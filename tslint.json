@@ -124,7 +124,7 @@
     "component-selector": [
       true,
       "element",
-      "app",
+      ["app","portal"],
       "kebab-case"
     ],
     "use-input-property-decorator": true,

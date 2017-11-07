@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-portal',
+  // tslint:disable-next-line:component-selector
+  selector: 'portal',
   templateUrl: './portal.component.html',
   styleUrls: ['./portal.component.css']
 })
