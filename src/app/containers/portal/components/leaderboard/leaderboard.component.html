@@ -1,0 +1,40 @@
+<portal-navbar></portal-navbar>
+
+<form (ngSubmit)="onSubmit(rankForm)" #rankForm="ngForm">
+  <select name="mapId"
+    [(ngModel)]="mapId"
+    >
+    <option *ngFor="let _map of mapDatas" [value]="_map.map_id">{{ _map.map_name }}</option>
+  </select>
+  <button type="submit">Submit</button>
+</form>
+
+<table>
+  <thead>
+    <tr>
+      <td>Rank</td>
+      <td>UserId</td>
+      <td>UserName</td>
+      <td>Gender</td>
+      <td>Offical Time</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let data of rankDatas">
+      <td>{{ data.rank }}</td>
+      <td>{{ data.user_id }}</td>
+      <td>{{ data.nick_name }}</td>
+      <td>{{ data.gender }}</td>
+      <td>{{ data.offical_time }}</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td colspan="5" style="text-align: center">
+        <button (click)="prePage()">pre</button>
+        <button (click)="nextPage()">next</button>
+      </td>
+    </tr>
+  </tfoot>
+</table>
+
