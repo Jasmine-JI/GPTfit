@@ -20,6 +20,8 @@ export class LeaderboardComponent implements OnInit {
   searchedUserId: number;
   groupId = '3';
   isHaveUserId: boolean;
+  isHaveEmail: boolean;
+  email: string;
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
@@ -50,21 +52,24 @@ export class LeaderboardComponent implements OnInit {
       });
   }
   onSubmit(form) {
-    this.mapId = form.value.mapId;
-    this.groupId = form.value.groupId;
+    const { email, mapId, groupId, userId, month } = form.value;
+    this.email = email;
+    this.mapId = mapId;
+    this.groupId = groupId;
     let params = new HttpParams();
     params = params.append('mapId', this.mapId.toString());
-    this.isHaveUserId = form.value.userId ? true : false;
+    params = params.append('month', month);
+    this.isHaveUserId = userId ? true : false;
+    this.isHaveEmail = email ? true : false;
     if (this.groupId !== '3') {
       params = params.append('gender', this.groupId);
     }
-    if (form.value.userId) {
-      params = params.append(
-        'userId',
-        (form.value.userId && form.value.userId.toString()) || null
-      );
+    if (email) {
+      params = params.append('email', email.trim());
     }
-    params = params.append('month', form.value.month);
+    if (userId) {
+      params = params.append('userId', (userId && userId.toString()) || null);
+    }
     this.http
       .get('http://192.168.1.235:3000/rankform', { params })
       .subscribe(res => {
@@ -75,7 +80,8 @@ export class LeaderboardComponent implements OnInit {
         this.isFirstPage = this.meta.currentPage === 1;
         this.isLastPage = this.meta.currentPage === this.meta.maxPage;
         this.isHaveDatas = this.rankDatas.length > 0;
-        this.searchedUserId = Number(form.value.userId);
+        // this.searchedUserId = Number(form.value.userId);
+        this.email = form.value.email.trim();
         this.pageRanges = Array.from(
           { length: this.meta.maxPage },
           (v, k) => k + 1

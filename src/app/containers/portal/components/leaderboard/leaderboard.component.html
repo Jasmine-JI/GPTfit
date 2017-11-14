@@ -7,6 +7,8 @@
   </select>
   <label>User Id:</label>
   <input name="userId" [(ngModel)]="userId">
+  <label>Email:</label>
+  <input name="email" [(ngModel)]="email">
   <label>Month:</label>
   <select name="month" [(ngModel)]="month">
     <option *ngFor="let _month of monthDatas" [value]="_month.month">{{ _month.month }}</option>
@@ -25,28 +27,30 @@
     <tr>
       <td>Rank</td>
       <td>UserId</td>
+      <td>Email</td>
       <td>UserName</td>
       <td>Gender</td>
       <td>Offical Time</td>
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let data of rankDatas" [ngClass]="{'here' : (data.user_id === searchedUserId)}">
+    <tr *ngFor="let data of rankDatas" [ngClass]="{'here' : (data.e_mail === email)}">
       <td>{{ data.rank }}</td>
       <td>{{ data.user_id }}</td>
+      <td>{{ data.e_mail }}</td>
       <td>{{ data.nick_name }}</td>
       <td>{{ data.gender }}</td>
       <td>{{ data.offical_time }}</td>
     </tr>
     <tr *ngIf="!isHaveDatas">
-      <td colspan="5" style="text-align: center">
+      <td colspan="6" style="text-align: center">
         尚無相關資訊
       </td>
     </tr>
   </tbody>
   <tfoot>
-    <tr *ngIf="!isHaveUserId">
-      <td colspan="5" style="text-align: center">
+    <tr *ngIf="!isHaveEmail">
+      <td colspan="6" style="text-align: center">
         <ng-container *ngIf="isHaveDatas">
           <button (click)="toFirstPage()" [disabled]="isFirstPage">first page</button>
           <button (click)="prePage()" [disabled]="isFirstPage">pre</button>
