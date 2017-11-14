@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, Routes, RouterModule } from '@angular/router';
-import { Page404Component } from './shared/page404/page404.component';
+import { Page404Component } from './shared/components/page404/page404.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/', pathMatch: 'full' },

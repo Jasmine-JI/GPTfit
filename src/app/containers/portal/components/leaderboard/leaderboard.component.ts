@@ -1,63 +1,188 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-
+import { HttpClient, HttpParams } from '@angular/common/http';
 @Component({
   selector: 'app-leaderboard',
   templateUrl: './leaderboard.component.html',
   styleUrls: ['./leaderboard.component.css']
 })
 export class LeaderboardComponent implements OnInit {
-  rankDatas: any;
+  rankDatas: Array<any>;
+  monthDatas: any;
   mapDatas: any;
-  meta: any;
+  response: any;
   mapId = 5;
-  constructor(private http: HttpClient) { }
+  month = '11';
+  meta: any;
+  pageRanges: Array<any>;
+  isFirstPage: boolean;
+  isLastPage: boolean;
+  isHaveDatas: boolean;
+  searchedUserId: number;
+  groupId = '3';
+  isHaveUserId: boolean;
+  constructor(private http: HttpClient) {}
 
   ngOnInit() {
-    this.http.get('http://localhost:3000/rankform').subscribe(res => {
-      this.rankDatas = res.datas;
-      this.meta = this.buildPageMeta(res.meta);
+    let params = new HttpParams();
+    params = params.append('param', 'map');
+    this.http.get('http://192.168.1.235:3000/rankform').subscribe(res => {
+      this.response = res;
+      const { datas, meta } = this.response;
+      this.rankDatas = datas;
+      this.meta = this.buildPageMeta(meta);
+      this.isFirstPage = this.meta.currentPage === 1;
+      this.isLastPage = this.meta.currentPage === this.meta.maxPage;
+      this.isHaveDatas = this.rankDatas.length > 0;
+      this.pageRanges = Array.from(
+        { length: this.meta.maxPage },
+        (v, k) => k + 1
+      );
     });
-    this.http.get('http://localhost:3000/rankform/rankInfo?param=map').subscribe(res => {
-      this.mapDatas = res;
-    });
+    this.http
+      .get('http://192.168.1.235:3000/rankform/rankInfo', { params })
+      .subscribe(res => {
+        this.mapDatas = res;
+      });
+    this.http
+      .get('http://192.168.1.235:3000/rankform/rankInfo/month')
+      .subscribe(res => {
+        this.monthDatas = res;
+      });
   }
   onSubmit(form) {
     this.mapId = form.value.mapId;
-    this.http.get('http://localhost:3000/rankform?mapId=' + this.mapId).subscribe(res => {
-      this.rankDatas = res.datas;
-    });
+    this.groupId = form.value.groupId;
+    let params = new HttpParams();
+    params = params.append('mapId', this.mapId.toString());
+    this.isHaveUserId = form.value.userId ? true : false;
+    if (this.groupId !== '3') {
+      params = params.append('gender', this.groupId);
+    }
+    if (form.value.userId) {
+      params = params.append(
+        'userId',
+        (form.value.userId && form.value.userId.toString()) || null
+      );
+    }
+    params = params.append('month', form.value.month);
+    this.http
+      .get('http://192.168.1.235:3000/rankform', { params })
+      .subscribe(res => {
+        this.response = res;
+        const { datas, meta } = this.response;
+        this.rankDatas = datas;
+        this.meta = this.buildPageMeta(meta);
+        this.isFirstPage = this.meta.currentPage === 1;
+        this.isLastPage = this.meta.currentPage === this.meta.maxPage;
+        this.isHaveDatas = this.rankDatas.length > 0;
+        this.searchedUserId = Number(form.value.userId);
+        this.pageRanges = Array.from(
+          { length: this.meta.maxPage },
+          (v, k) => k + 1
+        );
+      });
   }
   buildPageMeta(_meta) {
-    const meta = Object.assign({}, {
-      pageNumber: 0,
-      pageSize: 0,
-      pageCount: 0,
-    }, _meta);
-    const {
-      pageSize,
-      pageCount,
-    } = meta;
+    const meta = Object.assign(
+      {},
+      {
+        pageNumber: 0,
+        pageSize: 0,
+        pageCount: 0
+      },
+      _meta
+    );
+    const { pageSize, pageCount } = meta;
     const maxPage = Math.ceil(pageCount / pageSize) || 0;
     return {
       maxPage,
       currentPage: meta.pageNumber,
       perPage: pageSize,
-      total: pageCount,
+      total: pageCount
     };
+  }
+  selectPage(pageNumber) {
+    let params = new HttpParams();
+    params = params.append('mapId', this.mapId.toString());
+    params = params.append('pageNumber', pageNumber.toString());
+    this.http
+      .get(`http://192.168.1.235:3000/rankform`, { params })
+      .subscribe(res => {
+        this.response = res;
+        const { datas, meta } = this.response;
+        this.rankDatas = datas;
+        this.meta = this.buildPageMeta(meta);
+        this.isFirstPage = this.meta.currentPage === 1;
+        this.isLastPage = this.meta.currentPage === this.meta.maxPage;
+      });
   }
   prePage() {
     const pageNumber = this.meta.currentPage - 1;
-    this.http.get(`http://localhost:3000/rankform?mapId=${this.mapId}&pageNumber=` + pageNumber).subscribe(res => {
-      this.rankDatas = res.datas;
-      this.meta = this.buildPageMeta(res.meta);
-    });
+    let params = new HttpParams();
+    params = params.append('mapId', this.mapId.toString());
+    params = params.append('pageNumber', pageNumber.toString());
+    this.http
+      .get(`http://192.168.1.235:3000/rankform`, { params })
+      .subscribe(res => {
+        this.response = res;
+        const { datas, meta } = this.response;
+        this.rankDatas = datas;
+        this.meta = this.buildPageMeta(meta);
+        this.isFirstPage = pageNumber === 1;
+        this.isLastPage = this.meta.currentPage === this.meta.maxPage;
+        this.isHaveDatas = this.rankDatas.length > 0;
+      });
   }
   nextPage() {
     const pageNumber = this.meta.currentPage + 1;
-    this.http.get(`http://localhost:3000/rankform?mapId=${this.mapId}&pageNumber=` + pageNumber).subscribe(res => {
-      this.rankDatas = res.datas;
-      this.meta = this.buildPageMeta(res.meta);
-    });
+    let params = new HttpParams();
+    params = params.append('mapId', this.mapId.toString());
+    params = params.append('pageNumber', pageNumber);
+    this.http
+      .get(`http://192.168.1.235:3000/rankform`, { params })
+      .subscribe(res => {
+        this.response = res;
+        const { datas, meta } = this.response;
+        this.rankDatas = datas;
+        this.meta = this.buildPageMeta(meta);
+        this.isFirstPage = this.meta.currentPage === 1;
+        this.isLastPage = this.meta.currentPage === this.meta.maxPage;
+        this.isHaveDatas = this.rankDatas.length > 0;
+      });
+  }
+  toFirstPage() {
+    let params = new HttpParams();
+    params = params.append('mapId', this.mapId.toString());
+    params = params.append('pageNumber', '1');
+
+    this.http
+      .get(`http://192.168.1.235:3000/rankform`, { params })
+      .subscribe(res => {
+        this.response = res;
+        const { datas, meta } = this.response;
+        this.rankDatas = datas;
+        this.meta = this.buildPageMeta(meta);
+        this.isFirstPage = this.meta.currentPage === 1;
+        this.isLastPage = this.meta.currentPage === this.meta.maxPage;
+        this.isHaveDatas = this.rankDatas.length > 0;
+      });
+  }
+  toLastPage() {
+    const { maxPage } = this.meta;
+    let params = new HttpParams();
+    params = params.append('mapId', this.mapId.toString());
+    params = params.append('pageNumber', maxPage);
+
+    this.http
+      .get(`http://192.168.1.235:3000/rankform`, { params })
+      .subscribe(res => {
+        this.response = res;
+        const { datas, meta } = this.response;
+        this.rankDatas = datas;
+        this.meta = this.buildPageMeta(meta);
+        this.isFirstPage = this.meta.currentPage === 1;
+        this.isLastPage = this.meta.currentPage === this.meta.maxPage;
+        this.isHaveDatas = this.rankDatas.length > 0;
+      });
   }
 }

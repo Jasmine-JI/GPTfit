@@ -1,6 +1,13 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    // "typescript.tsdk": "../node_modules/typescript/lib",
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": [
+        "app/shared/*"
+      ]
+    },
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,

@@ -7,6 +7,7 @@ import { PortalRoutingModule } from './portal-routing.module';
 import { PortalComponent } from './portal.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
+import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 
 @NgModule({
   imports: [
@@ -15,6 +16,6 @@ import { LeaderboardComponent } from './components/leaderboard/leaderboard.compo
     HttpClientModule,
     FormsModule
   ],
-  declarations: [PortalComponent, NavbarComponent, LeaderboardComponent]
+  declarations: [PortalComponent, NavbarComponent, LeaderboardComponent, PaginationComponent]
 })
 export class PortalModule { }

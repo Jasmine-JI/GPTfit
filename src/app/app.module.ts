@@ -4,7 +4,7 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { AppComponent } from './app.component';
 import { PortalModule } from './containers/portal/portal.module';
-import { Page404Component } from './shared/page404/page404.component';
+import { Page404Component } from './shared/components/page404/page404.component';
 
 @NgModule({
   declarations: [

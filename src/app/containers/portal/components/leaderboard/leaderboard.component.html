@@ -1,10 +1,21 @@
 <portal-navbar></portal-navbar>
 
 <form (ngSubmit)="onSubmit(rankForm)" #rankForm="ngForm">
-  <select name="mapId"
-    [(ngModel)]="mapId"
-    >
+  <label>Map:</label>
+  <select name="mapId" [(ngModel)]="mapId">
     <option *ngFor="let _map of mapDatas" [value]="_map.map_id">{{ _map.map_name }}</option>
+  </select>
+  <label>User Id:</label>
+  <input name="userId" [(ngModel)]="userId">
+  <label>Month:</label>
+  <select name="month" [(ngModel)]="month">
+    <option *ngFor="let _month of monthDatas" [value]="_month.month">{{ _month.month }}</option>
+  </select>
+  <label>組別:</label>
+  <select name="groupId" [(ngModel)]="groupId">
+    <option [value]="3">無分組</option>
+    <option [value]="0">男生組</option>
+    <option [value]="1">女生組</option>
   </select>
   <button type="submit">Submit</button>
 </form>
@@ -20,21 +31,32 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let data of rankDatas">
+    <tr *ngFor="let data of rankDatas" [ngClass]="{'here' : (data.user_id === searchedUserId)}">
       <td>{{ data.rank }}</td>
       <td>{{ data.user_id }}</td>
       <td>{{ data.nick_name }}</td>
       <td>{{ data.gender }}</td>
       <td>{{ data.offical_time }}</td>
     </tr>
+    <tr *ngIf="!isHaveDatas">
+      <td colspan="5" style="text-align: center">
+        尚無相關資訊
+      </td>
+    </tr>
   </tbody>
   <tfoot>
-    <tr>
+    <tr *ngIf="!isHaveUserId">
       <td colspan="5" style="text-align: center">
-        <button (click)="prePage()">pre</button>
-        <button (click)="nextPage()">next</button>
+        <ng-container *ngIf="isHaveDatas">
+          <button (click)="toFirstPage()" [disabled]="isFirstPage">first page</button>
+          <button (click)="prePage()" [disabled]="isFirstPage">pre</button>
+          <ng-container *ngFor="let _page of pageRanges">
+            <span (click)="selectPage(_page)">{{ _page }}</span>
+          </ng-container>
+          <button (click)="nextPage()" [disabled]="isLastPage">next</button>
+          <button (click)="toLastPage()" [disabled]="isLastPage">last page</button>
+        </ng-container>
       </td>
     </tr>
   </tfoot>
 </table>
-

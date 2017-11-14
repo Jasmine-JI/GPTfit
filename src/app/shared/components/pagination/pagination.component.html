@@ -1,0 +1,7 @@
+<button (click)="toFirstPage()" [disabled]="isFirstPage">first page</button>
+<button (click)="prePage()" [disabled]="isFirstPage">pre</button>
+<ng-container *ngFor="let _page of pageRanges">
+  <span (click)="selectPage(_page)">{{ _page }}</span>
+</ng-container>
+<button (click)="nextPage()" [disabled]="isLastPage">next</button>
+<button (click)="toLastPage()" [disabled]="isLastPage">last page</button>
