@@ -1,4 +1,7 @@
 <portal-navbar></portal-navbar>
+<div class="leaderboard-bg" [style.background-image]="bgImageUrl">
+  <div class="leaderboard-layer">
+
 <form (ngSubmit)="onSubmit(rankForm, $event)" #rankForm="ngForm">
   <label>Map:</label>
   <select name="mapId" [(ngModel)]="mapId">
@@ -76,3 +79,10 @@
     </tr>
   </tfoot>
 </table>
+<div>
+  <button (click)="preMap()">Pre map</button>
+  <button (click)="nextMap()">Next map</button>
+</div>
+
+  </div>
+</div>

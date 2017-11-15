@@ -30,9 +30,19 @@ export class LeaderboardComponent implements OnInit {
   tempEmail: string;
   emailOptions: any;
   isFoundUser = false;
-
+  bgImageUrl: string;
+  bgIdx = 0;
+  mapImages = [
+    '/assets/images/Panathenean_Stadium_1080.jpg',
+    '/assets/images/Tour_Eiffel_1080.jpg',
+    '/assets/images/Olympiapark_Munchen_1080.jpg',
+    '/assets/images/Ju-Yong_customs_1080.jpg',
+    '/assets/images/Airolo_1080.jpg'
+  ];
   constructor(private http: HttpClient) {
     this.handleSearchEmail = debounce(this.handleSearchEmail, 1000);
+
+    this.bgImageUrl = `url(${this.mapImages[this.bgIdx]})`;
   }
   @HostListener('document:click')
   close() {
@@ -247,5 +257,21 @@ export class LeaderboardComponent implements OnInit {
     if (this.emailOptions.length > 1) {
       this.tempEmail = this.emailOptions.splice(index, 1).toString();
     }
+  }
+  preMap() {
+    if (this.bgIdx - 1 < 0) {
+      this.bgIdx = this.mapImages.length - 1;
+    } else {
+      this.bgIdx = this.bgIdx - 1;
+    }
+    this.bgImageUrl = `url(${this.mapImages[this.bgIdx]})`;
+  }
+  nextMap() {
+    if (this.bgIdx + 1 > 4) {
+      this.bgIdx = 0;
+    } else {
+      this.bgIdx = this.bgIdx + 1;
+    }
+    this.bgImageUrl = `url(${this.mapImages[this.bgIdx]})`;
   }
 }
