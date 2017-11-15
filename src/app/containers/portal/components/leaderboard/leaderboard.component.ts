@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, HostListener } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import debounce from 'debounce';
+
 @Component({
   selector: 'app-leaderboard',
   templateUrl: './leaderboard.component.html',
@@ -22,8 +24,20 @@ export class LeaderboardComponent implements OnInit {
   isHaveUserId: boolean;
   isHaveEmail: boolean;
   email: string;
-  constructor(private http: HttpClient) {}
+  active = false;
+  isSelectLoading = false;
+  public element: ElementRef;
+  tempEmail: string;
+  emailOptions: any;
+  isFoundUser = false;
 
+  constructor(private http: HttpClient) {
+    this.handleSearchEmail = debounce(this.handleSearchEmail, 1000);
+  }
+  @HostListener('document:click')
+  close() {
+    this.active = false;
+  }
   ngOnInit() {
     let params = new HttpParams();
     params = params.append('param', 'map');
@@ -51,11 +65,14 @@ export class LeaderboardComponent implements OnInit {
         this.monthDatas = res;
       });
   }
-  onSubmit(form) {
+  onSubmit(form, event: any) {
+    event.stopPropagation();
     const { email, mapId, groupId, userId, month } = form.value;
     this.email = email;
+    this.isFoundUser = this.email ? true : false;
     this.mapId = mapId;
     this.groupId = groupId;
+    this.month = month;
     let params = new HttpParams();
     params = params.append('mapId', this.mapId.toString());
     params = params.append('month', month);
@@ -80,8 +97,7 @@ export class LeaderboardComponent implements OnInit {
         this.isFirstPage = this.meta.currentPage === 1;
         this.isLastPage = this.meta.currentPage === this.meta.maxPage;
         this.isHaveDatas = this.rankDatas.length > 0;
-        // this.searchedUserId = Number(form.value.userId);
-        this.email = form.value.email.trim();
+        this.email = email && email.trim();
         this.pageRanges = Array.from(
           { length: this.meta.maxPage },
           (v, k) => k + 1
@@ -190,5 +206,38 @@ export class LeaderboardComponent implements OnInit {
         this.isLastPage = this.meta.currentPage === this.meta.maxPage;
         this.isHaveDatas = this.rankDatas.length > 0;
       });
+  }
+  public inputEvent(e: any, isUpMode: boolean = false): void {
+    this.handleSearchEmail();
+  }
+  handleSearchEmail() {
+    this.isSelectLoading = true;
+    let params = new HttpParams();
+    params = params.append('mapId', this.mapId.toString());
+    params = params.append('month', this.month);
+    params = params.append('keyword', this.email);
+    this.http
+      .get('http://192.168.1.235:3000/rankform/rankInfo/email', { params })
+      .subscribe(res => {
+        this.emailOptions = res;
+        this.isSelectLoading = false;
+      });
+  }
+  openActive(event: any) {
+    event.stopPropagation();
+    this.active = !this.active;
+  }
+  closeActive(event: any) {
+    event.stopPropagation();
+    this.active = false;
+  }
+  remove(index: number, event?: any): void {
+    if (this.email && this.emailOptions.length > 1) {
+      this.emailOptions.push(this.tempEmail);
+    }
+    this.email = this.emailOptions[index];
+    if (this.emailOptions.length > 1) {
+      this.tempEmail = this.emailOptions.splice(index, 1).toString();
+    }
   }
 }

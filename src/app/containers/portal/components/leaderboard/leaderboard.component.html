@@ -1,14 +1,28 @@
 <portal-navbar></portal-navbar>
-
-<form (ngSubmit)="onSubmit(rankForm)" #rankForm="ngForm">
+<form (ngSubmit)="onSubmit(rankForm, $event)" #rankForm="ngForm">
   <label>Map:</label>
   <select name="mapId" [(ngModel)]="mapId">
     <option *ngFor="let _map of mapDatas" [value]="_map.map_id">{{ _map.map_name }}</option>
   </select>
-  <label>User Id:</label>
-  <input name="userId" [(ngModel)]="userId">
+
   <label>Email:</label>
-  <input name="email" [(ngModel)]="email">
+  <div class="dropdown" (click)="openActive($event)">
+    <input type="email" name="email" [(ngModel)]="email"
+      (keydown)="inputEvent($event)" autocomplete="off"
+       [class.loading]="isSelectLoading"
+    >
+    <ul class="dropdown-menu" *ngIf="emailOptions && emailOptions.length > 0"
+       [class.show]="active && emailOptions.length > 0"
+    >
+      <li *ngFor="let o of emailOptions; let i = index">
+        <div class="">
+          <a class="">
+            <div (click)="remove(i, $event)">{{ o }}</div>
+          </a>
+        </div>
+      </li>
+    </ul>
+  </div>
   <label>Month:</label>
   <select name="month" [(ngModel)]="month">
     <option *ngFor="let _month of monthDatas" [value]="_month.month">{{ _month.month }}</option>
@@ -26,7 +40,6 @@
   <thead>
     <tr>
       <td>Rank</td>
-      <td>UserId</td>
       <td>Email</td>
       <td>UserName</td>
       <td>Gender</td>
@@ -34,23 +47,22 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let data of rankDatas" [ngClass]="{'here' : (data.e_mail === email)}">
+    <tr *ngFor="let data of rankDatas" [ngClass]="{'here' : (data.e_mail === email) && isFoundUser}">
       <td>{{ data.rank }}</td>
-      <td>{{ data.user_id }}</td>
       <td>{{ data.e_mail }}</td>
       <td>{{ data.nick_name }}</td>
-      <td>{{ data.gender }}</td>
+      <td>{{ data.gender | sex }}</td>
       <td>{{ data.offical_time }}</td>
     </tr>
     <tr *ngIf="!isHaveDatas">
-      <td colspan="6" style="text-align: center">
+      <td colspan="5" style="text-align: center">
         尚無相關資訊
       </td>
     </tr>
   </tbody>
   <tfoot>
     <tr *ngIf="!isHaveEmail">
-      <td colspan="6" style="text-align: center">
+      <td colspan="5" style="text-align: center">
         <ng-container *ngIf="isHaveDatas">
           <button (click)="toFirstPage()" [disabled]="isFirstPage">first page</button>
           <button (click)="prePage()" [disabled]="isFirstPage">pre</button>
