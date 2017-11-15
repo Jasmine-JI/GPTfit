@@ -48,7 +48,7 @@
   </thead>
   <tbody>
     <tr *ngFor="let data of rankDatas" [ngClass]="{'here' : (data.e_mail === email) && isFoundUser}">
-      <td>{{ data.rank }}</td>
+      <td [routerLink] ="[data.map_id]">{{ data.rank }}</td>
       <td>{{ data.e_mail }}</td>
       <td>{{ data.nick_name }}</td>
       <td>{{ data.gender | sex }}</td>

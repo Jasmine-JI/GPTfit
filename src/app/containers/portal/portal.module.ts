@@ -9,6 +9,7 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
 import { SexPipe } from '@shared/pipes/sex.pipe';
 import { TimePipe } from '@shared/pipes/time.pipe';
+import { MapInfoComponent } from './components/map-info/map-info.component';
 
 @NgModule({
   imports: [
@@ -22,7 +23,8 @@ import { TimePipe } from '@shared/pipes/time.pipe';
     NavbarComponent,
     LeaderboardComponent,
     SexPipe,
-    TimePipe
+    TimePipe,
+    MapInfoComponent
   ]
 })
 export class PortalModule {}
