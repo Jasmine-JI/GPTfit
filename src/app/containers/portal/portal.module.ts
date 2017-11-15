@@ -8,6 +8,8 @@ import { PortalComponent } from './portal.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
 import { SexPipe } from '@shared/pipes/sex.pipe';
+import { TimePipe } from '@shared/pipes/time.pipe';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -19,7 +21,8 @@ import { SexPipe } from '@shared/pipes/sex.pipe';
     PortalComponent,
     NavbarComponent,
     LeaderboardComponent,
-    SexPipe
+    SexPipe,
+    TimePipe
   ]
 })
 export class PortalModule {}

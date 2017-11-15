@@ -52,7 +52,7 @@
       <td>{{ data.e_mail }}</td>
       <td>{{ data.nick_name }}</td>
       <td>{{ data.gender | sex }}</td>
-      <td>{{ data.offical_time }}</td>
+      <td>{{ data.offical_time | time }}</td>
     </tr>
     <tr *ngIf="!isHaveDatas">
       <td colspan="5" style="text-align: center">

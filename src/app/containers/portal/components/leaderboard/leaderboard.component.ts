@@ -143,6 +143,10 @@ export class LeaderboardComponent implements OnInit {
     let params = new HttpParams();
     params = params.append('mapId', this.mapId.toString());
     params = params.append('pageNumber', pageNumber.toString());
+    params = params.append('month', this.month);
+    if (this.groupId !== '3') {
+      params = params.append('gender', this.groupId);
+    }
     this.http
       .get(`http://192.168.1.235:3000/rankform`, { params })
       .subscribe(res => {
@@ -160,6 +164,10 @@ export class LeaderboardComponent implements OnInit {
     let params = new HttpParams();
     params = params.append('mapId', this.mapId.toString());
     params = params.append('pageNumber', pageNumber);
+    params = params.append('month', this.month);
+    if (this.groupId !== '3') {
+      params = params.append('gender', this.groupId);
+    }
     this.http
       .get(`http://192.168.1.235:3000/rankform`, { params })
       .subscribe(res => {
