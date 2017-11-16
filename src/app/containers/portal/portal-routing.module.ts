@@ -12,7 +12,7 @@ const routes: Routes = [
     path: 'leaderboard', component: LeaderboardComponent,
   },
   {
-    path: 'leaderboard/:mapId', component: MapInfoComponent,
+    path: 'leaderboard/mapInfo', component: MapInfoComponent,
   }
 ];
 

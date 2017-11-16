@@ -17,31 +17,31 @@
               <ul class="run-info">
                 <li class="run-info__item">
                   <span class="">Route Name:</span>
-                  <div class="run-info__item--collocate">{{ map_name || '艾菲爾鐵塔' }}</div>
+                  <div class="run-info__item--collocate">{{ mapData && mapData.map_name }}</div>
                 </li>
                 <li class="run-info__item">
                   <span class="">Total Distance:</span>
-                  <div class="run-info__item--collocate">{{ race_total_distance || 1.45 }} km</div>
+                  <div class="run-info__item--collocate">{{ mapData && mapData.race_total_distance }} km</div>
                 </li>
                 <li class="run-info__item">
                   <span class="">Race Category:</span>
-                  <div class="run-info__item--collocate">{{ race_category || '繞圈' }}</div>
+                  <div class="run-info__item--collocate">{{ mapData && mapData.race_category }}</div>
                 </li>
                 <li class="run-info__item">
                   <span class="">Average Pace:</span>
-                  <div class="run-info__item--collocate">{{ average_pace || '15' }}</div>
+                  <div class="run-info__item--collocate">{{ data && data.average_pace || '15(fake data)' }}</div>
                 </li>
                 <li class="run-info__item">
                   <span class="">Max Pace:</span>
-                  <div class="run-info__item--collocate">{{ max_pace || '17' }}</div>
+                  <div class="run-info__item--collocate">{{ data && data.max_pace || '17(fake data)' }}</div>
                 </li>
                 <li class="run-info__item">
                   <span class="">Average speed:</span>
-                  <div class="run-info__item--collocate">{{ average_speed || '15' }}</div>
+                  <div class="run-info__item--collocate">{{ data && data.average_speed || '15(fake data)' }}</div>
                 </li>
                 <li class="run-info__item">
                   <span class="">Max speed:</span>
-                  <div class="run-info__item--collocate">{{ max_speed || '17' }}</div>
+                  <div class="run-info__item--collocate">{{ data && data.max_speed || '17(fake data)' }}</div>
                 </li>
               </ul>
             </div>

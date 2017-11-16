@@ -42,6 +42,7 @@ export class LeaderboardComponent implements OnInit {
     '/assets/images/Panathenean_Stadium_1080.jpg'
   ];
   EMPTY_OBJECT = {};
+
   constructor(private http: HttpClient, private router: Router) {
     this.handleSearchEmail = debounce(this.handleSearchEmail, 1000);
 
@@ -53,10 +54,23 @@ export class LeaderboardComponent implements OnInit {
   }
   ngOnInit() {
     const queryStrings = this.getUrlQueryStrings(location.search);
-    const pageNumber = queryStrings.pageNumber;
     let params = new HttpParams();
     params = params.append('param', 'map');
-    params = params.append('pageNumber', pageNumber);
+    if (!this.isObjectEmpty(queryStrings)) {
+      const { pageNumber, month, mapId } = queryStrings;
+      if (pageNumber) {
+        params = params.append('pageNumber', pageNumber);
+      }
+      if (month) {
+        this.month = month;
+        params = params.append('month', month);
+      }
+      if (mapId) {
+        this.mapId = mapId;
+        params = params.append('mapId', mapId);
+      }
+    }
+
     this.http
       .get('http://192.168.1.235:3000/rankform', { params })
       .subscribe(res => {
@@ -118,6 +132,7 @@ export class LeaderboardComponent implements OnInit {
           { length: this.meta.maxPage },
           (v, k) => k + 1
         );
+        this.toHistoryPrePage();
       });
   }
   buildPageMeta(_meta) {
@@ -152,9 +167,29 @@ export class LeaderboardComponent implements OnInit {
         this.meta = this.buildPageMeta(meta);
         this.isFirstPage = this.meta.currentPage === 1;
         this.isLastPage = this.meta.currentPage === this.meta.maxPage;
-        const paramDatas = { pageNumber: this.meta.currentPage };
-        this.router.navigateByUrl(`${location.pathname}?${this.buildUrlQueryStrings(paramDatas)}`);
+        this.toHistoryPrePage();
       });
+  }
+  toHistoryPrePage() {
+    const paramDatas = {
+      pageNumber: this.meta.currentPage,
+      month: this.month,
+      mapId: this.mapId
+    };
+    this.router.navigateByUrl(
+      `${location.pathname}?${this.buildUrlQueryStrings(paramDatas)}`
+    );
+  }
+  toMapInfoPage(userId) {
+
+    const paramDatas = {
+      month: this.month,
+      mapId: this.mapId,
+      userId
+    };
+    this.router.navigateByUrl(
+      `${location.pathname}/mapInfo?${this.buildUrlQueryStrings(paramDatas)}`
+    );
   }
   prePage() {
     const pageNumber = this.meta.currentPage - 1;
@@ -175,8 +210,7 @@ export class LeaderboardComponent implements OnInit {
         this.isFirstPage = pageNumber === 1;
         this.isLastPage = this.meta.currentPage === this.meta.maxPage;
         this.isHaveDatas = this.rankDatas.length > 0;
-        const paramDatas = { pageNumber: this.meta.currentPage };
-        this.router.navigateByUrl(`${location.pathname}?${this.buildUrlQueryStrings(paramDatas)}`);
+        this.toHistoryPrePage();
       });
   }
   nextPage() {
@@ -198,12 +232,7 @@ export class LeaderboardComponent implements OnInit {
         this.isFirstPage = this.meta.currentPage === 1;
         this.isLastPage = this.meta.currentPage === this.meta.maxPage;
         this.isHaveDatas = this.rankDatas.length > 0;
-        const paramDatas = {
-          pageNumber: this.meta.currentPage
-        };
-        this.router.navigateByUrl(
-          `${location.pathname}?${this.buildUrlQueryStrings(paramDatas)}`
-        );
+        this.toHistoryPrePage();
       });
   }
   toFirstPage() {
@@ -221,12 +250,7 @@ export class LeaderboardComponent implements OnInit {
         this.isFirstPage = this.meta.currentPage === 1;
         this.isLastPage = this.meta.currentPage === this.meta.maxPage;
         this.isHaveDatas = this.rankDatas.length > 0;
-        const paramDatas = {
-          pageNumber: 1
-        };
-        this.router.navigateByUrl(
-          `${location.pathname}?${this.buildUrlQueryStrings(paramDatas)}`
-        );
+        this.toHistoryPrePage();
       });
   }
   toLastPage() {
@@ -245,12 +269,7 @@ export class LeaderboardComponent implements OnInit {
         this.isFirstPage = this.meta.currentPage === 1;
         this.isLastPage = this.meta.currentPage === this.meta.maxPage;
         this.isHaveDatas = this.rankDatas.length > 0;
-        const paramDatas = {
-          pageNumber: this.meta.maxPage
-        };
-        this.router.navigateByUrl(
-          `${location.pathname}?${this.buildUrlQueryStrings(paramDatas)}`
-        );
+        this.toHistoryPrePage();
       });
   }
   public inputEvent(e: any, isUpMode: boolean = false): void {
@@ -321,6 +340,7 @@ export class LeaderboardComponent implements OnInit {
           { length: this.meta.maxPage },
           (v, k) => k + 1
         );
+        this.toHistoryPrePage();
       });
   }
   nextMap() {
@@ -358,6 +378,7 @@ export class LeaderboardComponent implements OnInit {
           { length: this.meta.maxPage },
           (v, k) => k + 1
         );
+        this.toHistoryPrePage();
       });
   }
   buildUrlQueryStrings(_params) {
