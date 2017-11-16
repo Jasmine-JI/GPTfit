@@ -1,88 +1,90 @@
 <portal-navbar></portal-navbar>
+
+
 <div class="leaderboard-bg" [style.background-image]="bgImageUrl">
   <div class="leaderboard-layer">
 
-<form (ngSubmit)="onSubmit(rankForm, $event)" #rankForm="ngForm">
-  <label>Map:</label>
-  <select name="mapId" [(ngModel)]="mapId">
-    <option *ngFor="let _map of mapDatas" [value]="_map.map_id">{{ _map.map_name }}</option>
-  </select>
+    <div class="container pt-5">
+      <div class="row row-runs">
+        <form (ngSubmit)="onSubmit(rankForm, $event)" #rankForm="ngForm">
+          <label>Map:</label>
+          <select name="mapId" [(ngModel)]="mapId">
+            <option *ngFor="let _map of mapDatas" [value]="_map.map_id">{{ _map.map_name }}</option>
+          </select>
 
-  <label>Email:</label>
-  <div class="dropdown" (click)="openActive($event)">
-    <input type="email" name="email" [(ngModel)]="email"
-      (keydown)="inputEvent($event)" autocomplete="off"
-       [class.loading]="isSelectLoading"
-    >
-    <ul class="dropdown-menu" *ngIf="emailOptions && emailOptions.length > 0"
-       [class.show]="active && emailOptions.length > 0"
-    >
-      <li *ngFor="let o of emailOptions; let i = index">
-        <div class="">
-          <a class="">
-            <div (click)="remove(i, $event)">{{ o }}</div>
-          </a>
+          <label>Email:</label>
+          <div class="dropdown" (click)="openActive($event)">
+            <input type="email" name="email" [(ngModel)]="email" (keydown)="inputEvent($event)" autocomplete="off" [class.loading]="isSelectLoading">
+            <ul class="dropdown-menu" *ngIf="emailOptions && emailOptions.length > 0" [class.show]="active && emailOptions.length > 0">
+              <li *ngFor="let o of emailOptions; let i = index">
+                <div class="">
+                  <a class="">
+                    <div (click)="remove(i, $event)">{{ o }}</div>
+                  </a>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <label>Month:</label>
+          <select name="month" [(ngModel)]="month">
+            <option *ngFor="let _month of monthDatas" [value]="_month.month">{{ _month.month }}</option>
+          </select>
+          <label>組別:</label>
+          <select name="groupId" [(ngModel)]="groupId">
+            <option [value]="3">無分組</option>
+            <option [value]="0">男生組</option>
+            <option [value]="1">女生組</option>
+          </select>
+          <button type="submit">Submit</button>
+        </form>
+
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <td>Rank</td>
+              <td>Email</td>
+              <td>UserName</td>
+              <td>Gender</td>
+              <td>Offical Time</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let data of rankDatas" [ngClass]="{'here' : (data.e_mail === email) && isFoundUser}">
+              <td [routerLink]="[data.map_id]" class="rank">{{ data.rank }}</td>
+              <td>{{ data.e_mail }}</td>
+              <td>{{ data.nick_name }}</td>
+              <td>{{ data.gender | sex }}</td>
+              <td>{{ data.offical_time | time }}</td>
+            </tr>
+            <tr *ngIf="!isHaveDatas">
+              <td colspan="5" style="text-align: center">
+                尚無相關資訊
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr *ngIf="!isHaveEmail">
+              <td colspan="5" style="text-align: center">
+                <ng-container *ngIf="isHaveDatas">
+                  <button (click)="toFirstPage()" [disabled]="isFirstPage">first page</button>
+                  <button (click)="prePage()" [disabled]="isFirstPage">pre</button>
+                  <ng-container *ngFor="let _page of pageRanges">
+                    <span (click)="selectPage(_page)">{{ _page }}</span>
+                  </ng-container>
+                  <button (click)="nextPage()" [disabled]="isLastPage">next</button>
+                  <button (click)="toLastPage()" [disabled]="isLastPage">last page</button>
+                </ng-container>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+        <div>
+          <button (click)="preMap()">Pre map</button>
+          <button (click)="nextMap()">Next map</button>
         </div>
-      </li>
-    </ul>
-  </div>
-  <label>Month:</label>
-  <select name="month" [(ngModel)]="month">
-    <option *ngFor="let _month of monthDatas" [value]="_month.month">{{ _month.month }}</option>
-  </select>
-  <label>組別:</label>
-  <select name="groupId" [(ngModel)]="groupId">
-    <option [value]="3">無分組</option>
-    <option [value]="0">男生組</option>
-    <option [value]="1">女生組</option>
-  </select>
-  <button type="submit">Submit</button>
-</form>
 
-<table>
-  <thead>
-    <tr>
-      <td>Rank</td>
-      <td>Email</td>
-      <td>UserName</td>
-      <td>Gender</td>
-      <td>Offical Time</td>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let data of rankDatas" [ngClass]="{'here' : (data.e_mail === email) && isFoundUser}">
-      <td [routerLink] ="[data.map_id]">{{ data.rank }}</td>
-      <td>{{ data.e_mail }}</td>
-      <td>{{ data.nick_name }}</td>
-      <td>{{ data.gender | sex }}</td>
-      <td>{{ data.offical_time | time }}</td>
-    </tr>
-    <tr *ngIf="!isHaveDatas">
-      <td colspan="5" style="text-align: center">
-        尚無相關資訊
-      </td>
-    </tr>
-  </tbody>
-  <tfoot>
-    <tr *ngIf="!isHaveEmail">
-      <td colspan="5" style="text-align: center">
-        <ng-container *ngIf="isHaveDatas">
-          <button (click)="toFirstPage()" [disabled]="isFirstPage">first page</button>
-          <button (click)="prePage()" [disabled]="isFirstPage">pre</button>
-          <ng-container *ngFor="let _page of pageRanges">
-            <span (click)="selectPage(_page)">{{ _page }}</span>
-          </ng-container>
-          <button (click)="nextPage()" [disabled]="isLastPage">next</button>
-          <button (click)="toLastPage()" [disabled]="isLastPage">last page</button>
-        </ng-container>
-      </td>
-    </tr>
-  </tfoot>
-</table>
-<div>
-  <button (click)="preMap()">Pre map</button>
-  <button (click)="nextMap()">Next map</button>
-</div>
+      </div>
+    </div>
 
   </div>
 </div>

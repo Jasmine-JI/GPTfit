@@ -1,46 +1,52 @@
 <portal-navbar></portal-navbar>
-<div class="row row-map">
-  <div class="col-md-8">
-    <h2 class="heading">Map</h2>
-    <hr/>
-    <div id="map"></div>
-  </div>
-  <div class="col-md-4 info-container">
-    <div id="run-info">
-      <h2 class="heading">Run Data</h2>
-      <hr/>
-      <div class="data-heading">Route Name:</div>
-      <p class="data-entry">{{ map_name || '艾菲爾鐵塔' }}</p>
-      <hr/>
-
-      <div class="data-heading">Date:</div>
-      <p class="data-entry">{{ date | date:"longDate" }}
-        <p>
+<div class="leaderboard-bg" [style.background-image]="bgImageUrl">
+  <div class="leaderboard-layer">
+    <button (click)="this._location.back()">Go back</button>
+    <div class="container pt-5">
+      <div class="row row-map">
+        <div class="col-md-8">
+          <h2 class="heading">Map</h2>
           <hr/>
-
-          <div class="data-heading">Total Distance:</div>
-          <p class="data-entry">{{ race_total_distance || 1.45 }} km</p>
-          <hr/>
-
-          <div class="data-heading">Race Category:</div>
-          <p class="data-entry">{{ race_category || '繞圈' }}</p>
-          <hr/>
-
-          <div class="data-heading">Average Pace:</div>
-          <p class="data-entry">{{ average_pace || '15' }}</p>
-          <hr/>
-
-          <div class="data-heading">Max Pace:</div>
-          <p class="data-entry">{{ max_pace || '17' }}</p>
-          <hr/>
-
-          <div class="data-heading">Average Speed:</div>
-          <p class="data-entry">{{ average_speed || '15' }}</p>
-          <hr/>
-
-          <div class="data-heading">Max Speed:</div>
-          <p class="data-entry">{{ max_speed || '17' }}</p>
-          <hr/>
+          <div id="map"></div>
+        </div>
+        <div class="col-md-4 info-container">
+          <div>
+            <h2 class="heading">Run Data</h2>
+            <hr/>
+            <div class="">
+              <ul class="run-info">
+                <li class="run-info__item">
+                  <span class="">Route Name:</span>
+                  <div class="run-info__item--collocate">{{ map_name || '艾菲爾鐵塔' }}</div>
+                </li>
+                <li class="run-info__item">
+                  <span class="">Total Distance:</span>
+                  <div class="run-info__item--collocate">{{ race_total_distance || 1.45 }} km</div>
+                </li>
+                <li class="run-info__item">
+                  <span class="">Race Category:</span>
+                  <div class="run-info__item--collocate">{{ race_category || '繞圈' }}</div>
+                </li>
+                <li class="run-info__item">
+                  <span class="">Average Pace:</span>
+                  <div class="run-info__item--collocate">{{ average_pace || '15' }}</div>
+                </li>
+                <li class="run-info__item">
+                  <span class="">Max Pace:</span>
+                  <div class="run-info__item--collocate">{{ max_pace || '17' }}</div>
+                </li>
+                <li class="run-info__item">
+                  <span class="">Average speed:</span>
+                  <div class="run-info__item--collocate">{{ average_speed || '15' }}</div>
+                </li>
+                <li class="run-info__item">
+                  <span class="">Max speed:</span>
+                  <div class="run-info__item--collocate">{{ max_speed || '17' }}</div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-</div>

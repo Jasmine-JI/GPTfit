@@ -1,6 +1,9 @@
 import { Component, OnInit, ElementRef, HostListener } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { Router } from '@angular/router';
 import debounce from 'debounce';
+import queryString from 'query-string';
+import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'app-leaderboard',
@@ -21,7 +24,6 @@ export class LeaderboardComponent implements OnInit {
   isHaveDatas: boolean;
   searchedUserId: number;
   groupId = '3';
-  isHaveUserId: boolean;
   isHaveEmail: boolean;
   email: string;
   active = false;
@@ -33,13 +35,14 @@ export class LeaderboardComponent implements OnInit {
   bgImageUrl: string;
   bgIdx = 0;
   mapImages = [
-    '/assets/images/Panathenean_Stadium_1080.jpg',
     '/assets/images/Tour_Eiffel_1080.jpg',
     '/assets/images/Olympiapark_Munchen_1080.jpg',
     '/assets/images/Ju-Yong_customs_1080.jpg',
-    '/assets/images/Airolo_1080.jpg'
+    '/assets/images/Airolo_1080.jpg',
+    '/assets/images/Panathenean_Stadium_1080.jpg'
   ];
-  constructor(private http: HttpClient) {
+  EMPTY_OBJECT = {};
+  constructor(private http: HttpClient, private router: Router) {
     this.handleSearchEmail = debounce(this.handleSearchEmail, 1000);
 
     this.bgImageUrl = `url(${this.mapImages[this.bgIdx]})`;
@@ -49,21 +52,26 @@ export class LeaderboardComponent implements OnInit {
     this.active = false;
   }
   ngOnInit() {
+    const queryStrings = this.getUrlQueryStrings(location.search);
+    const pageNumber = queryStrings.pageNumber;
     let params = new HttpParams();
     params = params.append('param', 'map');
-    this.http.get('http://192.168.1.235:3000/rankform').subscribe(res => {
-      this.response = res;
-      const { datas, meta } = this.response;
-      this.rankDatas = datas;
-      this.meta = this.buildPageMeta(meta);
-      this.isFirstPage = this.meta.currentPage === 1;
-      this.isLastPage = this.meta.currentPage === this.meta.maxPage;
-      this.isHaveDatas = this.rankDatas.length > 0;
-      this.pageRanges = Array.from(
-        { length: this.meta.maxPage },
-        (v, k) => k + 1
-      );
-    });
+    params = params.append('pageNumber', pageNumber);
+    this.http
+      .get('http://192.168.1.235:3000/rankform', { params })
+      .subscribe(res => {
+        this.response = res;
+        const { datas, meta } = this.response;
+        this.rankDatas = datas;
+        this.meta = this.buildPageMeta(meta);
+        this.isFirstPage = this.meta.currentPage === 1;
+        this.isLastPage = this.meta.currentPage === this.meta.maxPage;
+        this.isHaveDatas = this.rankDatas.length > 0;
+        this.pageRanges = Array.from(
+          { length: this.meta.maxPage },
+          (v, k) => k + 1
+        );
+      });
     this.http
       .get('http://192.168.1.235:3000/rankform/rankInfo', { params })
       .subscribe(res => {
@@ -77,25 +85,23 @@ export class LeaderboardComponent implements OnInit {
   }
   onSubmit(form, event: any) {
     event.stopPropagation();
-    const { email, mapId, groupId, userId, month } = form.value;
+    const { email, mapId, groupId, month } = form.value;
     this.email = email;
     this.isFoundUser = this.email ? true : false;
     this.mapId = mapId;
+    this.bgIdx = this.mapId - 1;
+    this.bgImageUrl = `url(${this.mapImages[this.bgIdx]})`;
     this.groupId = groupId;
     this.month = month;
     let params = new HttpParams();
     params = params.append('mapId', this.mapId.toString());
     params = params.append('month', month);
-    this.isHaveUserId = userId ? true : false;
     this.isHaveEmail = email ? true : false;
     if (this.groupId !== '3') {
       params = params.append('gender', this.groupId);
     }
     if (email) {
       params = params.append('email', email.trim());
-    }
-    if (userId) {
-      params = params.append('userId', (userId && userId.toString()) || null);
     }
     this.http
       .get('http://192.168.1.235:3000/rankform', { params })
@@ -146,6 +152,8 @@ export class LeaderboardComponent implements OnInit {
         this.meta = this.buildPageMeta(meta);
         this.isFirstPage = this.meta.currentPage === 1;
         this.isLastPage = this.meta.currentPage === this.meta.maxPage;
+        const paramDatas = { pageNumber: this.meta.currentPage };
+        this.router.navigateByUrl(`${location.pathname}?${this.buildUrlQueryStrings(paramDatas)}`);
       });
   }
   prePage() {
@@ -167,6 +175,8 @@ export class LeaderboardComponent implements OnInit {
         this.isFirstPage = pageNumber === 1;
         this.isLastPage = this.meta.currentPage === this.meta.maxPage;
         this.isHaveDatas = this.rankDatas.length > 0;
+        const paramDatas = { pageNumber: this.meta.currentPage };
+        this.router.navigateByUrl(`${location.pathname}?${this.buildUrlQueryStrings(paramDatas)}`);
       });
   }
   nextPage() {
@@ -188,6 +198,12 @@ export class LeaderboardComponent implements OnInit {
         this.isFirstPage = this.meta.currentPage === 1;
         this.isLastPage = this.meta.currentPage === this.meta.maxPage;
         this.isHaveDatas = this.rankDatas.length > 0;
+        const paramDatas = {
+          pageNumber: this.meta.currentPage
+        };
+        this.router.navigateByUrl(
+          `${location.pathname}?${this.buildUrlQueryStrings(paramDatas)}`
+        );
       });
   }
   toFirstPage() {
@@ -205,6 +221,12 @@ export class LeaderboardComponent implements OnInit {
         this.isFirstPage = this.meta.currentPage === 1;
         this.isLastPage = this.meta.currentPage === this.meta.maxPage;
         this.isHaveDatas = this.rankDatas.length > 0;
+        const paramDatas = {
+          pageNumber: 1
+        };
+        this.router.navigateByUrl(
+          `${location.pathname}?${this.buildUrlQueryStrings(paramDatas)}`
+        );
       });
   }
   toLastPage() {
@@ -223,6 +245,12 @@ export class LeaderboardComponent implements OnInit {
         this.isFirstPage = this.meta.currentPage === 1;
         this.isLastPage = this.meta.currentPage === this.meta.maxPage;
         this.isHaveDatas = this.rankDatas.length > 0;
+        const paramDatas = {
+          pageNumber: this.meta.maxPage
+        };
+        this.router.navigateByUrl(
+          `${location.pathname}?${this.buildUrlQueryStrings(paramDatas)}`
+        );
       });
   }
   public inputEvent(e: any, isUpMode: boolean = false): void {
@@ -264,7 +292,36 @@ export class LeaderboardComponent implements OnInit {
     } else {
       this.bgIdx = this.bgIdx - 1;
     }
+    if (this.mapId - 1 === 0) {
+      this.mapId = this.mapDatas.length;
+    } else {
+      this.mapId = this.mapId - 1;
+    }
     this.bgImageUrl = `url(${this.mapImages[this.bgIdx]})`;
+    let params = new HttpParams();
+    params = params.append('mapId', this.mapId.toString());
+    params = params.append('month', this.month);
+    if (this.groupId !== '3') {
+      params = params.append('gender', this.groupId);
+    }
+    if (this.email) {
+      params = params.append('email', this.email.trim());
+    }
+    this.http
+      .get('http://192.168.1.235:3000/rankform', { params })
+      .subscribe(res => {
+        this.response = res;
+        const { datas, meta } = this.response;
+        this.rankDatas = datas;
+        this.meta = this.buildPageMeta(meta);
+        this.isFirstPage = this.meta.currentPage === 1;
+        this.isLastPage = this.meta.currentPage === this.meta.maxPage;
+        this.isHaveDatas = this.rankDatas.length > 0;
+        this.pageRanges = Array.from(
+          { length: this.meta.maxPage },
+          (v, k) => k + 1
+        );
+      });
   }
   nextMap() {
     if (this.bgIdx + 1 > 4) {
@@ -272,6 +329,62 @@ export class LeaderboardComponent implements OnInit {
     } else {
       this.bgIdx = this.bgIdx + 1;
     }
+    if (this.mapId + 1 > this.mapDatas.length) {
+      this.mapId = 1;
+    } else {
+      this.mapId = this.mapId + 1;
+    }
     this.bgImageUrl = `url(${this.mapImages[this.bgIdx]})`;
+    let params = new HttpParams();
+    params = params.append('mapId', this.mapId.toString());
+    params = params.append('month', this.month);
+    if (this.groupId !== '3') {
+      params = params.append('gender', this.groupId);
+    }
+    if (this.email) {
+      params = params.append('email', this.email.trim());
+    }
+    this.http
+      .get('http://192.168.1.235:3000/rankform', { params })
+      .subscribe(res => {
+        this.response = res;
+        const { datas, meta } = this.response;
+        this.rankDatas = datas;
+        this.meta = this.buildPageMeta(meta);
+        this.isFirstPage = this.meta.currentPage === 1;
+        this.isLastPage = this.meta.currentPage === this.meta.maxPage;
+        this.isHaveDatas = this.rankDatas.length > 0;
+        this.pageRanges = Array.from(
+          { length: this.meta.maxPage },
+          (v, k) => k + 1
+        );
+      });
+  }
+  buildUrlQueryStrings(_params) {
+    const params = this.isObjectEmpty(_params)
+      ? this.EMPTY_OBJECT
+      : cloneDeep(_params);
+    if (Object.keys(params).length) {
+      for (const key in params) {
+        if (!params[key]) {
+          delete params[key];
+        }
+      }
+    }
+    return queryString.stringify(params);
+  }
+  isObjectEmpty(object) {
+    if (!object) {
+      return true;
+    }
+    return Object.keys(object).length === 0 && object.constructor === Object;
+  }
+
+  getUrlQueryStrings(_search) {
+    const search = _search || window.location.search;
+    if (!search) {
+      return this.EMPTY_OBJECT;
+    }
+    return queryString.parse(search);
   }
 }

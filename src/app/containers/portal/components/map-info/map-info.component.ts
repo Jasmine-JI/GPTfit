@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-map-info',
@@ -6,10 +7,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./map-info.component.css']
 })
 export class MapInfoComponent implements OnInit {
-
-  constructor() { }
+  constructor(private _location: Location) {}
 
   ngOnInit() {
-  }
 
+  }
 }

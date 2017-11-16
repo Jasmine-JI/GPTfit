@@ -1,5 +1,6 @@
 tr.here {
-  border: 1px red solid;
+  background-color: #cb5e5e;
+  color: #fff;
 }
 
 .dropdown {
@@ -15,10 +16,12 @@ tr.here {
 }
 
 .leaderboard-bg {
-  height: 100%;
+  height: calc(100% - 56px);
   background-position: center;
   background-repeat: no-repeat;
-  background-attachment: fixed;
+  background-size: cover;
+  /* background-image: url("/assets/images/Panathenean_Stadium_1080.jpg"); */
+
 }
 
 .leaderboard-layer {
@@ -26,9 +29,65 @@ tr.here {
   background: linear-gradient(135deg, rgba(100, 185, 196, 0.2) 0%, rgba(6, 24, 91, 0.8) 100%);
   /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 
-  min-height: 1000px;
+  min-height: 100%;
+
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
+
+.row-runs {
+  background-color: rgba(255, 255, 255, 0.94);
+  padding: 10px 32px;
+}
+
+td {
+  font-size: 1.4em;
+}
+
+table>tbody>tr:hover {
+  background-color: #fff;
+}
+
+table>tbody>tr.here:hover {
+  background-color: #cb5e5e;
+}
+td>a {
+  color: #ff1744;
+}
+
+td>a:hover {
+  text-decoration: none;
+  color: #ff5252;
+}
+
+hr {
+  border-color: #ddd;
+}
+
+.summary {
+  font-size: 1.4em;
+}
+
+.heading {
+  font-family: 'Fjalla One', sans-serif;
+}
+
+.totals {
+  display: inline;
+  font-family: 'Fjalla One', sans-serif;
+  color: #333;
+  margin: 2px;
+}
+
+.rank {
+  color: #cb5e5e;
+  cursor: pointer;
+}
+
+.here .rank {
+  color: #fff;
+}
+
+
 
