@@ -10,6 +10,8 @@ import { LeaderboardComponent } from './components/leaderboard/leaderboard.compo
 import { SexPipe } from '@shared/pipes/sex.pipe';
 import { TimePipe } from '@shared/pipes/time.pipe';
 import { MapInfoComponent } from './components/map-info/map-info.component';
+import { MapService } from '@shared/services/map.service';
+import { RankFormService } from './services/rank-form.service';
 
 @NgModule({
   imports: [
@@ -17,6 +19,10 @@ import { MapInfoComponent } from './components/map-info/map-info.component';
     PortalRoutingModule,
     HttpClientModule,
     FormsModule
+  ],
+  providers: [
+    MapService,
+    RankFormService
   ],
   declarations: [
     PortalComponent,

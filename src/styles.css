@@ -5,3 +5,164 @@ html {
   height: 100%;
   margin: 0;
 }
+.form-field {
+  height: 30px;
+  max-width: 100%;
+  padding: 0px 10px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #CCC;
+  border-radius: 3px;
+  background-color: transparent;
+  outline: 0;
+}
+
+/* button */
+.button {
+  border-radius: 5px;
+  background-color: #26abe3;
+  text-align: center;
+  padding: 0px;
+  width: 100%;
+  border: 0px;
+  color: #fff;
+  height: 30px;
+  cursor: pointer;
+  line-height: 30px;
+  text-align: center;
+  transition: 0.3s;
+}
+
+.button:hover {
+  background: #1c89bf;
+}
+
+.button:hover,
+.button:active,
+.button:visited,
+.button:focus {
+  color: #fff;
+  outline: none;
+}
+.button.search-form__button {
+  font-size: 20px;
+  vertical-align: middle;
+  display: inline-block;
+  width: 30px;
+  margin-bottom: 0px;
+}
+
+.bg-btn {
+  cursor: pointer;
+  border-radius: 100%;
+  font-size: 20px;
+  color: #fff;
+  width: 50px;
+  height: 50px;
+}
+.button.bg-btn {
+  opacity: 0.5;
+}
+
+.button.bg-btn:hover {
+  opacity: 1;
+}
+
+/* pagination */
+.page-item > a {
+  border: none !important;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.page-link:hover {
+  text-decoration: none;
+  cursor: pointer;
+  background-color: #eee;
+  border-radius: 4px;
+  color: #157fcc;
+}
+
+.page-link {
+  border: none;
+  background-color: transparent;
+  text-decoration: none;
+  padding: 8px;
+  font-size: 16px;
+  color: #157fcc;
+}
+.active > a {
+  background-color: #eee !important;
+}
+
+.pagination > li > a {
+  position: relative;
+  float: left;
+  padding: 6px 9pt;
+  line-height: 1.42857143;
+  text-decoration: none;
+  color: #337ab7 !important;
+}
+/* .pagination {
+  display: none;
+} */
+
+.pagination-item > a {
+  border: none !important;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.pagination-item--active > a {
+  background-color: #eee !important;
+}
+.pagination-item--disabled > a {
+  color: #999 !important;
+  background-color: #fff !important;
+  cursor: default;
+}
+.page__move-button {
+  border: none;
+  background-color: #fff;
+  text-decoration: none;
+  padding: 8px;
+  font-size: 12px;
+  color: #157fcc;
+}
+.page__move-button[disabled] {
+  color: #999;
+  pointer-events: none;
+}
+.page__move-button:hover {
+  text-decoration: none;
+  cursor: pointer;
+  background-color: #eee;
+  border-radius: 4px;
+  color: #157fcc;
+}
+
+.page__move--button--previous {
+  float: left;
+}
+.page__move--button--previous::before {
+  content: '<';
+  margin-right: 5px;
+}
+
+.page__move--button--next {
+  float: right;
+}
+
+.page__move--button--next::after {
+  content: '>';
+  margin-left: 5px;
+}
+
+@media (min-width: 767px) {
+  .pagination {
+    display: inline-block;
+  }
+  .page__move-to {
+    display: none;
+  }
+}

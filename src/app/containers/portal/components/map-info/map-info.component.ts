@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import queryString from 'query-string';
+import { HttpParams } from '@angular/common/http';
+import { MapService } from '@shared/services/map.service';
+import { ActivatedRoute } from '@angular/router';
+import { RankFormService } from '../../services/rank-form.service';
+import { getUrlQueryStrings } from '@shared/utils/';
+import { mapImages } from '@shared/mapImages';
 
 @Component({
   selector: 'app-map-info',
@@ -9,48 +13,47 @@ import queryString from 'query-string';
   styleUrls: ['./map-info.component.css']
 })
 export class MapInfoComponent implements OnInit {
-  constructor(private _location: Location, private http: HttpClient) {}
+  constructor(
+    private _location: Location, // 調用location.back()，來回到上一頁
+    private _mapService: MapService,
+    private rankFormService: RankFormService
+  ) {}
   EMPTY_OBJECT = {};
   data: any;
   mapData: any;
+
+  activity: any;
+  activityName: string;
+  activityComments: string;
+  activityDate: Date;
+  activityDistance: number;
+  gpx: any;
+  bgImageUrl: string;
   ngOnInit() {
-    const queryStrings = this.getUrlQueryStrings(location.search);
+    const queryStrings = getUrlQueryStrings(location.search);
     const {
       mapId,
       month,
       userId
     } = queryStrings;
-    this.fetchSportData(mapId, month, userId);
-    this.fetchMapData(mapId, userId);
+    this.bgImageUrl = `url(${mapImages[mapId - 1]})`;
+    this.activity = this._mapService.getActivity(Number(mapId));
 
+    this.fetchSportData(mapId, month, userId);
+  }
+  ngAfterViewInit() {
+    const queryStrings = getUrlQueryStrings(location.search);
+    const { mapId } = queryStrings;
+    this._mapService.plotActivity(Number(mapId));
+    this.gpx = this.activity.gpxData;
   }
   fetchSportData(mapId, month, userId) {
     let params = new HttpParams();
     params = params.append('mapId', mapId);
     params = params.append('month', month);
     params = params.append('userId', userId);
-    this.http
-      .get('http://192.168.1.235:3000/rankform/mapInfo', { params })
-      .subscribe(res => {
-        this.data = res;
-      });
-  }
-  fetchMapData(mapId, userId) {
-    let params = new HttpParams();
-    params = params.append('mapId', mapId);
-    params = params.append('userId', userId);
-
-    this.http
-      .get('http://192.168.1.235:3000/rankform/mapInfo/map', { params })
-      .subscribe(res => {
-        this.mapData = res;
+    this.rankFormService.getMapInfos(params).subscribe(res => {
+      this.data = res;
     });
-  }
-  getUrlQueryStrings(_search) {
-    const search = _search || window.location.search;
-    if (!search) {
-      return this.EMPTY_OBJECT;
-    }
-    return queryString.parse(search);
   }
 }

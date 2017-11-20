@@ -9,7 +9,7 @@ tr.here {
 
 .loading {
   background-color: #ffffff;
-  background-image: url("http://loadinggif.com/images/image-selection/3.gif");
+  background-image: url('http://loadinggif.com/images/image-selection/3.gif');
   background-size: 25px 25px;
   background-position: right center;
   background-repeat: no-repeat;
@@ -20,13 +20,15 @@ tr.here {
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  /* background-image: url("/assets/images/Panathenean_Stadium_1080.jpg"); */
-
 }
 
 .leaderboard-layer {
   background: rgb(100, 185, 196);
-  background: linear-gradient(135deg, rgba(100, 185, 196, 0.2) 0%, rgba(6, 24, 91, 0.8) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(100, 185, 196, 0.2) 0%,
+    rgba(6, 24, 91, 0.8) 100%
+  );
   /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 
   min-height: 100%;
@@ -39,24 +41,25 @@ tr.here {
 .row-runs {
   background-color: rgba(255, 255, 255, 0.94);
   padding: 10px 32px;
+  border-radius: 3px;
 }
 
 td {
   font-size: 1.4em;
 }
 
-table>tbody>tr:hover {
+table > tbody > tr:hover {
   background-color: #fff;
 }
 
-table>tbody>tr.here:hover {
+table > tbody > tr.here:hover {
   background-color: #cb5e5e;
 }
-td>a {
+td > a {
   color: #ff1744;
 }
 
-td>a:hover {
+td > a:hover {
   text-decoration: none;
   color: #ff5252;
 }
@@ -73,13 +76,6 @@ hr {
   font-family: 'Fjalla One', sans-serif;
 }
 
-.totals {
-  display: inline;
-  font-family: 'Fjalla One', sans-serif;
-  color: #333;
-  margin: 2px;
-}
-
 .rank {
   color: #cb5e5e;
   cursor: pointer;
@@ -89,5 +85,7 @@ hr {
   color: #fff;
 }
 
-
-
+.page__info {
+  color: #777;
+  text-align: right;
+}

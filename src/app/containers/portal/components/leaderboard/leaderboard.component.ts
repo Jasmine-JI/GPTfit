@@ -1,9 +1,14 @@
-import { Component, OnInit, ElementRef, HostListener } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { Component, OnInit, HostListener } from '@angular/core';
+import { HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
 import debounce from 'debounce';
-import queryString from 'query-string';
-import { cloneDeep } from 'lodash';
+import { RankFormService } from '../../services/rank-form.service';
+import { mapImages } from '@shared/mapImages';
+import {
+  isObjectEmpty,
+  buildUrlQueryStrings,
+  getUrlQueryStrings
+} from '@shared/utils/';
 
 @Component({
   selector: 'app-leaderboard',
@@ -11,53 +16,50 @@ import { cloneDeep } from 'lodash';
   styleUrls: ['./leaderboard.component.css']
 })
 export class LeaderboardComponent implements OnInit {
-  rankDatas: Array<any>;
-  monthDatas: any;
-  mapDatas: any;
-  response: any;
-  mapId = 5;
+  rankDatas: Array<any>; // 排行板資料
+  monthDatas: any; // 有資料的月份
+  mapDatas: any; // 有資料的地圖
+  response: any; // rankDatas 回的res載體
+  mapId = 5; // 預設為雅典
   month = '11';
-  meta: any;
-  pageRanges: Array<any>;
-  isFirstPage: boolean;
-  isLastPage: boolean;
-  isHaveDatas: boolean;
-  searchedUserId: number;
-  groupId = '3';
-  isHaveEmail: boolean;
+  meta: any; // api回的meta資料
+  pageRanges: Array<any>; // 產生頁數範圍
+  isFirstPage: boolean; // 是否為第一頁
+  isLastPage: boolean; // 是否為最後一頁
+  isHaveDatas: boolean; // 當前條件下的rankDatas有無資料
+  groupId = '3'; // 組別 預設為無分組
+  isHaveEmail: boolean; // 有無mail
   email: string;
-  active = false;
-  isSelectLoading = false;
-  public element: ElementRef;
-  tempEmail: string;
-  emailOptions: any;
-  isFoundUser = false;
-  bgImageUrl: string;
-  bgIdx = 0;
-  mapImages = [
-    '/assets/images/Tour_Eiffel_1080.jpg',
-    '/assets/images/Olympiapark_Munchen_1080.jpg',
-    '/assets/images/Ju-Yong_customs_1080.jpg',
-    '/assets/images/Airolo_1080.jpg',
-    '/assets/images/Panathenean_Stadium_1080.jpg'
-  ];
-  EMPTY_OBJECT = {};
+  active = false; // select options的開關
+  isSelectLoading = false; // select async loading開關
+  tempEmail: string; // 存select上一筆被選的email
+  emailOptions: any; // select async options
+  isFoundUser = false; // 標記目標email
+  bgImageUrl: string; // 背景圖
+  distance: number; // 該地圖的距離資料
 
-  constructor(private http: HttpClient, private router: Router) {
+  mapName: string; // 該地圖名字
+
+  constructor(
+    private router: Router,
+    private rankFormService: RankFormService
+  ) {
     this.handleSearchEmail = debounce(this.handleSearchEmail, 1000);
-
-    this.bgImageUrl = `url(${this.mapImages[this.bgIdx]})`;
   }
   @HostListener('document:click')
   close() {
     this.active = false;
   }
   ngOnInit() {
-    const queryStrings = this.getUrlQueryStrings(location.search);
+    const queryStrings = getUrlQueryStrings(location.search);
     let params = new HttpParams();
     params = params.append('param', 'map');
-    if (!this.isObjectEmpty(queryStrings)) {
-      const { pageNumber, month, mapId } = queryStrings;
+    if (!isObjectEmpty(queryStrings)) {
+      const {
+        pageNumber,
+        month,
+        mapId
+      } = queryStrings;
       if (pageNumber) {
         params = params.append('pageNumber', pageNumber);
       }
@@ -70,41 +72,30 @@ export class LeaderboardComponent implements OnInit {
         params = params.append('mapId', mapId);
       }
     }
+    this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`; // 背景圖 ，預設為取雅典娜
 
-    this.http
-      .get('http://192.168.1.235:3000/rankform', { params })
-      .subscribe(res => {
-        this.response = res;
-        const { datas, meta } = this.response;
-        this.rankDatas = datas;
-        this.meta = this.buildPageMeta(meta);
-        this.isFirstPage = this.meta.currentPage === 1;
-        this.isLastPage = this.meta.currentPage === this.meta.maxPage;
-        this.isHaveDatas = this.rankDatas.length > 0;
-        this.pageRanges = Array.from(
-          { length: this.meta.maxPage },
-          (v, k) => k + 1
-        );
-      });
-    this.http
-      .get('http://192.168.1.235:3000/rankform/rankInfo', { params })
-      .subscribe(res => {
-        this.mapDatas = res;
-      });
-    this.http
-      .get('http://192.168.1.235:3000/rankform/rankInfo/month')
-      .subscribe(res => {
-        this.monthDatas = res;
-      });
+    this.fetchRankForm(params);
+    this.rankFormService.getMapOptions(params).subscribe(res => {
+      this.mapDatas = res;
+      this.mapName = this.mapDatas[this.mapId - 1].map_name;
+    });
+    this.rankFormService.getMonths().subscribe(res => {
+      this.monthDatas = res;
+    });
   }
   onSubmit(form, event: any) {
     event.stopPropagation();
-    const { email, mapId, groupId, month } = form.value;
+    const {
+      email,
+      mapId,
+      groupId,
+      month
+    } = form.value;
     this.email = email;
     this.isFoundUser = this.email ? true : false;
     this.mapId = mapId;
-    this.bgIdx = this.mapId - 1;
-    this.bgImageUrl = `url(${this.mapImages[this.bgIdx]})`;
+    this.mapName = this.mapDatas[this.mapId - 1].map_name;
+    this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
     this.groupId = groupId;
     this.month = month;
     let params = new HttpParams();
@@ -117,23 +108,18 @@ export class LeaderboardComponent implements OnInit {
     if (email) {
       params = params.append('email', email.trim());
     }
-    this.http
-      .get('http://192.168.1.235:3000/rankform', { params })
-      .subscribe(res => {
-        this.response = res;
-        const { datas, meta } = this.response;
-        this.rankDatas = datas;
-        this.meta = this.buildPageMeta(meta);
-        this.isFirstPage = this.meta.currentPage === 1;
-        this.isLastPage = this.meta.currentPage === this.meta.maxPage;
-        this.isHaveDatas = this.rankDatas.length > 0;
-        this.email = email && email.trim();
-        this.pageRanges = Array.from(
-          { length: this.meta.maxPage },
-          (v, k) => k + 1
-        );
-        this.toHistoryPrePage();
-      });
+    this.email = email && email.trim();
+    this.fetchRankForm(params);
+  }
+  fetchRankForm(params) {
+    this.rankFormService.getRank(params).subscribe(res => {
+      this.response = res;
+      const { datas, meta } = this.response;
+      this.rankDatas = datas;
+      this.distance = this.rankDatas.length > 0 && this.rankDatas[0].race_total_distance;
+      this.meta = this.buildPageMeta(meta);
+      this.toHistoryPrePage();
+    });
   }
   buildPageMeta(_meta) {
     const meta = Object.assign(
@@ -147,6 +133,10 @@ export class LeaderboardComponent implements OnInit {
     );
     const { pageSize, pageCount } = meta;
     const maxPage = Math.ceil(pageCount / pageSize) || 0;
+    this.isFirstPage = meta.currentPage === 1;
+    this.isLastPage = meta.currentPage === meta.maxPage;
+    this.isHaveDatas = this.rankDatas.length > 0;
+    this.pageRanges = Array.from({ length: maxPage }, (v, k) => k + 1);
     return {
       maxPage,
       currentPage: meta.pageNumber,
@@ -158,17 +148,7 @@ export class LeaderboardComponent implements OnInit {
     let params = new HttpParams();
     params = params.append('mapId', this.mapId.toString());
     params = params.append('pageNumber', pageNumber.toString());
-    this.http
-      .get(`http://192.168.1.235:3000/rankform`, { params })
-      .subscribe(res => {
-        this.response = res;
-        const { datas, meta } = this.response;
-        this.rankDatas = datas;
-        this.meta = this.buildPageMeta(meta);
-        this.isFirstPage = this.meta.currentPage === 1;
-        this.isLastPage = this.meta.currentPage === this.meta.maxPage;
-        this.toHistoryPrePage();
-      });
+    this.fetchRankForm(params);
   }
   toHistoryPrePage() {
     const paramDatas = {
@@ -177,81 +157,57 @@ export class LeaderboardComponent implements OnInit {
       mapId: this.mapId
     };
     this.router.navigateByUrl(
-      `${location.pathname}?${this.buildUrlQueryStrings(paramDatas)}`
+      `${location.pathname}?${buildUrlQueryStrings(paramDatas)}`
     );
   }
   toMapInfoPage(userId) {
-
     const paramDatas = {
       month: this.month,
       mapId: this.mapId,
       userId
     };
     this.router.navigateByUrl(
-      `${location.pathname}/mapInfo?${this.buildUrlQueryStrings(paramDatas)}`
+      `${location.pathname}/mapInfo?${buildUrlQueryStrings(paramDatas)}`
     );
   }
   prePage() {
-    const pageNumber = this.meta.currentPage - 1;
     let params = new HttpParams();
     params = params.append('mapId', this.mapId.toString());
-    params = params.append('pageNumber', pageNumber.toString());
     params = params.append('month', this.month);
+    if (this.meta.currentPage > 1) {
+      const pageNumber = this.meta.currentPage - 1;
+      params = params.append('pageNumber', pageNumber.toString());
+    } else {
+      return;
+    }
+
     if (this.groupId !== '3') {
       params = params.append('gender', this.groupId);
     }
-    this.http
-      .get(`http://192.168.1.235:3000/rankform`, { params })
-      .subscribe(res => {
-        this.response = res;
-        const { datas, meta } = this.response;
-        this.rankDatas = datas;
-        this.meta = this.buildPageMeta(meta);
-        this.isFirstPage = pageNumber === 1;
-        this.isLastPage = this.meta.currentPage === this.meta.maxPage;
-        this.isHaveDatas = this.rankDatas.length > 0;
-        this.toHistoryPrePage();
-      });
+    this.fetchRankForm(params);
   }
   nextPage() {
-    const pageNumber = this.meta.currentPage + 1;
     let params = new HttpParams();
     params = params.append('mapId', this.mapId.toString());
-    params = params.append('pageNumber', pageNumber);
     params = params.append('month', this.month);
+    if (this.meta.currentPage < this.meta.maxPage) {
+      const pageNumber = this.meta.currentPage + 1;
+      params = params.append('pageNumber', pageNumber);
+    } else {
+      return;
+    }
+
     if (this.groupId !== '3') {
       params = params.append('gender', this.groupId);
     }
-    this.http
-      .get(`http://192.168.1.235:3000/rankform`, { params })
-      .subscribe(res => {
-        this.response = res;
-        const { datas, meta } = this.response;
-        this.rankDatas = datas;
-        this.meta = this.buildPageMeta(meta);
-        this.isFirstPage = this.meta.currentPage === 1;
-        this.isLastPage = this.meta.currentPage === this.meta.maxPage;
-        this.isHaveDatas = this.rankDatas.length > 0;
-        this.toHistoryPrePage();
-      });
+    this.fetchRankForm(params);
   }
   toFirstPage() {
     let params = new HttpParams();
     params = params.append('mapId', this.mapId.toString());
     params = params.append('pageNumber', '1');
 
-    this.http
-      .get(`http://192.168.1.235:3000/rankform`, { params })
-      .subscribe(res => {
-        this.response = res;
-        const { datas, meta } = this.response;
-        this.rankDatas = datas;
-        this.meta = this.buildPageMeta(meta);
-        this.isFirstPage = this.meta.currentPage === 1;
-        this.isLastPage = this.meta.currentPage === this.meta.maxPage;
-        this.isHaveDatas = this.rankDatas.length > 0;
-        this.toHistoryPrePage();
-      });
+    this.fetchRankForm(params);
   }
   toLastPage() {
     const { maxPage } = this.meta;
@@ -259,18 +215,7 @@ export class LeaderboardComponent implements OnInit {
     params = params.append('mapId', this.mapId.toString());
     params = params.append('pageNumber', maxPage);
 
-    this.http
-      .get(`http://192.168.1.235:3000/rankform`, { params })
-      .subscribe(res => {
-        this.response = res;
-        const { datas, meta } = this.response;
-        this.rankDatas = datas;
-        this.meta = this.buildPageMeta(meta);
-        this.isFirstPage = this.meta.currentPage === 1;
-        this.isLastPage = this.meta.currentPage === this.meta.maxPage;
-        this.isHaveDatas = this.rankDatas.length > 0;
-        this.toHistoryPrePage();
-      });
+    this.fetchRankForm(params);
   }
   public inputEvent(e: any, isUpMode: boolean = false): void {
     this.handleSearchEmail();
@@ -281,12 +226,10 @@ export class LeaderboardComponent implements OnInit {
     params = params.append('mapId', this.mapId.toString());
     params = params.append('month', this.month);
     params = params.append('keyword', this.email);
-    this.http
-      .get('http://192.168.1.235:3000/rankform/rankInfo/email', { params })
-      .subscribe(res => {
-        this.emailOptions = res;
-        this.isSelectLoading = false;
-      });
+    this.rankFormService.getEmail(params).subscribe(res => {
+      this.emailOptions = res;
+      this.isSelectLoading = false;
+    });
   }
   openActive(event: any) {
     event.stopPropagation();
@@ -306,17 +249,14 @@ export class LeaderboardComponent implements OnInit {
     }
   }
   preMap() {
-    if (this.bgIdx - 1 < 0) {
-      this.bgIdx = this.mapImages.length - 1;
-    } else {
-      this.bgIdx = this.bgIdx - 1;
-    }
     if (this.mapId - 1 === 0) {
       this.mapId = this.mapDatas.length;
     } else {
       this.mapId = this.mapId - 1;
     }
-    this.bgImageUrl = `url(${this.mapImages[this.bgIdx]})`;
+    this.mapName = this.mapDatas[this.mapId - 1].map_name;
+
+    this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
     let params = new HttpParams();
     params = params.append('mapId', this.mapId.toString());
     params = params.append('month', this.month);
@@ -326,35 +266,16 @@ export class LeaderboardComponent implements OnInit {
     if (this.email) {
       params = params.append('email', this.email.trim());
     }
-    this.http
-      .get('http://192.168.1.235:3000/rankform', { params })
-      .subscribe(res => {
-        this.response = res;
-        const { datas, meta } = this.response;
-        this.rankDatas = datas;
-        this.meta = this.buildPageMeta(meta);
-        this.isFirstPage = this.meta.currentPage === 1;
-        this.isLastPage = this.meta.currentPage === this.meta.maxPage;
-        this.isHaveDatas = this.rankDatas.length > 0;
-        this.pageRanges = Array.from(
-          { length: this.meta.maxPage },
-          (v, k) => k + 1
-        );
-        this.toHistoryPrePage();
-      });
+    this.fetchRankForm(params);
   }
   nextMap() {
-    if (this.bgIdx + 1 > 4) {
-      this.bgIdx = 0;
-    } else {
-      this.bgIdx = this.bgIdx + 1;
-    }
     if (this.mapId + 1 > this.mapDatas.length) {
       this.mapId = 1;
     } else {
       this.mapId = this.mapId + 1;
     }
-    this.bgImageUrl = `url(${this.mapImages[this.bgIdx]})`;
+    this.mapName = this.mapDatas[this.mapId - 1].map_name;
+    this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
     let params = new HttpParams();
     params = params.append('mapId', this.mapId.toString());
     params = params.append('month', this.month);
@@ -364,48 +285,7 @@ export class LeaderboardComponent implements OnInit {
     if (this.email) {
       params = params.append('email', this.email.trim());
     }
-    this.http
-      .get('http://192.168.1.235:3000/rankform', { params })
-      .subscribe(res => {
-        this.response = res;
-        const { datas, meta } = this.response;
-        this.rankDatas = datas;
-        this.meta = this.buildPageMeta(meta);
-        this.isFirstPage = this.meta.currentPage === 1;
-        this.isLastPage = this.meta.currentPage === this.meta.maxPage;
-        this.isHaveDatas = this.rankDatas.length > 0;
-        this.pageRanges = Array.from(
-          { length: this.meta.maxPage },
-          (v, k) => k + 1
-        );
-        this.toHistoryPrePage();
-      });
-  }
-  buildUrlQueryStrings(_params) {
-    const params = this.isObjectEmpty(_params)
-      ? this.EMPTY_OBJECT
-      : cloneDeep(_params);
-    if (Object.keys(params).length) {
-      for (const key in params) {
-        if (!params[key]) {
-          delete params[key];
-        }
-      }
-    }
-    return queryString.stringify(params);
-  }
-  isObjectEmpty(object) {
-    if (!object) {
-      return true;
-    }
-    return Object.keys(object).length === 0 && object.constructor === Object;
+    this.fetchRankForm(params);
   }
 
-  getUrlQueryStrings(_search) {
-    const search = _search || window.location.search;
-    if (!search) {
-      return this.EMPTY_OBJECT;
-    }
-    return queryString.parse(search);
-  }
 }

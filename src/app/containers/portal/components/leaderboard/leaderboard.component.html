@@ -1,20 +1,20 @@
 <portal-navbar></portal-navbar>
 
-
 <div class="leaderboard-bg" [style.background-image]="bgImageUrl">
   <div class="leaderboard-layer">
-
     <div class="container pt-5">
       <div class="row row-runs">
         <form (ngSubmit)="onSubmit(rankForm, $event)" #rankForm="ngForm">
           <label>Map:</label>
-          <select name="mapId" [(ngModel)]="mapId">
+          <select name="mapId" [(ngModel)]="mapId" class="form-field mr-2">
             <option *ngFor="let _map of mapDatas" [value]="_map.map_id">{{ _map.map_name }}</option>
           </select>
 
           <label>Email:</label>
           <div class="dropdown" (click)="openActive($event)">
-            <input type="email" name="email" [(ngModel)]="email" (keydown)="inputEvent($event)" autocomplete="off" [class.loading]="isSelectLoading">
+            <input type="email" name="email" [(ngModel)]="email" (keydown)="inputEvent($event)" autocomplete="off" [class.loading]="isSelectLoading"
+              class="form-field mr-2"
+            >
             <ul class="dropdown-menu" *ngIf="emailOptions && emailOptions.length > 0" [class.show]="active && emailOptions.length > 0">
               <li *ngFor="let o of emailOptions; let i = index">
                 <div class="">
@@ -26,18 +26,24 @@
             </ul>
           </div>
           <label>Month:</label>
-          <select name="month" [(ngModel)]="month">
+          <select name="month" [(ngModel)]="month" class="form-field mr-2">
             <option *ngFor="let _month of monthDatas" [value]="_month.month">{{ _month.month }}</option>
           </select>
           <label>組別:</label>
-          <select name="groupId" [(ngModel)]="groupId">
+          <select name="groupId" [(ngModel)]="groupId" class="form-field mr-2">
             <option [value]="3">無分組</option>
             <option [value]="0">男生組</option>
             <option [value]="1">女生組</option>
           </select>
-          <button type="submit">Submit</button>
+          <button type="submit" class="button search-form__button">
+            <i class="fa fa-search"></i>
+          </button>
         </form>
-
+        <div class="summary">
+          本月進行的例行排行賽為
+          <span style="color: #cb5e5e;font-weight: 700">指定地圖{{ mapName }}{{ distance }}KM</span>
+          <div>排行榜於每日06:00刷新，最終排名以當月最後一日23:59結算成績為主</div>
+        </div>
         <table class="table table-hover">
           <thead>
             <tr>
@@ -63,28 +69,47 @@
             </tr>
           </tbody>
           <tfoot>
-            <tr *ngIf="!isHaveEmail">
-              <td colspan="5" style="text-align: center">
-                <ng-container *ngIf="isHaveDatas">
-                  <button (click)="toFirstPage()" [disabled]="isFirstPage">first page</button>
-                  <button (click)="prePage()" [disabled]="isFirstPage">pre</button>
-                  <ng-container *ngFor="let _page of pageRanges">
-                    <span (click)="selectPage(_page)">{{ _page }}</span>
-                  </ng-container>
-                  <button (click)="nextPage()" [disabled]="isLastPage">next</button>
-                  <button (click)="toLastPage()" [disabled]="isLastPage">last page</button>
-                </ng-container>
+            <tr>
+              <td colspan="5" *ngIf="!isHaveEmail">
+                <div class="row" *ngIf="isHaveDatas">
+                  <div class="col-sm-8">
+                    <ul class="justify-content-end pagination">
+                      <li class="pagination-item" (click)="toFirstPage()" [class.disabled]="isFirstPage" [ngClass]="{'pagination-item--disabled' : isFirstPage}">
+                        <a class="" title="Go to first page">第一頁</a>
+                      </li>
+                      <li class="pagination-item" (click)="prePage()" [class.disabled]="isFirstPage" [ngClass]="{'pagination-item--disabled' : isFirstPage}">
+                        <a class="" tabindex="-1">&laquo;</a>
+                      </li>
+                      <li *ngFor="let _page of pageRanges" class="pagination-item" (click)="selectPage(_page)" [ngClass]="{'active' : _page === meta.currentPage}">
+                        <a class="" (click)="selectPage(_page)">{{ _page }}</a>
+                      </li>
+                      <li class="pagination-item" (click)="nextPage()" [class.disabled]="isLastPage" [ngClass]="{'pagination-item--disabled' : isLastPage}">
+                        <a class="">&raquo;</a>
+                      </li>
+                      <li class="pagination-item" (click)="toLastPage()" [class.disabled]="isLastPage" [ngClass]="{'pagination-item--disabled' : isLastPage}">
+                        <a class="">最後一頁</a>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="page__info">
+                      <span>第{{ meta.currentPage }}/{{ meta.maxPage }}頁 ，共{{ meta.total }}筆</span>
+                    </div>
+                  </div>
+                </div>
               </td>
             </tr>
           </tfoot>
         </table>
         <div>
-          <button (click)="preMap()">Pre map</button>
-          <button (click)="nextMap()">Next map</button>
+          <button (click)="preMap()" class="button bg-btn" style="position: absolute;left: 0;top: 50%;">
+            <i class="fa fa-arrow-left" aria-hidden="true"></i>
+          </button>
+          <button (click)="nextMap()" class="button bg-btn" style="position: absolute;right: 0;top: 50%;">
+            <i class="fa fa-arrow-right" aria-hidden="true"></i>
+          </button>
         </div>
-
       </div>
     </div>
-
   </div>
 </div>

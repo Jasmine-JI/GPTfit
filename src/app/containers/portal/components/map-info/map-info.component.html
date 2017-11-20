@@ -1,7 +1,9 @@
 <portal-navbar></portal-navbar>
 <div class="leaderboard-bg" [style.background-image]="bgImageUrl">
   <div class="leaderboard-layer">
-    <button (click)="this._location.back()">Go back</button>
+    <button (click)="this._location.back()" class="button bg-btn">
+      <i class="fa fa-undo" aria-hidden="true"></i>
+    </button>
     <div class="container pt-5">
       <div class="row row-map">
         <div class="col-md-8">
@@ -17,31 +19,31 @@
               <ul class="run-info">
                 <li class="run-info__item">
                   <span class="">Route Name:</span>
-                  <div class="run-info__item--collocate">{{ mapData && mapData.map_name }}</div>
+                  <div class="run-info__item--collocate">{{ data && data.map_name || '尚無資訊' }}</div>
                 </li>
                 <li class="run-info__item">
                   <span class="">Total Distance:</span>
-                  <div class="run-info__item--collocate">{{ mapData && mapData.race_total_distance }} km</div>
+                  <div class="run-info__item--collocate">{{ data && data.race_total_distance || '尚無資訊' }} km</div>
                 </li>
                 <li class="run-info__item">
                   <span class="">Race Category:</span>
-                  <div class="run-info__item--collocate">{{ mapData && mapData.race_category }}</div>
+                  <div class="run-info__item--collocate">{{ data && data.race_category || '尚無資訊' }}</div>
                 </li>
                 <li class="run-info__item">
                   <span class="">Average Pace:</span>
-                  <div class="run-info__item--collocate">{{ data && data.average_pace || '15(fake data)' }}</div>
+                  <div class="run-info__item--collocate">{{ data && data.average_pace || '尚無資訊' }}</div>
                 </li>
                 <li class="run-info__item">
                   <span class="">Max Pace:</span>
-                  <div class="run-info__item--collocate">{{ data && data.max_pace || '17(fake data)' }}</div>
+                  <div class="run-info__item--collocate">{{ data && data.max_pace || '尚無資訊' }}</div>
                 </li>
                 <li class="run-info__item">
                   <span class="">Average speed:</span>
-                  <div class="run-info__item--collocate">{{ data && data.average_speed || '15(fake data)' }}</div>
+                  <div class="run-info__item--collocate">{{ data && data.average_speed || '尚無資訊' }}</div>
                 </li>
                 <li class="run-info__item">
                   <span class="">Max speed:</span>
-                  <div class="run-info__item--collocate">{{ data && data.max_speed || '17(fake data)' }}</div>
+                  <div class="run-info__item--collocate">{{ data && data.max_speed || '尚無資訊' }}</div>
                 </li>
               </ul>
             </div>
