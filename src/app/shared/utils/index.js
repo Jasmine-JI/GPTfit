@@ -24,3 +24,23 @@ export function getUrlQueryStrings(_search) {
   if (!search) return EMPTY_OBJECT;
   return queryString.parse(search);
 }
+
+export function buildPageMeta(_meta) {
+  const meta = Object.assign(
+    {},
+    {
+      pageNumber: 0,
+      pageSize: 0,
+      pageCount: 0
+    },
+    _meta
+  );
+  const { pageSize, pageCount } = meta;
+  const maxPage = Math.ceil(pageCount / pageSize) || 0;
+  return {
+    maxPage,
+    currentPage: meta.pageNumber,
+    perPage: pageSize,
+    total: pageCount
+  };
+}

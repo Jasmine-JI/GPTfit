@@ -7,7 +7,8 @@ import { mapImages } from '@shared/mapImages';
 import {
   isObjectEmpty,
   buildUrlQueryStrings,
-  getUrlQueryStrings
+  getUrlQueryStrings,
+  buildPageMeta
 } from '@shared/utils/';
 
 @Component({
@@ -120,33 +121,16 @@ export class LeaderboardComponent implements OnInit {
       const { datas, meta } = this.response;
       this.rankDatas = datas;
       this.distance = this.rankDatas.length > 0 && this.rankDatas[0].race_total_distance;
-      this.meta = this.buildPageMeta(meta);
+      this.meta = buildPageMeta(meta);
+      const { currentPage, maxPage } = this.meta;
+      this.isFirstPage = currentPage === 1;
+      this.isLastPage = currentPage === maxPage;
+      this.isHaveDatas = this.rankDatas.length > 0;
+      this.pageRanges = Array.from({ length: maxPage }, (v, k) => k + 1);
       this.toHistoryPrePage();
     });
   }
-  buildPageMeta(_meta) {
-    const meta = Object.assign(
-      {},
-      {
-        pageNumber: 0,
-        pageSize: 0,
-        pageCount: 0
-      },
-      _meta
-    );
-    const { pageSize, pageCount } = meta;
-    const maxPage = Math.ceil(pageCount / pageSize) || 0;
-    this.isFirstPage = meta.currentPage === 1;
-    this.isLastPage = meta.currentPage === meta.maxPage;
-    this.isHaveDatas = this.rankDatas.length > 0;
-    this.pageRanges = Array.from({ length: maxPage }, (v, k) => k + 1);
-    return {
-      maxPage,
-      currentPage: meta.pageNumber,
-      perPage: pageSize,
-      total: pageCount
-    };
-  }
+
   selectPage(pageNumber) {
     let params = new HttpParams();
     params = params.append('mapId', this.mapId.toString());
