@@ -12,6 +12,7 @@ import { TimePipe } from '@shared/pipes/time.pipe';
 import { MapInfoComponent } from './components/map-info/map-info.component';
 import { MapService } from '@shared/services/map.service';
 import { RankFormService } from './services/rank-form.service';
+import { LoadingComponent } from '../../shared/components/loading/loading.component';
 
 @NgModule({
   imports: [
@@ -30,7 +31,8 @@ import { RankFormService } from './services/rank-form.service';
     LeaderboardComponent,
     SexPipe,
     TimePipe,
-    MapInfoComponent
+    MapInfoComponent,
+    LoadingComponent
   ]
 })
 export class PortalModule {}

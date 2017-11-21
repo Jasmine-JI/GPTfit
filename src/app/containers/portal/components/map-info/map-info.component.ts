@@ -29,6 +29,7 @@ export class MapInfoComponent implements OnInit {
   activityDistance: number;
   gpx: any;
   bgImageUrl: string;
+  isLoading = false;
   ngOnInit() {
     const queryStrings = getUrlQueryStrings(location.search);
     const {
@@ -37,9 +38,9 @@ export class MapInfoComponent implements OnInit {
       userId
     } = queryStrings;
     this.bgImageUrl = `url(${mapImages[mapId - 1]})`;
+    this.fetchSportData(mapId, month, userId);
     this.activity = this._mapService.getActivity(Number(mapId));
 
-    this.fetchSportData(mapId, month, userId);
   }
   ngAfterViewInit() {
     const queryStrings = getUrlQueryStrings(location.search);
@@ -48,12 +49,14 @@ export class MapInfoComponent implements OnInit {
     this.gpx = this.activity.gpxData;
   }
   fetchSportData(mapId, month, userId) {
+    this.isLoading = true;
     let params = new HttpParams();
     params = params.append('mapId', mapId);
     params = params.append('month', month);
     params = params.append('userId', userId);
     this.rankFormService.getMapInfos(params).subscribe(res => {
       this.data = res;
+      this.isLoading = false;
     });
   }
 }

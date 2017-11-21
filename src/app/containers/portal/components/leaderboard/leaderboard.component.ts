@@ -39,6 +39,7 @@ export class LeaderboardComponent implements OnInit {
   distance: number; // 該地圖的距離資料
 
   mapName: string; // 該地圖名字
+  isLoading = false;
 
   constructor(
     private router: Router,
@@ -112,7 +113,9 @@ export class LeaderboardComponent implements OnInit {
     this.fetchRankForm(params);
   }
   fetchRankForm(params) {
+    this.isLoading = true;
     this.rankFormService.getRank(params).subscribe(res => {
+      this.isLoading = false;
       this.response = res;
       const { datas, meta } = this.response;
       this.rankDatas = datas;

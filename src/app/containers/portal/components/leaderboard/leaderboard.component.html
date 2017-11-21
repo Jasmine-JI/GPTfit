@@ -1,6 +1,6 @@
 <portal-navbar></portal-navbar>
 
-<div class="leaderboard-bg" [style.background-image]="bgImageUrl">
+<div class="leaderboard-bg" [style.background-image]="bgImageUrl" *ngIf="!isLoading">
   <div class="leaderboard-layer">
     <div class="container pt-5">
       <div class="row row-runs">
@@ -112,4 +112,7 @@
       </div>
     </div>
   </div>
+</div>
+<div *ngIf="isLoading">
+  <app-loading></app-loading>
 </div>
