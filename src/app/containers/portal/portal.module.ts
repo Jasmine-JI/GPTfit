@@ -13,6 +13,7 @@ import { MapInfoComponent } from './components/map-info/map-info.component';
 import { MapService } from '@shared/services/map.service';
 import { RankFormService } from './services/rank-form.service';
 import { LoadingComponent } from '../../shared/components/loading/loading.component';
+import { PaginationComponent } from '../../shared/components/pagination/pagination.component';
 
 @NgModule({
   imports: [
@@ -32,7 +33,8 @@ import { LoadingComponent } from '../../shared/components/loading/loading.compon
     SexPipe,
     TimePipe,
     MapInfoComponent,
-    LoadingComponent
+    LoadingComponent,
+    PaginationComponent
   ]
 })
 export class PortalModule {}

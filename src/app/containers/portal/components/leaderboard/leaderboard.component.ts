@@ -24,7 +24,6 @@ export class LeaderboardComponent implements OnInit {
   mapId = 5; // 預設為雅典
   month = '11';
   meta: any; // api回的meta資料
-  pageRanges: Array<any>; // 產生頁數範圍
   isFirstPage: boolean; // 是否為第一頁
   isLastPage: boolean; // 是否為最後一頁
   isHaveDatas: boolean; // 當前條件下的rankDatas有無資料
@@ -41,6 +40,7 @@ export class LeaderboardComponent implements OnInit {
 
   mapName: string; // 該地圖名字
   isLoading = false;
+  currentPage: number;
 
   constructor(
     private router: Router,
@@ -60,7 +60,8 @@ export class LeaderboardComponent implements OnInit {
       const {
         pageNumber,
         month,
-        mapId
+        mapId,
+        groupId
       } = queryStrings;
       if (pageNumber) {
         params = params.append('pageNumber', pageNumber);
@@ -72,6 +73,10 @@ export class LeaderboardComponent implements OnInit {
       if (mapId) {
         this.mapId = mapId;
         params = params.append('mapId', mapId);
+      }
+      if (groupId !== '3') {
+        this.groupId = groupId;
+        params = params.append('gender', groupId);
       }
     }
     this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`; // 背景圖 ，預設為取雅典娜
@@ -113,6 +118,19 @@ export class LeaderboardComponent implements OnInit {
     this.email = email && email.trim();
     this.fetchRankForm(params);
   }
+  onPageChange(pageNumber) {
+    this.currentPage = pageNumber;
+    let params = new HttpParams();
+    if (this.groupId !== '3') {
+      params = params.append('gender', this.groupId);
+    }
+    if (this.email) {
+      params = params.append('email', this.email.trim());
+    }
+    params = params.append('mapId', this.mapId.toString());
+    params = params.append('pageNumber', this.currentPage.toString());
+    this.fetchRankForm(params);
+  }
   fetchRankForm(params) {
     this.isLoading = true;
     this.rankFormService.getRank(params).subscribe(res => {
@@ -126,22 +144,16 @@ export class LeaderboardComponent implements OnInit {
       this.isFirstPage = currentPage === 1;
       this.isLastPage = currentPage === maxPage;
       this.isHaveDatas = this.rankDatas.length > 0;
-      this.pageRanges = Array.from({ length: maxPage }, (v, k) => k + 1);
       this.toHistoryPrePage();
     });
   }
 
-  selectPage(pageNumber) {
-    let params = new HttpParams();
-    params = params.append('mapId', this.mapId.toString());
-    params = params.append('pageNumber', pageNumber.toString());
-    this.fetchRankForm(params);
-  }
   toHistoryPrePage() {
     const paramDatas = {
       pageNumber: this.meta.currentPage,
       month: this.month,
-      mapId: this.mapId
+      mapId: this.mapId,
+      groupId: this.groupId
     };
     this.router.navigateByUrl(
       `${location.pathname}?${buildUrlQueryStrings(paramDatas)}`
@@ -151,59 +163,13 @@ export class LeaderboardComponent implements OnInit {
     const paramDatas = {
       month: this.month,
       mapId: this.mapId,
-      userId
+      userId,
     };
     this.router.navigateByUrl(
       `${location.pathname}/mapInfo?${buildUrlQueryStrings(paramDatas)}`
     );
   }
-  prePage() {
-    let params = new HttpParams();
-    params = params.append('mapId', this.mapId.toString());
-    params = params.append('month', this.month);
-    if (this.meta.currentPage > 1) {
-      const pageNumber = this.meta.currentPage - 1;
-      params = params.append('pageNumber', pageNumber.toString());
-    } else {
-      return;
-    }
 
-    if (this.groupId !== '3') {
-      params = params.append('gender', this.groupId);
-    }
-    this.fetchRankForm(params);
-  }
-  nextPage() {
-    let params = new HttpParams();
-    params = params.append('mapId', this.mapId.toString());
-    params = params.append('month', this.month);
-    if (this.meta.currentPage < this.meta.maxPage) {
-      const pageNumber = this.meta.currentPage + 1;
-      params = params.append('pageNumber', pageNumber);
-    } else {
-      return;
-    }
-
-    if (this.groupId !== '3') {
-      params = params.append('gender', this.groupId);
-    }
-    this.fetchRankForm(params);
-  }
-  toFirstPage() {
-    let params = new HttpParams();
-    params = params.append('mapId', this.mapId.toString());
-    params = params.append('pageNumber', '1');
-
-    this.fetchRankForm(params);
-  }
-  toLastPage() {
-    const { maxPage } = this.meta;
-    let params = new HttpParams();
-    params = params.append('mapId', this.mapId.toString());
-    params = params.append('pageNumber', maxPage);
-
-    this.fetchRankForm(params);
-  }
   public inputEvent(e: any, isUpMode: boolean = false): void {
     this.handleSearchEmail();
   }
@@ -274,5 +240,4 @@ export class LeaderboardComponent implements OnInit {
     }
     this.fetchRankForm(params);
   }
-
 }

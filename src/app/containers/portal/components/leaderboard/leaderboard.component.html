@@ -71,7 +71,14 @@
           <tfoot>
             <tr>
               <td colspan="5" *ngIf="!isHaveEmail">
-                <div class="row" *ngIf="isHaveDatas">
+                <ng-container *ngIf="isHaveDatas">
+                  <app-pagination (onChange)="onPageChange($event)"
+                    [maxPage]="meta.maxPage"
+                    [currentPage]="meta.currentPage"
+                    [total]="meta.total"
+                  ></app-pagination>
+                </ng-container>
+                <!-- <div class="row" *ngIf="isHaveDatas">
                   <div class="col-sm-8">
                     <ul class="justify-content-end pagination">
                       <li class="pagination-item" (click)="toFirstPage()" [class.disabled]="isFirstPage" [ngClass]="{'pagination-item--disabled' : isFirstPage}">
@@ -96,7 +103,7 @@
                       <span>第{{ meta.currentPage }}/{{ meta.maxPage }}頁 ，共{{ meta.total }}筆</span>
                     </div>
                   </div>
-                </div>
+                </div> -->
               </td>
             </tr>
           </tfoot>

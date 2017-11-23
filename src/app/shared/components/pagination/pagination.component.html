@@ -1,7 +1,26 @@
-<button (click)="toFirstPage()" [disabled]="isFirstPage">first page</button>
-<button (click)="prePage()" [disabled]="isFirstPage">pre</button>
-<ng-container *ngFor="let _page of pageRanges">
-  <span (click)="selectPage(_page)">{{ _page }}</span>
-</ng-container>
-<button (click)="nextPage()" [disabled]="isLastPage">next</button>
-<button (click)="toLastPage()" [disabled]="isLastPage">last page</button>
+<div class="row">
+  <div class="col-sm-8">
+    <ul class="justify-content-end pagination">
+      <li class="pagination-item" (click)="toFirstPage()" [ngClass]="{'pagination-item--disabled' : currentPage === 1}">
+        <a title="Go to first page">第一頁</a>
+      </li>
+      <li class="pagination-item" (click)="prePage()" [class.disabled]="isFirstPage" [ngClass]="{'pagination-item--disabled' : currentPage === 1}">
+        <a tabindex="-1">&laquo;</a>
+      </li>
+      <li *ngFor="let _page of pageRanges" class="pagination-item" (click)="selectPage(_page)" [ngClass]="{'pagination-item--active' : _page === currentPage}">
+        <a class="pagination-item__content"(click)="selectPage(_page)">{{ _page }}</a>
+      </li>
+      <li class="pagination-item" (click)="nextPage()" [ngClass]="{'pagination-item--disabled' : currentPage === maxPage}">
+        <a>&raquo;</a>
+      </li>
+      <li class="pagination-item" (click)="toLastPage()" [ngClass]="{'pagination-item--disabled' : currentPage === maxPage}">
+        <a>最後一頁</a>
+      </li>
+    </ul>
+  </div>
+  <div class="col-sm-4">
+    <div class="page__info justify-content-end pagination">
+      <span>第 {{ currentPage || 1 }} / {{ maxPage || 1 }} 頁 ，共 {{ total || 1 }} 筆</span>
+    </div>
+  </div>
+</div>
