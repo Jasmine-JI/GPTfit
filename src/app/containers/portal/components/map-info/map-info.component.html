@@ -1,15 +1,14 @@
-<portal-navbar></portal-navbar>
 <div class="leaderboard-bg" [style.background-image]="bgImageUrl">
   <div class="leaderboard-layer">
     <button (click)="this._location.back()" class="button bg-btn">
       <i class="fa fa-undo" aria-hidden="true"></i>
     </button>
-    <div class="container pt-5">
+    <div class="container pt-5 map-container">
       <div class="row row-map">
         <div class="col-md-8">
           <h2 class="heading">Map</h2>
           <hr/>
-          <div id="map"></div>
+          <div id="map" style="z-index: 1"></div>
         </div>
         <div class="col-md-4 info-container">
           <div>
@@ -52,7 +51,4 @@
       </div>
     </div>
   </div>
-</div>
-<div *ngIf="isLoading">
-  <app-loading></app-loading>
 </div>

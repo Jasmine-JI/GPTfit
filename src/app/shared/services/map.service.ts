@@ -7,7 +7,7 @@ declare var omnivore: any;
 declare var L: any;
 
 const defaultCoords: number[] = [40, -80];
-const defaultZoom: number = 8;
+const defaultZoom = 8;
 
 @Injectable()
 export class MapService {
@@ -30,7 +30,10 @@ export class MapService {
     L.tileLayer(
       'https://api.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}',
       {
-        attribution:'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        attribution: `Map data &copy;
+        <a href="http://openstreetmap.org">OpenStreetMap</a> contributors,
+        <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>,
+        Imagery © <a href="http://mapbox.com">Mapbox</a>`,
         maxZoom: 18,
         id: 'mapbox.satellite',
         accessToken: apiToken

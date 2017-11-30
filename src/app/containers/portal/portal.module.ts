@@ -14,6 +14,7 @@ import { MapService } from '@shared/services/map.service';
 import { RankFormService } from './services/rank-form.service';
 import { LoadingComponent } from '../../shared/components/loading/loading.component';
 import { PaginationComponent } from '../../shared/components/pagination/pagination.component';
+import { GlobalEventsManager } from '@shared/global-events-manager';
 
 @NgModule({
   imports: [
@@ -24,7 +25,8 @@ import { PaginationComponent } from '../../shared/components/pagination/paginati
   ],
   providers: [
     MapService,
-    RankFormService
+    RankFormService,
+    GlobalEventsManager
   ],
   declarations: [
     PortalComponent,

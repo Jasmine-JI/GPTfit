@@ -7,13 +7,15 @@ import { MapInfoComponent } from './components/map-info/map-info.component';
 const routes: Routes = [
   {
     path: '', component: PortalComponent,
+    children: [
+      {
+        path: 'leaderboard', component: LeaderboardComponent,
+      },
+      {
+        path: 'leaderboard/mapInfo', component: MapInfoComponent,
+      }
+    ]
   },
-  {
-    path: 'leaderboard', component: LeaderboardComponent,
-  },
-  {
-    path: 'leaderboard/mapInfo', component: MapInfoComponent,
-  }
 ];
 
 @NgModule({

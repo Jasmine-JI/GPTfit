@@ -1,86 +1,55 @@
+body,
+html {
+  height: 100%;
+}
 
-.loading {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.app-loading {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.app-loading .spinner {
+  height: 200px;
+  width: 200px;
+  animation: rotate 2s linear infinite;
+  transform-origin: center center;
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 20;
-}
-
-.loading__cycle {
-  height: 0;
-  position: absolute;
-  top: 50%;
+  top: 0;
+  bottom: 0;
   left: 0;
-  width: 0;
-  margin: 0;
-  height: 20px;
-  width: 20px;
-  border-radius: 100%;
-  transform: transformZ(0);
-  animation: LOADING 2s infinite;
+  right: 0;
+  margin: auto;
 }
 
-.loading__cycle:nth-child(1n) {
-  left: -20px;
-  animation-delay: 0s;
+.app-loading .spinner .path {
+  stroke-dasharray: 1, 200;
+  stroke-dashoffset: 0;
+  animation: dash 1.5s ease-in-out infinite;
+  stroke-linecap: round;
+  stroke: #ddd;
 }
 
-.loading__cycle:nth-child(2n) {
-  left: 0;
-  animation-delay: 0.2s;
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
-.loading__cycle:nth-child(3n) {
-  left: 20px;
-  animation-delay: 0.4s;
-}
-
-.loading__cycle--reversed li {
-  animation: LOADINGREV 2s infinite;
-}
-
-.loading__cycle--reversed li:nth-child(1n) {
-  animation-delay: 0s;
-}
-
-.loading__cycle--reversed li:nth-child(2n) {
-  animation-delay: 0.2s;
-}
-
-.loading__cycle--reversed li:nth-child(3n) {
-  animation-delay: 0.4s;
-}
-
-@keyframes LOADING {
+@keyframes dash {
   0% {
-    transform: scale(0.5);
-    background: #999;
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
   }
   50% {
-    transform: scale(1);
-    background: white;
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -35px;
   }
   100% {
-    transform: scale(0.5);
-    background: #999;
-  }
-}
-
-@keyframes LOADINGREV {
-  0% {
-    transform: scale(0.5);
-    background: white;
-  }
-  50% {
-    transform: scale(1);
-    background: #999;
-  }
-  100% {
-    transform: scale(0.5);
-    background: white;
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -124px;
   }
 }

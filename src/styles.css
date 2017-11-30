@@ -1,7 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 body,
 html {
-  font-family: 'Noto Sans TC', sans-serif !important;
+  font-family: 'Microsoft JhengHei', sans-serif !important;
   height: 100%;
   margin: 0;
 }
@@ -62,9 +62,31 @@ html {
   height: 50px;
 }
 .button.bg-btn {
+  position: fixed;
   opacity: 0.5;
 }
 
 .button.bg-btn:hover {
   opacity: 1;
+}
+
+.mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 0;
+  width: 0;
+  background: rgba(0, 0, 0, .6);
+  z-index: 3;
+  opacity: 0;
+  transition: opacity .3s ease-in-out,
+  height 0s ease-in-out .3s,
+  width 0s ease-in-out .3s;
+}
+
+.mask--show {
+  height: 100vh;
+  width: 100vw;
+  opacity: 1;
+  transition: opacity .3s ease-in-out;
 }

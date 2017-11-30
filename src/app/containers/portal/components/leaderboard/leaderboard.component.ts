@@ -10,6 +10,8 @@ import {
   getUrlQueryStrings,
   buildPageMeta
 } from '@shared/utils/';
+import { GlobalEventsManager } from '@shared/global-events-manager';
+import { forkJoin } from 'rxjs/observable/forkJoin';
 
 @Component({
   selector: 'app-leaderboard',
@@ -22,7 +24,7 @@ export class LeaderboardComponent implements OnInit {
   mapDatas: any; // 有資料的地圖
   response: any; // rankDatas 回的res載體
   mapId = 5; // 預設為雅典
-  month = '11';
+  month = (new Date().getMonth() + 1).toString();
   meta: any; // api回的meta資料
   isFirstPage: boolean; // 是否為第一頁
   isLastPage: boolean; // 是否為最後一頁
@@ -41,10 +43,11 @@ export class LeaderboardComponent implements OnInit {
   mapName: string; // 該地圖名字
   isLoading = false;
   currentPage: number;
-
+  isClearIconShow = false;
   constructor(
     private router: Router,
-    private rankFormService: RankFormService
+    private rankFormService: RankFormService,
+    private globalEventsManager: GlobalEventsManager
   ) {
     this.handleSearchEmail = debounce(this.handleSearchEmail, 1000);
   }
@@ -82,12 +85,48 @@ export class LeaderboardComponent implements OnInit {
     this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`; // 背景圖 ，預設為取雅典娜
 
     this.fetchRankForm(params);
-    this.rankFormService.getMapOptions(params).subscribe(res => {
-      this.mapDatas = res;
+
+    const fetchMapOptions = this.rankFormService.getMapOptions(params);
+    const fetchMonthsOptions = this.rankFormService.getMonths();
+
+    forkJoin([fetchMapOptions, fetchMonthsOptions]).subscribe(results => {
+      this.mapDatas = results[0];
       this.mapName = this.mapDatas[this.mapId - 1].map_name;
+      this.monthDatas = results[1];
+      const { mapDatas, monthDatas } = this;
+      const searchOptions = {
+        mapDatas,
+        monthDatas
+      };
+      this.globalEventsManager.getMapOptions(searchOptions);
+      this.globalEventsManager.getMapId(this.mapId);
     });
-    this.rankFormService.getMonths().subscribe(res => {
-      this.monthDatas = res;
+    this.globalEventsManager.getRankFormEmitter.subscribe((res) => {
+      this.response = res;
+      if (res) {
+        const {
+          datas,
+          email,
+          meta
+        } = this.response;
+        this.rankDatas = datas;
+        this.email = email;
+        if (meta) {
+          this.isHaveEmail = false;
+          this.meta = buildPageMeta(meta);
+        } else {
+          this.isHaveEmail = true;
+          this.isFoundUser = true;
+        }
+        if (this.rankDatas && this.rankDatas.length > 0) {
+          this.mapId = datas[0].map_id;
+          this.mapName = this.mapDatas[this.mapId - 1].map_name;
+          this.distance = this.rankDatas.length > 0 && this.rankDatas[0].race_total_distance;
+        }
+      }
+    });
+    this.globalEventsManager.showLoadingEmitter.subscribe((isLoading) => {
+      this.isLoading = isLoading;
     });
   }
   onSubmit(form, event: any) {
@@ -113,7 +152,7 @@ export class LeaderboardComponent implements OnInit {
       params = params.append('gender', this.groupId);
     }
     if (email) {
-      params = params.append('email', email.trim());
+      params = params.append('email', encodeURIComponent(email.trim()));
     }
     this.email = email && email.trim();
     this.fetchRankForm(params);
@@ -171,7 +210,19 @@ export class LeaderboardComponent implements OnInit {
   }
 
   public inputEvent(e: any, isUpMode: boolean = false): void {
+    if (e.target.value.length > 0 && this.email) {
+      this.isClearIconShow = true;
+    } else {
+      this.isClearIconShow = false;
+    }
     this.handleSearchEmail();
+  }
+  public focusEvent(e: any, isUpMode: boolean = false): void {
+    if (e.target.value.length > 0 && this.email) {
+      this.isClearIconShow = true;
+    } else {
+      this.isClearIconShow = false;
+    }
   }
   handleSearchEmail() {
     this.isSelectLoading = true;
@@ -239,5 +290,12 @@ export class LeaderboardComponent implements OnInit {
       params = params.append('email', this.email.trim());
     }
     this.fetchRankForm(params);
+  }
+  selectMap(id) {
+    this.globalEventsManager.getMapId(id);
+  }
+  clear() {
+    this.email = '';
+    this.isClearIconShow = false;
   }
 }

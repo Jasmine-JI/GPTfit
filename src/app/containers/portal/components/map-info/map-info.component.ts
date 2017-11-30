@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Location } from '@angular/common';
 import { HttpParams } from '@angular/common/http';
 import { MapService } from '@shared/services/map.service';
@@ -12,7 +12,7 @@ import { mapImages } from '@shared/mapImages';
   templateUrl: './map-info.component.html',
   styleUrls: ['./map-info.component.css']
 })
-export class MapInfoComponent implements OnInit {
+export class MapInfoComponent implements OnInit, AfterViewInit {
   constructor(
     private _location: Location, // 調用location.back()，來回到上一頁
     private _mapService: MapService,

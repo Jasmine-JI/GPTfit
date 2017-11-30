@@ -1,113 +1,99 @@
-<portal-navbar></portal-navbar>
-
 <div class="leaderboard-bg" [style.background-image]="bgImageUrl" *ngIf="!isLoading">
   <div class="leaderboard-layer">
-    <div class="container pt-5">
+    <div class="container leaderboard-rwd">
       <div class="row row-runs">
-        <form (ngSubmit)="onSubmit(rankForm, $event)" #rankForm="ngForm">
-          <label>Map:</label>
-          <select name="mapId" [(ngModel)]="mapId" class="form-field mr-2">
-            <option *ngFor="let _map of mapDatas" [value]="_map.map_id">{{ _map.map_name }}</option>
-          </select>
+        <div class="searchRank-bar">
+          <form (ngSubmit)="onSubmit(rankForm, $event)" #rankForm="ngForm">
+            <label>Map:</label>
+            <select name="mapId" [(ngModel)]="mapId" class="form-field"(click)="selectMap(mapId)">
+              <option *ngFor="let _map of mapDatas" [value]="_map.map_id">{{ _map.map_name }}</option>
+            </select>
 
-          <label>Email:</label>
-          <div class="dropdown" (click)="openActive($event)">
-            <input type="email" name="email" [(ngModel)]="email" (keydown)="inputEvent($event)" autocomplete="off" [class.loading]="isSelectLoading"
-              class="form-field mr-2"
-            >
-            <ul class="dropdown-menu" *ngIf="emailOptions && emailOptions.length > 0" [class.show]="active && emailOptions.length > 0">
-              <li *ngFor="let o of emailOptions; let i = index">
-                <div class="">
-                  <a class="">
-                    <div (click)="remove(i, $event)">{{ o }}</div>
+            <label>Email:</label>
+            <div class="dropdown" (click)="openActive($event)">
+              <div class="clearable">
+                <input type="email" name="email" [(ngModel)]="email" (keyup)="inputEvent($event)" autocomplete="off" [class.loading]="isSelectLoading"
+                  class="form-field" placeholder="enter email" (focus)="focusEvent($event)" style="width: 255px;text-overflow: ellipsis;"
+                >
+                <i class="clearable__clear" [class.show]="isClearIconShow" (click)="clear()">&times;</i>
+                <i class="fa fa-caret-down async-caret"></i>
+                <i class="fa fa-spinner fa-pulse fa-1x fa-fw spinner" [class.spinner-hidden]="!isSelectLoading"></i>
+              </div>
+              <ul class="dropdown-menu" style="width: 100%;" *ngIf="emailOptions && emailOptions.length > 0" [class.show]="active && emailOptions.length > 0">
+                <li *ngFor="let o of emailOptions; let i = index"
+                 (click)="remove(i, $event)">
+                  <a>
+                    {{ o }}
                   </a>
-                </div>
-              </li>
-            </ul>
+                </li>
+              </ul>
+            </div>
+            <label>Month:</label>
+            <select name="month" [(ngModel)]="month" class="form-field">
+              <option *ngFor="let _month of monthDatas" [value]="_month.month">{{ _month.month }}</option>
+            </select>
+            <label>組別:</label>
+            <select name="groupId" [(ngModel)]="groupId" class="form-field">
+              <option [value]="3">無分組</option>
+              <option [value]="0">男生組</option>
+              <option [value]="1">女生組</option>
+            </select>
+            <button type="submit" class="button search-form__button">
+              <i class="fa fa-search"></i>
+            </button>
+          </form>
+          <div class="summary">
+            本月進行的例行排行賽為
+            <span style="color: #157fcc;font-weight: 700">指定地圖{{ mapName }}{{ distance }}KM</span>
+            <div>排行榜於每日06:00刷新，最終排名以當月最後一日23:59結算成績為主</div>
           </div>
-          <label>Month:</label>
-          <select name="month" [(ngModel)]="month" class="form-field mr-2">
-            <option *ngFor="let _month of monthDatas" [value]="_month.month">{{ _month.month }}</option>
-          </select>
-          <label>組別:</label>
-          <select name="groupId" [(ngModel)]="groupId" class="form-field mr-2">
-            <option [value]="3">無分組</option>
-            <option [value]="0">男生組</option>
-            <option [value]="1">女生組</option>
-          </select>
-          <button type="submit" class="button search-form__button">
-            <i class="fa fa-search"></i>
-          </button>
-        </form>
-        <div class="summary">
-          本月進行的例行排行賽為
-          <span style="color: #cb5e5e;font-weight: 700">指定地圖{{ mapName }}{{ distance }}KM</span>
-          <div>排行榜於每日06:00刷新，最終排名以當月最後一日23:59結算成績為主</div>
         </div>
-        <table class="table table-hover">
-          <thead>
-            <tr>
-              <td>Rank</td>
-              <td>Email</td>
-              <td>UserName</td>
-              <td>Gender</td>
-              <td>Offical Time</td>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let data of rankDatas" [ngClass]="{'here' : (data.e_mail === email) && isFoundUser}">
-              <td (click)="toMapInfoPage(data.user_id)" class="rank">{{ data.rank }}</td>
-              <td>{{ data.e_mail }}</td>
-              <td>{{ data.nick_name }}</td>
-              <td>{{ data.gender | sex }}</td>
-              <td>{{ data.offical_time | time }}</td>
-            </tr>
-            <tr *ngIf="!isHaveDatas">
-              <td colspan="5" style="text-align: center">
-                尚無相關資訊
-              </td>
-            </tr>
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colspan="5" *ngIf="!isHaveEmail">
-                <ng-container *ngIf="isHaveDatas">
-                  <app-pagination (onChange)="onPageChange($event)"
-                    [maxPage]="meta.maxPage"
-                    [currentPage]="meta.currentPage"
-                    [total]="meta.total"
-                  ></app-pagination>
-                </ng-container>
-                <!-- <div class="row" *ngIf="isHaveDatas">
-                  <div class="col-sm-8">
-                    <ul class="justify-content-end pagination">
-                      <li class="pagination-item" (click)="toFirstPage()" [class.disabled]="isFirstPage" [ngClass]="{'pagination-item--disabled' : isFirstPage}">
-                        <a class="" title="Go to first page">第一頁</a>
-                      </li>
-                      <li class="pagination-item" (click)="prePage()" [class.disabled]="isFirstPage" [ngClass]="{'pagination-item--disabled' : isFirstPage}">
-                        <a class="" tabindex="-1">&laquo;</a>
-                      </li>
-                      <li *ngFor="let _page of pageRanges" class="pagination-item" (click)="selectPage(_page)" [ngClass]="{'active' : _page === meta.currentPage}">
-                        <a class="" (click)="selectPage(_page)">{{ _page }}</a>
-                      </li>
-                      <li class="pagination-item" (click)="nextPage()" [class.disabled]="isLastPage" [ngClass]="{'pagination-item--disabled' : isLastPage}">
-                        <a class="">&raquo;</a>
-                      </li>
-                      <li class="pagination-item" (click)="toLastPage()" [class.disabled]="isLastPage" [ngClass]="{'pagination-item--disabled' : isLastPage}">
-                        <a class="">最後一頁</a>
-                      </li>
-                    </ul>
-                  </div>
-                  <div class="col-sm-4">
-                    <div class="page__info">
-                      <span>第{{ meta.currentPage }}/{{ meta.maxPage }}頁 ，共{{ meta.total }}筆</span>
-                    </div>
-                  </div>
-                </div> -->
-              </td>
-            </tr>
-          </tfoot>
-        </table>
+        <div class="searchRank-mapInfo"><span style="color: #008bcd;font-weight: 700">指定地圖{{ mapName }}{{ distance }}KM</span></div>
+        <div class="table-responsive">
+          <table class="table table-rwd">
+            <thead>
+              <tr class="tr-only-hide">
+                <th class="ranking-table__cell--head">Rank</th>
+                <th class="ranking-table__cell--head">Email</th>
+                <th class="ranking-table__cell--head">UserName</th>
+                <th class="ranking-table__cell--head">Gender</th>
+                <th class="ranking-table__cell--head">Offical Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of rankDatas" [ngClass]="{'here' : (data.e_mail === email) && isFoundUser}">
+                <td class="ranking-table__cell" (click)="toMapInfoPage(data.user_id)"
+                  data-th="Rank"
+                >
+                  <a class="ranking-link">{{ data.rank }}</a>
+                </td>
+                <td class="ranking-table__cell" data-th="Email">{{ data.e_mail }}</td>
+                <td class="ranking-table__cell" data-th="UserName">{{ data.nick_name }}</td>
+                <td class="ranking-table__cell" data-th="Gender">{{ data.gender | sex }}</td>
+                <td class="ranking-table__cell" data-th="Offical Time">{{ data.offical_time | time }}</td>
+              </tr>
+              <tr *ngIf="!isHaveDatas">
+                <td class="ranking-table__cell" colspan="5" style="text-align: center">
+                  尚無相關資訊
+                </td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="5" *ngIf="!isHaveEmail">
+                  <ng-container *ngIf="isHaveDatas">
+                    <app-pagination (onChange)="onPageChange($event)"
+                      [maxPage]="meta.maxPage"
+                      [currentPage]="meta.currentPage"
+                      [total]="meta.total"
+                    ></app-pagination>
+                  </ng-container>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
         <div>
           <button (click)="preMap()" class="button bg-btn" style="position: absolute;left: 0;top: 50%;">
             <i class="fa fa-arrow-left" aria-hidden="true"></i>

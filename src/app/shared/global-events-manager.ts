@@ -1,0 +1,51 @@
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Observable } from 'rxjs/Observable';
+
+@Injectable()
+export class GlobalEventsManager {
+
+  private _showMask: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private _openCollapse: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private _getMapOptions: BehaviorSubject<any> = new BehaviorSubject<any>([]);
+  private _getMapId: BehaviorSubject<number> = new BehaviorSubject<number>(5);
+  private _getRankForm = new BehaviorSubject<any>(undefined);
+  private _showLoading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private _getIsFoundUser: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
+  public showNavBarEmitter: Observable<boolean> = this._showMask.asObservable();
+  public showCollapseEmitter: Observable<boolean> = this._openCollapse.asObservable();
+  public getMapOptionsEmitter: Observable<any> = this._getMapOptions.asObservable();
+  public getMapIdEmitter: Observable<number> = this._getMapId.asObservable();
+  public getRankFormEmitter: Observable<Array<any>> = this._getRankForm.asObservable();
+  public showLoadingEmitter: Observable<boolean> = this._showLoading.asObservable();
+  public getIsFoundUserEmitter: Observable<boolean> = this._getIsFoundUser.asObservable();
+
+  constructor() { }
+
+  showLoading(ifShow: boolean) {
+    this._showLoading.next(ifShow);
+  }
+
+  showMask(ifShow: boolean) {
+    this._showMask.next(ifShow);
+  }
+
+  openCollapse(ifOpen: boolean) {
+    this._openCollapse.next(ifOpen);
+  }
+
+  getMapOptions(mapOptions) {
+    this._getMapOptions.next(mapOptions);
+  }
+
+  getMapId(id: number) {
+    this._getMapId.next(id);
+  }
+  getRankForm(data: any) {
+    this._getRankForm.next(data);
+  }
+  getIsFoundUser(isFoundUser: any) {
+    this._getIsFoundUser.next(isFoundUser);
+  }
+}
