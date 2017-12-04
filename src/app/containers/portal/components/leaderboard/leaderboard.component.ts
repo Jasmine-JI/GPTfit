@@ -58,7 +58,7 @@ export class LeaderboardComponent implements OnInit {
   ngOnInit() {
     const queryStrings = getUrlQueryStrings(location.search);
     let params = new HttpParams();
-    params = params.append('param', 'map');
+    params = params.set('param', 'map');
     if (!isObjectEmpty(queryStrings)) {
       const {
         pageNumber,
@@ -67,32 +67,38 @@ export class LeaderboardComponent implements OnInit {
         groupId
       } = queryStrings;
       if (pageNumber) {
-        params = params.append('pageNumber', pageNumber);
+        params = params.set('pageNumber', pageNumber);
       }
       if (month) {
         this.month = month;
-        params = params.append('month', month);
+        params = params.set('month', month);
       }
       if (mapId) {
         this.mapId = mapId;
-        params = params.append('mapId', mapId);
+        params = params.set('mapId', mapId);
       }
       if (groupId !== '3') {
         this.groupId = groupId;
-        params = params.append('gender', groupId);
+        params = params.set('gender', groupId);
       }
     }
     this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`; // 背景圖 ，預設為取雅典娜
 
-    this.fetchRankForm(params);
-
     const fetchMapOptions = this.rankFormService.getMapOptions(params);
+
     const fetchMonthsOptions = this.rankFormService.getMonths();
 
     forkJoin([fetchMapOptions, fetchMonthsOptions]).subscribe(results => {
       this.mapDatas = results[0];
       this.mapName = this.mapDatas[this.mapId - 1].map_name;
       this.monthDatas = results[1];
+      if (this.monthDatas.findIndex(_month => _month.month === this.month) === -1) {
+        const idx = this.monthDatas.length - 1;
+        this.month = this.monthDatas[idx].month;
+        params = params.set('month', this.month);
+      }
+      this.fetchRankForm(params);
+
       const { mapDatas, monthDatas } = this;
       const searchOptions = {
         mapDatas,
@@ -120,7 +126,8 @@ export class LeaderboardComponent implements OnInit {
         }
         if (this.rankDatas && this.rankDatas.length > 0) {
           this.mapId = datas[0].map_id;
-          this.mapName = this.mapDatas[this.mapId - 1].map_name;
+          this.mapName = datas[0].map_name;
+          // this.mapName = this.mapDatas[this.mapId - 1].map_name;
           this.distance = this.rankDatas.length > 0 && this.rankDatas[0].race_total_distance;
         }
       }
@@ -145,14 +152,14 @@ export class LeaderboardComponent implements OnInit {
     this.groupId = groupId;
     this.month = month;
     let params = new HttpParams();
-    params = params.append('mapId', this.mapId.toString());
-    params = params.append('month', month);
+    params = params.set('mapId', this.mapId.toString());
+    params = params.set('month', this.month);
     this.isHaveEmail = email ? true : false;
     if (this.groupId !== '3') {
-      params = params.append('gender', this.groupId);
+      params = params.set('gender', this.groupId);
     }
     if (email) {
-      params = params.append('email', encodeURIComponent(email.trim()));
+      params = params.set('email', encodeURIComponent(email.trim()));
     }
     this.email = email && email.trim();
     this.fetchRankForm(params);
@@ -161,13 +168,14 @@ export class LeaderboardComponent implements OnInit {
     this.currentPage = pageNumber;
     let params = new HttpParams();
     if (this.groupId !== '3') {
-      params = params.append('gender', this.groupId);
+      params = params.set('gender', this.groupId);
     }
     if (this.email) {
-      params = params.append('email', this.email.trim());
+      params = params.set('email', this.email.trim());
     }
-    params = params.append('mapId', this.mapId.toString());
-    params = params.append('pageNumber', this.currentPage.toString());
+    params = params.set('month', this.month);
+    params = params.set('mapId', this.mapId.toString());
+    params = params.set('pageNumber', this.currentPage.toString());
     this.fetchRankForm(params);
   }
   fetchRankForm(params) {
@@ -227,9 +235,9 @@ export class LeaderboardComponent implements OnInit {
   handleSearchEmail() {
     this.isSelectLoading = true;
     let params = new HttpParams();
-    params = params.append('mapId', this.mapId.toString());
-    params = params.append('month', this.month);
-    params = params.append('keyword', this.email);
+    params = params.set('mapId', this.mapId.toString());
+    params = params.set('month', this.month);
+    params = params.set('keyword', this.email);
     this.rankFormService.getEmail(params).subscribe(res => {
       this.emailOptions = res;
       this.isSelectLoading = false;
@@ -262,13 +270,13 @@ export class LeaderboardComponent implements OnInit {
 
     this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
     let params = new HttpParams();
-    params = params.append('mapId', this.mapId.toString());
-    params = params.append('month', this.month);
+    params = params.set('mapId', this.mapId.toString());
+    params = params.set('month', this.month);
     if (this.groupId !== '3') {
-      params = params.append('gender', this.groupId);
+      params = params.set('gender', this.groupId);
     }
     if (this.email) {
-      params = params.append('email', this.email.trim());
+      params = params.set('email', this.email.trim());
     }
     this.fetchRankForm(params);
   }
@@ -281,13 +289,13 @@ export class LeaderboardComponent implements OnInit {
     this.mapName = this.mapDatas[this.mapId - 1].map_name;
     this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
     let params = new HttpParams();
-    params = params.append('mapId', this.mapId.toString());
-    params = params.append('month', this.month);
+    params = params.set('mapId', this.mapId.toString());
+    params = params.set('month', this.month);
     if (this.groupId !== '3') {
-      params = params.append('gender', this.groupId);
+      params = params.set('gender', this.groupId);
     }
     if (this.email) {
-      params = params.append('email', this.email.trim());
+      params = params.set('email', this.email.trim());
     }
     this.fetchRankForm(params);
   }

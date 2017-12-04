@@ -51,9 +51,9 @@ export class MapInfoComponent implements OnInit, AfterViewInit {
   fetchSportData(mapId, month, userId) {
     this.isLoading = true;
     let params = new HttpParams();
-    params = params.append('mapId', mapId);
-    params = params.append('month', month);
-    params = params.append('userId', userId);
+    params = params.set('mapId', mapId);
+    params = params.set('month', month);
+    params = params.set('userId', userId);
     this.rankFormService.getMapInfos(params).subscribe(res => {
       this.data = res;
       this.isLoading = false;
