@@ -1,5 +1,7 @@
 .main {
-  margin: 56px 0px 0px;
+  padding-top: 56px;
+
+  /* margin: 56px 0px 0px; */
   width: 100%;
 }
 

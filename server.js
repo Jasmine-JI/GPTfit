@@ -2,7 +2,6 @@ var mysql = require("mysql");
 var express = require('express');
 var bodyParser = require('body-parser');
 var schedule = require('node-schedule');
-
 // Init app
 var app = express();
 
@@ -69,7 +68,6 @@ scheduleCronstyle();
 app.use(bodyParser.urlencoded({ extended: true }))
 // parse application/json
 app.use(bodyParser.json())
-
 // Add headers
 app.use(function (req, res, next) {
   req.con = connection;

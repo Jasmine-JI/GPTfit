@@ -15,6 +15,9 @@ import { RankFormService } from './services/rank-form.service';
 import { LoadingComponent } from '../../shared/components/loading/loading.component';
 import { PaginationComponent } from '../../shared/components/pagination/pagination.component';
 import { GlobalEventsManager } from '@shared/global-events-manager';
+import { PasswordComponent } from './components/password/password.component';
+import { ResetPasswordService } from './services/reset-password.service';
+import { BrowserXhr } from '@angular/http';
 
 @NgModule({
   imports: [
@@ -26,7 +29,8 @@ import { GlobalEventsManager } from '@shared/global-events-manager';
   providers: [
     MapService,
     RankFormService,
-    GlobalEventsManager
+    GlobalEventsManager,
+    ResetPasswordService,
   ],
   declarations: [
     PortalComponent,
@@ -36,7 +40,8 @@ import { GlobalEventsManager } from '@shared/global-events-manager';
     TimePipe,
     MapInfoComponent,
     LoadingComponent,
-    PaginationComponent
+    PaginationComponent,
+    PasswordComponent
   ]
 })
 export class PortalModule {}
