@@ -1,7 +1,22 @@
 var express = require('express');
 
 var router = express.Router();
+var currentDate = function() {
+  var today = new Date();
+  var dd = today.getDate();
+  var mm = today.getMonth() + 1;  //January is 0!
+  var yyyy = today.getFullYear();
 
+  if (dd < 10) {
+    dd = '0' + dd
+  }
+
+  if (mm < 10) {
+    mm = '0' + mm
+  }
+  today = yyyy + '-' + mm + '-' + dd;
+  return today;
+};
 router.get('/', function(req, res, next) {
   const {
     con,
@@ -12,14 +27,16 @@ router.get('/', function(req, res, next) {
       mapId,
       gender,
       userId,
-      email
+      email,
+      date
     }
   } = req;
   const today = new Date();
   const currMonth = today.getMonth() + 1;
+  const currDate = currentDate();
   const genderQuery = gender ? `and gender = ${gender}` : '';
   const sql = `
-    select a.rank as rank,
+    select distinct a.rank as rank,
     a.offical_time,
     a.user_id,
     a.map_id,
@@ -38,16 +55,16 @@ router.get('/', function(req, res, next) {
     ) as rank
     from (select * from ??
       where
-      map_id = ${mapId || 5}
+      date = '${date || currDate}'
       and
-      month = ${month || currMonth}
+      map_id = ${mapId || 5}
       ${genderQuery}
     )b,
     (
       select @curr := null, @prev :=null, @rank := 0
     )
     time order by offical_time
-    )a
+    )a;
   `;
   con.query(sql, 'run_rank', function(err, rows) {
     if (err) {
@@ -61,7 +78,7 @@ router.get('/', function(req, res, next) {
 
     if (email) {
       let idx = rows.findIndex(_row => encodeURIComponent(_row.e_mail) === email);
-      const halfRange = 2;
+      const halfRange = 5;
       let start = 0;
       if (idx === -1) {
         return res.send({ datas: []});
@@ -109,12 +126,15 @@ router.get('/rankInfo/email', function(req, res, next) {
     con,
     query:{
       email,
-      month,
+      // month,
+      date,
       mapId,
       keyword
     }
   } = req;
-  const sql = `SELECT e_mail FROM ?? where month = ${month} and map_id = ${mapId};`;
+  // const sql = `SELECT e_mail FROM ?? where month = ${month} and map_id = ${mapId};`;
+  const sql = `SELECT distinct e_mail FROM ?? where date = '${date}' and map_id = ${mapId};`;
+
   con.query(sql, 'run_rank', function(err, rows) {
     if (err) {
       console.log(err);
@@ -139,7 +159,7 @@ router.get('/mapInfo', function(req, res, next) { // 分成兩個fetch是因為�
   } = req;
   const userQuery = userId ? `and t.user_id = ${userId}` : '';
   const mapQuery = mapId ? `and t.map_id = ${mapId}` : '';
-  const monthQuery = month ? `and t.month = ${month}` : '';  
+  const monthQuery = month ? `and t.month = ${month}` : '';
   const sql1 = `
       select t.map_id, t.user_id,t.e_mail, s.max_speed,
       s.average_speed, s.max_pace, s.average_pace,

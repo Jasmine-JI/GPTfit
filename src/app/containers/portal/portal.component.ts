@@ -23,6 +23,11 @@ export class PortalComponent implements OnInit {
   monthDatas = [];
   groupId = '3';
   month = (new Date().getMonth() + 1).toString();
+  date = 0;
+  dateData = [
+    '2017-12-05',
+    '2017-12-06'
+  ];
   email: string;
   isFoundUser = false; // 標記目標email
   mapName: string; // 該地圖名字
@@ -78,17 +83,22 @@ export class PortalComponent implements OnInit {
       email,
       mapId,
       groupId,
-      month
+      // month,
+      date
     } = form.value;
     this.email = email;
     this.isFoundUser = this.email ? true : false;
-    this.mapId = mapId;
-    this.mapName = this.mapDatas[this.mapId - 1].map_name;
+    // this.mapId = mapId;
+    // this.mapName = this.mapDatas[this.mapId - 1].map_name;
     this.groupId = groupId;
-    this.month = month;
+    // this.month = month;
+    this.date = date;
+    this.date = date;
+    const selectDate = this.dateData[this.date];
     let params = new HttpParams();
     params = params.append('mapId', this.mapId.toString());
-    params = params.append('month', month);
+    // params = params.append('month', month);
+    params = params.append('date', selectDate);
     this.isHaveEmail = email ? true : false;
     if (this.groupId !== '3') {
       params = params.append('gender', this.groupId);

@@ -25,6 +25,11 @@ export class LeaderboardComponent implements OnInit {
   response: any; // rankDatas 回的res載體
   mapId = 5; // 預設為雅典
   month = (new Date().getMonth() + 1).toString();
+  date =  0;
+  dateData = [
+    '2017-12-05',
+    '2017-12-06'
+  ];
   meta: any; // api回的meta資料
   isFirstPage: boolean; // 是否為第一頁
   isLastPage: boolean; // 是否為最後一頁
@@ -64,10 +69,16 @@ export class LeaderboardComponent implements OnInit {
         pageNumber,
         month,
         mapId,
-        groupId
+        groupId,
+        date
       } = queryStrings;
       if (pageNumber) {
         params = params.set('pageNumber', pageNumber);
+      }
+      if (date) {
+        this.date = date;
+        const selectDate = this.dateData[this.date];
+        params = params.set('date', selectDate);
       }
       if (month) {
         this.month = month;
@@ -83,20 +94,19 @@ export class LeaderboardComponent implements OnInit {
       }
     }
     this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`; // 背景圖 ，預設為取雅典娜
-
     const fetchMapOptions = this.rankFormService.getMapOptions(params);
 
-    const fetchMonthsOptions = this.rankFormService.getMonths();
+    // const fetchMonthsOptions = this.rankFormService.getMonths();
 
-    forkJoin([fetchMapOptions, fetchMonthsOptions]).subscribe(results => {
+    forkJoin([fetchMapOptions]).subscribe(results => {
       this.mapDatas = results[0];
       this.mapName = this.mapDatas[this.mapId - 1].map_name;
       this.monthDatas = results[1];
-      if (this.monthDatas.findIndex(_month => _month.month === this.month) === -1) {
-        const idx = this.monthDatas.length - 1;
-        this.month = this.monthDatas[idx].month;
-        params = params.set('month', this.month);
-      }
+      // if (this.monthDatas.findIndex(_month => _month.month === this.month) === -1) {
+      //   const idx = this.monthDatas.length - 1;
+      //   this.month = this.monthDatas[idx].month;
+      //   // params = params.set('month', this.month);
+      // }
       this.fetchRankForm(params);
 
       const { mapDatas, monthDatas } = this;
@@ -125,10 +135,13 @@ export class LeaderboardComponent implements OnInit {
           this.isFoundUser = true;
         }
         if (this.rankDatas && this.rankDatas.length > 0) {
+          this.isHaveDatas = true;
           this.mapId = datas[0].map_id;
           this.mapName = datas[0].map_name;
           // this.mapName = this.mapDatas[this.mapId - 1].map_name;
           this.distance = this.rankDatas.length > 0 && this.rankDatas[0].race_total_distance;
+        } else {
+          this.isHaveDatas = false;
         }
       }
     });
@@ -142,7 +155,8 @@ export class LeaderboardComponent implements OnInit {
       email,
       mapId,
       groupId,
-      month
+      // month,
+      date
     } = form.value;
     this.email = email;
     this.isFoundUser = this.email ? true : false;
@@ -150,10 +164,13 @@ export class LeaderboardComponent implements OnInit {
     this.mapName = this.mapDatas[this.mapId - 1].map_name;
     this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
     this.groupId = groupId;
-    this.month = month;
+    // this.month = month;
+    this.date = date;
+    const selectDate = this.dateData[this.date];
     let params = new HttpParams();
     params = params.set('mapId', this.mapId.toString());
-    params = params.set('month', this.month);
+    // params = params.set('month', this.month);
+    params = params.set('date', selectDate);
     this.isHaveEmail = email ? true : false;
     if (this.groupId !== '3') {
       params = params.set('gender', this.groupId);
@@ -173,7 +190,9 @@ export class LeaderboardComponent implements OnInit {
     if (this.email) {
       params = params.set('email', this.email.trim());
     }
-    params = params.set('month', this.month);
+    const selectDate = this.dateData[this.date];
+    params = params.set('date', selectDate);
+    // params = params.set('month', this.month);
     params = params.set('mapId', this.mapId.toString());
     params = params.set('pageNumber', this.currentPage.toString());
     this.fetchRankForm(params);
@@ -198,7 +217,8 @@ export class LeaderboardComponent implements OnInit {
   toHistoryPrePage() {
     const paramDatas = {
       pageNumber: this.meta.currentPage,
-      month: this.month,
+      // month: this.month,
+      date: this.date,
       mapId: this.mapId,
       groupId: this.groupId
     };
@@ -208,7 +228,8 @@ export class LeaderboardComponent implements OnInit {
   }
   toMapInfoPage(userId) {
     const paramDatas = {
-      month: this.month,
+      // month: this.month,
+      date: this.date,
       mapId: this.mapId,
       userId,
     };
@@ -236,7 +257,9 @@ export class LeaderboardComponent implements OnInit {
     this.isSelectLoading = true;
     let params = new HttpParams();
     params = params.set('mapId', this.mapId.toString());
-    params = params.set('month', this.month);
+    // params = params.set('month', this.month);
+    const selectDate = this.dateData[this.date];
+    params = params.set('date', selectDate);
     params = params.set('keyword', this.email);
     this.rankFormService.getEmail(params).subscribe(res => {
       this.emailOptions = res;
@@ -271,7 +294,9 @@ export class LeaderboardComponent implements OnInit {
     this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
     let params = new HttpParams();
     params = params.set('mapId', this.mapId.toString());
-    params = params.set('month', this.month);
+    const selectDate = this.dateData[this.date];
+    params = params.set('date', selectDate);
+    // params = params.set('month', this.month);
     if (this.groupId !== '3') {
       params = params.set('gender', this.groupId);
     }
@@ -290,7 +315,9 @@ export class LeaderboardComponent implements OnInit {
     this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
     let params = new HttpParams();
     params = params.set('mapId', this.mapId.toString());
-    params = params.set('month', this.month);
+    const selectDate = this.dateData[this.date];
+    params = params.set('date', selectDate);
+    // params = params.set('month', this.month);
     if (this.groupId !== '3') {
       params = params.set('gender', this.groupId);
     }

@@ -240,6 +240,11 @@ tr.tr-only-hide {
     margin-right: 10px;
     /* color: #D20B2A; */
   }
+  .table-rwd tbody td.no-data:before {
+    content: '';
+  }
+
+
   /*當RWD縮小的時候.table-bordered 會有兩條線，所以針對.table-bordered去做修正*/
   .table-rwd.table-bordered td,
   .table-rwd.table-bordered th,
