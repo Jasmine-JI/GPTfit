@@ -7,18 +7,18 @@ export class RankFormService {
   constructor(private http: HttpClient) {}
 
   getRank(params) {
-    return this.http.get('http://192.168.1.235:3000/rankform', { params });
+    return this.http.get('http://alatechapp.alatech.com.tw:3000/rankform', { params });
   }
   getMapOptions(params) {
-    return this.http.get('http://192.168.1.235:3000/rankform/rankInfo', { params });
+    return this.http.get('http://alatechapp.alatech.com.tw:3000/rankform/rankInfo', { params });
   }
   getMonths() {
-    return this.http.get('http://192.168.1.235:3000/rankform/rankInfo/month');
+    return this.http.get('http://alatechapp.alatech.com.tw:3000/rankform/rankInfo/month');
   }
   getMapInfos(params) {
-    return this.http.get('http://192.168.1.235:3000/rankform/mapInfo', { params });
+    return this.http.get('http://alatechapp.alatech.com.tw:3000/rankform/mapInfo', { params });
   }
   getEmail(params) {
-    return this.http.get('http://192.168.1.235:3000/rankform/rankInfo/email', { params });
+    return this.http.get('http://alatechapp.alatech.com.tw:3000/rankform/rankInfo/email', { params });
   }
 }

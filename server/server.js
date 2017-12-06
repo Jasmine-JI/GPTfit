@@ -2,14 +2,13 @@ var mysql = require("mysql");
 var express = require('express');
 var bodyParser = require('body-parser');
 var schedule = require('node-schedule');
-
 // Init app
 var app = express();
 
 var connection = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "1234",
+  password: "A1atech",
   database: "alatech",
   multipleStatements: true
 });
@@ -38,16 +37,18 @@ function scheduleCronstyle() {
       race_map_info as m
       where user_race_status = 3
       and
-      activity_duration = (select min(r2.activity_duration)
-      from race_data r2 where user_race_status = 3 and
+      activity_duration = (select min(r2.activity_duration) from race_data r2
+      where user_race_status = 3
+      and
       r1.map_id = r2.map_id
       and
       r1.user_id = r2.user_id
-      and
-      FROM_UNIXTIME(r1.time_stamp, "%m") = FROM_UNIXTIME(r2.time_stamp, "%m"))
+      and FROM_UNIXTIME(r1.time_stamp, "%Y-%m-%d")  >= FROM_UNIXTIME(1512432000,  "%Y-%m-%d")
+      and FROM_UNIXTIME(r2.time_stamp, "%Y-%m-%d")  >= FROM_UNIXTIME(1512432000,  "%Y-%m-%d")
+      and FROM_UNIXTIME(r1.time_stamp, "%Y-%m-%d") = FROM_UNIXTIME(r2.time_stamp, "%Y-%m-%d") )
       and r1.user_id = p.user_id and r1.map_id = m.map_index order by user_id;
     `;
-    
+
     connection.query(sql, 'run_rank', function (err, rows) {
       if (err) {
         throw err;
@@ -69,12 +70,11 @@ scheduleCronstyle();
 app.use(bodyParser.urlencoded({ extended: true }))
 // parse application/json
 app.use(bodyParser.json())
-
 // Add headers
 app.use(function (req, res, next) {
   req.con = connection;
   // Website you wish to allow to connect
-  res.setHeader("Access-Control-Allow-Origin", "http://192.168.1.235:4200");
+  res.setHeader("Access-Control-Allow-Origin", "http://alatechapp.alatech.com.tw:4200");
 
   // Request methods you wish to allow
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
