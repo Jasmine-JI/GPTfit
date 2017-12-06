@@ -12,3 +12,7 @@
 input[type="email"]::-webkit-input-placeholder {
   color: #fff;
 }
+.nav-item {
+  cursor: pointer;
+}
+

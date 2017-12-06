@@ -11,6 +11,7 @@ export class PasswordComponent implements OnInit {
   isSuccess = false;
   email: string;
   response: any;
+  isConfirm = true;
   constructor(
     private resetPasswordService: ResetPasswordService
   ) { }
@@ -29,7 +30,9 @@ export class PasswordComponent implements OnInit {
     } = value;
     if (newPassword !== confirmPassword) {
       valid = false;
+      return this.isConfirm = false;
     }
+    this.isConfirm = true;
     if (valid) {
       const body = {
         email: this.email,

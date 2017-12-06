@@ -18,6 +18,12 @@ html {
   outline: 0;
 }
 
+.form-field.form-field--invalid {
+  border: 1px solid #c75353;
+  box-shadow: rgba(163, 50, 50, .34) 0 0 4px 0;
+}
+
+
 /* button */
 .button {
   border-radius: 5px;

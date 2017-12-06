@@ -49,4 +49,7 @@ export class NavbarComponent implements OnInit {
     this.isCollapseShow = !this.isCollapseShow;
     this.globalEventsManager.showMask(this.isShowMask);
   }
+  reloadPage() {
+    location.reload();
+  }
 }
