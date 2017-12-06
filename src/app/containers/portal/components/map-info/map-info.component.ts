@@ -35,7 +35,7 @@ export class MapInfoComponent implements OnInit, AfterViewInit {
     const {
       mapId,
       month,
-      userId
+      userId,
     } = queryStrings;
     this.bgImageUrl = `url(${mapImages[mapId - 1]})`;
     this.fetchSportData(mapId, month, userId);
@@ -52,7 +52,9 @@ export class MapInfoComponent implements OnInit, AfterViewInit {
     this.isLoading = true;
     let params = new HttpParams();
     params = params.set('mapId', mapId);
-    params = params.set('month', month);
+    if (month) {
+      params = params.set('month', month);
+    }
     params = params.set('userId', userId);
     this.rankFormService.getMapInfos(params).subscribe(res => {
       this.data = res;

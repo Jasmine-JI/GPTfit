@@ -62,9 +62,10 @@ export class PortalComponent implements OnInit {
     });
     this.globalEventsManager.getMapOptionsEmitter.subscribe((options) => {
       const { mapDatas, monthDatas } = options;
-
-      if (monthDatas) {
+      if (mapDatas) {
         this.mapDatas = mapDatas;
+      }
+      if (monthDatas) {
         this.monthDatas = monthDatas;
         this.month = monthDatas[0].month;
       }
@@ -169,7 +170,9 @@ export class PortalComponent implements OnInit {
     this.isSelectLoading = true;
     let params = new HttpParams();
     params = params.append('mapId', this.mapId.toString());
-    params = params.append('month', this.month);
+    // params = params.append('month', this.month);
+    const selectDate = this.dateData[this.date];
+    params = params.set('date', selectDate);
     params = params.append('keyword', this.email);
     this.rankFormService.getEmail(params).subscribe(res => {
       this.emailOptions = res;
