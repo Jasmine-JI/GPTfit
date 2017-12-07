@@ -1,6 +1,6 @@
 {
   "/api": {
-    "target": "http://alatechapp.alatech.com.tw:5555",
+    "target": "http://152.101.90.130:5555",
     "secure": false
   }
 }

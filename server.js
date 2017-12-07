@@ -6,9 +6,9 @@ var schedule = require('node-schedule');
 var app = express();
 
 var connection = mysql.createConnection({
-  host: "localhost",
+  host: "192.168.0.2",
   user: "root",
-  password: "1234",
+  password: "A1atech",
   database: "alatech",
   multipleStatements: true
 });
@@ -72,7 +72,7 @@ app.use(bodyParser.json())
 app.use(function (req, res, next) {
   req.con = connection;
   // Website you wish to allow to connect
-  res.setHeader("Access-Control-Allow-Origin", "http://192.168.1.235:4200");
+  res.setHeader("Access-Control-Allow-Origin", "http://152.101.90.130:4200");
 
   // Request methods you wish to allow
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');

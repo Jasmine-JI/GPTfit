@@ -7,9 +7,9 @@ var schedule = require('node-schedule');
 var app = express();
 
 var connection = mysql.createConnection({
-  host: "localhost",
+  host: "192.168.0.2",
   user: "root",
-  password: "1234",
+  password: "A1atech",
   database: "alatech",
   multipleStatements: true
 });
@@ -47,7 +47,7 @@ function scheduleCronstyle() {
       FROM_UNIXTIME(r1.time_stamp, "%m") = FROM_UNIXTIME(r2.time_stamp, "%m"))
       and r1.user_id = p.user_id and r1.map_id = m.map_index order by user_id;
     `;
-    
+
     connection.query(sql, 'run_rank', function (err, rows) {
       if (err) {
         throw err;
@@ -74,7 +74,7 @@ app.use(bodyParser.json())
 app.use(function (req, res, next) {
   req.con = connection;
   // Website you wish to allow to connect
-  res.setHeader("Access-Control-Allow-Origin", "http://192.168.1.235:4200");
+  res.setHeader("Access-Control-Allow-Origin", "http://152.101.90.130:4200");
 
   // Request methods you wish to allow
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
