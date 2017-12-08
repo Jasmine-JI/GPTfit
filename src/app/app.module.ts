@@ -14,7 +14,7 @@ import { Page404Component } from './shared/components/page404/page404.component'
   imports: [
     BrowserModule,
     AppRoutingModule,
-    PortalModule
+    PortalModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

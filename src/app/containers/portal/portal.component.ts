@@ -8,6 +8,7 @@ import {
   buildPageMeta
 } from '@shared/utils/';
 import { Router } from '@angular/router';
+import { IMyDpOptions } from 'mydatepicker';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -23,11 +24,26 @@ export class PortalComponent implements OnInit {
   monthDatas = [];
   groupId = '3';
   month = (new Date().getMonth() + 1).toString();
-  date = 0;
-  dateData = [
-    '2017-12-05',
-    '2017-12-06'
-  ];
+  startDateOptions: IMyDpOptions = {
+    height: '30px',
+    selectorWidth: ((window.screen.width - 60) / 2).toString(),
+    dateFormat: 'yyyy-mm-dd',
+    disableUntil: { year: 2017, month: 12, day: 4 },
+    disableSince: { year: new Date().getFullYear(), month: new Date().getMonth() + 1, day: new Date().getUTCDate() + 1 }
+  };
+  endDateOptions: IMyDpOptions = {
+    height: '30px',
+    selectorWidth: ((window.screen.width - 60) / 2).toString(),
+    dateFormat: 'yyyy-mm-dd',
+    disableUntil: { year: 2017, month: 12, day: 4 },
+    disableSince: { year: new Date().getFullYear(), month: new Date().getMonth() + 1, day: new Date().getUTCDate() + 1 }
+  };
+  startDay: any = { date: { year: new Date().getFullYear(), month: new Date().getMonth() + 1, day: new Date().getUTCDate() } };
+  finalDay: any = { date: { year: new Date().getFullYear(), month: new Date().getMonth() + 1, day: new Date().getUTCDate() } };
+  startDate: string;
+  endDate: string;
+  date: any;
+
   email: string;
   isFoundUser = false; // 標記目標email
   mapName: string; // 該地圖名字
@@ -54,6 +70,7 @@ export class PortalComponent implements OnInit {
   }
 
   ngOnInit() {
+    // this.startDateOptions.selectorWidth = ((window.screen.width - 60) / 2).toString();
     this.globalEventsManager.showNavBarEmitter.subscribe((mode) => {
       this.isMaskShow = mode;
     });
@@ -84,22 +101,21 @@ export class PortalComponent implements OnInit {
       email,
       mapId,
       groupId,
-      // month,
-      date
+      selectedStartDate,
+      selectedEndDate
     } = form.value;
     this.email = email;
     this.isFoundUser = this.email ? true : false;
-    // this.mapId = mapId;
-    // this.mapName = this.mapDatas[this.mapId - 1].map_name;
+    this.mapId = mapId;
     this.groupId = groupId;
-    // this.month = month;
-    this.date = date;
-    this.date = date;
-    const selectDate = this.dateData[this.date];
     let params = new HttpParams();
+    this.startDay = this.convertDateFormat(selectedStartDate);
+    this.finalDay = this.convertDateFormat(selectedEndDate);
+    this.startDate = this.convertDateString(selectedStartDate);
+    this.endDate = this.convertDateString(selectedEndDate);
     params = params.append('mapId', this.mapId.toString());
-    // params = params.append('month', month);
-    params = params.append('date', selectDate);
+    params = params.set('startDate', this.startDate);
+    params = params.set('endDate', this.endDate);
     this.isHaveEmail = email ? true : false;
     if (this.groupId !== '3') {
       params = params.append('gender', this.groupId);
@@ -109,6 +125,39 @@ export class PortalComponent implements OnInit {
     }
     this.email = email && email.trim();
     this.fetchRankForm(params);
+  }
+  convertDateString(_date) {
+    if (_date) {
+      const {
+        date: {
+          day,
+        month,
+        year
+        }
+      } = _date;
+      return year.toString() + '-' + month.toString() + '-' + day.toString();
+    }
+    return new Date().getFullYear() + '-' + new Date().getMonth() + 1 + '-' + new Date().getUTCDate();
+  }
+  convertDateFormat(_date) {
+    if (_date) {
+      const {
+        date: {
+          day,
+        month,
+        year
+        }
+      } = _date;
+      const data = {
+        date: {
+          year,
+          month,
+          day
+        }
+      };
+      return data;
+    }
+    return { date: { year: new Date().getFullYear(), month: new Date().getMonth() + 1, day: new Date().getUTCDate() } };
   }
   fetchRankForm(params) {
     this.globalEventsManager.showLoading(true);
@@ -120,7 +169,8 @@ export class PortalComponent implements OnInit {
       const data = {
         datas,
         meta,
-        email: this.email
+        email: this.email,
+        mapId: this.mapId
       };
       this.globalEventsManager.getRankForm(data);
       this.distance = this.rankDatas.length > 0 && this.rankDatas[0].race_total_distance;
@@ -169,11 +219,10 @@ export class PortalComponent implements OnInit {
   handleSearchEmail() {
     this.isSelectLoading = true;
     let params = new HttpParams();
-    params = params.append('mapId', this.mapId.toString());
-    // params = params.append('month', this.month);
-    const selectDate = this.dateData[this.date];
-    params = params.set('date', selectDate);
-    params = params.append('keyword', this.email);
+    params = params.set('mapId', this.mapId.toString());
+    params = params.set('startDate', this.startDate);
+    params = params.set('endDate', this.endDate);
+    params = params.set('keyword', this.email);
     this.rankFormService.getEmail(params).subscribe(res => {
       this.emailOptions = res;
       this.isSelectLoading = false;

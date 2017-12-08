@@ -175,10 +175,13 @@ tr.tr-only-hide {
   text-align: center;
   font-size: 18px;
 }
+.form-label {
+  margin-right: 10px;
+}
 
 @media (min-width: 992px) {
   .container {
-    max-width: 885px;
+    max-width: 890px;
   }
 }
 

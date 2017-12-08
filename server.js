@@ -43,7 +43,12 @@ function scheduleCronstyle() {
       and
       r1.user_id = r2.user_id
       and
-      FROM_UNIXTIME(r1.time_stamp, "%m") = FROM_UNIXTIME(r2.time_stamp, "%m"))
+      FROM_UNIXTIME(r1.time_stamp, "%Y-%m-%d")  >= FROM_UNIXTIME(1512432000,  "%Y-%m-%d")
+      and
+      FROM_UNIXTIME(r2.time_stamp, "%Y-%m-%d")  >= FROM_UNIXTIME(1512432000,  "%Y-%m-%d")
+      and
+      FROM_UNIXTIME(r1.time_stamp, "%Y-%m-%d") = FROM_UNIXTIME(r2.time_stamp, "%Y-%m-%d")
+      )
       and r1.user_id = p.user_id and r1.map_id = m.map_index order by user_id;
     `;
 

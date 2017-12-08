@@ -1,6 +1,5 @@
 .main {
   padding-top: 56px;
-
   /* margin: 56px 0px 0px; */
   width: 100%;
 }
@@ -73,3 +72,15 @@
   cursor: pointer;
 }
 
+.date-picker {
+  vertical-align: middle;
+  display: inline-block;
+}
+
+@media (min-width: 768px) {
+  .date-picker {
+    vertical-align: middle;
+    display: inline-block;
+    width: calc((100% - 30px) / 2);
+  }
+}
