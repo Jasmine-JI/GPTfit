@@ -9,8 +9,8 @@ export class RankFormService {
   getRank(params) {
     return this.http.get('http://alatechapp.alatech.com.tw:3000/rankform', { params });
   }
-  getMapOptions(params) {
-    return this.http.get('http://alatechapp.alatech.com.tw:3000/rankform/rankInfo', { params });
+  getMapOptions() {
+    return this.http.get('http://alatechapp.alatech.com.tw/rankform/rankInfo/map');
   }
   getMonths() {
     return this.http.get('http://alatechapp.alatech.com.tw:3000/rankform/rankInfo/month');

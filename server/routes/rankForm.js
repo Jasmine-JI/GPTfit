@@ -28,9 +28,11 @@ router.get('/', function(req, res, next) {
       gender,
       userId,
       email,
-      date
+      startDate,
+      endDate
     }
   } = req;
+
   const today = new Date();
   const currMonth = today.getMonth() + 1;
   const currDate = currentDate();
@@ -53,9 +55,23 @@ router.get('/', function(req, res, next) {
       select *, @prev := @curr, @curr := offical_time,
       @rank := if(@prev = @curr, @rank, @rank+1
     ) as rank
-    from (select * from ??
+    from (select * from ?? a
       where
-      date = '${date || currDate}'
+      date between '${startDate || currDate}'
+      and
+      '${endDate || currDate}'
+      and
+      offical_time in
+      (
+      select min(b.offical_time)  from run_rank as b
+      where map_id = ${mapId || 5}
+      and
+      date between '${startDate || currDate}'
+      and
+      '${endDate || currDate}'
+      and
+      a.user_id = b.user_id
+      )
       and
       map_id = ${mapId || 5}
       ${genderQuery}
@@ -99,9 +115,16 @@ router.get('/', function(req, res, next) {
   });
 });
 
-router.get('/rankInfo', function(req, res, next) {
-  const { con, query: { param } } = req;
-  const sql = `SELECT ${param}_id, ${param}_name FROM ?? GROUP BY ${param}_id, ${param}_name;`;
+router.get('/rankInfo/map', function(req, res, next) {
+  const { con } = req;
+  const sql = `
+    select
+    distinct map_name,
+    race_total_distance as distance,
+    race_category,
+    map_id
+    from ?? ;
+  `;
   con.query(sql, 'run_rank', function(err, rows) {
     if (err) {
       console.log(err);
@@ -126,14 +149,20 @@ router.get('/rankInfo/email', function(req, res, next) {
     con,
     query:{
       email,
-      // month,
-      date,
+      startDate,
+      endDate,
       mapId,
       keyword
     }
   } = req;
-  // const sql = `SELECT e_mail FROM ?? where month = ${month} and map_id = ${mapId};`;
-  const sql = `SELECT distinct e_mail FROM ?? where date = '${date}' and map_id = ${mapId};`;
+  const sql = `
+  SELECT distinct e_mail FROM ??
+  where date between
+  '${startDate || currDate}'
+  and
+  '${endDate || currDate}'
+  and map_id = ${mapId};
+  `;
 
   con.query(sql, 'run_rank', function(err, rows) {
     if (err) {
