@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { ResetPasswordService } from '../../services/reset-password.service';
 import { getUrlQueryStrings } from '@shared/utils/';
 
@@ -9,11 +10,14 @@ import { getUrlQueryStrings } from '@shared/utils/';
 })
 export class PasswordComponent implements OnInit {
   isSuccess = false;
+  code: string;
   email: string;
   response: any;
   isConfirm = true;
+  resultMessage = '';
   constructor(
-    private resetPasswordService: ResetPasswordService
+    private resetPasswordService: ResetPasswordService,
+    private router: Router,
   ) { }
   resetpwd = {
     newPassword: '',
@@ -21,7 +25,18 @@ export class PasswordComponent implements OnInit {
   };
   ngOnInit() {
     const queryStrings = getUrlQueryStrings(location.search);
-    this.email = queryStrings.email;
+    this.code = queryStrings.code;
+    if (this.code) {
+      this.resetPasswordService.getEmail(this.code).subscribe(res => {
+        this.response = res;
+        if (this.response === 'noemail') {
+          return this.router.navigateByUrl('/404');
+        }
+        this.email = this.response.email;
+      });
+    } else {
+      this.router.navigateByUrl('/404');
+    }
   }
   reset({value, valid}) {
     const {
@@ -41,9 +56,11 @@ export class PasswordComponent implements OnInit {
       };
       this.resetPasswordService.resetPassword(body).subscribe((res) => {
         this.response = res;
-        let { resultCode } = this.response;
-        if (resultCode = 200) {
+        const { resultCode, resultMessage } = this.response;
+        if (resultCode === 200) {
           this.isSuccess = true;
+        } else {
+          this.resultMessage = resultMessage;
         }
       });
     }

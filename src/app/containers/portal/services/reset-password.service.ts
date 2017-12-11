@@ -9,4 +9,7 @@ export class ResetPasswordService {
   resetPassword(body) {
     return this.http.post('/api/v1/user/resetPWD', body);
   }
+  getEmail(code) {
+    return this.http.get('http://192.168.1.235:3000/resetPassword/getEmail?code=' + code);
+  }
 }
