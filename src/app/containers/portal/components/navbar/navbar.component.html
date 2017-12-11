@@ -1,0 +1,32 @@
+<nav class="navbar fixed-top navbar-expand-lg navabar-color bg-color navbar-toggle">
+  <a class="navbar-brand nav-item" (click)="reloadPage()">Alatech</a>
+  <button class="navbar-toggler collaped  ml-auto nav-item"
+    *ngIf="!isShowResetPwd"
+    (click)="toggleSearch()" style="color: #fff"
+  >
+    <i class="fa fa-search" aria-hidden="true"></i>
+  </button>
+  <button class="navbar-toggler nav-item" type="button"(click)="toggleMask()">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" [class.show]="isCollapseShow" id="navbarResponsive">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item" *ngIf="!isShowResetPwd">
+        <a class="nav-link" href="/leaderboard">Cloud Run LeaderBoard</a>
+      </li>
+      <li class="nav-item" *ngIf="isShowResetPwd">
+        <a class="nav-link"  (click)="reloadPage()">Reset Password</a>
+      </li>
+      <!-- <li class="nav-item">
+        <a class="nav-link" href="#">About</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Services</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Sign in/Sign out</a>
+      </li> -->
+    </ul>
+  </div>
+</nav>
