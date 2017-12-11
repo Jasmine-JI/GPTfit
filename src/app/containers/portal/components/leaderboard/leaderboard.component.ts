@@ -12,6 +12,7 @@ import {
 } from '@shared/utils/';
 import { GlobalEventsManager } from '@shared/global-events-manager';
 import { forkJoin } from 'rxjs/observable/forkJoin';
+import { IMyDpOptions } from 'mydatepicker';
 
 @Component({
   selector: 'app-leaderboard',
@@ -26,11 +27,6 @@ export class LeaderboardComponent implements OnInit {
   mapId = 5; // 預設為第一張地圖
   idx: number;
   month = (new Date().getMonth() + 1).toString();
-  date =  0;
-  dateData = [
-    '2017-12-05',
-    '2017-12-06'
-  ];
   meta: any; // api回的meta資料
   isFirstPage: boolean; // 是否為第一頁
   isLastPage: boolean; // 是否為最後一頁
@@ -50,6 +46,28 @@ export class LeaderboardComponent implements OnInit {
   isLoading = false;
   currentPage: number;
   isClearIconShow = false;
+
+  startDateOptions: IMyDpOptions = {
+    height : '30px',
+    width: '200px',
+    selectorWidth: '200px',
+    dateFormat: 'yyyy-mm-dd',
+    disableUntil: { year: 2017, month: 12, day: 4 },
+    disableSince: { year: new Date().getFullYear(), month: new Date().getMonth() + 1, day: new Date().getUTCDate() + 1 }
+  };
+  endDateOptions: IMyDpOptions = {
+    height: '30px',
+    width: '200px',
+    selectorWidth: '200px',
+    dateFormat: 'yyyy-mm-dd',
+    disableUntil: { year: 2017, month: 12, day: 4 },
+    disableSince: { year: new Date().getFullYear(), month: new Date().getMonth() + 1, day: new Date().getUTCDate() + 1 }
+  };
+  startDay: any = { date: { year: new Date().getFullYear(), month: new Date().getMonth() + 1, day: new Date().getUTCDate() } };
+  finalDay: any = { date: { year: new Date().getFullYear(), month: new Date().getMonth() + 1, day: new Date().getUTCDate() } };
+  startDate: string;
+  endDate: string;
+  date: any;
   constructor(
     private router: Router,
     private rankFormService: RankFormService,
@@ -65,23 +83,32 @@ export class LeaderboardComponent implements OnInit {
     const queryStrings = getUrlQueryStrings(location.search);
     let params = new HttpParams();
     params = params.set('param', 'map');
-    const selectDate = this.dateData[this.date];
-    params = params.set('date', selectDate);
+    this.startDate = this.convertDateString(this.startDay);
+    this.endDate = this.convertDateString(this.finalDay);
+
+    params = params.set('startDate', this.startDate);
+    params = params.set('endDate', this.endDate);
     if (!isObjectEmpty(queryStrings)) {
       const {
         pageNumber,
         month,
         mapId,
         groupId,
-        date
+        startDate,
+        endDate
       } = queryStrings;
       if (pageNumber) {
         params = params.set('pageNumber', pageNumber);
       }
-      if (date) {
-        this.date = date;
-        const selectedDate = this.dateData[this.date];
-        params = params.set('date', selectedDate);
+      if (startDate) {
+        this.startDate = startDate;
+        this.startDay = this.convertStringDatetoFormat(this.startDate);
+        params = params.set('startDate', startDate);
+      }
+      if (endDate) {
+        this.endDate = endDate;
+        this.finalDay = this.convertStringDatetoFormat(this.endDate);
+        params = params.set('endDate', endDate);
       }
       if (month) {
         this.month = month;
@@ -97,24 +124,17 @@ export class LeaderboardComponent implements OnInit {
       }
     }
     this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`; // 背景圖 ，預設為取雅典娜
-    const fetchMapOptions = this.rankFormService.getMapOptions(params);
-
-    // const fetchMonthsOptions = this.rankFormService.getMonths();
+    const fetchMapOptions = this.rankFormService.getMapOptions();
 
     forkJoin([fetchMapOptions]).subscribe(results => {
       this.mapDatas = results[0];
       this.idx = this.mapDatas.findIndex(_data => _data.map_id === this.mapId);
       if (this.idx > -1) {
         this.mapName = this.mapDatas[this.idx].map_name;
+        this.distance = this.mapDatas[this.idx].distance;
         this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
       }
-
       this.monthDatas = results[1];
-      // if (this.monthDatas.findIndex(_month => _month.month === this.month) === -1) {
-      //   const idx = this.monthDatas.length - 1;
-      //   this.month = this.monthDatas[idx].month;
-      //   // params = params.set('month', this.month);
-      // }
       this.fetchRankForm(params);
 
       const { mapDatas, monthDatas } = this;
@@ -131,10 +151,17 @@ export class LeaderboardComponent implements OnInit {
         const {
           datas,
           email,
-          meta
+          meta,
+          mapId
         } = this.response;
         this.rankDatas = datas;
         this.email = email;
+        this.mapId = mapId;
+        if (this.idx > -1) {
+          this.mapName = this.mapDatas[this.idx].map_name;
+          this.distance = this.mapDatas[this.idx].distance;
+          this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
+        }
         if (meta) {
           this.isHaveEmail = false;
           this.meta = buildPageMeta(meta);
@@ -146,8 +173,6 @@ export class LeaderboardComponent implements OnInit {
           this.isHaveDatas = true;
           this.mapId = datas[0].map_id;
           this.mapName = datas[0].map_name;
-          // this.mapName = this.mapDatas[this.mapId - 1].map_name;
-          this.distance = this.rankDatas.length > 0 && this.rankDatas[0].race_total_distance;
         } else {
           this.isHaveDatas = false;
         }
@@ -163,24 +188,27 @@ export class LeaderboardComponent implements OnInit {
       email,
       mapId,
       groupId,
-      // month,
-      date
+      selectedStartDate,
+      selectedEndDate
     } = form.value;
-    this.email = email;
-    this.isFoundUser = this.email ? true : false;
     this.mapId = mapId;
-    if (this.idx) {
+    this.idx = this.mapDatas.findIndex(_data => _data.map_id === Number(this.mapId));
+    if (this.idx > -1) {
       this.mapName = this.mapDatas[this.idx].map_name;
+      this.distance = this.mapDatas[this.idx].distance;
       this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
     }
+    this.email = email;
+    this.isFoundUser = this.email ? true : false;
     this.groupId = groupId;
-    // this.month = month;
-    this.date = date;
-    const selectDate = this.dateData[this.date];
+    this.startDay = this.convertDateFormat(selectedStartDate);
+    this.finalDay = this.convertDateFormat(selectedEndDate);
+    this.startDate = this.convertDateString(selectedStartDate);
+    this.endDate = this.convertDateString(selectedEndDate);
     let params = new HttpParams();
     params = params.set('mapId', this.mapId.toString());
-    // params = params.set('month', this.month);
-    params = params.set('date', selectDate);
+    params = params.set('startDate', this.startDate);
+    params = params.set('endDate', this.endDate);
     this.isHaveEmail = email ? true : false;
     if (this.groupId !== '3') {
       params = params.set('gender', this.groupId);
@@ -191,6 +219,43 @@ export class LeaderboardComponent implements OnInit {
     this.email = email && email.trim();
     this.fetchRankForm(params);
   }
+  convertDateString(_date) {
+    if (_date) {
+      const {
+        date: {
+          day,
+          month,
+          year
+        }
+      } = _date;
+      return year.toString() + '-' + month.toString() + '-' + day.toString();
+    }
+    return new Date().getFullYear() + '-' + new Date().getMonth() + 1 + '-' + new Date().getUTCDate();
+  }
+  convertDateFormat(_date) {
+    if (_date) {
+      const {
+        date: {
+          day,
+          month,
+          year
+        }
+      } = _date;
+      const data = {
+        date: {
+          year,
+          month,
+          day
+        }
+      };
+      return data;
+    }
+    return { date: { year: new Date().getFullYear(), month: new Date().getMonth() + 1, day: new Date().getUTCDate() } };
+  }
+  convertStringDatetoFormat(_date) {
+    const dateArray = _date.split('-');
+    return { date: { year: Number(dateArray[0]), month: Number(dateArray[1]), day: Number(dateArray[2]) } };
+  }
   onPageChange(pageNumber) {
     this.currentPage = pageNumber;
     let params = new HttpParams();
@@ -200,9 +265,8 @@ export class LeaderboardComponent implements OnInit {
     if (this.email) {
       params = params.set('email', this.email.trim());
     }
-    const selectDate = this.dateData[this.date];
-    params = params.set('date', selectDate);
-    // params = params.set('month', this.month);
+    params = params.set('startDate', this.startDate);
+    params = params.set('endDate', this.endDate);
     params = params.set('mapId', this.mapId.toString());
     params = params.set('pageNumber', this.currentPage.toString());
     this.fetchRankForm(params);
@@ -214,7 +278,6 @@ export class LeaderboardComponent implements OnInit {
       this.response = res;
       const { datas, meta } = this.response;
       this.rankDatas = datas;
-      this.distance = this.rankDatas.length > 0 && this.rankDatas[0].race_total_distance;
       this.meta = buildPageMeta(meta);
       const { currentPage, maxPage } = this.meta;
       this.isFirstPage = currentPage === 1;
@@ -227,8 +290,8 @@ export class LeaderboardComponent implements OnInit {
   toHistoryPrePage() {
     const paramDatas = {
       pageNumber: this.meta.currentPage,
-      // month: this.month,
-      date: this.date,
+      startDate: this.startDate,
+      endDate: this.endDate,
       mapId: this.mapId,
       groupId: this.groupId
     };
@@ -238,7 +301,6 @@ export class LeaderboardComponent implements OnInit {
   }
   toMapInfoPage(userId) {
     const paramDatas = {
-      // month: this.month,
       date: this.date,
       mapId: this.mapId,
       userId,
@@ -267,9 +329,8 @@ export class LeaderboardComponent implements OnInit {
     this.isSelectLoading = true;
     let params = new HttpParams();
     params = params.set('mapId', this.mapId.toString());
-    // params = params.set('month', this.month);
-    const selectDate = this.dateData[this.date];
-    params = params.set('date', selectDate);
+    params = params.set('startDate', this.startDate);
+    params = params.set('endDate', this.endDate);
     params = params.set('keyword', this.email);
     this.rankFormService.getEmail(params).subscribe(res => {
       this.emailOptions = res;
@@ -301,15 +362,13 @@ export class LeaderboardComponent implements OnInit {
       this.idx --;
     }
     this.mapId = this.mapDatas[this.idx].map_id;
+    this.distance = this.mapDatas[this.idx].distance;
 
     this.mapName = this.mapDatas[this.idx].map_name;
     this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
 
     let params = new HttpParams();
     params = params.set('mapId', this.mapId.toString());
-    const selectDate = this.dateData[this.date];
-    params = params.set('date', selectDate);
-    // params = params.set('month', this.month);
     if (this.groupId !== '3') {
       params = params.set('gender', this.groupId);
     }
@@ -323,17 +382,14 @@ export class LeaderboardComponent implements OnInit {
     if (this.idx + 1 > this.mapDatas.length - 1) {
       this.idx = 0;
     } else {
-      this.idx = this.mapDatas.length - 1;
+      this.idx++;
     }
     this.mapId = this.mapDatas[this.idx].map_id;
-
+    this.distance = this.mapDatas[this.idx].distance;
     this.mapName = this.mapDatas[this.idx].map_name;
     this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
     let params = new HttpParams();
     params = params.set('mapId', this.mapId.toString());
-    const selectDate = this.dateData[this.date];
-    params = params.set('date', selectDate);
-    // params = params.set('month', this.month);
     if (this.groupId !== '3') {
       params = params.set('gender', this.groupId);
     }

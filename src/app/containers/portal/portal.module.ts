@@ -19,13 +19,15 @@ import { PasswordComponent } from './components/password/password.component';
 import { ResetPasswordService } from './services/reset-password.service';
 import { BrowserXhr } from '@angular/http';
 import { PatternValidator } from '@angular/forms';
+import { MyDatePickerModule } from 'mydatepicker';
 
 @NgModule({
   imports: [
     CommonModule,
     PortalRoutingModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    MyDatePickerModule
   ],
   providers: [
     MapService,

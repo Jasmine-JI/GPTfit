@@ -9,8 +9,8 @@ export class RankFormService {
   getRank(params) {
     return this.http.get('http://152.101.90.130:3000/rankform', { params });
   }
-  getMapOptions(params) {
-    return this.http.get('http://152.101.90.130:3000/rankform/rankInfo', { params });
+  getMapOptions() {
+    return this.http.get('http://152.101.90.130:3000/rankform/rankInfo/map');
   }
   getMonths() {
     return this.http.get('http://152.101.90.130:3000/rankform/rankInfo/month');
