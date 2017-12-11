@@ -98,8 +98,10 @@ app.use(function (req, res, next) {
 // Set routes
 
 var rankForm = require('./routes/rankForm.js');
+var resetPassword = require('./routes/resetPassword.js');
 
 app.use('/rankForm', rankForm);
+app.use('/resetPassword', resetPassword);
 
 // Start the server
 const port = process.env.PORT || 3000;

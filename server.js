@@ -2,6 +2,7 @@ var mysql = require("mysql");
 var express = require('express');
 var bodyParser = require('body-parser');
 var schedule = require('node-schedule');
+
 // Init app
 var app = express();
 
@@ -73,6 +74,7 @@ scheduleCronstyle();
 app.use(bodyParser.urlencoded({ extended: true }))
 // parse application/json
 app.use(bodyParser.json())
+
 // Add headers
 app.use(function (req, res, next) {
   req.con = connection;
@@ -96,8 +98,10 @@ app.use(function (req, res, next) {
 // Set routes
 
 var rankForm = require('./server/routes/rankForm.js');
+var resetPassword = require('./server/routes/resetPassword.js');
 
 app.use('/rankForm', rankForm);
+app.use('/resetPassword', resetPassword);
 
 // Start the server
 const port = process.env.PORT || 3000;
