@@ -2,50 +2,64 @@
   <div class="leaderboard-layer">
     <div class="container leaderboard-rwd">
       <div class="row row-runs">
-        <div class="searchRank-bar">
+        <div class="searchRank-bar" style="width: 100%">
           <form (ngSubmit)="onSubmit(rankForm, $event)" #rankForm="ngForm">
-            <label>Map:</label>
-            <select name="mapId" [(ngModel)]="mapId" class="form-field"(click)="selectMap(mapId)">
-              <option *ngFor="let _map of mapDatas" [value]="_map.map_id">{{ _map.map_name }}</option>
-            </select>
+            <div class="row">
+              <div class="col-9">
+                <label class="form-label">Map:</label>
+                <select name="mapId" [(ngModel)]="mapId" class="form-field" (click)="selectMap(mapId)">
+                  <option *ngFor="let _map of mapDatas" [value]="_map.map_id">{{ _map.map_name }}</option>
+                </select>
 
-            <label>Email:</label>
-            <div class="dropdown" (click)="openActive($event)">
-              <div class="clearable">
-                <input type="email" name="email" [(ngModel)]="email" (keyup)="inputEvent($event)" autocomplete="off" [class.loading]="isSelectLoading"
-                  class="form-field" placeholder="enter email" (focus)="focusEvent($event)" style="width: 255px;text-overflow: ellipsis;"
-                >
-                <i class="clearable__clear" [class.show]="isClearIconShow" (click)="clear()">&times;</i>
-                <i class="fa fa-caret-down async-caret"></i>
-                <i class="fa fa-spinner fa-pulse fa-1x fa-fw spinner" [class.spinner-hidden]="!isSelectLoading"></i>
+                <label class="form-label" style="margin-left: 28px;">Email:</label>
+                <div class="dropdown" (click)="openActive($event)">
+                  <div class="clearable">
+                    <input type="email" name="email" [(ngModel)]="email" (keyup)="inputEvent($event)" autocomplete="off" [class.loading]="isSelectLoading"
+                      class="form-field" placeholder="enter email" (focus)="focusEvent($event)" style="width: 300px;text-overflow: ellipsis;">
+                    <i class="clearable__clear" [class.show]="isClearIconShow" (click)="clear()">&times;</i>
+                    <i class="fa fa-caret-down async-caret"></i>
+                    <i class="fa fa-spinner fa-pulse fa-1x fa-fw spinner" [class.spinner-hidden]="!isSelectLoading"></i>
+                  </div>
+                  <ul class="dropdown-menu" style="width: 100%;" *ngIf="emailOptions && emailOptions.length > 0" [class.show]="active && emailOptions.length > 0">
+                    <li *ngFor="let o of emailOptions; let i = index" (click)="remove(i, $event)">
+                      <a>
+                        {{ o }}
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <label class="form-label">組別:</label>
+                  <select name="groupId" [(ngModel)]="groupId" class="form-field">
+                    <option [value]="3">無分組</option>
+                    <option [value]="0">男生組</option>
+                    <option [value]="1">女生組</option>
+                  </select>
+                  <label class="form-label">Date:</label>
+                  <my-date-picker name="selectedStartDate"
+                    style="vertical-align: middle;display:inline-block"
+                    [options]="startDateOptions"
+                    [(ngModel)]="startDay"
+                    required
+                  >
+                  </my-date-picker>
+                  <div style="margin: 0px 5px;display: inline-block;vertical-align: text-bottom;">~</div>
+
+                  <my-date-picker name="selectedEndDate"
+                    style="vertical-align: middle;display:inline-block"
+                    [options]="endDateOptions"
+                    [(ngModel)]="finalDay"
+                    required
+                  >
+                  </my-date-picker>
+                </div>
               </div>
-              <ul class="dropdown-menu" style="width: 100%;" *ngIf="emailOptions && emailOptions.length > 0" [class.show]="active && emailOptions.length > 0">
-                <li *ngFor="let o of emailOptions; let i = index"
-                 (click)="remove(i, $event)">
-                  <a>
-                    {{ o }}
-                  </a>
-                </li>
-              </ul>
+              <div class="col-md-2 offset-md-1">
+                <button type="submit" class="button search-form__button">
+                  <i class="fa fa-search"></i>
+                </button>
+              </div>
             </div>
-            <!-- <label>Month:</label>
-            <select name="month" [(ngModel)]="month" class="form-field">
-              <option *ngFor="let _month of monthDatas" [value]="_month.month">{{ _month.month }}</option>
-            </select> -->
-            <label>Date:</label>
-            <select name="date" [(ngModel)]="date" class="form-field">
-              <option [value]='0'>2017-12-05</option>
-              <option [value]="1">2017-12-06</option>
-            </select>
-            <label>組別:</label>
-            <select name="groupId" [(ngModel)]="groupId" class="form-field">
-              <option [value]="3">無分組</option>
-              <option [value]="0">男生組</option>
-              <option [value]="1">女生組</option>
-            </select>
-            <button type="submit" class="button search-form__button">
-              <i class="fa fa-search"></i>
-            </button>
           </form>
           <div class="summary">
             本月進行的例行排行賽為
@@ -59,7 +73,6 @@
             <thead>
               <tr class="tr-only-hide">
                 <th class="ranking-table__cell--head">Rank</th>
-                <!-- <th class="ranking-table__cell--head">Email</th> -->
                 <th class="ranking-table__cell--head">UserName</th>
                 <th class="ranking-table__cell--head">Gender</th>
                 <th class="ranking-table__cell--head">Offical Time</th>
@@ -72,7 +85,6 @@
                 >
                   <a class="ranking-link">{{ data.rank }}</a>
                 </td>
-                <!-- <td class="ranking-table__cell" data-th="Email">{{ data.e_mail }}</td> -->
                 <td class="ranking-table__cell" data-th="UserName">{{ data.nick_name }}</td>
                 <td class="ranking-table__cell" data-th="Gender">{{ data.gender | sex }}</td>
                 <td class="ranking-table__cell" data-th="Offical Time">{{ data.offical_time | time }}</td>
