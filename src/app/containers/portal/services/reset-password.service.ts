@@ -9,4 +9,7 @@ export class ResetPasswordService {
   resetPassword(body) {
     return this.http.post('/api/v1/user/resetPWD', body);
   }
+  getEmail(code) {
+    return this.http.get('http://alatechapp.alatech.com.tw:3000/resetPassword/getEmail?code=' + code);
+  }
 }
