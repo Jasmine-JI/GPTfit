@@ -178,6 +178,11 @@ tr.tr-only-hide {
 .form-label {
   margin-right: 10px;
 }
+.rank__datepicker {
+  vertical-align: middle;
+  display: inline-block;
+}
+
 
 @media (min-width: 992px) {
   .container {

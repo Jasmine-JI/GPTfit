@@ -82,7 +82,6 @@ export class LeaderboardComponent implements OnInit {
   ngOnInit() {
     const queryStrings = getUrlQueryStrings(location.search);
     let params = new HttpParams();
-    params = params.set('param', 'map');
     this.startDate = this.convertDateString(this.startDay);
     this.endDate = this.convertDateString(this.finalDay);
 
@@ -152,11 +151,21 @@ export class LeaderboardComponent implements OnInit {
           datas,
           email,
           meta,
-          mapId
+          mapId,
+          startDate,
+          endDate,
+          startDay,
+          finalDay,
+          groupId
         } = this.response;
         this.rankDatas = datas;
         this.email = email;
         this.mapId = mapId;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.startDay = startDay;
+        this.finalDay = finalDay;
+        this.groupId = groupId;
         if (this.idx > -1) {
           this.mapName = this.mapDatas[this.idx].map_name;
           this.distance = this.mapDatas[this.idx].distance;
@@ -263,7 +272,7 @@ export class LeaderboardComponent implements OnInit {
       params = params.set('gender', this.groupId);
     }
     if (this.email) {
-      params = params.set('email', this.email.trim());
+      params = params.set('email', encodeURIComponent(this.email.trim()));
     }
     params = params.set('startDate', this.startDate);
     params = params.set('endDate', this.endDate);
@@ -332,6 +341,9 @@ export class LeaderboardComponent implements OnInit {
     params = params.set('startDate', this.startDate);
     params = params.set('endDate', this.endDate);
     params = params.set('keyword', this.email);
+    if (this.groupId !== '3') {
+      params = params.set('gender', this.groupId);
+    }
     this.rankFormService.getEmail(params).subscribe(res => {
       this.emailOptions = res;
       this.isSelectLoading = false;
@@ -373,8 +385,10 @@ export class LeaderboardComponent implements OnInit {
       params = params.set('gender', this.groupId);
     }
     if (this.email) {
-      params = params.set('email', this.email.trim());
+      params = params.set('email', encodeURIComponent(this.email.trim()));
     }
+    params = params.set('startDate', this.startDate);
+    params = params.set('endDate', this.endDate);
     this.fetchRankForm(params);
   }
   nextMap() {
@@ -394,8 +408,10 @@ export class LeaderboardComponent implements OnInit {
       params = params.set('gender', this.groupId);
     }
     if (this.email) {
-      params = params.set('email', this.email.trim());
+      params = params.set('email', encodeURIComponent(this.email.trim()));
     }
+    params = params.set('startDate', this.startDate);
+    params = params.set('endDate', this.endDate);
     this.fetchRankForm(params);
   }
   selectMap(id) {
