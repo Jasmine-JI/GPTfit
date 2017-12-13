@@ -169,8 +169,13 @@ export class PortalComponent implements OnInit {
       const data = {
         datas,
         meta,
+        startDate: this.startDate,
+        endDate: this.endDate,
+        startDay: this.startDay,
+        finalDay: this.finalDay,
         email: this.email,
-        mapId: this.mapId
+        mapId: this.mapId,
+        groupId: this.groupId
       };
       this.globalEventsManager.getRankForm(data);
       this.distance = this.rankDatas.length > 0 && this.rankDatas[0].race_total_distance;
@@ -223,6 +228,9 @@ export class PortalComponent implements OnInit {
     params = params.set('startDate', this.startDate);
     params = params.set('endDate', this.endDate);
     params = params.set('keyword', this.email);
+    if (this.groupId !== '3') {
+      params = params.set('gender', this.groupId);
+    }
     this.rankFormService.getEmail(params).subscribe(res => {
       this.emailOptions = res;
       this.isSelectLoading = false;
