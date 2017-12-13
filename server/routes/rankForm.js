@@ -152,18 +152,20 @@ router.get('/rankInfo/email', function(req, res, next) {
       startDate,
       endDate,
       mapId,
-      keyword
+      keyword,
+      gender
     }
   } = req;
+  const genderQuery = gender ? `and gender = ${gender}` : '';
   const sql = `
   SELECT distinct e_mail FROM ??
   where date between
   '${startDate || currDate}'
   and
   '${endDate || currDate}'
-  and map_id = ${mapId};
+  and map_id = ${mapId}
+  ${genderQuery};
   `;
-
   con.query(sql, 'run_rank', function(err, rows) {
     if (err) {
       console.log(err);
