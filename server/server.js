@@ -78,7 +78,7 @@ app.use(bodyParser.json())
 app.use(function (req, res, next) {
   req.con = connection;
   // Website you wish to allow to connect
-  res.setHeader("Access-Control-Allow-Origin", "http://alatechapp.alatech.com.tw:4200");
+  res.setHeader("Access-Control-Allow-Origin", "http://alatechapp.alatech.com.tw:8080");
 
   // Request methods you wish to allow
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
