@@ -37,7 +37,7 @@
                   </select>
                   <label class="form-label">Date:</label>
                   <my-date-picker name="selectedStartDate"
-                    style="vertical-align: middle;display:inline-block"
+                    class="rank__datepicker"
                     [options]="startDateOptions"
                     [(ngModel)]="startDay"
                     required
@@ -46,7 +46,7 @@
                   <div style="margin: 0px 5px;display: inline-block;vertical-align: text-bottom;">~</div>
 
                   <my-date-picker name="selectedEndDate"
-                    style="vertical-align: middle;display:inline-block"
+                    class="rank__datepicker"
                     [options]="endDateOptions"
                     [(ngModel)]="finalDay"
                     required

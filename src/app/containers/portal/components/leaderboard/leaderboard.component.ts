@@ -82,7 +82,6 @@ export class LeaderboardComponent implements OnInit {
   ngOnInit() {
     const queryStrings = getUrlQueryStrings(location.search);
     let params = new HttpParams();
-    params = params.set('param', 'map');
     this.startDate = this.convertDateString(this.startDay);
     this.endDate = this.convertDateString(this.finalDay);
 
@@ -375,6 +374,8 @@ export class LeaderboardComponent implements OnInit {
     if (this.email) {
       params = params.set('email', this.email.trim());
     }
+    params = params.set('startDate', this.startDate);
+    params = params.set('endDate', this.endDate);
     this.fetchRankForm(params);
   }
   nextMap() {
@@ -396,6 +397,8 @@ export class LeaderboardComponent implements OnInit {
     if (this.email) {
       params = params.set('email', this.email.trim());
     }
+    params = params.set('startDate', this.startDate);
+    params = params.set('endDate', this.endDate);
     this.fetchRankForm(params);
   }
   selectMap(id) {
