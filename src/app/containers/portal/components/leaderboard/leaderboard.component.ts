@@ -272,7 +272,7 @@ export class LeaderboardComponent implements OnInit {
       params = params.set('gender', this.groupId);
     }
     if (this.email) {
-      params = params.set('email', this.email.trim());
+      params = params.set('email', encodeURIComponent(this.email.trim()));
     }
     params = params.set('startDate', this.startDate);
     params = params.set('endDate', this.endDate);
@@ -385,7 +385,7 @@ export class LeaderboardComponent implements OnInit {
       params = params.set('gender', this.groupId);
     }
     if (this.email) {
-      params = params.set('email', this.email.trim());
+      params = params.set('email', encodeURIComponent(this.email.trim()));
     }
     params = params.set('startDate', this.startDate);
     params = params.set('endDate', this.endDate);
@@ -408,7 +408,7 @@ export class LeaderboardComponent implements OnInit {
       params = params.set('gender', this.groupId);
     }
     if (this.email) {
-      params = params.set('email', this.email.trim());
+      params = params.set('email', encodeURIComponent(this.email.trim()));
     }
     params = params.set('startDate', this.startDate);
     params = params.set('endDate', this.endDate);

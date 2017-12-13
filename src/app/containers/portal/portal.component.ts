@@ -71,6 +71,8 @@ export class PortalComponent implements OnInit {
 
   ngOnInit() {
     // this.startDateOptions.selectorWidth = ((window.screen.width - 60) / 2).toString();
+    this.startDate = this.convertDateString(this.startDay);
+    this.endDate = this.convertDateString(this.finalDay);
     this.globalEventsManager.showNavBarEmitter.subscribe((mode) => {
       this.isMaskShow = mode;
     });
