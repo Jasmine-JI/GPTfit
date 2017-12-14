@@ -4,17 +4,19 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { AppComponent } from './app.component';
 import { PortalModule } from './containers/portal/portal.module';
-import { Page404Component } from './shared/components/page404/page404.component';
+import { DashboardModule } from './containers/dashboard/dashboard.module';
+import { SharedComponentsModule } from './shared/components/shared-components.module';
 
 @NgModule({
   declarations: [
     AppComponent,
-    Page404Component,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     PortalModule,
+    DashboardModule,
+    SharedComponentsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
