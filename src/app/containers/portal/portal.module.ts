@@ -5,7 +5,6 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { PortalRoutingModule } from './portal-routing.module';
 import { PortalComponent } from './portal.component';
-import { NavbarComponent } from './components/navbar/navbar.component';
 import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
 import { SexPipe } from '@shared/pipes/sex.pipe';
 import { TimePipe } from '@shared/pipes/time.pipe';
@@ -20,6 +19,7 @@ import { ResetPasswordService } from './services/reset-password.service';
 import { BrowserXhr } from '@angular/http';
 import { PatternValidator } from '@angular/forms';
 import { MyDatePickerModule } from 'mydatepicker';
+import { SharedComponentsModule } from '@shared/components/shared-components.module';
 
 @NgModule({
   imports: [
@@ -27,7 +27,8 @@ import { MyDatePickerModule } from 'mydatepicker';
     PortalRoutingModule,
     HttpClientModule,
     FormsModule,
-    MyDatePickerModule
+    MyDatePickerModule,
+    SharedComponentsModule
   ],
   providers: [
     MapService,
@@ -38,13 +39,10 @@ import { MyDatePickerModule } from 'mydatepicker';
   ],
   declarations: [
     PortalComponent,
-    NavbarComponent,
     LeaderboardComponent,
     SexPipe,
     TimePipe,
     MapInfoComponent,
-    LoadingComponent,
-    PaginationComponent,
     PasswordComponent
   ]
 })
