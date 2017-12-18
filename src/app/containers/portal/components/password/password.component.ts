@@ -56,6 +56,7 @@ export class PasswordComponent implements OnInit {
       };
       this.resetPasswordService.resetPassword(body).subscribe((res) => {
         this.response = res;
+
         const { resultCode, resultMessage } = this.response;
         if (resultCode === 200) {
           this.isSuccess = true;
