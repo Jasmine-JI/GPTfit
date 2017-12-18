@@ -16,10 +16,12 @@ import { PaginationComponent } from '../../shared/components/pagination/paginati
 import { GlobalEventsManager } from '@shared/global-events-manager';
 import { PasswordComponent } from './components/password/password.component';
 import { ResetPasswordService } from './services/reset-password.service';
+import { EmptyResponseBodyErrorInterceptor } from './services/empty-response-body-error-interceptor';
 import { BrowserXhr } from '@angular/http';
 import { PatternValidator } from '@angular/forms';
 import { MyDatePickerModule } from 'mydatepicker';
 import { SharedComponentsModule } from '@shared/components/shared-components.module';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 @NgModule({
   imports: [
@@ -35,6 +37,11 @@ import { SharedComponentsModule } from '@shared/components/shared-components.mod
     RankFormService,
     GlobalEventsManager,
     ResetPasswordService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: EmptyResponseBodyErrorInterceptor,
+      multi: true
+    },
     PatternValidator
   ],
   declarations: [
