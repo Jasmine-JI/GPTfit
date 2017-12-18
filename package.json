@@ -7,6 +7,7 @@
     "dev": "ng serve --port 8080 --host 0.0.0.0 --disable-host-check --proxy-config proxy.conf.json",
     "start": "concurrently \"pm2 start server.js\" \"ng serve --port 8080 --host 0.0.0.0 --disable-host-check --proxy-config proxy.conf.json\"",
     "build": "ng build",
+    "prod-build": "ng build --prod --aot",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
