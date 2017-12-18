@@ -4,7 +4,7 @@
       <li class="pagination-item" (click)="toFirstPage()" [ngClass]="{'pagination-item--disabled' : currentPage === 1}">
         <a title="Go to first page">第一頁</a>
       </li>
-      <li class="pagination-item" (click)="prePage()" [class.disabled]="isFirstPage" [ngClass]="{'pagination-item--disabled' : currentPage === 1}">
+      <li class="pagination-item" (click)="prePage()" [ngClass]="{'pagination-item--disabled' : currentPage === 1}">
         <a tabindex="-1">&laquo;</a>
       </li>
       <li *ngFor="let _page of pageRanges" class="pagination-item" (click)="selectPage(_page)" [ngClass]="{'pagination-item--active' : _page === currentPage}">

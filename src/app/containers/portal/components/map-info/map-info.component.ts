@@ -14,7 +14,7 @@ import { mapImages } from '@shared/mapImages';
 })
 export class MapInfoComponent implements OnInit, AfterViewInit {
   constructor(
-    private _location: Location, // 調用location.back()，來回到上一頁
+    public _location: Location, // 調用location.back()，來回到上一頁
     private _mapService: MapService,
     private rankFormService: RankFormService
   ) {}
