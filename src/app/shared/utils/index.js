@@ -11,11 +11,11 @@ export function isObjectEmpty(object) {
 
 export function buildUrlQueryStrings(_params) {
   const params = isObjectEmpty(_params) ? EMPTY_OBJECT : cloneDeep(_params);
-  if (Object.keys(params).length) {
-    for (const key in params) {
-      if (!params[key]) delete params[key];
-    }
-  }
+  // if (Object.keys(params).length) {
+  //   for (var key in params) {
+  //     if (!params[key]) delete params[key];
+  //   }
+  // }
   return queryString.stringify(params);
 }
 
@@ -35,10 +35,12 @@ export function buildPageMeta(_meta) {
     },
     _meta
   );
-  const { pageSize, pageCount } = meta;
+  // const { pageSize, pageCount } = meta;
+  const pageSize = meta.pageSize;
+  const pageCount = meta.pageCount;
   const maxPage = Math.ceil(pageCount / pageSize) || 0;
   return {
-    maxPage,
+    maxPage: maxPage,
     currentPage: meta.pageNumber,
     perPage: pageSize,
     total: pageCount
