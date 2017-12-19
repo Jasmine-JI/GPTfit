@@ -1,9 +1,24 @@
-.error {
+.error-404 {
   position: absolute;
-  top: 50%;
   left: 50%;
-  font-size: 250px;
-  letter-spacing: 15px;
+  top: 50%;
   transform: translate(-50%, -50%);
-  color: #333;
+  width: 100%;
+  text-align: center;
+  color: #405060;
 }
+.error-404 h2 {
+  font-size: 24px;
+}
+
+@media (min-width: 768px) {
+  .error-404 {
+    width: 40%;
+    padding: 20px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 2px 1px hsla(0, 0%, 100%, .2);
+  }
+}
+
+
+
