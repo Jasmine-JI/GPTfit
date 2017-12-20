@@ -79,8 +79,11 @@ app.use(bodyParser.json())
 app.use(function (req, res, next) {
   req.con = connection;
   // Website you wish to allow to connect
-  res.setHeader("Access-Control-Allow-Origin", "http://192.168.1.235:8080");
-
+  var allowedOrigins = ['http://192.168.1.235:8080', 'http://192.168.1.235'];
+  var origin = req.headers.origin;
+  if (allowedOrigins.indexOf(origin) > -1) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
   // Request methods you wish to allow
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 
