@@ -80,8 +80,16 @@ app.use(bodyParser.json())
 app.use(function (req, res, next) {
   req.con = connection;
   // Website you wish to allow to connect
-  // res.setHeader("Access-Control-Allow-Origin", "http://alatechapp.alatech.com.tw:8080");
-  res.setHeader("Access-Control-Allow-Origin", "http://alatechapp.alatech.com.tw");
+  var allowedOrigins = [
+    'http://alatechapp.alatech.com.tw:8080',
+    'http://alatechapp.alatech.com.tw',
+    'http://192.168.1.234:8080',
+    'http://192.168.1.234'
+  ];
+  var origin = req.headers.origin;
+  if (allowedOrigins.indexOf(origin) > -1) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
   // Request methods you wish to allow
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 
