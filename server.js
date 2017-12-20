@@ -79,8 +79,17 @@ app.use(bodyParser.json())
 app.use(function (req, res, next) {
   req.con = connection;
   // Website you wish to allow to connect
-  // res.setHeader("Access-Control-Allow-Origin", "http://alatechcloud.alatech.com.tw:8080");
-  res.setHeader("Access-Control-Allow-Origin", "http://alatechcloud.alatech.com.tw");
+  var allowedOrigins = [
+    'http://alatechcloud.alatech.com.tw:8080',
+    'http://alatechcloud.alatech.com.tw',
+    'http://152.101.90.130:8080',
+    'http://152.101.90.130'
+  ];
+  var origin = req.headers.origin;
+  if (allowedOrigins.indexOf(origin) > -1) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+
   // Request methods you wish to allow
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 
