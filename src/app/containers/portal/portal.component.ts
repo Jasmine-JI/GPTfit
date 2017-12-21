@@ -192,7 +192,8 @@ export class PortalComponent implements OnInit {
   toHistoryPrePage() {
     const paramDatas = {
       pageNumber: this.meta.currentPage,
-      month: this.month,
+      startDate: this.startDate,
+      endDate: this.endDate,
       mapId: this.mapId,
       groupId: this.groupId
     };
