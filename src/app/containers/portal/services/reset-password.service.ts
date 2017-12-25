@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 
-const domain = environment.domain;
+const { API_SERVER } = environment.url;
 
 @Injectable()
 export class ResetPasswordService {
@@ -13,6 +13,6 @@ export class ResetPasswordService {
     return this.http.post('/api/v1/user/resetPWD', body);
   }
   getEmail(code) {
-    return this.http.get(domain + 'resetPassword/getEmail?code=' + code);
+    return this.http.get(API_SERVER + 'resetPassword/getEmail?code=' + code);
   }
 }
