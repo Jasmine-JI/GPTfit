@@ -2,17 +2,45 @@ var mysql = require("mysql");
 var express = require('express');
 var bodyParser = require('body-parser');
 var schedule = require('node-schedule');
+var os = require('os');
 
 // Init app
 var app = express();
 
-var connection = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "1234",
-  database: "alatech",
-  multipleStatements: true
-});
+var address,
+  ifaces = os.networkInterfaces();
+for (var dev in ifaces) {
+  ifaces[dev].filter((details) => details.family === 'IPv4' && details.internal === false ? address = details.address : undefined);
+}
+var connectInfo = {};
+if (address === '192.168.1.235') {
+  connectInfo = {
+    host: "localhost",
+    user: "root",
+    password: "1234",
+    database: "alatech",
+    multipleStatements: true
+  };
+} else if (address === '192.168.1.234' || address === '192.168.1.232') {
+  connectInfo = {
+    host: "localhost",
+    user: "root",
+    password: "A1atech",
+    database: "alatech",
+    multipleStatements: true
+  };
+} else {
+  connectInfo = {
+    host: "192.168.0.2",
+    user: "root",
+    password: "A1atech",
+    database: "alatech",
+    multipleStatements: true
+  };
+}
+console.log('address: ', address);
+var connection = mysql.createConnection(connectInfo);
+
 connection.connect(function (err) {
   if (err) {
     console.error("error connecting: " + err.stack);
@@ -79,7 +107,26 @@ app.use(bodyParser.json())
 app.use(function (req, res, next) {
   req.con = connection;
   // Website you wish to allow to connect
-  var allowedOrigins = ['http://192.168.1.235:8080', 'http://192.168.1.235'];
+  var address,
+    ifaces = os.networkInterfaces();
+  for (var dev in ifaces) {
+    ifaces[dev].filter((details) => details.family === 'IPv4' && details.internal === false ? address = details.address : undefined);
+  }
+
+  console.log('address: ', address);
+  var allowedOrigins = [];
+  if (address === '192.168.1.235') {
+    allowedOrigins = ['http://192.168.1.235'];
+  } else if (address === '192.168.1.234') {
+    allowedOrigins = ['*']; // 因為要for在家只做前端時，需要隨意的domain去call
+  } else if (address === '192.168.1.232') {
+    allowedOrigins = ['http://192.168.1.232'];
+  } else {
+    allowedOrigins = [
+      'http://alatechcloud.alatech.com.tw',
+      'http://152.101.90.130'
+    ];
+  }
   var origin = req.headers.origin;
   if (allowedOrigins.indexOf(origin) > -1) {
     res.setHeader('Access-Control-Allow-Origin', origin);
