@@ -1,11 +1,13 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { GlobalEventsManager } from '@shared/global-events-manager';
-import debounce from 'debounce';
+// import debounce from 'debounce';
 import { HttpParams } from '@angular/common/http';
+
 import { RankFormService } from './services/rank-form.service';
 import {
   buildUrlQueryStrings,
-  buildPageMeta
+  buildPageMeta,
+  debounce
 } from '@shared/utils/';
 import { Router } from '@angular/router';
 import { IMyDpOptions } from 'mydatepicker';

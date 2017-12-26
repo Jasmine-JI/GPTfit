@@ -70,7 +70,7 @@ app.use(function (req, res, next) {
   console.log('address: ', address);
   var allowedOrigins = [];
   if (address === '192.168.1.235') {
-    allowedOrigins = ['http://192.168.1.235:8080'];
+    allowedOrigins = ['http://192.168.1.235:8080', '*'];
   } else if (address === '192.168.1.234') {
     allowedOrigins = ['*']; // 因為要for在家只做前端時，需要隨意的domain去call
   } else if (address === '192.168.1.232') {
