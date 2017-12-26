@@ -1,24 +1,27 @@
 import { HttpClient } from '@angular/common/http';
 
 import { Injectable } from '@angular/core';
+import { environment } from '../../../../environments/environment';
+
+const { API_SERVER } = environment.url;
 
 @Injectable()
 export class RankFormService {
   constructor(private http: HttpClient) {}
 
   getRank(params) {
-    return this.http.get('http://152.101.90.130:3000/rankform', { params });
+    return this.http.get(API_SERVER + 'rankform', { params });
   }
   getMapOptions() {
-    return this.http.get('http://152.101.90.130:3000/rankform/rankInfo/map');
+    return this.http.get(API_SERVER + 'rankform/rankInfo/map');
   }
   getMonths() {
-    return this.http.get('http://152.101.90.130:3000/rankform/rankInfo/month');
+    return this.http.get(API_SERVER + 'rankform/rankInfo/month');
   }
   getMapInfos(params) {
-    return this.http.get('http://152.101.90.130:3000/rankform/mapInfo', { params });
+    return this.http.get(API_SERVER + 'rankform/mapInfo', { params });
   }
   getEmail(params) {
-    return this.http.get('http://152.101.90.130:3000/rankform/rankInfo/email', { params });
+    return this.http.get(API_SERVER + 'rankform/rankInfo/email', { params });
   }
 }

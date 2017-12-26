@@ -5,7 +5,6 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { PortalRoutingModule } from './portal-routing.module';
 import { PortalComponent } from './portal.component';
-import { NavbarComponent } from './components/navbar/navbar.component';
 import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
 import { SexPipe } from '@shared/pipes/sex.pipe';
 import { TimePipe } from '@shared/pipes/time.pipe';
@@ -17,9 +16,12 @@ import { PaginationComponent } from '../../shared/components/pagination/paginati
 import { GlobalEventsManager } from '@shared/global-events-manager';
 import { PasswordComponent } from './components/password/password.component';
 import { ResetPasswordService } from './services/reset-password.service';
+import { EmptyResponseBodyErrorInterceptor } from './services/empty-response-body-error-interceptor';
 import { BrowserXhr } from '@angular/http';
 import { PatternValidator } from '@angular/forms';
 import { MyDatePickerModule } from 'mydatepicker';
+import { SharedComponentsModule } from '@shared/components/shared-components.module';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 @NgModule({
   imports: [
@@ -27,24 +29,27 @@ import { MyDatePickerModule } from 'mydatepicker';
     PortalRoutingModule,
     HttpClientModule,
     FormsModule,
-    MyDatePickerModule
+    MyDatePickerModule,
+    SharedComponentsModule
   ],
   providers: [
     MapService,
     RankFormService,
     GlobalEventsManager,
     ResetPasswordService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: EmptyResponseBodyErrorInterceptor,
+      multi: true
+    },
     PatternValidator
   ],
   declarations: [
     PortalComponent,
-    NavbarComponent,
     LeaderboardComponent,
     SexPipe,
     TimePipe,
     MapInfoComponent,
-    LoadingComponent,
-    PaginationComponent,
     PasswordComponent
   ]
 })

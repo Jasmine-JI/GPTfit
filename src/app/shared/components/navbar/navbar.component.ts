@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 
 @Component({
   // tslint:disable-next-line:component-selector
-  selector: 'portal-navbar',
+  selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
