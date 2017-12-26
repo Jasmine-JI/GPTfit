@@ -118,7 +118,7 @@ app.use(function (req, res, next) {
   if (address === '192.168.1.235') {
     allowedOrigins = ['http://192.168.1.235'];
   } else if (address === '192.168.1.234') {
-    allowedOrigins = ['http://192.168.1.234', 'http://alatechapp.alatech.com.tw'];
+    allowedOrigins = ['http://192.168.1.234', 'http://alatechapp.alatech.com.tw', 'http://192.168.1.235:8080'];
   } else if (address === '192.168.1.232') {
     allowedOrigins = ['http://192.168.1.232'];
   } else {
