@@ -119,7 +119,7 @@ app.use(function (req, res, next) {
   if (address === '192.168.1.235') {
     allowedOrigins = ['http://192.168.1.235'];
   } else if (address === '192.168.1.234') {
-    allowedOrigins = ['http://192.168.1.234', 'http://alatechapp.alatech.com.tw']; // 因為要for在家只做前端時，需要隨意的domain去call
+    allowedOrigins = ['http://192.168.1.234', 'http://alatechapp.alatech.com.tw', 'http://192.168.1.235:8080'];
   } else if (address === '192.168.1.232') {
     allowedOrigins = ['http://192.168.1.232'];
   } else {
@@ -129,7 +129,7 @@ app.use(function (req, res, next) {
     ];
   }
 
-  var origin = req.headers.origin;  
+  var origin = req.headers.origin;
   if (allowedOrigins.indexOf(origin) > -1) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   }

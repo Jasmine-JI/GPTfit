@@ -1,14 +1,15 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
-import debounce from 'debounce';
+// import debounce from 'debounce';
 import { RankFormService } from '../../services/rank-form.service';
 import { mapImages } from '@shared/mapImages';
 import {
   isObjectEmpty,
   buildUrlQueryStrings,
   getUrlQueryStrings,
-  buildPageMeta
+  buildPageMeta,
+  debounce
 } from '@shared/utils/';
 import { GlobalEventsManager } from '@shared/global-events-manager';
 import { forkJoin } from 'rxjs/observable/forkJoin';
