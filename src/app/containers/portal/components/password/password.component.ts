@@ -49,8 +49,10 @@ export class PasswordComponent implements OnInit {
     }
     this.isConfirm = true;
     if (valid) {
+      let email = this.email.toLowerCase();
+      email = email.trim();
       const body = {
-        email: this.email,
+        email,
         password: newPassword,
         confirmpassword: confirmPassword
       };
