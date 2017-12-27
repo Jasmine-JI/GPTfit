@@ -107,9 +107,12 @@ console.log('allowedOrigins.indexOf(origin): ', allowedOrigins.indexOf(origin));
 
 var rankForm = require('./routes/rankForm.js');
 var resetPassword = require('./routes/resetPassword.js');
+var raceEnroll = require('./routes/raceEnroll.js');
+var raceEventInfo = require('./routes/raceEventInfo.js');
 
 app.use('/rankForm', rankForm);
 app.use('/resetPassword', resetPassword);
+app.use('/raceEventInfo', raceEventInfo);
 
 // Start the server
 const port = process.env.PORT || 3001;
