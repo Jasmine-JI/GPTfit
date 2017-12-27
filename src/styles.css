@@ -96,3 +96,13 @@ html {
   opacity: 1;
   transition: opacity .3s ease-in-out;
 }
+
+.form__label--required:before {
+  content: '*';
+  color: #cb5e5e;
+}
+
+.form__message {
+  color: #cb5e5e;
+  font-size: 12px;
+}
