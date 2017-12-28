@@ -112,6 +112,7 @@ var raceEventInfo = require('./routes/raceEventInfo.js');
 
 app.use('/rankForm', rankForm);
 app.use('/resetPassword', resetPassword);
+app.use('/raceEnroll', raceEnroll);
 app.use('/raceEventInfo', raceEventInfo);
 
 // Start the server
