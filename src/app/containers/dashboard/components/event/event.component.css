@@ -1,0 +1,18 @@
+.ranking-table__cell--head {
+  font-weight: 700;
+  font-size: 14px;
+  background-image: linear-gradient(to bottom, #eee, #d8d8d8);
+  text-align: center;
+}
+
+.ranking-table__cell {
+  padding: 10px;
+  border-top: 1px solid #ccc;
+  color: #4a4a4a;
+  text-align: center;
+  font-size: 18px;
+}
+
+.event-table {
+  border: 1px solid #ccc;
+}

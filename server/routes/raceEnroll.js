@@ -26,11 +26,11 @@ router.post('/enroll', async(req, res) => {
       gender,
       idNumber,
       address,
-      event_seesion
+      event_seesion,
+      country_code
     },
     con
   } = req;
-  console.log('body: ', req.body);
 
 
   try {
@@ -38,7 +38,6 @@ router.post('/enroll', async(req, res) => {
     const e_mail = trimEmail.toLowerCase();
     const login_acc = userName.trim();
     const race_event = event_seesion.split('-');
-    console.log('race_event: ', race_event);
     const event = race_event[0];
     const session = race_event[1];
     const age_range = ageRange.trim();
@@ -58,7 +57,8 @@ router.post('/enroll', async(req, res) => {
       address,
       event,
       session,
-      time_stamp
+      time_stamp,
+      country_code
     )
     value (
       '${login_acc}',
@@ -70,17 +70,15 @@ router.post('/enroll', async(req, res) => {
       '${address}',
       ${event},
       ${session},
-      ${time_stamp}
+      ${time_stamp},
+      '${country_code}'
     );`;
-    console.log('sql: ', sql);
     await con.query(sql, 'user_race_enroll', async(err, rows) => {
       if (err) {
-        console.log('!!!!!', err);
         return res.status(500).send({
           errorMessage: err.sqlMessage
         });
       }
-      console.log('results: ', rows);
       res.send({
         userName: login_acc,
         email: e_mail,
@@ -90,7 +88,8 @@ router.post('/enroll', async(req, res) => {
         idNumber: id_number,
         address,
         event,
-        session
+        session,
+        country_code
       });
     });
   } catch (err) {
@@ -112,9 +111,6 @@ router.get('/emailsValidate', async(req, res, next) => {
     const sql = `
     SELECT e_mail FROM ??;
     `;
-    console.log('email: ', email);
-
-    console.log('email.length: ', email.length);
 
     con.query(sql, 'user_race_enroll', function (err, rows) {
       if (err) {
@@ -132,9 +128,7 @@ router.get('/emailsValidate', async(req, res, next) => {
       const trimEmail = email.trim();
       if (email && trimEmail.search(emailRule) > -1) {
         let results = rows.map(_row => _row.e_mail);
-        console.log('results1: ', results);
         results = results.filter(_res => _res === trimEmail);
-        console.log('results2: ', results);
         if (results.length === 0) return res.send('email無重複');
         return res.status(409).send({
           errorMessage: '此email已報名'
@@ -163,7 +157,6 @@ router.get('/phoneValidate', async(req, res, next) => {
     const sql = `
     SELECT phone FROM ??;
     `;
-    console.log('phone: ', phone);
 
     con.query(sql, 'user_race_enroll', function (err, rows) {
       if (err) {
@@ -173,15 +166,13 @@ router.get('/phoneValidate', async(req, res, next) => {
       }
       if (phone.length === 0) {
         return res.status(400).send({
-          errorMessage: '請填入email'
+          errorMessage: '請填入電話號碼'
         });
       }
       const trimPhone = phone.trim();
 
       let results = rows.map(_row => _row.phone);
-      console.log('results1: ', results);
       results = results.filter(_res => _res === trimPhone);
-      console.log('results2: ', results);
       if (results.length === 0) return res.send('電話無重複');
       return res.status(409).send({
         errorMessage: '此電話已報名'
@@ -189,7 +180,7 @@ router.get('/phoneValidate', async(req, res, next) => {
     });
   } catch (err) {
     return res.status(400).send({
-      errorMessage: '請填入email'
+      errorMessage: '請填入電話號碼'
     });
   }
 });
@@ -205,7 +196,6 @@ router.get('/idNumberValidate', async(req, res, next) => {
     const sql = `
     SELECT id_number FROM ??;
     `;
-    console.log('idNumber: ', idNumber);
 
     con.query(sql, 'user_race_enroll', function (err, rows) {
       if (err) {
@@ -222,9 +212,7 @@ router.get('/idNumberValidate', async(req, res, next) => {
       const idNum = trimIdNumber.toUpperCase();
       if (idNum && checkID('1', idNum)) {
         let results = rows.map(_row => _row.id_number);
-        console.log('results1: ', results);
         results = results.filter(_res => _res === idNum);
-        console.log('results2: ', results);
         if (results.length === 0) return res.send('身分證字號無重複');
         return res.status(409).send({
           errorMessage: '此身分證字號已報名'
@@ -256,15 +244,12 @@ router.post('/enroll', async(req, res) => {
     },
     con
   } = req;
-  console.log('body: ', req.body);
-
 
   try {
     const trimEmail = email.trim();
     const e_mail = trimEmail.toLowerCase();
     const login_acc = userName.trim();
     const race_event = event_seesion.split('-');
-    console.log('race_event: ', race_event);
     const event = race_event[0];
     const session = race_event[1];
     const age_range = ageRange.trim();
@@ -293,7 +278,6 @@ router.post('/enroll', async(req, res) => {
       ${event},
       ${session}
     );`;
-    console.log('sql: ', sql);
     await con.query(sql, 'user_race_enroll', async(err, rows) => {
       if (err) {
         console.log('!!!!!', err);
@@ -301,7 +285,6 @@ router.post('/enroll', async(req, res) => {
           errorMessage: err.sqlMessage
         });
       }
-      console.log('results: ', rows);
       res.send({
         userName: login_acc,
         email: e_mail,

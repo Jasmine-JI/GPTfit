@@ -26,17 +26,13 @@ router.post('/create', async(req, res) => {
       event_name,
       session,
       session_name,
-      // time_stamp_start,
       start_date,
-      // time_stamp_end,
       end_date,
       launch_user_name,
       description
     },
     con
   } = req;
-  console.log('body: ', req.body);
-
 
   try {
     const time_stamp_start = moment(start_date).unix();
@@ -73,7 +69,6 @@ router.post('/create', async(req, res) => {
       '${launch_user_name}',
       '${description}'
     );`;
-    console.log('sql: ', sql);
     await con.query(sql, 'race_event_info', async(err, rows) => {
       if (err) {
         console.log('!!!!!', err);
@@ -81,7 +76,6 @@ router.post('/create', async(req, res) => {
           errorMessage: err.sqlMessage
         });
       }
-      console.log('results: ', rows);
       res.send({
         event,
         event_name,
