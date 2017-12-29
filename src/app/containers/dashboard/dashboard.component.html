@@ -1,4 +1,10 @@
-<app-navbar></app-navbar>
+<ng-container *ngIf="!isPreviewMode">
+  <app-navbar></app-navbar>
+</ng-container>
+<ng-container *ngIf="isPreviewMode">
+  <div class="alatech-ribbon alatech-ribbon--bg-blue"></div>
+</ng-container>
+
 <div class="container dashboard-rwd">
   <router-outlet></router-outlet>
 </div>

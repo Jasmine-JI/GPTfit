@@ -5,25 +5,40 @@ import { EnrollFormComponent } from './components/enroll-form/enroll-form.compon
 import { EventComponent } from './components/event/event.component';
 import { CreateEventComponent } from './components/create-event/create-event.component';
 import { EditEventComponent } from './components/edit-event/edit-event.component';
+import { CertificateComponent } from './components/certificate/certificate.component';
+import { CertificatePreviewComponent } from './components/certificate-preview/certificate-preview.component';
 
 const routes: Routes = [
   {
-    path: 'dashboard', component: DashboardComponent,
+    path: 'dashboard',
+    component: DashboardComponent,
     children: [
       {
-        path: 'enroll', component: EnrollFormComponent,
+        path: 'enroll',
+        component: EnrollFormComponent
       },
       {
-        path: 'event', component: EventComponent,
+        path: 'event',
+        component: EventComponent
       },
       {
-        path: 'event/create', component: CreateEventComponent,
+        path: 'certificate',
+        component: CertificateComponent
       },
       {
-        path: 'event/edit', component: EditEventComponent,
+        path: 'certificate/preview',
+        component: CertificatePreviewComponent
+      },
+      {
+        path: 'event/create',
+        component: CreateEventComponent
+      },
+      {
+        path: 'event/edit',
+        component: EditEventComponent
       }
     ]
-  },
+  }
 ];
 
 @NgModule({
