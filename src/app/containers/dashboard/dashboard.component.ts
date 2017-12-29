@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import {
+  getUrlQueryStrings,
+} from '@shared/utils/';
 
 @Component({
   selector: 'app-dashboard',
@@ -6,10 +9,13 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit() {
+  isPreviewMode = false;
+  constructor() {
+    console.log(location.search);
+    if (location.search.indexOf('ipm=s') > -1) {
+      this.isPreviewMode = true;
+    }
   }
 
+  ngOnInit() {}
 }

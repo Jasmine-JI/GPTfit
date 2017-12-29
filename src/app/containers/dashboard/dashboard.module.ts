@@ -8,13 +8,17 @@ import { FormsModule } from '@angular/forms';
 import { CreateEventComponent } from './components/create-event/create-event.component';
 import { EventComponent } from './components/event/event.component';
 import { EditEventComponent } from './components/edit-event/edit-event.component';
+import { CertificatePreviewComponent } from './components/certificate-preview/certificate-preview.component';
+import { CertificateComponent } from './components/certificate/certificate.component';
+import { MyDatePickerModule } from 'mydatepicker';
 
 @NgModule({
   imports: [
     CommonModule,
     DashboardRoutingModule,
     SharedComponentsModule,
-    FormsModule
+    FormsModule,
+    MyDatePickerModule
   ],
   declarations: [
     DashboardComponent,
@@ -22,6 +26,8 @@ import { EditEventComponent } from './components/edit-event/edit-event.component
     CreateEventComponent,
     EventComponent,
     EditEventComponent,
-  ],
+    CertificatePreviewComponent,
+    CertificateComponent
+  ]
 })
-export class DashboardModule { }
+export class DashboardModule {}
