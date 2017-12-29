@@ -127,7 +127,7 @@ html {
 }
 .icon_fa.fa {
   font-size: 22px;
-  color: #777;  
+  color: #777;
 }
 .icon-btn + .icon-btn {
   margin-left: 10px;
@@ -182,4 +182,29 @@ a.alatech-btn:hover {
 .alatech-btn--default[disabled]:hover {
   border-color: #9B9B9B;
   color: #777;
+}
+
+.alatech-table__cell--head {
+  font-weight: 700;
+  font-size: 14px;
+  background-image: linear-gradient(to bottom, #eee, #d8d8d8);
+  text-align: center;
+}
+
+.alatech-table__cell {
+  padding: 10px;
+  border-top: 1px solid #ccc;
+  color: #4a4a4a;
+  text-align: center;
+  font-size: 18px;
+}
+
+.alatech-table {
+  border: 1px solid #ccc;
+}
+
+@media print {
+  .alatech-btn {
+    display: none;
+  }
 }
