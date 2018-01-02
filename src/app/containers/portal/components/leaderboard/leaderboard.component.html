@@ -1,6 +1,24 @@
 <div class="leaderboard-bg" [style.background-image]="bgImageUrl" *ngIf="!isLoading">
   <div class="leaderboard-layer">
     <div class="container leaderboard-rwd">
+      <div style="margin: -5px -15px 0px;border-bottom: 5px solid #26ABE4">
+        <ul class="tablist">
+          <li class="tablist__tab"
+            title="英達高空活動排行版"
+            [class.tablist__tab--selected]="tabIdx === 0"
+            (click)="selectTab(0)"
+          >
+            英達高空活動排行版
+          </li>
+          <li class="tablist__tab"
+            title="一般賽事排行版"
+            [class.tablist__tab--selected]="tabIdx === 1"
+            (click)="selectTab(1)"
+          >
+            一般賽事排行版
+          </li>
+        </ul>
+      </div>
       <div class="row row-runs">
         <div class="searchRank-bar" style="width: 100%">
           <form (ngSubmit)="onSubmit(rankForm, $event)" #rankForm="ngForm">
