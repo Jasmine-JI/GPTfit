@@ -42,19 +42,23 @@ export class LeaderboardComponent implements OnInit {
   isFoundUser = false; // 標記目標email
   bgImageUrl: string; // 背景圖
   distance: number; // 該地圖的距離資料
-
+  tabIdx = 0;
   mapName: string; // 該地圖名字
   isLoading = false;
   currentPage: number;
   isClearIconShow = false;
 
   startDateOptions: IMyDpOptions = {
-    height : '30px',
+    height: '30px',
     width: '200px',
     selectorWidth: '200px',
     dateFormat: 'yyyy-mm-dd',
     disableUntil: { year: 2017, month: 12, day: 4 },
-    disableSince: { year: new Date().getFullYear(), month: new Date().getMonth() + 1, day: new Date().getUTCDate() + 1 }
+    disableSince: {
+      year: new Date().getFullYear(),
+      month: new Date().getMonth() + 1,
+      day: new Date().getUTCDate() + 1
+    }
   };
   endDateOptions: IMyDpOptions = {
     height: '30px',
@@ -62,10 +66,26 @@ export class LeaderboardComponent implements OnInit {
     selectorWidth: '200px',
     dateFormat: 'yyyy-mm-dd',
     disableUntil: { year: 2017, month: 12, day: 4 },
-    disableSince: { year: new Date().getFullYear(), month: new Date().getMonth() + 1, day: new Date().getUTCDate() + 1 }
+    disableSince: {
+      year: new Date().getFullYear(),
+      month: new Date().getMonth() + 1,
+      day: new Date().getUTCDate() + 1
+    }
   };
-  startDay: any = { date: { year: new Date().getFullYear(), month: new Date().getMonth() + 1, day: new Date().getUTCDate() } };
-  finalDay: any = { date: { year: new Date().getFullYear(), month: new Date().getMonth() + 1, day: new Date().getUTCDate() } };
+  startDay: any = {
+    date: {
+      year: new Date().getFullYear(),
+      month: new Date().getMonth() + 1,
+      day: new Date().getUTCDate()
+    }
+  };
+  finalDay: any = {
+    date: {
+      year: new Date().getFullYear(),
+      month: new Date().getMonth() + 1,
+      day: new Date().getUTCDate()
+    }
+  };
   startDate: string;
   endDate: string;
   date: any;
@@ -145,7 +165,7 @@ export class LeaderboardComponent implements OnInit {
       this.globalEventsManager.getMapOptions(searchOptions);
       this.globalEventsManager.getMapId(this.mapId);
     });
-    this.globalEventsManager.getRankFormEmitter.subscribe((res) => {
+    this.globalEventsManager.getRankFormEmitter.subscribe(res => {
       this.response = res;
       if (res) {
         const {
@@ -188,7 +208,7 @@ export class LeaderboardComponent implements OnInit {
         }
       }
     });
-    this.globalEventsManager.showLoadingEmitter.subscribe((isLoading) => {
+    this.globalEventsManager.showLoadingEmitter.subscribe(isLoading => {
       this.isLoading = isLoading;
     });
   }
@@ -202,7 +222,9 @@ export class LeaderboardComponent implements OnInit {
       selectedEndDate
     } = form.value;
     this.mapId = mapId;
-    this.idx = this.mapDatas.findIndex(_data => _data.map_id === Number(this.mapId));
+    this.idx = this.mapDatas.findIndex(
+      _data => _data.map_id === Number(this.mapId)
+    );
     if (this.idx > -1) {
       this.mapName = this.mapDatas[this.idx].map_name;
       this.distance = this.mapDatas[this.idx].distance;
@@ -240,7 +262,14 @@ export class LeaderboardComponent implements OnInit {
       } = _date;
       return year.toString() + '-' + month.toString() + '-' + day.toString();
     }
-    return new Date().getFullYear() + '-' + new Date().getMonth() + 1 + '-' + new Date().getUTCDate();
+    return (
+      new Date().getFullYear() +
+      '-' +
+      new Date().getMonth() +
+      1 +
+      '-' +
+      new Date().getUTCDate()
+    );
   }
   convertDateFormat(_date) {
     if (_date) {
@@ -260,11 +289,23 @@ export class LeaderboardComponent implements OnInit {
       };
       return data;
     }
-    return { date: { year: new Date().getFullYear(), month: new Date().getMonth() + 1, day: new Date().getUTCDate() } };
+    return {
+      date: {
+        year: new Date().getFullYear(),
+        month: new Date().getMonth() + 1,
+        day: new Date().getUTCDate()
+      }
+    };
   }
   convertStringDatetoFormat(_date) {
     const dateArray = _date.split('-');
-    return { date: { year: Number(dateArray[0]), month: Number(dateArray[1]), day: Number(dateArray[2]) } };
+    return {
+      date: {
+        year: Number(dateArray[0]),
+        month: Number(dateArray[1]),
+        day: Number(dateArray[2])
+      }
+    };
   }
   onPageChange(pageNumber) {
     this.currentPage = pageNumber;
@@ -313,7 +354,7 @@ export class LeaderboardComponent implements OnInit {
     const paramDatas = {
       date: this.date,
       mapId: this.mapId,
-      userId,
+      userId
     };
     this.router.navigateByUrl(
       `${location.pathname}/mapInfo?${buildUrlQueryStrings(paramDatas)}`
@@ -368,11 +409,13 @@ export class LeaderboardComponent implements OnInit {
     }
   }
   preMap() {
-    this.idx = this.mapDatas.findIndex(_data => _data.map_id === Number(this.mapId));
+    this.idx = this.mapDatas.findIndex(
+      _data => _data.map_id === Number(this.mapId)
+    );
     if (this.idx - 1 === -1) {
       this.idx = this.mapDatas.length - 1;
     } else {
-      this.idx --;
+      this.idx--;
     }
     this.mapId = this.mapDatas[this.idx].map_id;
     this.distance = this.mapDatas[this.idx].distance;
@@ -393,7 +436,9 @@ export class LeaderboardComponent implements OnInit {
     this.fetchRankForm(params);
   }
   nextMap() {
-    this.idx = this.mapDatas.findIndex(_data => _data.map_id === Number(this.mapId));
+    this.idx = this.mapDatas.findIndex(
+      _data => _data.map_id === Number(this.mapId)
+    );
     if (this.idx + 1 > this.mapDatas.length - 1) {
       this.idx = 0;
     } else {
@@ -421,5 +466,8 @@ export class LeaderboardComponent implements OnInit {
   clear() {
     this.email = '';
     this.isClearIconShow = false;
+  }
+  selectTab(idx) {
+    this.tabIdx = idx;
   }
 }
