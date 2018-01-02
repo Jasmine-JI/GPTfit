@@ -37,7 +37,7 @@ router.get('/', function(req, res, next) {
   const today = new Date();
   const currMonth = today.getMonth() + 1;
   const currDate = currentDate();
-  const genderQuery = gender ? `and gender = ${gender}` : '';
+  const genderQuery = gender ? `and a.gender = ${gender}` : '';
   const eventQuery = event ? `and b.e_mail = c.e_mail and c.event = ${event}` : '';
   const sql = `
     select distinct a.rank as rank,

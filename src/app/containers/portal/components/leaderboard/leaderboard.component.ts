@@ -42,7 +42,7 @@ export class LeaderboardComponent implements OnInit {
   isFoundUser = false; // 標記目標email
   bgImageUrl: string; // 背景圖
   distance: number; // 該地圖的距離資料
-  tabIdx = 0;
+  tabIdx = 0; // 目前代表為一般賽事排行版
   mapName: string; // 該地圖名字
   isLoading = false;
   currentPage: number;
@@ -74,9 +74,9 @@ export class LeaderboardComponent implements OnInit {
   };
   startDay: any = {
     date: {
-      year: new Date().getFullYear(),
-      month: new Date().getMonth() + 1,
-      day: new Date().getUTCDate()
+      year: 2017,
+      month: 12
+      day: 5
     }
   };
   finalDay: any = {
@@ -115,7 +115,8 @@ export class LeaderboardComponent implements OnInit {
         mapId,
         groupId,
         startDate,
-        endDate
+        endDate,
+        event
       } = queryStrings;
       if (pageNumber) {
         params = params.set('pageNumber', pageNumber);
@@ -141,6 +142,12 @@ export class LeaderboardComponent implements OnInit {
       if (groupId !== '3') {
         this.groupId = groupId;
         params = params.set('gender', groupId);
+      }
+      if (event) {
+        params = params.set('event', 1);
+        params = params.set('startDate', '2018-01-10');
+        params = params.set('endDate', '2018-02-09');
+        this.tabIdx = 1;
       }
     }
     this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`; // 背景圖 ，預設為取雅典娜
@@ -239,8 +246,15 @@ export class LeaderboardComponent implements OnInit {
     this.endDate = this.convertDateString(selectedEndDate);
     let params = new HttpParams();
     params = params.set('mapId', this.mapId.toString());
-    params = params.set('startDate', this.startDate);
-    params = params.set('endDate', this.endDate);
+    if (this.tabIdx === 1) {
+      params = params.set('startDate', '2018-01-10');
+      params = params.set('endDate', '2018-02-09');
+      params = params.set('event', 1);
+    } else {
+      params = params.set('startDate', this.startDate);
+      params = params.set('endDate', this.endDate);
+    }
+
     this.isHaveEmail = email ? true : false;
     if (this.groupId !== '3') {
       params = params.set('gender', this.groupId);
@@ -316,8 +330,14 @@ export class LeaderboardComponent implements OnInit {
     if (this.email) {
       params = params.set('email', encodeURIComponent(this.email.trim()));
     }
-    params = params.set('startDate', this.startDate);
-    params = params.set('endDate', this.endDate);
+    if (this.tabIdx === 1) {
+      params = params.set('startDate', '2018-01-10');
+      params = params.set('endDate', '2018-02-09');
+      params = params.set('event', 1);
+    } else {
+      params = params.set('startDate', this.startDate);
+      params = params.set('endDate', this.endDate);
+    }
     params = params.set('mapId', this.mapId.toString());
     params = params.set('pageNumber', this.currentPage.toString());
     this.fetchRankForm(params);
@@ -334,11 +354,11 @@ export class LeaderboardComponent implements OnInit {
       this.isFirstPage = currentPage === 1;
       this.isLastPage = currentPage === maxPage;
       this.isHaveDatas = this.rankDatas.length > 0;
-      this.toHistoryPrePage();
+      this.toHistoryPrePage(this.tabIdx);
     });
   }
 
-  toHistoryPrePage() {
+  toHistoryPrePage(tabIdx) {
     const paramDatas = {
       pageNumber: this.meta.currentPage,
       startDate: this.startDate,
@@ -346,6 +366,24 @@ export class LeaderboardComponent implements OnInit {
       mapId: this.mapId,
       groupId: this.groupId
     };
+    let paramDatas = {};
+    if (tabIdx) {
+      paramDatas = {
+        pageNumber: this.meta.currentPage,
+        mapId: this.mapId,
+        groupId: this.groupId,
+        event: 1
+      };
+
+    } else {
+      paramDatas = {
+        pageNumber: this.meta.currentPage,
+        startDate: this.startDate,
+        endDate: this.endDate,
+        mapId: this.mapId,
+        groupId: this.groupId
+      };
+    }
     this.router.navigateByUrl(
       `${location.pathname}?${buildUrlQueryStrings(paramDatas)}`
     );
@@ -380,8 +418,15 @@ export class LeaderboardComponent implements OnInit {
     this.isSelectLoading = true;
     let params = new HttpParams();
     params = params.set('mapId', this.mapId.toString());
-    params = params.set('startDate', this.startDate);
-    params = params.set('endDate', this.endDate);
+    if (this.tabIdx === 1) {
+      params = params.set('startDate', '2018-01-10');
+      params = params.set('endDate', '2018-02-09');
+      params = params.set('event', 1);
+    } else {
+      params = params.set('startDate', this.startDate);
+      params = params.set('endDate', this.endDate);
+    }
+
     params = params.set('keyword', this.email);
     if (this.groupId !== '3') {
       params = params.set('gender', this.groupId);
@@ -431,8 +476,14 @@ export class LeaderboardComponent implements OnInit {
     if (this.email) {
       params = params.set('email', encodeURIComponent(this.email.trim()));
     }
-    params = params.set('startDate', this.startDate);
-    params = params.set('endDate', this.endDate);
+    if (this.tabIdx === 1) {
+      params = params.set('startDate', '2018-01-10');
+      params = params.set('endDate', '2018-02-09');
+      params = params.set('event', 1);
+    } else {
+      params = params.set('startDate', this.startDate);
+      params = params.set('endDate', this.endDate);
+    }
     this.fetchRankForm(params);
   }
   nextMap() {
@@ -456,8 +507,14 @@ export class LeaderboardComponent implements OnInit {
     if (this.email) {
       params = params.set('email', encodeURIComponent(this.email.trim()));
     }
-    params = params.set('startDate', this.startDate);
-    params = params.set('endDate', this.endDate);
+    if (this.tabIdx === 1) {
+      params = params.set('startDate', '2018-01-10');
+      params = params.set('endDate', '2018-02-09');
+      params = params.set('event', 1);
+    } else {
+      params = params.set('startDate', this.startDate);
+      params = params.set('endDate', this.endDate);
+    }
     this.fetchRankForm(params);
   }
   selectMap(id) {
@@ -469,5 +526,21 @@ export class LeaderboardComponent implements OnInit {
   }
   selectTab(idx) {
     this.tabIdx = idx;
+    let params = new HttpParams();
+    params = params.set('mapId', this.mapId.toString());
+    if (this.tabIdx === 1) {
+      params = params.set('startDate', '2018-01-10');
+      params = params.set('endDate', '2018-02-09');
+      params = params.set('event', 1);
+      this.finalEventDate = '2018-02-09';
+    } else {
+      params = params.set('startDate', this.startDate);
+      params = params.set('endDate', this.endDate);
+      this.finalEventDate = '';
+    }
+    if (this.groupId !== '3') {
+      params = params.set('gender', this.groupId);
+    }
+    this.fetchRankForm(params);
   }
 }

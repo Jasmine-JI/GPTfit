@@ -4,18 +4,18 @@
       <div style="margin: -5px -15px 0px;border-bottom: 5px solid #26ABE4">
         <ul class="tablist">
           <li class="tablist__tab"
-            title="英達高空活動排行版"
+            title="一般賽事排行版"
             [class.tablist__tab--selected]="tabIdx === 0"
             (click)="selectTab(0)"
           >
-            英達高空活動排行版
+            一般賽事排行版
           </li>
           <li class="tablist__tab"
-            title="一般賽事排行版"
+            title="第一屆英達高空夜跑賽"
             [class.tablist__tab--selected]="tabIdx === 1"
             (click)="selectTab(1)"
           >
-            一般賽事排行版
+            第一屆英達高空夜跑賽
           </li>
         </ul>
       </div>
@@ -23,7 +23,7 @@
         <div class="searchRank-bar" style="width: 100%">
           <form (ngSubmit)="onSubmit(rankForm, $event)" #rankForm="ngForm">
             <div class="row">
-              <div class="col-9">
+              <div class="col-10">
                 <label class="form-label">Map:</label>
                 <select name="mapId" [(ngModel)]="mapId" class="form-field" (click)="selectMap(mapId)">
                   <option *ngFor="let _map of mapDatas" [value]="_map.map_id">{{ _map.map_name }}</option>
@@ -46,33 +46,35 @@
                     </li>
                   </ul>
                 </div>
-                <div>
+                <div style="display: inline-block">
                   <label class="form-label">組別:</label>
                   <select name="groupId" [(ngModel)]="groupId" class="form-field">
                     <option [value]="3">無分組</option>
                     <option [value]="0">男生組</option>
                     <option [value]="1">女生組</option>
                   </select>
-                  <label class="form-label">Date:</label>
-                  <my-date-picker name="selectedStartDate"
-                    class="rank__datepicker"
-                    [options]="startDateOptions"
-                    [(ngModel)]="startDay"
-                    required
-                  >
-                  </my-date-picker>
-                  <div style="margin: 0px 5px;display: inline-block;vertical-align: text-bottom;">~</div>
+                  <ng-container *ngIf="!tabIdx">
+                    <label class="form-label">Date:</label>
+                    <my-date-picker name="selectedStartDate"
+                      class="rank__datepicker"
+                      [options]="startDateOptions"
+                      [(ngModel)]="startDay"
+                      required
+                    >
+                    </my-date-picker>
+                    <div style="margin: 0px 5px;display: inline-block;vertical-align: text-bottom;">~</div>
 
-                  <my-date-picker name="selectedEndDate"
-                    class="rank__datepicker"
-                    [options]="endDateOptions"
-                    [(ngModel)]="finalDay"
-                    required
-                  >
-                  </my-date-picker>
+                    <my-date-picker name="selectedEndDate"
+                      class="rank__datepicker"
+                      [options]="endDateOptions"
+                      [(ngModel)]="finalDay"
+                      required
+                    >
+                    </my-date-picker>
+                  </ng-container>
                 </div>
               </div>
-              <div class="col-md-2 offset-md-1">
+              <div class="col-md-2">
                 <button type="submit" class="button search-form__button">
                   <i class="fa fa-search"></i>
                 </button>
@@ -82,7 +84,7 @@
           <div class="summary">
             本月進行的例行排行賽為
             <span style="color: #157fcc;font-weight: 700">指定地圖{{ mapName }}{{ distance }}KM</span>
-            <div>排行榜於每日06:00刷新，最終排名以當月最後一日23:59結算成績為主</div>
+            <div>排行榜於每日06:00刷新，最終排名以{{ finalEventDate || '當月最後一日' }} 23:59結算成績為主</div>
           </div>
         </div>
         <div class="searchRank-mapInfo"><span style="color: #008bcd;font-weight: 700">指定地圖{{ mapName }}{{ distance }}KM</span></div>
