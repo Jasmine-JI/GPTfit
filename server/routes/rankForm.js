@@ -30,7 +30,7 @@ router.get('/', function(req, res, next) {
       email,
       startDate,
       endDate,
-      event
+      event_id
     }
   } = req;
 
@@ -38,7 +38,7 @@ router.get('/', function(req, res, next) {
   const currMonth = today.getMonth() + 1;
   const currDate = currentDate();
   const genderQuery = gender ? `and a.gender = ${gender}` : '';
-  const eventQuery = event ? `and b.e_mail = c.e_mail and c.event = ${event}` : '';
+  const eventQuery = event_id ? `and b.e_mail = c.e_mail and c.event_id = ${event_id}` : '';
   const sql = `
     select distinct a.rank as rank,
     a.offical_time,

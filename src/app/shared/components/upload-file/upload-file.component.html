@@ -1,0 +1,10 @@
+<button class="alatech-btn alatech-btn--default"
+>
+  {{ btnText }}
+</button>
+<input type="file"
+  class="fileUplload_input"
+  (change)="handleChange($event)"
+  (click)="handleClick"
+  #fileUpload
+/>

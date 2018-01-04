@@ -4,25 +4,24 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { Page404Component } from './page404/page404.component';
 import { LoadingComponent } from './loading/loading.component';
 import { PaginationComponent } from './pagination/pagination.component';
+import { UploadFileComponent } from './upload-file/upload-file.component';
 
 @NgModule({
-  imports: [
-    CommonModule,
-  ],
+  imports: [CommonModule],
   declarations: [
     NavbarComponent,
     Page404Component,
     LoadingComponent,
-    PaginationComponent
+    PaginationComponent,
+    UploadFileComponent
   ],
-  schemas: [
-    CUSTOM_ELEMENTS_SCHEMA
-  ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
     NavbarComponent,
     Page404Component,
     LoadingComponent,
-    PaginationComponent
+    PaginationComponent,
+    UploadFileComponent
   ]
 })
-export class SharedComponentsModule { }
+export class SharedComponentsModule {}
