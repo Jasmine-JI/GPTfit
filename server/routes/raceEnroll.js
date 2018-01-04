@@ -15,7 +15,9 @@ router.get('/', function (req, res, next) {
   SELECT  * FROM ??;`;
   con.query(sql, 'user_race_enroll', function (err, rows) {
     if (err) {
-      console.log(err);
+      return res.status(500).send({
+        errorMessage: err.sqlMessage
+      });
     }
     res.json({ datas: rows });
   });
@@ -287,34 +289,38 @@ router.post('/upload', async (req, res, next) => {
       const resultData = {};
       _.each(_data, function(value, key) {
         resultData[map[key]] = value;
-        if (map[key] === 'event_id' && resultData[map[key]] === '2018-01-10 14:00 ~ 2018-02-09 16:00') {
-          resultData[map[key]] = 1;
-        }
-        if (map[key] === 'e_mail') {
-          resultData[map[key]].trim();
-        }
-        if (map[key] === 'phone') {
-          let phone = resultData[map[key]];
-          resultData.country_code = phone.slice(0, 3);
-          if (resultData.country_code === '886') {
-            resultData[map[key]] = '0' + phone.slice(3, phone.length);
-          }
-          // to fix 等其他國碼在做判斷
-        }
-        if (map[key] === 'gender') {
-          let sex = resultData[map[key]];
-          if (sex === '男性') {
-            resultData[map[key]] = 0;
-          } else if (sex === '女性') {
+        if (map[key] !== undefined) {
+          if (map[key] === 'event_id' && value === '2018-01-10 14:00 ~ 2018-02-09 16:00') {
             resultData[map[key]] = 1;
-          } else {
-            resultData[map[key]] = 2;
+          }
+          if (map[key] === 'e_mail') {
+            resultData[map[key]].trim();
+          }
+          if (map[key] === 'phone') {
+            let phone = resultData[map[key]];
+            resultData.country_code = phone.slice(0, 3);
+            if (resultData.country_code === '886') {
+              resultData[map[key]] = '0' + phone.slice(3, phone.length);
+            }
+            // to fix 等其他國碼在做判斷
+          }
+          if (map[key] === 'gender') {
+            let sex = resultData[map[key]];
+            if (sex === '男性') {
+              resultData[map[key]] = 0;
+            } else if (sex === '女性') {
+              resultData[map[key]] = 1;
+            } else {
+              resultData[map[key]] = 2;
+            }
+          }
+          if (map[key] === 'enroll_time') {
+            resultData[map[key]] = moment(resultData[map[key]]).unix();
           }
         }
-        if (map[key] === 'enroll_time') {
-          resultData[map[key]] = moment(resultData[map[key]]).unix();
-        }
+
       });
+      delete resultData.undefined; // in order unknown undefined key
       return resultData;
     });
     res.parseResults = parseResults;
@@ -324,59 +330,29 @@ router.post('/upload', async (req, res, next) => {
     const { con } = req;
     const { parseResults } = res;
     try {
-      const {
-        login_acc,
-        e_mail,
-        phone,
-        age_range,
-        gender,
-        id_number,
-        address,
-        event_id,
-        session_name,
-        enroll_time,
-        country_code,
-        pay_method,
-        status,
-        ticket_id,
-        ticket_group
-      } = parseResults[0];
+      const results = parseResults.map((_result) => {
+        return Object.values(_result);
+      });
       const sql = `
       INSERT INTO ?? (
+        ticket_id,
         login_acc,
         e_mail,
         phone,
+        country_code,
+        ticket_group,
+        session_name,
+        pay_method,
+        status,
+        event_id,
+        enroll_time,
         age_range,
         gender,
         id_number,
-        address,
-        event_id,
-        session_name,
-        enroll_time,
-        country_code,
-        pay_method,
-        status,
-        ticket_id,
-        ticket_group
+        address
       )
-      value (
-        '${login_acc}',
-        '${e_mail}',
-        '${phone}',
-        '${age_range}',
-        ${gender},
-        '${id_number}',
-        '${address}',
-        ${event_id},
-        '${session_name}',
-        ${enroll_time},
-        '${country_code}',
-        '${pay_method}',
-        '${status}',
-        '${ticket_id}',
-        '${ticket_group}'
-      );`;
-      con.query(sql, 'user_race_enroll', async(err, rows) => {
+      values ?;`;
+      con.query(sql, ['user_race_enroll', results], async(err, rows) => {
         if (err) {
           return res.status(500).send({
             errorMessage: err.sqlMessage

@@ -11,6 +11,7 @@ import { EditEventComponent } from './components/edit-event/edit-event.component
 import { CertificatePreviewComponent } from './components/certificate-preview/certificate-preview.component';
 import { CertificateComponent } from './components/certificate/certificate.component';
 import { MyDatePickerModule } from 'mydatepicker';
+import { EventEnrollService } from './services/event-enroll.service';
 
 @NgModule({
   imports: [
@@ -20,6 +21,7 @@ import { MyDatePickerModule } from 'mydatepicker';
     FormsModule,
     MyDatePickerModule
   ],
+  providers: [EventEnrollService],
   declarations: [
     DashboardComponent,
     EnrollFormComponent,

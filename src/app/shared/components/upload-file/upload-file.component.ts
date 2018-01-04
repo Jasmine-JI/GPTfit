@@ -1,4 +1,11 @@
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Output,
+  EventEmitter,
+  Input,
+  ViewChild
+} from '@angular/core';
 
 @Component({
   selector: 'app-upload-file',
@@ -7,15 +14,25 @@ import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 })
 export class UploadFileComponent implements OnInit {
   @Input() maxFileSize: number;
-  @Input() disabled: boolean;
+  @Input() disabled = false;
   @Input() btnText: string;
   @Input() isLoading: boolean;
   @Input() accept: string;
 
   @Output() onChange = new EventEmitter();
+  @ViewChild('fileUpload')
+  set lookUp(ref: any) {
+    ref.nativeElement.value = null;
+  }
   constructor() {}
+
+  ngOnInit() {}
+  handleClick() {
+  }
+  handleBtnEvent(event) {
+    event.preventDefault();
+  }
   handleChange(event) {
-    // const { accept } = this.props;
     const files = event.target.files;
     const acceptFileArray = this.accept;
     if (files.length > 0) {
@@ -26,7 +43,7 @@ export class UploadFileComponent implements OnInit {
         const fileType = fileName[fileName.length - 1];
         const fileInformation = {
           value: files[0] || null,
-          link: e.target.result || '',
+          link: fileReader.result || '',
           isTypeCorrect: false,
           isSizeCorrect: false
         };
@@ -37,16 +54,9 @@ export class UploadFileComponent implements OnInit {
           fileInformation.isSizeCorrect = true;
         }
         console.log('fileInformation: ', fileInformation);
-        // return this.onChange(fileInformation);
+        return this.onChange.emit(fileInformation);
       };
       fileReader.readAsDataURL(files[0]);
     }
-  }
-  ngOnInit() {
-    console.log('accept: ', this.accept);
-    console.log('maxFileSize: ', this.maxFileSize);
-    console.log('btnText: ', this.btnText);
-    console.log('isLoading: ', this.isLoading);
-    console.log('disabled: ', this.disabled);
   }
 }
