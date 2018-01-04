@@ -145,7 +145,7 @@ export class LeaderboardComponent implements OnInit {
         params = params.set('gender', groupId);
       }
       if (event) {
-        params = params.set('event', '1');
+        params = params.set('event_id', '1');
         params = params.set('startDate', '2018-01-10');
         params = params.set('endDate', '2018-02-09');
         this.tabIdx = 1;
@@ -250,7 +250,7 @@ export class LeaderboardComponent implements OnInit {
     if (this.tabIdx === 1) {
       params = params.set('startDate', '2018-01-10');
       params = params.set('endDate', '2018-02-09');
-      params = params.set('event', '1');
+      params = params.set('event_id', '1');
     } else {
       params = params.set('startDate', this.startDate);
       params = params.set('endDate', this.endDate);
@@ -322,7 +322,7 @@ export class LeaderboardComponent implements OnInit {
     if (this.tabIdx === 1) {
       params = params.set('startDate', '2018-01-10');
       params = params.set('endDate', '2018-02-09');
-      params = params.set('event', '1');
+      params = params.set('event_id', '1');
     } else {
       params = params.set('startDate', this.startDate);
       params = params.set('endDate', this.endDate);
@@ -402,7 +402,7 @@ export class LeaderboardComponent implements OnInit {
     if (this.tabIdx === 1) {
       params = params.set('startDate', '2018-01-10');
       params = params.set('endDate', '2018-02-09');
-      params = params.set('event', '1');
+      params = params.set('event_id', '1');
     } else {
       params = params.set('startDate', this.startDate);
       params = params.set('endDate', this.endDate);
@@ -460,7 +460,7 @@ export class LeaderboardComponent implements OnInit {
     if (this.tabIdx === 1) {
       params = params.set('startDate', '2018-01-10');
       params = params.set('endDate', '2018-02-09');
-      params = params.set('event', '1');
+      params = params.set('event_id', '1');
     } else {
       params = params.set('startDate', this.startDate);
       params = params.set('endDate', this.endDate);
@@ -491,7 +491,7 @@ export class LeaderboardComponent implements OnInit {
     if (this.tabIdx === 1) {
       params = params.set('startDate', '2018-01-10');
       params = params.set('endDate', '2018-02-09');
-      params = params.set('event', '1');
+      params = params.set('event_id', '1');
     } else {
       params = params.set('startDate', this.startDate);
       params = params.set('endDate', this.endDate);
@@ -512,7 +512,7 @@ export class LeaderboardComponent implements OnInit {
     if (this.tabIdx === 1) {
       params = params.set('startDate', '2018-01-10');
       params = params.set('endDate', '2018-02-09');
-      params = params.set('event', '1');
+      params = params.set('event_id', '1');
       this.finalEventDate = '2018-02-09';
     } else {
       params = params.set('startDate', this.startDate);
