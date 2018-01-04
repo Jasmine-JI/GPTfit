@@ -32,7 +32,7 @@ export class LeaderboardComponent implements OnInit {
   isFirstPage: boolean; // 是否為第一頁
   isLastPage: boolean; // 是否為最後一頁
   isHaveDatas: boolean; // 當前條件下的rankDatas有無資料
-  groupId = '3'; // 組別 預設為無分組
+  groupId = '2'; // 組別 預設為無分組
   isHaveEmail: boolean; // 有無mail
   email: string;
   active = false; // select options的開關
@@ -47,6 +47,7 @@ export class LeaderboardComponent implements OnInit {
   isLoading = false;
   currentPage: number;
   isClearIconShow = false;
+  finalEventDate: string;
 
   startDateOptions: IMyDpOptions = {
     height: '30px',
@@ -75,7 +76,7 @@ export class LeaderboardComponent implements OnInit {
   startDay: any = {
     date: {
       year: 2017,
-      month: 12
+      month: 12,
       day: 5
     }
   };
@@ -139,12 +140,12 @@ export class LeaderboardComponent implements OnInit {
         this.mapId = Number(mapId);
         params = params.set('mapId', mapId);
       }
-      if (groupId !== '3') {
+      if (groupId !== '2') {
         this.groupId = groupId;
         params = params.set('gender', groupId);
       }
       if (event) {
-        params = params.set('event', 1);
+        params = params.set('event', '1');
         params = params.set('startDate', '2018-01-10');
         params = params.set('endDate', '2018-02-09');
         this.tabIdx = 1;
@@ -249,14 +250,14 @@ export class LeaderboardComponent implements OnInit {
     if (this.tabIdx === 1) {
       params = params.set('startDate', '2018-01-10');
       params = params.set('endDate', '2018-02-09');
-      params = params.set('event', 1);
+      params = params.set('event', '1');
     } else {
       params = params.set('startDate', this.startDate);
       params = params.set('endDate', this.endDate);
     }
 
     this.isHaveEmail = email ? true : false;
-    if (this.groupId !== '3') {
+    if (this.groupId !== '2') {
       params = params.set('gender', this.groupId);
     }
     if (email) {
@@ -267,13 +268,7 @@ export class LeaderboardComponent implements OnInit {
   }
   convertDateString(_date) {
     if (_date) {
-      const {
-        date: {
-          day,
-          month,
-          year
-        }
-      } = _date;
+      const { date: { day, month, year } } = _date;
       return year.toString() + '-' + month.toString() + '-' + day.toString();
     }
     return (
@@ -287,13 +282,7 @@ export class LeaderboardComponent implements OnInit {
   }
   convertDateFormat(_date) {
     if (_date) {
-      const {
-        date: {
-          day,
-          month,
-          year
-        }
-      } = _date;
+      const { date: { day, month, year } } = _date;
       const data = {
         date: {
           year,
@@ -324,7 +313,7 @@ export class LeaderboardComponent implements OnInit {
   onPageChange(pageNumber) {
     this.currentPage = pageNumber;
     let params = new HttpParams();
-    if (this.groupId !== '3') {
+    if (this.groupId !== '2') {
       params = params.set('gender', this.groupId);
     }
     if (this.email) {
@@ -333,7 +322,7 @@ export class LeaderboardComponent implements OnInit {
     if (this.tabIdx === 1) {
       params = params.set('startDate', '2018-01-10');
       params = params.set('endDate', '2018-02-09');
-      params = params.set('event', 1);
+      params = params.set('event', '1');
     } else {
       params = params.set('startDate', this.startDate);
       params = params.set('endDate', this.endDate);
@@ -359,13 +348,6 @@ export class LeaderboardComponent implements OnInit {
   }
 
   toHistoryPrePage(tabIdx) {
-    const paramDatas = {
-      pageNumber: this.meta.currentPage,
-      startDate: this.startDate,
-      endDate: this.endDate,
-      mapId: this.mapId,
-      groupId: this.groupId
-    };
     let paramDatas = {};
     if (tabIdx) {
       paramDatas = {
@@ -374,7 +356,6 @@ export class LeaderboardComponent implements OnInit {
         groupId: this.groupId,
         event: 1
       };
-
     } else {
       paramDatas = {
         pageNumber: this.meta.currentPage,
@@ -421,14 +402,14 @@ export class LeaderboardComponent implements OnInit {
     if (this.tabIdx === 1) {
       params = params.set('startDate', '2018-01-10');
       params = params.set('endDate', '2018-02-09');
-      params = params.set('event', 1);
+      params = params.set('event', '1');
     } else {
       params = params.set('startDate', this.startDate);
       params = params.set('endDate', this.endDate);
     }
 
     params = params.set('keyword', this.email);
-    if (this.groupId !== '3') {
+    if (this.groupId !== '2') {
       params = params.set('gender', this.groupId);
     }
     this.rankFormService.getEmail(params).subscribe(res => {
@@ -470,7 +451,7 @@ export class LeaderboardComponent implements OnInit {
 
     let params = new HttpParams();
     params = params.set('mapId', this.mapId.toString());
-    if (this.groupId !== '3') {
+    if (this.groupId !== '2') {
       params = params.set('gender', this.groupId);
     }
     if (this.email) {
@@ -479,7 +460,7 @@ export class LeaderboardComponent implements OnInit {
     if (this.tabIdx === 1) {
       params = params.set('startDate', '2018-01-10');
       params = params.set('endDate', '2018-02-09');
-      params = params.set('event', 1);
+      params = params.set('event', '1');
     } else {
       params = params.set('startDate', this.startDate);
       params = params.set('endDate', this.endDate);
@@ -501,7 +482,7 @@ export class LeaderboardComponent implements OnInit {
     this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
     let params = new HttpParams();
     params = params.set('mapId', this.mapId.toString());
-    if (this.groupId !== '3') {
+    if (this.groupId !== '2') {
       params = params.set('gender', this.groupId);
     }
     if (this.email) {
@@ -510,7 +491,7 @@ export class LeaderboardComponent implements OnInit {
     if (this.tabIdx === 1) {
       params = params.set('startDate', '2018-01-10');
       params = params.set('endDate', '2018-02-09');
-      params = params.set('event', 1);
+      params = params.set('event', '1');
     } else {
       params = params.set('startDate', this.startDate);
       params = params.set('endDate', this.endDate);
@@ -531,14 +512,14 @@ export class LeaderboardComponent implements OnInit {
     if (this.tabIdx === 1) {
       params = params.set('startDate', '2018-01-10');
       params = params.set('endDate', '2018-02-09');
-      params = params.set('event', 1);
+      params = params.set('event', '1');
       this.finalEventDate = '2018-02-09';
     } else {
       params = params.set('startDate', this.startDate);
       params = params.set('endDate', this.endDate);
       this.finalEventDate = '';
     }
-    if (this.groupId !== '3') {
+    if (this.groupId !== '2') {
       params = params.set('gender', this.groupId);
     }
     this.fetchRankForm(params);

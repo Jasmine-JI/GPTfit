@@ -24,7 +24,7 @@ export class PortalComponent implements OnInit {
   mapDatas = [];
   mapId = 5;
   monthDatas = [];
-  groupId = '3';
+  groupId = '2';
   month = (new Date().getMonth() + 1).toString();
   startDateOptions: IMyDpOptions = {
     height: '30px',
@@ -121,7 +121,7 @@ export class PortalComponent implements OnInit {
     params = params.set('startDate', this.startDate);
     params = params.set('endDate', this.endDate);
     this.isHaveEmail = email ? true : false;
-    if (this.groupId !== '3') {
+    if (this.groupId !== '2') {
       params = params.append('gender', this.groupId);
     }
     if (email) {
@@ -233,7 +233,7 @@ export class PortalComponent implements OnInit {
     params = params.set('startDate', this.startDate);
     params = params.set('endDate', this.endDate);
     params = params.set('keyword', this.email);
-    if (this.groupId !== '3') {
+    if (this.groupId !== '2') {
       params = params.set('gender', this.groupId);
     }
     this.rankFormService.getEmail(params).subscribe(res => {
