@@ -1,10 +1,16 @@
-<button class="alatech-btn alatech-btn--default"
->
-  {{ btnText }}
-</button>
-<input type="file"
-  class="fileUplload_input"
-  (change)="handleChange($event)"
-  (click)="handleClick"
-  #fileUpload
-/>
+<label class="fileupload">
+  <button class="alatech-btn alatech-btn--default"
+    (click)="handleBtnEvent($event)"
+    [disabled]="disabled"
+  >
+    {{ btnText }}
+  </button>
+  <input type="file"
+    class="fileupload__input"
+    (change)="handleChange($event)"
+    (click)="handleClick"
+    [disabled]="disabled"
+    #fileUpload
+  />
+</label>
+

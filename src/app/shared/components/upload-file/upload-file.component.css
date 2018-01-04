@@ -1,0 +1,22 @@
+.fileupload {
+  display: inline-block;
+  position: relative;
+  margin: 0;
+  cursor: pointer;
+}
+
+.fileupload>button {
+  cursor: pointer;
+  outline: none;
+}
+
+.fileupload__input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0;
+  padding: 0;
+  height: 30px;
+  opacity: 0;
+  cursor: pointer;
+}
