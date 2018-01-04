@@ -203,6 +203,13 @@ a.alatech-btn:hover {
   border: 1px solid #ccc;
 }
 
+.alatech-footer {
+  text-align: right;
+  height: 45px;
+  background-color: #f0eeee;
+  padding: 8px 11px 7px;
+}
+
 @media print {
   .alatech-btn {
     display: none;

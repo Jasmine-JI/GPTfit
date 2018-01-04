@@ -16,12 +16,16 @@ export class EnrollFormComponent implements OnInit {
     address: '',
     gender: 2
   };
+  acceptFileExtensions = ['jpg', 'jpeg', 'gif', 'png'];
+  maxFileSize = 307200;
+  isUploading = false;
+  fileLink: string;
+  reloadFileText = '重新上傳';
+  chooseFileText = '選擇檔案';
+  constructor() {}
 
-  constructor() { }
-
-  ngOnInit() {
-  }
-  enroll({value, valid}) {
+  ngOnInit() {}
+  enroll({ value, valid }) {
     console.log('value: ', value);
     console.log('valid: ', valid);
   }
