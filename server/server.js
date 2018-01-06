@@ -37,7 +37,6 @@ if (address === '192.168.1.235') {
     multipleStatements: true
   };
 }
-console.log('address: ', address);
 var connection = mysql.createConnection(connectInfo);
 
 
@@ -67,7 +66,6 @@ app.use(function (req, res, next) {
     ifaces[dev].filter((details) => details.family === 'IPv4' && details.internal === false ? address = details.address : undefined);
   }
 
-  console.log('address: ', address);
   var allowedOrigins = [];
   if (address === '192.168.1.235') {
     allowedOrigins = ['http://192.168.1.235:8080', '*'];

@@ -1,0 +1,58 @@
+<div fxLayout="row" fxLayout.xs="column">
+  <div fxFlex="70" fxFlex.xs>
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>活動行事曆</mat-card-title>
+        <mat-card-subtitle>
+          <h1>{{selectedMonth}}</h1>
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-grid-list cols="7" rowHeight="68px">
+          <mat-grid-tile *ngFor="let header of dayHeaders; let i = index" [ngStyle]="{'color': dayColors[i]}">
+            <h3>{{header}}</h3>
+          </mat-grid-tile>
+          <mat-grid-tile [colspan]="lastMonth_colspan" *ngIf="lastMonth_colspan"></mat-grid-tile>
+          <mat-grid-tile *ngFor="let item of days" [ngStyle]="{'color': dayColors[item.week]}" class="day" (click)="selectdDay(item)">
+            <div fxFill *ngIf="item.isSelected" class="selected"></div>
+            <span class="text">{{item.day}}</span>
+            <div fxFill fxLayout="row" fxLayoutAlign="start end" class="note">
+              <ng-container *ngFor="let note of item.notes">
+                <ng-container [ngSwitch]="note.type">
+                  <mat-icon *ngSwitchCase="1">assessment</mat-icon>
+                  <mat-icon *ngSwitchCase="2">directions_run</mat-icon>
+                  <mat-icon *ngSwitchCase="3">forum</mat-icon>
+                  <mat-icon *ngSwitchCase="4">local_dining</mat-icon>
+                  <mat-icon *ngSwitchDefault="">alarm</mat-icon>
+                </ng-container>
+              </ng-container>
+            </div>
+          </mat-grid-tile>
+        </mat-grid-list>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button  (click)="getDay(-1)" disabled>上個月</button>
+        <button mat-button (click)="getToday()">本月</button>
+        <button mat-button (click)="getDay(1)">下個月</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+  <div fxFlex>
+    <mat-card>
+      <mat-card-content>
+        <h1>{{selectedDay | date:'yyyy/MM/dd'}}</h1>
+        <mat-divider></mat-divider>
+        <mat-list>
+          <mat-list-item *ngFor="let item of selectedItem.notes; let i = index">
+            {{i+1}}. {{item.subject}}
+            <button class="alatech-btn alatech-btn--default"
+              (click)="goEnrollFrom(item.event_seesion)"
+            >
+              前往報名
+            </button>
+          </mat-list-item>
+        </mat-list>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
