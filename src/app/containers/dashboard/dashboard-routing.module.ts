@@ -7,14 +7,16 @@ import { CreateEventComponent } from './components/create-event/create-event.com
 import { EditEventComponent } from './components/edit-event/edit-event.component';
 import { CertificateComponent } from './components/certificate/certificate.component';
 import { CertificatePreviewComponent } from './components/certificate-preview/certificate-preview.component';
+import { EventCalendarComponent } from './components/event-calendar/event-calendar.component';
+import { EnrollPreviewComponent } from './components/enroll-preview/enroll-preview.component';
 
 const routes: Routes = [
   {
-    path: 'dashboard',
+    path: 'dashboardalaala',
     component: DashboardComponent,
     children: [
       {
-        path: 'enroll',
+        path: 'enroll/:event_id',
         component: EnrollFormComponent
       },
       {
@@ -36,9 +38,18 @@ const routes: Routes = [
       {
         path: 'event/edit',
         component: EditEventComponent
+      },
+      {
+        path: 'event-calendar',
+        component: EventCalendarComponent
+      },
+      {
+        path: 'enroll/:event_id/preview',
+        component: EnrollPreviewComponent
       }
     ]
-  }
+  },
+  { path: '**', redirectTo: '404' }
 ];
 
 @NgModule({

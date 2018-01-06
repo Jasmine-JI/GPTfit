@@ -38,3 +38,18 @@
 .tablist__tab:hover {
   cursor: pointer;
 }
+
+.spinner {
+  position: absolute;
+  right: 30px;
+  top: 0;
+  padding: 6px 4px;
+  font-style: normal;
+  font-size: 1.2em;
+  user-select: none;
+  cursor: pointer;
+}
+
+.spinner-hidden {
+  display: none;
+}

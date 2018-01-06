@@ -25,7 +25,7 @@ router.post('/create', async(req, res) => {
     body: {
       event,
       event_name,
-      session,
+      // session,
       session_name,
       start_date,
       end_date,
@@ -38,14 +38,14 @@ router.post('/create', async(req, res) => {
   try {
     const time_stamp_start = moment(start_date).unix();
     const time_stamp_end = moment(end_date).unix();
-
+    const session_id = moment(start_date).format('YMDH');
     const launch_time_stamp = moment().unix();
     const lanuch_date = moment.unix(launch_time_stamp).format('YYYY-MM-DD H:mm:ss.000000');
     const sql = `
     INSERT INTO ?? (
       event,
       event_name,
-      session,
+      session_id,
       session_name,
       time_stamp_start,
       start_date,
@@ -59,7 +59,7 @@ router.post('/create', async(req, res) => {
     value (
       ${event},
       '${event_name}',
-      ${session},
+      ${session_id},
       '${session_name}',
       ${time_stamp_start},
       '${start_date}',
@@ -80,7 +80,7 @@ router.post('/create', async(req, res) => {
       res.send({
         event,
         event_name,
-        session,
+        session_id,
         session_name,
         time_stamp_start,
         start_date,

@@ -116,7 +116,7 @@ app.use(function (req, res, next) {
   console.log('address: ', address);
   var allowedOrigins = [];
   if (address === '192.168.1.235') {
-    allowedOrigins = ['http://192.168.1.235'];
+    allowedOrigins = ['http://192.168.1.235', 'http://192.168.1.235:8080'];
   } else if (address === '192.168.1.234') {
     allowedOrigins = ['http://192.168.1.234', 'http://alatechapp.alatech.com.tw', 'http://192.168.1.235:8080'];
   } else if (address === '192.168.1.232') {
@@ -149,13 +149,16 @@ app.use(function (req, res, next) {
 
 var rankForm = require('./server/routes/rankForm.js');
 var resetPassword = require('./server/routes/resetPassword.js');
+var raceEnroll = require('./server/routes/raceEnroll.js');
+var raceEventInfo = require('./server/routes/raceEventInfo.js');
 
 app.use('/rankForm', rankForm);
 app.use('/resetPassword', resetPassword);
+app.use('/raceEnroll', raceEnroll);
+app.use('/raceEventInfo', raceEventInfo);
 
 // Start the server
 const port = process.env.PORT || 3000;
-// var port = 3000;
 app.listen(port, function () {
   console.log('Server running at ' + port);
 });

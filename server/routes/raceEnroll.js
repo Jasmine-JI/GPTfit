@@ -12,14 +12,14 @@ router.get('/', function (req, res, next) {
     con,
   } = req;
   const sql = `
-  SELECT  * FROM ??;`;
+  SELECT  distinct * FROM ??;`;
   con.query(sql, 'user_race_enroll', function (err, rows) {
     if (err) {
       return res.status(500).send({
         errorMessage: err.sqlMessage
       });
     }
-    res.json({ datas: rows });
+    res.json(rows);
   });
 });
 
@@ -115,12 +115,13 @@ router.get('/emailsValidate', async(req, res, next) => {
   const {
     con,
     query: {
-      email
+      email,
+      event_id
     }
   } = req;
   try {
     const sql = `
-    SELECT e_mail FROM ??;
+    SELECT e_mail FROM ?? where event_id = ${event_id};
     `;
 
     con.query(sql, 'user_race_enroll', function (err, rows) {
@@ -130,29 +131,21 @@ router.get('/emailsValidate', async(req, res, next) => {
         });
       }
       if (email.length === 0) {
-        return res.status(400).send({
-          errorMessage: '請填入email'
-        });
+        return res.status(400).send('請填入email');
       }
       const emailRule = /^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$/;
       const trimEmail = email.trim();
       if (email && trimEmail.search(emailRule) > -1) {
         let results = rows.map(_row => _row.e_mail);
         results = results.filter(_res => _res === trimEmail);
-        if (results.length === 0) return res.send('email無重複');
-        return res.status(409).send({
-          errorMessage: '此email已報名'
-        });
+        if (results.length === 0) return res.json('email無重複');
+        return res.status(409).send('此email已報名');
       } else {
-        return res.status(400).send({
-          errorMessage: 'email格式錯誤'
-        });
+        return res.status(400).send('email格式錯誤');
       }
     });
   } catch (err) {
-    return res.status(400).send({
-      errorMessage: '請填入email'
-    });
+    return res.status(400).send('請填入email');
   }
 });
 
@@ -160,12 +153,13 @@ router.get('/phoneValidate', async(req, res, next) => {
   const {
     con,
     query: {
-      phone
+      phone,
+      event_id
     }
   } = req;
   try {
     const sql = `
-    SELECT phone FROM ??;
+    SELECT phone FROM ?? where event_id = ${event_id};
     `;
 
     con.query(sql, 'user_race_enroll', function (err, rows) {
@@ -175,23 +169,17 @@ router.get('/phoneValidate', async(req, res, next) => {
         });
       }
       if (phone.length === 0) {
-        return res.status(400).send({
-          errorMessage: '請填入電話號碼'
-        });
+        return res.status(400).send('請填入電話號碼');
       }
       const trimPhone = phone.trim();
 
       let results = rows.map(_row => _row.phone);
       results = results.filter(_res => _res === trimPhone);
-      if (results.length === 0) return res.send('電話無重複');
-      return res.status(409).send({
-        errorMessage: '此電話已報名'
-      });
+      if (results.length === 0) return res.json('電話無重複');
+      return res.status(409).send('此電話已報名');
     });
   } catch (err) {
-    return res.status(400).send({
-      errorMessage: '請填入電話號碼'
-    });
+    return res.status(400).send('請填入電話號碼');
   }
 });
 
@@ -199,12 +187,13 @@ router.get('/idNumberValidate', async(req, res, next) => {
   const {
     con,
     query: {
-      idNumber
+      idNumber,
+      event_id
     }
   } = req;
   try {
     const sql = `
-    SELECT id_number FROM ??;
+    SELECT id_number FROM ?? where event_id = ${event_id};
     `;
 
     con.query(sql, 'user_race_enroll', function (err, rows) {
@@ -214,29 +203,21 @@ router.get('/idNumberValidate', async(req, res, next) => {
         });
       }
       if (idNumber.length === 0) {
-        return res.status(400).send({
-          errorMessage: '請填入身分證字號'
-        });
+        return res.status(400).send('請填入身分證字號');
       }
       const trimIdNumber = idNumber.trim();
       const idNum = trimIdNumber.toUpperCase();
       if (idNum && checkID('1', idNum)) {
         let results = rows.map(_row => _row.id_number);
         results = results.filter(_res => _res === idNum);
-        if (results.length === 0) return res.send('身分證字號無重複');
-        return res.status(409).send({
-          errorMessage: '此身分證字號已報名'
-        });
+        if (results.length === 0) return res.json('身分證字號無重複');
+        return res.status(409).send('此身分證字號已報名');
       } else {
-        return res.status(400).send({
-          errorMessage: '身分證字號格式錯誤'
-        });
+        return res.status(400).send('身分證字號格式錯誤');
       }
     });
   } catch (err) {
-    return res.status(400).send({
-      errorMessage: '請填入身分證字號'
-    });
+    return res.status(400).send('請填入身分證字號');
   }
 });
 
