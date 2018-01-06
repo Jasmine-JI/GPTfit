@@ -1,4 +1,4 @@
-<form novalidate #f="ngForm" (ngSubmit)="enroll(f)" class="form modify-password__form">
+<form novalidate #f="ngForm"  class="form modify-password__form">
   <!--*ngIf="!isSuccess && resultMessage.length === 0"-->
   <div class="border" style="padding: 15px">
 
@@ -24,7 +24,7 @@
           </div>
 
             <div class="col-md-5">
-              <my-date-picker name="selectedStartDate" class="rank__datepicker" [options]="startDateOptions" [(ngModel)]="startDay" required>
+              <my-date-picker name="selectedStartDate" class="rank__datepicker" [options]="startDateOptions"  required>
               </my-date-picker>
             </div>
           </div>

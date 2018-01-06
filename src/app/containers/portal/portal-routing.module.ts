@@ -7,7 +7,7 @@ import { PasswordComponent } from './components/password/password.component';
 
 const routes: Routes = [
   {
-    path: '', component: PortalComponent,
+    path: 'portal', component: PortalComponent,
     children: [
       {
         path: 'resetpassword', component: PasswordComponent,
@@ -19,7 +19,7 @@ const routes: Routes = [
         path: 'leaderboard/mapInfo', component: MapInfoComponent,
       }
     ]
-  },
+  }
 ];
 
 @NgModule({

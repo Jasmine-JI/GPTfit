@@ -1,4 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
+/* @import "~@angular/material/prebuilt-themes/pink-bluegrey.css"; */
+
 body,
 html {
   font-family: 'Microsoft JhengHei', sans-serif !important;
@@ -17,6 +19,7 @@ html {
   background-color: transparent;
   outline: 0;
 }
+
 
 .form-field.form-field--invalid {
   border: 1px solid #c75353;
@@ -42,6 +45,9 @@ html {
 
 .button:hover {
   background: #1c89bf;
+}
+button:focus {
+  outline: none!important;
 }
 
 .button:hover,

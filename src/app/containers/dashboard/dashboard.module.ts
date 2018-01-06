@@ -12,6 +12,10 @@ import { CertificatePreviewComponent } from './components/certificate-preview/ce
 import { CertificateComponent } from './components/certificate/certificate.component';
 import { MyDatePickerModule } from 'mydatepicker';
 import { EventEnrollService } from './services/event-enroll.service';
+import { EventCalendarComponent } from './components/event-calendar/event-calendar.component';
+import { CustomMaterialModule } from '@shared/custom-material.module.ts';
+import { EnrollPreviewComponent } from './components/enroll-preview/enroll-preview.component';
+import { GlobalEventsManager } from '@shared/global-events-manager';
 
 @NgModule({
   imports: [
@@ -19,9 +23,13 @@ import { EventEnrollService } from './services/event-enroll.service';
     DashboardRoutingModule,
     SharedComponentsModule,
     FormsModule,
-    MyDatePickerModule
+    MyDatePickerModule,
+    CustomMaterialModule
   ],
-  providers: [EventEnrollService],
+  providers: [
+    EventEnrollService,
+    GlobalEventsManager
+  ],
   declarations: [
     DashboardComponent,
     EnrollFormComponent,
@@ -29,7 +37,9 @@ import { EventEnrollService } from './services/event-enroll.service';
     EventComponent,
     EditEventComponent,
     CertificatePreviewComponent,
-    CertificateComponent
+    CertificateComponent,
+    EventCalendarComponent,
+    EnrollPreviewComponent
   ]
 })
 export class DashboardModule {}

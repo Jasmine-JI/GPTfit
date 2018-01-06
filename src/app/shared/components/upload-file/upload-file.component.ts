@@ -53,7 +53,6 @@ export class UploadFileComponent implements OnInit {
         if (files[0].size <= this.maxFileSize) {
           fileInformation.isSizeCorrect = true;
         }
-        console.log('fileInformation: ', fileInformation);
         return this.onChange.emit(fileInformation);
       };
       fileReader.readAsDataURL(files[0]);
