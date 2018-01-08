@@ -190,13 +190,16 @@
   </div>
   <div class="alatech-footer">
     <div class="justify-content-end">
-      <a *ngIf="tabIdx === 1" class="alatech-btn alatech-btn--default" title="預覽目前參賽名單" target="_blank" href="/dashboardalaala/enroll/{{ event_id }}/preview?ipm=s">
+      <a *ngIf="tabIdx === 1" class="alatech-btn alatech-btn--default" title="預覽目前參賽名單" target="_blank" href="/dashboardalaala/enroll/{{ event_id }}/preview?ipm=s&&session_id={{ session_id }}">
         預覽
       </a>
       <button class="alatech-btn alatech-btn--default"
         [disabled]="isBtnDisabled"
       >
         送出
+      </button>
+      <button class="alatech-btn alatech-btn--default" [disabled]="isBtnDisabled" (click)="goBack()">
+        返回
       </button>
     </div>
   </div>

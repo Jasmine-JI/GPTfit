@@ -1,7 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { EventEnrollService } from '../../services/event-enroll.service';
+import { EventInfoService } from '../../services/event-info.service';
+import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { CheckEnrollDialogComponent } from '../check-enroll-dialog/check-enroll-dialog.component';
 import {
-  debounce
+  debounce,
+  getUrlQueryStrings
 } from '@shared/utils/';
 import { HttpParams } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
@@ -41,9 +46,15 @@ export class EnrollFormComponent implements OnInit {
   isPhoneLoading = false;
   isIDNumLoading = false;
   event_id: string;
+  session_id: string;
+  eventInfo: any;
+
   constructor(
     private eventEnrollService: EventEnrollService,
-    private route: ActivatedRoute
+    private eventInfoService: EventInfoService,
+    private route: ActivatedRoute,
+    private router: Router,
+    public dialog: MatDialog
   ) {
     this.handleSearchEmail = debounce(this.handleSearchEmail, 1000);
     this.handleSearchPhone = debounce(this.handleSearchPhone, 1000);
@@ -52,6 +63,17 @@ export class EnrollFormComponent implements OnInit {
 
   ngOnInit() {
     this.event_id = this.route.snapshot.paramMap.get('event_id');
+    const queryStrings = getUrlQueryStrings(location.search);
+    const { session_id } = queryStrings;
+    this.session_id = session_id;
+    let params = new HttpParams();
+    if (this.event_id && this.session_id) {
+      params = params.set('event_id', this.event_id);
+      params = params.set('session_id', this.session_id);
+    }
+    this.eventInfoService
+      .fetchEventInfo(params)
+      .subscribe(datas => (this.eventInfo = datas[0]));
   }
 
   public onEmailChange(e: any, { controls: { email } }): void {
@@ -146,20 +168,42 @@ export class EnrollFormComponent implements OnInit {
     const formData = new FormData();
     formData.append('file', value.attachment);
     if (this.tabIdx === 1 && this.fileLink) {
-      this.eventEnrollService
+      return this.eventEnrollService
         .uploadFile(formData)
-        .subscribe(results => console.log('results: ', results));
+        .subscribe(results => {
+          console.log(results);
+          window.alert(results);
+        });
     }
     if (valid) {
       const data = value;
       data.country_code = '886';
       data.pay_method = '臨櫃付款';
       data.status = '已付款';
-      data.event_seesion = '0-1';
-      this.eventEnrollService
-        .enroll(data)
-        .subscribe(results => console.log('results: ', results));
+      data.event_id = this.event_id;
+      data.session_id = this.session_id;
+      data.session_name = this.eventInfo.session_name;
+      this.eventEnrollService.enroll(data).subscribe(results => {
+        this.dialog.open(CheckEnrollDialogComponent, {
+          hasBackdrop: true
+        });
+        this.formData = {
+          userName: '',
+          email: '',
+          phone: '',
+          idNumber: '',
+          address: '',
+          gender: 2,
+          ageRange: '21~25歲',
+          attachment: null
+        };
+        // this.router.navigateByUrl('/dashboardalaala/event-calendar');
+      });
     }
+  }
+  showCheckEnrollDialog() {
+    console.log('!!!');
+    this.dialog.open(CheckEnrollDialogComponent, { hasBackdrop: true });
   }
   downloadFile(e) {
     e.preventDefault();
@@ -172,5 +216,8 @@ export class EnrollFormComponent implements OnInit {
     } else {
       this.isBtnDisabled = false;
     }
+  }
+  goBack() {
+    this.router.navigateByUrl('/dashboardalaala/event-calendar');
   }
 }

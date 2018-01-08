@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import * as moment from 'moment';
 import { Router } from '@angular/router';
+import { EventInfoService } from '../../services/event-info.service';
+import { HttpParams } from '@angular/common/http';
 
 @Component({
   selector: 'app-event-calendar',
@@ -18,7 +20,11 @@ export class EventCalendarComponent implements OnInit {
   session_id: number;
   id: number;
   sessionMonth: string;
-  constructor(private router: Router) {}
+  events: any;
+  constructor(
+    private router: Router,
+    private eventInfoService: EventInfoService
+  ) {}
 
   ngOnInit() {
     this.getToday();
@@ -49,6 +55,7 @@ export class EventCalendarComponent implements OnInit {
       }
       const isSelected = time.getDate() === dayNumber;
       const d: any = {
+        notes: [],
         isSelected: isSelected,
         datetime: time,
         day: day,
@@ -81,46 +88,38 @@ export class EventCalendarComponent implements OnInit {
 
   getNote(month) {
     this.id = 1;
-    if (this.days.length > 0) {
-      console.log('this.days: ', this.days);
-      this.days.forEach(item => {
-        const notes = [];
-        const event_id = 1;
-        const event_seesion = event_id + '-' + this.session_id;
-        if (
-          moment(item.datetime).unix() >= 1515513600 &&
-          moment(item.datetime).unix() <= 1518105600
-        ) {
-          if (item.week !== 0) {
-            if (item.week !== 0 && item.week !== 1 && item.week !== 6) {
-              notes.push({
+    const params = new HttpParams();
+    this.eventInfoService.fetchEventInfo(params).subscribe(events => {
+      this.events = events;
+      if (this.days.length > 0) {
+        this.events.map(_event => {
+          const {
+            event_name,
+            session_name,
+            start_date,
+            event_id,
+            session_id
+          } = _event;
+          const subject = event_name + session_name;
+          const session_startDate = moment(
+            moment(start_date).format('YYYY-MM-DDT00:00:00')
+          ).unix();
+          this.days.forEach(item => {
+            if (moment(item.datetime).unix() === session_startDate) {
+              item.notes.push({
                 type: 2,
-                subject: '第一屆英達高空夜跑賽(17:00-19:00)',
-                event_seesion
+                subject,
+                session_id,
+                event_id
               });
+              item.notes.sort((a, b) => a.session_id - b.session_id);
             }
-            if (
-              item.week === 6 &&
-              moment(item.datetime).unix() >= 1515772800 &&
-              moment(item.datetime).unix() <= 1516982400
-            ) {
-              notes.push({
-                type: 2,
-                subject: '第一屆英達高空夜跑賽(09:00-11:00)',
-                event_seesion
-              });
-              // this.session_id++;
-            }
-          }
-        }
-        item.notes = notes;
-      });
-    }
+          });
+        });
+      }
+    });
   }
-  goEnrollFrom(event_seesion) {
-    console.log('event_seesion: ', event_seesion);
-    const event_id = event_seesion.split('-')[0];
-    console.log('!!!!', event_id);
-    this.router.navigateByUrl('/dashboardalaala/enroll/' + `${event_id}`);
+  goEnrollFrom(event_id, session_id) {
+    this.router.navigateByUrl('/dashboardalaala/enroll/' + `${event_id}` + `?session_id=${session_id}`);
   }
 }

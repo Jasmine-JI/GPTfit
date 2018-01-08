@@ -10,8 +10,8 @@ const { API_SERVER } = environment.url;
 export class EventEnrollService {
   constructor(private http: HttpClient) {}
 
-  fetchEnrollData() {
-    return this.http.get(API_SERVER + 'raceEnroll');
+  fetchEnrollData(params) {
+    return this.http.get(API_SERVER + 'raceEnroll', { params });
   }
   getEmail(params) {
     return this.http.get(API_SERVER + 'raceEnroll/emailsValidate', { params });
