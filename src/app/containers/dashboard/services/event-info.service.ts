@@ -12,5 +12,7 @@ export class EventInfoService {
   fetchEventInfo(params) {
     return this.http.get(API_SERVER + 'raceEventInfo', { params });
   }
-
+  fetchTodayRank(params) {
+    return this.http.get(API_SERVER + 'rankForm/todayRank', { params });
+  }
 }
