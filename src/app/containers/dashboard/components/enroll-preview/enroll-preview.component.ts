@@ -46,7 +46,6 @@ export class EnrollPreviewComponent implements OnInit {
     }
     this.eventEnrollService.fetchEnrollData(params).subscribe(_results => {
       this.globalEventsManager.showLoading(false);
-      console.log(_results);
       this.results = _results;
     });
   }

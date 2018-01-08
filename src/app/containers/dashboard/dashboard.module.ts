@@ -20,6 +20,7 @@ import { EventInfoService } from './services/event-info.service';
 import { CheckEnrollDialogComponent } from './components/check-enroll-dialog/check-enroll-dialog.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { SharedPipes } from '@shared/pipes/shared-pipes';
 
 @NgModule({
   imports: [
@@ -31,7 +32,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     CustomMaterialModule,
     MyDatePickerModule,
     BrowserModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    SharedPipes
   ],
   providers: [
     EventEnrollService,
