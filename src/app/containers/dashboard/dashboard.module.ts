@@ -21,6 +21,8 @@ import { CheckEnrollDialogComponent } from './components/check-enroll-dialog/che
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedPipes } from '@shared/pipes/shared-pipes';
+import { LeaderboardSettingsComponent } from './components/leaderboard-settings/leaderboard-settings.component';
+import { RealTimeLeaderboardComponent } from './components/real-time-leaderboard/real-time-leaderboard.component';
 
 @NgModule({
   imports: [
@@ -50,7 +52,9 @@ import { SharedPipes } from '@shared/pipes/shared-pipes';
     CertificateComponent,
     EventCalendarComponent,
     EnrollPreviewComponent,
-    CheckEnrollDialogComponent
+    CheckEnrollDialogComponent,
+    LeaderboardSettingsComponent,
+    RealTimeLeaderboardComponent
   ],
   entryComponents: [CheckEnrollDialogComponent]
 })

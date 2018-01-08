@@ -1,0 +1,41 @@
+<div class="leaderboard-bg" [style.background-image]="bgImageUrl" *ngIf="!isLoading">
+  <div class="leaderboard-layer">
+    <div class="container leaderboard-rwd">
+      <div class="row row-runs">
+        <div class="searchRank-mapInfo">
+          <span style="color: #008bcd;font-weight: 700">指定地圖{{ mapName }}{{ distance }}KM</span>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-rwd">
+            <thead>
+              <tr class="tr-only-hide">
+                <th class="ranking-table__cell--head">Rank</th>
+                <th class="ranking-table__cell--head">UserName</th>
+                <th class="ranking-table__cell--head">Gender</th>
+                <th class="ranking-table__cell--head">Offical Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of showDatas; let i = index" [ngClass]="{'here' : (data.e_mail === email) && isFoundUser}">
+                <td class="ranking-table__cell" (click)="toMapInfoPage(data.user_id)" data-th="Rank">
+                  <a class="ranking-link">{{ data.rank }}</a>
+                </td>
+                <td class="ranking-table__cell" data-th="UserName">{{ data.login_acc }}</td>
+                <td class="ranking-table__cell" data-th="Gender">{{ data.gender | sex }}</td>
+                <td class="ranking-table__cell" data-th="Offical Time">{{ data.activity_duration | time }}</td>
+              </tr>
+              <tr *ngIf="!isHaveDatas">
+                <td class="ranking-table__cell no-data" colspan="4" style="text-align: center">
+                  尚無相關資訊
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="isLoading">
+  <app-loading></app-loading>
+</div>
