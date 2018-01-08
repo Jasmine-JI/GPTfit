@@ -297,30 +297,52 @@ router.get('/todayRank', function(req, res, next) {
     con,
     query: {
       start_date,
-      end_date
+      end_date,
+      map_id
     }
   } = req;
 
-  const time_stamp_start = moment(start_date).unix();
-  const time_stamp_end = moment(end_date).unix();
   const sql = `
-    select r.race_id, r.map_id, r.activity_duration,
-    p.e_mail, p.login_acc
-    from race_data as r, user_profile as p
-    where user_race_status = 3
-    and
-    r.user_id = p.user_id
-    and
-    r.time_stamp
-    between ${time_stamp_start} and ${time_stamp_end}
-    order by activity_duration
-  ;`;
+SELECT distinct a.rank AS rank
+     , a.map_id
+     , a.activity_duration
+     , a.user_race_status
+     , a.e_mail
+     , a.login_acc
+     , a.gender
+  FROM (SELECT race_id
+             , r.map_id
+             , r.activity_duration
+             , r.user_race_status
+             , p.e_mail
+             , p.login_acc
+             , p.gender
+             , @prev := @curr
+             , @curr := r.activity_duration
+             , @rank := IF(@prev = @curr, @rank, @rank + 1) AS rank
+          FROM race_data as r,
+          user_profile as p
+             , (SELECT @curr := null
+                     , @prev := null
+                     , @rank := 0) s
+          where r.user_race_status = 3
+          and
+          r.user_id = p.user_id
+          and
+          r.activity_duration > '00:00:10.000'
+          and
+          r.time_stamp
+          between ${start_date} and ${end_date}
+          and
+          r.map_id = ${map_id}
+          ORDER BY r.activity_duration) a;
+;`;
 
   con.query(sql, 'race_event_info', function(err, rows) {
     if (err) {
       return res.status(500).send(err);
     }
-    return res.send({ datas: rows });
+    return res.json(rows);
   });
 });
 // Exports

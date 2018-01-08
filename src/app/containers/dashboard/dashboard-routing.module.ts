@@ -9,6 +9,8 @@ import { CertificateComponent } from './components/certificate/certificate.compo
 import { CertificatePreviewComponent } from './components/certificate-preview/certificate-preview.component';
 import { EventCalendarComponent } from './components/event-calendar/event-calendar.component';
 import { EnrollPreviewComponent } from './components/enroll-preview/enroll-preview.component';
+import { LeaderboardSettingsComponent } from './components/leaderboard-settings/leaderboard-settings.component';
+import { RealTimeLeaderboardComponent } from './components/real-time-leaderboard/real-time-leaderboard.component';
 
 const routes: Routes = [
   {
@@ -46,6 +48,14 @@ const routes: Routes = [
       {
         path: 'enroll/:event_id/preview',
         component: EnrollPreviewComponent
+      },
+      {
+        path: 'leaderboard-settings',
+        component: LeaderboardSettingsComponent
+      },
+      {
+        path: 'real-time-leaderboard',
+        component: RealTimeLeaderboardComponent
       }
     ]
   },

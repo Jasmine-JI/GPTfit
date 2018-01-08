@@ -3,9 +3,10 @@
 </ng-container>
 <ng-container *ngIf="isPreviewMode">
   <div class="alatech-ribbon alatech-ribbon--bg-blue"></div>
+  <router-outlet></router-outlet>
 </ng-container>
 
-<div class="container dashboard-rwd" [hidden]="isLoading">
+<div *ngIf="!isPreviewMode" class="container dashboard-rwd" [hidden]="isLoading">
   <router-outlet></router-outlet>
 </div>
 <div [hidden]="!isLoading">
