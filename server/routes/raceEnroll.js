@@ -10,9 +10,15 @@ var checkID = require('../utils');
 router.get('/', function (req, res, next) {
   const {
     con,
+    query: {
+      event_id,
+      session_id
+    }
   } = req;
+  const query1 = event_id && session_id ? `where event_id = ${event_id} and session_id = ${session_id}` : '';
+
   const sql = `
-  SELECT  distinct * FROM ??;`;
+  SELECT  distinct * FROM ?? ${query1};`;
   con.query(sql, 'user_race_enroll', function (err, rows) {
     if (err) {
       return res.status(500).send({
@@ -33,7 +39,8 @@ router.post('/enroll', async(req, res) => {
       gender,
       idNumber,
       address,
-      event_seesion,
+      event_id,
+      session_id,
       country_code,
       pay_method,
       status
@@ -45,9 +52,6 @@ router.post('/enroll', async(req, res) => {
     const trimEmail = email.trim();
     const e_mail = trimEmail.toLowerCase();
     const login_acc = userName.trim();
-    const race_event = event_seesion.split('-');
-    const event_id = race_event[0];
-    const session_id = race_event[1];
     const age_range = ageRange.trim();
     const trimIdNumber = idNumber.trim();
     const id_number = trimIdNumber.toUpperCase();
@@ -222,19 +226,32 @@ router.get('/idNumberValidate', async(req, res, next) => {
 });
 
 router.post('/upload', async (req, res, next) => {
-  var path;
-  var form = new formidable.IncomingForm();
-  form.parse(req, (err, fields, files) => {
+  const sql = `SELECT  * from ??`;
+  const { con } = req;
+  con.query(sql, 'race_event_info', function(err, rows) {
     if (err) {
-      return res.status(500).send({ errorMessage: err.sqlMessage });
+      return console.log(err);
     }
-    path = files.file.path;
-    res.path = path;
-    next();
+    res.events = rows;
+    var path;
+    var form = new formidable.IncomingForm();
+    form.parse(req, (err, fields, files) => {
+      if (err) {
+        return res.status(500).send({ errorMessage: err.sqlMessage });
+      }
+      path = files.file.path;
+      res.path = path;
+        next();
+
+    });
   });
+
+
 }, (req, res, next) => {
     const { con } = req;
     const path = res.path;
+    const events = res.events;
+
     var buf = fs.readFileSync(path);
     var wb = XLSX.read(buf, { type: 'buffer' });
     const sheetNames = wb.SheetNames;
@@ -266,13 +283,43 @@ router.post('/upload', async (req, res, next) => {
       });
     const filterArr = datas.filter(_data => _data['狀態'] === '已付款');
     const parseResults = filterArr.map(_data => {
-      var map = { 票號: 'ticket_id', 持票人姓名: 'login_acc', 持票人Email: 'e_mail', 持票人手機: 'phone', 票種分組名稱: 'ticket_group', 票券名稱: 'session_name', 付款方式: 'pay_method', 狀態: 'status', '有效時間(GMT+8)': 'event_id', '報名時間(GMT+8)': 'enroll_time', 年齡: 'age_range', 性別: 'gender', 身分證字號: 'id_number', 地址: 'address' };
+      var map = {
+        票號: 'ticket_id',
+        持票人姓名: 'login_acc',
+        持票人Email: 'e_mail',
+        持票人手機: 'phone',
+        票種分組名稱: 'ticket_group',
+        票券名稱: 'session_name',
+        付款方式: 'pay_method',
+        狀態: 'status',
+        '有效時間(GMT+8)': 'event_name',
+        '報名時間(GMT+8)': 'enroll_time',
+        年齡: 'age_range',
+        性別: 'gender',
+        身分證字號: 'id_number',
+        地址: 'address'
+      };
       const resultData = {};
       _.each(_data, function(value, key) {
         resultData[map[key]] = value;
         if (map[key] !== undefined) {
-          if (map[key] === 'event_id' && value === '2018-01-10 14:00 ~ 2018-02-09 16:00') {
-            resultData[map[key]] = 1;
+          if (map[key] === 'session_name') {
+            var idx_session = events.findIndex(_event => _event.session_name === value);
+            if (idx_session > -1) {
+              console.log(idx_session);
+              resultData[map[key]] = events[idx_session].session_name;
+              console.log('idx: ', idx_session);
+            }
+
+          }
+          if (map[key] === 'event_name') {
+            var idx_event = events.findIndex(_event => _event.event_time_name === value);
+            if (idx_event > -1) {
+              resultData[map[key]] = events[idx_event].event_id;
+              console.log('idx: ', idx_event);
+            } else {
+              resultData[map[key]] = 1;
+            }
           }
           if (map[key] === 'e_mail') {
             resultData[map[key]].trim();
@@ -339,7 +386,7 @@ router.post('/upload', async (req, res, next) => {
             errorMessage: err.sqlMessage
           });
         }
-        res.send('上傳成功!!');
+        res.json('上傳成功!!');
       });
     } catch (err) {
       return res.status(500).send({ errorMessage: '請檢查報名資料欄位' });
