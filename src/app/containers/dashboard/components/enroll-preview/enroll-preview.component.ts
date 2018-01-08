@@ -27,7 +27,7 @@ export class EnrollPreviewComponent implements OnInit {
     const queryStrings = getUrlQueryStrings(location.search);
     const { session_id } = queryStrings;
     this.session_id = session_id;
-    this.getData(this.event_id, this.session_id);
+    this.getData();
     let params = new HttpParams();
     if (this.event_id && this.session_id) {
       params = params.set('event_id', this.event_id);
@@ -37,7 +37,7 @@ export class EnrollPreviewComponent implements OnInit {
     //   .fetchEventInfo(params)
     //   .subscribe(datas => (this.eventInfo = datas[0]));
   }
-  getData(event_id, session_id) {
+  getData() {
     this.globalEventsManager.showLoading(true);
     let params = new HttpParams();
     if (this.event_id && this.session_id) {
