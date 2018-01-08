@@ -16,6 +16,10 @@ import { EventCalendarComponent } from './components/event-calendar/event-calend
 import { CustomMaterialModule } from '@shared/custom-material.module.ts';
 import { EnrollPreviewComponent } from './components/enroll-preview/enroll-preview.component';
 import { GlobalEventsManager } from '@shared/global-events-manager';
+import { EventInfoService } from './services/event-info.service';
+import { CheckEnrollDialogComponent } from './components/check-enroll-dialog/check-enroll-dialog.component';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   imports: [
@@ -24,11 +28,15 @@ import { GlobalEventsManager } from '@shared/global-events-manager';
     SharedComponentsModule,
     FormsModule,
     MyDatePickerModule,
-    CustomMaterialModule
+    CustomMaterialModule,
+    MyDatePickerModule,
+    BrowserModule,
+    BrowserAnimationsModule
   ],
   providers: [
     EventEnrollService,
-    GlobalEventsManager
+    GlobalEventsManager,
+    EventInfoService,
   ],
   declarations: [
     DashboardComponent,
@@ -39,7 +47,9 @@ import { GlobalEventsManager } from '@shared/global-events-manager';
     CertificatePreviewComponent,
     CertificateComponent,
     EventCalendarComponent,
-    EnrollPreviewComponent
-  ]
+    EnrollPreviewComponent,
+    CheckEnrollDialogComponent
+  ],
+  entryComponents: [CheckEnrollDialogComponent]
 })
 export class DashboardModule {}
