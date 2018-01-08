@@ -28,14 +28,15 @@ export class NavbarComponent implements OnInit {
     } else {
       this.isShowResetPwd = false;
     }
-    if (this.href.indexOf('dashboardalaala') > -1) {
-      const sessionValue = sessionStorage.web;
-      if (sessionValue === '12345678') {
-        this.isShowDashboard = true;
-      } else {
-        this.validate();
-      }
-    }
+    this.isShowDashboard = true;
+    // if (this.href.indexOf('dashboardalaala') > -1) {
+    //   const sessionValue = sessionStorage.web;
+    //   if (sessionValue === '12345678') {
+    //     this.isShowDashboard = true;
+    //   } else {
+    //     this.validate();
+    //   }
+    // }
   }
   validate() {
     const pwd = window.prompt('請輸入密碼: ');
