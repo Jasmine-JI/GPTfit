@@ -7,6 +7,6 @@ export class SexPipe implements PipeTransform {
       return 'male';
     } else if (value === 1) {
       return 'female';
-    } return '尚無相關資訊';
+    } return '不透露';
   }
 }

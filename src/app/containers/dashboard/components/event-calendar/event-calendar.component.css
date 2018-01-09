@@ -1,0 +1,20 @@
+/deep/.day.mat-grid-tile:active,
+/deep/.day.mat-grid-tile:focus {
+  border: 1px dotted;
+}
+
+/deep/.day.mat-grid-tile:hover {
+  cursor: pointer;
+}
+/deep/ .mat-grid-tile .mat-figure {
+  flex-wrap: wrap;
+}
+
+/deep/.day.calendar_icon.mat-grid-tile {
+  border: 1px solid #ccc;
+}
+
+/deep/.day.calendar_icon.mat-grid-tile.isSelected {
+  border: 4px dashed #ccc;
+}
+
