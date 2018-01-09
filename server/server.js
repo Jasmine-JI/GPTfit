@@ -37,7 +37,6 @@ if (address === '192.168.1.235') {
     multipleStatements: true
   };
 }
-console.log('address: ', address);
 var connection = mysql.createConnection(connectInfo);
 
 
@@ -67,7 +66,6 @@ app.use(function (req, res, next) {
     ifaces[dev].filter((details) => details.family === 'IPv4' && details.internal === false ? address = details.address : undefined);
   }
 
-  console.log('address: ', address);
   var allowedOrigins = [];
   if (address === '192.168.1.235') {
     allowedOrigins = ['http://192.168.1.235:8080', '*'];
@@ -107,9 +105,13 @@ console.log('allowedOrigins.indexOf(origin): ', allowedOrigins.indexOf(origin));
 
 var rankForm = require('./routes/rankForm.js');
 var resetPassword = require('./routes/resetPassword.js');
+var raceEnroll = require('./routes/raceEnroll.js');
+var raceEventInfo = require('./routes/raceEventInfo.js');
 
 app.use('/rankForm', rankForm);
 app.use('/resetPassword', resetPassword);
+app.use('/raceEnroll', raceEnroll);
+app.use('/raceEventInfo', raceEventInfo);
 
 // Start the server
 const port = process.env.PORT || 3001;

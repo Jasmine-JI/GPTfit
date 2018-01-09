@@ -1,5 +1,5 @@
 var express = require('express');
-
+var moment = require('moment');
 var router = express.Router();
 var currentDate = function() {
   var today = new Date();
@@ -29,14 +29,16 @@ router.get('/', function(req, res, next) {
       userId,
       email,
       startDate,
-      endDate
+      endDate,
+      event_id
     }
   } = req;
 
   const today = new Date();
   const currMonth = today.getMonth() + 1;
   const currDate = currentDate();
-  const genderQuery = gender ? `and gender = ${gender}` : '';
+  const genderQuery = gender ? `and a.gender = ${gender}` : '';
+  const eventQuery = event_id ? `and b.e_mail = c.e_mail and c.event_id = ${event_id}` : '';
   const sql = `
     select distinct a.rank as rank,
     a.offical_time,
@@ -55,7 +57,8 @@ router.get('/', function(req, res, next) {
       select *, @prev := @curr, @curr := offical_time,
       @rank := if(@prev = @curr, @rank, @rank+1
     ) as rank
-    from (select * from ?? a
+    from (select a.* from ?? a
+      , user_race_enroll c
       where
       date between '${startDate || currDate}'
       and
@@ -70,7 +73,8 @@ router.get('/', function(req, res, next) {
       and
       '${endDate || currDate}'
       and
-      a.user_id = b.user_id
+      a.e_mail = b.e_mail
+      ${eventQuery}
       )
       and
       map_id = ${mapId || 5}
@@ -223,5 +227,123 @@ router.get('/mapInfo', function(req, res, next) { // 分成兩個fetch是因為�
   });
 });
 
+router.post('/fakeData', async (req, res) => {
+  const {
+    body: {
+      offical_time,
+      date,
+      map_id,
+      gender,
+      userName,
+      email,
+      map_name,
+      user_id
+    },
+    con
+  } = req;
+
+  try {
+    const trimEmail = email.trim();
+    const e_mail = trimEmail.toLowerCase();
+    const nick_name = userName.trim();
+    const sql = `
+    INSERT INTO ?? (
+      offical_time,
+      date,
+      map_id,
+      gender,
+      nick_name,
+      e_mail,
+      map_name,
+      user_id
+    )
+    value (
+      '${offical_time}',
+      '${date}',
+      ${map_id},
+      ${gender},
+      '${nick_name}',
+      '${e_mail}',
+      '${map_name}',
+      '${user_id}'
+    );`;
+    await con.query(sql, 'run_rank', async (err, rows) => {
+      if (err) {
+        console.log('!!!!!', err);
+        return res.status(500).send({
+          errorMessage: err.sqlMessage
+        });
+      }
+      res.send({
+        offical_time,
+        date,
+        map_id,
+        gender,
+        userName,
+        email,
+        map_name
+      });
+    });
+  } catch (err) {
+    console.log('~~~~~', err);
+    res.status(500).send({
+      errorMessage: '請檢查假資料欄位格式是否正確'
+    });
+  }
+});
+
+router.get('/todayRank', function(req, res, next) {
+  const {
+    con,
+    query: {
+      start_date,
+      end_date,
+      map_id
+    }
+  } = req;
+
+  const sql = `
+SELECT distinct a.rank AS rank
+     , a.map_id
+     , a.activity_duration
+     , a.user_race_status
+     , a.e_mail
+     , a.login_acc
+     , a.gender
+  FROM (SELECT race_id
+             , r.map_id
+             , r.activity_duration
+             , r.user_race_status
+             , p.e_mail
+             , p.login_acc
+             , p.gender
+             , @prev := @curr
+             , @curr := r.activity_duration
+             , @rank := IF(@prev = @curr, @rank, @rank + 1) AS rank
+          FROM race_data as r,
+          user_profile as p
+             , (SELECT @curr := null
+                     , @prev := null
+                     , @rank := 0) s
+          where r.user_race_status = 3
+          and
+          r.user_id = p.user_id
+          and
+          r.activity_duration > '00:00:10.000'
+          and
+          r.time_stamp
+          between ${start_date} and ${end_date}
+          and
+          r.map_id = ${map_id}
+          ORDER BY r.activity_duration) a;
+;`;
+
+  con.query(sql, 'race_event_info', function(err, rows) {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    return res.json(rows);
+  });
+});
 // Exports
 module.exports = router;

@@ -1,0 +1,39 @@
+<div class="justify-content-end">
+  <button class="alatech-btn alatech-btn--default" title="重新整理"
+    (click)="getData()"
+  >
+    重新整理
+  </button>
+</div>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">姓名</th>
+      <th scope="col">email</th>
+      <th scope="col">phone</th>
+      <th scope="col">年紀範圍</th>
+      <th scope="col">性別</th>
+      <th scope="col">身分證字號</th>
+      <th scope="col">地址</th>
+      <th scope="col">付款方式</th>
+      <th scope="col">狀態</th>
+      <th scope="col">票卷編號</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of results">
+      <td><input type="checkbox" /></td>
+      <td>{{ item.login_acc}}</td>
+      <td>{{ item.e_mail}}</td>
+      <td>{{ item.phone}}</td>
+      <td>{{ item.age_range}}</td>
+      <td>{{ item.gender | sex }}</td>
+      <td>{{ item.id_number}}</td>
+      <td>{{ item.address}}</td>
+      <td>{{ item.pay_method}}</td>
+      <td>{{ item.status}}</td>
+      <td>{{ item.ticket_id }}</td>
+    </tr>
+  </tbody>
+</table>

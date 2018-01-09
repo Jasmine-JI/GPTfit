@@ -1,0 +1,212 @@
+<form novalidate #f="ngForm"
+  (ngSubmit)="enroll(f)"
+  class="form modify-password__form"
+>
+  <div>
+    <ul class="tablist">
+      <li class="tablist__tab" title="現場報名" [class.tablist__tab--selected]="tabIdx === 0" (click)="selectTab(0)">
+        現場報名
+      </li>
+      <li class="tablist__tab" title="報名設定" [class.tablist__tab--selected]="tabIdx === 1" (click)="selectTab(1)">
+        報名設定
+      </li>
+    </ul>
+  </div>
+  <div style="padding: 30px;border: 1px solid #ccc;margin: -1px 0px 0px;">
+    <div *ngIf="tabIdx === 0">
+      <div class="form-group">
+        <div class="form-group ">
+          <div class="row">
+            <div class="col-md-5 text-right">
+              <label class="form__label--required">姓名:</label>
+            </div>
+            <div class="col-md-5">
+              <input type="text" autocomplete="off" class="form-control form-field" name="userName" [(ngModel)]="formData.userName" #userName="ngModel"
+                minlength="1" [class.form-field--invalid]="(userName.errors?.required && userName.touched) || (f.submitted && userName.errors?.required)"
+                required />
+              <div class="form__message" *ngIf="(userName.errors?.required && userName.touched) || (f.submitted && userName.errors?.required)">
+                  userName is required.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-md-5 text-right">
+            <label class="form__label--required">電子郵件:</label>
+          </div>
+          <div class="col-md-5">
+            <input type="email" autocomplete="off" class="form-control form-field" name="email" [(ngModel)]="formData.email" #email="ngModel"
+              minlength="1" pattern="^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$" required
+              [class.form-field--invalid]="(email.errors?.required && email.touched)  || (email.hasError('pattern') && email.touched) || (f.submitted && email.errors?.required) || emailErr.length > 0"
+             (keyup)="onEmailChange($event, f)"
+              />
+              <i class="fa fa-spinner fa-pulse fa-1x fa-fw spinner" [class.spinner-hidden]="!isEmailLoading"></i>
+              <div style="color: #999;font-size: 10px;">
+               ※請填上您申請的Cloud Run雲跑帳號,以免成績無法登錄
+              </div>
+            <div class="form__message" *ngIf="email.errors?.required && email.touched || (f.submitted && email.errors?.required)">
+              Email is required.
+            </div>
+            <div class="form__message" *ngIf="email.hasError('pattern') && email.touched">
+              信箱格式不正確
+            </div>
+            <div class="form__message" *ngIf="emailErr.length > 0">
+              {{ emailErr }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-md-5 text-right">
+            <label class="form__label--required">行動電話:</label>
+          </div>
+          <div class="col-md-5">
+            <input type="tel" autocomplete="off" class="form-control form-field" name="phone" [(ngModel)]="formData.phone" #phone="ngModel"
+              required [class.form-field--invalid]="(phone.errors?.required && phone.touched) || (f.submitted && phone.errors?.required) || phoneErr.length > 0"
+              (keyup)="onPhoneChange($event, f)"
+            />
+            <i class="fa fa-spinner fa-pulse fa-1x fa-fw spinner" [class.spinner-hidden]="!isPhoneLoading"></i>
+            <div class="form__message" *ngIf="phone.errors?.required && phone.touched || (f.submitted && phone.errors?.required)">
+              Phone is required.
+            </div>
+            <div class="form__message" *ngIf="phoneErr.length > 0">
+              {{ phoneErr }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-md-5 text-right">
+            <label>年齡範圍:</label>
+          </div>
+          <div class="col-md-5">
+            <select name="ageRange" [(ngModel)]="formData.ageRange" class="form-field">
+              <option value="15歲以下">15歲以下</option>
+              <option value="16~20歲">16~20歲</option>
+              <option value="21~25歲">21~25歲</option>
+              <option value="26~30歲">26~30歲</option>
+              <option value="31~35歲">31~35歲</option>
+              <option value="36~40歲">36~40歲</option>
+              <option value="41~45歲">41~45歲</option>
+              <option value="46~50歲">46~50歲</option>
+              <option value="51~55歲">51~55歲</option>
+              <option value="56~60歲">56~60歲</option>
+              <option value="61歲以上">61歲以上</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-md-5 text-right">
+            <label>性別:</label>
+          </div>
+          <div class="col-md-5">
+            <select name="gender" [(ngModel)]="formData.gender" class="form-field">
+              <option value=2>不透漏</option>
+              <option value=0>男生</option>
+              <option value=1>女生</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-md-5 text-right">
+            <label class="form__label--required">身分證字號:</label>
+          </div>
+          <div class="col-md-5">
+            <input type="text" autocomplete="off" class="form-control form-field" name="idNumber" [(ngModel)]="formData.idNumber" #idNumber="ngModel"
+              maxlength="10"
+              required [class.form-field--invalid]="(idNumber.errors?.required && idNumber.touched) || (isIDFormatErr || isIDEnroll) || (f.submitted && idNumber.errors?.required) || idNumErr.length > 0"
+              (keyup)="onIDNumChange($event, f)"
+            />
+            <i class="fa fa-spinner fa-pulse fa-1x fa-fw spinner" [class.spinner-hidden]="!isIDNumLoading"></i>
+            <div class="form__message" *ngIf="idNumber.errors?.required && idNumber.touched || (f.submitted && idNumber.errors?.required)">
+              IDNumber is required.
+            </div>
+            <div class="form__message" *ngIf="isIDFormatErr">
+              身分證字號格式錯誤
+            </div>
+            <div class="form__message" *ngIf="isIDEnroll">
+              此身分證字號已報名
+            </div>
+            <div class="form__message" *ngIf="idNumErr.length > 0">
+              {{ idNumErr }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="row">
+          <div class="col-md-5 text-right">
+            <label class="form__label--required">地址:</label>
+          </div>
+          <div class="col-md-5">
+            <input type="text" autocomplete="off" class="form-control form-field" name="address" [(ngModel)]="formData.address" #address="ngModel"
+              required [class.form-field--invalid]="(address.errors?.required && address.touched) || (f.submitted && address.errors?.required)"
+            />
+            <div class="form__message" *ngIf="address.errors?.required && address.touched || (f.submitted && address.errors?.required)">
+              Address is required.
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- <div class="form-group">
+        <div class="row">
+          <div class="col-md-5 text-right">
+            <label class="form__label--required">活動場次:</label>
+          </div>
+          <div class="col-md-5">
+            <select name="event_seesion" [(ngModel)]="event_seesion" class="form-field">
+              <option [value]=2>不透漏</option>
+              <option [value]=0>男生</option>
+              <option [value]=1>女生</option>
+            </select>
+          </div>
+        </div>
+      </div> -->
+    </div>
+
+    <div class="form-group" *ngIf="tabIdx === 1">
+      <div class="row">
+        <div class="col-md-5 text-right">
+          <label>上傳報名檔案<span style="color:#cb5e5e">(限工作人員操作)</span>:</label>
+        </div>
+        <div class="col-md-5">
+          <app-upload-file
+            [maxFileSize]="maxFileSize"
+            [disabled]="isUploading"
+            [btnText]="this.fileLink ? reloadFileText : chooseFileText"
+            [isLoading]="isUploading"
+            [accept]="acceptFileExtensions.join()"
+            (onChange)="handleAttachmentChange($event)"
+          ></app-upload-file>
+          <a href (click)="downloadFile($event)">{{ fileName }}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="alatech-footer">
+    <div class="justify-content-end">
+      <a *ngIf="tabIdx === 1" class="alatech-btn alatech-btn--default" title="預覽目前參賽名單" target="_blank" href="/dashboardalaala/enroll/{{ event_id }}/preview?ipm=s&&session_id={{ session_id }}">
+        預覽
+      </a>
+      <button class="alatech-btn alatech-btn--default"
+        [disabled]="isBtnDisabled"
+      >
+        送出
+      </button>
+      <button class="alatech-btn alatech-btn--default" [disabled]="isBtnDisabled" (click)="goBack()">
+        返回
+      </button>
+    </div>
+  </div>
+</form>
+
+
+

@@ -98,3 +98,13 @@ export function debounce(func, wait, immediate) {
 
   return debounced;
 };
+
+export function setLocalStorageObject(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+export function getLocalStorageObject(key) {
+  const value = localStorage.getItem(key);
+  return value && JSON.parse(value);
+}
+
