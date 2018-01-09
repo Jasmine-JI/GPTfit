@@ -6,8 +6,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { PortalRoutingModule } from './portal-routing.module';
 import { PortalComponent } from './portal.component';
 import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
-import { SexPipe } from '@shared/pipes/sex.pipe';
-import { TimePipe } from '@shared/pipes/time.pipe';
+import { SharedPipes } from '@shared/pipes/shared-pipes';
 import { MapInfoComponent } from './components/map-info/map-info.component';
 import { MapService } from '@shared/services/map.service';
 import { RankFormService } from './services/rank-form.service';
@@ -30,7 +29,8 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
     HttpClientModule,
     FormsModule,
     MyDatePickerModule,
-    SharedComponentsModule
+    SharedComponentsModule,
+    SharedPipes
   ],
   providers: [
     MapService,
@@ -47,8 +47,6 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
   declarations: [
     PortalComponent,
     LeaderboardComponent,
-    SexPipe,
-    TimePipe,
     MapInfoComponent,
     PasswordComponent
   ]

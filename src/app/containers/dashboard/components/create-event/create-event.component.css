@@ -1,0 +1,52 @@
+.session_area {
+  background-color: #f2f2f2;
+  padding: 30px 0px;
+  position: relative;
+}
+.session_area + .session_area {
+  margin-top: 15px;
+}
+
+.time_picker {
+  display: inline-block;
+  width: 180px;
+
+  margin-left: 15px;
+}
+.time_picker input {
+  display: inline-block;
+  width: 150px;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+
+.time_picker span {
+  display: inline-block;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #ccc;
+  margin-left: -4px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+.rank__datepicker {
+  vertical-align: middle;
+  display: inline-block;
+}
+
+.add-sessions {
+  color: #4a90e2;
+}
+.add-sessions:hover {
+  cursor: pointer;
+}
+
+.remove-sessions {
+  position: absolute;
+  z-index: 2;
+  top: 15px;
+  right: 15px;
+  background-color: transparent;
+  border: none;
+}

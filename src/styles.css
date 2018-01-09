@@ -1,4 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
+/* @import "~@angular/material/prebuilt-themes/pink-bluegrey.css"; */
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+
 body,
 html {
   font-family: 'Microsoft JhengHei', sans-serif !important;
@@ -17,6 +20,7 @@ html {
   background-color: transparent;
   outline: 0;
 }
+
 
 .form-field.form-field--invalid {
   border: 1px solid #c75353;
@@ -42,6 +46,9 @@ html {
 
 .button:hover {
   background: #1c89bf;
+}
+button:focus {
+  outline: none!important;
 }
 
 .button:hover,
@@ -95,4 +102,123 @@ html {
   width: 100vw;
   opacity: 1;
   transition: opacity .3s ease-in-out;
+}
+
+.form__label--required:before {
+  content: '*';
+  color: #cb5e5e;
+}
+
+.form__message {
+  color: #cb5e5e;
+  font-size: 12px;
+}
+
+.icon-btn {
+  display: inline-block;
+  vertical-align: top;
+  padding: 0;
+  margin: 0;
+  border: none;
+  line-height: 1;
+  outline: 0;
+  background-color: transparent;
+}
+
+.icon-btn:hover {
+  cursor: pointer;
+}
+
+.icon_fa.fa:hover {
+  color: #9b9b9b;
+}
+.icon_fa.fa {
+  font-size: 22px;
+  color: #777;
+}
+.icon-btn + .icon-btn {
+  margin-left: 10px;
+}
+.alatech-btn {
+  display: inline-block;
+  vertical-align: middle;
+  min-width: 75px;
+  height: 30px;
+  padding: 0;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: transparent;
+  border-radius: 4px;
+  background-color: transparent;
+  font-size: 12px;
+  font-weight: 400;
+}
+.alatech-btn:hover {
+  cursor: pointer;
+}
+.alatech-btn[disabled] {
+  opacity: .65;
+  cursor: not-allowed;
+}
+a.alatech-btn {
+  line-height: 30px;
+  text-align: center;
+  text-decoration: none;
+}
+a.alatech-btn:hover {
+  text-decoration: none;
+}
+.alatech-btn + .alatech-btn {
+  margin-left: 10px;
+}
+.alatech-btn--default {
+  border-color: #9b9b9b;
+  background-color: #fff;
+  color: #777;
+}
+
+.alatech-btn--default[disabled] {
+  background-color: #EFEFEF;
+}
+.alatech-btn--default:hover {
+  border-color: #CCC;
+  color: #9B9B9B;
+}
+.alatech-btn--default[disabled]:hover {
+  border-color: #9B9B9B;
+  color: #777;
+}
+
+.alatech-table__cell--head {
+  font-weight: 700;
+  font-size: 14px;
+  background-image: linear-gradient(to bottom, #eee, #d8d8d8);
+  text-align: center;
+}
+
+.alatech-table__cell {
+  padding: 10px;
+  border-top: 1px solid #ccc;
+  color: #4a4a4a;
+  text-align: center;
+  font-size: 18px;
+}
+
+.alatech-table {
+  border: 1px solid #ccc;
+}
+
+.alatech-footer {
+  text-align: right;
+  height: 45px;
+  background-color: #f0eeee;
+  padding: 8px 11px 7px;
+}
+
+@media print {
+  .alatech-btn {
+    display: none;
+  }
 }
