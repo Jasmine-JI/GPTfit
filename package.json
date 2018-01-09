@@ -61,6 +61,7 @@
     "popper.js": "^1.12.6",
     "query-string": "^5.0.1",
     "rxjs": "^5.5.2",
+    "uglify-es": "3.2.2",
     "zone.js": "^0.8.14"
   },
   "devDependencies": {

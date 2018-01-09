@@ -124,7 +124,8 @@ app.use(function (req, res, next) {
   } else {
     allowedOrigins = [
       'http://alatechcloud.alatech.com.tw',
-      'http://152.101.90.130'
+      'http://152.101.90.130',
+      'http://192.168.1.235:8080'
     ];
   }
   var origin = req.headers.origin;

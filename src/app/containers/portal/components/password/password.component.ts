@@ -38,7 +38,8 @@ export class PasswordComponent implements OnInit {
       this.router.navigateByUrl('/404');
     }
   }
-  reset({value, valid}) {
+  reset({value, valid}, e) {
+    e.preventDefault();
     const {
       newPassword,
       confirmPassword
