@@ -5,9 +5,10 @@ import { Page404Component } from './page404/page404.component';
 import { LoadingComponent } from './loading/loading.component';
 import { PaginationComponent } from './pagination/pagination.component';
 import { UploadFileComponent } from './upload-file/upload-file.component';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   declarations: [
     NavbarComponent,
     Page404Component,
