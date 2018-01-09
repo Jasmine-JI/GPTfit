@@ -321,13 +321,18 @@ SELECT distinct a.rank AS rank
              , @curr := r.activity_duration
              , @rank := IF(@prev = @curr, @rank, @rank + 1) AS rank
           FROM race_data as r,
-          user_profile as p
+          user_profile as p,
+          race_map_info as m
              , (SELECT @curr := null
                      , @prev := null
                      , @rank := 0) s
           where r.user_race_status = 3
           and
           r.user_id = p.user_id
+	  and
+          r.map_id = m.map_index
+          and
+          r.activity_distance >= m.race_total_distance * 1000
           and
           r.activity_duration > '00:00:10.000'
           and
