@@ -7,7 +7,7 @@ import { PasswordComponent } from './components/password/password.component';
 
 const routes: Routes = [
   {
-    path: 'portal', component: PortalComponent,
+    path: '', component: PortalComponent,
     children: [
       {
         path: 'resetpassword', component: PasswordComponent,
