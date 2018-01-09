@@ -171,7 +171,6 @@ export class EnrollFormComponent implements OnInit {
       return this.eventEnrollService
         .uploadFile(formData)
         .subscribe(results => {
-          console.log(results);
           window.alert(results);
         });
     }
@@ -202,7 +201,6 @@ export class EnrollFormComponent implements OnInit {
     }
   }
   showCheckEnrollDialog() {
-    console.log('!!!');
     this.dialog.open(CheckEnrollDialogComponent, { hasBackdrop: true });
   }
   downloadFile(e) {
