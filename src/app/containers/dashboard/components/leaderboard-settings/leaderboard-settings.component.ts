@@ -15,22 +15,13 @@ export class LeaderboardSettingsComponent implements OnInit {
   map_id = 1;
 
   constructor() {
-    // this.timer = setInterval(() => {
-    //   console.log('Ya!!!');
-    // }, 5000);
   }
 
   ngOnInit() {}
   public onTimeStartChange(e: any): void {
     this.time_start = moment(e.target.value).unix();
-    console.log('this.time_start: ', this.time_start);
   }
   public onTimeEndChange(e: any): void {
     this.time_end = moment(e.target.value).unix();
-  }
-  getTime() {
-
-
-    console.log('timeStart: ', this.timeStart);
   }
 }
