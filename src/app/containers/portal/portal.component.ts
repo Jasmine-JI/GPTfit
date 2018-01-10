@@ -127,7 +127,6 @@ export class PortalComponent implements OnInit {
   }
   selectMap(id) {
     this.mapId = id;
-    this.globalEventsManager.getMapId(this.mapId);
   }
   onSubmit(form, event: any) {
     event.stopPropagation();
@@ -199,6 +198,7 @@ export class PortalComponent implements OnInit {
     this.rankFormService.getRank(params).subscribe(res => {
       this.response = res;
       this.globalEventsManager.showLoading(false);
+      this.globalEventsManager.getMapId(this.mapId);
       this.isCollapseOpen = false;
       this.isMaskShow = false;
       const { datas, meta } = this.response;
