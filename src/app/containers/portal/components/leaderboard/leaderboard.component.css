@@ -267,31 +267,32 @@ tr.tr-only-hide {
   }
   /*讓tr變成區塊主要讓他有個區塊*/
   .table-rwd tr {
-    display: block;
+    /* display: block; */
     border-top: 1px solid #ccc;
     border-bottom: 1px solid #ccc;
   }
   .table-rwd td {
-    text-align: left;
+    /* text-align: left; */
     font-size: 15px;
+    /*
     overflow: hidden;
     width: 100%;
     display: block;
     border: none;
-    padding: 15px;
+    padding: 15px; */
   }
   .table-rwd tbody td:before {
     /*最重要的就是這串*/
-    content: attr(data-th) " : ";
+    /* content: attr(data-th) " : "; */
     /*最重要的就是這串*/
-    display: inline-block;
-    text-transform: uppercase;
-    font-weight: bold;
-    margin-right: 10px;
+    /* display: inline-block; */
+    /* text-transform: uppercase; */
+    /* font-weight: bold; */
+    /* margin-right: 10px; */
     /* color: #D20B2A; */
   }
   .table-rwd tbody td.no-data:before {
-    content: '';
+    /* content: ''; */
   }
 
 
