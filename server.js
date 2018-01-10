@@ -78,7 +78,15 @@ function scheduleCronstyle() {
       and
       FROM_UNIXTIME(r1.time_stamp, "%Y-%m-%d") = FROM_UNIXTIME(r2.time_stamp, "%Y-%m-%d")
       )
-      and r1.user_id = p.user_id and r1.map_id = m.map_index order by user_id;
+      and
+      r1.user_id = p.user_id
+      and
+      r1.map_id = m.map_index
+      and
+      r1.activity_distance >= m.race_total_distance * 1000
+      and
+      r1.activity_duration > '00:00:10.000'
+      order by user_id;
     `;
 
     connection.query(sql, 'run_rank', function (err, rows) {
