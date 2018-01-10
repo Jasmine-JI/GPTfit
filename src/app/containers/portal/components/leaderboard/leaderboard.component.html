@@ -99,8 +99,10 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let data of rankDatas" [ngClass]="{'here' : (data.e_mail === email) && isFoundUser}">
-                <td class="ranking-table__cell" (click)="toMapInfoPage(data.user_id)"
+              <tr *ngFor="let data of rankDatas" [ngClass]="{'here' : (data.e_mail === email) && isFoundUser}"
+               (click)="toMapInfoPage(data.user_id)" class="ranking-link"
+              >
+                <td class="ranking-table__cell"
                   data-th="Rank"
                 >
                   <a class="ranking-link">{{ data.rank }}</a>
