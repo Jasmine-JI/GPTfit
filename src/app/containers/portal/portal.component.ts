@@ -7,7 +7,8 @@ import { RankFormService } from './services/rank-form.service';
 import {
   buildUrlQueryStrings,
   buildPageMeta,
-  debounce
+  debounce,
+  getUrlQueryStrings
 } from '@shared/utils/';
 import { Router } from '@angular/router';
 import { IMyDpOptions } from 'mydatepicker';
@@ -31,17 +32,37 @@ export class PortalComponent implements OnInit {
     selectorWidth: ((window.screen.width - 60) / 2).toString(),
     dateFormat: 'yyyy-mm-dd',
     disableUntil: { year: 2017, month: 12, day: 4 },
-    disableSince: { year: new Date().getFullYear(), month: new Date().getMonth() + 1, day: new Date().getUTCDate() + 1 }
+    disableSince: {
+      year: new Date().getFullYear(),
+      month: new Date().getMonth() + 1,
+      day: new Date().getUTCDate() + 1
+    }
   };
   endDateOptions: IMyDpOptions = {
     height: '30px',
     selectorWidth: ((window.screen.width - 60) / 2).toString(),
     dateFormat: 'yyyy-mm-dd',
     disableUntil: { year: 2017, month: 12, day: 4 },
-    disableSince: { year: new Date().getFullYear(), month: new Date().getMonth() + 1, day: new Date().getUTCDate() + 1 }
+    disableSince: {
+      year: new Date().getFullYear(),
+      month: new Date().getMonth() + 1,
+      day: new Date().getUTCDate() + 1
+    }
   };
-  startDay: any = { date: { year: new Date().getFullYear(), month: new Date().getMonth() + 1, day: new Date().getUTCDate() } };
-  finalDay: any = { date: { year: new Date().getFullYear(), month: new Date().getMonth() + 1, day: new Date().getUTCDate() } };
+  startDay: any = {
+    date: {
+      year: new Date().getFullYear(),
+      month: new Date().getMonth() + 1,
+      day: new Date().getUTCDate()
+    }
+  };
+  finalDay: any = {
+    date: {
+      year: new Date().getFullYear(),
+      month: new Date().getMonth() + 1,
+      day: new Date().getUTCDate()
+    }
+  };
   startDate: string;
   endDate: string;
   date: any;
@@ -62,6 +83,7 @@ export class PortalComponent implements OnInit {
   emailOptions: any; // select async options
   isSelectLoading = false;
   tempEmail: string;
+  isEventTab: boolean;
 
   constructor(
     private router: Router,
@@ -75,13 +97,21 @@ export class PortalComponent implements OnInit {
     // this.startDateOptions.selectorWidth = ((window.screen.width - 60) / 2).toString();
     this.startDate = this.convertDateString(this.startDay);
     this.endDate = this.convertDateString(this.finalDay);
-    this.globalEventsManager.showNavBarEmitter.subscribe((mode) => {
+    this.globalEventsManager.showNavBarEmitter.subscribe(mode => {
       this.isMaskShow = mode;
     });
-    this.globalEventsManager.showCollapseEmitter.subscribe((mode) => {
+    this.globalEventsManager.showCollapseEmitter.subscribe(mode => {
       this.isCollapseOpen = mode;
+      if (this.isCollapseOpen) {
+        const { event } = getUrlQueryStrings(location.search);
+        if (event && event.length > 0) {
+          this.isEventTab = true;
+        } else {
+          this.isEventTab = false;
+        }
+      }
     });
-    this.globalEventsManager.getMapOptionsEmitter.subscribe((options) => {
+    this.globalEventsManager.getMapOptionsEmitter.subscribe(options => {
       const { mapDatas, monthDatas } = options;
       if (mapDatas) {
         this.mapDatas = mapDatas;
@@ -91,7 +121,7 @@ export class PortalComponent implements OnInit {
         this.month = monthDatas[0].month;
       }
     });
-    this.globalEventsManager.getMapIdEmitter.subscribe((id) => {
+    this.globalEventsManager.getMapIdEmitter.subscribe(id => {
       this.mapId = id;
     });
   }
@@ -132,26 +162,21 @@ export class PortalComponent implements OnInit {
   }
   convertDateString(_date) {
     if (_date) {
-      const {
-        date: {
-          day,
-        month,
-        year
-        }
-      } = _date;
+      const { date: { day, month, year } } = _date;
       return year.toString() + '-' + month.toString() + '-' + day.toString();
     }
-    return new Date().getFullYear() + '-' + new Date().getMonth() + 1 + '-' + new Date().getUTCDate();
+    return (
+      new Date().getFullYear() +
+      '-' +
+      new Date().getMonth() +
+      1 +
+      '-' +
+      new Date().getUTCDate()
+    );
   }
   convertDateFormat(_date) {
     if (_date) {
-      const {
-        date: {
-          day,
-        month,
-        year
-        }
-      } = _date;
+      const { date: { day, month, year } } = _date;
       const data = {
         date: {
           year,
@@ -161,13 +186,21 @@ export class PortalComponent implements OnInit {
       };
       return data;
     }
-    return { date: { year: new Date().getFullYear(), month: new Date().getMonth() + 1, day: new Date().getUTCDate() } };
+    return {
+      date: {
+        year: new Date().getFullYear(),
+        month: new Date().getMonth() + 1,
+        day: new Date().getUTCDate()
+      }
+    };
   }
   fetchRankForm(params) {
     this.globalEventsManager.showLoading(true);
     this.rankFormService.getRank(params).subscribe(res => {
       this.response = res;
       this.globalEventsManager.showLoading(false);
+      this.isCollapseOpen = false;
+      this.isMaskShow = false;
       const { datas, meta } = this.response;
       this.rankDatas = datas;
       const data = {
@@ -182,7 +215,8 @@ export class PortalComponent implements OnInit {
         groupId: this.groupId
       };
       this.globalEventsManager.getRankForm(data);
-      this.distance = this.rankDatas.length > 0 && this.rankDatas[0].race_total_distance;
+      this.distance =
+        this.rankDatas.length > 0 && this.rankDatas[0].race_total_distance;
       this.meta = buildPageMeta(meta);
       const { currentPage, maxPage } = this.meta;
       this.isFirstPage = currentPage === 1;
@@ -253,5 +287,11 @@ export class PortalComponent implements OnInit {
   clear() {
     this.email = '';
     this.isClearIconShow = false;
+  }
+  touchMask() {
+    this.isCollapseOpen = false;
+    this.globalEventsManager.openCollapse(this.isCollapseOpen);
+    this.isMaskShow = false;
+    this.globalEventsManager.closeCollapse(false);
   }
 }
