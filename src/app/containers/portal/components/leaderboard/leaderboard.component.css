@@ -63,13 +63,14 @@ table>tbody>tr.here:hover {
 
 td > a.ranking-link {
   color: #157fcc;
-  cursor: pointer;
 }
 td > a.ranking-link:hover {
   text-decoration: none;
   color: #157fcc;
 }
-
+.ranking-link {
+  cursor: pointer;
+}
 hr {
   border-color: #ddd;
 }
@@ -234,6 +235,10 @@ tr.tr-only-hide {
 }
 
 @media (max-width: 991px) {
+  .tablist__tab {
+    width: 50%;
+  }
+
   .searchRank-bar {
     display: none;
   }

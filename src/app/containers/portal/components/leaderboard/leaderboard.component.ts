@@ -223,6 +223,15 @@ export class LeaderboardComponent implements OnInit {
     this.globalEventsManager.showLoadingEmitter.subscribe(isLoading => {
       this.isLoading = isLoading;
     });
+    this.globalEventsManager.getMapIdEmitter.subscribe(id => {
+      if (id && this.mapDatas) {
+        this.mapId = id;
+        this.idx = this.mapDatas.findIndex(
+          _data => _data.map_id === Number(this.mapId)
+        );
+        this.mapName = this.mapDatas[this.idx].map_name;
+      }
+    });
   }
   onSubmit(form, event: any) {
     event.stopPropagation();
