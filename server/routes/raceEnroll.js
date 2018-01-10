@@ -306,9 +306,11 @@ router.post('/upload', async (req, res, next) => {
           if (map[key] === 'session_name') {
             var idx_session = events.findIndex(_event => _event.session_name === value);
             if (idx_session > -1) {
-              console.log(idx_session);
               resultData[map[key]] = events[idx_session].session_name;
-              console.log('idx: ', idx_session);
+              resultData['session_id'] = events[idx_session].session_id;
+            } else {
+              resultData[map[key]] = value;
+              resultData['session_id'] = 0;
             }
 
           }
@@ -316,9 +318,8 @@ router.post('/upload', async (req, res, next) => {
             var idx_event = events.findIndex(_event => _event.event_time_name === value);
             if (idx_event > -1) {
               resultData[map[key]] = events[idx_event].event_id;
-              console.log('idx: ', idx_event);
             } else {
-              resultData[map[key]] = 1;
+              resultData[map[key]] = 0;
             }
           }
           if (map[key] === 'e_mail') {
@@ -370,6 +371,7 @@ router.post('/upload', async (req, res, next) => {
         country_code,
         ticket_group,
         session_name,
+        session_id,
         pay_method,
         status,
         event_id,
