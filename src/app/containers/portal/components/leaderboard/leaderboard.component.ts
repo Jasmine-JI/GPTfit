@@ -25,7 +25,7 @@ export class LeaderboardComponent implements OnInit {
   monthDatas: any; // 有資料的月份
   mapDatas: any; // 有資料的地圖
   response: any; // rankDatas 回的res載體
-  mapId = 5; // 預設為第一張地圖
+  mapId = 1; // 預設為第一張地圖
   idx: number;
   month = (new Date().getMonth() + 1).toString();
   meta: any; // api回的meta資料
@@ -42,7 +42,7 @@ export class LeaderboardComponent implements OnInit {
   isFoundUser = false; // 標記目標email
   bgImageUrl: string; // 背景圖
   distance: number; // 該地圖的距離資料
-  tabIdx = 0; // 目前代表為一般賽事排行版
+  tabIdx = 1; // 目前代表為英達高空
   mapName: string; // 該地圖名字
   isLoading = false;
   currentPage: number;
@@ -109,6 +109,10 @@ export class LeaderboardComponent implements OnInit {
 
     params = params.set('startDate', this.startDate);
     params = params.set('endDate', this.endDate);
+    if (this.tabIdx === 1) {
+      params = params.set('event_id', '201811014');
+    }
+
     if (!isObjectEmpty(queryStrings)) {
       const {
         pageNumber,
@@ -145,7 +149,7 @@ export class LeaderboardComponent implements OnInit {
         params = params.set('gender', groupId);
       }
       if (event) {
-        params = params.set('event_id', '1');
+        params = params.set('event_id', '201811014');
         params = params.set('startDate', '2018-01-10');
         params = params.set('endDate', '2018-02-09');
         this.tabIdx = 1;
@@ -250,7 +254,7 @@ export class LeaderboardComponent implements OnInit {
     if (this.tabIdx === 1) {
       params = params.set('startDate', '2018-01-10');
       params = params.set('endDate', '2018-02-09');
-      params = params.set('event_id', '1');
+      params = params.set('event_id', '201811014');
     } else {
       params = params.set('startDate', this.startDate);
       params = params.set('endDate', this.endDate);
@@ -322,7 +326,7 @@ export class LeaderboardComponent implements OnInit {
     if (this.tabIdx === 1) {
       params = params.set('startDate', '2018-01-10');
       params = params.set('endDate', '2018-02-09');
-      params = params.set('event_id', '1');
+      params = params.set('event_id', '201811014');
     } else {
       params = params.set('startDate', this.startDate);
       params = params.set('endDate', this.endDate);
@@ -354,7 +358,7 @@ export class LeaderboardComponent implements OnInit {
         pageNumber: this.meta.currentPage,
         mapId: this.mapId,
         groupId: this.groupId,
-        event: 1
+        event: '201811014'
       };
     } else {
       paramDatas = {
@@ -402,7 +406,7 @@ export class LeaderboardComponent implements OnInit {
     if (this.tabIdx === 1) {
       params = params.set('startDate', '2018-01-10');
       params = params.set('endDate', '2018-02-09');
-      params = params.set('event_id', '1');
+      params = params.set('event_id', '201811014');
     } else {
       params = params.set('startDate', this.startDate);
       params = params.set('endDate', this.endDate);
@@ -460,7 +464,7 @@ export class LeaderboardComponent implements OnInit {
     if (this.tabIdx === 1) {
       params = params.set('startDate', '2018-01-10');
       params = params.set('endDate', '2018-02-09');
-      params = params.set('event_id', '1');
+      params = params.set('event_id', '201811014');
     } else {
       params = params.set('startDate', this.startDate);
       params = params.set('endDate', this.endDate);
@@ -491,7 +495,7 @@ export class LeaderboardComponent implements OnInit {
     if (this.tabIdx === 1) {
       params = params.set('startDate', '2018-01-10');
       params = params.set('endDate', '2018-02-09');
-      params = params.set('event_id', '1');
+      params = params.set('event_id', '201811014');
     } else {
       params = params.set('startDate', this.startDate);
       params = params.set('endDate', this.endDate);
@@ -512,7 +516,7 @@ export class LeaderboardComponent implements OnInit {
     if (this.tabIdx === 1) {
       params = params.set('startDate', '2018-01-10');
       params = params.set('endDate', '2018-02-09');
-      params = params.set('event_id', '1');
+      params = params.set('event_id', '201811014');
       this.finalEventDate = '2018-02-09';
     } else {
       params = params.set('startDate', this.startDate);
