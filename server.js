@@ -55,11 +55,11 @@ function scheduleCronstyle() {
   schedule.scheduleJob('00 00 06 * * *', function () { // 每日早上六點
     const sql = "TRUNCATE TABLE ??";
     const sql2 = `
-      insert into ??
+      insert into run_rank
       select r1.activity_duration as offical_time,
       r1.user_id, FROM_UNIXTIME(r1.time_stamp, "%m") as month,
       FROM_UNIXTIME(r1.time_stamp, "%Y-%m-%d") as date, r1.map_id ,
-      r1.file_name, p.gender, p.nick_name, p.e_mail, m.map_name,
+      r1.file_name, p.gender, p.login_acc, p.e_mail, m.map_name,
       m.race_category, m.race_total_distance
       from race_data r1,
       user_profile as p,
@@ -77,15 +77,17 @@ function scheduleCronstyle() {
       FROM_UNIXTIME(r2.time_stamp, "%Y-%m-%d")  >= FROM_UNIXTIME(1512432000,  "%Y-%m-%d")
       and
       FROM_UNIXTIME(r1.time_stamp, "%Y-%m-%d") = FROM_UNIXTIME(r2.time_stamp, "%Y-%m-%d")
+      and
+      r2.map_id = m.map_index
+      and
+      r2.activity_distance >= m.race_total_distance * 1000
+      and
+      r2.activity_duration > '00:00:10.000'
       )
       and
       r1.user_id = p.user_id
       and
       r1.map_id = m.map_index
-      and
-      r1.activity_distance >= m.race_total_distance * 1000
-      and
-      r1.activity_duration > '00:00:10.000'
       order by user_id;
     `;
 

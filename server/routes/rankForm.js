@@ -47,7 +47,7 @@ router.get('/', function(req, res, next) {
     a.date,
     a.gender,
     a.month,
-    a.nick_name,
+    a.login_acc,
     a.map_name,
     a.race_category,
     a.race_total_distance,
@@ -245,14 +245,14 @@ router.post('/fakeData', async (req, res) => {
   try {
     const trimEmail = email.trim();
     const e_mail = trimEmail.toLowerCase();
-    const nick_name = userName.trim();
+    const login_acc = userName.trim();
     const sql = `
     INSERT INTO ?? (
       offical_time,
       date,
       map_id,
       gender,
-      nick_name,
+      login_acc,
       e_mail,
       map_name,
       user_id
@@ -262,7 +262,7 @@ router.post('/fakeData', async (req, res) => {
       '${date}',
       ${map_id},
       ${gender},
-      '${nick_name}',
+      '${login_acc}',
       '${e_mail}',
       '${map_name}',
       '${user_id}'
