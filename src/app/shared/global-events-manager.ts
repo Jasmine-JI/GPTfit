@@ -7,6 +7,7 @@ export class GlobalEventsManager {
 
   private _showMask: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private _openCollapse: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private _closeCollapse: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private _getMapOptions: BehaviorSubject<any> = new BehaviorSubject<any>([]);
   private _getMapId: BehaviorSubject<number> = new BehaviorSubject<number>(5);
   private _getRankForm = new BehaviorSubject<any>(undefined);
@@ -15,6 +16,7 @@ export class GlobalEventsManager {
 
   public showNavBarEmitter: Observable<boolean> = this._showMask.asObservable();
   public showCollapseEmitter: Observable<boolean> = this._openCollapse.asObservable();
+  public closeCollapseEmitter: Observable<boolean> = this._closeCollapse.asObservable();
   public getMapOptionsEmitter: Observable<any> = this._getMapOptions.asObservable();
   public getMapIdEmitter: Observable<number> = this._getMapId.asObservable();
   public getRankFormEmitter: Observable<Array<any>> = this._getRankForm.asObservable();
@@ -35,6 +37,9 @@ export class GlobalEventsManager {
     this._openCollapse.next(ifOpen);
   }
 
+  closeCollapse(ifClose: boolean) {
+    this._closeCollapse.next(ifClose);
+  }
   getMapOptions(mapOptions) {
     this._getMapOptions.next(mapOptions);
   }

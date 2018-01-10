@@ -36,6 +36,16 @@ export class NavbarComponent implements OnInit {
         this.validate();
       }
     }
+    this.globalEventsManager.closeCollapseEmitter.subscribe(mode => {
+      this.isCollapseShow = mode;
+      if (!this.isCollapseShow) {
+        this.isShowMask = false;
+        this.globalEventsManager.showMask(this.isShowMask);
+      }
+    });
+    this.globalEventsManager.showCollapseEmitter.subscribe(mode => {
+      this.isCollapseSearchShow = mode;
+    });
   }
   validate() {
     const pwd = window.prompt('請輸入密碼: ');
