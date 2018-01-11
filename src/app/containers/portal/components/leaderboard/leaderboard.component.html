@@ -91,7 +91,7 @@
         <div class="table-responsive">
           <table class="table table-rwd">
             <thead>
-              <tr class="tr-only-hide">
+              <tr class="">
                 <th class="ranking-table__cell--head">Rank</th>
                 <th class="ranking-table__cell--head">UserName</th>
                 <th class="ranking-table__cell--head">Gender</th>
@@ -99,13 +99,15 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let data of rankDatas" [ngClass]="{'here' : (data.e_mail === email) && isFoundUser}">
-                <td class="ranking-table__cell" (click)="toMapInfoPage(data.user_id)"
+              <tr *ngFor="let data of rankDatas" [ngClass]="{'here' : (data.e_mail === email) && isFoundUser}"
+               (click)="toMapInfoPage(data.user_id)" class="ranking-link"
+              >
+                <td class="ranking-table__cell"
                   data-th="Rank"
                 >
                   <a class="ranking-link">{{ data.rank }}</a>
                 </td>
-                <td class="ranking-table__cell" data-th="UserName">{{ data.nick_name }}</td>
+                <td class="ranking-table__cell" data-th="UserName">{{ data.login_acc }}</td>
                 <td class="ranking-table__cell" data-th="Gender">{{ data.gender | sex }}</td>
                 <td class="ranking-table__cell" data-th="Offical Time">{{ data.offical_time | time }}</td>
               </tr>
