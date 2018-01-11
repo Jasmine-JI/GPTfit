@@ -51,9 +51,9 @@ export class PortalComponent implements OnInit {
   };
   startDay: any = {
     date: {
-      year: new Date().getFullYear(),
-      month: new Date().getMonth() + 1,
-      day: new Date().getUTCDate()
+      year: 2017,
+      month: 12,
+      day: 5
     }
   };
   finalDay: any = {
