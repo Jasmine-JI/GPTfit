@@ -107,12 +107,6 @@ export class LeaderboardComponent implements OnInit {
     this.startDate = this.convertDateString(this.startDay);
     this.endDate = this.convertDateString(this.finalDay);
 
-    params = params.set('startDate', this.startDate);
-    params = params.set('endDate', this.endDate);
-    if (this.tabIdx === 1) {
-      params = params.set('event_id', '201811014');
-    }
-
     if (!isObjectEmpty(queryStrings)) {
       const {
         pageNumber,
@@ -153,7 +147,15 @@ export class LeaderboardComponent implements OnInit {
         params = params.set('startDate', '2018-01-10');
         params = params.set('endDate', '2018-02-09');
         this.tabIdx = 1;
+      } else {
+        this.tabIdx = 0;
       }
+    }
+    if (this.tabIdx === 1) {
+      params = params.set('event_id', '201811014');
+      params = params.set('startDate', '2018-01-10');
+      params = params.set('endDate', '2018-02-09');
+      params = params.set('mapId', this.mapId.toString());
     }
     this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`; // 背景圖 ，預設為取雅典娜
     const fetchMapOptions = this.rankFormService.getMapOptions();
