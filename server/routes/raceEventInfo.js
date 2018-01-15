@@ -11,10 +11,11 @@ router.get('/', function (req, res, next) {
       session_id
     }
   } = req;
-  const query1 = (event_id && session_id) ? `where event_id = ${event_id} and session_id = ${session_id}` : '';
+  const sessionQuery = session_id ? `and session_id = ${session_id}` : '';
+  const eventQuery = event_id ? `where event_id = ${event_id}  ${sessionQuery}` : '';
   const sql = `
   SELECT  * from ??
-  ${query1}
+  ${eventQuery}
   ;`;
 
   con.query(sql, 'race_event_info', function (err, rows) {
