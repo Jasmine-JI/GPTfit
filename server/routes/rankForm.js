@@ -301,7 +301,6 @@ router.get('/todayRank', function(req, res, next) {
       map_id
     }
   } = req;
-
   const sql = `
 SELECT distinct a.rank AS rank
      , a.map_id
