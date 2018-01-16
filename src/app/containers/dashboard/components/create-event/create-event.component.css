@@ -36,6 +36,7 @@
 }
 
 .add-sessions {
+  display: inline-block;
   color: #4a90e2;
 }
 .add-sessions:hover {
