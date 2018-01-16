@@ -14,27 +14,21 @@
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td class="alatech-table__cell" data-th="">第一場英達內部大對決(20180102-20180103)</td>
-        <td class="alatech-table__cell" data-th="">
-          <button class="icon-btn">
-            <i class="fa fa-pencil-square-o icon_fa"></i>
-          </button>
-          <button class="icon-btn">
-            <i class="fa fa-trash-o icon_fa"></i>
-          </button>
-        </td>
-      </tr>
-      <tr>
-        <td class="alatech-table__cell" data-th="">第一次台中高空夜跑賽(20180110-20180209)</td>
-        <td class="alatech-table__cell" data-th="">
-          <button class="icon-btn">
-            <i class="fa fa-pencil-square-o icon_fa"></i>
-          </button>
-          <button class="icon-btn">
-            <i class="fa fa-trash-o icon_fa"></i>
-          </button>
-        </td>
+      <ng-container *ngIf="events && events.length > 0">
+        <tr *ngFor="let event of events;let idx = index">
+          <td class="alatech-table__cell" data-th="">{{ event.event_name }}</td>
+          <td class="alatech-table__cell" data-th="">
+            <button class="icon-btn">
+              <i class="fa fa-pencil-square-o icon_fa"></i>
+            </button>
+            <button class="icon-btn" (click)="remove(event.event_id, idx)">
+              <i class="fa fa-trash-o icon_fa"></i>
+            </button>
+          </td>
+        </tr>
+      </ng-container>
+      <tr *ngIf="events && events.length === 0">
+        <td colspan="2" style="text-align: center">尚無活動賽事</td>
       </tr>
     </tbody>
   </table>
