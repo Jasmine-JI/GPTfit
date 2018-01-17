@@ -18,7 +18,7 @@
         <tr *ngFor="let event of events;let idx = index">
           <td class="alatech-table__cell" data-th="">{{ event.event_name }}</td>
           <td class="alatech-table__cell" data-th="">
-            <button class="icon-btn">
+            <button class="icon-btn" (click)="toEdit(event.event_id)">
               <i class="fa fa-pencil-square-o icon_fa"></i>
             </button>
             <button class="icon-btn" (click)="remove(event.event_id, idx)">

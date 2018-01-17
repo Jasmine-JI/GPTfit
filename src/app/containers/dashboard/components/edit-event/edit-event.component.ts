@@ -1,4 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { EventInfoService } from '../../services/event-info.service';
+import { HttpParams } from '@angular/common/http';
+import { IMyDpOptions } from 'mydatepicker';
+import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-edit-event',
@@ -6,10 +12,216 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./edit-event.component.css']
 })
 export class EditEventComponent implements OnInit {
+  complexForm: FormGroup;
+  event_id: string;
+  events: any;
+  startDateOptions: IMyDpOptions = {
+    height: '30px',
+    width: '200px',
+    selectorWidth: '200px',
+    dateFormat: 'yyyy-mm-dd',
+    disableUntil: { year: 2017, month: 12, day: 4 },
+    disableSince: {
+      year: new Date().getFullYear(),
+      month: new Date().getMonth() + 1,
+      day: new Date().getUTCDate() + 1
+    }
+  };
+  endDateOptions: IMyDpOptions = {
+    height: '30px',
+    width: '200px',
+    selectorWidth: '200px',
+    dateFormat: 'yyyy-mm-dd',
+    disableUntil: { year: 2017, month: 12, day: 4 },
+    disableSince: {
+      year: new Date().getFullYear(),
+      month: new Date().getMonth() + 1,
+      day: new Date().getUTCDate() + 1
+    }
+  };
+  startDay: any = {
+    date: {
+      year: 2017,
+      month: 12,
+      day: 20
+    }
+  };
+  finalDay: any = {
+    date: {
+      year: new Date().getFullYear(),
+      month: new Date().getMonth() + 1,
+      day: new Date().getUTCDate()
+    }
+  };
+  sessionStartDay: any = {
+    date: {
+      year: new Date().getFullYear(),
+      month: new Date().getMonth() + 1,
+      day: new Date().getUTCDate()
+    }
+  };
+  sessionFinalDay: any = {
+    date: {
+      year: new Date().getFullYear(),
+      month: new Date().getMonth() + 1,
+      day: new Date().getUTCDate()
+    }
+  };
+  startDate: string;
+  endDate: string;
+  constructor(
+    private route: ActivatedRoute,
+    private eventInfoService: EventInfoService,
+    private fb: FormBuilder,
+    private router: Router
+  ) {
+    this.complexForm = this.fb.group({
+      // 定義表格的預設值
+      event_name: ['', Validators.required],
+      selectedStartDate: [this.startDay, Validators.required],
+      selectedEndDate: [this.finalDay, Validators.required],
+      event_timer_start: ['12:30', Validators.required],
+      event_timer_end: ['02:30', Validators.required],
+      launch_user_name: ['', Validators.required],
+      description: '',
+      sessionDatas: this.fb.array([])
+    });
 
-  constructor() { }
-
-  ngOnInit() {
   }
 
-}
+  ngOnInit() {
+    this.event_id = this.route.snapshot.paramMap.get('id');
+    let params = new HttpParams();
+    params = params.set('event_id', this.event_id);
+    this.eventInfoService
+      .fetchEventInfo(params)
+      .subscribe(_results => {
+        this.events = _results;
+        const {
+          description,
+          event_name,
+          event_time_end,
+          event_time_name,
+          event_time_start,
+          launch_user_name,
+          sessions
+        } = this.events;
+        const selectedStartDate = this.convertDateFormat(moment(event_time_start * 1000).format('YYYY-M-D'));
+        const selectedEndDate = this.convertDateFormat(moment(event_time_end * 1000).format('YYYY-M-D'));
+        const event_timer_start = moment(event_time_start * 1000).format('hh:mm');
+        const event_timer_end = moment(event_time_end * 1000).format('hh:mm');
+        const sessionArray = [];
+        sessions.forEach(session => {
+          const {
+            session_name,
+            time_stamp_end,
+            time_stamp_start
+          } = session;
+          const session_start_date = this.convertDateFormat(moment(time_stamp_start * 1000).format('YYYY-M-D'));
+          const session_end_date = this.convertDateFormat(moment(time_stamp_end * 1000).format('YYYY-M-D'));
+          const session_start_time = moment(time_stamp_start * 1000).format('hh:mm');
+          const session_end_time = moment(time_stamp_end * 1000).format('hh:mm');
+          const data = {
+            session_name,
+            session_start_date,
+            session_end_date,
+            session_start_time,
+            session_end_time
+          };
+        sessionArray.push(data);
+        });
+
+        this.complexForm.patchValue({
+          description,
+          event_name,
+          selectedStartDate,
+          selectedEndDate,
+          event_timer_start,
+          event_timer_end,
+          launch_user_name,
+        });
+        this.addItem(sessionArray);
+      });
+  }
+  createForm(events) {
+    const {
+      event_name,
+      description
+    } = events;
+    this.complexForm = this.fb.group({
+      // 定義表格的預設值
+      event_name: [event_name, Validators.required],
+      selectedStartDate: [this.startDay, Validators.required],
+      selectedEndDate: [this.finalDay, Validators.required],
+      event_timer_start: ['12:30', Validators.required],
+      event_timer_end: ['02:30', Validators.required],
+      launch_user_name: ['', Validators.required],
+      description,
+      sessionDatas: this.fb.array(events)
+    });
+  }
+  initSessions(): FormGroup {
+    return this.fb.group({
+      session_name: ['', Validators.required],
+      session_start_date: ['', Validators.required],
+      session_start_time: ['', Validators.required],
+      session_end_date: ['', Validators.required],
+      session_end_time: ['', Validators.required]
+    });
+  }
+  createSessions(data): FormGroup {
+    const {
+      session_name,
+      session_start_date,
+      session_start_time,
+      session_end_date,
+      session_end_time
+    } = data;
+    return this.fb.group({
+      session_name: [session_name, Validators.required],
+      session_start_date: [session_start_date, Validators.required],
+      session_start_time: [session_start_time, Validators.required],
+      session_end_date: [session_end_date, Validators.required],
+      session_end_time: [session_end_time, Validators.required]
+    });
+  }
+  addItem(array): void {
+    const control = <FormArray>this.complexForm.controls['sessionDatas'];
+    if (array) {
+      array.forEach((_data) => {
+        control.push(this.createSessions(_data));
+      });
+    } else {
+      control.push(this.initSessions());
+    }
+  }
+  removeItems(e, idx) {
+    e.preventDefault();
+    const control = <FormArray>this.complexForm.controls['sessionDatas'];
+    control.removeAt(idx);
+  }
+  convertDateString(_date) {
+    if (_date) {
+      const { date: { day, month, year } } = _date;
+      return year.toString() + '-' + month.toString() + '-' + day.toString();
+    }
+    return (
+      new Date().getFullYear() +
+      '-' +
+      new Date().getMonth() +
+      1 +
+      '-' +
+      new Date().getUTCDate()
+    );
+  }
+  convertDateFormat(_date) {
+    const dateArrs = _date.split('-');
+    const data = {
+      date: {
+        year: dateArrs[0],
+        month: dateArrs[1],
+        day: dateArrs[2]
+      }
+    };
+    return data;
+  }
