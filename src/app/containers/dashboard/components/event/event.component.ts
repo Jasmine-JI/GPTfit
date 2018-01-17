@@ -27,4 +27,7 @@ export class EventComponent implements OnInit {
       this.events.splice(idx, 1);
     });
   }
+  toEdit(id) {
+    this.router.navigateByUrl('/dashboardalaala/event/edit/' + id);
+  }
 }
