@@ -207,6 +207,9 @@ tr.tr-only-hide {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+}
+.tablist__tab + .tablist__tab {
+  border-left: 1px solid #dbd8ca;
 
 }
 .tablist__tab--selected {
@@ -236,7 +239,7 @@ tr.tr-only-hide {
 
 @media (max-width: 991px) {
   .tablist__tab {
-    width: 50%;
+    width: calc(100% / 3);
   }
 
   .searchRank-bar {

@@ -24,30 +24,28 @@ router.get('/', function (req, res, next) {
   from race_event_info
   ${eventQuery}
   ;`;
-
   const sql3 = `
   select session_id,
   session_name,
   time_stamp_start,
   start_date,
   time_stamp_end, end_date
-  from race_event_info where event_id = ${event_id};`
+  from race_event_info ${eventQuery};`;
   const sqlQuery = event_id ? sql + sql3 : sql;
-
   con.query(sqlQuery, function (err, rows) {
     if (err) {
       return console.log(err);
     }
     let datas = rows;
-    if (event_id) {
-      datas = rows[0][0];
-      const sessions = rows[1];
-      if (sessions[0].session_id === null) {
-        datas.sessions = [];
-      } else {
-        datas.sessions = rows[1];
+      if (event_id) {
+          datas = rows[0][0];
+        const sessions = rows[1];
+        if (sessions[0].session_id === null) {
+          datas.sessions = [];
+        } else {
+          datas.sessions = rows[1];
+        }
       }
-    }
     res.json(datas);
   });
 });
@@ -166,10 +164,6 @@ router.put('/edit', (req, res) => {
     con
   } = req;
   try {
-    const sessionQuery =
-      sessions.length > 0
-        ? `, time_stamp_start = ?, start_date = ?, time_stamp_end = ?, end_date = ?`
-        : '';
     const launch_time_stamp = moment().unix();
     const lanuch_date = moment
       .unix(launch_time_stamp)
@@ -194,8 +188,8 @@ router.put('/edit', (req, res) => {
       values = sessions.map(_session => {
         return `
           event_id = ${event_id},
-          event_name = ${event_name},
-          session_id = ${moment(_session.session_start_date).format('YMDH')},
+          event_name = '${event_name}',
+          session_id = ${Number(moment(_session.session_start_date).format('YMDH'))},
           session_name = '${_session.session_name || null}',
           launch_time_stamp = ${launch_time_stamp},
           lanuch_date = '${lanuch_date}',
@@ -205,9 +199,9 @@ router.put('/edit', (req, res) => {
           event_time_start = ${event_start},
           event_time_end = ${event_end},
           time_stamp_start = ${Number(moment(_session.session_start_date).unix())},
-          start_date = '${_session.session_start_date}',
+          start_date = '${moment(_session.session_start_date).format('YYYY-MM-DD')}',
           time_stamp_end = ${Number(moment(_session.session_end_date).unix())},
-          end_date = '${_session.session_end_date}'
+          end_date = '${moment(_session.session_end_date).format('YYYY-MM-DD')}'
         `;
       });
     }

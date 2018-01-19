@@ -67,8 +67,10 @@ export class EnrollFormComponent implements OnInit {
     const { session_id } = queryStrings;
     this.session_id = session_id;
     let params = new HttpParams();
-    if (this.event_id && this.session_id) {
+    if (this.event_id) {
       params = params.set('event_id', this.event_id);
+    }
+    if (!this.session_id && !(this.session_id === null)) {
       params = params.set('session_id', this.session_id);
     }
     this.eventInfoService
