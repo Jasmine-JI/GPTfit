@@ -100,7 +100,8 @@ export class EventCalendarComponent implements OnInit {
             event_id,
             session_id
           } = _event;
-          const subject = event_name + session_name;
+          const subject = event_name + (session_name || '');
+          const session_id_num  = session_id ? session_id : null;
           const session_startDate = moment(
             moment(start_date).format('YYYY-MM-DDT00:00:00')
           ).unix();
@@ -109,7 +110,7 @@ export class EventCalendarComponent implements OnInit {
               item.notes.push({
                 type: 2,
                 subject,
-                session_id,
+                session_id: session_id_num,
                 event_id
               });
               item.notes.sort((a, b) => a.session_id - b.session_id);

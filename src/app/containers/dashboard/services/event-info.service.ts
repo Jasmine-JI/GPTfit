@@ -21,4 +21,7 @@ export class EventInfoService {
   removeEvent(id) {
     return this.http.delete(API_SERVER + 'raceEventInfo/' + id);
   }
+  updateEvent(body) {
+    return this.http.put(API_SERVER + 'raceEventInfo/edit', body);
+  }
 }
