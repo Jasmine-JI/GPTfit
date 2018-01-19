@@ -20,24 +20,14 @@ export class EditEventComponent implements OnInit {
     width: '200px',
     selectorWidth: '200px',
     dateFormat: 'yyyy-mm-dd',
-    disableUntil: { year: 2017, month: 12, day: 4 },
-    disableSince: {
-      year: new Date().getFullYear(),
-      month: new Date().getMonth() + 1,
-      day: new Date().getUTCDate() + 1
-    }
+    disableUntil: { year: 2017, month: 12, day: 4 }
   };
   endDateOptions: IMyDpOptions = {
     height: '30px',
     width: '200px',
     selectorWidth: '200px',
     dateFormat: 'yyyy-mm-dd',
-    disableUntil: { year: 2017, month: 12, day: 4 },
-    disableSince: {
-      year: new Date().getFullYear(),
-      month: new Date().getMonth() + 1,
-      day: new Date().getUTCDate() + 1
-    }
+    disableUntil: { year: 2017, month: 12, day: 4 }
   };
   startDay: any = {
     date: {
@@ -86,40 +76,44 @@ export class EditEventComponent implements OnInit {
       description: '',
       sessionDatas: this.fb.array([])
     });
-
   }
 
   ngOnInit() {
     this.event_id = this.route.snapshot.paramMap.get('id');
     let params = new HttpParams();
     params = params.set('event_id', this.event_id);
-    this.eventInfoService
-      .fetchEventInfo(params)
-      .subscribe(_results => {
-        this.events = _results;
-        const {
-          description,
-          event_name,
-          event_time_end,
-          event_time_name,
-          event_time_start,
-          launch_user_name,
-          sessions
-        } = this.events;
-        const selectedStartDate = this.convertDateFormat(moment(event_time_start * 1000).format('YYYY-M-D'));
-        const selectedEndDate = this.convertDateFormat(moment(event_time_end * 1000).format('YYYY-M-D'));
-        const event_timer_start = moment(event_time_start * 1000).format('hh:mm');
-        const event_timer_end = moment(event_time_end * 1000).format('hh:mm');
-        const sessionArray = [];
+    this.eventInfoService.fetchEventInfo(params).subscribe(_results => {
+      this.events = _results;
+      const {
+        description,
+        event_name,
+        event_time_end,
+        event_time_name,
+        event_time_start,
+        launch_user_name,
+        sessions
+      } = this.events;
+      const selectedStartDate = this.convertDateFormat(
+        moment(event_time_start * 1000).format('YYYY-M-D')
+      );
+      const selectedEndDate = this.convertDateFormat(
+        moment(event_time_end * 1000).format('YYYY-M-D')
+      );
+      const event_timer_start = moment(event_time_start * 1000).format('hh:mm');
+      const event_timer_end = moment(event_time_end * 1000).format('hh:mm');
+      const sessionArray = [];
+      if (sessions) {
         sessions.forEach(session => {
-          const {
-            session_name,
-            time_stamp_end,
-            time_stamp_start
-          } = session;
-          const session_start_date = this.convertDateFormat(moment(time_stamp_start * 1000).format('YYYY-M-D'));
-          const session_end_date = this.convertDateFormat(moment(time_stamp_end * 1000).format('YYYY-M-D'));
-          const session_start_time = moment(time_stamp_start * 1000).format('hh:mm');
+          const { session_name, time_stamp_end, time_stamp_start } = session;
+          const session_start_date = this.convertDateFormat(
+            moment(time_stamp_start * 1000).format('YYYY-M-D')
+          );
+          const session_end_date = this.convertDateFormat(
+            moment(time_stamp_end * 1000).format('YYYY-M-D')
+          );
+          const session_start_time = moment(time_stamp_start * 1000).format(
+            'hh:mm'
+          );
           const session_end_time = moment(time_stamp_end * 1000).format('hh:mm');
           const data = {
             session_name,
@@ -128,26 +122,24 @@ export class EditEventComponent implements OnInit {
             session_start_time,
             session_end_time
           };
-        sessionArray.push(data);
-        });
-
-        this.complexForm.patchValue({
-          description,
-          event_name,
-          selectedStartDate,
-          selectedEndDate,
-          event_timer_start,
-          event_timer_end,
-          launch_user_name,
+          sessionArray.push(data);
         });
         this.addItem(sessionArray);
+      }
+
+      this.complexForm.patchValue({
+        description,
+        event_name,
+        selectedStartDate,
+        selectedEndDate,
+        event_timer_start,
+        event_timer_end,
+        launch_user_name
       });
+    });
   }
   createForm(events) {
-    const {
-      event_name,
-      description
-    } = events;
+    const { event_name, description } = events;
     this.complexForm = this.fb.group({
       // 定義表格的預設值
       event_name: [event_name, Validators.required],
@@ -188,7 +180,7 @@ export class EditEventComponent implements OnInit {
   addItem(array): void {
     const control = <FormArray>this.complexForm.controls['sessionDatas'];
     if (array) {
-      array.forEach((_data) => {
+      array.forEach(_data => {
         control.push(this.createSessions(_data));
       });
     } else {
@@ -225,3 +217,49 @@ export class EditEventComponent implements OnInit {
     };
     return data;
   }
+  submit({ value, valid }) {
+    const {
+      selectedEndDate,
+      selectedStartDate,
+      description,
+      event_name,
+      event_timer_end,
+      event_timer_start,
+      launch_user_name,
+      sessionDatas
+    } = value;
+    const event_time_start =
+      this.convertDateString(selectedStartDate) + ' ' + event_timer_start;
+    const event_time_end =
+      this.convertDateString(selectedEndDate) + ' ' + event_timer_end;
+    const data = {
+      event_id: this.event_id,
+      event_name,
+      event_time_start,
+      event_time_end,
+      launch_user_name,
+      description,
+      sessions: []
+    };
+    if (sessionDatas.length > 0) {
+      const sessionResults = sessionDatas.map(_data => {
+        return {
+          session_name: _data.session_name,
+          session_start_date:
+            this.convertDateString(_data.session_start_date) + ' ' + _data.session_start_time,
+          session_end_date:
+            this.convertDateString(_data.session_end_date) + ' ' + _data.session_end_time
+        };
+      });
+      data.sessions = sessionResults;
+    }
+
+    if (valid) {
+      this.eventInfoService
+        .updateEvent(data)
+        .subscribe(results =>
+          this.router.navigateByUrl('/dashboardalaala/event')
+        );
+    }
+  }
+}

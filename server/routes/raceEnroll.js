@@ -15,8 +15,9 @@ router.get('/', function (req, res, next) {
       session_id
     }
   } = req;
-  const query1 = event_id && session_id ? `where event_id = ${event_id} and session_id = ${session_id}` : '';
+  const sessionQuery = session_id ? `and session_id = ${session_id}` : '';
 
+  const query1 = event_id ? `where event_id = ${event_id} ${sessionQuery}` : '';
   const sql = `
   SELECT  distinct * FROM ?? ${query1};`;
   con.query(sql, 'user_race_enroll', function (err, rows) {

@@ -285,7 +285,6 @@ router.post('/fakeData', async (req, res) => {
       });
     });
   } catch (err) {
-    console.log('~~~~~', err);
     res.status(500).send({
       errorMessage: '請檢查假資料欄位格式是否正確'
     });
@@ -339,14 +338,104 @@ SELECT distinct a.rank AS rank
           between ${start_date} and ${end_date}
           and
           r.map_id = ${map_id}
-          ORDER BY r.activity_duration) a;
+          ) a;
 ;`;
-
   con.query(sql, 'race_event_info', function(err, rows) {
     if (err) {
       return res.status(500).send(err);
     }
     return res.json(rows);
+  });
+});
+
+router.get('/eventRank', function(req, res, next) {
+  const {
+    con,
+    query: {
+      start_date_time,
+      end_date_time,
+      event_id,
+      email,
+      pageSize,
+      pageNumber,
+      mapId
+    }
+  } = req;
+
+const sql = `
+  select b.user_id, b.offical_time, p.e_mail, p.login_acc, p.gender
+  from (
+  SELECT
+    distinct
+    t2.user_id,
+    t2.user_race_status,
+    t2.activity_duration as offical_time,
+    t2.average_speed
+
+    FROM (
+      SELECT user_id,
+      MIN(activity_duration) AS min_duration
+      FROM race_data
+      WHERE
+      time_stamp between 1515513600 and 1518191999
+      and
+      activity_distance IS NOT NULL
+      and
+      user_race_status = 3
+      AND activity_duration IS NOT NULL GROUP BY user_id
+    ) AS t1
+    INNER JOIN
+    race_data AS t2
+    ON
+    t2.activity_duration = t1.min_duration
+    AND
+    t2.user_id = t1.user_id
+    WHERE user_race_status = 3
+    and
+    time_stamp between 1515513600 and 1518191999
+    and
+    t2.map_id = 5
+  )b,
+  user_profile as p,
+  user_race_enroll as e
+  where
+  b.user_id = p.user_id
+  and
+  p.e_mail = e.e_mail
+  and
+  e.event_id = 201812100
+  order by b.offical_time
+  ;
+`;
+  con.query(sql, 'race_event_info', function(err, rows) {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    const meta = {
+      pageSize: pageSize || 10,
+      pageCount: rows.length,
+      pageNumber: Number(pageNumber) || 1
+    };
+    if (email) {
+      let idx = rows.findIndex(_row => encodeURIComponent(_row.e_mail) === email);
+      const halfRange = 5;
+      let start = 0;
+      if (idx === -1) {
+        return res.send({ datas: [] });
+      }
+      if (idx - halfRange < 0) {
+        start = 0;
+      } else {
+        start = idx - halfRange;
+      }
+
+      const end = halfRange * 2 + 1;
+      let datas = rows.splice(start, end);
+      return res.json({ datas });
+    } else {
+      datas = rows.splice((meta.pageNumber - 1) * meta.pageSize, meta.pageSize);
+    }
+    res.json({ datas, meta });
   });
 });
 // Exports
