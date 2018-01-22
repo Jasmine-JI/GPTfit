@@ -36,9 +36,10 @@ export class MapInfoComponent implements OnInit, AfterViewInit {
       mapId,
       month,
       userId,
+      event
     } = queryStrings;
     this.bgImageUrl = `url(${mapImages[mapId - 1]})`;
-    this.fetchSportData(mapId, month, userId);
+    this.fetchSportData(mapId, month, userId, event);
     this.activity = this._mapService.getActivity(Number(mapId));
 
   }
@@ -48,12 +49,15 @@ export class MapInfoComponent implements OnInit, AfterViewInit {
     this._mapService.plotActivity(Number(mapId));
     this.gpx = this.activity.gpxData;
   }
-  fetchSportData(mapId, month, userId) {
+  fetchSportData(mapId, month, userId, event) {
     this.isLoading = true;
     let params = new HttpParams();
     params = params.set('mapId', mapId);
     if (month) {
       params = params.set('month', month);
+    }
+    if (event && event === '2') {
+      params = params.set('isRealTime', 'true');
     }
     params = params.set('userId', userId);
     this.rankFormService.getMapInfos(params).subscribe(res => {
