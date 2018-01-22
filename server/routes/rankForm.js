@@ -38,13 +38,14 @@ router.get('/', function(req, res, next) {
   const currMonth = today.getMonth() + 1;
   const currDate = currentDate();
   const genderQuery = gender ? `and a.gender = ${gender}` : '';
-  const eventQuery = event_id ? `and b.e_mail = c.e_mail and c.event_id = ${event_id}` : '';
+  const eventQuery = event_id
+    ? `and b.e_mail = c.e_mail and c.event_id = ${event_id}`
+    : '';
   const sql = `
     select distinct a.rank as rank,
     a.offical_time,
     a.user_id,
     a.map_id,
-    a.date,
     a.gender,
     a.month,
     a.login_acc,
@@ -97,11 +98,13 @@ router.get('/', function(req, res, next) {
     };
 
     if (email) {
-      let idx = rows.findIndex(_row => encodeURIComponent(_row.e_mail) === email);
+      let idx = rows.findIndex(
+        _row => encodeURIComponent(_row.e_mail) === email
+      );
       const halfRange = 5;
       let start = 0;
       if (idx === -1) {
-        return res.send({ datas: []});
+        return res.send({ datas: [] });
       }
       if (idx - halfRange < 0) {
         start = 0;
@@ -118,6 +121,7 @@ router.get('/', function(req, res, next) {
     res.json({ datas, meta });
   });
 });
+
 
 router.get('/rankInfo/map', function(req, res, next) {
   const { con } = req;
@@ -154,22 +158,41 @@ router.get('/rankInfo/email', function(req, res, next) {
     query:{
       email,
       startDate,
+      start_date_time,
+      end_date_time,
       endDate,
       mapId,
       keyword,
-      gender
+      gender,
+      isRealTime
     }
   } = req;
   const genderQuery = gender ? `and gender = ${gender}` : '';
-  const sql = `
-  SELECT distinct e_mail FROM ??
-  where date between
-  '${startDate || currDate}'
-  and
-  '${endDate || currDate}'
-  and map_id = ${mapId}
-  ${genderQuery};
-  `;
+  let sql = '';
+  if (isRealTime === 'true') {
+    sql = `
+      select distinct p.e_mail
+      from race_data as r,
+      user_profile as p,
+      user_race_enroll as e
+      where r.user_race_status = 3
+      and r.time_stamp between ${start_date_time} and ${end_date_time}
+      and p.user_id = r.user_id
+      and p.e_mail = e.e_mail
+      and e.event_id = 20181280
+      and r.map_id = ${mapId};
+    `;
+  } else {
+    sql = `
+    SELECT distinct e_mail FROM ??
+    where date between
+    '${startDate || currDate}'
+    and
+    '${endDate || currDate}'
+    and map_id = ${mapId}
+    ${genderQuery};
+    `;
+  }
   con.query(sql, 'run_rank', function(err, rows) {
     if (err) {
       console.log(err);
@@ -189,13 +212,49 @@ router.get('/mapInfo', function(req, res, next) { // 分成兩個fetch是因為�
     query: {
       userId,
       mapId,
-      month
+      month,
+      isRealTime
     }
   } = req;
   const userQuery = userId ? `and t.user_id = ${userId}` : '';
   const mapQuery = mapId ? `and t.map_id = ${mapId}` : '';
   const monthQuery = month ? `and t.month = ${month}` : '';
-  const sql1 = `
+  let sql = '';
+  if (isRealTime === 'true') {
+    sql = `
+      select
+      r.activity_duration,
+      r.user_id,
+      r.map_id,
+      p.e_mail,
+      s.max_speed,
+      s.average_speed,
+      s.max_pace,
+      s.average_pace,
+      m.map_name,
+      m.race_total_distance,
+      m.race_category
+      from race_data as r,
+      user_profile p,
+      sport as s,
+      race_map_info m
+      where
+      user_race_status = 3
+      and
+      p.user_id = r.user_id
+      and
+      r.file_name = s.file_name
+      and
+      r.map_id = m.map_index
+      and
+      r.user_id = ${userId}
+      and
+      map_id = ${mapId}
+      order by r.activity_duration
+      ;
+    `;
+  } else {
+    const sql1 = `
       select t.map_id, t.user_id,t.e_mail, s.max_speed,
       s.average_speed, s.max_pace, s.average_pace,
       t.map_name,
@@ -207,23 +266,30 @@ router.get('/mapInfo', function(req, res, next) { // 分成兩個fetch是因為�
       ${mapQuery}
       ${monthQuery}
       ;
-  `;
-  const sql2 = `
+    `;
+    const sql2 = `
       select map_name, race_total_distance, race_category
       from run_rank
       where map_id = ${mapId}
       and
       user_id = ${userId}
     `;
-  con.query(`${sql1}${sql2}`, function(err, results) {
+    sql = `${sql1}${sql2}`;
+  }
+  con.query(`${sql}`, function(err, results) {
     if (err) {
       console.log(err);
     }
-    if (results[0].length === 0) {
-      res.json(results[1][0]);
+    if (!isRealTime) {
+      if (results[0].length === 0) {
+        res.json(results[1][0]);
+      } else {
+        res.json(results[0][0]);
+      }
     } else {
-      res.json(results[0][0]);
+      res.json(results[0]);
     }
+
   });
 });
 
@@ -291,6 +357,65 @@ router.post('/fakeData', async (req, res) => {
   }
 });
 
+router.post('/fakeData/race_data', async (req, res) => {
+  const {
+    body: {
+      activity_duration,
+      map_id,
+      user_id,
+      email,
+      userName
+    },
+    con
+  } = req;
+  try {
+    const trimEmail = email.trim();
+    const e_mail = trimEmail.toLowerCase();
+    const login_acc = userName.trim();
+    const sql = `
+    INSERT INTO race_data (
+      activity_duration,
+      map_id,
+      user_id
+    )
+    value (
+      '${activity_duration}',
+      ${map_id},
+      ${user_id}
+    );`;
+    const sql2 = `
+    INSERT INTO user_profile (
+      user_id,
+      e_mail,
+      login_acc
+    )
+    value (
+      ${user_id},
+      '${e_mail}',
+      '${login_acc}'
+    );`;
+    await con.query(`${sql}${sql2}`, async (err, rows) => {
+      if (err) {
+        console.log('!!!!!', err);
+        return res.status(500).send({
+          errorMessage: err.sqlMessage
+        });
+      }
+      res.send({
+        activity_duration,
+        map_id,
+        user_id,
+        time_stamp,
+        email,
+        login_acc
+      });
+    });
+  } catch (err) {
+    res.status(500).send({
+      errorMessage: '請檢查假資料欄位格式是否正確'
+    });
+  }
+});
 router.get('/todayRank', function(req, res, next) {
   const {
     con,
@@ -358,30 +483,36 @@ router.get('/eventRank', function(req, res, next) {
       email,
       pageSize,
       pageNumber,
-      mapId
+      mapId,
+      gender
     }
   } = req;
-
+const genderQuery = gender ? `and p.gender = ${gender}` : '';
 const sql = `
-  select b.user_id, b.offical_time, p.e_mail, p.login_acc, p.gender
+  select distinct b.user_id, b.offical_time, p.e_mail, p.login_acc, p.gender
   from (
   SELECT
     distinct
     t2.user_id,
     t2.user_race_status,
     t2.activity_duration as offical_time,
-    t2.average_speed
-
+    t2.average_speed,
+    t2.map_id,
+    t2.activity_distance
     FROM (
       SELECT user_id,
       MIN(activity_duration) AS min_duration
       FROM race_data
       WHERE
-      time_stamp between 1515513600 and 1518191999
+      time_stamp between ${start_date_time} and ${end_date_time}
+      and
+      file_name IS NOT NULL
       and
       activity_distance IS NOT NULL
       and
       user_race_status = 3
+      and
+      map_id = ${mapId}
       AND activity_duration IS NOT NULL GROUP BY user_id
     ) AS t1
     INNER JOIN
@@ -392,21 +523,28 @@ const sql = `
     t2.user_id = t1.user_id
     WHERE user_race_status = 3
     and
-    time_stamp between 1515513600 and 1518191999
+    time_stamp between ${start_date_time} and ${end_date_time}
     and
-    t2.map_id = 5
+    t2.map_id = ${mapId}
   )b,
   user_profile as p,
-  user_race_enroll as e
+  user_race_enroll as e,
+  race_map_info as m
   where
   b.user_id = p.user_id
+  ${genderQuery}
+  and
+  b.map_id = m.map_index
+  and
+  b.activity_distance >= m.race_total_distance * 1000
   and
   p.e_mail = e.e_mail
   and
-  e.event_id = 201812100
+  e.event_id = 20181280
   order by b.offical_time
   ;
 `;
+
   con.query(sql, 'race_event_info', function(err, rows) {
     if (err) {
       return res.status(500).send(err);
