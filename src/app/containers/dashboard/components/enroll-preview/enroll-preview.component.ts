@@ -29,13 +29,15 @@ export class EnrollPreviewComponent implements OnInit {
     this.session_id = session_id;
     this.getData();
     let params = new HttpParams();
-    if (this.event_id && this.session_id) {
+    if (this.event_id && this.session_id === null) {
+      params = params.set('event_id', this.event_id);
+    } else {
       params = params.set('event_id', this.event_id);
       params = params.set('session_id', this.session_id);
     }
-    // this.eventInfoService
-    //   .fetchEventInfo(params)
-    //   .subscribe(datas => (this.eventInfo = datas[0]));
+    this.eventInfoService
+      .fetchEventInfo(params)
+      .subscribe(datas => (this.eventInfo = datas[0]));
   }
   getData() {
     this.globalEventsManager.showLoading(true);

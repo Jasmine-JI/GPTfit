@@ -84,6 +84,7 @@ export class PortalComponent implements OnInit {
   isSelectLoading = false;
   tempEmail: string;
   isEventTab: boolean;
+  tabIdx = 2;
 
   constructor(
     private router: Router,
@@ -106,6 +107,11 @@ export class PortalComponent implements OnInit {
         const { event } = getUrlQueryStrings(location.search);
         if (event && event.length > 0) {
           this.isEventTab = true;
+          if (event === '201812100') {
+            this.tabIdx = 2;
+          } else {
+            this.tabIdx = 1;
+          }
         } else {
           this.isEventTab = false;
         }
@@ -157,7 +163,15 @@ export class PortalComponent implements OnInit {
       params = params.append('email', encodeURIComponent(email.trim()));
     }
     this.email = email && email.trim();
-    this.fetchRankForm(params);
+    if (this.tabIdx !== 2) {
+      this.fetchRankForm(params);
+    } else {
+      params = params.set('start_date_time', '1517068800');
+      params = params.set('end_date_time', '1517414340');
+      params = params.set('event_id', '20181280');
+      params = params.set('mapId', this.mapId.toString());
+      this.fetchRealTimeRank(params);
+    }
   }
   convertDateString(_date) {
     if (_date) {
@@ -217,6 +231,31 @@ export class PortalComponent implements OnInit {
       this.globalEventsManager.getRankForm(data);
       this.distance =
         this.rankDatas.length > 0 && this.rankDatas[0].race_total_distance;
+      this.meta = buildPageMeta(meta);
+      const { currentPage, maxPage } = this.meta;
+      this.isFirstPage = currentPage === 1;
+      this.isLastPage = currentPage === maxPage;
+      this.isHaveDatas = this.rankDatas.length > 0;
+      this.toHistoryPrePage();
+    });
+  }
+
+  fetchRealTimeRank(params) {
+    this.rankFormService.getRealTimeEvent(params).subscribe(res => {
+      this.response = res;
+      const { datas, meta } = this.response;
+      this.rankDatas = datas;
+      this.rankDatas.forEach((data, idx) => {
+        if (idx > 0) {
+          if (this.rankDatas[idx - 1].offical_time === data.offical_time) {
+            data.rank = this.rankDatas[idx - 1].rank;
+          } else {
+            data.rank = this.rankDatas[idx - 1].rank + 1;
+          }
+        } else {
+          data.rank = 1;
+        }
+      });
       this.meta = buildPageMeta(meta);
       const { currentPage, maxPage } = this.meta;
       this.isFirstPage = currentPage === 1;
