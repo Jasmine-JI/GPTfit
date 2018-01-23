@@ -489,7 +489,14 @@ router.get('/eventRank', function(req, res, next) {
   } = req;
 const genderQuery = gender ? `and p.gender = ${gender}` : '';
 const sql = `
-  select distinct b.user_id, b.offical_time, p.e_mail, p.login_acc, p.gender
+  select distinct
+  b.user_id,
+  b.offical_time,
+  b.map_id,
+  p.e_mail,
+  p.login_acc,
+  p.gender,
+  m.map_name
   from (
   SELECT
     distinct
@@ -544,7 +551,6 @@ const sql = `
   order by b.offical_time
   ;
 `;
-
   con.query(sql, 'race_event_info', function(err, rows) {
     if (err) {
       return res.status(500).send(err);
