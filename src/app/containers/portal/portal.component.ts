@@ -107,7 +107,7 @@ export class PortalComponent implements OnInit {
         const { event } = getUrlQueryStrings(location.search);
         if (event && event.length > 0) {
           this.isEventTab = true;
-          if (event === '201812100') {
+          if (event === '20181280') {
             this.tabIdx = 2;
           } else {
             this.tabIdx = 1;
@@ -129,6 +129,9 @@ export class PortalComponent implements OnInit {
     });
     this.globalEventsManager.getMapIdEmitter.subscribe(id => {
       this.mapId = id;
+    });
+    this.globalEventsManager.getTabIdxEmitter.subscribe(idx => {
+      this.tabIdx = idx;
     });
   }
   selectMap(id) {
@@ -161,6 +164,11 @@ export class PortalComponent implements OnInit {
     }
     if (email) {
       params = params.append('email', encodeURIComponent(email.trim()));
+    }
+    if (this.tabIdx === 1) {
+      params = params.set('startDate', '2018-01-10');
+      params = params.set('endDate', '2018-02-09');
+      params = params.set('event_id', '201811014');
     }
     this.email = email && email.trim();
     if (this.tabIdx !== 2) {
@@ -230,7 +238,7 @@ export class PortalComponent implements OnInit {
       };
       this.globalEventsManager.getRankForm(data);
       this.distance =
-        this.rankDatas.length > 0 && this.rankDatas[0].race_total_distance;
+      this.rankDatas.length > 0 && this.rankDatas[0].race_total_distance;
       this.meta = buildPageMeta(meta);
       const { currentPage, maxPage } = this.meta;
       this.isFirstPage = currentPage === 1;
@@ -241,10 +249,26 @@ export class PortalComponent implements OnInit {
   }
 
   fetchRealTimeRank(params) {
+    this.globalEventsManager.showLoading(true);
     this.rankFormService.getRealTimeEvent(params).subscribe(res => {
+      this.globalEventsManager.showLoading(false);
+      this.globalEventsManager.getMapId(this.mapId);
+      this.isCollapseOpen = false;
+      this.isMaskShow = false;
       this.response = res;
       const { datas, meta } = this.response;
       this.rankDatas = datas;
+      const data = {
+        datas,
+        meta,
+        startDate: this.startDate,
+        endDate: this.endDate,
+        startDay: this.startDay,
+        finalDay: this.finalDay,
+        email: this.email,
+        mapId: this.mapId,
+        groupId: this.groupId
+      };
       this.rankDatas.forEach((data, idx) => {
         if (idx > 0) {
           if (this.rankDatas[idx - 1].offical_time === data.offical_time) {
@@ -257,6 +281,7 @@ export class PortalComponent implements OnInit {
         }
       });
       this.meta = buildPageMeta(meta);
+      this.globalEventsManager.getRankForm(data);
       const { currentPage, maxPage } = this.meta;
       this.isFirstPage = currentPage === 1;
       this.isLastPage = currentPage === maxPage;
@@ -265,13 +290,31 @@ export class PortalComponent implements OnInit {
     });
   }
   toHistoryPrePage() {
-    const paramDatas = {
-      pageNumber: this.meta.currentPage,
-      startDate: this.startDate,
-      endDate: this.endDate,
-      mapId: this.mapId,
-      groupId: this.groupId
-    };
+    let paramDatas = {};
+    if (this.tabIdx === 1) {
+      paramDatas = {
+        pageNumber: this.meta.currentPage,
+        mapId: this.mapId,
+        groupId: this.groupId,
+        event: '201811014'
+      };
+    } else if (this.tabIdx === 2) {
+      paramDatas = {
+        pageNumber: this.meta.currentPage,
+        mapId: this.mapId,
+        groupId: this.groupId,
+        event: '20181280'
+      };
+    } else {
+      paramDatas = {
+        pageNumber: this.meta.currentPage,
+        startDate: this.startDate,
+        endDate: this.endDate,
+        mapId: this.mapId,
+        groupId: this.groupId
+      };
+    }
+
     this.router.navigateByUrl(
       `${location.pathname}?${buildUrlQueryStrings(paramDatas)}`
     );
