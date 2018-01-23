@@ -182,7 +182,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
           if (this.tabIdx === 2) {
             this.fetchRealTimeRank(params);
           }
-        }, 10000);
+        }, 300000);
       }
 
       const { mapDatas, monthDatas } = this;
@@ -309,7 +309,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
         if (this.tabIdx === 2) {
           this.fetchRealTimeRank(params);
         }
-      }, 10000);
+      }, 300000);
     }
   }
   convertDateString(_date) {
@@ -388,7 +388,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
         if (this.tabIdx === 2) {
           this.fetchRealTimeRank(params);
         }
-      }, 10000);
+      }, 300000);
     }
   }
   fetchRankForm(params) {
@@ -588,7 +588,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
         if (this.tabIdx === 2) {
           this.fetchRealTimeRank(params);
         }
-      }, 10000);
+      }, 300000);
     }
   }
   nextMap() {
@@ -638,7 +638,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
         if (this.tabIdx === 2) {
           this.fetchRealTimeRank(params);
         }
-      }, 10000);
+      }, 300000);
     }
   }
   selectMap(id) {
@@ -652,6 +652,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     clearInterval(this.timer);
     this.tabIdx = idx;
     let params = new HttpParams();
+    this.globalEventsManager.getTabIdx(this.tabIdx);
     params = params.set('mapId', this.mapId.toString());
     if (this.tabIdx !== 2) {
       if (this.tabIdx === 1) {
@@ -678,7 +679,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
         if (this.tabIdx === 2) {
           this.fetchRealTimeRank(params);
         }
-      }, 10000);
+      }, 300000);
     }
   }
 }

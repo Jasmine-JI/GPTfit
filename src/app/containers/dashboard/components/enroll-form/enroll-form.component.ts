@@ -67,12 +67,11 @@ export class EnrollFormComponent implements OnInit {
     const { session_id } = queryStrings;
     this.session_id = session_id;
     let params = new HttpParams();
-    if (this.event_id) {
+    if (this.event_id && this.session_id) {
       params = params.set('event_id', this.event_id);
-    }
-    if (!this.session_id && !(this.session_id === null)) {
       params = params.set('session_id', this.session_id);
     }
+
     this.eventInfoService
       .fetchEventInfo(params)
       .subscribe(datas => (this.eventInfo = datas));
@@ -183,9 +182,7 @@ export class EnrollFormComponent implements OnInit {
       data.status = '已付款';
       data.event_id = this.event_id;
       data.session_id = this.session_id;
-      if (this.eventInfo.sessions.length > 0) {
-        data.session_name = this.eventInfo.sessions.session_name;
-      }
+      data.session_name = this.eventInfo.session_name;
       if (this.event_id === '20181280') {
         data.phone = '';
         data.ageRange = '';
