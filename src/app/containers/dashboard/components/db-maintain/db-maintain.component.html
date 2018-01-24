@@ -1,0 +1,53 @@
+<form #rankForm="ngForm">
+  <div class="row">
+    <div class="col-6">
+      <label style="vertical-align: top">initdb文件: </label>
+
+      <textarea name="intidb" [(ngModel)]="intidb"></textarea>
+      <button (click)="intidbSubmit(rankForm, $event)">initdb列表</button>
+    </div>
+
+    <div class="col-6">
+      <label style="vertical-align: top">DB文件: </label>
+
+      <textarea name="db" [(ngModel)]="db"></textarea>
+      <button (click)="dbSubmit(rankForm, $event)">db列表</button>
+    </div>
+  </div>
+</form>
+<div>
+  <div>
+    <button (click)="parse()">分析結果</button>
+  </div>
+  <label>Result:</label>
+</div>
+<div class="row">
+  <div class="col-6">
+    <table>
+      <thead>
+        <th>Name</th>
+        <th>Type</th>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of initdbArray">
+          <td>{{ item.name }}</td>
+          <td>{{ item.type }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="col-6">
+    <table>
+      <thead>
+        <th>Name</th>
+        <th>Type</th>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of dbArray">
+          <td>{{ item.name }}</td>
+          <td>{{ item.type }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
