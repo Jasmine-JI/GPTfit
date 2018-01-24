@@ -547,7 +547,7 @@ const sql = `
   and
   p.e_mail = e.e_mail
   and
-  e.event_id = 20181280
+  e.event_id = ${event_id}
   order by b.offical_time
   ;
 `;

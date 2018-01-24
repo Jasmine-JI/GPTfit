@@ -197,7 +197,7 @@ tr.tr-only-hide {
   cursor: pointer;
   background-color: #f9f9f9;
   border-radius: 4px 4px 0 0;
-  width: 180px;
+  width: 160px;
   text-align: center;
   color: #999;
   font-size: 12px;
@@ -208,6 +208,10 @@ tr.tr-only-hide {
   text-overflow: ellipsis;
   overflow: hidden;
 }
+.tablist__tab:nth-child(1) {
+  max-width: 90px;
+}
+
 .tablist__tab + .tablist__tab {
   border-left: 1px solid #dbd8ca;
 
@@ -238,10 +242,29 @@ tr.tr-only-hide {
 }
 
 @media (max-width: 991px) {
-  .tablist__tab {
-    width: calc(100% / 3);
+  .tablist__tab--selected {
+    font-size: 14px;
+    line-height: 22px;
+  }
+  .ranking-table__cell--head {
+    font-size: 12px;
   }
 
+  .tablist__tab {
+    width: calc(100% / 3);
+    border-radius: 0px;
+    border-top: 1px solid #dbd8ca;
+  }
+  .tablist__tab:nth-child(1) {
+    width: calc(100% / 3);
+    max-width: 100%;
+  }
+
+  .tablist__tab:nth-child(4),
+  .tablist__tab:nth-child(5),
+  .tablist__tab:nth-child(6) {
+    width: calc(100% / 3);
+  }
   .searchRank-bar {
     display: none;
   }
