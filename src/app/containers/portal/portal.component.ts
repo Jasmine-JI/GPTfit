@@ -84,6 +84,7 @@ export class PortalComponent implements OnInit {
   isSelectLoading = false;
   tempEmail: string;
   isEventTab: boolean;
+  tabIdx = 2;
 
   constructor(
     private router: Router,
@@ -106,6 +107,19 @@ export class PortalComponent implements OnInit {
         const { event } = getUrlQueryStrings(location.search);
         if (event && event.length > 0) {
           this.isEventTab = true;
+          if (event === '201811014') {
+            this.tabIdx = 1;
+          } else if (event === '20181277') {
+            this.tabIdx = 2;
+          } else if (event === '20181287') {
+            this.tabIdx = 3;
+          } else if (event === '20181297') {
+            this.tabIdx = 4;
+          } else if (event === '20181307') {
+            this.tabIdx = 5;
+          } else {
+            this.tabIdx = 0;
+          }
         } else {
           this.isEventTab = false;
         }
@@ -123,6 +137,9 @@ export class PortalComponent implements OnInit {
     });
     this.globalEventsManager.getMapIdEmitter.subscribe(id => {
       this.mapId = id;
+    });
+    this.globalEventsManager.getTabIdxEmitter.subscribe(idx => {
+      this.tabIdx = idx;
     });
   }
   selectMap(id) {
@@ -156,8 +173,35 @@ export class PortalComponent implements OnInit {
     if (email) {
       params = params.append('email', encodeURIComponent(email.trim()));
     }
+    if (this.tabIdx === 1) {
+      params = params.set('startDate', '2018-01-10');
+      params = params.set('endDate', '2018-02-09');
+      params = params.set('event_id', '201811014');
+    }
     this.email = email && email.trim();
-    this.fetchRankForm(params);
+    if (this.tabIdx === 0 || this.tabIdx === 1) {
+      this.fetchRankForm(params);
+    } else if (this.tabIdx === 2) {
+      params = params.set('start_date_time', '1517007600');
+      params = params.set('end_date_time', '1517093999');
+      params = params.set('event_id', '20181277');
+      this.fetchRealTimeRank(params);
+    } else if (this.tabIdx === 3) {
+      params = params.set('start_date_time', '1517094000');
+      params = params.set('end_date_time', '1517180399');
+      params = params.set('event_id', '20181287');
+      this.fetchRealTimeRank(params);
+    } else if (this.tabIdx === 4) {
+      params = params.set('start_date_time', '1517180400');
+      params = params.set('end_date_time', '1517266799');
+      params = params.set('event_id', '20181297');
+      this.fetchRealTimeRank(params);
+    } else if (this.tabIdx === 5) {
+      params = params.set('start_date_time', '1517266800');
+      params = params.set('end_date_time', '1517353199');
+      params = params.set('event_id', '20181307');
+      this.fetchRealTimeRank(params);
+    }
   }
   convertDateString(_date) {
     if (_date) {
@@ -216,7 +260,7 @@ export class PortalComponent implements OnInit {
       };
       this.globalEventsManager.getRankForm(data);
       this.distance =
-        this.rankDatas.length > 0 && this.rankDatas[0].race_total_distance;
+      this.rankDatas.length > 0 && this.rankDatas[0].race_total_distance;
       this.meta = buildPageMeta(meta);
       const { currentPage, maxPage } = this.meta;
       this.isFirstPage = currentPage === 1;
@@ -225,14 +269,95 @@ export class PortalComponent implements OnInit {
       this.toHistoryPrePage();
     });
   }
+
+  fetchRealTimeRank(params) {
+    this.globalEventsManager.showLoading(true);
+    this.rankFormService.getRealTimeEvent(params).subscribe(res => {
+      this.globalEventsManager.showLoading(false);
+      this.globalEventsManager.getMapId(this.mapId);
+      this.isCollapseOpen = false;
+      this.isMaskShow = false;
+      this.response = res;
+      const { datas, meta } = this.response;
+      this.rankDatas = datas;
+      const data = {
+        datas,
+        meta,
+        startDate: this.startDate,
+        endDate: this.endDate,
+        startDay: this.startDay,
+        finalDay: this.finalDay,
+        email: this.email,
+        mapId: this.mapId,
+        groupId: this.groupId
+      };
+      this.rankDatas.forEach((data, idx) => {
+        if (idx > 0) {
+          if (this.rankDatas[idx - 1].offical_time === data.offical_time) {
+            data.rank = this.rankDatas[idx - 1].rank;
+          } else {
+            data.rank = this.rankDatas[idx - 1].rank + 1;
+          }
+        } else {
+          data.rank = 1;
+        }
+      });
+      this.meta = buildPageMeta(meta);
+      this.globalEventsManager.getRankForm(data);
+      const { currentPage, maxPage } = this.meta;
+      this.isFirstPage = currentPage === 1;
+      this.isLastPage = currentPage === maxPage;
+      this.isHaveDatas = this.rankDatas.length > 0;
+      this.toHistoryPrePage();
+    });
+  }
   toHistoryPrePage() {
-    const paramDatas = {
-      pageNumber: this.meta.currentPage,
-      startDate: this.startDate,
-      endDate: this.endDate,
-      mapId: this.mapId,
-      groupId: this.groupId
-    };
+    let paramDatas = {};
+    if (this.tabIdx === 1) {
+      paramDatas = {
+        pageNumber: this.meta.currentPage,
+        mapId: this.mapId,
+        groupId: this.groupId,
+        event: '201811014'
+      };
+    } else if (this.tabIdx === 2) {
+      paramDatas = {
+        pageNumber: this.meta.currentPage,
+        mapId: this.mapId,
+        groupId: this.groupId,
+        event: '20181277'
+      };
+    } else if (this.tabIdx === 3) {
+      paramDatas = {
+        pageNumber: this.meta.currentPage,
+        mapId: this.mapId,
+        groupId: this.groupId,
+        event: '20181287'
+      };
+    } else if (this.tabIdx === 4) {
+      paramDatas = {
+        pageNumber: this.meta.currentPage,
+        mapId: this.mapId,
+        groupId: this.groupId,
+        event: '20181297'
+      };
+    } else if (this.tabIdx === 5) {
+      paramDatas = {
+        pageNumber: this.meta.currentPage,
+        mapId: this.mapId,
+        groupId: this.groupId,
+        event: '20181307'
+      };
+    } else {
+      paramDatas = {
+        pageNumber: this.meta.currentPage,
+        startDate: this.startDate,
+        endDate: this.endDate,
+        mapId: this.mapId,
+        groupId: this.groupId
+      };
+    }
+
     this.router.navigateByUrl(
       `${location.pathname}?${buildUrlQueryStrings(paramDatas)}`
     );

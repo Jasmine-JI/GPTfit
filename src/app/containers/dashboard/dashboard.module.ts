@@ -23,6 +23,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedPipes } from '@shared/pipes/shared-pipes';
 import { LeaderboardSettingsComponent } from './components/leaderboard-settings/leaderboard-settings.component';
 import { RealTimeLeaderboardComponent } from './components/real-time-leaderboard/real-time-leaderboard.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   imports: [
@@ -35,7 +36,8 @@ import { RealTimeLeaderboardComponent } from './components/real-time-leaderboard
     MyDatePickerModule,
     BrowserModule,
     BrowserAnimationsModule,
-    SharedPipes
+    SharedPipes,
+    ReactiveFormsModule
   ],
   providers: [
     EventEnrollService,

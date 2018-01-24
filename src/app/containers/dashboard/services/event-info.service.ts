@@ -15,4 +15,13 @@ export class EventInfoService {
   fetchTodayRank(params) {
     return this.http.get(API_SERVER + 'rankForm/todayRank', { params });
   }
+  createEvent(body) {
+    return this.http.post(API_SERVER + 'raceEventInfo/create', body);
+  }
+  removeEvent(id) {
+    return this.http.delete(API_SERVER + 'raceEventInfo/' + id);
+  }
+  updateEvent(body) {
+    return this.http.put(API_SERVER + 'raceEventInfo/edit', body);
+  }
 }

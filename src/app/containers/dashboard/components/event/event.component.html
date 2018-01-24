@@ -1,5 +1,5 @@
 <div class="">
-  <div class="d-flex flex-row-reverse">
+  <div class="d-flex flex-row-reverse" style="margin-bottom: 15px">
     <button class="alatech-btn alatech-btn--default" title="新增活動賽事"
       (click)="toCreatePage()"
     >
@@ -10,94 +10,25 @@
     <thead>
       <tr class="tr-only-hide">
         <th class="alatech-table__cell--head">主要競賽</th>
-        <th class="alatech-table__cell--head">子活動</th>
         <th class="alatech-table__cell--head">管理功能</th>
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td class="alatech-table__cell" data-th="">第一場英達內部大對決(20180102-20180103)</td>
-        <td class="alatech-table__cell" data-th="">
-          無
-        </td>
-        <td class="alatech-table__cell" data-th="">
-          <button class="icon-btn">
-            <i class="fa fa-pencil-square-o icon_fa"></i>
-          </button>
-          <button class="icon-btn">
-            <i class="fa fa-trash-o icon_fa"></i>
-          </button>
-        </td>
-      </tr>
-      <tr>
-        <td class="alatech-table__cell" data-th="">第一次台中高空夜跑賽(20180110-20180209)</td>
-        <td class="alatech-table__cell" data-th="">
-          <ol>
-            <li>
-              01/10(周三)_場次時間(17:00-19:00)
-              <li>
-                01/11(周四)_場次時間(17:00-19:00)
-                <li>
-                  01/12(周五)_場次時間(17:00-19:00)
-                </li>
-                <li>
-                  01/16(周二)_場次時間(17:00-19:00)
-                </li>
-                <li>
-                  01/17(周三)_場次時間(17:00-19:00)
-                </li>
-                <li>
-                  01/18(周四)_場次時間(17:00-19:00)
-                </li>
-                <li>
-                  01/19(周五)_場次時間(17:00-19:00)
-                </li>
-                <li>
-                  01/23(周二)_場次時間(17:00-19:00)
-                </li>
-                <li>
-                  01/24(周三)_場次時間(17:00-19:00)
-                </li>
-                <li>
-                  01/25(周四)_場次時間(17:00-19:00)
-                </li>
-                <li>
-                  01/26(周五)_場次時間(17:00-19:00)
-                </li>
-                <li>
-                  01/30(周二)_場次時間(17:00-19:00)
-                </li>
-                <li>
-                  01/31(周三)_場次時間(17:00-19:00)
-                </li>
-                <li>
-                  02/01(周四)_場次時間(17:00-19:00)
-                </li>
-                <li>
-                  02/02(周五)_場次時間(17:00-19:00)
-                </li>
-                <li>
-                  02/06(周二)_場次時間(17:00-19:00)
-                </li>
-                <li>
-                  02/07(周三)_場次時間(17:00-19:00)
-                </li>
-                <li>
-                  02/08(周四)_場次時間(17:00-19:00)
-                </li>
-                <li>
-                  02/09(周五)_場次時間(17:00-19:00)
-                </li>
-          </ol>
-        </td>
-        <td class="alatech-table__cell" data-th="">
-          <button class="icon-btn">
-            <i class="fa fa-pencil-square-o icon_fa"></i>
-          </button>
-          <button class="icon-btn">
-            <i class="fa fa-trash-o icon_fa"></i>
-          </button>
-        </td>
+      <ng-container *ngIf="events && events.length > 0">
+        <tr *ngFor="let event of events;let idx = index">
+          <td class="alatech-table__cell" data-th="">{{ event.event_name }}</td>
+          <td class="alatech-table__cell" data-th="">
+            <button class="icon-btn" (click)="toEdit(event.event_id)">
+              <i class="fa fa-pencil-square-o icon_fa"></i>
+            </button>
+            <button class="icon-btn" (click)="remove(event.event_id, idx)">
+              <i class="fa fa-trash-o icon_fa"></i>
+            </button>
+          </td>
+        </tr>
+      </ng-container>
+      <tr *ngIf="events && events.length === 0">
+        <td colspan="2" style="text-align: center">尚無活動賽事</td>
       </tr>
     </tbody>
   </table>

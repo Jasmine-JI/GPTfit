@@ -8,7 +8,7 @@
             [class.tablist__tab--selected]="tabIdx === 0"
             (click)="selectTab(0)"
           >
-            一般賽事排行版
+             General
           </li>
           <li class="tablist__tab"
             title="第一屆英達高空夜跑賽"
@@ -17,18 +17,48 @@
           >
             第一屆英達高空夜跑賽
           </li>
+          <li class="tablist__tab"
+            title="ISPO (2018/01/27)"
+            [class.tablist__tab--selected]="tabIdx === 2"
+            (click)="selectTab(2)"
+          >
+            ISPO<span style="font-size: 12px">(2018/01/27)</span>
+          </li>
+          <li class="tablist__tab"
+            title="ISPO (2018/01/28)"
+            [class.tablist__tab--selected]="tabIdx === 3"
+            (click)="selectTab(3)"
+          >
+            ISPO<span style="font-size: 12px">(2018/01/28)</span>
+          </li>
+          <li class="tablist__tab"
+            title="ISPO (2018/01/29)"
+            [class.tablist__tab--selected]="tabIdx === 4"
+            (click)="selectTab(4)"
+          >
+            ISPO<span style="font-size: 12px">(2018/01/29)</span>
+          </li>
+          <li class="tablist__tab"
+            title="ISPO (2018/01/30)"
+            [class.tablist__tab--selected]="tabIdx === 5"
+            (click)="selectTab(5)"
+          >
+            ISPO<span style="font-size: 12px">(2018/01/30)</span>
+          </li>
         </ul>
       </div>
       <div class="row row-runs">
         <div class="searchRank-bar" style="width: 100%">
           <form (ngSubmit)="onSubmit(rankForm, $event)" #rankForm="ngForm">
             <div class="row">
-              <div class="col-10">
+              <div class="col-11">
                 <label class="form-label">Map:</label>
-                <select name="mapId" [(ngModel)]="mapId" class="form-field" (click)="selectMap(mapId)">
+                <select  *ngIf="tabIdx === 1 || tabIdx === 0" name="mapId" [(ngModel)]="mapId" class="form-field" (click)="selectMap(mapId)">
                   <option *ngFor="let _map of mapDatas" [value]="_map.map_id">{{ _map.map_name }}</option>
                 </select>
-
+                <select *ngIf="tabIdx === 2 || tabIdx === 3 || tabIdx === 4 || tabIdx === 5" name="mapId" [(ngModel)]="mapId" class="form-field" (click)="selectMap(mapId)">
+                  <option *ngFor="let _map of mapDatas" [value]="_map.map_id">{{ _map.map_name | mapTranslate }}</option>
+                </select>
                 <label class="form-label" style="margin-left: 28px;">Email:</label>
                 <div class="dropdown" (click)="openActive($event)">
                   <div class="clearable">
@@ -47,11 +77,11 @@
                   </ul>
                 </div>
                 <div style="display: inline-block">
-                  <label class="form-label">組別:</label>
+                  <label class="form-label">Group:</label>
                   <select name="groupId" [(ngModel)]="groupId" class="form-field">
-                    <option [value]="2">無分組</option>
-                    <option [value]="0">男生組</option>
-                    <option [value]="1">女生組</option>
+                    <option [value]="2">No grouping</option>
+                    <option [value]="0">Male</option>
+                    <option [value]="1">Female</option>
                   </select>
                   <ng-container *ngIf="!tabIdx">
                     <label class="form-label">Date:</label>
@@ -74,20 +104,36 @@
                   </ng-container>
                 </div>
               </div>
-              <div class="col-md-2">
+              <div class="col-md-1">
                 <button type="submit" class="button search-form__button">
                   <i class="fa fa-search"></i>
                 </button>
               </div>
             </div>
           </form>
-          <div class="summary">
+          <div class="summary" *ngIf="tabIdx === 1 || tabIdx === 0 ">
             本月進行的例行排行賽為
             <span style="color: #157fcc;font-weight: 700">指定地圖{{ mapName }}{{ distance }}KM</span>
             <div>排行榜於每日06:00刷新，最終排名以{{ finalEventDate || '當月最後一日' }} 23:59結算成績為主</div>
           </div>
+          <div class="summary" *ngIf="tabIdx === 2 || tabIdx === 3 || tabIdx === 4 || tabIdx === 5">
+             The event with specify map
+            <span style="color: #157fcc;font-weight: 700">{{ mapName | mapTranslate }} {{ distance }}KM</span>
+            <div> Refresh every 5 minutes after leaderboard page loading, the final ranking settlement results based on {{ ispoArray[tabIdx - 2]}}</div>
+          </div>
         </div>
-        <div class="searchRank-mapInfo"><span style="color: #008bcd;font-weight: 700">指定地圖{{ mapName }}{{ distance }}KM</span></div>
+        <div class="searchRank-mapInfo">
+          <span style="color: #008bcd;font-weight: 700"
+            *ngIf="tabIdx === 1 || tabIdx === 0 "
+          >
+            {{ mapName }}{{ distance }}KM
+          </span>
+          <span style="color: #008bcd;font-weight: 700"
+           *ngIf="tabIdx === 2 || tabIdx === 3 || tabIdx === 4 || tabIdx === 5"
+          >
+            {{ mapName | mapTranslate }}{{ distance }}KM
+          </span>
+        </div>
         <div class="table-responsive">
           <table class="table table-rwd">
             <thead>
@@ -113,7 +159,7 @@
               </tr>
               <tr *ngIf="!isHaveDatas">
                 <td class="ranking-table__cell no-data" colspan="4" style="text-align: center">
-                  尚無相關資訊
+                   Cannot find any information
                 </td>
               </tr>
             </tbody>

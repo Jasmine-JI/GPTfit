@@ -120,6 +120,8 @@ export class EventCalendarComponent implements OnInit {
     });
   }
   goEnrollFrom(event_id, session_id) {
-    this.router.navigateByUrl('/dashboardalaala/enroll/' + `${event_id}` + `?session_id=${session_id}`);
+    this.router.navigateByUrl(
+      '/dashboardalaala/enroll/' + `${event_id}` + `?session_id=${session_id}`
+    );
   }
 }

@@ -2,22 +2,18 @@ var express = require('express');
 var moment = require('moment');
 var router = express.Router();
 
-
-router.get('/', function (req, res, next) {
-  const {
-    con,
-    query: {
-      event_id,
-      session_id
-    }
-  } = req;
-  const query1 = (event_id && session_id) ? `where event_id = ${event_id} and session_id = ${session_id}` : '';
+router.get('/', function(req, res, next) {
+  const { con, query: { event_id, session_id } } = req;
+  const query1 =
+    event_id && session_id
+      ? `where event_id = ${event_id} and session_id = ${session_id}`
+      : '';
   const sql = `
   SELECT  * from ??
   ${query1}
   ;`;
 
-  con.query(sql, 'race_event_info', function (err, rows) {
+  con.query(sql, 'race_event_info', function(err, rows) {
     if (err) {
       return console.log(err);
     }
@@ -44,7 +40,9 @@ router.post('/create', (req, res) => {
     const time_stamp_end = moment(end_date).unix();
     const session_id = moment(start_date).format('YMDH');
     const launch_time_stamp = moment().unix();
-    const lanuch_date = moment.unix(launch_time_stamp).format('YYYY-MM-DD H:mm:ss.000000');
+    const lanuch_date = moment
+      .unix(launch_time_stamp)
+      .format('YYYY-MM-DD H:mm:ss.000000');
     const event_time_name = event_time_start + ' ~ ' + event_time_end;
     const event_id = moment(event_time_start).format('YMDH');
     const event_start = moment(event_time_start).unix();
@@ -85,7 +83,6 @@ router.post('/create', (req, res) => {
       ${event_start},
       ${event_end}
     );`;
-    console.log('sql: ', sql);
     con.query(sql, 'race_event_info', (err, rows) => {
       if (err) {
         return res.status(500).send({
@@ -109,7 +106,7 @@ router.post('/create', (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    res.status(500).send(err);;
+    res.status(500).send(err);
   }
 });
 

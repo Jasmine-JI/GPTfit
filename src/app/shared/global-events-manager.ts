@@ -13,6 +13,7 @@ export class GlobalEventsManager {
   private _getRankForm = new BehaviorSubject<any>(undefined);
   private _showLoading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private _getIsFoundUser: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private _getTabIdx: BehaviorSubject<number> = new BehaviorSubject<number>(2); // 排行版tab預設為2
 
   public showNavBarEmitter: Observable<boolean> = this._showMask.asObservable();
   public showCollapseEmitter: Observable<boolean> = this._openCollapse.asObservable();
@@ -22,6 +23,7 @@ export class GlobalEventsManager {
   public getRankFormEmitter: Observable<Array<any>> = this._getRankForm.asObservable();
   public showLoadingEmitter: Observable<boolean> = this._showLoading.asObservable();
   public getIsFoundUserEmitter: Observable<boolean> = this._getIsFoundUser.asObservable();
+  public getTabIdxEmitter: Observable<number> = this._getTabIdx.asObservable();
 
   constructor() { }
 
@@ -52,5 +54,8 @@ export class GlobalEventsManager {
   }
   getIsFoundUser(isFoundUser: any) {
     this._getIsFoundUser.next(isFoundUser);
+  }
+  getTabIdx(id: number) {
+    this._getTabIdx.next(id);
   }
 }
