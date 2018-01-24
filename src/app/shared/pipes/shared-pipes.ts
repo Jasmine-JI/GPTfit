@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { SexPipe } from '@shared/pipes/sex.pipe';
 import { TimePipe } from '@shared/pipes/time.pipe';
+import { MapTranslatePipe } from '@shared/pipes/map-translate.pipe';
 
 @NgModule({
   imports: [
@@ -8,11 +9,13 @@ import { TimePipe } from '@shared/pipes/time.pipe';
   ],
   declarations: [
     SexPipe,
-    TimePipe
+    TimePipe,
+    MapTranslatePipe
   ],
   exports: [
     SexPipe,
-    TimePipe
+    TimePipe,
+    MapTranslatePipe
   ]
 })
 export class SharedPipes {}
