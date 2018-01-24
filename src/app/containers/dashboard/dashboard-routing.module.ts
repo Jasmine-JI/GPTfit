@@ -11,6 +11,7 @@ import { EventCalendarComponent } from './components/event-calendar/event-calend
 import { EnrollPreviewComponent } from './components/enroll-preview/enroll-preview.component';
 import { LeaderboardSettingsComponent } from './components/leaderboard-settings/leaderboard-settings.component';
 import { RealTimeLeaderboardComponent } from './components/real-time-leaderboard/real-time-leaderboard.component';
+import { DbMaintainComponent } from './components/db-maintain/db-maintain.component';
 
 const routes: Routes = [
   {
@@ -56,6 +57,10 @@ const routes: Routes = [
       {
         path: 'real-time-leaderboard',
         component: RealTimeLeaderboardComponent
+      },
+      {
+        path: 'db',
+        component: DbMaintainComponent
       }
     ]
   },

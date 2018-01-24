@@ -24,6 +24,7 @@ import { SharedPipes } from '@shared/pipes/shared-pipes';
 import { LeaderboardSettingsComponent } from './components/leaderboard-settings/leaderboard-settings.component';
 import { RealTimeLeaderboardComponent } from './components/real-time-leaderboard/real-time-leaderboard.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { DbMaintainComponent } from './components/db-maintain/db-maintain.component';
 
 @NgModule({
   imports: [
@@ -56,7 +57,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     EnrollPreviewComponent,
     CheckEnrollDialogComponent,
     LeaderboardSettingsComponent,
-    RealTimeLeaderboardComponent
+    RealTimeLeaderboardComponent,
+    DbMaintainComponent
   ],
   entryComponents: [CheckEnrollDialogComponent]
 })
