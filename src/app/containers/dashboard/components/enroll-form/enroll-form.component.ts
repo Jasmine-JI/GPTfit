@@ -183,14 +183,13 @@ export class EnrollFormComponent implements OnInit {
       data.event_id = this.event_id;
       data.session_id = this.session_id;
       data.session_name = this.eventInfo.session_name;
-      if (this.event_id === '20181280') {
+      if (this.event_id === '20181277' || this.event_id === '20181287' || this.event_id === '20181297' || this.event_id === '20181307') {
         data.phone = '';
         data.ageRange = '';
         data.gender = 2;
         data.idNumber = '';
         data.address = '';
       }
-      console.log('data: ', data);
       // data.session_name = this.eventInfo.sessions.session_name;
       this.eventEnrollService.enroll(data).subscribe(results => {
         this.dialog.open(CheckEnrollDialogComponent, {

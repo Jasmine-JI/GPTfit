@@ -89,7 +89,6 @@ router.post('/enroll', async(req, res) => {
       '${pay_method}',
       '${status}'
     );`;
-    console.log('sql: ', sql);
     await con.query(sql, 'user_race_enroll', async(err, rows) => {
       if (err) {
         return res.status(500).send({

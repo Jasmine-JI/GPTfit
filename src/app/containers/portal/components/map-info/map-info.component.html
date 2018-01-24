@@ -9,43 +9,43 @@
           <i class="fa fa-undo" aria-hidden="true"></i>
         </button>
         <div class="col-md-8" style="margin-bottom: 15px">
-          <h2 class="heading text-center text-md-left">活動路線圖</h2>
+          <h2 class="heading text-center text-md-left">Road Map</h2>
           <hr/>
           <div id="map" style="z-index: 1"></div>
         </div>
         <div class="col-md-4 info-container">
           <div>
-            <h2 class="heading text-center text-md-left">個人成績</h2>
+            <h2 class="heading text-center text-md-left">Personal Data</h2>
             <hr/>
             <div class="">
               <ul class="run-info">
                 <li class="run-info__item">
                   <span class="">Route Name:</span>
-                  <div class="run-info__item--collocate">{{ data && data.map_name || '尚無資訊' }}</div>
+                  <div class="run-info__item--collocate">{{ (data && data.map_name | mapTranslate) || 'Cannot find any information' }}</div>
                 </li>
                 <li class="run-info__item">
                   <span class="">Total Distance:</span>
-                  <div class="run-info__item--collocate">{{ data && data.race_total_distance || '尚無資訊' }} km</div>
+                  <div class="run-info__item--collocate">{{ data && data.race_total_distance || 'Cannot find any information' }} km</div>
                 </li>
                 <li class="run-info__item">
                   <span class="">Race Category:</span>
-                  <div class="run-info__item--collocate">{{ data && data.race_category || '尚無資訊' }}</div>
+                  <div class="run-info__item--collocate">{{ (data && data.race_category | mapTranslate) || 'Cannot find any information' }}</div>
                 </li>
                 <li class="run-info__item">
                   <span class="">Average Pace:</span>
-                  <div class="run-info__item--collocate">{{ data && data.average_pace || '尚無資訊' }}</div>
+                  <div class="run-info__item--collocate">{{ data && data.average_pace || 'Cannot find any information' }}</div>
                 </li>
                 <li class="run-info__item">
                   <span class="">Max Pace:</span>
-                  <div class="run-info__item--collocate">{{ data && data.max_pace || '尚無資訊' }}</div>
+                  <div class="run-info__item--collocate">{{ data && data.max_pace || 'Cannot find any information' }}</div>
                 </li>
                 <li class="run-info__item">
                   <span class="">Average speed:</span>
-                  <div class="run-info__item--collocate">{{ data && data.average_speed || '尚無資訊' }}</div>
+                  <div class="run-info__item--collocate">{{ data && data.average_speed || 'Cannot find any information' }}</div>
                 </li>
                 <li class="run-info__item">
                   <span class="">Max speed:</span>
-                  <div class="run-info__item--collocate">{{ data && data.max_speed || '尚無資訊' }}</div>
+                  <div class="run-info__item--collocate">{{ data && data.max_speed || 'Cannot find any information' }}</div>
                 </li>
               </ul>
             </div>

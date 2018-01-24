@@ -107,10 +107,18 @@ export class PortalComponent implements OnInit {
         const { event } = getUrlQueryStrings(location.search);
         if (event && event.length > 0) {
           this.isEventTab = true;
-          if (event === '20181280') {
-            this.tabIdx = 2;
-          } else {
+          if (event === '201811014') {
             this.tabIdx = 1;
+          } else if (event === '20181277') {
+            this.tabIdx = 2;
+          } else if (event === '20181287') {
+            this.tabIdx = 3;
+          } else if (event === '20181297') {
+            this.tabIdx = 4;
+          } else if (event === '20181307') {
+            this.tabIdx = 5;
+          } else {
+            this.tabIdx = 0;
           }
         } else {
           this.isEventTab = false;
@@ -171,13 +179,27 @@ export class PortalComponent implements OnInit {
       params = params.set('event_id', '201811014');
     }
     this.email = email && email.trim();
-    if (this.tabIdx !== 2) {
+    if (this.tabIdx === 0 || this.tabIdx === 1) {
       this.fetchRankForm(params);
-    } else {
-      params = params.set('start_date_time', '1517068800');
-      params = params.set('end_date_time', '1517414340');
-      params = params.set('event_id', '20181280');
-      params = params.set('mapId', this.mapId.toString());
+    } else if (this.tabIdx === 2) {
+      params = params.set('start_date_time', '1517007600');
+      params = params.set('end_date_time', '1517093999');
+      params = params.set('event_id', '20181277');
+      this.fetchRealTimeRank(params);
+    } else if (this.tabIdx === 3) {
+      params = params.set('start_date_time', '1517094000');
+      params = params.set('end_date_time', '1517180399');
+      params = params.set('event_id', '20181287');
+      this.fetchRealTimeRank(params);
+    } else if (this.tabIdx === 4) {
+      params = params.set('start_date_time', '1517180400');
+      params = params.set('end_date_time', '1517266799');
+      params = params.set('event_id', '20181297');
+      this.fetchRealTimeRank(params);
+    } else if (this.tabIdx === 5) {
+      params = params.set('start_date_time', '1517266800');
+      params = params.set('end_date_time', '1517353199');
+      params = params.set('event_id', '20181307');
       this.fetchRealTimeRank(params);
     }
   }
@@ -303,7 +325,28 @@ export class PortalComponent implements OnInit {
         pageNumber: this.meta.currentPage,
         mapId: this.mapId,
         groupId: this.groupId,
-        event: '20181280'
+        event: '20181277'
+      };
+    } else if (this.tabIdx === 3) {
+      paramDatas = {
+        pageNumber: this.meta.currentPage,
+        mapId: this.mapId,
+        groupId: this.groupId,
+        event: '20181287'
+      };
+    } else if (this.tabIdx === 4) {
+      paramDatas = {
+        pageNumber: this.meta.currentPage,
+        mapId: this.mapId,
+        groupId: this.groupId,
+        event: '20181297'
+      };
+    } else if (this.tabIdx === 5) {
+      paramDatas = {
+        pageNumber: this.meta.currentPage,
+        mapId: this.mapId,
+        groupId: this.groupId,
+        event: '20181307'
       };
     } else {
       paramDatas = {
