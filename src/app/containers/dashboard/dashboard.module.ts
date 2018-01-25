@@ -25,6 +25,7 @@ import { LeaderboardSettingsComponent } from './components/leaderboard-settings/
 import { RealTimeLeaderboardComponent } from './components/real-time-leaderboard/real-time-leaderboard.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DbMaintainComponent } from './components/db-maintain/db-maintain.component';
+import { DbResultDialogComponent } from './components/db-result-dialog/db-result-dialog.component';
 
 @NgModule({
   imports: [
@@ -58,8 +59,9 @@ import { DbMaintainComponent } from './components/db-maintain/db-maintain.compon
     CheckEnrollDialogComponent,
     LeaderboardSettingsComponent,
     RealTimeLeaderboardComponent,
-    DbMaintainComponent
+    DbMaintainComponent,
+    DbResultDialogComponent
   ],
-  entryComponents: [CheckEnrollDialogComponent]
+  entryComponents: [CheckEnrollDialogComponent, DbResultDialogComponent]
 })
 export class DashboardModule {}

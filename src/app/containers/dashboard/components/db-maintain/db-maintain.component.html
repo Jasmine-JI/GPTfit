@@ -1,49 +1,121 @@
+<div style="margin-bottom: 15px">
+  <h2>使用說明</h2>
+  <li><b>pull 最新的initdb.php</b>，把initdb.php擇一個table貼製對應的textarea，再從DB文件複製對應的table(欄位名稱、名稱)兩個欄位的值，到對應的textarea</li>
+  <li>按下分析結果，會產生是否有lost掉的欄位、type錯誤的欄位及此table的primary key</li>
+  <li>
+    <b>修改DB文件的</b>lost掉的欄位</li>
+  <li>
+    <b>修改DB文件的</b>type錯誤的欄位</li>
+  <li>
+    <b>檢查DB文件的</b>primary key是否正確</li>
+  <li>利用initdb產生的table<b>檢查DB文件的</b>Null欄位與Default欄位</li>
+  <li><span style="color: #cb5e5e">此功能建議每個月最後一個禮拜去做整理DB文件</span></li>
+</div>
 <form #rankForm="ngForm">
-  <div class="row">
-    <div class="col-6">
+  <div class="row" style="margin-bottom: 15px">
+    <div class="col-7">
       <label style="vertical-align: top">initdb文件: </label>
 
-      <textarea name="intidb" [(ngModel)]="intidb"></textarea>
-      <button (click)="intidbSubmit(rankForm, $event)">initdb列表</button>
+      <textarea #intidbElement name="intidb" [(ngModel)]="intidb"></textarea>
+      <button (click)="intidbSubmit(rankForm, $event)"
+        class="alatech-btn alatech-btn--default"
+      >
+        initdb列表
+      </button>
+      <button (click)="reset(intidbElement)"
+        class="alatech-btn alatech-btn--default"
+      >
+        Reset
+      </button>
     </div>
 
-    <div class="col-6">
+    <div class="col-5">
       <label style="vertical-align: top">DB文件: </label>
 
-      <textarea name="db" [(ngModel)]="db"></textarea>
-      <button (click)="dbSubmit(rankForm, $event)">db列表</button>
+      <textarea #dbElement name="db" [(ngModel)]="db"></textarea>
+      <button (click)="dbSubmit(rankForm, $event)"
+        class="alatech-btn alatech-btn--default"
+      >
+        db列表
+      </button>
+      <button (click)="reset(dbElement)"
+        class="alatech-btn alatech-btn--default"
+      >
+        Reset
+      </button>
     </div>
   </div>
 </form>
-<div>
+<div class="results_area" style="margin-bottom: 15px">
   <div>
-    <button (click)="parse()">分析結果</button>
+    <button (click)="parse()" [disabled]="initdbArray.length === 0 || dbArray.length === 0"
+      class="alatech-btn alatech-btn--default"
+    >
+      分析結果
+    </button>
   </div>
-  <label>Result:</label>
+  <h3>Result:</h3>
+  <div *ngIf="results.lostArray.length === 0 && results.typeErrors.length === 0"
+    style="word-wrap: break-word"
+  >
+    <label>修改內容: </label>
+    {{ resultsContent.add }}
+    <br>
+    {{ resultsContent.fix }}
+    <br>
+    {{ resultsContent.delete }}
+  </div>
+  <div *ngIf="results.primaryKey.length > 0">
+    <label>intidb 's primary key: </label>
+    {{ results.primaryKey }}
+  </div>
+  <div *ngIf="results.lostArray.length > 0">
+    <label>lost column: {{results.lostArray.length }}筆</label>
+    <button *ngIf="results.lostArray.length > 0" (click)="showLostColumnDialog()"
+      class="alatech-btn alatech-btn--default"
+    >
+      display lost column
+    </button>
+  </div>
+  <div *ngIf="results.typeErrors.length > 0">
+    <label>type errors: {{results.typeErrors.length }}筆</label>
+    <button *ngIf="results.typeErrors.length > 0" (click)="showTypeErrorsDialog()"
+      class="alatech-btn alatech-btn--default"
+    >
+      display type errors
+    </button>
+  </div>
+
 </div>
 <div class="row">
-  <div class="col-6">
-    <table>
+  <div class="col-8">
+    <table class="table alatech-table">
       <thead>
-        <th>Name</th>
-        <th>Type</th>
+        <th class="alatech-table__cell--head">Name</th>
+        <th class="alatech-table__cell--head">Type</th>
+        <th class="alatech-table__cell--head">Null</th>
+        <th class="alatech-table__cell--head">Default</th>
       </thead>
       <tbody>
         <tr *ngFor="let item of initdbArray">
           <td>{{ item.name }}</td>
           <td>{{ item.type }}</td>
+          <td>{{ item.null || '' }}</td>
+          <td>{{ item.default || '' }}</td>
         </tr>
       </tbody>
     </table>
   </div>
-  <div class="col-6">
-    <table>
+  <div class="col-4">
+    <table class="table alatech-table">
       <thead>
-        <th>Name</th>
-        <th>Type</th>
+        <th class="alatech-table__cell--head">Name</th>
+        <th class="alatech-table__cell--head">Type</th>
       </thead>
       <tbody>
-        <tr *ngFor="let item of dbArray">
+        <tr *ngFor="let item of dbArray"
+          [ngClass]="{'ambiguous_tr' : item.isAmbiguous}"
+        >
           <td>{{ item.name }}</td>
           <td>{{ item.type }}</td>
         </tr>
