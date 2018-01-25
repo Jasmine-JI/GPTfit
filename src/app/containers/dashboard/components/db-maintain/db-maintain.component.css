@@ -1,0 +1,10 @@
+.results_area {
+  background-color: #f2f2f2;
+  padding: 30px 15px;
+}
+
+.ambiguous_tr {
+  color: #fff;
+  background-color:#cb5e5e;
+}
+
