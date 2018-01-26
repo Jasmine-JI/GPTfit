@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { EventEnrollService } from '../../services/event-enroll.service';
 import { EventInfoService } from '../../services/event-info.service';
 import { Router } from '@angular/router';
@@ -48,6 +48,7 @@ export class EnrollFormComponent implements OnInit {
   event_id: string;
   session_id: string;
   eventInfo: any;
+  @ViewChild('f') form: any;
 
   constructor(
     private eventEnrollService: EventEnrollService,
@@ -169,11 +170,9 @@ export class EnrollFormComponent implements OnInit {
     const formData = new FormData();
     formData.append('file', value.attachment);
     if (this.tabIdx === 1 && this.fileLink) {
-      return this.eventEnrollService
-        .uploadFile(formData)
-        .subscribe(results => {
-          window.alert(results);
-        });
+      return this.eventEnrollService.uploadFile(formData).subscribe(results => {
+        window.alert(results);
+      });
     }
     if (valid) {
       const data = value;
@@ -183,29 +182,24 @@ export class EnrollFormComponent implements OnInit {
       data.event_id = this.event_id;
       data.session_id = this.session_id;
       data.session_name = this.eventInfo.session_name;
-      if (this.event_id === '20181277' || this.event_id === '20181287' || this.event_id === '20181297' || this.event_id === '20181307') {
+      if (
+        this.event_id === '20181277' ||
+        this.event_id === '20181287' ||
+        this.event_id === '20181297' ||
+        this.event_id === '20181307'
+      ) {
         data.phone = '';
         data.ageRange = '';
         data.gender = 2;
         data.idNumber = '';
         data.address = '';
       }
-      // data.session_name = this.eventInfo.sessions.session_name;
       this.eventEnrollService.enroll(data).subscribe(results => {
         this.dialog.open(CheckEnrollDialogComponent, {
           hasBackdrop: true
         });
-        this.formData = {
-          userName: '',
-          email: '',
-          phone: '',
-          idNumber: '',
-          address: '',
-          gender: 2,
-          ageRange: '21~25歲',
-          attachment: null
-        };
-        // this.router.navigateByUrl('/dashboardalaala/event-calendar');
+
+        this.form.resetForm();
       });
     }
   }
