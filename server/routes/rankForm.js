@@ -28,6 +28,7 @@ router.get('/', function(req, res, next) {
       gender,
       userId,
       email,
+      phone,
       startDate,
       endDate,
       event_id
@@ -101,6 +102,24 @@ router.get('/', function(req, res, next) {
     if (email) {
       let idx = rows.findIndex(
         _row => encodeURIComponent(_row.e_mail) === email
+      );
+      const halfRange = 5;
+      let start = 0;
+      if (idx === -1) {
+        return res.send({ datas: [] });
+      }
+      if (idx - halfRange < 0) {
+        start = 0;
+      } else {
+        start = idx - halfRange;
+      }
+
+      const end = halfRange * 2 + 1;
+      let datas = rows.splice(start, end);
+      return res.json({ datas });
+    } else if (phone) {
+      let idx = rows.findIndex(
+        _row => _row.phone === phone
       );
       const halfRange = 5;
       let start = 0;
@@ -283,7 +302,9 @@ router.get('/mapInfo', function(req, res, next) { // 分成兩個fetch是因為�
       userId,
       mapId,
       month,
-      isRealTime
+      isRealTime,
+      start_time,
+      end_time
     }
   } = req;
   const userQuery = userId ? `and t.user_id = ${userId}` : '';
@@ -320,8 +341,17 @@ router.get('/mapInfo', function(req, res, next) { // 分成兩個fetch是因為�
       r.user_id = ${userId}
       and
       map_id = ${mapId}
+      and
+      r.time_stamp
+      between
+      ${start_time}
+      and
+      ${end_time}
       order by r.activity_duration
       ;
+      select map_name, race_total_distance, race_category
+      from race_map_info
+      where map_index = ${mapId};
     `;
   } else {
     const sql1 = `
@@ -357,7 +387,11 @@ router.get('/mapInfo', function(req, res, next) { // 分成兩個fetch是因為�
         res.json(results[0][0]);
       }
     } else {
-      res.json(results[0]);
+      if (results[0].length > 0) {
+        res.json(results[0][0]);
+      } else {
+        res.json(results[1][0]);
+      }
     }
 
   });

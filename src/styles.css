@@ -216,6 +216,24 @@ a.alatech-btn:hover {
   background-color: #f0eeee;
   padding: 8px 11px 7px;
 }
+.searchbar-menu--text,
+.searchbar-menu--text__rwd {
+  font-weight: 500;
+  color: #999;
+  margin-right: 10px;
+  cursor: pointer;
+}
+.searchbar-menu--text.active {
+  margin-bottom: 4px;
+  border-bottom: 2px solid #263147;
+  color: #263147;
+}
+
+.searchbar-menu--text__rwd.active {
+  margin-bottom: 4px;
+  border-bottom: 2px solid #263147;
+  color: #008bcd;  
+}
 
 @media print {
   .alatech-btn {
