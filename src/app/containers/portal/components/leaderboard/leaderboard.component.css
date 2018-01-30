@@ -243,13 +243,13 @@ tr.tr-only-hide {
 
 @media (min-width: 992px) {
   .container {
-    max-width: 890px;
+    min-width: 890px;
   }
 }
 
 @media (min-width: 1170px) {
   .container {
-    max-width: 1050px;
+    min-width: 1050px;
   }
 }
 
