@@ -35,10 +35,13 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   groupId = '2'; // 組別 預設為無分組
   isHaveEmail: boolean; // 有無mail
   email: string;
+  phone: string;
   active = false; // select options的開關
   isSelectLoading = false; // select async loading開關
   tempEmail: string; // 存select上一筆被選的email
+  tempPhone: string;
   emailOptions: any; // select async options
+  phoneOptions: any;
   isFoundUser = false; // 標記目標email
   bgImageUrl: string; // 背景圖
   distance: number; // 該地圖的距離資料
@@ -96,6 +99,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     '2018/01/29 23:59:59',
     '2018/01/30 23:59:59'
   ];
+  isEmailSearch = true;
   constructor(
     private router: Router,
     private rankFormService: RankFormService,
@@ -301,7 +305,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
       this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
     }
     this.email = email;
-    this.isFoundUser = this.email ? true : false;
+    this.isFoundUser = this.email || this.phone ? true : false;
     this.groupId = groupId;
     this.startDay = this.convertDateFormat(selectedStartDate);
     this.finalDay = this.convertDateFormat(selectedEndDate);
@@ -575,7 +579,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   }
 
   public inputEvent(e: any, isUpMode: boolean = false): void {
-    if (e.target.value.length > 0 && this.email) {
+    if (e.target.value.length > 0 && (this.email || this.phone)) {
       this.isClearIconShow = true;
     } else {
       this.isClearIconShow = false;
@@ -583,7 +587,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     this.handleSearchEmail();
   }
   public focusEvent(e: any, isUpMode: boolean = false): void {
-    if (e.target.value.length > 0 && this.email) {
+    if (e.target.value.length > 0 && (this.email || this.phone)) {
       this.isClearIconShow = true;
     } else {
       this.isClearIconShow = false;
@@ -600,32 +604,44 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     } else if (this.tabIdx === 2) {
       params = params.set('start_date_time', '1517007600');
       params = params.set('end_date_time', '1517093999');
+      params = params.set('event_id', '20181277');
       params = params.set('isRealTime', 'true');
     } else if (this.tabIdx === 3) {
       params = params.set('start_date_time', '1517094000');
       params = params.set('end_date_time', '1517180399');
+      params = params.set('event_id', '20181287');
       params = params.set('isRealTime', 'true');
     } else if (this.tabIdx === 4) {
       params = params.set('start_date_time', '1517180400');
       params = params.set('end_date_time', '1517266799');
+      params = params.set('event_id', '20181297');
       params = params.set('isRealTime', 'true');
     } else if (this.tabIdx === 5) {
       params = params.set('start_date_time', '1517266800');
       params = params.set('end_date_time', '1517353199');
+      params = params.set('event_id', '20181307');
       params = params.set('isRealTime', 'true');
     } else {
       params = params.set('startDate', this.startDate);
       params = params.set('endDate', this.endDate);
     }
 
-    params = params.set('keyword', this.email);
     if (this.groupId !== '2') {
       params = params.set('gender', this.groupId);
     }
-    this.rankFormService.getEmail(params).subscribe(res => {
-      this.emailOptions = res;
-      this.isSelectLoading = false;
-    });
+    if (this.isEmailSearch) {
+      params = params.set('keyword', this.email);
+      this.rankFormService.getEmail(params).subscribe(res => {
+        this.emailOptions = res;
+        this.isSelectLoading = false;
+      });
+    } else {
+      params = params.set('keyword', this.phone);
+      this.rankFormService.getPhone(params).subscribe(res => {
+        this.phoneOptions = res;
+        this.isSelectLoading = false;
+      });
+    }
   }
   openActive(event: any) {
     event.stopPropagation();
@@ -636,12 +652,22 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     this.active = false;
   }
   remove(index: number, event?: any): void {
-    if (this.email && this.emailOptions.length > 1) {
-      this.emailOptions.push(this.tempEmail);
-    }
-    this.email = this.emailOptions[index];
-    if (this.emailOptions.length > 1) {
-      this.tempEmail = this.emailOptions.splice(index, 1).toString();
+    if (this.isEmailSearch) {
+      if (this.email && this.emailOptions.length > 1) {
+        this.emailOptions.push(this.tempEmail);
+      }
+      this.email = this.emailOptions[index];
+      if (this.emailOptions.length > 1) {
+        this.tempEmail = this.emailOptions.splice(index, 1).toString();
+      }
+    } else {
+      if (this.phone && this.phoneOptions.length > 1) {
+        this.phoneOptions.push(this.tempPhone);
+      }
+      this.phone = this.phoneOptions[index].searchPhone;
+      if (this.phoneOptions.length > 1) {
+        this.tempPhone = this.phoneOptions.splice(index, 1).toString();
+      }
     }
   }
   preMap() {
@@ -789,6 +815,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   }
   clear() {
     this.email = '';
+    this.phone = '';
     this.isClearIconShow = false;
   }
   selectTab(idx) {
@@ -842,6 +869,14 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
           this.fetchRealTimeRank(params);
         }
       }, 300000);
+    }
+  }
+  switchSearchItem(target) {
+    if (
+      (target === 'email' && !this.isEmailSearch) ||
+      (target === 'phone' && this.isEmailSearch)
+    ) {
+      this.isEmailSearch = !this.isEmailSearch;
     }
   }
 }

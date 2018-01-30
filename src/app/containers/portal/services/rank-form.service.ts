@@ -24,6 +24,9 @@ export class RankFormService {
   getEmail(params) {
     return this.http.get(API_SERVER + 'rankform/rankInfo/email', { params });
   }
+  getPhone(params) {
+    return this.http.get(API_SERVER + 'rankform/rankInfo/phone', { params });
+  }
   getRealTimeEvent(params) {
     return this.http.get(API_SERVER + 'rankform/eventRank', { params });
   }

@@ -52,7 +52,8 @@ router.get('/', function(req, res, next) {
     a.map_name,
     a.race_category,
     a.race_total_distance,
-    a.e_mail
+    a.e_mail,
+    a.phone
     from
     (
       select *, @prev := @curr, @curr := offical_time,
@@ -164,6 +165,7 @@ router.get('/rankInfo/email', function(req, res, next) {
       mapId,
       keyword,
       gender,
+      event_id,
       isRealTime
     }
   } = req;
@@ -179,7 +181,7 @@ router.get('/rankInfo/email', function(req, res, next) {
       and r.time_stamp between ${start_date_time} and ${end_date_time}
       and p.user_id = r.user_id
       and p.e_mail = e.e_mail
-      and e.event_id = 20181280
+      and e.event_id = ${event_id}
       and r.map_id = ${mapId};
     `;
   } else {
@@ -190,6 +192,8 @@ router.get('/rankInfo/email', function(req, res, next) {
     and
     '${endDate || currDate}'
     and map_id = ${mapId}
+    and
+    e_mail IS NOT NULL
     ${genderQuery};
     `;
   }
@@ -201,7 +205,73 @@ router.get('/rankInfo/email', function(req, res, next) {
       return res.send([]);
     }
     let results = rows.map(_row => _row.e_mail);
+
     results = results.filter(_res => _res.indexOf(keyword) > -1);
+    res.json(results);
+  });
+});
+
+router.get('/rankInfo/phone', function(req, res, next) {
+  const {
+    con,
+    query: {
+      startDate,
+      start_date_time,
+      end_date_time,
+      endDate,
+      mapId,
+      keyword,
+      gender,
+      event_id,
+      isRealTime
+    }
+  } = req;
+  const genderQuery = gender ? `and gender = ${gender}` : '';
+  let sql = '';
+  if (isRealTime === 'true') {
+    sql = `
+      select distinct p.phone
+      from race_data as r,
+      user_profile as p,
+      user_race_enroll as e
+      where r.user_race_status = 3
+      and r.time_stamp between ${start_date_time} and ${end_date_time}
+      and p.user_id = r.user_id
+      and
+      p.phone IS NOT NULL
+      and
+      e.phone IS NOT NULL
+      and p.phone = e.phone
+      and e.event_id = ${event_id}
+      and r.map_id = ${mapId};
+    `;
+  } else {
+    sql = `
+    SELECT distinct phone, country_code FROM ??
+    where date between
+    '${startDate || currDate}'
+    and
+    '${endDate || currDate}'
+    and
+    phone IS NOT NULL
+    and map_id = ${mapId}
+    ${genderQuery};
+    `;
+  }
+  con.query(sql, 'run_rank', function(err, rows) {
+    if (err) {
+      console.log(err);
+    }
+    if (keyword.length === 0) {
+      return res.send([]);
+    }
+    let results = rows.map(_row => {
+      return {
+        searchPhone: _row.phone,
+        displayPhone: '+' + _row.country_code + ' ' + _row.phone
+      };
+    });
+    results = results.filter(_res => _res.searchPhone.indexOf(keyword) > -1);
     res.json(results);
   });
 });
@@ -303,7 +373,9 @@ router.post('/fakeData', async (req, res) => {
       userName,
       email,
       map_name,
-      user_id
+      user_id,
+      phone,
+      country_code
     },
     con
   } = req;
@@ -321,7 +393,9 @@ router.post('/fakeData', async (req, res) => {
       login_acc,
       e_mail,
       map_name,
-      user_id
+      user_id,
+      phone,
+      country_code
     )
     value (
       '${offical_time}',
@@ -331,7 +405,9 @@ router.post('/fakeData', async (req, res) => {
       '${login_acc}',
       '${e_mail}',
       '${map_name}',
-      '${user_id}'
+      '${user_id}',
+      '${phone}',
+      '${country_code}'
     );`;
     await con.query(sql, 'run_rank', async (err, rows) => {
       if (err) {
@@ -496,6 +572,7 @@ const sql = `
   p.e_mail,
   p.login_acc,
   p.gender,
+  p.phone,
   m.map_name
   from (
   SELECT

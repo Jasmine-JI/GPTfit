@@ -10,6 +10,8 @@ import { MatDialog } from '@angular/material/dialog';
 export class DbMaintainComponent implements OnInit {
   initdbArray = [];
   dbArray = [];
+  db = '';
+  intidb = '';
   resultsContent = {
     add: '',
     fix: '',
