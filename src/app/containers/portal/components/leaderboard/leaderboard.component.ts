@@ -34,6 +34,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   isHaveDatas: boolean; // 當前條件下的rankDatas有無資料
   groupId = '2'; // 組別 預設為無分組
   isHaveEmail: boolean; // 有無mail
+  isHavePhone: boolean; // 有無phone
   email: string;
   phone: string;
   active = false; // select options的開關
@@ -232,6 +233,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
         const {
           datas,
           email,
+          phone,
           meta,
           mapId,
           startDate,
@@ -242,6 +244,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
         } = this.response;
         this.rankDatas = datas;
         this.email = email;
+        this.phone = phone;
         this.mapId = mapId;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -255,9 +258,11 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
         }
         if (meta) {
           this.isHaveEmail = false;
+          this.isHavePhone = false;
           this.meta = buildPageMeta(meta);
         } else {
-          this.isHaveEmail = true;
+          this.isHavePhone = phone ? true : false;
+          this.isHaveEmail = email ? true : false;
           this.isFoundUser = true;
         }
         if (this.rankDatas && this.rankDatas.length > 0) {
@@ -290,6 +295,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     event.stopPropagation();
     const {
       email,
+      phone,
       mapId,
       groupId,
       selectedStartDate,
@@ -305,6 +311,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
       this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
     }
     this.email = email;
+    this.phone = phone;
     this.isFoundUser = this.email || this.phone ? true : false;
     this.groupId = groupId;
     this.startDay = this.convertDateFormat(selectedStartDate);
@@ -323,11 +330,15 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     }
 
     this.isHaveEmail = email ? true : false;
+    this.isHavePhone = phone ? true : false;
     if (this.groupId !== '2') {
       params = params.set('gender', this.groupId);
     }
     if (email) {
       params = params.set('email', encodeURIComponent(email.trim()));
+    }
+    if (phone) {
+      params = params.set('phone', phone.trim());
     }
     this.email = email && email.trim();
     if (
@@ -563,16 +574,34 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
       date: this.date,
       mapId: this.mapId,
       userId,
-      event: '0'
+      event: '0',
+      start_time: 0,
+      end_time: 0
     };
-    if (this.tabIdx === 2) {
+    if (this.tabIdx !== 0 && this.tabIdx !== 1) {
       paramDatas = {
         date: this.date,
         mapId: this.mapId,
         userId,
-        event: '2'
+        event: '1',
+        start_time: 0,
+        end_time: 0
       };
+      if (this.tabIdx === 2) {
+        paramDatas.start_time = 1517007600;
+        paramDatas.end_time = 1517093999;
+      } else if (this.tabIdx === 3) {
+        paramDatas.start_time = 1517094000;
+        paramDatas.end_time = 1517180399;
+      } else if (this.tabIdx === 4) {
+        paramDatas.start_time = 1517180400;
+        paramDatas.end_time = 1517266799;
+      } else if (this.tabIdx === 5) {
+        paramDatas.start_time = 1517266800;
+        paramDatas.end_time = 1517353199;
+      }
     }
+
     this.router.navigateByUrl(
       `${location.pathname}/mapInfo?${buildUrlQueryStrings(paramDatas)}`
     );

@@ -1,6 +1,6 @@
 <div class="row">
-  <div class="col-md-7">
-    <ul class="justify-content-end pagination page__pagination">
+  <div style="width: 100%">
+    <ul class="justify-content-center pagination page__pagination">
       <li class="pagination-item" (click)="toFirstPage()" [ngClass]="{'pagination-item--disabled' : currentPage === 1}">
         <a title="Go to first page">First page</a>
       </li>
@@ -17,10 +17,9 @@
         <a>Last page</a>
       </li>
     </ul>
-  </div>
-  <div class="col-md-5">
     <div class="page__info justify-content-end-md justify-content-center pagination">
-      <span style="font-size: 14px">No. {{ currentPage || 1 }} page / total {{ maxPage || 1 }} page(s) ，total {{ total || 1 }} item(s)</span>
+      <span style="font-size: 14px">No. {{ currentPage || 1 }} page / total {{ maxPage || 1 }} page(s)
+      total {{ total || 1 }} item(s)</span>
     </div>
   </div>
   <ul class="pagination__md" style="width: 100%">

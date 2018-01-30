@@ -81,6 +81,7 @@
 @media (min-width: 767px) {
   .pagination.page__pagination {
     display: flex;
+    margin-bottom: 0px;
   }
   .pagination__md {
     display: none;
