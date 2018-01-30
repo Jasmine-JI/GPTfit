@@ -60,7 +60,7 @@ function scheduleCronstyle() {
       r1.user_id, FROM_UNIXTIME(r1.time_stamp, "%m") as month,
       FROM_UNIXTIME(r1.time_stamp, "%Y-%m-%d") as date, r1.map_id ,
       r1.file_name, p.gender, p.login_acc, p.e_mail, m.map_name,
-      m.race_category, m.race_total_distance
+      m.race_category, m.race_total_distance, p.phone, p.country_code
       from race_data r1,
       user_profile as p,
       race_map_info as m
