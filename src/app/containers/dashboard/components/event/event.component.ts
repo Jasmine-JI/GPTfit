@@ -17,7 +17,11 @@ export class EventComponent implements OnInit {
 
   ngOnInit() {
     const params = new HttpParams();
-    this.eventInfoService.fetchEventInfo(params).subscribe(results => this.events = results);
+    this.eventInfoService.fetchEventInfo(params).subscribe(results => {
+      this.events = results.filter((value, idx, self) => {
+        return self.findIndex((_self) => _self.event_id === value.event_id) === idx;
+      });
+    });
   }
   toCreatePage() {
     this.router.navigateByUrl('/dashboardalaala/event/create');

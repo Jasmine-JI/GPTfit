@@ -26,7 +26,7 @@ router.get('/', function (req, res, next) {
         errorMessage: err.sqlMessage
       });
     }
-    res.json(rows);
+    res.status(200).json(rows);
   });
 });
 
