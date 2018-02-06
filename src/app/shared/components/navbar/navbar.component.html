@@ -14,7 +14,7 @@
         transform="translate(-441.77 -374.19)" />
     </svg>
   </a>
-  <button class="navbar-toggler collaped  ml-auto nav-item" *ngIf="!isShowResetPwd" (click)="toggleSearch()" style="color: #fff">
+  <button class="navbar-toggler collaped  ml-auto nav-item" *ngIf="!isShowResetPwd && !isShowDashboard" (click)="toggleSearch()" style="color: #fff">
     <i class="fa fa-search" aria-hidden="true"></i>
   </button>
   <button class="navbar-toggler nav-item" type="button" (click)="toggleMask()">
@@ -23,6 +23,9 @@
 
   <div class="collapse navbar-collapse" [class.show]="isCollapseShow" id="navbarResponsive">
     <ul class="navbar-nav ml-auto">
+      <li class="nav-item" *ngIf="isShowDashboard">
+        <a class="nav-link" [routerLink]="['/dashboardalaala/event']">活動賽事自訂</a>
+      </li>
       <li class="nav-item" *ngIf="isShowDashboard">
         <a class="nav-link" [routerLink]="['/dashboardalaala/event-calendar']">活動賽事日曆</a>
       </li>

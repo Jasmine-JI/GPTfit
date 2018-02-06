@@ -2,6 +2,13 @@ var mysql = require("mysql");
 var express = require('express');
 var bodyParser = require('body-parser');
 var os = require('os');
+// const https = require('https');
+// const fs = require('fs');
+
+// const SERVER_CONFIG = {
+//   key: fs.readFileSync('../key/private.key'),
+//   cert: fs.readFileSync('../key/server.crt')
+// };
 
 // Init app
 var app = express();
@@ -114,3 +121,6 @@ const port = process.env.PORT || 3001;
 app.listen(port, function () {
   console.log('Server running at ' + port);
 });
+// https.createServer(SERVER_CONFIG, app).listen(port, function() {
+//   console.log('HTTPS sever started at ' + port);
+// });

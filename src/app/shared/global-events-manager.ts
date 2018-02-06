@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
+import { RankForms } from './models/rankForm';
 
 @Injectable()
 export class GlobalEventsManager {
@@ -20,7 +21,7 @@ export class GlobalEventsManager {
   public closeCollapseEmitter: Observable<boolean> = this._closeCollapse.asObservable();
   public getMapOptionsEmitter: Observable<any> = this._getMapOptions.asObservable();
   public getMapIdEmitter: Observable<number> = this._getMapId.asObservable();
-  public getRankFormEmitter: Observable<Array<any>> = this._getRankForm.asObservable();
+  public getRankFormEmitter: Observable<RankForms> = this._getRankForm.asObservable();
   public showLoadingEmitter: Observable<boolean> = this._showLoading.asObservable();
   public getIsFoundUserEmitter: Observable<boolean> = this._getIsFoundUser.asObservable();
   public getTabIdxEmitter: Observable<number> = this._getTabIdx.asObservable();

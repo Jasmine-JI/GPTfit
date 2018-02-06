@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
+import { Events } from '../models/events';
 
 const { API_SERVER } = environment.url;
 
@@ -10,7 +11,7 @@ export class EventInfoService {
   constructor(private http: HttpClient) {}
 
   fetchEventInfo(params) {
-    return this.http.get(API_SERVER + 'raceEventInfo', { params });
+    return this.http.get<Events[]>(API_SERVER + 'raceEventInfo', { params });
   }
   fetchTodayRank(params) {
     return this.http.get(API_SERVER + 'rankForm/todayRank', { params });
@@ -22,6 +23,8 @@ export class EventInfoService {
     return this.http.delete(API_SERVER + 'raceEventInfo/' + id);
   }
   updateEvent(body) {
-    return this.http.put(API_SERVER + 'raceEventInfo/edit', body);
+    return this.http.put(API_SERVER + 'raceEventInfo/edit', body, {
+      responseType: 'text'
+    });
   }
 }
