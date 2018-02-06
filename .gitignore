@@ -9,6 +9,9 @@
 # dependencies
 /node_modules
 
+# about ssl key and cert
+/key
+
 # IDEs and editors
 /.idea
 .project

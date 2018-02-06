@@ -3,7 +3,7 @@
     <div>
       <div class="form-group ">
         <div class="row">
-          <div class="col-md-5 text-right">
+          <div class="col-md-5 text-md-right">
             <label class="form__label--required">賽事名稱:</label>
           </div>
           <div class="col-md-5">
@@ -19,7 +19,7 @@
       </div>
       <div class="form-group">
         <div class="row">
-          <div class="col-md-5 text-right">
+          <div class="col-md-5 text-md-right">
             <label class="form__label--required">賽事日期與時間:</label>
           </div>
           <div class="col-md-5">
@@ -64,7 +64,7 @@
       </div>
       <div class="form-group">
         <div class="row">
-          <div class="col-md-5 text-right">
+          <div class="col-md-5 text-md-right">
             <label class="form__label--required">填表單人:</label>
           </div>
           <div class="col-md-5">
@@ -79,7 +79,7 @@
       </div>
       <div class="form-group">
         <div class="row">
-          <div class="col-md-5 text-right">
+          <div class="col-md-5 text-md-right">
             <label class="">描述:</label>
           </div>
           <div class="col-md-5">
@@ -90,7 +90,7 @@
           </div>
         </div>
       </div>
-      <!-- <ng-container
+      <ng-container
           formArrayName="sessionDatas"
         >
         <div class="session_area"
@@ -104,7 +104,7 @@
           </button>
           <div class="form-group">
             <div class="row">
-              <div class="col-md-5 text-right">
+              <div class="col-md-5 text-md-right">
                 <label class="form__label--required">子活動名稱:</label>
               </div>
               <div class="col-md-5">
@@ -117,7 +117,7 @@
           </div>
           <div class="form-group">
             <div class="row">
-              <div class="col-md-5 text-right">
+              <div class="col-md-5 text-md-right">
                 <label class="form__label--required">子活動日期與時間:</label>
               </div>
               <div class="col-md-5">
@@ -165,7 +165,7 @@
             </div>
           </div>
         </div>
-      </ng-container> -->
+      </ng-container>
       <div class="add-sessions" (click)="addItem()">
         <i class="fa fa-plus"></i>
         新增子活動
@@ -176,6 +176,9 @@
     <div class="justify-content-end">
       <button class="alatech-btn alatech-btn--default">
         送出
+      </button>
+      <button class="alatech-btn alatech-btn--default" [routerLink]="['/dashboardalaala/event']">
+        返回
       </button>
     </div>
   </div>

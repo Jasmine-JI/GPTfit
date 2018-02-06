@@ -51,3 +51,13 @@
   background-color: transparent;
   border: none;
 }
+
+@media (max-width: 768px) {
+  .time_picker {
+    width: 100%;
+    margin-left: 0px;
+  }
+  .time_picker input {
+    width: calc(100% - 24px);
+  }
+}

@@ -59,6 +59,7 @@ export class EditEventComponent implements OnInit {
   };
   startDate: string;
   endDate: string;
+
   constructor(
     private route: ActivatedRoute,
     private eventInfoService: EventInfoService,
@@ -83,8 +84,27 @@ export class EditEventComponent implements OnInit {
     let params = new HttpParams();
     params = params.set('event_id', this.event_id);
     this.eventInfoService.fetchEventInfo(params).subscribe(_results => {
-      this.events = _results;
+      const sessions = _results.filter(_data => {
+        if (_data.session_id !== null) {
+          return {
+            session_id: _data.session_id,
+            session_name: _data.session_name,
+            start_date: _data.start_date,
+            end_data: _data.end_date,
+            time_stamp_start: _data.time_stamp_start,
+            time_stamp_end: _data.time_stamp_end
+          };
+        }
+      });
       const {
+        description,
+        event_name,
+        event_time_end,
+        event_time_name,
+        event_time_start,
+        launch_user_name
+      } = _results[0];
+      const data = {
         description,
         event_name,
         event_time_end,
@@ -92,7 +112,8 @@ export class EditEventComponent implements OnInit {
         event_time_start,
         launch_user_name,
         sessions
-      } = this.events;
+      };
+      this.events = data;
       const selectedStartDate = this.convertDateFormat(
         moment(event_time_start * 1000).format('YYYY-M-D')
       );
@@ -114,7 +135,9 @@ export class EditEventComponent implements OnInit {
           const session_start_time = moment(time_stamp_start * 1000).format(
             'hh:mm'
           );
-          const session_end_time = moment(time_stamp_end * 1000).format('hh:mm');
+          const session_end_time = moment(time_stamp_end * 1000).format(
+            'hh:mm'
+          );
           const data = {
             session_name,
             session_start_date,
@@ -243,12 +266,17 @@ export class EditEventComponent implements OnInit {
     };
     if (sessionDatas.length > 0) {
       const sessionResults = sessionDatas.map(_data => {
+        const session_start_date = this.convertDateString(_data.session_start_date) +
+            ' ' +
+            _data.session_start_time;
+        const session_end_date = this.convertDateString(_data.session_end_date) +
+            ' ' +
+            _data.session_end_time;
         return {
           session_name: _data.session_name,
-          session_start_date:
-            this.convertDateString(_data.session_start_date) + ' ' + _data.session_start_time,
-          session_end_date:
-            this.convertDateString(_data.session_end_date) + ' ' + _data.session_end_time
+          session_start_date,
+          session_end_date,
+          session_id: moment(session_start_date, 'YMDH').format('YMDH')
         };
       });
       data.sessions = sessionResults;
@@ -257,9 +285,7 @@ export class EditEventComponent implements OnInit {
     if (valid) {
       this.eventInfoService
         .updateEvent(data)
-        .subscribe(results =>
-          this.router.navigateByUrl('/dashboardalaala/event')
-        );
+        .subscribe(results => this.router.navigateByUrl('/dashboardalaala/event'));
     }
   }
 }

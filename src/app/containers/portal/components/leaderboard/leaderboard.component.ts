@@ -24,7 +24,6 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   rankDatas: Array<any>; // 排行板資料
   monthDatas: any; // 有資料的月份
   mapDatas: any; // 有資料的地圖
-  response: any; // rankDatas 回的res載體
   mapId = 1; // 預設為第一張地圖
   idx: number;
   month = (new Date().getMonth() + 1).toString();
@@ -228,7 +227,6 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
       this.globalEventsManager.getMapId(this.mapId);
     });
     this.globalEventsManager.getRankFormEmitter.subscribe(res => {
-      this.response = res;
       if (res) {
         const {
           datas,
@@ -241,7 +239,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
           startDay,
           finalDay,
           groupId
-        } = this.response;
+        } = res;
         this.rankDatas = datas;
         this.email = email;
         this.phone = phone;
@@ -482,8 +480,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.rankFormService.getRank(params).subscribe(res => {
       this.isLoading = false;
-      this.response = res;
-      const { datas, meta } = this.response;
+      const { datas, meta } = res;
       this.rankDatas = datas;
       this.meta = buildPageMeta(meta);
       const { currentPage, maxPage } = this.meta;
@@ -497,8 +494,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.rankFormService.getRealTimeEvent(params).subscribe(res => {
       this.isLoading = false;
-      this.response = res;
-      const { datas, meta } = this.response;
+      const { datas, meta } = res;
       this.rankDatas = datas;
       this.rankDatas.forEach((data, idx) => {
         if (idx > 0) {
