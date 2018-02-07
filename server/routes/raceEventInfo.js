@@ -53,7 +53,9 @@ router.post('/create', (req, res) => {
         const {
           session_end_date,
           session_name,
-          session_start_date
+          session_start_date,
+          isRealTime,
+          isShowPortal
         } = _session;
         const time_stamp_start = moment(session_start_date).unix();
         const time_stamp_end = moment(session_end_date).unix();
@@ -73,7 +75,9 @@ router.post('/create', (req, res) => {
           `${description}`,
           `${event_time_name}`,
           event_start,
-          event_end
+          event_end,
+          isRealTime,
+          isShowPortal
         ];
       });
     } else {
@@ -108,7 +112,9 @@ router.post('/create', (req, res) => {
         description,
         event_time_name,
         event_time_start,
-        event_time_end
+        event_time_end,
+        is_real_time,
+        is_show_portal
       )
       values ?;`;
     } else {
@@ -187,7 +193,14 @@ router.put('/edit', (req, res, next) => {
       const event_end = moment(event_time_end, 'YYYY-MM-DD H:mm:ss').unix();
       if (sessions.length > 0) {
         values = sessions.map(_session => {
-          const { session_end_date, session_name, session_start_date, session_id } = _session;
+          const {
+            session_end_date,
+            session_name,
+            session_start_date,
+            session_id,
+            isRealTime,
+            isShowPortal
+          } = _session;
           const time_stamp_start = moment(session_start_date, 'YYYY-MM-DD H:mm:ss').unix();
           const time_stamp_end = moment(session_end_date, 'YYYY-MM-DD H:mm:ss').unix();
 
@@ -206,7 +219,9 @@ router.put('/edit', (req, res, next) => {
             '${description}',
             '${event_time_name}',
             ${event_start},
-            ${event_end}
+            ${event_end},
+            ${isShowPortal},
+            ${isRealTime}
           )`];
         });
       }
@@ -229,7 +244,9 @@ router.put('/edit', (req, res, next) => {
           description,
           event_time_name,
           event_time_start,
-          event_time_end
+          event_time_end,
+          is_show_portal,
+          is_real_time
         )
         values ${values}
         on duplicate key
@@ -247,7 +264,9 @@ router.put('/edit', (req, res, next) => {
         description = values(description),
         event_time_name = values(event_time_name),
         event_time_start = values(event_time_start),
-        event_time_end = values(event_time_end)
+        event_time_end = values(event_time_end),
+        is_show_portal = values(is_show_portal),
+        is_real_time = values(is_real_time)
         ;`;
       } else {
         sql = `

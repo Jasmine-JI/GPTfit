@@ -125,7 +125,15 @@ export class EditEventComponent implements OnInit {
       const sessionArray = [];
       if (sessions) {
         sessions.forEach(session => {
-          const { session_name, time_stamp_end, time_stamp_start } = session;
+          const {
+            session_name,
+            time_stamp_end,
+            time_stamp_start,
+            is_real_time,
+            is_show_portal
+          } = session;
+          const isShowPortal = this.convertDBBoolean(is_show_portal);
+          const isRealTime = this.convertDBBoolean(is_real_time);
           const session_start_date = this.convertDateFormat(
             moment(time_stamp_start * 1000).format('YYYY-M-D')
           );
@@ -138,14 +146,16 @@ export class EditEventComponent implements OnInit {
           const session_end_time = moment(time_stamp_end * 1000).format(
             'hh:mm'
           );
-          const data = {
+          const sessionData = {
+            isShowPortal,
+            isRealTime,
             session_name,
             session_start_date,
             session_end_date,
             session_start_time,
             session_end_time
           };
-          sessionArray.push(data);
+          sessionArray.push(sessionData);
         });
         this.addItem(sessionArray);
       }
@@ -177,6 +187,8 @@ export class EditEventComponent implements OnInit {
   }
   initSessions(): FormGroup {
     return this.fb.group({
+      isShowPortal: [false],
+      isRealTime: [false],
       session_name: ['', Validators.required],
       session_start_date: ['', Validators.required],
       session_start_time: ['', Validators.required],
@@ -190,9 +202,13 @@ export class EditEventComponent implements OnInit {
       session_start_date,
       session_start_time,
       session_end_date,
-      session_end_time
+      session_end_time,
+      isRealTime,
+      isShowPortal
     } = data;
     return this.fb.group({
+      isShowPortal: [isShowPortal],
+      isRealTime: [isRealTime],
       session_name: [session_name, Validators.required],
       session_start_date: [session_start_date, Validators.required],
       session_start_time: [session_start_time, Validators.required],
@@ -251,6 +267,7 @@ export class EditEventComponent implements OnInit {
       launch_user_name,
       sessionDatas
     } = value;
+
     const event_time_start =
       this.convertDateString(selectedStartDate) + ' ' + event_timer_start;
     const event_time_end =
@@ -266,13 +283,17 @@ export class EditEventComponent implements OnInit {
     };
     if (sessionDatas.length > 0) {
       const sessionResults = sessionDatas.map(_data => {
-        const session_start_date = this.convertDateString(_data.session_start_date) +
-            ' ' +
-            _data.session_start_time;
-        const session_end_date = this.convertDateString(_data.session_end_date) +
-            ' ' +
-            _data.session_end_time;
+        const session_start_date =
+          this.convertDateString(_data.session_start_date) +
+          ' ' +
+          _data.session_start_time;
+        const session_end_date =
+          this.convertDateString(_data.session_end_date) +
+          ' ' +
+          _data.session_end_time;
         return {
+          isRealTime: _data.isRealTime,
+          isShowPortal: _data.isShowPortal,
           session_name: _data.session_name,
           session_start_date,
           session_end_date,
@@ -285,7 +306,15 @@ export class EditEventComponent implements OnInit {
     if (valid) {
       this.eventInfoService
         .updateEvent(data)
-        .subscribe(results => this.router.navigateByUrl('/dashboardalaala/event'));
+        .subscribe(results =>
+          this.router.navigateByUrl('/dashboardalaala/event')
+        );
     }
+  }
+  convertDBBoolean(value) {
+    if (value === 0) {
+      return false;
+    }
+    return true;
   }
 }

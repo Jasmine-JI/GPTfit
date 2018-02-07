@@ -100,6 +100,8 @@ export class CreateEventComponent implements OnInit {
     if (sessionDatas.length > 0) {
       const sessionResults = sessionDatas.map(_data => {
         return {
+          isRealTime: _data.isRealTime,
+          isShowPortal: _data.isShowPortal,
           session_name: _data.session_name,
           session_start_date:
             _data.session_start_date.formatted + ' ' + _data.session_start_time,
@@ -120,6 +122,8 @@ export class CreateEventComponent implements OnInit {
   }
   initSessions(): FormGroup {
     return this.fb.group({
+      isShowPortal: [false],
+      isRealTime: [false],
       session_name: ['', Validators.required],
       session_start_date: ['', Validators.required],
       session_start_time: ['', Validators.required],
@@ -150,4 +154,5 @@ export class CreateEventComponent implements OnInit {
       new Date().getUTCDate()
     );
   }
+
 }

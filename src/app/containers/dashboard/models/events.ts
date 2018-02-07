@@ -1,6 +1,8 @@
 export interface Events {
   event_id: number;
   event_name: string;
+  is_real_time: number;
+  is_show_portal: number;
   session_id: number;
   session_name: string;
   time_stamp_start: number;

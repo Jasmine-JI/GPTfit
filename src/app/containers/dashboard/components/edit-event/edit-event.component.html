@@ -70,7 +70,20 @@
       </div>
       <ng-container formArrayName="sessionDatas">
         <div class="session_area" *ngFor="let item of complexForm.get('sessionDatas').controls;let idx = index" [formGroupName]="idx">
-          <button class="icon-btn remove-sessions" (click)="removeItems($event, idx)">
+          <div style="position: relative; top: -15px; left: 0">
+            <mat-checkbox formControlName="isShowPortal"
+              color="primary"
+            ><span style="font-size: 14px">將此活動設為顯示在外部排行版</span>
+            </mat-checkbox>
+            <mat-checkbox formControlName="isRealTime"
+              color="primary"
+            ><span style="font-size: 14px">將此活動設為及時排行搜尋</span>
+            </mat-checkbox>
+          </div>
+          <button class="icon-btn remove-sessions"
+            (click)="removeItems($event, idx)"
+            type="button"
+          >
             <i class="fa fa-times-circle icon_fa"></i>
           </button>
           <div class="form-group">
