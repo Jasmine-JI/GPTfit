@@ -1,6 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
 /* @import "~@angular/material/prebuilt-themes/pink-bluegrey.css"; */
 @import '~@angular/material/prebuilt-themes/indigo-pink.css';
+.session_area .mat-checkbox-inner-container {
+  height: 14px;
+  width: 14px;
+}
+.mat-checkbox + .mat-checkbox {
+  margin-left: 10px;
+}
+
+
 
 body,
 html {
@@ -232,7 +241,7 @@ a.alatech-btn:hover {
 .searchbar-menu--text__rwd.active {
   margin-bottom: 4px;
   border-bottom: 2px solid #263147;
-  color: #008bcd;  
+  color: #008bcd;
 }
 
 @media print {
