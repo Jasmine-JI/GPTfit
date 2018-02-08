@@ -8,6 +8,16 @@
 .mat-checkbox + .mat-checkbox {
   margin-left: 10px;
 }
+.mat-dialog-container {
+  padding-top: 0px !important;
+}
+.ala-dialog.mat-dialog-title {
+  margin: 0 -24px 20px;
+  background-color: #157fcc;
+  color: #fff;
+  padding: 8px 25px;
+}
+
 
 
 
@@ -243,6 +253,20 @@ a.alatech-btn:hover {
   border-bottom: 2px solid #263147;
   color: #008bcd;
 }
+
+.event-form {
+  position: relative;
+}
+
+.ala-lineframe__title {
+  position: absolute;
+  top: -12px;
+  left: 25px;
+  padding: 0px 10px;
+  background-color: #fff;
+  font-weight: 700;
+}
+
 
 @media print {
   .alatech-btn {

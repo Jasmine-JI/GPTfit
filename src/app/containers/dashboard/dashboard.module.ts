@@ -17,7 +17,7 @@ import { CustomMaterialModule } from '@shared/custom-material.module.ts';
 import { EnrollPreviewComponent } from './components/enroll-preview/enroll-preview.component';
 import { GlobalEventsManager } from '@shared/global-events-manager';
 import { EventInfoService } from './services/event-info.service';
-import { CheckEnrollDialogComponent } from './components/check-enroll-dialog/check-enroll-dialog.component';
+import { MsgDialogComponent } from './components/msg-dialog/msg-dialog.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedPipes } from '@shared/pipes/shared-pipes';
@@ -56,12 +56,12 @@ import { DbResultDialogComponent } from './components/db-result-dialog/db-result
     CertificateComponent,
     EventCalendarComponent,
     EnrollPreviewComponent,
-    CheckEnrollDialogComponent,
+    MsgDialogComponent,
     LeaderboardSettingsComponent,
     RealTimeLeaderboardComponent,
     DbMaintainComponent,
     DbResultDialogComponent
   ],
-  entryComponents: [CheckEnrollDialogComponent, DbResultDialogComponent]
+  entryComponents: [MsgDialogComponent, DbResultDialogComponent]
 })
 export class DashboardModule {}

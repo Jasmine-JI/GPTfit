@@ -3,7 +3,7 @@ import { EventEnrollService } from '../../services/event-enroll.service';
 import { EventInfoService } from '../../services/event-info.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { CheckEnrollDialogComponent } from '../check-enroll-dialog/check-enroll-dialog.component';
+import { MsgDialogComponent } from '../msg-dialog/msg-dialog.component';
 import {
   debounce,
   getUrlQueryStrings
@@ -195,8 +195,13 @@ export class EnrollFormComponent implements OnInit {
         data.address = '';
       }
       this.eventEnrollService.enroll(data).subscribe(results => {
-        this.dialog.open(CheckEnrollDialogComponent, {
-          hasBackdrop: true
+        this.dialog.open(MsgDialogComponent, {
+          hasBackdrop: true,
+          data: {
+            title: 'Message',
+            body: 'Registration success and back to event calendar',
+            href: '/dashboardalaala/event-calendar'
+          }
         });
 
         this.form.resetForm();
@@ -204,7 +209,7 @@ export class EnrollFormComponent implements OnInit {
     }
   }
   showCheckEnrollDialog() {
-    this.dialog.open(CheckEnrollDialogComponent, { hasBackdrop: true });
+    this.dialog.open(MsgDialogComponent, { hasBackdrop: true });
   }
   downloadFile(e) {
     e.preventDefault();

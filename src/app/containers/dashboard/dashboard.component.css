@@ -13,3 +13,17 @@
   opacity: 1;
   background-color: #157fcc;
 }
+
+.edit-event__form {
+  position: relative;
+}
+
+.ala-lineframe__title {
+  position: absolute;
+  top: -12px;
+  left: 25px;
+  padding: 0px 10px;
+  background-color: #fff;
+  font-weight: 700;
+}
+

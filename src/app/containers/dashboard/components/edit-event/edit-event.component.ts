@@ -5,6 +5,8 @@ import { HttpParams } from '@angular/common/http';
 import { IMyDpOptions } from 'mydatepicker';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import * as moment from 'moment';
+import { MsgDialogComponent } from '../msg-dialog/msg-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-edit-event',
@@ -12,6 +14,9 @@ import * as moment from 'moment';
   styleUrls: ['./edit-event.component.css']
 })
 export class EditEventComponent implements OnInit {
+  get sessionDatas() {
+    return <FormArray>this.complexForm.get('sessionDatas');
+  }
   complexForm: FormGroup;
   event_id: string;
   events: any;
@@ -59,12 +64,14 @@ export class EditEventComponent implements OnInit {
   };
   startDate: string;
   endDate: string;
+  sessionArray = [];
 
   constructor(
     private route: ActivatedRoute,
     private eventInfoService: EventInfoService,
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    public dialog: MatDialog
   ) {
     this.complexForm = this.fb.group({
       // 定義表格的預設值
@@ -122,7 +129,6 @@ export class EditEventComponent implements OnInit {
       );
       const event_timer_start = moment(event_time_start * 1000).format('hh:mm');
       const event_timer_end = moment(event_time_end * 1000).format('hh:mm');
-      const sessionArray = [];
       if (sessions) {
         sessions.forEach(session => {
           const {
@@ -155,9 +161,12 @@ export class EditEventComponent implements OnInit {
             session_start_time,
             session_end_time
           };
-          sessionArray.push(sessionData);
+          this.sessionArray.push(sessionData);
         });
-        this.addItem(sessionArray);
+        const control = <FormArray>this.complexForm.controls['sessionDatas'];
+        this.sessionArray.forEach(_data => {
+          control.push(this.createSessions(_data));
+        });
       }
 
       this.complexForm.patchValue({
@@ -216,15 +225,9 @@ export class EditEventComponent implements OnInit {
       session_end_time: [session_end_time, Validators.required]
     });
   }
-  addItem(array): void {
+  addItem(): void {
     const control = <FormArray>this.complexForm.controls['sessionDatas'];
-    if (array) {
-      array.forEach(_data => {
-        control.push(this.createSessions(_data));
-      });
-    } else {
-      control.push(this.initSessions());
-    }
+    control.push(this.initSessions());
   }
   removeItems(e, idx) {
     e.preventDefault();
@@ -316,5 +319,16 @@ export class EditEventComponent implements OnInit {
       return false;
     }
     return true;
+  }
+
+  checkBack() {
+    this.dialog.open(MsgDialogComponent, {
+      hasBackdrop: true,
+      data: {
+        title: 'Message',
+        body: '是否確定返回',
+        href: '/dashboardalaala/event'
+      }
+    });
   }
 }
