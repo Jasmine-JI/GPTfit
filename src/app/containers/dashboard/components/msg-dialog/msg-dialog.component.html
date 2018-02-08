@@ -1,0 +1,11 @@
+<h2 class="ala-dialog" mat-dialog-title>
+  {{ title }}
+</h2>
+<mat-dialog-content>
+  {{ body }}
+</mat-dialog-content>
+
+<mat-dialog-actions class="justify-content-end">
+  <button mat-button color="primary" (click)="confirm()">確定</button>
+  <button mat-button mat-dialog-close color="warn">取消</button>
+</mat-dialog-actions>

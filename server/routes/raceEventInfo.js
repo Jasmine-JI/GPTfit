@@ -163,7 +163,7 @@ router.delete('/:id', function(req, res, next) {
 
   con.query(sql, ['race_event_info', id], function(err, rows) {
     if (err) {
-      return console.log(err);
+      return res.status(500).send(err);
     }
     return res.json(rows);
   });
