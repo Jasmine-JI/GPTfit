@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import * as moment from 'moment';
 import { EventInfoService } from '../../services/event-info.service';
+import { GpxService } from '../../services/gpx.service';
 import { HttpParams } from '@angular/common/http';
+import { saveAs } from 'file-saver'; // 引入前記得要裝： npm install file-saver
 
 @Component({
   selector: 'app-leaderboard-settings',
@@ -16,7 +18,10 @@ export class LeaderboardSettingsComponent implements OnInit {
   updateTime: any;
   map_id = 1;
   isLoading = false;
-  constructor(private eventInfoService: EventInfoService) {}
+  constructor(
+    private eventInfoService: EventInfoService,
+    private gpxService: GpxService
+  ) {}
 
   ngOnInit() {
     this.isLoading = true;
@@ -42,5 +47,12 @@ export class LeaderboardSettingsComponent implements OnInit {
   updateRankInfo() {
     this.isLoading = true;
     this.eventInfoService.updateRank().subscribe(() => this.fetchUpdateTime());
+  }
+  download() {
+    this.gpxService.downloadFile().subscribe(res => {
+      const blob = new Blob([res], { type: 'application/xml' }); // 檔案類型 file type
+      const filename = 'files.gpx'; // 你想存的名字 The name you want to save
+      saveAs(blob, filename);
+    });
   }
 }
