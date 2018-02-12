@@ -27,4 +27,12 @@ export class EventInfoService {
       responseType: 'text'
     });
   }
+  getUpdateTime(params) {
+    return this.http.get(API_SERVER + 'rankForm', { params });
+  }
+  updateRank() {
+    return this.http.get(API_SERVER + 'rankForm/manualUpdate', {
+      responseType: 'text'
+    });
+  }
 }

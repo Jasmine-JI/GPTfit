@@ -60,42 +60,82 @@ connection.connect(function (err) {
 
 function scheduleCronstyle() {
   schedule.scheduleJob('00 00 06 * * *', function () { // 每日早上六點
+    var now = new Date();
+    var now_mill = now.getTime();
+    const update_time = Math.round(now_mill / 1000);
     const sql = "TRUNCATE TABLE ??";
     const sql2 = `
-      insert into run_rank
-      select r1.activity_duration as offical_time,
-      r1.user_id, FROM_UNIXTIME(r1.time_stamp, "%m") as month,
-      FROM_UNIXTIME(r1.time_stamp, "%Y-%m-%d") as date, r1.map_id ,
-      r1.file_name, p.gender, p.login_acc, p.e_mail, m.map_name,
-      m.race_category, m.race_total_distance, p.phone, p.country_code
-      from race_data r1,
-      user_profile as p,
-      race_map_info as m
-      where user_race_status = 3
+  insert into ??
+select
+  b.offical_time,
+  b.user_id,
+  b.month,
+  b.date,
+  b.map_id,
+  b.file_name,
+  p.gender,
+  p.login_acc,
+  p.e_mail,
+  m.map_name,
+  m.race_category,
+  m.race_total_distance,
+  p.phone,
+  p.country_code,
+  ${update_time}
+from (
+  select distinct r2.user_id,
+    r2.map_id,
+    FROM_UNIXTIME(r2.time_stamp, "%Y-%m-%d") as date,
+    FROM_UNIXTIME(r2.time_stamp, "%m") as month,
+    r2.activity_duration as offical_time,
+    r2.activity_distance,
+    r2.time_stamp,
+    r2.file_name
+    from
+    (
+      SELECT user_id,
+      map_id,
+      FROM_UNIXTIME(time_stamp, "%Y-%m-%d") as date,
+      MIN(activity_duration) AS min_duration
+      FROM race_data
+      WHERE
+      user_race_status = 3
       and
-      activity_duration = (select min(r2.activity_duration)
-      from race_data r2 where user_race_status = 3 and
-      r1.map_id = r2.map_id
+      activity_distance IS NOT NULL
+      AND activity_duration IS NOT NULL
       and
-      r1.user_id = r2.user_id
-      and
-      FROM_UNIXTIME(r1.time_stamp, "%Y-%m-%d")  >= FROM_UNIXTIME(1512432000,  "%Y-%m-%d")
-      and
-      FROM_UNIXTIME(r2.time_stamp, "%Y-%m-%d")  >= FROM_UNIXTIME(1512432000,  "%Y-%m-%d")
-      and
-      FROM_UNIXTIME(r1.time_stamp, "%Y-%m-%d") = FROM_UNIXTIME(r2.time_stamp, "%Y-%m-%d")
-      and
-      r2.map_id = m.map_index
-      and
-      r2.activity_distance >= m.race_total_distance * 1000
-      and
-      r2.activity_duration > '00:00:10.000'
-      )
-      and
-      r1.user_id = p.user_id
-      and
-      r1.map_id = m.map_index
-      order by user_id;
+      map_id is not null
+      GROUP BY
+      user_id,
+      FROM_UNIXTIME(time_stamp, "%Y-%m-%d"),
+      map_id
+    ) as r1
+  INNER JOIN
+  race_data AS r2
+  ON
+  r2.activity_duration = r1.min_duration
+  AND
+  r2.user_id = r1.user_id
+  and
+  r1.map_id = r2.map_id
+  and
+  r1.date = FROM_UNIXTIME(r2.time_stamp, "%Y-%m-%d")
+  WHERE r2.user_race_status = 3
+  and
+  r2.activity_distance IS NOT NULL
+  AND r2.activity_duration IS NOT NULL
+  and
+  r2.map_id is not null
+)b,
+user_profile as p,
+race_map_info as m
+where
+b.user_id = p.user_id
+and
+b.map_id = m.map_index
+  and
+  b.activity_distance >= m.race_total_distance * 1000
+  ;
     `;
 
     connection.query(sql, 'run_rank', function (err, rows) {

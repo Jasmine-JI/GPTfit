@@ -31,4 +31,7 @@ export class RankFormService {
   getRealTimeEvent(params) {
     return this.http.get<EventRanks>(API_SERVER + 'rankform/eventRank', { params });
   }
+  getRankTabs() {
+    return this.http.get(API_SERVER + 'raceEventInfo/rankTab');
+  }
 }

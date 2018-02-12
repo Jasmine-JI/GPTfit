@@ -17,34 +17,15 @@
           >
             第一屆英達高空夜跑賽
           </li>
-          <li class="tablist__tab"
-            title="ISPO (2018/01/27)"
-            [class.tablist__tab--selected]="tabIdx === 2"
-            (click)="selectTab(2)"
-          >
-            ISPO<span style="font-size: 12px">(2018/01/27)</span>
-          </li>
-          <li class="tablist__tab"
-            title="ISPO (2018/01/28)"
-            [class.tablist__tab--selected]="tabIdx === 3"
-            (click)="selectTab(3)"
-          >
-            ISPO<span style="font-size: 12px">(2018/01/28)</span>
-          </li>
-          <li class="tablist__tab"
-            title="ISPO (2018/01/29)"
-            [class.tablist__tab--selected]="tabIdx === 4"
-            (click)="selectTab(4)"
-          >
-            ISPO<span style="font-size: 12px">(2018/01/29)</span>
-          </li>
-          <li class="tablist__tab"
-            title="ISPO (2018/01/30)"
-            [class.tablist__tab--selected]="tabIdx === 5"
-            (click)="selectTab(5)"
-          >
-            ISPO<span style="font-size: 12px">(2018/01/30)</span>
-          </li>
+          <ng-container *ngFor="let tab of rankTabs;let _tabIdx = index">
+            <li class="tablist__tab"
+              title="{{tab.session_name}}"
+              (click)="selectTab(_tabIdx + 2)"
+              [class.tablist__tab--selected]="tabIdx === _tabIdx + 2"
+            >
+              {{ tab.session_name }}
+            </li>
+          </ng-container>
         </ul>
       </div>
       <div class="row row-runs">
