@@ -115,11 +115,13 @@ var rankForm = require('./routes/rankForm.js');
 var resetPassword = require('./routes/resetPassword.js');
 var raceEnroll = require('./routes/raceEnroll.js');
 var raceEventInfo = require('./routes/raceEventInfo.js');
+var runGpx = require('./routes/runGpx.js');
 
 app.use('/nodejs/api/rankForm', rankForm);
 app.use('/nodejs/api/resetPassword', resetPassword);
 app.use('/nodejs/api/raceEnroll', raceEnroll);
 app.use('/nodejs/api/raceEventInfo', raceEventInfo);
+app.use('/nodejs/api/gpx', runGpx);
 
 // Start the server
 const port = process.env.PORT || 3001;

@@ -5,38 +5,39 @@ var router = express.Router();
 var currentDate = function() {
   var today = new Date();
   var dd = today.getDate();
-  var mm = today.getMonth() + 1;  //January is 0!
+  var mm = today.getMonth() + 1; //January is 0!
   var yyyy = today.getFullYear();
 
   if (dd < 10) {
-    dd = '0' + dd
+    dd = '0' + dd;
   }
 
   if (mm < 10) {
-    mm = '0' + mm
+    mm = '0' + mm;
   }
   today = yyyy + '-' + mm + '-' + dd;
   return today;
 };
 
-router.get('/manualUpdate', function(req, res, next) {
-  const { con } = req;
-  const sql = 'TRUNCATE TABLE ??';
+router.get(
+  '/manualUpdate',
+  function(req, res, next) {
+    const { con } = req;
+    const sql = 'TRUNCATE TABLE ??';
 
-  con.query(sql, 'run_rank', function(err, rows) {
-    if (err) {
-      throw err;
-    }
-    next();
-  });
-
-
-}, (req, res, next) => {
-  const { con } = req;
-  var now = new Date();
-  var now_mill = now.getTime();
-  const update_time = Math.round(now_mill / 1000);
-  const sql2 = `
+    con.query(sql, 'run_rank', function(err, rows) {
+      if (err) {
+        throw err;
+      }
+      next();
+    });
+  },
+  (req, res, next) => {
+    const { con } = req;
+    var now = new Date();
+    var now_mill = now.getTime();
+    const update_time = Math.round(now_mill / 1000);
+    const sql2 = `
   insert into ??
 select
   b.offical_time,
@@ -109,13 +110,14 @@ b.map_id = m.map_index
   b.activity_distance >= m.race_total_distance * 1000
   ;
   `;
-  con.query(sql2, 'run_rank', function(err, rows) {
-    if (err) {
-      throw err;
-    }
-    res.send('complete update!!');
-  });
-});
+    con.query(sql2, 'run_rank', function(err, rows) {
+      if (err) {
+        throw err;
+      }
+      res.send('complete update!!');
+    });
+  }
+);
 
 router.get('/', function(req, res, next) {
   const {
@@ -132,7 +134,7 @@ router.get('/', function(req, res, next) {
       startDate,
       endDate,
       event_id,
-      isGetUpdateTime,
+      isGetUpdateTime
     }
   } = req;
   let sql = '';
@@ -224,9 +226,7 @@ router.get('/', function(req, res, next) {
       let datas = rows.splice(start, end);
       return res.json({ datas });
     } else if (phone) {
-      let idx = rows.findIndex(
-        _row => _row.phone === phone
-      );
+      let idx = rows.findIndex(_row => _row.phone === phone);
       const halfRange = 5;
       let start = 0;
       if (idx === -1) {
@@ -247,7 +247,6 @@ router.get('/', function(req, res, next) {
     res.json({ datas, meta });
   });
 });
-
 
 router.get('/rankInfo/map', function(req, res, next) {
   const { con } = req;
@@ -281,7 +280,7 @@ router.get('/rankInfo/month', function(req, res, next) {
 router.get('/rankInfo/email', function(req, res, next) {
   const {
     con,
-    query:{
+    query: {
       email,
       startDate,
       start_date_time,
@@ -401,17 +400,11 @@ router.get('/rankInfo/phone', function(req, res, next) {
   });
 });
 
-router.get('/mapInfo', function(req, res, next) { // 分成兩個fetch是因為有些是測試程式所產生資料，無對應的fileName
+router.get('/mapInfo', function(req, res, next) {
+  // 分成兩個fetch是因為有些是測試程式所產生資料，無對應的fileName
   const {
     con,
-    query: {
-      userId,
-      mapId,
-      month,
-      isRealTime,
-      start_time,
-      end_time
-    }
+    query: { userId, mapId, month, isRealTime, start_time, end_time }
   } = req;
   const userQuery = userId ? `and t.user_id = ${userId}` : '';
   const mapQuery = mapId ? `and t.map_id = ${mapId}` : '';
@@ -499,7 +492,6 @@ router.get('/mapInfo', function(req, res, next) { // 分成兩個fetch是因為�
         res.json(results[1][0]);
       }
     }
-
   });
 });
 
@@ -575,13 +567,7 @@ router.post('/fakeData', async (req, res) => {
 
 router.post('/fakeData/race_data', async (req, res) => {
   const {
-    body: {
-      activity_duration,
-      map_id,
-      user_id,
-      email,
-      userName
-    },
+    body: { activity_duration, map_id, user_id, email, userName },
     con
   } = req;
   try {
@@ -633,14 +619,7 @@ router.post('/fakeData/race_data', async (req, res) => {
   }
 });
 router.get('/todayRank', function(req, res, next) {
-  const {
-    con,
-    query: {
-      start_date,
-      end_date,
-      map_id
-    }
-  } = req;
+  const { con, query: { start_date, end_date, map_id } } = req;
   const sql = `
 SELECT distinct a.rank AS rank
      , a.map_id
@@ -703,8 +682,8 @@ router.get('/eventRank', function(req, res, next) {
       gender
     }
   } = req;
-const genderQuery = gender ? `and p.gender = ${gender}` : '';
-const sql = `
+  const genderQuery = gender ? `and p.gender = ${gender}` : '';
+  const sql = `
   select distinct
   b.user_id,
   b.offical_time,
@@ -778,7 +757,9 @@ const sql = `
       pageNumber: Number(pageNumber) || 1
     };
     if (email) {
-      let idx = rows.findIndex(_row => encodeURIComponent(_row.e_mail) === email);
+      let idx = rows.findIndex(
+        _row => encodeURIComponent(_row.e_mail) === email
+      );
       const halfRange = 5;
       let start = 0;
       if (idx === -1) {

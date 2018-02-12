@@ -17,6 +17,7 @@ import { CustomMaterialModule } from '@shared/custom-material.module.ts';
 import { EnrollPreviewComponent } from './components/enroll-preview/enroll-preview.component';
 import { GlobalEventsManager } from '@shared/global-events-manager';
 import { EventInfoService } from './services/event-info.service';
+import { GpxService } from './services/gpx.service';
 import { MsgDialogComponent } from './components/msg-dialog/msg-dialog.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -45,6 +46,7 @@ import { DbResultDialogComponent } from './components/db-result-dialog/db-result
     EventEnrollService,
     GlobalEventsManager,
     EventInfoService,
+    GpxService
   ],
   declarations: [
     DashboardComponent,
