@@ -1,6 +1,7 @@
 var express = require('express');
 var moment = require('moment');
 var router = express.Router();
+
 var currentDate = function() {
   var today = new Date();
   var dd = today.getDate();
@@ -17,6 +18,105 @@ var currentDate = function() {
   today = yyyy + '-' + mm + '-' + dd;
   return today;
 };
+
+router.get('/manualUpdate', function(req, res, next) {
+  const { con } = req;
+  const sql = 'TRUNCATE TABLE ??';
+
+  con.query(sql, 'run_rank', function(err, rows) {
+    if (err) {
+      throw err;
+    }
+    next();
+  });
+
+
+}, (req, res, next) => {
+  const { con } = req;
+  var now = new Date();
+  var now_mill = now.getTime();
+  const update_time = Math.round(now_mill / 1000);
+  const sql2 = `
+  insert into ??
+select
+  b.offical_time,
+  b.user_id,
+  b.month,
+  b.date,
+  b.map_id,
+  b.file_name,
+  p.gender,
+  p.login_acc,
+  p.e_mail,
+  m.map_name,
+  m.race_category,
+  m.race_total_distance,
+  p.phone,
+  p.country_code,
+  ${update_time}
+from (
+  select distinct r2.user_id,
+    r2.map_id,
+    FROM_UNIXTIME(r2.time_stamp, "%Y-%m-%d") as date,
+    FROM_UNIXTIME(r2.time_stamp, "%m") as month,
+    r2.activity_duration as offical_time,
+    r2.activity_distance,
+    r2.time_stamp,
+    r2.file_name
+    from
+    (
+      SELECT user_id,
+      map_id,
+      FROM_UNIXTIME(time_stamp, "%Y-%m-%d") as date,
+      MIN(activity_duration) AS min_duration
+      FROM race_data
+      WHERE
+      user_race_status = 3
+      and
+      activity_distance IS NOT NULL
+      AND activity_duration IS NOT NULL
+      and
+      map_id is not null
+      GROUP BY
+      user_id,
+      FROM_UNIXTIME(time_stamp, "%Y-%m-%d"),
+      map_id
+    ) as r1
+  INNER JOIN
+  race_data AS r2
+  ON
+  r2.activity_duration = r1.min_duration
+  AND
+  r2.user_id = r1.user_id
+  and
+  r1.map_id = r2.map_id
+  and
+  r1.date = FROM_UNIXTIME(r2.time_stamp, "%Y-%m-%d")
+  WHERE r2.user_race_status = 3
+  and
+  r2.activity_distance IS NOT NULL
+  AND r2.activity_duration IS NOT NULL
+  and
+  r2.map_id is not null
+)b,
+user_profile as p,
+race_map_info as m
+where
+b.user_id = p.user_id
+and
+b.map_id = m.map_index
+  and
+  b.activity_distance >= m.race_total_distance * 1000
+  ;
+  `;
+  con.query(sql2, 'run_rank', function(err, rows) {
+    if (err) {
+      throw err;
+    }
+    res.send('complete update!!');
+  });
+});
+
 router.get('/', function(req, res, next) {
   const {
     con,
@@ -31,64 +131,70 @@ router.get('/', function(req, res, next) {
       phone,
       startDate,
       endDate,
-      event_id
+      event_id,
+      isGetUpdateTime,
     }
   } = req;
-
-  const today = new Date();
-  const currMonth = today.getMonth() + 1;
-  const currDate = currentDate();
-  const genderQuery = gender ? `and a.gender = ${gender}` : '';
-  const eventQuery = event_id
-    ? `and b.e_mail = c.e_mail and c.event_id = ${event_id}`
-    : '';
-  const sql = `
-    select distinct a.rank as rank,
-    a.offical_time,
-    a.user_id,
-    a.map_id,
-    a.gender,
-    a.month,
-    a.login_acc,
-    a.map_name,
-    a.race_category,
-    a.race_total_distance,
-    a.e_mail,
-    a.phone
-    from
-    (
-      select *, @prev := @curr, @curr := offical_time,
-      @rank := if(@prev = @curr, @rank, @rank+1
-    ) as rank
-    from (select a.* from ?? a
-      , user_race_enroll c
-      where
-      date between '${startDate || currDate}'
-      and
-      '${endDate || currDate}'
-      and
-      offical_time in
+  let sql = '';
+  if (isGetUpdateTime) {
+    sql = 'select distinct update_time from run_rank;';
+  } else {
+    const today = new Date();
+    const currMonth = today.getMonth() + 1;
+    const currDate = currentDate();
+    const genderQuery = gender ? `and a.gender = ${gender}` : '';
+    const eventQuery = event_id
+      ? `and b.e_mail = c.e_mail and c.event_id = ${event_id}`
+      : '';
+    sql = `
+      select distinct a.rank as rank,
+      a.offical_time,
+      a.user_id,
+      a.map_id,
+      a.gender,
+      a.month,
+      a.login_acc,
+      a.map_name,
+      a.race_category,
+      a.race_total_distance,
+      a.e_mail,
+      a.phone
+      from
       (
-      select min(b.offical_time)  from run_rank as b
-      where map_id = ${mapId || 5}
-      and
-      date between '${startDate || currDate}'
-      and
-      '${endDate || currDate}'
-      and
-      a.user_id = b.user_id
-      ${eventQuery}
+        select *, @prev := @curr, @curr := offical_time,
+        @rank := if(@prev = @curr, @rank, @rank+1
+      ) as rank
+      from (select a.* from ?? a
+        , user_race_enroll c
+        where
+        date between '${startDate || currDate}'
+        and
+        '${endDate || currDate}'
+        and
+        offical_time in
+        (
+        select min(b.offical_time)  from run_rank as b
+        where map_id = ${mapId || 5}
+        and
+        date between '${startDate || currDate}'
+        and
+        '${endDate || currDate}'
+        and
+        a.e_mail = b.e_mail
+        ${eventQuery}
+        )
+        and
+        map_id = ${mapId || 5}
+        ${genderQuery}
+      )b,
+      (
+        select @curr := null, @prev :=null, @rank := 0
       )
-      and
-      map_id = ${mapId || 5}
-      ${genderQuery}
-    )b,
-    (
-      select @curr := null, @prev :=null, @rank := 0
-    )
-    time order by offical_time
-    )a;
-  `;
+      time order by offical_time
+      )a;
+    `;
+  }
+
   con.query(sql, 'run_rank', function(err, rows) {
     if (err) {
       throw err;
@@ -98,7 +204,7 @@ router.get('/', function(req, res, next) {
       pageCount: rows.length,
       pageNumber: Number(pageNumber) || 1
     };
-
+    if (isGetUpdateTime) return res.json(rows[0].update_time);
     if (email) {
       let idx = rows.findIndex(
         _row => encodeURIComponent(_row.e_mail) === email
