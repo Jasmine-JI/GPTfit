@@ -100,6 +100,8 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     '2018/01/30 23:59:59'
   ];
   isEmailSearch = true;
+  rankTabs: any;
+
   constructor(
     private router: Router,
     private rankFormService: RankFormService,
@@ -116,7 +118,9 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     let params = new HttpParams();
     this.startDate = this.convertDateString(this.startDay);
     this.endDate = this.convertDateString(this.finalDay);
-
+    this.rankFormService.getRankTabs().subscribe((res) => {
+      this.rankTabs = res;
+    });
     if (!isObjectEmpty(queryStrings)) {
       const {
         pageNumber,

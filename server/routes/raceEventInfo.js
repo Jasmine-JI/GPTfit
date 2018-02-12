@@ -305,6 +305,16 @@ router.put('/edit', (req, res, next) => {
   }
 });
 
+router.get('/rankTab', function(req, res, next) {
+  const { con } = req;
+  const sql = `select is_show_portal, session_name, session_id, event_id from ?? where is_show_portal = 1;`;
+  con.query(sql, 'race_event_info', function(err, rows) {
+    if (err) {
+      console.log(err);
+    }
+    res.json(rows);
+  });
+});
 
 // Exports
 module.exports = router;
