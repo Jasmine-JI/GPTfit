@@ -74,7 +74,7 @@ router.get('/', function(req, res, next) {
       and
       '${endDate || currDate}'
       and
-      a.e_mail = b.e_mail
+      a.user_id = b.user_id
       ${eventQuery}
       )
       and
