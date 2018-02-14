@@ -7,7 +7,14 @@ var writeGpx = require('../models/write_gpx');
 router.get('/make', function(req, res, next) {
   const { con, query: { md5_unicode } } = req;
   const sql = `
-select longitude,latitude, altitude, utc from ?? where md5_unicode = ${md5_unicode};`;
+    select r.longitude, r.latitude, r.altitude, r.utc,
+    r.heart_rate, r.cadence, r.pace, r.calorie, r.incline,
+    s.file_name from ?? r, sport as s
+    where r.md5_unicode = ${md5_unicode}
+    and
+    r.md5_unicode = s.md5_unicode
+  ;
+  `;
 
   con.query(sql, 'real_time_activity', function(err, rows) {
     if (err) {
@@ -25,7 +32,7 @@ select longitude,latitude, altitude, utc from ?? where md5_unicode = ${md5_unico
 router.post('/download', (req, res) => {
   // FILEPATH 填入要被下載檔案的路徑
   // FILENAME 無所謂，因為會被 Angular 定義的新名稱蓋掉
-  res.download('./test.gpx', 'test.gpx', err => {
+  res.download('/var/www/html/dist/test.gpx', 'test.gpx', err => {
     if (err) {
       res.send(err);
     } else {
