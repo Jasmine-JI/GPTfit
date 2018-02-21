@@ -45,7 +45,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   isFoundUser = false; // 標記目標email
   bgImageUrl: string; // 背景圖
   distance: number; // 該地圖的距離資料
-  tabIdx = 2; // 目前代表為ISPO
+  tabIdx = 0; // 目前代表為General
   mapName: string; // 該地圖名字
   isLoading = false;
   currentPage: number;

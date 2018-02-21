@@ -1,0 +1,19 @@
+<mat-table [dataSource]="logSource">
+  <ng-container matColumnDef="info">
+    <mat-header-cell *matHeaderCellDef>Info</mat-header-cell>
+    <mat-cell *matCellDef="let row">{{ row.info }}</mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="time">
+    <mat-header-cell *matHeaderCellDef>Time</mat-header-cell>
+    <mat-cell *matCellDef="let row">{{ row.time }}</mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="counts">
+    <mat-header-cell *matHeaderCellDef>Counts</mat-header-cell>
+    <mat-cell *matCellDef="let row">{{ row.number }}</mat-cell>
+  </ng-container>
+  <mat-header-row *matHeaderRowDef="['info', 'time', 'counts']"></mat-header-row>
+<mat-row *matRowDef="let logRow; columns: ['info', 'time', 'counts']"></mat-row>
+
+
+
+</mat-table>

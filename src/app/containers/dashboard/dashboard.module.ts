@@ -27,6 +27,8 @@ import { RealTimeLeaderboardComponent } from './components/real-time-leaderboard
 import { ReactiveFormsModule } from '@angular/forms';
 import { DbMaintainComponent } from './components/db-maintain/db-maintain.component';
 import { DbResultDialogComponent } from './components/db-result-dialog/db-result-dialog.component';
+import { DeviceLogComponent } from './components/device-log/device-log.component';
+import { DeviceLogService } from './services/device-log.service';
 
 @NgModule({
   imports: [
@@ -46,7 +48,8 @@ import { DbResultDialogComponent } from './components/db-result-dialog/db-result
     EventEnrollService,
     GlobalEventsManager,
     EventInfoService,
-    GpxService
+    GpxService,
+    DeviceLogService
   ],
   declarations: [
     DashboardComponent,
@@ -62,7 +65,8 @@ import { DbResultDialogComponent } from './components/db-result-dialog/db-result
     LeaderboardSettingsComponent,
     RealTimeLeaderboardComponent,
     DbMaintainComponent,
-    DbResultDialogComponent
+    DbResultDialogComponent,
+    DeviceLogComponent
   ],
   entryComponents: [MsgDialogComponent, DbResultDialogComponent]
 })
