@@ -13,7 +13,7 @@ router.get('/lists', function (req, res, next) {
     keywordQuery = keyword.substring(0, 1) === '+' ? `and u.phone = '${keyword}'` : `and u.e_mail = '${keyword}'`;
   }
   let sql = `
-    select concat('+',u.country_code, u.phone) as phone_number, u.e_mail,
+    select (case when e_mail is null or e_mail = '' then concat('+',u.country_code, u.phone) else e_mail end) as info,
     DATE_FORMAT(max(s.time), '%Y-%m-%d %h:%i:%s') as time,
     s.user_id, count(s.user_id) as number
     from ?? as s ,

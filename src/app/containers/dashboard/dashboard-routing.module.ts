@@ -12,6 +12,7 @@ import { EnrollPreviewComponent } from './components/enroll-preview/enroll-previ
 import { LeaderboardSettingsComponent } from './components/leaderboard-settings/leaderboard-settings.component';
 import { RealTimeLeaderboardComponent } from './components/real-time-leaderboard/real-time-leaderboard.component';
 import { DbMaintainComponent } from './components/db-maintain/db-maintain.component';
+import { DeviceLogComponent } from './components/device-log/device-log.component';
 
 const routes: Routes = [
   {
@@ -61,6 +62,10 @@ const routes: Routes = [
       {
         path: 'db',
         component: DbMaintainComponent
+      },
+      {
+        path: 'device_log',
+        component: DeviceLogComponent
       }
     ]
   },
