@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { DeviceLogService } from '../../services/device-log.service';
-import { MatTableDataSource } from '@angular/material';
+import { MatTableDataSource, MatPaginator } from '@angular/material';
 
 @Component({
   selector: 'app-device-log',
@@ -8,13 +8,16 @@ import { MatTableDataSource } from '@angular/material';
   styleUrls: ['./device-log.component.css']
 })
 export class DeviceLogComponent implements OnInit {
-  logSource: any;
-
-  constructor(private deviceLogservice: DeviceLogService) {
-    this.logSource = new MatTableDataSource<any>();
-  }
+  logSource = new MatTableDataSource<any>();
+  totalCount: number;
+  @ViewChild('paginator') paginator: MatPaginator;
+  constructor(private deviceLogservice: DeviceLogService) {}
 
   ngOnInit() {
-    this.deviceLogservice.fetchLists().subscribe(res => this.logSource.data = res);
+    this.deviceLogservice.fetchLists().subscribe(res => {
+      this.logSource.data = res;
+      this.totalCount = res.length;
+      this.logSource.paginator = this.paginator;
+    });
   }
 }
