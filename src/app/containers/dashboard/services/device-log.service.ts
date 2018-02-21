@@ -9,6 +9,6 @@ const { API_SERVER } = environment.url;
 export class DeviceLogService {
   constructor(private http: HttpClient) {}
   fetchLists() {
-      return this.http.get(API_SERVER + 'deviceLog/lists'); // 注意這邊要選 `blob`
+    return this.http.get<any>(API_SERVER + 'deviceLog/lists');
   }
 }
