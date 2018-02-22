@@ -29,6 +29,7 @@ import { DbMaintainComponent } from './components/db-maintain/db-maintain.compon
 import { DbResultDialogComponent } from './components/db-result-dialog/db-result-dialog.component';
 import { DeviceLogComponent } from './components/device-log/device-log.component';
 import { DeviceLogService } from './services/device-log.service';
+import { DeviceLogDetailComponent } from './components/device-log-detail/device-log-detail.component';
 
 @NgModule({
   imports: [
@@ -66,7 +67,8 @@ import { DeviceLogService } from './services/device-log.service';
     RealTimeLeaderboardComponent,
     DbMaintainComponent,
     DbResultDialogComponent,
-    DeviceLogComponent
+    DeviceLogComponent,
+    DeviceLogDetailComponent
   ],
   entryComponents: [MsgDialogComponent, DbResultDialogComponent]
 })

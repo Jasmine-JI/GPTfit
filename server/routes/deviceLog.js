@@ -33,8 +33,7 @@ router.get('/lists', function (req, res, next) {
   `;
   if (userId) {
     sql = `
-    select concat('+',u.country_code, u.phone) as phone_number,
-    u.e_mail,
+    select (case when e_mail is null or e_mail = '' then concat('+',u.country_code, u.phone) else e_mail end) as info,
     s.message, s.time, s.equipment_sn
     from save_device_log as s,
     user_profile as u
