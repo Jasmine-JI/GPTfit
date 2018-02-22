@@ -5,13 +5,20 @@ var router = express.Router();
 router.get('/lists', function (req, res, next) {
   const {
     con,
-    query: { keyword, userId }
+    query: {
+      keyword,
+      userId,
+      pageSize,
+      pageNumber,
+      sort
+    }
   } = req;
   let keywordQuery = '';
-
+  const sortQuery = sort === 'asc' ? 'order by time' : 'order by time desc';
   if (keyword) {
     keywordQuery = keyword.substring(0, 1) === '+' ? `and u.phone = '${keyword}'` : `and u.e_mail = '${keyword}'`;
   }
+
   let sql = `
     select (case when e_mail is null or e_mail = '' then concat('+',u.country_code, u.phone) else e_mail end) as info,
     DATE_FORMAT(max(s.time), '%Y-%m-%d %h:%i:%s') as time,
@@ -21,7 +28,7 @@ router.get('/lists', function (req, res, next) {
     where s.user_id= u.user_id
     ${keywordQuery}
     group by s.user_id
-    order by time desc
+    ${sortQuery}
     ;
   `;
   if (userId) {
@@ -33,7 +40,7 @@ router.get('/lists', function (req, res, next) {
     user_profile as u
     where s.user_id = u.user_id
     and u.user_id = ${userId}
-    order by s.time desc
+    ${sortQuery}
     ;
   `;
   }
@@ -44,7 +51,13 @@ router.get('/lists', function (req, res, next) {
         errorMessage: err.sqlMessage
       });
     }
-    res.json(rows);
+    const meta = {
+      pageSize: pageSize || 10,
+      pageCount: rows.length,
+      pageNumber: Number(pageNumber) || 1
+    };
+    const datas = rows.splice((meta.pageNumber - 1) * meta.pageSize, meta.pageSize);
+    res.json({ datas, meta });
   });
 });
 

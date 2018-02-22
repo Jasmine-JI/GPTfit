@@ -1,10 +1,24 @@
-<mat-table [dataSource]="logSource">
+<div style="color: #157fcc; font-weight:700">
+  活動賽事自訂
+</div>
+<mat-form-field>
+  <input matInput #filter placeholder="info搜尋">
+</mat-form-field>
+
+<mat-table [dataSource]="logSource" matSort #sortTable="matSort"
+  (matSortChange)="changeSort($event)"
+>
   <ng-container matColumnDef="info">
     <mat-header-cell *matHeaderCellDef>Info</mat-header-cell>
     <mat-cell *matCellDef="let row">{{ row.info }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="time">
-    <mat-header-cell *matHeaderCellDef>Time</mat-header-cell>
+    <mat-header-cell *matHeaderCellDef mat-sort-header
+      disableClear="true"
+      start="asc"
+    >
+      Time
+    </mat-header-cell>
     <mat-cell *matCellDef="let row">{{ row.time }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="counts">
@@ -13,8 +27,6 @@
   </ng-container>
   <mat-header-row *matHeaderRowDef="['info', 'time', 'counts']"></mat-header-row>
 <mat-row *matRowDef="let logRow; columns: ['info', 'time', 'counts']"></mat-row>
-
-
 
 </mat-table>
 <mat-paginator #paginator [length]="totalCount" [pageIndex]="0" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]">
