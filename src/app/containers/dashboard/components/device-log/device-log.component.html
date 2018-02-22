@@ -1,5 +1,5 @@
 <div style="color: #157fcc; font-weight:700">
-  活動賽事自訂
+  Device_log Lists
 </div>
 <mat-form-field>
   <input matInput #filter placeholder="info搜尋">
@@ -26,7 +26,10 @@
     <mat-cell *matCellDef="let row">{{ row.number }}</mat-cell>
   </ng-container>
   <mat-header-row *matHeaderRowDef="['info', 'time', 'counts']"></mat-header-row>
-<mat-row *matRowDef="let logRow; columns: ['info', 'time', 'counts']"></mat-row>
+  <mat-row *matRowDef="let logRow; columns: ['info', 'time', 'counts']"
+    (click)="goDetail(logRow.user_id)"
+  >
+  </mat-row>
 
 </mat-table>
 <mat-paginator #paginator [length]="totalCount" [pageIndex]="0" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]">
