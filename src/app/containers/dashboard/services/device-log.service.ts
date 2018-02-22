@@ -8,7 +8,7 @@ const { API_SERVER } = environment.url;
 @Injectable()
 export class DeviceLogService {
   constructor(private http: HttpClient) {}
-  fetchLists() {
-    return this.http.get<any>(API_SERVER + 'deviceLog/lists');
+  fetchLists(params) {
+    return this.http.get<any>(API_SERVER + 'deviceLog/lists', { params });
   }
 }

@@ -5,4 +5,6 @@
 .mat-column-counts {
   max-width: 100px;
 }
-
+.mat-form-field {
+  margin-left: 24px;
+}
