@@ -4,9 +4,40 @@
 <div style="margin: 15px 0">
   資料所有人的資訊：<span>{{ userInfo }}</span>
 </div>
-<mat-form-field>
-  <input matInput #filter placeholder="info搜尋">
-</mat-form-field>
+
+<label>取得列表資料時間: </label>{{ getDataTime }}
+<button (click)="refreshLists($event)" mat-raised-button mat-icon-button style="background-color: #26abe3;color: #fff">
+  <i class="fa fa-refresh" aria-hidden="true" style="font-size: 18px"></i>
+</button>
+
+<form [formGroup]="complexForm" #f="ngForm" novalidate (ngSubmit)="submit(complexForm)">
+  <mat-form-field>
+    <input type="text" name="startDate" matInput placeholder="起始日期" [matDatepicker]="startDatePicker"
+    (dateChange)="logStartDateChange($event)"
+       formControlName="startDate"
+    />
+    <mat-datepicker-toggle [for]="startDatePicker" matSuffix></mat-datepicker-toggle>
+    <mat-datepicker #startDatePicker disabled="false" [touchUi]="isHandset$ | async"></mat-datepicker>
+  </mat-form-field>
+  ~
+  <mat-form-field>
+    <input type="text" name="endDate" matInput placeholder="最終日期" [matDatepicker]="endDatePicker"
+     (dateChange)="logEndDateChange($event)"
+     formControlName="endDate"
+    />
+    <mat-datepicker-toggle [for]="endDatePicker" matSuffix></mat-datepicker-toggle>
+    <mat-datepicker #endDatePicker disabled="false" [touchUi]="isHandset$ | async"></mat-datepicker>
+  </mat-form-field>
+
+  <button mat-raised-button mat-icon-button style="background-color: #26abe3;color: #fff">
+    <mat-icon>search</mat-icon>
+  </button>
+  <button (click)="this._location.back()" mat-raised-button mat-icon-button
+    style="background-color: #26abe3;color: #fff"
+  >
+    <i class="fa fa-undo" aria-hidden="true" style="font-size: 18px"></i>
+  </button>
+</form>
 
 <mat-table [dataSource]="logSource" matSort #sortTable="matSort" (matSortChange)="changeSort($event)">
   <ng-container matColumnDef="equipment_sn">
@@ -28,5 +59,10 @@
   </mat-row>
 
 </mat-table>
-<mat-paginator #paginator [length]="totalCount" [pageIndex]="0" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]">
+<mat-paginator #paginator
+  [length]="totalCount"
+  [pageIndex]="0"
+  [pageSize]="10"
+  [pageSizeOptions]="[5, 10, 15]"
+>
 </mat-paginator>
