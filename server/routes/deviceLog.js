@@ -10,10 +10,13 @@ router.get('/lists', function (req, res, next) {
       userId,
       pageSize,
       pageNumber,
-      sort
+      sort,
+      startDate,
+      endDate
     }
   } = req;
   let keywordQuery = '';
+  const dateQuery = startDate && endDate ? `and s.time between '${startDate}' and '${endDate}'` : '';
   const sortQuery = sort === 'asc' ? 'order by time' : 'order by time desc';
   if (keyword) {
     keywordQuery = keyword.substring(0, 1) === '+' ? `and u.phone = '${keyword}'` : `and u.e_mail = '${keyword}'`;
@@ -39,6 +42,7 @@ router.get('/lists', function (req, res, next) {
     user_profile as u
     where s.user_id = u.user_id
     and u.user_id = ${userId}
+    ${dateQuery}
     ${sortQuery}
     ;
   `;
