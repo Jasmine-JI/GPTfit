@@ -12,6 +12,7 @@ import {
 } from '@shared/utils/';
 import { Router } from '@angular/router';
 import { IMyDpOptions } from 'mydatepicker';
+import * as moment from 'moment';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -67,12 +68,10 @@ export class PortalComponent implements OnInit {
   endDate: string;
   date: any;
 
-  email: string;
-  phone: string;
+  userName: string;
   isFoundUser = false; // 標記目標email
   mapName: string; // 該地圖名字
   isHaveEmail: boolean; // 有無mail
-  isHavePhone: boolean; // 有無phone  
   rankDatas: Array<any>; // 排行板資料
   meta: any; // api回的meta資料
   isFirstPage: boolean; // 是否為第一頁
@@ -83,13 +82,12 @@ export class PortalComponent implements OnInit {
   isClearIconShow = false;
   active = false; // select options的開關
   emailOptions: any; // select async options
-  phoneOptions: any; // select async options  
   isSelectLoading = false;
   tempEmail: string;
-  tempPhone: string;  
   isEventTab: boolean;
   tabIdx = 2;
   isEmailSearch = true;
+  rankTabs: any;
 
   constructor(
     private router: Router,
@@ -131,13 +129,9 @@ export class PortalComponent implements OnInit {
       }
     });
     this.globalEventsManager.getMapOptionsEmitter.subscribe(options => {
-      const { mapDatas, monthDatas } = options;
+      const { mapDatas } = options;
       if (mapDatas) {
         this.mapDatas = mapDatas;
-      }
-      if (monthDatas) {
-        this.monthDatas = monthDatas;
-        this.month = monthDatas[0].month;
       }
     });
     this.globalEventsManager.getMapIdEmitter.subscribe(id => {
@@ -146,6 +140,9 @@ export class PortalComponent implements OnInit {
     this.globalEventsManager.getTabIdxEmitter.subscribe(idx => {
       this.tabIdx = idx;
     });
+    this.globalEventsManager.getRankTabsEmitter.subscribe(datas => {
+      this.rankTabs = datas;
+    });
   }
   selectMap(id) {
     this.mapId = id;
@@ -153,16 +150,14 @@ export class PortalComponent implements OnInit {
   onSubmit(form, event: any) {
     event.stopPropagation();
     const {
-      email,
-      phone,
+      userName,
       mapId,
       groupId,
       selectedStartDate,
       selectedEndDate
     } = form.value;
-    this.email = email;
-    this.phone = phone;
-    this.isFoundUser = this.email || this.phone ? true : false;
+    this.userName = userName;
+    this.isFoundUser = this.userName ? true : false;
     this.mapId = mapId;
     this.groupId = groupId;
     let params = new HttpParams();
@@ -173,23 +168,19 @@ export class PortalComponent implements OnInit {
     params = params.append('mapId', this.mapId.toString());
     params = params.set('startDate', this.startDate);
     params = params.set('endDate', this.endDate);
-    this.isHaveEmail = email ? true : false;
-    this.isHavePhone = phone ? true : false;    
+    this.isHaveEmail = userName ? true : false;
     if (this.groupId !== '2') {
       params = params.append('gender', this.groupId);
     }
-    if (email) {
-      params = params.append('email', encodeURIComponent(email.trim()));
-    }
-    if (phone) {
-      params = params.append('phone', phone.trim());
+    if (userName) {
+      params = params.append('userName', userName.trim());
     }
     if (this.tabIdx === 1) {
       params = params.set('startDate', '2018-01-10');
       params = params.set('endDate', '2018-02-09');
       params = params.set('event_id', '201811014');
     }
-    this.email = email && email.trim();
+    this.userName = userName && userName.trim();
     if (this.tabIdx === 0 || this.tabIdx === 1) {
       this.fetchRankForm(params);
     } else if (this.tabIdx === 2) {
@@ -265,14 +256,13 @@ export class PortalComponent implements OnInit {
         endDate: this.endDate,
         startDay: this.startDay,
         finalDay: this.finalDay,
-        email: this.email,
-        phone: this.phone,
+        userName: this.userName,
         mapId: this.mapId,
         groupId: this.groupId
       };
       this.globalEventsManager.getRankForm(data);
       this.distance =
-      this.rankDatas.length > 0 && this.rankDatas[0].race_total_distance;
+        this.rankDatas.length > 0 && this.rankDatas[0].race_total_distance;
       this.meta = buildPageMeta(meta);
       const { currentPage, maxPage } = this.meta;
       this.isFirstPage = currentPage === 1;
@@ -299,8 +289,7 @@ export class PortalComponent implements OnInit {
         endDate: this.endDate,
         startDay: this.startDay,
         finalDay: this.finalDay,
-        email: this.email,
-        phone: this.phone,
+        userName: this.userName,
         mapId: this.mapId,
         groupId: this.groupId
       };
@@ -326,48 +315,21 @@ export class PortalComponent implements OnInit {
   }
   toHistoryPrePage() {
     let paramDatas = {};
-    if (this.tabIdx === 1) {
-      paramDatas = {
-        pageNumber: this.meta.currentPage,
-        mapId: this.mapId,
-        groupId: this.groupId,
-        event: '201811014'
-      };
-    } else if (this.tabIdx === 2) {
-      paramDatas = {
-        pageNumber: this.meta.currentPage,
-        mapId: this.mapId,
-        groupId: this.groupId,
-        event: '20181277'
-      };
-    } else if (this.tabIdx === 3) {
-      paramDatas = {
-        pageNumber: this.meta.currentPage,
-        mapId: this.mapId,
-        groupId: this.groupId,
-        event: '20181287'
-      };
-    } else if (this.tabIdx === 4) {
-      paramDatas = {
-        pageNumber: this.meta.currentPage,
-        mapId: this.mapId,
-        groupId: this.groupId,
-        event: '20181297'
-      };
-    } else if (this.tabIdx === 5) {
-      paramDatas = {
-        pageNumber: this.meta.currentPage,
-        mapId: this.mapId,
-        groupId: this.groupId,
-        event: '20181307'
-      };
-    } else {
+    if (this.tabIdx === 0) {
       paramDatas = {
         pageNumber: this.meta.currentPage,
         startDate: this.startDate,
         endDate: this.endDate,
         mapId: this.mapId,
         groupId: this.groupId
+      };
+    } else {
+      const eventId = this.rankTabs[this.tabIdx - 1].event_id;
+      paramDatas = {
+        pageNumber: this.meta.currentPage,
+        mapId: this.mapId,
+        groupId: this.groupId,
+        eventId
       };
     }
 
@@ -376,7 +338,7 @@ export class PortalComponent implements OnInit {
     );
   }
   public inputEvent(e: any, isUpMode: boolean = false): void {
-    if (e.target.value.length > 0 && (this.email || this.phone)) {
+    if (e.target.value.length > 0 && this.userName) {
       this.isClearIconShow = true;
     } else {
       this.isClearIconShow = false;
@@ -384,7 +346,7 @@ export class PortalComponent implements OnInit {
     this.handleSearchEmail();
   }
   public focusEvent(e: any, isUpMode: boolean = false): void {
-    if (e.target.value.length > 0 && (this.email || this.phone)) {
+    if (e.target.value.length > 0 && this.userName) {
       this.isClearIconShow = true;
     } else {
       this.isClearIconShow = false;
@@ -402,74 +364,50 @@ export class PortalComponent implements OnInit {
     this.isSelectLoading = true;
     let params = new HttpParams();
     params = params.set('mapId', this.mapId.toString());
-    if (this.tabIdx === 1) {
-      params = params.set('startDate', '2018-01-10');
-      params = params.set('endDate', '2018-02-09');
-      params = params.set('event_id', '201811014');
-    } else if (this.tabIdx === 2) {
-      params = params.set('start_date_time', '1517007600');
-      params = params.set('end_date_time', '1517093999');
-      params = params.set('event_id', '20181277');
-      params = params.set('isRealTime', 'true');
-    } else if (this.tabIdx === 3) {
-      params = params.set('start_date_time', '1517094000');
-      params = params.set('end_date_time', '1517180399');
-      params = params.set('event_id', '20181287');
-      params = params.set('isRealTime', 'true');
-    } else if (this.tabIdx === 4) {
-      params = params.set('start_date_time', '1517180400');
-      params = params.set('end_date_time', '1517266799');
-      params = params.set('event_id', '20181297');
-      params = params.set('isRealTime', 'true');
-    } else if (this.tabIdx === 5) {
-      params = params.set('start_date_time', '1517266800');
-      params = params.set('end_date_time', '1517353199');
-      params = params.set('event_id', '20181307');
-      params = params.set('isRealTime', 'true');
+    if (this.tabIdx > 0) {
+      const {
+        time_stamp_start,
+        time_stamp_end,
+        is_real_time,
+        event_id
+      } = this.rankTabs[this.tabIdx - 1];
+      if (is_real_time === 1) {
+        params = params.set('start_date_time', time_stamp_start);
+        params = params.set('end_date_time', time_stamp_end);
+        params = params.set('event_id', event_id);
+        params = params.set('isRealTime', 'true');
+      } else {
+        params = params.set('startDate', moment(time_stamp_start).format('YYYY-MM-DD'));
+        params = params.set('endDate', moment(time_stamp_end).format('YYYY-MM-DD'));
+      }
     } else {
       params = params.set('startDate', this.startDate);
       params = params.set('endDate', this.endDate);
     }
 
+
     if (this.groupId !== '2') {
       params = params.set('gender', this.groupId);
     }
-    if (this.isEmailSearch) {
-      params = params.set('keyword', this.email);
-      this.rankFormService.getEmail(params).subscribe(res => {
-        this.emailOptions = res;
-        this.isSelectLoading = false;
-      });
-    } else {
-      params = params.set('keyword', this.phone);
-      this.rankFormService.getPhone(params).subscribe(res => {
-        this.phoneOptions = res;
-        this.isSelectLoading = false;
-      });
-    }
+    params = params.set('keyword', this.userName);
+    this.rankFormService.getName(params).subscribe(res => {
+      this.emailOptions = res;
+      this.isSelectLoading = false;
+    });
   }
   remove(index: number, event?: any): void {
     if (this.isEmailSearch) {
-      if (this.email && this.emailOptions.length > 1) {
+      if (this.userName && this.emailOptions.length > 1) {
         this.emailOptions.push(this.tempEmail);
       }
-      this.email = this.emailOptions[index];
+      this.userName = this.emailOptions[index];
       if (this.emailOptions.length > 1) {
         this.tempEmail = this.emailOptions.splice(index, 1).toString();
-      }
-    } else {
-      if (this.phone && this.phoneOptions.length > 1) {
-        this.phoneOptions.push(this.tempPhone);
-      }
-      this.phone = this.phoneOptions[index].searchPhone;
-      if (this.phoneOptions.length > 1) {
-        this.tempPhone = this.phoneOptions.splice(index, 1).toString();
       }
     }
   }
   clear() {
-    this.email = '';
-    this.phone = '';
+    this.userName = '';
     this.isClearIconShow = false;
   }
   touchMask() {
@@ -477,13 +415,5 @@ export class PortalComponent implements OnInit {
     this.globalEventsManager.openCollapse(this.isCollapseOpen);
     this.isMaskShow = false;
     this.globalEventsManager.closeCollapse(false);
-  }
-  switchSearchItem(target) {
-    if (
-      (target === 'email' && !this.isEmailSearch) ||
-      (target === 'phone' && this.isEmailSearch)
-    ) {
-      this.isEmailSearch = !this.isEmailSearch;
-    }
   }
 }
