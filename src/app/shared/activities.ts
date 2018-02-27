@@ -20,5 +20,9 @@ export const SAVED_ACTIVITIES: IActivity[] = [
  {
    'id': 5,
    'gpxData': '../../assets/gpx/Panathenean_Stadium.gpx',
+ },
+ {
+   'id': 6,
+   'gpxData': '../../assets/gpx/wanjinshi_warm-up.gpx',
  }
 ];

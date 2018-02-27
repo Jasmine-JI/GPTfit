@@ -10,18 +10,11 @@
           >
              General
           </li>
-          <li class="tablist__tab"
-            title="第一屆英達高空夜跑賽"
-            [class.tablist__tab--selected]="tabIdx === 1"
-            (click)="selectTab(1)"
-          >
-            第一屆英達高空夜跑賽
-          </li>
           <ng-container *ngFor="let tab of rankTabs;let _tabIdx = index">
             <li class="tablist__tab"
               title="{{tab.session_name}}"
-              (click)="selectTab(_tabIdx + 2)"
-              [class.tablist__tab--selected]="tabIdx === _tabIdx + 2"
+              (click)="selectTab(_tabIdx + 1)"
+              [class.tablist__tab--selected]="tabIdx === _tabIdx + 1"
             >
               {{ tab.session_name }}
             </li>
@@ -34,10 +27,10 @@
             <div class="row">
               <div class="col-11">
                 <label class="form-label">Map:</label>
-                <select  *ngIf="tabIdx === 1 || tabIdx === 0" name="mapId" [(ngModel)]="mapId" class="form-field" (click)="selectMap(mapId)">
+                <select  *ngIf="!isRealTime || tabIdx === 0" name="mapId" [(ngModel)]="mapId" class="form-field" (click)="selectMap(mapId)">
                   <option *ngFor="let _map of mapDatas" [value]="_map.map_id">{{ _map.map_name }}</option>
                 </select>
-                <select *ngIf="tabIdx === 2 || tabIdx === 3 || tabIdx === 4 || tabIdx === 5" name="mapId" [(ngModel)]="mapId" class="form-field" (click)="selectMap(mapId)">
+                <select *ngIf="isRealTime && tabIdx > 0" name="mapId" [(ngModel)]="mapId" class="form-field" (click)="selectMap(mapId)">
                   <option *ngFor="let _map of mapDatas" [value]="_map.map_id">{{ _map.map_name | mapTranslate }}</option>
                 </select>
                 <label class="form-label" style="margin-left: 5px">Group:</label>
@@ -68,23 +61,11 @@
                     </div>
                   </ng-container>
                 <div style="display: inline-block">
-                  <label class="form-label searchbar-menu--text"
-                    (click)="switchSearchItem('email')"
-                    [ngClass]="{'active': isEmailSearch}"
-                  >
-                    Email
-                  </label>
-                  <label class="form-label searchbar-menu--text"
-                    (click)="switchSearchItem('phone')"
-                    [ngClass]="{'active': !isEmailSearch }"
-                  >
-                    Phone
-                  </label>
-                  <ng-container *ngIf="isEmailSearch">
+                  <label class="form-label">UserName:</label>
                     <div class="dropdown" (click)="openActive($event)">
                       <div class="clearable">
-                        <input type="email" name="email" [(ngModel)]="email" (keyup)="inputEvent($event)" autocomplete="off" [class.loading]="isSelectLoading"
-                          class="form-field" placeholder="enter email" (focus)="focusEvent($event)" style="width: 300px;text-overflow: ellipsis;">
+                        <input type="text" name="userName" [(ngModel)]="userName" (keyup)="inputEvent($event)" autocomplete="off" [class.loading]="isSelectLoading"
+                          class="form-field" placeholder="enter user name" (focus)="focusEvent($event)" style="width: 300px;text-overflow: ellipsis;">
                         <i class="clearable__clear" [class.show]="isClearIconShow" (click)="clear()">&times;</i>
                         <i class="fa fa-caret-down async-caret"></i>
                         <i class="fa fa-spinner fa-pulse fa-1x fa-fw spinner" [class.spinner-hidden]="!isSelectLoading"></i>
@@ -97,26 +78,6 @@
                         </li>
                       </ul>
                     </div>
-                  </ng-container>
-                  <ng-container *ngIf="!isEmailSearch">
-                    <div class="dropdown" (click)="openActive($event)">
-                      <div class="clearable">
-                        <input type="phone" name="phone" [(ngModel)]="phone" (keyup)="inputEvent($event)" autocomplete="off" [class.loading]="isSelectLoading"
-                          class="form-field" placeholder="enter phone number" (focus)="focusEvent($event)" style="width: 300px;text-overflow: ellipsis;">
-                        <i class="clearable__clear" [class.show]="isClearIconShow" (click)="clear()">&times;</i>
-                        <i class="fa fa-caret-down async-caret"></i>
-                        <i class="fa fa-spinner fa-pulse fa-1x fa-fw spinner" [class.spinner-hidden]="!isSelectLoading"></i>
-                      </div>
-                      <ul class="dropdown-menu" style="width: 100%;" *ngIf="phoneOptions && phoneOptions.length > 0" [class.show]="active && phoneOptions.length > 0">
-                        <li *ngFor="let phone of phoneOptions; let i = index" (click)="remove(i, $event)">
-                          <a>
-                            {{ phone?.displayPhone }}
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                  </ng-container>
-
                 </div>
               </div>
               <div class="col-md-1">
@@ -126,25 +87,25 @@
               </div>
             </div>
           </form>
-          <div class="summary" *ngIf="tabIdx === 1 || tabIdx === 0 ">
+          <div class="summary" *ngIf="!isRealTime || tabIdx === 0">
             本月進行的例行排行賽為
             <span style="color: #157fcc;font-weight: 700">指定地圖{{ mapName }}{{ distance }}KM</span>
-            <div>排行榜於每日06:00刷新，最終排名以{{ finalEventDate || '當月最後一日' }} 23:59結算成績為主</div>
+            <div>排行榜於每日06:00刷新，最終排名以{{ finalEventDate || '當月最後一日 23:59' }} 結算成績為主</div>
           </div>
-          <div class="summary" *ngIf="tabIdx === 2 || tabIdx === 3 || tabIdx === 4 || tabIdx === 5">
+          <div class="summary" *ngIf="isRealTime && tabIdx > 0">
              The event with specify map
             <span style="color: #157fcc;font-weight: 700">{{ mapName | mapTranslate }} {{ distance }}KM</span>
-            <div> Refresh every 5 minutes after leaderboard page loading, the final ranking settlement results based on {{ ispoArray[tabIdx - 2]}}</div>
+            <div> Refresh every 5 minutes after leaderboard page loading, the final ranking settlement results based on {{ finalEventDate }}</div>
           </div>
         </div>
         <div class="searchRank-mapInfo">
           <span style="color: #008bcd;font-weight: 700"
-            *ngIf="tabIdx === 1 || tabIdx === 0 "
+            *ngIf="!isRealTime || tabIdx === 0 "
           >
             {{ mapName }}{{ distance }}KM
           </span>
           <span style="color: #008bcd;font-weight: 700"
-           *ngIf="tabIdx === 2 || tabIdx === 3 || tabIdx === 4 || tabIdx === 5"
+           *ngIf="isRealTime && tabIdx > 0"
           >
             {{ mapName | mapTranslate }}{{ distance }}KM
           </span>
@@ -160,7 +121,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let data of rankDatas" [ngClass]="{'here' : ((data.e_mail === email) && isFoundUser && email.length > 0) || ((data.phone === phone) && isFoundUser && phone)}"
+              <tr *ngFor="let data of rankDatas" [ngClass]="{'here' : ((data.login_acc === userName) && isFoundUser && userName.length > 0)}"
                (click)="toMapInfoPage(data.user_id)" class="ranking-link"
               >
                 <td class="ranking-table__cell"
@@ -180,7 +141,7 @@
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="4" *ngIf="!isHaveEmail && !isHavePhone" style="padding: 5px">
+                <td colspan="4" *ngIf="!isHaveEmail" style="padding: 5px">
                   <ng-container *ngIf="isHaveDatas">
                     <app-pagination (onChange)="onPageChange($event)"
                       [maxPage]="meta.maxPage"

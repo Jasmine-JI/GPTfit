@@ -17,6 +17,8 @@ export class MapTranslatePipe implements PipeTransform {
       return 'circle';
     } else if (value === '線段') {
       return 'line';
+    } else if (value === '新北市 萬金石暖身賽') {
+      return 'Wanjinshi warm-up';
     }
   }
 }

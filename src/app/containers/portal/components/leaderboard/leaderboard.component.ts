@@ -14,6 +14,7 @@ import {
 import { GlobalEventsManager } from '@shared/global-events-manager';
 import { forkJoin } from 'rxjs/observable/forkJoin';
 import { IMyDpOptions } from 'mydatepicker';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-leaderboard',
@@ -22,7 +23,7 @@ import { IMyDpOptions } from 'mydatepicker';
 })
 export class LeaderboardComponent implements OnInit, OnDestroy {
   rankDatas: Array<any>; // 排行板資料
-  monthDatas: any; // 有資料的月份
+  // monthDatas: any; // 有資料的月份
   mapDatas: any; // 有資料的地圖
   mapId = 1; // 預設為第一張地圖
   idx: number;
@@ -33,15 +34,11 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   isHaveDatas: boolean; // 當前條件下的rankDatas有無資料
   groupId = '2'; // 組別 預設為無分組
   isHaveEmail: boolean; // 有無mail
-  isHavePhone: boolean; // 有無phone
-  email: string;
-  phone: string;
+  userName: string;
   active = false; // select options的開關
   isSelectLoading = false; // select async loading開關
   tempEmail: string; // 存select上一筆被選的email
-  tempPhone: string;
   emailOptions: any; // select async options
-  phoneOptions: any;
   isFoundUser = false; // 標記目標email
   bgImageUrl: string; // 背景圖
   distance: number; // 該地圖的距離資料
@@ -57,7 +54,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     width: '200px',
     selectorWidth: '200px',
     dateFormat: 'yyyy-mm-dd',
-    disableUntil: { year: 2017, month: 12, day: 4 },
+    disableUntil: { year: 2017, month: 12, day: 31 },
     disableSince: {
       year: new Date().getFullYear(),
       month: new Date().getMonth() + 1,
@@ -69,7 +66,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     width: '200px',
     selectorWidth: '200px',
     dateFormat: 'yyyy-mm-dd',
-    disableUntil: { year: 2017, month: 12, day: 4 },
+    disableUntil: { year: 2017, month: 12, day: 31 },
     disableSince: {
       year: new Date().getFullYear(),
       month: new Date().getMonth() + 1,
@@ -78,9 +75,9 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   };
   startDay: any = {
     date: {
-      year: 2017,
-      month: 12,
-      day: 5
+      year: 2018,
+      month: 1,
+      day: 1
     }
   };
   finalDay: any = {
@@ -101,7 +98,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   ];
   isEmailSearch = true;
   rankTabs: any;
-
+  isRealTime: boolean;
   constructor(
     private router: Router,
     private rankFormService: RankFormService,
@@ -118,9 +115,8 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     let params = new HttpParams();
     this.startDate = this.convertDateString(this.startDay);
     this.endDate = this.convertDateString(this.finalDay);
-    this.rankFormService.getRankTabs().subscribe((res) => {
-      this.rankTabs = res;
-    });
+
+    // 若有自帶字串 parse字串
     if (!isObjectEmpty(queryStrings)) {
       const {
         pageNumber,
@@ -128,8 +124,8 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
         mapId,
         groupId,
         startDate,
-        endDate,
-        event
+        endDate
+        // event
       } = queryStrings;
       if (pageNumber) {
         params = params.set('pageNumber', pageNumber);
@@ -144,10 +140,6 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
         this.finalDay = this.convertStringDatetoFormat(this.endDate);
         params = params.set('endDate', endDate);
       }
-      if (month) {
-        this.month = month;
-        params = params.set('month', month);
-      }
       if (mapId) {
         this.mapId = Number(mapId);
         params = params.set('mapId', mapId);
@@ -156,62 +148,61 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
         this.groupId = groupId;
         params = params.set('gender', groupId);
       }
-      if (event) {
-        params = params.set('event_id', event);
-        if (event === '201811014') {
-          this.tabIdx = 1;
-        } else if (event === '20181277') {
-          this.tabIdx = 2;
-        } else if (event === '20181287') {
-          this.tabIdx = 3;
-        } else if (event === '20181297') {
-          this.tabIdx = 4;
-        } else if (event === '20181307') {
-          this.tabIdx = 5;
-        }
-      } else {
-        this.tabIdx = 0;
-      }
     }
-    if (this.tabIdx === 1) {
-      params = params.set('event_id', '201811014');
-      params = params.set('startDate', '2018-01-10');
-      params = params.set('endDate', '2018-02-09');
-    } else if (this.tabIdx === 2) {
-      params = params.set('start_date_time', '1517007600');
-      params = params.set('end_date_time', '1517093999');
-      params = params.set('event_id', '20181277');
-    } else if (this.tabIdx === 3) {
-      params = params.set('start_date_time', '1517094000');
-      params = params.set('end_date_time', '1517180399');
-      params = params.set('event_id', '20181287');
-    } else if (this.tabIdx === 4) {
-      params = params.set('start_date_time', '1517180400');
-      params = params.set('end_date_time', '1517266799');
-      params = params.set('event_id', '20181297');
-    } else if (this.tabIdx === 5) {
-      params = params.set('start_date_time', '1517266800');
-      params = params.set('end_date_time', '1517353199');
-      params = params.set('event_id', '20181307');
-    }
+
     params = params.set('mapId', this.mapId.toString());
     this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`; // 背景圖 ，預設為取雅典娜
-    const fetchMapOptions = this.rankFormService.getMapOptions();
 
-    forkJoin([fetchMapOptions]).subscribe(results => {
+    const fetchMapOptions = this.rankFormService.getMapOptions();
+    const fetchRankTabs = this.rankFormService.getRankTabs();
+    forkJoin([fetchMapOptions, fetchRankTabs]).subscribe(results => {
       this.mapDatas = results[0];
+      this.rankTabs = results[1];
+      const { sessionId } = queryStrings;
+      if (sessionId) {
+        const idx = this.rankTabs.findIndex(
+          _tab => _tab.session_id.toString() === sessionId
+        );
+        this.tabIdx = idx + 1;
+        this.handleRealTimeValue(this.tabIdx);
+      }
+      // 判斷tabIdx 並對應塞參數
+      if (this.tabIdx !== 0) {
+        const {
+          is_real_time,
+          time_stamp_start,
+          time_stamp_end,
+          event_id
+        } = this.rankTabs[this.tabIdx - 1];
+        if (is_real_time === 1) {
+          params = params.set('start_date_time', time_stamp_start);
+          params = params.set('end_date_time', time_stamp_end);
+        } else {
+          params = params.set(
+            'startDate',
+            moment(time_stamp_start * 1000).format('YYYY-MM-DD')
+          );
+          params = params.set(
+            'endDate',
+            moment(time_stamp_end * 1000).format('YYYY-MM-DD')
+          );
+        }
+        params = params.set('event_id', `${event_id}`);
+      } else {
+        params = params.set('startDate', this.startDate);
+        params = params.set('endDate', this.endDate);
+      }
+
       this.idx = this.mapDatas.findIndex(_data => _data.map_id === this.mapId);
       if (this.idx > -1) {
         this.mapName = this.mapDatas[this.idx].map_name;
         this.distance = this.mapDatas[this.idx].distance;
         this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
       }
-      this.monthDatas = results[1];
+
       if (
-        this.tabIdx !== 2 &&
-        this.tabIdx !== 3 &&
-        this.tabIdx !== 4 &&
-        this.tabIdx !== 5
+        this.tabIdx === 0 ||
+        this.rankTabs[this.tabIdx - 1].is_real_time === 0
       ) {
         this.fetchRankForm(params);
       } else {
@@ -222,20 +213,17 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
           }
         }, 300000);
       }
-      const { mapDatas, monthDatas } = this;
-      const searchOptions = {
-        mapDatas,
-        monthDatas
-      };
+      const { mapDatas } = this;
+      const searchOptions = { mapDatas };
       this.globalEventsManager.getMapOptions(searchOptions);
       this.globalEventsManager.getMapId(this.mapId);
+      this.globalEventsManager.getRankTabs(this.rankTabs);
     });
     this.globalEventsManager.getRankFormEmitter.subscribe(res => {
       if (res) {
         const {
           datas,
           email,
-          phone,
           meta,
           mapId,
           startDate,
@@ -245,8 +233,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
           groupId
         } = res;
         this.rankDatas = datas;
-        this.email = email;
-        this.phone = phone;
+        this.userName = email;
         this.mapId = mapId;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -260,10 +247,8 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
         }
         if (meta) {
           this.isHaveEmail = false;
-          this.isHavePhone = false;
           this.meta = buildPageMeta(meta);
         } else {
-          this.isHavePhone = phone ? true : false;
           this.isHaveEmail = email ? true : false;
           this.isFoundUser = true;
         }
@@ -296,8 +281,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     clearInterval(this.timer);
     event.stopPropagation();
     const {
-      email,
-      phone,
+      userName,
       mapId,
       groupId,
       selectedStartDate,
@@ -312,70 +296,23 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
       this.distance = this.mapDatas[this.idx].distance;
       this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
     }
-    this.email = email;
-    this.phone = phone;
-    this.isFoundUser = this.email || this.phone ? true : false;
+    this.userName = userName;
+    this.isFoundUser = this.userName ? true : false;
     this.groupId = groupId;
     this.startDay = this.convertDateFormat(selectedStartDate);
     this.finalDay = this.convertDateFormat(selectedEndDate);
     this.startDate = this.convertDateString(selectedStartDate);
     this.endDate = this.convertDateString(selectedEndDate);
     let params = new HttpParams();
-    params = params.set('mapId', this.mapId.toString());
-    if (this.tabIdx === 1) {
-      params = params.set('startDate', '2018-01-10');
-      params = params.set('endDate', '2018-02-09');
-      params = params.set('event_id', '201811014');
-    } else if (this.tabIdx === 0) {
-      params = params.set('startDate', this.startDate);
-      params = params.set('endDate', this.endDate);
-    }
-
-    this.isHaveEmail = email ? true : false;
-    this.isHavePhone = phone ? true : false;
+    this.isHaveEmail = userName ? true : false;
     if (this.groupId !== '2') {
       params = params.set('gender', this.groupId);
     }
-    if (email) {
-      params = params.set('email', encodeURIComponent(email.trim()));
+    if (userName) {
+      params = params.set('userName', userName);
     }
-    if (phone) {
-      params = params.set('phone', phone.trim());
-    }
-    this.email = email && email.trim();
-    if (
-      this.tabIdx !== 2 &&
-      this.tabIdx !== 3 &&
-      this.tabIdx !== 4 &&
-      this.tabIdx !== 5
-    ) {
-      this.fetchRankForm(params);
-    } else {
-      if (this.tabIdx === 2) {
-        params = params.set('start_date_time', '1517007600');
-        params = params.set('end_date_time', '1517093999');
-        params = params.set('event_id', '20181277');
-      } else if (this.tabIdx === 3) {
-        params = params.set('start_date_time', '1517094000');
-        params = params.set('end_date_time', '1517180399');
-        params = params.set('event_id', '20181287');
-      } else if (this.tabIdx === 4) {
-        params = params.set('start_date_time', '1517180400');
-        params = params.set('end_date_time', '1517266799');
-        params = params.set('event_id', '20181297');
-      } else if (this.tabIdx === 5) {
-        params = params.set('start_date_time', '1517266800');
-        params = params.set('end_date_time', '1517353199');
-        params = params.set('event_id', '20181307');
-      }
-      params = params.set('mapId', this.mapId.toString());
-      this.fetchRealTimeRank(params);
-      this.timer = setInterval(() => {
-        if (this.tabIdx !== 0 && this.tabIdx !== 1) {
-          this.fetchRealTimeRank(params);
-        }
-      }, 300000);
-    }
+    this.userName = userName && userName.trim();
+    this.handleGetRankForm(params);
   }
   convertDateString(_date) {
     if (_date) {
@@ -428,56 +365,56 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     if (this.groupId !== '2') {
       params = params.set('gender', this.groupId);
     }
-    if (this.email) {
-      params = params.set('email', encodeURIComponent(this.email.trim()));
+
+    if (this.userName) {
+      params = params.set('userName', this.userName.trim());
     }
-    params = params.set('mapId', this.mapId.toString());
     params = params.set('pageNumber', this.currentPage.toString());
-    if (
-      this.tabIdx !== 2 &&
-      this.tabIdx !== 3 &&
-      this.tabIdx !== 4 &&
-      this.tabIdx !== 5
-    ) {
-      if (this.tabIdx === 1) {
-        params = params.set('startDate', '2018-01-10');
-        params = params.set('endDate', '2018-02-09');
-        params = params.set('event_id', '201811014');
-        this.finalEventDate = '2018-02-09';
+    this.handleGetRankForm(params);
+  }
+  handleRealTimeValue(idx) {
+    if (idx > 0) {
+      this.finalEventDate = moment(this.rankTabs[idx - 1].time_stamp_end * 1000).format('YYYY-MM-DD HH:mm');
+      if (this.rankTabs[idx - 1].is_real_time === 1) {
+        this.isRealTime = true;
       } else {
-        params = params.set('startDate', this.startDate);
-        params = params.set('endDate', this.endDate);
-        this.finalEventDate = '';
+        this.isRealTime = false;
       }
-      if (this.groupId !== '2') {
-        params = params.set('gender', this.groupId);
-      }
-      this.fetchRankForm(params);
     } else {
-      if (this.tabIdx === 2) {
-        params = params.set('start_date_time', '1517007600');
-        params = params.set('end_date_time', '1517093999');
-        params = params.set('event_id', '20181277');
-      } else if (this.tabIdx === 3) {
-        params = params.set('start_date_time', '1517094000');
-        params = params.set('end_date_time', '1517180399');
-        params = params.set('event_id', '20181287');
-      } else if (this.tabIdx === 4) {
-        params = params.set('start_date_time', '1517180400');
-        params = params.set('end_date_time', '1517266799');
-        params = params.set('event_id', '20181297');
-      } else if (this.tabIdx === 5) {
-        params = params.set('start_date_time', '1517266800');
-        params = params.set('end_date_time', '1517353199');
-        params = params.set('event_id', '20181307');
-      }
-      params = params.set('mapId', this.mapId.toString());
+      this.finalEventDate = '';
+      this.isRealTime = false;
+    }
+  }
+  handleGetRankForm(params) {
+    params = params.set('mapId', this.mapId.toString());
+    this.handleRealTimeValue(this.tabIdx);
+    if (this.tabIdx === 0) {
+      params = params.set('startDate', this.startDate);
+      params = params.set('endDate', this.endDate);
+      this.fetchRankForm(params);
+    } else if (this.isRealTime === true) {
+      const { time_stamp_start, time_stamp_end, event_id } = this.rankTabs[
+        this.tabIdx - 1
+      ];
+      params = params.set('start_date_time', time_stamp_start);
+      params = params.set('end_date_time', time_stamp_end);
+      params = params.set('event_id', event_id);
       this.fetchRealTimeRank(params);
       this.timer = setInterval(() => {
-        if (this.tabIdx !== 0 && this.tabIdx !== 1) {
+        if (this.tabIdx !== 0) {
           this.fetchRealTimeRank(params);
         }
       }, 300000);
+    } else {
+      const { time_stamp_start, time_stamp_end, event_id } = this.rankTabs[
+        this.tabIdx - 1
+      ];
+      const startDate = moment(time_stamp_start * 1000).format('YYYY-MM-DD');
+      const endDate = moment(time_stamp_end * 1000).format('YYYY-MM-DD');
+      params = params.set('startDate', startDate);
+      params = params.set('endDate', endDate);
+      params = params.set('event_id', event_id);
+      this.fetchRankForm(params);
     }
   }
   fetchRankForm(params) {
@@ -521,48 +458,22 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   }
   toHistoryPrePage(tabIdx) {
     let paramDatas = {};
-    if (tabIdx === 1) {
-      paramDatas = {
-        pageNumber: this.meta.currentPage,
-        mapId: this.mapId,
-        groupId: this.groupId,
-        event: '201811014'
-      };
-    } else if (tabIdx === 2) {
-      paramDatas = {
-        pageNumber: this.meta.currentPage,
-        mapId: this.mapId,
-        groupId: this.groupId,
-        event: '20181277'
-      };
-    } else if (tabIdx === 3) {
-      paramDatas = {
-        pageNumber: this.meta.currentPage,
-        mapId: this.mapId,
-        groupId: this.groupId,
-        event: '20181287'
-      };
-    } else if (tabIdx === 4) {
-      paramDatas = {
-        pageNumber: this.meta.currentPage,
-        mapId: this.mapId,
-        groupId: this.groupId,
-        event: '20181297'
-      };
-    } else if (tabIdx === 5) {
-      paramDatas = {
-        pageNumber: this.meta.currentPage,
-        mapId: this.mapId,
-        groupId: this.groupId,
-        event: '20181307'
-      };
-    } else {
+    if (tabIdx === 0) {
       paramDatas = {
         pageNumber: this.meta.currentPage,
         startDate: this.startDate,
         endDate: this.endDate,
         mapId: this.mapId,
         groupId: this.groupId
+      };
+    } else {
+      const { event_id, session_id } = this.rankTabs[tabIdx - 1];
+      paramDatas = {
+        pageNumber: this.meta.currentPage,
+        mapId: this.mapId,
+        groupId: this.groupId,
+        eventId: event_id,
+        sessionId: session_id
       };
     }
     this.router.navigateByUrl(
@@ -578,27 +489,21 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
       start_time: 0,
       end_time: 0
     };
-    if (this.tabIdx !== 0 && this.tabIdx !== 1) {
+    if (this.tabIdx > 0) {
+      const { time_stamp_start, time_stamp_end, is_real_time } = this.rankTabs[
+        this.tabIdx - 1
+      ];
+
       paramDatas = {
         date: this.date,
         mapId: this.mapId,
         userId,
         event: '1',
-        start_time: 0,
-        end_time: 0
+        start_time: time_stamp_start,
+        end_time: time_stamp_end
       };
-      if (this.tabIdx === 2) {
-        paramDatas.start_time = 1517007600;
-        paramDatas.end_time = 1517093999;
-      } else if (this.tabIdx === 3) {
-        paramDatas.start_time = 1517094000;
-        paramDatas.end_time = 1517180399;
-      } else if (this.tabIdx === 4) {
-        paramDatas.start_time = 1517180400;
-        paramDatas.end_time = 1517266799;
-      } else if (this.tabIdx === 5) {
-        paramDatas.start_time = 1517266800;
-        paramDatas.end_time = 1517353199;
+      if (is_real_time === 0) {
+        paramDatas.event = '0';
       }
     }
 
@@ -608,7 +513,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   }
 
   public inputEvent(e: any, isUpMode: boolean = false): void {
-    if (e.target.value.length > 0 && (this.email || this.phone)) {
+    if (e.target.value.length > 0 && this.userName) {
       this.isClearIconShow = true;
     } else {
       this.isClearIconShow = false;
@@ -616,7 +521,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     this.handleSearchEmail();
   }
   public focusEvent(e: any, isUpMode: boolean = false): void {
-    if (e.target.value.length > 0 && (this.email || this.phone)) {
+    if (e.target.value.length > 0 && this.userName) {
       this.isClearIconShow = true;
     } else {
       this.isClearIconShow = false;
@@ -626,30 +531,28 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     this.isSelectLoading = true;
     let params = new HttpParams();
     params = params.set('mapId', this.mapId.toString());
-    if (this.tabIdx === 1) {
-      params = params.set('startDate', '2018-01-10');
-      params = params.set('endDate', '2018-02-09');
-      params = params.set('event_id', '201811014');
-    } else if (this.tabIdx === 2) {
-      params = params.set('start_date_time', '1517007600');
-      params = params.set('end_date_time', '1517093999');
-      params = params.set('event_id', '20181277');
-      params = params.set('isRealTime', 'true');
-    } else if (this.tabIdx === 3) {
-      params = params.set('start_date_time', '1517094000');
-      params = params.set('end_date_time', '1517180399');
-      params = params.set('event_id', '20181287');
-      params = params.set('isRealTime', 'true');
-    } else if (this.tabIdx === 4) {
-      params = params.set('start_date_time', '1517180400');
-      params = params.set('end_date_time', '1517266799');
-      params = params.set('event_id', '20181297');
-      params = params.set('isRealTime', 'true');
-    } else if (this.tabIdx === 5) {
-      params = params.set('start_date_time', '1517266800');
-      params = params.set('end_date_time', '1517353199');
-      params = params.set('event_id', '20181307');
-      params = params.set('isRealTime', 'true');
+    if (this.tabIdx > 0) {
+      const {
+        time_stamp_start,
+        time_stamp_end,
+        is_real_time,
+        event_id
+      } = this.rankTabs[this.tabIdx - 1];
+      if (is_real_time === 1) {
+        params = params.set('start_date_time', time_stamp_start);
+        params = params.set('end_date_time', time_stamp_end);
+        params = params.set('event_id', event_id);
+        params = params.set('isRealTime', 'true');
+      } else {
+        params = params.set(
+          'startDate',
+          moment(time_stamp_start * 1000).format('YYYY-MM-DD')
+        );
+        params = params.set(
+          'endDate',
+          moment(time_stamp_end * 1000).format('YYYY-MM-DD')
+        );
+      }
     } else {
       params = params.set('startDate', this.startDate);
       params = params.set('endDate', this.endDate);
@@ -658,19 +561,11 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     if (this.groupId !== '2') {
       params = params.set('gender', this.groupId);
     }
-    if (this.isEmailSearch) {
-      params = params.set('keyword', this.email);
-      this.rankFormService.getEmail(params).subscribe(res => {
-        this.emailOptions = res;
-        this.isSelectLoading = false;
-      });
-    } else {
-      params = params.set('keyword', this.phone);
-      this.rankFormService.getPhone(params).subscribe(res => {
-        this.phoneOptions = res;
-        this.isSelectLoading = false;
-      });
-    }
+    params = params.set('keyword', this.userName);
+    this.rankFormService.getName(params).subscribe(res => {
+      this.emailOptions = res;
+      this.isSelectLoading = false;
+    });
   }
   openActive(event: any) {
     event.stopPropagation();
@@ -682,20 +577,12 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   }
   remove(index: number, event?: any): void {
     if (this.isEmailSearch) {
-      if (this.email && this.emailOptions.length > 1) {
+      if (this.userName && this.emailOptions.length > 1) {
         this.emailOptions.push(this.tempEmail);
       }
-      this.email = this.emailOptions[index];
+      this.userName = this.emailOptions[index];
       if (this.emailOptions.length > 1) {
         this.tempEmail = this.emailOptions.splice(index, 1).toString();
-      }
-    } else {
-      if (this.phone && this.phoneOptions.length > 1) {
-        this.phoneOptions.push(this.tempPhone);
-      }
-      this.phone = this.phoneOptions[index].searchPhone;
-      if (this.phoneOptions.length > 1) {
-        this.tempPhone = this.phoneOptions.splice(index, 1).toString();
       }
     }
   }
@@ -720,54 +607,43 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     if (this.groupId !== '2') {
       params = params.set('gender', this.groupId);
     }
-    if (this.email) {
-      params = params.set('email', encodeURIComponent(this.email.trim()));
+    if (this.userName) {
+      params = params.set('userName', this.userName.trim());
     }
-    if (
-      this.tabIdx !== 2 &&
-      this.tabIdx !== 3 &&
-      this.tabIdx !== 4 &&
-      this.tabIdx !== 5
-    ) {
-      if (this.tabIdx === 1) {
-        params = params.set('startDate', '2018-01-10');
-        params = params.set('endDate', '2018-02-09');
-        params = params.set('event_id', '201811014');
-        this.finalEventDate = '2018-02-09';
+    if (this.tabIdx > 0) {
+      const {
+        time_stamp_start,
+        time_stamp_end,
+        is_real_time,
+        event_id
+      } = this.rankTabs[this.tabIdx - 1];
+      if (is_real_time === 1) {
+        params = params.set('start_date_time', time_stamp_start);
+        params = params.set('end_date_time', time_stamp_end);
+        params = params.set('event_id', event_id);
+        params = params.set('isRealTime', 'true');
+        this.fetchRealTimeRank(params);
+        this.timer = setInterval(() => {
+          if (this.tabIdx !== 0 && this.tabIdx !== 1) {
+            this.fetchRealTimeRank(params);
+          }
+        }, 300000);
       } else {
-        params = params.set('startDate', this.startDate);
-        params = params.set('endDate', this.endDate);
-        this.finalEventDate = '';
+        this.finalEventDate = moment(time_stamp_end * 1000).format(
+          'YYYY-MM-DD'
+        );
+        params = params.set(
+          'startDate',
+          moment(time_stamp_start * 1000).format('YYYY-MM-DD')
+        );
+        params = params.set('endDate', this.finalEventDate);
+        params = params.set('event_id', event_id);
+        this.fetchRankForm(params);
       }
-      if (this.groupId !== '2') {
-        params = params.set('gender', this.groupId);
-      }
-      this.fetchRankForm(params);
     } else {
-      if (this.tabIdx === 2) {
-        params = params.set('start_date_time', '1517007600');
-        params = params.set('end_date_time', '1517093999');
-        params = params.set('event_id', '20181277');
-      } else if (this.tabIdx === 3) {
-        params = params.set('start_date_time', '1517094000');
-        params = params.set('end_date_time', '1517180399');
-        params = params.set('event_id', '20181287');
-      } else if (this.tabIdx === 4) {
-        params = params.set('start_date_time', '1517180400');
-        params = params.set('end_date_time', '1517266799');
-        params = params.set('event_id', '20181297');
-      } else if (this.tabIdx === 5) {
-        params = params.set('start_date_time', '1517266800');
-        params = params.set('end_date_time', '1517353199');
-        params = params.set('event_id', '20181307');
-      }
-      params = params.set('mapId', this.mapId.toString());
-      this.fetchRealTimeRank(params);
-      this.timer = setInterval(() => {
-        if (this.tabIdx !== 0 && this.tabIdx !== 1) {
-          this.fetchRealTimeRank(params);
-        }
-      }, 300000);
+      params = params.set('startDate', this.startDate);
+      params = params.set('endDate', this.endDate);
+      this.fetchRankForm(params);
     }
   }
   nextMap() {
@@ -789,62 +665,51 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     if (this.groupId !== '2') {
       params = params.set('gender', this.groupId);
     }
-    if (this.email) {
-      params = params.set('email', encodeURIComponent(this.email.trim()));
+    if (this.userName) {
+      params = params.set('userName', this.userName.trim());
     }
-    if (
-      this.tabIdx !== 2 &&
-      this.tabIdx !== 3 &&
-      this.tabIdx !== 4 &&
-      this.tabIdx !== 5
-    ) {
-      if (this.tabIdx === 1) {
-        params = params.set('startDate', '2018-01-10');
-        params = params.set('endDate', '2018-02-09');
-        params = params.set('event_id', '201811014');
-        this.finalEventDate = '2018-02-09';
+    if (this.tabIdx > 0) {
+      const {
+        time_stamp_start,
+        time_stamp_end,
+        is_real_time,
+        event_id
+      } = this.rankTabs[this.tabIdx - 1];
+      if (is_real_time === 1) {
+        params = params.set('start_date_time', time_stamp_start);
+        params = params.set('end_date_time', time_stamp_end);
+        params = params.set('event_id', event_id);
+        params = params.set('isRealTime', 'true');
+        this.fetchRealTimeRank(params);
+        this.timer = setInterval(() => {
+          if (this.tabIdx !== 0 && this.tabIdx !== 1) {
+            this.fetchRealTimeRank(params);
+          }
+        }, 300000);
       } else {
-        params = params.set('startDate', this.startDate);
-        params = params.set('endDate', this.endDate);
-        this.finalEventDate = '';
+        this.finalEventDate = moment(time_stamp_end * 1000).format(
+          'YYYY-MM-DD'
+        );
+        params = params.set(
+          'startDate',
+          moment(time_stamp_start * 1000).format('YYYY-MM-DD')
+        );
+        params = params.set('endDate', this.finalEventDate);
+        params = params.set('event_id', event_id);
+        this.fetchRankForm(params);
       }
-      if (this.groupId !== '2') {
-        params = params.set('gender', this.groupId);
-      }
-      this.fetchRankForm(params);
     } else {
-      if (this.tabIdx === 2) {
-        params = params.set('start_date_time', '1517007600');
-        params = params.set('end_date_time', '1517093999');
-        params = params.set('event_id', '20181277');
-      } else if (this.tabIdx === 3) {
-        params = params.set('start_date_time', '1517094000');
-        params = params.set('end_date_time', '1517180399');
-        params = params.set('event_id', '20181287');
-      } else if (this.tabIdx === 4) {
-        params = params.set('start_date_time', '1517180400');
-        params = params.set('end_date_time', '1517266799');
-        params = params.set('event_id', '20181297');
-      } else if (this.tabIdx === 5) {
-        params = params.set('start_date_time', '1517266800');
-        params = params.set('end_date_time', '1517353199');
-        params = params.set('event_id', '20181307');
-      }
-      params = params.set('mapId', this.mapId.toString());
-      this.fetchRealTimeRank(params);
-      this.timer = setInterval(() => {
-        if (this.tabIdx !== 0 && this.tabIdx !== 1) {
-          this.fetchRealTimeRank(params);
-        }
-      }, 300000);
+      this.finalEventDate = '';
+      params = params.set('startDate', this.startDate);
+      params = params.set('endDate', this.endDate);
+      this.fetchRankForm(params);
     }
   }
   selectMap(id) {
     this.globalEventsManager.getMapId(id);
   }
   clear() {
-    this.email = '';
-    this.phone = '';
+    this.userName = '';
     this.isClearIconShow = false;
   }
   selectTab(idx) {
@@ -852,60 +717,9 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     this.tabIdx = idx;
     let params = new HttpParams();
     this.globalEventsManager.getTabIdx(this.tabIdx);
-    params = params.set('mapId', this.mapId.toString());
-    if (
-      this.tabIdx !== 2 &&
-      this.tabIdx !== 3 &&
-      this.tabIdx !== 4 &&
-      this.tabIdx !== 5
-    ) {
-      if (this.tabIdx === 1) {
-        params = params.set('startDate', '2018-01-10');
-        params = params.set('endDate', '2018-02-09');
-        params = params.set('event_id', '201811014');
-        this.finalEventDate = '2018-02-09';
-      } else {
-        params = params.set('startDate', this.startDate);
-        params = params.set('endDate', this.endDate);
-        this.finalEventDate = '';
-      }
-      if (this.groupId !== '2') {
-        params = params.set('gender', this.groupId);
-      }
-      this.fetchRankForm(params);
-    } else {
-      if (this.tabIdx === 2) {
-        params = params.set('start_date_time', '1517007600');
-        params = params.set('end_date_time', '1517093999');
-        params = params.set('event_id', '20181277');
-      } else if (this.tabIdx === 3) {
-        params = params.set('start_date_time', '1517094000');
-        params = params.set('end_date_time', '1517180399');
-        params = params.set('event_id', '20181287');
-      } else if (this.tabIdx === 4) {
-        params = params.set('start_date_time', '1517180400');
-        params = params.set('end_date_time', '1517266799');
-        params = params.set('event_id', '20181297');
-      } else if (this.tabIdx === 5) {
-        params = params.set('start_date_time', '1517266800');
-        params = params.set('end_date_time', '1517353199');
-        params = params.set('event_id', '20181307');
-      }
-      params = params.set('mapId', this.mapId.toString());
-      this.fetchRealTimeRank(params);
-      this.timer = setInterval(() => {
-        if (this.tabIdx !== 0 && this.tabIdx !== 1) {
-          this.fetchRealTimeRank(params);
-        }
-      }, 300000);
+    if (this.groupId !== '2') {
+      params = params.set('gender', this.groupId);
     }
-  }
-  switchSearchItem(target) {
-    if (
-      (target === 'email' && !this.isEmailSearch) ||
-      (target === 'phone' && this.isEmailSearch)
-    ) {
-      this.isEmailSearch = !this.isEmailSearch;
-    }
+    this.handleGetRankForm(params);
   }
 }
