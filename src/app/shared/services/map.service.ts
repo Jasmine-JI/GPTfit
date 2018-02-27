@@ -19,7 +19,7 @@ export class MapService {
 
   plotActivity(id: number) {
     const myStyle = {
-      color: '#3949AB',
+      color: '#ff0035',
       weight: 5,
       opacity: 0.95
     };

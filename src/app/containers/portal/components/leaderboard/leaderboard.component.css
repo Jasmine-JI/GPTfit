@@ -209,7 +209,7 @@ tr.tr-only-hide {
   cursor: pointer;
   background-color: #f9f9f9;
   border-radius: 4px 4px 0 0;
-  width: 160px;
+  width: 190px;
   text-align: center;
   color: #999;
   font-size: 12px;
@@ -275,7 +275,7 @@ tr.tr-only-hide {
   .tablist__tab:nth-child(4),
   .tablist__tab:nth-child(5),
   .tablist__tab:nth-child(6) {
-    width: calc(100% / 3);
+    width: calc(100% / 2);
   }
   .searchRank-bar {
     display: none;

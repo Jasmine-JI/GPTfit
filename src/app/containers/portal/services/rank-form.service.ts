@@ -25,6 +25,9 @@ export class RankFormService {
   getEmail(params) {
     return this.http.get(API_SERVER + 'rankform/rankInfo/email', { params });
   }
+  getName(params) {
+    return this.http.get(API_SERVER + 'rankform/rankInfo/userName', { params });
+  }
   getPhone(params) {
     return this.http.get(API_SERVER + 'rankform/rankInfo/phone', { params });
   }

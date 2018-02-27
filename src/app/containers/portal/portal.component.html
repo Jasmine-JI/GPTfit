@@ -13,54 +13,25 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label searchbar-menu--text__rwd"
-          (click)="switchSearchItem('email')"
-          [ngClass]="{'active': isEmailSearch}"
-        >
-          Email
+        <label style="color: #008bcd">
+          User Name
         </label>
-        <label class="form-label searchbar-menu--text__rwd"
-          (click)="switchSearchItem('phone')"
-          [ngClass]="{'active': !isEmailSearch }"
-        >
-          Phone
-        </label>
-        <ng-container *ngIf="isEmailSearch">
-          <div class="dropdown" (click)="openActive($event)">
-            <div class="clearable">
-              <input type="email" name="email" [(ngModel)]="email" (keyup)="inputEvent($event)" autocomplete="off" [class.loading]="isSelectLoading"
-                class="form-field" placeholder="enter email" (focus)="focusEvent($event)" style="width: 100%;text-overflow: ellipsis;">
-              <i class="clearable__clear" [class.show]="isClearIconShow" (click)="clear()">&times;</i>
-              <i class="fa fa-caret-down async-caret"></i>
-              <i class="fa fa-spinner fa-pulse fa-1x fa-fw spinner" [class.spinner-hidden]="!isSelectLoading"></i>
-            </div>
-            <ul class="dropdown-menu" style="width: 100%;" *ngIf="emailOptions && emailOptions.length > 0" [class.show]="active && emailOptions.length > 0">
-              <li *ngFor="let o of emailOptions; let i = index" (click)="remove(i, $event)">
-                <a>
-                  {{ o }}
-                </a>
-              </li>
-            </ul>
+        <div class="dropdown" (click)="openActive($event)">
+          <div class="clearable">
+            <input type="text" name="userName" [(ngModel)]="userName" (keyup)="inputEvent($event)" autocomplete="off" [class.loading]="isSelectLoading"
+              class="form-field" placeholder="enter user name" (focus)="focusEvent($event)" style="width: 100%;text-overflow: ellipsis;">
+            <i class="clearable__clear" [class.show]="isClearIconShow" (click)="clear()">&times;</i>
+            <i class="fa fa-caret-down async-caret"></i>
+            <i class="fa fa-spinner fa-pulse fa-1x fa-fw spinner" [class.spinner-hidden]="!isSelectLoading"></i>
           </div>
-        </ng-container>
-        <ng-container *ngIf="!isEmailSearch">
-          <div class="dropdown" (click)="openActive($event)">
-            <div class="clearable">
-              <input type="phone" name="phone" [(ngModel)]="phone" (keyup)="inputEvent($event)" autocomplete="off" [class.loading]="isSelectLoading"
-                class="form-field" placeholder="enter phone number" (focus)="focusEvent($event)" style="width: 100%;text-overflow: ellipsis;">
-              <i class="clearable__clear" [class.show]="isClearIconShow" (click)="clear()">&times;</i>
-              <i class="fa fa-caret-down async-caret"></i>
-              <i class="fa fa-spinner fa-pulse fa-1x fa-fw spinner" [class.spinner-hidden]="!isSelectLoading"></i>
-            </div>
-            <ul class="dropdown-menu" style="width: 100%;" *ngIf="phoneOptions && phoneOptions.length > 0" [class.show]="active && phoneOptions.length > 0">
-              <li *ngFor="let phone of phoneOptions; let i = index" (click)="remove(i, $event)">
-                <a>
-                  {{ phone?.displayPhone }}
-                </a>
-              </li>
-            </ul>
-          </div>
-        </ng-container>
+          <ul class="dropdown-menu" style="width: 100%;" *ngIf="emailOptions && emailOptions.length > 0" [class.show]="active && emailOptions.length > 0">
+            <li *ngFor="let o of emailOptions; let i = index" (click)="remove(i, $event)">
+              <a>
+                {{ o }}
+              </a>
+            </li>
+          </ul>
+        </div>
       </div>
       <div class="form-group"  *ngIf="!isEventTab">
         <label style="color: #008bcd">Date</label>
