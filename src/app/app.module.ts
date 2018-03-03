@@ -8,9 +8,7 @@ import { DashboardModule } from './containers/dashboard/dashboard.module';
 import { SharedComponentsModule } from './shared/components/shared-components.module';
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -21,4 +19,4 @@ import { SharedComponentsModule } from './shared/components/shared-components.mo
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

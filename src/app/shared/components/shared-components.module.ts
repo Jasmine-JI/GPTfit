@@ -6,15 +6,19 @@ import { LoadingComponent } from './loading/loading.component';
 import { PaginationComponent } from './pagination/pagination.component';
 import { UploadFileComponent } from './upload-file/upload-file.component';
 import { RouterModule } from '@angular/router';
+import { IntlPhoneInputComponent } from './intl-phone-input/intl-phone-input.component';
+import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule, ReactiveFormsModule],
   declarations: [
     NavbarComponent,
     Page404Component,
     LoadingComponent,
     PaginationComponent,
-    UploadFileComponent
+    UploadFileComponent,
+    IntlPhoneInputComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -22,7 +26,8 @@ import { RouterModule } from '@angular/router';
     Page404Component,
     LoadingComponent,
     PaginationComponent,
-    UploadFileComponent
+    UploadFileComponent,
+    IntlPhoneInputComponent
   ]
 })
 export class SharedComponentsModule {}

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DashboardComponent } from './dashboard.component';
 import { DashboardRoutingModule } from './dashboard-routing.module';
@@ -70,6 +70,7 @@ import { DeviceLogDetailComponent } from './components/device-log-detail/device-
     DeviceLogComponent,
     DeviceLogDetailComponent
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [MsgDialogComponent, DbResultDialogComponent]
 })
 export class DashboardModule {}

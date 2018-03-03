@@ -215,6 +215,7 @@ a.alatech-btn:hover {
   font-size: 14px;
   background-image: linear-gradient(to bottom, #eee, #d8d8d8);
   text-align: center;
+  border: 1px solid #ccc;
 }
 
 .alatech-table__cell {
