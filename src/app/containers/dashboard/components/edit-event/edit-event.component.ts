@@ -147,10 +147,10 @@ export class EditEventComponent implements OnInit {
             moment(time_stamp_end * 1000).format('YYYY-M-D')
           );
           const session_start_time = moment(time_stamp_start * 1000).format(
-            'hh:mm'
+            'HH:mm'
           );
           const session_end_time = moment(time_stamp_end * 1000).format(
-            'hh:mm'
+            'HH:mm'
           );
           const sessionData = {
             isShowPortal,

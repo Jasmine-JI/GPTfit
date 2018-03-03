@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   MatIconModule,
@@ -18,7 +18,8 @@ import {
   MatInputModule,
   MatDatepickerModule,
   MAT_DATE_LOCALE,
-  MAT_DATE_FORMATS
+  MAT_DATE_FORMATS,
+  MatRadioModule
 } from '@angular/material';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import { LayoutModule } from '@angular/cdk/layout';
@@ -52,7 +53,8 @@ export const TW_FORMATS = {
     MatFormFieldModule,
     MatInputModule,
     MatDatepickerModule,
-    MatMomentDateModule
+    MatMomentDateModule,
+    MatRadioModule
   ],
   exports: [
     MatIconModule,
@@ -72,8 +74,10 @@ export const TW_FORMATS = {
     MatInputModule,
     MatDatepickerModule,
     MatMomentDateModule,
-    LayoutModule
+    LayoutModule,
+    MatRadioModule
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'zh-TW' },
     { provide: MAT_DATE_FORMATS, useValue: TW_FORMATS }
