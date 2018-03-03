@@ -10,6 +10,12 @@ import {
 } from '@shared/utils/';
 import { HttpParams } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  FormControl
+} from '@angular/forms';
 
 @Component({
   selector: 'app-enroll-form',
@@ -19,16 +25,6 @@ import { ActivatedRoute } from '@angular/router';
 export class EnrollFormComponent implements OnInit {
   isIDFormatErr = false;
   isIDEnroll = false;
-  formData = {
-    userName: '',
-    email: '',
-    phone: '',
-    idNumber: '',
-    address: '',
-    gender: 2,
-    ageRange: '21~25歲',
-    attachment: null
-  };
   acceptFileExtensions = ['xlsx'];
   maxFileSize = 307200;
   isUploading = false;
@@ -48,18 +44,29 @@ export class EnrollFormComponent implements OnInit {
   event_id: string;
   session_id: string;
   eventInfo: any;
+  signupMethod: number;
   @ViewChild('f') form: any;
-
+  complexForm: FormGroup;
+  counrtyCode = '+886';
   constructor(
     private eventEnrollService: EventEnrollService,
     private eventInfoService: EventInfoService,
     private route: ActivatedRoute,
     private router: Router,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private fb: FormBuilder
   ) {
     this.handleSearchEmail = debounce(this.handleSearchEmail, 1000);
     this.handleSearchPhone = debounce(this.handleSearchPhone, 1000);
-    this.handleSearchIDNum = debounce(this.handleSearchIDNum, 1000);
+    // this.handleSearchIDNum = debounce(this.handleSearchIDNum, 1000);
+    this.complexForm = this.fb.group({
+      // 定義表格的預設值
+      userName: ['', Validators.required],
+      signupMethod: ['', Validators.required],
+      address: ['', Validators.required],
+      ageRange: '不透露',
+      gender: 2
+    });
   }
 
   ngOnInit() {
@@ -80,132 +87,156 @@ export class EnrollFormComponent implements OnInit {
 
   public onEmailChange(e: any, { controls: { email } }): void {
     if (e.target.value.length > 0 && email.status === 'VALID') {
-      this.handleSearchEmail(email);
+      this.handleSearchEmail(email.value);
     }
     if (e.target.value.length === 0) {
       this.emailErr = '';
     }
   }
-  public onPhoneChange(e: any, { controls: { phone } }): void {
-    if (e.target.value.length > 0 && phone.status === 'VALID') {
-      this.handleSearchPhone(phone);
-    }
-    if (e.target.value.length === 0) {
-      this.phoneErr = '';
-    }
-  }
-  public onIDNumChange(e: any, { controls: { idNumber } }): void {
-    if (e.target.value.length > 0 && idNumber.status === 'VALID') {
-      this.handleSearchIDNum(idNumber);
-    }
-    if (e.target.value.length === 0) {
-      this.idNumErr = '';
+
+  public onPhoneChange(code): void {
+    this.counrtyCode = code;
+    const phoneValue = this.complexForm.get('phone').value;
+    if (phoneValue.length > 0) {
+      this.handleSearchPhone(phoneValue);
     }
   }
-  handleSearchIDNum(idNumber) {
-    let params = new HttpParams();
-    params = params.set('event_id', this.event_id);
-    params = params.set('idNumber', this.formData.idNumber);
-    this.isIDNumLoading = true;
-    this.eventEnrollService.getIDNum(params).subscribe(
-      result => {
-        this.isIDNumLoading = false;
-        idNumber.status = 'VALID';
-        this.idNumErr = '';
-      },
-      err => {
-        this.isIDNumLoading = false;
-        idNumber.status = 'INVALID';
-        this.idNumErr = err.error;
-      }
-    );
-  }
+  // public onIDNumChange(e: any, { controls: { idNumber } }): void {
+  //   if (e.target.value.length > 0 && idNumber.status === 'VALID') {
+  //     this.handleSearchIDNum(idNumber);
+  //   }
+  //   if (e.target.value.length === 0) {
+  //     this.idNumErr = '';
+  //   }
+  // }
+  // handleSearchIDNum(idNumber) {
+  //   let params = new HttpParams();
+  //   params = params.set('event_id', this.event_id);
+  //   params = params.set('idNumber', this.formData.idNumber);
+  //   this.isIDNumLoading = true;
+  //   this.eventEnrollService.getIDNum(params).subscribe(
+  //     result => {
+  //       this.isIDNumLoading = false;
+  //       this.idNumErr = '';
+  //     },
+  //     err => {
+  //       this.isIDNumLoading = false;
+  //       this.idNumErr = err.error;
+  //     }
+  //   );
+  // }
   handleSearchPhone(phone) {
     let params = new HttpParams();
     params = params.set('event_id', this.event_id);
-    params = params.set('phone', this.formData.phone);
+    params = params.set('phone', phone);
     this.isPhoneLoading = true;
     this.eventEnrollService.getPhone(params).subscribe(
       result => {
         this.isPhoneLoading = false;
-        phone.status = 'VALID';
         this.phoneErr = '';
       },
       err => {
         this.isPhoneLoading = false;
-        phone.status = 'INVALID';
         this.phoneErr = err.error;
       }
     );
   }
+  handleRadioBtn(value) {
+    if (value === '1') {
+      this.phoneErr = '';
+      this.complexForm.removeControl('phone');
+      const emailControl: FormControl = new FormControl('', [
+        Validators.required,
+        Validators.pattern(
+          /^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$/
+        )
+      ]);
+      this.complexForm.addControl('email', emailControl);
+    } else {
+      this.complexForm.removeControl('email');
+      this.emailErr = '';
+      const phoneControl: FormControl = new FormControl(
+        '',
+        Validators.required
+      );
+      this.complexForm.addControl('phone', phoneControl);
+    }
+  }
   handleSearchEmail(email) {
     let params = new HttpParams();
     params = params.set('event_id', this.event_id);
-    params = params.set('email', this.formData.email);
+    params = params.set('email', email);
     this.isEmailLoading = true;
     this.eventEnrollService.getEmail(params).subscribe(
       result => {
         this.isEmailLoading = false;
-        email.status = 'VALID';
         this.emailErr = '';
       },
       err => {
         this.isEmailLoading = false;
-        email.status = 'INVALID';
         this.emailErr = err.error;
       }
     );
   }
-  handleAttachmentChange(file) {
-    if (file) {
-      const { value, link } = file;
-      this.formData.attachment = value;
-      this.fileName = value.name;
-      this.fileLink = link;
-      this.isBtnDisabled = !(this.tabIdx === 1 && this.fileLink);
-    }
-  }
+  // handleAttachmentChange(file) {
+  //   if (file) {
+  //     const { value, link } = file;
+  //     this.formData.attachment = value;
+  //     this.fileName = value.name;
+  //     this.fileLink = link;
+  //     this.isBtnDisabled = !(this.tabIdx === 1 && this.fileLink);
+  //   }
+  // }
   enroll({ value, valid }) {
-    value.attachment = this.formData.attachment;
-    const formData = new FormData();
-    formData.append('file', value.attachment);
     if (this.tabIdx === 1 && this.fileLink) {
+      value.attachment = null;
+      const formData = new FormData();
+      formData.append('file', value.attachment);
       return this.eventEnrollService.uploadFile(formData).subscribe(results => {
         window.alert(results);
       });
     }
-    if (valid) {
+    if (valid && this.phoneErr.length === 0 && this.emailErr.length === 0) {
       const data = value;
-      data.country_code = '886';
       data.pay_method = '臨櫃付款';
       data.status = '已付款';
       data.event_id = this.event_id;
       data.session_id = this.session_id;
       data.session_name = this.eventInfo.session_name;
-      if (
-        this.event_id === '20181277' ||
-        this.event_id === '20181287' ||
-        this.event_id === '20181297' ||
-        this.event_id === '20181307'
-      ) {
-        data.phone = '';
-        data.ageRange = '';
-        data.gender = 2;
-        data.idNumber = '';
-        data.address = '';
-      }
-      this.eventEnrollService.enroll(data).subscribe(results => {
-        this.dialog.open(MsgDialogComponent, {
-          hasBackdrop: true,
-          data: {
-            title: 'Message',
-            body: 'Registration success and back to event calendar',
-            href: '/dashboardalaala/event-calendar'
-          }
-        });
+      data.idNumber = ''; // 因為把身分證欄位拿掉
+      if (data.signupMethod === 2) {
+        data.email = '';
+        data.country_code = this.counrtyCode;
 
-        this.form.resetForm();
-      });
+      } else {
+        data.phone = '';
+      }
+      this.eventEnrollService.enroll(data).subscribe(
+        results => {
+          this.dialog.open(MsgDialogComponent, {
+            hasBackdrop: true,
+            data: {
+              title: 'Message',
+              body: 'Registration success and back to event calendar',
+              href: '/dashboardalaala/event-calendar'
+            }
+          });
+          this.form.resetForm();
+          this.complexForm.patchValue({
+            ageRange: '不透露',
+            gender: 2
+          });
+        },
+        err => {
+          this.dialog.open(MsgDialogComponent, {
+            hasBackdrop: true,
+            data: {
+              title: 'Message',
+              body: err.errorMessage
+            }
+          });
+        }
+      );
     }
   }
   showCheckEnrollDialog() {

@@ -1,0 +1,81 @@
+.selected-flag {
+  position: relative;
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding-left: 10px;
+  padding-right: 20px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  border-radius: 3px;
+}
+.selected-flag:hover {
+  cursor: pointer;
+}
+
+.dropdown-menu.show {
+  word-break: break-all;
+  padding: 0px;
+}
+
+.dropdown-menu.show>li {
+  padding: 5px 10px;
+}
+
+.dropdown-menu.show>li:hover {
+  background-color: #008bcd;
+  color: #fff;
+  cursor: pointer;
+}
+.dropdown-menu.show>li.selected {
+  background-color: #008bcd;
+  color: #fff;
+}
+
+.clearable__clear {
+  display: none;
+  position: absolute;
+  right: 10px;
+  top: 0;
+  padding: 0 8px;
+  font-style: normal;
+  font-size: 1.2em;
+  user-select: none;
+  cursor: pointer;
+}
+
+.clearable__clear.show {
+  display: inline;
+}
+
+.fa-caret-down.async-caret {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 6px 4px;
+  font-style: normal;
+  font-size: 1.2em;
+  user-select: none;
+  cursor: pointer;
+}
+
+.clearable {
+  position: relative;
+  display: inline-block;
+}
+
+.spinner {
+  position: absolute;
+  right: 30px;
+  top: 0;
+  padding: 6px 4px;
+  font-style: normal;
+  font-size: 1.2em;
+  user-select: none;
+  cursor: pointer;
+}
+
+.spinner-hidden {
+  display: none;
+}
+
+
