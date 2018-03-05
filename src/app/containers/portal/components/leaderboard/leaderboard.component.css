@@ -239,7 +239,28 @@ tr.tr-only-hide {
 .tablist__tab:hover {
   cursor: pointer;
 }
+.ranking-link .medal {
+  width: 30px;
+  height: 30px;
+  transition: 0.70s;
+  -webkit-transition: 0.70s;
+  -moz-transition: 0.70s;
+  -ms-transition: 0.70s;
+  -o-transition: 0.70s;
+}
 
+.ranking-link:hover .medal {
+  transition: 0.70s;
+  -webkit-transition: 0.70s;
+  -moz-transition: 0.70s;
+  -ms-transition: 0.70s;
+  -o-transition: 0.70s;
+  -webkit-transform: rotate(360deg);
+  -moz-transform: rotate(360deg);
+  -o-transform: rotate(360deg);
+  -ms-transform: rotate(360deg);
+  transform: rotate(360deg);
+}
 
 @media (min-width: 992px) {
   .container {
