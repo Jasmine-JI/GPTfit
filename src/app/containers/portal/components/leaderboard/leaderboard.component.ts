@@ -48,6 +48,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   currentPage: number;
   isClearIconShow = false;
   finalEventDate: string;
+  finalEventStamp: number;
   timer: any;
   startDateOptions: IMyDpOptions = {
     height: '30px',
@@ -99,6 +100,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   isEmailSearch = true;
   rankTabs: any;
   isRealTime: boolean;
+  currentDate = moment().unix();
   constructor(
     private router: Router,
     private rankFormService: RankFormService,
@@ -375,6 +377,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   handleRealTimeValue(idx) {
     if (idx > 0) {
       this.finalEventDate = moment(this.rankTabs[idx - 1].time_stamp_end * 1000).format('YYYY-MM-DD HH:mm');
+      this.finalEventStamp = this.rankTabs[idx - 1].time_stamp_end;
       if (this.rankTabs[idx - 1].is_real_time === 1) {
         this.isRealTime = true;
       } else {
@@ -382,6 +385,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
       }
     } else {
       this.finalEventDate = '';
+      this.finalEventStamp = 0;
       this.isRealTime = false;
     }
   }
