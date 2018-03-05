@@ -9,7 +9,7 @@ export interface RankForms {
   endDate: string;
   startDay: string;
   finalDay: string;
-  email: string;
+  userName: string;
   phone: string;
   mapId: number;
   groupId: string;

@@ -365,19 +365,29 @@ router.get('/rankInfo/userName', function(req, res, next) {
       startDate,
       endDate,
       mapId,
-      gender
+      gender,
+      event_id
     }
   } = req;
-  const genderQuery = gender ? `and gender = ${gender}` : '';
+  const genderQuery = gender ? `and r.gender = ${gender}` : '';
+  const eventQuery = event_id ? `
+    and e.event_id = ${event_id}
+    and u.event_id = e.event_id
+    and (u.e_mail = r.e_mail or u.phone = r.e_mail)
+  ` :
+  '';
   const sql = `
-    select distinct login_acc from ??
-    where date between
+    select distinct r.login_acc from ?? as r,
+    race_event_info as e,
+    user_race_enroll as u
+    where r.date between
     '${startDate}'
     and
     '${endDate}'
-    and map_id = ${mapId}
+    and r.map_id = ${mapId}
     and
-    e_mail IS NOT NULL
+    r.e_mail IS NOT NULL
+    ${eventQuery}
     ${genderQuery};
     ;
   `;

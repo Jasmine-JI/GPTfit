@@ -219,7 +219,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
       if (res) {
         const {
           datas,
-          email,
+          userName,
           meta,
           mapId,
           startDate,
@@ -229,7 +229,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
           groupId
         } = res;
         this.rankDatas = datas;
-        this.userName = email;
+        this.userName = userName;
         this.mapId = mapId;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -245,7 +245,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
           this.isHaveEmail = false;
           this.meta = buildPageMeta(meta);
         } else {
-          this.isHaveEmail = email ? true : false;
+          this.isHaveEmail = userName ? true : false;
           this.isFoundUser = true;
         }
         if (this.rankDatas && this.rankDatas.length > 0) {
@@ -550,6 +550,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
           'endDate',
           moment(time_stamp_end * 1000).format('YYYY-MM-DD')
         );
+        params = params.set('event_id', event_id);
       }
     } else {
       params = params.set('startDate', this.startDate);

@@ -51,6 +51,7 @@ tr.here {
 
 td {
   font-size: 1.4em;
+  vertical-align: middle;
 }
 
 table>tbody>tr:hover {

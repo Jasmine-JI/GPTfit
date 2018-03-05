@@ -113,7 +113,6 @@ export class PortalComponent implements OnInit {
           this.isEventTab = true;
           const idx = this.rankTabs.findIndex(_tab => _tab.session_id.toString() === sessionId);
           this.tabIdx = idx + 1;
-          // this.handleRealTimeValue(this.tabIdx);
         } else {
           this.isEventTab = false;
         }
@@ -140,7 +139,6 @@ export class PortalComponent implements OnInit {
   }
   handleGetRankForm(params) {
     params = params.set('mapId', this.mapId.toString());
-    // this.handleRealTimeValue(this.tabIdx);
     if (this.tabIdx === 0) {
       params = params.set('startDate', this.startDate);
       params = params.set('endDate', this.endDate);
@@ -358,6 +356,7 @@ export class PortalComponent implements OnInit {
     this.isSelectLoading = true;
     let params = new HttpParams();
     params = params.set('mapId', this.mapId.toString());
+
     if (this.tabIdx > 0) {
       const {
         time_stamp_start,
@@ -379,6 +378,7 @@ export class PortalComponent implements OnInit {
           'endDate',
           moment(time_stamp_end * 1000).format('YYYY-MM-DD')
         );
+        params = params.set('event_id', event_id);
       }
     } else {
       params = params.set('startDate', this.startDate);
