@@ -91,12 +91,6 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   startDate: string;
   endDate: string;
   date: any;
-  ispoArray = [
-    '2018/01/27 23:59:59',
-    '2018/01/28 23:59:59',
-    '2018/01/29 23:59:59',
-    '2018/01/30 23:59:59'
-  ];
   isEmailSearch = true;
   rankTabs: any;
   isRealTime: boolean;
