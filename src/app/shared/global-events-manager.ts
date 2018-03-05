@@ -14,7 +14,7 @@ export class GlobalEventsManager {
   private _getRankForm = new BehaviorSubject<any>(undefined);
   private _showLoading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private _getIsFoundUser: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  private _getTabIdx: BehaviorSubject<number> = new BehaviorSubject<number>(2); // 排行版tab預設為2
+  private _getTabIdx: BehaviorSubject<number> = new BehaviorSubject<number>(0); // 排行版tab預設為0
   private _getRankTabs: BehaviorSubject<any> = new BehaviorSubject<any>([]);
 
   public showNavBarEmitter: Observable<boolean> = this._showMask.asObservable();
