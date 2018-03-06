@@ -1,124 +1,136 @@
-<form [formGroup]="complexForm" #f="ngForm" novalidate (ngSubmit)="submit(complexForm)" class="form modify-password__form">
+<form [formGroup]="complexForm" #f="ngForm" novalidate (ngSubmit)="submit(complexForm)" class="form event-form">
+  <label class="ala-lineframe__title">修改活動賽事</label>
   <div style="padding: 30px;border: 1px solid #ccc;margin: -1px 0px 0px;">
-    <div>
-      <div class="form-group ">
-        <div class="row">
-          <div class="col-md-5 text-right">
-            <label class="form__label--required">賽事名稱:</label>
-          </div>
-          <div class="col-md-5">
-            <input type="text" class="form-control form-field" formControlName="event_name" [class.form-field--invalid]="(!complexForm.controls['event_name'].valid && complexForm.controls['event_name'].touched) || (f.submitted && complexForm.get('event_name').hasError('required'))"
-            />
-            <div class="form__message" *ngIf="(!complexForm.controls['event_name'].valid && complexForm.controls['event_name'].touched) || (f.submitted && complexForm.get('event_name').hasError('required'))">
-              賽事名稱 is required.
-            </div>
+    <div class="form-group ">
+      <div class="row">
+        <div class="col-md-5 text-md-right">
+          <label class="form__label--required">賽事名稱:</label>
+        </div>
+        <div class="col-md-5">
+          <input type="text" class="form-control form-field" formControlName="event_name" [class.form-field--invalid]="(!complexForm.controls['event_name'].valid && complexForm.controls['event_name'].touched) || (f.submitted && complexForm.get('event_name').hasError('required'))"
+          />
+          <div class="form__message" *ngIf="(!complexForm.controls['event_name'].valid && complexForm.controls['event_name'].touched) || (f.submitted && complexForm.get('event_name').hasError('required'))">
+            賽事名稱 is required.
           </div>
         </div>
       </div>
-      <div class="form-group">
-        <div class="row">
-          <div class="col-md-5 text-right">
-            <label class="form__label--required">賽事日期與時間:</label>
+    </div>
+    <div class="form-group">
+      <div class="row">
+        <div class="col-md-5 text-md-right">
+          <label class="form__label--required">賽事日期與時間:</label>
+        </div>
+        <div class="col-md-5">
+          <my-date-picker name="selectedStartDate" class="rank__datepicker" [options]="startDateOptions" formControlName="selectedStartDate"
+            style="height: 34px" [style.border]="(!complexForm.controls['selectedStartDate'].valid && complexForm.controls['selectedStartDate'].touched) || (f.submitted && complexForm.get('selectedStartDate').hasError('required')) ? '1px solid #c75353' : ''">
+          </my-date-picker>
+          <div class="time_picker">
+            <input type="time" class="form-field" formControlName="event_timer_start" [class.form-field--invalid]="(!complexForm.controls['event_timer_start'].valid && complexForm.controls['event_timer_start'].touched) || (f.submitted && complexForm.get('event_timer_start').hasError('required'))">
+            <span>
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+            </span>
           </div>
-          <div class="col-md-5">
-            <my-date-picker name="selectedStartDate" class="rank__datepicker" [options]="startDateOptions" formControlName="selectedStartDate"
-              style="height: 34px" [style.border]="(!complexForm.controls['selectedStartDate'].valid && complexForm.controls['selectedStartDate'].touched) || (f.submitted && complexForm.get('selectedStartDate').hasError('required')) ? '1px solid #c75353' : ''">
-            </my-date-picker>
-            <div class="time_picker">
-              <input type="time" class="form-field" formControlName="event_timer_start" [class.form-field--invalid]="(!complexForm.controls['event_timer_start'].valid && complexForm.controls['event_timer_start'].touched) || (f.submitted && complexForm.get('event_timer_start').hasError('required'))">
-              <span>
-                <i class="fa fa-clock-o" aria-hidden="true"></i>
-              </span>
-            </div>
-            <div style="margin: 0px 5px;vertical-align: text-bottom;">~</div>
+          <div style="margin: 0px 5px;vertical-align: text-bottom;">~</div>
 
-            <my-date-picker name="selectedEndDate" class="rank__datepicker" [options]="endDateOptions" formControlName="selectedEndDate"
-              style="height: 34px" [style.border]="(!complexForm.controls['selectedEndDate'].valid && complexForm.controls['selectedEndDate'].touched) || (f.submitted && complexForm.get('selectedEndDate').hasError('required')) ? '1px solid #c75353' : ''">
-            </my-date-picker>
-            <div class="time_picker">
-              <input type="time" class="form-field" formControlName="event_timer_end" [class.form-field--invalid]="(!complexForm.controls['event_timer_end'].valid && complexForm.controls['event_timer_end'].touched) || (f.submitted && complexForm.get('event_timer_end').hasError('required'))">
-              <span>
-                <i class="fa fa-clock-o" aria-hidden="true"></i>
-              </span>
-            </div>
+          <my-date-picker name="selectedEndDate" class="rank__datepicker" [options]="endDateOptions" formControlName="selectedEndDate"
+            style="height: 34px" [style.border]="(!complexForm.controls['selectedEndDate'].valid && complexForm.controls['selectedEndDate'].touched) || (f.submitted && complexForm.get('selectedEndDate').hasError('required')) ? '1px solid #c75353' : ''">
+          </my-date-picker>
+          <div class="time_picker">
+            <input type="time" class="form-field" formControlName="event_timer_end" [class.form-field--invalid]="(!complexForm.controls['event_timer_end'].valid && complexForm.controls['event_timer_end'].touched) || (f.submitted && complexForm.get('event_timer_end').hasError('required'))">
+            <span>
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+            </span>
           </div>
         </div>
       </div>
-      <div class="form-group">
-        <div class="row">
-          <div class="col-md-5 text-right">
-            <label class="form__label--required">填表單人:</label>
-          </div>
-          <div class="col-md-5">
-            <input autocomplete="off" class="form-control form-field" formControlName="launch_user_name" [class.form-field--invalid]="(!complexForm.controls['launch_user_name'].valid && complexForm.controls['launch_user_name'].touched) || (f.submitted && complexForm.get('launch_user_name').hasError('required'))"
-            />
-            <div class="form__message" *ngIf="(!complexForm.controls['launch_user_name'].valid && complexForm.controls['launch_user_name'].touched) || (f.submitted && complexForm.get('launch_user_name').hasError('required'))">
-              填表單人 is required.
-            </div>
+    </div>
+    <div class="form-group">
+      <div class="row">
+        <div class="col-md-5 text-md-right">
+          <label class="form__label--required">填表單人:</label>
+        </div>
+        <div class="col-md-5">
+          <input autocomplete="off" class="form-control form-field" formControlName="launch_user_name" [class.form-field--invalid]="(!complexForm.controls['launch_user_name'].valid && complexForm.controls['launch_user_name'].touched) || (f.submitted && complexForm.get('launch_user_name').hasError('required'))"
+          />
+          <div class="form__message" *ngIf="(!complexForm.controls['launch_user_name'].valid && complexForm.controls['launch_user_name'].touched) || (f.submitted && complexForm.get('launch_user_name').hasError('required'))">
+            填表單人 is required.
           </div>
         </div>
       </div>
-      <div class="form-group">
-        <div class="row">
-          <div class="col-md-5 text-right">
-            <label class="">描述:</label>
-          </div>
-          <div class="col-md-5">
-            <textarea autocomplete="off" class="form-control form-field" formControlName="description" style="min-height: auto;height:44px"></textarea>
-          </div>
+    </div>
+    <div class="form-group">
+      <div class="row">
+        <div class="col-md-5 text-md-right">
+          <label class="">描述:</label>
+        </div>
+        <div class="col-md-5">
+          <textarea autocomplete="off" class="form-control form-field" formControlName="description" style="min-height: auto;height:44px"></textarea>
         </div>
       </div>
-      <!-- <ng-container formArrayName="sessionDatas">
-        <div class="session_area" *ngFor="let item of complexForm.get('sessionDatas').controls;let idx = index" [formGroupName]="idx">
-          <button class="icon-btn remove-sessions" (click)="removeItems($event, idx)">
-            <i class="fa fa-times-circle icon_fa"></i>
-          </button>
-          <div class="form-group">
-            <div class="row">
-              <div class="col-md-5 text-right">
-                <label class="form__label--required">子活動名稱:</label>
-              </div>
-              <div class="col-md-5">
-                <input class="form-control form-field" formControlName="session_name" [class.form-field--invalid]="(!complexForm.get('sessionDatas').controls[idx].get('session_name').valid && complexForm.get('sessionDatas').controls[idx].get('session_name').touched) || (f.submitted && complexForm.get('sessionDatas').controls[idx].get('session_name').invalid)"
-                />
-              </div>
+    </div>
+    <ng-container formArrayName="sessionDatas">
+      <div class="session_area" *ngFor="let item of sessionDatas.controls;let idx = index" [formGroupName]="idx">
+        <div style="position: relative; top: -15px; left: 0">
+          <mat-checkbox formControlName="isShowPortal"
+            color="primary"
+          ><span style="font-size: 14px">將此活動設為顯示在外部排行版</span>
+          </mat-checkbox>
+          <mat-checkbox formControlName="isRealTime"
+            color="primary"
+          ><span style="font-size: 14px">將此活動設為及時排行搜尋</span>
+          </mat-checkbox>
+        </div>
+        <button class="icon-btn remove-sessions"
+          (click)="removeItems($event, idx)"
+          type="button"
+        >
+          <i class="fa fa-times-circle icon_fa"></i>
+        </button>
+        <div class="form-group">
+          <div class="row">
+            <div class="col-md-5 text-md-right">
+              <label class="form__label--required">子活動名稱:</label>
+            </div>
+            <div class="col-md-5">
+              <input class="form-control form-field" formControlName="session_name" [class.form-field--invalid]="(!complexForm.get('sessionDatas').controls[idx].get('session_name').valid && complexForm.get('sessionDatas').controls[idx].get('session_name').touched) || (f.submitted && complexForm.get('sessionDatas').controls[idx].get('session_name').invalid)"
+              />
             </div>
           </div>
-          <div class="form-group">
-            <div class="row">
-              <div class="col-md-5 text-right">
-                <label class="form__label--required">子活動日期與時間:</label>
+        </div>
+        <div class="form-group">
+          <div class="row">
+            <div class="col-md-5 text-md-right">
+              <label class="form__label--required">子活動日期與時間:</label>
+            </div>
+            <div class="col-md-5">
+              <my-date-picker class="rank__datepicker" [options]="startDateOptions" formControlName='session_start_date' style="height: 34px"
+                [style.border]="(!complexForm.get('sessionDatas').controls[idx].get('session_start_date').valid && complexForm.get('sessionDatas').controls[idx].get('session_start_date').touched)|| (f.submitted && complexForm.get('sessionDatas').controls[idx].get('session_start_date').invalid) ? '1px solid #c75353' : ''">
+              </my-date-picker>
+              <div class="time_picker">
+                <input type="time" class="form-field" formControlName="session_start_time" style="background-color: #fff;" [class.form-field--invalid]="(!complexForm.get('sessionDatas').controls[idx].get('session_start_time').valid && complexForm.get('sessionDatas').controls[idx].get('session_start_time').touched) || (f.submitted && complexForm.get('sessionDatas').controls[idx].get('session_start_time').invalid)">
+                <span>
+                  <i class="fa fa-clock-o" aria-hidden="true"></i>
+                </span>
               </div>
-              <div class="col-md-5">
-                <my-date-picker class="rank__datepicker" [options]="startDateOptions" formControlName='session_start_date' style="height: 34px"
-                  [style.border]="(!complexForm.get('sessionDatas').controls[idx].get('session_start_date').valid && complexForm.get('sessionDatas').controls[idx].get('session_start_date').touched)|| (f.submitted && complexForm.get('sessionDatas').controls[idx].get('session_start_date').invalid) ? '1px solid #c75353' : ''">
-                </my-date-picker>
-                <div class="time_picker">
-                  <input type="time" class="form-field" formControlName="session_start_time" style="background-color: #fff;" [class.form-field--invalid]="(!complexForm.get('sessionDatas').controls[idx].get('session_start_time').valid && complexForm.get('sessionDatas').controls[idx].get('session_start_time').touched) || (f.submitted && complexForm.get('sessionDatas').controls[idx].get('session_start_time').invalid)">
-                  <span>
-                    <i class="fa fa-clock-o" aria-hidden="true"></i>
-                  </span>
-                </div>
-                <div style="margin: 0px 5px;vertical-align: text-bottom;">~</div>
+              <div style="margin: 0px 5px;vertical-align: text-bottom;">~</div>
 
-                <my-date-picker formControlName="session_end_date" class="rank__datepicker" [options]="endDateOptions" style="height: 34px"
-                  [style.border]="(!complexForm.get('sessionDatas').controls[idx].get('session_end_date').valid && complexForm.get('sessionDatas').controls[idx].get('session_end_date').touched)|| (f.submitted && complexForm.get('sessionDatas').controls[idx].get('session_end_date').invalid) ? '1px solid #c75353' : ''">
-                </my-date-picker>
-                <div class="time_picker">
-                  <input type="time" class="form-field" formControlName="session_end_time" style="background-color: #fff;" [class.form-field--invalid]="(!complexForm.get('sessionDatas').controls[idx].get('session_end_time').valid && complexForm.get('sessionDatas').controls[idx].get('session_end_time').touched) || (f.submitted && complexForm.get('sessionDatas').controls[idx].get('session_end_time').invalid)">
-                  <span>
-                    <i class="fa fa-clock-o" aria-hidden="true"></i>
-                  </span>
-                </div>
+              <my-date-picker formControlName="session_end_date" class="rank__datepicker" [options]="endDateOptions" style="height: 34px"
+                [style.border]="(!complexForm.get('sessionDatas').controls[idx].get('session_end_date').valid && complexForm.get('sessionDatas').controls[idx].get('session_end_date').touched)|| (f.submitted && complexForm.get('sessionDatas').controls[idx].get('session_end_date').invalid) ? '1px solid #c75353' : ''">
+              </my-date-picker>
+              <div class="time_picker">
+                <input type="time" class="form-field" formControlName="session_end_time" style="background-color: #fff;" [class.form-field--invalid]="(!complexForm.get('sessionDatas').controls[idx].get('session_end_time').valid && complexForm.get('sessionDatas').controls[idx].get('session_end_time').touched) || (f.submitted && complexForm.get('sessionDatas').controls[idx].get('session_end_time').invalid)">
+                <span>
+                  <i class="fa fa-clock-o" aria-hidden="true"></i>
+                </span>
               </div>
             </div>
           </div>
         </div>
-      </ng-container> -->
-      <!-- <div class="add-sessions" (click)="addItem()">
-        <i class="fa fa-plus"></i>
-        新增子活動
-      </div> -->
+      </div>
+    </ng-container>
+    <div class="add-sessions" (click)="addItem()">
+      <i class="fa fa-plus"></i>
+      新增子活動
     </div>
   </div>
   <div class="alatech-footer">
@@ -126,7 +138,10 @@
       <button class="alatech-btn alatech-btn--default">
         送出
       </button>
-      <button class="alatech-btn alatech-btn--default" [routerLink]="['/dashboardalaala/event']">
+      <button class="alatech-btn alatech-btn--default"
+        type="button"
+        (click)="checkBack()"
+      >
         返回
       </button>
     </div>

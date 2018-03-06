@@ -1,0 +1,15 @@
+.mat-header-cell {
+  font-weight: 700;
+  font-size: 16px;
+}
+.mat-column-counts {
+  max-width: 100px;
+}
+.mat-form-field {
+  margin-left: 24px;
+}
+
+.mat-row:hover {
+  cursor: pointer;
+  background-color: #eee;
+}

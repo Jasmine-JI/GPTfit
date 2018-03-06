@@ -3,6 +3,8 @@ import { IMyDpOptions } from 'mydatepicker';
 import { EventInfoService } from '../../services/event-info.service';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MsgDialogComponent } from '../msg-dialog/msg-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-create-event',
@@ -10,6 +12,9 @@ import { Router } from '@angular/router';
   styleUrls: ['./create-event.component.css']
 })
 export class CreateEventComponent implements OnInit {
+  get sessionDatas() {
+    return <FormArray>this.complexForm.get('sessionDatas');
+  }
   complexForm: FormGroup;
   startDateOptions: IMyDpOptions = {
     height: '30px',
@@ -58,7 +63,8 @@ export class CreateEventComponent implements OnInit {
   constructor(
     private eventInfoService: EventInfoService,
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    public dialog: MatDialog
   ) {
     this.complexForm = this.fb.group({
       // 定義表格的預設值
@@ -100,6 +106,8 @@ export class CreateEventComponent implements OnInit {
     if (sessionDatas.length > 0) {
       const sessionResults = sessionDatas.map(_data => {
         return {
+          isRealTime: _data.isRealTime,
+          isShowPortal: _data.isShowPortal,
           session_name: _data.session_name,
           session_start_date:
             _data.session_start_date.formatted + ' ' + _data.session_start_time,
@@ -120,6 +128,8 @@ export class CreateEventComponent implements OnInit {
   }
   initSessions(): FormGroup {
     return this.fb.group({
+      isShowPortal: [false],
+      isRealTime: [false],
       session_name: ['', Validators.required],
       session_start_date: ['', Validators.required],
       session_start_time: ['', Validators.required],
@@ -149,5 +159,15 @@ export class CreateEventComponent implements OnInit {
       '-' +
       new Date().getUTCDate()
     );
+  }
+  checkBack() {
+    this.dialog.open(MsgDialogComponent, {
+      hasBackdrop: true,
+      data: {
+        title: 'Message',
+        body: '是否確定返回',
+        href: '/dashboardalaala/event'
+      }
+    });
   }
 }

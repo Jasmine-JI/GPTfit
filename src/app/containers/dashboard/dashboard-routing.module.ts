@@ -11,6 +11,9 @@ import { EventCalendarComponent } from './components/event-calendar/event-calend
 import { EnrollPreviewComponent } from './components/enroll-preview/enroll-preview.component';
 import { LeaderboardSettingsComponent } from './components/leaderboard-settings/leaderboard-settings.component';
 import { RealTimeLeaderboardComponent } from './components/real-time-leaderboard/real-time-leaderboard.component';
+import { DbMaintainComponent } from './components/db-maintain/db-maintain.component';
+import { DeviceLogComponent } from './components/device-log/device-log.component';
+import { DeviceLogDetailComponent } from './components/device-log-detail/device-log-detail.component';
 
 const routes: Routes = [
   {
@@ -56,6 +59,18 @@ const routes: Routes = [
       {
         path: 'real-time-leaderboard',
         component: RealTimeLeaderboardComponent
+      },
+      {
+        path: 'db',
+        component: DbMaintainComponent
+      },
+      {
+        path: 'device_log',
+        component: DeviceLogComponent
+      },
+      {
+        path: 'device_log/detail/:userId',
+        component: DeviceLogDetailComponent
       }
     ]
   },

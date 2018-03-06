@@ -34,4 +34,20 @@
       </div>
     </div>
   </div>
+  <div class="row">
+    <div class="col-md-3  text-right">
+      <label class="">手動更新排行版的資料表:</label>
+    </div>
+    <div class="col-md-9">
+      <label>run_rank上次更新時間為</label>
+        {{ updateTime }}
+      <button class="alatech-btn alatech-btn--default" (click)="updateRankInfo()">
+        手動更新
+        <i *ngIf="isLoading" class="fa fa-spinner fa-pulse fa-lg"></i>
+      </button>
+      <button class="alatech-btn alatech-btn--default" (click)="download()">
+        下載Gpx檔
+      </button>
+    </div>
+  </div>
 </div>

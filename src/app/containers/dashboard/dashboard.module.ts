@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DashboardComponent } from './dashboard.component';
 import { DashboardRoutingModule } from './dashboard-routing.module';
@@ -17,13 +17,19 @@ import { CustomMaterialModule } from '@shared/custom-material.module.ts';
 import { EnrollPreviewComponent } from './components/enroll-preview/enroll-preview.component';
 import { GlobalEventsManager } from '@shared/global-events-manager';
 import { EventInfoService } from './services/event-info.service';
-import { CheckEnrollDialogComponent } from './components/check-enroll-dialog/check-enroll-dialog.component';
+import { GpxService } from './services/gpx.service';
+import { MsgDialogComponent } from './components/msg-dialog/msg-dialog.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedPipes } from '@shared/pipes/shared-pipes';
 import { LeaderboardSettingsComponent } from './components/leaderboard-settings/leaderboard-settings.component';
 import { RealTimeLeaderboardComponent } from './components/real-time-leaderboard/real-time-leaderboard.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { DbMaintainComponent } from './components/db-maintain/db-maintain.component';
+import { DbResultDialogComponent } from './components/db-result-dialog/db-result-dialog.component';
+import { DeviceLogComponent } from './components/device-log/device-log.component';
+import { DeviceLogService } from './services/device-log.service';
+import { DeviceLogDetailComponent } from './components/device-log-detail/device-log-detail.component';
 
 @NgModule({
   imports: [
@@ -43,6 +49,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     EventEnrollService,
     GlobalEventsManager,
     EventInfoService,
+    GpxService,
+    DeviceLogService
   ],
   declarations: [
     DashboardComponent,
@@ -54,10 +62,15 @@ import { ReactiveFormsModule } from '@angular/forms';
     CertificateComponent,
     EventCalendarComponent,
     EnrollPreviewComponent,
-    CheckEnrollDialogComponent,
+    MsgDialogComponent,
     LeaderboardSettingsComponent,
-    RealTimeLeaderboardComponent
+    RealTimeLeaderboardComponent,
+    DbMaintainComponent,
+    DbResultDialogComponent,
+    DeviceLogComponent,
+    DeviceLogDetailComponent
   ],
-  entryComponents: [CheckEnrollDialogComponent]
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  entryComponents: [MsgDialogComponent, DbResultDialogComponent]
 })
 export class DashboardModule {}
