@@ -167,35 +167,15 @@ router.get('/', function(req, res, next) {
       a.phone
       from
       (
-        select *, @prev := @curr, @curr := offical_time,
-        @rank := if(@prev = @curr, @rank, @rank+1
-      ) as rank
-      from (select a.* from ?? a
-        , user_race_enroll c
-        where
-        date between '${startDate || currDate}'
-        and
-        '${endDate || currDate}'
-        and
-        offical_time in
-        (
-        select min(b.offical_time)  from run_rank as b
-        where map_id = ${mapId || 5}
-        and
-        date between '${startDate || currDate}'
-        and
-        '${endDate || currDate}'
-        and
-        a.user_id = b.user_id
-        ${eventQuery}
-        )
-        and
-        map_id = ${mapId || 5}
-        ${genderQuery}
-        ${userIdQuery}
-      )b,
-      (
-        select @curr := null, @prev :=null, @rank := 0
+      select min(b.offical_time)  from run_rank as b
+      where map_id = ${mapId || 5}
+      and
+      date between '${startDate || currDate}'
+      and
+      '${endDate || currDate}'
+      and
+      a.user_id = b.user_id
+      ${eventQuery}
       )
       time order by offical_time
       )a;
