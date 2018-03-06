@@ -88,11 +88,7 @@ app.use(function (req, res, next) {
     ];
   }
   var origin = req.headers.origin;
-  console.log('!!!', allowedOrigins);
-console.log('origin: ', origin);
-console.log('allowedOrigins.indexOf(origin): ', allowedOrigins.indexOf(origin));
   if (allowedOrigins.indexOf(origin) > -1) {
-    console.log('origin:', origin);
     res.setHeader('Access-Control-Allow-Origin', origin);
   }
   // Request methods you wish to allow
