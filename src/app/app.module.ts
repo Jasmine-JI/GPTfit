@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { PortalModule } from './containers/portal/portal.module';
 import { DashboardModule } from './containers/dashboard/dashboard.module';
 import { SharedComponentsModule } from './shared/components/shared-components.module';
+import { WINDOW_PROVIDERS } from "@shared/services/window.service";
 
 @NgModule({
   declarations: [AppComponent],
@@ -16,7 +17,7 @@ import { SharedComponentsModule } from './shared/components/shared-components.mo
     DashboardModule,
     SharedComponentsModule
   ],
-  providers: [],
+  providers: [WINDOW_PROVIDERS],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

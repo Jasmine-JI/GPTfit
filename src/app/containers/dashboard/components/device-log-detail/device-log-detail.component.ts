@@ -1,4 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  HostListener,
+  Inject
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DeviceLogService } from '../../services/device-log.service';
 import { HttpParams } from '@angular/common/http';
@@ -24,6 +30,8 @@ import {
 } from '@angular/cdk/layout';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { Location } from '@angular/common';
+import { DOCUMENT } from '@angular/platform-browser';
+import { WINDOW } from '@shared/services/window.service';
 
 @Component({
   selector: 'app-device-log-detail',
@@ -43,11 +51,11 @@ export class DeviceLogDetailComponent implements OnInit {
   endDate: any;
   isDateSearch = false;
   getDataTime: string;
+  isTopIconDisplay = false;
 
   @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild('sortTable') sortTable: MatSort;
   @ViewChild('f') form: any;
-
   constructor(
     private route: ActivatedRoute,
     private deviceLogservice: DeviceLogService,
@@ -55,6 +63,8 @@ export class DeviceLogDetailComponent implements OnInit {
     private router: Router,
     private breakpointObserver: BreakpointObserver,
     private fb: FormBuilder,
+    @Inject(DOCUMENT) private document: Document,
+    @Inject(WINDOW) private window,
     public _location: Location // 調用location.back()，來回到上一頁
   ) {
     this.complexForm = this.fb.group({
@@ -106,6 +116,15 @@ export class DeviceLogDetailComponent implements OnInit {
       this.currentPage = page;
       this.getLists();
     });
+  }
+  @HostListener('window:scroll', [])
+  onWindowScroll() {
+    const number = this.window.pageYOffset || this.document.documentElement.scrollTop || this.document.body.scrollTop || 0;
+    if (number > 80) {
+      this.isTopIconDisplay = true;
+    } else if (number === 0) {
+      this.isTopIconDisplay = false;
+    }
   }
   changeSort(sortInfo: Sort) {
     this.currentSort = sortInfo;
@@ -164,4 +183,7 @@ export class DeviceLogDetailComponent implements OnInit {
     this.getLists();
   }
 
+  goTop() {
+    window.scrollTo(1170, 0);
+  }
 }
