@@ -1,0 +1,20 @@
+.gotop--show {
+  line-height: 0px;
+  position: fixed;
+  left: 85%;
+  bottom: 75px;
+  display: inline-block;
+  cursor: pointer;
+  color: #157fcc;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.gotop--show:hover {
+  opacity: 0.6;
+}
+
+.gotop--hidden {
+  display: none;
+}
+
