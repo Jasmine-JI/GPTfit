@@ -137,8 +137,8 @@ router.get('/emailsValidate', async(req, res, next) => {
       if (email.length === 0) {
         return res.status(400).send('請填入email');
       }
-      const emailRule = /^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$/;
-      const trimEmail = email.trim();
+      const emailRule = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+      const trimEmail = decodeURIComponent(email).trim();
       if (email && trimEmail.search(emailRule) > -1) {
         let results = rows.map(_row => _row.e_mail);
         results = results.filter(_res => _res === trimEmail);

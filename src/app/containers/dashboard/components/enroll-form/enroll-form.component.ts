@@ -147,9 +147,7 @@ export class EnrollFormComponent implements OnInit {
       this.complexForm.removeControl('phone');
       const emailControl: FormControl = new FormControl('', [
         Validators.required,
-        Validators.pattern(
-          /^([0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*@([0-9a-zA-Z][-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9})$/
-        )
+        Validators.pattern(/^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/)
       ]);
       this.complexForm.addControl('email', emailControl);
     } else {
@@ -165,7 +163,7 @@ export class EnrollFormComponent implements OnInit {
   handleSearchEmail(email) {
     let params = new HttpParams();
     params = params.set('event_id', this.event_id);
-    params = params.set('email', email);
+    params = params.set('email', encodeURIComponent(email).trim());
     this.isEmailLoading = true;
     this.eventEnrollService.getEmail(params).subscribe(
       result => {
