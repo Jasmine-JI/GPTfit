@@ -19,7 +19,8 @@ import {
   MatDatepickerModule,
   MAT_DATE_LOCALE,
   MAT_DATE_FORMATS,
-  MatRadioModule
+  MatRadioModule,
+  MatSelectModule
 } from '@angular/material';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import { LayoutModule } from '@angular/cdk/layout';
@@ -54,7 +55,8 @@ export const TW_FORMATS = {
     MatInputModule,
     MatDatepickerModule,
     MatMomentDateModule,
-    MatRadioModule
+    MatRadioModule,
+    MatSelectModule
   ],
   exports: [
     MatIconModule,
@@ -75,7 +77,8 @@ export const TW_FORMATS = {
     MatDatepickerModule,
     MatMomentDateModule,
     LayoutModule,
-    MatRadioModule
+    MatRadioModule,
+    MatSelectModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [

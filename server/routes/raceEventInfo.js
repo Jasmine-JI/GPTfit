@@ -55,7 +55,9 @@ router.post('/create', (req, res) => {
           session_name,
           session_start_date,
           isRealTime,
-          isShowPortal
+          isShowPortal,
+          isSpecificMap,
+          chooseMaps
         } = _session;
         const time_stamp_start = moment(session_start_date).unix();
         const time_stamp_end = moment(session_end_date).unix();
@@ -77,7 +79,9 @@ router.post('/create', (req, res) => {
           event_start,
           event_end,
           isRealTime,
-          isShowPortal
+          isShowPortal,
+          isSpecificMap,
+          chooseMaps
         ];
       });
     } else {
@@ -114,7 +118,9 @@ router.post('/create', (req, res) => {
         event_time_start,
         event_time_end,
         is_real_time,
-        is_show_portal
+        is_show_portal,
+        is_specific_map,
+        specific_map
       )
       values ?;`;
     } else {
@@ -199,7 +205,9 @@ router.put('/edit', (req, res, next) => {
             session_start_date,
             session_id,
             isRealTime,
-            isShowPortal
+            isShowPortal,
+            chooseMapStr,
+            isSpecificMap
           } = _session;
           const time_stamp_start = moment(session_start_date, 'YYYY-MM-DD H:mm:ss').unix();
           const time_stamp_end = moment(session_end_date, 'YYYY-MM-DD H:mm:ss').unix();
@@ -221,7 +229,9 @@ router.put('/edit', (req, res, next) => {
             ${event_start},
             ${event_end},
             ${isShowPortal},
-            ${isRealTime}
+            ${isRealTime},
+            ${isSpecificMap},
+            '${chooseMapStr}'
           )`];
         });
       }
@@ -246,7 +256,9 @@ router.put('/edit', (req, res, next) => {
           event_time_start,
           event_time_end,
           is_show_portal,
-          is_real_time
+          is_real_time,
+          is_specific_map,
+          specific_map
         )
         values ${values}
         on duplicate key
@@ -266,7 +278,9 @@ router.put('/edit', (req, res, next) => {
         event_time_start = values(event_time_start),
         event_time_end = values(event_time_end),
         is_show_portal = values(is_show_portal),
-        is_real_time = values(is_real_time)
+        is_real_time = values(is_real_time),
+        is_specific_map = values(is_specific_map),
+        specific_map = values(specific_map)
         ;`;
       } else {
         sql = `
@@ -308,10 +322,21 @@ router.put('/edit', (req, res, next) => {
 router.get('/rankTab', function(req, res, next) {
   const { con } = req;
   const sql = `select is_show_portal, is_real_time,
-  time_stamp_start, time_stamp_end, session_name, session_id, event_id
+  time_stamp_start, time_stamp_end, session_name, session_id, event_id, specific_map
   from ??
   where is_show_portal = 1;`;
   con.query(sql, 'race_event_info', function(err, rows) {
+    if (err) {
+      console.log(err);
+    }
+    res.json(rows);
+  });
+});
+
+router.get('/map', function(req, res, next) {
+  const { con } = req;
+  const sql = `select map_index, map_name from ?? `;
+  con.query(sql, 'race_map_info', function(err, rows) {
     if (err) {
       console.log(err);
     }
