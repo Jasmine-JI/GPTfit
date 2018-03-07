@@ -1,7 +1,13 @@
 import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { IMyDpOptions } from 'mydatepicker';
 import { EventInfoService } from '../../services/event-info.service';
-import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  FormArray,
+  FormControl
+} from '@angular/forms';
 import { Router } from '@angular/router';
 import { MsgDialogComponent } from '../msg-dialog/msg-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -60,6 +66,7 @@ export class CreateEventComponent implements OnInit {
   };
   startDate: string;
   endDate: string;
+  mapOptions: any;
   constructor(
     private eventInfoService: EventInfoService,
     private fb: FormBuilder,
@@ -79,7 +86,11 @@ export class CreateEventComponent implements OnInit {
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.eventInfoService
+      .fetchMapDatas()
+      .subscribe(res => (this.mapOptions = res));
+  }
   submit({ value, valid }) {
     const {
       selectedEndDate,
@@ -112,7 +123,9 @@ export class CreateEventComponent implements OnInit {
           session_start_date:
             _data.session_start_date.formatted + ' ' + _data.session_start_time,
           session_end_date:
-            _data.session_end_date.formatted + ' ' + _data.session_end_time
+            _data.session_end_date.formatted + ' ' + _data.session_end_time,
+          isSpecificMap: _data.isSpecificMap,
+          chooseMaps: _data.chooseMaps.join()
         };
       });
       data.sessions = sessionResults;
@@ -134,7 +147,9 @@ export class CreateEventComponent implements OnInit {
       session_start_date: ['', Validators.required],
       session_start_time: ['', Validators.required],
       session_end_date: ['', Validators.required],
-      session_end_time: ['', Validators.required]
+      session_end_time: ['', Validators.required],
+      isSpecificMap: [false, Validators.required],
+      chooseMaps: ''
     });
   }
   addItem(): void {

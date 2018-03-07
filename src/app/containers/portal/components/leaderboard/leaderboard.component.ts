@@ -95,6 +95,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   rankTabs: any;
   isRealTime: boolean;
   currentDate = moment().unix();
+  customMapOptions = [];
   constructor(
     private router: Router,
     private rankFormService: RankFormService,
@@ -209,8 +210,10 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
           }
         }, 300000);
       }
-      const { mapDatas } = this;
-      const searchOptions = { mapDatas };
+
+      this.handleCoustomMaps();
+      const { mapDatas, customMapOptions } = this;
+      const searchOptions = { mapDatas, customMapOptions };
       this.globalEventsManager.getMapOptions(searchOptions);
       this.globalEventsManager.getMapId(this.mapId);
       this.globalEventsManager.getRankTabs(this.rankTabs);
@@ -368,9 +371,37 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     params = params.set('pageNumber', this.currentPage.toString());
     this.handleGetRankForm(params);
   }
+  handleCoustomMaps() {
+    if (this.tabIdx > 0) {
+      const chooseMapOptions = this.rankTabs[
+        this.tabIdx - 1
+      ].specific_map.split(',');
+      this.customMapOptions = this.mapDatas.filter(_data => {
+        if (
+          chooseMapOptions.findIndex(
+            _map_id => _map_id === _data.map_id.toString()
+          ) > -1
+        ) {
+          return _data;
+        }
+      });
+      let idx = this.customMapOptions.findIndex(_option => _option.map_id === this.mapId);
+      if (idx === -1) {
+        idx = 0;
+      }
+      this.globalEventsManager.getMapOptions({ customMapOptions: this.customMapOptions });
+      this.mapId = this.customMapOptions[idx].map_id;
+      this.globalEventsManager.getMapId(this.mapId);
+      this.mapName = this.customMapOptions[this.tabIdx - 1].map_name;
+      this.distance = this.customMapOptions[this.tabIdx - 1].distance;
+      this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
+    }
+  }
   handleRealTimeValue(idx) {
     if (idx > 0) {
-      this.finalEventDate = moment(this.rankTabs[idx - 1].time_stamp_end * 1000).format('YYYY-MM-DD HH:mm');
+      this.finalEventDate = moment(
+        this.rankTabs[idx - 1].time_stamp_end * 1000
+      ).format('YYYY-MM-DD HH:mm');
       this.finalEventStamp = this.rankTabs[idx - 1].time_stamp_end;
       if (this.rankTabs[idx - 1].is_real_time === 1) {
         this.isRealTime = true;
@@ -384,8 +415,8 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     }
   }
   handleGetRankForm(params) {
-    params = params.set('mapId', this.mapId.toString());
     this.handleRealTimeValue(this.tabIdx);
+    params = params.set('mapId', this.mapId.toString());
     if (this.tabIdx === 0) {
       params = params.set('startDate', this.startDate);
       params = params.set('endDate', this.endDate);
@@ -504,10 +535,9 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
         paramDatas.event = '0';
       }
     }
+    const mapInfoUrl = `${location.pathname}/mapInfo?${buildUrlQueryStrings(paramDatas)}`;
 
-    this.router.navigateByUrl(
-      `${location.pathname}/mapInfo?${buildUrlQueryStrings(paramDatas)}`
-    );
+    this.router.navigateByUrl(mapInfoUrl);
   }
 
   public inputEvent(e: any, isUpMode: boolean = false): void {
@@ -587,20 +617,35 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   }
   preMap() {
     clearInterval(this.timer);
-    this.idx = this.mapDatas.findIndex(
-      _data => _data.map_id === Number(this.mapId)
-    );
-    if (this.idx - 1 === -1) {
-      this.idx = this.mapDatas.length - 1;
+    if (this.tabIdx === 0) {
+      this.idx = this.mapDatas.findIndex(
+        _data => _data.map_id === Number(this.mapId)
+      );
+      if (this.idx - 1 === -1) {
+        this.idx = this.mapDatas.length - 1;
+      } else {
+        this.idx--;
+      }
+      this.mapId = this.mapDatas[this.idx].map_id;
+      this.distance = this.mapDatas[this.idx].distance;
+
+      this.mapName = this.mapDatas[this.idx].map_name;
+      this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
     } else {
-      this.idx--;
+      this.idx = this.customMapOptions.findIndex(
+        _data => _data.map_id === Number(this.mapId)
+      );
+      if (this.idx - 1 === -1) {
+        this.idx = this.customMapOptions.length - 1;
+      } else {
+        this.idx--;
+      }
+      this.mapId = this.customMapOptions[this.idx].map_id;
+      this.distance = this.customMapOptions[this.idx].distance;
+
+      this.mapName = this.customMapOptions[this.idx].map_name;
+      this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
     }
-    this.mapId = this.mapDatas[this.idx].map_id;
-    this.distance = this.mapDatas[this.idx].distance;
-
-    this.mapName = this.mapDatas[this.idx].map_name;
-    this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
-
     let params = new HttpParams();
     params = params.set('mapId', this.mapId.toString());
     if (this.groupId !== '2') {
@@ -647,18 +692,35 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   }
   nextMap() {
     clearInterval(this.timer);
-    this.idx = this.mapDatas.findIndex(
-      _data => _data.map_id === Number(this.mapId)
-    );
-    if (this.idx + 1 > this.mapDatas.length - 1) {
-      this.idx = 0;
+    if (this.tabIdx === 0) {
+      this.idx = this.mapDatas.findIndex(
+        _data => _data.map_id === Number(this.mapId)
+      );
+      if (this.idx + 1 > this.mapDatas.length - 1) {
+        this.idx = 0;
+      } else {
+        this.idx++;
+      }
+      this.mapId = this.mapDatas[this.idx].map_id;
+      this.distance = this.mapDatas[this.idx].distance;
+
+      this.mapName = this.mapDatas[this.idx].map_name;
+      this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
     } else {
-      this.idx++;
+      this.idx = this.customMapOptions.findIndex(
+        _data => _data.map_id === Number(this.mapId)
+      );
+      if (this.idx + 1 > this.customMapOptions.length - 1) {
+        this.idx = 0;
+      } else {
+        this.idx++;
+      }
+      this.mapId = this.customMapOptions[this.idx].map_id;
+      this.distance = this.customMapOptions[this.idx].distance;
+
+      this.mapName = this.customMapOptions[this.idx].map_name;
+      this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
     }
-    this.mapId = this.mapDatas[this.idx].map_id;
-    this.distance = this.mapDatas[this.idx].distance;
-    this.mapName = this.mapDatas[this.idx].map_name;
-    this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
     let params = new HttpParams();
     params = params.set('mapId', this.mapId.toString());
     if (this.groupId !== '2') {
@@ -719,6 +781,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     if (this.groupId !== '2') {
       params = params.set('gender', this.groupId);
     }
+    this.handleCoustomMaps();
     this.handleGetRankForm(params);
   }
 }
