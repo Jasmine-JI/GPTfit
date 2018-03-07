@@ -69,4 +69,5 @@ export class MapInfoComponent implements OnInit, AfterViewInit {
       this.isLoading = false;
     });
   }
+
 }

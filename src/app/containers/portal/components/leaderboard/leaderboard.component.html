@@ -27,8 +27,11 @@
             <div class="row">
               <div class="col-11">
                 <label class="form-label">Map:</label>
-                <select  *ngIf="!isRealTime || tabIdx === 0" name="mapId" [(ngModel)]="mapId" class="form-field" (click)="selectMap(mapId)">
+                <select  *ngIf="(!isRealTime || tabIdx === 0) && tabIdx === 0" name="mapId" [(ngModel)]="mapId" class="form-field" (click)="selectMap(mapId)">
                   <option *ngFor="let _map of mapDatas" [value]="_map.map_id">{{ _map.map_name }}</option>
+                </select>
+                <select *ngIf="tabIdx > 0" name="mapId" [(ngModel)]="mapId" class="form-field" (click)="selectMap(mapId)">
+                  <option *ngFor="let _map of customMapOptions" [value]="_map.map_id">{{ _map.map_name }}</option>
                 </select>
                 <select *ngIf="isRealTime && tabIdx > 0" name="mapId" [(ngModel)]="mapId" class="form-field" (click)="selectMap(mapId)">
                   <option *ngFor="let _map of mapDatas" [value]="_map.map_id">{{ _map.map_name | mapTranslate }}</option>
@@ -166,7 +169,7 @@
           </table>
         </div>
 
-        <div>
+        <div *ngIf="customMapOptions.length > 1 || this.tabIdx === 0">
           <button title="previous map" (click)="preMap()" class="button bg-btn" style="position: absolute;left: 0;top: 50%;">
             <i class="fa fa-arrow-left" aria-hidden="true"></i>
           </button>
