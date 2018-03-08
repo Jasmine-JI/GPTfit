@@ -230,7 +230,8 @@ export class EditEventComponent implements OnInit {
       isSpecificMap,
       chooseMaps
     } = data;
-    const chooseMapOptions = chooseMaps.map(_map => Number(_map));
+
+    const chooseMapOptions = chooseMaps.length > 0 ? chooseMaps.map(_map => Number(_map)) : chooseMaps.split(',').map(_map => Number(_map));
     return this.fb.group({
       isShowPortal: [isShowPortal],
       isRealTime: [isRealTime],
