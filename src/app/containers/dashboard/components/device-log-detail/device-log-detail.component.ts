@@ -149,7 +149,7 @@ export class DeviceLogDetailComponent implements OnInit {
         this.userInfo = res.datas[0].info;
       }
       this.totalCount = res.meta.pageCount;
-      this.getDataTime = moment().format('YYYY-MM-DD hh:mm:ss');
+      this.getDataTime = moment().format('YYYY-MM-DD HH:mm:ss');
     });
   }
 
