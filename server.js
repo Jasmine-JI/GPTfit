@@ -93,22 +93,25 @@ from (
     r2.file_name
     from
     (
-      SELECT user_id,
-      map_id,
-      FROM_UNIXTIME(time_stamp, "%Y-%m-%d") as date,
-      MIN(activity_duration) AS min_duration
-      FROM race_data
+      SELECT r.user_id,
+      r.map_id,
+      FROM_UNIXTIME(r.time_stamp, "%Y-%m-%d") as date,
+      MIN(r.activity_duration) AS min_duration
+      FROM race_data as r,
+      race_map_info as m1
       WHERE
-      user_race_status = 3
+      r.user_race_status = 3
       and
-      activity_distance IS NOT NULL
-      AND activity_duration IS NOT NULL
+      r.activity_distance IS NOT NULL
+      AND r.activity_duration IS NOT NULL
       and
-      map_id is not null
+      r.map_id is not null
+      and
+      r.activity_distance >= m1.race_total_distance * 1000
       GROUP BY
-      user_id,
-      FROM_UNIXTIME(time_stamp, "%Y-%m-%d"),
-      map_id
+      r.user_id,
+      FROM_UNIXTIME(r.time_stamp, "%Y-%m-%d"),
+      r.map_id
     ) as r1
   INNER JOIN
   race_data AS r2
@@ -174,7 +177,7 @@ app.use(function (req, res, next) {
   if (address === '192.168.1.235') {
     allowedOrigins = ['http://192.168.1.235', 'http://192.168.1.235:8080'];
   } else if (address === '192.168.1.234') {
-    allowedOrigins = ['http://192.168.1.234', 'http://alatechapp.alatech.com.tw', 'http://192.168.1.235:8080'];
+    allowedOrigins = ['http://192.168.1.234', 'http://alatechapp.alatech.com.tw', 'http://192.168.1.235:8080', 'http://localhost:8080'];
   } else if (address === '192.168.1.232') {
     allowedOrigins = ['http://192.168.1.232'];
   } else {
