@@ -175,6 +175,26 @@
             </div>
           </div>
         </div>
+        <div class="form-group">
+          <div class="row">
+            <div class="col-md-5 text-md-right">
+              <label class="form__label--required">是否有指定地圖:</label>
+            </div>
+            <div class="col-md-5">
+              <mat-radio-group formControlName="isSpecificMap">
+                <mat-radio-button [value]="false" color="primary">無</mat-radio-button>
+                <mat-radio-button [value]="true" color="primary">有</mat-radio-button>
+              </mat-radio-group>
+              <div *ngIf="complexForm.get('sessionDatas').controls[idx].get('isSpecificMap').value === true">
+                <mat-form-field style="width: 100%">
+                  <mat-select placeholder="請選擇比賽的地圖" multiple  formControlName="chooseMaps">
+                    <mat-option *ngFor="let option of mapOptions" [value]="option.map_index">{{ option.map_name }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </ng-container>
     <div class="add-sessions" (click)="addItem()">

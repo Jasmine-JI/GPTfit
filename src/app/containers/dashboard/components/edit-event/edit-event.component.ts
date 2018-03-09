@@ -7,6 +7,7 @@ import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import * as moment from 'moment';
 import { MsgDialogComponent } from '../msg-dialog/msg-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { forkJoin } from 'rxjs/observable/forkJoin';
 
 @Component({
   selector: 'app-edit-event',
@@ -65,6 +66,7 @@ export class EditEventComponent implements OnInit {
   startDate: string;
   endDate: string;
   sessionArray = [];
+  mapOptions: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -90,8 +92,11 @@ export class EditEventComponent implements OnInit {
     this.event_id = this.route.snapshot.paramMap.get('id');
     let params = new HttpParams();
     params = params.set('event_id', this.event_id);
-    this.eventInfoService.fetchEventInfo(params).subscribe(_results => {
-      const sessions = _results.filter(_data => {
+    const fetchMapOptions = this.eventInfoService.fetchMapDatas();
+    const fetcheventInfo = this.eventInfoService.fetchEventInfo(params);
+    forkJoin([fetchMapOptions, fetcheventInfo]).subscribe(_results => {
+      this.mapOptions = _results[0];
+      const sessions = _results[1].filter(_data => {
         if (_data.session_id !== null) {
           return {
             session_id: _data.session_id,
@@ -110,7 +115,7 @@ export class EditEventComponent implements OnInit {
         event_time_name,
         event_time_start,
         launch_user_name
-      } = _results[0];
+      } = _results[1][0];
       const data = {
         description,
         event_name,
@@ -136,8 +141,12 @@ export class EditEventComponent implements OnInit {
             time_stamp_end,
             time_stamp_start,
             is_real_time,
-            is_show_portal
+            is_show_portal,
+            is_specific_map,
+            specific_map
           } = session;
+          const chooseMaps = specific_map ? specific_map.split(',') : '';
+          const isSpecificMap = is_specific_map === 1 ? true : false;
           const isShowPortal = this.convertDBBoolean(is_show_portal);
           const isRealTime = this.convertDBBoolean(is_real_time);
           const session_start_date = this.convertDateFormat(
@@ -159,7 +168,9 @@ export class EditEventComponent implements OnInit {
             session_start_date,
             session_end_date,
             session_start_time,
-            session_end_time
+            session_end_time,
+            isSpecificMap,
+            chooseMaps
           };
           this.sessionArray.push(sessionData);
         });
@@ -202,7 +213,9 @@ export class EditEventComponent implements OnInit {
       session_start_date: ['', Validators.required],
       session_start_time: ['', Validators.required],
       session_end_date: ['', Validators.required],
-      session_end_time: ['', Validators.required]
+      session_end_time: ['', Validators.required],
+      isSpecificMap: [false, Validators.required],
+      chooseMaps: ''
     });
   }
   createSessions(data): FormGroup {
@@ -213,8 +226,12 @@ export class EditEventComponent implements OnInit {
       session_end_date,
       session_end_time,
       isRealTime,
-      isShowPortal
+      isShowPortal,
+      isSpecificMap,
+      chooseMaps
     } = data;
+
+    const chooseMapOptions = chooseMaps.length > 0 ? chooseMaps.map(_map => Number(_map)) : chooseMaps.split(',').map(_map => Number(_map));
     return this.fb.group({
       isShowPortal: [isShowPortal],
       isRealTime: [isRealTime],
@@ -222,7 +239,9 @@ export class EditEventComponent implements OnInit {
       session_start_date: [session_start_date, Validators.required],
       session_start_time: [session_start_time, Validators.required],
       session_end_date: [session_end_date, Validators.required],
-      session_end_time: [session_end_time, Validators.required]
+      session_end_time: [session_end_time, Validators.required],
+      isSpecificMap: [isSpecificMap, Validators.required],
+      chooseMaps: [chooseMapOptions]
     });
   }
   addItem(): void {
@@ -286,6 +305,7 @@ export class EditEventComponent implements OnInit {
     };
     if (sessionDatas.length > 0) {
       const sessionResults = sessionDatas.map(_data => {
+        const chooseMapStr = _data.chooseMaps === '' ? '' :  _data.chooseMaps.join();
         const session_start_date =
           this.convertDateString(_data.session_start_date) +
           ' ' +
@@ -300,7 +320,9 @@ export class EditEventComponent implements OnInit {
           session_name: _data.session_name,
           session_start_date,
           session_end_date,
-          session_id: moment(session_start_date, 'YMDH').format('YMDH')
+          session_id: moment(session_start_date, 'YMDH').format('YMDH'),
+          chooseMapStr,
+          isSpecificMap: _data.isSpecificMap
         };
       });
       data.sessions = sessionResults;

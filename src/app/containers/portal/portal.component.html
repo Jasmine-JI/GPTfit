@@ -4,12 +4,12 @@
     <form (ngSubmit)="onSubmit(rankForm, $event)" #rankForm="ngForm">
       <div class="form-group">
         <label style="color: #008bcd">Map</label>
-        <select  name="mapId" [(ngModel)]="mapId" class="form-field mr-2" (click)="selectMap(mapId)"style="width: 100%">
+        <select *ngIf="(!isRealTime || tabIdx === 0) && tabIdx === 0" name="mapId" [(ngModel)]="mapId" class="form-field mr-2" (click)="selectMap(mapId)"style="width: 100%">
           <option *ngFor="let _map of mapDatas" [value]="_map.map_id">{{ _map.map_name }}</option>
         </select>
-        <!-- <select *ngIf="tabIdx === 2 || tabIdx === 3 || tabIdx === 4 || tabIdx === 5" name="mapId" [(ngModel)]="mapId" class="form-field mr-2" (click)="selectMap(mapId)" style="width: 100%">
-          <option *ngFor="let _map of mapDatas" [value]="_map.map_id">{{ _map.map_name | mapTranslate }}</option>
-        </select> -->
+        <select *ngIf="tabIdx > 0" name="mapId" [(ngModel)]="mapId" class="form-field mr-2" (click)="selectMap(mapId)" style="width: 100%">
+          <option *ngFor="let _map of customMapOptions" [value]="_map.map_id">{{ _map.map_name }}</option>
+        </select>
       </div>
 
       <div class="form-group">

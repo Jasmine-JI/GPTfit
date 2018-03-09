@@ -90,6 +90,7 @@ export class PortalComponent implements OnInit {
   rankTabs: any;
   timer: any;
   isRealTime: boolean;
+  customMapOptions = [];
 
   constructor(
     private router: Router,
@@ -111,7 +112,9 @@ export class PortalComponent implements OnInit {
         const { sessionId } = getUrlQueryStrings(location.search);
         if (sessionId) {
           this.isEventTab = true;
-          const idx = this.rankTabs.findIndex(_tab => _tab.session_id.toString() === sessionId);
+          const idx = this.rankTabs.findIndex(
+            _tab => _tab.session_id.toString() === sessionId
+          );
           this.tabIdx = idx + 1;
         } else {
           this.isEventTab = false;
@@ -119,15 +122,18 @@ export class PortalComponent implements OnInit {
       }
     });
     this.globalEventsManager.getMapOptionsEmitter.subscribe(options => {
-      const { mapDatas } = options;
+      const { mapDatas, customMapOptions } = options;
       if (mapDatas) {
         this.mapDatas = mapDatas;
+      }
+      if (customMapOptions) {
+        this.customMapOptions = customMapOptions;
       }
     });
     this.globalEventsManager.getMapIdEmitter.subscribe(id => {
       this.mapId = id;
     });
-    this.globalEventsManager.getTabIdxEmitter.subscribe((idx) => {
+    this.globalEventsManager.getTabIdxEmitter.subscribe(idx => {
       this.tabIdx = idx;
     });
     this.globalEventsManager.getRankTabsEmitter.subscribe(datas => {
@@ -144,7 +150,9 @@ export class PortalComponent implements OnInit {
       params = params.set('endDate', this.endDate);
       this.fetchRankForm(params);
     } else if (this.isRealTime === true) {
-      const { time_stamp_start, time_stamp_end, event_id } = this.rankTabs[this.tabIdx - 1];
+      const { time_stamp_start, time_stamp_end, event_id } = this.rankTabs[
+        this.tabIdx - 1
+      ];
       params = params.set('start_date_time', time_stamp_start);
       params = params.set('end_date_time', time_stamp_end);
       params = params.set('event_id', event_id);
@@ -155,7 +163,9 @@ export class PortalComponent implements OnInit {
         }
       }, 300000);
     } else {
-      const { time_stamp_start, time_stamp_end, event_id } = this.rankTabs[this.tabIdx - 1];
+      const { time_stamp_start, time_stamp_end, event_id } = this.rankTabs[
+        this.tabIdx - 1
+      ];
       const startDate = moment(time_stamp_start * 1000).format('YYYY-MM-DD');
       const endDate = moment(time_stamp_end * 1000).format('YYYY-MM-DD');
       params = params.set('startDate', startDate);
@@ -206,7 +216,12 @@ export class PortalComponent implements OnInit {
       const { date: { day, month, year } } = _date;
       return year.toString() + '-' + month.toString() + '-' + day.toString();
     }
-    const ans = new Date().getFullYear() + '-' + Number(new Date().getMonth() + 1) + '-' + new Date().getUTCDate();
+    const ans =
+      new Date().getFullYear() +
+      '-' +
+      Number(new Date().getMonth() + 1) +
+      '-' +
+      new Date().getUTCDate();
     return ans;
   }
   convertDateFormat(_date) {
