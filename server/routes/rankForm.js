@@ -66,22 +66,25 @@ from (
     r2.file_name
     from
     (
-      SELECT user_id,
-      map_id,
-      FROM_UNIXTIME(time_stamp, "%Y-%m-%d") as date,
-      MIN(activity_duration) AS min_duration
-      FROM race_data
+      SELECT r.user_id,
+      r.map_id,
+      FROM_UNIXTIME(r.time_stamp, "%Y-%m-%d") as date,
+      MIN(r.activity_duration) AS min_duration
+      FROM race_data as r,
+      race_map_info as m1
       WHERE
-      user_race_status = 3
+      r.user_race_status = 3
       and
-      activity_distance IS NOT NULL
-      AND activity_duration IS NOT NULL
+      r.activity_distance IS NOT NULL
+      AND r.activity_duration IS NOT NULL
       and
-      map_id is not null
+      r.map_id is not null
+      and
+      r.activity_distance >= m1.race_total_distance * 1000
       GROUP BY
-      user_id,
-      FROM_UNIXTIME(time_stamp, "%Y-%m-%d"),
-      map_id
+      r.user_id,
+      FROM_UNIXTIME(r.time_stamp, "%Y-%m-%d"),
+      r.map_id
     ) as r1
   INNER JOIN
   race_data AS r2
