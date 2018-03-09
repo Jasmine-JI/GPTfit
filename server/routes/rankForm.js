@@ -165,9 +165,7 @@ router.get('/', function(req, res, next) {
       a.login_acc,
       a.map_name,
       a.race_category,
-      a.race_total_distance,
-      a.e_mail,
-      a.phone
+      a.race_total_distance
       from
       (
         select *, @prev := @curr, @curr := offical_time,
@@ -488,7 +486,6 @@ router.get('/mapInfo', function(req, res, next) {
       r.activity_duration,
       r.user_id,
       r.map_id,
-      p.e_mail,
       s.max_speed,
       s.average_speed,
       s.max_pace,
@@ -526,7 +523,7 @@ router.get('/mapInfo', function(req, res, next) {
     `;
   } else {
     const sql1 = `
-      select t.map_id, t.user_id,t.e_mail, s.max_speed,
+      select t.map_id, t.user_id, s.max_speed,
       s.average_speed, s.max_pace, s.average_pace,
       t.map_name,
       t.race_total_distance,
