@@ -2,8 +2,18 @@
   Device_log Lists
 </div>
 <mat-form-field>
-  <input matInput #filter placeholder="info搜尋">
+  <input matInput placeholder="info搜尋" (keyup)="searchInfo($event)"  [matAutocomplete]="auto">
 </mat-form-field>
+<mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+<mat-option *ngFor="let option of infoOptions" [value]="option" (click)="selectTarget(option)">
+    {{ option }}
+  </mat-option>
+</mat-autocomplete>
+<button mat-raised-button mat-icon-button style="background-color: #26abe3;color: #fff"
+  (click)="search($event)"
+>
+  <mat-icon>search</mat-icon>
+</button>
 
 <mat-table [dataSource]="logSource" matSort #sortTable="matSort"
   (matSortChange)="changeSort($event)"

@@ -41,10 +41,19 @@
     <mat-datepicker #endDatePicker disabled="false" [touchUi]="isHandset$ | async"></mat-datepicker>
   </mat-form-field>
 
-  <button mat-raised-button mat-icon-button style="background-color: #26abe3;color: #fff">
+  <button mat-raised-button mat-icon-button
+    style="background-color: #26abe3;color: #fff"
+  >
     <mat-icon>search</mat-icon>
   </button>
 </form>
+
+<div class="example-loading-shade" *ngIf="isLoadingResults || isRateLimitReached">
+  <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
+  <div class="example-rate-limit-reached" *ngIf="isRateLimitReached">
+    GitHub's API rate limit has been reached. It will be reset in one minute.
+  </div>
+</div>
 
 <mat-table [dataSource]="logSource" matSort #sortTable="matSort" (matSortChange)="changeSort($event)">
   <ng-container matColumnDef="equipment_sn">
@@ -64,7 +73,9 @@
   <mat-header-row *matHeaderRowDef="['equipment_sn', 'time', 'message']"></mat-header-row>
   <mat-row *matRowDef="let logRow; columns: ['equipment_sn', 'time', 'message']">
   </mat-row>
-
+  <div *ngIf="logSource.data.length === 0">
+    尚無相關資料
+  </div>
 </mat-table>
 <mat-paginator #paginator
   [length]="totalCount"
