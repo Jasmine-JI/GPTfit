@@ -25,6 +25,7 @@ export class NavbarComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.deviceWidth = window.innerWidth;
     this.href = this.router.url;
     if (this.href.indexOf('resetpassword') > -1) {
       this.isShowResetPwd = true;
