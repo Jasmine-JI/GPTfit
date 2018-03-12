@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener, Inject } from '@angular/core';
 import { GlobalEventsManager } from '@shared/global-events-manager';
 import { Router } from '@angular/router';
+import { WINDOW } from '@shared/services/window.service';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -15,13 +16,16 @@ export class NavbarComponent implements OnInit {
   href: string;
   isShowResetPwd = false;
   isShowDashboard = false;
+  deviceWidth: number;
 
   constructor(
     private globalEventsManager: GlobalEventsManager,
-    private router: Router
+    private router: Router,
+    @Inject(WINDOW) private window
   ) {}
 
   ngOnInit() {
+    this.deviceWidth = window.innerWidth;
     this.href = this.router.url;
     if (this.href.indexOf('resetpassword') > -1) {
       this.isShowResetPwd = true;
@@ -47,11 +51,15 @@ export class NavbarComponent implements OnInit {
       this.isCollapseSearchShow = mode;
     });
   }
+  @HostListener('window:resize', [])
+  onResize() {
+    this.deviceWidth = window.innerWidth;
+  }
   validate() {
     const pwd = window.prompt('請輸入密碼: ');
     if (pwd === '12345678') {
       sessionStorage.web = pwd;
-      return this.isShowDashboard = true;
+      return (this.isShowDashboard = true);
     }
     return (location.href = '/');
   }
@@ -66,14 +74,16 @@ export class NavbarComponent implements OnInit {
     this.globalEventsManager.openCollapse(this.isCollapseSearchShow);
   }
   toggleMask() {
-    if (this.isCollapseSearchShow) {
-      this.isCollapseSearchShow = !this.isCollapseSearchShow;
-      this.globalEventsManager.openCollapse(this.isCollapseSearchShow);
-    } else {
-      this.isShowMask = !this.isShowMask;
+    if (this.deviceWidth < 992) {
+      if (this.isCollapseSearchShow) {
+        this.isCollapseSearchShow = !this.isCollapseSearchShow;
+        this.globalEventsManager.openCollapse(this.isCollapseSearchShow);
+      } else {
+        this.isShowMask = !this.isShowMask;
+      }
+      this.isCollapseShow = !this.isCollapseShow;
+      this.globalEventsManager.showMask(this.isShowMask);
     }
-    this.isCollapseShow = !this.isCollapseShow;
-    this.globalEventsManager.showMask(this.isShowMask);
   }
   reloadPage() {
     location.reload();
