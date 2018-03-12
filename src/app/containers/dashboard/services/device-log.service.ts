@@ -11,4 +11,7 @@ export class DeviceLogService {
   fetchLists(params) {
     return this.http.get<any>(API_SERVER + 'deviceLog/lists', { params });
   }
+  searchKeyword(params) {
+    return this.http.get<any>(API_SERVER + 'deviceLog/search', { params });
+  }
 }

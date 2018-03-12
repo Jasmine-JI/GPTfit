@@ -20,7 +20,9 @@ import {
   MAT_DATE_LOCALE,
   MAT_DATE_FORMATS,
   MatRadioModule,
-  MatSelectModule
+  MatSelectModule,
+  MatAutocompleteModule,
+  MatProgressSpinnerModule
 } from '@angular/material';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import { LayoutModule } from '@angular/cdk/layout';
@@ -56,7 +58,9 @@ export const TW_FORMATS = {
     MatDatepickerModule,
     MatMomentDateModule,
     MatRadioModule,
-    MatSelectModule
+    MatSelectModule,
+    MatAutocompleteModule,
+    MatProgressSpinnerModule
   ],
   exports: [
     MatIconModule,
@@ -78,7 +82,9 @@ export const TW_FORMATS = {
     MatMomentDateModule,
     LayoutModule,
     MatRadioModule,
-    MatSelectModule
+    MatSelectModule,
+    MatAutocompleteModule,
+    MatProgressSpinnerModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [

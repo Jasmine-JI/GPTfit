@@ -16,10 +16,11 @@ router.get('/lists', function (req, res, next) {
     }
   } = req;
   let keywordQuery = '';
+  let completeKeyword = decodeURIComponent(keyword);
   const dateQuery = startDate && endDate ? `and s.time between '${startDate}' and '${endDate}'` : '';
   const sortQuery = sort === 'asc' ? 'order by time' : 'order by time desc';
   if (keyword) {
-    keywordQuery = keyword.substring(0, 1) === '+' ? `and u.phone = '${keyword}'` : `and u.e_mail = '${keyword}'`;
+    keywordQuery = completeKeyword.substring(0, 1) === '+' ? `and u.phone like '%${completeKeyword.slice(5)}%'` : `and u.e_mail = '${completeKeyword}'`;
   }
 
   let sql = `

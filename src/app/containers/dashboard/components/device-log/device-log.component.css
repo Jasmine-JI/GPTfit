@@ -13,3 +13,7 @@
   cursor: pointer;
   background-color: #eee;
 }
+
+.mat-form-field {
+  width: 240px;
+}

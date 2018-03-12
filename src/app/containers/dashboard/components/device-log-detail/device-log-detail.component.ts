@@ -52,6 +52,8 @@ export class DeviceLogDetailComponent implements OnInit {
   isDateSearch = false;
   getDataTime: string;
   isTopIconDisplay = false;
+  isLoadingResults = false;
+  isRateLimitReached = false;
 
   @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild('sortTable') sortTable: MatSort;
@@ -119,7 +121,11 @@ export class DeviceLogDetailComponent implements OnInit {
   }
   @HostListener('window:scroll', [])
   onWindowScroll() {
-    const number = this.window.pageYOffset || this.document.documentElement.scrollTop || this.document.body.scrollTop || 0;
+    const number =
+      this.window.pageYOffset ||
+      this.document.documentElement.scrollTop ||
+      this.document.body.scrollTop ||
+      0;
     if (number > 80) {
       this.isTopIconDisplay = true;
     } else if (number === 0) {
@@ -143,14 +149,23 @@ export class DeviceLogDetailComponent implements OnInit {
     params = params.set('pageNumber', pageNumber);
     params = params.set('pageSize', pageSize);
     params = params.set('sort', sort);
-    this.deviceLogservice.fetchLists(params).subscribe(res => {
-      this.logSource.data = res.datas;
-      if (res.datas.length > 0) {
-        this.userInfo = res.datas[0].info;
-      }
-      this.totalCount = res.meta.pageCount;
-      this.getDataTime = moment().format('YYYY-MM-DD HH:mm:ss');
-    });
+    this.isLoadingResults = true;
+    this.deviceLogservice.fetchLists(params).subscribe(
+      res => {
+        this.isLoadingResults = false;
+        this.isRateLimitReached = false;
+        this.logSource.data = res.datas;
+        if (res.datas.length > 0) {
+          this.userInfo = res.datas[0].info;
+        }
+        this.totalCount = res.meta.pageCount;
+        this.getDataTime = moment().format('YYYY-MM-DD HH:mm:ss');
+      },
+      err => {
+        this.isLoadingResults = false;
+        // Catch if the API has reached its rate limit. Return empty data.
+        this.isRateLimitReached = true;
+      });
   }
 
   logStartDateChange($event: MatDatepickerInputEvent<moment.Moment>) {
@@ -167,17 +182,13 @@ export class DeviceLogDetailComponent implements OnInit {
   submit({ value, valid }) {
     if (valid) {
       this.isDateSearch = true;
+      this.getLists();
     } else {
       this.isDateSearch = false;
     }
-    this.getLists();
   }
   refreshLists(event) {
-    this.currentPage = {
-      pageIndex: 0,
-      pageSize: 10,
-      length: null
-    };
+    this.currentPage.pageIndex = 0;
 
     this.form.resetForm();
     this.getLists();
