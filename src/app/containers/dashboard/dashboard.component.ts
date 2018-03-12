@@ -12,6 +12,8 @@ import { GlobalEventsManager } from '@shared/global-events-manager';
 export class DashboardComponent implements OnInit {
   isPreviewMode = false;
   isLoading = false;
+  isMaskShow = false;
+  isCollapseOpen = false;
   constructor(private globalEventsManager: GlobalEventsManager) {
     if (location.search.indexOf('ipm=s') > -1) {
       this.isPreviewMode = true;
@@ -19,8 +21,17 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.globalEventsManager.showNavBarEmitter.subscribe(mode => {
+      this.isMaskShow = mode;
+    });
     this.globalEventsManager.showLoadingEmitter.subscribe(isLoading => {
       this.isLoading = isLoading;
     });
+  }
+  touchMask() {
+    this.isCollapseOpen = false;
+    this.globalEventsManager.openCollapse(this.isCollapseOpen);
+    this.isMaskShow = false;
+    this.globalEventsManager.closeCollapse(false);
   }
 }

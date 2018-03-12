@@ -57,17 +57,17 @@
 
 <mat-table [dataSource]="logSource" matSort #sortTable="matSort" (matSortChange)="changeSort($event)">
   <ng-container matColumnDef="equipment_sn">
-    <mat-header-cell *matHeaderCellDef>EquipmentSN</mat-header-cell>
-    <mat-cell *matCellDef="let row">{{ row.equipment_sn }}</mat-cell>
+    <mat-header-cell *matHeaderCellDef style="text-align:center">EquipmentSN</mat-header-cell>
+    <mat-cell *matCellDef="let row" style="text-align:center">{{ row.equipment_sn || '-' }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="time">
-    <mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true" start="asc">
+    <mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true" start="asc" style="text-align:center">
       Time
     </mat-header-cell>
     <mat-cell *matCellDef="let row">{{ row.time }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="message">
-    <mat-header-cell *matHeaderCellDef>Messages</mat-header-cell>
+    <mat-header-cell *matHeaderCellDef style="text-align:center">Messages</mat-header-cell>
     <mat-cell *matCellDef="let row">{{ row.message }}</mat-cell>
   </ng-container>
   <mat-header-row *matHeaderRowDef="['equipment_sn', 'time', 'message']"></mat-header-row>
