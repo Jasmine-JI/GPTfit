@@ -392,8 +392,8 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
       this.globalEventsManager.getMapOptions({ customMapOptions: this.customMapOptions });
       this.mapId = this.customMapOptions[idx].map_id;
       this.globalEventsManager.getMapId(this.mapId);
-      this.mapName = this.customMapOptions[this.tabIdx - 1].map_name;
-      this.distance = this.customMapOptions[this.tabIdx - 1].distance;
+      this.mapName = this.customMapOptions[idx].map_name;
+      this.distance = this.customMapOptions[idx].distance;
       this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
     }
   }
