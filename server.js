@@ -214,6 +214,7 @@ var raceEnroll = require('./server/routes/raceEnroll.js');
 var raceEventInfo = require('./server/routes/raceEventInfo.js');
 var runGpx = require('./server/routes/runGpx.js');
 var deviceLog = require('./server/routes/deviceLog.js');
+var coach = require('./routes/coach.js');
 
 app.use('/nodejs/api/rankForm', rankForm);
 app.use('/nodejs/api/resetPassword', resetPassword);
@@ -221,6 +222,7 @@ app.use('/nodejs/api/raceEnroll', raceEnroll);
 app.use('/nodejs/api/raceEventInfo', raceEventInfo);
 app.use('/nodejs/api/gpx', runGpx);
 app.use('/nodejs/api/deviceLog', deviceLog);
+app.use('/nodejs/api/coach', coach);
 
 // Start the server
 const port = process.env.PORT || 3000;
