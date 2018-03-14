@@ -30,6 +30,8 @@ import { DbResultDialogComponent } from './components/db-result-dialog/db-result
 import { DeviceLogComponent } from './components/device-log/device-log.component';
 import { DeviceLogService } from './services/device-log.service';
 import { DeviceLogDetailComponent } from './components/device-log-detail/device-log-detail.component';
+import { CoachDashboardComponent } from './components/coach-dashboard/coach-dashboard.component';
+import { CoachService } from './services/coach.service';
 
 @NgModule({
   imports: [
@@ -50,7 +52,8 @@ import { DeviceLogDetailComponent } from './components/device-log-detail/device-
     GlobalEventsManager,
     EventInfoService,
     GpxService,
-    DeviceLogService
+    DeviceLogService,
+    CoachService
   ],
   declarations: [
     DashboardComponent,
@@ -68,7 +71,8 @@ import { DeviceLogDetailComponent } from './components/device-log-detail/device-
     DbMaintainComponent,
     DbResultDialogComponent,
     DeviceLogComponent,
-    DeviceLogDetailComponent
+    DeviceLogDetailComponent,
+    CoachDashboardComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [MsgDialogComponent, DbResultDialogComponent]
