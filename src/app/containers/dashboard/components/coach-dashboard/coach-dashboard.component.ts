@@ -2,6 +2,9 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CoachService } from '../../services/coach.service';
 import { HttpParams } from '@angular/common/http';
 import { debounce } from '@shared/utils/';
+import { MatSnackBar } from '@angular/material';
+import { MsgDialogComponent } from '../msg-dialog/msg-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-coach-dashboard',
@@ -36,7 +39,11 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
     }
   ];
   displayCards = [];
-  constructor(private coachService: CoachService) {
+  constructor(
+    private coachService: CoachService,
+    private snackBar: MatSnackBar,
+    public dialog: MatDialog
+  ) {
     this.handleSearchFile = debounce(this.handleSearchFile, 1000);
   }
 
@@ -63,6 +70,13 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
   removeUser(idx) {
     this.userDatas.splice(idx, 1);
     this.displayCards.splice(idx, 1);
+    this.snackBar.open(
+      `教練，有userId: ${
+        this.userDatas[idx].userId
+      }學員，中途離開訓練大廳了!!`,
+      '我知道了',
+      { duration: 2000 }
+    );
   }
   insertFakeData(data, index) {
     const { idx, totalCount, fakeDatas } = data;
@@ -116,7 +130,8 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
       this.userDatas[index].zones.push(hrValue);
       hrValue = (220 - age - rest_hr) * 0.85 + rest_hr;
       this.userDatas[index].zones.push(hrValue);
-    } else { // 儲備心率法
+    } else {
+      // 儲備心率法
       let hrValue = (220 - age - rest_hr) * 0.5 + rest_hr;
       this.userDatas[index].zones.push(hrValue);
       hrValue = (220 - age - rest_hr) * 0.6 + rest_hr;
@@ -141,8 +156,24 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
     this.coachService.fetchExample(body).subscribe(res => {
       this.userDatas[idx].fakeDatas = res;
       this.userDatas[idx].totalCount = res.length;
-      if (res.length > 0) {
+      const isHaveHR = res.some(_data => _data.heart_rate > 0);
+      if (res.length > 0 && isHaveHR) {
         this.displayCards.push(code);
+        this.snackBar.open(
+          `教練，有userId: ${
+            this.userDatas[idx].userId
+          }學員，已進入訓練大廳!!`,
+          '我知道了',
+          { duration: 2000 }
+        );
+      } else {
+        this.dialog.open(MsgDialogComponent, {
+          hasBackdrop: true,
+          data: {
+            title: 'Message',
+            body: '此運動檔案無數據，或是沒有heart rate數據都為0'
+          }
+        });
       }
     });
   }
