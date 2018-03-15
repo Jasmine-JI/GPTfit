@@ -26,7 +26,6 @@ router.post('/createRace', function(req, res, next) {
 
 router.post('/example', function(req, res, next) {
   const { con, body: { codes } } = req;
-  console.log('codes: ', codes);
   let codeSql = codes.map(_code => {
     return `
     select heart_rate, utc, pace, distance from real_time_activity
@@ -34,7 +33,6 @@ router.post('/example', function(req, res, next) {
     `;
   })
   codeSql = codeSql.join('');
-  console.log('codeSql: ', codeSql);
   con.query(codeSql, 'real_time_activity', function(err, rows) {
     if (err) {
       console.log(err);
@@ -44,15 +42,16 @@ router.post('/example', function(req, res, next) {
   });
 });
 
-router.post('/fileName', function(req, res, next) {
-  const { con, body: { ids } } = req;
-  let idSql = ids.map(_id => {
-    return `
-      select md5_unicode, file_name   from sport where user_id = ${_id};
-    `;
-  });
-  idSql = idSql.join('');
-  con.query(idSql, 'sport', function(err, rows) {
+router.get('/fileName', function(req, res, next) {
+  const { con, query: { userId } } = req;
+  // let idSql = ids.map(_id => {
+  //   return `
+  //     select md5_unicode, file_name   from sport where user_id = ${_id};
+  //   `;
+  // });
+  // idSql = idSql.join('');
+  const sql = `select md5_unicode, file_name   from sport where user_id = ${userId};`;
+  con.query(sql, 'sport', function(err, rows) {
     if (err) {
       console.log(err);
       return res.status(500).send({ errorMessage: err.sqlMessage });
