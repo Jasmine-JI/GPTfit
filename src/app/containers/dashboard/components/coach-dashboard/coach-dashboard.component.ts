@@ -6,6 +6,7 @@ import { MatSnackBar } from '@angular/material';
 import { MsgDialogComponent } from '../msg-dialog/msg-dialog.component';
 import { HrZoneDialogComponent } from '../hr-zone-dialog/hr-zone-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { DragulaService } from 'ng2-dragula/ng2-dragula';
 
 @Component({
   selector: 'app-coach-dashboard',
@@ -16,12 +17,12 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
   timer: any;
   method = 2;
   colorDatas = [
-    '#006dff',
-    '#85e1ff',
-    '#76ff40',
-    '#fff72a',
-    '#ffb000',
-    '#ff0000'
+    '#4D99FF',
+    '#AAEAFF',
+    '#9FFF7A',
+    '#FFC84D',
+    '#FFF96A',
+    '#FF4D4D'
   ];
   userDatas = [
     {
@@ -43,12 +44,15 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
   constructor(
     private coachService: CoachService,
     private snackBar: MatSnackBar,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private dragula: DragulaService
   ) {
     this.handleSearchFile = debounce(this.handleSearchFile, 1000);
+    this.dragula.setOptions('bag-items', { revertOnSpill: true });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+  }
   ngOnDestroy() {
     clearInterval(this.timer);
   }
@@ -70,9 +74,7 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
   }
   removeUser(idx) {
     this.snackBar.open(
-      `教練，有userId: ${
-        this.userDatas[idx].userId
-      }學員，中途離開訓練大廳了!!`,
+      `教練，有userId: ${this.userDatas[idx].userId}學員，中途離開訓練大廳了!!`,
       '我知道了',
       { duration: 2000 }
     );
@@ -171,9 +173,7 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
       if (res.length > 0 && isHaveHR) {
         this.displayCards.push(code);
         this.snackBar.open(
-          `教練，有userId: ${
-            this.userDatas[idx].userId
-          }學員，已進入訓練大廳!!`,
+          `教練，有userId: ${this.userDatas[idx].userId}學員，已進入訓練大廳!!`,
           '我知道了',
           { duration: 2000 }
         );

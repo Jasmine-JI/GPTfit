@@ -58,6 +58,7 @@
     "moment": "^2.20.1",
     "mydatepicker": "^2.6.1",
     "mysql": "^2.15.0",
+    "ng2-dragula": "^1.5.0",
     "node-schedule": "^1.2.5",
     "nodemon": "^1.12.1",
     "pm2": "^2.9.1",

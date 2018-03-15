@@ -64,13 +64,16 @@
     重新開始/開始
   </button>
 </div>
-<ng-container *ngFor="let item of displayCards;let _idx = index">
-  <div style="display: inline-block; margin: 10px">
-    <label>顯示數據:</label>
-    第{{ userDatas[_idx].idx }}筆資料
+<div  [dragula]='"bag-items"'
+>
+  <div style="display: inline-block; margin: 10px"
+     *ngFor="let item of displayCards;let _idx = index"
+  >
+
     <div class="card"
-    [style.background-color]="colorDatas[userDatas[_idx].colorIdx]"
+      [style.background-color]="colorDatas[userDatas[_idx].colorIdx]"
     >
+      <label>顯示: 第{{ userDatas[_idx].idx }}筆資料</label>
       userId: {{ userDatas[_idx].userId }}
       <br>
       HR: {{ userDatas[_idx].hr || 0 }}
@@ -80,5 +83,5 @@
       </span>
     </div>
   </div>
-</ng-container>
+</div>
 
