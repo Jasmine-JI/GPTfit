@@ -4,7 +4,6 @@
     <mat-radio-button [value]="2" color="primary">儲備心率法</mat-radio-button>
   </mat-radio-group>
   <br>
-  <!-- <div style="display: inline-block;width:86px;height:16px">70</div> -->
   <div style="display: inline-block; margin-right: 2px;border: 1px solid #ccc;width: 40px;height: 5px; background-color: #006dff;opacity: 0.7"></div>
   <div style="display: inline-block; margin-right: 2px;border: 1px solid #ccc;width: 40px;height: 5px; background-color: #85e1ff;opacity: 0.7"></div>
   <div style="display: inline-block; margin-right: 2px;border: 1px solid #ccc;width: 40px;height: 5px; background-color: #76ff40;opacity: 0.7"></div>
@@ -27,7 +26,6 @@
       <select name="code" [(ngModel)]="userDatas[userIdx].code">
         <option  *ngFor="let item of userDatas[userIdx].fileDatas" value={{item?.md5_unicode}}>{{ item?.file_name}}</option>
       </select>
-      <!-- <input name="file_name" [(ngModel)]="userDatas[userIdx].file_name"> -->
       <button mat-raised-button mat-icon-button style="background-color: #26abe3;color: #fff"
         (click)="join(userDatas[userIdx].userId, userDatas[userIdx].code, userIdx)"
       >
@@ -72,6 +70,10 @@
       userId: {{ userDatas[_idx].userId }}
       <br>
       HR: {{ userDatas[_idx].hr || 0 }}
+      <br>
+      <span *ngIf="userDatas[_idx].totalCount === userDatas[_idx].idx">
+        已跑完囉!!!!!
+      </span>
     </div>
   </div>
 </ng-container>
