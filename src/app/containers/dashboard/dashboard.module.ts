@@ -32,6 +32,7 @@ import { DeviceLogService } from './services/device-log.service';
 import { DeviceLogDetailComponent } from './components/device-log-detail/device-log-detail.component';
 import { CoachDashboardComponent } from './components/coach-dashboard/coach-dashboard.component';
 import { CoachService } from './services/coach.service';
+import { HrZoneDialogComponent } from './components/hr-zone-dialog/hr-zone-dialog.component';
 
 @NgModule({
   imports: [
@@ -72,9 +73,14 @@ import { CoachService } from './services/coach.service';
     DbResultDialogComponent,
     DeviceLogComponent,
     DeviceLogDetailComponent,
-    CoachDashboardComponent
+    CoachDashboardComponent,
+    HrZoneDialogComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  entryComponents: [MsgDialogComponent, DbResultDialogComponent]
+  entryComponents: [
+    MsgDialogComponent,
+    DbResultDialogComponent,
+    HrZoneDialogComponent
+  ]
 })
 export class DashboardModule {}

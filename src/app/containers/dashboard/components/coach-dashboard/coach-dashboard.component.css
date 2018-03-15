@@ -13,3 +13,8 @@
 .add-users:hover {
   cursor: pointer;
 }
+
+.coach-btn {
+  background-color: #26abe3;
+  color: #fff
+}

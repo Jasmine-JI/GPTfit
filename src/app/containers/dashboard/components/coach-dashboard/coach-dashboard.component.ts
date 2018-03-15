@@ -4,6 +4,7 @@ import { HttpParams } from '@angular/common/http';
 import { debounce } from '@shared/utils/';
 import { MatSnackBar } from '@angular/material';
 import { MsgDialogComponent } from '../msg-dialog/msg-dialog.component';
+import { HrZoneDialogComponent } from '../hr-zone-dialog/hr-zone-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 
 @Component({
@@ -68,8 +69,6 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
     });
   }
   removeUser(idx) {
-    this.userDatas.splice(idx, 1);
-    this.displayCards.splice(idx, 1);
     this.snackBar.open(
       `教練，有userId: ${
         this.userDatas[idx].userId
@@ -77,6 +76,8 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
       '我知道了',
       { duration: 2000 }
     );
+    this.userDatas.splice(idx, 1);
+    this.displayCards.splice(idx, 1);
   }
   insertFakeData(data, index) {
     const { idx, totalCount, fakeDatas } = data;
@@ -120,6 +121,20 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
     this.userDatas[index].zones = [];
     // 最大心律法
     if (this.method === 1) {
+      let hrValue = (220 - age) * 0.5;
+      this.userDatas[index].zones.push(hrValue);
+      hrValue = (220 - age) * 0.6;
+      this.userDatas[index].zones.push(hrValue);
+      hrValue = (220 - age) * 0.7;
+      this.userDatas[index].zones.push(hrValue);
+      hrValue = (220 - age) * 0.8;
+      this.userDatas[index].zones.push(hrValue);
+      hrValue = (220 - age) * 0.9;
+      this.userDatas[index].zones.push(hrValue);
+      hrValue = (220 - age) * 1;
+      this.userDatas[index].zones.push(hrValue);
+    } else {
+      // 儲備心率法
       let hrValue = (220 - age - rest_hr) * 0.55 + rest_hr;
       this.userDatas[index].zones.push(hrValue);
       hrValue = (220 - age - rest_hr) * 0.6 + rest_hr;
@@ -130,19 +145,15 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
       this.userDatas[index].zones.push(hrValue);
       hrValue = (220 - age - rest_hr) * 0.85 + rest_hr;
       this.userDatas[index].zones.push(hrValue);
-    } else {
-      // 儲備心率法
-      let hrValue = (220 - age - rest_hr) * 0.5 + rest_hr;
-      this.userDatas[index].zones.push(hrValue);
-      hrValue = (220 - age - rest_hr) * 0.6 + rest_hr;
-      this.userDatas[index].zones.push(hrValue);
-      hrValue = (220 - age - rest_hr) * 0.7 + rest_hr;
-      this.userDatas[index].zones.push(hrValue);
-      hrValue = (220 - age - rest_hr) * 0.8 + rest_hr;
-      this.userDatas[index].zones.push(hrValue);
-      hrValue = (220 - age - rest_hr) * 0.9 + rest_hr;
+      hrValue = (220 - age - rest_hr) * 1 + rest_hr;
       this.userDatas[index].zones.push(hrValue);
     }
+  }
+  openHRZoneWin(userId, zones) {
+    this.dialog.open(HrZoneDialogComponent, {
+      hasBackdrop: true,
+      data: { userId, zones, method: this.method }
+    });
   }
   join(id, code, idx) {
     const codearr = [];
