@@ -213,7 +213,7 @@ var raceEnroll = require('./server/routes/raceEnroll.js');
 var raceEventInfo = require('./server/routes/raceEventInfo.js');
 var runGpx = require('./server/routes/runGpx.js');
 var deviceLog = require('./server/routes/deviceLog.js');
-var coach = require('./routes/coach.js');
+var coach = require('./server/routes/coach.js');
 
 app.use('/nodejs/api/rankForm', rankForm);
 app.use('/nodejs/api/resetPassword', resetPassword);
