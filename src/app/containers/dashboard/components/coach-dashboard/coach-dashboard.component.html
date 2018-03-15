@@ -24,12 +24,17 @@
       <label>測試者休息心率</label>
       <input type="number" name="rest_hr" [(ngModel)]="userDatas[userIdx].rest_hr" style="width: 60px">
       <label>測試運動檔案</label>
-      <select>
-        <option  *ngFor="let item of userDatas[userIdx].fileDatas">{{ item?.file_name}}</option>
+      <select name="code" [(ngModel)]="userDatas[userIdx].code">
+        <option  *ngFor="let item of userDatas[userIdx].fileDatas" value={{item?.md5_unicode}}>{{ item?.file_name}}</option>
       </select>
       <!-- <input name="file_name" [(ngModel)]="userDatas[userIdx].file_name"> -->
-      <button mat-raised-button mat-icon-button style="background-color: #26abe3;color: #fff">
+      <button mat-raised-button mat-icon-button style="background-color: #26abe3;color: #fff"
+        (click)="join(userDatas[userIdx].userId, userDatas[userIdx].code, userIdx)"
+      >
         join
+      </button>
+      <button class="alatech-btn alatech-btn--default">
+        顯示測試者心率區間
       </button>
       <button class="icon-btn" (click)="removeUser(userIdx)" type="button">
         <i class="fa fa-times-circle icon_fa"></i>
@@ -54,19 +59,19 @@
   </button>
 
   <button class="alatech-btn alatech-btn--default" (click)="restart()">
-    重新開始
+    重新開始/開始
   </button>
 </div>
-<ng-container *ngFor="let item of userDatas;let _idx = index">
+<ng-container *ngFor="let item of displayCards;let _idx = index">
   <div style="display: inline-block; margin: 10px">
     <label>顯示數據:</label>
-    第{{ idx }}筆資料
+    第{{ userDatas[_idx].idx }}筆資料
     <div class="card"
-    [style.background-color]="colorDatas[colorIdx]"
+    [style.background-color]="colorDatas[userDatas[_idx].colorIdx]"
     >
       userId: {{ userDatas[_idx].userId }}
       <br>
-      HR: {{ hr || 0 }}
+      HR: {{ userDatas[_idx].hr || 0 }}
     </div>
   </div>
 </ng-container>

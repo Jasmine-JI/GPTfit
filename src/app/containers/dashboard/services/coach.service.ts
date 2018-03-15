@@ -11,8 +11,8 @@ export class CoachService {
   fetchExample(body) {
     return this.http.post<any>(API_SERVER + 'coach/example', body);
   }
-  fetchFileName(body) {
-    return this.http.post<any>(API_SERVER + 'coach/fileName', body);
+  fetchFileName(params) {
+    return this.http.get<any>(API_SERVER + 'coach/fileName', { params });
   }
   postFakeData(body) {
     return this.http.post<any>(API_SERVER + 'coach/fakeData', body);
