@@ -19,7 +19,7 @@ export class HrZoneDialogComponent implements OnInit {
     }
     return '儲備心率法%(%HRR)';
   }
-  constructor(@Inject(MAT_DIALOG_DATA) private data: any) {}
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
 
   ngOnInit() {}
 }
