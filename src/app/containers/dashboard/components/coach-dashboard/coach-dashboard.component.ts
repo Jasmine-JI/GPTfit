@@ -10,15 +10,7 @@ import { debounce } from '@shared/utils/';
 })
 export class CoachDashboardComponent implements OnInit, OnDestroy {
   timer: any;
-  idx: number;
-  fakeDatas: any;
-  totalCount: number;
-  age = 30;
-  rest_hr = 60;
   method = 2;
-  hr: number;
-  zones = [];
-  colorIdx = 0;
   colorDatas = [
     '#006dff',
     '#85e1ff',
@@ -29,53 +21,53 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
   ];
   userDatas = [
     {
-      userId: 46,
-      age: 25,
+      userId: null,
+      age: 30,
       rest_hr: 60,
-      file_name: '20171108203559',
-      code: 'a9d2ba7e46bc8ae40c3b1aa448c037b4',
-      fileDatas: []
+      file_name: '',
+      code: '',
+      fileDatas: [],
+      totalCount: 0,
+      idx: 1,
+      fakeDatas: [],
+      hr: 0,
+      colorIdx: 0,
+      zones: []
     }
   ];
+  displayCards = [];
   constructor(private coachService: CoachService) {
     this.handleSearchFile = debounce(this.handleSearchFile, 1000);
   }
 
-  ngOnInit() {
-    this.handleHRZone();
-    const codes = this.userDatas.map(_data => _data.code);
-    const ids = this.userDatas.map(_data => _data.userId);
-    const idBody = { ids };
-    this.coachService.fetchFileName(idBody).subscribe((res) => {
-        this.userDatas[0].fileDatas = res;
-    });
-    const body = {
-      codes
-    };
-    this.coachService.fetchExample(body).subscribe(res => {
-      this.fakeDatas = res;
-      this.totalCount = res.length;
-    });
-  }
+  ngOnInit() {}
   ngOnDestroy() {
     clearInterval(this.timer);
   }
   addUser() {
     this.userDatas.push({
-      userId: 1,
-      age: 25,
+      userId: null,
+      age: 30,
       rest_hr: 60,
-      file_name: '20171108224223',
-      code: 'cdb33bd281d9d5aa98102670062f560b',
-      fileDatas: []
+      file_name: '',
+      code: '',
+      fileDatas: [],
+      totalCount: 0,
+      idx: 1,
+      fakeDatas: [],
+      hr: 0,
+      colorIdx: 0,
+      zones: []
     });
   }
   removeUser(idx) {
     this.userDatas.splice(idx, 1);
+    this.displayCards.splice(idx, 1);
   }
-  insertFakeData(idx) {
-    if (this.totalCount > idx) {
-      const { distance, heart_rate, pace, utc } = this.fakeDatas[idx - 1];
+  insertFakeData(data, index) {
+    const { idx, totalCount, fakeDatas } = data;
+    if (totalCount > idx) {
+      const { distance, heart_rate, pace, utc } = fakeDatas[idx - 1];
       const body = {
         raceId: '5219',
         heartRate: heart_rate,
@@ -83,60 +75,83 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
         pace,
         distance
       };
-      this.coachService
-        .postFakeData(body)
-        .subscribe(res => this.handleCard(res.heartRate));
-    } else {
-      clearInterval(this.timer);
+      this.coachService.postFakeData(body).subscribe(res => {
+        data.hr = res.heartRate;
+        this.handleCard(data.hr, index);
+        data.idx++;
+      });
     }
   }
   handleSearchFile(userId, idx) {
     let params = new HttpParams();
     params = params.set('userId', userId);
-    this.coachService.fetchFileName(params).subscribe((res) => this.userDatas[idx].fileDatas = res);
+    this.coachService
+      .fetchFileName(params)
+      .subscribe(res => (this.userDatas[idx].fileDatas = res));
   }
-  handleCard(hr) {
-    this.hr = hr;
-    this.colorIdx = this.zones.findIndex(_val => this.hr * 1.5 < _val);
-    if (this.colorIdx === -1) {
-      this.colorIdx = 5;
+  handleCard(hr, index) {
+    this.userDatas[index].colorIdx = this.userDatas[index].zones.findIndex(
+      _val => hr * 1.5 < _val
+    );
+    if (this.userDatas[index].colorIdx === -1) {
+      this.userDatas[index].colorIdx = 5;
     }
   }
   handleMethod() {
-    this.handleHRZone();
+    this.userDatas.forEach((data, index) => {
+      this.handleHRZone(index, data.age, data.rest_hr);
+    });
   }
-  handleHRZone() {
-    this.zones = [];
+  handleHRZone(index, age, rest_hr) {
+    this.userDatas[index].zones = [];
     // 最大心律法
     if (this.method === 1) {
-      let hrValue = (220 - this.age - this.rest_hr) * 0.55 + this.rest_hr;
-      this.zones.push(hrValue);
-      hrValue = (220 - this.age - this.rest_hr) * 0.6 + this.rest_hr;
-      this.zones.push(hrValue);
-      hrValue = (220 - this.age - this.rest_hr) * 0.65 + this.rest_hr;
-      this.zones.push(hrValue);
-      hrValue = (220 - this.age - this.rest_hr) * 0.75 + this.rest_hr;
-      this.zones.push(hrValue);
-      hrValue = (220 - this.age - this.rest_hr) * 0.85 + this.rest_hr;
-      this.zones.push(hrValue);
-    } else {
-      let hrValue = (220 - this.age - this.rest_hr) * 0.5 + this.rest_hr;
-      this.zones.push(hrValue);
-      hrValue = (220 - this.age - this.rest_hr) * 0.6 + this.rest_hr;
-      this.zones.push(hrValue);
-      hrValue = (220 - this.age - this.rest_hr) * 0.7 + this.rest_hr;
-      this.zones.push(hrValue);
-      hrValue = (220 - this.age - this.rest_hr) * 0.8 + this.rest_hr;
-      this.zones.push(hrValue);
-      hrValue = (220 - this.age - this.rest_hr) * 0.9 + this.rest_hr;
-      this.zones.push(hrValue);
+      let hrValue = (220 - age - rest_hr) * 0.55 + rest_hr;
+      this.userDatas[index].zones.push(hrValue);
+      hrValue = (220 - age - rest_hr) * 0.6 + rest_hr;
+      this.userDatas[index].zones.push(hrValue);
+      hrValue = (220 - age - rest_hr) * 0.65 + rest_hr;
+      this.userDatas[index].zones.push(hrValue);
+      hrValue = (220 - age - rest_hr) * 0.75 + rest_hr;
+      this.userDatas[index].zones.push(hrValue);
+      hrValue = (220 - age - rest_hr) * 0.85 + rest_hr;
+      this.userDatas[index].zones.push(hrValue);
+    } else { // 儲備心率法
+      let hrValue = (220 - age - rest_hr) * 0.5 + rest_hr;
+      this.userDatas[index].zones.push(hrValue);
+      hrValue = (220 - age - rest_hr) * 0.6 + rest_hr;
+      this.userDatas[index].zones.push(hrValue);
+      hrValue = (220 - age - rest_hr) * 0.7 + rest_hr;
+      this.userDatas[index].zones.push(hrValue);
+      hrValue = (220 - age - rest_hr) * 0.8 + rest_hr;
+      this.userDatas[index].zones.push(hrValue);
+      hrValue = (220 - age - rest_hr) * 0.9 + rest_hr;
+      this.userDatas[index].zones.push(hrValue);
     }
+  }
+  join(id, code, idx) {
+    const codearr = [];
+    codearr.push(code);
+    this.handleHRZone(
+      idx,
+      this.userDatas[idx].age,
+      this.userDatas[idx].rest_hr
+    );
+    const body = { codes: codearr };
+    this.coachService.fetchExample(body).subscribe(res => {
+      this.userDatas[idx].fakeDatas = res;
+      this.userDatas[idx].totalCount = res.length;
+      if (res.length > 0) {
+        this.displayCards.push(code);
+      }
+    });
   }
   continue() {
     clearInterval(this.timer);
     this.timer = setInterval(() => {
-      this.insertFakeData(this.idx);
-      this.idx++;
+      this.userDatas.forEach((data, index) => {
+        this.insertFakeData(data, index);
+      });
     }, 2000);
   }
   stop() {
@@ -144,10 +159,13 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
   }
   restart() {
     clearInterval(this.timer);
-    this.idx = 1;
+    this.userDatas.forEach(data => {
+      data.idx = 1;
+    });
     this.timer = setInterval(() => {
-      this.insertFakeData(this.idx);
-      this.idx++;
+      this.userDatas.forEach((data, index) => {
+        this.insertFakeData(data, index);
+      });
     }, 2000);
   }
 }
