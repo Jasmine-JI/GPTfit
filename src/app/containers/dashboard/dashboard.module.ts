@@ -33,6 +33,7 @@ import { DeviceLogDetailComponent } from './components/device-log-detail/device-
 import { CoachDashboardComponent } from './components/coach-dashboard/coach-dashboard.component';
 import { CoachService } from './services/coach.service';
 import { HrZoneDialogComponent } from './components/hr-zone-dialog/hr-zone-dialog.component';
+import { DragulaModule } from 'ng2-dragula/ng2-dragula';
 
 @NgModule({
   imports: [
@@ -46,7 +47,8 @@ import { HrZoneDialogComponent } from './components/hr-zone-dialog/hr-zone-dialo
     BrowserModule,
     BrowserAnimationsModule,
     SharedPipes,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    DragulaModule
   ],
   providers: [
     EventEnrollService,
