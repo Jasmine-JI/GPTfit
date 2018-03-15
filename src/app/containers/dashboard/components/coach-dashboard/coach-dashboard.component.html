@@ -26,12 +26,16 @@
       <select name="code" [(ngModel)]="userDatas[userIdx].code">
         <option  *ngFor="let item of userDatas[userIdx].fileDatas" value={{item?.md5_unicode}}>{{ item?.file_name}}</option>
       </select>
-      <button mat-raised-button mat-icon-button style="background-color: #26abe3;color: #fff"
+      <button mat-raised-button mat-icon-button class="coach-btn"
         (click)="join(userDatas[userIdx].userId, userDatas[userIdx].code, userIdx)"
+        [disabled]="displayCards[userIdx]?.length > 0"
       >
         join
       </button>
-      <button class="alatech-btn alatech-btn--default">
+      <button class="alatech-btn alatech-btn--default"
+        (click)="openHRZoneWin(userDatas[userIdx].userId, userDatas[userIdx].zones)"
+         [disabled]="!displayCards[userIdx]?.length > 0"
+      >
         顯示測試者心率區間
       </button>
       <button class="icon-btn" (click)="removeUser(userIdx)" type="button">
