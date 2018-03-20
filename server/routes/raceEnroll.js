@@ -58,6 +58,10 @@ router.post('/enroll', async(req, res) => {
     var now = new Date();
     var now_mill = now.getTime();
     const enroll_time = Math.round(now_mill / 1000);
+    const sqlParams = ['user_race_enroll', login_acc, e_mail, phone, age_range,
+      gender, id_number, address, event_id, session_id, enroll_time, country_code,
+      pay_method, status
+    ];
     const sql = `
     INSERT INTO ?? (
       login_acc,
@@ -75,21 +79,21 @@ router.post('/enroll', async(req, res) => {
       status
     )
     value (
-      '${login_acc}',
-      '${e_mail}',
-      '${phone}',
-      '${age_range}',
-      ${gender},
-      '${id_number}',
-      '${address}',
-      ${event_id},
-      ${session_id},
-      ${enroll_time},
-      '${country_code}',
-      '${pay_method}',
-      '${status}'
+      ?,
+      ?,
+      ?,
+      ?,
+      ?,
+      ?,
+      ?,
+      ?,
+      ?,
+      ?,
+      ?,
+      ?,
+      ?
     );`;
-    await con.query(sql, 'user_race_enroll', async(err, rows) => {
+    await con.query(sql, sqlParams, async(err, rows) => {
       if (err) {
         return res.status(500).send({
           errorMessage: err.sqlMessage
@@ -125,10 +129,10 @@ router.get('/emailsValidate', async(req, res, next) => {
   } = req;
   try {
     const sql = `
-    SELECT e_mail FROM ?? where event_id = ${event_id};
+    SELECT e_mail FROM ?? where event_id = ?;
     `;
 
-    con.query(sql, 'user_race_enroll', function (err, rows) {
+    con.query(sql, ['user_race_enroll', event_id], function (err, rows) {
       if (err) {
         return res.status(500).send({
           errorMessage: err.sqlMessage
@@ -163,14 +167,12 @@ router.get('/phoneValidate', async(req, res, next) => {
   } = req;
   try {
     const sql = `
-    SELECT phone FROM ?? where event_id = ${event_id};
+    SELECT phone FROM ?? where event_id = ?;
     `;
 
-    con.query(sql, 'user_race_enroll', function (err, rows) {
+    con.query(sql, ['user_race_enroll', event_id], function(err, rows) {
       if (err) {
-        return res.status(500).send({
-          errorMessage: err.sqlMessage
-        });
+        return res.status(500).send({ errorMessage: err.sqlMessage });
       }
       if (phone.length === 0) {
         return res.status(400).send('請填入電話號碼');
@@ -197,10 +199,10 @@ router.get('/idNumberValidate', async(req, res, next) => {
   } = req;
   try {
     const sql = `
-    SELECT id_number FROM ?? where event_id = ${event_id};
+    SELECT id_number FROM ?? where event_id = ?;
     `;
 
-    con.query(sql, 'user_race_enroll', function (err, rows) {
+    con.query(sql, ['user_race_enroll', event_id], function (err, rows) {
       if (err) {
         return res.status(500).send({
           errorMessage: err.sqlMessage
