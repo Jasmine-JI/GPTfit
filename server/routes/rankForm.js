@@ -174,24 +174,24 @@ router.get('/', function(req, res, next) {
       from (select a.* from ?? a
         , user_race_enroll c
         where
-        date between '${startDate || currDate}'
+        date between ${con.escape(startDate) || currDate}
         and
-        '${endDate || currDate}'
+        ${con.escape(endDate) || currDate}
         and
         offical_time in
         (
         select min(b.offical_time)  from run_rank as b
         where map_id = ${mapId || 5}
         and
-        date between '${startDate || currDate}'
+        date between ${con.escape(startDate) || currDate}
         and
-        '${endDate || currDate}'
+        ${con.escape(endDate) || currDate}
         and
         a.user_id = b.user_id
         ${eventQuery}
         )
         and
-        map_id = ${mapId || 5}
+        map_id = ${con.escape(mapId) || 5}
         ${genderQuery}
         ${userIdQuery}
       )b,
@@ -378,20 +378,20 @@ router.get('/rankInfo/userName', function(req, res, next) {
   '';
   const sql = `
     select distinct r.login_acc from ?? as r,
-    race_event_info as e,
-    user_race_enroll as u
+    ?? as e,
+    ?? as u
     where r.date between
-    '${startDate}'
+    ?
     and
-    '${endDate}'
-    and r.map_id = ${mapId}
+    ?
+    and r.map_id = ?
     and
     r.e_mail IS NOT NULL
     ${eventQuery}
     ${genderQuery};
     ;
   `;
-  con.query(sql, 'run_rank', function(err, rows) {
+  con.query(sql, ['run_rank', 'race_event_info', 'user_race_enroll', startDate, endDate, mapId] , function(err, rows) {
     if (err) {
       console.log(err);
     }
@@ -505,20 +505,20 @@ router.get('/mapInfo', function(req, res, next) {
       and
       r.map_id = m.map_index
       and
-      r.user_id = ${userId}
+      r.user_id = ${con.escape(userId)}
       and
-      map_id = ${mapId}
+      map_id = ${con.escape(mapId)}
       and
       r.time_stamp
       between
-      ${start_time}
+      ${con.escape(start_time)}
       and
-      ${end_time}
+      ${con.escape(end_time)}
       order by r.activity_duration
       ;
       select map_name, race_total_distance, race_category
       from race_map_info
-      where map_index = ${mapId};
+      where map_index = ${con.escape(mapId)};
     `;
   } else {
     const sql1 = `
@@ -537,9 +537,9 @@ router.get('/mapInfo', function(req, res, next) {
     const sql2 = `
       select map_name, race_total_distance, race_category
       from run_rank
-      where map_id = ${mapId}
+      where map_id = ${con.escape(mapId)}
       and
-      user_id = ${userId}
+      user_id = ${con.escape(userId)}
     `;
     sql = `${sql1}${sql2}`;
   }

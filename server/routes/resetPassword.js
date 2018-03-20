@@ -9,7 +9,7 @@ router.get('/getEmail', function (req, res, next) {
   } = req;
   const sql = `
   SELECT  e_mail FROM ??
-  where md5_reset_passwd = '${code}';`;
+  where md5_reset_passwd = ${con.escape(code)};`;
 
   con.query(sql, 'user_profile', function (err, rows) {
     if (err) {
