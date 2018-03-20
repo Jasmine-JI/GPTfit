@@ -152,7 +152,7 @@ router.get('/', function(req, res, next) {
     const currDate = currentDate();
     const genderQuery = gender ? `and a.gender = ${gender}` : '';
     const eventQuery = event_id
-      ? `and b.e_mail = c.e_mail and c.event_id = ${event_id}`
+      ? `and c.phone like concat('%', b.phone, '%') and c.e_mail = b.e_mail  and c.event_id = ${event_id}`
       : '';
     const userIdQuery = userId ? `and user_id = ${userId}` : '';
     sql = `
@@ -202,7 +202,6 @@ router.get('/', function(req, res, next) {
       )a;
     `;
   }
-
   con.query(sql, 'run_rank', function(err, rows) {
     if (err) {
       throw err;
