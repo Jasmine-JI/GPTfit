@@ -10,13 +10,13 @@ router.get('/make', function(req, res, next) {
     select r.longitude, r.latitude, r.altitude, r.utc,
     r.heart_rate, r.cadence, r.pace, r.calorie, r.incline,
     s.file_name from ?? r, sport as s
-    where r.md5_unicode = ${md5_unicode}
+    where r.md5_unicode = ?
     and
     r.md5_unicode = s.md5_unicode
   ;
   `;
 
-  con.query(sql, 'real_time_activity', function(err, rows) {
+  con.query(sql, ['real_time_activity', md5_unicode], function(err, rows) {
     if (err) {
       console.log(err);
     }
