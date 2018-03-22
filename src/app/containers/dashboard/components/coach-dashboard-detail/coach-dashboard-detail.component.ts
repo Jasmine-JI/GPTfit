@@ -64,7 +64,6 @@ export class CoachDashboardDetailComponent implements OnInit, OnDestroy {
     params = params.set('raceId', this.raceId);
     this.timer = setInterval(() => {
       this.coachService.fetchRealTimeData(params).subscribe(res => {
-        console.log(res);
         this.displayCards = res;
         this.handleMethod();
         this.displayCards.forEach((_card, idx) => {
@@ -182,7 +181,6 @@ export class CoachDashboardDetailComponent implements OnInit, OnDestroy {
     params = params.set('raceId', this.raceId);
     this.timer = setInterval(() => {
       this.coachService.fetchRealTimeData(params).subscribe(res => {
-        console.log(res);
         this.displayCards = res;
         this.handleMethod();
         this.displayCards.forEach((_card, idx) => {
@@ -201,7 +199,6 @@ export class CoachDashboardDetailComponent implements OnInit, OnDestroy {
     params = params.set('raceId', this.raceId);
     this.timer = setInterval(() => {
       this.coachService.fetchRealTimeData(params).subscribe(res => {
-        console.log(res);
         this.displayCards = res;
         this.handleMethod();
         this.displayCards.forEach((_card, idx) => {
