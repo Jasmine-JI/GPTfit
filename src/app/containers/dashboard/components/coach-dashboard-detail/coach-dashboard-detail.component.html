@@ -77,9 +77,12 @@
       <br>
       HR: {{ displayCards[_idx].current_heart_rate || 0 }}
       <br>
-      <span *ngIf="displayCards[_idx].activity_distance > 2660">
+      age: {{displayCards[_idx].age }}
+      <br>
+      rest_hr: {{displayCards[_idx].rest_hr }}
+      <!-- <span *ngIf="displayCards[_idx].activity_distance > 2660">
         已跑完囉!!!!!
-      </span>
+      </span> -->
     </div>
   </div>
 </div>

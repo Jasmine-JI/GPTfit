@@ -59,21 +59,18 @@ router.get('/fileName', function(req, res, next) {
 router.get('/realTimeData', function(req, res, next) {
   const { con, query: { raceId, userId } } = req;
   const sql = `
-    select r.activity_distance, r.current_heart_rate, r.user_id,
-     (case when u.birthday is null then 30 else u.birthday end) as age ,
+   select distinct b.current_heart_rate, a.* from  ?? as b inner join (select max(r.activity_distance) as distance, r.user_id, (case when u.birthday is null then 30 else u.birthday end) as age,
      (case when u.rest_heart_rate is null then 60 else u.rest_heart_rate end) as rest_hr
-    from ?? as r,
-    ?? as u
-    where r.activity_distance  in
-    (select max(activity_distance) from ?? group by user_id) and u.user_id = r.user_id;`;
-  con.query(sql, [`tmp_race_data_${raceId}`, 'user_profile', `tmp_race_data_${raceId}`], function(err, rows) {
+     from ?? as r, ?? as u where u.user_id = r.user_id group by r.user_id)a
+     on a.user_id = b.user_id and a.distance = b.activity_distance;
+    `;
+  con.query(sql, [`tmp_race_data_${raceId}`, `tmp_race_data_${raceId}`, 'user_profile'], function(err, rows) {
     if (err) {
       console.log(err);
       return res.status(500).send({ errorMessage: err.sqlMessage });
     }
     rows = rows.map(_row => {
       const { age } = _row;
-      // console.log(age);
       if (age.length > 3) {
         _row.age = moment().format('YYYY') - moment(age).format('YYYY');
       }

@@ -68,7 +68,27 @@ export class CoachDashboardComponent implements OnInit {
     this.coachService.fetchRaceList(body).subscribe(res => {
       const { info: { raceList } } = res;
       this.raceList = raceList;
-      console.log(this.raceList);
+    });
+  }
+  createTestRoom() {
+    const body = {
+      token: 'e467bdfefeb831bcd4af56d12d1ce988',
+      raceRoom: '1',
+      raceMan: '5'
+    };
+    const body1 = {
+      token: 'e467bdfefeb831bcd4af56d12d1ce988',
+      serialNumber: '87A84662-B288-4BCD-A013-A99ECED70600',
+      sportMode: '0',
+      trainingType: '0',
+      page: '0',
+      pageCounts: '1000'
+    };
+    this.coachService.postRaceTest(body).subscribe(res => {
+      this.coachService.fetchRaceList(body1).subscribe(_res => {
+        const { info: { raceList } } = _res;
+        this.raceList = raceList;
+      });
     });
   }
   // ngOnDestroy() {
@@ -118,8 +138,6 @@ export class CoachDashboardComponent implements OnInit {
   //   }
   // }
   goViewRace(raceId) {
-    console.log('raceId: ', raceId);
-    console.log(location.pathname);
     this.router.navigateByUrl(`${location.pathname}` + '/detail/' + raceId);
   }
   // handleSearchFile(userId, idx) {
