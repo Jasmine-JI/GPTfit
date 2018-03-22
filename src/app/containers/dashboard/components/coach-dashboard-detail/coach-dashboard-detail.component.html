@@ -1,0 +1,85 @@
+<div style="margin-bottom: 15px">
+  <mat-radio-group [(ngModel)]="method" (change)="handleMethod()">
+    <mat-radio-button [value]="1" color="primary">最大心率法</mat-radio-button>
+    <mat-radio-button [value]="2" color="primary">儲備心率法</mat-radio-button>
+  </mat-radio-group>
+  <br>
+  <div style="display: inline-block; margin-right: 2px;border: 1px solid #ccc;width: 40px;height: 5px; background-color: #006dff;opacity: 0.7"></div>
+  <div style="display: inline-block; margin-right: 2px;border: 1px solid #ccc;width: 40px;height: 5px; background-color: #85e1ff;opacity: 0.7"></div>
+  <div style="display: inline-block; margin-right: 2px;border: 1px solid #ccc;width: 40px;height: 5px; background-color: #76ff40;opacity: 0.7"></div>
+  <div style="display: inline-block; margin-right: 2px;border: 1px solid #ccc;width: 40px;height: 5px; background-color: #fff72a;opacity: 0.7"></div>
+  <div style="display: inline-block; margin-right: 2px;border: 1px solid #ccc;width: 40px;height: 5px; background-color: #ffb000;opacity: 0.7"></div>
+  <div style="display: inline-block; margin-right: 2px;border: 1px solid #ccc;width: 40px;height: 5px; background-color: #ff0000;opacity: 0.7"></div>
+</div>
+<div style="margin-bottom: 15px">
+  <ng-container *ngFor="let item of userDatas;let userIdx = index">
+    <div style="margin-bottom: 15px">
+      <label>userId</label>
+      <input type="number" name="userId" [(ngModel)]="userDatas[userIdx].userId" style="width: 60px"
+        (keyup)="handleSearchFile(userDatas[userIdx].userId, userIdx)"
+      >
+      <label>測試者年紀</label>
+      <input type="number" name="age" [(ngModel)]="userDatas[userIdx].age" style="width: 60px">
+      <label>測試者休息心率</label>
+      <input type="number" name="rest_hr" [(ngModel)]="userDatas[userIdx].rest_hr" style="width: 60px">
+      <label>測試運動檔案</label>
+      <select name="code" [(ngModel)]="userDatas[userIdx].code">
+        <option  *ngFor="let item of userDatas[userIdx].fileDatas" value={{item?.md5_unicode}}>{{ item?.file_name}}</option>
+      </select>
+      <button mat-raised-button mat-icon-button class="coach-btn"
+        (click)="join(userDatas[userIdx].userId, userDatas[userIdx].code, userIdx)"
+        [disabled]="displayCards[userIdx]?.length > 0"
+      >
+        join
+      </button>
+      <button class="alatech-btn alatech-btn--default"
+        (click)="openHRZoneWin(userDatas[userIdx].userId, userDatas[userIdx].zones)"
+         [disabled]="!displayCards[userIdx]?.length > 0"
+      >
+        顯示測試者心率區間
+      </button>
+      <button class="icon-btn" (click)="removeUser(userIdx)" type="button">
+        <i class="fa fa-times-circle icon_fa"></i>
+      </button>
+    </div>
+  </ng-container>
+
+  <div class="add-users" (click)="addUser()">
+    <i class="fa fa-plus"></i>
+    新增測試者
+  </div>
+</div>
+
+
+<div style="margin-bottom: 15px">
+  <button class="alatech-btn alatech-btn--default" (click)="stop()">
+    暫停
+  </button>
+
+  <button class="alatech-btn alatech-btn--default" (click)="continue()">
+    繼續
+  </button>
+
+  <button class="alatech-btn alatech-btn--default" (click)="restart()">
+    重新開始/開始
+  </button>
+</div>
+<div  [dragula]='"bag-items"'
+>
+  <div style="display: inline-block; margin: 10px"
+     *ngFor="let item of displayCards;let _idx = index"
+  >
+
+    <div class="card"
+      [style.background-color]="colorDatas[displayCards[_idx].colorIdx]"
+    >
+      userId: {{ displayCards[_idx].user_id }}
+      <br>
+      HR: {{ displayCards[_idx].current_heart_rate || 0 }}
+      <br>
+      <span *ngIf="displayCards[_idx].activity_distance > 2660">
+        已跑完囉!!!!!
+      </span>
+    </div>
+  </div>
+</div>
