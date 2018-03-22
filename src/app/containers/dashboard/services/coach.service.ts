@@ -17,4 +17,10 @@ export class CoachService {
   postFakeData(body) {
     return this.http.post<any>(API_SERVER + 'coach/fakeData', body);
   }
+  fetchRaceList(body) {
+    return this.http.post<any>('/api/v1/race/getRaceList', body);
+  }
+  fetchRealTimeData(params) {
+    return this.http.get<any>(API_SERVER + 'coach/realTimeData', { params });
+  }
 }
