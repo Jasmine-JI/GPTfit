@@ -6,6 +6,10 @@
   padding: 10px;
 }
 
+.card:hover {
+  cursor: pointer;
+}
+
 .add-users {
   display: inline-block;
   color: #4a90e2;
@@ -23,4 +27,9 @@
 .ng-star-inserted {
   cursor: pointer;
 }
+.bag-items {
+
+  pointer-events: none;
+}
+
 
