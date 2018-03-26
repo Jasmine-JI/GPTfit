@@ -56,6 +56,15 @@ export class CoachDashboardDetailComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute
   ) {
     this.dragula.setOptions('bag-items', { revertOnSpill: true });
+    this.dragula.drag.subscribe(value => {
+      this.stop();
+    });
+    this.dragula.drop.subscribe(value => {
+      this.restart();
+    });
+    this.dragula.cancel.subscribe((value, idx) => {
+      this.restart();
+    });
   }
 
   ngOnInit() {
@@ -69,11 +78,9 @@ export class CoachDashboardDetailComponent implements OnInit, OnDestroy {
         this.displayCards.forEach((_card, idx) => {
           const { current_heart_rate } = _card;
           this.handleCard(current_heart_rate, idx);
-
         });
       });
     }, 2000);
-
   }
   ngOnDestroy() {
     clearInterval(this.timer);
@@ -122,11 +129,10 @@ export class CoachDashboardDetailComponent implements OnInit, OnDestroy {
     }
   }
 
-
   handleCard(hr, index) {
-    this.displayCards[index].colorIdx = this.displayCards[index].zones.findIndex(
-      _val => hr < _val
-    );
+    this.displayCards[index].colorIdx = this.displayCards[
+      index
+    ].zones.findIndex(_val => hr < _val);
     if (this.displayCards[index].colorIdx === -1) {
       this.displayCards[index].colorIdx = 5;
     }
