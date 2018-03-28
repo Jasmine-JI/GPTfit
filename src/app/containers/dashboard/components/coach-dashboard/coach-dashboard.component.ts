@@ -3,6 +3,7 @@ import { CoachService } from '../../services/coach.service';
 import { DragulaService } from 'ng2-dragula/ng2-dragula';
 import { mapImages } from '@shared/mapImages';
 import { Router } from '@angular/router';
+import { mapInfos } from './coach';
 
 @Component({
   selector: 'app-coach-dashboard',
@@ -10,8 +11,11 @@ import { Router } from '@angular/router';
   styleUrls: ['./coach-dashboard.component.css']
 })
 export class CoachDashboardComponent implements OnInit {
-  raceList: any;
+  raceList = [];
   mapImages = mapImages;
+  mapInfos = mapInfos;
+  tabIdx = 1;
+  mapIdx = 1;
   constructor(
     private coachService: CoachService,
     private dragula: DragulaService,
@@ -60,7 +64,12 @@ export class CoachDashboardComponent implements OnInit {
   }
 
   goViewRace(raceId) {
-    this.router.navigateByUrl(`${location.pathname}` + '/detail/' + raceId);
+    this.router.navigateByUrl(`${location.pathname}` + '/detail/' + raceId + '?ipm=s');
   }
-
+  choose(idx) {
+    this.tabIdx = idx;
+  }
+  chooseMap(index) {
+    this.mapIdx = index;
+  }
 }
