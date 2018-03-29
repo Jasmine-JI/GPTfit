@@ -35,6 +35,7 @@ import { CoachService } from './services/coach.service';
 import { HrZoneDialogComponent } from './components/hr-zone-dialog/hr-zone-dialog.component';
 import { DragulaModule } from 'ng2-dragula/ng2-dragula';
 import { CoachDashboardDetailComponent } from './components/coach-dashboard-detail/coach-dashboard-detail.component';
+import { Top3DialogComponent } from './components/top3-dialog/top3-dialog.component';
 
 @NgModule({
   imports: [
@@ -78,13 +79,15 @@ import { CoachDashboardDetailComponent } from './components/coach-dashboard-deta
     DeviceLogDetailComponent,
     CoachDashboardComponent,
     HrZoneDialogComponent,
-    CoachDashboardDetailComponent
+    CoachDashboardDetailComponent,
+    Top3DialogComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
     MsgDialogComponent,
     DbResultDialogComponent,
-    HrZoneDialogComponent
+    HrZoneDialogComponent,
+    Top3DialogComponent
   ]
 })
 export class DashboardModule {}

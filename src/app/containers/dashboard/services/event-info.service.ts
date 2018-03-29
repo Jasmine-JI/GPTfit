@@ -38,4 +38,7 @@ export class EventInfoService {
   fetchMapDatas() {
     return this.http.get(API_SERVER + 'raceEventInfo/map');
   }
+  getTop3(params) {
+    return this.http.get(API_SERVER + 'raceEventInfo/top3', { params });
+  }
 }
