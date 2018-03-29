@@ -52,6 +52,13 @@
               >
                 前往報名
               </button>
+              <ng-container *ngIf="item.isEventEnd">
+                <button class="alatech-btn alatech-btn--default"
+                  (click)="handleDisplayTop3(item.session_id, item.event_id, item.specific_map)"
+                >
+                  顯示前三名名單
+                </button>
+              </ng-container>
             </div>
           </mat-list-item>
         </mat-list>
