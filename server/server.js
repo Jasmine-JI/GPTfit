@@ -85,6 +85,7 @@ app.use(function (req, res, next) {
     allowedOrigins = [
       'http://alatechcloud.alatech.com.tw:8080',
       'http://152.101.90.130:8080',
+      'http://cloud.alatech.com.tw:8080'
     ];
   }
   var origin = req.headers.origin;
