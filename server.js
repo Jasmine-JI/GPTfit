@@ -173,20 +173,27 @@ app.use(function (req, res, next) {
     ifaces[dev].filter((details) => details.family === 'IPv4' && details.internal === false ? address = details.address : undefined);
   }
 
-  console.log('address: ', address);
   var allowedOrigins = [];
   if (address === '192.168.1.235') {
     allowedOrigins = ['http://192.168.1.235', 'http://192.168.1.235:8080'];
   } else if (address === '192.168.1.234') {
-    allowedOrigins = ['http://192.168.1.234', 'http://alatechapp.alatech.com.tw', 'http://192.168.1.235:8080', 'http://localhost:8080'];
+    allowedOrigins = [
+      'http://192.168.1.234',
+      'http://alatechapp.alatech.com.tw',
+      'http://192.168.1.235:8080',
+      'http://localhost:8080',
+      'http://app.alatech.com.tw'
+    ];
   } else if (address === '192.168.1.232') {
     allowedOrigins = ['http://192.168.1.232'];
   } else {
     allowedOrigins = [
       'http://alatechcloud.alatech.com.tw',
-      'http://152.101.90.130'
+      'http://152.101.90.130',
+      'http://cloud.alatech.com.tw'
     ];
   }
+
   var origin = req.headers.origin;
   if (allowedOrigins.indexOf(origin) > -1) {
     res.setHeader('Access-Control-Allow-Origin', origin);
