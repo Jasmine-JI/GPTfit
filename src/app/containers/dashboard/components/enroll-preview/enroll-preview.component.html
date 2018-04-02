@@ -1,11 +1,11 @@
-<div class="justify-content-end">
-  <button class="alatech-btn alatech-btn--default" title="重新整理"
+<div class="justify-content-end" style="margin: 10px;">
+  <button class="alatech-btn alatech-btn--default rwd-btn" title="重新整理"
     (click)="getData()"
   >
     重新整理
   </button>
 </div>
-<table class="table">
+<table class="table rwd-table table-hover">
   <thead>
     <tr>
       <th scope="col">#</th>
@@ -16,24 +16,32 @@
       <th scope="col">性別</th>
       <th scope="col">身分證字號</th>
       <th scope="col">地址</th>
-      <th scope="col">付款方式</th>
-      <th scope="col">狀態</th>
-      <th scope="col">票卷編號</th>
+      <th scope="col">報名時間</th>
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let item of results">
-      <td><input type="checkbox" /></td>
-      <td>{{ item.login_acc}}</td>
-      <td style="text-align:center">{{ item.e_mail || '-'}}</td>
-      <td style="text-align:center">{{ item.phone || '-'}}</td>
-      <td>{{ item.age_range}}</td>
-      <td>{{ item.gender | sex }}</td>
-      <td style="text-align:center">{{ item.id_number || '-'}}</td>
-      <td>{{ item.address}}</td>
-      <td>{{ item.pay_method}}</td>
-      <td>{{ item.status}}</td>
-      <td>{{ item.ticket_id }}</td>
-    </tr>
+    <ng-container *ngIf="results?.length > 0">
+      <tr *ngFor="let item of results">
+        <td data-th="#"><input type="checkbox" /></td>
+        <td data-th="姓名">{{ item.login_acc}}</td>
+        <td data-th="email">{{ item.e_mail || '-'}}</td>
+        <td data-th="phone">{{ item.phone || '-'}}</td>
+        <td data-th="年紀範圍">{{ item.age_range}}</td>
+        <td data-th="性別">{{ item.gender | sex }}</td>
+        <td data-th="身分證字號">{{ item.id_number || '-'}}</td>
+        <td data-th="地址">{{ item.address}}</td>
+        <td data-th="報名時間">{{ item.enroll_time * 1000 | unixTime }}</td>
+      </tr>
+    </ng-container>
+    <ng-container *ngIf="results?.length === 0">
+      <tr>
+        <td colspan="9">
+          <div style="text-align:center">
+            尚無相關資訊
+          </div>
+        </td>
+      </tr>
+    </ng-container>
   </tbody>
 </table>
+

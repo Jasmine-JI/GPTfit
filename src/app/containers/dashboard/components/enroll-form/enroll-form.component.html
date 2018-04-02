@@ -1,10 +1,14 @@
 <form [formGroup]="complexForm" #f="ngForm" novalidate (ngSubmit)="enroll(complexForm)">
   <div>
     <ul class="tablist">
-      <li class="tablist__tab" title="現場報名" [class.tablist__tab--selected]="tabIdx === 0" (click)="selectTab(0)">
+      <li class="tablist__tab" title="現場報名" [class.tablist__tab--selected]="tabIdx === 0" (click)="selectTab(0)"
+        (click)="handleTab()"
+      >
         On-site registration
       </li>
-      <li class="tablist__tab" title="報名設定" [class.tablist__tab--selected]="tabIdx === 1" (click)="selectTab(1)">
+      <li class="tablist__tab" title="報名設定" [class.tablist__tab--selected]="tabIdx === 1" (click)="selectTab(1)"
+        (click)="handleTab()"
+      >
         報名設定
       </li>
     </ul>
@@ -194,6 +198,13 @@
             (onChange)="handleAttachmentChange($event)"
           ></app-upload-file>
           <a href (click)="downloadFile($event)">{{ fileName }}</a>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-5 text-right">
+          <label>範例格式檔
+            <a href (click)="downloadExample($event)">外部報名資料範例檔案</a>
+          </label>
         </div>
       </div>
     </div>
