@@ -305,7 +305,7 @@ export class EditEventComponent implements OnInit {
     };
     if (sessionDatas.length > 0) {
       const sessionResults = sessionDatas.map(_data => {
-        const chooseMapStr = _data.chooseMaps === '' ? '' :  _data.chooseMaps.join();
+        let chooseMapStr = _data.chooseMaps === '' ? '' :  _data.chooseMaps.join();
         const session_start_date =
           this.convertDateString(_data.session_start_date) +
           ' ' +
@@ -314,6 +314,9 @@ export class EditEventComponent implements OnInit {
           this.convertDateString(_data.session_end_date) +
           ' ' +
           _data.session_end_time;
+        if (!_data.isSpecificMap) {
+          chooseMapStr = '0';
+        }
         return {
           isRealTime: _data.isRealTime,
           isShowPortal: _data.isShowPortal,

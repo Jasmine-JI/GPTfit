@@ -116,6 +116,9 @@ export class CreateEventComponent implements OnInit {
     };
     if (sessionDatas.length > 0) {
       const sessionResults = sessionDatas.map(_data => {
+        if (!_data.isSpecificMap) {
+          _data.chooseMaps = ['0'];
+        }
         return {
           isRealTime: _data.isRealTime,
           isShowPortal: _data.isShowPortal,
