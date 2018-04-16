@@ -62,7 +62,8 @@ router.get('/realTimeData', function(req, res, next) {
    select distinct b.current_heart_rate, a.* from  ?? as b inner join (select max(r.activity_distance) as distance, r.user_id, (case when u.birthday is null then 30 else u.birthday end) as age,
      (case when u.rest_heart_rate is null then 60 else u.rest_heart_rate end) as rest_hr
      from ?? as r, ?? as u where u.user_id = r.user_id group by r.user_id)a
-     on a.user_id = b.user_id and a.distance = b.activity_distance;
+     on a.user_id = b.user_id and a.distance = b.activity_distance
+     order by distance desc;
     `;
   con.query(sql, [`tmp_race_data_${raceId}`, `tmp_race_data_${raceId}`, 'user_profile'], function(err, rows) {
     if (err) {

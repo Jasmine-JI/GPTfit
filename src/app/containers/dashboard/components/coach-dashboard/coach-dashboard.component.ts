@@ -49,7 +49,7 @@ export class CoachDashboardComponent implements OnInit {
     };
     const body1 = {
       token: 'e467bdfefeb831bcd4af56d12d1ce988',
-      serialNumber: '87A84662-B288-4BCD-A013-A99ECED70600',
+      serialNumber: '79ACE0A2-BAAB-45C1-BC40-A4149570130F',
       sportMode: '0',
       trainingType: '0',
       page: '0',
@@ -64,7 +64,7 @@ export class CoachDashboardComponent implements OnInit {
   }
 
   goViewRace(raceId) {
-    this.router.navigateByUrl(`${location.pathname}` + '/detail/' + raceId + '?ipm=s');
+    this.router.navigateByUrl('/dashboardalaala/test/' + raceId + '?ipm=s');
   }
   choose(idx) {
     this.tabIdx = idx;
