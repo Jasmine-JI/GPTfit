@@ -36,6 +36,7 @@ import { HrZoneDialogComponent } from './components/hr-zone-dialog/hr-zone-dialo
 import { DragulaModule } from 'ng2-dragula/ng2-dragula';
 import { CoachDashboardDetailComponent } from './components/coach-dashboard-detail/coach-dashboard-detail.component';
 import { Top3DialogComponent } from './components/top3-dialog/top3-dialog.component';
+import { CoachRexComponent } from './components/coach-rex/coach-rex.component';
 
 @NgModule({
   imports: [
@@ -80,7 +81,8 @@ import { Top3DialogComponent } from './components/top3-dialog/top3-dialog.compon
     CoachDashboardComponent,
     HrZoneDialogComponent,
     CoachDashboardDetailComponent,
-    Top3DialogComponent
+    Top3DialogComponent,
+    CoachRexComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [

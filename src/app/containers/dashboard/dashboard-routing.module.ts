@@ -16,6 +16,7 @@ import { DeviceLogComponent } from './components/device-log/device-log.component
 import { DeviceLogDetailComponent } from './components/device-log-detail/device-log-detail.component';
 import { CoachDashboardComponent } from './components/coach-dashboard/coach-dashboard.component';
 import { CoachDashboardDetailComponent } from './components/coach-dashboard-detail/coach-dashboard-detail.component';
+import { CoachRexComponent } from './components/coach-rex/coach-rex.component';
 
 const routes: Routes = [
   {
@@ -81,6 +82,10 @@ const routes: Routes = [
       {
         path: 'coach-dashboard/detail/:raceId',
         component: CoachDashboardDetailComponent
+      },
+      {
+        path: 'test/:raceId',
+        component: CoachRexComponent
       }
     ]
   },

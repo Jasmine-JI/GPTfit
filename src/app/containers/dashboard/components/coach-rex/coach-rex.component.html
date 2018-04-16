@@ -1,0 +1,63 @@
+<div class="coach-container">
+  <div class="coach-header">
+    <span>詳細成員</span>
+  </div>
+  <div class="content">
+    <div style="font-size: 35px;margin: 30px 0px 30px 15px;">
+      全部成員{{ renderCards?.length }}人
+    </div>
+    <!-- <div style="font-size: 35px;margin: 30px 0px 30px 15px;">
+     1: {{ displayCards[0].zones }}
+     <br>
+     2: {{ displayCards[1].zones }}
+    <br>
+     3: {{ displayCards[2].zones }}
+    <br>
+     4: {{ displayCards[3].zones }}
+    <br>
+     5: {{ displayCards[4].zones }}
+    <br>
+    </div> -->
+    <!-- <div style="font-size: 35px;margin: 30px 0px 30px 15px;">
+      devicePixelRatio: {{ window.devicePixelRatio }}
+    </div> -->
+    <div class="hr-card"
+     *ngFor="let item of renderCards;let _idx = index"
+    >
+        <div class="color-mask"></div>
+        <div class="hr-card-header"
+          [@animateState]="displayCards[_idx]?.colorIdx"
+        >
+          <div class="hr-card-header__no">No.{{_idx + 1}}</div>
+          <div class="hr-card-header__name">頂港有名聲</div>
+        </div>
+
+      <div class="hr-card-body">
+        <div class="card-body--bg"></div>
+        <div class="hr-card-body__hr">
+          <div class="user-photo">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2lJbY5cDhBrr8KWRkF7mxQmf7h6lqITN_NPr6xQnJ8WBCWIWe3w">
+          </div>
+          <div class="hr-val">
+            <div class="hr">心率</div>
+            <div class="val" [style.color]="hrColors[displayCards[_idx].colorIdx]">
+               {{ displayCards[_idx].current_heart_rate || 0 }}
+            </div>
+          </div>
+        </div>
+        <div class="hr-card-body__other">
+          <div class="hr-card-body__pace">
+            <div style="">配速</div>
+            <div class="card-params">6'55"</div>
+          </div>
+          <div class="hr-card-body__distance">
+            <div style="">距離</div>
+            <div class="card-params">{{ displayCards[_idx].distance || 0 }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<button (click)="stop()">stop</button>
+<button (click)="restart()">restart</button>
