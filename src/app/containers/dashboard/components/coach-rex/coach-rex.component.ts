@@ -91,7 +91,7 @@ export class CoachRexComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     const ratio = window.devicePixelRatio;
-    if (location.host !== '192.168.1.235:8080') {
+    if (location.host !== '192.168.1.235:8080' && ratio === 3) {
       this.meta.updateTag({
         name: 'viewport',
         content: `width=device-width, initial-scale=${1 / ratio}`
