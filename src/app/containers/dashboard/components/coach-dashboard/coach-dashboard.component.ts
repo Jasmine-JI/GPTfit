@@ -30,7 +30,7 @@ export class CoachDashboardComponent implements OnInit {
   ngOnInit() {
     const body = {
       token: 'e467bdfefeb831bcd4af56d12d1ce988',
-      serialNumber: '87A84662-B288-4BCD-A013-A99ECED70600',
+      serialNumber: '79ACE0A2-BAAB-45C1-BC40-A4149570130F',
       sportMode: '0',
       trainingType: '0',
       page: '0',
