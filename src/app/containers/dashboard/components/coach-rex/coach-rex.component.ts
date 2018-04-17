@@ -9,7 +9,7 @@ import {
   animate
 } from '@angular/core';
 import { mapImages } from '@shared/mapImages';
-import { fakeDatas } from './fakeUsers';
+import { fakeDatas, fakeCoachInfo } from './fakeUsers';
 import { CoachService } from '../../services/coach.service';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
@@ -80,8 +80,17 @@ export class CoachRexComponent implements OnInit, OnDestroy {
   window = window;
   isNotFirstChanged = false;
   renderCards = [];
-
-  hrColors = ['#009fe1', '#00e1b4', '#5fe100', '#dee100', '#e18400', '#e14a00', '#e10019'];
+  coachInfo: string;
+  hrColors = [
+    '#009fe1',
+    '#00e1b4',
+    '#5fe100',
+    '#dee100',
+    '#e18400',
+    '#e14a00',
+    '#e10019'
+  ];
+  isMoreDisplay = false;
   constructor(
     private coachService: CoachService,
     private router: Router,
@@ -105,6 +114,7 @@ export class CoachRexComponent implements OnInit, OnDestroy {
     });
     this.raceId = this.route.snapshot.paramMap.get('raceId');
     this.handleRealTime();
+    this.handleCoachInfo(fakeCoachInfo);
   }
   ngOnDestroy() {
     clearInterval(this.timer);
@@ -146,6 +156,16 @@ export class CoachRexComponent implements OnInit, OnDestroy {
       } else if (proportion > 1.2) {
         this.fakeDatas[idx].photoClassName += ' photo-fit__25';
       }
+    }
+  }
+  handleCoachInfo(str) {
+    const info = str.replace(/\r\n|\n/g, '').trim();
+    if (info.length > 118) {
+      this.coachInfo = info.substring(0, 118);
+      this.isMoreDisplay = true;
+    } else {
+      this.coachInfo = info;
+      this.isMoreDisplay = false;
     }
   }
   handleCard(hr, index) {

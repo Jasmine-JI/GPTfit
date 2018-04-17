@@ -1,8 +1,46 @@
 <div class="coach-container">
   <div class="coach-header">
+    <span>課程資訊</span>
+  </div>
+  <div style="height: 425px;padding:0 15px;display:flex">
+    <div style="width: 60%;height: 100%;display:flex;flex-direction:column;padding-right: 45px;">
+      <div style="height:45%;width:100%;font-size:34.5px;text-align:right;color:#959595">
+        <div style="font-size:55px;color:#1b4d70;font-weight:bold">
+          BODY COMBAT 戰鬥有氧
+        </div>
+        <div>
+          2018/05/10 AM11:26
+        </div>
+
+        <div>
+          健身工廠 新時代廠
+        </div>
+      </div>
+      <div style="height:55%;width:100%;display:flex">
+        <div style="display:flex;align-items: center;">
+          <div class="user-photo user-photo--portrait" style="margin: 0 15px">
+            <img src="http://www.jituwang.com/uploads/allimg/130927/259905-13092FI41922.jpg">
+          </div>
+        </div>
+        <div style="width: 90%;padding-left:20px">
+          <div style="font-size: 48.6px;font-weight:bold;margin-bottom: 27px;">Jason Wu</div>
+          <div style="font-size: 24px;width:845px">
+            {{ coachInfo }}<span *ngIf="isMoreDisplay" style="color: #0078ff;cursor:pointer">...more</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="width: 40%;height: 100%;padding: 20px 0px;">
+      <img style="width:100%;height:100%"src="https://www.healthcenterhoornsevaart.nl/wp-content/uploads/2018/02/combat-630x300.jpg">
+    </div>
+  </div>
+  <div class="coach-header">
+    <span>分析圖表</span>
+  </div>
+  <div class="coach-header">
     <span>詳細成員</span>
   </div>
-  <div class="content">
+  <div class="content" style="height: 52%;margin-bottom: 30px;">
     <div style="font-size: 35px;margin: 30px 0px 30px 15px;">
       全部成員{{ renderCards?.length }}人
     </div>
@@ -57,7 +95,9 @@
         </div>
       </div>
     </div>
+    <button (click)="stop()">stop</button>
+    <button (click)="restart()">restart</button>
   </div>
+  <!-- <div class="coach-footer">
+  </div> -->
 </div>
-<button (click)="stop()">stop</button>
-<button (click)="restart()">restart</button>

@@ -4,14 +4,14 @@
 
 .alatech-ribbon {
   width: 100%;
-  height: 10px;
+  height: 90px;
   opacity: .9;
   background-color: #66abdd;
 }
 
 .alatech-ribbon--bg-blue {
   opacity: 1;
-  background-color: #157fcc;
+  background-color: #80d6ff;
 }
 
 .edit-event__form {
