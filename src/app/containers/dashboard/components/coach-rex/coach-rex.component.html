@@ -46,30 +46,30 @@
       <div style="width:80%"></div>
       <div style="height:100%">
         <div style="margin-bottom: 70px;">
-          <div style="font-size:24px;text-align:center">頂港有名聲</div>
+          <div style="font-size:24px;text-align:center">{{hrSortValues && hrSortValues[0]?.login_acc }}</div>
           <div style="display: flex;">
             <div class="hr-heart">
-              <i class="fa fa-heart"></i>
+              <i class="fa fa-heart" [style.color]="hrSortValues && hrColors[hrSortValues[0]?.colorIdx]"></i>
             </div>
-            <div style="width:70%;font-size:40px;font-family:ITC;text-align:right">182</div>
+            <div style="width:70%;font-size:40px;font-family:ITC;text-align:right">{{hrSortValues && hrSortValues[0]?.current_heart_rate || 0}}</div>
           </div>
         </div>
         <div style="margin-bottom: 70px;">
           <div style="font-size:24px;text-align:center;text-align:center">平均</div>
           <div style="display: flex;">
-            <div class="hr-heart">
+            <div class="hr-heart" [style.color]="">
               <i class="fa fa-heart"></i>
             </div>
-            <div style="width:70%;font-size:40px;font-family:ITC;text-align:right">178</div>
+            <div style="width:70%;font-size:40px;font-family:ITC;text-align:right">{{hrMeanValue}}</div>
           </div>
         </div>
         <div style="margin-bottom: 70px;">
-          <div style="font-size:24px;text-align:center">下港尚出名</div>
+          <div style="font-size:24px;text-align:center">{{hrSortValues && hrSortValues[hrSortValues.length - 1]?.login_acc}}</div>
           <div style="display: flex;">
             <div class="hr-heart">
-              <i class="fa fa-heart"></i>
+              <i class="fa fa-heart"  [style.color]="hrSortValues && hrColors[hrSortValues[hrSortValues.length - 1]?.colorIdx]"></i>
             </div>
-            <div style="width:70%;font-size:40px;font-family:ITC;text-align:right">173</div>
+            <div style="width:70%;font-size:40px;font-family:ITC;text-align:right">{{hrSortValues && hrSortValues[hrSortValues && hrSortValues.length - 1]?.current_heart_rate || 0}}</div>
           </div>
         </div>
       </div>
@@ -92,14 +92,14 @@
             [@animateState]="displayCards[_idx]?.colorIdx"
           >
             <div class="hr-card-header__no">No.{{_idx + 1}}</div>
-            <div class="hr-card-header__name">頂港有名聲</div>
+            <div class="hr-card-header__name">{{ displayCards[_idx].login_acc}}</div>
           </div>
 
         <div class="hr-card-body">
           <div class="card-body--bg"></div>
           <div class="hr-card-body__hr">
-            <div class="user-photo">
-              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2lJbY5cDhBrr8KWRkF7mxQmf7h6lqITN_NPr6xQnJ8WBCWIWe3w">
+            <div class="user-photo" [ngClass]="imgClassess[_idx]">
+              <img [src]="(displayCards[_idx]?.imgUrl | safeHtml)">
             </div>
             <div class="hr-val">
               <div class="hr">心率</div>
@@ -111,7 +111,7 @@
           <div class="hr-card-body__other">
             <div class="hr-card-body__pace">
               <div style="">配速</div>
-              <div class="card-params">6'55"</div>
+              <div class="card-params">{{ displayCards[_idx].current_speed || 0 }}</div>
             </div>
             <div class="hr-card-body__distance">
               <div style="">距離</div>

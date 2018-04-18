@@ -76,11 +76,14 @@ export class CoachRexComponent implements OnInit, OnDestroy {
   raceId: string;
   timer: any;
   displayCards = [];
+  imgClassess = [];
   method = 2;
   window = window;
   isNotFirstChanged = false;
   renderCards = [];
   coachInfo: string;
+  hrSortValues: any;
+  hrMeanValue = 0;
   hrColors = [
     '#009fe1',
     '#00e1b4',
@@ -137,12 +140,25 @@ export class CoachRexComponent implements OnInit, OnDestroy {
           this.isNotFirstChanged = true;
         }
         this.handleMethod();
+        this.handleChartHr(this.displayCards);
+        let sum = 0;
         this.displayCards.forEach((_card, idx) => {
           const { current_heart_rate } = _card;
+          const image = new Image();
+          image.addEventListener('load', e => this.handleImageLoad(e, idx));
+          image.src = _card.imgUrl;
+          sum += current_heart_rate;
           this.handleCard(current_heart_rate, idx);
         });
+        this.hrMeanValue = Math.round(sum / this.displayCards.length);
       });
     }, 2000);
+  }
+  handleChartHr(arr) {
+    this.hrSortValues = [...arr]; // use spread operator deep copy because avoid being immutable
+    this.hrSortValues = this.hrSortValues.sort(
+      (a, b) => b.current_heart_rate - a.current_heart_rate
+    );
   }
   handldeSection(idx) {
     this.isSectionIndividual = !this.isSectionIndividual;
@@ -170,22 +186,26 @@ export class CoachRexComponent implements OnInit, OnDestroy {
   handleImageLoad(event, idx): void {
     this.width = event.target.width;
     this.height = event.target.height;
-    this.fakeDatas[idx].photoClassName =
+    this.imgClassess[idx] =
       this.width > this.height
         ? 'user-photo--landscape'
         : 'user-photo--portrait';
-    if (this.fakeDatas[idx].photoClassName === 'user-photo--landscape') {
+    if (this.imgClassess[idx] === 'user-photo--landscape') {
       const proportion = this.width / this.height;
       if (proportion > 1.5) {
-        this.fakeDatas[idx].photoClassName += ' photo-fit__50';
+        this.imgClassess[idx] += ' photo-fit__50';
       } else if (proportion > 1.2) {
-        this.fakeDatas[idx].photoClassName += ' photo-fit__25';
+        this.imgClassess[idx] += ' photo-fit__25';
       }
     }
   }
   handleCoachInfo(str) {
     const info = str.replace(/\r\n|\n/g, '').trim();
-    if (info.length > 118 && this.displaySections[0] === true && !this.isSectionIndividual) {
+    if (
+      info.length > 118 &&
+      this.displaySections[0] === true &&
+      !this.isSectionIndividual
+    ) {
       this.coachInfo = info.substring(0, 118);
       this.isMoreDisplay = true;
     } else {
