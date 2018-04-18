@@ -1,103 +1,130 @@
 <div class="coach-container">
-  <div class="coach-header">
-    <span>課程資訊</span>
-  </div>
-  <div style="height: 425px;padding:0 15px;display:flex">
-    <div style="width: 60%;height: 100%;display:flex;flex-direction:column;padding-right: 45px;">
-      <div style="height:45%;width:100%;font-size:34.5px;text-align:right;color:#959595">
-        <div style="font-size:55px;color:#1b4d70;font-weight:bold">
-          BODY COMBAT 戰鬥有氧
-        </div>
-        <div>
-          2018/05/10 AM11:26
-        </div>
+  <ng-container *ngIf="displaySections[0]">
+    <div class="coach-header">
+      <span>課程資訊</span>
+      <span style="cursor:pointer" (click)="handldeSection(0)">開關</span>
+    </div>
+    <div style="height: 425px;padding:0 15px;display:flex">
+      <div style="width: 60%;height: 100%;display:flex;flex-direction:column;padding-right: 45px;">
+        <div style="height:45%;width:100%;font-size:34.5px;text-align:right;color:#959595">
+          <div style="font-size:55px;color:#1b4d70;font-weight:bold">
+            BODY COMBAT 戰鬥有氧
+          </div>
+          <div>
+            2018/05/10 AM11:26
+          </div>
 
-        <div>
-          健身工廠 新時代廠
-        </div>
-      </div>
-      <div style="height:55%;width:100%;display:flex">
-        <div style="display:flex;align-items: center;">
-          <div class="user-photo user-photo--portrait" style="margin: 0 15px">
-            <img src="http://www.jituwang.com/uploads/allimg/130927/259905-13092FI41922.jpg">
+          <div>
+            健身工廠 新時代廠
           </div>
         </div>
-        <div style="width: 90%;padding-left:20px">
-          <div style="font-size: 48.6px;font-weight:bold;margin-bottom: 27px;">Jason Wu</div>
-          <div style="font-size: 24px;width:845px">
-            {{ coachInfo }}<span *ngIf="isMoreDisplay" style="color: #0078ff;cursor:pointer">...more</span>
+        <div style="height:55%;width:100%;display:flex">
+          <div style="display:flex;align-items: center;">
+            <div class="user-photo user-photo--portrait" style="margin: 0 15px">
+              <img src="http://www.jituwang.com/uploads/allimg/130927/259905-13092FI41922.jpg">
+            </div>
           </div>
-        </div>
-      </div>
-    </div>
-    <div style="width: 40%;height: 100%;padding: 20px 0px;">
-      <img style="width:100%;height:100%"src="https://www.healthcenterhoornsevaart.nl/wp-content/uploads/2018/02/combat-630x300.jpg">
-    </div>
-  </div>
-  <div class="coach-header">
-    <span>分析圖表</span>
-  </div>
-  <div class="coach-header">
-    <span>詳細成員</span>
-  </div>
-  <div class="content" style="height: 52%;margin-bottom: 30px;">
-    <div style="font-size: 35px;margin: 30px 0px 30px 15px;">
-      全部成員{{ renderCards?.length }}人
-    </div>
-    <!-- <div style="font-size: 35px;margin: 30px 0px 30px 15px;">
-     1: {{ displayCards[0].zones }}
-     <br>
-     2: {{ displayCards[1].zones }}
-    <br>
-     3: {{ displayCards[2].zones }}
-    <br>
-     4: {{ displayCards[3].zones }}
-    <br>
-     5: {{ displayCards[4].zones }}
-    <br>
-    </div> -->
-    <!-- <div style="font-size: 35px;margin: 30px 0px 30px 15px;">
-      devicePixelRatio: {{ window.devicePixelRatio }}
-    </div> -->
-    <div class="hr-card"
-     *ngFor="let item of renderCards;let _idx = index"
-    >
-        <div class="color-mask"></div>
-        <div class="hr-card-header"
-          [@animateState]="displayCards[_idx]?.colorIdx"
-        >
-          <div class="hr-card-header__no">No.{{_idx + 1}}</div>
-          <div class="hr-card-header__name">頂港有名聲</div>
-        </div>
-
-      <div class="hr-card-body">
-        <div class="card-body--bg"></div>
-        <div class="hr-card-body__hr">
-          <div class="user-photo">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2lJbY5cDhBrr8KWRkF7mxQmf7h6lqITN_NPr6xQnJ8WBCWIWe3w">
-          </div>
-          <div class="hr-val">
-            <div class="hr">心率</div>
-            <div class="val" [style.color]="hrColors[displayCards[_idx].colorIdx]">
-               {{ displayCards[_idx].current_heart_rate || 0 }}
+          <div style="width: 90%;padding-left:20px">
+            <div style="font-size: 48.6px;font-weight:bold;margin-bottom: 27px;">Jason Wu</div>
+            <div style="font-size: 24px;max-width:845px">
+              {{ coachInfo }}<span *ngIf="isMoreDisplay" style="color: #0078ff;cursor:pointer">...more</span>
             </div>
           </div>
         </div>
-        <div class="hr-card-body__other">
-          <div class="hr-card-body__pace">
-            <div style="">配速</div>
-            <div class="card-params">6'55"</div>
+      </div>
+      <div style="width: 40%;height: 100%;padding: 20px 0px;">
+        <img style="width:100%;height:100%"src="https://www.healthcenterhoornsevaart.nl/wp-content/uploads/2018/02/combat-630x300.jpg">
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="displaySections[1]">
+    <div class="coach-header">
+      <span>分析圖表</span>
+      <span style="cursor:pointer" (click)="handldeSection(1)">開關</span>
+    </div>
+    <div style="display:flex;padding:65px 70px;justify-content:space-between;height:680px">
+      <div style="width:80%"></div>
+      <div style="height:100%">
+        <div style="margin-bottom: 70px;">
+          <div style="font-size:24px;text-align:center">頂港有名聲</div>
+          <div style="display: flex;">
+            <div class="hr-heart">
+              <i class="fa fa-heart"></i>
+            </div>
+            <div style="width:70%;font-size:40px;font-family:ITC;text-align:right">182</div>
           </div>
-          <div class="hr-card-body__distance">
-            <div style="">距離</div>
-            <div class="card-params">{{ displayCards[_idx].distance || 0 }}</div>
+        </div>
+        <div style="margin-bottom: 70px;">
+          <div style="font-size:24px;text-align:center;text-align:center">平均</div>
+          <div style="display: flex;">
+            <div class="hr-heart">
+              <i class="fa fa-heart"></i>
+            </div>
+            <div style="width:70%;font-size:40px;font-family:ITC;text-align:right">178</div>
+          </div>
+        </div>
+        <div style="margin-bottom: 70px;">
+          <div style="font-size:24px;text-align:center">下港尚出名</div>
+          <div style="display: flex;">
+            <div class="hr-heart">
+              <i class="fa fa-heart"></i>
+            </div>
+            <div style="width:70%;font-size:40px;font-family:ITC;text-align:right">173</div>
           </div>
         </div>
       </div>
     </div>
-    <button (click)="stop()">stop</button>
-    <button (click)="restart()">restart</button>
-  </div>
+  </ng-container>
+  <ng-container *ngIf="displaySections[2]">
+    <div class="coach-header">
+      <span>詳細成員</span>
+      <span style="cursor:pointer" (click)="handldeSection(2)">開關</span>
+    </div>
+    <div class="content" style="height: 52%;margin-bottom: 30px;">
+      <div style="font-size: 35px;margin: 30px 0px 30px 15px;">
+        全部成員{{ renderCards?.length }}人
+      </div>
+      <div class="hr-card"
+      *ngFor="let item of renderCards;let _idx = index"
+      >
+          <div class="color-mask"></div>
+          <div class="hr-card-header"
+            [@animateState]="displayCards[_idx]?.colorIdx"
+          >
+            <div class="hr-card-header__no">No.{{_idx + 1}}</div>
+            <div class="hr-card-header__name">頂港有名聲</div>
+          </div>
+
+        <div class="hr-card-body">
+          <div class="card-body--bg"></div>
+          <div class="hr-card-body__hr">
+            <div class="user-photo">
+              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2lJbY5cDhBrr8KWRkF7mxQmf7h6lqITN_NPr6xQnJ8WBCWIWe3w">
+            </div>
+            <div class="hr-val">
+              <div class="hr">心率</div>
+              <div class="val" [style.color]="hrColors[displayCards[_idx].colorIdx]">
+                {{ displayCards[_idx].current_heart_rate || 0 }}
+              </div>
+            </div>
+          </div>
+          <div class="hr-card-body__other">
+            <div class="hr-card-body__pace">
+              <div style="">配速</div>
+              <div class="card-params">6'55"</div>
+            </div>
+            <div class="hr-card-body__distance">
+              <div style="">距離</div>
+              <div class="card-params">{{ displayCards[_idx].distance || 0 }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button (click)="stop()">stop</button>
+      <button (click)="restart()">restart</button>
+    </div>
+  </ng-container>
+
   <!-- <div class="coach-footer">
   </div> -->
 </div>
