@@ -73,13 +73,14 @@
   height: 374px;
   display: inline-block;
   margin: 0px 15px 25px 15px;
+  position: relative;
 }
 
 .color-mask {
-  width: calc((100% - 149px) / 4);
   position: absolute;
   z-index: 1;
-  height: 5%;
+  width: 100%;
+  height: 20%;
   background: linear-gradient(to bottom right, rgb(0, 0, 0, 0.3), transparent);
 }
 
@@ -185,6 +186,8 @@
   background-color: #f1f1f1f1;
   border-top: 1px solid #4f4f4f;
   border-bottom: 1px solid #4f4f4f;
+  display: flex;
+  justify-content: space-between;
 }
 .coach-footer {
   width: 100%;
@@ -197,7 +200,7 @@
 .coach-header span {
   font-size:46px;
   color: #108bcd;
-  margin: auto 0px auto 30px;
+  margin: auto 30px auto 30px;
   font-weight: bold;
   line-height: 140px;
 }
@@ -207,17 +210,22 @@
   opacity: .8;
 }
 
-@media (max-width: 1979px) {
+.hr-heart {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30%;
+  font-size: 30px;
+  color: #e10019;
+}
+
+@media (max-width: 1919px) {
   .hr-card {
     width: calc((100% - 78px) / 3);
     height: 284px;
     margin: 0px 13px 25px 13px;
   }
 
-  .color-mask {
-    width: calc((100% - 78px) / 3);
-    height: 4%;
-  }
   .user-photo {
     width: 110px;
     height: 110px;
@@ -252,9 +260,7 @@
     height: 281px;
     margin: 0px 11.5px 25px 11.5px;
   }
-  .color-mask {
-    width: calc((100% - 64px) / 2);
-  }
+
   .user-photo {
     width: 110px;
     height: 110px;

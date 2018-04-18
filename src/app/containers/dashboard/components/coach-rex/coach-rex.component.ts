@@ -90,6 +90,8 @@ export class CoachRexComponent implements OnInit, OnDestroy {
     '#e14a00',
     '#e10019'
   ];
+  displaySections = [true, true, true];
+  isSectionIndividual = false;
   isMoreDisplay = false;
   constructor(
     private coachService: CoachService,
@@ -142,6 +144,29 @@ export class CoachRexComponent implements OnInit, OnDestroy {
       });
     }, 2000);
   }
+  handldeSection(idx) {
+    this.isSectionIndividual = !this.isSectionIndividual;
+    if (this.isSectionIndividual) {
+      if (idx === 0) {
+        this.displaySections[0] = true;
+        this.displaySections[1] = false;
+        this.displaySections[2] = false;
+      } else if (idx === 1) {
+        this.displaySections[0] = false;
+        this.displaySections[1] = true;
+        this.displaySections[2] = false;
+      } else {
+        this.displaySections[0] = false;
+        this.displaySections[1] = false;
+        this.displaySections[2] = true;
+      }
+    } else {
+      this.displaySections[0] = true;
+      this.displaySections[1] = true;
+      this.displaySections[2] = true;
+    }
+    this.handleCoachInfo(fakeCoachInfo);
+  }
   handleImageLoad(event, idx): void {
     this.width = event.target.width;
     this.height = event.target.height;
@@ -160,7 +185,7 @@ export class CoachRexComponent implements OnInit, OnDestroy {
   }
   handleCoachInfo(str) {
     const info = str.replace(/\r\n|\n/g, '').trim();
-    if (info.length > 118) {
+    if (info.length > 118 && this.displaySections[0] === true && !this.isSectionIndividual) {
       this.coachInfo = info.substring(0, 118);
       this.isMoreDisplay = true;
     } else {
