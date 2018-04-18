@@ -270,8 +270,8 @@ a.alatech-btn:hover {
 /* about font family */
 @font-face {
   font-family: 'ITC';
-  src: url('./assets/fonts/ITC Avant Garde Gothic Demi.ttf');
-  src: url('./assets/fonts/itc_avant_garde_gothic_demi-webfont.woff'); /*為了IE可吃到此字體*/
+  src: url('/assets/fonts/ITC Avant Garde Gothic Demi.ttf');
+  src: url('/assets/fonts/itc_avant_garde_gothic_demi-webfont.woff'); /*為了IE可吃到此字體*/
 
   font-weight: 700;
   font-style: normal;
