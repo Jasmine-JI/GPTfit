@@ -21,6 +21,7 @@ import { PatternValidator } from '@angular/forms';
 import { MyDatePickerModule } from 'mydatepicker';
 import { SharedComponentsModule } from '@shared/components/shared-components.module';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { DemoQrcodComponent } from './components/demo-qrcod/demo-qrcod.component';
 
 @NgModule({
   imports: [
@@ -49,7 +50,8 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
     PortalComponent,
     LeaderboardComponent,
     MapInfoComponent,
-    PasswordComponent
+    PasswordComponent,
+    DemoQrcodComponent
   ]
 })
 export class PortalModule {}
