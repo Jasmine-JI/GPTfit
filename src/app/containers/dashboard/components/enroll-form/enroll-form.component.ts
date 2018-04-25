@@ -141,13 +141,26 @@ export class EnrollFormComponent implements OnInit {
       }
     );
   }
+  handleTab() {
+    if (this.tabIdx === 0) {
+      this.complexForm.removeControl('attachment');
+    } else {
+      const attachmentControl: FormControl = new FormControl(
+        null,
+        Validators.required
+      );
+      this.complexForm.addControl('attachment', attachmentControl);
+    }
+  }
   handleRadioBtn(value) {
     if (value === '1') {
       this.phoneErr = '';
       this.complexForm.removeControl('phone');
       const emailControl: FormControl = new FormControl('', [
         Validators.required,
-        Validators.pattern(/^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/)
+        Validators.pattern(
+          /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/
+        )
       ]);
       this.complexForm.addControl('email', emailControl);
     } else {
@@ -176,20 +189,21 @@ export class EnrollFormComponent implements OnInit {
       }
     );
   }
-  // handleAttachmentChange(file) {
-  //   if (file) {
-  //     const { value, link } = file;
-  //     this.formData.attachment = value;
-  //     this.fileName = value.name;
-  //     this.fileLink = link;
-  //     this.isBtnDisabled = !(this.tabIdx === 1 && this.fileLink);
-  //   }
-  // }
+  handleAttachmentChange(file) {
+    if (file) {
+      const { value, link } = file;
+      this.complexForm.value.attachment = value;
+      this.fileName = value.name;
+      this.fileLink = link;
+      this.isBtnDisabled = !(this.tabIdx === 1 && this.fileLink);
+    }
+  }
   enroll({ value, valid }) {
     if (this.tabIdx === 1 && this.fileLink) {
-      value.attachment = null;
       const formData = new FormData();
       formData.append('file', value.attachment);
+      formData.append('eventId', this.event_id);
+      formData.append('sessionId', this.session_id);
       return this.eventEnrollService.uploadFile(formData).subscribe(results => {
         window.alert(results);
       });
@@ -205,7 +219,6 @@ export class EnrollFormComponent implements OnInit {
       if (data.signupMethod === 2) {
         data.email = '';
         data.country_code = this.counrtyCode;
-
       } else {
         data.phone = '';
       }
@@ -243,6 +256,10 @@ export class EnrollFormComponent implements OnInit {
   downloadFile(e) {
     e.preventDefault();
     location.href = this.fileLink;
+  }
+  downloadExample(e) {
+    e.preventDefault();
+    location.href = '../../../../../assets/files/enrollExample.xlsx';
   }
   selectTab(idx) {
     this.tabIdx = idx;

@@ -85,6 +85,7 @@ app.use(function (req, res, next) {
     allowedOrigins = [
       'http://alatechcloud.alatech.com.tw:8080',
       'http://152.101.90.130:8080',
+      'http://cloud.alatech.com.tw:8080'
     ];
   }
   var origin = req.headers.origin;
@@ -113,6 +114,7 @@ var raceEnroll = require('./routes/raceEnroll.js');
 var raceEventInfo = require('./routes/raceEventInfo.js');
 var runGpx = require('./routes/runGpx.js');
 var deviceLog = require('./routes/deviceLog.js');
+var coach = require('./routes/coach.js');
 
 app.use('/nodejs/api/rankForm', rankForm);
 app.use('/nodejs/api/resetPassword', resetPassword);
@@ -120,6 +122,7 @@ app.use('/nodejs/api/raceEnroll', raceEnroll);
 app.use('/nodejs/api/raceEventInfo', raceEventInfo);
 app.use('/nodejs/api/gpx', runGpx);
 app.use('/nodejs/api/deviceLog', deviceLog);
+app.use('/nodejs/api/coach', coach);
 
 // Start the server
 const port = process.env.PORT || 3001;

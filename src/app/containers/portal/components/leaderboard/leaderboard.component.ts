@@ -376,15 +376,20 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
       const chooseMapOptions = this.rankTabs[
         this.tabIdx - 1
       ].specific_map.split(',');
-      this.customMapOptions = this.mapDatas.filter(_data => {
-        if (
-          chooseMapOptions.findIndex(
-            _map_id => _map_id === _data.map_id.toString()
-          ) > -1
-        ) {
-          return _data;
-        }
-      });
+      if (chooseMapOptions.length === 1 && chooseMapOptions[0] === '0') {
+        this.customMapOptions = this.mapDatas;
+      } else {
+        this.customMapOptions = this.mapDatas.filter(_data => {
+          if (
+            chooseMapOptions.findIndex(
+              _map_id => _map_id === _data.map_id.toString()
+            ) > -1
+          ) {
+            return _data;
+          }
+        });
+      }
+
       let idx = this.customMapOptions.findIndex(_option => _option.map_id === this.mapId);
       if (idx === -1) {
         idx = 0;

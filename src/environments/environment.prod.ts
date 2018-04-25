@@ -2,6 +2,6 @@ export const environment = {
   production: true,
   MAPBOX_API_KEY: 'pk.eyJ1IjoiYnVkZGFsZWUiLCJhIjoiY2o5aDVmbjdzMGo4bDJ3cGd4bmhzYWsydiJ9.lxzLHzTITbvPGDBDnbIKcw',
   url: {
-    API_SERVER: 'http://alatechcloud.alatech.com.tw:3000/nodejs/api/'
+    API_SERVER: 'http://cloud.alatech.com.tw:3000/nodejs/api/'
   }
 };

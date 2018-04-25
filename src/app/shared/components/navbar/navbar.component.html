@@ -24,6 +24,9 @@
   <div class="collapse navbar-collapse" [class.show]="isCollapseShow" id="navbarResponsive">
     <ul class="navbar-nav ml-auto">
       <li class="nav-item" *ngIf="isShowDashboard">
+        <a class="nav-link"  target="_blank" href="/dashboardalaala/coach-dashboard?ipm=s" (click)="toggleMask()">Coach Dashboard</a>
+      </li>
+      <li class="nav-item" *ngIf="isShowDashboard">
         <a class="nav-link" [routerLink]="['/dashboardalaala/device_log']" (click)="toggleMask()">Device Log</a>
       </li>
       <li class="nav-item" *ngIf="isShowDashboard">

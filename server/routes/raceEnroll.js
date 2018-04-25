@@ -58,6 +58,10 @@ router.post('/enroll', async(req, res) => {
     var now = new Date();
     var now_mill = now.getTime();
     const enroll_time = Math.round(now_mill / 1000);
+    const sqlParams = ['user_race_enroll', login_acc, e_mail, phone, age_range,
+      gender, id_number, address, event_id, session_id, enroll_time, country_code,
+      pay_method, status
+    ];
     const sql = `
     INSERT INTO ?? (
       login_acc,
@@ -75,21 +79,21 @@ router.post('/enroll', async(req, res) => {
       status
     )
     value (
-      '${login_acc}',
-      '${e_mail}',
-      '${phone}',
-      '${age_range}',
-      ${gender},
-      '${id_number}',
-      '${address}',
-      ${event_id},
-      ${session_id},
-      ${enroll_time},
-      '${country_code}',
-      '${pay_method}',
-      '${status}'
+      ?,
+      ?,
+      ?,
+      ?,
+      ?,
+      ?,
+      ?,
+      ?,
+      ?,
+      ?,
+      ?,
+      ?,
+      ?
     );`;
-    await con.query(sql, 'user_race_enroll', async(err, rows) => {
+    await con.query(sql, sqlParams, async(err, rows) => {
       if (err) {
         return res.status(500).send({
           errorMessage: err.sqlMessage
@@ -125,10 +129,10 @@ router.get('/emailsValidate', async(req, res, next) => {
   } = req;
   try {
     const sql = `
-    SELECT e_mail FROM ?? where event_id = ${event_id};
+    SELECT e_mail FROM ?? where event_id = ?;
     `;
 
-    con.query(sql, 'user_race_enroll', function (err, rows) {
+    con.query(sql, ['user_race_enroll', event_id], function (err, rows) {
       if (err) {
         return res.status(500).send({
           errorMessage: err.sqlMessage
@@ -163,14 +167,12 @@ router.get('/phoneValidate', async(req, res, next) => {
   } = req;
   try {
     const sql = `
-    SELECT phone FROM ?? where event_id = ${event_id};
+    SELECT phone FROM ?? where event_id = ?;
     `;
 
-    con.query(sql, 'user_race_enroll', function (err, rows) {
+    con.query(sql, ['user_race_enroll', event_id], function(err, rows) {
       if (err) {
-        return res.status(500).send({
-          errorMessage: err.sqlMessage
-        });
+        return res.status(500).send({ errorMessage: err.sqlMessage });
       }
       if (phone.length === 0) {
         return res.status(400).send('請填入電話號碼');
@@ -197,10 +199,10 @@ router.get('/idNumberValidate', async(req, res, next) => {
   } = req;
   try {
     const sql = `
-    SELECT id_number FROM ?? where event_id = ${event_id};
+    SELECT id_number FROM ?? where event_id = ?;
     `;
 
-    con.query(sql, 'user_race_enroll', function (err, rows) {
+    con.query(sql, ['user_race_enroll', event_id], function (err, rows) {
       if (err) {
         return res.status(500).send({
           errorMessage: err.sqlMessage
@@ -239,8 +241,16 @@ router.post('/upload', async (req, res, next) => {
       if (err) {
         return res.status(500).send({ errorMessage: err.sqlMessage });
       }
+      const { eventId, sessionId } = fields;
       path = files.file.path;
       res.path = path;
+      if (eventId && sessionId) {
+        res.eventId = eventId;
+        res.sessionId = sessionId;
+      } else {
+        return res.status(500).send({ errorMessage: '請檢查報名資料欄位' });
+      }
+
         next();
 
     });
@@ -249,15 +259,19 @@ router.post('/upload', async (req, res, next) => {
 
 }, (req, res, next) => {
     const { con } = req;
-    const path = res.path;
-    const events = res.events;
+    const {
+      path,
+      events,
+      eventId,
+      sessionId
+    } = res;
 
     var buf = fs.readFileSync(path);
     var wb = XLSX.read(buf, { type: 'buffer' });
     const sheetNames = wb.SheetNames;
     const worksheet = wb.Sheets[sheetNames[0]];
     const headers = {};
-    const datas = [];
+    let datas = [];
     const keys = Object.keys(worksheet);
     keys
       // 过滤以 ! 开头的 key
@@ -281,75 +295,44 @@ router.post('/upload', async (req, res, next) => {
         }
         datas[row][headers[col]] = value;
       });
-    const filterArr = datas.filter(_data => _data['狀態'] === '已付款');
-    const parseResults = filterArr.map(_data => {
+    let count = 0;
+    let parseResults = [];
+    datas = datas.filter(_data => _data !== undefined);
+    parseResults = datas.map(_data => {
+      count++;
       var map = {
-        票號: 'ticket_id',
-        持票人姓名: 'login_acc',
-        持票人Email: 'e_mail',
-        持票人手機: 'phone',
-        票種分組名稱: 'ticket_group',
-        票券名稱: 'session_name',
-        付款方式: 'pay_method',
-        狀態: 'status',
-        '有效時間(GMT+8)': 'event_name',
-        '報名時間(GMT+8)': 'enroll_time',
-        年齡: 'age_range',
+        電子郵件地址: 'e_mail',
+        姓名: 'login_acc',
         性別: 'gender',
-        身分證字號: 'id_number',
-        地址: 'address'
+        年齡: 'age_range',
+        電話: 'phone',
+        住址: 'address'
       };
-      const resultData = {};
+      const resultData = {
+        eventId,
+        sessionId,
+        enroll_time: moment().unix(),
+        country_code: '886'
+      };
       _.each(_data, function(value, key) {
         resultData[map[key]] = value;
         if (map[key] !== undefined) {
-          if (map[key] === 'session_name') {
-            var idx_session = events.findIndex(_event => _event.session_name === value);
-            if (idx_session > -1) {
-              resultData[map[key]] = events[idx_session].session_name;
-              resultData['session_id'] = events[idx_session].session_id;
-            } else {
-              resultData[map[key]] = value;
-              resultData['session_id'] = 0;
-            }
-
-          }
-          if (map[key] === 'event_name') {
-            var idx_event = events.findIndex(_event => _event.event_time_name === value);
-            if (idx_event > -1) {
-              resultData[map[key]] = events[idx_event].event_id;
-            } else {
-              resultData[map[key]] = 0;
-            }
-          }
           if (map[key] === 'e_mail') {
             resultData[map[key]].trim();
           }
-          if (map[key] === 'phone') {
-            let phone = resultData[map[key]];
-            resultData.country_code = phone.slice(0, 3);
-            if (resultData.country_code === '886') {
-              resultData[map[key]] = '0' + phone.slice(3, phone.length);
-            }
-            // to fix 等其他國碼在做判斷
-          }
           if (map[key] === 'gender') {
             let sex = resultData[map[key]];
-            if (sex === '男性') {
+            if (sex === '男') {
               resultData[map[key]] = 0;
-            } else if (sex === '女性') {
+            } else if (sex === '女') {
               resultData[map[key]] = 1;
             } else {
               resultData[map[key]] = 2;
             }
           }
-          if (map[key] === 'enroll_time') {
-            resultData[map[key]] = moment(resultData[map[key]]).unix();
-          }
         }
 
       });
-      delete resultData.undefined; // in order unknown undefined key
       return resultData;
     });
     res.parseResults = parseResults;
@@ -364,21 +347,15 @@ router.post('/upload', async (req, res, next) => {
       });
       const sql = `
       INSERT INTO ?? (
-        ticket_id,
-        login_acc,
-        e_mail,
-        phone,
-        country_code,
-        ticket_group,
-        session_name,
-        session_id,
-        pay_method,
-        status,
         event_id,
+        session_id,
         enroll_time,
-        age_range,
+        country_code,
+        e_mail,
+        login_acc,
         gender,
-        id_number,
+        age_range,
+        phone,
         address
       )
       values ?;`;

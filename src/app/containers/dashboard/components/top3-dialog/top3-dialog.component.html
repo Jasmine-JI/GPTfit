@@ -1,0 +1,106 @@
+<mat-form-field>
+  <mat-select [(ngModel)]="mapId" [(value)]="mapId">
+    <mat-option *ngFor="let map of mapDatas" [value]="map.map_index">
+      {{ map.map_name }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
+<mat-tab-group (selectChange)="changeGender($event)">
+  <mat-tab label="不分組">
+    <table class="table">
+      <thead>
+        <th>名次</th>
+        <th>成績(時間)</th>
+        <th>報名姓名</th>
+        <th>遊戲中名稱</th>
+        <th>電話</th>
+        <th>信箱</th>
+        <th>地址</th>
+      </thead>
+      <tbody>
+        <ng-container *ngIf="topDatas?.length === 0">
+          <tr>
+            <td colspan="7" style="text-align: center">尚無相關資訊</td>
+          </tr>
+        </ng-container>
+        <ng-container *ngIf="topDatas?.length > 0">
+          <tr *ngFor="let data of topDatas">
+            <td>{{ data.rank }}</td>
+            <td>{{ data.offical_time }}</td>
+            <td>{{ data.enroll_name }}</td>
+            <td>{{ data.login_acc }}</td>
+            <td>{{ data.phone }}</td>
+            <td>{{ data.e_mail }}</td>
+            <td>{{ data.address }}</td>
+          </tr>
+        </ng-container>
+
+      </tbody>
+    </table>
+  </mat-tab>
+  <mat-tab label="男子組">
+    <table class="table">
+      <thead>
+        <th>名次</th>
+        <th>成績(時間)</th>
+        <th>報名姓名</th>
+        <th>遊戲中名稱</th>
+        <th>電話</th>
+        <th>信箱</th>
+        <th>地址</th>
+      </thead>
+      <tbody>
+        <ng-container *ngIf="topDatas?.length === 0">
+          <tr>
+            <td colspan="7" style="text-align: center">尚無相關資訊</td>
+          </tr>
+        </ng-container>
+        <ng-container *ngIf="topDatas?.length > 0">
+          <tr *ngFor="let data of topDatas">
+            <td>{{ data.rank }}</td>
+            <td>{{ data.offical_time }}</td>
+            <td>{{ data.enroll_name }}</td>
+            <td>{{ data.login_acc }}</td>
+            <td>{{ data.phone }}</td>
+            <td>{{ data.e_mail }}</td>
+            <td>{{ data.address }}</td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </mat-tab>
+  <mat-tab label="女子組">
+    <table class="table">
+      <thead>
+        <th>名次</th>
+        <th>成績(時間)</th>
+        <th>報名姓名</th>
+        <th>遊戲中名稱</th>
+        <th>電話</th>
+        <th>信箱</th>
+        <th>地址</th>
+      </thead>
+      <tbody>
+        <ng-container *ngIf="topDatas?.length === 0">
+          <tr>
+            <td colspan="7" style="text-align: center">尚無相關資訊</td>
+          </tr>
+        </ng-container>
+        <ng-container *ngIf="topDatas?.length > 0">
+          <tr *ngFor="let data of topDatas">
+            <td>{{ data.rank }}</td>
+            <td>{{ data.offical_time }}</td>
+            <td>{{ data.enroll_name }}</td>
+            <td>{{ data.login_acc }}</td>
+            <td>{{ data.phone }}</td>
+            <td>{{ data.e_mail }}</td>
+            <td>{{ data.address }}</td>
+          </tr>
+        </ng-container>
+
+      </tbody>
+    </table>
+  </mat-tab>
+</mat-tab-group>
+

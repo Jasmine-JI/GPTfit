@@ -39,16 +39,16 @@ router.get('/lists', function (req, res, next) {
     sql = `
     select (case when e_mail is null or e_mail = '' then concat('+',u.country_code, u.phone) else e_mail end) as info,
     s.message, DATE_FORMAT(s.time, '%Y-%m-%d %H:%i:%s') as time, s.equipment_sn
-    from save_device_log as s,
-    user_profile as u
+    from ?? as s,
+    ?? as u
     where s.user_id = u.user_id
-    and u.user_id = ${userId}
+    and u.user_id = ?
     ${dateQuery}
     ${sortQuery}
     ;
   `;
   }
-  con.query(sql, ['save_device_log', 'user_profile'], function(err, rows) {
+  con.query(sql, ['save_device_log', 'user_profile', userId], function(err, rows) {
     if (err) {
       console.log(err);
       return res.status(500).send({

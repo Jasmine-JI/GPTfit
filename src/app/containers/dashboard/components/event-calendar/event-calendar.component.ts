@@ -3,6 +3,8 @@ import * as moment from 'moment';
 import { Router } from '@angular/router';
 import { EventInfoService } from '../../services/event-info.service';
 import { HttpParams } from '@angular/common/http';
+import { MatDialog } from '@angular/material/dialog';
+import { Top3DialogComponent } from '../top3-dialog/top3-dialog.component';
 
 @Component({
   selector: 'app-event-calendar',
@@ -21,9 +23,11 @@ export class EventCalendarComponent implements OnInit {
   id: number;
   sessionMonth: string;
   events: any;
+  todayStamp = Date.now() / 1000;
   constructor(
     private router: Router,
-    private eventInfoService: EventInfoService
+    private eventInfoService: EventInfoService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -98,19 +102,24 @@ export class EventCalendarComponent implements OnInit {
             session_name,
             start_date,
             event_id,
-            session_id
+            session_id,
+            time_stamp_end,
+            specific_map
           } = _event;
           const subject = event_name + session_name;
           const session_startDate = moment(
             moment(start_date).format('YYYY-MM-DDT00:00:00')
           ).unix();
           this.days.forEach(item => {
+            const isEventEnd = time_stamp_end < this.todayStamp ? true : false;
             if (moment(item.datetime).unix() === session_startDate) {
               item.notes.push({
                 type: 2,
                 subject,
                 session_id,
-                event_id
+                event_id,
+                isEventEnd,
+                specific_map
               });
               item.notes.sort((a, b) => a.session_id - b.session_id);
             }
@@ -123,5 +132,15 @@ export class EventCalendarComponent implements OnInit {
     this.router.navigateByUrl(
       '/dashboardalaala/enroll/' + `${event_id}` + `?session_id=${session_id}`
     );
+  }
+  handleDisplayTop3(sessionId, eventId, mapIdStr) {
+    this.dialog.open(Top3DialogComponent, {
+      hasBackdrop: true,
+      data: {
+        sessionId,
+        eventId,
+        mapIdStr
+      }
+    });
   }
 }

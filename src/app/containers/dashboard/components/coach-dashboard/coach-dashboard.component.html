@@ -1,0 +1,136 @@
+<div style="background-color: #333;height: calc(100vh - 10px)">
+  <div class="container">
+    <div class="main-menu">
+      <div style="display:flex;width:100%">
+        <ul class="main-menu__nav">
+          <li (click)="choose(1)" [class.active]="tabIdx === 1">
+            <a data-title="目前訓練">目前訓練</a>
+          </li>
+          <li (click)="choose(2)"  [class.active]="tabIdx === 2">
+            <a  data-title="開啟新訓練">開啟新訓練</a>
+          </li>
+
+          <li (click)="choose(3)"  [class.active]="tabIdx === 3">
+            <a  data-title="Exit">Exit</a>
+          </li>
+        </ul>
+        <div class="content">
+          <ng-container *ngIf="tabIdx === 1">
+            <div *ngIf="raceList.length === 0" style="color: #fff">
+              尚無訓練進行中
+            </div>
+            <div *ngIf="raceList.length > 0" style="display: flex;flex-wrap: wrap;">
+              <div class="flex-container status_waitting">
+                <div class="card-left">
+                  <img src={{mapImages[0]}}>
+                </div>
+                <div class="card-right">
+                  <div class="title status_waitting">
+                    <div class="race_id">
+                      8888
+                    </div>
+                    三缺一
+                  </div>
+                  <div class="info">
+                    <div class="race_status status_waitting">
+                      等待中
+                    </div>
+                    <div class="map_name status_waitting">
+                      艾菲爾鐵塔
+                    </div>
+                    <div class="race_mans">
+                      1/2
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="flex-container" *ngFor="let item of raceList;"
+                (click)="goViewRace(item.raceIndex)"
+              >
+                <div class="card-left">
+                  <img src={{mapImages[item.raceMapID-1]}}>
+                </div>
+                <div class="card-right">
+                  <div class="title">
+                    <div class="race_id">
+                       {{ item.raceIndex }}
+                    </div>
+                    快進來訓練喔
+                  </div>
+                  <div class="info">
+                    <div class="race_status">
+                      <ng-container *ngIf="item.raceStatus === 1">
+                        競賽中
+                      </ng-container>
+                      <ng-container *ngIf="item.raceStatus === 2">
+                        等待中
+                      </ng-container>
+                      <ng-container *ngIf="item.raceStatus === 3">
+                        倒數中
+                      </ng-container>
+                      <ng-container *ngIf="item.raceStatus === 4">
+                        結束中
+                      </ng-container>
+                    </div>
+                    <div class="map_name">
+                       {{ item.raceMap }}
+                    </div>
+                    <div class="race_mans">
+                       {{ item.raceMans }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="tabIdx === 2">
+            <div class="box-outer" *ngFor="let item of mapImages; let idx = index">
+              <div class="main_box" (click)="chooseMap(idx + 1)">
+                <ng-container *ngIf="mapIdx === idx + 1">
+                  <div class="bar top "></div>
+                  <div class="bar right delay"></div>
+                  <div class="bar bottom delay"></div>
+                  <div class="bar left "></div>
+                </ng-container>
+                <article class="tile">
+                  <figure>
+                    <img src={{item}}/>
+                    <figcaption>
+                      <h2 style="color: #333">{{ mapInfos[idx].name }}</h2>
+                    </figcaption>
+                  </figure>
+                </article>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+
+      <div style="width: 100%;display: inline-block;color:#fff" *ngIf="tabIdx === 2">
+        <div style="font-size:18px">
+          <label>地圖名稱:</label> {{ mapInfos[mapIdx - 1].name }}
+        </div>
+        <div>
+          <label>訓練目標:</label> {{ mapInfos[mapIdx - 1].target }}
+        </div>
+        <div>
+          <label>地圖總距離:</label> {{ mapInfos[mapIdx - 1].distance }}
+        </div>
+        <div>
+          <label>地圖總爬升:</label> {{ mapInfos[mapIdx - 1].incline }}
+        </div>
+        <label>地圖類別:</label> {{ mapInfos[mapIdx - 1].category }}
+      </div>
+    </div>
+
+  </div>
+  <footer class="footer">
+    <div class="container">
+      <button class="alatech-btn alatech-btn--default coach-btn"
+       (click)="createTestRoom()"
+      >
+        開啟訓練
+      </button>
+    </div>
+  </footer>
+</div>
