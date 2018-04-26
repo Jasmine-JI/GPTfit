@@ -1,39 +1,4 @@
 <div class="form-group">
-  <div class="row" style="margin-bottom: 15px;">
-    <div class="col-md-3 text-md-right">
-      <label class="form__label--required">及時排行版時間範圍:</label>
-    </div>
-    <div class="col-md-9">
-      <input style="width: 200px;display: inline-block"
-        class="form-control form-field"
-        name="timeStart" [(ngModel)]="timeStart"
-        placeholder="YYYY-MM-DD hh:mm"
-        (keyup)="onTimeStartChange($event)"
-      />
-      ~
-      <input style="width: 200px;display: inline-block"
-        class="form-control form-field"
-        name="timeEnd" [(ngModel)]="timeEnd"
-        placeholder="YYYY-MM-DD hh:mm"
-        (keyup)="onTimeEndChange($event)"
-      />
-      <select name="map_id" [(ngModel)]="map_id" class="form-field">
-        <option [value]="1">艾菲爾鐵塔</option>
-        <option [value]="2">慕尼黑奧林匹克公園</option>
-        <option [value]="3">居庸關長城</option>
-        <option [value]="4">阿爾卑斯山 艾羅路山路</option>
-        <option [value]="5">希臘 雅典運動場</option>
-      </select>
-      <a class="alatech-btn alatech-btn--default"
-        target="_blank" href="/dashboardalaala/real-time-leaderboard?ipm=s&&time_start={{ time_start }}&&time_end={{ time_end }}&&map_id={{ map_id }}"
-      >
-        及時排行榜預覽
-      </a>
-      <div style="color: #999;font-size: 10px;">
-        ※時間範例2017-12-09 00:00:00
-      </div>
-    </div>
-  </div>
   <div class="row">
     <div class="col-md-3  text-md-right">
       <label class="">手動更新排行版的資料表:</label>

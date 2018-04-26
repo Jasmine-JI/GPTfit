@@ -1,7 +1,7 @@
 <div class="leaderboard-bg" [style.background-image]="bgImageUrl" *ngIf="!isLoading">
   <div class="leaderboard-layer">
     <div class="container leaderboard-rwd">
-      <div style="margin: -5px -15px 0px;border-bottom: 5px solid #26ABE4">
+      <div style="margin: 0px -15px 0px;border-bottom: 1px solid #dbd8ca">
         <ul class="tablist">
           <li class="tablist__tab"
             title="一般賽事排行版"
@@ -15,6 +15,9 @@
               title="{{tab.session_name}}"
               (click)="selectTab(_tabIdx + 1)"
               [class.tablist__tab--selected]="tabIdx === _tabIdx + 1"
+              [class.tablist__tab--total4]="_tabIdx + 1 > 2 && rankTabs.length === 3"
+              [class.tablist__tab--total5]="_tabIdx + 1 > 2 && rankTabs.length === 4"
+              [class.tablist__tab--total6]="_tabIdx + 1 > 2 && rankTabs.length === 5"
             >
               {{ tab.session_name }}
             </li>
