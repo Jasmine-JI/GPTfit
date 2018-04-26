@@ -91,7 +91,7 @@ router.post('/create', (req, res) => {
         launch_time_stamp,
         `${lanuch_date}`,
         `${launch_user_name}`,
-        `${description || null}`,
+        `${description || ''}`,
         `${event_time_name}`,
         event_start,
         event_end
@@ -301,10 +301,11 @@ router.put('/edit', (req, res, next) => {
           launch_time_stamp = ${launch_time_stamp},
           lanuch_date = '${lanuch_date}',
           launch_user_name = '${launch_user_name}',
-          description = '${description}',
+          description = '${description || ''}',
           event_time_name = '${event_time_name}',
           event_time_start = ${event_start},
           event_time_end = ${event_end}
+          where event_id = ${event_id}
         ;`;
       }
 
