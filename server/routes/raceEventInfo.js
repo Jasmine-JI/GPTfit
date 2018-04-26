@@ -1,7 +1,11 @@
 var express = require('express');
 var moment = require('moment');
 var router = express.Router();
-const { checkSessionExit, checkEventId } = require('../models/event_model');
+const {
+  checkSessionExit,
+  checkEventId,
+  checkShowPortalNum
+} = require('../models/event_model');
 
 router.get('/', function(req, res, next) {
   const { con, query: { event_id, session_id } } = req;
@@ -50,6 +54,7 @@ router.post('/create', (req, res) => {
     let results = [];
     checkEventId(event_id).then((response) => {
       if (response) {
+        let showPortalNum = 0;
         if (sessions.length > 0) {
           results = sessions.map(_session => {
             const {
@@ -61,6 +66,9 @@ router.post('/create', (req, res) => {
               isSpecificMap,
               chooseMaps
             } = _session;
+            if (isShowPortal) {
+              showPortalNum++;
+            }
             const time_stamp_start = moment(session_start_date).unix();
             const time_stamp_end = moment(session_end_date).unix();
             const session_id = moment(session_start_date, 'YMDH').format('YMDH');
@@ -148,22 +156,31 @@ router.post('/create', (req, res) => {
           )
           values (?);`;
         }
-
-        con.query(sql, ['race_event_info', results], (err, rows) => {
-          if (err) {
-            return res.status(500).send({
-              errorMessage: err.sqlMessage
+        checkShowPortalNum(showPortalNum).then((data) => {
+          const { isTooMuch, currNum } = data;
+          if (!isTooMuch) {
+            con.query(sql, ['race_event_info', results], (err, rows) => {
+              if (err) {
+                console.log('!!!!!', err);
+                return res.status(500).send({
+                  errorMessage: err.sqlMessage
+                });
+              }
+              res.send({
+                event_id,
+                event_name,
+                launch_time_stamp,
+                lanuch_date,
+                launch_user_name,
+                description
+              });
             });
+          }  else {
+            res.status(500).json(currNum);
           }
-          res.send({
-            event_id,
-            event_name,
-            launch_time_stamp,
-            lanuch_date,
-            launch_user_name,
-            description
-          });
+
         });
+
       } else {
         res.send('duplicate eventId');
       }
@@ -213,6 +230,7 @@ router.put('/edit', (req, res, next) => {
     const event_time_name = event_time_start + ' ~ ' + event_time_end;
     const event_start = moment(event_time_start, 'YYYY-MM-DD H:mm:ss').unix();
     const event_end = moment(event_time_end, 'YYYY-MM-DD H:mm:ss').unix();
+    let showPortalNum = 0;
     if (sessions.length > 0) {
       values = sessions.map(_session => {
         const {
@@ -225,6 +243,9 @@ router.put('/edit', (req, res, next) => {
           chooseMapStr,
           isSpecificMap
         } = _session;
+        if (isShowPortal) {
+          showPortalNum++;
+        }
         const time_stamp_start = moment(
           session_start_date,
           'YYYY-MM-DD H:mm:ss'
@@ -327,16 +348,22 @@ router.put('/edit', (req, res, next) => {
         deleteIds.length > 0
           ? `delete from race_event_info where session_id in (${deleteIds})`
           : '';
-
-      con.query(`${sql}${sql2}`, [values], function(err, rows) {
-        if (err) {
-          console.log(err.sqlMessage);
-          res.status(500).send(err);
-        }
-        if (rows) {
-          res.send('更新成功');
+      checkShowPortalNum(showPortalNum, event_id).then((data) => {
+        const { isTooMuch, currNum } = data;
+        if (!isTooMuch) {
+          con.query(`${sql}${sql2}`, [values], function(err, rows) {
+            if (err) {
+              console.log(err.sqlMessage);
+              res.status(500).send(err);
+            }
+            if (rows) {
+              res.send('更新成功');
+            } else {
+              res.status(500).send('有遺失喔');
+            }
+          });
         } else {
-          res.status(500).send('有遺失喔');
+          res.status(500).json(currNum);
         }
       });
     });

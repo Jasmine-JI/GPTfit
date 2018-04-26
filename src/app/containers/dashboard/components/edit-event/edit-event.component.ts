@@ -25,21 +25,19 @@ export class EditEventComponent implements OnInit {
     height: '30px',
     width: '200px',
     selectorWidth: '200px',
-    dateFormat: 'yyyy-mm-dd',
-    disableUntil: { year: 2017, month: 12, day: 4 }
+    dateFormat: 'yyyy-mm-dd'
   };
   endDateOptions: IMyDpOptions = {
     height: '30px',
     width: '200px',
     selectorWidth: '200px',
-    dateFormat: 'yyyy-mm-dd',
-    disableUntil: { year: 2017, month: 12, day: 4 }
+    dateFormat: 'yyyy-mm-dd'
   };
   startDay: any = {
     date: {
-      year: 2017,
-      month: 12,
-      day: 20
+      year: new Date().getFullYear(),
+      month: new Date().getMonth() + 1,
+      day: new Date().getUTCDate()
     }
   };
   finalDay: any = {
@@ -80,8 +78,8 @@ export class EditEventComponent implements OnInit {
       event_name: ['', Validators.required],
       selectedStartDate: [this.startDay, Validators.required],
       selectedEndDate: [this.finalDay, Validators.required],
-      event_timer_start: ['12:30', Validators.required],
-      event_timer_end: ['02:30', Validators.required],
+      event_timer_start: ['00:00', Validators.required],
+      event_timer_end: ['23:59', Validators.required],
       launch_user_name: ['', Validators.required],
       description: '',
       sessionDatas: this.fb.array([])
@@ -191,29 +189,28 @@ export class EditEventComponent implements OnInit {
       });
     });
   }
-  createForm(events) {
-    const { event_name, description } = events;
-    this.complexForm = this.fb.group({
-      // 定義表格的預設值
-      event_name: [event_name, Validators.required],
-      selectedStartDate: [this.startDay, Validators.required],
-      selectedEndDate: [this.finalDay, Validators.required],
-      event_timer_start: ['12:30', Validators.required],
-      event_timer_end: ['02:30', Validators.required],
-      launch_user_name: ['', Validators.required],
-      description,
-      sessionDatas: this.fb.array(events)
-    });
-  }
+
   initSessions(): FormGroup {
     return this.fb.group({
       isShowPortal: [false],
       isRealTime: [false],
       session_name: ['', Validators.required],
-      session_start_date: ['', Validators.required],
-      session_start_time: ['', Validators.required],
-      session_end_date: ['', Validators.required],
-      session_end_time: ['', Validators.required],
+      session_start_date: [
+        this.complexForm.controls['selectedStartDate'].value,
+        Validators.required
+      ],
+      session_start_time: [
+        this.complexForm.controls['event_timer_start'].value,
+        Validators.required
+      ],
+      session_end_date: [
+        this.complexForm.controls['selectedEndDate'].value,
+        Validators.required
+      ],
+      session_end_time: [
+        this.complexForm.controls['event_timer_end'].value,
+        Validators.required
+      ],
       isSpecificMap: [false, Validators.required],
       chooseMaps: ''
     });
@@ -231,7 +228,10 @@ export class EditEventComponent implements OnInit {
       chooseMaps
     } = data;
 
-    const chooseMapOptions = chooseMaps.length > 0 ? chooseMaps.map(_map => Number(_map)) : chooseMaps.split(',').map(_map => Number(_map));
+    const chooseMapOptions =
+      chooseMaps.length > 0
+        ? chooseMaps.map(_map => Number(_map))
+        : chooseMaps.split(',').map(_map => Number(_map));
     return this.fb.group({
       isShowPortal: [isShowPortal],
       isRealTime: [isRealTime],
@@ -255,7 +255,9 @@ export class EditEventComponent implements OnInit {
   }
   convertDateString(_date) {
     if (_date) {
-      const { date: { day, month, year } } = _date;
+      const {
+        date: { day, month, year }
+      } = _date;
       return year.toString() + '-' + month.toString() + '-' + day.toString();
     }
     return (
@@ -305,7 +307,8 @@ export class EditEventComponent implements OnInit {
     };
     if (sessionDatas.length > 0) {
       const sessionResults = sessionDatas.map(_data => {
-        let chooseMapStr = _data.chooseMaps === '' ? '' :  _data.chooseMaps.join();
+        let chooseMapStr =
+          _data.chooseMaps === '' ? '' : _data.chooseMaps.join();
         const session_start_date =
           this.convertDateString(_data.session_start_date) +
           ' ' +
@@ -332,11 +335,22 @@ export class EditEventComponent implements OnInit {
     }
 
     if (valid) {
-      this.eventInfoService
-        .updateEvent(data)
-        .subscribe(results =>
-          this.router.navigateByUrl('/dashboardalaala/event')
-        );
+      this.eventInfoService.updateEvent(data).subscribe(
+        results => {
+          this.router.navigateByUrl('/dashboardalaala/event');
+        },
+        err => {
+          return this.dialog.open(MsgDialogComponent, {
+            hasBackdrop: true,
+            data: {
+              title: 'Message',
+              body: `顯示外部排行活動數量超過上限，最多五筆，目前操作總共有${
+                err.error
+              }筆`
+            }
+          });
+        }
+      );
     }
   }
   convertDBBoolean(value) {
