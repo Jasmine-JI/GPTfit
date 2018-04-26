@@ -1,6 +1,33 @@
 const db = require('./connection_db');
 
-module.exports = function checkSessionExit(eventId, sessions) {
+exports.checkEventId = function(eventId) {
+  let result = {};
+  return new Promise((resolve, reject) => {
+    if (eventId) {
+      db.query(
+        `SELECT session_id FROM ?? WHERE event_id = ?`,
+        ['race_event_info', eventId],
+        function(err, rows) {
+          if (err) {
+            result.status = '系統異常';
+            result.err = 'eventId未傳入';
+            reject(result);
+          }
+          if (rows.length === 0) {
+            return resolve(true);
+          } else {
+            return resolve(false);
+          }
+        }
+      );
+    } else {
+      return resolve(false);
+    }
+  });
+
+
+}
+exports.checkSessionExit =  function (eventId, sessions) {
   let result = {};
   return new Promise((resolve, reject) => {
     db.query(

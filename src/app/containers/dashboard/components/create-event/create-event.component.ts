@@ -137,9 +137,18 @@ export class CreateEventComponent implements OnInit {
     if (valid) {
       this.eventInfoService
         .createEvent(data)
-        .subscribe(results =>
-          this.router.navigateByUrl('/dashboardalaala/event')
-        );
+        .subscribe(results => {
+          if (results === 'duplicate eventId') {
+            return this.dialog.open(MsgDialogComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'Message',
+                body: '此eventId已重複'
+              }
+            });
+          }
+          this.router.navigateByUrl('/dashboardalaala/event');
+        });
     }
   }
   initSessions(): FormGroup {
