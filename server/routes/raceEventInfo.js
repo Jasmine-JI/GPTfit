@@ -1,7 +1,7 @@
 var express = require('express');
 var moment = require('moment');
 var router = express.Router();
-var checkSessionExit = require('../models/event_model');
+const { checkSessionExit, checkEventId } = require('../models/event_model');
 
 router.get('/', function(req, res, next) {
   const { con, query: { event_id, session_id } } = req;
@@ -48,115 +48,129 @@ router.post('/create', (req, res) => {
     const event_start = moment(event_time_start, 'YYYY-MM-DD H:mm:ss').unix();
     const event_end = moment(event_time_end, 'YYYY-MM-DD H:mm:ss').unix();
     let results = [];
-    if (sessions.length > 0) {
-      results = sessions.map(_session => {
-        const {
-          session_end_date,
-          session_name,
-          session_start_date,
-          isRealTime,
-          isShowPortal,
-          isSpecificMap,
-          chooseMaps
-        } = _session;
-        const time_stamp_start = moment(session_start_date).unix();
-        const time_stamp_end = moment(session_end_date).unix();
-        const session_id = moment(session_start_date, 'YMDH').format('YMDH');
-        return [
-          event_id,
-          `${event_name}`,
-          session_id,
-          `${session_name}`,
-          time_stamp_start,
-          `${session_start_date}`,
-          time_stamp_end,
-          `${session_end_date}`,
-          launch_time_stamp,
-          `${lanuch_date}`,
-          `${launch_user_name}`,
-          `${description}`,
-          `${event_time_name}`,
-          event_start,
-          event_end,
-          isRealTime,
-          isShowPortal,
-          isSpecificMap,
-          chooseMaps
-        ];
-      });
-    } else {
-      results = [
-        event_id,
-        `${event_name}`,
-        launch_time_stamp,
-        `${lanuch_date}`,
-        `${launch_user_name}`,
-        `${description || ''}`,
-        `${event_time_name}`,
-        event_start,
-        event_end
-      ];
-    }
-    const sqlParams = [event_id, event_name, launch_time_stamp, lanuch_date, launch_user_name
-      ,description, event_time_name, event_start, event_end
-    ];
-    let sql = '';
-    if (sessions.length > 0) {
-      sql = `
-      INSERT INTO race_event_info (
-        event_id,
-        event_name,
-        session_id,
-        session_name,
-        time_stamp_start,
-        start_date,
-        time_stamp_end,
-        end_date,
-        launch_time_stamp,
-        lanuch_date,
-        launch_user_name,
-        description,
-        event_time_name,
-        event_time_start,
-        event_time_end,
-        is_real_time,
-        is_show_portal,
-        is_specific_map,
-        specific_map
-      )
-      values ?;`;
-    } else {
-      sql = `
-      INSERT INTO race_event_info (
-        event_id,
-        event_name,
-        launch_time_stamp,
-        lanuch_date,
-        launch_user_name,
-        description,
-        event_time_name,
-        event_time_start,
-        event_time_end
-      )
-      values (?);`;
-    }
+    checkEventId(event_id).then((response) => {
+      if (response) {
+        if (sessions.length > 0) {
+          results = sessions.map(_session => {
+            const {
+              session_end_date,
+              session_name,
+              session_start_date,
+              isRealTime,
+              isShowPortal,
+              isSpecificMap,
+              chooseMaps
+            } = _session;
+            const time_stamp_start = moment(session_start_date).unix();
+            const time_stamp_end = moment(session_end_date).unix();
+            const session_id = moment(session_start_date, 'YMDH').format('YMDH');
+            return [
+              event_id,
+              `${event_name}`,
+              session_id,
+              `${session_name}`,
+              time_stamp_start,
+              `${session_start_date}`,
+              time_stamp_end,
+              `${session_end_date}`,
+              launch_time_stamp,
+              `${lanuch_date}`,
+              `${launch_user_name}`,
+              `${description}`,
+              `${event_time_name}`,
+              event_start,
+              event_end,
+              isRealTime,
+              isShowPortal,
+              isSpecificMap,
+              chooseMaps
+            ];
+          });
+        } else {
+          results = [
+            event_id,
+            `${event_name}`,
+            launch_time_stamp,
+            `${lanuch_date}`,
+            `${launch_user_name}`,
+            `${description || ''}`,
+            `${event_time_name}`,
+            event_start,
+            event_end,
+            event_id,
+            `${event_name}`,
+            event_start,
+            event_end
+          ];
+        }
 
-    con.query(sql, [results, sqlParams], (err, rows) => {
-      if (err) {
-        return res.status(500).send({
-          errorMessage: err.sqlMessage
+        let sql = '';
+        if (sessions.length > 0) {
+          sql = `
+          INSERT INTO ?? (
+            event_id,
+            event_name,
+            session_id,
+            session_name,
+            time_stamp_start,
+            start_date,
+            time_stamp_end,
+            end_date,
+            launch_time_stamp,
+            lanuch_date,
+            launch_user_name,
+            description,
+            event_time_name,
+            event_time_start,
+            event_time_end,
+            is_real_time,
+            is_show_portal,
+            is_specific_map,
+            specific_map
+          )
+          values ?;`;
+        } else {
+          sql = `
+          INSERT INTO ?? (
+            event_id,
+            event_name,
+            launch_time_stamp,
+            lanuch_date,
+            launch_user_name,
+            description,
+            event_time_name,
+            event_time_start,
+            event_time_end,
+            session_id,
+            session_name,
+            time_stamp_start,
+            time_stamp_end
+          )
+          values (?);`;
+        }
+
+        con.query(sql, ['race_event_info', results], (err, rows) => {
+          if (err) {
+            return res.status(500).send({
+              errorMessage: err.sqlMessage
+            });
+          }
+          res.send({
+            event_id,
+            event_name,
+            launch_time_stamp,
+            lanuch_date,
+            launch_user_name,
+            description
+          });
         });
+      } else {
+        res.send('duplicate eventId');
       }
-      res.send({
-        event_id,
-        event_name,
-        launch_time_stamp,
-        lanuch_date,
-        launch_user_name,
-        description
-      });
+
     });
-  } catch (err) {
+  }
+    catch (err) {
     console.log(err);
     res.status(500).send(err);
   }
