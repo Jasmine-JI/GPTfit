@@ -56,7 +56,6 @@ connection.connect(function (err) {
   console.log('Connected to MySql');
 
 });
-
 // Body parser middleware
 
 // parse application/x-www-form-urlencoded
