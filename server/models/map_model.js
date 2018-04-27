@@ -7,15 +7,16 @@ exports.getMapList = function() {
         let urls = [];
         const datas = JSON.parse(body).mapList.raceMapInfo.map(_info => {
           const { mapId, distance, totalElevation, incline, mapUpdateFile } = _info;
-          let imgUrl =  '/app/public_html/cloudrun/update/'
-          imgUrl += mapUpdateFile.replace('.zip', '/');
+          const race_elevation = Number(totalElevation.replace('m', ''));
+          let img_url =  '/app/public_html/cloudrun/update/'
+          img_url += mapUpdateFile.replace('.zip', '/');
           urls.push('http://cloud.alatech.com.tw/app/public_html/cloudrun/update/map-summary/map-mapdefinition_' + mapId + '.json');
           return ({
             map_index: mapId,
             race_total_distance: distance,
-            race_elevation: totalElevation,
+            race_elevation,
             race_average_incline: incline,
-            imgUrl
+            img_url
           });
         });
       resolve({datas, urls});
