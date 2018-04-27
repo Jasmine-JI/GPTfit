@@ -3,6 +3,8 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var schedule = require('node-schedule');
 var os = require('os');
+const { getMapList } = require('./server/models/map_model');
+
 // const https = require('https');
 // const fs = require('fs');
 
@@ -58,7 +60,7 @@ connection.connect(function (err) {
 
 });
 
-function scheduleCronstyle() {
+const runRankTask = function () {
   schedule.scheduleJob('00 00 06 * * *', function () { // 每日早上六點
     var now = new Date();
     var now_mill = now.getTime();
@@ -154,7 +156,56 @@ b.map_id = m.map_index
     });
   });
 }
-scheduleCronstyle();
+const runMapTask = function() {
+
+  schedule.scheduleJob('00 00 06 * * *', function() {
+    // 每日早上六點
+    const sql = 'TRUNCATE TABLE ??';
+
+    connection.query(sql, 'race_map_info', function(err, rows) {
+      if (err) {
+        throw err;
+      }
+      getMapList().then(mapLists => {
+        const sql2 = `insert into ?? (
+            map_index,
+            race_total_distance,
+            race_elevation,
+            race_average_incline,
+            img_url,
+            left_top_coordinate,
+            right_bottom_coordinate,
+            max_lap_limit,
+            map_name
+        ) values ?
+          `;
+        const { datas, urls } = mapLists;
+        async.map(urls, httpGet, function(err, response) {
+          if (err) return console.log(err);
+          const maps = response.map((_res, idx) => {
+            const { map: { buildMap: { info }, raceRoom, basic } } = _res;
+            datas[idx].img_url += info[0].FileName1080p;
+            datas[idx].left_top_coordinate = info[0].leftTopCoordinateLat;
+            datas[idx].right_bottom_coordinate = info[0].rightBottomCoordinateLat;
+            datas[idx].max_lap_limit = raceRoom.info[0].raceLap;
+            datas[idx].map_name = basic.info[0].mapName;
+            return info[0].FileName1080p;
+          });
+          const results = datas.map(_data => Object.values(_data));
+          con.query(sql2, ['race_map_info', results], function(err, rows) {
+            if (err) {
+              throw err;
+            }
+          });
+          console.log('complete update!!');
+        });
+      });
+    });
+  });
+};
+runRankTask();
+runMapTask();
+
 
 // Body parser middleware
 
@@ -221,6 +272,7 @@ var raceEventInfo = require('./server/routes/raceEventInfo.js');
 var runGpx = require('./server/routes/runGpx.js');
 var deviceLog = require('./server/routes/deviceLog.js');
 var coach = require('./server/routes/coach.js');
+var map = require('./server/routes/map.js');
 
 app.use('/nodejs/api/rankForm', rankForm);
 app.use('/nodejs/api/resetPassword', resetPassword);
@@ -229,6 +281,7 @@ app.use('/nodejs/api/raceEventInfo', raceEventInfo);
 app.use('/nodejs/api/gpx', runGpx);
 app.use('/nodejs/api/deviceLog', deviceLog);
 app.use('/nodejs/api/coach', coach);
+app.use('/nodejs/api/map', map);
 
 // Start the server
 const port = process.env.PORT || 3000;
