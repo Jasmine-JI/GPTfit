@@ -2,6 +2,10 @@ var mysql = require("mysql");
 var express = require('express');
 var bodyParser = require('body-parser');
 var os = require('os');
+var schedule = require('node-schedule');
+const { getMapList } = require('./models/map_model');
+var async = require('async');
+var request = require('request');
 
 // const https = require('https');
 // const fs = require('fs');
@@ -57,6 +61,7 @@ connection.connect(function (err) {
   console.log('Connected to MySql');
 
 });
+
 // Body parser middleware
 
 // parse application/x-www-form-urlencoded
