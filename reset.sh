@@ -14,7 +14,9 @@ fi
 if [ ! -L /var/www/html/dist/.htaccess ]; then
   ln -s /var/www/html/.htaccess /var/www/html/dist/
 fi
-
+if [ ! -L /var/www/html/dist/app ]; then
+        ln -s /var/www/html/app /var/www/html/dist/app
+fi
 if [ $IP_ADDR == "192.168.1.235" ]; then
   API_SERVER="/home/administrator/myWorkSpace/web"
   if [ ! -L /var/www/html/dist/phpmyadmin ]; then
@@ -44,9 +46,6 @@ elif [ $IP_ADDR == "192.168.1.234" ]; then
   fi
   if [ ! -L /var/www/html/dist/device_log ]; then
           ln -s /var/www/html/device_log /var/www/html/dist/device_log
-  fi
-  if [ ! -L /var/www/html/dist/app ]; then
-    ln -s /var/www/html/app /var/www/html/dist/app
   fi
 elif [ $IP_ADDR == "192.168.1.232" ]; then
   if [ ! -h /var/www/html/dist/angular ]; then
@@ -105,9 +104,6 @@ else
   fi
   if [ ! -h /var/www/html/dist/redirect.php ]; then
           ln -s $HOME/redirect/redirect.php /var/www/html/dist/
-  fi
-  if [ ! -L /var/www/html/dist/app ]; then
-    ln -s /var/www/html/app /var/www/html/dist/app
   fi
 fi
 

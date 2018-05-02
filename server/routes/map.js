@@ -14,7 +14,14 @@ function httpGet(url, callback) {
     callback(err, body);
   });
 }
-
+router.get('/mapUrl', function(req, res, next) {
+  const { con } = req;
+  const sql = 'select img_url from ??';
+  con.query(sql, 'race_map_info', function(err, rows) {
+    rows = rows.map(_row => _row.img_url);
+    res.json(rows);
+  });
+});
 
 router.get('/', function(req, res, next) {
   const { con } = req;
@@ -47,7 +54,7 @@ router.get('/', function(req, res, next) {
               basic
             }
           } = _res;
-          datas[idx].img_url += info[0].FileName1080p;
+          datas[idx].img_url += info[0].FileName1080p.replace('1080', 'web_bg');
           datas[idx].left_top_coordinate = info[0].leftTopCoordinateLat;
           datas[idx].right_bottom_coordinate = info[0].rightBottomCoordinateLat;
           datas[idx].max_lap_limit = raceRoom.info[0].raceLap;
