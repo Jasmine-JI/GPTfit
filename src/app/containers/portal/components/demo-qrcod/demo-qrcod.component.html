@@ -1,0 +1,32 @@
+<div class="container">
+  <div style="display:flex;height: calc(100vh - 75px);justify-content: center;flex-direction: column;font-size:20px">
+    <div class="row" style="margin-bottom: 15px">
+      <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">連線狀態：</div>
+      <div class="col-sm-6 text-sm-left text-center"><img src="/assets/images/deviceOnline.png">在線中</div>
+    </div>
+    <div class="row" style="margin-bottom: 15px">
+      <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">設備序號：</div>
+      <div class="col-sm-6 text-sm-left text-center">{{ displayQr.device_sn || '尚無相關資訊' }}</div>
+    </div>
+    <div class="row" style="margin-bottom: 15px">
+      <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">設備藍牙名稱：</div>
+      <div class="col-sm-6 text-sm-left text-center">{{ displayQr.bt_name || '尚無相關資訊' }}</div>
+    </div>
+    <div class="row" style="margin-bottom: 15px">
+      <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">設備藍牙密碼(非必須)：</div>
+      <div class="col-sm-6 text-sm-left text-center">0000</div>
+    </div>
+    <div class="row" style="margin-bottom: 15px">
+      <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">設備藍牙位址(非必須)：</div>
+      <div class="col-sm-6 text-sm-left text-center">{{ displayQr.bt_mac || '尚無相關資訊' }}</div>
+    </div>
+    <div class="row" style="margin-bottom: 15px" style="justify-content: center;">
+      <button class="alatech-btn alatech-btn--default">
+        登入設備
+      </button>
+      <button class="alatech-btn alatech-btn--default">
+        即時資訊
+      </button>
+    </div>
+  </div>
+</div>

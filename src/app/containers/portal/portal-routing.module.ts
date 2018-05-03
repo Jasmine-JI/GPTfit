@@ -4,6 +4,7 @@ import { PortalComponent } from './portal.component';
 import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
 import { MapInfoComponent } from './components/map-info/map-info.component';
 import { PasswordComponent } from './components/password/password.component';
+import { DemoQrcodComponent } from './components/demo-qrcod/demo-qrcod.component';
 
 const routes: Routes = [
   {
@@ -17,6 +18,9 @@ const routes: Routes = [
       },
       {
         path: 'leaderboard/mapInfo', component: MapInfoComponent,
+      },
+      {
+        path: 'pair', component: DemoQrcodComponent,
       }
     ]
   }
