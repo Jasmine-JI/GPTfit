@@ -383,7 +383,6 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
           }
         });
       }
-
       let idx = this.customMapOptions.findIndex(
         _option => _option.map_id === Number(this.mapId)
       );
