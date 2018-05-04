@@ -37,9 +37,11 @@ export class Top3DialogComponent implements OnInit {
 
     this.eventInfoService.fetchMapDatas().subscribe(res => {
       this.mapDatas = res;
-      this.mapDatas = this.mapDatas.filter(
-        _map => this.mapIds.some(_id => _id === _map.map_index) === true
-      );
+      if (+this.mapId !== 0) {
+        this.mapDatas = this.mapDatas.filter(
+          _map => this.mapIds.some(_id => _id === _map.map_index) === true
+        );
+      }
     });
     this.handleDisplayData();
   }
@@ -55,6 +57,7 @@ export class Top3DialogComponent implements OnInit {
       this.topDatas = res;
     });
   }
+
   changeGender({ index }) {
     if (index > 0) {
       this.gender = index - 1;

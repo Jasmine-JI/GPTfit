@@ -24,7 +24,8 @@ import {
   MatAutocompleteModule,
   MatProgressSpinnerModule,
   MatSnackBarModule,
-  MatTabsModule
+  MatTabsModule,
+  MatExpansionModule
 } from '@angular/material';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import { LayoutModule } from '@angular/cdk/layout';
@@ -64,7 +65,8 @@ export const TW_FORMATS = {
     MatAutocompleteModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
-    MatTabsModule
+    MatTabsModule,
+    MatExpansionModule
   ],
   exports: [
     MatIconModule,
@@ -90,7 +92,8 @@ export const TW_FORMATS = {
     MatAutocompleteModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
-    MatTabsModule
+    MatTabsModule,
+    MatExpansionModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [

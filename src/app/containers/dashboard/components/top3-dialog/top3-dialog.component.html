@@ -5,6 +5,11 @@
     </mat-option>
   </mat-select>
 </mat-form-field>
+<div style="display: inline-block">
+  <button (click)="handleDisplayData()" class="button search-form__button">
+    <i class="fa fa-search"></i>
+  </button>
+</div>
 
 <mat-tab-group (selectChange)="changeGender($event)">
   <mat-tab label="不分組">
