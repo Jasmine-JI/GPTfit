@@ -30,7 +30,7 @@
         <td data-th="性別">{{ item.gender | sex }}</td>
         <td data-th="身分證字號">{{ item.id_number || '-'}}</td>
         <td data-th="地址">{{ item.address}}</td>
-        <td data-th="報名時間">{{ item.enroll_time * 1000 | unixTime }}</td>
+        <td data-th="報名時間">{{ item.enroll_time | unixTime }}</td>
       </tr>
     </ng-container>
     <ng-container *ngIf="results?.length === 0">

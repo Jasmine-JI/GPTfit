@@ -122,9 +122,9 @@ export class CreateEventComponent implements OnInit {
           isShowPortal: _data.isShowPortal,
           session_name: _data.session_name,
           session_start_date:
-            _data.session_start_date.formatted + ' ' + _data.session_start_time,
+            this.convertDateString(_data.session_start_date) + ' ' + _data.session_start_time,
           session_end_date:
-            _data.session_end_date.formatted + ' ' + _data.session_end_time,
+            this.convertDateString(_data.session_end_date) + ' ' + _data.session_end_time,
           isSpecificMap: _data.isSpecificMap,
           chooseMaps: _data.chooseMaps.join()
         };
