@@ -152,14 +152,7 @@ router.get('/', function(req, res, next) {
     const currDate = currentDate();
     const genderQuery = gender ? `and a.gender = ${gender}` : '';
     const eventQuery = event_id
-      ?
-      `and
-      (
-        (c.phone is not NULL and c.phone != '' and c.phone like concat('%', b.phone, '%'))
-        or
-        (c.e_mail is not NULL and c.e_mail != '' and c.e_mail = b.e_mail)
-      )
-      and c.event_id = ${event_id}`
+      ? `and (c.phone is not NULL and c.phone != '' and c.phone like concat('%', b.phone, '%')) or (c.e_mail is not NULL and c.e_mail != '' and c.e_mail = b.e_mail)  and c.event_id = ${event_id}`
       : '';
     const userIdQuery = userId ? `and user_id = ${userId}` : '';
     sql = `
