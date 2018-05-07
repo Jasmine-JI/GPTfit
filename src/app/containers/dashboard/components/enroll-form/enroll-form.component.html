@@ -15,20 +15,27 @@
   </div>
   <div style="padding: 30px;border: 1px solid #ccc;margin: -1px 0px 0px;">
     <div *ngIf="tabIdx === 0">
-      <div class="form-group">
-        <div class="form-group ">
-          <div class="row">
-            <div class="col-md-5 text-md-right">
-              <label class="form__label--required">Name:</label>
-            </div>
-            <div class="col-md-5">
-              <input type="text" class="form-control form-field" formControlName="userName"
-                [class.form-field--invalid]="(!complexForm.controls['userName'].valid
-                && complexForm.controls['userName'].touched) || (f.submitted && complexForm.get('userName').hasError('required'))"
-              />
-              <div class="form__message" *ngIf="(!complexForm.controls['userName'].valid && complexForm.controls['userName'].touched) || (f.submitted && complexForm.get('userName').hasError('required'))">
-                  userName is required.
-              </div>
+      <div class="form-group ">
+        <div class="row">
+          <div class="col-md-5 text-md-right">
+            <label class="form__label--required">活動名稱:</label>
+          </div>
+          <div class="col-md-5">
+          </div>
+        </div>
+      </div>
+      <div class="form-group ">
+        <div class="row">
+          <div class="col-md-5 text-md-right">
+            <label class="form__label--required">Name:</label>
+          </div>
+          <div class="col-md-5">
+            <input type="text" class="form-control form-field" formControlName="userName"
+              [class.form-field--invalid]="(!complexForm.controls['userName'].valid
+              && complexForm.controls['userName'].touched) || (f.submitted && complexForm.get('userName').hasError('required'))"
+            />
+            <div class="form__message" *ngIf="(!complexForm.controls['userName'].valid && complexForm.controls['userName'].touched) || (f.submitted && complexForm.get('userName').hasError('required'))">
+                userName is required.
             </div>
           </div>
         </div>

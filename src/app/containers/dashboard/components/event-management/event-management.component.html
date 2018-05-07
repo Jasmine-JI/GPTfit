@@ -1,0 +1,113 @@
+<div class="d-flex" style="margin-bottom: 15px">
+  <span style="color: #157fcc; font-weight:700">
+    尚未開始的活動
+  </span>
+</div>
+<div style="text-align:center" *ngIf="!isNotYetDone">
+  尚無相關資料
+</div>
+<mat-accordion multi="false">
+  <ng-container *ngFor="let event of events">
+    <mat-expansion-panel (click)="toggle(event.event_id)"
+      *ngIf="event?.event_time_end > todayTimeStamp "
+    >
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          賽事名稱: {{ event.event_name }}
+        </mat-panel-title>
+        <mat-panel-description>
+          賽事日期: {{ event?.event_time_start | unixTime }} ~ {{ event?.event_time_end | unixTime }}
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>活動名稱</th>
+            <th>活動日期</th>
+            <th>操作功能</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let session of yetSessions">
+            <td>{{ session.session_name }}</td>
+            <td>{{ session?.time_stamp_start | unixTime }} ~ {{ session?.time_stamp_end | unixTime }}</td>
+            <td>
+              <button class="icon-btn"
+                (click)="goEnroll(event.event_id, session.session_id)"
+                title="前往報名"
+              >
+                <i class="fa fa-pencil-square-o icon_fa"></i>
+              </button>
+              <button class="icon-btn"
+                *ngIf="session.event_time_end <= todayTimeStamp"
+                (click)="handleDisplayTop3(session.session_id, event.event_id, session.specific_map)"
+                title="顯示前三名"
+              >
+                <i class="fa fa-list-ol icon_fa"></i>
+              </button>
+              <a  class="icon-btn"
+                title="預覽目前報名名單"
+                target="_blank"
+                href="/dashboardalaala/enroll/{{ event.event_id }}/preview?ipm=s&&session_id={{ session.session_id }}"
+              >
+                <i class="fa fa-file-o icon_fa"></i>
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </mat-expansion-panel>
+  </ng-container>
+</mat-accordion>
+
+<div class="d-flex" style="margin: 30px 0px 15px">
+  <span style="color: #157fcc; font-weight:700">
+     已結束的活動
+  </span>
+</div>
+<div style="text-align:center" *ngIf="!isNotYetDone === false || events?.length === 0">
+  尚無相關資料
+</div>
+<mat-accordion multi="false">
+  <ng-container *ngFor="let event of events">
+    <mat-expansion-panel (click)="toggle(event.event_id)"
+      *ngIf="event?.event_time_end <= todayTimeStamp"
+    >
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          賽事名稱: {{ event.event_name }}
+        </mat-panel-title>
+        <mat-panel-description>
+          賽事日期: {{ event?.event_time_start | unixTime }} ~ {{ event?.event_time_end | unixTime }}
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>活動名稱</th>
+            <th>活動日期</th>
+            <th>操作功能</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let session of completeSessions">
+            <td>{{ session.session_name }}</td>
+            <td>{{ session?.time_stamp_start | unixTime }} ~ {{ session?.time_stamp_end | unixTime }}</td>
+            <td>
+              <button class="icon-btn" (click)="goEnroll(event.event_id, session.session_id)" title="前往報名">
+                <i class="fa fa-pencil-square-o icon_fa"></i>
+              </button>
+              <button class="icon-btn" *ngIf="session.event_time_end <= todayTimeStamp" (click)="handleDisplayTop3(session.session_id, event.event_id, session.specific_map)"
+                title="顯示前三名">
+                <i class="fa fa-list-ol icon_fa"></i>
+              </button>
+              <a class="icon-btn" title="預覽目前報名名單" target="_blank" href="/dashboardalaala/enroll/{{ event.event_id }}/preview?ipm=s&&session_id={{ session.session_id }}">
+                <i class="fa fa-file-o icon_fa"></i>
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </mat-expansion-panel>
+  </ng-container>
+</mat-accordion>

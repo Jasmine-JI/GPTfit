@@ -5,7 +5,7 @@ import { MapService } from '@shared/services/map.service';
 import { ActivatedRoute } from '@angular/router';
 import { RankFormService } from '../../services/rank-form.service';
 import { getUrlQueryStrings } from '@shared/utils/';
-import { mapImages } from '@shared/mapImages';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-map-info',
@@ -16,7 +16,8 @@ export class MapInfoComponent implements OnInit, AfterViewInit {
   constructor(
     public _location: Location, // 調用location.back()，來回到上一頁
     private _mapService: MapService,
-    private rankFormService: RankFormService
+    private rankFormService: RankFormService,
+    private router: Router
   ) {}
   EMPTY_OBJECT = {};
   data: any;
@@ -30,20 +31,17 @@ export class MapInfoComponent implements OnInit, AfterViewInit {
   gpx: any;
   bgImageUrl: string;
   isLoading = false;
+  mapImages: any;
   ngOnInit() {
     const queryStrings = getUrlQueryStrings(location.search);
-    const {
-      mapId,
-      month,
-      userId,
-      event,
-      start_time,
-      end_time
-    } = queryStrings;
-    this.bgImageUrl = `url(${mapImages[mapId - 1]})`;
-    this.fetchSportData(mapId, month, userId, event, start_time, end_time);
-    this.activity = this._mapService.getActivity(Number(mapId));
+    const { mapId, month, userId, event, start_time, end_time } = queryStrings;
 
+    this.fetchSportData(mapId, month, userId, event, start_time, end_time);
+    this.rankFormService.getMapUrls().subscribe(res => {
+      this.mapImages = res;
+      this.bgImageUrl = `url(${this.mapImages[mapId - 1]})`;
+    });
+    this.activity = this._mapService.getActivity(Number(mapId));
   }
   ngAfterViewInit() {
     const queryStrings = getUrlQueryStrings(location.search);
@@ -69,5 +67,19 @@ export class MapInfoComponent implements OnInit, AfterViewInit {
       this.isLoading = false;
     });
   }
+  goBack() {
+    const hosts = [
+      '192.168.1.235',
+      'app.alatech.com.tw',
+      'cloud.alatech.com.tw'
+    ];
+    const isHostName = hosts.some(
+      _host => document.referrer.indexOf(_host) > -1
+    );
 
+    if (isHostName) {
+      return window.history.back();
+    }
+    return this.router.navigateByUrl('/');
+  }
 }

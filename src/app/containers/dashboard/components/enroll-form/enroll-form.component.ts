@@ -270,6 +270,15 @@ export class EnrollFormComponent implements OnInit {
     }
   }
   goBack() {
-    this.router.navigateByUrl('/dashboardalaala/event-calendar');
+    const hosts = [
+      '192.168.1.235',
+      'app.alatech.com.tw',
+      'cloud.alatech.com.tw'
+    ];
+    const isHostName = hosts.some(_host => document.referrer.indexOf(_host) > -1);
+    if (isHostName) {
+      return window.history.back();
+    }
+    return this.router.navigateByUrl('/dashboardalaala/event-calendar');
   }
 }

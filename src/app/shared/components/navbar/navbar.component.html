@@ -30,6 +30,9 @@
         <a class="nav-link" [routerLink]="['/dashboardalaala/device_log']" (click)="toggleMask()">Device Log</a>
       </li>
       <li class="nav-item" *ngIf="isShowDashboard">
+        <a class="nav-link" [routerLink]="['/dashboardalaala/event-management']" (click)="toggleMask()">活動賽事管理</a>
+      </li>
+      <li class="nav-item" *ngIf="isShowDashboard">
         <a class="nav-link" [routerLink]="['/dashboardalaala/event']"  (click)="toggleMask()">活動賽事自訂</a>
       </li>
       <li class="nav-item" *ngIf="isShowDashboard">
