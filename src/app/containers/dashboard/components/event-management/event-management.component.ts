@@ -17,6 +17,7 @@ export class EventManagementComponent implements OnInit {
   completeSessions: any;
 
   todayTimeStamp = Math.floor(Date.now() / 1000);
+  isNotYetDone = false;
   constructor(
     private router: Router,
     private eventInfoService: EventInfoService,
@@ -45,6 +46,9 @@ export class EventManagementComponent implements OnInit {
   getEventInfo(params) {
     this.eventInfoService.fetchEventInfo(params).subscribe(results => {
       const eventId = params.get('event_id');
+      this.isNotYetDone = results.some(
+        _result => _result.event_time_end > this.todayTimeStamp
+      );
       if (!eventId) {
         this.events = results.filter((value, idx, self) => {
           return (
