@@ -5,6 +5,7 @@ import { MapService } from '@shared/services/map.service';
 import { ActivatedRoute } from '@angular/router';
 import { RankFormService } from '../../services/rank-form.service';
 import { getUrlQueryStrings } from '@shared/utils/';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-map-info',
@@ -15,7 +16,8 @@ export class MapInfoComponent implements OnInit, AfterViewInit {
   constructor(
     public _location: Location, // 調用location.back()，來回到上一頁
     private _mapService: MapService,
-    private rankFormService: RankFormService
+    private rankFormService: RankFormService,
+    private router: Router
   ) {}
   EMPTY_OBJECT = {};
   data: any;
@@ -64,5 +66,20 @@ export class MapInfoComponent implements OnInit, AfterViewInit {
       this.data = res;
       this.isLoading = false;
     });
+  }
+  goBack() {
+    const hosts = [
+      '192.168.1.235',
+      'app.alatech.com.tw',
+      'cloud.alatech.com.tw'
+    ];
+    const isHostName = hosts.some(
+      _host => document.referrer.indexOf(_host) > -1
+    );
+
+    if (isHostName) {
+      return window.history.back();
+    }
+    return this.router.navigateByUrl('/');
   }
 }
