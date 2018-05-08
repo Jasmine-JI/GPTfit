@@ -8,7 +8,8 @@ import {
   buildUrlQueryStrings,
   getUrlQueryStrings,
   buildPageMeta,
-  debounce
+  debounce,
+  setLocalStorageObject
 } from '@shared/utils/';
 import { GlobalEventsManager } from '@shared/global-events-manager';
 import { forkJoin } from 'rxjs/observable/forkJoin';
@@ -113,7 +114,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     let params = new HttpParams();
     this.startDate = this.convertDateString(this.startDay);
     this.endDate = this.convertDateString(this.finalDay);
-
+    setLocalStorageObject('hostName', location.hostname);
     // 若有自帶字串 parse字串
     if (!isObjectEmpty(queryStrings)) {
       const {
