@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { EventInfoService } from '../../services/event-info.service';
 import { HttpParams } from '@angular/common/http';
 import { getUrlQueryStrings } from '@shared/utils/';
-import { mapImages } from '@shared/mapImages';
+import { MapService } from '@shared/services/map.service';
 
 @Component({
   selector: 'app-real-time-leaderboard',
@@ -16,7 +16,11 @@ export class RealTimeLeaderboardComponent implements OnInit {
   isHaveDatas = false;
   bgImageUrl: string; // 背景圖
   timer: any;
-  constructor(private eventInfoService: EventInfoService) {
+  mapImages: any;
+  constructor(
+    private eventInfoService: EventInfoService,
+    private mapService: MapService
+  ) {
     this.timer = setInterval(() => {
       this.idx++;
       this.handleRank();
@@ -26,7 +30,10 @@ export class RealTimeLeaderboardComponent implements OnInit {
   ngOnInit() {
     const queryStrings = getUrlQueryStrings(location.search);
     const { time_start, time_end, map_id } = queryStrings;
-    this.bgImageUrl = `url(${mapImages[map_id - 1]})`;
+    this.mapService.getMapUrls().subscribe(res => {
+      this.mapImages = res;
+      this.bgImageUrl = `url(${this.mapImages[map_id - 1]})`;
+    });
     let params = new HttpParams();
     if (time_start && time_end) {
       params = params.set('start_date', time_start);

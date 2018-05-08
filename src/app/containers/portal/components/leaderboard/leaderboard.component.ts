@@ -1,9 +1,8 @@
 import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
-// import debounce from 'debounce';
 import { RankFormService } from '../../services/rank-form.service';
-// import { mapImages } from '@shared/mapImages';
+import { MapService } from '@shared/services/map.service';
 import {
   isObjectEmpty,
   buildUrlQueryStrings,
@@ -100,6 +99,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private rankFormService: RankFormService,
+    private mapService: MapService,
     private globalEventsManager: GlobalEventsManager
   ) {
     this.handleSearchEmail = debounce(this.handleSearchEmail, 1000);
@@ -153,7 +153,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
 
     const fetchMapOptions = this.rankFormService.getMapOptions();
     const fetchRankTabs = this.rankFormService.getRankTabs();
-    const fetchMapUrls = this.rankFormService.getMapUrls();
+    const fetchMapUrls = this.mapService.getMapUrls();
     forkJoin([fetchMapOptions, fetchRankTabs, fetchMapUrls]).subscribe(
       results => {
         this.mapDatas = results[0];
