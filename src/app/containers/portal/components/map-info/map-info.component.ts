@@ -5,7 +5,7 @@ import { MapGPXService } from '@shared/services/map-gpx.service';
 import { MapService } from '@shared/services/map.service';
 import { ActivatedRoute } from '@angular/router';
 import { RankFormService } from '../../services/rank-form.service';
-import { getUrlQueryStrings } from '@shared/utils/';
+import { getUrlQueryStrings, getLocalStorageObject } from '@shared/utils/';
 import { Router } from '@angular/router';
 
 @Component({
@@ -75,10 +75,10 @@ export class MapInfoComponent implements OnInit, AfterViewInit {
       'app.alatech.com.tw',
       'cloud.alatech.com.tw'
     ];
-    const isHostName = hosts.some(
-      _host => document.referrer.indexOf(_host) > -1
-    );
-
+    const hostName = getLocalStorageObject('hostName');
+    const isHostName = hostName ? hosts.some(
+      _host => hostName.indexOf(_host) > -1
+    ) : false;
     if (isHostName) {
       return window.history.back();
     }

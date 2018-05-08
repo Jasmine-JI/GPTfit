@@ -5,6 +5,7 @@ import { HttpParams } from '@angular/common/http';
 import * as moment from 'moment';
 import { Top3DialogComponent } from '../top3-dialog/top3-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { setLocalStorageObject } from '@shared/utils/';
 
 @Component({
   selector: 'app-event-management',
@@ -25,6 +26,7 @@ export class EventManagementComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    setLocalStorageObject('hostName', location.hostname);
     const params = new HttpParams();
     this.getEventInfo(params);
   }
