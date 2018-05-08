@@ -23,6 +23,14 @@ router.get('/mapUrl', function(req, res, next) {
   });
 });
 
+router.get('/gpxUrl', function(req, res, next) {
+  const { con } = req;
+  const sql = 'select map_index as id , gpx_url as gpxData from ??';
+  con.query(sql, 'race_map_info', function(err, rows) {
+    res.json(rows);
+  });
+});
+
 router.get('/', function(req, res, next) {
   const { con } = req;
   const sql = 'truncate table ??';
@@ -37,6 +45,7 @@ router.get('/', function(req, res, next) {
           race_elevation,
           race_average_incline,
           img_url,
+          gpx_url,
           left_top_coordinate,
           right_bottom_coordinate,
           max_lap_limit,
@@ -55,6 +64,7 @@ router.get('/', function(req, res, next) {
             }
           } = _res;
           datas[idx].img_url += info[0].FileName1080p.replace('1080', 'web_bg');
+          datas[idx].gpx_url += info[0].GPXName;
           datas[idx].left_top_coordinate = info[0].leftTopCoordinateLat;
           datas[idx].right_bottom_coordinate = info[0].rightBottomCoordinateLat;
           datas[idx].max_lap_limit = raceRoom.info[0].raceLap;

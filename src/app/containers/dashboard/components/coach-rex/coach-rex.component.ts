@@ -8,7 +8,6 @@ import {
   transition,
   animate
 } from '@angular/core';
-import { mapImages } from '@shared/mapImages';
 import { fakeDatas, fakeCoachInfo } from './fakeUsers';
 import { CoachService } from '../../services/coach.service';
 import { Router } from '@angular/router';

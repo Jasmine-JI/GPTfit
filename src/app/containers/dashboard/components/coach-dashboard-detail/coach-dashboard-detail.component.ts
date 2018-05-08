@@ -7,7 +7,6 @@ import { MsgDialogComponent } from '../msg-dialog/msg-dialog.component';
 import { HrZoneDialogComponent } from '../hr-zone-dialog/hr-zone-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DragulaService } from 'ng2-dragula/ng2-dragula';
-import { mapImages } from '@shared/mapImages';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 
@@ -45,7 +44,6 @@ export class CoachDashboardDetailComponent implements OnInit, OnDestroy {
   ];
   displayCards = [];
   raceList: any;
-  mapImages = mapImages;
   raceId: string;
   constructor(
     private coachService: CoachService,
