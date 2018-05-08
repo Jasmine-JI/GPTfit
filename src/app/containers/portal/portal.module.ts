@@ -8,8 +8,9 @@ import { PortalComponent } from './portal.component';
 import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
 import { SharedPipes } from '@shared/pipes/shared-pipes';
 import { MapInfoComponent } from './components/map-info/map-info.component';
-import { MapService } from '@shared/services/map.service';
+import { MapGPXService } from '@shared/services/map-gpx.service';
 import { RankFormService } from './services/rank-form.service';
+import { MapService } from '@shared/services/map.service';
 import { LoadingComponent } from '../../shared/components/loading/loading.component';
 import { PaginationComponent } from '../../shared/components/pagination/pagination.component';
 import { GlobalEventsManager } from '@shared/global-events-manager';
@@ -34,8 +35,9 @@ import { DemoQrcodComponent } from './components/demo-qrcod/demo-qrcod.component
     SharedPipes
   ],
   providers: [
-    MapService,
+    MapGPXService,
     RankFormService,
+    MapService,
     GlobalEventsManager,
     ResetPasswordService,
     {

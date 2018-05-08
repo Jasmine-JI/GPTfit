@@ -37,7 +37,4 @@ export class RankFormService {
   getRankTabs() {
     return this.http.get(API_SERVER + 'raceEventInfo/rankTab');
   }
-  getMapUrls() {
-    return this.http.get(API_SERVER + 'map/mapUrl');
-  }
 }

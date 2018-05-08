@@ -28,7 +28,8 @@ exports.getMapList = function() {
             race_total_distance: distance,
             race_elevation,
             race_average_incline: incline,
-            img_url
+            img_url,
+            gpx_url: img_url
           });
         });
       resolve({datas, urls});

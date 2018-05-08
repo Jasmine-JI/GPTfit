@@ -12,6 +12,7 @@ import { CertificatePreviewComponent } from './components/certificate-preview/ce
 import { CertificateComponent } from './components/certificate/certificate.component';
 import { MyDatePickerModule } from 'mydatepicker';
 import { EventEnrollService } from './services/event-enroll.service';
+import { MapService } from '@shared/services/map.service';
 import { EventCalendarComponent } from './components/event-calendar/event-calendar.component';
 import { CustomMaterialModule } from '@shared/custom-material.module.ts';
 import { EnrollPreviewComponent } from './components/enroll-preview/enroll-preview.component';
@@ -56,6 +57,7 @@ import { EventManagementComponent } from './components/event-management/event-ma
   ],
   providers: [
     EventEnrollService,
+    MapService,
     GlobalEventsManager,
     EventInfoService,
     GpxService,
