@@ -16,6 +16,7 @@ import {
   Validators,
   FormControl
 } from '@angular/forms';
+import { getLocalStorageObject } from '@shared/utils/';
 
 @Component({
   selector: 'app-enroll-form',
@@ -275,7 +276,10 @@ export class EnrollFormComponent implements OnInit {
       'app.alatech.com.tw',
       'cloud.alatech.com.tw'
     ];
-    const isHostName = hosts.some(_host => document.referrer.indexOf(_host) > -1);
+    const hostName = getLocalStorageObject('hostName');
+    const isHostName = hostName ? hosts.some(
+      _host => hostName.indexOf(_host) > -1
+    ) : false;
     if (isHostName) {
       return window.history.back();
     }
