@@ -408,41 +408,73 @@ router.get('/top3', function(req, res, next) {
       mapId
     }
   } = req;
-  const genderQuery = gender ? `and r.gender = ${con.escape(gender)}` : '';
+  const genderQuery = gender ? `and a.gender = ${con.escape(gender)}` : '';
   const sql = `
-    select login_acc, offical_time, phone, e_mail, address, enroll_name, rank
-    from
-    (
-      select *, @prev := @curr, @curr := offical_time,
-      @rank := if(@prev = @curr, @rank, @rank+1
-    ) as rank
-    from (
-    select r.login_acc, r.offical_time, c.login_acc as enroll_name, c.phone, c.e_mail, c.address from ?? r, ?? as c
-    where c.phone like concat('%', r.phone, '%')
-    and
-    c.e_mail = r.e_mail
-    and
-    c.session_id = ? and c.event_id = ?
-    and
-    r.map_id = ?
-    ${genderQuery}
-    order by offical_time
-    )a,
+    select offical_time, login_acc, enroll_name, phone, e_mail, address, rank
+      from
       (
-        select @curr := null, @prev :=null, @rank := 0
-      )c
-    )b where rank < 4;
+        select *, @prev := @curr, @curr := offical_time,
+        @rank := if(@prev = @curr, @rank, @rank+1
+      ) as rank
+      from
+      (
+        select distinct b.offical_time, a.login_acc,
+        c.login_acc as enroll_name, c.phone, c.e_mail, c.address
+        from (
+        select min(r.offical_time) as offical_time, r.user_id
+        from ?? r, ?? as c
+        where
+        r.map_id = ?
+        and
+        (
+          (r.phone is not NULL and r.phone != '' and c.phone like concat('%', r.phone, '%'))
+          or
+          (r.e_mail is not NULL and r.e_mail != '' and c.e_mail = r.e_mail)
+        )
+        and
+        c.session_id = ? and c.event_id = ?
+        group by r.user_id
+      ) as b,
+        ?? as a,
+        ?? as c
+        where a.user_id = b.user_id
+        and
+        c.session_id = ? and c.event_id = ?
+        and
+        (
+          (a.phone is not NULL and a.phone != '' and c.phone like concat('%', a.phone, '%'))
+          or
+          (a.e_mail is not NULL and a.e_mail != '' and c.e_mail = a.e_mail)
+        )
+        ${genderQuery}
+        order by offical_time
+        )a,
+        (
+          select @curr := null, @prev :=null, @rank := 0
+        )c
+        )b where rank < 4
     ;
   `;
-  con.query(sql, ['run_rank', 'user_race_enroll', sessionId, eventId, mapId], function(
-    err,
-    rows
-  ) {
-    if (err) {
-      console.log(err);
+  con.query(
+    sql,
+    [
+      'run_rank',
+      'user_race_enroll',
+      mapId,
+      sessionId,
+      eventId,
+      'run_rank',
+      'user_race_enroll',
+      sessionId,
+      eventId
+    ],
+    function(err, rows) {
+      if (err) {
+        console.log(err);
+      }
+      res.json(rows);
     }
-    res.json(rows);
-  });
+  );
 });
 // Exports
 module.exports = router;
