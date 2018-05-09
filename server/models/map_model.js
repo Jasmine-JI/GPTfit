@@ -14,7 +14,7 @@ for (var dev in ifaces) {
 
 exports.getMapList = function() {
   return new Promise((resolve, reject) => {
-    request('http://cloud.alatech.com.tw/app/public_html/cloudrun/update/mapList.json', function (error, response, body) {
+    request(`http://${address}/app/public_html/cloudrun/update/mapList.json`, function (error, response, body) {
       if (error) throw new Error(error);
         let urls = [];
         const datas = JSON.parse(body).mapList.raceMapInfo.map(_info => {

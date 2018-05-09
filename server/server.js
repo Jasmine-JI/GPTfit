@@ -120,6 +120,7 @@ var runGpx = require('./routes/runGpx.js');
 var deviceLog = require('./routes/deviceLog.js');
 var coach = require('./routes/coach.js');
 var map = require('./routes/map.js');
+var qrPair = require('./routes/qrPair.js');
 
 app.use('/nodejs/api/rankForm', rankForm);
 app.use('/nodejs/api/resetPassword', resetPassword);
@@ -129,6 +130,7 @@ app.use('/nodejs/api/gpx', runGpx);
 app.use('/nodejs/api/deviceLog', deviceLog);
 app.use('/nodejs/api/coach', coach);
 app.use('/nodejs/api/map', map);
+app.use('/nodejs/api/qrPair', qrPair);
 
 // Start the server
 const port = process.env.PORT || 3001;
