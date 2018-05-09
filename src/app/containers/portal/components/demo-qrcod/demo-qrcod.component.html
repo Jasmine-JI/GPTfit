@@ -1,4 +1,14 @@
+
 <div class="container" style="font-size:20px; margin-top: 30px;">
+  <ng-progress
+    [positionUsing]="'marginLeft'"
+    [direction]="'leftToRightIncreased'"
+    [color]="'#cb5e5e'"
+    [trickleSpeed]="500"
+    [thick]="true"
+    [ease]="'easeInSine'"
+  >
+  </ng-progress>
   <div class="row" style="margin-bottom: 15px">
     <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">產品照片：</div>
     <div class="col-sm-6 text-sm-left text-center"><img src={{deviceInfo?.modeImgUrl}}></div>
