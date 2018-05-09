@@ -23,6 +23,7 @@ import { MyDatePickerModule } from 'mydatepicker';
 import { SharedComponentsModule } from '@shared/components/shared-components.module';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { DemoQrcodComponent } from './components/demo-qrcod/demo-qrcod.component';
+import { QrcodeService } from './services/qrcode.service';
 
 @NgModule({
   imports: [
@@ -38,6 +39,7 @@ import { DemoQrcodComponent } from './components/demo-qrcod/demo-qrcod.component
     MapGPXService,
     RankFormService,
     MapService,
+    QrcodeService,
     GlobalEventsManager,
     ResetPasswordService,
     {
