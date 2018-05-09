@@ -6,7 +6,9 @@ import {
   state,
   style,
   transition,
-  animate
+  animate,
+  AfterViewInit,
+  ElementRef
 } from '@angular/core';
 import { fakeDatas, fakeCoachInfo } from './fakeUsers';
 import { CoachService } from '../../services/coach.service';
@@ -15,6 +17,7 @@ import { ActivatedRoute } from '@angular/router';
 import { HttpParams } from '@angular/common/http';
 import { Users } from '../../models/fakeUser';
 import { Meta } from '@angular/platform-browser';
+import * as d3 from 'd3';
 
 @Component({
   selector: 'app-coach-rex',
@@ -68,7 +71,7 @@ import { Meta } from '@angular/platform-browser';
     ])
   ]
 })
-export class CoachRexComponent implements OnInit, OnDestroy {
+export class CoachRexComponent implements OnInit, OnDestroy, AfterViewInit {
   width = 0;
   height = 0;
   fakeDatas: any;
@@ -79,6 +82,7 @@ export class CoachRexComponent implements OnInit, OnDestroy {
   method = 2;
   window = window;
   isNotFirstChanged = false;
+  isNotFirstDrawed = false;
   renderCards = [];
   coachInfo: string;
   hrSortValues: any;
@@ -95,12 +99,23 @@ export class CoachRexComponent implements OnInit, OnDestroy {
   displaySections = [true, true, true];
   isSectionIndividual = false;
   isMoreDisplay = false;
+  radius = 10;
+  elementRef: ElementRef;
+  data = [];
+  defChartIds = [2, 3, 4, 5, 6];
+  chartWidth = 0;
+  chartHeight = 0;
+  s: any;
+  time = 0;
   constructor(
     private coachService: CoachService,
     private router: Router,
     private route: ActivatedRoute,
-    private meta: Meta
-  ) {}
+    private meta: Meta,
+    elementRef: ElementRef
+  ) {
+    this.elementRef = elementRef;
+  }
 
   ngOnInit() {
     const ratio = window.devicePixelRatio;
@@ -120,6 +135,262 @@ export class CoachRexComponent implements OnInit, OnDestroy {
     this.handleRealTime();
     this.handleCoachInfo(fakeCoachInfo);
   }
+
+  handleArea(data, scaleX, scaleY, idx) {
+    d3
+      .area()
+      .x(function(d) {
+        return scaleX(d[0]);
+      })
+      .y0(this.chartHeight)
+      .y1(function(d) {
+        return scaleY(d[idx]);
+      })
+      .curve(d3.curveCardinal);
+  }
+  handleLine(data, scaleX, scaleY, idx) {
+    d3
+      .line()
+      .x(function(d) {
+        return scaleX(d[0]);
+      })
+      .y(function(d) {
+        return scaleY(d[idx]);
+      })
+      .curve(d3.curveCardinal);
+  }
+
+  updateChart() {
+    const s = d3.select('#chart').transition();
+    this.chartWidth = 1468;
+    this.chartHeight = 450;
+    s.attr('width', 1468).attr('height', 518);
+    const minX = d3.min(this.data, function(d) {
+      return d[0];
+    });
+    const maxX = d3.max(this.data, function(d) {
+      return d[0];
+    });
+    const minY = d3.min(this.data, function(d) {
+      return Math.min(...d.slice(1, d.length));
+    });
+    const maxY = d3.max(this.data, function(d) {
+      return Math.max(...d.slice(1, d.length));
+    });
+
+    const scaleX = d3
+      .scaleLinear()
+      .range([0, this.chartWidth])
+      .domain([minX, maxX]);
+
+    const scaleY = d3
+      .scaleLinear()
+      .range([this.chartHeight, 0])
+      .domain([minY - 10, maxY + 10]);
+    this.data[this.data.length - 1].forEach((_data, idx) => {
+      if (idx > 0) {
+        const index = this.displayCards.findIndex(_card => (_card.user_id === this.renderCards[idx - 1]));
+        const areaGradient = d3
+          .select('#chart')
+          .select(`#areaGradient${idx}`);
+        areaGradient
+          .select(`#stop1areaGradient${idx}`)
+          .attr('offset', '0%')
+          .attr('stop-color', this.hrColors[this.displayCards[index].colorIdx])
+          .attr('stop-opacity', 0.8);
+        areaGradient
+          .select(`#stop2areaGradient${idx}`)
+          .attr('offset', '100%')
+          .attr('stop-color', this.hrColors[this.displayCards[index].colorIdx])
+          .attr('stop-opacity', 0);
+        const line = d3
+          .line()
+          .x(function(d) {
+            return scaleX(d[0]);
+          })
+          .y(function(d) {
+            return scaleY(d[idx]);
+          })
+          .curve(d3.curveCardinal);
+        const area = d3
+          .area()
+          .x(function(d) {
+            return scaleX(d[0]);
+          })
+          .y0(this.chartHeight)
+          .y1(function(d) {
+            return scaleY(d[idx]);
+          })
+          .curve(d3.curveCardinal);
+
+        s
+          .select(`#line${idx}`)
+          .duration(1000)
+          .attr('d', line(this.data))
+          .attr('stroke', this.hrColors[this.displayCards[index].colorIdx])
+          .attr('stroke-width', 5)
+          .attr('fill', 'none')
+          .attr('transform', 'translate(35,20)');
+        s
+          .select(`#area${idx}`)
+          .duration(1000)
+          .attr('d', area(this.data))
+          .attr('fill', `url(#areaGradient${idx})`);
+
+      }
+
+    });
+    const start = Math.floor((maxY + 10) / 10) * 10;
+    const end = Math.floor((minY - 10) / 10) * 10;
+
+    const tmpArr = this.handleRangeArray(start, end);
+    const axisY = d3.axisLeft(scaleY).tickValues(tmpArr);
+    d3
+      .select('#chart')
+      .select('#y-axis')
+      .transition()
+      .call(axisY);
+  }
+  handleRangeArray(start, end) {
+    const final = (end - start) / 10;
+    const arr = [];
+    for (let i = 0; i <= final; i++) {
+      arr.push(start + 10 * i);
+      return arr;
+    }
+
+  }
+  handleDrawChart() {
+    const s = d3.select('#chart');
+
+    this.chartWidth = 1468;
+    this.chartHeight = 450;
+    s.attr('width', 1468).attr('height', 518);
+    const minX = d3.min(this.data, function(d) {
+      return d[0];
+    });
+
+    if (this.data.length > 0) {
+      const maxX = d3.max(this.data, function(d) {
+        return d[0];
+      });
+      const minY = d3.min(this.data, function(d) {
+        return Math.min(...d.slice(1, d.length));
+      });
+      const maxY = d3.max(this.data, function(d) {
+        return Math.max(...d.slice(1, d.length));
+      });
+
+      const scaleX = d3
+        .scaleLinear()
+        .range([0, this.chartWidth])
+        .domain([minX, maxX]);
+
+      const scaleY = d3
+        .scaleLinear()
+        .range([this.chartHeight, 0])
+        .domain([minY - 10, maxY + 10]);
+      this.data[this.data.length - 1].forEach((_data, idx) => {
+        if (idx > 0) {
+          const index = this.displayCards.findIndex(_card => _card.user_id === this.renderCards[idx - 1]);
+
+          const areaGradient = d3
+            .select('#chart')
+            .append('defs')
+            .append('linearGradient')
+            .attr('id', `areaGradient${idx}`)
+            .attr('x1', '0%')
+            .attr('y1', '0%')
+            .attr('x2', '0%')
+            .attr('y2', '100%');
+          areaGradient
+            .append('stop')
+            .attr('id', `stop1areaGradient${idx}`)
+            .attr('offset', '0%')
+            .attr('stop-color', this.hrColors[this.displayCards[index].colorIdx])
+            .attr('stop-opacity', 0.8);
+          areaGradient
+            .append('stop')
+            .attr('id', `stop2areaGradient${idx}`)
+            .attr('offset', '100%')
+            .attr('stop-color', this.hrColors[this.displayCards[index].colorIdx])
+            .attr('stop-opacity', 0);
+          const line = d3
+            .line()
+            .x(function(d) {
+              return scaleX(d[0]);
+            })
+            .y(function(d) {
+              return scaleY(d[idx]);
+            })
+            .curve(d3.curveCardinal);
+          const area = d3
+            .area()
+            .x(function(d) {
+              return scaleX(d[0]);
+            })
+            .y0(this.chartHeight)
+            .y1(function(d) {
+              return scaleY(d[idx]);
+            })
+            .curve(d3.curveCardinal);
+          s
+            .append('path')
+            .attr('id', `line${idx}`)
+            .attr('d', line(this.data))
+            .attr('stroke', this.hrColors[this.displayCards[index].colorIdx])
+            .attr('stroke-width', 5)
+            .attr('fill', 'none')
+            .attr('transform', 'translate(35,20)');
+
+          s
+            .append('path')
+            .attr('id', `area${idx}`)
+            .attr('d', area(this.data))
+            .attr('fill', `url(#areaGradient${idx})`)
+            .attr('transform', 'translate(35,20)');
+        }
+        // axis
+        const axisX = d3.axisBottom(scaleX).ticks(10);
+
+        const start = Math.floor((maxY + 10) / 10) * 10;
+        const end = Math.floor((minY - 10) / 10) * 10;
+        const axisY = d3
+          .axisLeft(scaleY)
+          .tickValues(this.handleRangeArray(start, end));
+
+        // grid
+        const axisXGrid = d3
+          .axisBottom(scaleX)
+          .ticks(10)
+          .tickFormat('')
+          .tickSize(-this.chartHeight, 0);
+
+        const axisYGrid = d3
+          .axisLeft(scaleY)
+          .ticks(10)
+          .tickFormat('')
+          .tickSize(-this.chartWidth, 0);
+
+        // Axis Grid line
+        s
+          .append('g')
+          .attr('id', 'y-axis')
+          .call(axisY)
+          .attr('fill', 'none')
+          .attr('stroke', '#000')
+          .attr('transform', 'translate(35,20)')
+          .selectAll('text')
+          // .attr('fill', '#000')
+          .attr('stroke', 'none')
+          .style('font-size', '10px');
+      });
+
+    }
+  }
+  ngAfterViewInit() {
+    this.handleDrawChart();
+  }
   ngOnDestroy() {
     clearInterval(this.timer);
     this.meta.updateTag({
@@ -135,20 +406,30 @@ export class CoachRexComponent implements OnInit, OnDestroy {
       this.coachService.fetchRealTimeData(params).subscribe(res => {
         this.displayCards = res;
         if (!this.isNotFirstChanged) {
-          this.renderCards = new Array(this.displayCards.length);
+          this.renderCards = this.displayCards.map(_card => _card.user_id);
           this.isNotFirstChanged = true;
         }
         this.handleMethod();
         this.handleChartHr(this.displayCards);
         let sum = 0;
+        this.data.push([(this.time + 1) * 2]);
+        this.time++;
         this.displayCards.forEach((_card, idx) => {
-          const { current_heart_rate } = _card;
+          const { current_heart_rate, user_id } = _card;
+          const index = this.renderCards.findIndex(_id => _id === user_id);
           const image = new Image();
           image.addEventListener('load', e => this.handleImageLoad(e, idx));
           image.src = _card.imgUrl;
           sum += current_heart_rate;
           this.handleCard(current_heart_rate, idx);
+          this.data[this.data.length - 1][index + 1] = current_heart_rate;
         });
+        if (this.data.length > 0 && !this.isNotFirstDrawed) {
+          this.handleDrawChart();
+          this.isNotFirstDrawed = true;
+        } else {
+          this.updateChart();
+        }
         this.hrMeanValue = Math.round(sum / this.displayCards.length);
       });
     }, 2000);

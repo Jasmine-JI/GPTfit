@@ -219,6 +219,11 @@
   color: #e10019;
 }
 
+.mySvg {
+  background-color: cadetblue;
+}
+
+
 @media (max-width: 1919px) {
   .hr-card {
     width: calc((100% - 78px) / 3);

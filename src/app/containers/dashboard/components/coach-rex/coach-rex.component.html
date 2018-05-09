@@ -43,7 +43,9 @@
       <span style="cursor:pointer" (click)="handldeSection(1)">開關</span>
     </div>
     <div style="display:flex;padding:65px 70px;justify-content:space-between;height:680px">
-      <div style="width:80%"></div>
+      <div style="width:80%">
+        <svg id="chart"></svg>
+      </div>
       <div style="height:100%">
         <div style="margin-bottom: 70px;">
           <div style="font-size:24px;text-align:center">{{hrSortValues && hrSortValues[0]?.login_acc }}</div>
