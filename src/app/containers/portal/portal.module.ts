@@ -24,6 +24,7 @@ import { SharedComponentsModule } from '@shared/components/shared-components.mod
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { DemoQrcodComponent } from './components/demo-qrcod/demo-qrcod.component';
 import { QrcodeService } from './services/qrcode.service';
+import { NgProgressModule } from 'ngx-progressbar';
 
 @NgModule({
   imports: [
@@ -33,7 +34,8 @@ import { QrcodeService } from './services/qrcode.service';
     FormsModule,
     MyDatePickerModule,
     SharedComponentsModule,
-    SharedPipes
+    SharedPipes,
+    NgProgressModule
   ],
   providers: [
     MapGPXService,
