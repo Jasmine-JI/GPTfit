@@ -19,9 +19,9 @@ exports.getInfos = function(sn) {
       const data = {};
       const { productsInfo, modeType, appInfo } = JSON.parse(body);
       const year = sn.slice(0, 1).charCodeAt() + 1952; // 因為A代表2017，B代表2018
-      const date = moment(moment(year + '')
-          .add(sn.slice(1, 3), 'weeks')
-          .calendar()).format('YYYY年MM月');
+      let date = moment(new Date(year + ''), 'YYYY')
+        .add(+sn.slice(1, 3), 'weeks');
+      date = moment(date).format('YYYY/MM');
       const productsInfoData = productsInfo
             .filter(_data => sn
             .toLocaleLowerCase()
