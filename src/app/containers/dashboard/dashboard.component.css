@@ -1,3 +1,9 @@
+/* * {
+  border: 1px solid #fff;
+} */
+.mat-drawer-container {
+  background-color: #fff;
+}
 .dashboard-rwd {
   padding-top: 80px;
 }
@@ -27,3 +33,123 @@
   font-weight: 700;
 }
 
+.main-nav-toggle {
+  height: 34px;
+  width: 34px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px #fff;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 400ms ease-in;
+  display: flex;
+}
+
+.minimize-main-nav.main-nav-toggle {
+  -webkit-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+.main-nav-toggle-icon {
+  color: #fff;
+}
+.main-nav-toggle-icon.icon-svg_web-icon_073-level_fold  {
+  margin: 50% 0 0 50%;
+  -webkit-transform: translate(-58%,-58%);
+  -ms-transform: translate(-58%,-58%);
+  transform: translate(-58%,-58%);
+  text-align: center;
+}
+
+.navabar-color a {
+  color: #fff;
+}
+
+.bg-color {
+  background-color: #797d7d;
+}
+
+.mat-drawer {
+  background-color: #1f2626;
+  color: #fff;
+  width: 270px;
+}
+
+.mat-expansion-panel-header-title {
+  color: #fff;
+}
+.mat-expansion-panel {
+  background-color: #1f2626;
+  color: #fff;
+}
+.mat-expansion-panel-header.ala-expansion-panel-header {
+  padding: 5px 15px 5px 20px;
+  font-size: 16px;
+}
+
+::ng-deep .mat-expansion-panel-content .mat-expansion-panel-body {
+  padding: 0px;
+}
+
+
+::ng-deep .ala-expansion-panel-header>.mat-expansion-indicator:after {
+  color: #fff;
+}
+
+.ala-sidenav-icon {
+  margin-right: 10px;
+  font-size: 20px;
+}
+.mat-nav-list > li {
+  list-style: none;
+}
+.ala-sidenav-item {
+  list-style: none;
+  padding: 5px 15px 5px 20px;
+}
+
+.ala-sidenav-menu-item {
+  list-style: none;
+  padding: 5px 5px 5px 55px;
+}
+
+.ala-sidenav-menu-item:hover {
+  background: #1e1e1e;
+  cursor: pointer;
+}
+
+.mat-expansion-panel.mat-expansion-panel-spacing {
+  background-color: #363c3c;
+}
+.ala-sidenav-item.ala-sidenav-menu-item__active,
+.ala-sidenav-menu-item.ala-sidenav-menu-item__active {
+
+  color: #9bf9ff
+}
+.main-nav-toggle-icon.icon-svg_web-icon_005-menu {
+  display: none;
+}
+.mat-drawer-transition .mat-drawer-content {
+  margin-left: 270px;
+}
+@media(max-width: 768px) {
+  .main-nav-toggle-icon.icon-svg_web-icon_073-level_fold {
+    display: none;
+  }
+  .main-nav-toggle-icon.icon-svg_web-icon_005-menu {
+    display: block;
+    font-size: 24px;
+    width: 24px;
+  }
+  .main-nav-toggle {
+    box-shadow: none;
+  }
+  .mat-drawer {
+    width: calc(100% - 63px);
+  }
+  .navbar.ala-dashboard-nav {
+    display: none;
+  }
+  .mat-drawer-transition .mat-drawer-content {
+        margin-left: calc(100% - 63px);
+  }
+}
