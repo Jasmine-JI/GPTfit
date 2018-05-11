@@ -3,6 +3,7 @@ import {
   getUrlQueryStrings,
 } from '@shared/utils/';
 import { GlobalEventsManager } from '@shared/global-events-manager';
+import { MatSidenav, MatDrawerToggleResult } from '@angular/material';
 
 @Component({
   selector: 'app-dashboard',
@@ -14,6 +15,8 @@ export class DashboardComponent implements OnInit {
   isLoading = false;
   isMaskShow = false;
   isCollapseOpen = false;
+  target = 0;
+  isSideNavOpend = false;
   constructor(private globalEventsManager: GlobalEventsManager) {
     if (location.search.indexOf('ipm=s') > -1) {
       this.isPreviewMode = true;
@@ -33,5 +36,13 @@ export class DashboardComponent implements OnInit {
     this.globalEventsManager.openCollapse(this.isCollapseOpen);
     this.isMaskShow = false;
     this.globalEventsManager.closeCollapse(false);
+  }
+  toggleSideNav(sideNav: MatSidenav) {
+    this.isSideNavOpend = !this.isSideNavOpend;
+    sideNav.toggle().then((result: <MatDrawerToggleResult>)  => {
+    });
+  }
+  chooseItem(_target) {
+    this.target = _target;
   }
 }
