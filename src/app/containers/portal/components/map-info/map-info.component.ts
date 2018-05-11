@@ -43,13 +43,11 @@ export class MapInfoComponent implements OnInit, AfterViewInit {
       this.mapImages = res;
       this.bgImageUrl = `url(${this.mapImages[mapId - 1]})`;
     });
-    this.activity = this._mapGpxService.getActivity(Number(mapId));
   }
   ngAfterViewInit() {
     const queryStrings = getUrlQueryStrings(location.search);
     const { mapId } = queryStrings;
     this._mapGpxService.plotActivity(Number(mapId));
-    this.gpx = this.activity.gpxData;
   }
   fetchSportData(mapId, month, userId, event, start_time, end_time) {
     this.isLoading = true;
