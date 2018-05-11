@@ -14,6 +14,7 @@ export class DemoQrcodComponent implements OnInit {
   deviceInfo: any;
   isMainAppOpen = false;
   isSecondAppOpen = false;
+  isWrong = false;
   constructor(
     private qrcodeService: QrcodeService,
     private progress: NgProgress
@@ -29,7 +30,33 @@ export class DemoQrcodComponent implements OnInit {
       .getDeviceInfo(params)
       .subscribe(res => {
         this.deviceInfo = res;
+        this.uploadDevice();
         this.progress.done();
+      });
+  }
+  uploadDevice() {
+    const types = ['Wearable', 'Treadmill', 'Spin Bike', 'Rowing machine'];
+    const { modeType } = this.deviceInfo;
+    const { cs, device_sn } = this.displayQr;
+    const typeIdx = types.findIndex(_type => _type.toLowerCase() === modeType.toLowerCase());
+    const body = {
+      token: '',
+      verifyCode: this.displayQr.cs,
+      deviceType: typeIdx,
+      deviceDistance: '',
+      deviceUsage: '',
+      deviceFWVer: '',
+      deviceRFVer: ''
+    };
+    this.qrcodeService
+      .uploadDeviceInfo(body, device_sn)
+      .subscribe(res => {
+        const result = res;
+        if (result.resultCode !== 200) {
+          this.isWrong = true;
+        } else {
+          this.isWrong = false;
+        }
       });
   }
   swithMainApp() {
