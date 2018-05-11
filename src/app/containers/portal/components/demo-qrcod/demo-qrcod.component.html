@@ -9,88 +9,88 @@
     [ease]="'easeInSine'"
   >
   </ng-progress>
-  <div class="row" style="margin-bottom: 15px">
-    <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">產品照片：</div>
-    <div class="col-sm-6 text-sm-left text-center"><img src={{deviceInfo?.modeImgUrl}}></div>
-  </div>
-  <div class="row" style="margin-bottom: 15px">
-    <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">設備序號：</div>
-    <div class="col-sm-6 text-sm-left text-center">{{ displayQr.device_sn || '尚無相關資訊' }}</div>
-  </div>
-  <div class="row" style="margin-bottom: 15px">
-    <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">產品類型：</div>
-    <div class="col-sm-6 text-sm-left text-center">{{ deviceInfo?.modeName || '尚無相關資訊' }}</div>
-  </div>
-  <div class="row" style="margin-bottom: 15px">
-    <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">產品類別：</div>
-    <div class="col-sm-6 text-sm-left text-center">{{ deviceInfo?.modeType || '尚無相關資訊' }}</div>
-  </div>
-  <div class="row" style="margin-bottom: 15px">
-    <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">出廠日期：</div>
-    <div class="col-sm-6 text-sm-left text-center">{{ deviceInfo?.date || '尚無相關資訊' }}</div>
-  </div>
-  <div class="row" style="margin-bottom: 15px" *ngIf="deviceInfo?.mainAppData">
-    <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">
-      主要App應用：
-    </div>
-    <div class="col-sm-6 text-sm-left text-center">
-      <div style="margin-bottom:10px">
-        <img src={{deviceInfo?.mainAppData.appIconUrl}} style="width:20%;cursor: pointer;"
-          (click)="swithMainApp()"
-        >
+  <ng-container *ngIf="this.deviceInfo">
+    <div class="row" style="margin-bottom: 15px">
+      <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">產品照片：</div>
+      <div class="col-sm-6 text-sm-left text-center">
+        <img src={{deviceInfo?.modeImgUrl}}>
       </div>
-      <ng-container *ngIf="isMainAppOpen">
-        <div style="margin-bottom:10px" *ngIf="deviceInfo?.mainAppData.appIosUrl.length > 0">
-          <a target="_blank" href={{deviceInfo?.mainAppData.appIosUrl}}>
-            <img src={{deviceInfo?.mainAppData.appIosImg}}>
-          </a>
-        </div>
-        <div style="margin-bottom:10px" *ngIf="deviceInfo?.mainAppData.appAndroidUrl.length > 0">
-          <a target="_blank" href={{deviceInfo?.mainAppData.appAndroidUrl}}>
-            <img src={{deviceInfo?.mainAppData.appAndroidImg}}>
-          </a>
-        </div>
-        <div style="margin-bottom:10px" *ngIf="deviceInfo?.mainAppData.appApkUrl.length > 0">
-          <a target="_blank" href={{deviceInfo?.mainAppData.appApkUrl}}>
-            <img src={{deviceInfo?.mainAppData.appApkImg}}>
-          </a>
-        </div>
-      </ng-container>
     </div>
-  </div>
-  <div class="row" style="margin-bottom: 15px" *ngIf="deviceInfo?.secondaryAppData">
-    <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">
-      其他App應用：
+    <div class="row" style="margin-bottom: 15px">
+      <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">設備序號：</div>
+      <div class="col-sm-6 text-sm-left text-center">{{ displayQr.device_sn || '尚無相關資訊' }}</div>
     </div>
-    <div class="col-sm-6 text-sm-left text-center">
-      <div style="margin-bottom:10px">
-        <img src={{deviceInfo?.secondaryAppData.appIconUrl}} style="width:20%;cursor: pointer;"
-          (click)="swithSecondApp()"
-        >
+    <div class="row" style="margin-bottom: 15px">
+      <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">產品類型：</div>
+      <div class="col-sm-6 text-sm-left text-center">{{ deviceInfo?.modeName || '尚無相關資訊' }}</div>
+    </div>
+    <div class="row" style="margin-bottom: 15px">
+      <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">產品類別：</div>
+      <div class="col-sm-6 text-sm-left text-center">{{ deviceInfo?.modeType || '尚無相關資訊' }}</div>
+    </div>
+    <div class="row" style="margin-bottom: 15px">
+      <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">出廠日期：</div>
+      <div class="col-sm-6 text-sm-left text-center">{{ deviceInfo?.date || '尚無相關資訊' }}</div>
+    </div>
+    <div class="row" style="margin-bottom: 15px" *ngIf="deviceInfo?.mainAppData">
+      <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">
+        主要App應用：
       </div>
-      <ng-container *ngIf="isSecondAppOpen">
-        <div style="margin-bottom:10px" *ngIf="deviceInfo?.secondaryAppData.appIosUrl.length > 0">
-          <a target="_blank" href={{deviceInfo?.secondaryAppData.appIosUrl}}>
-            <img src={{deviceInfo?.secondaryAppData.appIosImg}}>
-          </a>
+      <div class="col-sm-6 text-sm-left text-center">
+        <div style="margin-bottom:10px">
+          <img src={{deviceInfo?.mainAppData.appIconUrl}} style="width:20%;cursor: pointer;" (click)="swithMainApp()">
         </div>
-        <div style="margin-bottom:10px" *ngIf="deviceInfo?.secondaryAppData.appAndroidUrl.length > 0">
-          <a target="_blank" href={{deviceInfo?.secondaryAppData.appAndroidUrl}}>
-            <img src={{deviceInfo?.secondaryAppData.appAndroidImg}}>
-          </a>
-        </div>
-        <div style="margin-bottom:10px" *ngIf="deviceInfo?.secondaryAppData.appApkUrl.length > 0">
-          <a target="_blank" href={{deviceInfo?.secondaryAppData.appApkUrl}}>
-            <img src={{deviceInfo?.secondaryAppData.appApkImg}}>
-          </a>
-        </div>
-      </ng-container>
+        <ng-container *ngIf="isMainAppOpen">
+          <div style="margin-bottom:10px" *ngIf="deviceInfo?.mainAppData.appIosUrl.length > 0">
+            <a target="_blank" href={{deviceInfo?.mainAppData.appIosUrl}}>
+              <img src={{deviceInfo?.mainAppData.appIosImg}}>
+            </a>
+          </div>
+          <div style="margin-bottom:10px" *ngIf="deviceInfo?.mainAppData.appAndroidUrl.length > 0">
+            <a target="_blank" href={{deviceInfo?.mainAppData.appAndroidUrl}}>
+              <img src={{deviceInfo?.mainAppData.appAndroidImg}}>
+            </a>
+          </div>
+          <div style="margin-bottom:10px" *ngIf="deviceInfo?.mainAppData.appApkUrl.length > 0">
+            <a target="_blank" href={{deviceInfo?.mainAppData.appApkUrl}}>
+              <img src={{deviceInfo?.mainAppData.appApkImg}}>
+            </a>
+          </div>
+        </ng-container>
+      </div>
     </div>
-  </div>
-  <div class="row" style="margin-bottom: 15px">
-    <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">相關連結：</div>
-    <div class="col-sm-6 text-sm-left text-center">
-      <a target="_blank" href={{deviceInfo?.InformationUrl}}>產品頁面</a>
+    <div class="row" style="margin-bottom: 15px" *ngIf="deviceInfo?.secondaryAppData">
+      <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">
+        其他App應用：
+      </div>
+      <div class="col-sm-6 text-sm-left text-center">
+        <div style="margin-bottom:10px">
+          <img src={{deviceInfo?.secondaryAppData.appIconUrl}} style="width:20%;cursor: pointer;" (click)="swithSecondApp()">
+        </div>
+        <ng-container *ngIf="isSecondAppOpen">
+          <div style="margin-bottom:10px" *ngIf="deviceInfo?.secondaryAppData.appIosUrl.length > 0">
+            <a target="_blank" href={{deviceInfo?.secondaryAppData.appIosUrl}}>
+              <img src={{deviceInfo?.secondaryAppData.appIosImg}}>
+            </a>
+          </div>
+          <div style="margin-bottom:10px" *ngIf="deviceInfo?.secondaryAppData.appAndroidUrl.length > 0">
+            <a target="_blank" href={{deviceInfo?.secondaryAppData.appAndroidUrl}}>
+              <img src={{deviceInfo?.secondaryAppData.appAndroidImg}}>
+            </a>
+          </div>
+          <div style="margin-bottom:10px" *ngIf="deviceInfo?.secondaryAppData.appApkUrl.length > 0">
+            <a target="_blank" href={{deviceInfo?.secondaryAppData.appApkUrl}}>
+              <img src={{deviceInfo?.secondaryAppData.appApkImg}}>
+            </a>
+          </div>
+        </ng-container>
+      </div>
     </div>
-  </div>
+    <div class="row" style="margin-bottom: 15px">
+      <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">相關連結：</div>
+      <div class="col-sm-6 text-sm-left text-center">
+        <a target="_blank" href={{deviceInfo?.InformationUrl}} [class.wrong-cs]="isWrong">產品頁面</a>
+      </div>
+    </div>
+  </ng-container>
 </div>
