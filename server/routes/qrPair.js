@@ -16,18 +16,10 @@ function httpGet(url, callback) {
 }
 
 router.get('/', function(req, res, next) {
-  const { con, query: { device_sn } } = req;
-  const sql = 'truncate table ??';
-  con.query(sql, 'race_map_info', function(err, rows) {
-    if (err) {
-      throw err;
-    }
-    getInfos(device_sn).then(datas => {
-      res.json(datas);
-    });
-  });
-
-
+  const { query: { device_sn } } = req;
+  getInfos(device_sn).then(datas => {
+    res.json(datas);
+  }, err => console.log(err));
 });
 
 
