@@ -6,89 +6,102 @@
   <div class="alatech-ribbon alatech-ribbon--bg-blue"></div>
     <router-outlet></router-outlet>
 </ng-container>
+<div  (window:resize)="onResize($event, sideNav)" [class.minimize-main-nav]="!isSideNavOpend === false">
+  <mat-sidenav-container style="height:100vh">
+    <mat-sidenav #sideNav opened={{isDefaultOpend}} mode={{mode}}>
+      <nav class="navbar ala-dashboard-nav">
+        <span class="ala-dashboard-logo">
+          center
+        </span>
+        <mat-nav-list>
+          <li class="ala-sidenav-item"  (click)="chooseItem(1, sideNav)"  [class.ala-sidenav-menu-item__active]="target === 1">
+            <a [routerLink]="['/leaderboard']">
+              <i class="icon-svg_web-icon_002-trophy ala-sidenav-icon"></i>排行版
+            </a>
+          </li>
+          <mat-accordion multi="false">
+            <mat-expansion-panel>
+              <mat-expansion-panel-header  class="ala-expansion-panel-header"
+                [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
+                (click)="chooseItem(0, sideNav)"
+              >
+                <mat-panel-title>
+                  <i class="icon-svg_web-icon_003-peoples ala-sidenav-icon"></i>及時活動
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+                <li class="ala-sidenav-menu-item"  (click)="chooseItem(2, sideNav)"  [class.ala-sidenav-menu-item__active]="target === 2">
+                  雲跑
+                </li>
+                <li class="ala-sidenav-menu-item"  (click)="chooseItem(3, sideNav)"  [class.ala-sidenav-menu-item__active]="target === 3">
+                  <a [routerLink]="['/dashboardalaala/coach-dashboard']">
+                    健身工廠
+                  </a>
+                </li>
 
-<mat-sidenav-container style="height:100vh">
-  <mat-sidenav #sideNav opened="true" mode="side">
-    <div>
-      <nav class="navbar ala-dashboard-nav" style="font-size:32px">
-        Center
+            </mat-expansion-panel>
+          </mat-accordion>
+          <li class="ala-sidenav-item"  (click)="chooseItem(4, sideNav)" [class.ala-sidenav-menu-item__active]="target === 4">
+            <a>
+              <i class="icon-svg_web-icon_004-qr_code ala-sidenav-icon"></i>登入設備
+            </a>
+          </li>
+          <li class="ala-sidenav-item"  (click)="chooseItem(5, sideNav)" [class.ala-sidenav-menu-item__active]="target === 5">
+            <a [routerLink]="['/dashboardalaala/device_log']">
+              <i class="icon icon-log-file-format ala-sidenav-icon"></i>Device Log
+            </a>
+          </li>
+
+          <li class="ala-sidenav-item"  (click)="chooseItem(6, sideNav)" [class.ala-sidenav-menu-item__active]="target === 6">
+            <a [routerLink]="['/dashboardalaala/event-management']">
+              活動賽事管理
+            </a>
+          </li>
+
+          <li class="ala-sidenav-item"  (click)="chooseItem(7, sideNav)" [class.ala-sidenav-menu-item__active]="target === 7">
+            <a [routerLink]="['/dashboardalaala/event']">
+              活動賽事自訂
+            </a>
+          </li>
+          <li class="ala-sidenav-item"  (click)="chooseItem(8, sideNav)" [class.ala-sidenav-menu-item__active]="target === 8">
+            <a [routerLink]="['/dashboardalaala/event-calendar']">活動賽事日曆</a>
+          </li>
+          <li class="ala-sidenav-item"  (click)="chooseItem(9, sideNav)" [class.ala-sidenav-menu-item__active]="target === 9">
+            <a [routerLink]="['/dashboardalaala/leaderboard-settings']">排行版設定</a>
+          </li>
+        </mat-nav-list>
       </nav>
-      <mat-nav-list  style="display: flex;flex-direction: column">
-        <li class="ala-sidenav-item"  (click)="chooseItem(1)"  [class.ala-sidenav-menu-item__active]="target === 1">
-          <a [routerLink]="['/leaderboard']">
-            <i class="icon-svg_web-icon_002-trophy ala-sidenav-icon"></i>排行版
-          </a>
-        </li>
-        <mat-accordion multi="false">
-          <mat-expansion-panel>
-            <mat-expansion-panel-header  class="ala-expansion-panel-header" [collapsedHeight]="'100%'" [expandedHeight]="'100%'">
-              <mat-panel-title>
-                <i class="icon-svg_web-icon_003-peoples ala-sidenav-icon"></i>及時活動
-              </mat-panel-title>
-            </mat-expansion-panel-header>
-            <!-- <ul> -->
-              <li class="ala-sidenav-menu-item"  (click)="chooseItem(2)"  [class.ala-sidenav-menu-item__active]="target === 2">
-                雲跑
-              </li>
-              <li class="ala-sidenav-menu-item"  (click)="chooseItem(3)"  [class.ala-sidenav-menu-item__active]="target === 3">
-                <a [routerLink]="['/dashboardalaala/coach-dashboard']">
-                  健身工廠
-                </a>
-              </li>
-            <!-- </ul> -->
+    </mat-sidenav>
 
-          </mat-expansion-panel>
-        </mat-accordion>
-        <li class="ala-sidenav-item"  (click)="chooseItem(4)" [class.ala-sidenav-menu-item__active]="target === 4">
-          <a>
-            <i class="icon-svg_web-icon_004-qr_code ala-sidenav-icon"></i>登入設備
-          </a>
-        </li>
-        <li class="ala-sidenav-item"  (click)="chooseItem(5)" [class.ala-sidenav-menu-item__active]="target === 5">
-          <a [routerLink]="['/dashboardalaala/device_log']">
-            <i class="icon icon-log-file-format ala-sidenav-icon"></i>Device Log
-          </a>
-        </li>
-
-        <li class="ala-sidenav-item"  (click)="chooseItem(6)" [class.ala-sidenav-menu-item__active]="target === 6">
-          <a [routerLink]="['/dashboardalaala/event-management']">
-            活動賽事管理
-          </a>
-        </li>
-
-        <li class="ala-sidenav-item"  (click)="chooseItem(7)" [class.ala-sidenav-menu-item__active]="target === 7">
-          <a [routerLink]="['/dashboardalaala/event']">
-            活動賽事自訂
-          </a>
-        </li>
-        <li class="ala-sidenav-item"  (click)="chooseItem(8)" [class.ala-sidenav-menu-item__active]="target === 8">
-          <a [routerLink]="['/dashboardalaala/event-calendar']">活動賽事日曆</a>
-        </li>
-        <li class="ala-sidenav-item"  (click)="chooseItem(9)" [class.ala-sidenav-menu-item__active]="target === 9">
-          <a [routerLink]="['/dashboardalaala/leaderboard-settings']">排行版設定</a>
-        </li>
-      </mat-nav-list>
-    </div>
-  </mat-sidenav>
-
-  <mat-sidenav-content>
-    <nav class="navbar ala-navbar navbar-expand-lg navabar-color bg-color navbar-toggle">
-      <div style="display: flex">
-        <div class="main-nav-toggle"
-          [class.minimize-main-nav]="isSideNavOpend"
-        >
-          <i class="icon-svg_web-icon_073-level_fold main-nav-toggle-icon"
-            (click)="toggleSideNav(sideNav)"
-          ></i>
-          <i class="icon-svg_web-icon_005-menu main-nav-toggle-icon" (click)="sideNav.toggle()"></i>
+    <mat-sidenav-content>
+      <header class="header header__color ala-dashboard-header">
+        <div style="display: flex">
+          <div class="main-nav-toggle"
+            [class.minimize-main-nav]="isSideNavOpend"
+             (click)="toggleSideNav(sideNav)"
+          >
+            <i class="icon-svg_web-icon_073-level_fold main-nav-toggle-icon"
+            ></i>
+            <i class="icon-svg_web-icon_005-menu main-nav-toggle-icon"></i>
+          </div>
         </div>
+        <div style="display: flex">
+          <div class="header-nav-item">
+            頂港有名聲
+          </div>
+          <div class="header-nav-item">
+            <img src="/assets/images/user.png" class="header-user-photo">
+          </div>
+        </div>
+      </header>
+      <div *ngIf="!isPreviewMode" class="container dashboard-rwd" [hidden]="isLoading">
+        <router-outlet></router-outlet>
       </div>
-    </nav>
-    <div *ngIf="!isPreviewMode" class="container dashboard-rwd" [hidden]="isLoading">
-      <router-outlet></router-outlet>
-    </div>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+      <footer class="footer footer-details">
+      Center 是由 Alatech 提供 Copyright © Alatech  Co.,Ltd. 或其子公司 • Version: 1.0.0.0
+      </footer>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>
 
 <div [hidden]="!isLoading">
   <app-loading></app-loading>
