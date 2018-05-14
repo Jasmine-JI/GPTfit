@@ -17,6 +17,8 @@ export class DashboardComponent implements OnInit {
   isCollapseOpen = false;
   target = 0;
   isSideNavOpend = false;
+  mode = 'side';
+  isDefaultOpend = true;
   constructor(private globalEventsManager: GlobalEventsManager) {
     if (location.search.indexOf('ipm=s') > -1) {
       this.isPreviewMode = true;
@@ -30,6 +32,20 @@ export class DashboardComponent implements OnInit {
     this.globalEventsManager.showLoadingEmitter.subscribe(isLoading => {
       this.isLoading = isLoading;
     });
+    if (window.innerWidth < 769) {
+      this.mode = 'push';
+      this.isDefaultOpend = false;
+    }
+  }
+  onResize(event, sideNav) {
+    if (event.target.innerWidth < 769) {
+      this.toggleSideNav(sideNav);
+      this.mode = 'push';
+      this.isDefaultOpend = false;
+    } else {
+      this.mode = 'side';
+      this.isDefaultOpend = true;
+    }
   }
   touchMask() {
     this.isCollapseOpen = false;
@@ -39,10 +55,14 @@ export class DashboardComponent implements OnInit {
   }
   toggleSideNav(sideNav: MatSidenav) {
     this.isSideNavOpend = !this.isSideNavOpend;
-    sideNav.toggle().then((result: <MatDrawerToggleResult>)  => {
+    sideNav.toggle().then(result  => {
+      // console.log('result: ', result);
     });
   }
-  chooseItem(_target) {
+  chooseItem(_target, sidenav) {
     this.target = _target;
+    if (window.innerWidth < 769 && this.target > 0) {
+      this.toggleSideNav(sidenav);
+    }
   }
 }

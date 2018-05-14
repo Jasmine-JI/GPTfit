@@ -6,6 +6,7 @@
 }
 .dashboard-rwd {
   padding-top: 80px;
+  min-height: calc(100% - 40px);
 }
 
 .alatech-ribbon {
@@ -64,10 +65,28 @@
   color: #fff;
 }
 
-.bg-color {
+.header__color {
   background-color: #797d7d;
 }
 
+.ala-dashboard-header {
+  color: #fff;
+  height: 60px;
+  padding: 0 10px 0 15px;
+  position: fixed;
+  top: 0;
+  display: flex;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  width: calc(100% - 270px);  
+}
+.minimize-main-nav .ala-dashboard-header {
+  width: 100%;
+}
 .mat-drawer {
   background-color: #1f2626;
   color: #fff;
@@ -128,8 +147,50 @@
 .main-nav-toggle-icon.icon-svg_web-icon_005-menu {
   display: none;
 }
-.mat-drawer-transition .mat-drawer-content {
+/* .mat-drawer-transition .mat-drawer-content {
   margin-left: 270px;
+} */
+.ala-dashboard-logo {
+  font-size:32px;
+  line-height: 32px;
+  margin: 16px 20px;
+  position: fixed;
+}
+
+.navbar.ala-dashboard-nav{
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+}
+.mat-nav-list {
+  display: flex;
+  flex-direction: column;
+  padding-top: 8px;
+  position: fixed;
+  width: 100%;
+  top: 60px;
+}
+.minimize-main-nav .main-nav-list {
+  overflow: hidden;
+}
+.minimize-main-nav .ala-dashboard-nav {
+  width: 60px;
+}
+.header-user-photo {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%
+}
+.header-nav-item {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+}
+.footer-details {
+  color: #aaa;
+  text-align: center;
+  font-size: 12px;
 }
 @media(max-width: 768px) {
   .main-nav-toggle-icon.icon-svg_web-icon_073-level_fold {
@@ -146,10 +207,13 @@
   .mat-drawer {
     width: calc(100% - 63px);
   }
-  .navbar.ala-dashboard-nav {
+  .navbar.ala-dashboard-logo {
     display: none;
   }
   .mat-drawer-transition .mat-drawer-content {
-        margin-left: calc(100% - 63px);
+    margin-left: calc(100% - 63px);
+  }
+  .ala-dashboard-header {
+    width: 100%;
   }
 }
