@@ -45,13 +45,12 @@
               >
                 <i class="fa fa-list-ol icon_fa"></i>
               </button>
-              <a  class="icon-btn"
+              <button class="icon-btn"
                 title="預覽目前報名名單"
-                target="_blank"
-                href="/dashboardalaala/enroll/{{ event.event_id }}/preview?ipm=s&&session_id={{ session.session_id }}"
+                (click)="goViewEnroll(event.event_id, session.session_id)"
               >
                 <i class="fa fa-file-o icon_fa"></i>
-              </a>
+              </button>
             </td>
           </tr>
         </tbody>
@@ -101,9 +100,12 @@
                 title="顯示前三名">
                 <i class="fa fa-list-ol icon_fa"></i>
               </button>
-              <a class="icon-btn" title="預覽目前報名名單" target="_blank" href="/dashboardalaala/enroll/{{ event.event_id }}/preview?ipm=s&&session_id={{ session.session_id }}">
+              <button class="icon-btn"
+                title="預覽目前報名名單"
+                (click)="goViewEnroll(event.event_id, session.session_id)"
+              >
                 <i class="fa fa-file-o icon_fa"></i>
-              </a>
+              </button>
             </td>
           </tr>
         </tbody>
