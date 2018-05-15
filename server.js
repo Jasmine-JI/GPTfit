@@ -62,8 +62,8 @@ connection.connect(function (err) {
 
 });
 
-const runRankTask = function() {
-  schedule.scheduleJob('00 00 06 * * *', function() {
+const runRankTask = function () {
+  schedule.scheduleJob('00 00 06 * * *', function () {
     // 每日早上六點整點更新
     var now = new Date();
     var now_mill = now.getTime();
@@ -148,8 +148,8 @@ const runRankTask = function() {
         ;
     `;
     const tasks = [
-      function(callback) {
-        connection.query(sql1, ['run_rank_copy', 'run_rank'], function(
+      function (callback) {
+        connection.query(sql1, ['run_rank_copy', 'run_rank'], function (
           err,
           result
         ) {
@@ -161,8 +161,8 @@ const runRankTask = function() {
           }
         });
       },
-      function(callback) {
-        connection.query(sql2, 'run_rank_copy', function(err, result) {
+      function (callback) {
+        connection.query(sql2, 'run_rank_copy', function (err, result) {
           if (err) {
             console.log('2 err: ', err);
           } else {
@@ -171,11 +171,10 @@ const runRankTask = function() {
           }
         });
       },
-      function(callback) {
+      function (callback) {
         connection.query(
-          sql3,
-          ['run_rank', 'run_rank_old', 'run_rank_copy', 'run_rank'],
-          function(err, result) {
+          sql3, ['run_rank', 'run_rank_old', 'run_rank_copy', 'run_rank'],
+          function (err, result) {
             if (err) {
               console.log('3 err: ', err);
             } else {
@@ -185,8 +184,8 @@ const runRankTask = function() {
           }
         );
       },
-      function(callback) {
-        connection.query(sql4, 'run_rank_old', function(err, result) {
+      function (callback) {
+        connection.query(sql4, 'run_rank_old', function (err, result) {
           if (err) {
             console.log('4 err: ', err);
           } else {
@@ -196,7 +195,7 @@ const runRankTask = function() {
         });
       }
     ];
-    async.series(tasks, function(err, results) {
+    async.series(tasks, function (err, results) {
       if (err) {
         console.log('err', err);
         connection.rollback(); // 发生错误事务回滚
@@ -206,21 +205,22 @@ const runRankTask = function() {
     });
   });
 };
+
 function httpGet(url, callback) {
   const options = {
     url: url,
     json: true
   };
-  request(options, function(err, res, body) {
+  request(options, function (err, res, body) {
     callback(err, body);
   });
 }
-const runMapTask = function() {
-  schedule.scheduleJob('00 30 05 * * *', function() {
+const runMapTask = function () {
+  schedule.scheduleJob('00 30 05 * * *', function () {
     // 每日早上五點半更新，為了避開run_rank更新
     const sql = 'TRUNCATE TABLE ??;';
 
-    connection.query(sql, 'race_map_info', function(err, rows) {
+    connection.query(sql, 'race_map_info', function (err, rows) {
       if (err) {
         throw err;
       }
@@ -231,39 +231,40 @@ const runMapTask = function() {
             race_elevation,
             race_average_incline,
             img_url,
+            gpx_url,
             left_top_coordinate,
             right_bottom_coordinate,
             max_lap_limit,
             map_name
         ) values ?
           `;
-        const { datas, urls } = mapLists;
-        async.map(urls, httpGet, function(err, response) {
+        const {
+          datas,
+          urls
+        } = mapLists;
+        async.map(urls, httpGet, function (err, response) {
           if (err) return console.log(err);
           const maps = response.map((_res, idx) => {
             const {
               map: {
-                buildMap: { info },
+                buildMap: {
+                  info
+                },
                 raceRoom,
                 basic
               }
             } = _res;
-            datas[idx].img_url += info[0].FileName1080p.replace(
-              '1080',
-              'web_bg'
-            );
+            datas[idx].img_url += info[0].FileName1080p.replace('1080', 'web_bg');
+            datas[idx].gpx_url += info[0].GPXName;
             datas[idx].left_top_coordinate = info[0].leftTopCoordinateLat;
-            datas[idx].right_bottom_coordinate =
-              info[0].rightBottomCoordinateLat;
+            datas[idx].right_bottom_coordinate = info[0].rightBottomCoordinateLat;
             datas[idx].max_lap_limit = raceRoom.info[0].raceLap;
             datas[idx].map_name = basic.info[0].mapName;
             return info[0].FileName1080p;
           });
           const results = datas.map(_data => Object.values(_data));
-          connection.query(sql2, ['race_map_info', results], function(
-            err,
-            rows
-          ) {
+          connection.query(sql2, ['race_map_info', results], function (err, rows) {
+
             if (err) {
               throw err;
             }
@@ -276,6 +277,7 @@ const runMapTask = function() {
 };
 runMapTask();
 runRankTask();
+
 
 // Body parser middleware
 
