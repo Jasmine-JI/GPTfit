@@ -1,0 +1,27 @@
+.breadcrumb {
+  margin-bottom: 0px;
+  margin-left: 10px;
+  background-color: transparent;
+
+}
+.breadcrumb-item a {
+  color: #fff;
+}
+.breadcrumb-item+.breadcrumb-item::after {
+  display: inline-block;
+  padding-right: 5px;
+  padding-left: 5px;
+  color: #fff;
+  content: ">";
+}
+.breadcrumb-item a:last-child::after {
+  content: "";
+  display: none;
+  padding: 0px;
+}
+
+.breadcrumb-item+.breadcrumb-item::before {
+  content: "";
+  display: none;
+  padding: 0px;
+}

@@ -1,5 +1,5 @@
 .main {
-  padding-top: 56px;
+  padding-top: 63px;
   /* margin: 56px 0px 0px; */
   width: 100%;
 }
@@ -83,4 +83,11 @@
     display: inline-block;
     width: calc((100% - 30px) / 2);
   }
+
+}
+@media (min-width: 992px) {
+  .main {
+    padding-top: 0px;
+  }
+
 }

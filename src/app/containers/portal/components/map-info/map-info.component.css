@@ -74,7 +74,9 @@ tr.here {
   visibility: hidden;
   margin: 10px 5px;
 }
-
+.map-container {
+  padding-top: 80px;
+}
 @media (max-width: 768px) {
   .mapinfo__goback-rwd {
     display: none;

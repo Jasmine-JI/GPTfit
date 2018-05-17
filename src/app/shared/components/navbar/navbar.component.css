@@ -2,7 +2,7 @@
   color: #fff;
 }
 .bg-color {
-  background-color: #008bcd;
+  background-color: rgb(121, 125, 125, .5);
 }
 
 .navbar-toggler-icon {
@@ -22,3 +22,47 @@ input[type='email']::-webkit-input-placeholder {
   border-bottom: 3px solid #fa8b00;
 }
 
+.navbar {
+  height: 63px;
+}
+.nav-item + .nav-item {
+  margin-left: 30px;
+}
+.navbar-brand.nav-item {
+  margin-right: 30px;
+}
+.show > .btn-secondary.dropdown-toggle {
+  border-color: transparent;
+  box-shadow: none;
+}
+.dropdown-menu.dropdown-menu-lang {
+  left: -35px;
+}
+.collapse.navbar-collapse.show .navbar-utility {
+  display: none;
+}
+.navbar-utility {
+  display: flex;
+  order: 1;
+}
+
+
+@media (max-width: 991px) {
+  .nav-item + .nav-item {
+    margin-left: 0px;
+  }
+
+  .navbar-brand.nav-item {
+    margin-right: 0;
+  }
+  .navbar-utility {
+    order: 0;
+  }
+
+}
+@media (max-width: 375px) {
+  .navbar-brand.nav-item h2 {
+    font-size: 25px;
+  }
+
+}
