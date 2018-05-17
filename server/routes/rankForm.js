@@ -283,7 +283,6 @@ router.get('/rankInfo/map', function(req, res, next) {
     select
     distinct map_name,
     race_total_distance as distance,
-    race_category,
     map_id
     from ?? ;
   `;

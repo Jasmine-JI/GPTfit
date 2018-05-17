@@ -1,15 +1,15 @@
 import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
-// import debounce from 'debounce';
 import { RankFormService } from '../../services/rank-form.service';
-import { mapImages } from '@shared/mapImages';
+import { MapService } from '@shared/services/map.service';
 import {
   isObjectEmpty,
   buildUrlQueryStrings,
   getUrlQueryStrings,
   buildPageMeta,
-  debounce
+  debounce,
+  setLocalStorageObject
 } from '@shared/utils/';
 import { GlobalEventsManager } from '@shared/global-events-manager';
 import { forkJoin } from 'rxjs/observable/forkJoin';
@@ -96,9 +96,11 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   isRealTime: boolean;
   currentDate = moment().unix();
   customMapOptions = [];
+  mapImages: any;
   constructor(
     private router: Router,
     private rankFormService: RankFormService,
+    private mapService: MapService,
     private globalEventsManager: GlobalEventsManager
   ) {
     this.handleSearchEmail = debounce(this.handleSearchEmail, 1000);
@@ -112,7 +114,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     let params = new HttpParams();
     this.startDate = this.convertDateString(this.startDay);
     this.endDate = this.convertDateString(this.finalDay);
-
+    setLocalStorageObject('hostName', location.hostname);
     // 若有自帶字串 parse字串
     if (!isObjectEmpty(queryStrings)) {
       const {
@@ -148,76 +150,65 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     }
 
     params = params.set('mapId', this.mapId.toString());
-    this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`; // 背景圖 ，預設為取雅典娜
+    // this.bgImageUrl = `url(${this.mapImages[this.mapId - 1]})`; // 背景圖 ，預設為取雅典娜
 
     const fetchMapOptions = this.rankFormService.getMapOptions();
     const fetchRankTabs = this.rankFormService.getRankTabs();
-    forkJoin([fetchMapOptions, fetchRankTabs]).subscribe(results => {
-      this.mapDatas = results[0];
-      this.rankTabs = results[1];
-      const { sessionId } = queryStrings;
-      if (sessionId) {
-        const idx = this.rankTabs.findIndex(
-          _tab => _tab.session_id.toString() === sessionId
-        );
-        this.tabIdx = idx + 1;
-        this.handleRealTimeValue(this.tabIdx);
-      }
-      // 判斷tabIdx 並對應塞參數
-      if (this.tabIdx !== 0) {
-        const {
-          is_real_time,
-          time_stamp_start,
-          time_stamp_end,
-          event_id
-        } = this.rankTabs[this.tabIdx - 1];
-        if (is_real_time === 1) {
-          params = params.set('start_date_time', time_stamp_start);
-          params = params.set('end_date_time', time_stamp_end);
-        } else {
-          params = params.set(
-            'startDate',
-            moment(time_stamp_start * 1000).format('YYYY-MM-DD')
-          );
-          params = params.set(
-            'endDate',
-            moment(time_stamp_end * 1000).format('YYYY-MM-DD')
-          );
+    const fetchMapUrls = this.mapService.getMapUrls();
+    forkJoin([fetchMapOptions, fetchRankTabs, fetchMapUrls]).subscribe(
+      results => {
+        this.mapDatas = results[0];
+        this.rankTabs = results[1];
+        this.mapImages = results[2];
+        this.bgImageUrl = `url(${this.mapImages[this.mapId - 1]})`; // 背景圖 ，預設為取雅典娜
+
+        const { sessionId } = queryStrings;
+        if (sessionId) {
+          const idx = this.rankTabs.findIndex(_tab => _tab.session_id.toString() === sessionId);
+          this.tabIdx = idx + 1;
+          this.handleRealTimeValue(this.tabIdx);
         }
-        params = params.set('event_id', `${event_id}`);
-      } else {
-        params = params.set('startDate', this.startDate);
-        params = params.set('endDate', this.endDate);
-      }
-
-      this.idx = this.mapDatas.findIndex(_data => _data.map_id === this.mapId);
-      if (this.idx > -1) {
-        this.mapName = this.mapDatas[this.idx].map_name;
-        this.distance = this.mapDatas[this.idx].distance;
-        this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
-      }
-
-      if (
-        this.tabIdx === 0 ||
-        this.rankTabs[this.tabIdx - 1].is_real_time === 0
-      ) {
-        this.fetchRankForm(params);
-      } else {
-        this.fetchRealTimeRank(params);
-        this.timer = setInterval(() => {
-          if (this.tabIdx !== 0 && this.tabIdx !== 1) {
-            this.fetchRealTimeRank(params);
+        // 判斷tabIdx 並對應塞參數
+        if (this.tabIdx !== 0) {
+          const { is_real_time, time_stamp_start, time_stamp_end, event_id } = this.rankTabs[this.tabIdx - 1];
+          if (is_real_time === 1) {
+            params = params.set('start_date_time', time_stamp_start);
+            params = params.set('end_date_time', time_stamp_end);
+          } else {
+            params = params.set('startDate', moment(time_stamp_start * 1000).format('YYYY-MM-DD'));
+            params = params.set('endDate', moment(time_stamp_end * 1000).format('YYYY-MM-DD'));
           }
-        }, 300000);
-      }
+          params = params.set('event_id', `${event_id}`);
+        } else {
+          params = params.set('startDate', this.startDate);
+          params = params.set('endDate', this.endDate);
+        }
 
-      this.handleCoustomMaps();
-      const { mapDatas, customMapOptions } = this;
-      const searchOptions = { mapDatas, customMapOptions };
-      this.globalEventsManager.getMapOptions(searchOptions);
-      this.globalEventsManager.getMapId(this.mapId);
-      this.globalEventsManager.getRankTabs(this.rankTabs);
-    });
+        this.idx = this.mapDatas.findIndex(_data => _data.map_id === this.mapId);
+        if (this.idx > -1) {
+          this.mapName = this.mapDatas[this.idx].map_name;
+          this.distance = this.mapDatas[this.idx].distance;
+          this.bgImageUrl = `url(${this.mapImages[this.mapId - 1]})`;
+        }
+
+        if (this.tabIdx === 0 || this.rankTabs[this.tabIdx - 1].is_real_time === 0) {
+          this.fetchRankForm(params);
+        } else {
+          this.fetchRealTimeRank(params);
+          this.timer = setInterval(() => {
+            if (this.tabIdx !== 0 && this.tabIdx !== 1) {
+              this.fetchRealTimeRank(params);
+            }
+          }, 300000);
+        }
+
+        this.handleCoustomMaps();
+        const { mapDatas, customMapOptions } = this;
+        const searchOptions = { mapDatas, customMapOptions };
+        this.globalEventsManager.getMapOptions(searchOptions);
+        this.globalEventsManager.getMapId(this.mapId);
+        this.globalEventsManager.getRankTabs(this.rankTabs);
+      });
     this.globalEventsManager.getRankFormEmitter.subscribe(res => {
       if (res) {
         const {
@@ -242,7 +233,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
         if (this.idx > -1) {
           this.mapName = this.mapDatas[this.idx].map_name;
           this.distance = this.mapDatas[this.idx].distance;
-          this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
+          this.bgImageUrl = `url(${this.mapImages[this.mapId - 1]})`;
         }
         if (meta) {
           this.isHaveEmail = false;
@@ -293,7 +284,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     if (this.idx > -1) {
       this.mapName = this.mapDatas[this.idx].map_name;
       this.distance = this.mapDatas[this.idx].distance;
-      this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
+      this.bgImageUrl = `url(${this.mapImages[this.mapId - 1]})`;
     }
     this.userName = userName;
     this.isFoundUser = this.userName ? true : false;
@@ -315,7 +306,9 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   }
   convertDateString(_date) {
     if (_date) {
-      const { date: { day, month, year } } = _date;
+      const {
+        date: { day, month, year }
+      } = _date;
       return year.toString() + '-' + month.toString() + '-' + day.toString();
     }
     return (
@@ -329,7 +322,9 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
   }
   convertDateFormat(_date) {
     if (_date) {
-      const { date: { day, month, year } } = _date;
+      const {
+        date: { day, month, year }
+      } = _date;
       const data = {
         date: {
           year,
@@ -389,17 +384,20 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
           }
         });
       }
-
-      let idx = this.customMapOptions.findIndex(_option => _option.map_id === this.mapId);
+      let idx = this.customMapOptions.findIndex(
+        _option => _option.map_id === Number(this.mapId)
+      );
       if (idx === -1) {
         idx = 0;
       }
-      this.globalEventsManager.getMapOptions({ customMapOptions: this.customMapOptions });
+      this.globalEventsManager.getMapOptions({
+        customMapOptions: this.customMapOptions
+      });
       this.mapId = this.customMapOptions[idx].map_id;
       this.globalEventsManager.getMapId(this.mapId);
       this.mapName = this.customMapOptions[idx].map_name;
       this.distance = this.customMapOptions[idx].distance;
-      this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
+      this.bgImageUrl = `url(${this.mapImages[this.mapId - 1]})`;
     }
   }
   handleRealTimeValue(idx) {
@@ -540,7 +538,9 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
         paramDatas.event = '0';
       }
     }
-    const mapInfoUrl = `${location.pathname}/mapInfo?${buildUrlQueryStrings(paramDatas)}`;
+    const mapInfoUrl = `${location.pathname}/mapInfo?${buildUrlQueryStrings(
+      paramDatas
+    )}`;
 
     this.router.navigateByUrl(mapInfoUrl);
   }
@@ -635,7 +635,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
       this.distance = this.mapDatas[this.idx].distance;
 
       this.mapName = this.mapDatas[this.idx].map_name;
-      this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
+      this.bgImageUrl = `url(${this.mapImages[this.mapId - 1]})`;
     } else {
       this.idx = this.customMapOptions.findIndex(
         _data => _data.map_id === Number(this.mapId)
@@ -649,7 +649,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
       this.distance = this.customMapOptions[this.idx].distance;
 
       this.mapName = this.customMapOptions[this.idx].map_name;
-      this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
+      this.bgImageUrl = `url(${this.mapImages[this.mapId - 1]})`;
     }
     let params = new HttpParams();
     params = params.set('mapId', this.mapId.toString());
@@ -710,7 +710,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
       this.distance = this.mapDatas[this.idx].distance;
 
       this.mapName = this.mapDatas[this.idx].map_name;
-      this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
+      this.bgImageUrl = `url(${this.mapImages[this.mapId - 1]})`;
     } else {
       this.idx = this.customMapOptions.findIndex(
         _data => _data.map_id === Number(this.mapId)
@@ -724,7 +724,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
       this.distance = this.customMapOptions[this.idx].distance;
 
       this.mapName = this.customMapOptions[this.idx].map_name;
-      this.bgImageUrl = `url(${mapImages[this.mapId - 1]})`;
+      this.bgImageUrl = `url(${this.mapImages[this.mapId - 1]})`;
     }
     let params = new HttpParams();
     params = params.set('mapId', this.mapId.toString());

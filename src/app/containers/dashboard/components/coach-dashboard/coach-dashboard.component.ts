@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CoachService } from '../../services/coach.service';
 import { DragulaService } from 'ng2-dragula/ng2-dragula';
-import { mapImages } from '@shared/mapImages';
+import { MapService } from '@shared/services/map.service';
 import { Router } from '@angular/router';
 import { mapInfos } from './coach';
 
@@ -12,13 +12,14 @@ import { mapInfos } from './coach';
 })
 export class CoachDashboardComponent implements OnInit {
   raceList = [];
-  mapImages = mapImages;
+  mapImages: any;
   mapInfos = mapInfos;
   tabIdx = 1;
   mapIdx = 1;
   constructor(
     private coachService: CoachService,
     private dragula: DragulaService,
+    private mapService: MapService,
     private router: Router
   ) {
     const bag: any = this.dragula.find('bag-items');
@@ -30,12 +31,13 @@ export class CoachDashboardComponent implements OnInit {
   ngOnInit() {
     const body = {
       token: 'e467bdfefeb831bcd4af56d12d1ce988',
-      serialNumber: '87A84662-B288-4BCD-A013-A99ECED70600',
+      serialNumber: '79ACE0A2-BAAB-45C1-BC40-A4149570130F',
       sportMode: '0',
       trainingType: '0',
       page: '0',
       pageCounts: '1000'
     };
+    this.mapService.getMapUrls().subscribe(res => this.mapImages = res);
     this.coachService.fetchRaceList(body).subscribe(res => {
       const { info: { raceList } } = res;
       this.raceList = raceList;
@@ -49,7 +51,7 @@ export class CoachDashboardComponent implements OnInit {
     };
     const body1 = {
       token: 'e467bdfefeb831bcd4af56d12d1ce988',
-      serialNumber: '87A84662-B288-4BCD-A013-A99ECED70600',
+      serialNumber: '79ACE0A2-BAAB-45C1-BC40-A4149570130F',
       sportMode: '0',
       trainingType: '0',
       page: '0',
@@ -64,7 +66,7 @@ export class CoachDashboardComponent implements OnInit {
   }
 
   goViewRace(raceId) {
-    this.router.navigateByUrl(`${location.pathname}` + '/detail/' + raceId + '?ipm=s');
+    this.router.navigateByUrl('/dashboardalaala/test/' + raceId + '?ipm=s');
   }
   choose(idx) {
     this.tabIdx = idx;

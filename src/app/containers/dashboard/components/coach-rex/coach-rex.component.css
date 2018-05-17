@@ -1,0 +1,296 @@
+/* * {
+  border: 1px solid black;
+} */
+
+.top {
+  display: flex;
+}
+.coach-bg {
+  min-height: 100vh;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: absolute;
+  z-index: -1;
+}
+.card-body--bg {
+  position: absolute;
+  z-index: -1;
+  background-color: #f0f0f0;
+  width: 100%;
+  height: 100%;
+}
+.coach-container {
+  height: 100vh;
+  width: 100%;
+}
+.bg-filter {
+  float: left;
+  width: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  -webkit-filter: brightness(2) blur(15px);
+  -moz-filter: brightness(2) blur(15px);
+  -o-filter: brightness(2) blur(15px);
+  -ms-filter: brightness(2) blur(15px);
+  filter: brightness(2) blur(15px);
+
+}
+.content {
+  height: 50%;
+  padding: 0 15px;
+}
+
+.race-info {
+  width: 40%;
+  height: 200px;
+  text-align: right;
+
+}
+.race-mode__shadow {
+  font-size: 75px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 3px 2px 1px #333333;
+}
+.race-map__info {
+  font-size: 36px;
+  font-style: italic;
+  color: #fff;
+  text-shadow: 4px 3px 1px #333333;
+}
+.curmap-info {
+  width: 60%;
+  height: 200px;
+  text-align: right;
+  font-size: 34px;
+  color: #303030;
+}
+
+.hr-card {
+  width: calc((100% - 120px) / 4);
+  height: 374px;
+  display: inline-block;
+  margin: 0px 15px 25px 15px;
+  position: relative;
+}
+
+.color-mask {
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  height: 20%;
+  background: linear-gradient(to bottom right, rgb(0, 0, 0, 0.3), transparent);
+}
+
+
+.hr-card-header {
+  height: 20%;
+  display: flex;
+  color: #fff;
+  background-color: #a2a2a2;
+  font-size: 35px;
+  justify-content: space-between;
+  padding: 0 15px;
+  letter-spacing: 5px;
+}
+
+.hr-card-body {
+  height: 80%;
+  position: relative;
+  font-size: 30px;
+  letter-spacing: 5px;
+}
+
+.hr-card-body__hr {
+  height: 50%;
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+}
+
+.hr-card-body__other {
+  height: 50%;
+  display: flex;
+  padding: 15px;
+  justify-content: space-between;
+}
+
+.hr-card-body__pace {
+  display: inline-block;
+}
+
+.hr-card-body__distance {
+  display: inline-block;
+  text-align: right;
+}
+
+.hr-card-header__no {
+  display: inline-block;
+  line-height: 70px;
+  font-family: ITC;
+}
+
+.hr-card-header__name {
+  display: inline-block;
+  line-height: 70px;
+}
+
+.hr {
+  display: inline-block;
+}
+
+.hr-val {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+}
+.val {
+  display: inline-block;
+  font-family: ITC;
+  font-style: italic;
+  font-size: 112px;
+  color: #e10019;
+  opacity: .8;
+  line-height: 112px;
+  letter-spacing: 12px;
+}
+
+.user-photo {
+  width: 144px;
+  height: 144px;
+  display: inline-block;
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+}
+.user-photo--landscape img {
+  width: auto;
+  height: 100%;
+}
+.user-photo--portrait img {
+  width: 100%;
+  height: auto;
+}
+.photo-fit__25 img {
+  margin-left: -25%;
+}
+.photo-fit__50 img {
+  margin-left: -50%;
+}
+
+.coach-header {
+  width: 100%;
+  height: 140px;
+  background-color: #f1f1f1f1;
+  border-top: 1px solid #4f4f4f;
+  border-bottom: 1px solid #4f4f4f;
+  display: flex;
+  justify-content: space-between;
+}
+.coach-footer {
+  width: 100%;
+  height: 105px;
+  background-color: #f1f1f1f1;
+  border-top: 1px solid #4f4f4f;
+  border-bottom: 1px solid #4f4f4f;
+}
+
+.coach-header span {
+  font-size:46px;
+  color: #108bcd;
+  margin: auto 30px auto 30px;
+  font-weight: bold;
+  line-height: 140px;
+}
+.card-params {
+  font-family: ITC;
+  font-size: 65px;
+  opacity: .8;
+}
+
+.hr-heart {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30%;
+  font-size: 30px;
+  color: #e10019;
+}
+
+.mySvg {
+  background-color: cadetblue;
+}
+
+
+@media (max-width: 1919px) {
+  .hr-card {
+    width: calc((100% - 78px) / 3);
+    height: 284px;
+    margin: 0px 13px 25px 13px;
+  }
+
+  .user-photo {
+    width: 110px;
+    height: 110px;
+  }
+  .hr-card-header {
+    font-size: 28.5px;
+  }
+  .hr-card-header__no {
+    line-height: 57px;
+  }
+  .hr-card-header__name {
+    line-height: 57px;
+  }
+  .content {
+    padding: 0;
+  }
+  .card-params {
+    font-size: 49px;
+  }
+  .hr-card-body {
+    font-size: 22px;
+  }
+  .val {
+    font-size: 85px;
+    line-height: 85px;
+  }
+}
+
+@media (max-width: 1079px) {
+  .hr-card {
+    width: calc((100% - 46px) / 2);
+    height: 281px;
+    margin: 0px 11.5px 25px 11.5px;
+  }
+
+  .user-photo {
+    width: 110px;
+    height: 110px;
+  }
+  .hr-card-header {
+    font-size: 28.5px;
+  }
+  .hr-card-header__no {
+    line-height: 57px;
+  }
+  .hr-card-header__name {
+    line-height: 57px;
+  }
+  .content {
+    padding: 0 11.5px;
+  }
+  .card-params {
+    font-size: 49px;
+  }
+  .hr-card-body {
+    font-size: 22px;
+  }
+  .val {
+    font-size: 85px;
+    line-height: 85px;
+  }
+}
+

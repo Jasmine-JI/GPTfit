@@ -12,6 +12,7 @@ import { CertificatePreviewComponent } from './components/certificate-preview/ce
 import { CertificateComponent } from './components/certificate/certificate.component';
 import { MyDatePickerModule } from 'mydatepicker';
 import { EventEnrollService } from './services/event-enroll.service';
+import { MapService } from '@shared/services/map.service';
 import { EventCalendarComponent } from './components/event-calendar/event-calendar.component';
 import { CustomMaterialModule } from '@shared/custom-material.module.ts';
 import { EnrollPreviewComponent } from './components/enroll-preview/enroll-preview.component';
@@ -36,6 +37,8 @@ import { HrZoneDialogComponent } from './components/hr-zone-dialog/hr-zone-dialo
 import { DragulaModule } from 'ng2-dragula/ng2-dragula';
 import { CoachDashboardDetailComponent } from './components/coach-dashboard-detail/coach-dashboard-detail.component';
 import { Top3DialogComponent } from './components/top3-dialog/top3-dialog.component';
+import { CoachRexComponent } from './components/coach-rex/coach-rex.component';
+import { EventManagementComponent } from './components/event-management/event-management.component';
 
 @NgModule({
   imports: [
@@ -54,6 +57,7 @@ import { Top3DialogComponent } from './components/top3-dialog/top3-dialog.compon
   ],
   providers: [
     EventEnrollService,
+    MapService,
     GlobalEventsManager,
     EventInfoService,
     GpxService,
@@ -80,7 +84,9 @@ import { Top3DialogComponent } from './components/top3-dialog/top3-dialog.compon
     CoachDashboardComponent,
     HrZoneDialogComponent,
     CoachDashboardDetailComponent,
-    Top3DialogComponent
+    Top3DialogComponent,
+    CoachRexComponent,
+    EventManagementComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [

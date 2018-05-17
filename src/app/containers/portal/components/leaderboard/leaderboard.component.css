@@ -203,6 +203,7 @@ tr.tr-only-hide {
   margin: 0;
   list-style: none;
   font-size: 0;
+  border-bottom: 5px solid #26ABE4;
 }
 
 .tablist__tab {
@@ -210,7 +211,7 @@ tr.tr-only-hide {
   cursor: pointer;
   background-color: #f9f9f9;
   border-radius: 4px 4px 0 0;
-  width: 190px;
+  width: 170px;
   text-align: center;
   color: #999;
   font-size: 12px;
@@ -276,6 +277,10 @@ tr.tr-only-hide {
 }
 
 @media (max-width: 991px) {
+  .tablist {
+    border-bottom: 1px solid #dbd8ca;
+  }
+
   .tablist__tab--selected {
     font-size: 14px;
     line-height: 22px;
@@ -294,10 +299,14 @@ tr.tr-only-hide {
     max-width: 100%;
   }
 
-  .tablist__tab:nth-child(4),
-  .tablist__tab:nth-child(5),
-  .tablist__tab:nth-child(6) {
+  .tablist__tab--total4 {
+    width: 100%;
+  }
+  .tablist__tab--total5 {
     width: calc(100% / 2);
+  }
+  .tablist__tab--total6 {
+    width: calc(100% / 3);
   }
   .searchRank-bar {
     display: none;

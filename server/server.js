@@ -2,6 +2,10 @@ var mysql = require("mysql");
 var express = require('express');
 var bodyParser = require('body-parser');
 var os = require('os');
+var schedule = require('node-schedule');
+const { getMapList } = require('./models/map_model');
+var async = require('async');
+var request = require('request');
 
 // const https = require('https');
 // const fs = require('fs');
@@ -115,6 +119,8 @@ var raceEventInfo = require('./routes/raceEventInfo.js');
 var runGpx = require('./routes/runGpx.js');
 var deviceLog = require('./routes/deviceLog.js');
 var coach = require('./routes/coach.js');
+var map = require('./routes/map.js');
+var qrPair = require('./routes/qrPair.js');
 
 app.use('/nodejs/api/rankForm', rankForm);
 app.use('/nodejs/api/resetPassword', resetPassword);
@@ -123,6 +129,8 @@ app.use('/nodejs/api/raceEventInfo', raceEventInfo);
 app.use('/nodejs/api/gpx', runGpx);
 app.use('/nodejs/api/deviceLog', deviceLog);
 app.use('/nodejs/api/coach', coach);
+app.use('/nodejs/api/map', map);
+app.use('/nodejs/api/qrPair', qrPair);
 
 // Start the server
 const port = process.env.PORT || 3001;

@@ -17,7 +17,9 @@ export class EventInfoService {
     return this.http.get(API_SERVER + 'rankForm/todayRank', { params });
   }
   createEvent(body) {
-    return this.http.post(API_SERVER + 'raceEventInfo/create', body);
+    return this.http.post(API_SERVER + 'raceEventInfo/create', body, {
+      responseType: 'text'
+    });
   }
   removeEvent(id) {
     return this.http.delete(API_SERVER + 'raceEventInfo/' + id);

@@ -26,21 +26,19 @@ export class CreateEventComponent implements OnInit {
     height: '30px',
     width: '200px',
     selectorWidth: '200px',
-    dateFormat: 'yyyy-mm-dd',
-    disableUntil: { year: 2017, month: 12, day: 4 }
+    dateFormat: 'yyyy-mm-dd'
   };
   endDateOptions: IMyDpOptions = {
     height: '30px',
     width: '200px',
     selectorWidth: '200px',
-    dateFormat: 'yyyy-mm-dd',
-    disableUntil: { year: 2017, month: 12, day: 4 }
+    dateFormat: 'yyyy-mm-dd'
   };
   startDay: any = {
     date: {
-      year: 2017,
-      month: 12,
-      day: 5
+      year: new Date().getFullYear(),
+      month: new Date().getMonth() + 1,
+      day: new Date().getUTCDate()
     }
   };
   finalDay: any = {
@@ -78,8 +76,8 @@ export class CreateEventComponent implements OnInit {
       event_name: ['', Validators.required],
       selectedStartDate: [this.startDay, Validators.required],
       selectedEndDate: [this.finalDay, Validators.required],
-      event_timer_start: ['12:30', Validators.required],
-      event_timer_end: ['02:30', Validators.required],
+      event_timer_start: ['00:00', Validators.required],
+      event_timer_end: ['23:59', Validators.required],
       launch_user_name: ['', Validators.required],
       description: '',
       sessionDatas: this.fb.array([])
@@ -124,9 +122,9 @@ export class CreateEventComponent implements OnInit {
           isShowPortal: _data.isShowPortal,
           session_name: _data.session_name,
           session_start_date:
-            _data.session_start_date.formatted + ' ' + _data.session_start_time,
+            this.convertDateString(_data.session_start_date) + ' ' + _data.session_start_time,
           session_end_date:
-            _data.session_end_date.formatted + ' ' + _data.session_end_time,
+            this.convertDateString(_data.session_end_date) + ' ' + _data.session_end_time,
           isSpecificMap: _data.isSpecificMap,
           chooseMaps: _data.chooseMaps.join()
         };
@@ -135,22 +133,57 @@ export class CreateEventComponent implements OnInit {
     }
 
     if (valid) {
-      this.eventInfoService
-        .createEvent(data)
-        .subscribe(results =>
-          this.router.navigateByUrl('/dashboardalaala/event')
-        );
+      this.eventInfoService.createEvent(data).subscribe(
+        results => {
+          if (results === 'duplicate eventId') {
+            return this.dialog.open(MsgDialogComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'Message',
+                body: '此eventId已重複'
+              }
+            });
+          }
+          this.router.navigateByUrl('/dashboardalaala/event');
+        },
+        err => {
+          return this.dialog.open(MsgDialogComponent, {
+            hasBackdrop: true,
+            data: {
+              title: 'Message',
+              body: `顯示外部排行活動數量超過上限，最多五筆，目前操作總共有${
+                err.error
+              }筆`
+            }
+          });
+        }
+      );
     }
   }
   initSessions(): FormGroup {
     return this.fb.group({
       isShowPortal: [false],
       isRealTime: [false],
-      session_name: ['', Validators.required],
-      session_start_date: ['', Validators.required],
-      session_start_time: ['', Validators.required],
-      session_end_date: ['', Validators.required],
-      session_end_time: ['', Validators.required],
+      session_name: [
+        this.complexForm.controls['event_name'].value,
+        Validators.required
+      ],
+      session_start_date: [
+        this.complexForm.controls['selectedStartDate'].value,
+        Validators.required
+      ],
+      session_start_time: [
+        this.complexForm.controls['event_timer_start'].value,
+        Validators.required
+      ],
+      session_end_date: [
+        this.complexForm.controls['selectedEndDate'].value,
+        Validators.required
+      ],
+      session_end_time: [
+        this.complexForm.controls['event_timer_end'].value,
+        Validators.required
+      ],
       isSpecificMap: [false, Validators.required],
       chooseMaps: ''
     });
@@ -166,7 +199,9 @@ export class CreateEventComponent implements OnInit {
   }
   convertDateString(_date) {
     if (_date) {
-      const { date: { day, month, year } } = _date;
+      const {
+        date: { day, month, year }
+      } = _date;
       return year.toString() + '-' + month.toString() + '-' + day.toString();
     }
     return (

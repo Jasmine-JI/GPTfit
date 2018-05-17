@@ -8,8 +8,9 @@ import { PortalComponent } from './portal.component';
 import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
 import { SharedPipes } from '@shared/pipes/shared-pipes';
 import { MapInfoComponent } from './components/map-info/map-info.component';
-import { MapService } from '@shared/services/map.service';
+import { MapGPXService } from '@shared/services/map-gpx.service';
 import { RankFormService } from './services/rank-form.service';
+import { MapService } from '@shared/services/map.service';
 import { LoadingComponent } from '../../shared/components/loading/loading.component';
 import { PaginationComponent } from '../../shared/components/pagination/pagination.component';
 import { GlobalEventsManager } from '@shared/global-events-manager';
@@ -22,6 +23,8 @@ import { MyDatePickerModule } from 'mydatepicker';
 import { SharedComponentsModule } from '@shared/components/shared-components.module';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { DemoQrcodComponent } from './components/demo-qrcod/demo-qrcod.component';
+import { QrcodeService } from './services/qrcode.service';
+import { NgProgressModule } from 'ngx-progressbar';
 
 @NgModule({
   imports: [
@@ -31,11 +34,14 @@ import { DemoQrcodComponent } from './components/demo-qrcod/demo-qrcod.component
     FormsModule,
     MyDatePickerModule,
     SharedComponentsModule,
-    SharedPipes
+    SharedPipes,
+    NgProgressModule
   ],
   providers: [
-    MapService,
+    MapGPXService,
     RankFormService,
+    MapService,
+    QrcodeService,
     GlobalEventsManager,
     ResetPasswordService,
     {
