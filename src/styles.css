@@ -276,6 +276,11 @@ a.alatech-btn:hover {
   font-weight: 700;
   font-style: normal;
 }
+.dropdown-menu.dropdown-menu-lang {
+  top: 47px;
+  left: -81px;
+}
+
 
 /* about print */
 @media print {

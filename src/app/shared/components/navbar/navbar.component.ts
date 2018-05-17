@@ -16,6 +16,7 @@ export class NavbarComponent implements OnInit {
   href: string;
   isShowResetPwd = false;
   isShowDashboard = false;
+  isShowLeaderboard = false;
   deviceWidth: number;
 
   constructor(
@@ -27,6 +28,9 @@ export class NavbarComponent implements OnInit {
   ngOnInit() {
     this.deviceWidth = window.innerWidth;
     this.href = this.router.url;
+    if (this.href.indexOf('leaderboard') > -1) {
+      this.isShowLeaderboard = true;
+    }
     if (this.href.indexOf('resetpassword') > -1) {
       this.isShowResetPwd = true;
     } else {

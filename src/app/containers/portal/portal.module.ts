@@ -25,6 +25,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { DemoQrcodComponent } from './components/demo-qrcod/demo-qrcod.component';
 import { QrcodeService } from './services/qrcode.service';
 import { NgProgressModule } from 'ngx-progressbar';
+import { SigninComponent } from './components/signin/signin.component';
 
 @NgModule({
   imports: [
@@ -57,7 +58,8 @@ import { NgProgressModule } from 'ngx-progressbar';
     LeaderboardComponent,
     MapInfoComponent,
     PasswordComponent,
-    DemoQrcodComponent
+    DemoQrcodComponent,
+    SigninComponent
   ]
 })
 export class PortalModule {}
