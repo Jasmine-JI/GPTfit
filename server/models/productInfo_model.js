@@ -12,9 +12,20 @@ for (var dev in ifaces) {
         : undefined
   );
 }
+const addressToDomain = function (_address) {
+  if (_address === '192.168.1.234') {
+    return 'app.alatech.com.tw';
+  } else if (_address === '152.101.90.130') {
+    return 'cloud.alatech.com.tw';
+  } else {
+    return _address;
+  }
+}
+
 exports.getInfos = function(sn) {
   return new Promise((resolve, reject) => {
-    request(`http://${address}/app/public_html/products/info.json`, function (error, response, body) {
+    const domain = addressToDomain(address);
+    request(`http://${domain}/app/public_html/products/info.json`, function (error, response, body) {
       if (error) throw new Error(error);
       const data = {};
       const { productsInfo, modeType, appInfo } = JSON.parse(body);
@@ -29,21 +40,21 @@ exports.getInfos = function(sn) {
       const mainAppData = productsInfoData.mainApp ? appInfo.filter(
         _info => _info.appId === productsInfoData.mainApp[0].appId)[0]: null;
       if (mainAppData) {
-        mainAppData.appIconUrl = `http://${address}/app/public_html/products` + mainAppData.appIconUrl;
-        mainAppData.appIosImg = `http://${address}/app/public_html/products/img/getApp_01_apple.png`;
-        mainAppData.appAndroidImg = `http://${address}/app/public_html/products/img/getApp_02_googleplay.png`;
-        mainAppData.appApkImg = `http://${address}/app/public_html/products/img/getApp_03_apk.png`;
+        mainAppData.appIconUrl = `http://${domain}/app/public_html/products` + mainAppData.appIconUrl;
+        mainAppData.appIosImg = `http://${domain}/app/public_html/products/img/getApp_01_apple.png`;
+        mainAppData.appAndroidImg = `http://${domain}/app/public_html/products/img/getApp_02_googleplay.png`;
+        mainAppData.appApkImg = `http://${domain}/app/public_html/products/img/getApp_03_apk.png`;
       }
 
       const secondaryAppData = productsInfoData.secondaryApp ? appInfo.filter(_info => _info.appId === productsInfoData.secondaryApp[0].appId)[0] : null;
       if (secondaryAppData) {
-        secondaryAppData.appIconUrl = `http://${address}/app/public_html/products` + secondaryAppData.appIconUrl;
-        secondaryAppData.appIosImg = `http://${address}/app/public_html/products/img/getApp_01_apple.png`;
-        secondaryAppData.appAndroidImg = `http://${address}/app/public_html/products/img/getApp_02_googleplay.png`;
-        secondaryAppData.appApkImg = `http://${address}/app/public_html/products/img/getApp_03_apk.png`;
+        secondaryAppData.appIconUrl = `http://${domain}/app/public_html/products` + secondaryAppData.appIconUrl;
+        secondaryAppData.appIosImg = `http://${domain}/app/public_html/products/img/getApp_01_apple.png`;
+        secondaryAppData.appAndroidImg = `http://${domain}/app/public_html/products/img/getApp_02_googleplay.png`;
+        secondaryAppData.appApkImg = `http://${domain}/app/public_html/products/img/getApp_03_apk.png`;
       }
 
-      data.modeImgUrl = `http://${address}/app/public_html/products${productsInfoData.modeImg}`;
+      data.modeImgUrl = `http://${domain}/app/public_html/products${productsInfoData.modeImg}`;
       data.modeName = productsInfoData.modeName;
       data.InformationUrl = productsInfoData['product InformationUrl_zh-TW']; // to fix 等多語系要改
       data.date = date;
