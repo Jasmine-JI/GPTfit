@@ -15,10 +15,10 @@ for (var dev in ifaces) {
 const addressToDomain = function (_address) {
   if (_address === '192.168.1.234') {
     return 'app.alatech.com.tw';
-  } else if (_address === '152.101.90.130') {
-    return 'cloud.alatech.com.tw';
-  } else {
+  } else if (_address === '192.168.1.235') {
     return _address;
+  } else {
+    return 'cloud.alatech.com.tw';
   }
 }
 
