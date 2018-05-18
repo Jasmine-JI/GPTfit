@@ -18,13 +18,13 @@ const addressToDomain = function (_address) {
   } else if (_address === '192.168.1.235') {
     return _address;
   } else {
-    return 'cloud.alatech.com.tw';
+    return '127.0.0.1';
   }
 }
 
 exports.getInfos = function(sn) {
   return new Promise((resolve, reject) => {
-    const domain = addressToDomain(address);
+    let domain = addressToDomain(address);
     request(`http://${domain}/app/public_html/products/info.json`, function (error, response, body) {
       if (error) throw new Error(error);
       const data = {};
@@ -39,6 +39,10 @@ exports.getInfos = function(sn) {
             .indexOf(_data.modeID) > -1)[0];
       const mainAppData = productsInfoData.mainApp ? appInfo.filter(
         _info => _info.appId === productsInfoData.mainApp[0].appId)[0]: null;
+      if (domain === '127.0.0.1') {
+        domain = 'cloud.alatech.com.tw';
+      }
+
       if (mainAppData) {
         mainAppData.appIconUrl = `http://${domain}/app/public_html/products` + mainAppData.appIconUrl;
         mainAppData.appIosImg = `http://${domain}/app/public_html/products/img/getApp_01_apple.png`;
