@@ -28,9 +28,6 @@ exports.getMapList = function() {
       if (error) throw new Error(error);
         let urls = [];
         const datas = JSON.parse(body).mapList.raceMapInfo.map(_info => {
-          if (domain === '127.0.0.1') {
-            domain = 'cloud.alatech.com.tw';
-          }
           const { mapId, distance, totalElevation, incline, mapUpdateFile } = _info;
           const race_elevation = Number(totalElevation.replace('m', ''));
           let img_url = 'http://' + domain + '/app/public_html/cloudrun/update/';

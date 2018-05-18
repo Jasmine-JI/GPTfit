@@ -254,6 +254,8 @@ const runMapTask = function () {
                 basic
               }
             } = _res;
+            datas[idx].img_url = datas[idx].img_url.replace('127.0.0.1', 'cloud.alatech.com.tw');
+            datas[idx].gpx_url = datas[idx].gpx_url.replace('127.0.0.1', 'cloud.alatech.com.tw');
             datas[idx].img_url += info[0].FileName1080p.replace('1080', 'web_bg');
             datas[idx].gpx_url += info[0].GPXName;
             datas[idx].left_top_coordinate = info[0].leftTopCoordinateLat;
