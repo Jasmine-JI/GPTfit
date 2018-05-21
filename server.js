@@ -6,6 +6,7 @@ var os = require('os');
 const { getMapList } = require('./server/models/map_model');
 var async = require('async');
 var request = require('request');
+const helmet = require('helmet');
 
 // const https = require('https');
 // const fs = require('fs');
@@ -287,6 +288,13 @@ runRankTask();
 app.use(bodyParser.urlencoded({ extended: true }))
 // parse application/json
 app.use(bodyParser.json())
+
+// use helmet
+app.use(helmet({
+  dnsPrefetchControl: {
+    allow: true
+  }
+}));
 
 // Add headers
 app.use(function (req, res, next) {
