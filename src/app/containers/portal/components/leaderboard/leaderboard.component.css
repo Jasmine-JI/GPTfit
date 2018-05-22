@@ -32,6 +32,7 @@ tr.here {
 }
 
 .leaderboard-layer {
+  margin-top: -63px;
   background: rgb(100, 185, 196);
   background: linear-gradient( 135deg, rgba(100, 185, 196, 0.2) 0%, rgba(6, 24, 91, 0.8) 100%);
   /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
@@ -277,6 +278,10 @@ tr.tr-only-hide {
 }
 
 @media (max-width: 991px) {
+  .leaderboard-layer {
+    margin-top: 0px;
+  }
+
   .tablist {
     border-bottom: 1px solid #dbd8ca;
   }
