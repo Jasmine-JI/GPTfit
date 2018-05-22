@@ -37,7 +37,7 @@ exports.getInfos = function(sn) {
             .filter(_data => sn
             .toLocaleLowerCase()
             .indexOf(_data.modeID) > -1)[0];
-      const mainAppData = productsInfoData.mainApp ? appInfo.filter(
+      const mainAppData = productsInfoData ? appInfo.filter(
         _info => _info.appId === productsInfoData.mainApp[0].appId)[0]: null;
       if (domain === '127.0.0.1') {
         domain = 'cloud.alatech.com.tw';
@@ -50,22 +50,25 @@ exports.getInfos = function(sn) {
         mainAppData.appApkImg = `http://${domain}/app/public_html/products/img/getApp_03_apk.png`;
       }
 
-      const secondaryAppData = productsInfoData.secondaryApp ? appInfo.filter(_info => _info.appId === productsInfoData.secondaryApp[0].appId)[0] : null;
+      const secondaryAppData = productsInfoData ? appInfo.filter(_info => _info.appId === productsInfoData.secondaryApp[0].appId)[0] : null;
       if (secondaryAppData) {
         secondaryAppData.appIconUrl = `http://${domain}/app/public_html/products` + secondaryAppData.appIconUrl;
         secondaryAppData.appIosImg = `http://${domain}/app/public_html/products/img/getApp_01_apple.png`;
         secondaryAppData.appAndroidImg = `http://${domain}/app/public_html/products/img/getApp_02_googleplay.png`;
         secondaryAppData.appApkImg = `http://${domain}/app/public_html/products/img/getApp_03_apk.png`;
       }
-
-      data.modeImgUrl = `http://${domain}/app/public_html/products${productsInfoData.modeImg}`;
-      data.modeName = productsInfoData.modeName;
-      data.InformationUrl = productsInfoData['product InformationUrl_zh-TW']; // to fix 等多語系要改
-      data.date = date;
-      data.modeType = modeType[0][productsInfoData.modeType];
-      data.mainAppData = mainAppData;
-      data.secondaryAppData = secondaryAppData;
-      resolve(data);
+      if (mainAppData) {
+        data.modeImgUrl = `http://${domain}/app/public_html/products${productsInfoData.modeImg}`;
+        data.modeName = productsInfoData.modeName;
+        data.InformationUrl = productsInfoData['product InformationUrl_zh-TW']; // to fix 等多語系要改
+        data.date = date;
+        data.modeType = modeType[0][productsInfoData.modeType];
+        data.mainAppData = mainAppData;
+        data.secondaryAppData = secondaryAppData;
+        resolve(data);
+      } else {
+        resolve('尚無相關設備資訊');
+      }
     });
   });
 }

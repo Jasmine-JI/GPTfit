@@ -14,6 +14,7 @@ tr.here {
 }
 
 .leaderboard-layer {
+  margin-top: -63px;
   background: rgb(100, 185, 196);
   background: linear-gradient(
     135deg,
@@ -81,6 +82,9 @@ tr.here {
   }
 }
 @media (max-width: 768px) {
+  .leaderboard-layer {
+    margin-top: 0px;
+  }
   .mapinfo__goback-rwd--md {
     visibility: visible;
     z-index: 2;
