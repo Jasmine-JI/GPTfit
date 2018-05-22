@@ -15,6 +15,8 @@ export class DemoQrcodComponent implements OnInit {
   isMainAppOpen = false;
   isSecondAppOpen = false;
   isWrong = false;
+  noProductImg: string;
+  isLoading: boolean;
   constructor(
     private qrcodeService: QrcodeService,
     private progress: NgProgress
@@ -26,19 +28,27 @@ export class DemoQrcodComponent implements OnInit {
     let params = new HttpParams();
     params = params.set('device_sn', this.displayQr.device_sn);
     this.progress.start();
-    this.qrcodeService
-      .getDeviceInfo(params)
-      .subscribe(res => {
+    this.isLoading = true;
+    this.qrcodeService.getDeviceInfo(params).subscribe(res => {
+      if (typeof res === 'string') {
+        this.noProductImg = `http://${
+          location.hostname
+        }/app/public_html/products/img/unknown.png`;
+      } else {
         this.deviceInfo = res;
         this.uploadDevice();
-        this.progress.done();
-      });
+      }
+      this.progress.done();
+      this.isLoading = false;
+    });
   }
   uploadDevice() {
     const types = ['Wearable', 'Treadmill', 'Spin Bike', 'Rowing machine'];
     const { modeType } = this.deviceInfo;
     const { cs, device_sn } = this.displayQr;
-    const typeIdx = types.findIndex(_type => _type.toLowerCase() === modeType.toLowerCase());
+    const typeIdx = types.findIndex(
+      _type => _type.toLowerCase() === modeType.toLowerCase()
+    );
     const body = {
       token: '',
       verifyCode: this.displayQr.cs,
@@ -48,16 +58,14 @@ export class DemoQrcodComponent implements OnInit {
       deviceFWVer: '',
       deviceRFVer: ''
     };
-    this.qrcodeService
-      .uploadDeviceInfo(body, device_sn)
-      .subscribe(res => {
-        const result = res;
-        if (result.resultCode !== 200) {
-          this.isWrong = true;
-        } else {
-          this.isWrong = false;
-        }
-      });
+    this.qrcodeService.uploadDeviceInfo(body, device_sn).subscribe(res => {
+      const result = res;
+      if (result.resultCode !== 200) {
+        this.isWrong = true;
+      } else {
+        this.isWrong = false;
+      }
+    });
   }
   swithMainApp() {
     this.isMainAppOpen = !this.isMainAppOpen;
