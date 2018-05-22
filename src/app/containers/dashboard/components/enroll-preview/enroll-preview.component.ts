@@ -5,6 +5,7 @@ import { getUrlQueryStrings } from '@shared/utils/';
 import { HttpParams } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { EventInfoService } from '../../services/event-info.service';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-enroll-preview',
@@ -20,7 +21,8 @@ export class EnrollPreviewComponent implements OnInit {
     private eventEnrollService: EventEnrollService,
     private globalEventsManager: GlobalEventsManager,
     private route: ActivatedRoute,
-    private eventInfoService: EventInfoService
+    private eventInfoService: EventInfoService,
+    public _location: Location // 調用location.back()，來回到上一頁
   ) {}
   ngOnInit() {
     this.event_id = this.route.snapshot.paramMap.get('event_id');

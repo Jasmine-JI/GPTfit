@@ -35,6 +35,11 @@ export class EventManagementComponent implements OnInit {
       `/dashboardalaala/enroll/${eventId}?session_id=${sessionId}`
     );
   }
+  goViewEnroll(eventId, sessionId) {
+    this.router.navigateByUrl(
+      `/dashboardalaala/enroll/${eventId}/preview?session_id=${sessionId}`
+    );
+  }
   handleDisplayTop3(sessionId, eventId, mapIdStr) {
     this.dialog.open(Top3DialogComponent, {
       hasBackdrop: true,

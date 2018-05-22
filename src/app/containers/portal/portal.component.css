@@ -1,6 +1,5 @@
 .main {
   padding-top: 56px;
-  /* margin: 56px 0px 0px; */
   width: 100%;
 }
 
@@ -84,3 +83,4 @@
     width: calc((100% - 30px) / 2);
   }
 }
+
