@@ -1,5 +1,5 @@
 .main {
-  padding-top: 63px;
+  padding-top: 56px;
   width: 100%;
 }
 
@@ -83,3 +83,4 @@
     width: calc((100% - 30px) / 2);
   }
 }
+
