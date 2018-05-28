@@ -66,7 +66,7 @@ export class CoachDashboardComponent implements OnInit {
   }
 
   goViewRace(raceId) {
-    this.router.navigateByUrl('/dashboardalaala/test/' + raceId + '?ipm=s');
+    this.router.navigateByUrl('/dashboard/test/' + raceId + '?ipm=s');
   }
   choose(idx) {
     this.tabIdx = idx;

@@ -26,7 +26,7 @@ export class SigninGuard implements CanActivate {
       .map(res => {
         if (res) {
           // 導回dashboard頁面
-          this.router.navigate(['/dashboardalaala']);
+          this.router.navigate(['/dashboard']);
           return false;
         }
         return true;

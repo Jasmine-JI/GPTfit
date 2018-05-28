@@ -5,8 +5,8 @@ import { Page404Component } from './shared/components/page404/page404.component'
 const routes: Routes = [
   { path: '', redirectTo: 'leaderboard', pathMatch: 'full' },
   {
-    path: 'dashboardalaala',
-    redirectTo: 'dashboardalaala',
+    path: 'dashboard',
+    redirectTo: 'dashboard',
     pathMatch: 'full'
   },
   { path: '404', component: Page404Component }

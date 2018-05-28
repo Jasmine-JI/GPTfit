@@ -230,7 +230,7 @@ export class EnrollFormComponent implements OnInit {
             data: {
               title: 'Message',
               body: 'Registration success and back to event calendar',
-              href: '/dashboardalaala/event-calendar'
+              href: '/dashboard/event-calendar'
             }
           });
           this.form.resetForm();
@@ -283,6 +283,6 @@ export class EnrollFormComponent implements OnInit {
     if (isHostName) {
       return window.history.back();
     }
-    return this.router.navigateByUrl('/dashboardalaala/event-calendar');
+    return this.router.navigateByUrl('/dashboard/event-calendar');
   }
 }

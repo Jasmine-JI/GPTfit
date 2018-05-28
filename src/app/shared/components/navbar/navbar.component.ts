@@ -46,7 +46,7 @@ export class NavbarComponent implements OnInit {
     } else {
       this.isShowResetPwd = false;
     }
-    if (this.href.indexOf('dashboardalaala') > -1) {
+    if (this.href.indexOf('dashboard') > -1) {
       const sessionValue = sessionStorage.web;
       if (sessionValue === '12345678') {
         this.isShowDashboard = true;

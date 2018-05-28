@@ -35,22 +35,22 @@
   <div class="collapse navbar-collapse" [class.show]="isCollapseShow" id="navbarResponsive">
     <ul class="navbar-nav">
       <li class="nav-item" *ngIf="isShowDashboard">
-        <a class="nav-link"  target="_blank" href="/dashboardalaala/coach-dashboard?ipm=s" (click)="toggleMask()">Coach Dashboard</a>
+        <a class="nav-link"  target="_blank" href="/dashboard/coach-dashboard?ipm=s" (click)="toggleMask()">Coach Dashboard</a>
       </li>
       <li class="nav-item" *ngIf="isShowDashboard">
-        <a class="nav-link" [routerLink]="['/dashboardalaala/device_log']" (click)="toggleMask()">Device Log</a>
+        <a class="nav-link" [routerLink]="['/dashboard/device_log']" (click)="toggleMask()">Device Log</a>
       </li>
       <li class="nav-item" *ngIf="isShowDashboard">
-        <a class="nav-link" [routerLink]="['/dashboardalaala/event-management']" (click)="toggleMask()">活動賽事管理</a>
+        <a class="nav-link" [routerLink]="['/dashboard/event-management']" (click)="toggleMask()">活動賽事管理</a>
       </li>
       <li class="nav-item" *ngIf="isShowDashboard">
-        <a class="nav-link" [routerLink]="['/dashboardalaala/event']"  (click)="toggleMask()">活動賽事自訂</a>
+        <a class="nav-link" [routerLink]="['/dashboard/event']"  (click)="toggleMask()">活動賽事自訂</a>
       </li>
       <li class="nav-item" *ngIf="isShowDashboard">
-        <a class="nav-link" [routerLink]="['/dashboardalaala/event-calendar']" (click)="toggleMask()">活動賽事日曆</a>
+        <a class="nav-link" [routerLink]="['/dashboard/event-calendar']" (click)="toggleMask()">活動賽事日曆</a>
       </li>
       <li class="nav-item" *ngIf="isShowDashboard">
-        <a class="nav-link" [routerLink]="['/dashboardalaala/leaderboard-settings']" (click)="toggleMask()">排行版設定</a>
+        <a class="nav-link" [routerLink]="['/dashboard/leaderboard-settings']" (click)="toggleMask()">排行版設定</a>
       </li>
       <li class="nav-item" [class.active]="navItemNum === 1"
         *ngIf="!isShowResetPwd"
