@@ -83,6 +83,7 @@ export class AuthService {
     this.loginStatus$.next(false);
     this.currentUser$.next(null);
     this.utils.removeToken();
+    this.utils.removeLocalStorageObject('ala_token_time');
     this.backUrl = '';
   }
   getLoginStatus(): Observable<boolean> {
@@ -117,6 +118,7 @@ export class AuthService {
       return of(true);
     } else { // 'no token or token is expired'
       this.utils.removeToken();
+      this.utils.removeLocalStorageObject('ala_token_time');
       return of(false);
     }
   }
