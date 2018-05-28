@@ -26,7 +26,7 @@ import { DemoQrcodComponent } from './components/demo-qrcod/demo-qrcod.component
 import { QrcodeService } from './services/qrcode.service';
 import { NgProgressModule } from 'ngx-progressbar';
 import { SigninComponent } from './components/signin/signin.component';
-import { AuthService } from './services/auth.service';
+import { AuthService } from '@shared/services/auth.service';
 import { UtilsService } from '@shared/services/utils.service';
 
 @NgModule({

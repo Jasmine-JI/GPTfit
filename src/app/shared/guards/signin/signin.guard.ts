@@ -1,0 +1,35 @@
+import { Injectable } from '@angular/core';
+import {
+  CanActivate,
+  ActivatedRouteSnapshot,
+  RouterStateSnapshot,
+  Router
+} from '@angular/router';
+import { Observable } from 'rxjs/Observable';
+import { AuthService } from '../../services/auth.service';
+import 'rxjs/add/operator/take';
+
+@Injectable()
+export class SigninGuard implements CanActivate {
+  constructor(private authService: AuthService, private router: Router) {}
+  canActivate(
+    next: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ): Observable<boolean> | Promise<boolean> | boolean {
+    return this.checkLogin();
+  }
+  checkLogin(): Observable<boolean> {
+    // 儲存現在的 URL，這樣登入後可以直接回來這個頁面
+    return this.authService
+      .getLoginStatus()
+      .take(1)
+      .map(res => {
+        if (res) {
+          // 導回dashboard頁面
+          this.router.navigate(['/dashboardalaala']);
+          return false;
+        }
+        return true;
+      });
+  }
+}

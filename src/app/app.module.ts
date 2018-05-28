@@ -9,7 +9,9 @@ import { SharedComponentsModule } from './shared/components/shared-components.mo
 import { WINDOW_PROVIDERS } from '@shared/services/window.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { StartupService } from '@shared/services/startup.service';
-import { AuthGuard } from '@shared/auth.guard';
+import { AuthGuard } from '@shared/guards/auth/auth.guard';
+import { SigninGuard } from '@shared/guards/signin/signin.guard';
+
 export function startupServiceFactory(startupService: StartupService): Function { return () => startupService.load(); }
 
 @NgModule({
@@ -26,6 +28,7 @@ export function startupServiceFactory(startupService: StartupService): Function 
     WINDOW_PROVIDERS,
     StartupService,
     AuthGuard,
+    SigninGuard,
     {
       provide: APP_INITIALIZER,
       useFactory: startupServiceFactory,

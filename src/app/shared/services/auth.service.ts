@@ -5,7 +5,7 @@ import {
 } from '@angular/common/http';
 
 import { Injectable, Injector } from '@angular/core';
-import { environment } from '../../../../environments/environment';
+import { environment } from '../../../environments/environment';
 
 const { API_SERVER } = environment.url;
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';

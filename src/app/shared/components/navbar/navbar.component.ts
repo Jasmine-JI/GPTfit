@@ -2,7 +2,7 @@ import { Component, OnInit, HostListener, Inject } from '@angular/core';
 import { GlobalEventsManager } from '@shared/global-events-manager';
 import { Router } from '@angular/router';
 import { WINDOW } from '@shared/services/window.service';
-import { AuthService } from '../../../containers/portal/services/auth.service';
+import { AuthService } from '@shared/services/auth.service';
 import { Observable } from 'rxjs/Observable';
 
 @Component({
