@@ -1,6 +1,6 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
 import { PortalRoutingModule } from './portal-routing.module';
@@ -26,6 +26,8 @@ import { DemoQrcodComponent } from './components/demo-qrcod/demo-qrcod.component
 import { QrcodeService } from './services/qrcode.service';
 import { NgProgressModule } from 'ngx-progressbar';
 import { SigninComponent } from './components/signin/signin.component';
+import { AuthService } from './services/auth.service';
+import { UtilsService } from '@shared/services/utils.service';
 
 @NgModule({
   imports: [
@@ -36,15 +38,18 @@ import { SigninComponent } from './components/signin/signin.component';
     MyDatePickerModule,
     SharedComponentsModule,
     SharedPipes,
-    NgProgressModule
+    NgProgressModule,
+    ReactiveFormsModule
   ],
   providers: [
     MapGPXService,
     RankFormService,
     MapService,
     QrcodeService,
+    AuthService,
     GlobalEventsManager,
     ResetPasswordService,
+    UtilsService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: EmptyResponseBodyErrorInterceptor,

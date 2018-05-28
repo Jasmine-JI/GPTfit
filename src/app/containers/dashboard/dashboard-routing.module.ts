@@ -18,11 +18,13 @@ import { CoachDashboardComponent } from './components/coach-dashboard/coach-dash
 import { CoachDashboardDetailComponent } from './components/coach-dashboard-detail/coach-dashboard-detail.component';
 import { CoachRexComponent } from './components/coach-rex/coach-rex.component';
 import { EventManagementComponent } from './components/event-management/event-management.component';
+import { AuthGuard } from '@shared/auth.guard';
 
 const routes: Routes = [
   {
     path: 'dashboardalaala',
     component: DashboardComponent,
+    canActivate: [AuthGuard],
     children: [
       {
         path: 'enroll/:event_id',
