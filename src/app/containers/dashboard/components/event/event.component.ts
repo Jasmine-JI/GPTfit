@@ -29,7 +29,7 @@ export class EventComponent implements OnInit {
     });
   }
   toCreatePage() {
-    this.router.navigateByUrl('/dashboardalaala/event/create');
+    this.router.navigateByUrl('/dashboard/event/create');
   }
   remove(id, idx) {
     const removeDialogRef = this.dialog.open(MsgDialogComponent, {
@@ -55,6 +55,6 @@ export class EventComponent implements OnInit {
     });
   }
   toEdit(id) {
-    this.router.navigateByUrl('/dashboardalaala/event/edit/' + id);
+    this.router.navigateByUrl('/dashboard/event/edit/' + id);
   }
 }

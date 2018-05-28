@@ -62,7 +62,7 @@ export class AuthService {
           if (this.backUrl.length > 0) {
             router.navigate([this.backUrl]);
           } else {
-            router.navigate(['/dashboardalaala']);
+            router.navigate(['/dashboard']);
           }
           return true;
         } else {

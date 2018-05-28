@@ -22,7 +22,7 @@ import { AuthGuard } from '@shared/guards/auth/auth.guard';
 
 const routes: Routes = [
   {
-    path: 'dashboardalaala',
+    path: 'dashboard',
     component: DashboardComponent,
     canActivate: [AuthGuard],
     children: [

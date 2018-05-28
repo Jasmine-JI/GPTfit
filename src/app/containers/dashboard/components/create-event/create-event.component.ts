@@ -144,7 +144,7 @@ export class CreateEventComponent implements OnInit {
               }
             });
           }
-          this.router.navigateByUrl('/dashboardalaala/event');
+          this.router.navigateByUrl('/dashboard/event');
         },
         err => {
           return this.dialog.open(MsgDialogComponent, {
@@ -219,7 +219,7 @@ export class CreateEventComponent implements OnInit {
       data: {
         title: 'Message',
         body: '是否確定返回',
-        href: '/dashboardalaala/event'
+        href: '/dashboard/event'
       }
     });
   }
