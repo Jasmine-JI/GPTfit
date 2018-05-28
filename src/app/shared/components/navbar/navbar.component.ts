@@ -20,6 +20,7 @@ export class NavbarComponent implements OnInit {
   isShowDashboard = false;
   isShowLeaderboard = false;
   deviceWidth: number;
+  navItemNum: number;
   login$: Observable<boolean>;
 
   constructor(
@@ -35,6 +36,10 @@ export class NavbarComponent implements OnInit {
     this.href = this.router.url;
     if (this.href.indexOf('leaderboard') > -1) {
       this.isShowLeaderboard = true;
+      this.navItemNum = 2;
+    }
+    if (this.href.indexOf('signin') > -1) {
+      this.navItemNum = 3;
     }
     if (this.href.indexOf('resetpassword') > -1) {
       this.isShowResetPwd = true;
@@ -99,5 +104,8 @@ export class NavbarComponent implements OnInit {
   }
   logout() {
     this.authService.logout();
+  }
+  chooseNavItem(num: number) {
+    this.navItemNum = num;
   }
 }

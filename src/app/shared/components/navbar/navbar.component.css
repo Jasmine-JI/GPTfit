@@ -18,10 +18,11 @@ input[type='email']::-webkit-input-placeholder {
 }
 
 .nav-item .nav-link:hover {
-  padding-bottom: 5px;
-  border-bottom: 3px solid #fa8b00;
+  color: #9bf9ff;
 }
-
+.nav-item.active .nav-link {
+  color: #9bf9ff;
+}
 .navbar {
   height: 63px;
 }
@@ -45,7 +46,10 @@ input[type='email']::-webkit-input-placeholder {
   display: flex;
   order: 1;
 }
-
+.ala-btn__lang {
+  padding: 8px 16px;
+  cursor: pointer;
+}
 
 @media (max-width: 991px) {
   .nav-item + .nav-item {
