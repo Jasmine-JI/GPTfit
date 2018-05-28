@@ -1,7 +1,7 @@
 import { Injectable, Injector } from '@angular/core';
 import { Router } from '@angular/router';
 import { UtilsService } from './utils.service';
-import { AuthService } from '../../containers/portal/services/auth.service';
+import { AuthService } from './auth.service';
 @Injectable()
 export class StartupService {
   constructor(

@@ -88,8 +88,19 @@
           <div class="header-nav-item">
             {{ userName || '' }}
           </div>
-          <div class="header-nav-item">
+          <!-- <div class="header-nav-item" (click)="handleUserMenu()">
             <img src="/assets/images/user.png" class="header-user-photo">
+          </div> -->
+          <div class="dropdown">
+            <div class="header-nav-item" id="dropdownMenu3" data-toggle="dropdown" aria-haspopup="true"
+              aria-expanded="false" style="background-color: transparent;border-color: transparent">
+              <img src="/assets/images/user.png" class="header-user-photo">
+            </div>
+            <div class="dropdown-menu dropdown-user-menu" [class.show]="isUserMenuShow"
+               aria-labelledby="dropdownMenu3"
+            >
+              <button class="dropdown-item" type="button" (click)="logout()">登出</button>
+            </div>
           </div>
         </div>
       </header>

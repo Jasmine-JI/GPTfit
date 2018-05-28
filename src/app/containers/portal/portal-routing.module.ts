@@ -6,6 +6,7 @@ import { MapInfoComponent } from './components/map-info/map-info.component';
 import { PasswordComponent } from './components/password/password.component';
 import { DemoQrcodComponent } from './components/demo-qrcod/demo-qrcod.component';
 import { SigninComponent } from './components/signin/signin.component';
+import { SigninGuard } from '@shared/guards/signin/signin.guard';
 
 const routes: Routes = [
   {
@@ -30,7 +31,8 @@ const routes: Routes = [
       },
       {
         path: 'signin',
-        component: SigninComponent
+        component: SigninComponent,
+        canActivate: [SigninGuard]
       }
     ]
   }

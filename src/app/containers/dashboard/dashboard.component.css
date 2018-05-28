@@ -187,6 +187,7 @@
   display: flex;
   align-items: center;
   margin-left: 20px;
+  cursor: pointer;
 }
 .footer-details {
   color: #aaa;
@@ -196,6 +197,11 @@
 .mobile-menu-toggle {
   display: flex;
 }
+.dropdown.show .dropdown-menu.dropdown-user-menu.show {
+  top: -3px !important;
+  left: 5px !important;
+}
+
 @media(max-width: 768px) {
   .main-nav-toggle-icon.icon-svg_web-icon_073-level_fold {
     display: none;

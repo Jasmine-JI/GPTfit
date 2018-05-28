@@ -4,6 +4,8 @@ import {
 } from '@shared/utils/';
 import { GlobalEventsManager } from '@shared/global-events-manager';
 import { MatSidenav, MatDrawerToggleResult } from '@angular/material';
+import { AuthService } from '@shared/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -20,7 +22,12 @@ export class DashboardComponent implements OnInit {
   mode = 'side';
   isDefaultOpend = true;
   userName: string;
-  constructor(private globalEventsManager: GlobalEventsManager) {
+  isUserMenuShow = false;
+  constructor(
+    private globalEventsManager: GlobalEventsManager,
+    private authService: AuthService,
+    private router: Router
+  ) {
     if (location.search.indexOf('ipm=s') > -1) {
       this.isPreviewMode = true;
     }
@@ -56,7 +63,7 @@ export class DashboardComponent implements OnInit {
   }
   toggleSideNav(sideNav: MatSidenav) {
     this.isSideNavOpend = !this.isSideNavOpend;
-    sideNav.toggle().then(result  => {
+    sideNav.toggle().then(result => {
       // console.log('result: ', result);
     });
   }
@@ -65,5 +72,12 @@ export class DashboardComponent implements OnInit {
     if (window.innerWidth < 769 && this.target > 0) {
       this.toggleSideNav(sidenav);
     }
+  }
+  handleUserMenu() {
+    this.isUserMenuShow = !this.isUserMenuShow;
+  }
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/signin']);
   }
 }
