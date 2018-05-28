@@ -19,6 +19,7 @@ export class DashboardComponent implements OnInit {
   isSideNavOpend = false;
   mode = 'side';
   isDefaultOpend = true;
+  userName: string;
   constructor(private globalEventsManager: GlobalEventsManager) {
     if (location.search.indexOf('ipm=s') > -1) {
       this.isPreviewMode = true;

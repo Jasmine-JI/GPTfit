@@ -2,6 +2,8 @@ import { Component, OnInit, HostListener, Inject } from '@angular/core';
 import { GlobalEventsManager } from '@shared/global-events-manager';
 import { Router } from '@angular/router';
 import { WINDOW } from '@shared/services/window.service';
+import { AuthService } from '../../../containers/portal/services/auth.service';
+import { Observable } from 'rxjs/Observable';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -18,14 +20,17 @@ export class NavbarComponent implements OnInit {
   isShowDashboard = false;
   isShowLeaderboard = false;
   deviceWidth: number;
+  login$: Observable<boolean>;
 
   constructor(
     private globalEventsManager: GlobalEventsManager,
     private router: Router,
+    private authService: AuthService,
     @Inject(WINDOW) private window
   ) {}
 
   ngOnInit() {
+    this.login$ = this.authService.getLoginStatus();
     this.deviceWidth = window.innerWidth;
     this.href = this.router.url;
     if (this.href.indexOf('leaderboard') > -1) {
@@ -91,5 +96,8 @@ export class NavbarComponent implements OnInit {
   }
   reloadPage() {
     location.reload();
+  }
+  logout() {
+    this.authService.logout();
   }
 }
