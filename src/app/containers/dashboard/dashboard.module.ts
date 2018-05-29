@@ -39,6 +39,8 @@ import { CoachDashboardDetailComponent } from './components/coach-dashboard-deta
 import { Top3DialogComponent } from './components/top3-dialog/top3-dialog.component';
 import { CoachRexComponent } from './components/coach-rex/coach-rex.component';
 import { EventManagementComponent } from './components/event-management/event-management.component';
+import { UserInfoService } from './services/userInfo.service';
+import { UtilsService } from '@shared/services/utils.service';
 
 @NgModule({
   imports: [
@@ -62,7 +64,9 @@ import { EventManagementComponent } from './components/event-management/event-ma
     EventInfoService,
     GpxService,
     DeviceLogService,
-    CoachService
+    CoachService,
+    UserInfoService,
+    UtilsService
   ],
   declarations: [
     DashboardComponent,
