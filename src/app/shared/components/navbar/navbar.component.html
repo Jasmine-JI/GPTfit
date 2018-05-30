@@ -10,17 +10,20 @@
     <button class="navbar-toggler nav-item mobile-hamburger" type="button" (click)="toggleMask()">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <li class="nav-item" [class.active]="navItemNum === 3"
+    <li class="nav-item nav-rwd" [class.active]="navItemNum === 3"
       style="list-style: none;"
       *ngIf="!(login$| async)"
       (click)="chooseNavItem(3)"
     >
       <a class="nav-link" [routerLink]="['/signin']" (click)="toggleMask()">登入</a>
     </li>
-    <li class="nav-item" style="list-style: none;" *ngIf="(login$| async)">
+    <li class="nav-item nav-rwd" style="list-style: none;" *ngIf="(login$| async)">
       <a class="nav-link" (click)="logout()">登出</a>
     </li>
-    <div class="dropdown">
+    <li class="nav-item nav-rwd" style="list-style: none;margin-left: 10px" *ngIf="(login$| async)">
+      <a class="nav-link" [routerLink]="['/dashboard']">dashboard</a>
+    </li>
+    <div class="dropdown nav-rwd">
       <button class="btn btn-secondary dropdown-toggle ala-btn__lang" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true"
         aria-expanded="false" style="background-color: transparent;border-color: transparent">
         繁體中文
@@ -68,6 +71,32 @@
       <li class="nav-item" *ngIf="isShowResetPwd">
         <a class="nav-link" (click)="reloadPage()" (click)="toggleMask()">Reset Password</a>
       </li>
+      <li class="nav-item nav-rwd__hamburger" [class.active]="navItemNum === 3"
+        style="list-style: none;"
+        *ngIf="!(login$| async)"
+        (click)="chooseNavItem(3)"
+      >
+        <a class="nav-link" [routerLink]="['/signin']" (click)="toggleMask()">登入</a>
+      </li>
+      <li class="nav-item nav-rwd__hamburger" style="list-style: none;" *ngIf="(login$| async)">
+        <a class="nav-link" (click)="logout()">登出</a>
+      </li>
+      <li class="nav-item nav-rwd__hamburger" style="list-style: none;" *ngIf="(login$| async)">
+        <a class="nav-link" [routerLink]="['/dashboard']">dashboard</a>
+      </li>
+      <div class="dropdown nav-rwd__hamburger">
+        <button class="btn btn-secondary dropdown-toggle ala-btn__lang" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true"
+          aria-expanded="false"
+          style="background-color: transparent;border-color: transparent;padding: 0px"
+        >
+          繁體中文
+        </button>
+        <div class="dropdown-menu dropdown-menu-lang" aria-labelledby="dropdownMenu2">
+          <button class="dropdown-item" type="button">繁體中文</button>
+          <button class="dropdown-item" type="button">简体中文</button>
+          <button class="dropdown-item" type="button">English</button>
+        </div>
+      </div>
     </ul>
   </div>
 </nav>
