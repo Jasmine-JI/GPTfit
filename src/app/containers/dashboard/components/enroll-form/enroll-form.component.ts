@@ -277,12 +277,17 @@ export class EnrollFormComponent implements OnInit {
       'cloud.alatech.com.tw'
     ];
     const hostName = getLocalStorageObject('hostName');
-    const isHostName = hostName ? hosts.some(
-      _host => hostName.indexOf(_host) > -1
-    ) : false;
+    const isHostName = hostName
+      ? hosts.some(_host => hostName.indexOf(_host) > -1)
+      : false;
     if (isHostName) {
       return window.history.back();
     }
     return this.router.navigateByUrl('/dashboard/event-calendar');
+  }
+  goViewEnroll(eventId, sessionId) {
+    this.router.navigateByUrl(
+      `/dashboard/enroll/${eventId}/preview?session_id=${sessionId}`
+    );
   }
 }
