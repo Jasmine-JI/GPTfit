@@ -7,6 +7,7 @@ const { getMapList } = require('./server/models/map_model');
 var async = require('async');
 var request = require('request');
 const helmet = require('helmet');
+const { checkTokenExit } = require('./server/models/auth.model');
 
 // const https = require('https');
 // const fs = require('fs');
@@ -335,7 +336,7 @@ app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 
   // Request headers you wish to allow
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization');
 
   // Set to true if you need the website to include cookies in the requests sent
   // to the API (e.g. in case you use sessions)
@@ -344,6 +345,31 @@ app.use(function (req, res, next) {
   // Pass to next layer of middleware
   next();
 });
+
+// authenticate middleware
+
+const authMiddleware = function (req, res, next) {
+  const token = req.headers['authorization'];
+  if (token) {
+    return checkTokenExit(token).then(ans => {
+      if (ans) {
+        next();
+      } else {
+        res.status(401).json({
+          success: false,
+          message: 'Failed to authenticate token.'
+        });
+      }
+    });
+  } else if (req.method !== 'OPTIONS') {
+    return res.status(403).json({
+      success: false,
+      message: 'No token provided.'
+    })
+  } else {
+    next();
+  }
+}
 
 // Set routes
 
@@ -357,15 +383,19 @@ var coach = require('./server/routes/coach.js');
 var map = require('./server/routes/map.js');
 var qrPair = require('./server/routes/qrPair.js');
 
-app.use('/nodejs/api/rankForm', rankForm);
+app.use('/nodejs/api/rankForm', rankForm.unprotected);
+app.use('/nodejs/api/rankForm', authMiddleware, rankForm.protected);
 app.use('/nodejs/api/resetPassword', resetPassword);
-app.use('/nodejs/api/raceEnroll', raceEnroll);
-app.use('/nodejs/api/raceEventInfo', raceEventInfo);
-app.use('/nodejs/api/gpx', runGpx);
-app.use('/nodejs/api/deviceLog', deviceLog);
-app.use('/nodejs/api/coach', coach);
-app.use('/nodejs/api/map', map);
+app.use('/nodejs/api/raceEnroll', authMiddleware, raceEnroll);
 app.use('/nodejs/api/qrPair', qrPair);
+app.use('/nodejs/api/raceEventInfo', raceEventInfo.unprotected);
+app.use('/nodejs/api/raceEventInfo', authMiddleware, raceEventInfo.protected);
+app.use('/nodejs/api/map', map.unprotected);
+app.use('/nodejs/api/map', authMiddleware, map.protected);
+app.use('/nodejs/api/gpx', authMiddleware, runGpx);
+app.use('/nodejs/api/deviceLog', authMiddleware, deviceLog);
+app.use('/nodejs/api/coach', authMiddleware, coach);
+
 
 // Start the server
 const port = process.env.PORT || 3000;
