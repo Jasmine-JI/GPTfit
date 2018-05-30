@@ -13,6 +13,7 @@ import { AuthGuard } from '@shared/guards/auth/auth.guard';
 import { SigninGuard } from '@shared/guards/signin/signin.guard';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from '@shared/interceptors/token.interceptor';
+import { HttpStatusInterceptor } from '@shared/interceptors/http-status.interceptor';
 
 export function startupServiceFactory(startupService: StartupService): Function { return () => startupService.load(); }
 
@@ -34,6 +35,11 @@ export function startupServiceFactory(startupService: StartupService): Function 
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpStatusInterceptor,
       multi: true
     },
     {

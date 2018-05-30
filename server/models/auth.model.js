@@ -13,7 +13,6 @@ exports.checkTokenExit = function (token) {
           reject(result);
           return;
         }
-        console.log('rows: ', rows);
         if (rows.length > 0) {
           resolve(true);
         } else {
