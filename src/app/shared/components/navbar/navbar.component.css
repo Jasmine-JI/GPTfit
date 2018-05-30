@@ -51,7 +51,13 @@ input[type='email']::-webkit-input-placeholder {
   cursor: pointer;
 }
 
+.nav-rwd__hamburger {
+  display: none;
+}
 @media (max-width: 991px) {
+  .nav-rwd {
+    display: none;
+  }
   .nav-item + .nav-item {
     margin-left: 0px;
   }
@@ -62,6 +68,21 @@ input[type='email']::-webkit-input-placeholder {
   .navbar-utility {
     order: 0;
   }
+  .nav-rwd__hamburger {
+    display: block;
+  }
+  .nav-rwd__hamburger .dropdown-menu {
+    background-color: transparent;
+    border: none;
+  }
+  .nav-rwd__hamburger .dropdown-item {
+    color: #fff;
+  }
+  .nav-rwd__hamburger .dropdown-item:hover {
+    background-color: rgb(111, 111, 111);
+    cursor: pointer;
+  }
+
 
 }
 @media (max-width: 375px) {
