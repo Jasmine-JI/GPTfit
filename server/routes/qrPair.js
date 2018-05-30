@@ -19,7 +19,12 @@ router.get('/', function(req, res, next) {
   const { query: { device_sn } } = req;
   getInfos(device_sn).then(datas => {
     res.json(datas);
-  }, err => console.log(err));
+  }, err => {
+    console.log(err);
+    res.status(500).json({
+      Error: err
+    })
+  });
 });
 
 

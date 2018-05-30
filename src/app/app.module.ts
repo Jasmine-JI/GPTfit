@@ -11,6 +11,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { StartupService } from '@shared/services/startup.service';
 import { AuthGuard } from '@shared/guards/auth/auth.guard';
 import { SigninGuard } from '@shared/guards/signin/signin.guard';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { TokenInterceptor } from '@shared/interceptors/token.interceptor';
 
 export function startupServiceFactory(startupService: StartupService): Function { return () => startupService.load(); }
 
@@ -30,11 +32,17 @@ export function startupServiceFactory(startupService: StartupService): Function 
     AuthGuard,
     SigninGuard,
     {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TokenInterceptor,
+      multi: true
+    },
+    {
       provide: APP_INITIALIZER,
       useFactory: startupServiceFactory,
       deps: [StartupService, Injector],
       multi: true
-    }
+    },
+
   ],
   bootstrap: [AppComponent]
 })
