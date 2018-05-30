@@ -218,9 +218,12 @@
   </div>
   <div class="alatech-footer">
     <div class="justify-content-end">
-      <a *ngIf="tabIdx === 1" class="alatech-btn alatech-btn--default" title="預覽目前參賽名單" target="_blank" href="/dashboard/enroll/{{ event_id }}/preview?ipm=s&&session_id={{ session_id }}">
+      <button class="alatech-btn alatech-btn--default"
+        title="預覽目前報名名單"
+        (click)="goViewEnroll(event_id, session_id)"
+      >
         預覽
-      </a>
+      </button>
       <button class="alatech-btn alatech-btn--default"
         [disabled]="isBtnDisabled"
       >
