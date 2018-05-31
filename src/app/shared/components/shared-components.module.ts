@@ -9,9 +9,16 @@ import { RouterModule } from '@angular/router';
 import { IntlPhoneInputComponent } from './intl-phone-input/intl-phone-input.component';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
+import { SharedModule } from '../shared.module';
 
 @NgModule({
-  imports: [CommonModule, RouterModule, FormsModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    ReactiveFormsModule,
+    SharedModule
+  ],
   declarations: [
     NavbarComponent,
     Page404Component,

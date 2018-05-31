@@ -28,6 +28,7 @@ import { NgProgressModule } from 'ngx-progressbar';
 import { SigninComponent } from './components/signin/signin.component';
 import { AuthService } from '@shared/services/auth.service';
 import { UtilsService } from '@shared/services/utils.service';
+import { SharedModule } from '@shared/shared.module';
 
 @NgModule({
   imports: [
@@ -39,7 +40,8 @@ import { UtilsService } from '@shared/services/utils.service';
     SharedComponentsModule,
     SharedPipes,
     NgProgressModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    SharedModule
   ],
   providers: [
     MapGPXService,

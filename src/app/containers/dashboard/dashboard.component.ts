@@ -8,6 +8,7 @@ import { AuthService } from '@shared/services/auth.service';
 import { Router } from '@angular/router';
 import { UserInfoService } from './services/userInfo.service';
 import { UtilsService } from '@shared/services/utils.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-dashboard',
@@ -31,7 +32,8 @@ export class DashboardComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private userInfoService: UserInfoService,
-    private utilsService: UtilsService
+    private utilsService: UtilsService,
+    public translateService: TranslateService
   ) {
     if (location.search.indexOf('ipm=s') > -1) {
       this.isPreviewMode = true;
@@ -39,24 +41,32 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
+    let browserLang = this.utilsService.getLocalStorageObject('locale');
+    if (!browserLang) {
+      browserLang = this.translateService.getBrowserCultureLang().toLowerCase();
+      this.translateService.use(browserLang);
+      this.utilsService.setLocalStorageObject('locale', browserLang);
+    } else {
+      this.translateService.use(browserLang);
+    }
     const token = this.utilsService.getToken();
-    const body =  {
+    const body = {
       token,
       iconType: 2
     };
-    this.userInfoService
-      .getLogonData(body)
-      .subscribe(res => {
-        if (res.resultCode === 200) {
-          const { info: { name, nameIcon } } = res;
-          this.userName = name;
-          this.userPhoto = 'data:image/jpg;base64,' + nameIcon;
-        }
-      });
+    this.userInfoService.getLogonData(body).subscribe(res => {
+      if (res.resultCode === 200) {
+        const {
+          info: { name, nameIcon }
+        } = res;
+        this.userName = name;
+        this.userPhoto = 'data:image/jpg;base64,' + nameIcon;
+      }
+    });
 
     this.globalEventsManager.showNavBarEmitter.subscribe(mode => {
-        this.isMaskShow = mode;
-      });
+      this.isMaskShow = mode;
+    });
     this.globalEventsManager.showLoadingEmitter.subscribe(isLoading => {
       this.isLoading = isLoading;
     });

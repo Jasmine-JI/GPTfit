@@ -13,6 +13,8 @@ import {
 import { Router } from '@angular/router';
 import { IMyDpOptions } from 'mydatepicker';
 import * as moment from 'moment';
+import { TranslateService } from '@ngx-translate/core';
+import { UtilsService } from '../../shared/services/utils.service';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -95,12 +97,24 @@ export class PortalComponent implements OnInit {
   constructor(
     private router: Router,
     private globalEventsManager: GlobalEventsManager,
-    private rankFormService: RankFormService
+    private rankFormService: RankFormService,
+    private utilsService: UtilsService,
+    public translateService: TranslateService
   ) {
     this.handleSearchEmail = debounce(this.handleSearchEmail, 1000);
   }
 
   ngOnInit() {
+    let browserLang = this.utilsService.getLocalStorageObject('locale');
+    if (!browserLang) {
+      browserLang = this.translateService
+        .getBrowserCultureLang()
+        .toLowerCase();
+      this.translateService.use(browserLang);
+      this.utilsService.setLocalStorageObject('locale', browserLang);
+    } else {
+      this.translateService.use(browserLang);
+    }
     this.startDate = this.convertDateString(this.startDay);
     this.endDate = this.convertDateString(this.finalDay);
     this.globalEventsManager.showNavBarEmitter.subscribe(mode => {
@@ -213,7 +227,9 @@ export class PortalComponent implements OnInit {
   }
   convertDateString(_date) {
     if (_date) {
-      const { date: { day, month, year } } = _date;
+      const {
+        date: { day, month, year }
+      } = _date;
       return year.toString() + '-' + month.toString() + '-' + day.toString();
     }
     const ans =
@@ -226,7 +242,9 @@ export class PortalComponent implements OnInit {
   }
   convertDateFormat(_date) {
     if (_date) {
-      const { date: { day, month, year } } = _date;
+      const {
+        date: { day, month, year }
+      } = _date;
       const data = {
         date: {
           year,
