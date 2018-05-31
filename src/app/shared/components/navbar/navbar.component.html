@@ -21,7 +21,7 @@
       <a class="nav-link" (click)="logout()">{{ "SH.Signout" | translate}}</a>
     </li>
     <li class="nav-item nav-rwd" style="list-style: none;margin-left: 10px" *ngIf="(login$| async)">
-      <a class="nav-link" [routerLink]="['/dashboard']">{{ "SH.Leaderboard" | translate}}</a>
+      <a class="nav-link" [routerLink]="['/dashboard']">{{ "SH.Dashboard" | translate}}</a>
     </li>
     <div class="dropdown nav-rwd">
       <button class="btn btn-secondary dropdown-toggle ala-btn__lang" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true"
@@ -48,7 +48,7 @@
         *ngIf="!isShowResetPwd"
         (click)="chooseNavItem(2)"
       >
-        <a class="nav-link" href="/leaderboard" (click)="toggleMask()">{{ "SH.Dashboard" | translate}}</a>
+        <a class="nav-link" href="/leaderboard" (click)="toggleMask()">{{ "SH.Leaderboard" | translate}}</a>
       </li>
       <li class="nav-item" *ngIf="isShowResetPwd">
         <a class="nav-link" (click)="reloadPage()" (click)="toggleMask()">Reset Password</a>
