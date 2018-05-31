@@ -1,0 +1,11 @@
+{
+  "SH": {
+    "Signin": "登录",
+    "Leaderboard": "排行榜",
+    "Signout": "登出",
+    "Dashboard": "仪表板"
+  },
+  "Portal": {
+    "Introduce": "介绍"
+  }
+}

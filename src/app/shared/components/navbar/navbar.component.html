@@ -15,58 +15,40 @@
       *ngIf="!(login$| async)"
       (click)="chooseNavItem(3)"
     >
-      <a class="nav-link" [routerLink]="['/signin']" (click)="toggleMask()">登入</a>
+      <a class="nav-link" [routerLink]="['/signin']" (click)="toggleMask()">{{"SH.Signin" | translate}}</a>
     </li>
     <li class="nav-item nav-rwd" style="list-style: none;" *ngIf="(login$| async)">
-      <a class="nav-link" (click)="logout()">登出</a>
+      <a class="nav-link" (click)="logout()">{{ "SH.Signout" | translate}}</a>
     </li>
     <li class="nav-item nav-rwd" style="list-style: none;margin-left: 10px" *ngIf="(login$| async)">
-      <a class="nav-link" [routerLink]="['/dashboard']">dashboard</a>
+      <a class="nav-link" [routerLink]="['/dashboard']">{{ "SH.Leaderboard" | translate}}</a>
     </li>
     <div class="dropdown nav-rwd">
       <button class="btn btn-secondary dropdown-toggle ala-btn__lang" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true"
         aria-expanded="false" style="background-color: transparent;border-color: transparent">
-        繁體中文
+        {{langName}}
       </button>
       <div class="dropdown-menu dropdown-menu-lang" aria-labelledby="dropdownMenu2">
-        <button class="dropdown-item" type="button">繁體中文</button>
-        <button class="dropdown-item" type="button">简体中文</button>
-        <button class="dropdown-item" type="button">English</button>
+        <button class="dropdown-item" type="button" (click)="switchLang('zh-tw')">繁體中文</button>
+        <button class="dropdown-item" type="button" (click)="switchLang('zh-cn')">简体中文</button>
+        <button class="dropdown-item" type="button" (click)="switchLang('en-us')">English</button>
       </div>
     </div>
   </div>
   <div class="collapse navbar-collapse" [class.show]="isCollapseShow" id="navbarResponsive">
     <ul class="navbar-nav">
-      <li class="nav-item" *ngIf="isShowDashboard">
-        <a class="nav-link"  target="_blank" href="/dashboard/coach-dashboard?ipm=s" (click)="toggleMask()">Coach Dashboard</a>
-      </li>
-      <li class="nav-item" *ngIf="isShowDashboard">
-        <a class="nav-link" [routerLink]="['/dashboard/device_log']" (click)="toggleMask()">Device Log</a>
-      </li>
-      <li class="nav-item" *ngIf="isShowDashboard">
-        <a class="nav-link" [routerLink]="['/dashboard/event-management']" (click)="toggleMask()">活動賽事管理</a>
-      </li>
-      <li class="nav-item" *ngIf="isShowDashboard">
-        <a class="nav-link" [routerLink]="['/dashboard/event']"  (click)="toggleMask()">活動賽事自訂</a>
-      </li>
-      <li class="nav-item" *ngIf="isShowDashboard">
-        <a class="nav-link" [routerLink]="['/dashboard/event-calendar']" (click)="toggleMask()">活動賽事日曆</a>
-      </li>
-      <li class="nav-item" *ngIf="isShowDashboard">
-        <a class="nav-link" [routerLink]="['/dashboard/leaderboard-settings']" (click)="toggleMask()">排行版設定</a>
-      </li>
       <li class="nav-item" [class.active]="navItemNum === 1"
         *ngIf="!isShowResetPwd"
         (click)="chooseNavItem(1)"
       >
-        <a class="nav-link" (click)="toggleMask()">介紹</a>
+        <a class="nav-link" (click)="toggleMask()">{{ "Portal.Introduce" | translate}}</a>
       </li>
 
       <li class="nav-item" [class.active]="navItemNum === 2"
         *ngIf="!isShowResetPwd"
         (click)="chooseNavItem(2)"
       >
-        <a class="nav-link" href="/leaderboard" (click)="toggleMask()">排行版</a>
+        <a class="nav-link" href="/leaderboard" (click)="toggleMask()">{{ "SH.Dashboard" | translate}}</a>
       </li>
       <li class="nav-item" *ngIf="isShowResetPwd">
         <a class="nav-link" (click)="reloadPage()" (click)="toggleMask()">Reset Password</a>
@@ -76,25 +58,25 @@
         *ngIf="!(login$| async)"
         (click)="chooseNavItem(3)"
       >
-        <a class="nav-link" [routerLink]="['/signin']" (click)="toggleMask()">登入</a>
+        <a class="nav-link" [routerLink]="['/signin']" (click)="toggleMask()">{{"SH.Signin" | translate}}</a>
       </li>
       <li class="nav-item nav-rwd__hamburger" style="list-style: none;" *ngIf="(login$| async)">
-        <a class="nav-link" (click)="logout()">登出</a>
+        <a class="nav-link" (click)="logout()">{{ "SH.Signout" | translate}}</a>
       </li>
       <li class="nav-item nav-rwd__hamburger" style="list-style: none;" *ngIf="(login$| async)">
-        <a class="nav-link" [routerLink]="['/dashboard']">dashboard</a>
+        <a class="nav-link" [routerLink]="['/dashboard']">{{ "SH.Dashboard" | translate}}</a>
       </li>
       <div class="dropdown nav-rwd__hamburger">
         <button class="btn btn-secondary dropdown-toggle ala-btn__lang" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true"
           aria-expanded="false"
           style="background-color: transparent;border-color: transparent;padding: 0px"
         >
-          繁體中文
+          {{langName}}
         </button>
         <div class="dropdown-menu dropdown-menu-lang" aria-labelledby="dropdownMenu2">
-          <button class="dropdown-item" type="button">繁體中文</button>
-          <button class="dropdown-item" type="button">简体中文</button>
-          <button class="dropdown-item" type="button">English</button>
+          <button class="dropdown-item" type="button" (click)="switchLang('zh-tw')">繁體中文</button>
+          <button class="dropdown-item" type="button" (click)="switchLang('zh-cn')">简体中文</button>
+          <button class="dropdown-item" type="button" (click)="switchLang('en-us')">English</button>
         </div>
       </div>
     </ul>

@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { WINDOW } from '@shared/services/window.service';
 import { AuthService } from '@shared/services/auth.service';
 import { Observable } from 'rxjs/Observable';
+import { TranslateService } from '@ngx-translate/core';
+import { UtilsService } from '../../services/utils.service';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -22,15 +24,23 @@ export class NavbarComponent implements OnInit {
   deviceWidth: number;
   navItemNum: number;
   login$: Observable<boolean>;
-
+  langName: string;
+  langData = {
+    'zh-tw': '繁體中文',
+    'zh-cn': '简体中文',
+    'en-us': 'English'
+  };
   constructor(
     private globalEventsManager: GlobalEventsManager,
     private router: Router,
     private authService: AuthService,
-    @Inject(WINDOW) private window
+    private utilsService: UtilsService,
+    @Inject(WINDOW) private window,
+    private translateService: TranslateService
   ) {}
 
   ngOnInit() {
+    this.langName = this.langData[this.utilsService.getLocalStorageObject('locale')];
     this.login$ = this.authService.getLoginStatus();
     this.deviceWidth = window.innerWidth;
     this.href = this.router.url;
@@ -107,5 +117,10 @@ export class NavbarComponent implements OnInit {
   }
   chooseNavItem(num: number) {
     this.navItemNum = num;
+  }
+  switchLang(lang: string) {
+    this.langName = this.langData[lang];
+    this.translateService.use(lang);
+    this.utilsService.setLocalStorageObject('locale', lang);
   }
 }

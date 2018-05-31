@@ -14,9 +14,15 @@ import { SigninGuard } from '@shared/guards/signin/signin.guard';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from '@shared/interceptors/token.interceptor';
 import { HttpStatusInterceptor } from '@shared/interceptors/http-status.interceptor';
+import { HttpClient } from '@angular/common/http';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 export function startupServiceFactory(startupService: StartupService): Function { return () => startupService.load(); }
 
+function createTranslateLoader(http: HttpClient) {
+  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+}
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -25,7 +31,14 @@ export function startupServiceFactory(startupService: StartupService): Function 
     PortalModule,
     DashboardModule,
     SharedComponentsModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: (createTranslateLoader),
+        deps: [HttpClient]
+      }
+    })
   ],
   providers: [
     WINDOW_PROVIDERS,
