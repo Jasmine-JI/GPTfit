@@ -20,7 +20,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 export function startupServiceFactory(startupService: StartupService): Function { return () => startupService.load(); }
 
-function createTranslateLoader(http: HttpClient) {
+export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
 @NgModule({
