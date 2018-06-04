@@ -29,6 +29,7 @@ import { SigninComponent } from './components/signin/signin.component';
 import { AuthService } from '@shared/services/auth.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { SharedModule } from '@shared/shared.module';
+import { SignupComponent } from './components/signup/signup.component';
 
 @NgModule({
   imports: [
@@ -66,7 +67,8 @@ import { SharedModule } from '@shared/shared.module';
     MapInfoComponent,
     PasswordComponent,
     DemoQrcodComponent,
-    SigninComponent
+    SigninComponent,
+    SignupComponent
   ]
 })
 export class PortalModule {}

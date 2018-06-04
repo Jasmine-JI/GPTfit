@@ -267,6 +267,79 @@ a.alatech-btn:hover {
   background-color: #fff;
   font-weight: 700;
 }
+/* about auth page */
+.access-bg {
+  margin-top: -63px;
+  min-height: 100vh;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: url('/assets/images/center_bg.jpg');
+}
+
+.access-description {
+  color: #fff;
+  font-size: 40px;
+  margin: 100px 0 80px;
+}
+
+.access-panel {
+  max-width: 520px;
+  width: 100%;
+  height: 370px;
+  border: 1px solid;
+}
+
+.access-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70px;
+  background-color: #2f4349;
+}
+
+.btn-primary.access-btn {
+  float: right;
+  background-color: #2b819b;
+  width: 125px;
+}
+
+.access-text {
+  color: #757575;
+  margin-left: 10px;
+}
+
+.access-panel-body {
+  height: calc(100% - 70px);
+  background-color: #f4eeeb;
+  padding: 40px 75px;
+}
+
+@media(max-width: 991px) {
+  .access-bg {
+    margin-top: -63px;
+  }
+}
+
+@media(max-width: 768px) {
+  .access-header {
+    height: 50px;
+  }
+  .access-panel {
+    max-width: 400px;
+    height: 325px;
+  }
+  .access-panel-body {
+    padding: 30px 15px;
+    height: calc(100% - 50px);
+  }
+  .access-description {
+    margin: 30px 0;
+    font-size: 25px;
+  }
+}
+
+
 /* about font family */
 @font-face {
   font-family: 'ITC';

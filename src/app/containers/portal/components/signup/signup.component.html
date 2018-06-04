@@ -1,0 +1,87 @@
+<div class="access-bg">
+  <div class="container signup" style="padding-top:63px">
+    <div class="d-flex" style="flex-direction: column;align-items: center;;">
+
+      <div class="access-description">
+        在Ala Conter上，獲得健體分析
+        <br> 生活追蹤、即時分享與競賽樂趣
+      </div>
+      <div class="access-panel">
+        <header class="access-header">
+          <img src="assets/attacus_logo.png" style="width: 36%">
+        </header>
+        <div class="access-panel-body">
+          <form [formGroup]="form" (ngSubmit)="login()" novalidate>
+            <ng-container *ngIf="!isEmailMethod">
+              <div class="form-group">
+                <div style="display: flex;justify-content: space-between;">
+                  <label for="exampleInputEmail1" class="access-text">註冊帳號:
+                  </label>
+                  <a href="#" (click)="switchMethod($event)">或使用電子信箱註冊></a>
+                </div>
+                <input formControlName="accountName" class="form-control"
+                  id="exampleInputEmail1"
+                  aria-describedby="emailHelp"
+                  placeholder="輸入您的手機號碼"
+                >
+              </div>
+            </ng-container>
+            <ng-container *ngIf="isEmailMethod">
+              <div class="form-group">
+                <div style="display: flex;justify-content: space-between;">
+                  <label for="exampleInputEmail1" class="access-text">註冊帳號:
+                  </label>
+                  <a href="#" (click)="switchMethod($event)">或使用手機註冊></a>
+                </div>
+                <input formControlName="accountName" class="form-control"
+                  id="exampleInputEmail1"
+                  aria-describedby="emailHelp"
+                  placeholder="輸入您的電子信箱"
+                >
+              </div>
+            </ng-container>
+            <div class="form-group">
+              <label for="exampleInputPassword1" class="access-text">設置密碼:</label>
+              <input formControlName="password" type="password" class="form-control" placeholder="密碼需區分大小寫並包含數字"
+                autocomplete="off">
+            </div>
+            <div class="form-group">
+              <label for="exampleInputPassword1" class="access-text">顯示名稱:</label>
+              <input formControlName="password" type="password" class="form-control" placeholder="16個字元內"
+                autocomplete="off">
+            </div>
+            <ng-container *ngIf="!isEmailMethod">
+              <div class="form-group">
+                <label for="exampleInputPassword1" class="access-text">簡訊驗證碼:</label>
+                <div style="display: flex;justify-content: space-between;align-items: center">
+                  <input formControlName="password" type="password"
+                    class="form-control"
+                    autocomplete="off"
+                    style="width: 150px"
+                  >
+                  <a href="#">寄發簡訊驗證碼</a>
+                </div>
+              </div>
+              <a class="access-text" style="cursor:pointer" [routerLink]="['/signin']"><返回</a>
+            </ng-container>
+            <ng-container *ngIf="isEmailMethod">
+              <div class="form-group">
+                <label for="exampleInputPassword1" class="access-text">圖形驗證碼:</label>
+                <div style="display: flex;justify-content: space-between;align-items: center">
+                  <input formControlName="password" type="password"
+                    class="form-control"
+                    autocomplete="off"
+                    style="width: 150px"
+                  >
+                </div>
+              </div>
+              <a class="access-text" href="#" style="cursor:pointer" (click)="switchMethod($event)"><返回</a>
+            </ng-container>
+            <button type="submit" class="btn btn-primary access-btn">註冊</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
