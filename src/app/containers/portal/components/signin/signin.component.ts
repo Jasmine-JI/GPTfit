@@ -9,6 +9,8 @@ import { AuthService } from '@shared/services/auth.service';
 import { setLocalStorageObject } from '@shared/utils';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 
 @Component({
   selector: 'app-signin',
@@ -22,7 +24,8 @@ export class SigninComponent implements OnInit {
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private snackbar: MatSnackBar
+    private snackbar: MatSnackBar,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -54,6 +57,30 @@ export class SigninComponent implements OnInit {
         this.snackbar.open('登入成功', 'OK', { duration: 3000 });
       } else {
         this.snackbar.open('請檢查使用者名稱及密碼', 'OK', { duration: 3000 });
+      }
+    });
+  }
+  onConfirm() {
+    this.router.navigateByUrl('/signup');
+  }
+  showPrivateMsg(e) {
+    e.preventDefault();
+    this.dialog.open(MessageBoxComponent, {
+      hasBackdrop: true,
+      data: {
+        title: '同意條款',
+        body: `我已仔細閱讀並明瞭<a target="_blank"
+          href="https://www.alatech.com.tw/action-copyright.htm">
+          『條款及條件』</a>、
+          <a target="_blank" href="https://www.alatech.com.tw/action-privacy.htm">
+          『隱私權聲明』
+          </a>
+          等所記載內容及其意義，茲同意
+          該等條款規定，並願遵守網站現今，嗣後規範。
+        `,
+        confirmText: '同意',
+        cancelText: '不同意',
+        onConfirm: this.onConfirm
       }
     });
   }
