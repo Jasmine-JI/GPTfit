@@ -10,6 +10,8 @@ import { IntlPhoneInputComponent } from './intl-phone-input/intl-phone-input.com
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../shared.module';
+import { MessageBoxComponent } from './message-box/message-box.component';
+import { CustomMaterialModule } from '../custom-material.module';
 
 @NgModule({
   imports: [
@@ -17,7 +19,8 @@ import { SharedModule } from '../shared.module';
     RouterModule,
     FormsModule,
     ReactiveFormsModule,
-    SharedModule
+    SharedModule,
+    CustomMaterialModule
   ],
   declarations: [
     NavbarComponent,
@@ -25,7 +28,8 @@ import { SharedModule } from '../shared.module';
     LoadingComponent,
     PaginationComponent,
     UploadFileComponent,
-    IntlPhoneInputComponent
+    IntlPhoneInputComponent,
+    MessageBoxComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -34,7 +38,8 @@ import { SharedModule } from '../shared.module';
     LoadingComponent,
     PaginationComponent,
     UploadFileComponent,
-    IntlPhoneInputComponent
+    IntlPhoneInputComponent,
+    MessageBoxComponent
   ]
 })
 export class SharedComponentsModule {}

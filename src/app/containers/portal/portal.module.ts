@@ -30,6 +30,7 @@ import { AuthService } from '@shared/services/auth.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { SharedModule } from '@shared/shared.module';
 import { SignupComponent } from './components/signup/signup.component';
+import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 
 @NgModule({
   imports: [
@@ -69,6 +70,7 @@ import { SignupComponent } from './components/signup/signup.component';
     DemoQrcodComponent,
     SigninComponent,
     SignupComponent
-  ]
+  ],
+  entryComponents: [MessageBoxComponent]
 })
 export class PortalModule {}
