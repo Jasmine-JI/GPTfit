@@ -19,11 +19,16 @@
                   </label>
                   <a href="#" (click)="switchMethod($event)">或使用電子信箱註冊></a>
                 </div>
-                <input formControlName="accountName" class="form-control"
-                  id="exampleInputEmail1"
-                  aria-describedby="emailHelp"
-                  placeholder="輸入您的手機號碼"
-                >
+                <div style="display: flex">
+                  <div style="width: 100%">
+                    <app-intl-phone-input
+                      (onChange)="onPhoneChange($event)"
+                      [placeholder]="placeholder"
+                      [control]="form"
+                      [isLoading]="isPhoneLoading"
+                    ></app-intl-phone-input>
+                  </div>
+                </div>
               </div>
             </ng-container>
             <ng-container *ngIf="isEmailMethod">
@@ -35,6 +40,7 @@
                 </div>
                 <input formControlName="accountName" class="form-control"
                   id="exampleInputEmail1"
+                  type="email"
                   aria-describedby="emailHelp"
                   placeholder="輸入您的電子信箱"
                 >
@@ -62,7 +68,7 @@
                   <a href="#">寄發簡訊驗證碼</a>
                 </div>
               </div>
-              <a class="access-text" style="cursor:pointer" [routerLink]="['/signin']"><返回</a>
+              <!-- <a class="access-text" style="cursor:pointer" [routerLink]="['/signin']"><返回</a> -->
             </ng-container>
             <ng-container *ngIf="isEmailMethod">
               <div class="form-group">
@@ -75,9 +81,12 @@
                   >
                 </div>
               </div>
-              <a class="access-text" href="#" style="cursor:pointer" (click)="switchMethod($event)"><返回</a>
             </ng-container>
-            <button type="submit" class="btn btn-primary access-btn">註冊</button>
+            <div style="display: flex;justify-content: space-between;align-items: center;">
+              <a *ngIf="isEmailMethod" class="access-text" href="#" style="cursor:pointer" (click)="switchMethod($event)"><返回</a>
+              <a *ngIf="!isEmailMethod" class="access-text" style="cursor:pointer" [routerLink]="['/signin']"><返回</a>
+              <button type="submit" class="btn btn-primary access-btn">註冊</button>
+            </div>
           </form>
         </div>
       </div>
