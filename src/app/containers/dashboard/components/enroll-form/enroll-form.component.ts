@@ -48,7 +48,9 @@ export class EnrollFormComponent implements OnInit {
   signupMethod: number;
   @ViewChild('f') form: any;
   complexForm: FormGroup;
-  counrtyCode = '+886';
+  counrtyCode: string;
+  placeholder = '請輸入您的手機號碼';
+  isCodeInvalid = false;
   constructor(
     private eventEnrollService: EventEnrollService,
     private eventInfoService: EventInfoService,
@@ -97,35 +99,14 @@ export class EnrollFormComponent implements OnInit {
 
   public onPhoneChange(code): void {
     this.counrtyCode = code;
+    if (this.counrtyCode) {
+      this.isCodeInvalid = false;
+    }
     const phoneValue = this.complexForm.get('phone').value;
     if (phoneValue.length > 0) {
       this.handleSearchPhone(phoneValue);
     }
   }
-  // public onIDNumChange(e: any, { controls: { idNumber } }): void {
-  //   if (e.target.value.length > 0 && idNumber.status === 'VALID') {
-  //     this.handleSearchIDNum(idNumber);
-  //   }
-  //   if (e.target.value.length === 0) {
-  //     this.idNumErr = '';
-  //   }
-  // }
-  // handleSearchIDNum(idNumber) {
-  //   let params = new HttpParams();
-  //   params = params.set('event_id', this.event_id);
-  //   params = params.set('idNumber', this.formData.idNumber);
-  //   this.isIDNumLoading = true;
-  //   this.eventEnrollService.getIDNum(params).subscribe(
-  //     result => {
-  //       this.isIDNumLoading = false;
-  //       this.idNumErr = '';
-  //     },
-  //     err => {
-  //       this.isIDNumLoading = false;
-  //       this.idNumErr = err.error;
-  //     }
-  //   );
-  // }
   handleSearchPhone(phone) {
     let params = new HttpParams();
     params = params.set('event_id', this.event_id);
@@ -209,7 +190,12 @@ export class EnrollFormComponent implements OnInit {
         window.alert(results);
       });
     }
-    if (valid && this.phoneErr.length === 0 && this.emailErr.length === 0) {
+    if (!this.counrtyCode) {
+      this.isCodeInvalid = true;
+    } else {
+      this.isCodeInvalid = false;
+    }
+    if (valid && this.phoneErr.length === 0 && this.emailErr.length === 0 && !this.isCodeInvalid) {
       const data = value;
       data.pay_method = '臨櫃付款';
       data.status = '已付款';
@@ -223,8 +209,7 @@ export class EnrollFormComponent implements OnInit {
       } else {
         data.phone = '';
       }
-      this.eventEnrollService.enroll(data).subscribe(
-        results => {
+      this.eventEnrollService.enroll(data).subscribe(results => {
           this.dialog.open(MsgDialogComponent, {
             hasBackdrop: true,
             data: {
@@ -234,12 +219,8 @@ export class EnrollFormComponent implements OnInit {
             }
           });
           this.form.resetForm();
-          this.complexForm.patchValue({
-            ageRange: '不透露',
-            gender: 2
-          });
-        },
-        err => {
+          this.complexForm.patchValue({ ageRange: '不透露', gender: 2 });
+        }, err => {
           this.dialog.open(MsgDialogComponent, {
             hasBackdrop: true,
             data: {
@@ -247,8 +228,7 @@ export class EnrollFormComponent implements OnInit {
               body: err.errorMessage
             }
           });
-        }
-      );
+        });
     }
   }
   showCheckEnrollDialog() {

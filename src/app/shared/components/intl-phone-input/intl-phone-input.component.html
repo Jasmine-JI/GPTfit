@@ -1,26 +1,26 @@
 <div class="dropdown">
   <div class="clearable" [formGroup]="control" >
-    <div class="selected-flag"  (click)="openActive($event)">
-      <img src="{{ selectedOption.url }}">
+    <div class="selected-flag"  (click)="openActive($event)"
+      [class.selected-flag--invalid]="isCodeInvalid"
+    >
+      {{ this.countryCode || '國家/地區' }}
       <i class="fa fa-caret-down async-caret"></i>
     </div>
-    <input type="tel" (keyup)="inputEvent($event)" autocomplete="off"
-        formControlName="phone"
-       class="form-field" placeholder="{{ selectedOption?.placeholder }}"
-       (focus)="focusEvent($event)"
-       style="width: 300px;text-overflow: ellipsis;"
-       (keyup)="handlePhoneChange($event)"
-       [class.form-field--invalid]="isInvalid"
+    <input formControlName="phone" class="form-control"
+      type="tel"
+      (keyup)="inputEvent($event)" autocomplete="tel"
+      (focus)="focusEvent($event)"
+      (keyup)="handlePhoneChange($event)"
+      style="width: calc(100% - 105px);text-overflow: ellipsis;"
+      placeholder={{placeholder}}
+      [class.form-control--invalid]="isPhoneInvalid"
     >
     <i class="clearable__clear" [class.show]="isClearIconShow" (click)="clear()">&times;</i>
     <i class="fa fa-spinner fa-pulse fa-1x fa-fw spinner" [class.spinner-hidden]="!isLoading"></i>
   </div>
-  <ul class="dropdown-menu" style="width: 100%;" *ngIf="countryOptions && countryOptions.length > 0" [class.show]="active && countryOptions.length > 0">
+  <ul class="dropdown-menu ala-intl-tel" *ngIf="countryOptions && countryOptions.length > 0" [class.show]="active && countryOptions.length > 0">
     <li *ngFor="let o of countryOptions; let i = index" (click)="chooseCountry(i)"[ngClass]="{'selected' : selectedOption && o.code === selectedOption.code }">
-      <span style="margin-right: 2px">
-        <img src="{{o.url}}">
-      </span>
-       {{ o.name }}{{ o.code }}
+       {{ o.name }}<span class="dial-code">{{ o.code }}</span>
     </li>
   </ul>
 </div>

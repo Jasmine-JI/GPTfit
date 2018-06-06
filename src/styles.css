@@ -40,6 +40,10 @@ html {
   outline: 0;
 }
 
+.form-control.form-control--invalid {
+  border: 1px solid #c75353;
+  box-shadow: rgba(163, 50, 50, .34) 0 0 4px 0;
+}
 
 .form-field.form-field--invalid {
   border: 1px solid #c75353;
@@ -313,6 +317,15 @@ a.alatech-btn:hover {
   height: calc(100% - 70px);
   background-color: #f4eeeb;
   padding: 40px 75px;
+}
+/* 修改intl-tel */
+.ala-flag .flag {
+  display: none !important;
+  background: transparent;
+}
+
+.input-group-addon {
+  background-color: #fff!important;
 }
 
 @media(max-width: 991px) {
