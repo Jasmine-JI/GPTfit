@@ -31,6 +31,7 @@ import { UtilsService } from '@shared/services/utils.service';
 import { SharedModule } from '@shared/shared.module';
 import { SignupComponent } from './components/signup/signup.component';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { ForgetpwdComponent } from './components/forgetpwd/forgetpwd.component';
 
 @NgModule({
   imports: [
@@ -69,7 +70,8 @@ import { MessageBoxComponent } from '@shared/components/message-box/message-box.
     PasswordComponent,
     DemoQrcodComponent,
     SigninComponent,
-    SignupComponent
+    SignupComponent,
+    ForgetpwdComponent
   ],
   entryComponents: [MessageBoxComponent]
 })

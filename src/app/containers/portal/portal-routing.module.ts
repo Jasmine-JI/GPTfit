@@ -8,6 +8,7 @@ import { DemoQrcodComponent } from './components/demo-qrcod/demo-qrcod.component
 import { SigninComponent } from './components/signin/signin.component';
 import { SigninGuard } from '@shared/guards/signin/signin.guard';
 import { SignupComponent } from './components/signup/signup.component';
+import { ForgetpwdComponent } from './components/forgetpwd/forgetpwd.component';
 
 const routes: Routes = [
   {
@@ -38,6 +39,10 @@ const routes: Routes = [
       {
         path: 'signup',
         component: SignupComponent,
+      },
+      {
+        path: 'forget-pwd',
+        component: ForgetpwdComponent,
       }
     ]
   }
