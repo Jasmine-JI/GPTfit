@@ -290,7 +290,6 @@ a.alatech-btn:hover {
 .access-panel {
   max-width: 520px;
   width: 100%;
-  height: 370px;
   border: 1px solid;
 }
 
@@ -303,7 +302,6 @@ a.alatech-btn:hover {
 }
 
 .btn-primary.access-btn {
-  float: right;
   background-color: #2b819b;
   width: 125px;
 }
@@ -327,6 +325,11 @@ a.alatech-btn:hover {
 .input-group-addon {
   background-color: #fff!important;
 }
+.auth-submit {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0;
+}
 
 @media(max-width: 991px) {
   .access-bg {
@@ -340,7 +343,6 @@ a.alatech-btn:hover {
   }
   .access-panel {
     max-width: 400px;
-    height: 325px;
   }
   .access-panel-body {
     padding: 30px 15px;
