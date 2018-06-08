@@ -60,7 +60,7 @@ export class DashboardComponent implements OnInit {
           info: { name, nameIcon }
         } = res;
         this.userName = name;
-        this.userPhoto = 'data:image/jpg;base64,' + nameIcon;
+        this.userPhoto = this.utilsService.buildBase64ImgString(nameIcon);
       }
     });
 

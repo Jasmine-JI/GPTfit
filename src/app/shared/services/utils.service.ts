@@ -28,4 +28,11 @@ export class UtilsService {
       localStorage.removeItem(token);
     }
   }
+  buildBase64ImgString(value: string) {
+    if (!value) {
+      return '';
+    } else {
+      return `data: image / jpg; base64, ${value}`;
+    }
+  }
 }

@@ -78,6 +78,11 @@
                     autocomplete="off"
                     style="width: 150px"
                   >
+                  <img *ngIf="randomCode"
+                    [src]="randomCode?.randomCodeImg | safeHtml"
+                    (click)="handleRandomCode()"
+                    style="cursor:pointer"
+                  >
                 </div>
               </div>
             </ng-container>
