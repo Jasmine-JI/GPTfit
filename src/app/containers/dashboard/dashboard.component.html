@@ -94,7 +94,7 @@
           <div class="dropdown">
             <div class="header-nav-item" id="dropdownMenu3" data-toggle="dropdown" aria-haspopup="true"
               aria-expanded="false" style="background-color: transparent;border-color: transparent">
-              <img *ngIf="userPhoto" src={{userPhoto}} class="header-user-photo">
+              <img *ngIf="userPhoto" [src]="(userPhoto | safeHtml)" class="header-user-photo">
               <img *ngIf="!userPhoto" src="/assets/images/user.png" class="header-user-photo">
             </div>
             <div class="dropdown-menu dropdown-user-menu" [class.show]="isUserMenuShow"

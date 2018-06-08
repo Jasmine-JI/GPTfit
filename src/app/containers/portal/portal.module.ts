@@ -32,6 +32,7 @@ import { SharedModule } from '@shared/shared.module';
 import { SignupComponent } from './components/signup/signup.component';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { ForgetpwdComponent } from './components/forgetpwd/forgetpwd.component';
+import { RandomCodeService } from './services/random-code.service';
 
 @NgModule({
   imports: [
@@ -55,6 +56,7 @@ import { ForgetpwdComponent } from './components/forgetpwd/forgetpwd.component';
     GlobalEventsManager,
     ResetPasswordService,
     UtilsService,
+    RandomCodeService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: EmptyResponseBodyErrorInterceptor,

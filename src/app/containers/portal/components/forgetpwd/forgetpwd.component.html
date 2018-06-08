@@ -55,6 +55,11 @@
                 <label for="exampleInputPassword1" class="access-text">圖形驗證碼:</label>
                 <div style="display: flex;justify-content: space-between;align-items: center">
                   <input formControlName="password" type="password" class="form-control" autocomplete="off" style="width: 150px">
+                  <img *ngIf="randomCode"
+                    [src]="randomCode?.randomCodeImg | safeHtml"
+                    (click)="handleRandomCode()"
+                    style="cursor:pointer"
+                  >
                 </div>
               </div>
             </ng-container>
