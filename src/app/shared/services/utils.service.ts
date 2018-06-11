@@ -35,4 +35,21 @@ export class UtilsService {
       return `data: image / jpg; base64, ${value}`;
     }
   }
+  str_cut(str, max_length) {
+    let m = 0,
+        str_return = '';
+    const a = str.split('');
+    for (let i = 0; i < a.length; i++) {
+      if (a[i].charCodeAt(0) < 299) {
+        m++;
+      } else {
+        m += 2;
+      }
+      if (m > max_length) {
+        break;
+      }
+      str_return += a[i];
+    }
+    return str_return;
+  }
 }
