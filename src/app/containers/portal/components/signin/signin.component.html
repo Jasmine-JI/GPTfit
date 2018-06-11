@@ -11,19 +11,37 @@
           <img src="assets/attacus_logo.png" style="width: 36%">
         </header>
         <div class="access-panel-body">
-          <form [formGroup]="form" (ngSubmit)="login()" novalidate>
+          <form [formGroup]="form" (ngSubmit)="login(f)"#f="ngForm" novalidate>
             <div class="form-group">
               <label for="exampleInputEmail1" class="access-text">帳號(
-                <a href="#" (click)="showPrivateMsg($event)">沒有帳號?</a>):</label>
-              <input formControlName="accountName" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="電子信箱或手機號碼">
+                <a href="#" (click)="showPrivateMsg($event)">沒有帳號?</a>):
+              </label>
+              <input formControlName="accountName"
+                autocomplete="true"
+                class="form-control"
+                placeholder="電子信箱或手機號碼"
+                [class.form-control--invalid]="(!form.controls['accountName'].valid && form.controls['accountName'].touched) || (f.submitted && form.get('accountName').hasError('required'))"
+              >
+              <div class="form__message form__message--placeholder" *ngIf="(!form.controls['accountName'].valid && form.controls['accountName'].touched) || (f.submitted && form.get('accountName').hasError('required'))">
+                請輸入您的帳號
+              </div>
             </div>
             <div class="form-group">
               <label for="exampleInputPassword1" class="access-text">
-                密碼(<a href="#" [routerLink]="['/forget-pwd']">忘了密碼?</a>):</label>
-              <input formControlName="password" type="password" class="form-control"
-                id="exampleInputPassword1" placeholder="密碼需區分大小寫並包含數字"
+                密碼(<a href="#" [routerLink]="['/forget-pwd']">忘了密碼?</a>):
+              </label>
+              <input formControlName="password" type="password"
+                class="form-control"
+                placeholder="密碼需區分大小寫並包含數字"
                 autocomplete="off"
+                [class.form-control--invalid]="(!form.controls['password'].valid && form.controls['password'].touched) || (f.submitted && form.get('password').hasError('required'))"
               >
+              <div class="form__message form__message--placeholder" *ngIf="(form.controls['password'].hasError('required') && form.controls['password'].touched) || (f.submitted && form.get('password').hasError('required'))">
+                請輸入您的密碼
+              </div>
+              <div class="form__message form__message--placeholder" *ngIf="(form.controls['password'].hasError('pattern') && form.controls['password'].touched) || (f.submitted && form.controls['password'].hasError('pattern'))">
+                密碼需區分大小寫並包含數字
+              </div>
             </div>
             <div class="auth-submit">
               <button type="submit" class="btn btn-primary access-btn">登入</button>

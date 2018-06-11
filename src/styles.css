@@ -136,6 +136,10 @@ button:focus {
   color: #cb5e5e;
   font-size: 12px;
 }
+.form__message--placeholder {
+  margin-left: 12px;
+  font-size: 16px;
+}
 
 .icon-btn {
   display: inline-block;
@@ -308,7 +312,7 @@ a.alatech-btn:hover {
 
 .access-text {
   color: #757575;
-  margin-left: 10px;
+  margin-left: 12px;
 }
 
 .access-panel-body {
