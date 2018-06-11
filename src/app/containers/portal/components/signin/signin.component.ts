@@ -30,8 +30,8 @@ export class SigninComponent implements OnInit {
 
   ngOnInit() {
     this.form = this.fb.group({
-      accountName: '',
-      password: ''
+      accountName: ['', Validators.required],
+      password: ['', [Validators.required, Validators.pattern(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$/)]]
     });
   }
   get accountName() {
@@ -44,21 +44,24 @@ export class SigninComponent implements OnInit {
   //   return this.form.get('rememberMe');
   // }
 
-  login() {
+  login({ valid }) {
     const body = {
       email: this.accountName.value,
       password: this.password.value,
       // rememberMe: this.rememberMe.value,
       iconType: 2
     };
-
-    this.authService.login(body).subscribe(res => {
-      if (res) {
-        this.snackbar.open('登入成功', 'OK', { duration: 3000 });
-      } else {
-        this.snackbar.open('請檢查使用者名稱及密碼', 'OK', { duration: 3000 });
-      }
-    });
+    if (valid) {
+      this.authService.login(body).subscribe(res => {
+        if (res) {
+          this.snackbar.open('登入成功', 'OK', { duration: 3000 });
+        } else {
+          this.snackbar.open('請檢查使用者名稱及密碼', 'OK', {
+            duration: 3000
+          });
+        }
+      });
+    }
   }
   onConfirm() {
     this.router.navigateByUrl('/signup');
