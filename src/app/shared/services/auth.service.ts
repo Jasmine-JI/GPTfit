@@ -62,7 +62,8 @@ export class AuthService {
           if (this.backUrl.length > 0) {
             router.navigate([this.backUrl]);
           } else {
-            router.navigate(['/dashboard']);
+            // router.navigate(['/dashboard']);
+            location.href = '/dashboard'; // 為了讓登入的api request payload清除掉
           }
           return true;
         } else {

@@ -11,7 +11,7 @@
           <img src="assets/attacus_logo.png" style="width: 36%">
         </header>
         <div class="access-panel-body">
-          <form [formGroup]="form" (ngSubmit)="signup()" #f="ngForm" novalidate>
+          <form [formGroup]="form" (ngSubmit)="signup(f)" #f="ngForm" novalidate>
             <ng-container *ngIf="!isEmailMethod">
               <div class="form-group">
                 <div style="display: flex;justify-content: space-between;">
@@ -84,7 +84,6 @@
               <input formControlName="name" type="text"
                 class="form-control"
                 placeholder="16個字元內"
-                autocomplete="off"
                 (keyup)="onNameChange($event, form)"
                 [class.form-control--invalid]="(form.controls['name'].hasError('required') && form.controls['name'].touched) || (f.submitted && form.get('name').hasError('required'))"
               >
@@ -96,12 +95,17 @@
               <div class="form-group">
                 <label class="access-text">簡訊驗證碼:</label>
                 <div style="display: flex;justify-content: space-between;align-items: center">
-                  <input formControlName="smsCode" type="password"
+                  <input formControlName="smsCode"
                     class="form-control"
-                    autocomplete="off"
                     style="width: 150px"
-                    [class.form-control--invalid]="(form.controls['smsCode'].hasError('required') && form.controls['smsCode'].touched) || (f.submitted && form.get('smsCode').hasError('required'))"
+                    [class.form-control--invalid]="(form.controls['smsCode'].hasError('required') && form.controls['smsCode'].touched) || (f.submitted
+                    && form.get('smsCode').hasError('required')) || isSMSCodeErr"
                   >
+                  <div class="form__message form__message--placeholder"
+                    *ngIf="isSMSCodeErr"
+                  >
+                    輸入錯的驗證碼
+                  </div>
                   <a href="#" (click)="sendSMSCode($event)">寄發簡訊驗證碼</a>
                 </div>
               </div>
@@ -110,12 +114,17 @@
               <div class="form-group">
                 <label class="access-text">圖形驗證碼:</label>
                 <div style="display: flex;justify-content: space-between;align-items: center">
-                  <input formControlName="chartCode" type="password"
+                  <input formControlName="chartCode"
                     class="form-control"
-                    autocomplete="off"
                     style="width: 150px"
-                    [class.form-control--invalid]="(form.controls['chartCode'].hasError('required') && form.controls['chartCode'].touched) || (f.submitted && form.get('chartCode').hasError('required'))"
+                    [class.form-control--invalid]="(form.controls['chartCode'].hasError('required') && form.controls['chartCode'].touched) ||
+                    (f.submitted && form.get('chartCode').hasError('required') || isChartCodeErr)"
                   >
+                  <div class="form__message form__message--placeholder"
+                    *ngIf="isChartCodeErr"
+                  >
+                    輸入錯的驗證碼
+                  </div>
                   <img *ngIf="randomCode"
                     [src]="randomCode?.randomCodeImg | safeHtml"
                     (click)="handleRandomCode()"

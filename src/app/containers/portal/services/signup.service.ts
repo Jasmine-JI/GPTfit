@@ -12,4 +12,7 @@ export class SignupService {
   getSMSVerifyCode(body) {
     return this.http.post('/api/v1/user/getSMSVerifyCode', body);
   }
+  register(body) {
+    return this.http.post('/api/v1/user/register', body);
+  }
 }
