@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -13,6 +13,7 @@ import { UtilsService } from '../../../../shared/services/utils.service';
 import { RandomCode } from '../../models/random-code';
 import { SignupService } from '../../services/signup.service';
 import { SMSCode } from '../../models/sms-code';
+import { SignupResponse } from '../../models/signup-response';
 
 @Component({
   selector: 'app-signup',
@@ -27,7 +28,10 @@ export class SignupComponent implements OnInit {
   counrtyCode: string;
   randomCode: RandomCode;
   isCodeInvalid = false;
-  smsVerifyCode: string;
+  smsVerifyCode = '406068';
+  @ViewChild('f') signupForm: any;
+  isChartCodeErr = false;
+  isSMSCodeErr = false;
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -40,15 +44,6 @@ export class SignupComponent implements OnInit {
 
   ngOnInit() {
     this.form = this.fb.group({
-      email: [
-        '',
-        [
-          Validators.required,
-          Validators.pattern(
-            /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/
-          )
-        ]
-      ],
       password: [
         '',
         [
@@ -58,8 +53,7 @@ export class SignupComponent implements OnInit {
       ],
       phone: ['', Validators.required],
       name: ['', Validators.required],
-      smsCode: ['', Validators.required],
-      chartCode: ['', Validators.required]
+      smsCode: ['', Validators.required]
     });
   }
   get email() {
@@ -86,12 +80,61 @@ export class SignupComponent implements OnInit {
       return this.form.patchValue({ name: charValue });
     }
   }
-  signup() {
+  signup({ valid, value }) {
     if (!this.counrtyCode) {
       this.isCodeInvalid = true;
     } else {
       this.isCodeInvalid = false;
     }
+    if (valid) {
+      if (this.isEmailMethod) {
+        if (this.randomCode.randomCodeVerify === value.chartCode) {
+          this.isChartCodeErr = false;
+          const body = {
+            name: value.name,
+            email: value.email,
+            phone: '',
+            countryCode: '',
+            smsVerifyCode: '',
+            password: value.password
+          };
+          this.handleSignup(body);
+        } else {
+          this.isChartCodeErr = true;
+        }
+      } else {
+        if (this.smsVerifyCode === value.smsCode) {
+          this.isSMSCodeErr = false;
+          const body = {
+            name: value.name,
+            email: '',
+            phone: value.phone,
+            password: value.password,
+            countryCode: this.counrtyCode,
+            smsVerifyCode: value.smsCode
+          };
+          this.handleSignup(body);
+        } else {
+          this.isSMSCodeErr = true;
+        }
+      }
+    }
+  }
+  handleSignup(body) {
+    this.signupService.register(body).subscribe((res: SignupResponse) => {
+      const {
+        resultCode,
+        info: { rtnMsg }
+      } = res;
+      if (resultCode === 200) {
+        this.snackbar.open('註冊成功，五秒後將跳轉回登入頁面', 'OK', {
+          duration: 3000
+        });
+        setTimeout(() => this.router.navigate(['/signin']), 5000);
+      } else {
+        this.snackbar.open(rtnMsg, 'OK', { duration: 3000 });
+      }
+    });
   }
   handleRandomCode() {
     this.randomCodeService.getRandomCode().subscribe((res: RandomCode) => {
@@ -105,13 +148,40 @@ export class SignupComponent implements OnInit {
   switchMethod(e) {
     e.preventDefault();
     this.isEmailMethod = !this.isEmailMethod;
+    this.isCodeInvalid = false;
     if (this.isEmailMethod) {
+      this.form.removeControl('smsCode');
+      this.form.removeControl('phone');
+      const emailControl: FormControl = new FormControl('', [
+        Validators.required,
+        Validators.pattern(
+          /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/
+        )
+      ]);
+      const chartCodeControl: FormControl = new FormControl(
+        '',
+        Validators.required
+      );
+      this.form.addControl('email', emailControl);
+      this.form.addControl('chartCode', chartCodeControl);
       this.handleRandomCode();
+    } else {
+      this.form.removeControl('chartCode');
+      this.form.removeControl('email');
+      const phoneControl: FormControl = new FormControl(
+        '',
+        Validators.required
+      );
+      const smsControl: FormControl = new FormControl('', Validators.required);
+      this.form.addControl('phone', phoneControl);
+      this.form.addControl('smsCode', smsControl);
     }
+    return this.signupForm.resetForm();
   }
 
   sendSMSCode(e) {
     e.preventDefault();
+
     if (this.counrtyCode && this.phone.value) {
       const body = {
         countryCode: this.counrtyCode,
