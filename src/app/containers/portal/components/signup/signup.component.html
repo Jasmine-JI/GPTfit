@@ -3,7 +3,7 @@
     <div class="d-flex" style="flex-direction: column;align-items: center;;">
 
       <div class="access-description">
-        在Ala Conter上，獲得健體分析
+        在Ala Center上，獲得健體分析
         <br> 生活追蹤、即時分享與競賽樂趣
       </div>
       <div class="access-panel">
@@ -22,10 +22,9 @@
                 <div style="display: flex">
                   <div style="width: 100%">
                     <app-intl-phone-input
-                      (onChange)="onPhoneChange($event)"
+                      (onChange)="onCodeChange($event)"
                       [placeholder]="placeholder"
                       [control]="form"
-                      [isLoading]="isPhoneLoading"
                       [isPhoneInvalid]="(!form.controls['phone'].valid && form.controls['phone'].touched) || (f.submitted && form.get('phone').hasError('required'))"
                       [isCodeInvalid]="isCodeInvalid"
                     ></app-intl-phone-input>
@@ -42,12 +41,13 @@
             <ng-container *ngIf="isEmailMethod">
               <div class="form-group">
                 <div style="display: flex;justify-content: space-between;">
-                  <label class="access-text">註冊帳號:
+                  <label for="exampleInputEmail1"class="access-text">註冊帳號:
                   </label>
                   <a href="#" (click)="switchMethod($event)">或使用手機註冊></a>
                 </div>
                 <input formControlName="email" class="form-control"
                   type="email"
+                  id="exampleInputEmail1"
                   placeholder="輸入您的電子信箱"
                   [class.form-control--invalid]="(!form.controls['email'].valid && form.controls['email'].touched) || (f.submitted &&
                   form.get('email').hasError('required'))"

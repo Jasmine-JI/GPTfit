@@ -40,7 +40,6 @@ export class IntlPhoneInputComponent implements OnInit {
   }
   handlePhoneChange(e) {
     this.phone = e.target.value.trim();
-    this.onChange.emit(this.countryCode);
   }
   public inputEvent(e: any, isUpMode: boolean = false): void {
     if (e.target.value.length > 0 && this.phone) {

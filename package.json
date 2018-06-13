@@ -43,6 +43,8 @@
     "@angular/router": "^5.1.1",
     "@ngx-translate/core": "^9.1.1",
     "@ngx-translate/http-loader": "^3.0.1",
+    "@types/lodash": "^4.14.109",
+    "@types/query-string": "^5.1.0",
     "body-parser": "^1.18.2",
     "bootstrap": "4.0.0-beta.2",
     "concurrently": "^3.5.1",

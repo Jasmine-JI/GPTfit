@@ -3,7 +3,7 @@
     <div class="d-flex" style="flex-direction: column;align-items: center;;">
 
       <div class="access-description">
-        在Ala Conter上，獲得健體分析
+        在Ala Center上，獲得健體分析
         <br> 生活追蹤、即時分享與競賽樂趣
       </div>
       <div class="access-panel forget">
@@ -11,17 +11,29 @@
           <img src="assets/attacus_logo.png" style="width: 36%">
         </header>
         <div class="access-panel-body">
-          <form [formGroup]="form" (ngSubmit)="login()" novalidate>
+          <form [formGroup]="form" (ngSubmit)="forget(f)" #f="ngForm"  novalidate>
             <ng-container *ngIf="!isEmailMethod">
               <div class="form-group">
                 <div style="display: flex;justify-content: space-between;">
-                  <label for="exampleInputEmail1" class="access-text">帳號:
+                  <label  class="access-text">帳號:
                   </label>
                   <a href="#" (click)="switchMethod($event)">使用電子信箱重設密碼></a>
                 </div>
                 <div style="display: flex">
                   <div style="width: 100%">
-                    <app-intl-phone-input (onChange)="onPhoneChange($event)" [placeholder]="placeholder" [control]="form" [isLoading]="isPhoneLoading"></app-intl-phone-input>
+                    <app-intl-phone-input
+                      (onChange)="onPhoneChange($event)"
+                      [placeholder]="placeholder"
+                      [control]="form"
+                      [isPhoneInvalid]="(!form.controls['phone'].valid && form.controls['phone'].touched) || (f.submitted && form.get('phone').hasError('required'))"
+                      [isCodeInvalid]="isCodeInvalid"
+                    ></app-intl-phone-input>
+                    <div class="form__message form__message--placeholder"
+                      style="margin-left: 118px"
+                      *ngIf="(!form.controls['phone'].valid && form.controls['phone'].touched) || (f.submitted && form.get('phone').hasError('required'))"
+                    >
+                      請輸入您的手機號碼
+                    </div>
                   </div>
                 </div>
               </div>
@@ -33,20 +45,70 @@
                   </label>
                   <a href="#" (click)="switchMethod($event)">使用手機號碼重設密碼></a>
                 </div>
-                <input formControlName="accountName" class="form-control" id="exampleInputEmail1" type="email" aria-describedby="emailHelp"
-                  placeholder="輸入您的電子信箱">
+                <input formControlName="email"
+                  class="form-control" id="exampleInputEmail1" type="email"
+                  placeholder="輸入您的電子信箱"
+                  [class.form-control--invalid]="(!form.controls['email'].valid && form.controls['email'].touched) || (f.submitted &&
+                  form.get('email').hasError('required'))"
+                >
+                <div class="form__message form__message--placeholder"
+                  *ngIf="(form.controls['email'].hasError('required') && form.controls['email'].touched) || (f.submitted && form.get('email').hasError('required'))"
+                >
+                  請輸入您的電子信箱
+                </div>
+                <div class="form__message form__message--placeholder"
+                  *ngIf="(form.controls['email'].hasError('pattern') && form.controls['email'].touched) || (f.submitted && form.get('email').hasError('required'))"
+                >
+                  請輸入正確的電子信箱格式
+                </div>
               </div>
             </ng-container>
             <div class="form-group">
-              <input *ngIf="!isEmailMethod" formControlName="password" type="password" class="form-control" placeholder="再次確認您的手機號碼" autocomplete="off">
-              <input *ngIf="isEmailMethod" formControlName="password" type="password" class="form-control" placeholder="再次確認您的電子信箱" autocomplete="off">
+              <ng-container *ngIf="!isEmailMethod">
+                <input formControlName="confirmPhone" type="tel"
+                  class="form-control" placeholder="再次確認您的手機號碼"
+                  autocomplete="off"
+                  [class.form-control--invalid]="(!form.controls['confirmPhone'].valid && form.controls['confirmPhone'].touched) || (f.submitted &&
+                  form.get('confirmPhone').hasError('required'))"
+                >
+                <div class="form__message form__message--placeholder"
+                  *ngIf="(form.controls['confirmPhone'].hasError('required') && form.controls['confirmPhone'].touched) || (f.submitted && form.get('confirmPhone').hasError('required'))"
+                >
+                  請輸入您的手機號碼
+                </div>
+              <div class="form__message form__message--placeholder" *ngIf="isPhoneNotSame">
+                輸入的手機號碼不符合
+              </div>
+              </ng-container>
+              <ng-container *ngIf="isEmailMethod">
+                <input formControlName="confirmEmail" type="email"
+                  class="form-control"
+                  placeholder="再次確認您的電子信箱"
+                  autocomplete="off"
+                  [class.form-control--invalid]="(!form.controls['confirmEmail'].valid && form.controls['confirmEmail'].touched) || (f.submitted &&
+                  form.get('confirmEmail').hasError('required'))"
+                >
+                <div class="form__message form__message--placeholder"
+                  *ngIf="(form.controls['confirmEmail'].hasError('required') && form.controls['confirmEmail'].touched) || (f.submitted && form.get('confirmEmail').hasError('required'))"
+                >
+                  請輸入您的電子信箱
+                </div>
+                <div class="form__message form__message--placeholder"
+                  *ngIf="(form.controls['confirmEmail'].hasError('pattern') && form.controls['confirmEmail'].touched) || (f.submitted && form.get('confirmEmail').hasError('required'))"
+                >
+                  請輸入正確的電子信箱格式
+                </div>
+              </ng-container>
             </div>
             <ng-container *ngIf="!isEmailMethod">
               <div class="form-group">
                 <label for="exampleInputPassword1" class="access-text">簡訊驗證碼:</label>
                 <div style="display: flex;justify-content: space-between;align-items: center">
-                  <input formControlName="password" type="password" class="form-control" autocomplete="off" style="width: 150px">
-                  <a href="#">寄發簡訊驗證碼</a>
+                  <input formControlName="smsCode" type="text"
+                    class="form-control"
+                    style="width: 150px"
+                  >
+                  <a href="#"  (click)="sendSMSCode($event)">寄發簡訊驗證碼</a>
                 </div>
               </div>
             </ng-container>
@@ -54,7 +116,10 @@
               <div class="form-group">
                 <label for="exampleInputPassword1" class="access-text">圖形驗證碼:</label>
                 <div style="display: flex;justify-content: space-between;align-items: center">
-                  <input formControlName="password" type="password" class="form-control" autocomplete="off" style="width: 150px">
+                  <input formControlName="chartCode"
+                    type="text" class="form-control"
+                    style="width: 150px"
+                  >
                   <img *ngIf="randomCode"
                     [src]="randomCode?.randomCodeImg | safeHtml"
                     (click)="handleRandomCode()"
@@ -68,7 +133,7 @@
                 <返回</a>
                   <a *ngIf="!isEmailMethod" class="access-text" style="cursor:pointer" [routerLink]="['/signin']">
                     <返回</a>
-                      <button type="submit" class="btn btn-primary access-btn">註冊</button>
+                      <button type="submit" class="btn btn-primary access-btn">送出</button>
             </div>
           </form>
         </div>

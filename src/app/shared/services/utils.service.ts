@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
+import { cloneDeep } from 'lodash';
+import { stringify } from 'query-string';
 
 export const TOKEN = 'ala_token';
+export const EMPTY_OBJECT = {};
 @Injectable()
 export class UtilsService {
   setLocalStorageObject(key: string, value) {
@@ -51,5 +54,24 @@ export class UtilsService {
       str_return += a[i];
     }
     return str_return;
+  }
+  isObjectEmpty(object) {
+    if (!object) {
+      return true;
+    }
+    return Object.keys(object).length === 0 && object.constructor === Object;
+  }
+
+  buildUrlQueryStrings(_params) {
+    const params = this.isObjectEmpty(_params) ? EMPTY_OBJECT : cloneDeep(_params);
+
+    if (Object.keys(params).length) {
+      for (const key in params) {
+        if (!params[key]) {
+          delete params[key];
+        }
+      }
+    }
+    return stringify(params);
   }
 }

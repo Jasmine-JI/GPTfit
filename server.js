@@ -336,7 +336,11 @@ app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 
   // Request headers you wish to allow
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization');
+  const allowHeaders = ['X-Requested-With', 'content-type', 'Authorization',
+    'deviceID', 'chartset', 'language', 'Accept', 'deviceType', 'deviceName',
+    'deviceOSVersion', 'appVersionCode', 'appVersionName', 'regionCode', 'appName'
+  ];
+  res.setHeader('Access-Control-Allow-Headers', allowHeaders.join(','));
 
   // Set to true if you need the website to include cookies in the requests sent
   // to the API (e.g. in case you use sessions)
