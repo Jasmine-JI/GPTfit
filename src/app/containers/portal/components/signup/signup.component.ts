@@ -28,7 +28,7 @@ export class SignupComponent implements OnInit {
   counrtyCode: string;
   randomCode: RandomCode;
   isCodeInvalid = false;
-  smsVerifyCode = '406068';
+  smsVerifyCode: string;
   @ViewChild('f') signupForm: any;
   isChartCodeErr = false;
   isSMSCodeErr = false;
@@ -65,14 +65,13 @@ export class SignupComponent implements OnInit {
   get phone() {
     return this.form.get('phone');
   }
-  public onPhoneChange(code): void {
+  public onCodeChange(code): void {
     this.counrtyCode = code.slice(1, code.length);
     if (!this.counrtyCode) {
       this.isCodeInvalid = true;
     } else {
       this.isCodeInvalid = false;
     }
-    const phoneValue = this.form.get('phone').value;
   }
   public onNameChange(e: any, { controls: { name } }): void {
     const charValue = this.utils.str_cut(e.target.value, 16);

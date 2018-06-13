@@ -15,37 +15,37 @@ export class PasswordComponent implements OnInit {
   response: any;
   isConfirm = true;
   resultMessage = '';
+  queryStrings: any;
   constructor(
     private resetPasswordService: ResetPasswordService,
-    private router: Router,
-  ) { }
+    private router: Router
+  ) {}
   resetpwd = {
     newPassword: '',
     confirmPassword: ''
   };
   ngOnInit() {
-    const queryStrings = getUrlQueryStrings(location.search);
-    this.code = queryStrings.code;
-    if (this.code) {
-      this.resetPasswordService.getEmail(this.code).subscribe(res => {
+    this.queryStrings = getUrlQueryStrings(location.search);
+    const { code, smsVerifyCode, countryCode, phone } = this.queryStrings;
+    if (code) {
+      this.resetPasswordService.getEmail(code).subscribe(res => {
         this.response = res;
         if (this.response === 'noemail') {
           return this.router.navigateByUrl('/404');
         }
         this.email = this.response.email;
       });
+    } else if (smsVerifyCode && countryCode && phone) {
+      this.email = phone;
     } else {
       this.router.navigateByUrl('/404');
     }
   }
-  reset({value, valid}) {
-    const {
-      newPassword,
-      confirmPassword
-    } = value;
+  reset({ value, valid }) {
+    const { newPassword, confirmPassword } = value;
     if (newPassword !== confirmPassword) {
       valid = false;
-      return this.isConfirm = false;
+      return (this.isConfirm = false);
     }
     this.isConfirm = true;
     if (valid) {
@@ -54,9 +54,18 @@ export class PasswordComponent implements OnInit {
       const body = {
         email,
         password: newPassword,
-        confirmpassword: confirmPassword
+        confirmpassword: confirmPassword,
+        smsVerifyCode: '',
+        countryCode: '',
+        phone: ''
       };
-      this.resetPasswordService.resetPassword(body).subscribe((res) => {
+      const { smsVerifyCode, countryCode, phone } = this.queryStrings;
+      if (smsVerifyCode && countryCode && phone) {
+        body.smsVerifyCode = smsVerifyCode;
+        body.countryCode = countryCode;
+        body.phone = phone;
+      }
+      this.resetPasswordService.resetPassword(body).subscribe(res => {
         this.response = res;
 
         const { resultCode, resultMessage } = this.response;
@@ -67,6 +76,5 @@ export class PasswordComponent implements OnInit {
         }
       });
     }
-
   }
 }

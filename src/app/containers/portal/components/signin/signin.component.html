@@ -3,7 +3,7 @@
     <div class="d-flex" style="flex-direction: column;align-items: center;;">
 
       <div class="access-description">
-        在Ala Conter上，獲得健體分析
+        在Ala Center上，獲得健體分析
         <br> 生活追蹤、即時分享與競賽樂趣
       </div>
       <div class="access-panel">
@@ -17,7 +17,7 @@
                 <a href="#" (click)="showPrivateMsg($event)">沒有帳號?</a>):
               </label>
               <input formControlName="accountName"
-                aria-describedby="emailHelp"
+                id="exampleInputEmail1"
                 class="form-control"
                 placeholder="電子信箱或手機號碼"
                 [class.form-control--invalid]="(!form.controls['accountName'].valid && form.controls['accountName'].touched) || (f.submitted && form.get('accountName').hasError('required'))"

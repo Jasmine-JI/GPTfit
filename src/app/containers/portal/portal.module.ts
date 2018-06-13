@@ -34,6 +34,7 @@ import { MessageBoxComponent } from '@shared/components/message-box/message-box.
 import { ForgetpwdComponent } from './components/forgetpwd/forgetpwd.component';
 import { RandomCodeService } from './services/random-code.service';
 import { SignupService } from './services/signup.service';
+import { ForgetService } from './services/forget.service';
 
 @NgModule({
   imports: [
@@ -59,6 +60,7 @@ import { SignupService } from './services/signup.service';
     UtilsService,
     RandomCodeService,
     SignupService,
+    ForgetService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: EmptyResponseBodyErrorInterceptor,

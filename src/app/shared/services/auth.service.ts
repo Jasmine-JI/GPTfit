@@ -1,13 +1,9 @@
 import {
   HttpClient,
-  HttpHeaders,
   HttpErrorResponse
 } from '@angular/common/http';
 
 import { Injectable, Injector } from '@angular/core';
-import { environment } from '../../../environments/environment';
-
-const { API_SERVER } = environment.url;
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { User } from '../models/user';
 import { Response } from '../models/response';
@@ -29,25 +25,7 @@ export class AuthService {
   ) {}
 
   loginServer(body) {
-    const headers = new HttpHeaders();
-    const httpOptions = {
-      headers: new HttpHeaders({
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        chartset: 'utf-8',
-        Authorization: 'required',
-        deviceType: '0',
-        deviceName: 'Chrome',
-        deviceOSVersion: 'chrome',
-        deviceID: 'IMEIxxxxxxx',
-        appVersionCode: '4.4.14',
-        appVersionName: 'v1.0.0',
-        language: 'zh',
-        regionCode: 'TW',
-        appName: 'AlaCloudRun'
-      })
-    };
-    return this.http.post<any>('/api/v1/user/login', body, httpOptions);
+    return this.http.post<any>('/api/v1/user/login', body);
   }
   login(loginData): Observable<boolean> {
     return this.loginServer(loginData).map(
