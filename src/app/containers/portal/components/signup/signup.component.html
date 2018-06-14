@@ -84,7 +84,7 @@
               <input formControlName="name" type="text"
                 class="form-control"
                 placeholder="16個字元內"
-                (keyup)="onNameChange($event, form)"
+                (keyup)="onNameChange($event)"
                 [class.form-control--invalid]="(form.controls['name'].hasError('required') && form.controls['name'].touched) || (f.submitted && form.get('name').hasError('required'))"
               >
               <div class="form__message form__message--placeholder" *ngIf="(form.controls['name'].hasError('required') && form.controls['name'].touched) || (f.submitted && form.get('name').hasError('required'))">

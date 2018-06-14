@@ -75,7 +75,7 @@ export class SignupComponent implements OnInit {
       this.isCodeInvalid = false;
     }
   }
-  public onNameChange(e: any, { controls: { name } }): void {
+  public onNameChange(e: any): void {
     const charValue = this.utils.str_cut(e.target.value, 16);
     if (e.target.value !== charValue) {
       return this.form.patchValue({ name: charValue });
