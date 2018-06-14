@@ -15,6 +15,7 @@ import { ForgetService } from '../../services/forget.service';
 import { SignupResponse } from '../../models/signup-response';
 import { SignupService } from '../../services/signup.service';
 import { SMSCode } from '../../models/sms-code';
+import { equalValueValidator } from '@shared/equal-value-validator';
 
 @Component({
   selector: 'app-forgetpwd',
@@ -34,6 +35,9 @@ export class ForgetpwdComponent implements OnInit {
   isChartCodeErr = false;
   isSMSCodeErr = false;
   isPhoneNotSame = false;
+  isEmailNotSame = false;
+  isForgetSending = false;
+  isSMSCodSending = false;
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -51,11 +55,16 @@ export class ForgetpwdComponent implements OnInit {
     return this.form.get('confirmPhone');
   }
   ngOnInit() {
-    this.form = this.fb.group({
-      phone: ['', Validators.required],
-      confirmPhone: ['', Validators.required],
-      smsCode: ['', Validators.required]
-    });
+    this.form = this.fb.group(
+      {
+        phone: ['', Validators.required],
+        confirmPhone: ['', Validators.required],
+        smsCode: ['', Validators.required]
+      },
+      {
+        validator: equalValueValidator('phone', 'confirmPhone')
+      }
+    );
   }
 
   public onPhoneChange(code): void {
@@ -74,11 +83,16 @@ export class ForgetpwdComponent implements OnInit {
     }
     if (valid) {
       if (this.isEmailMethod) {
+        if (value.confirmEmail === value.email) {
+          this.isEmailNotSame = false;
+        } else {
+          this.isEmailNotSame = true;
+        }
         if (this.randomCode.randomCodeVerify === value.chartCode) {
           this.isChartCodeErr = false;
           const body = {
             email: value.email,
-            randomCode: value.chartCode,
+            randomCode: value.chartCode
           };
           this.handleForget(body);
         } else {
@@ -97,7 +111,7 @@ export class ForgetpwdComponent implements OnInit {
             countryCode: this.countryCode,
             phone: this.phone.value
           };
-          const resetPwdQuery =  this.utils.buildUrlQueryStrings(param);
+          const resetPwdQuery = this.utils.buildUrlQueryStrings(param);
           this.router.navigateByUrl(`/resetpassword?${resetPwdQuery}`);
         } else {
           this.isSMSCodeErr = true;
@@ -106,6 +120,7 @@ export class ForgetpwdComponent implements OnInit {
     }
   }
   handleForget(body) {
+    this.isForgetSending = true;
     this.forgetService.forgetPWD(body).subscribe((res: SignupResponse) => {
       const {
         resultCode,
@@ -119,7 +134,7 @@ export class ForgetpwdComponent implements OnInit {
       } else {
         this.snackbar.open(rtnMsg, 'OK', { duration: 3000 });
       }
-    });
+    }, () => (this.isForgetSending = false));
   }
   handleRandomCode() {
     this.randomCodeService.getRandomCode().subscribe((res: RandomCode) => {
@@ -135,46 +150,44 @@ export class ForgetpwdComponent implements OnInit {
     this.isEmailMethod = !this.isEmailMethod;
     this.isCodeInvalid = false;
     if (this.isEmailMethod) {
-      this.form.removeControl('smsCode');
-      this.form.removeControl('phone');
-      this.form.removeControl('confirmPhone');
-      const emailControl: FormControl = new FormControl('', [
-        Validators.required,
-        Validators.pattern(
-          /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/
-        )
-      ]);
-      const confirmEmailControl: FormControl = new FormControl('', [
-        Validators.required,
-        Validators.pattern(
-          /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/
-        )
-      ]);
-      const chartCodeControl: FormControl = new FormControl(
-        '',
-        Validators.required
+      this.form = this.fb.group(
+        {
+          email: [
+            '',
+            [
+              Validators.required,
+              Validators.pattern(
+                /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/
+              )
+            ]
+          ],
+          confirmEmail: [
+            '',
+            [
+              Validators.required,
+              Validators.pattern(
+                /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/
+              )
+            ]
+          ],
+          chartCode: ['', Validators.required]
+        },
+        {
+          validator: equalValueValidator('email', 'confirmEmail')
+        }
       );
-
-      this.form.addControl('email', emailControl);
-      this.form.addControl('confirmEmail', confirmEmailControl);
-      this.form.addControl('chartCode', chartCodeControl);
       this.handleRandomCode();
     } else {
-      this.form.removeControl('chartCode');
-      this.form.removeControl('email');
-      this.form.removeControl('confirmEmail');
-      const phoneControl: FormControl = new FormControl(
-        '',
-        Validators.required
+      this.form = this.fb.group(
+        {
+          phone: ['', Validators.required],
+          confirmPhone: ['', Validators.required],
+          smsCode: ['', Validators.required]
+        },
+        {
+          validator: equalValueValidator('phone', 'confirmPhone')
+        }
       );
-      const confirmPhoneControl: FormControl = new FormControl(
-        '',
-        Validators.required
-      );
-      const smsControl: FormControl = new FormControl('', Validators.required);
-      this.form.addControl('phone', phoneControl);
-      this.form.addControl('confirmPhone', confirmPhoneControl);
-      this.form.addControl('smsCode', smsControl);
     }
     return this.forgetForm.resetForm();
   }
@@ -189,15 +202,19 @@ export class ForgetpwdComponent implements OnInit {
     }
     if (
       this.countryCode &&
-      this.phone.value && this.phone.valid
-      &&
-      this.confirmPhone.value && this.confirmPhone.valid
-      &&
+      this.phone.value &&
+      this.phone.valid &&
+      this.confirmPhone.value &&
+      this.confirmPhone.valid &&
       this.confirmPhone.value === this.phone.value
+      &&
+      !this.isSMSCodSending
     ) {
       const body = { countryCode: this.countryCode, phone: this.phone.value };
       this.isPhoneNotSame = false;
+      this.isSMSCodSending = true;
       this.signupService.getSMSVerifyCode(body).subscribe((res: SMSCode) => {
+        this.isSMSCodSending = false;
         const {
           resultCode,
           smsVerifyCode,

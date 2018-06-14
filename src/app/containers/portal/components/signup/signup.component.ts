@@ -32,6 +32,8 @@ export class SignupComponent implements OnInit {
   @ViewChild('f') signupForm: any;
   isChartCodeErr = false;
   isSMSCodeErr = false;
+  isSignupSending = false;
+  isSMSCodSending = false;
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -120,6 +122,7 @@ export class SignupComponent implements OnInit {
     }
   }
   handleSignup(body) {
+    this.isSignupSending = true;
     this.signupService.register(body).subscribe((res: SignupResponse) => {
       const {
         resultCode,
@@ -131,6 +134,7 @@ export class SignupComponent implements OnInit {
         });
         setTimeout(() => this.router.navigate(['/signin']), 5000);
       } else {
+        this.isSignupSending = false;
         this.snackbar.open(rtnMsg, 'OK', { duration: 3000 });
       }
     });
@@ -181,12 +185,14 @@ export class SignupComponent implements OnInit {
   sendSMSCode(e) {
     e.preventDefault();
 
-    if (this.counrtyCode && this.phone.value) {
+    if (this.counrtyCode && this.phone.value && !this.isSMSCodSending) {
       const body = {
         countryCode: this.counrtyCode,
         phone: this.phone.value
       };
+      this.isSMSCodSending = true;
       this.signupService.getSMSVerifyCode(body).subscribe((res: SMSCode) => {
+        this.isSMSCodSending = false;
         const {
           resultCode,
           smsVerifyCode,

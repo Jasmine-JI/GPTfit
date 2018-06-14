@@ -335,6 +335,13 @@ a.alatech-btn:hover {
   margin-bottom: 0;
 }
 
+a.ban-send,
+a.ban-send:hover {
+  color: #ccc;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
 @media(max-width: 991px) {
   .access-bg {
     margin-top: -63px;
