@@ -106,7 +106,7 @@
                   >
                     輸入錯的驗證碼
                   </div>
-                  <a href="#" (click)="sendSMSCode($event)">寄發簡訊驗證碼</a>
+                  <a href="#" (click)="sendSMSCode($event)" [class.ban-send]="isSMSCodSending">寄發簡訊驗證碼</a>
                 </div>
               </div>
             </ng-container>
@@ -136,7 +136,12 @@
             <div style="display: flex;justify-content: space-between;align-items: center;">
               <a *ngIf="isEmailMethod" class="access-text" href="#" style="cursor:pointer" (click)="switchMethod($event)"><返回</a>
               <a *ngIf="!isEmailMethod" class="access-text" style="cursor:pointer" [routerLink]="['/signin']"><返回</a>
-              <button type="submit" class="btn btn-primary access-btn">註冊</button>
+              <button type="submit"
+                class="btn btn-primary access-btn"
+                [disabled]="isSignupSending"
+              >
+                註冊
+              </button>
             </div>
           </form>
         </div>
