@@ -107,7 +107,14 @@
                   <input formControlName="smsCode" type="text"
                     class="form-control"
                     style="width: 150px"
+                    [class.form-control--invalid]="(form.controls['smsCode'].hasError('required') && form.controls['smsCode'].touched) || (f.submitted
+                    && form.get('smsCode').hasError('required')) || isSMSCodeErr"
                   >
+                  <div class="form__message form__message--placeholder"
+                    *ngIf="isSMSCodeErr"
+                  >
+                    輸入錯的驗證碼
+                  </div>
                   <a href="#"  (click)="sendSMSCode($event)">寄發簡訊驗證碼</a>
                 </div>
               </div>
@@ -119,7 +126,14 @@
                   <input formControlName="chartCode"
                     type="text" class="form-control"
                     style="width: 150px"
+                    [class.form-control--invalid]="(form.controls['chartCode'].hasError('required') && form.controls['chartCode'].touched) ||
+                    (f.submitted && form.get('chartCode').hasError('required') || isChartCodeErr)"
                   >
+                  <div class="form__message form__message--placeholder"
+                    *ngIf="isChartCodeErr"
+                  >
+                    輸入錯的驗證碼
+                  </div>
                   <img *ngIf="randomCode"
                     [src]="randomCode?.randomCodeImg | safeHtml"
                     (click)="handleRandomCode()"
