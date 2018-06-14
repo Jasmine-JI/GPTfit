@@ -77,11 +77,8 @@ export class ForgetpwdComponent implements OnInit {
         if (this.randomCode.randomCodeVerify === value.chartCode) {
           this.isChartCodeErr = false;
           const body = {
-            name: value.name,
             email: value.email,
-            phone: '',
-            countryCode: '',
-            smsVerifyCode: ''
+            randomCode: value.chartCode,
           };
           this.handleForget(body);
         } else {
@@ -115,7 +112,7 @@ export class ForgetpwdComponent implements OnInit {
         info: { rtnMsg }
       } = res;
       if (resultCode === 200) {
-        this.snackbar.open('註冊成功，五秒後將跳轉回登入頁面', 'OK', {
+        this.snackbar.open('信件已發送，五秒後將跳轉回登入頁面', 'OK', {
           duration: 3000
         });
         setTimeout(() => this.router.navigate(['/signin']), 5000);
