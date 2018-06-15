@@ -93,6 +93,7 @@ export class PortalComponent implements OnInit {
   timer: any;
   isRealTime: boolean;
   customMapOptions = [];
+  isIntroducePage: boolean;
 
   constructor(
     private router: Router,
@@ -105,11 +106,14 @@ export class PortalComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (this.router.url === '/') {
+      this.isIntroducePage = true;
+    } else {
+      this.isIntroducePage = false;
+    }
     let browserLang = this.utilsService.getLocalStorageObject('locale');
     if (!browserLang) {
-      browserLang = this.translateService
-        .getBrowserCultureLang()
-        .toLowerCase();
+      browserLang = this.translateService.getBrowserCultureLang().toLowerCase();
       this.translateService.use(browserLang);
       this.utilsService.setLocalStorageObject('locale', browserLang);
     } else {
@@ -447,5 +451,10 @@ export class PortalComponent implements OnInit {
     this.globalEventsManager.openCollapse(this.isCollapseOpen);
     this.isMaskShow = false;
     this.globalEventsManager.closeCollapse(false);
+  }
+  handleSignin(e) {
+    e.preventDefault();
+    this.isIntroducePage = false;
+    this.router.navigateByUrl('/signin');
   }
 }
