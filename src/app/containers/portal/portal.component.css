@@ -76,11 +76,119 @@
   display: inline-block;
 }
 
+
+/* home */
+.home-header {
+  background-image: url('/assets/images/introduce/T1.jpg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 837px;
+  width: 100%;
+  position: relative;
+  /* display: flex;
+  justify-content: center;
+  align-items: center; */
+}
+.home-header-title {
+  padding: 9px 35px;
+  min-width: 257px;
+  color: #fff;
+  background-color: rgba(0, 0, 0, .35);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+/* .home-header-title {
+  padding: 45px 90px;
+  background-color: rgba(0, 0, 0, .35);
+  color: #fff;
+} */
+.home-header-title h1 {
+  font-size: 20px;
+  text-align: center;
+}
+/* .home-header-title h1 {
+  font-size: 35px;
+  line-height: 70px;
+  text-align: center;
+} */
+.home-connect-app {
+  /* height: 823px; */
+  height: 623px;
+  /* display: flex; */
+}
+.message {
+  margin: 50px 0px;
+  text-align: center;
+}
+.ala-app-info {
+  background-image: url(/assets/images/introduce/T1-connect.jpg);
+  background-position: bottom;
+  background-repeat: no-repeat;
+  background-size: 870px 773px;
+  width: 100%;
+  height: 100%;
+}
+.app-link {
+  display: inline-block;
+  height: 90px;
+}
+.app-link img {
+  height: 100%;
+}
+.app-link + .app-link {
+  margin-top: 30px;
+}
+/* .app-icon { */
+  /* height: 90px; */
+  /* width: 174px; */
+/* } */
+.home-cloudRun-description {
+  background-image: url('/assets/images/introduce/T2.jpg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 887px;
+  width: 100%;
+  position: relative;
+  /* display: flex;
+  justify-content: center;
+  align-items: center; */
+}
+.home-cloudRun-app {
+  height: 823px;
+  display: flex;
+}
+.home-coach-description {
+  background-image: url('/assets/images/introduce/T3.jpg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 100%;
+  height: 841px;
+  position: relative;
+}
 @media (min-width: 768px) {
   .date-picker {
     vertical-align: middle;
     display: inline-block;
     width: calc((100% - 30px) / 2);
   }
-
+  .home-header-title {
+    padding: 11px 50px;
+    min-width: 382px;
+    color: #fff;
+  }
 }
+/* @media (min-width: 320px) and (max-width: 768px) {
+  .home-header-title {
+    padding: 9px 35px;
+    min-width: 257px;
+  }
+  .home-header-title h1 {
+    font-size: 20px;
+    line-height: normal;
+  }
+} */

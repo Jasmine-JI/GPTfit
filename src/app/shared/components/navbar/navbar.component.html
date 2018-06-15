@@ -41,7 +41,7 @@
         *ngIf="!isShowResetPwd"
         (click)="chooseNavItem(1)"
       >
-        <a class="nav-link" (click)="toggleMask()">{{ "Portal.Introduce" | translate}}</a>
+        <a class="nav-link"[routerLink]="['/']" (click)="toggleMask()">{{ "Portal.Introduce" | translate}}</a>
       </li>
 
       <li class="nav-item" [class.active]="navItemNum === 2"

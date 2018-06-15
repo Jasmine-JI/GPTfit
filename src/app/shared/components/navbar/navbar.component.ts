@@ -44,12 +44,15 @@ export class NavbarComponent implements OnInit {
     this.login$ = this.authService.getLoginStatus();
     this.deviceWidth = window.innerWidth;
     this.href = this.router.url;
-    if (this.href.indexOf('leaderboard') > -1) {
+    if (this.router.url === '/leaderboard') {
       this.isShowLeaderboard = true;
       this.navItemNum = 2;
     }
-    if (this.href.indexOf('signin') > -1) {
+    if (this.router.url === '/signin') {
       this.navItemNum = 3;
+    }
+    if (this.router.url === '/') {
+      this.navItemNum = 1;
     }
     if (this.href.indexOf('resetpassword') > -1) {
       this.isShowResetPwd = true;
