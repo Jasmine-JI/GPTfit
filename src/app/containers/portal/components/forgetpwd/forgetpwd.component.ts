@@ -122,6 +122,7 @@ export class ForgetpwdComponent implements OnInit {
   handleForget(body) {
     this.isForgetSending = true;
     this.forgetService.forgetPWD(body).subscribe((res: SignupResponse) => {
+      this.isForgetSending = false;
       const {
         resultCode,
         info: { rtnMsg }

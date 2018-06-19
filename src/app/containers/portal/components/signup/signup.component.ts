@@ -25,7 +25,7 @@ export class SignupComponent implements OnInit {
   results: any;
   isEmailMethod = false;
   placeholder = '輸入您的手機號碼';
-  counrtyCode: string;
+  countryCode: string;
   randomCode: RandomCode;
   isCodeInvalid = false;
   smsVerifyCode: string;
@@ -68,8 +68,8 @@ export class SignupComponent implements OnInit {
     return this.form.get('phone');
   }
   public onCodeChange(code): void {
-    this.counrtyCode = code.slice(1, code.length);
-    if (!this.counrtyCode) {
+    this.countryCode = code.slice(1, code.length);
+    if (!this.countryCode) {
       this.isCodeInvalid = true;
     } else {
       this.isCodeInvalid = false;
@@ -82,7 +82,7 @@ export class SignupComponent implements OnInit {
     }
   }
   signup({ valid, value }) {
-    if (!this.counrtyCode) {
+    if (!this.countryCode) {
       this.isCodeInvalid = true;
     } else {
       this.isCodeInvalid = false;
@@ -111,7 +111,7 @@ export class SignupComponent implements OnInit {
             email: '',
             phone: value.phone,
             password: value.password,
-            countryCode: this.counrtyCode,
+            countryCode: this.countryCode,
             smsVerifyCode: value.smsCode
           };
           this.handleSignup(body);
@@ -137,7 +137,7 @@ export class SignupComponent implements OnInit {
         this.isSignupSending = false;
         this.snackbar.open(rtnMsg, 'OK', { duration: 3000 });
       }
-    });
+    }, () => (this.isSignupSending = false));
   }
   handleRandomCode() {
     this.randomCodeService.getRandomCode().subscribe((res: RandomCode) => {
@@ -184,10 +184,15 @@ export class SignupComponent implements OnInit {
 
   sendSMSCode(e) {
     e.preventDefault();
-
-    if (this.counrtyCode && this.phone.value && !this.isSMSCodSending) {
+    this.phone.markAsTouched();
+    if (!this.countryCode) {
+      this.isCodeInvalid = true;
+    } else {
+      this.isCodeInvalid = false;
+    }
+    if (this.countryCode && this.phone.value && !this.isSMSCodSending) {
       const body = {
-        countryCode: this.counrtyCode,
+        countryCode: this.countryCode,
         phone: this.phone.value
       };
       this.isSMSCodSending = true;
