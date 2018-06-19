@@ -6,7 +6,7 @@
     "ng": "ng",
     "web-start": "ng serve --env=dev-web --port 8080 --host 192.168.1.235 --proxy-config proxy.conf.json --delete-output-path=false",
     "start": "ng serve --aot --port 8080 --host 0.0.0.0 --disable-host-check --proxy-config proxy.conf.json --delete-output-path=false",
-    "pm2-start": "pm2 start server.js",
+    "pm2-start": "pm2 start server.js --log-date-format 'YYYY-DD-MM HH:mm:ss.SSS'",
     "pm2-delete": "pm2 delete all",
     "pm2-kill": "pm2 kill",
     "bash": "./reset.sh",
