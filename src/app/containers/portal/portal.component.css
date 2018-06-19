@@ -83,7 +83,7 @@
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  height: 837px;
+  height: 568px;
   width: 100%;
   position: relative;
 }
@@ -128,7 +128,7 @@
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  height: 887px;
+  height: 568px;
   width: 100%;
   position: relative;
 }
@@ -142,7 +142,7 @@
   background-repeat: no-repeat;
   background-size: cover;
   width: 100%;
-  height: 841px;
+  height: 568px;
   position: relative;
 }
 .app-link-container {
@@ -170,11 +170,15 @@
 .ala-app-info {
   display: none;
 }
+
 @media (min-width: 768px) {
   .date-picker {
     vertical-align: middle;
     display: inline-block;
     width: calc((100% - 30px) / 2);
+  }
+  .home-header {
+    height: 837px;
   }
   .home-header-title {
     padding: 11px 50px;
@@ -182,9 +186,12 @@
     color: #fff;
   }
   .ala-app-info {
-    display: flex;
+    display: block;
+    height: 100%;
   }
-
+  .ala-app-info img {
+    height: 100%;
+  }
   .home-connect-app {
     display: flex;
   }
@@ -202,8 +209,11 @@
   .message a {
     float: right;
   }
-  .home-connect-info {
-    width: 70%;
+  .home-cloudRun-description {
+    height: 887px;
+  }
+  .home-coach-description {
+    height: 841px;
   }
 }
 @media(min-width: 1440px) {
