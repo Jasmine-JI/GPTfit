@@ -38,6 +38,8 @@ export class ForgetpwdComponent implements OnInit {
   isEmailNotSame = false;
   isForgetSending = false;
   isSMSCodSending = false;
+  content = '送出';
+  className = 'btn btn-primary access-btn';
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -122,7 +124,6 @@ export class ForgetpwdComponent implements OnInit {
   handleForget(body) {
     this.isForgetSending = true;
     this.forgetService.forgetPWD(body).subscribe((res: SignupResponse) => {
-      this.isForgetSending = false;
       const {
         resultCode,
         info: { rtnMsg }
@@ -207,8 +208,7 @@ export class ForgetpwdComponent implements OnInit {
       this.phone.valid &&
       this.confirmPhone.value &&
       this.confirmPhone.valid &&
-      this.confirmPhone.value === this.phone.value
-      &&
+      this.confirmPhone.value === this.phone.value &&
       !this.isSMSCodSending
     ) {
       const body = { countryCode: this.countryCode, phone: this.phone.value };

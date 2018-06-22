@@ -156,12 +156,12 @@
               <a *ngIf="!isEmailMethod" class="access-text" style="cursor:pointer" [routerLink]="['/signin']">
                 <返回
               </a>
-              <button type="submit"
-                class="btn btn-primary access-btn"
+              <app-confirm-button
+                [className]="className"
+                [content]="content"
                 [disabled]="isForgetSending"
               >
-                送出
-              </button>
+              </app-confirm-button>
             </div>
           </form>
         </div>

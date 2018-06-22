@@ -20,6 +20,9 @@ import { MessageBoxComponent } from '@shared/components/message-box/message-box.
 export class SigninComponent implements OnInit {
   form: FormGroup;
   results: any;
+  content = '登入';
+  className = 'btn btn-primary access-btn';
+  isLogining = false;
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -31,7 +34,13 @@ export class SigninComponent implements OnInit {
   ngOnInit() {
     this.form = this.fb.group({
       accountName: ['', Validators.required],
-      password: ['', [Validators.required, Validators.pattern(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$/)]]
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}$/)
+        ]
+      ]
     });
   }
   get accountName() {
@@ -52,7 +61,9 @@ export class SigninComponent implements OnInit {
       iconType: 2
     };
     if (valid) {
+      this.isLogining = true;
       this.authService.login(body).subscribe(res => {
+        this.isLogining = false;
         if (res) {
           this.snackbar.open('登入成功', 'OK', { duration: 3000 });
         } else {
