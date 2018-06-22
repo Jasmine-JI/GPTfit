@@ -42,6 +42,13 @@ import { EventManagementComponent } from './components/event-management/event-ma
 import { UserInfoService } from './services/userInfo.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { SharedModule } from '@shared/shared.module';
+import { MyGroupListComponent } from './components/my-group-list/my-group-list.component';
+import { AllGroupListComponent } from './components/all-group-list/all-group-list.component';
+import { GroupSearchComponent } from './components/group-search/group-search.component';
+import { GroupInfoComponent } from './components/group-info/group-info.component';
+import { GroupService } from './services/group.service';
+import { AccessNamePipe } from './pipes/access-name.pipe';
+import { GroupStatusPipe } from './pipes/group-status.pipe';
 
 @NgModule({
   imports: [
@@ -68,7 +75,8 @@ import { SharedModule } from '@shared/shared.module';
     DeviceLogService,
     CoachService,
     UserInfoService,
-    UtilsService
+    UtilsService,
+    GroupService
   ],
   declarations: [
     DashboardComponent,
@@ -92,7 +100,13 @@ import { SharedModule } from '@shared/shared.module';
     CoachDashboardDetailComponent,
     Top3DialogComponent,
     CoachRexComponent,
-    EventManagementComponent
+    EventManagementComponent,
+    MyGroupListComponent,
+    AllGroupListComponent,
+    GroupSearchComponent,
+    GroupInfoComponent,
+    AccessNamePipe,
+    GroupStatusPipe
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [

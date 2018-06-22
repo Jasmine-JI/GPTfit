@@ -1,0 +1,35 @@
+<div class="d-flex justify-content-between" style="margin-bottom: 15px">
+  <span style="color: #157fcc; font-weight:700">
+    我的群組列表
+  </span>
+  <div>
+    <button class="alatech-btn alatech-btn--default"
+      title="新增活動賽事"
+      [routerLink]="['/dashboard/group-search']"
+    >
+      搜尋群組
+    </button>
+    <button class="alatech-btn alatech-btn--default" title="新增活動賽事">
+      建立新群組
+    </button>
+  </div>
+</div>
+
+<mat-table [dataSource]="logSource" matSort #sortTable="matSort" (matSortChange)="changeSort($event)">
+  <ng-container matColumnDef="info">
+    <mat-header-cell *matHeaderCellDef>名稱</mat-header-cell>
+    <mat-cell *matCellDef="let row">{{ row.groupName }}</mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="time">
+    <mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true" start="asc">
+      身分
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">{{ row.groupProperty | accessName }}</mat-cell>
+  </ng-container>
+  <mat-header-row *matHeaderRowDef="['info', 'time']"></mat-header-row>
+  <mat-row *matRowDef="let logRow; columns: ['info', 'time']" (click)="goDetail(logRow.groupId)">
+  </mat-row>
+
+</mat-table>
+<mat-paginator #paginator [length]="totalCount" [pageIndex]="0" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]">
+</mat-paginator>

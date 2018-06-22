@@ -19,6 +19,9 @@ import { CoachDashboardDetailComponent } from './components/coach-dashboard-deta
 import { CoachRexComponent } from './components/coach-rex/coach-rex.component';
 import { EventManagementComponent } from './components/event-management/event-management.component';
 import { AuthGuard } from '@shared/guards/auth/auth.guard';
+import { MyGroupListComponent } from './components/my-group-list/my-group-list.component';
+import { GroupSearchComponent } from './components/group-search/group-search.component';
+import { GroupInfoComponent } from './components/group-info/group-info.component';
 
 const routes: Routes = [
   {
@@ -93,6 +96,18 @@ const routes: Routes = [
       {
         path: 'event-management',
         component: EventManagementComponent
+      },
+      {
+        path: 'my-group-list',
+        component: MyGroupListComponent
+      },
+      {
+        path: 'group-search',
+        component: GroupSearchComponent
+      },
+      {
+        path: 'group-info/:groupId',
+        component: GroupInfoComponent
       }
     ]
   },
