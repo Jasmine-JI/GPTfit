@@ -12,6 +12,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../shared.module';
 import { MessageBoxComponent } from './message-box/message-box.component';
 import { CustomMaterialModule } from '../custom-material.module';
+import { ConfirmButtonComponent } from './confirm-button/confirm-button.component';
 
 @NgModule({
   imports: [
@@ -29,7 +30,8 @@ import { CustomMaterialModule } from '../custom-material.module';
     PaginationComponent,
     UploadFileComponent,
     IntlPhoneInputComponent,
-    MessageBoxComponent
+    MessageBoxComponent,
+    ConfirmButtonComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -39,7 +41,8 @@ import { CustomMaterialModule } from '../custom-material.module';
     PaginationComponent,
     UploadFileComponent,
     IntlPhoneInputComponent,
-    MessageBoxComponent
+    MessageBoxComponent,
+    ConfirmButtonComponent
   ]
 })
 export class SharedComponentsModule {}

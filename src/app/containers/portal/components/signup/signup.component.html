@@ -136,12 +136,12 @@
             <div style="display: flex;justify-content: space-between;align-items: center;">
               <a *ngIf="isEmailMethod" class="access-text" href="#" style="cursor:pointer" (click)="switchMethod($event)"><返回</a>
               <a *ngIf="!isEmailMethod" class="access-text" style="cursor:pointer" [routerLink]="['/signin']"><返回</a>
-              <button type="submit"
-                class="btn btn-primary access-btn"
+              <app-confirm-button
+                [className]="className"
+                [content]="content"
                 [disabled]="isSignupSending"
               >
-                註冊
-              </button>
+              </app-confirm-button>
             </div>
           </form>
         </div>

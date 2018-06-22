@@ -309,7 +309,12 @@ a.alatech-btn:hover {
   background-color: #2b819b;
   width: 125px;
 }
-
+.btn-primary.access-btn:hover {
+  cursor: pointer;
+}
+.btn-primary.access-btn[disabled]:hover {
+  cursor: wait;
+}
 .access-text {
   color: #757575;
   margin-left: 12px;
