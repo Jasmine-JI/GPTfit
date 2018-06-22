@@ -16,6 +16,9 @@ export class PasswordComponent implements OnInit {
   isConfirm = true;
   resultMessage = '';
   queryStrings: any;
+  content = '送出';
+  className = 'btn btn-primary access-btn';
+  isSending = false;
   constructor(
     private resetPasswordService: ResetPasswordService,
     private router: Router
@@ -65,7 +68,9 @@ export class PasswordComponent implements OnInit {
         body.countryCode = countryCode;
         body.phone = phone;
       }
+      this.isSending = true;
       this.resetPasswordService.resetPassword(body).subscribe(res => {
+        this.isSending = false;
         this.response = res;
 
         const { resultCode, resultMessage } = this.response;

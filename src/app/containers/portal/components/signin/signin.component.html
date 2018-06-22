@@ -44,7 +44,12 @@
               </div>
             </div>
             <div class="auth-submit">
-              <button type="submit" class="btn btn-primary access-btn">登入</button>
+              <app-confirm-button
+                [className]="className"
+                [content]="content"
+                [disabled]="isLogining"
+              >
+              </app-confirm-button>
             </div>
           </form>
         </div>

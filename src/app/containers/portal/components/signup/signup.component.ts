@@ -34,6 +34,8 @@ export class SignupComponent implements OnInit {
   isSMSCodeErr = false;
   isSignupSending = false;
   isSMSCodSending = false;
+  content = '註冊';
+  className = 'btn btn-primary access-btn';
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
