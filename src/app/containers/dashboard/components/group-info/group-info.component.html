@@ -1,0 +1,39 @@
+<div class="row">
+  <div class="col-4">
+    <img *ngIf="groupImg" style="width: 100%" [src]="(groupImg | safeHtml)">
+  </div>
+  <div class="col-8">
+    <div class="d-flex justify-content-between" style="margin-bottom: 15px">
+      <span style="color: #157fcc; font-weight:700">
+        群組資訊
+      </span>
+      <div>
+        <!-- <button class="alatech-btn alatech-btn--default" title="返回" [routerLink]="['/dashboard/my-group-list']">
+          管理
+        </button> -->
+      </div>
+    </div>
+    <div>
+      <label>{{ groupInfo?.groupName }}</label>
+    </div>
+    <div>
+      <label>群組ID：</label>{{ group_id }}
+    </div>
+    <div>
+      <label>階層：</label>{{ this.groupLevel }}
+    </div>
+    <div>
+      <label>狀態：</label>{{ groupInfo?.groupStatus | groupStatus }}
+    </div>
+    <div>
+      <label>介紹：</label>{{ groupInfo?.groupDesc }}
+    </div>
+    <div>
+      <mat-tab-group>
+        <mat-tab label="子群組資訊"> Content 1 </mat-tab>
+        <mat-tab label="管理員資訊"> Content 2 </mat-tab>
+        <mat-tab label="一般成員資訊"> Content 3 </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+</div>
