@@ -42,10 +42,10 @@ import { EventManagementComponent } from './components/event-management/event-ma
 import { UserInfoService } from './services/userInfo.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { SharedModule } from '@shared/shared.module';
-import { MyGroupListComponent } from './components/my-group-list/my-group-list.component';
-import { AllGroupListComponent } from './components/all-group-list/all-group-list.component';
-import { GroupSearchComponent } from './components/group-search/group-search.component';
-import { GroupInfoComponent } from './components/group-info/group-info.component';
+import { MyGroupListComponent } from './group/my-group-list/my-group-list.component';
+import { AllGroupListComponent } from './group/all-group-list/all-group-list.component';
+import { GroupSearchComponent } from './group/group-search/group-search.component';
+import { GroupInfoComponent } from './group/group-info/group-info.component';
 import { GroupService } from './services/group.service';
 import { AccessNamePipe } from './pipes/access-name.pipe';
 import { GroupStatusPipe } from './pipes/group-status.pipe';
