@@ -50,24 +50,35 @@
               <i class="icon icon-log-file-format ala-sidenav-icon"></i>Device Log
             </a>
           </li>
+          <mat-accordion multi="false">
+            <mat-expansion-panel>
+              <mat-expansion-panel-header  class="ala-expansion-panel-header"
+                [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
+                (click)="chooseItem(0, sideNav)"
+              >
+                <mat-panel-title>
+                  <i class="icon-svg_web-icon_003-peoples ala-sidenav-icon"></i>活動賽事管理
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <li class="ala-sidenav-menu-item"  (click)="chooseItem(6, sideNav)" [class.ala-sidenav-menu-item__active]="target === 6">
+                <a [routerLink]="['/dashboard/event-management']">
+                  活動賽事總表
+                </a>
+              </li>
 
-          <li class="ala-sidenav-item"  (click)="chooseItem(6, sideNav)" [class.ala-sidenav-menu-item__active]="target === 6">
-            <a [routerLink]="['/dashboard/event-management']">
-              活動賽事管理
-            </a>
-          </li>
-
-          <li class="ala-sidenav-item"  (click)="chooseItem(7, sideNav)" [class.ala-sidenav-menu-item__active]="target === 7">
-            <a [routerLink]="['/dashboard/event']">
-              活動賽事自訂
-            </a>
-          </li>
-          <li class="ala-sidenav-item"  (click)="chooseItem(8, sideNav)" [class.ala-sidenav-menu-item__active]="target === 8">
-            <a [routerLink]="['/dashboard/event-calendar']">活動賽事日曆</a>
-          </li>
-          <li class="ala-sidenav-item"  (click)="chooseItem(9, sideNav)" [class.ala-sidenav-menu-item__active]="target === 9">
-            <a [routerLink]="['/dashboard/leaderboard-settings']">排行版設定</a>
-          </li>
+              <li class="ala-sidenav-menu-item"  (click)="chooseItem(7, sideNav)" [class.ala-sidenav-menu-item__active]="target === 7">
+                <a [routerLink]="['/dashboard/event']">
+                  活動賽事自訂
+                </a>
+              </li>
+              <li class="ala-sidenav-menu-item"  (click)="chooseItem(8, sideNav)" [class.ala-sidenav-menu-item__active]="target === 8">
+                <a [routerLink]="['/dashboard/event-calendar']">活動賽事日曆</a>
+              </li>
+              <li class="ala-sidenav-menu-item"  (click)="chooseItem(9, sideNav)" [class.ala-sidenav-menu-item__active]="target === 9">
+                <a [routerLink]="['/dashboard/leaderboard-settings']">排行版設定</a>
+              </li>
+            </mat-expansion-panel>
+          </mat-accordion>
           <mat-accordion multi="false">
             <mat-expansion-panel>
               <mat-expansion-panel-header  class="ala-expansion-panel-header"
@@ -78,10 +89,10 @@
                   <i class="icon-svg_web-icon_003-peoples ala-sidenav-icon"></i>群組
                 </mat-panel-title>
               </mat-expansion-panel-header>
-                <li class="ala-sidenav-item"  (click)="chooseItem(10, sideNav)" [class.ala-sidenav-menu-item__active]="target === 10">
+                <li class="ala-sidenav-menu-item"  (click)="chooseItem(10, sideNav)" [class.ala-sidenav-menu-item__active]="target === 10">
                   <a [routerLink]="['/dashboard/my-group-list']">我的群組</a>
                 </li>
-                <li class="ala-sidenav-item"  (click)="chooseItem(11, sideNav)" [class.ala-sidenav-menu-item__active]="target === 11">
+                <li class="ala-sidenav-menu-item"  (click)="chooseItem(11, sideNav)" [class.ala-sidenav-menu-item__active]="target === 11">
                   <a [routerLink]="['/dashboard/my-group-list']">所有群組列表</a>
                 </li>
             </mat-expansion-panel>
