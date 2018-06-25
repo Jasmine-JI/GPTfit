@@ -18,7 +18,8 @@
 <mat-form-field>
   <input matInput placeholder="群組ID或名稱搜尋"
     [matAutocomplete]="auto"
-    [(value)]="searchWords"
+    [(ngModel)]="searchWords"
+    name="searchWords"
   >
 </mat-form-field>
 <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
@@ -29,6 +30,7 @@
 <button mat-raised-button mat-icon-button
   style="background-color: #26abe3;color: #fff"
   (click)="getLists()"
+  [disabled]="searchWords.length === 0"
 >
   <mat-icon>search</mat-icon>
 </button>
