@@ -20,7 +20,7 @@ import { UtilsService } from '@shared/services/utils.service';
 @Component({
   selector: 'app-group-search',
   templateUrl: './group-search.component.html',
-  styleUrls: ['./group-search.component.css']
+  styleUrls: ['./group-search.component.css', '../group-style.css']
 })
 export class GroupSearchComponent implements OnInit {
   groupLevel = '90';
@@ -55,10 +55,14 @@ export class GroupSearchComponent implements OnInit {
       page: '0',
       pageCounts: '10'
     };
-    this.groupService.fetchGroupList(body).subscribe(res => {
-      this.logSource.data = res.info.groupList;
-      this.totalCount = res.info.totalCounts;
-    });
+    if (this.searchWords.length > 0) {
+      this.groupService
+        .fetchGroupList(body)
+        .subscribe(res => {
+          this.logSource.data = res.info.groupList;
+          this.totalCount = res.info.totalCounts;
+        });
+    }
   }
   goDetail(groupId) {
     this.router.navigateByUrl(`dashboard/group-info/${groupId}`);

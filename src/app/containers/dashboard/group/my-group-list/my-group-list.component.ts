@@ -17,7 +17,7 @@ import { UtilsService } from '@shared/services/utils.service';
 @Component({
   selector: 'app-my-group-list',
   templateUrl: './my-group-list.component.html',
-  styleUrls: ['./my-group-list.component.css']
+  styleUrls: ['./my-group-list.component.css', '../group-style.css']
 })
 export class MyGroupListComponent implements OnInit {
   logSource = new MatTableDataSource<any>();
