@@ -27,6 +27,17 @@ export class DashboardComponent implements OnInit {
   userName: string;
   userPhoto: string;
   isUserMenuShow = false;
+  isSupervisor = false;
+  isBrandAdministrator = false;
+  isSystemDeveloper = false;
+  isSystemMaintainer = false;
+  isMarketingDeveloper = false;
+  isBranchAdministrator = false;
+  isBroadcastProducer = false;
+  isCoach = false;
+  isGroupAdministrator = false;
+  isGeneralMember = false;
+
   constructor(
     private globalEventsManager: GlobalEventsManager,
     private authService: AuthService,
@@ -50,20 +61,68 @@ export class DashboardComponent implements OnInit {
       this.translateService.use(browserLang);
     }
     const token = this.utilsService.getToken();
-    const body = {
-      token,
-      iconType: 2
-    };
-    this.userInfoService.getLogonData(body).subscribe(res => {
-      if (res.resultCode === 200) {
-        const {
-          info: { name, nameIcon }
-        } = res;
-        this.userName = name;
-        this.userPhoto = this.utilsService.buildBase64ImgString(nameIcon);
-      }
+    // const body = {
+    //   token,
+    //   iconType: 2
+    // };
+    // this.userInfoService.getLogonData(body).subscribe(res => {
+    //   if (res.resultCode === 200) {
+    //     const {
+    //       info: { name, nameIcon }
+    //     } = res;
+    //     this.userName = name;
+    //     this.userPhoto = this.utilsService.buildBase64ImgString(nameIcon);
+    //   }
+    // });
+    this.userInfoService.getUserIcon().subscribe(res => {
+      this.userPhoto = this.utilsService.buildBase64ImgString(res);
     });
-
+    this.userInfoService.getUserName().subscribe(res => {
+      this.userName = res;
+    });
+    this.userInfoService.getSupervisorStatus().subscribe(res => {
+      this.isSupervisor = res;
+      console.log('this.isSupervisor', this.isSupervisor);
+    });
+    this.userInfoService.getSystemDeveloperStatus().subscribe(res => {
+      this.isSystemDeveloper = res;
+      console.log('this.isSystemDeveloper', this.isSystemDeveloper);
+    });
+    this.userInfoService.getSystemMaintainerStatus().subscribe(res => {
+      this.isSystemMaintainer = res;
+      console.log('this.isSystemMaintainer', this.isSystemMaintainer);
+    });
+    this.userInfoService.getMarketingDeveloperStatus().subscribe(res => {
+      this.isMarketingDeveloper = res;
+      console.log('this.isMarketingDeveloper', this.isMarketingDeveloper);
+    });
+    this.userInfoService.getBrandAdministratorStatus().subscribe(res => {
+      this.isBrandAdministrator = res;
+      console.log('this.isBrandAdministrator', this.isBrandAdministrator);
+    });
+    this.userInfoService.getBranchAdministratorStatus().subscribe(res => {
+      this.isBranchAdministrator = res;
+      console.log('this.isBranchAdministrator', this.isBranchAdministrator);
+    });
+    this.userInfoService.getBroadcastProducerStatus().subscribe(res => {
+      this.isBroadcastProducer = res;
+      console.log('this.isBroadcastProducer', this.isBroadcastProducer);
+    });
+    this.userInfoService.getCoachStatus().subscribe(res => {
+      this.isCoach = res;
+      console.log('this.isCoach', this.isCoach);
+    });
+    this.userInfoService.getGroupAdministratorStatus().subscribe(res => {
+      this.isGroupAdministrator = res;
+      console.log('this.isGroupAdministrator', this.isGroupAdministrator);
+    });
+    this.userInfoService.getGeneralMemberStatus().subscribe(res => {
+      this.isGeneralMember = res;
+      console.log('this.isGeneralMember', this.isGeneralMember);
+    });
+    this.userInfoService
+      .getLogonData()
+      .subscribe(() => console.log(''));
     this.globalEventsManager.showNavBarEmitter.subscribe(mode => {
       this.isMaskShow = mode;
     });
