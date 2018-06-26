@@ -14,4 +14,7 @@ export class GroupService {
   fetchGroupListDetail(body) {
     return this.http.post<any>('/api/v1/center/getGroupListDetail', body);
   }
+  fetchGroupMemberList(body) {
+    return this.http.post<any>('/api/v1/center/getGroupMemberList', body);
+  }
 }

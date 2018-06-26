@@ -15,6 +15,7 @@ export class GroupInfoComponent implements OnInit {
   groupImg: string;
   group_id: string;
   groupLevel: string;
+  groupInfos: any;
   constructor(
     private route: ActivatedRoute,
     private groupService: GroupService,
@@ -34,6 +35,22 @@ export class GroupInfoComponent implements OnInit {
       this.groupImg = this.utils.buildBase64ImgString(groupIcon);
       this.group_id = this.utils.displayGroupId(groupId);
       this.groupLevel = this.utils.displayGroupLevel(groupId);
+    });
+    this.getGroupMemberList();
+  }
+  getGroupMemberList() {
+    const body = {
+      token: this.token,
+      groupId: this.groupId,
+      infoType: '2'
+    };
+    this.groupService.fetchGroupMemberList(body).subscribe(res => {
+      if (res.resultCode === 200) {
+        const {
+          info: { groupMemberInfo }
+        } = res;
+        this.groupInfos = groupMemberInfo;
+      }
     });
   }
 }
