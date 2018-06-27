@@ -161,6 +161,7 @@ var coach = require('./routes/coach.js');
 var map = require('./routes/map.js');
 var qrPair = require('./routes/qrPair.js');
 var user = require('./routes/user.js');
+var center = require('./routes/center.js');
 
 app.use('/nodejs/api/rankForm', rankForm.unprotected);
 app.use('/nodejs/api/rankForm', authMiddleware, rankForm.protected);
@@ -175,6 +176,7 @@ app.use('/nodejs/api/gpx', authMiddleware, runGpx);
 app.use('/nodejs/api/deviceLog', authMiddleware, deviceLog);
 app.use('/nodejs/api/coach', authMiddleware, coach);
 app.use('/nodejs/api/user', authMiddleware, user);
+app.use('/nodejs/api/center', authMiddleware, center);
 
 // Start the server
 const port = process.env.PORT || 3001;

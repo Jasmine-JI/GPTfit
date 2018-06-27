@@ -5,7 +5,7 @@ var moment = require('moment');
 var XLSX = require('xlsx');
 var fs = require('fs');
 var router = express.Router();
-var checkID = require('../utils');
+var checkID = require('../utils').checkID;
 
 router.get('/', function (req, res, next) {
   const {
