@@ -1,3 +1,7 @@
 /* * {
   border: 1px solid black;
 } */
+.group-btn--waiting {
+  background-color: #157fcc;
+  color: #fff;
+}

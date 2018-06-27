@@ -11,9 +11,39 @@
         <!-- <button class="alatech-btn alatech-btn--default" title="返回" [routerLink]="['/dashboard/my-group-list']">
           管理
         </button> -->
-        <button class="alatech-btn alatech-btn--default" title="申請加入" >
+        <button class="alatech-btn alatech-btn--default"
+          title="申請加入"
+          *ngIf="joinStatus === 0"
+          (click)="handleActionGroup(1)"
+        >
           申請加入
         </button>
+        <button class="alatech-btn alatech-btn--default group-btn--waiting"
+          title="取消申請"
+          *ngIf="joinStatus === 1"
+          (click)="handleActionGroup(2)"
+        >
+          取消申請
+        </button>
+        <button class="alatech-btn alatech-btn--default"
+          title="退出群組"
+          *ngIf="joinStatus === 2"
+          (click)="handleActionGroup(2)"
+        >
+          退出群組
+        </button>
+        <button class="alatech-btn alatech-btn--default"
+          title="管理"
+          *ngIf="joinStatus === 2"
+        >
+          管理
+        </button>
+        <!-- <button class="alatech-btn alatech-btn--default"
+          title="管理"
+          *ngIf="joinStatus === 2 && accessRight === 30"
+        >
+          管理
+        </button> -->
       </div>
     </div>
     <div>

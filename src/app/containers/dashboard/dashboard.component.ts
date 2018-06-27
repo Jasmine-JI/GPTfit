@@ -82,43 +82,43 @@ export class DashboardComponent implements OnInit {
     });
     this.userInfoService.getSupervisorStatus().subscribe(res => {
       this.isSupervisor = res;
-      console.log('this.isSupervisor', this.isSupervisor);
+      console.log('%c this.isSupervisor', 'color: #0ca011', this.isSupervisor);
     });
     this.userInfoService.getSystemDeveloperStatus().subscribe(res => {
       this.isSystemDeveloper = res;
-      console.log('this.isSystemDeveloper', this.isSystemDeveloper);
+      console.log('%c this.isSystemDeveloper', 'color: #0ca011', this.isSystemDeveloper);
     });
     this.userInfoService.getSystemMaintainerStatus().subscribe(res => {
       this.isSystemMaintainer = res;
-      console.log('this.isSystemMaintainer', this.isSystemMaintainer);
+      console.log('%c this.isSystemMaintainer', 'color: #0ca011', this.isSystemMaintainer);
     });
     this.userInfoService.getMarketingDeveloperStatus().subscribe(res => {
       this.isMarketingDeveloper = res;
-      console.log('this.isMarketingDeveloper', this.isMarketingDeveloper);
+      console.log('%c this.isMarketingDeveloper', 'color: #0ca011', this.isMarketingDeveloper);
     });
     this.userInfoService.getBrandAdministratorStatus().subscribe(res => {
       this.isBrandAdministrator = res;
-      console.log('this.isBrandAdministrator', this.isBrandAdministrator);
+      console.log('%c this.isBrandAdministrator', 'color: #0ca011', this.isBrandAdministrator);
     });
     this.userInfoService.getBranchAdministratorStatus().subscribe(res => {
       this.isBranchAdministrator = res;
-      console.log('this.isBranchAdministrator', this.isBranchAdministrator);
+      console.log('%c this.isBranchAdministrator', 'color: #0ca011', this.isBranchAdministrator);
     });
     this.userInfoService.getBroadcastProducerStatus().subscribe(res => {
       this.isBroadcastProducer = res;
-      console.log('this.isBroadcastProducer', this.isBroadcastProducer);
+      console.log('%c this.isBroadcastProducer', 'color: #0ca011', this.isBroadcastProducer);
     });
     this.userInfoService.getCoachStatus().subscribe(res => {
       this.isCoach = res;
-      console.log('this.isCoach', this.isCoach);
+      console.log('%c this.isCoach', 'color: #0ca011', this.isCoach);
     });
     this.userInfoService.getGroupAdministratorStatus().subscribe(res => {
       this.isGroupAdministrator = res;
-      console.log('this.isGroupAdministrator', this.isGroupAdministrator);
+      console.log('%c this.isGroupAdministrator', 'color: #0ca011', this.isGroupAdministrator);
     });
     this.userInfoService.getGeneralMemberStatus().subscribe(res => {
       this.isGeneralMember = res;
-      console.log('this.isGeneralMember', this.isGeneralMember);
+      console.log('%c this.isGeneralMember', 'color: #0ca011', this.isGeneralMember);
     });
     this.userInfoService
       .getLogonData()
