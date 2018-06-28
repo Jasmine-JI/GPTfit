@@ -5,3 +5,30 @@
   background-color: #157fcc;
   color: #fff;
 }
+
+.member-selector {
+  width: 237px;
+  height: 64px;
+  border-radius: 32px;
+  border: 1px solid #ccc;
+  display: flex;
+  align-items: center;
+}
+.member-selector:hover {
+  cursor: pointer;
+}
+.member-selector span {
+  margin: 0px 0px 0px 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  width: 140px;
+}
+.member-selector--photo {
+  width: 58px; /* 64 - 2* 2(margin) + 1*2(border) */
+  height: 58px;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  margin: 2px;
+}
+

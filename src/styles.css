@@ -17,7 +17,9 @@
   color: #fff;
   padding: 8px 25px;
 }
-
+.ala-tab-group .mat-tab-body-content {
+  padding-top: 50px;
+}
 
 
 

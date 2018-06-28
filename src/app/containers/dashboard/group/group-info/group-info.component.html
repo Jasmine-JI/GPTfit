@@ -4,7 +4,7 @@
   </div>
   <div class="col-8">
     <div class="d-flex justify-content-between" style="margin-bottom: 15px">
-      <span style="color: #157fcc; font-weight:700">
+      <span style="color: #26abe3; font-weight:700">
         群組資訊
       </span>
       <div>
@@ -46,25 +46,81 @@
         </button> -->
       </div>
     </div>
-    <div>
-      <label>{{ groupInfo?.groupName }}</label>
+    <div style="margin-bottom: 30px;">
+      <div>
+        <label>{{ groupInfo?.groupName }}</label>
+      </div>
+      <div>
+        <label>群組ID：</label>{{ group_id }}
+      </div>
+      <div>
+        <label>階層：</label>{{ this.groupLevel }}
+      </div>
+      <div>
+        <label>狀態：</label>{{ groupInfo?.groupStatus | groupStatus }}
+      </div>
+      <div>
+        <label>介紹：</label>{{ groupInfo?.groupDesc }}
+      </div>
     </div>
     <div>
-      <label>群組ID：</label>{{ group_id }}
-    </div>
-    <div>
-      <label>階層：</label>{{ this.groupLevel }}
-    </div>
-    <div>
-      <label>狀態：</label>{{ groupInfo?.groupStatus | groupStatus }}
-    </div>
-    <div>
-      <label>介紹：</label>{{ groupInfo?.groupDesc }}
-    </div>
-    <div>
-      <mat-tab-group>
-        <mat-tab label="子群組資訊"> Content 1 </mat-tab>
-        <mat-tab label="管理員資訊"> Content 2 </mat-tab>
+      <mat-tab-group (selectChange)="changeGroupInfo($event)" class="ala-tab-group">
+        <mat-tab label="子群組資訊" (click)="getGroupMemberList(1)">
+          <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">品牌</label>
+          <div style="margin-bottom: 15px">
+            <div class="member-selector" [title]="subBrandItem?.group_name"  *ngFor="let subBrandItem of subBrandInfo">
+              <img *ngIf="subBrandItem.group_icon" [src]="(subBrandItem?.group_icon | safeHtml)" class="member-selector--photo">
+              <img *ngIf="!subBrandItem.group_icon"src="/assets/images/user.png" class="member-selector--photo">
+              <span style="margin-left: 13px"> {{ subBrandItem && subBrandItem?.group_name }}</span>
+            </div>
+          </div>
+
+          <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">分店</label>
+          <div style="margin-bottom: 15px">
+            <div class="member-selector" [title]="subBranchItem?.group_name"  *ngFor="let subBranchItem of subBranchInfo">
+              <img *ngIf="subBranchItem.group_icon" [src]="(subBranchItem?.group_icon | safeHtml)" class="member-selector--photo">
+              <img *ngIf="!subBranchItem.group_icon"src="/assets/images/user.png" class="member-selector--photo">
+              <span style="margin-left: 13px"> {{ subBranchItem && subBranchItem?.group_name }}</span>
+            </div>
+          </div>
+
+          <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">教練課</label>
+          <div style="margin-bottom: 15px" >
+            <div class="member-selector" [title]="subCoachItem?.group_name" *ngFor="let subCoachItem of subCoachInfo">
+              <img *ngIf="subCoachItem.group_icon" [src]="(subCoachItem?.group_icon | safeHtml)" class="member-selector--photo">
+              <img *ngIf="!subCoachItem.group_icon"src="/assets/images/user.png" class="member-selector--photo">
+              <span style="margin-left: 13px"> {{ subCoachItem && subCoachItem?.group_name }}</span>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab label="管理員資訊" (click)="getGroupMemberList(2)">
+          <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">品牌管理員</label>
+          <div style="margin-bottom: 15px">
+            <div class="member-selector" [title]="brandAdmItem?.memberName"  *ngFor="let brandAdmItem of brandAdministrators">
+              <img *ngIf="brandAdmItem.group_icon" [src]="(brandAdmItem?.group_icon | safeHtml)" class="member-selector--photo">
+              <img *ngIf="!brandAdmItem.group_icon"src="/assets/images/user.png" class="member-selector--photo">
+              <span style="margin-left: 13px"> {{ brandAdmItem && brandAdmItem?.memberName }}</span>
+            </div>
+          </div>
+
+          <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">分店管理員</label>
+          <div style="margin-bottom: 15px">
+            <div class="member-selector" [title]="branchAdmItem?.memberName"  *ngFor="let branchAdmItem of branchAdministrators">
+              <img *ngIf="branchAdmItem.group_icon" [src]="(branchAdmItem?.group_icon | safeHtml)" class="member-selector--photo">
+              <img *ngIf="!branchAdmItem.group_icon"src="/assets/images/user.png" class="member-selector--photo">
+              <span style="margin-left: 13px"> {{ branchAdmItem && branchAdmItem?.memberName }}</span>
+            </div>
+          </div>
+
+          <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">教練課管理員</label>
+          <div style="margin-bottom: 15px" >
+            <div class="member-selector" [title]="coachAdmItem?.memberName" *ngFor="let coachAdmItem of coachAdministrators">
+              <img *ngIf="coachAdmItem.group_icon" [src]="(coachAdmItem?.group_icon | safeHtml)" class="member-selector--photo">
+              <img *ngIf="!coachAdmItem.group_icon"src="/assets/images/user.png" class="member-selector--photo">
+              <span style="margin-left: 13px"> {{ coachAdmItem && coachAdmItem?.memberName }}</span>
+            </div>
+          </div>
+        </mat-tab>
         <mat-tab label="一般成員資訊"> Content 3 </mat-tab>
       </mat-tab-group>
     </div>
