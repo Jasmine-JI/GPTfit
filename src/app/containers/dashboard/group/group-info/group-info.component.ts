@@ -18,6 +18,13 @@ export class GroupInfoComponent implements OnInit {
   groupLevel: string;
   groupInfos: any;
   joinStatus = 0;
+  subGroupInfo: any;
+  brandAdministrators: any;
+  subBrandInfo: any;
+  subBranchInfo: any;
+  subCoachInfo: any;
+  branchAdministrators: any;
+  coachAdministrators: any;
   constructor(
     private route: ActivatedRoute,
     private groupService: GroupService,
@@ -47,7 +54,7 @@ export class GroupInfoComponent implements OnInit {
         this.joinStatus = 0;
       }
     });
-    this.getGroupMemberList();
+    this.getGroupMemberList(1);
   }
   handleActionGroup(_type) {
     const body = {
@@ -67,19 +74,71 @@ export class GroupInfoComponent implements OnInit {
         console.log(rtnMsg);
       });
   }
-  getGroupMemberList() {
+  getGroupMemberList(_type) {
     const body = {
-      token: this.token,
+      // token: this.token,
       groupId: this.groupId,
-      infoType: '2'
+      infoType: _type
     };
     this.groupService.fetchGroupMemberList(body).subscribe(res => {
       if (res.resultCode === 200) {
         const {
-          info: { groupMemberInfo }
+          info: { groupMemberInfo, subGroupInfo }
         } = res;
-        this.groupInfos = groupMemberInfo;
+        if (_type === 1) {
+          this.subGroupInfo = subGroupInfo;
+          console.log('this.subGroupInfo: ', this.subGroupInfo);
+          this.subBrandInfo = this.subGroupInfo.brands.map(_brand => {
+            return {
+              ..._brand,
+              group_icon: this.utils.buildBase64ImgString(_brand.group_icon)
+            };
+          });
+          this.subBranchInfo = this.subGroupInfo.branches.map(_branch => {
+            return {
+              ..._branch,
+              group_icon: this.utils.buildBase64ImgString(_branch.group_icon)
+            };
+          });
+          this.subCoachInfo = this.subGroupInfo.coaches.map(_coach => {
+            return {
+              ..._coach,
+              group_icon: this.utils.buildBase64ImgString(_coach.group_icon)
+            };
+          });
+          console.log('this.subBrandInfo: ', this.subBrandInfo);
+        } else {
+          this.groupInfos = groupMemberInfo;
+          this.brandAdministrators = this.groupInfos.filter(_info => {
+            if (_info.accessRight === '30') {
+              return { ..._info, userIcon: this.utils.buildBase64ImgString(_info.userIcon) };
+            }
+          });
+          this.branchAdministrators = this.groupInfos.filter(_info => {
+            if (_info.accessRight === '40') {
+              return { ..._info, userIcon: this.utils.buildBase64ImgString(_info.userIcon) };
+            }
+          });
+          this.coachAdministrators = this.groupInfos.filter(_info => {
+            if (_info.accessRight === '60') {
+              return { ..._info, userIcon: this.utils.buildBase64ImgString(_info.userIcon) };
+            }
+          });
+          console.log('this.brandAdministrators: ', this.brandAdministrators);
+          console.log('this.branchAdministrators: ', this.branchAdministrators);
+          console.log('this.coachAdministrators: ', this.coachAdministrators);
+
+        }
       }
     });
+  }
+  changeGroupInfo({ index }) {
+    if (index === 0) {
+      this.getGroupMemberList(1);
+    } else if (index === 1) {
+      this.getGroupMemberList(2);
+    } else {
+      this.getGroupMemberList(3);
+    }
   }
 }

@@ -23,7 +23,10 @@ export class GroupService {
   actionGroup(body) {
     return this.http.post<any>(API_SERVER + 'center/actionGroup', body);
   }
+  // fetchGroupMemberList(body) {
+  //   return this.http.post<any>('/api/v1/center/getGroupMemberList', body);
+  // }
   fetchGroupMemberList(body) {
-    return this.http.post<any>('/api/v1/center/getGroupMemberList', body);
+    return this.http.post<any>(API_SERVER + 'center/getGroupMemberList', body);
   }
 }
