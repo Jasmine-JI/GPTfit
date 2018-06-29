@@ -11,33 +11,20 @@
         <!-- <button class="alatech-btn alatech-btn--default" title="返回" [routerLink]="['/dashboard/my-group-list']">
           管理
         </button> -->
-        <button class="alatech-btn alatech-btn--default"
-          title="申請加入"
-          *ngIf="joinStatus === 0"
-          (click)="handleActionGroup(1)"
-        >
+        <button class="alatech-btn alatech-btn--default" title="申請加入" *ngIf="joinStatus === 0" (click)="handleActionGroup(1)">
           申請加入
         </button>
-        <button class="alatech-btn alatech-btn--default group-btn--waiting"
-          title="取消申請"
-          *ngIf="joinStatus === 1"
-          (click)="handleActionGroup(2)"
-        >
+        <button class="alatech-btn alatech-btn--default group-btn--waiting" title="取消申請" *ngIf="joinStatus === 1" (click)="handleActionGroup(2)">
           取消申請
         </button>
-        <button class="alatech-btn alatech-btn--default"
-          title="退出群組"
-          *ngIf="joinStatus === 2"
-          (click)="handleActionGroup(2)"
-        >
-          退出群組
+        <button class="alatech-btn alatech-btn--default" title="管理" *ngIf="joinStatus === 2" (click)="goEditPage()">
+          申請解散品牌
         </button>
-        <button class="alatech-btn alatech-btn--default"
-          title="管理"
-          *ngIf="joinStatus === 2"
-          (click)="goEditPage()"
-        >
-          管理
+        <button class="alatech-btn alatech-btn--default" title="管理" *ngIf="joinStatus === 2" (click)="goEditPage()">
+          新增子群組
+        </button>
+        <button class="alatech-btn alatech-btn--default" title="管理" *ngIf="joinStatus === 2" (click)="goEditPage()">
+          完成管理
         </button>
         <!-- <button class="alatech-btn alatech-btn--default"
           title="管理"
@@ -49,19 +36,22 @@
     </div>
     <div style="margin-bottom: 30px;">
       <div>
-        <label>{{ groupInfo?.groupName }}</label>
-      </div>
-      <div>
         <label>群組ID：</label>{{ group_id }}
       </div>
       <div>
-        <label>階層：</label>{{ this.groupLevel }}
+        <label>名稱：</label><input [value]="groupInfo?.groupName"/>
       </div>
       <div>
-        <label>狀態：</label>{{ groupInfo?.groupStatus | groupStatus }}
+        <label>狀態：</label>
+        <select>
+          <option>{{ groupInfo?.groupStatus | groupStatus }}</option>
+        </select>
       </div>
       <div>
-        <label>介紹：</label>{{ groupInfo?.groupDesc }}
+        <label>介紹：</label>
+        <textarea>
+          {{ groupInfo?.groupDesc }}
+        </textarea>
       </div>
     </div>
     <div>
@@ -69,27 +59,27 @@
         <mat-tab label="子群組資訊" (click)="getGroupMemberList(1)">
           <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">品牌</label>
           <div style="margin-bottom: 15px">
-            <div class="member-selector" [title]="subBrandItem?.group_name"  *ngFor="let subBrandItem of subBrandInfo">
+            <div class="member-selector" [title]="subBrandItem?.group_name" *ngFor="let subBrandItem of subBrandInfo">
               <img *ngIf="subBrandItem.group_icon" [src]="(subBrandItem?.group_icon | safeHtml)" class="member-selector--photo">
-              <img *ngIf="!subBrandItem.group_icon"src="/assets/images/user.png" class="member-selector--photo">
+              <img *ngIf="!subBrandItem.group_icon" src="/assets/images/user.png" class="member-selector--photo">
               <span style="margin-left: 13px"> {{ subBrandItem && subBrandItem?.group_name }}</span>
             </div>
           </div>
 
           <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">分店</label>
           <div style="margin-bottom: 15px">
-            <div class="member-selector" [title]="subBranchItem?.group_name"  *ngFor="let subBranchItem of subBranchInfo">
+            <div class="member-selector" [title]="subBranchItem?.group_name" *ngFor="let subBranchItem of subBranchInfo">
               <img *ngIf="subBranchItem.group_icon" [src]="(subBranchItem?.group_icon | safeHtml)" class="member-selector--photo">
-              <img *ngIf="!subBranchItem.group_icon"src="/assets/images/user.png" class="member-selector--photo">
+              <img *ngIf="!subBranchItem.group_icon" src="/assets/images/user.png" class="member-selector--photo">
               <span style="margin-left: 13px"> {{ subBranchItem && subBranchItem?.group_name }}</span>
             </div>
           </div>
 
           <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">教練課</label>
-          <div style="margin-bottom: 15px" >
+          <div style="margin-bottom: 15px">
             <div class="member-selector" [title]="subCoachItem?.group_name" *ngFor="let subCoachItem of subCoachInfo">
               <img *ngIf="subCoachItem.group_icon" [src]="(subCoachItem?.group_icon | safeHtml)" class="member-selector--photo">
-              <img *ngIf="!subCoachItem.group_icon"src="/assets/images/user.png" class="member-selector--photo">
+              <img *ngIf="!subCoachItem.group_icon" src="/assets/images/user.png" class="member-selector--photo">
               <span style="margin-left: 13px"> {{ subCoachItem && subCoachItem?.group_name }}</span>
             </div>
           </div>
@@ -97,36 +87,33 @@
         <mat-tab label="管理員資訊" (click)="getGroupMemberList(2)">
           <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">品牌管理員</label>
           <div style="margin-bottom: 15px">
-            <div class="member-selector" [title]="brandAdmItem?.memberName"  *ngFor="let brandAdmItem of brandAdministrators">
+            <div class="member-selector" [title]="brandAdmItem?.memberName" *ngFor="let brandAdmItem of brandAdministrators">
               <img *ngIf="brandAdmItem.userIcon" [src]="(brandAdmItem?.userIcon | safeHtml)" class="member-selector--photo">
-              <img *ngIf="!brandAdmItem.userIcon"src="/assets/images/user.png" class="member-selector--photo">
+              <img *ngIf="!brandAdmItem.userIcon" src="/assets/images/user.png" class="member-selector--photo">
               <span style="margin-left: 13px"> {{ brandAdmItem && brandAdmItem?.memberName }}</span>
             </div>
           </div>
 
           <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">分店管理員</label>
           <div style="margin-bottom: 15px">
-            <div class="member-selector" [title]="branchAdmItem?.memberName"  *ngFor="let branchAdmItem of branchAdministrators">
+            <div class="member-selector" [title]="branchAdmItem?.memberName" *ngFor="let branchAdmItem of branchAdministrators">
               <img *ngIf="branchAdmItem.userIcon" [src]="(branchAdmItem?.userIcon | safeHtml)" class="member-selector--photo">
-              <img *ngIf="!branchAdmItem.userIcon"src="/assets/images/user.png" class="member-selector--photo">
+              <img *ngIf="!branchAdmItem.userIcon" src="/assets/images/user.png" class="member-selector--photo">
               <span style="margin-left: 13px"> {{ branchAdmItem && branchAdmItem?.memberName }}</span>
             </div>
           </div>
 
           <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">教練課管理員</label>
-          <div style="margin-bottom: 15px" >
+          <div style="margin-bottom: 15px">
             <div class="member-selector" [title]="coachAdmItem?.memberName" *ngFor="let coachAdmItem of coachAdministrators">
               <img *ngIf="coachAdmItem.userIcon" [src]="(coachAdmItem?.userIcon | safeHtml)" class="member-selector--photo">
-              <img *ngIf="!coachAdmItem.userIcon"src="/assets/images/user.png" class="member-selector--photo">
+              <img *ngIf="!coachAdmItem.userIcon" src="/assets/images/user.png" class="member-selector--photo">
               <span style="margin-left: 13px"> {{ coachAdmItem && coachAdmItem?.memberName }}</span>
             </div>
           </div>
         </mat-tab>
         <mat-tab label="一般成員資訊">
-          <div class="member-selector" [title]="item?.memberName"
-            *ngFor="let item of groupInfos"
-            style="margin-bottom: 15px"
-          >
+          <div class="member-selector" [title]="item?.memberName" *ngFor="let item of groupInfos" style="margin-bottom: 15px">
             <img *ngIf="item.userIcon" [src]="(item?.userIcon | safeHtml)" class="member-selector--photo">
             <img *ngIf="!item.userIcon" src="/assets/images/user.png" class="member-selector--photo">
             <span style="margin-left: 13px"> {{ item && item?.memberName }}</span>

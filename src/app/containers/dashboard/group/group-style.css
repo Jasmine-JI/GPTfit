@@ -1,3 +1,50 @@
 .mat-row {
   cursor: pointer;
 }
+.member-selector {
+  width: 237px;
+  height: 64px;
+  border-radius: 32px;
+  border: 1px solid #ccc;
+  display: flex;
+  align-items: center;
+}
+
+.member-selector:hover {
+  cursor: pointer;
+}
+
+.member-selector span {
+  margin: 0px 0px 0px 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  width: 140px;
+}
+
+.member-selector--photo {
+  width: 58px;
+  /* 64 - 2* 2(margin) + 1*2(border) */
+  height: 58px;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  margin: 2px;
+}
+/* about custom mat-tab */
+.mat-tab-label {
+  color: #828282;
+  font-weight: 700;
+  background-color: none;
+  opacity: 1 !important;
+}
+
+.mat-tab-label.mat-tab-label-active {
+  padding: 5px;
+  background-color: transparent;
+  color: #26abe3;
+  font-weight: 700;
+}
+
+.mat-tab-group.mat-primary .mat-ink-bar {
+  background-color: #26abe3;
+}
