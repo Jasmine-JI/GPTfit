@@ -38,20 +38,33 @@
       <div>
         <label>群組ID：</label>{{ group_id }}
       </div>
-      <div>
-        <label>名稱：</label><input [value]="groupInfo?.groupName"/>
+      <div class="ala-list__item">
+        <label class="ala-form__label">名稱：</label>
+        <app-form-text
+          [className]="formTextClassName"
+          [content]="groupInfo?.groupName"
+          [maxLength]="32"
+          [remindText]="remindText"
+        >
+        </app-form-text>
       </div>
-      <div>
-        <label>狀態：</label>
-        <select>
-          <option>{{ groupInfo?.groupStatus | groupStatus }}</option>
+      <div class="ala-list__item">
+        <label class="ala-form__label">狀態：</label>
+        <select class="form-field">
+          <option class="form-field-option">{{ groupInfo?.groupStatus | groupStatus }}</option>
+          <option class="form-field-option">審核制</option>
+          <option class="form-field-option">隱藏群組</option>
         </select>
       </div>
-      <div>
-        <label>介紹：</label>
-        <textarea>
-          {{ groupInfo?.groupDesc }}
-        </textarea>
+      <div class="ala-list__item">
+        <label class="ala-form__label">介紹：</label>
+        <div style="width: calc(100% - 50px)">
+          <app-form-textarea
+            [content]="groupInfo?.groupDesc"
+            [remindText]="remindTextarea"
+          >
+          </app-form-textarea>
+        </div>
       </div>
     </div>
     <div>

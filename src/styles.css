@@ -49,7 +49,13 @@ html {
   border: 1px solid #c75353;
   box-shadow: rgba(163, 50, 50, .34) 0 0 4px 0;
 }
-
+/* textarea */
+textarea.form-field {
+  height: auto;
+  min-height: 72px;
+  padding: 10px;
+  background-color: #fff;
+}
 
 /* button */
 .button {
@@ -165,6 +171,33 @@ button:focus {
 }
 .icon-btn + .icon-btn {
   margin-left: 10px;
+}
+.ala-formtext {
+  display: flex;
+  flex-direction: column;
+}
+
+.ala-list__item {
+  display: flex;
+}
+.ala-list__item + .ala-list__item {
+  margin-top: 15px;
+}
+
+.ala-form__remind  {
+  display: inline-block;
+  padding-top: 5px;
+  font-size: 12px;
+  font-weight: normal;
+  cursor: default;
+  color: #9b9b9b;
+}
+
+.ala-form__remind--is-invalid {
+  color: #C75353;
+}
+.ala-form__label {
+  margin-bottom: 0px;
 }
 .alatech-btn {
   display: inline-block;
