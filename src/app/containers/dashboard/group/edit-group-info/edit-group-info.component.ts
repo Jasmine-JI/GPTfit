@@ -6,12 +6,12 @@ import { HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-group-info',
-  templateUrl: './group-info.component.html',
-  styleUrls: ['./group-info.component.css', '../group-style.css'],
+  selector: 'app-edit-group-info',
+  templateUrl: './edit-group-info.component.html',
+  styleUrls: ['./edit-group-info.component.css', '../group-style.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class GroupInfoComponent implements OnInit {
+export class EditGroupInfoComponent implements OnInit {
   groupId: string;
   token: string;
   groupInfo: any;

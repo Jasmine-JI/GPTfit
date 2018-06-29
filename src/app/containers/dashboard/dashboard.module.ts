@@ -49,6 +49,7 @@ import { GroupInfoComponent } from './group/group-info/group-info.component';
 import { GroupService } from './services/group.service';
 import { AccessNamePipe } from './pipes/access-name.pipe';
 import { GroupStatusPipe } from './pipes/group-status.pipe';
+import { EditGroupInfoComponent } from './group/edit-group-info/edit-group-info.component';
 
 @NgModule({
   imports: [
@@ -106,7 +107,8 @@ import { GroupStatusPipe } from './pipes/group-status.pipe';
     GroupSearchComponent,
     GroupInfoComponent,
     AccessNamePipe,
-    GroupStatusPipe
+    GroupStatusPipe,
+    EditGroupInfoComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [

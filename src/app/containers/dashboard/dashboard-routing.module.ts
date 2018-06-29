@@ -22,6 +22,7 @@ import { AuthGuard } from '@shared/guards/auth/auth.guard';
 import { MyGroupListComponent } from './group/my-group-list/my-group-list.component';
 import { GroupSearchComponent } from './group/group-search/group-search.component';
 import { GroupInfoComponent } from './group/group-info/group-info.component';
+import { EditGroupInfoComponent } from './group/edit-group-info/edit-group-info.component';
 
 const routes: Routes = [
   {
@@ -108,6 +109,10 @@ const routes: Routes = [
       {
         path: 'group-info/:groupId',
         component: GroupInfoComponent
+      },
+      {
+        path: 'group-info/:groupId/edit',
+        component: EditGroupInfoComponent
       }
     ]
   },
