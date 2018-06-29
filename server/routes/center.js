@@ -270,7 +270,6 @@ router.post('/getGroupMemberList', function (req, res, next) {
             errorMessage: err.sqlMessage
           });
         }
-        console.log(rows);
 
         const groupMemberInfo = rows.map(_row => {
           const {
@@ -320,13 +319,10 @@ router.post('/getGroupMemberList', function (req, res, next) {
             errorMessage: err.sqlMessage
           });
         }
-        console.log(_results);
         if (_results.length > 0) {
           const brands = _results.filter(_re => {
             const arr = _re.group_id.split('-');
-            console.log('arr: ', arr);
             if (arr[3] === '0') {
-              console.log('_re', _re);
               return _re;
             }
           });
@@ -342,7 +338,6 @@ router.post('/getGroupMemberList', function (req, res, next) {
               return _re;
             }
           });
-          console.log('brands: ', brands);
           const subGroupInfo = {
             brands,
             branches,

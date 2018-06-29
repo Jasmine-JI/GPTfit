@@ -71,7 +71,6 @@ export class GroupInfoComponent implements OnInit {
             this.joinStatus = joinStatus;
           }
         }
-        console.log(rtnMsg);
       });
   }
   getGroupMemberList(_type) {
@@ -87,7 +86,6 @@ export class GroupInfoComponent implements OnInit {
         } = res;
         if (_type === 1) {
           this.subGroupInfo = subGroupInfo;
-          console.log('this.subGroupInfo: ', this.subGroupInfo);
           this.subBrandInfo = this.subGroupInfo.brands.map(_brand => {
             return {
               ..._brand,
@@ -106,28 +104,14 @@ export class GroupInfoComponent implements OnInit {
               group_icon: this.utils.buildBase64ImgString(_coach.group_icon)
             };
           });
-          console.log('this.subBrandInfo: ', this.subBrandInfo);
         } else {
           this.groupInfos = groupMemberInfo;
-          this.brandAdministrators = this.groupInfos.filter(_info => {
-            if (_info.accessRight === '30') {
-              return { ..._info, userIcon: this.utils.buildBase64ImgString(_info.userIcon) };
-            }
-          });
-          this.branchAdministrators = this.groupInfos.filter(_info => {
-            if (_info.accessRight === '40') {
-              return { ..._info, userIcon: this.utils.buildBase64ImgString(_info.userIcon) };
-            }
-          });
-          this.coachAdministrators = this.groupInfos.filter(_info => {
-            if (_info.accessRight === '60') {
-              return { ..._info, userIcon: this.utils.buildBase64ImgString(_info.userIcon) };
-            }
-          });
-          console.log('this.brandAdministrators: ', this.brandAdministrators);
-          console.log('this.branchAdministrators: ', this.branchAdministrators);
-          console.log('this.coachAdministrators: ', this.coachAdministrators);
-
+          this.groupInfos = this.groupInfos.map(_info => {
+            return { ..._info, userIcon: this.utils.buildBase64ImgString(_info.userIcon) };
+          }).filter(newInfo => !(typeof (newInfo) === 'undefined'));
+          this.brandAdministrators = this.groupInfos.filter(_info => _info.accessRight === '30');
+          this.branchAdministrators = this.groupInfos.filter(_info => _info.accessRight === '40');
+          this.coachAdministrators = this.groupInfos.filter(_info => _info.accessRight === '60');
         }
       }
     });
