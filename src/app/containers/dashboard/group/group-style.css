@@ -48,3 +48,8 @@
 .mat-tab-group.mat-primary .mat-ink-bar {
   background-color: #26abe3;
 }
+/* select.form-field option:hover,
+select.form-field option:checked {
+  background-color: #26abe3;
+  color: #fff;
+} */

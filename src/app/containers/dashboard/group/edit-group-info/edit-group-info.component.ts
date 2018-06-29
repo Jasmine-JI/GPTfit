@@ -4,6 +4,12 @@ import { GroupService } from '../../services/group.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
+import {
+  FormBuilder,
+  FormGroup,
+  FormControl,
+  Validators
+} from '@angular/forms';
 
 @Component({
   selector: 'app-edit-group-info',
@@ -27,15 +33,25 @@ export class EditGroupInfoComponent implements OnInit {
   subCoachInfo: any;
   branchAdministrators: any;
   coachAdministrators: any;
+  formTextClassName = 'form-field';
+  remindText = '※不得超過32個字元';
+  remindTextarea = '※不得超過500個字元';
+  form: FormGroup;
   constructor(
     private route: ActivatedRoute,
     private groupService: GroupService,
     private utils: UtilsService,
-    private router: Router
+    private router: Router,
+    private fb: FormBuilder
   ) {}
 
   ngOnInit() {
     this.groupId = this.route.snapshot.paramMap.get('groupId');
+    this.form = this.fb.group({
+      groupName: ['', Validators.required, Validators.maxLength(32)],
+      groupDesc: ['', Validators.required, Validators.maxLength(500)]
+    });
+
     // this.token = this.utils.getToken();
     // const body = {
     //   token: this.token,
@@ -45,7 +61,8 @@ export class EditGroupInfoComponent implements OnInit {
     params = params.set('groupId', this.groupId);
     this.groupService.fetchGroupListDetail(params).subscribe(res => {
       this.groupInfo = res.info;
-      const { groupIcon, groupId } = this.groupInfo;
+      const { groupIcon, groupId, groupName, groupDesc } = this.groupInfo;
+      // this.form.patchValue({ groupName, groupDesc });
       this.groupImg = this.utils.buildBase64ImgString(groupIcon);
       this.group_id = this.utils.displayGroupId(groupId);
       this.groupLevel = this.utils.displayGroupLevel(groupId);

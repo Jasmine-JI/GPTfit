@@ -4,6 +4,7 @@ import { stringify } from 'query-string';
 
 export const TOKEN = 'ala_token';
 export const EMPTY_OBJECT = {};
+
 @Injectable()
 export class UtilsService {
   setLocalStorageObject(key: string, value) {
