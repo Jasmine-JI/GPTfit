@@ -97,8 +97,8 @@
           <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">品牌管理員</label>
           <div style="margin-bottom: 15px">
             <div class="member-selector" [title]="brandAdmItem?.memberName"  *ngFor="let brandAdmItem of brandAdministrators">
-              <img *ngIf="brandAdmItem.group_icon" [src]="(brandAdmItem?.group_icon | safeHtml)" class="member-selector--photo">
-              <img *ngIf="!brandAdmItem.group_icon"src="/assets/images/user.png" class="member-selector--photo">
+              <img *ngIf="brandAdmItem.userIcon" [src]="(brandAdmItem?.userIcon | safeHtml)" class="member-selector--photo">
+              <img *ngIf="!brandAdmItem.userIcon"src="/assets/images/user.png" class="member-selector--photo">
               <span style="margin-left: 13px"> {{ brandAdmItem && brandAdmItem?.memberName }}</span>
             </div>
           </div>
@@ -106,8 +106,8 @@
           <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">分店管理員</label>
           <div style="margin-bottom: 15px">
             <div class="member-selector" [title]="branchAdmItem?.memberName"  *ngFor="let branchAdmItem of branchAdministrators">
-              <img *ngIf="branchAdmItem.group_icon" [src]="(branchAdmItem?.group_icon | safeHtml)" class="member-selector--photo">
-              <img *ngIf="!branchAdmItem.group_icon"src="/assets/images/user.png" class="member-selector--photo">
+              <img *ngIf="branchAdmItem.userIcon" [src]="(branchAdmItem?.userIcon | safeHtml)" class="member-selector--photo">
+              <img *ngIf="!branchAdmItem.userIcon"src="/assets/images/user.png" class="member-selector--photo">
               <span style="margin-left: 13px"> {{ branchAdmItem && branchAdmItem?.memberName }}</span>
             </div>
           </div>
@@ -115,13 +115,22 @@
           <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">教練課管理員</label>
           <div style="margin-bottom: 15px" >
             <div class="member-selector" [title]="coachAdmItem?.memberName" *ngFor="let coachAdmItem of coachAdministrators">
-              <img *ngIf="coachAdmItem.group_icon" [src]="(coachAdmItem?.group_icon | safeHtml)" class="member-selector--photo">
-              <img *ngIf="!coachAdmItem.group_icon"src="/assets/images/user.png" class="member-selector--photo">
+              <img *ngIf="coachAdmItem.userIcon" [src]="(coachAdmItem?.userIcon | safeHtml)" class="member-selector--photo">
+              <img *ngIf="!coachAdmItem.userIcon"src="/assets/images/user.png" class="member-selector--photo">
               <span style="margin-left: 13px"> {{ coachAdmItem && coachAdmItem?.memberName }}</span>
             </div>
           </div>
         </mat-tab>
-        <mat-tab label="一般成員資訊"> Content 3 </mat-tab>
+        <mat-tab label="一般成員資訊">
+          <div class="member-selector" [title]="item?.memberName"
+            *ngFor="let item of groupInfos"
+            style="margin-bottom: 15px"
+          >
+            <img *ngIf="item.userIcon" [src]="(item?.userIcon | safeHtml)" class="member-selector--photo">
+            <img *ngIf="!item.userIcon" src="/assets/images/user.png" class="member-selector--photo">
+            <span style="margin-left: 13px"> {{ item && item?.memberName }}</span>
+          </div>
+        </mat-tab>
       </mat-tab-group>
     </div>
   </div>
