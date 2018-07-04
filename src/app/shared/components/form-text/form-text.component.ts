@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { DEFAULT_MAXLENGTH } from '@shared/utils/';
+import { FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-form-text',
@@ -7,22 +8,22 @@ import { DEFAULT_MAXLENGTH } from '@shared/utils/';
   styleUrls: ['./form-text.component.css']
 })
 export class FormTextComponent implements OnInit {
-  @Input() className: string;
+  @Input() class_name = 'form-field';
   @Input() maxLength = DEFAULT_MAXLENGTH.TEXT;
-  @Input() isInvalid = false;
+  @Input() isInvalid: boolean;
   @Input() content: string;
   @Input() invalidRemindText: string;
   @Input() remindText: string;
-  inputCls: string;
-  constructor() {}
-
+  @Input() control: FormGroup;
+  @Input() controlName: string;
+  invalidClassName = `${this.class_name} ${this.class_name}--invalid`;
   ngOnInit() {
-    console.log('this.className: ', this.className);
-    console.log('this.maxLength: ', this.maxLength);
-    console.log('this.content: ', this.content);
-    this.inputCls = this.isInvalid
-      ? `${this.className} ${this.className}--invalid`
-      : `${this.className}`;
-    console.log('this.inputCls: ', this.inputCls);
+  }
+  setMyClasses() {
+    const classes = {
+      'form-field': true,
+      'form-field--invalid': this.isInvalid
+    };
+    return classes;
   }
 }

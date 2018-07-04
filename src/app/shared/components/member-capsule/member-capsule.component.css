@@ -1,0 +1,27 @@
+.dropdown-menu > li {
+  padding: 3px 8px;
+}
+.dropdown-menu.show {
+  padding: 8px 5px;
+  min-width: auto;
+  box-shadow: 1px 2px #888888;
+  min-width: 115px;
+}
+
+.member-selector .dropdown-menu {
+  top: 40px;
+  right:0px;
+  left: auto;
+}
+
+.normal-manage:hover {
+  color: #fff;
+  background-color: #26abe3;
+}
+.warn-manage {
+  color: #ff0000;
+}
+.warn-manage:hover {
+  color: #fff;
+  background-color: #cb5e5e;
+}

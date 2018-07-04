@@ -10,6 +10,7 @@ import {
   FormControl,
   Validators
 } from '@angular/forms';
+import { UserInfoService } from '../../services/userInfo.service';
 
 @Component({
   selector: 'app-edit-group-info',
@@ -33,25 +34,65 @@ export class EditGroupInfoComponent implements OnInit {
   subCoachInfo: any;
   branchAdministrators: any;
   coachAdministrators: any;
-  formTextClassName = 'form-field';
   remindText = '※不得超過32個字元';
-  remindTextarea = '※不得超過500個字元';
+  inValidText = '欄位為必填';
+  textareaMaxLength = 500;
   form: FormGroup;
+  formTextName = 'groupName';
+  formTextareaName = 'groupDesc';
+  role = {
+    isSupervisor: false,
+    isSystemDeveloper: false,
+    isSystemMaintainer: false,
+    isBrandAdministrator: false,
+    isBranchAdministrator: false,
+    isCoach: false
+  };
+  get groupName() {
+    return this.form.get('groupName');
+  }
+  get groupDesc() {
+    return this.form.get('groupDesc');
+  }
   constructor(
     private route: ActivatedRoute,
     private groupService: GroupService,
     private utils: UtilsService,
     private router: Router,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private userInfoService: UserInfoService
   ) {}
 
   ngOnInit() {
     this.groupId = this.route.snapshot.paramMap.get('groupId');
     this.form = this.fb.group({
-      groupName: ['', Validators.required, Validators.maxLength(32)],
-      groupDesc: ['', Validators.required, Validators.maxLength(500)]
+      groupName: ['', [Validators.required, Validators.maxLength(32)]],
+      groupDesc: ['', [Validators.required, Validators.maxLength(500)]]
     });
-
+    this.userInfoService.getSupervisorStatus().subscribe(res => {
+      this.role.isSupervisor = res;
+      console.log('%c this.isSupervisor', 'color: #0ca011', res);
+    });
+    this.userInfoService.getSystemDeveloperStatus().subscribe(res => {
+      this.role.isSystemDeveloper = res;
+      console.log('%c this.isSystemDeveloper', 'color: #0ca011', res);
+    });
+    this.userInfoService.getSystemMaintainerStatus().subscribe(res => {
+      this.role.isSystemMaintainer = res;
+      console.log('%c this.isSystemMaintainer', 'color: #0ca011', res);
+    });
+    this.userInfoService.getBrandAdministratorStatus().subscribe(res => {
+      this.role.isBrandAdministrator = res;
+      console.log('%c this.isBrandAdministrator', 'color: #0ca011', res);
+    });
+    this.userInfoService.getBranchAdministratorStatus().subscribe(res => {
+      this.role.isBranchAdministrator = res;
+      console.log('%c this.isBranchAdministrator', 'color: #0ca011', res);
+    });
+    this.userInfoService.getCoachStatus().subscribe(res => {
+      this.role.isCoach = res;
+      console.log('%c this.isCoach', 'color: #0ca011', res);
+    });
     // this.token = this.utils.getToken();
     // const body = {
     //   token: this.token,
@@ -62,7 +103,7 @@ export class EditGroupInfoComponent implements OnInit {
     this.groupService.fetchGroupListDetail(params).subscribe(res => {
       this.groupInfo = res.info;
       const { groupIcon, groupId, groupName, groupDesc } = this.groupInfo;
-      // this.form.patchValue({ groupName, groupDesc });
+      this.form.patchValue({ groupName, groupDesc });
       this.groupImg = this.utils.buildBase64ImgString(groupIcon);
       this.group_id = this.utils.displayGroupId(groupId);
       this.groupLevel = this.utils.displayGroupLevel(groupId);
@@ -156,7 +197,10 @@ export class EditGroupInfoComponent implements OnInit {
       this.getGroupMemberList(3);
     }
   }
-  goEditPage() {
-    this.router.navigateByUrl(`${location.pathname}/edit`);
+  manage() {
+    window.history.back();
+  }
+  public handleChangeTextarea(code): void {
+    this.form.patchValue({ groupDesc: code });
   }
 }

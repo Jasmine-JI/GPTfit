@@ -23,6 +23,7 @@ import { MyGroupListComponent } from './group/my-group-list/my-group-list.compon
 import { GroupSearchComponent } from './group/group-search/group-search.component';
 import { GroupInfoComponent } from './group/group-info/group-info.component';
 import { EditGroupInfoComponent } from './group/edit-group-info/edit-group-info.component';
+import { AllGroupListComponent } from './group/all-group-list/all-group-list.component';
 
 const routes: Routes = [
   {
@@ -101,6 +102,10 @@ const routes: Routes = [
       {
         path: 'my-group-list',
         component: MyGroupListComponent
+      },
+      {
+        path: 'all-group-list',
+        component: AllGroupListComponent
       },
       {
         path: 'group-search',

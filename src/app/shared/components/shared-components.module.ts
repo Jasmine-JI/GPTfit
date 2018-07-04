@@ -16,6 +16,8 @@ import { ConfirmButtonComponent } from './confirm-button/confirm-button.componen
 import { FormTextComponent } from './form-text/form-text.component';
 import { FormRemindComponent } from './form-remind/form-remind.component';
 import { FormTextareaComponent } from './form-textarea/form-textarea.component';
+import { MemberCapsuleComponent } from './member-capsule/member-capsule.component';
+import { SharedPipes } from '@shared/pipes/shared-pipes';
 
 @NgModule({
   imports: [
@@ -24,7 +26,8 @@ import { FormTextareaComponent } from './form-textarea/form-textarea.component';
     FormsModule,
     ReactiveFormsModule,
     SharedModule,
-    CustomMaterialModule
+    CustomMaterialModule,
+    SharedPipes
   ],
   declarations: [
     NavbarComponent,
@@ -37,7 +40,8 @@ import { FormTextareaComponent } from './form-textarea/form-textarea.component';
     ConfirmButtonComponent,
     FormTextComponent,
     FormRemindComponent,
-    FormTextareaComponent
+    FormTextareaComponent,
+    MemberCapsuleComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -51,7 +55,8 @@ import { FormTextareaComponent } from './form-textarea/form-textarea.component';
     ConfirmButtonComponent,
     FormTextComponent,
     FormRemindComponent,
-    FormTextareaComponent
+    FormTextareaComponent,
+    MemberCapsuleComponent
   ]
 })
 export class SharedComponentsModule {}
