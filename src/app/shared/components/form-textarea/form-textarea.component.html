@@ -1,12 +1,17 @@
-<div class="ala-formtext">
+<div class="ala-formtext" [formGroup]="control">
   <textarea
-    [class]="fieldCls"
     [value]="content"
     [placeholder]="placeholder"
+    [className]="isInvalid ? invalidClassName : class_name"
+    (keyup)="handleChange($event)"
+    [maxLength]="maxLength"
   >
   </textarea>
   <app-form-remind
-    [invalidText]="remindText"
+    style="text-align: right"
+    [remindText]="remindText"
+    [content]="content"
+    [maxLength]="maxLength"
   >
   </app-form-remind>
 </div>

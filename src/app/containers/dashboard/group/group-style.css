@@ -6,8 +6,11 @@
   height: 64px;
   border-radius: 32px;
   border: 1px solid #ccc;
-  display: flex;
+  /* display: flex; */
+  display: inline-block;
   align-items: center;
+  position: relative;
+  vertical-align: middle;
 }
 
 .member-selector:hover {
@@ -15,11 +18,13 @@
 }
 
 .member-selector span {
-  margin: 0px 0px 0px 13px;
+  /* margin: 0px 0px 0px 13px; */
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
   width: 140px;
+  display: inline-block;
+  vertical-align: middle
 }
 
 .member-selector--photo {

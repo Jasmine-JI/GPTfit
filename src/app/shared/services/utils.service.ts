@@ -106,4 +106,7 @@ export class UtilsService {
       }
     }
   }
+  replaceCarriageReturn(string = '', format = '') {
+    return string.replace(/(\r\n|\r|\n)/gm, format);
+  }
 }

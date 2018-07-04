@@ -1,11 +1,14 @@
-<div class="ala-formtext">
+<div class="ala-formtext" [formGroup]="control">
   <input type="text"
-  [class]="className"
-    maxLength="maxLength"
+    [maxLength]="maxLength"
     [value]="content"
+    [formControlName]="controlName"
+    [className]="isInvalid ? invalidClassName : class_name"
   />
   <app-form-remind
-    [invalidText]="remindText"
+    [isInvalid]="isInvalid"
+    [remindText]="remindText"
+    [invalidRemindText]="invalidRemindText"
   >
   </app-form-remind>
 </div>

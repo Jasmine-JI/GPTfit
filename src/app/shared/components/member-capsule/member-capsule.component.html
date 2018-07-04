@@ -1,0 +1,38 @@
+<div class="member-selector" [title]="title" (click)="toggleMenu()">
+  <img *ngIf="icon" [src]="(icon | safeHtml)" class="member-selector--photo">
+  <img *ngIf="!icon" src="/assets/images/user.png" class="member-selector--photo">
+  <span>{{ name }}</span>
+  <ng-container
+    *ngIf="isSubGroupInfo && (role?.isBrandAdministrator || role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator)"
+  >
+    <i class="fa fa-caret-down" style="vertical-align: sub"></i>
+    <ul class="dropdown-menu"
+      [class.show]="active"
+    >
+      <li class="normal-manage">
+        <a>
+          管理
+        </a>
+      </li>
+      <li class="warn-manage">
+        <a>
+          移除群組
+        </a>
+      </li>
+    </ul>
+  </ng-container>
+  <ng-container
+    *ngIf="isAdminInfo && (role?.isBrandAdministrator || role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator)"
+  >
+    <i class="fa fa-caret-down" style="vertical-align: sub"></i>
+    <ul class="dropdown-menu"
+      [class.show]="active"
+    >
+      <li class="warn-manage">
+        <a>
+          移除管理員
+        </a>
+      </li>
+    </ul>
+  </ng-container>
+</div>

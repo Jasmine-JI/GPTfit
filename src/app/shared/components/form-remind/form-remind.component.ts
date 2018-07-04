@@ -8,7 +8,11 @@ import { Component, OnInit, Input } from '@angular/core';
 export class FormRemindComponent implements OnInit {
   @Input() className: string;
   @Input() isInvalid = false;
-  @Input() invalidText: string;
+  @Input() remindText: string;
+  @Input() invalidRemindText: string;
+  @Input() textareaLength: number;
+  @Input() content: string;
+  @Input() maxLength: string;
   remindCls = 'ala-form__remind';
   constructor() {}
 
