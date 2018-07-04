@@ -3,7 +3,7 @@
     <img *ngIf="groupImg" style="width: 100%" [src]="(groupImg | safeHtml)">
   </div>
   <div class="col-8">
-    <form [formGroup]="form" (ngSubmit)="manage(f)" #f="ngForm" novalidate>
+    <form [formGroup]="form" (ngSubmit)="manage()" #f="ngForm" novalidate>
       <div class="d-flex justify-content-between" style="margin-bottom: 15px">
         <span style="color: #26abe3; font-weight:700">
           群組資訊
@@ -70,7 +70,6 @@
             <app-form-textarea
               [maxLength]="textareaMaxLength"
               [content]="groupInfo?.groupDesc"
-              [remindText]="remindTextarea"
               [control]="form"
               [controlName]="formTextareaName"
               (onChange)="handleChangeTextarea($event)"
