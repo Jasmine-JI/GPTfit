@@ -7,7 +7,9 @@
   box-shadow: 1px 2px #888888;
   min-width: 115px;
 }
-
+.member-selector {
+  position: relative;
+}
 .member-selector .dropdown-menu {
   top: 40px;
   right:0px;
@@ -24,4 +26,44 @@
 .warn-manage:hover {
   color: #fff;
   background-color: #cb5e5e;
+}
+
+figure {
+  width: 58px;
+  height: 58px;
+  overflow: hidden;
+  margin: 0;
+  position: relative;
+  border-radius: 50%;
+  display: inline-block;
+  top: 50%;
+  left: 0%;
+  transform: translate(0%, -50%);
+}
+figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.member-selector span {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  width: 140px;
+  display: inline-block;
+  position: relative;
+  position: absolute;
+  top: 50%;
+  left: 70px;
+  transform: translate(0%, -50%);
+}
+.member-selector i {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translate(0%, -50%);
 }

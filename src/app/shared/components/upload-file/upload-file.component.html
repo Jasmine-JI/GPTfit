@@ -1,16 +1,49 @@
-<label class="fileupload">
-  <button class="alatech-btn alatech-btn--default"
-    (click)="handleBtnEvent($event)"
-    [disabled]="disabled"
+<div class="ala-upload">
+  <div *ngIf="isImageFileMode"
+    class="ala-upload-image"
+    [class.ala-upload-image--vertical]="isImgVertical$ | async"
   >
-    {{ btnText }}
-  </button>
-  <input type="file"
-    class="fileupload__input"
-    (change)="handleChange($event)"
-    (click)="handleClick"
-    [disabled]="disabled"
-    #fileUpload
-  />
-</label>
+    <button class="profile-picture__remove"
+      *ngIf="(isUploadNewImg$ | async) && imageURL?.length > 0"
+      (click)="removePreImage()"
+    >
+      <i class="fa fa-times-circle profile-picture__remove-icon"></i>
+    </button>
+      <img
+      *ngIf="!(isUploadNewImg$ | async) && imageURL?.length > 0"
+      [src]="imageURL | safeHtml"
+      >
+    <img
+      *ngIf="(isUploadNewImg$ | async)"
+      [src]="(fileInformation?.link | safeHtml)"
+    >
+  </div>
+  <div [class.ala-upload--descrption]="isImageFileMode">
+    <label class="fileupload">
+      <button class="alatech-btn alatech-btn--default"
+        (click)="handleBtnEvent($event)"
+        [disabled]="disabled"
+      >
+        {{ btnText }}
+      </button>
+      <input type="file"
+        class="fileupload__input"
+        (change)="handleChange($event)"
+        (click)="handleClick"
+        [disabled]="disabled"
+        #fileUpload
+      />
+    </label>
+    <div
+      *ngIf="isImageFileMode"
+      style="margin-top:15px;font-size:12px;font-weight:400;color:#999;text-align:left"
+    >
+      *照片格式限{{ accept }}
+      <br>
+      *大小限制為{{ maxFileSize / 1024}} KB以內
+    </div>
+  </div>
+</div>
+
+
 

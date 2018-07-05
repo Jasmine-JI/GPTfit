@@ -27,6 +27,7 @@ export class GroupInfoComponent implements OnInit {
   subCoachInfo: any;
   branchAdministrators: any;
   coachAdministrators: any;
+
   constructor(
     private route: ActivatedRoute,
     private groupService: GroupService,
@@ -76,6 +77,7 @@ export class GroupInfoComponent implements OnInit {
         }
       });
   }
+
   getGroupMemberList(_type) {
     const body = {
       // token: this.token,

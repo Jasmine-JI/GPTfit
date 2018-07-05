@@ -1,4 +1,9 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewEncapsulation,
+  HostListener
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { GroupService } from '../../services/group.service';
 import { UtilsService } from '@shared/services/utils.service';
@@ -11,6 +16,8 @@ import {
   Validators
 } from '@angular/forms';
 import { UserInfoService } from '../../services/userInfo.service';
+import { MsgDialogComponent } from '../../components/msg-dialog/msg-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-edit-group-info',
@@ -48,6 +55,12 @@ export class EditGroupInfoComponent implements OnInit {
     isBranchAdministrator: false,
     isCoach: false
   };
+  maxFileSize = 524288;
+  isUploading = false;
+  fileLink: string;
+  reloadFileText = '重新上傳';
+  chooseFileText = '選擇檔案';
+  acceptFileExtensions = ['JPG', 'JPEG', 'GIF', 'PNG'];
   get groupName() {
     return this.form.get('groupName');
   }
@@ -60,9 +73,24 @@ export class EditGroupInfoComponent implements OnInit {
     private utils: UtilsService,
     private router: Router,
     private fb: FormBuilder,
-    private userInfoService: UserInfoService
+    private userInfoService: UserInfoService,
+    public dialog: MatDialog
   ) {}
-
+  @HostListener('dragover', ['$event'])
+  public onDragOver(evt) {
+    evt.preventDefault();
+    evt.stopPropagation();
+  }
+  @HostListener('dragleave', ['$event'])
+  public onDragLeave(evt) {
+    evt.preventDefault();
+    evt.stopPropagation();
+  }
+  @HostListener('drop', ['$event'])
+  public onDrop(evt) {
+    evt.preventDefault();
+    evt.stopPropagation();
+  }
   ngOnInit() {
     this.groupId = this.route.snapshot.paramMap.get('groupId');
     this.form = this.fb.group({
@@ -202,5 +230,19 @@ export class EditGroupInfoComponent implements OnInit {
   }
   public handleChangeTextarea(code): void {
     this.form.patchValue({ groupDesc: code });
+  }
+  handleAttachmentChange(file) {
+    if (file) {
+      const { isSizeCorrect, isTypeCorrect, errorMsg } = file;
+      if (!isSizeCorrect || !isTypeCorrect) {
+        this.dialog.open(MsgDialogComponent, {
+          hasBackdrop: true,
+          data: {
+            title: 'Message',
+            body: errorMsg
+          }
+        });
+      }
+    }
   }
 }

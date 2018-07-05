@@ -1,6 +1,11 @@
 <div class="member-selector" [title]="title" (click)="toggleMenu()">
-  <img *ngIf="icon" [src]="(icon | safeHtml)" class="member-selector--photo">
-  <img *ngIf="!icon" src="/assets/images/user.png" class="member-selector--photo">
+  <figure>
+    <img *ngIf="icon" [src]="(icon | safeHtml)"
+      [style.width]="width"
+      [style.height]="height"
+    >
+    <img *ngIf="!icon" src="/assets/images/user.png">
+  </figure>
   <span>{{ name }}</span>
   <ng-container
     *ngIf="isSubGroupInfo && (role?.isBrandAdministrator || role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator)"
