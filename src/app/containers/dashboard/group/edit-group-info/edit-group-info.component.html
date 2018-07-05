@@ -1,6 +1,17 @@
 <div class="row">
   <div class="col-4">
-    <img *ngIf="groupImg" style="width: 100%" [src]="(groupImg | safeHtml)">
+    <app-upload-file
+      [isImageFileMode]="true"
+      [imageURL]="groupImg"
+      [maxFileSize]="maxFileSize"
+      [disabled]="isUploading"
+      [btnText]="this.fileLink ? reloadFileText : chooseFileText"
+      [isLoading]="isUploading"
+      [accept]="acceptFileExtensions.join()"
+      [reloadFileText]="reloadFileText"
+      [chooseFileText]="chooseFileText"
+      (onChange)="handleAttachmentChange($event)"
+    ></app-upload-file>
   </div>
   <div class="col-8">
     <form [formGroup]="form" (ngSubmit)="manage()" #f="ngForm" novalidate>
