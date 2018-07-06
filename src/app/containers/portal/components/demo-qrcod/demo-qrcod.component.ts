@@ -71,7 +71,7 @@ export class DemoQrcodComponent implements OnInit {
     }
   }
   handleCScode(code, sn) {
-    const weights = [2, 2, 6, 1, 8, 3, 4, 1, 1, 1, 1, 1, 1];
+    const weights = [2, 2, 6, 1, 8, 3, 4, 1, 1, 1, 1, 1, 1, 1];
     const arr = sn.split('').map((_str, idx) => _str.charCodeAt() * weights[idx]);
     let evenNum = 0;
     let oddNum = 0;
