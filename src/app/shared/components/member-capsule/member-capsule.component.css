@@ -9,7 +9,18 @@
 }
 .member-selector {
   position: relative;
+  width: 237px;
+  height: 64px;
+  border-radius: 32px;
+  border: 1px solid #ccc;
+  display: inline-block;
+  align-items: center;
+  vertical-align: middle;
 }
+.member-selector:hover {
+  cursor: pointer;
+}
+
 .member-selector .dropdown-menu {
   top: 40px;
   right:0px;
@@ -37,7 +48,7 @@ figure {
   border-radius: 50%;
   display: inline-block;
   top: 50%;
-  left: 0%;
+  left: 2px;
   transform: translate(0%, -50%);
 }
 figure img {

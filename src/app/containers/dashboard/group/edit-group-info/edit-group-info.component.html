@@ -130,7 +130,7 @@
                 <app-member-capsule
                   [role]="role"
                   [isSubGroupInfo]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator"
-                  [title]="subCoachItem?.userIcon"
+                  [title]="subCoachItem?.group_name"
                   [memberInfo]="subCoachItem"
                   [name]="subCoachItem && subCoachItem?.group_name"
                   [icon]="subCoachItem?.group_icon"
