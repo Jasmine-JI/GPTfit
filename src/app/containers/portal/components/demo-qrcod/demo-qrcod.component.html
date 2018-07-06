@@ -13,8 +13,8 @@
     <div class="row" style="margin-bottom: 15px">
       <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">產品照片：</div>
       <div class="col-sm-6 text-sm-left text-center" style="width: 100%">
-        <img *ngIf="!deviceInfo" src={{noProductImg}} style="width: 100%">
-        <img *ngIf="deviceInfo" src={{deviceInfo?.modeImgUrl}}  style="width: 100%">
+        <img *ngIf="!deviceInfo" src={{noProductImg}}>
+        <img *ngIf="deviceInfo" src={{deviceInfo?.modeImgUrl}} >
       </div>
     </div>
     <div class="row" style="margin-bottom: 15px">
