@@ -13,7 +13,7 @@
 }
 .ala-dialog.mat-dialog-title {
   margin: 0 -24px 20px;
-  background-color: #157fcc;
+  background-color: #2f4349;
   color: #fff;
   padding: 8px 25px;
 }
@@ -40,6 +40,10 @@ html {
   outline: 0;
 }
 
+.form-control.form-control--invalid {
+  border: 1px solid #c75353;
+  box-shadow: rgba(163, 50, 50, .34) 0 0 4px 0;
+}
 
 .form-field.form-field--invalid {
   border: 1px solid #c75353;
@@ -131,6 +135,10 @@ button:focus {
 .form__message {
   color: #cb5e5e;
   font-size: 12px;
+}
+.form__message--placeholder {
+  margin-left: 12px;
+  font-size: 16px;
 }
 
 .icon-btn {
@@ -267,6 +275,102 @@ a.alatech-btn:hover {
   background-color: #fff;
   font-weight: 700;
 }
+/* about auth page */
+.access-bg {
+  margin-top: -63px;
+  min-height: 100vh;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: url('/assets/images/center_bg.jpg');
+}
+
+.access-description {
+  color: #fff;
+  font-size: 40px;
+  margin: 100px 0 80px;
+}
+
+.access-panel {
+  max-width: 520px;
+  width: 100%;
+  border: 1px solid;
+}
+
+.access-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70px;
+  background-color: #2f4349;
+}
+
+.btn-primary.access-btn {
+  background-color: #2b819b;
+  width: 125px;
+}
+.btn-primary.access-btn:hover {
+  cursor: pointer;
+}
+.btn-primary.access-btn[disabled]:hover {
+  cursor: wait;
+}
+.access-text {
+  color: #757575;
+  margin-left: 12px;
+}
+
+.access-panel-body {
+  height: calc(100% - 70px);
+  background-color: #f4eeeb;
+  padding: 40px 75px;
+}
+/* 修改intl-tel */
+.ala-flag .flag {
+  display: none !important;
+  background: transparent;
+}
+
+.input-group-addon {
+  background-color: #fff!important;
+}
+.auth-submit {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0;
+}
+
+a.ban-send,
+a.ban-send:hover {
+  color: #ccc;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+@media(max-width: 991px) {
+  .access-bg {
+    margin-top: -63px;
+  }
+}
+
+@media(max-width: 768px) {
+  .access-header {
+    height: 50px;
+  }
+  .access-panel {
+    max-width: 400px;
+  }
+  .access-panel-body {
+    padding: 30px 15px;
+    height: calc(100% - 50px);
+  }
+  .access-description {
+    margin: 30px 0;
+    font-size: 25px;
+  }
+}
+
+
 /* about font family */
 @font-face {
   font-family: 'ITC';
@@ -276,6 +380,11 @@ a.alatech-btn:hover {
   font-weight: 700;
   font-style: normal;
 }
+.dropdown-menu.dropdown-menu-lang {
+  top: 47px;
+  left: -81px;
+}
+
 
 /* about print */
 @media print {

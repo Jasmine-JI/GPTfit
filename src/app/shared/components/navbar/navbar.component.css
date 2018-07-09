@@ -1,8 +1,9 @@
 .navabar-color a {
   color: #fff;
 }
+
 .bg-color {
-  background-color: #008bcd;
+  background-color: rgba(121, 125, 125, .5);
 }
 
 .navbar-toggler-icon {
@@ -12,12 +13,90 @@
 input[type='email']::-webkit-input-placeholder {
   color: #fff;
 }
+
 .nav-item {
   cursor: pointer;
   font-weight: bolder;
 }
 
 .nav-item .nav-link:hover {
-  padding-bottom: 5px;
-  border-bottom: 3px solid #fa8b00;
+  color: #9bf9ff;
+}
+
+.nav-item.active .nav-link {
+  color: #9bf9ff;
+}
+
+.navbar {
+  height: 63px;
+}
+
+.nav-item+.nav-item {
+  margin-left: 30px;
+}
+
+.navbar-brand.nav-item {
+  margin-right: 30px;
+}
+
+.show>.btn-secondary.dropdown-toggle {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.dropdown-menu.dropdown-menu-lang {
+  left: -35px;
+}
+
+.collapse.navbar-collapse.show .navbar-utility {
+  display: none;
+}
+
+.navbar-utility {
+  display: flex;
+  order: 1;
+}
+
+.ala-btn__lang {
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.nav-rwd__hamburger {
+  display: none;
+}
+
+@media (max-width: 991px) {
+  .nav-rwd {
+    display: none;
+  }
+  .nav-item+.nav-item {
+    margin-left: 0px;
+  }
+  .navbar-brand.nav-item {
+    margin-right: 0;
+  }
+  .navbar-utility {
+    order: 0;
+  }
+  .nav-rwd__hamburger {
+    display: block;
+  }
+  .nav-rwd__hamburger .dropdown-menu {
+    background-color: transparent;
+    border: none;
+  }
+  .nav-rwd__hamburger .dropdown-item {
+    color: #fff;
+  }
+  .nav-rwd__hamburger .dropdown-item:hover {
+    background-color: rgb(111, 111, 111);
+    cursor: pointer;
+  }
+}
+
+@media (max-width: 375px) {
+  .navbar-brand.nav-item h2 {
+    font-size: 25px;
+  }
 }

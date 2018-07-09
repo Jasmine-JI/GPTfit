@@ -6,7 +6,7 @@ import {
   Output,
   EventEmitter
 } from '@angular/core';
-import { imgUrls } from '@shared/components/intl-phone-input/img.ts';
+import { codes } from '@shared/components/intl-phone-input/countryCode';
 import { FormGroup, FormControl, NgForm } from '@angular/forms';
 
 @Component({
@@ -19,15 +19,16 @@ export class IntlPhoneInputComponent implements OnInit {
   phone = '';
   isClearIconShow = false;
   countryOptions: any;
-  selectedOption: any;
-  @Input() isInvalid: boolean;
+  countryCode: any;
+  @Input() isPhoneInvalid: boolean;
+  @Input() isCodeInvalid: boolean;
   @Input() control: FormGroup;
   @Input() isLoading: boolean;
+  @Input() placeholder: string;
   @Output() onChange = new EventEmitter();
   constructor() {}
   ngOnInit() {
-    this.countryOptions = imgUrls;
-    this.selectedOption = this.countryOptions[0];
+    this.countryOptions = codes;
   }
   @HostListener('document:click')
   close() {
@@ -39,7 +40,6 @@ export class IntlPhoneInputComponent implements OnInit {
   }
   handlePhoneChange(e) {
     this.phone = e.target.value.trim();
-    this.onChange.emit(this.selectedOption.code);
   }
   public inputEvent(e: any, isUpMode: boolean = false): void {
     if (e.target.value.length > 0 && this.phone) {
@@ -60,7 +60,7 @@ export class IntlPhoneInputComponent implements OnInit {
     this.active = !this.active;
   }
   chooseCountry(idx) {
-    this.selectedOption = this.countryOptions[idx];
-    this.onChange.emit(this.selectedOption.code);
+    this.countryCode = this.countryOptions[idx].code;
+    this.onChange.emit(this.countryCode);
   }
 }

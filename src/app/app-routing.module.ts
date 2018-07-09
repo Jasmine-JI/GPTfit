@@ -1,12 +1,13 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, Routes, RouterModule } from '@angular/router';
 import { Page404Component } from './shared/components/page404/page404.component';
+import { PortalComponent } from './containers/portal/portal.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'leaderboard', pathMatch: 'full' },
+  { path: '',  component: PortalComponent },
   {
-    path: 'dashboardalaala',
-    redirectTo: 'dashboardalaala',
+    path: 'dashboard',
+    redirectTo: 'dashboard',
     pathMatch: 'full'
   },
   { path: '404', component: Page404Component }

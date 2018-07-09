@@ -32,12 +32,12 @@ export class EventManagementComponent implements OnInit {
   }
   goEnroll(eventId, sessionId) {
     this.router.navigateByUrl(
-      `/dashboardalaala/enroll/${eventId}?session_id=${sessionId}`
+      `/dashboard/enroll/${eventId}?session_id=${sessionId}`
     );
   }
   goViewEnroll(eventId, sessionId) {
     this.router.navigateByUrl(
-      `/dashboardalaala/enroll/${eventId}/preview?session_id=${sessionId}`
+      `/dashboard/enroll/${eventId}/preview?session_id=${sessionId}`
     );
   }
   handleDisplayTop3(sessionId, eventId, mapIdStr) {

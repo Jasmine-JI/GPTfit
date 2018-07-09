@@ -23,7 +23,6 @@ tr.here {
   cursor: pointer;
 }
 
-
 .leaderboard-bg {
   min-height: 100vh;
   background-position: center;
@@ -32,6 +31,7 @@ tr.here {
 }
 
 .leaderboard-layer {
+  margin-top: -63px;
   background: rgb(100, 185, 196);
   background: linear-gradient( 135deg, rgba(100, 185, 196, 0.2) 0%, rgba(6, 24, 91, 0.8) 100%);
   /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
@@ -62,16 +62,19 @@ table>tbody>tr.here:hover {
   background-color: #cb5e5e;
 }
 
-td > a.ranking-link {
+td>a.ranking-link {
   color: #157fcc;
 }
-td > a.ranking-link:hover {
+
+td>a.ranking-link:hover {
   text-decoration: none;
   color: #157fcc;
 }
+
 .ranking-link {
   cursor: pointer;
 }
+
 hr {
   border-color: #ddd;
 }
@@ -106,7 +109,7 @@ tr.tr-only-hide {
 }
 
 .leaderboard-rwd {
-  padding-top: 50px;
+  padding-top: 66px;
 }
 
 .table-responsive {
@@ -264,6 +267,96 @@ tr.tr-only-hide {
   transform: rotate(360deg);
 }
 
+.form-label {
+  margin-right: 10px;
+}
+
+.searchbar-menu--text {
+  font-weight: 500;
+  color: #999;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.searchbar-menu--text.active {
+  margin-bottom: 4px;
+  border-bottom: 2px solid #263147;
+  color: #263147;
+}
+
+.rank__datepicker {
+  vertical-align: middle;
+  display: inline-block;
+}
+
+.tablist {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  font-size: 0;
+  border-bottom: 5px solid #26ABE4;
+}
+
+.tablist__tab {
+  display: inline-block;
+  cursor: pointer;
+  background-color: #f9f9f9;
+  border-radius: 4px 4px 0 0;
+  width: 170px;
+  text-align: center;
+  color: #999;
+  font-size: 12px;
+  opacity: 0.9;
+  line-height: 22px;
+  padding: 10px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.tablist__tab:nth-child(1) {
+  max-width: 90px;
+}
+
+.tablist__tab+.tablist__tab {
+  border-left: 1px solid #dbd8ca;
+}
+
+.tablist__tab--selected {
+  background-color: #26ABE4;
+  color: #fff;
+  opacity: 1;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.tablist__tab:hover {
+  cursor: pointer;
+}
+
+.ranking-link .medal {
+  width: 30px;
+  height: 30px;
+  transition: 0.70s;
+  -webkit-transition: 0.70s;
+  -moz-transition: 0.70s;
+  -ms-transition: 0.70s;
+  -o-transition: 0.70s;
+}
+
+.ranking-link:hover .medal {
+  transition: 0.70s;
+  -webkit-transition: 0.70s;
+  -moz-transition: 0.70s;
+  -ms-transition: 0.70s;
+  -o-transition: 0.70s;
+  -webkit-transform: rotate(360deg);
+  -moz-transform: rotate(360deg);
+  -o-transform: rotate(360deg);
+  -ms-transform: rotate(360deg);
+  transform: rotate(360deg);
+}
+
 @media (min-width: 992px) {
   .container {
     min-width: 890px;
@@ -277,10 +370,12 @@ tr.tr-only-hide {
 }
 
 @media (max-width: 991px) {
+  .leaderboard-layer {
+    margin-top: 0px;
+  }
   .tablist {
     border-bottom: 1px solid #dbd8ca;
   }
-
   .tablist__tab--selected {
     font-size: 14px;
     line-height: 22px;
@@ -288,7 +383,6 @@ tr.tr-only-hide {
   .ranking-table__cell--head {
     font-size: 12px;
   }
-
   .tablist__tab {
     width: calc(100% / 3);
     border-radius: 0px;
@@ -298,7 +392,6 @@ tr.tr-only-hide {
     width: calc(100% / 3);
     max-width: 100%;
   }
-
   .tablist__tab--total4 {
     width: 100%;
   }
@@ -363,8 +456,6 @@ tr.tr-only-hide {
   .table-rwd tbody td.no-data:before {
     /* content: ''; */
   }
-
-
   /*當RWD縮小的時候.table-bordered 會有兩條線，所以針對.table-bordered去做修正*/
   .table-rwd.table-bordered td,
   .table-rwd.table-bordered th,
@@ -372,3 +463,4 @@ tr.tr-only-hide {
     border: 0;
   }
 }
+

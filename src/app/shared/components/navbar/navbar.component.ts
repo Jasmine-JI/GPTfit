@@ -2,6 +2,10 @@ import { Component, OnInit, HostListener, Inject } from '@angular/core';
 import { GlobalEventsManager } from '@shared/global-events-manager';
 import { Router } from '@angular/router';
 import { WINDOW } from '@shared/services/window.service';
+import { AuthService } from '@shared/services/auth.service';
+import { Observable } from 'rxjs/Observable';
+import { TranslateService } from '@ngx-translate/core';
+import { UtilsService } from '../../services/utils.service';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -16,23 +20,46 @@ export class NavbarComponent implements OnInit {
   href: string;
   isShowResetPwd = false;
   isShowDashboard = false;
+  isShowLeaderboard = false;
   deviceWidth: number;
-
+  navItemNum: number;
+  login$: Observable<boolean>;
+  langName: string;
+  langData = {
+    'zh-tw': '繁體中文',
+    'zh-cn': '简体中文',
+    'en-us': 'English'
+  };
   constructor(
     private globalEventsManager: GlobalEventsManager,
     private router: Router,
-    @Inject(WINDOW) private window
+    private authService: AuthService,
+    private utilsService: UtilsService,
+    @Inject(WINDOW) private window,
+    private translateService: TranslateService
   ) {}
 
   ngOnInit() {
+    this.langName = this.langData[this.utilsService.getLocalStorageObject('locale')];
+    this.login$ = this.authService.getLoginStatus();
     this.deviceWidth = window.innerWidth;
     this.href = this.router.url;
+    if (this.router.url === '/leaderboard') {
+      this.isShowLeaderboard = true;
+      this.navItemNum = 2;
+    }
+    if (this.router.url === '/signin') {
+      this.navItemNum = 3;
+    }
+    if (this.router.url === '/') {
+      this.navItemNum = 1;
+    }
     if (this.href.indexOf('resetpassword') > -1) {
       this.isShowResetPwd = true;
     } else {
       this.isShowResetPwd = false;
     }
-    if (this.href.indexOf('dashboardalaala') > -1) {
+    if (this.href.indexOf('dashboard') > -1) {
       const sessionValue = sessionStorage.web;
       if (sessionValue === '12345678') {
         this.isShowDashboard = true;
@@ -87,5 +114,16 @@ export class NavbarComponent implements OnInit {
   }
   reloadPage() {
     location.reload();
+  }
+  logout() {
+    this.authService.logout();
+  }
+  chooseNavItem(num: number) {
+    this.navItemNum = num;
+  }
+  switchLang(lang: string) {
+    this.langName = this.langData[lang];
+    this.translateService.use(lang);
+    this.utilsService.setLocalStorageObject('locale', lang);
   }
 }
