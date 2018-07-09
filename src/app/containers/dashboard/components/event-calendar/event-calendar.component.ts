@@ -130,7 +130,7 @@ export class EventCalendarComponent implements OnInit {
   }
   goEnrollFrom(event_id, session_id) {
     this.router.navigateByUrl(
-      '/dashboardalaala/enroll/' + `${event_id}` + `?session_id=${session_id}`
+      '/dashboard/enroll/' + `${event_id}` + `?session_id=${session_id}`
     );
   }
   handleDisplayTop3(sessionId, eventId, mapIdStr) {

@@ -3,7 +3,8 @@ var request = require("request");
 var async = require('async');
 const { getMapList } = require('../models/map_model');
 
-var router = express.Router();
+var router = express.Router(),
+    routerProtected = express.Router();
 
 function httpGet(url, callback) {
   const options = {
@@ -31,7 +32,7 @@ router.get('/gpxUrl', function(req, res, next) {
   });
 });
 
-router.get('/', function(req, res, next) {
+routerProtected.get('/', function (req, res, next) {
   const { con } = req;
   const sql = 'truncate table ??';
   con.query(sql, 'race_map_info', function(err, rows) {
@@ -88,7 +89,7 @@ router.get('/', function(req, res, next) {
 
 });
 
-
-
-
-module.exports = router;
+module.exports = {
+  protected: routerProtected,
+  unprotected: router
+};

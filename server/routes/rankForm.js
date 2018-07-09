@@ -1,6 +1,7 @@
 var express = require('express');
 var moment = require('moment');
-var router = express.Router();
+var router = express.Router(),
+    routerProtected = express.Router();
 
 var currentDate = function() {
   var today = new Date();
@@ -19,7 +20,7 @@ var currentDate = function() {
   return today;
 };
 
-router.get(
+routerProtected.get(
   '/manualUpdate',
   function(req, res, next) {
     const { con } = req;
@@ -700,7 +701,7 @@ router.post('/fakeData/race_data', async (req, res) => {
     });
   }
 });
-router.get('/todayRank', function(req, res, next) {
+routerProtected.get('/todayRank', function(req, res, next) {
   const { con, query: { start_date, end_date, map_id } } = req;
   const sql = `
 SELECT distinct a.rank AS rank
@@ -863,4 +864,8 @@ router.get('/eventRank', function(req, res, next) {
   });
 });
 // Exports
-module.exports = router;
+module.exports = {
+  protected: routerProtected,
+  unprotected: router
+};
+

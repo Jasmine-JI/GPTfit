@@ -69,5 +69,117 @@
     </form>
   </div>
   <div class="mask" [class.mask--show]="isMaskShow" (click)="touchMask()"></div>
+  <div style="min-height: 100vh; margin-top: -63px" *ngIf="isIntroducePage">
+    <header>
+      <div class="home-header">
+        <div class="home-header-title">
+          <h1>在Ala Conter上，獲得健體分析<br> 生活追蹤、即時分享與競賽樂趣</h1>
+        </div>
+      </div>
+    </header>
+    <section>
+      <div class="container">
+        <div class="home-connect-app">
+          <div class="home-connect-info">
+            <div class="message">
+              <h3 style="margin-bottom: 15px;font-weight: 700">ALA Connect 行動版</h3>
+              <p style="font-size:19px">從您的智慧型手機檢視您的運動資料，與相容的Alatech 裝置
+                配對後，可建立起全天候的步數、心率追蹤，睡眠品質。
+                並且在運動過程中全程紀錄
+              </p>
+            </div>
+            <div class="app-link-container">
+              <a target="_blank" class="app-link" href="https://itunes.apple.com/us/app/alaconnect/id1386657871?l=zh&ls=1&mt=8">
+                <img class="app-icon" src="/assets/images/introduce/getApp_01_apple.png" alt="ala connect apple ios app">
+              </a>
+              <a target="_blank" class="app-link" href="https://play.google.com/store/apps/details?id=pack.ala.ala_connect"
+                alt="ala connect android google app"
+              >
+                <img class="app-icon" src="/assets/images/introduce/getApp_02_googleplay.png">
+              </a>
+              <a target="_blank" class="app-link" href="https://www.alatech.com.tw/upload_files/alatech/website/ala_connect.apk"
+                alt="ala connect apk download"
+              >
+                <img class="app-icon" src="/assets/images/introduce/getApp_03_apk.png">
+              </a>
+            </div>
+          </div>
+          <div class="ala-app-info">
+            <img src="/assets/images/introduce/T1-connect.jpg" alt="Ala Connect">
+          </div>
+        </div>
+      </div>
+    </section>
+    <section>
+      <div class="home-cloudRun-description">
+        <div class="home-header-title">
+          <h1>互動式的競賽，讓路跑更有趣<br>累積成就，互相砥礪</h1>
+        </div>
+      </div>
+    </section>
+    <section>
+      <div class="container">
+        <div class="home-cloudRun-app">
+          <div>
+            <div class="cloudRun-app-container">
+              <img style="width: 100%"src="/assets/images/introduce/T2-cloudrun.jpg" alt="Ala Cloud Run">
+            </div>
+            <div class="cloudRun-app-info">
+              <div class="message">
+                <h3 style="margin-bottom: 15px;font-weight: 700">ALA Cloud Run 行動版</h3>
+                <p style="font-size:19px">是一款提供跑步機真實路線連線競賽與社群互動應用，
+                與相容的Alatech 跑步機配對後，可建立起雲端路跑，
+                將路線高度變化透過跑步機模擬實際路況。
+                </p>
+              </div>
+              <div class="app-link-container">
+                <a target="_blank" class="app-link"
+                  href="https://itunes.apple.com/us/app/cloud-run/id1316368345?mt=8"
+                  alt="ala cloud run Apple ios app"
+                >
+                  <img class="app-icon" src="/assets/images/introduce/getApp_01_apple.png">
+                </a>
+                <a target="_blank" class="app-link"
+                  href="https://play.google.com/store/apps/details?id=pack.ala.ala_cloudrun"
+                  alt="ala cloud run android google app"
+                >
+                  <img class="app-icon" src="/assets/images/introduce/getApp_02_googleplay.png">
+                </a>
+                <a target="_blank" class="app-link"
+                  href="https://www.alatech.com.tw/upload_files/alatech/website/ala_cloudrun.apk"
+                  alt="ala cloud run apk download"
+                >
+                  <img class="app-icon" src="/assets/images/introduce/getApp_03_apk.png">
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section>
+      <div class="home-coach-description">
+        <div class="home-header-title">
+          <h1>打造即時同步運動資訊<br>群體訓練更加有效</h1>
+        </div>
+      </div>
+    </section>
+    <section>
+      <div class="container">
+        <div class="">
+          <div style="display: flex;align-items: center;justify-content: center">
+            <img class="coach-img"src="/assets/images/introduce/T3-center.jpg" alt="ala coach Board web">
+            <div class="message">
+              <h3 style="margin-bottom: 15px;font-weight: 700">Coach Board 網頁版</h3>
+              <p style="font-size:19px;margin-bottom: 80px">提供教練及時觀看學員運動狀況，同步相同的活動強度，<br>
+              獲得更佳的運動效率。學員也可以獲得活動歷程資訊。
+              </p>
+              <a href="#" style="font-size: 24px;" (click)="handleSignin($event)">立即登入 >></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
   <router-outlet></router-outlet>
 </div>

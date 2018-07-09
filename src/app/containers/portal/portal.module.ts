@@ -1,6 +1,6 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
 import { PortalRoutingModule } from './portal-routing.module';
@@ -25,6 +25,16 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { DemoQrcodComponent } from './components/demo-qrcod/demo-qrcod.component';
 import { QrcodeService } from './services/qrcode.service';
 import { NgProgressModule } from 'ngx-progressbar';
+import { SigninComponent } from './components/signin/signin.component';
+import { AuthService } from '@shared/services/auth.service';
+import { UtilsService } from '@shared/services/utils.service';
+import { SharedModule } from '@shared/shared.module';
+import { SignupComponent } from './components/signup/signup.component';
+import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { ForgetpwdComponent } from './components/forgetpwd/forgetpwd.component';
+import { RandomCodeService } from './services/random-code.service';
+import { SignupService } from './services/signup.service';
+import { ForgetService } from './services/forget.service';
 
 @NgModule({
   imports: [
@@ -35,15 +45,22 @@ import { NgProgressModule } from 'ngx-progressbar';
     MyDatePickerModule,
     SharedComponentsModule,
     SharedPipes,
-    NgProgressModule
+    NgProgressModule,
+    ReactiveFormsModule,
+    SharedModule
   ],
   providers: [
     MapGPXService,
     RankFormService,
     MapService,
     QrcodeService,
+    AuthService,
     GlobalEventsManager,
     ResetPasswordService,
+    UtilsService,
+    RandomCodeService,
+    SignupService,
+    ForgetService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: EmptyResponseBodyErrorInterceptor,
@@ -57,7 +74,11 @@ import { NgProgressModule } from 'ngx-progressbar';
     LeaderboardComponent,
     MapInfoComponent,
     PasswordComponent,
-    DemoQrcodComponent
-  ]
+    DemoQrcodComponent,
+    SigninComponent,
+    SignupComponent,
+    ForgetpwdComponent
+  ],
+  entryComponents: [MessageBoxComponent]
 })
 export class PortalModule {}

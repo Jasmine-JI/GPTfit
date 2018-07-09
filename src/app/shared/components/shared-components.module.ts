@@ -9,16 +9,29 @@ import { RouterModule } from '@angular/router';
 import { IntlPhoneInputComponent } from './intl-phone-input/intl-phone-input.component';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
+import { SharedModule } from '../shared.module';
+import { MessageBoxComponent } from './message-box/message-box.component';
+import { CustomMaterialModule } from '../custom-material.module';
+import { ConfirmButtonComponent } from './confirm-button/confirm-button.component';
 
 @NgModule({
-  imports: [CommonModule, RouterModule, FormsModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    ReactiveFormsModule,
+    SharedModule,
+    CustomMaterialModule
+  ],
   declarations: [
     NavbarComponent,
     Page404Component,
     LoadingComponent,
     PaginationComponent,
     UploadFileComponent,
-    IntlPhoneInputComponent
+    IntlPhoneInputComponent,
+    MessageBoxComponent,
+    ConfirmButtonComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -27,7 +40,9 @@ import { ReactiveFormsModule } from '@angular/forms';
     LoadingComponent,
     PaginationComponent,
     UploadFileComponent,
-    IntlPhoneInputComponent
+    IntlPhoneInputComponent,
+    MessageBoxComponent,
+    ConfirmButtonComponent
   ]
 })
 export class SharedComponentsModule {}

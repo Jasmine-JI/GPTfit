@@ -1,5 +1,5 @@
 .main {
-  padding-top: 56px;
+  padding-top: 63px;
   width: 100%;
 }
 
@@ -76,11 +76,170 @@
   display: inline-block;
 }
 
+
+/* home */
+.home-header {
+  background-image: url('/assets/images/introduce/T1.jpg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 568px;
+  width: 100%;
+  position: relative;
+}
+.home-header-title {
+  padding: 9px 35px;
+  min-width: 257px;
+  color: #fff;
+  background-color: rgba(0, 0, 0, .35);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.home-header-title h1 {
+  font-size: 20px;
+  line-height: 40px;
+  text-align: center;
+}
+
+.home-connect-app {
+  height: 683px;
+}
+.message {
+  margin: 50px 0px;
+  text-align: center;
+}
+
+.app-link {
+  display: inline-block;
+  height: 90px;
+}
+.app-link img {
+  height: 100%;
+}
+.app-link + .app-link {
+  margin-top: 30px;
+}
+
+.home-cloudRun-description {
+  background-image: url('/assets/images/introduce/T2.jpg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 568px;
+  width: 100%;
+  position: relative;
+}
+.home-cloudRun-app {
+  height: 700px;
+  display: flex;
+}
+.home-coach-description {
+  background-image: url('/assets/images/introduce/T3.jpg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 100%;
+  height: 568px;
+  position: relative;
+}
+.app-link-container {
+  display: flex;
+  flex-direction: column;
+}
+.cloudRun-app-container {
+  display: none;
+}
+.cloudRun-app-info {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center
+}
+.coach-img {
+  display: none;
+}
+.home-connect-info {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center
+}
+.ala-app-info {
+  display: none;
+}
+
 @media (min-width: 768px) {
   .date-picker {
     vertical-align: middle;
     display: inline-block;
     width: calc((100% - 30px) / 2);
   }
+  .home-header {
+    height: 837px;
+  }
+  .home-header-title {
+    padding: 11px 50px;
+    min-width: 382px;
+    color: #fff;
+  }
+  .ala-app-info {
+    display: block;
+    height: 100%;
+  }
+  .ala-app-info img {
+    height: 100%;
+  }
+  .home-connect-app {
+    display: flex;
+  }
+  .cloudRun-app-container {
+    display: block;
+  }
+  .home-cloudRun-app {
+    height: 100%;
+    margin: 30px 0px;
+  }
+  .coach-img {
+    width: 45%;
+    display: block;
+  }
+  .message a {
+    float: right;
+  }
+  .home-cloudRun-description {
+    height: 887px;
+  }
+  .home-coach-description {
+    height: 841px;
+  }
 }
-
+@media(min-width: 1440px) {
+  .app-link + .app-link {
+    margin-top: 0px;
+    margin-left: 35px;
+  }
+  .app-link-container {
+    flex-direction: row;
+  }
+  .app-link img {
+    width: 174px;
+    height: auto;
+  }
+  .cloudRun-app-info {
+    flex-direction: row;
+    align-items: flex-end;
+  }
+  .cloudRun-app-info .app-link-container {
+    margin-left: 95px;
+  }
+  .home-header-title {
+    padding: 40px 120px;
+  }
+  .home-header-title h1 {
+    font-size: 35px;
+    line-height: 70px;
+  }
+}

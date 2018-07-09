@@ -1,5 +1,12 @@
+/* * {
+  border: 1px solid #fff;
+} */
+.mat-drawer-container {
+  background-color: #fff;
+}
 .dashboard-rwd {
   padding-top: 80px;
+  min-height: calc(100% - 40px);
 }
 
 .alatech-ribbon {
@@ -25,5 +32,208 @@
   padding: 0px 10px;
   background-color: #fff;
   font-weight: 700;
+}
+
+.main-nav-toggle {
+  height: 34px;
+  width: 34px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px #fff;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 400ms ease-in;
+  display: flex;
+}
+
+.minimize-main-nav.main-nav-toggle {
+  -webkit-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+.main-nav-toggle-icon {
+  color: #fff;
+}
+.main-nav-toggle-icon.icon-svg_web-icon_073-level_fold  {
+  margin: 50% 0 0 50%;
+  -webkit-transform: translate(-58%,-58%);
+  -ms-transform: translate(-58%,-58%);
+  transform: translate(-58%,-58%);
+  text-align: center;
+}
+
+.navabar-color a {
+  color: #fff;
+}
+
+.header__color {
+  background-color: #797d7d;
+}
+
+.ala-dashboard-header {
+  color: #fff;
+  height: 60px;
+  padding: 0 10px 0 15px;
+  position: fixed;
+  top: 0;
+  display: flex;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  width: calc(100% - 270px);
+  z-index: 10;
+}
+.minimize-main-nav .ala-dashboard-header {
+  width: 100%;
+}
+.mat-drawer {
+  background-color: #1f2626;
+  color: #fff;
+  width: 270px;
+}
+
+.mat-expansion-panel-header-title {
+  color: #fff;
+}
+.mat-expansion-panel {
+  background-color: #1f2626;
+  color: #fff;
+}
+.mat-expansion-panel-header.ala-expansion-panel-header {
+  padding: 5px 15px 5px 20px;
+  font-size: 16px;
+}
+
+::ng-deep .mat-expansion-panel-content .mat-expansion-panel-body {
+  padding: 0px;
+}
+
+
+::ng-deep .ala-expansion-panel-header>.mat-expansion-indicator:after {
+  color: #fff;
+}
+
+.ala-sidenav-icon {
+  margin-right: 10px;
+  font-size: 20px;
+}
+.mat-nav-list > li {
+  list-style: none;
+}
+.ala-sidenav-item {
+  list-style: none;
+  padding: 5px 15px 5px 20px;
+}
+
+.ala-sidenav-menu-item {
+  list-style: none;
+  padding: 5px 5px 5px 55px;
+}
+
+.ala-sidenav-menu-item:hover {
+  background: #1e1e1e;
+  cursor: pointer;
+}
+
+.mat-expansion-panel.mat-expansion-panel-spacing {
+  background-color: #363c3c;
+}
+.ala-sidenav-item.ala-sidenav-menu-item__active,
+.ala-sidenav-menu-item.ala-sidenav-menu-item__active {
+
+  color: #9bf9ff
+}
+.main-nav-toggle-icon.icon-svg_web-icon_005-menu {
+  display: none;
+}
+/* .mat-drawer-transition .mat-drawer-content {
+  margin-left: 270px;
+} */
+.ala-dashboard-logo {
+  font-size:32px;
+  line-height: 32px;
+  margin: 16px 20px;
+  position: fixed;
+}
+
+.navbar.ala-dashboard-nav{
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+}
+.mat-nav-list {
+  display: flex;
+  flex-direction: column;
+  padding-top: 8px;
+  position: fixed;
+  width: 100%;
+  top: 60px;
+}
+.minimize-main-nav .main-nav-list {
+  overflow: hidden;
+}
+.minimize-main-nav .ala-dashboard-nav {
+  width: 60px;
+}
+.header-user-photo {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%
+}
+.header-nav-item {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+  cursor: pointer;
+}
+.footer-details {
+  color: #aaa;
+  text-align: center;
+  font-size: 12px;
+}
+.mobile-menu-toggle {
+  display: flex;
+}
+.dropdown.show .dropdown-menu.dropdown-user-menu.show {
+  top: -3px !important;
+  left: 5px !important;
+}
+
+@media(max-width: 768px) {
+  .main-nav-toggle-icon.icon-svg_web-icon_073-level_fold {
+    display: none;
+  }
+  .main-nav-toggle-icon.icon-svg_web-icon_005-menu {
+    display: block;
+    font-size: 44px;
+    width: 44px;
+  }
+  .main-nav-toggle {
+    box-shadow: none;
+  }
+  .mat-drawer {
+    width: calc(100% - 63px);
+  }
+  .navbar.ala-dashboard-logo {
+    display: none;
+  }
+  .mat-drawer-transition .mat-drawer-content {
+    margin-left: calc(100% - 63px);
+  }
+  .ala-dashboard-header {
+    width: 100%;
+  }
+  .main-nav-toggle {
+    height: 44px;
+    width: 44px;
+  }
+  .mobile-menu-toggle {
+    padding: 7px 15px;
+    margin-left: -15px;
+    background-color: #404646;
+  }
 }
 

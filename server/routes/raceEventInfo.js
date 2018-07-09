@@ -1,13 +1,15 @@
 var express = require('express');
 var moment = require('moment');
-var router = express.Router();
+var router = express.Router(),
+    routerProtected = express.Router();
+
 const {
   checkSessionExit,
   checkEventId,
   checkShowPortalNum
 } = require('../models/event_model');
 
-router.get('/', function(req, res, next) {
+routerProtected.get('/', function(req, res, next) {
   const { con, query: { event_id, session_id } } = req;
   const query1 =
     event_id
@@ -26,7 +28,7 @@ router.get('/', function(req, res, next) {
   });
 });
 
-router.post('/create', (req, res) => {
+routerProtected.post('/create', (req, res) => {
   const {
     body: {
       event_name,
@@ -193,7 +195,7 @@ router.post('/create', (req, res) => {
   }
 });
 
-router.delete('/:id', function(req, res, next) {
+routerProtected.delete('/:id', function(req, res, next) {
   const { con, params: { id } } = req;
   const sql = `
   delete from ??
@@ -208,7 +210,7 @@ router.delete('/:id', function(req, res, next) {
   });
 });
 
-router.put('/edit', (req, res, next) => {
+routerProtected.put('/edit', (req, res, next) => {
   const {
     body: {
       event_id,
@@ -387,7 +389,7 @@ router.get('/rankTab', function(req, res, next) {
   });
 });
 
-router.get('/map', function(req, res, next) {
+routerProtected.get('/map', function(req, res, next) {
   const { con } = req;
   const sql = `select map_index, map_name from ?? `;
   con.query(sql, 'race_map_info', function(err, rows) {
@@ -398,7 +400,7 @@ router.get('/map', function(req, res, next) {
   });
 });
 
-router.get('/top3', function(req, res, next) {
+routerProtected.get('/top3', function(req, res, next) {
   const {
     con,
     query: {
@@ -477,4 +479,7 @@ router.get('/top3', function(req, res, next) {
   );
 });
 // Exports
-module.exports = router;
+module.exports = {
+  protected: routerProtected,
+  unprotected: router
+};
