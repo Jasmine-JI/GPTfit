@@ -37,42 +37,42 @@ export class GroupInfoComponent implements OnInit {
 
   ngOnInit() {
     this.groupId = this.route.snapshot.paramMap.get('groupId');
-    // this.token = this.utils.getToken();
-    // const body = {
-    //   token: this.token,
-    //   groupId: this.groupId
-    // };
+    this.token = this.utils.getToken();
+    const body = {
+      token: this.token,
+      groupId: this.groupId
+    };
     let params = new HttpParams();
     params = params.set('groupId', this.groupId);
-    this.groupService.fetchGroupListDetail(params).subscribe(res => {
+    this.groupService.fetchGroupListDetail(body).subscribe(res => {
       this.groupInfo = res.info;
-      const { groupIcon, groupId } = this.groupInfo;
-      this.groupImg = this.utils.buildBase64ImgString(groupIcon);
-      this.group_id = this.utils.displayGroupId(groupId);
-      this.groupLevel = this.utils.displayGroupLevel(groupId);
-    });
-    this.groupService.getGroupJoinStatus(params).subscribe(res => {
-      if (res.info) {
-        this.joinStatus = res.info.joinStatus;
+      const { groupIcon, groupId, selfJoinStatus } = this.groupInfo;
+      if (selfJoinStatus) {
+        this.joinStatus = selfJoinStatus;
       } else {
         this.joinStatus = 0;
       }
+      this.groupImg = this.utils.buildBase64ImgString(groupIcon);
+      this.group_id = this.utils.displayGroupId(groupId);
+      this.groupLevel = this.utils.displayGroupLevel(groupId);
     });
     this.getGroupMemberList(1);
   }
   handleActionGroup(_type) {
     const body = {
+      token: this.token,
       groupId: this.groupId,
       actionType: _type
     };
     this.groupService
       .actionGroup(body)
-      .subscribe(({ resultCode, rtnMsg, joinStatus }) => {
+      .subscribe(({ resultCode, info: { selfJoinStatus } }) => {
+        console.log('selfJoinStatus: ', selfJoinStatus);
         if (resultCode === 200) {
           if (_type === 2) {
             this.joinStatus = 0;
           } else {
-            this.joinStatus = joinStatus;
+            this.joinStatus = selfJoinStatus;
           }
         }
       });
@@ -80,7 +80,7 @@ export class GroupInfoComponent implements OnInit {
 
   getGroupMemberList(_type) {
     const body = {
-      // token: this.token,
+      token: this.token,
       groupId: this.groupId,
       infoType: _type
     };
@@ -94,19 +94,19 @@ export class GroupInfoComponent implements OnInit {
           this.subBrandInfo = this.subGroupInfo.brands.map(_brand => {
             return {
               ..._brand,
-              group_icon: this.utils.buildBase64ImgString(_brand.group_icon)
+              groupIcon: this.utils.buildBase64ImgString(_brand.groupIcon)
             };
           });
           this.subBranchInfo = this.subGroupInfo.branches.map(_branch => {
             return {
               ..._branch,
-              group_icon: this.utils.buildBase64ImgString(_branch.group_icon)
+              groupIcon: this.utils.buildBase64ImgString(_branch.groupIcon)
             };
           });
           this.subCoachInfo = this.subGroupInfo.coaches.map(_coach => {
             return {
               ..._coach,
-              group_icon: this.utils.buildBase64ImgString(_coach.group_icon)
+              groupIcon: this.utils.buildBase64ImgString(_coach.groupIcon)
             };
           });
         } else {
@@ -115,7 +115,7 @@ export class GroupInfoComponent implements OnInit {
             .map(_info => {
               return {
                 ..._info,
-                userIcon: this.utils.buildBase64ImgString(_info.userIcon)
+                memberIcon: this.utils.buildBase64ImgString(_info.memberIcon)
               };
             })
             .filter(newInfo => !(typeof newInfo === 'undefined'));
@@ -137,8 +137,10 @@ export class GroupInfoComponent implements OnInit {
       this.getGroupMemberList(1);
     } else if (index === 1) {
       this.getGroupMemberList(2);
-    } else {
+    } else if (index === 2) {
       this.getGroupMemberList(3);
+    } else {
+      this.getGroupMemberList(4);
     }
   }
   goEditPage() {

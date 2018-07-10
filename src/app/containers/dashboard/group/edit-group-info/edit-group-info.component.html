@@ -78,6 +78,7 @@
         <div class="ala-list__item">
           <label class="ala-form__label">介紹：</label>
           <div style="width: calc(100% - 50px)">
+            {{ groupDesc.valid }}
             <app-form-textarea
               [maxLength]="textareaMaxLength"
               [content]="groupInfo?.groupDesc"
@@ -92,7 +93,7 @@
       </div>
       <div>
         <mat-tab-group (selectChange)="changeGroupInfo($event)" class="ala-tab-group">
-          <mat-tab label="子群組資訊" (click)="getGroupMemberList(1)">
+          <mat-tab label="子群組資訊">
             <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">品牌</label>
 
             <div style="margin-bottom: 15px">
@@ -100,10 +101,10 @@
                 <app-member-capsule
                   [role]="role"
                   [isSubGroupInfo]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer"
-                  [title]="subBrandItem?.group_name"
+                  [title]="subBrandItem?.groupName"
                   [memberInfo]="subBrandItem"
-                  [name]="subBrandItem && subBrandItem?.group_name"
-                  [icon]="subBrandItem?.group_icon"
+                  [name]="subBrandItem && subBrandItem?.groupName"
+                  [icon]="subBrandItem?.groupIcon"
                 >
                 </app-member-capsule>
               </ng-container>
@@ -115,10 +116,10 @@
                 <app-member-capsule
                   [role]="role"
                   [isSubGroupInfo]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator"
-                  [title]="subBranchItem?.group_name"
+                  [title]="subBranchItem?.groupName"
                   [memberInfo]="subBranchItem"
-                  [name]="subBranchItem && subBranchItem?.group_name"
-                  [icon]="subBranchItem?.group_icon"
+                  [name]="subBranchItem && subBranchItem?.groupName"
+                  [icon]="subBranchItem?.groupIcon"
                 >
                 </app-member-capsule>
               </ng-container>
@@ -130,16 +131,16 @@
                 <app-member-capsule
                   [role]="role"
                   [isSubGroupInfo]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator"
-                  [title]="subCoachItem?.group_name"
+                  [title]="subCoachItem?.groupName"
                   [memberInfo]="subCoachItem"
-                  [name]="subCoachItem && subCoachItem?.group_name"
-                  [icon]="subCoachItem?.group_icon"
+                  [name]="subCoachItem && subCoachItem?.groupName"
+                  [icon]="subCoachItem?.groupIcon"
                 >
                 </app-member-capsule>
               </ng-container>
             </div>
           </mat-tab>
-          <mat-tab label="管理員資訊" (click)="getGroupMemberList(2)">
+          <mat-tab label="管理員資訊">
             <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">品牌層管理員</label>
             <div style="margin-bottom: 15px">
               <ng-container  *ngFor="let brandAdmItem of brandAdministrators">
@@ -149,7 +150,7 @@
                   [title]="brandAdmItem?.memberName"
                   [memberInfo]="brandAdmItem"
                   [name]="brandAdmItem && brandAdmItem?.memberName"
-                  [icon]="brandAdmItem?.userIcon"
+                  [icon]="brandAdmItem?.memberIcon"
                 >
                 </app-member-capsule>
               </ng-container>
@@ -164,7 +165,7 @@
                   [title]="branchAdmItem?.memberName"
                   [memberInfo]="branchAdmItem"
                   [name]="branchAdmItem && branchAdmItem?.memberName"
-                  [icon]="branchAdmItem?.userIcon"
+                  [icon]="branchAdmItem?.memberIcon"
                 >
                 </app-member-capsule>
               </ng-container>
@@ -179,7 +180,7 @@
                   [title]="coachAdmItem?.memberName"
                   [memberInfo]="coachAdmItem"
                   [name]="coachAdmItem && coachAdmItem?.memberName"
-                  [icon]="coachAdmItem?.userIcon"
+                  [icon]="coachAdmItem?.memberIcon"
                 >
                 </app-member-capsule>
               </ng-container>
@@ -194,7 +195,22 @@
                   [title]="item?.memberName"
                   [memberInfo]="item"
                   [name]="item && item?.memberName"
-                  [icon]="item?.userIcon"
+                  [icon]="item?.memberIcon"
+                >
+                </app-member-capsule>
+              </div>
+            </ng-container>
+          </mat-tab>
+          <mat-tab label="待加入成員">
+            <ng-container  *ngFor="let item of groupInfos">
+              <div style="margin-bottom: 15px">
+                <app-member-capsule
+                  [role]="role"
+                  [isAdminInfo]="true"
+                  [title]="item?.memberName"
+                  [memberInfo]="item"
+                  [name]="item && item?.memberName"
+                  [icon]="item?.memberIcon"
                 >
                 </app-member-capsule>
               </div>

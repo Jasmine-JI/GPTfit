@@ -24,6 +24,7 @@ import { GroupSearchComponent } from './group/group-search/group-search.componen
 import { GroupInfoComponent } from './group/group-info/group-info.component';
 import { EditGroupInfoComponent } from './group/edit-group-info/edit-group-info.component';
 import { AllGroupListComponent } from './group/all-group-list/all-group-list.component';
+import { EditGroupGuard } from './guards/edit-group-guard';
 
 const routes: Routes = [
   {
@@ -117,7 +118,8 @@ const routes: Routes = [
       },
       {
         path: 'group-info/:groupId/edit',
-        component: EditGroupInfoComponent
+        component: EditGroupInfoComponent,
+        canActivate: [EditGroupGuard]
       }
     ]
   },
