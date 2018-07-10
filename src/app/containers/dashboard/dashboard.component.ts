@@ -61,10 +61,10 @@ export class DashboardComponent implements OnInit {
       this.translateService.use(browserLang);
     }
     const token = this.utilsService.getToken();
-    // const body = {
-    //   token,
-    //   iconType: 2
-    // };
+    const body = {
+      token,
+      iconType: 2
+    };
     // this.userInfoService.getLogonData(body).subscribe(res => {
     //   if (res.resultCode === 200) {
     //     const {
@@ -120,9 +120,10 @@ export class DashboardComponent implements OnInit {
       this.isGeneralMember = res;
       console.log('%c this.isGeneralMember', 'color: #108bcd', this.isGeneralMember);
     });
-    this.userInfoService
-      .getLogonData()
-      .subscribe(() => console.log(''));
+    this.userInfoService.getUserInfo(body);
+    // this.userInfoService.getMemberAccessRight(body).subscribe((res) =>
+    //   console.log('res:', res)
+    // );
     this.globalEventsManager.showNavBarEmitter.subscribe(mode => {
       this.isMaskShow = mode;
     });

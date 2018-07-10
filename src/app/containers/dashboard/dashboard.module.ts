@@ -50,6 +50,7 @@ import { GroupService } from './services/group.service';
 import { AccessNamePipe } from './pipes/access-name.pipe';
 import { GroupStatusPipe } from './pipes/group-status.pipe';
 import { EditGroupInfoComponent } from './group/edit-group-info/edit-group-info.component';
+import { EditGroupGuard } from './guards/edit-group-guard';
 
 @NgModule({
   imports: [
@@ -77,7 +78,8 @@ import { EditGroupInfoComponent } from './group/edit-group-info/edit-group-info.
     CoachService,
     UserInfoService,
     UtilsService,
-    GroupService
+    GroupService,
+    EditGroupGuard
   ],
   declarations: [
     DashboardComponent,

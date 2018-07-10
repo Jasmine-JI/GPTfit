@@ -121,27 +121,25 @@ export class EditGroupInfoComponent implements OnInit {
       this.role.isCoach = res;
       console.log('%c this.isCoach', 'color: #0ca011', res);
     });
-    // this.token = this.utils.getToken();
-    // const body = {
-    //   token: this.token,
-    //   groupId: this.groupId
-    // };
+    this.token = this.utils.getToken();
+    const body = {
+      token: this.token,
+      groupId: this.groupId
+    };
     let params = new HttpParams();
     params = params.set('groupId', this.groupId);
-    this.groupService.fetchGroupListDetail(params).subscribe(res => {
+    this.groupService.fetchGroupListDetail(body).subscribe(res => {
       this.groupInfo = res.info;
-      const { groupIcon, groupId, groupName, groupDesc } = this.groupInfo;
+      const { groupIcon, groupId, groupName, groupDesc, selfJoinStatus } = this.groupInfo;
+      if (selfJoinStatus) {
+        this.joinStatus = selfJoinStatus;
+      } else {
+        this.joinStatus = 0;
+      }
       this.form.patchValue({ groupName, groupDesc });
       this.groupImg = this.utils.buildBase64ImgString(groupIcon);
       this.group_id = this.utils.displayGroupId(groupId);
       this.groupLevel = this.utils.displayGroupLevel(groupId);
-    });
-    this.groupService.getGroupJoinStatus(params).subscribe(res => {
-      if (res.info) {
-        this.joinStatus = res.info.joinStatus;
-      } else {
-        this.joinStatus = 0;
-      }
     });
     this.getGroupMemberList(1);
   }
@@ -152,19 +150,20 @@ export class EditGroupInfoComponent implements OnInit {
     };
     this.groupService
       .actionGroup(body)
-      .subscribe(({ resultCode, rtnMsg, joinStatus }) => {
+      .subscribe(({ resultCode, info: { selfJoinStatus }}) => {
+        console.log('selfJoinStatus: ', selfJoinStatus);
         if (resultCode === 200) {
           if (_type === 2) {
             this.joinStatus = 0;
           } else {
-            this.joinStatus = joinStatus;
+            this.joinStatus = selfJoinStatus;
           }
         }
       });
   }
   getGroupMemberList(_type) {
     const body = {
-      // token: this.token,
+      token: this.token,
       groupId: this.groupId,
       infoType: _type
     };
@@ -178,19 +177,19 @@ export class EditGroupInfoComponent implements OnInit {
           this.subBrandInfo = this.subGroupInfo.brands.map(_brand => {
             return {
               ..._brand,
-              group_icon: this.utils.buildBase64ImgString(_brand.group_icon)
+              groupIcon: this.utils.buildBase64ImgString(_brand.groupIcon)
             };
           });
           this.subBranchInfo = this.subGroupInfo.branches.map(_branch => {
             return {
               ..._branch,
-              group_icon: this.utils.buildBase64ImgString(_branch.group_icon)
+              groupIcon: this.utils.buildBase64ImgString(_branch.groupIcon)
             };
           });
           this.subCoachInfo = this.subGroupInfo.coaches.map(_coach => {
             return {
               ..._coach,
-              group_icon: this.utils.buildBase64ImgString(_coach.group_icon)
+              groupIcon: this.utils.buildBase64ImgString(_coach.groupIcon)
             };
           });
         } else {
@@ -199,7 +198,7 @@ export class EditGroupInfoComponent implements OnInit {
             .map(_info => {
               return {
                 ..._info,
-                userIcon: this.utils.buildBase64ImgString(_info.userIcon)
+                memberIcon: this.utils.buildBase64ImgString(_info.memberIcon)
               };
             })
             .filter(newInfo => !(typeof newInfo === 'undefined'));
@@ -221,8 +220,10 @@ export class EditGroupInfoComponent implements OnInit {
       this.getGroupMemberList(1);
     } else if (index === 1) {
       this.getGroupMemberList(2);
-    } else {
+    } else if (index === 2) {
       this.getGroupMemberList(3);
+    } else {
+      this.getGroupMemberList(4);
     }
   }
   manage() {

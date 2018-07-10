@@ -13,7 +13,7 @@
 .fileupload__input {
   position: absolute;
   top: 0;
-  right: 0;
+  left: 0;
   margin: 0;
   padding: 0;
   height: 30px;
@@ -24,8 +24,9 @@
 
 .ala-upload-image {
   border: 1px solid #ccc;
-  width: 250px;
+  max-width: 250px;
   height: 250px;
+  width: 100%;
   display: inline-block;
   position: relative;
 }
@@ -66,12 +67,14 @@
   cursor: pointer;
 }
 .ala-upload {
+  width: 100%;
   display: inline-block;
   position: relative;
 }
 .ala-upload  .ala-upload--descrption {
   margin-top: 10px;
-  text-align: center
+  text-align: center;
+  max-width: 250px;
 }
 .ala-upload--descrption .fileupload__input {
   height: 296px;
