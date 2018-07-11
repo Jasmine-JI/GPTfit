@@ -40,4 +40,47 @@
       </li>
     </ul>
   </ng-container>
+  <ng-container
+    *ngIf="isNormalMemberInfo && (role?.isBrandAdministrator || role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator)"
+  >
+    <i class="fa fa-caret-down" style="vertical-align: sub"></i>
+    <ul class="dropdown-menu"
+      [class.show]="active"
+    >
+      <li class="normal-manage">
+        <a>
+          指定管理員
+        </a>
+      </li>
+      <li class="warn-manage">
+        <a>
+          刪除該成員
+        </a>
+      </li>
+    </ul>
+  </ng-container>
+  <ng-container
+    *ngIf="isWaittingMemberInfo && (role?.isBrandAdministrator || role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator)"
+  >
+    <i class="fa fa-caret-down" style="vertical-align: sub"></i>
+    <ul class="dropdown-menu"
+      [class.show]="active"
+    >
+      <li class="normal-manage">
+        <a>
+          接受
+        </a>
+      </li>
+      <li class="normal-manage">
+        <a>
+          拒絕
+        </a>
+      </li>
+      <li class="normal-manage">
+        <a>
+          永久拒絕
+        </a>
+      </li>
+    </ul>
+  </ng-container>
 </div>

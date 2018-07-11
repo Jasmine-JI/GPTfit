@@ -4,7 +4,7 @@
     [class.ala-upload-image--vertical]="isImgVertical$ | async"
   >
     <button class="profile-picture__remove"
-      *ngIf="(isUploadNewImg$ | async) && imageURL?.length > 0"
+      *ngIf="(isUploadNewImg$ | async)"
       (click)="removePreImage()"
     >
       <i class="fa fa-times-circle profile-picture__remove-icon"></i>

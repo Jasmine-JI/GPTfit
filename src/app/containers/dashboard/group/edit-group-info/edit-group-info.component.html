@@ -14,7 +14,7 @@
     ></app-upload-file>
   </div>
   <div class="col-8">
-    <form [formGroup]="form" (ngSubmit)="manage()" #f="ngForm" novalidate>
+    <form [formGroup]="form" (ngSubmit)="manage(f)" #f="ngForm" novalidate>
       <div class="d-flex justify-content-between" style="margin-bottom: 15px">
         <span style="color: #26abe3; font-weight:700">
           群組資訊
@@ -78,7 +78,6 @@
         <div class="ala-list__item">
           <label class="ala-form__label">介紹：</label>
           <div style="width: calc(100% - 50px)">
-            {{ groupDesc.valid }}
             <app-form-textarea
               [maxLength]="textareaMaxLength"
               [content]="groupInfo?.groupDesc"
@@ -188,10 +187,10 @@
           </mat-tab>
           <mat-tab label="一般成員資訊">
             <ng-container  *ngFor="let item of groupInfos">
-              <div style="margin-bottom: 15px">
+              <div style="margin-bottom: 15px;display:inline-block">
                 <app-member-capsule
                   [role]="role"
-                  [isAdminInfo]="true"
+                  [isNormalMemberInfo]="true"
                   [title]="item?.memberName"
                   [memberInfo]="item"
                   [name]="item && item?.memberName"
@@ -203,10 +202,10 @@
           </mat-tab>
           <mat-tab label="待加入成員">
             <ng-container  *ngFor="let item of groupInfos">
-              <div style="margin-bottom: 15px">
+              <div style="margin-bottom: 15px;display:inline-block">
                 <app-member-capsule
                   [role]="role"
-                  [isAdminInfo]="true"
+                  [isWaittingMemberInfo]="true"
                   [title]="item?.memberName"
                   [memberInfo]="item"
                   [name]="item && item?.memberName"

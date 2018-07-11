@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-4">
-    <img *ngIf="groupImg" style="width: 100%" [src]="(groupImg | safeHtml)">
+    <img *ngIf="groupImg" style="width: 100%;max-width:250px" [src]="(groupImg | safeHtml)">
   </div>
   <div class="col-8">
     <div class="d-flex justify-content-between" style="margin-bottom: 15px">
@@ -13,7 +13,7 @@
         </button> -->
         <button class="alatech-btn alatech-btn--default"
           title="申請加入"
-          *ngIf="joinStatus === 0"
+          *ngIf="joinStatus === 5"
           (click)="handleActionGroup(1)"
         >
           申請加入
@@ -86,7 +86,6 @@
             <ng-container  *ngFor="let subBranchItem of subBranchInfo">
               <app-member-capsule
                 [role]="role"
-                [isSubGroupInfo]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator"
                 [title]="subBranchItem?.groupName"
                 [memberInfo]="subBranchItem"
                 [name]="subBranchItem && subBranchItem?.groupName"
@@ -101,7 +100,6 @@
             <ng-container  *ngFor="let subCoachItem of subCoachInfo">
               <app-member-capsule
                 [role]="role"
-                [isSubGroupInfo]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator"
                 [title]="subCoachItem?.groupName"
                 [memberInfo]="subCoachItem"
                 [name]="subCoachItem && subCoachItem?.groupName"
@@ -117,7 +115,6 @@
             <ng-container  *ngFor="let brandAdmItem of brandAdministrators">
               <app-member-capsule
                 [role]="role"
-                [isAdminInfo]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer"
                 [title]="brandAdmItem?.memberName"
                 [memberInfo]="brandAdmItem"
                 [name]="brandAdmItem && brandAdmItem?.memberName"
@@ -132,7 +129,6 @@
             <ng-container  *ngFor="let branchAdmItem of branchAdministrators">
               <app-member-capsule
                 [role]="role"
-                [isAdminInfo]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator"
                 [title]="branchAdmItem?.memberName"
                 [memberInfo]="branchAdmItem"
                 [name]="branchAdmItem && branchAdmItem?.memberName"
@@ -147,7 +143,6 @@
             <ng-container  *ngFor="let coachAdmItem of coachAdministrators">
               <app-member-capsule
                 [role]="role"
-                [isAdminInfo]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator"
                 [title]="coachAdmItem?.memberName"
                 [memberInfo]="coachAdmItem"
                 [name]="coachAdmItem && coachAdmItem?.memberName"
@@ -158,11 +153,10 @@
           </div>
         </mat-tab>
         <mat-tab label="一般成員資訊">
-          <ng-container  *ngFor="let item of groupInfos">
-            <div style="margin-bottom: 15px">
+          <ng-container  *ngFor="let item of normalMemberInfos">
+            <div style="margin-bottom: 15px;display:inline-block">
               <app-member-capsule
                 [role]="role"
-                [isAdminInfo]="true"
                 [title]="item?.memberName"
                 [memberInfo]="item"
                 [name]="item && item?.memberName"
@@ -174,10 +168,9 @@
         </mat-tab>
         <mat-tab label="待加入成員">
           <ng-container  *ngFor="let item of groupInfos">
-            <div style="margin-bottom: 15px">
+            <div style="margin-bottom: 15px;display:inline-block">
               <app-member-capsule
                 [role]="role"
-                [isAdminInfo]="true"
                 [title]="item?.memberName"
                 [memberInfo]="item"
                 [name]="item && item?.memberName"

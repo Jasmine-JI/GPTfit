@@ -226,15 +226,32 @@ export class EditGroupInfoComponent implements OnInit {
       this.getGroupMemberList(4);
     }
   }
-  manage() {
-    window.history.back();
+  manage({value, valid}) {
+    console.log('value: ', value);
+    console.log('valid: ', valid);
+    const { groupName, groupDesc } = value;
+    const body = {
+      token: this.token,
+      groupId: this.groupId,
+      groupName,
+      groupIcon: this.groupImg || '',
+      groupDesc
+    };
+    this.groupService.editGroup(body).subscribe((res) => {
+      if (res.resultCode === 200) {
+        window.history.back();
+      }
+      console.log('res', res);
+    });
   }
   public handleChangeTextarea(code): void {
     this.form.patchValue({ groupDesc: code });
   }
   handleAttachmentChange(file) {
+    console.log(file);
     if (file) {
-      const { isSizeCorrect, isTypeCorrect, errorMsg } = file;
+      const { isSizeCorrect, isTypeCorrect, errorMsg, link } = file;
+      this.groupImg = link;
       if (!isSizeCorrect || !isTypeCorrect) {
         this.dialog.open(MsgDialogComponent, {
           hasBackdrop: true,

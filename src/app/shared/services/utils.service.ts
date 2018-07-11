@@ -35,6 +35,8 @@ export class UtilsService {
   buildBase64ImgString(value: string) {
     if (!value) {
       return '';
+    } else if (value.indexOf('data:image') > -1) {
+      return value;
     } else {
       return `data:image/jpg; base64, ${value}`;
     }

@@ -19,7 +19,8 @@ export class GroupInfoComponent implements OnInit {
   group_id: string;
   groupLevel: string;
   groupInfos: any;
-  joinStatus = 0;
+  normalMemberInfos: any;
+  joinStatus = 5;
   subGroupInfo: any;
   brandAdministrators: any;
   subBrandInfo: any;
@@ -50,7 +51,7 @@ export class GroupInfoComponent implements OnInit {
       if (selfJoinStatus) {
         this.joinStatus = selfJoinStatus;
       } else {
-        this.joinStatus = 0;
+        this.joinStatus = 5;
       }
       this.groupImg = this.utils.buildBase64ImgString(groupIcon);
       this.group_id = this.utils.displayGroupId(groupId);
@@ -70,7 +71,7 @@ export class GroupInfoComponent implements OnInit {
         console.log('selfJoinStatus: ', selfJoinStatus);
         if (resultCode === 200) {
           if (_type === 2) {
-            this.joinStatus = 0;
+            this.joinStatus = 5;
           } else {
             this.joinStatus = selfJoinStatus;
           }
@@ -127,6 +128,9 @@ export class GroupInfoComponent implements OnInit {
           );
           this.coachAdministrators = this.groupInfos.filter(
             _info => _info.accessRight === '60'
+          );
+          this.normalMemberInfos = this.groupInfos.filter(
+            _info => _info.accessRight === '90' && _info.joinStatus === 2
           );
         }
       }

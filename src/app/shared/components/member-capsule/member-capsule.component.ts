@@ -19,6 +19,8 @@ export class MemberCapsuleComponent implements OnInit {
   @Input() role: any;
   @Input() isSubGroupInfo = false;
   @Input() isAdminInfo = false;
+  @Input() isNormalMemberInfo = false;
+  @Input() isWaittingMemberInfo = false;
   active = false;
   width = '100%';
   height = 'auto';
@@ -50,7 +52,7 @@ export class MemberCapsuleComponent implements OnInit {
     if (radio > 1.6) {
       this.width = '180%';
       this.height = 'auto';
-    } else if (radio < 0.6)  {
+    } else if (radio < 0.6) {
       this.width = 'auto';
       this.height = '180%';
     } else if (radio < 1.6 && radio > 1.3) {
