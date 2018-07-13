@@ -20,12 +20,12 @@ import { MsgDialogComponent } from '../../components/msg-dialog/msg-dialog.compo
 import { MatDialog } from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-edit-group-info',
-  templateUrl: './edit-group-info.component.html',
-  styleUrls: ['./edit-group-info.component.css', '../group-style.css'],
+  selector: 'app-create-group',
+  templateUrl: './create-group.component.html',
+  styleUrls: ['./create-group.component.css', '../group-style.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class EditGroupInfoComponent implements OnInit {
+export class CreateGroupComponent implements OnInit {
   groupId: string;
   token: string;
   groupInfo: any;
@@ -41,7 +41,6 @@ export class EditGroupInfoComponent implements OnInit {
   subCoachInfo: any;
   branchAdministrators: any;
   coachAdministrators: any;
-  normalMemberInfos: any;
   remindText = '※不得超過32個字元';
   inValidText = '欄位為必填';
   textareaMaxLength = 500;
@@ -62,12 +61,19 @@ export class EditGroupInfoComponent implements OnInit {
   reloadFileText = '重新上傳';
   chooseFileText = '選擇檔案';
   acceptFileExtensions = ['JPG', 'JPEG', 'GIF', 'PNG'];
-  finalImageLink: string;
+  createType = 3; // 1為新建分店， 2為新建教練課，3為新建群組
+  brandName: string;
   get groupName() {
     return this.form.get('groupName');
   }
   get groupDesc() {
     return this.form.get('groupDesc');
+  }
+  get branchName() {
+    return this.form.get('branchName');
+  }
+  get coachLessonName() {
+    return this.form.get('coachLessonName');
   }
   constructor(
     private route: ActivatedRoute,
@@ -94,11 +100,14 @@ export class EditGroupInfoComponent implements OnInit {
     evt.stopPropagation();
   }
   ngOnInit() {
+    const queryStrings = this.utils.getUrlQueryStrings(location.search);
+    const { type } = queryStrings;
+    if (type) {
+      this.createType = +type;
+    }
     this.groupId = this.route.snapshot.paramMap.get('groupId');
-    this.form = this.fb.group({
-      groupName: ['', [Validators.required, Validators.maxLength(32)]],
-      groupDesc: ['', [Validators.required, Validators.maxLength(500)]]
-    });
+
+    this.buildForm(this.createType);
     this.userInfoService.getSupervisorStatus().subscribe(res => {
       this.role.isSupervisor = res;
       console.log('%c this.isSupervisor', 'color: #0ca011', res);
@@ -136,7 +145,6 @@ export class EditGroupInfoComponent implements OnInit {
         groupIcon,
         groupId,
         groupName,
-        groupDesc,
         selfJoinStatus
       } = this.groupInfo;
       if (selfJoinStatus) {
@@ -144,13 +152,33 @@ export class EditGroupInfoComponent implements OnInit {
       } else {
         this.joinStatus = 0;
       }
-      this.form.patchValue({ groupName, groupDesc });
+      this.brandName = groupName;
       this.groupImg = this.utils.buildBase64ImgString(groupIcon);
-      this.finalImageLink = this.groupImg;
       this.group_id = this.utils.displayGroupId(groupId);
       this.groupLevel = this.utils.displayGroupLevel(groupId);
     });
     this.getGroupMemberList(1);
+  }
+  buildForm(_type: number) {
+    if (_type === 1) {
+      this.formTextName = 'branchName';
+      this.form = this.fb.group({
+        branchName: ['', [Validators.required, Validators.maxLength(32)]],
+        groupDesc: ['', [Validators.required, Validators.maxLength(500)]]
+      });
+    } else if (_type === 2) {
+      this.formTextName = 'coachLessonName';
+      this.form = this.fb.group({
+        branchName: ['', [Validators.required, Validators.maxLength(32)]],
+        coachLessonName: ['', [Validators.required, Validators.maxLength(32)]],
+        groupDesc: ['', [Validators.required, Validators.maxLength(500)]]
+      });
+    } else {
+      this.form = this.fb.group({
+        groupName: ['', [Validators.required, Validators.maxLength(32)]],
+        groupDesc: ['', [Validators.required, Validators.maxLength(500)]]
+      });
+    }
   }
   handleActionGroup(_type) {
     const body = {
@@ -219,9 +247,6 @@ export class EditGroupInfoComponent implements OnInit {
           this.coachAdministrators = this.groupInfos.filter(
             _info => _info.accessRight === '60'
           );
-          this.normalMemberInfos = this.groupInfos.filter(
-            _info => _info.accessRight === '90' && _info.joinStatus === 2
-          );
         }
       }
     });
@@ -237,28 +262,24 @@ export class EditGroupInfoComponent implements OnInit {
       this.getGroupMemberList(4);
     }
   }
-  manage({ value, valid }) {
-    const { groupName, groupDesc } = value;
-    const body = {
-      token: this.token,
-      groupId: this.groupId,
-      groupName,
-      groupIcon: this.finalImageLink || '',
-      groupDesc
-    };
-    this.groupService.editGroup(body).subscribe(res => {
-      if (res.resultCode === 200) {
-        this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}`);
-      }
-    });
+  manage(f) {
+    // const { groupName, groupDesc } = value;
+    // const body = {
+    //   token: this.token,
+    //   groupId: this.groupId,
+    //   groupName,
+    //   groupIcon: this.groupImg || '',
+    //   groupDesc
+    // };
+
+    // window.history.back();
   }
   public handleChangeTextarea(code): void {
     this.form.patchValue({ groupDesc: code });
   }
   handleAttachmentChange(file) {
     if (file) {
-      const { isSizeCorrect, isTypeCorrect, errorMsg, link } = file;
-      this.finalImageLink = link;
+      const { isSizeCorrect, isTypeCorrect, errorMsg } = file;
       if (!isSizeCorrect || !isTypeCorrect) {
         this.dialog.open(MsgDialogComponent, {
           hasBackdrop: true,
@@ -270,7 +291,27 @@ export class EditGroupInfoComponent implements OnInit {
       }
     }
   }
-  goCreatePage(_type) {
-    this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}/create?type=${_type}`);
+  handleCancel(e) {
+    e.preventDefault();
+    let typeName = '';
+    const href =
+      this.createType === 3
+        ? '/dashboard/my-group-list'
+        : `/dashboard/group-info/${this.groupId}/edit`;
+    if (this.createType === 1) {
+      typeName = '分店';
+    } else if (this.createType === 2) {
+      typeName = '教練課';
+    } else {
+      typeName = '群組';
+    }
+    this.dialog.open(MsgDialogComponent, {
+      hasBackdrop: true,
+      data: {
+        title: 'Message',
+        body: `是否要取消新增${typeName}`,
+        href
+      }
+    });
   }
 }

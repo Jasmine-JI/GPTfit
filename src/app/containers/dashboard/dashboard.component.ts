@@ -121,9 +121,6 @@ export class DashboardComponent implements OnInit {
       console.log('%c this.isGeneralMember', 'color: #108bcd', this.isGeneralMember);
     });
     this.userInfoService.getUserInfo(body);
-    // this.userInfoService.getMemberAccessRight(body).subscribe((res) =>
-    //   console.log('res:', res)
-    // );
     this.globalEventsManager.showNavBarEmitter.subscribe(mode => {
       this.isMaskShow = mode;
     });

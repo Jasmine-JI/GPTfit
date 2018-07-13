@@ -5,7 +5,9 @@ import {
   EventEmitter,
   Input,
   ViewChild,
-  HostListener
+  HostListener,
+  OnChanges,
+  SimpleChanges
 } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
@@ -14,7 +16,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
   templateUrl: './upload-file.component.html',
   styleUrls: ['./upload-file.component.css']
 })
-export class UploadFileComponent implements OnInit {
+export class UploadFileComponent implements OnInit, OnChanges {
   @Input() maxFileSize: number;
   @Input() disabled = false;
   @Input() reloadFileText: string;
@@ -89,6 +91,12 @@ export class UploadFileComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {}
+  ngOnChanges(changes: SimpleChanges) {
+    const { imageURL: { currentValue } } = changes;
+    if (currentValue) {
+      this.listenImage(currentValue);
+    }
+  }
   handleClick() {}
   handleBtnEvent(event) {
     event.preventDefault();
@@ -149,6 +157,8 @@ export class UploadFileComponent implements OnInit {
   }
   removePreImage() {
     this.listenImage(this.imageURL);
+    this.fileInformation.link = this.imageURL;
+    this.onChange.emit(this.fileInformation);
     this.btnText = this.chooseFileText;
     this.isUploadNewImg$.next(false);
   }

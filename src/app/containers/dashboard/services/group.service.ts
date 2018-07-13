@@ -14,15 +14,7 @@ export class GroupService {
   fetchGroupListDetail(body) {
     return this.http.post<any>('/api/v1/center/getGroupListDetail', body);
   }
-  // fetchGroupListDetail(params) {
-  //   return this.http.get<any>(API_SERVER + 'center/getGroupListDetail', { params });
-  // }
-  // getGroupJoinStatus(params) {
-  //   return this.http.get<any>(API_SERVER + 'center/getGroupJoinStatus', { params });
-  // }
-  // actionGroup(body) {
-  //   return this.http.post<any>(API_SERVER + 'center/actionGroup', body);
-  // }
+
   actionGroup(body) {
     return this.http.post<any>('/api/v1/center/actionGroup', body);
   }
@@ -32,7 +24,8 @@ export class GroupService {
   editGroup(body) {
     return this.http.post<any>('/api/v1/center/editGroup', body);
   }
-  // fetchGroupMemberList(body) {
-  //   return this.http.post<any>(API_SERVER + 'center/getGroupMemberList', body);
-  // }
+
+  createGroup(body) {
+    return this.http.post<any>('/api/v1/center/createGroup', body);
+  }
 }

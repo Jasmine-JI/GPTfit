@@ -16,24 +16,35 @@
   <div class="col-8">
     <form [formGroup]="form" (ngSubmit)="manage(f)" #f="ngForm" novalidate>
       <div class="d-flex justify-content-between" style="margin-bottom: 15px">
-        <span style="color: #26abe3; font-weight:700">
+        <div style="color: #26abe3; font-weight:700">
           群組資訊
-        </span>
+        </div>
         <div>
-          <!-- <button class="alatech-btn alatech-btn--default" title="返回" [routerLink]="['/dashboard/my-group-list']">
-            管理
-          </button> -->
           <button class="alatech-btn alatech-btn--default" title="申請加入" *ngIf="joinStatus === 0" (click)="handleActionGroup(1)">
             申請加入
           </button>
           <button class="alatech-btn alatech-btn--default group-btn--waiting" title="取消申請" *ngIf="joinStatus === 1" (click)="handleActionGroup(2)">
             取消申請
           </button>
-          <button class="alatech-btn alatech-btn--default" title="管理" *ngIf="joinStatus === 2" (click)="goEditPage()">
+          <button class="alatech-btn alatech-btn--default"
+            title="申請解散品牌"
+            *ngIf="joinStatus === 2"
+          >
             申請解散品牌
           </button>
-          <button class="alatech-btn alatech-btn--default" title="管理" *ngIf="joinStatus === 2" (click)="goEditPage()">
-            新增子群組
+          <button class="alatech-btn alatech-btn--default"
+            title="新增分店"
+            *ngIf="joinStatus === 2"
+            (click)="goCreatePage(1)"
+          >
+            新增分店
+          </button>
+          <button class="alatech-btn alatech-btn--default"
+            title="新增教練課"
+            *ngIf="joinStatus === 2"
+            (click)="goCreatePage(2)"
+          >
+            新增教練課
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="完成管理"
@@ -50,9 +61,9 @@
           </button> -->
         </div>
       </div>
-      <div style="margin-bottom: 30px;">
-        <div>
-          <label>群組ID：</label>{{ group_id }}
+      <div style="margin-bottom: 30px;position: relative;top: 0;left: -55px;">
+        <div class="ala-list__item">
+          <label class="ala-form__label">群組ID：</label>{{ group_id }}
         </div>
         <div class="ala-list__item">
           <label class="ala-form__label">名稱：</label>
@@ -186,7 +197,7 @@
             </div>
           </mat-tab>
           <mat-tab label="一般成員資訊">
-            <ng-container  *ngFor="let item of groupInfos">
+            <ng-container  *ngFor="let item of normalMemberInfos">
               <div style="margin-bottom: 15px;display:inline-block">
                 <app-member-capsule
                   [role]="role"

@@ -51,6 +51,7 @@ import { AccessNamePipe } from './pipes/access-name.pipe';
 import { GroupStatusPipe } from './pipes/group-status.pipe';
 import { EditGroupInfoComponent } from './group/edit-group-info/edit-group-info.component';
 import { EditGroupGuard } from './guards/edit-group-guard';
+import { CreateGroupComponent } from './group/create-group/create-group.component';
 
 @NgModule({
   imports: [
@@ -110,7 +111,8 @@ import { EditGroupGuard } from './guards/edit-group-guard';
     GroupInfoComponent,
     AccessNamePipe,
     GroupStatusPipe,
-    EditGroupInfoComponent
+    EditGroupInfoComponent,
+    CreateGroupComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
