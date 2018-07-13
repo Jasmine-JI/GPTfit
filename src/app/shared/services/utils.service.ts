@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { cloneDeep } from 'lodash';
-import { stringify } from 'query-string';
+import { stringify, parse } from 'query-string';
 
 export const TOKEN = 'ala_token';
 export const EMPTY_OBJECT = {};
@@ -40,6 +40,13 @@ export class UtilsService {
     } else {
       return `data:image/jpg; base64, ${value}`;
     }
+  }
+  getUrlQueryStrings(_search: string) {
+    const search = _search || window.location.search;
+    if (!search) {
+      return EMPTY_OBJECT;
+    }
+    return parse(search);
   }
   str_cut(str, max_length) {
     let m = 0,

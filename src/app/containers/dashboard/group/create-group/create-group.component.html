@@ -1,0 +1,141 @@
+<div class="row">
+  <div class="col-4">
+    <app-upload-file
+      [isImageFileMode]="true"
+      [imageURL]="groupImg"
+      [maxFileSize]="maxFileSize"
+      [disabled]="isUploading"
+      [btnText]="this.fileLink ? reloadFileText : chooseFileText"
+      [isLoading]="isUploading"
+      [accept]="acceptFileExtensions.join()"
+      [reloadFileText]="reloadFileText"
+      [chooseFileText]="chooseFileText"
+      (onChange)="handleAttachmentChange($event)"
+    ></app-upload-file>
+  </div>
+  <div class="col-8">
+    <form [formGroup]="form" (ngSubmit)="manage(f)" #f="ngForm" novalidate>
+      <div class="d-flex justify-content-between" style="margin-bottom: 15px">
+        <span style="color: #26abe3; font-weight:700"
+          *ngIf="createType === 1"
+        >
+          新增分店
+        </span>
+        <span style="color: #26abe3; font-weight:700"
+          *ngIf="createType === 2"
+        >
+          新增教練課
+        </span>
+        <span style="color: #26abe3; font-weight:700"
+          *ngIf="createType === 3"
+        >
+          建立新群組
+        </span>
+        <div>
+          <button class="alatech-btn alatech-btn--default"
+            title="取消"
+            (click)="handleCancel($event)"
+          >
+            取消
+          </button>
+          <button class="alatech-btn alatech-btn--default"
+            title="完成"
+            *ngIf="joinStatus === 2"
+            type="submit"
+          >
+            完成
+          </button>
+        </div>
+      </div>
+      <div
+        style="margin-bottom: 30px;position: relative;top: 0;left:-40px"
+      >
+        <div class="ala-list__item" *ngIf="createType === 3">
+          <label class="ala-form__label">名稱：</label>
+          <app-form-text
+            [content]="groupName?.value"
+            [maxLength]="32"
+            [invalidRemindText]="inValidText"
+            [control]="form"
+            [controlName]="formTextName"
+            [remindText]="remindText"
+            [isInvalid]="(!groupName.valid && groupName.touched) || (f.submitted && groupName.hasError('required')) || (f.submitted && groupName.hasError('maxLength'))"
+          >
+          </app-form-text>
+        </div>
+        <div class="ala-list__item" *ngIf="createType !== 3">
+          <label class="ala-form__label">品牌名稱：</label>
+          <app-form-text
+            [disabled]="true"
+            [content]="brandName"
+          >
+          </app-form-text>
+        </div>
+        <div class="ala-list__item" *ngIf="createType !== 3">
+          <label class="ala-form__label form__label--required">分店名稱：</label>
+          <app-form-text
+            *ngIf="createType === 1"
+            [content]="branchName?.value"
+            [maxLength]="32"
+            [remindText]="remindText"
+            [invalidRemindText]="inValidText"
+            [control]="form"
+            [controlName]="formTextName"
+            [isInvalid]="(!branchName.valid && branchName.touched) || (f.submitted && branchName.hasError('required')) || (f.submitted && branchName.hasError('maxLength'))"
+          >
+          </app-form-text>
+          <select *ngIf="createType === 2">
+            <option>無</option>
+            <option>fake lession</option>
+          </select>
+        </div>
+        <div class="ala-list__item" *ngIf="createType !== 3">
+          <label class="ala-form__label"
+            [class.form__label--required]="createType === 2"
+          >
+            教練課名稱：
+          </label>
+          <input
+            style="width: 275px"
+            disabled="true"
+            *ngIf="createType === 1"
+            class="form-field"
+          />
+          <app-form-text
+            *ngIf="createType === 2"
+            [content]="coachLessonName?.value"
+            [maxLength]="32"
+            [remindText]="remindText"
+            [invalidRemindText]="inValidText"
+            [control]="form"
+            [controlName]="formTextName"
+            [isInvalid]="(!coachLessonName.valid && coachLessonName.touched) || (f.submitted && coachLessonName.hasError('required')) || (f.submitted && coachLessonName.hasError('maxLength'))"
+          >
+          </app-form-text>
+        </div>
+        <div class="ala-list__item">
+          <label class="ala-form__label">狀態：</label>
+          <select class="form-field">
+            <option class="form-field-option">{{ groupInfo?.groupStatus | groupStatus }}</option>
+            <option class="form-field-option">審核制</option>
+            <option class="form-field-option">隱藏群組</option>
+          </select>
+        </div>
+        <div class="ala-list__item">
+          <label class="ala-form__label">介紹：</label>
+          <div style="width: calc(100% - 50px)">
+            <app-form-textarea
+              [maxLength]="textareaMaxLength"
+              [content]="groupDesc?.value"
+              [control]="form"
+              [controlName]="formTextareaName"
+              (onChange)="handleChangeTextarea($event)"
+              [isInvalid]="(groupDesc.invalid && groupDesc?.touched) || (f.submitted && groupDesc.hasError('required')) || (f.submitted && groupDesc.hasError('maxLength'))"
+            >
+            </app-form-textarea>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

@@ -13,6 +13,11 @@
       *ngIf="!(isUploadNewImg$ | async) && imageURL?.length > 0"
       [src]="imageURL | safeHtml"
       >
+      <p *ngIf="!(isUploadNewImg$ | async) && !(fileInformation?.link || imageURL)"
+        style="position:absolute;top:50%;left:50%;width:100%;text-align:center;transform:translate(-50%, -50%)"
+      >
+        Choose a file or drag it here
+      </p>
     <img
       *ngIf="(isUploadNewImg$ | async)"
       [src]="(fileInformation?.link | safeHtml)"

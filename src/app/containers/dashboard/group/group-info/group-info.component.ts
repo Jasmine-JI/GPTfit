@@ -68,7 +68,6 @@ export class GroupInfoComponent implements OnInit {
     this.groupService
       .actionGroup(body)
       .subscribe(({ resultCode, info: { selfJoinStatus } }) => {
-        console.log('selfJoinStatus: ', selfJoinStatus);
         if (resultCode === 200) {
           if (_type === 2) {
             this.joinStatus = 5;

@@ -16,9 +16,9 @@ export class FormTextComponent implements OnInit {
   @Input() remindText: string;
   @Input() control: FormGroup;
   @Input() controlName: string;
+  @Input() disabled = false;
   invalidClassName = `${this.class_name} ${this.class_name}--invalid`;
-  ngOnInit() {
-  }
+  ngOnInit() {}
   setMyClasses() {
     const classes = {
       'form-field': true,

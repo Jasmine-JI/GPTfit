@@ -3,6 +3,7 @@
     [value]="content"
     [placeholder]="placeholder"
     [className]="isInvalid ? invalidClassName : class_name"
+    [formControlName]="controlName"
     (keyup)="handleChange($event)"
     [maxLength]="maxLength"
   >

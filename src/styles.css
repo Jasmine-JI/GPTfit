@@ -37,7 +37,11 @@ html {
   background-color: transparent;
   outline: 0;
 }
-
+.form-field[disabled] {
+  border-color: #9B9B9B;
+  background-color: #EFEFEF;
+  opacity: .65;
+}
 .form-control.form-control--invalid {
   border: 1px solid #c75353;
   box-shadow: rgba(163, 50, 50, .34) 0 0 4px 0;
@@ -196,6 +200,8 @@ button:focus {
 }
 .ala-form__label {
   margin-bottom: 0px;
+  min-width: 120px;
+  text-align: right;
 }
 .alatech-btn {
   display: inline-block;
