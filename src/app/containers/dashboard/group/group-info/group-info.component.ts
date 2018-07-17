@@ -82,6 +82,7 @@ export class GroupInfoComponent implements OnInit {
     const body = {
       token: this.token,
       groupId: this.groupId,
+      groupLevel: '30',
       infoType: _type
     };
     this.groupService.fetchGroupMemberList(body).subscribe(res => {

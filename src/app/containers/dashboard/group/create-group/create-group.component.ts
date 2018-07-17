@@ -55,9 +55,9 @@ export class CreateGroupComponent implements OnInit {
     isBranchAdministrator: false,
     isCoach: false
   };
+  finalImageLink: string;
   maxFileSize = 524288;
   isUploading = false;
-  fileLink: string;
   reloadFileText = '重新上傳';
   chooseFileText = '選擇檔案';
   acceptFileExtensions = ['JPG', 'JPEG', 'GIF', 'PNG'];
@@ -74,6 +74,9 @@ export class CreateGroupComponent implements OnInit {
   }
   get coachLessonName() {
     return this.form.get('coachLessonName');
+  }
+  get branchId() {
+    return this.form.get('branchId');
   }
   constructor(
     private route: ActivatedRoute,
@@ -141,12 +144,7 @@ export class CreateGroupComponent implements OnInit {
     params = params.set('groupId', this.groupId);
     this.groupService.fetchGroupListDetail(body).subscribe(res => {
       this.groupInfo = res.info;
-      const {
-        groupIcon,
-        groupId,
-        groupName,
-        selfJoinStatus
-      } = this.groupInfo;
+      const { groupIcon, groupId, groupName, selfJoinStatus } = this.groupInfo;
       if (selfJoinStatus) {
         this.joinStatus = selfJoinStatus;
       } else {
@@ -154,6 +152,7 @@ export class CreateGroupComponent implements OnInit {
       }
       this.brandName = groupName;
       this.groupImg = this.utils.buildBase64ImgString(groupIcon);
+      this.finalImageLink = this.groupImg;
       this.group_id = this.utils.displayGroupId(groupId);
       this.groupLevel = this.utils.displayGroupLevel(groupId);
     });
@@ -169,7 +168,7 @@ export class CreateGroupComponent implements OnInit {
     } else if (_type === 2) {
       this.formTextName = 'coachLessonName';
       this.form = this.fb.group({
-        branchName: ['', [Validators.required, Validators.maxLength(32)]],
+        branchId: [this.groupId, [Validators.required, Validators.maxLength(32)]],
         coachLessonName: ['', [Validators.required, Validators.maxLength(32)]],
         groupDesc: ['', [Validators.required, Validators.maxLength(500)]]
       });
@@ -262,24 +261,52 @@ export class CreateGroupComponent implements OnInit {
       this.getGroupMemberList(4);
     }
   }
-  manage(f) {
-    // const { groupName, groupDesc } = value;
-    // const body = {
-    //   token: this.token,
-    //   groupId: this.groupId,
-    //   groupName,
-    //   groupIcon: this.groupImg || '',
-    //   groupDesc
-    // };
+  manage({ valid, value }) {
+    console.log('valid: ', valid);
+    if (valid) {
+      const { groupDesc } = value;
+      const body = {
+        token: this.token,
+        groupId: this.groupId,
+        levelDesc: groupDesc,
+        levelIcon: this.finalImageLink,
+        levelName: '',
+        levelType: null
+      };
+      if (this.createType === 1) {
+        // 建立分店
+        const { branchName } = value;
+        body.levelName = branchName;
+        body.levelType = 4;
+        this.groupService.createGroup(body).subscribe(res => {
+          if (res.resultCode === 200) {
+            this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}/edit`);
+          }
+        });
+      } else if (this.createType === 2) {
+        // 建立教練課
+        const { branchId, coachLessonName } = value;
+        body.levelType = 5;
+        body.levelName = coachLessonName;
+        if (branchId !== this.groupId) {
+          body.groupId = branchId;
+        }
+        this.groupService.createGroup(body).subscribe(res => {
+          if (res.resultCode === 200) {
+            this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}/edit`);
+          }
+        });
+      }
+    }
 
-    // window.history.back();
   }
   public handleChangeTextarea(code): void {
     this.form.patchValue({ groupDesc: code });
   }
   handleAttachmentChange(file) {
     if (file) {
-      const { isSizeCorrect, isTypeCorrect, errorMsg } = file;
+      const { isSizeCorrect, isTypeCorrect, errorMsg, link } = file;
+      this.finalImageLink = link;
       if (!isSizeCorrect || !isTypeCorrect) {
         this.dialog.open(MsgDialogComponent, {
           hasBackdrop: true,

@@ -161,6 +161,9 @@
                   [memberInfo]="brandAdmItem"
                   [name]="brandAdmItem && brandAdmItem?.memberName"
                   [icon]="brandAdmItem?.memberIcon"
+                  [groupId]="brandAdmItem?.groupId"
+                  [userId]="brandAdmItem?.memberId"
+                  (onRemoveAdmin)="handleRemoveAdmin($event, 1)"
                 >
                 </app-member-capsule>
               </ng-container>
@@ -176,6 +179,9 @@
                   [memberInfo]="branchAdmItem"
                   [name]="branchAdmItem && branchAdmItem?.memberName"
                   [icon]="branchAdmItem?.memberIcon"
+                  [groupId]="branchAdmItem?.groupId"
+                  [userId]="branchAdmItem?.memberId"
+                  (onRemoveAdmin)="handleRemoveAdmin($event, 2)"
                 >
                 </app-member-capsule>
               </ng-container>
@@ -191,6 +197,9 @@
                   [memberInfo]="coachAdmItem"
                   [name]="coachAdmItem && coachAdmItem?.memberName"
                   [icon]="coachAdmItem?.memberIcon"
+                  [groupId]="coachAdmItem?.groupId"
+                  [userId]="coachAdmItem?.memberId"
+                  (onRemoveAdmin)="handleRemoveAdmin($event, 3)"
                 >
                 </app-member-capsule>
               </ng-container>
@@ -206,6 +215,9 @@
                   [memberInfo]="item"
                   [name]="item && item?.memberName"
                   [icon]="item?.memberIcon"
+                  [groupId]="item?.groupId"
+                  [userId]="item?.memberId"
+                  (onAssignAdmin)="handleAssignAdmin($event)"
                 >
                 </app-member-capsule>
               </div>
@@ -221,6 +233,9 @@
                   [memberInfo]="item"
                   [name]="item && item?.memberName"
                   [icon]="item?.memberIcon"
+                  [groupId]="item?.groupId"
+                  [userId]="item?.memberId"
+                  (onWaittingMemberInfoChange)="handleWaittingMemberInfo($event)"
                 >
                 </app-member-capsule>
               </div>

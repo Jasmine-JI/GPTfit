@@ -173,6 +173,7 @@ export class EditGroupInfoComponent implements OnInit {
     const body = {
       token: this.token,
       groupId: this.groupId,
+      groupLevel: '30',
       infoType: _type
     };
     this.groupService.fetchGroupMemberList(body).subscribe(res => {
@@ -271,6 +272,29 @@ export class EditGroupInfoComponent implements OnInit {
     }
   }
   goCreatePage(_type) {
-    this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}/create?type=${_type}`);
+    this.router.navigateByUrl(
+      `/dashboard/group-info/${this.groupId}/create?type=${_type}`
+    );
+  }
+  handleWaittingMemberInfo(id: string) {
+    if (id) {
+      this.groupInfos = this.groupInfos.filter(_info => _info.memberId !== id);
+    }
+  }
+  handleRemoveAdmin(id: string, type: number) {
+    if (id) {
+      if (type === 1) {
+        this.brandAdministrators = this.brandAdministrators.filter(_info => _info.memberId !== id);
+      } else if (type === 2) {
+        this.branchAdministrators = this.branchAdministrators.filter(_info => _info.memberId !== id);
+      } else {
+        this.coachAdministrators = this.coachAdministrators.filter(_info => _info.memberId !== id);
+      }
+    }
+  }
+  handleAssignAdmin(id: string) {
+    if (id) {
+      this.normalMemberInfos = this.normalMemberInfos.filter(_info => _info.memberId !== id);
+    }
   }
 }
