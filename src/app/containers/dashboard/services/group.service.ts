@@ -28,4 +28,10 @@ export class GroupService {
   createGroup(body) {
     return this.http.post<any>('/api/v1/center/createGroup', body);
   }
+  updateJoinStatus(body) {
+    return this.http.post<any>('/api/v1/center/updateJoinStatus', body);
+  }
+  editGroupMember(body) {
+    return this.http.post<any>('/api/v1/center/editGroupMember', body);
+  }
 }

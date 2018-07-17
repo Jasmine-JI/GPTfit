@@ -33,7 +33,7 @@
     <ul class="dropdown-menu"
       [class.show]="active"
     >
-      <li class="warn-manage">
+      <li class="warn-manage" (click)="handleRemoveAdmin()">
         <a>
           移除管理員
         </a>
@@ -47,7 +47,7 @@
     <ul class="dropdown-menu"
       [class.show]="active"
     >
-      <li class="normal-manage">
+      <li class="normal-manage" (click)="handleAssignAdmin()">
         <a>
           指定管理員
         </a>
@@ -66,17 +66,17 @@
     <ul class="dropdown-menu"
       [class.show]="active"
     >
-      <li class="normal-manage">
+      <li class="normal-manage" (click)="handleJoinStatus(2)">
         <a>
           接受
         </a>
       </li>
-      <li class="normal-manage">
+      <li class="normal-manage" (click)="handleJoinStatus(3)">
         <a>
           拒絕
         </a>
       </li>
-      <li class="normal-manage">
+      <li class="normal-manage" (click)="handleJoinStatus(4)">
         <a>
           永久拒絕
         </a>

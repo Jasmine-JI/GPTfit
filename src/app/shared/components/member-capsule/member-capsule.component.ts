@@ -3,8 +3,12 @@ import {
   OnInit,
   Input,
   HostListener,
-  ElementRef
+  ElementRef,
+  EventEmitter,
+  Output
 } from '@angular/core';
+import { GroupService } from '../../../containers/dashboard/services/group.service';
+import { UtilsService } from '@shared/services/utils.service';
 
 @Component({
   selector: 'app-member-capsule',
@@ -21,11 +25,22 @@ export class MemberCapsuleComponent implements OnInit {
   @Input() isAdminInfo = false;
   @Input() isNormalMemberInfo = false;
   @Input() isWaittingMemberInfo = false;
+  @Input() groupId: string;
+  @Input() userId: string;
+  @Output() onWaittingMemberInfoChange = new EventEmitter();
+  @Output() onRemoveAdmin = new EventEmitter();
+  @Output() onAssignAdmin = new EventEmitter();
+
   active = false;
   width = '100%';
   height = 'auto';
+  token: string;
   public elementRef;
-  constructor(myElement: ElementRef) {
+  constructor(
+    myElement: ElementRef,
+    private groupService: GroupService,
+    private utils: UtilsService
+  ) {
     this.elementRef = myElement;
   }
   @HostListener('document:click', ['$event'])
@@ -38,6 +53,7 @@ export class MemberCapsuleComponent implements OnInit {
   handleClick() {}
   ngOnInit() {
     this.listenImage(this.icon);
+    this.token = this.utils.getToken();
   }
   listenImage(link) {
     // Set the image height and width
@@ -65,5 +81,44 @@ export class MemberCapsuleComponent implements OnInit {
   }
   toggleMenu() {
     this.active = !this.active;
+  }
+  handleJoinStatus(_type: number) {
+    const body = {
+      token: this.token,
+      groupId: this.groupId,
+      joinUserId: this.userId,
+      joinStatus: _type
+    };
+    this.groupService.updateJoinStatus(body).subscribe(res => {
+      if (res.resultCode === 200) {
+        return this.onWaittingMemberInfoChange.emit(this.userId);
+      }
+    });
+  }
+  handleRemoveAdmin() {
+    const body = {
+      token: this.token,
+      groupId: this.groupId,
+      userId: this.userId,
+      accessRight: '90'
+    };
+    this.groupService.editGroupMember(body).subscribe(res => {
+      if (res.resultCode === 200) {
+        return this.onRemoveAdmin.emit(this.userId);
+      }
+    });
+  }
+  handleAssignAdmin() {
+    const body = {
+      token: this.token,
+      groupId: this.groupId,
+      userId: this.userId,
+      accessRight: '60'
+    };
+    this.groupService.editGroupMember(body).subscribe(res => {
+      if (res.resultCode === 200) {
+        return this.onAssignAdmin.emit(this.userId);
+      }
+    });
   }
 }

@@ -5,7 +5,7 @@
       [imageURL]="groupImg"
       [maxFileSize]="maxFileSize"
       [disabled]="isUploading"
-      [btnText]="this.fileLink ? reloadFileText : chooseFileText"
+      [btnText]="this.finalImageLink ? reloadFileText : chooseFileText"
       [isLoading]="isUploading"
       [accept]="acceptFileExtensions.join()"
       [reloadFileText]="reloadFileText"
@@ -84,9 +84,11 @@
             [isInvalid]="(!branchName.valid && branchName.touched) || (f.submitted && branchName.hasError('required')) || (f.submitted && branchName.hasError('maxLength'))"
           >
           </app-form-text>
-          <select *ngIf="createType === 2">
-            <option>無</option>
-            <option>fake lession</option>
+          <select *ngIf="createType === 2" formControlName="branchId">
+            <option [value]="groupId">無指定分店</option>
+            <ng-container  *ngFor="let subBranchItem of subBranchInfo">
+              <option [value]="subBranchItem?.groupId">{{subBranchItem?.groupName}}</option>
+            </ng-container>
           </select>
         </div>
         <div class="ala-list__item" *ngIf="createType !== 3">
