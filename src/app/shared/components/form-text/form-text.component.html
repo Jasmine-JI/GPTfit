@@ -5,6 +5,7 @@
     [formControlName]="controlName"
     [className]="isInvalid ? invalidClassName : class_name"
     [attr.disabled]="disabled ? '' : null"
+    [placeholder]="placeholder"
   />
   <app-form-remind
     *ngIf="remindText"
@@ -21,6 +22,7 @@
     [value]="content"
     [className]="isInvalid ? invalidClassName : class_name"
     [attr.disabled]="disabled ? '' : null"
+    [placeholder]="placeholder"
   />
   <app-form-remind
     *ngIf="remindText"

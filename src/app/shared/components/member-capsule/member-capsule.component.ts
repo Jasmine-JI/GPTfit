@@ -9,6 +9,8 @@ import {
 } from '@angular/core';
 import { GroupService } from '../../../containers/dashboard/services/group.service';
 import { UtilsService } from '@shared/services/utils.service';
+import { MatDialog } from '@angular/material/dialog';
+import { RightSettingWinComponent } from '../../../containers/dashboard/group/right-setting-win/right-setting-win.component';
 
 @Component({
   selector: 'app-member-capsule',
@@ -39,7 +41,8 @@ export class MemberCapsuleComponent implements OnInit {
   constructor(
     myElement: ElementRef,
     private groupService: GroupService,
-    private utils: UtilsService
+    private utils: UtilsService,
+    public dialog: MatDialog
   ) {
     this.elementRef = myElement;
   }
@@ -115,10 +118,17 @@ export class MemberCapsuleComponent implements OnInit {
       userId: this.userId,
       accessRight: '60'
     };
-    this.groupService.editGroupMember(body).subscribe(res => {
-      if (res.resultCode === 200) {
-        return this.onAssignAdmin.emit(this.userId);
+    this.dialog.open(RightSettingWinComponent, {
+      hasBackdrop: true,
+      data: {
+        name: this.name,
+        groupId: this.groupId
       }
     });
+    // this.groupService.editGroupMember(body).subscribe(res => {
+    //   if (res.resultCode === 200) {
+    //     return this.onAssignAdmin.emit(this.userId);
+    //   }
+    // });
   }
 }

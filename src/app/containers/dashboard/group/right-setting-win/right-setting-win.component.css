@@ -1,0 +1,39 @@
+.ala-dialog.mat-dialog-title.group-dialog {
+  background-color: #fff;
+  color: #2f4349;
+  border-bottom: 1px solid #ccc;
+}
+.mat-expansion-panel-header-title {
+  padding-left: 10px;
+}
+
+.mat-expansion-panel-header.active,
+.mat-expansion-panel:not(.mat-expanded) .active.mat-expansion-panel-header:not([aria-disabled=true]):hover,
+.mat-expansion-panel-header.active .mat-expansion-panel-header-title,
+.mat-expansion-panel-header.mat-expanded.active,
+.mat-expansion-panel-header.mat-expanded.active .mat-expansion-panel-header-title {
+  background: rgb(38, 171, 227);
+  color: #fff;
+}
+.mat-expansion-panel-header.active .mat-expansion-indicator::after,
+.mat-expansion-panel-header.active:hover .mat-expansion-indicator::after,
+.mat-expansion-panel-header.mat-expanded.active .mat-expansion-indicator::after {
+  color: #fff;
+}
+
+.coach-lesson-item {
+  list-style: none;
+  padding-left: 72px;
+  min-height: 30px;
+  line-height: 30px;
+}
+.coach-lesson-item.active {
+  background: rgb(38, 171, 227);
+  color: #fff;
+}
+
+.hint {
+  color: #ccc;
+  font-size: 12px;
+  margin-left: 10px;
+}

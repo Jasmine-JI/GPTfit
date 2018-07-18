@@ -17,6 +17,7 @@ export class FormTextComponent implements OnInit {
   @Input() control: FormGroup;
   @Input() controlName: string;
   @Input() disabled = false;
+  @Input() placeholder = '';
   invalidClassName = `${this.class_name} ${this.class_name}--invalid`;
   ngOnInit() {}
   setMyClasses() {
