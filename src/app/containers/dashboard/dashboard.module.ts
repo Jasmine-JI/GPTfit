@@ -52,6 +52,7 @@ import { GroupStatusPipe } from './pipes/group-status.pipe';
 import { EditGroupInfoComponent } from './group/edit-group-info/edit-group-info.component';
 import { EditGroupGuard } from './guards/edit-group-guard';
 import { CreateGroupComponent } from './group/create-group/create-group.component';
+import { RightSettingWinComponent } from './group/right-setting-win/right-setting-win.component';
 
 @NgModule({
   imports: [
@@ -112,14 +113,16 @@ import { CreateGroupComponent } from './group/create-group/create-group.componen
     AccessNamePipe,
     GroupStatusPipe,
     EditGroupInfoComponent,
-    CreateGroupComponent
+    CreateGroupComponent,
+    RightSettingWinComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
     MsgDialogComponent,
     DbResultDialogComponent,
     HrZoneDialogComponent,
-    Top3DialogComponent
+    Top3DialogComponent,
+    RightSettingWinComponent
   ]
 })
 export class DashboardModule {}

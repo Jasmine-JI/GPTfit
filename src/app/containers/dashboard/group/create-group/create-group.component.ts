@@ -262,7 +262,6 @@ export class CreateGroupComponent implements OnInit {
     }
   }
   manage({ valid, value }) {
-    console.log('valid: ', valid);
     if (valid) {
       const { groupDesc } = value;
       const body = {
