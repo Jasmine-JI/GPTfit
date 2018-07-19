@@ -122,7 +122,8 @@ export class MemberCapsuleComponent implements OnInit {
       hasBackdrop: true,
       data: {
         name: this.name,
-        groupId: this.groupId
+        groupId: this.groupId,
+        userId: this.userId
       }
     });
     // this.groupService.editGroupMember(body).subscribe(res => {

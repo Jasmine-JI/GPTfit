@@ -1,9 +1,13 @@
+.right-setting {
+  min-height: 300px;
+  min-width:500px;
+}
 .ala-dialog.mat-dialog-title.group-dialog {
   background-color: #fff;
   color: #2f4349;
   border-bottom: 1px solid #ccc;
 }
-.mat-expansion-panel-header-title {
+.right-setting .mat-expansion-panel-header-title {
   padding-left: 10px;
 }
 
@@ -26,6 +30,9 @@
   padding-left: 72px;
   min-height: 30px;
   line-height: 30px;
+}
+.coach-lesson-item:hover {
+  cursor: pointer;
 }
 .coach-lesson-item.active {
   background: rgb(38, 171, 227);
