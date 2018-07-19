@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, EventEmitter } from '@angular/core';
+import { Component, OnInit, Inject, EventEmitter, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
 
@@ -8,7 +8,7 @@ import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
   styleUrls: ['./msg-dialog.component.css']
 })
 export class MsgDialogComponent implements OnInit {
-  onConfirm = new EventEmitter();
+  @Output() onConfirm: EventEmitter<any> = new EventEmitter();
   get title() {
     return this.data.title;
   }

@@ -34,4 +34,7 @@ export class GroupService {
   editGroupMember(body) {
     return this.http.post<any>('/api/v1/center/editGroupMember', body);
   }
+  addGroupMember(body) {
+    return this.http.post<any>('/api/v1/center/addGroupMember', body);
+  }
 }

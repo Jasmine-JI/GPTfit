@@ -1,9 +1,9 @@
 import { Component, OnInit, Inject, EventEmitter, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
-import { MsgDialogComponent } from '../../components/msg-dialog/msg-dialog.component';
 import { GroupService } from '../../services/group.service';
 import { UtilsService } from '@shared/services/utils.service';
+import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 
 @Component({
   selector: 'app-right-setting-win',
@@ -22,6 +22,9 @@ export class RightSettingWinComponent implements OnInit {
   subBranchInfo: any;
   subCoachInfo: any;
   dispalyCoachInfo: any;
+  chooseGroupId: string;
+  chooseGroupName: string;
+  manageType: string; // 30: brand, 40: branch, 60: coach
   get name() {
     return this.data.name;
   }
@@ -32,6 +35,9 @@ export class RightSettingWinComponent implements OnInit {
 
   get groupId() {
     return this.data.groupId;
+  }
+  get userId() {
+    return this.data.userId;
   }
   get onChange() {
     return this.data.onDelete;
@@ -51,31 +57,71 @@ export class RightSettingWinComponent implements OnInit {
   confirm() {
     this.onConfirm.emit();
     if (this.chooseItem !== '') {
-      this.dialog.open(MsgDialogComponent, {
+      this.dialog.open(MessageBoxComponent, {
         hasBackdrop: true,
         data: {
           title: 'Message',
-          body: `是否要指派為XXX的管理員`
+          body: `是否要指派${this.name}為${this.chooseGroupName}的管理員`,
+          confirmText: '確定',
+          cancelText: '取消',
+          onConfirm: this.handleConfirm.bind(this)
         }
       });
     }
   }
-  handlechooseBrandItem(item: string) {
+  handleConfirm() {
+    const body = {
+      token: this.token,
+      groupId: this.groupId,
+      userId: this.userId,
+      accessRight: this.manageType
+    };
+    if (this.groupId !== this.chooseGroupId) {
+      body.groupId = this.chooseGroupId;
+      this.groupService.addGroupMember(body).subscribe(res => {
+        if (res.resultCode === 200) {
+          this.groupService.editGroupMember(body).subscribe(response => {
+            if (response.resultCode === 200) {
+              this.dialog.closeAll();
+            }
+          });
+        }
+      });
+    } else {
+      this.groupService.editGroupMember(body).subscribe(res => {
+        if (res.resultCode === 200) {
+          this.dialog.closeAll();
+        }
+      });
+    }
+  }
+  handlechooseBrandItem(item: string, id: string, name: string) {
+    this.chooseGroupId = id;
+    this.chooseGroupName = name;
+    this.manageType = '30';
     if (item === this.chooseItem) {
       this.chooseItem = '';
     } else {
       this.chooseItem = item;
     }
   }
-  handlechooseBranchItem(item: string, id: string) {
+  handlechooseBranchItem(item: string, id: string, name: string) {
+    this.chooseGroupId = id;
+    this.chooseGroupName = name;
+    this.manageType = '40';
     if (item === this.chooseItem) {
       this.chooseItem = '';
     } else {
       this.chooseItem = item;
     }
-    this.dispalyCoachInfo = this.subCoachInfo.filter(_info => _info.groupId.slice(0, 7) === id.slice(0, 7));
+    this.dispalyCoachInfo = this.subCoachInfo.filter(
+      _info => _info.groupId.slice(0, 7) === this.chooseGroupId.slice(0, 7)
+    );
   }
-  handlechooseLessonItem(item: string) {
+  handlechooseLessonItem(item: string, id: string, name: string) {
+    this.chooseGroupId = id;
+    this.chooseGroupName = name;
+    this.manageType = '60';
     if (item === this.chooseItem) {
       this.chooseItem = '';
     } else {

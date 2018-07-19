@@ -1,7 +1,7 @@
 <h2 class="ala-dialog group-dialog" mat-dialog-title>
   {{ name }} 權限設定
 </h2>
-<mat-dialog-content style="min-height: 300px">
+<mat-dialog-content class="right-setting">
   <app-form-text
     [content]="searchWord"
     [placeholder]="placeholder"
@@ -13,7 +13,7 @@
           expandedHeight="30px"
           collapsedHeight="30px"
           [class.active]="chooseItem === brandIndex + ''"
-          (click)="handlechooseBrandItem(brandIndex + '')"
+          (click)="handlechooseBrandItem(brandIndex + '', subBrandItem.groupId, subBrandItem?.groupName)"
         >
           <mat-panel-title>{{subBrandItem?.groupName}}<span class="hint" *ngIf="chooseItem === brandIndex + ''">(指派為品牌管理者)</span></mat-panel-title>
         </mat-expansion-panel-header>
@@ -23,16 +23,21 @@
               expandedHeight="30px"
               collapsedHeight="30px"
               [class.active]="chooseItem === brandIndex + '-' + branchIndex"
-              (click)="handlechooseBranchItem(brandIndex+ '-' + branchIndex, subBranchItem.groupId)"
+              (click)="handlechooseBranchItem(brandIndex+ '-' + branchIndex, subBranchItem.groupId, subBranchItem?.groupName)"
             >
               <mat-panel-title>{{subBranchItem?.groupName}} <span class="hint"*ngIf="chooseItem === brandIndex + '-' + branchIndex">(指派為分店管理者)</span></mat-panel-title>
             </mat-expansion-panel-header>
             <li class="coach-lesson-item"
-              (click)="handlechooseLessonItem(brandIndex + '-' + branchIndex + '-' + coachIndex)"
-               *ngFor="let coachItem of dispalyCoachInfo;let coachIndex = index"
-                [class.active]="chooseItem === brandIndex + '-' + branchIndex + '-' + coachIndex"
+              *ngFor="let coachItem of dispalyCoachInfo;let coachIndex = index"
+              (click)="handlechooseLessonItem(brandIndex + '-' + branchIndex + '-' + coachIndex, coachItem.groupId, coachItem?.groupName)"
+              [class.active]="chooseItem === brandIndex + '-' + branchIndex + '-' + coachIndex"
             >
               {{coachItem?.groupName}} <span class="hint" *ngIf="chooseItem === brandIndex + '-' + branchIndex + '-' + coachIndex">(指派為課程管理者)</span>
+            </li>
+            <li class="coach-lesson-item"
+               *ngIf="dispalyCoachInfo?.length === 0"
+            >
+              尚無相關課程
             </li>
           </mat-expansion-panel>
         </mat-accordion>
