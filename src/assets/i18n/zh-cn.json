@@ -6,6 +6,13 @@
     "Dashboard": "仪表板"
   },
   "Portal": {
-    "Introduce": "介绍"
+    "Introduce": "介绍",
+    "ProductPhoto": "产品照片",
+    "EquipmentSN": "设备序号",
+    "ProductName": "产品型号",
+    "ProductType": "产品类别",
+    "MainApp": "主要App应用",
+    "othersApp": "其他App应用",
+    "RelatedLinks": "相关连结"
   }
 }

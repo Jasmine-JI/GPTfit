@@ -11,33 +11,31 @@
   </ng-progress>
   <ng-container *ngIf="!isLoading">
     <div class="row" style="margin-bottom: 15px">
-      <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">產品照片：</div>
+      <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">{{"Portal.ProductPhoto" | translate}}：</div>
       <div class="col-sm-6 text-sm-left text-center" style="width: 100%">
         <img *ngIf="!deviceInfo" src={{noProductImg}}>
-        <img *ngIf="deviceInfo" src={{deviceInfo?.modeImgUrl}} >
+        <img *ngIf="deviceInfo" src={{deviceInfo?.modelImgUrl}} >
       </div>
     </div>
     <div class="row" style="margin-bottom: 15px">
-      <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">設備序號：</div>
+      <div class="col-sm-6 text-sm-right text-center" [style.font-weight]="isWrong ? '200' : '700' ">
+        <span  style="font-weight: bold">{{"Portal.EquipmentSN" | translate}}</span>：
+      </div>
       <div *ngIf="!deviceInfo" class="col-sm-6 text-sm-left text-center">查無此設備資訊</div>
       <div *ngIf="deviceInfo" class="col-sm-6 text-sm-left text-center">{{ displayQr.device_sn  }}</div>
     </div>
     <ng-container *ngIf="deviceInfo">
       <div class="row" style="margin-bottom: 15px">
-        <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">產品型號：</div>
-        <div class="col-sm-6 text-sm-left text-center">{{ deviceInfo?.modeName || '尚無相關資訊' }}</div>
+        <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">{{"Portal.ProductName" | translate}}：</div>
+        <div class="col-sm-6 text-sm-left text-center">{{ deviceInfo?.modelName || '尚無相關資訊' }}</div>
       </div>
       <div class="row" style="margin-bottom: 15px">
-        <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">產品類別：</div>
-        <div class="col-sm-6 text-sm-left text-center">{{ deviceInfo?.modeType || '尚無相關資訊' }}</div>
+        <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">{{"Portal.ProductType" | translate}}：</div>
+        <div class="col-sm-6 text-sm-left text-center">{{ deviceInfo?.modelType || '尚無相關資訊' }}</div>
       </div>
-      <!-- <div class="row" style="margin-bottom: 15px">
-        <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">出廠日期：</div>
-        <div class="col-sm-6 text-sm-left text-center">{{ deviceInfo?.date || '尚無相關資訊' }}</div>
-      </div> -->
       <div class="row" style="margin-bottom: 15px" *ngIf="deviceInfo?.mainAppData">
         <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">
-          主要App應用：
+          {{"Portal.MainApp" | translate}}：
         </div>
         <div class="col-sm-6 text-sm-left text-center">
           <div style="margin-bottom:10px">
@@ -64,7 +62,7 @@
       </div>
       <div class="row" style="margin-bottom: 15px" *ngIf="deviceInfo?.secondaryAppData">
         <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">
-          其他App應用：
+          {{"Portal.othersApp" | translate}}：
         </div>
         <div class="col-sm-6 text-sm-left text-center">
           <div style="margin-bottom:10px">
@@ -89,10 +87,12 @@
           </ng-container>
         </div>
       </div>
-      <div class="row" style="margin-bottom: 15px">
-        <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">相關連結：</div>
+      <div class="row" style="margin-bottom: 15px" *ngIf="productInfo && productInfo.length > 0">
+        <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">{{"Portal.RelatedLinks" | translate}}：</div>
         <div class="col-sm-6 text-sm-left text-center">
-          <a target="_blank" href={{deviceInfo?.InformationUrl}} [class.wrong-cs]="isWrong">產品頁面</a>
+          <div *ngFor="let info of productInfo">
+            <a target="_blank" href={{info?.link}}>{{info?.dispName}}</a>
+          </div>
         </div>
       </div>
     </ng-container>
