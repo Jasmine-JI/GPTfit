@@ -75,13 +75,11 @@ exports.getInfos = function(sn) {
           secondaryAppData.appApkImg = `http://${domain}/app/public_html/products/img/getApp_03_apk.png`;
         }
         if (mainAppData) {
-          console.log('productData: ', productData);
           data.informations = {
             'relatedLinks_zh-TW': productData["relatedLinks_zh-TW"],
             'relatedLinks_zh-CN': productData["relatedLinks_zh-CN"],
             'relatedLinks_en-US': productData["relatedLinks_en-US"]
           };
-          console.log('data.informations: ', data.informations);
           data.modelImgUrl = `http://${domain}/app/public_html/products${productData.modelImg}`;
           data.modelName = productData.modelName;
 
