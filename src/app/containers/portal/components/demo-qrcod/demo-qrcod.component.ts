@@ -4,6 +4,8 @@ import { QrcodeService } from '../../services/qrcode.service';
 import { HttpParams } from '@angular/common/http';
 import { NgProgress } from 'ngx-progressbar';
 import * as moment from 'moment';
+import { UtilsService } from '@shared/services/utils.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-demo-qrcod',
@@ -18,13 +20,22 @@ export class DemoQrcodComponent implements OnInit {
   isWrong = false;
   noProductImg: string;
   isLoading: boolean;
+  productInfo: any;
   constructor(
     private qrcodeService: QrcodeService,
-    private progress: NgProgress
+    private progress: NgProgress,
+    private utilsService: UtilsService,
+    private translateService: TranslateService
   ) {}
 
   ngOnInit() {
     const queryStrings = getUrlQueryStrings(location.search);
+    const langName = this.utilsService.getLocalStorageObject('locale');
+    this.translateService.onLangChange.subscribe(e => {
+      if (this.deviceInfo) {
+        this.handleProductInfo(e.lang);
+      }
+    });
     this.displayQr = queryStrings;
     let params = new HttpParams();
     params = params.set('device_sn', this.displayQr.device_sn);
@@ -37,11 +48,21 @@ export class DemoQrcodComponent implements OnInit {
         }/app/public_html/products/img/unknown.png`;
       } else {
         this.deviceInfo = res;
+        this.handleProductInfo(langName);
         this.handleUpload();
       }
       this.progress.done();
       this.isLoading = false;
     });
+  }
+  handleProductInfo(lang) {
+    if (lang === 'zh-cn') {
+      this.productInfo = this.deviceInfo.informations['relatedLinks_zh-CN'];
+    } else if (lang === 'en-us') {
+      this.productInfo = this.deviceInfo.informations['relatedLinks_en-US'];
+    } else {
+      this.productInfo = this.deviceInfo.informations['relatedLinks_zh-TW'];
+    }
   }
   handleUpload() {
     const { cs, device_sn } = this.displayQr;
@@ -51,19 +72,19 @@ export class DemoQrcodComponent implements OnInit {
       .locale('en')
       .format('dddd');
     const week = {
-      'Monday': 6,
-      'Tuesday': 5,
-      'Wednesday': 4,
-      'Thursday': 3,
-      'Friday': 2,
-      'Saturday': 1,
-      'Sunday': 7
+      Monday: 6,
+      Tuesday: 5,
+      Wednesday: 4,
+      Thursday: 3,
+      Friday: 2,
+      Saturday: 1,
+      Sunday: 7
     };
     const weekNum = week[weekStr];
-      const day = +(((device_sn.slice(1, 3)) - 1) * 7) + weekNum;
-      const dateTimeStamp = moment(firstDay, 'YYYY-MM-DD')
-        .add(day, 'days')
-        .unix();
+    const day = +((device_sn.slice(1, 3) - 1) * 7) + weekNum;
+    const dateTimeStamp = moment(firstDay, 'YYYY-MM-DD')
+      .add(day, 'days')
+      .unix();
     if (dateTimeStamp * 1000 < Date.now()) {
       this.uploadDevice();
     } else {
@@ -72,7 +93,9 @@ export class DemoQrcodComponent implements OnInit {
   }
   handleCScode(code, sn) {
     const weights = [2, 2, 6, 1, 8, 3, 4, 1, 1, 1, 1, 1, 1, 1];
-    const arr = sn.split('').map((_str, idx) => _str.charCodeAt() * weights[idx]);
+    const arr = sn
+      .split('')
+      .map((_str, idx) => _str.charCodeAt() * weights[idx]);
     let evenNum = 0;
     let oddNum = 0;
     arr.forEach((_arr, idx) => {
@@ -92,10 +115,10 @@ export class DemoQrcodComponent implements OnInit {
   }
   uploadDevice() {
     const types = ['Wearable', 'Treadmill', 'Spin Bike', 'Rowing machine'];
-    const { modeType } = this.deviceInfo;
+    const { modelType } = this.deviceInfo;
     const { cs, device_sn } = this.displayQr;
     const typeIdx = types.findIndex(
-      _type => _type.toLowerCase() === modeType.toLowerCase()
+      _type => _type.toLowerCase() === modelType.toLowerCase()
     );
     const body = {
       token: '',
@@ -113,7 +136,7 @@ export class DemoQrcodComponent implements OnInit {
       } else {
         this.isWrong = false;
       }
-    }, err => this.isWrong = true);
+    }, err => (this.isWrong = true));
   }
   swithMainApp() {
     this.isMainAppOpen = !this.isMainAppOpen;
