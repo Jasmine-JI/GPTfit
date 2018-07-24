@@ -9,13 +9,13 @@ var request = require('request');
 const helmet = require('helmet');
 const { checkTokenExit } = require('./models/auth.model');
 
-// const https = require('https');
-// const fs = require('fs');
+const https = require('https');
+const fs = require('fs');
 
-// const SERVER_CONFIG = {
-//   key: fs.readFileSync('../key/private.key'),
-//   cert: fs.readFileSync('../key/server.crt')
-// };
+const SERVER_CONFIG = {
+  key: fs.readFileSync('/etc/ssl/free.key'),
+  cert: fs.readFileSync('/etc/ssl/free.crt')
+};
 
 // Init app
 var app = express();
@@ -90,7 +90,7 @@ app.use(function (req, res, next) {
 
   var allowedOrigins = [];
   if (address === '192.168.1.235') {
-    allowedOrigins = ['http://192.168.1.235:8080', '*'];
+    allowedOrigins = ['http://192.168.1.235:8080', 'https://192.168.1.235:8080'];
   } else if (address === '192.168.1.234') {
     allowedOrigins = ['*']; // 因為要for在家只做前端時，需要隨意的domain去call
   } else if (address === '192.168.1.232') {
@@ -176,9 +176,9 @@ app.use('/nodejs/api/coach', authMiddleware, coach);
 
 // Start the server
 const port = process.env.PORT || 3001;
-app.listen(port, function () {
-  console.log('Server running at ' + port);
-});
-// https.createServer(SERVER_CONFIG, app).listen(port, function() {
-//   console.log('HTTPS sever started at ' + port);
+// app.listen(port, function () {
+//   console.log('Server running at ' + port);
 // });
+https.createServer(SERVER_CONFIG, app).listen(port, function() {
+  console.log('HTTPS sever started at ' + port);
+});
