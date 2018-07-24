@@ -6,6 +6,13 @@
     "Dashboard": "儀表板"
   },
   "Portal": {
-    "Introduce": "介紹"
+    "Introduce": "介紹",
+    "ProductPhoto": "產品照片",
+    "EquipmentSN": "設備序號",
+    "ProductName": "產品型號",
+    "ProductType": "產品類別",
+    "MainApp": "主要App應用",
+    "othersApp": "其他App應用",
+    "RelatedLinks": "相關連結"
   }
 }
