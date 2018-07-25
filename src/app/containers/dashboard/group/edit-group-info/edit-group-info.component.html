@@ -28,27 +28,27 @@
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="申請解散品牌"
-            *ngIf="joinStatus === 2"
+            *ngIf="joinStatus === 2  || role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator"
           >
             申請解散品牌
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="新增分店"
-            *ngIf="joinStatus === 2"
+            *ngIf="joinStatus === 2 || role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator"
             (click)="goCreatePage(1)"
           >
             新增分店
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="新增教練課"
-            *ngIf="joinStatus === 2"
+            *ngIf="joinStatus === 2 || role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator"
             (click)="goCreatePage(2)"
           >
             新增教練課
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="完成管理"
-            *ngIf="joinStatus === 2"
+            *ngIf="joinStatus === 2 || role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator"
             type="submit"
           >
             完成管理
@@ -110,11 +110,12 @@
               <ng-container  *ngFor="let subBrandItem of subBrandInfo">
                 <app-member-capsule
                   [role]="role"
-                  [isSubGroupInfo]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer"
+                  [isSubGroupInfo]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator"
                   [title]="subBrandItem?.groupName"
                   [memberInfo]="subBrandItem"
                   [name]="subBrandItem && subBrandItem?.groupName"
                   [icon]="subBrandItem?.groupIcon"
+                  [groupId]="subBrandItem?.groupId"
                 >
                 </app-member-capsule>
               </ng-container>
@@ -130,6 +131,7 @@
                   [memberInfo]="subBranchItem"
                   [name]="subBranchItem && subBranchItem?.groupName"
                   [icon]="subBranchItem?.groupIcon"
+                  [groupId]="subBranchItem?.groupId"
                 >
                 </app-member-capsule>
               </ng-container>
@@ -145,6 +147,7 @@
                   [memberInfo]="subCoachItem"
                   [name]="subCoachItem && subCoachItem?.groupName"
                   [icon]="subCoachItem?.groupIcon"
+                  [groupId]="subCoachItem?.groupId"
                 >
                 </app-member-capsule>
               </ng-container>

@@ -40,7 +40,6 @@
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="完成"
-            *ngIf="joinStatus === 2"
             type="submit"
           >
             完成
@@ -84,8 +83,9 @@
             [isInvalid]="(!branchName.valid && branchName.touched) || (f.submitted && branchName.hasError('required')) || (f.submitted && branchName.hasError('maxLength'))"
           >
           </app-form-text>
-          <select *ngIf="createType === 2" formControlName="branchId">
-            <option [value]="groupId">無指定分店</option>
+          <select *ngIf="createType === 2" formControlName="branchId" class="form-field"
+            [class.form-field--invalid]="(!branchId.valid && branchId.touched) || (f.submitted && branchId.hasError('required'))"
+          >
             <ng-container  *ngFor="let subBranchItem of subBranchInfo">
               <option [value]="subBranchItem?.groupId">{{subBranchItem?.groupName}}</option>
             </ng-container>
@@ -117,14 +117,14 @@
         </div>
         <div class="ala-list__item">
           <label class="ala-form__label">狀態：</label>
-          <select class="form-field">
-            <option class="form-field-option">{{ groupInfo?.groupStatus | groupStatus }}</option>
-            <option class="form-field-option">審核制</option>
-            <option class="form-field-option">隱藏群組</option>
+          <select class="form-field" formControlName="groupStatus">
+            <option class="form-field-option" value="2">審核制</option>
+            <option class="form-field-option" value="1">自由加入</option>
+            <option class="form-field-option" value="3">隱藏群組</option>
           </select>
         </div>
         <div class="ala-list__item">
-          <label class="ala-form__label">介紹：</label>
+          <label class="ala-form__label form__label--required">介紹：</label>
           <div style="width: calc(100% - 50px)">
             <app-form-textarea
               [maxLength]="textareaMaxLength"

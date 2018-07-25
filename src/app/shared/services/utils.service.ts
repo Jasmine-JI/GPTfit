@@ -103,15 +103,15 @@ export class UtilsService {
   }
   displayGroupLevel(_id: string) {
     if (_id) {
-      const arr = _id.split('-').splice(2, 3);
+      const arr = _id.split('-').splice(2, 4);
       if (+arr[0] > 0) {
-        return '品牌';
+        return '30';
       } else if (+arr[1] > 0) {
-        return '分店';
+        return '40';
       } else if (+arr[2] > 0) {
-        return '課程';
+        return '60';
       } else {
-        return '一般群組';
+        return '80';
       }
     }
   }

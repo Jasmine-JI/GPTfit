@@ -11,6 +11,7 @@ import { GroupService } from '../../../containers/dashboard/services/group.servi
 import { UtilsService } from '@shared/services/utils.service';
 import { MatDialog } from '@angular/material/dialog';
 import { RightSettingWinComponent } from '../../../containers/dashboard/group/right-setting-win/right-setting-win.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-member-capsule',
@@ -42,6 +43,7 @@ export class MemberCapsuleComponent implements OnInit {
     myElement: ElementRef,
     private groupService: GroupService,
     private utils: UtilsService,
+    private router: Router,
     public dialog: MatDialog
   ) {
     this.elementRef = myElement;
@@ -126,10 +128,8 @@ export class MemberCapsuleComponent implements OnInit {
         userId: this.userId
       }
     });
-    // this.groupService.editGroupMember(body).subscribe(res => {
-    //   if (res.resultCode === 200) {
-    //     return this.onAssignAdmin.emit(this.userId);
-    //   }
-    // });
+  }
+  goToManage() {
+    this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}/edit`);
   }
 }

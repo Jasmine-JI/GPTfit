@@ -34,7 +34,7 @@
         </button>
         <button class="alatech-btn alatech-btn--default"
           title="管理"
-          *ngIf="joinStatus === 2"
+          *ngIf="joinStatus === 2 || role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer"
           (click)="goEditPage()"
         >
           管理
@@ -55,7 +55,7 @@
         <label>群組ID：</label>{{ group_id }}
       </div>
       <div>
-        <label>階層：</label>{{ this.groupLevel }}
+        <label>階層：</label>{{ this.groupLevel | groupLevelTranslate }}
       </div>
       <div>
         <label>狀態：</label>{{ groupInfo?.groupStatus | groupStatus }}
@@ -66,7 +66,7 @@
     </div>
     <div>
       <mat-tab-group (selectChange)="changeGroupInfo($event)" class="ala-tab-group">
-        <mat-tab label="子群組資訊">
+        <mat-tab label="子群組資訊" *ngIf="groupLevel && groupLevel !== '80'">
           <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">品牌</label>
           <div style="margin-bottom: 15px">
             <ng-container  *ngFor="let subBrandItem of subBrandInfo">

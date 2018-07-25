@@ -94,6 +94,9 @@ export class EditGroupInfoComponent implements OnInit {
     evt.stopPropagation();
   }
   ngOnInit() {
+    this.route.params.subscribe(_params => this.handleInit());
+  }
+  handleInit() {
     this.groupId = this.route.snapshot.paramMap.get('groupId');
     this.form = this.fb.group({
       groupName: ['', [Validators.required, Validators.maxLength(32)]],
@@ -124,10 +127,7 @@ export class EditGroupInfoComponent implements OnInit {
       console.log('%c this.isCoach', 'color: #0ca011', res);
     });
     this.token = this.utils.getToken();
-    const body = {
-      token: this.token,
-      groupId: this.groupId
-    };
+    const body = { token: this.token, groupId: this.groupId };
     let params = new HttpParams();
     params = params.set('groupId', this.groupId);
     this.groupService.fetchGroupListDetail(body).subscribe(res => {
@@ -149,8 +149,12 @@ export class EditGroupInfoComponent implements OnInit {
       this.finalImageLink = this.groupImg;
       this.group_id = this.utils.displayGroupId(groupId);
       this.groupLevel = this.utils.displayGroupLevel(groupId);
+      if (this.groupLevel === '80') {
+        this.getGroupMemberList(2);
+      } else {
+        this.getGroupMemberList(1);
+      }
     });
-    this.getGroupMemberList(1);
   }
   handleActionGroup(_type) {
     const body = {
@@ -173,7 +177,7 @@ export class EditGroupInfoComponent implements OnInit {
     const body = {
       token: this.token,
       groupId: this.groupId,
-      groupLevel: '30',
+      groupLevel: this.groupLevel,
       infoType: _type
     };
     this.groupService.fetchGroupMemberList(body).subscribe(res => {
@@ -284,17 +288,25 @@ export class EditGroupInfoComponent implements OnInit {
   handleRemoveAdmin(id: string, type: number) {
     if (id) {
       if (type === 1) {
-        this.brandAdministrators = this.brandAdministrators.filter(_info => _info.memberId !== id);
+        this.brandAdministrators = this.brandAdministrators.filter(
+          _info => _info.memberId !== id
+        );
       } else if (type === 2) {
-        this.branchAdministrators = this.branchAdministrators.filter(_info => _info.memberId !== id);
+        this.branchAdministrators = this.branchAdministrators.filter(
+          _info => _info.memberId !== id
+        );
       } else {
-        this.coachAdministrators = this.coachAdministrators.filter(_info => _info.memberId !== id);
+        this.coachAdministrators = this.coachAdministrators.filter(
+          _info => _info.memberId !== id
+        );
       }
     }
   }
   handleAssignAdmin(id: string) {
     if (id) {
-      this.normalMemberInfos = this.normalMemberInfos.filter(_info => _info.memberId !== id);
+      this.normalMemberInfos = this.normalMemberInfos.filter(
+        _info => _info.memberId !== id
+      );
     }
   }
 }
