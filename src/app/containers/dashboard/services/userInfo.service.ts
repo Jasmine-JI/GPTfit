@@ -91,100 +91,54 @@ export class UserInfoService {
   getUserInfo(body) {
     const fetchMemberAccessRight = this.getMemberAccessRight(body);
     const fetchLogonData = this.getLogonData(body);
-    forkJoin([fetchMemberAccessRight, fetchLogonData]).subscribe(res => {
-      const { info: { groupAccessRight } } = res[0];
-      const { info: { nameIcon, name } } = res[1];
-      if (nameIcon && name) {
-        this.userName$.next(name);
-        this.userIcon$.next(nameIcon);
-      }
+    return new Promise((resolve, reject) => {
+      forkJoin([fetchMemberAccessRight, fetchLogonData]).subscribe(res => {
+        const { info: { groupAccessRight } } = res[0];
+        const { info: { nameIcon, name } } = res[1];
+        if (nameIcon && name) {
+          this.userName$.next(name);
+          this.userIcon$.next(nameIcon);
+        }
 
-      if (groupAccessRight.findIndex(_group => _group.accessRight === '00') > -1) {
-        this.isSupervisor$.next(true);
-      }
-      if (groupAccessRight.findIndex(_group => _group.accessRight === '10') > -1) {
-        this.isSystemDeveloper$.next(true);
-      }
-      if (groupAccessRight.findIndex(_group => _group.accessRight === '20') > -1) {
-        this.isSystemMaintainer$.next(true);
-      }
-      if (groupAccessRight.findIndex(_group => _group.accessRight === '29') > -1) {
-        this.isMarketingDeveloper$.next(true);
-      }
-      if (groupAccessRight.findIndex(_group => _group.accessRight === '30') > -1) {
-        this.isBrandAdministrator$.next(true);
-      }
-      if (groupAccessRight.findIndex(_group => _group.accessRight === '40') > -1) {
-        this.isBranchAdministrator$.next(true);
-      }
-      if (groupAccessRight.findIndex(_group => _group.accessRight === '50') > -1) {
-        this.isBroadcastProducer$.next(true);
-      }
-      if (groupAccessRight.findIndex(_group => _group.accessRight === '60') > -1) {
-        this.isCoach$.next(true);
-      }
-      if (groupAccessRight.findIndex(_group => _group.accessRight === '80') > -1) {
-        this.isGroupAdministrator$.next(true);
-      }
-      if (groupAccessRight.findIndex(_group => _group.accessRight === '90') > -1) {
-        this.isGeneralMember$.next(true);
-      }
-    }, (err: HttpErrorResponse) => {
-      if (err.error instanceof Error) {
-        console.log('client-side error');
-      } else {
-        console.log('server-side error');
-      }
-      return of(false);
+        if (groupAccessRight.findIndex(_group => _group.accessRight === '00') > -1) {
+          this.isSupervisor$.next(true);
+        }
+        if (groupAccessRight.findIndex(_group => _group.accessRight === '10') > -1) {
+          this.isSystemDeveloper$.next(true);
+        }
+        if (groupAccessRight.findIndex(_group => _group.accessRight === '20') > -1) {
+          this.isSystemMaintainer$.next(true);
+        }
+        if (groupAccessRight.findIndex(_group => _group.accessRight === '29') > -1) {
+          this.isMarketingDeveloper$.next(true);
+        }
+        if (groupAccessRight.findIndex(_group => _group.accessRight === '30') > -1) {
+          this.isBrandAdministrator$.next(true);
+        }
+        if (groupAccessRight.findIndex(_group => _group.accessRight === '40') > -1) {
+          this.isBranchAdministrator$.next(true);
+        }
+        if (groupAccessRight.findIndex(_group => _group.accessRight === '50') > -1) {
+          this.isBroadcastProducer$.next(true);
+        }
+        if (groupAccessRight.findIndex(_group => _group.accessRight === '60') > -1) {
+          this.isCoach$.next(true);
+        }
+        if (groupAccessRight.findIndex(_group => _group.accessRight === '80') > -1) {
+          this.isGroupAdministrator$.next(true);
+        }
+        if (groupAccessRight.findIndex(_group => _group.accessRight === '90') > -1) {
+          this.isGeneralMember$.next(true);
+        }
+        resolve(true);
+      }, (err: HttpErrorResponse) => {
+        if (err.error instanceof Error) {
+          console.log('client-side error');
+        } else {
+          console.log('server-side error');
+        }
+        resolve(false);
+      });
     });
   }
-  // getLogonData() {
-  //   return this.http.get<any>(API_SERVER + 'user/getLogonData').map(
-  //     res => {
-  //       const { userName, userRole, userIcon } = res;
-  //       const accessRight = userRole.join(',');
-  //       if (accessRight.indexOf('00') > -1) {
-  //         this.isSupervisor$.next(true);
-  //       }
-  //       if (accessRight.indexOf('10') > -1) {
-  //         this.isSystemDeveloper$.next(true);
-  //       }
-  //       if (accessRight.indexOf('20') > -1) {
-  //         this.isSystemMaintainer$.next(true);
-  //       }
-  //       if (accessRight.indexOf('29') > -1) {
-  //         this.isMarketingDeveloper$.next(true);
-  //       }
-  //       if (accessRight.indexOf('30') > -1) {
-  //         this.isBrandAdministrator$.next(true);
-  //       }
-  //       if (accessRight.indexOf('40') > -1) {
-  //         this.isBranchAdministrator$.next(true);
-  //       }
-  //       if (accessRight.indexOf('50') > -1) {
-  //         this.isBroadcastProducer$.next(true);
-  //       }
-  //       if (accessRight.indexOf('60') > -1) {
-  //         this.isCoach$.next(true);
-  //       }
-  //       if (accessRight.indexOf('80') > -1) {
-  //         this.isGroupAdministrator$.next(true);
-  //       }
-  //       if (accessRight.indexOf('90') > -1) {
-  //         this.isGeneralMember$.next(true);
-  //       }
-  //       this.userName$.next(userName);
-  //       this.userIcon$.next(userIcon);
-  //       return true;
-  //     },
-  //     (err: HttpErrorResponse) => {
-  //       if (err.error instanceof Error) {
-  //         console.log('client-side error');
-  //       } else {
-  //         console.log('server-side error');
-  //       }
-  //       return of(false);
-  //     }
-  //   );
-  // }
 }

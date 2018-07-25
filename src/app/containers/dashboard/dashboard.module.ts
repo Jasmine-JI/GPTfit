@@ -53,6 +53,7 @@ import { EditGroupInfoComponent } from './group/edit-group-info/edit-group-info.
 import { EditGroupGuard } from './guards/edit-group-guard';
 import { CreateGroupComponent } from './group/create-group/create-group.component';
 import { RightSettingWinComponent } from './group/right-setting-win/right-setting-win.component';
+import { GroupLevelNamePipe } from './pipes/group-level-name.pipe';
 
 @NgModule({
   imports: [
@@ -114,7 +115,8 @@ import { RightSettingWinComponent } from './group/right-setting-win/right-settin
     GroupStatusPipe,
     EditGroupInfoComponent,
     CreateGroupComponent,
-    RightSettingWinComponent
+    RightSettingWinComponent,
+    GroupLevelNamePipe
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [

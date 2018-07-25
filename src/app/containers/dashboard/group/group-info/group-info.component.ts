@@ -4,6 +4,7 @@ import { GroupService } from '../../services/group.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { UserInfoService } from '../../services/userInfo.service';
 
 @Component({
   selector: 'app-group-info',
@@ -28,12 +29,17 @@ export class GroupInfoComponent implements OnInit {
   subCoachInfo: any;
   branchAdministrators: any;
   coachAdministrators: any;
-
+  role = {
+    isSupervisor: false,
+    isSystemDeveloper: false,
+    isSystemMaintainer: false
+  };
   constructor(
     private route: ActivatedRoute,
     private groupService: GroupService,
     private utils: UtilsService,
-    private router: Router
+    private router: Router,
+    private userInfoService: UserInfoService
   ) {}
 
   ngOnInit() {
@@ -45,6 +51,18 @@ export class GroupInfoComponent implements OnInit {
     };
     let params = new HttpParams();
     params = params.set('groupId', this.groupId);
+    this.userInfoService.getSupervisorStatus().subscribe(res => {
+      this.role.isSupervisor = res;
+      console.log('%c this.isSupervisor', 'color: #0ca011', res);
+    });
+    this.userInfoService.getSystemDeveloperStatus().subscribe(res => {
+      this.role.isSystemDeveloper = res;
+      console.log('%c this.isSystemDeveloper', 'color: #0ca011', res);
+    });
+    this.userInfoService.getSystemMaintainerStatus().subscribe(res => {
+      this.role.isSystemMaintainer = res;
+      console.log('%c this.isSystemMaintainer', 'color: #0ca011', res);
+    });
     this.groupService.fetchGroupListDetail(body).subscribe(res => {
       this.groupInfo = res.info;
       const { groupIcon, groupId, selfJoinStatus } = this.groupInfo;
@@ -56,8 +74,13 @@ export class GroupInfoComponent implements OnInit {
       this.groupImg = this.utils.buildBase64ImgString(groupIcon);
       this.group_id = this.utils.displayGroupId(groupId);
       this.groupLevel = this.utils.displayGroupLevel(groupId);
+      console.log('this.groupLevel: ', this.groupLevel);
+      if (this.groupLevel === '80') {
+        this.getGroupMemberList(2);
+      } else {
+        this.getGroupMemberList(1);
+      }
     });
-    this.getGroupMemberList(1);
   }
   handleActionGroup(_type) {
     const body = {
@@ -82,7 +105,7 @@ export class GroupInfoComponent implements OnInit {
     const body = {
       token: this.token,
       groupId: this.groupId,
-      groupLevel: '30',
+      groupLevel: this.groupLevel,
       infoType: _type
     };
     this.groupService.fetchGroupMemberList(body).subscribe(res => {

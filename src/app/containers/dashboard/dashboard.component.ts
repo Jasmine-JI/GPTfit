@@ -60,20 +60,6 @@ export class DashboardComponent implements OnInit {
     } else {
       this.translateService.use(browserLang);
     }
-    const token = this.utilsService.getToken();
-    const body = {
-      token,
-      iconType: 2
-    };
-    // this.userInfoService.getLogonData(body).subscribe(res => {
-    //   if (res.resultCode === 200) {
-    //     const {
-    //       info: { name, nameIcon }
-    //     } = res;
-    //     this.userName = name;
-    //     this.userPhoto = this.utilsService.buildBase64ImgString(nameIcon);
-    //   }
-    // });
     this.userInfoService.getUserIcon().subscribe(res => {
       this.userPhoto = this.utilsService.buildBase64ImgString(res);
     });
@@ -120,7 +106,6 @@ export class DashboardComponent implements OnInit {
       this.isGeneralMember = res;
       console.log('%c this.isGeneralMember', 'color: #108bcd', this.isGeneralMember);
     });
-    this.userInfoService.getUserInfo(body);
     this.globalEventsManager.showNavBarEmitter.subscribe(mode => {
       this.isMaskShow = mode;
     });

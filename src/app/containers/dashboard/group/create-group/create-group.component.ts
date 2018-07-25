@@ -78,6 +78,9 @@ export class CreateGroupComponent implements OnInit {
   get branchId() {
     return this.form.get('branchId');
   }
+  // get groupStatus() {
+  //   return this.form.get('groupStatus');
+  // }
   constructor(
     private route: ActivatedRoute,
     private groupService: GroupService,
@@ -140,42 +143,51 @@ export class CreateGroupComponent implements OnInit {
       token: this.token,
       groupId: this.groupId
     };
-    let params = new HttpParams();
-    params = params.set('groupId', this.groupId);
-    this.groupService.fetchGroupListDetail(body).subscribe(res => {
-      this.groupInfo = res.info;
-      const { groupIcon, groupId, groupName, selfJoinStatus } = this.groupInfo;
-      if (selfJoinStatus) {
-        this.joinStatus = selfJoinStatus;
-      } else {
-        this.joinStatus = 0;
-      }
-      this.brandName = groupName;
-      this.groupImg = this.utils.buildBase64ImgString(groupIcon);
-      this.finalImageLink = this.groupImg;
-      this.group_id = this.utils.displayGroupId(groupId);
-      this.groupLevel = this.utils.displayGroupLevel(groupId);
-    });
-    this.getGroupMemberList(1);
+    // let params = new HttpParams();
+    // params = params.set('groupId', this.groupId);
+    if (this.createType !== 3) {
+      this.groupService.fetchGroupListDetail(body).subscribe(res => {
+        this.groupInfo = res.info;
+        const { groupIcon, groupId, groupName, selfJoinStatus } = this.groupInfo;
+        if (selfJoinStatus) {
+          this.joinStatus = selfJoinStatus;
+        } else {
+          this.joinStatus = 0;
+        }
+        this.brandName = groupName;
+        this.groupImg = this.utils.buildBase64ImgString(groupIcon);
+        this.finalImageLink = this.groupImg;
+        this.group_id = this.utils.displayGroupId(groupId);
+        this.groupLevel = this.utils.displayGroupLevel(groupId);
+      });
+      this.getGroupMemberList(1);
+    }
+
   }
   buildForm(_type: number) {
     if (_type === 1) {
       this.formTextName = 'branchName';
       this.form = this.fb.group({
         branchName: ['', [Validators.required, Validators.maxLength(32)]],
-        groupDesc: ['', [Validators.required, Validators.maxLength(500)]]
+        groupDesc: ['', [Validators.required, Validators.maxLength(500)]],
+        groupStatus: 2
       });
     } else if (_type === 2) {
       this.formTextName = 'coachLessonName';
       this.form = this.fb.group({
-        branchId: [this.groupId, [Validators.required, Validators.maxLength(32)]],
+        branchId: [
+          '',
+          [Validators.required]
+        ],
         coachLessonName: ['', [Validators.required, Validators.maxLength(32)]],
-        groupDesc: ['', [Validators.required, Validators.maxLength(500)]]
+        groupDesc: ['', [Validators.required, Validators.maxLength(500)]],
+        groupStatus: 2
       });
     } else {
       this.form = this.fb.group({
         groupName: ['', [Validators.required, Validators.maxLength(32)]],
-        groupDesc: ['', [Validators.required, Validators.maxLength(500)]]
+        groupDesc: ['', [Validators.required, Validators.maxLength(500)]],
+        groupStatus: 2
       });
     }
   }
@@ -200,6 +212,7 @@ export class CreateGroupComponent implements OnInit {
     const body = {
       token: this.token,
       groupId: this.groupId,
+      groupLevel: '30',
       infoType: _type
     };
     this.groupService.fetchGroupMemberList(body).subscribe(res => {
@@ -263,11 +276,12 @@ export class CreateGroupComponent implements OnInit {
   }
   manage({ valid, value }) {
     if (valid) {
-      const { groupDesc } = value;
+      const { groupDesc, groupStatus } = value;
       const body = {
         token: this.token,
         groupId: this.groupId,
         levelDesc: groupDesc,
+        groupStatus,
         levelIcon: this.finalImageLink,
         levelName: '',
         levelType: null
@@ -279,7 +293,9 @@ export class CreateGroupComponent implements OnInit {
         body.levelType = 4;
         this.groupService.createGroup(body).subscribe(res => {
           if (res.resultCode === 200) {
-            this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}/edit`);
+            this.router.navigateByUrl(
+              `/dashboard/group-info/${this.groupId}/edit`
+            );
           }
         });
       } else if (this.createType === 2) {
@@ -292,12 +308,23 @@ export class CreateGroupComponent implements OnInit {
         }
         this.groupService.createGroup(body).subscribe(res => {
           if (res.resultCode === 200) {
-            this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}/edit`);
+            this.router.navigateByUrl(
+              `/dashboard/group-info/${this.groupId}/edit`
+            );
+          }
+        });
+      } else {
+        const { groupName } = value;
+        body.levelName = groupName;
+        body.levelType = 6;
+        body.groupId = '0-0-0-0-0-0';
+        this.groupService.createGroup(body).subscribe(res => {
+          if (res.resultCode === 200) {
+            this.router.navigateByUrl('/dashboard/my-group-list');
           }
         });
       }
     }
-
   }
   public handleChangeTextarea(code): void {
     this.form.patchValue({ groupDesc: code });
