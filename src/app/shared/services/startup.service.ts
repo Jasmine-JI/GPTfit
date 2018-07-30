@@ -27,12 +27,7 @@ export class StartupService {
   });
 
   load(): Promise<any> {
-    const token = this.utils.getToken();
-    const body = {
-      token,
-      iconType: 2
-    };
-    return Promise.all([this.checkUserEvent, this.userInfoService.getUserInfo(body)]);
+    return this.checkUserEvent;
   }
   checkStatus() {
     if (this.authService.isTokenExpired()) {   // if token expired

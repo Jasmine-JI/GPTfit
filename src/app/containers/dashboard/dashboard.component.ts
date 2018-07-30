@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { UserInfoService } from './services/userInfo.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { TranslateService } from '@ngx-translate/core';
+import { UserInfo } from './models/userInfo';
 
 @Component({
   selector: 'app-dashboard',
@@ -49,6 +50,21 @@ export class DashboardComponent implements OnInit {
     if (location.search.indexOf('ipm=s') > -1) {
       this.isPreviewMode = true;
     }
+    this.userInfoService.getInitialUserInfoStatus().subscribe((res: UserInfo) => {
+      
+      const { isInitial } = res;
+      if (!isInitial) {
+        this.isLoading = true;
+        const token = this.utilsService.getToken();
+        const body = {
+          token,
+          iconType: 2
+        };
+        this.userInfoService.getUserInfo(body).then(() => {
+          this.isLoading = false;
+        });
+      }
+    });
   }
 
   ngOnInit() {
@@ -66,33 +82,58 @@ export class DashboardComponent implements OnInit {
     this.userInfoService.getUserName().subscribe(res => {
       this.userName = res;
     });
+
     this.userInfoService.getSupervisorStatus().subscribe(res => {
       this.isSupervisor = res;
       console.log('%c this.isSupervisor', 'color: #108bcd', this.isSupervisor);
     });
     this.userInfoService.getSystemDeveloperStatus().subscribe(res => {
       this.isSystemDeveloper = res;
-      console.log('%c this.isSystemDeveloper', 'color: #108bcd', this.isSystemDeveloper);
+      console.log(
+        '%c this.isSystemDeveloper',
+        'color: #108bcd',
+        this.isSystemDeveloper
+      );
     });
     this.userInfoService.getSystemMaintainerStatus().subscribe(res => {
       this.isSystemMaintainer = res;
-      console.log('%c this.isSystemMaintainer', 'color: #108bcd', this.isSystemMaintainer);
+      console.log(
+        '%c this.isSystemMaintainer',
+        'color: #108bcd',
+        this.isSystemMaintainer
+      );
     });
     this.userInfoService.getMarketingDeveloperStatus().subscribe(res => {
       this.isMarketingDeveloper = res;
-      console.log('%c this.isMarketingDeveloper', 'color: #108bcd', this.isMarketingDeveloper);
+      console.log(
+        '%c this.isMarketingDeveloper',
+        'color: #108bcd',
+        this.isMarketingDeveloper
+      );
     });
     this.userInfoService.getBrandAdministratorStatus().subscribe(res => {
       this.isBrandAdministrator = res;
-      console.log('%c this.isBrandAdministrator', 'color: #108bcd', this.isBrandAdministrator);
+      console.log(
+        '%c this.isBrandAdministrator',
+        'color: #108bcd',
+        this.isBrandAdministrator
+      );
     });
     this.userInfoService.getBranchAdministratorStatus().subscribe(res => {
       this.isBranchAdministrator = res;
-      console.log('%c this.isBranchAdministrator', 'color: #108bcd', this.isBranchAdministrator);
+      console.log(
+        '%c this.isBranchAdministrator',
+        'color: #108bcd',
+        this.isBranchAdministrator
+      );
     });
     this.userInfoService.getBroadcastProducerStatus().subscribe(res => {
       this.isBroadcastProducer = res;
-      console.log('%c this.isBroadcastProducer', 'color: #108bcd', this.isBroadcastProducer);
+      console.log(
+        '%c this.isBroadcastProducer',
+        'color: #108bcd',
+        this.isBroadcastProducer
+      );
     });
     this.userInfoService.getCoachStatus().subscribe(res => {
       this.isCoach = res;
@@ -100,18 +141,26 @@ export class DashboardComponent implements OnInit {
     });
     this.userInfoService.getGroupAdministratorStatus().subscribe(res => {
       this.isGroupAdministrator = res;
-      console.log('%c this.isGroupAdministrator', 'color: #108bcd', this.isGroupAdministrator);
+      console.log(
+        '%c this.isGroupAdministrator',
+        'color: #108bcd',
+        this.isGroupAdministrator
+      );
     });
     this.userInfoService.getGeneralMemberStatus().subscribe(res => {
       this.isGeneralMember = res;
-      console.log('%c this.isGeneralMember', 'color: #108bcd', this.isGeneralMember);
+      console.log(
+        '%c this.isGeneralMember',
+        'color: #108bcd',
+        this.isGeneralMember
+      );
     });
     this.globalEventsManager.showNavBarEmitter.subscribe(mode => {
       this.isMaskShow = mode;
     });
-    this.globalEventsManager.showLoadingEmitter.subscribe(isLoading => {
-      this.isLoading = isLoading;
-    });
+    // this.globalEventsManager.showLoadingEmitter.subscribe(isLoading => {
+    //   this.isLoading = isLoading;
+    // });
     if (window.innerWidth < 769) {
       this.mode = 'push';
       this.isDefaultOpend = false;

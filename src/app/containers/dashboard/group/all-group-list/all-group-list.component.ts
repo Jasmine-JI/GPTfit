@@ -22,7 +22,7 @@ import { UtilsService } from '@shared/services/utils.service';
   styleUrls: ['./all-group-list.component.css']
 })
 export class AllGroupListComponent implements OnInit {
-  groupLevel = '90';
+  groupLevel = '00';
   searchWords = '';
   token: string;
   logSource = new MatTableDataSource<any>();
@@ -51,17 +51,17 @@ export class AllGroupListComponent implements OnInit {
       category: '1',
       groupLevel: this.groupLevel,
       searchWords: this.searchWords,
-      page: '0',
+      page: '1',
       pageCounts: '10'
     };
-    if (this.searchWords.length > 0) {
+    // if (this.searchWords.length > 0) {
       this.groupService
         .fetchGroupList(body)
         .subscribe(res => {
           this.logSource.data = res.info.groupList;
           this.totalCount = res.info.totalCounts;
         });
-    }
+    // }
   }
   goDetail(groupId) {
     this.router.navigateByUrl(`dashboard/group-info/${groupId}`);

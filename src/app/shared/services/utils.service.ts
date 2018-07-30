@@ -104,14 +104,15 @@ export class UtilsService {
   displayGroupLevel(_id: string) {
     if (_id) {
       const arr = _id.split('-').splice(2, 4);
-      if (+arr[0] > 0) {
-        return '30';
-      } else if (+arr[1] > 0) {
-        return '40';
+      console.log('arr', arr);
+      if (+arr[3] > 0) {
+        return '80';
       } else if (+arr[2] > 0) {
         return '60';
+      } else if (+arr[1] > 0) {
+        return '40';
       } else {
-        return '80';
+        return '30';
       }
     }
   }

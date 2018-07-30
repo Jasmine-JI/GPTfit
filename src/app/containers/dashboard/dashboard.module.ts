@@ -54,6 +54,8 @@ import { EditGroupGuard } from './guards/edit-group-guard';
 import { CreateGroupComponent } from './group/create-group/create-group.component';
 import { RightSettingWinComponent } from './group/right-setting-win/right-setting-win.component';
 import { GroupLevelNamePipe } from './pipes/group-level-name.pipe';
+import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
+import { InnerSelectorWinComponent } from './components/inner-selector-win/inner-selector-win.component';
 
 @NgModule({
   imports: [
@@ -116,7 +118,9 @@ import { GroupLevelNamePipe } from './pipes/group-level-name.pipe';
     EditGroupInfoComponent,
     CreateGroupComponent,
     RightSettingWinComponent,
-    GroupLevelNamePipe
+    GroupLevelNamePipe,
+    InnerSettingsComponent,
+    InnerSelectorWinComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
@@ -124,7 +128,8 @@ import { GroupLevelNamePipe } from './pipes/group-level-name.pipe';
     DbResultDialogComponent,
     HrZoneDialogComponent,
     Top3DialogComponent,
-    RightSettingWinComponent
+    RightSettingWinComponent,
+    InnerSelectorWinComponent
   ]
 })
 export class DashboardModule {}

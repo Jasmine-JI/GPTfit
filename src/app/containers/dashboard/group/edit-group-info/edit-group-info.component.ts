@@ -63,6 +63,7 @@ export class EditGroupInfoComponent implements OnInit {
   chooseFileText = '選擇檔案';
   acceptFileExtensions = ['JPG', 'JPEG', 'GIF', 'PNG'];
   finalImageLink: string;
+  visitorDetail: any;
   get groupName() {
     return this.form.get('groupName');
   }
@@ -95,6 +96,9 @@ export class EditGroupInfoComponent implements OnInit {
   }
   ngOnInit() {
     this.route.params.subscribe(_params => this.handleInit());
+    this.userInfoService.getUserAccessRightDetail().subscribe(res => {
+      this.visitorDetail = res;
+    });
   }
   handleInit() {
     this.groupId = this.route.snapshot.paramMap.get('groupId');
@@ -232,14 +236,24 @@ export class EditGroupInfoComponent implements OnInit {
     });
   }
   changeGroupInfo({ index }) {
-    if (index === 0) {
-      this.getGroupMemberList(1);
-    } else if (index === 1) {
-      this.getGroupMemberList(2);
-    } else if (index === 2) {
-      this.getGroupMemberList(3);
+    if (this.groupLevel === '80') {
+      if (index === 0) {
+        this.getGroupMemberList(index + 2);
+      } else if (index === 1) {
+        this.getGroupMemberList(index + 2);
+      } else {
+        this.getGroupMemberList(index + 2);
+      }
     } else {
-      this.getGroupMemberList(4);
+      if (index === 0) {
+        this.getGroupMemberList(1);
+      } else if (index === 1) {
+        this.getGroupMemberList(2);
+      } else if (index === 2) {
+        this.getGroupMemberList(3);
+      } else {
+        this.getGroupMemberList(4);
+      }
     }
   }
   manage({ value, valid }) {
@@ -247,6 +261,7 @@ export class EditGroupInfoComponent implements OnInit {
     const body = {
       token: this.token,
       groupId: this.groupId,
+      groupLevel: this.visitorDetail.groupLevel,
       groupName,
       groupIcon: this.finalImageLink || '',
       groupDesc
