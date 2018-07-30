@@ -2,17 +2,14 @@
   <span style="color: #157fcc; font-weight:700">
     所有群組列表
   </span>
-  <div>
-    <button class="alatech-btn alatech-btn--default" title="返回"
-      [routerLink]="['/dashboard/my-group-list']">
-      返回
-    </button>
-  </div>
 </div>
 <mat-form-field>
   <mat-select [(value)]="groupLevel">
-    <mat-option value="90">一般群組</mat-option>
+    <mat-option value="00">全部階層</mat-option>
     <mat-option value="30">品牌</mat-option>
+    <mat-option value="40">分店</mat-option>
+    <mat-option value="60">課程或教練</mat-option>
+    <mat-option value="80">一般群組</mat-option>
   </mat-select>
 </mat-form-field>
 <mat-form-field>

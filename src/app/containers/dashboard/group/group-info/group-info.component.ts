@@ -34,6 +34,7 @@ export class GroupInfoComponent implements OnInit {
     isSystemDeveloper: false,
     isSystemMaintainer: false
   };
+  visitorDetail: any;
   constructor(
     private route: ActivatedRoute,
     private groupService: GroupService,
@@ -51,6 +52,10 @@ export class GroupInfoComponent implements OnInit {
     };
     let params = new HttpParams();
     params = params.set('groupId', this.groupId);
+    this.userInfoService.getUserDetail(body, this.groupId);
+    this.userInfoService.getUserAccessRightDetail().subscribe(res => {
+      this.visitorDetail = res;
+    });
     this.userInfoService.getSupervisorStatus().subscribe(res => {
       this.role.isSupervisor = res;
       console.log('%c this.isSupervisor', 'color: #0ca011', res);
@@ -74,7 +79,6 @@ export class GroupInfoComponent implements OnInit {
       this.groupImg = this.utils.buildBase64ImgString(groupIcon);
       this.group_id = this.utils.displayGroupId(groupId);
       this.groupLevel = this.utils.displayGroupLevel(groupId);
-      console.log('this.groupLevel: ', this.groupLevel);
       if (this.groupLevel === '80') {
         this.getGroupMemberList(2);
       } else {
@@ -160,15 +164,26 @@ export class GroupInfoComponent implements OnInit {
     });
   }
   changeGroupInfo({ index }) {
-    if (index === 0) {
-      this.getGroupMemberList(1);
-    } else if (index === 1) {
-      this.getGroupMemberList(2);
-    } else if (index === 2) {
-      this.getGroupMemberList(3);
+    if (this.groupLevel === '80') {
+      if (index === 0) {
+        this.getGroupMemberList(index + 2);
+      } else if (index === 1) {
+        this.getGroupMemberList(index + 2);
+      } else {
+        this.getGroupMemberList(index + 2);
+      }
     } else {
-      this.getGroupMemberList(4);
+      if (index === 0) {
+        this.getGroupMemberList(1);
+      } else if (index === 1) {
+        this.getGroupMemberList(2);
+      } else if (index === 2) {
+        this.getGroupMemberList(3);
+      } else {
+        this.getGroupMemberList(4);
+      }
     }
+
   }
   goEditPage() {
     this.router.navigateByUrl(`${location.pathname}/edit`);

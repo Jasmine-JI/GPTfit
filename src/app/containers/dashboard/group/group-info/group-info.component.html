@@ -8,12 +8,9 @@
         群組資訊
       </span>
       <div>
-        <!-- <button class="alatech-btn alatech-btn--default" title="返回" [routerLink]="['/dashboard/my-group-list']">
-          管理
-        </button> -->
         <button class="alatech-btn alatech-btn--default"
           title="申請加入"
-          *ngIf="joinStatus === 5"
+          *ngIf="joinStatus === 5 && !visitorDetail?.isGroupAdmin"
           (click)="handleActionGroup(1)"
         >
           申請加入
@@ -27,24 +24,18 @@
         </button>
         <button class="alatech-btn alatech-btn--default"
           title="退出群組"
-          *ngIf="joinStatus === 2"
+          *ngIf="joinStatus === 2 || (visitorDetail?.isGroupAdmin)"
           (click)="handleActionGroup(2)"
         >
           退出群組
         </button>
         <button class="alatech-btn alatech-btn--default"
           title="管理"
-          *ngIf="joinStatus === 2 || role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer"
+          *ngIf="visitorDetail?.isCanManage"
           (click)="goEditPage()"
         >
           管理
         </button>
-        <!-- <button class="alatech-btn alatech-btn--default"
-          title="管理"
-          *ngIf="joinStatus === 2 && accessRight === 30"
-        >
-          管理
-        </button> -->
       </div>
     </div>
     <div style="margin-bottom: 30px;">
@@ -110,47 +101,64 @@
           </div>
         </mat-tab>
         <mat-tab label="管理員資訊">
-          <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">品牌管理員</label>
-          <div style="margin-bottom: 15px">
-            <ng-container  *ngFor="let brandAdmItem of brandAdministrators">
-              <app-member-capsule
-                [role]="role"
-                [title]="brandAdmItem?.memberName"
-                [memberInfo]="brandAdmItem"
-                [name]="brandAdmItem && brandAdmItem?.memberName"
-                [icon]="brandAdmItem?.memberIcon"
-              >
-              </app-member-capsule>
-            </ng-container>
-          </div>
+          <ng-container *ngIf="groupLevel && groupLevel !== '80'">
+            <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">品牌管理員</label>
+            <div style="margin-bottom: 15px">
+              <ng-container  *ngFor="let brandAdmItem of brandAdministrators">
+                <app-member-capsule
+                  [role]="role"
+                  [title]="brandAdmItem?.memberName"
+                  [memberInfo]="brandAdmItem"
+                  [name]="brandAdmItem && brandAdmItem?.memberName"
+                  [icon]="brandAdmItem?.memberIcon"
+                >
+                </app-member-capsule>
+              </ng-container>
+            </div>
 
-          <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">分店管理員</label>
-          <div style="margin-bottom: 15px">
-            <ng-container  *ngFor="let branchAdmItem of branchAdministrators">
-              <app-member-capsule
-                [role]="role"
-                [title]="branchAdmItem?.memberName"
-                [memberInfo]="branchAdmItem"
-                [name]="branchAdmItem && branchAdmItem?.memberName"
-                [icon]="branchAdmItem?.memberIcon"
-              >
-              </app-member-capsule>
-            </ng-container>
-          </div>
+            <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">分店管理員</label>
+            <div style="margin-bottom: 15px">
+              <ng-container  *ngFor="let branchAdmItem of branchAdministrators">
+                <app-member-capsule
+                  [role]="role"
+                  [title]="branchAdmItem?.memberName"
+                  [memberInfo]="branchAdmItem"
+                  [name]="branchAdmItem && branchAdmItem?.memberName"
+                  [icon]="branchAdmItem?.memberIcon"
+                >
+                </app-member-capsule>
+              </ng-container>
+            </div>
 
-          <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">教練課管理員</label>
-          <div style="margin-bottom: 15px" >
-            <ng-container  *ngFor="let coachAdmItem of coachAdministrators">
-              <app-member-capsule
-                [role]="role"
-                [title]="coachAdmItem?.memberName"
-                [memberInfo]="coachAdmItem"
-                [name]="coachAdmItem && coachAdmItem?.memberName"
-                [icon]="coachAdmItem?.memberIcon"
-              >
-              </app-member-capsule>
-            </ng-container>
-          </div>
+            <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">教練課管理員</label>
+            <div style="margin-bottom: 15px" >
+              <ng-container  *ngFor="let coachAdmItem of coachAdministrators">
+                <app-member-capsule
+                  [role]="role"
+                  [title]="coachAdmItem?.memberName"
+                  [memberInfo]="coachAdmItem"
+                  [name]="coachAdmItem && coachAdmItem?.memberName"
+                  [icon]="coachAdmItem?.memberIcon"
+                >
+                </app-member-capsule>
+              </ng-container>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="groupLevel && groupLevel === '80'">
+            <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">管理員</label>
+            <div style="margin-bottom: 15px" >
+              <ng-container  *ngFor="let item of groupInfos">
+                <app-member-capsule
+                  [role]="role"
+                  [title]="item?.memberName"
+                  [memberInfo]="item"
+                  [name]="item && item?.memberName"
+                  [icon]="item?.memberIcon"
+                >
+                </app-member-capsule>
+              </ng-container>
+            </div>
+          </ng-container>
         </mat-tab>
         <mat-tab label="一般成員資訊">
           <ng-container  *ngFor="let item of normalMemberInfos">

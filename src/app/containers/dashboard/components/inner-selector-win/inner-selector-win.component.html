@@ -1,0 +1,45 @@
+<h2 class="ala-dialog" mat-dialog-title>
+  {{ title }}
+</h2>
+<mat-dialog-content style="min-width: 750px;min-height: 470px;">
+  <div>地區： 台灣</div>
+  <div style="display: flex">
+    <div class="memberselector__content" (click)="handleBtnColor(1, $event)">
+      <div class="memberselector__bar-box">
+        <label>搜尋</label>
+        <select>
+          <option value="" disabled selected>選擇群組</option>
+        </select>
+        <input placeholder="姓名關鍵字" style="width: 100px"/>
+        <button>X</button>
+      </div>
+      <ul class="memberselector-sl memberselector-sl--with-bar">
+        <li class="memberselector-sl__item">
+          找不到符合條件的人
+        </li>
+      </ul>
+    </div>
+    <div class="memberselector__middle">
+      <button class="alatech-btn alatech-btn--default memberselector__btn"
+        title="加入"
+        [class.memberselector__btn--is-focused]="areaType === 1"
+      >
+        加入<i class="fa fa-chevron-right" style="margin-left: 5px"></i>
+      </button>
+      <button class="alatech-btn alatech-btn--default memberselector__btn"
+        title="移除"
+        [class.memberselector__btn--is-focused]="areaType === 2"
+      >
+        <i class="fa fa-chevron-left" style="margin-right: 5px"></i>移除
+      </button>
+    </div>
+    <div class="memberselector__content"
+      (click)="handleBtnColor(2, $event)"
+    ></div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions class="justify-content-end">
+  <button mat-button color="primary" (click)="confirm()">確定</button>
+  <button mat-button mat-dialog-close color="warn">取消</button>
+</mat-dialog-actions>

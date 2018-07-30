@@ -28,37 +28,49 @@
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="申請解散品牌"
-            *ngIf="joinStatus === 2  || role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator"
+            *ngIf="joinStatus === 2 && groupLevel && groupLevel === '30' && visitorDetail?.isCanManage"
           >
             申請解散品牌
           </button>
           <button class="alatech-btn alatech-btn--default"
+            title="解散分店"
+            *ngIf="(groupLevel && groupLevel === '40') && visitorDetail?.isCanManage"
+          >
+            解散分店
+          </button>
+          <button class="alatech-btn alatech-btn--default"
+            title="解散課程"
+            *ngIf="(groupLevel && groupLevel === '60') && visitorDetail?.isCanManage"
+          >
+            解散課程
+          </button>
+          <button class="alatech-btn alatech-btn--default"
+            title="解散群組"
+            *ngIf="(groupLevel && groupLevel === '80') && visitorDetail?.isCanManage"
+          >
+            解散群組
+          </button>
+          <button class="alatech-btn alatech-btn--default"
             title="新增分店"
-            *ngIf="joinStatus === 2 || role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator"
+            *ngIf="groupLevel && groupLevel === '30' && visitorDetail?.isCanManage"
             (click)="goCreatePage(1)"
           >
             新增分店
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="新增教練課"
-            *ngIf="joinStatus === 2 || role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator"
+            *ngIf="groupLevel && (groupLevel === '30' || groupLevel === '40') && visitorDetail?.isCanManage"
             (click)="goCreatePage(2)"
           >
             新增教練課
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="完成管理"
-            *ngIf="joinStatus === 2 || role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator"
+            *ngIf="visitorDetail?.isCanManage"
             type="submit"
           >
             完成管理
           </button>
-          <!-- <button class="alatech-btn alatech-btn--default"
-            title="管理"
-            *ngIf="joinStatus === 2 && accessRight === 30"
-          >
-            管理
-          </button> -->
         </div>
       </div>
       <div style="margin-bottom: 30px;position: relative;top: 0;left: -55px;">
@@ -103,7 +115,7 @@
       </div>
       <div>
         <mat-tab-group (selectChange)="changeGroupInfo($event)" class="ala-tab-group">
-          <mat-tab label="子群組資訊">
+          <mat-tab label="子群組資訊"  *ngIf="groupLevel && groupLevel !== '80'">
             <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">品牌</label>
 
             <div style="margin-bottom: 15px">
@@ -154,59 +166,76 @@
             </div>
           </mat-tab>
           <mat-tab label="管理員資訊">
-            <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">品牌層管理員</label>
-            <div style="margin-bottom: 15px">
-              <ng-container  *ngFor="let brandAdmItem of brandAdministrators">
-                <app-member-capsule
-                  [role]="role"
-                  [isAdminInfo]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer"
-                  [title]="brandAdmItem?.memberName"
-                  [memberInfo]="brandAdmItem"
-                  [name]="brandAdmItem && brandAdmItem?.memberName"
-                  [icon]="brandAdmItem?.memberIcon"
-                  [groupId]="brandAdmItem?.groupId"
-                  [userId]="brandAdmItem?.memberId"
-                  (onRemoveAdmin)="handleRemoveAdmin($event, 1)"
-                >
-                </app-member-capsule>
-              </ng-container>
-            </div>
+            <ng-container *ngIf="groupLevel && groupLevel !== '80'">
+              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">品牌層管理員</label>
+              <div style="margin-bottom: 15px">
+                <ng-container  *ngFor="let brandAdmItem of brandAdministrators">
+                  <app-member-capsule
+                    [role]="role"
+                    [isAdminInfo]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer"
+                    [title]="brandAdmItem?.memberName"
+                    [memberInfo]="brandAdmItem"
+                    [name]="brandAdmItem && brandAdmItem?.memberName"
+                    [icon]="brandAdmItem?.memberIcon"
+                    [groupId]="brandAdmItem?.groupId"
+                    [userId]="brandAdmItem?.memberId"
+                    (onRemoveAdmin)="handleRemoveAdmin($event, 1)"
+                  >
+                  </app-member-capsule>
+                </ng-container>
+              </div>
 
-            <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">分店層管理員</label>
-            <div style="margin-bottom: 15px">
-              <ng-container  *ngFor="let branchAdmItem of branchAdministrators">
-                <app-member-capsule
-                  [role]="role"
-                  [isAdminInfo]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator"
-                  [title]="branchAdmItem?.memberName"
-                  [memberInfo]="branchAdmItem"
-                  [name]="branchAdmItem && branchAdmItem?.memberName"
-                  [icon]="branchAdmItem?.memberIcon"
-                  [groupId]="branchAdmItem?.groupId"
-                  [userId]="branchAdmItem?.memberId"
-                  (onRemoveAdmin)="handleRemoveAdmin($event, 2)"
-                >
-                </app-member-capsule>
-              </ng-container>
-            </div>
+              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">分店層管理員</label>
+              <div style="margin-bottom: 15px">
+                <ng-container  *ngFor="let branchAdmItem of branchAdministrators">
+                  <app-member-capsule
+                    [role]="role"
+                    [isAdminInfo]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator"
+                    [title]="branchAdmItem?.memberName"
+                    [memberInfo]="branchAdmItem"
+                    [name]="branchAdmItem && branchAdmItem?.memberName"
+                    [icon]="branchAdmItem?.memberIcon"
+                    [groupId]="branchAdmItem?.groupId"
+                    [userId]="branchAdmItem?.memberId"
+                    (onRemoveAdmin)="handleRemoveAdmin($event, 2)"
+                  >
+                  </app-member-capsule>
+                </ng-container>
+              </div>
 
-            <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">教練課管理員</label>
-            <div style="margin-bottom: 15px">
-              <ng-container  *ngFor="let coachAdmItem of coachAdministrators">
-                <app-member-capsule
-                  [role]="role"
-                  [isAdminInfo]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator"
-                  [title]="coachAdmItem?.memberName"
-                  [memberInfo]="coachAdmItem"
-                  [name]="coachAdmItem && coachAdmItem?.memberName"
-                  [icon]="coachAdmItem?.memberIcon"
-                  [groupId]="coachAdmItem?.groupId"
-                  [userId]="coachAdmItem?.memberId"
-                  (onRemoveAdmin)="handleRemoveAdmin($event, 3)"
-                >
-                </app-member-capsule>
-              </ng-container>
-            </div>
+              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">教練課管理員</label>
+              <div style="margin-bottom: 15px">
+                <ng-container  *ngFor="let coachAdmItem of coachAdministrators">
+                  <app-member-capsule
+                    [role]="role"
+                    [isAdminInfo]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator"
+                    [title]="coachAdmItem?.memberName"
+                    [memberInfo]="coachAdmItem"
+                    [name]="coachAdmItem && coachAdmItem?.memberName"
+                    [icon]="coachAdmItem?.memberIcon"
+                    [groupId]="coachAdmItem?.groupId"
+                    [userId]="coachAdmItem?.memberId"
+                    (onRemoveAdmin)="handleRemoveAdmin($event, 3)"
+                  >
+                  </app-member-capsule>
+                </ng-container>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="groupLevel && groupLevel === '80'">
+              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">管理員</label>
+              <div style="margin-bottom: 15px" >
+                <ng-container  *ngFor="let item of groupInfos">
+                  <app-member-capsule
+                    [role]="role"
+                    [title]="item?.memberName"
+                    [memberInfo]="item"
+                    [name]="item && item?.memberName"
+                    [icon]="item?.memberIcon"
+                  >
+                  </app-member-capsule>
+                </ng-container>
+              </div>
+            </ng-container>
           </mat-tab>
           <mat-tab label="一般成員資訊">
             <ng-container  *ngFor="let item of normalMemberInfos">

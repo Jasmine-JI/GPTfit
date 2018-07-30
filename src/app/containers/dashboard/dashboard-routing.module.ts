@@ -26,6 +26,7 @@ import { EditGroupInfoComponent } from './group/edit-group-info/edit-group-info.
 import { AllGroupListComponent } from './group/all-group-list/all-group-list.component';
 import { EditGroupGuard } from './guards/edit-group-guard';
 import { CreateGroupComponent } from './group/create-group/create-group.component';
+import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
 
 const routes: Routes = [
   {
@@ -128,7 +129,12 @@ const routes: Routes = [
       },
       {
         path: 'group-info/:groupId/create',
-        component: CreateGroupComponent
+        component: CreateGroupComponent,
+        canActivate: [EditGroupGuard]
+      },
+      {
+        path: 'setting',
+        component: InnerSettingsComponent
       }
     ]
   },
