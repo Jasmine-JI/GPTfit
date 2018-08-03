@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { cloneDeep } from 'lodash';
-import { stringify } from 'query-string';
+import { stringify, parse } from 'query-string';
 
 export const TOKEN = 'ala_token';
 export const EMPTY_OBJECT = {};
+
 @Injectable()
 export class UtilsService {
   setLocalStorageObject(key: string, value) {
@@ -34,13 +35,22 @@ export class UtilsService {
   buildBase64ImgString(value: string) {
     if (!value) {
       return '';
+    } else if (value.indexOf('data:image') > -1) {
+      return value;
     } else {
-      return `data: image / jpg; base64, ${value}`;
+      return `data:image/jpg; base64, ${value}`;
     }
+  }
+  getUrlQueryStrings(_search: string) {
+    const search = _search || window.location.search;
+    if (!search) {
+      return EMPTY_OBJECT;
+    }
+    return parse(search);
   }
   str_cut(str, max_length) {
     let m = 0,
-        str_return = '';
+      str_return = '';
     const a = str.split('');
     for (let i = 0; i < a.length; i++) {
       if (a[i].charCodeAt(0) < 299) {
@@ -63,7 +73,9 @@ export class UtilsService {
   }
 
   buildUrlQueryStrings(_params) {
-    const params = this.isObjectEmpty(_params) ? EMPTY_OBJECT : cloneDeep(_params);
+    const params = this.isObjectEmpty(_params)
+      ? EMPTY_OBJECT
+      : cloneDeep(_params);
 
     if (Object.keys(params).length) {
       for (const key in params) {
@@ -73,5 +85,37 @@ export class UtilsService {
       }
     }
     return stringify(params);
+  }
+
+  displayGroupId(_id: string) {
+    if (_id) {
+      const arr = _id.split('-').splice(2, 3);
+      const isNormalGroup = !arr.some(_num => +_num > 0);
+      if (isNormalGroup) {
+        const _arr = _id.split('-').splice(2, 4);
+        const id = _arr.join('-');
+        return id;
+      } else {
+        const id = arr.join('-');
+        return id;
+      }
+    }
+  }
+  displayGroupLevel(_id: string) {
+    if (_id) {
+      const arr = _id.split('-').splice(2, 4);
+      if (+arr[3] > 0) {
+        return '80';
+      } else if (+arr[2] > 0) {
+        return '60';
+      } else if (+arr[1] > 0) {
+        return '40';
+      } else {
+        return '30';
+      }
+    }
+  }
+  replaceCarriageReturn(string = '', format = '') {
+    return string.replace(/(\r\n|\r|\n)/gm, format);
   }
 }

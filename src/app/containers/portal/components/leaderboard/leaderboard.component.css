@@ -70,11 +70,9 @@ td>a.ranking-link:hover {
   text-decoration: none;
   color: #157fcc;
 }
-
 .ranking-link {
   cursor: pointer;
 }
-
 hr {
   border-color: #ddd;
 }
@@ -180,6 +178,91 @@ tr.tr-only-hide {
   color: #4a4a4a;
   text-align: center;
   font-size: 18px;
+}
+.form-label {
+  margin-right: 10px;
+}
+.searchbar-menu--text {
+  font-weight: 500;
+  color: #999;
+  margin-right: 10px;
+  cursor: pointer;
+}
+.searchbar-menu--text.active {
+  margin-bottom: 4px;
+  border-bottom: 2px solid #263147;
+  color: #263147;
+}
+
+.rank__datepicker {
+  vertical-align: middle;
+  display: inline-block;
+}
+
+.tablist {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  font-size: 0;
+  border-bottom: 5px solid #26ABE4;
+}
+
+.tablist__tab {
+  display: inline-block;
+  cursor: pointer;
+  background-color: #f9f9f9;
+  border-radius: 4px 4px 0 0;
+  width: 170px;
+  text-align: center;
+  color: #999;
+  font-size: 12px;
+  opacity: 0.9;
+  line-height: 22px;
+  padding: 10px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.tablist__tab:nth-child(1) {
+  max-width: 90px;
+}
+
+.tablist__tab + .tablist__tab {
+  border-left: 1px solid #dbd8ca;
+
+}
+.tablist__tab--selected {
+  background-color: #26ABE4;
+  color: #fff;
+  opacity: 1;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.tablist__tab:hover {
+  cursor: pointer;
+}
+.ranking-link .medal {
+  width: 30px;
+  height: 30px;
+  transition: 0.70s;
+  -webkit-transition: 0.70s;
+  -moz-transition: 0.70s;
+  -ms-transition: 0.70s;
+  -o-transition: 0.70s;
+}
+
+.ranking-link:hover .medal {
+  transition: 0.70s;
+  -webkit-transition: 0.70s;
+  -moz-transition: 0.70s;
+  -ms-transition: 0.70s;
+  -o-transition: 0.70s;
+  -webkit-transform: rotate(360deg);
+  -moz-transform: rotate(360deg);
+  -o-transform: rotate(360deg);
+  -ms-transform: rotate(360deg);
+  transform: rotate(360deg);
 }
 
 .form-label {
@@ -288,9 +371,11 @@ tr.tr-only-hide {
   .leaderboard-layer {
     margin-top: 0px;
   }
+
   .tablist {
     border-bottom: 1px solid #dbd8ca;
   }
+
   .tablist__tab--selected {
     font-size: 14px;
     line-height: 22px;

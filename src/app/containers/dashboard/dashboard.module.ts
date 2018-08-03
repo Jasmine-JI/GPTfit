@@ -42,6 +42,21 @@ import { EventManagementComponent } from './components/event-management/event-ma
 import { UserInfoService } from './services/userInfo.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { SharedModule } from '@shared/shared.module';
+import { MyGroupListComponent } from './group/my-group-list/my-group-list.component';
+import { AllGroupListComponent } from './group/all-group-list/all-group-list.component';
+import { GroupSearchComponent } from './group/group-search/group-search.component';
+import { GroupInfoComponent } from './group/group-info/group-info.component';
+import { GroupService } from './services/group.service';
+import { AccessNamePipe } from './pipes/access-name.pipe';
+import { GroupStatusPipe } from './pipes/group-status.pipe';
+import { EditGroupInfoComponent } from './group/edit-group-info/edit-group-info.component';
+import { EditGroupGuard } from './guards/edit-group-guard';
+import { CreateGroupComponent } from './group/create-group/create-group.component';
+import { RightSettingWinComponent } from './group/right-setting-win/right-setting-win.component';
+import { GroupLevelNamePipe } from './pipes/group-level-name.pipe';
+import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
+import { InnerSelectorWinComponent } from './components/inner-selector-win/inner-selector-win.component';
+import { DashboardGuard } from './guards/dashboard-guard';
 
 @NgModule({
   imports: [
@@ -68,7 +83,10 @@ import { SharedModule } from '@shared/shared.module';
     DeviceLogService,
     CoachService,
     UserInfoService,
-    UtilsService
+    UtilsService,
+    GroupService,
+    EditGroupGuard,
+    DashboardGuard
   ],
   declarations: [
     DashboardComponent,
@@ -92,14 +110,28 @@ import { SharedModule } from '@shared/shared.module';
     CoachDashboardDetailComponent,
     Top3DialogComponent,
     CoachRexComponent,
-    EventManagementComponent
+    EventManagementComponent,
+    MyGroupListComponent,
+    AllGroupListComponent,
+    GroupSearchComponent,
+    GroupInfoComponent,
+    AccessNamePipe,
+    GroupStatusPipe,
+    EditGroupInfoComponent,
+    CreateGroupComponent,
+    RightSettingWinComponent,
+    GroupLevelNamePipe,
+    InnerSettingsComponent,
+    InnerSelectorWinComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
     MsgDialogComponent,
     DbResultDialogComponent,
     HrZoneDialogComponent,
-    Top3DialogComponent
+    Top3DialogComponent,
+    RightSettingWinComponent,
+    InnerSelectorWinComponent
   ]
 })
 export class DashboardModule {}

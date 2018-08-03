@@ -13,6 +13,11 @@ import { SharedModule } from '../shared.module';
 import { MessageBoxComponent } from './message-box/message-box.component';
 import { CustomMaterialModule } from '../custom-material.module';
 import { ConfirmButtonComponent } from './confirm-button/confirm-button.component';
+import { FormTextComponent } from './form-text/form-text.component';
+import { FormRemindComponent } from './form-remind/form-remind.component';
+import { FormTextareaComponent } from './form-textarea/form-textarea.component';
+import { MemberCapsuleComponent } from './member-capsule/member-capsule.component';
+import { SharedPipes } from '@shared/pipes/shared-pipes';
 
 @NgModule({
   imports: [
@@ -21,7 +26,8 @@ import { ConfirmButtonComponent } from './confirm-button/confirm-button.componen
     FormsModule,
     ReactiveFormsModule,
     SharedModule,
-    CustomMaterialModule
+    CustomMaterialModule,
+    SharedPipes
   ],
   declarations: [
     NavbarComponent,
@@ -31,7 +37,11 @@ import { ConfirmButtonComponent } from './confirm-button/confirm-button.componen
     UploadFileComponent,
     IntlPhoneInputComponent,
     MessageBoxComponent,
-    ConfirmButtonComponent
+    ConfirmButtonComponent,
+    FormTextComponent,
+    FormRemindComponent,
+    FormTextareaComponent,
+    MemberCapsuleComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -42,7 +52,11 @@ import { ConfirmButtonComponent } from './confirm-button/confirm-button.componen
     UploadFileComponent,
     IntlPhoneInputComponent,
     MessageBoxComponent,
-    ConfirmButtonComponent
+    ConfirmButtonComponent,
+    FormTextComponent,
+    FormRemindComponent,
+    FormTextareaComponent,
+    MemberCapsuleComponent
   ]
 })
 export class SharedComponentsModule {}

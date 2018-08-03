@@ -53,7 +53,6 @@ if (address === '192.168.1.235') {
 }
 var connection = mysql.createConnection(connectInfo);
 
-
 connection.connect(function (err) {
   if (err) {
     console.error("error connecting: " + err.stack);
@@ -93,7 +92,7 @@ app.use(function (req, res, next) {
   if (address === '192.168.1.235') {
     allowedOrigins = ['http://192.168.1.235:8080', '*'];
   } else if (address === '192.168.1.234') {
-    allowedOrigins = [`${address}`]; // 因為要for在家只做前端時，需要隨意的domain去call
+    allowedOrigins = ['*']; // 因為要for在家只做前端時，需要隨意的domain去call
   } else if (address === '192.168.1.232') {
     allowedOrigins = ['http://192.168.1.232:8080'];
   } else {
@@ -161,6 +160,8 @@ var deviceLog = require('./routes/deviceLog.js');
 var coach = require('./routes/coach.js');
 var map = require('./routes/map.js');
 var qrPair = require('./routes/qrPair.js');
+var user = require('./routes/user.js');
+var center = require('./routes/center.js');
 
 app.use('/nodejs/api/rankForm', rankForm.unprotected);
 app.use('/nodejs/api/rankForm', authMiddleware, rankForm.protected);
@@ -174,6 +175,8 @@ app.use('/nodejs/api/map', authMiddleware, map.protected);
 app.use('/nodejs/api/gpx', authMiddleware, runGpx);
 app.use('/nodejs/api/deviceLog', authMiddleware, deviceLog);
 app.use('/nodejs/api/coach', authMiddleware, coach);
+app.use('/nodejs/api/user', authMiddleware, user);
+app.use('/nodejs/api/center', authMiddleware, center);
 
 // Start the server
 const port = process.env.PORT || 3001;

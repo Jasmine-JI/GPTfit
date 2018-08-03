@@ -1,4 +1,4 @@
-module.exports = function checkID(type, id) {
+function checkID(type, id) {
   const tab = 'ABCDEFGHJKLMNPQRSTUVXYWZIO';
   const tabByForegin = 'ABCD';
   const A1 = new Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3);
@@ -37,3 +37,14 @@ module.exports = function checkID(type, id) {
   }
   return true;
 }
+
+function getNowTime() {
+  var now = new Date();
+  var now_mill = now.getTime();
+  const update_time = Math.round(now_mill / 1000);
+  return update_time;
+}
+module.exports = {
+  checkID,
+  getNowTime
+};

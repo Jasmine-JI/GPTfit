@@ -1,0 +1,4 @@
+.mat-raised-button.mat-icon-button[disabled] {
+  cursor: not-allowed;
+}
+

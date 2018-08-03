@@ -19,7 +19,15 @@ import { CoachDashboardDetailComponent } from './components/coach-dashboard-deta
 import { CoachRexComponent } from './components/coach-rex/coach-rex.component';
 import { EventManagementComponent } from './components/event-management/event-management.component';
 import { AuthGuard } from '@shared/guards/auth/auth.guard';
-
+import { MyGroupListComponent } from './group/my-group-list/my-group-list.component';
+import { GroupSearchComponent } from './group/group-search/group-search.component';
+import { GroupInfoComponent } from './group/group-info/group-info.component';
+import { EditGroupInfoComponent } from './group/edit-group-info/edit-group-info.component';
+import { AllGroupListComponent } from './group/all-group-list/all-group-list.component';
+import { EditGroupGuard } from './guards/edit-group-guard';
+import { CreateGroupComponent } from './group/create-group/create-group.component';
+import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
+import { DashboardGuard } from './guards/dashboard-guard';
 const routes: Routes = [
   {
     path: 'dashboard',
@@ -72,7 +80,8 @@ const routes: Routes = [
       },
       {
         path: 'device_log',
-        component: DeviceLogComponent
+        component: DeviceLogComponent,
+        canActivate: [DashboardGuard]
       },
       {
         path: 'device_log/detail/:userId',
@@ -93,6 +102,41 @@ const routes: Routes = [
       {
         path: 'event-management',
         component: EventManagementComponent
+      },
+      {
+        path: 'my-group-list',
+        component: MyGroupListComponent
+      },
+      {
+        path: 'my-group-list/create',
+        component: CreateGroupComponent
+      },
+      {
+        path: 'all-group-list',
+        component: AllGroupListComponent
+      },
+      {
+        path: 'group-search',
+        component: GroupSearchComponent
+      },
+      {
+        path: 'group-info/:groupId',
+        component: GroupInfoComponent
+      },
+      {
+        path: 'group-info/:groupId/edit',
+        component: EditGroupInfoComponent,
+        canActivate: [EditGroupGuard]
+      },
+      {
+        path: 'group-info/:groupId/create',
+        component: CreateGroupComponent,
+        canActivate: [EditGroupGuard]
+      },
+      {
+        path: 'setting',
+        component: InnerSettingsComponent,
+        canActivate: [DashboardGuard]
       }
     ]
   },

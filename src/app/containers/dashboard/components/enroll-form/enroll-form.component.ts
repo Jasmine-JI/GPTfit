@@ -98,7 +98,6 @@ export class EnrollFormComponent implements OnInit {
   }
 
   public onPhoneChange(code): void {
-    console.log('code: ', code);
     this.counrtyCode = code;
     if (this.counrtyCode) {
       this.isCodeInvalid = false;

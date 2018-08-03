@@ -6,7 +6,7 @@
   <div class="alatech-ribbon alatech-ribbon--bg-blue"></div>
     <router-outlet></router-outlet>
 </ng-container>
-<div  (window:resize)="onResize($event, sideNav)" [class.minimize-main-nav]="!isSideNavOpend === false">
+<div (window:resize)="onResize($event, sideNav)" *ngIf="!isLoading" [class.minimize-main-nav]="!isSideNavOpend === false">
   <mat-sidenav-container style="height:100vh">
     <mat-sidenav #sideNav opened={{isDefaultOpend}} mode={{mode}}>
       <nav class="navbar ala-dashboard-nav">
@@ -14,10 +14,12 @@
           center
         </span>
         <mat-nav-list>
-          <li class="ala-sidenav-item"  (click)="chooseItem(1, sideNav)"  [class.ala-sidenav-menu-item__active]="target === 1">
-            <a [routerLink]="['/leaderboard']">
-              <i class="icon-svg_web-icon_002-trophy ala-sidenav-icon"></i>排行版
-            </a>
+          <li class="ala-sidenav-item"
+            (click)="chooseItem(1, sideNav)"
+            [class.ala-sidenav-menu-item__active]="target === 1"
+            [routerLink]="['/leaderboard']"
+          >
+            <i class="icon-svg_web-icon_002-trophy ala-sidenav-icon"></i>排行版
           </li>
           <mat-accordion multi="false">
             <mat-expansion-panel>
@@ -29,44 +31,109 @@
                   <i class="icon-svg_web-icon_003-peoples ala-sidenav-icon"></i>及時活動
                 </mat-panel-title>
               </mat-expansion-panel-header>
-                <li class="ala-sidenav-menu-item"  (click)="chooseItem(2, sideNav)"  [class.ala-sidenav-menu-item__active]="target === 2">
+                <li class="ala-sidenav-menu-item"
+                  (click)="chooseItem(2, sideNav)"
+                  [class.ala-sidenav-menu-item__active]="target === 2"
+                >
                   雲跑
                 </li>
-                <li class="ala-sidenav-menu-item"  (click)="chooseItem(3, sideNav)"  [class.ala-sidenav-menu-item__active]="target === 3">
-                  <a [routerLink]="['/dashboard/coach-dashboard']">
-                    健身工廠
-                  </a>
+                <li class="ala-sidenav-menu-item"
+                  (click)="chooseItem(3, sideNav)"
+                  [class.ala-sidenav-menu-item__active]="target === 3"
+                  [routerLink]="['/dashboard/coach-dashboard']"
+                >
+                  健身工廠
                 </li>
 
             </mat-expansion-panel>
           </mat-accordion>
           <li class="ala-sidenav-item"  (click)="chooseItem(4, sideNav)" [class.ala-sidenav-menu-item__active]="target === 4">
-            <a>
-              <i class="icon-svg_web-icon_004-qr_code ala-sidenav-icon"></i>登入設備
-            </a>
+            <i class="icon-svg_web-icon_004-qr_code ala-sidenav-icon"></i>登入設備
           </li>
-          <li class="ala-sidenav-item"  (click)="chooseItem(5, sideNav)" [class.ala-sidenav-menu-item__active]="target === 5">
-            <a [routerLink]="['/dashboard/device_log']">
-              <i class="icon icon-log-file-format ala-sidenav-icon"></i>Device Log
-            </a>
+          <li class="ala-sidenav-item"
+            (click)="chooseItem(5, sideNav)"
+            [class.ala-sidenav-menu-item__active]="target === 5"
+            [routerLink]="['/dashboard/device_log']"
+             *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer"
+          >
+            <i class="icon icon-log-file-format ala-sidenav-icon"></i>Device Log
           </li>
+          <mat-accordion multi="false" *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper">
+            <mat-expansion-panel>
+              <mat-expansion-panel-header  class="ala-expansion-panel-header"
+                [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
+                (click)="chooseItem(0, sideNav)"
+              >
+                <mat-panel-title>
+                  <i class="icon-svg_web-icon_003-peoples ala-sidenav-icon"></i>活動賽事管理
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <li class="ala-sidenav-menu-item"
+                (click)="chooseItem(6, sideNav)"
+                [class.ala-sidenav-menu-item__active]="target === 6"
+                [routerLink]="['/dashboard/event-management']"
+              >
+                活動賽事總表
+              </li>
 
-          <li class="ala-sidenav-item"  (click)="chooseItem(6, sideNav)" [class.ala-sidenav-menu-item__active]="target === 6">
-            <a [routerLink]="['/dashboard/event-management']">
-              活動賽事管理
-            </a>
-          </li>
-
-          <li class="ala-sidenav-item"  (click)="chooseItem(7, sideNav)" [class.ala-sidenav-menu-item__active]="target === 7">
-            <a [routerLink]="['/dashboard/event']">
-              活動賽事自訂
-            </a>
-          </li>
-          <li class="ala-sidenav-item"  (click)="chooseItem(8, sideNav)" [class.ala-sidenav-menu-item__active]="target === 8">
-            <a [routerLink]="['/dashboard/event-calendar']">活動賽事日曆</a>
-          </li>
-          <li class="ala-sidenav-item"  (click)="chooseItem(9, sideNav)" [class.ala-sidenav-menu-item__active]="target === 9">
-            <a [routerLink]="['/dashboard/leaderboard-settings']">排行版設定</a>
+              <li class="ala-sidenav-menu-item"
+                (click)="chooseItem(7, sideNav)"
+                [class.ala-sidenav-menu-item__active]="target === 7"
+                [routerLink]="['/dashboard/event']"
+              >
+                活動賽事自訂
+              </li>
+              <li class="ala-sidenav-menu-item"
+                (click)="chooseItem(8, sideNav)"
+                [class.ala-sidenav-menu-item__active]="target === 8"
+                [routerLink]="['/dashboard/event-calendar']"
+              >
+                活動賽事日曆
+              </li>
+              <li class="ala-sidenav-menu-item"
+                (click)="chooseItem(9, sideNav)"
+                [class.ala-sidenav-menu-item__active]="target === 9"
+                [routerLink]="['/dashboard/leaderboard-settings']"
+              >
+                排行版設定
+              </li>
+            </mat-expansion-panel>
+          </mat-accordion>
+          <mat-accordion multi="false">
+            <mat-expansion-panel>
+              <mat-expansion-panel-header  class="ala-expansion-panel-header"
+                [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
+                (click)="chooseItem(0, sideNav)"
+              >
+                <mat-panel-title>
+                  <i class="icon-svg_web-icon_003-peoples ala-sidenav-icon"></i>群組
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+                <li class="ala-sidenav-menu-item"
+                  (click)="chooseItem(10, sideNav)"
+                  [class.ala-sidenav-menu-item__active]="target === 10"
+                  *ngIf="isBrandAdministrator || isBranchAdministrator || isBroadcastProducer || isGroupAdministrator || isGeneralMember"
+                  [routerLink]="['/dashboard/my-group-list']"
+                >
+                  我的群組
+                </li>
+                <li class="ala-sidenav-menu-item"
+                  (click)="chooseItem(11, sideNav)"
+                  [class.ala-sidenav-menu-item__active]="target === 11"
+                  *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper"
+                  [routerLink]="['/dashboard/all-group-list']"
+                >
+                  所有群組列表
+                </li>
+            </mat-expansion-panel>
+          </mat-accordion>
+          <li class="ala-sidenav-item"
+            (click)="chooseItem(12, sideNav)"
+            [class.ala-sidenav-menu-item__active]="target === 12"
+            [routerLink]="['/dashboard/setting']"
+            *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper"
+          >
+              <i class="fa fa-cog ala-sidenav-icon"></i>設定
           </li>
         </mat-nav-list>
       </nav>
