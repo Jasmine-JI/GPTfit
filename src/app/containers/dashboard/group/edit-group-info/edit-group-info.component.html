@@ -249,7 +249,9 @@
                   [icon]="item?.memberIcon"
                   [groupId]="item?.groupId"
                   [userId]="item?.memberId"
+                  [groupLevel]="groupLevel"
                   (onAssignAdmin)="handleAssignAdmin($event)"
+                  (onRemoveAdmin)="handleRemoveAdmin($event, 4)"
                 >
                 </app-member-capsule>
               </div>

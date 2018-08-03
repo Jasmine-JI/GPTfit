@@ -310,8 +310,12 @@ export class EditGroupInfoComponent implements OnInit {
         this.branchAdministrators = this.branchAdministrators.filter(
           _info => _info.memberId !== id
         );
-      } else {
+      } else if (type === 3) {
         this.coachAdministrators = this.coachAdministrators.filter(
+          _info => _info.memberId !== id
+        );
+      } else {
+        this.normalMemberInfos = this.normalMemberInfos.filter(
           _info => _info.memberId !== id
         );
       }

@@ -32,7 +32,11 @@
   <mat-icon>search</mat-icon>
 </button>
 
-<mat-table [dataSource]="logSource" matSort #sortTable="matSort">
+<mat-table class="example-table"[dataSource]="logSource" matSort #sortTable="matSort">
+  <ng-container matColumnDef="id">
+    <mat-header-cell *matHeaderCellDef>群組ID</mat-header-cell>
+    <mat-cell *matCellDef="let row">{{ utils.displayGroupId(row.groupId) }}</mat-cell>
+  </ng-container>
   <ng-container matColumnDef="info">
     <mat-header-cell *matHeaderCellDef>名稱</mat-header-cell>
     <mat-cell *matCellDef="let row">{{ row.groupName }}</mat-cell>
@@ -43,8 +47,8 @@
     </mat-header-cell>
     <mat-cell *matCellDef="let row">{{ row.groupStatus | groupStatus }}</mat-cell>
   </ng-container>
-  <mat-header-row *matHeaderRowDef="['info', 'time']"></mat-header-row>
-  <mat-row *matRowDef="let logRow; columns: ['info', 'time']" (click)="goDetail(logRow.groupId)">
+  <mat-header-row *matHeaderRowDef="['id', 'info', 'time']"></mat-header-row>
+  <mat-row *matRowDef="let logRow; columns: ['id', 'info', 'time']" (click)="goDetail(logRow.groupId)">
   </mat-row>
 
 </mat-table>

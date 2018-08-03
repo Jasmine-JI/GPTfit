@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, ViewEncapsulation } from '@angular/core';
 import { GroupService } from '../../services/group.service';
 import {
   MatTableDataSource,
@@ -19,7 +19,8 @@ import { UtilsService } from '@shared/services/utils.service';
 @Component({
   selector: 'app-all-group-list',
   templateUrl: './all-group-list.component.html',
-  styleUrls: ['./all-group-list.component.css']
+  styleUrls: ['./all-group-list.component.css', '../group-style.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class AllGroupListComponent implements OnInit {
   groupLevel = '00';
@@ -51,17 +52,15 @@ export class AllGroupListComponent implements OnInit {
       category: '1',
       groupLevel: this.groupLevel,
       searchWords: this.searchWords,
-      page: '1',
+      page: '0',
       pageCounts: '10'
     };
-    // if (this.searchWords.length > 0) {
-      this.groupService
-        .fetchGroupList(body)
-        .subscribe(res => {
-          this.logSource.data = res.info.groupList;
-          this.totalCount = res.info.totalCounts;
-        });
-    // }
+    this.groupService
+      .fetchGroupList(body)
+      .subscribe(res => {
+        this.logSource.data = res.info.groupList;
+        this.totalCount = res.info.totalCounts;
+      });
   }
   goDetail(groupId) {
     this.router.navigateByUrl(`dashboard/group-info/${groupId}`);

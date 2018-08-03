@@ -30,6 +30,7 @@ export class MemberCapsuleComponent implements OnInit {
   @Input() isWaittingMemberInfo = false;
   @Input() groupId: string;
   @Input() userId: string;
+  @Input() groupLevel: string;
   @Output() onWaittingMemberInfoChange = new EventEmitter();
   @Output() onRemoveAdmin = new EventEmitter();
   @Output() onAssignAdmin = new EventEmitter();
@@ -131,5 +132,18 @@ export class MemberCapsuleComponent implements OnInit {
   }
   goToManage() {
     this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}/edit`);
+  }
+  handleDeleteMember() {
+    const body = {
+      token: this.token,
+      groupId: this.groupId,
+      userId: this.userId,
+      groupLevel: this.groupLevel
+    };
+    this.groupService.deleteGroupMember(body).subscribe(res => {
+      if (res.resultCode === 200) {
+        return this.onRemoveAdmin.emit(this.userId);
+      }
+    });    
   }
 }
