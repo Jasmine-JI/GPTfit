@@ -104,7 +104,6 @@ export class UtilsService {
   displayGroupLevel(_id: string) {
     if (_id) {
       const arr = _id.split('-').splice(2, 4);
-      console.log('arr', arr);
       if (+arr[3] > 0) {
         return '80';
       } else if (+arr[2] > 0) {

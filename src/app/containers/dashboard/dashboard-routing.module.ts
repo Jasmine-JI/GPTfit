@@ -27,7 +27,7 @@ import { AllGroupListComponent } from './group/all-group-list/all-group-list.com
 import { EditGroupGuard } from './guards/edit-group-guard';
 import { CreateGroupComponent } from './group/create-group/create-group.component';
 import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
-
+import { DashboardGuard } from './guards/dashboard-guard';
 const routes: Routes = [
   {
     path: 'dashboard',
@@ -80,7 +80,8 @@ const routes: Routes = [
       },
       {
         path: 'device_log',
-        component: DeviceLogComponent
+        component: DeviceLogComponent,
+        canActivate: [DashboardGuard]
       },
       {
         path: 'device_log/detail/:userId',
@@ -134,7 +135,8 @@ const routes: Routes = [
       },
       {
         path: 'setting',
-        component: InnerSettingsComponent
+        component: InnerSettingsComponent,
+        canActivate: [DashboardGuard]
       }
     ]
   },

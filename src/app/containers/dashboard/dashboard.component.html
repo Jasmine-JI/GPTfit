@@ -54,10 +54,11 @@
             (click)="chooseItem(5, sideNav)"
             [class.ala-sidenav-menu-item__active]="target === 5"
             [routerLink]="['/dashboard/device_log']"
+             *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer"
           >
             <i class="icon icon-log-file-format ala-sidenav-icon"></i>Device Log
           </li>
-          <mat-accordion multi="false">
+          <mat-accordion multi="false" *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper">
             <mat-expansion-panel>
               <mat-expansion-panel-header  class="ala-expansion-panel-header"
                 [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
@@ -130,6 +131,7 @@
             (click)="chooseItem(12, sideNav)"
             [class.ala-sidenav-menu-item__active]="target === 12"
             [routerLink]="['/dashboard/setting']"
+            *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper"
           >
               <i class="fa fa-cog ala-sidenav-icon"></i>設定
           </li>

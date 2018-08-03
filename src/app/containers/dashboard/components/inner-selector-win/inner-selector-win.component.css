@@ -36,7 +36,7 @@
 }
 
 .memberselector-sl--with-bar {
-  min-height: calc(100% - 40px);
+  height: calc(100% - 40px);
 }
 
 .memberselector-sl__item {
@@ -44,4 +44,15 @@
   background-color: #fff;
   word-break: break-all;
   color: #333;
+}
+.memberselector-sl__item:hover,
+.memberselector-sl__item.memberselector-sl__item--is-selected {
+  background-color: #dfeaf2;
+}
+.memberselector-sl__item.memberselector-sl__item--is-selected {
+  cursor: pointer;
+}
+.memberselector-sl__item.memberselector-sl__item--empty {
+  background-color: #fff;
+  cursor: default;
 }

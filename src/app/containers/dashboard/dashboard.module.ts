@@ -56,6 +56,7 @@ import { RightSettingWinComponent } from './group/right-setting-win/right-settin
 import { GroupLevelNamePipe } from './pipes/group-level-name.pipe';
 import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
 import { InnerSelectorWinComponent } from './components/inner-selector-win/inner-selector-win.component';
+import { DashboardGuard } from './guards/dashboard-guard';
 
 @NgModule({
   imports: [
@@ -84,7 +85,8 @@ import { InnerSelectorWinComponent } from './components/inner-selector-win/inner
     UserInfoService,
     UtilsService,
     GroupService,
-    EditGroupGuard
+    EditGroupGuard,
+    DashboardGuard
   ],
   declarations: [
     DashboardComponent,

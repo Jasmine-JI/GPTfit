@@ -1,7 +1,9 @@
 var express = require('express');
-
+var async = require('async')
 var router = express.Router();
 var { getUserId } = require('../models/user_id');
+var { getInnerAdmin } = require('../models/exist_innerAdmin');
+
 var moment = require('moment');
 
 router.get('/getGroupListDetail', function (req, res, next) {
@@ -90,6 +92,129 @@ router.get('/getGroupJoinStatus', function (req, res, next) {
 
 });
 
+router.get('/getGroupList', function (req, res, next) {
+  const {
+    con,
+    query: {
+      groupId
+    }
+  } = req;
+  const sql = `
+    select group_name as groupName, group_id from ??
+  `;
+  con.query(sql, ['group_info'], function (err, rows) {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({
+        errorMessage: err.sqlMessage
+      });
+    }
+    if (rows) {
+      return res.json(rows);
+    }
+  });
+});
+
+router.post('/innerAdmin', function (req, res, next) {
+  const {
+    con,
+    body: {
+      targetRight,
+      userIds
+    }
+  } = req;
+
+  getInnerAdmin(targetRight).then((ids) => {
+    let normalIds = [];
+    if (ids.length > 0) {
+      normalIds = ids.filter(_id => userIds.findIndex(_userId => +_userId === _id.member_id) === -1);
+    }
+    normalQuerys = normalIds.map(_id => `update ?? set access_right = 90 where member_id = ${_id.member_id};`);
+    let sql = userIds.map(_id => `update ?? set access_right = ${con.escape(targetRight)} where member_id = ${_id};`);
+    sql = sql.concat(normalQuerys);
+    const processer = function (query) {
+      con.query(query, ['group_member_info'], function (err, rows) {
+        if (err) {
+          console.log(err);
+          return res.status(500).send({
+            errorMessage: err.sqlMessage
+          });
+        }
+      });
+    }
+    res.json({
+        resultCode: 200,
+        rtnMsg: 'success'
+    });
+    async.eachLimit(sql, 10, processer, function (error, result){
+      console.log('!!!!!');
+      console.log('error: ', error);
+      console.log('result: ', result);
+    });
+  }).catch(error => console.log(error));
+});
+
+router.get('/innerAdmin', function (req, res, next) {
+  const {
+    con,
+    query: {
+      groupId
+    }
+  } = req;
+  const sql = `
+    select m.group_id as groupId, m.access_right as accessRight,
+    m.member_id as userId, m.member_name as userName, g.group_name as groupName
+    from group_member_info m, group_info g
+    where m.access_right < 30 and m.group_id = g.group_id;
+  `;
+  con.query(sql, ['group_member_info', 'group_info'], function (err, rows) {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({
+        errorMessage: err.sqlMessage
+      });
+    }
+    if (rows) {
+      return res.json(rows);
+    }
+  });
+
+});
+router.get('/searchMember', function (req, res, next) {
+  const {
+    con,
+    query: {
+      keyword,
+      groupId,
+      accessRight,
+      type // 0: 沒有權限的篩選， 1: 有
+    }
+  } = req;
+  const groupIdQuery = groupId && groupId.length > 0 ? ` and g.group_id = ?` : '';
+  let additionalVal = groupId;
+  if (type === '1') {
+    additionalVal = accessRight;
+  }
+  const accessRightQuery = accessRight && accessRight.length > 0 ? ` and m.access_right = ?` : '';
+
+  const sql = `
+    select m.member_name as userName, g.group_name as groupName, m.member_id as userId
+    from ?? m, ?? g
+    where member_name like ? '%' and g.group_id = m.group_id ${groupIdQuery} ${accessRightQuery};
+  `;
+  con.query(sql, ['group_member_info', 'group_info', keyword, additionalVal], function (err, rows) {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({
+        errorMessage: err.sqlMessage
+      });
+    }
+    if (rows) {
+      return res.json(rows);
+    }
+  });
+
+});
 router.post('/actionGroup', function (req, res, next) {
   const {
     con,

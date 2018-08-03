@@ -51,7 +51,6 @@ export class DashboardComponent implements OnInit {
       this.isPreviewMode = true;
     }
     this.userInfoService.getInitialUserInfoStatus().subscribe((res: UserInfo) => {
-      
       const { isInitial } = res;
       if (!isInitial) {
         this.isLoading = true;

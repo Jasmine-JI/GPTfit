@@ -37,4 +37,19 @@ export class GroupService {
   addGroupMember(body) {
     return this.http.post<any>('/api/v1/center/addGroupMember', body);
   }
+  getGroupList() {
+    return this.http.get<any>(API_SERVER + 'center/getGroupList');
+  }
+  searchMember(params) {
+    return this.http.get<any>(API_SERVER + 'center/searchMember', { params });
+  }
+  getInnerAdmin() {
+    return this.http.get<any>(API_SERVER + 'center/innerAdmin');
+  }
+  deleteGroupMember(body) {
+    return this.http.post<any>('/api/v1/center/deleteGroupMember', body);
+  }
+  updateInnerAdmin(body) {
+    return this.http.post<any>(API_SERVER + 'center/innerAdmin', body);
+  }
 }
