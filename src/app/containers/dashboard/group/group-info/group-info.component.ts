@@ -44,6 +44,14 @@ export class GroupInfoComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.route.params.subscribe(_params => this.handleInit());
+
+    this.userInfoService.getUserAccessRightDetail().subscribe(res => {
+      this.visitorDetail = res;
+    });
+
+  }
+  handleInit() {
     this.groupId = this.route.snapshot.paramMap.get('groupId');
     this.token = this.utils.getToken();
     const body = {
@@ -53,9 +61,6 @@ export class GroupInfoComponent implements OnInit {
     let params = new HttpParams();
     params = params.set('groupId', this.groupId);
     this.userInfoService.getUserDetail(body, this.groupId);
-    this.userInfoService.getUserAccessRightDetail().subscribe(res => {
-      this.visitorDetail = res;
-    });
     this.userInfoService.getSupervisorStatus().subscribe(res => {
       this.role.isSupervisor = res;
       console.log('%c this.isSupervisor', 'color: #0ca011', res);
@@ -70,7 +75,10 @@ export class GroupInfoComponent implements OnInit {
     });
     this.groupService.fetchGroupListDetail(body).subscribe(res => {
       this.groupInfo = res.info;
-      const { groupIcon, groupId, selfJoinStatus } = this.groupInfo;
+      const { groupIcon, groupId, selfJoinStatus, groupStatus } = this.groupInfo;
+      if (groupStatus === 4) {
+        this.router.navigateByUrl(`/404`);
+      }
       if (selfJoinStatus) {
         this.joinStatus = selfJoinStatus;
       } else {
@@ -125,17 +133,23 @@ export class GroupInfoComponent implements OnInit {
               groupIcon: this.utils.buildBase64ImgString(_brand.groupIcon)
             };
           });
-          this.subBranchInfo = this.subGroupInfo.branches.map(_branch => {
-            return {
-              ..._branch,
-              groupIcon: this.utils.buildBase64ImgString(_branch.groupIcon)
-            };
+          this.subBranchInfo = this.subGroupInfo.branches.filter(_branch => {
+            if (_branch.groupStatus !== 4) {
+              // 過濾解散群組
+              return {
+                ..._branch,
+                groupIcon: this.utils.buildBase64ImgString(_branch.groupIcon)
+              };
+            }
           });
-          this.subCoachInfo = this.subGroupInfo.coaches.map(_coach => {
-            return {
-              ..._coach,
-              groupIcon: this.utils.buildBase64ImgString(_coach.groupIcon)
-            };
+          this.subCoachInfo = this.subGroupInfo.coaches.filter(_coach => {
+            if (_coach.groupStatus !== 4) {
+              // 過濾解散群組
+              return {
+                ..._coach,
+                groupIcon: this.utils.buildBase64ImgString(_coach.groupIcon)
+              };
+            }
           });
         } else {
           this.groupInfos = groupMemberInfo;
@@ -153,9 +167,22 @@ export class GroupInfoComponent implements OnInit {
           this.branchAdministrators = this.groupInfos.filter(
             _info => _info.accessRight === '40'
           );
-          this.coachAdministrators = this.groupInfos.filter(
-            _info => _info.accessRight === '60'
-          );
+          if (this.groupLevel === '60') {
+            this.coachAdministrators = this.groupInfos.filter(
+              _info => _info.accessRight === '60' && _info.groupId === this.groupId
+            );
+          } else {
+            this.coachAdministrators = this.groupInfos.filter(_info => {
+              if (_info.accessRight === '60') {
+                const idx = this.subCoachInfo.findIndex(_subCoach => _subCoach.groupId === _info.groupId);
+                if (idx > -1) {
+                  _info.memberName = this.subCoachInfo[idx].groupName + '/' + _info.memberName;
+                  return _info;
+                }
+              }
+            });
+          }
+
           this.normalMemberInfos = this.groupInfos.filter(
             _info => _info.accessRight === '90' && _info.joinStatus === 2
           );
@@ -183,7 +210,6 @@ export class GroupInfoComponent implements OnInit {
         this.getGroupMemberList(4);
       }
     }
-
   }
   goEditPage() {
     this.router.navigateByUrl(`${location.pathname}/edit`);

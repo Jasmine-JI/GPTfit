@@ -36,3 +36,27 @@
   max-width: 360px;
   text-align: center;
 }
+
+.mat-header-cell.mat-column-equipment_sn {
+  flex: 1 1 20%;
+}
+
+.mat-cell.mat-column-equipment_sn {
+  flex: 1 1 20%;
+}
+
+.mat-header-cell.mat-column-time {
+  flex: 1 1 20%;
+}
+
+.mat-cell.mat-column-time {
+  flex: 1 1 20%;
+}
+
+.mat-header-cell.mat-column-message {
+  flex: 1 1 60%;
+}
+
+.mat-cell.mat-column-message {
+  flex: 1 1 60%;
+}

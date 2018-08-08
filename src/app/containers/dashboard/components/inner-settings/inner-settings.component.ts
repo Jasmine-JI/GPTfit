@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { InnerSelectorWinComponent } from '../inner-selector-win/inner-selector-win.component';
 import { GroupService } from '../../services/group.service';
-import { HttpParams } from '@angular/common/http';
 import * as _ from 'lodash';
 import { UserInfoService } from '../../services/userInfo.service';
 import { MsgDialogComponent } from '../msg-dialog/msg-dialog.component';
@@ -22,6 +21,7 @@ export class InnerSettingsComponent implements OnInit {
     isSystemMaintainer: false,
     isMarketingDeveloper: false
   };
+  userId: number;
   constructor(
     private dialog: MatDialog,
     private groupService: GroupService,
@@ -29,7 +29,7 @@ export class InnerSettingsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.groupService.getInnerAdmin().subscribe(_result =>{
+    this.groupService.getInnerAdmin().subscribe(_result => {
       this.systemDevelopers = _result.filter(_res => _res.accessRight === '10');
       this.systemMaintainers = _result.filter(_res => _res.accessRight === '20');
       this.marketingDevelopers = _result.filter(_res => _res.accessRight === '29');
@@ -50,12 +50,18 @@ export class InnerSettingsComponent implements OnInit {
       this.role.isMarketingDeveloper = res;
       console.log('%c this.isMarketingDeveloper', 'color: #ccc', res);
     });
+    this.userInfoService.getUserId().subscribe(res => this.userId = res);
   }
   handleConfirm() {
-    this.groupService.getInnerAdmin().subscribe(_result =>{
-      this.systemDevelopers = _result.filter(_res => _res.accessRight === '10');
-      this.systemMaintainers = _result.filter(_res => _res.accessRight === '20');
-      this.marketingDevelopers = _result.filter(_res => _res.accessRight === '29');
+    this.groupService.getInnerAdmin().subscribe(_result => {
+      const isCanUse = _result.findIndex(_res => _res.userId === this.userId) > -1;
+      if (isCanUse) {
+        this.systemDevelopers = _result.filter(_res => _res.accessRight === '10');
+        this.systemMaintainers = _result.filter(_res => _res.accessRight === '20');
+        this.marketingDevelopers = _result.filter(_res => _res.accessRight === '29');
+      } else {
+        location.href = '/dashboard';
+      }
     });
   }
   openSelectorWin(_type: number) {
@@ -90,7 +96,7 @@ export class InnerSettingsComponent implements OnInit {
           adminLists,
           onConfirm: this.handleConfirm.bind(this)
         }
-      });      
+      });
     } else {
       this.dialog.open(MsgDialogComponent, {
         hasBackdrop: true,

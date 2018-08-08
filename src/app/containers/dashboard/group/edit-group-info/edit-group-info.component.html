@@ -29,24 +29,28 @@
           <button class="alatech-btn alatech-btn--default"
             title="申請解散品牌"
             *ngIf="joinStatus === 2 && groupLevel && groupLevel === '30' && visitorDetail?.isCanManage"
+            (click)="$event.preventDefault()"
           >
             申請解散品牌
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="解散分店"
             *ngIf="(groupLevel && groupLevel === '40') && visitorDetail?.isCanManage"
+            (click)="dimissGroup($event, 2)"
           >
             解散分店
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="解散課程"
             *ngIf="(groupLevel && groupLevel === '60') && visitorDetail?.isCanManage"
+            (click)="dimissGroup($event, 3)"
           >
             解散課程
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="解散群組"
             *ngIf="(groupLevel && groupLevel === '80') && visitorDetail?.isCanManage"
+            (click)="dimissGroup($event, 4)"
           >
             解散群組
           </button>
@@ -92,10 +96,10 @@
         </div>
         <div class="ala-list__item">
           <label class="ala-form__label">狀態：</label>
-          <select class="form-field">
-            <option class="form-field-option">{{ groupInfo?.groupStatus | groupStatus }}</option>
-            <option class="form-field-option">審核制</option>
-            <option class="form-field-option">隱藏群組</option>
+          <select class="form-field" formControlName="groupStatus">
+            <option value="1" class="form-field-option">自由加入</option>
+            <option value="2" class="form-field-option">審核制</option>
+            <option value="3" class="form-field-option">隱藏群組</option>
           </select>
         </div>
         <div class="ala-list__item">
@@ -122,12 +126,14 @@
               <ng-container  *ngFor="let subBrandItem of subBrandInfo">
                 <app-member-capsule
                   [role]="role"
-                  [isSubGroupInfo]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator"
+                  [isSubGroupInfo]="true"
+                  [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer"
                   [title]="subBrandItem?.groupName"
                   [memberInfo]="subBrandItem"
                   [name]="subBrandItem && subBrandItem?.groupName"
                   [icon]="subBrandItem?.groupIcon"
                   [groupId]="subBrandItem?.groupId"
+                  [groupLevel]="groupLevel"
                 >
                 </app-member-capsule>
               </ng-container>
@@ -138,12 +144,15 @@
               <ng-container  *ngFor="let subBranchItem of subBranchInfo">
                 <app-member-capsule
                   [role]="role"
-                  [isSubGroupInfo]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator"
+                  [isSubGroupInfo]="true"
+                  [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator"
                   [title]="subBranchItem?.groupName"
                   [memberInfo]="subBranchItem"
                   [name]="subBranchItem && subBranchItem?.groupName"
                   [icon]="subBranchItem?.groupIcon"
                   [groupId]="subBranchItem?.groupId"
+                  [groupLevel]="groupLevel"
+                  (onRemoveGroup)="handleRemoveGroup($event, 2)"
                 >
                 </app-member-capsule>
               </ng-container>
@@ -154,12 +163,15 @@
               <ng-container  *ngFor="let subCoachItem of subCoachInfo">
                 <app-member-capsule
                   [role]="role"
-                  [isSubGroupInfo]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator"
+                  [isSubGroupInfo]="true"
+                  [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator"
                   [title]="subCoachItem?.groupName"
                   [memberInfo]="subCoachItem"
                   [name]="subCoachItem && subCoachItem?.groupName"
                   [icon]="subCoachItem?.groupIcon"
                   [groupId]="subCoachItem?.groupId"
+                  [groupLevel]="groupLevel"
+                  (onRemoveGroup)="handleRemoveGroup($event, 3)"
                 >
                 </app-member-capsule>
               </ng-container>
@@ -172,7 +184,8 @@
                 <ng-container  *ngFor="let brandAdmItem of brandAdministrators">
                   <app-member-capsule
                     [role]="role"
-                    [isAdminInfo]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer"
+                    [isAdminInfo]="true"
+                    [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer"
                     [title]="brandAdmItem?.memberName"
                     [memberInfo]="brandAdmItem"
                     [name]="brandAdmItem && brandAdmItem?.memberName"
@@ -190,7 +203,8 @@
                 <ng-container  *ngFor="let branchAdmItem of branchAdministrators">
                   <app-member-capsule
                     [role]="role"
-                    [isAdminInfo]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator"
+                    [isAdminInfo]="true"
+                    [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator"
                     [title]="branchAdmItem?.memberName"
                     [memberInfo]="branchAdmItem"
                     [name]="branchAdmItem && branchAdmItem?.memberName"
@@ -208,7 +222,8 @@
                 <ng-container  *ngFor="let coachAdmItem of coachAdministrators">
                   <app-member-capsule
                     [role]="role"
-                    [isAdminInfo]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator"
+                    [isAdminInfo]="true"
+                    [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator"
                     [title]="coachAdmItem?.memberName"
                     [memberInfo]="coachAdmItem"
                     [name]="coachAdmItem && coachAdmItem?.memberName"
@@ -227,6 +242,7 @@
                 <ng-container  *ngFor="let item of groupInfos">
                   <app-member-capsule
                     [role]="role"
+                    [isAdminInfo]="true"
                     [title]="item?.memberName"
                     [memberInfo]="item"
                     [name]="item && item?.memberName"
@@ -243,6 +259,9 @@
                 <app-member-capsule
                   [role]="role"
                   [isNormalMemberInfo]="true"
+                  [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper
+                  || role?.isSystemMaintainer || role?.isBrandAdministrator
+                  || role?.isBranchAdministrator || role?.isCoach"
                   [title]="item?.memberName"
                   [memberInfo]="item"
                   [name]="item && item?.memberName"
@@ -263,12 +282,14 @@
                 <app-member-capsule
                   [role]="role"
                   [isWaittingMemberInfo]="true"
+                  [isHadMenu]="visitorDetail?.isCanManage"
                   [title]="item?.memberName"
                   [memberInfo]="item"
                   [name]="item && item?.memberName"
                   [icon]="item?.memberIcon"
                   [groupId]="item?.groupId"
                   [userId]="item?.memberId"
+                  [groupLevel]="groupLevel"
                   (onWaittingMemberInfoChange)="handleWaittingMemberInfo($event)"
                 >
                 </app-member-capsule>

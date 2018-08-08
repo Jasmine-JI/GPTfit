@@ -27,6 +27,7 @@ export class MyGroupListComponent implements OnInit {
   infoOptions: any;
   selectedValue = '';
   token: string;
+  isEmpty = false;
   @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild('sortTable') sortTable: MatSort;
   @ViewChild('filter') filter: ElementRef;
@@ -79,25 +80,23 @@ export class MyGroupListComponent implements OnInit {
       this.getLists();
     });
   }
-  changeSort(sortInfo: Sort) {
-    this.currentSort = sortInfo;
-    this.getLists();
-  }
   getLists() {
-    const pageNumber = (this.currentPage.pageIndex + 1).toString();
-    const pageSize = this.currentPage.pageSize.toString();
-    const sort = this.currentSort.direction;
     const body = {
       token: this.token,
       category: '2',
       groupLevel: '90',
       searchWords: '',
-      page: '0',
-      pageCounts: '10'
+      page: this.currentPage && this.currentPage.pageIndex.toString() || '0',
+      pageCounts: this.currentPage && this.currentPage.pageSize.toString() || '10'
     };
     this.groupService.fetchGroupList(body).subscribe(res => {
-      this.logSource.data = res.info.groupList;
+      this.logSource.data = res.info.groupList.filter(_group => _group.groupStatus !== 4);
       this.totalCount = res.info.totalCounts;
+      if (this.logSource.data.length === 0) {
+        this.isEmpty = true;
+      } else {
+        this.isEmpty = false;
+      }
     });
   }
 

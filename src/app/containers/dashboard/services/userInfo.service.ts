@@ -26,6 +26,7 @@ export class UserInfoService {
   isCoach$ = new BehaviorSubject<boolean>(false);
   isGroupAdministrator$ = new BehaviorSubject<boolean>(false);
   isGeneralMember$ = new BehaviorSubject<boolean>(false);
+  userId$ = new BehaviorSubject<number>(null);
   initialUserInfo$ = new BehaviorSubject<any>({
     isInitial: false,
     groupAccessRight: []
@@ -33,7 +34,7 @@ export class UserInfoService {
   userAccessRightDetail$ = new BehaviorSubject<any>({
     groupLevel: 'none',
     isCanManage: false,
-    isGroupAdmin: false    
+    isGroupAdmin: false
   });
 
   constructor(private http: HttpClient) {}
@@ -65,6 +66,9 @@ export class UserInfoService {
   }
   getUserName(): Observable<string> {
     return this.userName$;
+  }
+  getUserId(): Observable<number> {
+    return this.userId$;
   }
   getSupervisorStatus(): Observable<boolean> {
     return this.isSupervisor$;
@@ -110,51 +114,130 @@ export class UserInfoService {
       const { groupAccessRight, isInitial } = res;
       if (isInitial) {
         if (this.isSupervisor$.value) {
-          return this.userAccessRightDetail$.next({ groupLevel: '00', isCanManage: true, isGroupAdmin: false});
+          return this.userAccessRightDetail$.next({
+            groupLevel: '00',
+            isCanManage: true,
+            isGroupAdmin: false
+          });
         }
         if (this.isSystemDeveloper$.value) {
-          return this.userAccessRightDetail$.next({ groupLevel: '10', isCanManage: true, isGroupAdmin: false});
+          return this.userAccessRightDetail$.next({
+            groupLevel: '10',
+            isCanManage: true,
+            isGroupAdmin: false
+          });
         }
         if (this.isSystemMaintainer$.value) {
-          return this.userAccessRightDetail$.next({ groupLevel: '20', isCanManage: true, isGroupAdmin: false});
+          return this.userAccessRightDetail$.next({
+            groupLevel: '20',
+            isCanManage: true,
+            isGroupAdmin: false
+          });
         }
         if (this.isBrandAdministrator$.value) {
-          const brandGroups = groupAccessRight.filter(_group => _group.accessRight === '30');
-          const brandIdx = brandGroups.findIndex(_brandGroup => _brandGroup.groupId.slice(0, 5) === groupId.slice(0, 5));
+          const brandGroups = groupAccessRight.filter(
+            _group => _group.accessRight === '30'
+          );
+          const brandIdx = brandGroups.findIndex(
+            _brandGroup =>
+              _brandGroup.groupId.slice(0, 5) === groupId.slice(0, 5)
+          );
           if (brandIdx > -1) {
-            return this.userAccessRightDetail$.next({ groupLevel: '30', isCanManage: true, isGroupAdmin: true});
+            return this.userAccessRightDetail$.next({
+              groupLevel: '30',
+              isCanManage: true,
+              isGroupAdmin: true
+            });
           }
-        } 
+        }
         if (this.isBranchAdministrator$.value) {
-          const branchGroups = groupAccessRight.filter(_group => _group.accessRight === '40');
-          let branchIdx = branchGroups.findIndex(_branchGroup => _branchGroup.groupId === groupId);
+          const branchGroups = groupAccessRight.filter(
+            _group => _group.accessRight === '40'
+          );
+          let branchIdx = branchGroups.findIndex(
+            _branchGroup => _branchGroup.groupId === groupId
+          );
           if (branchIdx > -1) {
-            return this.userAccessRightDetail$.next({ groupLevel: '40', isCanManage: true, isGroupAdmin: true});
+            return this.userAccessRightDetail$.next({
+              groupLevel: '40',
+              isCanManage: true,
+              isGroupAdmin: true
+            });
           }
-          branchIdx = branchGroups.findIndex(_branchGroup => _branchGroup.groupId.slice(0, 5) === groupId.slice(0, 5));
-          if (branchIdx > -1)  {
-            return this.userAccessRightDetail$.next({ groupLevel: '40', isCanManage: false, isGroupAdmin: true});
-          }    
+          branchIdx = branchGroups.findIndex(
+            _branchGroup =>
+              _branchGroup.groupId.slice(0, 7) === groupId.slice(0, 7)
+          );
+          if (branchIdx > -1) {
+            return this.userAccessRightDetail$.next({
+              groupLevel: '40',
+              isCanManage: true,
+              isGroupAdmin: true
+            });
+          }
+          branchIdx = branchGroups.findIndex(
+            _branchGroup =>
+              _branchGroup.groupId.slice(0, 5) === groupId.slice(0, 5)
+          );
+          if (branchIdx > -1) {
+            return this.userAccessRightDetail$.next({
+              groupLevel: '40',
+              isCanManage: false,
+              isGroupAdmin: true
+            });
+          }
         }
         if (this.isCoach$.value) {
-          const coachGroups = groupAccessRight.filter(_group => _group.accessRight === '60');
-          if (coachGroups.findIndex(_coachGroup => _coachGroup.groupId === groupId > -1)) {
-            return this.userAccessRightDetail$.next({ groupLevel: '60', isCanManage: true, isGroupAdmin: true});
+          const coachGroups = groupAccessRight.filter(
+            _group => _group.accessRight === '60'
+          );
+          if (coachGroups.findIndex(_coachGroup => _coachGroup.groupId === groupId) > -1) {
+            return this.userAccessRightDetail$.next({
+              groupLevel: '60',
+              isCanManage: true,
+              isGroupAdmin: true
+            });
+          } else {
+            return this.userAccessRightDetail$.next({
+              groupLevel: '60',
+              isCanManage: false,
+              isGroupAdmin: false
+            });
           }
-          if (coachGroups.findIndex(_coachGroup => _coachGroup.groupId.slice(0, 5) === groupId.slice(0, 5) > -1))  {
-            return this.userAccessRightDetail$.next({ groupLevel: '60', isCanManage: false, isGroupAdmin: true});
-          }  
         }
         if (this.isGroupAdministrator$.value) {
-          const normalGroups = groupAccessRight.filter(_group => _group.accessRight === '80');
-          if (normalGroups.findIndex(_normalGroup => _normalGroup.groupId === groupId > -1)) {
-            return this.userAccessRightDetail$.next({ groupLevel: '80', isCanManage: true, isGroupAdmin: true});
-          }      
-          if (normalGroups.findIndex(_normalGroup => _normalGroup.groupId.slice(0, 5) === groupId.slice(0, 5) > -1))  {
-            return this.userAccessRightDetail$.next({ groupLevel: '80', isCanManage: false, isGroupAdmin: true});
-          }        
+          const normalGroups = groupAccessRight.filter(
+            _group => _group.accessRight === '80'
+          );
+          if (
+            normalGroups.findIndex(
+              _normalGroup => _normalGroup.groupId === groupId > -1
+            )
+          ) {
+            return this.userAccessRightDetail$.next({
+              groupLevel: '80',
+              isCanManage: true,
+              isGroupAdmin: true
+            });
+          }
+          if (
+            normalGroups.findIndex(
+              _normalGroup =>
+                _normalGroup.groupId.slice(0, 5) === groupId.slice(0, 5)
+            ) > -1
+          ) {
+            return this.userAccessRightDetail$.next({
+              groupLevel: '80',
+              isCanManage: false,
+              isGroupAdmin: true
+            });
+          }
         }
-        return this.userAccessRightDetail$.next({ groupLevel: 'none', isCanManage: false, isGroupAdmin: false});  
+        return this.userAccessRightDetail$.next({
+          groupLevel: 'none',
+          isCanManage: false,
+          isGroupAdmin: false
+        });
       }
     });
   }
@@ -168,7 +251,7 @@ export class UserInfoService {
             info: { groupAccessRight }
           } = res[0];
           const {
-            info: { nameIcon, name }
+            info: { nameIcon, name, nameId }
           } = res[1];
           this.initialUserInfo$.next({
             isInitial: true,
@@ -177,6 +260,7 @@ export class UserInfoService {
           if (nameIcon && name) {
             this.userName$.next(name);
             this.userIcon$.next(nameIcon);
+            this.userId$.next(nameId);
           }
 
           if (

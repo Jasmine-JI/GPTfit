@@ -188,6 +188,7 @@
 .header-user-photo {
   width: 36px;
   height: 36px;
+  min-height: 0;
   border-radius: 50%
 }
 .header-nav-item {
