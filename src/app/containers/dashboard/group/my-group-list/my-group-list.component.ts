@@ -28,6 +28,7 @@ export class MyGroupListComponent implements OnInit {
   selectedValue = '';
   token: string;
   isEmpty = false;
+  isLoading = false;
   @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild('sortTable') sortTable: MatSort;
   @ViewChild('filter') filter: ElementRef;
@@ -81,6 +82,7 @@ export class MyGroupListComponent implements OnInit {
     });
   }
   getLists() {
+    this.isLoading = true;
     const body = {
       token: this.token,
       category: '2',
@@ -90,6 +92,7 @@ export class MyGroupListComponent implements OnInit {
       pageCounts: this.currentPage && this.currentPage.pageSize.toString() || '10'
     };
     this.groupService.fetchGroupList(body).subscribe(res => {
+      this.isLoading = false;
       this.logSource.data = res.info.groupList.filter(_group => _group.groupStatus !== 4);
       this.totalCount = res.info.totalCounts;
       if (this.logSource.data.length === 0) {

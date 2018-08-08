@@ -28,6 +28,7 @@ export class DeviceLogComponent implements OnInit {
   currentSort: Sort;
   infoOptions: any;
   selectedValue = '';
+  isLoading = false;
 
   @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild('sortTable') sortTable: MatSort;
@@ -85,6 +86,7 @@ export class DeviceLogComponent implements OnInit {
     this.getLists();
   }
   getLists() {
+    this.isLoading = true;
     let params = new HttpParams();
     const pageNumber = (this.currentPage.pageIndex + 1).toString();
     const pageSize = this.currentPage.pageSize.toString();
@@ -93,6 +95,7 @@ export class DeviceLogComponent implements OnInit {
     params = params.set('pageSize', pageSize);
     params = params.set('sort', sort);
     this.deviceLogservice.fetchLists(params).subscribe(res => {
+      this.isLoading = false;
       this.logSource.data = res.datas;
       this.totalCount = res.meta.pageCount;
     });

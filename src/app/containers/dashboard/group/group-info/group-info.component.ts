@@ -35,6 +35,7 @@ export class GroupInfoComponent implements OnInit {
     isSystemMaintainer: false
   };
   visitorDetail: any;
+  isLoading = false;
   constructor(
     private route: ActivatedRoute,
     private groupService: GroupService,
@@ -114,6 +115,7 @@ export class GroupInfoComponent implements OnInit {
   }
 
   getGroupMemberList(_type) {
+    this.isLoading = true;
     const body = {
       token: this.token,
       groupId: this.groupId,
@@ -121,6 +123,7 @@ export class GroupInfoComponent implements OnInit {
       infoType: _type
     };
     this.groupService.fetchGroupMemberList(body).subscribe(res => {
+      this.isLoading = false;
       if (res.resultCode === 200) {
         const {
           info: { groupMemberInfo, subGroupInfo }

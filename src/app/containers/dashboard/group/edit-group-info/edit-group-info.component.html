@@ -120,181 +120,209 @@
       <div>
         <mat-tab-group (selectChange)="changeGroupInfo($event)" class="ala-tab-group">
           <mat-tab label="子群組資訊"  *ngIf="groupLevel && groupLevel !== '80'">
-            <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">品牌</label>
+            <ng-container *ngIf="!isLoading">
+              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">品牌</label>
 
-            <div style="margin-bottom: 15px">
-              <ng-container  *ngFor="let subBrandItem of subBrandInfo">
-                <app-member-capsule
-                  [role]="role"
-                  [isSubGroupInfo]="true"
-                  [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer"
-                  [title]="subBrandItem?.groupName"
-                  [memberInfo]="subBrandItem"
-                  [name]="subBrandItem && subBrandItem?.groupName"
-                  [icon]="subBrandItem?.groupIcon"
-                  [groupId]="subBrandItem?.groupId"
-                  [groupLevel]="groupLevel"
-                >
-                </app-member-capsule>
-              </ng-container>
-            </div>
-
-            <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">分店</label>
-            <div style="margin-bottom: 15px">
-              <ng-container  *ngFor="let subBranchItem of subBranchInfo">
-                <app-member-capsule
-                  [role]="role"
-                  [isSubGroupInfo]="true"
-                  [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator"
-                  [title]="subBranchItem?.groupName"
-                  [memberInfo]="subBranchItem"
-                  [name]="subBranchItem && subBranchItem?.groupName"
-                  [icon]="subBranchItem?.groupIcon"
-                  [groupId]="subBranchItem?.groupId"
-                  [groupLevel]="groupLevel"
-                  (onRemoveGroup)="handleRemoveGroup($event, 2)"
-                >
-                </app-member-capsule>
-              </ng-container>
-            </div>
-
-            <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">教練課</label>
-            <div style="margin-bottom: 15px">
-              <ng-container  *ngFor="let subCoachItem of subCoachInfo">
-                <app-member-capsule
-                  [role]="role"
-                  [isSubGroupInfo]="true"
-                  [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator"
-                  [title]="subCoachItem?.groupName"
-                  [memberInfo]="subCoachItem"
-                  [name]="subCoachItem && subCoachItem?.groupName"
-                  [icon]="subCoachItem?.groupIcon"
-                  [groupId]="subCoachItem?.groupId"
-                  [groupLevel]="groupLevel"
-                  (onRemoveGroup)="handleRemoveGroup($event, 3)"
-                >
-                </app-member-capsule>
-              </ng-container>
-            </div>
-          </mat-tab>
-          <mat-tab label="管理員資訊">
-            <ng-container *ngIf="groupLevel && groupLevel !== '80'">
-              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">品牌層管理員</label>
               <div style="margin-bottom: 15px">
-                <ng-container  *ngFor="let brandAdmItem of brandAdministrators">
+                <ng-container  *ngFor="let subBrandItem of subBrandInfo">
                   <app-member-capsule
                     [role]="role"
-                    [isAdminInfo]="true"
+                    [isSubGroupInfo]="true"
                     [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer"
-                    [title]="brandAdmItem?.memberName"
-                    [memberInfo]="brandAdmItem"
-                    [name]="brandAdmItem && brandAdmItem?.memberName"
-                    [icon]="brandAdmItem?.memberIcon"
-                    [groupId]="brandAdmItem?.groupId"
-                    [userId]="brandAdmItem?.memberId"
-                    (onRemoveAdmin)="handleRemoveAdmin($event, 1)"
+                    [title]="subBrandItem?.groupName"
+                    [memberInfo]="subBrandItem"
+                    [name]="subBrandItem && subBrandItem?.groupName"
+                    [icon]="subBrandItem?.groupIcon"
+                    [groupId]="subBrandItem?.groupId"
+                    [groupLevel]="groupLevel"
                   >
                   </app-member-capsule>
                 </ng-container>
               </div>
 
-              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">分店層管理員</label>
+              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">分店</label>
               <div style="margin-bottom: 15px">
-                <ng-container  *ngFor="let branchAdmItem of branchAdministrators">
+                <ng-container  *ngFor="let subBranchItem of subBranchInfo">
                   <app-member-capsule
                     [role]="role"
-                    [isAdminInfo]="true"
+                    [isSubGroupInfo]="true"
                     [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator"
-                    [title]="branchAdmItem?.memberName"
-                    [memberInfo]="branchAdmItem"
-                    [name]="branchAdmItem && branchAdmItem?.memberName"
-                    [icon]="branchAdmItem?.memberIcon"
-                    [groupId]="branchAdmItem?.groupId"
-                    [userId]="branchAdmItem?.memberId"
-                    (onRemoveAdmin)="handleRemoveAdmin($event, 2)"
+                    [title]="subBranchItem?.groupName"
+                    [memberInfo]="subBranchItem"
+                    [name]="subBranchItem && subBranchItem?.groupName"
+                    [icon]="subBranchItem?.groupIcon"
+                    [groupId]="subBranchItem?.groupId"
+                    [groupLevel]="groupLevel"
+                    (onRemoveGroup)="handleRemoveGroup($event, 2)"
                   >
                   </app-member-capsule>
                 </ng-container>
               </div>
 
-              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">教練課管理員</label>
+              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">教練課</label>
               <div style="margin-bottom: 15px">
-                <ng-container  *ngFor="let coachAdmItem of coachAdministrators">
+                <ng-container  *ngFor="let subCoachItem of subCoachInfo">
                   <app-member-capsule
                     [role]="role"
-                    [isAdminInfo]="true"
+                    [isSubGroupInfo]="true"
                     [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator"
-                    [title]="coachAdmItem?.memberName"
-                    [memberInfo]="coachAdmItem"
-                    [name]="coachAdmItem && coachAdmItem?.memberName"
-                    [icon]="coachAdmItem?.memberIcon"
-                    [groupId]="coachAdmItem?.groupId"
-                    [userId]="coachAdmItem?.memberId"
-                    (onRemoveAdmin)="handleRemoveAdmin($event, 3)"
+                    [title]="subCoachItem?.groupName"
+                    [memberInfo]="subCoachItem"
+                    [name]="subCoachItem && subCoachItem?.groupName"
+                    [icon]="subCoachItem?.groupIcon"
+                    [groupId]="subCoachItem?.groupId"
+                    [groupLevel]="groupLevel"
+                    (onRemoveGroup)="handleRemoveGroup($event, 3)"
                   >
                   </app-member-capsule>
                 </ng-container>
               </div>
             </ng-container>
-            <ng-container *ngIf="groupLevel && groupLevel === '80'">
-              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">管理員</label>
-              <div style="margin-bottom: 15px" >
-                <ng-container  *ngFor="let item of groupInfos">
+            <div style="display:flex;justify-content: center;align-items: center;height:100%"
+              *ngIf="isLoading"
+            >
+              <mat-spinner></mat-spinner>
+            </div>
+          </mat-tab>
+          <mat-tab label="管理員資訊">
+            <ng-container *ngIf="!isLoading">
+              <ng-container *ngIf="groupLevel && groupLevel !== '80'">
+                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">品牌層管理員</label>
+                <div style="margin-bottom: 15px">
+                  <ng-container  *ngFor="let brandAdmItem of brandAdministrators">
+                    <app-member-capsule
+                      [role]="role"
+                      [isAdminInfo]="true"
+                      [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer"
+                      [title]="brandAdmItem?.memberName"
+                      [memberInfo]="brandAdmItem"
+                      [name]="brandAdmItem && brandAdmItem?.memberName"
+                      [icon]="brandAdmItem?.memberIcon"
+                      [groupId]="brandAdmItem?.groupId"
+                      [userId]="brandAdmItem?.memberId"
+                      (onRemoveAdmin)="handleRemoveAdmin($event, 1)"
+                    >
+                    </app-member-capsule>
+                  </ng-container>
+                </div>
+
+                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">分店層管理員</label>
+                <div style="margin-bottom: 15px">
+                  <ng-container  *ngFor="let branchAdmItem of branchAdministrators">
+                    <app-member-capsule
+                      [role]="role"
+                      [isAdminInfo]="true"
+                      [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator"
+                      [title]="branchAdmItem?.memberName"
+                      [memberInfo]="branchAdmItem"
+                      [name]="branchAdmItem && branchAdmItem?.memberName"
+                      [icon]="branchAdmItem?.memberIcon"
+                      [groupId]="branchAdmItem?.groupId"
+                      [userId]="branchAdmItem?.memberId"
+                      (onRemoveAdmin)="handleRemoveAdmin($event, 2)"
+                    >
+                    </app-member-capsule>
+                  </ng-container>
+                </div>
+
+                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">教練課管理員</label>
+                <div style="margin-bottom: 15px">
+                  <ng-container  *ngFor="let coachAdmItem of coachAdministrators">
+                    <app-member-capsule
+                      [role]="role"
+                      [isAdminInfo]="true"
+                      [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator"
+                      [title]="coachAdmItem?.memberName"
+                      [memberInfo]="coachAdmItem"
+                      [name]="coachAdmItem && coachAdmItem?.memberName"
+                      [icon]="coachAdmItem?.memberIcon"
+                      [groupId]="coachAdmItem?.groupId"
+                      [userId]="coachAdmItem?.memberId"
+                      (onRemoveAdmin)="handleRemoveAdmin($event, 3)"
+                    >
+                    </app-member-capsule>
+                  </ng-container>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="groupLevel && groupLevel === '80'">
+                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">管理員</label>
+                <div style="margin-bottom: 15px" >
+                  <ng-container  *ngFor="let item of groupInfos">
+                    <app-member-capsule
+                      [role]="role"
+                      [isAdminInfo]="true"
+                      [title]="item?.memberName"
+                      [memberInfo]="item"
+                      [name]="item && item?.memberName"
+                      [icon]="item?.memberIcon"
+                    >
+                    </app-member-capsule>
+                  </ng-container>
+                </div>
+              </ng-container>
+            </ng-container>
+            <div style="display:flex;justify-content: center;align-items: center;height:100%"
+              *ngIf="isLoading"
+            >
+              <mat-spinner></mat-spinner>
+            </div>
+          </mat-tab>
+          <mat-tab label="一般成員資訊">
+            <ng-container *ngIf="!isLoading">
+              <ng-container  *ngFor="let item of normalMemberInfos">
+                <div style="margin-bottom: 15px;display:inline-block">
                   <app-member-capsule
                     [role]="role"
-                    [isAdminInfo]="true"
+                    [isNormalMemberInfo]="true"
+                    [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper
+                    || role?.isSystemMaintainer || role?.isBrandAdministrator
+                    || role?.isBranchAdministrator || role?.isCoach"
                     [title]="item?.memberName"
                     [memberInfo]="item"
                     [name]="item && item?.memberName"
                     [icon]="item?.memberIcon"
+                    [groupId]="item?.groupId"
+                    [userId]="item?.memberId"
+                    [groupLevel]="groupLevel"
+                    (onAssignAdmin)="handleAssignAdmin($event)"
+                    (onRemoveAdmin)="handleRemoveAdmin($event, 4)"
                   >
                   </app-member-capsule>
-                </ng-container>
-              </div>
+                </div>
+              </ng-container>
             </ng-container>
-          </mat-tab>
-          <mat-tab label="一般成員資訊">
-            <ng-container  *ngFor="let item of normalMemberInfos">
-              <div style="margin-bottom: 15px;display:inline-block">
-                <app-member-capsule
-                  [role]="role"
-                  [isNormalMemberInfo]="true"
-                  [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper
-                  || role?.isSystemMaintainer || role?.isBrandAdministrator
-                  || role?.isBranchAdministrator || role?.isCoach"
-                  [title]="item?.memberName"
-                  [memberInfo]="item"
-                  [name]="item && item?.memberName"
-                  [icon]="item?.memberIcon"
-                  [groupId]="item?.groupId"
-                  [userId]="item?.memberId"
-                  [groupLevel]="groupLevel"
-                  (onAssignAdmin)="handleAssignAdmin($event)"
-                  (onRemoveAdmin)="handleRemoveAdmin($event, 4)"
-                >
-                </app-member-capsule>
-              </div>
-            </ng-container>
+            <div style="display:flex;justify-content: center;align-items: center;height:100%"
+              *ngIf="isLoading"
+            >
+              <mat-spinner></mat-spinner>
+            </div>
           </mat-tab>
           <mat-tab label="待加入成員">
-            <ng-container  *ngFor="let item of groupInfos">
-              <div style="margin-bottom: 15px;display:inline-block">
-                <app-member-capsule
-                  [role]="role"
-                  [isWaittingMemberInfo]="true"
-                  [isHadMenu]="visitorDetail?.isCanManage"
-                  [title]="item?.memberName"
-                  [memberInfo]="item"
-                  [name]="item && item?.memberName"
-                  [icon]="item?.memberIcon"
-                  [groupId]="item?.groupId"
-                  [userId]="item?.memberId"
-                  [groupLevel]="groupLevel"
-                  (onWaittingMemberInfoChange)="handleWaittingMemberInfo($event)"
-                >
-                </app-member-capsule>
-              </div>
+            <ng-container *ngIf="!isLoading">
+              <ng-container  *ngFor="let item of groupInfos">
+                <div style="margin-bottom: 15px;display:inline-block">
+                  <app-member-capsule
+                    [role]="role"
+                    [isWaittingMemberInfo]="true"
+                    [isHadMenu]="visitorDetail?.isCanManage"
+                    [title]="item?.memberName"
+                    [memberInfo]="item"
+                    [name]="item && item?.memberName"
+                    [icon]="item?.memberIcon"
+                    [groupId]="item?.groupId"
+                    [userId]="item?.memberId"
+                    [groupLevel]="groupLevel"
+                    (onWaittingMemberInfoChange)="handleWaittingMemberInfo($event)"
+                  >
+                  </app-member-capsule>
+                </div>
+              </ng-container>
             </ng-container>
+            <div style="display:flex;justify-content: center;align-items: center;height:100%"
+              *ngIf="isLoading"
+            >
+              <mat-spinner></mat-spinner>
+            </div>
           </mat-tab>
         </mat-tab-group>
       </div>
