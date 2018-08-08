@@ -32,6 +32,7 @@ export class AllGroupListComponent implements OnInit {
   currentSort: Sort;
   infoOptions: any;
   selectedValue = '';
+  isLoading = false;
   @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild('sortTable') sortTable: MatSort;
   @ViewChild('filter') filter: ElementRef;
@@ -53,6 +54,7 @@ export class AllGroupListComponent implements OnInit {
   }
 
   getLists() {
+    this.isLoading = true;
     const body = {
       token: this.token,
       category: '1',
@@ -66,6 +68,7 @@ export class AllGroupListComponent implements OnInit {
       .subscribe(res => {
         this.logSource.data = res.info.groupList;
         this.totalCount = res.info.totalCounts;
+        this.isLoading = false;
       });
   }
   goDetail(groupId) {

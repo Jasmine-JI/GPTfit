@@ -31,7 +31,6 @@
 >
   <mat-icon>search</mat-icon>
 </button>
-
 <mat-table [dataSource]="logSource" matSort #sortTable="matSort">
   <ng-container matColumnDef="id">
     <mat-header-cell *matHeaderCellDef>群組ID</mat-header-cell>
@@ -50,7 +49,10 @@
   <mat-header-row *matHeaderRowDef="['id', 'info', 'time']"></mat-header-row>
   <mat-row *matRowDef="let logRow; columns: ['id', 'info', 'time']" (click)="goDetail(logRow.groupId)">
   </mat-row>
-
 </mat-table>
+<div class="ala-loading-shade" *ngIf="isLoading">
+  <mat-spinner></mat-spinner>
+</div>
+
 <mat-paginator #paginator [length]="totalCount" [pageIndex]="0" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]">
 </mat-paginator>

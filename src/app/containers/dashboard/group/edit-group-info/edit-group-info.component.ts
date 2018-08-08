@@ -66,6 +66,7 @@ export class EditGroupInfoComponent implements OnInit {
   acceptFileExtensions = ['JPG', 'JPEG', 'GIF', 'PNG'];
   finalImageLink: string;
   visitorDetail: any;
+  isLoading = false;
   get groupName() {
     return this.form.get('groupName');
   }
@@ -220,6 +221,7 @@ export class EditGroupInfoComponent implements OnInit {
     });
   }
   getGroupMemberList(_type) {
+    this.isLoading = true;
     const body = {
       token: this.token,
       groupId: this.groupId,
@@ -227,6 +229,7 @@ export class EditGroupInfoComponent implements OnInit {
       infoType: _type
     };
     this.groupService.fetchGroupMemberList(body).subscribe(res => {
+      this.isLoading = false;
       if (res.resultCode === 200) {
         const {
           info: { groupMemberInfo, subGroupInfo }
