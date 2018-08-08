@@ -112,7 +112,6 @@
                 <li class="ala-sidenav-menu-item"
                   (click)="chooseItem(10, sideNav)"
                   [class.ala-sidenav-menu-item__active]="target === 10"
-                  *ngIf="isBrandAdministrator || isBranchAdministrator || isBroadcastProducer || isGroupAdministrator || isGeneralMember"
                   [routerLink]="['/dashboard/my-group-list']"
                 >
                   我的群組
@@ -160,7 +159,7 @@
           </div> -->
           <div class="dropdown">
             <div class="header-nav-item" id="dropdownMenu3" data-toggle="dropdown" aria-haspopup="true"
-              aria-expanded="false" style="background-color: transparent;border-color: transparent">
+              aria-expanded="false">
               <img *ngIf="userPhoto" [src]="(userPhoto | safeHtml)" class="header-user-photo">
               <img *ngIf="!userPhoto" src="/assets/images/user.png" class="header-user-photo">
             </div>

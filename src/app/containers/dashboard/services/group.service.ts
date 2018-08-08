@@ -31,6 +31,9 @@ export class GroupService {
   updateJoinStatus(body) {
     return this.http.post<any>('/api/v1/center/updateJoinStatus', body);
   }
+  changeGroupStatus(body) {
+    return this.http.post<any>('/api/v1/center/changeGroupStatus', body);
+  }
   editGroupMember(body) {
     return this.http.post<any>('/api/v1/center/editGroupMember', body);
   }

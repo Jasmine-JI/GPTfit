@@ -48,14 +48,15 @@ export class InnerSelectorWinComponent implements OnInit {
     const body = {
       targetRight: this.adminLevel,
       userIds
-    }
+    };
     this.groupService.updateInnerAdmin(body).subscribe((res) => {
       if (res.resultCode === 200) {
         this.data.onConfirm();
         this.dialog.closeAll();
-      } 
+      } else {
+        this.router.navigateByUrl(`/404`);
+      }
     });
-    
   }
   handleBtnColor(_areaType, e) {
     e.stopPropagation();
@@ -73,8 +74,8 @@ export class InnerSelectorWinComponent implements OnInit {
     if (this.chooseIndex > -1) {
       const chooseData = this.fakeDatas[this.chooseIndex];
       this.adminLists.push(chooseData);
-      this.fakeDatas.splice(this.chooseIndex, 1); 
-      this.chooseIndex = -1;     
+      this.fakeDatas.splice(this.chooseIndex, 1);
+      this.chooseIndex = -1;
     }
   }
   removeUser() {
@@ -82,7 +83,7 @@ export class InnerSelectorWinComponent implements OnInit {
       const chooseData = this.adminLists[this.chooseExistIndex];
       this.fakeDatas.push(chooseData);
       this.adminLists.splice(this.chooseExistIndex, 1);
-      this.chooseExistIndex = -1;      
+      this.chooseExistIndex = -1;
     }
   }
   handleGroupOptions() {

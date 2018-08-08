@@ -3,7 +3,8 @@ import {
   OnInit,
   ViewChild,
   HostListener,
-  Inject
+  Inject,
+  ViewEncapsulation
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DeviceLogService } from '../../services/device-log.service';
@@ -36,7 +37,8 @@ import { WINDOW } from '@shared/services/window.service';
 @Component({
   selector: 'app-device-log-detail',
   templateUrl: './device-log-detail.component.html',
-  styleUrls: ['./device-log-detail.component.css']
+  styleUrls: ['./device-log-detail.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class DeviceLogDetailComponent implements OnInit {
   userId: string;
@@ -165,7 +167,8 @@ export class DeviceLogDetailComponent implements OnInit {
         this.isLoadingResults = false;
         // Catch if the API has reached its rate limit. Return empty data.
         this.isRateLimitReached = true;
-      });
+      }
+    );
   }
 
   logStartDateChange($event: MatDatepickerInputEvent<moment.Moment>) {

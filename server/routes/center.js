@@ -3,6 +3,7 @@ var async = require('async')
 var router = express.Router();
 var { getUserId } = require('../models/user_id');
 var { getInnerAdmin } = require('../models/exist_innerAdmin');
+var { getAccessRight } = require('../models/get_accessRight');
 
 var moment = require('moment');
 
@@ -123,35 +124,44 @@ router.post('/innerAdmin', function (req, res, next) {
       userIds
     }
   } = req;
-
-  getInnerAdmin(targetRight).then((ids) => {
-    let normalIds = [];
-    if (ids.length > 0) {
-      normalIds = ids.filter(_id => userIds.findIndex(_userId => +_userId === _id.member_id) === -1);
-    }
-    normalQuerys = normalIds.map(_id => `update ?? set access_right = 90 where member_id = ${_id.member_id};`);
-    let sql = userIds.map(_id => `update ?? set access_right = ${con.escape(targetRight)} where member_id = ${_id};`);
-    sql = sql.concat(normalQuerys);
-    const processer = function (query) {
-      con.query(query, ['group_member_info'], function (err, rows) {
-        if (err) {
-          console.log(err);
-          return res.status(500).send({
-            errorMessage: err.sqlMessage
+  const token = req.headers['authorization'];
+  return getAccessRight(token, targetRight).then((isAllow) => {
+    if (isAllow) {
+      return getInnerAdmin(targetRight).then((ids) => {
+        let normalIds = [];
+        if (ids.length > 0) {
+          normalIds = ids.filter(_id => userIds.findIndex(_userId => +_userId === _id.member_id) === -1);
+        }
+        normalQuerys = normalIds.map(_id => `update ?? set access_right = 90 where member_id = ${_id.member_id};`);
+        let sql = userIds.map(_id => `update ?? set access_right = ${con.escape(targetRight)} where member_id = ${_id};`);
+        sql = sql.concat(normalQuerys);
+        const processer = function (query) {
+          con.query(query, ['group_member_info'], function (err, rows) {
+            if (err) {
+              console.log(err);
+              return res.status(500).send({
+                errorMessage: err.sqlMessage
+              });
+            }
           });
         }
-      });
+        res.json({
+            resultCode: 200,
+            rtnMsg: 'success'
+        });
+        async.eachLimit(sql, 10, processer, function (error, result){
+          console.log('!!!!!');
+          console.log('error: ', error);
+          console.log('result: ', result);
+        });
+      }).catch(error => console.log(error));
     }
-    res.json({
-        resultCode: 200,
-        rtnMsg: 'success'
+    return res.json({
+      resultCode: 403,
+      rtnMsg: '你沒權限~'
     });
-    async.eachLimit(sql, 10, processer, function (error, result){
-      console.log('!!!!!');
-      console.log('error: ', error);
-      console.log('result: ', result);
-    });
-  }).catch(error => console.log(error));
+  });
+
 });
 
 router.get('/innerAdmin', function (req, res, next) {

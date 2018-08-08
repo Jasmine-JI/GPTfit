@@ -32,7 +32,7 @@
     <mat-cell *matCellDef="let row">{{ row.time }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="counts">
-    <mat-header-cell *matHeaderCellDef>Counts</mat-header-cell>
+    <mat-header-cell *matHeaderCellDef>筆數</mat-header-cell>
     <mat-cell *matCellDef="let row">{{ row.number }}</mat-cell>
   </ng-container>
   <mat-header-row *matHeaderRowDef="['info', 'time', 'counts']"></mat-header-row>
