@@ -141,17 +141,26 @@ export class MemberCapsuleComponent implements OnInit {
       token: this.token,
       groupId: this.groupId,
       userId: this.userId,
-      accessRight: '60'
+      accessRight: '80'
     };
-    this.dialog.open(RightSettingWinComponent, {
-      hasBackdrop: true,
-      data: {
-        name: this.name,
-        groupId: this.groupId,
-        userId: this.userId,
-        groupLevel: this.groupLevel
-      }
-    });
+    if (this.groupLevel === '80') {
+      this.groupService.editGroupMember(body).subscribe(res => {
+        if (res.resultCode === 200) {
+          this.onAssignAdmin.emit(this.userId);
+          this.dialog.closeAll();
+        }
+      });
+    } else {
+      this.dialog.open(RightSettingWinComponent, {
+        hasBackdrop: true,
+        data: {
+          name: this.name,
+          groupId: this.groupId,
+          userId: this.userId,
+          groupLevel: this.groupLevel
+        }
+      });
+    }
   }
   goToManage() {
     this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}/edit`);

@@ -1,6 +1,10 @@
 <div class="row">
   <div class="col-4">
-    <img *ngIf="groupImg" style="width: 100%;max-width:250px" [src]="(groupImg | safeHtml)">
+    <img *ngIf="groupImg"
+      style="width: 100%;max-width:250px"
+      [src]="(groupImg | safeHtml)"
+      [class.image-is--default]="groupImg === '/assets/images/group-default.svg'"
+    >
   </div>
   <div class="col-8">
     <div class="d-flex justify-content-between" style="margin-bottom: 15px">
