@@ -85,7 +85,7 @@ export class GroupInfoComponent implements OnInit {
       } else {
         this.joinStatus = 5;
       }
-      this.groupImg = this.utils.buildBase64ImgString(groupIcon);
+      this.groupImg = groupIcon && groupIcon.length > 0 ? this.utils.buildBase64ImgString(groupIcon) : '/assets/images/group-default.svg';
       this.group_id = this.utils.displayGroupId(groupId);
       this.groupLevel = this.utils.displayGroupLevel(groupId);
       if (this.groupLevel === '80') {

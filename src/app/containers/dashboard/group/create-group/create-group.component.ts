@@ -281,7 +281,7 @@ export class CreateGroupComponent implements OnInit {
         groupId: this.groupId,
         levelDesc: groupDesc,
         groupStatus,
-        levelIcon: this.finalImageLink,
+        levelIcon: this.finalImageLink || '',
         levelName: '',
         levelType: null
       };

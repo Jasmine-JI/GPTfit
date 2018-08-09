@@ -281,9 +281,7 @@
                   <app-member-capsule
                     [role]="role"
                     [isNormalMemberInfo]="true"
-                    [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper
-                    || role?.isSystemMaintainer || role?.isBrandAdministrator
-                    || role?.isBranchAdministrator || role?.isCoach"
+                    [isHadMenu]="visitorDetail?.isCanManage"
                     [title]="item?.memberName"
                     [memberInfo]="item"
                     [name]="item && item?.memberName"
