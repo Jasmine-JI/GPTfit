@@ -32,6 +32,8 @@ export class GroupSearchComponent implements OnInit {
   currentSort: Sort;
   infoOptions: any;
   selectedValue = '';
+  isEmpty = true;
+  isLoading = false;
   @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild('sortTable') sortTable: MatSort;
   @ViewChild('filter') filter: ElementRef;
@@ -56,12 +58,17 @@ export class GroupSearchComponent implements OnInit {
       pageCounts: '10'
     };
     if (this.searchWords.length > 0) {
-      this.groupService
-        .fetchGroupList(body)
-        .subscribe(res => {
-          this.logSource.data = res.info.groupList;
-          this.totalCount = res.info.totalCounts;
-        });
+      this.isLoading = true;
+      this.groupService.fetchGroupList(body).subscribe(res => {
+        this.isLoading = false;
+        this.logSource.data = res.info.groupList;
+        this.totalCount = res.info.totalCounts;
+        if (this.logSource.data.length === 0) {
+          this.isEmpty = true;
+        } else {
+          this.isEmpty = false;
+        }
+      });
     }
   }
   goDetail(groupId) {

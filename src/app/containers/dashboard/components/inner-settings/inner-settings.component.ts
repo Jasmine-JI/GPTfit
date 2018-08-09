@@ -21,6 +21,7 @@ export class InnerSettingsComponent implements OnInit {
     isSystemMaintainer: false,
     isMarketingDeveloper: false
   };
+  isLoading = false;
   userId: number;
   constructor(
     private dialog: MatDialog,
@@ -29,11 +30,7 @@ export class InnerSettingsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.groupService.getInnerAdmin().subscribe(_result => {
-      this.systemDevelopers = _result.filter(_res => _res.accessRight === '10');
-      this.systemMaintainers = _result.filter(_res => _res.accessRight === '20');
-      this.marketingDevelopers = _result.filter(_res => _res.accessRight === '29');
-    });
+    this.handleConfirm();
     this.userInfoService.getSupervisorStatus().subscribe(res => {
       this.role.isSupervisor = res;
       console.log('%c this.isSupervisor', 'color: #ccc', res);
@@ -53,7 +50,9 @@ export class InnerSettingsComponent implements OnInit {
     this.userInfoService.getUserId().subscribe(res => this.userId = res);
   }
   handleConfirm() {
+    this.isLoading = true;
     this.groupService.getInnerAdmin().subscribe(_result => {
+      this.isLoading = false;
       const isCanUse = _result.findIndex(_res => _res.userId === this.userId) > -1;
       if (isCanUse) {
         this.systemDevelopers = _result.filter(_res => _res.accessRight === '10');

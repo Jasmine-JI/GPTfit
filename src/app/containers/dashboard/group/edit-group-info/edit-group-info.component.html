@@ -30,6 +30,7 @@
             title="申請解散品牌"
             *ngIf="joinStatus === 2 && groupLevel && groupLevel === '30' && visitorDetail?.isCanManage"
             (click)="$event.preventDefault()"
+            disabled
           >
             申請解散品牌
           </button>
@@ -72,6 +73,7 @@
             title="完成管理"
             *ngIf="visitorDetail?.isCanManage"
             type="submit"
+            [disabled]="isGroupDetailLoading"
           >
             完成管理
           </button>
@@ -87,6 +89,7 @@
             [content]="groupInfo?.groupName"
             [maxLength]="32"
             [remindText]="remindText"
+            [disabled]="isGroupDetailLoading"
             [invalidRemindText]="inValidText"
             [control]="form"
             [controlName]="formTextName"
@@ -96,7 +99,10 @@
         </div>
         <div class="ala-list__item">
           <label class="ala-form__label">狀態：</label>
-          <select class="form-field" formControlName="groupStatus">
+          <select class="form-field"
+            formControlName="groupStatus"
+            [attr.disabled]="isGroupDetailLoading ? '' : null"
+          >
             <option value="1" class="form-field-option">自由加入</option>
             <option value="2" class="form-field-option">審核制</option>
             <option value="3" class="form-field-option">隱藏群組</option>
@@ -110,6 +116,7 @@
               [content]="groupInfo?.groupDesc"
               [control]="form"
               [controlName]="formTextareaName"
+              [disabled]="isGroupDetailLoading"
               (onChange)="handleChangeTextarea($event)"
               [isInvalid]="(!groupDesc.valid && groupDesc.touched) || (f.submitted && groupDesc.hasError('required')) || (f.submitted && groupDesc.hasError('maxLength'))"
             >

@@ -2,6 +2,7 @@
   <div class="clearable" [formGroup]="control" >
     <div class="selected-flag"  (click)="openActive($event)"
       [class.selected-flag--invalid]="isCodeInvalid"
+      [class.selected-flag--disabled]="disabled"
     >
       {{ this.countryCode || '國家/地區' }}
       <i class="fa fa-caret-down async-caret"></i>
@@ -13,6 +14,7 @@
       (keyup)="handlePhoneChange($event)"
       style="width: calc(100% - 105px);text-overflow: ellipsis;"
       placeholder={{placeholder}}
+      [attr.disabled]="disabled ? '' : null"
       [class.form-control--invalid]="isPhoneInvalid"
     >
     <i class="clearable__clear" [class.show]="isClearIconShow" (click)="clear()">&times;</i>

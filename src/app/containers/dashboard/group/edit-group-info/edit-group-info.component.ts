@@ -67,6 +67,7 @@ export class EditGroupInfoComponent implements OnInit {
   finalImageLink: string;
   visitorDetail: any;
   isLoading = false;
+  isGroupDetailLoading = false;
   get groupName() {
     return this.form.get('groupName');
   }
@@ -138,7 +139,9 @@ export class EditGroupInfoComponent implements OnInit {
     const body = { token: this.token, groupId: this.groupId };
     let params = new HttpParams();
     params = params.set('groupId', this.groupId);
+    this.isGroupDetailLoading = true;
     this.groupService.fetchGroupListDetail(body).subscribe(res => {
+      this.isGroupDetailLoading = false;
       this.groupInfo = res.info;
       const {
         groupIcon,
@@ -342,7 +345,9 @@ export class EditGroupInfoComponent implements OnInit {
       };
       const groupService = this.groupService.editGroup(body1);
       const changeGroupStatus = this.groupService.changeGroupStatus(body2);
+      this.isGroupDetailLoading = true;
       forkJoin([groupService, changeGroupStatus]).subscribe(results => {
+        this.isGroupDetailLoading = false;
         if (results[0].resultCode === 200 && results[1].resultCode === 200) {
           this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}`);
         } else {

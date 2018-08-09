@@ -24,6 +24,7 @@ export class EventCalendarComponent implements OnInit {
   sessionMonth: string;
   events: any;
   todayStamp = Date.now() / 1000;
+  isLoading = false;
   constructor(
     private router: Router,
     private eventInfoService: EventInfoService,
@@ -93,7 +94,9 @@ export class EventCalendarComponent implements OnInit {
   getNote(month) {
     this.id = 1;
     const params = new HttpParams();
+    this.isLoading = true;
     this.eventInfoService.fetchEventInfo(params).subscribe(events => {
+      this.isLoading = false;
       this.events = events;
       if (this.days.length > 0) {
         this.events.map(_event => {

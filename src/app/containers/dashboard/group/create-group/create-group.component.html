@@ -41,6 +41,7 @@
           <button class="alatech-btn alatech-btn--default"
             title="完成"
             type="submit"
+            [disabled]="isEditing"
           >
             完成
           </button>
@@ -57,6 +58,7 @@
             [invalidRemindText]="inValidText"
             [control]="form"
             [controlName]="formTextName"
+            [disabled]="isEditing"
             [remindText]="remindText"
             [isInvalid]="(!groupName.valid && groupName.touched) || (f.submitted && groupName.hasError('required')) || (f.submitted && groupName.hasError('maxLength'))"
           >
@@ -79,6 +81,7 @@
             [remindText]="remindText"
             [invalidRemindText]="inValidText"
             [control]="form"
+            [disabled]="isEditing"
             [controlName]="formTextName"
             [isInvalid]="(!branchName.valid && branchName.touched) || (f.submitted && branchName.hasError('required')) || (f.submitted && branchName.hasError('maxLength'))"
           >
@@ -110,6 +113,7 @@
             [remindText]="remindText"
             [invalidRemindText]="inValidText"
             [control]="form"
+            [disabled]="isEditing"
             [controlName]="formTextName"
             [isInvalid]="(!coachLessonName.valid && coachLessonName.touched) || (f.submitted && coachLessonName.hasError('required')) || (f.submitted && coachLessonName.hasError('maxLength'))"
           >
@@ -117,7 +121,10 @@
         </div>
         <div class="ala-list__item">
           <label class="ala-form__label">狀態：</label>
-          <select class="form-field" formControlName="groupStatus">
+          <select class="form-field"
+            formControlName="groupStatus"
+            [attr.disabled]="isEditing ? '' : null"
+          >
             <option class="form-field-option" value="2">審核制</option>
             <option class="form-field-option" value="1">自由加入</option>
             <option class="form-field-option" value="3">隱藏群組</option>
@@ -130,6 +137,7 @@
               [maxLength]="textareaMaxLength"
               [content]="groupDesc?.value"
               [control]="form"
+              [disabled]="isEditing"
               [controlName]="formTextareaName"
               (onChange)="handleChangeTextarea($event)"
               [isInvalid]="(groupDesc.invalid && groupDesc?.touched) || (f.submitted && groupDesc.hasError('required')) || (f.submitted && groupDesc.hasError('maxLength'))"
