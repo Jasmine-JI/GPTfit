@@ -20,6 +20,7 @@
                 id="exampleInputEmail1"
                 class="form-control"
                 placeholder="電子信箱或手機號碼"
+                [attr.disabled]="isLogining ? '' : null"
                 [class.form-control--invalid]="(!form.controls['accountName'].valid && form.controls['accountName'].touched) || (f.submitted && form.get('accountName').hasError('required'))"
               >
               <div class="form__message form__message--placeholder" *ngIf="(!form.controls['accountName'].valid && form.controls['accountName'].touched) || (f.submitted && form.get('accountName').hasError('required'))">
@@ -34,6 +35,7 @@
                 class="form-control"
                 placeholder="密碼需區分大小寫並包含數字"
                 autocomplete="off"
+                [attr.disabled]="isLogining ? '' : null"
                 [class.form-control--invalid]="(!form.controls['password'].valid && form.controls['password'].touched) || (f.submitted && form.get('password').hasError('required'))"
               >
               <div class="form__message form__message--placeholder" *ngIf="(form.controls['password'].hasError('required') && form.controls['password'].touched) || (f.submitted && form.get('password').hasError('required'))">

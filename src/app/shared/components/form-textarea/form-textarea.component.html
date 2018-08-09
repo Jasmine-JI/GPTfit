@@ -4,6 +4,7 @@
     [placeholder]="placeholder"
     [className]="isInvalid ? invalidClassName : class_name"
     [formControlName]="controlName"
+    [attr.disabled]="disabled ? '' : null"
     (keyup)="handleChange($event)"
     [maxLength]="maxLength"
   >

@@ -19,6 +19,7 @@ export class EventManagementComponent implements OnInit {
 
   todayTimeStamp = Math.floor(Date.now() / 1000);
   isNotYetDone = false;
+  isLoading = false;
   constructor(
     private router: Router,
     private eventInfoService: EventInfoService,
@@ -28,7 +29,9 @@ export class EventManagementComponent implements OnInit {
   ngOnInit() {
     setLocalStorageObject('hostName', location.hostname);
     const params = new HttpParams();
+    this.isLoading = true;
     this.getEventInfo(params);
+    this.isLoading = false;
   }
   goEnroll(eventId, sessionId) {
     this.router.navigateByUrl(

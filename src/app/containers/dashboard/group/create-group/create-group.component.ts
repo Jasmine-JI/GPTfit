@@ -58,6 +58,7 @@ export class CreateGroupComponent implements OnInit {
   finalImageLink: string;
   maxFileSize = 524288;
   isUploading = false;
+  isEditing = false;
   reloadFileText = '重新上傳';
   chooseFileText = '選擇檔案';
   acceptFileExtensions = ['JPG', 'JPEG', 'GIF', 'PNG'];
@@ -143,8 +144,6 @@ export class CreateGroupComponent implements OnInit {
       token: this.token,
       groupId: this.groupId
     };
-    // let params = new HttpParams();
-    // params = params.set('groupId', this.groupId);
     if (this.createType !== 3) {
       this.groupService.fetchGroupListDetail(body).subscribe(res => {
         this.groupInfo = res.info;
@@ -291,7 +290,9 @@ export class CreateGroupComponent implements OnInit {
         const { branchName } = value;
         body.levelName = branchName;
         body.levelType = 4;
+        this.isEditing = true;
         this.groupService.createGroup(body).subscribe(res => {
+          this.isEditing = false;
           if (res.resultCode === 200) {
             this.router.navigateByUrl(
               `/dashboard/group-info/${this.groupId}/edit`
@@ -306,7 +307,9 @@ export class CreateGroupComponent implements OnInit {
         if (branchId !== this.groupId) {
           body.groupId = branchId;
         }
+        this.isEditing = true;
         this.groupService.createGroup(body).subscribe(res => {
+          this.isEditing = false;
           if (res.resultCode === 200) {
             this.router.navigateByUrl(
               `/dashboard/group-info/${this.groupId}/edit`
@@ -318,7 +321,9 @@ export class CreateGroupComponent implements OnInit {
         body.levelName = groupName;
         body.levelType = 6;
         body.groupId = '0-0-0-0-0-0';
+        this.isEditing = true;
         this.groupService.createGroup(body).subscribe(res => {
+          this.isEditing = false;
           if (res.resultCode === 200) {
             this.router.navigateByUrl('/dashboard/my-group-list');
           }
