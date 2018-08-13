@@ -124,6 +124,14 @@
                 >
                   所有群組列表
                 </li>
+                <li class="ala-sidenav-menu-item"
+                  (click)="chooseItem(12, sideNav)"
+                  [class.ala-sidenav-menu-item__active]="target === 12"
+                  *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper"
+                  [routerLink]="['/dashboard/create-brand-group']"
+                >
+                  建立品牌群組
+                </li>
             </mat-expansion-panel>
           </mat-accordion>
           <li class="ala-sidenav-item"

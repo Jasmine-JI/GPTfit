@@ -62,7 +62,7 @@ export class CreateGroupComponent implements OnInit {
   reloadFileText = '重新上傳';
   chooseFileText = '選擇檔案';
   acceptFileExtensions = ['JPG', 'JPEG', 'GIF', 'PNG'];
-  createType = 3; // 1為新建分店， 2為新建教練課，3為新建群組
+  createType = 3; // 1為新建分店， 2為新建教練課，3為新建群組，4為新建品牌
   brandName: string;
   get groupName() {
     return this.form.get('groupName');
@@ -108,9 +108,13 @@ export class CreateGroupComponent implements OnInit {
   }
   ngOnInit() {
     const queryStrings = this.utils.getUrlQueryStrings(location.search);
+    console.log(location);
     const { type } = queryStrings;
     if (type) {
       this.createType = +type;
+    }
+    if (location.pathname.indexOf('/dashboard/create-brand-group') > -1) {
+      this.createType = 4;
     }
     this.groupId = this.route.snapshot.paramMap.get('groupId');
 
@@ -144,7 +148,7 @@ export class CreateGroupComponent implements OnInit {
       token: this.token,
       groupId: this.groupId
     };
-    if (this.createType !== 3) {
+    if (this.createType !== 3 && this.createType !== 4) {
       this.groupService.fetchGroupListDetail(body).subscribe(res => {
         this.groupInfo = res.info;
         const { groupIcon, groupId, groupName, selfJoinStatus } = this.groupInfo;
@@ -316,10 +320,22 @@ export class CreateGroupComponent implements OnInit {
             );
           }
         });
-      } else {
+      } else if (this.createType === 3) {
         const { groupName } = value;
         body.levelName = groupName;
         body.levelType = 6;
+        body.groupId = '0-0-0-0-0-0';
+        this.isEditing = true;
+        this.groupService.createGroup(body).subscribe(res => {
+          this.isEditing = false;
+          if (res.resultCode === 200) {
+            this.router.navigateByUrl('/dashboard/my-group-list');
+          }
+        });
+      } else {
+        const { groupName } = value;
+        body.levelName = groupName;
+        body.levelType = 3;
         body.groupId = '0-0-0-0-0-0';
         this.isEditing = true;
         this.groupService.createGroup(body).subscribe(res => {
@@ -352,16 +368,26 @@ export class CreateGroupComponent implements OnInit {
   handleCancel(e) {
     e.preventDefault();
     let typeName = '';
-    const href =
-      this.createType === 3
-        ? '/dashboard/my-group-list'
-        : `/dashboard/group-info/${this.groupId}/edit`;
+    let href = '';
+    switch (this.createType) {
+      case 3:
+        href = '/dashboard/my-group-list';
+        break;
+      case 4:
+        href = '/dashboard/all-group-list';
+        break;
+      default:
+        href = `/dashboard/group-info/${this.groupId}/edit`;
+    }
+
     if (this.createType === 1) {
       typeName = '分店';
     } else if (this.createType === 2) {
       typeName = '教練課';
-    } else {
+    } else if (this.createType === 3) {
       typeName = '群組';
+    } else {
+      typeName = '分店';
     }
     this.dialog.open(MsgDialogComponent, {
       hasBackdrop: true,
