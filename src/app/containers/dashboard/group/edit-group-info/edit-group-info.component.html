@@ -58,14 +58,14 @@
           <button class="alatech-btn alatech-btn--default"
             title="新增分店"
             *ngIf="groupLevel && groupLevel === '30' && visitorDetail?.isCanManage"
-            (click)="goCreatePage(1)"
+            (click)="goCreatePage(1, $event)"
           >
             新增分店
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="新增教練課"
             *ngIf="groupLevel && (groupLevel === '30' || groupLevel === '40') && visitorDetail?.isCanManage"
-            (click)="goCreatePage(2)"
+            (click)="goCreatePage(2, $event)"
           >
             新增教練課
           </button>

@@ -29,6 +29,7 @@ export class GroupInfoComponent implements OnInit {
   subCoachInfo: any;
   branchAdministrators: any;
   coachAdministrators: any;
+  normalGroupAdministrators: any;
   role = {
     isSupervisor: false,
     isSystemDeveloper: false,
@@ -36,6 +37,7 @@ export class GroupInfoComponent implements OnInit {
   };
   visitorDetail: any;
   isLoading = false;
+  userId: number;
   constructor(
     private route: ActivatedRoute,
     private groupService: GroupService,
@@ -49,8 +51,8 @@ export class GroupInfoComponent implements OnInit {
 
     this.userInfoService.getUserAccessRightDetail().subscribe(res => {
       this.visitorDetail = res;
+      console.log('this.visitorDetail: ', this.visitorDetail);
     });
-
   }
   handleInit() {
     this.groupId = this.route.snapshot.paramMap.get('groupId');
@@ -59,9 +61,10 @@ export class GroupInfoComponent implements OnInit {
       token: this.token,
       groupId: this.groupId
     };
-    let params = new HttpParams();
-    params = params.set('groupId', this.groupId);
     this.userInfoService.getUserDetail(body, this.groupId);
+    this.userInfoService.getUserId().subscribe(res => {
+      this.userId = res;
+    });
     this.userInfoService.getSupervisorStatus().subscribe(res => {
       this.role.isSupervisor = res;
       console.log('%c this.isSupervisor', 'color: #0ca011', res);
@@ -76,7 +79,12 @@ export class GroupInfoComponent implements OnInit {
     });
     this.groupService.fetchGroupListDetail(body).subscribe(res => {
       this.groupInfo = res.info;
-      const { groupIcon, groupId, selfJoinStatus, groupStatus } = this.groupInfo;
+      const {
+        groupIcon,
+        groupId,
+        selfJoinStatus,
+        groupStatus
+      } = this.groupInfo;
       if (groupStatus === 4) {
         this.router.navigateByUrl(`/404`);
       }
@@ -85,7 +93,10 @@ export class GroupInfoComponent implements OnInit {
       } else {
         this.joinStatus = 5;
       }
-      this.groupImg = groupIcon && groupIcon.length > 0 ? this.utils.buildBase64ImgString(groupIcon) : '/assets/images/group-default.svg';
+      this.groupImg =
+        groupIcon && groupIcon.length > 0
+          ? this.utils.buildBase64ImgString(groupIcon)
+          : '/assets/images/group-default.svg';
       this.group_id = this.utils.displayGroupId(groupId);
       this.groupLevel = this.utils.displayGroupLevel(groupId);
       if (this.groupLevel === '80') {
@@ -101,12 +112,17 @@ export class GroupInfoComponent implements OnInit {
       groupId: this.groupId,
       actionType: _type
     };
+    const isBeenGroupMember = this.joinStatus === 2;
     this.groupService
       .actionGroup(body)
       .subscribe(({ resultCode, info: { selfJoinStatus } }) => {
         if (resultCode === 200) {
+          if (_type === 2 && this.groupLevel === '80' && isBeenGroupMember) {
+            this.userInfoService.getUserDetail(body, this.groupId);
+          }
           if (_type === 2) {
             this.joinStatus = 5;
+            this.userInfoService.getUserDetail(body, this.groupId);
           } else {
             this.joinStatus = selfJoinStatus;
           }
@@ -167,28 +183,83 @@ export class GroupInfoComponent implements OnInit {
           this.brandAdministrators = this.groupInfos.filter(
             _info => _info.accessRight === '30'
           );
-          this.branchAdministrators = this.groupInfos.filter(
-            _info => _info.accessRight === '40'
-          );
+          if (this.groupLevel === '40') {
+            if (_type === 2) {
+              this.branchAdministrators = this.groupInfos.filter(
+                _info => _info.accessRight === '40' && _info.groupId === this.groupId
+              );
+            }
+          } else {
+            if (_type === 2) {
+              this.branchAdministrators = this.groupInfos.filter(_info => {
+                if (_info.accessRight === '40') {
+                  const idx = this.subBranchInfo.findIndex(
+                    _subBranch => _subBranch.groupId === _info.groupId
+                  );
+                  if (idx > -1) {
+                    _info.memberName =
+                      this.subBranchInfo[idx].groupName + '/' + _info.memberName;
+                    return _info;
+                  }
+                }
+              });
+            }
+
+          }
           if (this.groupLevel === '60') {
             this.coachAdministrators = this.groupInfos.filter(
-              _info => _info.accessRight === '60' && _info.groupId === this.groupId
+              _info =>
+                _info.accessRight === '60' && _info.groupId === this.groupId
             );
           } else {
             this.coachAdministrators = this.groupInfos.filter(_info => {
               if (_info.accessRight === '60') {
-                const idx = this.subCoachInfo.findIndex(_subCoach => _subCoach.groupId === _info.groupId);
+                const idx = this.subCoachInfo.findIndex(
+                  _subCoach => _subCoach.groupId === _info.groupId
+                );
                 if (idx > -1) {
-                  _info.memberName = this.subCoachInfo[idx].groupName + '/' + _info.memberName;
+                  _info.memberName =
+                    this.subCoachInfo[idx].groupName + '/' + _info.memberName;
                   return _info;
                 }
               }
             });
           }
-
+          if (_type === 2) {
+            this.normalGroupAdministrators = this.groupInfos.filter(
+              _info => _info.accessRight === '80' && _info.joinStatus === 2
+            );
+          }
           this.normalMemberInfos = this.groupInfos.filter(
             _info => _info.accessRight === '90' && _info.joinStatus === 2
           );
+          // 如果按到tab為一般成員，剛好她也被加入，就讓她擁有退出群組
+          if (
+            _type === 3 &&
+            this.normalMemberInfos.findIndex(
+              _normalMember => _normalMember.memberId === this.userId
+            ) > -1 && this.joinStatus !== 2
+          ) {
+            this.joinStatus = 2;
+          }
+          // 如果按到tab為管理員，剛好她也被加入，就讓她擁有管理按鈕
+          if (
+            _type === 2 &&
+            this.groupInfos.findIndex(
+              _admin =>
+                _admin.memberId === this.userId &&
+                (
+                _admin.accessRight === '80'
+                ||
+                _admin.accessRight === '40'
+                )
+                &&
+                _admin.joinStatus === 2
+            ) > -1 && (this.joinStatus !== 2 && !this.visitorDetail.isCanManage)
+          ) {
+            this.joinStatus = 2;
+            this.userInfoService.getUserDetail(body, this.groupId);
+          }
         }
       }
     });

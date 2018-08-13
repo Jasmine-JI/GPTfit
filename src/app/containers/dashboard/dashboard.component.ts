@@ -157,9 +157,6 @@ export class DashboardComponent implements OnInit {
     this.globalEventsManager.showNavBarEmitter.subscribe(mode => {
       this.isMaskShow = mode;
     });
-    // this.globalEventsManager.showLoadingEmitter.subscribe(isLoading => {
-    //   this.isLoading = isLoading;
-    // });
     if (window.innerWidth < 769) {
       this.mode = 'push';
       this.isDefaultOpend = false;
