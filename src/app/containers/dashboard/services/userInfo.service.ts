@@ -147,23 +147,24 @@ export class UserInfoService {
   getUserDetail(body, visittingId) {
     return this.getMemberAccessRight(body).subscribe(res => {
       const { info: { groupAccessRight } } = res;
+      const idx = groupAccessRight.findIndex(_group => _group.groupId === visittingId && _group.joinStatus === 2);
       if (this.isSupervisor$.value) {
         this.userAccessRightDetail$.next({
           accessRight: '00',
           isCanManage: true,
-          isGroupAdmin: false
+          isGroupAdmin: idx > -1
         });
       } else if (this.isSystemDeveloper$.value) {
         this.userAccessRightDetail$.next({
           accessRight: '10',
           isCanManage: true,
-          isGroupAdmin: false
+          isGroupAdmin: idx > -1
         });
       } else if (this.isSystemMaintainer$.value) {
         this.userAccessRightDetail$.next({
           accessRight: '20',
           isCanManage: true,
-          isGroupAdmin: false
+          isGroupAdmin: idx > -1
         });
       } else if (this.isMarketingDeveloper$.value) {
         this.userAccessRightDetail$.next({

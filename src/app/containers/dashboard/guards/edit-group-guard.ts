@@ -116,29 +116,30 @@ export class EditGroupGuard implements CanActivate {
         this.userInfoService.setGeneralMemberStatus(true);
       }
       const { isSupervisor, isSystemDeveloper, isSystemMaintainer, isMarketingDeveloper } = role;
+      const idx = groupAccessRight.findIndex(_group => _group.groupId === visittingId && _group.joinStatus === 2);
       if (isSupervisor) {
         this.userInfoService.setUserAccessRightDetail({
           accessRight: '00',
           isCanManage: true,
-          isGroupAdmin: false
+          isGroupAdmin: idx > -1
         });
       } else if (isSystemDeveloper) {
         this.userInfoService.setUserAccessRightDetail({
           accessRight: '10',
           isCanManage: true,
-          isGroupAdmin: false
+          isGroupAdmin: idx > -1
         });
       } else if (isSystemMaintainer) {
         this.userInfoService.setUserAccessRightDetail({
           accessRight: '20',
           isCanManage: true,
-          isGroupAdmin: false
+          isGroupAdmin: idx > -1
         });
       } else if (isMarketingDeveloper) {
         this.userInfoService.setUserAccessRightDetail({
           accessRight: '29',
           isCanManage: true,
-          isGroupAdmin: false
+          isGroupAdmin: idx > -1
         });
       } else {
         const groupLevel = this.utils.displayGroupLevel(visittingId);
