@@ -144,6 +144,11 @@ const routes: Routes = [
         canActivate: [EditGroupGuard]
       },
       {
+        path: 'create-brand-group',
+        component: CreateGroupComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
         path: 'setting',
         component: InnerSettingsComponent,
         canActivate: [DashboardGuard]

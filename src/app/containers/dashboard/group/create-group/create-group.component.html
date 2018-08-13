@@ -31,6 +31,11 @@
         >
           建立新群組
         </span>
+        <span style="color: #26abe3; font-weight:700"
+          *ngIf="createType === 4"
+        >
+          建立品牌
+        </span>
         <div>
           <button class="alatech-btn alatech-btn--default"
             title="取消"
@@ -64,7 +69,7 @@
           >
           </app-form-text>
         </div>
-        <div class="ala-list__item" *ngIf="createType !== 3">
+        <div class="ala-list__item" *ngIf="createType !== 3 && createType !== 4">
           <label class="ala-form__label">品牌名稱：</label>
           <app-form-text
             [disabled]="true"
@@ -72,7 +77,21 @@
           >
           </app-form-text>
         </div>
-        <div class="ala-list__item" *ngIf="createType !== 3">
+        <div class="ala-list__item" *ngIf="createType === 4">
+          <label class="ala-form__label form__label--required">品牌名稱：</label>
+          <app-form-text
+            [content]="groupName?.value"
+            [maxLength]="32"
+            [remindText]="remindText"
+            [invalidRemindText]="inValidText"
+            [control]="form"
+            [disabled]="isEditing"
+            [controlName]="formTextName"
+            [isInvalid]="(!groupName.valid && groupName.touched) || (f.submitted && groupName.hasError('required')) || (f.submitted && groupName.hasError('maxLength'))"
+          >
+          </app-form-text>
+        </div>
+        <div class="ala-list__item" *ngIf="createType !== 3 && createType !== 4">
           <label class="ala-form__label form__label--required">分店名稱：</label>
           <app-form-text
             *ngIf="createType === 1"
@@ -94,7 +113,7 @@
             </ng-container>
           </select>
         </div>
-        <div class="ala-list__item" *ngIf="createType !== 3">
+        <div class="ala-list__item" *ngIf="createType !== 3 && createType !== 4">
           <label class="ala-form__label"
             [class.form__label--required]="createType === 2"
           >
