@@ -8,6 +8,7 @@ import { of } from 'rxjs/observable/of';
 import { forkJoin } from 'rxjs/observable/forkJoin';
 import { UserInfo } from '../models/userInfo';
 import { UserDetail } from '../models/userDetail';
+import { UtilsService } from '@shared/services/utils.service';
 
 const { API_SERVER } = environment.url;
 
@@ -32,12 +33,12 @@ export class UserInfoService {
     groupAccessRight: []
   });
   userAccessRightDetail$ = new BehaviorSubject<any>({
-    groupLevel: 'none',
+    accessRight: 'none',
     isCanManage: false,
     isGroupAdmin: false
   });
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private utils: UtilsService) {}
   getLogonData(body) {
     const headers = new HttpHeaders();
     const httpOptions = {
@@ -70,6 +71,40 @@ export class UserInfoService {
   getUserId(): Observable<number> {
     return this.userId$;
   }
+  setSupervisorStatus(status: boolean) {
+    this.isSupervisor$.next(status);
+  }
+  setSystemDeveloperStatus(status: boolean) {
+    this.isSystemDeveloper$.next(status);
+  }
+  setSystemMaintainerStatus(status: boolean) {
+    this.isSystemMaintainer$.next(status);
+  }
+  setMarketingDeveloperStatus(status: boolean) {
+    this.isMarketingDeveloper$.next(status);
+  }
+  setBrandAdministratorStatus(status: boolean) {
+    this.isBrandAdministrator$.next(status);
+  }
+  setBranchAdministratorStatus(status: boolean) {
+    this.isBranchAdministrator$.next(status);
+  }
+  setBroadcastProducerStatus(status: boolean) {
+    this.isBroadcastProducer$.next(status);
+  }
+  setCoachStatus(status: boolean) {
+    this.isCoach$.next(status);
+  }
+  setGroupAdministratorStatus(status: boolean) {
+    this.isGroupAdministrator$.next(status);
+  }
+  setGeneralMemberStatus(status: boolean) {
+    this.isGeneralMember$.next(status);
+  }
+  setUserAccessRightDetail(data: UserDetail) {
+    return this.userAccessRightDetail$.next(data);
+  }
+
   getSupervisorStatus(): Observable<boolean> {
     return this.isSupervisor$;
   }
@@ -109,135 +144,118 @@ export class UserInfoService {
   getMemberAccessRight(body) {
     return this.http.post<any>('/api/v1/center/getMemberAccessRight', body);
   }
-  getUserDetail(body, groupId) {
-    this.getInitialUserInfoStatus().subscribe((res: UserInfo) => {
-      const { groupAccessRight, isInitial } = res;
-      if (isInitial) {
-        if (this.isSupervisor$.value) {
-          return this.userAccessRightDetail$.next({
-            groupLevel: '00',
-            isCanManage: true,
-            isGroupAdmin: false
-          });
-        }
-        if (this.isSystemDeveloper$.value) {
-          return this.userAccessRightDetail$.next({
-            groupLevel: '10',
-            isCanManage: true,
-            isGroupAdmin: false
-          });
-        }
-        if (this.isSystemMaintainer$.value) {
-          return this.userAccessRightDetail$.next({
-            groupLevel: '20',
-            isCanManage: true,
-            isGroupAdmin: false
-          });
-        }
-        if (this.isBrandAdministrator$.value) {
-          const brandGroups = groupAccessRight.filter(
-            _group => _group.accessRight === '30'
-          );
-          const brandIdx = brandGroups.findIndex(
-            _brandGroup =>
-              _brandGroup.groupId.slice(0, 5) === groupId.slice(0, 5)
-          );
-          if (brandIdx > -1) {
-            return this.userAccessRightDetail$.next({
-              groupLevel: '30',
-              isCanManage: true,
-              isGroupAdmin: true
-            });
-          }
-        }
-        if (this.isBranchAdministrator$.value) {
-          const branchGroups = groupAccessRight.filter(
-            _group => _group.accessRight === '40'
-          );
-          let branchIdx = branchGroups.findIndex(
-            _branchGroup => _branchGroup.groupId === groupId
-          );
-          if (branchIdx > -1) {
-            return this.userAccessRightDetail$.next({
-              groupLevel: '40',
-              isCanManage: true,
-              isGroupAdmin: true
-            });
-          }
-          branchIdx = branchGroups.findIndex(
-            _branchGroup =>
-              _branchGroup.groupId.slice(0, 7) === groupId.slice(0, 7)
-          );
-          if (branchIdx > -1) {
-            return this.userAccessRightDetail$.next({
-              groupLevel: '40',
-              isCanManage: true,
-              isGroupAdmin: true
-            });
-          }
-          branchIdx = branchGroups.findIndex(
-            _branchGroup =>
-              _branchGroup.groupId.slice(0, 5) === groupId.slice(0, 5)
-          );
-          if (branchIdx > -1) {
-            return this.userAccessRightDetail$.next({
-              groupLevel: '40',
-              isCanManage: false,
-              isGroupAdmin: true
-            });
-          }
-        }
-        if (this.isCoach$.value) {
-          const coachGroups = groupAccessRight.filter(
-            _group => _group.accessRight === '60'
-          );
-          if (coachGroups.findIndex(_coachGroup => _coachGroup.groupId === groupId) > -1) {
-            return this.userAccessRightDetail$.next({
-              groupLevel: '60',
-              isCanManage: true,
-              isGroupAdmin: true
-            });
-          } else {
-            return this.userAccessRightDetail$.next({
-              groupLevel: '60',
+  getUserDetail(body, visittingId) {
+    return this.getMemberAccessRight(body).subscribe(res => {
+      const { info: { groupAccessRight } } = res;
+      if (this.isSupervisor$.value) {
+        this.userAccessRightDetail$.next({
+          accessRight: '00',
+          isCanManage: true,
+          isGroupAdmin: false
+        });
+      } else if (this.isSystemDeveloper$.value) {
+        this.userAccessRightDetail$.next({
+          accessRight: '10',
+          isCanManage: true,
+          isGroupAdmin: false
+        });
+      } else if (this.isSystemMaintainer$.value) {
+        this.userAccessRightDetail$.next({
+          accessRight: '20',
+          isCanManage: true,
+          isGroupAdmin: false
+        });
+      } else if (this.isMarketingDeveloper$.value) {
+        this.userAccessRightDetail$.next({
+          accessRight: '29',
+          isCanManage: true,
+          isGroupAdmin: false
+        });
+      } else {
+        const groupLevel = this.utils.displayGroupLevel(visittingId);
+        switch (groupLevel) {
+          case '30':
+            const brandIdx = groupAccessRight.findIndex(_group => _group.groupId === visittingId && _group.joinStatus === 2);
+            if (brandIdx > -1) {
+              this.userAccessRightDetail$.next({
+                accessRight: groupAccessRight[brandIdx].accessRight,
+                isCanManage: groupAccessRight[brandIdx].accessRight === '30',
+                isGroupAdmin: groupAccessRight[brandIdx].accessRight === '30'
+              });
+            } else {
+              this.userAccessRightDetail$.next({
+                accessRight: 'none',
+                isCanManage: false,
+                isGroupAdmin: false
+              });
+            }
+            break;
+          case '40':
+            const branchIdx = groupAccessRight.findIndex(_group => ((_group.groupId.slice(0, 5) === visittingId.slice(0, 5) && _group.accessRight === '30') || _group.groupId === visittingId) && _group.joinStatus === 2);
+            if (branchIdx > -1) {
+              this.userAccessRightDetail$.next({
+                accessRight: groupAccessRight[branchIdx].accessRight,
+                isCanManage: groupAccessRight[branchIdx].accessRight === '40' || groupAccessRight[branchIdx].accessRight === '30',
+                isGroupAdmin: groupAccessRight[branchIdx].accessRight === '40' || groupAccessRight[branchIdx].accessRight === '30'
+              });
+            } else {
+              this.userAccessRightDetail$.next({
+                accessRight: 'none',
+                isCanManage: false,
+                isGroupAdmin: false
+              });
+            }
+            break;
+          case '60':
+            const coachIdx = groupAccessRight.findIndex(_group => ((_group.groupId.slice(0, 5) === visittingId.slice(0, 5) && _group.accessRight === '30') || (_group.groupId.slice(0, 7) === visittingId.slice(0, 7) && _group.accessRight === '40') || _group.groupId === visittingId) && _group.joinStatus === 2);
+            if (coachIdx > -1) {
+              this.userAccessRightDetail$.next({
+                accessRight:
+                  groupAccessRight[coachIdx].accessRight,
+                isCanManage:
+                  groupAccessRight[coachIdx].accessRight === '30'
+                  ||
+                  groupAccessRight[coachIdx].accessRight === '40'
+                  ||
+                  groupAccessRight[coachIdx].accessRight === '60',
+                isGroupAdmin:
+                  groupAccessRight[coachIdx].accessRight === '30'
+                  ||
+                  groupAccessRight[coachIdx].accessRight === '40'
+                  ||
+                  groupAccessRight[coachIdx].accessRight === '60'
+              });
+            } else {
+              this.userAccessRightDetail$.next({
+                accessRight: 'none',
+                isCanManage: false,
+                isGroupAdmin: false
+              });
+            }
+            break;
+          case '80':
+            const normalIdx = groupAccessRight.findIndex(_group => _group.groupId === visittingId && _group.joinStatus === 2);
+            if (normalIdx > -1) {
+              this.userAccessRightDetail$.next({
+                accessRight: groupAccessRight[normalIdx].accessRight,
+                isCanManage: groupAccessRight[normalIdx].accessRight === '80',
+                isGroupAdmin: groupAccessRight[normalIdx].accessRight === '80'
+              });
+            } else {
+              this.userAccessRightDetail$.next({
+                accessRight: 'none',
+                isCanManage: false,
+                isGroupAdmin: false
+              });
+            }
+            break;
+          default:
+            this.userAccessRightDetail$.next({
+              accessRight: '90',
               isCanManage: false,
               isGroupAdmin: false
             });
-          }
         }
-        if (this.isGroupAdministrator$.value) {
-          const normalGroups = groupAccessRight.filter(
-            _group => _group.accessRight === '80'
-          );
-          if (
-            normalGroups.findIndex(
-              _normalGroup => _normalGroup.groupId === groupId > -1
-            )
-          ) {
-            return this.userAccessRightDetail$.next({
-              groupLevel: '80',
-              isCanManage: true,
-              isGroupAdmin: true
-            });
-          }
-          if (
-            normalGroups.findIndex(
-              _normalGroup =>
-                _normalGroup.groupId.slice(0, 5) === groupId.slice(0, 5)
-            ) > -1
-          ) {
-            return this.userAccessRightDetail$.next({
-              groupLevel: '80',
-              isCanManage: false,
-              isGroupAdmin: true
-            });
-          }
-        }
-        return this.userAccessRightDetail$.next({
-          groupLevel: 'none',
-          isCanManage: false,
-          isGroupAdmin: false
-        });
       }
     });
   }

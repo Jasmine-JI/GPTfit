@@ -137,13 +137,13 @@ export class MemberCapsuleComponent implements OnInit {
     });
   }
   handleAssignAdmin() {
-    const body = {
-      token: this.token,
-      groupId: this.groupId,
-      userId: this.userId,
-      accessRight: '80'
-    };
-    if (this.groupLevel === '80') {
+    if (this.groupLevel === '80' || this.groupLevel === '60') {
+      const body = {
+        token: this.token,
+        groupId: this.groupId,
+        userId: this.userId,
+        accessRight: this.groupLevel
+      };
       this.groupService.editGroupMember(body).subscribe(res => {
         if (res.resultCode === 200) {
           this.onAssignAdmin.emit(this.userId);

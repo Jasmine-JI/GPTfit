@@ -102,6 +102,7 @@ export class EditGroupInfoComponent implements OnInit {
     this.route.params.subscribe(_params => this.handleInit());
     this.userInfoService.getUserAccessRightDetail().subscribe(res => {
       this.visitorDetail = res;
+      console.log('visitorDetail: ', this.visitorDetail);
     });
   }
   handleInit() {
@@ -276,9 +277,24 @@ export class EditGroupInfoComponent implements OnInit {
           this.brandAdministrators = this.groupInfos.filter(
             _info => _info.accessRight === '30'
           );
-          this.branchAdministrators = this.groupInfos.filter(
-            _info => _info.accessRight === '40'
-          );
+          if (this.groupLevel === '40') {
+            this.branchAdministrators = this.groupInfos.filter(
+              _info => _info.accessRight === '40' && _info.groupId === this.groupId
+            );
+          } else {
+            this.branchAdministrators = this.groupInfos.filter(_info => {
+              if (_info.accessRight === '40') {
+                const idx = this.subBranchInfo.findIndex(
+                  _subBranch => _subBranch.groupId === _info.groupId
+                );
+                if (idx > -1) {
+                  _info.memberName =
+                    this.subBranchInfo[idx].groupName + '/' + _info.memberName;
+                  return _info;
+                }
+              }
+            });
+          }
           if (this.groupLevel === '60') {
             this.coachAdministrators = this.groupInfos.filter(
               _info =>
@@ -332,7 +348,7 @@ export class EditGroupInfoComponent implements OnInit {
       const body1 = {
         token: this.token,
         groupId: this.groupId,
-        groupLevel: this.visitorDetail.groupLevel,
+        groupLevel: this.groupLevel,
         groupName,
         groupIcon: this.finalImageLink || '',
         groupDesc
@@ -380,7 +396,8 @@ export class EditGroupInfoComponent implements OnInit {
       }
     }
   }
-  goCreatePage(_type) {
+  goCreatePage(_type, e) {
+    e.preventDefault();
     this.router.navigateByUrl(
       `/dashboard/group-info/${this.groupId}/create?type=${_type}`
     );

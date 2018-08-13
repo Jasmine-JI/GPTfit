@@ -14,7 +14,7 @@
       <div>
         <button class="alatech-btn alatech-btn--default"
           title="申請加入"
-          *ngIf="(joinStatus === 5 || joinStatus === 3 ) && !visitorDetail?.isGroupAdmin"
+          *ngIf="(joinStatus === 5 || joinStatus === 3 ) && (!visitorDetail?.isGroupAdmin || groupLevel === '80')"
           (click)="handleActionGroup(1)"
         >
           申請加入
@@ -28,7 +28,13 @@
         </button>
         <button class="alatech-btn alatech-btn--default"
           title="退出群組"
-          *ngIf="joinStatus === 2 && (!visitorDetail?.isGroupAdmin)"
+          *ngIf="joinStatus === 2 &&
+          (!visitorDetail?.isGroupAdmin
+          ||
+          (groupLevel === '80' && normalGroupAdministrators && normalGroupAdministrators?.length > 1)
+          ||
+          (groupLevel === '40' && branchAdministrators && branchAdministrators?.length > 1)
+          )"
           (click)="handleActionGroup(2)"
         >
           退出群組

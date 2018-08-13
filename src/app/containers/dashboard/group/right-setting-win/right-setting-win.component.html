@@ -49,8 +49,13 @@
   <ng-container *ngIf="groupLevel === '40'">
     <mat-accordion multi="true" *ngFor="let subBranchItem of subBranchInfo;let branchIndex = index">
       <mat-expansion-panel style="box-shadow: none;margin-top: 25px;">
-        <mat-expansion-panel-header style="flex-direction: row-reverse;height: 30px;" expandedHeight="30px" collapsedHeight="30px"
-          [class.active]="chooseItem === branchIndex + ''" (click)="handlechooseBranchItem(branchIndex + '', subBranchItem.groupId, subBrandItem?.groupName)">
+        <mat-expansion-panel-header
+          style="flex-direction: row-reverse;height: 30px;"
+          expandedHeight="30px"
+          collapsedHeight="30px"
+          [class.active]="chooseItem === branchIndex + ''"
+          (click)="handlechooseBranchItem(branchIndex + '', subBranchItem.groupId, subBranchItem?.groupName)"
+        >
           <mat-panel-title>{{subBranchItem?.groupName}}
             <span class="hint" *ngIf="chooseItem === branchIndex + ''">(指派為分店管理者)</span>
           </mat-panel-title>

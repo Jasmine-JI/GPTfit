@@ -1,5 +1,5 @@
 export interface UserDetail {
-  groupLevel: string,
-  isCanManage: boolean,
-  isGroupAdmin: boolean
+  accessRight: string;
+  isCanManage: boolean;
+  isGroupAdmin: boolean;
 }
