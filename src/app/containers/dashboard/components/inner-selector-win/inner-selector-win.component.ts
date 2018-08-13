@@ -54,7 +54,7 @@ export class InnerSelectorWinComponent implements OnInit {
         this.data.onConfirm();
         this.dialog.closeAll();
       } else {
-        this.router.navigateByUrl(`/404`);
+        this.router.navigateByUrl(`/403`);
       }
     });
   }
