@@ -24,6 +24,7 @@ export class IntlPhoneInputComponent implements OnInit {
   @Input() isCodeInvalid: boolean;
   @Input() control: FormGroup;
   @Input() isLoading: boolean;
+  @Input() disabled = false;
   @Input() placeholder: string;
   @Output() onChange = new EventEmitter();
   constructor() {}
@@ -57,7 +58,9 @@ export class IntlPhoneInputComponent implements OnInit {
   }
   openActive(event: any) {
     event.stopPropagation();
-    this.active = !this.active;
+    if (!this.disabled) {
+      this.active = !this.active;
+    }
   }
   chooseCountry(idx) {
     this.countryCode = this.countryOptions[idx].code;

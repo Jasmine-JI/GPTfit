@@ -19,12 +19,12 @@ export class FormTextareaComponent implements OnInit {
   @Output() onChange = new EventEmitter();
   @Input() control: FormGroup;
   @Input() controlName: string;
+  @Input() disabled = false;
   preContent = this.content;
   invalidClassName = `${this.class_name} ${this.class_name}--invalid`;
   constructor(private utils: UtilsService) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
   handleAutoHeight(textarea) {
     let adjustedHeight = textarea.currentTarget.clientHeight;
     adjustedHeight = Math.max(

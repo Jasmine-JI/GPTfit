@@ -12,6 +12,7 @@ import { MatDialog } from '@angular/material/dialog';
 })
 export class EventComponent implements OnInit {
   events: any;
+  isLoading = false;
   constructor(
     private router: Router,
     private eventInfoService: EventInfoService,
@@ -20,7 +21,9 @@ export class EventComponent implements OnInit {
 
   ngOnInit() {
     const params = new HttpParams();
+    this.isLoading = true;
     this.eventInfoService.fetchEventInfo(params).subscribe(results => {
+      this.isLoading = false;
       this.events = results.filter((value, idx, self) => {
         return (
           self.findIndex(_self => _self.event_id === value.event_id) === idx

@@ -7,43 +7,70 @@
     [placeholder]="placeholder"
   >
   </app-form-text>
-  <mat-accordion multi="true" *ngFor="let subBrandItem of subBrandInfo;let brandIndex = index">
-    <mat-expansion-panel style="box-shadow: none;margin-top: 25px;">
-        <mat-expansion-panel-header style="flex-direction: row-reverse;height: 30px;"
+  <ng-container *ngIf="groupLevel === '30'">
+    <mat-accordion multi="true" *ngFor="let subBrandItem of subBrandInfo;let brandIndex = index">
+      <mat-expansion-panel style="box-shadow: none;margin-top: 25px;">
+          <mat-expansion-panel-header style="flex-direction: row-reverse;height: 30px;"
+            expandedHeight="30px"
+            collapsedHeight="30px"
+            [class.active]="chooseItem === brandIndex + ''"
+            (click)="handlechooseBrandItem(brandIndex + '', subBrandItem.groupId, subBrandItem?.groupName)"
+          >
+            <mat-panel-title>{{subBrandItem?.groupName}}<span class="hint" *ngIf="chooseItem === brandIndex + ''">(指派為品牌管理者)</span></mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-accordion multi="false">
+            <mat-expansion-panel style="box-shadow: none;"  *ngFor="let subBranchItem of subBranchInfo;let branchIndex = index">
+              <mat-expansion-panel-header style="flex-direction: row-reverse; padding: 0px 24px 0px 48px;height: 30px;"
+                expandedHeight="30px"
+                collapsedHeight="30px"
+                [class.active]="chooseItem === brandIndex + '-' + branchIndex"
+                (click)="handlechooseBranchItem(brandIndex+ '-' + branchIndex, subBranchItem.groupId, subBranchItem?.groupName)"
+              >
+                <mat-panel-title>{{subBranchItem?.groupName}} <span class="hint"*ngIf="chooseItem === brandIndex + '-' + branchIndex">(指派為分店管理者)</span></mat-panel-title>
+              </mat-expansion-panel-header>
+              <li class="coach-lesson-item"
+                *ngFor="let coachItem of dispalyCoachInfo;let coachIndex = index"
+                (click)="handlechooseLessonItem(brandIndex + '-' + branchIndex + '-' + coachIndex, coachItem.groupId, coachItem?.groupName)"
+                [class.active]="chooseItem === brandIndex + '-' + branchIndex + '-' + coachIndex"
+              >
+                {{coachItem?.groupName}} <span class="hint" *ngIf="chooseItem === brandIndex + '-' + branchIndex + '-' + coachIndex">(指派為課程管理者)</span>
+              </li>
+              <li class="coach-lesson-item"
+                *ngIf="dispalyCoachInfo?.length === 0"
+              >
+                尚無相關課程
+              </li>
+            </mat-expansion-panel>
+          </mat-accordion>
+
+      </mat-expansion-panel>
+    </mat-accordion>
+  </ng-container>
+  <ng-container *ngIf="groupLevel === '40'">
+    <mat-accordion multi="true" *ngFor="let subBranchItem of subBranchInfo;let branchIndex = index">
+      <mat-expansion-panel style="box-shadow: none;margin-top: 25px;">
+        <mat-expansion-panel-header
+          style="flex-direction: row-reverse;height: 30px;"
           expandedHeight="30px"
           collapsedHeight="30px"
-          [class.active]="chooseItem === brandIndex + ''"
-          (click)="handlechooseBrandItem(brandIndex + '', subBrandItem.groupId, subBrandItem?.groupName)"
+          [class.active]="chooseItem === branchIndex + ''"
+          (click)="handlechooseBranchItem(branchIndex + '', subBranchItem.groupId, subBranchItem?.groupName)"
         >
-          <mat-panel-title>{{subBrandItem?.groupName}}<span class="hint" *ngIf="chooseItem === brandIndex + ''">(指派為品牌管理者)</span></mat-panel-title>
+          <mat-panel-title>{{subBranchItem?.groupName}}
+            <span class="hint" *ngIf="chooseItem === branchIndex + ''">(指派為分店管理者)</span>
+          </mat-panel-title>
         </mat-expansion-panel-header>
-        <mat-accordion multi="false">
-          <mat-expansion-panel style="box-shadow: none;"  *ngFor="let subBranchItem of subBranchInfo;let branchIndex = index">
-            <mat-expansion-panel-header style="flex-direction: row-reverse; padding: 0px 24px 0px 48px;height: 30px;"
-              expandedHeight="30px"
-              collapsedHeight="30px"
-              [class.active]="chooseItem === brandIndex + '-' + branchIndex"
-              (click)="handlechooseBranchItem(brandIndex+ '-' + branchIndex, subBranchItem.groupId, subBranchItem?.groupName)"
-            >
-              <mat-panel-title>{{subBranchItem?.groupName}} <span class="hint"*ngIf="chooseItem === brandIndex + '-' + branchIndex">(指派為分店管理者)</span></mat-panel-title>
-            </mat-expansion-panel-header>
-            <li class="coach-lesson-item"
-              *ngFor="let coachItem of dispalyCoachInfo;let coachIndex = index"
-              (click)="handlechooseLessonItem(brandIndex + '-' + branchIndex + '-' + coachIndex, coachItem.groupId, coachItem?.groupName)"
-              [class.active]="chooseItem === brandIndex + '-' + branchIndex + '-' + coachIndex"
-            >
-              {{coachItem?.groupName}} <span class="hint" *ngIf="chooseItem === brandIndex + '-' + branchIndex + '-' + coachIndex">(指派為課程管理者)</span>
-            </li>
-            <li class="coach-lesson-item"
-               *ngIf="dispalyCoachInfo?.length === 0"
-            >
-              尚無相關課程
-            </li>
-          </mat-expansion-panel>
-        </mat-accordion>
-
-    </mat-expansion-panel>
-  </mat-accordion>
+          <li class="coach-lesson-item" *ngFor="let coachItem of dispalyCoachInfo;let coachIndex = index" (click)="handlechooseLessonItem(brandIndex + '-' + branchIndex + '-' + coachIndex, coachItem.groupId, coachItem?.groupName)"
+            [class.active]="chooseItem === brandIndex + '-' + branchIndex + '-' + coachIndex">
+            {{coachItem?.groupName}}
+            <span class="hint" *ngIf="chooseItem === brandIndex + '-' + branchIndex + '-' + coachIndex">(指派為課程管理者)</span>
+          </li>
+          <li class="coach-lesson-item" *ngIf="dispalyCoachInfo?.length === 0">
+            尚無相關課程
+          </li>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </ng-container>
 </mat-dialog-content>
 
 <mat-dialog-actions class="justify-content-end">

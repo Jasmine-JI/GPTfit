@@ -5,18 +5,21 @@ import {
   HostListener,
   ElementRef,
   EventEmitter,
-  Output
+  Output,
+  ViewEncapsulation
 } from '@angular/core';
 import { GroupService } from '../../../containers/dashboard/services/group.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { MatDialog } from '@angular/material/dialog';
 import { RightSettingWinComponent } from '../../../containers/dashboard/group/right-setting-win/right-setting-win.component';
 import { Router } from '@angular/router';
+import { MessageBoxComponent } from '../message-box/message-box.component';
 
 @Component({
   selector: 'app-member-capsule',
   templateUrl: './member-capsule.component.html',
-  styleUrls: ['./member-capsule.component.css']
+  styleUrls: ['./member-capsule.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class MemberCapsuleComponent implements OnInit {
   @Input() memberInfo: any;
@@ -31,8 +34,10 @@ export class MemberCapsuleComponent implements OnInit {
   @Input() groupId: string;
   @Input() userId: string;
   @Input() groupLevel: string;
+  @Input() isHadMenu = false;
   @Output() onWaittingMemberInfoChange = new EventEmitter();
   @Output() onRemoveAdmin = new EventEmitter();
+  @Output() onRemoveGroup = new EventEmitter();
   @Output() onAssignAdmin = new EventEmitter();
 
   active = false;
@@ -86,14 +91,19 @@ export class MemberCapsuleComponent implements OnInit {
     }
   }
   toggleMenu() {
-    this.active = !this.active;
+    if (this.isSubGroupInfo && !this.isHadMenu) {
+      this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}`);
+    } else {
+      this.active = !this.active;
+    }
   }
   handleJoinStatus(_type: number) {
     const body = {
       token: this.token,
       groupId: this.groupId,
       joinUserId: this.userId,
-      joinStatus: _type
+      joinStatus: _type,
+      groupLevel: this.groupLevel
     };
     this.groupService.updateJoinStatus(body).subscribe(res => {
       if (res.resultCode === 200) {
@@ -101,7 +111,7 @@ export class MemberCapsuleComponent implements OnInit {
       }
     });
   }
-  handleRemoveAdmin() {
+  handleEditGroupMember() {
     const body = {
       token: this.token,
       groupId: this.groupId,
@@ -114,26 +124,48 @@ export class MemberCapsuleComponent implements OnInit {
       }
     });
   }
-  handleAssignAdmin() {
-    const body = {
-      token: this.token,
-      groupId: this.groupId,
-      userId: this.userId,
-      accessRight: '60'
-    };
-    this.dialog.open(RightSettingWinComponent, {
+  handleRemoveAdmin() {
+    this.dialog.open(MessageBoxComponent, {
       hasBackdrop: true,
       data: {
-        name: this.name,
-        groupId: this.groupId,
-        userId: this.userId
+        title: 'message',
+        body: `是否確定要刪除該管理員`,
+        confirmText: '確定',
+        cancelText: '取消',
+        onConfirm: this.handleEditGroupMember.bind(this)
       }
     });
+  }
+  handleAssignAdmin() {
+    if (this.groupLevel === '80' || this.groupLevel === '60') {
+      const body = {
+        token: this.token,
+        groupId: this.groupId,
+        userId: this.userId,
+        accessRight: this.groupLevel
+      };
+      this.groupService.editGroupMember(body).subscribe(res => {
+        if (res.resultCode === 200) {
+          this.onAssignAdmin.emit(this.userId);
+          this.dialog.closeAll();
+        }
+      });
+    } else {
+      this.dialog.open(RightSettingWinComponent, {
+        hasBackdrop: true,
+        data: {
+          name: this.name,
+          groupId: this.groupId,
+          userId: this.userId,
+          groupLevel: this.groupLevel
+        }
+      });
+    }
   }
   goToManage() {
     this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}/edit`);
   }
-  handleDeleteMember() {
+  handleDeleteGroupMember() {
     const body = {
       token: this.token,
       groupId: this.groupId,
@@ -144,6 +176,43 @@ export class MemberCapsuleComponent implements OnInit {
       if (res.resultCode === 200) {
         return this.onRemoveAdmin.emit(this.userId);
       }
-    });    
+    });
+  }
+  handleDeleteMember() {
+    this.dialog.open(MessageBoxComponent, {
+      hasBackdrop: true,
+      data: {
+        title: 'message',
+        body: `是否確定要刪除該成員`,
+        confirmText: '確定',
+        cancelText: '取消',
+        onConfirm: this.handleDeleteGroupMember.bind(this)
+      }
+    });
+  }
+  handleDeleteGroup() {
+    const body = {
+      token: this.token,
+      groupId: this.groupId,
+      changeStatus: '4',
+      groupLevel: this.groupLevel
+    };
+    this.groupService.changeGroupStatus(body).subscribe(res => {
+      if (res.resultCode === 200) {
+        return this.onRemoveGroup.emit(this.groupId);
+      }
+    });
+  }
+  openDeleteGroupWin() {
+    this.dialog.open(MessageBoxComponent, {
+      hasBackdrop: true,
+      data: {
+        title: 'message',
+        body: `是否確定要移除此群組`,
+        confirmText: '確定',
+        cancelText: '取消',
+        onConfirm: this.handleDeleteGroup.bind(this)
+      }
+    });
   }
 }

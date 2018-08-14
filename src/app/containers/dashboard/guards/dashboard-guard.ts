@@ -63,7 +63,7 @@ export class DashboardGuard implements CanActivate {
             this.router.navigateByUrl(`/dashboard/${next.url[0].path}`);
             return true;
           } else {
-            this.router.navigateByUrl(`/404`);
+            this.router.navigateByUrl(`/403`);
             return false;
           }
         });
@@ -71,7 +71,7 @@ export class DashboardGuard implements CanActivate {
         if (isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper) {
           return true;
         } else {
-          this.router.navigateByUrl(`/404`);
+          this.router.navigateByUrl(`/403`);
           return false;
         }
       }

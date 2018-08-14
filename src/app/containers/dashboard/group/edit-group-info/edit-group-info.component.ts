@@ -18,6 +18,8 @@ import {
 import { UserInfoService } from '../../services/userInfo.service';
 import { MsgDialogComponent } from '../../components/msg-dialog/msg-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { forkJoin } from 'rxjs/observable/forkJoin';
+import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 
 @Component({
   selector: 'app-edit-group-info',
@@ -64,6 +66,8 @@ export class EditGroupInfoComponent implements OnInit {
   acceptFileExtensions = ['JPG', 'JPEG', 'GIF', 'PNG'];
   finalImageLink: string;
   visitorDetail: any;
+  isLoading = false;
+  isGroupDetailLoading = false;
   get groupName() {
     return this.form.get('groupName');
   }
@@ -98,11 +102,13 @@ export class EditGroupInfoComponent implements OnInit {
     this.route.params.subscribe(_params => this.handleInit());
     this.userInfoService.getUserAccessRightDetail().subscribe(res => {
       this.visitorDetail = res;
+      console.log('visitorDetail: ', this.visitorDetail);
     });
   }
   handleInit() {
     this.groupId = this.route.snapshot.paramMap.get('groupId');
     this.form = this.fb.group({
+      groupStatus: ['', [Validators.required]],
       groupName: ['', [Validators.required, Validators.maxLength(32)]],
       groupDesc: ['', [Validators.required, Validators.maxLength(500)]]
     });
@@ -134,21 +140,27 @@ export class EditGroupInfoComponent implements OnInit {
     const body = { token: this.token, groupId: this.groupId };
     let params = new HttpParams();
     params = params.set('groupId', this.groupId);
+    this.isGroupDetailLoading = true;
     this.groupService.fetchGroupListDetail(body).subscribe(res => {
+      this.isGroupDetailLoading = false;
       this.groupInfo = res.info;
       const {
         groupIcon,
         groupId,
         groupName,
         groupDesc,
-        selfJoinStatus
+        selfJoinStatus,
+        groupStatus
       } = this.groupInfo;
+      if (groupStatus === 4) {
+        this.router.navigateByUrl(`/404`);
+      }
       if (selfJoinStatus) {
         this.joinStatus = selfJoinStatus;
       } else {
         this.joinStatus = 0;
       }
-      this.form.patchValue({ groupName, groupDesc });
+      this.form.patchValue({ groupName, groupDesc, groupStatus });
       this.groupImg = this.utils.buildBase64ImgString(groupIcon);
       this.finalImageLink = this.groupImg;
       this.group_id = this.utils.displayGroupId(groupId);
@@ -177,7 +189,43 @@ export class EditGroupInfoComponent implements OnInit {
         }
       });
   }
+  dimissGroup(e, type) {
+    e.preventDefault();
+    let targetName = '';
+    if (type === 2) {
+      targetName = '分店';
+    } else if (type === 3) {
+      targetName = '課程';
+    } else {
+      targetName = '群組';
+    }
+    this.dialog.open(MessageBoxComponent, {
+      hasBackdrop: true,
+      data: {
+        title: 'message',
+        body: `是否確定要解散此${targetName}?`,
+        confirmText: '確定',
+        cancelText: '取消',
+        onConfirm: this.handleDimissGroup.bind(this)
+      }
+    });
+
+  }
+  handleDimissGroup() {
+    const body = {
+      token: this.token,
+      groupId: this.groupId,
+      changeStatus: '4',
+      groupLevel: this.groupLevel
+    };
+    this.groupService.changeGroupStatus(body).subscribe(_res => {
+      if (_res.resultCode === 200) {
+        this.router.navigateByUrl(`/dashboard/my-group-list`);
+      }
+    });
+  }
   getGroupMemberList(_type) {
+    this.isLoading = true;
     const body = {
       token: this.token,
       groupId: this.groupId,
@@ -185,6 +233,7 @@ export class EditGroupInfoComponent implements OnInit {
       infoType: _type
     };
     this.groupService.fetchGroupMemberList(body).subscribe(res => {
+      this.isLoading = false;
       if (res.resultCode === 200) {
         const {
           info: { groupMemberInfo, subGroupInfo }
@@ -197,17 +246,23 @@ export class EditGroupInfoComponent implements OnInit {
               groupIcon: this.utils.buildBase64ImgString(_brand.groupIcon)
             };
           });
-          this.subBranchInfo = this.subGroupInfo.branches.map(_branch => {
-            return {
-              ..._branch,
-              groupIcon: this.utils.buildBase64ImgString(_branch.groupIcon)
-            };
+          this.subBranchInfo = this.subGroupInfo.branches.filter(_branch => {
+            if (_branch.groupStatus !== 4) {
+              // 過濾解散群組
+              return {
+                ..._branch,
+                groupIcon: this.utils.buildBase64ImgString(_branch.groupIcon)
+              };
+            }
           });
-          this.subCoachInfo = this.subGroupInfo.coaches.map(_coach => {
-            return {
-              ..._coach,
-              groupIcon: this.utils.buildBase64ImgString(_coach.groupIcon)
-            };
+          this.subCoachInfo = this.subGroupInfo.coaches.filter(_coach => {
+            if (_coach.groupStatus !== 4) {
+              // 過濾解散群組
+              return {
+                ..._coach,
+                groupIcon: this.utils.buildBase64ImgString(_coach.groupIcon)
+              };
+            }
           });
         } else {
           this.groupInfos = groupMemberInfo;
@@ -222,12 +277,43 @@ export class EditGroupInfoComponent implements OnInit {
           this.brandAdministrators = this.groupInfos.filter(
             _info => _info.accessRight === '30'
           );
-          this.branchAdministrators = this.groupInfos.filter(
-            _info => _info.accessRight === '40'
-          );
-          this.coachAdministrators = this.groupInfos.filter(
-            _info => _info.accessRight === '60'
-          );
+          if (this.groupLevel === '40') {
+            this.branchAdministrators = this.groupInfos.filter(
+              _info => _info.accessRight === '40' && _info.groupId === this.groupId
+            );
+          } else {
+            this.branchAdministrators = this.groupInfos.filter(_info => {
+              if (_info.accessRight === '40') {
+                const idx = this.subBranchInfo.findIndex(
+                  _subBranch => _subBranch.groupId === _info.groupId
+                );
+                if (idx > -1) {
+                  _info.memberName =
+                    this.subBranchInfo[idx].groupName + '/' + _info.memberName;
+                  return _info;
+                }
+              }
+            });
+          }
+          if (this.groupLevel === '60') {
+            this.coachAdministrators = this.groupInfos.filter(
+              _info =>
+                _info.accessRight === '60' && _info.groupId === this.groupId
+            );
+          } else {
+            this.coachAdministrators = this.groupInfos.filter(_info => {
+              if (_info.accessRight === '60') {
+                const idx = this.subCoachInfo.findIndex(
+                  _subCoach => _subCoach.groupId === _info.groupId
+                );
+                if (idx > -1) {
+                  _info.memberName =
+                    this.subCoachInfo[idx].groupName + '/' + _info.memberName;
+                  return _info;
+                }
+              }
+            });
+          }
           this.normalMemberInfos = this.groupInfos.filter(
             _info => _info.accessRight === '90' && _info.joinStatus === 2
           );
@@ -257,20 +343,40 @@ export class EditGroupInfoComponent implements OnInit {
     }
   }
   manage({ value, valid }) {
-    const { groupName, groupDesc } = value;
-    const body = {
-      token: this.token,
-      groupId: this.groupId,
-      groupLevel: this.visitorDetail.groupLevel,
-      groupName,
-      groupIcon: this.finalImageLink || '',
-      groupDesc
-    };
-    this.groupService.editGroup(body).subscribe(res => {
-      if (res.resultCode === 200) {
-        this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}`);
-      }
-    });
+    if (valid) {
+      const { groupName, groupDesc, groupStatus } = value;
+      const body1 = {
+        token: this.token,
+        groupId: this.groupId,
+        groupLevel: this.groupLevel,
+        groupName,
+        groupIcon: this.finalImageLink || '',
+        groupDesc
+      };
+      const body2 = {
+        token: this.token,
+        groupId: this.groupId,
+        changeStatus: groupStatus,
+        groupLevel: this.groupLevel
+      };
+      const groupService = this.groupService.editGroup(body1);
+      const changeGroupStatus = this.groupService.changeGroupStatus(body2);
+      this.isGroupDetailLoading = true;
+      forkJoin([groupService, changeGroupStatus]).subscribe(results => {
+        this.isGroupDetailLoading = false;
+        if (results[0].resultCode === 200 && results[1].resultCode === 200) {
+          this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}`);
+        } else {
+          this.dialog.open(MsgDialogComponent, {
+            hasBackdrop: true,
+            data: {
+              title: 'Message',
+              body: '群組資訊編輯失敗'
+            }
+          });
+        }
+      });
+    }
   }
   public handleChangeTextarea(code): void {
     this.form.patchValue({ groupDesc: code });
@@ -290,7 +396,8 @@ export class EditGroupInfoComponent implements OnInit {
       }
     }
   }
-  goCreatePage(_type) {
+  goCreatePage(_type, e) {
+    e.preventDefault();
     this.router.navigateByUrl(
       `/dashboard/group-info/${this.groupId}/create?type=${_type}`
     );
@@ -317,6 +424,22 @@ export class EditGroupInfoComponent implements OnInit {
       } else {
         this.normalMemberInfos = this.normalMemberInfos.filter(
           _info => _info.memberId !== id
+        );
+      }
+    }
+  }
+  handleRemoveGroup(id: string, type: number) {
+    if (id) {
+      if (id === this.groupId) {
+        this.router.navigateByUrl('/dashboard/my-group-list');
+      }
+      if (type === 2) {
+        this.subBranchInfo = this.subBranchInfo.filter(
+          _branch => _branch.groupId !== id
+        );
+      } else {
+        this.subCoachInfo = this.subCoachInfo.filter(
+          _coach => _coach.groupId !== id
         );
       }
     }

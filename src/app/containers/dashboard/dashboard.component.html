@@ -112,7 +112,6 @@
                 <li class="ala-sidenav-menu-item"
                   (click)="chooseItem(10, sideNav)"
                   [class.ala-sidenav-menu-item__active]="target === 10"
-                  *ngIf="isBrandAdministrator || isBranchAdministrator || isBroadcastProducer || isGroupAdministrator || isGeneralMember"
                   [routerLink]="['/dashboard/my-group-list']"
                 >
                   我的群組
@@ -125,11 +124,19 @@
                 >
                   所有群組列表
                 </li>
+                <li class="ala-sidenav-menu-item"
+                  (click)="chooseItem(12, sideNav)"
+                  [class.ala-sidenav-menu-item__active]="target === 12"
+                  *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper"
+                  [routerLink]="['/dashboard/create-brand-group']"
+                >
+                  建立品牌群組
+                </li>
             </mat-expansion-panel>
           </mat-accordion>
           <li class="ala-sidenav-item"
-            (click)="chooseItem(12, sideNav)"
-            [class.ala-sidenav-menu-item__active]="target === 12"
+            (click)="chooseItem(13, sideNav)"
+            [class.ala-sidenav-menu-item__active]="target === 13"
             [routerLink]="['/dashboard/setting']"
             *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper"
           >
@@ -160,7 +167,7 @@
           </div> -->
           <div class="dropdown">
             <div class="header-nav-item" id="dropdownMenu3" data-toggle="dropdown" aria-haspopup="true"
-              aria-expanded="false" style="background-color: transparent;border-color: transparent">
+              aria-expanded="false">
               <img *ngIf="userPhoto" [src]="(userPhoto | safeHtml)" class="header-user-photo">
               <img *ngIf="!userPhoto" src="/assets/images/user.png" class="header-user-photo">
             </div>

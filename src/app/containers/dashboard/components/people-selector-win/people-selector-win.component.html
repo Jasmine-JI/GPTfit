@@ -12,7 +12,7 @@
           [(ngModel)]="chooseGroupId"
         >
           <option value="" disabled selected>選擇群組</option>
-          <option [value]="option.group_id"
+          <option [value]="option.groupId"
             *ngFor="let option of groupLists"
           >
             {{option.groupName}}

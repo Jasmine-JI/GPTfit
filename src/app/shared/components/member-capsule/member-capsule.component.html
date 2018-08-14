@@ -4,11 +4,15 @@
       [style.width]="width"
       [style.height]="height"
     >
-    <img *ngIf="!icon" src="/assets/images/user.png">
+    <img *ngIf="!icon && !isSubGroupInfo" src="/assets/images/user.png">
+    <img *ngIf="!icon && isSubGroupInfo"
+      src="/assets/images/group-default.svg"
+      style="opacity: .1"
+    >
   </figure>
   <span>{{ name }}</span>
   <ng-container
-    *ngIf="isSubGroupInfo && (role?.isBrandAdministrator || role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator)"
+ *ngIf="isSubGroupInfo && isHadMenu"
   >
     <i class="fa fa-caret-down" style="vertical-align: sub"></i>
     <ul class="dropdown-menu"
@@ -19,7 +23,7 @@
           管理
         </a>
       </li>
-      <li class="warn-manage">
+      <li class="warn-manage" (click)="openDeleteGroupWin()">
         <a>
           移除群組
         </a>
@@ -27,7 +31,7 @@
     </ul>
   </ng-container>
   <ng-container
-    *ngIf="isAdminInfo && (role?.isBrandAdministrator || role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator)"
+ *ngIf="isAdminInfo && isHadMenu"
   >
     <i class="fa fa-caret-down" style="vertical-align: sub"></i>
     <ul class="dropdown-menu"
@@ -41,7 +45,7 @@
     </ul>
   </ng-container>
   <ng-container
-    *ngIf="isNormalMemberInfo && (role?.isBrandAdministrator || role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator)"
+  *ngIf="isNormalMemberInfo && isHadMenu"
   >
     <i class="fa fa-caret-down" style="vertical-align: sub"></i>
     <ul class="dropdown-menu"
@@ -60,7 +64,7 @@
     </ul>
   </ng-container>
   <ng-container
-    *ngIf="isWaittingMemberInfo && (role?.isBrandAdministrator || role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator)"
+  *ngIf="isWaittingMemberInfo && isHadMenu"
   >
     <i class="fa fa-caret-down" style="vertical-align: sub"></i>
     <ul class="dropdown-menu"
@@ -74,11 +78,6 @@
       <li class="normal-manage" (click)="handleJoinStatus(3)">
         <a>
           拒絕
-        </a>
-      </li>
-      <li class="normal-manage" (click)="handleJoinStatus(4)">
-        <a>
-          永久拒絕
         </a>
       </li>
     </ul>

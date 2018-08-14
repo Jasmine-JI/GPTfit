@@ -18,6 +18,8 @@ import {
 import { UserInfoService } from '../../services/userInfo.service';
 import { MsgDialogComponent } from '../../components/msg-dialog/msg-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-create-group',
@@ -58,11 +60,14 @@ export class CreateGroupComponent implements OnInit {
   finalImageLink: string;
   maxFileSize = 524288;
   isUploading = false;
+  isEditing = false;
   reloadFileText = '重新上傳';
   chooseFileText = '選擇檔案';
   acceptFileExtensions = ['JPG', 'JPEG', 'GIF', 'PNG'];
-  createType = 3; // 1為新建分店， 2為新建教練課，3為新建群組
+  createType = 3; // 1為新建分店， 2為新建教練課，3為新建群組，4為新建品牌
   brandName: string;
+  chooseType: number;
+  chooseLabels = [];
   get groupName() {
     return this.form.get('groupName');
   }
@@ -78,9 +83,9 @@ export class CreateGroupComponent implements OnInit {
   get branchId() {
     return this.form.get('branchId');
   }
-  // get groupStatus() {
-  //   return this.form.get('groupStatus');
-  // }
+  get groupManager() {
+    return this.form.get('groupManager');
+  }
   constructor(
     private route: ActivatedRoute,
     private groupService: GroupService,
@@ -110,6 +115,9 @@ export class CreateGroupComponent implements OnInit {
     const { type } = queryStrings;
     if (type) {
       this.createType = +type;
+    }
+    if (location.pathname.indexOf('/dashboard/create-brand-group') > -1) {
+      this.createType = 4;
     }
     this.groupId = this.route.snapshot.paramMap.get('groupId');
 
@@ -143,12 +151,15 @@ export class CreateGroupComponent implements OnInit {
       token: this.token,
       groupId: this.groupId
     };
-    // let params = new HttpParams();
-    // params = params.set('groupId', this.groupId);
-    if (this.createType !== 3) {
+    if (this.createType !== 3 && this.createType !== 4) {
       this.groupService.fetchGroupListDetail(body).subscribe(res => {
         this.groupInfo = res.info;
-        const { groupIcon, groupId, groupName, selfJoinStatus } = this.groupInfo;
+        const {
+          groupIcon,
+          groupId,
+          groupName,
+          selfJoinStatus
+        } = this.groupInfo;
         if (selfJoinStatus) {
           this.joinStatus = selfJoinStatus;
         } else {
@@ -162,29 +173,35 @@ export class CreateGroupComponent implements OnInit {
       });
       this.getGroupMemberList(1);
     }
-
   }
   buildForm(_type: number) {
     if (_type === 1) {
       this.formTextName = 'branchName';
       this.form = this.fb.group({
         branchName: ['', [Validators.required, Validators.maxLength(32)]],
+        groupManager: [[], [Validators.required]],
         groupDesc: ['', [Validators.required, Validators.maxLength(500)]],
         groupStatus: 2
       });
     } else if (_type === 2) {
       this.formTextName = 'coachLessonName';
       this.form = this.fb.group({
-        branchId: [
-          '',
-          [Validators.required]
-        ],
+        branchId: ['', [Validators.required]],
+        groupManager: [[], [Validators.required]],
         coachLessonName: ['', [Validators.required, Validators.maxLength(32)]],
+        groupDesc: ['', [Validators.required, Validators.maxLength(500)]],
+        groupStatus: 2
+      });
+    } else if (_type === 4) {
+      this.form = this.fb.group({
+        groupManager: [[], [Validators.required]],
+        groupName: ['', [Validators.required, Validators.maxLength(32)]],
         groupDesc: ['', [Validators.required, Validators.maxLength(500)]],
         groupStatus: 2
       });
     } else {
       this.form = this.fb.group({
+        groupManager: [[''], [Validators.required]],
         groupName: ['', [Validators.required, Validators.maxLength(32)]],
         groupDesc: ['', [Validators.required, Validators.maxLength(500)]],
         groupStatus: 2
@@ -208,6 +225,7 @@ export class CreateGroupComponent implements OnInit {
         }
       });
   }
+
   getGroupMemberList(_type) {
     const body = {
       token: this.token,
@@ -276,13 +294,14 @@ export class CreateGroupComponent implements OnInit {
   }
   manage({ valid, value }) {
     if (valid) {
-      const { groupDesc, groupStatus } = value;
+      const { groupDesc, groupStatus, groupManager } = value;
       const body = {
         token: this.token,
         groupId: this.groupId,
+        groupManager,
         levelDesc: groupDesc,
         groupStatus,
-        levelIcon: this.finalImageLink,
+        levelIcon: this.finalImageLink || '',
         levelName: '',
         levelType: null
       };
@@ -291,7 +310,9 @@ export class CreateGroupComponent implements OnInit {
         const { branchName } = value;
         body.levelName = branchName;
         body.levelType = 4;
+        this.isEditing = true;
         this.groupService.createGroup(body).subscribe(res => {
+          this.isEditing = false;
           if (res.resultCode === 200) {
             this.router.navigateByUrl(
               `/dashboard/group-info/${this.groupId}/edit`
@@ -306,19 +327,35 @@ export class CreateGroupComponent implements OnInit {
         if (branchId !== this.groupId) {
           body.groupId = branchId;
         }
+        this.isEditing = true;
         this.groupService.createGroup(body).subscribe(res => {
+          this.isEditing = false;
           if (res.resultCode === 200) {
             this.router.navigateByUrl(
               `/dashboard/group-info/${this.groupId}/edit`
             );
           }
         });
-      } else {
+      } else if (this.createType === 3) {
         const { groupName } = value;
         body.levelName = groupName;
         body.levelType = 6;
         body.groupId = '0-0-0-0-0-0';
+        this.isEditing = true;
         this.groupService.createGroup(body).subscribe(res => {
+          this.isEditing = false;
+          if (res.resultCode === 200) {
+            this.router.navigateByUrl('/dashboard/my-group-list');
+          }
+        });
+      } else {
+        const { groupName } = value;
+        body.levelName = groupName;
+        body.levelType = 3;
+        body.groupId = '0-0-0-0-0-0';
+        this.isEditing = true;
+        this.groupService.createGroup(body).subscribe(res => {
+          this.isEditing = false;
           if (res.resultCode === 200) {
             this.router.navigateByUrl('/dashboard/my-group-list');
           }
@@ -347,16 +384,26 @@ export class CreateGroupComponent implements OnInit {
   handleCancel(e) {
     e.preventDefault();
     let typeName = '';
-    const href =
-      this.createType === 3
-        ? '/dashboard/my-group-list'
-        : `/dashboard/group-info/${this.groupId}/edit`;
+    let href = '';
+    switch (this.createType) {
+      case 3:
+        href = '/dashboard/my-group-list';
+        break;
+      case 4:
+        href = '/dashboard/all-group-list';
+        break;
+      default:
+        href = `/dashboard/group-info/${this.groupId}/edit`;
+    }
+
     if (this.createType === 1) {
       typeName = '分店';
     } else if (this.createType === 2) {
       typeName = '教練課';
-    } else {
+    } else if (this.createType === 3) {
       typeName = '群組';
+    } else {
+      typeName = '品牌';
     }
     this.dialog.open(MsgDialogComponent, {
       hasBackdrop: true,
@@ -366,5 +413,31 @@ export class CreateGroupComponent implements OnInit {
         href
       }
     });
+  }
+  removeLabel(idx) {
+    this.chooseLabels.splice(idx, 1);
+    const userIds = this.chooseLabels.map(_label => _label.userId);
+    this.form.patchValue({ groupManager: userIds });
+  }
+  handleConfirm(_lists) {
+    const userIds = _lists.map(_list => _list.userId);
+    this.form.patchValue({ groupManager: userIds });
+    this.chooseLabels = _lists;
+  }
+  openSelectorWin(_type: number, e) {
+    e.preventDefault();
+    this.chooseType = _type;
+    const adminLists = _.cloneDeep(this.chooseLabels);
+    if (_type !== 3) {
+      this.dialog.open(PeopleSelectorWinComponent, {
+        hasBackdrop: true,
+        data: {
+          title: `品牌管理員選擇設定`,
+          adminLevel: `${_type}`,
+          adminLists,
+          onConfirm: this.handleConfirm.bind(this)
+        }
+      });
+    }
   }
 }

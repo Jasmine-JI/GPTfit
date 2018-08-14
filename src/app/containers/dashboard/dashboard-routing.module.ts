@@ -36,11 +36,13 @@ const routes: Routes = [
     children: [
       {
         path: 'enroll/:event_id',
-        component: EnrollFormComponent
+        component: EnrollFormComponent,
+        canActivate: [DashboardGuard]
       },
       {
         path: 'event',
-        component: EventComponent
+        component: EventComponent,
+        canActivate: [DashboardGuard]
       },
       {
         path: 'certificate',
@@ -52,23 +54,28 @@ const routes: Routes = [
       },
       {
         path: 'event/create',
-        component: CreateEventComponent
+        component: CreateEventComponent,
+        canActivate: [DashboardGuard]
       },
       {
         path: 'event/edit/:id',
-        component: EditEventComponent
+        component: EditEventComponent,
+        canActivate: [DashboardGuard]
       },
       {
         path: 'event-calendar',
-        component: EventCalendarComponent
+        component: EventCalendarComponent,
+        canActivate: [DashboardGuard]
       },
       {
         path: 'enroll/:event_id/preview',
-        component: EnrollPreviewComponent
+        component: EnrollPreviewComponent,
+        canActivate: [DashboardGuard]
       },
       {
         path: 'leaderboard-settings',
-        component: LeaderboardSettingsComponent
+        component: LeaderboardSettingsComponent,
+        canActivate: [DashboardGuard]
       },
       {
         path: 'real-time-leaderboard',
@@ -85,7 +92,8 @@ const routes: Routes = [
       },
       {
         path: 'device_log/detail/:userId',
-        component: DeviceLogDetailComponent
+        component: DeviceLogDetailComponent,
+        canActivate: [DashboardGuard]
       },
       {
         path: 'coach-dashboard',
@@ -101,7 +109,8 @@ const routes: Routes = [
       },
       {
         path: 'event-management',
-        component: EventManagementComponent
+        component: EventManagementComponent,
+        canActivate: [DashboardGuard]
       },
       {
         path: 'my-group-list',
@@ -113,7 +122,8 @@ const routes: Routes = [
       },
       {
         path: 'all-group-list',
-        component: AllGroupListComponent
+        component: AllGroupListComponent,
+        canActivate: [DashboardGuard]
       },
       {
         path: 'group-search',
@@ -132,6 +142,11 @@ const routes: Routes = [
         path: 'group-info/:groupId/create',
         component: CreateGroupComponent,
         canActivate: [EditGroupGuard]
+      },
+      {
+        path: 'create-brand-group',
+        component: CreateGroupComponent,
+        canActivate: [DashboardGuard]
       },
       {
         path: 'setting',

@@ -3,6 +3,7 @@ const db = require('./connection_db');
 exports.getUserId = function (token) {
   let result = {};
   return new Promise((resolve, reject) => {
+    console.log('reject: ', reject);
     db.query(
       `SELECT user_id FROM ?? WHERE access_token = ?`, ['user_profile', token],
       function (err, rows) {

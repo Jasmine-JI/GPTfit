@@ -18,6 +18,7 @@ import { FormRemindComponent } from './form-remind/form-remind.component';
 import { FormTextareaComponent } from './form-textarea/form-textarea.component';
 import { MemberCapsuleComponent } from './member-capsule/member-capsule.component';
 import { SharedPipes } from '@shared/pipes/shared-pipes';
+import { Page403Component } from './page403/page403.component';
 
 @NgModule({
   imports: [
@@ -41,7 +42,8 @@ import { SharedPipes } from '@shared/pipes/shared-pipes';
     FormTextComponent,
     FormRemindComponent,
     FormTextareaComponent,
-    MemberCapsuleComponent
+    MemberCapsuleComponent,
+    Page403Component
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [

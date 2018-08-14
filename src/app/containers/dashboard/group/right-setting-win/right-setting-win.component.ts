@@ -39,6 +39,9 @@ export class RightSettingWinComponent implements OnInit {
   get userId() {
     return this.data.userId;
   }
+  get groupLevel() {
+    return this.data.groupLevel;
+  }
   get onChange() {
     return this.data.onDelete;
   }
@@ -70,17 +73,19 @@ export class RightSettingWinComponent implements OnInit {
     }
   }
   handleConfirm() {
-    const body = {
+    const body2 = {
       token: this.token,
       groupId: this.groupId,
       userId: this.userId,
       accessRight: this.manageType
     };
     if (this.groupId !== this.chooseGroupId) {
-      body.groupId = this.chooseGroupId;
-      this.groupService.addGroupMember(body).subscribe(res => {
+      body2.groupId = this.chooseGroupId;
+      this.groupService.addGroupMember(body2).subscribe(res => {
         if (res.resultCode === 200) {
-          this.groupService.editGroupMember(body).subscribe(response => {
+          this.dialog.closeAll();
+        } else {
+          this.groupService.editGroupMember(body2).subscribe(response => {
             if (response.resultCode === 200) {
               this.dialog.closeAll();
             }
@@ -88,7 +93,7 @@ export class RightSettingWinComponent implements OnInit {
         }
       });
     } else {
-      this.groupService.editGroupMember(body).subscribe(res => {
+      this.groupService.editGroupMember(body2).subscribe(res => {
         if (res.resultCode === 200) {
           this.dialog.closeAll();
         }
@@ -142,24 +147,70 @@ export class RightSettingWinComponent implements OnInit {
         } = res;
         if (_type === 1) {
           this.subGroupInfo = subGroupInfo;
-          this.subBrandInfo = this.subGroupInfo.brands.map(_brand => {
-            return {
-              ..._brand,
-              groupIcon: this.utils.buildBase64ImgString(_brand.groupIcon)
-            };
-          });
-          this.subBranchInfo = this.subGroupInfo.branches.map(_branch => {
-            return {
-              ..._branch,
-              groupIcon: this.utils.buildBase64ImgString(_branch.groupIcon)
-            };
-          });
-          this.subCoachInfo = this.subGroupInfo.coaches.map(_coach => {
-            return {
-              ..._coach,
-              groupIcon: this.utils.buildBase64ImgString(_coach.groupIcon)
-            };
-          });
+          if (this.groupLevel === '40') {
+            this.subBranchInfo = this.subGroupInfo.branches.filter(
+              _branch => {
+                if (_branch.groupStatus !== 4 && _branch.groupId === this.groupId) {
+                  return {
+                    ..._branch,
+                    groupIcon: this.utils.buildBase64ImgString(
+                      _branch.groupIcon
+                    )
+                  };
+                }
+              }
+            );
+            this.subCoachInfo = this.subGroupInfo.coaches.filter(
+              _coach => {
+                if (_coach.groupStatus !== 4) {
+                  return {
+                    ..._coach,
+                    groupIcon: this.utils.buildBase64ImgString(
+                      _coach.groupIcon
+                    )
+                  };
+                }
+              }
+            );
+          } else if (this.groupLevel === '60') {
+            this.subCoachInfo = this.subGroupInfo.coaches.filter(
+              _coach => {
+                if (_coach.groupStatus !== 4 && _coach.groupId === this.groupId) {
+                  return {
+                    ..._coach,
+                    groupIcon: this.utils.buildBase64ImgString(
+                      _coach.groupIcon
+                    )
+                  };
+                }
+              }
+            );
+          } else {
+            this.subBrandInfo = this.subGroupInfo.brands.filter(_brand => {
+              if (_brand.groupStatus !== 4) {
+                return {
+                  ..._brand,
+                  groupIcon: this.utils.buildBase64ImgString(_brand.groupIcon)
+                };
+              }
+            });
+            this.subBranchInfo = this.subGroupInfo.branches.filter(_branch => {
+              if (_branch.groupStatus !== 4) {
+                return {
+                  ..._branch,
+                  groupIcon: this.utils.buildBase64ImgString(_branch.groupIcon)
+                };
+              }
+            });
+            this.subCoachInfo = this.subGroupInfo.coaches.filter(_coach => {
+              if (_coach.groupStatus !== 4) {
+                return {
+                  ..._coach,
+                  groupIcon: this.utils.buildBase64ImgString(_coach.groupIcon)
+                };
+              }
+            });
+          }
         }
       }
     });
