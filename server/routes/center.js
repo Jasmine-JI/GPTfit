@@ -95,25 +95,35 @@ router.get('/getGroupJoinStatus', function (req, res, next) {
 
 router.get('/getGroupList', function (req, res, next) {
   const {
-    con,
-    query: {
-      groupId
-    }
+    con
   } = req;
+
+  const token = req.headers['authorization'];
+  getUserId(token).then((userId) => {
   const sql = `
-    select group_name as groupName, group_id from ??
+    select g.group_name as groupName, g.group_id as groupId,
+    m.access_right as accessRight, m.join_status as JoinStatus
+    from ?? g, ?? m
+    where g.group_id = m.group_id and m.member_id = ?;
   `;
-  con.query(sql, ['group_info'], function (err, rows) {
-    if (err) {
-      console.log(err);
-      return res.status(500).send({
-        errorMessage: err.sqlMessage
-      });
-    }
-    if (rows) {
-      return res.json(rows);
-    }
+    con.query(sql, ['group_info', 'group_member_info', userId], function (err, rows) {
+      if (err) {
+        console.log(err);
+        return res.status(500).send({
+          errorMessage: err.sqlMessage
+        });
+      }
+      const systemManagerIdx = rows.findIndex(_row => +_row.accessRight < 30);
+      let results = rows.filter(_row =>  _row.JoinStatus === 2 && +_row.accessRight >= 30 && +_row.accessRight <= 80);
+      if (rows && systemManagerIdx > -1) {
+        results.push(rows[systemManagerIdx]); // 因為預設0-0-0-0-0-0的join_status為1
+        return res.json(results);
+      } else {
+        return res.json(results);
+      }
+    });    
   });
+
 });
 
 router.post('/innerAdmin', function (req, res, next) {
@@ -133,7 +143,7 @@ router.post('/innerAdmin', function (req, res, next) {
           normalIds = ids.filter(_id => userIds.findIndex(_userId => +_userId === _id.member_id) === -1);
         }
         normalQuerys = normalIds.map(_id => `update ?? set access_right = 90 where member_id = ${_id.member_id};`);
-        let sql = userIds.map(_id => `update ?? set access_right = ${con.escape(targetRight)} where member_id = ${_id};`);
+        let sql = userIds.map(_id => `update ?? set access_right = ${con.escape(targetRight)} where member_id = ${_id} and group_id = '0-0-0-0-0-0';`);
         sql = sql.concat(normalQuerys);
         const processer = function (query) {
           con.query(query, ['group_member_info'], function (err, rows) {

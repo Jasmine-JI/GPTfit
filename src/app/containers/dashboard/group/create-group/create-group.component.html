@@ -138,6 +138,34 @@
           >
           </app-form-text>
         </div>
+
+        <div class="ala-list__item" *ngIf="createType !== 3">
+          <label class="ala-form__label"
+            [class.form__label--required]="createType !== 3"
+          >
+            指派管理者：
+          </label>
+          <div style="width: calc(100% - 50px)">
+            <button class="icon-btn" (click)="openSelectorWin(createType, $event)">
+              <i class="fa fa-user-plus icon_fa"></i>
+            </button>
+            <div style="margin-top: 15px;color:#c75353"
+              *ngIf="(!groupManager.valid && groupManager.touched) || (f.submitted && groupManager.hasError('required'))"
+            >
+              請指派至少一位管理者
+            </div>
+            <div style="margin-top: 15px" *ngIf="chooseLabels && chooseLabels.length > 0">
+              <ng-container *ngFor="let label of chooseLabels;let _idx = index">
+                <div class="candidate-label">
+                  <div style="display: inline-block">{{label.groupName}}/{{label.userName}}</div>
+                  <button class="icon-btn" (click)="removeLabel(_idx)">
+                    <i class="fa fa-plus icon_fa" style="transform: rotate(45deg);"></i>
+                  </button>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
         <div class="ala-list__item">
           <label class="ala-form__label">狀態：</label>
           <select class="form-field"
