@@ -55,7 +55,7 @@ import { CreateGroupComponent } from './group/create-group/create-group.componen
 import { RightSettingWinComponent } from './group/right-setting-win/right-setting-win.component';
 import { GroupLevelNamePipe } from './pipes/group-level-name.pipe';
 import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
-import { InnerSelectorWinComponent } from './components/inner-selector-win/inner-selector-win.component';
+import { PeopleSelectorWinComponent } from './components/people-selector-win/people-selector-win.component';
 import { DashboardGuard } from './guards/dashboard-guard';
 
 @NgModule({
@@ -122,7 +122,7 @@ import { DashboardGuard } from './guards/dashboard-guard';
     RightSettingWinComponent,
     GroupLevelNamePipe,
     InnerSettingsComponent,
-    InnerSelectorWinComponent
+    PeopleSelectorWinComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
@@ -131,7 +131,7 @@ import { DashboardGuard } from './guards/dashboard-guard';
     HrZoneDialogComponent,
     Top3DialogComponent,
     RightSettingWinComponent,
-    InnerSelectorWinComponent
+    PeopleSelectorWinComponent
   ]
 })
 export class DashboardModule {}
