@@ -51,6 +51,16 @@ export class HttpStatusInterceptor implements HttpInterceptor {
             auth.logout();
             router.navigate(['/signin']);
           }
+          if (err.status === 504) {
+            this.dialog.open(MessageBoxComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'Error',
+                body: 'server出現問題',
+                confirmText: '確定'
+              }
+            });
+          }
         }
       }
     );
