@@ -64,7 +64,8 @@
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="新增教練課"
-            *ngIf="groupLevel && (groupLevel === '30' || groupLevel === '40') && visitorDetail?.isCanManage"
+            *ngIf="groupLevel && (groupLevel === '30' || groupLevel === '40')
+              && visitorDetail?.isCanManage && (subBranchInfo && subBranchInfo.length > 0)"
             (click)="goCreatePage(2, $event)"
           >
             新增教練課
