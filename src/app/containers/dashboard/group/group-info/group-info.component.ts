@@ -85,7 +85,7 @@ export class GroupInfoComponent implements OnInit {
         selfJoinStatus,
         groupStatus
       } = this.groupInfo;
-      if (groupStatus === 4) {
+      if ((groupStatus === 4) || (groupStatus === 3 && !this.visitorDetail.isCanManage)) {
         this.router.navigateByUrl(`/404`);
       }
       if (selfJoinStatus) {
