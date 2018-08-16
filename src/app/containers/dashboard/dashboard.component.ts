@@ -26,7 +26,7 @@ export class DashboardComponent implements OnInit {
   mode = 'side';
   isDefaultOpend = true;
   userName: string;
-  userPhoto: string;
+  userPhoto: string;  
   isUserMenuShow = false;
   isSupervisor = false;
   isBrandAdministrator = false;

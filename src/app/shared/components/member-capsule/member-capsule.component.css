@@ -13,7 +13,7 @@
   height: 64px;
   border-radius: 32px;
   border: 1px solid #ccc;
-  display: inline-block;
+  display: flex;
   align-items: center;
   vertical-align: middle;
 }
@@ -38,20 +38,17 @@
   color: #fff;
   background-color: #cb5e5e;
 }
-
-figure {
-  width: 58px;
-  height: 58px;
+.capsule-img {
+  width: 55px;
+  height: 55px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   overflow: hidden;
-  margin: 0;
-  position: relative;
   border-radius: 50%;
-  display: inline-block;
-  top: 50%;
-  left: 2px;
-  transform: translate(0%, -50%);
+  margin-left: 3px;
 }
-figure img {
+.capsule-img img {
   display: block;
   width: 100%;
   height: auto;

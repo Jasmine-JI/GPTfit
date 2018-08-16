@@ -189,7 +189,10 @@
   width: 36px;
   height: 36px;
   min-height: 0;
-  border-radius: 50%
+  border-radius: 50%;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 .header-nav-item {
   height: 60px;

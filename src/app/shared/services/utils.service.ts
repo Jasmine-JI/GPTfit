@@ -38,7 +38,7 @@ export class UtilsService {
     } else if (value.indexOf('data:image') > -1) {
       return value;
     } else {
-      return `data:image/jpg; base64, ${value}`;
+      return `data:image/jpg; base64, ${value}`.replace(/\s+/g,"");
     }
   }
   getUrlQueryStrings(_search: string) {
