@@ -1,18 +1,20 @@
 <div class="member-selector" [title]="title" (click)="toggleMenu()">
-  <figure>
-    <img *ngIf="icon" [src]="(icon | safeHtml)"
-      [style.width]="width"
-      [style.height]="height"
-    >
-    <img *ngIf="!icon && !isSubGroupInfo" src="/assets/images/user.png">
-    <img *ngIf="!icon && isSubGroupInfo"
-      src="/assets/images/group-default.svg"
-      style="opacity: .1"
-    >
-  </figure>
+  <div *ngIf="icon"
+    [ngStyle]="{'background-image': 'url(' + icon + ')'}"
+    class="capsule-img"
+  ></div>
+  <img *ngIf="!icon && !isSubGroupInfo"
+    src="/assets/images/user.png"
+    class="capsule-img"
+  >
+  <img *ngIf="!icon && isSubGroupInfo"
+    src="/assets/images/group-default.svg"
+    style="opacity: .1"
+    class="capsule-img"
+  >
   <span>{{ name }}</span>
   <ng-container
- *ngIf="isSubGroupInfo && isHadMenu"
+    *ngIf="isSubGroupInfo && isHadMenu"
   >
     <i class="fa fa-caret-down" style="vertical-align: sub"></i>
     <ul class="dropdown-menu"
