@@ -82,7 +82,7 @@
   -webkit-align-items: center;
   -ms-flex-align: center;
   align-items: center;
-  width: calc(100% - 270px);
+  width: 100%;
   z-index: 10;
 }
 .minimize-main-nav .ala-dashboard-header {
@@ -156,9 +156,7 @@
 .main-nav-toggle-icon.icon-svg_web-icon_005-menu {
   display: none;
 }
-/* .mat-drawer-transition .mat-drawer-content {
-  margin-left: 270px;
-} */
+
 .ala-dashboard-logo {
   font-size:32px;
   line-height: 32px;
@@ -226,18 +224,11 @@
   .main-nav-toggle {
     box-shadow: none;
   }
-  .mat-drawer {
-    width: calc(100% - 63px);
-  }
+
   .navbar.ala-dashboard-logo {
     display: none;
   }
-  .mat-drawer-transition .mat-drawer-content {
-    margin-left: calc(100% - 63px);
-  }
-  .ala-dashboard-header {
-    width: 100%;
-  }
+
   .main-nav-toggle {
     height: 44px;
     width: 44px;

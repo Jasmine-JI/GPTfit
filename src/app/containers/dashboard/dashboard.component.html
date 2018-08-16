@@ -6,7 +6,7 @@
   <div class="alatech-ribbon alatech-ribbon--bg-blue"></div>
     <router-outlet></router-outlet>
 </ng-container>
-<div (window:resize)="onResize($event, sideNav)" *ngIf="!isLoading" [class.minimize-main-nav]="!isSideNavOpend === false">
+<div (window:resize)="onResize($event, sideNav)" *ngIf="!isLoading" [class.minimize-main-nav]="isSideNavOpend">
   <mat-sidenav-container style="height:100vh">
     <mat-sidenav #sideNav opened={{isDefaultOpend}} mode={{mode}}>
       <nav class="navbar ala-dashboard-nav">
@@ -158,13 +158,10 @@
             <i class="icon-svg_web-icon_005-menu main-nav-toggle-icon"></i>
           </div>
         </div>
-        <div style="display: flex">
+        <div style="display: flex" [style.margin-right]="(isSideNavOpend && isDefaultOpend) ? '273px' : '0px'">
           <div class="header-nav-item">
             {{ userName || '' }}
           </div>
-          <!-- <div class="header-nav-item" (click)="handleUserMenu()">
-            <img src="/assets/images/user.png" class="header-user-photo">
-          </div> -->
           <div class="dropdown">
             <div class="header-nav-item" id="dropdownMenu3" data-toggle="dropdown" aria-haspopup="true"
               aria-expanded="false">

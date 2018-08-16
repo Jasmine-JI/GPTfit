@@ -22,7 +22,7 @@ export class DashboardComponent implements OnInit {
   isMaskShow = false;
   isCollapseOpen = false;
   target = 0;
-  isSideNavOpend = false;
+  isSideNavOpend: boolean;
   mode = 'side';
   isDefaultOpend = true;
   userName: string;
@@ -38,7 +38,6 @@ export class DashboardComponent implements OnInit {
   isCoach = false;
   isGroupAdministrator = false;
   isGeneralMember = false;
-
   constructor(
     private globalEventsManager: GlobalEventsManager,
     private authService: AuthService,
@@ -158,18 +157,24 @@ export class DashboardComponent implements OnInit {
       this.isMaskShow = mode;
     });
     if (window.innerWidth < 769) {
-      this.mode = 'push';
+      this.mode = 'over';
       this.isDefaultOpend = false;
+      this.isSideNavOpend = false;
+    } else {
+      this.isDefaultOpend = true;
+      this.isSideNavOpend = true;
     }
   }
   onResize(event, sideNav) {
     if (event.target.innerWidth < 769) {
-      this.toggleSideNav(sideNav);
-      this.mode = 'push';
+      // this.toggleSideNav(sideNav);
+      this.mode = 'over';
       this.isDefaultOpend = false;
+      this.isSideNavOpend = false;
     } else {
       this.mode = 'side';
       this.isDefaultOpend = true;
+      this.isSideNavOpend = true;
     }
   }
   touchMask() {
@@ -180,8 +185,19 @@ export class DashboardComponent implements OnInit {
   }
   toggleSideNav(sideNav: MatSidenav) {
     this.isSideNavOpend = !this.isSideNavOpend;
-    sideNav.toggle().then(result => {
-      // console.log('result: ', result);
+    sideNav.toggle().then((result) => {
+      const toogleResult = result;
+      if (toogleResult['type'] === 'open') {
+        this.isSideNavOpend = true;
+      } else {
+        this.isSideNavOpend = false;
+      }
+      if (window.innerWidth < 769) {
+        this.mode = 'over';
+        this.isDefaultOpend = false;
+      } else {
+        this.isDefaultOpend = true;
+      }
     });
   }
   chooseItem(_target, sidenav) {
@@ -189,9 +205,6 @@ export class DashboardComponent implements OnInit {
     if (window.innerWidth < 769 && this.target > 0) {
       this.toggleSideNav(sidenav);
     }
-  }
-  handleUserMenu() {
-    this.isUserMenuShow = !this.isUserMenuShow;
   }
   logout() {
     this.authService.logout();
