@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { cloneDeep } from 'lodash';
 import { stringify, parse } from 'query-string';
-
+import {  FormGroup } from '@angular/forms';
 export const TOKEN = 'ala_token';
 export const EMPTY_OBJECT = {};
 
@@ -38,7 +38,7 @@ export class UtilsService {
     } else if (value.indexOf('data:image') > -1) {
       return value;
     } else {
-      return `data:image/jpg; base64, ${value}`.replace(/\s+/g,"");
+      return `data:image/jpg; base64, ${value}`.replace(/\s+/g, '');
     }
   }
   getUrlQueryStrings(_search: string) {
@@ -117,5 +117,14 @@ export class UtilsService {
   }
   replaceCarriageReturn(string = '', format = '') {
     return string.replace(/(\r\n|\r|\n)/gm, format);
+  }
+  markFormGroupTouched(formGroup: FormGroup) {
+    (<any>Object).values(formGroup.controls).forEach(control => {
+      control.markAsTouched();
+
+      if (control.controls) {
+        this.markFormGroupTouched(control);
+      }
+    });
   }
 }

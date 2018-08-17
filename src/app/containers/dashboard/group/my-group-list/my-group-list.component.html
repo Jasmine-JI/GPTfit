@@ -2,7 +2,7 @@
   <span style="color: #157fcc; font-weight:700">
     我的群組列表
   </span>
-  <div>
+  <div class="group-edit-bar">
     <button class="alatech-btn alatech-btn--default"
       title="搜尋群組"
       [routerLink]="['/dashboard/group-search']"
@@ -43,3 +43,17 @@
 </div>
 <mat-paginator #paginator [length]="totalCount" [pageIndex]="0" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]">
 </mat-paginator>
+<div class="group-manage__action">
+  <button class="alatech-btn group-manage__btn"
+    title="搜尋群組"
+    [routerLink]="['/dashboard/group-search']"
+  >
+    搜尋群組
+  </button>
+  <button class="alatech-btn group-manage__btn"
+    title="建立新群組"
+    [routerLink]="['/dashboard/my-group-list/create']"
+  >
+    建立新群組
+  </button>
+</div>
