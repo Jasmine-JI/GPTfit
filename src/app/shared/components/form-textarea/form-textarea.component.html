@@ -1,0 +1,19 @@
+<div class="ala-formtext" [formGroup]="control">
+  <textarea
+    [value]="content"
+    [placeholder]="placeholder"
+    [className]="isInvalid ? invalidClassName : class_name"
+    [formControlName]="controlName"
+    [attr.disabled]="disabled ? '' : null"
+    (keyup)="handleChange($event)"
+    [maxLength]="maxLength"
+  >
+  </textarea>
+  <app-form-remind
+    style="text-align: right"
+    [remindText]="remindText"
+    [content]="content"
+    [maxLength]="maxLength"
+  >
+  </app-form-remind>
+</div>

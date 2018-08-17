@@ -12,9 +12,8 @@
 
 @font-face {
   font-family: "iconfont";
-  src: url("./assets/fonts/iconfont.eot?7caf2176ec763bb1fb13653fa7a7de2b?#iefix") format("embedded-opentype"),
-  url("./assets/fonts/iconfont.woff2?7caf2176ec763bb1fb13653fa7a7de2b") format("woff2"),
-  url("./assets/fonts/iconfont.woff?7caf2176ec763bb1fb13653fa7a7de2b") format("woff");
+  src: url("./assets/fonts/iconfont.eot?#iefix") format("embedded-opentype"),
+  url("./assets/fonts/iconfont.woff") format("woff");
 
 }
 

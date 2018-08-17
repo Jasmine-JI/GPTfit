@@ -1,0 +1,90 @@
+<h2 class="ala-dialog" mat-dialog-title>
+  {{ title }}
+</h2>
+<mat-dialog-content style="min-width: 750px;min-height: 470px;">
+  <div>地區： 台灣</div>
+  <div style="display: flex">
+    <div class="memberselector__content">
+      <div class="memberselector__bar-box">
+        <label>搜尋</label>
+        <select (click)="handleGroupOptions()"
+          style="width: 100px"
+          [(ngModel)]="chooseGroupId"
+        >
+          <option value="" disabled selected>選擇群組</option>
+          <option [value]="option.groupId"
+            *ngFor="let option of groupLists"
+          >
+            {{option.groupName}}
+          </option>
+        </select>
+        <input placeholder="姓名關鍵字"
+          style="width: 100px"
+          [(ngModel)]="keyword"
+        />
+        <button class="icon-btn" (click)="search()">
+          <i class="fa fa-search icon_fa"></i>
+        </button>
+      </div>
+      <ul class="memberselector-sl memberselector-sl--with-bar"
+        (click)="handleBtnColor(1, $event)"
+      >
+        <ng-container *ngIf="fakeDatas.length > 0">
+          <li class="memberselector-sl__item"
+            *ngFor="let item of fakeDatas;let _idx = index"
+            (click)="handleItem(_idx)"
+            [class.memberselector-sl__item--is-selected]="chooseIndex === _idx"
+          >
+            {{item.groupName}}/{{item.userName}}
+          </li>
+        </ng-container>
+        <li class="memberselector-sl__item memberselector-sl__item--empty"
+          *ngIf="fakeDatas.length === 0"
+        >
+          找不到符合條件的人
+        </li>
+      </ul>
+    </div>
+    <div class="memberselector__middle">
+      <button class="alatech-btn alatech-btn--default memberselector__btn"
+        title="加入"
+        [class.memberselector__btn--is-focused]="areaType === 1"
+        (click)="assignUser()"
+      >
+        加入<i class="fa fa-chevron-right" style="margin-left: 5px"></i>
+      </button>
+      <button class="alatech-btn alatech-btn--default memberselector__btn"
+        title="移除"
+        [class.memberselector__btn--is-focused]="areaType === 2"
+        (click)="removeUser()"
+      >
+        <i class="fa fa-chevron-left" style="margin-right: 5px"></i>移除
+      </button>
+    </div>
+    <div class="memberselector__content"
+      (click)="handleBtnColor(2, $event)"
+    >
+      <ul class="memberselector-sl memberselector-sl--with-bar">
+        <ng-container *ngIf="adminLists.length > 0">
+          <li class="memberselector-sl__item"
+            *ngFor="let item of adminLists;let _idx = index"
+            (click)="handleExistItem(_idx)"
+            [class.memberselector-sl__item--is-selected]="chooseExistIndex === _idx"
+          >
+            {{item.groupName}}/{{item.userName}}
+          </li>
+        </ng-container>
+        <li class="memberselector-sl__item memberselector-sl__item--empty"
+          *ngIf="adminLists.length === 0"
+        >
+          找不到符合條件的人
+        </li>
+      </ul>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions class="justify-content-end">
+  <button mat-button color="primary" (click)="confirm()">確定</button>
+  <button mat-button mat-dialog-close color="warn">取消</button>
+</mat-dialog-actions>

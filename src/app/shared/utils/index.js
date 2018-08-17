@@ -2,7 +2,10 @@ import queryString from 'query-string';
 import { cloneDeep } from 'lodash';
 
 export const EMPTY_OBJECT = {};
-
+export const DEFAULT_MAXLENGTH = {
+  TEXT: 100,
+  TEXTAREA: 2000,
+};
 export function isObjectEmpty(object) {
   if (!object) return true;
 

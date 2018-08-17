@@ -1,0 +1,34 @@
+<div class="ala-formtext" [formGroup]="control" *ngIf="controlName">
+  <input type="text"
+    [maxLength]="maxLength"
+    [value]="content"
+    [formControlName]="controlName"
+    [className]="isInvalid ? invalidClassName : class_name"
+    [attr.disabled]="disabled ? '' : null"
+    [placeholder]="placeholder"
+  />
+  <app-form-remind
+    *ngIf="remindText"
+    [isInvalid]="isInvalid"
+    [remindText]="remindText"
+    [invalidRemindText]="invalidRemindText"
+  >
+  </app-form-remind>
+</div>
+
+<div class="ala-formtext" *ngIf="!controlName">
+  <input type="text"
+    [maxLength]="maxLength"
+    [value]="content"
+    [className]="isInvalid ? invalidClassName : class_name"
+    [attr.disabled]="disabled ? '' : null"
+    [placeholder]="placeholder"
+  />
+  <app-form-remind
+    *ngIf="remindText"
+    [isInvalid]="isInvalid"
+    [remindText]="remindText"
+    [invalidRemindText]="invalidRemindText"
+  >
+  </app-form-remind>
+</div>

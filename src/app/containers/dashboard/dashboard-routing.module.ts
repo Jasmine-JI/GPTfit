@@ -19,7 +19,15 @@ import { CoachDashboardDetailComponent } from './components/coach-dashboard-deta
 import { CoachRexComponent } from './components/coach-rex/coach-rex.component';
 import { EventManagementComponent } from './components/event-management/event-management.component';
 import { AuthGuard } from '@shared/guards/auth/auth.guard';
-
+import { MyGroupListComponent } from './group/my-group-list/my-group-list.component';
+import { GroupSearchComponent } from './group/group-search/group-search.component';
+import { GroupInfoComponent } from './group/group-info/group-info.component';
+import { EditGroupInfoComponent } from './group/edit-group-info/edit-group-info.component';
+import { AllGroupListComponent } from './group/all-group-list/all-group-list.component';
+import { EditGroupGuard } from './guards/edit-group-guard';
+import { CreateGroupComponent } from './group/create-group/create-group.component';
+import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
+import { DashboardGuard } from './guards/dashboard-guard';
 const routes: Routes = [
   {
     path: 'dashboard',
@@ -28,11 +36,13 @@ const routes: Routes = [
     children: [
       {
         path: 'enroll/:event_id',
-        component: EnrollFormComponent
+        component: EnrollFormComponent,
+        canActivate: [DashboardGuard]
       },
       {
         path: 'event',
-        component: EventComponent
+        component: EventComponent,
+        canActivate: [DashboardGuard]
       },
       {
         path: 'certificate',
@@ -44,23 +54,28 @@ const routes: Routes = [
       },
       {
         path: 'event/create',
-        component: CreateEventComponent
+        component: CreateEventComponent,
+        canActivate: [DashboardGuard]
       },
       {
         path: 'event/edit/:id',
-        component: EditEventComponent
+        component: EditEventComponent,
+        canActivate: [DashboardGuard]
       },
       {
         path: 'event-calendar',
-        component: EventCalendarComponent
+        component: EventCalendarComponent,
+        canActivate: [DashboardGuard]
       },
       {
         path: 'enroll/:event_id/preview',
-        component: EnrollPreviewComponent
+        component: EnrollPreviewComponent,
+        canActivate: [DashboardGuard]
       },
       {
         path: 'leaderboard-settings',
-        component: LeaderboardSettingsComponent
+        component: LeaderboardSettingsComponent,
+        canActivate: [DashboardGuard]
       },
       {
         path: 'real-time-leaderboard',
@@ -72,11 +87,13 @@ const routes: Routes = [
       },
       {
         path: 'device_log',
-        component: DeviceLogComponent
+        component: DeviceLogComponent,
+        canActivate: [DashboardGuard]
       },
       {
         path: 'device_log/detail/:userId',
-        component: DeviceLogDetailComponent
+        component: DeviceLogDetailComponent,
+        canActivate: [DashboardGuard]
       },
       {
         path: 'coach-dashboard',
@@ -92,7 +109,49 @@ const routes: Routes = [
       },
       {
         path: 'event-management',
-        component: EventManagementComponent
+        component: EventManagementComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'my-group-list',
+        component: MyGroupListComponent
+      },
+      {
+        path: 'my-group-list/create',
+        component: CreateGroupComponent
+      },
+      {
+        path: 'all-group-list',
+        component: AllGroupListComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'group-search',
+        component: GroupSearchComponent
+      },
+      {
+        path: 'group-info/:groupId',
+        component: GroupInfoComponent
+      },
+      {
+        path: 'group-info/:groupId/edit',
+        component: EditGroupInfoComponent,
+        canActivate: [EditGroupGuard]
+      },
+      {
+        path: 'group-info/:groupId/create',
+        component: CreateGroupComponent,
+        canActivate: [EditGroupGuard]
+      },
+      {
+        path: 'create-brand-group',
+        component: CreateGroupComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'setting',
+        component: InnerSettingsComponent,
+        canActivate: [DashboardGuard]
       }
     ]
   },

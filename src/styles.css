@@ -17,8 +17,9 @@
   color: #fff;
   padding: 8px 25px;
 }
-
-
+.mat-progress-spinner circle, .mat-spinner circle {
+  stroke: #108bcd;
+}
 
 
 body,
@@ -28,6 +29,21 @@ html {
   margin: 0;
 }
 
+/* loading */
+.ala-loading-shade {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0px;
+  right: 0;
+  background: rgba(0, 0, 0, 0.15);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* form field */
 .form-field {
   height: 30px;
   max-width: 100%;
@@ -39,7 +55,11 @@ html {
   background-color: transparent;
   outline: 0;
 }
-
+.form-field[disabled] {
+  border-color: #9B9B9B;
+  background-color: #EFEFEF;
+  opacity: .65;
+}
 .form-control.form-control--invalid {
   border: 1px solid #c75353;
   box-shadow: rgba(163, 50, 50, .34) 0 0 4px 0;
@@ -49,7 +69,13 @@ html {
   border: 1px solid #c75353;
   box-shadow: rgba(163, 50, 50, .34) 0 0 4px 0;
 }
-
+/* textarea */
+textarea.form-field {
+  height: auto;
+  min-height: 72px;
+  padding: 10px;
+  background-color: #fff;
+}
 
 /* button */
 .button {
@@ -165,6 +191,35 @@ button:focus {
 }
 .icon-btn + .icon-btn {
   margin-left: 10px;
+}
+.ala-formtext {
+  display: flex;
+  flex-direction: column;
+}
+
+.ala-list__item {
+  display: flex;
+}
+.ala-list__item + .ala-list__item {
+  margin-top: 15px;
+}
+
+.ala-form__remind  {
+  display: inline-block;
+  padding-top: 5px;
+  font-size: 12px;
+  font-weight: normal;
+  cursor: default;
+  color: #9b9b9b;
+}
+
+.ala-form__remind--is-invalid {
+  color: #C75353;
+}
+.ala-form__label {
+  margin-bottom: 0px;
+  min-width: 120px;
+  text-align: right;
 }
 .alatech-btn {
   display: inline-block;
