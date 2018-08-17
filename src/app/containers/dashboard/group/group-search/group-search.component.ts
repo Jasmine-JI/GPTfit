@@ -1,4 +1,10 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  ViewEncapsulation
+} from '@angular/core';
 import { GroupService } from '../../services/group.service';
 import {
   MatTableDataSource,
@@ -20,7 +26,8 @@ import { UtilsService } from '@shared/services/utils.service';
 @Component({
   selector: 'app-group-search',
   templateUrl: './group-search.component.html',
-  styleUrls: ['./group-search.component.css', '../group-style.css']
+  styleUrls: ['./group-search.component.css', '../group-style.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class GroupSearchComponent implements OnInit {
   groupLevel = '90';
@@ -34,9 +41,12 @@ export class GroupSearchComponent implements OnInit {
   selectedValue = '';
   isEmpty = true;
   isLoading = false;
-  @ViewChild('paginator') paginator: MatPaginator;
-  @ViewChild('sortTable') sortTable: MatSort;
-  @ViewChild('filter') filter: ElementRef;
+  @ViewChild('paginator')
+  paginator: MatPaginator;
+  @ViewChild('sortTable')
+  sortTable: MatSort;
+  @ViewChild('filter')
+  filter: ElementRef;
   constructor(
     private groupService: GroupService,
     private matPaginatorIntl: MatPaginatorIntl,

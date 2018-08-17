@@ -292,7 +292,10 @@ export class CreateGroupComponent implements OnInit {
       this.getGroupMemberList(4);
     }
   }
-  manage({ valid, value }) {
+  manage({ valid, value, submitted }) {
+    if (!submitted) {  // 如果脫離form的判斷
+      this.utils.markFormGroupTouched(this.form);
+    }
     if (valid) {
       const { groupDesc, groupStatus, groupManager } = value;
       const body = {

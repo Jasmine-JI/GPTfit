@@ -2,7 +2,7 @@
   <span style="color: #157fcc; font-weight:700">
     搜尋群組
   </span>
-  <div>
+  <div class="group-edit-bar">
     <button class="alatech-btn alatech-btn--default" title="返回"
       [routerLink]="['/dashboard/my-group-list']">
       返回
@@ -28,6 +28,7 @@
 </mat-option>
 </mat-autocomplete>
 <button mat-raised-button mat-icon-button
+  class="mat-icon__rwd"
   style="background-color: #26abe3;color: #fff"
   (click)="getLists()"
   [disabled]="searchWords.length === 0"
@@ -59,3 +60,16 @@
 </div>
 <mat-paginator #paginator [length]="totalCount" [pageIndex]="0" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]">
 </mat-paginator>
+<div class="group-manage__action">
+  <button class="alatech-btn group-manage__btn"
+    title="search"
+    (click)="getLists()"
+    [disabled]="searchWords.length === 0"
+  >
+    <mat-icon>search</mat-icon>
+  </button>
+  <button class="alatech-btn group-manage__btn" title="返回"
+    [routerLink]="['/dashboard/my-group-list']">
+    返回
+  </button>
+</div>

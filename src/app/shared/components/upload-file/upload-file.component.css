@@ -80,3 +80,9 @@
   height: 296px;
   width: 250px;
 }
+
+@media(max-width: 767px) {
+  .ala-upload-image {
+    min-width: 250px;
+  }
+}

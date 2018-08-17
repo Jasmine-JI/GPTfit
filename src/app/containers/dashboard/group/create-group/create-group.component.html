@@ -1,5 +1,5 @@
 <div class="row">
-  <div class="col-4">
+  <div class="col-md-4 group-image--area">
     <app-upload-file
       [isImageFileMode]="true"
       [imageURL]="groupImg"
@@ -13,9 +13,9 @@
       (onChange)="handleAttachmentChange($event)"
     ></app-upload-file>
   </div>
-  <div class="col-8">
+  <div class="col-md-8">
     <form [formGroup]="form" (ngSubmit)="manage(f)" #f="ngForm" novalidate>
-      <div class="d-flex justify-content-between" style="margin-bottom: 15px">
+      <div class="group-edit-bar">
         <span style="color: #26abe3; font-weight:700"
           *ngIf="createType === 1"
         >
@@ -52,9 +52,7 @@
           </button>
         </div>
       </div>
-      <div
-        style="margin-bottom: 30px;position: relative;top: 0;left:-40px"
-      >
+      <div class="group-edit-area">
         <div class="ala-list__item" *ngIf="createType === 3">
           <label class="ala-form__label">名稱：</label>
           <app-form-text
@@ -145,11 +143,11 @@
           >
             指派管理者：
           </label>
-          <div style="width: calc(100% - 50px)">
+          <div class="ala-form__col assign-admin">
             <button class="icon-btn" (click)="openSelectorWin(createType, $event)">
               <i class="fa fa-user-plus icon_fa"></i>
             </button>
-            <div style="margin-top: 15px;color:#c75353"
+            <div class="assign-admin__warning"
               *ngIf="(!groupManager.valid && groupManager.touched) || (f.submitted && groupManager.hasError('required'))"
             >
               請指派至少一位管理者
@@ -179,7 +177,7 @@
         </div>
         <div class="ala-list__item">
           <label class="ala-form__label form__label--required">介紹：</label>
-          <div style="width: calc(100% - 50px)">
+          <div class="ala-form__col">
             <app-form-textarea
               [maxLength]="textareaMaxLength"
               [content]="groupDesc?.value"
@@ -195,4 +193,19 @@
       </div>
     </form>
   </div>
+</div>
+<div class="group-manage__action">
+  <button class="alatech-btn group-manage__btn"
+    title="取消"
+    (click)="handleCancel($event)"
+  >
+    取消
+  </button>
+  <button class="alatech-btn group-manage__btn"
+    title="完成"
+    (click)="manage(f)"
+    [disabled]="isEditing"
+  >
+    完成
+  </button>
 </div>
