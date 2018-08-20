@@ -36,9 +36,11 @@
 }
 
 .memberselector-sl--with-bar {
-  height: calc(100% - 40px);
+  height: calc(100% - 65px);
 }
-
+.memberselector-sl--with-bar.memberselector-sl--with-bar--manage {
+  height: 100%;
+}
 .memberselector-sl__item {
   padding: 9pt 40px;
   background-color: #fff;
@@ -55,4 +57,55 @@
 .memberselector-sl__item.memberselector-sl__item--empty {
   background-color: #fff;
   cursor: default;
+}
+.ala-selector-content {
+  min-width: 300px;
+  min-height: 470px;
+}
+.memberselector-area {
+  display: flex;
+}
+.cdk-overlay-pane {
+  max-width: 100vw;
+}
+@media(max-width: 767px) {
+  .memberselector-sl--with-bar {
+    height: calc(100% - 112px);
+  }
+
+  .ala-selector-content {
+    min-width: 100%;
+    min-height: 100%;
+    max-height: 100%;
+  }
+  .memberselector-area {
+    display: inline-block;
+  }
+  .memberselector-area input,
+  .memberselector-area select,
+  .memberselector-area button,
+  .memberselector-area label {
+    width: 100%;
+    margin-bottom: 0;
+  }
+
+  .memberselector__content {
+    width: 100%;
+    height: 240px;
+  }
+  .memberselector__middle {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .memberselector__icon--rotate {
+    transform: rotate(90deg);
+  }
+  .alatech-btn.memberselector__btn {
+    width:100%;
+    margin-top: 5px;
+  }
+  .alatech-btn.memberselector__btn+.alatech-btn.memberselector__btn {
+    margin: 5px 0 5px 0;
+  }
 }
