@@ -58,6 +58,7 @@ import { InnerSettingsComponent } from './components/inner-settings/inner-settin
 import { PeopleSelectorWinComponent } from './components/people-selector-win/people-selector-win.component';
 import { DashboardGuard } from './guards/dashboard-guard';
 import { ActivityInfoComponent } from './components/activity-info/activity-info.component';
+import { NgxEchartsModule } from 'ngx-echarts';
 
 @NgModule({
   imports: [
@@ -73,7 +74,8 @@ import { ActivityInfoComponent } from './components/activity-info/activity-info.
     SharedPipes,
     ReactiveFormsModule,
     DragulaModule,
-    SharedModule
+    SharedModule,
+    NgxEchartsModule
   ],
   providers: [
     EventEnrollService,

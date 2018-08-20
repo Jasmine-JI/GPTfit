@@ -49,5 +49,15 @@
   圖表
 </div>
 <div class="activity-block">
-
+  <div style="height: 30px;margin: 30px 0px">
+    <div class="pull-right">
+      <button class="alatech-btn alatech-btn--default"
+        (click)="switch()"
+      >
+        <span [hidden]="loading">顯示loading</span>
+        <span [hidden]="!loading">隱藏loading</span>
+      </button>
+    </div>
+  </div>
+  <div echarts [options]="chartOption" [loading]="loading" (chartInit)="onChartInit($event)"></div>
 </div>
