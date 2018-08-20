@@ -85,4 +85,7 @@
   .ala-upload-image {
     min-width: 250px;
   }
+  .profile-picture__remove-icon {
+    font-size: 30px;
+  }
 }

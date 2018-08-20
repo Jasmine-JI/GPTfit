@@ -65,11 +65,24 @@
   color: #c75353;
 }
 @media(max-width: 767px) {
+  .mat-paginator-page-size-label {
+    text-align: right;
+  }
+  .mat-paginator-page-size-select {
+    width: 100px;
+    text-align: center;
+  }
+  .mat-paginator-range-actions {
+    justify-content: center;
+  }
+  .mat-form-field.mat-paginator-page-size-select {
+    width: 100px;
+    text-align: center;
+  }
   .mat-paginator .mat-paginator-container,
   .mat-paginator-range-actions {
     display: initial;
   }
-  .mat-paginator-page-size-select,
   .mat-paginator-page-size-label,
   .mat-form-field,
   .ala-form__col {
@@ -116,8 +129,9 @@
   .group-edit-bar {
     display: none;
   }
-  .mat-icon__rwd {
-    display: none;
+  .mat-icon__rwd.mat-icon-button {
+    width: 100%;
+    border-radius: 4px;
   }
   .group-manage__action {
     font-weight: 500;
