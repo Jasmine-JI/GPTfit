@@ -28,6 +28,7 @@ import { EditGroupGuard } from './guards/edit-group-guard';
 import { CreateGroupComponent } from './group/create-group/create-group.component';
 import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
 import { DashboardGuard } from './guards/dashboard-guard';
+import { ActivityInfoComponent } from './components/activity-info/activity-info.component';
 const routes: Routes = [
   {
     path: 'dashboard',
@@ -152,6 +153,10 @@ const routes: Routes = [
         path: 'setting',
         component: InnerSettingsComponent,
         canActivate: [DashboardGuard]
+      },
+      {
+        path: 'activity-info',
+        component: ActivityInfoComponent
       }
     ]
   },

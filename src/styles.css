@@ -330,6 +330,11 @@ a.alatech-btn:hover {
   background-color: #fff;
   font-weight: 700;
 }
+
+.ala-dashboard-title {
+  color: #157fcc;
+  font-weight: 700;
+}
 /* about auth page */
 .access-bg {
   margin-top: -63px;

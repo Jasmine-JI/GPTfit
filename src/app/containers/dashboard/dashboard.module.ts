@@ -57,6 +57,7 @@ import { GroupLevelNamePipe } from './pipes/group-level-name.pipe';
 import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
 import { PeopleSelectorWinComponent } from './components/people-selector-win/people-selector-win.component';
 import { DashboardGuard } from './guards/dashboard-guard';
+import { ActivityInfoComponent } from './components/activity-info/activity-info.component';
 
 @NgModule({
   imports: [
@@ -122,7 +123,8 @@ import { DashboardGuard } from './guards/dashboard-guard';
     RightSettingWinComponent,
     GroupLevelNamePipe,
     InnerSettingsComponent,
-    PeopleSelectorWinComponent
+    PeopleSelectorWinComponent,
+    ActivityInfoComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
