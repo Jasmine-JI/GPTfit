@@ -52,12 +52,47 @@
   <div style="height: 30px;margin: 30px 0px">
     <div class="pull-right">
       <button class="alatech-btn alatech-btn--default"
-        (click)="switch()"
+        (click)="switch('chartLoading')"
       >
         <span [hidden]="loading">顯示loading</span>
         <span [hidden]="!loading">隱藏loading</span>
       </button>
     </div>
   </div>
-  <div echarts [options]="chartOption" [loading]="loading" (chartInit)="onChartInit($event)"></div>
+  <div echarts
+    [options]="chartOption"
+    [loading]="chartLoading"
+    (chartInit)="onChartInit($event)"
+  ></div>
+</div>
+<div class="activity-block">
+  <div style="height: 30px;margin: 30px 0px">
+    <div class="pull-right">
+      <button class="alatech-btn alatech-btn--default" (click)="switch('basicLoading')">
+        <span [hidden]="loading">顯示loading</span>
+        <span [hidden]="!loading">隱藏loading</span>
+      </button>
+    </div>
+  </div>
+  <div echarts
+    [options]="basicAreaOption"
+    [loading]="basicLoading"
+    (chartInit)="onChartInit($event)"
+  ></div>
+</div>
+<div class="activity-block">
+  <div style="height: 30px;margin: 30px 0px">
+    <div class="pull-right">
+      <button class="alatech-btn alatech-btn--default" (click)="switch('rainLoading')">
+        <span [hidden]="loading">顯示loading</span>
+        <span [hidden]="!loading">隱藏loading</span>
+      </button>
+    </div>
+  </div>
+  <div echarts
+    [options]="rainOption"
+    [loading]="rainLoading"
+    (chartInit)="onChartInit($event)"
+    style="height:828px"
+  ></div>
 </div>
