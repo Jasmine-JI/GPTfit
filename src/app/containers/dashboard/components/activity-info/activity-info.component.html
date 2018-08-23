@@ -48,51 +48,109 @@
 <div class="ala-dashboard-title activty-title">
   圖表
 </div>
-<div class="activity-block">
-  <div style="height: 30px;margin: 30px 0px">
-    <div class="pull-right">
-      <button class="alatech-btn alatech-btn--default"
-        (click)="switch('chartLoading')"
-      >
-        <span [hidden]="loading">顯示loading</span>
-        <span [hidden]="!loading">隱藏loading</span>
-      </button>
+<div class="pull-right">
+  <button class="alatech-btn alatech-btn--default" (click)="toogleEChart()">
+    <span [hidden]="isdisplayEcharts">顯示Echart Demo</span>
+    <span [hidden]="!isdisplayEcharts">隱藏Echart Demo</span>
+  </button>
+  <button class="alatech-btn alatech-btn--default" (click)="toogleHChart()" disabled>
+    <span [hidden]="isdisplayHcharts">顯示Highchart Demo</span>
+    <span [hidden]="!isdisplayHcharts">隱藏Highchart Demo</span>
+  </button>
+</div>
+<ng-container *ngIf="isdisplayEcharts">
+  <div class="activity-block">
+    <div style="height: 30px;margin: 30px 0px">
+      <div class="pull-right">
+        <button class="alatech-btn alatech-btn--default"
+          (click)="switch('chartLoading')"
+        >
+          <span [hidden]="chartLoading">顯示loading</span>
+          <span [hidden]="!chartLoading">隱藏loading</span>
+        </button>
+      </div>
+    </div>
+    <div echarts
+      [options]="chartOption"
+      [loading]="chartLoading"
+      (chartInit)="onChartInit($event)"
+    ></div>
+  </div>
+  <div class="activity-block">
+    <div style="height: 30px;margin: 30px 0px">
+      <div class="pull-right">
+        <button class="alatech-btn alatech-btn--default" (click)="switch('basicLoading')">
+          <span [hidden]="basicLoading">顯示loading</span>
+          <span [hidden]="!basicLoading">隱藏loading</span>
+        </button>
+      </div>
+    </div>
+    <div echarts
+      [options]="basicAreaOption"
+      [loading]="basicLoading"
+      (chartInit)="onChartInit($event)"
+    ></div>
+  </div>
+  <div class="activity-block">
+    <div style="height: 30px;margin: 30px 0px">
+      <div class="pull-right">
+        <button class="alatech-btn alatech-btn--default" (click)="switch('rainLoading')">
+          <span [hidden]="rainLoading">顯示loading</span>
+          <span [hidden]="!rainLoading">隱藏loading</span>
+        </button>
+      </div>
+    </div>
+    <div echarts
+      [options]="rainOption"
+      [loading]="rainLoading"
+      (chartInit)="onChartInit($event)"
+      style="height:828px"
+    ></div>
+  </div>
+</ng-container>
+<ng-container *ngIf="isdisplayHcharts">
+  <div #container>
+    <div class="activity-block">
+      <div>
+        <button (click)="addSeries(1)">Add Series</button>
+        <button (click)="removeSeries(1)" [attr.disabled]="chart1?.series.length === 1 ? '' : null">
+          Remove Series
+        </button>
+        <button (click)="addPoint()">
+          Add Point
+        </button>
+        <button (click)="removePoint()">
+          Remove Point
+        </button>
+      </div>
+      <div #speedChartTarget class="chart">
+        chart target
+      </div>
+
+    </div>
+    <div class="activity-block">
+      <div>
+        <button (click)="addSeries(2)">Add Series</button>
+        <button (click)="removeSeries(2)" [attr.disabled]="chart2?.series.length === 1 ? '' : null">
+          Remove Series
+        </button>
+      </div>
+      <div #elevationChartTarget class="chart">
+        chart target
+      </div>
+    </div>
+    <div class="activity-block">
+      <div>
+        <button (click)="addSeries(3)">Add Series</button>
+        <button (click)="removeSeries(3)" [attr.disabled]="chart3?.series.length === 1 ? '' : null">
+          Remove Series
+        </button>
+      </div>
+      <div #hrChartTarget class="chart">
+        chart target
+      </div>
     </div>
   </div>
-  <div echarts
-    [options]="chartOption"
-    [loading]="chartLoading"
-    (chartInit)="onChartInit($event)"
-  ></div>
-</div>
-<div class="activity-block">
-  <div style="height: 30px;margin: 30px 0px">
-    <div class="pull-right">
-      <button class="alatech-btn alatech-btn--default" (click)="switch('basicLoading')">
-        <span [hidden]="loading">顯示loading</span>
-        <span [hidden]="!loading">隱藏loading</span>
-      </button>
-    </div>
-  </div>
-  <div echarts
-    [options]="basicAreaOption"
-    [loading]="basicLoading"
-    (chartInit)="onChartInit($event)"
-  ></div>
-</div>
-<div class="activity-block">
-  <div style="height: 30px;margin: 30px 0px">
-    <div class="pull-right">
-      <button class="alatech-btn alatech-btn--default" (click)="switch('rainLoading')">
-        <span [hidden]="loading">顯示loading</span>
-        <span [hidden]="!loading">隱藏loading</span>
-      </button>
-    </div>
-  </div>
-  <div echarts
-    [options]="rainOption"
-    [loading]="rainLoading"
-    (chartInit)="onChartInit($event)"
-    style="height:828px"
-  ></div>
-</div>
+</ng-container>
+
+

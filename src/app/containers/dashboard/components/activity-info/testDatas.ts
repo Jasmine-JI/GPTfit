@@ -250,7 +250,7 @@ const rainOption = {
       boundaryGap: false,
       axisLine: { onZero: true },
       data: timeData,
-      position: 'top'
+      // position: 'top'
     }
   ],
   yAxis: [
@@ -263,7 +263,7 @@ const rainOption = {
       gridIndex: 1,
       name: 'Speed(km/h)',
       type: 'value',
-      inverse: true
+      inverse: false
     }
   ],
   series: [

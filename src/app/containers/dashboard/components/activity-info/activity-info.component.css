@@ -36,3 +36,12 @@
 .demo-chart {
   height: 400px;
 }
+.highcharts-credits {
+  display: none;
+}
+.chart {
+  min-width: 320px;
+  max-width: 800px;
+  height: 220px;
+  margin: 0 auto;
+}

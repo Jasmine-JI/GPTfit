@@ -59,6 +59,7 @@ import { PeopleSelectorWinComponent } from './components/people-selector-win/peo
 import { DashboardGuard } from './guards/dashboard-guard';
 import { ActivityInfoComponent } from './components/activity-info/activity-info.component';
 import { NgxEchartsModule } from 'ngx-echarts';
+import { ActivityService } from './services/activity.service';
 
 @NgModule({
   imports: [
@@ -89,7 +90,8 @@ import { NgxEchartsModule } from 'ngx-echarts';
     UtilsService,
     GroupService,
     EditGroupGuard,
-    DashboardGuard
+    DashboardGuard,
+    ActivityService
   ],
   declarations: [
     DashboardComponent,
