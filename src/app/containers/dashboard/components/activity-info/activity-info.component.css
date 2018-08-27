@@ -31,7 +31,7 @@
   color: #6e6e6e;
 }
 .activity-block {
-  margin-bottom: 45px;
+  margin: 25px 20px 45px;
 }
 .demo-chart {
   height: 400px;
@@ -44,4 +44,37 @@
   max-width: 800px;
   height: 220px;
   margin: 0 auto;
+}
+.activity-info__area {
+  width: 240px;
+  display: inline-block;
+  vertical-align: top;
+}
+.activity-info__area + .activity-info__area {
+  margin-left: 70px;
+}
+.mat-tab-body {
+  padding: 20px 15px;
+}
+.activity-info__area--block {
+  padding: 15px 10px 0px;
+}
+
+/* 之後再跟群組的tab做共用樣式*/
+.mat-tab-label {
+  color: #828282;
+  font-weight: 700;
+  background-color: none;
+  opacity: 1 !important;
+}
+
+.mat-tab-label.mat-tab-label-active {
+  padding: 5px;
+  background-color: transparent;
+  color: #26abe3;
+  font-weight: 700;
+}
+
+.mat-tab-group.mat-primary .mat-ink-bar {
+  background-color: #26abe3;
 }

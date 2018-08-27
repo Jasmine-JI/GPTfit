@@ -48,7 +48,7 @@
 <div class="ala-dashboard-title activty-title">
   圖表
 </div>
-<div class="pull-right">
+<div style="display:flex;justify-content: flex-end;">
   <button class="alatech-btn alatech-btn--default" (click)="toogleEChart()">
     <span [hidden]="isdisplayEcharts">顯示Echart Demo</span>
     <span [hidden]="!isdisplayEcharts">隱藏Echart Demo</span>
@@ -61,7 +61,7 @@
 <ng-container *ngIf="isdisplayEcharts">
   <div class="activity-block">
     <div style="height: 30px;margin: 30px 0px">
-      <div class="pull-right">
+      <div style="display:flex;justify-content: flex-end;">
         <button class="alatech-btn alatech-btn--default"
           (click)="switch('chartLoading')"
         >
@@ -78,7 +78,7 @@
   </div>
   <div class="activity-block">
     <div style="height: 30px;margin: 30px 0px">
-      <div class="pull-right">
+      <div style="display:flex;justify-content: flex-end;">
         <button class="alatech-btn alatech-btn--default" (click)="switch('basicLoading')">
           <span [hidden]="basicLoading">顯示loading</span>
           <span [hidden]="!basicLoading">隱藏loading</span>
@@ -93,7 +93,7 @@
   </div>
   <div class="activity-block">
     <div style="height: 30px;margin: 30px 0px">
-      <div class="pull-right">
+      <div style="display:flex;justify-content: flex-end;">
         <button class="alatech-btn alatech-btn--default" (click)="switch('rainLoading')">
           <span [hidden]="rainLoading">顯示loading</span>
           <span [hidden]="!rainLoading">隱藏loading</span>
@@ -112,14 +112,14 @@
   <div #container>
     <div class="activity-block">
       <div>
-        <button (click)="addSeries(1)">Add Series</button>
-        <button (click)="removeSeries(1)" [attr.disabled]="chart1?.series.length === 1 ? '' : null">
+        <button class="alatech-btn alatech-btn--default" (click)="addSeries(1)">Add Series</button>
+        <button class="alatech-btn alatech-btn--default" (click)="removeSeries(1)" [attr.disabled]="chart1?.series.length === 1 ? '' : null">
           Remove Series
         </button>
-        <button (click)="addPoint()">
+        <button class="alatech-btn alatech-btn--default" (click)="addPoint()">
           Add Point
         </button>
-        <button (click)="removePoint()">
+        <button class="alatech-btn alatech-btn--default" (click)="removePoint()">
           Remove Point
         </button>
       </div>
@@ -130,8 +130,8 @@
     </div>
     <div class="activity-block">
       <div>
-        <button (click)="addSeries(2)">Add Series</button>
-        <button (click)="removeSeries(2)" [attr.disabled]="chart2?.series.length === 1 ? '' : null">
+        <button class="alatech-btn alatech-btn--default" (click)="addSeries(2)">Add Series</button>
+        <button class="alatech-btn alatech-btn--default" (click)="removeSeries(2)" [attr.disabled]="chart2?.series.length === 1 ? '' : null">
           Remove Series
         </button>
       </div>
@@ -141,8 +141,8 @@
     </div>
     <div class="activity-block">
       <div>
-        <button (click)="addSeries(3)">Add Series</button>
-        <button (click)="removeSeries(3)" [attr.disabled]="chart3?.series.length === 1 ? '' : null">
+        <button class="alatech-btn alatech-btn--default" (click)="addSeries(3)">Add Series</button>
+        <button class="alatech-btn alatech-btn--default" (click)="removeSeries(3)" [attr.disabled]="chart3?.series.length === 1 ? '' : null">
           Remove Series
         </button>
       </div>
@@ -152,5 +152,77 @@
     </div>
   </div>
 </ng-container>
-
+<mat-tab-group>
+  <mat-tab label="詳細資訊">
+    <div class="activity-info__area">
+      <div class="ala-dashboard-title activty-title">
+        時間
+      </div>
+      <div class="activity-info__area--block">
+        <div>
+          1:05:12
+        </div>
+        <div>
+          總時間
+        </div>
+      </div>
+      <div class="activity-info__area--block">
+        <div>
+          1:02:37
+        </div>
+        <div>
+          移動時間
+        </div>
+      </div>
+      <div class="activity-info__area--block">
+        <div>
+          2:35
+        </div>
+        <div>
+          休息時間
+        </div>
+      </div>
+    </div>
+    <div class="activity-info__area">
+      <div class="ala-dashboard-title activty-title">
+        速度
+      </div>
+      <div class="activity-info__area--block">
+        <div>
+          6'55"
+        </div>
+        <div>
+          平均1km配速
+        </div>
+      </div>
+      <div class="activity-info__area--block">
+        <div>
+          5'33"
+        </div>
+        <div>
+          最佳配速
+        </div>
+      </div>
+      <div class="activity-info__area--block">
+        <div>
+          3.56
+        </div>
+        <div>
+          平均時速
+        </div>
+      </div>
+    </div>
+    <div class="activity-info__area">
+      <div class="ala-dashboard-title activty-title">
+        距離
+      </div>
+      <div class="activity-info__area--block">
+        <div>
+          6.59
+        </div>
+      </div>
+    </div>
+  </mat-tab>
+  <mat-tab label="分段資料">我是分段資料</mat-tab>
+</mat-tab-group>
 
