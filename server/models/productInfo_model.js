@@ -26,7 +26,7 @@ exports.getInfos = function(sn) {
   return new Promise((resolve, reject) => {
     let domain = addressToDomain(address);
     if (sn) {
-      request(`http://${domain}/app/public_html/products/info6.json`, function (error, response, body) {
+      request(`http://${domain}/app/public_html/products/info.json`, function (error, response, body) {
         if (error) throw new Error(error);
         const data = {};
         const { productsInfo, modelType, appInfo } = JSON.parse(body);
