@@ -6,7 +6,14 @@
     "Dashboard": "Dashboard"
   },
   "Portal": {
-    "Introduce": "Introduce"
+    "Introduce": "Introduce",
+    "ProductPhoto": "Product Photo",
+    "EquipmentSN": "Equipment S/N",
+    "ProductName": "Product Name",
+    "ProductType": "Product Type",
+    "MainApp": "Main Application",
+    "othersApp": "Secondary Application",
+    "RelatedLinks": "Related Links"
   }
 }
 
