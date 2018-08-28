@@ -9,7 +9,8 @@ import {
   animate,
   AfterViewInit,
   ElementRef,
-  ViewChild
+  ViewChild,
+  ViewEncapsulation
 } from '@angular/core';
 import { fakeDatas, fakeCoachInfo } from './fakeUsers';
 import { CoachService } from '../../services/coach.service';
@@ -29,6 +30,7 @@ var Highcharts: any = _Highcharts; // 不檢查highchart型態
   selector: 'app-coach-rex',
   templateUrl: './coach-rex.component.html',
   styleUrls: ['./coach-rex.component.css'],
+  encapsulation: ViewEncapsulation.None,
   animations: [
     trigger('animateState', [
       state(
@@ -103,6 +105,8 @@ export class CoachRexComponent implements OnInit, OnDestroy, AfterViewInit {
     '#e10019'
   ];
   displaySections = [true, true, true];
+  dispalyChartOptions = [false, true, false];
+  dispalyMemberOptions = [false, true, false, false];
   isSectionIndividual = false;
   isMoreDisplay = false;
   radius = 10;
@@ -457,7 +461,7 @@ export class CoachRexComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   ngAfterViewInit() {
-    this.handleDrawChart();
+    // this.handleDrawChart();
     this.initHChart();
   }
   ngOnDestroy() {
@@ -509,6 +513,43 @@ export class CoachRexComponent implements OnInit, OnDestroy, AfterViewInit {
       (a, b) => b.current_heart_rate - a.current_heart_rate
     );
   }
+  handldeChartOptions(idx) {
+    if (idx === 1) {
+      this.dispalyChartOptions[0] = !this.dispalyChartOptions[0];
+      this.dispalyChartOptions[1] = !this.dispalyChartOptions[1];
+    } else {
+      this.dispalyChartOptions[0] = !this.dispalyChartOptions[0];
+      this.dispalyChartOptions[1] = !this.dispalyChartOptions[1];
+    }
+  }
+  handldeMemberOptions(idx) {
+    if (idx === 0) {
+      this.dispalyMemberOptions[0] = !this.dispalyMemberOptions[0];
+      if (this.dispalyMemberOptions[0]) {
+        this.dispalyMemberOptions[1] = false;
+      } else {
+        this.dispalyMemberOptions[1] = true;
+      }
+      this.dispalyMemberOptions[2] = false;
+    } else if (idx === 1) {
+      this.dispalyMemberOptions[1] = !this.dispalyMemberOptions[1];
+      if (this.dispalyMemberOptions[1]) {
+        this.dispalyMemberOptions[0] = false;
+      } else {
+        this.dispalyMemberOptions[0] = true;
+      }
+      this.dispalyMemberOptions[2] = false;
+    } else {
+      this.dispalyMemberOptions[2] = !this.dispalyMemberOptions[2];
+      if (this.dispalyMemberOptions[2]) {
+        this.dispalyMemberOptions[0] = false;
+        this.dispalyMemberOptions[1] = false;
+      } else {
+        this.dispalyMemberOptions[0] = false;
+        this.dispalyMemberOptions[1] = true;
+      }
+    }
+  }
   handldeSection(idx) {
     this.isSectionIndividual = !this.isSectionIndividual;
     if (this.isSectionIndividual) {
@@ -517,15 +558,21 @@ export class CoachRexComponent implements OnInit, OnDestroy, AfterViewInit {
         this.displaySections[1] = false;
         this.displaySections[2] = false;
       } else if (idx === 1) {
+        this.dispalyChartOptions[2] = true;
         this.displaySections[0] = false;
         this.displaySections[1] = true;
         this.displaySections[2] = false;
       } else {
+        this.dispalyMemberOptions[3] = true;
         this.displaySections[0] = false;
         this.displaySections[1] = false;
         this.displaySections[2] = true;
       }
     } else {
+      // this.chart.destory();
+      // this.initHChart();
+      this.dispalyChartOptions[2] = false;
+      this.dispalyMemberOptions[3] = false;
       this.displaySections[0] = true;
       this.displaySections[1] = true;
       this.displaySections[2] = true;
