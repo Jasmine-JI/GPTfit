@@ -10,6 +10,7 @@ import { UserInfoService } from './services/userInfo.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { TranslateService } from '@ngx-translate/core';
 import { UserInfo } from './models/userInfo';
+import { NavigationEnd } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -26,7 +27,7 @@ export class DashboardComponent implements OnInit {
   mode = 'side';
   isDefaultOpend = true;
   userName: string;
-  userPhoto: string;  
+  userPhoto: string;
   isUserMenuShow = false;
   isSupervisor = false;
   isBrandAdministrator = false;
@@ -38,6 +39,7 @@ export class DashboardComponent implements OnInit {
   isCoach = false;
   isGroupAdministrator = false;
   isGeneralMember = false;
+  isHadContainer = true;
   constructor(
     private globalEventsManager: GlobalEventsManager,
     private authService: AuthService,
@@ -49,20 +51,31 @@ export class DashboardComponent implements OnInit {
     if (location.search.indexOf('ipm=s') > -1) {
       this.isPreviewMode = true;
     }
-    this.userInfoService.getInitialUserInfoStatus().subscribe((res: UserInfo) => {
-      const { isInitial } = res;
-      if (!isInitial) {
-        this.isLoading = true;
-        const token = this.utilsService.getToken();
-        const body = {
-          token,
-          iconType: 2
-        };
-        this.userInfoService.getUserInfo(body).then(() => {
-          this.isLoading = false;
-        });
+    this.router.events.subscribe(_val => {
+      if (_val instanceof NavigationEnd) {
+        if (_val.url.indexOf('/dashboard/test') > -1) {
+          this.isHadContainer = false;
+        } else {
+          this.isHadContainer = true;
+        }
       }
     });
+    this.userInfoService
+      .getInitialUserInfoStatus()
+      .subscribe((res: UserInfo) => {
+        const { isInitial } = res;
+        if (!isInitial) {
+          this.isLoading = true;
+          const token = this.utilsService.getToken();
+          const body = {
+            token,
+            iconType: 2
+          };
+          this.userInfoService.getUserInfo(body).then(() => {
+            this.isLoading = false;
+          });
+        }
+      });
   }
 
   ngOnInit() {
@@ -185,7 +198,7 @@ export class DashboardComponent implements OnInit {
   }
   toggleSideNav(sideNav: MatSidenav) {
     this.isSideNavOpend = !this.isSideNavOpend;
-    sideNav.toggle().then((result) => {
+    sideNav.toggle().then(result => {
       const toogleResult = result;
       if (toogleResult['type'] === 'open') {
         this.isSideNavOpend = true;

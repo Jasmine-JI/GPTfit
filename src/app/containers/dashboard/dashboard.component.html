@@ -40,7 +40,7 @@
                 <li class="ala-sidenav-menu-item"
                   (click)="chooseItem(3, sideNav)"
                   [class.ala-sidenav-menu-item__active]="target === 3"
-                  [routerLink]="['/dashboard/coach-dashboard']"
+                  [routerLink]="['/dashboard/test/3400']"
                 >
                   健身工廠
                 </li>
@@ -179,7 +179,12 @@
           </div>
         </div>
       </header>
-      <div *ngIf="!isPreviewMode" class="container dashboard-rwd" [hidden]="isLoading">
+      <div *ngIf="!isPreviewMode"
+        [class.container]="isHadContainer"
+        class="dashboard-rwd"
+        [style.padding-top]="isHadContainer? '80px' : '60px'"
+        [hidden]="isLoading"
+      >
         <router-outlet></router-outlet>
       </div>
       <footer class="footer footer-details">

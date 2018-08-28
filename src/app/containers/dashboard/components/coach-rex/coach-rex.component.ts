@@ -8,7 +8,8 @@ import {
   transition,
   animate,
   AfterViewInit,
-  ElementRef
+  ElementRef,
+  ViewChild
 } from '@angular/core';
 import { fakeDatas, fakeCoachInfo } from './fakeUsers';
 import { CoachService } from '../../services/coach.service';
@@ -18,6 +19,11 @@ import { HttpParams } from '@angular/common/http';
 import { Users } from '../../models/fakeUser';
 import { Meta } from '@angular/platform-browser';
 import * as d3 from 'd3';
+import * as _Highcharts from 'highcharts';
+import * as Stock from 'highcharts/highstock';
+
+import { chart } from 'highcharts';
+var Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 @Component({
   selector: 'app-coach-rex',
@@ -107,6 +113,9 @@ export class CoachRexComponent implements OnInit, OnDestroy, AfterViewInit {
   chartHeight = 0;
   s: any;
   time = 0;
+  @ViewChild('hrChartTarget')
+  hrChartTarget: ElementRef;
+  chart: any; // Highcharts.ChartObject
   constructor(
     private coachService: CoachService,
     private router: Router,
@@ -118,13 +127,18 @@ export class CoachRexComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
-    const ratio = window.devicePixelRatio;
-    if (location.host !== '192.168.1.235:8080' && ratio === 3) {
-      this.meta.updateTag({
-        name: 'viewport',
-        content: `width=device-width, initial-scale=${1 / ratio}`
-      });
-    }
+    Highcharts.setOptions({
+      global: {
+        useUTC: false
+      }
+    });
+    // const ratio = window.devicePixelRatio;
+    // if (location.host !== '192.168.1.235:8080' && ratio === 3) {
+    //   this.meta.updateTag({
+    //     name: 'viewport',
+    //     content: `width=device-width, initial-scale=${1 / ratio}`
+    //   });
+    // }
     this.fakeDatas = fakeDatas;
     this.fakeDatas.forEach((_data, idx) => {
       const image = new Image();
@@ -132,13 +146,70 @@ export class CoachRexComponent implements OnInit, OnDestroy, AfterViewInit {
       image.src = _data.imgUrl;
     });
     this.raceId = this.route.snapshot.paramMap.get('raceId');
-    this.handleRealTime();
+    // this.handleRealTime();
     this.handleCoachInfo(fakeCoachInfo);
   }
 
+  initHChart() {
+    const hrOptions: any = {
+      chart: {
+        events: {
+          load: function () {
+
+            // set up the updating of the chart each second
+            const series = this.series[0];
+            setInterval(function () {
+              const x = (new Date()).getTime(), // current time
+                y = Math.round(Math.random() * 100);
+              series.addPoint([x, y], true, true);
+            }, 1000);
+          }
+        }
+      },
+      title: {
+        text: 'Live random data'
+      },
+      exporting: {
+        enabled: false
+      },
+      rangeSelector: {
+        buttons: [{
+          count: 1,
+          type: 'minute',
+          text: '1M'
+        }, {
+          count: 5,
+          type: 'minute',
+          text: '5M'
+        }, {
+          type: 'all',
+          text: 'All'
+        }],
+        inputEnabled: false,
+        selected: 0
+      },
+      series: [{
+        name: 'Random data',
+        data: (function () {
+          // generate an array of random data
+          const data = [],
+            time = (new Date()).getTime();
+          let i;
+
+          for (i = -999; i <= 0; i += 1) {
+            data.push([
+              time + i * 1000,
+              Math.round(Math.random() * 100)
+            ]);
+          }
+          return data;
+        }())
+      }]
+    };
+    this.chart = new Stock.StockChart(this.hrChartTarget.nativeElement, hrOptions);
+  }
   handleArea(data, scaleX, scaleY, idx) {
-    d3
-      .area()
+    d3.area()
       .x(function(d) {
         return scaleX(d[0]);
       })
@@ -149,8 +220,7 @@ export class CoachRexComponent implements OnInit, OnDestroy, AfterViewInit {
       .curve(d3.curveCardinal);
   }
   handleLine(data, scaleX, scaleY, idx) {
-    d3
-      .line()
+    d3.line()
       .x(function(d) {
         return scaleX(d[0]);
       })
@@ -189,10 +259,10 @@ export class CoachRexComponent implements OnInit, OnDestroy, AfterViewInit {
       .domain([minY - 10, maxY + 10]);
     this.data[this.data.length - 1].forEach((_data, idx) => {
       if (idx > 0) {
-        const index = this.displayCards.findIndex(_card => (_card.user_id === this.renderCards[idx - 1]));
-        const areaGradient = d3
-          .select('#chart')
-          .select(`#areaGradient${idx}`);
+        const index = this.displayCards.findIndex(
+          _card => _card.user_id === this.renderCards[idx - 1]
+        );
+        const areaGradient = d3.select('#chart').select(`#areaGradient${idx}`);
         areaGradient
           .select(`#stop1areaGradient${idx}`)
           .attr('offset', '0%')
@@ -223,30 +293,25 @@ export class CoachRexComponent implements OnInit, OnDestroy, AfterViewInit {
           })
           .curve(d3.curveCardinal);
 
-        s
-          .select(`#line${idx}`)
+        s.select(`#line${idx}`)
           .duration(1000)
           .attr('d', line(this.data))
           .attr('stroke', this.hrColors[this.displayCards[index].colorIdx])
           .attr('stroke-width', 5)
           .attr('fill', 'none')
           .attr('transform', 'translate(35,20)');
-        s
-          .select(`#area${idx}`)
+        s.select(`#area${idx}`)
           .duration(1000)
           .attr('d', area(this.data))
           .attr('fill', `url(#areaGradient${idx})`);
-
       }
-
     });
     const start = Math.floor((maxY + 10) / 10) * 10;
     const end = Math.floor((minY - 10) / 10) * 10;
 
     const tmpArr = this.handleRangeArray(start, end);
     const axisY = d3.axisLeft(scaleY).tickValues(tmpArr);
-    d3
-      .select('#chart')
+    d3.select('#chart')
       .select('#y-axis')
       .transition()
       .call(axisY);
@@ -258,7 +323,6 @@ export class CoachRexComponent implements OnInit, OnDestroy, AfterViewInit {
       arr.push(start + 10 * i);
       return arr;
     }
-
   }
   handleDrawChart() {
     const s = d3.select('#chart');
@@ -292,7 +356,9 @@ export class CoachRexComponent implements OnInit, OnDestroy, AfterViewInit {
         .domain([minY - 10, maxY + 10]);
       this.data[this.data.length - 1].forEach((_data, idx) => {
         if (idx > 0) {
-          const index = this.displayCards.findIndex(_card => _card.user_id === this.renderCards[idx - 1]);
+          const index = this.displayCards.findIndex(
+            _card => _card.user_id === this.renderCards[idx - 1]
+          );
 
           const areaGradient = d3
             .select('#chart')
@@ -307,13 +373,19 @@ export class CoachRexComponent implements OnInit, OnDestroy, AfterViewInit {
             .append('stop')
             .attr('id', `stop1areaGradient${idx}`)
             .attr('offset', '0%')
-            .attr('stop-color', this.hrColors[this.displayCards[index].colorIdx])
+            .attr(
+              'stop-color',
+              this.hrColors[this.displayCards[index].colorIdx]
+            )
             .attr('stop-opacity', 0.8);
           areaGradient
             .append('stop')
             .attr('id', `stop2areaGradient${idx}`)
             .attr('offset', '100%')
-            .attr('stop-color', this.hrColors[this.displayCards[index].colorIdx])
+            .attr(
+              'stop-color',
+              this.hrColors[this.displayCards[index].colorIdx]
+            )
             .attr('stop-opacity', 0);
           const line = d3
             .line()
@@ -334,8 +406,7 @@ export class CoachRexComponent implements OnInit, OnDestroy, AfterViewInit {
               return scaleY(d[idx]);
             })
             .curve(d3.curveCardinal);
-          s
-            .append('path')
+          s.append('path')
             .attr('id', `line${idx}`)
             .attr('d', line(this.data))
             .attr('stroke', this.hrColors[this.displayCards[index].colorIdx])
@@ -343,8 +414,7 @@ export class CoachRexComponent implements OnInit, OnDestroy, AfterViewInit {
             .attr('fill', 'none')
             .attr('transform', 'translate(35,20)');
 
-          s
-            .append('path')
+          s.append('path')
             .attr('id', `area${idx}`)
             .attr('d', area(this.data))
             .attr('fill', `url(#areaGradient${idx})`)
@@ -373,8 +443,7 @@ export class CoachRexComponent implements OnInit, OnDestroy, AfterViewInit {
           .tickSize(-this.chartWidth, 0);
 
         // Axis Grid line
-        s
-          .append('g')
+        s.append('g')
           .attr('id', 'y-axis')
           .call(axisY)
           .attr('fill', 'none')
@@ -385,11 +454,11 @@ export class CoachRexComponent implements OnInit, OnDestroy, AfterViewInit {
           .attr('stroke', 'none')
           .style('font-size', '10px');
       });
-
     }
   }
   ngAfterViewInit() {
     this.handleDrawChart();
+    this.initHChart();
   }
   ngOnDestroy() {
     clearInterval(this.timer);
