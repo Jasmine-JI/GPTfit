@@ -30,17 +30,17 @@ export class HttpStatusInterceptor implements HttpInterceptor {
       (event: HttpEvent<any>) => {
         if (event instanceof HttpResponse) {
           // do stuff with response if you want
-          const parseBody = JSON.parse(event.body);
-          if (parseBody.resultCode && parseBody.resultCode !== 200) {
-            this.dialog.open(MessageBoxComponent, {
-              hasBackdrop: true,
-              data: {
-                title: 'Error',
-                body: parseBody.resultMessage,
-                confirmText: '確定'
-              }
-            });
-          }
+          // const parseBody = JSON.parse(event.body);
+          // if (parseBody.resultCode && parseBody.resultCode !== 200) {
+          //   this.dialog.open(MessageBoxComponent, {
+          //     hasBackdrop: true,
+          //     data: {
+          //       title: 'Error',
+          //       body: parseBody.resultMessage,
+          //       confirmText: '確定'
+          //     }
+          //   });
+          // }
         }
       },
       (err: any) => {
