@@ -162,7 +162,7 @@ export class CoachRexComponent implements OnInit, OnDestroy, AfterViewInit {
 
             // set up the updating of the chart each second
             const series = this.series[0];
-            setInterval(function () {
+            this.hchartTimer = setInterval(() => {
               const x = (new Date()).getTime(), // current time
                 y = Math.round(Math.random() * 100);
               series.addPoint([x, y], true, true);
@@ -466,6 +466,7 @@ export class CoachRexComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   ngOnDestroy() {
     clearInterval(this.timer);
+    clearInterval(this.chart.hchartTimer); // 因為要到this.chart裡找hchartTimer
     this.meta.updateTag({
       name: 'viewport',
       content: 'width=device-width, initial-scale=1'
