@@ -1,4 +1,4 @@
 export interface UserInfo {
-  isInitial: boolean,
+  isInitial: boolean;
   [groupAccessRight: string]: any;
 }

@@ -57,6 +57,13 @@ import { GroupLevelNamePipe } from './pipes/group-level-name.pipe';
 import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
 import { PeopleSelectorWinComponent } from './components/people-selector-win/people-selector-win.component';
 import { DashboardGuard } from './guards/dashboard-guard';
+import { ActivityInfoComponent } from './components/activity-info/activity-info.component';
+import { NgxEchartsModule } from 'ngx-echarts';
+import { ActivityService } from './services/activity.service';
+import { MyActivityComponent } from './components/my-activity/my-activity.component';
+import { SportTypePipe } from './pipes/sport-type.pipe';
+import { SportDatePipe } from './pipes/sport-date.pipe';
+import { NgProgressModule } from 'ngx-progressbar';
 
 @NgModule({
   imports: [
@@ -72,7 +79,9 @@ import { DashboardGuard } from './guards/dashboard-guard';
     SharedPipes,
     ReactiveFormsModule,
     DragulaModule,
-    SharedModule
+    SharedModule,
+    NgxEchartsModule,
+    NgProgressModule
   ],
   providers: [
     EventEnrollService,
@@ -86,7 +95,8 @@ import { DashboardGuard } from './guards/dashboard-guard';
     UtilsService,
     GroupService,
     EditGroupGuard,
-    DashboardGuard
+    DashboardGuard,
+    ActivityService
   ],
   declarations: [
     DashboardComponent,
@@ -122,7 +132,11 @@ import { DashboardGuard } from './guards/dashboard-guard';
     RightSettingWinComponent,
     GroupLevelNamePipe,
     InnerSettingsComponent,
-    PeopleSelectorWinComponent
+    PeopleSelectorWinComponent,
+    ActivityInfoComponent,
+    MyActivityComponent,
+    SportTypePipe,
+    SportDatePipe
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [

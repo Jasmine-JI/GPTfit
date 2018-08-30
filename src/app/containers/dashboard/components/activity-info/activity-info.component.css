@@ -1,0 +1,91 @@
+.activty-title {
+  border-bottom: 2px #e5e5e5 solid;
+}
+/*之後要跟my activity 做共用*/
+.activty-btn {
+  width: 140px;
+  height: 38px;
+}
+
+.activty-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #d2d2d2;
+  display: inline-block;
+  position: relative;
+  color: #919191;
+}
+.activty-icon-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.activty-info-data-value {
+  font-size: 30px;
+  color: #646464;
+}
+.activty-info-data-name {
+  font-size: 15px;
+  color: #6e6e6e;
+}
+.activity-block {
+  margin: 25px 20px 45px;
+}
+.demo-chart {
+  height: 400px;
+}
+.highcharts-credits {
+  display: none;
+}
+.chart {
+  min-width: 320px;
+  max-width: 800px;
+  height: 220px;
+  margin: 0 auto;
+}
+.activity-info__area {
+  width: 240px;
+  display: inline-block;
+  vertical-align: top;
+}
+.activity-info__area + .activity-info__area {
+  margin-left: 70px;
+}
+.mat-tab-body {
+  padding: 20px 15px;
+}
+.activity-info__area--block {
+  padding: 15px 10px 0px;
+}
+
+/* 之後再跟群組的tab做共用樣式*/
+.mat-tab-label {
+  color: #828282;
+  font-weight: 700;
+  background-color: none;
+  opacity: 1 !important;
+}
+
+.mat-tab-label.mat-tab-label-active {
+  padding: 5px;
+  background-color: transparent;
+  color: #26abe3;
+  font-weight: 700;
+}
+
+.mat-tab-group.mat-primary .mat-ink-bar {
+  background-color: #26abe3;
+}
+@media(max-width: 767px) {
+  .mat-tab-body-content {
+    display: flex;
+  }
+  .activity-info__area {
+    text-align: center;
+  }
+  .activity-info__area + .activity-info__area {
+    margin-left: 0px;
+  }
+}

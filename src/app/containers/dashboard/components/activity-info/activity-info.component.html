@@ -1,0 +1,246 @@
+<ng-progress
+  [positionUsing]="'marginLeft'"
+  [direction]="'leftToRightIncreased'"
+  [color]="'#108bcd'"
+  [trickleSpeed]="500"
+  [thick]="true"
+  [ease]="'easeInSine'"
+>
+</ng-progress>
+<div [style.visibility]="isLoading ? 'hidden': 'visible'">
+  <div class="group-edit-bar" style="justify-content: flex-end;">
+    <button class="alatech-btn alatech-btn--default activty-btn" (click)="toogleEChart()">
+      <span [hidden]="isdisplayEcharts">顯示Echart Demo</span>
+      <span [hidden]="!isdisplayEcharts">隱藏Echart Demo</span>
+    </button>
+    <button class="alatech-btn alatech-btn--default activty-btn"
+      title="返回列表"
+      [routerLink]="['/dashboard/my-activity']"
+    >
+      返回列表
+    </button>
+  </div>
+  <div class="ala-dashboard-title activty-title">
+    概要資訊
+  </div>
+  <div class="activity-block">
+    <p style="color: #919191;margin: 15px 10px">
+      [類別名稱] 由<span style="color:#54b9e7">*玩家暱稱與ID連結 *</span>  紀錄，於{{infoDate}} 建立
+    </p>
+    <div class="d-flex" style="align-items:center">
+      <div class="activty-icon">
+        <span class="activty-icon-text">
+          icon
+        </span>
+      </div>
+      <span style="color: #919191;margin-left: 15px;font-size: 26px;">
+        {{activityInfo?.type | sportType}}
+      </span>
+    </div>
+    <div class="d-flex" style="justify-content: space-between;margin-top: 30px">
+      <div>
+        <div class="activty-info-data-value">{{activityInfo?.totalSecond | time}}</div>
+        <div class="activty-info-data-name">時間</div>
+      </div>
+      <div>
+        <div class="activty-info-data-value">{{activityInfo?.totalDistanceMeters}}</div>
+        <div class="activty-info-data-name">距離</div>
+      </div>
+      <div>
+        <div class="activty-info-data-value">{{activityInfo?.avgSpeed}}</div>
+        <div class="activty-info-data-name">平均1km配速</div>
+      </div>
+      <div>
+        <div class="activty-info-data-value">{{activityInfo?.avgHeartRateBpm}}</div>
+        <div class="activty-info-data-name">平均心率</div>
+      </div>
+      <div>
+        <div class="activty-info-data-value">{{activityInfo?.calories}}</div>
+        <div class="activty-info-data-name">卡路里</div>
+      </div>
+    </div>
+  </div>
+  <div class="ala-dashboard-title activty-title">
+    圖表
+  </div>
+  <ng-container *ngIf="isdisplayEcharts">
+    <div class="activity-block">
+      <div style="height: 30px;margin: 30px 0px">
+        <div style="display:flex;justify-content: flex-end;">
+          <button class="alatech-btn alatech-btn--default"
+            (click)="switch('chartLoading')"
+          >
+            <span [hidden]="chartLoading">顯示loading</span>
+            <span [hidden]="!chartLoading">隱藏loading</span>
+          </button>
+        </div>
+      </div>
+      <div echarts
+        [options]="chartOption"
+        [loading]="chartLoading"
+        (chartInit)="onChartInit($event)"
+      ></div>
+    </div>
+    <div class="activity-block">
+      <div style="height: 30px;margin: 30px 0px">
+        <div style="display:flex;justify-content: flex-end;">
+          <button class="alatech-btn alatech-btn--default" (click)="switch('basicLoading')">
+            <span [hidden]="basicLoading">顯示loading</span>
+            <span [hidden]="!basicLoading">隱藏loading</span>
+          </button>
+        </div>
+      </div>
+      <div echarts
+        style="height: 600px"
+        [options]="basicAreaOption"
+        [loading]="basicLoading"
+        (chartInit)="onChartInit($event)"
+      ></div>
+    </div>
+    <div class="activity-block">
+      <div style="height: 30px;margin: 30px 0px">
+        <div style="display:flex;justify-content: flex-end;">
+          <button class="alatech-btn alatech-btn--default" (click)="switch('rainLoading')">
+            <span [hidden]="rainLoading">顯示loading</span>
+            <span [hidden]="!rainLoading">隱藏loading</span>
+          </button>
+        </div>
+      </div>
+      <div echarts
+        [options]="rainOption"
+        [loading]="rainLoading"
+        (chartInit)="onChartInit($event)"
+        style="height:828px"
+      ></div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="isdisplayHcharts">
+    <div #container>
+      <div class="activity-block">
+        <div>
+          <button class="alatech-btn alatech-btn--default" (click)="addSeries(1)">Add Series</button>
+          <button class="alatech-btn alatech-btn--default" (click)="removeSeries(1)" [attr.disabled]="chart1?.series.length === 1 ? '' : null">
+            Remove Series
+          </button>
+          <button class="alatech-btn alatech-btn--default" (click)="addPoint()">
+            Add Point
+          </button>
+          <button class="alatech-btn alatech-btn--default" (click)="removePoint()">
+            Remove Point
+          </button>
+        </div>
+        <div #speedChartTarget class="chart">
+          chart target
+        </div>
+
+      </div>
+      <div class="activity-block">
+        <div>
+          <button class="alatech-btn alatech-btn--default" (click)="addSeries(2)">Add Series</button>
+          <button class="alatech-btn alatech-btn--default" (click)="removeSeries(2)" [attr.disabled]="chart2?.series.length === 1 ? '' : null">
+            Remove Series
+          </button>
+        </div>
+        <div #elevationChartTarget class="chart">
+          chart target
+        </div>
+      </div>
+      <div class="activity-block">
+        <div>
+          <button class="alatech-btn alatech-btn--default" (click)="addSeries(3)">Add Series</button>
+          <button class="alatech-btn alatech-btn--default" (click)="removeSeries(3)" [attr.disabled]="chart3?.series.length === 1 ? '' : null">
+            Remove Series
+          </button>
+        </div>
+        <div #hrChartTarget class="chart">
+          chart target
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <mat-tab-group>
+    <mat-tab label="詳細資訊">
+      <div class="activity-info__area">
+        <div class="ala-dashboard-title activty-title">
+          時間
+        </div>
+        <div class="activity-info__area--block">
+          <div>
+            {{activityInfo?.totalSecond | time}}
+          </div>
+          <div>
+            總時間
+          </div>
+        </div>
+        <div class="activity-info__area--block">
+          <div>
+            1:02:37
+          </div>
+          <div>
+            移動時間
+          </div>
+        </div>
+        <div class="activity-info__area--block">
+          <div>
+            2:35
+          </div>
+          <div>
+            休息時間
+          </div>
+        </div>
+      </div>
+      <div class="activity-info__area">
+        <div class="ala-dashboard-title activty-title">
+          速度
+        </div>
+        <div class="activity-info__area--block">
+          <div>
+            {{activityInfo?.avgSpeed}}
+          </div>
+          <div>
+            平均1km配速
+          </div>
+        </div>
+        <div class="activity-info__area--block">
+          <div>
+            5'33"
+          </div>
+          <div>
+            最佳配速
+          </div>
+        </div>
+        <div class="activity-info__area--block">
+          <div>
+            3.56
+          </div>
+          <div>
+            平均時速
+          </div>
+        </div>
+      </div>
+      <div class="activity-info__area">
+        <div class="ala-dashboard-title activty-title">
+          距離
+        </div>
+        <div class="activity-info__area--block">
+          <div>
+            {{activityInfo?.totalDistanceMeters}}
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+    <mat-tab label="分段資料">我是分段資料</mat-tab>
+  </mat-tab-group>
+</div>
+<div class="group-manage__action">
+  <button class="alatech-btn group-manage__btn" (click)="toogleEChart()">
+    <span [hidden]="isdisplayEcharts">顯示Echart Demo</span>
+    <span [hidden]="!isdisplayEcharts">隱藏Echart Demo</span>
+  </button>
+  <button class="alatech-btn group-manage__btn"
+    title="返回列表"
+    [routerLink]="['/dashboard/my-activity']"
+  >
+    返回列表
+  </button>
+</div>

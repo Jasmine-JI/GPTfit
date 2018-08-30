@@ -20,7 +20,9 @@
 .mat-progress-spinner circle, .mat-spinner circle {
   stroke: #108bcd;
 }
-
+.ng-progress.thick .bar {
+  height: 5px!important;
+}
 
 body,
 html {
@@ -328,6 +330,11 @@ a.alatech-btn:hover {
   left: 25px;
   padding: 0px 10px;
   background-color: #fff;
+  font-weight: 700;
+}
+
+.ala-dashboard-title {
+  color: #157fcc;
   font-weight: 700;
 }
 /* about auth page */
