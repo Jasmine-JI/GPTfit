@@ -62,6 +62,8 @@ import { NgxEchartsModule } from 'ngx-echarts';
 import { ActivityService } from './services/activity.service';
 import { MyActivityComponent } from './components/my-activity/my-activity.component';
 import { SportTypePipe } from './pipes/sport-type.pipe';
+import { SportDatePipe } from './pipes/sport-date.pipe';
+import { NgProgressModule } from 'ngx-progressbar';
 
 @NgModule({
   imports: [
@@ -78,7 +80,8 @@ import { SportTypePipe } from './pipes/sport-type.pipe';
     ReactiveFormsModule,
     DragulaModule,
     SharedModule,
-    NgxEchartsModule
+    NgxEchartsModule,
+    NgProgressModule
   ],
   providers: [
     EventEnrollService,
@@ -132,7 +135,8 @@ import { SportTypePipe } from './pipes/sport-type.pipe';
     PeopleSelectorWinComponent,
     ActivityInfoComponent,
     MyActivityComponent,
-    SportTypePipe
+    SportTypePipe,
+    SportDatePipe
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [

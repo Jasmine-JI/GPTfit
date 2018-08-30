@@ -93,6 +93,7 @@ export class MyActivityComponent implements OnInit {
     this.activityService.fetchSportList(params).subscribe(res => {
       this.isLoading = false;
       this.logSource.data = res.activityInfoLayer;
+
       this.totalCount = res.totalCounts;
       if (this.logSource.data.length === 0) {
         this.isEmpty = true;
@@ -101,7 +102,7 @@ export class MyActivityComponent implements OnInit {
       }
     });
   }
-  goDetail() {
-    this.router.navigateByUrl(`dashboard/my-activity/detail`);
+  goDetail(id) {
+    this.router.navigateByUrl(`dashboard/my-activity/detail/${id}`);
   }
 }

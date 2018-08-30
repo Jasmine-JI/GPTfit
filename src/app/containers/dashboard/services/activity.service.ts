@@ -14,4 +14,7 @@ export class ActivityService {
   fetchSportList(params) {
     return this.http.get<any>(API_SERVER + 'sport/sportList', { params });
   }
+  fetchSportListDetail(params) {
+    return this.http.get<any>(API_SERVER + 'sport/sportListDetail', { params });
+  }
 }

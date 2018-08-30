@@ -8,22 +8,26 @@ import {
   OnDestroy,
   ViewEncapsulation
 } from '@angular/core';
-import { EChartOption } from 'echarts';
+// import { EChartOption } from 'echarts';
 import { chartOption, basicAreaOption, rainOption } from './testDatas';
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
 import { testData } from './testData1';
+import { ActivityService } from '../../services/activity.service';
+import { ActivatedRoute } from '@angular/router';
+import { HttpParams } from '@angular/common/http';
+import { NgProgress } from 'ngx-progressbar';
 
 var Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 @Component({
   selector: 'app-activity-info',
   templateUrl: './activity-info.component.html',
-  styleUrls: ['./activity-info.component.css'],
+  styleUrls: ['./activity-info.component.css', '../../group/group-style.css'],
   encapsulation: ViewEncapsulation.None
 })
 export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
-  isdisplayEcharts = true;
+  isdisplayEcharts = false;
   isdisplayHcharts = true;
 
   echartsIntance: any;
@@ -54,7 +58,17 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   dataset1: any;
   dataset2: any;
   dataset3: any;
-  constructor(elementRef: ElementRef, private renderer: Renderer2) {
+  activityInfo: any;
+  infoDate: string;
+  activityPoints: any;
+  isLoading = false;
+  constructor(
+    elementRef: ElementRef,
+    private renderer: Renderer2,
+    private activityService: ActivityService,
+    private route: ActivatedRoute,
+    private progress: NgProgress
+  ) {
     /**
      * 重写内部的方法， 这里是将提示框即十字准星的隐藏函数关闭
      */
@@ -76,28 +90,93 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     };
   }
 
+  ngOnInit() {
+    const fieldId = this.route.snapshot.paramMap.get('fileId');
+    this.getInfo(fieldId);
+  }
   ngAfterViewInit() {
-    this.initHchart();
+    // this.initHchart();
   }
   ngOnDestroy() {
     this.listenFunc();
   }
-  ngOnInit() {}
-  initHchart () {
-    this.dataset1 = testData.datasets[0];
-    this.dataset2 = testData.datasets[1];
-    this.dataset3 = testData.datasets[2];
+  getInfo(id) {
+    this.isLoading = true;
+    this.progress.start();
+    let params = new HttpParams();
+    params = params.set('fileId', id);
+    this.activityService.fetchSportListDetail(params).subscribe(res => {
+      this.activityInfo = res.activityInfoLayer;
+      this.activityPoints = res.activityPointLayer;
+      this.infoDate = this.handleDate(this.activityInfo.startTime);
+      this.initHchart();
+      const { distances, speeds, elevations, heartRates } = this.activityPoints;
+      this.rainOption.series[0].data = heartRates;
+      this.rainOption.series[1].data = speeds;
+      this.rainOption.xAxis[0].data = distances;
+      this.rainOption.xAxis[1].data = distances;
 
-    this.dataset1.data = testData.datasets[0].data.map((val, j) => [
-      testData.xData[j],
+      this.progress.done();
+      this.isLoading = false;
+    });
+  }
+  handleDate(dateStr) {
+    const dateArr = dateStr.split('');
+    const date =
+      dateArr[0] +
+      dateArr[1] +
+      dateArr[2] +
+      dateArr[3] +
+      '年' +
+      ' ' +
+      dateArr[4] +
+      dateArr[5] +
+      '月' +
+      dateArr[6] +
+      dateArr[7] +
+      '日' +
+      ' @ ' +
+      dateArr[8] +
+      dateArr[9] +
+      ':' +
+      dateArr[10] +
+      dateArr[11] +
+      ' +08:00';
+    return date;
+  }
+  initHchart() {
+    const { distances, speeds, elevations, heartRates } = this.activityPoints;
+    this.dataset1 = {
+      name: 'Speed',
+      data: speeds,
+      unit: 'km/h',
+      type: 'line',
+      valueDecimals: 1
+    };
+    this.dataset2 = {
+      name: 'Elevation',
+      data: elevations,
+      unit: 'm',
+      type: 'area',
+      valueDecimals: 0
+    };
+    this.dataset3 = {
+      name: 'Heart rate',
+      data: heartRates,
+      unit: 'bpm',
+      type: 'area',
+      valueDecimals: 0
+    };
+    this.dataset1.data = this.dataset1.data.map((val, j) => [
+      distances[j],
       val
     ]);
-    this.dataset2.data = testData.datasets[1].data.map((val, j) => [
-      testData.xData[j],
+    this.dataset2.data = this.dataset2.data.map((val, j) => [
+      distances[j],
       val
     ]);
-    this.dataset3.data = testData.datasets[2].data.map((val, j) => [
-      testData.xData[j],
+    this.dataset3.data = this.dataset3.data.map((val, j) => [
+      distances[j],
       val
     ]);
     const speedOptions: any = {
@@ -276,10 +355,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.elevationChartTarget.nativeElement,
       elevationOptions
     );
-    this.chart3 = chart(
-      this.hrChartTarget.nativeElement,
-      hrOptions
-    );
+    this.chart3 = chart(this.hrChartTarget.nativeElement, hrOptions);
     this.listenFunc = this.renderer.listen(
       this.container.nativeElement,
       'mousemove',
@@ -315,7 +391,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   toogleHChart() {
     this.isdisplayHcharts = !this.isdisplayHcharts;
-    if(this.isdisplayHcharts) {
+    if (this.isdisplayHcharts) {
       // this.initHchart();
       setTimeout(() => this.initHchart(), 10000);
     }
@@ -332,31 +408,31 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     this[_loading] = !this[_loading];
   }
   addSeries(_num) {
-    const power = +_num > 1 ?  3 : 1;
+    const power = +_num > 1 ? 3 : 1;
     this[`chart${_num}`].addSeries({
       name: 'test',
       data: [
-        Math.floor(Math.random() * 10**power),
-        Math.floor(Math.random() * 10**power),
-        Math.floor(Math.random() * 10**power),
-        Math.floor(Math.random() * 10**power),
-        Math.floor(Math.random() * 10**power),
-        Math.floor(Math.random() * 10**power),
-        Math.floor(Math.random() * 10**power)
+        Math.floor(Math.random() * 10 ** power),
+        Math.floor(Math.random() * 10 ** power),
+        Math.floor(Math.random() * 10 ** power),
+        Math.floor(Math.random() * 10 ** power),
+        Math.floor(Math.random() * 10 ** power),
+        Math.floor(Math.random() * 10 ** power),
+        Math.floor(Math.random() * 10 ** power)
       ]
     });
   }
 
   addPoint() {
     if (this.chart1.series[1]) {
-      this.chart1.series[1].addPoint(
-        Math.floor(Math.random() * 10)
-      );
+      this.chart1.series[1].addPoint(Math.floor(Math.random() * 10));
     }
   }
   removePoint() {
     if (this.chart1.series[1]) {
-      this.chart1.series[1].points[this.chart1.series[1].points.length - 1].remove();
+      this.chart1.series[1].points[
+        this.chart1.series[1].points.length - 1
+      ].remove();
     }
   }
   removeSeries(num) {

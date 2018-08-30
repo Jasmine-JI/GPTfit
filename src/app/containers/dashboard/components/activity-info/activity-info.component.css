@@ -78,3 +78,14 @@
 .mat-tab-group.mat-primary .mat-ink-bar {
   background-color: #26abe3;
 }
+@media(max-width: 767px) {
+  .mat-tab-body-content {
+    display: flex;
+  }
+  .activity-info__area {
+    text-align: center;
+  }
+  .activity-info__area + .activity-info__area {
+    margin-left: 0px;
+  }
+}

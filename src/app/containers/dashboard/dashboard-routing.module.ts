@@ -161,7 +161,7 @@ const routes: Routes = [
         component: MyActivityComponent
       },
       {
-        path: 'my-activity/detail',
+        path: 'my-activity/detail/:fileId',
         component: ActivityInfoComponent
       }
     ]
