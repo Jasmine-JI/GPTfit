@@ -163,6 +163,7 @@ var qrPair = require('./routes/qrPair.js');
 var user = require('./routes/user.js');
 var center = require('./routes/center.js');
 var uploadFile = require('./routes/uploadFile.js');
+var sport = require('./routes/sport.js');
 
 app.use('/nodejs/api/rankForm', rankForm.unprotected);
 app.use('/nodejs/api/rankForm', authMiddleware, rankForm.protected);
@@ -179,6 +180,7 @@ app.use('/nodejs/api/coach', authMiddleware, coach);
 app.use('/nodejs/api/user', authMiddleware, user);
 app.use('/nodejs/api/center', authMiddleware, center);
 app.use('/nodejs/api/uploadFile', authMiddleware, uploadFile);
+app.use('/nodejs/api/sport', authMiddleware, sport);
 
 // Start the server
 const port = process.env.PORT || 3001;

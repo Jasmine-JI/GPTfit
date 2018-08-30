@@ -60,6 +60,8 @@ import { DashboardGuard } from './guards/dashboard-guard';
 import { ActivityInfoComponent } from './components/activity-info/activity-info.component';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { ActivityService } from './services/activity.service';
+import { MyActivityComponent } from './components/my-activity/my-activity.component';
+import { SportTypePipe } from './pipes/sport-type.pipe';
 
 @NgModule({
   imports: [
@@ -128,7 +130,9 @@ import { ActivityService } from './services/activity.service';
     GroupLevelNamePipe,
     InnerSettingsComponent,
     PeopleSelectorWinComponent,
-    ActivityInfoComponent
+    ActivityInfoComponent,
+    MyActivityComponent,
+    SportTypePipe
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [

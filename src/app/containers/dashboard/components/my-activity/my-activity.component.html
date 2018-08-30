@@ -1,0 +1,96 @@
+<div class="d-flex justify-content-between" style="margin-bottom: 15px">
+  <span style="color: #157fcc; font-weight:700">
+    我的活動
+  </span>
+  <div class="group-edit-bar">
+    <button class="alatech-btn alatech-btn--default activty-btn"
+      title="搜尋活動"
+      [routerLink]="['/dashboard/group-search']"
+    >
+      搜尋活動
+    </button>
+  </div>
+</div>
+
+<mat-table [dataSource]="logSource"
+  matSort #sortTable="matSort"
+ (matSortChange)="changeSort($event)"
+>
+  <ng-container matColumnDef="date">
+    <mat-header-cell *matHeaderCellDef mat-sort-header>日期</mat-header-cell>
+    <mat-cell *matCellDef="let row">{{ row.startTime }}</mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="type">
+    <mat-header-cell *matHeaderCellDef disableClear="true">
+      運動類別
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">{{ row.type | sportType }}</mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="bpm">
+    <mat-header-cell *matHeaderCellDef disableClear="true">
+      平均心率
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+      {{ row.avgHeartRateBpm }}
+      <span style="color: #919191">bpm</span>
+    </mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="speed">
+    <mat-header-cell *matHeaderCellDef disableClear="true">
+      平均配速
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+      {{ row.avgSpeed }}
+      <span style="color: #919191">km/h</span>
+    </mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="calories">
+    <mat-header-cell *matHeaderCellDef disableClear="true">
+      卡路里
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+      {{ row.calories }}
+      <span style="color: #919191">cal</span>
+    </mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="distance">
+    <mat-header-cell *matHeaderCellDef disableClear="true">
+      總距離
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+      {{ row.totalDistanceMeters }}
+      <span style="color: #919191">km</span>
+    </mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="time">
+    <mat-header-cell *matHeaderCellDef disableClear="true">
+      消耗時間
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">{{ row.totalSecond }}</mat-cell>
+  </ng-container>
+  <mat-header-row
+    *matHeaderRowDef="['date', 'type', 'bpm', 'speed', 'calories', 'distance', 'time']"
+  >
+  </mat-header-row>
+  <mat-row
+    *matRowDef="let logRow; columns: ['date', 'type', 'bpm', 'speed', 'calories', 'distance', 'time']"
+    (click)="goDetail()"
+  >
+  </mat-row>
+</mat-table>
+<div *ngIf="isEmpty" style="text-align: center;padding: 30px">
+  尚無相關資訊
+</div>
+<div class="ala-loading-shade" *ngIf="isLoading">
+  <mat-spinner></mat-spinner>
+</div>
+<mat-paginator #paginator [length]="totalCount" [pageIndex]="0" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]">
+</mat-paginator>
+<div class="group-manage__action">
+  <button class="alatech-btn group-manage__btn"
+    title="搜尋活動"
+    [routerLink]="['/dashboard/group-search']"
+  >
+    搜尋活動
+  </button>
+</div>
