@@ -40,7 +40,7 @@
                 <li class="ala-sidenav-menu-item"
                   (click)="chooseItem(3, sideNav)"
                   [class.ala-sidenav-menu-item__active]="target === 3"
-                  [routerLink]="['/dashboard/coach-dashboard']"
+                  [routerLink]="['/dashboard/test/3400']"
                 >
                   健身工廠
                 </li>
@@ -142,6 +142,13 @@
           >
               <i class="fa fa-cog ala-sidenav-icon"></i>設定
           </li>
+          <li class="ala-sidenav-item"
+            (click)="chooseItem(14, sideNav)"
+            [class.ala-sidenav-menu-item__active]="target === 14"
+            [routerLink]="['/dashboard/my-activity']"
+          >
+            <img src="/assets/icons/icon_72px_22_activity.png" style="width:20px;margin-right: 7px">我的活動
+          </li>
         </mat-nav-list>
       </nav>
     </mat-sidenav>
@@ -179,7 +186,12 @@
           </div>
         </div>
       </header>
-      <div *ngIf="!isPreviewMode" class="container dashboard-rwd" [hidden]="isLoading">
+      <div *ngIf="!isPreviewMode"
+        [class.container]="isHadContainer"
+        class="dashboard-rwd"
+        [style.padding-top]="isHadContainer? '80px' : '60px'"
+        [hidden]="isLoading"
+      >
         <router-outlet></router-outlet>
       </div>
       <footer class="footer footer-details">

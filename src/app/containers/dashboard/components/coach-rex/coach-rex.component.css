@@ -21,7 +21,6 @@
   height: 100%;
 }
 .coach-container {
-  height: 100vh;
   width: 100%;
 }
 .bg-filter {
@@ -188,6 +187,7 @@
   border-bottom: 1px solid #4f4f4f;
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 .coach-footer {
   width: 100%;
@@ -196,13 +196,17 @@
   border-top: 1px solid #4f4f4f;
   border-bottom: 1px solid #4f4f4f;
 }
-
+.coach-header img {
+  width: 96px;
+  height: 96px;
+  cursor:pointer;
+}
 .coach-header span {
   font-size:46px;
   color: #108bcd;
   margin: auto 30px auto 30px;
   font-weight: bold;
-  line-height: 140px;
+  vertical-align: middle;
 }
 .card-params {
   font-family: ITC;
@@ -214,7 +218,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30%;
+  /* width: 30%; */
   font-size: 30px;
   color: #e10019;
 }
@@ -222,8 +226,40 @@
 .mySvg {
   background-color: cadetblue;
 }
-
-
+.chart-area {
+  position: absolute;
+  top: -10000px;
+}
+.chart-container {
+  display:inline-block;
+  width: calc(100% - 65px);
+}
+.chart {
+  display:inline-block;
+  min-width: 100%;
+  max-width: 100%;
+  width: 100%;
+  margin: 0 auto;
+}
+.chart .highcharts-container {
+  display: flex;
+  width: 100% !important;
+}
+.hr-container {
+  height:100%;
+  width: 60px;
+  display: inline-block;
+}
+.hr-info {
+  margin-bottom: 70px;
+}
+.lesson-container {
+  padding: 0 15px;
+  display: flex;
+}
+.lesson-img {
+  padding: 20px 0px;
+}
 @media (max-width: 1919px) {
   .hr-card {
     width: calc((100% - 78px) / 3);
@@ -260,6 +296,13 @@
 }
 
 @media (max-width: 1079px) {
+  .lesson-container {
+    display: block;
+  }
+  .lesson-img {
+    display: flex;
+    justify-content: center;
+  }
   .hr-card {
     width: calc((100% - 46px) / 2);
     height: 281px;
@@ -293,4 +336,31 @@
     line-height: 85px;
   }
 }
-
+@media(max-width: 767px) {
+  .chart-container {
+    width: 100%;
+  }
+  .hr-info {
+    display: inline-block;
+    margin-bottom: 0px;
+  }
+  .hr-container {
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .coach-header img {
+    width: 56px;
+    height: 56px;
+  }
+  .coach-header span {
+    margin: 0;
+    font-size: 30px;
+  }
+  .coach-header {
+    padding: 0 15px;
+    height: 100px;
+  }
+}

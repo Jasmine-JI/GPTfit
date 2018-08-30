@@ -7,6 +7,7 @@
       "@shared/*": [
         "app/shared/*"
       ]
+      // "echarts": ["node_modules/echarts/dist/echarts.min.js"]
     },
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
