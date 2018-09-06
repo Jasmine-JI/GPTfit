@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { CoachService } from '../../services/coach.service';
-import { DragulaService } from 'ng2-dragula/ng2-dragula';
 import { MapService } from '@shared/services/map.service';
 import { Router } from '@angular/router';
 import { mapInfos } from './coach';
@@ -18,14 +17,9 @@ export class CoachDashboardComponent implements OnInit {
   mapIdx = 1;
   constructor(
     private coachService: CoachService,
-    private dragula: DragulaService,
     private mapService: MapService,
     private router: Router
   ) {
-    const bag: any = this.dragula.find('bag-items');
-    if (bag !== undefined) {
-      this.dragula.destroy('bag-items');
-    }
   }
 
   ngOnInit() {

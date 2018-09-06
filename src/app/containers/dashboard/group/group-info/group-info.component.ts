@@ -265,6 +265,7 @@ export class GroupInfoComponent implements OnInit {
     });
   }
   changeGroupInfo({ index }) {
+    console.log('index: ', index);
     if (this.groupLevel === '80') {
       if (index === 0) {
         this.getGroupMemberList(index + 2);

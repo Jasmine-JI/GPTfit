@@ -1,10 +1,16 @@
 <ng-progress
-  [positionUsing]="'marginLeft'"
-  [direction]="'leftToRightIncreased'"
-  [color]="'#108bcd'"
-  [trickleSpeed]="500"
-  [thick]="true"
-  [ease]="'easeInSine'"
+  #progressBar
+  [meteor]="_options.meteor"
+  [color]="_options.color"
+  [min]="_options.min"
+  [speed]="_options.speed"
+  [spinner]="_options.spinner"
+  [max]="_options.max"
+  [spinnerPosition]="_options.spinnerPosition"
+  [direction]="_options.direction"
+  [thick]="_options.thick"
+  [trickleSpeed]="_options.trickleSpeed"
+  [ease]="_options.ease"
 >
 </ng-progress>
 <div [style.visibility]="isLoading ? 'hidden': 'visible'">

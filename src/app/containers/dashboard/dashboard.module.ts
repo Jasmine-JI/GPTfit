@@ -34,7 +34,6 @@ import { DeviceLogDetailComponent } from './components/device-log-detail/device-
 import { CoachDashboardComponent } from './components/coach-dashboard/coach-dashboard.component';
 import { CoachService } from './services/coach.service';
 import { HrZoneDialogComponent } from './components/hr-zone-dialog/hr-zone-dialog.component';
-import { DragulaModule } from 'ng2-dragula/ng2-dragula';
 import { CoachDashboardDetailComponent } from './components/coach-dashboard-detail/coach-dashboard-detail.component';
 import { Top3DialogComponent } from './components/top3-dialog/top3-dialog.component';
 import { CoachRexComponent } from './components/coach-rex/coach-rex.component';
@@ -63,7 +62,8 @@ import { ActivityService } from './services/activity.service';
 import { MyActivityComponent } from './components/my-activity/my-activity.component';
 import { SportTypePipe } from './pipes/sport-type.pipe';
 import { SportDatePipe } from './pipes/sport-date.pipe';
-import { NgProgressModule } from 'ngx-progressbar';
+import { NgProgressModule } from '@ngx-progressbar/core';
+import { SportReportComponent } from './components/sport-report/sport-report.component';
 
 @NgModule({
   imports: [
@@ -78,7 +78,6 @@ import { NgProgressModule } from 'ngx-progressbar';
     BrowserAnimationsModule,
     SharedPipes,
     ReactiveFormsModule,
-    DragulaModule,
     SharedModule,
     NgxEchartsModule,
     NgProgressModule
@@ -136,7 +135,8 @@ import { NgProgressModule } from 'ngx-progressbar';
     ActivityInfoComponent,
     MyActivityComponent,
     SportTypePipe,
-    SportDatePipe
+    SportDatePipe,
+    SportReportComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
@@ -145,7 +145,8 @@ import { NgProgressModule } from 'ngx-progressbar';
     HrZoneDialogComponent,
     Top3DialogComponent,
     RightSettingWinComponent,
-    PeopleSelectorWinComponent
+    PeopleSelectorWinComponent,
+    SportReportComponent
   ]
 })
 export class DashboardModule {}

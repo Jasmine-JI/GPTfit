@@ -2,16 +2,18 @@ import {
   Component,
   OnInit,
   OnDestroy,
-  trigger,
-  state,
-  style,
-  transition,
-  animate,
   AfterViewInit,
   ElementRef,
   ViewChild,
   ViewEncapsulation
 } from '@angular/core';
+import {
+  trigger,
+  state,
+  style,
+  transition,
+  animate
+} from '@angular/animations';
 import { fakeDatas, fakeCoachInfo } from './fakeUsers';
 import { CoachService } from '../../services/coach.service';
 import { Router } from '@angular/router';

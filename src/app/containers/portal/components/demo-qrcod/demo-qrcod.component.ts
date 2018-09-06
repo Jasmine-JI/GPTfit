@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { getUrlQueryStrings } from '@shared/utils/';
 import { QrcodeService } from '../../services/qrcode.service';
 import { HttpParams } from '@angular/common/http';
-import { NgProgress } from 'ngx-progressbar';
+import { NgProgress, NgProgressRef } from '@ngx-progressbar/core';
 import * as moment from 'moment';
 import { UtilsService } from '@shared/services/utils.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -21,6 +21,7 @@ export class DemoQrcodComponent implements OnInit {
   noProductImg: string;
   isLoading: boolean;
   productInfo: any;
+  progressRef: NgProgressRef;
   constructor(
     private qrcodeService: QrcodeService,
     private progress: NgProgress,
@@ -39,7 +40,8 @@ export class DemoQrcodComponent implements OnInit {
     this.displayQr = queryStrings;
     let params = new HttpParams();
     params = params.set('device_sn', this.displayQr.device_sn);
-    this.progress.start();
+    this.progressRef = this.progress.ref();
+    this.progressRef.start();
     this.isLoading = true;
     this.qrcodeService.getDeviceInfo(params).subscribe(res => {
       if (typeof res === 'string') {
@@ -51,7 +53,7 @@ export class DemoQrcodComponent implements OnInit {
         this.handleProductInfo(langName);
         this.handleUpload();
       }
-      this.progress.done();
+      this.progressRef.complete();
       this.isLoading = false;
     });
   }
@@ -129,14 +131,17 @@ export class DemoQrcodComponent implements OnInit {
       deviceFWVer: '',
       deviceRFVer: ''
     };
-    this.qrcodeService.uploadDeviceInfo(body, device_sn).subscribe(res => {
-      const result = res;
-      if (result.resultCode !== 200) {
-        this.isWrong = true;
-      } else {
-        this.isWrong = false;
-      }
-    }, err => (this.isWrong = true));
+    this.qrcodeService.uploadDeviceInfo(body, device_sn).subscribe(
+      res => {
+        const result = res;
+        if (result.resultCode !== 200) {
+          this.isWrong = true;
+        } else {
+          this.isWrong = false;
+        }
+      },
+      err => (this.isWrong = true)
+    );
   }
   swithMainApp() {
     this.isMainAppOpen = !this.isMainAppOpen;

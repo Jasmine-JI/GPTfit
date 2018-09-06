@@ -30,6 +30,7 @@ import { InnerSettingsComponent } from './components/inner-settings/inner-settin
 import { DashboardGuard } from './guards/dashboard-guard';
 import { ActivityInfoComponent } from './components/activity-info/activity-info.component';
 import { MyActivityComponent } from './components/my-activity/my-activity.component';
+import { SportReportComponent } from './components/sport-report/sport-report.component';
 
 const routes: Routes = [
   {
@@ -163,6 +164,10 @@ const routes: Routes = [
       {
         path: 'my-activity/detail/:fileId',
         component: ActivityInfoComponent
+      },
+      {
+        path: 'sport-report',
+        component: SportReportComponent
       }
     ]
   },

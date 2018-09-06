@@ -20,7 +20,7 @@
 .mat-progress-spinner circle, .mat-spinner circle {
   stroke: #108bcd;
 }
-.ng-progress.thick .bar {
+.ng-bar-placeholder {
   height: 5px!important;
 }
 
