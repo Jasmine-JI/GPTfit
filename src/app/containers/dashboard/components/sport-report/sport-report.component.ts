@@ -16,39 +16,74 @@ export class FileNode {
  * The Json tree data in string. The data could be parsed into Json object
  */
 const TREE_DATA = JSON.stringify({
-  Applications: {
-    Calendar: 'app',
-    Chrome: 'app',
-    Webstorm: 'app'
+  '所有運動': {
+    '活動數量': '1-1',
+    '總時間': '1-2',
+    '總距離': '1-3',
+    '消耗卡路里': '1-4',
+    '平均速度': '1-5',
+    '最大速度': '1-6',
+    '平均心率': '1-7',
+    '最大心率': '1-8'
   },
-  Documents: {
-    angular: {
-      src: {
-        compiler: 'ts',
-        core: 'ts'
-      }
+  '跑步': {
+    '總時間': '2-1',
+    '總距離': '2-2',
+    '消耗卡路里': '2-3',
+    '平均配速': '2-4',
+    '最大配速': '2-5',
+    '平均心率': '2-6',
+    '最大心率': '2-7',
+    '平均步頻': '2-8',
+    '最大步頻': '2-9'
+  },
+  '騎乘': {
+    '總時間': '3-1',
+    '總距離': '3-2',
+    '消耗卡路里': '3-3',
+    '平均速度': '3-4',
+    '最大速度': '3-5',
+    '平均心率': '3-6',
+    '最大心率': '3-7',
+    '平均踏頻': '3-8',
+    '最大踏頻': '3-9',
+    '平均功率': '3-10',
+    '最大功率': '3-11'
+  },
+  '游泳': {
+    '總時間': '4-1',
+    '總距離': '4-2',
+    '消耗卡路里': '4-3',
+    '平均配速': '4-4',
+    '最大配速': '4-5',
+    '平均划水頻': '4-6',
+    '最大划水頻': '4-7'
+  },
+  '重訓': {
+    '總時間': '5-1',
+    '總重量': '5-2',
+    '總次數': '5-3',
+    '消耗卡路里': '5-4',
+    '平均心率': '5-5',
+    '最大心率': '5-6',
+    '所有肌肉概要部位資訊': {
+      '最大1RM{跟下面一起}': '5-7',
+      '總重量{跟上面一起}': '5-8',
+      '總組數{跟下面一起}': '5-9',
+      '總次數{跟上面一起}': '5-10'
     },
-    material2: {
-      src: {
-        button: 'ts',
-        checkbox: 'ts',
-        input: 'ts'
-      }
+    '各個肌肉概要部位資訊': {
+      '最大1RM': '5-11',
+      '總重量': '5-12',
+      '總組數': '5-13',
+      '總次數': '5-14'
     }
   },
-  Downloads: {
+  '有氧': {
     October: 'pdf',
     November: 'pdf',
     Tutorial: 'html'
   },
-  Pictures: {
-    'Photo Booth Library': {
-      Contents: 'dir',
-      Pictures: 'dir'
-    },
-    Sun: 'png',
-    Woods: 'jpg'
-  }
 });
 
 /**
@@ -115,7 +150,7 @@ export class FileDatabase {
 export class SportReportComponent {
   nestedTreeControl: NestedTreeControl<FileNode>;
   nestedDataSource: MatTreeNestedDataSource<FileNode>;
-
+  chooseType = '1-1';
   constructor(database: FileDatabase) {
     this.nestedTreeControl = new NestedTreeControl<FileNode>(this._getChildren);
     this.nestedDataSource = new MatTreeNestedDataSource();
@@ -126,4 +161,8 @@ export class SportReportComponent {
   hasNestedChild = (_: number, nodeData: FileNode) => !nodeData.type;
 
   private _getChildren = (node: FileNode) => node.children;
+  handleRenderChart(type) {
+    console.log('type: ', type);
+    this.chooseType = type;
+  }
 }

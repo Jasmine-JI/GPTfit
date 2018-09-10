@@ -64,6 +64,14 @@ import { SportTypePipe } from './pipes/sport-type.pipe';
 import { SportDatePipe } from './pipes/sport-date.pipe';
 import { NgProgressModule } from '@ngx-progressbar/core';
 import { SportReportComponent } from './components/sport-report/sport-report.component';
+import { ActivityLevelsComponent } from './components/sport-report/components/activity-levels/activity-levels.component';
+import { AllDurationComponent } from './components/sport-report/components/all-duration/all-duration.component';
+import { TotalDistanceComponent } from './components/sport-report/components/total-distance/total-distance.component';
+import { BurnCaloriesComponent } from './components/sport-report/components/burn-calories/burn-calories.component';
+import { AverageSpeedComponent } from './components/sport-report/components/average-speed/average-speed.component';
+import { MaxSpeedComponent } from './components/sport-report/components/max-speed/max-speed.component';
+import { AverageHRComponent } from './components/sport-report/components/average-hr/average-hr.component';
+import { MaxHRComponent } from './components/sport-report/components/max-hr/max-hr.component';
 
 @NgModule({
   imports: [
@@ -136,7 +144,15 @@ import { SportReportComponent } from './components/sport-report/sport-report.com
     MyActivityComponent,
     SportTypePipe,
     SportDatePipe,
-    SportReportComponent
+    SportReportComponent,
+    ActivityLevelsComponent,
+    AllDurationComponent,
+    TotalDistanceComponent,
+    BurnCaloriesComponent,
+    AverageSpeedComponent,
+    MaxSpeedComponent,
+    AverageHRComponent,
+    MaxHRComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
