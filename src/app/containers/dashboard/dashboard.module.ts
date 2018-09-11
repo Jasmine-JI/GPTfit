@@ -72,6 +72,10 @@ import { AverageSpeedComponent } from './components/sport-report/components/aver
 import { MaxSpeedComponent } from './components/sport-report/components/max-speed/max-speed.component';
 import { AverageHRComponent } from './components/sport-report/components/average-hr/average-hr.component';
 import { MaxHRComponent } from './components/sport-report/components/max-hr/max-hr.component';
+import { OtherBurnCaloriesComponent } from './components/sport-report/components/other-burn-calories/other-burn-calories.component';
+import { AllTimesComponent } from './components/sport-report/components/all-times/all-times.component';
+import { AllGroupsComponent } from './components/sport-report/components/all-groups/all-groups.component';
+import { PartialMuscleInfoComponent } from './components/sport-report/components/partial-muscle-info/partial-muscle-info.component';
 
 @NgModule({
   imports: [
@@ -152,7 +156,11 @@ import { MaxHRComponent } from './components/sport-report/components/max-hr/max-
     AverageSpeedComponent,
     MaxSpeedComponent,
     AverageHRComponent,
-    MaxHRComponent
+    MaxHRComponent,
+    OtherBurnCaloriesComponent,
+    AllTimesComponent,
+    AllGroupsComponent,
+    PartialMuscleInfoComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
