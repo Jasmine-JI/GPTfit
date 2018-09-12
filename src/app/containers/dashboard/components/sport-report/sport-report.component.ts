@@ -2,7 +2,7 @@ import { NestedTreeControl } from '@angular/cdk/tree';
 import { Component, Injectable } from '@angular/core';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
 import { BehaviorSubject } from 'rxjs';
-
+import { ViewEncapsulation } from '@angular/core';
 /**
  * Json node data with nested structure. Each node has a filename and a value or a list of children
  */
@@ -145,6 +145,7 @@ export class FileDatabase {
   selector: 'app-sport-report',
   templateUrl: './sport-report.component.html',
   styleUrls: ['./sport-report.component.css'],
+  encapsulation: ViewEncapsulation.None,
   providers: [FileDatabase]
 })
 export class SportReportComponent {
@@ -162,7 +163,6 @@ export class SportReportComponent {
 
   private _getChildren = (node: FileNode) => node.children;
   handleRenderChart(type) {
-    console.log('type: ', type);
     this.chooseType = type;
   }
 }

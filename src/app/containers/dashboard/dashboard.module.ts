@@ -76,6 +76,8 @@ import { OtherBurnCaloriesComponent } from './components/sport-report/components
 import { AllTimesComponent } from './components/sport-report/components/all-times/all-times.component';
 import { AllGroupsComponent } from './components/sport-report/components/all-groups/all-groups.component';
 import { PartialMuscleInfoComponent } from './components/sport-report/components/partial-muscle-info/partial-muscle-info.component';
+import { MyDeviceComponent } from './components/device/my-device/my-device.component';
+import { ProductInfoComponent } from './components/device/product-info/product-info.component';
 
 @NgModule({
   imports: [
@@ -160,7 +162,9 @@ import { PartialMuscleInfoComponent } from './components/sport-report/components
     OtherBurnCaloriesComponent,
     AllTimesComponent,
     AllGroupsComponent,
-    PartialMuscleInfoComponent
+    PartialMuscleInfoComponent,
+    MyDeviceComponent,
+    ProductInfoComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [

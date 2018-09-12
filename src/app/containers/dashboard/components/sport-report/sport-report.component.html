@@ -29,6 +29,16 @@
     </mat-tree>
   </div>
   <div class="col-9">
+  <mat-tab-group class="ala-tab-group">
+    <mat-tab label="7天">
+    </mat-tab>
+    <mat-tab label="30天">
+    </mat-tab>
+    <mat-tab label="6個月">
+    </mat-tab>
+    <mat-tab label="12個月">
+    </mat-tab>
+  </mat-tab-group>
     Hello i m {{chooseType}}chart
     <ng-container *ngIf="chooseType === '1-1'">
       <app-activity-levels></app-activity-levels>

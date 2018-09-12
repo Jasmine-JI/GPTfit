@@ -149,6 +149,20 @@
           >
             <img src="/assets/icons/icon_72px_22_activity.png" style="width:20px;margin-right: 7px">我的活動
           </li>
+          <li class="ala-sidenav-item"
+            (click)="chooseItem(15, sideNav)"
+            [class.ala-sidenav-menu-item__active]="target === 15"
+            [routerLink]="['/dashboard/device']"
+          >
+            我的裝置
+          </li>
+          <li class="ala-sidenav-item"
+            (click)="chooseItem(16, sideNav)"
+            [class.ala-sidenav-menu-item__active]="target === 16"
+            [routerLink]="['/dashboard/sport-report']"
+          >
+            運動報告
+          </li>
         </mat-nav-list>
       </nav>
     </mat-drawer>

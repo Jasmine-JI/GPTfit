@@ -1,0 +1,5 @@
+/* 之後再做共用 */
+.mat-row:hover {
+  cursor: pointer;
+  background-color: #eee;
+}

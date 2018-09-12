@@ -12,3 +12,18 @@
 .mat-tree-node:hover {
   cursor: pointer;
 }
+
+.example-tree ul {
+  padding-left: 5px;
+}
+/*之後做共用*/
+.mat-tab-label.mat-tab-label-active {
+  padding: 5px;
+  background-color: transparent;
+  color: #26abe3;
+  font-weight: 700;
+}
+
+.mat-tab-group.mat-primary .mat-ink-bar {
+  background-color: #26abe3;
+}
