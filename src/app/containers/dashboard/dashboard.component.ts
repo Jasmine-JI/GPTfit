@@ -200,7 +200,7 @@ export class DashboardComponent implements OnInit {
     this.isSideNavOpend = !this.isSideNavOpend;
     sideNav.toggle().then(result => {
       const toogleResult = result;
-      if (toogleResult['type'] === 'open') {
+      if (toogleResult === 'open') {
         this.isSideNavOpend = true;
       } else {
         this.isSideNavOpend = false;
