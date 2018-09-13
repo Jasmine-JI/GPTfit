@@ -213,6 +213,18 @@
 }
 
 @media(max-width: 768px) {
+  .footer-details.footer-rwd--1 {
+    margin-bottom: 50px;
+  }
+  .footer-details.footer-rwd--2 {
+    margin-bottom: 85px;
+  }
+  .footer-details.footer-rwd--3 {
+    margin-bottom: 120px;
+  }
+  .footer-details.footer-rwd--4 {
+    margin-bottom: 155px;
+  }
   .main-nav-toggle-icon.icon-svg_web-icon_073-level_fold {
     display: none;
   }

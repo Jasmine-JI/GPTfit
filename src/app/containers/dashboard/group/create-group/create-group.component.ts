@@ -2,7 +2,8 @@ import {
   Component,
   OnInit,
   ViewEncapsulation,
-  HostListener
+  HostListener,
+  OnDestroy
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { GroupService } from '../../services/group.service';
@@ -20,6 +21,7 @@ import { MsgDialogComponent } from '../../components/msg-dialog/msg-dialog.compo
 import { MatDialog } from '@angular/material/dialog';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
 import * as _ from 'lodash';
+import { GlobalEventsManager } from '@shared/global-events-manager';
 
 @Component({
   selector: 'app-create-group',
@@ -27,7 +29,7 @@ import * as _ from 'lodash';
   styleUrls: ['./create-group.component.css', '../group-style.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class CreateGroupComponent implements OnInit {
+export class CreateGroupComponent implements OnInit, OnDestroy {
   groupId: string;
   token: string;
   groupInfo: any;
@@ -93,7 +95,8 @@ export class CreateGroupComponent implements OnInit {
     private router: Router,
     private fb: FormBuilder,
     private userInfoService: UserInfoService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private globalEventsManager: GlobalEventsManager
   ) {}
   @HostListener('dragover', ['$event'])
   public onDragOver(evt) {
@@ -111,6 +114,7 @@ export class CreateGroupComponent implements OnInit {
     evt.stopPropagation();
   }
   ngOnInit() {
+    this.globalEventsManager.setFooterRWD(2); // 為了讓footer長高85px
     const queryStrings = this.utils.getUrlQueryStrings(location.search);
     const { type } = queryStrings;
     if (type) {
@@ -173,6 +177,9 @@ export class CreateGroupComponent implements OnInit {
       });
       this.getGroupMemberList(1);
     }
+  }
+  ngOnDestroy() {
+    this.globalEventsManager.setFooterRWD(0); // 為了讓footer自己變回去預設值
   }
   buildForm(_type: number) {
     if (_type === 1) {
@@ -293,7 +300,8 @@ export class CreateGroupComponent implements OnInit {
     }
   }
   manage({ valid, value, submitted }) {
-    if (!submitted) {  // 如果脫離form的判斷
+    if (!submitted) {
+      // 如果脫離form的判斷
       this.utils.markFormGroupTouched(this.form);
     }
     if (valid) {

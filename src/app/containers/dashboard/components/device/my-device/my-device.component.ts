@@ -1,23 +1,20 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import {
   MatTableDataSource,
   MatPaginator,
   PageEvent,
-  MatSort,
   Sort,
   MatPaginatorIntl
 } from '@angular/material';
-// import { ActivityService } from '../../services/activity.service';
-// import { UtilsService } from '@shared/services/utils.service';
-import { HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { GlobalEventsManager } from '@shared/global-events-manager';
 
 @Component({
   selector: 'app-my-device',
   templateUrl: './my-device.component.html',
   styleUrls: ['./my-device.component.css', '../../../group/group-style.css']
 })
-export class MyDeviceComponent implements OnInit {
+export class MyDeviceComponent implements OnInit, OnDestroy {
   testDatas = [
     { modelName: 'AT500', deviceName: '跑步機', deviceSN: 'B21T0500010598' },
     { modelName: 'WB001', deviceName: '穿戴式裝置', deviceSN: 'A51WB001000589' }
@@ -32,12 +29,12 @@ export class MyDeviceComponent implements OnInit {
   paginator: MatPaginator;
   constructor(
     private matPaginatorIntl: MatPaginatorIntl,
-    // private activityService: ActivityService,
-    // private utils: UtilsService,
-    private router: Router
+    private router: Router,
+    private globalEventsManager: GlobalEventsManager
   ) {}
 
   ngOnInit() {
+    this.globalEventsManager.setFooterRWD(1); // 為了讓footer長高85px
     // 設定顯示筆數資訊文字
     this.matPaginatorIntl.getRangeLabel = (
       page: number,
@@ -76,6 +73,9 @@ export class MyDeviceComponent implements OnInit {
     //   this.currentPage = page;
     //   this.getLists();
     // });
+  }
+  ngOnDestroy() {
+    this.globalEventsManager.setFooterRWD(0); // 為了讓footer自己變回去預設值
   }
   changeSort(sortInfo: Sort) {
     this.currentSort = sortInfo;

@@ -17,6 +17,7 @@ import { ActivityService } from '../../services/activity.service';
 import { ActivatedRoute } from '@angular/router';
 import { HttpParams } from '@angular/common/http';
 import { NgProgress, NgProgressRef } from '@ngx-progressbar/core';
+import { GlobalEventsManager } from '@shared/global-events-manager';
 
 var Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -81,7 +82,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     private renderer: Renderer2,
     private activityService: ActivityService,
     private route: ActivatedRoute,
-    private ngProgress: NgProgress
+    private ngProgress: NgProgress,
+    private globalEventsManager: GlobalEventsManager
   ) {
     /**
      * 重写内部的方法， 这里是将提示框即十字准星的隐藏函数关闭
@@ -105,6 +107,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.globalEventsManager.setFooterRWD(2); // 為了讓footer長高85px
     const fieldId = this.route.snapshot.paramMap.get('fileId');
     this.progressRef = this.ngProgress.ref();
     this.getInfo(fieldId);
@@ -114,6 +117,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   ngOnDestroy() {
     this.listenFunc();
+    this.globalEventsManager.setFooterRWD(0); // 為了讓footer自己變回去預設值
   }
   getInfo(id) {
     this.isLoading = true;

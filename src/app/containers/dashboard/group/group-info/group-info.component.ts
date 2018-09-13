@@ -1,10 +1,18 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewEncapsulation,
+  ViewChild,
+  ElementRef,
+  OnDestroy
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { GroupService } from '../../services/group.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { UserInfoService } from '../../services/userInfo.service';
+import { GlobalEventsManager } from '@shared/global-events-manager';
 
 @Component({
   selector: 'app-group-info',
@@ -12,7 +20,7 @@ import { UserInfoService } from '../../services/userInfo.service';
   styleUrls: ['./group-info.component.css', '../group-style.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class GroupInfoComponent implements OnInit {
+export class GroupInfoComponent implements OnInit, OnDestroy {
   groupId: string;
   token: string;
   groupInfo: any;
@@ -38,12 +46,15 @@ export class GroupInfoComponent implements OnInit {
   visitorDetail: any;
   isLoading = false;
   userId: number;
+  @ViewChild('footerTarget')
+  footerTarget: ElementRef;
   constructor(
     private route: ActivatedRoute,
     private groupService: GroupService,
     private utils: UtilsService,
     private router: Router,
-    private userInfoService: UserInfoService
+    private userInfoService: UserInfoService,
+    private globalEventsManager: GlobalEventsManager
   ) {}
 
   ngOnInit() {
@@ -53,6 +64,9 @@ export class GroupInfoComponent implements OnInit {
       this.visitorDetail = res;
       console.log('this.visitorDetail: ', this.visitorDetail);
     });
+  }
+  ngOnDestroy() {
+    this.globalEventsManager.setFooterRWD(0); // 為了讓footer自己變回去預設值
   }
   handleInit() {
     this.groupId = this.route.snapshot.paramMap.get('groupId');
@@ -78,6 +92,9 @@ export class GroupInfoComponent implements OnInit {
       console.log('%c this.isSystemMaintainer', 'color: #0ca011', res);
     });
     this.groupService.fetchGroupListDetail(body).subscribe(res => {
+      const childElementCount = this.footerTarget.nativeElement
+        .childElementCount;
+      this.globalEventsManager.setFooterRWD(childElementCount); // 為了讓footer長高85px
       this.groupInfo = res.info;
       const {
         groupIcon,
@@ -85,7 +102,10 @@ export class GroupInfoComponent implements OnInit {
         selfJoinStatus,
         groupStatus
       } = this.groupInfo;
-      if ((groupStatus === 4) || (groupStatus === 3 && !this.visitorDetail.isCanManage)) {
+      if (
+        groupStatus === 4 ||
+        (groupStatus === 3 && !this.visitorDetail.isCanManage)
+      ) {
         this.router.navigateByUrl(`/404`);
       }
       if (selfJoinStatus) {
@@ -186,7 +206,8 @@ export class GroupInfoComponent implements OnInit {
           if (this.groupLevel === '40') {
             if (_type === 2) {
               this.branchAdministrators = this.groupInfos.filter(
-                _info => _info.accessRight === '40' && _info.groupId === this.groupId
+                _info =>
+                  _info.accessRight === '40' && _info.groupId === this.groupId
               );
             }
           } else {
@@ -198,13 +219,14 @@ export class GroupInfoComponent implements OnInit {
                   );
                   if (idx > -1) {
                     _info.memberName =
-                      this.subBranchInfo[idx].groupName + '/' + _info.memberName;
+                      this.subBranchInfo[idx].groupName +
+                      '/' +
+                      _info.memberName;
                     return _info;
                   }
                 }
               });
             }
-
           }
           if (this.groupLevel === '60') {
             this.coachAdministrators = this.groupInfos.filter(
@@ -238,7 +260,8 @@ export class GroupInfoComponent implements OnInit {
             _type === 3 &&
             this.normalMemberInfos.findIndex(
               _normalMember => _normalMember.memberId === this.userId
-            ) > -1 && this.joinStatus !== 2
+            ) > -1 &&
+            this.joinStatus !== 2
           ) {
             this.joinStatus = 2;
           }
@@ -248,14 +271,10 @@ export class GroupInfoComponent implements OnInit {
             this.groupInfos.findIndex(
               _admin =>
                 _admin.memberId === this.userId &&
-                (
-                _admin.accessRight === '80'
-                ||
-                _admin.accessRight === '40'
-                )
-                &&
+                (_admin.accessRight === '80' || _admin.accessRight === '40') &&
                 _admin.joinStatus === 2
-            ) > -1 && (this.joinStatus !== 2 && !this.visitorDetail.isCanManage)
+            ) > -1 &&
+            (this.joinStatus !== 2 && !this.visitorDetail.isCanManage)
           ) {
             this.joinStatus = 2;
             this.userInfoService.getUserDetail(body, this.groupId);
@@ -265,7 +284,6 @@ export class GroupInfoComponent implements OnInit {
     });
   }
   changeGroupInfo({ index }) {
-    console.log('index: ', index);
     if (this.groupLevel === '80') {
       if (index === 0) {
         this.getGroupMemberList(index + 2);
