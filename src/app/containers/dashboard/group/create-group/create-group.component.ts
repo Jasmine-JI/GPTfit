@@ -368,7 +368,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         this.groupService.createGroup(body).subscribe(res => {
           this.isEditing = false;
           if (res.resultCode === 200) {
-            this.router.navigateByUrl('/dashboard/my-group-list');
+            this.router.navigateByUrl('/dashboard/all-group-list');
           }
         });
       }

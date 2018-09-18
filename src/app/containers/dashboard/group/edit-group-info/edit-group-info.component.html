@@ -88,7 +88,7 @@
           <label class="ala-form__label">群組ID：</label>{{ group_id }}
         </div>
         <div class="ala-list__item">
-          <label class="ala-form__label">名稱：</label>
+          <label class="ala-form__label form__label--required">名稱：</label>
           <app-form-text
             [content]="groupInfo?.groupName"
             [maxLength]="32"
@@ -113,7 +113,7 @@
           </select>
         </div>
         <div class="ala-list__item">
-          <label class="ala-form__label">介紹：</label>
+          <label class="ala-form__label form__label--required">介紹：</label>
           <div class="ala-form__col">
             <app-form-textarea
               [maxLength]="textareaMaxLength"
@@ -129,8 +129,11 @@
         </div>
       </div>
       <div>
-        <mat-tab-group (selectedTabChange)="changeGroupInfo($event)" class="ala-tab-group">
-          <mat-tab label="子群組資訊"  *ngIf="groupLevel && groupLevel !== '80'">
+        <mat-tab-group class="ala-tab-group"
+          (selectedTabChange)="changeGroupInfo($event)"
+          [selectedIndex]="0"
+        >
+          <mat-tab label="子群組資訊"  *ngIf="groupLevel !== '80'">
             <ng-container *ngIf="!isLoading">
               <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">品牌</label>
 
