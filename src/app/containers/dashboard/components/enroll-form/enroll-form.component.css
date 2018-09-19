@@ -53,3 +53,8 @@
 .spinner-hidden {
   display: none;
 }
+@media(max-width: 767px) {
+  .tablist__tab {
+    width: 33%;
+  }
+}

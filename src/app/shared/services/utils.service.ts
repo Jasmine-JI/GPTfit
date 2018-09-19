@@ -127,4 +127,21 @@ export class UtilsService {
       }
     });
   }
+
+  handleNextUrl(next) {
+    const { queryParams, url } = next;
+    let finalUrl = '';
+    if (url.length > 1) {
+      url.forEach(_url => {
+        finalUrl += '/' + _url.path;
+      });
+    } else {
+      finalUrl = url[0].path;
+    }
+    if (queryParams) {
+      const key = Object.keys(queryParams)[0];
+      finalUrl = finalUrl + '?' + key + '=' + queryParams[`${key}`];
+    }
+    return finalUrl;
+  }
 }

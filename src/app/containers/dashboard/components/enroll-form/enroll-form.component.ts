@@ -33,7 +33,7 @@ export class EnrollFormComponent implements OnInit {
   chooseFileText = '選擇檔案';
   fileName = '';
   fileLink: string;
-  tabIdx = 0;
+  tabIdx = 2;
   isBtnDisabled = false;
   active = false; // select options的開關
   emailErr = '';
