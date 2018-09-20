@@ -1,0 +1,24 @@
+<h2 class="ala-dialog" mat-dialog-title>
+  今日登入名單(排除已報名的)
+</h2>
+<mat-selection-list #lists>
+  <ng-container *ngIf="logonlist?.length > 0">
+    <mat-list-option *ngFor="let item of logonlist"
+      (click)="handleChooseLists(item)"
+    >
+      {{item.login_acc}}
+    </mat-list-option>
+  </ng-container>
+  <div *ngIf="logonlist?.length === 0">
+    今日尚無登入者
+  </div>
+</mat-selection-list>
+
+<p>
+  已選取人數: {{lists.selectedOptions.selected.length}}
+</p>
+
+<mat-dialog-actions class="justify-content-end">
+  <button mat-button color="primary" (click)="confirm()">確定</button>
+  <button mat-button mat-dialog-close color="warn">取消</button>
+</mat-dialog-actions>

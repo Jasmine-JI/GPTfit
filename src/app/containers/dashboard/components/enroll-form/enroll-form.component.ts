@@ -17,6 +17,8 @@ import {
   FormControl
 } from '@angular/forms';
 import { getLocalStorageObject } from '@shared/utils/';
+import { TodayLoginnerWinComponent } from '../today-loginner-win/today-loginner-win.component';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-enroll-form',
@@ -51,6 +53,7 @@ export class EnrollFormComponent implements OnInit {
   counrtyCode: string;
   placeholder = '請輸入您的手機號碼';
   isCodeInvalid = false;
+  chooseLists = [];
   constructor(
     private eventEnrollService: EventEnrollService,
     private eventInfoService: EventInfoService,
@@ -181,6 +184,17 @@ export class EnrollFormComponent implements OnInit {
     }
   }
   enroll({ value, valid }) {
+    if (this.tabIdx === 2) {
+      const userIds = this.chooseLists.map(_label => _label.user_id);
+      const body = {
+        eventId: this.event_id,
+        sessionId: this.session_id,
+        userIds
+      };
+      return this.eventEnrollService.fastEnroll(body).subscribe(() => this.router.navigateByUrl(
+        `/dashboard/enroll/${this.event_id}/preview?session_id=${this.session_id}`
+      ));
+    }
     if (this.tabIdx === 1 && this.fileLink) {
       const formData = new FormData();
       formData.append('file', value.attachment);
@@ -233,6 +247,23 @@ export class EnrollFormComponent implements OnInit {
   }
   showCheckEnrollDialog() {
     this.dialog.open(MsgDialogComponent, { hasBackdrop: true });
+  }
+  handleConfirm(_lists) {
+    this.chooseLists = this.chooseLists.concat(_lists);
+  }
+  removeLabel(idx) {
+    this.chooseLists.splice(idx, 1);
+  }
+  openTodayLoginWin(e) {
+    e.preventDefault();
+    const list = _.cloneDeep(this.chooseLists);
+    this.dialog.open(TodayLoginnerWinComponent, {
+      hasBackdrop: true,
+      data: {
+        chooseLists: list,
+        onConfirm: this.handleConfirm.bind(this)
+      }
+    });
   }
   downloadFile(e) {
     e.preventDefault();

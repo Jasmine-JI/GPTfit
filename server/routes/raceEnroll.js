@@ -30,7 +30,7 @@ router.get('/', function (req, res, next) {
     res.status(200).json(rows);
   });
 });
-router.get('/today', function (req, res, next) {
+router.get('/todayLoginList', function (req, res, next) {
   const {
     con
   } = req;
@@ -60,12 +60,15 @@ router.post('/fastEnroll', function (req, res, next) {
       userIds
     }
   } = req;
+  var now = new Date();
+  var now_mill = now.getTime();
+  const today_stamp = Math.round(now_mill / 1000);
   normalQuerys = userIds.map(_id => `
-    INSERT INTO ?? (e_mail, phone, country_code, login_acc, event_id, session_id)
-    select e_mail, phone, country_code, login_acc, ?, ?  from ?? where user_id = ${con.escape(_id)};`
+    INSERT INTO ?? (e_mail, phone, country_code, login_acc, event_id, session_id, enroll_time)
+    select e_mail, phone, country_code, login_acc, ?, ?, ? from ?? where user_id = ${con.escape(_id)};`
   );
   const processer = function (query) {
-    con.query(query, ['user_race_enroll', eventId, sessionId, 'user_profile'], function (err, rows) {
+    con.query(query, ['user_race_enroll', eventId, sessionId, today_stamp, 'user_profile'], function (err, rows) {
       if (err) {
         console.log(err);
         return res.status(500).send({

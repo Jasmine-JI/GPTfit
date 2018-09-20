@@ -205,6 +205,7 @@
     <div class="form-group" *ngIf="tabIdx === 2">
       <button class="alatech-btn alatech-btn--default"
         title="今日登入者"
+        (click)="openTodayLoginWin($event)"
       >
         今日登入者
       </button>
@@ -215,6 +216,16 @@
       </button>
       <div style="border-bottom: 1px solid #ccc;margin: 15px 0;color:#333">
         快速報名名單<span style="color: #919191">(一次最多10筆)</span>：
+      </div>
+      <div *ngIf="chooseLists && chooseLists.length > 0">
+        <ng-container *ngFor="let label of chooseLists;let _idx = index">
+          <div class="candidate-label">
+            <div style="display: inline-block">{{label.login_acc}}</div>
+            <button class="icon-btn" (click)="removeLabel(_idx)">
+              <i class="fa fa-plus icon_fa" style="transform: rotate(45deg);"></i>
+            </button>
+          </div>
+        </ng-container>
       </div>
     </div>
   </div>
