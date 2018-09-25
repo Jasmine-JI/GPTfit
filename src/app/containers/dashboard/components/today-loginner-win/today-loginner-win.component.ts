@@ -27,7 +27,7 @@ export class TodayLoginnerWinComponent implements OnInit {
         this.logonlist = res;
         this.logonlist = this.logonlist.filter(_list => {
           const idx = this.chooseLists.findIndex(
-            item => item.user_id === _list.user_id
+            item => item.userId === _list.userId
           );
           if (idx === -1) {
             return _list;
@@ -37,7 +37,7 @@ export class TodayLoginnerWinComponent implements OnInit {
   }
   handleChooseLists(item) {
     const idx = this.collectLists.findIndex(
-      _list => _list.user_id === item.user_id
+      _list => _list.userId === item.userId
     );
     if (idx > -1) {
       this.collectLists.splice(idx, 1);

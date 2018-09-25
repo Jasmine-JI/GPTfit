@@ -40,7 +40,7 @@ router.get('/todayLoginList', function (req, res, next) {
   const start_time = today_stamp - 43200;
   const end_time = today_stamp + 43200;
   const sql = `
-  select time_stamp, login_acc, user_id from ?? where time_stamp between ? and ?  order by time_stamp desc;
+  select time_stamp, login_acc as userName, user_id as userId from ?? where time_stamp between ? and ?  order by time_stamp desc;
 `;
   con.query(sql, ['user_profile', start_time, end_time], function (err, rows) {
     if (err) {

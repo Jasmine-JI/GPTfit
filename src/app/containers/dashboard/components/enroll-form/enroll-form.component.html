@@ -211,6 +211,7 @@
       </button>
       <button class="alatech-btn alatech-btn--default"
         title="人員搜尋"
+        (click)="openPeopleSelector($event)"
       >
       人員搜尋
       </button>
@@ -220,7 +221,7 @@
       <div *ngIf="chooseLists && chooseLists.length > 0">
         <ng-container *ngFor="let label of chooseLists;let _idx = index">
           <div class="candidate-label">
-            <div style="display: inline-block">{{label.login_acc}}</div>
+            <div style="display: inline-block;margin-right: 10px">{{label.userName}}</div>
             <button class="icon-btn" (click)="removeLabel(_idx)">
               <i class="fa fa-plus icon_fa" style="transform: rotate(45deg);"></i>
             </button>

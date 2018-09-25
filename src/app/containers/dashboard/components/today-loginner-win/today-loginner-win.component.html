@@ -6,7 +6,7 @@
     <mat-list-option *ngFor="let item of logonlist"
       (click)="handleChooseLists(item)"
     >
-      {{item.login_acc}}
+      {{item.userName}}
     </mat-list-option>
   </ng-container>
   <div *ngIf="logonlist?.length === 0">
