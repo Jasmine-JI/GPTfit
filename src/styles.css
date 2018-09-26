@@ -144,8 +144,8 @@ button:focus {
   z-index: 3;
   opacity: 0;
   transition: opacity .3s ease-in-out,
-  height 0s ease-in-out .3s,
-  width 0s ease-in-out .3s;
+  height .1s ease-in-out .3s,
+  width .1s ease-in-out .3s;
 }
 
 .mask--show {

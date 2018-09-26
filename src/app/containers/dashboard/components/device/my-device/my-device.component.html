@@ -2,14 +2,6 @@
   <span style="color: #157fcc; font-weight:700">
     我的裝置
   </span>
-  <div class="group-edit-bar">
-    <button class="alatech-btn alatech-btn--default activty-btn"
-      title="搜尋裝置"
-      disabled
-    >
-      搜尋裝置
-    </button>
-  </div>
 </div>
 
 <mat-table [dataSource]="logSource"
@@ -18,20 +10,26 @@
 >
   <ng-container matColumnDef="model">
     <mat-header-cell *matHeaderCellDef mat-sort-header>產品型號</mat-header-cell>
-    <mat-cell *matCellDef="let row">{{ row.modelName }}</mat-cell>
+    <mat-cell *matCellDef="let row">{{ row?.modelName }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="type">
     <mat-header-cell *matHeaderCellDef disableClear="true">
       產品類別
     </mat-header-cell>
-    <mat-cell *matCellDef="let row">{{ row.deviceName }}</mat-cell>
+    <mat-cell *matCellDef="let row">{{ row?.deviceType | productType | translate }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="sn">
     <mat-header-cell *matHeaderCellDef disableClear="true">
       設備序號
     </mat-header-cell>
     <mat-cell *matCellDef="let row">
-      {{ row.deviceSN }}
+      {{ row?.myEquipmentSN }}
+      <ng-container *ngIf="row?.isDisplayNew">
+        <span matBadge="New"
+          matBadgeColor="warn"
+        >
+        </span>
+      </ng-container>
     </mat-cell>
   </ng-container>
   <mat-header-row
@@ -40,11 +38,11 @@
   </mat-header-row>
   <mat-row
     *matRowDef="let logRow; columns: ['model', 'type', 'sn']"
-    (click)="goDetail(logRow.deviceSN)"
+    (click)="goDetail(logRow.myEquipmentSN)"
   >
   </mat-row>
 </mat-table>
-<div *ngIf="isEmpty" style="text-align: center;padding: 30px">
+<div *ngIf="logSource?.data.length === 0" style="text-align: center;padding: 30px">
   尚無相關資訊
 </div>
 <div class="ala-loading-shade" *ngIf="isLoading">
@@ -52,12 +50,3 @@
 </div>
 <mat-paginator #paginator [length]="totalCount" [pageIndex]="0" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]">
 </mat-paginator>
-<div class="group-manage__action">
-  <button class="alatech-btn group-manage__btn"
-    title="搜尋裝置"
-    [routerLink]="['/dashboard/group-search']"
-    disabled
-  >
-    搜尋裝置
-  </button>
-</div>

@@ -26,7 +26,8 @@ import {
   MatSnackBarModule,
   MatTabsModule,
   MatExpansionModule,
-  MatTreeModule
+  MatTreeModule,
+  MatBadgeModule
 } from '@angular/material';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import { LayoutModule } from '@angular/cdk/layout';
@@ -68,7 +69,8 @@ export const TW_FORMATS = {
     MatSnackBarModule,
     MatTabsModule,
     MatExpansionModule,
-    MatTreeModule
+    MatTreeModule,
+    MatBadgeModule
   ],
   exports: [
     MatIconModule,
@@ -96,7 +98,8 @@ export const TW_FORMATS = {
     MatSnackBarModule,
     MatTabsModule,
     MatExpansionModule,
-    MatTreeModule
+    MatTreeModule,
+    MatBadgeModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [

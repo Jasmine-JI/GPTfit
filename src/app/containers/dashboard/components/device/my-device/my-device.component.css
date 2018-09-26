@@ -3,3 +3,27 @@
   cursor: pointer;
   background-color: #eee;
 }
+.mat-badge-medium.mat-badge-overlap.mat-badge-after .mat-badge-content {
+  right: -40px;
+}
+.mat-badge-medium.mat-badge-above .mat-badge-content {
+  top: -14px;
+}
+
+.mat-badge-medium .mat-badge-content {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+}
+@media(max-width: 767px) {
+  .mat-cell:last-of-type {
+    overflow: initial;
+  }
+  .mat-badge-medium.mat-badge-overlap.mat-badge-after .mat-badge-content {
+    right: -25px;
+  }
+
+  .mat-badge-medium.mat-badge-above .mat-badge-content {
+    top: -33px;
+  }
+}

@@ -1,4 +1,19 @@
-<div class="row">
+<ng-progress
+  #progressBar
+  [meteor]="_options.meteor"
+  [color]="_options.color"
+  [min]="_options.min"
+  [speed]="_options.speed"
+  [spinner]="_options.spinner"
+  [max]="_options.max"
+  [spinnerPosition]="_options.spinnerPosition"
+  [direction]="_options.direction"
+  [thick]="_options.thick"
+  [trickleSpeed]="_options.trickleSpeed"
+  [ease]="_options.ease"
+>
+</ng-progress>
+<div class="row" *ngIf="!isLoading">
   <span class="group-handle-name group-handle-name__rwd">
     產品資訊
   </span>
@@ -7,25 +22,24 @@
     <img *ngIf="deviceInfo" src={{deviceInfo?.modelImgUrl}} >
   </div>
   <div class="col-md-8">
-
     <div class="group-edit-bar">
       <span class="group-handle-name">
         產品資訊
       </span>
       <div>
         <button class="alatech-btn alatech-btn--default activty-btn"
-          title="Fit pair"
-          disabled
+          title="完成修改"
           style="width: 140px;height: 38px;"
+          (click)="manage()"
         >
-          Fit pair
+          完成修改
         </button>
         <button class="alatech-btn alatech-btn--default activty-btn"
-          title="登錄產品"
-          disabled
+          title="返回"
           style="width: 140px;height: 38px;"
+          [routerLink]="['/dashboard/device']"
         >
-          登錄產品
+          返回
         </button>
       </div>
     </div>
@@ -37,17 +51,18 @@
         {{"Portal.ProductName" | translate}}：{{ deviceInfo?.modelName || '尚無相關資訊' }}
       </div>
       <div style="margin-bottom: 50px">
-        {{"Portal.ProductType" | translate}}：{{ deviceInfo?.modelType || '尚無相關資訊' }}
+        {{"Portal.ProductType" | translate}}：{{ (deviceInfo?.modelType | productType | translate) || '尚無相關資訊' }}
       </div>
       <div style="margin-bottom: 50px">
         出廠日期：{{ deviceInfo?.date || '尚無相關資訊' }}
       </div>
       <div style="margin-bottom: 50px">
         裝置動態對應：
-        <select style="width: 186px">
-          <option>僅限自己</option>
-          <option>不公開</option>
-          <option>公開</option>
+        <select  [(ngModel)]="fitPairStatus" style="width: 186px">
+          <option value="0">不公開</option>
+          <option value="1">僅限自己(頭像與運動檔案)</option>
+          <option value="2">僅限自己(運動檔案)</option>
+          <option value="3">公開</option>
         </select>
         <div class="device-hint"
           (mouseenter)="mouseEnter()"
@@ -127,15 +142,15 @@
 
 <div class="group-manage__action">
   <button class="alatech-btn group-manage__btn"
-    title="Fit pair"
-    disabled
+    title="完成修改"
+    (click)="manage()"
   >
-    Fit pair
+    完成修改
   </button>
   <button class="alatech-btn group-manage__btn"
-    title="登錄產品"
-    disabled
+    title="返回"
+    [routerLink]="['/dashboard/device']"
   >
-    登錄產品
+    返回
   </button>
 </div>

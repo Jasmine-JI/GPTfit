@@ -80,6 +80,7 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.globalEventsManager.showMask(false);
     let browserLang = this.utilsService.getLocalStorageObject('locale');
     if (!browserLang) {
       browserLang = this.translateService.getBrowserCultureLang().toLowerCase();
