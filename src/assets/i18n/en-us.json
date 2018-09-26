@@ -3,7 +3,11 @@
     "Signin": "Signin",
     "Leaderboard": "Leaderboard",
     "Signout": "Signout",
-    "Dashboard": "Dashboard"
+    "Dashboard": "Dashboard",
+    "ProductType": {
+      "treadmill": "Treadmill",
+      "wearable": "Wearable"
+    }
   },
   "Portal": {
     "Introduce": "Introduce",

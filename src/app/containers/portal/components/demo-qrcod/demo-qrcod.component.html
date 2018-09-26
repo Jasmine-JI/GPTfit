@@ -31,7 +31,7 @@
       </div>
       <div class="row" style="margin-bottom: 15px">
         <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">{{"Portal.ProductType" | translate}}：</div>
-        <div class="col-sm-6 text-sm-left text-center">{{ deviceInfo?.modelType || '尚無相關資訊' }}</div>
+        <div class="col-sm-6 text-sm-left text-center">{{ (deviceInfo?.modelType | productType | translate) || '尚無相關資訊' }}</div>
       </div>
       <div class="row" style="margin-bottom: 15px" *ngIf="deviceInfo?.mainAppData">
         <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">
@@ -94,6 +94,29 @@
             <a target="_blank" href={{info?.link}}>{{info?.dispName}}</a>
           </div>
         </div>
+      </div>
+      <div class="row demo-qr__action">
+        <button class="alatech-btn alatech-btn--default"
+          title="Fit Pair"
+          *ngIf="isShowFitPairBtn"
+          (click)="fitPair('1')"
+        >
+          Fit Pair(對應頭像與運動檔案)
+        </button>
+        <button class="alatech-btn alatech-btn--default"
+          title="Fit Pair"
+          *ngIf="isShowFitPairBtn"
+          (click)="fitPair('2')"
+        >
+          Fit Pair(僅對應運動檔案)
+        </button>
+        <button class="alatech-btn alatech-btn--default"
+          title="登錄產品"
+          *ngIf="isShowBindingBtn"
+          (click)="goBinding()"
+        >
+          登錄產品
+        </button>
       </div>
     </ng-container>
   </ng-container>

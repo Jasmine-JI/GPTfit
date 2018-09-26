@@ -6,6 +6,10 @@ import { NgProgress } from 'ngx-progressbar';
 import * as moment from 'moment';
 import { UtilsService } from '@shared/services/utils.service';
 import { TranslateService } from '@ngx-translate/core';
+import { MatDialog } from '@angular/material/dialog';
+import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { AuthService } from '@shared/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-demo-qrcod',
@@ -21,22 +25,35 @@ export class DemoQrcodComponent implements OnInit {
   noProductImg: string;
   isLoading: boolean;
   productInfo: any;
+  // progressRef: NgProgressRef;
+  isShowBindingBtn = false;
+  isShowFitPairBtn = false;
+  fitPairType: string;
   constructor(
     private qrcodeService: QrcodeService,
     private progress: NgProgress,
     private utilsService: UtilsService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private dialog: MatDialog,
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit() {
     const queryStrings = getUrlQueryStrings(location.search);
+    this.displayQr = queryStrings;
+
+    this.fitPairType = this.utilsService.getLocalStorageObject('fitPairType');
+    if (this.fitPairType) {
+      this.handleFitPair();
+      this.utilsService.removeLocalStorageObject('fitPairType');
+    }
     const langName = this.utilsService.getLocalStorageObject('locale');
     this.translateService.onLangChange.subscribe(e => {
       if (this.deviceInfo) {
         this.handleProductInfo(e.lang);
       }
     });
-    this.displayQr = queryStrings;
     let params = new HttpParams();
     params = params.set('device_sn', this.displayQr.device_sn);
     this.progress.start();
@@ -46,13 +63,13 @@ export class DemoQrcodComponent implements OnInit {
         this.noProductImg = `http://${
           location.hostname
         }/app/public_html/products/img/unknown.png`;
+        this.progress.start();
+        this.isLoading = false;
       } else {
         this.deviceInfo = res;
         this.handleProductInfo(langName);
         this.handleUpload();
       }
-      this.progress.done();
-      this.isLoading = false;
     });
   }
   handleProductInfo(lang) {
@@ -89,6 +106,8 @@ export class DemoQrcodComponent implements OnInit {
       this.uploadDevice();
     } else {
       this.handleCScode(cs, device_sn);
+      this.progress.start();
+      this.isLoading = false;
     }
   }
   handleCScode(code, sn) {
@@ -112,6 +131,7 @@ export class DemoQrcodComponent implements OnInit {
     } else {
       this.isWrong = true;
     }
+    this.isShowBindingBtn = false; // 無論是否正確，出廠日期前，皆不顯示登錄產品btn
   }
   uploadDevice() {
     const types = ['Wearable', 'Treadmill', 'Spin Bike', 'Rowing machine'];
@@ -122,6 +142,7 @@ export class DemoQrcodComponent implements OnInit {
     );
     const body = {
       token: '',
+      uploadEquipmentSN: device_sn,
       verifyCode: this.displayQr.cs,
       deviceType: typeIdx,
       deviceDistance: '',
@@ -129,19 +150,122 @@ export class DemoQrcodComponent implements OnInit {
       deviceFWVer: '',
       deviceRFVer: ''
     };
-    this.qrcodeService.uploadDeviceInfo(body, device_sn).subscribe(res => {
-      const result = res;
-      if (result.resultCode !== 200) {
-        this.isWrong = true;
-      } else {
-        this.isWrong = false;
-      }
-    }, err => (this.isWrong = true));
+    this.qrcodeService.uploadDeviceInfo(body, device_sn).subscribe(
+      res => {
+        this.progress.start();
+        this.isLoading = false;
+        const result = res;
+        const {
+          resultCode,
+          info: { warrantyStatus, fitPairStatus }
+        } = result;
+        if (resultCode !== 200) {
+          this.isShowBindingBtn = false; // 驗證失敗，不顯示登錄產品btn
+          this.isShowFitPairBtn = false;
+          this.isWrong = true;
+        } else {
+          this.isShowBindingBtn = warrantyStatus !== '2'; // 驗證成功，判斷是否已綁訂
+          this.isShowFitPairBtn = fitPairStatus === '3';
+          this.isWrong = false;
+        }
+      },
+      err => (this.isWrong = true)
+    );
   }
   swithMainApp() {
     this.isMainAppOpen = !this.isMainAppOpen;
   }
   swithSecondApp() {
     this.isSecondAppOpen = !this.isSecondAppOpen;
+  }
+  handleBindingInfo() {
+    const localSN = this.utilsService.getLocalStorageObject('snNumber');
+    if (localSN) {
+      localSN.push(this.displayQr.device_sn);
+      this.utilsService.setLocalStorageObject('snNumber', localSN);
+      this.utilsService.setLocalStorageObject('updateIdx', localSN.length - 1);
+    } else {
+      this.utilsService.setLocalStorageObject('snNumber', [
+        this.displayQr.device_sn
+      ]);
+      this.utilsService.setLocalStorageObject('updateIdx', '0'); // 因為防止0 number為falsey值，妨礙判斷式
+    }
+    this.utilsService.setLocalStorageObject('bondStatus', '1'); // 先狀態是綁訂，之後解綁訂再加判斷
+  }
+  handleGoLoginPage(type: number) {
+    if (type === 1) {
+      this.authService.backUrl = '/dashboard/device';
+      this.handleBindingInfo();
+    } else {
+      this.authService.backUrl = location.pathname + location.search;
+      this.utilsService.setLocalStorageObject('fitPairType', this.fitPairType);
+    }
+    this.router.navigateByUrl(`signin`);
+  }
+  goBinding() {
+    const token = this.utilsService.getToken();
+    if (!token) {
+      this.dialog.open(MessageBoxComponent, {
+        hasBackdrop: true,
+        data: {
+          title: 'message',
+          body: `如果要登入產品，請登入，系統將會自動完成登錄產品的流程`,
+          confirmText: '確定',
+          cancelText: '取消',
+          onConfirm: this.handleGoLoginPage.bind(this, 1)
+        }
+      });
+    } else {
+      this.handleBindingInfo();
+      this.router.navigateByUrl(`dashboard/device`);
+    }
+  }
+  fitPair(type) {
+    this.fitPairType = type;
+    const token = this.utilsService.getToken();
+    if (!token) {
+      this.dialog.open(MessageBoxComponent, {
+        hasBackdrop: true,
+        data: {
+          title: 'message',
+          body: `如果要Fit Pair產品，請登入，系統將會自動完成Fit Pair產品的流程`,
+          confirmText: '確定',
+          cancelText: '取消',
+          onConfirm: this.handleGoLoginPage.bind(this, 2)
+        }
+      });
+    } else {
+      this.handleFitPair();
+    }
+  }
+  handleFitPair() {
+    const token = this.utilsService.getToken();
+    const { device_sn } = this.displayQr;
+    const body = {
+      token,
+      fitPairType: this.fitPairType,
+      pairEquipmentSN: [device_sn]
+    };
+    this.qrcodeService.fitPairSetting(body).subscribe(res => {
+      if (res.resultCode === 200) {
+        this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          data: {
+            title: 'message',
+            body: `Fit Pairt成功`,
+            confirmText: '確定'
+          }
+        });
+      } else {
+        this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          data: {
+            title: 'message',
+            body: `Fit Pair失敗`,
+            confirmText: '確定'
+          }
+        });
+      }
+    });
   }
 }
