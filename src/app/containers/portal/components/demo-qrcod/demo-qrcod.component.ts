@@ -29,6 +29,7 @@ export class DemoQrcodComponent implements OnInit {
   isShowBindingBtn = false;
   isShowFitPairBtn = false;
   fitPairType: string;
+  isFitPaired: boolean;
   constructor(
     private qrcodeService: QrcodeService,
     private progress: NgProgress,
@@ -158,8 +159,9 @@ export class DemoQrcodComponent implements OnInit {
         const result = res;
         const {
           resultCode,
-          info: { warrantyStatus, fitPairStatus }
+          info: { warrantyStatus, fitPairStatus, isFitPaired }
         } = result;
+        this.isFitPaired = isFitPaired;
         if (resultCode !== 200) {
           this.isShowBindingBtn = false; // 驗證失敗，不顯示登錄產品btn
           this.isShowFitPairBtn = false;
@@ -249,21 +251,35 @@ export class DemoQrcodComponent implements OnInit {
     };
     this.qrcodeService.fitPairSetting(body).subscribe(res => {
       if (res.resultCode === 200) {
-        this.dialog.open(MessageBoxComponent, {
-          hasBackdrop: true,
-          data: {
-            title: 'message',
-            body: `Fit Pairt成功`,
-            confirmText: '確定'
-          }
-        });
+        if (this.fitPairType === '2') {
+          return this.dialog.open(MessageBoxComponent, {
+            hasBackdrop: true,
+            data: {
+              title: 'message',
+              body: `完成解除Fit Pairt`,
+              confirmText: '確定',
+              onConfirm: this.uploadDevice.bind(this)
+            }
+          });
+        } else {
+          this.dialog.open(MessageBoxComponent, {
+            hasBackdrop: true,
+            data: {
+              title: 'message',
+              body: `Fit Pairt成功`,
+              confirmText: '確定',
+              onConfirm: this.uploadDevice.bind(this)
+            }
+          });
+        }
       } else {
         this.dialog.open(MessageBoxComponent, {
           hasBackdrop: true,
           data: {
             title: 'message',
             body: `Fit Pair失敗`,
-            confirmText: '確定'
+            confirmText: '確定',
+            onConfirm: this.uploadDevice.bind(this)
           }
         });
       }
