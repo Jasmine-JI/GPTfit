@@ -78,6 +78,7 @@ import { AllGroupsComponent } from './components/sport-report/components/all-gro
 import { PartialMuscleInfoComponent } from './components/sport-report/components/partial-muscle-info/partial-muscle-info.component';
 import { MyDeviceComponent } from './components/device/my-device/my-device.component';
 import { ProductInfoComponent } from './components/device/product-info/product-info.component';
+import { TodayLoginnerWinComponent } from './components/today-loginner-win/today-loginner-win.component';
 
 @NgModule({
   imports: [
@@ -164,7 +165,8 @@ import { ProductInfoComponent } from './components/device/product-info/product-i
     AllGroupsComponent,
     PartialMuscleInfoComponent,
     MyDeviceComponent,
-    ProductInfoComponent
+    ProductInfoComponent,
+    TodayLoginnerWinComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
@@ -174,7 +176,8 @@ import { ProductInfoComponent } from './components/device/product-info/product-i
     Top3DialogComponent,
     RightSettingWinComponent,
     PeopleSelectorWinComponent,
-    SportReportComponent
+    SportReportComponent,
+    TodayLoginnerWinComponent
   ]
 })
 export class DashboardModule {}

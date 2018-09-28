@@ -1,6 +1,11 @@
 <form [formGroup]="complexForm" #f="ngForm" novalidate (ngSubmit)="enroll(complexForm)">
   <div>
     <ul class="tablist">
+      <li class="tablist__tab" title="現場報名" [class.tablist__tab--selected]="tabIdx === 2" (click)="selectTab(2)"
+        (click)="handleTab()"
+      >
+        快速報名
+      </li>
       <li class="tablist__tab" title="現場報名" [class.tablist__tab--selected]="tabIdx === 0" (click)="selectTab(0)"
         (click)="handleTab()"
       >
@@ -194,6 +199,34 @@
             <a href (click)="downloadExample($event)">外部報名資料範例檔案</a>
           </label>
         </div>
+      </div>
+    </div>
+
+    <div class="form-group" *ngIf="tabIdx === 2">
+      <button class="alatech-btn alatech-btn--default"
+        title="今日登入者"
+        (click)="openTodayLoginWin($event)"
+      >
+        今日登入者
+      </button>
+      <button class="alatech-btn alatech-btn--default"
+        title="人員搜尋"
+        (click)="openPeopleSelector($event)"
+      >
+      人員搜尋
+      </button>
+      <div style="border-bottom: 1px solid #ccc;margin: 15px 0;color:#333">
+        快速報名名單<span style="color: #919191">(一次最多10筆)</span>：
+      </div>
+      <div *ngIf="chooseLists && chooseLists.length > 0">
+        <ng-container *ngFor="let label of chooseLists;let _idx = index">
+          <div class="candidate-label">
+            <div style="display: inline-block;margin-right: 10px">{{label.userName}}</div>
+            <button class="icon-btn" (click)="removeLabel(_idx)">
+              <i class="fa fa-plus icon_fa" style="transform: rotate(45deg);"></i>
+            </button>
+          </div>
+        </ng-container>
       </div>
     </div>
   </div>
