@@ -1,0 +1,156 @@
+<ng-progress
+  #progressBar
+  [meteor]="_options.meteor"
+  [color]="_options.color"
+  [min]="_options.min"
+  [speed]="_options.speed"
+  [spinner]="_options.spinner"
+  [max]="_options.max"
+  [spinnerPosition]="_options.spinnerPosition"
+  [direction]="_options.direction"
+  [thick]="_options.thick"
+  [trickleSpeed]="_options.trickleSpeed"
+  [ease]="_options.ease"
+>
+</ng-progress>
+<div class="row" *ngIf="!isLoading">
+  <span class="group-handle-name group-handle-name__rwd">
+    產品資訊
+  </span>
+  <div class="col-md-4 product-info group-image--area">
+    <img *ngIf="!deviceInfo" src={{noProductImg}}>
+    <img *ngIf="deviceInfo" src={{deviceInfo?.modelImgUrl}} >
+  </div>
+  <div class="col-md-8">
+    <div class="group-edit-bar">
+      <span class="group-handle-name">
+        產品資訊
+      </span>
+      <div>
+        <button class="alatech-btn alatech-btn--default activty-btn"
+          title="完成修改"
+          style="width: 140px;height: 38px;"
+          (click)="manage()"
+        >
+          完成修改
+        </button>
+        <button class="alatech-btn alatech-btn--default activty-btn"
+          title="返回"
+          style="width: 140px;height: 38px;"
+          [routerLink]="['/dashboard/device']"
+        >
+          返回
+        </button>
+      </div>
+    </div>
+    <div style="color: #919191">
+      <div style="margin-bottom: 50px">
+        {{"Portal.EquipmentSN" | translate}}：{{ deviceSN || '尚無相關資訊' }}
+      </div>
+      <div style="margin-bottom: 50px">
+        {{"Portal.ProductName" | translate}}：{{ deviceInfo?.modelName || '尚無相關資訊' }}
+      </div>
+      <div style="margin-bottom: 50px">
+        {{"Portal.ProductType" | translate}}：{{ (deviceInfo?.modelType | productType | translate) || '尚無相關資訊' }}
+      </div>
+      <div style="margin-bottom: 50px">
+        出廠日期：{{ deviceInfo?.date || '尚無相關資訊' }}
+      </div>
+      <div style="margin-bottom: 50px">
+        裝置動態對應：
+        <select  [(ngModel)]="fitPairStatus" style="width: 186px">
+          <option value="0">不公開</option>
+          <option value="1">僅限自己(頭像與運動檔案)</option>
+          <option value="2">僅限自己(運動檔案)</option>
+          <option value="3">公開</option>
+        </select>
+        <div class="device-hint"
+          (mouseenter)="mouseEnter()"
+          (mouseleave)="mouseLeave()"
+        >
+          ※動態對應
+          <div class="device-hint-box" *ngIf="isDisplayBox">
+            設備經由ANT+或藍牙廣播運動資訊至支援Train Live的設備上，
+            例如Wasp。
+            則會將運動資訊對應至目標用戶名稱與頭像，並儲存運動檔案傳送至該用戶。
+            若該設備為公用設施，建議選項為公開，即可使用Fit pair單次活動配對，
+            若為個人穿戴裝置，則設置為僅限自己，若不想分享資訊，則設置為不公開。
+          </div>
+        </div>
+      </div>
+    </div>
+
+      <div class="app-link" *ngIf="deviceInfo?.mainAppData">
+        <div>
+          <span class="group-handle-name">{{"Portal.MainApp" | translate}}：</span>
+          <div style="margin: 25px 0">
+            <img src={{deviceInfo?.mainAppData.appIconUrl}}  (click)="swithMainApp()">
+          </div>
+          <ng-container *ngIf="isMainAppOpen">
+            <div style="margin-bottom:10px" *ngIf="deviceInfo?.mainAppData.appIosUrl.length > 0">
+              <a target="_blank" href={{deviceInfo?.mainAppData.appIosUrl}}>
+                <img src={{deviceInfo?.mainAppData.appIosImg}}>
+              </a>
+            </div>
+            <div style="margin-bottom:10px" *ngIf="deviceInfo?.mainAppData.appAndroidUrl.length > 0">
+              <a target="_blank" href={{deviceInfo?.mainAppData.appAndroidUrl}}>
+                <img src={{deviceInfo?.mainAppData.appAndroidImg}}>
+              </a>
+            </div>
+            <div style="margin-bottom:10px" *ngIf="deviceInfo?.mainAppData.appApkUrl.length > 0">
+              <a target="_blank" href={{deviceInfo?.mainAppData.appApkUrl}}>
+                <img src={{deviceInfo?.mainAppData.appApkImg}}>
+              </a>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+      <div class="app-link" *ngIf="deviceInfo?.secondaryAppData">
+        <div>
+          <span class="group-handle-name">{{"Portal.othersApp" | translate}}：</span>
+          <div style="margin: 25px 0">
+            <img src={{deviceInfo?.secondaryAppData.appIconUrl}}  (click)="swithSecondApp()">
+          </div>
+          <ng-container *ngIf="isSecondAppOpen">
+            <div style="margin-bottom:10px" *ngIf="deviceInfo?.secondaryAppData.appIosUrl.length > 0">
+              <a target="_blank" href={{deviceInfo?.secondaryAppData.appIosUrl}}>
+                <img src={{deviceInfo?.secondaryAppData.appIosImg}}>
+              </a>
+            </div>
+            <div style="margin-bottom:10px" *ngIf="deviceInfo?.secondaryAppData.appAndroidUrl.length > 0">
+              <a target="_blank" href={{deviceInfo?.secondaryAppData.appAndroidUrl}}>
+                <img src={{deviceInfo?.secondaryAppData.appAndroidImg}}>
+              </a>
+            </div>
+            <div style="margin-bottom:10px" *ngIf="deviceInfo?.secondaryAppData.appApkUrl.length > 0">
+              <a target="_blank" href={{deviceInfo?.secondaryAppData.appApkUrl}}>
+                <img src={{deviceInfo?.secondaryAppData.appApkImg}}>
+              </a>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+      <span class="group-handle-name">{{"Portal.RelatedLinks" | translate}}：</span>
+      <div class="app-link" *ngIf="productInfo && productInfo.length > 0">
+
+        <div *ngFor="let info of productInfo">
+          <a target="_blank" href={{info?.link}}>{{info?.dispName}}</a>
+        </div>
+      </div>
+  </div>
+</div>
+
+<div class="group-manage__action">
+  <button class="alatech-btn group-manage__btn"
+    title="完成修改"
+    (click)="manage()"
+  >
+    完成修改
+  </button>
+  <button class="alatech-btn group-manage__btn"
+    title="返回"
+    [routerLink]="['/dashboard/device']"
+  >
+    返回
+  </button>
+</div>

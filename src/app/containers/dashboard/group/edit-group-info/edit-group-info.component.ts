@@ -2,7 +2,10 @@ import {
   Component,
   OnInit,
   ViewEncapsulation,
-  HostListener
+  HostListener,
+  ViewChild,
+  ElementRef,
+  OnDestroy
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { GroupService } from '../../services/group.service';
@@ -20,6 +23,7 @@ import { MsgDialogComponent } from '../../components/msg-dialog/msg-dialog.compo
 import { MatDialog } from '@angular/material/dialog';
 import { forkJoin } from 'rxjs/observable/forkJoin';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { GlobalEventsManager } from '@shared/global-events-manager';
 
 @Component({
   selector: 'app-edit-group-info',
@@ -27,7 +31,7 @@ import { MessageBoxComponent } from '@shared/components/message-box/message-box.
   styleUrls: ['./edit-group-info.component.css', '../group-style.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class EditGroupInfoComponent implements OnInit {
+export class EditGroupInfoComponent implements OnInit, OnDestroy {
   groupId: string;
   token: string;
   groupInfo: any;
@@ -68,6 +72,8 @@ export class EditGroupInfoComponent implements OnInit {
   visitorDetail: any;
   isLoading = false;
   isGroupDetailLoading = false;
+  @ViewChild('footerTarget')
+  footerTarget: ElementRef;
   get groupName() {
     return this.form.get('groupName');
   }
@@ -81,7 +87,8 @@ export class EditGroupInfoComponent implements OnInit {
     private router: Router,
     private fb: FormBuilder,
     private userInfoService: UserInfoService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private globalEventsManager: GlobalEventsManager
   ) {}
   @HostListener('dragover', ['$event'])
   public onDragOver(evt) {
@@ -104,6 +111,9 @@ export class EditGroupInfoComponent implements OnInit {
       this.visitorDetail = res;
       console.log('visitorDetail: ', this.visitorDetail);
     });
+  }
+  ngOnDestroy() {
+    this.globalEventsManager.setFooterRWD(0); // 為了讓footer自己變回去預設值
   }
   handleInit() {
     this.groupId = this.route.snapshot.paramMap.get('groupId');
@@ -209,7 +219,6 @@ export class EditGroupInfoComponent implements OnInit {
         onConfirm: this.handleDimissGroup.bind(this)
       }
     });
-
   }
   handleDimissGroup() {
     const body = {
@@ -279,7 +288,8 @@ export class EditGroupInfoComponent implements OnInit {
           );
           if (this.groupLevel === '40') {
             this.branchAdministrators = this.groupInfos.filter(
-              _info => _info.accessRight === '40' && _info.groupId === this.groupId
+              _info =>
+                _info.accessRight === '40' && _info.groupId === this.groupId
             );
           } else {
             this.branchAdministrators = this.groupInfos.filter(_info => {
@@ -319,6 +329,11 @@ export class EditGroupInfoComponent implements OnInit {
           );
         }
       }
+      setTimeout(() => {
+        const childElementCount = this.footerTarget.nativeElement
+          .childElementCount;
+        this.globalEventsManager.setFooterRWD(childElementCount); // 為了讓footer長高85px
+      }, 1000);  // 應該長新增教練課btn非同步延遲，所以等一秒來得到childelement
     });
   }
   changeGroupInfo({ index }) {

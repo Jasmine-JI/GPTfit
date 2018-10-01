@@ -60,7 +60,8 @@ export class DashboardGuard implements CanActivate {
         this.userInfoService.getUserInfo(body).then(() => {
 
           if (isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper) {
-            this.router.navigateByUrl(`/dashboard/${next.url[0].path}`);
+            this.utils.handleNextUrl(next);
+            this.router.navigateByUrl(`/dashboard${this.utils.handleNextUrl(next)}`);
             return true;
           } else {
             this.router.navigateByUrl(`/403`);

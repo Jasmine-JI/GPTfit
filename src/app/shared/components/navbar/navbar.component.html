@@ -15,7 +15,7 @@
       *ngIf="!(login$| async)"
       (click)="chooseNavItem(3)"
     >
-      <a class="nav-link" [routerLink]="['/signin']" (click)="toggleMask()">{{"SH.Signin" | translate}}</a>
+      <a class="nav-link" [routerLink]="['/signin']">{{"SH.Signin" | translate}}</a>
     </li>
     <li class="nav-item nav-rwd" style="list-style: none;" *ngIf="(login$| async)">
       <a class="nav-link" (click)="logout()">{{ "SH.Signout" | translate}}</a>
@@ -41,24 +41,24 @@
         *ngIf="!isShowResetPwd"
         (click)="chooseNavItem(1)"
       >
-        <a class="nav-link"[routerLink]="['/']" (click)="toggleMask()">{{ "Portal.Introduce" | translate}}</a>
+        <a class="nav-link"[routerLink]="['/']">{{ "Portal.Introduce" | translate}}</a>
       </li>
 
       <li class="nav-item" [class.active]="navItemNum === 2"
         *ngIf="!isShowResetPwd"
         (click)="chooseNavItem(2)"
       >
-        <a class="nav-link" href="/leaderboard" (click)="toggleMask()">{{ "SH.Leaderboard" | translate}}</a>
+        <a class="nav-link" href="/leaderboard">{{ "SH.Leaderboard" | translate}}</a>
       </li>
       <li class="nav-item" *ngIf="isShowResetPwd">
-        <a class="nav-link" (click)="reloadPage()" (click)="toggleMask()">Reset Password</a>
+        <a class="nav-link" (click)="reloadPage()">Reset Password</a>
       </li>
       <li class="nav-item nav-rwd__hamburger" [class.active]="navItemNum === 3"
         style="list-style: none;"
         *ngIf="!(login$| async)"
         (click)="chooseNavItem(3)"
       >
-        <a class="nav-link" [routerLink]="['/signin']" (click)="toggleMask()">{{"SH.Signin" | translate}}</a>
+        <a class="nav-link" [routerLink]="['/signin']">{{"SH.Signin" | translate}}</a>
       </li>
       <li class="nav-item nav-rwd__hamburger" style="list-style: none;" *ngIf="(login$| async)">
         <a class="nav-link" (click)="logout()">{{ "SH.Signout" | translate}}</a>

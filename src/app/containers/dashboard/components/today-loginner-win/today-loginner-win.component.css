@@ -1,0 +1,13 @@
+.mat-selection-list:focus {
+  outline: none;
+}
+.cdk-overlay-pane {
+  min-width: 520px;
+}
+@media(max-width: 767px) {
+  .cdk-overlay-pane {
+    min-width: 90vw;
+  }
+}
+
+

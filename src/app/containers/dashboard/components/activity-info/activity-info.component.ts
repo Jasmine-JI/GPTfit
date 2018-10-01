@@ -16,7 +16,8 @@ import { testData } from './testData1';
 import { ActivityService } from '../../services/activity.service';
 import { ActivatedRoute } from '@angular/router';
 import { HttpParams } from '@angular/common/http';
-import { NgProgress } from 'ngx-progressbar';
+import { NgProgress, NgProgressRef } from '@ngx-progressbar/core';
+import { GlobalEventsManager } from '@shared/global-events-manager';
 
 var Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -62,12 +63,27 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   infoDate: string;
   activityPoints: any;
   isLoading = false;
+  _options = {
+    min: 8,
+    max: 100,
+    ease: 'linear',
+    speed: 200,
+    trickleSpeed: 400,
+    meteor: true,
+    spinner: true,
+    spinnerPosition: 'right',
+    direction: 'ltr+',
+    color: '#108bcd',
+    thick: false
+  };
+  progressRef: NgProgressRef;
   constructor(
     elementRef: ElementRef,
     private renderer: Renderer2,
     private activityService: ActivityService,
     private route: ActivatedRoute,
-    private progress: NgProgress
+    private ngProgress: NgProgress,
+    private globalEventsManager: GlobalEventsManager
   ) {
     /**
      * 重写内部的方法， 这里是将提示框即十字准星的隐藏函数关闭
@@ -91,7 +107,9 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.globalEventsManager.setFooterRWD(2); // 為了讓footer長高85px
     const fieldId = this.route.snapshot.paramMap.get('fileId');
+    this.progressRef = this.ngProgress.ref();
     this.getInfo(fieldId);
   }
   ngAfterViewInit() {
@@ -99,10 +117,12 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   ngOnDestroy() {
     this.listenFunc();
+    this.globalEventsManager.setFooterRWD(0); // 為了讓footer自己變回去預設值
   }
   getInfo(id) {
     this.isLoading = true;
-    this.progress.start();
+
+    this.progressRef.start();
     let params = new HttpParams();
     params = params.set('fileId', id);
     this.activityService.fetchSportListDetail(params).subscribe(res => {
@@ -115,8 +135,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.rainOption.series[1].data = speeds;
       this.rainOption.xAxis[0].data = distances;
       this.rainOption.xAxis[1].data = distances;
-
-      this.progress.done();
+      this.progressRef.complete();
       this.isLoading = false;
     });
   }

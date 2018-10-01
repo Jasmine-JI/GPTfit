@@ -17,6 +17,9 @@ import {
   FormControl
 } from '@angular/forms';
 import { getLocalStorageObject } from '@shared/utils/';
+import { TodayLoginnerWinComponent } from '../today-loginner-win/today-loginner-win.component';
+import * as _ from 'lodash';
+import { PeopleSelectorWinComponent } from '../people-selector-win/people-selector-win.component';
 
 @Component({
   selector: 'app-enroll-form',
@@ -33,7 +36,7 @@ export class EnrollFormComponent implements OnInit {
   chooseFileText = '選擇檔案';
   fileName = '';
   fileLink: string;
-  tabIdx = 0;
+  tabIdx = 2;
   isBtnDisabled = false;
   active = false; // select options的開關
   emailErr = '';
@@ -46,11 +49,13 @@ export class EnrollFormComponent implements OnInit {
   session_id: string;
   eventInfo: any;
   signupMethod: number;
-  @ViewChild('f') form: any;
+  @ViewChild('f')
+  form: any;
   complexForm: FormGroup;
   counrtyCode: string;
   placeholder = '請輸入您的手機號碼';
   isCodeInvalid = false;
+  chooseLists = [];
   constructor(
     private eventEnrollService: EventEnrollService,
     private eventInfoService: EventInfoService,
@@ -181,6 +186,23 @@ export class EnrollFormComponent implements OnInit {
     }
   }
   enroll({ value, valid }) {
+    if (this.tabIdx === 2) {
+      const userIds = this.chooseLists.map(_label => _label.userId);
+      const body = {
+        eventId: this.event_id,
+        sessionId: this.session_id,
+        userIds
+      };
+      return this.eventEnrollService
+        .fastEnroll(body)
+        .subscribe(() =>
+          this.router.navigateByUrl(
+            `/dashboard/enroll/${this.event_id}/preview?session_id=${
+              this.session_id
+            }`
+          )
+        );
+    }
     if (this.tabIdx === 1 && this.fileLink) {
       const formData = new FormData();
       formData.append('file', value.attachment);
@@ -195,7 +217,12 @@ export class EnrollFormComponent implements OnInit {
     } else {
       this.isCodeInvalid = false;
     }
-    if (valid && this.phoneErr.length === 0 && this.emailErr.length === 0 && !this.isCodeInvalid) {
+    if (
+      valid &&
+      this.phoneErr.length === 0 &&
+      this.emailErr.length === 0 &&
+      !this.isCodeInvalid
+    ) {
       const data = value;
       data.pay_method = '臨櫃付款';
       data.status = '已付款';
@@ -209,7 +236,8 @@ export class EnrollFormComponent implements OnInit {
       } else {
         data.phone = '';
       }
-      this.eventEnrollService.enroll(data).subscribe(results => {
+      this.eventEnrollService.enroll(data).subscribe(
+        results => {
           this.dialog.open(MsgDialogComponent, {
             hasBackdrop: true,
             data: {
@@ -220,7 +248,8 @@ export class EnrollFormComponent implements OnInit {
           });
           this.form.resetForm();
           this.complexForm.patchValue({ ageRange: '不透露', gender: 2 });
-        }, err => {
+        },
+        err => {
           this.dialog.open(MsgDialogComponent, {
             hasBackdrop: true,
             data: {
@@ -228,11 +257,48 @@ export class EnrollFormComponent implements OnInit {
               body: err.errorMessage
             }
           });
-        });
+        }
+      );
     }
   }
   showCheckEnrollDialog() {
     this.dialog.open(MsgDialogComponent, { hasBackdrop: true });
+  }
+  handleConfirm(_lists) {
+    const targetListLength = _lists.length;
+    if (targetListLength <= 10) {
+      const newLists = _lists.filter(item => this.chooseLists.findIndex(list => list.userId === item.userId) === -1);
+      this.chooseLists = this.chooseLists.concat(newLists);
+    } else {
+      const originListLength = this.chooseLists.length;
+      alert(`最多一次操作為10筆，目前還可加入${10 - originListLength}`);
+    }
+  }
+  removeLabel(idx) {
+    this.chooseLists.splice(idx, 1);
+  }
+  openTodayLoginWin(e) {
+    e.preventDefault();
+    const list = _.cloneDeep(this.chooseLists);
+    this.dialog.open(TodayLoginnerWinComponent, {
+      hasBackdrop: true,
+      data: {
+        chooseLists: list,
+        onConfirm: this.handleConfirm.bind(this)
+      }
+    });
+  }
+  openPeopleSelector(e) {
+    e.preventDefault();
+    const list = _.cloneDeep(this.chooseLists);
+    this.dialog.open(PeopleSelectorWinComponent, {
+      hasBackdrop: true,
+      data: {
+        title: `人員選擇器`,
+        adminLists: list,
+        onConfirm: this.handleConfirm.bind(this)
+      }
+    });
   }
   downloadFile(e) {
     e.preventDefault();

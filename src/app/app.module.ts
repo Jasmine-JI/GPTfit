@@ -17,6 +17,7 @@ import { HttpStatusInterceptor } from '@shared/interceptors/http-status.intercep
 import { HttpClient } from '@angular/common/http';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { NgProgressModule } from '@ngx-progressbar/core';
 
 export function startupServiceFactory(startupService: StartupService): Function { return () => startupService.load(); }
 
@@ -38,7 +39,8 @@ export function createTranslateLoader(http: HttpClient) {
         useFactory: createTranslateLoader,
         deps: [HttpClient]
       }
-    })
+    }),
+    NgProgressModule.forRoot()
   ],
   providers: [
     WINDOW_PROVIDERS,

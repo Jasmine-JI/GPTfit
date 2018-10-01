@@ -104,7 +104,7 @@ router.get('/getGroupList', function (req, res, next) {
     select g.group_name as groupName, g.group_id as groupId,
     m.access_right as accessRight, m.join_status as JoinStatus
     from ?? g, ?? m
-    where g.group_id = m.group_id and m.member_id = ?;
+    where g.group_id = m.group_id and m.member_id = ? and g.group_status != 4;
   `;
     con.query(sql, ['group_info', 'group_member_info', userId], function (err, rows) {
       if (err) {
@@ -121,7 +121,7 @@ router.get('/getGroupList', function (req, res, next) {
       } else {
         return res.json(results);
       }
-    });    
+    });
   });
 
 });

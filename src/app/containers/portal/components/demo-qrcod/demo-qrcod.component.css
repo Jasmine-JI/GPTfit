@@ -1,3 +1,25 @@
 .wrong-cs {
   text-decoration: underline;
 }
+.demo-qr__action {
+  margin: 0 0 15px 120px;
+  justify-content: center;
+}
+.demo-qr__action button {
+  width: 180px;
+  height: 38px;
+}
+
+@media(max-width: 575px) {
+  .demo-qr__action {
+    margin: 0 15px 15px;
+  }
+  .demo-qr__action button {
+    width: 100%;
+    height: 50px;
+  }
+  .demo-qr__action .alatech-btn + .alatech-btn {
+    margin-left: 0px;
+    margin-top: 10px;
+  }
+}

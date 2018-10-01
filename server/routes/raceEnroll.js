@@ -6,6 +6,7 @@ var XLSX = require('xlsx');
 var fs = require('fs');
 var router = express.Router();
 var checkID = require('../utils').checkID;
+var async = require('async')
 
 router.get('/', function (req, res, next) {
   const {
@@ -29,7 +30,63 @@ router.get('/', function (req, res, next) {
     res.status(200).json(rows);
   });
 });
-
+router.get('/todayLoginList', function (req, res, next) {
+  const {
+    con
+  } = req;
+  var now = new Date();
+  var now_mill = now.getTime();
+  const today_stamp = Math.round(now_mill / 1000);
+  const start_time = today_stamp - 43200;
+  const end_time = today_stamp + 43200;
+  const sql = `
+  select time_stamp, login_acc as userName, user_id as userId from ?? where time_stamp between ? and ?  order by time_stamp desc;
+`;
+  con.query(sql, ['user_profile', start_time, end_time], function (err, rows) {
+    if (err) {
+      return res.status(500).send({
+        errorMessage: err.sqlMessage
+      });
+    }
+    res.status(200).json(rows);
+  });
+});
+router.post('/fastEnroll', function (req, res, next) {
+  const {
+    con,
+    body: {
+      eventId,
+      sessionId,
+      userIds
+    }
+  } = req;
+  var now = new Date();
+  var now_mill = now.getTime();
+  const today_stamp = Math.round(now_mill / 1000);
+  normalQuerys = userIds.map(_id => `
+    INSERT INTO ?? (e_mail, phone, country_code, login_acc, event_id, session_id, enroll_time)
+    select e_mail, phone, country_code, login_acc, ?, ?, ? from ?? where user_id = ${con.escape(_id)};`
+  );
+  const processer = function (query) {
+    con.query(query, ['user_race_enroll', eventId, sessionId, today_stamp, 'user_profile'], function (err, rows) {
+      if (err) {
+        console.log(err);
+        return res.status(500).send({
+          errorMessage: err.sqlMessage
+        });
+      }
+    });
+  }
+  res.json({
+    resultCode: 200,
+    rtnMsg: 'success'
+  });
+  async.eachLimit(normalQuerys, 10, processer, function (error, result) {
+  console.log('!!!!!');
+  console.log('error: ', error);
+  console.log('result: ', result);
+  });
+});
 router.post('/enroll', async(req, res) => {
   const {
     body: {

@@ -1,4 +1,10 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  OnDestroy
+} from '@angular/core';
 import { GroupService } from '../../services/group.service';
 import {
   MatTableDataSource,
@@ -13,13 +19,14 @@ import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/observable/fromEvent';
 import { Router } from '@angular/router';
 import { UtilsService } from '@shared/services/utils.service';
+import { GlobalEventsManager } from '@shared/global-events-manager';
 
 @Component({
   selector: 'app-my-group-list',
   templateUrl: './my-group-list.component.html',
   styleUrls: ['./my-group-list.component.css', '../group-style.css']
 })
-export class MyGroupListComponent implements OnInit {
+export class MyGroupListComponent implements OnInit, OnDestroy {
   logSource = new MatTableDataSource<any>();
   totalCount: number;
   currentPage: PageEvent;
@@ -37,11 +44,13 @@ export class MyGroupListComponent implements OnInit {
     private groupService: GroupService,
     private matPaginatorIntl: MatPaginatorIntl,
     private router: Router,
-    private utils: UtilsService
+    private utils: UtilsService,
+    private globalEventsManager: GlobalEventsManager
   ) {
   }
 
   ngOnInit() {
+    this.globalEventsManager.setFooterRWD(2); // 為了讓footer長高85px
     // 設定顯示筆數資訊文字
     this.matPaginatorIntl.getRangeLabel = (
       page: number,
@@ -108,5 +117,8 @@ export class MyGroupListComponent implements OnInit {
   }
   selectTarget(_value) {
     this.selectedValue = encodeURIComponent(_value).trim();
+  }
+  ngOnDestroy() {
+    this.globalEventsManager.setFooterRWD(0); // 為了讓footer自己變回去預設值
   }
 }

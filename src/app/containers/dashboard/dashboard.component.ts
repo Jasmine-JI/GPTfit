@@ -40,6 +40,7 @@ export class DashboardComponent implements OnInit {
   isGroupAdministrator = false;
   isGeneralMember = false;
   isHadContainer = true;
+  footerAddClassName = 'footer footer-details';
   constructor(
     private globalEventsManager: GlobalEventsManager,
     private authService: AuthService,
@@ -79,6 +80,7 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.globalEventsManager.showMask(false);
     let browserLang = this.utilsService.getLocalStorageObject('locale');
     if (!browserLang) {
       browserLang = this.translateService.getBrowserCultureLang().toLowerCase();
@@ -169,6 +171,13 @@ export class DashboardComponent implements OnInit {
     this.globalEventsManager.showNavBarEmitter.subscribe(mode => {
       this.isMaskShow = mode;
     });
+    this.globalEventsManager.setFooterRWDEmitter.subscribe(_num => {
+      if (_num > 0) {
+        this.footerAddClassName = `footer footer-details footer-rwd--${_num}`;
+      } else {
+        this.footerAddClassName = 'footer footer-details';
+      }
+    });
     if (window.innerWidth < 769) {
       this.mode = 'over';
       this.isDefaultOpend = false;
@@ -200,7 +209,7 @@ export class DashboardComponent implements OnInit {
     this.isSideNavOpend = !this.isSideNavOpend;
     sideNav.toggle().then(result => {
       const toogleResult = result;
-      if (toogleResult['type'] === 'open') {
+      if (toogleResult === 'open') {
         this.isSideNavOpend = true;
       } else {
         this.isSideNavOpend = false;

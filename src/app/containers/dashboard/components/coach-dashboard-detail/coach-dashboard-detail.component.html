@@ -66,28 +66,6 @@
         重新開始/開始
       </button>
     </div>
-    <div  [dragula]='"bag-items"'
-    >
-      <div style="display: inline-block; margin: 10px"
-        *ngFor="let item of displayCards;let _idx = index"
-      >
-
-        <div class="card"
-          [style.background-color]="colorDatas[displayCards[_idx].colorIdx]"
-        >
-          userId: {{ displayCards[_idx].user_id }}
-          <br>
-          HR: {{ displayCards[_idx].current_heart_rate || 0 }}
-          <br>
-          age: {{displayCards[_idx].age }}
-          <br>
-          rest_hr: {{displayCards[_idx].rest_hr }}
-          <!-- <span *ngIf="displayCards[_idx].activity_distance > 2660">
-            已跑完囉!!!!!
-          </span> -->
-        </div>
-      </div>
-    </div>
   </div>
 
 </div>

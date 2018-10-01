@@ -1,9 +1,13 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  OnDestroy
+} from '@angular/core';
 import {
   MatTableDataSource,
   MatPaginator,
   PageEvent,
-  MatSort,
   Sort,
   MatPaginatorIntl
 } from '@angular/material';
@@ -11,13 +15,14 @@ import { ActivityService } from '../../services/activity.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { GlobalEventsManager } from '@shared/global-events-manager';
 
 @Component({
   selector: 'app-my-activity',
   templateUrl: './my-activity.component.html',
   styleUrls: ['./my-activity.component.css', '../../group/group-style.css']
 })
-export class MyActivityComponent implements OnInit {
+export class MyActivityComponent implements OnInit, OnDestroy {
   logSource = new MatTableDataSource<any>();
   totalCount: number;
   currentPage: PageEvent;
@@ -31,10 +36,12 @@ export class MyActivityComponent implements OnInit {
     private matPaginatorIntl: MatPaginatorIntl,
     private activityService: ActivityService,
     private utils: UtilsService,
-    private router: Router
+    private router: Router,
+    private globalEventsManager: GlobalEventsManager
   ) {}
 
   ngOnInit() {
+    this.globalEventsManager.setFooterRWD(1); // 為了讓footer長高85px
     // 設定顯示筆數資訊文字
     this.matPaginatorIntl.getRangeLabel = (
       page: number,
@@ -72,6 +79,9 @@ export class MyActivityComponent implements OnInit {
       this.currentPage = page;
       this.getLists();
     });
+  }
+  ngOnDestroy() {
+    this.globalEventsManager.setFooterRWD(0); // 為了讓footer自己變回去預設值
   }
   changeSort(sortInfo: Sort) {
     this.currentSort = sortInfo;

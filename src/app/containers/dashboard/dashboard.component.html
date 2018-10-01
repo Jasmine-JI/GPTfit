@@ -7,8 +7,8 @@
     <router-outlet></router-outlet>
 </ng-container>
 <div (window:resize)="onResize($event, sideNav)" *ngIf="!isLoading" [class.minimize-main-nav]="isSideNavOpend">
-  <mat-sidenav-container style="height:100vh">
-    <mat-sidenav #sideNav opened={{isDefaultOpend}} mode={{mode}}>
+  <mat-drawer-container style="height:100vh">
+    <mat-drawer #sideNav opened={{isDefaultOpend}} mode={{mode}}>
       <nav class="navbar ala-dashboard-nav">
         <span class="ala-dashboard-logo">
           center
@@ -149,11 +149,25 @@
           >
             <img src="/assets/icons/icon_72px_22_activity.png" style="width:20px;margin-right: 7px">我的活動
           </li>
+          <li class="ala-sidenav-item"
+            (click)="chooseItem(15, sideNav)"
+            [class.ala-sidenav-menu-item__active]="target === 15"
+            [routerLink]="['/dashboard/device']"
+          >
+            我的裝置
+          </li>
+          <li class="ala-sidenav-item"
+            (click)="chooseItem(16, sideNav)"
+            [class.ala-sidenav-menu-item__active]="target === 16"
+            [routerLink]="['/dashboard/sport-report']"
+          >
+            運動報告
+          </li>
         </mat-nav-list>
       </nav>
-    </mat-sidenav>
+    </mat-drawer>
 
-    <mat-sidenav-content>
+    <mat-drawer-content>
       <header class="header header__color ala-dashboard-header">
         <div class="mobile-menu-toggle">
           <div class="main-nav-toggle"
@@ -194,11 +208,13 @@
       >
         <router-outlet></router-outlet>
       </div>
-      <footer class="footer footer-details">
+      <footer
+        [ngClass]="footerAddClassName"
+      >
       Center 是由 Alatech 提供 Copyright © Alatech  Co.,Ltd. 或其子公司 • Version: 1.0.0.0
       </footer>
-    </mat-sidenav-content>
-  </mat-sidenav-container>
+    </mat-drawer-content>
+  </mat-drawer-container>
 </div>
 
 <div [hidden]="!isLoading">

@@ -34,7 +34,6 @@ import { DeviceLogDetailComponent } from './components/device-log-detail/device-
 import { CoachDashboardComponent } from './components/coach-dashboard/coach-dashboard.component';
 import { CoachService } from './services/coach.service';
 import { HrZoneDialogComponent } from './components/hr-zone-dialog/hr-zone-dialog.component';
-import { DragulaModule } from 'ng2-dragula/ng2-dragula';
 import { CoachDashboardDetailComponent } from './components/coach-dashboard-detail/coach-dashboard-detail.component';
 import { Top3DialogComponent } from './components/top3-dialog/top3-dialog.component';
 import { CoachRexComponent } from './components/coach-rex/coach-rex.component';
@@ -63,7 +62,23 @@ import { ActivityService } from './services/activity.service';
 import { MyActivityComponent } from './components/my-activity/my-activity.component';
 import { SportTypePipe } from './pipes/sport-type.pipe';
 import { SportDatePipe } from './pipes/sport-date.pipe';
-import { NgProgressModule } from 'ngx-progressbar';
+import { NgProgressModule } from '@ngx-progressbar/core';
+import { SportReportComponent } from './components/sport-report/sport-report.component';
+import { ActivityLevelsComponent } from './components/sport-report/components/activity-levels/activity-levels.component';
+import { AllDurationComponent } from './components/sport-report/components/all-duration/all-duration.component';
+import { TotalDistanceComponent } from './components/sport-report/components/total-distance/total-distance.component';
+import { BurnCaloriesComponent } from './components/sport-report/components/burn-calories/burn-calories.component';
+import { AverageSpeedComponent } from './components/sport-report/components/average-speed/average-speed.component';
+import { MaxSpeedComponent } from './components/sport-report/components/max-speed/max-speed.component';
+import { AverageHRComponent } from './components/sport-report/components/average-hr/average-hr.component';
+import { MaxHRComponent } from './components/sport-report/components/max-hr/max-hr.component';
+import { OtherBurnCaloriesComponent } from './components/sport-report/components/other-burn-calories/other-burn-calories.component';
+import { AllTimesComponent } from './components/sport-report/components/all-times/all-times.component';
+import { AllGroupsComponent } from './components/sport-report/components/all-groups/all-groups.component';
+import { PartialMuscleInfoComponent } from './components/sport-report/components/partial-muscle-info/partial-muscle-info.component';
+import { MyDeviceComponent } from './components/device/my-device/my-device.component';
+import { ProductInfoComponent } from './components/device/product-info/product-info.component';
+import { TodayLoginnerWinComponent } from './components/today-loginner-win/today-loginner-win.component';
 
 @NgModule({
   imports: [
@@ -78,7 +93,6 @@ import { NgProgressModule } from 'ngx-progressbar';
     BrowserAnimationsModule,
     SharedPipes,
     ReactiveFormsModule,
-    DragulaModule,
     SharedModule,
     NgxEchartsModule,
     NgProgressModule
@@ -136,7 +150,23 @@ import { NgProgressModule } from 'ngx-progressbar';
     ActivityInfoComponent,
     MyActivityComponent,
     SportTypePipe,
-    SportDatePipe
+    SportDatePipe,
+    SportReportComponent,
+    ActivityLevelsComponent,
+    AllDurationComponent,
+    TotalDistanceComponent,
+    BurnCaloriesComponent,
+    AverageSpeedComponent,
+    MaxSpeedComponent,
+    AverageHRComponent,
+    MaxHRComponent,
+    OtherBurnCaloriesComponent,
+    AllTimesComponent,
+    AllGroupsComponent,
+    PartialMuscleInfoComponent,
+    MyDeviceComponent,
+    ProductInfoComponent,
+    TodayLoginnerWinComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
@@ -145,7 +175,9 @@ import { NgProgressModule } from 'ngx-progressbar';
     HrZoneDialogComponent,
     Top3DialogComponent,
     RightSettingWinComponent,
-    PeopleSelectorWinComponent
+    PeopleSelectorWinComponent,
+    SportReportComponent,
+    TodayLoginnerWinComponent
   ]
 })
 export class DashboardModule {}

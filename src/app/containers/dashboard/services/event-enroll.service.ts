@@ -22,6 +22,12 @@ export class EventEnrollService {
   getIDNum(params) {
     return this.http.get(API_SERVER + 'raceEnroll/idNumberValidate', { params });
   }
+  getTodayLoginList() {
+    return this.http.get(API_SERVER + 'raceEnroll/todayLoginList');
+  }
+  fastEnroll(body) {
+    return this.http.post(API_SERVER + 'raceEnroll/fastEnroll', body);
+  }
   enroll(body) {
     return this.http.post(API_SERVER + 'raceEnroll/enroll', body);
   }

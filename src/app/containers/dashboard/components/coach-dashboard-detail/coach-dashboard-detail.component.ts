@@ -6,7 +6,6 @@ import { MatSnackBar } from '@angular/material';
 import { MsgDialogComponent } from '../msg-dialog/msg-dialog.component';
 import { HrZoneDialogComponent } from '../hr-zone-dialog/hr-zone-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { DragulaService } from 'ng2-dragula/ng2-dragula';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 
@@ -49,20 +48,9 @@ export class CoachDashboardDetailComponent implements OnInit, OnDestroy {
     private coachService: CoachService,
     private snackBar: MatSnackBar,
     public dialog: MatDialog,
-    private dragula: DragulaService,
     private router: Router,
     private route: ActivatedRoute
   ) {
-    this.dragula.setOptions('bag-items', { revertOnSpill: true });
-    this.dragula.drag.subscribe(value => {
-      this.stop();
-    });
-    this.dragula.drop.subscribe(value => {
-      this.restart();
-    });
-    this.dragula.cancel.subscribe((value, idx) => {
-      this.restart();
-    });
   }
 
   ngOnInit() {
