@@ -7,7 +7,9 @@
     "ProductType": {
       "treadmill": "跑步机",
       "wearable": "穿戴式装置"
-    }
+    },
+    "UserManual": "使用说明",
+    "GetDocument": "取得操作手册"
   },
   "Portal": {
     "Introduce": "介绍",

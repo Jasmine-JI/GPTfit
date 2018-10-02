@@ -12,7 +12,7 @@
   <ng-container *ngIf="!isLoading">
     <div class="row" style="margin-bottom: 15px">
       <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">{{"Portal.ProductPhoto" | translate}}：</div>
-      <div class="col-sm-6 text-sm-left text-center" style="width: 100%">
+      <div class="col-sm-6 text-sm-left text-center" [ngClass]="imgClass" style="width: 100%">
         <img *ngIf="!deviceInfo" src={{noProductImg}}>
         <img *ngIf="deviceInfo" src={{deviceInfo?.modelImgUrl}} >
       </div>
@@ -95,7 +95,15 @@
           </div>
         </div>
       </div>
-      <div class="row demo-qr__action">
+      <div class="row" style="margin-bottom: 15px" *ngIf="productManual && productManual.length > 0">
+        <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">{{"SH.UserManual" | translate}}：</div>
+        <div class="col-sm-6 text-sm-left text-center">
+          <div>
+            <a target="_blank" href={{productManual}}>{{"SH.GetDocument" | translate}}</a>
+          </div>
+        </div>
+      </div>
+      <!-- <div class="row demo-qr__action">
         <button class="alatech-btn alatech-btn--default"
           title="Fit Pair"
           *ngIf="isShowFitPairBtn"
@@ -117,7 +125,7 @@
         >
           登錄產品
         </button>
-      </div>
+      </div> -->
     </ng-container>
   </ng-container>
 

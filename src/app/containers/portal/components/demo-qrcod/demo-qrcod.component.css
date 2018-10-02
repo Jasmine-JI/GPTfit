@@ -9,7 +9,15 @@
   width: 180px;
   height: 38px;
 }
+.product-photo--landscape img {
+  width: 100%;
+  height: auto;
+}
 
+.product-photo--portrait img {
+  width: auto;
+  height: 100%;
+}
 @media(max-width: 575px) {
   .demo-qr__action {
     margin: 0 15px 15px;
@@ -21,5 +29,10 @@
   .demo-qr__action .alatech-btn + .alatech-btn {
     margin-left: 0px;
     margin-top: 10px;
+  }
+}
+@media(min-width: 1200px) {
+  .product-photo--landscape img {
+    width: auto;
   }
 }

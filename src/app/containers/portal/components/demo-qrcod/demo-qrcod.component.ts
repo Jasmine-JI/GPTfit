@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { getUrlQueryStrings } from '@shared/utils/';
 import { QrcodeService } from '../../services/qrcode.service';
 import { HttpParams } from '@angular/common/http';
+// import { NgProgress, NgProgressRef } from '@ngx-progressbar/core';
 import { NgProgress } from 'ngx-progressbar';
 import * as moment from 'moment';
 import { UtilsService } from '@shared/services/utils.service';
@@ -25,10 +26,13 @@ export class DemoQrcodComponent implements OnInit {
   noProductImg: string;
   isLoading: boolean;
   productInfo: any;
+  productManual: any;
   // progressRef: NgProgressRef;
   isShowBindingBtn = false;
   isShowFitPairBtn = false;
   fitPairType: string;
+  isFitPaired: boolean;
+  imgClass = 'product-photo--landscape';
   constructor(
     private qrcodeService: QrcodeService,
     private progress: NgProgress,
@@ -37,7 +41,7 @@ export class DemoQrcodComponent implements OnInit {
     private dialog: MatDialog,
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit() {
     const queryStrings = getUrlQueryStrings(location.search);
@@ -52,25 +56,37 @@ export class DemoQrcodComponent implements OnInit {
     this.translateService.onLangChange.subscribe(e => {
       if (this.deviceInfo) {
         this.handleProductInfo(e.lang);
+        this.handleProductManual(e.lang);
       }
     });
     let params = new HttpParams();
     params = params.set('device_sn', this.displayQr.device_sn);
+    // this.progressRef = this.progress.ref();
     this.progress.start();
     this.isLoading = true;
     this.qrcodeService.getDeviceInfo(params).subscribe(res => {
       if (typeof res === 'string') {
         this.noProductImg = `http://${
           location.hostname
-        }/app/public_html/products/img/unknown.png`;
-        this.progress.start();
+          }/app/public_html/products/img/unknown.png`;
+        this.progress.done();
         this.isLoading = false;
       } else {
         this.deviceInfo = res;
+        const image = new Image();
+        image.addEventListener('load', e => this.handleImageLoad(e));
+        image.src = this.deviceInfo.modelImgUrl;
         this.handleProductInfo(langName);
+        this.handleProductManual(langName);
         this.handleUpload();
       }
     });
+  }
+  handleImageLoad(event): void {
+    const width = event.target.width;
+    const height = event.target.height;
+    this.imgClass =
+      width > height ? 'product-photo--landscape' : 'product-photo--portrait';
   }
   handleProductInfo(lang) {
     if (lang === 'zh-cn') {
@@ -79,6 +95,15 @@ export class DemoQrcodComponent implements OnInit {
       this.productInfo = this.deviceInfo.informations['relatedLinks_en-US'];
     } else {
       this.productInfo = this.deviceInfo.informations['relatedLinks_zh-TW'];
+    }
+  }
+  handleProductManual(lang) {
+    if (lang === 'zh-cn') {
+      this.productManual = this.deviceInfo.informations['manual_zh-CN'];
+    } else if (lang === 'en-us') {
+      this.productManual = this.deviceInfo.informations['manual_en-US'];
+    } else {
+      this.productManual = this.deviceInfo.informations['manual_zh-TW'];
     }
   }
   handleUpload() {
@@ -106,7 +131,7 @@ export class DemoQrcodComponent implements OnInit {
       this.uploadDevice();
     } else {
       this.handleCScode(cs, device_sn);
-      this.progress.start();
+      this.progress.done();
       this.isLoading = false;
     }
   }
@@ -152,13 +177,14 @@ export class DemoQrcodComponent implements OnInit {
     };
     this.qrcodeService.uploadDeviceInfo(body, device_sn).subscribe(
       res => {
-        this.progress.start();
+        this.progress.done();
         this.isLoading = false;
         const result = res;
         const {
           resultCode,
-          info: { warrantyStatus, fitPairStatus }
+          info: { warrantyStatus, fitPairStatus, isFitPaired }
         } = result;
+        this.isFitPaired = isFitPaired;
         if (resultCode !== 200) {
           this.isShowBindingBtn = false; // 驗證失敗，不顯示登錄產品btn
           this.isShowFitPairBtn = false;
@@ -248,21 +274,35 @@ export class DemoQrcodComponent implements OnInit {
     };
     this.qrcodeService.fitPairSetting(body).subscribe(res => {
       if (res.resultCode === 200) {
-        this.dialog.open(MessageBoxComponent, {
-          hasBackdrop: true,
-          data: {
-            title: 'message',
-            body: `Fit Pairt成功`,
-            confirmText: '確定'
-          }
-        });
+        if (this.fitPairType === '2') {
+          return this.dialog.open(MessageBoxComponent, {
+            hasBackdrop: true,
+            data: {
+              title: 'message',
+              body: `完成解除Fit Pairt`,
+              confirmText: '確定',
+              onConfirm: this.uploadDevice.bind(this)
+            }
+          });
+        } else {
+          this.dialog.open(MessageBoxComponent, {
+            hasBackdrop: true,
+            data: {
+              title: 'message',
+              body: `Fit Pairt成功`,
+              confirmText: '確定',
+              onConfirm: this.uploadDevice.bind(this)
+            }
+          });
+        }
       } else {
         this.dialog.open(MessageBoxComponent, {
           hasBackdrop: true,
           data: {
             title: 'message',
             body: `Fit Pair失敗`,
-            confirmText: '確定'
+            confirmText: '確定',
+            onConfirm: this.uploadDevice.bind(this)
           }
         });
       }
