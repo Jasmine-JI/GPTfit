@@ -1,4 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ChangeDetectorRef,
+  AfterViewChecked
+} from '@angular/core';
 import {
   getUrlQueryStrings,
 } from '@shared/utils/';
@@ -17,7 +22,7 @@ import { NavigationEnd } from '@angular/router';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, AfterViewChecked {
   isPreviewMode = false;
   isLoading = false;
   isMaskShow = false;
@@ -40,14 +45,15 @@ export class DashboardComponent implements OnInit {
   isGroupAdministrator = false;
   isGeneralMember = false;
   isHadContainer = true;
-  footerAddClassName = 'footer footer-details';
+  footerAddClassName = '';
   constructor(
     private globalEventsManager: GlobalEventsManager,
     private authService: AuthService,
     private router: Router,
     private userInfoService: UserInfoService,
     private utilsService: UtilsService,
-    public translateService: TranslateService
+    public translateService: TranslateService,
+    private cdRef: ChangeDetectorRef
   ) {
     if (location.search.indexOf('ipm=s') > -1) {
       this.isPreviewMode = true;
@@ -173,9 +179,9 @@ export class DashboardComponent implements OnInit {
     });
     this.globalEventsManager.setFooterRWDEmitter.subscribe(_num => {
       if (_num > 0) {
-        this.footerAddClassName = `footer footer-details footer-rwd--${_num}`;
+        this.footerAddClassName = `footer-rwd--${_num}`;
       } else {
-        this.footerAddClassName = 'footer footer-details';
+        this.footerAddClassName = '';
       }
     });
     if (window.innerWidth < 769) {
@@ -186,6 +192,9 @@ export class DashboardComponent implements OnInit {
       this.isDefaultOpend = true;
       this.isSideNavOpend = true;
     }
+  }
+  ngAfterViewChecked() {
+    this.cdRef.detectChanges();
   }
   onResize(event, sideNav) {
     if (event.target.innerWidth < 769) {

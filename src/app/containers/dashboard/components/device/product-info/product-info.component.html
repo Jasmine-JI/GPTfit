@@ -137,6 +137,13 @@
           <a target="_blank" href={{info?.link}}>{{info?.dispName}}</a>
         </div>
       </div>
+      <span class="group-handle-name">{{"SH.UserManual" | translate}}：</span>
+      <div class="app-link" *ngIf="productManual && productManual.length > 0">
+
+        <div>
+          <a target="_blank" href={{productManual}}>{{"SH.GetDocument" | translate}}</a>
+        </div>
+      </div>
   </div>
 </div>
 
