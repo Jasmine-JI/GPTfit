@@ -22,6 +22,7 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
   deviceInfo: any;
   deviceSN: string;
   productInfo: any;
+  productManual: any;
   isMainAppOpen = false;
   isSecondAppOpen = false;
   isDisplayBox = false;
@@ -80,6 +81,7 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
           this.deviceInfo = response;
           const langName = this.utilsService.getLocalStorageObject('locale');
           this.handleProductInfo(langName);
+          this.handleProductManual(langName);
         });
       } else {
         this.router.navigateByUrl('dashboard/device');
@@ -96,6 +98,15 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
       this.productInfo = this.deviceInfo.informations['relatedLinks_en-US'];
     } else {
       this.productInfo = this.deviceInfo.informations['relatedLinks_zh-TW'];
+    }
+  }
+  handleProductManual(lang) {
+    if (lang === 'zh-cn') {
+      this.productManual = this.deviceInfo.informations['manual_zh-CN'];
+    } else if (lang === 'en-us') {
+      this.productManual = this.deviceInfo.informations['manual_en-US'];
+    } else {
+      this.productManual = this.deviceInfo.informations['manual_zh-TW'];
     }
   }
   swithMainApp() {
