@@ -25,11 +25,13 @@ export class DemoQrcodComponent implements OnInit {
   noProductImg: string;
   isLoading: boolean;
   productInfo: any;
+  productManual: any;
   progressRef: NgProgressRef;
   isShowBindingBtn = false;
   isShowFitPairBtn = false;
   fitPairType: string;
   isFitPaired: boolean;
+  imgClass = 'product-photo--landscape';
   constructor(
     private qrcodeService: QrcodeService,
     private progress: NgProgress,
@@ -53,6 +55,7 @@ export class DemoQrcodComponent implements OnInit {
     this.translateService.onLangChange.subscribe(e => {
       if (this.deviceInfo) {
         this.handleProductInfo(e.lang);
+        this.handleProductManual(e.lang);
       }
     });
     let params = new HttpParams();
@@ -69,10 +72,20 @@ export class DemoQrcodComponent implements OnInit {
         this.isLoading = false;
       } else {
         this.deviceInfo = res;
+        const image = new Image();
+        image.addEventListener('load', e => this.handleImageLoad(e));
+        image.src = this.deviceInfo.modelImgUrl;
         this.handleProductInfo(langName);
+        this.handleProductManual(langName);
         this.handleUpload();
       }
     });
+  }
+  handleImageLoad(event): void {
+    const width = event.target.width;
+    const height = event.target.height;
+    this.imgClass =
+      width > height ? 'product-photo--landscape' : 'product-photo--portrait';
   }
   handleProductInfo(lang) {
     if (lang === 'zh-cn') {
@@ -81,6 +94,15 @@ export class DemoQrcodComponent implements OnInit {
       this.productInfo = this.deviceInfo.informations['relatedLinks_en-US'];
     } else {
       this.productInfo = this.deviceInfo.informations['relatedLinks_zh-TW'];
+    }
+  }
+  handleProductManual(lang) {
+    if (lang === 'zh-cn') {
+      this.productManual = this.deviceInfo.informations['manual_zh-CN'];
+    } else if (lang === 'en-us') {
+      this.productManual = this.deviceInfo.informations['manual_en-US'];
+    } else {
+      this.productManual = this.deviceInfo.informations['manual_zh-TW'];
     }
   }
   handleUpload() {
