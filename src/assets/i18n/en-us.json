@@ -7,7 +7,9 @@
     "ProductType": {
       "treadmill": "Treadmill",
       "wearable": "Wearable"
-    }
+    },
+    "UserManual": "User Manual",
+    "GetDocument": "Get document"
   },
   "Portal": {
     "Introduce": "Introduce",

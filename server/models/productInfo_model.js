@@ -78,7 +78,10 @@ exports.getInfos = function(sn) {
           data.informations = {
             'relatedLinks_zh-TW': productData["relatedLinks_zh-TW"],
             'relatedLinks_zh-CN': productData["relatedLinks_zh-CN"],
-            'relatedLinks_en-US': productData["relatedLinks_en-US"]
+            'relatedLinks_en-US': productData["relatedLinks_en-US"],
+            'manual_zh-TW': productData["manual_zh-TW"],
+            'manual_zh-CN': productData["manual_zh-CN"],
+            'manual_en-US': productData["manual_en-US"]
           };
           data.modelImgUrl = `http://${domain}/app/public_html/products${productData.modelImg}`;
           data.modelName = productData.modelName;
