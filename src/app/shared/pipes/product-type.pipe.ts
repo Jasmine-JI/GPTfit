@@ -9,8 +9,10 @@ export class ProductTypePipe implements PipeTransform {
       return 'SH.ProductType.treadmill';
     } else if (value === 'wearable') {
       return 'SH.ProductType.wearable';
-    } else {
+    } else if (value === 'treadmill') {
       return 'SH.ProductType.treadmill';
+    } else {
+      return 'unknown type';
     }
   }
 }

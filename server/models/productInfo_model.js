@@ -87,7 +87,8 @@ exports.getInfos = function(sn) {
           data.modelName = productData.modelName;
 
           data.date = date;
-          data.modelType = modelType[0][productsInfoData.modelType];
+          const typeIdx = modelType.findIndex(_type => _type.typeID === productsInfoData.modelType);
+          data.modelType = modelType[typeIdx].typeName;
           data.mainAppData = mainAppData;
           data.secondaryAppData = secondaryAppData;
           resolve(data);
