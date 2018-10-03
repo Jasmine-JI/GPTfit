@@ -37,7 +37,7 @@ exports.getInfos = function(sn) {
 
         const productsInfoData = productsInfo
               .filter(_data => sn
-              .toLocaleLowerCase()
+              .toLocaleUpperCase()
               .indexOf(_data.modelID) > -1)[0];
         let customerIdx;
         if (sn.length > 13) { // 如果是14碼，有商品號，去判斷是哪個客戶編號(customerId)
