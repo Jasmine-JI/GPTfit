@@ -37,8 +37,11 @@ exports.getInfos = function(sn) {
 
         const productsInfoData = productsInfo
               .filter(_data => sn
-              .toLocaleLowerCase()
+              .toLocaleUpperCase()
               .indexOf(_data.modelID) > -1)[0];
+        if (!productsInfoData) {
+          return resolve('sn is not exist');
+        }
         let customerIdx;
         if (sn.length > 13) { // 如果是14碼，有商品號，去判斷是哪個客戶編號(customerId)
           customerIdx = productsInfoData.modelNameInquire.findIndex(_data => _data.customerID.toString() === sn.slice(8, 10));
@@ -78,13 +81,17 @@ exports.getInfos = function(sn) {
           data.informations = {
             'relatedLinks_zh-TW': productData["relatedLinks_zh-TW"],
             'relatedLinks_zh-CN': productData["relatedLinks_zh-CN"],
-            'relatedLinks_en-US': productData["relatedLinks_en-US"]
+            'relatedLinks_en-US': productData["relatedLinks_en-US"],
+            'manual_zh-TW': productData["manual_zh-TW"],
+            'manual_zh-CN': productData["manual_zh-CN"],
+            'manual_en-US': productData["manual_en-US"]
           };
           data.modelImgUrl = `http://${domain}/app/public_html/products${productData.modelImg}`;
           data.modelName = productData.modelName;
 
           data.date = date;
-          data.modelType = modelType[0][productsInfoData.modelType];
+          const typeIdx = modelType.findIndex(_type => _type.typeID === productsInfoData.modelType);
+          data.modelType = modelType[typeIdx].typeName;
           data.mainAppData = mainAppData;
           data.secondaryAppData = secondaryAppData;
           resolve(data);

@@ -38,7 +38,8 @@ export class AuthService {
           this.utils.setLocalStorageObject('ala_token_time', tokenTimeStamp);
           const router = this.injector.get(Router);
           if (this.backUrl.length > 0) {
-            router.navigate([this.backUrl]);
+            // router.navigate([this.backUrl]);
+            location.href = this.backUrl; // 為了讓登入的api request payload清除掉
           } else {
             // router.navigate(['/dashboard']);
             location.href = '/dashboard'; // 為了讓登入的api request payload清除掉

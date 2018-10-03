@@ -4,6 +4,7 @@ import { TimePipe } from '@shared/pipes/time.pipe';
 import { MapTranslatePipe } from '@shared/pipes/map-translate.pipe';
 import { UnixTimeConvertPipe } from '@shared/pipes/unix-time-convert.pipe';
 import { SafeHtmlPipe } from '@shared/pipes/safe-html.pipe';
+import { ProductTypePipe } from '@shared/pipes/product-type.pipe';
 
 @NgModule({
   imports: [
@@ -14,14 +15,16 @@ import { SafeHtmlPipe } from '@shared/pipes/safe-html.pipe';
     TimePipe,
     MapTranslatePipe,
     UnixTimeConvertPipe,
-    SafeHtmlPipe
+    SafeHtmlPipe,
+    ProductTypePipe
   ],
   exports: [
     SexPipe,
     TimePipe,
     MapTranslatePipe,
     UnixTimeConvertPipe,
-    SafeHtmlPipe
+    SafeHtmlPipe,
+    ProductTypePipe
   ]
 })
 export class SharedPipes {}

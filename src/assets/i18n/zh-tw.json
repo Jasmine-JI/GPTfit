@@ -3,7 +3,13 @@
     "Signin": "登入",
     "Leaderboard": "排行榜",
     "Signout": "登出",
-    "Dashboard": "儀表板"
+    "Dashboard": "儀表板",
+    "ProductType": {
+      "treadmill": "跑步機",
+      "wearable": "穿戴式裝置"
+    },
+    "UserManual": "使用說明",
+    "GetDocument": "取得操作手冊"
   },
   "Portal": {
     "Introduce": "介紹",
