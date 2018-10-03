@@ -39,6 +39,9 @@ exports.getInfos = function(sn) {
               .filter(_data => sn
               .toLocaleUpperCase()
               .indexOf(_data.modelID) > -1)[0];
+        if (!productsInfoData) {
+          return resolve('sn is not exist');
+        }
         let customerIdx;
         if (sn.length > 13) { // 如果是14碼，有商品號，去判斷是哪個客戶編號(customerId)
           customerIdx = productsInfoData.modelNameInquire.findIndex(_data => _data.customerID.toString() === sn.slice(8, 10));
