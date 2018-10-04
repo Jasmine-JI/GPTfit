@@ -18,8 +18,10 @@
     "moment": "^2.20.1",
     "mysql": "^2.15.0",
     "node-schedule": "^1.2.5",
+    "nodemailer": "^4.6.8",
     "nodemon": "^1.17.2",
     "pm2": "^2.9.1",
+    "request": "^2.88.0",
     "xlsx": "^0.11.16"
   }
 }

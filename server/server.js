@@ -1,13 +1,10 @@
-var mysql = require("mysql");
 var express = require('express');
 var bodyParser = require('body-parser');
 var os = require('os');
-var schedule = require('node-schedule');
-const { getMapList } = require('./models/map_model');
-var async = require('async');
-var request = require('request');
 const helmet = require('helmet');
-const { checkTokenExit } = require('./models/auth.model');
+const {
+  checkTokenExit
+} = require('./models/auth.model');
 
 // const https = require('https');
 // const fs = require('fs');
@@ -19,54 +16,14 @@ const { checkTokenExit } = require('./models/auth.model');
 
 // Init app
 var app = express();
-
-var address,
-  ifaces = os.networkInterfaces();
-for (var dev in ifaces) {
-  ifaces[dev].filter((details) => details.family === 'IPv4' && details.internal === false ? address = details.address : undefined);
-}
-var connectInfo = {};
-if (address === '192.168.1.235') {
-  connectInfo = {
-    host: "localhost",
-    user: "root",
-    password: "1234",
-    database: "alatech",
-    multipleStatements: true
-  };
-} else if (address === '192.168.1.234' || address === '192.168.1.232') {
-  connectInfo = {
-    host: "localhost",
-    user: "root",
-    password: "A1atech",
-    database: "alatech",
-    multipleStatements: true
-  };
-} else {
-  connectInfo = {
-    host: "192.168.0.2",
-    user: "root",
-    password: "A1atech",
-    database: "alatech",
-    multipleStatements: true
-  };
-}
-var connection = mysql.createConnection(connectInfo);
-
-connection.connect(function (err) {
-  if (err) {
-    console.error("error connecting: " + err.stack);
-    return;
-  }
-
-  console.log('Connected to MySql');
-
-});
+var connection = require('./models/connection_db');
 
 // Body parser middleware
 
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.urlencoded({
+  extended: true
+}))
 // parse application/json
 app.use(bodyParser.json())
 
@@ -110,9 +67,10 @@ app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 
   // Request headers you wish to allow
-  const allowHeaders = ['X-Requested-With','content-type', 'Authorization',
-  'deviceID', 'chartset', 'language', 'Accept', 'deviceType', 'deviceName',
-  'deviceOSVersion', 'appVersionCode', 'appVersionName', 'regionCode', 'appName'];
+  const allowHeaders = ['X-Requested-With', 'content-type', 'Authorization',
+    'deviceID', 'chartset', 'language', 'Accept', 'deviceType', 'deviceName',
+    'deviceOSVersion', 'appVersionCode', 'appVersionName', 'regionCode', 'appName'
+  ];
   res.setHeader('Access-Control-Allow-Headers', allowHeaders.join(','));
   // res.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept, token, Authorization, X-Auth-Token, X-XSRF-TOKEN, X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Access-Control-Allow-Headers");
 
