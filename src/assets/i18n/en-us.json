@@ -9,7 +9,8 @@
       "wearable": "Wearable"
     },
     "UserManual": "User Manual",
-    "GetDocument": "Get document"
+    "GetDocument": "Get document",
+    "NoFindData": "Cannot find any information"
   },
   "Portal": {
     "Introduce": "Introduce",

@@ -21,7 +21,7 @@
       <div class="col-sm-6 text-sm-right text-center" [style.font-weight]="isWrong ? '200' : '700' ">
         <span  style="font-weight: bold">{{"Portal.EquipmentSN" | translate}}</span>：
       </div>
-      <div *ngIf="!deviceInfo" class="col-sm-6 text-sm-left text-center">查無此設備資訊</div>
+      <div *ngIf="!deviceInfo" class="col-sm-6 text-sm-left text-center">{{"SH.NoFindData" | translate}}</div>
       <div *ngIf="deviceInfo" class="col-sm-6 text-sm-left text-center">{{ displayQr.device_sn  }}</div>
     </div>
     <ng-container *ngIf="deviceInfo">
@@ -95,7 +95,7 @@
           </div>
         </div>
       </div>
-      <div class="row" style="margin-bottom: 15px" *ngIf="productManual && productManual.length > 0">
+      <div class="row" style="margin-bottom: 15px" *ngIf="productManual && productManual?.length > 0">
         <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">{{"SH.UserManual" | translate}}：</div>
         <div class="col-sm-6 text-sm-left text-center">
           <div>
