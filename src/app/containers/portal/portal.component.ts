@@ -114,6 +114,10 @@ export class PortalComponent implements OnInit {
     let browserLang = this.utilsService.getLocalStorageObject('locale');
     if (!browserLang) {
       browserLang = this.translateService.getBrowserCultureLang().toLowerCase();
+      const currentLocales = ['zh-tw', 'zh-cn', 'en-us'];
+      if (currentLocales.findIndex(_locale => _locale === browserLang) === -1) {
+        browserLang = 'en-us'; // default en-us
+      }
       this.translateService.use(browserLang);
       this.utilsService.setLocalStorageObject('locale', browserLang);
     } else {
