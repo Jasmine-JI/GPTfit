@@ -316,7 +316,8 @@ export class EnrollFormComponent implements OnInit {
       this.isBtnDisabled = false;
     }
   }
-  goBack() {
+  goBack(e) {
+    e.preventDefault();
     const hosts = [
       '192.168.1.235',
       'app.alatech.com.tw',
