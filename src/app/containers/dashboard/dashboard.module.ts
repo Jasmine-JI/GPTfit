@@ -79,6 +79,7 @@ import { PartialMuscleInfoComponent } from './components/sport-report/components
 import { MyDeviceComponent } from './components/device/my-device/my-device.component';
 import { ProductInfoComponent } from './components/device/product-info/product-info.component';
 import { TodayLoginnerWinComponent } from './components/today-loginner-win/today-loginner-win.component';
+import { ReportService } from './services/report.service';
 
 @NgModule({
   imports: [
@@ -110,7 +111,8 @@ import { TodayLoginnerWinComponent } from './components/today-loginner-win/today
     GroupService,
     EditGroupGuard,
     DashboardGuard,
-    ActivityService
+    ActivityService,
+    ReportService
   ],
   declarations: [
     DashboardComponent,

@@ -29,7 +29,7 @@
     </mat-tree>
   </div>
   <div class="col-9">
-  <mat-tab-group>
+  <mat-tab-group  (selectedTabChange)="changeGroupInfo($event)">
     <mat-tab label="7天">
     </mat-tab>
     <mat-tab label="30天">
@@ -39,9 +39,12 @@
     <mat-tab label="12個月">
     </mat-tab>
   </mat-tab-group>
-    Hello i m {{chooseType}}chart
+    <!-- Hello i m {{chooseType}}chart -->
+    <div style="font-weight: 700;letter-spacing: 1.5px;margin: 15px 0px;">
+      {{filterStartTime}} - {{filterEndTime}}
+    </div>
     <ng-container *ngIf="chooseType === '1-1'">
-      <app-activity-levels></app-activity-levels>
+      <app-activity-levels [timeType]="timeType"></app-activity-levels>
     </ng-container>
     <ng-container *ngIf="chooseType === '1-2'">
       <app-all-duration></app-all-duration>

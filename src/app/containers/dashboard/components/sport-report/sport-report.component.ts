@@ -3,6 +3,8 @@ import { Component, Injectable } from '@angular/core';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
 import { BehaviorSubject } from 'rxjs';
 import { ViewEncapsulation } from '@angular/core';
+import * as moment from 'moment';
+
 /**
  * Json node data with nested structure. Each node has a filename and a value or a list of children
  */
@@ -152,11 +154,18 @@ export class SportReportComponent {
   nestedTreeControl: NestedTreeControl<FileNode>;
   nestedDataSource: MatTreeNestedDataSource<FileNode>;
   chooseType = '1-1';
+  timeType = 0;
+  filterStartTime: string;
+  filterEndTime: string;
   constructor(database: FileDatabase) {
     this.nestedTreeControl = new NestedTreeControl<FileNode>(this._getChildren);
     this.nestedDataSource = new MatTreeNestedDataSource();
 
     database.dataChange.subscribe(data => (this.nestedDataSource.data = data));
+    this.filterEndTime = moment().format('YYYY-MM-DD');
+    this.filterStartTime = moment()
+      .subtract(7, 'days')
+      .format('YYYY-MM-DD');
   }
 
   hasNestedChild = (_: number, nodeData: FileNode) => !nodeData.type;
@@ -164,5 +173,35 @@ export class SportReportComponent {
   private _getChildren = (node: FileNode) => node.children;
   handleRenderChart(type) {
     this.chooseType = type;
+  }
+  changeGroupInfo({ index }) {
+    this.timeType = index;
+    this.filterEndTime = moment().format('YYYY-MM-DD');
+    const day = moment().format('d');
+    if (this.timeType === 0) {
+      this.filterStartTime = moment()
+        .subtract(7, 'days')
+        .format('YYYY-MM-DD');
+    } else if (this.timeType === 1) {
+      this.filterStartTime = moment()
+        .subtract(30, 'days')
+        .format('YYYY-MM-DD');
+    } else if (this.timeType === 2) {
+      this.filterStartTime = moment()
+        .subtract(day, 'days')
+        .subtract(26, 'weeks')
+        .format('YYYY-MM-DD');
+      this.filterEndTime = moment()
+        .add(6 - +day, 'days')
+        .format('YYYY-MM-DD');
+    } else {
+      this.filterStartTime = moment()
+        .subtract(day, 'days')
+        .subtract(52, 'weeks')
+        .format('YYYY-MM-DD');
+      this.filterEndTime = moment()
+        .add(6 - +day, 'days')
+        .format('YYYY-MM-DD');
+    }
   }
 }
