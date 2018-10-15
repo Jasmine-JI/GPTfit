@@ -3,10 +3,16 @@ import {
   OnInit,
   AfterViewInit,
   ViewChild,
-  ElementRef
+  ElementRef,
+  Input,
+  OnChanges,
+  SimpleChanges
 } from '@angular/core';
 import * as _Highcharts from 'highcharts';
 import * as Stock from 'highcharts/highstock';
+import { ReportService } from '../../../../services/report.service';
+import { UtilsService } from '@shared/services/utils.service';
+import * as moment from 'moment';
 
 var Highcharts: any = _Highcharts; // 不檢查highchart型態
 

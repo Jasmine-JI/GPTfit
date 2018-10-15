@@ -59,6 +59,7 @@
     "font-awesome": "^4.7.0",
     "helmet": "^3.12.1",
     "highcharts": "^6.1.1",
+    "highcharts-no-data-to-display": "^0.1.7",
     "jquery": "^3.2.1",
     "jquery.js": "0.0.2-security",
     "leaflet": "^1.2.0",

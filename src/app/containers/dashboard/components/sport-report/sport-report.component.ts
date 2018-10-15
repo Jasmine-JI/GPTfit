@@ -1,10 +1,11 @@
 import { NestedTreeControl } from '@angular/cdk/tree';
-import { Component, Injectable } from '@angular/core';
+import { Component, Injectable, OnInit } from '@angular/core';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
 import { BehaviorSubject } from 'rxjs';
 import { ViewEncapsulation } from '@angular/core';
 import * as moment from 'moment';
-
+import { ReportService } from '../../services/report.service';
+import { UtilsService } from '@shared/services/utils.service';
 /**
  * Json node data with nested structure. Each node has a filename and a value or a list of children
  */
@@ -150,14 +151,20 @@ export class FileDatabase {
   encapsulation: ViewEncapsulation.None,
   providers: [FileDatabase]
 })
-export class SportReportComponent {
+export class SportReportComponent implements OnInit {
   nestedTreeControl: NestedTreeControl<FileNode>;
   nestedDataSource: MatTreeNestedDataSource<FileNode>;
   chooseType = '1-1';
   timeType = 0;
   filterStartTime: string;
   filterEndTime: string;
-  constructor(database: FileDatabase) {
+  series = [];
+  seriesX: any;
+  constructor(
+    database: FileDatabase,
+    private reportService: ReportService,
+    private utils: UtilsService
+  ) {
     this.nestedTreeControl = new NestedTreeControl<FileNode>(this._getChildren);
     this.nestedDataSource = new MatTreeNestedDataSource();
 
@@ -169,7 +176,18 @@ export class SportReportComponent {
   }
 
   hasNestedChild = (_: number, nodeData: FileNode) => !nodeData.type;
+  ngOnInit() {
+    const filterEndTime = moment().format('YYYY-MM-DDTHH:mm:ss+08:00');
+    const filterStartTime = moment().subtract(7, 'days').format('YYYY-MM-DDTHH:mm:ss+08:00');
 
+    const body = {
+      token: this.utils.getToken(),
+      type: 1,
+      filterStartTime,
+      filterEndTime
+    };
+    this.handleSportSummaryArray(body);
+  }
   private _getChildren = (node: FileNode) => node.children;
   handleRenderChart(type) {
     this.chooseType = type;
@@ -203,5 +221,103 @@ export class SportReportComponent {
         .add(6 - +day, 'days')
         .format('YYYY-MM-DD');
     }
+    this.series = [];
+    let filterEndTime = moment().format('YYYY-MM-DDTHH:mm:ss+08:00');
+
+    let body = {};
+    let filterStartTime = '';
+    if (this.timeType === 0) {
+      filterStartTime = moment()
+        .subtract(7, 'days')
+        .format('YYYY-MM-DDTHH:mm:ss+08:00');
+    } else if (this.timeType === 1) {
+      filterStartTime = moment()
+        .subtract(30, 'days')
+        .format('YYYY-MM-DDTHH:mm:ss+08:00');
+    } else if (this.timeType === 2) {
+      filterStartTime = moment()
+        .subtract(day, 'days')
+        .subtract(26, 'weeks')
+        .format('YYYY-MM-DDT00:00:00+08:00');
+      filterEndTime = moment()
+        .add(6 - +day, 'days')
+        .format('YYYY-MM-DDT23:59:59+08:00');
+    } else {
+      filterStartTime = moment()
+        .subtract(day, 'days')
+        .subtract(52, 'weeks')
+        .format('YYYY-MM-DDT00:00:00+08:00');
+      filterEndTime = moment()
+        .add(6 - +day, 'days')
+        .format('YYYY-MM-DDT23:59:59+08:00');
+    }
+    if (this.timeType <= 1) {
+      body = {
+        token: this.utils.getToken(),
+        type: 1,
+        filterStartTime,
+        filterEndTime
+      };
+    } else {
+      body = {
+        token: this.utils.getToken(),
+        type: 2,
+        filterStartTime,
+        filterEndTime
+      };
+    }
+    this.handleSportSummaryArray(body);
+  }
+  handleSportSummaryArray(body) {
+    this.reportService.fetchSportSummaryArray(body).subscribe(res => {
+      const { reportActivityDays, reportActivityWeeks } = res;
+      let datas = [];
+      if (body.type === 1) {
+        datas = reportActivityDays;
+      } else {
+        datas = reportActivityWeeks;
+      }
+      this.seriesX = datas
+        .filter((value, idx, self) => {
+          return (
+            self.findIndex(
+              _self =>
+                _self.startTime.slice(0, 10) === value.startTime.slice(0, 10)
+            ) === idx
+          );
+        })
+        .map(_serie => _serie.startTime.slice(0, 10))
+        .sort();
+      const sportTypes = [];
+      datas.forEach((value, idx, self) => {
+        if (
+          self.findIndex(
+            _self => _self.activities[0].type === value.activities[0].type
+          ) === idx
+        ) {
+          sportTypes.push(value.activities[0].type);
+        }
+      });
+      sportTypes.map(_type => {
+        const data = [];
+        this.seriesX.forEach(() => data.push(0));
+        datas
+          .filter(_data => _data.activities[0].type === _type)
+          .forEach(_data => {
+            const idx = this.seriesX.findIndex(
+              _seriesX => _seriesX === _data.startTime.slice(0, 10)
+            );
+            data[idx] = +_data.activities[0].totalActivities;
+          });
+        let name = '';
+        if (_type === '1') {
+          name = '跑步';
+        } else {
+          name = '自行車';
+        }
+        const serie = { name, data };
+        this.series.push(serie);
+      });
+    });
   }
 }
