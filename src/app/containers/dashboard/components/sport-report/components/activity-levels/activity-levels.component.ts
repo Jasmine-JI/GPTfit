@@ -24,18 +24,65 @@ export class ActivityLevelsComponent implements AfterViewInit, OnChanges {
   @ViewChild('activityLevelsChartTarget')
   activityLevelsChartTarget: ElementRef;
   chart1: any; // Highcharts.ChartObject
+  @Input() datas: any;
+  seriesX = [];
+  series = [];
 
-  @Input() series: any;
-  @Input() seriesX: any;
   constructor(private reportService: ReportService) {}
 
   ngOnChanges(changes: SimpleChanges) {
+    this.handleSportSummaryArray();
     this.initHchart();
   }
   ngAfterViewInit() {
-      this.initHchart();
+    this.handleSportSummaryArray();
+    this.initHchart();
   }
-
+  handleSportSummaryArray() {
+    this.series = [];
+    this.seriesX = [];
+    this.seriesX = this.datas
+      .filter((value, idx, self) => {
+        return (
+          self.findIndex(
+            _self =>
+              _self.startTime.slice(0, 10) === value.startTime.slice(0, 10)
+          ) === idx
+        );
+      })
+      .map(_serie => _serie.startTime.slice(0, 10))
+      .sort();
+    const sportTypes = [];
+    this.datas.forEach((value, idx, self) => {
+      if (
+        self.findIndex(
+          _self => _self.activities[0].type === value.activities[0].type
+        ) === idx
+      ) {
+        sportTypes.push(value.activities[0].type);
+      }
+    });
+    sportTypes.map(_type => {
+      const data = [];
+      this.seriesX.forEach(() => data.push(0));
+      this.datas
+        .filter(_data => _data.activities[0].type === _type)
+        .forEach(_data => {
+          const idx = this.seriesX.findIndex(
+            _seriesX => _seriesX === _data.startTime.slice(0, 10)
+          );
+          data[idx] = +_data.activities[0].totalActivities;
+        });
+      let name = '';
+      if (_type === '1') {
+        name = '跑步';
+      } else {
+        name = '自行車';
+      }
+      const serie = { name, data };
+      this.series.push(serie);
+    });
+  }
   initHchart() {
     const options: any = {
       title: {

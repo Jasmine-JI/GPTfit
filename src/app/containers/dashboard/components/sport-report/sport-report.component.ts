@@ -158,8 +158,8 @@ export class SportReportComponent implements OnInit {
   timeType = 0;
   filterStartTime: string;
   filterEndTime: string;
-  series = [];
-  seriesX: any;
+
+  datas = [];
   constructor(
     database: FileDatabase,
     private reportService: ReportService,
@@ -221,7 +221,6 @@ export class SportReportComponent implements OnInit {
         .add(6 - +day, 'days')
         .format('YYYY-MM-DD');
     }
-    this.series = [];
     let filterEndTime = moment().format('YYYY-MM-DDTHH:mm:ss+08:00');
 
     let body = {};
@@ -271,53 +270,11 @@ export class SportReportComponent implements OnInit {
   handleSportSummaryArray(body) {
     this.reportService.fetchSportSummaryArray(body).subscribe(res => {
       const { reportActivityDays, reportActivityWeeks } = res;
-      let datas = [];
       if (body.type === 1) {
-        datas = reportActivityDays;
+        this.datas = reportActivityDays;
       } else {
-        datas = reportActivityWeeks;
+        this.datas = reportActivityWeeks;
       }
-      this.seriesX = datas
-        .filter((value, idx, self) => {
-          return (
-            self.findIndex(
-              _self =>
-                _self.startTime.slice(0, 10) === value.startTime.slice(0, 10)
-            ) === idx
-          );
-        })
-        .map(_serie => _serie.startTime.slice(0, 10))
-        .sort();
-      const sportTypes = [];
-      datas.forEach((value, idx, self) => {
-        if (
-          self.findIndex(
-            _self => _self.activities[0].type === value.activities[0].type
-          ) === idx
-        ) {
-          sportTypes.push(value.activities[0].type);
-        }
-      });
-      sportTypes.map(_type => {
-        const data = [];
-        this.seriesX.forEach(() => data.push(0));
-        datas
-          .filter(_data => _data.activities[0].type === _type)
-          .forEach(_data => {
-            const idx = this.seriesX.findIndex(
-              _seriesX => _seriesX === _data.startTime.slice(0, 10)
-            );
-            data[idx] = +_data.activities[0].totalActivities;
-          });
-        let name = '';
-        if (_type === '1') {
-          name = '跑步';
-        } else {
-          name = '自行車';
-        }
-        const serie = { name, data };
-        this.series.push(serie);
-      });
     });
   }
 }

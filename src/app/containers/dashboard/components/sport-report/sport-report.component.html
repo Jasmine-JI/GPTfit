@@ -45,13 +45,15 @@
     </div>
     <ng-container *ngIf="chooseType === '1-1'">
       <app-activity-levels
-        [series]="series"
-        [seriesX]="seriesX"
+        [datas]="datas"
       >
     </app-activity-levels>
     </ng-container>
     <ng-container *ngIf="chooseType === '1-2'">
-      <app-all-duration></app-all-duration>
+      <app-all-duration
+        [datas]="datas"
+      >
+      </app-all-duration>
     </ng-container>
     <ng-container *ngIf="chooseType === '1-3'">
       <app-total-distance></app-total-distance>
