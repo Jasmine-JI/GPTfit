@@ -1,12 +1,14 @@
 import {
   Component,
-  OnInit,
   AfterViewInit,
   ViewChild,
-  ElementRef
+  ElementRef,
+  Input,
+  OnChanges
 } from '@angular/core';
 import * as _Highcharts from 'highcharts';
-import * as Stock from 'highcharts/highstock';
+import { chart } from 'highcharts';
+// import * as Stock from 'highcharts/highstock';
 
 var Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -15,15 +17,72 @@ var Highcharts: any = _Highcharts; // 不檢查highchart型態
   templateUrl: './total-distance.component.html',
   styleUrls: ['./total-distance.component.css']
 })
-export class TotalDistanceComponent implements OnInit, AfterViewInit {
+export class TotalDistanceComponent implements AfterViewInit, OnChanges {
   @ViewChild('totalDistanceChartTarget')
   totalDistanceChartTarget: ElementRef;
   chart: any; // Highcharts.ChartObject
-  constructor(elementRef: ElementRef) {}
+  @Input() datas: any;
+  @Input() chartName: string;
+  seriesX = [];
+  series = [];
 
-  ngOnInit() {}
-  ngAfterViewInit() {
+  constructor() {}
+
+  ngOnChanges() {
+    this.handleSportSummaryArray();
     this.initHchart();
+  }
+  ngAfterViewInit() {
+    this.handleSportSummaryArray();
+    this.initHchart();
+  }
+  handleSportSummaryArray() {
+    this.series = [];
+    this.seriesX = [];
+    this.seriesX = this.datas
+      .filter((value, idx, self) => {
+        return (
+          self.findIndex(
+            _self =>
+              _self.startTime.slice(0, 10) === value.startTime.slice(0, 10)
+          ) === idx
+        );
+      })
+      .map(_serie => _serie.startTime.slice(0, 10))
+      .sort();
+    const sportTypes = [];
+    this.datas.forEach((value, idx, self) => {
+      if (
+        self.findIndex(
+          _self => _self.activities[0].type === value.activities[0].type
+        ) === idx
+      ) {
+        sportTypes.push(value.activities[0].type);
+      }
+    });
+    sportTypes.sort().map(_type => { // 加入sort 是為了按照type排序
+      const data = [];
+      this.seriesX.forEach(() => data.push(0));
+      this.datas
+        .filter(_data => _data.activities[0].type === _type)
+        .forEach(_data => {
+          const idx = this.seriesX.findIndex(
+            _seriesX => _seriesX === _data.startTime.slice(0, 10)
+          );
+          data[idx] = +_data.activities[0].totalDistanceMeters;
+        });
+      let name = '';
+      if (_type === '1') {
+        name = '跑步';
+      } else {
+        name = '自行車';
+      }
+      const serie = { name, data };
+      this.series.push(serie);
+    });
+    console.log('datas: ', this.datas);
+    console.log('this.series: ', this.series);
+    console.log('this.seriesX: ', this.seriesX);
   }
   initHchart() {
     const options: any = {
@@ -31,15 +90,15 @@ export class TotalDistanceComponent implements OnInit, AfterViewInit {
         type: 'column'
       },
       title: {
-        text: 'Stacked column chart'
+        text: this.chartName
       },
       xAxis: {
-        categories: ['Apples', 'Oranges', 'Pears', 'Grapes', 'Bananas']
+        categories: this.seriesX || []
       },
       yAxis: {
         min: 0,
         title: {
-          text: 'Total fruit consumption'
+          text: '總距離'
         },
         stackLabels: {
           enabled: true,
@@ -55,8 +114,7 @@ export class TotalDistanceComponent implements OnInit, AfterViewInit {
         verticalAlign: 'top',
         y: 25,
         floating: true,
-        backgroundColor:
-          (Highcharts.theme && Highcharts.theme.background2) || 'white',
+        backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
         borderColor: '#CCC',
         borderWidth: 1,
         shadow: false,
@@ -76,34 +134,20 @@ export class TotalDistanceComponent implements OnInit, AfterViewInit {
         enabled: false
       },
       plotOptions: {
-        // series: {
-        //   showInNavigator: false
-        // },
+        series: {
+          showInNavigator: false
+        },
         column: {
           stacking: 'normal',
           dataLabels: {
             enabled: true,
-            color:
-              (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
+            color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
           }
         }
       },
-      series: [
-        {
-          name: 'John',
-          data: [5, 3, 4, 7, 2]
-        },
-        {
-          name: 'Jane',
-          data: [2, 2, 3, 2, 1]
-        },
-        {
-          name: 'Joe',
-          data: [3, 4, 4, 2, 5]
-        }
-      ]
+      series: this.series || []
     };
-    this.chart = new Stock.StockChart(
+    this.chart = chart(
       this.totalDistanceChartTarget.nativeElement,
       options
     );

@@ -46,32 +46,58 @@
     <ng-container *ngIf="chooseType === '1-1'">
       <app-activity-levels
         [datas]="datas"
+        [chartName]="chartName"
       >
     </app-activity-levels>
     </ng-container>
     <ng-container *ngIf="chooseType === '1-2'">
       <app-all-duration
         [datas]="datas"
+        [chartName]="chartName"
       >
       </app-all-duration>
     </ng-container>
     <ng-container *ngIf="chooseType === '1-3'">
-      <app-total-distance></app-total-distance>
+      <app-total-distance
+        [datas]="datas"
+        [chartName]="chartName"
+      >
+      </app-total-distance>
     </ng-container>
     <ng-container *ngIf="chooseType === '1-4'">
-      <app-burn-calories></app-burn-calories>
+      <app-burn-calories
+        [datas]="datas"
+        [chartName]="chartName"
+      >
+      </app-burn-calories>
     </ng-container>
     <ng-container *ngIf="chooseType === '1-5'">
-      <app-average-speed></app-average-speed>
+      <app-average-speed
+        [datas]="datas"
+        [chartName]="chartName"
+      >
+      </app-average-speed>
     </ng-container>
     <ng-container *ngIf="chooseType === '1-6'">
-      <app-max-speed></app-max-speed>
+      <app-max-speed
+        [datas]="datas"
+        [chartName]="chartName"
+      >
+      </app-max-speed>
     </ng-container>
     <ng-container *ngIf="chooseType === '1-7'">
-      <app-average-hr></app-average-hr>
+      <app-average-hr
+        [datas]="datas"
+        [chartName]="chartName"
+      >
+      </app-average-hr>
     </ng-container>
     <ng-container *ngIf="chooseType === '1-8'">
-      <app-max-hr></app-max-hr>
+      <app-max-hr
+        [datas]="datas"
+        [chartName]="chartName"
+      >
+      </app-max-hr>
     </ng-container>
     <ng-container *ngIf="chooseType === '2-1'">
       <app-all-duration></app-all-duration>

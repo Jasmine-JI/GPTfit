@@ -27,6 +27,7 @@ export class AllDurationComponent implements OnChanges, AfterViewInit {
   chart: any; // Highcharts.ChartObject
 
   @Input() datas: any;
+  @Input() chartName: string;
   seriesX = [];
   series = [];
   constructor() {}
@@ -63,7 +64,7 @@ export class AllDurationComponent implements OnChanges, AfterViewInit {
         sportTypes.push(value.activities[0].type);
       }
     });
-    sportTypes.map(_type => {
+    sportTypes.sort().map(_type => {
       const data = [];
       this.seriesX.forEach(() => data.push(0));
       this.datas
@@ -93,7 +94,7 @@ export class AllDurationComponent implements OnChanges, AfterViewInit {
         type: 'column'
       },
       title: {
-        text: '總時間'
+        text: this.chartName
       },
       xAxis: {
         categories: this.seriesX || []

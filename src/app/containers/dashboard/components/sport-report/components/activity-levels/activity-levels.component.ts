@@ -25,6 +25,7 @@ export class ActivityLevelsComponent implements AfterViewInit, OnChanges {
   activityLevelsChartTarget: ElementRef;
   chart1: any; // Highcharts.ChartObject
   @Input() datas: any;
+  @Input() chartName: string;
   seriesX = [];
   series = [];
 
@@ -62,7 +63,7 @@ export class ActivityLevelsComponent implements AfterViewInit, OnChanges {
         sportTypes.push(value.activities[0].type);
       }
     });
-    sportTypes.map(_type => {
+    sportTypes.sort().map(_type => {
       const data = [];
       this.seriesX.forEach(() => data.push(0));
       this.datas
@@ -86,7 +87,7 @@ export class ActivityLevelsComponent implements AfterViewInit, OnChanges {
   initHchart() {
     const options: any = {
       title: {
-        text: '活動數量'
+        text: this.chartName
       },
       xAxis: {
         categories: this.seriesX || []

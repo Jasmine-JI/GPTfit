@@ -160,6 +160,9 @@ export class SportReportComponent implements OnInit {
   filterEndTime: string;
 
   datas = [];
+  chartName = '';
+  treeData = JSON.parse(TREE_DATA);
+
   constructor(
     database: FileDatabase,
     private reportService: ReportService,
@@ -178,7 +181,9 @@ export class SportReportComponent implements OnInit {
   hasNestedChild = (_: number, nodeData: FileNode) => !nodeData.type;
   ngOnInit() {
     const filterEndTime = moment().format('YYYY-MM-DDTHH:mm:ss+08:00');
-    const filterStartTime = moment().subtract(7, 'days').format('YYYY-MM-DDTHH:mm:ss+08:00');
+    const filterStartTime = moment()
+      .subtract(7, 'days')
+      .format('YYYY-MM-DDTHH:mm:ss+08:00');
 
     const body = {
       token: this.utils.getToken(),
@@ -186,11 +191,44 @@ export class SportReportComponent implements OnInit {
       filterStartTime,
       filterEndTime
     };
+
+    if (this.treeData) {
+      for (const sport in this.treeData) {
+        if (this.treeData.hasOwnProperty(sport)) {
+          for (const item in this.treeData[sport]) {
+            if (this.treeData.hasOwnProperty(sport)) {
+              const _sport = this.treeData[sport];
+              if (_sport[item] === this.chooseType) {
+                this.chartName = sport + item;
+              }
+            }
+          }
+        }
+      }
+    }
     this.handleSportSummaryArray(body);
   }
   private _getChildren = (node: FileNode) => node.children;
   handleRenderChart(type) {
     this.chooseType = type;
+    if (this.treeData) {
+      for (const sport in this.treeData) {
+        if (this.treeData.hasOwnProperty(sport)) {
+          for (const item in this.treeData[sport]) {
+            if (this.treeData.hasOwnProperty(sport)) {
+              const _sport = this.treeData[sport];
+              if (_sport[item] === this.chooseType) {
+                this.chartName = sport + item;
+              }
+            }
+            // 	  console.log(chartName);
+            // 	  console.log(_sport[item]);
+          }
+        }
+      }
+    }
+
+    console.log('chartName: ', this.chartName);
   }
   changeGroupInfo({ index }) {
     this.timeType = index;
