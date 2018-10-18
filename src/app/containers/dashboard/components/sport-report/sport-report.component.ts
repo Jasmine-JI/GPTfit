@@ -81,12 +81,12 @@ const TREE_DATA = JSON.stringify({
       '總組數': '5-13',
       '總次數': '5-14'
     }
-  },
-  '有氧': {
-    October: 'pdf',
-    November: 'pdf',
-    Tutorial: 'html'
-  },
+  }
+  // '有氧': {
+  //   October: 'pdf',
+  //   November: 'pdf',
+  //   Tutorial: 'html'
+  // },
 });
 
 /**
@@ -211,6 +211,7 @@ export class SportReportComponent implements OnInit {
   private _getChildren = (node: FileNode) => node.children;
   handleRenderChart(type) {
     this.chooseType = type;
+    // chartName generate
     if (this.treeData) {
       for (const sport in this.treeData) {
         if (this.treeData.hasOwnProperty(sport)) {
@@ -221,8 +222,6 @@ export class SportReportComponent implements OnInit {
                 this.chartName = sport + item;
               }
             }
-            // 	  console.log(chartName);
-            // 	  console.log(_sport[item]);
           }
         }
       }

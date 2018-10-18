@@ -27,3 +27,8 @@
 .mat-tab-group.mat-primary .mat-ink-bar {
   background-color: #26abe3;
 }
+
+/* 隱藏highchart字標 */
+.highcharts-credits {
+  display: none;
+}

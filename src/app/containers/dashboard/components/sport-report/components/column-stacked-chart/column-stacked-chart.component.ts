@@ -13,16 +13,17 @@ import { chart } from 'highcharts';
 var Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 @Component({
-  selector: 'app-total-distance',
-  templateUrl: './total-distance.component.html',
-  styleUrls: ['./total-distance.component.css']
+  selector: 'app-column-stacked-chart',
+  templateUrl: './column-stacked-chart.component.html',
+  styleUrls: ['./column-stacked-chart.component.css', '../../sport-report.component.css']
 })
-export class TotalDistanceComponent implements AfterViewInit, OnChanges {
+export class ColumnstackedChartComponent implements AfterViewInit, OnChanges {
   @ViewChild('totalDistanceChartTarget')
   totalDistanceChartTarget: ElementRef;
   chart: any; // Highcharts.ChartObject
   @Input() datas: any;
   @Input() chartName: string;
+  @Input() chooseType: string;
   seriesX = [];
   series = [];
 
@@ -37,6 +38,14 @@ export class TotalDistanceComponent implements AfterViewInit, OnChanges {
     this.initHchart();
   }
   handleSportSummaryArray() {
+    let targetName = '';
+    if (this.chooseType === '1-2' ||
+      this.chooseType === '2-1' || this.chooseType === '3-1' ||
+      this.chooseType === '4-1' || this.chooseType === '5-1') {
+      targetName = 'totalSecond';
+    } else {
+      targetName = 'totalDistanceMeters';
+    }
     this.series = [];
     this.seriesX = [];
     this.seriesX = this.datas
@@ -51,15 +60,26 @@ export class TotalDistanceComponent implements AfterViewInit, OnChanges {
       .map(_serie => _serie.startTime.slice(0, 10))
       .sort();
     const sportTypes = [];
-    this.datas.forEach((value, idx, self) => {
-      if (
-        self.findIndex(
-          _self => _self.activities[0].type === value.activities[0].type
-        ) === idx
-      ) {
-        sportTypes.push(value.activities[0].type);
-      }
-    });
+    if (this.chooseType.slice(0, 2) === '2-') {
+      sportTypes.push('1'); // 只選run type
+    } else if (this.chooseType.slice(0, 2) === '3-') {
+      sportTypes.push('2'); // 只選cycle type
+    } else if (this.chooseType.slice(0, 2) === '4-') {
+      sportTypes.push('4'); // 只選swim type
+    } else if (this.chooseType.slice(0, 2) === '5-') {
+      sportTypes.push('3'); // 只選weightTraining type
+    } else { // all type
+      this.datas.forEach((value, idx, self) => {
+        if (
+          self.findIndex(
+            _self => _self.activities[0].type === value.activities[0].type
+          ) === idx
+        ) {
+          sportTypes.push(value.activities[0].type);
+        }
+      });
+    }
+    console.log('sportTypes: ', sportTypes);
     sportTypes.sort().map(_type => { // 加入sort 是為了按照type排序
       const data = [];
       this.seriesX.forEach(() => data.push(0));
@@ -69,13 +89,20 @@ export class TotalDistanceComponent implements AfterViewInit, OnChanges {
           const idx = this.seriesX.findIndex(
             _seriesX => _seriesX === _data.startTime.slice(0, 10)
           );
-          data[idx] = +_data.activities[0].totalDistanceMeters;
+          data[idx] = +_data.activities[0][targetName];
         });
+      console.log('d!ata: ', data);
       let name = '';
       if (_type === '1') {
         name = '跑步';
-      } else {
+      } else if (_type === '2') {
         name = '自行車';
+      } else if (_type === '3') {
+        name = '重量訓練';
+      } else if (_type === '4') {
+        name = '游泳';
+      } else {
+        name = '尚未定義';
       }
       const serie = { name, data };
       this.series.push(serie);
@@ -85,6 +112,14 @@ export class TotalDistanceComponent implements AfterViewInit, OnChanges {
     console.log('this.seriesX: ', this.seriesX);
   }
   initHchart() {
+    let yAxisText = '';
+    if (this.chooseType === '1-2' ||
+      this.chooseType === '2-1' || this.chooseType === '3-1' ||
+      this.chooseType === '4-1' || this.chooseType === '5-1') {
+      yAxisText = '總時間(s)';
+    } else {
+      yAxisText = '總距離';
+    }
     const options: any = {
       chart: {
         type: 'column'
@@ -98,7 +133,7 @@ export class TotalDistanceComponent implements AfterViewInit, OnChanges {
       yAxis: {
         min: 0,
         title: {
-          text: '總距離'
+          text: yAxisText
         },
         stackLabels: {
           enabled: true,
@@ -122,7 +157,7 @@ export class TotalDistanceComponent implements AfterViewInit, OnChanges {
       },
       tooltip: {
         headerFormat: '<b>{point.x}</b><br/>',
-        pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+        pointFormat: '{series.name}: {point.y}km<br/>Total: {point.stackTotal}km'
       },
       navigator: {
         enabled: false

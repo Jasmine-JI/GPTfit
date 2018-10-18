@@ -28,6 +28,8 @@ export class AllDurationComponent implements OnChanges, AfterViewInit {
 
   @Input() datas: any;
   @Input() chartName: string;
+  @Input() chooseType: string;
+
   seriesX = [];
   series = [];
   constructor() {}
@@ -55,15 +57,21 @@ export class AllDurationComponent implements OnChanges, AfterViewInit {
       .map(_serie => _serie.startTime.slice(0, 10))
       .sort();
     const sportTypes = [];
-    this.datas.forEach((value, idx, self) => {
-      if (
-        self.findIndex(
-          _self => _self.activities[0].type === value.activities[0].type
-        ) === idx
-      ) {
-        sportTypes.push(value.activities[0].type);
-      }
-    });
+    if (this.chooseType.slice(0, 2) !== '1-') {
+      sportTypes.push('1');
+    } else {
+      this.datas.forEach((value, idx, self) => {
+        if (
+          self.findIndex(
+            _self => _self.activities[0].type === value.activities[0].type
+          ) === idx
+        ) {
+          sportTypes.push(value.activities[0].type);
+        }
+      });
+    }
+
+    console.log('sportTypes: ', sportTypes);
     sportTypes.sort().map(_type => {
       const data = [];
       this.seriesX.forEach(() => data.push(0));

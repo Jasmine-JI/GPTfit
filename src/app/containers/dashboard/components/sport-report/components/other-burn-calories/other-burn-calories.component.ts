@@ -1,9 +1,10 @@
 import {
   Component,
-  OnInit,
   AfterViewInit,
   ViewChild,
-  ElementRef
+  ElementRef,
+  Input,
+  OnChanges
 } from '@angular/core';
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
@@ -13,17 +14,90 @@ var Highcharts: any = _Highcharts; // 不檢查highchart型態
 @Component({
   selector: 'app-other-burn-calories',
   templateUrl: './other-burn-calories.component.html',
-  styleUrls: ['./other-burn-calories.component.css']
+  styleUrls: ['./other-burn-calories.component.css', '../../sport-report.component.css']
 })
-export class OtherBurnCaloriesComponent implements OnInit, AfterViewInit {
+export class OtherBurnCaloriesComponent implements AfterViewInit, OnChanges {
   @ViewChild('otherBurnChartTarget')
   otherBurnChartTarget: ElementRef;
   chart1: any; // Highcharts.ChartObject
-  constructor(elementRef: ElementRef) {}
+  @Input() datas: any;
+  @Input() chartName: string;
+  @Input() chooseType: string;
+  seriesX = [];
+  series = [];
+  constructor() {}
 
-  ngOnInit() {}
-  ngAfterViewInit() {
+  ngOnChanges() {
+    this.handleSportSummaryArray();
     this.initHchart();
+  }
+  ngAfterViewInit() {
+    this.handleSportSummaryArray();
+    this.initHchart();
+  }
+  handleSportSummaryArray() {
+    this.series = [];
+    this.seriesX = [];
+    this.seriesX = this.datas
+      .filter((value, idx, self) => {
+        return (
+          self.findIndex(
+            _self =>
+              _self.startTime.slice(0, 10) === value.startTime.slice(0, 10)
+          ) === idx
+        );
+      })
+      .map(_serie => _serie.startTime.slice(0, 10))
+      .sort();
+    const sportTypes = [];
+    if (this.chooseType.slice(0, 2) === '2-') {
+      sportTypes.push('1'); // 只選run type
+    } else if (this.chooseType.slice(0, 2) === '3-') {
+      sportTypes.push('2'); // 只選cycle type
+    } else if (this.chooseType.slice(0, 2) === '4-') {
+      sportTypes.push('4'); // 只選swim type
+    } else if (this.chooseType.slice(0, 2) === '5-') {
+      sportTypes.push('3'); // 只選weightTraining type
+    } else { // all type
+      this.datas.forEach((value, idx, self) => {
+        if (
+          self.findIndex(
+            _self => _self.activities[0].type === value.activities[0].type
+          ) === idx
+        ) {
+          sportTypes.push(value.activities[0].type);
+        }
+      });
+    }
+    sportTypes.sort().map(_type => { // 加入sort 是為了按照type排序
+      const data = [];
+      this.seriesX.forEach(() => data.push(0));
+      this.datas
+        .filter(_data => _data.activities[0].type === _type)
+        .forEach(_data => {
+          const idx = this.seriesX.findIndex(
+            _seriesX => _seriesX === _data.startTime.slice(0, 10)
+          );
+          data[idx] = +_data.activities[0].calories;
+        });
+      let name = '';
+      if (_type === '1') {
+        name = '跑步';
+      } else if (_type === '2') {
+        name = '自行車';
+      } else if (_type === '3') {
+        name = '重量訓練';
+      } else if (_type === '4') {
+        name = '游泳';
+      } else {
+        name = '尚未定義';
+      }
+      const serie = { name, data };
+      this.series.push(serie);
+    });
+    console.log('datas: ', this.datas);
+    console.log('this.series: ', this.series);
+    console.log('this.seriesX: ', this.seriesX);
   }
   initHchart() {
     const options: any = {
@@ -31,38 +105,22 @@ export class OtherBurnCaloriesComponent implements OnInit, AfterViewInit {
           type: 'column'
       },
       title: {
-          text: 'Monthly Average Rainfall'
-      },
-      subtitle: {
-          text: 'Source: WorldClimate.com'
+          text: this.chartName
       },
       xAxis: {
-          categories: [
-              'Jan',
-              'Feb',
-              'Mar',
-              'Apr',
-              'May',
-              'Jun',
-              'Jul',
-              'Aug',
-              'Sep',
-              'Oct',
-              'Nov',
-              'Dec'
-          ],
+          categories: this.seriesX || [],
           crosshair: true
       },
       yAxis: {
           min: 0,
           title: {
-              text: 'Rainfall (mm)'
+              text: '消耗卡路里 (bpm/min)'
           }
       },
       tooltip: {
           headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
           pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-              '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+              '<td style="padding:0"><b>{point.y:.1f} bpm/min</b></td></tr>',
           footerFormat: '</table>',
           shared: true,
           useHTML: true
@@ -73,23 +131,7 @@ export class OtherBurnCaloriesComponent implements OnInit, AfterViewInit {
               borderWidth: 0
           }
       },
-      series: [{
-          name: 'Tokyo',
-          data: [49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4]
-
-      }, {
-          name: 'New York',
-          data: [83.6, 78.8, 98.5, 93.4, 106.0, 84.5, 105.0, 104.3, 91.2, 83.5, 106.6, 92.3]
-
-      }, {
-          name: 'London',
-          data: [48.9, 38.8, 39.3, 41.4, 47.0, 48.3, 59.0, 59.6, 52.4, 65.2, 59.3, 51.2]
-
-      }, {
-          name: 'Berlin',
-          data: [42.4, 33.2, 34.5, 39.7, 52.6, 75.5, 57.4, 60.4, 47.6, 39.1, 46.8, 51.1]
-
-      }]
+      series: this.series
     };
     this.chart1 = chart(this.otherBurnChartTarget.nativeElement, options);
   }
