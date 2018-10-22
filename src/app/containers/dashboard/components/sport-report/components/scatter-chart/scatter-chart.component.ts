@@ -30,7 +30,8 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
 
   seriesX = [];
   series = [];
-  constructor() {}
+  constructor() {
+  }
 
   ngOnChanges() {
     this.handleSportSummaryArray();
@@ -87,7 +88,6 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
     } else {
       targetName = 'noDefine';
     }
-    console.log('targetName: ', targetName);
     this.series = [];
     this.seriesX = [];
     this.seriesX = this.datas
@@ -121,7 +121,6 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
         }
       });
     }
-    console.log('sportTypes: ', sportTypes);
     sportTypes.sort().map(_type => {
       const data = [];
       this.seriesX.forEach(() => data.push(0));
@@ -131,10 +130,11 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
           const idx = this.seriesX.findIndex(
             _seriesX => _seriesX === _data.startTime.slice(0, 10)
           );
-          data[idx] = [
-            _data.startTime.slice(0, 10),
-            +_data.activities[0][targetName]
-          ];
+          if (this.chooseType === '2-4' || this.chooseType === '2-5') {
+            data[idx] = (60 / +_data.activities[0][targetName]) * 60;
+          } else {
+            data[idx] = [_data.startTime.slice(0, 10), +_data.activities[0][targetName]];
+          }
         });
       let name = '';
       let color = '';
@@ -160,8 +160,11 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
     console.log('this.series: ', this.series);
     console.log('this.seriesX: ', this.seriesX);
   }
+
   initHchart() {
     let yAxisText = '';
+    let toolTipUnit = ' bpm/min';
+
     if (
       this.chooseType === '1-7' ||
       this.chooseType === '2-6' ||
@@ -178,32 +181,45 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
       yAxisText = '最大心率 (bpm/min)';
     } else if (this.chooseType === '2-8') {
       yAxisText = '平均步頻';
+      toolTipUnit = ' ';
     } else if (this.chooseType === '2-9') {
       yAxisText = '最大步頻';
+      toolTipUnit = ' ';
     } else if (this.chooseType === '3-8') {
       yAxisText = '平均踏頻';
+      toolTipUnit = ' ';
     } else if (this.chooseType === '3-9') {
       yAxisText = '最大踏頻';
+      toolTipUnit = ' ';
     } else if (this.chooseType === '3-4') {
       yAxisText = '平均速度';
+      toolTipUnit = ' km/hr';
     } else if (this.chooseType === '3-5') {
       yAxisText = '最大速度';
+      toolTipUnit = ' km/hr';
     } else if (this.chooseType === '3-10') {
       yAxisText = '平均功率';
+      toolTipUnit = ' ';
     } else if (this.chooseType === '3-11') {
       yAxisText = '最大功率';
+      toolTipUnit = ' ';
     } else if (this.chooseType === '1-5' || this.chooseType === '3-4') {
       yAxisText = '平均速度';
+      toolTipUnit = ' km/hr';
     } else if (this.chooseType === '1-6' || this.chooseType === '3-5') {
       yAxisText = '最大速度';
+      toolTipUnit = ' km/hr';
     } else if (this.chooseType === '2-4') {
       yAxisText = '平均配速';
+      toolTipUnit = ' min/km';
     } else if (this.chooseType === '2-5') {
       yAxisText = '最大配速';
+      toolTipUnit = ' min/km';
     } else {
       yAxisText = 'noDefine';
+      toolTipUnit = ' ';
     }
-    console.log('yAxisText: ', yAxisText);
+    const chooseType = this.chooseType;
     const options: any = {
       chart: {
         type: 'scatter',
@@ -224,14 +240,23 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
       },
       tooltip: {
         formatter: function() {
+          let yVal = this.y;
+          if (chooseType === '2-4' || chooseType === '2-5') {
+            const costminperkm = Math.floor(yVal / 60);
+            const costsecondperkm = Math.round(yVal - costminperkm * 60);
+            const timeMin = ('0' + costminperkm).slice(-2);
+            const timeSecond = ('0' + costsecondperkm).slice(-2);
+
+            yVal = `${timeMin}'${timeSecond}"`;
+          }
+
           return (
             '<b>' +
             this.series.name +
             '</b><br/>' +
             this.x +
             ', ' +
-            this.y +
-            ' bpm/min'
+            yVal + toolTipUnit
           );
         }
       },
@@ -239,7 +264,7 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
       yAxis: {
         title: {
           text: yAxisText
-        }
+        },
       },
       legend: {
         layout: 'vertical',
@@ -275,6 +300,24 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
       },
       series: this.series
     };
+    if (this.chooseType === '2-4' || this.chooseType === '2-5') {
+      options.yAxis.min = 0;
+      options.yAxis.max = 3000;
+      options.yAxis.max = 3000;
+      options.yAxis.tickInterval = 600;
+      options.yAxis.labels = {
+        formatter: function () {
+          const costminperkm = Math.floor(this.value / 60);
+          const costsecondperkm = Math.round(this.value - costminperkm * 60);
+          const timeMin = ('0' + costminperkm).slice(-2);
+          const timeSecond = ('0' + costsecondperkm).slice(-2);
+
+          const paceVal = `${timeMin}'${timeSecond}"`;
+          return paceVal;
+        }
+      };
+      options.yAxis.reversed = true;
+    }
     this.chart1 = chart(this.averageHRChartTarget.nativeElement, options);
   }
 }
