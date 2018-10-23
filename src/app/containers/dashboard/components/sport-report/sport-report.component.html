@@ -43,12 +43,18 @@
     <div style="font-weight: 700;letter-spacing: 1.5px;margin: 15px 0px;">
       {{filterStartTime}} - {{filterEndTime}}
     </div>
+    <ng-container *ngIf="isLoading">
+      <div style="display: flex;justify-content: center;margin-top: 30px;">
+        <mat-spinner></mat-spinner>
+      </div>
+    </ng-container>
     <ng-container *ngIf="chooseType === '1-1'">
       <app-activity-levels
         [datas]="datas"
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
     </app-activity-levels>
     </ng-container>
@@ -58,6 +64,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-column-stacked-chart>
     </ng-container>
@@ -67,6 +74,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-column-stacked-chart>
     </ng-container>
@@ -76,6 +84,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-burn-calories>
     </ng-container>
@@ -85,6 +94,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-scatter-chart>
     </ng-container>
@@ -94,6 +104,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-scatter-chart>
     </ng-container>
@@ -103,6 +114,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-scatter-chart>
     </ng-container>
@@ -112,6 +124,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-scatter-chart>
     </ng-container>
@@ -121,6 +134,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-column-stacked-chart>
     </ng-container>
@@ -130,6 +144,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-column-stacked-chart>
     </ng-container>
@@ -139,6 +154,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-other-burn-calories>
     </ng-container>
@@ -148,6 +164,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-scatter-chart>
     </ng-container>
@@ -157,6 +174,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-scatter-chart>
     </ng-container>
@@ -166,6 +184,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-scatter-chart>
     </ng-container>
@@ -175,6 +194,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-scatter-chart>
     </ng-container>
@@ -184,6 +204,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-scatter-chart>
     </ng-container>
@@ -193,6 +214,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-scatter-chart>
     </ng-container>
@@ -202,6 +224,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-column-stacked-chart>
     </ng-container>
@@ -211,6 +234,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-column-stacked-chart>
     </ng-container>
@@ -220,6 +244,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-other-burn-calories>
     </ng-container>
@@ -229,6 +254,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-scatter-chart>
     </ng-container>
@@ -238,6 +264,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-scatter-chart>
     </ng-container>
@@ -247,6 +274,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-scatter-chart>
     </ng-container>
@@ -256,6 +284,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-scatter-chart>
     </ng-container>
@@ -265,6 +294,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-scatter-chart>
     </ng-container>
@@ -274,6 +304,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-scatter-chart>
     </ng-container>
@@ -283,6 +314,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-scatter-chart>
     </ng-container>
@@ -292,6 +324,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-scatter-chart>
     </ng-container>
@@ -301,6 +334,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-column-stacked-chart>
     </ng-container>
@@ -310,6 +344,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-column-stacked-chart>
     </ng-container>
@@ -319,6 +354,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-other-burn-calories>
     </ng-container>
@@ -328,6 +364,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-scatter-chart>
     </ng-container>
@@ -337,6 +374,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-scatter-chart>
     </ng-container>
@@ -346,6 +384,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-scatter-chart>
     </ng-container>
@@ -355,6 +394,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-scatter-chart>
     </ng-container>
@@ -364,6 +404,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-column-stacked-chart>
     </ng-container>
@@ -373,6 +414,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-column-stacked-chart>
     </ng-container>
@@ -382,6 +424,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-all-times>
     </ng-container>
@@ -391,6 +434,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-other-burn-calories>
     </ng-container>
@@ -400,6 +444,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-scatter-chart>
     </ng-container>
@@ -409,6 +454,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-scatter-chart>
     </ng-container>
@@ -418,6 +464,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-other-burn-calories>
     </ng-container>
@@ -427,6 +474,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-other-burn-calories>
     </ng-container>
@@ -436,6 +484,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-all-groups>
     </ng-container>
@@ -445,6 +494,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-all-groups>
     </ng-container>
@@ -454,6 +504,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-partial-muscle-info>
     </ng-container>
@@ -463,6 +514,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-partial-muscle-info>
     </ng-container>
@@ -472,6 +524,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-partial-muscle-info>
     </ng-container>
@@ -481,6 +534,7 @@
         [chartName]="chartName"
         [chooseType]="chooseType"
         [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
       >
       </app-partial-muscle-info>
     </ng-container>

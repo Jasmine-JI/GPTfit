@@ -1,3 +1,6 @@
-<div #averageHRChartTarget class="chart">
+<div #averageHRChartTarget
+  class="chart"
+  [style.display]="isLoading ? 'none': 'initial'"
+>
   chart target
 </div>

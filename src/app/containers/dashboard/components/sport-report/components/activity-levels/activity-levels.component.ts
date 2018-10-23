@@ -27,6 +27,8 @@ export class ActivityLevelsComponent implements AfterViewInit, OnChanges {
   @Input() datas: any;
   @Input() chartName: string;
   @Input() periodTimes: any;
+  @Input() isLoading: boolean;
+
   seriesX = [];
   series = [];
 

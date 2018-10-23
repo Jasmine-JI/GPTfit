@@ -1,3 +1,6 @@
-<div #burnCaloriesChartTarget class="chart">
+<div #burnCaloriesChartTarget
+  class="chart"
+  [style.display]="isLoading ? 'none': 'initial'"
+>
   chart target
 </div>

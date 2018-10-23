@@ -1,3 +1,6 @@
-<div #totalDistanceChartTarget class="chart">
+<div #totalDistanceChartTarget
+  class="chart"
+  [style.display]="isLoading ? 'none': 'initial'"
+>
   chart target
 </div>

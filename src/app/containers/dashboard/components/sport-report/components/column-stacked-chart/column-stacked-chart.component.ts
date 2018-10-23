@@ -25,6 +25,7 @@ export class ColumnstackedChartComponent implements AfterViewInit, OnChanges {
   @Input() chartName: string;
   @Input() chooseType: string;
   @Input() periodTimes: any;
+  @Input() isLoading: boolean;
   seriesX = [];
   series = [];
 

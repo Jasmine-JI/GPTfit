@@ -29,6 +29,7 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
   chooseType: string;
   @Input()
   periodTimes: any;
+  @Input() isLoading: boolean;
   seriesX = [];
   series = [];
   constructor() {
