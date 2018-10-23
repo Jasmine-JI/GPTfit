@@ -164,6 +164,8 @@ export class SportReportComponent implements OnInit {
   treeData = JSON.parse(TREE_DATA);
   periodTimes = [];
   isLoading = false;
+  // to fix 之後多語系要注意
+  openTreeName = '所有運動';
   constructor(
     database: FileDatabase,
     private reportService: ReportService,
@@ -227,14 +229,11 @@ export class SportReportComponent implements OnInit {
         }
       }
     }
-
-    console.log('chartName: ', this.chartName);
   }
   generateTimePeriod() {
     this.periodTimes = [];
     let stamp = moment(this.filterStartTime).unix();
     const stopDay = moment(this.filterEndTime).format('d');
-    console.log('stopDay: ', stopDay);
     let stopTime = '';
     if (this.timeType === 2 || this.timeType === 3) {
       const stopTimeStamp =
@@ -243,12 +242,10 @@ export class SportReportComponent implements OnInit {
           .unix() +
         86400 * 7;
       stopTime = moment.unix(stopTimeStamp).format('YYYY-MM-DD');
-      console.log('~~~~', moment.unix(stopTimeStamp).format('YYYY-MM-DD'));
     } else {
       const stopStamp = moment(this.filterEndTime).unix() + 86400;
       stopTime = moment.unix(stopStamp).format('YYYY-MM-DD');
     }
-    console.log('stopTime: ', stopTime);
     while (moment.unix(stamp).format('YYYY-MM-DD') !== stopTime) {
       if (this.timeType === 2 || this.timeType === 3) {
         this.periodTimes.push(
@@ -262,7 +259,6 @@ export class SportReportComponent implements OnInit {
         stamp = stamp + 86400;
       }
     }
-    console.log('this.periodTimes: ', this.periodTimes);
   }
   changeGroupInfo({ index }) {
     this.timeType = index;
@@ -351,5 +347,12 @@ export class SportReportComponent implements OnInit {
         this.datas = reportActivityWeeks;
       }
     });
+  }
+  handleItem(targetNode) {
+    if (this.openTreeName === targetNode.filename) {
+      this.openTreeName = '';
+    } else {
+      this.openTreeName = targetNode.filename;
+    }
   }
 }
