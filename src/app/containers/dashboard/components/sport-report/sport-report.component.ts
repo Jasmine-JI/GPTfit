@@ -162,7 +162,7 @@ export class SportReportComponent implements OnInit {
   datas = [];
   chartName = '';
   treeData = JSON.parse(TREE_DATA);
-
+  periodTimes = [];
   constructor(
     database: FileDatabase,
     private reportService: ReportService,
@@ -184,7 +184,7 @@ export class SportReportComponent implements OnInit {
     const filterStartTime = moment()
       .subtract(7, 'days')
       .format('YYYY-MM-DDTHH:mm:ss+08:00');
-
+    this.generateTimePeriod();
     const body = {
       token: this.utils.getToken(),
       type: 1,
@@ -229,6 +229,34 @@ export class SportReportComponent implements OnInit {
 
     console.log('chartName: ', this.chartName);
   }
+  generateTimePeriod() {
+    this.periodTimes = [];
+    let stamp = moment(this.filterStartTime).unix();
+    const stopDay = moment(this.filterEndTime).format('d');
+    console.log('stopDay: ', stopDay);
+    let stopTime = '';
+    if (this.timeType === 2 || this.timeType === 3) {
+      const stopTimeStamp = moment(this.filterEndTime)
+        .subtract(stopDay, 'days')
+        .unix() + 86400 * 7;
+      stopTime = moment.unix(stopTimeStamp).format('YYYY-MM-DD');
+      console.log('~~~~', moment.unix(stopTimeStamp).format('YYYY-MM-DD'));
+    } else {
+      const stopStamp = moment(this.filterEndTime).unix() + 86400;
+      stopTime = moment.unix(stopStamp).format('YYYY-MM-DD');
+    }
+    console.log('stopTime: ', stopTime);
+    while (moment.unix(stamp).format('YYYY-MM-DD') !== stopTime) {
+      if (this.timeType === 2 || this.timeType === 3) {
+        this.periodTimes.push(`${moment.unix(stamp).format('YYYY-MM-DD')}~${moment.unix(stamp + 86400 * 6).format('YYYY-MM-DD')}`);
+        stamp = stamp + 86400 * 7;
+      } else {
+        this.periodTimes.push(moment.unix(stamp).format('YYYY-MM-DD'));
+        stamp = stamp + 86400;
+      }
+    }
+    console.log('this.periodTimes: ', this.periodTimes);
+  }
   changeGroupInfo({ index }) {
     this.timeType = index;
     this.filterEndTime = moment().format('YYYY-MM-DD');
@@ -258,6 +286,7 @@ export class SportReportComponent implements OnInit {
         .add(6 - +day, 'days')
         .format('YYYY-MM-DD');
     }
+    this.generateTimePeriod();
     let filterEndTime = moment().format('YYYY-MM-DDTHH:mm:ss+08:00');
 
     let body = {};

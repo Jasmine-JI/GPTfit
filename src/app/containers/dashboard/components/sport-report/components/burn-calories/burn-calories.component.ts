@@ -24,6 +24,7 @@ export class BurnCaloriesComponent implements AfterViewInit, OnChanges {
   @Input() datas: any;
   @Input() chartName: string;
   @Input() chooseType: string;
+  @Input() periodTimes: any;
   seriesX = [];
   series = [];
   constructor() {}
@@ -40,17 +41,18 @@ export class BurnCaloriesComponent implements AfterViewInit, OnChanges {
   handleSportSummaryArray() {
     this.series = [];
     this.seriesX = [];
-    this.seriesX = this.datas
-      .filter((value, idx, self) => {
-        return (
-          self.findIndex(
-            _self =>
-              _self.startTime.slice(0, 10) === value.startTime.slice(0, 10)
-          ) === idx
-        );
-      })
-      .map(_serie => _serie.startTime.slice(0, 10))
-      .sort();
+    this.seriesX = this.periodTimes;
+    // this.seriesX = this.datas
+    //   .filter((value, idx, self) => {
+    //     return (
+    //       self.findIndex(
+    //         _self =>
+    //           _self.startTime.slice(0, 10) === value.startTime.slice(0, 10)
+    //       ) === idx
+    //     );
+    //   })
+    //   .map(_serie => _serie.startTime.slice(0, 10))
+    //   .sort();
     const sportTypes = [];
     if (this.chooseType.slice(0, 2) !== '1-') {
       sportTypes.push('1');
@@ -72,7 +74,7 @@ export class BurnCaloriesComponent implements AfterViewInit, OnChanges {
         .filter(_data => _data.activities[0].type === _type)
         .forEach(_data => {
           const idx = this.seriesX.findIndex(
-            _seriesX => _seriesX === _data.startTime.slice(0, 10)
+            _seriesX => _seriesX.slice(0, 10) === _data.startTime.slice(0, 10)
           );
           data[idx] = +_data.activities[0].calories;
         });

@@ -27,7 +27,8 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
   chartName: string;
   @Input()
   chooseType: string;
-
+  @Input()
+  periodTimes: any;
   seriesX = [];
   series = [];
   constructor() {
@@ -90,17 +91,18 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
     }
     this.series = [];
     this.seriesX = [];
-    this.seriesX = this.datas
-      .filter((value, idx, self) => {
-        return (
-          self.findIndex(
-            _self =>
-              _self.startTime.slice(0, 10) === value.startTime.slice(0, 10)
-          ) === idx
-        );
-      })
-      .map(_serie => _serie.startTime.slice(0, 10))
-      .sort();
+    this.seriesX = this.periodTimes;
+    // this.seriesX = this.datas
+    //   .filter((value, idx, self) => {
+    //     return (
+    //       self.findIndex(
+    //         _self =>
+    //           _self.startTime.slice(0, 10) === value.startTime.slice(0, 10)
+    //       ) === idx
+    //     );
+    //   })
+    //   .map(_serie => _serie.startTime.slice(0, 10))
+    //   .sort();
     const sportTypes = [];
     if (this.chooseType.slice(0, 2) === '2-') {
       sportTypes.push('1'); // 只選run type
@@ -123,12 +125,16 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
     }
     sportTypes.sort().map(_type => {
       const data = [];
-      this.seriesX.forEach(() => data.push(0));
+      if (this.chooseType === '2-4' || this.chooseType === '2-5') {
+        this.seriesX.forEach(() => data.push(3600));
+      } else {
+        this.seriesX.forEach(() => data.push(0));
+      }
       this.datas
         .filter(_data => _data.activities[0].type === _type)
         .forEach(_data => {
           const idx = this.seriesX.findIndex(
-            _seriesX => _seriesX === _data.startTime.slice(0, 10)
+            _seriesX => _seriesX.slice(0, 10) === _data.startTime.slice(0, 10)
           );
           if (this.chooseType === '2-4' || this.chooseType === '2-5') {
             data[idx] = (60 / +_data.activities[0][targetName]) * 60;
@@ -303,7 +309,7 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
     if (this.chooseType === '2-4' || this.chooseType === '2-5') {
       options.yAxis.min = 0;
       options.yAxis.max = 3000;
-      options.yAxis.max = 3000;
+      options.yAxis.max = 3600;
       options.yAxis.tickInterval = 600;
       options.yAxis.labels = {
         formatter: function () {
