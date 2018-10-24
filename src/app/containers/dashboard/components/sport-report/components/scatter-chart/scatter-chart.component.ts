@@ -14,7 +14,10 @@ var Highcharts: any = _Highcharts; // 不檢查highchart型態
 @Component({
   selector: 'app-scatter-chart',
   templateUrl: './scatter-chart.component.html',
-  styleUrls: ['./scatter-chart.component.css', '../../sport-report.component.css']
+  styleUrls: [
+    './scatter-chart.component.css',
+    '../../sport-report.component.css'
+  ]
 })
 export class ScatterChartComponent implements AfterViewInit, OnChanges {
   @ViewChild('averageHRChartTarget')
@@ -29,11 +32,11 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
   chooseType: string;
   @Input()
   periodTimes: any;
-  @Input() isLoading: boolean;
+  @Input()
+  isLoading: boolean;
   seriesX = [];
   series = [];
-  constructor() {
-  }
+  constructor() {}
 
   ngOnChanges() {
     this.handleSportSummaryArray();
@@ -93,17 +96,6 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
     this.series = [];
     this.seriesX = [];
     this.seriesX = this.periodTimes;
-    // this.seriesX = this.datas
-    //   .filter((value, idx, self) => {
-    //     return (
-    //       self.findIndex(
-    //         _self =>
-    //           _self.startTime.slice(0, 10) === value.startTime.slice(0, 10)
-    //       ) === idx
-    //     );
-    //   })
-    //   .map(_serie => _serie.startTime.slice(0, 10))
-    //   .sort();
     const sportTypes = [];
     if (this.chooseType.slice(0, 2) === '2-') {
       sportTypes.push('1'); // 只選run type
@@ -113,7 +105,8 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
       sportTypes.push('4'); // 只選swim type
     } else if (this.chooseType.slice(0, 2) === '5-') {
       sportTypes.push('3'); // 只選weightTraining type
-    } else { // all type
+    } else {
+      // all type
       this.datas.forEach((value, idx, self) => {
         if (
           self.findIndex(
@@ -140,7 +133,10 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
           if (this.chooseType === '2-4' || this.chooseType === '2-5') {
             data[idx] = (60 / +_data.activities[0][targetName]) * 60;
           } else {
-            data[idx] = [_data.startTime.slice(0, 10), +_data.activities[0][targetName]];
+            data[idx] = [
+              _data.startTime.slice(0, 10),
+              +_data.activities[0][targetName]
+            ];
           }
         });
       let name = '';
@@ -163,9 +159,6 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
       const serie = { name, data, color };
       this.series.push(serie);
     });
-    console.log('datas: ', this.datas);
-    console.log('this.series: ', this.series);
-    console.log('this.seriesX: ', this.seriesX);
   }
 
   initHchart() {
@@ -187,40 +180,40 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
     ) {
       yAxisText = '最大心率 (bpm/min)';
     } else if (this.chooseType === '2-8') {
-      yAxisText = '平均步頻';
-      toolTipUnit = ' ';
+      yAxisText = '平均步頻(spm)';
+      toolTipUnit = ' spm';
     } else if (this.chooseType === '2-9') {
-      yAxisText = '最大步頻';
-      toolTipUnit = ' ';
+      yAxisText = '最大步頻(spm)';
+      toolTipUnit = ' spm';
     } else if (this.chooseType === '3-8') {
-      yAxisText = '平均踏頻';
-      toolTipUnit = ' ';
+      yAxisText = '平均踏頻(spm)';
+      toolTipUnit = ' spm';
     } else if (this.chooseType === '3-9') {
-      yAxisText = '最大踏頻';
-      toolTipUnit = ' ';
+      yAxisText = '最大踏頻(spm)';
+      toolTipUnit = ' spm';
     } else if (this.chooseType === '3-4') {
-      yAxisText = '平均速度';
+      yAxisText = '平均速度(km/hr)';
       toolTipUnit = ' km/hr';
     } else if (this.chooseType === '3-5') {
-      yAxisText = '最大速度';
+      yAxisText = '最大速度(km/hr)';
       toolTipUnit = ' km/hr';
     } else if (this.chooseType === '3-10') {
-      yAxisText = '平均功率';
-      toolTipUnit = ' ';
+      yAxisText = '平均功率(w)';
+      toolTipUnit = ' w';
     } else if (this.chooseType === '3-11') {
-      yAxisText = '最大功率';
-      toolTipUnit = ' ';
+      yAxisText = '最大功率(w)';
+      toolTipUnit = ' w';
     } else if (this.chooseType === '1-5' || this.chooseType === '3-4') {
-      yAxisText = '平均速度';
+      yAxisText = '平均速度(km/hr)';
       toolTipUnit = ' km/hr';
     } else if (this.chooseType === '1-6' || this.chooseType === '3-5') {
-      yAxisText = '最大速度';
+      yAxisText = '最大速度(km/hr)';
       toolTipUnit = ' km/hr';
     } else if (this.chooseType === '2-4') {
-      yAxisText = '平均配速';
+      yAxisText = '平均配速(min/km)';
       toolTipUnit = ' min/km';
     } else if (this.chooseType === '2-5') {
-      yAxisText = '最大配速';
+      yAxisText = '最大配速(min/km)';
       toolTipUnit = ' min/km';
     } else {
       yAxisText = 'noDefine';
@@ -262,8 +255,9 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
             this.series.name +
             '</b><br/>' +
             this.x +
-            ', ' +
-            yVal + toolTipUnit
+            '<br> ' +
+            yVal +
+            toolTipUnit
           );
         }
       },
@@ -271,7 +265,7 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
       yAxis: {
         title: {
           text: yAxisText
-        },
+        }
       },
       legend: {
         layout: 'vertical',
@@ -309,11 +303,10 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
     };
     if (this.chooseType === '2-4' || this.chooseType === '2-5') {
       options.yAxis.min = 0;
-      options.yAxis.max = 3000;
       options.yAxis.max = 3600;
       options.yAxis.tickInterval = 600;
       options.yAxis.labels = {
-        formatter: function () {
+        formatter: function() {
           const costminperkm = Math.floor(this.value / 60);
           const costsecondperkm = Math.round(this.value - costminperkm * 60);
           const timeMin = ('0' + costminperkm).slice(-2);

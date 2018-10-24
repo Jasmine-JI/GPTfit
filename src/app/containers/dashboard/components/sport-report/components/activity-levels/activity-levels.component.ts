@@ -11,6 +11,7 @@ import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
 import * as HighchartsNoData from 'highcharts-no-data-to-display';
 import { ReportService } from '../../../../services/report.service';
+import * as moment from 'moment';
 
 var Highcharts: any = _Highcharts; // 不檢查highchart型態
 HighchartsNoData(Highcharts);
@@ -28,6 +29,7 @@ export class ActivityLevelsComponent implements AfterViewInit, OnChanges {
   @Input() chartName: string;
   @Input() periodTimes: any;
   @Input() isLoading: boolean;
+  @Input() timeType: boolean;
 
   seriesX = [];
   series = [];
@@ -46,24 +48,13 @@ export class ActivityLevelsComponent implements AfterViewInit, OnChanges {
     this.series = [];
     this.seriesX = [];
     this.seriesX = this.periodTimes;
-    // this.seriesX = this.datas
-    //   .filter((value, idx, self) => {
-    //     return (
-    //       self.findIndex(
-    //         _self =>
-    //           _self.startTime.slice(0, 10) === value.startTime.slice(0, 10)
-    //       ) === idx
-    //     );
-    //   })
-    //   .map(_serie => _serie.startTime.slice(0, 10))
-    //   .sort();
     const sportTypes = [];
     this.datas.forEach((value, idx, self) => {
-      if (
-        self.findIndex(
-          _self => _self.activities[0].type === value.activities[0].type
-        ) === idx
-      ) {
+      const sameIdx = self.findIndex(
+          _self => {
+            return _self.activities[0].type === value.activities[0].type;
+          });
+      if (sameIdx === idx) {
         sportTypes.push(value.activities[0].type);
       }
     });
@@ -89,14 +80,31 @@ export class ActivityLevelsComponent implements AfterViewInit, OnChanges {
     });
   }
   initHchart() {
+    const timeType = this.timeType;
     const options: any = {
       title: {
         text: this.chartName
       },
       xAxis: {
+        labels: {
+          formatter: function () {
+            const _day = moment(this.value).format('d');
+            if (timeType === 1) {
+              if (_day === '0') {
+                return this.value;
+              } else {
+                return '';
+              }
+            }
+            return this.value;
+
+          }
+        },
         categories: this.seriesX || []
       },
       yAxis: {
+        min: 0,
+        tickInterval: 1,
         title: {
           text: '活動數量'
         }

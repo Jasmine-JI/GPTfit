@@ -98,9 +98,6 @@ export class OtherBurnCaloriesComponent implements AfterViewInit, OnChanges {
       const serie = { name, data };
       this.series.push(serie);
     });
-    console.log('datas: ', this.datas);
-    console.log('this.series: ', this.series);
-    console.log('this.seriesX: ', this.seriesX);
   }
   initHchart() {
     const options: any = {
@@ -117,13 +114,13 @@ export class OtherBurnCaloriesComponent implements AfterViewInit, OnChanges {
       yAxis: {
           min: 0,
           title: {
-              text: '消耗卡路里 (bpm/min)'
+              text: '消耗卡路里 (cal)'
           }
       },
       tooltip: {
           headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
           pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-              '<td style="padding:0"><b>{point.y:.1f} bpm/min</b></td></tr>',
+              '<td style="padding:0"><b>{point.y:.1f} cal</b></td></tr>',
           footerFormat: '</table>',
           shared: true,
           useHTML: true

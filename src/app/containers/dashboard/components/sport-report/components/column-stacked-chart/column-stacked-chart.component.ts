@@ -8,7 +8,6 @@ import {
 } from '@angular/core';
 import * as _Highcharts from 'highcharts';
 import { chart } from 'highcharts';
-// import * as Stock from 'highcharts/highstock';
 
 var Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -51,17 +50,7 @@ export class ColumnstackedChartComponent implements AfterViewInit, OnChanges {
     this.series = [];
     this.seriesX = [];
     this.seriesX = this.periodTimes;
-    // this.seriesX = this.datas
-    //   .filter((value, idx, self) => {
-    //     return (
-    //       self.findIndex(
-    //         _self =>
-    //           _self.startTime.slice(0, 10) === value.startTime.slice(0, 10)
-    //       ) === idx
-    //     );
-    //   })
-    //   .map(_serie => _serie.startTime.slice(0, 10))
-    //   .sort();
+
     const sportTypes = [];
     if (this.chooseType.slice(0, 2) === '2-') {
       sportTypes.push('1'); // 只選run type
@@ -82,7 +71,6 @@ export class ColumnstackedChartComponent implements AfterViewInit, OnChanges {
         }
       });
     }
-    console.log('sportTypes: ', sportTypes);
     sportTypes.sort().map(_type => { // 加入sort 是為了按照type排序
       const data = [];
       this.seriesX.forEach(() => data.push(0));
@@ -94,7 +82,6 @@ export class ColumnstackedChartComponent implements AfterViewInit, OnChanges {
           );
           data[idx] = +_data.activities[0][targetName];
         });
-      console.log('d!ata: ', data);
       let name = '';
       if (_type === '1') {
         name = '跑步';
@@ -110,18 +97,38 @@ export class ColumnstackedChartComponent implements AfterViewInit, OnChanges {
       const serie = { name, data };
       this.series.push(serie);
     });
-    console.log('datas: ', this.datas);
-    console.log('this.series: ', this.series);
-    console.log('this.seriesX: ', this.seriesX);
   }
-  initHchart() {
-    let yAxisText = '';
+  convertUnit(y) {
+    let yVal = y;
     if (this.chooseType === '1-2' ||
       this.chooseType === '2-1' || this.chooseType === '3-1' ||
       this.chooseType === '4-1' || this.chooseType === '5-1') {
-      yAxisText = '總時間(s)';
+      const costhr = Math.floor(yVal / 3600);
+      const costmin = Math.floor(Math.round(yVal - costhr * 60 * 60) / 60);
+      const costsecond = Math.round(yVal - costmin * 60);
+      const timeHr = ('0' + costhr).slice(-2);
+      const timeMin = ('0' + costmin).slice(-2);
+      const timeSecond = ('0' + costsecond).slice(-2);
+
+      yVal = `${timeHr}:${timeMin}:${timeSecond}`;
     } else {
-      yAxisText = '總距離';
+      yVal = yVal / 1000;
+    }
+    return yVal;
+  }
+  initHchart() {
+    let yAxisText = '';
+    let toolTipUnit = '';
+    const chooseType = this.chooseType;
+    const convertUnit = this.convertUnit.bind(this);
+    if (this.chooseType === '1-2' ||
+      this.chooseType === '2-1' || this.chooseType === '3-1' ||
+      this.chooseType === '4-1' || this.chooseType === '5-1') {
+      yAxisText = '總時間(min)';
+      toolTipUnit = ' ';
+    } else {
+      yAxisText = '總距離(km)';
+      toolTipUnit = ' km';
     }
     const options: any = {
       chart: {
@@ -137,13 +144,6 @@ export class ColumnstackedChartComponent implements AfterViewInit, OnChanges {
         min: 0,
         title: {
           text: yAxisText
-        },
-        stackLabels: {
-          enabled: true,
-          style: {
-            fontWeight: 'bold',
-            color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
-          }
         }
       },
       legend: {
@@ -159,8 +159,9 @@ export class ColumnstackedChartComponent implements AfterViewInit, OnChanges {
         enabled: true
       },
       tooltip: {
-        headerFormat: '<b>{point.x}</b><br/>',
-        pointFormat: '{series.name}: {point.y}km<br/>Total: {point.stackTotal}km'
+        formatter: function() {
+          return '<b>' + this.x + '</b><br/>' + this.series.name + ': ' + convertUnit(this.y) + toolTipUnit;
+        }
       },
       navigator: {
         enabled: false
@@ -179,12 +180,34 @@ export class ColumnstackedChartComponent implements AfterViewInit, OnChanges {
           stacking: 'normal',
           dataLabels: {
             enabled: true,
-            color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white'
+            color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
+            formatter: function () {
+              return convertUnit(this.y) + toolTipUnit;
+            }
           }
         }
       },
       series: this.series || []
     };
+    if (this.chooseType === '1-2' ||
+      this.chooseType === '2-1' || this.chooseType === '3-1' ||
+      this.chooseType === '4-1' || this.chooseType === '5-1') {
+      options.yAxis.labels = {
+        formatter: function () {
+          const distance = Math.round(this.value / 60);
+          return distance + ' min';
+        }
+      };
+    } else {
+      options.yAxis.min = 0;
+      options.yAxis.tickInterval = 1000; // 因為1km = 1000m
+      options.yAxis.labels = {
+        formatter: function () {
+          const distance = this.value / 1000;
+          return distance + ' km';
+        }
+      };
+    }
     this.chart = chart(
       this.totalDistanceChartTarget.nativeElement,
       options

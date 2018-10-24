@@ -43,17 +43,6 @@ export class BurnCaloriesComponent implements AfterViewInit, OnChanges {
     this.series = [];
     this.seriesX = [];
     this.seriesX = this.periodTimes;
-    // this.seriesX = this.datas
-    //   .filter((value, idx, self) => {
-    //     return (
-    //       self.findIndex(
-    //         _self =>
-    //           _self.startTime.slice(0, 10) === value.startTime.slice(0, 10)
-    //       ) === idx
-    //     );
-    //   })
-    //   .map(_serie => _serie.startTime.slice(0, 10))
-    //   .sort();
     const sportTypes = [];
     if (this.chooseType.slice(0, 2) !== '1-') {
       sportTypes.push('1');
@@ -88,9 +77,6 @@ export class BurnCaloriesComponent implements AfterViewInit, OnChanges {
       const serie = { name, data };
       this.series.push(serie);
     });
-    console.log('datas: ', this.datas);
-    console.log('this.series: ', this.series);
-    console.log('this.seriesX: ', this.seriesX);
   }
   initHchart() {
     const options: any = {

@@ -82,11 +82,6 @@ const TREE_DATA = JSON.stringify({
       '總次數': '5-14'
     }
   }
-  // '有氧': {
-  //   October: 'pdf',
-  //   November: 'pdf',
-  //   Tutorial: 'html'
-  // },
 });
 
 /**
@@ -259,6 +254,7 @@ export class SportReportComponent implements OnInit {
         stamp = stamp + 86400;
       }
     }
+
   }
   changeGroupInfo({ index }) {
     this.timeType = index;
