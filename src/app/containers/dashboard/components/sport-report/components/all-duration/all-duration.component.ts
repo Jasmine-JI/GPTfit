@@ -71,7 +71,6 @@ export class AllDurationComponent implements OnChanges, AfterViewInit {
       });
     }
 
-    console.log('sportTypes: ', sportTypes);
     sportTypes.sort().map(_type => {
       const data = [];
       this.seriesX.forEach(() => data.push(0));
@@ -92,9 +91,6 @@ export class AllDurationComponent implements OnChanges, AfterViewInit {
       const serie = { name, data };
       this.series.push(serie);
     });
-    console.log('datas: ', this.datas);
-    console.log('this.series: ', this.series);
-    console.log('this.seriesX: ', this.seriesX);
   }
   initHchart() {
     const options: any = {

@@ -31,15 +31,6 @@ export class AllGroupsComponent implements OnInit, AfterViewInit {
           minWidth: 700
         }
       },
-      // data: {
-      //   csvURL:
-      //     'https://cdn.rawgit.com/highcharts/highcharts/' +
-      //     '057b672172ccc6c08fe7dbb27fc17ebca3f5b770/samples/data/analytics.csv',
-      //   beforeParse: function(csv) {
-      //     console.log('csv: ', csv);
-      //     return csv.replace(/\n\n/g, '\n');
-      //   }
-      // },
       title: {
         text: 'Daily sessions at www.highcharts.com'
       },
@@ -105,26 +96,6 @@ export class AllGroupsComponent implements OnInit, AfterViewInit {
       plotOptions: {
         series: {
           cursor: 'pointer',
-          // point: {
-          //   events: {
-          //     click: function(e) {
-          //       console.log('hs: ', hs);
-          //       hs.htmlExpand(null, {
-          //         pageOrigin: {
-          //           x: e.pageX || e.clientX,
-          //           y: e.pageY || e.clientY
-          //         },
-          //         headingText: this.series.name,
-          //         maincontentText:
-          //           Highcharts.dateFormat('%A, %b %e, %Y', this.x) +
-          //           ':<br/> ' +
-          //           this.y +
-          //           ' sessions',
-          //         width: 200
-          //       });
-          //     }
-          //   }
-          // },
           marker: {
             lineWidth: 1
           }

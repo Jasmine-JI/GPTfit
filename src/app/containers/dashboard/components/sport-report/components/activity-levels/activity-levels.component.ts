@@ -29,7 +29,7 @@ export class ActivityLevelsComponent implements AfterViewInit, OnChanges {
   @Input() chartName: string;
   @Input() periodTimes: any;
   @Input() isLoading: boolean;
-  @Input() timeType: boolean;
+  @Input() timeType: number;
 
   seriesX = [];
   series = [];
@@ -86,6 +86,7 @@ export class ActivityLevelsComponent implements AfterViewInit, OnChanges {
         text: this.chartName
       },
       xAxis: {
+        categories: this.seriesX || [],
         labels: {
           formatter: function () {
             const _day = moment(this.value).format('d');
@@ -95,12 +96,22 @@ export class ActivityLevelsComponent implements AfterViewInit, OnChanges {
               } else {
                 return '';
               }
-            }
-            return this.value;
+            } else if (timeType === 2 || timeType === 3) {
+              const startMonth = this.value.slice(5, 7);
+              const startDay = this.value.slice(8, 10);
 
+              const endMonth = this.value.slice(16, 18);
+
+              if (startMonth !== endMonth) {
+                return endMonth;
+              } else if (startDay === '01') {
+                return startMonth;
+              }
+            } else {
+              return this.value;
+            }
           }
-        },
-        categories: this.seriesX || []
+        }
       },
       yAxis: {
         min: 0,

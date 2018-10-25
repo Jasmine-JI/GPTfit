@@ -178,13 +178,13 @@ export class ColumnstackedChartComponent implements AfterViewInit, OnChanges {
         },
         column: {
           stacking: 'normal',
-          dataLabels: {
-            enabled: true,
-            color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
-            formatter: function () {
-              return convertUnit(this.y) + toolTipUnit;
-            }
-          }
+          // dataLabels: {
+          //   enabled: true,
+          //   color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
+          //   formatter: function () {
+          //     return convertUnit(this.y) + toolTipUnit;
+          //   }
+          // }
         }
       },
       series: this.series || []
