@@ -66,12 +66,9 @@ import { NgProgressModule } from '@ngx-progressbar/core';
 import { SportReportComponent } from './components/sport-report/sport-report.component';
 import { ActivityLevelsComponent } from './components/sport-report/components/activity-levels/activity-levels.component';
 import { AllDurationComponent } from './components/sport-report/components/all-duration/all-duration.component';
-import { TotalDistanceComponent } from './components/sport-report/components/total-distance/total-distance.component';
+import { ColumnstackedChartComponent } from './components/sport-report/components/column-stacked-chart/column-stacked-chart.component';
 import { BurnCaloriesComponent } from './components/sport-report/components/burn-calories/burn-calories.component';
-import { AverageSpeedComponent } from './components/sport-report/components/average-speed/average-speed.component';
-import { MaxSpeedComponent } from './components/sport-report/components/max-speed/max-speed.component';
-import { AverageHRComponent } from './components/sport-report/components/average-hr/average-hr.component';
-import { MaxHRComponent } from './components/sport-report/components/max-hr/max-hr.component';
+import { ScatterChartComponent } from './components/sport-report/components/scatter-chart/scatter-chart.component';
 import { OtherBurnCaloriesComponent } from './components/sport-report/components/other-burn-calories/other-burn-calories.component';
 import { AllTimesComponent } from './components/sport-report/components/all-times/all-times.component';
 import { AllGroupsComponent } from './components/sport-report/components/all-groups/all-groups.component';
@@ -79,6 +76,7 @@ import { PartialMuscleInfoComponent } from './components/sport-report/components
 import { MyDeviceComponent } from './components/device/my-device/my-device.component';
 import { ProductInfoComponent } from './components/device/product-info/product-info.component';
 import { TodayLoginnerWinComponent } from './components/today-loginner-win/today-loginner-win.component';
+import { ReportService } from './services/report.service';
 
 @NgModule({
   imports: [
@@ -110,7 +108,8 @@ import { TodayLoginnerWinComponent } from './components/today-loginner-win/today
     GroupService,
     EditGroupGuard,
     DashboardGuard,
-    ActivityService
+    ActivityService,
+    ReportService
   ],
   declarations: [
     DashboardComponent,
@@ -154,12 +153,9 @@ import { TodayLoginnerWinComponent } from './components/today-loginner-win/today
     SportReportComponent,
     ActivityLevelsComponent,
     AllDurationComponent,
-    TotalDistanceComponent,
+    ColumnstackedChartComponent,
     BurnCaloriesComponent,
-    AverageSpeedComponent,
-    MaxSpeedComponent,
-    AverageHRComponent,
-    MaxHRComponent,
+    ScatterChartComponent,
     OtherBurnCaloriesComponent,
     AllTimesComponent,
     AllGroupsComponent,

@@ -136,9 +136,9 @@ export class UtilsService {
         finalUrl += '/' + _url.path;
       });
     } else {
-      finalUrl = url[0].path;
+      finalUrl = '/' +  url[0].path;
     }
-    if (queryParams) {
+    if (Object.keys(queryParams).length > 0) {
       const key = Object.keys(queryParams)[0];
       finalUrl = finalUrl + '?' + key + '=' + queryParams[`${key}`];
     }

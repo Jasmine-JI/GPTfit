@@ -1,8 +1,11 @@
 import { NestedTreeControl } from '@angular/cdk/tree';
-import { Component, Injectable } from '@angular/core';
+import { Component, Injectable, OnInit } from '@angular/core';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
 import { BehaviorSubject } from 'rxjs';
 import { ViewEncapsulation } from '@angular/core';
+import * as moment from 'moment';
+import { ReportService } from '../../services/report.service';
+import { UtilsService } from '@shared/services/utils.service';
 /**
  * Json node data with nested structure. Each node has a filename and a value or a list of children
  */
@@ -78,12 +81,7 @@ const TREE_DATA = JSON.stringify({
       '總組數': '5-13',
       '總次數': '5-14'
     }
-  },
-  '有氧': {
-    October: 'pdf',
-    November: 'pdf',
-    Tutorial: 'html'
-  },
+  }
 });
 
 /**
@@ -148,21 +146,209 @@ export class FileDatabase {
   encapsulation: ViewEncapsulation.None,
   providers: [FileDatabase]
 })
-export class SportReportComponent {
+export class SportReportComponent implements OnInit {
   nestedTreeControl: NestedTreeControl<FileNode>;
   nestedDataSource: MatTreeNestedDataSource<FileNode>;
   chooseType = '1-1';
-  constructor(database: FileDatabase) {
+  timeType = 0;
+  filterStartTime: string;
+  filterEndTime: string;
+
+  datas = [];
+  chartName = '';
+  treeData = JSON.parse(TREE_DATA);
+  periodTimes = [];
+  isLoading = false;
+  // to fix 之後多語系要注意
+  openTreeName = '所有運動';
+  constructor(
+    database: FileDatabase,
+    private reportService: ReportService,
+    private utils: UtilsService
+  ) {
     this.nestedTreeControl = new NestedTreeControl<FileNode>(this._getChildren);
     this.nestedDataSource = new MatTreeNestedDataSource();
 
     database.dataChange.subscribe(data => (this.nestedDataSource.data = data));
+    this.filterEndTime = moment().format('YYYY-MM-DD');
+    this.filterStartTime = moment()
+      .subtract(7, 'days')
+      .format('YYYY-MM-DD');
   }
 
   hasNestedChild = (_: number, nodeData: FileNode) => !nodeData.type;
+  ngOnInit() {
+    const filterEndTime = moment().format('YYYY-MM-DDTHH:mm:ss+08:00');
+    const filterStartTime = moment()
+      .subtract(7, 'days')
+      .format('YYYY-MM-DDTHH:mm:ss+08:00');
+    this.generateTimePeriod();
+    const body = {
+      token: this.utils.getToken(),
+      type: 1,
+      filterStartTime,
+      filterEndTime
+    };
 
+    if (this.treeData) {
+      for (const sport in this.treeData) {
+        if (this.treeData.hasOwnProperty(sport)) {
+          for (const item in this.treeData[sport]) {
+            if (this.treeData.hasOwnProperty(sport)) {
+              const _sport = this.treeData[sport];
+              if (_sport[item] === this.chooseType) {
+                this.chartName = sport + item;
+              }
+            }
+          }
+        }
+      }
+    }
+    this.handleSportSummaryArray(body);
+  }
   private _getChildren = (node: FileNode) => node.children;
   handleRenderChart(type) {
     this.chooseType = type;
+    // chartName generate
+    if (this.treeData) {
+      for (const sport in this.treeData) {
+        if (this.treeData.hasOwnProperty(sport)) {
+          for (const item in this.treeData[sport]) {
+            if (this.treeData.hasOwnProperty(sport)) {
+              const _sport = this.treeData[sport];
+              if (_sport[item] === this.chooseType) {
+                this.chartName = sport + item;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  generateTimePeriod() {
+    this.periodTimes = [];
+    let stamp = moment(this.filterStartTime).unix();
+    const stopDay = moment(this.filterEndTime).format('d');
+    let stopTime = '';
+    if (this.timeType === 2 || this.timeType === 3) {
+      const stopTimeStamp =
+        moment(this.filterEndTime)
+          .subtract(stopDay, 'days')
+          .unix() +
+        86400 * 7;
+      stopTime = moment.unix(stopTimeStamp).format('YYYY-MM-DD');
+    } else {
+      const stopStamp = moment(this.filterEndTime).unix() + 86400;
+      stopTime = moment.unix(stopStamp).format('YYYY-MM-DD');
+    }
+    while (moment.unix(stamp).format('YYYY-MM-DD') !== stopTime) {
+      if (this.timeType === 2 || this.timeType === 3) {
+        this.periodTimes.push(
+          `${moment.unix(stamp).format('YYYY-MM-DD')}~${moment
+            .unix(stamp + 86400 * 6)
+            .format('YYYY-MM-DD')}`
+        );
+        stamp = stamp + 86400 * 7;
+      } else {
+        this.periodTimes.push(moment.unix(stamp).format('YYYY-MM-DD'));
+        stamp = stamp + 86400;
+      }
+    }
+
+  }
+  changeGroupInfo({ index }) {
+    this.timeType = index;
+    this.filterEndTime = moment().format('YYYY-MM-DD');
+    const day = moment().format('d');
+    if (this.timeType === 0) {
+      this.filterStartTime = moment()
+        .subtract(7, 'days')
+        .format('YYYY-MM-DD');
+    } else if (this.timeType === 1) {
+      this.filterStartTime = moment()
+        .subtract(30, 'days')
+        .format('YYYY-MM-DD');
+    } else if (this.timeType === 2) {
+      this.filterStartTime = moment()
+        .subtract(day, 'days')
+        .subtract(26, 'weeks')
+        .format('YYYY-MM-DD');
+      this.filterEndTime = moment()
+        .add(6 - +day, 'days')
+        .format('YYYY-MM-DD');
+    } else {
+      this.filterStartTime = moment()
+        .subtract(day, 'days')
+        .subtract(52, 'weeks')
+        .format('YYYY-MM-DD');
+      this.filterEndTime = moment()
+        .add(6 - +day, 'days')
+        .format('YYYY-MM-DD');
+    }
+    this.generateTimePeriod();
+    let filterEndTime = moment().format('YYYY-MM-DDTHH:mm:ss+08:00');
+
+    let body = {};
+    let filterStartTime = '';
+    if (this.timeType === 0) {
+      filterStartTime = moment()
+        .subtract(7, 'days')
+        .format('YYYY-MM-DDTHH:mm:ss+08:00');
+    } else if (this.timeType === 1) {
+      filterStartTime = moment()
+        .subtract(30, 'days')
+        .format('YYYY-MM-DDTHH:mm:ss+08:00');
+    } else if (this.timeType === 2) {
+      filterStartTime = moment()
+        .subtract(day, 'days')
+        .subtract(26, 'weeks')
+        .format('YYYY-MM-DDT00:00:00+08:00');
+      filterEndTime = moment()
+        .add(6 - +day, 'days')
+        .format('YYYY-MM-DDT23:59:59+08:00');
+    } else {
+      filterStartTime = moment()
+        .subtract(day, 'days')
+        .subtract(52, 'weeks')
+        .format('YYYY-MM-DDT00:00:00+08:00');
+      filterEndTime = moment()
+        .add(6 - +day, 'days')
+        .format('YYYY-MM-DDT23:59:59+08:00');
+    }
+    if (this.timeType <= 1) {
+      body = {
+        token: this.utils.getToken(),
+        type: 1,
+        filterStartTime,
+        filterEndTime
+      };
+    } else {
+      body = {
+        token: this.utils.getToken(),
+        type: 2,
+        filterStartTime,
+        filterEndTime
+      };
+    }
+    this.handleSportSummaryArray(body);
+  }
+  handleSportSummaryArray(body) {
+    this.isLoading = true;
+    this.reportService.fetchSportSummaryArray(body).subscribe(res => {
+      this.isLoading = false;
+      const { reportActivityDays, reportActivityWeeks } = res;
+      if (body.type === 1) {
+        this.datas = reportActivityDays;
+      } else {
+        this.datas = reportActivityWeeks;
+      }
+    });
+  }
+  handleItem(targetNode) {
+    if (this.openTreeName === targetNode.filename) {
+      this.openTreeName = '';
+    } else {
+      this.openTreeName = targetNode.filename;
+    }
   }
 }

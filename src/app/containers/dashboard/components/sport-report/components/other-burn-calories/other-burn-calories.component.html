@@ -1,6 +1,6 @@
-<p>
-  other-burn-calories works!
-</p>
-<div #otherBurnChartTarget class="chart">
+<div #otherBurnChartTarget
+  class="chart"
+  [style.display]="isLoading ? 'none': 'block'"
+>
   chart target
 </div>

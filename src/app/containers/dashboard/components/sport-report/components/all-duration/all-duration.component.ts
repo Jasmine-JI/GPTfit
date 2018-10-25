@@ -1,12 +1,18 @@
 import {
   Component,
-  OnInit,
   AfterViewInit,
   ViewChild,
-  ElementRef
+  ElementRef,
+  Input,
+  OnChanges,
+  SimpleChanges
 } from '@angular/core';
 import * as _Highcharts from 'highcharts';
-import * as Stock from 'highcharts/highstock';
+import { chart } from 'highcharts';
+// import * as Stock from 'highcharts/highstock';
+// import { ReportService } from '../../../../services/report.service';
+// import { UtilsService } from '@shared/services/utils.service';
+// import * as moment from 'moment';
 
 var Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -15,15 +21,76 @@ var Highcharts: any = _Highcharts; // 不檢查highchart型態
   templateUrl: './all-duration.component.html',
   styleUrls: ['./all-duration.component.css']
 })
-export class AllDurationComponent implements OnInit, AfterViewInit {
+export class AllDurationComponent implements OnChanges, AfterViewInit {
   @ViewChild('allDurationChartTarget')
   allDurationChartTarget: ElementRef;
   chart: any; // Highcharts.ChartObject
-  constructor(elementRef: ElementRef) {}
 
-  ngOnInit() {}
-  ngAfterViewInit() {
+  @Input() datas: any;
+  @Input() chartName: string;
+  @Input() chooseType: string;
+
+  seriesX = [];
+  series = [];
+  constructor() {}
+
+  ngOnChanges() {
+    this.handleSportSummaryArray();
     this.initHchart();
+  }
+  ngAfterViewInit() {
+    this.handleSportSummaryArray();
+    this.initHchart();
+  }
+  handleSportSummaryArray() {
+    this.series = [];
+    this.seriesX = [];
+    this.seriesX = this.datas
+      .filter((value, idx, self) => {
+        return (
+          self.findIndex(
+            _self =>
+              _self.startTime.slice(0, 10) === value.startTime.slice(0, 10)
+          ) === idx
+        );
+      })
+      .map(_serie => _serie.startTime.slice(0, 10))
+      .sort();
+    const sportTypes = [];
+    if (this.chooseType.slice(0, 2) !== '1-') {
+      sportTypes.push('1');
+    } else {
+      this.datas.forEach((value, idx, self) => {
+        if (
+          self.findIndex(
+            _self => _self.activities[0].type === value.activities[0].type
+          ) === idx
+        ) {
+          sportTypes.push(value.activities[0].type);
+        }
+      });
+    }
+
+    sportTypes.sort().map(_type => {
+      const data = [];
+      this.seriesX.forEach(() => data.push(0));
+      this.datas
+        .filter(_data => _data.activities[0].type === _type)
+        .forEach(_data => {
+          const idx = this.seriesX.findIndex(
+            _seriesX => _seriesX === _data.startTime.slice(0, 10)
+          );
+          data[idx] = +_data.activities[0].totalSecond;
+        });
+      let name = '';
+      if (_type === '1') {
+        name = '跑步';
+      } else {
+        name = '自行車';
+      }
+      const serie = { name, data };
+      this.series.push(serie);
+    });
   }
   initHchart() {
     const options: any = {
@@ -31,15 +98,15 @@ export class AllDurationComponent implements OnInit, AfterViewInit {
         type: 'column'
       },
       title: {
-        text: 'Stacked column chart'
+        text: this.chartName
       },
       xAxis: {
-        categories: ['Apples', 'Oranges', 'Pears', 'Grapes', 'Bananas']
+        categories: this.seriesX || []
       },
       yAxis: {
         min: 0,
         title: {
-          text: 'Total fruit consumption'
+          text: '總時間'
         },
         stackLabels: {
           enabled: true,
@@ -75,9 +142,9 @@ export class AllDurationComponent implements OnInit, AfterViewInit {
         enabled: false
       },
       plotOptions: {
-        // series: {
-        //   showInNavigator: false
-        // },
+        series: {
+          showInNavigator: false
+        },
         column: {
           stacking: 'normal',
           dataLabels: {
@@ -86,17 +153,8 @@ export class AllDurationComponent implements OnInit, AfterViewInit {
           }
         }
       },
-      series: [{
-        name: 'John',
-        data: [5, 3, 4, 7, 2]
-      }, {
-        name: 'Jane',
-        data: [2, 2, 3, 2, 1]
-      }, {
-        name: 'Joe',
-        data: [3, 4, 4, 2, 5]
-      }]
+      series: this.series || []
     };
-    this.chart = new Stock.StockChart(this.allDurationChartTarget.nativeElement, options);
+    this.chart = chart(this.allDurationChartTarget.nativeElement, options);
   }
 }

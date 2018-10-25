@@ -1,9 +1,10 @@
 import {
   Component,
-  OnInit,
   AfterViewInit,
   ViewChild,
-  ElementRef
+  ElementRef,
+  Input,
+  OnChanges
 } from '@angular/core';
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
@@ -15,75 +16,109 @@ var Highcharts: any = _Highcharts; // 不檢查highchart型態
   templateUrl: './burn-calories.component.html',
   styleUrls: ['./burn-calories.component.css']
 })
-export class BurnCaloriesComponent implements OnInit, AfterViewInit {
+export class BurnCaloriesComponent implements AfterViewInit, OnChanges {
   @ViewChild('burnCaloriesChartTarget')
   burnCaloriesChartTarget: ElementRef;
   chart1: any; // Highcharts.ChartObject
-  constructor(elementRef: ElementRef) {}
 
-  ngOnInit() {}
-  ngAfterViewInit() {
+  @Input() datas: any;
+  @Input() chartName: string;
+  @Input() chooseType: string;
+  @Input() periodTimes: any;
+  @Input() isLoading: boolean;
+  seriesX = [];
+  series = [];
+  constructor() {}
+
+  ngOnChanges() {
+    this.handleSportSummaryArray();
     this.initHchart();
+  }
+
+  ngAfterViewInit() {
+    this.handleSportSummaryArray();
+    this.initHchart();
+  }
+  handleSportSummaryArray() {
+    this.series = [];
+    this.seriesX = [];
+    this.seriesX = this.periodTimes;
+    const sportTypes = [];
+    if (this.chooseType.slice(0, 2) !== '1-') {
+      sportTypes.push('1');
+    } else {
+      this.datas.forEach((value, idx, self) => {
+        if (
+          self.findIndex(
+            _self => _self.activities[0].type === value.activities[0].type
+          ) === idx
+        ) {
+          sportTypes.push(value.activities[0].type);
+        }
+      });
+    }
+    sportTypes.sort().map(_type => {
+      const data = [];
+      this.seriesX.forEach(() => data.push(0));
+      this.datas
+        .filter(_data => _data.activities[0].type === _type)
+        .forEach(_data => {
+          const idx = this.seriesX.findIndex(
+            _seriesX => _seriesX.slice(0, 10) === _data.startTime.slice(0, 10)
+          );
+          data[idx] = +_data.activities[0].calories;
+        });
+      let name = '';
+      if (_type === '1') {
+        name = '跑步';
+      } else {
+        name = '自行車';
+      }
+      const serie = { name, data };
+      this.series.push(serie);
+    });
   }
   initHchart() {
     const options: any = {
       chart: {
-          type: 'area'
+        type: 'area'
       },
       title: {
-          text: 'Historic and Estimated Worldwide Population Growth by Region'
-      },
-      subtitle: {
-          text: 'Source: Wikipedia.org'
+        text: this.chartName
       },
       xAxis: {
-          categories: ['1750', '1800', '1850', '1900', '1950', '1999', '2050'],
-          tickmarkPlacement: 'on',
-          title: {
-              enabled: false
-          }
+        categories: this.seriesX || [],
+        tickmarkPlacement: 'on',
+        title: {
+          enabled: false
+        }
       },
       yAxis: {
-          title: {
-              text: 'Billions'
-          },
-          labels: {
-              formatter: function () {
-                  return this.value / 1000;
-              }
+        title: {
+          text: '消耗卡路里(Cal)'
+        },
+        labels: {
+          formatter: function() {
+            return this.value;
           }
+        }
       },
       tooltip: {
-          split: true,
-          valueSuffix: ' millions'
+        split: true,
+        valueSuffix: ' Cal'
       },
       plotOptions: {
-          area: {
-              stacking: 'normal',
-              lineColor: '#666666',
-              lineWidth: 1,
-              marker: {
-                  lineWidth: 1,
-                  lineColor: '#666666'
-              }
+        area: {
+          stacking: 'normal',
+          lineColor: '#666666',
+          lineWidth: 1,
+          marker: {
+            lineWidth: 1,
+            lineColor: '#666666'
           }
+        }
       },
-      series: [{
-          name: 'Asia',
-          data: [502, 635, 809, 947, 1402, 3634, 5268]
-      }, {
-          name: 'Africa',
-          data: [106, 107, 111, 133, 221, 767, 1766]
-      }, {
-          name: 'Europe',
-          data: [163, 203, 276, 408, 547, 729, 628]
-      }, {
-          name: 'America',
-          data: [18, 31, 54, 156, 339, 818, 1201]
-      }, {
-          name: 'Oceania',
-          data: [2, 2, 2, 6, 13, 30, 46]
-      }]
+      series: this.series || []
     };
     this.chart1 = chart(this.burnCaloriesChartTarget.nativeElement, options);
   }

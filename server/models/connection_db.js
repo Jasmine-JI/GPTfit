@@ -12,7 +12,8 @@ for (var dev in ifaces) {
 }
 var connectInfo = {};
  var reconnectNum = 0;
-if (address === '192.168.1.235') {
+ console.log('address: ', address);
+if (address === '192.168.1.235' || address === '172.17.0.1') {
   connectInfo = {
     host: "localhost",
     user: "root",
