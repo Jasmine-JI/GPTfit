@@ -171,7 +171,7 @@
       <header class="header header__color ala-dashboard-header">
         <div class="mobile-menu-toggle">
           <div class="main-nav-toggle"
-            [class.minimize-main-nav]="isSideNavOpend"
+            [class.minimize-main-nav]="!isSideNavOpend"
              (click)="toggleSideNav(sideNav)"
           >
             <i class="icon-svg_web-icon_073-level_fold main-nav-toggle-icon"
