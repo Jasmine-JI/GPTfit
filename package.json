@@ -44,7 +44,7 @@
     "@ngx-progressbar/core": "^5.1.1",
     "@ngx-translate/core": "^10.0.2",
     "@ngx-translate/http-loader": "^3.0.1",
-    "@types/highcharts": "^5.0.27",
+    "@types/highcharts": "^5.0.31",
     "@types/lodash": "^4.14.109",
     "@types/query-string": "^6.1.0",
     "body-parser": "^1.18.2",

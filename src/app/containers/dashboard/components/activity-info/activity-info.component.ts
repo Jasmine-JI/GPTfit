@@ -19,7 +19,7 @@ import { HttpParams } from '@angular/common/http';
 import { NgProgress, NgProgressRef } from '@ngx-progressbar/core';
 import { GlobalEventsManager } from '@shared/global-events-manager';
 
-var Highcharts: any = _Highcharts; // 不檢查highchart型態
+const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 @Component({
   selector: 'app-activity-info',
@@ -27,6 +27,7 @@ var Highcharts: any = _Highcharts; // 不檢查highchart型態
   styleUrls: ['./activity-info.component.css', '../../group/group-style.css'],
   encapsulation: ViewEncapsulation.None
 })
+
 export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   isdisplayEcharts = false;
   isdisplayHcharts = true;
@@ -85,6 +86,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     private ngProgress: NgProgress,
     private globalEventsManager: GlobalEventsManager
   ) {
+
     /**
      * 重写内部的方法， 这里是将提示框即十字准星的隐藏函数关闭
      */
@@ -118,6 +120,9 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     this.listenFunc();
     this.globalEventsManager.setFooterRWD(0); // 為了讓footer自己變回去預設值
+    this.chart1.destroy();
+    this.chart2.destroy();
+    this.chart3.destroy();
   }
   getInfo(id) {
     this.isLoading = true;
@@ -380,7 +385,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       'mousemove',
       e => {
         // Do something with 'event'
-        for (let i = 0; i < Highcharts.charts.length; i = i + 1) {
+        for (let i = Highcharts.charts.length - 3; i < Highcharts.charts.length; i = i + 1) {
           const _chart: any = Highcharts.charts[i];
           const event = _chart.pointer.normalize(e); // Find coordinates within the chart
           const point = _chart.series[0].searchPoint(event, true); // Get the hovered point

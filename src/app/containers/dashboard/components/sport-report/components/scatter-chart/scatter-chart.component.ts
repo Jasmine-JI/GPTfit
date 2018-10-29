@@ -1,15 +1,13 @@
 import {
   Component,
-  AfterViewInit,
   ViewChild,
   ElementRef,
   Input,
   OnChanges
 } from '@angular/core';
 import { chart } from 'highcharts';
-import * as _Highcharts from 'highcharts';
-
-var Highcharts: any = _Highcharts; // 不檢查highchart型態
+import * as Highcharts from 'highcharts';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-scatter-chart',
@@ -19,7 +17,7 @@ var Highcharts: any = _Highcharts; // 不檢查highchart型態
     '../../sport-report.component.css'
   ]
 })
-export class ScatterChartComponent implements AfterViewInit, OnChanges {
+export class ScatterChartComponent implements OnChanges {
   @ViewChild('averageHRChartTarget')
   averageHRChartTarget: ElementRef;
   chart1: any; // Highcharts.ChartObject
@@ -34,15 +32,12 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
   periodTimes: any;
   @Input()
   isLoading: boolean;
+  @Input() timeType: number;
   seriesX = [];
   series = [];
   constructor() {}
 
   ngOnChanges() {
-    this.handleSportSummaryArray();
-    this.initHchart();
-  }
-  ngAfterViewInit() {
     this.handleSportSummaryArray();
     this.initHchart();
   }
@@ -120,23 +115,23 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
     sportTypes.sort().map(_type => {
       const data = [];
       if (this.chooseType === '2-4' || this.chooseType === '2-5') {
-        this.seriesX.forEach(() => data.push(3600));
+        this.seriesX.forEach(x => data.push([x, 3600]));
       } else {
-        this.seriesX.forEach(() => data.push(0));
+        this.seriesX.forEach(x => data.push([x, 0]));
       }
       this.datas
         .filter(_data => _data.activities[0].type === _type)
         .forEach(_data => {
           const idx = this.seriesX.findIndex(
-            _seriesX => _seriesX.slice(0, 10) === _data.startTime.slice(0, 10)
+            _seriesX =>
+              _seriesX === moment(_data.endTime.slice(0, 10)).unix() * 1000
           );
-          if (this.chooseType === '2-4' || this.chooseType === '2-5') {
-            data[idx] = (60 / +_data.activities[0][targetName]) * 60;
-          } else {
-            data[idx] = [
-              _data.startTime.slice(0, 10),
-              +_data.activities[0][targetName]
-            ];
+          if (idx > -1) {
+            if (this.chooseType === '2-4' || this.chooseType === '2-5') {
+              data[idx][1] = (60 / +_data.activities[0][targetName]) * 60;
+            } else {
+              data[idx][1] = +_data.activities[0][targetName];
+            }
           }
         });
       let name = '';
@@ -220,6 +215,8 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
       toolTipUnit = ' ';
     }
     const chooseType = this.chooseType;
+    const timeType = this.timeType;
+
     const options: any = {
       chart: {
         type: 'scatter',
@@ -229,7 +226,13 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
         text: this.chartName
       },
       xAxis: {
-        categories: this.seriesX || [],
+        type: 'datetime',
+        dateTimeLabelFormats: {
+          day: '%m/%d',
+          week: '%m/%d',
+          month: '%Y/%m',
+          year: '%Y'
+        },
         title: {
           enabled: true,
           text: '時間'
@@ -249,12 +252,19 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
 
             yVal = `${timeMin}'${timeSecond}"`;
           }
-
+          if (timeType === 2 || timeType === 3) {
+            const startDay = moment(this.x - (86400 * 6 * 1000)).format('YYYY/MM/DD');
+            const endDay = moment(this.x).format('YYYY/MM/DD');
+            return `${startDay}~${endDay}<br>
+      <span style="color:${this.point.color}">●</span> ${
+              this.series.name
+              }: ${yVal}${toolTipUnit}<br/>`;
+          }
           return (
             '<b>' +
             this.series.name +
             '</b><br/>' +
-            this.x +
+            moment(this.x).format('YYYY/MM/DD') +
             '<br> ' +
             yVal +
             toolTipUnit
@@ -274,9 +284,7 @@ export class ScatterChartComponent implements AfterViewInit, OnChanges {
         x: 0,
         y: 0,
         floating: true,
-        backgroundColor:
-          (Highcharts.theme && Highcharts.theme.legendBackgroundColor) ||
-          '#FFFFFF',
+        backgroundColor: '#FFFFFF',
         borderWidth: 1
       },
       plotOptions: {

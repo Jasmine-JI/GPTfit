@@ -170,10 +170,10 @@ export class SportReportComponent implements OnInit {
     this.nestedDataSource = new MatTreeNestedDataSource();
 
     database.dataChange.subscribe(data => (this.nestedDataSource.data = data));
-    this.filterEndTime = moment().format('YYYY-MM-DD');
+    this.filterEndTime = moment().format('YYYY/MM/DD');
     this.filterStartTime = moment()
       .subtract(7, 'days')
-      .format('YYYY-MM-DD');
+      .format('YYYY/MM/DD');
   }
 
   hasNestedChild = (_: number, nodeData: FileNode) => !nodeData.type;
@@ -243,47 +243,42 @@ export class SportReportComponent implements OnInit {
     }
     while (moment.unix(stamp).format('YYYY-MM-DD') !== stopTime) {
       if (this.timeType === 2 || this.timeType === 3) {
-        this.periodTimes.push(
-          `${moment.unix(stamp).format('YYYY-MM-DD')}~${moment
-            .unix(stamp + 86400 * 6)
-            .format('YYYY-MM-DD')}`
-        );
+        this.periodTimes.push((stamp + 86400 * 6) * 1000);
         stamp = stamp + 86400 * 7;
       } else {
-        this.periodTimes.push(moment.unix(stamp).format('YYYY-MM-DD'));
+        this.periodTimes.push(stamp * 1000);
         stamp = stamp + 86400;
       }
     }
-
   }
   changeGroupInfo({ index }) {
     this.timeType = index;
-    this.filterEndTime = moment().format('YYYY-MM-DD');
+    this.filterEndTime = moment().format('YYYY/MM/DD');
     const day = moment().format('d');
     if (this.timeType === 0) {
       this.filterStartTime = moment()
         .subtract(7, 'days')
-        .format('YYYY-MM-DD');
+        .format('YYYY/MM/DD');
     } else if (this.timeType === 1) {
       this.filterStartTime = moment()
         .subtract(30, 'days')
-        .format('YYYY-MM-DD');
+        .format('YYYY/MM/DD');
     } else if (this.timeType === 2) {
       this.filterStartTime = moment()
         .subtract(day, 'days')
         .subtract(26, 'weeks')
-        .format('YYYY-MM-DD');
+        .format('YYYY/MM/DD');
       this.filterEndTime = moment()
         .add(6 - +day, 'days')
-        .format('YYYY-MM-DD');
+        .format('YYYY/MM/DD');
     } else {
       this.filterStartTime = moment()
         .subtract(day, 'days')
         .subtract(52, 'weeks')
-        .format('YYYY-MM-DD');
+        .format('YYYY/MM/DD');
       this.filterEndTime = moment()
         .add(6 - +day, 'days')
-        .format('YYYY-MM-DD');
+        .format('YYYY/MM/DD');
     }
     this.generateTimePeriod();
     let filterEndTime = moment().format('YYYY-MM-DDTHH:mm:ss+08:00');

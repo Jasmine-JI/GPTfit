@@ -1,27 +1,23 @@
 import {
   Component,
-  AfterViewInit,
   ViewChild,
   ElementRef,
   Input,
   OnChanges,
-  SimpleChanges
+  SimpleChanges,
+  OnDestroy
 } from '@angular/core';
-import { chart } from 'highcharts';
-import * as _Highcharts from 'highcharts';
+import * as Highcharts from 'highcharts';
 import * as HighchartsNoData from 'highcharts-no-data-to-display';
 import { ReportService } from '../../../../services/report.service';
 import * as moment from 'moment';
-
-var Highcharts: any = _Highcharts; // 不檢查highchart型態
-HighchartsNoData(Highcharts);
 
 @Component({
   selector: 'app-activity-levels',
   templateUrl: './activity-levels.component.html',
   styleUrls: ['./activity-levels.component.css']
 })
-export class ActivityLevelsComponent implements AfterViewInit, OnChanges {
+export class ActivityLevelsComponent implements OnChanges, OnDestroy {
   @ViewChild('activityLevelsChartTarget')
   activityLevelsChartTarget: ElementRef;
   chart1: any; // Highcharts.ChartObject
@@ -34,15 +30,22 @@ export class ActivityLevelsComponent implements AfterViewInit, OnChanges {
   seriesX = [];
   series = [];
 
-  constructor(private reportService: ReportService) {}
+  constructor(private reportService: ReportService) {
+    HighchartsNoData(Highcharts);
+    Highcharts.setOptions({
+      global: {
+        useUTC: false
+      }
+    });
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     this.handleSportSummaryArray();
     this.initHchart();
   }
-  ngAfterViewInit() {
-    this.handleSportSummaryArray();
-    this.initHchart();
+
+  ngOnDestroy () {
+    this.chart1.destroy();
   }
   handleSportSummaryArray() {
     this.series = [];
@@ -60,14 +63,17 @@ export class ActivityLevelsComponent implements AfterViewInit, OnChanges {
     });
     sportTypes.sort().map(_type => {
       const data = [];
-      this.seriesX.forEach(() => data.push(0));
+      this.seriesX.forEach((x) => data.push([x, 0]));
       this.datas
         .filter(_data => _data.activities[0].type === _type)
         .forEach(_data => {
           const idx = this.seriesX.findIndex(
-            _seriesX => _seriesX.slice(0, 10) === _data.startTime.slice(0, 10)
-          );
-          data[idx] = +_data.activities[0].totalActivities;
+            _seriesX => {
+              return _seriesX === moment(_data.endTime.slice(0, 10)).unix() * 1000;
+            });
+          if (idx > -1) {
+            data[idx][1] = +_data.activities[0].totalActivities;
+          }
         });
       let name = '';
       if (_type === '1') {
@@ -85,32 +91,24 @@ export class ActivityLevelsComponent implements AfterViewInit, OnChanges {
       title: {
         text: this.chartName
       },
+      chart: {
+        zoomType: 'x'
+      },
       xAxis: {
-        categories: this.seriesX || [],
-        labels: {
-          formatter: function () {
-            const _day = moment(this.value).format('d');
-            if (timeType === 1) {
-              if (_day === '0') {
-                return this.value;
-              } else {
-                return '';
-              }
-            } else if (timeType === 2 || timeType === 3) {
-              const startMonth = this.value.slice(5, 7);
-              const startDay = this.value.slice(8, 10);
-
-              const endMonth = this.value.slice(16, 18);
-
-              if (startMonth !== endMonth) {
-                return endMonth;
-              } else if (startDay === '01') {
-                return startMonth;
-              }
-            } else {
-              return this.value;
-            }
-          }
+        type: 'datetime',
+        dateTimeLabelFormats: {
+          day: '%m/%d',
+          week: '%m/%d',
+          month: '%Y/%m',
+          year: '%Y'
+        }
+      },
+      tooltip: {
+        type: 'datetime',
+        dateTimeLabelFormats: {
+          day: '%Y-%m-%d',
+          month: '%Y-%M',
+          year: '%Y'
         }
       },
       yAxis: {
@@ -153,7 +151,15 @@ export class ActivityLevelsComponent implements AfterViewInit, OnChanges {
         ]
       }
     };
-    this.chart1 = chart(this.activityLevelsChartTarget.nativeElement, options);
+    if (this.timeType === 2 || this.timeType === 3) {
+        options.tooltip.formatter =  function() {
+        const startDay = moment(this.x - (86400 * 6 * 1000)).format('YYYY/MM/DD');
+        const endDay = moment(this.x).format('YYYY/MM/DD');
+        return `${startDay}~${endDay}<br>
+        <span style="color:${this.point.color}">●</span> ${this.series.name}: <b>${this.point.y}</b><br/>`;
+      };
+    }
+    this.chart1 = Highcharts.chart(this.activityLevelsChartTarget.nativeElement, options);
 
   }
 }

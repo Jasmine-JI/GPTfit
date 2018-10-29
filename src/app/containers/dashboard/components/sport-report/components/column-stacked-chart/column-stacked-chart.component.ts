@@ -1,22 +1,20 @@
 import {
   Component,
-  AfterViewInit,
   ViewChild,
   ElementRef,
   Input,
   OnChanges
 } from '@angular/core';
-import * as _Highcharts from 'highcharts';
+import * as Highcharts from 'highcharts';
 import { chart } from 'highcharts';
-
-var Highcharts: any = _Highcharts; // 不檢查highchart型態
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-column-stacked-chart',
   templateUrl: './column-stacked-chart.component.html',
   styleUrls: ['./column-stacked-chart.component.css', '../../sport-report.component.css']
 })
-export class ColumnstackedChartComponent implements AfterViewInit, OnChanges {
+export class ColumnstackedChartComponent implements OnChanges {
   @ViewChild('totalDistanceChartTarget')
   totalDistanceChartTarget: ElementRef;
   chart: any; // Highcharts.ChartObject
@@ -25,16 +23,19 @@ export class ColumnstackedChartComponent implements AfterViewInit, OnChanges {
   @Input() chooseType: string;
   @Input() periodTimes: any;
   @Input() isLoading: boolean;
+  @Input() timeType: number;
   seriesX = [];
   series = [];
 
-  constructor() {}
+  constructor() {
+    Highcharts.setOptions({
+      global: {
+        useUTC: false
+      }
+    });
+  }
 
   ngOnChanges() {
-    this.handleSportSummaryArray();
-    this.initHchart();
-  }
-  ngAfterViewInit() {
     this.handleSportSummaryArray();
     this.initHchart();
   }
@@ -73,14 +74,16 @@ export class ColumnstackedChartComponent implements AfterViewInit, OnChanges {
     }
     sportTypes.sort().map(_type => { // 加入sort 是為了按照type排序
       const data = [];
-      this.seriesX.forEach(() => data.push(0));
+      this.seriesX.forEach(x => data.push([x, 0]));
       this.datas
         .filter(_data => _data.activities[0].type === _type)
         .forEach(_data => {
           const idx = this.seriesX.findIndex(
-            _seriesX => _seriesX.slice(0, 10) === _data.startTime.slice(0, 10)
+            _seriesX => _seriesX === moment(_data.endTime.slice(0, 10)).unix() * 1000
           );
-          data[idx] = +_data.activities[0][targetName];
+          if (idx > -1) {
+            data[idx][1] = +_data.activities[0][targetName];
+          }
         });
       let name = '';
       if (_type === '1') {
@@ -119,7 +122,7 @@ export class ColumnstackedChartComponent implements AfterViewInit, OnChanges {
   initHchart() {
     let yAxisText = '';
     let toolTipUnit = '';
-    const chooseType = this.chooseType;
+    // const chooseType = this.chooseType;
     const convertUnit = this.convertUnit.bind(this);
     if (this.chooseType === '1-2' ||
       this.chooseType === '2-1' || this.chooseType === '3-1' ||
@@ -132,13 +135,20 @@ export class ColumnstackedChartComponent implements AfterViewInit, OnChanges {
     }
     const options: any = {
       chart: {
-        type: 'column'
+        type: 'column',
+        zoomType: 'x'
       },
       title: {
         text: this.chartName
       },
       xAxis: {
-        categories: this.seriesX || []
+        type: 'datetime',
+        dateTimeLabelFormats: {
+          day: '%m/%d',
+          week: '%m/%d',
+          month: '%Y/%m',
+          year: '%Y'
+        }
       },
       yAxis: {
         min: 0,
@@ -152,7 +162,7 @@ export class ColumnstackedChartComponent implements AfterViewInit, OnChanges {
         verticalAlign: 'top',
         y: 25,
         floating: true,
-        backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+        backgroundColor: 'white',
         borderColor: '#CCC',
         borderWidth: 1,
         shadow: false,
@@ -160,7 +170,7 @@ export class ColumnstackedChartComponent implements AfterViewInit, OnChanges {
       },
       tooltip: {
         formatter: function() {
-          return '<b>' + this.x + '</b><br/>' + this.series.name + ': ' + convertUnit(this.y) + toolTipUnit;
+          return '<b>' + moment(this.x).format('YYYY/MM/DD') + '</b><br/>' + this.series.name + ': ' + convertUnit(this.y) + toolTipUnit;
         }
       },
       navigator: {
@@ -177,14 +187,7 @@ export class ColumnstackedChartComponent implements AfterViewInit, OnChanges {
           showInNavigator: false
         },
         column: {
-          stacking: 'normal',
-          // dataLabels: {
-          //   enabled: true,
-          //   color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
-          //   formatter: function () {
-          //     return convertUnit(this.y) + toolTipUnit;
-          //   }
-          // }
+          stacking: 'normal'
         }
       },
       series: this.series || []
@@ -206,6 +209,14 @@ export class ColumnstackedChartComponent implements AfterViewInit, OnChanges {
           const distance = this.value / 1000;
           return distance + ' km';
         }
+      };
+    }
+    if (this.timeType === 2 || this.timeType === 3) {
+      options.tooltip.formatter =  function() {
+        const startDay = moment(this.x - 86400 * 6 * 1000).format('YYYY/MM/DD');
+        const endDay = moment(this.x).format('YYYY/MM/DD');
+        return `${startDay}~${endDay}<br>
+        <span style="color:${this.point.color}">●</span> ${this.series.name}: ${convertUnit(this.point.y)}${toolTipUnit}<br/>`;
       };
     }
     this.chart = chart(
