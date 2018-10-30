@@ -9,7 +9,6 @@ import {
 } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import * as HighchartsNoData from 'highcharts-no-data-to-display';
-import { ReportService } from '../../../../services/report.service';
 import * as moment from 'moment';
 
 @Component({
@@ -30,7 +29,7 @@ export class ActivityLevelsComponent implements OnChanges, OnDestroy {
   seriesX = [];
   series = [];
 
-  constructor(private reportService: ReportService) {
+  constructor() {
     HighchartsNoData(Highcharts);
     Highcharts.setOptions({
       global: {
@@ -86,7 +85,6 @@ export class ActivityLevelsComponent implements OnChanges, OnDestroy {
     });
   }
   initHchart() {
-    const timeType = this.timeType;
     const options: any = {
       title: {
         text: this.chartName

@@ -179,10 +179,10 @@ export class SportReportComponent implements OnInit {
 
   hasNestedChild = (_: number, nodeData: FileNode) => !nodeData.type;
   ngOnInit() {
-    const filterEndTime = moment().format('YYYY-MM-DDTHH:mm:ss+08:00');
+    const filterEndTime = moment().format('YYYY-MM-DDT23:59:59+08:00');
     const filterStartTime = moment()
       .subtract(6, 'days')
-      .format('YYYY-MM-DDTHH:mm:ss+08:00');
+      .format('YYYY-MM-DDT00:00:00+08:00');
     this.generateTimePeriod();
     const body = {
       token: this.utils.getToken(),
@@ -282,18 +282,18 @@ export class SportReportComponent implements OnInit {
         .format('YYYY/MM/DD');
     }
     this.generateTimePeriod();
-    let filterEndTime = moment().format('YYYY-MM-DDTHH:mm:ss+08:00');
+    let filterEndTime = moment().format('YYYY-MM-DDT23:59:59+08:00');
 
     let body = {};
     let filterStartTime = '';
     if (this.timeType === 0) {
       filterStartTime = moment()
         .subtract(6, 'days')
-        .format('YYYY-MM-DDTHH:mm:ss+08:00');
+        .format('YYYY-MM-DDT00:00:00+08:00');
     } else if (this.timeType === 1) {
       filterStartTime = moment()
         .subtract(29, 'days')
-        .format('YYYY-MM-DDTHH:mm:ss+08:00');
+        .format('YYYY-MM-DDT00:00:00+08:00');
     } else if (this.timeType === 2) {
       filterStartTime = moment()
         .subtract(day, 'days')
