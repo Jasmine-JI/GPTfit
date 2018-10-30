@@ -2,9 +2,12 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({name: 'sportDate'})
 export class SportDatePipe implements PipeTransform {
-  transform(value: string, args: string[]): any {
-    const dateArr = value.split('');
-    return dateArr[0] + dateArr[1] + dateArr[2] + dateArr[3] + '/'
-      + dateArr[4] + dateArr[5] + '/' + dateArr[6] + dateArr[7];
+  transform(value: string, args: any): any {
+    const type = args;
+    if (type === 'date') {
+      return value.slice(0, 10);
+    } else {
+      return value.slice(11, 19);
+    }
   }
 }

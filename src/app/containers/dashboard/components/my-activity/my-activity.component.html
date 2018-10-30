@@ -17,22 +17,55 @@
   matSort #sortTable="matSort"
  (matSortChange)="changeSort($event)"
 >
+  <ng-container matColumnDef="typeIcon">
+    <mat-header-cell *matHeaderCellDef disableClear="true">
+    </mat-header-cell>
+    <mat-cell *matCellDef="let row">
+      <i *ngIf=" row.activityInfoLayer.type === '1'"
+        class="icon-svg_web-icon_083-run ala-activity-icon"
+      ></i>
+      <i *ngIf=" row.activityInfoLayer.type === '2'"
+        class="icon-svg_web-icon_084-cycle ala-activity-icon"
+      ></i>
+      <i *ngIf=" row.activityInfoLayer.type === '3'"
+        class="icon-svg_web-icon_086-weight_training ala-activity-icon"
+      ></i>
+      <i *ngIf=" row.activityInfoLayer.type === '4'"
+        class="icon-svg_web-icon_085-swim ala-activity-icon"
+      ></i>
+      <i *ngIf=" row.activityInfoLayer.type === '5'"
+        class="icon-svg_web-icon_087-aerobic ala-activity-icon"
+      ></i>
+      <i *ngIf=" row.activityInfoLayer.type === '6'"
+        class="icon-svg_web-icon_088-row ala-activity-icon"
+      ></i>
+    </mat-cell>
+  </ng-container>
   <ng-container matColumnDef="date">
     <mat-header-cell *matHeaderCellDef mat-sort-header>日期</mat-header-cell>
-    <mat-cell *matCellDef="let row">{{ row.startTime | sportDate }}</mat-cell>
+    <mat-cell *matCellDef="let row">
+      <div>
+        <div>
+          {{ row.activityInfoLayer.startTime | sportDate: 'date' }}
+        </div>
+        <div style="color: #999;">
+          {{ row.activityInfoLayer.startTime | sportDate: 'time' }}
+        </div>
+      </div>
+    </mat-cell>
   </ng-container>
   <ng-container matColumnDef="type">
     <mat-header-cell *matHeaderCellDef disableClear="true">
       運動類別
     </mat-header-cell>
-    <mat-cell *matCellDef="let row">{{ row.type | sportType }}</mat-cell>
+    <mat-cell *matCellDef="let row">{{ row.activityInfoLayer.type | sportType }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="bpm">
     <mat-header-cell *matHeaderCellDef disableClear="true">
       平均心率
     </mat-header-cell>
     <mat-cell *matCellDef="let row">
-      {{ row.avgHeartRateBpm }}
+      {{ row.activityInfoLayer.avgHeartRateBpm }}
       <span style="color: #919191">bpm</span>
     </mat-cell>
   </ng-container>
@@ -41,7 +74,7 @@
       平均配速
     </mat-header-cell>
     <mat-cell *matCellDef="let row">
-      {{ row.avgSpeed }}
+      {{ row.activityInfoLayer.avgSpeed }}
       <span style="color: #919191">km/h</span>
     </mat-cell>
   </ng-container>
@@ -49,17 +82,17 @@
     <mat-header-cell *matHeaderCellDef disableClear="true">
       卡路里
     </mat-header-cell>
-    <mat-cell *matCellDef="let row">
-      {{ row.calories }}
+    <!-- <mat-cell *matCellDef="let row">
+      {{ row.activityInfoLayer.calories }}
       <span style="color: #919191">cal</span>
-    </mat-cell>
+    </mat-cell> -->
   </ng-container>
   <ng-container matColumnDef="distance">
     <mat-header-cell *matHeaderCellDef disableClear="true">
       總距離
     </mat-header-cell>
     <mat-cell *matCellDef="let row">
-      {{ row.totalDistanceMeters }}
+      {{ row.activityInfoLayer.totalDistanceMeters / 1000 }}
       <span style="color: #919191">km</span>
     </mat-cell>
   </ng-container>
@@ -67,15 +100,15 @@
     <mat-header-cell *matHeaderCellDef disableClear="true">
       消耗時間
     </mat-header-cell>
-    <mat-cell *matCellDef="let row">{{ row.totalSecond | time }}</mat-cell>
+    <mat-cell *matCellDef="let row">{{ row.activityInfoLayer.totalSecond | sportTime }}</mat-cell>
   </ng-container>
   <mat-header-row
-    *matHeaderRowDef="['date', 'type', 'bpm', 'speed', 'calories', 'distance', 'time']"
+    *matHeaderRowDef="['typeIcon','date', 'type', 'bpm', 'speed', 'distance', 'time']"
   >
   </mat-header-row>
   <mat-row
-    *matRowDef="let logRow; columns: ['date', 'type', 'bpm', 'speed', 'calories', 'distance', 'time']"
-    (click)="goDetail(logRow.startTime)"
+    *matRowDef="let logRow; columns: ['typeIcon', 'date', 'type', 'bpm', 'speed', 'distance', 'time']"
+    (click)="goDetail(logRow.fileInfo.fileId)"
   >
   </mat-row>
 </mat-table>

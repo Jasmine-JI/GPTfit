@@ -62,6 +62,7 @@ import { ActivityService } from './services/activity.service';
 import { MyActivityComponent } from './components/my-activity/my-activity.component';
 import { SportTypePipe } from './pipes/sport-type.pipe';
 import { SportDatePipe } from './pipes/sport-date.pipe';
+import { SportTimePipe } from './pipes/sport-time.pipe';
 import { NgProgressModule } from '@ngx-progressbar/core';
 import { SportReportComponent } from './components/sport-report/sport-report.component';
 import { ActivityLevelsComponent } from './components/sport-report/components/activity-levels/activity-levels.component';
@@ -150,6 +151,7 @@ import { ReportService } from './services/report.service';
     MyActivityComponent,
     SportTypePipe,
     SportDatePipe,
+    SportTimePipe,
     SportReportComponent,
     ActivityLevelsComponent,
     AllDurationComponent,

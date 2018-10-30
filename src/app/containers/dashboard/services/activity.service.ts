@@ -11,8 +11,11 @@ export class ActivityService {
     return this.http.get<any>('https://data.jianshukeji.com/jsonp?filename=json/activity.json');
   }
 
-  fetchSportList(params) {
-    return this.http.get<any>(API_SERVER + 'sport/sportList', { params });
+  // fetchSportList(params) {
+  //   return this.http.get<any>(API_SERVER + 'sport/sportList', { params });
+  // }
+  fetchSportList(body) {
+    return this.http.post<any>('/api/v2/sport/getSportList', body);
   }
   fetchSportListDetail(params) {
     return this.http.get<any>(API_SERVER + 'sport/sportListDetail', { params });

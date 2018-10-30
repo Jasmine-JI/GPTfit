@@ -9,3 +9,9 @@
   width: 140px;
   height: 38px;
 }
+.mat-column-typeIcon {
+  max-width: 80px;
+}
+.ala-activity-icon {
+  font-size: 20px;
+}
