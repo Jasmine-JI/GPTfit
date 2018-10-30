@@ -34,9 +34,7 @@
               "node_modules/popper.js/dist/umd/popper.min.js",
               "node_modules/bootstrap/dist/js/bootstrap.min.js",
               "node_modules/leaflet/dist/leaflet.js",
-              "node_modules/leaflet-omnivore/leaflet-omnivore.min.js",
-              "node_modules/echarts/dist/echarts.min.js",
-              "node_modules/echarts/dist/extension/bmap.min.js"
+              "node_modules/leaflet-omnivore/leaflet-omnivore.min.js"
             ]
           },
           "configurations": {
@@ -159,9 +157,7 @@
               "node_modules/popper.js/dist/umd/popper.min.js",
               "node_modules/bootstrap/dist/js/bootstrap.min.js",
               "node_modules/leaflet/dist/leaflet.js",
-              "node_modules/leaflet-omnivore/leaflet-omnivore.min.js",
-              "node_modules/echarts/dist/echarts.min.js",
-              "node_modules/echarts/dist/extension/bmap.min.js"
+              "node_modules/leaflet-omnivore/leaflet-omnivore.min.js"
             ],
             "styles": [
               "src/icon.css",

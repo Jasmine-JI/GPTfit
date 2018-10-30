@@ -8,16 +8,13 @@ import {
   OnDestroy,
   ViewEncapsulation
 } from '@angular/core';
-// import { EChartOption } from 'echarts';
-import { chartOption, basicAreaOption, rainOption } from './testDatas';
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
-import { testData } from './testData1';
 import { ActivityService } from '../../services/activity.service';
 import { ActivatedRoute } from '@angular/router';
-import { HttpParams } from '@angular/common/http';
 import { NgProgress, NgProgressRef } from '@ngx-progressbar/core';
 import { GlobalEventsManager } from '@shared/global-events-manager';
+import { UtilsService } from '@shared/services/utils.service';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -29,18 +26,11 @@ const Highcharts: any = _Highcharts; // 不檢查highchart型態
 })
 
 export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
-  isdisplayEcharts = false;
   isdisplayHcharts = true;
-
-  echartsIntance: any;
-
   chartLoading = false;
   basicLoading = false;
   rainLoading = false;
 
-  chartOption = chartOption;
-  basicAreaOption = basicAreaOption;
-  rainOption = rainOption;
   options: Object;
   seriesIdx = 0;
   @ViewChild('speedChartTarget')
@@ -64,6 +54,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   infoDate: string;
   activityPoints: any;
   isLoading = false;
+  token: string;
   _options = {
     min: 8,
     max: 100,
@@ -79,7 +70,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   };
   progressRef: NgProgressRef;
   constructor(
-    elementRef: ElementRef,
+    private utils: UtilsService,
     private renderer: Renderer2,
     private activityService: ActivityService,
     private route: ActivatedRoute,
@@ -112,6 +103,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     this.globalEventsManager.setFooterRWD(2); // 為了讓footer長高85px
     const fieldId = this.route.snapshot.paramMap.get('fileId');
     this.progressRef = this.ngProgress.ref();
+    this.token = this.utils.getToken();
     this.getInfo(fieldId);
   }
   ngAfterViewInit() {
@@ -128,18 +120,16 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isLoading = true;
 
     this.progressRef.start();
-    let params = new HttpParams();
-    params = params.set('fileId', id);
-    this.activityService.fetchSportListDetail(params).subscribe(res => {
+    const body = {
+      token: this.token,
+      fileId: id
+    };
+    this.activityService.fetchSportListDetail(body).subscribe(res => {
+      // console.log('res: ', res);
       this.activityInfo = res.activityInfoLayer;
       this.activityPoints = res.activityPointLayer;
       this.infoDate = this.handleDate(this.activityInfo.startTime);
       this.initHchart();
-      const { distances, speeds, elevations, heartRates } = this.activityPoints;
-      this.rainOption.series[0].data = heartRates;
-      this.rainOption.series[1].data = speeds;
-      this.rainOption.xAxis[0].data = distances;
-      this.rainOption.xAxis[1].data = distances;
       this.progressRef.complete();
       this.isLoading = false;
     });
@@ -153,23 +143,40 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       dateArr[3] +
       '年' +
       ' ' +
-      dateArr[4] +
       dateArr[5] +
-      '月' +
       dateArr[6] +
-      dateArr[7] +
-      '日' +
-      ' @ ' +
+      '月' +
       dateArr[8] +
       dateArr[9] +
-      ':' +
-      dateArr[10] +
+      '日' +
+      ' @ ' +
       dateArr[11] +
-      ' +08:00';
+      dateArr[12] +
+      ':' +
+      dateArr[14] +
+      dateArr[15] +
+      dateArr[16] +
+      dateArr[17] +
+      dateArr[18] +
+      dateArr[19] +
+      dateArr[20] +
+      dateArr[21] +
+      dateArr[22] +
+      dateArr[23] +
+      dateArr[24];
     return date;
   }
   initHchart() {
-    const { distances, speeds, elevations, heartRates } = this.activityPoints;
+    const distances = [],
+          speeds = [],
+          elevations = [],
+          heartRates = [];
+    this.activityPoints.forEach(_point => {
+      distances.push(+_point.distanceMeters);
+      speeds.push(+_point.speed);
+      elevations.push(+_point.altitudeMeters);
+      heartRates.push(+_point.heartRateBpm);
+    });
     this.dataset1 = {
       name: 'Speed',
       data: speeds,
@@ -400,7 +407,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     const thisChart = this[`chart${num}`];
     if (e.trigger !== 'syncExtremes') {
       Highcharts.each(Highcharts.charts, function(_chart) {
-        if (_chart !== thisChart) {
+        if (_chart !== thisChart && _chart) {
           if (_chart.xAxis[0].setExtremes) {
             _chart.xAxis[0].setExtremes(e.min, e.max, undefined, false, {
               trigger: 'syncExtremes'
@@ -409,57 +416,5 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       });
     }
-  }
-  toogleEChart() {
-    this.isdisplayEcharts = !this.isdisplayEcharts;
-  }
-  toogleHChart() {
-    this.isdisplayHcharts = !this.isdisplayHcharts;
-    if (this.isdisplayHcharts) {
-      // this.initHchart();
-      setTimeout(() => this.initHchart(), 10000);
-    }
-  }
-  /**
-   * 获取echarts对象
-   * @param ec echarts对象
-   */
-  onChartInit(ec) {
-    this.echartsIntance = ec;
-  }
-
-  switch(_loading) {
-    this[_loading] = !this[_loading];
-  }
-  addSeries(_num) {
-    const power = +_num > 1 ? 3 : 1;
-    this[`chart${_num}`].addSeries({
-      name: 'test',
-      data: [
-        Math.floor(Math.random() * 10 ** power),
-        Math.floor(Math.random() * 10 ** power),
-        Math.floor(Math.random() * 10 ** power),
-        Math.floor(Math.random() * 10 ** power),
-        Math.floor(Math.random() * 10 ** power),
-        Math.floor(Math.random() * 10 ** power),
-        Math.floor(Math.random() * 10 ** power)
-      ]
-    });
-  }
-
-  addPoint() {
-    if (this.chart1.series[1]) {
-      this.chart1.series[1].addPoint(Math.floor(Math.random() * 10));
-    }
-  }
-  removePoint() {
-    if (this.chart1.series[1]) {
-      this.chart1.series[1].points[
-        this.chart1.series[1].points.length - 1
-      ].remove();
-    }
-  }
-  removeSeries(num) {
-    this[`chart${num}`].series[this.chart1.series.length - 1].remove(false);
   }
 }

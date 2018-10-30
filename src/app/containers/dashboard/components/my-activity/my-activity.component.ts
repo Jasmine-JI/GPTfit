@@ -101,7 +101,7 @@ export class MyActivityComponent implements OnInit, OnDestroy {
     // );
     // params = params.set('sort', sort);
     const body = {
-      token: '8bb87a0a79a8568a5cbfb73b597eb484',
+      token: this.token,
       type: '9',
       page: this.currentPage && this.currentPage.pageIndex.toString() || '0',
       pageCounts: this.currentPage && this.currentPage.pageSize.toString() || '10',

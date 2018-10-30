@@ -57,12 +57,12 @@ import { InnerSettingsComponent } from './components/inner-settings/inner-settin
 import { PeopleSelectorWinComponent } from './components/people-selector-win/people-selector-win.component';
 import { DashboardGuard } from './guards/dashboard-guard';
 import { ActivityInfoComponent } from './components/activity-info/activity-info.component';
-import { NgxEchartsModule } from 'ngx-echarts';
 import { ActivityService } from './services/activity.service';
 import { MyActivityComponent } from './components/my-activity/my-activity.component';
 import { SportTypePipe } from './pipes/sport-type.pipe';
 import { SportDatePipe } from './pipes/sport-date.pipe';
 import { SportTimePipe } from './pipes/sport-time.pipe';
+import { SportPacePipe } from './pipes/sport-pace.pipe';
 import { NgProgressModule } from '@ngx-progressbar/core';
 import { SportReportComponent } from './components/sport-report/sport-report.component';
 import { ActivityLevelsComponent } from './components/sport-report/components/activity-levels/activity-levels.component';
@@ -93,7 +93,6 @@ import { ReportService } from './services/report.service';
     SharedPipes,
     ReactiveFormsModule,
     SharedModule,
-    NgxEchartsModule,
     NgProgressModule
   ],
   providers: [
@@ -152,6 +151,7 @@ import { ReportService } from './services/report.service';
     SportTypePipe,
     SportDatePipe,
     SportTimePipe,
+    SportPacePipe,
     SportReportComponent,
     ActivityLevelsComponent,
     AllDurationComponent,

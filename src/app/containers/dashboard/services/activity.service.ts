@@ -17,7 +17,10 @@ export class ActivityService {
   fetchSportList(body) {
     return this.http.post<any>('/api/v2/sport/getSportList', body);
   }
-  fetchSportListDetail(params) {
-    return this.http.get<any>(API_SERVER + 'sport/sportListDetail', { params });
+  fetchSportListDetail(body) {
+    return this.http.post<any>('/api/v2/sport/getSportListDetail', body);
   }
+  // fetchSportListDetail(params) {
+  //   return this.http.get<any>(API_SERVER + 'sport/sportListDetail', { params });
+  // }
 }
