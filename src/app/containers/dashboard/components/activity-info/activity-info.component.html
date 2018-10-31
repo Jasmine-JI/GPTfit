@@ -173,79 +173,421 @@
   </ng-container>
   <mat-tab-group>
     <mat-tab label="詳細資訊">
-      <div class="activity-info__area">
-        <div class="ala-dashboard-title activty-title">
-          時間
-        </div>
-        <div class="activity-info__area--block">
-          <div>
-            {{activityInfo?.totalSecond | sportTime}}
+      <div class="d-flex" style="flex-wrap: wrap;">
+        <div class="activity-info__area">
+          <div class="ala-dashboard-title activty-title">
+            計時
           </div>
-          <div>
-            總時間
-          </div>
-        </div>
-        <div class="activity-info__area--block">
-          <div>
-            1:02:37
-          </div>
-          <div>
-            移動時間
-          </div>
-        </div>
-        <div class="activity-info__area--block">
-          <div>
-            2:35
-          </div>
-          <div>
-            休息時間
-          </div>
-        </div>
-      </div>
-      <div class="activity-info__area">
-        <div class="ala-dashboard-title activty-title">
-          速度
-        </div>
-        <div class="activity-info__area--block">
-          <div>
-            {{activityInfo?.avgSpeed | sportPace: activityInfo?.type}}
-          </div>
-          <div>
-            <span *ngIf="activityInfo?.type === '1'">
-              平均1km配速
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.totalSecond | sportTime}}
+            </div>
+            <span class="data-label">
+              總計時
             </span>
-            <span *ngIf="activityInfo?.type === '4'">
-              平均1m配速
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.totalActivitySecond | sportTime}}
+            </div>
+            <span class="data-label">
+              移動時間
             </span>
-            <span *ngIf="activityInfo?.type !== '4' && activityInfo?.type !== '1'">
-              平均1hr配速
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.totalRestSecond | sportTime}}
+            </div>
+            <span class="data-label">
+              休息時間
             </span>
           </div>
         </div>
-        <div class="activity-info__area--block">
-          <div>
-            {{activityInfo?.maxSpeed | sportPace: activityInfo?.type}}
+        <div class="activity-info__area"
+          *ngIf="activityInfo?.type !== '2' && activityInfo?.type !== '3' && activityInfo?.type !== '5'"
+        >
+          <div class="ala-dashboard-title activty-title">
+            配速
           </div>
-          <div>
-            最佳配速
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.avgSpeed | sportPace: activityInfo?.type}}
+            </div>
+            <div class="data-label">
+              <span *ngIf="activityInfo?.type === '1'">
+                平均配速1hr/1km
+              </span>
+              <span *ngIf="activityInfo?.type === '4'">
+                平均配速1hr/100m
+              </span>
+              <span *ngIf="activityInfo?.type === '6'">
+                平均配速1hr/500m
+              </span>
+            </div>
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.avgMoveSpeed | sportPace: activityInfo?.type}}
+            </div>
+            <div class="data-label">
+              <span *ngIf="activityInfo?.type === '1'">
+                平均移動配速1hr/1km
+              </span>
+              <span *ngIf="activityInfo?.type === '4'">
+                平均移動配速1hr/100m
+              </span>
+              <span *ngIf="activityInfo?.type === '6'">
+                平均移動配速1hr/500m
+              </span>
+            </div>
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.maxSpeed | sportPace: activityInfo?.type}}
+            </div>
+            <div class="data-label">
+              <span *ngIf="activityInfo?.type === '1'">
+                最佳配速1hr/1km
+              </span>
+              <span *ngIf="activityInfo?.type === '4'">
+                最佳配速1hr/100m
+              </span>
+              <span *ngIf="activityInfo?.type === '6'">
+                最佳配速1hr/500m
+              </span>
+            </div>
           </div>
         </div>
-        <div class="activity-info__area--block">
-          <div>
-            {{activityInfo?.avgSpeed}}
+        <div class="activity-info__area"
+          *ngIf="activityInfo?.type !== '3' && activityInfo?.type !== '5'"
+        >
+          <div class="ala-dashboard-title activty-title">
+            速度
           </div>
-          <div>
-            平均時速
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.avgSpeed}}
+            </div>
+            <span class="data-label">
+              平均時速
+            </span>
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.avgMoveSpeed}}
+            </div>
+            <span class="data-label">
+              平均移動時速
+            </span>
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.maxSpeed}}
+            </div>
+            <span class="data-label">
+              最高時速
+            </span>
           </div>
         </div>
-      </div>
-      <div class="activity-info__area">
-        <div class="ala-dashboard-title activty-title">
-          距離
+        <div class="activity-info__area"
+          *ngIf="activityInfo?.type !== '4' && activityInfo?.type !== '6'"
+        >
+          <div class="ala-dashboard-title activty-title">
+            心率
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.avgHeartRateBpm}}
+            </div>
+            <span class="data-label">
+              平均心率
+            </span>
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.maxHeartRateBpm}}
+            </div>
+            <span class="data-label">
+              最大心率
+            </span>
+          </div>
         </div>
-        <div class="activity-info__area--block">
-          <div>
-            {{activityInfo?.totalDistanceMeters / 1000}} km
+        <div class="activity-info__area"
+          *ngIf="activityInfo?.type === '1'"
+        >
+          <div class="ala-dashboard-title activty-title">
+            跑步動態
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.runAvgCadence || 0}}
+            </div>
+            <span class="data-label">
+              平均步頻
+            </span>
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.runMaxCadence || 0}}
+            </div>
+            <span class="data-label">
+              最高步頻
+            </span>
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.avgStrideLengthCentimeter || 0}}
+            </div>
+            <span class="data-label">
+              平均步距
+            </span>
+          </div>
+        </div>
+        <div class="activity-info__area"
+          *ngIf="activityInfo?.type === '2'"
+        >
+          <div class="ala-dashboard-title activty-title">
+            騎乘動態
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.cycleAvgCadence || 0}}
+            </div>
+            <span class="data-label">
+              平均踏頻
+            </span>
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.cycleMaxCadence || 0}}
+            </div>
+            <span class="data-label">
+              最高踏頻
+            </span>
+          </div>
+        </div>
+        <div class="activity-info__area"
+          *ngIf="activityInfo?.type === '1'|| activityInfo?.type === '2'"
+        >
+          <div class="ala-dashboard-title activty-title">
+            爬升資訊
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.elevGain || 0}}
+            </div>
+            <span class="data-label">
+              爬升高度
+            </span>
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.elevLoss || 0}}
+            </div>
+            <span class="data-label">
+              下降高度
+            </span>
+          </div>
+        </div>
+        <div class="activity-info__area"
+          *ngIf="activityInfo?.type === '2'"
+        >
+          <div class="ala-dashboard-title activty-title">
+            功率
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.cycleAvgWatt || 0}}
+            </div>
+            <span class="data-label">
+              平均功率
+            </span>
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.cycleMaxWatt || 0}}
+            </div>
+            <span class="data-label">
+              最大功率
+            </span>
+          </div>
+        </div>
+        <div class="activity-info__area"
+          *ngIf="activityInfo?.type === '1'|| activityInfo?.type === '2'"
+        >
+          <div class="ala-dashboard-title activty-title">
+            海拔資訊
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.maxElev || 0}}
+            </div>
+            <span class="data-label">
+              最高海拔
+            </span>
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.minElev || 0}}
+            </div>
+            <span class="data-label">
+              最低海拔
+            </span>
+          </div>
+        </div>
+        <div class="activity-info__area"
+          *ngIf="activityInfo?.type !== '4'&& activityInfo?.type !== '6'"
+        >
+          <div class="ala-dashboard-title activty-title">
+            溫度資訊
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.maxTemp || 0}}
+            </div>
+            <span class="data-label">
+              最高溫度
+            </span>
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.minTemp || 0}}
+            </div>
+            <span class="data-label">
+              最低溫度
+            </span>
+          </div>
+        </div>
+        <!-- to fix -->
+        <div class="activity-info__area"
+          *ngIf="activityInfo?.type === '3'"
+        >
+          <div class="ala-dashboard-title activty-title">
+            部位(複數)
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.weightTrainingInfo?.max1RmWeightKg || 0}}
+            </div>
+            <span class="data-label">
+              最大1RM
+            </span>
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.weightTrainingInfo?.totalWeightKg || 0}}
+            </div>
+            <span class="data-label">
+              累積重量
+            </span>
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.weightTrainingInfo?.totalSets || 0}}
+            </div>
+            <span class="data-label">
+              累計組數
+            </span>
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.weightTrainingInfo?.totalReps || 0}}
+            </div>
+            <span class="data-label">
+              累計次數
+            </span>
+          </div>
+        </div>
+        <div class="activity-info__area"
+          *ngIf="activityInfo?.type === '3'"
+        >
+          <div class="ala-dashboard-title activty-title">
+            組數
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.totalActivityLapOrSet || 0}}
+            </div>
+            <span class="data-label">
+              總組數
+            </span>
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.totalReps || 0}}
+            </div>
+            <span class="data-label">
+              總次數
+            </span>
+          </div>
+        </div>
+        <div class="activity-info__area"
+          *ngIf="activityInfo?.type === '4'"
+        >
+          <div class="ala-dashboard-title activty-title">
+            游泳動態
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.swimAvgCadence || 0}}
+            </div>
+            <span class="data-label">
+              平均划頻(游泳)
+            </span>
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.swimMaxCadence || 0}}
+            </div>
+            <span class="data-label">
+              最高划頻(游泳)
+            </span>
+          </div>
+        </div>
+        <div class="activity-info__area"
+          *ngIf="activityInfo?.type === '4'"
+        >
+          <div class="ala-dashboard-title activty-title">
+            泳池
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.poolLengthMeters || 0}}
+            </div>
+            <span class="data-label">
+              泳池長度
+            </span>
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.poolSwimAvgCadence || 0}}
+            </div>
+            <span class="data-label">
+              平均划水數
+            </span>
+          </div>
+        </div>
+        <div class="activity-info__area"
+          *ngIf="activityInfo?.type === '6'"
+        >
+          <div class="ala-dashboard-title activty-title">
+            划槳動態
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.rowingAvgCadence || 0}}
+            </div>
+            <span class="data-label">
+              平均划頻(划槳)
+            </span>
+          </div>
+          <div class="activity-info__area--block">
+            <div>
+              {{activityInfo?.rowingMaxCadence || 0}}
+            </div>
+            <span class="data-label">
+              最高划頻(划槳)
+            </span>
           </div>
         </div>
       </div>

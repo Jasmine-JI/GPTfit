@@ -146,7 +146,14 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
   handleDate(dateStr) {
-    const dateArr = dateStr.split('');
+    const arr = dateStr.split('T');
+    const dateArr = arr[0].split('');
+    let time = '';
+    if (arr[1].indexOf('.') > -1) {
+      time = arr[1].split('.')[0];
+    } else {
+      time = arr[1].split('+')[0];
+    }
     const date =
       dateArr[0] +
       dateArr[1] +
@@ -161,20 +168,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       dateArr[9] +
       '日' +
       ' @ ' +
-      dateArr[11] +
-      dateArr[12] +
-      ':' +
-      dateArr[14] +
-      dateArr[15] +
-      dateArr[16] +
-      dateArr[17] +
-      dateArr[18] +
-      dateArr[19] +
-      dateArr[20] +
-      dateArr[21] +
-      dateArr[22] +
-      dateArr[23] +
-      dateArr[24];
+      time;
     return date;
   }
   initHchart() {
