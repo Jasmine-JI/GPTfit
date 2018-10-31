@@ -15,6 +15,7 @@ import { ActivatedRoute } from '@angular/router';
 import { NgProgress, NgProgressRef } from '@ngx-progressbar/core';
 import { GlobalEventsManager } from '@shared/global-events-manager';
 import { UtilsService } from '@shared/services/utils.service';
+import { Router } from '@angular/router';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -51,6 +52,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   dataset2: any;
   dataset3: any;
   activityInfo: any;
+  fileInfo: any;
   infoDate: string;
   activityPoints: any;
   isLoading = false;
@@ -68,6 +70,10 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     color: '#108bcd',
     thick: false
   };
+  userLink = {
+    userName: '',
+    userId: null
+  };
   progressRef: NgProgressRef;
   constructor(
     private utils: UtilsService,
@@ -75,7 +81,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     private activityService: ActivityService,
     private route: ActivatedRoute,
     private ngProgress: NgProgress,
-    private globalEventsManager: GlobalEventsManager
+    private globalEventsManager: GlobalEventsManager,
+    private router: Router,
   ) {
 
     /**
@@ -128,6 +135,10 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       // console.log('res: ', res);
       this.activityInfo = res.activityInfoLayer;
       this.activityPoints = res.activityPointLayer;
+      this.fileInfo = res.fileInfo;
+      this.userLink.userName = this.fileInfo.author.split('?')[0];
+      this.userLink.userId = this.fileInfo.author.split('?')[1].split('=')[1];
+
       this.infoDate = this.handleDate(this.activityInfo.startTime);
       this.initHchart();
       this.progressRef.complete();
@@ -416,5 +427,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       });
     }
+  }
+  goToProfile() {
+    this.router.navigateByUrl(`/user-profile/${this.userLink.userId}`);
   }
 }

@@ -135,7 +135,7 @@ app.use('/nodejs/api/map', authMiddleware, map.protected);
 app.use('/nodejs/api/gpx', authMiddleware, runGpx);
 app.use('/nodejs/api/deviceLog', authMiddleware, deviceLog);
 app.use('/nodejs/api/coach', authMiddleware, coach);
-app.use('/nodejs/api/user', authMiddleware, user);
+app.use('/nodejs/api/user', user);
 app.use('/nodejs/api/center', authMiddleware, center);
 app.use('/nodejs/api/uploadFile', authMiddleware, uploadFile);
 app.use('/nodejs/api/sport', authMiddleware, sport);

@@ -9,6 +9,7 @@ import { SigninComponent } from './components/signin/signin.component';
 import { SigninGuard } from '@shared/guards/signin/signin.guard';
 import { SignupComponent } from './components/signup/signup.component';
 import { ForgetpwdComponent } from './components/forgetpwd/forgetpwd.component';
+import { UserProfileComponent } from './components/user-profile/user-profile.component';
 
 const routes: Routes = [
   {
@@ -38,11 +39,15 @@ const routes: Routes = [
       },
       {
         path: 'signup',
-        component: SignupComponent,
+        component: SignupComponent
       },
       {
         path: 'forget-pwd',
-        component: ForgetpwdComponent,
+        component: ForgetpwdComponent
+      },
+      {
+        path: 'user-profile/:userId',
+        component: UserProfileComponent
       }
     ]
   }

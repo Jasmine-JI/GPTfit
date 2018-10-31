@@ -26,8 +26,14 @@
     概要資訊
   </div>
   <div class="activity-block">
-    <p style="color: #919191;margin: 15px 10px">
-      [類別名稱] 由<span style="color:#54b9e7">*玩家暱稱與ID連結 *</span>  紀錄，於{{infoDate}} 建立
+    <p style="color: #919191">
+      [{{ fileInfo?.dispName}}] 由
+      <span class="activity-author"
+        (click)="goToProfile()"
+      >
+        {{userLink?.userName}}
+      </span>
+        紀錄，於{{infoDate}} 建立
     </p>
     <div class="d-flex" style="align-items:center">
       <div class="activty-icon">
@@ -51,39 +57,94 @@
         ></i>
       </div>
       <span style="color: #919191;margin-left: 15px;font-size: 26px;">
-        {{activityInfo?.type | sportType}}
+        {{fileInfo?.dispName}}
       </span>
     </div>
-    <div class="d-flex" style="justify-content: space-between;margin-top: 30px">
-      <div>
-        <div class="activty-info-data-value">{{activityInfo?.totalSecond | sportTime}}</div>
-        <div class="activty-info-data-name">時間</div>
+    <div class="summary-info">
+      <div class="summary-item">
+        <div class="activty-info-data-value">{{activityInfo?.totalActivitySecond | sportTime}}</div>
+        <div class="activty-info-data-name">活動時間</div>
       </div>
-      <div>
-        <div class="activty-info-data-value">{{activityInfo?.totalDistanceMeters / 1000}}</div>
-        <div class="activty-info-data-name">距離</div>
+      <div class="summary-item">
+        <div class="activty-info-data-value">{{activityInfo?.totalRestSecond | sportTime}}</div>
+        <div class="activty-info-data-name">休息時間</div>
       </div>
-      <div>
-        <div class="activty-info-data-value">{{activityInfo?.avgSpeed | sportPace: activityInfo?.type}}</div>
-        <div class="activty-info-data-name">
-          <span *ngIf="activityInfo?.type === '1'">
-            平均1km配速
-          </span>
-          <span *ngIf="activityInfo?.type === '4'">
-            平均1m配速
-          </span>
-          <span *ngIf="activityInfo?.type !== '4' && activityInfo?.type !== '1'">
-            平均1hr配速
-          </span>
-        </div>
-      </div>
-      <div>
+      <div *ngIf="activityInfo?.type !== '4' && activityInfo?.type !== '6'"
+        class="summary-item"
+      >
         <div class="activty-info-data-value">{{activityInfo?.avgHeartRateBpm}}</div>
         <div class="activty-info-data-name">平均心率</div>
       </div>
-      <div>
+      <div *ngIf="activityInfo?.type !== '4' && activityInfo?.type !== '6'"
+        class="summary-item"
+      >
+        <div class="activty-info-data-value">{{activityInfo?.maxHeartRateBpm}}</div>
+        <div class="activty-info-data-name">最大心率</div>
+      </div>
+      <div class="summary-item">
         <div class="activty-info-data-value">{{activityInfo?.calories}}</div>
-        <div class="activty-info-data-name">卡路里</div>
+        <div class="activty-info-data-name">消耗卡路里</div>
+      </div>
+      <div *ngIf="activityInfo?.type !== '3' && activityInfo?.type !== '5'"
+        class="summary-item"
+      >
+        <div class="activty-info-data-value">{{activityInfo?.totalDistanceMeters / 1000}}</div>
+        <div class="activty-info-data-name">總距離</div>
+      </div>
+      <div *ngIf="activityInfo?.type !== '3' && activityInfo?.type !== '5'"
+        class="summary-item"
+      >
+        <div class="activty-info-data-value">{{activityInfo?.avgSpeed | sportPace: activityInfo?.type}}</div>
+        <div class="activty-info-data-name">
+          <span *ngIf="activityInfo?.type === '1'">
+            平均配速1hr/1km
+          </span>
+          <span *ngIf="activityInfo?.type === '4'">
+            平均配速1hr/100m
+          </span>
+          <span *ngIf="activityInfo?.type === '6'">
+            平均配速1hr/500m
+          </span>
+          <span *ngIf="activityInfo?.type !== '4' && activityInfo?.type !== '1' && activityInfo?.type !== '6'">
+            平均時速
+          </span>
+        </div>
+      </div>
+      <div *ngIf="activityInfo?.type === '2'"
+        class="summary-item"
+      >
+        <div class="activty-info-data-value">{{activityInfo?.elevGain || 0 }}</div>
+        <div class="activty-info-data-name">爬升高度</div>
+      </div>
+      <div *ngIf="activityInfo?.type === '3'"
+        class="summary-item"
+      >
+        <div class="activty-info-data-value">{{activityInfo?.weightTrainingInfo?.totalWeightKg || 0 }}</div>
+        <div class="activty-info-data-name">總重量</div>
+      </div>
+      <div *ngIf="activityInfo?.type === '3'"
+        class="summary-item"
+      >
+        <div class="activty-info-data-value">{{activityInfo?.weightTrainingInfo?.totalReps || 0 }}</div>
+        <div class="activty-info-data-name">總次數</div>
+      </div>
+      <div *ngIf="activityInfo?.type === '3'"
+        class="summary-item"
+      >
+        <div class="activty-info-data-value">{{activityInfo?.weightTrainingInfo?.max1RmWeightKg || 0 }}</div>
+        <div class="activty-info-data-name">最大1RM</div>
+      </div>
+      <div *ngIf="activityInfo?.type === '4'"
+        class="summary-item"
+      >
+        <div class="activty-info-data-value">{{activityInfo?.swimAvgCadence || 0 }}</div>
+        <div class="activty-info-data-name">平均划水(游泳)頻率</div>
+      </div>
+      <div *ngIf="activityInfo?.type === '6'"
+        class="summary-item"
+      >
+        <div class="activty-info-data-value">{{activityInfo?.rowingAvgCadence || 0 }}</div>
+        <div class="activty-info-data-name">平均划水(划槳)頻率</div>
       </div>
     </div>
   </div>

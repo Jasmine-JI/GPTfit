@@ -20,7 +20,7 @@ export class SportPacePipe implements PipeTransform {
       const timeMin = ('0' + costminperkm).slice(-2);
       const timeSecond = ('0' + costsecondperkm).slice(-2);
       return `${timeMin}'${timeSecond}"`;
-    } else if (args === '6') { // 游泳配速
+    } else if (args === '6') { // 划水配速
       yVal = (60 / +value) * 60 / 2;
       const costminperkm = Math.floor(yVal / 60);
       const costsecondperkm = Math.round(yVal - costminperkm * 60);
