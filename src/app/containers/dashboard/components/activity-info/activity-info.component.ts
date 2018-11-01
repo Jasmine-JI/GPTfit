@@ -66,6 +66,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   activityPoints: any;
   isLoading = false;
   token: string;
+  isShowNoRight = false;
   _options = {
     min: 8,
     max: 100,
@@ -141,6 +142,13 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     };
     this.activityService.fetchSportListDetail(body).subscribe(res => {
       this.activityInfo = res.activityInfoLayer;
+      if (this.activityInfo === '') {
+        this.isShowNoRight = true;
+        this.isLoading = false;
+        this.progressRef.complete();
+        return;
+      }
+      this.isShowNoRight = false;
       this.handleLapColumns();
       this.activityPoints = res.activityPointLayer;
       this.dataSource.data = res.activityLapLayer;
