@@ -126,11 +126,13 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     // this.initHchart();
   }
   ngOnDestroy() {
-    this.listenFunc();
+    if (!this.isShowNoRight) {
+      this.listenFunc();
+      this.chart1.destroy();
+      this.chart2.destroy();
+      this.chart3.destroy();
+    }
     this.globalEventsManager.setFooterRWD(0); // 為了讓footer自己變回去預設值
-    this.chart1.destroy();
-    this.chart2.destroy();
-    this.chart3.destroy();
   }
   getInfo(id) {
     this.isLoading = true;
@@ -142,8 +144,9 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     };
     this.activityService.fetchSportListDetail(body).subscribe(res => {
       this.activityInfo = res.activityInfoLayer;
-      if (this.activityInfo === '') {
+      if (res.resultCode === 402) {
         this.isShowNoRight = true;
+        this.globalEventsManager.setFooterRWD(0); // 為了讓footer自己變回去預設值
         this.isLoading = false;
         this.progressRef.complete();
         return;
