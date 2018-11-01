@@ -1,0 +1,36 @@
+.avatar-wrapper {
+  position: relative;
+  max-width: 300px;
+  max-height: 300px;
+}
+.avatar-wrapper img {
+  width: 100%;
+}
+.username-label {
+  position: absolute;
+  bottom: 25px;
+  width: 100%;
+  padding: 3px 10px;
+  color: #fff;
+  background: #11a9ed;
+  font-size: 22px;
+}
+.genesis-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.user-profile-wrapper {
+  display: flex;
+  justify-content: space-around;
+}
+@media(max-width: 991px) {
+  .user-profile-wrapper {
+    flex-direction: column;
+    align-items: center;
+  }
+  .genesis-message {
+    margin-top: 50px;
+  }
+}

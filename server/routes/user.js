@@ -2,32 +2,30 @@ var express = require('express');
 
 var router = express.Router();
 
-router.get('/getLogonData', function (req, res, next) {
-  const { con } = req;
-  const token = req.headers['authorization'];
+router.get('/userProfile', function (req, res, next) {
+  const {
+    con,
+    query: { userId }
+  } = req;
   const sql = `
-    select distinct u.login_acc, u.icon_small, g.access_right from
-    ?? u,
-    ?? g where g.member_id = u.user_id and access_token = ?;
+    select distinct u.login_acc, u.icon_large as userIcon from
+    ?? u where user_id = ?;
   `;
-  con.query(sql, ['user_profile', 'group_member_info', token], function (err, rows) {
+  con.query(sql, ['user_profile', userId], function (err, rows) {
     if (err) {
       console.log(err);
       return res.status(500).send({
         errorMessage: err.sqlMessage
       });
     }
-    let userRole = [];
     let userName = '';
     let userIcon = '';
     if (rows.length > 0) {
-      userRole = rows.map(_row => _row.access_right);
       userName = rows[0].login_acc;
-      userIcon = rows[0].icon_small;
+      userIcon = rows[0].userIcon;
     }
 
     res.json({
-      userRole,
       userName,
       userIcon
     });

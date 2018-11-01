@@ -32,3 +32,12 @@
 .highcharts-credits {
   display: none;
 }
+
+.report-time-btn.mat-icon-button {
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+}
+.mat-tab-body {
+  padding: 0;
+}

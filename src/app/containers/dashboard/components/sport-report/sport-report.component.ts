@@ -153,7 +153,8 @@ export class SportReportComponent implements OnInit {
   timeType = 0;
   filterStartTime: string;
   filterEndTime: string;
-
+  today = moment().format('YYYY/MM/DD');
+  endWeekDay = moment().add(6 - +(moment().format('d')), 'days').format('YYYY/MM/DD');
   datas = [];
   chartName = '';
   treeData = JSON.parse(TREE_DATA);
@@ -170,18 +171,18 @@ export class SportReportComponent implements OnInit {
     this.nestedDataSource = new MatTreeNestedDataSource();
 
     database.dataChange.subscribe(data => (this.nestedDataSource.data = data));
-    this.filterEndTime = moment().format('YYYY-MM-DD');
+    this.filterEndTime = moment().format('YYYY/MM/DD');
     this.filterStartTime = moment()
-      .subtract(7, 'days')
-      .format('YYYY-MM-DD');
+      .subtract(6, 'days')
+      .format('YYYY/MM/DD');
   }
 
   hasNestedChild = (_: number, nodeData: FileNode) => !nodeData.type;
   ngOnInit() {
-    const filterEndTime = moment().format('YYYY-MM-DDTHH:mm:ss+08:00');
+    const filterEndTime = moment().format('YYYY-MM-DDT23:59:59+08:00');
     const filterStartTime = moment()
-      .subtract(7, 'days')
-      .format('YYYY-MM-DDTHH:mm:ss+08:00');
+      .subtract(6, 'days')
+      .format('YYYY-MM-DDT00:00:00+08:00');
     this.generateTimePeriod();
     const body = {
       token: this.utils.getToken(),
@@ -243,61 +244,56 @@ export class SportReportComponent implements OnInit {
     }
     while (moment.unix(stamp).format('YYYY-MM-DD') !== stopTime) {
       if (this.timeType === 2 || this.timeType === 3) {
-        this.periodTimes.push(
-          `${moment.unix(stamp).format('YYYY-MM-DD')}~${moment
-            .unix(stamp + 86400 * 6)
-            .format('YYYY-MM-DD')}`
-        );
+        this.periodTimes.push((stamp + 86400 * 6) * 1000);
         stamp = stamp + 86400 * 7;
       } else {
-        this.periodTimes.push(moment.unix(stamp).format('YYYY-MM-DD'));
+        this.periodTimes.push(stamp * 1000);
         stamp = stamp + 86400;
       }
     }
-
   }
   changeGroupInfo({ index }) {
     this.timeType = index;
-    this.filterEndTime = moment().format('YYYY-MM-DD');
+    this.filterEndTime = moment().format('YYYY/MM/DD');
     const day = moment().format('d');
     if (this.timeType === 0) {
       this.filterStartTime = moment()
-        .subtract(7, 'days')
-        .format('YYYY-MM-DD');
+        .subtract(6, 'days')
+        .format('YYYY/MM/DD');
     } else if (this.timeType === 1) {
       this.filterStartTime = moment()
-        .subtract(30, 'days')
-        .format('YYYY-MM-DD');
+        .subtract(29, 'days')
+        .format('YYYY/MM/DD');
     } else if (this.timeType === 2) {
       this.filterStartTime = moment()
         .subtract(day, 'days')
         .subtract(26, 'weeks')
-        .format('YYYY-MM-DD');
+        .format('YYYY/MM/DD');
       this.filterEndTime = moment()
         .add(6 - +day, 'days')
-        .format('YYYY-MM-DD');
+        .format('YYYY/MM/DD');
     } else {
       this.filterStartTime = moment()
         .subtract(day, 'days')
         .subtract(52, 'weeks')
-        .format('YYYY-MM-DD');
+        .format('YYYY/MM/DD');
       this.filterEndTime = moment()
         .add(6 - +day, 'days')
-        .format('YYYY-MM-DD');
+        .format('YYYY/MM/DD');
     }
     this.generateTimePeriod();
-    let filterEndTime = moment().format('YYYY-MM-DDTHH:mm:ss+08:00');
+    let filterEndTime = moment().format('YYYY-MM-DDT23:59:59+08:00');
 
     let body = {};
     let filterStartTime = '';
     if (this.timeType === 0) {
       filterStartTime = moment()
-        .subtract(7, 'days')
-        .format('YYYY-MM-DDTHH:mm:ss+08:00');
+        .subtract(6, 'days')
+        .format('YYYY-MM-DDT00:00:00+08:00');
     } else if (this.timeType === 1) {
       filterStartTime = moment()
-        .subtract(30, 'days')
-        .format('YYYY-MM-DDTHH:mm:ss+08:00');
+        .subtract(29, 'days')
+        .format('YYYY-MM-DDT00:00:00+08:00');
     } else if (this.timeType === 2) {
       filterStartTime = moment()
         .subtract(day, 'days')
@@ -349,6 +345,97 @@ export class SportReportComponent implements OnInit {
       this.openTreeName = '';
     } else {
       this.openTreeName = targetNode.filename;
+    }
+  }
+  shiftPreTime() {
+    if (this.timeType === 0) {
+      this.filterEndTime = moment(this.filterStartTime)
+        .subtract(1, 'days')
+        .format('YYYY/MM/DD');
+      this.filterStartTime = moment(this.filterEndTime)
+        .subtract(6, 'days')
+        .format('YYYY/MM/DD');
+    } else if (this.timeType === 1) {
+      this.filterEndTime = moment(this.filterStartTime)
+        .subtract(1, 'days')
+        .format('YYYY/MM/DD');
+      this.filterStartTime = moment(this.filterEndTime)
+        .subtract(29, 'days')
+        .format('YYYY/MM/DD');
+    } else if (this.timeType === 2) {
+      this.filterEndTime = moment(this.filterStartTime)
+        .subtract(1, 'days')
+        .format('YYYY/MM/DD');
+      this.filterStartTime = moment(this.filterEndTime)
+        .subtract(6, 'days')
+        .subtract(26, 'weeks')
+        .format('YYYY/MM/DD');
+    } else {
+      this.filterEndTime = moment(this.filterStartTime)
+        .subtract(1, 'days')
+        .format('YYYY/MM/DD');
+      this.filterStartTime = moment(this.filterEndTime)
+        .subtract(6, 'days')
+        .subtract(52, 'weeks')
+        .format('YYYY/MM/DD');
+    }
+    const filterEndTime = moment(this.filterEndTime)
+      .format('YYYY-MM-DDT23:59:59+08:00');
+    const filterStartTime = moment(this.filterStartTime)
+      .format('YYYY-MM-DDT00:00:00+08:00');
+    const body = {
+      token: this.utils.getToken(),
+      type: 1,
+      filterStartTime,
+      filterEndTime
+    };
+    if (this.timeType > 1) {
+      body.type = 2;
+    }
+    this.generateTimePeriod();
+    this.handleSportSummaryArray(body);
+  }
+  shiftNextTime() {
+    if (this.filterEndTime !== this.today || this.filterEndTime !== this.endWeekDay) {
+      if (this.timeType === 0) {
+        this.filterStartTime = moment(this.filterEndTime)
+          .add(1, 'days')
+          .format('YYYY/MM/DD');
+        this.filterEndTime = moment(this.filterStartTime)
+          .add(6, 'days')
+          .format('YYYY/MM/DD');
+      } else if (this.timeType === 1) {
+        this.filterStartTime = moment(this.filterEndTime)
+          .add(1, 'days')
+          .format('YYYY/MM/DD');
+        this.filterEndTime = moment(this.filterStartTime)
+          .add(29, 'days')
+          .format('YYYY/MM/DD');
+      } else if (this.timeType === 2) {
+        this.filterStartTime = moment(this.filterEndTime)
+          .add(1, 'days')
+          .format('YYYY/MM/DD');
+        this.filterEndTime = moment(this.filterStartTime)
+          .add(6, 'days')
+          .add(26, 'weeks')
+          .format('YYYY/MM/DD');
+      } else {
+        this.filterStartTime = moment(this.filterEndTime)
+          .add(1, 'days')
+          .format('YYYY/MM/DD');
+        this.filterEndTime = moment(this.filterStartTime)
+          .add(6, 'days')
+          .add(52, 'weeks')
+          .format('YYYY/MM/DD');
+      }
+      const filterEndTime = moment(this.filterEndTime).format('YYYY-MM-DDT23:59:59+08:00');
+      const filterStartTime = moment(this.filterStartTime).format('YYYY-MM-DDT00:00:00+08:00');
+      const body = { token: this.utils.getToken(), type: 1, filterStartTime, filterEndTime };
+      if (this.timeType > 1) {
+        body.type = 2;
+      }
+      this.generateTimePeriod();
+      this.handleSportSummaryArray(body);
     }
   }
 }

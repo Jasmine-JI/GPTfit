@@ -51,7 +51,24 @@
     </mat-tab>
   </mat-tab-group>
     <!-- Hello i m {{chooseType}}chart -->
-    <div style="font-weight: 700;letter-spacing: 1.5px;margin: 15px 0px;">
+    <div style="font-weight: 700;letter-spacing: 1.5px;margin: 15px 0px;display:flex">
+      <button mat-icon-button
+        (click)="shiftPreTime()"
+        class="report-time-btn"
+      >
+        <mat-icon style="cursor: pointer">
+          keyboard_arrow_left
+        </mat-icon>
+      </button>
+      <button mat-icon-button
+        (click)="shiftNextTime()"
+        [disabled]="filterEndTime === today || filterEndTime === endWeekDay"
+        class="report-time-btn"
+      >
+        <mat-icon style="cursor: pointer">
+          keyboard_arrow_right
+        </mat-icon>
+      </button>
       {{filterStartTime}} - {{filterEndTime}}
     </div>
     <ng-container *ngIf="isLoading">

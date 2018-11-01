@@ -35,6 +35,8 @@ import { ForgetpwdComponent } from './components/forgetpwd/forgetpwd.component';
 import { RandomCodeService } from './services/random-code.service';
 import { SignupService } from './services/signup.service';
 import { ForgetService } from './services/forget.service';
+import { UserProfileComponent } from './components/user-profile/user-profile.component';
+import { UserProfileService } from './services/user-profile.service';
 
 @NgModule({
   imports: [
@@ -61,6 +63,7 @@ import { ForgetService } from './services/forget.service';
     RandomCodeService,
     SignupService,
     ForgetService,
+    UserProfileService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: EmptyResponseBodyErrorInterceptor,
@@ -77,7 +80,8 @@ import { ForgetService } from './services/forget.service';
     DemoQrcodComponent,
     SigninComponent,
     SignupComponent,
-    ForgetpwdComponent
+    ForgetpwdComponent,
+    UserProfileComponent
   ],
   entryComponents: [MessageBoxComponent]
 })

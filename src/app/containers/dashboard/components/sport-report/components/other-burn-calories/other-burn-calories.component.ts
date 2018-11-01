@@ -1,30 +1,38 @@
 import {
   Component,
-  AfterViewInit,
   ViewChild,
   ElementRef,
   Input,
   OnChanges
 } from '@angular/core';
 import { chart } from 'highcharts';
-import * as _Highcharts from 'highcharts';
-
-var Highcharts: any = _Highcharts; // 不檢查highchart型態
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-other-burn-calories',
   templateUrl: './other-burn-calories.component.html',
-  styleUrls: ['./other-burn-calories.component.css', '../../sport-report.component.css']
+  styleUrls: [
+    './other-burn-calories.component.css',
+    '../../sport-report.component.css'
+  ]
 })
-export class OtherBurnCaloriesComponent implements AfterViewInit, OnChanges {
+export class OtherBurnCaloriesComponent implements OnChanges {
   @ViewChild('otherBurnChartTarget')
   otherBurnChartTarget: ElementRef;
   chart1: any; // Highcharts.ChartObject
-  @Input() datas: any;
-  @Input() chartName: string;
-  @Input() chooseType: string;
-  @Input() periodTimes: any;
-  @Input() isLoading: boolean;
+  @Input()
+  datas: any;
+  @Input()
+  chartName: string;
+  @Input()
+  chooseType: string;
+  @Input()
+  periodTimes: any;
+  @Input()
+  isLoading: boolean;
+  @Input()
+  timeType: number;
+
   seriesX = [];
   series = [];
   constructor() {}
@@ -33,25 +41,10 @@ export class OtherBurnCaloriesComponent implements AfterViewInit, OnChanges {
     this.handleSportSummaryArray();
     this.initHchart();
   }
-  ngAfterViewInit() {
-    this.handleSportSummaryArray();
-    this.initHchart();
-  }
   handleSportSummaryArray() {
     this.series = [];
     this.seriesX = [];
     this.seriesX = this.periodTimes;
-    // this.seriesX = this.datas
-    //   .filter((value, idx, self) => {
-    //     return (
-    //       self.findIndex(
-    //         _self =>
-    //           _self.startTime.slice(0, 10) === value.startTime.slice(0, 10)
-    //       ) === idx
-    //     );
-    //   })
-    //   .map(_serie => _serie.startTime.slice(0, 10))
-    //   .sort();
     const sportTypes = [];
     if (this.chooseType.slice(0, 2) === '2-') {
       sportTypes.push('1'); // 只選run type
@@ -61,7 +54,8 @@ export class OtherBurnCaloriesComponent implements AfterViewInit, OnChanges {
       sportTypes.push('4'); // 只選swim type
     } else if (this.chooseType.slice(0, 2) === '5-') {
       sportTypes.push('3'); // 只選weightTraining type
-    } else { // all type
+    } else {
+      // all type
       this.datas.forEach((value, idx, self) => {
         if (
           self.findIndex(
@@ -72,16 +66,20 @@ export class OtherBurnCaloriesComponent implements AfterViewInit, OnChanges {
         }
       });
     }
-    sportTypes.sort().map(_type => { // 加入sort 是為了按照type排序
+    sportTypes.sort().map(_type => {
+      // 加入sort 是為了按照type排序
       const data = [];
-      this.seriesX.forEach(() => data.push(0));
+      this.seriesX.forEach(x => data.push([x, 0]));
       this.datas
         .filter(_data => _data.activities[0].type === _type)
         .forEach(_data => {
           const idx = this.seriesX.findIndex(
-            _seriesX => _seriesX.slice(0, 10) === _data.startTime.slice(0, 10)
+            _seriesX =>
+              _seriesX === moment(_data.endTime.slice(0, 10)).unix() * 1000
           );
-          data[idx] = +_data.activities[0].calories;
+          if (idx > -1) {
+            data[idx][1] = +_data.activities[0].calories;
+          }
         });
       let name = '';
       if (_type === '1') {
@@ -100,36 +98,63 @@ export class OtherBurnCaloriesComponent implements AfterViewInit, OnChanges {
     });
   }
   initHchart() {
+    const timeType = this.timeType;
     const options: any = {
       chart: {
-          type: 'column'
+        type: 'column',
+        zoomType: 'x'
       },
       title: {
-          text: this.chartName
+        text: this.chartName
       },
       xAxis: {
-          categories: this.seriesX || [],
-          crosshair: true
+        type: 'datetime',
+        dateTimeLabelFormats: {
+          day: '%m/%d',
+          week: '%m/%d',
+          month: '%Y/%m',
+          year: '%Y'
+        },
+        crosshair: true
       },
       yAxis: {
-          min: 0,
-          title: {
-              text: '消耗卡路里 (cal)'
-          }
+        min: 0,
+        title: {
+          text: '消耗卡路里 (cal)'
+        }
       },
       tooltip: {
-          headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-          pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-              '<td style="padding:0"><b>{point.y:.1f} cal</b></td></tr>',
-          footerFormat: '</table>',
-          shared: true,
-          useHTML: true
+        formatter: function() {
+          const yVal = this.y;
+          if (timeType === 2 || timeType === 3) {
+            const startDay = moment(this.x - 86400 * 6 * 1000).format(
+              'YYYY/MM/DD'
+            );
+            const endDay = moment(this.x).format('YYYY/MM/DD');
+            return `${startDay}~${endDay}<br>
+      <span style="color:${this.points[0].series.color}">●</span> ${
+              this.points[0].series.name
+            }: </span>${yVal.toFixed(1)} cal<br/>`;
+          }
+          return (
+            moment(this.x).format('YYYY/MM/DD') +
+            '<br> ' +
+            `<span style="color:${
+              this.points[0].series.color
+            };padding:0">●</span>` +
+            this.points[0].series.name +
+            yVal.toFixed(1) +
+            ' cal'
+          );
+        },
+        shared: true,
+        useHTML: true
       },
       plotOptions: {
-          column: {
-              pointPadding: 0.2,
-              borderWidth: 0
-          }
+        column: {
+          pointPadding: 0.2,
+          borderWidth: 0
+        }
       },
       series: this.series
     };

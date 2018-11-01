@@ -90,19 +90,27 @@ export class MyActivityComponent implements OnInit, OnDestroy {
   getLists() {
     this.isLoading = true;
     const sort = this.currentSort.direction;
-    let params = new HttpParams();
-    params = params.set(
-      'page',
-      (this.currentPage && this.currentPage.pageIndex.toString()) || '0'
-    );
-    params = params.set(
-      'pageCounts',
-      (this.currentPage && this.currentPage.pageSize.toString()) || '10'
-    );
-    params = params.set('sort', sort);
-    this.activityService.fetchSportList(params).subscribe(res => {
+    // let params = new HttpParams();
+    // params = params.set(
+    //   'page',
+    //   (this.currentPage && this.currentPage.pageIndex.toString()) || '0'
+    // );
+    // params = params.set(
+    //   'pageCounts',
+    //   (this.currentPage && this.currentPage.pageSize.toString()) || '10'
+    // );
+    // params = params.set('sort', sort);
+    const body = {
+      token: this.token,
+      type: '9',
+      page: this.currentPage && this.currentPage.pageIndex.toString() || '0',
+      pageCounts: this.currentPage && this.currentPage.pageSize.toString() || '10',
+      filterStartTime: '',
+      filterEndTime: '2018-10-07T23:59:59+08:00'
+    };
+    this.activityService.fetchSportList(body).subscribe(res => {
       this.isLoading = false;
-      this.logSource.data = res.activityInfoLayer;
+      this.logSource.data = res.info;
 
       this.totalCount = res.totalCounts;
       if (this.logSource.data.length === 0) {

@@ -1,22 +1,20 @@
 import {
   Component,
-  AfterViewInit,
   ViewChild,
   ElementRef,
   Input,
   OnChanges
 } from '@angular/core';
 import { chart } from 'highcharts';
-import * as _Highcharts from 'highcharts';
-
-var Highcharts: any = _Highcharts; // 不檢查highchart型態
+import * as Highcharts from 'highcharts';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-burn-calories',
   templateUrl: './burn-calories.component.html',
   styleUrls: ['./burn-calories.component.css']
 })
-export class BurnCaloriesComponent implements AfterViewInit, OnChanges {
+export class BurnCaloriesComponent implements OnChanges {
   @ViewChild('burnCaloriesChartTarget')
   burnCaloriesChartTarget: ElementRef;
   chart1: any; // Highcharts.ChartObject
@@ -26,19 +24,22 @@ export class BurnCaloriesComponent implements AfterViewInit, OnChanges {
   @Input() chooseType: string;
   @Input() periodTimes: any;
   @Input() isLoading: boolean;
+  @Input() timeType: number;
   seriesX = [];
   series = [];
-  constructor() {}
+  constructor() {
+    Highcharts.setOptions({
+      global: {
+        useUTC: false
+      }
+    });
+  }
 
   ngOnChanges() {
     this.handleSportSummaryArray();
     this.initHchart();
   }
 
-  ngAfterViewInit() {
-    this.handleSportSummaryArray();
-    this.initHchart();
-  }
   handleSportSummaryArray() {
     this.series = [];
     this.seriesX = [];
@@ -59,14 +60,16 @@ export class BurnCaloriesComponent implements AfterViewInit, OnChanges {
     }
     sportTypes.sort().map(_type => {
       const data = [];
-      this.seriesX.forEach(() => data.push(0));
+      this.seriesX.forEach((x) => data.push([x, 0]));
       this.datas
         .filter(_data => _data.activities[0].type === _type)
         .forEach(_data => {
           const idx = this.seriesX.findIndex(
-            _seriesX => _seriesX.slice(0, 10) === _data.startTime.slice(0, 10)
+            _seriesX => _seriesX === moment(_data.endTime.slice(0, 10)).unix() * 1000
           );
-          data[idx] = +_data.activities[0].calories;
+          if (idx > -1) {
+            data[idx][1] = +_data.activities[0].calories;
+          }
         });
       let name = '';
       if (_type === '1') {
@@ -81,16 +84,19 @@ export class BurnCaloriesComponent implements AfterViewInit, OnChanges {
   initHchart() {
     const options: any = {
       chart: {
-        type: 'area'
+        type: 'area',
+        zoomType: 'x'
       },
       title: {
         text: this.chartName
       },
       xAxis: {
-        categories: this.seriesX || [],
-        tickmarkPlacement: 'on',
-        title: {
-          enabled: false
+        type: 'datetime',
+        dateTimeLabelFormats: {
+          day: '%m/%d',
+          week: '%m/%d',
+          month: '%Y/%m',
+          year: '%Y'
         }
       },
       yAxis: {
@@ -104,8 +110,9 @@ export class BurnCaloriesComponent implements AfterViewInit, OnChanges {
         }
       },
       tooltip: {
+        xDateFormat: '%Y-%m-%d',
         split: true,
-        valueSuffix: ' Cal'
+        valueSuffix: ' Cal',
       },
       plotOptions: {
         area: {

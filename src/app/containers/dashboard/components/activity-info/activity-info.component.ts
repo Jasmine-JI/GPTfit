@@ -8,18 +8,17 @@ import {
   OnDestroy,
   ViewEncapsulation
 } from '@angular/core';
-// import { EChartOption } from 'echarts';
-import { chartOption, basicAreaOption, rainOption } from './testDatas';
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
-import { testData } from './testData1';
 import { ActivityService } from '../../services/activity.service';
 import { ActivatedRoute } from '@angular/router';
-import { HttpParams } from '@angular/common/http';
 import { NgProgress, NgProgressRef } from '@ngx-progressbar/core';
 import { GlobalEventsManager } from '@shared/global-events-manager';
+import { UtilsService } from '@shared/services/utils.service';
+import { Router } from '@angular/router';
+import { MatTableDataSource } from '@angular/material';
 
-var Highcharts: any = _Highcharts; // 不檢查highchart型態
+const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 @Component({
   selector: 'app-activity-info',
@@ -28,18 +27,20 @@ var Highcharts: any = _Highcharts; // 不檢查highchart型態
   encapsulation: ViewEncapsulation.None
 })
 export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
-  isdisplayEcharts = false;
+  dataSource = new MatTableDataSource<any>();
+  displayedColumns: string[] = [
+    'lapIndex',
+    'status',
+    'heartRate',
+    'speed',
+    'distance'
+  ];
+
   isdisplayHcharts = true;
-
-  echartsIntance: any;
-
   chartLoading = false;
   basicLoading = false;
   rainLoading = false;
 
-  chartOption = chartOption;
-  basicAreaOption = basicAreaOption;
-  rainOption = rainOption;
   options: Object;
   seriesIdx = 0;
   @ViewChild('speedChartTarget')
@@ -60,9 +61,11 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   dataset2: any;
   dataset3: any;
   activityInfo: any;
+  fileInfo: any;
   infoDate: string;
   activityPoints: any;
   isLoading = false;
+  token: string;
   _options = {
     min: 8,
     max: 100,
@@ -76,14 +79,19 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     color: '#108bcd',
     thick: false
   };
+  userLink = {
+    userName: '',
+    userId: null
+  };
   progressRef: NgProgressRef;
   constructor(
-    elementRef: ElementRef,
+    private utils: UtilsService,
     private renderer: Renderer2,
     private activityService: ActivityService,
     private route: ActivatedRoute,
     private ngProgress: NgProgress,
-    private globalEventsManager: GlobalEventsManager
+    private globalEventsManager: GlobalEventsManager,
+    private router: Router
   ) {
     /**
      * 重写内部的方法， 这里是将提示框即十字准星的隐藏函数关闭
@@ -110,6 +118,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     this.globalEventsManager.setFooterRWD(2); // 為了讓footer長高85px
     const fieldId = this.route.snapshot.paramMap.get('fileId');
     this.progressRef = this.ngProgress.ref();
+    this.token = this.utils.getToken();
     this.getInfo(fieldId);
   }
   ngAfterViewInit() {
@@ -118,29 +127,71 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     this.listenFunc();
     this.globalEventsManager.setFooterRWD(0); // 為了讓footer自己變回去預設值
+    this.chart1.destroy();
+    this.chart2.destroy();
+    this.chart3.destroy();
   }
   getInfo(id) {
     this.isLoading = true;
 
     this.progressRef.start();
-    let params = new HttpParams();
-    params = params.set('fileId', id);
-    this.activityService.fetchSportListDetail(params).subscribe(res => {
+    const body = {
+      token: this.token,
+      fileId: id
+    };
+    this.activityService.fetchSportListDetail(body).subscribe(res => {
       this.activityInfo = res.activityInfoLayer;
+      this.handleLapColumns();
       this.activityPoints = res.activityPointLayer;
+      this.dataSource.data = res.activityLapLayer;
+      this.fileInfo = res.fileInfo;
+      this.userLink.userName = this.fileInfo.author.split('?')[0];
+      this.userLink.userId = this.fileInfo.author.split('?')[1].split('=')[1];
+
       this.infoDate = this.handleDate(this.activityInfo.startTime);
       this.initHchart();
-      const { distances, speeds, elevations, heartRates } = this.activityPoints;
-      this.rainOption.series[0].data = heartRates;
-      this.rainOption.series[1].data = speeds;
-      this.rainOption.xAxis[0].data = distances;
-      this.rainOption.xAxis[1].data = distances;
       this.progressRef.complete();
       this.isLoading = false;
     });
   }
+  handleLapColumns() {
+    const sportType = this.activityInfo.type;
+    switch (sportType) {
+      case '1':
+        this.displayedColumns = [
+          'lapIndex',
+          'status',
+          'heartRate',
+          'speed',
+          'distance'
+        ];
+        break;
+      case '2':
+        this.displayedColumns = ['lapIndex', 'status', 'heartRate', 'speed', 'distance'];
+        break;
+      case '3':
+        this.displayedColumns = ['lapIndex', 'status', 'dispName', 'totalRepo', 'totalWeight', 'cadence'];
+        break;
+      case '4':
+        this.displayedColumns = ['lapIndex', 'status', 'dispName', 'cadence', 'totalRepo', 'speed'];
+        break;
+      case '5':
+        this.displayedColumns = ['lapIndex', 'status', 'heartRate'];
+        break;
+      case '6':
+        this.displayedColumns = ['lapIndex', 'status', 'cadence', 'totalRepo', 'speed'];
+        break;
+    }
+  }
   handleDate(dateStr) {
-    const dateArr = dateStr.split('');
+    const arr = dateStr.split('T');
+    const dateArr = arr[0].split('');
+    let time = '';
+    if (arr[1].indexOf('.') > -1) {
+      time = arr[1].split('.')[0];
+    } else {
+      time = arr[1].split('+')[0];
+    }
     const date =
       dateArr[0] +
       dateArr[1] +
@@ -148,23 +199,27 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       dateArr[3] +
       '年' +
       ' ' +
-      dateArr[4] +
       dateArr[5] +
-      '月' +
       dateArr[6] +
-      dateArr[7] +
-      '日' +
-      ' @ ' +
+      '月' +
       dateArr[8] +
       dateArr[9] +
-      ':' +
-      dateArr[10] +
-      dateArr[11] +
-      ' +08:00';
+      '日' +
+      ' @ ' +
+      time;
     return date;
   }
   initHchart() {
-    const { distances, speeds, elevations, heartRates } = this.activityPoints;
+    const distances = [],
+      speeds = [],
+      elevations = [],
+      heartRates = [];
+    this.activityPoints.forEach(_point => {
+      distances.push(+_point.distanceMeters);
+      speeds.push(+_point.speed);
+      elevations.push(+_point.altitudeMeters);
+      heartRates.push(+_point.heartRateBpm);
+    });
     this.dataset1 = {
       name: 'Speed',
       data: speeds,
@@ -380,7 +435,11 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       'mousemove',
       e => {
         // Do something with 'event'
-        for (let i = 0; i < Highcharts.charts.length; i = i + 1) {
+        for (
+          let i = Highcharts.charts.length - 3;
+          i < Highcharts.charts.length;
+          i = i + 1
+        ) {
           const _chart: any = Highcharts.charts[i];
           const event = _chart.pointer.normalize(e); // Find coordinates within the chart
           const point = _chart.series[0].searchPoint(event, true); // Get the hovered point
@@ -395,7 +454,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     const thisChart = this[`chart${num}`];
     if (e.trigger !== 'syncExtremes') {
       Highcharts.each(Highcharts.charts, function(_chart) {
-        if (_chart !== thisChart) {
+        if (_chart !== thisChart && _chart) {
           if (_chart.xAxis[0].setExtremes) {
             _chart.xAxis[0].setExtremes(e.min, e.max, undefined, false, {
               trigger: 'syncExtremes'
@@ -405,56 +464,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
   }
-  toogleEChart() {
-    this.isdisplayEcharts = !this.isdisplayEcharts;
-  }
-  toogleHChart() {
-    this.isdisplayHcharts = !this.isdisplayHcharts;
-    if (this.isdisplayHcharts) {
-      // this.initHchart();
-      setTimeout(() => this.initHchart(), 10000);
-    }
-  }
-  /**
-   * 获取echarts对象
-   * @param ec echarts对象
-   */
-  onChartInit(ec) {
-    this.echartsIntance = ec;
-  }
-
-  switch(_loading) {
-    this[_loading] = !this[_loading];
-  }
-  addSeries(_num) {
-    const power = +_num > 1 ? 3 : 1;
-    this[`chart${_num}`].addSeries({
-      name: 'test',
-      data: [
-        Math.floor(Math.random() * 10 ** power),
-        Math.floor(Math.random() * 10 ** power),
-        Math.floor(Math.random() * 10 ** power),
-        Math.floor(Math.random() * 10 ** power),
-        Math.floor(Math.random() * 10 ** power),
-        Math.floor(Math.random() * 10 ** power),
-        Math.floor(Math.random() * 10 ** power)
-      ]
-    });
-  }
-
-  addPoint() {
-    if (this.chart1.series[1]) {
-      this.chart1.series[1].addPoint(Math.floor(Math.random() * 10));
-    }
-  }
-  removePoint() {
-    if (this.chart1.series[1]) {
-      this.chart1.series[1].points[
-        this.chart1.series[1].points.length - 1
-      ].remove();
-    }
-  }
-  removeSeries(num) {
-    this[`chart${num}`].series[this.chart1.series.length - 1].remove(false);
+  goToProfile() {
+    this.router.navigateByUrl(`/user-profile/${this.userLink.userId}`);
   }
 }
