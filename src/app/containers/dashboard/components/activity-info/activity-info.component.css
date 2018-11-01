@@ -103,7 +103,9 @@
   font-size: 12px;
   color: #888;
 }
-
+table.mat-table {
+  width: 100%;
+}
 @media(max-width: 767px) {
   .mat-tab-body-content {
     display: flex;

@@ -16,6 +16,7 @@ import { NgProgress, NgProgressRef } from '@ngx-progressbar/core';
 import { GlobalEventsManager } from '@shared/global-events-manager';
 import { UtilsService } from '@shared/services/utils.service';
 import { Router } from '@angular/router';
+import { MatTableDataSource } from '@angular/material';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -25,8 +26,16 @@ const Highcharts: any = _Highcharts; // 不檢查highchart型態
   styleUrls: ['./activity-info.component.css', '../../group/group-style.css'],
   encapsulation: ViewEncapsulation.None
 })
-
 export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
+  dataSource = new MatTableDataSource<any>();
+  displayedColumns: string[] = [
+    'lapIndex',
+    'status',
+    'heartRate',
+    'speed',
+    'distance'
+  ];
+
   isdisplayHcharts = true;
   chartLoading = false;
   basicLoading = false;
@@ -82,9 +91,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     private route: ActivatedRoute,
     private ngProgress: NgProgress,
     private globalEventsManager: GlobalEventsManager,
-    private router: Router,
+    private router: Router
   ) {
-
     /**
      * 重写内部的方法， 这里是将提示框即十字准星的隐藏函数关闭
      */
@@ -132,9 +140,10 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       fileId: id
     };
     this.activityService.fetchSportListDetail(body).subscribe(res => {
-      // console.log('res: ', res);
       this.activityInfo = res.activityInfoLayer;
+      this.handleLapColumns();
       this.activityPoints = res.activityPointLayer;
+      this.dataSource.data = res.activityLapLayer;
       this.fileInfo = res.fileInfo;
       this.userLink.userName = this.fileInfo.author.split('?')[0];
       this.userLink.userId = this.fileInfo.author.split('?')[1].split('=')[1];
@@ -144,6 +153,35 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.progressRef.complete();
       this.isLoading = false;
     });
+  }
+  handleLapColumns() {
+    const sportType = this.activityInfo.type;
+    switch (sportType) {
+      case '1':
+        this.displayedColumns = [
+          'lapIndex',
+          'status',
+          'heartRate',
+          'speed',
+          'distance'
+        ];
+        break;
+      case '2':
+        this.displayedColumns = ['lapIndex', 'status', 'heartRate', 'speed', 'distance'];
+        break;
+      case '3':
+        this.displayedColumns = ['lapIndex', 'status', 'dispName', 'totalRepo', 'totalWeight', 'cadence'];
+        break;
+      case '4':
+        this.displayedColumns = ['lapIndex', 'status', 'dispName', 'cadence', 'totalRepo', 'speed'];
+        break;
+      case '5':
+        this.displayedColumns = ['lapIndex', 'status', 'heartRate'];
+        break;
+      case '6':
+        this.displayedColumns = ['lapIndex', 'status', 'cadence', 'totalRepo', 'speed'];
+        break;
+    }
   }
   handleDate(dateStr) {
     const arr = dateStr.split('T');
@@ -173,9 +211,9 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   initHchart() {
     const distances = [],
-          speeds = [],
-          elevations = [],
-          heartRates = [];
+      speeds = [],
+      elevations = [],
+      heartRates = [];
     this.activityPoints.forEach(_point => {
       distances.push(+_point.distanceMeters);
       speeds.push(+_point.speed);
@@ -397,7 +435,11 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       'mousemove',
       e => {
         // Do something with 'event'
-        for (let i = Highcharts.charts.length - 3; i < Highcharts.charts.length; i = i + 1) {
+        for (
+          let i = Highcharts.charts.length - 3;
+          i < Highcharts.charts.length;
+          i = i + 1
+        ) {
           const _chart: any = Highcharts.charts[i];
           const event = _chart.pointer.normalize(e); // Find coordinates within the chart
           const point = _chart.series[0].searchPoint(event, true); // Get the hovered point

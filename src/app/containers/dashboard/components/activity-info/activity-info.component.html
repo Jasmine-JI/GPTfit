@@ -592,7 +592,113 @@
         </div>
       </div>
     </mat-tab>
-    <mat-tab label="分段資料">我是分段資料</mat-tab>
+    <mat-tab label="分段資料">
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+        <ng-container matColumnDef="lapIndex">
+          <th mat-header-cell *matHeaderCellDef>
+            <span *ngIf="activityInfo?.type !== '3'">圈序號No.</span>
+            <span *ngIf="activityInfo?.type === '3'">組序號No.</span>
+          </th>
+          <td mat-cell *matCellDef="let element; let i = index;"> {{i + 1}} </td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>休息活動標示 </th>
+          <td mat-cell *matCellDef="let element">
+            <span *ngIf="element.type === '0'">
+              活動圈
+            </span>
+            <span *ngIf="element.type === '1'">
+              休息圈
+            </span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="dispName">
+          <th mat-header-cell *matHeaderCellDef>
+            <span *ngIf="activityInfo?.type === '3'">該組名稱</span>
+            <span *ngIf="activityInfo?.type === '4'">該圈泳姿名稱</span>
+          </th>
+          <ng-container *ngIf="activityInfo?.type !== '4'">
+            <td mat-cell *matCellDef="let element"
+            >{{element.dispName}} </td>
+          </ng-container>
+          <ng-container *ngIf="activityInfo?.type === '4'">
+            <td mat-cell *matCellDef="let element"
+            > {{element.lapSwimPosture}} </td>
+          </ng-container>
+
+        </ng-container>
+        <ng-container matColumnDef="cadence">
+          <th mat-header-cell *matHeaderCellDef>
+            <span *ngIf="activityInfo?.type !== '3'">該圈划水頻</span>
+            <span *ngIf="activityInfo?.type === '3'">動作頻率</span>
+          </th>
+          <ng-container *ngIf="activityInfo?.type === '3'">
+            <td mat-cell *matCellDef="let element"
+            >{{element.setMoveRepetitionsAvgCadence}} </td>
+          </ng-container>
+          <ng-container *ngIf="activityInfo?.type === '4'">
+            <td mat-cell *matCellDef="let element"
+            >{{element.lapSwimAvgCadence}} </td>
+          </ng-container>
+          <ng-container *ngIf="activityInfo?.type === '6'">
+            <td mat-cell *matCellDef="let element"
+            > {{element.lapRowingAvgCadence}} </td>
+          </ng-container>
+        </ng-container>
+        <ng-container matColumnDef="totalRepo">
+          <th mat-header-cell *matHeaderCellDef>
+            <span *ngIf="activityInfo?.type === '3'">該組總次數</span>
+            <span *ngIf="activityInfo?.type === '4' || activityInfo?.type === '6'">該圈划水數</span>
+          </th>
+          <ng-container *ngIf="activityInfo?.type === '3'">
+            <td mat-cell *matCellDef="let element"
+            >{{element.setTotalReps}} </td>
+          </ng-container>
+          <ng-container *ngIf="activityInfo?.type === '4'">
+            <td mat-cell *matCellDef="let element"
+            > {{element.lapTotaStrokes}} </td>
+          </ng-container>
+          <ng-container *ngIf="activityInfo?.type === '6'">
+            <td mat-cell *matCellDef="let element"
+            > {{element.lapTotalPulls}} </td>
+          </ng-container>
+        </ng-container>
+        <ng-container matColumnDef="totalWeight">
+          <th mat-header-cell *matHeaderCellDef>
+            該組總重
+          </th>
+            <td mat-cell *matCellDef="let element"
+            >{{element.setTotalWeightKg}} </td>
+        </ng-container>
+        <ng-container matColumnDef="heartRate">
+          <th mat-header-cell *matHeaderCellDef>該圈平均心率 </th>
+          <td mat-cell *matCellDef="let element"> {{element.lapAvgHeartRateBpm}} </td>
+        </ng-container>
+        <ng-container matColumnDef="speed">
+          <th mat-header-cell *matHeaderCellDef>
+            <span *ngIf="activityInfo?.type === '1'">
+              該圈平均配速1hr/1km
+            </span>
+            <span *ngIf="activityInfo?.type === '4'">
+              該圈平均配速1hr/100m
+            </span>
+            <span *ngIf="activityInfo?.type === '6'">
+              該圈平均配速1hr/500m
+            </span>
+            <span *ngIf="activityInfo?.type !== '4' && activityInfo?.type !== '1' && activityInfo?.type !== '6'">
+              該圈平均時速
+          </span>
+          </th>
+          <td mat-cell *matCellDef="let element"> {{element.lapAvgSpeed | sportPace: activityInfo?.type}} </td>
+        </ng-container>
+        <ng-container matColumnDef="distance">
+          <th mat-header-cell *matHeaderCellDef> 該圈距離km </th>
+          <td mat-cell *matCellDef="let element"> {{element.lapTotalDistanceMeters / 100000  | number: '0.1-3' }} </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </mat-tab>
   </mat-tab-group>
 </div>
 <div class="group-manage__action">
