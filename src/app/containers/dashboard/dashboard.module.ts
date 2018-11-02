@@ -78,6 +78,7 @@ import { MyDeviceComponent } from './components/device/my-device/my-device.compo
 import { ProductInfoComponent } from './components/device/product-info/product-info.component';
 import { TodayLoginnerWinComponent } from './components/today-loginner-win/today-loginner-win.component';
 import { ReportService } from './services/report.service';
+import { TrainLiveComponent } from './components/train-live/train-live.component';
 
 @NgModule({
   imports: [
@@ -164,7 +165,8 @@ import { ReportService } from './services/report.service';
     PartialMuscleInfoComponent,
     MyDeviceComponent,
     ProductInfoComponent,
-    TodayLoginnerWinComponent
+    TodayLoginnerWinComponent,
+    TrainLiveComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
