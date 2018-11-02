@@ -341,6 +341,9 @@ export class SportReportComponent implements OnInit {
     });
   }
   handleItem(targetNode) {
+    if (targetNode.filename === '重訓') {
+      return;
+    }
     if (this.openTreeName === targetNode.filename) {
       this.openTreeName = '';
     } else {
