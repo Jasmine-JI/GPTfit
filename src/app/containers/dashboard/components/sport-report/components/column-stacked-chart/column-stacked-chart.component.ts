@@ -43,7 +43,8 @@ export class ColumnstackedChartComponent implements OnChanges {
     let targetName = '';
     if (this.chooseType === '1-2' ||
       this.chooseType === '2-1' || this.chooseType === '3-1' ||
-      this.chooseType === '4-1' || this.chooseType === '5-1') {
+      this.chooseType === '4-1' || this.chooseType === '5-1' ||
+      this.chooseType === '6-1') {
       targetName = 'totalSecond';
     } else {
       targetName = 'totalDistanceMeters';
@@ -61,6 +62,8 @@ export class ColumnstackedChartComponent implements OnChanges {
       sportTypes.push('4'); // 只選swim type
     } else if (this.chooseType.slice(0, 2) === '5-') {
       sportTypes.push('3'); // 只選weightTraining type
+    } else if (this.chooseType.slice(0, 2) === '6-') {
+      sportTypes.push('5'); // 只選有氧 type
     } else { // all type
       this.datas.forEach((value, idx, self) => {
         if (
@@ -94,6 +97,8 @@ export class ColumnstackedChartComponent implements OnChanges {
         name = '重量訓練';
       } else if (_type === '4') {
         name = '游泳';
+      } else if (_type === '5') {
+        name = '有氧運動';
       } else {
         name = '尚未定義';
       }
@@ -105,7 +110,8 @@ export class ColumnstackedChartComponent implements OnChanges {
     let yVal = y;
     if (this.chooseType === '1-2' ||
       this.chooseType === '2-1' || this.chooseType === '3-1' ||
-      this.chooseType === '4-1' || this.chooseType === '5-1') {
+      this.chooseType === '4-1' || this.chooseType === '5-1' ||
+      this.chooseType === '6-1') {
       const costhr = Math.floor(yVal / 3600);
       const costmin = Math.floor(Math.round(yVal - costhr * 60 * 60) / 60);
       const costsecond = Math.round(yVal - costmin * 60);
@@ -126,7 +132,8 @@ export class ColumnstackedChartComponent implements OnChanges {
     const convertUnit = this.convertUnit.bind(this);
     if (this.chooseType === '1-2' ||
       this.chooseType === '2-1' || this.chooseType === '3-1' ||
-      this.chooseType === '4-1' || this.chooseType === '5-1') {
+      this.chooseType === '4-1' || this.chooseType === '5-1' ||
+      this.chooseType === '6-1') {
       yAxisText = '總時間(min)';
       toolTipUnit = ' ';
     } else {
@@ -194,7 +201,8 @@ export class ColumnstackedChartComponent implements OnChanges {
     };
     if (this.chooseType === '1-2' ||
       this.chooseType === '2-1' || this.chooseType === '3-1' ||
-      this.chooseType === '4-1' || this.chooseType === '5-1') {
+      this.chooseType === '4-1' || this.chooseType === '5-1' ||
+      this.chooseType === '6-1') {
       options.yAxis.labels = {
         formatter: function () {
           const distance = Math.round(this.value / 60);

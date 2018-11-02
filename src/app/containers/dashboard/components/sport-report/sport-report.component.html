@@ -620,5 +620,49 @@
       >
       </app-partial-muscle-info>
     </ng-container>
+    <ng-container *ngIf="chooseType === '6-1'">
+      <app-column-stacked-chart
+        [datas]="datas"
+        [chartName]="chartName"
+        [chooseType]="chooseType"
+        [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
+        [timeType]="timeType"
+      >
+      </app-column-stacked-chart>
+    </ng-container>
+    <ng-container *ngIf="chooseType === '6-2'">
+      <app-other-burn-calories
+        [datas]="datas"
+        [chartName]="chartName"
+        [chooseType]="chooseType"
+        [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
+        [timeType]="timeType"
+      >
+      </app-other-burn-calories>
+    </ng-container>
+    <ng-container *ngIf="chooseType === '6-3'">
+      <app-scatter-chart
+        [datas]="datas"
+        [chartName]="chartName"
+        [chooseType]="chooseType"
+        [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
+        [timeType]="timeType"
+      >
+      </app-scatter-chart>
+    </ng-container>
+    <ng-container *ngIf="chooseType === '6-4'">
+      <app-scatter-chart
+        [datas]="datas"
+        [chartName]="chartName"
+        [chooseType]="chooseType"
+        [periodTimes]="periodTimes"
+        [isLoading]="isLoading"
+        [timeType]="timeType"
+      >
+      </app-scatter-chart>
+    </ng-container>
   </div>
 </div>
