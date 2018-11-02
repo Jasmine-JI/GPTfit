@@ -59,14 +59,16 @@ export class ScatterChartComponent implements OnChanges {
       this.chooseType === '1-7' ||
       this.chooseType === '2-6' ||
       this.chooseType === '3-6' ||
-      this.chooseType === '5-5'
+      this.chooseType === '5-5' ||
+      this.chooseType === '6-3'
     ) {
       targetName = 'avgHeartRateBpm';
     } else if (
       this.chooseType === '1-8' ||
       this.chooseType === '2-7' ||
       this.chooseType === '3-7' ||
-      this.chooseType === '5-6'
+      this.chooseType === '5-6' ||
+      this.chooseType === '6-4'
     ) {
       targetName = 'avgMaxHeartRateBpm';
     } else if (this.chooseType === '2-8') {
@@ -100,6 +102,8 @@ export class ScatterChartComponent implements OnChanges {
       sportTypes.push('4'); // 只選swim type
     } else if (this.chooseType.slice(0, 2) === '5-') {
       sportTypes.push('3'); // 只選weightTraining type
+    } else if (this.chooseType.slice(0, 2) === '6-') {
+      sportTypes.push('5'); // 只選有氧 type
     } else {
       // all type
       this.datas.forEach((value, idx, self) => {
@@ -148,6 +152,9 @@ export class ScatterChartComponent implements OnChanges {
       } else if (_type === '4') {
         name = '游泳';
         color = 'rgba(247, 163, 92, .5)';
+      } else if (_type === '5') {
+        name = '有氧運動';
+        color = 'rgba(142, 9,	156, .5)';
       } else {
         name = '尚未定義';
       }
@@ -164,14 +171,16 @@ export class ScatterChartComponent implements OnChanges {
       this.chooseType === '1-7' ||
       this.chooseType === '2-6' ||
       this.chooseType === '3-6' ||
-      this.chooseType === '5-5'
+      this.chooseType === '5-5' ||
+      this.chooseType === '6-3'
     ) {
       yAxisText = '平均心率 (bpm/min)';
     } else if (
       this.chooseType === '1-8' ||
       this.chooseType === '2-7' ||
       this.chooseType === '3-7' ||
-      this.chooseType === '5-6'
+      this.chooseType === '5-6' ||
+      this.chooseType === '6-4'
     ) {
       yAxisText = '最大心率 (bpm/min)';
     } else if (this.chooseType === '2-8') {

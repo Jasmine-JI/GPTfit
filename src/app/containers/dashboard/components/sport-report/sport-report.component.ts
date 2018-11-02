@@ -81,7 +81,13 @@ const TREE_DATA = JSON.stringify({
       '總組數': '5-13',
       '總次數': '5-14'
     }
-  }
+  },
+  '有氧運動': {
+    '總時間': '6-1',
+    '消耗卡路里': '6-2',
+    '平均心率': '6-3',
+    '最大心率': '6-4'
+  },
 });
 
 /**
@@ -341,6 +347,9 @@ export class SportReportComponent implements OnInit {
     });
   }
   handleItem(targetNode) {
+    if (targetNode.filename === '重訓') {
+      return;
+    }
     if (this.openTreeName === targetNode.filename) {
       this.openTreeName = '';
     } else {

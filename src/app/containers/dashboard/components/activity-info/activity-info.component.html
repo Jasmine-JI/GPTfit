@@ -71,10 +71,18 @@
       </div>
       <div class="summary-info">
         <div class="summary-item">
+          <div class="activty-info-data-value">{{activityInfo?.totalSecond | sportTime}}</div>
+          <div class="activty-info-data-name">總時間</div>
+        </div>
+        <div class="summary-item"
+          *ngIf="activityInfo?.totalActivitySecond.length !== 0"
+        >
           <div class="activty-info-data-value">{{activityInfo?.totalActivitySecond | sportTime}}</div>
           <div class="activty-info-data-name">活動時間</div>
         </div>
-        <div class="summary-item">
+        <div class="summary-item"
+          *ngIf="activityInfo?.totalRestSecond.length !== 0"
+        >
           <div class="activty-info-data-value">{{activityInfo?.totalRestSecond | sportTime}}</div>
           <div class="activty-info-data-name">休息時間</div>
         </div>
@@ -119,7 +127,7 @@
             </span>
           </div>
         </div>
-        <div *ngIf="activityInfo?.type === '2'"
+        <div *ngIf="activityInfo?.type === '2' && activityInfo?.elevGain.length !== 0"
           class="summary-item"
         >
           <div class="activty-info-data-value">{{activityInfo?.elevGain || 0 }}</div>
@@ -195,7 +203,9 @@
                 總計時
               </span>
             </div>
-            <div class="activity-info__area--block">
+            <div class="activity-info__area--block"
+              *ngIf="activityInfo?.totalActivitySecond.length !== 0"
+            >
               <div>
                 {{activityInfo?.totalActivitySecond | sportTime}}
               </div>
@@ -203,7 +213,9 @@
                 移動時間
               </span>
             </div>
-            <div class="activity-info__area--block">
+            <div class="activity-info__area--block"
+              *ngIf="activityInfo?.totalRestSecond.length !== 0"
+            >
               <div>
                 {{activityInfo?.totalRestSecond | sportTime}}
               </div>
@@ -376,12 +388,15 @@
             </div>
           </div>
           <div class="activity-info__area"
-            *ngIf="activityInfo?.type === '1'|| activityInfo?.type === '2'"
+            *ngIf="(activityInfo?.type === '1'|| activityInfo?.type === '2') &&
+              (activityInfo?.elevGain.length > 0 || activityInfo?.elevLoss.length > 0)"
           >
             <div class="ala-dashboard-title activty-title">
               爬升資訊
             </div>
-            <div class="activity-info__area--block">
+            <div class="activity-info__area--block"
+              *ngIf="activityInfo?.elevGain.length > 0"
+            >
               <div>
                 {{activityInfo?.elevGain || 0}}
               </div>
@@ -389,7 +404,9 @@
                 爬升高度
               </span>
             </div>
-            <div class="activity-info__area--block">
+            <div class="activity-info__area--block"
+              *ngIf="activityInfo?.elevLoss.length > 0"
+            >
               <div>
                 {{activityInfo?.elevLoss || 0}}
               </div>
@@ -399,12 +416,15 @@
             </div>
           </div>
           <div class="activity-info__area"
-            *ngIf="activityInfo?.type === '2'"
+            *ngIf="activityInfo?.type === '2' &&
+            (activityInfo?.cycleAvgWatt.length > 0 || activityInfo?.cycleMaxWatt.length > 0)"
           >
             <div class="ala-dashboard-title activty-title">
               功率
             </div>
-            <div class="activity-info__area--block">
+            <div class="activity-info__area--block"
+              *ngIf="activityInfo?.cycleAvgWatt.length > 0"
+            >
               <div>
                 {{activityInfo?.cycleAvgWatt || 0}}
               </div>
@@ -412,7 +432,9 @@
                 平均功率
               </span>
             </div>
-            <div class="activity-info__area--block">
+            <div class="activity-info__area--block"
+             *ngIf="activityInfo?.cycleMaxWatt.length > 0"
+            >
               <div>
                 {{activityInfo?.cycleMaxWatt || 0}}
               </div>
@@ -422,12 +444,15 @@
             </div>
           </div>
           <div class="activity-info__area"
-            *ngIf="activityInfo?.type === '1'|| activityInfo?.type === '2'"
+            *ngIf="(activityInfo?.type === '1'|| activityInfo?.type === '2') &&
+            (activityInfo?.maxElev.length > 0 || activityInfo?.minElev.length > 0)"
           >
             <div class="ala-dashboard-title activty-title">
               海拔資訊
             </div>
-            <div class="activity-info__area--block">
+            <div class="activity-info__area--block"
+              *ngIf="activityInfo?.maxElev.length > 0"
+            >
               <div>
                 {{activityInfo?.maxElev || 0}}
               </div>
@@ -435,7 +460,9 @@
                 最高海拔
               </span>
             </div>
-            <div class="activity-info__area--block">
+            <div class="activity-info__area--block"
+              *ngIf="activityInfo?.minElev.length > 0"
+            >
               <div>
                 {{activityInfo?.minElev || 0}}
               </div>
@@ -445,12 +472,15 @@
             </div>
           </div>
           <div class="activity-info__area"
-            *ngIf="activityInfo?.type !== '4'&& activityInfo?.type !== '6'"
+            *ngIf="(activityInfo?.type !== '4'&& activityInfo?.type !== '6') &&
+            (activityInfo?.maxTemp.length > 0 || activityInfo?.minTemp.length > 0)"
           >
             <div class="ala-dashboard-title activty-title">
               溫度資訊
             </div>
-            <div class="activity-info__area--block">
+            <div class="activity-info__area--block"
+             *ngIf="activityInfo?.maxTemp.length > 0"
+            >
               <div>
                 {{activityInfo?.maxTemp || 0}}
               </div>
@@ -458,7 +488,9 @@
                 最高溫度
               </span>
             </div>
-            <div class="activity-info__area--block">
+            <div class="activity-info__area--block"
+              *ngIf="activityInfo?.minTemp.length > 0"
+            >
               <div>
                 {{activityInfo?.minTemp || 0}}
               </div>
