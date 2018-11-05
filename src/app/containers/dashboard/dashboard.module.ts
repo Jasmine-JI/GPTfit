@@ -34,9 +34,7 @@ import { DeviceLogDetailComponent } from './components/device-log-detail/device-
 import { CoachDashboardComponent } from './components/coach-dashboard/coach-dashboard.component';
 import { CoachService } from './services/coach.service';
 import { HrZoneDialogComponent } from './components/hr-zone-dialog/hr-zone-dialog.component';
-import { CoachDashboardDetailComponent } from './components/coach-dashboard-detail/coach-dashboard-detail.component';
 import { Top3DialogComponent } from './components/top3-dialog/top3-dialog.component';
-import { CoachRexComponent } from './components/coach-rex/coach-rex.component';
 import { EventManagementComponent } from './components/event-management/event-management.component';
 import { UserInfoService } from './services/userInfo.service';
 import { UtilsService } from '@shared/services/utils.service';
@@ -131,9 +129,7 @@ import { TrainLiveComponent } from './components/train-live/train-live.component
     DeviceLogDetailComponent,
     CoachDashboardComponent,
     HrZoneDialogComponent,
-    CoachDashboardDetailComponent,
     Top3DialogComponent,
-    CoachRexComponent,
     EventManagementComponent,
     MyGroupListComponent,
     AllGroupListComponent,

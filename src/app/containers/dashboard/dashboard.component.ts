@@ -60,7 +60,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
     }
     this.router.events.subscribe(_val => {
       if (_val instanceof NavigationEnd) {
-        if (_val.url.indexOf('/dashboard/test') > -1) {
+        if (_val.url.indexOf('/dashboard/coach-dashboard') > -1) {
           this.isHadContainer = false;
         } else {
           this.isHadContainer = true;

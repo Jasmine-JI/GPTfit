@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CoachService } from '../../services/coach.service';
 import { UtilsService } from '@shared/services/utils.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-train-live',
@@ -11,7 +12,8 @@ export class TrainLiveComponent implements OnInit {
   classLists: any;
   constructor(
     private coachService: CoachService,
-    private utils: UtilsService
+    private utils: UtilsService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -22,5 +24,8 @@ export class TrainLiveComponent implements OnInit {
     this.coachService
       .fetchClassRoomList(body)
       .subscribe(res => this.classLists = res.info.classList);
+  }
+  goToClass(id) {
+    this.router.navigateByUrl(`/dashboard/coach-dashboard/${id}`);
   }
 }
