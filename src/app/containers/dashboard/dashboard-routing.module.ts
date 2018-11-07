@@ -15,8 +15,6 @@ import { DbMaintainComponent } from './components/db-maintain/db-maintain.compon
 import { DeviceLogComponent } from './components/device-log/device-log.component';
 import { DeviceLogDetailComponent } from './components/device-log-detail/device-log-detail.component';
 import { CoachDashboardComponent } from './components/coach-dashboard/coach-dashboard.component';
-import { CoachDashboardDetailComponent } from './components/coach-dashboard-detail/coach-dashboard-detail.component';
-import { CoachRexComponent } from './components/coach-rex/coach-rex.component';
 import { EventManagementComponent } from './components/event-management/event-management.component';
 import { AuthGuard } from '@shared/guards/auth/auth.guard';
 import { MyGroupListComponent } from './group/my-group-list/my-group-list.component';
@@ -33,6 +31,7 @@ import { MyActivityComponent } from './components/my-activity/my-activity.compon
 import { SportReportComponent } from './components/sport-report/sport-report.component';
 import { MyDeviceComponent } from './components/device/my-device/my-device.component';
 import { ProductInfoComponent } from './components/device/product-info/product-info.component';
+import { TrainLiveComponent } from './components/train-live/train-live.component';
 
 const routes: Routes = [
   {
@@ -102,16 +101,8 @@ const routes: Routes = [
         canActivate: [DashboardGuard]
       },
       {
-        path: 'coach-dashboard',
+        path: 'coach-dashboard/:classId',
         component: CoachDashboardComponent
-      },
-      {
-        path: 'coach-dashboard/detail/:raceId',
-        component: CoachDashboardDetailComponent
-      },
-      {
-        path: 'test/:raceId',
-        component: CoachRexComponent
       },
       {
         path: 'event-management',
@@ -178,6 +169,10 @@ const routes: Routes = [
       {
         path: 'device/info/:deviceSN',
         component: ProductInfoComponent
+      },
+      {
+        path: 'train-live',
+        component: TrainLiveComponent
       }
     ]
   },

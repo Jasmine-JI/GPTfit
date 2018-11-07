@@ -8,6 +8,9 @@ const { API_SERVER } = environment.url;
 @Injectable()
 export class CoachService {
   constructor(private http: HttpClient) {}
+  fetchClassRoomList(body) {
+    return this.http.post<any>('/api/v1/train/getClassRoomList', body);
+  }
   fetchExample(body) {
     return this.http.post<any>(API_SERVER + 'coach/example', body);
   }

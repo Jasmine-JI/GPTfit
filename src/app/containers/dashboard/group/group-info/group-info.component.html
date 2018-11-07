@@ -64,7 +64,8 @@
         <label>狀態：</label>{{ groupInfo?.groupStatus | groupStatus }}
       </div>
       <div>
-        <label>介紹：</label>{{ groupInfo?.groupDesc }}
+        <label>介紹：</label>
+        <div [innerHTML]="groupInfo?.groupDesc | lineBreak"></div>
       </div>
     </div>
     <div>

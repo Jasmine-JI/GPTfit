@@ -1,367 +1,366 @@
-.coach-content {
-  background-color: #333;
-}
-.example-card {
-  max-width: 200px;
-}
-.example-card + .example-card {
-  margin-left: 15px;
-}
-
-.example-header-image {
-  background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
-  background-size: cover;
-}
-
-.demo-tab-group {
-  border: 1px solid #e8e8e8;
-}
-
-.demo-tab-content {
-  padding: 16px;
-}
-ul {
-  list-style-type: none;
-}
-
-a {
-  text-decoration: none;
-  color: #ddd;
-  transition: 0.2s ease-in;
-}
-a:hover {
-  color: #fff;
-}
-
-.main-menu {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: calc(100vh - 10px);
-  flex-direction: column;
-}
-
-ul.main-menu__nav {
-  display: inline-block;
-  width: 300px;
-  padding-left: 40px;
-}
-.main-menu__nav li ~ li {
-  margin-top: -1px;
-  cursor: pointer;
-}
-.main-menu__nav .active {
-  background-color: #2bc0db;
-}
-.main-menu__nav .active a {
-  color: #fff;
-}
-
-.main-menu__nav a {
-  border: 2px solid #2bc0db;
-  display: block;
-  padding: 10px;
-  text-align: center;
-  color: #2bc0db;
-  text-transform: uppercase;
-  position: relative;
-  overflow: hidden;
-  transition: 0.3s ease-in;
-}
-
-.main-menu__nav a:after {
-  content: '';
-  display: block;
-  background-color: #fff;
-  width: 20px;
-  height: 200px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform: rotate(30deg) translateY(-50%);
-  transform-origin: top center;
-  opacity: 0;
-  animation-duration: 0.3s;
-  animation-timing-function: linear;
-}
-
-.main-menu__nav a:before {
-  content: attr(data-title);
-  color: #fff;
-  display: block;
-  position: absolute;
-  left: 100%;
-  transition: 0.3s ease-out;
-  opacity: 0;
-}
-
-.main-menu__nav a:hover {
-  background-color: #2bc0db;
-  color: #fff;
-  text-indent: -500px;
-}
-
-.main-menu__nav a:hover:after {
-  animation-name: blik;
-}
-
-.main-menu__nav a:hover:before {
-  opacity: 1;
-  left: 50%;
-  text-indent: 0;
-  transform: translateX(-50%);
-}
-.content-triangle {
-  width: 30px;
-  height: 180px;
-  display: inline-block;
-  width: 30px;
-  margin-right: -4px;
-}
-
-.content {
-  min-height: 200px;
-  text-align: center;
-  padding: 0px 15px 15px;
-  width: calc(100% - 300px);
-}
-
-.map-card {
-  display: inline-block;
-  width: 200px;
-  height: 200px;
-}
-.map-card:nth-child(2n) {
-  margin-left: 10px;
-}
-
-@keyframes blik {
-  0% {
-    opacity: 0;
-    left: 0;
-  }
-  50% {
-    opacity: 0.7;
-    left: 50%;
-  }
-  100% {
-    opacity: 0;
-    left: 100%;
-  }
-}
-
-.bar {
-  position: absolute;
-  width: 50px;
-  height: 5px;
-  background: #2bc0db;
-  transition: all 1s linear;
-  -webkit-animation-duration: 1s;
-  animation-duration: 1s;
-  -webkit-animation-fill-mode: both;
-  animation-fill-mode: both;
-  -webkit-animation-iteration-count: infinite;
-  animation-iteration-count: infinite;
-}
-
-.bar.delay {
-  animation-delay: 0.5s;
-  -webkit-animation-delay: 0.5s;
-}
+/* * {
+  border: 1px solid black;
+} */
 
 .top {
-  top: -5px;
-  left: -5px;
+  display: flex;
+}
+.coach-bg {
+  min-height: 100vh;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: absolute;
+  z-index: -1;
+}
+.card-body--bg {
+  position: absolute;
+  z-index: -1;
+  background-color: #f0f0f0;
+  width: 100%;
+  height: 100%;
+}
+.coach-container {
+  width: 100%;
+}
+.bg-filter {
+  float: left;
+  width: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  -webkit-filter: brightness(2) blur(15px);
+  -moz-filter: brightness(2) blur(15px);
+  -o-filter: brightness(2) blur(15px);
+  -ms-filter: brightness(2) blur(15px);
+  filter: brightness(2) blur(15px);
+
+}
+.content {
+  height: 50%;
+  padding: 0 15px;
 }
 
-.right {
-  top: 18px;
-  right: -28px;
-  transform: rotate(90deg);
-}
-
-.bottom {
-  bottom: -5px;
-  left: -5px;
-}
-
-.left {
-  top: 18px;
-  left: -28px;
-  transform: rotate(90deg);
-}
-
-@-webkit-keyframes h-move {
-  0% {
-    left: -5px;
-  }
-  100% {
-    left: 200px;
-  }
-}
-
-@keyframes h-move {
-  0% {
-    left: -5px;
-  }
-  100% {
-    left: 200px;
-  }
-}
-
-.top,
-.bottom {
-  -webkit-animation-name: h-move;
-  animation-name: h-move;
-}
-
-@-webkit-keyframes v-move {
-  0% {
-    top: -5px;
-  }
-  100% {
-    top: 228px;
-  }
-}
-
-@keyframes v-move {
-  0% {
-    top: -5px;
-  }
-  100% {
-    top: 228px;
-  }
-}
-
-.right,
-.left {
-  -webkit-animation-name: v-move;
-  animation-name: v-move;
-}
-
-.box-outer {
-  width: 200px;
+.race-info {
+  width: 40%;
   height: 200px;
-  overflow: hidden;
+  text-align: right;
+
+}
+.race-mode__shadow {
+  font-size: 75px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 3px 2px 1px #333333;
+}
+.race-map__info {
+  font-size: 36px;
+  font-style: italic;
+  color: #fff;
+  text-shadow: 4px 3px 1px #333333;
+}
+.curmap-info {
+  width: 60%;
+  height: 200px;
+  text-align: right;
+  font-size: 34px;
+  color: #303030;
+}
+
+.hr-card {
+  width: calc((100% - 120px) / 4);
+  height: 374px;
   display: inline-block;
-  cursor: pointer;
-}
-.main_box {
-  width: 200px;
-  height: 200px;
+  margin: 0px 15px 25px 15px;
   position: relative;
-  background: rgba(0, 0, 0, 0.7);
-
-  border: 5px solid #333;
 }
 
-.main_box .tile figure img {
+.color-mask {
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  height: 20%;
+  background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.3), transparent);
+}
+
+
+.hr-card-header {
+  height: 20%;
+  display: flex;
+  color: #fff;
+  background-color: #a2a2a2;
+  font-size: 35px;
+  justify-content: space-between;
+  padding: 0 15px;
+  letter-spacing: 5px;
+}
+
+.hr-card-body {
+  height: 80%;
+  position: relative;
+  font-size: 30px;
+  letter-spacing: 5px;
+}
+
+.hr-card-body__hr {
+  height: 50%;
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+}
+
+.hr-card-body__other {
+  height: 50%;
+  display: flex;
+  padding: 15px;
+  justify-content: space-between;
+}
+
+.hr-card-body__pace {
+  display: inline-block;
+}
+
+.hr-card-body__distance {
+  display: inline-block;
+  text-align: right;
+}
+
+.hr-card-header__no {
+  display: inline-block;
+  line-height: 70px;
+  font-family: ITC;
+}
+
+.hr-card-header__name {
+  display: inline-block;
+  line-height: 70px;
+}
+
+.hr {
+  display: inline-block;
+}
+
+.hr-val {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+}
+.val {
+  display: inline-block;
+  font-family: ITC;
+  font-style: italic;
+  font-size: 112px;
+  color: #e10019;
+  opacity: .8;
+  line-height: 112px;
+  letter-spacing: 12px;
+}
+
+.user-photo {
+  width: 144px;
+  height: 144px;
+  display: inline-block;
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+}
+.user-photo--landscape img {
+  width: auto;
+  height: 100%;
+}
+.user-photo--portrait img {
   width: 100%;
   height: auto;
 }
-
-.main_box:focus {
-  outline: none;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-  transform: translate3d(0, -8px, 0);
+.photo-fit__25 img {
+  margin-left: -25%;
+}
+.photo-fit__50 img {
+  margin-left: -50%;
 }
 
-.footer {
-  position: absolute;
-  bottom: 0;
+.coach-header {
   width: 100%;
-  background-color: #3a392d;
-}
-.coach-btn {
-  font-size: 16px;
-  color: #fff;
-  background-color: #f0ad4e;
-  width: 100px;
-  height: 50px;
-  float: right;
-  border-color: #eea236;
-}
-
-.card-left {
-  width: 40%;
-  margin: 10px;
-  border-radius: 3px;
-}
-
-img {
-  width: 100%;
-  height: 100%;
-  border-radius: 3px;
-}
-
-.flex-container {
-  display: flex;
   height: 140px;
-  border: 1px solid #6b6e75;
-  border-radius: 5px;
-  border-top: .2em solid #b5cc18;
-  width: 50%;
-  margin-top: 15px;
-  cursor: pointer;
-}
-.flex-container.status_waitting {
-  border-top: .2em solid #fbbd08;
-}
-.flex-container:nth-child(1),
-.flex-container:nth-child(2) {
-  margin-top: 0px;
-}
-
-.race_id {
-  border-radius: 3px;
-  padding-right: 5px;
-  margin-right: 5px;
-}
-
-.card-right {
-  width: 60%;
+  background-color: #f1f1f1f1;
+  border-top: 1px solid #4f4f4f;
+  border-bottom: 1px solid #4f4f4f;
   display: flex;
-  flex-direction: column;
-  padding: 10px 5px;
-  ;
-}
-
-.title {
-  display: flex;
-  border-radius: 3px;
-  padding: 10px 5px;
-  color: #b5cc18;
-  border-bottom: 1px solid #6b6e75;
-}
-
-.title.status_waitting {
-  color:#fbbd08;
-}
-
-.info {
-  display: flex;
-  height: 70%;
+  justify-content: space-between;
   align-items: center;
 }
-
-.race_status {
-  width: 33%;
-  color: #b5cc18;
+.coach-footer {
+  width: 100%;
+  height: 105px;
+  background-color: #f1f1f1f1;
+  border-top: 1px solid #4f4f4f;
+  border-bottom: 1px solid #4f4f4f;
+}
+.coach-header img {
+  width: 96px;
+  height: 96px;
+  cursor:pointer;
+}
+.coach-header span {
+  font-size:46px;
+  color: #108bcd;
+  margin: auto 30px auto 30px;
   font-weight: bold;
-  font-size: 16px;
+  vertical-align: middle;
 }
-.race_status.status_waitting {
-  color: #fbbd08;
-}
-
-.map_name {
-  border-radius: 3px;
-  padding: 3px 5px;
-  color: #fff;
+.card-params {
+  font-family: ITC;
+  font-size: 65px;
+  opacity: .8;
 }
 
-.race_mans {
-  border-radius: 3px;
-  padding: 3px 5px;
-  color: #fff;
+.hr-heart {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* width: 30%; */
+  font-size: 30px;
+  color: #e10019;
+}
+
+.mySvg {
+  background-color: cadetblue;
+}
+.chart-area {
+  position: absolute;
+  top: -10000px;
+}
+.chart-container {
+  display:inline-block;
+  width: calc(100% - 65px);
+}
+.chart {
+  display:inline-block;
+  min-width: 100%;
+  max-width: 100%;
+  width: 100%;
+  margin: 0 auto;
+}
+.chart .highcharts-container {
+  display: flex;
+  width: 100% !important;
+}
+.hr-container {
+  height:100%;
+  width: 60px;
+  display: inline-block;
+}
+.hr-info {
+  margin-bottom: 70px;
+}
+.lesson-container {
+  padding: 0 15px;
+  display: flex;
+}
+.lesson-img {
+  padding: 20px 0px;
+}
+@media (max-width: 1919px) {
+  .hr-card {
+    width: calc((100% - 78px) / 3);
+    height: 284px;
+    margin: 0px 13px 25px 13px;
+  }
+
+  .user-photo {
+    width: 110px;
+    height: 110px;
+  }
+  .hr-card-header {
+    font-size: 28.5px;
+  }
+  .hr-card-header__no {
+    line-height: 57px;
+  }
+  .hr-card-header__name {
+    line-height: 57px;
+  }
+  .content {
+    padding: 0;
+  }
+  .card-params {
+    font-size: 49px;
+  }
+  .hr-card-body {
+    font-size: 22px;
+  }
+  .val {
+    font-size: 85px;
+    line-height: 85px;
+  }
+}
+
+@media (max-width: 1079px) {
+  .lesson-container {
+    display: block;
+  }
+  .lesson-img {
+    display: flex;
+    justify-content: center;
+  }
+  .hr-card {
+    width: calc((100% - 46px) / 2);
+    height: 281px;
+    margin: 0px 11.5px 25px 11.5px;
+  }
+
+  .user-photo {
+    width: 110px;
+    height: 110px;
+  }
+  .hr-card-header {
+    font-size: 28.5px;
+  }
+  .hr-card-header__no {
+    line-height: 57px;
+  }
+  .hr-card-header__name {
+    line-height: 57px;
+  }
+  .content {
+    padding: 0 11.5px;
+  }
+  .card-params {
+    font-size: 49px;
+  }
+  .hr-card-body {
+    font-size: 22px;
+  }
+  .val {
+    font-size: 85px;
+    line-height: 85px;
+  }
+}
+@media(max-width: 767px) {
+  .chart-container {
+    width: 100%;
+  }
+  .hr-info {
+    display: inline-block;
+    margin-bottom: 0px;
+  }
+  .hr-container {
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .coach-header img {
+    width: 56px;
+    height: 56px;
+  }
+  .coach-header span {
+    margin: 0;
+    font-size: 30px;
+  }
+  .coach-header {
+    padding: 0 15px;
+    height: 100px;
+  }
 }

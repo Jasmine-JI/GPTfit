@@ -62,7 +62,7 @@ export class EditGroupInfoComponent implements OnInit, OnDestroy {
     isBranchAdministrator: false,
     isCoach: false
   };
-  maxFileSize = 524288;
+  maxFileSize = 1048576;
   isUploading = false;
   fileLink: string;
   reloadFileText = '重新上傳';
@@ -333,7 +333,7 @@ export class EditGroupInfoComponent implements OnInit, OnDestroy {
         const childElementCount = this.footerTarget.nativeElement
           .childElementCount;
         this.globalEventsManager.setFooterRWD(childElementCount); // 為了讓footer長高85px
-      }, 1000);  // 應該長新增教練課btn非同步延遲，所以等一秒來得到childelement
+      }, 1000); // 應該長新增教練課btn非同步延遲，所以等一秒來得到childelement
     });
   }
   changeGroupInfo({ index }) {

@@ -34,9 +34,7 @@ import { DeviceLogDetailComponent } from './components/device-log-detail/device-
 import { CoachDashboardComponent } from './components/coach-dashboard/coach-dashboard.component';
 import { CoachService } from './services/coach.service';
 import { HrZoneDialogComponent } from './components/hr-zone-dialog/hr-zone-dialog.component';
-import { CoachDashboardDetailComponent } from './components/coach-dashboard-detail/coach-dashboard-detail.component';
 import { Top3DialogComponent } from './components/top3-dialog/top3-dialog.component';
-import { CoachRexComponent } from './components/coach-rex/coach-rex.component';
 import { EventManagementComponent } from './components/event-management/event-management.component';
 import { UserInfoService } from './services/userInfo.service';
 import { UtilsService } from '@shared/services/utils.service';
@@ -78,6 +76,8 @@ import { MyDeviceComponent } from './components/device/my-device/my-device.compo
 import { ProductInfoComponent } from './components/device/product-info/product-info.component';
 import { TodayLoginnerWinComponent } from './components/today-loginner-win/today-loginner-win.component';
 import { ReportService } from './services/report.service';
+import { TrainLiveComponent } from './components/train-live/train-live.component';
+import { LineBreakPipe } from './pipes/line-break.pipe';
 
 @NgModule({
   imports: [
@@ -130,9 +130,7 @@ import { ReportService } from './services/report.service';
     DeviceLogDetailComponent,
     CoachDashboardComponent,
     HrZoneDialogComponent,
-    CoachDashboardDetailComponent,
     Top3DialogComponent,
-    CoachRexComponent,
     EventManagementComponent,
     MyGroupListComponent,
     AllGroupListComponent,
@@ -164,7 +162,9 @@ import { ReportService } from './services/report.service';
     PartialMuscleInfoComponent,
     MyDeviceComponent,
     ProductInfoComponent,
-    TodayLoginnerWinComponent
+    TodayLoginnerWinComponent,
+    TrainLiveComponent,
+    LineBreakPipe
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
