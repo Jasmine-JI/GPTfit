@@ -235,8 +235,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* width: 30%; */
   font-size: 30px;
+    animation: heartbeat 1s infinite;
+
   color: #e10019;
 }
 
@@ -293,7 +294,31 @@
   width: 15%;
   height: 20px;
 }
+@keyframes heartbeat {
+  0% {
+    transform: scale(.75);
+  }
 
+  20% {
+    transform: scale(1);
+  }
+
+  40% {
+    transform: scale(.75);
+  }
+
+  60% {
+    transform: scale(1);
+  }
+
+  80% {
+    transform: scale(.75);
+  }
+
+  100% {
+    transform: scale(.75);
+  }
+}
 @media (max-width: 1919px) {
   .hr-card {
     width: calc((100% - 78px) / 3);

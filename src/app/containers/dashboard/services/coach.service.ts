@@ -26,6 +26,9 @@ export class CoachService {
   fetchRealTimeData(params) {
     return this.http.get<any>(API_SERVER + 'coach/realTimeData', { params });
   }
+  fetchFitPairInfo(body) {
+    return this.http.post<any>('/api/v1/device/getFitPairInfo', body);
+  }
   postRaceTest(body) {
     const headers = new HttpHeaders();
     const httpOptions = {
