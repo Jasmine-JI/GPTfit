@@ -19,6 +19,7 @@ import { FormTextareaComponent } from './form-textarea/form-textarea.component';
 import { MemberCapsuleComponent } from './member-capsule/member-capsule.component';
 import { SharedPipes } from '@shared/pipes/shared-pipes';
 import { Page403Component } from './page403/page403.component';
+import { AlaIframeComponent } from './ala-iframe/ala-iframe.component';
 
 @NgModule({
   imports: [
@@ -43,7 +44,8 @@ import { Page403Component } from './page403/page403.component';
     FormRemindComponent,
     FormTextareaComponent,
     MemberCapsuleComponent,
-    Page403Component
+    Page403Component,
+    AlaIframeComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -58,7 +60,8 @@ import { Page403Component } from './page403/page403.component';
     FormTextComponent,
     FormRemindComponent,
     FormTextareaComponent,
-    MemberCapsuleComponent
+    MemberCapsuleComponent,
+    AlaIframeComponent
   ]
 })
 export class SharedComponentsModule {}

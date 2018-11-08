@@ -5,85 +5,103 @@
       <!-- <span style="cursor:pointer" (click)="handldeSection(0)">開關</span> -->
     </div>
     <div class="lesson-container">
-      <div style="display:flex;flex-direction:column;padding-right: 45px;">
-        <div style="width:100%;font-size:20.5px;text-align:right;color:#959595">
-          <div style="font-size:32px;color:#1b4d70;font-weight:bold">
-            BODY COMBAT 戰鬥有氧
-          </div>
-          <div>
-            2018/05/10 AM11:26
-          </div>
+      <div class="col-md-6 ala-coach">
+        <div style="display:flex;flex-direction:column;padding-right: 45px;">
+          <div style="width:100%;font-size:20.5px;text-align:right;color:#959595">
+            <div style="font-size:32px;color:#1b4d70;font-weight:bold">
+              BODY COMBAT 戰鬥有氧
+            </div>
+            <div>
+              2018/05/10 AM11:26
+            </div>
 
-          <div>
-            健身工廠 新時代廠
-          </div>
-        </div>
-        <div style="width:100%;display:flex">
-          <div style="display:flex;align-items: center;">
-            <div class="user-photo user-photo--portrait" style="margin: 0 15px">
-              <img src="http://www.jituwang.com/uploads/allimg/130927/259905-13092FI41922.jpg">
+            <div>
+              健身工廠 新時代廠
             </div>
           </div>
-          <div style="width: 90%;padding-left:20px">
-            <div style="font-size: 26.6px;font-weight:bold;margin-bottom: 27px;">Jason Wu</div>
-            <div style="font-size: 14px;max-width:845px">
-              {{ coachInfo }}<span *ngIf="isMoreDisplay" style="color: #0078ff;cursor:pointer">...more</span>
+          <div style="width:100%;display:flex">
+            <div style="display:flex;align-items: center;">
+              <div class="user-photo user-photo--portrait" style="margin: 0 15px">
+                <img src="http://www.jituwang.com/uploads/allimg/130927/259905-13092FI41922.jpg">
+              </div>
+            </div>
+            <div style="width: 90%;padding-left:20px">
+              <div style="font-size: 26.6px;font-weight:bold;margin-bottom: 27px;">Jason Wu</div>
+              <div style="font-size: 14px;max-width:845px">
+                {{ coachInfo }}<span *ngIf="isMoreDisplay" style="color: #0078ff;cursor:pointer">...more</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="lesson-img">
-        <img style=""src="https://www.healthcenterhoornsevaart.nl/wp-content/uploads/2018/02/combat-630x300.jpg">
+
+      <div class="col-md-6 ala-coach">
+        <div #carousel class="lesson-img">
+          <div id="carouselExampleIndicators"
+            class="carousel slide"
+            data-interval="false"
+            data-ride="carousel"
+          >
+            <ol class="carousel-indicators">
+              <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+              <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+              <!-- <li data-target="#carouselExampleIndicators" data-slide-to="2"></li> -->
+            </ol>
+            <div class="carousel-inner">
+              <div class="carousel-item active">
+                <img style="width:100%" [src]="classImage">
+              </div>
+              <div class="carousel-item">
+                <app-ala-iframe
+                  [src]="frameUrl"
+                  [width]="carouselElement?.nativeElement.width"
+                  [height]="carouselElement?.nativeElement.height"
+                ></app-ala-iframe>
+              </div>
+            </div>
+            <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="sr-only">Next</span>
+            </a>
+          </div>
+        </div>
       </div>
+
     </div>
   </ng-container>
   <ng-container>
-    <div class="coach-header"  *ngIf="displaySections[1]">
+    <div class="coach-header" *ngIf="displaySections[1]">
       <span>分析圖表</span>
       <span>
-        <img src="/assets/icons/btn_icon_128px_59-speed_normal.png"
-          [hidden]="dispalyChartOptions[0]"
-          (click)="handldeChartOptions(0)"
-        />
-        <img src="/assets/icons/btn_icon_128px_60-speed_over.png"
-          [hidden]="!dispalyChartOptions[0]"
-          (click)="handldeChartOptions(0)"
-        />
-        <img src="/assets/icons/btn_icon_128px_57-heart_rate_normal.png"
-          [hidden]="dispalyChartOptions[1]"
-          (click)="handldeChartOptions(1)"
-        />
-        <img src="/assets/icons/btn_icon_128px_58-heart_rate_over.png"
-          [hidden]="!dispalyChartOptions[1]"
-          (click)="handldeChartOptions(1)"
-        />
-        <img src="/assets/icons/btn_icon_128px_61-full_display_normal.png"
-          [hidden]="dispalyChartOptions[2]"
-          (click)="handldeSection(1)"
-        />
-        <img src="/assets/icons/btn_icon_128px_62-full_display_over.png"
-          [hidden]="!dispalyChartOptions[2]"
-          (click)="handldeSection(1)"
-        />
+        <img src="/assets/icons/btn_icon_128px_59-speed_normal.png" [hidden]="dispalyChartOptions[0]" (click)="handldeChartOptions(0)" />
+        <img src="/assets/icons/btn_icon_128px_60-speed_over.png" [hidden]="!dispalyChartOptions[0]" (click)="handldeChartOptions(0)" />
+        <img src="/assets/icons/btn_icon_128px_57-heart_rate_normal.png" [hidden]="dispalyChartOptions[1]" (click)="handldeChartOptions(1)" />
+        <img src="/assets/icons/btn_icon_128px_58-heart_rate_over.png" [hidden]="!dispalyChartOptions[1]" (click)="handldeChartOptions(1)" />
+        <img src="/assets/icons/btn_icon_128px_61-full_display_normal.png" [hidden]="dispalyChartOptions[2]" (click)="handldeSection(1)" />
+        <img src="/assets/icons/btn_icon_128px_62-full_display_over.png" [hidden]="!dispalyChartOptions[2]" (click)="handldeSection(1)" />
       </span>
     </div>
-    <div style="width:100%;display:inline-block;padding:65px 70px;justify-content:space-between;height:680px"
-      [class.chart-area]="!displaySections[1]"
-    >
+    <div style="width:100%;display:inline-block;padding:65px 70px;height:680px" [class.chart-area]="!displaySections[1]">
       <div class="chart-container">
         <!-- <svg id="chart"></svg> -->
         <div #hrChartTarget class="chart">
           chart target
         </div>
       </div>
+
       <div class="hr-container">
         <div class="hr-info">
-          <div style="font-size:24px;text-align:center">{{hrSortValues && hrSortValues[0]?.login_acc }}</div>
+          <div style="font-size:24px;text-align:center">{{heartValues && heartValues[0]?.userName }}</div>
           <div style="display: flex;">
             <div class="hr-heart">
-              <i class="fa fa-heart" [style.color]="hrSortValues && hrColors[hrSortValues[0]?.colorIdx]"></i>
+              <i class="fa fa-heart" [style.color]="heartValues && hrColors[heartValues[0]?.colorIdx]"></i>
             </div>
-            <div style="width:70%;font-size:40px;font-family:ITC;text-align:right">{{hrSortValues && hrSortValues[0]?.current_heart_rate || 0}}</div>
+            <div style="width:70%;font-size:40px;font-family:ITC;text-align:right">{{heartValues &&
+              heartValues[0]?.liveHr || 0}}</div>
           </div>
         </div>
         <div class="hr-info">
@@ -96,14 +114,27 @@
           </div>
         </div>
         <div class="hr-info">
-          <div style="font-size:24px;text-align:center">{{hrSortValues && hrSortValues[hrSortValues.length - 1]?.login_acc}}</div>
+          <div style="font-size:24px;text-align:center">{{heartValues && heartValues[heartValues.length -
+            1]?.userName}}</div>
           <div style="display: flex;">
             <div class="hr-heart">
-              <i class="fa fa-heart"  [style.color]="hrSortValues && hrColors[hrSortValues[hrSortValues.length - 1]?.colorIdx]"></i>
+              <i class="fa fa-heart" [style.color]="heartValues && hrColors[heartValues[heartValues.length - 1]?.colorIdx]"></i>
             </div>
-            <div style="width:70%;font-size:40px;font-family:ITC;text-align:right">{{hrSortValues && hrSortValues[hrSortValues && hrSortValues.length - 1]?.current_heart_rate || 0}}</div>
+            <div style="width:70%;font-size:40px;font-family:ITC;text-align:right">{{heartValues &&
+              heartValues[heartValues && heartValues.length - 1]?.liveHr || 0}}</div>
           </div>
         </div>
+      </div>
+      <div>
+        <button class="alatech-btn alatech-btn--default rwd-btn" (click)="sendBoardCast()">
+          廣播測試資料
+        </button>
+        <button class="alatech-btn alatech-btn--default rwd-btn" (click)="stopBoardCast()">
+          停止測試
+        </button>
+        <button class="alatech-btn alatech-btn--default rwd-btn" (click)="sendAddMember()">
+          模擬中途有學員加入
+        </button>
       </div>
     </div>
   </ng-container>
@@ -111,65 +142,46 @@
     <div class="coach-header">
       <span>詳細成員</span>
       <span>
-        <img src="/assets/icons/btn_icon_128px_59-speed_normal.png"
-          [hidden]="dispalyMemberOptions[0]"
-          (click)="handldeMemberOptions(0)"
-        />
-        <img src="/assets/icons/btn_icon_128px_60-speed_over.png"
-          [hidden]="!dispalyMemberOptions[0]"
-          (click)="handldeMemberOptions(0)"
-        />
-        <img src="/assets/icons/btn_icon_128px_57-heart_rate_normal.png"
-          [hidden]="dispalyMemberOptions[1]"
-          (click)="handldeMemberOptions(1)"
-        />
-        <img src="/assets/icons/btn_icon_128px_58-heart_rate_over.png"
-          [hidden]="!dispalyMemberOptions[1]"
-          (click)="handldeMemberOptions(1)"
-        />
-        <img src="/assets/icons/btn_icon_128px_55-rise_normal.png"
-          [hidden]="dispalyMemberOptions[2]"
-          (click)="handldeMemberOptions(2)"
-        />
-        <img src="/assets/icons/btn_icon_128px_56-rise_over.png"
-          [hidden]="!dispalyMemberOptions[2]"
-          (click)="handldeMemberOptions(2)"
-        />
-        <img src="/assets/icons/btn_icon_128px_61-full_display_normal.png"
-          [hidden]="dispalyMemberOptions[3]"
-          (click)="handldeSection(2)"
-        />
-        <img src="/assets/icons/btn_icon_128px_62-full_display_over.png"
-          [hidden]="!dispalyMemberOptions[3]"
-          (click)="handldeSection(2)"
-        />
+        <img src="/assets/icons/btn_icon_128px_59-speed_normal.png" [hidden]="dispalyMemberOptions[0]" (click)="handldeMemberOptions(0)" />
+        <img src="/assets/icons/btn_icon_128px_60-speed_over.png" [hidden]="!dispalyMemberOptions[0]" (click)="handldeMemberOptions(0)" />
+        <img src="/assets/icons/btn_icon_128px_57-heart_rate_normal.png" [hidden]="dispalyMemberOptions[1]" (click)="handldeMemberOptions(1)" />
+        <img src="/assets/icons/btn_icon_128px_58-heart_rate_over.png" [hidden]="!dispalyMemberOptions[1]" (click)="handldeMemberOptions(1)" />
+        <img src="/assets/icons/btn_icon_128px_55-rise_normal.png" [hidden]="dispalyMemberOptions[2]" (click)="handldeMemberOptions(2)" />
+        <img src="/assets/icons/btn_icon_128px_56-rise_over.png" [hidden]="!dispalyMemberOptions[2]" (click)="handldeMemberOptions(2)" />
+        <img src="/assets/icons/btn_icon_128px_61-full_display_normal.png" [hidden]="dispalyMemberOptions[3]" (click)="handldeSection(2)" />
+        <img src="/assets/icons/btn_icon_128px_62-full_display_over.png" [hidden]="!dispalyMemberOptions[3]" (click)="handldeSection(2)" />
       </span>
     </div>
     <div class="content" style="height: 52%;margin-bottom: 30px;">
       <div style="font-size: 35px;margin: 30px 0px 30px 15px;">
-        全部成員{{ renderCards?.length }}人
+        全部成員{{ serverMessages?.classMemberInfo?.length }}人
       </div>
-      <div class="hr-card"
-      *ngFor="let item of renderCards;let _idx = index"
+      <!-- <div class="hr-card"
+      *ngFor="let item of serverMessages?.classMemberInfo;let _idx = index"
       >
           <div class="color-mask"></div>
           <div class="hr-card-header"
             [@animateState]="displayCards[_idx]?.colorIdx"
           >
             <div class="hr-card-header__no">No.{{_idx + 1}}</div>
-            <div class="hr-card-header__name">{{ displayCards[_idx].login_acc}}</div>
+            <div class="hr-card-header__name">{{ item.userName}}</div>
           </div>
 
         <div class="hr-card-body">
           <div class="card-body--bg"></div>
           <div class="hr-card-body__hr">
             <div class="user-photo" [ngClass]="imgClassess[_idx]">
-              <img [src]="(displayCards[_idx]?.imgUrl | safeHtml)">
+              <img *ngIf="item?.userIcon.length > 0"
+                [src]="(item?.userIcon | safeHtml)"
+              >
+              <img *ngIf="item?.userIcon.length === 0"
+                src="/assets/images/user.png"
+              >
             </div>
             <div class="hr-val">
               <div class="hr">心率</div>
               <div class="val" [style.color]="hrColors[displayCards[_idx].colorIdx]">
-                {{ displayCards[_idx].current_heart_rate || 0 }}
+                {{ displayCards[_idx].liveHr || 0 }}
               </div>
             </div>
           </div>
@@ -184,7 +196,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
       <button (click)="stop()">stop</button>
       <button (click)="restart()">restart</button>
     </div>
