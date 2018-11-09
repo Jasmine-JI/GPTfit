@@ -23,15 +23,15 @@
               matTreeNodeToggle
               [attr.aria-label]="'toggle ' + node.filename"
               (click)="handleItem(node)"
-              [disabled]="node.filename === '重訓' ? true : false"
+              [disabled]="node.filename === '重訓' || node.filename === '游泳' || node.filename === '游泳' ? true : false"
             >
               <mat-icon class="mat-icon-rtl-mirror">
                 {{openTreeName === node.filename ? 'expand_more' : 'chevron_right'}}
               </mat-icon>
             </button>
             <span [style.color]="openTreeName === node.filename ? '#157fcc' : 'initial'">
-              <span [style.color]="node.filename === '重訓' ? '#ada9a9' : 'initial'"
-                [style.cursor]="node.filename === '重訓' ? 'not-allowed' : 'initial'"
+              <span [style.color]="node.filename === '重訓' || node.filename === '游泳' ? '#ada9a9' : 'initial'"
+                [style.cursor]="node.filename === '重訓' || node.filename === '游泳' ? 'not-allowed' : 'initial'"
               >
                 {{node.filename}}
               </span>

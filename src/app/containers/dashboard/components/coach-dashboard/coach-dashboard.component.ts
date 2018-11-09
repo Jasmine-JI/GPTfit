@@ -2,7 +2,6 @@ import {
   Component,
   OnInit,
   OnDestroy,
-  AfterViewInit,
   ElementRef,
   ViewChild,
   ViewEncapsulation
@@ -18,16 +17,23 @@ import { fakeDatas, fakeCoachInfo } from './fakeUsers';
 import { CoachService } from '../../services/coach.service';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
-import { HttpParams } from '@angular/common/http';
-import { Users } from '../../models/fakeUser';
 import { Meta } from '@angular/platform-browser';
-import * as d3 from 'd3';
-import * as _Highcharts from 'highcharts';
 import * as Stock from 'highcharts/highstock';
+import { WebSocketSubject } from 'rxjs/observable/dom/WebSocketSubject';
+import * as moment from 'moment';
+import { stockChart } from 'highcharts/highstock';
 
-import { chart } from 'highcharts';
-var Highcharts: any = _Highcharts; // 不檢查highchart型態
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { UtilsService } from '@shared/services/utils.service';
+import * as _ from 'lodash';
 
+
+export class Message {
+  constructor(
+    public classMemberDataField: any,
+    public classMemberDataFieldValue: any
+  ) {}
+}
 @Component({
   selector: 'app-coach-dashboard',
   templateUrl: './coach-dashboard.component.html',
@@ -81,11 +87,11 @@ var Highcharts: any = _Highcharts; // 不檢查highchart型態
     ])
   ]
 })
-export class CoachDashboardComponent implements OnInit, OnDestroy, AfterViewInit {
+export class CoachDashboardComponent implements OnInit, OnDestroy {
   width = 0;
   height = 0;
   fakeDatas: any;
-  raceId: string;
+  classId: string;
   timer: any;
   displayCards = [];
   imgClassess = [];
@@ -121,206 +127,159 @@ export class CoachDashboardComponent implements OnInit, OnDestroy, AfterViewInit
   time = 0;
   @ViewChild('hrChartTarget')
   hrChartTarget: ElementRef;
+  @ViewChild('carousel')
+  carouselElement: ElementRef;
   chart: any; // Highcharts.ChartObject
+  heartValues = [];
+  socketTimer: any;
+  isFirstInit = true;
+  currentMemberNum = 0;
+  frameUrl: SafeResourceUrl;
+  totalInfo: string;
+  isLoading = false;
+  isClassEnd = false;
+  classImage =
+    'https://www.healthcenterhoornsevaart.nl/wp-content/uploads/2018/02/combat-630x300.jpg';
+  private socket$: WebSocketSubject<any>;
+
+  public serverMessages: Message;
+  userInfos: any = [];
   constructor(
     private coachService: CoachService,
     private router: Router,
     private route: ActivatedRoute,
     private meta: Meta,
-    elementRef: ElementRef
+    elementRef: ElementRef,
+    private sanitizer: DomSanitizer,
+    private utils: UtilsService
   ) {
+    Stock.setOptions({ global: { useUTC: false } });
     this.elementRef = elementRef;
+    this.socket$ = new WebSocketSubject('ws://192.168.1.231:9000/train');
+    // this.socket$ = new WebSocketSubject('ws://192.168.1.235:3002');
+
+    this.socket$.subscribe(
+      // message => this.display(JSON.stringify(message)),
+      message => this.display(message),
+      err => console.error(err),
+      () => console.warn('Completed!')
+    );
+
+    const url = 'https://player.twitch.tv/?channel=baoz';
+    this.frameUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
 
   ngOnInit() {
-    Highcharts.setOptions({
-      global: {
-        useUTC: false
-      }
-    });
-    // const ratio = window.devicePixelRatio;
-    // if (location.host !== '192.168.1.235:8080' && ratio === 3) {
-    //   this.meta.updateTag({
-    //     name: 'viewport',
-    //     content: `width=device-width, initial-scale=${1 / ratio}`
-    //   });
-    // }
-    this.fakeDatas = fakeDatas;
-    this.fakeDatas.forEach((_data, idx) => {
-      const image = new Image();
-      image.addEventListener('load', e => this.handleImageLoad(e, idx));
-      image.src = _data.imgUrl;
-    });
-    this.raceId = this.route.snapshot.paramMap.get('raceId');
-    // this.handleRealTime();
+    this.classId = this.route.snapshot.paramMap.get('classId');
     this.handleCoachInfo(fakeCoachInfo);
+    this.sendBoardCast();
   }
+  display(msg) {
+    let sum = 0;
+    this.heartValues = [];
+    if (typeof msg === 'string') {
+      this.serverMessages = JSON.parse(msg
+          .replace(/u'(?=[^:]+')/g, "'")
+          .replace(/'/g, '"'));
+      const chartDatas = this.serverMessages.classMemberDataFieldValue;
+      const fields = this.serverMessages.classMemberDataField;
+      const heartIdx = fields.findIndex(_field => _field === '129');
+      const snIdx = fields.findIndex(_field => _field === 'equipmentSN');
+      const zoneIdx = fields.findIndex(_field => _field === '133');
 
-  initHChart() {
-    const hrOptions: any = {
-      chart: {
-        events: {
-          load: function () {
-
-            // set up the updating of the chart each second
-            const series = this.series[0];
-            this.hchartTimer = setInterval(() => {
-              const x = (new Date()).getTime(), // current time
-                y = Math.round(Math.random() * 100);
-              series.addPoint([x, y], true, true);
-            }, 1000);
-          }
-        }
-      },
-      title: {
-        text: 'Live random data'
-      },
-      exporting: {
-        enabled: false
-      },
-      rangeSelector: {
-        buttons: [{
-          count: 1,
-          type: 'minute',
-          text: '1M'
-        }, {
-          count: 5,
-          type: 'minute',
-          text: '5M'
-        }, {
-          type: 'all',
-          text: 'All'
-        }],
-        inputEnabled: false,
-        selected: 0
-      },
-      series: [{
-        name: 'Random data',
-        data: (function () {
-          // generate an array of random data
-          const data = [],
-            time = (new Date()).getTime();
-          let i;
-
-          for (i = -999; i <= 0; i += 1) {
-            data.push([
-              time + i * 1000,
-              Math.round(Math.random() * 100)
-            ]);
-          }
-          return data;
-        }())
-      }]
-    };
-    this.chart = new Stock.StockChart(this.hrChartTarget.nativeElement, hrOptions);
-  }
-  handleArea(data, scaleX, scaleY, idx) {
-    d3.area()
-      .x(function(d) {
-        return scaleX(d[0]);
-      })
-      .y0(this.chartHeight)
-      .y1(function(d) {
-        return scaleY(d[idx]);
-      })
-      .curve(d3.curveCardinal);
-  }
-  handleLine(data, scaleX, scaleY, idx) {
-    d3.line()
-      .x(function(d) {
-        return scaleX(d[0]);
-      })
-      .y(function(d) {
-        return scaleY(d[idx]);
-      })
-      .curve(d3.curveCardinal);
-  }
-
-  updateChart() {
-    const s = d3.select('#chart').transition();
-    this.chartWidth = 1468;
-    this.chartHeight = 450;
-    s.attr('width', 1468).attr('height', 518);
-    const minX = d3.min(this.data, function(d) {
-      return d[0];
-    });
-    const maxX = d3.max(this.data, function(d) {
-      return d[0];
-    });
-    const minY = d3.min(this.data, function(d) {
-      return Math.min(...d.slice(1, d.length));
-    });
-    const maxY = d3.max(this.data, function(d) {
-      return Math.max(...d.slice(1, d.length));
-    });
-
-    const scaleX = d3
-      .scaleLinear()
-      .range([0, this.chartWidth])
-      .domain([minX, maxX]);
-
-    const scaleY = d3
-      .scaleLinear()
-      .range([this.chartHeight, 0])
-      .domain([minY - 10, maxY + 10]);
-    this.data[this.data.length - 1].forEach((_data, idx) => {
-      if (idx > 0) {
-        const index = this.displayCards.findIndex(
-          _card => _card.user_id === this.renderCards[idx - 1]
-        );
-        const areaGradient = d3.select('#chart').select(`#areaGradient${idx}`);
-        areaGradient
-          .select(`#stop1areaGradient${idx}`)
-          .attr('offset', '0%')
-          .attr('stop-color', this.hrColors[this.displayCards[index].colorIdx])
-          .attr('stop-opacity', 0.8);
-        areaGradient
-          .select(`#stop2areaGradient${idx}`)
-          .attr('offset', '100%')
-          .attr('stop-color', this.hrColors[this.displayCards[index].colorIdx])
-          .attr('stop-opacity', 0);
-        const line = d3
-          .line()
-          .x(function(d) {
-            return scaleX(d[0]);
-          })
-          .y(function(d) {
-            return scaleY(d[idx]);
-          })
-          .curve(d3.curveCardinal);
-        const area = d3
-          .area()
-          .x(function(d) {
-            return scaleX(d[0]);
-          })
-          .y0(this.chartHeight)
-          .y1(function(d) {
-            return scaleY(d[idx]);
-          })
-          .curve(d3.curveCardinal);
-
-        s.select(`#line${idx}`)
-          .duration(1000)
-          .attr('d', line(this.data))
-          .attr('stroke', this.hrColors[this.displayCards[index].colorIdx])
-          .attr('stroke-width', 5)
-          .attr('fill', 'none')
-          .attr('transform', 'translate(35,20)');
-        s.select(`#area${idx}`)
-          .duration(1000)
-          .attr('d', area(this.data))
-          .attr('fill', `url(#areaGradient${idx})`);
+      if (this.userInfos.length === 0) {
+        const equipSnDatas = chartDatas.map(_data => {
+          return _data[snIdx];
+        });
+        this.handleSNInfo(equipSnDatas);
+      } else {
+        this.heartValues = chartDatas.map((_data, idx) => {
+          const liveHr = _data[heartIdx];
+          const colorIdx = _data[zoneIdx];
+          this.chart.series[idx].addPoint([moment().unix() * 1000, liveHr]);
+          sum += liveHr;
+          return { liveHr, userName: this.userInfos[_data[snIdx]].userName, colorIdx, userIcon: this.userInfos[_data[snIdx]].userIcon, imgClassName: this.userInfos[_data[snIdx]].imgClassName };
+        });
       }
+      this.currentMemberNum = chartDatas.length;
+    } else {
+      if (msg.classStatus === '2') {
+        clearInterval(this.socketTimer);
+        this.socket$.unsubscribe();
+        this.isLoading = false;
+        this.isClassEnd = true;
+      }
+    }
+    this.heartValues = this.heartValues.sort((a, b) => b.liveHr - a.liveHr);
+    this.hrMeanValue = Math.round(sum / this.currentMemberNum);
+  }
+  handleSNInfo(snDatas: any) {
+    const body = { token: this.utils.getToken(), pairEquipmentSN: snDatas };
+    this.coachService.fetchFitPairInfo(body).subscribe(res => {
+      const datas = res.info.deviceInfo;
+      const series = [];
+      const infos = datas.map((_data, idx) => {
+        const { userName, pairEquipmentSN, pairIcon } = _data;
+        series.push({ name: userName, data: [] });
+        const userIcon =
+          pairIcon && pairIcon.length > 0
+            ? this.utils.buildBase64ImgString(pairIcon)
+            : '/assets/images/user.png';
+        const image = new Image();
+        image.src = userIcon;
+        const width = image.width;
+        const height = image.height;
+        let imgClassName =
+          width > height ? 'user-photo--landscape' : 'user-photo--portrait';
+        const proportion = width / height;
+        if (proportion > 1.5) {
+          imgClassName += ' photo-fit__50';
+        } else if (proportion > 1.2) {
+          imgClassName += ' photo-fit__25';
+        }
+        return { userName, pairEquipmentSN, userIcon, imgClassName };
+      });
+      const hrOptions: any = {
+        title: {
+          text: 'Live random data'
+        },
+        exporting: {
+          enabled: false
+        },
+        xAxis: {
+          type: 'datetime',
+          dateTimeLabelFormats: {
+            millisecond: '%H:%M:%S.%L',
+            second: '%H:%M:%S',
+            minute: '%H:%M',
+            hour: '%H:%M',
+            day: '%m/%d',
+            week: '%m/%d',
+            month: '%Y/%m',
+            year: '%Y'
+          }
+        },
+        series
+      };
+      this.initHChart(hrOptions);
+      this.isLoading = false;
+      this.userInfos = _.keyBy(infos, keyName => keyName.pairEquipmentSN);
     });
-    const start = Math.floor((maxY + 10) / 10) * 10;
-    const end = Math.floor((minY - 10) / 10) * 10;
+  }
 
-    const tmpArr = this.handleRangeArray(start, end);
-    const axisY = d3.axisLeft(scaleY).tickValues(tmpArr);
-    d3.select('#chart')
-      .select('#y-axis')
-      .transition()
-      .call(axisY);
+  sendBoardCast() {
+    this.isLoading = true;
+    this.socketTimer = setInterval(() => {
+      const data = { classViewer: '2', classId: this.classId }; // 1:執行，2:觀看
+      this.socket$.next(data);
+    }, 5000);
+  }
+  stopBoardCast() {
+    clearInterval(this.socketTimer);
+  }
+
+  initHChart(option) {
+    this.chart = stockChart(this.hrChartTarget.nativeElement, option);
   }
   handleRangeArray(start, end) {
     const final = (end - start) / 10;
@@ -330,228 +289,27 @@ export class CoachDashboardComponent implements OnInit, OnDestroy, AfterViewInit
       return arr;
     }
   }
-  handleDrawChart() {
-    const s = d3.select('#chart');
-
-    this.chartWidth = 1468;
-    this.chartHeight = 450;
-    s.attr('width', 1468).attr('height', 518);
-    const minX = d3.min(this.data, function(d) {
-      return d[0];
-    });
-
-    if (this.data.length > 0) {
-      const maxX = d3.max(this.data, function(d) {
-        return d[0];
-      });
-      const minY = d3.min(this.data, function(d) {
-        return Math.min(...d.slice(1, d.length));
-      });
-      const maxY = d3.max(this.data, function(d) {
-        return Math.max(...d.slice(1, d.length));
-      });
-
-      const scaleX = d3
-        .scaleLinear()
-        .range([0, this.chartWidth])
-        .domain([minX, maxX]);
-
-      const scaleY = d3
-        .scaleLinear()
-        .range([this.chartHeight, 0])
-        .domain([minY - 10, maxY + 10]);
-      this.data[this.data.length - 1].forEach((_data, idx) => {
-        if (idx > 0) {
-          const index = this.displayCards.findIndex(
-            _card => _card.user_id === this.renderCards[idx - 1]
-          );
-
-          const areaGradient = d3
-            .select('#chart')
-            .append('defs')
-            .append('linearGradient')
-            .attr('id', `areaGradient${idx}`)
-            .attr('x1', '0%')
-            .attr('y1', '0%')
-            .attr('x2', '0%')
-            .attr('y2', '100%');
-          areaGradient
-            .append('stop')
-            .attr('id', `stop1areaGradient${idx}`)
-            .attr('offset', '0%')
-            .attr(
-              'stop-color',
-              this.hrColors[this.displayCards[index].colorIdx]
-            )
-            .attr('stop-opacity', 0.8);
-          areaGradient
-            .append('stop')
-            .attr('id', `stop2areaGradient${idx}`)
-            .attr('offset', '100%')
-            .attr(
-              'stop-color',
-              this.hrColors[this.displayCards[index].colorIdx]
-            )
-            .attr('stop-opacity', 0);
-          const line = d3
-            .line()
-            .x(function(d) {
-              return scaleX(d[0]);
-            })
-            .y(function(d) {
-              return scaleY(d[idx]);
-            })
-            .curve(d3.curveCardinal);
-          const area = d3
-            .area()
-            .x(function(d) {
-              return scaleX(d[0]);
-            })
-            .y0(this.chartHeight)
-            .y1(function(d) {
-              return scaleY(d[idx]);
-            })
-            .curve(d3.curveCardinal);
-          s.append('path')
-            .attr('id', `line${idx}`)
-            .attr('d', line(this.data))
-            .attr('stroke', this.hrColors[this.displayCards[index].colorIdx])
-            .attr('stroke-width', 5)
-            .attr('fill', 'none')
-            .attr('transform', 'translate(35,20)');
-
-          s.append('path')
-            .attr('id', `area${idx}`)
-            .attr('d', area(this.data))
-            .attr('fill', `url(#areaGradient${idx})`)
-            .attr('transform', 'translate(35,20)');
-        }
-        // axis
-        const axisX = d3.axisBottom(scaleX).ticks(10);
-
-        const start = Math.floor((maxY + 10) / 10) * 10;
-        const end = Math.floor((minY - 10) / 10) * 10;
-        const axisY = d3
-          .axisLeft(scaleY)
-          .tickValues(this.handleRangeArray(start, end));
-
-        // grid
-        const axisXGrid = d3
-          .axisBottom(scaleX)
-          .ticks(10)
-          .tickFormat('')
-          .tickSize(-this.chartHeight, 0);
-
-        const axisYGrid = d3
-          .axisLeft(scaleY)
-          .ticks(10)
-          .tickFormat('')
-          .tickSize(-this.chartWidth, 0);
-
-        // Axis Grid line
-        s.append('g')
-          .attr('id', 'y-axis')
-          .call(axisY)
-          .attr('fill', 'none')
-          .attr('stroke', '#000')
-          .attr('transform', 'translate(35,20)')
-          .selectAll('text')
-          // .attr('fill', '#000')
-          .attr('stroke', 'none')
-          .style('font-size', '10px');
-      });
-    }
-  }
-  ngAfterViewInit() {
-    // this.handleDrawChart();
-    this.initHChart();
-  }
   ngOnDestroy() {
-    clearInterval(this.timer);
-    clearInterval(this.chart.hchartTimer); // 因為要到this.chart裡找hchartTimer
-    this.meta.updateTag({
-      name: 'viewport',
-      content: 'width=device-width, initial-scale=1'
-    });
+    clearInterval(this.socketTimer);
   }
 
-  handleRealTime() {
-    let params = new HttpParams();
-    params = params.set('raceId', this.raceId);
-    this.timer = setInterval(() => {
-      this.coachService.fetchRealTimeData(params).subscribe(res => {
-        this.displayCards = res;
-        if (!this.isNotFirstChanged) {
-          this.renderCards = this.displayCards.map(_card => _card.user_id);
-          this.isNotFirstChanged = true;
-        }
-        this.handleMethod();
-        this.handleChartHr(this.displayCards);
-        let sum = 0;
-        this.data.push([(this.time + 1) * 2]);
-        this.time++;
-        this.displayCards.forEach((_card, idx) => {
-          const { current_heart_rate, user_id } = _card;
-          const index = this.renderCards.findIndex(_id => _id === user_id);
-          const image = new Image();
-          image.addEventListener('load', e => this.handleImageLoad(e, idx));
-          image.src = _card.imgUrl;
-          sum += current_heart_rate;
-          this.handleCard(current_heart_rate, idx);
-          this.data[this.data.length - 1][index + 1] = current_heart_rate;
-        });
-        if (this.data.length > 0 && !this.isNotFirstDrawed) {
-          this.handleDrawChart();
-          this.isNotFirstDrawed = true;
-        } else {
-          this.updateChart();
-        }
-        this.hrMeanValue = Math.round(sum / this.displayCards.length);
-      });
-    }, 2000);
-  }
-  handleChartHr(arr) {
-    this.hrSortValues = [...arr]; // use spread operator deep copy because avoid being immutable
-    this.hrSortValues = this.hrSortValues.sort(
-      (a, b) => b.current_heart_rate - a.current_heart_rate
-    );
-  }
-  handldeChartOptions(idx) {
-    if (idx === 1) {
-      this.dispalyChartOptions[0] = !this.dispalyChartOptions[0];
-      this.dispalyChartOptions[1] = !this.dispalyChartOptions[1];
+  handleCoachInfo(str) {
+    this.totalInfo = str.replace(/\r\n|\n/g, '').trim();
+    if (
+      this.totalInfo.length > 118 &&
+      this.displaySections[0] === true &&
+      !this.isSectionIndividual
+    ) {
+      this.coachInfo = this.totalInfo.substring(0, 118);
+      this.isMoreDisplay = true;
     } else {
-      this.dispalyChartOptions[0] = !this.dispalyChartOptions[0];
-      this.dispalyChartOptions[1] = !this.dispalyChartOptions[1];
+      this.coachInfo = this.totalInfo;
+      this.isMoreDisplay = false;
     }
   }
-  handldeMemberOptions(idx) {
-    if (idx === 0) {
-      this.dispalyMemberOptions[0] = !this.dispalyMemberOptions[0];
-      if (this.dispalyMemberOptions[0]) {
-        this.dispalyMemberOptions[1] = false;
-      } else {
-        this.dispalyMemberOptions[1] = true;
-      }
-      this.dispalyMemberOptions[2] = false;
-    } else if (idx === 1) {
-      this.dispalyMemberOptions[1] = !this.dispalyMemberOptions[1];
-      if (this.dispalyMemberOptions[1]) {
-        this.dispalyMemberOptions[0] = false;
-      } else {
-        this.dispalyMemberOptions[0] = true;
-      }
-      this.dispalyMemberOptions[2] = false;
-    } else {
-      this.dispalyMemberOptions[2] = !this.dispalyMemberOptions[2];
-      if (this.dispalyMemberOptions[2]) {
-        this.dispalyMemberOptions[0] = false;
-        this.dispalyMemberOptions[1] = false;
-      } else {
-        this.dispalyMemberOptions[0] = false;
-        this.dispalyMemberOptions[1] = true;
-      }
-    }
+  handleExtendCoachInfo() {
+    this.coachInfo = this.totalInfo;
+    this.isMoreDisplay = false;
   }
   handldeSection(idx) {
     this.isSectionIndividual = !this.isSectionIndividual;
@@ -581,87 +339,5 @@ export class CoachDashboardComponent implements OnInit, OnDestroy, AfterViewInit
       this.displaySections[2] = true;
     }
     this.handleCoachInfo(fakeCoachInfo);
-  }
-  handleImageLoad(event, idx): void {
-    this.width = event.target.width;
-    this.height = event.target.height;
-    this.imgClassess[idx] =
-      this.width > this.height
-        ? 'user-photo--landscape'
-        : 'user-photo--portrait';
-    if (this.imgClassess[idx] === 'user-photo--landscape') {
-      const proportion = this.width / this.height;
-      if (proportion > 1.5) {
-        this.imgClassess[idx] += ' photo-fit__50';
-      } else if (proportion > 1.2) {
-        this.imgClassess[idx] += ' photo-fit__25';
-      }
-    }
-  }
-  handleCoachInfo(str) {
-    const info = str.replace(/\r\n|\n/g, '').trim();
-    if (
-      info.length > 118 &&
-      this.displaySections[0] === true &&
-      !this.isSectionIndividual
-    ) {
-      this.coachInfo = info.substring(0, 118);
-      this.isMoreDisplay = true;
-    } else {
-      this.coachInfo = info;
-      this.isMoreDisplay = false;
-    }
-  }
-  handleCard(hr, index) {
-    this.displayCards[index].colorIdx = this.displayCards[
-      index
-    ].zones.findIndex(_val => hr < _val);
-    if (this.displayCards[index].colorIdx === -1) {
-      this.displayCards[index].colorIdx = 6;
-    }
-  }
-  handleMethod() {
-    this.displayCards.forEach((data, index) => {
-      this.handleHRZone(index, data.age, data.rest_hr);
-    });
-  }
-  handleHRZone(index, age, rest_hr) {
-    this.displayCards[index].zones = [];
-    // 最大心律法
-    if (this.method === 1) {
-      let hrValue = (220 - age) * 0.5;
-      this.displayCards[index].zones.push(hrValue);
-      hrValue = (220 - age) * 0.6;
-      this.displayCards[index].zones.push(hrValue);
-      hrValue = (220 - age) * 0.7;
-      this.displayCards[index].zones.push(hrValue);
-      hrValue = (220 - age) * 0.8;
-      this.displayCards[index].zones.push(hrValue);
-      hrValue = (220 - age) * 0.9;
-      this.displayCards[index].zones.push(hrValue);
-      hrValue = (220 - age) * 1;
-      this.displayCards[index].zones.push(hrValue);
-    } else {
-      // 儲備心率法
-      let hrValue = (220 - age - rest_hr) * 0.55 + rest_hr;
-      this.displayCards[index].zones.push(hrValue);
-      hrValue = (220 - age - rest_hr) * 0.6 + rest_hr;
-      this.displayCards[index].zones.push(hrValue);
-      hrValue = (220 - age - rest_hr) * 0.65 + rest_hr;
-      this.displayCards[index].zones.push(hrValue);
-      hrValue = (220 - age - rest_hr) * 0.75 + rest_hr;
-      this.displayCards[index].zones.push(hrValue);
-      hrValue = (220 - age - rest_hr) * 0.85 + rest_hr;
-      this.displayCards[index].zones.push(hrValue);
-      hrValue = (220 - age - rest_hr) * 1 + rest_hr;
-      this.displayCards[index].zones.push(hrValue);
-    }
-  }
-  stop() {
-    clearInterval(this.timer);
-  }
-  restart() {
-    clearInterval(this.timer);
-    this.handleRealTime();
   }
 }

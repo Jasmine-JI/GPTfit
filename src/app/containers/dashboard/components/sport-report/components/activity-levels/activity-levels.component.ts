@@ -75,10 +75,27 @@ export class ActivityLevelsComponent implements OnChanges, OnDestroy {
           }
         });
       let name = '';
-      if (_type === '1') {
-        name = '跑步';
-      } else {
-        name = '自行車';
+      switch (_type) {
+        case '1':
+          name = '跑步';
+          break;
+        case '2':
+          name = '自行車';
+          break;
+        case '3':
+          name = '重量訓練';
+          break;
+        case '4':
+          name = '游泳';
+          break;
+        case '5':
+          name = '有氧運動';
+          break;
+        case '6':
+          name = '划船';
+          break;
+        default:
+          name = '尚未定義';
       }
       const serie = { name, data };
       this.series.push(serie);

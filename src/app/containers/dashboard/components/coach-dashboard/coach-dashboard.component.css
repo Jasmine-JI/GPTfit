@@ -1,10 +1,30 @@
 /* * {
   border: 1px solid black;
 } */
-
+.blurred-mask {
+  filter: blur(5px);
+  width: 100%;
+  height: 100vh;
+  background: inherit;
+  overflow: hidden;
+  /* background-color: #fff; */
+  z-index: 2;
+}
+.end-text {
+  z-index: 1001;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  /* height: 50%; */
+  color: #108Bcd;
+  font-weight: 700;
+  font-size: 70px;
+  transform: translate(-50%, -50%);
+}
 .top {
   display: flex;
 }
+
 .coach-bg {
   min-height: 100vh;
   background-position: center;
@@ -13,6 +33,7 @@
   position: absolute;
   z-index: -1;
 }
+
 .card-body--bg {
   position: absolute;
   z-index: -1;
@@ -20,9 +41,11 @@
   width: 100%;
   height: 100%;
 }
+
 .coach-container {
   width: 100%;
 }
+
 .bg-filter {
   float: left;
   width: 100%;
@@ -36,6 +59,7 @@
   filter: brightness(2) blur(15px);
 
 }
+
 .content {
   height: 50%;
   padding: 0 15px;
@@ -47,18 +71,21 @@
   text-align: right;
 
 }
+
 .race-mode__shadow {
   font-size: 75px;
   font-weight: bold;
   color: #fff;
   text-shadow: 3px 2px 1px #333333;
 }
+
 .race-map__info {
   font-size: 36px;
   font-style: italic;
   color: #fff;
   text-shadow: 4px 3px 1px #333333;
 }
+
 .curmap-info {
   width: 60%;
   height: 200px;
@@ -145,6 +172,7 @@
   flex-direction: column;
   text-align: right;
 }
+
 .val {
   display: inline-block;
   font-family: ITC;
@@ -164,17 +192,21 @@
   position: relative;
   overflow: hidden;
 }
+
 .user-photo--landscape img {
   width: auto;
   height: 100%;
 }
+
 .user-photo--portrait img {
   width: 100%;
   height: auto;
 }
+
 .photo-fit__25 img {
   margin-left: -25%;
 }
+
 .photo-fit__50 img {
   margin-left: -50%;
 }
@@ -189,6 +221,7 @@
   justify-content: space-between;
   align-items: center;
 }
+
 .coach-footer {
   width: 100%;
   height: 105px;
@@ -196,18 +229,21 @@
   border-top: 1px solid #4f4f4f;
   border-bottom: 1px solid #4f4f4f;
 }
+
 .coach-header img {
   width: 96px;
   height: 96px;
-  cursor:pointer;
+  cursor: pointer;
 }
+
 .coach-header span {
-  font-size:46px;
+  font-size: 46px;
   color: #108bcd;
   margin: auto 30px auto 30px;
   font-weight: bold;
   vertical-align: middle;
 }
+
 .card-params {
   font-family: ITC;
   font-size: 65px;
@@ -218,48 +254,93 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* width: 30%; */
   font-size: 30px;
+  animation: heartbeat 1s infinite;
+
   color: #e10019;
 }
 
 .mySvg {
   background-color: cadetblue;
 }
+
 .chart-area {
   position: absolute;
   top: -10000px;
 }
+
 .chart-container {
-  display:inline-block;
+  display: inline-block;
   width: calc(100% - 65px);
 }
+
 .chart {
-  display:inline-block;
+  display: inline-block;
   min-width: 100%;
   max-width: 100%;
   width: 100%;
   margin: 0 auto;
 }
+
 .chart .highcharts-container {
   display: flex;
   width: 100% !important;
 }
+
 .hr-container {
-  height:100%;
+  height: 100%;
   width: 60px;
   display: inline-block;
 }
+
 .hr-info {
   margin-bottom: 70px;
 }
+
 .lesson-container {
   padding: 0 15px;
   display: flex;
 }
+
 .lesson-img {
   padding: 20px 0px;
+  width: 100%;
+  height: 100%;
 }
+
+.carousel-control-prev,
+.carousel-control-next {
+  top: 50%;
+  width: 15%;
+  height: 20px;
+}
+
+@keyframes heartbeat {
+  0% {
+    transform: scale(.75);
+  }
+
+  20% {
+    transform: scale(1);
+  }
+
+  40% {
+    transform: scale(.75);
+  }
+
+  60% {
+    transform: scale(1);
+  }
+
+  80% {
+    transform: scale(.75);
+  }
+
+  100% {
+    transform: scale(.75);
+  }
+}
+
 @media (max-width: 1919px) {
   .hr-card {
     width: calc((100% - 78px) / 3);
@@ -271,26 +352,33 @@
     width: 110px;
     height: 110px;
   }
+
   .hr-card-header {
-    font-size: 28.5px;
+    font-size: 23px;
   }
+
   .hr-card-header__no {
     line-height: 57px;
   }
+
   .hr-card-header__name {
     line-height: 57px;
   }
+
   .content {
     padding: 0;
   }
+
   .card-params {
     font-size: 49px;
   }
+
   .hr-card-body {
     font-size: 22px;
   }
+
   .val {
-    font-size: 85px;
+    font-size: 60px;
     line-height: 85px;
   }
 }
@@ -299,10 +387,7 @@
   .lesson-container {
     display: block;
   }
-  .lesson-img {
-    display: flex;
-    justify-content: center;
-  }
+
   .hr-card {
     width: calc((100% - 46px) / 2);
     height: 281px;
@@ -313,37 +398,79 @@
     width: 110px;
     height: 110px;
   }
+
   .hr-card-header {
     font-size: 28.5px;
   }
+
   .hr-card-header__no {
     line-height: 57px;
   }
+
   .hr-card-header__name {
     line-height: 57px;
   }
+
   .content {
     padding: 0 11.5px;
   }
+
   .card-params {
     font-size: 49px;
   }
+
   .hr-card-body {
     font-size: 22px;
   }
+
   .val {
     font-size: 85px;
     line-height: 85px;
   }
 }
+
+.carousel-item.active {
+  height: 260px;
+  line-height: 260px;
+  background: black;
+}
+
+@media (min-width: 768px) {
+  .ala-coach.col-md-6 {
+    max-width: initial;
+    min-width: 50%;
+  }
+}
+@media(max-width: 992px) {
+  .user-photo {
+    width: 80px;
+    height: 80px;
+  }
+
+  .val {
+    font-size: 45px;
+    line-height: 85px;
+  }
+}
 @media(max-width: 767px) {
+  .user-photo {
+    width: 95px;
+    height: 95px;
+  }
+
+  .val {
+    font-size: 70px;
+  }
+
   .chart-container {
     width: 100%;
   }
+
   .hr-info {
     display: inline-block;
     margin-bottom: 0px;
   }
+
   .hr-container {
     width: 100%;
     height: auto;
@@ -351,16 +478,37 @@
     justify-content: space-between;
     align-items: flex-end;
   }
+
   .coach-header img {
     width: 56px;
     height: 56px;
   }
+
   .coach-header span {
     margin: 0;
     font-size: 30px;
   }
+
   .coach-header {
     padding: 0 15px;
     height: 100px;
+  }
+}
+
+@media(max-width: 645px) {
+  .hr-card-header {
+    font-size: 23.5px;
+  }
+  .user-photo {
+    width: 100px;
+    height: 100px;
+  }
+
+  .val {
+    font-size: 85px;
+  }
+
+  .hr-card {
+    width: 100%;
   }
 }

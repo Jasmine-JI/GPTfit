@@ -19,7 +19,7 @@ export class TrainLiveComponent implements OnInit {
   ngOnInit() {
     const body = {
       token: this.utils.getToken(),
-      classType: '1'
+      classType: '7'
     };
     this.coachService
       .fetchClassRoomList(body)
