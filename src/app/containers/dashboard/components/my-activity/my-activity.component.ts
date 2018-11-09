@@ -106,7 +106,7 @@ export class MyActivityComponent implements OnInit, OnDestroy {
       page: this.currentPage && this.currentPage.pageIndex.toString() || '0',
       pageCounts: this.currentPage && this.currentPage.pageSize.toString() || '10',
       filterStartTime: '',
-      filterEndTime: '2018-10-07T23:59:59+08:00'
+      filterEndTime: ''
     };
     this.activityService.fetchSportList(body).subscribe(res => {
       this.isLoading = false;

@@ -17,16 +17,10 @@ import { fakeDatas, fakeCoachInfo } from './fakeUsers';
 import { CoachService } from '../../services/coach.service';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
-import { HttpParams } from '@angular/common/http';
-// import { Users } from '../../models/fakeUser';
 import { Meta } from '@angular/platform-browser';
-// import * as d3 from 'd3';
-// import * as Highcharts from 'highcharts';
 import * as Stock from 'highcharts/highstock';
-// import { Observable } from 'rxjs/Observable';
 import { WebSocketSubject } from 'rxjs/observable/dom/WebSocketSubject';
 import * as moment from 'moment';
-// import { chart } from 'highcharts';
 import { stockChart } from 'highcharts/highstock';
 
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -93,8 +87,7 @@ export class Message {
     ])
   ]
 })
-export class CoachDashboardComponent
-  implements OnInit, OnDestroy {
+export class CoachDashboardComponent implements OnInit, OnDestroy {
   width = 0;
   height = 0;
   fakeDatas: any;
@@ -142,6 +135,9 @@ export class CoachDashboardComponent
   isFirstInit = true;
   currentMemberNum = 0;
   frameUrl: SafeResourceUrl;
+  totalInfo: string;
+  isLoading = false;
+  isClassEnd = false;
   classImage =
     'https://www.healthcenterhoornsevaart.nl/wp-content/uploads/2018/02/combat-630x300.jpg';
   private socket$: WebSocketSubject<any>;
@@ -169,23 +165,22 @@ export class CoachDashboardComponent
       () => console.warn('Completed!')
     );
 
-    const url = 'https://www.youtube.com/embed/4ZxUz0weJUY';
+    const url = 'https://player.twitch.tv/?channel=baoz';
     this.frameUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
 
   ngOnInit() {
     this.classId = this.route.snapshot.paramMap.get('classId');
     this.handleCoachInfo(fakeCoachInfo);
+    this.sendBoardCast();
   }
   display(msg) {
     let sum = 0;
     this.heartValues = [];
-    const firstsSeries = [];
     if (typeof msg === 'string') {
-      this.serverMessages = JSON.parse(
-        msg.replace(/u'(?=[^:]+')/g, "'").replace(/'/g, '"')
-      );
-      console.log('this.serverMessages: ', this.serverMessages);
+      this.serverMessages = JSON.parse(msg
+          .replace(/u'(?=[^:]+')/g, "'")
+          .replace(/'/g, '"'));
       const chartDatas = this.serverMessages.classMemberDataFieldValue;
       const fields = this.serverMessages.classMemberDataField;
       const heartIdx = fields.findIndex(_field => _field === '129');
@@ -203,13 +198,7 @@ export class CoachDashboardComponent
           const colorIdx = _data[zoneIdx];
           this.chart.series[idx].addPoint([moment().unix() * 1000, liveHr]);
           sum += liveHr;
-          return {
-            liveHr,
-            userName: this.userInfos[_data[snIdx]].userName,
-            colorIdx,
-            userIcon: this.userInfos[_data[snIdx]].userIcon,
-            imgClassName: this.userInfos[_data[snIdx]].imgClassName
-          };
+          return { liveHr, userName: this.userInfos[_data[snIdx]].userName, colorIdx, userIcon: this.userInfos[_data[snIdx]].userIcon, imgClassName: this.userInfos[_data[snIdx]].imgClassName };
         });
       }
       this.currentMemberNum = chartDatas.length;
@@ -217,10 +206,10 @@ export class CoachDashboardComponent
       if (msg.classStatus === '2') {
         clearInterval(this.socketTimer);
         this.socket$.unsubscribe();
-        alert('下課嚕');
+        this.isLoading = false;
+        this.isClassEnd = true;
       }
     }
-    console.log('this.heartValues: ', this.heartValues);
     this.heartValues = this.heartValues.sort((a, b) => b.liveHr - a.liveHr);
     this.hrMeanValue = Math.round(sum / this.currentMemberNum);
   }
@@ -231,17 +220,17 @@ export class CoachDashboardComponent
       const series = [];
       const infos = datas.map((_data, idx) => {
         const { userName, pairEquipmentSN, pairIcon } = _data;
-        series.push({ name: userName, data: []});
-        const userIcon = pairIcon && pairIcon.length > 0
-          ? this.utils.buildBase64ImgString(pairIcon)
-          : '/assets/images/user.png';
+        series.push({ name: userName, data: [] });
+        const userIcon =
+          pairIcon && pairIcon.length > 0
+            ? this.utils.buildBase64ImgString(pairIcon)
+            : '/assets/images/user.png';
         const image = new Image();
         image.src = userIcon;
         const width = image.width;
         const height = image.height;
-        let imgClassName = width > height
-          ? 'user-photo--landscape'
-          : 'user-photo--portrait';
+        let imgClassName =
+          width > height ? 'user-photo--landscape' : 'user-photo--portrait';
         const proportion = width / height;
         if (proportion > 1.5) {
           imgClassName += ' photo-fit__50';
@@ -273,11 +262,13 @@ export class CoachDashboardComponent
         series
       };
       this.initHChart(hrOptions);
+      this.isLoading = false;
       this.userInfos = _.keyBy(infos, keyName => keyName.pairEquipmentSN);
     });
   }
 
   sendBoardCast() {
+    this.isLoading = true;
     this.socketTimer = setInterval(() => {
       const data = { classViewer: '2', classId: this.classId }; // 1:執行，2:觀看
       this.socket$.next(data);
@@ -299,22 +290,54 @@ export class CoachDashboardComponent
     }
   }
   ngOnDestroy() {
-    clearInterval(this.chart.hchartTimer); // 因為要到this.chart裡找hchartTimer
+    clearInterval(this.socketTimer);
   }
 
   handleCoachInfo(str) {
-    const info = str.replace(/\r\n|\n/g, '').trim();
+    this.totalInfo = str.replace(/\r\n|\n/g, '').trim();
     if (
-      info.length > 118 &&
+      this.totalInfo.length > 118 &&
       this.displaySections[0] === true &&
       !this.isSectionIndividual
     ) {
-      this.coachInfo = info.substring(0, 118);
+      this.coachInfo = this.totalInfo.substring(0, 118);
       this.isMoreDisplay = true;
     } else {
-      this.coachInfo = info;
+      this.coachInfo = this.totalInfo;
       this.isMoreDisplay = false;
     }
   }
-
+  handleExtendCoachInfo() {
+    this.coachInfo = this.totalInfo;
+    this.isMoreDisplay = false;
+  }
+  handldeSection(idx) {
+    this.isSectionIndividual = !this.isSectionIndividual;
+    if (this.isSectionIndividual) {
+      if (idx === 0) {
+        this.displaySections[0] = true;
+        this.displaySections[1] = false;
+        this.displaySections[2] = false;
+      } else if (idx === 1) {
+        this.dispalyChartOptions[2] = true;
+        this.displaySections[0] = false;
+        this.displaySections[1] = true;
+        this.displaySections[2] = false;
+      } else {
+        this.dispalyMemberOptions[3] = true;
+        this.displaySections[0] = false;
+        this.displaySections[1] = false;
+        this.displaySections[2] = true;
+      }
+    } else {
+      // this.chart.destory();
+      // this.initHChart();
+      this.dispalyChartOptions[2] = false;
+      this.dispalyMemberOptions[3] = false;
+      this.displaySections[0] = true;
+      this.displaySections[1] = true;
+      this.displaySections[2] = true;
+    }
+    this.handleCoachInfo(fakeCoachInfo);
+  }
 }

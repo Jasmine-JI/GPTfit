@@ -30,17 +30,20 @@ export class HttpStatusInterceptor implements HttpInterceptor {
       (event: HttpEvent<any>) => {
         if (event instanceof HttpResponse) {
           // do stuff with response if you want
-          // const parseBody = JSON.parse(event.body);
-          // if (parseBody.resultCode && parseBody.resultCode !== 200) {
-          //   this.dialog.open(MessageBoxComponent, {
-          //     hasBackdrop: true,
-          //     data: {
-          //       title: 'Error',
-          //       body: parseBody.resultMessage,
-          //       confirmText: '確定'
-          //     }
-          //   });
-          // }
+          const parseBody = JSON.parse(event.body);
+          if ((parseBody.msgCode === 5058 || parseBody.msgCode === 1144) && parseBody.resultCode === 402) {
+            this.dialog.open(MessageBoxComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'Error',
+                body: parseBody.resultMessage + '<br>於五秒後，回到登入畫面',
+                confirmText: '確定'
+              }
+            });
+            const auth = this.injector.get(AuthService);
+            auth.logout();
+            setTimeout(() => location.href = '/signin', 5000);
+          }
         }
       },
       (err: any) => {
