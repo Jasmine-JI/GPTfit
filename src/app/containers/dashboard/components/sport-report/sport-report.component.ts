@@ -53,6 +53,12 @@ const TREE_DATA = JSON.stringify({
     '平均功率': '3-10',
     '最大功率': '3-11'
   },
+  '有氧運動': {
+    '總時間': '6-1',
+    '消耗卡路里': '6-2',
+    '平均心率': '6-3',
+    '最大心率': '6-4'
+  },
   '游泳': {
     '總時間': '4-1',
     '總距離': '4-2',
@@ -81,13 +87,7 @@ const TREE_DATA = JSON.stringify({
       '總組數': '5-13',
       '總次數': '5-14'
     }
-  },
-  '有氧運動': {
-    '總時間': '6-1',
-    '消耗卡路里': '6-2',
-    '平均心率': '6-3',
-    '最大心率': '6-4'
-  },
+  }
 });
 
 /**
@@ -347,7 +347,7 @@ export class SportReportComponent implements OnInit {
     });
   }
   handleItem(targetNode) {
-    if (targetNode.filename === '重訓') {
+    if (targetNode.filename === '重訓' || targetNode.filename === '游泳') {
       return;
     }
     if (this.openTreeName === targetNode.filename) {

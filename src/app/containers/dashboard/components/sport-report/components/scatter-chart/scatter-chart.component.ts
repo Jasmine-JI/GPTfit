@@ -155,6 +155,9 @@ export class ScatterChartComponent implements OnChanges {
       } else if (_type === '5') {
         name = '有氧運動';
         color = 'rgba(142, 9,	156, .5)';
+      } else if (_type === '6') {
+        name = '划船';
+        color = 'rgba(153,153,153, .5)';
       } else {
         name = '尚未定義';
       }
