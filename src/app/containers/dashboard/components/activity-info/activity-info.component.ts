@@ -17,6 +17,7 @@ import { GlobalEventsManager } from '@shared/global-events-manager';
 import { UtilsService } from '@shared/services/utils.service';
 import { Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material';
+import { getUrlQueryStrings } from '@shared/utils/';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -85,6 +86,9 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     userId: null
   };
   progressRef: NgProgressRef;
+  totalSecond: number;
+  resolutionSeconds: number;
+  isOriginalMode = false;
   constructor(
     private utils: UtilsService,
     private renderer: Renderer2,
@@ -105,7 +109,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     Highcharts.Point.prototype.highlight = function(event) {
       this.onMouseOver(); // 显示鼠标激活标识
-      this.series.chart.tooltip.refresh(this); // 显示提示框
+      // this.series.chart.tooltip.refresh(this); // 显示提示框
       this.series.chart.xAxis[0].drawCrosshair(event, this); // 显示十字准星线
     };
     this.options = {
@@ -116,6 +120,11 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
+    // const queryStrings = getUrlQueryStrings(location.search);
+    console.log('location.search: ', location.search);
+    if (location.search.indexOf('?original') > -1) {
+      this.isOriginalMode = true;
+    }
     this.globalEventsManager.setFooterRWD(2); // 為了讓footer長高85px
     const fieldId = this.route.snapshot.paramMap.get('fileId');
     this.progressRef = this.ngProgress.ref();
@@ -160,6 +169,9 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.userLink.userId = this.fileInfo.author.split('?')[1].split('=')[1];
 
       this.infoDate = this.handleDate(this.activityInfo.startTime);
+      this.totalSecond = this.activityInfo.totalSecond;
+      this.resolutionSeconds = +this.totalSecond / this.activityPoints.length;
+      console.log('前端加工後的resolutionSeconds(秒): ', this.resolutionSeconds);
       this.initHchart();
       this.progressRef.complete();
       this.isLoading = false;
@@ -178,19 +190,45 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         ];
         break;
       case '2':
-        this.displayedColumns = ['lapIndex', 'status', 'heartRate', 'speed', 'distance'];
+        this.displayedColumns = [
+          'lapIndex',
+          'status',
+          'heartRate',
+          'speed',
+          'distance'
+        ];
         break;
       case '3':
-        this.displayedColumns = ['lapIndex', 'status', 'dispName', 'totalRepo', 'totalWeight', 'cadence'];
+        this.displayedColumns = [
+          'lapIndex',
+          'status',
+          'dispName',
+          'totalRepo',
+          'totalWeight',
+          'cadence'
+        ];
         break;
       case '4':
-        this.displayedColumns = ['lapIndex', 'status', 'dispName', 'cadence', 'totalRepo', 'speed'];
+        this.displayedColumns = [
+          'lapIndex',
+          'status',
+          'dispName',
+          'cadence',
+          'totalRepo',
+          'speed'
+        ];
         break;
       case '5':
         this.displayedColumns = ['lapIndex', 'status', 'heartRate'];
         break;
       case '6':
-        this.displayedColumns = ['lapIndex', 'status', 'cadence', 'totalRepo', 'speed'];
+        this.displayedColumns = [
+          'lapIndex',
+          'status',
+          'cadence',
+          'totalRepo',
+          'speed'
+        ];
         break;
     }
   }
@@ -221,16 +259,21 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     return date;
   }
   initHchart() {
-    const distances = [],
+    const pointSeconds = [],
       speeds = [],
       elevations = [],
       heartRates = [];
-    this.activityPoints.forEach(_point => {
-      distances.push(+_point.distanceMeters);
+    this.activityPoints.forEach((_point, idx) => {
+      if (this.isOriginalMode) {
+        pointSeconds.push(+_point.pointSecond * 1000);
+      } else {
+        pointSeconds.push(this.resolutionSeconds * (idx + 1) * 1000);
+      }
       speeds.push(+_point.speed);
       elevations.push(+_point.altitudeMeters);
       heartRates.push(+_point.heartRateBpm);
     });
+    console.log('pointSeconds(毫秒): ', pointSeconds);
     this.dataset1 = {
       name: 'Speed',
       data: speeds,
@@ -253,15 +296,15 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       valueDecimals: 0
     };
     this.dataset1.data = this.dataset1.data.map((val, j) => [
-      distances[j],
+      pointSeconds[j],
       val
     ]);
     this.dataset2.data = this.dataset2.data.map((val, j) => [
-      distances[j],
+      pointSeconds[j],
       val
     ]);
     this.dataset3.data = this.dataset3.data.map((val, j) => [
-      distances[j],
+      pointSeconds[j],
       val
     ]);
     const speedOptions: any = {
@@ -282,8 +325,14 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         events: {
           setExtremes: this.syncExtremes.bind(this, 1)
         },
-        labels: {
-          format: '{value} km'
+        type: 'datetime',
+        dateTimeLabelFormats: {
+          millisecond: '%H:%M:%S',
+          second: '%H:%M:%S',
+          minute: '%H:%M:%S',
+          day: '%H:%M:%S',
+          hour: '%H:%M:%S',
+          year: '%H:%M:%S'
         }
       },
       yAxis: {
@@ -292,21 +341,15 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       },
       tooltip: {
-        positioner: function() {
-          return {
-            x: this.chart.chartWidth - this.label.width, // right aligned
-            y: -1 // align to title
-          };
-        },
-        borderWidth: 0,
-        backgroundColor: 'none',
         pointFormat: '{point.y}',
-        headerFormat: '',
+        xDateFormat: '%H:%M:%S',
         shadow: false,
         style: {
-          fontSize: '18px'
+          fontSize: '14px'
         },
-        valueDecimals: this.dataset1.valueDecimals
+        valueDecimals: this.dataset1.valueDecimals,
+        split: true,
+        share: true
       },
       series: [
         {
@@ -339,8 +382,14 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         events: {
           setExtremes: this.syncExtremes.bind(this, 2)
         },
-        labels: {
-          format: '{value} km'
+        type: 'datetime',
+        dateTimeLabelFormats: {
+          millisecond: '%H:%M:%S',
+          second: '%H:%M:%S',
+          minute: '%H:%M:%S',
+          day: '%H:%M:%S',
+          hour: '%H:%M:%S',
+          year: '%H:%M:%S'
         }
       },
       yAxis: {
@@ -349,21 +398,14 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       },
       tooltip: {
-        positioner: function() {
-          return {
-            x: this.chart.chartWidth - this.label.width, // right aligned
-            y: -1 // align to title
-          };
-        },
-        borderWidth: 0,
-        backgroundColor: 'none',
         pointFormat: '{point.y}',
-        headerFormat: '',
+        xDateFormat: '%H:%M:%S',
         shadow: false,
         style: {
-          fontSize: '18px'
+          fontSize: '14px'
         },
-        valueDecimals: this.dataset2.valueDecimals
+        valueDecimals: this.dataset2.valueDecimals,
+        split: true
       },
       series: [
         {
@@ -396,8 +438,14 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         events: {
           setExtremes: this.syncExtremes.bind(this, 3)
         },
-        labels: {
-          format: '{value} km'
+        type: 'datetime',
+        dateTimeLabelFormats: {
+          millisecond: '%H:%M:%S',
+          second: '%H:%M:%S',
+          minute: '%H:%M:%S',
+          day: '%H:%M:%S',
+          hour: '%H:%M:%S',
+          year: '%H:%M:%S'
         }
       },
       yAxis: {
@@ -406,21 +454,14 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       },
       tooltip: {
-        positioner: function() {
-          return {
-            x: this.chart.chartWidth - this.label.width, // right aligned
-            y: -1 // align to title
-          };
-        },
-        borderWidth: 0,
-        backgroundColor: 'none',
         pointFormat: '{point.y}',
-        headerFormat: '',
+        xDateFormat: '%H:%M:%S',
         shadow: false,
         style: {
-          fontSize: '18px'
+          fontSize: '14px'
         },
-        valueDecimals: this.dataset3.valueDecimals
+        valueDecimals: this.dataset3.valueDecimals,
+        split: true
       },
       series: [
         {
