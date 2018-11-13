@@ -27,7 +27,6 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { UtilsService } from '@shared/services/utils.service';
 import * as _ from 'lodash';
 
-
 export class Message {
   constructor(
     public classMemberDataField: any,
@@ -155,7 +154,7 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
   ) {
     Stock.setOptions({ global: { useUTC: false } });
     this.elementRef = elementRef;
-    this.socket$ = new WebSocketSubject('ws://192.168.1.231:9000/train');
+    this.socket$ = new WebSocketSubject('ws://192.168.1.234:9000/train');
     // this.socket$ = new WebSocketSubject('ws://192.168.1.235:3002');
 
     this.socket$.subscribe(
@@ -178,9 +177,9 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
     let sum = 0;
     this.heartValues = [];
     if (typeof msg === 'string') {
-      this.serverMessages = JSON.parse(msg
-          .replace(/u'(?=[^:]+')/g, "'")
-          .replace(/'/g, '"'));
+      this.serverMessages = JSON.parse(
+        msg.replace(/u'(?=[^:]+')/g, "'").replace(/'/g, '"')
+      );
       const chartDatas = this.serverMessages.classMemberDataFieldValue;
       const fields = this.serverMessages.classMemberDataField;
       const heartIdx = fields.findIndex(_field => _field === '129');
@@ -198,7 +197,13 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
           const colorIdx = _data[zoneIdx];
           this.chart.series[idx].addPoint([moment().unix() * 1000, liveHr]);
           sum += liveHr;
-          return { liveHr, userName: this.userInfos[_data[snIdx]].userName, colorIdx, userIcon: this.userInfos[_data[snIdx]].userIcon, imgClassName: this.userInfos[_data[snIdx]].imgClassName };
+          return {
+            liveHr,
+            userName: this.userInfos[_data[snIdx]].userName,
+            colorIdx,
+            userIcon: this.userInfos[_data[snIdx]].userIcon,
+            imgClassName: this.userInfos[_data[snIdx]].imgClassName
+          };
         });
       }
       this.currentMemberNum = chartDatas.length;
@@ -251,19 +256,19 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
           dateTimeLabelFormats: {
             millisecond: '%H:%M:%S.%L',
             second: '%H:%M:%S',
-            minute: '%H:%M',
-            hour: '%H:%M',
-            day: '%m/%d',
-            week: '%m/%d',
-            month: '%Y/%m',
-            year: '%Y'
+            minute: '%H:%M:%S',
+            hour: '%H:%M:%S',
+            day: '%H:%M:%S',
+            week: '%H:%M:%S',
+            month: '%H:%M:%S',
+            year: '%H:%M:%S'
           }
         },
         series
       };
       this.initHChart(hrOptions);
       this.isLoading = false;
-      this.userInfos = _.keyBy(infos, keyName => keyName.pairEquipmentSN);
+      this.userInfos = _.keyBy(infos, keyName => keyName.pairEquipmentSN.trim());
     });
   }
 
