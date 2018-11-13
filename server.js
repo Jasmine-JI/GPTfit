@@ -294,8 +294,9 @@ app.use(function (req, res, next) {
 
   // Request headers you wish to allow
   const allowHeaders = ['X-Requested-With', 'content-type', 'Authorization',
-    'deviceID', 'chartset', 'language', 'Accept', 'deviceType', 'deviceName',
-    'deviceOSVersion', 'appVersionCode', 'appVersionName', 'regionCode', 'appName'
+    'deviceID', 'charset', 'language', 'Accept', 'deviceType', 'deviceName',
+    'deviceOSVersion', 'appVersionCode', 'appVersionName', 'regionCode', 'appName',
+    'equipmentSN', 'Accept-Encoding'
   ];
   res.setHeader('Access-Control-Allow-Headers', allowHeaders.join(','));
 
