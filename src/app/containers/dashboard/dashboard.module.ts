@@ -78,6 +78,8 @@ import { TodayLoginnerWinComponent } from './components/today-loginner-win/today
 import { ReportService } from './services/report.service';
 import { TrainLiveComponent } from './components/train-live/train-live.component';
 import { LineBreakPipe } from './pipes/line-break.pipe';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { TokenInterceptor } from '@shared/interceptors/token.interceptor';
 
 @NgModule({
   imports: [
@@ -109,7 +111,12 @@ import { LineBreakPipe } from './pipes/line-break.pipe';
     EditGroupGuard,
     DashboardGuard,
     ActivityService,
-    ReportService
+    ReportService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TokenInterceptor,
+      multi: true
+    }
   ],
   declarations: [
     DashboardComponent,
