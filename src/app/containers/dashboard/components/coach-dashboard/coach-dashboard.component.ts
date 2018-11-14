@@ -193,7 +193,7 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
         this.handleSNInfo(equipSnDatas);
       } else {
         this.heartValues = chartDatas.map((_data, idx) => {
-          const liveHr = _data[heartIdx];
+          const liveHr = +_data[heartIdx];
           const colorIdx = _data[zoneIdx];
           this.chart.series[idx].addPoint([moment().unix() * 1000, liveHr]);
           sum += liveHr;
@@ -222,6 +222,9 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
     const body = { token: this.utils.getToken(), pairEquipmentSN: snDatas };
     this.coachService.fetchFitPairInfo(body).subscribe(res => {
       const datas = res.info.deviceInfo;
+      if (datas.length === 0) {
+        return alert('deviceSN對外開放');
+      }
       const series = [];
       const infos = datas.map((_data, idx) => {
         const { userName, pairEquipmentSN, pairIcon } = _data;
@@ -277,7 +280,7 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
     this.socketTimer = setInterval(() => {
       const data = { classViewer: '2', classId: this.classId }; // 1:執行，2:觀看
       this.socket$.next(data);
-    }, 5000);
+    }, 3000);
   }
   stopBoardCast() {
     clearInterval(this.socketTimer);
