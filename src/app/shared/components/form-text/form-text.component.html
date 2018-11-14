@@ -6,6 +6,7 @@
     [className]="isInvalid ? invalidClassName : class_name"
     [attr.disabled]="disabled ? '' : null"
     [placeholder]="placeholder"
+    (keyup)="handleChange($event)"
   />
   <app-form-remind
     *ngIf="remindText"
