@@ -49,10 +49,13 @@ export class EditGroupInfoComponent implements OnInit, OnDestroy {
   coachAdministrators: any;
   normalMemberInfos: any;
   remindText = '※不得超過32個字元';
+  remindVideoText = '請輸入直播影片的嵌入式語句';
+  isVideoEdit = false;
   inValidText = '欄位為必填';
   textareaMaxLength = 500;
   form: FormGroup;
   formTextName = 'groupName';
+  formUrlName = 'groupVideoUrl';
   formTextareaName = 'groupDesc';
   role = {
     isSupervisor: false,
@@ -72,6 +75,7 @@ export class EditGroupInfoComponent implements OnInit, OnDestroy {
   visitorDetail: any;
   isLoading = false;
   isGroupDetailLoading = false;
+  videoUrl = '';
   @ViewChild('footerTarget')
   footerTarget: ElementRef;
   get groupName() {
@@ -79,6 +83,9 @@ export class EditGroupInfoComponent implements OnInit, OnDestroy {
   }
   get groupDesc() {
     return this.form.get('groupDesc');
+  }
+  get groupVideoUrl() {
+    return this.form.get('groupVideoUrl');
   }
   constructor(
     private route: ActivatedRoute,
@@ -109,7 +116,6 @@ export class EditGroupInfoComponent implements OnInit, OnDestroy {
     this.route.params.subscribe(_params => this.handleInit());
     this.userInfoService.getUserAccessRightDetail().subscribe(res => {
       this.visitorDetail = res;
-      console.log('visitorDetail: ', this.visitorDetail);
     });
   }
   ngOnDestroy() {
@@ -120,7 +126,8 @@ export class EditGroupInfoComponent implements OnInit, OnDestroy {
     this.form = this.fb.group({
       groupStatus: ['', [Validators.required]],
       groupName: ['', [Validators.required, Validators.maxLength(32)]],
-      groupDesc: ['', [Validators.required, Validators.maxLength(500)]]
+      groupDesc: ['', [Validators.required, Validators.maxLength(500)]],
+      groupVideoUrl: ['']
     });
     this.userInfoService.getSupervisorStatus().subscribe(res => {
       this.role.isSupervisor = res;
@@ -160,8 +167,10 @@ export class EditGroupInfoComponent implements OnInit, OnDestroy {
         groupName,
         groupDesc,
         selfJoinStatus,
-        groupStatus
+        groupStatus,
+        groupVideoUrl
       } = this.groupInfo;
+      this.videoUrl = groupVideoUrl;
       if (groupStatus === 4) {
         this.router.navigateByUrl(`/404`);
       }
@@ -170,7 +179,12 @@ export class EditGroupInfoComponent implements OnInit, OnDestroy {
       } else {
         this.joinStatus = 0;
       }
-      this.form.patchValue({ groupName, groupDesc, groupStatus });
+      this.form.patchValue({
+        groupName,
+        groupDesc,
+        groupStatus,
+        groupVideoUrl
+      });
       this.groupImg = this.utils.buildBase64ImgString(groupIcon);
       this.finalImageLink = this.groupImg;
       this.group_id = this.utils.displayGroupId(groupId);
@@ -366,7 +380,8 @@ export class EditGroupInfoComponent implements OnInit, OnDestroy {
         groupLevel: this.groupLevel,
         groupName,
         groupIcon: this.finalImageLink || '',
-        groupDesc
+        groupDesc,
+        groupVideoUrl: this.videoUrl
       };
       const body2 = {
         token: this.token,
@@ -393,8 +408,27 @@ export class EditGroupInfoComponent implements OnInit, OnDestroy {
       });
     }
   }
-  public handleChangeTextarea(code): void {
-    this.form.patchValue({ groupDesc: code });
+  public handleChangeTextarea(code: string, type: number): void {
+    if (type === 1) {
+      return this.form.patchValue({ groupDesc: code });
+    }
+    if (code && code.length > 0) {
+      const re = /src\s*=\s*"(.+?)"/i;
+      const arr = code.match(re);
+      let groupVideoUrl = code;
+      if (arr) {
+        groupVideoUrl = arr[0].slice(4);
+        this.videoUrl = groupVideoUrl;
+        this.isVideoEdit = true;
+        this.form.patchValue({ groupVideoUrl });
+        this.videoUrl = this.videoUrl.slice(1, this.videoUrl.length - 1);
+      } else {
+        this.videoUrl = code;
+      }
+    }
+  }
+  switchVideoLink() {
+    this.isVideoEdit = !this.isVideoEdit;
   }
   handleAttachmentChange(file) {
     if (file) {
