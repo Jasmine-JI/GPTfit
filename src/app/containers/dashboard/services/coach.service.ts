@@ -29,6 +29,9 @@ export class CoachService {
   fetchFitPairInfo(body) {
     return this.http.post<any>('/api/v1/device/getFitPairInfo', body);
   }
+  fetchClassRoomDetail(body) {
+    return this.http.post<any>('/api/v1/train/getClassRoomDetail', body);
+  }
   postRaceTest(body) {
     return this.http.post<any>('/race_test', body);
   }
