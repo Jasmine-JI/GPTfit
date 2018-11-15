@@ -25,7 +25,7 @@ export class TrainLiveComponent implements OnInit {
       .fetchClassRoomList(body)
       .subscribe(res => this.classLists = res.info.classList);
   }
-  goToClass(id) {
-    this.router.navigateByUrl(`/dashboard/coach-dashboard/${id}`);
+  goToClass(id, type) {
+    this.router.navigateByUrl(`/dashboard/coach-dashboard/${id}?type=${type}`);
   }
 }
