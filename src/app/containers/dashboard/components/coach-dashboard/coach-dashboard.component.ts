@@ -13,19 +13,18 @@ import {
   transition,
   animate
 } from '@angular/animations';
-import { fakeDatas, fakeCoachInfo } from './fakeUsers';
+import { fakeCoachInfo } from './fakeUsers';
 import { CoachService } from '../../services/coach.service';
-import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
-import { Meta } from '@angular/platform-browser';
 import * as Stock from 'highcharts/highstock';
 import { WebSocketSubject } from 'rxjs/observable/dom/WebSocketSubject';
 import * as moment from 'moment';
 import { stockChart } from 'highcharts/highstock';
 
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { DomSanitizer } from '@angular/platform-browser';
 import { UtilsService } from '@shared/services/utils.service';
 import * as _ from 'lodash';
+import { getUrlQueryStrings } from '@shared/utils/';
 
 export class Message {
   constructor(
@@ -133,10 +132,12 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
   socketTimer: any;
   isFirstInit = true;
   currentMemberNum = 0;
-  frameUrl: SafeResourceUrl;
   totalInfo: string;
   isLoading = false;
   isClassEnd = false;
+  token: string;
+  classInfo: any;
+  classType: string;
   classImage =
     'https://www.healthcenterhoornsevaart.nl/wp-content/uploads/2018/02/combat-630x300.jpg';
   private socket$: WebSocketSubject<any>;
@@ -145,9 +146,7 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
   userInfos: any = [];
   constructor(
     private coachService: CoachService,
-    private router: Router,
     private route: ActivatedRoute,
-    private meta: Meta,
     elementRef: ElementRef,
     private sanitizer: DomSanitizer,
     private utils: UtilsService
@@ -155,21 +154,35 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
     Stock.setOptions({ global: { useUTC: false } });
     this.elementRef = elementRef;
     this.socket$ = new WebSocketSubject('ws://192.168.1.234:9000/train');
-    // this.socket$ = new WebSocketSubject('ws://192.168.1.235:3002');
 
     this.socket$.subscribe(
-      // message => this.display(JSON.stringify(message)),
       message => this.display(message),
       err => console.error(err),
       () => console.warn('Completed!')
     );
-
-    const url = 'https://player.twitch.tv/?channel=baoz';
-    this.frameUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
 
   ngOnInit() {
+    const queryStrings = getUrlQueryStrings(location.search);
+    this.classType = queryStrings.type;
     this.classId = this.route.snapshot.paramMap.get('classId');
+    this.token = this.utils.getToken();
+    const body = {
+      token: this.token,
+      classId: this.classId
+    };
+    this.coachService.fetchClassRoomDetail(body).subscribe(res => {
+      this.classInfo = res.info;
+      this.classInfo.groupIcon = this.classInfo.groupIcon && this.classInfo.groupIcon.length > 0
+      ? this.utils.buildBase64ImgString(this.classInfo.groupIcon)
+        : '/assets/images/group-default.svg';
+      this.classInfo.coachAvatar = this.classInfo.coachAvatar && this.classInfo.coachAvatar.length > 0
+      ? this.utils.buildBase64ImgString(this.classInfo.coachAvatar)
+        : '/assets/images/user.png';
+      this.classInfo.groupVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+        this.classInfo.groupVideoUrl
+      );
+    });
     this.handleCoachInfo(fakeCoachInfo);
     this.sendBoardCast();
   }
@@ -185,7 +198,12 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
       const heartIdx = fields.findIndex(_field => _field === '129');
       const snIdx = fields.findIndex(_field => _field === 'equipmentSN');
       const zoneIdx = fields.findIndex(_field => _field === '133');
-
+      let speedIdx = '';
+      let cadenceIdx = '';
+      if (this.classType === '2') {
+        speedIdx = fields.findIndex(_field => _field === '113');
+        cadenceIdx = fields.findIndex(_field => _field === '161');
+      }
       if (this.userInfos.length === 0) {
         const equipSnDatas = chartDatas.map(_data => {
           return _data[snIdx];
@@ -195,10 +213,14 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
         this.heartValues = chartDatas.map((_data, idx) => {
           const liveHr = +_data[heartIdx];
           const colorIdx = _data[zoneIdx];
+          const cadence = +_data[cadenceIdx] || 0;
+          const speed = +_data[speedIdx] || 0;
           this.chart.series[idx].addPoint([moment().unix() * 1000, liveHr]);
           sum += liveHr;
           return {
             liveHr,
+            cadence,
+            speed,
             userName: this.userInfos[_data[snIdx]].userName,
             colorIdx,
             userIcon: this.userInfos[_data[snIdx]].userIcon,
@@ -219,19 +241,28 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
     this.hrMeanValue = Math.round(sum / this.currentMemberNum);
   }
   handleSNInfo(snDatas: any) {
-    const body = { token: this.utils.getToken(), pairEquipmentSN: snDatas };
+    const body = { token: this.token, pairEquipmentSN: snDatas };
     this.coachService.fetchFitPairInfo(body).subscribe(res => {
       const datas = res.info.deviceInfo;
-      if (datas.length === 0) {
-        return alert('deviceSN對外開放');
-      }
       const series = [];
-      const infos = datas.map((_data, idx) => {
-        const { userName, pairEquipmentSN, pairIcon } = _data;
+      let userIcon = '';
+      let userName = '';
+      let pairEquipmentSN = '';
+      const infos = snDatas.map((_snData) => {
+        const existIdx = datas.findIndex(
+          _data => _data.pairEquipmentSN === _snData
+        );
+        if (existIdx > -1) {
+          userName = datas[existIdx].userName;
+          pairEquipmentSN = datas[existIdx].pairEquipmentSN;
+        } else {
+          userName = _snData.slice(_snData.length - 3, _snData.length);
+          pairEquipmentSN = _snData;
+        }
         series.push({ name: userName, data: [] });
-        const userIcon =
-          pairIcon && pairIcon.length > 0
-            ? this.utils.buildBase64ImgString(pairIcon)
+        userIcon =
+          datas[existIdx] && datas[existIdx].pairIcon.length > 0
+            ? this.utils.buildBase64ImgString(datas[existIdx].pairIcon)
             : '/assets/images/user.png';
         const image = new Image();
         image.src = userIcon;
@@ -249,10 +280,15 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
       });
       const hrOptions: any = {
         title: {
-          text: 'Live random data'
+          text: '及時心率圖表'
         },
         exporting: {
           enabled: false
+        },
+        rangeSelector: {
+          inputEnabled: false,
+          enabled: false,
+          // selected: 3
         },
         xAxis: {
           type: 'datetime',
@@ -271,7 +307,9 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
       };
       this.initHChart(hrOptions);
       this.isLoading = false;
-      this.userInfos = _.keyBy(infos, keyName => keyName.pairEquipmentSN.trim());
+      this.userInfos = _.keyBy(infos, keyName =>
+        keyName.pairEquipmentSN.trim()
+      );
     });
   }
 
@@ -280,7 +318,7 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
     this.socketTimer = setInterval(() => {
       const data = { classViewer: '2', classId: this.classId }; // 1:執行，2:觀看
       this.socket$.next(data);
-    }, 3000);
+    }, 5000);
   }
   stopBoardCast() {
     clearInterval(this.socketTimer);
@@ -338,8 +376,6 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
         this.displaySections[2] = true;
       }
     } else {
-      // this.chart.destory();
-      // this.initHChart();
       this.dispalyChartOptions[2] = false;
       this.dispalyMemberOptions[3] = false;
       this.displaySections[0] = true;

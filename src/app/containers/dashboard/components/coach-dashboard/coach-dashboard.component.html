@@ -2,7 +2,7 @@
   *ngIf="isClassEnd"
 >
   課程直播已結束
-  <div style="display: flex;justify-content: center">
+  <div style="display: flex;justify-content: center;margin-top:30px">
     <button class="alatech-btn alatech-btn--default"
       [routerLink]="['/dashboard/train-live']"
     >
@@ -17,10 +17,10 @@
     </div>
     <div class="lesson-container">
       <div class="col-md-6 ala-coach">
-        <div style="display:flex;flex-direction:column;padding-right: 45px;">
+        <div class="lesson-info">
           <div style="width:100%;font-size:20.5px;text-align:right;color:#959595">
-            <div style="font-size:32px;color:#1b4d70;font-weight:bold">
-              BODY COMBAT 戰鬥有氧
+            <div class="lesson-title">
+              {{classInfo?.groupName}}
             </div>
             <div>
               2018/05/10 AM11:26
@@ -33,13 +33,14 @@
           <div style="width:100%;display:flex">
             <div style="display:flex;align-items: center;">
               <div class="user-photo user-photo--portrait" style="margin: 0 15px">
-                <img src="http://www.jituwang.com/uploads/allimg/130927/259905-13092FI41922.jpg">
+                <img [src]="classInfo?.coachAvatar">
               </div>
             </div>
             <div style="width: 90%;padding-left:20px">
-              <div style="font-size: 26.6px;font-weight:bold;margin-bottom: 27px;">Jason Wu</div>
+              <div class="coach-name">{{classInfo?.coachName}}</div>
               <div style="font-size: 14px;max-width:845px">
                 {{ coachInfo }}
+                <!-- {{ classInfo?.coachDesc}} --> <!-- 等之後有個人頁面在接回來 -->
                 <span *ngIf="isMoreDisplay"
                   style="color: #0078ff;cursor:pointer"
                   (click)="handleExtendCoachInfo()"
@@ -65,12 +66,14 @@
               <!-- <li data-target="#carouselExampleIndicators" data-slide-to="2"></li> -->
             </ol>
             <div class="carousel-inner">
-              <div class="carousel-item active">
-                <img style="width:100%" [src]="classImage">
+              <div class="carousel-item active"
+                [style.background-color]="classInfo?.groupIcon !== '/assets/images/group-default.svg'  ? 'black': '#fff'"
+              >
+                <img style="width:100%;height:100%" [src]="classInfo?.groupIcon">
               </div>
               <div class="carousel-item">
                 <app-ala-iframe
-                  [src]="frameUrl"
+                  [src]="classInfo?.groupVideoUrl"
                   [width]="carouselElement?.nativeElement.width"
                   [height]="carouselElement?.nativeElement.height"
                 ></app-ala-iframe>
@@ -105,7 +108,6 @@
     <div style="width:100%;display:inline-block;padding:65px 70px;height:680px" [class.chart-area]="!displaySections[1]">
       <div class="chart-container">
         <div #hrChartTarget class="chart">
-          chart target
         </div>
       </div>
       <div style="display:flex;justify-content: center;align-items: center;height:100%"
@@ -146,12 +148,12 @@
         </div>
       </div>
       <div>
-        <button class="alatech-btn alatech-btn--default rwd-btn" (click)="sendBoardCast()">
+        <!-- <button class="alatech-btn alatech-btn--default rwd-btn" (click)="sendBoardCast()">
           廣播測試資料
-        </button>
-        <button class="alatech-btn alatech-btn--default rwd-btn" (click)="stopBoardCast()">
+        </button> -->
+        <!-- <button class="alatech-btn alatech-btn--default rwd-btn" (click)="stopBoardCast()">
           停止測試
-        </button>
+        </button> -->
       </div>
     </div>
   </ng-container>
@@ -186,7 +188,7 @@
 
         <div class="hr-card-body">
           <div class="card-body--bg"></div>
-          <div class="hr-card-body__hr">
+          <div class="hr-card-body__hr" [class.hr-card-body_other]="classType !== '2'">
             <div class="user-photo" [ngClass]="item?.imgClassName">
               <img *ngIf="item?.userIcon.length > 0"
                 [src]="(item?.userIcon | safeHtml)"
@@ -202,16 +204,19 @@
               </div>
             </div>
           </div>
-          <div class="hr-card-body__other">
-            <div class="hr-card-body__pace">
-              <div style="">配速</div>
-              <!-- <div class="card-params">{{ displayCards[_idx].current_speed || 0 }}</div> -->
+          <ng-container *ngIf="classType === '2'">
+            <div class="hr-card-body__other">
+              <div class="hr-card-body__pace">
+                <div style="">配速</div>
+                <div class="card-params">{{ item?.cadence || 0 }}</div>
+              </div>
+              <div class="hr-card-body__distance">
+                <div style="">距離</div>
+                <div class="card-params">{{ item?.speed || 0 }}</div>
+              </div>
             </div>
-            <div class="hr-card-body__distance">
-              <div style="">距離</div>
-              <!-- <div class="card-params">{{ displayCards[_idx].distance || 0 }}</div> -->
-            </div>
-          </div>
+          </ng-container>
+
         </div>
       </div>
     </div>

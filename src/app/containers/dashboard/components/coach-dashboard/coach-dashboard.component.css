@@ -10,6 +10,16 @@
   /* background-color: #fff; */
   z-index: 2;
 }
+.lesson-info {
+  display:flex;
+  flex-direction:column;
+  padding-right: 45px;
+}
+.lesson-title {
+  font-size:32px;
+  color:#1b4d70;
+  font-weight:bold
+}
 .end-text {
   z-index: 1001;
   position: absolute;
@@ -135,7 +145,10 @@
   justify-content: space-between;
   padding: 15px;
 }
-
+.hr-card-body_other.hr-card-body__hr {
+  align-items: center;
+  height: 100%;
+}
 .hr-card-body__other {
   height: 50%;
   display: flex;
@@ -229,7 +242,11 @@
   border-top: 1px solid #4f4f4f;
   border-bottom: 1px solid #4f4f4f;
 }
-
+.coach-name {
+  font-size: 26.6px;
+  font-weight:bold;
+  margin-bottom: 27px;
+}
 .coach-header img {
   width: 96px;
   height: 96px;
@@ -298,7 +315,7 @@
 }
 
 .lesson-container {
-  padding: 0 15px;
+  padding: 15px;
   display: flex;
 }
 
@@ -307,14 +324,19 @@
   width: 100%;
   height: 100%;
 }
-
+.highcharts-credits {
+  display: none;
+}
 .carousel-control-prev,
 .carousel-control-next {
   top: 50%;
   width: 15%;
   height: 20px;
 }
-
+.carousel-control-next-icon,
+.carousel-control-prev-icon {
+  background-color: #333;
+}
 @keyframes heartbeat {
   0% {
     transform: scale(.75);
@@ -453,6 +475,20 @@
   }
 }
 @media(max-width: 767px) {
+  .end-text {
+    font-size: 45px;
+  }
+  .coach-name {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+  .lesson-info {
+    padding-right: 0px;
+  }
+
+  .lesson-title {
+    font-size: 24px;
+  }
   .user-photo {
     width: 95px;
     height: 95px;
@@ -496,6 +532,9 @@
 }
 
 @media(max-width: 645px) {
+  .end-text {
+    font-size: 25px;
+  }
   .hr-card-header {
     font-size: 23.5px;
   }
@@ -509,6 +548,6 @@
   }
 
   .hr-card {
-    width: 100%;
+    width: calc(100% - 23px);
   }
 }
