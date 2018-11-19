@@ -69,6 +69,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
   createType = 3; // 1為新建分店， 2為新建教練課，3為新建群組，4為新建品牌
   brandName: string;
   chooseType: number;
+  coachType: number;
   chooseLabels = [];
   get groupName() {
     return this.form.get('groupName');
@@ -116,9 +117,12 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.globalEventsManager.setFooterRWD(2); // 為了讓footer長高85px
     const queryStrings = this.utils.getUrlQueryStrings(location.search);
-    const { type } = queryStrings;
-    if (type) {
-      this.createType = +type;
+    const { createType, coachType } = queryStrings;
+    if (coachType) {
+      this.coachType = +coachType;
+    }
+    if (createType) {
+      this.createType = +createType;
     }
     if (location.pathname.indexOf('/dashboard/create-brand-group') > -1) {
       this.createType = 4;
@@ -265,6 +269,17 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
               groupIcon: this.utils.buildBase64ImgString(_coach.groupIcon)
             };
           });
+          if (this.groupLevel === '40') {
+            this.subBranchInfo = this.subGroupInfo.branches.filter(_branch => {
+              if (_branch.groupId === this.groupId) {
+                return _branch;
+              }
+            });
+            this.brandName = this.subBrandInfo[0].groupName;
+            this.form.patchValue({
+              branchId: this.subBranchInfo[0].groupId
+            });
+          }
         } else {
           this.groupInfos = groupMemberInfo;
           this.groupInfos = this.groupInfos
@@ -314,7 +329,8 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         groupStatus,
         levelIcon: this.finalImageLink || '',
         levelName: '',
-        levelType: null
+        levelType: null,
+        coachType: null
       };
       if (this.createType === 1) {
         // 建立分店
@@ -334,6 +350,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         // 建立教練課
         const { branchId, coachLessonName } = value;
         body.levelType = 5;
+        body.coachType = this.coachType;
         body.levelName = coachLessonName;
         if (branchId !== this.groupId) {
           body.groupId = branchId;

@@ -1,9 +1,216 @@
-<div class="d-flex justify-content-between" style="margin-bottom: 15px">
-  <span style="color: #157fcc; font-weight:700">
-    我的活動
-  </span>
-  <div class="group-edit-bar">
-    <button class="alatech-btn alatech-btn--default activty-btn"
+<div>
+  <div class="d-flex justify-content-between" style="margin-bottom: 15px">
+    <span style="color: #157fcc; font-weight:700">
+      我的活動
+    </span>
+    <div class="group-edit-bar">
+      <button class="alatech-btn alatech-btn--default activty-btn"
+        title="搜尋活動"
+        [routerLink]="['/dashboard/group-search']"
+        disabled
+      >
+        搜尋活動
+      </button>
+    </div>
+  </div>
+
+  <mat-table [dataSource]="logSource"
+    matSort #sortTable="matSort"
+  (matSortChange)="changeSort($event)"
+  >
+    <ng-container matColumnDef="typeIcon">
+      <mat-header-cell *matHeaderCellDef disableClear="true">
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <i *ngIf=" row.activityInfoLayer.type === '1'"
+          class="icon-svg_web-icon_083-run ala-activity-icon"
+        ></i>
+        <i *ngIf=" row.activityInfoLayer.type === '2'"
+          class="icon-svg_web-icon_084-cycle ala-activity-icon"
+        ></i>
+        <i *ngIf=" row.activityInfoLayer.type === '3'"
+          class="icon-svg_web-icon_086-weight_training ala-activity-icon"
+        ></i>
+        <i *ngIf=" row.activityInfoLayer.type === '4'"
+          class="icon-svg_web-icon_085-swim ala-activity-icon"
+        ></i>
+        <i *ngIf=" row.activityInfoLayer.type === '5'"
+          class="icon-svg_web-icon_087-aerobic ala-activity-icon"
+        ></i>
+        <i *ngIf=" row.activityInfoLayer.type === '6'"
+          class="icon-svg_web-icon_088-row ala-activity-icon"
+        ></i>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="type">
+      <mat-header-cell *matHeaderCellDef disableClear="true">
+        <!-- 運動類別 -->
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">{{  row.fileInfo && row.fileInfo?.dispName || ' -- ' }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="date">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>
+        <!-- 日期 -->
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <div>
+          <div>
+            {{ row.activityInfoLayer && row.activityInfoLayer?.startTime | sportDate: 'date' || ' -- ' }}
+          </div>
+          <div style="color: #999;font-size: 12px">
+            {{ row.activityInfoLayer && row.activityInfoLayer?.startTime | sportDate: 'time' || ' -- ' }}
+          </div>
+        </div>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="time">
+      <mat-header-cell *matHeaderCellDef disableClear="true">
+        <!-- 消耗時間 -->
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <div>
+          <div>{{ (row.activityInfoLayer && row.activityInfoLayer?.totalSecond | sportTime) || ' -- ' }}</div>
+          <div><span style="color: #999;font-size:12px">消耗時間</span></div>
+        </div>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="bpm">
+      <mat-header-cell *matHeaderCellDef disableClear="true">
+        <!-- 平均心率 -->
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        {{ row.activityInfoLayer && row.activityInfoLayer?.avgHeartRateBpm || ' -- ' }}
+        <span style="color: #919191">bpm</span>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="speed">
+      <mat-header-cell *matHeaderCellDef disableClear="true">
+        <!-- 平均配速 -->
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <div>
+          <!-- <div> -->
+            <span *ngIf=" row.activityInfoLayer.type !== '5' && row.activityInfoLayer.type !== '3'">
+              {{ (row.activityInfoLayer && row.activityInfoLayer?.avgSpeed | sportPace: row.activityInfoLayer.type) || ' -- ' }}
+              <span
+                *ngIf=" row.activityInfoLayer.type === '1'"
+              >
+                hr/1km
+              </span>
+              <span
+                *ngIf=" row.activityInfoLayer.type === '4'"
+              >
+                hr/100m
+              </span>
+              <span
+                *ngIf=" row.activityInfoLayer.type === '6'"
+              >
+                hr/500m
+              </span>
+              <span
+                *ngIf=" row.activityInfoLayer.type === '2'"
+              >
+                km/hr
+              </span>
+            </span>
+            <span *ngIf=" row.activityInfoLayer.type === '5'">
+              {{ row.activityInfoLayer && row.activityInfoLayer?.maxHeartRateBpm || ' -- ' }}bpm
+            </span>
+            <span *ngIf=" row.activityInfoLayer.type === '3'">
+              {{ row.activityInfoLayer?.weightTrainingInfo && row.activityInfoLayer?.weightTrainingInfo.totalReps || ' -- ' }}
+            </span>
+          <!-- </div> -->
+          <div>
+            <span style="color: #919191;font-size: 12px"
+              *ngIf=" row.activityInfoLayer.type === '1'"
+            >
+              平均配速
+            </span>
+            <span style="color: #919191;font-size: 12px"
+              *ngIf=" row.activityInfoLayer.type === '4'"
+            >
+              平均配速
+            </span>
+            <span style="color: #919191;font-size: 12px"
+              *ngIf=" row.activityInfoLayer.type === '6'"
+            >
+              平均配速
+            </span>
+            <span style="color: #919191;font-size: 12px"
+              *ngIf=" row.activityInfoLayer.type === '2'"
+            >
+              平均速度
+            </span>
+            <span style="color: #919191;font-size: 12px"
+              *ngIf=" row.activityInfoLayer.type === '5'"
+            >
+              最大心率
+            </span>
+            <span style="color: #919191;font-size: 12px"
+              *ngIf=" row.activityInfoLayer.type === '3'"
+            >
+              最次數
+            </span>
+          </div>
+        </div>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="calories">
+      <mat-header-cell *matHeaderCellDef disableClear="true">
+        <!-- 卡路里 -->
+      </mat-header-cell>
+    </ng-container>
+    <ng-container matColumnDef="distance">
+      <mat-header-cell *matHeaderCellDef disableClear="true">
+        <!-- 總距離 -->
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <div *ngIf=" row.activityInfoLayer.type !== '5' && row.activityInfoLayer.type !== '3'">
+          <div >
+            {{ row.activityInfoLayer && row.activityInfoLayer?.totalDistanceMeters / 1000 || ' -- ' }}km
+          </div>
+          <div>
+            <span style="color: #999;font-size:12px">總距離</span>
+          </div>
+        </div>
+        <div *ngIf=" row.activityInfoLayer.type === '5'">
+          <div >
+            {{ row.activityInfoLayer && row.activityInfoLayer?.calories || ' -- ' }}cal
+          </div>
+          <div>
+            <span style="color: #999;font-size:12px">卡路里</span>
+          </div>
+        </div>
+        <div *ngIf=" row.activityInfoLayer.type === '3'">
+          <div >
+            {{ row.activityInfoLayer?.weightTrainingInfo && row.activityInfoLayer?.weightTrainingInfo.totalWeightKg || ' -- ' }}kg
+          </div>
+          <div>
+            <span style="color: #999;font-size:12px">總重量</span>
+          </div>
+        </div>
+      </mat-cell>
+    </ng-container>
+    <mat-header-row
+      *matHeaderRowDef="['typeIcon','type', 'date' ,'time','distance', 'speed']"
+    >
+    </mat-header-row>
+    <mat-row
+      *matRowDef="let logRow; columns: ['typeIcon', 'type', 'date' ,'time','distance', 'speed']"
+      (click)="goDetail(logRow.fileInfo.fileId)"
+    >
+    </mat-row>
+  </mat-table>
+  <div *ngIf="isEmpty" style="text-align: center;padding: 30px">
+    尚無相關資訊
+  </div>
+  <div class="ala-loading-shade" *ngIf="isLoading">
+    <mat-spinner></mat-spinner>
+  </div>
+  <mat-paginator #paginator [length]="totalCount" [pageIndex]="0" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]">
+  </mat-paginator>
+  <div class="group-manage__action">
+    <button class="alatech-btn group-manage__btn"
       title="搜尋活動"
       [routerLink]="['/dashboard/group-search']"
       disabled
@@ -11,209 +218,4 @@
       搜尋活動
     </button>
   </div>
-</div>
-
-<mat-table [dataSource]="logSource"
-  matSort #sortTable="matSort"
- (matSortChange)="changeSort($event)"
->
-  <ng-container matColumnDef="typeIcon">
-    <mat-header-cell *matHeaderCellDef disableClear="true">
-    </mat-header-cell>
-    <mat-cell *matCellDef="let row">
-      <i *ngIf=" row.activityInfoLayer.type === '1'"
-        class="icon-svg_web-icon_083-run ala-activity-icon"
-      ></i>
-      <i *ngIf=" row.activityInfoLayer.type === '2'"
-        class="icon-svg_web-icon_084-cycle ala-activity-icon"
-      ></i>
-      <i *ngIf=" row.activityInfoLayer.type === '3'"
-        class="icon-svg_web-icon_086-weight_training ala-activity-icon"
-      ></i>
-      <i *ngIf=" row.activityInfoLayer.type === '4'"
-        class="icon-svg_web-icon_085-swim ala-activity-icon"
-      ></i>
-      <i *ngIf=" row.activityInfoLayer.type === '5'"
-        class="icon-svg_web-icon_087-aerobic ala-activity-icon"
-      ></i>
-      <i *ngIf=" row.activityInfoLayer.type === '6'"
-        class="icon-svg_web-icon_088-row ala-activity-icon"
-      ></i>
-    </mat-cell>
-  </ng-container>
-  <ng-container matColumnDef="type">
-    <mat-header-cell *matHeaderCellDef disableClear="true">
-      <!-- 運動類別 -->
-    </mat-header-cell>
-    <mat-cell *matCellDef="let row">{{ row.fileInfo.dispName }}</mat-cell>
-  </ng-container>
-  <ng-container matColumnDef="date">
-    <mat-header-cell *matHeaderCellDef mat-sort-header>
-      <!-- 日期 -->
-    </mat-header-cell>
-    <mat-cell *matCellDef="let row">
-      <div>
-        <div>
-          {{ row.activityInfoLayer.startTime | sportDate: 'date' }}
-        </div>
-        <div style="color: #999;font-size: 12px">
-          {{ row.activityInfoLayer.startTime | sportDate: 'time' }}
-        </div>
-      </div>
-    </mat-cell>
-  </ng-container>
-  <ng-container matColumnDef="time">
-    <mat-header-cell *matHeaderCellDef disableClear="true">
-      <!-- 消耗時間 -->
-    </mat-header-cell>
-    <mat-cell *matCellDef="let row">
-      <div>
-        <div>{{ row.activityInfoLayer.totalSecond | sportTime }}</div>
-        <div><span style="color: #999;font-size:12px">消耗時間</span></div>
-      </div>
-    </mat-cell>
-  </ng-container>
-  <ng-container matColumnDef="bpm">
-    <mat-header-cell *matHeaderCellDef disableClear="true">
-      <!-- 平均心率 -->
-    </mat-header-cell>
-    <mat-cell *matCellDef="let row">
-      {{ row.activityInfoLayer.avgHeartRateBpm }}
-      <span style="color: #919191">bpm</span>
-    </mat-cell>
-  </ng-container>
-  <ng-container matColumnDef="speed">
-    <mat-header-cell *matHeaderCellDef disableClear="true">
-      <!-- 平均配速 -->
-    </mat-header-cell>
-    <mat-cell *matCellDef="let row">
-      <div>
-        <div>
-          <span *ngIf=" row.activityInfoLayer.type !== '5' && row.activityInfoLayer.type !== '3'">
-            {{ row.activityInfoLayer.avgSpeed | sportPace: row.activityInfoLayer.type }}
-            <span
-              *ngIf=" row.activityInfoLayer.type === '1'"
-            >
-              hr/1km
-            </span>
-            <span
-              *ngIf=" row.activityInfoLayer.type === '4'"
-            >
-              hr/100m
-            </span>
-            <span
-              *ngIf=" row.activityInfoLayer.type === '6'"
-            >
-              hr/500m
-            </span>
-            <span
-              *ngIf=" row.activityInfoLayer.type === '2'"
-            >
-              km/hr
-            </span>
-          </span>
-          <span *ngIf=" row.activityInfoLayer.type === '5'">
-            {{ row.activityInfoLayer.maxHeartRateBpm }}bpm
-          </span>
-          <span *ngIf=" row.activityInfoLayer.type === '3'">
-            {{ row.activityInfoLayer.weightTrainingInfo.totalReps }}
-          </span>
-        </div>
-        <div>
-          <span style="color: #919191;font-size: 12px"
-            *ngIf=" row.activityInfoLayer.type === '1'"
-          >
-            平均配速
-          </span>
-          <span style="color: #919191;font-size: 12px"
-            *ngIf=" row.activityInfoLayer.type === '4'"
-          >
-            平均配速
-          </span>
-          <span style="color: #919191;font-size: 12px"
-            *ngIf=" row.activityInfoLayer.type === '6'"
-          >
-            平均配速
-          </span>
-          <span style="color: #919191;font-size: 12px"
-            *ngIf=" row.activityInfoLayer.type === '2'"
-          >
-            平均速度
-          </span>
-          <span style="color: #919191;font-size: 12px"
-            *ngIf=" row.activityInfoLayer.type === '5'"
-          >
-            最大心率
-          </span>
-          <span style="color: #919191;font-size: 12px"
-            *ngIf=" row.activityInfoLayer.type === '3'"
-          >
-            最次數
-          </span>
-        </div>
-      </div>
-    </mat-cell>
-  </ng-container>
-  <ng-container matColumnDef="calories">
-    <mat-header-cell *matHeaderCellDef disableClear="true">
-      <!-- 卡路里 -->
-    </mat-header-cell>
-  </ng-container>
-  <ng-container matColumnDef="distance">
-    <mat-header-cell *matHeaderCellDef disableClear="true">
-      <!-- 總距離 -->
-    </mat-header-cell>
-    <mat-cell *matCellDef="let row">
-      <div *ngIf=" row.activityInfoLayer.type !== '5' && row.activityInfoLayer.type !== '3'">
-        <div >
-          {{ row.activityInfoLayer.totalDistanceMeters / 1000 }}km
-        </div>
-        <div>
-          <span style="color: #999;font-size:12px">總距離</span>
-        </div>
-      </div>
-      <div *ngIf=" row.activityInfoLayer.type === '5'">
-        <div >
-          {{ row.activityInfoLayer.calories }}cal
-        </div>
-        <div>
-          <span style="color: #999;font-size:12px">卡路里</span>
-        </div>
-      </div>
-      <div *ngIf=" row.activityInfoLayer.type === '3'">
-        <div >
-          {{ row.activityInfoLayer.weightTrainingInfo.totalWeightKg }}kg
-        </div>
-        <div>
-          <span style="color: #999;font-size:12px">總重量</span>
-        </div>
-      </div>
-    </mat-cell>
-  </ng-container>
-  <mat-header-row
-    *matHeaderRowDef="['typeIcon','type', 'date' ,'time','distance', 'speed']"
-  >
-  </mat-header-row>
-  <mat-row
-    *matRowDef="let logRow; columns: ['typeIcon', 'type', 'date' ,'time','distance', 'speed']"
-    (click)="goDetail(logRow.fileInfo.fileId)"
-  >
-  </mat-row>
-</mat-table>
-<div *ngIf="isEmpty" style="text-align: center;padding: 30px">
-  尚無相關資訊
-</div>
-<div class="ala-loading-shade" *ngIf="isLoading">
-  <mat-spinner></mat-spinner>
-</div>
-<mat-paginator #paginator [length]="totalCount" [pageIndex]="0" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]">
-</mat-paginator>
-<div class="group-manage__action">
-  <button class="alatech-btn group-manage__btn"
-    title="搜尋活動"
-    [routerLink]="['/dashboard/group-search']"
-    disabled
-  >
-    搜尋活動
-  </button>
 </div>

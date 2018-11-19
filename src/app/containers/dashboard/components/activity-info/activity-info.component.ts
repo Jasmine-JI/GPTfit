@@ -136,7 +136,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   ngOnDestroy() {
     if (!this.isShowNoRight) {
-      this.listenFunc();
+      // this.listenFunc();
       this.chart1.destroy();
       this.chart2.destroy();
       this.chart3.destroy();
@@ -165,9 +165,10 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.activityPoints = res.activityPointLayer;
       this.dataSource.data = res.activityLapLayer;
       this.fileInfo = res.fileInfo;
-      this.userLink.userName = this.fileInfo.author.split('?')[0];
-      this.userLink.userId = this.fileInfo.author.split('?')[1].split('=')[1];
-
+      if (this.fileInfo.author.indexOf('?') > -1) { // 防止後續author會帶更多參數，先不寫死
+        this.userLink.userName = this.fileInfo.author.split('?')[0];
+        this.userLink.userId = this.fileInfo.author.split('?')[1].split('=')[1];
+      }
       this.infoDate = this.handleDate(this.activityInfo.startTime);
       this.totalSecond = this.activityInfo.totalSecond;
       this.resolutionSeconds = +this.totalSecond / this.activityPoints.length;

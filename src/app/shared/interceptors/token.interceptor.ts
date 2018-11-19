@@ -24,7 +24,7 @@ export class TokenInterceptor implements HttpInterceptor {
         appName: 'AlaCenter',
         appVersionCode: 'v.1.0.0 beta',
         appVersionName: 'v.1.0.0 beta',
-        language: this.utils.getLocalStorageObject('locale'),
+        language: this.utils.getLocalStorageObject('locale') || 'en-us',
         regionCode: 'TW'
       }
     });
