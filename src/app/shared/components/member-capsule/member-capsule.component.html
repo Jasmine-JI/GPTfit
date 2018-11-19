@@ -1,87 +1,90 @@
-<div class="member-selector" [title]="title" (click)="toggleMenu()">
-  <div *ngIf="icon"
-    [ngStyle]="{'background-image': 'url(' + icon + ')'}"
-    class="capsule-img"
-  ></div>
-  <img *ngIf="!icon && !isSubGroupInfo"
-    src="/assets/images/user.png"
-    class="capsule-img"
-  >
-  <img *ngIf="!icon && isSubGroupInfo"
-    src="/assets/images/group-default.svg"
-    style="opacity: .1"
-    class="capsule-img"
-  >
-  <span>{{ name }}</span>
-  <ng-container
-    *ngIf="isSubGroupInfo && isHadMenu"
-  >
-    <i class="fa fa-caret-down" style="vertical-align: sub"></i>
-    <ul class="dropdown-menu"
-      [class.show]="active"
+<div style="display:inline-block">
+  <div class="member-selector" [title]="title" (click)="toggleMenu()">
+    <div *ngIf="icon"
+      [ngStyle]="{'background-image': 'url(' + icon + ')'}"
+      class="capsule-img"
+    ></div>
+    <img *ngIf="!icon && !isSubGroupInfo"
+      src="/assets/images/user.png"
+      class="capsule-img"
     >
-      <li class="normal-manage" (click)="goToManage()">
-        <a>
-          管理
-        </a>
-      </li>
-      <li class="warn-manage" (click)="openDeleteGroupWin()">
-        <a>
-          移除群組
-        </a>
-      </li>
-    </ul>
-  </ng-container>
-  <ng-container
- *ngIf="isAdminInfo && isHadMenu"
-  >
-    <i class="fa fa-caret-down" style="vertical-align: sub"></i>
-    <ul class="dropdown-menu"
-      [class.show]="active"
+    <img *ngIf="!icon && isSubGroupInfo"
+      src="/assets/images/group-default.svg"
+      style="opacity: .1"
+      class="capsule-img"
     >
-      <li class="warn-manage" (click)="handleRemoveAdmin()">
-        <a>
-          移除管理員
-        </a>
-      </li>
-    </ul>
-  </ng-container>
-  <ng-container
-  *ngIf="isNormalMemberInfo && isHadMenu"
-  >
-    <i class="fa fa-caret-down" style="vertical-align: sub"></i>
-    <ul class="dropdown-menu"
-      [class.show]="active"
+    <span>{{ name }}</span>
+    <ng-container
+      *ngIf="isSubGroupInfo && isHadMenu"
     >
-      <li class="normal-manage" (click)="handleAssignAdmin()">
-        <a>
-          指定管理員
-        </a>
-      </li>
-      <li class="warn-manage" (click)="handleDeleteMember()">
-        <a>
-          刪除該成員
-        </a>
-      </li>
-    </ul>
-  </ng-container>
-  <ng-container
-  *ngIf="isWaittingMemberInfo && isHadMenu"
-  >
-    <i class="fa fa-caret-down" style="vertical-align: sub"></i>
-    <ul class="dropdown-menu"
-      [class.show]="active"
+      <i class="fa fa-caret-down" style="vertical-align: sub"></i>
+      <ul class="dropdown-menu"
+        [class.show]="active"
+      >
+        <li class="normal-manage" (click)="goToManage()">
+          <a>
+            管理
+          </a>
+        </li>
+        <li class="warn-manage" (click)="openDeleteGroupWin()">
+          <a>
+            移除群組
+          </a>
+        </li>
+      </ul>
+    </ng-container>
+    <ng-container
+  *ngIf="isAdminInfo && isHadMenu"
     >
-      <li class="normal-manage" (click)="handleJoinStatus(2)">
-        <a>
-          接受
-        </a>
-      </li>
-      <li class="normal-manage" (click)="handleJoinStatus(3)">
-        <a>
-          拒絕
-        </a>
-      </li>
-    </ul>
-  </ng-container>
+      <i class="fa fa-caret-down" style="vertical-align: sub"></i>
+      <ul class="dropdown-menu"
+        [class.show]="active"
+      >
+        <li class="warn-manage" (click)="handleRemoveAdmin()">
+          <a>
+            移除管理員
+          </a>
+        </li>
+      </ul>
+    </ng-container>
+    <ng-container
+    *ngIf="isNormalMemberInfo && isHadMenu"
+    >
+      <i class="fa fa-caret-down" style="vertical-align: sub"></i>
+      <ul class="dropdown-menu"
+        [class.show]="active"
+      >
+        <li class="normal-manage" (click)="handleAssignAdmin()">
+          <a>
+            指定管理員
+          </a>
+        </li>
+        <li class="warn-manage" (click)="handleDeleteMember()">
+          <a>
+            刪除該成員
+          </a>
+        </li>
+      </ul>
+    </ng-container>
+    <ng-container
+    *ngIf="isWaittingMemberInfo && isHadMenu"
+    >
+      <i class="fa fa-caret-down" style="vertical-align: sub"></i>
+      <ul class="dropdown-menu"
+        [class.show]="active"
+      >
+        <li class="normal-manage" (click)="handleJoinStatus(2)">
+          <a>
+            接受
+          </a>
+        </li>
+        <li class="normal-manage" (click)="handleJoinStatus(3)">
+          <a>
+            拒絕
+          </a>
+        </li>
+      </ul>
+    </ng-container>
+  </div>
 </div>
+

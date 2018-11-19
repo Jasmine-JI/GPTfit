@@ -15,3 +15,16 @@
 .ala-activity-icon {
   font-size: 20px;
 }
+
+@media(max-width: 479px) {
+  .mat-column-typeIcon {
+    max-width: 30px;
+  }
+  mat-cell:first-of-type {
+    padding-left: 0px;
+  }
+  .mat-cell {
+    font-size: 12px;
+    padding: 5px;
+  }
+}

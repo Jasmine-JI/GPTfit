@@ -13,7 +13,6 @@ export class Page403Component implements OnInit, OnDestroy {
   ngOnInit() {
     this.countDown = setInterval(() => {
       this.count--;
-      console.log(this.count);
       if (this.count < 0) {
         this.router.navigate(['/dashboard']);
       }

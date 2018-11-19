@@ -37,6 +37,8 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
   subCoachInfo: any;
   branchAdministrators: any;
   coachAdministrators: any;
+  normalCoaches: any;
+  PFCoaches: any;
   normalGroupAdministrators: any;
   role = {
     isSupervisor: false,
@@ -62,7 +64,6 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
 
     this.userInfoService.getUserAccessRightDetail().subscribe(res => {
       this.visitorDetail = res;
-      console.log('this.visitorDetail: ', this.visitorDetail);
     });
   }
   ngOnDestroy() {
@@ -228,10 +229,14 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
               });
             }
           }
-          if (this.groupLevel === '60') {
-            this.coachAdministrators = this.groupInfos.filter(
+          if (this.groupLevel === '60') { // 如果是教練課群組
+            this.normalCoaches = this.groupInfos.filter( // 一般教練
               _info =>
                 _info.accessRight === '60' && _info.groupId === this.groupId
+            );
+            this.PFCoaches = this.groupInfos.filter( // 體適能教練
+              _info =>
+                _info.accessRight === '50' && _info.groupId === this.groupId
             );
           } else {
             this.coachAdministrators = this.groupInfos.filter(_info => {

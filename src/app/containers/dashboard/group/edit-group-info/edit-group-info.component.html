@@ -127,7 +127,9 @@
             </app-form-textarea>
           </div>
         </div>
-        <div class="ala-list__item">
+        <div class="ala-list__item"
+          *ngIf="groupLevel === '60'"
+        >
           <label class="ala-form__label">直播課程連結：</label>
           <div class="ala-form__col"
             style="position: relative;"
@@ -291,26 +293,43 @@
                     </app-member-capsule>
                   </ng-container>
                 </div>
-
-                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">教練課管理員</label>
-                <div style="margin-bottom: 15px">
-                  <span *ngIf="coachAdministrators && coachAdministrators.length === 0">尚無教練課管理員資訊</span>
-                  <ng-container  *ngFor="let coachAdmItem of coachAdministrators">
-                    <app-member-capsule
-                      [role]="role"
-                      [isAdminInfo]="true"
-                      [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator"
-                      [title]="coachAdmItem?.memberName"
-                      [memberInfo]="coachAdmItem"
-                      [name]="coachAdmItem && coachAdmItem?.memberName"
-                      [icon]="coachAdmItem?.memberIcon"
-                      [groupId]="coachAdmItem?.groupId"
-                      [userId]="coachAdmItem?.memberId"
-                      (onRemoveAdmin)="handleRemoveAdmin($event, 3)"
-                    >
-                    </app-member-capsule>
-                  </ng-container>
-                </div>
+                <ng-container *ngIf="groupLevel !== '60'">
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">教練課管理員</label>
+                  <div style="margin-bottom: 15px" >
+                    <span *ngIf="coachAdministrators && coachAdministrators.length === 0">尚無教練課管理員資訊</span>
+                    <ng-container  *ngFor="let coachAdmItem of coachAdministrators">
+                      <app-member-capsule
+                        [role]="role"
+                        [isAdminInfo]="true"
+                        [title]="coachAdmItem?.memberName"
+                        [memberInfo]="coachAdmItem"
+                        [name]="coachAdmItem && coachAdmItem?.memberName"
+                        [icon]="coachAdmItem?.memberIcon"
+                      >
+                      </app-member-capsule>
+                    </ng-container>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="groupLevel === '60'">
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">一般教練</label>
+                  <div style="margin-bottom: 15px">
+                    <span *ngIf="normalCoaches && normalCoaches.length === 0">尚無一般教練資訊</span>
+                    <ng-container *ngFor="let normalCoachAdmItem of normalCoaches">
+                      <app-member-capsule [role]="role" [isAdminInfo]="true" [title]="normalCoachAdmItem?.memberName" [memberInfo]="normalCoachAdmItem"
+                        [name]="normalCoachAdmItem && normalCoachAdmItem?.memberName" [icon]="normalCoachAdmItem?.memberIcon">
+                      </app-member-capsule>
+                    </ng-container>
+                  </div>
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">體適能教練</label>
+                  <div style="margin-bottom: 15px">
+                    <span *ngIf="PFCoaches && PFCoaches.length === 0">尚無體適能教練資訊</span>
+                    <ng-container *ngFor="let pfCoachAdmItem of PFCoaches">
+                      <app-member-capsule [role]="role" [isAdminInfo]="true" [title]="pfCoachAdmItem?.memberName" [memberInfo]="pfCoachAdmItem"
+                        [name]="pfCoachAdmItem && pfCoachAdmItem?.memberName" [icon]="pfCoachAdmItem?.memberIcon">
+                      </app-member-capsule>
+                    </ng-container>
+                  </div>
+                </ng-container>
               </ng-container>
               <ng-container *ngIf="groupLevel && groupLevel === '80'">
                 <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">管理員</label>

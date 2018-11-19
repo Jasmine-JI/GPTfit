@@ -80,6 +80,7 @@ import { TrainLiveComponent } from './components/train-live/train-live.component
 import { LineBreakPipe } from './pipes/line-break.pipe';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from '@shared/interceptors/token.interceptor';
+import { BottomSheetComponent } from './group/edit-group-info/edit-group-info.component';
 
 @NgModule({
   imports: [
@@ -171,7 +172,8 @@ import { TokenInterceptor } from '@shared/interceptors/token.interceptor';
     ProductInfoComponent,
     TodayLoginnerWinComponent,
     TrainLiveComponent,
-    LineBreakPipe
+    LineBreakPipe,
+    BottomSheetComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
@@ -182,7 +184,8 @@ import { TokenInterceptor } from '@shared/interceptors/token.interceptor';
     RightSettingWinComponent,
     PeopleSelectorWinComponent,
     SportReportComponent,
-    TodayLoginnerWinComponent
+    TodayLoginnerWinComponent,
+    BottomSheetComponent
   ]
 })
 export class DashboardModule {}
