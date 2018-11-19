@@ -71,7 +71,7 @@
           <label class="ala-form__label">品牌名稱：</label>
           <app-form-text
             [disabled]="true"
-            [content]="brandName"
+            [content]="brandName || ''"
           >
           </app-form-text>
         </div>
@@ -103,7 +103,13 @@
             [isInvalid]="(!branchName.valid && branchName.touched) || (f.submitted && branchName.hasError('required')) || (f.submitted && branchName.hasError('maxLength'))"
           >
           </app-form-text>
-          <select *ngIf="createType === 2" formControlName="branchId" class="form-field"
+          <app-form-text
+            *ngIf="createType === 2 && groupLevel === '40'"
+            [content]="subBranchInfo && subBranchInfo[0]?.groupName || ''"
+            [disabled]="true"
+          >
+          </app-form-text>
+          <select *ngIf="createType === 2 && groupLevel === '30'" formControlName="branchId" class="form-field"
             [class.form-field--invalid]="(!branchId.valid && branchId.touched) || (f.submitted && branchId.hasError('required'))"
           >
             <ng-container  *ngFor="let subBranchItem of subBranchInfo">

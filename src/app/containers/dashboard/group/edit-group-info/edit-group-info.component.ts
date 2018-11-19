@@ -5,7 +5,8 @@ import {
   HostListener,
   ViewChild,
   ElementRef,
-  OnDestroy
+  OnDestroy,
+  Inject
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { GroupService } from '../../services/group.service';
@@ -24,6 +25,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { forkJoin } from 'rxjs/observable/forkJoin';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { GlobalEventsManager } from '@shared/global-events-manager';
+import { MatBottomSheet, MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA} from '@angular/material';
 
 @Component({
   selector: 'app-edit-group-info',
@@ -47,6 +49,8 @@ export class EditGroupInfoComponent implements OnInit, OnDestroy {
   subCoachInfo: any;
   branchAdministrators: any;
   coachAdministrators: any;
+  normalCoaches: any;
+  PFCoaches: any;
   normalMemberInfos: any;
   remindText = '※不得超過32個字元';
   remindVideoText = '請輸入直播影片的嵌入式語句';
@@ -95,7 +99,8 @@ export class EditGroupInfoComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private userInfoService: UserInfoService,
     public dialog: MatDialog,
-    private globalEventsManager: GlobalEventsManager
+    private globalEventsManager: GlobalEventsManager,
+    private bottomSheet: MatBottomSheet
   ) {}
   @HostListener('dragover', ['$event'])
   public onDragOver(evt) {
@@ -320,9 +325,16 @@ export class EditGroupInfoComponent implements OnInit, OnDestroy {
             });
           }
           if (this.groupLevel === '60') {
-            this.coachAdministrators = this.groupInfos.filter(
+            // 如果是教練課群組
+            this.normalCoaches = this.groupInfos.filter(
+              // 一般教練
               _info =>
                 _info.accessRight === '60' && _info.groupId === this.groupId
+            );
+            this.PFCoaches = this.groupInfos.filter(
+              // 體適能教練
+              _info =>
+                _info.accessRight === '50' && _info.groupId === this.groupId
             );
           } else {
             this.coachAdministrators = this.groupInfos.filter(_info => {
@@ -447,9 +459,15 @@ export class EditGroupInfoComponent implements OnInit, OnDestroy {
   }
   goCreatePage(_type, e) {
     e.preventDefault();
-    this.router.navigateByUrl(
-      `/dashboard/group-info/${this.groupId}/create?type=${_type}`
-    );
+    if (_type === 1) {
+      this.router.navigateByUrl(
+        `/dashboard/group-info/${this.groupId}/create?createType=1`
+      );
+    } else {
+      this.bottomSheet.open(BottomSheetComponent, {
+        data: { groupId: this.groupId }
+      });
+    }
   }
   handleWaittingMemberInfo(id: string) {
     if (id) {
@@ -497,6 +515,35 @@ export class EditGroupInfoComponent implements OnInit, OnDestroy {
     if (id) {
       this.normalMemberInfos = this.normalMemberInfos.filter(
         _info => _info.memberId !== id
+      );
+    }
+  }
+}
+@Component({
+  selector: 'app-bottom-sheet',
+  templateUrl: 'bottom-sheet.html'
+})
+export class BottomSheetComponent {
+  constructor(
+    private bottomSheetRef: MatBottomSheetRef<BottomSheetComponent>,
+    private router: Router,
+    @Inject(MAT_BOTTOM_SHEET_DATA) private data: any
+  ) {}
+  get groupId() {
+    return this.data.groupId;
+  }
+  openLink(event: MouseEvent, type: number): void {
+    let coachType = null;
+    if (type === 1 || type === 2) {
+      coachType = type;
+    }
+    if (type === 1 || type === 3) {
+      this.bottomSheetRef.dismiss();
+      event.preventDefault();
+    }
+    if (type === 1) {
+      this.router.navigateByUrl(
+        `/dashboard/group-info/${this.groupId}/create?createType=2&coachType=${coachType}`
       );
     }
   }
