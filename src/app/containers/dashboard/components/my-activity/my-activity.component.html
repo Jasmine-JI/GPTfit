@@ -117,7 +117,7 @@
               {{ row.activityInfoLayer && row.activityInfoLayer?.maxHeartRateBpm || ' -- ' }}bpm
             </span>
             <span *ngIf=" row.activityInfoLayer.type === '3'">
-              {{ row.activityInfoLayer?.weightTrainingInfo && row.activityInfoLayer?.weightTrainingInfo.totalReps || ' -- ' }}
+              {{ row.activityInfoLayer && row.activityInfoLayer?.totalReps || ' -- ' }}
             </span>
           <!-- </div> -->
           <div>
@@ -183,7 +183,7 @@
         </div>
         <div *ngIf=" row.activityInfoLayer.type === '3'">
           <div >
-            {{ row.activityInfoLayer?.weightTrainingInfo && row.activityInfoLayer?.weightTrainingInfo.totalWeightKg || ' -- ' }}kg
+            {{ row.activityInfoLayer && row.activityInfoLayer?.totalWeightKg || ' -- ' }}kg
           </div>
           <div>
             <span style="color: #999;font-size:12px">總重量</span>

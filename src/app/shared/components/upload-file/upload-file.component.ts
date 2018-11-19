@@ -92,12 +92,12 @@ export class UploadFileComponent implements OnInit, OnChanges {
 
   ngOnInit() {}
   ngOnChanges(changes: SimpleChanges) {
-    if (this.isImageFileMode) {
-      const { imageURL: { currentValue } } = changes;
-      if (currentValue) {
-        this.listenImage(currentValue);
-      }
-    }
+    // if (this.isImageFileMode) {
+    //   const { imageURL: { currentValue } } = changes;
+    //   if (currentValue) {
+    //     this.listenImage(currentValue);
+    //   }
+    // }
   }
   handleClick() {}
   handleBtnEvent(event) {
