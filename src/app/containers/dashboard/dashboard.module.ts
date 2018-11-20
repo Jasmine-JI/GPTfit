@@ -45,12 +45,10 @@ import { GroupSearchComponent } from './group/group-search/group-search.componen
 import { GroupInfoComponent } from './group/group-info/group-info.component';
 import { GroupService } from './services/group.service';
 import { AccessNamePipe } from './pipes/access-name.pipe';
-import { GroupStatusPipe } from './pipes/group-status.pipe';
 import { EditGroupInfoComponent } from './group/edit-group-info/edit-group-info.component';
 import { EditGroupGuard } from './guards/edit-group-guard';
 import { CreateGroupComponent } from './group/create-group/create-group.component';
 import { RightSettingWinComponent } from './group/right-setting-win/right-setting-win.component';
-import { GroupLevelNamePipe } from './pipes/group-level-name.pipe';
 import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
 import { PeopleSelectorWinComponent } from './components/people-selector-win/people-selector-win.component';
 import { DashboardGuard } from './guards/dashboard-guard';
@@ -77,7 +75,6 @@ import { ProductInfoComponent } from './components/device/product-info/product-i
 import { TodayLoginnerWinComponent } from './components/today-loginner-win/today-loginner-win.component';
 import { ReportService } from './services/report.service';
 import { TrainLiveComponent } from './components/train-live/train-live.component';
-import { LineBreakPipe } from './pipes/line-break.pipe';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from '@shared/interceptors/token.interceptor';
 import { BottomSheetComponent } from './group/edit-group-info/edit-group-info.component';
@@ -145,11 +142,9 @@ import { BottomSheetComponent } from './group/edit-group-info/edit-group-info.co
     GroupSearchComponent,
     GroupInfoComponent,
     AccessNamePipe,
-    GroupStatusPipe,
     EditGroupInfoComponent,
     CreateGroupComponent,
     RightSettingWinComponent,
-    GroupLevelNamePipe,
     InnerSettingsComponent,
     PeopleSelectorWinComponent,
     ActivityInfoComponent,
@@ -172,7 +167,6 @@ import { BottomSheetComponent } from './group/edit-group-info/edit-group-info.co
     ProductInfoComponent,
     TodayLoginnerWinComponent,
     TrainLiveComponent,
-    LineBreakPipe,
     BottomSheetComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

@@ -124,6 +124,7 @@
   }
   .group-image--area img {
     width: auto;
+    height: 400px;
   }
   .group-edit-bar {
     display: none;
