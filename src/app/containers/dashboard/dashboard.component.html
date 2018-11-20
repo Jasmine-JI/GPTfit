@@ -22,10 +22,9 @@
             <i class="icon-svg_web-icon_002-trophy ala-sidenav-icon"></i>排行版
           </li>
           <mat-accordion multi="false">
-            <mat-expansion-panel>
+            <mat-expansion-panel [expanded]="target === 3">
               <mat-expansion-panel-header  class="ala-expansion-panel-header"
                 [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
-                (click)="chooseItem(0, sideNav)"
               >
                 <mat-panel-title>
                   <i class="icon-svg_web-icon_003-peoples ala-sidenav-icon"></i>及時活動
@@ -47,25 +46,26 @@
 
             </mat-expansion-panel>
           </mat-accordion>
-          <li class="ala-sidenav-item"  (click)="chooseItem(4, sideNav)" [class.ala-sidenav-menu-item__active]="target === 4">
+          <!-- <li class="ala-sidenav-item"  (click)="chooseItem(4, sideNav)" [class.ala-sidenav-menu-item__active]="target === 4">
             <i class="icon-svg_web-icon_004-qr_code ala-sidenav-icon"></i>登入設備
-          </li>
+          </li> -->
           <li class="ala-sidenav-item"
             (click)="chooseItem(5, sideNav)"
             [class.ala-sidenav-menu-item__active]="target === 5"
             [routerLink]="['/dashboard/device_log']"
              *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer"
           >
-            <i class="icon icon-log-file-format ala-sidenav-icon"></i>Device Log
+            <i class="icon icon-log-file-format ala-sidenav-icon"style="margin-left:2px;font-size:18px"></i>Device Log
           </li>
           <mat-accordion multi="false" *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper">
-            <mat-expansion-panel>
+            <mat-expansion-panel [expanded]="target === 6 || target === 7 || target === 8|| target === 9">
               <mat-expansion-panel-header  class="ala-expansion-panel-header"
                 [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
-                (click)="chooseItem(0, sideNav)"
               >
                 <mat-panel-title>
-                  <i class="icon-svg_web-icon_003-peoples ala-sidenav-icon"></i>活動賽事管理
+                  <!--  之後把font awesome 與material icon 擇一-->
+                  <i class="fa fa-calendar-check-o ala-sidenav-icon"
+                    style="margin-left:2px;font-size:18px;line-height:24px" aria-hidden="true"></i>活動賽事管理
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <li class="ala-sidenav-menu-item"
@@ -100,13 +100,12 @@
             </mat-expansion-panel>
           </mat-accordion>
           <mat-accordion multi="false">
-            <mat-expansion-panel>
+            <mat-expansion-panel [expanded]="target === 10 || target === 11 || target === 12">
               <mat-expansion-panel-header  class="ala-expansion-panel-header"
                 [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
-                (click)="chooseItem(0, sideNav)"
               >
                 <mat-panel-title>
-                  <i class="icon-svg_web-icon_003-peoples ala-sidenav-icon"></i>群組
+                  <i class="icon-svg_web-icon_036-friends ala-sidenav-icon"></i>群組
                 </mat-panel-title>
               </mat-expansion-panel-header>
                 <li class="ala-sidenav-menu-item"
@@ -140,28 +139,29 @@
             [routerLink]="['/dashboard/setting']"
             *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper"
           >
-              <i class="fa fa-cog ala-sidenav-icon"></i>設定
+            <!--  之後把font awesome 與material icon 擇一-->
+            <i class="fa fa-cog ala-sidenav-icon" style="margin-left:2px;font-size:18px"></i>設定
           </li>
           <li class="ala-sidenav-item"
             (click)="chooseItem(14, sideNav)"
             [class.ala-sidenav-menu-item__active]="target === 14"
             [routerLink]="['/dashboard/my-activity']"
           >
-            <img src="/assets/icons/icon_72px_22_activity.png" style="width:20px;margin-right: 7px">我的活動
+            <i class="icon-svg_web-icon_083-run ala-sidenav-icon"></i>我的活動
           </li>
           <li class="ala-sidenav-item"
             (click)="chooseItem(15, sideNav)"
             [class.ala-sidenav-menu-item__active]="target === 15"
             [routerLink]="['/dashboard/device']"
           >
-            我的裝置
+            <i class="icon-svg_web-icon_010-treadmill ala-sidenav-icon"></i>我的裝置
           </li>
           <li class="ala-sidenav-item"
             (click)="chooseItem(16, sideNav)"
             [class.ala-sidenav-menu-item__active]="target === 16"
             [routerLink]="['/dashboard/sport-report']"
           >
-            運動報告
+            <i class="icon-svg_web-icon_037-chart ala-sidenav-icon"></i>運動報告
           </li>
         </mat-nav-list>
       </nav>
