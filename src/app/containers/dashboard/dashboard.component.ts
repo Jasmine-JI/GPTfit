@@ -27,7 +27,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
   isLoading = false;
   isMaskShow = false;
   isCollapseOpen = false;
-  target = 0;
+  target = 14; // 目前預設是我的活動
   isSideNavOpend: boolean;
   mode = 'side';
   isDefaultOpend = true;
@@ -64,6 +64,37 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
           this.isHadContainer = false;
         } else {
           this.isHadContainer = true;
+        }
+        if (_val.url.indexOf('/dashboard/coach-dashboard') > -1 || _val.url.indexOf('/dashboard/train-live') > -1) {
+          this.target = 3;
+        } else if (_val.url.indexOf('/dashboard/group-search') > -1) {
+          this.target = 10;
+        } else if (_val.url.indexOf('/dashboard/my-activity') > -1) {
+          this.target = 14;
+        } else if (_val.url.indexOf('/dashboard/sport-report') > -1) {
+          this.target = 16;
+        } else if (_val.url.indexOf('/dashboard/my-group-list') > -1 || _val.url.indexOf('/dashboard/group-search') > -1) {
+          this.target = 10;
+        } else if (_val.url.indexOf('/dashboard/device_log') > -1) { // 字長的先排前辨識
+          this.target = 5;
+        } else if (_val.url.indexOf('/dashboard/device') > -1) {
+          this.target = 15;
+        } else if (_val.url.indexOf('/dashboard/event-management') > -1) {
+          this.target = 6;
+        } else if (_val.url.indexOf('/dashboard/event-calendar') > -1) { // 字長的先排前辨識
+          this.target = 8;
+        } else if (_val.url.indexOf('/dashboard/event') > -1) {
+          this.target = 7;
+        } else if (_val.url.indexOf('/dashboard/leaderboard-settings') > -1) {
+          this.target = 9;
+        } else if (_val.url.indexOf('/dashboard/all-group-list') > -1) {
+          this.target = 11;
+        } else if (_val.url.indexOf('/dashboard/create-brand-group') > -1) {
+          this.target = 12;
+        } else if (_val.url.indexOf('/dashboard/setting') > -1) {
+          this.target = 13;
+        } else {
+          this.target = 0;
         }
       }
     });

@@ -35,7 +35,8 @@ export class UserInfoService {
   userAccessRightDetail$ = new BehaviorSubject<any>({
     accessRight: 'none',
     isCanManage: false,
-    isGroupAdmin: false
+    isGroupAdmin: false,
+    isApplying: false
   });
 
   constructor(private http: HttpClient, private utils: UtilsService) {}
@@ -126,8 +127,12 @@ export class UserInfoService {
   }
   getUserDetail(body, visittingId) {
     return this.getMemberAccessRight(body).subscribe(res => {
-      const { info: { groupAccessRight } } = res;
-      const idx = groupAccessRight.findIndex(_group => _group.groupId === visittingId && _group.joinStatus === 2);
+      const {
+        info: { groupAccessRight }
+      } = res;
+      const idx = groupAccessRight.findIndex(
+        _group => _group.groupId === visittingId && _group.joinStatus === 2
+      );
       if (this.isSupervisor$.value) {
         this.userAccessRightDetail$.next({
           accessRight: '00',
@@ -154,79 +159,109 @@ export class UserInfoService {
         });
       } else {
         const groupLevel = this.utils.displayGroupLevel(visittingId);
+        const applyIdx = groupAccessRight.findIndex(
+          _group => _group.groupId === visittingId && _group.joinStatus === 1
+        );
         switch (groupLevel) {
           case '30':
-            const brandIdx = groupAccessRight.findIndex(_group => _group.groupId === visittingId && _group.joinStatus === 2);
+            const brandIdx = groupAccessRight.findIndex(
+              _group =>
+                _group.groupId === visittingId && _group.joinStatus === 2
+            );
             if (brandIdx > -1) {
               this.userAccessRightDetail$.next({
                 accessRight: groupAccessRight[brandIdx].accessRight,
                 isCanManage: groupAccessRight[brandIdx].accessRight === '30',
-                isGroupAdmin: groupAccessRight[brandIdx].accessRight === '30'
+                isGroupAdmin: groupAccessRight[brandIdx].accessRight === '30',
+                isApplying: applyIdx > -1
               });
             } else {
               this.userAccessRightDetail$.next({
                 accessRight: 'none',
                 isCanManage: false,
-                isGroupAdmin: false
+                isGroupAdmin: false,
+                isApplying: applyIdx > -1
               });
             }
             break;
           case '40':
-            const branchIdx = groupAccessRight.findIndex(_group => ((_group.groupId.slice(0, 5) === visittingId.slice(0, 5) && _group.accessRight === '30') || _group.groupId === visittingId) && _group.joinStatus === 2);
+            const branchIdx = groupAccessRight.findIndex(
+              _group =>
+                ((_group.groupId.slice(0, 5) === visittingId.slice(0, 5) &&
+                  _group.accessRight === '30') ||
+                  _group.groupId === visittingId) &&
+                _group.joinStatus === 2
+            );
             if (branchIdx > -1) {
               this.userAccessRightDetail$.next({
                 accessRight: groupAccessRight[branchIdx].accessRight,
-                isCanManage: groupAccessRight[branchIdx].accessRight === '40' || groupAccessRight[branchIdx].accessRight === '30',
-                isGroupAdmin: groupAccessRight[branchIdx].accessRight === '40' || groupAccessRight[branchIdx].accessRight === '30'
+                isCanManage:
+                  groupAccessRight[branchIdx].accessRight === '40' ||
+                  groupAccessRight[branchIdx].accessRight === '30',
+                isGroupAdmin:
+                  groupAccessRight[branchIdx].accessRight === '40' ||
+                  groupAccessRight[branchIdx].accessRight === '30',
+                isApplying: applyIdx > -1
               });
             } else {
               this.userAccessRightDetail$.next({
                 accessRight: 'none',
                 isCanManage: false,
-                isGroupAdmin: false
+                isGroupAdmin: false,
+                isApplying: applyIdx > -1
               });
             }
             break;
           case '60':
-            const coachIdx = groupAccessRight.findIndex(_group => ((_group.groupId.slice(0, 5) === visittingId.slice(0, 5) && _group.accessRight === '30') || (_group.groupId.slice(0, 7) === visittingId.slice(0, 7) && _group.accessRight === '40') || _group.groupId === visittingId) && _group.joinStatus === 2);
+            const coachIdx = groupAccessRight.findIndex(
+              _group =>
+                ((_group.groupId.slice(0, 5) === visittingId.slice(0, 5) &&
+                  _group.accessRight === '30') ||
+                  (_group.groupId.slice(0, 7) === visittingId.slice(0, 7) &&
+                    _group.accessRight === '40') ||
+                  _group.groupId === visittingId) &&
+                _group.joinStatus === 2
+            );
             if (coachIdx > -1) {
               this.userAccessRightDetail$.next({
-                accessRight:
-                  groupAccessRight[coachIdx].accessRight,
+                accessRight: groupAccessRight[coachIdx].accessRight,
                 isCanManage:
-                  groupAccessRight[coachIdx].accessRight === '30'
-                  ||
-                  groupAccessRight[coachIdx].accessRight === '40'
-                  ||
+                  groupAccessRight[coachIdx].accessRight === '30' ||
+                  groupAccessRight[coachIdx].accessRight === '40' ||
                   groupAccessRight[coachIdx].accessRight === '60',
                 isGroupAdmin:
-                  groupAccessRight[coachIdx].accessRight === '30'
-                  ||
-                  groupAccessRight[coachIdx].accessRight === '40'
-                  ||
-                  groupAccessRight[coachIdx].accessRight === '60'
+                  groupAccessRight[coachIdx].accessRight === '30' ||
+                  groupAccessRight[coachIdx].accessRight === '40' ||
+                  groupAccessRight[coachIdx].accessRight === '60',
+                isApplying: applyIdx > -1
               });
             } else {
               this.userAccessRightDetail$.next({
                 accessRight: 'none',
                 isCanManage: false,
-                isGroupAdmin: false
+                isGroupAdmin: false,
+                isApplying: applyIdx > -1
               });
             }
             break;
           case '80':
-            const normalIdx = groupAccessRight.findIndex(_group => _group.groupId === visittingId && _group.joinStatus === 2);
+            const normalIdx = groupAccessRight.findIndex(
+              _group =>
+                _group.groupId === visittingId && _group.joinStatus === 2
+            );
             if (normalIdx > -1) {
               this.userAccessRightDetail$.next({
                 accessRight: groupAccessRight[normalIdx].accessRight,
                 isCanManage: groupAccessRight[normalIdx].accessRight === '80',
-                isGroupAdmin: groupAccessRight[normalIdx].accessRight === '80'
+                isGroupAdmin: groupAccessRight[normalIdx].accessRight === '80',
+                isApplying: applyIdx > -1
               });
             } else {
               this.userAccessRightDetail$.next({
                 accessRight: 'none',
                 isCanManage: false,
-                isGroupAdmin: false
+                isGroupAdmin: false,
+                isApplying: applyIdx > -1
               });
             }
             break;
@@ -234,7 +269,8 @@ export class UserInfoService {
             this.userAccessRightDetail$.next({
               accessRight: '90',
               isCanManage: false,
-              isGroupAdmin: false
+              isGroupAdmin: false,
+              isApplying: applyIdx > -1
             });
         }
       }
