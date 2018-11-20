@@ -9,7 +9,6 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { GroupService } from '../../services/group.service';
 import { UtilsService } from '@shared/services/utils.service';
-import { HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { UserInfoService } from '../../services/userInfo.service';
 import { GlobalEventsManager } from '@shared/global-events-manager';
@@ -61,10 +60,22 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.route.params.subscribe(_params => this.handleInit());
-
-    this.userInfoService.getUserAccessRightDetail().subscribe(res => {
-      this.visitorDetail = res;
-    });
+    let isAutoApplyGroup = this.utils.getLocalStorageObject('isAutoApplyGroup');
+    setTimeout(() => {
+      this.userInfoService.getUserAccessRightDetail().subscribe(res => {
+        this.visitorDetail = res;
+        const { accessRight, isCanManage, isGroupAdmin } = this.visitorDetail;
+        if (isAutoApplyGroup && (+accessRight <= 29 || isCanManage || isGroupAdmin)) { // 00~29無法利用qr 掃描自動加入群組
+          this.utils.removeLocalStorageObject('isAutoApplyGroup');
+          isAutoApplyGroup = false;
+        }
+        if (isAutoApplyGroup) { // 00~29無法利用qr 掃描自動加入群組
+          this.handleActionGroup(1);
+          this.utils.removeLocalStorageObject('isAutoApplyGroup');
+          isAutoApplyGroup = false;
+        }
+      });
+    }, 300);
   }
   ngOnDestroy() {
     this.globalEventsManager.setFooterRWD(0); // 為了讓footer自己變回去預設值
@@ -103,12 +114,6 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
         selfJoinStatus,
         groupStatus
       } = this.groupInfo;
-      if (
-        groupStatus === 4 ||
-        (groupStatus === 3 && !this.visitorDetail.isCanManage)
-      ) {
-        this.router.navigateByUrl(`/404`);
-      }
       if (selfJoinStatus) {
         this.joinStatus = selfJoinStatus;
       } else {
@@ -124,6 +129,12 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
         this.getGroupMemberList(2);
       } else {
         this.getGroupMemberList(1);
+      }
+      if (
+        groupStatus === 4 ||
+        (groupStatus === 3 && !this.visitorDetail.isCanManage)
+      ) {
+        this.router.navigateByUrl(`/404`);
       }
     });
   }

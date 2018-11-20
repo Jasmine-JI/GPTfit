@@ -10,6 +10,7 @@ import { SigninGuard } from '@shared/guards/signin/signin.guard';
 import { SignupComponent } from './components/signup/signup.component';
 import { ForgetpwdComponent } from './components/forgetpwd/forgetpwd.component';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
+import { GroupInfoComponent } from './components/group-info/group-info.component';
 
 const routes: Routes = [
   {
@@ -48,6 +49,10 @@ const routes: Routes = [
       {
         path: 'user-profile/:userId',
         component: UserProfileComponent
+      },
+      {
+        path: 'group-info/:groupId',
+        component: GroupInfoComponent
       }
     ]
   }
