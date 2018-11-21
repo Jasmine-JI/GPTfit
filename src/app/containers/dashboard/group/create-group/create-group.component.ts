@@ -257,17 +257,21 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
               groupIcon: this.utils.buildBase64ImgString(_brand.groupIcon)
             };
           });
-          this.subBranchInfo = this.subGroupInfo.branches.map(_branch => {
-            return {
-              ..._branch,
-              groupIcon: this.utils.buildBase64ImgString(_branch.groupIcon)
-            };
+          this.subBranchInfo = this.subGroupInfo.branches.filter(_branch => {
+            if (_branch.groupStatus !== 4) {
+              return {
+                ..._branch,
+                groupIcon: this.utils.buildBase64ImgString(_branch.groupIcon)
+              };
+            }
           });
-          this.subCoachInfo = this.subGroupInfo.coaches.map(_coach => {
-            return {
-              ..._coach,
-              groupIcon: this.utils.buildBase64ImgString(_coach.groupIcon)
-            };
+          this.subCoachInfo = this.subGroupInfo.coaches.filter(_coach => {
+            if (_coach.groupStatus !== 4) {
+              return {
+                ..._coach,
+                groupIcon: this.utils.buildBase64ImgString(_coach.groupIcon)
+              };
+            }
           });
           if (this.groupLevel === '40') {
             this.subBranchInfo = this.subGroupInfo.branches.filter(_branch => {
