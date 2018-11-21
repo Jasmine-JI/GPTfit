@@ -1,4 +1,4 @@
-<div class="container" style="padding-top: 30px;">
+<div class="container" style="padding-top: 30px">
   <div class="row">
     <span class="group-handle-name group-handle-name__rwd">
       群組資訊
@@ -6,7 +6,8 @@
     <div class="col-md-6 group-image--area">
       <img *ngIf="groupImg" [src]="(groupImg | safeHtml)" [class.image-is--default]="groupImg === '/assets/images/group-default.svg'">
     </div>
-    <div class="col-md-6">
+    <!--之後如果外部模組很多需要rwd footer高度，再另外調整成共用-->
+    <div class="col-md-6 portal-group-info">
       <div class="group-edit-bar">
         <span class="group-handle-name">
           群組資訊
@@ -45,7 +46,7 @@
   <button class="alatech-btn group-manage__btn"
     *ngIf="!visitorDetail?.isGroupAdmin"
     title="申請加入"
-    [routerLink]="['/dashboard/group-info/', groupId]"
+    (click)="goDashboardGroupInfo()"
   >
     申請加入
   </button>

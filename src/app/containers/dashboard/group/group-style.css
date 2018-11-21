@@ -43,9 +43,15 @@
 }
 .group-manage__btn {
   border-color: #9b9b9b;
-  color: #fff;
+  /* color: #fff; */
+  color: #333;
+
   width: 100%;
-  background-color: #26abe3;
+  /* background-color: #26abe3; */
+  background-color: #fff;
+  height: 64px;
+  border-radius: 32px;
+  font-size: 16px;
 }
 .group-image--area img {
   width: 100%;
@@ -123,8 +129,8 @@
     margin: 15px 0px;
   }
   .group-image--area img {
-    width: auto;
-    height: 400px;
+    width: 100%;
+    height: auto;
   }
   .group-edit-bar {
     display: none;

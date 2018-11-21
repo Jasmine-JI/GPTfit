@@ -95,7 +95,7 @@ export class MyGroupListComponent implements OnInit, OnDestroy {
     const body = {
       token: this.token,
       category: '2',
-      groupLevel: '90',
+      groupLevel: '90', // 撈全部列表，後端不會檢查groupLevel欄位，所以質可以亂帶
       searchWords: '',
       page: this.currentPage && this.currentPage.pageIndex.toString() || '0',
       pageCounts: this.currentPage && this.currentPage.pageSize.toString() || '10'
