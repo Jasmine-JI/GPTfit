@@ -1,0 +1,105 @@
+<div class="access-bg">
+  <div class="container" style="padding-top:63px">
+    <div class="d-flex" style="flex-direction: column;align-items: center;;">
+
+      <div class="access-description">
+        在Ala Center上，獲得健體分析
+        <br> 生活追蹤、即時分享與競賽樂趣
+      </div>
+      <div class="access-panel">
+        <header class="access-header">
+          <img src="assets/attacus_logo.png" style="width: 36%">
+        </header>
+        <div class="access-panel-body first-login">
+          <div class="user-photo">
+            <app-upload-file
+              [isUserAvastarMode]="true"
+              [isImageFileMode]="true"
+              [imageURL]="groupImg"
+              [maxFileSize]="maxFileSize"
+              [accept]="acceptFileExtensions.join()"
+              [reloadFileText]="reloadFileText"
+              [chooseFileText]="chooseFileText"
+              (onChange)="handleAttachmentChange($event)"
+            ></app-upload-file>
+          </div>
+          <form [formGroup]="form" (ngSubmit)="submit(f)" #f="ngForm" novalidate>
+            <div class="form-group">
+              <label for="exampleInputEmail1" class="access-text">名稱
+              </label>
+              <input formControlName="userName" id="exampleInputEmail1" class="form-control" placeholder="我是凶狠的運動員"
+                [attr.disabled]="isLogining ? '' : null"
+                (keyup)="handleDuplicateStatus($event)"
+                [class.form-control--invalid]="(!form.controls['userName'].valid && form.controls['userName'].touched) || (f.submitted
+                && form.get('userName').hasError('required')) || isDuplicateName"
+              >
+              <div class="form__message form__message--placeholder" >
+                <span [style.visibility]="(!form.controls['userName'].valid && form.controls['userName'].touched) || (f.submitted && form.get('userName').hasError('required')) ? 'initial' : 'hidden'"
+                  *ngIf="!isDuplicateName && (!tempDuplicateName || this.tempDuplicateName.length === 0)"
+                >
+                  請輸入您的名稱
+                </span>
+                <span *ngIf="isDuplicateName">
+                  此名稱已存在
+                </span>
+              </div>
+            </div>
+            <div class="form-group form-group--half">
+              <label  class="access-text">
+                身高
+              </label>
+              <input formControlName="height" type="number" class="form-control" placeholder="175"
+                autocomplete="off" [attr.disabled]="isLogining ? '' : null" [class.form-control--invalid]="(!form.controls['height'].valid && form.controls['height'].touched) || (f.submitted && form.get('height').hasError('required'))">
+              <div class="form__message form__message--placeholder">
+                <span [style.visibility]="(form.controls['height'].hasError('required') && form.controls['height'].touched) || (f.submitted && form.get('height').hasError('required')) ? 'initial' : 'hidden'">
+                  請輸入您的身高
+                </span>
+              </div>
+            </div>
+            <div class="form-group form-group--half">
+              <label  class="access-text">
+                體重
+              </label>
+              <input formControlName="weight" type="number" class="form-control" placeholder="75"
+                autocomplete="off" [attr.disabled]="isLogining ? '' : null" [class.form-control--invalid]="(!form.controls['weight'].valid && form.controls['weight'].touched) || (f.submitted && form.get('weight').hasError('required'))">
+              <div class="form__message form__message--placeholder" [style.visibility]="(form.controls['weight'].hasError('required') && form.controls['weight'].touched) || (f.submitted && form.get('weight').hasError('required')) ? 'initial' : 'hidden'">
+                請輸入您的體重
+              </div>
+            </div>
+            <div class="form-group form-group--half">
+              <label  class="access-text">
+                性別
+              </label>
+              <select formControlName="gender" class="form-field"
+                style="width: 100%;height:38px;background-color: #fff"
+              >
+                <option value="0">男</option>
+                <option value="1">女</option>
+                <option value="2">無</option>
+              </select>
+            </div>
+            <div class="form-group form-group--half">
+              <label  class="access-text">
+                出生年月日
+              </label>
+              <mat-form-field style="max-width: 140px;">
+                <input matInput [matDatepicker]="picker" placeholder="1988/06/01"
+                  (dateChange)="logStartDateChange($event)"
+                >
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker startView="year" [startAt]="startDate"></mat-datepicker>
+              </mat-form-field>
+            </div>
+            <!-- <a href (click)="downloadFile($event, 1)">下載原圖256</a>
+            <a href (click)="downloadFile($event, 2)">下載原圖128</a>
+            <a href (click)="downloadFile($event, 3)">下載原圖64</a> -->
+            <div class="auth-submit">
+              <app-confirm-button [className]="className" [content]="content" [disabled]="isLogining">
+              </app-confirm-button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

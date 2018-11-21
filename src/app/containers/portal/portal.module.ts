@@ -38,6 +38,8 @@ import { ForgetService } from './services/forget.service';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
 import { UserProfileService } from './services/user-profile.service';
 import { GroupInfoComponent } from './components/group-info/group-info.component';
+import { FirstLoginComponent } from './components/first-login/first-login.component';
+import { CustomMaterialModule } from '@shared/custom-material.module.ts';
 
 @NgModule({
   imports: [
@@ -50,7 +52,8 @@ import { GroupInfoComponent } from './components/group-info/group-info.component
     SharedPipes,
     NgProgressModule,
     ReactiveFormsModule,
-    SharedModule
+    SharedModule,
+    CustomMaterialModule
   ],
   providers: [
     MapGPXService,
@@ -83,7 +86,8 @@ import { GroupInfoComponent } from './components/group-info/group-info.component
     SignupComponent,
     ForgetpwdComponent,
     UserProfileComponent,
-    GroupInfoComponent
+    GroupInfoComponent,
+    FirstLoginComponent
   ],
   entryComponents: [MessageBoxComponent]
 })
