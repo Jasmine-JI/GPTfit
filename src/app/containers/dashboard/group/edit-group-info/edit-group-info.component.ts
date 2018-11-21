@@ -203,6 +203,7 @@ export class EditGroupInfoComponent implements OnInit, OnDestroy {
   }
   handleActionGroup(_type) {
     const body = {
+      token: this.token,
       groupId: this.groupId,
       actionType: _type
     };
