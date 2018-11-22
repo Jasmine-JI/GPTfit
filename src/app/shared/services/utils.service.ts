@@ -14,9 +14,21 @@ export class UtilsService {
     const value = localStorage.getItem(key);
     return value && JSON.parse(value);
   }
+  setSessionStorageObject(key: string, value) {
+    sessionStorage.setItem(key, JSON.stringify(value));
+  }
+  getSessionStorageObject(key: string) {
+    const value = sessionStorage.getItem(key);
+    return value && JSON.parse(value);
+  }
   removeLocalStorageObject(key: string) {
     if (this.getLocalStorageObject(key)) {
       localStorage.removeItem(key);
+    }
+  }
+  removeSessionStorageObject(key: string) {
+    if (this.getSessionStorageObject(key)) {
+      sessionStorage.removeItem(key);
     }
   }
   writeToken(value: string, token: string = TOKEN) {
@@ -136,7 +148,7 @@ export class UtilsService {
         finalUrl += '/' + _url.path;
       });
     } else {
-      finalUrl = '/' +  url[0].path;
+      finalUrl = '/' + url[0].path;
     }
     if (Object.keys(queryParams).length > 0) {
       const key = Object.keys(queryParams)[0];
@@ -154,7 +166,8 @@ export class UtilsService {
       return 'Microsoft Internet Explorer';
     } else if (sUsrAg.indexOf('Edge') > -1) {
       return 'Microsoft Edge';
-    } else if (sUsrAg.indexOf('Chrome') > -1 || sUsrAg.indexOf('CriOS') > -1) { // CriOS為首機版的
+    } else if (sUsrAg.indexOf('Chrome') > -1 || sUsrAg.indexOf('CriOS') > -1) {
+      // CriOS為首機版的
       return 'Google Chrome or Chromium';
     } else if (sUsrAg.indexOf('Safari') > -1) {
       return 'Apple Safari';

@@ -10,6 +10,7 @@ import { MatSnackBar, MatDatepickerInputEvent } from '@angular/material';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import * as moment from 'moment';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-first-login',
@@ -36,10 +37,15 @@ export class FirstLoginComponent implements OnInit {
     private authService: AuthService,
     private snackbar: MatSnackBar,
     private dialog: MatDialog,
-    private utils: UtilsService
+    private utils: UtilsService,
+    private router: Router
   ) {}
 
   ngOnInit() {
+    const isFirstLogin = this.utils.getSessionStorageObject('isFirstLogin') || false;
+    if (!isFirstLogin) {
+      return this.router.navigateByUrl('/404');
+    }
     this.form = this.fb.group({
       userName: ['', Validators.required],
       height: [175, Validators.required],
@@ -56,14 +62,14 @@ export class FirstLoginComponent implements OnInit {
     };
     if (!this.finalImageLink || this.finalImageLink.length === 0) {
       return this.dialog.open(MessageBoxComponent, {
-          hasBackdrop: true,
-          data: {
-            title: 'Message',
-            body: `請上傳照片`,
-            confirmText: '確定'
-          }
-        });
-      } else {
+        hasBackdrop: true,
+        data: {
+          title: 'Message',
+          body: `請上傳照片`,
+          confirmText: '確定'
+        }
+      });
+    } else {
       const image = new Image();
       image.src = this.finalImageLink || '';
       icon.iconLarge = this.imageToDataUri(image, 256, 256);
@@ -71,11 +77,10 @@ export class FirstLoginComponent implements OnInit {
       icon.iconSmall = this.imageToDataUri(image, 64, 64);
     }
 
-    // console.log('icon: ', icon);
     const { userName, height, weight, gender, birth } = value;
     const body = {
       token: this.utils.getToken(),
-      // icon,
+      icon,
       name: userName,
       height,
       weight,
@@ -94,10 +99,12 @@ export class FirstLoginComponent implements OnInit {
           this.tempDuplicateName = '';
         }
         if (res.resultCode === 200 && this.authService.backUrl.length > 0) {
-          return location.href = this.authService.backUrl;
+          this.utils.removeSessionStorageObject('isFirstLogin');
+          return (location.href = this.authService.backUrl);
         }
         if (res.resultCode === 200) {
-          return location.href = '/dashboard';
+          this.utils.removeSessionStorageObject('isFirstLogin');
+          return (location.href = '/dashboard');
         }
         // if (res) {
         //   this.snackbar.open('登入成功', 'OK', { duration: 5000 });
@@ -117,7 +124,6 @@ export class FirstLoginComponent implements OnInit {
         this.isDuplicateName = false;
       }
     }
-
   }
   imageToDataUri(img, width, height) {
     // create an off-screen canvas
