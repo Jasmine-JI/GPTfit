@@ -153,7 +153,7 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
   ) {
     Stock.setOptions({ global: { useUTC: false } });
     this.elementRef = elementRef;
-    this.socket$ = new WebSocketSubject('ws://192.168.1.234:9000/train');
+    this.socket$ = new WebSocketSubject('ws://app.alatech.com.tw:9000/train');
 
     this.socket$.subscribe(
       message => this.display(message),
