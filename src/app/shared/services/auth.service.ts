@@ -38,6 +38,7 @@ export class AuthService {
           this.utils.setLocalStorageObject('ala_token_time', tokenTimeStamp);
           const router = this.injector.get(Router);
           if (res.info.firstLogin === '2') {
+            this.utils.setSessionStorageObject('isFirstLogin', true);
             router.navigate(['/first-login']);
           } else if (this.backUrl.length > 0) {
             location.href = this.backUrl; // 為了讓登入的api request payload清除掉
