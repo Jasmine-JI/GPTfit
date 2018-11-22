@@ -300,11 +300,15 @@
                     <ng-container  *ngFor="let coachAdmItem of coachAdministrators">
                       <app-member-capsule
                         [role]="role"
+                        [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator"
                         [isAdminInfo]="true"
                         [title]="coachAdmItem?.memberName"
                         [memberInfo]="coachAdmItem"
                         [name]="coachAdmItem && coachAdmItem?.memberName"
                         [icon]="coachAdmItem?.memberIcon"
+                        [groupId]="coachAdmItem?.groupId"
+                        [userId]="coachAdmItem?.memberId"
+                        (onRemoveAdmin)="handleRemoveAdmin($event, 3)"
                       >
                       </app-member-capsule>
                     </ng-container>
@@ -315,8 +319,18 @@
                   <div style="margin-bottom: 15px">
                     <span *ngIf="normalCoaches && normalCoaches.length === 0">尚無一般教練資訊</span>
                     <ng-container *ngFor="let normalCoachAdmItem of normalCoaches">
-                      <app-member-capsule [role]="role" [isAdminInfo]="true" [title]="normalCoachAdmItem?.memberName" [memberInfo]="normalCoachAdmItem"
-                        [name]="normalCoachAdmItem && normalCoachAdmItem?.memberName" [icon]="normalCoachAdmItem?.memberIcon">
+                      <app-member-capsule
+                        [role]="role"
+                        [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator"
+                        [isAdminInfo]="true"
+                        [title]="normalCoachAdmItem?.memberName"
+                        [memberInfo]="normalCoachAdmItem"
+                        [name]="normalCoachAdmItem && normalCoachAdmItem?.memberName"
+                        [icon]="normalCoachAdmItem?.memberIcon"
+                        [groupId]="normalCoachAdmItem?.groupId"
+                        [userId]="normalCoachAdmItem?.memberId"
+                        (onRemoveAdmin)="handleRemoveAdmin($event, 4)"
+                      >
                       </app-member-capsule>
                     </ng-container>
                   </div>
@@ -324,8 +338,18 @@
                   <div style="margin-bottom: 15px">
                     <span *ngIf="PFCoaches && PFCoaches.length === 0">尚無體適能教練資訊</span>
                     <ng-container *ngFor="let pfCoachAdmItem of PFCoaches">
-                      <app-member-capsule [role]="role" [isAdminInfo]="true" [title]="pfCoachAdmItem?.memberName" [memberInfo]="pfCoachAdmItem"
-                        [name]="pfCoachAdmItem && pfCoachAdmItem?.memberName" [icon]="pfCoachAdmItem?.memberIcon">
+                      <app-member-capsule
+                        [role]="role"
+                        [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator"
+                        [isAdminInfo]="true"
+                        [title]="pfCoachAdmItem?.memberName"
+                        [memberInfo]="pfCoachAdmItem"
+                        [name]="pfCoachAdmItem && pfCoachAdmItem?.memberName"
+                        [icon]="pfCoachAdmItem?.memberIcon"
+                        [groupId]="pfCoachAdmItem?.groupId"
+                        [userId]="pfCoachAdmItem?.memberId"
+                        (onRemoveAdmin)="handleRemoveAdmin($event, 4)"
+                      >
                       </app-member-capsule>
                     </ng-container>
                   </div>
@@ -372,7 +396,7 @@
                     [userId]="item?.memberId"
                     [groupLevel]="groupLevel"
                     (onAssignAdmin)="handleAssignAdmin($event)"
-                    (onRemoveAdmin)="handleRemoveAdmin($event, 4)"
+                    (onRemoveAdmin)="handleRemoveAdmin($event, 5)"
                   >
                   </app-member-capsule>
                 </div>

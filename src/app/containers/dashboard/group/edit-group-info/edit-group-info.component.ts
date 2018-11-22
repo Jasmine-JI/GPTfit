@@ -489,6 +489,13 @@ export class EditGroupInfoComponent implements OnInit, OnDestroy {
         this.coachAdministrators = this.coachAdministrators.filter(
           _info => _info.memberId !== id
         );
+      } else if (type === 4) { // 針對教練群組，刪除一般教練或體適能教練
+        this.normalCoaches = this.normalCoaches.filter(
+          _info => _info.memberId !== id
+        );
+        this.PFCoaches = this.PFCoaches.filter(
+          _info => _info.memberId !== id
+        );
       } else {
         this.normalMemberInfos = this.normalMemberInfos.filter(
           _info => _info.memberId !== id
