@@ -18,6 +18,7 @@ export class AuthService {
   loginStatus$ = new BehaviorSubject<boolean>(false);
   currentUser$ = new BehaviorSubject<User>(null);
   backUrl = '';
+  userName = '';
   constructor(
     private http: HttpClient,
     private utils: UtilsService,
@@ -33,7 +34,9 @@ export class AuthService {
         if (res.resultCode === 200) {
           const { name, token, tokenTimeStamp } = res.info;
           this.loginStatus$.next(true);
+          // to remove
           this.currentUser$.next(name);
+          this.userName = name;
           this.utils.writeToken(token);
           this.utils.setLocalStorageObject('ala_token_time', tokenTimeStamp);
           const router = this.injector.get(Router);

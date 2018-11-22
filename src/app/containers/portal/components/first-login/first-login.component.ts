@@ -28,7 +28,7 @@ export class FirstLoginComponent implements OnInit {
   reloadFileText = '重新上傳';
   chooseFileText = '上傳相片';
   acceptFileExtensions = ['JPG', 'JPEG', 'GIF', 'PNG'];
-  maxFileSize = 1048576;
+  maxFileSize = 10485760; // 10MB
   finalImageLink: string;
   isDuplicateName = false;
   tempDuplicateName: string;
@@ -46,8 +46,9 @@ export class FirstLoginComponent implements OnInit {
     if (!isFirstLogin) {
       return this.router.navigateByUrl('/404');
     }
+    const userName = this.authService.userName || '';
     this.form = this.fb.group({
-      userName: ['', Validators.required],
+      userName: [userName, Validators.required],
       height: [175, Validators.required],
       weight: [75, Validators.required],
       gender: 0,
