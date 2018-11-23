@@ -58,6 +58,13 @@ input[type='email']::-webkit-input-placeholder {
   .nav-rwd {
     display: none;
   }
+  .dropdown.nav-rwd__hamburger {
+    margin-top: 50px;
+  }
+  .nav-item,
+  .ala-btn__lang {
+    font-size: 20px;
+  }
   .nav-item + .nav-item {
     margin-left: 0px;
   }
@@ -77,6 +84,7 @@ input[type='email']::-webkit-input-placeholder {
   }
   .nav-rwd__hamburger .dropdown-item {
     color: #fff;
+    padding: 8px 24px;
   }
   .nav-rwd__hamburger .dropdown-item:hover {
     background-color: rgb(111, 111, 111);

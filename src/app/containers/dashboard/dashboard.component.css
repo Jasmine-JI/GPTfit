@@ -161,7 +161,7 @@
   font-size:32px;
   line-height: 32px;
   margin: 16px 20px;
-  position: fixed;
+  /* position: fixed; */
 }
 
 .navbar.ala-dashboard-nav{
@@ -175,7 +175,7 @@
   padding-top: 8px;
   position: relative;
   width: 100%;
-  top: 60px;
+  /* top: 60px; */
 }
 .minimize-main-nav .main-nav-list {
   overflow: hidden;
