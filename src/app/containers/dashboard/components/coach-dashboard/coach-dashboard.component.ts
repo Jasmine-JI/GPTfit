@@ -133,8 +133,10 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
   demoMaker: any;
   demoTime: any;
   classInfo = {
+    groupName: '',
     groupIcon: '',
     coachAvatar: '',
+    coachName: '',
     groupVideoUrl: null
   };
   classType: string;
