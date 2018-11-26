@@ -11,7 +11,7 @@
   </div>
 </div>
 <div class="coach-container" [class.blurred-mask]="isClassEnd">
-  <ng-container *ngIf="displaySections[0]">
+  <section [class.lesson-section__hide]="!displaySections[0]">
     <div class="coach-header">
       <span>課程資訊</span>
     </div>
@@ -23,11 +23,13 @@
               {{classInfo?.groupName}}
             </div>
             <div>
-              2018/05/10 AM11:26
+              <span *ngIf="!(classId === '99999' && isDemoMode)">2018/05/10 AM11:26</span>
+              <span *ngIf="(classId === '99999' && isDemoMode)">{{demoTime}}</span>
             </div>
 
             <div>
-              健身工廠 新時代廠
+              <span *ngIf="!(classId === '99999' && isDemoMode)">健身工廠 新時代廠</span>
+              <span *ngIf="(classId === '99999' && isDemoMode)">Fitness gym / Taichung New Era</span>
             </div>
           </div>
           <div style="width:100%;display:flex">
@@ -69,7 +71,7 @@
               <div class="carousel-item active"
                 [style.background-color]="classInfo?.groupIcon !== '/assets/images/group-default.svg'  ? 'black': '#fff'"
               >
-                <img style="width:100%;height:100%" [src]="classInfo?.groupIcon">
+                <img style="width:100%;" [src]="classInfo?.groupIcon">
               </div>
               <div class="carousel-item">
                 <app-ala-iframe
@@ -92,7 +94,7 @@
       </div>
 
     </div>
-  </ng-container>
+  </section>
   <ng-container>
     <div class="coach-header" *ngIf="displaySections[1]">
       <span>分析圖表</span>
@@ -105,7 +107,7 @@
         <img src="/assets/icons/btn_icon_128px_62-full_display_over.png" [hidden]="!dispalyChartOptions[2]" (click)="handldeSection(1)" />
       </span>
     </div>
-    <div style="width:100%;display:inline-block;padding:65px 70px;height:680px" [class.chart-area]="!displaySections[1]">
+    <section class="chart-section" [class.chart-area]="!displaySections[1]">
       <div class="chart-container">
         <div #hrChartTarget class="chart">
         </div>
@@ -155,7 +157,7 @@
           停止測試
         </button> -->
       </div>
-    </div>
+    </section>
   </ng-container>
   <ng-container *ngIf="displaySections[2]">
     <div class="coach-header">

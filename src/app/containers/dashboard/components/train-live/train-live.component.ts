@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 })
 export class TrainLiveComponent implements OnInit {
   classLists: any;
+  isDemoMode = true;
   constructor(
     private coachService: CoachService,
     private utils: UtilsService,
@@ -23,7 +24,7 @@ export class TrainLiveComponent implements OnInit {
     };
     this.coachService
       .fetchClassRoomList(body)
-      .subscribe(res => this.classLists = res.info.classList);
+      .subscribe(res => (this.classLists = res.info.classList));
   }
   goToClass(id, type) {
     this.router.navigateByUrl(`/dashboard/coach-dashboard/${id}?type=${type}`);
