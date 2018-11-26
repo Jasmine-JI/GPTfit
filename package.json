@@ -40,7 +40,9 @@
     "@angular/material-moment-adapter": "^6.4.7",
     "@angular/platform-browser": "^6.1.6",
     "@angular/platform-browser-dynamic": "^6.1.6",
+    "@angular/pwa": "^0.8.7",
     "@angular/router": "^6.1.6",
+    "@angular/service-worker": "^6.1.6",
     "@ngx-progressbar/core": "^5.1.1",
     "@ngx-translate/core": "^10.0.2",
     "@ngx-translate/http-loader": "^3.0.1",
@@ -74,7 +76,7 @@
     "pm2": "^3.0.4",
     "popper.js": "^1.12.6",
     "query-string": "^6.1.0",
-    "rxjs": "^6.3.1",
+    "rxjs": "6.3.2",
     "rxjs-compat": "^6.0.0-rc.0",
     "zone.js": "^0.8.14"
   },
