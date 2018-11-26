@@ -1,6 +1,11 @@
 /* * {
   border: 1px solid black;
 } */
+.lesson-section__hide {
+  position: absolute;
+  top: -500px;
+  left: 0;
+}
 .blurred-mask {
   filter: blur(5px);
   width: 100%;
@@ -298,7 +303,12 @@
   width: 100%;
   margin: 0 auto;
 }
-
+.chart-section {
+  width:100%;
+  display:inline-block;
+  padding:65px 70px;
+  height:680px;
+}
 .chart .highcharts-container {
   display: flex;
   width: 100% !important;
@@ -475,6 +485,9 @@
   }
 }
 @media(max-width: 767px) {
+  .chart-section {
+    padding: 30px 40px;
+  }
   .end-text {
     font-size: 45px;
   }

@@ -39,3 +39,5 @@ export const fakeDatas = [
 
 export const fakeCoachInfo = `國民體適能中級.AASFP私人教練指導. YMCA體適能指導員. MET轉式教練學.RX-STC懸吊訓練師.TRX-FTC懸吊訓練師. CPR證照
 .經歷：. 新北市蘆洲國民運動中心健身教練健身工廠三重廠私人教練緹力士健康事業中和館私人教練`;
+
+export const demoCoachInfo = `Experienced Aerobics Instructor with a demonstrated history of working in the health wellness and fitness industry. Strong community and social services professional skilled in Computer Performance, Customer Satisfaction, Documentation, Organization Skills, and Time Management.`;
