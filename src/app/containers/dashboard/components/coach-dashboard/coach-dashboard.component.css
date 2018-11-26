@@ -131,7 +131,7 @@
   display: flex;
   color: #fff;
   background-color: #a2a2a2;
-  font-size: 35px;
+  font-size: 30px;
   justify-content: space-between;
   padding: 0 15px;
   letter-spacing: 5px;
@@ -140,7 +140,7 @@
 .hr-card-body {
   height: 80%;
   position: relative;
-  font-size: 30px;
+  font-size: 25px;
   letter-spacing: 5px;
 }
 
@@ -195,7 +195,7 @@
   display: inline-block;
   font-family: ITC;
   font-style: italic;
-  font-size: 112px;
+  font-size: 100px;
   color: #e10019;
   opacity: .8;
   line-height: 112px;
