@@ -13,7 +13,7 @@ import {
   transition,
   animate
 } from '@angular/animations';
-import { fakeCoachInfo } from './fakeUsers';
+import { fakeCoachInfo, demoCoachInfo } from './fakeUsers';
 import { CoachService } from '../../services/coach.service';
 import { ActivatedRoute } from '@angular/router';
 import * as Stock from 'highcharts/highstock';
@@ -42,43 +42,37 @@ export class Message {
       state(
         '0',
         style({
-          backgroundColor: '#009fe1'
+          backgroundColor: '#2e4d9f'
         })
       ),
       state(
         '1',
         style({
-          backgroundColor: '#00e1b4'
+          backgroundColor: '#2eb1e7'
         })
       ),
       state(
         '2',
         style({
-          backgroundColor: '#5fe100'
+          backgroundColor: '#92c422'
         })
       ),
       state(
         '3',
         style({
-          backgroundColor: '#dee100'
+          backgroundColor: '#f5ab14'
         })
       ),
       state(
         '4',
         style({
-          backgroundColor: '#e18400'
+          backgroundColor: '#eb5b19'
         })
       ),
       state(
         '5',
         style({
-          backgroundColor: '#e14a00'
-        })
-      ),
-      state(
-        '6',
-        style({
-          backgroundColor: '#e10019'
+          backgroundColor: '#c11920'
         })
       ),
       transition('* => *', animate('1000ms'))
@@ -102,13 +96,12 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
   hrSortValues: any;
   hrMeanValue = 0;
   hrColors = [
-    '#009fe1',
-    '#00e1b4',
-    '#5fe100',
-    '#dee100',
-    '#e18400',
-    '#e14a00',
-    '#e10019'
+    '#2e4d9f',
+    '#2eb1e7',
+    '#92c422',
+    '#f5ab14',
+    '#eb5b19',
+    '#c11920',
   ];
   displaySections = [true, true, true];
   dispalyChartOptions = [false, true, false];
@@ -136,7 +129,14 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
   isLoading = false;
   isClassEnd = false;
   token: string;
-  classInfo: any;
+  isDemoMode = true;
+  demoMaker: any;
+  demoTime: any;
+  classInfo = {
+    groupIcon: '',
+    coachAvatar: '',
+    groupVideoUrl: null
+  };
   classType: string;
   classImage =
     'https://www.healthcenterhoornsevaart.nl/wp-content/uploads/2018/02/combat-630x300.jpg';
@@ -171,20 +171,97 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
       token: this.token,
       classId: this.classId
     };
-    this.coachService.fetchClassRoomDetail(body).subscribe(res => {
-      this.classInfo = res.info;
-      this.classInfo.groupIcon = this.classInfo.groupIcon && this.classInfo.groupIcon.length > 0
-      ? this.utils.buildBase64ImgString(this.classInfo.groupIcon)
-        : '/assets/images/group-default.svg';
-      this.classInfo.coachAvatar = this.classInfo.coachAvatar && this.classInfo.coachAvatar.length > 0
-      ? this.utils.buildBase64ImgString(this.classInfo.coachAvatar)
-        : '/assets/images/user.png';
+    if (!(this.classId === '99999' && this.isDemoMode)) {
+      this.coachService.fetchClassRoomDetail(body).subscribe(res => {
+        this.classInfo = res.info;
+        this.classInfo.groupIcon =
+          this.classInfo.groupIcon && this.classInfo.groupIcon.length > 0
+            ? this.utils.buildBase64ImgString(this.classInfo.groupIcon)
+            : '/assets/images/group-default.svg';
+        this.classInfo.coachAvatar =
+          this.classInfo.coachAvatar && this.classInfo.coachAvatar.length > 0
+            ? this.utils.buildBase64ImgString(this.classInfo.coachAvatar)
+            : '/assets/images/user.png';
+        this.classInfo.groupVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+          this.classInfo.groupVideoUrl
+        );
+      });
+      this.handleCoachInfo(fakeCoachInfo);
+      this.sendBoardCast();
+    } else {
+      this.classInfo.groupIcon = '/assets/demo/demoClass.jpg';
+      this.classInfo.coachAvatar = '/assets/demo/coach.png';
       this.classInfo.groupVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-        this.classInfo.groupVideoUrl
+        this.handleVideoUrl('https://www.youtube.com/embed/eHiDLxBhHGs')
       );
-    });
-    this.handleCoachInfo(fakeCoachInfo);
-    this.sendBoardCast();
+      this.handleCoachInfo(demoCoachInfo);
+      const series = [
+        { name: 'Eve Beardall', data: [] },
+        { name: 'Alexia', data: [] },
+        { name: 'Florence', data: [] },
+        { name: 'Katherine', data: [] },
+        { name: 'Martina', data: [] },
+        { name: 'Stephanie', data: [] }
+      ];
+      const hrOptions: any = {
+        title: {
+          text: '及時心率圖表'
+        },
+        exporting: {
+          enabled: false
+        },
+        rangeSelector: {
+          inputEnabled: false,
+          enabled: false
+          // selected: 3
+        },
+        xAxis: {
+          type: 'datetime',
+          dateTimeLabelFormats: {
+            millisecond: '%H:%M:%S.%L',
+            second: '%H:%M:%S',
+            minute: '%H:%M:%S',
+            hour: '%H:%M:%S',
+            day: '%H:%M:%S',
+            week: '%H:%M:%S',
+            month: '%H:%M:%S',
+            year: '%H:%M:%S'
+          }
+        },
+        series
+      };
+      this.initHChart(hrOptions);
+      this.currentMemberNum = 6;
+      this.demoTime = moment().format('YYYY/MM/DD Ahh:mm');
+      this.getDemoData();
+    }
+  }
+  handleVideoUrl(url: string) {
+    let finalUrl = '';
+    finalUrl = url;
+    if (finalUrl.indexOf('?') > -1) {
+      finalUrl += '&autoplay=1&mute=1';
+    } else {
+      finalUrl += '?autoplay=1&mute=1';
+    }
+    return finalUrl;
+  }
+  handleDemoColor(hr) {
+    let colorIdx = 0;
+    if (hr <= 114) {
+      colorIdx = 0;
+    } else if (hr <= 133) {
+      colorIdx = 1;
+    } else if (hr <= 152) {
+      colorIdx = 2;
+    } else if (hr <= 171) {
+      colorIdx = 3;
+    } else if (hr < 190) {
+      colorIdx = 4;
+    } else {
+      colorIdx = 5;
+    }
+    return colorIdx;
   }
   display(msg) {
     let sum = 0;
@@ -234,7 +311,9 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
         clearInterval(this.socketTimer);
         this.socket$.unsubscribe();
         this.isLoading = false;
-        this.isClassEnd = true;
+        if (!(this.classId === '99999' && this.isDemoMode)) {
+          this.isClassEnd = true;
+        }
       }
     }
     this.heartValues = this.heartValues.sort((a, b) => b.liveHr - a.liveHr);
@@ -248,7 +327,7 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
       let userIcon = '';
       let userName = '';
       let pairEquipmentSN = '';
-      const infos = snDatas.map((_snData) => {
+      const infos = snDatas.map(_snData => {
         const existIdx = datas.findIndex(
           _data => _data.pairEquipmentSN === _snData
         );
@@ -287,7 +366,7 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
         },
         rangeSelector: {
           inputEnabled: false,
-          enabled: false,
+          enabled: false
           // selected: 3
         },
         xAxis: {
@@ -312,7 +391,118 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
       );
     });
   }
-
+  getDemoData() {
+    const demoData: Array<any> = [
+      {
+        liveHr: 100,
+        cadence: 0,
+        speed: 0,
+        userName: 'Eve Beardall',
+        colorIdx: 0,
+        userIcon: '/assets/demo/coach.png',
+        imgClassName: 'user-photo--landscape'
+      },
+      {
+        liveHr: 100,
+        cadence: 0,
+        speed: 0,
+        userName: 'Alexia',
+        colorIdx: 0,
+        userIcon: '/assets/demo/1.png',
+        imgClassName: 'user-photo--landscape'
+      },
+      {
+        liveHr: 100,
+        cadence: 0,
+        speed: 0,
+        userName: 'Florence',
+        colorIdx: 0,
+        userIcon: '/assets/demo/2.png',
+        imgClassName: 'user-photo--landscape'
+      },
+      {
+        liveHr: 100,
+        cadence: 0,
+        speed: 0,
+        userName: 'Katherine',
+        colorIdx: 0,
+        userIcon: '/assets/demo/3.png',
+        imgClassName: 'user-photo--landscape'
+      },
+      {
+        liveHr: 100,
+        cadence: 0,
+        speed: 0,
+        userName: 'Martina',
+        colorIdx: 0,
+        userIcon: '/assets/demo/4.png',
+        imgClassName: 'user-photo--landscape'
+      },
+      {
+        liveHr: 100,
+        cadence: 0,
+        speed: 0,
+        userName: 'Stephanie',
+        colorIdx: 0,
+        userIcon: '/assets/demo/5.png',
+        imgClassName: 'user-photo--landscape'
+      }
+    ];
+    let coachLiveHr = 100;
+    this.demoMaker = setInterval(() => {
+      this.heartValues = demoData;
+      let sum = 0;
+      this.heartValues = this.heartValues.map((_demoData, idx) => {
+        if (idx === 0) {
+          if (_demoData.liveHr >= 190) {
+            _demoData.liveHr =
+              _demoData.liveHr + (Math.floor(Math.random() * 5) - 1) - 7;
+          } else if (_demoData.liveHr <= 80) {
+            _demoData.liveHr =
+              _demoData.liveHr + (Math.floor(Math.random() * 5) - 1) + 5;
+          } else {
+            _demoData.liveHr =
+              _demoData.liveHr + (Math.floor(Math.random() * 5) - 1);
+          }
+          coachLiveHr = _demoData.liveHr;
+        }
+        if (idx === 1) {
+          _demoData.liveHr =
+            coachLiveHr +
+            Math.round(1 * (Math.floor(Math.random() * 8.98) - 3.99));
+        }
+        if (idx === 2) {
+          _demoData.liveHr =
+            coachLiveHr +
+            Math.round(2 * (Math.floor(Math.random() * 7.98) - 2.99));
+        }
+        if (idx === 3) {
+          _demoData.liveHr =
+            coachLiveHr +
+            Math.round(5 * (Math.floor(Math.random() * 6.98) - 1.99));
+        }
+        if (idx === 4) {
+          _demoData.liveHr =
+            coachLiveHr +
+            Math.round(6 * (Math.floor(Math.random() * 6.98) - 2.99));
+        }
+        if (idx === 5) {
+          _demoData.liveHr =
+            coachLiveHr +
+            Math.round(3 * (Math.floor(Math.random() * 9.98) - 5.99));
+        }
+        _demoData.colorIdx = this.handleDemoColor(_demoData.liveHr);
+        sum += _demoData.liveHr;
+        this.chart.series[idx].addPoint([
+          moment().unix() * 1000,
+          _demoData.liveHr
+        ]);
+        return _demoData;
+      });
+      this.heartValues = this.heartValues.sort((a, b) => b.liveHr - a.liveHr);
+      this.hrMeanValue = Math.round(sum / this.currentMemberNum);
+    }, 5000);
+  }
   sendBoardCast() {
     this.isLoading = true;
     this.socketTimer = setInterval(() => {
@@ -337,6 +527,7 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
   }
   ngOnDestroy() {
     clearInterval(this.socketTimer);
+    clearInterval(this.demoMaker);
   }
 
   handleCoachInfo(str) {
@@ -382,6 +573,10 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
       this.displaySections[1] = true;
       this.displaySections[2] = true;
     }
-    this.handleCoachInfo(fakeCoachInfo);
+    if (!(this.classId === '99999' && this.isDemoMode)) {
+      this.handleCoachInfo(fakeCoachInfo);
+    } else {
+      this.handleCoachInfo(demoCoachInfo);
+    }
   }
 }
