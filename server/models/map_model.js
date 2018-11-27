@@ -24,15 +24,16 @@ const addressToDomain = function (_address) {
 exports.getMapList = function() {
   return new Promise((resolve, reject) => {
     let domain = addressToDomain(address);
-    request(`http://${domain}/app/public_html/cloudrun/update/mapList.json`, function (error, response, body) {
+    process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+    request(`https://${domain}/app/public_html/cloudrun/update/mapList.json`, function (error, response, body) {
       if (error) throw new Error(error);
         let urls = [];
         const datas = JSON.parse(body).mapList.raceMapInfo.map(_info => {
           const { mapId, distance, totalElevation, incline, mapUpdateFile } = _info;
           const race_elevation = Number(totalElevation.replace('m', ''));
-          let img_url = 'http://' + domain + '/app/public_html/cloudrun/update/';
+          let img_url = 'https://' + domain + '/app/public_html/cloudrun/update/';
           img_url += mapUpdateFile.replace('.zip', '/');
-          urls.push('http://' + domain + '/app/public_html/cloudrun/update/map-summary/map-mapdefinition_' + mapId + '.json');
+          urls.push('https://' + domain + '/app/public_html/cloudrun/update/map-summary/map-mapdefinition_' + mapId + '.json');
           return ({
             map_index: mapId,
             race_total_distance: distance,

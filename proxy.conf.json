@@ -1,10 +1,10 @@
 {
   "/api": {
-    "target": "http://app.alatech.com.tw:5555",
+    "target": "https://app.alatech.com.tw:5443",
     "secure": false
   },
   "/race_test": {
-    "target": "http://app.alatech.com.tw:5555",
+    "target": "https://app.alatech.com.tw:5443",
     "secure": false
   }
 }
