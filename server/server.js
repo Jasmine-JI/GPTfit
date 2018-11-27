@@ -6,13 +6,14 @@ const {
   checkTokenExit
 } = require('./models/auth.model');
 
-// const https = require('https');
-// const fs = require('fs');
+const https = require('https');
+const fs = require('fs');
 
-// const SERVER_CONFIG = {
-//   key: fs.readFileSync('../key/private.key'),
-//   cert: fs.readFileSync('../key/server.crt')
-// };
+const SERVER_CONFIG = {
+  key: fs.readFileSync('/etc/ssl/free.key'),
+  ca: fs.readFileSync('/etc/ssl/free_ca.crt'),
+  cert: fs.readFileSync('/etc/ssl/free.crt')
+};
 
 // Init app
 var app = express();
@@ -46,16 +47,35 @@ app.use(function (req, res, next) {
   }
 
   var allowedOrigins = [];
-  if (address === '192.168.1.235' || address === '172.17.0.1') {
-    allowedOrigins = ['http://192.168.1.235:8080', '*'];
+  if (address === '192.168.1.235') {
+    allowedOrigins = [
+      'http://192.168.1.235:8080',
+      'https://192.168.1.235:8080',
+      'http://192.168.1.235',
+      'https://192.168.1.235'
+    ];
   } else if (address === '192.168.1.234') {
-    allowedOrigins = ['*']; // 因為要for在家只做前端時，需要隨意的domain去call
+    allowedOrigins = [
+      'http://192.168.1.234',
+      'http://alatechapp.alatech.com.tw',
+      'http://192.168.1.235:8080',
+      'http://localhost:8080',
+      'http://app.alatech.com.tw',
+      'https://192.168.1.234',
+      'https://alatechapp.alatech.com.tw',
+      'https://192.168.1.235:8080',
+      'http://localhost:8080',
+      'https://app.alatech.com.tw'
+    ]; // 因為要for在家只做前端時，需要隨意的domain去call
   } else if (address === '192.168.1.232') {
     allowedOrigins = ['http://192.168.1.232:8080'];
   } else {
     allowedOrigins = [
       'http://alatechcloud.alatech.com.tw:8080',
+      'https://alatechcloud.alatech.com.tw:8080',
       'http://152.101.90.130:8080',
+      'https://152.101.90.130:8080',
+      'https://cloud.alatech.com.tw:8080',
       'http://cloud.alatech.com.tw:8080'
     ];
   }
@@ -143,9 +163,9 @@ app.use('/nodejs/api/sport', authMiddleware, sport);
 
 // Start the server
 const port = process.env.PORT || 3001;
-app.listen(port, function () {
-  console.log('Server running at ' + port);
-});
-// https.createServer(SERVER_CONFIG, app).listen(port, function() {
-//   console.log('HTTPS sever started at ' + port);
+// app.listen(port, function () {
+//   console.log('Server running at ' + port);
 // });
+https.createServer(SERVER_CONFIG, app).listen(port, function() {
+  console.log('HTTPS sever started at ' + port);
+});

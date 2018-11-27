@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
+    "dev-ssl-start": "ng serve -c dev-web --ssl --ssl-cert /etc/ssl/free.crt --ssl-key /etc/ssl/free.key --port 8080 --host 192.168.1.235 --proxy-config proxy.conf.json",
     "web-start": "ng serve -c dev-web --port 8080 --host 192.168.1.235 --proxy-config proxy.conf.json",
     "start": "ng serve --port 8080 --host 0.0.0.0 --disable-host-check --proxy-config proxy.conf.json",
     "pm2-start": "pm2 start -i 4 server.js --log-date-format 'YYYY-DD-MM HH:mm:ss.SSS'",
@@ -40,7 +41,9 @@
     "@angular/material-moment-adapter": "^6.4.7",
     "@angular/platform-browser": "^6.1.6",
     "@angular/platform-browser-dynamic": "^6.1.6",
+    "@angular/pwa": "^0.8.7",
     "@angular/router": "^6.1.6",
+    "@angular/service-worker": "^6.1.6",
     "@ngx-progressbar/core": "^5.1.1",
     "@ngx-translate/core": "^10.0.2",
     "@ngx-translate/http-loader": "^3.0.1",
@@ -74,7 +77,7 @@
     "pm2": "^3.0.4",
     "popper.js": "^1.12.6",
     "query-string": "^6.1.0",
-    "rxjs": "^6.3.1",
+    "rxjs": "6.3.2",
     "rxjs-compat": "^6.0.0-rc.0",
     "zone.js": "^0.8.14"
   },

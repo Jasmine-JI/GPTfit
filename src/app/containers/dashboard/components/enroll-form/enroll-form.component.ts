@@ -220,8 +220,7 @@ export class EnrollFormComponent implements OnInit {
     if (
       valid &&
       this.phoneErr.length === 0 &&
-      this.emailErr.length === 0 &&
-      !this.isCodeInvalid
+      this.emailErr.length === 0
     ) {
       const data = value;
       data.pay_method = '臨櫃付款';
