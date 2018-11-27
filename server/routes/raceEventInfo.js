@@ -163,7 +163,6 @@ routerProtected.post('/create', (req, res) => {
           if (!isTooMuch) {
             con.query(sql, ['race_event_info', results], (err, rows) => {
               if (err) {
-                console.log('!!!!!', err);
                 return res.status(500).send({
                   errorMessage: err.sqlMessage
                 });
@@ -184,7 +183,7 @@ routerProtected.post('/create', (req, res) => {
         });
 
       } else {
-        res.send('duplicate eventId');
+        res.status(409).json({resultMessage: 'duplicate eventId'});
       }
 
     });
@@ -359,13 +358,13 @@ routerProtected.put('/edit', (req, res, next) => {
               res.status(500).send(err);
             }
             if (rows) {
-              res.send('更新成功');
+              res.json({resultMessage: '更新成功'});
             } else {
-              res.status(500).send('有遺失喔');
+              res.status(500).json({resultMessage: '有遺失喔'});
             }
           });
         } else {
-          res.status(500).json(currNum);
+          res.status(400).json(currNum);
         }
       });
     });
