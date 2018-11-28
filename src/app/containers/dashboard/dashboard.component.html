@@ -14,13 +14,14 @@
           center
         </span>
         <mat-nav-list>
-          <li class="ala-sidenav-item"
+          <a class="ala-sidenav-item"
             (click)="chooseItem(1, sideNav)"
             [class.ala-sidenav-menu-item__active]="target === 1"
             [routerLink]="['/leaderboard']"
+            target="_blank"
           >
             <i class="icon-svg_web-icon_002-trophy ala-sidenav-icon"></i>排行版
-          </li>
+          </a>
           <mat-accordion multi="false">
             <mat-expansion-panel [expanded]="target === 3">
               <mat-expansion-panel-header  class="ala-expansion-panel-header"
@@ -136,7 +137,7 @@
           <li class="ala-sidenav-item"
             (click)="chooseItem(13, sideNav)"
             [class.ala-sidenav-menu-item__active]="target === 13"
-            [routerLink]="['/dashboard/setting']"
+            [routerLink]="['/dashboard/system/setting-member']"
             *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper"
           >
             <!--  之後把font awesome 與material icon 擇一-->
@@ -195,6 +196,20 @@
             <div class="dropdown-menu dropdown-user-menu" [class.show]="isUserMenuShow"
                aria-labelledby="dropdownMenu3"
             >
+              <div class="header-nav-menu-section">
+                <div (click)="$event.preventDefault();$event.stopPropagation();"
+                  style="padding: 15px 20px"
+                >
+                  {{ userName || '' }}
+                </div>
+              </div>
+              <div class="header-nav-menu-section">
+                <ul>
+                  <li [routerLink]="['/dashboard/settings']">
+                    使用者設定
+                  </li>
+                </ul>
+              </div>
               <button class="dropdown-item" type="button" (click)="logout()">登出</button>
             </div>
           </div>

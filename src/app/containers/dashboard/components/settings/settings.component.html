@@ -1,0 +1,33 @@
+<div class="row ala-settings">
+  <div class="col-md-3">
+    <span class="page-title">使用者設定</span>
+    <ul class="nav">
+      <li [class.active]="chooseIdx === 1"
+        (click)="handleTab(1)"
+      >
+        使用者資訊
+      </li>
+      <li [class.active]="chooseIdx === 2"
+        (click)="handleTab(2)"
+      >
+        隱私權設定
+      </li>
+      <li [class.active]="chooseIdx === 3"
+        (click)="handleTab(3)"
+      >
+        帳號資訊
+      </li>
+    </ul>
+  </div>
+  <div class="col-md-9">
+    <ng-container *ngIf="chooseIdx === 1">
+      <app-user-settings></app-user-settings>
+    </ng-container>
+    <ng-container *ngIf="chooseIdx === 2">
+      <app-privacy-settings></app-privacy-settings>
+    </ng-container>
+    <ng-container *ngIf="chooseIdx === 3">
+      <app-account-info></app-account-info>
+    </ng-container>
+  </div>
+</div>

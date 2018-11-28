@@ -1,0 +1,111 @@
+<h3 style="margin-bottom: 30px">使用者資訊</h3>
+<label class="ala-form__label settings-label">基本資訊</label>
+<div class="ala-list__item">
+  <label class="ala-form__label settings-item">頭像</label>
+  <div class="settings-control" style="min-width: 250px;">
+    <app-upload-file
+      [isImageFileMode]="true"
+      [imageURL]="userIcon"
+      [maxFileSize]="maxFileSize"
+      [disabled]="isUploading"
+      [btnText]="this.fileLink ? reloadFileText : chooseFileText"
+      [isLoading]="isUploading"
+      [accept]="acceptFileExtensions.join()"
+      [reloadFileText]="reloadFileText"
+      [chooseFileText]="chooseFileText"
+      (onChange)="handleAttachmentChange($event)"
+    ></app-upload-file>
+  </div>
+</div>
+<div class="ala-list__item">
+  <label class="ala-form__label settings-item">名稱</label>
+  <div class="settings-control">
+    <app-form-text
+      [content]="groupInfo?.groupName"
+      [maxLength]="32"
+      [remindText]="remindText"
+      [disabled]="isGroupDetailLoading"
+      [invalidRemindText]="inValidText"
+    >
+    </app-form-text>
+  </div>
+</div>
+<div class="ala-list__item">
+  <label class="ala-form__label settings-item">身高</label>
+  <div class="settings-control">
+    <select class="form-field"></select>
+  </div>
+
+</div>
+<div class="ala-list__item">
+  <label class="ala-form__label settings-item">體重</label>
+  <div class="settings-control">
+    <select class="form-field"></select>
+  </div>
+</div>
+<div class="ala-list__item">
+  <label class="ala-form__label settings-item">出生年</label>
+  <div class="settings-control">
+    <select class="form-field"></select>
+  </div>
+</div>
+<div class="ala-list__item">
+  <label class="ala-form__label settings-item">性別</label>
+  <div class="settings-control">
+    <select class="form-field">
+      <option>男</option>
+      <option>女</option>
+    </select>
+  </div>
+</div>
+<hr>
+<label class="ala-form__label settings-label">心率</label>
+<div class="ala-list__item">
+  <label class="ala-form__label settings-item">心率演算法</label>
+  <div class="settings-control">
+    <select class="form-field">
+      <option>最大心率法</option>
+      <option>休息心率法</option>
+    </select>
+  </div>
+</div>
+<div class="ala-list__item">
+  <label class="ala-form__label settings-item">最大心率</label>
+  <div class="settings-control">
+    <app-form-text
+      [content]="groupInfo?.groupName"
+      [maxLength]="32"
+      [remindText]="remindText"
+      [disabled]="isGroupDetailLoading"
+      [invalidRemindText]="inValidText"
+    >
+    </app-form-text>
+  </div>
+</div>
+<div class="ala-list__item">
+  <label class="ala-form__label settings-item">休息心率</label>
+  <div class="settings-control">
+    <app-form-text
+      [content]="groupInfo?.groupName"
+      [maxLength]="32"
+      [remindText]="remindText"
+      [disabled]="isGroupDetailLoading"
+      [invalidRemindText]="inValidText"
+    >
+    </app-form-text>
+  </div>
+</div>
+<hr>
+<label class="ala-form__label settings-label">睡眠</label>
+<div class="ala-list__item">
+  <label class="ala-form__label settings-item">平時入睡時間</label>
+  <div class="settings-control">
+    <select class="form-field"></select>
+  </div>
+</div>
+<div class="ala-list__item">
+  <label class="ala-form__label settings-item">平時起床時間</label>
+  <div class="settings-control">
+    <select class="form-field"></select>
+  </div>
+</div>

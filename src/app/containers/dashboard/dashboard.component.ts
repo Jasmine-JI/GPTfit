@@ -91,7 +91,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
           this.target = 11;
         } else if (_val.url.indexOf('/dashboard/create-brand-group') > -1) {
           this.target = 12;
-        } else if (_val.url.indexOf('/dashboard/setting') > -1) {
+        } else if (_val.url.indexOf('/dashboard/system/setting-member') > -1) {
           this.target = 13;
         } else {
           this.target = 0;

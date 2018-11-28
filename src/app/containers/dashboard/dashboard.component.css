@@ -1,6 +1,28 @@
 /* * {
   border: 1px solid #fff;
 } */
+.header-nav-menu-section {
+
+  border-bottom: 1px solid #e5e5e5
+}
+.header-nav-menu-section ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.header-nav-menu-section ul>li {
+  padding: 15px 20px;
+}
+.header-nav-menu-section ul>li:hover {
+  cursor: pointer;
+  background-color: #f8f9fa;
+}
+.dropdown-item {
+  padding: 15px 20px;
+}
+.dropdown-menu {
+  padding: 0;
+}
 .mat-drawer-container {
   background-color: #fff;
 }

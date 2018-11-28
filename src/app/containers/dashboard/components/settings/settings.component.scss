@@ -1,0 +1,31 @@
+.ala-settings {
+  .nav {
+    flex-direction: column;
+    margin-top: 30px;
+    li {
+      padding: 7px 33px 7px 0;
+      color: #999;
+      cursor: pointer;
+    }
+    li.active {
+      color: #333;
+    }
+  }
+}
+.settings-label {
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.settings-control {
+  margin-left: 15px;
+
+  .form-field {
+    width: 275px;
+  }
+}
+
+.ala-form__label.settings-item {
+  color: #919191;
+}
