@@ -20,7 +20,7 @@ export class PrivacySettingsComponent implements OnInit {
   ngOnInit() {
     const mapProp = {
       center: new google.maps.LatLng(24.123499, 120.660140),
-      zoom: 16,
+      zoom: 18,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
     this.map = new google.maps.Map(this.gmapElement.nativeElement, mapProp);
