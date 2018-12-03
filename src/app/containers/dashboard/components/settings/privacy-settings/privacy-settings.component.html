@@ -98,7 +98,7 @@
 </div>
 
 <div>
-  <mat-tab-group (selectedTabChange)="changeGroupInfo($event)" class="ala-tab-group">
+  <mat-tab-group  class="ala-tab-group">
     <mat-tab label="您的隱私區域">
       <div style="width: 100%;text-align: center;margin: 44px 0px 22px">
         新增隱私區域讓您的位置保持隱藏。
@@ -109,6 +109,7 @@
         <mat-icon class="area-add">add</mat-icon>
         新增區域
       </ng-template>
+          <div  #gmap style="height: 400px;"></div>
     </mat-tab>
   </mat-tab-group>
 </div>
