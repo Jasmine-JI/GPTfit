@@ -6,8 +6,11 @@
   <div class="alatech-ribbon alatech-ribbon--bg-blue"></div>
     <router-outlet></router-outlet>
 </ng-container>
-<div (window:resize)="onResize($event, sideNav)" *ngIf="!isLoading" [class.minimize-main-nav]="isSideNavOpend">
-  <mat-drawer-container style="height:100vh">
+<div (window:resize)="onResize($event, sideNav)"
+  *ngIf="!isLoading" [class.minimize-main-nav]="isSideNavOpend"
+  style="display: flex;align-items: stretch;"
+>
+  <mat-drawer-container>
     <mat-drawer #sideNav opened={{isDefaultOpend}} mode={{mode}}>
       <nav class="navbar ala-dashboard-nav">
         <span class="ala-dashboard-logo">
@@ -180,7 +183,7 @@
             <i class="icon-svg_web-icon_005-menu main-nav-toggle-icon"></i>
           </div>
         </div>
-        <div style="display: flex" [style.margin-right]="(isSideNavOpend && isDefaultOpend) ? '273px' : '0px'">
+        <div style="display: flex;position: fixed;right:0">
           <div class="header-nav-item">
             {{ userName || '' }}
           </div>
@@ -215,22 +218,22 @@
           </div>
         </div>
       </header>
-      <div *ngIf="!isPreviewMode"
-        [class.container]="isHadContainer"
-        class="dashboard-rwd"
-        [style.padding-top]="isHadContainer? '80px' : '60px'"
-        [hidden]="isLoading"
-      >
-        <router-outlet></router-outlet>
-      </div>
-      <footer
-        class="footer footer-details"
-        [ngClass]="footerAddClassName"
-      >
-      Center 是由 Alatech 提供 Copyright © Alatech  Co.,Ltd. 或其子公司 • Version: 1.0.0.0
-      </footer>
     </mat-drawer-content>
   </mat-drawer-container>
+  <div class="main-body">
+    <div *ngIf="!isPreviewMode"
+      [class.container]="isHadContainer"
+      [hidden]="isLoading"
+    >
+      <router-outlet></router-outlet>
+    </div>
+    <footer
+      class="footer footer-details"
+      [ngClass]="footerAddClassName"
+    >
+      Center 是由 Alatech 提供 Copyright © Alatech  Co.,Ltd. 或其子公司 • Version: 1.0.0.0
+    </footer>
+  </div>
 </div>
 
 <div [hidden]="!isLoading">

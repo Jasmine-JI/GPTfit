@@ -1,6 +1,18 @@
 /* * {
   border: 1px solid #fff;
 } */
+.main-body {
+  width: calc(100% - 273px);
+  position: relative;
+  flex-grow: 1;
+  height: calc(100vh - 60px);
+  margin-top: 60px;
+  overflow: auto;
+}
+.container {
+  padding: 30px;
+  min-height: calc(100vh - 78px);
+}
 .header-nav-menu-section {
 
   border-bottom: 1px solid #e5e5e5
@@ -25,10 +37,6 @@
 }
 .mat-drawer-container {
   background-color: #fff;
-}
-.dashboard-rwd {
-  padding-top: 80px;
-  min-height: calc(100% - 40px);
 }
 
 .alatech-ribbon {
@@ -126,6 +134,13 @@
 .mat-expansion-panel-header.ala-expansion-panel-header {
   padding: 5px 15px 5px 20px;
   font-size: 16px;
+}
+.mat-drawer-container {
+  min-height: 100vh;
+  flex-shrink: 0;
+  flex-basis: auto;
+  position: initial;
+  z-index: 3;
 }
 
 ::ng-deep .mat-expansion-panel-content .mat-expansion-panel-body {
@@ -231,7 +246,7 @@
 }
 .dropdown.show .dropdown-menu.dropdown-user-menu.show {
   top: -3px !important;
-  left: 5px !important;
+  left: 50px !important;
 }
 
 @media(max-width: 768px) {
