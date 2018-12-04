@@ -120,10 +120,12 @@ export class NavbarComponent implements OnInit {
   }
   chooseNavItem(num: number) {
     this.navItemNum = num;
+    this.toggleMask();
   }
   switchLang(lang: string) {
     this.langName = this.langData[lang];
     this.translateService.use(lang);
     this.utilsService.setLocalStorageObject('locale', lang);
+    this.toggleMask();
   }
 }
