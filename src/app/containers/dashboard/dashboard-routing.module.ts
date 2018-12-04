@@ -58,29 +58,10 @@ const routes: Routes = [
         path: 'certificate/preview',
         component: CertificatePreviewComponent
       },
-      {
-        path: 'event/create',
-        component: CreateEventComponent,
-        canActivate: [DashboardGuard]
-      },
-      {
-        path: 'event/edit/:id',
-        component: EditEventComponent,
-        canActivate: [DashboardGuard]
-      },
-      {
-        path: 'event-calendar',
-        component: EventCalendarComponent,
-        canActivate: [DashboardGuard]
-      },
+
       {
         path: 'enroll/:event_id/preview',
         component: EnrollPreviewComponent,
-        canActivate: [DashboardGuard]
-      },
-      {
-        path: 'leaderboard-settings',
-        component: LeaderboardSettingsComponent,
         canActivate: [DashboardGuard]
       },
       {
@@ -92,23 +73,8 @@ const routes: Routes = [
         component: DbMaintainComponent
       },
       {
-        path: 'device_log',
-        component: DeviceLogComponent,
-        canActivate: [DashboardGuard]
-      },
-      {
-        path: 'device_log/detail/:userId',
-        component: DeviceLogDetailComponent,
-        canActivate: [DashboardGuard]
-      },
-      {
         path: 'coach-dashboard/:classId',
         component: CoachDashboardComponent
-      },
-      {
-        path: 'event-management',
-        component: EventManagementComponent,
-        canActivate: [DashboardGuard]
       },
       {
         path: 'my-group-list',
@@ -118,11 +84,7 @@ const routes: Routes = [
         path: 'my-group-list/create',
         component: CreateGroupComponent
       },
-      {
-        path: 'all-group-list',
-        component: AllGroupListComponent,
-        canActivate: [DashboardGuard]
-      },
+
       {
         path: 'group-search',
         component: GroupSearchComponent
@@ -142,7 +104,57 @@ const routes: Routes = [
         canActivate: [EditGroupGuard]
       },
       {
-        path: 'create-brand-group',
+        path: 'system/event-management',
+        component: EventManagementComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/event',
+        component: EventComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/event/create',
+        component: CreateEventComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/event/edit/:id',
+        component: EditEventComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/event-calendar',
+        component: EventCalendarComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/leaderboard-settings',
+        component: LeaderboardSettingsComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/setting-member',
+        component: InnerSettingsComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/device_log',
+        component: DeviceLogComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/device_log/detail/:userId',
+        component: DeviceLogDetailComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/all-group-list',
+        component: AllGroupListComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/create-brand-group',
         component: CreateGroupComponent,
         canActivate: [DashboardGuard]
       },
@@ -165,11 +177,6 @@ const routes: Routes = [
         ]
       },
       {
-        path: 'system/setting-member',
-        component: InnerSettingsComponent,
-        canActivate: [DashboardGuard]
-      },
-      {
         path: 'my-activity',
         component: MyActivityComponent
       },
@@ -190,7 +197,7 @@ const routes: Routes = [
         component: ProductInfoComponent
       },
       {
-        path: 'train-live',
+        path: 'live/train-live',
         component: TrainLiveComponent
       }
     ]

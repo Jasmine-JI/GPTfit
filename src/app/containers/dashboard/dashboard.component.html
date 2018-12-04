@@ -43,7 +43,7 @@
                 <li class="ala-sidenav-menu-item"
                   (click)="chooseItem(3, sideNav)"
                   [class.ala-sidenav-menu-item__active]="target === 3"
-                  [routerLink]="['/dashboard/train-live']"
+                  [routerLink]="['/dashboard/live/train-live']"
                 >
                   Train live
                 </li>
@@ -53,14 +53,28 @@
           <!-- <li class="ala-sidenav-item"  (click)="chooseItem(4, sideNav)" [class.ala-sidenav-menu-item__active]="target === 4">
             <i class="icon-svg_web-icon_004-qr_code ala-sidenav-icon"></i>登入設備
           </li> -->
-          <li class="ala-sidenav-item"
-            (click)="chooseItem(5, sideNav)"
-            [class.ala-sidenav-menu-item__active]="target === 5"
-            [routerLink]="['/dashboard/device_log']"
-             *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer"
-          >
-            <i class="icon icon-log-file-format ala-sidenav-icon"style="margin-left:2px;font-size:18px"></i>Device Log
-          </li>
+          <mat-accordion multi="false" *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer">
+            <mat-expansion-panel [expanded]="target === 5">
+              <mat-expansion-panel-header  class="ala-expansion-panel-header"
+                [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
+              >
+                <mat-panel-title>
+                  <!--  之後把font awesome 與material icon 擇一-->
+                <i class="icon icon-log-file-format ala-sidenav-icon"
+                style="margin-left:2px;font-size:18px"></i>
+                  裝置管理
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <li class="ala-sidenav-menu-item"
+                (click)="chooseItem(5, sideNav)"
+                [class.ala-sidenav-menu-item__active]="target === 5"
+                [routerLink]="['/dashboard/system/device_log']"
+                *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer"
+              >
+                裝置日誌
+              </li>
+            </mat-expansion-panel>
+          </mat-accordion>
           <mat-accordion multi="false" *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper">
             <mat-expansion-panel [expanded]="target === 6 || target === 7 || target === 8|| target === 9">
               <mat-expansion-panel-header  class="ala-expansion-panel-header"
@@ -69,13 +83,13 @@
                 <mat-panel-title>
                   <!--  之後把font awesome 與material icon 擇一-->
                   <i class="fa fa-calendar-check-o ala-sidenav-icon"
-                    style="margin-left:2px;font-size:18px;line-height:24px" aria-hidden="true"></i>活動賽事管理
+                    style="margin-left:2px;font-size:18px;line-height:24px" aria-hidden="true"></i>賽事管理
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <li class="ala-sidenav-menu-item"
                 (click)="chooseItem(6, sideNav)"
                 [class.ala-sidenav-menu-item__active]="target === 6"
-                [routerLink]="['/dashboard/event-management']"
+                [routerLink]="['/dashboard/system/event-management']"
               >
                 活動賽事總表
               </li>
@@ -83,28 +97,28 @@
               <li class="ala-sidenav-menu-item"
                 (click)="chooseItem(7, sideNav)"
                 [class.ala-sidenav-menu-item__active]="target === 7"
-                [routerLink]="['/dashboard/event']"
+                [routerLink]="['/dashboard/system/event']"
               >
                 活動賽事自訂
               </li>
               <li class="ala-sidenav-menu-item"
                 (click)="chooseItem(8, sideNav)"
                 [class.ala-sidenav-menu-item__active]="target === 8"
-                [routerLink]="['/dashboard/event-calendar']"
+                [routerLink]="['/dashboard/system/event-calendar']"
               >
                 活動賽事日曆
               </li>
               <li class="ala-sidenav-menu-item"
                 (click)="chooseItem(9, sideNav)"
                 [class.ala-sidenav-menu-item__active]="target === 9"
-                [routerLink]="['/dashboard/leaderboard-settings']"
+                [routerLink]="['/dashboard/system/leaderboard-settings']"
               >
                 排行版設定
               </li>
             </mat-expansion-panel>
           </mat-accordion>
           <mat-accordion multi="false">
-            <mat-expansion-panel [expanded]="target === 10 || target === 11 || target === 12">
+            <mat-expansion-panel [expanded]="target === 10 || target === 17">
               <mat-expansion-panel-header  class="ala-expansion-panel-header"
                 [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
               >
@@ -112,18 +126,38 @@
                   <i class="icon-svg_web-icon_036-friends ala-sidenav-icon"></i>群組
                 </mat-panel-title>
               </mat-expansion-panel-header>
-                <li class="ala-sidenav-menu-item"
-                  (click)="chooseItem(10, sideNav)"
-                  [class.ala-sidenav-menu-item__active]="target === 10"
-                  [routerLink]="['/dashboard/my-group-list']"
-                >
-                  我的群組
-                </li>
+              <li class="ala-sidenav-menu-item"
+                (click)="chooseItem(10, sideNav)"
+                [class.ala-sidenav-menu-item__active]="target === 10"
+                [routerLink]="['/dashboard/my-group-list']"
+              >
+                我的群組
+              </li>
+              <li class="ala-sidenav-menu-item"
+                (click)="chooseItem(17, sideNav)"
+                [class.ala-sidenav-menu-item__active]="target === 17"
+                [routerLink]="['/dashboard/group-search']"
+              >
+                搜尋群組
+              </li>
+            </mat-expansion-panel>
+          </mat-accordion>
+          <mat-accordion multi="false" *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper">
+            <mat-expansion-panel [expanded]="target === 11 || target === 12">
+              <mat-expansion-panel-header  class="ala-expansion-panel-header"
+                [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
+              >
+                <mat-panel-title>
+                  <mat-icon style="font-size: 20px;margin-right: 4px;">
+                    group
+                  </mat-icon>群組管理
+                </mat-panel-title>
+              </mat-expansion-panel-header>
                 <li class="ala-sidenav-menu-item"
                   (click)="chooseItem(11, sideNav)"
                   [class.ala-sidenav-menu-item__active]="target === 11"
                   *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper"
-                  [routerLink]="['/dashboard/all-group-list']"
+                  [routerLink]="['/dashboard/system/all-group-list']"
                 >
                   所有群組列表
                 </li>
@@ -131,7 +165,7 @@
                   (click)="chooseItem(12, sideNav)"
                   [class.ala-sidenav-menu-item__active]="target === 12"
                   *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper"
-                  [routerLink]="['/dashboard/create-brand-group']"
+                  [routerLink]="['/dashboard/system/create-brand-group']"
                 >
                   建立品牌群組
                 </li>
