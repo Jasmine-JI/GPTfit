@@ -27,7 +27,8 @@ import {
   MatTabsModule,
   MatExpansionModule,
   MatTreeModule,
-  MatBadgeModule
+  MatBadgeModule,
+  MatSlideToggleModule
 } from '@angular/material';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
@@ -72,7 +73,8 @@ export const TW_FORMATS = {
     MatExpansionModule,
     MatTreeModule,
     MatBadgeModule,
-    MatBottomSheetModule
+    MatBottomSheetModule,
+    MatSlideToggleModule
   ],
   exports: [
     MatIconModule,
@@ -102,7 +104,8 @@ export const TW_FORMATS = {
     MatExpansionModule,
     MatTreeModule,
     MatBadgeModule,
-    MatBottomSheetModule
+    MatBottomSheetModule,
+    MatSlideToggleModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [

@@ -122,6 +122,7 @@
               [controlName]="formTextareaName"
               [disabled]="isGroupDetailLoading"
               (onChange)="handleChangeTextarea($event, 1)"
+              [isHadCount]="true"
               [isInvalid]="(!groupDesc.valid && groupDesc.touched) || (f.submitted && groupDesc.hasError('required')) || (f.submitted && groupDesc.hasError('maxLength'))"
             >
             </app-form-textarea>

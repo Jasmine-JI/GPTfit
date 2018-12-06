@@ -13,6 +13,8 @@ export class FormRemindComponent implements OnInit {
   @Input() textareaLength: number;
   @Input() content: string;
   @Input() maxLength: string;
+  @Input() isHadCount = false;
+  @Input() countText: string;
   remindCls = 'ala-form__remind';
   constructor() {}
 

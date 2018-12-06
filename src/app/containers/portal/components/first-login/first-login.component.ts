@@ -139,32 +139,8 @@ export class FirstLoginComponent implements OnInit {
     ctx.drawImage(img, 0, 0, width, height);
 
     // encode image to data-uri with base64 version of compressed image
-    // console.log(canvas.toDataURL().replace('data:image/png;base64,', ''));
     return canvas.toDataURL().replace('data:image/png;base64,', '');
   }
-  // downloadFile(e, type) {
-  //   e.preventDefault();
-  //   // const downloadLink = this.finalImageLink;
-  //   const image = new Image();
-  //   image.src = this.finalImageLink;
-  //   let newDataUri;
-  //   if (type === 1) {
-  //     newDataUri = this.imageToDataUri(image, 256, 256);
-  //   } else if (type === 2) {
-  //     newDataUri = this.imageToDataUri(image, 128, 128);
-  //   } else {
-  //     newDataUri = this.imageToDataUri(image, 64, 64);
-  //   }
-  //   newDataUri = newDataUri.replace(
-  //     'data:image/png;base64,',
-  //     'data:image/jpeg;base64,'
-  //   );
-  //   const downloadLink = newDataUri.replace(
-  //     'data:image/jpeg;base64,',
-  //     'data:application/octet-stream;base64,'
-  //   );
-  //   location.href = downloadLink;
-  // }
   logStartDateChange($event: MatDatepickerInputEvent<moment.Moment>) {
     const value = moment($event.value).format('YYYYMMDD');
     this.form.patchValue({ birth: value });

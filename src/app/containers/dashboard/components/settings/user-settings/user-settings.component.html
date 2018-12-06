@@ -1,0 +1,228 @@
+<h3>使用者資訊</h3>
+<form [formGroup]="settingsForm"
+  #f="ngForm"
+  novalidate
+  (ngSubmit)="saveSettings(settingsForm)"
+>
+  <label class="ala-form__label settings-label">基本資訊</label>
+  <div class="ala-list__item">
+    <label class="ala-form__label settings-item"
+      [class.form__label--required]="true"
+    >
+      頭像
+    </label>
+    <div class="settings-control" style="min-width: 250px;">
+      <app-upload-file
+        [isImageFileMode]="true"
+        [imageURL]="nameIcon?.value"
+        [maxFileSize]="maxFileSize"
+        [disabled]="isUploading"
+        [btnText]="this.fileLink ? reloadFileText : chooseFileText"
+        [isLoading]="isUploading"
+        [accept]="acceptFileExtensions.join()"
+        [reloadFileText]="reloadFileText"
+        [chooseFileText]="chooseFileText"
+        (onChange)="handleAttachmentChange($event)"
+      ></app-upload-file>
+    </div>
+  </div>
+  <div class="ala-list__item">
+    <label class="ala-form__label settings-item"
+      [class.form__label--required]="true"
+    >
+      名稱
+    </label>
+    <div class="settings-control" style="position: relative;">
+      <app-form-text
+        [content]="name?.value"
+        [maxLength]="32"
+        [invalidRemindText]="inValidText"
+        [control]="settingsForm"
+        [controlName]="'name'"
+        [isInvalid]="(!name.valid && name.touched) || (f.submitted && name.hasError('required')) || isNameError"
+        (onChange)="onNameChange($event, settingsForm)"
+      >
+      </app-form-text>
+      <i class="fa fa-spinner fa-pulse fa-1x fa-fw spinner" [class.spinner-hidden]="!isNameLoading"></i>
+    </div>
+  </div>
+  <div class="ala-list__item">
+    <label class="ala-form__label settings-item">身高</label>
+    <div class="settings-control">
+      <div style="display: inline-block">
+        <app-form-text
+          [type]="'number'"
+          [content]="height"
+          [maxLength]="32"
+          [disabled]="isGroupDetailLoading"
+          [invalidRemindText]="inValidText"
+          [control]="settingsForm"
+          [controlName]="'height'"
+        >
+        </app-form-text>
+      </div>
+      <span style="display: inline-block;margin-left: 10px">cm</span>
+    </div>
+
+  </div>
+  <div class="ala-list__item">
+    <label class="ala-form__label settings-item">體重</label>
+    <div class="settings-control">
+      <div style="display: inline-block">
+        <app-form-text
+          [type]="'number'"
+          [content]="weight"
+          [maxLength]="32"
+          [disabled]="isGroupDetailLoading"
+          [invalidRemindText]="inValidText"
+          [control]="settingsForm"
+          [controlName]="'weight'"
+        >
+        </app-form-text>
+      </div>
+      <span style="display: inline-block;margin-left: 10px">kg</span>
+    </div>
+  </div>
+  <div class="ala-list__item">
+    <label class="ala-form__label settings-item">出生年月日</label>
+    <div class="settings-control">
+      <mat-form-field style="min-width: 275px;">
+        <input matInput [matDatepicker]="picker" placeholder=""
+          (dateChange)="logStartDateChange($event)"
+          formControlName="birthday"
+        >
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker startView="year" [startAt]="birthday"></mat-datepicker>
+      </mat-form-field>
+    </div>
+  </div>
+  <div class="ala-list__item">
+    <label class="ala-form__label settings-item">性別</label>
+    <div class="settings-control">
+      <select class="form-field"
+        formControlName="gender"
+      >
+        <option value="0">男</option>
+        <option value="1">女</option>
+        <option value="2">無</option>
+      </select>
+    </div>
+  </div>
+  <div class="ala-list__item">
+    <label class="ala-form__label settings-item">介紹</label>
+    <div class="settings-control">
+      <app-form-textarea
+        [maxLength]="'300'"
+        [content]="description"
+        [control]="settingsForm"
+        [controlName]="'description'"
+        [disabled]="isGroupDetailLoading"
+        (onChange)="handleChangeTextarea($event, 1)"
+        [isHadCount]="true"
+      >
+      </app-form-textarea>
+    </div>
+  </div>
+  <hr>
+  <label class="ala-form__label settings-label">心率</label>
+  <div class="ala-list__item">
+    <label class="ala-form__label settings-item">心率演算法</label>
+    <div class="settings-control">
+      <select class="form-field"
+        formControlName="heartRateBase"
+      >
+        <option value="0">最大心率法</option>
+        <option value="1">休息心率法</option>
+      </select>
+    </div>
+  </div>
+  <div class="ala-list__item">
+    <label class="ala-form__label settings-item">最大心率</label>
+    <div class="settings-control">
+      <div style="display: inline-block">
+        <app-form-text
+          [type]="'number'"
+          [content]="heartRateMax"
+          [maxLength]="32"
+          [disabled]="isGroupDetailLoading"
+          [invalidRemindText]="inValidText"
+          [control]="settingsForm"
+          [controlName]="'heartRateMax'"
+        >
+        </app-form-text>
+      </div>
+      <span style="display: inline-block;margin-left: 10px">bpm</span>
+    </div>
+  </div>
+  <div class="ala-list__item">
+    <label class="ala-form__label settings-item">休息心率</label>
+    <div class="settings-control">
+      <div style="display: inline-block">
+        <app-form-text
+          [type]="'number'"
+          [content]="heartRateResting"
+          [maxLength]="32"
+          [disabled]="isGroupDetailLoading"
+          [invalidRemindText]="inValidText"
+          [control]="settingsForm"
+          [controlName]="'heartRateResting'"
+        >
+        </app-form-text>
+      </div>
+      <span style="display: inline-block;margin-left: 10px">bpm</span>
+    </div>
+  </div>
+  <hr>
+  <label class="ala-form__label settings-label">睡眠</label>
+  <div class="ala-list__item">
+    <label class="ala-form__label settings-item">平時入睡時間</label>
+    <div class="settings-control">
+      <div class="time_picker">
+        <input type="time"
+          class="form-field"
+          formControlName="normalBedTime"
+        >
+      </div>
+    </div>
+  </div>
+  <div class="ala-list__item">
+    <label class="ala-form__label settings-item">平時起床時間</label>
+    <div class="settings-control">
+      <div class="time_picker">
+        <input type="time"
+          class="form-field"
+          formControlName="normalWakeTime"
+        >
+      </div>
+    </div>
+  </div>
+  <hr>
+  <label class="ala-form__label settings-label">自行車</label>
+  <div class="ala-list__item">
+    <label class="ala-form__label settings-item">自行車輪徑</label>
+    <div class="settings-control">
+      <div style="display: inline-block">
+        <app-form-text
+          [type]="'number'"
+          [content]="wheelSize"
+          [maxLength]="32"
+          [disabled]="isGroupDetailLoading"
+          [invalidRemindText]="inValidText"
+          [control]="settingsForm"
+          [controlName]="'wheelSize'"
+        >
+         </app-form-text>
+      </div>
+      <span style="display: inline-block;margin-left: 10px">mm</span>
+    </div>
+  </div>
+  <hr>
+  <div class="controll-row">
+    <button class="alatech-btn alatech-btn--default settings-btn"
+      title="儲存"
+      type="submit"
+    >
+      儲存
+    </button>
+  </div>
+</form>

@@ -1,0 +1,40 @@
+<div class="row ala-settings">
+  <div class="col-md-3">
+    <span class="page-title">使用者設定</span>
+    <ul class="nav">
+      <li [class.active]="chooseIdx === 1"
+        (click)="handleTab(1)"
+      >
+        使用者資訊
+      </li>
+      <li [class.active]="chooseIdx === 2"
+        (click)="handleTab(2)"
+      >
+        隱私權設定
+      </li>
+      <li [class.active]="chooseIdx === 3"
+        (click)="handleTab(3)"
+      >
+        帳號資訊
+      </li>
+    </ul>
+  </div>
+  <div class="col-md-9">
+    <ng-container *ngIf="!isLoading">
+      <app-user-settings [userData]="userData"
+      *ngIf="chooseIdx === 1 && userData"
+      ></app-user-settings>
+      <app-privacy-settings [userData]="userData"
+        *ngIf="chooseIdx === 2 && userData"
+      ></app-privacy-settings>
+      <app-account-info [userData]="userData"
+      *ngIf="chooseIdx === 3 && userData"
+      ></app-account-info>
+    </ng-container>
+    <div style="display:flex;justify-content: center;align-items: center;height:100%"
+      *ngIf="isLoading"
+    >
+      <mat-spinner></mat-spinner>
+    </div>
+  </div>
+</div>

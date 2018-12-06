@@ -120,8 +120,6 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
-    // const queryStrings = getUrlQueryStrings(location.search);
-    console.log('location.search: ', location.search);
     if (location.search.indexOf('?original') > -1) {
       this.isOriginalMode = true;
     }
@@ -172,7 +170,6 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.infoDate = this.handleDate(this.activityInfo.startTime);
       this.totalSecond = this.activityInfo.totalSecond;
       this.resolutionSeconds = +this.totalSecond / this.activityPoints.length;
-      console.log('前端加工後的resolutionSeconds(秒): ', this.resolutionSeconds);
       this.initHchart();
       this.progressRef.complete();
       this.isLoading = false;
@@ -274,7 +271,6 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       elevations.push(+_point.altitudeMeters);
       heartRates.push(+_point.heartRateBpm);
     });
-    console.log('pointSeconds(毫秒): ', pointSeconds);
     this.dataset1 = {
       name: 'Speed',
       data: speeds,

@@ -78,6 +78,12 @@ import { TrainLiveComponent } from './components/train-live/train-live.component
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from '@shared/interceptors/token.interceptor';
 import { BottomSheetComponent } from './group/edit-group-info/edit-group-info.component';
+import { SettingsComponent } from './components/settings/settings.component';
+import { UserSettingsComponent } from './components/settings/user-settings/user-settings.component';
+import { PrivacySettingsComponent } from './components/settings/privacy-settings/privacy-settings.component';
+import { AccountInfoComponent } from './components/settings/account-info/account-info.component';
+import { SettingsService } from './services/settings.service';
+import { UserProfileService } from '@shared/services/user-profile.service';
 
 @NgModule({
   imports: [
@@ -110,6 +116,8 @@ import { BottomSheetComponent } from './group/edit-group-info/edit-group-info.co
     DashboardGuard,
     ActivityService,
     ReportService,
+    SettingsService,
+    UserProfileService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
@@ -167,7 +175,11 @@ import { BottomSheetComponent } from './group/edit-group-info/edit-group-info.co
     ProductInfoComponent,
     TodayLoginnerWinComponent,
     TrainLiveComponent,
-    BottomSheetComponent
+    BottomSheetComponent,
+    SettingsComponent,
+    UserSettingsComponent,
+    PrivacySettingsComponent,
+    AccountInfoComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
