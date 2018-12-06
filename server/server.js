@@ -143,6 +143,7 @@ var user = require('./routes/user.js');
 var center = require('./routes/center.js');
 var uploadFile = require('./routes/uploadFile.js');
 var sport = require('./routes/sport.js');
+var auth = require('./routes/auth.js');
 
 app.use('/nodejs/api/rankForm', rankForm.unprotected);
 app.use('/nodejs/api/rankForm', authMiddleware, rankForm.protected);
@@ -160,6 +161,7 @@ app.use('/nodejs/api/user', user);
 app.use('/nodejs/api/center', authMiddleware, center);
 app.use('/nodejs/api/uploadFile', authMiddleware, uploadFile);
 app.use('/nodejs/api/sport', authMiddleware, sport);
+app.use('/nodejs/api/auth', auth);
 
 // Start the server
 const port = process.env.PORT || 3001;
