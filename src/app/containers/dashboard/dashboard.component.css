@@ -155,6 +155,7 @@
 .ala-sidenav-icon {
   margin-right: 10px;
   font-size: 20px;
+  margin-top: 4px;
 }
 .mat-nav-list > li {
   list-style: none;
