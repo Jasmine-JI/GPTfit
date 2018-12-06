@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { UserProfileService } from '../../services/user-profile.service';
-import { HttpParams } from '@angular/common/http';
+import { UserProfileService } from '@shared/services/user-profile.service';
 import { ActivatedRoute } from '@angular/router';
 import { UtilsService } from '@shared/services/utils.service';
 
@@ -21,14 +20,17 @@ export class UserProfileComponent implements OnInit {
 
   ngOnInit() {
     this.userId = this.route.snapshot.paramMap.get('userId');
-    let params = new HttpParams();
-    params = params.set('userId', this.userId);
-    this.userProfileService.getUserProfile(params).subscribe(res => {
+    const body = {
+      token: this.utils.getToken(),
+      targetUserId: this.userId || ''
+    };
+    this.userProfileService.getUserProfile(body).subscribe(res => {
       const response: any = res;
-      this.userName = response.userName;
+      const { name, nameIcon } = response.info;
+      this.userName = name;
       this.userImg =
-        response.userIcon
-          ? this.utils.buildBase64ImgString(response.userIcon)
+        nameIcon
+          ? this.utils.buildBase64ImgString(nameIcon)
           : '/assets/images/user.png';
     });
   }

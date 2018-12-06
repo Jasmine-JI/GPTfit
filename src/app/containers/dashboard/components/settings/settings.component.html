@@ -20,14 +20,21 @@
     </ul>
   </div>
   <div class="col-md-9">
-    <ng-container *ngIf="chooseIdx === 1">
-      <app-user-settings></app-user-settings>
+    <ng-container *ngIf="!isLoading">
+      <app-user-settings [userData]="userData"
+      *ngIf="chooseIdx === 1 && userData"
+      ></app-user-settings>
+      <app-privacy-settings [userData]="userData"
+        *ngIf="chooseIdx === 2 && userData"
+      ></app-privacy-settings>
+      <app-account-info [userData]="userData"
+      *ngIf="chooseIdx === 3 && userData"
+      ></app-account-info>
     </ng-container>
-    <ng-container *ngIf="chooseIdx === 2">
-      <app-privacy-settings></app-privacy-settings>
-    </ng-container>
-    <ng-container *ngIf="chooseIdx === 3">
-      <app-account-info></app-account-info>
-    </ng-container>
+    <div style="display:flex;justify-content: center;align-items: center;height:100%"
+      *ngIf="isLoading"
+    >
+      <mat-spinner></mat-spinner>
+    </div>
   </div>
 </div>

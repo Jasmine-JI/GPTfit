@@ -4,7 +4,7 @@
   <label class="ala-form__label settings-item">帳號</label>
   <div class="settings-control">
     <span style="color:#919191">
-      roy_lee@alatech.com.tw
+      {{userData?.account}}
     </span>
   </div>
 </div>
@@ -24,7 +24,7 @@
     <span style="color:#26abe3">
       Strava
     </span>
-    <mat-slide-toggle>
+    <mat-slide-toggle [(ngModel)]="stravaStatus">
     </mat-slide-toggle>
   </div>
 </div>

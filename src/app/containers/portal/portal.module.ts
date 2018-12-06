@@ -36,7 +36,7 @@ import { RandomCodeService } from './services/random-code.service';
 import { SignupService } from './services/signup.service';
 import { ForgetService } from './services/forget.service';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
-import { UserProfileService } from './services/user-profile.service';
+import { UserProfileService } from '@shared/services/user-profile.service';
 import { GroupInfoComponent } from './components/group-info/group-info.component';
 import { FirstLoginComponent } from './components/first-login/first-login.component';
 import { CustomMaterialModule } from '@shared/custom-material.module.ts';

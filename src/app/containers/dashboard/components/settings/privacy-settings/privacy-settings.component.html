@@ -31,27 +31,33 @@
 <div class="control-list">
   <label class="ala-form__label settings-item">"新"運動活動資料：設定新活動詳細資料與路線的可見度。</label>
   <div class="settings-control">
-    <select class="form-field">
-      <option>僅限體適能教練</option>
-      <option>僅限自己</option>
+    <select class="form-field" [(ngModel)]="activityTracking"
+      (change)="handlePrivacySetting($event, 1)"
+    >
+      <option value="5">僅限體適能教練</option>
+      <option value="1">僅限自己</option>
     </select>
   </div>
 </div>
 <div class="control-list">
   <label class="ala-form__label settings-item">"新"運動期間報告：設定新活動期間報告的可見度。</label>
   <div class="settings-control">
-    <select class="form-field">
-      <option>僅限體適能教練</option>
-      <option>僅限自己</option>
+    <select class="form-field" [(ngModel)]="activityTrackingReport"
+      (change)="handlePrivacySetting($event, 2)"
+    >
+      <option value="5">僅限體適能教練</option>
+      <option value="1">僅限自己</option>
     </select>
   </div>
 </div>
 <div class="control-list">
   <label class="ala-form__label settings-item">"新"生活追蹤期間報告：設定新生活追蹤期間報告的可見度。</label>
   <div class="settings-control">
-    <select class="form-field">
-      <option>僅限體適能教練</option>
-      <option>僅限自己</option>
+    <select class="form-field" [(ngModel)]="lifeTrackingReport"
+      (change)="handlePrivacySetting($event, 3)"
+    >
+      <option value="5">僅限體適能教練</option>
+      <option value="1">僅限自己</option>
     </select>
   </div>
 </div>

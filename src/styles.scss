@@ -3,3 +3,17 @@
   font-size: 19px;
   font-weight: 700;
 }
+.spinner {
+  position: absolute;
+  right: 30px;
+  top: 0;
+  padding: 6px 4px;
+  font-style: normal;
+  font-size: 1.2em;
+  user-select: none;
+  cursor: pointer;
+}
+
+.fa.spinner-hidden {
+  display: none;
+}

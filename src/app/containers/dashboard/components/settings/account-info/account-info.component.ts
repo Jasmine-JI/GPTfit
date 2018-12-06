@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-account-info',
@@ -6,10 +6,12 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./account-info.component.scss', '../settings.component.scss']
 })
 export class AccountInfoComponent implements OnInit {
-
-  constructor() { }
+  @Input() userData: any;
+  stravaStatus: boolean;
+  constructor() {}
 
   ngOnInit() {
+    const { strava } = this.userData.thirdPartyAgency;
+    this.stravaStatus = strava === '1';
   }
-
 }

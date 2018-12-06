@@ -82,6 +82,8 @@ import { SettingsComponent } from './components/settings/settings.component';
 import { UserSettingsComponent } from './components/settings/user-settings/user-settings.component';
 import { PrivacySettingsComponent } from './components/settings/privacy-settings/privacy-settings.component';
 import { AccountInfoComponent } from './components/settings/account-info/account-info.component';
+import { SettingsService } from './services/settings.service';
+import { UserProfileService } from '@shared/services/user-profile.service';
 
 @NgModule({
   imports: [
@@ -114,6 +116,8 @@ import { AccountInfoComponent } from './components/settings/account-info/account
     DashboardGuard,
     ActivityService,
     ReportService,
+    SettingsService,
+    UserProfileService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,

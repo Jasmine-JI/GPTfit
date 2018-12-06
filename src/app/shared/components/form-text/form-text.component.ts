@@ -11,6 +11,7 @@ export class FormTextComponent implements OnInit {
   @Input() class_name = 'form-field';
   @Input() maxLength = DEFAULT_MAXLENGTH.TEXT;
   @Input() isInvalid: boolean;
+  @Input() type = 'text';
   @Input() content: string;
   @Input() invalidRemindText: string;
   @Input() remindText: string;
