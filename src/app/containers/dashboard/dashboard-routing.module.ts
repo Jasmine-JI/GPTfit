@@ -33,6 +33,7 @@ import { MyDeviceComponent } from './components/device/my-device/my-device.compo
 import { ProductInfoComponent } from './components/device/product-info/product-info.component';
 import { TrainLiveComponent } from './components/train-live/train-live.component';
 import { SettingsComponent } from './components/settings/settings.component';
+import { PersonalPreferencesComponent } from './components/settings/personal-preferences/personal-preferences.component';
 
 const routes: Routes = [
   {
@@ -173,6 +174,10 @@ const routes: Routes = [
           {
             path: 'account-info',
             component: SettingsComponent
+          },
+          {
+            path: 'personal-preferences',
+            component: PersonalPreferencesComponent
           }
         ]
       },

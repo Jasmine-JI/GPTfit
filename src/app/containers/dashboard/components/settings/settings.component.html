@@ -10,10 +10,15 @@
       <li [class.active]="chooseIdx === 2"
         (click)="handleTab(2)"
       >
-        隱私權設定
+        個人偏好設定
       </li>
       <li [class.active]="chooseIdx === 3"
         (click)="handleTab(3)"
+      >
+        隱私權設定
+      </li>
+      <li [class.active]="chooseIdx === 4"
+        (click)="handleTab(4)"
       >
         帳號資訊
       </li>
@@ -24,11 +29,14 @@
       <app-user-settings [userData]="userData"
       *ngIf="chooseIdx === 1 && userData"
       ></app-user-settings>
-      <app-privacy-settings [userData]="userData"
+      <app-personal-preferences [userData]="userData"
         *ngIf="chooseIdx === 2 && userData"
+      ></app-personal-preferences>
+      <app-privacy-settings [userData]="userData"
+        *ngIf="chooseIdx === 3 && userData"
       ></app-privacy-settings>
       <app-account-info [userData]="userData"
-      *ngIf="chooseIdx === 3 && userData"
+      *ngIf="chooseIdx === 4 && userData"
       ></app-account-info>
     </ng-container>
     <div style="display:flex;justify-content: center;align-items: center;height:100%"

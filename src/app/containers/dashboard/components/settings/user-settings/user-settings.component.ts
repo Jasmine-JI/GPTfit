@@ -57,22 +57,6 @@ export class UserSettingsComponent implements OnInit {
     }
     return moment();
   }
-  get heartRateMax() {
-    return (
-      (this.settingsForm && this.settingsForm.get('heartRateMax').value) || null
-    );
-  }
-  get heartRateResting() {
-    return (
-      (this.settingsForm && this.settingsForm.get('heartRateResting').value) ||
-      null
-    );
-  }
-  get wheelSize() {
-    return (
-      (this.settingsForm && this.settingsForm.get('wheelSize').value) || null
-    );
-  }
   get description() {
     return (
       (this.settingsForm && this.settingsForm.get('description').value) || null
@@ -85,12 +69,7 @@ export class UserSettingsComponent implements OnInit {
       height,
       weight,
       birthday,
-      heartRateBase,
-      heartRateMax,
-      heartRateResting,
-      wheelSize,
-      description,
-      sleep: { normalBedTime, normalWakeTime }
+      description
     } = this.userData;
     const gender = this.userData.gender === '2' ? '0' : this.userData.gender; // 如果接到性別為無(2)就轉成男生
     this.settingsForm = this.fb.group({
@@ -104,18 +83,10 @@ export class UserSettingsComponent implements OnInit {
       weight: [weight, Validators.required],
       birthday,
       gender,
-      heartRateBase,
-      heartRateMax,
-      heartRateResting,
-      normalBedTime,
-      normalWakeTime,
-      wheelSize,
       description
     });
   }
   handleValueArrange(type, _value) {
-    console.log('type: ', type);
-    console.log('text: ', _value);
     let tuneHeight = '';
     let tuneWeight = '';
 
@@ -197,15 +168,8 @@ export class UserSettingsComponent implements OnInit {
         weight,
         birthday,
         gender,
-        heartRateBase,
-        heartRateMax,
-        heartRateResting,
-        wheelSize,
-        description,
-        normalBedTime,
-        normalWakeTime
+        description
       } = value;
-      console.log('value: ', value);
       const token = this.utils.getToken();
       const image = new Image();
       const icon = {
@@ -226,15 +190,7 @@ export class UserSettingsComponent implements OnInit {
         weight: this.handleEmptyValue(weight),
         birthday,
         gender,
-        heartRateBase,
-        heartRateMax: this.handleEmptyValue(heartRateMax),
-        heartRateResting: this.handleEmptyValue(heartRateResting),
-        wheelSize: this.handleEmptyValue(wheelSize),
-        description,
-        sleep: {
-          normalBedTime,
-          normalWakeTime
-        }
+        description
       };
       this.isSaveUserSettingLoading = true;
       this.settingsService.updateUserProfile(body).subscribe(res => {

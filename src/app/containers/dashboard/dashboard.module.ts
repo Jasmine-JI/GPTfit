@@ -84,6 +84,7 @@ import { PrivacySettingsComponent } from './components/settings/privacy-settings
 import { AccountInfoComponent } from './components/settings/account-info/account-info.component';
 import { SettingsService } from './services/settings.service';
 import { UserProfileService } from '@shared/services/user-profile.service';
+import { PersonalPreferencesComponent } from './components/settings/personal-preferences/personal-preferences.component';
 
 @NgModule({
   imports: [
@@ -179,7 +180,8 @@ import { UserProfileService } from '@shared/services/user-profile.service';
     SettingsComponent,
     UserSettingsComponent,
     PrivacySettingsComponent,
-    AccountInfoComponent
+    AccountInfoComponent,
+    PersonalPreferencesComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
