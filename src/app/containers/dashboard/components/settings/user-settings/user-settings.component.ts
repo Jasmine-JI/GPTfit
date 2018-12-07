@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { SettingsService } from '../../../services/settings.service';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { UtilsService } from '@shared/services/utils.service';
 import * as moment from 'moment';
 import { MatDatepickerInputEvent } from '@angular/material';
@@ -26,6 +26,7 @@ export class UserSettingsComponent implements OnInit {
   inValidText = '欄位為必填';
   isNameError = false;
   isNameLoading = false;
+  isSaveUserSettingLoading = false;
   @Input() userData: any;
   constructor(
     private settingsService: SettingsService,
@@ -38,10 +39,10 @@ export class UserSettingsComponent implements OnInit {
     this.handleSearchName = debounce(this.handleSearchName, 1500);
   }
   get nameIcon() {
-    return (this.settingsForm && this.settingsForm.get('nameIcon')) || '';
+    return <FormArray>this.settingsForm.get('nameIcon');
   }
   get name() {
-    return (this.settingsForm && this.settingsForm.get('name')) || '';
+    return <FormArray>this.settingsForm.get('name');
   }
   get height() {
     return (this.settingsForm && this.settingsForm.get('height').value) || null;
@@ -131,8 +132,8 @@ export class UserSettingsComponent implements OnInit {
       }
     });
   }
-  public onNameChange(text: any, { controls: { name } }): void {
-    if (text.length > 0 && name.status === 'VALID') {
+  public onNameChange(text: any, form: FormGroup): void {
+    if (text.length > 0 && form.controls['name'].status === 'VALID') {
       this.handleSearchName(text.trim());
     }
   }
@@ -202,7 +203,9 @@ export class UserSettingsComponent implements OnInit {
           normalWakeTime
         }
       };
+      this.isSaveUserSettingLoading = true;
       this.settingsService.updateUserProfile(body).subscribe(res => {
+        this.isSaveUserSettingLoading = false;
         if (res.resultCode === 200) {
           this.userInfoService.getUserInfo({ token, iconType: 2 });
           this.snackbar.open('成功更新使用者資訊', 'OK', {
