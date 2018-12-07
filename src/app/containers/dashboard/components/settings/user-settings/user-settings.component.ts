@@ -37,6 +37,7 @@ export class UserSettingsComponent implements OnInit {
     private userInfoService: UserInfoService
   ) {
     this.handleSearchName = debounce(this.handleSearchName, 1500);
+    this.handleValueArrange = debounce(this.handleValueArrange, 1500);
   }
   get nameIcon() {
     return <FormArray>this.settingsForm.get('nameIcon');
@@ -45,10 +46,10 @@ export class UserSettingsComponent implements OnInit {
     return <FormArray>this.settingsForm.get('name');
   }
   get height() {
-    return (this.settingsForm && this.settingsForm.get('height').value) || null;
+    return <FormArray>this.settingsForm.get('height');
   }
   get weight() {
-    return (this.settingsForm && this.settingsForm.get('weight').value) || null;
+    return <FormArray>this.settingsForm.get('weight');
   }
   get birthday() {
     if (this.settingsForm && this.settingsForm.get('birthday').value) {
@@ -84,7 +85,6 @@ export class UserSettingsComponent implements OnInit {
       height,
       weight,
       birthday,
-      gender,
       heartRateBase,
       heartRateMax,
       heartRateResting,
@@ -92,6 +92,7 @@ export class UserSettingsComponent implements OnInit {
       description,
       sleep: { normalBedTime, normalWakeTime }
     } = this.userData;
+    const gender = this.userData.gender === '2' ? '0' : this.userData.gender; // 如果接到性別為無(2)就轉成男生
     this.settingsForm = this.fb.group({
       // 定義表格的預設值
       nameIcon: [
@@ -99,8 +100,8 @@ export class UserSettingsComponent implements OnInit {
         Validators.required
       ],
       name: [name, Validators.required],
-      height,
-      weight,
+      height: [height, Validators.required],
+      weight: [weight, Validators.required],
       birthday,
       gender,
       heartRateBase,
@@ -111,6 +112,37 @@ export class UserSettingsComponent implements OnInit {
       wheelSize,
       description
     });
+  }
+  handleValueArrange(type, _value) {
+    console.log('type: ', type);
+    console.log('text: ', _value);
+    let tuneHeight = '';
+    let tuneWeight = '';
+
+    if (_value) {
+      if (type === 1) { // type 1為身高 2為體重
+        if (+_value < 50) {
+          tuneHeight = '50';
+        } else if (+_value > 255) {
+          tuneHeight = '255';
+        } else {
+          tuneHeight = _value;
+        }
+      } else {
+        if (+_value < 30) {
+          tuneWeight = '30';
+        } else if (+_value > 255) {
+          tuneWeight = '255';
+        } else {
+          tuneWeight = _value;
+        }
+      }
+    }
+    if (type === 1) {
+      this.settingsForm.patchValue({ height: tuneHeight });
+    } else {
+      this.settingsForm.patchValue({ weight: tuneWeight });
+    }
   }
   handleSearchName(name) {
     const token = this.utils.getToken();
@@ -173,6 +205,7 @@ export class UserSettingsComponent implements OnInit {
         normalBedTime,
         normalWakeTime
       } = value;
+      console.log('value: ', value);
       const token = this.utils.getToken();
       const image = new Image();
       const icon = {
@@ -189,14 +222,14 @@ export class UserSettingsComponent implements OnInit {
         token,
         name,
         icon,
-        height,
-        weight,
+        height: this.handleEmptyValue(height),
+        weight: this.handleEmptyValue(weight),
         birthday,
         gender,
         heartRateBase,
-        heartRateMax,
-        heartRateResting,
-        wheelSize,
+        heartRateMax: this.handleEmptyValue(heartRateMax),
+        heartRateResting: this.handleEmptyValue(heartRateResting),
+        wheelSize: this.handleEmptyValue(wheelSize),
         description,
         sleep: {
           normalBedTime,
@@ -216,6 +249,12 @@ export class UserSettingsComponent implements OnInit {
         }
       });
     }
+  }
+  handleEmptyValue(_value) {
+    if (this.utils.isStringEmpty(_value)) {
+      return '0';
+    }
+    return _value;
   }
   imageToDataUri(img, width, height) {
     // create an off-screen canvas

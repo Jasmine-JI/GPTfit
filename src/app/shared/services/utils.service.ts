@@ -77,6 +77,12 @@ export class UtilsService {
     }
     return str_return;
   }
+  isStringEmpty(string) {
+    if (typeof (string) !== 'string') {
+      return true;
+    }
+    return string.trim().length === 0;
+  }
   isObjectEmpty(object) {
     if (!object) {
       return true;
