@@ -13,7 +13,7 @@ import {
   transition,
   animate
 } from '@angular/animations';
-import { fakeCoachInfo, demoCoachInfo } from './fakeUsers';
+import { fakeCoachInfo, demoCoachInfo, demoLessonInfo } from './fakeUsers';
 import { CoachService } from '../../services/coach.service';
 import { ActivatedRoute } from '@angular/router';
 import * as Stock from 'highcharts/highstock';
@@ -35,7 +35,7 @@ export class Message {
 @Component({
   selector: 'app-coach-dashboard',
   templateUrl: './coach-dashboard.component.html',
-  styleUrls: ['./coach-dashboard.component.css'],
+  styleUrls: ['./coach-dashboard.component.scss'],
   encapsulation: ViewEncapsulation.None,
   animations: [
     trigger('animateState', [
@@ -95,19 +95,14 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
   coachInfo: string;
   hrSortValues: any;
   hrMeanValue = 0;
-  hrColors = [
-    '#2e4d9f',
-    '#2eb1e7',
-    '#92c422',
-    '#f5ab14',
-    '#eb5b19',
-    '#c11920',
-  ];
+  hrColors = ['#2e4d9f', '#2eb1e7', '#92c422', '#f5ab14', '#eb5b19', '#c11920'];
   displaySections = [true, true, true];
   dispalyChartOptions = [false, true, false];
   dispalyMemberOptions = [false, true, false, false];
   isSectionIndividual = false;
-  isMoreDisplay = false;
+  isCoachMoreDisplay = false;
+  isLessonMoreDisplay = false;
+
   radius = 10;
   elementRef: ElementRef;
   data = [];
@@ -125,18 +120,22 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
   socketTimer: any;
   isFirstInit = true;
   currentMemberNum = 0;
-  totalInfo: string;
+  totalCoachInfo: string;
+  totalLessonInfo: string;
+
   isLoading = false;
   isClassEnd = false;
   token: string;
   isDemoMode = true;
   demoMaker: any;
   demoTime: any;
+  lessonInfo: string;
   classInfo = {
     groupName: '',
     groupIcon: '',
+    groupIconClassName: 'user-photo--landscape',
     coachAvatar: '',
-    coachName: '',
+    coachName: 'Eve Beardall',
     groupVideoUrl: null
   };
   classType: string;
@@ -153,12 +152,16 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
     private sanitizer: DomSanitizer,
     private utils: UtilsService
   ) {
-      Stock.setOptions({ global: { useUTC: false } });
-      this.elementRef = elementRef;
-      this.socket$ = new WebSocketSubject('wss://app.alatech.com.tw:9000/train');
+    Stock.setOptions({ global: { useUTC: false } });
+    this.elementRef = elementRef;
+    this.socket$ = new WebSocketSubject('wss://app.alatech.com.tw:9000/train');
 
-      this.socket$.subscribe(message => this.display(message), err => console.error(err), () => console.warn('Completed!'));
-    }
+    this.socket$.subscribe(
+      message => this.display(message),
+      err => console.error(err),
+      () => console.warn('Completed!')
+    );
+  }
 
   ngOnInit() {
     const queryStrings = getUrlQueryStrings(location.search);
@@ -176,6 +179,17 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
           this.classInfo.groupIcon && this.classInfo.groupIcon.length > 0
             ? this.utils.buildBase64ImgString(this.classInfo.groupIcon)
             : '/assets/images/group-default.svg';
+        const groupIcon = new Image();
+        groupIcon.src = this.classInfo.groupIcon;
+        this.classInfo.groupIconClassName =
+          groupIcon.width > groupIcon.height
+            ? 'user-photo--landscape'
+            : 'user-photo--portrait';
+        if (groupIcon.width / groupIcon.height > 1.5) {
+          this.classInfo.groupIconClassName += ' photo-fit__50';
+        } else if (groupIcon.width / groupIcon.height > 1.2) {
+          this.classInfo.groupIconClassName += ' photo-fit__25';
+        }
         this.classInfo.coachAvatar =
           this.classInfo.coachAvatar && this.classInfo.coachAvatar.length > 0
             ? this.utils.buildBase64ImgString(this.classInfo.coachAvatar)
@@ -193,6 +207,7 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
         this.handleVideoUrl('https://www.youtube.com/embed/eHiDLxBhHGs')
       );
       this.handleCoachInfo(demoCoachInfo);
+      this.handleLessonInfo(demoLessonInfo);
       const series = [
         { name: 'Eve Beardall', data: [] },
         { name: 'Alexia', data: [] },
@@ -527,24 +542,40 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
     clearInterval(this.socketTimer);
     clearInterval(this.demoMaker);
   }
-
-  handleCoachInfo(str) {
-    this.totalInfo = str.replace(/\r\n|\n/g, '').trim();
+  handleLessonInfo(str) {
+    this.totalLessonInfo = str.replace(/\r\n|\n/g, '').trim();
     if (
-      this.totalInfo.length > 118 &&
-      this.displaySections[0] === true &&
-      !this.isSectionIndividual
+      this.totalLessonInfo.length > 118
     ) {
-      this.coachInfo = this.totalInfo.substring(0, 118);
-      this.isMoreDisplay = true;
+      console.log('before : ', this.totalLessonInfo);
+      this.lessonInfo = this.totalLessonInfo.substring(0, 118);
+      console.log('after : ', this.totalLessonInfo);
+      this.isLessonMoreDisplay = true;
     } else {
-      this.coachInfo = this.totalInfo;
-      this.isMoreDisplay = false;
+      this.lessonInfo = this.totalLessonInfo;
+      this.isLessonMoreDisplay = false;
     }
   }
-  handleExtendCoachInfo() {
-    this.coachInfo = this.totalInfo;
-    this.isMoreDisplay = false;
+  handleCoachInfo(str) {
+    this.totalCoachInfo = str.replace(/\r\n|\n/g, '').trim();
+    if (
+      this.totalCoachInfo.length > 118
+    ) {
+      this.coachInfo = this.totalCoachInfo.substring(0, 118);
+      this.isCoachMoreDisplay = true;
+    } else {
+      this.coachInfo = this.totalCoachInfo;
+      this.isCoachMoreDisplay = false;
+    }
+  }
+  handleExtendCoachInfo(type) {
+    if (type === 1) {
+      this.coachInfo = this.totalCoachInfo;
+      this.isCoachMoreDisplay = false;
+    } else {
+      this.lessonInfo = this.totalLessonInfo;
+      this.isLessonMoreDisplay = false;
+    }
   }
   handldeSection(idx) {
     this.isSectionIndividual = !this.isSectionIndividual;
@@ -571,10 +602,11 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
       this.displaySections[1] = true;
       this.displaySections[2] = true;
     }
-    if (!(this.classId === '99999' && this.isDemoMode)) {
-      this.handleCoachInfo(fakeCoachInfo);
-    } else {
-      this.handleCoachInfo(demoCoachInfo);
-    }
+    // if (!(this.classId === '99999' && this.isDemoMode)) {
+    //   this.handleCoachInfo(fakeCoachInfo);
+    // } else {
+    //   this.handleCoachInfo(demoCoachInfo);
+    //   this.handleLessonInfo(demoLessonInfo);
+    // }
   }
 }

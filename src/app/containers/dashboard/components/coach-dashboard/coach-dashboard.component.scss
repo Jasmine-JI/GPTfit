@@ -21,10 +21,18 @@
   padding-right: 45px;
 }
 .lesson-title {
-  font-size:32px;
-  color:#1b4d70;
-  font-weight:bold
+  font-size:24px;
+  color: #454545;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+ .lesson-title-location {
+   font-size: 16px;
+   color: #a4a4a4;
+   text-align: right;
+ }
 }
+
 .end-text {
   z-index: 1001;
   position: absolute;
@@ -59,8 +67,11 @@
 
 .coach-container {
   width: 100%;
+  display: flex;
 }
-
+.data-container {
+  width: calc(100% - 360px);
+}
 .bg-filter {
   float: left;
   width: 100%;
@@ -76,7 +87,7 @@
 }
 
 .content {
-  height: 50%;
+  // height: 50%;
   padding: 0 15px;
 }
 
@@ -203,8 +214,8 @@
 }
 
 .user-photo {
-  width: 144px;
-  height: 144px;
+  width: 75px;
+  height: 75px;
   display: inline-block;
   border-radius: 50%;
   position: relative;
@@ -248,7 +259,7 @@
   border-bottom: 1px solid #4f4f4f;
 }
 .coach-name {
-  font-size: 26.6px;
+  font-size: 24px;
   font-weight:bold;
   margin-bottom: 27px;
 }
@@ -325,8 +336,14 @@
 }
 
 .lesson-container {
-  padding: 15px;
-  display: flex;
+  background-color: #f0f0f0;
+  max-width: 360px;
+  .board-title {
+    color: #26abe3;
+    font-weight: 700;
+    padding: 18px;
+    font-size: 19px;
+  }
 }
 
 .lesson-img {
@@ -380,10 +397,10 @@
     margin: 0px 13px 25px 13px;
   }
 
-  .user-photo {
-    width: 110px;
-    height: 110px;
-  }
+  // .user-photo {
+  //   width: 110px;
+  //   height: 110px;
+  // }
 
   .hr-card-header {
     font-size: 23px;
@@ -426,10 +443,10 @@
     margin: 0px 11.5px 25px 11.5px;
   }
 
-  .user-photo {
-    width: 110px;
-    height: 110px;
-  }
+  // .user-photo {
+  //   width: 110px;
+  //   height: 110px;
+  // }
 
   .hr-card-header {
     font-size: 28.5px;
@@ -474,10 +491,10 @@
   }
 }
 @media(max-width: 992px) {
-  .user-photo {
-    width: 80px;
-    height: 80px;
-  }
+  // .user-photo {
+  //   width: 80px;
+  //   height: 80px;
+  // }
 
   .val {
     font-size: 45px;
@@ -502,10 +519,10 @@
   .lesson-title {
     font-size: 24px;
   }
-  .user-photo {
-    width: 95px;
-    height: 95px;
-  }
+  // .user-photo {
+  //   width: 95px;
+  //   height: 95px;
+  // }
 
   .val {
     font-size: 70px;
@@ -551,10 +568,10 @@
   .hr-card-header {
     font-size: 23.5px;
   }
-  .user-photo {
-    width: 100px;
-    height: 100px;
-  }
+  // .user-photo {
+  //   width: 100px;
+  //   height: 100px;
+  // }
 
   .val {
     font-size: 85px;
