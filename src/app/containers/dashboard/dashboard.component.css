@@ -83,7 +83,7 @@
 .main-nav-toggle-icon {
   color: #fff;
 }
-.main-nav-toggle-icon.icon-svg_web-icon_073-level_fold  {
+.main-nav-toggle-icon.icon-svg_web-icon_p1_073-level_fold  {
   margin: 50% 0 0 50%;
   -webkit-transform: translate(-58%,-58%);
   -ms-transform: translate(-58%,-58%);
@@ -191,7 +191,7 @@
   outline: none;
   color: #9bf9ff
 }
-.main-nav-toggle-icon.icon-svg_web-icon_005-menu {
+.main-nav-toggle-icon.icon-svg_web-icon_p1_005-menu {
   display: none;
 }
 
@@ -263,10 +263,10 @@
   .footer-details.footer-rwd--4 {
     margin-bottom: 291px;
   }
-  .main-nav-toggle-icon.icon-svg_web-icon_073-level_fold {
+  .main-nav-toggle-icon.icon-svg_web-icon_p1_073-level_fold {
     display: none;
   }
-  .main-nav-toggle-icon.icon-svg_web-icon_005-menu {
+  .main-nav-toggle-icon.icon-svg_web-icon_p1_005-menu {
     display: block;
     font-size: 44px;
     width: 44px;
