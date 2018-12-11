@@ -2,6 +2,7 @@ import {
   Component,
   OnInit,
   OnDestroy,
+  AfterViewInit,
   ElementRef,
   ViewChild,
   ViewEncapsulation
@@ -79,7 +80,7 @@ export class Message {
     ])
   ]
 })
-export class CoachDashboardComponent implements OnInit, OnDestroy {
+export class CoachDashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   width = 0;
   height = 0;
   fakeDatas: any;
@@ -200,7 +201,10 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
       });
       this.handleCoachInfo(fakeCoachInfo);
       this.sendBoardCast();
-    } else {
+    }
+  }
+  ngAfterViewInit(): void {
+    if ((this.classId === '99999' && this.isDemoMode)) {
       this.classInfo.groupIcon = '/assets/demo/demoClass.jpg';
       this.classInfo.coachAvatar = '/assets/demo/coach.png';
       this.classInfo.groupVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
@@ -217,8 +221,8 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
         { name: 'Stephanie', data: [] }
       ];
       const hrOptions: any = {
-        title: {
-          text: '及時心率圖表'
+        chart: {
+          height: 280
         },
         exporting: {
           enabled: false
@@ -371,8 +375,8 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
         return { userName, pairEquipmentSN, userIcon, imgClassName };
       });
       const hrOptions: any = {
-        title: {
-          text: '及時心率圖表'
+        chart: {
+          height: 280
         },
         exporting: {
           enabled: false
@@ -525,6 +529,7 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
   }
   stopBoardCast() {
     clearInterval(this.socketTimer);
+    clearInterval(this.demoMaker);
   }
 
   initHChart(option) {
@@ -544,9 +549,7 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
   }
   handleLessonInfo(str) {
     this.totalLessonInfo = str.replace(/\r\n|\n/g, '').trim();
-    if (
-      this.totalLessonInfo.length > 118
-    ) {
+    if (this.totalLessonInfo.length > 118) {
       console.log('before : ', this.totalLessonInfo);
       this.lessonInfo = this.totalLessonInfo.substring(0, 118);
       console.log('after : ', this.totalLessonInfo);
@@ -558,9 +561,7 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
   }
   handleCoachInfo(str) {
     this.totalCoachInfo = str.replace(/\r\n|\n/g, '').trim();
-    if (
-      this.totalCoachInfo.length > 118
-    ) {
+    if (this.totalCoachInfo.length > 118) {
       this.coachInfo = this.totalCoachInfo.substring(0, 118);
       this.isCoachMoreDisplay = true;
     } else {
@@ -602,11 +603,5 @@ export class CoachDashboardComponent implements OnInit, OnDestroy {
       this.displaySections[1] = true;
       this.displaySections[2] = true;
     }
-    // if (!(this.classId === '99999' && this.isDemoMode)) {
-    //   this.handleCoachInfo(fakeCoachInfo);
-    // } else {
-    //   this.handleCoachInfo(demoCoachInfo);
-    //   this.handleLessonInfo(demoLessonInfo);
-    // }
   }
 }

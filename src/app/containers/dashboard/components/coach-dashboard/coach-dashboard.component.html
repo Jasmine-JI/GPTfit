@@ -101,8 +101,8 @@
       <div class="coach-header" *ngIf="displaySections[1]">
         <span>趨勢圖</span>
         <span>
-          <img src="/assets/icons/btn_icon_128px_61-full_display_normal.png" [hidden]="dispalyChartOptions[2]" (click)="handldeSection(1)" />
-          <img src="/assets/icons/btn_icon_128px_62-full_display_over.png" [hidden]="!dispalyChartOptions[2]" (click)="handldeSection(1)" />
+          <i class="icon-svg_web-icon_p1_037-chart"></i>
+          <button (click)="stopBoardCast()">拉拉ㄌ阿</button>
         </span>
       </div>
       <section class="chart-section" [class.chart-area]="!displaySections[1]">
@@ -117,32 +117,32 @@
         </div>
         <div class="hr-container"  *ngIf="heartValues.length > 0">
           <div class="hr-info">
-            <div style="font-size:24px;text-align:center">{{heartValues && heartValues[0]?.userName }}</div>
+            <div style="font-size:16px;text-align:center">{{heartValues && heartValues[0]?.userName }}</div>
             <div style="display: flex;">
               <div class="hr-heart">
-                <i class="fa fa-heart" [style.color]="heartValues && hrColors[heartValues[0]?.colorIdx]"></i>
+                <i class="icon-svg_web-icon_p2_003-heart_rate" [style.color]="heartValues && hrColors[heartValues[0]?.colorIdx]"></i>
               </div>
-              <div style="width:70%;font-size:40px;font-family:ITC;text-align:right">{{heartValues &&
+              <div style="width:70%;font-size:28px;font-family:ITC;text-align:right;color: #7f7f7f">{{heartValues &&
                 heartValues[0]?.liveHr || 0}}</div>
             </div>
           </div>
           <div class="hr-info">
-            <div style="font-size:24px;text-align:center;text-align:center">平均</div>
+            <div style="font-size:16px;text-align:center;text-align:center">平均</div>
             <div style="display: flex;">
               <div class="hr-heart" [style.color]="">
-                <i class="fa fa-heart"></i>
+                <i class="icon-svg_web-icon_p2_003-heart_rate"></i>
               </div>
-              <div style="width:70%;font-size:40px;font-family:ITC;text-align:right">{{hrMeanValue}}</div>
+              <div style="width:70%;font-size:28px;font-family:ITC;text-align:right;color: #7f7f7f">{{hrMeanValue}}</div>
             </div>
           </div>
           <div class="hr-info">
-            <div style="font-size:24px;text-align:center">{{heartValues && heartValues[heartValues.length -
+            <div style="font-size:16px;text-align:center">{{heartValues && heartValues[heartValues.length -
               1]?.userName}}</div>
             <div style="display: flex;">
               <div class="hr-heart">
-                <i class="fa fa-heart" [style.color]="heartValues && hrColors[heartValues[heartValues.length - 1]?.colorIdx]"></i>
+                <i class="icon-svg_web-icon_p2_003-heart_rate" [style.color]="heartValues && hrColors[heartValues[heartValues.length - 1]?.colorIdx]"></i>
               </div>
-              <div style="width:70%;font-size:40px;font-family:ITC;text-align:right">{{heartValues &&
+              <div style="width:70%;font-size:28px;font-family:ITC;text-align:right;color: #7f7f7f">{{heartValues &&
                 heartValues[heartValues && heartValues.length - 1]?.liveHr || 0}}</div>
             </div>
           </div>
@@ -161,14 +161,11 @@
       <div class="coach-header">
         <span>成員</span>
         <span>
-          <img src="/assets/icons/btn_icon_128px_61-full_display_normal.png" [hidden]="dispalyMemberOptions[3]" (click)="handldeSection(2)" />
-          <img src="/assets/icons/btn_icon_128px_62-full_display_over.png" [hidden]="!dispalyMemberOptions[3]" (click)="handldeSection(2)" />
+          <i class="icon-svg_web-icon_p1_019-full_screen"  [hidden]="dispalyMemberOptions[3]" (click)="handldeSection(2)"></i>
+          <i class="icon-svg_web-icon_p1_020-narrow"  [hidden]="!dispalyMemberOptions[3]" (click)="handldeSection(2)"></i>
         </span>
       </div>
       <div class="content">
-        <div style="font-size: 35px;margin: 30px 0px 30px 15px;">
-          全部成員{{ currentMemberNum }}人
-        </div>
         <div class="hr-card"
         *ngFor="let item of heartValues;let _idx = index"
         >

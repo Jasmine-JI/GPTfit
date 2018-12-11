@@ -227,7 +227,7 @@
         <div class="mobile-menu-toggle">
           <div class="main-nav-toggle"
             [class.minimize-main-nav]="!isSideNavOpend"
-             (click)="toggleSideNav(sideNav)"
+            (click)="toggleSideNav(sideNav)"
           >
             <i class="icon-svg_web-icon_p1_073-level_fold main-nav-toggle-icon"
             ></i>
@@ -251,11 +251,11 @@
                aria-labelledby="dropdownMenu3"
             >
               <div class="header-nav-menu-section">
-                <div (click)="$event.preventDefault();$event.stopPropagation();"
+                <!-- <div (click)="$event.preventDefault();$event.stopPropagation();"
                   style="padding: 15px 20px"
                 >
                   {{ userName || '' }}
-                </div>
+                </div> -->
               </div>
               <div class="header-nav-menu-section">
                 <ul>
