@@ -101,49 +101,107 @@
       <div class="coach-header" *ngIf="displaySections[1]">
         <span>趨勢圖</span>
         <span>
-          <i class="icon-svg_web-icon_p1_037-chart"></i>
-          <button (click)="stopBoardCast()">拉拉ㄌ阿</button>
+          <div class="dropdown">
+            <div class="trend-chart-item" id="dropdownMenu4" data-toggle="dropdown" aria-haspopup="true"
+              aria-expanded="false">
+              <i class="icon-svg_web-icon_p1_037-chart"></i>
+            </div>
+            <div class="dropdown-menu trend-chart-menu" [class.show]="isUserMenuShow"
+               aria-labelledby="dropdownMenu4"
+            >
+              <ul>
+                <li (click)="removeSeries(0)"
+                  [class.active]="chartType === 0"
+                >
+                  心率
+                </li>
+                <li (click)="removeSeries(1)"
+                  [class.active]="chartType === 1"
+                >
+                  卡路里
+                </li>
+                <li (click)="removeSeries(2)"
+                  [class.active]="chartType === 2"
+                >
+                  心率區間
+                </li>
+              </ul>
+            </div>
+          </div>
+          <!-- <button (click)="stopBoardCast()">拉拉ㄌ阿</button> -->
         </span>
       </div>
       <section class="chart-section" [class.chart-area]="!displaySections[1]">
-        <div class="chart-container">
+        <div class="chart-container" [style.visibility]="isLoading ? 'hidden' : 'initial'">
           <div #hrChartTarget class="chart">
           </div>
         </div>
-        <div style="display:flex;justify-content: center;align-items: center;height:100%"
-          *ngIf="isLoading"
-        >
-          <mat-spinner></mat-spinner>
-        </div>
         <div class="hr-container"  *ngIf="heartValues.length > 0">
           <div class="hr-info">
-            <div style="font-size:16px;text-align:center">{{heartValues && heartValues[0]?.userName }}</div>
+            <div class="hr-item">{{heartValues && heartValues[0]?.userName }}</div>
             <div style="display: flex;">
+              <div class="hr-val">
+                <span *ngIf="chartType === 0">
+                  {{heartValues && heartValues[0]?.liveHr || 0}}
+                </span>
+                <span *ngIf="chartType === 1">
+                  {{heartValues && heartValues[0]?.calorie || 0}}
+                </span>
+                <span *ngIf="chartType === 2">
+                  {{heartValues && heartValues[0]?.colorIdx || 0}}
+                </span>
+              </div>
+              <div class="hr-heart"
+                [style.color]="heartValues && hrColors[heartValues[0]?.colorIdx]"
+              >
+                <i class="icon-svg_web-icon_p2_003-heart_rate"
+                  *ngIf="chartType === 0 || chartType === 2"
+                ></i>
+                <i class="icon-svg_web-icon_p2_010-calorie"
+                  *ngIf="chartType === 1"
+                ></i>
+              </div>
+            </div>
+          </div>
+          <div class="hr-info">
+            <div class="hr-item">平均</div>
+            <div style="display: flex;">
+              <div class="hr-val">{{meanValue}}</div>
               <div class="hr-heart">
-                <i class="icon-svg_web-icon_p2_003-heart_rate" [style.color]="heartValues && hrColors[heartValues[0]?.colorIdx]"></i>
+                <i class="icon-svg_web-icon_p2_003-heart_rate"
+                  *ngIf="chartType === 0 || chartType === 2"
+                ></i>
+                <i class="icon-svg_web-icon_p2_010-calorie"
+                  *ngIf="chartType === 1"
+                ></i>
               </div>
-              <div style="width:70%;font-size:28px;font-family:ITC;text-align:right;color: #7f7f7f">{{heartValues &&
-                heartValues[0]?.liveHr || 0}}</div>
             </div>
           </div>
           <div class="hr-info">
-            <div style="font-size:16px;text-align:center;text-align:center">平均</div>
-            <div style="display: flex;">
-              <div class="hr-heart" [style.color]="">
-                <i class="icon-svg_web-icon_p2_003-heart_rate"></i>
-              </div>
-              <div style="width:70%;font-size:28px;font-family:ITC;text-align:right;color: #7f7f7f">{{hrMeanValue}}</div>
-            </div>
-          </div>
-          <div class="hr-info">
-            <div style="font-size:16px;text-align:center">{{heartValues && heartValues[heartValues.length -
+            <div class="hr-item">{{heartValues && heartValues[heartValues.length -
               1]?.userName}}</div>
             <div style="display: flex;">
-              <div class="hr-heart">
-                <i class="icon-svg_web-icon_p2_003-heart_rate" [style.color]="heartValues && hrColors[heartValues[heartValues.length - 1]?.colorIdx]"></i>
+              <div class="hr-val">
+                <span *ngIf="chartType === 0">
+                  {{heartValues && heartValues[heartValues && heartValues.length - 1]?.liveHr || 0}}
+                </span>
+                <span *ngIf="chartType === 1">
+                  {{heartValues && heartValues[heartValues && heartValues.length - 1]?.calorie || 0}}
+                </span>
+                <span *ngIf="chartType === 2">
+                  {{heartValues && heartValues[heartValues && heartValues.length - 1]?.colorIdx || 0}}
+                </span>
               </div>
-              <div style="width:70%;font-size:28px;font-family:ITC;text-align:right;color: #7f7f7f">{{heartValues &&
-                heartValues[heartValues && heartValues.length - 1]?.liveHr || 0}}</div>
+              <div class="hr-heart"
+                [style.color]="heartValues && hrColors[heartValues[heartValues.length - 1]?.colorIdx]"
+              >
+                <i class="icon-svg_web-icon_p2_003-heart_rate"
+                  *ngIf="chartType === 0 || chartType === 2"
+                ></i>
+                <i class="icon-svg_web-icon_p2_010-calorie"
+                  *ngIf="chartType === 1"
+                ></i>
+              </div>
             </div>
           </div>
         </div>
@@ -156,13 +214,62 @@
           </button> -->
         </div>
       </section>
+      <div style="display:flex;justify-content: center;align-items: center;width:100%"
+        *ngIf="isLoading"
+      >
+        <mat-spinner></mat-spinner>
+      </div>
     </ng-container>
     <ng-container *ngIf="displaySections[2]">
       <div class="coach-header">
         <span>成員</span>
         <span>
+        <div class="dropdown" style="display:inline-block">
+          <div class="trend-chart-item" id="dropdownMenu4" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="icon-svg_web-icon_p1_023-ascending"
+            [class.card-sort--color]="!isCardDesc"
+              (click)="handleSortCard(sortType, false)"
+            ></i>
+          </div>
+          <div class="dropdown-menu trend-chart-menu" [class.show]="isUserMenuShow" aria-labelledby="dropdownMenu4">
+            <ul>
+              <li (click)="handleSortCard(0)" [class.active]="sortType === 0">
+                心率
+              </li>
+              <li (click)="handleSortCard(1)" [class.active]="sortType === 1">
+                卡路里
+              </li>
+              <li (click)="handleSortCard(2)" [class.active]="sortType === 2">
+                心率區間
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="dropdown" style="display:inline-block">
+          <div class="trend-chart-item" id="dropdownMenu4" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="icon-svg_web-icon_p1_022-descending"
+              [class.card-sort--color]="isCardDesc"
+              (click)="handleSortCard(sortType, true)"
+            ></i>
+          </div>
+          <div class="dropdown-menu trend-chart-menu" [class.show]="isUserMenuShow" aria-labelledby="dropdownMenu4">
+            <ul>
+              <li (click)="handleSortCard(0)" [class.active]="sortType === 0">
+                心率
+              </li>
+              <li (click)="handleSortCard(1)" [class.active]="sortType === 1">
+                卡路里
+              </li>
+              <li (click)="handleSortCard(2)" [class.active]="sortType === 2">
+                心率區間
+              </li>
+            </ul>
+          </div>
+        </div>
+
           <i class="icon-svg_web-icon_p1_019-full_screen"  [hidden]="dispalyMemberOptions[3]" (click)="handldeSection(2)"></i>
           <i class="icon-svg_web-icon_p1_020-narrow"  [hidden]="!dispalyMemberOptions[3]" (click)="handldeSection(2)"></i>
+
         </span>
       </div>
       <div class="content">
@@ -195,6 +302,18 @@
                 </div>
               </div>
             </div>
+            <ng-container *ngIf="classType === '1' || classType === '5'">
+              <div class="hr-card-body__other">
+                <div class="hr-card-body__pace">
+                  <div style="">卡路里</div>
+                  <div class="card-params">{{ item?.calorie || 0 }}</div>
+                </div>
+                <div class="hr-card-body__distance">
+                  <div style="">心率區間</div>
+                  <div class="card-params">{{ item?.colorIdx || 0 }}</div>
+                </div>
+              </div>
+            </ng-container>
             <ng-container *ngIf="classType === '2'">
               <div class="hr-card-body__other">
                 <div class="hr-card-body__pace">

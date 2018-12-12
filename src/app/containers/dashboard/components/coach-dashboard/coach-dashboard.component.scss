@@ -134,7 +134,7 @@
   position: absolute;
   z-index: 1;
   width: 100%;
-  height: 60px;
+  height: 45px;
   background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.3), transparent);
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
@@ -148,7 +148,7 @@
   background-color: #a2a2a2;
   font-size: 17px;
   justify-content: space-between;
-  padding: 20px 10px 15px 10px;
+  padding: 10px;
   letter-spacing: 1px;
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
@@ -171,15 +171,17 @@
 .hr-card-body__hr {
   display: flex;
   justify-content: space-between;
-  padding: 15px;
+  align-items: center;
+  padding: 15px 15px 7.5px;
 }
 .hr-card-body_other.hr-card-body__hr {
   align-items: center;
 }
 .hr-card-body__other {
+  font-size: 17px;
   height: 50%;
   display: flex;
-  padding: 15px;
+  padding: 7.5px 15px 12px;
   justify-content: space-between;
 }
 
@@ -194,6 +196,7 @@
 
 .hr {
   display: inline-block;
+  font-size: 17px;
 }
 
 .hr-val {
@@ -205,16 +208,15 @@
 .val {
   display: inline-block;
   font-family: ITC;
-  font-style: italic;
-  font-size: 43px;
+  font-size: 42px;
+  line-height: 42px;
   color: #e10019;
   opacity: .8;
-  letter-spacing: 12px;
 }
 
 .user-photo {
-  width: 75px;
-  height: 75px;
+  width: 70px;
+  height: 70px;
   display: inline-block;
   border-radius: 50%;
   position: relative;
@@ -244,7 +246,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 25px 20px;
+  padding: 15px 20px;
   img {
     width: 96px;
     height: 96px;
@@ -260,6 +262,9 @@
     color: #aaa;
     font-size: 28px;
     cursor: pointer;
+  }
+  .card-sort--color {
+    color: #0090ff;
   }
 }
 
@@ -279,7 +284,7 @@
 
 .card-params {
   font-family: ITC;
-  font-size: 65px;
+  font-size: 24.5px;
   opacity: .8;
 }
 
@@ -304,7 +309,9 @@
 
 .chart-container {
   display: inline-block;
-  width: calc(100% - 65px);
+  width: calc(100% - 100px);
+  position: relative;
+  height: 280px;
 }
 
 .chart {
@@ -313,11 +320,14 @@
   max-width: 100%;
   width: 100%;
   margin: 0 auto;
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 .chart-section {
   width:100%;
   display:flex;
-  padding:0px 25px;
+  padding:0px 20px;
   align-items: center;
 }
 .chart .highcharts-container {
@@ -326,12 +336,47 @@
 }
 
 .hr-container {
-  width: 60px;
+  text-align: right;
   display: inline-block;
+  min-width: 100px;
 }
 
 .hr-info {
   margin-bottom: 25px;
+  .hr-item {
+    font-size: 16px;
+    text-align: left;
+    font-weight: 700;
+  }
+  .hr-val {
+    width:70%;
+    font-size:28px;
+    font-family:ITC;
+    text-align:right;
+    color: #7f7f7f;
+  }
+}
+.dropdown-menu.trend-chart-menu {
+  min-width: 120px;
+  font-weight: 500;
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    li {
+      padding: 10px 15px;
+    }
+    li.active {
+      background-color: #0090ff;
+      color: #fff;
+    }
+    li:hover {
+      cursor: pointer;
+      background-color: #0090ff;
+      color: #fff;
+    }
+  }
+
 }
 
 .lesson-container {
@@ -394,15 +439,9 @@
     width: calc((100% - 48px) / 3);
     margin-left: 12px;
   }
-
   .content {
     padding: 0;
   }
-
-  .card-params {
-    font-size: 49px;
-  }
-
   .hr-card-body {
     font-size: 22px;
   }
@@ -417,14 +456,8 @@
     width: calc((100% - 46px) / 2);
     margin: 0px 11.5px 25px 11.5px;
   }
-
-
   .content {
     padding: 0 11.5px;
-  }
-
-  .card-params {
-    font-size: 49px;
   }
 
   .hr-card-body {
