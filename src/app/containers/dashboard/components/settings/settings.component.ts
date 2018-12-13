@@ -45,6 +45,9 @@ export class SettingsComponent implements OnInit {
         url = '/dashboard/settings/user-settings';
         break;
       case 2:
+        url = '/dashboard/settings/personal-preferences';
+        break;
+      case 3:
         url = '/dashboard/settings/privacy-settings';
         break;
       default:
@@ -57,11 +60,14 @@ export class SettingsComponent implements OnInit {
     if (url.indexOf('/dashboard/settings/user-settings') > -1) {
       this.chooseIdx = 1;
     }
-    if (url.indexOf('/dashboard/settings/privacy-settings') > -1) {
+    if (url.indexOf('/dashboard/settings/personal-preferences') > -1) {
       this.chooseIdx = 2;
     }
-    if (url.indexOf('/dashboard/settings/account-info') > -1) {
+    if (url.indexOf('/dashboard/settings/privacy-settings') > -1) {
       this.chooseIdx = 3;
+    }
+    if (url.indexOf('/dashboard/settings/account-info') > -1) {
+      this.chooseIdx = 4;
     }
   }
 }

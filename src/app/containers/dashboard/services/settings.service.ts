@@ -9,4 +9,7 @@ export class SettingsService {
   updateUserProfile(body) {
     return this.http.post<any>('/api/v1/user/updateUserProfile', body);
   }
+  updateThirdParty(body) {
+    return this.http.post<any>('/api/v1/user/thirdPartyAccess', body);
+  }
 }

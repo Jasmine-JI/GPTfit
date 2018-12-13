@@ -386,7 +386,7 @@ export class EditGroupInfoComponent implements OnInit, OnDestroy {
   }
   manage({ value, valid }) {
     if (valid) {
-      const { groupName, groupDesc, groupStatus } = value;
+      const { groupName, groupDesc, groupStatus, groupVideoUrl } = value;
       const body1 = {
         token: this.token,
         groupId: this.groupId,
@@ -394,7 +394,7 @@ export class EditGroupInfoComponent implements OnInit, OnDestroy {
         groupName,
         groupIcon: this.finalImageLink || '',
         groupDesc,
-        groupVideoUrl: this.videoUrl
+        groupVideoUrl
       };
       const body2 = {
         token: this.token,

@@ -80,7 +80,7 @@ export class ActivityLevelsComponent implements OnChanges, OnDestroy {
           name = '跑步';
           break;
         case '2':
-          name = '自行車';
+          name = '騎乘';
           break;
         case '3':
           name = '重量訓練';

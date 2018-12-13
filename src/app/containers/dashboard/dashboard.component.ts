@@ -30,7 +30,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
   target = 14; // 目前預設是我的活動
   isSideNavOpend: boolean;
   mode = 'side';
-  isDefaultOpend = true;
+  isDefaultOpend: boolean;
   userName: string;
   userPhoto: string;
   isUserMenuShow = false;
@@ -62,9 +62,15 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
     this.router.events.subscribe(_val => {
       if (_val instanceof NavigationEnd) {
         if (_val.url.indexOf('/dashboard/coach-dashboard') > -1) {
+          this.mode = 'over';
           this.isHadContainer = false;
+          this.isDefaultOpend = false;
+          this.isSideNavOpend = false;
         } else {
+          this.mode = 'side';
           this.isHadContainer = true;
+          this.isDefaultOpend = true;
+          this.isSideNavOpend = true;
         }
         if (
           _val.url.indexOf('/dashboard/coach-dashboard') > -1 ||
@@ -236,6 +242,10 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
       this.mode = 'over';
       this.isDefaultOpend = false;
       this.isSideNavOpend = false;
+    } else if (location.pathname.indexOf('/dashboard/coach-dashboard') > -1) {
+      this.mode = 'over';
+      this.isDefaultOpend = false;
+      this.isSideNavOpend = false;
     } else {
       this.isDefaultOpend = true;
       this.isSideNavOpend = true;
@@ -248,6 +258,9 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
     if (event.target.innerWidth < 769) {
       // this.toggleSideNav(sideNav);
       this.mode = 'over';
+      this.isDefaultOpend = false;
+      this.isSideNavOpend = false;
+    } else if (location.pathname.indexOf('/dashboard/coach-dashboard') > -1) {
       this.isDefaultOpend = false;
       this.isSideNavOpend = false;
     } else {
@@ -270,6 +283,9 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
         this.isSideNavOpend = true;
       } else {
         this.isSideNavOpend = false;
+      }
+      if (location.pathname.indexOf('/dashboard/coach-dashboard') > -1) {
+        this.isSideNavOpend = false; // 如果是caoch bard 因為backdrop點擊不會觸發這個function，所以另外判斷是去handle
       }
       if (window.innerWidth < 769) {
         this.mode = 'over';

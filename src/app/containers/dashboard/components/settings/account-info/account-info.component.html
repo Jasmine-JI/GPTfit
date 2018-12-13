@@ -24,7 +24,9 @@
     <span style="color:#26abe3">
       Strava
     </span>
-    <mat-slide-toggle [(ngModel)]="stravaStatus">
+    <mat-slide-toggle [(ngModel)]="stravaStatus"
+      (change)="handleStravaStatus($event)"
+    >
     </mat-slide-toggle>
   </div>
 </div>

@@ -19,6 +19,8 @@ export class FormTextComponent implements OnInit {
   @Input() controlName: string;
   @Input() disabled = false;
   @Input() placeholder = '';
+  @Input() min = 0;
+  @Input() max = 255;
   @Output() onChange = new EventEmitter();
   invalidClassName = `${this.class_name} ${this.class_name}--invalid`;
   ngOnInit() {}
