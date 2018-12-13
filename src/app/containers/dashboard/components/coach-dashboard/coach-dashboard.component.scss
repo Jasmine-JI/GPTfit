@@ -217,7 +217,8 @@
 .user-photo {
   width: 70px;
   height: 70px;
-  display: inline-block;
+  display: flex;
+  justify-content: center;
   border-radius: 50%;
   position: relative;
   overflow: hidden;
@@ -231,14 +232,6 @@
 .user-photo--portrait img {
   width: 100%;
   height: auto;
-}
-
-.photo-fit__25 img {
-  margin-left: -25%;
-}
-
-.photo-fit__50 img {
-  margin-left: -50%;
 }
 
 .coach-header {
@@ -382,12 +375,20 @@
 .lesson-container {
   background-color: #f0f0f0;
   max-width: 360px;
+  min-width: 360px;
   .board-title {
     color: #26abe3;
     font-weight: 700;
     padding: 18px;
     font-size: 19px;
   }
+}
+.introduction{
+  font-size: 16px;
+  padding: 30px 24px 0px 20px;
+  color: #909090;
+  word-break: break-all;
+  white-space: pre-wrap;
 }
 
 .lesson-img {

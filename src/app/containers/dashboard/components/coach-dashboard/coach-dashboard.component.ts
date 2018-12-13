@@ -133,13 +133,16 @@ export class CoachDashboardComponent
   demoMaker: any;
   demoTime: any;
   lessonInfo: string;
+  isHadVideoUrl = false;
   classInfo = {
     groupName: '',
     groupIcon: '',
     groupIconClassName: 'user-photo--landscape',
     coachAvatar: '',
     coachName: 'Eve Beardall',
-    groupVideoUrl: null
+    groupVideoUrl: null,
+    coachDesc: '',
+    groupDesc: ''
   };
   series1: any;
   series2: any;
@@ -257,20 +260,21 @@ export class CoachDashboardComponent
           groupIcon.width > groupIcon.height
             ? 'user-photo--landscape'
             : 'user-photo--portrait';
-        if (groupIcon.width / groupIcon.height > 1.5) {
-          this.classInfo.groupIconClassName += ' photo-fit__50';
-        } else if (groupIcon.width / groupIcon.height > 1.2) {
-          this.classInfo.groupIconClassName += ' photo-fit__25';
-        }
         this.classInfo.coachAvatar =
           this.classInfo.coachAvatar && this.classInfo.coachAvatar.length > 0
             ? this.utils.buildBase64ImgString(this.classInfo.coachAvatar)
             : '/assets/images/user.png';
-        this.classInfo.groupVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-          this.classInfo.groupVideoUrl
-        );
+        if (this.classInfo.groupVideoUrl.length > 0) {
+          this.isHadVideoUrl = true;
+          this.classInfo.groupVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+            this.classInfo.groupVideoUrl
+          );
+        } else {
+          this.isHadVideoUrl = false;
+        }
+        this.handleCoachInfo(this.classInfo.coachDesc);
+        this.handleLessonInfo(this.classInfo.groupDesc);
       });
-      this.handleCoachInfo(fakeCoachInfo);
       this.sendBoardCast();
     }
   }
@@ -288,7 +292,6 @@ export class CoachDashboardComponent
         (a, b) => a.data[a.data.length - 1][0] - b.data[b.data.length - 1][0]
       );
     }
-    console.log('series: ', series);
     if (this.classId === '99999' && this.isDemoMode) {
       this.classInfo.groupIcon = '/assets/demo/demoClass.jpg';
       this.classInfo.coachAvatar = '/assets/demo/coach.png';
@@ -410,20 +413,10 @@ export class CoachDashboardComponent
           const calorie = +_data[calorieIdx] || 0;
           const time = moment().unix() * 1000;
           if (this.chartType === 0) {
-            this.chart.series[idx].addPoint(
-              [time, liveHr],
-              true,
-              false,
-              1000
-            );
+            this.chart.series[idx].addPoint([time, liveHr], true, false, 1000);
             sum += liveHr;
           } else if (this.chartType === 1) {
-            this.chart.series[idx].addPoint(
-              [time, calorie],
-              true,
-              false,
-              1000
-            );
+            this.chart.series[idx].addPoint([time, calorie], true, false, 1000);
             sum += calorie;
           } else {
             this.chart.series[idx].addPoint(
@@ -441,6 +434,7 @@ export class CoachDashboardComponent
             liveHr,
             cadence,
             speed,
+            calorie,
             userName: this.userInfos[_data[snIdx]].userName,
             colorIdx,
             userIcon: this.userInfos[_data[snIdx]].userIcon,
@@ -460,7 +454,6 @@ export class CoachDashboardComponent
       }
     }
     this.handleSortCard(this.sortType, this.isCardDesc);
-    console.log('this.currentMemberNum: ', this.currentMemberNum);
     this.meanValue = Math.round(sum / this.currentMemberNum);
   }
   handleSNInfo(snDatas: any) {

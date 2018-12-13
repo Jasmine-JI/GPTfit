@@ -14,24 +14,33 @@
   <div class="lesson-container">
     <div #carousel>
       <div id="carouselExampleIndicators" class="carousel slide" data-interval="false" data-ride="carousel">
-        <ol class="carousel-indicators">
+        <ol class="carousel-indicators" *ngIf="isHadVideoUrl">
           <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
           <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-          <!-- <li data-target="#carouselExampleIndicators" data-slide-to="2"></li> -->
         </ol>
         <div class="carousel-inner">
           <div class="carousel-item active" [style.background-color]="classInfo?.groupIcon !== '/assets/images/group-default.svg'  ? 'black': '#fff'">
             <img style="width:100%;" [src]="classInfo?.groupIcon">
           </div>
-          <div class="carousel-item">
+          <div class="carousel-item" *ngIf="isHadVideoUrl">
             <app-ala-iframe [src]="classInfo?.groupVideoUrl" [width]="carouselElement?.nativeElement.width" [height]="carouselElement?.nativeElement.height"></app-ala-iframe>
           </div>
         </div>
-        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+        <a class="carousel-control-prev"
+          href="#carouselExampleIndicators"
+          role="button"
+          data-slide="prev"
+          *ngIf="isHadVideoUrl"
+        >
           <span class="carousel-control-prev-icon" aria-hidden="true"></span>
           <span class="sr-only">Previous</span>
         </a>
-        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+        <a class="carousel-control-next"
+          href="#carouselExampleIndicators"
+          role="button"
+          data-slide="next"
+          *ngIf="isHadVideoUrl"
+        >
           <span class="carousel-control-next-icon" aria-hidden="true"></span>
           <span class="sr-only">Next</span>
         </a>
@@ -61,7 +70,7 @@
             </span>
           </div>
         </div>
-        <div style="font-size: 16px;padding: 30px 24px 0px 20px;color: #909090">
+        <div class="introduction">
           {{ lessonInfo }}
           <!-- {{ classInfo?.coachDesc}} --> <!-- 等之後有個人頁面在接回來 -->
           <div *ngIf="isLessonMoreDisplay"
@@ -82,7 +91,7 @@
           </div>
           <div class="coach-name">{{classInfo?.coachName}}</div>
         </div>
-        <div style="font-size: 16px;padding: 30px 24px 0px 20px;color: #909090">
+        <div class="introduction">
           {{ coachInfo }}
           <!-- {{ classInfo?.coachDesc}} --> <!-- 等之後有個人頁面在接回來 -->
           <div *ngIf="isCoachMoreDisplay"
@@ -233,13 +242,13 @@
           </div>
           <div class="dropdown-menu trend-chart-menu" [class.show]="isUserMenuShow" aria-labelledby="dropdownMenu4">
             <ul>
-              <li (click)="handleSortCard(0)" [class.active]="sortType === 0">
+              <li (click)="handleSortCard(0, false)" [class.active]="sortType === 0">
                 心率
               </li>
-              <li (click)="handleSortCard(1)" [class.active]="sortType === 1">
+              <li (click)="handleSortCard(1, false)" [class.active]="sortType === 1">
                 卡路里
               </li>
-              <li (click)="handleSortCard(2)" [class.active]="sortType === 2">
+              <li (click)="handleSortCard(2, false)" [class.active]="sortType === 2">
                 心率區間
               </li>
             </ul>
@@ -254,13 +263,13 @@
           </div>
           <div class="dropdown-menu trend-chart-menu" [class.show]="isUserMenuShow" aria-labelledby="dropdownMenu4">
             <ul>
-              <li (click)="handleSortCard(0)" [class.active]="sortType === 0">
+              <li (click)="handleSortCard(0, true)" [class.active]="sortType === 0">
                 心率
               </li>
-              <li (click)="handleSortCard(1)" [class.active]="sortType === 1">
+              <li (click)="handleSortCard(1, true)" [class.active]="sortType === 1">
                 卡路里
               </li>
-              <li (click)="handleSortCard(2)" [class.active]="sortType === 2">
+              <li (click)="handleSortCard(2, true)" [class.active]="sortType === 2">
                 心率區間
               </li>
             </ul>
