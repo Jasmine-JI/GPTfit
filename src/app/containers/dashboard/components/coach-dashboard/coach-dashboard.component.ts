@@ -133,7 +133,7 @@ export class CoachDashboardComponent
   demoMaker: any;
   demoTime: any;
   lessonInfo: string;
-  isHadVideoUrl = false;
+  isHadVideoUrl = true;
   classInfo = {
     groupName: '',
     groupIcon: '',
