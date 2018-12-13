@@ -41,3 +41,5 @@ export const fakeCoachInfo = `國民體適能中級.AASFP私人教練指導. YMC
 .經歷：. 新北市蘆洲國民運動中心健身教練健身工廠三重廠私人教練緹力士健康事業中和館私人教練`;
 
 export const demoCoachInfo = `Experienced Aerobics Instructor with a demonstrated history of working in the health wellness and fitness industry. Strong community and social services professional skilled in Computer Performance, Customer Satisfaction, Documentation, Organization Skills, and Time Management.`;
+
+export const demoLessonInfo = `High-low impact aerobics classes consist of a traditional dance-inspired routine. With low-impact aerobics, you always have one foot on the floor. you don't do any jumping or hopping. High-impact aerobics moves at a slower pace, but you jump around a lot. High-low combines the two types of routines.`;

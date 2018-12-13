@@ -4,223 +4,341 @@
   課程直播已結束
   <div style="display: flex;justify-content: center;margin-top:30px">
     <button class="alatech-btn alatech-btn--default"
-      [routerLink]="['/dashboard/train-live']"
+      [routerLink]="['/dashboard/live/train-live']"
     >
       返回課程直播列表
     </button>
   </div>
 </div>
 <div class="coach-container" [class.blurred-mask]="isClassEnd">
-  <section [class.lesson-section__hide]="!displaySections[0]">
-    <div class="coach-header">
-      <span>課程資訊</span>
+  <div class="lesson-container">
+    <div #carousel>
+      <div id="carouselExampleIndicators" class="carousel slide" data-interval="false" data-ride="carousel">
+        <ol class="carousel-indicators" *ngIf="isHadVideoUrl">
+          <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+          <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+        </ol>
+        <div class="carousel-inner">
+          <div class="carousel-item active" [style.background-color]="classInfo?.groupIcon !== '/assets/images/group-default.svg'  ? 'black': '#fff'">
+            <img style="width:100%;" [src]="classInfo?.groupIcon">
+          </div>
+          <div class="carousel-item" *ngIf="isHadVideoUrl">
+            <app-ala-iframe [src]="classInfo?.groupVideoUrl" [width]="carouselElement?.nativeElement.width" [height]="carouselElement?.nativeElement.height"></app-ala-iframe>
+          </div>
+        </div>
+        <a class="carousel-control-prev"
+          href="#carouselExampleIndicators"
+          role="button"
+          data-slide="prev"
+          *ngIf="isHadVideoUrl"
+        >
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next"
+          href="#carouselExampleIndicators"
+          role="button"
+          data-slide="next"
+          *ngIf="isHadVideoUrl"
+        >
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="sr-only">Next</span>
+        </a>
+      </div>
     </div>
-    <div class="lesson-container">
-      <div class="col-md-6 ala-coach">
-        <div class="lesson-info">
-          <div style="width:100%;font-size:20.5px;text-align:right;color:#959595">
-            <div class="lesson-title">
-              {{classInfo?.groupName}}
-            </div>
-            <div>
-              <span *ngIf="!(classId === '99999' && isDemoMode)">2018/05/10 AM11:26</span>
-              <span *ngIf="(classId === '99999' && isDemoMode)">{{demoTime}}</span>
-            </div>
-
-            <div>
-              <span *ngIf="!(classId === '99999' && isDemoMode)">健身工廠 新時代廠</span>
-              <span *ngIf="(classId === '99999' && isDemoMode)">Fitness gym / Taichung New Era</span>
+    <div>
+      <label class="board-title">課程介紹</label>
+      <div>
+        <div style="display: flex;padding-right: 24px;align-items: center;">
+          <div style="display:flex;align-items: center;">
+            <div class="user-photo"
+              style="margin: 0 15px"
+              [ngClass]="classInfo?.groupIconClassName"
+            >
+              <img [src]="classInfo?.groupIcon">
             </div>
           </div>
-          <div style="width:100%;display:flex">
-            <div style="display:flex;align-items: center;">
-              <div class="user-photo user-photo--portrait" style="margin: 0 15px">
-                <img [src]="classInfo?.coachAvatar">
-              </div>
+          <div class="lesson-title">
+            <span *ngIf="!(classId === '99999' && isDemoMode)">
+              {{classInfo?.groupName}}
+            </span>
+            <span *ngIf="(classId === '99999' && isDemoMode)">
+              High-Low Impact Aerobics
+            </span>
+            <span *ngIf="(classId === '99999' && isDemoMode)" class="lesson-title-location">
+              Fitness gym / Taichung New Era
+            </span>
+          </div>
+        </div>
+        <div class="introduction">
+          {{ lessonInfo }}
+          <!-- {{ classInfo?.coachDesc}} --> <!-- 等之後有個人頁面在接回來 -->
+          <div *ngIf="isLessonMoreDisplay"
+            style="color: #5fbae3;cursor:pointer;text-align: right"
+            (click)="handleExtendCoachInfo(2)"
+          >
+            more...
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <label class="board-title">教練介紹</label>
+      <div>
+        <div style="display:flex;align-items: center;">
+          <div class="user-photo user-photo--portrait" style="margin: 0 15px">
+            <img [src]="classInfo?.coachAvatar">
+          </div>
+          <div class="coach-name">{{classInfo?.coachName}}</div>
+        </div>
+        <div class="introduction">
+          {{ coachInfo }}
+          <!-- {{ classInfo?.coachDesc}} --> <!-- 等之後有個人頁面在接回來 -->
+          <div *ngIf="isCoachMoreDisplay"
+            style="color: #5fbae3;cursor:pointer;text-align: right"
+            (click)="handleExtendCoachInfo(1)"
+          >
+            more...
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="data-container">
+    <ng-container>
+      <div class="coach-header" *ngIf="displaySections[1]">
+        <span>趨勢圖</span>
+        <span>
+          <div class="dropdown">
+            <div class="trend-chart-item" id="dropdownMenu4" data-toggle="dropdown" aria-haspopup="true"
+              aria-expanded="false">
+              <i class="icon-svg_web-icon_p1_037-chart"></i>
             </div>
-            <div style="width: 90%;padding-left:20px">
-              <div class="coach-name">{{classInfo?.coachName}}</div>
-              <div style="font-size: 14px;max-width:845px">
-                {{ coachInfo }}
-                <!-- {{ classInfo?.coachDesc}} --> <!-- 等之後有個人頁面在接回來 -->
-                <span *ngIf="isMoreDisplay"
-                  style="color: #0078ff;cursor:pointer"
-                  (click)="handleExtendCoachInfo()"
+            <div class="dropdown-menu trend-chart-menu" [class.show]="isUserMenuShow"
+               aria-labelledby="dropdownMenu4"
+            >
+              <ul>
+                <li (click)="removeSeries(0)"
+                  [class.active]="chartType === 0"
                 >
-                  ...more
+                  心率
+                </li>
+                <li (click)="removeSeries(1)"
+                  [class.active]="chartType === 1"
+                >
+                  卡路里
+                </li>
+                <li (click)="removeSeries(2)"
+                  [class.active]="chartType === 2"
+                >
+                  心率區間
+                </li>
+              </ul>
+            </div>
+          </div>
+          <!-- <button (click)="stopBoardCast()">拉拉ㄌ阿</button> -->
+        </span>
+      </div>
+      <section class="chart-section" [class.chart-area]="!displaySections[1]">
+        <div class="chart-container" [style.visibility]="isLoading ? 'hidden' : 'initial'">
+          <div #hrChartTarget class="chart">
+          </div>
+        </div>
+        <div class="hr-container"  *ngIf="heartValues.length > 0">
+          <div class="hr-info">
+            <div class="hr-item">{{heartValues && heartValues[0]?.userName }}</div>
+            <div style="display: flex;">
+              <div class="hr-val">
+                <span *ngIf="chartType === 0">
+                  {{heartValues && heartValues[0]?.liveHr || 0}}
+                </span>
+                <span *ngIf="chartType === 1">
+                  {{heartValues && heartValues[0]?.calorie || 0}}
+                </span>
+                <span *ngIf="chartType === 2">
+                  {{heartValues && heartValues[0]?.colorIdx || 0}}
                 </span>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-6 ala-coach">
-        <div #carousel class="lesson-img">
-          <div id="carouselExampleIndicators"
-            class="carousel slide"
-            data-interval="false"
-            data-ride="carousel"
-          >
-            <ol class="carousel-indicators">
-              <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-              <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-              <!-- <li data-target="#carouselExampleIndicators" data-slide-to="2"></li> -->
-            </ol>
-            <div class="carousel-inner">
-              <div class="carousel-item active"
-                [style.background-color]="classInfo?.groupIcon !== '/assets/images/group-default.svg'  ? 'black': '#fff'"
+              <div class="hr-heart"
+                [style.color]="heartValues && hrColors[heartValues[0]?.colorIdx]"
               >
-                <img style="width:100%;" [src]="classInfo?.groupIcon">
-              </div>
-              <div class="carousel-item">
-                <app-ala-iframe
-                  [src]="classInfo?.groupVideoUrl"
-                  [width]="carouselElement?.nativeElement.width"
-                  [height]="carouselElement?.nativeElement.height"
-                ></app-ala-iframe>
+                <i class="icon-svg_web-icon_p2_003-heart_rate"
+                  *ngIf="chartType === 0 || chartType === 2"
+                ></i>
+                <i class="icon-svg_web-icon_p2_010-calorie"
+                  *ngIf="chartType === 1"
+                ></i>
               </div>
             </div>
-            <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-              <span class="sr-only">Previous</span>
-            </a>
-            <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-              <span class="carousel-control-next-icon" aria-hidden="true"></span>
-              <span class="sr-only">Next</span>
-            </a>
+          </div>
+          <div class="hr-info">
+            <div class="hr-item">平均</div>
+            <div style="display: flex;">
+              <div class="hr-val">{{meanValue}}</div>
+              <div class="hr-heart">
+                <i class="icon-svg_web-icon_p2_003-heart_rate"
+                  *ngIf="chartType === 0 || chartType === 2"
+                ></i>
+                <i class="icon-svg_web-icon_p2_010-calorie"
+                  *ngIf="chartType === 1"
+                ></i>
+              </div>
+            </div>
+          </div>
+          <div class="hr-info">
+            <div class="hr-item">{{heartValues && heartValues[heartValues.length -
+              1]?.userName}}</div>
+            <div style="display: flex;">
+              <div class="hr-val">
+                <span *ngIf="chartType === 0">
+                  {{heartValues && heartValues[heartValues && heartValues.length - 1]?.liveHr || 0}}
+                </span>
+                <span *ngIf="chartType === 1">
+                  {{heartValues && heartValues[heartValues && heartValues.length - 1]?.calorie || 0}}
+                </span>
+                <span *ngIf="chartType === 2">
+                  {{heartValues && heartValues[heartValues && heartValues.length - 1]?.colorIdx || 0}}
+                </span>
+              </div>
+              <div class="hr-heart"
+                [style.color]="heartValues && hrColors[heartValues[heartValues.length - 1]?.colorIdx]"
+              >
+                <i class="icon-svg_web-icon_p2_003-heart_rate"
+                  *ngIf="chartType === 0 || chartType === 2"
+                ></i>
+                <i class="icon-svg_web-icon_p2_010-calorie"
+                  *ngIf="chartType === 1"
+                ></i>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-
-    </div>
-  </section>
-  <ng-container>
-    <div class="coach-header" *ngIf="displaySections[1]">
-      <span>分析圖表</span>
-      <span>
-        <!-- <img src="/assets/icons/btn_icon_128px_59-speed_normal.png" [hidden]="dispalyChartOptions[0]" (click)="handldeChartOptions(0)" />
-        <img src="/assets/icons/btn_icon_128px_60-speed_over.png" [hidden]="!dispalyChartOptions[0]" (click)="handldeChartOptions(0)" />
-        <img src="/assets/icons/btn_icon_128px_57-heart_rate_normal.png" [hidden]="dispalyChartOptions[1]" (click)="handldeChartOptions(1)" />
-        <img src="/assets/icons/btn_icon_128px_58-heart_rate_over.png" [hidden]="!dispalyChartOptions[1]" (click)="handldeChartOptions(1)" /> -->
-        <img src="/assets/icons/btn_icon_128px_61-full_display_normal.png" [hidden]="dispalyChartOptions[2]" (click)="handldeSection(1)" />
-        <img src="/assets/icons/btn_icon_128px_62-full_display_over.png" [hidden]="!dispalyChartOptions[2]" (click)="handldeSection(1)" />
-      </span>
-    </div>
-    <section class="chart-section" [class.chart-area]="!displaySections[1]">
-      <div class="chart-container">
-        <div #hrChartTarget class="chart">
+        <div>
+          <!-- <button class="alatech-btn alatech-btn--default rwd-btn" (click)="sendBoardCast()">
+            廣播測試資料
+          </button> -->
+          <!-- <button class="alatech-btn alatech-btn--default rwd-btn" (click)="stopBoardCast()">
+            停止測試
+          </button> -->
         </div>
-      </div>
-      <div style="display:flex;justify-content: center;align-items: center;height:100%"
+      </section>
+      <div style="display:flex;justify-content: center;align-items: center;width:100%"
         *ngIf="isLoading"
       >
         <mat-spinner></mat-spinner>
       </div>
-      <div class="hr-container"  *ngIf="heartValues.length > 0">
-        <div class="hr-info">
-          <div style="font-size:24px;text-align:center">{{heartValues && heartValues[0]?.userName }}</div>
-          <div style="display: flex;">
-            <div class="hr-heart">
-              <i class="fa fa-heart" [style.color]="heartValues && hrColors[heartValues[0]?.colorIdx]"></i>
-            </div>
-            <div style="width:70%;font-size:40px;font-family:ITC;text-align:right">{{heartValues &&
-              heartValues[0]?.liveHr || 0}}</div>
+    </ng-container>
+    <ng-container *ngIf="displaySections[2]">
+      <div class="coach-header">
+        <span>成員</span>
+        <span>
+        <div class="dropdown" style="display:inline-block">
+          <div class="trend-chart-item" id="dropdownMenu4" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="icon-svg_web-icon_p1_023-ascending"
+            [class.card-sort--color]="!isCardDesc"
+              (click)="handleSortCard(sortType, false)"
+            ></i>
+          </div>
+          <div class="dropdown-menu trend-chart-menu" [class.show]="isUserMenuShow" aria-labelledby="dropdownMenu4">
+            <ul>
+              <li (click)="handleSortCard(0, false)" [class.active]="sortType === 0">
+                心率
+              </li>
+              <li (click)="handleSortCard(1, false)" [class.active]="sortType === 1">
+                卡路里
+              </li>
+              <li (click)="handleSortCard(2, false)" [class.active]="sortType === 2">
+                心率區間
+              </li>
+            </ul>
           </div>
         </div>
-        <div class="hr-info">
-          <div style="font-size:24px;text-align:center;text-align:center">平均</div>
-          <div style="display: flex;">
-            <div class="hr-heart" [style.color]="">
-              <i class="fa fa-heart"></i>
-            </div>
-            <div style="width:70%;font-size:40px;font-family:ITC;text-align:right">{{hrMeanValue}}</div>
+        <div class="dropdown" style="display:inline-block">
+          <div class="trend-chart-item" id="dropdownMenu4" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="icon-svg_web-icon_p1_022-descending"
+              [class.card-sort--color]="isCardDesc"
+              (click)="handleSortCard(sortType, true)"
+            ></i>
+          </div>
+          <div class="dropdown-menu trend-chart-menu" [class.show]="isUserMenuShow" aria-labelledby="dropdownMenu4">
+            <ul>
+              <li (click)="handleSortCard(0, true)" [class.active]="sortType === 0">
+                心率
+              </li>
+              <li (click)="handleSortCard(1, true)" [class.active]="sortType === 1">
+                卡路里
+              </li>
+              <li (click)="handleSortCard(2, true)" [class.active]="sortType === 2">
+                心率區間
+              </li>
+            </ul>
           </div>
         </div>
-        <div class="hr-info">
-          <div style="font-size:24px;text-align:center">{{heartValues && heartValues[heartValues.length -
-            1]?.userName}}</div>
-          <div style="display: flex;">
-            <div class="hr-heart">
-              <i class="fa fa-heart" [style.color]="heartValues && hrColors[heartValues[heartValues.length - 1]?.colorIdx]"></i>
-            </div>
-            <div style="width:70%;font-size:40px;font-family:ITC;text-align:right">{{heartValues &&
-              heartValues[heartValues && heartValues.length - 1]?.liveHr || 0}}</div>
-          </div>
-        </div>
-      </div>
-      <div>
-        <!-- <button class="alatech-btn alatech-btn--default rwd-btn" (click)="sendBoardCast()">
-          廣播測試資料
-        </button> -->
-        <!-- <button class="alatech-btn alatech-btn--default rwd-btn" (click)="stopBoardCast()">
-          停止測試
-        </button> -->
-      </div>
-    </section>
-  </ng-container>
-  <ng-container *ngIf="displaySections[2]">
-    <div class="coach-header">
-      <span>詳細成員</span>
-      <span>
-        <!-- <img src="/assets/icons/btn_icon_128px_59-speed_normal.png" [hidden]="dispalyMemberOptions[0]" (click)="handldeMemberOptions(0)" />
-        <img src="/assets/icons/btn_icon_128px_60-speed_over.png" [hidden]="!dispalyMemberOptions[0]" (click)="handldeMemberOptions(0)" />
-        <img src="/assets/icons/btn_icon_128px_57-heart_rate_normal.png" [hidden]="dispalyMemberOptions[1]" (click)="handldeMemberOptions(1)" />
-        <img src="/assets/icons/btn_icon_128px_58-heart_rate_over.png" [hidden]="!dispalyMemberOptions[1]" (click)="handldeMemberOptions(1)" />
-        <img src="/assets/icons/btn_icon_128px_55-rise_normal.png" [hidden]="dispalyMemberOptions[2]" (click)="handldeMemberOptions(2)" />
-        <img src="/assets/icons/btn_icon_128px_56-rise_over.png" [hidden]="!dispalyMemberOptions[2]" (click)="handldeMemberOptions(2)" /> -->
-        <img src="/assets/icons/btn_icon_128px_61-full_display_normal.png" [hidden]="dispalyMemberOptions[3]" (click)="handldeSection(2)" />
-        <img src="/assets/icons/btn_icon_128px_62-full_display_over.png" [hidden]="!dispalyMemberOptions[3]" (click)="handldeSection(2)" />
-      </span>
-    </div>
-    <div class="content" style="height: 52%;margin-bottom: 30px;">
-      <div style="font-size: 35px;margin: 30px 0px 30px 15px;">
-        全部成員{{ currentMemberNum }}人
-      </div>
-      <div class="hr-card"
-      *ngFor="let item of heartValues;let _idx = index"
-      >
-          <div class="color-mask"></div>
-          <div class="hr-card-header"
-            [@animateState]="item?.colorIdx"
-          >
-            <div class="hr-card-header__no">No.{{_idx + 1}}</div>
-            <div class="hr-card-header__name">{{ item.userName}}</div>
-          </div>
 
-        <div class="hr-card-body">
-          <div class="card-body--bg"></div>
-          <div class="hr-card-body__hr" [class.hr-card-body_other]="classType !== '2'">
-            <div class="user-photo" [ngClass]="item?.imgClassName">
-              <img *ngIf="item?.userIcon.length > 0"
-                [src]="(item?.userIcon | safeHtml)"
-              >
-              <img *ngIf="item?.userIcon.length === 0"
-                src="/assets/images/user.png"
-              >
-            </div>
-            <div class="hr-val">
-              <div class="hr">心率</div>
-              <div class="val" [style.color]="hrColors[item?.colorIdx]">
-                {{ item?.liveHr || 0 }}
-              </div>
-            </div>
-          </div>
-          <ng-container *ngIf="classType === '2'">
-            <div class="hr-card-body__other">
-              <div class="hr-card-body__pace">
-                <div style="">配速</div>
-                <div class="card-params">{{ item?.cadence || 0 }}</div>
-              </div>
-              <div class="hr-card-body__distance">
-                <div style="">距離</div>
-                <div class="card-params">{{ item?.speed || 0 }}</div>
-              </div>
-            </div>
-          </ng-container>
+          <i class="icon-svg_web-icon_p1_019-full_screen"  [hidden]="dispalyMemberOptions[3]" (click)="handldeSection(2)"></i>
+          <i class="icon-svg_web-icon_p1_020-narrow"  [hidden]="!dispalyMemberOptions[3]" (click)="handldeSection(2)"></i>
 
+        </span>
+      </div>
+      <div class="content">
+        <div class="hr-card"
+        *ngFor="let item of heartValues;let _idx = index"
+        >
+            <div class="color-mask"></div>
+            <div class="hr-card-header"
+              [@animateState]="item?.colorIdx"
+            >
+              <div class="hr-card-header__no">No.{{_idx + 1}}</div>
+              <div class="hr-card-header__name">{{ item.userName}}</div>
+            </div>
+
+          <div class="hr-card-body">
+            <div class="card-body--bg"></div>
+            <div class="hr-card-body__hr" [class.hr-card-body_other]="classType !== '2'">
+              <div class="user-photo" [ngClass]="item?.imgClassName">
+                <img *ngIf="item?.userIcon.length > 0"
+                  [src]="(item?.userIcon | safeHtml)"
+                >
+                <img *ngIf="item?.userIcon.length === 0"
+                  src="/assets/images/user.png"
+                >
+              </div>
+              <div class="hr-val">
+                <div class="hr">心率</div>
+                <div class="val" [style.color]="hrColors[item?.colorIdx]">
+                  {{ item?.liveHr || 0 }}
+                </div>
+              </div>
+            </div>
+            <ng-container *ngIf="classType === '1' || classType === '5'">
+              <div class="hr-card-body__other">
+                <div class="hr-card-body__pace">
+                  <div style="">卡路里</div>
+                  <div class="card-params">{{ item?.calorie || 0 }}</div>
+                </div>
+                <div class="hr-card-body__distance">
+                  <div style="">心率區間</div>
+                  <div class="card-params">{{ item?.colorIdx || 0 }}</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="classType === '2'">
+              <div class="hr-card-body__other">
+                <div class="hr-card-body__pace">
+                  <div style="">配速</div>
+                  <div class="card-params">{{ item?.cadence || 0 }}</div>
+                </div>
+                <div class="hr-card-body__distance">
+                  <div style="">距離</div>
+                  <div class="card-params">{{ item?.speed || 0 }}</div>
+                </div>
+              </div>
+            </ng-container>
+
+          </div>
         </div>
       </div>
-    </div>
-  </ng-container>
+    </ng-container>
+  </div>
 </div>

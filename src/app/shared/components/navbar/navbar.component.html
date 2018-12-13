@@ -44,14 +44,14 @@
         *ngIf="!isShowResetPwd"
         (click)="chooseNavItem(1)"
       >
-        <a class="nav-link"[routerLink]="['/']">{{ "Portal.Introduce" | translate}}</a>
+        <a class="nav-link" [routerLink]="['/']">{{ "Portal.Introduce" | translate}}</a>
       </li>
 
       <li class="nav-item" [class.active]="navItemNum === 2"
         *ngIf="!isShowResetPwd"
         (click)="chooseNavItem(2)"
       >
-        <a class="nav-link" href="/leaderboard">{{ "SH.Leaderboard" | translate}}</a>
+        <a class="nav-link" [routerLink]="['/leaderboard']">{{ "SH.Leaderboard" | translate}}</a>
       </li>
       <li class="nav-item" *ngIf="isShowResetPwd">
         <a class="nav-link" (click)="reloadPage()">Reset Password</a>

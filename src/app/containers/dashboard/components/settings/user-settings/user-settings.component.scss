@@ -1,0 +1,31 @@
+.settings-label {
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.settings-control {
+  margin-left: 15px;
+  .form-field {
+    width: 275px;
+  }
+  /deep/.mat-form-field-infix {
+    border: 0;
+  }
+}
+
+.ala-form__label.settings-item {
+  color: #919191;
+}
+
+// to 共用
+.time_picker {
+  display: inline-block;
+}
+
+.time_picker input {
+  display: inline-block;
+  width: 150px;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+}

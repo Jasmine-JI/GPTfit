@@ -30,7 +30,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
   target = 14; // 目前預設是我的活動
   isSideNavOpend: boolean;
   mode = 'side';
-  isDefaultOpend = true;
+  isDefaultOpend: boolean;
   userName: string;
   userPhoto: string;
   isUserMenuShow = false;
@@ -46,6 +46,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
   isGeneralMember = false;
   isHadContainer = true;
   footerAddClassName = '';
+  userId: number;
   constructor(
     private globalEventsManager: GlobalEventsManager,
     private authService: AuthService,
@@ -61,37 +62,57 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
     this.router.events.subscribe(_val => {
       if (_val instanceof NavigationEnd) {
         if (_val.url.indexOf('/dashboard/coach-dashboard') > -1) {
+          this.mode = 'over';
           this.isHadContainer = false;
+          this.isDefaultOpend = false;
+          this.isSideNavOpend = false;
         } else {
+          this.mode = 'side';
           this.isHadContainer = true;
+          this.isDefaultOpend = true;
+          this.isSideNavOpend = true;
         }
-        if (_val.url.indexOf('/dashboard/coach-dashboard') > -1 || _val.url.indexOf('/dashboard/train-live') > -1) {
+        if (
+          _val.url.indexOf('/dashboard/coach-dashboard') > -1 ||
+          _val.url.indexOf('/dashboard/live/train-live') > -1
+        ) {
           this.target = 3;
         } else if (_val.url.indexOf('/dashboard/group-search') > -1) {
-          this.target = 10;
+          this.target = 17;
         } else if (_val.url.indexOf('/dashboard/my-activity') > -1) {
           this.target = 14;
         } else if (_val.url.indexOf('/dashboard/sport-report') > -1) {
           this.target = 16;
-        } else if (_val.url.indexOf('/dashboard/my-group-list') > -1 || _val.url.indexOf('/dashboard/group-search') > -1) {
+        } else if (
+          _val.url.indexOf('/dashboard/my-group-list') > -1 ||
+          _val.url.indexOf('/dashboard/group-search') > -1
+        ) {
           this.target = 10;
-        } else if (_val.url.indexOf('/dashboard/device_log') > -1) { // 字長的先排前辨識
+        } else if (_val.url.indexOf('/dashboard/system/device_log') > -1) {
+          // 字長的先排前辨識
           this.target = 5;
         } else if (_val.url.indexOf('/dashboard/device') > -1) {
           this.target = 15;
-        } else if (_val.url.indexOf('/dashboard/event-management') > -1) {
+        } else if (
+          _val.url.indexOf('/dashboard/system/event-management') > -1
+        ) {
           this.target = 6;
-        } else if (_val.url.indexOf('/dashboard/event-calendar') > -1) { // 字長的先排前辨識
+        } else if (_val.url.indexOf('/dashboard/system/event-calendar') > -1) {
+          // 字長的先排前辨識
           this.target = 8;
-        } else if (_val.url.indexOf('/dashboard/event') > -1) {
+        } else if (_val.url.indexOf('/dashboard/system/event') > -1) {
           this.target = 7;
-        } else if (_val.url.indexOf('/dashboard/leaderboard-settings') > -1) {
+        } else if (
+          _val.url.indexOf('/dashboard/system/leaderboard-settings') > -1
+        ) {
           this.target = 9;
-        } else if (_val.url.indexOf('/dashboard/all-group-list') > -1) {
+        } else if (_val.url.indexOf('/dashboard/system/all-group-list') > -1) {
           this.target = 11;
-        } else if (_val.url.indexOf('/dashboard/create-brand-group') > -1) {
+        } else if (
+          _val.url.indexOf('/dashboard/system/create-brand-group') > -1
+        ) {
           this.target = 12;
-        } else if (_val.url.indexOf('/dashboard/setting') > -1) {
+        } else if (_val.url.indexOf('/dashboard/system/setting-member') > -1) {
           this.target = 13;
         } else {
           this.target = 0;
@@ -132,7 +153,9 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
     this.userInfoService.getUserName().subscribe(res => {
       this.userName = res;
     });
-
+    this.userInfoService.getUserId().subscribe(res => {
+      this.userId = res;
+    });
     this.userInfoService.getSupervisorStatus().subscribe(res => {
       this.isSupervisor = res;
       console.log('%c this.isSupervisor', 'color: #108bcd', this.isSupervisor);
@@ -219,6 +242,10 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
       this.mode = 'over';
       this.isDefaultOpend = false;
       this.isSideNavOpend = false;
+    } else if (location.pathname.indexOf('/dashboard/coach-dashboard') > -1) {
+      this.mode = 'over';
+      this.isDefaultOpend = false;
+      this.isSideNavOpend = false;
     } else {
       this.isDefaultOpend = true;
       this.isSideNavOpend = true;
@@ -231,6 +258,9 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
     if (event.target.innerWidth < 769) {
       // this.toggleSideNav(sideNav);
       this.mode = 'over';
+      this.isDefaultOpend = false;
+      this.isSideNavOpend = false;
+    } else if (location.pathname.indexOf('/dashboard/coach-dashboard') > -1) {
       this.isDefaultOpend = false;
       this.isSideNavOpend = false;
     } else {
@@ -253,6 +283,9 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
         this.isSideNavOpend = true;
       } else {
         this.isSideNavOpend = false;
+      }
+      if (location.pathname.indexOf('/dashboard/coach-dashboard') > -1) {
+        this.isSideNavOpend = false; // 如果是caoch bard 因為backdrop點擊不會觸發這個function，所以另外判斷是去handle
       }
       if (window.innerWidth < 769) {
         this.mode = 'over';

@@ -1,12 +1,42 @@
 /* * {
   border: 1px solid #fff;
 } */
+.main-body {
+  width: calc(100% - 273px);
+  position: relative;
+  flex-grow: 1;
+  height: calc(100vh - 60px);
+  margin-top: 60px;
+  overflow: auto;
+}
+.container {
+  padding: 30px;
+  min-height: calc(100vh - 78px);
+}
+.header-nav-menu-section {
+
+  border-bottom: 1px solid #e5e5e5
+}
+.header-nav-menu-section ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.header-nav-menu-section ul>li {
+  padding: 15px 20px;
+}
+.header-nav-menu-section ul>li:hover {
+  cursor: pointer;
+  background-color: #f8f9fa;
+}
+.dropdown-item {
+  padding: 15px 20px;
+}
+.dropdown-menu {
+  padding: 0;
+}
 .mat-drawer-container {
   background-color: #fff;
-}
-.dashboard-rwd {
-  padding-top: 80px;
-  min-height: calc(100% - 40px);
 }
 
 .alatech-ribbon {
@@ -53,7 +83,7 @@
 .main-nav-toggle-icon {
   color: #fff;
 }
-.main-nav-toggle-icon.icon-svg_web-icon_073-level_fold  {
+.main-nav-toggle-icon.icon-svg_web-icon_p1_073-level_fold  {
   margin: 50% 0 0 50%;
   -webkit-transform: translate(-58%,-58%);
   -ms-transform: translate(-58%,-58%);
@@ -105,6 +135,13 @@
   padding: 5px 15px 5px 20px;
   font-size: 16px;
 }
+.mat-drawer-container {
+  min-height: 100vh;
+  flex-shrink: 0;
+  flex-basis: auto;
+  position: initial;
+  z-index: 3;
+}
 
 ::ng-deep .mat-expansion-panel-content .mat-expansion-panel-body {
   padding: 0px;
@@ -118,6 +155,7 @@
 .ala-sidenav-icon {
   margin-right: 10px;
   font-size: 20px;
+  margin-top: 4px;
 }
 .mat-nav-list > li {
   list-style: none;
@@ -153,7 +191,7 @@
   outline: none;
   color: #9bf9ff
 }
-.main-nav-toggle-icon.icon-svg_web-icon_005-menu {
+.main-nav-toggle-icon.icon-svg_web-icon_p1_005-menu {
   display: none;
 }
 
@@ -209,7 +247,7 @@
 }
 .dropdown.show .dropdown-menu.dropdown-user-menu.show {
   top: -3px !important;
-  left: 5px !important;
+  left: 50px !important;
 }
 
 @media(max-width: 768px) {
@@ -225,10 +263,10 @@
   .footer-details.footer-rwd--4 {
     margin-bottom: 291px;
   }
-  .main-nav-toggle-icon.icon-svg_web-icon_073-level_fold {
+  .main-nav-toggle-icon.icon-svg_web-icon_p1_073-level_fold {
     display: none;
   }
-  .main-nav-toggle-icon.icon-svg_web-icon_005-menu {
+  .main-nav-toggle-icon.icon-svg_web-icon_p1_005-menu {
     display: block;
     font-size: 44px;
     width: 44px;

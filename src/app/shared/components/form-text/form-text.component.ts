@@ -11,6 +11,7 @@ export class FormTextComponent implements OnInit {
   @Input() class_name = 'form-field';
   @Input() maxLength = DEFAULT_MAXLENGTH.TEXT;
   @Input() isInvalid: boolean;
+  @Input() type = 'text';
   @Input() content: string;
   @Input() invalidRemindText: string;
   @Input() remindText: string;
@@ -18,6 +19,8 @@ export class FormTextComponent implements OnInit {
   @Input() controlName: string;
   @Input() disabled = false;
   @Input() placeholder = '';
+  @Input() min = 0;
+  @Input() max = 255;
   @Output() onChange = new EventEmitter();
   invalidClassName = `${this.class_name} ${this.class_name}--invalid`;
   ngOnInit() {}

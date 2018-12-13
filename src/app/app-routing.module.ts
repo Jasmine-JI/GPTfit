@@ -11,6 +11,11 @@ const routes: Routes = [
     redirectTo: 'dashboard/my-activity',
     pathMatch: 'full'
   },
+  {
+    path: 'dashboard/settings',
+    redirectTo: 'dashboard/settings/user-settings',
+    pathMatch: 'full'
+  },
   { path: '404', component: Page404Component },
   { path: '403', component: Page403Component }
   // { path: '**', redirectTo: '404' }

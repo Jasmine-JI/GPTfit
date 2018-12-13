@@ -1,6 +1,7 @@
+
 <span [class]="remindCls">
   <span *ngIf="!isInvalid && !remindText">{{ remindText }}</span>
   <span *ngIf="isInvalid && invalidRemindText"  style="color:#c75353">{{ invalidRemindText }}</span>
   <span *ngIf="!isInvalid && remindText">{{remindText}}</span>
-  <span *ngIf="!remindText">{{ content?.length }}/{{maxLength}}</span>
+  <span *ngIf="isHadCount">{{ countText }}</span>
 </span>

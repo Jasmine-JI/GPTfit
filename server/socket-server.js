@@ -1,16 +1,31 @@
 const express = require('express');
 const http = require('http');
-const WebSocket = require('ws');
+var WebSocket = require('ws');
 
 const app = express();
-
+const https = require('https');
+const fs = require('fs');
+const SERVER_CONFIG = {
+  key: fs.readFileSync('/etc/ssl/free.key'),
+  // ca: fs.readFileSync('/etc/ssl/free_ca.crt'),
+  cert: fs.readFileSync('/etc/ssl/free.crt')
+};
+// const SERVER_CONFIG = {
+//   key: fs.readFileSync('/home/administrator/myWorkSpace/130/server.key'),
+//   cert: fs.readFileSync('/home/administrator/myWorkSpace/130/server.crt')
+// };
 //initialize a simple http server
-const server = http.createServer(app);
+// const server = http.createServer(app);
+const httpsServer = https.createServer(SERVER_CONFIG);
+httpsServer.listen(process.env.PORT || 3002, function () {
+  console.log('HTTPS sever started at ' + httpsServer.address().port);
+});
 
 //initialize the WebSocket server instance
 let wss = new WebSocket.Server({
-  server
+  server: httpsServer
 });
+
 
 
 // Broadcast to all.
@@ -206,6 +221,6 @@ function makeName(type) {
 }
 
 //start our server
-server.listen(process.env.PORT || 3002, () => {
-  console.log(`Server started on port ${server.address().port} :)`);
-});
+// server.listen(process.env.PORT || 3002, () => {
+//   console.log(`Server started on port ${server.address().port} :)`);
+// });

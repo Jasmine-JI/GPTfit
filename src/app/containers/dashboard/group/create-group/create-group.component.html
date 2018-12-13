@@ -191,6 +191,7 @@
               [disabled]="isEditing"
               [controlName]="formTextareaName"
               (onChange)="handleChangeTextarea($event)"
+              [isHadCount]="true"
               [isInvalid]="(groupDesc.invalid && groupDesc?.touched) || (f.submitted && groupDesc.hasError('required')) || (f.submitted && groupDesc.hasError('maxLength'))"
             >
             </app-form-textarea>

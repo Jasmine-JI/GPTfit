@@ -86,7 +86,7 @@ export class AllDurationComponent implements OnChanges, AfterViewInit {
       if (_type === '1') {
         name = '跑步';
       } else {
-        name = '自行車';
+        name = '騎乘';
       }
       const serie = { name, data };
       this.series.push(serie);
