@@ -26,9 +26,12 @@ export class PrivacySettingsComponent implements OnInit {
   @Input() userData: any;
   map: any;
   mark: any;
-  activityTracking: string;
-  activityTrackingReport: string;
-  lifeTrackingReport: string;
+  activityTrackingStatus = [false]; // ['mycoach'] 順序是暫時的，等其他選項確定再補
+  activityTrackingReportStatus = [false]; // ['mycoach'] 順序是暫時的，等其他選項確定再補
+  lifeTrackingReportStatus = [false]; // ['mycoach'] 順序是暫時的，等其他選項確定再補
+  activityTracking = [];
+  activityTrackingReport = [];
+  lifeTrackingReport = [];
   constructor(
     private settingsService: SettingsService,
     private utils: UtilsService,
@@ -48,13 +51,25 @@ export class PrivacySettingsComponent implements OnInit {
     });
     this.mark.setMap(this.map);
     const {
-      activity_tracking,
-      activity_tracking_report,
-      life_tracking_report
+      activityTracking,
+      activityTrackingReport,
+      lifeTrackingReport
     } = this.userData.privacy;
-    this.activityTracking = activity_tracking;
-    this.activityTrackingReport = activity_tracking_report;
-    this.lifeTrackingReport = life_tracking_report;
+    this.activityTracking = activityTracking;
+    this.detectCheckBoxValue(
+      this.activityTracking,
+      this.activityTrackingStatus
+    );
+    this.activityTrackingReport = activityTrackingReport;
+    this.detectCheckBoxValue(
+      this.activityTrackingReport,
+      this.activityTrackingReportStatus
+    );
+    this.lifeTrackingReport = lifeTrackingReport;
+    this.detectCheckBoxValue(
+      this.lifeTrackingReport,
+      this.lifeTrackingReportStatus
+    );
   }
   mouseEnter() {
     this.isDisplayBox = true;
@@ -62,7 +77,45 @@ export class PrivacySettingsComponent implements OnInit {
   mouseLeave() {
     this.isDisplayBox = false;
   }
-  handlePrivacySetting(e, type) {
+  handleCheckBox(event, idx, type) {
+    let tempArr = [];
+    let tempStatus = [];
+    if (type === 1) {
+      tempArr = this.activityTracking;
+      tempStatus = this.activityTrackingStatus;
+    } else if (type === 2) {
+      tempArr = this.activityTrackingReport;
+      tempStatus = this.activityTrackingReportStatus;
+    } else {
+      tempArr = this.lifeTrackingReport;
+      tempStatus = this.lifeTrackingReportStatus;
+    }
+    if (event.checked) {
+      tempStatus[idx] = true;
+      tempArr.push(event.source.value);
+    } else {
+      tempStatus[idx] = false;
+      const i = tempArr.findIndex(
+        x => x.value === event.source.value
+      );
+      tempArr.splice(i, 1);
+    }
+    this.handlePrivacySetting(tempArr, type);
+  }
+  detectCheckBoxValue(arr, statusArr) {
+    if (arr.findIndex(arrVal => arrVal === '1') === -1) {
+      arr.push('1');
+    }
+    arr.forEach((_arr, idx) => {
+      if (_arr === '') {
+        arr.splice(idx, 1);
+      }
+      if (_arr === '4') {
+        statusArr[0] = true;
+      }
+    });
+  }
+  handlePrivacySetting(arr, type) {
     const body = {
       token: this.utils.getToken(),
       privacy: {
@@ -72,22 +125,20 @@ export class PrivacySettingsComponent implements OnInit {
       }
     };
     if (type === 1) {
-      body.privacy.activityTracking = e.target.value;
+      body.privacy.activityTracking = arr;
     } else if (type === 2) {
-      body.privacy.activityTrackingReport = e.target.value;
+      body.privacy.activityTrackingReport = arr;
     } else {
-      body.privacy.lifeTrackingReport = e.target.value;
+      body.privacy.lifeTrackingReport = arr;
     }
-    this.settingsService
-      .updateUserProfile(body)
-      .subscribe(res => {
-        if (res.resultCode === 200) {
-          this.snackbar.open('成功更新隱私權設定', 'OK', {
-            duration: 5000
-          });
-        } else {
-          this.snackbar.open('更新失敗', 'OK', { duration: 5000 });
-        }
-      });
+    this.settingsService.updateUserProfile(body).subscribe(res => {
+      if (res.resultCode === 200) {
+        this.snackbar.open('成功更新隱私權設定', 'OK', {
+          duration: 5000
+        });
+      } else {
+        this.snackbar.open('更新失敗', 'OK', { duration: 5000 });
+      }
+    });
   }
 }
