@@ -66,6 +66,9 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
           this.isHadContainer = false;
           this.isDefaultOpend = false;
           this.isSideNavOpend = false;
+        } else {
+          this.mode = 'side';
+          this.isHadContainer = true;
         }
         if (
           _val.url.indexOf('/dashboard/coach-dashboard') > -1 ||

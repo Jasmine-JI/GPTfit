@@ -278,6 +278,7 @@ export class CoachDashboardComponent
       this.sendBoardCast();
     }
   }
+
   handleDemoinit(type) {
     let series;
     if (type === 0) {
@@ -681,6 +682,7 @@ export class CoachDashboardComponent
   }
   initHChart(option) {
     this.chart = stockChart(this.hrChartTarget.nativeElement, option);
+    setTimeout(() => this.chart.reflow(), 1500); // 重繪chart width
   }
   handleRangeArray(start, end) {
     const final = (end - start) / 10;
