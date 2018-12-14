@@ -545,11 +545,11 @@ export class BottomSheetComponent {
     if (type === 1 || type === 2) {
       coachType = type;
     }
-    if (type === 1 || type === 3) {
-      this.bottomSheetRef.dismiss();
+    if (type === 3) {
       event.preventDefault();
     }
-    if (type === 1) {
+    this.bottomSheetRef.dismiss();
+    if (type === 1 || type === 2) {
       this.router.navigateByUrl(
         `/dashboard/group-info/${this.groupId}/create?createType=2&coachType=${coachType}`
       );
