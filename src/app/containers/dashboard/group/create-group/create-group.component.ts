@@ -124,7 +124,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
     if (createType) {
       this.createType = +createType;
     }
-    if (location.pathname.indexOf('/dashboard/create-brand-group') > -1) {
+    if (location.pathname.indexOf('/dashboard/system/create-brand-group') > -1) {
       this.createType = 4;
     }
     this.groupId = this.route.snapshot.paramMap.get('groupId');
@@ -389,7 +389,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         this.groupService.createGroup(body).subscribe(res => {
           this.isEditing = false;
           if (res.resultCode === 200) {
-            this.router.navigateByUrl('/dashboard/all-group-list');
+            this.router.navigateByUrl('/dashboard/system/all-group-list');
           }
         });
       }
@@ -422,7 +422,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         href = '/dashboard/my-group-list';
         break;
       case 4:
-        href = '/dashboard/all-group-list';
+        href = '/dashboard/system/all-group-list';
         break;
       default:
         href = `/dashboard/group-info/${this.groupId}/edit`;

@@ -1,19 +1,20 @@
 .avatar-wrapper {
   position: relative;
-  max-width: 300px;
-  max-height: 300px;
-}
-.avatar-wrapper img {
-  width: 100%;
+  width: 195px;
+  height: 195px;
+  border-radius: 50%;
+  overflow: hidden;
+  img {
+    width: 100%;
+  }
 }
 .username-label {
-  position: absolute;
-  bottom: 25px;
-  width: 100%;
+  margin: 15px 0 37px;
   padding: 3px 10px;
-  color: #fff;
-  background: #11a9ed;
+  color: #3e3e3e;
+  text-align: center;
   font-size: 22px;
+  font-weight: 700;
 }
 .genesis-message {
   display: flex;
@@ -24,6 +25,19 @@
 .user-profile-wrapper {
   display: flex;
   justify-content: space-around;
+  .nav {
+    flex-direction: column;
+  }
+  .nav > li {
+    font-size: 19px;
+    padding: 10px 0px;
+    cursor: pointer;
+    color: #919191;
+    font-weight: 700;
+  }
+  .nav > li.active {
+    color: #26abe3;
+  }
 }
 @media(max-width: 991px) {
   .user-profile-wrapper {

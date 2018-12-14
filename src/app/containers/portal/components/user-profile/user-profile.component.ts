@@ -6,12 +6,13 @@ import { UtilsService } from '@shared/services/utils.service';
 @Component({
   selector: 'app-user-profile',
   templateUrl: './user-profile.component.html',
-  styleUrls: ['./user-profile.component.css']
+  styleUrls: ['./user-profile.component.scss']
 })
 export class UserProfileComponent implements OnInit {
   userImg: string;
   userId: string;
   userName: string;
+  chooseIdx = 1;
   constructor(
     private userProfileService: UserProfileService,
     private route: ActivatedRoute,
@@ -28,10 +29,12 @@ export class UserProfileComponent implements OnInit {
       const response: any = res;
       const { name, nameIcon } = response.info;
       this.userName = name;
-      this.userImg =
-        nameIcon
-          ? this.utils.buildBase64ImgString(nameIcon)
-          : '/assets/images/user.png';
+      this.userImg = nameIcon
+        ? this.utils.buildBase64ImgString(nameIcon)
+        : '/assets/images/user.png';
     });
+  }
+  handleProfileItem(idx) {
+    this.chooseIdx = idx;
   }
 }

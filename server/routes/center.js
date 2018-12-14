@@ -183,9 +183,9 @@ router.get('/innerAdmin', function (req, res, next) {
   } = req;
   const sql = `
     select m.group_id as groupId, m.access_right as accessRight,
-    m.member_id as userId, m.member_name as userName, g.group_name as groupName
-    from group_member_info m, group_info g
-    where m.access_right < 30 and m.group_id = g.group_id;
+    u.user_id as userId, u.login_acc as userName, g.group_name as groupName
+    from group_member_info m, group_info g, user_profile u
+    where m.access_right < 30 and m.group_id = g.group_id and u.user_id = m.member_id;
   `;
   con.query(sql, ['group_member_info', 'group_info'], function (err, rows) {
     if (err) {
