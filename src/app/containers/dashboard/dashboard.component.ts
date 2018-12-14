@@ -69,8 +69,6 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
         } else {
           this.mode = 'side';
           this.isHadContainer = true;
-          this.isDefaultOpend = true;
-          this.isSideNavOpend = true;
         }
         if (
           _val.url.indexOf('/dashboard/coach-dashboard') > -1 ||
@@ -277,7 +275,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
   }
   toggleSideNav(sideNav: MatSidenav) {
     this.isSideNavOpend = !this.isSideNavOpend;
-    sideNav.toggle().then(result => {
+    return sideNav.toggle().then(result => {
       const toogleResult = result;
       if (toogleResult === 'open') {
         this.isSideNavOpend = true;
