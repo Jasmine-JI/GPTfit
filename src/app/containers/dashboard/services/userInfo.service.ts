@@ -292,7 +292,7 @@ export class UserInfoService {
             isInitial: true,
             groupAccessRight
           });
-          if (nameIcon && name) {
+          if (name) {
             this.userName$.next(name);
             this.userIcon$.next(nameIcon);
             this.userId$.next(nameId);

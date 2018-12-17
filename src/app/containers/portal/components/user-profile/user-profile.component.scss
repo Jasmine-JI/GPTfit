@@ -4,6 +4,7 @@
   height: 195px;
   border-radius: 50%;
   overflow: hidden;
+  margin: 0 auto;
   img {
     width: 100%;
   }
@@ -23,8 +24,6 @@
   flex-direction: column;
 }
 .user-profile-wrapper {
-  display: flex;
-  justify-content: space-around;
   .nav {
     flex-direction: column;
   }
@@ -38,6 +37,11 @@
   .nav > li.active {
     color: #26abe3;
   }
+}
+.user-profile-title {
+  color: #26abe3;
+  font-weight: 700;
+  font-size: 19px;
 }
 @media(max-width: 991px) {
   .user-profile-wrapper {

@@ -12,6 +12,7 @@ export class UserProfileComponent implements OnInit {
   userImg: string;
   userId: string;
   userName: string;
+  description: string;
   chooseIdx = 1;
   constructor(
     private userProfileService: UserProfileService,
@@ -27,7 +28,8 @@ export class UserProfileComponent implements OnInit {
     };
     this.userProfileService.getUserProfile(body).subscribe(res => {
       const response: any = res;
-      const { name, nameIcon } = response.info;
+      const { name, nameIcon, description } = response.info;
+      this.description = description;
       this.userName = name;
       this.userImg = nameIcon
         ? this.utils.buildBase64ImgString(nameIcon)
