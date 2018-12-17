@@ -81,10 +81,10 @@ const routes: Routes = [
         path: 'my-group-list',
         component: MyGroupListComponent
       },
-      {
-        path: 'my-group-list/create',
-        component: CreateGroupComponent
-      },
+      // {
+      //   path: 'my-group-list/create',
+      //   component: CreateGroupComponent
+      // },
 
       {
         path: 'group-search',
