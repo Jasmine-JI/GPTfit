@@ -24,7 +24,7 @@ const Highcharts: any = _Highcharts; // 不檢查highchart型態
 @Component({
   selector: 'app-activity-info',
   templateUrl: './activity-info.component.html',
-  styleUrls: ['./activity-info.component.css'],
+  styleUrls: ['./activity-info.component.css', '../../group/group-style.css'],
   encapsulation: ViewEncapsulation.None
 })
 export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {

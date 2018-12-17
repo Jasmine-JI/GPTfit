@@ -26,7 +26,7 @@ import { UtilsService } from '@shared/services/utils.service';
 @Component({
   selector: 'app-group-search',
   templateUrl: './group-search.component.html',
-  styleUrls: ['./group-search.component.css', '../group-style.css'],
+  styleUrls: ['./group-search.component.css'],
   encapsulation: ViewEncapsulation.None
 })
 export class GroupSearchComponent implements OnInit {

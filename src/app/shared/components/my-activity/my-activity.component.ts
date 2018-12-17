@@ -11,7 +11,7 @@ import {
   Sort,
   MatPaginatorIntl
 } from '@angular/material';
-import { ActivityService } from '../../services/activity.service';
+import { ActivityService } from '@shared/services/activity.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -20,7 +20,7 @@ import { GlobalEventsManager } from '@shared/global-events-manager';
 @Component({
   selector: 'app-my-activity',
   templateUrl: './my-activity.component.html',
-  styleUrls: ['./my-activity.component.css', '../../group/group-style.css']
+  styleUrls: ['./my-activity.component.css']
 })
 export class MyActivityComponent implements OnInit, OnDestroy {
   logSource = new MatTableDataSource<any>();

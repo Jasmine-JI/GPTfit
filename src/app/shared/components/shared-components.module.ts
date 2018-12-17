@@ -20,7 +20,7 @@ import { MemberCapsuleComponent } from './member-capsule/member-capsule.componen
 import { SharedPipes } from '@shared/pipes/shared-pipes';
 import { Page403Component } from './page403/page403.component';
 import { AlaIframeComponent } from './ala-iframe/ala-iframe.component';
-
+import { MyActivityComponent } from './my-activity/my-activity.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -29,7 +29,7 @@ import { AlaIframeComponent } from './ala-iframe/ala-iframe.component';
     ReactiveFormsModule,
     SharedModule,
     CustomMaterialModule,
-    SharedPipes
+    SharedPipes,
   ],
   declarations: [
     NavbarComponent,
@@ -45,7 +45,8 @@ import { AlaIframeComponent } from './ala-iframe/ala-iframe.component';
     FormTextareaComponent,
     MemberCapsuleComponent,
     Page403Component,
-    AlaIframeComponent
+    AlaIframeComponent,
+    MyActivityComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -61,7 +62,8 @@ import { AlaIframeComponent } from './ala-iframe/ala-iframe.component';
     FormRemindComponent,
     FormTextareaComponent,
     MemberCapsuleComponent,
-    AlaIframeComponent
+    AlaIframeComponent,
+    MyActivityComponent
   ]
 })
 export class SharedComponentsModule {}

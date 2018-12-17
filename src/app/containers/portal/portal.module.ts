@@ -43,7 +43,7 @@ import { CustomMaterialModule } from '@shared/custom-material.module.ts';
 import { BasicInfoComponent } from './components/user-profile/basic-info/basic-info.component';
 import { ActivityRecordComponent } from './components/user-profile/activity-record/activity-record.component';
 import { SportReportComponent } from './components/user-profile/sport-report/sport-report.component';
-
+import { ActivityService } from '@shared/services/activity.service.ts';
 @NgModule({
   imports: [
     CommonModule,
@@ -71,6 +71,7 @@ import { SportReportComponent } from './components/user-profile/sport-report/spo
     SignupService,
     ForgetService,
     UserProfileService,
+    ActivityService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: EmptyResponseBodyErrorInterceptor,

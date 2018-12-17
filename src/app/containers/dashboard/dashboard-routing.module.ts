@@ -27,7 +27,7 @@ import { CreateGroupComponent } from './group/create-group/create-group.componen
 import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
 import { DashboardGuard } from './guards/dashboard-guard';
 import { ActivityInfoComponent } from './components/activity-info/activity-info.component';
-import { MyActivityComponent } from './components/my-activity/my-activity.component';
+import { MyActivityComponent } from '@shared/components/my-activity/my-activity.component';
 import { SportReportComponent } from './components/sport-report/sport-report.component';
 import { MyDeviceComponent } from './components/device/my-device/my-device.component';
 import { ProductInfoComponent } from './components/device/product-info/product-info.component';

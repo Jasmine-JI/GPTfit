@@ -24,7 +24,7 @@ import { GlobalEventsManager } from '@shared/global-events-manager';
 @Component({
   selector: 'app-my-group-list',
   templateUrl: './my-group-list.component.html',
-  styleUrls: ['./my-group-list.component.css', '../group-style.css']
+  styleUrls: ['./my-group-list.component.css']
 })
 export class MyGroupListComponent implements OnInit, OnDestroy {
   logSource = new MatTableDataSource<any>();

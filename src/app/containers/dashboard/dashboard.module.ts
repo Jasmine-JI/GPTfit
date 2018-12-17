@@ -54,7 +54,6 @@ import { PeopleSelectorWinComponent } from './components/people-selector-win/peo
 import { DashboardGuard } from './guards/dashboard-guard';
 import { ActivityInfoComponent } from './components/activity-info/activity-info.component';
 import { ActivityService } from './services/activity.service';
-import { MyActivityComponent } from './components/my-activity/my-activity.component';
 import { SportTypePipe } from './pipes/sport-type.pipe';
 import { SportDatePipe } from './pipes/sport-date.pipe';
 import { SportTimePipe } from './pipes/sport-time.pipe';
@@ -157,7 +156,6 @@ import { PersonalPreferencesComponent } from './components/settings/personal-pre
     InnerSettingsComponent,
     PeopleSelectorWinComponent,
     ActivityInfoComponent,
-    MyActivityComponent,
     SportTypePipe,
     SportDatePipe,
     SportTimePipe,

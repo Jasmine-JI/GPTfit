@@ -8,6 +8,9 @@ import { ProductTypePipe } from '@shared/pipes/product-type.pipe';
 import { LineBreakPipe } from './line-break.pipe';
 import { GroupStatusPipe } from './group-status.pipe';
 import { GroupLevelNamePipe } from './group-level-name.pipe';
+import { SportDatePipe } from '@shared/pipes/sport-date.pipe';
+import { SportTimePipe } from '@shared/pipes/sport-time.pipe';
+import { SportPacePipe } from '@shared/pipes/sport-pace.pipe';
 
 
 @NgModule({
@@ -23,7 +26,10 @@ import { GroupLevelNamePipe } from './group-level-name.pipe';
     ProductTypePipe,
     LineBreakPipe,
     GroupStatusPipe,
-    GroupLevelNamePipe
+    GroupLevelNamePipe,
+    SportDatePipe,
+    SportTimePipe,
+    SportPacePipe
   ],
   exports: [
     SexPipe,
@@ -34,7 +40,10 @@ import { GroupLevelNamePipe } from './group-level-name.pipe';
     ProductTypePipe,
     LineBreakPipe,
     GroupStatusPipe,
-    GroupLevelNamePipe
+    GroupLevelNamePipe,
+    SportDatePipe,
+    SportTimePipe,
+    SportPacePipe
   ]
 })
 export class SharedPipes {}
