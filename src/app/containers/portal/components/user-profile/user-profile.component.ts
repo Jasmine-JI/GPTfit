@@ -51,9 +51,9 @@ export class UserProfileComponent implements OnInit {
       case 3:
         url = `/user-profile/${this.userId}/sport-report`;
         break;
-      case 4:
-        url = `/activity/${this.fileId}`;
-        break;
+      // case 4:
+      //   url = `/activity/${this.fileId}`;
+      //   break;
       default:
         url = `/user-profile/${this.userId}`;
     }
@@ -85,8 +85,8 @@ export class UserProfileComponent implements OnInit {
     if (url.indexOf(`/user-profile/${this.userId}/sport-report`) > -1) {
       this.chooseIdx = 3;
     }
-    if (url.indexOf(`/activity/${this.fileId}`) > -1) {
-      this.chooseIdx = 4;
-    }
+    // if (url.indexOf(`/activity/${this.fileId}`) > -1) {
+    //   this.chooseIdx = 4;
+    // }
   }
 }

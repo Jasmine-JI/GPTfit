@@ -11,13 +11,10 @@ import { MapInfoComponent } from './components/map-info/map-info.component';
 import { MapGPXService } from '@shared/services/map-gpx.service';
 import { RankFormService } from './services/rank-form.service';
 import { MapService } from '@shared/services/map.service';
-import { LoadingComponent } from '../../shared/components/loading/loading.component';
-import { PaginationComponent } from '../../shared/components/pagination/pagination.component';
 import { GlobalEventsManager } from '@shared/global-events-manager';
 import { PasswordComponent } from './components/password/password.component';
 import { ResetPasswordService } from './services/reset-password.service';
 import { EmptyResponseBodyErrorInterceptor } from './services/empty-response-body-error-interceptor';
-import { BrowserXhr } from '@angular/http';
 import { PatternValidator } from '@angular/forms';
 import { MyDatePickerModule } from 'mydatepicker';
 import { SharedComponentsModule } from '@shared/components/shared-components.module';
@@ -42,8 +39,9 @@ import { FirstLoginComponent } from './components/first-login/first-login.compon
 import { CustomMaterialModule } from '@shared/custom-material.module.ts';
 import { BasicInfoComponent } from './components/user-profile/basic-info/basic-info.component';
 import { ActivityRecordComponent } from './components/user-profile/activity-record/activity-record.component';
-import { SportReportComponent } from './components/user-profile/sport-report/sport-report.component';
 import { ActivityService } from '@shared/services/activity.service.ts';
+import { ReportService } from '@shared/services/report.service';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -72,6 +70,7 @@ import { ActivityService } from '@shared/services/activity.service.ts';
     ForgetService,
     UserProfileService,
     ActivityService,
+    ReportService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: EmptyResponseBodyErrorInterceptor,
@@ -93,8 +92,7 @@ import { ActivityService } from '@shared/services/activity.service.ts';
     GroupInfoComponent,
     FirstLoginComponent,
     BasicInfoComponent,
-    ActivityRecordComponent,
-    SportReportComponent
+    ActivityRecordComponent
   ],
   entryComponents: [MessageBoxComponent]
 })

@@ -28,7 +28,7 @@ import { InnerSettingsComponent } from './components/inner-settings/inner-settin
 import { DashboardGuard } from './guards/dashboard-guard';
 import { ActivityInfoComponent } from '@shared/components/activity-info/activity-info.component';
 import { MyActivityComponent } from '@shared/components/my-activity/my-activity.component';
-import { SportReportComponent } from './components/sport-report/sport-report.component';
+import { SportReportComponent } from '@shared/components/sport-report/sport-report.component';
 import { MyDeviceComponent } from './components/device/my-device/my-device.component';
 import { ProductInfoComponent } from './components/device/product-info/product-info.component';
 import { TrainLiveComponent } from './components/train-live/train-live.component';

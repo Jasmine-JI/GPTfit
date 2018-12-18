@@ -22,7 +22,18 @@ import { Page403Component } from './page403/page403.component';
 import { AlaIframeComponent } from './ala-iframe/ala-iframe.component';
 import { MyActivityComponent } from './my-activity/my-activity.component';
 import { ActivityInfoComponent } from './activity-info/activity-info.component';
-
+import {
+  SportReportComponent,
+  ActivityLevelsComponent,
+  AllDurationComponent,
+  AllGroupsComponent,
+  AllTimesComponent,
+  BurnCaloriesComponent,
+  ColumnstackedChartComponent,
+  OtherBurnCaloriesComponent,
+  PartialMuscleInfoComponent,
+  ScatterChartComponent
+} from './sport-report';
 @NgModule({
   imports: [
     CommonModule,
@@ -49,7 +60,17 @@ import { ActivityInfoComponent } from './activity-info/activity-info.component';
     Page403Component,
     AlaIframeComponent,
     MyActivityComponent,
-    ActivityInfoComponent
+    ActivityInfoComponent,
+    SportReportComponent,
+    ActivityLevelsComponent,
+    AllDurationComponent,
+    AllGroupsComponent,
+    AllTimesComponent,
+    BurnCaloriesComponent,
+    ColumnstackedChartComponent,
+    OtherBurnCaloriesComponent,
+    PartialMuscleInfoComponent,
+    ScatterChartComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -67,7 +88,17 @@ import { ActivityInfoComponent } from './activity-info/activity-info.component';
     MemberCapsuleComponent,
     AlaIframeComponent,
     MyActivityComponent,
-    ActivityInfoComponent
+    ActivityInfoComponent,
+    SportReportComponent,
+    ActivityLevelsComponent,
+    AllDurationComponent,
+    AllGroupsComponent,
+    AllTimesComponent,
+    BurnCaloriesComponent,
+    ColumnstackedChartComponent,
+    OtherBurnCaloriesComponent,
+    PartialMuscleInfoComponent,
+    ScatterChartComponent
   ]
 })
 export class SharedComponentsModule {}

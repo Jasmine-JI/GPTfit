@@ -14,7 +14,7 @@ import { GroupInfoComponent } from './components/group-info/group-info.component
 import { FirstLoginComponent } from './components/first-login/first-login.component';
 import { BasicInfoComponent } from './components/user-profile/basic-info/basic-info.component';
 import { ActivityRecordComponent } from './components/user-profile/activity-record/activity-record.component';
-import { SportReportComponent } from './components/user-profile/sport-report/sport-report.component';
+import { SportReportComponent } from '@shared/components/sport-report/sport-report.component';
 import { ActivityInfoComponent } from '@shared/components/activity-info/activity-info.component';
 
 const routes: Routes = [
@@ -63,13 +63,7 @@ const routes: Routes = [
       },
       {
         path: 'activity/:fileId',
-        component: UserProfileComponent,
-        children: [
-          {
-            path: '',
-            component: ActivityInfoComponent
-          }
-        ]
+        component: ActivityInfoComponent
       },
       {
         path: 'user-profile/:userId',
