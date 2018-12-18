@@ -25,10 +25,10 @@
   <div [style.visibility]="isLoading ? 'hidden': 'visible'">
     <div class="group-edit-bar" style="justify-content: flex-end;">
       <button class="alatech-btn alatech-btn--default activty-btn"
-        title="返回列表"
-        [routerLink]="['/dashboard/my-activity']"
+        title="返回"
+        (click)="goBack()"
       >
-        返回列表
+        返回
       </button>
     </div>
     <div class="ala-dashboard-title activty-title">
@@ -744,10 +744,10 @@
   </div>
   <div class="group-manage__action">
     <button class="alatech-btn group-manage__btn"
-      title="返回列表"
-      [routerLink]="['/dashboard/my-activity']"
+      title="返回"
+      (click)="goBack()"
     >
-      返回列表
+      返回
     </button>
   </div>
 </ng-container>

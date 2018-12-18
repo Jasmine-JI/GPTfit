@@ -155,7 +155,6 @@ import { PersonalPreferencesComponent } from './components/settings/personal-pre
     RightSettingWinComponent,
     InnerSettingsComponent,
     PeopleSelectorWinComponent,
-    ActivityInfoComponent,
     SportTypePipe,
     SportDatePipe,
     SportTimePipe,

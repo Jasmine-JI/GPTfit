@@ -43,12 +43,16 @@
   font-weight: 700;
   font-size: 19px;
 }
-@media(max-width: 991px) {
+@media(max-width: 767px) {
+  .genesis-message {
+    margin-top: 50px;
+  }
   .user-profile-wrapper {
     flex-direction: column;
     align-items: center;
-  }
-  .genesis-message {
-    margin-top: 50px;
+    .nav {
+      flex-direction: row;
+      justify-content: space-between;
+    }
   }
 }

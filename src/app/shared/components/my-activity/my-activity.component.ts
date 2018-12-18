@@ -2,7 +2,8 @@ import {
   Component,
   OnInit,
   ViewChild,
-  OnDestroy
+  OnDestroy,
+  Input
 } from '@angular/core';
 import {
   MatTableDataSource,
@@ -30,6 +31,9 @@ export class MyActivityComponent implements OnInit, OnDestroy {
   token: string;
   isLoading = false;
   isEmpty = false;
+  @Input() isPortal = false;
+  @Input() userName;
+
   @ViewChild('paginator')
   paginator: MatPaginator;
   constructor(
@@ -103,8 +107,9 @@ export class MyActivityComponent implements OnInit, OnDestroy {
     const body = {
       token: this.token,
       type: '9',
-      page: this.currentPage && this.currentPage.pageIndex.toString() || '0',
-      pageCounts: this.currentPage && this.currentPage.pageSize.toString() || '10',
+      page: (this.currentPage && this.currentPage.pageIndex.toString()) || '0',
+      pageCounts:
+        (this.currentPage && this.currentPage.pageSize.toString()) || '10',
       filterStartTime: '',
       filterEndTime: ''
     };
@@ -120,7 +125,10 @@ export class MyActivityComponent implements OnInit, OnDestroy {
       }
     });
   }
-  goDetail(id) {
-    this.router.navigateByUrl(`dashboard/my-activity/detail/${id}`);
+  goDetail(fileId) {
+    if (this.isPortal) {
+      return this.router.navigateByUrl(`/activity/${fileId}`);
+    }
+    this.router.navigateByUrl(`/dashboard/activity/${fileId}`);
   }
 }

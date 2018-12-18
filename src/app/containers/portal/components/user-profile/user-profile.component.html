@@ -28,14 +28,18 @@
         ></app-basic-info>
       </ng-container>
       <ng-container *ngIf="chooseIdx === 2">
-        <app-activity-record
+        <app-my-activity
+          [isPortal]="true"
           [userName]="userName"
-        ></app-activity-record>
-        <app-my-activity></app-my-activity>
+        ></app-my-activity>
       </ng-container>
       <ng-container *ngIf="chooseIdx === 3">
         <app-sport-report
         ></app-sport-report>
+      </ng-container>
+      <ng-container *ngIf="chooseIdx === 4">
+        <app-activity-info
+        ></app-activity-info>
       </ng-container>
     </div>
     <!-- <div class="genesis-message">

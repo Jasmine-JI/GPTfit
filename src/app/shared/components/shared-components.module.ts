@@ -21,6 +21,8 @@ import { SharedPipes } from '@shared/pipes/shared-pipes';
 import { Page403Component } from './page403/page403.component';
 import { AlaIframeComponent } from './ala-iframe/ala-iframe.component';
 import { MyActivityComponent } from './my-activity/my-activity.component';
+import { ActivityInfoComponent } from './activity-info/activity-info.component';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -29,7 +31,7 @@ import { MyActivityComponent } from './my-activity/my-activity.component';
     ReactiveFormsModule,
     SharedModule,
     CustomMaterialModule,
-    SharedPipes,
+    SharedPipes
   ],
   declarations: [
     NavbarComponent,
@@ -46,7 +48,8 @@ import { MyActivityComponent } from './my-activity/my-activity.component';
     MemberCapsuleComponent,
     Page403Component,
     AlaIframeComponent,
-    MyActivityComponent
+    MyActivityComponent,
+    ActivityInfoComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -63,7 +66,8 @@ import { MyActivityComponent } from './my-activity/my-activity.component';
     FormTextareaComponent,
     MemberCapsuleComponent,
     AlaIframeComponent,
-    MyActivityComponent
+    MyActivityComponent,
+    ActivityInfoComponent
   ]
 })
 export class SharedComponentsModule {}

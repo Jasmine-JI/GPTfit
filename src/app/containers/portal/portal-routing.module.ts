@@ -12,6 +12,10 @@ import { ForgetpwdComponent } from './components/forgetpwd/forgetpwd.component';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
 import { GroupInfoComponent } from './components/group-info/group-info.component';
 import { FirstLoginComponent } from './components/first-login/first-login.component';
+import { BasicInfoComponent } from './components/user-profile/basic-info/basic-info.component';
+import { ActivityRecordComponent } from './components/user-profile/activity-record/activity-record.component';
+import { SportReportComponent } from './components/user-profile/sport-report/sport-report.component';
+import { ActivityInfoComponent } from '@shared/components/activity-info/activity-info.component';
 
 const routes: Routes = [
   {
@@ -49,7 +53,37 @@ const routes: Routes = [
       },
       {
         path: 'user-profile/:userId',
-        component: UserProfileComponent
+        component: UserProfileComponent,
+        children: [
+          {
+            path: 'activity/:id',
+            component: ActivityRecordComponent
+          }
+        ]
+      },
+      {
+        path: 'activity/:fileId',
+        component: UserProfileComponent,
+        children: [
+          {
+            path: '',
+            component: ActivityInfoComponent
+          }
+        ]
+      },
+      {
+        path: 'user-profile/:userId',
+        component: UserProfileComponent,
+        children: [
+          {
+            path: 'activity-list',
+            component: ActivityRecordComponent
+          },
+          {
+            path: 'sport-report',
+            component: SportReportComponent
+          }
+        ]
       },
       {
         path: 'group-info/:groupId',

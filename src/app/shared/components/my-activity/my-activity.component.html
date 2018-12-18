@@ -1,6 +1,13 @@
 <div>
   <div class="d-flex justify-content-between" style="margin-bottom: 15px">
-    <span style="color: #157fcc; font-weight:700">
+    <span class="user-profile-title"
+      *ngIf="isPortal"
+    >
+      {{userName}}的活動
+    </span>
+    <span style="color: #157fcc; font-weight:700"
+      *ngIf="!isPortal"
+    >
       我的活動
     </span>
     <div class="group-edit-bar">

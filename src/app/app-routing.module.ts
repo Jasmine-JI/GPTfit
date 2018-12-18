@@ -8,7 +8,7 @@ const routes: Routes = [
   { path: '', component: PortalComponent },
   {
     path: 'dashboard',
-    redirectTo: 'dashboard/my-activity',
+    redirectTo: 'dashboard/activity-list',
     pathMatch: 'full'
   },
   {
