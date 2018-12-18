@@ -25,6 +25,10 @@ export class UserProfileComponent implements OnInit {
 
   ngOnInit() {
     this.userId = this.route.snapshot.paramMap.get('userId');
+    if (this.userId) {
+      this.utils.setSessionStorageObject('visitedId', this.userId);
+    }
+
     this.fileId = this.route.snapshot.paramMap.get('fileId');
     this.detectUrlChange(location.pathname);
     this.router.events.subscribe((val: NavigationEnd) => {
@@ -36,6 +40,9 @@ export class UserProfileComponent implements OnInit {
   }
   handleProfileItem(idx) {
     this.chooseIdx = idx;
+    if (!this.userId) {
+      this.userId = this.utils.getSessionStorageObject('visitedId');
+    }
     let url = '';
     switch (this.chooseIdx) {
       case 2:

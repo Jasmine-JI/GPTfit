@@ -52,7 +52,6 @@ import { RightSettingWinComponent } from './group/right-setting-win/right-settin
 import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
 import { PeopleSelectorWinComponent } from './components/people-selector-win/people-selector-win.component';
 import { DashboardGuard } from './guards/dashboard-guard';
-import { ActivityInfoComponent } from './components/activity-info/activity-info.component';
 import { ActivityService } from './services/activity.service';
 import { SportTypePipe } from './pipes/sport-type.pipe';
 import { SportDatePipe } from './pipes/sport-date.pipe';

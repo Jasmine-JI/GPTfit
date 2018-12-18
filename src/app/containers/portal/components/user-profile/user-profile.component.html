@@ -13,7 +13,7 @@
         <li [class.active]="chooseIdx === 1"
           (click)="handleProfileItem(1)"
         >基本資訊</li>
-        <li [class.active]="chooseIdx === 2"
+        <li [class.active]="chooseIdx === 2 || chooseIdx === 4"
           (click)="handleProfileItem(2)"
         >活動紀錄</li>
         <li [class.active]="chooseIdx === 3"
