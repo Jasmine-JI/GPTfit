@@ -50,6 +50,22 @@
   margin-top: 15px;
   color: #c75353;
 }
+.group-label {
+  color: #26abe3;
+  font-size: 18px;
+}
+.group-list {
+  font-size: 18px;
+  color: #919191;
+  label {
+    margin: 0;
+  }
+  .group-list-item + .group-list-item {
+    margin-top: 15px;
+  }
+  margin-bottom: 20px;
+}
+
 @media(max-width: 767px) {
   .mat-paginator-page-size-label {
     text-align: right;

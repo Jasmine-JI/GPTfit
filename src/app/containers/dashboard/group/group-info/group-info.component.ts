@@ -16,7 +16,7 @@ import { GlobalEventsManager } from '@shared/global-events-manager';
 @Component({
   selector: 'app-group-info',
   templateUrl: './group-info.component.html',
-  styleUrls: ['./group-info.component.css', '../group-style.css'],
+  styleUrls: ['./group-info.component.scss', '../group-style.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class GroupInfoComponent implements OnInit, OnDestroy {
@@ -44,6 +44,7 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
     isSystemDeveloper: false,
     isSystemMaintainer: false
   };
+  chooseIdx = 1;
   visitorDetail: any;
   isLoading = false;
   userId: number;
@@ -65,11 +66,16 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
       this.userInfoService.getUserAccessRightDetail().subscribe(res => {
         this.visitorDetail = res;
         const { accessRight, isCanManage, isGroupAdmin } = this.visitorDetail;
-        if (isAutoApplyGroup && (+accessRight <= 29 || isCanManage || isGroupAdmin)) { // 00~29無法利用qr 掃描自動加入群組
+        if (
+          isAutoApplyGroup &&
+          (+accessRight <= 29 || isCanManage || isGroupAdmin)
+        ) {
+          // 00~29無法利用qr 掃描自動加入群組
           this.utils.removeLocalStorageObject('isAutoApplyGroup');
           isAutoApplyGroup = false;
         }
-        if (isAutoApplyGroup) { // 00~29無法利用qr 掃描自動加入群組
+        if (isAutoApplyGroup) {
+          // 00~29無法利用qr 掃描自動加入群組
           this.handleActionGroup(1);
           this.utils.removeLocalStorageObject('isAutoApplyGroup');
           isAutoApplyGroup = false;
@@ -137,6 +143,9 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
         this.router.navigateByUrl(`/404`);
       }
     });
+  }
+  handleGroupItem(idx) {
+    this.chooseIdx = idx;
   }
   handleActionGroup(_type) {
     const body = {
@@ -240,12 +249,15 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
               });
             }
           }
-          if (this.groupLevel === '60') { // 如果是教練課群組
-            this.normalCoaches = this.groupInfos.filter( // 一般教練
+          if (this.groupLevel === '60') {
+            // 如果是教練課群組
+            this.normalCoaches = this.groupInfos.filter(
+              // 一般教練
               _info =>
                 _info.accessRight === '60' && _info.groupId === this.groupId
             );
-            this.PFCoaches = this.groupInfos.filter( // 體適能教練
+            this.PFCoaches = this.groupInfos.filter(
+              // 體適能教練
               _info =>
                 _info.accessRight === '50' && _info.groupId === this.groupId
             );

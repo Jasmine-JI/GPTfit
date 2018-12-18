@@ -16,7 +16,7 @@ import { MessageBoxComponent } from '@shared/components/message-box/message-box.
 @Component({
   selector: 'app-my-device',
   templateUrl: './my-device.component.html',
-  styleUrls: ['./my-device.component.css', '../../../group/group-style.css']
+  styleUrls: ['./my-device.component.css', '../../../group/group-style.scss']
 })
 export class MyDeviceComponent implements OnInit, OnDestroy {
   logSource = new MatTableDataSource<any>();

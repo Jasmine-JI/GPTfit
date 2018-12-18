@@ -30,7 +30,7 @@ import { MatBottomSheet, MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA} from '@angula
 @Component({
   selector: 'app-edit-group-info',
   templateUrl: './edit-group-info.component.html',
-  styleUrls: ['./edit-group-info.component.css', '../group-style.css'],
+  styleUrls: ['./edit-group-info.component.css', '../group-style.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class EditGroupInfoComponent implements OnInit, OnDestroy {
