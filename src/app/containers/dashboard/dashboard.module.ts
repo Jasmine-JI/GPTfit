@@ -73,6 +73,7 @@ import { AccountInfoComponent } from './components/settings/account-info/account
 import { SettingsService } from './services/settings.service';
 import { UserProfileService } from '@shared/services/user-profile.service';
 import { PersonalPreferencesComponent } from './components/settings/personal-preferences/personal-preferences.component';
+import { CommercePlanTableComponent } from './group/commerce-plan-table/commerce-plan-table.component';
 
 @NgModule({
   imports: [
@@ -157,7 +158,8 @@ import { PersonalPreferencesComponent } from './components/settings/personal-pre
     UserSettingsComponent,
     PrivacySettingsComponent,
     AccountInfoComponent,
-    PersonalPreferencesComponent
+    PersonalPreferencesComponent,
+    CommercePlanTableComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
