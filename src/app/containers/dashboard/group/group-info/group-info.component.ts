@@ -12,6 +12,9 @@ import { UtilsService } from '@shared/services/utils.service';
 import { Router } from '@angular/router';
 import { UserInfoService } from '../../services/userInfo.service';
 import { GlobalEventsManager } from '@shared/global-events-manager';
+import { MatDialog } from '@angular/material';
+import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { toMemberText } from '../desc';
 
 @Component({
   selector: 'app-group-info',
@@ -56,7 +59,8 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
     private utils: UtilsService,
     private router: Router,
     private userInfoService: UserInfoService,
-    private globalEventsManager: GlobalEventsManager
+    private globalEventsManager: GlobalEventsManager,
+    public dialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -147,12 +151,34 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
   handleGroupItem(idx) {
     this.chooseIdx = idx;
   }
+
   handleActionGroup(_type) {
     const body = {
       token: this.token,
       groupId: this.groupId,
       actionType: _type
     };
+    if (_type === 1 && this.groupLevel === '60') { // 申請加入
+      return this.dialog.open(MessageBoxComponent, {
+        hasBackdrop: true,
+        data: {
+          title: '免責聲明',
+          body: toMemberText,
+          confirmText: '我同意',
+          cancelText: '不同意',
+          onConfirm: () => {
+            this.groupService
+              .actionGroup(body)
+              .subscribe(({ resultCode, info: { selfJoinStatus } }) => {
+                if (resultCode === 200) {
+                  this.joinStatus = selfJoinStatus;
+                }
+              });
+          }
+        }
+      });
+    }
+
     const isBeenGroupMember = this.joinStatus === 2;
     this.groupService
       .actionGroup(body)

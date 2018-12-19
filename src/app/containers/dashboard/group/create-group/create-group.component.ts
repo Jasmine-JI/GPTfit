@@ -26,7 +26,7 @@ import { GlobalEventsManager } from '@shared/global-events-manager';
 @Component({
   selector: 'app-create-group',
   templateUrl: './create-group.component.html',
-  styleUrls: ['./create-group.component.css', '../group-style.scss'],
+  styleUrls: ['./create-group.component.scss', '../group-style.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class CreateGroupComponent implements OnInit, OnDestroy {
@@ -46,6 +46,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
   branchAdministrators: any;
   coachAdministrators: any;
   remindText = '※不得超過32個字元';
+  remindDescText = '※不得超過500個字元';
   inValidText = '欄位為必填';
   textareaMaxLength = 500;
   form: FormGroup;

@@ -26,6 +26,7 @@ import { forkJoin } from 'rxjs/observable/forkJoin';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { GlobalEventsManager } from '@shared/global-events-manager';
 import { MatBottomSheet, MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA} from '@angular/material';
+import { toCoachText } from '../desc';
 
 @Component({
   selector: 'app-edit-group-info',
@@ -535,6 +536,7 @@ export class BottomSheetComponent {
   constructor(
     private bottomSheetRef: MatBottomSheetRef<BottomSheetComponent>,
     private router: Router,
+    public dialog: MatDialog,
     @Inject(MAT_BOTTOM_SHEET_DATA) private data: any
   ) {}
   get groupId() {
@@ -550,9 +552,21 @@ export class BottomSheetComponent {
     }
     this.bottomSheetRef.dismiss();
     if (type === 1 || type === 2) {
-      this.router.navigateByUrl(
-        `/dashboard/group-info/${this.groupId}/create?createType=2&coachType=${coachType}`
-      );
+      this.dialog.open(MessageBoxComponent, {
+        hasBackdrop: true,
+        data: {
+          title: '建立課程說明',
+          body: toCoachText,
+          confirmText: '我同意',
+          cancelText: '不同意',
+          onConfirm: () => {
+            this.router.navigateByUrl(
+              `/dashboard/group-info/${this.groupId}/create?createType=2&coachType=${coachType}`
+            );
+          }
+        }
+      });
+
     }
   }
 }

@@ -24,7 +24,8 @@
         <span style="color: #26abe3; font-weight:700"
           *ngIf="createType === 2"
         >
-          新增教練課
+          <span *ngIf="coachType === 1">課程資訊-專業課程</span>
+          <span *ngIf="coachType === 2">課程資訊-體適能指導</span>
         </span>
         <span style="color: #26abe3; font-weight:700"
           *ngIf="createType === 3"
@@ -90,7 +91,10 @@
           </app-form-text>
         </div>
         <div class="ala-list__item" *ngIf="createType !== 3 && createType !== 4">
-          <label class="ala-form__label form__label--required">分店名稱：</label>
+          <label class="ala-form__label form__label--required">
+            <span *ngIf="createType === 1">分店名稱：</span>
+            <span *ngIf="createType === 2">選擇分店：</span>
+          </label>
           <app-form-text
             *ngIf="createType === 1"
             [content]="branchName?.value"
@@ -121,7 +125,7 @@
           <label class="ala-form__label"
             [class.form__label--required]="createType === 2"
           >
-            教練課名稱：
+            課程名稱：
           </label>
           <input
             style="width: 275px"
@@ -141,34 +145,6 @@
             [isInvalid]="(!coachLessonName.valid && coachLessonName.touched) || (f.submitted && coachLessonName.hasError('required')) || (f.submitted && coachLessonName.hasError('maxLength'))"
           >
           </app-form-text>
-        </div>
-
-        <div class="ala-list__item" *ngIf="createType !== 3">
-          <label class="ala-form__label"
-            [class.form__label--required]="createType !== 3"
-          >
-            指派管理者：
-          </label>
-          <div class="ala-form__col assign-admin">
-            <button class="icon-btn" (click)="openSelectorWin(createType, $event)">
-              <i class="fa fa-user-plus icon_fa"></i>
-            </button>
-            <div class="assign-admin__warning"
-              *ngIf="(!groupManager.valid && groupManager.touched) || (f.submitted && groupManager.hasError('required'))"
-            >
-              請指派至少一位管理者
-            </div>
-            <div style="margin-top: 15px" *ngIf="chooseLabels && chooseLabels.length > 0">
-              <ng-container *ngFor="let label of chooseLabels;let _idx = index">
-                <div class="candidate-label">
-                  <div style="display: inline-block">{{label.groupName}}/{{label.userName}}</div>
-                  <button class="icon-btn" (click)="removeLabel(_idx)">
-                    <i class="fa fa-plus icon_fa" style="transform: rotate(45deg);"></i>
-                  </button>
-                </div>
-              </ng-container>
-            </div>
-          </div>
         </div>
         <div class="ala-list__item">
           <label class="ala-form__label">狀態：</label>
@@ -191,6 +167,7 @@
               [disabled]="isEditing"
               [controlName]="formTextareaName"
               (onChange)="handleChangeTextarea($event)"
+              [remindText]="remindDescText"
               [isHadCount]="true"
               [isInvalid]="(groupDesc.invalid && groupDesc?.touched) || (f.submitted && groupDesc.hasError('required')) || (f.submitted && groupDesc.hasError('maxLength'))"
             >
@@ -199,6 +176,57 @@
         </div>
       </div>
     </form>
+    <ng-container *ngIf="createType === 2">
+      <span style="color: #26abe3; font-weight:700">
+        隱私權需求內容
+      </span>
+      <span style="font-size: 14px;margin-left: 10px">
+        ※隱私權需求與建立課程類別有關，建立成功後無法修改
+      </span>
+      <ul class="group-privacy-desc">
+        <li>群組"成員"可看到彼此基本暱稱與頭像</li>
+        <ng-container *ngIf="coachType === 2">
+          <li>"體適能教練"可觀看群組成員活動詳細資訊</li>
+          <li>"體適能教練"可觀看群組成員活動期間報告</li>
+        </ng-container>
+      </ul>
+    </ng-container>
+
+    <span style="color: #26abe3; font-weight:700">
+      管理員
+    </span>
+    <div class="ala-list__item" *ngIf="createType !== 3"
+      style="margin-top: 20px"
+    >
+      <label class="ala-form__label"
+        [class.form__label--required]="createType !== 3"
+        style="min-width: 140px"
+      >
+        <span *ngIf="coachType === 1">指派課程老師：</span>
+        <span *ngIf="coachType === 2">指派體適能教練：</span>
+        <span *ngIf="coachType !== 1 && coachType !== 2">指派管理者：</span>
+      </label>
+      <div class="ala-form__col assign-admin">
+        <button class="icon-btn" (click)="openSelectorWin(createType, $event)">
+          <i class="icon-svg_web-icon_p1_021-add_friend group-icon"></i>
+        </button>
+        <div class="assign-admin__warning"
+          *ngIf="(!groupManager.valid && groupManager.touched) || (f.submitted && groupManager.hasError('required'))"
+        >
+          請指派至少一位管理者
+        </div>
+        <div style="margin-top: 15px" *ngIf="chooseLabels && chooseLabels.length > 0">
+          <ng-container *ngFor="let label of chooseLabels;let _idx = index">
+            <div class="candidate-label">
+              <div style="display: inline-block">{{label.groupName}}/{{label.userName}}</div>
+              <button class="icon-btn" (click)="removeLabel(_idx)">
+                <i class="fa fa-plus icon_fa" style="transform: rotate(45deg);"></i>
+              </button>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 <div class="group-manage__action">
