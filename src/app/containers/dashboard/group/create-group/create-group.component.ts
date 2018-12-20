@@ -8,7 +8,6 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { GroupService } from '../../services/group.service';
 import { UtilsService } from '@shared/services/utils.service';
-import { HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
 import {
   FormBuilder,
@@ -23,6 +22,8 @@ import { PeopleSelectorWinComponent } from '../../components/people-selector-win
 import * as _ from 'lodash';
 import { GlobalEventsManager } from '@shared/global-events-manager';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { planDatas } from '../desc';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-create-group',
@@ -55,6 +56,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
   form: FormGroup;
   formTextName = 'groupName';
   formTextareaName = 'groupDesc';
+  planName: string;
   role = {
     isSupervisor: false,
     isSystemDeveloper: false,
@@ -75,6 +77,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
   chooseType: number;
   coachType: number;
   chooseLabels = [];
+  planDatas = planDatas;
   get groupName() {
     return this.form.get('groupName');
   }
@@ -92,6 +95,21 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
   }
   get groupManager() {
     return this.form.get('groupManager');
+  }
+  get commercePlanExpired() {
+    return this.form.get('commercePlanExpired');
+  }
+  get maxBranches() {
+    return this.form.get('maxBranches');
+  }
+  get maxClasses() {
+    return this.form.get('maxClasses');
+  }
+  get maxGroupManagers() {
+    return this.form.get('maxGroupManagers');
+  }
+  get maxGroupMembers() {
+    return this.form.get('maxGroupMembers');
   }
   constructor(
     private route: ActivatedRoute,
@@ -214,6 +232,11 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         groupManager: [[], [Validators.required]],
         groupName: ['', [Validators.required, Validators.maxLength(32)]],
         groupDesc: ['', [Validators.required, Validators.maxLength(500)]],
+        commercePlanExpired: ['', [Validators.required]],
+        maxBranches: [0, [Validators.required]],
+        maxClasses: [0, [Validators.required]],
+        maxGroupManagers: [0, [Validators.required]],
+        maxGroupMembers: [0, [Validators.required]],
         groupStatus: 2
       });
     } else {
@@ -330,7 +353,16 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
       this.utils.markFormGroupTouched(this.form);
     }
     if (valid) {
-      const { groupDesc, groupStatus, groupManager } = value;
+      const {
+        groupDesc,
+        groupStatus,
+        groupManager,
+        maxBranches,
+        maxClasses,
+        maxGroupManagers,
+        maxGroupMembers,
+        commercePlanExpired
+      } = value;
       const body = {
         token: this.token,
         groupId: this.groupId,
@@ -340,7 +372,12 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         levelIcon: this.finalImageLink || '',
         levelName: '',
         levelType: null,
-        coachType: null
+        coachType: null,
+        commercePlan: null,
+        groupSetting: null,
+        groupManagerSetting: null,
+        groupMemberSetting: null,
+        commercePlanExpired: ''
       };
       if (this.createType === 1) {
         // 建立分店
@@ -391,6 +428,14 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         body.levelName = groupName;
         body.levelType = 3;
         body.groupId = '0-0-0-0-0-0';
+        body.commercePlan = this.commercePlan;
+        body.groupSetting = {
+          maxBranches,
+          maxClasses
+        };
+        body.groupManagerSetting = { maxGroupManagers };
+        body.groupMemberSetting = { maxGroupMembers };
+        body.commercePlanExpired = commercePlanExpired;
         this.isEditing = true;
         this.groupService.createGroup(body).subscribe(res => {
           this.isEditing = false;
@@ -403,6 +448,37 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
   }
   public handleChangeTextarea(code): void {
     this.form.patchValue({ groupDesc: code });
+  }
+  handleExpireTime(e) {
+    let date = '';
+    switch (e.value) {
+      case '1':
+        date = moment()
+          .add(1, 'month')
+          .format('YYYY-MM-DDTHH:mm:ss');
+        break;
+      case '2':
+        date = moment()
+          .add(2, 'month')
+          .format('YYYY-MM-DDTHH:mm:ss');
+        break;
+      case '3':
+        date = moment()
+          .add(3, 'month')
+          .format('YYYY-MM-DDTHH:mm:ss');
+        break;
+      case '6':
+        date = moment()
+          .add(6, 'month')
+          .format('YYYY-MM-DDTHH:mm:ss');
+        break;
+      default:
+        date = moment()
+          .add(12, 'month')
+          .format('YYYY-MM-DDTHH:mm:ss');
+        break;
+    }
+    this.form.patchValue({ commercePlanExpired: date });
   }
   handleAttachmentChange(file) {
     if (file) {
@@ -420,30 +496,43 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
     }
   }
   handleShowCreateBrand() {
-    let planText = '';
     switch (this.commercePlan) {
       case 1:
-        planText = '體驗方案';
+        this.planName = '體驗方案';
         break;
       case 2:
-        planText = '工作室方案';
+        this.planName = '工作室方案';
         break;
       case 3:
-        planText = '中小企業方案';
+        this.planName = '中小企業方案';
         break;
       default:
-        planText = '客製方案';
+        this.planName = '客製方案';
     }
     this.dialog.open(MessageBoxComponent, {
       hasBackdrop: true,
       data: {
         title: 'Message',
-        body: `您選擇的方案是否為" ${planText} "?`,
+        body: `您選擇的方案是否為" ${this.planName} "?`,
         confirmText: '確定',
         cancelText: '取消',
         onConfirm: () => {
           if (this.commercePlan && this.commercePlan > 0) {
             this.isShowCreateBrand = true;
+            if (this.commercePlan < 99) {
+              const {
+                maxBranches,
+                maxClasses,
+                maxGroupManagers,
+                maxGroupMembers
+              } = this.planDatas[this.commercePlan - 1];
+              this.form.patchValue({
+                maxBranches,
+                maxClasses,
+                maxGroupManagers,
+                maxGroupMembers
+              });
+            }
           } else {
             this.isShowCreateBrand = false;
           }

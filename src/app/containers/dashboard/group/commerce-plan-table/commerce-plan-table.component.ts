@@ -1,4 +1,5 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { planDatas } from '../desc';
 
 @Component({
   selector: 'app-commerce-plan-table',
@@ -8,13 +9,12 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 export class CommercePlanTableComponent implements OnInit {
   @Output() onChange: EventEmitter<any> = new EventEmitter();
   planIdx: number;
-  constructor() { }
+  planDatas = planDatas;
+  constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
   choosePlan(idx) {
     this.planIdx = idx;
     this.onChange.emit(this.planIdx);
   }
-
 }

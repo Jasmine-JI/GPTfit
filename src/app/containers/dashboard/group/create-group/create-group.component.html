@@ -189,58 +189,187 @@
             </div>
           </div>
         </div>
-      </form>
-      <ng-container *ngIf="createType === 2">
-        <span style="color: #26abe3; font-weight:700">
-          隱私權需求內容
-        </span>
-        <span style="font-size: 14px;margin-left: 10px">
-          ※隱私權需求與建立課程類別有關，建立成功後無法修改
-        </span>
-        <ul class="group-privacy-desc">
-          <li>群組"成員"可看到彼此基本暱稱與頭像</li>
-          <ng-container *ngIf="coachType === 2">
-            <li>"體適能教練"可觀看群組成員活動詳細資訊</li>
-            <li>"體適能教練"可觀看群組成員活動期間報告</li>
-          </ng-container>
-        </ul>
-      </ng-container>
-
-      <span style="color: #26abe3; font-weight:700">
-        管理員
-      </span>
-      <div class="ala-list__item" *ngIf="createType !== 3"
-        style="margin-top: 20px"
-      >
-        <label class="ala-form__label"
-          [class.form__label--required]="createType !== 3"
-          style="min-width: 140px"
-        >
-          <span *ngIf="coachType === 1">指派課程老師：</span>
-          <span *ngIf="coachType === 2">指派體適能教練：</span>
-          <span *ngIf="coachType !== 1 && coachType !== 2">指派管理者：</span>
-        </label>
-        <div class="ala-form__col assign-admin">
-          <button class="icon-btn" (click)="openSelectorWin(createType, $event)">
-            <i class="icon-svg_web-icon_p1_021-add_friend group-icon"></i>
-          </button>
-          <div class="assign-admin__warning"
-            *ngIf="(!groupManager.valid && groupManager.touched) || (f.submitted && groupManager.hasError('required'))"
-          >
-            請指派至少一位管理者
-          </div>
-          <div style="margin-top: 15px" *ngIf="chooseLabels && chooseLabels.length > 0">
-            <ng-container *ngFor="let label of chooseLabels;let _idx = index">
-              <div class="candidate-label">
-                <div style="display: inline-block">{{label.groupName}}/{{label.userName}}</div>
-                <button class="icon-btn" (click)="removeLabel(_idx)">
-                  <i class="fa fa-plus icon_fa" style="transform: rotate(45deg);"></i>
-                </button>
-              </div>
+        <ng-container *ngIf="createType === 2">
+          <span style="color: #26abe3; font-weight:700">
+            隱私權需求內容
+          </span>
+          <span style="font-size: 14px;margin-left: 10px">
+            ※隱私權需求與建立課程類別有關，建立成功後無法修改
+          </span>
+          <ul class="group-privacy-desc">
+            <li>群組"成員"可看到彼此基本暱稱與頭像</li>
+            <ng-container *ngIf="coachType === 2">
+              <li>"體適能教練"可觀看群組成員活動詳細資訊</li>
+              <li>"體適能教練"可觀看群組成員活動期間報告</li>
             </ng-container>
+          </ul>
+        </ng-container>
+        <span style="color: #26abe3; font-weight:700">
+          管理員
+        </span>
+        <div class="ala-list__item" *ngIf="createType !== 3"
+          style="margin-top: 20px"
+        >
+          <label class="ala-form__label"
+            [class.form__label--required]="createType !== 3"
+            style="min-width: 140px"
+          >
+            <span *ngIf="coachType === 1">指派課程老師：</span>
+            <span *ngIf="coachType === 2">指派體適能教練：</span>
+            <span *ngIf="coachType !== 1 && coachType !== 2">指派管理者：</span>
+          </label>
+          <div class="ala-form__col assign-admin">
+            <button class="icon-btn" (click)="openSelectorWin(createType, $event)">
+              <i class="icon-svg_web-icon_p1_021-add_friend group-icon"></i>
+            </button>
+            <div class="assign-admin__warning"
+              *ngIf="(!groupManager.valid && groupManager.touched) || (f.submitted && groupManager.hasError('required'))"
+            >
+              請指派至少一位管理者
+            </div>
+            <div style="margin-top: 15px" *ngIf="chooseLabels && chooseLabels.length > 0">
+              <ng-container *ngFor="let label of chooseLabels;let _idx = index">
+                <div class="candidate-label">
+                  <div style="display: inline-block">{{label.groupName}}/{{label.userName}}</div>
+                  <button class="icon-btn" (click)="removeLabel(_idx)">
+                    <i class="fa fa-plus icon_fa" style="transform: rotate(45deg);"></i>
+                  </button>
+                </div>
+              </ng-container>
+            </div>
           </div>
         </div>
-      </div>
+        <div *ngIf="createType === 4" style="margin-top: 20px">
+          <span style="color: #26abe3; font-weight:700">
+            方案內容
+          </span>
+          <div class="ala-list__item" *ngIf="createType !== 3"
+            style="margin-top: 20px"
+          >
+            <label class="ala-form__label">
+              方案名稱：
+            </label>
+            {{planName}}
+          </div>
+          <div class="ala-list__item" *ngIf="createType !== 3"
+            style="margin-top: 20px"
+          >
+            <label class="ala-form__label"
+              [class.form__label--required]="createType !== 3"
+            >
+              購買時長：
+            </label>
+            <mat-button-toggle-group name="fontStyle" aria-label="Font Style"
+              [class.mat-button-toggle-group--invalid]="(!commercePlanExpired.valid && commercePlanExpired.touched) || (f.submitted && commercePlanExpired.hasError('required'))"
+              (change)="handleExpireTime($event)"
+            >
+              <mat-button-toggle value="1">1個月</mat-button-toggle>
+              <mat-button-toggle value="2">2個月</mat-button-toggle>
+              <mat-button-toggle value="3">3個月</mat-button-toggle>
+              <mat-button-toggle value="6">半年</mat-button-toggle>
+              <mat-button-toggle value="12">1年</mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+          <div class="ala-list__item" *ngIf="createType !== 3"
+            style="margin-top: 20px"
+          >
+            <label class="ala-form__label"
+              [class.form__label--required]="commercePlan === 99"
+            >
+              分店數量：
+            </label>
+            <span *ngIf="commercePlan !== 99">
+              {{planDatas[commercePlan - 1].maxBranches}}
+            </span>
+            <app-form-text
+              *ngIf="commercePlan === 99"
+              [type]="'number'"
+              [content]="maxBranches?.value"
+              [invalidRemindText]="inValidText"
+              [control]="form"
+              [disabled]="isEditing"
+              [controlName]="'maxBranches'"
+              [isInvalid]="(!maxBranches.valid && maxBranches.touched) || (f.submitted && maxBranches.hasError('required'))"
+            >
+            </app-form-text>
+          </div>
+          <div class="ala-list__item" *ngIf="createType !== 3"
+            style="margin-top: 20px"
+          >
+            <label class="ala-form__label"
+              [class.form__label--required]="commercePlan === 99"
+            >
+              課程數量：
+            </label>
+            <span *ngIf="commercePlan !== 99">
+              {{planDatas[commercePlan - 1].maxClasses}}
+            </span>
+            <app-form-text
+              *ngIf="commercePlan === 99"
+              [type]="'number'"
+              [content]="maxClasses?.value"
+              [invalidRemindText]="inValidText"
+              [control]="form"
+              [disabled]="isEditing"
+              [controlName]="'maxClasses'"
+              [isInvalid]="(!maxClasses.valid && maxClasses.touched) || (f.submitted && maxClasses.hasError('required'))"
+            >
+            </app-form-text>
+          </div>
+          <div class="ala-list__item" *ngIf="createType !== 3"
+            style="margin-top: 20px"
+          >
+            <label class="ala-form__label"
+              [class.form__label--required]="commercePlan === 99"
+            >
+              可入會成員：
+            </label>
+            <span *ngIf="commercePlan !== 99">
+              {{planDatas[commercePlan - 1].maxGroupMembers}}
+            </span>
+            <app-form-text
+              *ngIf="commercePlan === 99"
+              [type]="'number'"
+              [content]="maxGroupMembers?.value"
+              [invalidRemindText]="inValidText"
+              [control]="form"
+              [disabled]="isEditing"
+              [controlName]="'maxGroupMembers'"
+              [isInvalid]="(!maxGroupMembers.valid && maxGroupMembers.touched) || (f.submitted && maxGroupMembers.hasError('required'))"
+            >
+            </app-form-text>
+          </div>
+          <div class="ala-list__item" *ngIf="createType !== 3"
+            style="margin-top: 20px"
+          >
+            <label class="ala-form__label"
+              [class.form__label--required]="commercePlan === 99"
+            >
+              可建立管理員：
+            </label>
+            <span *ngIf="commercePlan !== 99">
+              {{planDatas[commercePlan - 1].maxGroupManagers}}
+            </span>
+            <app-form-text
+              *ngIf="commercePlan === 99"
+              [type]="'number'"
+              [content]="maxGroupManagers?.value"
+              [invalidRemindText]="inValidText"
+              [control]="form"
+              [disabled]="isEditing"
+              [controlName]="'maxGroupManagers'"
+              [isInvalid]="(!maxGroupManagers.valid && maxGroupManagers.touched) || (f.submitted && maxGroupManagers.hasError('required'))"
+            >
+            </app-form-text>
+          </div>
+          <hr>
+          <label class="ala-form__label">總計費用：</label>
+          <span style="color: #F1873A">
+            <span *ngIf="commercePlan !== 99">{{planDatas[commercePlan - 1].cost}}</span>
+            <span *ngIf="commercePlan === 99">自訂價格</span>
+          </span>
+        </div>
+      </form>
     </div>
   </div>
 </ng-container>
@@ -264,7 +393,6 @@
     <button class="alatech-btn group-manage__btn"
       title="創建品牌"
       (click)="handleShowCreateBrand()"
-      style="width: 222px;height: 46px"
       [disabled]="!commercePlan"
     >
       創建品牌

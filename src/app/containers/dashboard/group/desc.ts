@@ -18,3 +18,30 @@ Alatech Center 僅提供運動紀錄資訊、日常生活追蹤紀錄或長時�
 當接受本聲明同時，將會更改往後運動或報告紀錄的隱私權設定值，並其隱私權設定修改為"我的教練"。爾後您可在個人資訊的隱私權上修改該設定值，或退出課程解
 除教練與學員關係。
 `;
+
+export const planDatas = [
+  {
+    commercePlan: 1,
+    maxBranches: 1,
+    maxClasses: 2,
+    maxGroupMembers: 20,
+    maxGroupManagers: 4,
+    cost: 'free'
+  },
+  {
+    commercePlan: 2,
+    maxBranches: 3,
+    maxClasses: 10,
+    maxGroupMembers: 1000,
+    maxGroupManagers: 25,
+    cost: '$ 30,000'
+  },
+  {
+    commercePlan: 3,
+    maxBranches: 10,
+    maxClasses: 80,
+    maxGroupMembers: 10000,
+    maxGroupManagers: 200,
+    cost: '$ 250,000'
+  }
+];
