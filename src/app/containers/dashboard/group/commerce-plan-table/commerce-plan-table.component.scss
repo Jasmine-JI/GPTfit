@@ -4,6 +4,7 @@
   text-align: center;
   font-size: 19px;
   font-weight: 700;
+  cursor: pointer;
   .active-top {
     border-top: 5px solid #00c6ff;
   }
@@ -20,6 +21,7 @@
     .plan {
       font-size: 16px;
       color: #4d4d4d;
+      cursor: auto;
     }
     .active {
       font-size: 26px;
@@ -58,6 +60,7 @@
     margin-right: 11px;
     border-right: 11px #fff solid;
     font-size: 16px;
+    cursor: auto;
   }
 
   tbody {
@@ -109,6 +112,13 @@
         top: -40px;
         right: 0;
         height: calc(100% + 40px);
+      }
+      .active {
+        font-size: 26px;
+        color: #009cff;
+      }
+      .active.check {
+        font-size: 20px;
       }
     }
     tr.fee {

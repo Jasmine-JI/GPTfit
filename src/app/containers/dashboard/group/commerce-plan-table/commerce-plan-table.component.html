@@ -1,150 +1,514 @@
 <table class="commerce-plan-table">
   <thead>
     <th class="plan">方案</th>
-    <th>體驗方案</th>
     <th
-      [class.active-left]="true"
-      [class.active-right]="true"
-      [class.active-top]="true"
-      [class.active]="true"
+      (click)="choosePlan(1)"
+      [class.active-left]="planIdx === 1"
+      [class.active-right]="planIdx === 1"
+      [class.active-top]="planIdx === 1"
+      [class.active]="planIdx === 1"
+    >體驗方案</th>
+    <th
+      (click)="choosePlan(2)"
+      [class.active-left]="planIdx === 2"
+      [class.active-right]="planIdx === 2"
+      [class.active-top]="planIdx === 2"
+      [class.active]="planIdx === 2"
     >工作室方案</th>
-    <th>中小企業方案</th>
-    <th>客製方案</th>
+    <th
+      (click)="choosePlan(3)"
+      [class.active-left]="planIdx === 3"
+      [class.active-right]="planIdx === 3"
+      [class.active-top]="planIdx === 3"
+      [class.active]="planIdx === 3"
+    >中小企業方案</th>
+    <th
+      (click)="choosePlan(99)"
+      [class.active-left]="planIdx === 99"
+      [class.active-right]="planIdx === 99"
+      [class.active-top]="planIdx === 99"
+      [class.active]="planIdx === 99"
+    >客製方案</th>
   </thead>
   <tbody>
     <tr class="fee">
       <td class="plan">
         費用
       </td>
-      <td>
+      <td
+        (click)="choosePlan(1)"
+        [class.active-left]="planIdx === 1"
+        [class.active-right]="planIdx === 1"
+        [class.active]="planIdx === 1"
+      >
         Free
         <div class="unit">1month</div>
       </td>
-      <td [class.active-left]="true" [class.active-right]="true">
+      <td
+        (click)="choosePlan(2)"
+        [class.active-left]="planIdx === 2"
+        [class.active-right]="planIdx === 2"
+        [class.active]="planIdx === 2"
+      >
         $ 30,000
         <div class="unit">1year</div>
       </td>
-      <td>
+      <td
+        (click)="choosePlan(3)"
+        [class.active-left]="planIdx === 3"
+        [class.active-right]="planIdx === 3"
+        [class.active]="planIdx === 3"
+      >
         $250,000
         <div class="unit">1year</div>
       </td>
-      <td style="vertical-align: top">$***,***</td>
+      <td
+        (click)="choosePlan(99)"
+        style="vertical-align: top"
+        [class.active-left]="planIdx === 99"
+        [class.active-right]="planIdx === 99"
+        [class.active]="planIdx === 99"
+      >
+        $***,***
+      </td>
     </tr>
     <tr>
       <td class="plan">分店數量</td>
-      <td>1</td>
-      <td [class.active-left]="true" [class.active-right]="true">3</td>
-      <td>10</td>
-      <td>**</td>
+      <td
+        (click)="choosePlan(1)"
+        [class.active-left]="planIdx === 1"
+        [class.active-right]="planIdx === 1"
+        [class.active]="planIdx === 1"
+      >1</td>
+      <td
+        (click)="choosePlan(2)"
+        [class.active-left]="planIdx === 2"
+        [class.active-right]="planIdx === 2"
+        [class.active]="planIdx === 2"
+      >
+        3
+      </td>
+      <td
+        (click)="choosePlan(3)"
+        [class.active-left]="planIdx === 3"
+        [class.active-right]="planIdx === 3"
+        [class.active]="planIdx === 3"
+      >10</td>
+      <td
+        (click)="choosePlan(99)"
+        [class.active-left]="planIdx === 99"
+        [class.active-right]="planIdx === 99"
+        [class.active]="planIdx === 99"
+      >**</td>
     </tr>
     <tr>
       <td class="plan">課程數量</td>
-      <td>2</td>
-      <td [class.active-left]="true" [class.active-right]="true">10</td>
-      <td>80</td>
-      <td>**</td>
+      <td
+        (click)="choosePlan(1)"
+        [class.active-left]="planIdx === 1"
+        [class.active-right]="planIdx === 1"
+        [class.active]="planIdx === 1"
+      >2</td>
+      <td
+        (click)="choosePlan(2)"
+        [class.active-left]="planIdx === 2"
+        [class.active-right]="planIdx === 2"
+        [class.active]="planIdx === 2"
+      >10</td>
+      <td
+        (click)="choosePlan(3)"
+        [class.active-left]="planIdx === 3"
+        [class.active-right]="planIdx === 3"
+        [class.active]="planIdx === 3"
+      >80</td>
+      <td
+        (click)="choosePlan(99)"
+        [class.active-left]="planIdx === 99"
+        [class.active-right]="planIdx === 99"
+        [class.active]="planIdx === 99"
+      >**</td>
     </tr>
     <tr  class="custom">
       <td class="plan">可入會成員</td>
-      <td>20</td>
-      <td [class.active-left]="true" [class.active-right]="true">1,000</td>
-      <td>10,000</td>
-      <td>**</td>
+      <td
+        (click)="choosePlan(1)"
+        [class.active-left]="planIdx === 1"
+        [class.active-right]="planIdx === 1"
+        [class.active]="planIdx === 1"
+      >20</td>
+      <td
+        (click)="choosePlan(2)"
+        [class.active-left]="planIdx === 2"
+        [class.active-right]="planIdx === 2"
+        [class.active]="planIdx === 2"
+      >1,000</td>
+      <td
+        (click)="choosePlan(3)"
+        [class.active-left]="planIdx === 3"
+        [class.active-right]="planIdx === 3"
+        [class.active]="planIdx === 3"
+      >10,000</td>
+      <td
+        (click)="choosePlan(99)"
+        [class.active-left]="planIdx === 99"
+        [class.active-right]="planIdx === 99"
+        [class.active]="planIdx === 99"
+      >**</td>
     </tr>
     <tr>
       <td class="plan">可建立管理員</td>
-      <td>4</td>
-      <td [class.active-left]="true" [class.active-right]="true">25</td>
-      <td>200</td>
-      <td>**</td>
+      <td
+        (click)="choosePlan(1)"
+        [class.active-left]="planIdx === 1"
+        [class.active-right]="planIdx === 1"
+        [class.active]="planIdx === 1"
+      >4</td>
+      <td
+        (click)="choosePlan(2)"
+        [class.active-left]="planIdx === 2"
+        [class.active-right]="planIdx === 2"
+        [class.active]="planIdx === 2"
+      >25</td>
+      <td
+        (click)="choosePlan(3)"
+        [class.active-left]="planIdx === 3"
+        [class.active-right]="planIdx === 3"
+        [class.active]="planIdx === 3"
+      >200</td>
+      <td
+        (click)="choosePlan(99)"
+        [class.active-left]="planIdx === 99"
+        [class.active-right]="planIdx === 99"
+        [class.active]="planIdx === 99"
+      >**</td>
     </tr>
     <tr class="custom">
       <td class="plan">自訂品牌營業體</td>
-      <td class="check">V</td>
-      <td class="check" [class.active-left]="true" [class.active-right]="true">V</td>
-      <td class="check">V</td>
-      <td class="check">V</td>
+      <td class="check"
+        (click)="choosePlan(1)"
+        [class.active-left]="planIdx === 1"
+        [class.active-right]="planIdx === 1"
+        [class.active]="planIdx === 1"
+      >V</td>
+      <td class="check"
+        (click)="choosePlan(2)"
+        [class.active-left]="planIdx === 2"
+        [class.active-right]="planIdx === 2"
+        [class.active]="planIdx === 2"
+      >V</td>
+      <td class="check"
+        (click)="choosePlan(3)"
+        [class.active-left]="planIdx === 3"
+        [class.active-right]="planIdx === 3"
+        [class.active]="planIdx === 3"
+      >V</td>
+      <td class="check"
+        (click)="choosePlan(99)"
+        [class.active-left]="planIdx === 99"
+        [class.active-right]="planIdx === 99"
+        [class.active]="planIdx === 99"
+      >V</td>
     </tr>
     <tr>
       <td class="plan">Train Live轉播與記錄派發</td>
-      <td class="check">V</td>
-      <td class="check" [class.active-left]="true" [class.active-right]="true">V</td>
-      <td class="check">V</td>
-      <td class="check">V</td>
+      <td class="check"
+        (click)="choosePlan(1)"
+        [class.active-left]="planIdx === 1"
+        [class.active-right]="planIdx === 1"
+        [class.active]="planIdx === 1"
+      >V</td>
+      <td class="check"
+        (click)="choosePlan(2)"
+        [class.active-left]="planIdx === 2"
+        [class.active-right]="planIdx === 2"
+        [class.active]="planIdx === 2"
+      >V</td>
+      <td class="check"
+        (click)="choosePlan(3)"
+        [class.active-left]="planIdx === 3"
+        [class.active-right]="planIdx === 3"
+        [class.active]="planIdx === 3"
+      >V</td>
+      <td class="check"
+        (click)="choosePlan(99)"
+        [class.active-left]="planIdx === 99"
+        [class.active-right]="planIdx === 99"
+        [class.active]="planIdx === 99"
+      >V</td>
     </tr>
     <tr>
       <td class="plan">建立培訓師與鍛鍊者關係</td>
-      <td class="check">V</td>
-      <td class="check" [class.active-left]="true" [class.active-right]="true">V</td>
-      <td class="check">V</td>
-      <td class="check">V</td>
+      <td class="check"
+        (click)="choosePlan(1)"
+        [class.active-left]="planIdx === 1"
+        [class.active-right]="planIdx === 1"
+        [class.active]="planIdx === 1"
+      >V</td>
+      <td class="check"
+        (click)="choosePlan(2)"
+        [class.active-left]="planIdx === 2"
+        [class.active-right]="planIdx === 2"
+        [class.active]="planIdx === 2"
+      >V</td>
+      <td class="check"
+        (click)="choosePlan(3)"
+        [class.active-left]="planIdx === 3"
+        [class.active-right]="planIdx === 3"
+        [class.active]="planIdx === 3"
+      >V</td>
+      <td class="check"
+        (click)="choosePlan(99)"
+        [class.active-left]="planIdx === 99"
+        [class.active-right]="planIdx === 99"
+        [class.active]="planIdx === 99"
+      >V</td>
     </tr>
     <tr>
       <td class="plan">進階設備維護與主動式提醒</td>
-      <td class="check"></td>
-      <td class="check" [class.active-left]="true" [class.active-right]="true">V</td>
-      <td class="check">V</td>
-      <td class="check">V</td>
+      <td class="check"
+        (click)="choosePlan(1)"
+        [class.active-left]="planIdx === 1"
+        [class.active-right]="planIdx === 1"
+        [class.active]="planIdx === 1"
+      ></td>
+      <td class="check"
+        (click)="choosePlan(2)"
+        [class.active-left]="planIdx === 2"
+        [class.active-right]="planIdx === 2"
+        [class.active]="planIdx === 2"
+      >V</td>
+      <td class="check"
+        (click)="choosePlan(3)"
+        [class.active-left]="planIdx === 3"
+        [class.active-right]="planIdx === 3"
+        [class.active]="planIdx === 3"
+      >V</td>
+      <td class="check"
+        (click)="choosePlan(99)"
+        [class.active-left]="planIdx === 99"
+        [class.active-right]="planIdx === 99"
+        [class.active]="planIdx === 99"
+      >V</td>
     </tr>
     <tr>
       <td class="plan">編列專業訓練計畫</td>
-      <td class="check"></td>
-      <td class="check" [class.active-left]="true" [class.active-right]="true"></td>
-      <td class="check">V</td>
-      <td class="check">V</td>
+      <td class="check"
+        (click)="choosePlan(1)"
+        [class.active-left]="planIdx === 1"
+        [class.active-right]="planIdx === 1"
+        [class.active]="planIdx === 1"
+      ></td>
+      <td class="check"
+        (click)="choosePlan(2)"
+        [class.active-left]="planIdx === 2"
+        [class.active-right]="planIdx === 2"
+        [class.active]="planIdx === 2"
+      ></td>
+      <td class="check"
+        (click)="choosePlan(3)"
+        [class.active-left]="planIdx === 3"
+        [class.active-right]="planIdx === 3"
+        [class.active]="planIdx === 3"
+      >V</td>
+      <td class="check"
+        (click)="choosePlan(99)"
+        [class.active-left]="planIdx === 99"
+        [class.active-right]="planIdx === 99"
+        [class.active]="planIdx === 99"
+      >V</td>
     </tr>
     <tr>
       <td class="plan">派發群組學員訓練菜單</td>
-      <td class="check"></td>
-      <td class="check" [class.active-left]="true" [class.active-right]="true"></td>
-      <td class="check">V</td>
-      <td class="check">V</td>
+      <td class="check"
+        (click)="choosePlan(1)"
+        [class.active-left]="planIdx === 1"
+        [class.active-right]="planIdx === 1"
+        [class.active]="planIdx === 1"
+      ></td>
+      <td class="check"
+        (click)="choosePlan(2)"
+        [class.active-left]="planIdx === 2"
+        [class.active-right]="planIdx === 2"
+        [class.active]="planIdx === 2"
+      ></td>
+      <td class="check"
+        (click)="choosePlan(3)"
+        [class.active-left]="planIdx === 3"
+        [class.active-right]="planIdx === 3"
+        [class.active]="planIdx === 3"
+      >V</td>
+      <td class="check"
+        (click)="choosePlan(99)"
+        [class.active-left]="planIdx === 99"
+        [class.active-right]="planIdx === 99"
+        [class.active]="planIdx === 99"
+      >V</td>
     </tr>
     <tr class="custom">
       <td class="plan">Ala connect</td>
-      <td class="check">V</td>
-      <td class="check" [class.active-left]="true" [class.active-right]="true">V</td>
-      <td class="check">V</td>
-      <td class="check">V</td>
+      <td class="check"
+        (click)="choosePlan(1)"
+        [class.active-left]="planIdx === 1"
+        [class.active-right]="planIdx === 1"
+        [class.active]="planIdx === 1"
+      >V</td>
+      <td class="check"
+        (click)="choosePlan(2)"
+        [class.active-left]="planIdx === 2"
+        [class.active-right]="planIdx === 2"
+        [class.active]="planIdx === 2"
+      >V</td>
+      <td class="check"
+        (click)="choosePlan(3)"
+        [class.active-left]="planIdx === 3"
+        [class.active-right]="planIdx === 3"
+        [class.active]="planIdx === 3"
+      >V</td>
+      <td class="check"
+        (click)="choosePlan(99)"
+        [class.active-left]="planIdx === 99"
+        [class.active-right]="planIdx === 99"
+        [class.active]="planIdx === 99"
+      >V</td>
     </tr>
     <tr>
       <td class="plan">Cloud Run</td>
-      <td class="check">V</td>
-      <td class="check" [class.active-left]="true" [class.active-right]="true">V</td>
-      <td class="check">V</td>
-      <td class="check">V</td>
+      <td class="check"
+        (click)="choosePlan(1)"
+        [class.active-left]="planIdx === 1"
+        [class.active-right]="planIdx === 1"
+        [class.active]="planIdx === 1"
+      >V</td>
+      <td class="check"
+        (click)="choosePlan(2)"
+        [class.active-left]="planIdx === 2"
+        [class.active-right]="planIdx === 2"
+        [class.active]="planIdx === 2"
+      >V</td>
+      <td class="check"
+        (click)="choosePlan(3)"
+        [class.active-left]="planIdx === 3"
+        [class.active-right]="planIdx === 3"
+        [class.active]="planIdx === 3"
+      >V</td>
+      <td class="check"
+        (click)="choosePlan(99)"
+        [class.active-left]="planIdx === 99"
+        [class.active-right]="planIdx === 99"
+        [class.active]="planIdx === 99"
+      >V</td>
     </tr>
     <tr>
       <td class="plan">Train Live</td>
-      <td class="check">V</td>
-      <td class="check" [class.active-left]="true" [class.active-right]="true">V</td>
-      <td class="check">V</td>
-      <td class="check">V</td>
+      <td class="check"
+        (click)="choosePlan(1)"
+        [class.active-left]="planIdx === 1"
+        [class.active-right]="planIdx === 1"
+        [class.active]="planIdx === 1"
+      >V</td>
+      <td class="check"
+        (click)="choosePlan(2)"
+        [class.active-left]="planIdx === 2"
+        [class.active-right]="planIdx === 2"
+        [class.active]="planIdx === 2"
+      >V</td>
+      <td class="check"
+        (click)="choosePlan(3)"
+        [class.active-left]="planIdx === 3"
+        [class.active-right]="planIdx === 3"
+        [class.active]="planIdx === 3"
+      >V</td>
+      <td class="check"
+        (click)="choosePlan(99)"
+        [class.active-left]="planIdx === 99"
+        [class.active-right]="planIdx === 99"
+        [class.active]="planIdx === 99"
+      >V</td>
     </tr>
     <tr>
       <td class="plan">Ala Fitness</td>
-      <td class="check">V</td>
-      <td class="check" [class.active-left]="true" [class.active-right]="true">V</td>
-      <td class="check">V</td>
-      <td class="check">V</td>
+      <td class="check"
+        (click)="choosePlan(1)"
+        [class.active-left]="planIdx === 1"
+        [class.active-right]="planIdx === 1"
+        [class.active]="planIdx === 1"
+      >V</td>
+      <td class="check"
+        (click)="choosePlan(2)"
+        [class.active-left]="planIdx === 2"
+        [class.active-right]="planIdx === 2"
+        [class.active]="planIdx === 2"
+      >V</td>
+      <td class="check"
+        (click)="choosePlan(3)"
+        [class.active-left]="planIdx === 3"
+        [class.active-right]="planIdx === 3"
+        [class.active]="planIdx === 3"
+      >V</td>
+      <td class="check"
+        (click)="choosePlan(99)"
+        [class.active-left]="planIdx === 99"
+        [class.active-right]="planIdx === 99"
+        [class.active]="planIdx === 99"
+      >V</td>
     </tr>
     <tr>
       <td class="plan unconfirmed">Ala Trainer(培訓者運動紀錄)</td>
-      <td class="check"></td>
-      <td class="check" [class.active-left]="true" [class.active-right]="true"></td>
-      <td class="check"></td>
-      <td class="check"></td>
+      <td class="check"
+        (click)="choosePlan(1)"
+        [class.active-left]="planIdx === 1"
+        [class.active-right]="planIdx === 1"
+        [class.active]="planIdx === 1"
+      ></td>
+      <td class="check"
+        (click)="choosePlan(2)"
+        [class.active-left]="planIdx === 2"
+        [class.active-right]="planIdx === 2"
+        [class.active]="planIdx === 2"
+      ></td>
+      <td class="check"
+        (click)="choosePlan(3)"
+        [class.active-left]="planIdx === 3"
+        [class.active-right]="planIdx === 3"
+        [class.active]="planIdx === 3"
+      ></td>
+      <td class="check"
+        (click)="choosePlan(99)"
+        [class.active-left]="planIdx === 99"
+        [class.active-right]="planIdx === 99"
+        [class.active]="planIdx === 99"
+      ></td>
     </tr>
     <tr>
       <td class="plan unconfirmed">自訂品牌Center App</td>
-      <td class="check"></td>
       <td class="check"
-        [class.active-left]="true"
-        [class.active-right]="true"
-        [class.active-bottom]="true"
+        (click)="choosePlan(1)"
+        [class.active-left]="planIdx === 1"
+        [class.active-right]="planIdx === 1"
+        [class.active]="planIdx === 1"
+        [class.active-bottom]="planIdx === 1"
       ></td>
-      <td class="check"></td>
-      <td class="check"></td>
+      <td class="check"
+        (click)="choosePlan(2)"
+        [class.active-left]="planIdx === 2"
+        [class.active-right]="planIdx === 2"
+        [class.active]="planIdx === 2"
+        [class.active-bottom]="planIdx === 2"
+      ></td>
+      <td class="check"
+        (click)="choosePlan(3)"
+        [class.active-left]="planIdx === 3"
+        [class.active-right]="planIdx === 3"
+        [class.active]="planIdx === 3"
+        [class.active-bottom]="planIdx === 3"
+      ></td>
+      <td class="check"
+        (click)="choosePlan(99)"
+        [class.active-left]="planIdx === 99"
+        [class.active-right]="planIdx === 99"
+        [class.active]="planIdx === 99"
+        [class.active-bottom]="planIdx === 99"
+      ></td>
     </tr>
   </tbody>
 </table>

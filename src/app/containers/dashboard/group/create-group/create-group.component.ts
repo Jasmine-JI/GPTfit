@@ -22,6 +22,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
 import * as _ from 'lodash';
 import { GlobalEventsManager } from '@shared/global-events-manager';
+import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 
 @Component({
   selector: 'app-create-group',
@@ -49,6 +50,8 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
   remindDescText = '※不得超過500個字元';
   inValidText = '欄位為必填';
   textareaMaxLength = 500;
+  commercePlan: number;
+  isShowCreateBrand = false;
   form: FormGroup;
   formTextName = 'groupName';
   formTextareaName = 'groupDesc';
@@ -125,7 +128,9 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
     if (createType) {
       this.createType = +createType;
     }
-    if (location.pathname.indexOf('/dashboard/system/create-brand-group') > -1) {
+    if (
+      location.pathname.indexOf('/dashboard/system/create-brand-group') > -1
+    ) {
       this.createType = 4;
     }
     this.groupId = this.route.snapshot.paramMap.get('groupId');
@@ -414,6 +419,38 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
       }
     }
   }
+  handleShowCreateBrand() {
+    let planText = '';
+    switch (this.commercePlan) {
+      case 1:
+        planText = '體驗方案';
+        break;
+      case 2:
+        planText = '工作室方案';
+        break;
+      case 3:
+        planText = '中小企業方案';
+        break;
+      default:
+        planText = '客製方案';
+    }
+    this.dialog.open(MessageBoxComponent, {
+      hasBackdrop: true,
+      data: {
+        title: 'Message',
+        body: `您選擇的方案是否為" ${planText} "?`,
+        confirmText: '確定',
+        cancelText: '取消',
+        onConfirm: () => {
+          if (this.commercePlan && this.commercePlan > 0) {
+            this.isShowCreateBrand = true;
+          } else {
+            this.isShowCreateBrand = false;
+          }
+        }
+      }
+    });
+  }
   handleCancel(e) {
     e.preventDefault();
     let typeName = '';
@@ -446,6 +483,9 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         href
       }
     });
+  }
+  changePlan(_planIdx) {
+    this.commercePlan = _planIdx;
   }
   removeLabel(idx) {
     this.chooseLabels.splice(idx, 1);

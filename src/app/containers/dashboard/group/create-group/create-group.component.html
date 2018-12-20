@@ -1,16 +1,17 @@
-<ng-container *ngIf="createType === 4">
-  <div style="display: flex;justify-content: flex-end;">
+<ng-container *ngIf="createType === 4 && !isShowCreateBrand">
+  <div class="group-edit-bar"style="justify-content: flex-end;">
     <button class="alatech-btn alatech-btn--default"
       title="創建品牌"
-      (click)="handleCancel($event)"
+      (click)="handleShowCreateBrand()"
       style="width: 222px;height: 46px"
+      [disabled]="!commercePlan"
     >
       創建品牌
     </button>
   </div>
-    <app-commerce-plan-table></app-commerce-plan-table>
+    <app-commerce-plan-table (onChange)="changePlan($event)"></app-commerce-plan-table>
 </ng-container>
-<ng-container *ngIf="createType !== 4">
+<ng-container *ngIf="createType !== 4 || isShowCreateBrand">
   <div class="row">
     <div class="col-md-4 group-image--area">
       <app-upload-file
@@ -242,7 +243,9 @@
       </div>
     </div>
   </div>
-  <div class="group-manage__action">
+</ng-container>
+<div class="group-manage__action">
+  <ng-container *ngIf="createType !== 4 || isShowCreateBrand">
     <button class="alatech-btn group-manage__btn"
       title="取消"
       (click)="handleCancel($event)"
@@ -256,5 +259,15 @@
     >
       完成
     </button>
-  </div>
-</ng-container>
+  </ng-container>
+  <ng-container *ngIf="createType === 4 && !isShowCreateBrand">
+    <button class="alatech-btn group-manage__btn"
+      title="創建品牌"
+      (click)="handleShowCreateBrand()"
+      style="width: 222px;height: 46px"
+      [disabled]="!commercePlan"
+    >
+      創建品牌
+    </button>
+  </ng-container>
+</div>
