@@ -12,6 +12,7 @@
         (click)="handleGroupItem(1)"
       >群組資訊</li>
       <li [class.active]="chooseIdx === 2"
+        *ngIf="groupLevel === '30' && visitorDetail?.isCanManage"
         (click)="handleGroupItem(2)"
       >品牌管理</li>
       <li [class.active]="chooseIdx === 3"
@@ -297,42 +298,59 @@
         </mat-tab-group>
       </div>
     </ng-container>
-    <ng-container *ngIf="chooseIdx === 2">
+    <ng-container *ngIf="chooseIdx === 2 && !isCommerceInfoLoading">
       <label  class="group-label">
         品牌
       </label>
       <div class="group-list">
-        <div class="group-list-item">狀態：營運中</div>
+        <div class="group-list-item">狀態：
+          <span *ngIf="commerceInfo?.commerceStatus === '1'">營運中</span>
+          <span *ngIf="commerceInfo?.commerceStatus === '2'">停運中</span>
+          <span *ngIf="commerceInfo?.commerceStatus === '3'">歇業</span>
+          <span *ngIf="commerceInfo?.commerceStatus === '4'">待註銷</span>
+        </div>
       </div>
       <label  class="group-label">
         總成員
       </label>
       <div class="group-list">
-        <div class="group-list-item">管理員數：26/30人</div>
-        <div class="group-list-item">總人員數：655/2000人</div>
+        <div class="group-list-item">管理員數：
+          {{
+            +commerceInfo?.groupManagerStatus.currentBrandManagers + +commerceInfo?.groupManagerStatus.currentBranchManagers
+            + +commerceInfo?.groupManagerStatus.currentFitnessCoaches + +commerceInfo?.groupManagerStatus.currentCoaches + +commerceInfo?.groupManagerStatus.currentGeneralGroupManagers
+          }}/{{commerceInfo?.groupManagerStatus.maxGroupManagers}}人
+        </div>
+        <div class="group-list-item">總人員數：
+          {{+commerceInfo?.groupMemberStatus.currentGroupMembers}}/{{+commerceInfo?.groupMemberStatus.maxGroupMembers}}人</div>
       </div>
       <label  class="group-label">
         目前方案
       </label>
       <div class="group-list">
-        <div class="group-list-item">目前方案：中小型企業方案</div>
-        <div class="group-list-item">授權到期日：2020/12/10</div>
+        <div class="group-list-item">目前方案：
+          <span *ngIf="commerceInfo?.commercePlan === '1'">試用</span>
+          <span *ngIf="commerceInfo?.commercePlan === '2'">工作室方案</span>
+          <span *ngIf="commerceInfo?.commercePlan === '3'">中小型企業方案</span>
+          <span *ngIf="commerceInfo?.commercePlan === '99'">客制化</span>
+        </div>
+        <div class="group-list-item">授權到期日：
+          {{(commerceInfo?.commercePlanExpired) | date: 'y/MM/dd'}}</div>
       </div>
       <label  class="group-label">
         群組數量
       </label>
       <div class="group-list">
-        <div class="group-list-item">分店數：6</div>
-        <div class="group-list-item">課程數：12</div>
+        <div class="group-list-item">分店數：{{commerceInfo?.groupStatus.currentBranches}}/{{commerceInfo?.groupStatus.maxBranches}}</div>
+        <div class="group-list-item">課程數：{{commerceInfo?.groupStatus.currentClasses}}/{{commerceInfo?.groupStatus.maxClasses}}</div>
       </div>
       <label  class="group-label">
         管理成員
       </label>
       <div class="group-list">
-        <div class="group-list-item">品牌管理員：1人</div>
-        <div class="group-list-item">分店管理員：1人</div>
-        <div class="group-list-item">健體教練：1人</div>
-        <div class="group-list-item">專業老師：1人</div>
+        <div class="group-list-item">品牌管理員：{{commerceInfo?.groupManagerStatus.currentBrandManagers}}人</div>
+        <div class="group-list-item">分店管理員：{{commerceInfo?.groupManagerStatus.currentBranchManagers}}人</div>
+        <div class="group-list-item">健體教練：{{commerceInfo?.groupManagerStatus.currentFitnessCoaches}}人</div>
+        <div class="group-list-item">專業老師：{{commerceInfo?.groupManagerStatus.currentCoaches}}人</div>
       </div>
     </ng-container>
     <ng-container *ngIf="chooseIdx === 3">
@@ -355,6 +373,11 @@
         <div class="group-list-item">無任何成員可看到運動檔案</div>
       </div>
     </ng-container>
+    <div style="display:flex;justify-content: center;align-items: center;height:100%"
+      *ngIf="isCommerceInfoLoading"
+    >
+      <mat-spinner></mat-spinner>
+    </div>
   </div>
 </div>
 <div class="group-manage__action" #footerTarget>

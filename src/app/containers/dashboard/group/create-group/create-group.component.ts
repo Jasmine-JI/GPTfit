@@ -78,6 +78,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
   coachType: number;
   chooseLabels = [];
   planDatas = planDatas;
+  totalCost: number;
   get groupName() {
     return this.form.get('groupName');
   }
@@ -431,7 +432,8 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         body.commercePlan = this.commercePlan;
         body.groupSetting = {
           maxBranches,
-          maxClasses
+          maxClasses,
+          maxGeneralGroups: 0
         };
         body.groupManagerSetting = { maxGroupManagers };
         body.groupMemberSetting = { maxGroupMembers };
@@ -455,28 +457,31 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
       case '1':
         date = moment()
           .add(1, 'month')
-          .format('YYYY-MM-DDTHH:mm:ss');
+          .format('YYYY-MM-DDTHH:mm:ss.000+08:00');
         break;
       case '2':
         date = moment()
           .add(2, 'month')
-          .format('YYYY-MM-DDTHH:mm:ss');
+          .format('YYYY-MM-DDTHH:mm:ss.000+08:00');
         break;
       case '3':
         date = moment()
           .add(3, 'month')
-          .format('YYYY-MM-DDTHH:mm:ss');
+          .format('YYYY-MM-DDTHH:mm:ss.000+08:00');
         break;
       case '6':
         date = moment()
           .add(6, 'month')
-          .format('YYYY-MM-DDTHH:mm:ss');
+          .format('YYYY-MM-DDTHH:mm:ss.000+08:00');
         break;
       default:
         date = moment()
           .add(12, 'month')
-          .format('YYYY-MM-DDTHH:mm:ss');
+          .format('YYYY-MM-DDTHH:mm:ss.000+08:00');
         break;
+    }
+    if (this.commercePlan !== 1 && this.commercePlan !== 99) {
+      this.totalCost = +this.planDatas[this.commercePlan - 1].cost * +e.value;
     }
     this.form.patchValue({ commercePlanExpired: date });
   }

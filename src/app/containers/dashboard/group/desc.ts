@@ -26,7 +26,7 @@ export const planDatas = [
     maxClasses: 2,
     maxGroupMembers: 20,
     maxGroupManagers: 4,
-    cost: 'free'
+    cost: null
   },
   {
     commercePlan: 2,
@@ -34,7 +34,7 @@ export const planDatas = [
     maxClasses: 10,
     maxGroupMembers: 1000,
     maxGroupManagers: 25,
-    cost: '$ 30,000'
+    cost: 2500
   },
   {
     commercePlan: 3,
@@ -42,6 +42,6 @@ export const planDatas = [
     maxClasses: 80,
     maxGroupMembers: 10000,
     maxGroupManagers: 200,
-    cost: '$ 250,000'
+    cost: 20000
   }
 ];

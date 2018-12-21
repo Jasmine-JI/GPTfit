@@ -365,7 +365,8 @@
           <hr>
           <label class="ala-form__label">總計費用：</label>
           <span style="color: #F1873A">
-            <span *ngIf="commercePlan !== 99">{{planDatas[commercePlan - 1].cost}}</span>
+            <span *ngIf="commercePlan === 1">free</span>
+            <span *ngIf="commercePlan !== 99 && commercePlan !== 1">$ {{(totalCost | number:'.') || (planDatas[commercePlan - 1].cost  | number:'.')}}</span>
             <span *ngIf="commercePlan === 99">自訂價格</span>
           </span>
         </div>

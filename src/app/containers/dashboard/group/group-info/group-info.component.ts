@@ -41,6 +41,7 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
   coachAdministrators: any;
   normalCoaches: any;
   PFCoaches: any;
+  isCommerceInfoLoading = false;
   normalGroupAdministrators: any;
   role = {
     isSupervisor: false,
@@ -51,6 +52,7 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
   visitorDetail: any;
   isLoading = false;
   userId: number;
+  commerceInfo: any;
   @ViewChild('footerTarget')
   footerTarget: ElementRef;
   constructor(
@@ -150,6 +152,18 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
   }
   handleGroupItem(idx) {
     this.chooseIdx = idx;
+    const body = {
+      token: this.token,
+      groupId: this.groupId
+    };
+    if (this.chooseIdx === 2) {
+      this.isCommerceInfoLoading = true;
+      this.groupService.fetchCommerceInfo(body).subscribe(res => {
+        this.isCommerceInfoLoading = false;
+        this.commerceInfo = res.info;
+        console.log(res);
+      });
+    }
   }
 
   handleActionGroup(_type) {
@@ -158,7 +172,8 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
       groupId: this.groupId,
       actionType: _type
     };
-    if (_type === 1 && this.groupLevel === '60') { // 申請加入
+    if (_type === 1 && this.groupLevel === '60') {
+      // 申請加入
       return this.dialog.open(MessageBoxComponent, {
         hasBackdrop: true,
         data: {
