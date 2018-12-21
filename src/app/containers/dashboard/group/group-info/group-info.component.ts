@@ -304,7 +304,7 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
             );
           } else {
             this.coachAdministrators = this.groupInfos.filter(_info => {
-              if (_info.accessRight === '60') {
+              if (_info.accessRight === '60' || _info.accessRight === '50') {
                 const idx = this.subCoachInfo.findIndex(
                   _subCoach => _subCoach.groupId === _info.groupId
                 );

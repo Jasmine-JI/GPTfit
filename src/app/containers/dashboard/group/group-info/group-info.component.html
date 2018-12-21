@@ -1,4 +1,4 @@
-<div class="row">
+<div class="group-info row">
   <span class="group-handle-name group-handle-name__rwd">
     群組資訊
   </span>
@@ -155,6 +155,7 @@
                       [memberInfo]="brandAdmItem"
                       [name]="brandAdmItem && brandAdmItem?.memberName"
                       [icon]="brandAdmItem?.memberIcon"
+                      [userId]="brandAdmItem?.memberId"
                     >
                     </app-member-capsule>
                   </ng-container>
@@ -171,6 +172,7 @@
                       [memberInfo]="branchAdmItem"
                       [name]="branchAdmItem && branchAdmItem?.memberName"
                       [icon]="branchAdmItem?.memberIcon"
+                      [userId]="branchAdmItem?.memberId"
                     >
                     </app-member-capsule>
                   </ng-container>
@@ -187,15 +189,16 @@
                         [memberInfo]="coachAdmItem"
                         [name]="coachAdmItem && coachAdmItem?.memberName"
                         [icon]="coachAdmItem?.memberIcon"
+                        [userId]="coachAdmItem?.memberId"
                       >
                       </app-member-capsule>
                     </ng-container>
                   </div>
                 </ng-container>
                 <ng-container *ngIf="groupLevel === '60'">
-                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">一般教練</label>
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">專業老師</label>
                   <div style="margin-bottom: 15px" >
-                    <span *ngIf="normalCoaches && normalCoaches.length === 0">尚無一般教練資訊</span>
+                    <span *ngIf="normalCoaches && normalCoaches.length === 0">尚無專業老師資訊</span>
                     <ng-container  *ngFor="let normalCoachAdmItem of normalCoaches">
                       <app-member-capsule
                         [role]="role"
@@ -204,6 +207,7 @@
                         [memberInfo]="normalCoachAdmItem"
                         [name]="normalCoachAdmItem && normalCoachAdmItem?.memberName"
                         [icon]="normalCoachAdmItem?.memberIcon"
+                        [userId]="normalCoachAdmItem?.memberId"
                       >
                       </app-member-capsule>
                     </ng-container>
@@ -219,6 +223,7 @@
                         [memberInfo]="pfCoachAdmItem"
                         [name]="pfCoachAdmItem && pfCoachAdmItem?.memberName"
                         [icon]="pfCoachAdmItem?.memberIcon"
+                        [userId]="pfCoachAdmItem?.memberId"
                       >
                       </app-member-capsule>
                     </ng-container>
@@ -237,6 +242,7 @@
                       [memberInfo]="item"
                       [name]="item && item?.memberName"
                       [icon]="item?.memberIcon"
+                      [userId]="item?.memberId"
                     >
                     </app-member-capsule>
                   </ng-container>
@@ -261,6 +267,7 @@
                     [memberInfo]="item"
                     [name]="item && item?.memberName"
                     [icon]="item?.memberIcon"
+                    [userId]="item?.memberId"
                   >
                   </app-member-capsule>
                 </div>
@@ -284,6 +291,7 @@
                     [memberInfo]="item"
                     [name]="item && item?.memberName"
                     [icon]="item?.memberIcon"
+                    [userId]="item?.memberId"
                   >
                   </app-member-capsule>
                 </div>

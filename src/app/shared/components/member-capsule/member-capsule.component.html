@@ -1,4 +1,4 @@
-<div style="display:inline-block">
+<div style="display:inline-block" (click)="goToUserProfile()">
   <div class="member-selector" [title]="title" (click)="toggleMenu()">
     <div *ngIf="icon"
       [ngStyle]="{'background-image': 'url(' + icon + ')'}"
@@ -54,9 +54,19 @@
       <ul class="dropdown-menu"
         [class.show]="active"
       >
-        <li class="normal-manage" (click)="handleAssignAdmin()">
+        <li class="normal-manage" (click)="handleAssignAdmin(1)">
           <a>
-            指定管理員
+            指定為體適能教練
+          </a>
+        </li>
+        <li class="normal-manage" (click)="handleAssignAdmin(2)">
+          <a>
+            指定為專業老師
+          </a>
+        </li>
+        <li class="normal-manage" [routerLink]="['/user-profile', userId]">
+          <a>
+            查看個人檔案
           </a>
         </li>
         <li class="warn-manage" (click)="handleDeleteMember()">

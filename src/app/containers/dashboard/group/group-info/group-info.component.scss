@@ -22,3 +22,16 @@
     color: #26abe3;
   }
 }
+
+@media(max-width: 767px) {
+  .group-info.row {
+    display: block;
+    .group-image--area {
+      flex-direction: column;
+      ul.nav {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+    }
+  }
+}
