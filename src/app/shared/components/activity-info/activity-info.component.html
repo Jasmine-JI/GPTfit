@@ -114,13 +114,13 @@
           <div class="activty-info-data-value">{{activityInfo?.avgSpeed | sportPace: activityInfo?.type}}</div>
           <div class="activty-info-data-name">
             <span *ngIf="activityInfo?.type === '1'">
-              平均配速1hr/1km
+              平均配速1min/1km
             </span>
             <span *ngIf="activityInfo?.type === '4'">
-              平均配速1hr/100m
+              平均配速1min/100m
             </span>
             <span *ngIf="activityInfo?.type === '6'">
-              平均配速1hr/500m
+              平均配速1min/500m
             </span>
             <span *ngIf="activityInfo?.type !== '4' && activityInfo?.type !== '1' && activityInfo?.type !== '6'">
               平均時速
@@ -236,13 +236,13 @@
               </div>
               <div class="data-label">
                 <span *ngIf="activityInfo?.type === '1'">
-                  平均配速1hr/1km
+                  平均配速1min/1km
                 </span>
                 <span *ngIf="activityInfo?.type === '4'">
-                  平均配速1hr/100m
+                  平均配速1min/100m
                 </span>
                 <span *ngIf="activityInfo?.type === '6'">
-                  平均配速1hr/500m
+                  平均配速1min/500m
                 </span>
               </div>
             </div>
@@ -252,13 +252,13 @@
               </div>
               <div class="data-label">
                 <span *ngIf="activityInfo?.type === '1'">
-                  平均移動配速1hr/1km
+                  平均移動配速1min/1km
                 </span>
                 <span *ngIf="activityInfo?.type === '4'">
-                  平均移動配速1hr/100m
+                  平均移動配速1min/100m
                 </span>
                 <span *ngIf="activityInfo?.type === '6'">
-                  平均移動配速1hr/500m
+                  平均移動配速1min/500m
                 </span>
               </div>
             </div>
@@ -268,13 +268,13 @@
               </div>
               <div class="data-label">
                 <span *ngIf="activityInfo?.type === '1'">
-                  最佳配速1hr/1km
+                  最佳配速1min/1km
                 </span>
                 <span *ngIf="activityInfo?.type === '4'">
-                  最佳配速1hr/100m
+                  最佳配速1min/100m
                 </span>
                 <span *ngIf="activityInfo?.type === '6'">
-                  最佳配速1hr/500m
+                  最佳配速1min/500m
                 </span>
               </div>
             </div>
@@ -718,13 +718,13 @@
           <ng-container matColumnDef="speed">
             <th mat-header-cell *matHeaderCellDef>
               <span *ngIf="activityInfo?.type === '1'">
-                該圈平均配速1hr/1km
+                該圈平均配速1min/1km
               </span>
               <span *ngIf="activityInfo?.type === '4'">
-                該圈平均配速1hr/100m
+                該圈平均配速1min/100m
               </span>
               <span *ngIf="activityInfo?.type === '6'">
-                該圈平均配速1hr/500m
+                該圈平均配速1min/500m
               </span>
               <span *ngIf="activityInfo?.type !== '4' && activityInfo?.type !== '1' && activityInfo?.type !== '6'">
                 該圈平均時速

@@ -17,6 +17,7 @@ import { UtilsService } from '@shared/services/utils.service';
 import { HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { GlobalEventsManager } from '@shared/global-events-manager';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-my-activity',
@@ -31,6 +32,7 @@ export class MyActivityComponent implements OnInit, OnDestroy {
   token: string;
   isLoading = false;
   isEmpty = false;
+  targetUserId: string;
   @Input() isPortal = false;
   @Input() userName;
 
@@ -41,10 +43,12 @@ export class MyActivityComponent implements OnInit, OnDestroy {
     private activityService: ActivityService,
     private utils: UtilsService,
     private router: Router,
-    private globalEventsManager: GlobalEventsManager
+    private globalEventsManager: GlobalEventsManager,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
+    this.targetUserId = this.route.snapshot.paramMap.get('userId');
     this.globalEventsManager.setFooterRWD(1); // 為了讓footer長高85px
     // 設定顯示筆數資訊文字
     this.matPaginatorIntl.getRangeLabel = (
@@ -111,8 +115,12 @@ export class MyActivityComponent implements OnInit, OnDestroy {
       pageCounts:
         (this.currentPage && this.currentPage.pageSize.toString()) || '10',
       filterStartTime: '',
-      filterEndTime: ''
+      filterEndTime: '',
+      targetUserId: ''
     };
+    if (this.targetUserId) {
+      body.targetUserId = this.targetUserId;
+    }
     this.activityService.fetchSportList(body).subscribe(res => {
       this.isLoading = false;
       this.logSource.data = res.info;

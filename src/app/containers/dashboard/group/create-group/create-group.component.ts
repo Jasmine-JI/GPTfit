@@ -378,7 +378,10 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         groupSetting: null,
         groupManagerSetting: null,
         groupMemberSetting: null,
-        commercePlanExpired: ''
+        commercePlanExpired: '',
+        shareAvatarToMember: {},
+        shareActivityToMember: {},
+        shareReportToMember: {}
       };
       if (this.createType === 1) {
         // 建立分店
@@ -400,6 +403,30 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         body.levelType = 5;
         body.coachType = this.coachType;
         body.levelName = coachLessonName;
+        if (this.coachType === 1) { // 一般教練(課)
+          body.shareAvatarToMember = {
+            switch: '1'
+          };
+          body.shareActivityToMember = {
+            switch: '2',
+          };
+          body.shareReportToMember = {
+            switch: '2',
+          };
+        } else { // 體適能教練(課)
+          body.shareAvatarToMember = {
+            switch: '1'
+          };
+          body.shareActivityToMember = {
+            switch: '3',
+            enableAccessRight: ['50']
+          };
+          body.shareReportToMember = {
+            switch: '3',
+            enableAccessRight: ['50']
+          };
+        }
+
         if (branchId !== this.groupId) {
           body.groupId = branchId;
         }

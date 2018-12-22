@@ -43,6 +43,9 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
   PFCoaches: any;
   isCommerceInfoLoading = false;
   normalGroupAdministrators: any;
+  shareAvatarTarget: string;
+  shareActivityTarget: string;
+  shareReportTarget: string;
   role = {
     isSupervisor: false,
     isSystemDeveloper: false,
@@ -124,8 +127,20 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
         groupIcon,
         groupId,
         selfJoinStatus,
-        groupStatus
+        groupStatus,
+        shareActivityToMember,
+        shareAvatarToMember,
+        shareReportToMember
       } = this.groupInfo;
+      if (shareAvatarToMember && + shareAvatarToMember.switch > 2) {
+        this.handleShareTarget(shareAvatarToMember, 1);
+      }
+      if (shareActivityToMember && + shareActivityToMember.switch > 2) {
+        this.handleShareTarget(shareActivityToMember, 2);
+      }
+      if (shareReportToMember && + shareReportToMember.switch > 2) {
+        this.handleShareTarget(shareReportToMember, 3);
+      }
       if (selfJoinStatus) {
         this.joinStatus = selfJoinStatus;
       } else {
@@ -150,6 +165,43 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
       }
     });
   }
+  handleShareTarget(shareData, type) {
+    let text = '';
+    let accessRights = [];
+    if (shareData.switch === '3') {
+      text = '僅開放對象為';
+      accessRights = shareData.enableAccessRight;
+    } else {
+      text = '不開放對象為';
+      accessRights = shareData.disableAccessRight;
+    }
+    accessRights = accessRights.map(_accessRight => {
+      if (_accessRight === '30') {
+        return '品牌管理員';
+      } else if (_accessRight === '40') {
+        return '分店管理員';
+      } else if (_accessRight === '50') {
+        return '體適能教練';
+      } else {
+        return '專業老師';
+      }
+    });
+    const browserLang = this.utils.getLocalStorageObject('locale');
+    if (browserLang.indexOf('zh') > -1) {
+      text += accessRights.join(' 、');
+    } else {
+      text += accessRights.join(' ,');
+    }
+
+    if (type === 1) {
+      this.shareAvatarTarget = text;
+    } else if (type === 2) {
+      this.shareActivityTarget = text;
+    } else {
+      this.shareReportTarget = text;
+    }
+
+  }
   handleGroupItem(idx) {
     this.chooseIdx = idx;
     const body = {
@@ -161,7 +213,6 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
       this.groupService.fetchCommerceInfo(body).subscribe(res => {
         this.isCommerceInfoLoading = false;
         this.commerceInfo = res.info;
-        console.log(res);
       });
     }
   }

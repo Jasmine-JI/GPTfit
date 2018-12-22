@@ -366,19 +366,37 @@
         群組成員可見度
       </label>
       <div class="group-list">
-        <div class="group-list-item">"所有成員"皆可以看到頭像與暱稱</div>
+        <div class="group-list-item">
+          <span *ngIf="groupInfo?.shareAvatarToMember && groupInfo?.shareAvatarToMember.switch === '1'">"所有成員"皆可以看到頭像與暱稱</span>
+          <span *ngIf="groupInfo?.shareAvatarToMember && groupInfo?.shareAvatarToMember.switch === '2'">不開放頭像與暱稱</span>
+          <span *ngIf="groupInfo?.shareAvatarToMember && (groupInfo?.shareAvatarToMember.switch === '3' || groupInfo?.shareAvatarToMember.switch === '4')">
+            {{shareAvatarTarget}}
+          </span>
+        </div>
       </div>
       <label  class="group-label">
         分享運動檔案
       </label>
       <div class="group-list">
-        <div class="group-list-item">無任何成員可看到運動檔案</div>
+        <div class="group-list-item">
+          <span *ngIf="groupInfo?.shareActivityToMember && groupInfo?.shareActivityToMember.switch === '1'">"所有成員"皆可以看到運動檔案</span>
+          <span *ngIf="groupInfo?.shareActivityToMember && groupInfo?.shareActivityToMember.switch === '2'">不開放運動檔案</span>
+          <span *ngIf="groupInfo?.shareActivityToMember && (groupInfo?.shareActivityToMember.switch === '3' || groupInfo?.shareActivityToMember.switch === '4')">
+            {{shareActivityTarget}}
+          </span>
+        </div>
       </div>
       <label  class="group-label">
         分享運動報告
       </label>
       <div class="group-list">
-        <div class="group-list-item">無任何成員可看到運動檔案</div>
+        <div class="group-list-item">
+          <span *ngIf="groupInfo?.shareReportToMember && groupInfo?.shareReportToMember.switch === '1'">"所有成員"皆可以看到運動報告</span>
+          <span *ngIf="groupInfo?.shareReportToMember && groupInfo?.shareReportToMember.switch === '2'">不開放運動報告</span>
+          <span *ngIf="groupInfo?.shareReportToMember && (groupInfo?.shareReportToMember.switch === '3' || groupInfo?.shareReportToMember.switch === '4')">
+            {{shareReportTarget}}
+          </span>
+        </div>
       </div>
     </ng-container>
     <div style="display:flex;justify-content: center;align-items: center;height:100%"
