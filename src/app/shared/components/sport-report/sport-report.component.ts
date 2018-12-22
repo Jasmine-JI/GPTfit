@@ -1,5 +1,11 @@
 import { NestedTreeControl } from '@angular/cdk/tree';
-import { Component, Injectable, OnInit } from '@angular/core';
+import {
+  Component,
+  Injectable,
+  OnInit,
+  Output,
+  EventEmitter
+} from '@angular/core';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
 import { BehaviorSubject } from 'rxjs';
 import { ViewEncapsulation } from '@angular/core';
@@ -170,6 +176,7 @@ export class SportReportComponent implements OnInit {
   // to fix 之後多語系要注意
   openTreeName = '所有運動';
   targetUserId: string;
+  @Output() showPrivacyUi = new EventEmitter();
   constructor(
     database: FileDatabase,
     private reportService: ReportService,
@@ -346,11 +353,17 @@ export class SportReportComponent implements OnInit {
     }
     this.reportService.fetchSportSummaryArray(body).subscribe(res => {
       this.isLoading = false;
-      const { reportActivityDays, reportActivityWeeks } = res;
-      if (body.type === 1) {
-        this.datas = reportActivityDays;
-      } else {
-        this.datas = reportActivityWeeks;
+      if (res.resultCode === 402) {
+        return this.showPrivacyUi.emit(true);
+      }
+      if (res.resultCode === 200) {
+        const { reportActivityDays, reportActivityWeeks } = res;
+        if (body.type === 1) {
+          this.datas = reportActivityDays;
+        } else {
+          this.datas = reportActivityWeeks;
+        }
+        this.showPrivacyUi.emit(false);
       }
     });
   }

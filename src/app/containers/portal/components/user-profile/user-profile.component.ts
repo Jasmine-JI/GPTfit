@@ -16,6 +16,7 @@ export class UserProfileComponent implements OnInit {
   userName: string;
   description: string;
   chooseIdx = 1;
+  isShowLock = false;
   constructor(
     private userProfileService: UserProfileService,
     private route: ActivatedRoute,
@@ -88,5 +89,8 @@ export class UserProfileComponent implements OnInit {
     // if (url.indexOf(`/activity/${this.fileId}`) > -1) {
     //   this.chooseIdx = 4;
     // }
+  }
+  handlePrivacyLock(isShowLock) {
+    this.isShowLock = isShowLock;
   }
 }

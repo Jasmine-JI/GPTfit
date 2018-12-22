@@ -3,7 +3,9 @@ import {
   OnInit,
   ViewChild,
   OnDestroy,
-  Input
+  Input,
+  Output,
+  EventEmitter
 } from '@angular/core';
 import {
   MatTableDataSource,
@@ -35,6 +37,7 @@ export class MyActivityComponent implements OnInit, OnDestroy {
   targetUserId: string;
   @Input() isPortal = false;
   @Input() userName;
+  @Output() showPrivacyUi = new EventEmitter();
 
   @ViewChild('paginator')
   paginator: MatPaginator;
@@ -123,13 +126,19 @@ export class MyActivityComponent implements OnInit, OnDestroy {
     }
     this.activityService.fetchSportList(body).subscribe(res => {
       this.isLoading = false;
-      this.logSource.data = res.info;
+      if (res.resultCode === 402) {
+        return this.showPrivacyUi.emit(true);
+      }
+      if (res.resultCode === 200) {
+        this.logSource.data = res.info;
 
-      this.totalCount = res.totalCounts;
-      if (this.logSource.data.length === 0) {
-        this.isEmpty = true;
-      } else {
-        this.isEmpty = false;
+        this.totalCount = res.totalCounts;
+        if (this.logSource.data.length === 0) {
+          this.isEmpty = true;
+        } else {
+          this.isEmpty = false;
+        }
+        this.showPrivacyUi.emit(false);
       }
     });
   }
