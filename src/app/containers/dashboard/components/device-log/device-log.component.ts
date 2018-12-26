@@ -15,6 +15,7 @@ import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/observable/fromEvent';
 import { Router } from '@angular/router';
 import { debounce } from '@shared/utils/';
+import { UtilsService } from '@shared/services/utils.service';
 
 @Component({
   selector: 'app-device-log',
@@ -37,12 +38,15 @@ export class DeviceLogComponent implements OnInit {
   constructor(
     private deviceLogservice: DeviceLogService,
     private matPaginatorIntl: MatPaginatorIntl,
-    private router: Router
+    private router: Router,
+    private utils: UtilsService
   ) {
     this.searchInfo = debounce(this.searchInfo, 1000);
   }
 
   ngOnInit() {
+    const queryStrings = this.utils.getUrlQueryStrings(location.search);
+    const { pageNumber } = queryStrings;
     // 設定顯示筆數資訊文字
     this.matPaginatorIntl.getRangeLabel = (
       page: number,
@@ -64,7 +68,7 @@ export class DeviceLogComponent implements OnInit {
     };
 
     this.currentPage = {
-      pageIndex: 0,
+      pageIndex: (+pageNumber - 1) || 0,
       pageSize: 10,
       length: null
     };
@@ -78,6 +82,7 @@ export class DeviceLogComponent implements OnInit {
     // 分頁切換時，重新取得資料
     this.paginator.page.subscribe((page: PageEvent) => {
       this.currentPage = page;
+      this.router.navigateByUrl(`/dashboard/system/device_log?pageNumber=${this.currentPage.pageIndex + 1}`);
       this.getLists();
     });
   }
@@ -127,7 +132,6 @@ export class DeviceLogComponent implements OnInit {
         this.totalCount = res.meta.pageCount;
       });
     }
-
   }
   selectTarget(_value) {
     this.selectedValue = encodeURIComponent(_value).trim();

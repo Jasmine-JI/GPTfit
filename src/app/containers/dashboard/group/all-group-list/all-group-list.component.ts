@@ -8,14 +8,12 @@ import {
   Sort,
   MatPaginatorIntl
 } from '@angular/material';
-import { HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/observable/fromEvent';
 import { Router } from '@angular/router';
-import { debounce } from '@shared/utils/';
 import { UtilsService } from '@shared/services/utils.service';
+
 @Component({
   selector: 'app-all-group-list',
   templateUrl: './all-group-list.component.html',
@@ -44,11 +42,19 @@ export class AllGroupListComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    const queryStrings = this.utils.getUrlQueryStrings(location.search);
+    const { pageNumber } = queryStrings;
     this.token = this.utils.getToken();
+    this.currentPage = {
+      pageIndex: (+pageNumber - 1) || 0,
+      pageSize: 10,
+      length: null
+    };
     this.getLists();
     // 分頁切換時，重新取得資料
     this.paginator.page.subscribe((page: PageEvent) => {
       this.currentPage = page;
+      this.router.navigateByUrl(`/dashboard/system/all-group-list?pageNumber=${this.currentPage.pageIndex + 1}`);
       this.getLists();
     });
   }

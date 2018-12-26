@@ -16,7 +16,6 @@ import {
 } from '@angular/material';
 import { ActivityService } from '@shared/services/activity.service';
 import { UtilsService } from '@shared/services/utils.service';
-import { HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { GlobalEventsManager } from '@shared/global-events-manager';
 import { ActivatedRoute } from '@angular/router';
@@ -51,6 +50,8 @@ export class MyActivityComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    const queryStrings = this.utils.getUrlQueryStrings(location.search);
+    const { pageNumber } = queryStrings;
     this.targetUserId = this.route.snapshot.paramMap.get('userId');
     this.globalEventsManager.setFooterRWD(1); // 為了讓footer長高85px
     // 設定顯示筆數資訊文字
@@ -73,7 +74,7 @@ export class MyActivityComponent implements OnInit, OnDestroy {
       return `第 ${startIndex + 1} - ${endIndex} 筆、共 ${length} 筆`;
     };
     this.currentPage = {
-      pageIndex: 0,
+      pageIndex: (+pageNumber - 1) || 0,
       pageSize: 10,
       length: null
     };
@@ -88,6 +89,7 @@ export class MyActivityComponent implements OnInit, OnDestroy {
     // 分頁切換時，重新取得資料
     this.paginator.page.subscribe((page: PageEvent) => {
       this.currentPage = page;
+      this.router.navigateByUrl(`/dashboard/activity-list?pageNumber=${this.currentPage.pageIndex + 1}`);
       this.getLists();
     });
   }
@@ -101,16 +103,6 @@ export class MyActivityComponent implements OnInit, OnDestroy {
   getLists() {
     this.isLoading = true;
     const sort = this.currentSort.direction;
-    // let params = new HttpParams();
-    // params = params.set(
-    //   'page',
-    //   (this.currentPage && this.currentPage.pageIndex.toString()) || '0'
-    // );
-    // params = params.set(
-    //   'pageCounts',
-    //   (this.currentPage && this.currentPage.pageSize.toString()) || '10'
-    // );
-    // params = params.set('sort', sort);
     const body = {
       token: this.token,
       type: '9',

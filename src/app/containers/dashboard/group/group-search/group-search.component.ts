@@ -14,13 +14,10 @@ import {
   Sort,
   MatPaginatorIntl
 } from '@angular/material';
-import { HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/observable/fromEvent';
 import { Router } from '@angular/router';
-import { debounce } from '@shared/utils/';
 import { UtilsService } from '@shared/services/utils.service';
 
 @Component({
@@ -30,8 +27,9 @@ import { UtilsService } from '@shared/services/utils.service';
   encapsulation: ViewEncapsulation.None
 })
 export class GroupSearchComponent implements OnInit {
-  groupLevel = '90';
-  searchWords = '';
+  // to fixed
+  groupLevel: any; //  Type 'string | string[]' is not assignable to type 'string'.  所以暫時先用any，之後找原因
+  searchWords: any; //  Type 'string | string[]' is not assignable to type 'string'.  所以暫時先用any，之後找原因
   token: string;
   logSource = new MatTableDataSource<any>();
   totalCount: number;
@@ -55,19 +53,35 @@ export class GroupSearchComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    const queryStrings = this.utils.getUrlQueryStrings(location.search);
+    const { pageNumber, searchWords, groupLevel } = queryStrings;
+
+    this.searchWords = searchWords || '';
+    this.groupLevel = groupLevel || '30';
+
+    this.currentPage = {
+      pageIndex: +pageNumber - 1 || 0,
+      pageSize: 10,
+      length: null
+    };
     this.token = this.utils.getToken();
     this.getLists();
+    // 分頁切換時，重新取得資料
+    this.paginator.page.subscribe((page: PageEvent) => {
+      this.currentPage = page;
+      this.getLists();
+    });
   }
   getLists() {
     const body = {
       token: this.token,
       category: '3',
-      groupLevel: this.groupLevel,
-      searchWords: this.searchWords,
+      groupLevel: this.groupLevel || '30',
+      searchWords: this.searchWords || '',
       page: '0',
       pageCounts: '10'
     };
-    if (this.searchWords.length > 0) {
+    if (this.searchWords && this.searchWords.length > 0) {
       this.isLoading = true;
       this.groupService.fetchGroupList(body).subscribe(res => {
         this.isLoading = false;
@@ -78,6 +92,10 @@ export class GroupSearchComponent implements OnInit {
         } else {
           this.isEmpty = false;
         }
+        const url = '/dashboard/group-search?' +
+        `pageNumber=${this.currentPage.pageIndex + 1}&searchWords=${this.searchWords.trim()}`
+        + `&groupLevel=${this.groupLevel}`;
+        this.router.navigateByUrl(url);
       });
     }
   }
