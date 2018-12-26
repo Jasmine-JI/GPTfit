@@ -17,7 +17,7 @@ import { UtilsService } from '@shared/services/utils.service';
 @Component({
   selector: 'app-all-group-list',
   templateUrl: './all-group-list.component.html',
-  styleUrls: ['./all-group-list.component.css', '../group-style.scss'],
+  styleUrls: ['./all-group-list.component.scss', '../group-style.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class AllGroupListComponent implements OnInit {

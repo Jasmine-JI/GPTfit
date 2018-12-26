@@ -31,7 +31,9 @@
 >
   <mat-icon>search</mat-icon>
 </button>
-<mat-table [dataSource]="logSource" matSort #sortTable="matSort">
+<mat-table [dataSource]="logSource" matSort #sortTable="matSort"
+  class="all-group-list"
+>
   <ng-container matColumnDef="id">
     <mat-header-cell *matHeaderCellDef>群組ID</mat-header-cell>
     <mat-cell *matCellDef="let row">{{ utils.displayGroupId(row.groupId) }}</mat-cell>

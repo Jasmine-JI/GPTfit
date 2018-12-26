@@ -26,6 +26,8 @@ export class MyDeviceComponent implements OnInit, OnDestroy {
   isLoading = false;
   @ViewChild('paginator')
   paginator: MatPaginator;
+  token: string;
+  localSN: string[];
   constructor(
     private matPaginatorIntl: MatPaginatorIntl,
     private router: Router,
@@ -36,7 +38,17 @@ export class MyDeviceComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    const queryStrings = this.utilsService.getUrlQueryStrings(location.search);
+    const { pageNumber } = queryStrings;
     this.globalEventsManager.setFooterRWD(1); // 為了讓footer長高85px
+    // 分頁切換時，重新取得資料
+    this.paginator.page.subscribe((page: PageEvent) => {
+      this.currentPage = page;
+      this.router.navigateByUrl(
+        `/dashboard/device?pageNumber=${this.currentPage.pageIndex + 1}`
+      );
+      this.getDeviceList();
+    });
     // 設定顯示筆數資訊文字
     this.matPaginatorIntl.getRangeLabel = (
       page: number,
@@ -57,7 +69,7 @@ export class MyDeviceComponent implements OnInit, OnDestroy {
       return `第 ${startIndex + 1} - ${endIndex} 筆、共 ${length} 筆`;
     };
     this.currentPage = {
-      pageIndex: 0,
+      pageIndex: +pageNumber - 1 || 0,
       pageSize: 10,
       length: null
     };
@@ -67,36 +79,22 @@ export class MyDeviceComponent implements OnInit, OnDestroy {
       direction: ''
     };
     const updateIdx = this.utilsService.getLocalStorageObject('updateIdx');
-    const localSN = this.utilsService.getLocalStorageObject('snNumber') || [];
+    this.localSN = this.utilsService.getLocalStorageObject('snNumber') || [];
     const bondStatus = this.utilsService.getLocalStorageObject('bondStatus');
-    const token = this.utilsService.getToken();
-    const deviceBody = { token };
+    this.token = this.utilsService.getToken();
+
     this.isLoading = true;
-    if (localSN && bondStatus && updateIdx) {
+    if (this.localSN && bondStatus && updateIdx) {
       const body = {
-        token,
-        bondEquipmentSN: localSN[updateIdx],
+        token: this.token,
+        bondEquipmentSN: this.localSN[updateIdx],
         bondStatus
       };
       this.qrcodeService.updateDeviceBonding(body).subscribe(res => {
         if (res.resultCode === 200) {
           this.utilsService.removeLocalStorageObject('updateIdx');
           this.utilsService.removeLocalStorageObject('bondStatus');
-          this.qrcodeService.getDeviceList(deviceBody).subscribe(_res => {
-            this.isLoading = false;
-            this.logSource.data = _res.info.deviceList;
-            this.logSource.data = this.logSource.data.map(_data => {
-              const idx = localSN.findIndex(_sn => _sn === _data.myEquipmentSN);
-              if (idx > -1) {
-                return {
-                  ..._data,
-                  isDisplayNew: true
-                };
-              } else {
-                return { ..._data, isDisplayNew: false };
-              }
-            });
-          });
+          this.getDeviceList();
         }
         if (res.resultCode === 402) {
           this.isLoading = false;
@@ -122,24 +120,7 @@ export class MyDeviceComponent implements OnInit, OnDestroy {
         }
       });
     } else {
-      this.qrcodeService.getDeviceList(deviceBody).subscribe(_res => {
-        this.isLoading = false;
-        this.logSource.data = _res.info.deviceList;
-        this.logSource.data = this.logSource.data.map(_data => {
-          const idx = localSN.findIndex(_sn => _sn === _data.myEquipmentSN);
-          if (idx > -1) {
-            return {
-              ..._data,
-              isDisplayNew: true
-            };
-          } else {
-            return {
-              ..._data,
-              isDisplayNew: false
-            };
-          }
-        });
-      });
+      this.getDeviceList();
     }
   }
   ngOnDestroy() {
@@ -150,5 +131,31 @@ export class MyDeviceComponent implements OnInit, OnDestroy {
   }
   goDetail(id) {
     this.router.navigateByUrl(`dashboard/device/info/${id}`);
+  }
+  getDeviceList() {
+    const deviceBody = {
+      token: this.token,
+      page: (this.currentPage && this.currentPage.pageIndex.toString()) || '0',
+      pageCounts:
+        (this.currentPage && this.currentPage.pageSize.toString()) || '10'
+    };
+    this.qrcodeService.getDeviceList(deviceBody).subscribe(_res => {
+      this.isLoading = false;
+      this.logSource.data = _res.info.deviceList;
+      this.logSource.data = this.logSource.data.map(_data => {
+        const idx = this.localSN.findIndex(_sn => _sn === _data.myEquipmentSN);
+        if (idx > -1) {
+          return {
+            ..._data,
+            isDisplayNew: true
+          };
+        } else {
+          return {
+            ..._data,
+            isDisplayNew: false
+          };
+        }
+      });
+    });
   }
 }

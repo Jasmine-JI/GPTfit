@@ -42,7 +42,9 @@
   >
   </mat-row>
 </mat-table>
-<div *ngIf="logSource?.data.length === 0" style="text-align: center;padding: 30px">
+<div *ngIf="!logSource?.data || (logSource?.data && logSource?.data.length === 0)"
+  style="text-align: center;padding: 30px"
+>
   尚無相關資訊
 </div>
 <div class="ala-loading-shade" *ngIf="isLoading">
