@@ -426,9 +426,9 @@
   }
 }
 
-@media (max-width: 1919px) {
+@media(min-width: 1400px) and (max-width: 1798px) {
   .hr-card {
-    width: calc((100% - 48px) / 3);
+    width: calc((100% - 60px) / 4);
     margin-left: 12px;
   }
   .content {
@@ -438,23 +438,11 @@
     font-size: 22px;
   }
 }
-
-@media (max-width: 1079px) {
-  .lesson-container {
-    display: block;
-  }
-
+@media(min-width: 1100px) and (max-width: 1398px) {
   .hr-card {
-    width: calc((100% - 46px) / 2);
-    margin: 0px 11.5px 25px 11.5px;
-  }
-  .content {
-    padding: 0 11.5px;
+    width: calc((100% - 48px) / 3);
   }
 
-  .hr-card-body {
-    font-size: 22px;
-  }
 }
 
 .carousel-item.active {
@@ -462,7 +450,14 @@
   line-height: 260px;
   background: black;
 }
-
+@media(min-width: 600px) and (max-width: 1099px) {
+  .hr-card {
+    width: calc((100% - 36px) / 2);
+  }
+  .content {
+    padding: 0 11.5px;
+  }
+}
 @media (min-width: 768px) {
   .ala-coach.col-md-6 {
     max-width: initial;
