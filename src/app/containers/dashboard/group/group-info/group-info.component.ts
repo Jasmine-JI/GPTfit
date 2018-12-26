@@ -100,7 +100,8 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
     this.token = this.utils.getToken();
     const body = {
       token: this.token,
-      groupId: this.groupId
+      groupId: this.groupId,
+      findRoot: '1'
     };
     this.userInfoService.getUserDetail(body, this.groupId);
     this.userInfoService.getUserId().subscribe(res => {

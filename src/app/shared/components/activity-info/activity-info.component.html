@@ -228,7 +228,15 @@
             *ngIf="activityInfo?.type !== '2' && activityInfo?.type !== '3' && activityInfo?.type !== '5'"
           >
             <div class="ala-dashboard-title activty-title">
-              配速
+              <span *ngIf="activityInfo?.type === '1'">
+                1km配速
+              </span>
+              <span *ngIf="activityInfo?.type === '4'">
+                100m配速
+              </span>
+              <span *ngIf="activityInfo?.type === '6'">
+                500m配速
+                </span>
             </div>
             <div class="activity-info__area--block">
               <div>
@@ -416,8 +424,12 @@
             </div>
           </div>
           <div class="activity-info__area"
-            *ngIf="activityInfo?.type === '2' &&
-            (activityInfo?.cycleAvgWatt.length > 0 || activityInfo?.cycleMaxWatt.length > 0)"
+            *ngIf="(
+            (activityInfo?.type === '2' &&
+            (activityInfo?.cycleAvgWatt.length > 0 || activityInfo?.cycleMaxWatt.length > 0))
+            || (activityInfo?.type === '6' &&
+            (activityInfo?.rowingAvgWatt.length > 0 || activityInfo?.rowingMaxWatt.length > 0)
+            ))"
           >
             <div class="ala-dashboard-title activty-title">
               功率
@@ -425,8 +437,11 @@
             <div class="activity-info__area--block"
               *ngIf="activityInfo?.cycleAvgWatt.length > 0"
             >
-              <div>
+              <div *ngIf="activityInfo?.type === '2'">
                 {{activityInfo?.cycleAvgWatt || 0}}
+              </div>
+              <div *ngIf="activityInfo?.type === '6'">
+                {{activityInfo?.rowingAvgWatt || 0}}
               </div>
               <span class="data-label">
                 平均功率
@@ -435,8 +450,11 @@
             <div class="activity-info__area--block"
              *ngIf="activityInfo?.cycleMaxWatt.length > 0"
             >
-              <div>
+              <div *ngIf="activityInfo?.type === '2'">
                 {{activityInfo?.cycleMaxWatt || 0}}
+              </div>
+              <div *ngIf="activityInfo?.type === '6'">
+                {{activityInfo?.rowingMaxWatt || 0}}
               </div>
               <span class="data-label">
                 最大功率
