@@ -55,14 +55,14 @@
         [class.show]="active"
       >
         <li class="normal-manage" (click)="handleAssignAdmin(1)"
-          *ngIf="coachType === 2"
+          *ngIf="coachType === '2'"
         >
           <a>
             指定為體適能教練
           </a>
         </li>
         <li class="normal-manage" (click)="handleAssignAdmin(2)"
-          *ngIf="coachType === 1"
+          *ngIf="coachType === '1'"
         >
           <a>
             指定為專業老師
