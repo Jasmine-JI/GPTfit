@@ -89,7 +89,11 @@ export class MyActivityComponent implements OnInit, OnDestroy {
     // 分頁切換時，重新取得資料
     this.paginator.page.subscribe((page: PageEvent) => {
       this.currentPage = page;
-      this.router.navigateByUrl(`/dashboard/activity-list?pageNumber=${this.currentPage.pageIndex + 1}`);
+      if (this.isPortal) {
+        this.router.navigateByUrl(`${location.pathname}?pageNumber=${this.currentPage.pageIndex + 1}`);
+      } else {
+        this.router.navigateByUrl(`/dashboard/activity-list?pageNumber=${this.currentPage.pageIndex + 1}`);
+      }
       this.getLists();
     });
   }

@@ -379,9 +379,21 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         groupManagerSetting: null,
         groupMemberSetting: null,
         commercePlanExpired: '',
-        shareAvatarToMember: {},
-        shareActivityToMember: {},
-        shareReportToMember: {}
+        shareAvatarToMember: {
+          switch: '1',
+          enableAccessRight: [],
+          disableAccessRight: []
+        },
+        shareActivityToMember: {
+          switch: '2',
+          enableAccessRight: [],
+          disableAccessRight: []
+        },
+        shareReportToMember: {
+          switch: '2',
+          enableAccessRight: [],
+          disableAccessRight: []
+        }
       };
       if (this.createType === 1) {
         // 建立分店
@@ -405,25 +417,35 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         body.levelName = coachLessonName;
         if (this.coachType === 1) { // 一般教練(課)
           body.shareAvatarToMember = {
-            switch: '1'
+            switch: '1',
+            enableAccessRight: [],
+            disableAccessRight: []
           };
           body.shareActivityToMember = {
             switch: '2',
+            enableAccessRight: [],
+            disableAccessRight: []
           };
           body.shareReportToMember = {
             switch: '2',
+            enableAccessRight: [],
+            disableAccessRight: []
           };
         } else { // 體適能教練(課)
           body.shareAvatarToMember = {
-            switch: '1'
+            switch: '1',
+            enableAccessRight: [],
+            disableAccessRight: []
           };
           body.shareActivityToMember = {
             switch: '3',
-            enableAccessRight: ['50']
+            enableAccessRight: ['50'],
+            disableAccessRight: []
           };
           body.shareReportToMember = {
             switch: '3',
-            enableAccessRight: ['50']
+            enableAccessRight: ['50'],
+            disableAccessRight: []
           };
         }
 
