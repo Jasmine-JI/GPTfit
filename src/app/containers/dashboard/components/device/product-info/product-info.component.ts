@@ -12,7 +12,7 @@ import { MessageBoxComponent } from '@shared/components/message-box/message-box.
 @Component({
   selector: 'app-product-info',
   templateUrl: './product-info.component.html',
-  styleUrls: ['./product-info.component.css', '../../../group/group-style.css']
+  styleUrls: ['./product-info.component.css', '../../../group/group-style.scss']
 })
 export class ProductInfoComponent implements OnInit, OnDestroy {
   groupImg = 'http://app.alatech.com.tw/app/public_html/products/img/t0500.png';

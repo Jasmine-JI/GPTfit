@@ -20,7 +20,20 @@ import { MemberCapsuleComponent } from './member-capsule/member-capsule.componen
 import { SharedPipes } from '@shared/pipes/shared-pipes';
 import { Page403Component } from './page403/page403.component';
 import { AlaIframeComponent } from './ala-iframe/ala-iframe.component';
-
+import { MyActivityComponent } from './my-activity/my-activity.component';
+import { ActivityInfoComponent } from './activity-info/activity-info.component';
+import {
+  SportReportComponent,
+  ActivityLevelsComponent,
+  AllDurationComponent,
+  AllGroupsComponent,
+  AllTimesComponent,
+  BurnCaloriesComponent,
+  ColumnstackedChartComponent,
+  OtherBurnCaloriesComponent,
+  PartialMuscleInfoComponent,
+  ScatterChartComponent
+} from './sport-report';
 @NgModule({
   imports: [
     CommonModule,
@@ -45,7 +58,19 @@ import { AlaIframeComponent } from './ala-iframe/ala-iframe.component';
     FormTextareaComponent,
     MemberCapsuleComponent,
     Page403Component,
-    AlaIframeComponent
+    AlaIframeComponent,
+    MyActivityComponent,
+    ActivityInfoComponent,
+    SportReportComponent,
+    ActivityLevelsComponent,
+    AllDurationComponent,
+    AllGroupsComponent,
+    AllTimesComponent,
+    BurnCaloriesComponent,
+    ColumnstackedChartComponent,
+    OtherBurnCaloriesComponent,
+    PartialMuscleInfoComponent,
+    ScatterChartComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -61,7 +86,19 @@ import { AlaIframeComponent } from './ala-iframe/ala-iframe.component';
     FormRemindComponent,
     FormTextareaComponent,
     MemberCapsuleComponent,
-    AlaIframeComponent
+    AlaIframeComponent,
+    MyActivityComponent,
+    ActivityInfoComponent,
+    SportReportComponent,
+    ActivityLevelsComponent,
+    AllDurationComponent,
+    AllGroupsComponent,
+    AllTimesComponent,
+    BurnCaloriesComponent,
+    ColumnstackedChartComponent,
+    OtherBurnCaloriesComponent,
+    PartialMuscleInfoComponent,
+    ScatterChartComponent
   ]
 })
 export class SharedComponentsModule {}

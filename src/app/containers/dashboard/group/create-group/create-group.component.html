@@ -1,157 +1,226 @@
-<div class="row">
-  <div class="col-md-4 group-image--area">
-    <app-upload-file
-      [isImageFileMode]="true"
-      [imageURL]="groupImg"
-      [maxFileSize]="maxFileSize"
-      [disabled]="isUploading"
-      [btnText]="this.finalImageLink ? reloadFileText : chooseFileText"
-      [isLoading]="isUploading"
-      [accept]="acceptFileExtensions.join()"
-      [reloadFileText]="reloadFileText"
-      [chooseFileText]="chooseFileText"
-      (onChange)="handleAttachmentChange($event)"
-    ></app-upload-file>
+<ng-container *ngIf="createType === 4 && !isShowCreateBrand">
+  <div class="group-edit-bar"style="justify-content: flex-end;">
+    <button class="alatech-btn alatech-btn--default"
+      title="創建品牌"
+      (click)="handleShowCreateBrand()"
+      style="width: 222px;height: 46px"
+      [disabled]="!commercePlan"
+    >
+      創建品牌
+    </button>
   </div>
-  <div class="col-md-8">
-    <form [formGroup]="form" (ngSubmit)="manage(f)" #f="ngForm" novalidate>
-      <div class="group-edit-bar">
-        <span style="color: #26abe3; font-weight:700"
-          *ngIf="createType === 1"
-        >
-          新增分店
-        </span>
-        <span style="color: #26abe3; font-weight:700"
-          *ngIf="createType === 2"
-        >
-          新增教練課
-        </span>
-        <span style="color: #26abe3; font-weight:700"
-          *ngIf="createType === 3"
-        >
-          建立新群組
-        </span>
-        <span style="color: #26abe3; font-weight:700"
-          *ngIf="createType === 4"
-        >
-          建立品牌
-        </span>
-        <div>
-          <button class="alatech-btn alatech-btn--default"
-            title="取消"
-            (click)="handleCancel($event)"
-          >
-            取消
-          </button>
-          <button class="alatech-btn alatech-btn--default"
-            title="完成"
-            type="submit"
-            [disabled]="isEditing"
-          >
-            完成
-          </button>
-        </div>
-      </div>
-      <div class="group-edit-area">
-        <div class="ala-list__item" *ngIf="createType === 3">
-          <label class="ala-form__label form__label--required">名稱：</label>
-          <app-form-text
-            [content]="groupName?.value"
-            [maxLength]="32"
-            [invalidRemindText]="inValidText"
-            [control]="form"
-            [controlName]="formTextName"
-            [disabled]="isEditing"
-            [remindText]="remindText"
-            [isInvalid]="(!groupName.valid && groupName.touched) || (f.submitted && groupName.hasError('required')) || (f.submitted && groupName.hasError('maxLength'))"
-          >
-          </app-form-text>
-        </div>
-        <div class="ala-list__item" *ngIf="createType !== 3 && createType !== 4">
-          <label class="ala-form__label">品牌名稱：</label>
-          <app-form-text
-            [disabled]="true"
-            [content]="brandName || ''"
-          >
-          </app-form-text>
-        </div>
-        <div class="ala-list__item" *ngIf="createType === 4">
-          <label class="ala-form__label form__label--required">品牌名稱：</label>
-          <app-form-text
-            [content]="groupName?.value"
-            [maxLength]="32"
-            [remindText]="remindText"
-            [invalidRemindText]="inValidText"
-            [control]="form"
-            [disabled]="isEditing"
-            [controlName]="formTextName"
-            [isInvalid]="(!groupName.valid && groupName.touched) || (f.submitted && groupName.hasError('required')) || (f.submitted && groupName.hasError('maxLength'))"
-          >
-          </app-form-text>
-        </div>
-        <div class="ala-list__item" *ngIf="createType !== 3 && createType !== 4">
-          <label class="ala-form__label form__label--required">分店名稱：</label>
-          <app-form-text
+    <app-commerce-plan-table (onChange)="changePlan($event)"></app-commerce-plan-table>
+</ng-container>
+<ng-container *ngIf="createType !== 4 || isShowCreateBrand">
+  <div class="row">
+    <div class="col-md-4 group-image--area">
+      <app-upload-file
+        [isImageFileMode]="true"
+        [imageURL]="groupImg"
+        [maxFileSize]="maxFileSize"
+        [disabled]="isUploading"
+        [btnText]="this.finalImageLink ? reloadFileText : chooseFileText"
+        [isLoading]="isUploading"
+        [accept]="acceptFileExtensions.join()"
+        [reloadFileText]="reloadFileText"
+        [chooseFileText]="chooseFileText"
+        (onChange)="handleAttachmentChange($event)"
+      ></app-upload-file>
+    </div>
+    <div class="col-md-8">
+      <form [formGroup]="form" (ngSubmit)="manage(f)" #f="ngForm" novalidate>
+        <div class="group-edit-bar">
+          <span style="color: #26abe3; font-weight:700"
             *ngIf="createType === 1"
-            [content]="branchName?.value"
-            [maxLength]="32"
-            [remindText]="remindText"
-            [invalidRemindText]="inValidText"
-            [control]="form"
-            [disabled]="isEditing"
-            [controlName]="formTextName"
-            [isInvalid]="(!branchName.valid && branchName.touched) || (f.submitted && branchName.hasError('required')) || (f.submitted && branchName.hasError('maxLength'))"
           >
-          </app-form-text>
-          <app-form-text
-            *ngIf="createType === 2 && groupLevel === '40'"
-            [content]="subBranchInfo && subBranchInfo[0]?.groupName || ''"
-            [disabled]="true"
-          >
-          </app-form-text>
-          <select *ngIf="createType === 2 && groupLevel === '30'" formControlName="branchId" class="form-field"
-            [class.form-field--invalid]="(!branchId.valid && branchId.touched) || (f.submitted && branchId.hasError('required'))"
-          >
-            <ng-container  *ngFor="let subBranchItem of subBranchInfo">
-              <option [value]="subBranchItem?.groupId">{{subBranchItem?.groupName}}</option>
-            </ng-container>
-          </select>
-        </div>
-        <div class="ala-list__item" *ngIf="createType !== 3 && createType !== 4">
-          <label class="ala-form__label"
-            [class.form__label--required]="createType === 2"
-          >
-            教練課名稱：
-          </label>
-          <input
-            style="width: 275px"
-            disabled="true"
-            *ngIf="createType === 1"
-            class="form-field"
-          />
-          <app-form-text
+            新增分店
+          </span>
+          <span style="color: #26abe3; font-weight:700"
             *ngIf="createType === 2"
-            [content]="coachLessonName?.value"
-            [maxLength]="32"
-            [remindText]="remindText"
-            [invalidRemindText]="inValidText"
-            [control]="form"
-            [disabled]="isEditing"
-            [controlName]="formTextName"
-            [isInvalid]="(!coachLessonName.valid && coachLessonName.touched) || (f.submitted && coachLessonName.hasError('required')) || (f.submitted && coachLessonName.hasError('maxLength'))"
           >
-          </app-form-text>
+            <span *ngIf="coachType === 1">課程資訊-專業課程</span>
+            <span *ngIf="coachType === 2">課程資訊-體適能指導</span>
+          </span>
+          <span style="color: #26abe3; font-weight:700"
+            *ngIf="createType === 3"
+          >
+            建立新群組
+          </span>
+          <span style="color: #26abe3; font-weight:700"
+            *ngIf="createType === 4"
+          >
+            建立品牌
+          </span>
+          <div>
+            <button class="alatech-btn alatech-btn--default"
+              title="取消"
+              (click)="handleCancel($event)"
+            >
+              取消
+            </button>
+            <button class="alatech-btn alatech-btn--default"
+              title="完成"
+              type="submit"
+              [disabled]="isEditing"
+            >
+              完成
+            </button>
+          </div>
         </div>
-
-        <div class="ala-list__item" *ngIf="createType !== 3">
+        <div class="group-edit-area">
+          <div class="ala-list__item" *ngIf="createType === 3">
+            <label class="ala-form__label form__label--required">名稱：</label>
+            <app-form-text
+              [content]="groupName?.value"
+              [maxLength]="32"
+              [invalidRemindText]="inValidText"
+              [control]="form"
+              [controlName]="formTextName"
+              [disabled]="isEditing"
+              [remindText]="remindText"
+              [isInvalid]="(!groupName.valid && groupName.touched) || (f.submitted && groupName.hasError('required')) || (f.submitted && groupName.hasError('maxLength'))"
+            >
+            </app-form-text>
+          </div>
+          <div class="ala-list__item" *ngIf="createType !== 3 && createType !== 4">
+            <label class="ala-form__label">品牌名稱：</label>
+            <app-form-text
+              [disabled]="true"
+              [content]="brandName || ''"
+            >
+            </app-form-text>
+          </div>
+          <div class="ala-list__item" *ngIf="createType === 4">
+            <label class="ala-form__label form__label--required">品牌名稱：</label>
+            <app-form-text
+              [content]="groupName?.value"
+              [maxLength]="32"
+              [remindText]="remindText"
+              [invalidRemindText]="inValidText"
+              [control]="form"
+              [disabled]="isEditing"
+              [controlName]="formTextName"
+              [isInvalid]="(!groupName.valid && groupName.touched) || (f.submitted && groupName.hasError('required')) || (f.submitted && groupName.hasError('maxLength'))"
+            >
+            </app-form-text>
+          </div>
+          <div class="ala-list__item" *ngIf="createType !== 3 && createType !== 4">
+            <label class="ala-form__label form__label--required">
+              <span *ngIf="createType === 1">分店名稱：</span>
+              <span *ngIf="createType === 2">選擇分店：</span>
+            </label>
+            <app-form-text
+              *ngIf="createType === 1"
+              [content]="branchName?.value"
+              [maxLength]="32"
+              [remindText]="remindText"
+              [invalidRemindText]="inValidText"
+              [control]="form"
+              [disabled]="isEditing"
+              [controlName]="formTextName"
+              [isInvalid]="(!branchName.valid && branchName.touched) || (f.submitted && branchName.hasError('required')) || (f.submitted && branchName.hasError('maxLength'))"
+            >
+            </app-form-text>
+            <app-form-text
+              *ngIf="createType === 2 && groupLevel === '40'"
+              [content]="subBranchInfo && subBranchInfo[0]?.groupName || ''"
+              [disabled]="true"
+            >
+            </app-form-text>
+            <select *ngIf="createType === 2 && groupLevel === '30'" formControlName="branchId" class="form-field"
+              [class.form-field--invalid]="(!branchId.valid && branchId.touched) || (f.submitted && branchId.hasError('required'))"
+            >
+              <ng-container  *ngFor="let subBranchItem of subBranchInfo">
+                <option [value]="subBranchItem?.groupId">{{subBranchItem?.groupName}}</option>
+              </ng-container>
+            </select>
+          </div>
+          <div class="ala-list__item" *ngIf="createType !== 3 && createType !== 4">
+            <label class="ala-form__label"
+              [class.form__label--required]="createType === 2"
+            >
+              課程名稱：
+            </label>
+            <input
+              style="width: 275px"
+              disabled="true"
+              *ngIf="createType === 1"
+              class="form-field"
+            />
+            <app-form-text
+              *ngIf="createType === 2"
+              [content]="coachLessonName?.value"
+              [maxLength]="32"
+              [remindText]="remindText"
+              [invalidRemindText]="inValidText"
+              [control]="form"
+              [disabled]="isEditing"
+              [controlName]="formTextName"
+              [isInvalid]="(!coachLessonName.valid && coachLessonName.touched) || (f.submitted && coachLessonName.hasError('required')) || (f.submitted && coachLessonName.hasError('maxLength'))"
+            >
+            </app-form-text>
+          </div>
+          <div class="ala-list__item">
+            <label class="ala-form__label">狀態：</label>
+            <select class="form-field"
+              formControlName="groupStatus"
+              [attr.disabled]="isEditing ? '' : null"
+            >
+              <option class="form-field-option" value="2">審核制</option>
+              <option class="form-field-option" value="1">自由加入</option>
+              <option class="form-field-option" value="3">隱藏群組</option>
+            </select>
+          </div>
+          <div class="ala-list__item">
+            <label class="ala-form__label form__label--required">介紹：</label>
+            <div class="ala-form__col">
+              <app-form-textarea
+                [maxLength]="textareaMaxLength"
+                [content]="groupDesc?.value"
+                [control]="form"
+                [disabled]="isEditing"
+                [controlName]="formTextareaName"
+                (onChange)="handleChangeTextarea($event)"
+                [remindText]="remindDescText"
+                [isHadCount]="true"
+                [isInvalid]="(groupDesc.invalid && groupDesc?.touched) || (f.submitted && groupDesc.hasError('required')) || (f.submitted && groupDesc.hasError('maxLength'))"
+              >
+              </app-form-textarea>
+            </div>
+          </div>
+        </div>
+        <ng-container *ngIf="createType === 2">
+          <span style="color: #26abe3; font-weight:700">
+            隱私權需求內容
+          </span>
+          <span style="font-size: 14px;margin-left: 10px">
+            ※隱私權需求與建立課程類別有關，建立成功後無法修改
+          </span>
+          <ul class="group-privacy-desc">
+            <li>群組"成員"可看到彼此基本暱稱與頭像</li>
+            <ng-container *ngIf="coachType === 2">
+              <li>"體適能教練"可觀看群組成員活動詳細資訊</li>
+              <li>"體適能教練"可觀看群組成員活動期間報告</li>
+            </ng-container>
+          </ul>
+        </ng-container>
+        <span style="color: #26abe3; font-weight:700">
+          管理員
+        </span>
+        <div class="ala-list__item" *ngIf="createType !== 3"
+          style="margin-top: 20px"
+        >
           <label class="ala-form__label"
             [class.form__label--required]="createType !== 3"
+            style="min-width: 140px"
           >
-            指派管理者：
+            <span *ngIf="coachType === 1">指派課程老師：</span>
+            <span *ngIf="coachType === 2">指派體適能教練：</span>
+            <span *ngIf="coachType !== 1 && coachType !== 2">指派管理者：</span>
           </label>
           <div class="ala-form__col assign-admin">
             <button class="icon-btn" (click)="openSelectorWin(createType, $event)">
-              <i class="fa fa-user-plus icon_fa"></i>
+              <i class="icon-svg_web-icon_p1_021-add_friend group-icon"></i>
             </button>
             <div class="assign-admin__warning"
               *ngIf="(!groupManager.valid && groupManager.touched) || (f.submitted && groupManager.hasError('required'))"
@@ -170,49 +239,164 @@
             </div>
           </div>
         </div>
-        <div class="ala-list__item">
-          <label class="ala-form__label">狀態：</label>
-          <select class="form-field"
-            formControlName="groupStatus"
-            [attr.disabled]="isEditing ? '' : null"
+        <div *ngIf="createType === 4" style="margin-top: 20px">
+          <span style="color: #26abe3; font-weight:700">
+            方案內容
+          </span>
+          <div class="ala-list__item" *ngIf="createType !== 3"
+            style="margin-top: 20px"
           >
-            <option class="form-field-option" value="2">審核制</option>
-            <option class="form-field-option" value="1">自由加入</option>
-            <option class="form-field-option" value="3">隱藏群組</option>
-          </select>
-        </div>
-        <div class="ala-list__item">
-          <label class="ala-form__label form__label--required">介紹：</label>
-          <div class="ala-form__col">
-            <app-form-textarea
-              [maxLength]="textareaMaxLength"
-              [content]="groupDesc?.value"
+            <label class="ala-form__label">
+              方案名稱：
+            </label>
+            {{planName}}
+          </div>
+          <div class="ala-list__item" *ngIf="createType !== 3"
+            style="margin-top: 20px"
+          >
+            <label class="ala-form__label"
+              [class.form__label--required]="createType !== 3"
+            >
+              購買時長：
+            </label>
+            <mat-button-toggle-group name="fontStyle" aria-label="Font Style"
+              [class.mat-button-toggle-group--invalid]="(!commercePlanExpired.valid && commercePlanExpired.touched) || (f.submitted && commercePlanExpired.hasError('required'))"
+              (change)="handleExpireTime($event)"
+            >
+              <mat-button-toggle value="1">1個月</mat-button-toggle>
+              <mat-button-toggle value="2">2個月</mat-button-toggle>
+              <mat-button-toggle value="3">3個月</mat-button-toggle>
+              <mat-button-toggle value="6">半年</mat-button-toggle>
+              <mat-button-toggle value="12">1年</mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+          <div class="ala-list__item" *ngIf="createType !== 3"
+            style="margin-top: 20px"
+          >
+            <label class="ala-form__label"
+              [class.form__label--required]="commercePlan === 99"
+            >
+              分店數量：
+            </label>
+            <span *ngIf="commercePlan !== 99">
+              {{planDatas[commercePlan - 1].maxBranches}}
+            </span>
+            <app-form-text
+              *ngIf="commercePlan === 99"
+              [type]="'number'"
+              [content]="maxBranches?.value"
+              [invalidRemindText]="inValidText"
               [control]="form"
               [disabled]="isEditing"
-              [controlName]="formTextareaName"
-              (onChange)="handleChangeTextarea($event)"
-              [isHadCount]="true"
-              [isInvalid]="(groupDesc.invalid && groupDesc?.touched) || (f.submitted && groupDesc.hasError('required')) || (f.submitted && groupDesc.hasError('maxLength'))"
+              [controlName]="'maxBranches'"
+              [isInvalid]="(!maxBranches.valid && maxBranches.touched) || (f.submitted && maxBranches.hasError('required'))"
             >
-            </app-form-textarea>
+            </app-form-text>
           </div>
+          <div class="ala-list__item" *ngIf="createType !== 3"
+            style="margin-top: 20px"
+          >
+            <label class="ala-form__label"
+              [class.form__label--required]="commercePlan === 99"
+            >
+              課程數量：
+            </label>
+            <span *ngIf="commercePlan !== 99">
+              {{planDatas[commercePlan - 1].maxClasses}}
+            </span>
+            <app-form-text
+              *ngIf="commercePlan === 99"
+              [type]="'number'"
+              [content]="maxClasses?.value"
+              [invalidRemindText]="inValidText"
+              [control]="form"
+              [disabled]="isEditing"
+              [controlName]="'maxClasses'"
+              [isInvalid]="(!maxClasses.valid && maxClasses.touched) || (f.submitted && maxClasses.hasError('required'))"
+            >
+            </app-form-text>
+          </div>
+          <div class="ala-list__item" *ngIf="createType !== 3"
+            style="margin-top: 20px"
+          >
+            <label class="ala-form__label"
+              [class.form__label--required]="commercePlan === 99"
+            >
+              可入會成員：
+            </label>
+            <span *ngIf="commercePlan !== 99">
+              {{planDatas[commercePlan - 1].maxGroupMembers}}
+            </span>
+            <app-form-text
+              *ngIf="commercePlan === 99"
+              [type]="'number'"
+              [content]="maxGroupMembers?.value"
+              [invalidRemindText]="inValidText"
+              [control]="form"
+              [disabled]="isEditing"
+              [controlName]="'maxGroupMembers'"
+              [isInvalid]="(!maxGroupMembers.valid && maxGroupMembers.touched) || (f.submitted && maxGroupMembers.hasError('required'))"
+            >
+            </app-form-text>
+          </div>
+          <div class="ala-list__item" *ngIf="createType !== 3"
+            style="margin-top: 20px"
+          >
+            <label class="ala-form__label"
+              [class.form__label--required]="commercePlan === 99"
+            >
+              可建立管理員：
+            </label>
+            <span *ngIf="commercePlan !== 99">
+              {{planDatas[commercePlan - 1].maxGroupManagers}}
+            </span>
+            <app-form-text
+              *ngIf="commercePlan === 99"
+              [type]="'number'"
+              [content]="maxGroupManagers?.value"
+              [invalidRemindText]="inValidText"
+              [control]="form"
+              [disabled]="isEditing"
+              [controlName]="'maxGroupManagers'"
+              [isInvalid]="(!maxGroupManagers.valid && maxGroupManagers.touched) || (f.submitted && maxGroupManagers.hasError('required'))"
+            >
+            </app-form-text>
+          </div>
+          <hr>
+          <label class="ala-form__label">總計費用：</label>
+          <span style="color: #F1873A">
+            <span *ngIf="commercePlan === 1">free</span>
+            <span *ngIf="commercePlan !== 99 && commercePlan !== 1">$ {{(totalCost | number:'.') || (planDatas[commercePlan - 1].cost  | number:'.')}}</span>
+            <span *ngIf="commercePlan === 99">自訂價格</span>
+          </span>
         </div>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
-</div>
+</ng-container>
 <div class="group-manage__action">
-  <button class="alatech-btn group-manage__btn"
-    title="取消"
-    (click)="handleCancel($event)"
-  >
-    取消
-  </button>
-  <button class="alatech-btn group-manage__btn"
-    title="完成"
-    (click)="manage(f)"
-    [disabled]="isEditing"
-  >
-    完成
-  </button>
+  <ng-container *ngIf="createType !== 4 || isShowCreateBrand">
+    <button class="alatech-btn group-manage__btn"
+      title="取消"
+      (click)="handleCancel($event)"
+    >
+      取消
+    </button>
+    <button class="alatech-btn group-manage__btn"
+      title="完成"
+      (click)="manage(f)"
+      [disabled]="isEditing"
+    >
+      完成
+    </button>
+  </ng-container>
+  <ng-container *ngIf="createType === 4 && !isShowCreateBrand">
+    <button class="alatech-btn group-manage__btn"
+      title="創建品牌"
+      (click)="handleShowCreateBrand()"
+      [disabled]="!commercePlan"
+    >
+      創建品牌
+    </button>
+  </ng-container>
 </div>

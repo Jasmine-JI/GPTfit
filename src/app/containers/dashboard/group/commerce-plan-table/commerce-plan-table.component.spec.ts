@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ActivityRecordComponent } from './activity-record.component';
+import { CommercePlanTableComponent } from './commerce-plan-table.component';
 
-describe('ActivityRecordComponent', () => {
-  let component: ActivityRecordComponent;
-  let fixture: ComponentFixture<ActivityRecordComponent>;
+describe('CommercePlanTableComponent', () => {
+  let component: CommercePlanTableComponent;
+  let fixture: ComponentFixture<CommercePlanTableComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ActivityRecordComponent ]
+      declarations: [ CommercePlanTableComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ActivityRecordComponent);
+    fixture = TestBed.createComponent(CommercePlanTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

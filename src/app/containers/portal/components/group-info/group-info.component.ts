@@ -11,7 +11,7 @@ import { GlobalEventsManager } from '@shared/global-events-manager';
   templateUrl: './group-info.component.html',
   styleUrls: [
     './group-info.component.css',
-    '../../../dashboard/group/group-style.css'
+    '../../../dashboard/group/group-style.scss'
   ]
 })
 export class GroupInfoComponent implements OnInit {

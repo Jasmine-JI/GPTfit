@@ -31,7 +31,9 @@
 >
   <mat-icon>search</mat-icon>
 </button>
-<mat-table [dataSource]="logSource" matSort #sortTable="matSort">
+<mat-table [dataSource]="logSource" matSort #sortTable="matSort"
+  class="all-group-list"
+>
   <ng-container matColumnDef="id">
     <mat-header-cell *matHeaderCellDef>群組ID</mat-header-cell>
     <mat-cell *matCellDef="let row">{{ utils.displayGroupId(row.groupId) }}</mat-cell>
@@ -54,5 +56,5 @@
   <mat-spinner></mat-spinner>
 </div>
 
-<mat-paginator #paginator [length]="totalCount" [pageIndex]="0" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]">
+<mat-paginator #paginator [length]="totalCount" [pageIndex]="currentPage?.pageIndex" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]">
 </mat-paginator>

@@ -35,6 +35,7 @@ export class MemberCapsuleComponent implements OnInit {
   @Input() userId: string;
   @Input() groupLevel: string;
   @Input() isHadMenu = false;
+  @Input() coachType: number;
   @Output() onWaittingMemberInfoChange = new EventEmitter();
   @Output() onRemoveAdmin = new EventEmitter();
   @Output() onRemoveGroup = new EventEmitter();
@@ -136,13 +137,17 @@ export class MemberCapsuleComponent implements OnInit {
       }
     });
   }
-  handleAssignAdmin() {
+  handleAssignAdmin(type) {
+    let accessRight = '50';
+    if (type === 2) {
+      accessRight = '60';
+    }
     if (this.groupLevel === '80' || this.groupLevel === '60') {
       const body = {
         token: this.token,
         groupId: this.groupId,
         userId: this.userId,
-        accessRight: this.groupLevel
+        accessRight
       };
       this.groupService.editGroupMember(body).subscribe(res => {
         if (res.resultCode === 200) {
@@ -214,5 +219,10 @@ export class MemberCapsuleComponent implements OnInit {
         onConfirm: this.handleDeleteGroup.bind(this)
       }
     });
+  }
+  goToUserProfile() {
+    if (!this.isSubGroupInfo && !this.isHadMenu) {
+      this.router.navigateByUrl(`/user-profile/${this.userId}`);
+    }
   }
 }

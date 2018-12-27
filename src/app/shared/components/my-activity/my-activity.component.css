@@ -15,7 +15,11 @@
 .ala-activity-icon {
   font-size: 20px;
 }
-
+.user-profile-title {
+  color: #26abe3;
+  font-weight: 700;
+  font-size: 19px;
+}
 @media(max-width: 479px) {
   .mat-column-typeIcon {
     max-width: 30px;

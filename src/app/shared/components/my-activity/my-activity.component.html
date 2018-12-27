@@ -1,6 +1,13 @@
 <div>
   <div class="d-flex justify-content-between" style="margin-bottom: 15px">
-    <span style="color: #157fcc; font-weight:700">
+    <span class="user-profile-title"
+      *ngIf="isPortal"
+    >
+      {{userName}}的活動
+    </span>
+    <span style="color: #157fcc; font-weight:700"
+      *ngIf="!isPortal"
+    >
       我的活動
     </span>
     <div class="group-edit-bar">
@@ -207,7 +214,12 @@
   <div class="ala-loading-shade" *ngIf="isLoading">
     <mat-spinner></mat-spinner>
   </div>
-  <mat-paginator #paginator [length]="totalCount" [pageIndex]="0" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]">
+  <mat-paginator #paginator
+    [length]="totalCount"
+    [pageIndex]="currentPage?.pageIndex"
+    [pageSize]="10"
+    [pageSizeOptions]="[5, 10, 15]"
+  >
   </mat-paginator>
   <div class="group-manage__action">
     <button class="alatech-btn group-manage__btn"

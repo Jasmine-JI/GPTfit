@@ -316,9 +316,9 @@
                   </div>
                 </ng-container>
                 <ng-container *ngIf="groupLevel === '60'">
-                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">一般教練</label>
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">專業老師</label>
                   <div style="margin-bottom: 15px">
-                    <span *ngIf="normalCoaches && normalCoaches.length === 0">尚無一般教練資訊</span>
+                    <span *ngIf="normalCoaches && normalCoaches.length === 0">尚無專業老師資訊</span>
                     <ng-container *ngFor="let normalCoachAdmItem of normalCoaches">
                       <app-member-capsule
                         [role]="role"
@@ -398,6 +398,7 @@
                     [groupLevel]="groupLevel"
                     (onAssignAdmin)="handleAssignAdmin($event)"
                     (onRemoveAdmin)="handleRemoveAdmin($event, 5)"
+                    [coachType]="groupInfo?.coachType"
                   >
                   </app-member-capsule>
                 </div>

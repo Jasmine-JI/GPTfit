@@ -1,11 +1,18 @@
 import { NestedTreeControl } from '@angular/cdk/tree';
-import { Component, Injectable, OnInit } from '@angular/core';
+import {
+  Component,
+  Injectable,
+  OnInit,
+  Output,
+  EventEmitter
+} from '@angular/core';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
 import { BehaviorSubject } from 'rxjs';
 import { ViewEncapsulation } from '@angular/core';
 import * as moment from 'moment';
 import { ReportService } from '../../services/report.service';
 import { UtilsService } from '@shared/services/utils.service';
+import { ActivatedRoute } from '@angular/router';
 /**
  * Json node data with nested structure. Each node has a filename and a value or a list of children
  */
@@ -168,10 +175,13 @@ export class SportReportComponent implements OnInit {
   isLoading = false;
   // to fix 之後多語系要注意
   openTreeName = '所有運動';
+  targetUserId: string;
+  @Output() showPrivacyUi = new EventEmitter();
   constructor(
     database: FileDatabase,
     private reportService: ReportService,
-    private utils: UtilsService
+    private utils: UtilsService,
+    private route: ActivatedRoute
   ) {
     this.nestedTreeControl = new NestedTreeControl<FileNode>(this._getChildren);
     this.nestedDataSource = new MatTreeNestedDataSource();
@@ -185,6 +195,7 @@ export class SportReportComponent implements OnInit {
 
   hasNestedChild = (_: number, nodeData: FileNode) => !nodeData.type;
   ngOnInit() {
+    this.targetUserId = this.route.snapshot.paramMap.get('userId');
     const filterEndTime = moment().format('YYYY-MM-DDT23:59:59+08:00');
     const filterStartTime = moment()
       .subtract(6, 'days')
@@ -194,7 +205,8 @@ export class SportReportComponent implements OnInit {
       token: this.utils.getToken(),
       type: 1,
       filterStartTime,
-      filterEndTime
+      filterEndTime,
+      targetUserId: ''
     };
 
     if (this.treeData) {
@@ -336,13 +348,22 @@ export class SportReportComponent implements OnInit {
   }
   handleSportSummaryArray(body) {
     this.isLoading = true;
+    if (this.targetUserId) {
+      body.targetUserId = this.targetUserId;
+    }
     this.reportService.fetchSportSummaryArray(body).subscribe(res => {
       this.isLoading = false;
-      const { reportActivityDays, reportActivityWeeks } = res;
-      if (body.type === 1) {
-        this.datas = reportActivityDays;
-      } else {
-        this.datas = reportActivityWeeks;
+      if (res.resultCode === 402) {
+        return this.showPrivacyUi.emit(true);
+      }
+      if (res.resultCode === 200) {
+        const { reportActivityDays, reportActivityWeeks } = res;
+        if (body.type === 1) {
+          this.datas = reportActivityDays;
+        } else {
+          this.datas = reportActivityWeeks;
+        }
+        this.showPrivacyUi.emit(false);
       }
     });
   }
@@ -396,7 +417,8 @@ export class SportReportComponent implements OnInit {
       token: this.utils.getToken(),
       type: 1,
       filterStartTime,
-      filterEndTime
+      filterEndTime,
+      targetUserId: ''
     };
     if (this.timeType > 1) {
       body.type = 2;
@@ -439,7 +461,7 @@ export class SportReportComponent implements OnInit {
       }
       const filterEndTime = moment(this.filterEndTime).format('YYYY-MM-DDT23:59:59+08:00');
       const filterStartTime = moment(this.filterStartTime).format('YYYY-MM-DDT00:00:00+08:00');
-      const body = { token: this.utils.getToken(), type: 1, filterStartTime, filterEndTime };
+      const body = { token: this.utils.getToken(), type: 1, filterStartTime, filterEndTime, targetUserId: '' };
       if (this.timeType > 1) {
         body.type = 2;
       }

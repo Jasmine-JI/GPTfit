@@ -24,7 +24,7 @@ import { GlobalEventsManager } from '@shared/global-events-manager';
 @Component({
   selector: 'app-my-group-list',
   templateUrl: './my-group-list.component.html',
-  styleUrls: ['./my-group-list.component.css', '../group-style.css']
+  styleUrls: ['./my-group-list.component.css', '../group-style.scss']
 })
 export class MyGroupListComponent implements OnInit, OnDestroy {
   logSource = new MatTableDataSource<any>();
@@ -50,6 +50,8 @@ export class MyGroupListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    const queryStrings = this.utils.getUrlQueryStrings(location.search);
+    const { pageNumber } = queryStrings;
     this.globalEventsManager.setFooterRWD(2); // 為了讓footer長高85px
     // 設定顯示筆數資訊文字
     this.matPaginatorIntl.getRangeLabel = (
@@ -72,7 +74,7 @@ export class MyGroupListComponent implements OnInit, OnDestroy {
     };
 
     this.currentPage = {
-      pageIndex: 0,
+      pageIndex: (+pageNumber - 1) || 0,
       pageSize: 10,
       length: null
     };
@@ -87,6 +89,7 @@ export class MyGroupListComponent implements OnInit, OnDestroy {
     // 分頁切換時，重新取得資料
     this.paginator.page.subscribe((page: PageEvent) => {
       this.currentPage = page;
+      this.router.navigateByUrl(`/dashboard/my-group-list?pageNumber=${this.currentPage.pageIndex + 1}`);
       this.getLists();
     });
   }

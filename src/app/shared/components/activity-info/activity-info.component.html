@@ -22,13 +22,16 @@
   </div>
 </div>
 <ng-container *ngIf="!isShowNoRight">
-  <div [style.visibility]="isLoading ? 'hidden': 'visible'">
+  <div [style.visibility]="isLoading ? 'hidden': 'visible'"
+    [class.container]="isPortal"
+    [style.padding-top]="isPortal ? '15px' : '0px'"
+  >
     <div class="group-edit-bar" style="justify-content: flex-end;">
       <button class="alatech-btn alatech-btn--default activty-btn"
-        title="返回列表"
-        [routerLink]="['/dashboard/my-activity']"
+        title="返回"
+        (click)="goBack()"
       >
-        返回列表
+        返回
       </button>
     </div>
     <div class="ala-dashboard-title activty-title">
@@ -114,13 +117,13 @@
           <div class="activty-info-data-value">{{activityInfo?.avgSpeed | sportPace: activityInfo?.type}}</div>
           <div class="activty-info-data-name">
             <span *ngIf="activityInfo?.type === '1'">
-              平均配速1hr/1km
+              平均配速1min/1km
             </span>
             <span *ngIf="activityInfo?.type === '4'">
-              平均配速1hr/100m
+              平均配速1min/100m
             </span>
             <span *ngIf="activityInfo?.type === '6'">
-              平均配速1hr/500m
+              平均配速1min/500m
             </span>
             <span *ngIf="activityInfo?.type !== '4' && activityInfo?.type !== '1' && activityInfo?.type !== '6'">
               平均時速
@@ -228,7 +231,15 @@
             *ngIf="activityInfo?.type !== '2' && activityInfo?.type !== '3' && activityInfo?.type !== '5'"
           >
             <div class="ala-dashboard-title activty-title">
-              配速
+              <span *ngIf="activityInfo?.type === '1'">
+                1km配速
+              </span>
+              <span *ngIf="activityInfo?.type === '4'">
+                100m配速
+              </span>
+              <span *ngIf="activityInfo?.type === '6'">
+                500m配速
+                </span>
             </div>
             <div class="activity-info__area--block">
               <div>
@@ -236,13 +247,13 @@
               </div>
               <div class="data-label">
                 <span *ngIf="activityInfo?.type === '1'">
-                  平均配速1hr/1km
+                  平均配速1min/1km
                 </span>
                 <span *ngIf="activityInfo?.type === '4'">
-                  平均配速1hr/100m
+                  平均配速1min/100m
                 </span>
                 <span *ngIf="activityInfo?.type === '6'">
-                  平均配速1hr/500m
+                  平均配速1min/500m
                 </span>
               </div>
             </div>
@@ -252,13 +263,13 @@
               </div>
               <div class="data-label">
                 <span *ngIf="activityInfo?.type === '1'">
-                  平均移動配速1hr/1km
+                  平均移動配速1min/1km
                 </span>
                 <span *ngIf="activityInfo?.type === '4'">
-                  平均移動配速1hr/100m
+                  平均移動配速1min/100m
                 </span>
                 <span *ngIf="activityInfo?.type === '6'">
-                  平均移動配速1hr/500m
+                  平均移動配速1min/500m
                 </span>
               </div>
             </div>
@@ -268,13 +279,13 @@
               </div>
               <div class="data-label">
                 <span *ngIf="activityInfo?.type === '1'">
-                  最佳配速1hr/1km
+                  最佳配速1min/1km
                 </span>
                 <span *ngIf="activityInfo?.type === '4'">
-                  最佳配速1hr/100m
+                  最佳配速1min/100m
                 </span>
                 <span *ngIf="activityInfo?.type === '6'">
-                  最佳配速1hr/500m
+                  最佳配速1min/500m
                 </span>
               </div>
             </div>
@@ -416,8 +427,12 @@
             </div>
           </div>
           <div class="activity-info__area"
-            *ngIf="activityInfo?.type === '2' &&
-            (activityInfo?.cycleAvgWatt.length > 0 || activityInfo?.cycleMaxWatt.length > 0)"
+            *ngIf="(
+            (activityInfo?.type === '2' &&
+            (activityInfo?.cycleAvgWatt.length > 0 || activityInfo?.cycleMaxWatt.length > 0))
+            || (activityInfo?.type === '6' &&
+            (activityInfo?.rowingAvgWatt.length > 0 || activityInfo?.rowingMaxWatt.length > 0)
+            ))"
           >
             <div class="ala-dashboard-title activty-title">
               功率
@@ -425,8 +440,11 @@
             <div class="activity-info__area--block"
               *ngIf="activityInfo?.cycleAvgWatt.length > 0"
             >
-              <div>
+              <div *ngIf="activityInfo?.type === '2'">
                 {{activityInfo?.cycleAvgWatt || 0}}
+              </div>
+              <div *ngIf="activityInfo?.type === '6'">
+                {{activityInfo?.rowingAvgWatt || 0}}
               </div>
               <span class="data-label">
                 平均功率
@@ -435,8 +453,11 @@
             <div class="activity-info__area--block"
              *ngIf="activityInfo?.cycleMaxWatt.length > 0"
             >
-              <div>
+              <div *ngIf="activityInfo?.type === '2'">
                 {{activityInfo?.cycleMaxWatt || 0}}
+              </div>
+              <div *ngIf="activityInfo?.type === '6'">
+                {{activityInfo?.rowingMaxWatt || 0}}
               </div>
               <span class="data-label">
                 最大功率
@@ -718,13 +739,13 @@
           <ng-container matColumnDef="speed">
             <th mat-header-cell *matHeaderCellDef>
               <span *ngIf="activityInfo?.type === '1'">
-                該圈平均配速1hr/1km
+                該圈平均配速1min/1km
               </span>
               <span *ngIf="activityInfo?.type === '4'">
-                該圈平均配速1hr/100m
+                該圈平均配速1min/100m
               </span>
               <span *ngIf="activityInfo?.type === '6'">
-                該圈平均配速1hr/500m
+                該圈平均配速1min/500m
               </span>
               <span *ngIf="activityInfo?.type !== '4' && activityInfo?.type !== '1' && activityInfo?.type !== '6'">
                 該圈平均時速
@@ -744,10 +765,10 @@
   </div>
   <div class="group-manage__action">
     <button class="alatech-btn group-manage__btn"
-      title="返回列表"
-      [routerLink]="['/dashboard/my-activity']"
+      title="返回"
+      (click)="goBack()"
     >
-      返回列表
+      返回
     </button>
   </div>
 </ng-container>

@@ -106,15 +106,13 @@
 table.mat-table {
   width: 100%;
 }
+
 @media(max-width: 767px) {
   .summary-item {
     margin-right: 10px;
   }
   .activty-info-data-value {
     font-size: 20px;
-  }
-  .mat-tab-body-content {
-    display: flex;
   }
   .activity-info__area {
     text-align: center;

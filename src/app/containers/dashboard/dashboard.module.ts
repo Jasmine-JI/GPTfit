@@ -52,28 +52,16 @@ import { RightSettingWinComponent } from './group/right-setting-win/right-settin
 import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
 import { PeopleSelectorWinComponent } from './components/people-selector-win/people-selector-win.component';
 import { DashboardGuard } from './guards/dashboard-guard';
-import { ActivityInfoComponent } from './components/activity-info/activity-info.component';
-import { ActivityService } from './services/activity.service';
-import { MyActivityComponent } from './components/my-activity/my-activity.component';
+import { ActivityService } from '@shared/services/activity.service';
 import { SportTypePipe } from './pipes/sport-type.pipe';
 import { SportDatePipe } from './pipes/sport-date.pipe';
 import { SportTimePipe } from './pipes/sport-time.pipe';
 import { SportPacePipe } from './pipes/sport-pace.pipe';
 import { NgProgressModule } from '@ngx-progressbar/core';
-import { SportReportComponent } from './components/sport-report/sport-report.component';
-import { ActivityLevelsComponent } from './components/sport-report/components/activity-levels/activity-levels.component';
-import { AllDurationComponent } from './components/sport-report/components/all-duration/all-duration.component';
-import { ColumnstackedChartComponent } from './components/sport-report/components/column-stacked-chart/column-stacked-chart.component';
-import { BurnCaloriesComponent } from './components/sport-report/components/burn-calories/burn-calories.component';
-import { ScatterChartComponent } from './components/sport-report/components/scatter-chart/scatter-chart.component';
-import { OtherBurnCaloriesComponent } from './components/sport-report/components/other-burn-calories/other-burn-calories.component';
-import { AllTimesComponent } from './components/sport-report/components/all-times/all-times.component';
-import { AllGroupsComponent } from './components/sport-report/components/all-groups/all-groups.component';
-import { PartialMuscleInfoComponent } from './components/sport-report/components/partial-muscle-info/partial-muscle-info.component';
 import { MyDeviceComponent } from './components/device/my-device/my-device.component';
 import { ProductInfoComponent } from './components/device/product-info/product-info.component';
 import { TodayLoginnerWinComponent } from './components/today-loginner-win/today-loginner-win.component';
-import { ReportService } from './services/report.service';
+import { ReportService } from '@shared/services/report.service';
 import { TrainLiveComponent } from './components/train-live/train-live.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from '@shared/interceptors/token.interceptor';
@@ -85,6 +73,7 @@ import { AccountInfoComponent } from './components/settings/account-info/account
 import { SettingsService } from './services/settings.service';
 import { UserProfileService } from '@shared/services/user-profile.service';
 import { PersonalPreferencesComponent } from './components/settings/personal-preferences/personal-preferences.component';
+import { CommercePlanTableComponent } from './group/commerce-plan-table/commerce-plan-table.component';
 
 @NgModule({
   imports: [
@@ -156,22 +145,10 @@ import { PersonalPreferencesComponent } from './components/settings/personal-pre
     RightSettingWinComponent,
     InnerSettingsComponent,
     PeopleSelectorWinComponent,
-    ActivityInfoComponent,
-    MyActivityComponent,
     SportTypePipe,
     SportDatePipe,
     SportTimePipe,
     SportPacePipe,
-    SportReportComponent,
-    ActivityLevelsComponent,
-    AllDurationComponent,
-    ColumnstackedChartComponent,
-    BurnCaloriesComponent,
-    ScatterChartComponent,
-    OtherBurnCaloriesComponent,
-    AllTimesComponent,
-    AllGroupsComponent,
-    PartialMuscleInfoComponent,
     MyDeviceComponent,
     ProductInfoComponent,
     TodayLoginnerWinComponent,
@@ -181,7 +158,8 @@ import { PersonalPreferencesComponent } from './components/settings/personal-pre
     UserSettingsComponent,
     PrivacySettingsComponent,
     AccountInfoComponent,
-    PersonalPreferencesComponent
+    PersonalPreferencesComponent,
+    CommercePlanTableComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
@@ -191,7 +169,6 @@ import { PersonalPreferencesComponent } from './components/settings/personal-pre
     Top3DialogComponent,
     RightSettingWinComponent,
     PeopleSelectorWinComponent,
-    SportReportComponent,
     TodayLoginnerWinComponent,
     BottomSheetComponent
   ]

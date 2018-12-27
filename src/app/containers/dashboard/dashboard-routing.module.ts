@@ -26,9 +26,9 @@ import { EditGroupGuard } from './guards/edit-group-guard';
 import { CreateGroupComponent } from './group/create-group/create-group.component';
 import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
 import { DashboardGuard } from './guards/dashboard-guard';
-import { ActivityInfoComponent } from './components/activity-info/activity-info.component';
-import { MyActivityComponent } from './components/my-activity/my-activity.component';
-import { SportReportComponent } from './components/sport-report/sport-report.component';
+import { ActivityInfoComponent } from '@shared/components/activity-info/activity-info.component';
+import { MyActivityComponent } from '@shared/components/my-activity/my-activity.component';
+import { SportReportComponent } from '@shared/components/sport-report/sport-report.component';
 import { MyDeviceComponent } from './components/device/my-device/my-device.component';
 import { ProductInfoComponent } from './components/device/product-info/product-info.component';
 import { TrainLiveComponent } from './components/train-live/train-live.component';
@@ -81,10 +81,10 @@ const routes: Routes = [
         path: 'my-group-list',
         component: MyGroupListComponent
       },
-      {
-        path: 'my-group-list/create',
-        component: CreateGroupComponent
-      },
+      // {
+      //   path: 'my-group-list/create',
+      //   component: CreateGroupComponent
+      // },
 
       {
         path: 'group-search',
@@ -182,11 +182,11 @@ const routes: Routes = [
         ]
       },
       {
-        path: 'my-activity',
+        path: 'activity-list',
         component: MyActivityComponent
       },
       {
-        path: 'my-activity/detail/:fileId',
+        path: 'activity/:fileId',
         component: ActivityInfoComponent
       },
       {

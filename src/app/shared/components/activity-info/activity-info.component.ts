@@ -24,7 +24,7 @@ const Highcharts: any = _Highcharts; // 不檢查highchart型態
 @Component({
   selector: 'app-activity-info',
   templateUrl: './activity-info.component.html',
-  styleUrls: ['./activity-info.component.css', '../../group/group-style.css'],
+  styleUrls: ['./activity-info.component.css'],
   encapsulation: ViewEncapsulation.None
 })
 export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -67,6 +67,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   activityPoints: any;
   isLoading = false;
   token: string;
+  isPortal = false;
   isShowNoRight = false;
   _options = {
     min: 8,
@@ -123,6 +124,11 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     if (location.search.indexOf('?original') > -1) {
       this.isOriginalMode = true;
     }
+    if (location.pathname.indexOf('/dashboard/activity/') > -1) {
+      this.isPortal = false;
+    } else {
+      this.isPortal = true;
+    }
     this.globalEventsManager.setFooterRWD(2); // 為了讓footer長高85px
     const fieldId = this.route.snapshot.paramMap.get('fileId');
     this.progressRef = this.ngProgress.ref();
@@ -163,7 +169,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.activityPoints = res.activityPointLayer;
       this.dataSource.data = res.activityLapLayer;
       this.fileInfo = res.fileInfo;
-      if (this.fileInfo.author.indexOf('?') > -1) { // 防止後續author會帶更多參數，先不寫死
+      if (this.fileInfo.author.indexOf('?') > -1) {
+        // 防止後續author會帶更多參數，先不寫死
         this.userLink.userName = this.fileInfo.author.split('?')[0];
         this.userLink.userId = this.fileInfo.author.split('?')[1].split('=')[1];
       }
@@ -515,5 +522,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   goToProfile() {
     this.router.navigateByUrl(`/user-profile/${this.userLink.userId}`);
+  }
+  goBack() {
+    window.history.back();
   }
 }

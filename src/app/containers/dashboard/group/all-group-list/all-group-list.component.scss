@@ -1,0 +1,31 @@
+.example-table {
+  flex: 1 1 auto;
+  /* overflow: auto; */ /*<-*/
+  /* max-height: 500px; */
+  display: table; /*<-*/
+}
+.all-group-list {
+  .mat-header-cell.mat-column-id {
+    flex: 1 1 10%;
+  }
+
+  .mat-cell.mat-column-id {
+    flex: 1 1 10%;
+  }
+
+  .mat-header-cell.mat-column-info {
+    flex: 1 1 70%;
+  }
+
+  .mat-cell.mat-column-info {
+    flex: 1 1 70%;
+  }
+
+  .mat-header-cell.mat-column-time {
+    flex: 1 1 20%;
+  }
+
+  .mat-cell.mat-column-time {
+    flex: 1 1 20%;
+  }
+}
