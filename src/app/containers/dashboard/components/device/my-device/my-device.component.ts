@@ -142,6 +142,7 @@ export class MyDeviceComponent implements OnInit, OnDestroy {
     this.qrcodeService.getDeviceList(deviceBody).subscribe(_res => {
       this.isLoading = false;
       this.logSource.data = _res.info.deviceList;
+      this.totalCount = _res.info.totalCounts;
       this.logSource.data = this.logSource.data.map(_data => {
         const idx = this.localSN.findIndex(_sn => _sn === _data.myEquipmentSN);
         if (idx > -1) {

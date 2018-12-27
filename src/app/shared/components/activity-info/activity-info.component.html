@@ -22,7 +22,10 @@
   </div>
 </div>
 <ng-container *ngIf="!isShowNoRight">
-  <div [style.visibility]="isLoading ? 'hidden': 'visible'">
+  <div [style.visibility]="isLoading ? 'hidden': 'visible'"
+    [class.container]="isPortal"
+    [style.padding-top]="isPortal ? '15px' : '0px'"
+  >
     <div class="group-edit-bar" style="justify-content: flex-end;">
       <button class="alatech-btn alatech-btn--default activty-btn"
         title="返回"

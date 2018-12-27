@@ -35,6 +35,7 @@ export class MemberCapsuleComponent implements OnInit {
   @Input() userId: string;
   @Input() groupLevel: string;
   @Input() isHadMenu = false;
+  @Input() coachType: number;
   @Output() onWaittingMemberInfoChange = new EventEmitter();
   @Output() onRemoveAdmin = new EventEmitter();
   @Output() onRemoveGroup = new EventEmitter();

@@ -67,6 +67,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   activityPoints: any;
   isLoading = false;
   token: string;
+  isPortal = false;
   isShowNoRight = false;
   _options = {
     min: 8,
@@ -122,6 +123,11 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     if (location.search.indexOf('?original') > -1) {
       this.isOriginalMode = true;
+    }
+    if (location.pathname.indexOf('/dashboard/activity/') > -1) {
+      this.isPortal = false;
+    } else {
+      this.isPortal = true;
     }
     this.globalEventsManager.setFooterRWD(2); // 為了讓footer長高85px
     const fieldId = this.route.snapshot.paramMap.get('fileId');
