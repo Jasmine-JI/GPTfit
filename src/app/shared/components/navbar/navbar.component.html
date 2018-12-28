@@ -1,6 +1,9 @@
 <nav class="navbar fixed-top navbar-expand-lg navabar-color bg-color navbar-toggle">
   <a class="navbar-brand nav-item" [routerLink]="['/']">
-    <h2 style="font-weight: 700">center</h2>
+    <h2 style="font-weight: 700">
+      center
+      <span class="alpha-text" *ngIf="isAlphaVersion">alpha</span>
+    </h2>
   </a>
   <div class="navbar-utility">
     <button class="navbar-toggler collaped  nav-item" *ngIf="!isShowResetPwd && !isShowDashboard && isShowLeaderboard" (click)="toggleSearch()"

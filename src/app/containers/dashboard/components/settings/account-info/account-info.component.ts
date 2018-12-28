@@ -32,7 +32,26 @@ export class AccountInfoComponent implements OnInit {
       this.clientId = '30796';
       this.stravaApiDomain = 'https://cloud.alatech.com.tw:5443';
     }
-    const { strava } = this.userData.thirdPartyAgency;
+    const { strava, stravaValid } = this.userData.thirdPartyAgency;
+    if (stravaValid === 'false') {
+      this.stravaStatus = false;
+      return this.dialog.open(MessageBoxComponent, {
+        hasBackdrop: true,
+        data: {
+          title: 'message',
+          body: `您的綁定strava已失效，是否重新綁定您的strava?`,
+          confirmText: '確定',
+          cancelText: '取消',
+          onConfirm: () => {
+            location.href =
+              ('https://www.strava.com/oauth/authorize?' +
+              `client_id=${this.clientId}&response_type=code&` +
+              `redirect_uri=${this.stravaApiDomain}/api/v1/strava/redirect_uri` +
+              '/1/AlaCenter&scope=write&state=mystate&approval_prompt=force');
+          }
+        }
+      });
+    }
     this.stravaStatus = strava === '1';
     const queryStrings = getUrlQueryStrings(location.search);
     const { code } = queryStrings;
@@ -72,8 +91,8 @@ export class AccountInfoComponent implements OnInit {
   }
   handleStravaStatus(value) {
     this.stravaStatus = value.checked;
-    const { stravaValid } = this.userData.thirdPartyAgency;
-    if (stravaValid === 'false' && this.stravaStatus) {
+
+    if (this.stravaStatus) {
       return (location.href =
         'https://www.strava.com/oauth/authorize?' +
         `client_id=${this.clientId}&response_type=code&` +

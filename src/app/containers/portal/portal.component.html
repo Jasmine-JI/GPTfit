@@ -1,4 +1,4 @@
-<app-navbar></app-navbar>
+<app-navbar [isAlphaVersion]="isAlphaVersion"></app-navbar>
 <div class="main">
   <div class="collapse navbar-collapse search-form" id="navbarResponsive" [class.show]="isCollapseOpen">
     <form (ngSubmit)="onSubmit(rankForm, $event)" #rankForm="ngForm">

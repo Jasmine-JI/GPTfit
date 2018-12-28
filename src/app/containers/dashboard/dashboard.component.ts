@@ -16,6 +16,7 @@ import { UtilsService } from '@shared/services/utils.service';
 import { TranslateService } from '@ngx-translate/core';
 import { UserInfo } from './models/userInfo';
 import { NavigationEnd } from '@angular/router';
+import { version } from '@shared/version';
 
 @Component({
   selector: 'app-dashboard',
@@ -47,6 +48,8 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
   isHadContainer = true;
   footerAddClassName = '';
   userId: number;
+  isAlphaVersion = false;
+  version: string;
   constructor(
     private globalEventsManager: GlobalEventsManager,
     private authService: AuthService,
@@ -136,6 +139,15 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
   }
 
   ngOnInit() {
+    this.isAlphaVersion = true;
+    if (location.hostname.indexOf('cloud.alatech.com.tw') > -1) {
+      this.isAlphaVersion = false;
+      this.version = version.master;
+    } else if (location.hostname.indexOf('app.alatech.com.tw') > -1) {
+      this.version = version.release;
+    } else {
+      this.version = version.develop;
+    }
     this.globalEventsManager.showMask(false);
     let browserLang = this.utilsService.getLocalStorageObject('locale');
     if (!browserLang) {
