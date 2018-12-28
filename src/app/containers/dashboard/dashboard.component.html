@@ -15,6 +15,7 @@
       <nav class="navbar ala-dashboard-nav">
         <span class="ala-dashboard-logo">
           center
+          <span class="alpha-text" *ngIf="isAlphaVersion">alpha</span>
         </span>
         <mat-nav-list>
           <mat-accordion multi="false">
@@ -285,7 +286,7 @@
       class="footer footer-details"
       [ngClass]="footerAddClassName"
     >
-      Center 是由 Alatech 提供 Copyright © Alatech  Co.,Ltd. 或其子公司 • Version: 1.0.0.0
+      Center 是由 Alatech 提供 Copyright © Alatech  Co.,Ltd. 或其子公司 • Version: {{version}}
     </footer>
   </div>
 </div>

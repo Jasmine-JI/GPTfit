@@ -94,7 +94,7 @@ export class PortalComponent implements OnInit {
   isRealTime: boolean;
   customMapOptions = [];
   isIntroducePage: boolean;
-
+  isAlphaVersion = false;
   constructor(
     private router: Router,
     private globalEventsManager: GlobalEventsManager,
@@ -106,6 +106,11 @@ export class PortalComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (location.hostname.indexOf('cloud.alatech.com.tw') > -1) {
+      this.isAlphaVersion = false;
+    } else {
+      this.isAlphaVersion = true;
+    }
     if (this.router.url === '/') {
       this.isIntroducePage = true;
     } else {
