@@ -1,5 +1,4 @@
 #!/bin/bash
-
 HOME="/home/project/alatech_api"
 API_SERVER="/var/web"
 IP_ADDR=$(ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p')
@@ -17,8 +16,10 @@ fi
 if [ ! -L /var/www/html/dist/app ]; then
         ln -s /var/www/html/app /var/www/html/dist/app
 fi
-if [ $IP_ADDR == "192.168.1.235" ]; then
+tempIP=${IP_ADDR%192.168.1.235}
+if [ ${IP_ADDR#$tempIP} == "192.168.1.235" ]; then
   API_SERVER="/home/administrator/myWorkSpace/web"
+  echo "!!!!!!!!!!!!!!!!!!!!!!!"
   if [ ! -L /var/www/html/dist/phpmyadmin ]; then
           ln -s /usr/share/phpmyadmin /var/www/html/dist/phpmyadmin
   fi
@@ -94,8 +95,10 @@ else
           ln -s $HOME/redirect/redirect.php /var/www/html/dist/
   fi
 fi
+cd $API_SERVER
+cp -a dist/* /var/www/html/dist
 
 cd $API_SERVER
 npm run pm2-start
 
-#/usr/lib/vino/vino-server &
+# /usr/lib/vino/vino-server &
