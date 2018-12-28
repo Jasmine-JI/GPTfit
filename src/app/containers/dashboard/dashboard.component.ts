@@ -139,7 +139,6 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
   }
 
   ngOnInit() {
-    console.log('version: ', version);
     this.isAlphaVersion = true;
     if (location.hostname.indexOf('cloud.alatech.com.tw') > -1) {
       this.isAlphaVersion = false;

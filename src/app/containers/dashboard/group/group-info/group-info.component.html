@@ -65,7 +65,15 @@
       </div>
       <div style="margin-bottom: 30px;">
         <div>
-          <label>{{ groupInfo?.groupName }}</label>
+          <label>
+            <span *ngIf="groupLevel === '40' || groupLevel === '60'">
+              {{groupInfo?.groupRootInfo[2].brandName}} -
+            </span>
+            <span *ngIf="groupLevel === '60'">
+              {{groupInfo?.groupRootInfo[3].branchName}} -
+            </span>
+            {{ groupInfo?.groupName }}
+          </label>
         </div>
         <div>
           <label>群組ID：</label>{{ group_id }}
