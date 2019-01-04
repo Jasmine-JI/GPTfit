@@ -24,6 +24,19 @@ export class AccountInfoComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    const queryStrings = getUrlQueryStrings(location.search);
+    const { code } = queryStrings;
+
+    if (code && code.length > 0) {
+      const body = {
+        token: this.utils.getToken(),
+        thirdPartyAgency: '0',
+        switch: '1',
+        code,
+        clientId: this.clientId
+      };
+      return this.handleThirdPartyAccess(body);
+    }
     if (
       location.hostname === 'alatechcloud.alatech.com.tw' ||
       location.hostname === '152.101.90.130' ||
@@ -53,19 +66,6 @@ export class AccountInfoComponent implements OnInit {
       });
     }
     this.stravaStatus = strava === '1';
-    const queryStrings = getUrlQueryStrings(location.search);
-    const { code } = queryStrings;
-
-    if (code && code.length > 0) {
-      const body = {
-        token: this.utils.getToken(),
-        thirdPartyAgency: '0',
-        switch: '1',
-        code,
-        clientId: this.clientId
-      };
-      this.handleThirdPartyAccess(body);
-    }
   }
   handleThirdPartyAccess(body) {
     this.settingsService.updateThirdParty(body).subscribe(res => {
