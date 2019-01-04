@@ -78,7 +78,7 @@ export class UtilsService {
     return str_return;
   }
   isStringEmpty(string) {
-    if (typeof (string) !== 'string') {
+    if (typeof string !== 'string') {
       return true;
     }
     return string.trim().length === 0;
@@ -181,4 +181,16 @@ export class UtilsService {
       return 'unknown';
     }
   }
+  diff_array(originalArray: string[], targetArray: string[]) {
+    const diffArr = targetArray;
+    for (let i = 0; i < originalArray.length; i++) {
+      for (let j = 0; j < diffArr.length; j++) {
+        if (originalArray[i] === diffArr[j]) {
+          diffArr.splice(j, 1);
+        }
+      }
+    }
+    return diffArr.filter((v, i, a) => a.indexOf(v) === i);
+  }
+
 }

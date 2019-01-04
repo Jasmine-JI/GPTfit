@@ -105,7 +105,7 @@ export class MyGroupListComponent implements OnInit, OnDestroy {
     };
     this.groupService.fetchGroupList(body).subscribe(res => {
       this.isLoading = false;
-      this.logSource.data = res.info.groupList.filter(_group => _group.groupStatus !== 4);
+      this.logSource.data = res.info.groupList.filter(_group => (_group.groupStatus !== 4 && _group.joinStatus === 2));
       this.totalCount = res.info.totalCounts;
       if (this.logSource.data.length === 0) {
         this.isEmpty = true;
