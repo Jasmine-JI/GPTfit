@@ -1,0 +1,32 @@
+<h2 class="ala-dialog" mat-dialog-title>
+  隱私權設定
+</h2>
+<mat-dialog-content>
+您要加入的 <span style="color: #108bcd">{{groupName}}</span> 隱私權需要開放群組對象有：{{ targetText }}。
+<br /><br />
+需要更改您的隱私權設定值為上述目標對象嗎？
+
+<div style="margin-top: 30px;height: 250px;">
+  <div class="control-list">
+    <label class="ala-form__label settings-item">"新"運動活動資料：設定新活動詳細資料與路線的可見度。</label>
+    <div class="settings-control">
+      <mat-checkbox color="primary" value="4" [checked]="activityTrackingStatus[0]" (change)="handleCheckBox($event, 1, 1)"><span
+          style="font-size: 14px">僅限體適能教練</span>
+      </mat-checkbox>
+    </div>
+  </div>
+  <div class="control-list">
+    <label class="ala-form__label settings-item">"新"運動期間報告：設定新活動期間報告的可見度。</label>
+    <div class="settings-control">
+      <mat-checkbox color="primary" value="4" [checked]="activityTrackingReportStatus[0]" (change)="handleCheckBox($event, 1, 2)"><span
+          style="font-size: 14px">僅限體適能教練</span>
+      </mat-checkbox>
+    </div>
+  </div>
+</div>
+</mat-dialog-content>
+
+<mat-dialog-actions class="justify-content-end">
+  <button mat-button color="primary" (click)="confirm()">確定</button>
+  <button mat-button mat-dialog-close color="warn">取消</button>
+</mat-dialog-actions>

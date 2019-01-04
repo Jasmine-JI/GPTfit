@@ -16,6 +16,7 @@
   background-color: #2f4349;
   color: #fff;
   padding: 8px 25px;
+  text-align: center;
 }
 .mat-progress-spinner circle, .mat-spinner circle {
   stroke: #108bcd;

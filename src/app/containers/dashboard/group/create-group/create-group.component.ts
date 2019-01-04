@@ -157,27 +157,27 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
     this.buildForm(this.createType);
     this.userInfoService.getSupervisorStatus().subscribe(res => {
       this.role.isSupervisor = res;
-      console.log('%c this.isSupervisor', 'color: #0ca011', res);
+      // console.log('%c this.isSupervisor', 'color: #0ca011', res);
     });
     this.userInfoService.getSystemDeveloperStatus().subscribe(res => {
       this.role.isSystemDeveloper = res;
-      console.log('%c this.isSystemDeveloper', 'color: #0ca011', res);
+      // console.log('%c this.isSystemDeveloper', 'color: #0ca011', res);
     });
     this.userInfoService.getSystemMaintainerStatus().subscribe(res => {
       this.role.isSystemMaintainer = res;
-      console.log('%c this.isSystemMaintainer', 'color: #0ca011', res);
+      // console.log('%c this.isSystemMaintainer', 'color: #0ca011', res);
     });
     this.userInfoService.getBrandAdministratorStatus().subscribe(res => {
       this.role.isBrandAdministrator = res;
-      console.log('%c this.isBrandAdministrator', 'color: #0ca011', res);
+      // console.log('%c this.isBrandAdministrator', 'color: #0ca011', res);
     });
     this.userInfoService.getBranchAdministratorStatus().subscribe(res => {
       this.role.isBranchAdministrator = res;
-      console.log('%c this.isBranchAdministrator', 'color: #0ca011', res);
+      // console.log('%c this.isBranchAdministrator', 'color: #0ca011', res);
     });
     this.userInfoService.getCoachStatus().subscribe(res => {
       this.role.isCoach = res;
-      console.log('%c this.isCoach', 'color: #0ca011', res);
+      // console.log('%c this.isCoach', 'color: #0ca011', res);
     });
     this.token = this.utils.getToken();
     const body = {

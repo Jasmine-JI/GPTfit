@@ -69,6 +69,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   token: string;
   isPortal = false;
   isShowNoRight = false;
+  isFileIDNotExist = false;
   _options = {
     min: 8,
     max: 100,
@@ -139,7 +140,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     // this.initHchart();
   }
   ngOnDestroy() {
-    if (!this.isShowNoRight) {
+    if (!this.isShowNoRight && !this.isFileIDNotExist) {
       // this.listenFunc();
       this.chart1.destroy();
       this.chart2.destroy();
@@ -163,6 +164,10 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isLoading = false;
         this.progressRef.complete();
         return;
+      }
+      if (res.resultCode === 401) {
+        this.isFileIDNotExist = true;
+        return this.router.navigateByUrl('/404');
       }
       this.isShowNoRight = false;
       this.handleLapColumns();

@@ -46,7 +46,8 @@ export class AccountInfoComponent implements OnInit {
       this.stravaApiDomain = 'https://cloud.alatech.com.tw:5443';
     }
     const { strava, stravaValid } = this.userData.thirdPartyAgency;
-    if (stravaValid === 'false') {
+    this.stravaStatus = strava === '1';
+    if (stravaValid === 'false' && this.stravaStatus) {
       this.stravaStatus = false;
       return this.dialog.open(MessageBoxComponent, {
         hasBackdrop: true,
@@ -57,15 +58,16 @@ export class AccountInfoComponent implements OnInit {
           cancelText: '取消',
           onConfirm: () => {
             location.href =
-              ('https://www.strava.com/oauth/authorize?' +
+              'https://www.strava.com/oauth/authorize?' +
               `client_id=${this.clientId}&response_type=code&` +
-              `redirect_uri=${this.stravaApiDomain}/api/v1/strava/redirect_uri` +
-              '/1/AlaCenter&scope=write&state=mystate&approval_prompt=force');
+              `redirect_uri=${
+                this.stravaApiDomain
+              }/api/v1/strava/redirect_uri` +
+              '/1/AlaCenter&scope=write&state=mystate&approval_prompt=force';
           }
         }
       });
     }
-    this.stravaStatus = strava === '1';
   }
   handleThirdPartyAccess(body) {
     this.settingsService.updateThirdParty(body).subscribe(res => {

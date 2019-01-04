@@ -74,6 +74,7 @@ import { SettingsService } from './services/settings.service';
 import { UserProfileService } from '@shared/services/user-profile.service';
 import { PersonalPreferencesComponent } from './components/settings/personal-preferences/personal-preferences.component';
 import { CommercePlanTableComponent } from './group/commerce-plan-table/commerce-plan-table.component';
+import { PrivacySettingDialogComponent } from './group/privacy-setting-dialog/privacy-setting-dialog.component';
 
 @NgModule({
   imports: [
@@ -159,7 +160,8 @@ import { CommercePlanTableComponent } from './group/commerce-plan-table/commerce
     PrivacySettingsComponent,
     AccountInfoComponent,
     PersonalPreferencesComponent,
-    CommercePlanTableComponent
+    CommercePlanTableComponent,
+    PrivacySettingDialogComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
@@ -170,7 +172,8 @@ import { CommercePlanTableComponent } from './group/commerce-plan-table/commerce
     RightSettingWinComponent,
     PeopleSelectorWinComponent,
     TodayLoginnerWinComponent,
-    BottomSheetComponent
+    BottomSheetComponent,
+    PrivacySettingDialogComponent
   ]
 })
 export class DashboardModule {}
