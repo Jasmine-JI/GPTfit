@@ -15,7 +15,8 @@ import { GlobalEventsManager } from '@shared/global-events-manager';
 import { MatDialog } from '@angular/material';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { toMemberText } from '../desc';
-
+import { PrivacySettingDialogComponent } from '../privacy-setting-dialog/privacy-setting-dialog.component';
+import { UserProfileService } from '@shared/services/user-profile.service';
 @Component({
   selector: 'app-group-info',
   templateUrl: './group-info.component.html',
@@ -46,6 +47,9 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
   shareAvatarTarget: string;
   shareActivityTarget: string;
   shareReportTarget: string;
+  activityTrackingStatus = [false]; // ['mycoach'] 順序是暫時的，等其他選項確定再補
+  activityTrackingReportStatus = [false]; // ['mycoach'] 順序是暫時的，等其他選項確定再補
+  lifeTrackingReportStatus = [false]; // ['mycoach'] 順序是暫時的，等其他選項確定再補
   role = {
     isSupervisor: false,
     isSystemDeveloper: false,
@@ -65,6 +69,7 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
     private router: Router,
     private userInfoService: UserInfoService,
     private globalEventsManager: GlobalEventsManager,
+    private userProfileService: UserProfileService,
     public dialog: MatDialog
   ) {}
 
@@ -109,15 +114,15 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
     });
     this.userInfoService.getSupervisorStatus().subscribe(res => {
       this.role.isSupervisor = res;
-      console.log('%c this.isSupervisor', 'color: #0ca011', res);
+      // console.log('%c this.isSupervisor', 'color: #0ca011', res);
     });
     this.userInfoService.getSystemDeveloperStatus().subscribe(res => {
       this.role.isSystemDeveloper = res;
-      console.log('%c this.isSystemDeveloper', 'color: #0ca011', res);
+      // console.log('%c this.isSystemDeveloper', 'color: #0ca011', res);
     });
     this.userInfoService.getSystemMaintainerStatus().subscribe(res => {
       this.role.isSystemMaintainer = res;
-      console.log('%c this.isSystemMaintainer', 'color: #0ca011', res);
+      // console.log('%c this.isSystemMaintainer', 'color: #0ca011', res);
     });
     this.groupService.fetchGroupListDetail(body).subscribe(res => {
       const childElementCount = this.footerTarget.nativeElement
@@ -133,13 +138,13 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
         shareAvatarToMember,
         shareReportToMember
       } = this.groupInfo;
-      if (shareAvatarToMember && + shareAvatarToMember.switch > 2) {
+      if (shareAvatarToMember && +shareAvatarToMember.switch > 2) {
         this.handleShareTarget(shareAvatarToMember, 1);
       }
-      if (shareActivityToMember && + shareActivityToMember.switch > 2) {
+      if (shareActivityToMember && +shareActivityToMember.switch > 2) {
         this.handleShareTarget(shareActivityToMember, 2);
       }
-      if (shareReportToMember && + shareReportToMember.switch > 2) {
+      if (shareReportToMember && +shareReportToMember.switch > 2) {
         this.handleShareTarget(shareReportToMember, 3);
       }
       if (selfJoinStatus) {
@@ -201,7 +206,6 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
     } else {
       this.shareReportTarget = text;
     }
-
   }
   handleGroupItem(idx) {
     this.chooseIdx = idx;
@@ -239,6 +243,94 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
               .subscribe(({ resultCode, info: { selfJoinStatus } }) => {
                 if (resultCode === 200) {
                   this.joinStatus = selfJoinStatus;
+                  this.userProfileService
+                    .getUserProfile({ token: this.token })
+                    .subscribe(res => {
+                      this.isLoading = false;
+                      const {
+                        privacy: { activityTracking, activityTrackingReport }
+                      } = res.info;
+                      let isOnlyme = false;
+                      isOnlyme = !activityTracking.some(_val => +_val > 1);
+                      isOnlyme = !activityTrackingReport.some(
+                        _val => +_val > 1
+                      );
+                      const {
+                        shareActivityToMember,
+                        shareAvatarToMember,
+                        shareReportToMember
+                      } = this.groupInfo;
+                      if (
+                        (shareActivityToMember.switch === '3' ||
+                          shareAvatarToMember.switch === '3' ||
+                          shareReportToMember.switch === '3') &&
+                        isOnlyme
+                      ) {
+                        let accessRights = [];
+                        if (shareActivityToMember.switch === '3') {
+                          accessRights.push(
+                            ...shareActivityToMember.enableAccessRight
+                          );
+                        }
+                        if (shareReportToMember.switch === '3') {
+                          const diffArr = this.utils.diff_array(
+                            accessRights,
+                            shareReportToMember.enableAccessRight
+                          );
+                          if (diffArr.length > 0) {
+                            accessRights.push(...diffArr);
+                          }
+                        }
+                        if (shareAvatarToMember.switch === '3') {
+                          const _diffArr = this.utils.diff_array(
+                            accessRights,
+                            shareAvatarToMember.enableAccessRight
+                          );
+                          if (_diffArr.length > 0) {
+                            accessRights.push(..._diffArr);
+                          }
+                        }
+                        accessRights = accessRights.map(_accessRight => {
+                          if (_accessRight === '30') {
+                            return '品牌管理員';
+                          } else if (_accessRight === '40') {
+                            return '分店管理員';
+                          } else if (_accessRight === '50') {
+                            return '體適能教練';
+                          } else {
+                            return '專業老師';
+                          }
+                        });
+                        let text = '';
+                        const browserLang = this.utils.getLocalStorageObject(
+                          'locale'
+                        );
+                        if (browserLang.indexOf('zh') > -1) {
+                          text += accessRights.join(' 、');
+                        } else {
+                          text += accessRights.join(' ,');
+                        }
+                        this.detectCheckBoxValue(
+                          activityTracking,
+                          this.activityTrackingStatus
+                        );
+                        this.detectCheckBoxValue(
+                          activityTrackingReport,
+                          this.activityTrackingReportStatus
+                        );
+                        this.dialog.open(PrivacySettingDialogComponent, {
+                          hasBackdrop: true,
+                          data: {
+                            targetText: text,
+                            groupName: this.groupInfo.groupName,
+                            activityTrackingReportStatus: this.activityTrackingReportStatus,
+                            activityTrackingStatus: this.activityTrackingStatus,
+                            activityTracking,
+                            activityTrackingReport
+                          }
+                        });
+                      }
+                    });
                 }
               });
           }
@@ -263,7 +355,19 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
         }
       });
   }
-
+  detectCheckBoxValue(arr, statusArr) {
+    if (arr.findIndex(arrVal => arrVal === '1') === -1) {
+      arr.push('1');
+    }
+    arr.forEach((_arr, idx) => {
+      if (_arr === '') {
+        arr.splice(idx, 1);
+      }
+      if (_arr === '4') {
+        statusArr[0] = true;
+      }
+    });
+  }
   getGroupMemberList(_type) {
     this.isLoading = true;
     const body = {

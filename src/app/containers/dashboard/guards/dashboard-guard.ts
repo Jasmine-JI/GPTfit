@@ -35,19 +35,19 @@ export class DashboardGuard implements CanActivate {
     let isLoading = false;
     this.userInfoService.getSupervisorStatus().subscribe(res => {
       isSupervisor = res;
-      console.log('%c this.isSupervisor', 'color: #ccc', res);
+      // console.log('%c this.isSupervisor', 'color: #ccc', res);
     });
     this.userInfoService.getSystemDeveloperStatus().subscribe(res => {
       isSystemDeveloper = res;
-      console.log('%c this.isSystemDeveloper', 'color: #ccc', res);
+      // console.log('%c this.isSystemDeveloper', 'color: #ccc', res);
     });
     this.userInfoService.getSystemMaintainerStatus().subscribe(res => {
       isSystemMaintainer = res;
-      console.log('%c this.isSystemMaintainer', 'color: #ccc', res);
+      // console.log('%c this.isSystemMaintainer', 'color: #ccc', res);
     });
     this.userInfoService.getMarketingDeveloperStatus().subscribe(res => {
       isMarketingDeveloper = res;
-      console.log('%c this.isMarketingDeveloper', 'color: #ccc', res);
+      // console.log('%c this.isMarketingDeveloper', 'color: #ccc', res);
     });
     return this.userInfoService.getInitialUserInfoStatus().map((res: UserInfo) => {
       const { isInitial } = res;

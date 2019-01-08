@@ -36,19 +36,19 @@ export class InnerSettingsComponent implements OnInit {
     this.fetchInnerAdmin();
     this.userInfoService.getSupervisorStatus().subscribe(res => {
       this.role.isSupervisor = res;
-      console.log('%c this.isSupervisor', 'color: #ccc', res);
+      // console.log('%c this.isSupervisor', 'color: #ccc', res);
     });
     this.userInfoService.getSystemDeveloperStatus().subscribe(res => {
       this.role.isSystemDeveloper = res;
-      console.log('%c this.isSystemDeveloper', 'color: #ccc', res);
+      // console.log('%c this.isSystemDeveloper', 'color: #ccc', res);
     });
     this.userInfoService.getSystemMaintainerStatus().subscribe(res => {
       this.role.isSystemMaintainer = res;
-      console.log('%c this.isSystemMaintainer', 'color: #ccc', res);
+      // console.log('%c this.isSystemMaintainer', 'color: #ccc', res);
     });
     this.userInfoService.getMarketingDeveloperStatus().subscribe(res => {
       this.role.isMarketingDeveloper = res;
-      console.log('%c this.isMarketingDeveloper', 'color: #ccc', res);
+      // console.log('%c this.isMarketingDeveloper', 'color: #ccc', res);
     });
     this.userInfoService.getUserId().subscribe(res => (this.userId = res));
   }
