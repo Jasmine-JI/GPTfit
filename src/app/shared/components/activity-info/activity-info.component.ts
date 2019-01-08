@@ -18,6 +18,7 @@ import { UtilsService } from '@shared/services/utils.service';
 import { Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material';
 import { getUrlQueryStrings } from '@shared/utils/';
+import { handlePoints } from './chartData';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -52,12 +53,15 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   container: ElementRef;
   @ViewChild('hrChartTarget')
   hrChartTarget: ElementRef;
-
+  @ViewChild('cadenceChartTarget')
+  cadenceChartTarget: ElementRef;
+  @ViewChild('paceChartTarget')
+  paceChartTarget: ElementRef;
   chart1: any; // Highcharts.ChartObject
   chart2: any; // Highcharts.ChartObject
   chart3: any; // Highcharts.ChartObject
-
-  listenFunc: Function;
+  chart4: any; // Highcharts.ChartObject
+  chart5: any; // Highcharts.ChartObject
   dataset1: any;
   dataset2: any;
   dataset3: any;
@@ -83,6 +87,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     color: '#108bcd',
     thick: false
   };
+  chartOptions: any;
   userLink = {
     userName: '',
     userId: null
@@ -114,11 +119,11 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       // this.series.chart.tooltip.refresh(this); // 显示提示框
       this.series.chart.xAxis[0].drawCrosshair(event, this); // 显示十字准星线
     };
-    this.options = {
-      chart: { type: 'spline' },
-      title: { text: 'dynamic data example' },
-      series: [{ data: [1, 2, 3] }]
-    };
+    // this.options = {
+    //   chart: { type: 'spline' },
+    //   title: { text: 'dynamic data example' },
+    //   series: [{ data: [1, 2, 3] }]
+    // };
   }
 
   ngOnInit() {
@@ -141,10 +146,10 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   ngOnDestroy() {
     if (!this.isShowNoRight && !this.isFileIDNotExist) {
-      // this.listenFunc();
       this.chart1.destroy();
       this.chart2.destroy();
       this.chart3.destroy();
+      this.chart4.destroy();
     }
     this.globalEventsManager.setFooterRWD(0); // 為了讓footer自己變回去預設值
   }
@@ -268,250 +273,65 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       time;
     return date;
   }
-  initHchart() {
-    const pointSeconds = [],
-      speeds = [],
-      elevations = [],
-      heartRates = [];
-    this.activityPoints.forEach((_point, idx) => {
-      if (this.isOriginalMode) {
-        pointSeconds.push(+_point.pointSecond * 1000);
-      } else {
-        pointSeconds.push(this.resolutionSeconds * (idx + 1) * 1000);
+  handleSynchronizedPoint(e) {
+    // Do something with 'event'
+    for (
+      let i = 0;
+      i < Highcharts.charts.length;
+      i = i + 1
+    ) {
+      const _chart: any = Highcharts.charts[i];
+      const event = _chart.pointer.normalize(e); // Find coordinates within the chart
+      const point = _chart.series[0].searchPoint(event, true); // Get the hovered point
+      if (point) {
+        point.highlight(e);
       }
-      speeds.push(+_point.speed);
-      elevations.push(+_point.altitudeMeters);
-      heartRates.push(+_point.heartRateBpm);
-    });
-    this.dataset1 = {
-      name: 'Speed',
-      data: speeds,
-      unit: 'km/h',
-      type: 'line',
-      valueDecimals: 1
-    };
-    this.dataset2 = {
-      name: 'Elevation',
-      data: elevations,
-      unit: 'm',
-      type: 'area',
-      valueDecimals: 0
-    };
-    this.dataset3 = {
-      name: 'Heart rate',
-      data: heartRates,
-      unit: 'bpm',
-      type: 'area',
-      valueDecimals: 0
-    };
-    this.dataset1.data = this.dataset1.data.map((val, j) => [
-      pointSeconds[j],
-      val
-    ]);
-    this.dataset2.data = this.dataset2.data.map((val, j) => [
-      pointSeconds[j],
-      val
-    ]);
-    this.dataset3.data = this.dataset3.data.map((val, j) => [
-      pointSeconds[j],
-      val
-    ]);
-    const speedOptions: any = {
-      chart: {
-        marginLeft: 40, // Keep all charts left aligned
-        spacingTop: 20,
-        spacingBottom: 20,
-        zoomType: 'x'
-      },
-      title: {
-        text: this.dataset1.name,
-        align: 'left',
-        margin: 0,
-        x: 30
-      },
-      xAxis: {
-        crosshair: true,
-        events: {
-          setExtremes: this.syncExtremes.bind(this, 1)
-        },
-        type: 'datetime',
-        dateTimeLabelFormats: {
-          millisecond: '%H:%M:%S',
-          second: '%H:%M:%S',
-          minute: '%H:%M:%S',
-          day: '%H:%M:%S',
-          hour: '%H:%M:%S',
-          year: '%H:%M:%S'
-        }
-      },
-      yAxis: {
-        title: {
-          text: null
-        }
-      },
-      tooltip: {
-        pointFormat: '{point.y}',
-        xDateFormat: '%H:%M:%S',
-        shadow: false,
-        style: {
-          fontSize: '14px'
-        },
-        valueDecimals: this.dataset1.valueDecimals,
-        split: true,
-        share: true
-      },
-      series: [
-        {
-          data: this.dataset1.data,
-          name: this.dataset1.name,
-          type: this.dataset1.type,
-          color: Highcharts.getOptions().colors[0],
-          fillOpacity: 0.3,
-          tooltip: {
-            valueSuffix: ' ' + this.dataset1.unit
-          }
-        }
-      ]
-    };
-    const elevationOptions: any = {
-      chart: {
-        marginLeft: 40, // Keep all charts left aligned
-        spacingTop: 20,
-        spacingBottom: 20,
-        zoomType: 'x'
-      },
-      title: {
-        text: this.dataset2.name,
-        align: 'left',
-        margin: 0,
-        x: 30
-      },
-      xAxis: {
-        crosshair: true,
-        events: {
-          setExtremes: this.syncExtremes.bind(this, 2)
-        },
-        type: 'datetime',
-        dateTimeLabelFormats: {
-          millisecond: '%H:%M:%S',
-          second: '%H:%M:%S',
-          minute: '%H:%M:%S',
-          day: '%H:%M:%S',
-          hour: '%H:%M:%S',
-          year: '%H:%M:%S'
-        }
-      },
-      yAxis: {
-        title: {
-          text: null
-        }
-      },
-      tooltip: {
-        pointFormat: '{point.y}',
-        xDateFormat: '%H:%M:%S',
-        shadow: false,
-        style: {
-          fontSize: '14px'
-        },
-        valueDecimals: this.dataset2.valueDecimals,
-        split: true
-      },
-      series: [
-        {
-          data: this.dataset2.data,
-          name: this.dataset2.name,
-          type: this.dataset2.type,
-          color: Highcharts.getOptions().colors[2],
-          fillOpacity: 0.3,
-          tooltip: {
-            valueSuffix: ' ' + this.dataset2.unit
-          }
-        }
-      ]
-    };
-    const hrOptions: any = {
-      chart: {
-        marginLeft: 40, // Keep all charts left aligned
-        spacingTop: 20,
-        spacingBottom: 20,
-        zoomType: 'x'
-      },
-      title: {
-        text: this.dataset3.name,
-        align: 'left',
-        margin: 0,
-        x: 30
-      },
-      xAxis: {
-        crosshair: true,
-        events: {
-          setExtremes: this.syncExtremes.bind(this, 3)
-        },
-        type: 'datetime',
-        dateTimeLabelFormats: {
-          millisecond: '%H:%M:%S',
-          second: '%H:%M:%S',
-          minute: '%H:%M:%S',
-          day: '%H:%M:%S',
-          hour: '%H:%M:%S',
-          year: '%H:%M:%S'
-        }
-      },
-      yAxis: {
-        title: {
-          text: null
-        }
-      },
-      tooltip: {
-        pointFormat: '{point.y}',
-        xDateFormat: '%H:%M:%S',
-        shadow: false,
-        style: {
-          fontSize: '14px'
-        },
-        valueDecimals: this.dataset3.valueDecimals,
-        split: true
-      },
-      series: [
-        {
-          data: this.dataset3.data,
-          name: this.dataset3.name,
-          type: this.dataset3.type,
-          color: '#f45b5b',
-          fillOpacity: 0.3,
-          tooltip: {
-            valueSuffix: ' ' + this.dataset3.unit
-          }
-        }
-      ]
-    };
-    this.chart1 = chart(this.speedChartTarget.nativeElement, speedOptions);
-    this.chart2 = chart(
-      this.elevationChartTarget.nativeElement,
-      elevationOptions
+    }
+  }
+  initHchart() {
+    this.chartOptions = handlePoints(
+      this.activityPoints,
+      this.activityInfo.type,
+      this.resolutionSeconds
     );
-    this.chart3 = chart(this.hrChartTarget.nativeElement, hrOptions);
-    this.listenFunc = this.renderer.listen(
+    let chartTargets = [];
+    if (this.activityInfo.type) {
+      chartTargets = [
+        'speedChartTarget',
+        'elevationChartTarget',
+        'hrChartTarget',
+        'cadenceChartTarget',
+        'paceChartTarget'
+      ];
+    }
+    this.chartOptions.forEach((_option, idx) => {
+      _option[
+        chartTargets[idx]
+      ].xAxis.events.setExtremes = this.syncExtremes.bind(this, idx + 1);
+      this[`chart${idx + 1}`] = chart(
+        this[chartTargets[idx]].nativeElement,
+        _option[chartTargets[idx]]
+      );
+    });
+
+    this.renderer.listen(
       this.container.nativeElement,
       'mousemove',
-      e => {
-        // Do something with 'event'
-        for (
-          let i = Highcharts.charts.length - 3;
-          i < Highcharts.charts.length;
-          i = i + 1
-        ) {
-          const _chart: any = Highcharts.charts[i];
-          const event = _chart.pointer.normalize(e); // Find coordinates within the chart
-          const point = _chart.series[0].searchPoint(event, true); // Get the hovered point
-          if (point) {
-            point.highlight(e);
-          }
-        }
-      }
+      (e) => this.handleSynchronizedPoint(e)
+    );
+    this.renderer.listen(
+      this.container.nativeElement,
+      'touchmove',
+      (e) => this.handleSynchronizedPoint(e)
+    );
+    this.renderer.listen(
+      this.container.nativeElement,
+      'touchstart',
+      (e) => this.handleSynchronizedPoint(e)
     );
   }
   syncExtremes(num, e) {
+    // 調整縮放會同步
     const thisChart = this[`chart${num}`];
     if (e.trigger !== 'syncExtremes') {
       Highcharts.each(Highcharts.charts, function(_chart) {

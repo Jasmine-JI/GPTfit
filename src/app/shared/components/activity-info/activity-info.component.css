@@ -35,7 +35,7 @@
   color: #6e6e6e;
 }
 .activity-block {
-  margin: 25px 20px 45px;
+  /* margin: 25px 20px 45px; */
 }
 .demo-chart {
   height: 400px;
@@ -45,7 +45,7 @@
 }
 .activity-block .chart {
   min-width: 320px;
-  max-width: 800px;
+  max-width: 1000px;
   height: 220px;
   margin: 0 auto;
   display: block;
