@@ -8,7 +8,9 @@ import { Component } from '@angular/core';
 export class AppComponent {
   title = 'app';
   constructor() {
-    if (location.protocol === 'http:') {
+    if (location.protocol === 'http:'
+      &&
+      (location.hostname === 'app.alatech.com.tw' || location.hostname === 'cloud.alatech.com.tw')) {
       location.href = `https://${location.host}`;
     }
   }
