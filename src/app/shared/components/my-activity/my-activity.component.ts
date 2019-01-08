@@ -109,7 +109,7 @@ export class MyActivityComponent implements OnInit, OnDestroy {
     const sort = this.currentSort.direction;
     const body = {
       token: this.token,
-      type: '9',
+      type: '99',
       page: (this.currentPage && this.currentPage.pageIndex.toString()) || '0',
       pageCounts:
         (this.currentPage && this.currentPage.pageSize.toString()) || '10',
