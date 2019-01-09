@@ -43,7 +43,6 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   basicLoading = false;
   rainLoading = false;
 
-  options: Object;
   seriesIdx = 0;
   @ViewChild('speedChartTarget')
   speedChartTarget: ElementRef;
@@ -57,11 +56,14 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   cadenceChartTarget: ElementRef;
   @ViewChild('paceChartTarget')
   paceChartTarget: ElementRef;
-  chart1: any; // Highcharts.ChartObject
-  chart2: any; // Highcharts.ChartObject
-  chart3: any; // Highcharts.ChartObject
-  chart4: any; // Highcharts.ChartObject
-  chart5: any; // Highcharts.ChartObject
+  @ViewChild('tempChartTarget')
+  tempChartTarget: ElementRef;
+  isspeedChartTargetDisplay = false;
+  iselevationChartTargetDisplay = false;
+  ishrChartTargetDisplay = false;
+  iscadenceChartTargetDisplay = false;
+  ispaceChartTargetDisplay = false;
+  istempChartTargetDisplay = false;
   dataset1: any;
   dataset2: any;
   dataset3: any;
@@ -96,6 +98,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   totalSecond: number;
   resolutionSeconds: number;
   isOriginalMode = false;
+  isInitialChartDone = false;
   constructor(
     private utils: UtilsService,
     private renderer: Renderer2,
@@ -119,11 +122,6 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       // this.series.chart.tooltip.refresh(this); // 显示提示框
       this.series.chart.xAxis[0].drawCrosshair(event, this); // 显示十字准星线
     };
-    // this.options = {
-    //   chart: { type: 'spline' },
-    //   title: { text: 'dynamic data example' },
-    //   series: [{ data: [1, 2, 3] }]
-    // };
   }
 
   ngOnInit() {
@@ -146,10 +144,11 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   ngOnDestroy() {
     if (!this.isShowNoRight && !this.isFileIDNotExist) {
-      this.chart1.destroy();
-      this.chart2.destroy();
-      this.chart3.destroy();
-      this.chart4.destroy();
+      Highcharts.charts.forEach(_highChart => {
+        if (_highChart !== undefined) {
+          _highChart.destroy();
+        }
+      });
     }
     this.globalEventsManager.setFooterRWD(0); // 為了讓footer自己變回去預設值
   }
@@ -275,59 +274,46 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   handleSynchronizedPoint(e) {
     // Do something with 'event'
-    for (
-      let i = 0;
-      i < Highcharts.charts.length;
-      i = i + 1
-    ) {
+    for (let i = 0; i < Highcharts.charts.length; i = i + 1) {
       const _chart: any = Highcharts.charts[i];
-      const event = _chart.pointer.normalize(e); // Find coordinates within the chart
-      const point = _chart.series[0].searchPoint(event, true); // Get the hovered point
-      if (point) {
-        point.highlight(e);
+      if (_chart !== undefined) {
+        const event = _chart.pointer.normalize(e); // Find coordinates within the chart
+        const point = _chart.series[0].searchPoint(event, true); // Get the hovered point
+        if (point) {
+          point.highlight(e);
+        }
       }
     }
   }
   initHchart() {
-    this.chartOptions = handlePoints(
+    const { finalDatas, chartTargets } = handlePoints(
       this.activityPoints,
       this.activityInfo.type,
       this.resolutionSeconds
     );
-    let chartTargets = [];
-    if (this.activityInfo.type) {
-      chartTargets = [
-        'speedChartTarget',
-        'elevationChartTarget',
-        'hrChartTarget',
-        'cadenceChartTarget',
-        'paceChartTarget'
-      ];
-    }
-    this.chartOptions.forEach((_option, idx) => {
+    console.log('finalDatas: ', finalDatas);
+    console.log('chartTargets: ', chartTargets);
+
+    finalDatas.forEach((_option, idx) => {
+      this[`is${chartTargets[idx]}Display`] = true;
       _option[
         chartTargets[idx]
       ].xAxis.events.setExtremes = this.syncExtremes.bind(this, idx + 1);
-      this[`chart${idx + 1}`] = chart(
+      chart(
         this[chartTargets[idx]].nativeElement,
         _option[chartTargets[idx]]
       );
     });
+    this.isInitialChartDone = true;
 
-    this.renderer.listen(
-      this.container.nativeElement,
-      'mousemove',
-      (e) => this.handleSynchronizedPoint(e)
+    this.renderer.listen(this.container.nativeElement, 'mousemove', e =>
+      this.handleSynchronizedPoint(e)
     );
-    this.renderer.listen(
-      this.container.nativeElement,
-      'touchmove',
-      (e) => this.handleSynchronizedPoint(e)
+    this.renderer.listen(this.container.nativeElement, 'touchmove', e =>
+      this.handleSynchronizedPoint(e)
     );
-    this.renderer.listen(
-      this.container.nativeElement,
-      'touchstart',
-      (e) => this.handleSynchronizedPoint(e)
+    this.renderer.listen(this.container.nativeElement, 'touchstart', e =>
+      this.handleSynchronizedPoint(e)
     );
   }
   syncExtremes(num, e) {

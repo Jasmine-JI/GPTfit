@@ -173,28 +173,45 @@
     </div>
     <ng-container *ngIf="isdisplayHcharts">
       <div #container>
-        <div class="activity-block">
-          <div #speedChartTarget class="chart">
+        <div class="activity-block" *ngIf="!(isInitialChartDone && !isspeedChartTargetDisplay)">
+          <div #speedChartTarget class="chart"
+           [class.hidden]="!isspeedChartTargetDisplay"
+          >
             chart target
           </div>
         </div>
-        <div class="activity-block">
-          <div #hrChartTarget class="chart">
+        <div class="activity-block" *ngIf="!(isInitialChartDone && !ishrChartTargetDisplay)">
+          <div #hrChartTarget class="chart"
+           [class.hidden]="!ishrChartTargetDisplay"
+          >
             chart target
           </div>
         </div>
-        <div class="activity-block">
-          <div #cadenceChartTarget class="chart">
+        <div class="activity-block" *ngIf="!(isInitialChartDone && !iscadenceChartTargetDisplay)">
+          <div #cadenceChartTarget class="chart"
+            [class.hidden]="!iscadenceChartTargetDisplay"
+          >
             chart target
           </div>
         </div>
-        <div class="activity-block">
-          <div #paceChartTarget class="chart">
+        <div class="activity-block" *ngIf="!(isInitialChartDone && !ispaceChartTargetDisplay)">
+          <div #paceChartTarget class="chart"
+            [class.hidden]="!ispaceChartTargetDisplay"
+          >
             chart target
           </div>
         </div>
-        <div class="activity-block">
-          <div #elevationChartTarget class="chart">
+        <div class="activity-block" *ngIf="!(isInitialChartDone && !iselevationChartTargetDisplay)">
+          <div #elevationChartTarget class="chart"
+            [class.hidden]="!iselevationChartTargetDisplay"
+          >
+            chart target
+          </div>
+        </div>
+        <div class="activity-block" *ngIf="!(isInitialChartDone && !istempChartTargetDisplay)">
+          <div #tempChartTarget class="chart"
+            [class.hidden]="!istempChartTargetDisplay"
+          >
             chart target
           </div>
         </div>

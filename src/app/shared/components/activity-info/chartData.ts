@@ -68,24 +68,52 @@ export const handlePoints = (datas, type, resolutionSeconds) => {
 
   console.log('datas: ', datas);
   let colorIdx = 0;
+  let isNoSpeeds = false,
+    isNoElevations = false,
+    isNoHeartRates = false,
+  isNoRunCadences = false,
+    isNoPaces = false,
+    isNoTemps = false;
   const pointSeconds = [],
     speeds = [],
     elevations = [],
     heartRates = [],
     runCadences = [],
-    paces = [];
+    paces = [],
+    temps = [];
   datas.forEach((_point, idx) => {
     pointSeconds.push(resolutionSeconds * (idx + 1) * 1000);
-    speeds.push(+_point.speed);
-    if (+_point.speed === 0) {
+    if (!_point.speed || _point.speed.length === 0) {
+      isNoSpeeds = true;
+      isNoPaces = true;
+    } else {
+      speeds.push(+_point.speed);
+    }
+    if (!_point.speed || +_point.speed === 0) {
       paces.push(3600);
     } else {
       paces.push((60 / +_point.speed) * 60);
     }
-
-    elevations.push(+_point.altitudeMeters);
-    heartRates.push(+_point.heartRateBpm);
-    runCadences.push(+_point.runCadence);
+    if (!_point.altitudeMeters || _point.altitudeMeters.length === 0) {
+      isNoElevations = true;
+    } else {
+      elevations.push(+_point.altitudeMeters);
+    }
+    if (!_point.heartRateBpm || _point.heartRateBpm.length === 0) {
+      isNoHeartRates = true;
+    } else {
+      heartRates.push(+_point.heartRateBpm);
+    }
+    if (!_point.runCadence || _point.runCadence.length === 0) {
+      isNoRunCadences = true;
+    } else {
+      runCadences.push(+_point.runCadence);
+    }
+    if (!_point.temp || _point.temp.length === 0) {
+      isNoTemps = true;
+    } else {
+      temps.push(+_point.temp);
+    }
   });
   const speedDataset = {
     name: 'Speed',
@@ -122,46 +150,75 @@ export const handlePoints = (datas, type, resolutionSeconds) => {
     type: 'line',
     valueDecimals: 1
   };
-  speedDataset.data = speedDataset.data.map((val, j) => [
-    pointSeconds[j],
-    val
-  ]);
-  elevationDataset.data = elevationDataset.data.map((val, j) => [
-    pointSeconds[j],
-    val
-  ]);
-  hrDataset.data = hrDataset.data.map((val, j) => [
-    pointSeconds[j],
-    val
-  ]);
-  paceDataset.data = paceDataset.data.map((val, j) => [
-    pointSeconds[j],
-    val
-  ]);
-  runCadenceDataset.data = runCadenceDataset.data.map((val, j) => [
-    pointSeconds[j],
-    val
-  ]);
-  const speedOptions = new Option(speedDataset, colorIdx);
-  colorIdx++;
-  const paceOptions = new Option(paceDataset, colorIdx);
-  colorIdx++;
-  paceOptions['yAxis'].min = 0;
-  paceOptions['yAxis'].max = 3600;
-  paceOptions['yAxis'].tickInterval = 600;
-  paceOptions['yAxis'].labels = {
-    formatter: function () {
-      const val = +this.value;
-      const costminperkm = Math.floor(val / 60);
-      const costsecondperkm = Math.round(val - costminperkm * 60);
-      const timeMin = ('0' + costminperkm).slice(-2);
-      const timeSecond = ('0' + costsecondperkm).slice(-2);
+  const tempDataset = {
+    name: 'Temperature',
+    data: temps,
+    unit: '°C',
+    type: 'line',
+    valueDecimals: 1
+  };
+  const finalDatas = [];
+  const chartTargets = [];
+  let  speedOptions,
+      elevationOptions,
+      hrOptions,
+      runCadenceOptions,
+    paceOptions,
+    tempOptions;
+  if (!isNoSpeeds) {
+    speedDataset.data = speedDataset.data.map((val, j) => [
+      pointSeconds[j],
+      val
+    ]);
+    speedOptions = new Option(speedDataset, colorIdx);
+    colorIdx++;
+    finalDatas.push({ speedChartTarget: speedOptions });
+    chartTargets.push('speedChartTarget');
+  }
+  if (!isNoElevations) {
+    elevationDataset.data = elevationDataset.data.map((val, j) => [
+      pointSeconds[j],
+      val
+    ]);
+    elevationOptions = new Option(elevationDataset, colorIdx);
+    colorIdx++;
+    finalDatas.push({ elevationChartTarget: elevationOptions });
+    chartTargets.push('elevationChartTarget');
+  }
+  if (!isNoHeartRates) {
+    hrDataset.data = hrDataset.data.map((val, j) => [
+      pointSeconds[j],
+      val
+    ]);
+    hrOptions = new Option(hrDataset, colorIdx);
+    colorIdx++;
+    finalDatas.push({ hrChartTarget: hrOptions });
+    chartTargets.push('hrChartTarget');
+  }
+  if (!isNoPaces) {
+    paceDataset.data = paceDataset.data.map((val, j) => [
+      pointSeconds[j],
+      val
+    ]);
+    paceOptions = new Option(paceDataset, colorIdx);
+    colorIdx++;
+    paceOptions['yAxis'].min = 0;
+    paceOptions['yAxis'].max = 3600;
+    paceOptions['yAxis'].tickInterval = 600;
+    paceOptions['yAxis'].labels = {
+      formatter: function () {
+        const val = +this.value;
+        const costminperkm = Math.floor(val / 60);
+        const costsecondperkm = Math.round(val - costminperkm * 60);
+        const timeMin = ('0' + costminperkm).slice(-2);
+        const timeSecond = ('0' + costsecondperkm).slice(-2);
 
-      const paceVal = `${timeMin}'${timeSecond}"`;
-      return paceVal;
-    }};
-  paceOptions['yAxis'].reversed = true;
-  paceOptions['tooltip'] = {
+        const paceVal = `${timeMin}'${timeSecond}"`;
+        return paceVal;
+      }
+    };
+    paceOptions['yAxis'].reversed = true;
+    paceOptions['tooltip'] = {
       formatter: function () {
         let yVal = this.y;
         const costminperkm = Math.floor(yVal / 60);
@@ -174,18 +231,30 @@ export const handlePoints = (datas, type, resolutionSeconds) => {
       },
       split: true
     };
-  const elevationOptions = new Option(elevationDataset, colorIdx);
-  colorIdx++;
-  const hrOptions = new Option(hrDataset, colorIdx);
-  colorIdx++;
-  const runCadenceOptions = new Option(runCadenceDataset, colorIdx);
-  colorIdx++;
+    finalDatas.push({ paceChartTarget: paceOptions });
+    chartTargets.push('paceChartTarget');
+  }
+  if (!isNoRunCadences) {
+    runCadenceDataset.data = runCadenceDataset.data.map((val, j) => [
+      pointSeconds[j],
+      val
+    ]);
+    runCadenceOptions = new Option(runCadenceDataset, colorIdx);
+    colorIdx++;
+    finalDatas.push({ cadenceChartTarget: runCadenceOptions });
+    chartTargets.push('cadenceChartTarget');
+  }
 
-  return [
-    { speedChartTarget: speedOptions },
-    { elevationChartTarget: elevationOptions },
-    { hrChartTarget: hrOptions },
-    { cadenceChartTarget: runCadenceOptions },
-    { paceChartTarget: paceOptions }
-  ];
+  if (!isNoTemps) {
+    tempDataset.data = tempDataset.data.map((val, j) => [
+      pointSeconds[j],
+      val
+    ]);
+    tempOptions = new Option(tempDataset, colorIdx);
+    colorIdx++;
+    finalDatas.push({ tempChartTarget: tempOptions });
+    chartTargets.push('tempChartTarget');
+  }
+
+  return { finalDatas, chartTargets };
 };

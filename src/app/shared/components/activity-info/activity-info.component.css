@@ -49,6 +49,14 @@
   height: 220px;
   margin: 0 auto;
   display: block;
+  visibility: initial;
+}
+.activity-block .chart.hidden {
+  visibility: hidden;
+}
+.activity-block .chart.hidden .highcharts-container {
+  height: 0px;
+  visibility: hidden;
 }
 .activity-info__area {
   width: calc((100% - 60px)/3);
