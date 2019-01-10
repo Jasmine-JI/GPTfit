@@ -9,12 +9,18 @@ import { forkJoin } from 'rxjs/observable/forkJoin';
 import { UserInfo } from '../models/userInfo';
 import { UserDetail } from '../models/userDetail';
 import { UtilsService } from '@shared/services/utils.service';
+import * as moment from 'moment';
 
 const { API_SERVER } = environment.url;
 
 @Injectable()
 export class UserInfoService {
   userName$ = new BehaviorSubject<string>('');
+  userAge$ = new BehaviorSubject<number>(null);
+  userMaxHR$ = new BehaviorSubject<number>(null);
+  userRestHR$ = new BehaviorSubject<number>(null);
+  userHRBase$ = new BehaviorSubject<number>(null);
+
   // groupId$ = new BehaviorSubject<string>('0-0-0-0-0-0');
   userIcon$ = new BehaviorSubject<string>('');
   isSupervisor$ = new BehaviorSubject<boolean>(false);
@@ -51,6 +57,18 @@ export class UserInfoService {
   }
   getUserId(): Observable<number> {
     return this.userId$;
+  }
+  getUserAge(): Observable<number> {
+    return this.userAge$;
+  }
+  getUserMaxHR(): Observable<number> {
+    return this.userMaxHR$;
+  }
+  getUserRestHR(): Observable<number> {
+    return this.userRestHR$;
+  }
+  getUserHRBase(): Observable<number> {
+    return this.userHRBase$;
   }
   setSupervisorStatus(status: boolean) {
     this.isSupervisor$.next(status);
@@ -286,7 +304,15 @@ export class UserInfoService {
             info: { groupAccessRight }
           } = res[0];
           const {
-            info: { nameIcon, name, nameId }
+            info: {
+              nameIcon,
+              name,
+              nameId,
+              birthday,
+              heartRateMax,
+              heartRateResting,
+              heartRateBase
+            }
           } = res[1];
           this.initialUserInfo$.next({
             isInitial: true,
@@ -296,6 +322,10 @@ export class UserInfoService {
             this.userName$.next(name);
             this.userIcon$.next(nameIcon);
             this.userId$.next(nameId);
+            this.userAge$.next(moment().diff(birthday, 'years'));
+            this.userMaxHR$.next(heartRateMax);
+            this.userRestHR$.next(heartRateResting);
+            this.userHRBase$.next(heartRateBase);
           }
 
           if (
