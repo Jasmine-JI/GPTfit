@@ -165,7 +165,7 @@ router.post('/innerAdmin', function (req, res, next) {
             }
           });
         }
-        async.eachLimit(sql, 10, processer, function (error, result){
+        async.eachLimit(sql, 100, processer, function (error, result){
           console.log('!!!!!');
           console.log('error: ', error);
           console.log('result: ', result);
