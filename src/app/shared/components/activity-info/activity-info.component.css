@@ -35,7 +35,7 @@
   color: #6e6e6e;
 }
 .activity-block {
-  margin: 25px 20px 45px;
+  /* margin: 25px 20px 45px; */
 }
 .demo-chart {
   height: 400px;
@@ -45,10 +45,18 @@
 }
 .activity-block .chart {
   min-width: 320px;
-  max-width: 800px;
+  max-width: 1000px;
   height: 220px;
   margin: 0 auto;
   display: block;
+  visibility: initial;
+}
+.activity-block .chart.hidden {
+  visibility: hidden;
+}
+.activity-block .chart.hidden .highcharts-container {
+  height: 0px;
+  visibility: hidden;
 }
 .activity-info__area {
   width: calc((100% - 60px)/3);

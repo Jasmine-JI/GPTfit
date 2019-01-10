@@ -21,5 +21,38 @@
     "MainApp": "主要App應用",
     "othersApp": "其他App應用",
     "RelatedLinks": "相關連結"
+  },
+  "Dashboard": {
+    "LiveActivity": "及時活動",
+    "TrainLive": {
+      "NewsLive": "最新直播",
+      "ClassInfo": "課程介紹",
+      "CoachInfo": "教練介紹",
+      "LineChart": "趨勢圖",
+      "Member": "成員",
+      "Avg": "平均",
+      "more": "更多"
+    },
+    "Group": {
+      "MyGroup": {
+        "MyGroup": "我的群組",
+        "GroupList": "群組列表",
+        "Name": "名稱",
+        "Identity": "身分",
+        "NormalMember": "一般成員",
+        "GroupAdmin": "群組管理員",
+        "ProfessionalTeacher": "專業老師",
+        "PhysicalFitnessCoach": "體適能教練",
+        "BranchAdmin": "分店管理員",
+        "BrandAdmin": "品牌管理員",
+        "System-Marketing": "系統-行銷與企劃",
+        "System-Maintenance": "系統-維護員",
+        "System-Developer": "系統-開發員"
+      },
+      "GroupInfo": {
+        "GroupInfo": "群組資訊",
+        "Join": "申請加入"
+      }
+    }
   }
 }
