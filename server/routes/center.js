@@ -145,20 +145,26 @@ router.post('/innerAdmin', function (req, res, next) {
         normalQuerys = normalIds.map(_id => `update ?? set access_right = 90 where member_id = ${_id.member_id};`);
         let sql = userIds.map(_id => `update ?? set access_right = ${con.escape(targetRight)} where member_id = ${_id} and group_id = '0-0-0-0-0-0';`);
         sql = sql.concat(normalQuerys);
+        let successCount = 0;
         const processer = function (query) {
-          con.query(query, ['group_member_info'], function (err, rows) {
+          con.query(query, ['group_member_info'], function (err, results) {
             if (err) {
               console.log(err);
               return res.status(500).send({
                 errorMessage: err.sqlMessage
               });
             }
+            if (results) {
+              successCount++;
+              if (successCount === sql.length) {
+                res.json({
+                  resultCode: 200,
+                  rtnMsg: 'success'
+                });
+              }
+            }
           });
         }
-        res.json({
-            resultCode: 200,
-            rtnMsg: 'success'
-        });
         async.eachLimit(sql, 10, processer, function (error, result){
           console.log('!!!!!');
           console.log('error: ', error);
