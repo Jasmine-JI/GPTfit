@@ -410,6 +410,14 @@ export class EditGroupInfoComponent implements OnInit, OnDestroy {
         this.isGroupDetailLoading = false;
         if (results[0].resultCode === 200 && results[1].resultCode === 200) {
           this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}`);
+        } else if (results[0].resultCode === 409) {
+          this.dialog.open(MsgDialogComponent, {
+            hasBackdrop: true,
+            data: {
+              title: 'Message',
+              body: '品牌名稱已存在'
+            }
+          });
         } else {
           this.dialog.open(MsgDialogComponent, {
             hasBackdrop: true,
