@@ -64,17 +64,19 @@ class Option {
   }
 }
 export const handlePoints = (datas, type, resolutionSeconds, hrFormatData) => {
-  console.log('type: ', type);
-
-  console.log('datas: ', datas);
   let colorIdx = 0;
   let isNoSpeeds = false,
     isNoElevations = false,
     isNoHeartRates = false,
-  isNoRunCadences = false,
+    isNoRunCadences = false,
     isNoPaces = false,
     isNoTemps = false,
-    isNoZones = false;
+    isNoZones = false,
+    isNoCycleWatt = false,
+    isNoRowingWatt = false,
+    isNoCycleCadences = false,
+    isNoSwimCadences = false,
+    isNoRowingCadences = false;
   const pointSeconds = [],
     speeds = [],
     elevations = [],
@@ -82,6 +84,10 @@ export const handlePoints = (datas, type, resolutionSeconds, hrFormatData) => {
     runCadences = [],
     paces = [],
     temps = [],
+    watts = [],
+    cycleCadences = [],
+    swimCadences = [],
+    rowingCadences = [],
     userZoneTimes = [
       { y: 0, color: '#2e4d9f' },
       { y: 0, color: '#2eb1e7' },
@@ -138,7 +144,24 @@ export const handlePoints = (datas, type, resolutionSeconds, hrFormatData) => {
     if (!_point.speed || +_point.speed === 0) {
       paces.push(3600);
     } else {
-      paces.push((60 / +_point.speed) * 60);
+      if (type === '1') {
+        paces.push((60 / +_point.speed) * 60);
+      } else if (type === '4') {
+        paces.push((60 / +_point.speed) * 60 / 10);
+      } else if (type === '6') {
+        paces.push((60 / +_point.speed) * 60 / 2);
+      } else {
+      }
+    }
+    if (!_point.cycleWatt || _point.cycleWatt.length === 0) {
+      isNoCycleWatt = true;
+    } else {
+      watts.push(+_point.cycleWatt);
+    }
+    if (!_point.rowingWatt || _point.rowingWatt.length === 0) {
+      isNoRowingWatt = true;
+    } else {
+      watts.push(+_point.rowingWatt);
     }
     if (!_point.altitudeMeters || _point.altitudeMeters.length === 0) {
       isNoElevations = true;
@@ -168,6 +191,21 @@ export const handlePoints = (datas, type, resolutionSeconds, hrFormatData) => {
       isNoRunCadences = true;
     } else {
       runCadences.push(+_point.runCadence);
+    }
+    if (!_point.cycleCadence || _point.cycleCadence.length === 0) {
+      isNoCycleCadences = true;
+    } else {
+      cycleCadences.push(+_point.cycleCadence);
+    }
+    if (!_point.swimCadence || _point.swimCadence.length === 0) {
+      isNoSwimCadences = true;
+    } else {
+      swimCadences.push(+_point.swimCadence);
+    }
+    if (!_point.rowingCadence || _point.rowingCadence.length === 0) {
+      isNoRowingCadences = true;
+    } else {
+      rowingCadences.push(+_point.rowingCadence);
     }
     if (!_point.temp || _point.temp.length === 0) {
       isNoTemps = true;
@@ -203,10 +241,38 @@ export const handlePoints = (datas, type, resolutionSeconds, hrFormatData) => {
     type: 'scatter',
     valueDecimals: 0
   };
+  const cycleCadenceDataset = {
+    name: 'Cadence',
+    data: cycleCadences,
+    unit: 'spm',
+    type: 'scatter',
+    valueDecimals: 0
+  };
+  const swimCadenceDataset = {
+    name: 'Cadence',
+    data: swimCadences,
+    unit: 'spm',
+    type: 'scatter',
+    valueDecimals: 0
+  };
+  const rowingCadenceDataset = {
+    name: 'Cadence',
+    data: rowingCadences,
+    unit: 'spm',
+    type: 'scatter',
+    valueDecimals: 0
+  };
   const paceDataset = {
     name: 'Pace',
     data: paces,
     unit: 't/km',
+    type: 'line',
+    valueDecimals: 1
+  };
+  const wattDataset = {
+    name: 'Watt',
+    data: watts,
+    unit: 'w',
     type: 'line',
     valueDecimals: 1
   };
@@ -230,6 +296,10 @@ export const handlePoints = (datas, type, resolutionSeconds, hrFormatData) => {
       elevationOptions,
       hrOptions,
       runCadenceOptions,
+    cycleCadenceOptions,
+    swimCadenceOptions,
+    rowingCadenceOptions,
+    wattOptions,
     paceOptions,
     tempOptions,
     zoneOptions;
@@ -242,6 +312,26 @@ export const handlePoints = (datas, type, resolutionSeconds, hrFormatData) => {
     colorIdx++;
     finalDatas.push({ speedChartTarget: speedOptions, isSyncExtremes: true });
     chartTargets.push('speedChartTarget');
+  }
+  if (!isNoCycleWatt) {
+    wattDataset.data = wattDataset.data.map((val, j) => [
+      pointSeconds[j],
+      val
+    ]);
+    wattOptions = new Option(wattDataset, colorIdx);
+    colorIdx++;
+    finalDatas.push({ wattChartTarget: wattOptions, isSyncExtremes: true });
+    chartTargets.push('wattChartTarget');
+  }
+  if (!isNoRowingWatt) {
+    wattDataset.data = wattDataset.data.map((val, j) => [
+      pointSeconds[j],
+      val
+    ]);
+    wattOptions = new Option(wattDataset, colorIdx);
+    colorIdx++;
+    finalDatas.push({ wattChartTarget: wattOptions, isSyncExtremes: true });
+    chartTargets.push('wattChartTarget');
   }
   if (!isNoElevations) {
     elevationDataset.data = elevationDataset.data.map((val, j) => [
@@ -348,7 +438,45 @@ export const handlePoints = (datas, type, resolutionSeconds, hrFormatData) => {
     });
     chartTargets.push('cadenceChartTarget');
   }
-
+  if (!isNoCycleCadences) {
+    cycleCadenceDataset.data = cycleCadenceDataset.data.map((val, j) => [
+      pointSeconds[j],
+      val
+    ]);
+    cycleCadenceOptions = new Option(cycleCadenceDataset, colorIdx);
+    colorIdx++;
+    finalDatas.push({
+      cadenceChartTarget: cycleCadenceOptions,
+      isSyncExtremes: true
+    });
+    chartTargets.push('cadenceChartTarget');
+  }
+  if (!isNoSwimCadences) {
+    swimCadenceDataset.data = swimCadenceDataset.data.map((val, j) => [
+      pointSeconds[j],
+      val
+    ]);
+    swimCadenceOptions = new Option(swimCadenceDataset, colorIdx);
+    colorIdx++;
+    finalDatas.push({
+      cadenceChartTarget: swimCadenceOptions,
+      isSyncExtremes: true
+    });
+    chartTargets.push('cadenceChartTarget');
+  }
+  if (!isNoRowingCadences) {
+    rowingCadenceDataset.data = rowingCadenceDataset.data.map((val, j) => [
+      pointSeconds[j],
+      val
+    ]);
+    rowingCadenceOptions = new Option(rowingCadenceDataset, colorIdx);
+    colorIdx++;
+    finalDatas.push({
+      cadenceChartTarget: rowingCadenceOptions,
+      isSyncExtremes: true
+    });
+    chartTargets.push('cadenceChartTarget');
+  }
   if (!isNoTemps) {
     tempDataset.data = tempDataset.data.map((val, j) => [
       pointSeconds[j],

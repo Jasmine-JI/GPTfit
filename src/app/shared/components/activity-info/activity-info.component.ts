@@ -61,6 +61,9 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   tempChartTarget: ElementRef;
   @ViewChild('zoneChartTarget')
   zoneChartTarget: ElementRef;
+  @ViewChild('wattChartTarget')
+  wattChartTarget: ElementRef;
+
   isspeedChartTargetDisplay = false;
   iselevationChartTargetDisplay = false;
   ishrChartTargetDisplay = false;
@@ -322,8 +325,17 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     this.finalDatas = finalDatas;
     this.finalDatas.forEach((_option, idx) => {
       this[`is${chartTargets[idx]}Display`] = true;
-      _option[chartTargets[idx]].xAxis.events.setExtremes = this.syncExtremes.bind(this, idx, finalDatas);
-      this.charts[idx] = chart(this[chartTargets[idx]].nativeElement, _option[chartTargets[idx]]);
+      _option[
+        chartTargets[idx]
+      ].xAxis.events.setExtremes = this.syncExtremes.bind(
+        this,
+        idx,
+        finalDatas
+      );
+      this.charts[idx] = chart(
+        this[chartTargets[idx]].nativeElement,
+        _option[chartTargets[idx]]
+      );
     });
     this.isInitialChartDone = true;
 
