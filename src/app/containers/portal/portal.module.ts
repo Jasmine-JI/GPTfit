@@ -11,20 +11,17 @@ import { MapInfoComponent } from './components/map-info/map-info.component';
 import { MapGPXService } from '@shared/services/map-gpx.service';
 import { RankFormService } from './services/rank-form.service';
 import { MapService } from '@shared/services/map.service';
-import { LoadingComponent } from '../../shared/components/loading/loading.component';
-import { PaginationComponent } from '../../shared/components/pagination/pagination.component';
 import { GlobalEventsManager } from '@shared/global-events-manager';
 import { PasswordComponent } from './components/password/password.component';
 import { ResetPasswordService } from './services/reset-password.service';
 import { EmptyResponseBodyErrorInterceptor } from './services/empty-response-body-error-interceptor';
-import { BrowserXhr } from '@angular/http';
 import { PatternValidator } from '@angular/forms';
 import { MyDatePickerModule } from 'mydatepicker';
 import { SharedComponentsModule } from '@shared/components/shared-components.module';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { DemoQrcodComponent } from './components/demo-qrcod/demo-qrcod.component';
 import { QrcodeService } from './services/qrcode.service';
-import { NgProgressModule } from 'ngx-progressbar';
+import { NgProgressModule } from '@ngx-progressbar/core';
 import { SigninComponent } from './components/signin/signin.component';
 import { AuthService } from '@shared/services/auth.service';
 import { UtilsService } from '@shared/services/utils.service';
@@ -35,6 +32,14 @@ import { ForgetpwdComponent } from './components/forgetpwd/forgetpwd.component';
 import { RandomCodeService } from './services/random-code.service';
 import { SignupService } from './services/signup.service';
 import { ForgetService } from './services/forget.service';
+import { UserProfileComponent } from './components/user-profile/user-profile.component';
+import { UserProfileService } from '@shared/services/user-profile.service';
+import { GroupInfoComponent } from './components/group-info/group-info.component';
+import { FirstLoginComponent } from './components/first-login/first-login.component';
+import { CustomMaterialModule } from '@shared/custom-material.module.ts';
+import { BasicInfoComponent } from './components/user-profile/basic-info/basic-info.component';
+import { ActivityService } from '@shared/services/activity.service.ts';
+import { ReportService } from '@shared/services/report.service';
 
 @NgModule({
   imports: [
@@ -47,7 +52,8 @@ import { ForgetService } from './services/forget.service';
     SharedPipes,
     NgProgressModule,
     ReactiveFormsModule,
-    SharedModule
+    SharedModule,
+    CustomMaterialModule
   ],
   providers: [
     MapGPXService,
@@ -61,6 +67,9 @@ import { ForgetService } from './services/forget.service';
     RandomCodeService,
     SignupService,
     ForgetService,
+    UserProfileService,
+    ActivityService,
+    ReportService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: EmptyResponseBodyErrorInterceptor,
@@ -77,7 +86,11 @@ import { ForgetService } from './services/forget.service';
     DemoQrcodComponent,
     SigninComponent,
     SignupComponent,
-    ForgetpwdComponent
+    ForgetpwdComponent,
+    UserProfileComponent,
+    GroupInfoComponent,
+    FirstLoginComponent,
+    BasicInfoComponent
   ],
   entryComponents: [MessageBoxComponent]
 })

@@ -1,5 +1,29 @@
 export const codes = [
   {
+    name: 'China',
+    code: '+86'
+  },
+  {
+    name: 'Taiwan',
+    code: '+886'
+  },
+  {
+    name: 'United States',
+    code: '+1'
+  },
+  {
+    name: 'Germany',
+    code: '+49'
+  },
+  {
+    name: 'United Kingdom',
+    code: '+44'
+  },
+  {
+    name: 'Thailand',
+    code: '+66'
+  },
+  {
     name: 'Afghanistan',
     code: '+93'
   },
@@ -156,10 +180,6 @@ export const codes = [
     code: '+236'
   },
   {
-    name: 'China',
-    code: '+86'
-  },
-  {
     name: 'Chad',
     code: '+235'
   },
@@ -299,10 +319,7 @@ export const codes = [
     name: 'Gabon',
     code: '+241'
   },
-  {
-    name: 'Germany',
-    code: '+49'
-  },
+
   {
     name: 'Georgia',
     code: '+995'
@@ -843,17 +860,10 @@ export const codes = [
     name: 'Tanzania, United Republic of',
     code: '+255'
   },
-  {
-    name: 'Taiwan',
-    code: '+886'
-  },
+
   {
     name: 'Tajikistan',
     code: '+992'
-  },
-  {
-    name: 'Thailand',
-    code: '+66'
   },
   {
     name: 'Timor-Leste',
@@ -906,14 +916,6 @@ export const codes = [
   {
     name: 'United Arab Emirates',
     code: '+971'
-  },
-  {
-    name: 'United Kingdom',
-    code: '+44'
-  },
-  {
-    name: 'United States',
-    code: '+1'
   },
   {
     name: 'Uruguay',

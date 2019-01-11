@@ -20,6 +20,114 @@
   width: auto;
   opacity: 0;
   cursor: pointer;
+  z-index: 1;
+}
+
+.ala-upload-image {
+  border: 1px solid #ccc;
+  max-width: 250px;
+  height: 250px;
+  width: 100%;
+  display: inline-block;
+  position: relative;
+}
+.ala-upload-image img {
+  width: 100%;
+  height: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.ala-upload-image.ala-user-avastar-mode {
+  z-index: 1;
+}
+.ala-upload-image.ala-user-avastar-mode img {
+  width: auto;
+  height: 100%;
+  border: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.ala-upload-image.ala-upload-image--vertical img {
+  width: auto;
+  height: 100%;
+}
+.ala-upload-image.ala-upload-image--vertical.ala-user-avastar-mode img {
+  width: 100%;
+  height: auto;
+}
+
+.profile-picture__remove-icon {
+  font-size: 18px;
+  color: #777;
+}
+
+.profile-picture__remove {
+  position: absolute;
+  top: 5px;
+  right: 8px;
+  z-index: 2;
+  display: inline-block;
+  vertical-align: top;
+  padding: 0;
+  margin: 0;
+  border: none;
+  line-height: 1;
+  outline: 0;
+  background-color: transparent;
+}
+
+.profile-picture__remove:hover {
+  cursor: pointer;
+}
+.ala-upload {
+  width: 100%;
+  display: inline-block;
+  position: relative;
+}
+.ala-upload  .ala-upload--descrption {
+  margin-top: 10px;
+  text-align: center;
+  max-width: 250px;
+  z-index: 2;
+}
+.ala-upload--descrption .fileupload__input {
+  height: 296px;
+  width: 250px;
+}
+
+.user-avastar-mask {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  position: absolute;
+  z-index: 2;
+  background-color: #333;
+  opacity: .6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.user-avastar-mask span {
+  z-index: 3;
+  color: #fff;
+}
+.ala-user-avastar-mode .profile-picture__remove {
+  display: none;
+}
+@media(max-width: 767px) {
+  .ala-upload-image {
+    min-width: 250px;
+  }
+  .ala-upload-image.ala-user-avastar-mode {
+    min-width: initial;
+  }
+  .profile-picture__remove-icon {
+    font-size: 30px;
+  }
 }
 
 .ala-upload-image {

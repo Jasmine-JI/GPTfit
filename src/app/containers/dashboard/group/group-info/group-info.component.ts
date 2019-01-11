@@ -1,18 +1,29 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewEncapsulation,
+  ViewChild,
+  ElementRef,
+  OnDestroy
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { GroupService } from '../../services/group.service';
 import { UtilsService } from '@shared/services/utils.service';
-import { HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { UserInfoService } from '../../services/userInfo.service';
-
+import { GlobalEventsManager } from '@shared/global-events-manager';
+import { MatDialog } from '@angular/material';
+import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { toMemberText } from '../desc';
+import { PrivacySettingDialogComponent } from '../privacy-setting-dialog/privacy-setting-dialog.component';
+import { UserProfileService } from '@shared/services/user-profile.service';
 @Component({
   selector: 'app-group-info',
   templateUrl: './group-info.component.html',
-  styleUrls: ['./group-info.component.css', '../group-style.css'],
+  styleUrls: ['./group-info.component.scss', '../group-style.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class GroupInfoComponent implements OnInit {
+export class GroupInfoComponent implements OnInit, OnDestroy {
   groupId: string;
   token: string;
   groupInfo: any;
@@ -29,37 +40,73 @@ export class GroupInfoComponent implements OnInit {
   subCoachInfo: any;
   branchAdministrators: any;
   coachAdministrators: any;
+  normalCoaches: any;
+  PFCoaches: any;
+  isCommerceInfoLoading = false;
   normalGroupAdministrators: any;
+  shareAvatarTarget: string;
+  shareActivityTarget: string;
+  shareReportTarget: string;
+  activityTrackingStatus = [false]; // ['mycoach'] 順序是暫時的，等其他選項確定再補
+  activityTrackingReportStatus = [false]; // ['mycoach'] 順序是暫時的，等其他選項確定再補
+  lifeTrackingReportStatus = [false]; // ['mycoach'] 順序是暫時的，等其他選項確定再補
   role = {
     isSupervisor: false,
     isSystemDeveloper: false,
     isSystemMaintainer: false
   };
+  chooseIdx = 1;
   visitorDetail: any;
   isLoading = false;
   userId: number;
+  commerceInfo: any;
+  @ViewChild('footerTarget')
+  footerTarget: ElementRef;
   constructor(
     private route: ActivatedRoute,
     private groupService: GroupService,
     private utils: UtilsService,
     private router: Router,
-    private userInfoService: UserInfoService
+    private userInfoService: UserInfoService,
+    private globalEventsManager: GlobalEventsManager,
+    private userProfileService: UserProfileService,
+    public dialog: MatDialog
   ) {}
 
   ngOnInit() {
     this.route.params.subscribe(_params => this.handleInit());
-
-    this.userInfoService.getUserAccessRightDetail().subscribe(res => {
-      this.visitorDetail = res;
-      console.log('this.visitorDetail: ', this.visitorDetail);
-    });
+    let isAutoApplyGroup = this.utils.getLocalStorageObject('isAutoApplyGroup');
+    setTimeout(() => {
+      this.userInfoService.getUserAccessRightDetail().subscribe(res => {
+        this.visitorDetail = res;
+        const { accessRight, isCanManage, isGroupAdmin } = this.visitorDetail;
+        if (
+          isAutoApplyGroup &&
+          (+accessRight <= 29 || isCanManage || isGroupAdmin)
+        ) {
+          // 00~29無法利用qr 掃描自動加入群組
+          this.utils.removeLocalStorageObject('isAutoApplyGroup');
+          isAutoApplyGroup = false;
+        }
+        if (isAutoApplyGroup) {
+          // 00~29無法利用qr 掃描自動加入群組
+          this.handleActionGroup(1);
+          this.utils.removeLocalStorageObject('isAutoApplyGroup');
+          isAutoApplyGroup = false;
+        }
+      });
+    }, 300);
+  }
+  ngOnDestroy() {
+    this.globalEventsManager.setFooterRWD(0); // 為了讓footer自己變回去預設值
   }
   handleInit() {
     this.groupId = this.route.snapshot.paramMap.get('groupId');
     this.token = this.utils.getToken();
     const body = {
       token: this.token,
-      groupId: this.groupId
+      groupId: this.groupId,
+      findRoot: '1'
     };
     this.userInfoService.getUserDetail(body, this.groupId);
     this.userInfoService.getUserId().subscribe(res => {
@@ -67,26 +114,38 @@ export class GroupInfoComponent implements OnInit {
     });
     this.userInfoService.getSupervisorStatus().subscribe(res => {
       this.role.isSupervisor = res;
-      console.log('%c this.isSupervisor', 'color: #0ca011', res);
+      // console.log('%c this.isSupervisor', 'color: #0ca011', res);
     });
     this.userInfoService.getSystemDeveloperStatus().subscribe(res => {
       this.role.isSystemDeveloper = res;
-      console.log('%c this.isSystemDeveloper', 'color: #0ca011', res);
+      // console.log('%c this.isSystemDeveloper', 'color: #0ca011', res);
     });
     this.userInfoService.getSystemMaintainerStatus().subscribe(res => {
       this.role.isSystemMaintainer = res;
-      console.log('%c this.isSystemMaintainer', 'color: #0ca011', res);
+      // console.log('%c this.isSystemMaintainer', 'color: #0ca011', res);
     });
     this.groupService.fetchGroupListDetail(body).subscribe(res => {
+      const childElementCount = this.footerTarget.nativeElement
+        .childElementCount;
+      this.globalEventsManager.setFooterRWD(childElementCount); // 為了讓footer長高85px
       this.groupInfo = res.info;
       const {
         groupIcon,
         groupId,
         selfJoinStatus,
-        groupStatus
+        groupStatus,
+        shareActivityToMember,
+        shareAvatarToMember,
+        shareReportToMember
       } = this.groupInfo;
-      if ((groupStatus === 4) || (groupStatus === 3 && !this.visitorDetail.isCanManage)) {
-        this.router.navigateByUrl(`/404`);
+      if (shareAvatarToMember && +shareAvatarToMember.switch > 2) {
+        this.handleShareTarget(shareAvatarToMember, 1);
+      }
+      if (shareActivityToMember && +shareActivityToMember.switch > 2) {
+        this.handleShareTarget(shareActivityToMember, 2);
+      }
+      if (shareReportToMember && +shareReportToMember.switch > 2) {
+        this.handleShareTarget(shareReportToMember, 3);
       }
       if (selfJoinStatus) {
         this.joinStatus = selfJoinStatus;
@@ -104,14 +163,181 @@ export class GroupInfoComponent implements OnInit {
       } else {
         this.getGroupMemberList(1);
       }
+      if (
+        groupStatus === 4 ||
+        (groupStatus === 3 && !this.visitorDetail.isCanManage)
+      ) {
+        this.router.navigateByUrl(`/404`);
+      }
     });
   }
+  handleShareTarget(shareData, type) {
+    let text = '';
+    let accessRights = [];
+    if (shareData.switch === '3') {
+      text = '僅開放對象為';
+      accessRights = shareData.enableAccessRight;
+    } else {
+      text = '不開放對象為';
+      accessRights = shareData.disableAccessRight;
+    }
+    accessRights = accessRights.map(_accessRight => {
+      if (_accessRight === '30') {
+        return '品牌管理員';
+      } else if (_accessRight === '40') {
+        return '分店管理員';
+      } else if (_accessRight === '50') {
+        return '體適能教練';
+      } else {
+        return '專業老師';
+      }
+    });
+    const browserLang = this.utils.getLocalStorageObject('locale');
+    if (browserLang.indexOf('zh') > -1) {
+      text += accessRights.join(' 、');
+    } else {
+      text += accessRights.join(' ,');
+    }
+
+    if (type === 1) {
+      this.shareAvatarTarget = text;
+    } else if (type === 2) {
+      this.shareActivityTarget = text;
+    } else {
+      this.shareReportTarget = text;
+    }
+  }
+  handleGroupItem(idx) {
+    this.chooseIdx = idx;
+    const body = {
+      token: this.token,
+      groupId: this.groupId
+    };
+    if (this.chooseIdx === 2) {
+      this.isCommerceInfoLoading = true;
+      this.groupService.fetchCommerceInfo(body).subscribe(res => {
+        this.isCommerceInfoLoading = false;
+        this.commerceInfo = res.info;
+      });
+    }
+  }
+
   handleActionGroup(_type) {
     const body = {
       token: this.token,
       groupId: this.groupId,
       actionType: _type
     };
+    if (_type === 1 && this.groupLevel === '60') {
+      // 申請加入
+      return this.dialog.open(MessageBoxComponent, {
+        hasBackdrop: true,
+        data: {
+          title: '免責聲明',
+          body: toMemberText,
+          confirmText: '我同意',
+          cancelText: '不同意',
+          onConfirm: () => {
+            this.groupService
+              .actionGroup(body)
+              .subscribe(({ resultCode, info: { selfJoinStatus } }) => {
+                if (resultCode === 200) {
+                  this.joinStatus = selfJoinStatus;
+                  this.userProfileService
+                    .getUserProfile({ token: this.token })
+                    .subscribe(res => {
+                      this.isLoading = false;
+                      const {
+                        privacy: { activityTracking, activityTrackingReport }
+                      } = res.info;
+                      let isOnlyme = false;
+                      isOnlyme = !activityTracking.some(_val => +_val > 1);
+                      isOnlyme = !activityTrackingReport.some(
+                        _val => +_val > 1
+                      );
+                      const {
+                        shareActivityToMember,
+                        shareAvatarToMember,
+                        shareReportToMember
+                      } = this.groupInfo;
+                      if (
+                        (shareActivityToMember.switch === '3' ||
+                          shareAvatarToMember.switch === '3' ||
+                          shareReportToMember.switch === '3') &&
+                        isOnlyme
+                      ) {
+                        let accessRights = [];
+                        if (shareActivityToMember.switch === '3') {
+                          accessRights.push(
+                            ...shareActivityToMember.enableAccessRight
+                          );
+                        }
+                        if (shareReportToMember.switch === '3') {
+                          const diffArr = this.utils.diff_array(
+                            accessRights,
+                            shareReportToMember.enableAccessRight
+                          );
+                          if (diffArr.length > 0) {
+                            accessRights.push(...diffArr);
+                          }
+                        }
+                        if (shareAvatarToMember.switch === '3') {
+                          const _diffArr = this.utils.diff_array(
+                            accessRights,
+                            shareAvatarToMember.enableAccessRight
+                          );
+                          if (_diffArr.length > 0) {
+                            accessRights.push(..._diffArr);
+                          }
+                        }
+                        accessRights = accessRights.map(_accessRight => {
+                          if (_accessRight === '30') {
+                            return '品牌管理員';
+                          } else if (_accessRight === '40') {
+                            return '分店管理員';
+                          } else if (_accessRight === '50') {
+                            return '體適能教練';
+                          } else {
+                            return '專業老師';
+                          }
+                        });
+                        let text = '';
+                        const browserLang = this.utils.getLocalStorageObject(
+                          'locale'
+                        );
+                        if (browserLang.indexOf('zh') > -1) {
+                          text += accessRights.join(' 、');
+                        } else {
+                          text += accessRights.join(' ,');
+                        }
+                        this.detectCheckBoxValue(
+                          activityTracking,
+                          this.activityTrackingStatus
+                        );
+                        this.detectCheckBoxValue(
+                          activityTrackingReport,
+                          this.activityTrackingReportStatus
+                        );
+                        this.dialog.open(PrivacySettingDialogComponent, {
+                          hasBackdrop: true,
+                          data: {
+                            targetText: text,
+                            groupName: this.groupInfo.groupName,
+                            activityTrackingReportStatus: this.activityTrackingReportStatus,
+                            activityTrackingStatus: this.activityTrackingStatus,
+                            activityTracking,
+                            activityTrackingReport
+                          }
+                        });
+                      }
+                    });
+                }
+              });
+          }
+        }
+      });
+    }
+
     const isBeenGroupMember = this.joinStatus === 2;
     this.groupService
       .actionGroup(body)
@@ -129,7 +355,19 @@ export class GroupInfoComponent implements OnInit {
         }
       });
   }
-
+  detectCheckBoxValue(arr, statusArr) {
+    if (arr.findIndex(arrVal => arrVal === '1') === -1) {
+      arr.push('1');
+    }
+    arr.forEach((_arr, idx) => {
+      if (_arr === '') {
+        arr.splice(idx, 1);
+      }
+      if (_arr === '4') {
+        statusArr[0] = true;
+      }
+    });
+  }
   getGroupMemberList(_type) {
     this.isLoading = true;
     const body = {
@@ -186,7 +424,8 @@ export class GroupInfoComponent implements OnInit {
           if (this.groupLevel === '40') {
             if (_type === 2) {
               this.branchAdministrators = this.groupInfos.filter(
-                _info => _info.accessRight === '40' && _info.groupId === this.groupId
+                _info =>
+                  _info.accessRight === '40' && _info.groupId === this.groupId
               );
             }
           } else {
@@ -198,22 +437,30 @@ export class GroupInfoComponent implements OnInit {
                   );
                   if (idx > -1) {
                     _info.memberName =
-                      this.subBranchInfo[idx].groupName + '/' + _info.memberName;
+                      this.subBranchInfo[idx].groupName +
+                      '/' +
+                      _info.memberName;
                     return _info;
                   }
                 }
               });
             }
-
           }
           if (this.groupLevel === '60') {
-            this.coachAdministrators = this.groupInfos.filter(
+            // 如果是教練課群組
+            this.normalCoaches = this.groupInfos.filter(
+              // 一般教練
               _info =>
                 _info.accessRight === '60' && _info.groupId === this.groupId
             );
+            this.PFCoaches = this.groupInfos.filter(
+              // 體適能教練
+              _info =>
+                _info.accessRight === '50' && _info.groupId === this.groupId
+            );
           } else {
             this.coachAdministrators = this.groupInfos.filter(_info => {
-              if (_info.accessRight === '60') {
+              if (_info.accessRight === '60' || _info.accessRight === '50') {
                 const idx = this.subCoachInfo.findIndex(
                   _subCoach => _subCoach.groupId === _info.groupId
                 );
@@ -238,7 +485,8 @@ export class GroupInfoComponent implements OnInit {
             _type === 3 &&
             this.normalMemberInfos.findIndex(
               _normalMember => _normalMember.memberId === this.userId
-            ) > -1 && this.joinStatus !== 2
+            ) > -1 &&
+            this.joinStatus !== 2
           ) {
             this.joinStatus = 2;
           }
@@ -248,14 +496,10 @@ export class GroupInfoComponent implements OnInit {
             this.groupInfos.findIndex(
               _admin =>
                 _admin.memberId === this.userId &&
-                (
-                _admin.accessRight === '80'
-                ||
-                _admin.accessRight === '40'
-                )
-                &&
+                (_admin.accessRight === '80' || _admin.accessRight === '40') &&
                 _admin.joinStatus === 2
-            ) > -1 && (this.joinStatus !== 2 && !this.visitorDetail.isCanManage)
+            ) > -1 &&
+            (this.joinStatus !== 2 && !this.visitorDetail.isCanManage)
           ) {
             this.joinStatus = 2;
             this.userInfoService.getUserDetail(body, this.groupId);

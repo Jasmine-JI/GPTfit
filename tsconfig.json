@@ -1,7 +1,6 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    // "typescript.tsdk": "../node_modules/typescript/lib",
     "baseUrl": ".",
     "paths": {
       "@shared/*": [
@@ -21,6 +20,7 @@
     "lib": [
       "es2017",
       "dom"
-    ]
+    ],
+    "module": "es2015"
   }
 }

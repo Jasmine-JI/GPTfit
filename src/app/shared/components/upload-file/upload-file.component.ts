@@ -25,6 +25,7 @@ export class UploadFileComponent implements OnInit, OnChanges {
   @Input() isLoading: boolean;
   @Input() accept: string;
   @Input() isImageFileMode = false;
+  @Input() isUserAvastarMode = false;
   @Input() imageURL: string;
   fileInformation: any;
   isImgVertical$ = new BehaviorSubject<boolean>(false);
@@ -144,6 +145,7 @@ export class UploadFileComponent implements OnInit, OnChanges {
           this.btnText = this.reloadFileText;
         } else {
           this.handleErrorMsg();
+          this.fileInformation.link = null;
           this.isUploadNewImg$.next(false);
         }
         return this.onChange.emit(this.fileInformation);

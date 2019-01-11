@@ -1,5 +1,8 @@
 <div class="row">
-  <div class="col-4">
+  <span class="group-handle-name group-handle-name__rwd">
+    編輯群組資訊
+  </span>
+  <div class="col-md-4 group-image--area">
     <app-upload-file
       [isImageFileMode]="true"
       [imageURL]="groupImg"
@@ -13,11 +16,11 @@
       (onChange)="handleAttachmentChange($event)"
     ></app-upload-file>
   </div>
-  <div class="col-8">
+  <div class="col-md-8">
     <form [formGroup]="form" (ngSubmit)="manage(f)" #f="ngForm" novalidate>
-      <div class="d-flex justify-content-between" style="margin-bottom: 15px">
+      <div class="group-edit-bar">
         <div style="color: #26abe3; font-weight:700">
-          群組資訊
+          編輯群組資訊
         </div>
         <div>
           <button class="alatech-btn alatech-btn--default" title="申請加入" *ngIf="joinStatus === 0" (click)="handleActionGroup(1)">
@@ -80,12 +83,12 @@
           </button>
         </div>
       </div>
-      <div style="margin-bottom: 30px;position: relative;top: 0;left: -55px;">
+      <div class="group-edit-area">
         <div class="ala-list__item">
           <label class="ala-form__label">群組ID：</label>{{ group_id }}
         </div>
         <div class="ala-list__item">
-          <label class="ala-form__label">名稱：</label>
+          <label class="ala-form__label form__label--required">名稱：</label>
           <app-form-text
             [content]="groupInfo?.groupName"
             [maxLength]="32"
@@ -110,24 +113,78 @@
           </select>
         </div>
         <div class="ala-list__item">
-          <label class="ala-form__label">介紹：</label>
-          <div style="width: calc(100% - 50px)">
+          <label class="ala-form__label form__label--required">介紹：</label>
+          <div class="ala-form__col">
             <app-form-textarea
               [maxLength]="textareaMaxLength"
               [content]="groupInfo?.groupDesc"
               [control]="form"
               [controlName]="formTextareaName"
               [disabled]="isGroupDetailLoading"
-              (onChange)="handleChangeTextarea($event)"
+              (onChange)="handleChangeTextarea($event, 1)"
+              [isHadCount]="true"
               [isInvalid]="(!groupDesc.valid && groupDesc.touched) || (f.submitted && groupDesc.hasError('required')) || (f.submitted && groupDesc.hasError('maxLength'))"
             >
             </app-form-textarea>
           </div>
         </div>
+        <div class="ala-list__item"
+          *ngIf="groupLevel === '60'"
+        >
+          <label class="ala-form__label">直播課程連結：</label>
+          <div class="ala-form__col"
+            style="position: relative;"
+          >
+            <ng-container *ngIf="!isVideoEdit">
+              <app-form-text
+                [content]="videoUrl"
+                [disabled]="isGroupDetailLoading"
+                [remindText]="remindVideoText"
+                [invalidRemindText]="inValidText"
+                (onChange)="handleChangeTextarea($event, 2)"
+                [control]="form"
+                [controlName]="formUrlName"
+              >
+              </app-form-text>
+            </ng-container>
+            <!-- <a
+              href="https://www.youtube.com/embed/plDqw6o0LXg"
+              *ngIf="isVideoEdit"
+              target="_blank"
+            > -->
+            <a
+              [attr.href]="videoUrl | safeHtml"
+              *ngIf="isVideoEdit"
+              target="_blank"
+            >
+              直播嵌入式連結
+            </a>
+            <mat-icon style="position: absolute;cursor:pointer"
+              (click)="switchVideoLink()"
+              *ngIf="isVideoEdit"
+            >
+              link
+            </mat-icon>
+            <mat-icon style="position: absolute;cursor:pointer;right: -30px;top: 4px;"
+              (click)="switchVideoLink()"
+              *ngIf="!isVideoEdit && videoUrl.length > 0"
+            >
+              visibility
+            </mat-icon>
+            <!-- <mat-icon style="color: #2DC66D;position: absolute;right: -30px;top: 4px;"
+              *ngIf="isVideoEdit"
+            >
+              check_circle
+            </mat-icon> -->
+          </div>
+        </div>
       </div>
       <div>
-        <mat-tab-group (selectChange)="changeGroupInfo($event)" class="ala-tab-group">
-          <mat-tab label="子群組資訊"  *ngIf="groupLevel && groupLevel !== '80'">
+        <mat-tab-group class="ala-tab-group"
+          (selectedTabChange)="changeGroupInfo($event)"
+          [selectedIndex]="0"
+        >
+          <mat-tab label="子群組資訊"  *ngIf="groupLevel !== '80'">
             <ng-container *ngIf="!isLoading">
               <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">品牌</label>
 
@@ -237,26 +294,67 @@
                     </app-member-capsule>
                   </ng-container>
                 </div>
-
-                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">教練課管理員</label>
-                <div style="margin-bottom: 15px">
-                  <span *ngIf="coachAdministrators && coachAdministrators.length === 0">尚無教練課管理員資訊</span>
-                  <ng-container  *ngFor="let coachAdmItem of coachAdministrators">
-                    <app-member-capsule
-                      [role]="role"
-                      [isAdminInfo]="true"
-                      [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator"
-                      [title]="coachAdmItem?.memberName"
-                      [memberInfo]="coachAdmItem"
-                      [name]="coachAdmItem && coachAdmItem?.memberName"
-                      [icon]="coachAdmItem?.memberIcon"
-                      [groupId]="coachAdmItem?.groupId"
-                      [userId]="coachAdmItem?.memberId"
-                      (onRemoveAdmin)="handleRemoveAdmin($event, 3)"
-                    >
-                    </app-member-capsule>
-                  </ng-container>
-                </div>
+                <ng-container *ngIf="groupLevel !== '60'">
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">教練課管理員</label>
+                  <div style="margin-bottom: 15px" >
+                    <span *ngIf="coachAdministrators && coachAdministrators.length === 0">尚無教練課管理員資訊</span>
+                    <ng-container  *ngFor="let coachAdmItem of coachAdministrators">
+                      <app-member-capsule
+                        [role]="role"
+                        [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator"
+                        [isAdminInfo]="true"
+                        [title]="coachAdmItem?.memberName"
+                        [memberInfo]="coachAdmItem"
+                        [name]="coachAdmItem && coachAdmItem?.memberName"
+                        [icon]="coachAdmItem?.memberIcon"
+                        [groupId]="coachAdmItem?.groupId"
+                        [userId]="coachAdmItem?.memberId"
+                        (onRemoveAdmin)="handleRemoveAdmin($event, 3)"
+                      >
+                      </app-member-capsule>
+                    </ng-container>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="groupLevel === '60'">
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">專業老師</label>
+                  <div style="margin-bottom: 15px">
+                    <span *ngIf="normalCoaches && normalCoaches.length === 0">尚無專業老師資訊</span>
+                    <ng-container *ngFor="let normalCoachAdmItem of normalCoaches">
+                      <app-member-capsule
+                        [role]="role"
+                        [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator"
+                        [isAdminInfo]="true"
+                        [title]="normalCoachAdmItem?.memberName"
+                        [memberInfo]="normalCoachAdmItem"
+                        [name]="normalCoachAdmItem && normalCoachAdmItem?.memberName"
+                        [icon]="normalCoachAdmItem?.memberIcon"
+                        [groupId]="normalCoachAdmItem?.groupId"
+                        [userId]="normalCoachAdmItem?.memberId"
+                        (onRemoveAdmin)="handleRemoveAdmin($event, 4)"
+                      >
+                      </app-member-capsule>
+                    </ng-container>
+                  </div>
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">體適能教練</label>
+                  <div style="margin-bottom: 15px">
+                    <span *ngIf="PFCoaches && PFCoaches.length === 0">尚無體適能教練資訊</span>
+                    <ng-container *ngFor="let pfCoachAdmItem of PFCoaches">
+                      <app-member-capsule
+                        [role]="role"
+                        [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator"
+                        [isAdminInfo]="true"
+                        [title]="pfCoachAdmItem?.memberName"
+                        [memberInfo]="pfCoachAdmItem"
+                        [name]="pfCoachAdmItem && pfCoachAdmItem?.memberName"
+                        [icon]="pfCoachAdmItem?.memberIcon"
+                        [groupId]="pfCoachAdmItem?.groupId"
+                        [userId]="pfCoachAdmItem?.memberId"
+                        (onRemoveAdmin)="handleRemoveAdmin($event, 4)"
+                      >
+                      </app-member-capsule>
+                    </ng-container>
+                  </div>
+                </ng-container>
               </ng-container>
               <ng-container *ngIf="groupLevel && groupLevel === '80'">
                 <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">管理員</label>
@@ -299,7 +397,8 @@
                     [userId]="item?.memberId"
                     [groupLevel]="groupLevel"
                     (onAssignAdmin)="handleAssignAdmin($event)"
-                    (onRemoveAdmin)="handleRemoveAdmin($event, 4)"
+                    (onRemoveAdmin)="handleRemoveAdmin($event, 5)"
+                    [coachType]="groupInfo?.coachType"
                   >
                   </app-member-capsule>
                 </div>
@@ -343,4 +442,64 @@
       </div>
     </form>
   </div>
+</div>
+<div class="group-manage__action" #footerTarget>
+  <button class="alatech-btn group-manage__btn" title="申請加入" *ngIf="joinStatus === 0" (click)="handleActionGroup(1)">
+    申請加入
+  </button>
+  <button class="alatech-btn group-manage__btn group-btn--waiting" title="取消申請" *ngIf="joinStatus === 1" (click)="handleActionGroup(2)">
+    取消申請
+  </button>
+  <button class="alatech-btn group-manage__btn"
+    title="申請解散品牌"
+    *ngIf="joinStatus === 2 && groupLevel && groupLevel === '30' && visitorDetail?.isCanManage"
+    (click)="$event.preventDefault()"
+    disabled
+  >
+    申請解散品牌
+  </button>
+  <button class="alatech-btn group-manage__btn"
+    title="解散分店"
+    *ngIf="(groupLevel && groupLevel === '40') && visitorDetail?.isCanManage"
+    (click)="dimissGroup($event, 2)"
+  >
+    解散分店
+  </button>
+  <button class="alatech-btn group-manage__btn"
+    title="解散課程"
+    *ngIf="(groupLevel && groupLevel === '60') && visitorDetail?.isCanManage"
+    (click)="dimissGroup($event, 3)"
+  >
+    解散課程
+  </button>
+  <button class="alatech-btn group-manage__btn"
+    title="解散群組"
+    *ngIf="(groupLevel && groupLevel === '80') && visitorDetail?.isCanManage"
+    (click)="dimissGroup($event, 4)"
+  >
+    解散群組
+  </button>
+  <button class="alatech-btn group-manage__btn"
+    title="新增分店"
+    *ngIf="groupLevel && groupLevel === '30' && visitorDetail?.isCanManage"
+    (click)="goCreatePage(1, $event)"
+  >
+    新增分店
+  </button>
+  <button class="alatech-btn group-manage__btn"
+    title="新增教練課"
+    *ngIf="groupLevel && (groupLevel === '30' || groupLevel === '40')
+      && visitorDetail?.isCanManage && (subBranchInfo && subBranchInfo.length > 0)"
+    (click)="goCreatePage(2, $event)"
+  >
+    新增教練課
+  </button>
+  <button class="alatech-btn group-manage__btn"
+    title="完成管理"
+    *ngIf="visitorDetail?.isCanManage"
+    (click)="manage(f)"
+    [disabled]="isGroupDetailLoading"
+  >
+    完成管理
+  </button>
 </div>

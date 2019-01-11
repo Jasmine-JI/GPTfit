@@ -9,6 +9,12 @@ import { SigninComponent } from './components/signin/signin.component';
 import { SigninGuard } from '@shared/guards/signin/signin.guard';
 import { SignupComponent } from './components/signup/signup.component';
 import { ForgetpwdComponent } from './components/forgetpwd/forgetpwd.component';
+import { UserProfileComponent } from './components/user-profile/user-profile.component';
+import { GroupInfoComponent } from './components/group-info/group-info.component';
+import { FirstLoginComponent } from './components/first-login/first-login.component';
+import { SportReportComponent } from '@shared/components/sport-report/sport-report.component';
+import { ActivityInfoComponent } from '@shared/components/activity-info/activity-info.component';
+import { MyActivityComponent } from '@shared/components/my-activity/my-activity.component';
 
 const routes: Routes = [
   {
@@ -38,11 +44,37 @@ const routes: Routes = [
       },
       {
         path: 'signup',
-        component: SignupComponent,
+        component: SignupComponent
       },
       {
         path: 'forget-pwd',
-        component: ForgetpwdComponent,
+        component: ForgetpwdComponent
+      },
+      {
+        path: 'activity/:fileId',
+        component: ActivityInfoComponent
+      },
+      {
+        path: 'user-profile/:userId',
+        component: UserProfileComponent,
+        children: [
+          {
+            path: 'activity-list',
+            component: MyActivityComponent
+          },
+          {
+            path: 'sport-report',
+            component: SportReportComponent
+          }
+        ]
+      },
+      {
+        path: 'group-info/:groupId',
+        component: GroupInfoComponent
+      },
+      {
+        path: 'first-login',
+        component: FirstLoginComponent
       }
     ]
   }

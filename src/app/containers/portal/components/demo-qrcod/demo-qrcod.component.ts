@@ -2,8 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { getUrlQueryStrings } from '@shared/utils/';
 import { QrcodeService } from '../../services/qrcode.service';
 import { HttpParams } from '@angular/common/http';
-// import { NgProgress, NgProgressRef } from '@ngx-progressbar/core';
-import { NgProgress } from 'ngx-progressbar';
+import { NgProgress, NgProgressRef } from '@ngx-progressbar/core';
 import * as moment from 'moment';
 import { UtilsService } from '@shared/services/utils.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -27,7 +26,7 @@ export class DemoQrcodComponent implements OnInit {
   isLoading: boolean;
   productInfo: any;
   productManual: any;
-  // progressRef: NgProgressRef;
+  progressRef: NgProgressRef;
   isShowBindingBtn = false;
   isShowFitPairBtn = false;
   fitPairType: string;
@@ -41,7 +40,7 @@ export class DemoQrcodComponent implements OnInit {
     private dialog: MatDialog,
     private authService: AuthService,
     private router: Router
-  ) { }
+  ) {}
 
   ngOnInit() {
     const queryStrings = getUrlQueryStrings(location.search);
@@ -61,15 +60,15 @@ export class DemoQrcodComponent implements OnInit {
     });
     let params = new HttpParams();
     params = params.set('device_sn', this.displayQr.device_sn);
-    // this.progressRef = this.progress.ref();
-    this.progress.start();
+    this.progressRef = this.progress.ref();
+    this.progressRef.start();
     this.isLoading = true;
     this.qrcodeService.getDeviceInfo(params).subscribe(res => {
       if (typeof res === 'string') {
         this.noProductImg = `http://${
           location.hostname
-          }/app/public_html/products/img/unknown.png`;
-        this.progress.done();
+        }/app/public_html/products/img/unknown.png`;
+        this.progressRef.complete();
         this.isLoading = false;
       } else {
         this.deviceInfo = res;
@@ -131,7 +130,7 @@ export class DemoQrcodComponent implements OnInit {
       this.uploadDevice();
     } else {
       this.handleCScode(cs, device_sn);
-      this.progress.done();
+      this.progressRef.complete();
       this.isLoading = false;
     }
   }
@@ -159,7 +158,7 @@ export class DemoQrcodComponent implements OnInit {
     this.isShowBindingBtn = false; // 無論是否正確，出廠日期前，皆不顯示登錄產品btn
   }
   uploadDevice() {
-    const types = ['Wearable', 'Treadmill', 'Spin Bike', 'Rowing machine'];
+    const types = ['Wearable', 'Treadmill', 'spinBike', 'rowMachine'];
     const { modelType } = this.deviceInfo;
     const { cs, device_sn } = this.displayQr;
     const typeIdx = types.findIndex(
@@ -177,7 +176,7 @@ export class DemoQrcodComponent implements OnInit {
     };
     this.qrcodeService.uploadDeviceInfo(body, device_sn).subscribe(
       res => {
-        this.progress.done();
+        this.progressRef.complete();
         this.isLoading = false;
         const result = res;
         const {

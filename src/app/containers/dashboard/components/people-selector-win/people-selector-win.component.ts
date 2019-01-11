@@ -88,7 +88,7 @@ export class PeopleSelectorWinComponent implements OnInit {
         this.fakeDatas = this.fakeDatas.filter(_data => {
           return this.adminLists.findIndex(_adminList => _data.userId === _adminList.userId) === -1;
         });
-      });      
+      });
     } else {
       this.fakeDatas = [];
     }

@@ -1,0 +1,50 @@
+<div class="container" style="padding-top: 30px">
+  <div class="user-profile-wrapper row">
+    <div class="col-md-3">
+      <div class="avatar-wrapper">
+        <img *ngIf="userImg"
+          [src]="(userImg | safeHtml)"
+        >
+      </div>
+      <div class="username-label">
+        {{userName}}
+      </div>
+      <ul class="nav">
+        <li [class.active]="chooseIdx === 1"
+          (click)="handleProfileItem(1)"
+        >基本資訊</li>
+        <li [class.active]="chooseIdx === 2 || chooseIdx === 4"
+          (click)="handleProfileItem(2)"
+        >活動紀錄</li>
+        <li [class.active]="chooseIdx === 3"
+          (click)="handleProfileItem(3)"
+        >運動報告</li>
+      </ul>
+    </div>
+    <div class="col-md-9">
+      <ng-container *ngIf="chooseIdx === 1">
+        <app-basic-info
+        [description]="description"
+        ></app-basic-info>
+      </ng-container>
+      <ng-container *ngIf="chooseIdx === 2 && !isShowLock">
+        <app-my-activity
+          [isPortal]="true"
+          [userName]="userName"
+          (showPrivacyUi)="handlePrivacyLock($event)"
+        ></app-my-activity>
+      </ng-container>
+      <ng-container *ngIf="chooseIdx === 3 && !isShowLock">
+        <app-sport-report
+          (showPrivacyUi)="handlePrivacyLock($event)"
+        ></app-sport-report>
+      </ng-container>
+      <div class="genesis-message" *ngIf="isShowLock && chooseIdx !== 1">
+        <i class="icon-svg_web-icon_p1_059-lock" style="font-size: 100px"></i>
+        <p class="h5"
+          style="margin-top: 30px;color: #333;"
+        >{{userName}}僅公開分享部分資訊</p>
+      </div>
+    </div>
+  </div>
+</div>

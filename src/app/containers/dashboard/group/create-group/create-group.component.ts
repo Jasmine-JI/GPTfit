@@ -2,12 +2,12 @@ import {
   Component,
   OnInit,
   ViewEncapsulation,
-  HostListener
+  HostListener,
+  OnDestroy
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { GroupService } from '../../services/group.service';
 import { UtilsService } from '@shared/services/utils.service';
-import { HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
 import {
   FormBuilder,
@@ -20,14 +20,18 @@ import { MsgDialogComponent } from '../../components/msg-dialog/msg-dialog.compo
 import { MatDialog } from '@angular/material/dialog';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
 import * as _ from 'lodash';
+import { GlobalEventsManager } from '@shared/global-events-manager';
+import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { planDatas } from '../desc';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-create-group',
   templateUrl: './create-group.component.html',
-  styleUrls: ['./create-group.component.css', '../group-style.css'],
+  styleUrls: ['./create-group.component.scss', '../group-style.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class CreateGroupComponent implements OnInit {
+export class CreateGroupComponent implements OnInit, OnDestroy {
   groupId: string;
   token: string;
   groupInfo: any;
@@ -44,11 +48,15 @@ export class CreateGroupComponent implements OnInit {
   branchAdministrators: any;
   coachAdministrators: any;
   remindText = '※不得超過32個字元';
+  remindDescText = '※不得超過500個字元';
   inValidText = '欄位為必填';
   textareaMaxLength = 500;
+  commercePlan: number;
+  isShowCreateBrand = false;
   form: FormGroup;
   formTextName = 'groupName';
   formTextareaName = 'groupDesc';
+  planName: string;
   role = {
     isSupervisor: false,
     isSystemDeveloper: false,
@@ -67,7 +75,10 @@ export class CreateGroupComponent implements OnInit {
   createType = 3; // 1為新建分店， 2為新建教練課，3為新建群組，4為新建品牌
   brandName: string;
   chooseType: number;
+  coachType: number;
   chooseLabels = [];
+  planDatas = planDatas;
+  totalCost: number;
   get groupName() {
     return this.form.get('groupName');
   }
@@ -86,6 +97,21 @@ export class CreateGroupComponent implements OnInit {
   get groupManager() {
     return this.form.get('groupManager');
   }
+  get commercePlanExpired() {
+    return this.form.get('commercePlanExpired');
+  }
+  get maxBranches() {
+    return this.form.get('maxBranches');
+  }
+  get maxClasses() {
+    return this.form.get('maxClasses');
+  }
+  get maxGroupManagers() {
+    return this.form.get('maxGroupManagers');
+  }
+  get maxGroupMembers() {
+    return this.form.get('maxGroupMembers');
+  }
   constructor(
     private route: ActivatedRoute,
     private groupService: GroupService,
@@ -93,7 +119,8 @@ export class CreateGroupComponent implements OnInit {
     private router: Router,
     private fb: FormBuilder,
     private userInfoService: UserInfoService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private globalEventsManager: GlobalEventsManager
   ) {}
   @HostListener('dragover', ['$event'])
   public onDragOver(evt) {
@@ -111,12 +138,18 @@ export class CreateGroupComponent implements OnInit {
     evt.stopPropagation();
   }
   ngOnInit() {
+    this.globalEventsManager.setFooterRWD(2); // 為了讓footer長高85px
     const queryStrings = this.utils.getUrlQueryStrings(location.search);
-    const { type } = queryStrings;
-    if (type) {
-      this.createType = +type;
+    const { createType, coachType } = queryStrings;
+    if (coachType) {
+      this.coachType = +coachType;
     }
-    if (location.pathname.indexOf('/dashboard/create-brand-group') > -1) {
+    if (createType) {
+      this.createType = +createType;
+    }
+    if (
+      location.pathname.indexOf('/dashboard/system/create-brand-group') > -1
+    ) {
       this.createType = 4;
     }
     this.groupId = this.route.snapshot.paramMap.get('groupId');
@@ -124,27 +157,27 @@ export class CreateGroupComponent implements OnInit {
     this.buildForm(this.createType);
     this.userInfoService.getSupervisorStatus().subscribe(res => {
       this.role.isSupervisor = res;
-      console.log('%c this.isSupervisor', 'color: #0ca011', res);
+      // console.log('%c this.isSupervisor', 'color: #0ca011', res);
     });
     this.userInfoService.getSystemDeveloperStatus().subscribe(res => {
       this.role.isSystemDeveloper = res;
-      console.log('%c this.isSystemDeveloper', 'color: #0ca011', res);
+      // console.log('%c this.isSystemDeveloper', 'color: #0ca011', res);
     });
     this.userInfoService.getSystemMaintainerStatus().subscribe(res => {
       this.role.isSystemMaintainer = res;
-      console.log('%c this.isSystemMaintainer', 'color: #0ca011', res);
+      // console.log('%c this.isSystemMaintainer', 'color: #0ca011', res);
     });
     this.userInfoService.getBrandAdministratorStatus().subscribe(res => {
       this.role.isBrandAdministrator = res;
-      console.log('%c this.isBrandAdministrator', 'color: #0ca011', res);
+      // console.log('%c this.isBrandAdministrator', 'color: #0ca011', res);
     });
     this.userInfoService.getBranchAdministratorStatus().subscribe(res => {
       this.role.isBranchAdministrator = res;
-      console.log('%c this.isBranchAdministrator', 'color: #0ca011', res);
+      // console.log('%c this.isBranchAdministrator', 'color: #0ca011', res);
     });
     this.userInfoService.getCoachStatus().subscribe(res => {
       this.role.isCoach = res;
-      console.log('%c this.isCoach', 'color: #0ca011', res);
+      // console.log('%c this.isCoach', 'color: #0ca011', res);
     });
     this.token = this.utils.getToken();
     const body = {
@@ -174,6 +207,9 @@ export class CreateGroupComponent implements OnInit {
       this.getGroupMemberList(1);
     }
   }
+  ngOnDestroy() {
+    this.globalEventsManager.setFooterRWD(0); // 為了讓footer自己變回去預設值
+  }
   buildForm(_type: number) {
     if (_type === 1) {
       this.formTextName = 'branchName';
@@ -197,6 +233,11 @@ export class CreateGroupComponent implements OnInit {
         groupManager: [[], [Validators.required]],
         groupName: ['', [Validators.required, Validators.maxLength(32)]],
         groupDesc: ['', [Validators.required, Validators.maxLength(500)]],
+        commercePlanExpired: ['', [Validators.required]],
+        maxBranches: [0, [Validators.required]],
+        maxClasses: [0, [Validators.required]],
+        maxGroupManagers: [0, [Validators.required]],
+        maxGroupMembers: [0, [Validators.required]],
         groupStatus: 2
       });
     } else {
@@ -246,18 +287,33 @@ export class CreateGroupComponent implements OnInit {
               groupIcon: this.utils.buildBase64ImgString(_brand.groupIcon)
             };
           });
-          this.subBranchInfo = this.subGroupInfo.branches.map(_branch => {
-            return {
-              ..._branch,
-              groupIcon: this.utils.buildBase64ImgString(_branch.groupIcon)
-            };
+          this.subBranchInfo = this.subGroupInfo.branches.filter(_branch => {
+            if (_branch.groupStatus !== 4) {
+              return {
+                ..._branch,
+                groupIcon: this.utils.buildBase64ImgString(_branch.groupIcon)
+              };
+            }
           });
-          this.subCoachInfo = this.subGroupInfo.coaches.map(_coach => {
-            return {
-              ..._coach,
-              groupIcon: this.utils.buildBase64ImgString(_coach.groupIcon)
-            };
+          this.subCoachInfo = this.subGroupInfo.coaches.filter(_coach => {
+            if (_coach.groupStatus !== 4) {
+              return {
+                ..._coach,
+                groupIcon: this.utils.buildBase64ImgString(_coach.groupIcon)
+              };
+            }
           });
+          if (this.groupLevel === '40') {
+            this.subBranchInfo = this.subGroupInfo.branches.filter(_branch => {
+              if (_branch.groupId === this.groupId) {
+                return _branch;
+              }
+            });
+            this.brandName = this.subBrandInfo[0].groupName;
+            this.form.patchValue({
+              branchId: this.subBranchInfo[0].groupId
+            });
+          }
         } else {
           this.groupInfos = groupMemberInfo;
           this.groupInfos = this.groupInfos
@@ -292,9 +348,22 @@ export class CreateGroupComponent implements OnInit {
       this.getGroupMemberList(4);
     }
   }
-  manage({ valid, value }) {
+  manage({ valid, value, submitted }) {
+    if (!submitted) {
+      // 如果脫離form的判斷
+      this.utils.markFormGroupTouched(this.form);
+    }
     if (valid) {
-      const { groupDesc, groupStatus, groupManager } = value;
+      const {
+        groupDesc,
+        groupStatus,
+        groupManager,
+        maxBranches,
+        maxClasses,
+        maxGroupManagers,
+        maxGroupMembers,
+        commercePlanExpired
+      } = value;
       const body = {
         token: this.token,
         groupId: this.groupId,
@@ -303,7 +372,28 @@ export class CreateGroupComponent implements OnInit {
         groupStatus,
         levelIcon: this.finalImageLink || '',
         levelName: '',
-        levelType: null
+        levelType: null,
+        coachType: null,
+        commercePlan: null,
+        groupSetting: null,
+        groupManagerSetting: null,
+        groupMemberSetting: null,
+        commercePlanExpired: '',
+        shareAvatarToMember: {
+          switch: '1',
+          enableAccessRight: [],
+          disableAccessRight: []
+        },
+        shareActivityToMember: {
+          switch: '2',
+          enableAccessRight: [],
+          disableAccessRight: []
+        },
+        shareReportToMember: {
+          switch: '2',
+          enableAccessRight: [],
+          disableAccessRight: []
+        }
       };
       if (this.createType === 1) {
         // 建立分店
@@ -323,7 +413,42 @@ export class CreateGroupComponent implements OnInit {
         // 建立教練課
         const { branchId, coachLessonName } = value;
         body.levelType = 5;
+        body.coachType = this.coachType;
         body.levelName = coachLessonName;
+        if (this.coachType === 1) { // 一般教練(課)
+          body.shareAvatarToMember = {
+            switch: '1',
+            enableAccessRight: [],
+            disableAccessRight: []
+          };
+          body.shareActivityToMember = {
+            switch: '2',
+            enableAccessRight: [],
+            disableAccessRight: []
+          };
+          body.shareReportToMember = {
+            switch: '2',
+            enableAccessRight: [],
+            disableAccessRight: []
+          };
+        } else { // 體適能教練(課)
+          body.shareAvatarToMember = {
+            switch: '1',
+            enableAccessRight: [],
+            disableAccessRight: []
+          };
+          body.shareActivityToMember = {
+            switch: '3',
+            enableAccessRight: ['50'],
+            disableAccessRight: []
+          };
+          body.shareReportToMember = {
+            switch: '3',
+            enableAccessRight: ['50'],
+            disableAccessRight: []
+          };
+        }
+
         if (branchId !== this.groupId) {
           body.groupId = branchId;
         }
@@ -353,11 +478,20 @@ export class CreateGroupComponent implements OnInit {
         body.levelName = groupName;
         body.levelType = 3;
         body.groupId = '0-0-0-0-0-0';
+        body.commercePlan = this.commercePlan;
+        body.groupSetting = {
+          maxBranches,
+          maxClasses,
+          maxGeneralGroups: 0
+        };
+        body.groupManagerSetting = { maxGroupManagers };
+        body.groupMemberSetting = { maxGroupMembers };
+        body.commercePlanExpired = commercePlanExpired;
         this.isEditing = true;
         this.groupService.createGroup(body).subscribe(res => {
           this.isEditing = false;
           if (res.resultCode === 200) {
-            this.router.navigateByUrl('/dashboard/my-group-list');
+            this.router.navigateByUrl('/dashboard/system/all-group-list');
           }
         });
       }
@@ -365,6 +499,40 @@ export class CreateGroupComponent implements OnInit {
   }
   public handleChangeTextarea(code): void {
     this.form.patchValue({ groupDesc: code });
+  }
+  handleExpireTime(e) {
+    let date = '';
+    switch (e.value) {
+      case '1':
+        date = moment()
+          .add(1, 'month')
+          .format('YYYY-MM-DDTHH:mm:ss.000+08:00');
+        break;
+      case '2':
+        date = moment()
+          .add(2, 'month')
+          .format('YYYY-MM-DDTHH:mm:ss.000+08:00');
+        break;
+      case '3':
+        date = moment()
+          .add(3, 'month')
+          .format('YYYY-MM-DDTHH:mm:ss.000+08:00');
+        break;
+      case '6':
+        date = moment()
+          .add(6, 'month')
+          .format('YYYY-MM-DDTHH:mm:ss.000+08:00');
+        break;
+      default:
+        date = moment()
+          .add(12, 'month')
+          .format('YYYY-MM-DDTHH:mm:ss.000+08:00');
+        break;
+    }
+    if (this.commercePlan !== 1 && this.commercePlan !== 99) {
+      this.totalCost = +this.planDatas[this.commercePlan - 1].cost * +e.value;
+    }
+    this.form.patchValue({ commercePlanExpired: date });
   }
   handleAttachmentChange(file) {
     if (file) {
@@ -381,6 +549,51 @@ export class CreateGroupComponent implements OnInit {
       }
     }
   }
+  handleShowCreateBrand() {
+    switch (this.commercePlan) {
+      case 1:
+        this.planName = '體驗方案';
+        break;
+      case 2:
+        this.planName = '工作室方案';
+        break;
+      case 3:
+        this.planName = '中小企業方案';
+        break;
+      default:
+        this.planName = '客製方案';
+    }
+    this.dialog.open(MessageBoxComponent, {
+      hasBackdrop: true,
+      data: {
+        title: 'Message',
+        body: `您選擇的方案是否為" ${this.planName} "?`,
+        confirmText: '確定',
+        cancelText: '取消',
+        onConfirm: () => {
+          if (this.commercePlan && this.commercePlan > 0) {
+            this.isShowCreateBrand = true;
+            if (this.commercePlan < 99) {
+              const {
+                maxBranches,
+                maxClasses,
+                maxGroupManagers,
+                maxGroupMembers
+              } = this.planDatas[this.commercePlan - 1];
+              this.form.patchValue({
+                maxBranches,
+                maxClasses,
+                maxGroupManagers,
+                maxGroupMembers
+              });
+            }
+          } else {
+            this.isShowCreateBrand = false;
+          }
+        }
+      }
+    });
+  }
   handleCancel(e) {
     e.preventDefault();
     let typeName = '';
@@ -390,7 +603,7 @@ export class CreateGroupComponent implements OnInit {
         href = '/dashboard/my-group-list';
         break;
       case 4:
-        href = '/dashboard/all-group-list';
+        href = '/dashboard/system/all-group-list';
         break;
       default:
         href = `/dashboard/group-info/${this.groupId}/edit`;
@@ -413,6 +626,9 @@ export class CreateGroupComponent implements OnInit {
         href
       }
     });
+  }
+  changePlan(_planIdx) {
+    this.commercePlan = _planIdx;
   }
   removeLabel(idx) {
     this.chooseLabels.splice(idx, 1);

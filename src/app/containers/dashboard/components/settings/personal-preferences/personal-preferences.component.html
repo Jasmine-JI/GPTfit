@@ -1,0 +1,107 @@
+<div style="display:flex;justify-content: space-between">
+  <h3>個人偏好設定</h3>
+  <button class="alatech-btn alatech-btn--default settings-btn"
+    title="儲存"
+    (click)="saveSettings(settingsForm)"
+  >
+    儲存
+  </button>
+</div>
+<form [formGroup]="settingsForm"
+  #f="ngForm"
+  novalidate
+  (ngSubmit)="saveSettings(settingsForm)"
+>
+  <label class="ala-form__label settings-label">心率</label>
+  <div class="ala-list__item">
+    <label class="ala-form__label settings-item">心率演算法</label>
+    <div class="settings-control">
+      <select class="form-field"
+        formControlName="heartRateBase"
+      >
+        <option value="0">最大心率法 HRmax</option>
+        <option value="1">儲備心率法 HRR</option>
+      </select>
+    </div>
+  </div>
+  <div class="ala-list__item">
+    <label class="ala-form__label settings-item">最大心率</label>
+    <div class="settings-control">
+      <div style="display: inline-block">
+        <app-form-text
+          [type]="'number'"
+          [content]="heartRateMax"
+          [maxLength]="32"
+          [disabled]="isSaveUserSettingLoading"
+          [control]="settingsForm"
+          [controlName]="'heartRateMax'"
+        >
+        </app-form-text>
+      </div>
+      <span style="display: inline-block;margin-left: 10px">bpm</span>
+    </div>
+  </div>
+  <div class="ala-list__item">
+    <label class="ala-form__label settings-item">休息心率</label>
+    <div class="settings-control">
+      <div style="display: inline-block">
+        <app-form-text
+          [type]="'number'"
+          [content]="heartRateResting"
+          [maxLength]="32"
+          [disabled]="isSaveUserSettingLoading"
+          [control]="settingsForm"
+          [controlName]="'heartRateResting'"
+        >
+        </app-form-text>
+      </div>
+      <span style="display: inline-block;margin-left: 10px">bpm</span>
+    </div>
+  </div>
+  <hr>
+  <label class="ala-form__label settings-label">睡眠</label>
+  <div class="ala-list__item">
+    <label class="ala-form__label settings-item">平時入睡時間</label>
+    <div class="settings-control">
+      <div class="time_picker">
+        <input type="time"
+          class="form-field"
+          formControlName="normalBedTime"
+        >
+      </div>
+    </div>
+  </div>
+  <div class="ala-list__item">
+    <label class="ala-form__label settings-item">平時起床時間</label>
+    <div class="settings-control">
+      <div class="time_picker">
+        <input type="time"
+          class="form-field"
+          formControlName="normalWakeTime"
+        >
+      </div>
+    </div>
+  </div>
+  <hr>
+  <label class="ala-form__label settings-label">自行車</label>
+  <div class="ala-list__item">
+    <label class="ala-form__label settings-item">自行車輪徑</label>
+    <div class="settings-control">
+      <div style="display: inline-block">
+        <app-form-text
+          [type]="'number'"
+          [content]="wheelSize"
+          [maxLength]="32"
+          [disabled]="isSaveUserSettingLoading"
+          [control]="settingsForm"
+          [controlName]="'wheelSize'"
+          [max]="2500"
+          [min]="600"
+          (onChange)="handleValueArrange($event)"
+        >
+         </app-form-text>
+      </div>
+      <span style="display: inline-block;margin-left: 10px">mm</span>
+    </div>
+  </div>
+</form>

@@ -2,11 +2,11 @@
   {{ name }} 權限設定
 </h2>
 <mat-dialog-content class="right-setting">
-  <app-form-text
+  <!-- <app-form-text
     [content]="searchWord"
     [placeholder]="placeholder"
   >
-  </app-form-text>
+  </app-form-text> -->
   <ng-container *ngIf="groupLevel === '30'">
     <mat-accordion multi="true" *ngFor="let subBrandItem of subBrandInfo;let brandIndex = index">
       <mat-expansion-panel style="box-shadow: none;margin-top: 25px;">

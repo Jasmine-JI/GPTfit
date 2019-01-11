@@ -1,0 +1,40 @@
+.example-card {
+  max-width: 300px;
+  transition: transform 0.2s linear 0s;
+}
+.example-card:hover {
+  cursor: pointer;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, .2),
+  0 2px 2px 0 rgba(0, 0, 0, .14),
+  0 8px 6px 0 rgba(0, 0, 0, .12);
+}
+.example-header-image {
+  background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
+  background-size: cover;
+}
+.mat-card-actions {
+  display: flex;
+  justify-content: space-between;
+  color: #999;
+  font-size: 12px;
+}
+.live-icon {
+  background-color: #F53834;
+  width: 30px;
+  height: 16px;
+  position: absolute;
+  right: 10px;
+  color: #fff;
+  font-size: 12px;
+  text-align: center;
+}
+.member-counts {
+  position: absolute;
+  right: 10px;
+  top: 45px;
+}
+.mat-card {
+  display: inline-block;
+  margin: 0 15px 15px 0;
+}

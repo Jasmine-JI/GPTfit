@@ -130,11 +130,11 @@ export class ForgetpwdComponent implements OnInit {
       } = res;
       if (resultCode === 200) {
         this.snackbar.open('信件已發送，五秒後將跳轉回登入頁面', 'OK', {
-          duration: 3000
+          duration: 5000
         });
         setTimeout(() => this.router.navigate(['/signin']), 5000);
       } else {
-        this.snackbar.open(rtnMsg, 'OK', { duration: 3000 });
+        this.snackbar.open(rtnMsg, 'OK', { duration: 5000 });
       }
     }, () => (this.isForgetSending = false));
   }
@@ -224,7 +224,7 @@ export class ForgetpwdComponent implements OnInit {
         if (resultCode === 200) {
           this.smsVerifyCode = smsVerifyCode;
         }
-        this.snackbar.open(rtnMsg, 'OK', { duration: 3000 });
+        this.snackbar.open(rtnMsg, 'OK', { duration: 5000 });
       });
     } else {
       this.isPhoneNotSame = true;

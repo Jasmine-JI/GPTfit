@@ -14,22 +14,8 @@ export class QrcodeService {
   }
 
   uploadDeviceInfo(body, sn) {
-    const headers = new HttpHeaders();
     const httpOptions = {
       headers: new HttpHeaders({
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'chartset': 'utf-8',
-        'Authorization': 'required',
-        'deviceType': '0',
-        'deviceName': 'Chrome',
-        'deviceOSVersion': 'chrome',
-        'deviceID': 'IMEIxxxxxxx',
-        'appVersionCode': '4.4.14',
-        'appVersionName': 'v1.0.0',
-        'language': 'zh',
-        'regionCode': 'TW',
-        'appName': 'AlaCloudRun',
         'equipmentSN': sn,
       })
     };

@@ -65,10 +65,10 @@ export class SigninComponent implements OnInit {
       this.authService.login(body).subscribe(res => {
         this.isLogining = false;
         if (res) {
-          this.snackbar.open('登入成功', 'OK', { duration: 3000 });
+          this.snackbar.open('登入成功', 'OK', { duration: 5000 });
         } else {
           this.snackbar.open('請檢查使用者名稱及密碼', 'OK', {
-            duration: 3000
+            duration: 5000
           });
         }
       });
@@ -79,19 +79,16 @@ export class SigninComponent implements OnInit {
   }
   showPrivateMsg(e) {
     e.preventDefault();
+    const text = '我已仔細閱讀並明瞭' +
+    '<a target="_blank"href="https://www.alatech.com.tw/action-copyright.htm">『條款及條件』</a>' +
+    '、<a target="_blank" href="https://www.alatech.com.tw/action-privacy.htm">『隱私權聲明』</a>'
+    + '等所記載內容及其意義，茲同意該等條款規定，並願遵守網站現今，嗣後規範。';
+
     this.dialog.open(MessageBoxComponent, {
       hasBackdrop: true,
       data: {
         title: '同意條款',
-        body: `我已仔細閱讀並明瞭<a target="_blank"
-          href="https://www.alatech.com.tw/action-copyright.htm">
-          『條款及條件』</a>、
-          <a target="_blank" href="https://www.alatech.com.tw/action-privacy.htm">
-          『隱私權聲明』
-          </a>
-          等所記載內容及其意義，茲同意
-          該等條款規定，並願遵守網站現今，嗣後規範。
-        `,
+        body: text.trim(),
         confirmText: '同意',
         cancelText: '不同意',
         onConfirm: this.onConfirm

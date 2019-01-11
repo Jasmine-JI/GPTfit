@@ -1,0 +1,9 @@
+.ala-iframe {
+  width: 100%;
+  height: 260px;
+}
+@media(max-width: 500px) {
+  .ala-iframe {
+    height: 100%;
+  }
+}

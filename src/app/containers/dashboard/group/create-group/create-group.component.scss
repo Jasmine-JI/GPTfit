@@ -1,0 +1,24 @@
+/* 之後做共用 */
+.candidate-label {
+  display: inline-block;
+  margin: 0 10px 10px 0;
+  background-color: rgb(242, 242, 242);
+  border: 1px solid rgb(204, 204, 204);
+  border-radius: 3px;
+  padding: 3px 5px;
+}
+i.group-icon {
+  font-size: 25px;
+  margin-left: 10px;
+}
+
+.group-privacy-desc {
+  margin-top: 20px;
+  margin-bottom: 30px;
+  li {
+    margin-bottom: 10px;
+  }
+}
+.mat-button-toggle-group--invalid {
+  border: 1px solid #c75353;
+}

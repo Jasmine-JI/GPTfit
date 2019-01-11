@@ -1,4 +1,12 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter,
+  OnChanges,
+  SimpleChanges
+} from '@angular/core';
 import { DEFAULT_MAXLENGTH } from '@shared/utils/';
 import { UtilsService } from '@shared/services/utils.service';
 import { FormGroup } from '@angular/forms';
@@ -8,7 +16,7 @@ import { FormGroup } from '@angular/forms';
   templateUrl: './form-textarea.component.html',
   styleUrls: ['./form-textarea.component.css']
 })
-export class FormTextareaComponent implements OnInit {
+export class FormTextareaComponent implements OnInit, OnChanges {
   @Input() class_name = 'form-field';
   @Input() isInvalid = false;
   @Input() content: string;
@@ -20,11 +28,18 @@ export class FormTextareaComponent implements OnInit {
   @Input() control: FormGroup;
   @Input() controlName: string;
   @Input() disabled = false;
+  @Input() isHadCount = false;
+  countText: string;
   preContent = this.content;
   invalidClassName = `${this.class_name} ${this.class_name}--invalid`;
-  constructor(private utils: UtilsService) {}
+  constructor(private utils: UtilsService) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.content && changes.content.currentValue) {
+      this.countText = `${changes.content.currentValue.length}/${this.maxLength}`;
+    }
+  }
   handleAutoHeight(textarea) {
     let adjustedHeight = textarea.currentTarget.clientHeight;
     adjustedHeight = Math.max(
@@ -38,7 +53,7 @@ export class FormTextareaComponent implements OnInit {
   handleChange(event) {
     const value = event.target.value;
     this.handleAutoHeight(event);
-    this.remindText = `${value.length}/${this.maxLength}`;
+    this.countText = `${value.length}/${this.maxLength}`;
     this.onChange.emit(value);
   }
 }

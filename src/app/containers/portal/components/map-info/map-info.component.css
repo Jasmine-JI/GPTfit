@@ -68,33 +68,14 @@ tr.here {
   top: 0;
   transform: translate(50%, -50%);
 }
-.mapinfo__goback-rwd--md {
-  visibility: hidden;
-  margin: 10px 5px;
-}
-
-.mapinfo__goback-rwd {
-  position: absolute;
-  right: 0;
-  top: 0;
-  transform: translate(50%, -50%);
-}
-
-.mapinfo__goback-rwd--md {
-  visibility: hidden;
-  margin: 10px 5px;
-}
-
 .map-container {
   padding-top: 80px;
 }
-
 @media (max-width: 768px) {
   .mapinfo__goback-rwd {
     display: none;
   }
 }
-
 @media (max-width: 768px) {
   .leaderboard-layer {
     margin-top: 0px;

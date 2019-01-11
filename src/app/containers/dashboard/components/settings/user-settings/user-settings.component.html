@@ -1,0 +1,149 @@
+<div style="display:flex;justify-content: space-between">
+  <h3>使用者資訊</h3>
+  <button class="alatech-btn alatech-btn--default settings-btn"
+    title="儲存"
+    (click)="saveSettings(settingsForm)"
+  >
+    儲存
+  </button>
+</div>
+<form [formGroup]="settingsForm"
+  #f="ngForm"
+  novalidate
+  (ngSubmit)="saveSettings(settingsForm)"
+>
+  <label class="ala-form__label settings-label">基本資訊</label>
+  <div class="ala-list__item">
+    <label class="ala-form__label settings-item"
+      [class.form__label--required]="true"
+    >
+      頭像
+    </label>
+    <div class="settings-control" style="min-width: 250px;">
+      <app-upload-file
+        [isImageFileMode]="true"
+        [imageURL]="nameIcon?.value"
+        [maxFileSize]="maxFileSize"
+        [disabled]="isUploading"
+        [btnText]="chooseFileText"
+        [isLoading]="isUploading"
+        [accept]="acceptFileExtensions.join()"
+        [reloadFileText]="reloadFileText"
+        [chooseFileText]="chooseFileText"
+        (onChange)="handleAttachmentChange($event)"
+      ></app-upload-file>
+    </div>
+  </div>
+  <div class="ala-list__item">
+    <label class="ala-form__label settings-item"
+      [class.form__label--required]="true"
+    >
+      名稱
+    </label>
+    <div class="settings-control" style="position: relative;">
+      <app-form-text
+        [content]="name?.value"
+        [maxLength]="32"
+        [invalidRemindText]="inValidText"
+        [control]="settingsForm"
+        [controlName]="'name'"
+        [isInvalid]="(!name.valid && name.touched) || (f.submitted && name.hasError('required')) || isNameError"
+        (onChange)="onNameChange($event, settingsForm)"
+      >
+      </app-form-text>
+      <i class="fa fa-spinner fa-pulse fa-1x fa-fw spinner" [class.spinner-hidden]="!isNameLoading"></i>
+    </div>
+  </div>
+  <div class="ala-list__item">
+    <label class="ala-form__label settings-item"
+      [class.form__label--required]="true"
+    >
+      身高
+    </label>
+    <div class="settings-control">
+      <div style="display: inline-block">
+        <app-form-text
+          [type]="'number'"
+          [content]="height?.value"
+          [maxLength]="32"
+          [disabled]="isSaveUserSettingLoading"
+          [invalidRemindText]="inValidText"
+          [control]="settingsForm"
+          [controlName]="'height'"
+          [isInvalid]="(!height.valid && height.touched) || (f.submitted && height.hasError('required'))"
+          (onChange)="handleValueArrange(1, $event)"
+          [min]="50"
+          [max]="255"
+        >
+        </app-form-text>
+      </div>
+      <span style="display: inline-block;margin-left: 10px">cm</span>
+    </div>
+
+  </div>
+  <div class="ala-list__item">
+    <label class="ala-form__label settings-item"
+      [class.form__label--required]="true"
+    >
+      體重
+    </label>
+    <div class="settings-control">
+      <div style="display: inline-block">
+        <app-form-text
+          [type]="'number'"
+          [content]="weight?.value"
+          [maxLength]="32"
+          [disabled]="isSaveUserSettingLoading"
+          [isInvalid]="(!weight.valid && weight.touched) || (f.submitted && weight.hasError('required'))"
+          [invalidRemindText]="inValidText"
+          [control]="settingsForm"
+          [controlName]="'weight'"
+          [min]="30"
+          [max]="255"
+          (onChange)="handleValueArrange(2, $event)"
+        >
+        </app-form-text>
+      </div>
+      <span style="display: inline-block;margin-left: 10px">kg</span>
+    </div>
+  </div>
+  <div class="ala-list__item">
+    <label class="ala-form__label settings-item">出生年月日</label>
+    <div class="settings-control">
+      <mat-form-field style="min-width: 275px;">
+        <input matInput [matDatepicker]="picker" placeholder=""
+          (dateChange)="logStartDateChange($event)"
+          formControlName="birthday"
+        >
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker startView="year" [startAt]="birthday"></mat-datepicker>
+      </mat-form-field>
+    </div>
+  </div>
+  <div class="ala-list__item">
+    <label class="ala-form__label settings-item">性別</label>
+    <div class="settings-control">
+      <select class="form-field"
+        formControlName="gender"
+      >
+        <option value="0">男</option>
+        <option value="1">女</option>
+      </select>
+    </div>
+  </div>
+  <div class="ala-list__item">
+    <label class="ala-form__label settings-item">介紹</label>
+    <div class="settings-control">
+      <app-form-textarea
+        [maxLength]="'500'"
+        [content]="description"
+        [control]="settingsForm"
+        [controlName]="'description'"
+        [disabled]="isSaveUserSettingLoading"
+        (onChange)="handleChangeTextarea($event, 1)"
+        [isHadCount]="true"
+      >
+      </app-form-textarea>
+    </div>
+  </div>
+</form>

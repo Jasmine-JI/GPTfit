@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
@@ -8,6 +8,9 @@ const { API_SERVER } = environment.url;
 @Injectable()
 export class CoachService {
   constructor(private http: HttpClient) {}
+  fetchClassRoomList(body) {
+    return this.http.post<any>('/api/v1/train/getClassRoomList', body);
+  }
   fetchExample(body) {
     return this.http.post<any>(API_SERVER + 'coach/example', body);
   }
@@ -23,27 +26,13 @@ export class CoachService {
   fetchRealTimeData(params) {
     return this.http.get<any>(API_SERVER + 'coach/realTimeData', { params });
   }
+  fetchFitPairInfo(body) {
+    return this.http.post<any>('/api/v1/device/getFitPairInfo', body);
+  }
+  fetchClassRoomDetail(body) {
+    return this.http.post<any>('/api/v1/train/getClassRoomDetail', body);
+  }
   postRaceTest(body) {
-    const headers = new HttpHeaders();
-    const httpOptions = {
-      headers: new HttpHeaders({
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        chartset: 'utf-8',
-        Authorization: 'required',
-        deviceType: '2',
-        deviceName: 'htc one',
-        deviceOSVersion: 'android',
-        deviceID: 'IMEIxxxxxxx',
-        appVersionCode: '4.4.14',
-        appVersionName: 'v1.0.0',
-        language: 'zh',
-        regionCode: 'TW',
-        appName: 'AlaCloudRun',
-        equipmentSN: 'tradmill'
-      })
-    };
-
-    return this.http.post<any>('/race_test', body, httpOptions);
+    return this.http.post<any>('/race_test', body);
   }
 }

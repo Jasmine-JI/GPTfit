@@ -1,72 +1,30 @@
-var mysql = require("mysql");
 var express = require('express');
 var bodyParser = require('body-parser');
 var os = require('os');
-var schedule = require('node-schedule');
-const { getMapList } = require('./models/map_model');
-var async = require('async');
-var request = require('request');
 const helmet = require('helmet');
-const { checkTokenExit } = require('./models/auth.model');
+const {
+  checkTokenExit
+} = require('./models/auth.model');
 
-// const https = require('https');
-// const fs = require('fs');
+const https = require('https');
+const fs = require('fs');
 
-// const SERVER_CONFIG = {
-//   key: fs.readFileSync('../key/private.key'),
-//   cert: fs.readFileSync('../key/server.crt')
-// };
+const SERVER_CONFIG = {
+  key: fs.readFileSync('/etc/ssl/free.key'),
+  ca: fs.readFileSync('/etc/ssl/free_ca.crt'),
+  cert: fs.readFileSync('/etc/ssl/free.crt')
+};
 
 // Init app
 var app = express();
-
-var address,
-  ifaces = os.networkInterfaces();
-for (var dev in ifaces) {
-  ifaces[dev].filter((details) => details.family === 'IPv4' && details.internal === false ? address = details.address : undefined);
-}
-var connectInfo = {};
-if (address === '192.168.1.235') {
-  connectInfo = {
-    host: "localhost",
-    user: "root",
-    password: "1234",
-    database: "alatech",
-    multipleStatements: true
-  };
-} else if (address === '192.168.1.234' || address === '192.168.1.232') {
-  connectInfo = {
-    host: "localhost",
-    user: "root",
-    password: "A1atech",
-    database: "alatech",
-    multipleStatements: true
-  };
-} else {
-  connectInfo = {
-    host: "192.168.0.2",
-    user: "root",
-    password: "A1atech",
-    database: "alatech",
-    multipleStatements: true
-  };
-}
-var connection = mysql.createConnection(connectInfo);
-
-connection.connect(function (err) {
-  if (err) {
-    console.error("error connecting: " + err.stack);
-    return;
-  }
-
-  console.log('Connected to MySql');
-
-});
+var connection = require('./models/connection_db');
 
 // Body parser middleware
 
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.urlencoded({
+  extended: true
+}))
 // parse application/json
 app.use(bodyParser.json())
 
@@ -90,15 +48,34 @@ app.use(function (req, res, next) {
 
   var allowedOrigins = [];
   if (address === '192.168.1.235') {
-    allowedOrigins = ['http://192.168.1.235:8080', '*'];
+    allowedOrigins = [
+      'http://192.168.1.235:8080',
+      'https://192.168.1.235:8080',
+      'http://192.168.1.235',
+      'https://192.168.1.235'
+    ];
   } else if (address === '192.168.1.234') {
-    allowedOrigins = [`${address}`]; // 因為要for在家只做前端時，需要隨意的domain去call
+    allowedOrigins = [
+      'http://192.168.1.234',
+      'http://alatechapp.alatech.com.tw',
+      'http://192.168.1.235:8080',
+      'http://localhost:8080',
+      'http://app.alatech.com.tw',
+      'https://192.168.1.234',
+      'https://alatechapp.alatech.com.tw',
+      'https://192.168.1.235:8080',
+      'http://localhost:8080',
+      'https://app.alatech.com.tw'
+    ]; // 因為要for在家只做前端時，需要隨意的domain去call
   } else if (address === '192.168.1.232') {
     allowedOrigins = ['http://192.168.1.232:8080'];
   } else {
     allowedOrigins = [
       'http://alatechcloud.alatech.com.tw:8080',
+      'https://alatechcloud.alatech.com.tw:8080',
       'http://152.101.90.130:8080',
+      'https://152.101.90.130:8080',
+      'https://cloud.alatech.com.tw:8080',
       'http://cloud.alatech.com.tw:8080'
     ];
   }
@@ -110,9 +87,11 @@ app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 
   // Request headers you wish to allow
-  const allowHeaders = ['X-Requested-With','content-type', 'Authorization',
-  'deviceID', 'chartset', 'language', 'Accept', 'deviceType', 'deviceName',
-  'deviceOSVersion', 'appVersionCode', 'appVersionName', 'regionCode', 'appName'];
+  const allowHeaders = ['X-Requested-With', 'content-type', 'Authorization',
+    'deviceID', 'charset', 'language', 'Accept', 'deviceType', 'deviceName',
+    'deviceOSVersion', 'appVersionCode', 'appVersionName', 'regionCode', 'appName',
+     'equipmentSN', 'Accept-Encoding'
+  ];
   res.setHeader('Access-Control-Allow-Headers', allowHeaders.join(','));
   // res.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept, token, Authorization, X-Auth-Token, X-XSRF-TOKEN, X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Access-Control-Allow-Headers");
 
@@ -163,6 +142,8 @@ var qrPair = require('./routes/qrPair.js');
 var user = require('./routes/user.js');
 var center = require('./routes/center.js');
 var uploadFile = require('./routes/uploadFile.js');
+var sport = require('./routes/sport.js');
+var auth = require('./routes/auth.js');
 
 app.use('/nodejs/api/rankForm', rankForm.unprotected);
 app.use('/nodejs/api/rankForm', authMiddleware, rankForm.protected);
@@ -176,15 +157,17 @@ app.use('/nodejs/api/map', authMiddleware, map.protected);
 app.use('/nodejs/api/gpx', authMiddleware, runGpx);
 app.use('/nodejs/api/deviceLog', authMiddleware, deviceLog);
 app.use('/nodejs/api/coach', authMiddleware, coach);
-app.use('/nodejs/api/user', authMiddleware, user);
+app.use('/nodejs/api/user', user);
 app.use('/nodejs/api/center', authMiddleware, center);
 app.use('/nodejs/api/uploadFile', authMiddleware, uploadFile);
+app.use('/nodejs/api/sport', authMiddleware, sport);
+app.use('/nodejs/api/auth', auth);
 
 // Start the server
 const port = process.env.PORT || 3001;
-app.listen(port, function () {
-  console.log('Server running at ' + port);
-});
-// https.createServer(SERVER_CONFIG, app).listen(port, function() {
-//   console.log('HTTPS sever started at ' + port);
+// app.listen(port, function () {
+//   console.log('Server running at ' + port);
 // });
+https.createServer(SERVER_CONFIG, app).listen(port, function() {
+  console.log('HTTPS sever started at ' + port);
+});

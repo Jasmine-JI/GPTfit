@@ -1,14 +1,17 @@
 <div class="ala-formtext" [formGroup]="control" *ngIf="controlName">
-  <input type="text"
+  <input [type]="type"
     [maxLength]="maxLength"
     [value]="content"
     [formControlName]="controlName"
     [className]="isInvalid ? invalidClassName : class_name"
     [attr.disabled]="disabled ? '' : null"
     [placeholder]="placeholder"
+    (keyup)="handleChange($event)"
+    [min]="min"
+    [max]="max"
   />
   <app-form-remind
-    *ngIf="remindText"
+    *ngIf="remindText || (invalidRemindText && isInvalid)"
     [isInvalid]="isInvalid"
     [remindText]="remindText"
     [invalidRemindText]="invalidRemindText"
@@ -17,15 +20,17 @@
 </div>
 
 <div class="ala-formtext" *ngIf="!controlName">
-  <input type="text"
+  <input [type]="type"
     [maxLength]="maxLength"
     [value]="content"
     [className]="isInvalid ? invalidClassName : class_name"
     [attr.disabled]="disabled ? '' : null"
     [placeholder]="placeholder"
+    [min]="min"
+    [max]="max"
   />
   <app-form-remind
-    *ngIf="remindText"
+    *ngIf="remindText ||  (invalidRemindText && isInvalid)"
     [isInvalid]="isInvalid"
     [remindText]="remindText"
     [invalidRemindText]="invalidRemindText"

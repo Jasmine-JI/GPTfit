@@ -1,0 +1,190 @@
+.commerce-plan-table {
+  width: 100%;
+  margin-top: 33px;
+  text-align: center;
+  font-size: 19px;
+  font-weight: 700;
+  cursor: pointer;
+  .active-top {
+    border-top: 5px solid #00c6ff;
+  }
+  .active-bottom {
+    border-bottom: 5px solid #00c6ff;
+  }
+  thead {
+    background-color: #88e8ff;
+    font-size: 19px;
+    th {
+      padding: 15px;
+      color: #8e8e8e;
+    }
+    .plan {
+      font-size: 16px;
+      color: #4d4d4d;
+      cursor: auto;
+    }
+    .active {
+      font-size: 26px;
+      color: #fff;
+      background-color: #00c6ff;
+    }
+    .active-right {
+      border-right: 0;
+      position: relative;
+    }
+
+    .active-right:before {
+      content: "\00a0";
+      position: absolute;
+      border-right: 5px solid #00c6ff;
+      top: -40px;
+      right: 0;
+      height: calc(100% + 40px);
+    }
+    .active-left {
+      border-left: 0;
+      position: relative;
+    }
+
+    .active-left:before {
+      content: "\00a0";
+      position: absolute;
+      border-left: 5px solid #00c6ff;
+      top: 0px;
+      left: 0;
+      height: calc(100% + 14px);
+    }
+  }
+  .plan {
+    text-align: right;
+    margin-right: 11px;
+    border-right: 11px #fff solid;
+    font-size: 16px;
+    cursor: auto;
+  }
+
+  tbody {
+    td {
+      padding: 10px 12px;
+    }
+    tr {
+      // border-top: 5px #fff solid;
+      color: #4c4a4a;
+      font-size: 19px;
+      td {
+        border-top: 5px #fff solid;
+      }
+      .plan {
+        color: #4d4d4d;
+      }
+      .unconfirmed {
+        color: #c6c6c6;
+      }
+      .unit {
+        font-size: 12px;
+        color: #a9a9a9;
+      }
+      .check {
+        font-size: 14px;
+      }
+      .active-left {
+        border-left: 0;
+        position: relative;
+      }
+
+      .active-left:before {
+        content: "\00a0";
+        position: absolute;
+        border-left: 5px solid #00c6ff;
+        top: -40px;
+        left: 0;
+        height: calc(100% + 40px);
+      }
+      .active-right {
+        border-right: 0;
+        position: relative;
+      }
+
+      .active-right:before {
+        content: "\00a0";
+        position: absolute;
+        border-right: 5px solid #00c6ff;
+        top: -40px;
+        right: 0;
+        height: calc(100% + 40px);
+      }
+      .active {
+        font-size: 26px;
+        color: #009cff;
+      }
+      .active.check {
+        font-size: 20px;
+      }
+    }
+    tr.fee {
+      font-weight: 700;
+      td {
+        border-top: 14px #fff solid;
+        border-bottom: 20px #fff solid;
+        padding: 30px 15px 20px;
+      }
+      .plan {
+        font-size: 26px;
+      }
+      .active-left {
+        border-left: 0;
+        position: relative;
+      }
+
+      .active-left:before {
+        content:"\00a0";
+        position: absolute;
+        border-left: 5px solid #00c6ff;
+        top: -14px;
+        left: 0;
+        height: calc(100% + 14px);
+      }
+      .active-right {
+        border-right: 0;
+        position: relative;
+      }
+
+      .active-right:before {
+        content: "\00a0";
+        position: absolute;
+        border-right: 5px solid #00c6ff;
+        top: -40px;
+        right: 0;
+        height: calc(100% + 40px);
+      }
+    }
+    tr.custom {
+      border-top: 40px #fff solid;
+      .active-left:before {
+        content: "\00a0";
+        position: absolute;
+        border-left: 5px solid #00c6ff;
+        top: -40px;
+        left: 0;
+        height: calc(100% + 40px);
+      }
+    }
+    tr:nth-child(even) {
+      .plan {
+        background-color: #dff7ff;
+      }
+      td {
+        background-color: #ececec;
+      }
+    }
+    tr:nth-child(odd) {
+      .plan {
+        background-color: #c0f3ff;
+
+      }
+      td {
+        background-color: #d7d7d7;
+      }
+    }
+  }
+}

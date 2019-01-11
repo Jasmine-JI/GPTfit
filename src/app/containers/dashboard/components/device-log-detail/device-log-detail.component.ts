@@ -33,6 +33,7 @@ import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { Location } from '@angular/common';
 import { DOCUMENT } from '@angular/platform-browser';
 import { WINDOW } from '@shared/services/window.service';
+import { UtilsService } from '@shared/services/utils.service';
 
 @Component({
   selector: 'app-device-log-detail',
@@ -67,6 +68,7 @@ export class DeviceLogDetailComponent implements OnInit {
     private router: Router,
     private breakpointObserver: BreakpointObserver,
     private fb: FormBuilder,
+    private utils: UtilsService,
     @Inject(DOCUMENT) private document: Document,
     @Inject(WINDOW) private window,
     public _location: Location // 調用location.back()，來回到上一頁
@@ -79,6 +81,8 @@ export class DeviceLogDetailComponent implements OnInit {
   }
 
   ngOnInit() {
+    const queryStrings = this.utils.getUrlQueryStrings(location.search);
+    const { pageNumber } = queryStrings;
     this.isHandset$ = this.breakpointObserver
       .observe(Breakpoints.Handset)
       .map(match => match.matches);
@@ -105,7 +109,7 @@ export class DeviceLogDetailComponent implements OnInit {
       return `第 ${startIndex + 1} - ${endIndex} 筆、共 ${length} 筆`;
     };
     this.currentPage = {
-      pageIndex: 0,
+      pageIndex: (+pageNumber - 1) || 0,
       pageSize: 10,
       length: null
     };
@@ -118,6 +122,7 @@ export class DeviceLogDetailComponent implements OnInit {
     // 分頁切換時，重新取得資料
     this.paginator.page.subscribe((page: PageEvent) => {
       this.currentPage = page;
+      this.router.navigateByUrl(`${location.pathname}?pageNumber=${this.currentPage.pageIndex + 1}`);
       this.getLists();
     });
   }
