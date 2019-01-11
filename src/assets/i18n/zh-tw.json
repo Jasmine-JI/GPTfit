@@ -6,7 +6,9 @@
     "Dashboard": "開始使用",
     "ProductType": {
       "treadmill": "跑步機",
-      "wearable": "穿戴式裝置"
+      "wearable": "穿戴式裝置",
+      "spinBike": "飛輪",
+      "rowMachine": "划船機"
     },
     "UserManual": "使用說明",
     "GetDocument": "取得操作手冊",
@@ -113,7 +115,7 @@
         "ShareSportsFile": "分享運動檔案",
         "Can-browse-activity-file": "可以看到運動檔案",
         "ShareSportsReport": "分享運動報告",
-        "Can-browse-activity-report": "可以看到運動報告",
+        "Can-browse-activity-report": "可以看到運動報告"
       },
       "SearchGroup": {
         "SearchGroup": "搜尋群組",

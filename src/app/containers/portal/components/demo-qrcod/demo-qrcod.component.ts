@@ -158,7 +158,7 @@ export class DemoQrcodComponent implements OnInit {
     this.isShowBindingBtn = false; // 無論是否正確，出廠日期前，皆不顯示登錄產品btn
   }
   uploadDevice() {
-    const types = ['Wearable', 'Treadmill', 'Spin Bike', 'Rowing machine'];
+    const types = ['Wearable', 'Treadmill', 'spinBike', 'rowMachine'];
     const { modelType } = this.deviceInfo;
     const { cs, device_sn } = this.displayQr;
     const typeIdx = types.findIndex(

@@ -6,7 +6,9 @@
     "Dashboard": "Start",
     "ProductType": {
       "treadmill": "Treadmill",
-      "wearable": "Wearable"
+      "wearable": "Wearable",
+      "spinBike": "Spin Bikes",
+      "rowMachine": "Rowing Machines"
     },
     "UserManual": "User Manual",
     "GetDocument": "Get document",
