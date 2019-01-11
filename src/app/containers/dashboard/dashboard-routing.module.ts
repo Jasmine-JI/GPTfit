@@ -15,8 +15,6 @@ import { DbMaintainComponent } from './components/db-maintain/db-maintain.compon
 import { DeviceLogComponent } from './components/device-log/device-log.component';
 import { DeviceLogDetailComponent } from './components/device-log-detail/device-log-detail.component';
 import { CoachDashboardComponent } from './components/coach-dashboard/coach-dashboard.component';
-import { CoachDashboardDetailComponent } from './components/coach-dashboard-detail/coach-dashboard-detail.component';
-import { CoachRexComponent } from './components/coach-rex/coach-rex.component';
 import { EventManagementComponent } from './components/event-management/event-management.component';
 import { AuthGuard } from '@shared/guards/auth/auth.guard';
 import { MyGroupListComponent } from './group/my-group-list/my-group-list.component';
@@ -28,6 +26,15 @@ import { EditGroupGuard } from './guards/edit-group-guard';
 import { CreateGroupComponent } from './group/create-group/create-group.component';
 import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
 import { DashboardGuard } from './guards/dashboard-guard';
+import { ActivityInfoComponent } from '@shared/components/activity-info/activity-info.component';
+import { MyActivityComponent } from '@shared/components/my-activity/my-activity.component';
+import { SportReportComponent } from '@shared/components/sport-report/sport-report.component';
+import { MyDeviceComponent } from './components/device/my-device/my-device.component';
+import { ProductInfoComponent } from './components/device/product-info/product-info.component';
+import { TrainLiveComponent } from './components/train-live/train-live.component';
+import { SettingsComponent } from './components/settings/settings.component';
+import { PersonalPreferencesComponent } from './components/settings/personal-preferences/personal-preferences.component';
+
 const routes: Routes = [
   {
     path: 'dashboard',
@@ -52,29 +59,10 @@ const routes: Routes = [
         path: 'certificate/preview',
         component: CertificatePreviewComponent
       },
-      {
-        path: 'event/create',
-        component: CreateEventComponent,
-        canActivate: [DashboardGuard]
-      },
-      {
-        path: 'event/edit/:id',
-        component: EditEventComponent,
-        canActivate: [DashboardGuard]
-      },
-      {
-        path: 'event-calendar',
-        component: EventCalendarComponent,
-        canActivate: [DashboardGuard]
-      },
+
       {
         path: 'enroll/:event_id/preview',
         component: EnrollPreviewComponent,
-        canActivate: [DashboardGuard]
-      },
-      {
-        path: 'leaderboard-settings',
-        component: LeaderboardSettingsComponent,
         canActivate: [DashboardGuard]
       },
       {
@@ -86,45 +74,18 @@ const routes: Routes = [
         component: DbMaintainComponent
       },
       {
-        path: 'device_log',
-        component: DeviceLogComponent,
-        canActivate: [DashboardGuard]
-      },
-      {
-        path: 'device_log/detail/:userId',
-        component: DeviceLogDetailComponent,
-        canActivate: [DashboardGuard]
-      },
-      {
-        path: 'coach-dashboard',
+        path: 'coach-dashboard/:classId',
         component: CoachDashboardComponent
-      },
-      {
-        path: 'coach-dashboard/detail/:raceId',
-        component: CoachDashboardDetailComponent
-      },
-      {
-        path: 'test/:raceId',
-        component: CoachRexComponent
-      },
-      {
-        path: 'event-management',
-        component: EventManagementComponent,
-        canActivate: [DashboardGuard]
       },
       {
         path: 'my-group-list',
         component: MyGroupListComponent
       },
-      {
-        path: 'my-group-list/create',
-        component: CreateGroupComponent
-      },
-      {
-        path: 'all-group-list',
-        component: AllGroupListComponent,
-        canActivate: [DashboardGuard]
-      },
+      // {
+      //   path: 'my-group-list/create',
+      //   component: CreateGroupComponent
+      // },
+
       {
         path: 'group-search',
         component: GroupSearchComponent
@@ -144,14 +105,105 @@ const routes: Routes = [
         canActivate: [EditGroupGuard]
       },
       {
-        path: 'create-brand-group',
+        path: 'system/event-management',
+        component: EventManagementComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/event',
+        component: EventComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/event/create',
+        component: CreateEventComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/event/edit/:id',
+        component: EditEventComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/event-calendar',
+        component: EventCalendarComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/leaderboard-settings',
+        component: LeaderboardSettingsComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/setting-member',
+        component: InnerSettingsComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/device_log',
+        component: DeviceLogComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/device_log/detail/:userId',
+        component: DeviceLogDetailComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/all-group-list',
+        component: AllGroupListComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/create-brand-group',
         component: CreateGroupComponent,
         canActivate: [DashboardGuard]
       },
       {
-        path: 'setting',
-        component: InnerSettingsComponent,
-        canActivate: [DashboardGuard]
+        path: 'settings',
+        component: SettingsComponent,
+        children: [
+          {
+            path: 'user-settings',
+            component: SettingsComponent
+          },
+          {
+            path: 'privacy-settings',
+            component: SettingsComponent
+          },
+          {
+            path: 'account-info',
+            component: SettingsComponent
+          },
+          {
+            path: 'personal-preferences',
+            component: PersonalPreferencesComponent
+          }
+        ]
+      },
+      {
+        path: 'activity-list',
+        component: MyActivityComponent
+      },
+      {
+        path: 'activity/:fileId',
+        component: ActivityInfoComponent
+      },
+      {
+        path: 'sport-report',
+        component: SportReportComponent
+      },
+      {
+        path: 'device',
+        component: MyDeviceComponent
+      },
+      {
+        path: 'device/info/:deviceSN',
+        component: ProductInfoComponent
+      },
+      {
+        path: 'live/train-live',
+        component: TrainLiveComponent
       }
     ]
   },

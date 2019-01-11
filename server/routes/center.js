@@ -104,7 +104,7 @@ router.get('/getGroupList', function (req, res, next) {
     select g.group_name as groupName, g.group_id as groupId,
     m.access_right as accessRight, m.join_status as JoinStatus
     from ?? g, ?? m
-    where g.group_id = m.group_id and m.member_id = ?;
+    where g.group_id = m.group_id and m.member_id = ? and g.group_status != 4;
   `;
     con.query(sql, ['group_info', 'group_member_info', userId], function (err, rows) {
       if (err) {
@@ -121,7 +121,7 @@ router.get('/getGroupList', function (req, res, next) {
       } else {
         return res.json(results);
       }
-    });    
+    });
   });
 
 });
@@ -145,21 +145,27 @@ router.post('/innerAdmin', function (req, res, next) {
         normalQuerys = normalIds.map(_id => `update ?? set access_right = 90 where member_id = ${_id.member_id};`);
         let sql = userIds.map(_id => `update ?? set access_right = ${con.escape(targetRight)} where member_id = ${_id} and group_id = '0-0-0-0-0-0';`);
         sql = sql.concat(normalQuerys);
+        let successCount = 0;
         const processer = function (query) {
-          con.query(query, ['group_member_info'], function (err, rows) {
+          con.query(query, ['group_member_info'], function (err, results) {
             if (err) {
               console.log(err);
               return res.status(500).send({
                 errorMessage: err.sqlMessage
               });
             }
+            if (results) {
+              successCount++;
+              if (successCount === sql.length) {
+                res.json({
+                  resultCode: 200,
+                  rtnMsg: 'success'
+                });
+              }
+            }
           });
         }
-        res.json({
-            resultCode: 200,
-            rtnMsg: 'success'
-        });
-        async.eachLimit(sql, 10, processer, function (error, result){
+        async.eachLimit(sql, 100, processer, function (error, result){
           console.log('!!!!!');
           console.log('error: ', error);
           console.log('result: ', result);
@@ -183,9 +189,9 @@ router.get('/innerAdmin', function (req, res, next) {
   } = req;
   const sql = `
     select m.group_id as groupId, m.access_right as accessRight,
-    m.member_id as userId, m.member_name as userName, g.group_name as groupName
-    from group_member_info m, group_info g
-    where m.access_right < 30 and m.group_id = g.group_id;
+    u.user_id as userId, u.login_acc as userName, g.group_name as groupName
+    from group_member_info m, group_info g, user_profile u
+    where m.access_right < 30 and m.group_id = g.group_id and u.user_id = m.member_id;
   `;
   con.query(sql, ['group_member_info', 'group_info'], function (err, rows) {
     if (err) {
@@ -218,11 +224,11 @@ router.get('/searchMember', function (req, res, next) {
   const accessRightQuery = accessRight && accessRight.length > 0 ? ` and m.access_right = ?` : '';
 
   const sql = `
-    select m.member_name as userName, g.group_name as groupName, m.member_id as userId
-    from ?? m, ?? g
-    where member_name like ? '%' and g.group_id = m.group_id ${groupIdQuery} ${accessRightQuery};
+    select u.login_acc as userName, g.group_name as groupName, m.member_id as userId
+    from ?? m, ?? g, ?? u
+    where u.login_acc like ? '%' and g.group_id = m.group_id and m.member_id = u.user_id ${groupIdQuery} ${accessRightQuery};
   `;
-  con.query(sql, ['group_member_info', 'group_info', keyword, additionalVal], function (err, rows) {
+  con.query(sql, ['group_member_info', 'group_info', 'user_profile', keyword, additionalVal], function (err, rows) {
     if (err) {
       console.log(err);
       return res.status(500).send({

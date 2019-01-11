@@ -2,6 +2,7 @@
   <div *ngIf="isImageFileMode"
     class="ala-upload-image"
     [class.ala-upload-image--vertical]="isImgVertical$ | async"
+    [class.ala-user-avastar-mode]="isUserAvastarMode"
   >
     <button class="profile-picture__remove"
       *ngIf="(isUploadNewImg$ | async)"
@@ -9,15 +10,18 @@
     >
       <i class="fa fa-times-circle profile-picture__remove-icon"></i>
     </button>
-      <img
-      *ngIf="!(isUploadNewImg$ | async) && imageURL?.length > 0"
-      [src]="imageURL | safeHtml"
-      >
-      <p *ngIf="!(isUploadNewImg$ | async) && !(fileInformation?.link || imageURL)"
-        style="position:absolute;top:50%;left:50%;width:100%;text-align:center;transform:translate(-50%, -50%)"
-      >
-        Choose a file or drag it here
-      </p>
+    <div *ngIf="isUserAvastarMode && !fileInformation?.link" class="user-avastar-mask">
+      <span>{{chooseFileText}}</span>
+    </div>
+    <img
+    *ngIf="!(isUploadNewImg$ | async) && imageURL?.length > 0"
+    [src]="imageURL | safeHtml"
+    >
+    <p *ngIf="!(isUploadNewImg$ | async) && !(fileInformation?.link || imageURL)"
+      style="position:absolute;top:50%;left:50%;width:100%;text-align:center;transform:translate(-50%, -50%)"
+    >
+      Choose a file or drag it here
+    </p>
     <img
       *ngIf="(isUploadNewImg$ | async)"
       [src]="(fileInformation?.link | safeHtml)"

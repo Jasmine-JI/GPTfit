@@ -44,5 +44,5 @@
 <div class="ala-loading-shade" *ngIf="isLoading">
   <mat-spinner></mat-spinner>
 </div>
-<mat-paginator #paginator [length]="totalCount" [pageIndex]="0" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]">
+<mat-paginator #paginator [length]="totalCount" [pageIndex]="currentPage?.pageIndex" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]">
 </mat-paginator>

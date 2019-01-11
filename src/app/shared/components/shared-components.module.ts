@@ -19,7 +19,21 @@ import { FormTextareaComponent } from './form-textarea/form-textarea.component';
 import { MemberCapsuleComponent } from './member-capsule/member-capsule.component';
 import { SharedPipes } from '@shared/pipes/shared-pipes';
 import { Page403Component } from './page403/page403.component';
-
+import { AlaIframeComponent } from './ala-iframe/ala-iframe.component';
+import { MyActivityComponent } from './my-activity/my-activity.component';
+import { ActivityInfoComponent } from './activity-info/activity-info.component';
+import {
+  SportReportComponent,
+  ActivityLevelsComponent,
+  AllDurationComponent,
+  AllGroupsComponent,
+  AllTimesComponent,
+  BurnCaloriesComponent,
+  ColumnstackedChartComponent,
+  OtherBurnCaloriesComponent,
+  PartialMuscleInfoComponent,
+  ScatterChartComponent
+} from './sport-report';
 @NgModule({
   imports: [
     CommonModule,
@@ -43,7 +57,20 @@ import { Page403Component } from './page403/page403.component';
     FormRemindComponent,
     FormTextareaComponent,
     MemberCapsuleComponent,
-    Page403Component
+    Page403Component,
+    AlaIframeComponent,
+    MyActivityComponent,
+    ActivityInfoComponent,
+    SportReportComponent,
+    ActivityLevelsComponent,
+    AllDurationComponent,
+    AllGroupsComponent,
+    AllTimesComponent,
+    BurnCaloriesComponent,
+    ColumnstackedChartComponent,
+    OtherBurnCaloriesComponent,
+    PartialMuscleInfoComponent,
+    ScatterChartComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -58,7 +85,20 @@ import { Page403Component } from './page403/page403.component';
     FormTextComponent,
     FormRemindComponent,
     FormTextareaComponent,
-    MemberCapsuleComponent
+    MemberCapsuleComponent,
+    AlaIframeComponent,
+    MyActivityComponent,
+    ActivityInfoComponent,
+    SportReportComponent,
+    ActivityLevelsComponent,
+    AllDurationComponent,
+    AllGroupsComponent,
+    AllTimesComponent,
+    BurnCaloriesComponent,
+    ColumnstackedChartComponent,
+    OtherBurnCaloriesComponent,
+    PartialMuscleInfoComponent,
+    ScatterChartComponent
   ]
 })
 export class SharedComponentsModule {}

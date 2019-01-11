@@ -14,23 +14,24 @@ export class TokenInterceptor implements HttpInterceptor {
     const token = this.utils.getToken();
     let newRequest = request.clone({
       setHeaders: {
-        Accept: 'application/json', // 必要 為了不要讓他自動帶any mime type
-        chartset: 'utf-8',
+        Accept: 'application/json',
+        charset: 'utf-8',
+        Authorization: 'required',
         deviceType: '0',
-        deviceName: 'Chrome',
-        deviceOSVersion: 'chrome',
-        deviceID: 'IMEIxxxxxxx',
-        appVersionCode: '1.0.0',
-        appVersionName: '1.0.0',
-        language: 'zh',
-        regionCode: 'TW',
-        appName: 'AlaCenter'
+        deviceName: 'Web',
+        deviceOSVersion: this.utils.detectBrowser(),
+        // deviceID: '0', // browser沒有唯一碼
+        appName: 'AlaCenter',
+        appVersionCode: 'v.1.0.0 beta',
+        appVersionName: 'v.1.0.0 beta',
+        language: this.utils.getLocalStorageObject('locale') || 'en-us',
+        regionCode: 'TW'
       }
     });
     if (token) {
-      newRequest = request.clone({
+      newRequest = newRequest.clone({
         setHeaders: {
-          Authorization: token,
+          Authorization: token
         }
       });
     }

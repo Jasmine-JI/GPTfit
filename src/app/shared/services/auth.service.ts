@@ -18,6 +18,7 @@ export class AuthService {
   loginStatus$ = new BehaviorSubject<boolean>(false);
   currentUser$ = new BehaviorSubject<User>(null);
   backUrl = '';
+  userName = '';
   constructor(
     private http: HttpClient,
     private utils: UtilsService,
@@ -33,12 +34,16 @@ export class AuthService {
         if (res.resultCode === 200) {
           const { name, token, tokenTimeStamp } = res.info;
           this.loginStatus$.next(true);
+          // to remove
           this.currentUser$.next(name);
+          this.userName = name;
           this.utils.writeToken(token);
           this.utils.setLocalStorageObject('ala_token_time', tokenTimeStamp);
           const router = this.injector.get(Router);
-          if (this.backUrl.length > 0) {
-            // router.navigate([this.backUrl]);
+          if (res.info.firstLogin === '2') {
+            this.utils.setSessionStorageObject('isFirstLogin', true);
+            router.navigate(['/first-login']);
+          } else if (this.backUrl.length > 0) {
             location.href = this.backUrl; // 為了讓登入的api request payload清除掉
           } else {
             // router.navigate(['/dashboard']);
@@ -72,6 +77,9 @@ export class AuthService {
   getCurrentUser(): Observable<User> {
     return this.currentUser$;
   }
+  updateUserProfile(body) {
+    return this.http.post<any>('/api/v1/user/updateUserProfile', body);
+  }
   isTokenExpired(token: string = TOKEN): boolean {
     const alaToken = this.utils.getToken(token);
     if (alaToken) {
@@ -96,7 +104,8 @@ export class AuthService {
     if (!this.isTokenExpired()) {
       this.loginStatus$.next(true);
       return of(true);
-    } else { // 'no token or token is expired'
+    } else {
+      // 'no token or token is expired'
       this.utils.removeToken();
       this.utils.removeLocalStorageObject('ala_token_time');
       return of(false);

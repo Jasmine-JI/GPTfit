@@ -16,9 +16,9 @@ export class AccessNamePipe implements PipeTransform {
     } else if (value === '40') {
       return '品牌分店管理員';
     } else if (value === '50') {
-      return '轉播員';
+      return '體適能教練';
     } else if (value === '60') {
-      return '健身教練';
+      return '專業老師';
     } else if (value === '80') {
       return '群組長';
     } return '一般成員';

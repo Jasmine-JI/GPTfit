@@ -61,10 +61,10 @@ exports.getInfos = function(sn) {
         }
 
         if (mainAppData) {
-          mainAppData.appIconUrl = `http://${domain}/app/public_html/products` + mainAppData.appIconUrl;
-          mainAppData.appIosImg = `http://${domain}/app/public_html/products/img/getApp_01_apple.png`;
-          mainAppData.appAndroidImg = `http://${domain}/app/public_html/products/img/getApp_02_googleplay.png`;
-          mainAppData.appApkImg = `http://${domain}/app/public_html/products/img/getApp_03_apk.png`;
+          mainAppData.appIconUrl = `https://${domain}/app/public_html/products` + mainAppData.appIconUrl;
+          mainAppData.appIosImg = `https://${domain}/app/public_html/products/img/getApp_01_apple.png`;
+          mainAppData.appAndroidImg = `https://${domain}/app/public_html/products/img/getApp_02_googleplay.png`;
+          mainAppData.appApkImg = `https://${domain}/app/public_html/products/img/getApp_03_apk.png`;
         }
 
         const secondaryAppData = productsInfoData ? appInfo.filter(_info =>  {
@@ -72,10 +72,10 @@ exports.getInfos = function(sn) {
            return _info.appId === productData.secondaryApp[0].appId
         })[0] : null;
         if (secondaryAppData) {
-          secondaryAppData.appIconUrl = `http://${domain}/app/public_html/products` + secondaryAppData.appIconUrl;
-          secondaryAppData.appIosImg = `http://${domain}/app/public_html/products/img/getApp_01_apple.png`;
-          secondaryAppData.appAndroidImg = `http://${domain}/app/public_html/products/img/getApp_02_googleplay.png`;
-          secondaryAppData.appApkImg = `http://${domain}/app/public_html/products/img/getApp_03_apk.png`;
+          secondaryAppData.appIconUrl = `https://${domain}/app/public_html/products` + secondaryAppData.appIconUrl;
+          secondaryAppData.appIosImg = `https://${domain}/app/public_html/products/img/getApp_01_apple.png`;
+          secondaryAppData.appAndroidImg = `https://${domain}/app/public_html/products/img/getApp_02_googleplay.png`;
+          secondaryAppData.appApkImg = `https://${domain}/app/public_html/products/img/getApp_03_apk.png`;
         }
         if (mainAppData) {
           data.informations = {
@@ -86,7 +86,7 @@ exports.getInfos = function(sn) {
             'manual_zh-CN': productData["manual_zh-CN"],
             'manual_en-US': productData["manual_en-US"]
           };
-          data.modelImgUrl = `http://${domain}/app/public_html/products${productData.modelImg}`;
+          data.modelImgUrl = `https://${domain}/app/public_html/products${productData.modelImg}`;
           data.modelName = productData.modelName;
 
           data.date = date;

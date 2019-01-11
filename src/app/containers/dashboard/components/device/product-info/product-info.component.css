@@ -1,0 +1,61 @@
+.app-link {
+  margin: 10px 0 15px;
+
+}
+.app-link img {
+  /* width: 55px; */
+  height: 55px;
+  cursor: pointer;
+}
+
+.device-hint {
+  display: inline-block;
+  margin-left: 10px;
+  position: relative;
+  width: calc(100% - 340px);
+}
+.device-hint-box {
+  position: absolute;
+  border: 1px solid #ccc;
+  top: 20px;
+  left: 40px;
+  max-width: 265px;
+  width: 100%;
+  height: auto;
+  background-color: #feffe9;
+  color: black;
+  padding: 10px;
+}
+.product-info.group-image--area {
+  max-width: 225px;
+}
+@media(max-width: 1169px) {
+  .device-hint-box {
+    top: 30px;
+    left: initial;
+    right: 10px;
+    min-width: 285px;
+    max-width: initial;
+
+  }
+}
+@media(max-width: 977px) {
+  .device-hint {
+    display: block;
+    width: 100%;
+    margin: 10px 0 0 0;
+  }
+  .device-hint-box {
+    position: initial;
+    top: 30px;
+    left: initial;
+    right: 10px;
+    min-width: 285px;
+    max-width: initial;
+  }
+}
+@media(max-width: 767px) {
+  .product-info.group-image--area {
+    max-width: initial;
+  }
+}

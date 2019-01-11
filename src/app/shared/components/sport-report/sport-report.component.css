@@ -1,0 +1,43 @@
+.example-tree-invisible {
+  display: none;
+}
+
+.example-tree ul,
+.example-tree li {
+  margin-top: 0;
+  margin-bottom: 0;
+  list-style-type: none;
+}
+
+.mat-tree-node:hover {
+  cursor: pointer;
+}
+
+.example-tree ul {
+  padding-left: 5px;
+}
+/* 之後做共用 */
+.mat-tab-label.mat-tab-label-active {
+  padding: 5px;
+  background-color: transparent;
+  color: #26abe3;
+  font-weight: 700;
+}
+
+.mat-tab-group.mat-primary .mat-ink-bar {
+  background-color: #26abe3;
+}
+
+/* 隱藏highchart字標 */
+.highcharts-credits {
+  display: none;
+}
+
+.report-time-btn.mat-icon-button {
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+}
+.mat-tab-body {
+  padding: 0;
+}

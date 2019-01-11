@@ -1,7 +1,9 @@
 <div style="color: #157fcc; font-weight:700">
   Device_Log Details
   <div style="display: inline-block;float: right">
-    <button (click)="this._location.back()" class="alatech-btn alatech-btn--default">
+    <button class="alatech-btn alatech-btn--default"
+      [routerLink]="['/dashboard/system/device_log']"
+    >
       返回列表
     </button>
   </div>
@@ -79,7 +81,7 @@
 </mat-table>
 <mat-paginator #paginator
   [length]="totalCount"
-  [pageIndex]="0"
+  [pageIndex]="currentPage?.pageIndex"
   [pageSize]="10"
   [pageSizeOptions]="[10, 25, 100]"
 >

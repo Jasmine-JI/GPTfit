@@ -55,4 +55,7 @@ export class GroupService {
   updateInnerAdmin(body) {
     return this.http.post<any>(API_SERVER + 'center/innerAdmin', body);
   }
+  fetchCommerceInfo(body) {
+    return this.http.post<any>('/api/v1/center/getCommerceInfo', body);
+  }
 }

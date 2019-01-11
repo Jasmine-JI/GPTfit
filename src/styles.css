@@ -16,11 +16,14 @@
   background-color: #2f4349;
   color: #fff;
   padding: 8px 25px;
+  text-align: center;
 }
 .mat-progress-spinner circle, .mat-spinner circle {
   stroke: #108bcd;
 }
-
+.ng-bar-placeholder {
+  height: 5px!important;
+}
 
 body,
 html {
@@ -60,6 +63,11 @@ html {
   background-color: #EFEFEF;
   opacity: .65;
 }
+.form-control.form-control--invalid {
+  border: 1px solid #c75353;
+  box-shadow: rgba(163, 50, 50, .34) 0 0 4px 0;
+}
+
 .form-control.form-control--invalid {
   border: 1px solid #c75353;
   box-shadow: rgba(163, 50, 50, .34) 0 0 4px 0;
@@ -138,7 +146,7 @@ button:focus {
   top: 0;
   height: 0;
   width: 0;
-  background: rgba(0, 0, 0, .6);
+  background: rgba(0, 0, 0, .8);
   z-index: 3;
   opacity: 0;
   transition: opacity .3s ease-in-out,
@@ -328,6 +336,11 @@ a.alatech-btn:hover {
   left: 25px;
   padding: 0px 10px;
   background-color: #fff;
+  font-weight: 700;
+}
+
+.ala-dashboard-title {
+  color: #157fcc;
   font-weight: 700;
 }
 /* about auth page */

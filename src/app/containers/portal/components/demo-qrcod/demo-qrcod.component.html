@@ -2,7 +2,7 @@
 <div class="container" style="font-size:20px; margin-top: 30px;">
   <ng-progress
     [positionUsing]="'marginLeft'"
-    [direction]="'leftToRightIncreased'"
+    [direction]="'ltr+'"
     [color]="'#cb5e5e'"
     [trickleSpeed]="500"
     [thick]="true"
@@ -103,18 +103,25 @@
           </div>
         </div>
       </div>
-      <!-- <div class="row demo-qr__action">
+      <div class="row demo-qr__action">
         <button class="alatech-btn alatech-btn--default"
           title="Fit Pair"
-          *ngIf="isShowFitPairBtn"
+          *ngIf="isShowFitPairBtn && isFitPaired"
+          (click)="fitPair('2')"
+        >
+          解除原有的Fit Pair
+        </button>
+        <button class="alatech-btn alatech-btn--default"
+          title="Fit Pair"
+          *ngIf="isShowFitPairBtn && !isFitPaired"
           (click)="fitPair('1')"
         >
           Fit Pair(對應頭像與運動檔案)
         </button>
         <button class="alatech-btn alatech-btn--default"
           title="Fit Pair"
-          *ngIf="isShowFitPairBtn"
-          (click)="fitPair('2')"
+          *ngIf="isShowFitPairBtn && !isFitPaired"
+          (click)="fitPair('3')"
         >
           Fit Pair(僅對應運動檔案)
         </button>
@@ -125,7 +132,7 @@
         >
           登錄產品
         </button>
-      </div> -->
+      </div>
     </ng-container>
   </ng-container>
 

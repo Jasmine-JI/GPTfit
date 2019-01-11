@@ -70,11 +70,9 @@ td>a.ranking-link:hover {
   text-decoration: none;
   color: #157fcc;
 }
-
 .ranking-link {
   cursor: pointer;
 }
-
 hr {
   border-color: #ddd;
 }
@@ -373,9 +371,11 @@ tr.tr-only-hide {
   .leaderboard-layer {
     margin-top: 0px;
   }
+
   .tablist {
     border-bottom: 1px solid #dbd8ca;
   }
+
   .tablist__tab--selected {
     font-size: 14px;
     line-height: 22px;

@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CoachDashboardComponent } from './coach-dashboard.component';
+import { CoachRexComponent } from './coach-rex.component';
 
-describe('CoachDashboardComponent', () => {
-  let component: CoachDashboardComponent;
-  let fixture: ComponentFixture<CoachDashboardComponent>;
+describe('CoachRexComponent', () => {
+  let component: CoachRexComponent;
+  let fixture: ComponentFixture<CoachRexComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CoachDashboardComponent ]
+      declarations: [ CoachRexComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CoachDashboardComponent);
+    fixture = TestBed.createComponent(CoachRexComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,0 +1,37 @@
+.group-btn--waiting {
+  background-color: #26abe3;
+  color: #fff;
+}
+
+.image-is--default {
+  opacity: .1;
+}
+.group-image--area {
+  .nav {
+    flex-direction: column;
+    margin-top: 50px;
+  }
+  .nav>li {
+    font-size: 19px;
+    padding: 10px 0px;
+    cursor: pointer;
+    color: #919191;
+    font-weight: 700;
+  }
+  .nav>li.active {
+    color: #26abe3;
+  }
+}
+
+@media(max-width: 767px) {
+  .group-info.row {
+    display: block;
+    .group-image--area {
+      flex-direction: column;
+      ul.nav {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+    }
+  }
+}

@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, Inject } from '@angular/core';
+import { Component, OnInit, HostListener, Inject, Input } from '@angular/core';
 import { GlobalEventsManager } from '@shared/global-events-manager';
 import { Router } from '@angular/router';
 import { WINDOW } from '@shared/services/window.service';
@@ -30,6 +30,7 @@ export class NavbarComponent implements OnInit {
     'zh-cn': '简体中文',
     'en-us': 'English'
   };
+  @Input() isAlphaVersion = false;
   constructor(
     private globalEventsManager: GlobalEventsManager,
     private router: Router,
@@ -40,7 +41,9 @@ export class NavbarComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.langName = this.langData[this.utilsService.getLocalStorageObject('locale')];
+    this.langName = this.langData[
+      this.utilsService.getLocalStorageObject('locale')
+    ];
     this.login$ = this.authService.getLoginStatus();
     this.deviceWidth = window.innerWidth;
     this.href = this.router.url;
@@ -120,10 +123,12 @@ export class NavbarComponent implements OnInit {
   }
   chooseNavItem(num: number) {
     this.navItemNum = num;
+    this.toggleMask();
   }
   switchLang(lang: string) {
     this.langName = this.langData[lang];
     this.translateService.use(lang);
     this.utilsService.setLocalStorageObject('locale', lang);
+    this.toggleMask();
   }
 }

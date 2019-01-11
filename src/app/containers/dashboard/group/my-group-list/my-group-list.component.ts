@@ -1,4 +1,10 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  OnDestroy
+} from '@angular/core';
 import { GroupService } from '../../services/group.service';
 import {
   MatTableDataSource,
@@ -13,13 +19,14 @@ import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/observable/fromEvent';
 import { Router } from '@angular/router';
 import { UtilsService } from '@shared/services/utils.service';
+import { GlobalEventsManager } from '@shared/global-events-manager';
 
 @Component({
   selector: 'app-my-group-list',
   templateUrl: './my-group-list.component.html',
-  styleUrls: ['./my-group-list.component.css', '../group-style.css']
+  styleUrls: ['./my-group-list.component.css', '../group-style.scss']
 })
-export class MyGroupListComponent implements OnInit {
+export class MyGroupListComponent implements OnInit, OnDestroy {
   logSource = new MatTableDataSource<any>();
   totalCount: number;
   currentPage: PageEvent;
@@ -37,11 +44,15 @@ export class MyGroupListComponent implements OnInit {
     private groupService: GroupService,
     private matPaginatorIntl: MatPaginatorIntl,
     private router: Router,
-    private utils: UtilsService
+    private utils: UtilsService,
+    private globalEventsManager: GlobalEventsManager
   ) {
   }
 
   ngOnInit() {
+    const queryStrings = this.utils.getUrlQueryStrings(location.search);
+    const { pageNumber } = queryStrings;
+    this.globalEventsManager.setFooterRWD(2); // 為了讓footer長高85px
     // 設定顯示筆數資訊文字
     this.matPaginatorIntl.getRangeLabel = (
       page: number,
@@ -63,7 +74,7 @@ export class MyGroupListComponent implements OnInit {
     };
 
     this.currentPage = {
-      pageIndex: 0,
+      pageIndex: (+pageNumber - 1) || 0,
       pageSize: 10,
       length: null
     };
@@ -78,6 +89,7 @@ export class MyGroupListComponent implements OnInit {
     // 分頁切換時，重新取得資料
     this.paginator.page.subscribe((page: PageEvent) => {
       this.currentPage = page;
+      this.router.navigateByUrl(`/dashboard/my-group-list?pageNumber=${this.currentPage.pageIndex + 1}`);
       this.getLists();
     });
   }
@@ -86,14 +98,14 @@ export class MyGroupListComponent implements OnInit {
     const body = {
       token: this.token,
       category: '2',
-      groupLevel: '90',
+      groupLevel: '90', // 撈全部列表，後端不會檢查groupLevel欄位，所以質可以亂帶
       searchWords: '',
       page: this.currentPage && this.currentPage.pageIndex.toString() || '0',
       pageCounts: this.currentPage && this.currentPage.pageSize.toString() || '10'
     };
     this.groupService.fetchGroupList(body).subscribe(res => {
       this.isLoading = false;
-      this.logSource.data = res.info.groupList.filter(_group => _group.groupStatus !== 4);
+      this.logSource.data = res.info.groupList.filter(_group => (_group.groupStatus !== 4 && _group.joinStatus === 2));
       this.totalCount = res.info.totalCounts;
       if (this.logSource.data.length === 0) {
         this.isEmpty = true;
@@ -108,5 +120,8 @@ export class MyGroupListComponent implements OnInit {
   }
   selectTarget(_value) {
     this.selectedValue = encodeURIComponent(_value).trim();
+  }
+  ngOnDestroy() {
+    this.globalEventsManager.setFooterRWD(0); // 為了讓footer自己變回去預設值
   }
 }

@@ -2,7 +2,11 @@ import {
   Component,
   OnInit,
   ViewEncapsulation,
-  HostListener
+  HostListener,
+  ViewChild,
+  ElementRef,
+  OnDestroy,
+  Inject
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { GroupService } from '../../services/group.service';
@@ -20,14 +24,17 @@ import { MsgDialogComponent } from '../../components/msg-dialog/msg-dialog.compo
 import { MatDialog } from '@angular/material/dialog';
 import { forkJoin } from 'rxjs/observable/forkJoin';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { GlobalEventsManager } from '@shared/global-events-manager';
+import { MatBottomSheet, MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA} from '@angular/material';
+import { toCoachText } from '../desc';
 
 @Component({
   selector: 'app-edit-group-info',
   templateUrl: './edit-group-info.component.html',
-  styleUrls: ['./edit-group-info.component.css', '../group-style.css'],
+  styleUrls: ['./edit-group-info.component.css', '../group-style.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class EditGroupInfoComponent implements OnInit {
+export class EditGroupInfoComponent implements OnInit, OnDestroy {
   groupId: string;
   token: string;
   groupInfo: any;
@@ -43,12 +50,17 @@ export class EditGroupInfoComponent implements OnInit {
   subCoachInfo: any;
   branchAdministrators: any;
   coachAdministrators: any;
+  normalCoaches: any;
+  PFCoaches: any;
   normalMemberInfos: any;
   remindText = '※不得超過32個字元';
+  remindVideoText = '請輸入直播影片的嵌入式語句';
+  isVideoEdit = false;
   inValidText = '欄位為必填';
   textareaMaxLength = 500;
   form: FormGroup;
   formTextName = 'groupName';
+  formUrlName = 'groupVideoUrl';
   formTextareaName = 'groupDesc';
   role = {
     isSupervisor: false,
@@ -58,7 +70,7 @@ export class EditGroupInfoComponent implements OnInit {
     isBranchAdministrator: false,
     isCoach: false
   };
-  maxFileSize = 524288;
+  maxFileSize = 1048576;
   isUploading = false;
   fileLink: string;
   reloadFileText = '重新上傳';
@@ -68,11 +80,17 @@ export class EditGroupInfoComponent implements OnInit {
   visitorDetail: any;
   isLoading = false;
   isGroupDetailLoading = false;
+  videoUrl = '';
+  @ViewChild('footerTarget')
+  footerTarget: ElementRef;
   get groupName() {
     return this.form.get('groupName');
   }
   get groupDesc() {
     return this.form.get('groupDesc');
+  }
+  get groupVideoUrl() {
+    return this.form.get('groupVideoUrl');
   }
   constructor(
     private route: ActivatedRoute,
@@ -81,7 +99,9 @@ export class EditGroupInfoComponent implements OnInit {
     private router: Router,
     private fb: FormBuilder,
     private userInfoService: UserInfoService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private globalEventsManager: GlobalEventsManager,
+    private bottomSheet: MatBottomSheet
   ) {}
   @HostListener('dragover', ['$event'])
   public onDragOver(evt) {
@@ -102,39 +122,42 @@ export class EditGroupInfoComponent implements OnInit {
     this.route.params.subscribe(_params => this.handleInit());
     this.userInfoService.getUserAccessRightDetail().subscribe(res => {
       this.visitorDetail = res;
-      console.log('visitorDetail: ', this.visitorDetail);
     });
+  }
+  ngOnDestroy() {
+    this.globalEventsManager.setFooterRWD(0); // 為了讓footer自己變回去預設值
   }
   handleInit() {
     this.groupId = this.route.snapshot.paramMap.get('groupId');
     this.form = this.fb.group({
       groupStatus: ['', [Validators.required]],
       groupName: ['', [Validators.required, Validators.maxLength(32)]],
-      groupDesc: ['', [Validators.required, Validators.maxLength(500)]]
+      groupDesc: ['', [Validators.required, Validators.maxLength(500)]],
+      groupVideoUrl: ['']
     });
     this.userInfoService.getSupervisorStatus().subscribe(res => {
       this.role.isSupervisor = res;
-      console.log('%c this.isSupervisor', 'color: #0ca011', res);
+      // console.log('%c this.isSupervisor', 'color: #0ca011', res);
     });
     this.userInfoService.getSystemDeveloperStatus().subscribe(res => {
       this.role.isSystemDeveloper = res;
-      console.log('%c this.isSystemDeveloper', 'color: #0ca011', res);
+      // console.log('%c this.isSystemDeveloper', 'color: #0ca011', res);
     });
     this.userInfoService.getSystemMaintainerStatus().subscribe(res => {
       this.role.isSystemMaintainer = res;
-      console.log('%c this.isSystemMaintainer', 'color: #0ca011', res);
+      // console.log('%c this.isSystemMaintainer', 'color: #0ca011', res);
     });
     this.userInfoService.getBrandAdministratorStatus().subscribe(res => {
       this.role.isBrandAdministrator = res;
-      console.log('%c this.isBrandAdministrator', 'color: #0ca011', res);
+      // console.log('%c this.isBrandAdministrator', 'color: #0ca011', res);
     });
     this.userInfoService.getBranchAdministratorStatus().subscribe(res => {
       this.role.isBranchAdministrator = res;
-      console.log('%c this.isBranchAdministrator', 'color: #0ca011', res);
+      // console.log('%c this.isBranchAdministrator', 'color: #0ca011', res);
     });
     this.userInfoService.getCoachStatus().subscribe(res => {
       this.role.isCoach = res;
-      console.log('%c this.isCoach', 'color: #0ca011', res);
+      // console.log('%c this.isCoach', 'color: #0ca011', res);
     });
     this.token = this.utils.getToken();
     const body = { token: this.token, groupId: this.groupId };
@@ -150,8 +173,10 @@ export class EditGroupInfoComponent implements OnInit {
         groupName,
         groupDesc,
         selfJoinStatus,
-        groupStatus
+        groupStatus,
+        groupVideoUrl
       } = this.groupInfo;
+      this.videoUrl = groupVideoUrl;
       if (groupStatus === 4) {
         this.router.navigateByUrl(`/404`);
       }
@@ -160,7 +185,12 @@ export class EditGroupInfoComponent implements OnInit {
       } else {
         this.joinStatus = 0;
       }
-      this.form.patchValue({ groupName, groupDesc, groupStatus });
+      this.form.patchValue({
+        groupName,
+        groupDesc,
+        groupStatus,
+        groupVideoUrl
+      });
       this.groupImg = this.utils.buildBase64ImgString(groupIcon);
       this.finalImageLink = this.groupImg;
       this.group_id = this.utils.displayGroupId(groupId);
@@ -174,6 +204,7 @@ export class EditGroupInfoComponent implements OnInit {
   }
   handleActionGroup(_type) {
     const body = {
+      token: this.token,
       groupId: this.groupId,
       actionType: _type
     };
@@ -209,7 +240,6 @@ export class EditGroupInfoComponent implements OnInit {
         onConfirm: this.handleDimissGroup.bind(this)
       }
     });
-
   }
   handleDimissGroup() {
     const body = {
@@ -279,7 +309,8 @@ export class EditGroupInfoComponent implements OnInit {
           );
           if (this.groupLevel === '40') {
             this.branchAdministrators = this.groupInfos.filter(
-              _info => _info.accessRight === '40' && _info.groupId === this.groupId
+              _info =>
+                _info.accessRight === '40' && _info.groupId === this.groupId
             );
           } else {
             this.branchAdministrators = this.groupInfos.filter(_info => {
@@ -296,13 +327,20 @@ export class EditGroupInfoComponent implements OnInit {
             });
           }
           if (this.groupLevel === '60') {
-            this.coachAdministrators = this.groupInfos.filter(
+            // 如果是教練課群組
+            this.normalCoaches = this.groupInfos.filter(
+              // 一般教練
               _info =>
                 _info.accessRight === '60' && _info.groupId === this.groupId
             );
+            this.PFCoaches = this.groupInfos.filter(
+              // 體適能教練
+              _info =>
+                _info.accessRight === '50' && _info.groupId === this.groupId
+            );
           } else {
             this.coachAdministrators = this.groupInfos.filter(_info => {
-              if (_info.accessRight === '60') {
+              if (_info.accessRight === '60' || _info.accessRight === '50') {
                 const idx = this.subCoachInfo.findIndex(
                   _subCoach => _subCoach.groupId === _info.groupId
                 );
@@ -319,6 +357,11 @@ export class EditGroupInfoComponent implements OnInit {
           );
         }
       }
+      setTimeout(() => {
+        const childElementCount = this.footerTarget.nativeElement
+          .childElementCount;
+        this.globalEventsManager.setFooterRWD(childElementCount); // 為了讓footer長高85px
+      }, 1000); // 應該長新增教練課btn非同步延遲，所以等一秒來得到childelement
     });
   }
   changeGroupInfo({ index }) {
@@ -344,14 +387,15 @@ export class EditGroupInfoComponent implements OnInit {
   }
   manage({ value, valid }) {
     if (valid) {
-      const { groupName, groupDesc, groupStatus } = value;
+      const { groupName, groupDesc, groupStatus, groupVideoUrl } = value;
       const body1 = {
         token: this.token,
         groupId: this.groupId,
         groupLevel: this.groupLevel,
         groupName,
         groupIcon: this.finalImageLink || '',
-        groupDesc
+        groupDesc,
+        groupVideoUrl
       };
       const body2 = {
         token: this.token,
@@ -366,6 +410,14 @@ export class EditGroupInfoComponent implements OnInit {
         this.isGroupDetailLoading = false;
         if (results[0].resultCode === 200 && results[1].resultCode === 200) {
           this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}`);
+        } else if (results[0].resultCode === 409) {
+          this.dialog.open(MsgDialogComponent, {
+            hasBackdrop: true,
+            data: {
+              title: 'Message',
+              body: '品牌名稱已存在'
+            }
+          });
         } else {
           this.dialog.open(MsgDialogComponent, {
             hasBackdrop: true,
@@ -378,8 +430,27 @@ export class EditGroupInfoComponent implements OnInit {
       });
     }
   }
-  public handleChangeTextarea(code): void {
-    this.form.patchValue({ groupDesc: code });
+  public handleChangeTextarea(code: string, type: number): void {
+    if (type === 1) {
+      return this.form.patchValue({ groupDesc: code });
+    }
+    if (code && code.length > 0) {
+      const re = /src\s*=\s*"(.+?)"/i;
+      const arr = code.match(re);
+      let groupVideoUrl = code;
+      if (arr) {
+        groupVideoUrl = arr[0].slice(4);
+        this.videoUrl = groupVideoUrl;
+        this.isVideoEdit = true;
+        this.form.patchValue({ groupVideoUrl });
+        this.videoUrl = this.videoUrl.slice(1, this.videoUrl.length - 1);
+      } else {
+        this.videoUrl = code;
+      }
+    }
+  }
+  switchVideoLink() {
+    this.isVideoEdit = !this.isVideoEdit;
   }
   handleAttachmentChange(file) {
     if (file) {
@@ -398,9 +469,15 @@ export class EditGroupInfoComponent implements OnInit {
   }
   goCreatePage(_type, e) {
     e.preventDefault();
-    this.router.navigateByUrl(
-      `/dashboard/group-info/${this.groupId}/create?type=${_type}`
-    );
+    if (_type === 1) {
+      this.router.navigateByUrl(
+        `/dashboard/group-info/${this.groupId}/create?createType=1`
+      );
+    } else {
+      this.bottomSheet.open(BottomSheetComponent, {
+        data: { groupId: this.groupId }
+      });
+    }
   }
   handleWaittingMemberInfo(id: string) {
     if (id) {
@@ -419,6 +496,13 @@ export class EditGroupInfoComponent implements OnInit {
         );
       } else if (type === 3) {
         this.coachAdministrators = this.coachAdministrators.filter(
+          _info => _info.memberId !== id
+        );
+      } else if (type === 4) { // 針對教練群組，刪除一般教練或體適能教練
+        this.normalCoaches = this.normalCoaches.filter(
+          _info => _info.memberId !== id
+        );
+        this.PFCoaches = this.PFCoaches.filter(
           _info => _info.memberId !== id
         );
       } else {
@@ -449,6 +533,48 @@ export class EditGroupInfoComponent implements OnInit {
       this.normalMemberInfos = this.normalMemberInfos.filter(
         _info => _info.memberId !== id
       );
+    }
+  }
+}
+@Component({
+  selector: 'app-bottom-sheet',
+  templateUrl: 'bottom-sheet.html'
+})
+export class BottomSheetComponent {
+  constructor(
+    private bottomSheetRef: MatBottomSheetRef<BottomSheetComponent>,
+    private router: Router,
+    public dialog: MatDialog,
+    @Inject(MAT_BOTTOM_SHEET_DATA) private data: any
+  ) {}
+  get groupId() {
+    return this.data.groupId;
+  }
+  openLink(event: MouseEvent, type: number): void {
+    let coachType = null;
+    if (type === 1 || type === 2) {
+      coachType = type;
+    }
+    if (type === 3) {
+      event.preventDefault();
+    }
+    this.bottomSheetRef.dismiss();
+    if (type === 1 || type === 2) {
+      this.dialog.open(MessageBoxComponent, {
+        hasBackdrop: true,
+        data: {
+          title: '建立課程說明',
+          body: toCoachText,
+          confirmText: '我同意',
+          cancelText: '不同意',
+          onConfirm: () => {
+            this.router.navigateByUrl(
+              `/dashboard/group-info/${this.groupId}/create?createType=2&coachType=${coachType}`
+            );
+          }
+        }
+      });
+
     }
   }
 }
