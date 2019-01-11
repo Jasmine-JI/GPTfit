@@ -19,6 +19,7 @@ import { Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material';
 import { getUrlQueryStrings } from '@shared/utils/';
 import { handlePoints } from './chartData';
+import { UserInfoService } from '../../../containers/dashboard/services/userInfo.service';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -58,15 +59,18 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   paceChartTarget: ElementRef;
   @ViewChild('tempChartTarget')
   tempChartTarget: ElementRef;
+  @ViewChild('zoneChartTarget')
+  zoneChartTarget: ElementRef;
+  @ViewChild('wattChartTarget')
+  wattChartTarget: ElementRef;
+
   isspeedChartTargetDisplay = false;
   iselevationChartTargetDisplay = false;
   ishrChartTargetDisplay = false;
   iscadenceChartTargetDisplay = false;
   ispaceChartTargetDisplay = false;
   istempChartTargetDisplay = false;
-  dataset1: any;
-  dataset2: any;
-  dataset3: any;
+  iszoneChartTargetDisplay = false;
   activityInfo: any;
   fileInfo: any;
   infoDate: string;
@@ -99,6 +103,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   resolutionSeconds: number;
   isOriginalMode = false;
   isInitialChartDone = false;
+  charts = [];
+  finalDatas: any;
   constructor(
     private utils: UtilsService,
     private renderer: Renderer2,
@@ -106,7 +112,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     private route: ActivatedRoute,
     private ngProgress: NgProgress,
     private globalEventsManager: GlobalEventsManager,
-    private router: Router
+    private router: Router,
+    private userInfoService: UserInfoService
   ) {
     /**
      * 重写内部的方法， 这里是将提示框即十字准星的隐藏函数关闭
@@ -125,6 +132,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
+    Highcharts.charts.length = 0; // 初始化global highchart物件
     if (location.search.indexOf('?original') > -1) {
       this.isOriginalMode = true;
     }
@@ -144,7 +152,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   ngOnDestroy() {
     if (!this.isShowNoRight && !this.isFileIDNotExist) {
-      Highcharts.charts.forEach(_highChart => {
+      Highcharts.charts.forEach((_highChart, idx) => {
         if (_highChart !== undefined) {
           _highChart.destroy();
         }
@@ -272,34 +280,59 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       time;
     return date;
   }
-  handleSynchronizedPoint(e) {
+  handleSynchronizedPoint(e, finalDatas) {
     // Do something with 'event'
     for (let i = 0; i < Highcharts.charts.length; i = i + 1) {
       const _chart: any = Highcharts.charts[i];
       if (_chart !== undefined) {
-        const event = _chart.pointer.normalize(e); // Find coordinates within the chart
-        const point = _chart.series[0].searchPoint(event, true); // Get the hovered point
-        if (point) {
-          point.highlight(e);
+        if (finalDatas[i].isSyncExtremes) {
+          const event = _chart.pointer.normalize(e); // Find coordinates within the chart
+          const point = _chart.series[0].searchPoint(event, true); // Get the hovered point
+          if (point) {
+            point.highlight(e);
+          }
         }
       }
     }
   }
   initHchart() {
+    const hrFormatData = {
+      userAge: null,
+      userMaxHR: null,
+      userRestHR: null,
+      userHRBase: null
+    };
+    if (this.activityInfo.type !== '4') {
+      this.userInfoService.getUserAge().subscribe(res => {
+        hrFormatData.userAge = res;
+      });
+      this.userInfoService.getUserMaxHR().subscribe(res => {
+        hrFormatData.userMaxHR = res;
+      });
+      this.userInfoService.getUserRestHR().subscribe(res => {
+        hrFormatData.userRestHR = res;
+      });
+      this.userInfoService.getUserHRBase().subscribe(res => {
+        hrFormatData.userHRBase = res;
+      });
+    }
     const { finalDatas, chartTargets } = handlePoints(
       this.activityPoints,
       this.activityInfo.type,
-      this.resolutionSeconds
+      this.resolutionSeconds,
+      hrFormatData
     );
-    console.log('finalDatas: ', finalDatas);
-    console.log('chartTargets: ', chartTargets);
-
-    finalDatas.forEach((_option, idx) => {
+    this.finalDatas = finalDatas;
+    this.finalDatas.forEach((_option, idx) => {
       this[`is${chartTargets[idx]}Display`] = true;
       _option[
         chartTargets[idx]
-      ].xAxis.events.setExtremes = this.syncExtremes.bind(this, idx + 1);
-      chart(
+      ].xAxis.events.setExtremes = this.syncExtremes.bind(
+        this,
+        idx,
+        finalDatas
+      );
+      this.charts[idx] = chart(
         this[chartTargets[idx]].nativeElement,
         _option[chartTargets[idx]]
       );
@@ -307,21 +340,21 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isInitialChartDone = true;
 
     this.renderer.listen(this.container.nativeElement, 'mousemove', e =>
-      this.handleSynchronizedPoint(e)
+      this.handleSynchronizedPoint(e, finalDatas)
     );
     this.renderer.listen(this.container.nativeElement, 'touchmove', e =>
-      this.handleSynchronizedPoint(e)
+      this.handleSynchronizedPoint(e, finalDatas)
     );
     this.renderer.listen(this.container.nativeElement, 'touchstart', e =>
-      this.handleSynchronizedPoint(e)
+      this.handleSynchronizedPoint(e, finalDatas)
     );
   }
-  syncExtremes(num, e) {
+  syncExtremes(num, finalDatas, e) {
     // 調整縮放會同步
-    const thisChart = this[`chart${num}`];
+    const thisChart = this.charts[num];
     if (e.trigger !== 'syncExtremes') {
-      Highcharts.each(Highcharts.charts, function(_chart) {
-        if (_chart !== thisChart && _chart) {
+      Highcharts.each(Highcharts.charts, function(_chart, idx) {
+        if (_chart !== thisChart && _chart && finalDatas[idx].isSyncExtremes) {
           if (_chart.xAxis[0].setExtremes) {
             _chart.xAxis[0].setExtremes(e.min, e.max, undefined, false, {
               trigger: 'syncExtremes'

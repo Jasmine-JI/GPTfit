@@ -4,7 +4,7 @@ class Option {
   constructor(dataset, colorIdx) {
     return {
       chart: {
-        marginLeft: 60, // Keep all charts left aligned
+        // marginLeft: 60, // Keep all charts left aligned
         spacingTop: 20,
         spacingBottom: 20,
         zoomType: 'x'
@@ -63,24 +63,76 @@ class Option {
     };
   }
 }
-export const handlePoints = (datas, type, resolutionSeconds) => {
-  console.log('type: ', type);
-
-  console.log('datas: ', datas);
+export const handlePoints = (datas, type, resolutionSeconds, hrFormatData) => {
   let colorIdx = 0;
   let isNoSpeeds = false,
     isNoElevations = false,
     isNoHeartRates = false,
-  isNoRunCadences = false,
+    isNoRunCadences = false,
     isNoPaces = false,
-    isNoTemps = false;
+    isNoTemps = false,
+    isNoZones = false,
+    isNoCycleWatt = false,
+    isNoRowingWatt = false,
+    isNoCycleCadences = false,
+    isNoSwimCadences = false,
+    isNoRowingCadences = false;
   const pointSeconds = [],
     speeds = [],
     elevations = [],
     heartRates = [],
     runCadences = [],
     paces = [],
-    temps = [];
+    temps = [],
+    watts = [],
+    cycleCadences = [],
+    swimCadences = [],
+    rowingCadences = [],
+    userZoneTimes = [
+      { y: 0, color: '#2e4d9f' },
+      { y: 0, color: '#2eb1e7' },
+      { y: 0, color: '#92c422' },
+      { y: 0, color: '#f5ab14' },
+      { y: 0, color: '#eb5b19' },
+      { y: 0, color: '#c11920' }
+    ],
+    userHRZones = [0, 0, 0, 0, 0, 0];
+  if (type !== '4') {
+    const { userHRBase, userAge, userMaxHR, userRestHR} = hrFormatData;
+    if (userMaxHR && userRestHR) {
+      if (userHRBase === 0) {
+        userHRZones[0] = userMaxHR * (0.5);
+        userHRZones[1] = userMaxHR * (0.6);
+        userHRZones[2] = userMaxHR * (0.65);
+        userHRZones[3] = userMaxHR * (0.75);
+        userHRZones[4] = userMaxHR * (0.85);
+        userHRZones[5] = userMaxHR * (1);
+      } else {
+        userHRZones[0] = (userMaxHR - userRestHR) * (0.55) + userRestHR;
+        userHRZones[1] = (userMaxHR - userRestHR) * (0.6) + userRestHR;
+        userHRZones[2] = (userMaxHR - userRestHR) * (0.65) + userRestHR;
+        userHRZones[3] = (userMaxHR - userRestHR) * (0.75) + userRestHR;
+        userHRZones[4] = (userMaxHR - userRestHR) * (0.85) + userRestHR;
+        userHRZones[5] = (userMaxHR - userRestHR) * (1) + userRestHR;
+      }
+    } else {
+      if (userHRBase === 0) {
+        userHRZones[0] = (220 - userAge) * (0.5);
+        userHRZones[1] = (220 - userAge) * (0.6);
+        userHRZones[2] = (220 - userAge) * (0.65);
+        userHRZones[3] = (220 - userAge) * (0.75);
+        userHRZones[4] = (220 - userAge) * (0.85);
+        userHRZones[5] = (220 - userAge) * (1);
+      } else {
+        userHRZones[0] = ((220 - userAge) - userRestHR) * (0.55) + userRestHR;
+        userHRZones[1] = ((220 - userAge) - userRestHR) * (0.6) + userRestHR;
+        userHRZones[2] = ((220 - userAge) - userRestHR) * (0.65) + userRestHR;
+        userHRZones[3] = ((220 - userAge) - userRestHR) * (0.75) + userRestHR;
+        userHRZones[4] = ((220 - userAge) - userRestHR) * (0.85) + userRestHR;
+        userHRZones[5] = ((220 - userAge) - userRestHR) * (1) + userRestHR;
+      }
+    }
+  }
   datas.forEach((_point, idx) => {
     pointSeconds.push(resolutionSeconds * (idx + 1) * 1000);
     if (!_point.speed || _point.speed.length === 0) {
@@ -92,7 +144,24 @@ export const handlePoints = (datas, type, resolutionSeconds) => {
     if (!_point.speed || +_point.speed === 0) {
       paces.push(3600);
     } else {
-      paces.push((60 / +_point.speed) * 60);
+      if (type === '1') {
+        paces.push((60 / +_point.speed) * 60);
+      } else if (type === '4') {
+        paces.push((60 / +_point.speed) * 60 / 10);
+      } else if (type === '6') {
+        paces.push((60 / +_point.speed) * 60 / 2);
+      } else {
+      }
+    }
+    if (!_point.cycleWatt || _point.cycleWatt.length === 0) {
+      isNoCycleWatt = true;
+    } else {
+      watts.push(+_point.cycleWatt);
+    }
+    if (!_point.rowingWatt || _point.rowingWatt.length === 0) {
+      isNoRowingWatt = true;
+    } else {
+      watts.push(+_point.rowingWatt);
     }
     if (!_point.altitudeMeters || _point.altitudeMeters.length === 0) {
       isNoElevations = true;
@@ -101,13 +170,42 @@ export const handlePoints = (datas, type, resolutionSeconds) => {
     }
     if (!_point.heartRateBpm || _point.heartRateBpm.length === 0) {
       isNoHeartRates = true;
+      isNoZones = true;
     } else {
       heartRates.push(+_point.heartRateBpm);
+      if (+_point.heartRateBpm >= userHRZones[0] && +_point.heartRateBpm <= userHRZones[1] - 1) {
+        userZoneTimes[1].y = userZoneTimes[1].y + resolutionSeconds;
+      } else if (+_point.heartRateBpm >= userHRZones[1] && +_point.heartRateBpm <= userHRZones[2] - 1) {
+        userZoneTimes[2].y += resolutionSeconds;
+      } else if (+_point.heartRateBpm >= userHRZones[2] && +_point.heartRateBpm <= userHRZones[3] - 1) {
+        userZoneTimes[3].y += resolutionSeconds;
+      } else if (+_point.heartRateBpm >= userHRZones[3] && +_point.heartRateBpm <= userHRZones[4] - 1) {
+        userZoneTimes[4].y += resolutionSeconds;
+      } else if (+_point.heartRateBpm >= userHRZones[4]) {
+        userZoneTimes[5].y += resolutionSeconds;
+      } else {
+        userZoneTimes[0].y += resolutionSeconds;
+      }
     }
     if (!_point.runCadence || _point.runCadence.length === 0) {
       isNoRunCadences = true;
     } else {
       runCadences.push(+_point.runCadence);
+    }
+    if (!_point.cycleCadence || _point.cycleCadence.length === 0) {
+      isNoCycleCadences = true;
+    } else {
+      cycleCadences.push(+_point.cycleCadence);
+    }
+    if (!_point.swimCadence || _point.swimCadence.length === 0) {
+      isNoSwimCadences = true;
+    } else {
+      swimCadences.push(+_point.swimCadence);
+    }
+    if (!_point.rowingCadence || _point.rowingCadence.length === 0) {
+      isNoRowingCadences = true;
+    } else {
+      rowingCadences.push(+_point.rowingCadence);
     }
     if (!_point.temp || _point.temp.length === 0) {
       isNoTemps = true;
@@ -123,7 +221,7 @@ export const handlePoints = (datas, type, resolutionSeconds) => {
     valueDecimals: 1
   };
   const elevationDataset = {
-    name: 'Elevation',
+    name: 'Altitude',
     data: elevations,
     unit: 'm',
     type: 'area',
@@ -143,10 +241,38 @@ export const handlePoints = (datas, type, resolutionSeconds) => {
     type: 'scatter',
     valueDecimals: 0
   };
+  const cycleCadenceDataset = {
+    name: 'Cadence',
+    data: cycleCadences,
+    unit: 'spm',
+    type: 'scatter',
+    valueDecimals: 0
+  };
+  const swimCadenceDataset = {
+    name: 'Cadence',
+    data: swimCadences,
+    unit: 'spm',
+    type: 'scatter',
+    valueDecimals: 0
+  };
+  const rowingCadenceDataset = {
+    name: 'Cadence',
+    data: rowingCadences,
+    unit: 'spm',
+    type: 'scatter',
+    valueDecimals: 0
+  };
   const paceDataset = {
     name: 'Pace',
     data: paces,
     unit: 't/km',
+    type: 'line',
+    valueDecimals: 1
+  };
+  const wattDataset = {
+    name: 'Watt',
+    data: watts,
+    unit: 'w',
     type: 'line',
     valueDecimals: 1
   };
@@ -157,14 +283,26 @@ export const handlePoints = (datas, type, resolutionSeconds) => {
     type: 'line',
     valueDecimals: 1
   };
+  const zoneDataset = {
+    name: 'HR zone',
+    data: userZoneTimes,
+    unit: '',
+    type: 'column',
+    valueDecimals: 0
+  };
   const finalDatas = [];
   const chartTargets = [];
   let  speedOptions,
       elevationOptions,
       hrOptions,
       runCadenceOptions,
+    cycleCadenceOptions,
+    swimCadenceOptions,
+    rowingCadenceOptions,
+    wattOptions,
     paceOptions,
-    tempOptions;
+    tempOptions,
+    zoneOptions;
   if (!isNoSpeeds) {
     speedDataset.data = speedDataset.data.map((val, j) => [
       pointSeconds[j],
@@ -172,8 +310,28 @@ export const handlePoints = (datas, type, resolutionSeconds) => {
     ]);
     speedOptions = new Option(speedDataset, colorIdx);
     colorIdx++;
-    finalDatas.push({ speedChartTarget: speedOptions });
+    finalDatas.push({ speedChartTarget: speedOptions, isSyncExtremes: true });
     chartTargets.push('speedChartTarget');
+  }
+  if (!isNoCycleWatt) {
+    wattDataset.data = wattDataset.data.map((val, j) => [
+      pointSeconds[j],
+      val
+    ]);
+    wattOptions = new Option(wattDataset, colorIdx);
+    colorIdx++;
+    finalDatas.push({ wattChartTarget: wattOptions, isSyncExtremes: true });
+    chartTargets.push('wattChartTarget');
+  }
+  if (!isNoRowingWatt) {
+    wattDataset.data = wattDataset.data.map((val, j) => [
+      pointSeconds[j],
+      val
+    ]);
+    wattOptions = new Option(wattDataset, colorIdx);
+    colorIdx++;
+    finalDatas.push({ wattChartTarget: wattOptions, isSyncExtremes: true });
+    chartTargets.push('wattChartTarget');
   }
   if (!isNoElevations) {
     elevationDataset.data = elevationDataset.data.map((val, j) => [
@@ -182,7 +340,7 @@ export const handlePoints = (datas, type, resolutionSeconds) => {
     ]);
     elevationOptions = new Option(elevationDataset, colorIdx);
     colorIdx++;
-    finalDatas.push({ elevationChartTarget: elevationOptions });
+    finalDatas.push({ elevationChartTarget: elevationOptions, isSyncExtremes: true });
     chartTargets.push('elevationChartTarget');
   }
   if (!isNoHeartRates) {
@@ -192,8 +350,41 @@ export const handlePoints = (datas, type, resolutionSeconds) => {
     ]);
     hrOptions = new Option(hrDataset, colorIdx);
     colorIdx++;
-    finalDatas.push({ hrChartTarget: hrOptions });
+    finalDatas.push({ hrChartTarget: hrOptions, isSyncExtremes: true });
     chartTargets.push('hrChartTarget');
+  }
+  if (!isNoZones) {
+    zoneDataset.data = zoneDataset.data.map((val, j) => val);
+    zoneOptions = new Option(zoneDataset, colorIdx);
+    colorIdx++;
+    zoneOptions['chart'].zoomType = '';
+    zoneOptions['xAxis'].type = '';
+    zoneOptions['xAxis'].dateTimeLabelFormats = null;
+    zoneOptions['tooltip'] = {
+      formatter: function() {
+        const costhr = Math.floor(this.y / 3600);
+        const costmin = Math.floor(Math.round(this.y - costhr * 60 * 60) / 60);
+        const costsecond = Math.round(this.y - costmin * 60);
+        const timeHr = ('0' + costhr).slice(-2);
+        const timeMin = ('0' + costmin).slice(-2);
+        const timeSecond = ('0' + costsecond).slice(-2);
+
+        this.y = `${timeHr}:${timeMin}:${timeSecond}`;
+        return this.y;
+      }
+    };
+
+    zoneOptions['yAxis'].labels = {
+      formatter: function () {
+        const distance = Math.round(this.value / 60);
+        return distance + ' min';
+      }
+    };
+    zoneOptions['xAxis'].categories = [
+      'z0(Normal)', 'z1(Warm Up)', 'z2(Easy)', 'z3(Aerobic)', 'z4(Threshold)', 'z5(Maximum)'];
+
+    finalDatas.push({ zoneChartTarget: zoneOptions, isSyncExtremes: false });
+    chartTargets.push('zoneChartTarget');
   }
   if (!isNoPaces) {
     paceDataset.data = paceDataset.data.map((val, j) => [
@@ -231,7 +422,7 @@ export const handlePoints = (datas, type, resolutionSeconds) => {
       },
       split: true
     };
-    finalDatas.push({ paceChartTarget: paceOptions });
+    finalDatas.push({ paceChartTarget: paceOptions, isSyncExtremes: true });
     chartTargets.push('paceChartTarget');
   }
   if (!isNoRunCadences) {
@@ -241,10 +432,51 @@ export const handlePoints = (datas, type, resolutionSeconds) => {
     ]);
     runCadenceOptions = new Option(runCadenceDataset, colorIdx);
     colorIdx++;
-    finalDatas.push({ cadenceChartTarget: runCadenceOptions });
+    finalDatas.push({
+      cadenceChartTarget: runCadenceOptions,
+      isSyncExtremes: true
+    });
     chartTargets.push('cadenceChartTarget');
   }
-
+  if (!isNoCycleCadences) {
+    cycleCadenceDataset.data = cycleCadenceDataset.data.map((val, j) => [
+      pointSeconds[j],
+      val
+    ]);
+    cycleCadenceOptions = new Option(cycleCadenceDataset, colorIdx);
+    colorIdx++;
+    finalDatas.push({
+      cadenceChartTarget: cycleCadenceOptions,
+      isSyncExtremes: true
+    });
+    chartTargets.push('cadenceChartTarget');
+  }
+  if (!isNoSwimCadences) {
+    swimCadenceDataset.data = swimCadenceDataset.data.map((val, j) => [
+      pointSeconds[j],
+      val
+    ]);
+    swimCadenceOptions = new Option(swimCadenceDataset, colorIdx);
+    colorIdx++;
+    finalDatas.push({
+      cadenceChartTarget: swimCadenceOptions,
+      isSyncExtremes: true
+    });
+    chartTargets.push('cadenceChartTarget');
+  }
+  if (!isNoRowingCadences) {
+    rowingCadenceDataset.data = rowingCadenceDataset.data.map((val, j) => [
+      pointSeconds[j],
+      val
+    ]);
+    rowingCadenceOptions = new Option(rowingCadenceDataset, colorIdx);
+    colorIdx++;
+    finalDatas.push({
+      cadenceChartTarget: rowingCadenceOptions,
+      isSyncExtremes: true
+    });
+    chartTargets.push('cadenceChartTarget');
+  }
   if (!isNoTemps) {
     tempDataset.data = tempDataset.data.map((val, j) => [
       pointSeconds[j],
@@ -252,7 +484,7 @@ export const handlePoints = (datas, type, resolutionSeconds) => {
     ]);
     tempOptions = new Option(tempDataset, colorIdx);
     colorIdx++;
-    finalDatas.push({ tempChartTarget: tempOptions });
+    finalDatas.push({ tempChartTarget: tempOptions, isSyncExtremes: true });
     chartTargets.push('tempChartTarget');
   }
 

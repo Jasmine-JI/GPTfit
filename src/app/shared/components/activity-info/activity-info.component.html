@@ -215,6 +215,13 @@
             chart target
           </div>
         </div>
+        <div class="activity-block" *ngIf="!(isInitialChartDone && !iszoneChartTargetDisplay)">
+          <div #zoneChartTarget class="chart"
+            [class.hidden]="!iszoneChartTargetDisplay"
+          >
+            chart target
+          </div>
+        </div>
       </div>
     </ng-container>
     <mat-tab-group>
@@ -464,7 +471,8 @@
               功率
             </div>
             <div class="activity-info__area--block"
-              *ngIf="activityInfo?.cycleAvgWatt.length > 0"
+*ngIf="(activityInfo?.cycleAvgWatt && activityInfo?.cycleAvgWatt.length > 0) || (activityInfo?.rowingAvgWatt &&
+activityInfo?.rowingAvgWatt.length > 0)"
             >
               <div *ngIf="activityInfo?.type === '2'">
                 {{activityInfo?.cycleAvgWatt || 0}}
@@ -477,7 +485,8 @@
               </span>
             </div>
             <div class="activity-info__area--block"
-             *ngIf="activityInfo?.cycleMaxWatt.length > 0"
+*ngIf="(activityInfo?.cycleMaxWatt && activityInfo?.cycleMaxWatt.length > 0) || (activityInfo?.rowingMaxWatt &&
+activityInfo?.rowingMaxWatt.length > 0)"
             >
               <div *ngIf="activityInfo?.type === '2'">
                 {{activityInfo?.cycleMaxWatt || 0}}
