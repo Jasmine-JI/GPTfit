@@ -8,12 +8,26 @@ const {
 
 const https = require('https');
 const fs = require('fs');
-
+  var address,
+    ifaces = os.networkInterfaces();
+  for (var dev in ifaces) {
+    ifaces[dev].filter((details) => details.family === 'IPv4' && details.internal === false ? address = details.address : undefined);
+  }
 const SERVER_CONFIG = {
-  key: fs.readFileSync('/etc/ssl/free.key'),
-  ca: fs.readFileSync('/etc/ssl/free_ca.crt'),
-  cert: fs.readFileSync('/etc/ssl/free.crt')
+  key: null,
+  ca: null,
+  cert: null
 };
+if (address === '192.168.1.235' || address === '192.168.1.234') {
+  SERVER_CONFIG.key = fs.readFileSync('/etc/ssl/free.key'),
+  SERVER_CONFIG.ca = fs.readFileSync('/etc/ssl/free_ca.crt'),
+  SERVER_CONFIG.cert = fs.readFileSync('/etc/ssl/free.crt');
+} else {
+  SERVER_CONFIG.key = fs.readFileSync('/etc/ssl/130/offical_130_no_pem.key'),
+  SERVER_CONFIG.ca = fs.readFileSync('/etc/ssl/130/offical_public_130.crt'),
+  SERVER_CONFIG.cert = fs.readFileSync('/etc/ssl/130/offical_130.cer');
+}
+
 
 // Init app
 var app = express();
@@ -75,6 +89,7 @@ app.use(function (req, res, next) {
       'https://alatechcloud.alatech.com.tw:8080',
       'http://152.101.90.130:8080',
       'https://152.101.90.130:8080',
+      'https://cloud.alatech.com.tw',
       'https://cloud.alatech.com.tw:8080',
       'http://cloud.alatech.com.tw:8080'
     ];
