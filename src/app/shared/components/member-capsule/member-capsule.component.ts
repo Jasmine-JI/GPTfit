@@ -138,11 +138,15 @@ export class MemberCapsuleComponent implements OnInit {
     });
   }
   handleAssignAdmin(type) {
-    let accessRight = '50';
+    let accessRight = '';
     if (type === 2) {
       accessRight = '60';
+    } else if (type === 1) {
+      accessRight = '50';
+    } else {
+      accessRight = this.groupLevel;
     }
-    if (this.groupLevel === '80' || this.groupLevel === '60') {
+    // if (this.groupLevel === '80' || this.groupLevel === '60') {
       const body = {
         token: this.token,
         groupId: this.groupId,
@@ -155,17 +159,17 @@ export class MemberCapsuleComponent implements OnInit {
           this.dialog.closeAll();
         }
       });
-    } else {
-      this.dialog.open(RightSettingWinComponent, {
-        hasBackdrop: true,
-        data: {
-          name: this.name,
-          groupId: this.groupId,
-          userId: this.userId,
-          groupLevel: this.groupLevel
-        }
-      });
-    }
+    // } else {
+      // this.dialog.open(RightSettingWinComponent, {
+      //   hasBackdrop: true,
+      //   data: {
+      //     name: this.name,
+      //     groupId: this.groupId,
+      //     userId: this.userId,
+      //     groupLevel: this.groupLevel
+      //   }
+      // });
+    // }
   }
   goToManage() {
     this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}/edit`);

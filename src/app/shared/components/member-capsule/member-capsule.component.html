@@ -54,6 +54,13 @@
       <ul class="dropdown-menu"
         [class.show]="active"
       >
+        <li class="normal-manage" (click)="handleAssignAdmin(3)"
+          *ngIf="coachType !== '2' && coachType !== '1'"
+        >
+          <a>
+            指定管理員
+          </a>
+        </li>
         <li class="normal-manage" (click)="handleAssignAdmin(1)"
           *ngIf="coachType === '2'"
         >

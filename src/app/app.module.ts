@@ -18,7 +18,7 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { NgProgressModule } from '@ngx-progressbar/core';
-import { ServiceWorkerModule } from '@angular/service-worker';
+// import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 
 export function startupServiceFactory(startupService: StartupService): Function { return () => startupService.load(); }
@@ -42,8 +42,8 @@ export function createTranslateLoader(http: HttpClient) {
         deps: [HttpClient]
       }
     }),
-    NgProgressModule,
-    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
+    NgProgressModule
+    // ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [
     WINDOW_PROVIDERS,
