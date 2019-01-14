@@ -55,8 +55,7 @@
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.uat.ts"
                 }
-              ],
-              "serviceWorker": true
+              ]
             },
             "tst": {
               "optimization": true,
@@ -90,8 +89,7 @@
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
                 }
-              ],
-              "serviceWorker": true
+              ]
             },
             "web": {
               "optimization": true,
