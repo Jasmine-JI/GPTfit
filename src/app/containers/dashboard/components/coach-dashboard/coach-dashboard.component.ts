@@ -229,7 +229,11 @@ export class CoachDashboardComponent
   ) {
     Stock.setOptions({ global: { useUTC: false } });
     this.elementRef = elementRef;
-    this.socket$ = new WebSocketSubject('wss://app.alatech.com.tw:9000/train');
+    let hostName = 'app.alatech.com.tw';
+    if (location.hostname === 'cloud.alatech.com.tw') {
+      hostName = 'cloud.alatech.com.tw';
+    }
+    this.socket$ = new WebSocketSubject(`wss://${hostName}:9000/train`);
 
     this.socket$.subscribe(
       message => this.display(message),
