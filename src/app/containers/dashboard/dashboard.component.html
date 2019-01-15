@@ -24,7 +24,7 @@
                 [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
               >
                 <mat-panel-title>
-                  <i class="icon-svg_web-icon_p1_002-trophy ala-sidenav-icon"></i>排行版
+                  <i class="icon-svg_web-icon_p1_002-trophy ala-sidenav-icon"></i>{{ "SH.Leaderboard" | translate}}
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <a
@@ -45,7 +45,7 @@
                 [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
               >
                 <mat-panel-title>
-                  <i class="icon-svg_web-icon_p1_003-peoples ala-sidenav-icon"></i>及時活動
+                  <i class="icon-svg_web-icon_p1_003-peoples ala-sidenav-icon"></i>{{ "Dashboard.LiveActivity" | translate}}
                 </mat-panel-title>
               </mat-expansion-panel-header>
                 <!-- <li class="ala-sidenav-menu-item"
@@ -70,7 +70,7 @@
                 [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
               >
                 <mat-panel-title>
-                  <i class="icon-svg_web-icon_p1_036-friends ala-sidenav-icon"></i>群組
+                  <i class="icon-svg_web-icon_p1_036-friends ala-sidenav-icon"></i>{{ "Dashboard.Group.Group" | translate}}
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <li class="ala-sidenav-menu-item"
@@ -78,14 +78,14 @@
                 [class.ala-sidenav-menu-item__active]="target === 10"
                 [routerLink]="['/dashboard/my-group-list']"
               >
-                我的群組
+                {{"Dashboard.Group.MyGroup.MyGroup" | translate}}
               </li>
               <li class="ala-sidenav-menu-item"
                 (click)="chooseItem(17, sideNav)"
                 [class.ala-sidenav-menu-item__active]="target === 17"
                 [routerLink]="['/dashboard/group-search']"
               >
-                搜尋群組
+                {{"Dashboard.Group.SearchGroup.SearchGroup" | translate}}
               </li>
             </mat-expansion-panel>
           </mat-accordion>
@@ -94,21 +94,21 @@
             [class.ala-sidenav-menu-item__active]="target === 14"
             [routerLink]="['/dashboard/activity-list']"
           >
-            <i class="icon-svg_web-icon_p1_083-run ala-sidenav-icon"></i>我的活動
+            <i class="icon-svg_web-icon_p1_083-run ala-sidenav-icon"></i>{{"Dashboard.MyActivity.MyActivity" | translate}}
           </li>
           <li class="ala-sidenav-item"
             (click)="chooseItem(15, sideNav)"
             [class.ala-sidenav-menu-item__active]="target === 15"
             [routerLink]="['/dashboard/device']"
           >
-            <i class="icon-svg_web-icon_p1_010-treadmill ala-sidenav-icon"></i>我的裝置
+            <i class="icon-svg_web-icon_p1_010-treadmill ala-sidenav-icon"></i>{{"Dashboard.MyDevice.MyDevice" | translate }}
           </li>
           <li class="ala-sidenav-item"
             (click)="chooseItem(16, sideNav)"
             [class.ala-sidenav-menu-item__active]="target === 16"
             [routerLink]="['/dashboard/sport-report']"
           >
-            <i class="icon-svg_web-icon_p1_037-chart ala-sidenav-icon"></i>運動報告
+            <i class="icon-svg_web-icon_p1_037-chart ala-sidenav-icon"></i>{{"Dashboard.SportReport.SportReport" | translate }}
           </li>
           <mat-accordion multi="false" *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper">
             <mat-expansion-panel [expanded]="target === 13">
@@ -261,14 +261,14 @@
               <div class="header-nav-menu-section">
                 <ul>
                   <li [routerLink]="['/user-profile/', userId]">
-                    我的資訊
+                    {{ "Dashboard.MyInfo" | translate}}
                   </li>
                   <li [routerLink]="['/dashboard/settings']">
-                    帳號管理
+                    {{ "Dashboard.AccountManagement" | translate}}
                   </li>
                 </ul>
               </div>
-              <button class="dropdown-item" type="button" (click)="logout()">登出</button>
+              <button class="dropdown-item" type="button" (click)="logout()">{{ "SH.Signout" | translate}}</button>
             </div>
           </div>
         </div>

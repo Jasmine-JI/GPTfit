@@ -12,7 +12,10 @@
     },
     "UserManual": "使用说明",
     "GetDocument": "取得操作手册",
-    "NoFindData": "查无资料"
+    "NoFindData": "查无资料",
+    "HeartRate": "心率",
+    "Calorie": "卡路里",
+    "HeartRateZone": "心率区间"
   },
   "Portal": {
     "Introduce": "介绍",
@@ -25,6 +28,8 @@
     "RelatedLinks": "相关连结"
   },
   "Dashboard": {
+    "MyInfo": "我的资讯",
+    "AccountManagement": "帐号管理",
     "LiveActivity": "及时活动",
     "TrainLive": {
       "NewsLive": "最新直播",
@@ -33,7 +38,9 @@
       "LineChart": "趋势图",
       "Member": "成员",
       "Avg": "平均",
-      "more": "更多"
+      "more": "更多",
+      "LiveEnd": "课程直播已结束",
+      "BackClassList": "返回课程直播列表"
     },
     "Group": {
       "Group": "群组",
@@ -87,36 +94,6 @@
         "Accept": "接受",
         "Refuse": "拒绝"
       },
-      "BrandManagement": {
-        "BrandManagement": "品牌管理",
-        "Status": "状态",
-        "TotalMember": "总成员",
-        "TotalAdministrators": "管理员數",
-        "TotalMembers": "总人员数",
-        "CurrentPlan": "目前方案",
-        "ExperiencePlan": "体验方案",
-        "StudioPlan": "工作室方案",
-        "SME-program": "中小企业方案",
-        "CustomScheme": "客制方案",
-        "Authorization-due-date": "授权到期日",
-        "Number-of-groups": "群组数量",
-        "Number-of-branches": "分店数",
-        "Number-of-courses": "课程数",
-        "Number-of-management members": "管理成员数",
-        "BrandAdministrator": "品牌管理员",
-        "BranchManager": "分店管理员",
-        "PhysicalFitnessCoach": "体适能教练",
-        "ProfessionalTeacher": "专业老师"
-      },
-      "privacySettings": {
-        "privacySettings": "隐私设定",
-        "MemberVisibility": "群组成员可见度",
-        "can-see-avatar": "可以看到头像与昵称",
-        "ShareSportsFile": "分享运动档案",
-        "Can-browse-activity-file": "可以看到运动档案",
-        "ShareSportsReport": "分享运动报告",
-        "Can-browse-activity-report": "可以看到运动报告"
-      },
       "SearchGroup": {
         "SearchGroup": "搜寻群组",
         "Brand": "品牌",
@@ -129,59 +106,89 @@
         "AuditSystem": "审核制",
         "Free-to-join": "自由加入",
         "Hide": "隐藏"
-      },
-      "MyActivity":  {
-        "MyActivity": "我的活动",
-        "Search": "搜寻活动",
-        "page": "第[*]- [*]笔，共[**]笔",
-        "pageCount": "每页显示项数"
-      },
-      "ActivityDetail": {
-        "ActivityDetail": "详细活动",
-        "Summary": "概要资讯",
-        "Back": "返回",
-        "ActivityCreate": "[**活动名称**]由[**昵称**]建立，于[YYYY]年[MM]月[DD]日@hh：mm：ss建立",
-        "Chart": "图表",
-        "Details": "详细资料",
-        "Section": "分段资料"
-      },
-      "MyDevice": {
-        "MyDevice": "我的装置",
-        "ModeName": "产品型号",
-        "ModelType": "产品类别",
-        "SerialNumber": "设备序号",
-        "Treadmill": "跑步机",
-        "Wearable": "穿戴式",
-        "Flywheel": "飞轮车",
-        "RowingMachine": "划船器"
-      },
-      "ProductInfo": {
-        "ProductInfo": "产品资讯",
-        "Finished":  "完成修改",
-        "Back": "返回",
-        "SerialNumber": "设备序号",
-        "ModeName": "产品名称",
-        "Type": "类别",
-        "Date-of-manufacture": "出厂日期",
-        "Open-for-anyone": "开放任何人",
-        "close": "不开放",
-        "Only-me-avatar-and-file": "仅自己，头像与运动档案",
-        "Only-me-file": "仅自己，限运动档案"
-      },
-      "SportReport": {
-        "SportReport": "运动报告",
-        "AllActivity": "所有活动",
-        "Run": "跑步",
-        "Cycle": "骑乘",
-        "Aerobic": "有氧运动",
-        "Swim": "游泳",
-        "WeightTraining": "重训",
-        "Rowing": "划行",
-        "Activities": "活动数量",
-        "Day": "天",
-        "Month": "个",
-        "Year": "年"
       }
+    },
+    "BrandManagement": {
+      "BrandManagement": "品牌管理",
+      "Status": "状态",
+      "TotalMember": "总成员",
+      "TotalAdministrators": "管理员數",
+      "TotalMembers": "总人员数",
+      "CurrentPlan": "目前方案",
+      "ExperiencePlan": "体验方案",
+      "StudioPlan": "工作室方案",
+      "SME-program": "中小企业方案",
+      "CustomScheme": "客制方案",
+      "Authorization-due-date": "授权到期日",
+      "Number-of-groups": "群组数量",
+      "Number-of-branches": "分店数",
+      "Number-of-courses": "课程数",
+      "Number-of-management members": "管理成员数",
+      "BrandAdministrator": "品牌管理员",
+      "BranchManager": "分店管理员",
+      "PhysicalFitnessCoach": "体适能教练",
+      "ProfessionalTeacher": "专业老师"
+    },
+    "privacySettings": {
+      "privacySettings": "隐私设定",
+      "MemberVisibility": "群组成员可见度",
+      "can-see-avatar": "可以看到头像与昵称",
+      "ShareSportsFile": "分享运动档案",
+      "Can-browse-activity-file": "可以看到运动档案",
+      "ShareSportsReport": "分享运动报告",
+      "Can-browse-activity-report": "可以看到运动报告"
+    },
+    "MyActivity": {
+      "MyActivity": "我的活动",
+      "Search": "搜寻活动",
+      "page": "第[*]- [*]笔，共[**]笔",
+      "pageCount": "每页显示项数"
+    },
+    "ActivityDetail": {
+      "ActivityDetail": "详细活动",
+      "Summary": "概要资讯",
+      "Back": "返回",
+      "ActivityCreate": "[**活动名称**]由[**昵称**]建立，于[YYYY]年[MM]月[DD]日@hh：mm：ss建立",
+      "Chart": "图表",
+      "Details": "详细资料",
+      "Section": "分段资料"
+    },
+    "MyDevice": {
+      "MyDevice": "我的装置",
+      "ModeName": "产品型号",
+      "ModelType": "产品类别",
+      "SerialNumber": "设备序号",
+      "Treadmill": "跑步机",
+      "Wearable": "穿戴式",
+      "Flywheel": "飞轮车",
+      "RowingMachine": "划船器"
+    },
+    "ProductInfo": {
+      "ProductInfo": "产品资讯",
+      "Finished": "完成修改",
+      "Back": "返回",
+      "SerialNumber": "设备序号",
+      "ModeName": "产品名称",
+      "Type": "类别",
+      "Date-of-manufacture": "出厂日期",
+      "Open-for-anyone": "开放任何人",
+      "close": "不开放",
+      "Only-me-avatar-and-file": "仅自己，头像与运动档案",
+      "Only-me-file": "仅自己，限运动档案"
+    },
+    "SportReport": {
+      "SportReport": "运动报告",
+      "AllActivity": "所有活动",
+      "Run": "跑步",
+      "Cycle": "骑乘",
+      "Aerobic": "有氧运动",
+      "Swim": "游泳",
+      "WeightTraining": "重训",
+      "Rowing": "划行",
+      "Activities": "活动数量",
+      "Day": "天",
+      "Month": "个",
+      "Year": "年"
     }
   }
 }

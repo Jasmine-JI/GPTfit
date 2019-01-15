@@ -256,7 +256,7 @@
 }
 .dropdown.show .dropdown-menu.dropdown-user-menu.show {
   top: -3px !important;
-  left: 50px !important;
+  left: 5px !important;
 }
 
 @media(max-width: 768px) {
