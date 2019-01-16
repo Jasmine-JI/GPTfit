@@ -17,8 +17,6 @@ import { GlobalEventsManager } from '@shared/global-events-manager';
 import { UtilsService } from '@shared/services/utils.service';
 import { Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material';
-import { getUrlQueryStrings } from '@shared/utils/';
-import { handlePoints } from './chartData';
 import { UserInfoService } from '../../../containers/dashboard/services/userInfo.service';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
@@ -288,7 +286,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         if (finalDatas[i].isSyncExtremes) {
           const event = _chart.pointer.normalize(e); // Find coordinates within the chart
           const point = _chart.series[0].searchPoint(event, true); // Get the hovered point
-          if (point) {
+          if (point && point.index) {
             point.highlight(e);
           }
         }
@@ -316,13 +314,14 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         hrFormatData.userHRBase = res;
       });
     }
-    const { finalDatas, chartTargets } = handlePoints(
+    const { finalDatas, chartTargets } = this.activityService.handlePoints(
       this.activityPoints,
       this.activityInfo.type,
       this.resolutionSeconds,
       hrFormatData
     );
     this.finalDatas = finalDatas;
+
     this.finalDatas.forEach((_option, idx) => {
       this[`is${chartTargets[idx]}Display`] = true;
       _option[
