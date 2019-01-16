@@ -1,12 +1,12 @@
 <div class="end-text"
   *ngIf="isClassEnd"
 >
-  課程直播已結束
+  {{ "Dashboard.TrainLive.LiveEnd" | translate}}
   <div style="display: flex;justify-content: center;margin-top:30px">
     <button class="alatech-btn alatech-btn--default"
       [routerLink]="['/dashboard/live/train-live']"
     >
-      返回課程直播列表
+      {{ "Dashboard.TrainLive.BackClassList" | translate}}
     </button>
   </div>
 </div>
@@ -47,7 +47,7 @@
       </div>
     </div>
     <div>
-      <label class="board-title">課程介紹</label>
+      <label class="board-title">{{ "Dashboard.TrainLive.ClassInfo" | translate}}</label>
       <div>
         <div style="display: flex;padding-right: 24px;align-items: center;">
           <div style="display:flex;align-items: center;">
@@ -77,13 +77,13 @@
             style="color: #5fbae3;cursor:pointer;text-align: right"
             (click)="handleExtendCoachInfo(2)"
           >
-            more...
+            {{ "Dashboard.TrainLive.more" | translate}}...
           </div>
         </div>
       </div>
     </div>
     <div>
-      <label class="board-title">教練介紹</label>
+      <label class="board-title">{{ "Dashboard.TrainLive.CoachInfo" | translate}}</label>
       <div>
         <div style="display:flex;align-items: center;">
           <div class="user-photo user-photo--portrait" style="margin: 0 15px">
@@ -98,7 +98,7 @@
             style="color: #5fbae3;cursor:pointer;text-align: right"
             (click)="handleExtendCoachInfo(1)"
           >
-            more...
+            {{ "Dashboard.TrainLive.more" | translate}}...
           </div>
         </div>
       </div>
@@ -108,7 +108,7 @@
   <div class="data-container">
     <ng-container>
       <div class="coach-header" *ngIf="displaySections[1]">
-        <span>趨勢圖</span>
+        <span>{{ "Dashboard.TrainLive.LineChart" | translate}}</span>
         <span>
           <div class="dropdown">
             <div class="trend-chart-item" id="dropdownMenu4" data-toggle="dropdown" aria-haspopup="true"
@@ -122,17 +122,17 @@
                 <li (click)="removeSeries(0)"
                   [class.active]="chartType === 0"
                 >
-                  心率
+                  {{ "SH.HeartRate" | translate}}
                 </li>
                 <li (click)="removeSeries(1)"
                   [class.active]="chartType === 1"
                 >
-                  卡路里
+                  {{ "SH.Calorie" | translate}}
                 </li>
                 <li (click)="removeSeries(2)"
                   [class.active]="chartType === 2"
                 >
-                  心率區間
+                  {{ "SH.HeartRateZone" | translate}}
                 </li>
               </ul>
             </div>
@@ -173,7 +173,7 @@
             </div>
           </div>
           <div class="hr-info">
-            <div class="hr-item">平均</div>
+            <div class="hr-item">{{ "Dashboard.TrainLive.Avg" | translate}}</div>
             <div style="display: flex;">
               <div class="hr-val">{{meanValue}}</div>
               <div class="hr-heart">
@@ -231,7 +231,7 @@
     </ng-container>
     <ng-container *ngIf="displaySections[2]">
       <div class="coach-header">
-        <span>成員</span>
+        <span>{{ "Dashboard.TrainLive.Member" | translate}}</span>
         <span>
         <div class="dropdown" style="display:inline-block">
           <div class="trend-chart-item" id="dropdownMenu4" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -243,13 +243,13 @@
           <div class="dropdown-menu trend-chart-menu" [class.show]="isUserMenuShow" aria-labelledby="dropdownMenu4">
             <ul>
               <li (click)="handleSortCard(0, false)" [class.active]="sortType === 0">
-                心率
+                {{ "SH.HeartRate" | translate}}
               </li>
               <li (click)="handleSortCard(1, false)" [class.active]="sortType === 1">
-                卡路里
+                {{ "SH.Calorie" | translate}}
               </li>
               <li (click)="handleSortCard(2, false)" [class.active]="sortType === 2">
-                心率區間
+                {{ "SH.HeartRateZone" | translate}}
               </li>
             </ul>
           </div>
@@ -264,13 +264,13 @@
           <div class="dropdown-menu trend-chart-menu" [class.show]="isUserMenuShow" aria-labelledby="dropdownMenu4">
             <ul>
               <li (click)="handleSortCard(0, true)" [class.active]="sortType === 0">
-                心率
+                {{ "SH.HeartRate" | translate}}
               </li>
               <li (click)="handleSortCard(1, true)" [class.active]="sortType === 1">
-                卡路里
+                {{ "SH.Calorie" | translate}}
               </li>
               <li (click)="handleSortCard(2, true)" [class.active]="sortType === 2">
-                心率區間
+                {{ "SH.HeartRateZone" | translate}}
               </li>
             </ul>
           </div>
@@ -305,7 +305,7 @@
                 >
               </div>
               <div class="hr-val">
-                <div class="hr">心率</div>
+                <div class="hr">{{ "SH.HeartRate" | translate}}</div>
                 <div class="val" [style.color]="hrColors[item?.colorIdx]">
                   {{ item?.liveHr || 0 }}
                 </div>
@@ -314,11 +314,11 @@
             <ng-container *ngIf="classType === '1' || classType === '5'">
               <div class="hr-card-body__other">
                 <div class="hr-card-body__pace">
-                  <div style="">卡路里</div>
+                  <div style="">{{ "SH.Calorie" | translate}}</div>
                   <div class="card-params">{{ item?.calorie || 0 }}</div>
                 </div>
                 <div class="hr-card-body__distance">
-                  <div style="">心率區間</div>
+                  <div style="">{{ "SH.HeartRateZone" | translate}}</div>
                   <div class="card-params">{{ item?.colorIdx || 0 }}</div>
                 </div>
               </div>

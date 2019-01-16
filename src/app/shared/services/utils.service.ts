@@ -193,4 +193,13 @@ export class UtilsService {
     return diffArr.filter((v, i, a) => a.indexOf(v) === i);
   }
 
+  isNumber(val: any) {
+    const regPos = /^\d+(\.\d+)?$/; // 非負浮點數
+    const regNeg = /^(-(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*)))$/; // 負浮點數
+    if (regPos.test(val) || regNeg.test(val)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

@@ -78,13 +78,13 @@
           <div class="activty-info-data-name">總時間</div>
         </div>
         <div class="summary-item"
-          *ngIf="activityInfo?.totalActivitySecond.length !== 0"
+          *ngIf="activityInfo?.totalActivitySecond"
         >
           <div class="activty-info-data-value">{{activityInfo?.totalActivitySecond | sportTime}}</div>
           <div class="activty-info-data-name">活動時間</div>
         </div>
         <div class="summary-item"
-          *ngIf="activityInfo?.totalRestSecond.length !== 0"
+          *ngIf="activityInfo?.totalRestSecond"
         >
           <div class="activty-info-data-value">{{activityInfo?.totalRestSecond | sportTime}}</div>
           <div class="activty-info-data-name">休息時間</div>
@@ -130,7 +130,7 @@
             </span>
           </div>
         </div>
-        <div *ngIf="activityInfo?.type === '2' && activityInfo?.elevGain.length !== 0"
+        <div *ngIf="activityInfo?.type === '2' && activityInfo?.elevGain"
           class="summary-item"
         >
           <div class="activty-info-data-value">{{activityInfo?.elevGain || 0 }}</div>
@@ -240,7 +240,7 @@
               </span>
             </div>
             <div class="activity-info__area--block"
-              *ngIf="activityInfo?.totalActivitySecond.length !== 0"
+              *ngIf="activityInfo?.totalActivitySecond"
             >
               <div>
                 {{activityInfo?.totalActivitySecond | sportTime}}
@@ -250,7 +250,7 @@
               </span>
             </div>
             <div class="activity-info__area--block"
-              *ngIf="activityInfo?.totalRestSecond.length !== 0"
+              *ngIf="activityInfo?.totalRestSecond"
             >
               <div>
                 {{activityInfo?.totalRestSecond | sportTime}}
@@ -433,13 +433,13 @@
           </div>
           <div class="activity-info__area"
             *ngIf="(activityInfo?.type === '1'|| activityInfo?.type === '2') &&
-              (activityInfo?.elevGain && activityInfo?.elevGain.length > 0 || activityInfo?.elevLoss && activityInfo?.elevLoss.length > 0)"
+              (activityInfo?.elevGain || activityInfo?.elevLoss)"
           >
             <div class="ala-dashboard-title activty-title">
               爬升資訊
             </div>
             <div class="activity-info__area--block"
-              *ngIf="activityInfo?.elevGain.length > 0"
+              *ngIf="activityInfo?.elevGain"
             >
               <div>
                 {{activityInfo?.elevGain || 0}}
@@ -449,7 +449,7 @@
               </span>
             </div>
             <div class="activity-info__area--block"
-              *ngIf="activityInfo?.elevLoss.length > 0"
+              *ngIf="activityInfo?.elevLoss"
             >
               <div>
                 {{activityInfo?.elevLoss || 0}}
@@ -462,17 +462,16 @@
           <div class="activity-info__area"
             *ngIf="(
             (activityInfo?.type === '2' &&
-            (activityInfo?.cycleAvgWatt && activityInfo?.cycleAvgWatt.length > 0 || activityInfo?.cycleMaxWatt && activityInfo?.cycleMaxWatt.length > 0))
+            (activityInfo?.cycleAvgWatt || activityInfo?.cycleMaxWatt))
             || (activityInfo?.type === '6' &&
-            (activityInfo?.rowingAvgWatt && activityInfo?.rowingAvgWatt.length > 0 || activityInfo?.rowingMaxWatt && activityInfo?.rowingMaxWatt.length > 0)
+            (activityInfo?.rowingAvgWatt || activityInfo?.rowingMaxWatt)
             ))"
           >
             <div class="ala-dashboard-title activty-title">
               功率
             </div>
             <div class="activity-info__area--block"
-*ngIf="(activityInfo?.cycleAvgWatt && activityInfo?.cycleAvgWatt.length > 0) || (activityInfo?.rowingAvgWatt &&
-activityInfo?.rowingAvgWatt.length > 0)"
+              *ngIf="activityInfo?.cycleAvgWatt || activityInfo?.rowingAvgWatt"
             >
               <div *ngIf="activityInfo?.type === '2'">
                 {{activityInfo?.cycleAvgWatt || 0}}
@@ -485,8 +484,7 @@ activityInfo?.rowingAvgWatt.length > 0)"
               </span>
             </div>
             <div class="activity-info__area--block"
-*ngIf="(activityInfo?.cycleMaxWatt && activityInfo?.cycleMaxWatt.length > 0) || (activityInfo?.rowingMaxWatt &&
-activityInfo?.rowingMaxWatt.length > 0)"
+              *ngIf="activityInfo?.cycleMaxWatt || activityInfo?.rowingMaxWatt"
             >
               <div *ngIf="activityInfo?.type === '2'">
                 {{activityInfo?.cycleMaxWatt || 0}}
@@ -501,13 +499,13 @@ activityInfo?.rowingMaxWatt.length > 0)"
           </div>
           <div class="activity-info__area"
             *ngIf="(activityInfo?.type === '1'|| activityInfo?.type === '2') &&
-            (activityInfo?.maxElev.length > 0 || activityInfo?.minElev.length > 0)"
+            (activityInfo?.maxElev|| activityInfo?.minElev)"
           >
             <div class="ala-dashboard-title activty-title">
               海拔資訊
             </div>
             <div class="activity-info__area--block"
-              *ngIf="activityInfo?.maxElev.length > 0"
+              *ngIf="activityInfo?.maxElev"
             >
               <div>
                 {{activityInfo?.maxElev || 0}}
@@ -517,7 +515,7 @@ activityInfo?.rowingMaxWatt.length > 0)"
               </span>
             </div>
             <div class="activity-info__area--block"
-              *ngIf="activityInfo?.minElev.length > 0"
+              *ngIf="activityInfo?.minElev"
             >
               <div>
                 {{activityInfo?.minElev || 0}}
@@ -529,13 +527,13 @@ activityInfo?.rowingMaxWatt.length > 0)"
           </div>
           <div class="activity-info__area"
             *ngIf="(activityInfo?.type !== '4'&& activityInfo?.type !== '6') &&
-            (activityInfo?.maxTemp.length > 0 || activityInfo?.minTemp.length > 0)"
+            (activityInfo?.maxTemp || activityInfo?.minTemp)"
           >
             <div class="ala-dashboard-title activty-title">
               溫度資訊
             </div>
             <div class="activity-info__area--block"
-             *ngIf="activityInfo?.maxTemp.length > 0"
+             *ngIf="activityInfo?.maxTemp"
             >
               <div>
                 {{activityInfo?.maxTemp || 0}}
@@ -545,7 +543,7 @@ activityInfo?.rowingMaxWatt.length > 0)"
               </span>
             </div>
             <div class="activity-info__area--block"
-              *ngIf="activityInfo?.minTemp.length > 0"
+              *ngIf="activityInfo?.minTemp"
             >
               <div>
                 {{activityInfo?.minTemp || 0}}
