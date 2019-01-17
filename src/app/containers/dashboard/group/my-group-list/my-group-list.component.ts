@@ -54,24 +54,24 @@ export class MyGroupListComponent implements OnInit, OnDestroy {
     const { pageNumber } = queryStrings;
     this.globalEventsManager.setFooterRWD(2); // 為了讓footer長高85px
     // 設定顯示筆數資訊文字
-    this.matPaginatorIntl.getRangeLabel = (
-      page: number,
-      pageSize: number,
-      length: number
-    ): string => {
-      if (length === 0 || pageSize === 0) {
-        return `第 0 筆、共 ${length} 筆`;
-      }
+    // this.matPaginatorIntl.getRangeLabel = (
+    //   page: number,
+    //   pageSize: number,
+    //   length: number
+    // ): string => {
+    //   if (length === 0 || pageSize === 0) {
+    //     return `第 0 筆、共 ${length} 筆`;
+    //   }
 
-      length = Math.max(length, 0);
-      const startIndex = page * pageSize;
-      const endIndex =
-        startIndex < length
-          ? Math.min(startIndex + pageSize, length)
-          : startIndex + pageSize;
+    //   length = Math.max(length, 0);
+    //   const startIndex = page * pageSize;
+    //   const endIndex =
+    //     startIndex < length
+    //       ? Math.min(startIndex + pageSize, length)
+    //       : startIndex + pageSize;
 
-      return `第 ${startIndex + 1} - ${endIndex} 筆、共 ${length} 筆`;
-    };
+    //   return `第 ${startIndex + 1} - ${endIndex} 筆、共 ${length} 筆`;
+    // };
 
     this.currentPage = {
       pageIndex: (+pageNumber - 1) || 0,

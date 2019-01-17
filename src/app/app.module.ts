@@ -18,6 +18,8 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { NgProgressModule } from '@ngx-progressbar/core';
+import { MatPaginatorIntl } from '@angular/material';
+import { CustomMatPaginatorIntl } from '@shared/custom-mat-paginator-intl';
 // import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 
@@ -65,6 +67,10 @@ export function createTranslateLoader(http: HttpClient) {
       useFactory: startupServiceFactory,
       deps: [StartupService, Injector],
       multi: true
+    },
+    {
+      provide: MatPaginatorIntl,
+      useClass: CustomMatPaginatorIntl
     }
   ],
   bootstrap: [AppComponent]

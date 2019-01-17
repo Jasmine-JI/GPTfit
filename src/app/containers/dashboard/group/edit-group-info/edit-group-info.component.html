@@ -107,9 +107,9 @@
             formControlName="groupStatus"
             [attr.disabled]="isGroupDetailLoading ? '' : null"
           >
-            <option value="1" class="form-field-option">自由加入</option>
-            <option value="2" class="form-field-option">審核制</option>
-            <option value="3" class="form-field-option">隱藏群組</option>
+            <option value="1" class="form-field-option">{{ 'Dashboard.Group.Free-to-join' | translate}}</option>
+            <option value="2" class="form-field-option">{{ 'Dashboard.Group.AuditSystem' | translate}}</option>
+            <option value="3" class="form-field-option">{{ 'Dashboard.Group.Hide' | translate}}</option>
           </select>
         </div>
         <div class="ala-list__item">
@@ -189,7 +189,7 @@
               <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">品牌</label>
 
               <div style="margin-bottom: 15px">
-              <span *ngIf="subBrandInfo && subBrandInfo.length === 0">尚無品牌資訊</span>
+              <span *ngIf="subBrandInfo && subBrandInfo.length === 0">{{'SH.No-information' | translate}}</span>
                 <ng-container  *ngFor="let subBrandItem of subBrandInfo">
                   <app-member-capsule
                     [role]="role"
@@ -208,7 +208,7 @@
 
               <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">分店</label>
               <div style="margin-bottom: 15px">
-                <span *ngIf="subBranchInfo && subBranchInfo.length === 0">尚無分店資訊</span>
+                <span *ngIf="subBranchInfo && subBranchInfo.length === 0">{{'SH.No-information' | translate}}</span>
                 <ng-container  *ngFor="let subBranchItem of subBranchInfo">
                   <app-member-capsule
                     [role]="role"
@@ -228,7 +228,7 @@
 
               <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">教練課</label>
               <div style="margin-bottom: 15px">
-                <span *ngIf="subCoachInfo && subCoachInfo.length === 0">尚無教練課資訊</span>
+                <span *ngIf="subCoachInfo && subCoachInfo.length === 0">{{'SH.No-information' | translate}}</span>
                 <ng-container  *ngFor="let subCoachItem of subCoachInfo">
                   <app-member-capsule
                     [role]="role"
@@ -257,7 +257,7 @@
               <ng-container *ngIf="groupLevel && groupLevel !== '80'">
                 <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">品牌層管理員</label>
                 <div style="margin-bottom: 15px">
-                  <span *ngIf="brandAdministrators && brandAdministrators.length === 0">尚無品牌管理員資訊</span>
+                  <span *ngIf="brandAdministrators && brandAdministrators.length === 0">{{'SH.No-information' | translate}}</span>
                   <ng-container  *ngFor="let brandAdmItem of brandAdministrators">
                     <app-member-capsule
                       [role]="role"
@@ -277,7 +277,7 @@
 
                 <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">分店層管理員</label>
                 <div style="margin-bottom: 15px">
-                  <span *ngIf="branchAdministrators && branchAdministrators.length === 0">尚無分店管理員資訊</span>
+                  <span *ngIf="branchAdministrators && branchAdministrators.length === 0">{{'SH.No-information' | translate}}</span>
                   <ng-container  *ngFor="let branchAdmItem of branchAdministrators">
                     <app-member-capsule
                       [role]="role"
@@ -297,7 +297,7 @@
                 <ng-container *ngIf="groupLevel !== '60'">
                   <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">教練課管理員</label>
                   <div style="margin-bottom: 15px" >
-                    <span *ngIf="coachAdministrators && coachAdministrators.length === 0">尚無教練課管理員資訊</span>
+                    <span *ngIf="coachAdministrators && coachAdministrators.length === 0">{{'SH.No-information' | translate}}</span>
                     <ng-container  *ngFor="let coachAdmItem of coachAdministrators">
                       <app-member-capsule
                         [role]="role"
@@ -318,7 +318,7 @@
                 <ng-container *ngIf="groupLevel === '60'">
                   <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">專業老師</label>
                   <div style="margin-bottom: 15px">
-                    <span *ngIf="normalCoaches && normalCoaches.length === 0">尚無專業老師資訊</span>
+                    <span *ngIf="normalCoaches && normalCoaches.length === 0">{{'SH.No-information' | translate}}</span>
                     <ng-container *ngFor="let normalCoachAdmItem of normalCoaches">
                       <app-member-capsule
                         [role]="role"
@@ -337,7 +337,7 @@
                   </div>
                   <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">體適能教練</label>
                   <div style="margin-bottom: 15px">
-                    <span *ngIf="PFCoaches && PFCoaches.length === 0">尚無體適能教練資訊</span>
+                    <span *ngIf="PFCoaches && PFCoaches.length === 0">{{'SH.No-information' | translate}}</span>
                     <ng-container *ngFor="let pfCoachAdmItem of PFCoaches">
                       <app-member-capsule
                         [role]="role"
@@ -359,7 +359,7 @@
               <ng-container *ngIf="groupLevel && groupLevel === '80'">
                 <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">管理員</label>
                 <div style="margin-bottom: 15px" >
-                  <span *ngIf="groupInfos && groupInfos.length === 0">尚無管理員資訊</span>
+                  <span *ngIf="groupInfos && groupInfos.length === 0">{{'SH.No-information' | translate}}</span>
                   <ng-container  *ngFor="let item of groupInfos">
                     <app-member-capsule
                       [role]="role"
@@ -382,7 +382,7 @@
           </mat-tab>
           <mat-tab label="一般成員資訊">
             <ng-container *ngIf="!isLoading">
-              <span *ngIf="normalMemberInfos && normalMemberInfos.length === 0">尚無一般成員資訊</span>
+              <span *ngIf="normalMemberInfos && normalMemberInfos.length === 0">{{'SH.No-information' | translate}}</span>
               <ng-container  *ngFor="let item of normalMemberInfos">
                 <div style="margin-bottom: 15px;display:inline-block">
                   <app-member-capsule
@@ -412,7 +412,7 @@
           </mat-tab>
           <mat-tab label="待加入成員">
             <ng-container *ngIf="!isLoading">
-              <span *ngIf="groupInfos && groupInfos.length === 0">尚無待加入成員資訊</span>
+              <span *ngIf="groupInfos && groupInfos.length === 0">{{'SH.No-information' | translate}}</span>
               <ng-container  *ngFor="let item of groupInfos">
                 <div style="margin-bottom: 15px;display:inline-block">
                   <app-member-capsule

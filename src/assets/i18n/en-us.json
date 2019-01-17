@@ -20,7 +20,15 @@
     "Speed": "Speed",
     "Watt": "Watt",
     "Pace": "Pace",
-    "TotalDisTance": "Total Disc"
+    "TotalDisTance": "Total Disc",
+    "No-information": "No information",
+    "PAGINATOR": {
+      "ITEMS_PER_PAGE": "Items per page",
+      "NEXT_PAGE": "Next page",
+      "PREVIOUS_PAGE": "Previous page",
+      "OF_LABEL": "of"
+    },
+    "FooterAnnouncement": "Center is powered by Alatech Copyright © Alatech Co.,Ltd. or its subsidiaries• Version: "
   },
   "Portal": {
     "Introduce": "Introduce",
@@ -49,17 +57,26 @@
     },
     "Group": {
       "Group": "Group",
+      "System-SuperVisor": "System superVisor",
+      "System-Develop-Admin": "System develop admin",
+      "System-Maintenance-Admin": "System maintenance admin",
+      "Marketing-Business-Admin": "Marketing && Business admin",
+      "BrandAdministrator": "Brand administrator",
+      "BranchManager": "Branch manager",
+      "PhysicalFitnessCoach": "Physical fitness coach",
+      "ProfessionalTeacher": "Professional teacher",
+      "NormalGroupAdministrator": "Normal group administrator",
+      "NormalMember": "Normal member",
+      "AuditSystem": "Audit system",
+      "Free-to-join": "Free to join",
+      "Hide": "Hide",
+      "Dismiss": "Dismiss",
       "MyGroup": {
         "MyGroup": "My Group",
         "GroupList": "Group List",
         "Name": "Name",
         "Identity": "Identity",
-        "NormalMember": "Normal Member",
         "GroupAdmin": "Group Admin",
-        "ProfessionalTeacher": "Professional teacher",
-        "PhysicalFitnessCoach": "Physical fitness coach",
-        "BranchAdmin": "Branch Admin",
-        "BrandAdmin": "Brand Admin",
         "System-Marketing": "System-Marketing",
         "System-Maintenance": "System-Maintenance",
         "System-Developer": "System-Developer"
@@ -68,8 +85,8 @@
         "GroupInfo": "Group Info",
         "Join": "Join",
         "Unjoin": "Unjoin",
-        "Unjoin-group": "Unjoin",
-        "Management": "Management",
+        "LeaveGroup": "Leave Group",
+        "Manage": "Manage",
         "Finished": "Finished",
         "AddBranch": "Add branch",
         "AddClass": "Add class",
@@ -80,7 +97,6 @@
         "Introduction": "Introduction",
         "Subgroup": "Subgroup",
         "Administrator": "Administrator",
-        "NormalMember": "Normal member",
         "PendingMember": "Pending member",
         "Brand": "Brand",
         "Branch": "Branch",
@@ -106,11 +122,7 @@
         "group-id-or-name": "group id or name",
         "Name":"Name",
         "Status": "Status",
-        "No-information": "No information",
-        "Back": "Back",
-        "AuditSystem": "Audit system",
-        "Free-to-join": "Free to join",
-        "Hide": "Hide"
+        "Back": "Back"
       }
     },
     "BrandManagement": {
@@ -128,20 +140,23 @@
       "Number-of-groups": "Number of groups",
       "Number-of-branches": "Number of branches",
       "Number-of-courses": "Number of courses",
-      "Number-of-management members": "Number of management members",
-      "BrandAdministrator": "Brand administrator",
-      "BranchManager": "Branch manager",
-      "PhysicalFitnessCoach": "Physical fitness coach",
-      "ProfessionalTeacher": "Professional teacher"
+      "Number-of-management-members": "Number of management members",
+      "In-operation": "In operation",
+      "Out-of-service": "Out of service",
+      "Go-out-of-business": "Go out of business",
+      "To-be-destroyed": "To be destroyed"
     },
     "privacySettings": {
       "privacySettings": "privacy settings",
       "MemberVisibility": "Member visibility",
-      "can-see-avatar": "can see avatar",
+      "anyone-can-see-avatar-name": "Anyone can see avatar and name",
+      "cannot-see-avatar-name": "cannot see avatar",
+      "cannot-see-activity-file": "cannot see activity file",
+      "cannot-see-activity-report": "cannot see activity report",
       "ShareSportsFile": "Share sports file",
-      "Can-browse-activity-file": "Can browse activity file",
+      "anyone-can-browse-activity-file": "Anyone can browse activity file",
       "ShareSportsReport": "Share sports report",
-      "Can-browse-activity-report": "Can browse activity report"
+      "anyone-can-browse-activity-report": "Anyone can browse activity report"
     },
     "MyActivity": {
       "MyActivity": "My activity",
@@ -197,4 +212,3 @@
     }
   }
 }
-
