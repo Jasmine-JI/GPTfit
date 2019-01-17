@@ -20,7 +20,15 @@
     "Speed": "速度",
     "Watt": "功率",
     "Pace": "配速",
-    "TotalDisTance": "总距离"
+    "TotalDisTance": "总距离",
+    "No-information": "尚无相关资讯",
+    "PAGINATOR": {
+      "ITEMS_PER_PAGE": "每页显示笔数",
+      "NEXT_PAGE": "下一页",
+      "PREVIOUS_PAGE": "上一页",
+      "OF_LABEL": "共"
+    },
+    "FooterAnnouncement": "Center 由 Alatech 提供支持 版权所有 © Alatech Co.,Ltd. 或其子公司• 版本: "
   },
   "Portal": {
     "Introduce": "介绍",
@@ -49,17 +57,26 @@
     },
     "Group": {
       "Group": "群组",
+      "System-SuperVisor": "神",
+      "System-Develop-Admin": "系統開發管理員",
+      "System-Maintenance-Admin": "系統維護管理員",
+      "Marketing-Business-Admin": "行销与业务管理员",
+      "BrandAdministrator": "品牌管理员",
+      "BranchManager": "分店管理员",
+      "PhysicalFitnessCoach": "体适能教练",
+      "ProfessionalTeacher": "专业老师",
+      "NormalGroupAdministrator": "一般群组管理员",
+      "NormalMember": "一般成员",
+      "AuditSystem": "审核制",
+      "Free-to-join": "自由加入",
+      "Hide": "隐藏",
+      "Dismiss": "解散",
       "MyGroup": {
         "MyGroup": "我的群组",
         "GroupList": "群组列表",
         "Name": "名称",
         "Identity": "身分",
-        "NormalMember": "一般成员",
         "GroupAdmin": "群组管理员",
-        "ProfessionalTeacher": "专业老师",
-        "PhysicalFitnessCoach": "体适能教练",
-        "BranchAdmin": "分店管理员",
-        "BrandAdmin": "品牌管理员",
         "System-Marketing": "系统-行销与企划",
         "System-Maintenance": "系统-维护员",
         "System-Developer": "系统-开发员"
@@ -68,8 +85,8 @@
         "GroupInfo": "群组资讯",
         "Join": "申请加入",
         "Unjoin": "取消加入",
-        "Unjoin-group": "退出群组",
-        "Management": "管理",
+        "LeaveGroup": "退出群组",
+        "Manage": "管理",
         "Finished": "完成管理",
         "AddBranch": "新增分店",
         "AddClass": "新增教练课",
@@ -80,7 +97,6 @@
         "Introduction": "介绍",
         "Subgroup": "子群组",
         "Administrator": "管理员",
-        "NormalMember": "一般成员",
         "PendingMember": "待加入成员",
         "Brand": "品牌",
         "Branch": "分店",
@@ -106,11 +122,7 @@
         "group-id-or-name": "群组ID或名称搜寻",
         "Name":"名称",
         "Status": "状态",
-        "No-information": "尚无相关资讯",
-        "Back": "返回",
-        "AuditSystem": "审核制",
-        "Free-to-join": "自由加入",
-        "Hide": "隐藏"
+        "Back": "返回"
       }
     },
     "BrandManagement": {
@@ -128,20 +140,23 @@
       "Number-of-groups": "群组数量",
       "Number-of-branches": "分店数",
       "Number-of-courses": "课程数",
-      "Number-of-management members": "管理成员数",
-      "BrandAdministrator": "品牌管理员",
-      "BranchManager": "分店管理员",
-      "PhysicalFitnessCoach": "体适能教练",
-      "ProfessionalTeacher": "专业老师"
+      "Number-of-management-members": "管理成员数",
+      "In-operation": "营运中",
+      "Out-of-service": "停运中",
+      "Go-out-of-business": "歇业",
+      "To-be-destroyed": "待销毁"
     },
     "privacySettings": {
       "privacySettings": "隐私设定",
       "MemberVisibility": "群组成员可见度",
-      "can-see-avatar": "可以看到头像与昵称",
+      "anyone-can-see-avatar-name": "'所有成员'可以看到头像与昵称",
+      "cannot-see-avatar-name": "不开放头像与昵称",
+      "cannot-see-activity-file": "不开放运动档案",
+      "cannot-see-activity-report": "不开放运动报告",
       "ShareSportsFile": "分享运动档案",
-      "Can-browse-activity-file": "可以看到运动档案",
+      "anyone-can-browse-activity-file": "'所有成员'可以看到运动档案",
       "ShareSportsReport": "分享运动报告",
-      "Can-browse-activity-report": "可以看到运动报告"
+      "anyone-can-browse-activity-report": "'所有成员'可以看到运动报告"
     },
     "MyActivity": {
       "MyActivity": "我的活动",

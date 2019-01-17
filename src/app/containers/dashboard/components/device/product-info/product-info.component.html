@@ -45,16 +45,16 @@
     </div>
     <div style="color: #919191">
       <div style="margin-bottom: 50px">
-        {{"Portal.EquipmentSN" | translate}}：{{ deviceSN || '尚無相關資訊' }}
+        {{"Portal.EquipmentSN" | translate}}：{{ deviceSN || 'SH.No-information' | translate }}
       </div>
       <div style="margin-bottom: 50px">
-        {{"Portal.ProductName" | translate}}：{{ deviceInfo?.modelName || '尚無相關資訊' }}
+        {{"Portal.ProductName" | translate}}：{{ deviceInfo?.modelName || 'SH.No-information' | translate }}
       </div>
       <div style="margin-bottom: 50px">
-        {{"Portal.ProductType" | translate}}：{{ (deviceInfo?.modelType | productType | translate) || '尚無相關資訊' }}
+        {{"Portal.ProductType" | translate}}：{{ (deviceInfo?.modelType | productType | translate) || 'SH.No-information' | translate }}
       </div>
       <div style="margin-bottom: 50px">
-        出廠日期：{{ deviceInfo?.date || '尚無相關資訊' }}
+        出廠日期：{{ deviceInfo?.date || 'SH.No-information' | translate }}
       </div>
       <div style="margin-bottom: 50px">
         裝置動態對應：

@@ -177,7 +177,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         this.progressRef.complete();
         return;
       }
-      if (res.resultCode === 401) {
+      if (res.resultCode === 401 || res.resultCode === 400) {
         this.isFileIDNotExist = true;
         return this.router.navigateByUrl('/404');
       }

@@ -166,9 +166,9 @@
               formControlName="groupStatus"
               [attr.disabled]="isEditing ? '' : null"
             >
-              <option class="form-field-option" value="2">審核制</option>
-              <option class="form-field-option" value="1">自由加入</option>
-              <option class="form-field-option" value="3">隱藏群組</option>
+            <option value="1" class="form-field-option">{{ 'Dashboard.Group.Free-to-join' | translate}}</option>
+            <option value="2" class="form-field-option">{{ 'Dashboard.Group.AuditSystem' | translate}}</option>
+            <option value="3" class="form-field-option">{{ 'Dashboard.Group.Hide' | translate}}</option>
             </select>
           </div>
           <div class="ala-list__item">

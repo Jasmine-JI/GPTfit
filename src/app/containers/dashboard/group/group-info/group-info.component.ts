@@ -172,27 +172,69 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
     });
   }
   handleShareTarget(shareData, type) {
+    const browserLang = this.utils.getLocalStorageObject('locale');
     let text = '';
     let accessRights = [];
-    if (shareData.switch === '3') {
-      text = '僅開放對象為';
-      accessRights = shareData.enableAccessRight;
-    } else {
-      text = '不開放對象為';
-      accessRights = shareData.disableAccessRight;
-    }
-    accessRights = accessRights.map(_accessRight => {
-      if (_accessRight === '30') {
-        return '品牌管理員';
-      } else if (_accessRight === '40') {
-        return '分店管理員';
-      } else if (_accessRight === '50') {
-        return '體適能教練';
+    if (browserLang === 'zh-tw') {
+      if (shareData.switch === '3') {
+        text = '僅開放對象為';
+        accessRights = shareData.enableAccessRight;
       } else {
-        return '專業老師';
+        text = '不開放對象為';
+        accessRights = shareData.disableAccessRight;
+      }
+    } else if (browserLang === 'zh-cn') {
+      if (shareData.switch === '3') {
+        text = '仅开放对象为';
+        accessRights = shareData.enableAccessRight;
+      } else {
+        text = '不开放对象为';
+        accessRights = shareData.disableAccessRight;
+      }
+    } else {
+      if (shareData.switch === '3') {
+        text = 'Only for ';
+        accessRights = shareData.enableAccessRight;
+      } else {
+        text = 'Not for ';
+        accessRights = shareData.disableAccessRight;
+      }
+    }
+
+    accessRights = accessRights.map(_accessRight => {
+      if (browserLang === 'zh-tw') {
+        if (_accessRight === '30') {
+          return '品牌管理員';
+        } else if (_accessRight === '40') {
+          return '分店管理員';
+        } else if (_accessRight === '50') {
+          return '體適能教練';
+        } else {
+          return '專業老師';
+        }
+      } else if (browserLang === 'zh-cn') {
+        if (_accessRight === '30') {
+          return '品牌管理员';
+        } else if (_accessRight === '40') {
+          return '分店管理员';
+        } else if (_accessRight === '50') {
+          return '体适能教练';
+        } else {
+          return '专业老师';
+        }
+      } else {
+        if (_accessRight === '30') {
+          return 'Brand administrator';
+        } else if (_accessRight === '40') {
+          return 'Branch manager';
+        } else if (_accessRight === '50') {
+          return 'Physical fitness coach';
+        } else {
+          return 'Professional teacher';
+        }
       }
     });
-    const browserLang = this.utils.getLocalStorageObject('locale');
+
     if (browserLang.indexOf('zh') > -1) {
       text += accessRights.join(' 、');
     } else {

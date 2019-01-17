@@ -1,6 +1,6 @@
 <div class="group-info row">
   <span class="group-handle-name group-handle-name__rwd">
-    群組資訊
+    {{ 'Dashboard.Group.GroupInfo.GroupInfo' | translate}}
   </span>
   <div class="col-md-4 group-image--area">
     <img *ngIf="groupImg"
@@ -10,39 +10,39 @@
     <ul class="nav">
       <li [class.active]="chooseIdx === 1"
         (click)="handleGroupItem(1)"
-      >群組資訊</li>
+      >{{ 'Dashboard.Group.GroupInfo.GroupInfo' | translate}}</li>
       <li [class.active]="chooseIdx === 2"
         *ngIf="groupLevel === '30' && visitorDetail?.isCanManage"
         (click)="handleGroupItem(2)"
-      >品牌管理</li>
+      >{{ 'Dashboard.BrandManagement.BrandManagement' | translate}}</li>
       <li [class.active]="chooseIdx === 3"
         (click)="handleGroupItem(3)"
-      >隱私設定</li>
+      >{{ 'Dashboard.privacySettings.privacySettings' | translate}}</li>
     </ul>
   </div>
   <div class="col-md-8">
     <ng-container *ngIf="chooseIdx === 1">
       <div class="group-edit-bar">
         <span class="group-handle-name">
-          群組資訊
+          {{ 'Dashboard.Group.GroupInfo.GroupInfo' | translate}}
         </span>
         <div>
           <button class="alatech-btn alatech-btn--default"
-            title="申請加入"
+            title="{{ 'Dashboard.Group.GroupInfo.Join' | translate}}"
             *ngIf="(joinStatus === 5 || joinStatus === 3 ) && (!visitorDetail?.isGroupAdmin || groupLevel === '80')"
             (click)="handleActionGroup(1)"
           >
-            申請加入
+            {{ 'Dashboard.Group.GroupInfo.Join' | translate}}
           </button>
           <button class="alatech-btn alatech-btn--default group-btn--waiting"
-            title="取消申請"
+            title="{{'Dashboard.Group.GroupInfo.Unjoin' | translate}}"
             *ngIf="joinStatus === 1"
             (click)="handleActionGroup(2)"
           >
-            取消申請
+            {{'Dashboard.Group.GroupInfo.Unjoin' | translate}}
           </button>
           <button class="alatech-btn alatech-btn--default"
-            title="退出群組"
+            title="{{'Dashboard.Group.GroupInfo.LeaveGroup' | translate}}"
             *ngIf="joinStatus === 2 &&
             (!visitorDetail?.isGroupAdmin
             ||
@@ -52,14 +52,14 @@
             )"
             (click)="handleActionGroup(2)"
           >
-            退出群組
+            {{'Dashboard.Group.GroupInfo.LeaveGroup' | translate}}
           </button>
           <button class="alatech-btn alatech-btn--default"
-            title="管理"
+            title="{{'Dashboard.Group.GroupInfo.Manage' | translate}}"
             *ngIf="visitorDetail?.isCanManage"
             (click)="goEditPage()"
           >
-            管理
+            {{'Dashboard.Group.GroupInfo.Manage' | translate}}
           </button>
         </div>
       </div>
@@ -76,26 +76,30 @@
           </label>
         </div>
         <div>
-          <label>群組ID：</label>{{ group_id }}
+          <label>{{ 'Dashboard.Group.GroupInfo.GroupID' | translate}}：</label>{{ group_id }}
         </div>
         <div>
-          <label>階層：</label>{{ this.groupLevel | groupLevelTranslate }}
+          <label>{{ 'Dashboard.Group.GroupInfo.Level' | translate}}：</label>{{ this.groupLevel | groupLevelTranslate }}
         </div>
         <div>
-          <label>狀態：</label>{{ groupInfo?.groupStatus | groupStatus }}
+          <label>{{ 'Dashboard.Group.GroupInfo.Status' | translate}}：</label>{{ groupInfo?.groupStatus | groupStatus | translate }}
         </div>
         <div>
-          <label>介紹：</label>
+          <label>{{ 'Dashboard.Group.GroupInfo.Introduction' | translate}}：</label>
           <div [innerHTML]="groupInfo?.groupDesc | lineBreak"></div>
         </div>
       </div>
       <div>
         <mat-tab-group (selectedTabChange)="changeGroupInfo($event)" class="ala-tab-group">
-          <mat-tab label="子群組資訊" *ngIf="groupLevel !== '80'">
+          <mat-tab label="{{ 'Dashboard.Group.GroupInfo.Subgroup' | translate}}"
+            *ngIf="groupLevel !== '80'"
+          >
             <ng-container  *ngIf="!isLoading">
-              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">品牌</label>
+              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+                {{ 'Dashboard.Group.GroupInfo.Brand' | translate}}
+              </label>
               <div style="margin-bottom: 15px">
-                <span *ngIf="subBrandInfo && subBrandInfo.length === 0">尚無品牌資訊</span>
+                <span *ngIf="subBrandInfo && subBrandInfo.length === 0">{{'SH.No-information' | translate}}</span>
                 <ng-container  *ngFor="let subBrandItem of subBrandInfo">
                   <app-member-capsule
                     [role]="role"
@@ -109,9 +113,11 @@
                   </app-member-capsule>
                 </ng-container>
               </div>
-              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">分店</label>
+              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+                {{ 'Dashboard.Group.GroupInfo.Branch' | translate}}
+              </label>
               <div style="margin-bottom: 15px">
-                <span *ngIf="subBranchInfo && subBranchInfo.length === 0">尚無分店資訊</span>
+                <span *ngIf="subBranchInfo && subBranchInfo.length === 0">{{'SH.No-information' | translate}}</span>
                 <ng-container  *ngFor="let subBranchItem of subBranchInfo">
                   <app-member-capsule
                     [role]="role"
@@ -126,9 +132,11 @@
                 </ng-container>
               </div>
 
-              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">教練課</label>
+              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+                {{ 'Dashboard.Group.GroupInfo.Class' | translate}}
+              </label>
               <div style="margin-bottom: 15px" >
-                <span *ngIf="subCoachInfo && subCoachInfo.length === 0">尚無教練課資訊</span>
+                <span *ngIf="subCoachInfo && subCoachInfo.length === 0">{{'SH.No-information' | translate}}</span>
                 <ng-container  *ngFor="let subCoachItem of subCoachInfo">
                   <app-member-capsule
                     [role]="role"
@@ -149,12 +157,14 @@
               <mat-spinner></mat-spinner>
             </div>
           </mat-tab>
-          <mat-tab label="管理員資訊">
+          <mat-tab label="{{ 'Dashboard.Group.GroupInfo.Administrator' | translate}}">
             <ng-container *ngIf="!isLoading">
               <ng-container *ngIf="groupLevel && groupLevel !== '80'">
-                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">品牌管理員</label>
+                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+                  {{ 'Dashboard.Group.BrandAdministrator' | translate}}
+                </label>
                 <div style="margin-bottom: 15px">
-                <span *ngIf="brandAdministrators && brandAdministrators.length === 0">尚無品牌管理員資訊</span>
+                <span *ngIf="brandAdministrators && brandAdministrators.length === 0">{{'SH.No-information' | translate}}</span>
                   <ng-container  *ngFor="let brandAdmItem of brandAdministrators">
                     <app-member-capsule
                       [role]="role"
@@ -169,9 +179,11 @@
                   </ng-container>
                 </div>
 
-                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">分店管理員</label>
+                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+                  {{ 'Dashboard.Group.BranchManager' | translate}}
+                </label>
                 <div style="margin-bottom: 15px">
-                  <span *ngIf="branchAdministrators && branchAdministrators.length === 0">尚無分店管理員資訊</span>
+                  <span *ngIf="branchAdministrators && branchAdministrators.length === 0">{{'SH.No-information' | translate}}</span>
                   <ng-container  *ngFor="let branchAdmItem of branchAdministrators">
                     <app-member-capsule
                       [role]="role"
@@ -186,9 +198,12 @@
                   </ng-container>
                 </div>
                 <ng-container *ngIf="groupLevel !== '60'">
-                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">教練課管理員</label>
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+                    {{ 'Dashboard.Group.GroupInfo.Class' | translate}}
+                    {{ 'Dashboard.Group.GroupInfo.Administrator' | translate}}
+                  </label>
                   <div style="margin-bottom: 15px" >
-                    <span *ngIf="coachAdministrators && coachAdministrators.length === 0">尚無教練課管理員資訊</span>
+                    <span *ngIf="coachAdministrators && coachAdministrators.length === 0">{{'SH.No-information' | translate}}</span>
                     <ng-container  *ngFor="let coachAdmItem of coachAdministrators">
                       <app-member-capsule
                         [role]="role"
@@ -204,9 +219,11 @@
                   </div>
                 </ng-container>
                 <ng-container *ngIf="groupLevel === '60'">
-                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">專業老師</label>
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+                    {{ 'Dashboard.Group.ProfessionalTeacher' | translate}}
+                  </label>
                   <div style="margin-bottom: 15px" >
-                    <span *ngIf="normalCoaches && normalCoaches.length === 0">尚無專業老師資訊</span>
+                    <span *ngIf="normalCoaches && normalCoaches.length === 0">{{'SH.No-information' | translate}}</span>
                     <ng-container  *ngFor="let normalCoachAdmItem of normalCoaches">
                       <app-member-capsule
                         [role]="role"
@@ -220,9 +237,11 @@
                       </app-member-capsule>
                     </ng-container>
                   </div>
-                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">體適能教練</label>
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+                    {{ 'Dashboard.Group.PhysicalFitnessCoach' | translate}}
+                  </label>
                   <div style="margin-bottom: 15px" >
-                    <span *ngIf="PFCoaches && PFCoaches.length === 0">尚無體適能教練資訊</span>
+                    <span *ngIf="PFCoaches && PFCoaches.length === 0">{{'SH.No-information' | translate}}</span>
                     <ng-container  *ngFor="let pfCoachAdmItem of PFCoaches">
                       <app-member-capsule
                         [role]="role"
@@ -239,9 +258,11 @@
                 </ng-container>
               </ng-container>
               <ng-container *ngIf="groupLevel && groupLevel === '80'">
-                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">管理員</label>
+                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+                  {{ 'Dashboard.Group.GroupInfo.Administrator' | translate}}
+                </label>
                 <div style="margin-bottom: 15px" >
-                  <span *ngIf="groupInfos && groupInfos.length === 0">尚無管理員資訊</span>
+                  <span *ngIf="groupInfos && groupInfos.length === 0">{{'SH.No-information' | translate}}</span>
                   <ng-container  *ngFor="let item of groupInfos">
                     <app-member-capsule
                       [role]="role"
@@ -263,9 +284,9 @@
               <mat-spinner></mat-spinner>
             </div>
           </mat-tab>
-          <mat-tab label="一般成員資訊">
+          <mat-tab label="{{ 'Dashboard.Group.NormalMember' | translate}}">
             <ng-container *ngIf="!isLoading">
-              <span *ngIf="normalMemberInfos && normalMemberInfos.length === 0">尚無一般成員資訊</span>
+              <span *ngIf="normalMemberInfos && normalMemberInfos.length === 0">{{'SH.No-information' | translate}}</span>
               <ng-container  *ngFor="let item of normalMemberInfos">
                 <div style="margin-bottom: 15px;display:inline-block">
                   <app-member-capsule
@@ -287,9 +308,9 @@
               <mat-spinner></mat-spinner>
             </div>
           </mat-tab>
-          <mat-tab label="待加入成員">
+          <mat-tab label="{{ 'Dashboard.Group.GroupInfo.PendingMember' | translate}}">
             <ng-container *ngIf="!isLoading">
-              <span *ngIf="groupInfos && groupInfos.length === 0">尚無待加入成員資訊</span>
+              <span *ngIf="groupInfos && groupInfos.length === 0">{{'SH.No-information' | translate}}</span>
               <ng-container  *ngFor="let item of groupInfos">
                 <div style="margin-bottom: 15px;display:inline-block">
                   <app-member-capsule
@@ -316,91 +337,109 @@
     </ng-container>
     <ng-container *ngIf="chooseIdx === 2 && !isCommerceInfoLoading">
       <label  class="group-label">
-        品牌
+        {{ 'Dashboard.Group.GroupInfo.Brand' | translate}}
       </label>
       <div class="group-list">
-        <div class="group-list-item">狀態：
-          <span *ngIf="commerceInfo?.commerceStatus === '1'">營運中</span>
-          <span *ngIf="commerceInfo?.commerceStatus === '2'">停運中</span>
-          <span *ngIf="commerceInfo?.commerceStatus === '3'">歇業</span>
-          <span *ngIf="commerceInfo?.commerceStatus === '4'">待註銷</span>
+        <div class="group-list-item">{{ 'Dashboard.Group.GroupInfo.Status' | translate}}：
+          <span *ngIf="commerceInfo?.commerceStatus === '1'">{{ 'Dashboard.BrandManagement.In-operation' | translate}}</span>
+          <span *ngIf="commerceInfo?.commerceStatus === '2'">{{ 'Dashboard.BrandManagement.Out-of-service' | translate}}</span>
+          <span *ngIf="commerceInfo?.commerceStatus === '3'">{{ 'Dashboard.BrandManagement.Go-out-of-business' | translate}}</span>
+          <span *ngIf="commerceInfo?.commerceStatus === '4'">{{ 'Dashboard.BrandManagement.To-be-destroyed' | translate}}</span>
         </div>
       </div>
       <label  class="group-label">
-        總成員
+        {{ 'Dashboard.BrandManagement.TotalMember' | translate}}
       </label>
       <div class="group-list">
-        <div class="group-list-item">管理員數：
+        <div class="group-list-item">{{ 'Dashboard.BrandManagement.TotalAdministrators' | translate}}：
           {{
             +commerceInfo?.groupManagerStatus.currentBrandManagers + +commerceInfo?.groupManagerStatus.currentBranchManagers
             + +commerceInfo?.groupManagerStatus.currentFitnessCoaches + +commerceInfo?.groupManagerStatus.currentCoaches + +commerceInfo?.groupManagerStatus.currentGeneralGroupManagers
-          }}/{{commerceInfo?.groupManagerStatus.maxGroupManagers}}人
+          }}/{{commerceInfo?.groupManagerStatus.maxGroupManagers}}
         </div>
-        <div class="group-list-item">總人員數：
-          {{+commerceInfo?.groupMemberStatus.currentGroupMembers}}/{{+commerceInfo?.groupMemberStatus.maxGroupMembers}}人</div>
+        <div class="group-list-item">{{ 'Dashboard.BrandManagement.TotalMembers' | translate}}：
+          {{+commerceInfo?.groupMemberStatus.currentGroupMembers}}/{{+commerceInfo?.groupMemberStatus.maxGroupMembers}}</div>
       </div>
       <label  class="group-label">
-        目前方案
+        {{ 'Dashboard.BrandManagement.CurrentPlan' | translate}}
       </label>
       <div class="group-list">
-        <div class="group-list-item">目前方案：
-          <span *ngIf="commerceInfo?.commercePlan === '1'">試用</span>
-          <span *ngIf="commerceInfo?.commercePlan === '2'">工作室方案</span>
-          <span *ngIf="commerceInfo?.commercePlan === '3'">中小型企業方案</span>
-          <span *ngIf="commerceInfo?.commercePlan === '99'">客制化</span>
+        <div class="group-list-item">{{ 'Dashboard.BrandManagement.CurrentPlan' | translate}}：
+          <span *ngIf="commerceInfo?.commercePlan === '1'">{{ 'Dashboard.BrandManagement.ExperiencePlan' | translate}}</span>
+          <span *ngIf="commerceInfo?.commercePlan === '2'">{{ 'Dashboard.BrandManagement.StudioPlan' | translate}}</span>
+          <span *ngIf="commerceInfo?.commercePlan === '3'">{{ 'Dashboard.BrandManagement.SME-program' | translate}}</span>
+          <span *ngIf="commerceInfo?.commercePlan === '99'">{{ 'Dashboard.BrandManagement.CustomScheme' | translate}}</span>
         </div>
-        <div class="group-list-item">授權到期日：
+        <div class="group-list-item">{{ 'Dashboard.BrandManagement.Authorization-due-date' | translate}}：
           {{(commerceInfo?.commercePlanExpired) | date: 'y/MM/dd'}}</div>
       </div>
       <label  class="group-label">
-        群組數量
+        {{ 'Dashboard.BrandManagement.Number-of-groups' | translate}}
       </label>
       <div class="group-list">
-        <div class="group-list-item">分店數：{{commerceInfo?.groupStatus.currentBranches}}/{{commerceInfo?.groupStatus.maxBranches}}</div>
-        <div class="group-list-item">課程數：{{commerceInfo?.groupStatus.currentClasses}}/{{commerceInfo?.groupStatus.maxClasses}}</div>
+        <div class="group-list-item">{{ 'Dashboard.BrandManagement.Number-of-branches' | translate}}
+          ：{{commerceInfo?.groupStatus.currentBranches}}/{{commerceInfo?.groupStatus.maxBranches}}</div>
+        <div class="group-list-item">{{ 'Dashboard.BrandManagement.Number-of-courses' | translate}}：
+          {{commerceInfo?.groupStatus.currentClasses}}/{{commerceInfo?.groupStatus.maxClasses}}</div>
       </div>
       <label  class="group-label">
-        管理成員
+        {{ 'Dashboard.BrandManagement.Number-of-management-members' | translate}}
       </label>
       <div class="group-list">
-        <div class="group-list-item">品牌管理員：{{commerceInfo?.groupManagerStatus.currentBrandManagers}}人</div>
-        <div class="group-list-item">分店管理員：{{commerceInfo?.groupManagerStatus.currentBranchManagers}}人</div>
-        <div class="group-list-item">健體教練：{{commerceInfo?.groupManagerStatus.currentFitnessCoaches}}人</div>
-        <div class="group-list-item">專業老師：{{commerceInfo?.groupManagerStatus.currentCoaches}}人</div>
+        <div class="group-list-item">{{ 'Dashboard.Group.BrandAdministrator' | translate}}：
+          {{commerceInfo?.groupManagerStatus.currentBrandManagers}}</div>
+        <div class="group-list-item">{{ 'Dashboard.Group.BranchManager' | translate}}：
+          {{commerceInfo?.groupManagerStatus.currentBranchManagers}}</div>
+        <div class="group-list-item">{{ 'Dashboard.Group.PhysicalFitnessCoach' | translate}}：
+          {{commerceInfo?.groupManagerStatus.currentFitnessCoaches}}</div>
+        <div class="group-list-item">{{ 'Dashboard.Group.ProfessionalTeacher' | translate}}：
+          {{commerceInfo?.groupManagerStatus.currentCoaches}}</div>
       </div>
     </ng-container>
     <ng-container *ngIf="chooseIdx === 3">
       <label  class="group-label">
-        群組成員可見度
+        {{ 'Dashboard.privacySettings.MemberVisibility' | translate}}
       </label>
       <div class="group-list">
         <div class="group-list-item">
-          <span *ngIf="groupInfo?.shareAvatarToMember && groupInfo?.shareAvatarToMember.switch === '1'">"所有成員"皆可以看到頭像與暱稱</span>
-          <span *ngIf="groupInfo?.shareAvatarToMember && groupInfo?.shareAvatarToMember.switch === '2'">不開放頭像與暱稱</span>
+          <span *ngIf="groupInfo?.shareAvatarToMember && groupInfo?.shareAvatarToMember.switch === '1'">
+            {{ 'Dashboard.privacySettings.anyone-can-see-avatar-name' | translate}}
+          </span>
+          <span *ngIf="groupInfo?.shareAvatarToMember && groupInfo?.shareAvatarToMember.switch === '2'">
+            {{ 'Dashboard.privacySettings.cannot-see-avatar-name' | translate}}
+          </span>
           <span *ngIf="groupInfo?.shareAvatarToMember && (groupInfo?.shareAvatarToMember.switch === '3' || groupInfo?.shareAvatarToMember.switch === '4')">
             {{shareAvatarTarget}}
           </span>
         </div>
       </div>
       <label  class="group-label">
-        分享運動檔案
+        {{ 'Dashboard.privacySettings.ShareSportsFile' | translate}}
       </label>
       <div class="group-list">
         <div class="group-list-item">
-          <span *ngIf="groupInfo?.shareActivityToMember && groupInfo?.shareActivityToMember.switch === '1'">"所有成員"皆可以看到運動檔案</span>
-          <span *ngIf="groupInfo?.shareActivityToMember && groupInfo?.shareActivityToMember.switch === '2'">不開放運動檔案</span>
+          <span *ngIf="groupInfo?.shareActivityToMember && groupInfo?.shareActivityToMember.switch === '1'">
+            {{ 'Dashboard.privacySettings.anyone-can-browse-activity-file' | translate}}
+          </span>
+          <span *ngIf="groupInfo?.shareActivityToMember && groupInfo?.shareActivityToMember.switch === '2'">
+            {{ 'Dashboard.privacySettings.cannot-see-activity-file' | translate}}
+          </span>
           <span *ngIf="groupInfo?.shareActivityToMember && (groupInfo?.shareActivityToMember.switch === '3' || groupInfo?.shareActivityToMember.switch === '4')">
             {{shareActivityTarget}}
           </span>
         </div>
       </div>
       <label  class="group-label">
-        分享運動報告
+        {{ 'Dashboard.privacySettings.ShareSportsReport' | translate}}
       </label>
       <div class="group-list">
         <div class="group-list-item">
-          <span *ngIf="groupInfo?.shareReportToMember && groupInfo?.shareReportToMember.switch === '1'">"所有成員"皆可以看到運動報告</span>
-          <span *ngIf="groupInfo?.shareReportToMember && groupInfo?.shareReportToMember.switch === '2'">不開放運動報告</span>
+          <span *ngIf="groupInfo?.shareReportToMember && groupInfo?.shareReportToMember.switch === '1'">
+            {{ 'Dashboard.privacySettings.anyone-can-browse-report' | translate}}
+          </span>
+          <span *ngIf="groupInfo?.shareReportToMember && groupInfo?.shareReportToMember.switch === '2'">
+            {{ 'Dashboard.privacySettings.cannot-see-activity-report' | translate}}
+          </span>
           <span *ngIf="groupInfo?.shareReportToMember && (groupInfo?.shareReportToMember.switch === '3' || groupInfo?.shareReportToMember.switch === '4')">
             {{shareReportTarget}}
           </span>
@@ -416,21 +455,21 @@
 </div>
 <div class="group-manage__action" #footerTarget>
   <button class="alatech-btn group-manage__btn"
-    title="申請加入"
+    title="{{ 'Dashboard.Group.GroupInfo.Join' | translate}}"
     *ngIf="(joinStatus === 5 || joinStatus === 3 ) && (!visitorDetail?.isGroupAdmin || groupLevel === '80')"
     (click)="handleActionGroup(1)"
   >
-    申請加入
+    {{ 'Dashboard.Group.GroupInfo.Join' | translate}}
   </button>
   <button class="alatech-btn group-manage__btn group-btn--waiting"
-    title="取消申請"
+    title="{{'Dashboard.Group.GroupInfo.Unjoin' | translate}}"
     *ngIf="joinStatus === 1"
     (click)="handleActionGroup(2)"
   >
-    取消申請
+    {{'Dashboard.Group.GroupInfo.Unjoin' | translate}}
   </button>
   <button class="alatech-btn group-manage__btn"
-    title="退出群組"
+    title="{{'Dashboard.Group.GroupInfo.LeaveGroup' | translate}}"
     *ngIf="joinStatus === 2 &&
     (!visitorDetail?.isGroupAdmin
     ||
@@ -440,13 +479,13 @@
     )"
     (click)="handleActionGroup(2)"
   >
-    退出群組
+    {{'Dashboard.Group.GroupInfo.LeaveGroup' | translate}}
   </button>
   <button class="alatech-btn group-manage__btn"
-    title="管理"
+    title="{{'Dashboard.Group.GroupInfo.Manage' | translate}}"
     *ngIf="visitorDetail?.isCanManage"
     (click)="goEditPage()"
   >
-    管理
+    {{'Dashboard.Group.GroupInfo.Manage' | translate}}
   </button>
 </div>

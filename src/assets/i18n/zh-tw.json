@@ -20,7 +20,15 @@
     "Speed": "速度",
     "Watt": "功率",
     "Pace": "配速",
-    "TotalDisTance": "總距離"
+    "TotalDisTance": "總距離",
+    "No-information": "尚無相關資訊",
+    "PAGINATOR": {
+      "ITEMS_PER_PAGE": "每頁顯示筆數",
+      "NEXT_PAGE": "下一頁",
+      "PREVIOUS_PAGE": "上一頁",
+      "OF_LABEL": "共"
+    },
+    "FooterAnnouncement": "Center 是由 Alatech 提供 Copyright © Alatech Co.,Ltd. 或其子公司• 版本: "
   },
   "Portal": {
     "Introduce": "介紹",
@@ -44,21 +52,31 @@
       "Member": "成員",
       "Avg": "平均",
       "more": "更多",
-      "LiveEnd": "課程直播已結束"
+      "LiveEnd": "課程直播已結束",
+      "BackClassList": "返回課程直播列表"
     },
     "Group": {
       "Group": "群組",
+      "System-SuperVisor": "神",
+      "System-Develop-Admin": "系統開發管理員",
+      "System-Maintenance-Admin": "系統維護管理員",
+      "Marketing-Business-Admin": "行銷與業務管理員",
+      "BrandAdministrator": "品牌管理員",
+      "BranchManager": "分店管理員",
+      "PhysicalFitnessCoach": "體適能教練",
+      "ProfessionalTeacher": "專業老師",
+      "NormalGroupAdministrator": "一般群組管理員",
+      "NormalMember": "一般成員",
+      "AuditSystem": "審核制",
+      "Free-to-join": "自由加入",
+      "Hide": "隱藏",
+      "Dismiss": "解散",
       "MyGroup": {
         "MyGroup": "我的群組",
         "GroupList": "群組列表",
         "Name": "名稱",
         "Identity": "身分",
-        "NormalMember": "一般成員",
         "GroupAdmin": "群組管理員",
-        "ProfessionalTeacher": "專業老師",
-        "PhysicalFitnessCoach": "體適能教練",
-        "BranchAdmin": "分店管理員",
-        "BrandAdmin": "品牌管理員",
         "System-Marketing": "系統-行銷與企劃",
         "System-Maintenance": "系統-維護員",
         "System-Developer": "系統-開發員"
@@ -67,8 +85,8 @@
         "GroupInfo": "群組資訊",
         "Join": "申請加入",
         "Unjoin": "取消加入",
-        "Unjoin-group": "退出群組",
-        "Management": "管理",
+        "LeaveGroup": "退出群組",
+        "Manage": "管理",
         "Finished": "完成管理",
         "AddBranch": "新增分店",
         "AddClass": "新增教練課",
@@ -79,7 +97,6 @@
         "Introduction": "介紹",
         "Subgroup": "子群組",
         "Administrator": "管理員",
-        "NormalMember": "一般成員",
         "PendingMember": "待加入成員",
         "Brand": "品牌",
         "Branch": "分店",
@@ -105,11 +122,7 @@
         "group-id-or-name": "群組ID或名稱搜尋",
         "Name":"名稱",
         "Status": "狀態",
-        "No-information": "尚無相關資訊",
-        "Back": "返回",
-        "AuditSystem": "審核制",
-        "Free-to-join": "自由加入",
-        "Hide": "隱藏"
+        "Back": "返回"
       }
     },
     "BrandManagement": {
@@ -127,20 +140,23 @@
       "Number-of-groups": "群組數量",
       "Number-of-branches": "分店數",
       "Number-of-courses": "課程數",
-      "Number-of-management members": "管理成員數",
-      "BrandAdministrator": "品牌管理員",
-      "BranchManager": "分店管理員",
-      "PhysicalFitnessCoach": "體適能教練",
-      "ProfessionalTeacher": "專業老師"
+      "Number-of-management-members": "管理成員數",
+      "In-operation": "營運中",
+      "Out-of-service": "停運中",
+      "Go-out-of-business": "歇業",
+      "To-be-destroyed": "待銷毀"
     },
     "privacySettings": {
       "privacySettings": "隱私設定",
       "MemberVisibility": "群組成員可見度",
-      "can-see-avatar": "可以看到頭像與暱稱",
+      "anyone-can-see-avatar-name": "'所有成員'可以看到頭像與暱稱",
+      "cannot-see-avatar-name": "不開放頭像與暱稱",
+      "cannot-see-activity-file": "不開放運動檔案",
+      "cannot-see-activity-report": "不開放運動報告",
       "ShareSportsFile": "分享運動檔案",
-      "Can-browse-activity-file": "可以看到運動檔案",
+      "anyone-can-browse-activity-file": "'所有成員'可以看到運動檔案",
       "ShareSportsReport": "分享運動報告",
-      "Can-browse-activity-report": "可以看到運動報告"
+      "anyone-can-browse-activity-report": "'所有成員'可以看到運動報告"
     },
     "MyActivity": {
       "MyActivity": "我的活動",
