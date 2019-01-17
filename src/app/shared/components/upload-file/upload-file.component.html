@@ -47,9 +47,11 @@
       *ngIf="isImageFileMode"
       style="margin-top:15px;font-size:12px;font-weight:400;color:#999;text-align:left"
     >
-      *照片格式限{{ accept }}
+      <!-- *照片格式限{{ accept }} -->
+      *{{ accept }}
       <br>
-      *大小限制為{{ maxFileSize / 1024}} KB以內
+      <!-- *大小限制為{{ maxFileSize / 1024}} KB以內 -->
+      {{'Dashboard.Group.GroupInfo.size-limit' | translate: {'size': '1024'} }}
     </div>
   </div>
 </div>
