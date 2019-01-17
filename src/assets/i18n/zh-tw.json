@@ -15,7 +15,12 @@
     "NoFindData": "查無資料",
     "HeartRate": "心率",
     "Calorie": "卡路里",
-    "HeartRateZone": "心率區間"
+    "HeartRateZone": "心率區間",
+    "CycleCadence": "踏頻",
+    "Speed": "速度",
+    "Watt": "功率",
+    "Pace": "配速",
+    "TotalDisTance": "總距離"
   },
   "Portal": {
     "Introduce": "介紹",

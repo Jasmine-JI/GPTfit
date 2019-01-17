@@ -20,7 +20,7 @@
         </ol>
         <div class="carousel-inner">
           <div class="carousel-item active" [style.background-color]="classInfo?.groupIcon !== '/assets/images/group-default.svg'  ? 'black': '#fff'">
-            <img style="width:100%;" [src]="classInfo?.groupIcon">
+            <img style="width:100%;height:100%" [src]="classInfo?.groupIcon">
           </div>
           <div class="carousel-item" *ngIf="isHadVideoUrl">
             <app-ala-iframe [src]="classInfo?.groupVideoUrl" [width]="carouselElement?.nativeElement.width" [height]="carouselElement?.nativeElement.height"></app-ala-iframe>
@@ -119,21 +119,74 @@
                aria-labelledby="dropdownMenu4"
             >
               <ul>
-                <li (click)="removeSeries(0)"
-                  [class.active]="chartType === 0"
-                >
-                  {{ "SH.HeartRate" | translate}}
-                </li>
-                <li (click)="removeSeries(1)"
-                  [class.active]="chartType === 1"
-                >
-                  {{ "SH.Calorie" | translate}}
-                </li>
-                <li (click)="removeSeries(2)"
-                  [class.active]="chartType === 2"
-                >
-                  {{ "SH.HeartRateZone" | translate}}
-                </li>
+                <ng-container *ngIf="classType === '6'">
+                  <li (click)="removeSeries(0)"
+                    [class.active]="chartType === 0"
+                  >
+                    {{ "SH.HeartRate" | translate}}
+                  </li>
+                  <li (click)="removeSeries(1)"
+                    [class.active]="chartType === 1"
+                  >
+                    {{ "SH.Speed" | translate}}
+                  </li>
+                  <li (click)="removeSeries(2)"
+                    [class.active]="chartType === 2"
+                  >
+                    {{ "SH.Watt" | translate}}
+                  </li>
+                </ng-container>
+                <ng-container *ngIf="classType === '5'">
+                  <li (click)="removeSeries(0)"
+                    [class.active]="chartType === 0"
+                  >
+                    {{ "SH.HeartRate" | translate}}
+                  </li>
+                  <li (click)="removeSeries(1)"
+                    [class.active]="chartType === 1"
+                  >
+                    {{ "SH.Calorie" | translate}}
+                  </li>
+                  <li (click)="removeSeries(2)"
+                    [class.active]="chartType === 2"
+                  >
+                    {{ "SH.HeartRateZone" | translate}}
+                  </li>
+                </ng-container>
+                <ng-container *ngIf="classType === '2'">
+                  <li (click)="removeSeries(0)"
+                    [class.active]="chartType === 0"
+                  >
+                    {{ "SH.HeartRate" | translate}}
+                  </li>
+                  <li (click)="removeSeries(1)"
+                    [class.active]="chartType === 1"
+                  >
+                    {{ "SH.CycleCadence" | translate}}
+                  </li>
+                  <li (click)="removeSeries(2)"
+                    [class.active]="chartType === 2"
+                  >
+                    {{ "SH.Speed" | translate}}
+                  </li>
+                </ng-container>
+                <ng-container *ngIf="classType === '1'">
+                  <li (click)="removeSeries(0)"
+                    [class.active]="chartType === 0"
+                  >
+                    {{ "SH.HeartRate" | translate}}
+                  </li>
+                  <li (click)="removeSeries(1)"
+                    [class.active]="chartType === 1"
+                  >
+                    {{ "SH.Pace" | translate}}
+                  </li>
+                  <li (click)="removeSeries(2)"
+                    [class.active]="chartType === 2"
+                  >
+                    {{ "SH.TotalDisTance" | translate}}
+                  </li>
+                </ng-container>
               </ul>
             </div>
           </div>
@@ -153,21 +206,62 @@
                 <span *ngIf="chartType === 0">
                   {{heartValues && heartValues[0]?.liveHr || 0}}
                 </span>
-                <span *ngIf="chartType === 1">
-                  {{heartValues && heartValues[0]?.calorie || 0}}
-                </span>
-                <span *ngIf="chartType === 2">
-                  {{heartValues && heartValues[0]?.colorIdx || 0}}
-                </span>
+                <ng-container *ngIf="classType === '5'">
+                  <span *ngIf="chartType === 1">
+                    {{heartValues && heartValues[0]?.calorie || 0}}
+                  </span>
+                  <span *ngIf="chartType === 2">
+                    {{heartValues && heartValues[0]?.colorIdx || 0}}
+                  </span>
+                </ng-container>
+                <ng-container *ngIf="classType === '6'">
+                  <span *ngIf="chartType === 1">
+                    {{heartValues && heartValues[0]?.speed || 0}}
+                  </span>
+                  <span *ngIf="chartType === 2">
+                    {{heartValues && heartValues[0]?.watt || 0}}
+                  </span>
+                </ng-container>
+                <ng-container *ngIf="classType === '2'">
+                  <span *ngIf="chartType === 1">
+                    {{heartValues && heartValues[0]?.cadence || 0}}
+                  </span>
+                  <span *ngIf="chartType === 2">
+                    {{heartValues && heartValues[0]?.speed || 0}}
+                  </span>
+                </ng-container>
+                <ng-container *ngIf="classType === '1'">
+                  <span *ngIf="chartType === 1">
+                    {{heartValues && heartValues[0]?.pace || 0}}
+                  </span>
+                  <span *ngIf="chartType === 2">
+                    {{heartValues && heartValues[0]?.distance || 0}}
+                  </span>
+                </ng-container>
               </div>
               <div class="hr-heart"
                 [style.color]="heartValues && hrColors[heartValues[0]?.colorIdx]"
               >
                 <i class="icon-svg_web-icon_p2_003-heart_rate"
-                  *ngIf="chartType === 0 || chartType === 2"
+                  *ngIf="(classType === '5' && (chartType === 0 || chartType === 2)) || chartType === 0"
                 ></i>
                 <i class="icon-svg_web-icon_p2_010-calorie"
-                  *ngIf="chartType === 1"
+                  *ngIf="classType === '5' && chartType === 1"
+                ></i>
+                <i class="icon-svg_web-icon_p1_025-speed"
+                  *ngIf="(classType === '6' && chartType === 1) || (classType === '2' && chartType === 2)"
+                ></i>
+                <i class="icon-svg_web-icon_p1_058-charging"
+                  *ngIf="classType === '6' && chartType === 2"
+                ></i>
+                <i class="icon-svg_web-icon_p2_034-cadence"
+                  *ngIf="classType === '2' && chartType === 1"
+                ></i>
+                <i class="icon-svg_web-icon_p2_028-pace_1km"
+                  *ngIf="classType === '1' && chartType === 1"
+                ></i>
+                <i class="icon-svg_web-icon_p2_018-distance"
+                  *ngIf="classType === '1' && chartType === 2"
                 ></i>
               </div>
             </div>
@@ -178,10 +272,25 @@
               <div class="hr-val">{{meanValue}}</div>
               <div class="hr-heart">
                 <i class="icon-svg_web-icon_p2_003-heart_rate"
-                  *ngIf="chartType === 0 || chartType === 2"
+                  *ngIf="(classType === '5' && (chartType === 0 || chartType === 2)) || chartType === 0"
                 ></i>
                 <i class="icon-svg_web-icon_p2_010-calorie"
-                  *ngIf="chartType === 1"
+                  *ngIf="classType === '5' && chartType === 1"
+                ></i>
+                <i class="icon-svg_web-icon_p1_025-speed"
+                  *ngIf="(classType === '6' && chartType === 1) || (classType === '2' && chartType === 2)"
+                ></i>
+                <i class="icon-svg_web-icon_p1_058-charging"
+                  *ngIf="classType === '6' && chartType === 2"
+                ></i>
+                <i class="icon-svg_web-icon_p2_034-cadence"
+                  *ngIf="classType === '2' && chartType === 1"
+                ></i>
+                <i class="icon-svg_web-icon_p2_028-pace_1km"
+                  *ngIf="classType === '1' && chartType === 1"
+                ></i>
+                <i class="icon-svg_web-icon_p2_018-distance"
+                  *ngIf="classType === '1' && chartType === 2"
                 ></i>
               </div>
             </div>
@@ -194,21 +303,62 @@
                 <span *ngIf="chartType === 0">
                   {{heartValues && heartValues[heartValues && heartValues.length - 1]?.liveHr || 0}}
                 </span>
-                <span *ngIf="chartType === 1">
-                  {{heartValues && heartValues[heartValues && heartValues.length - 1]?.calorie || 0}}
-                </span>
-                <span *ngIf="chartType === 2">
-                  {{heartValues && heartValues[heartValues && heartValues.length - 1]?.colorIdx || 0}}
-                </span>
+                <ng-container *ngIf="classType === '5'">
+                  <span *ngIf="chartType === 1">
+                    {{heartValues && heartValues[heartValues && heartValues.length - 1]?.calorie || 0}}
+                  </span>
+                  <span *ngIf="chartType === 2">
+                    {{heartValues && heartValues[heartValues && heartValues.length - 1]?.colorIdx || 0}}
+                  </span>
+                </ng-container>
+                <ng-container *ngIf="classType === '6'">
+                  <span *ngIf="chartType === 1">
+                    {{heartValues && heartValues[heartValues && heartValues.length - 1]?.speed || 0}}
+                  </span>
+                  <span *ngIf="chartType === 2">
+                    {{heartValues && heartValues[heartValues && heartValues.length - 1]?.watt || 0}}
+                  </span>
+                </ng-container>
+                <ng-container *ngIf="classType === '2'">
+                  <span *ngIf="chartType === 1">
+                    {{heartValues && heartValues[heartValues && heartValues.length - 1]?.cadence || 0}}
+                  </span>
+                  <span *ngIf="chartType === 2">
+                    {{heartValues && heartValues[heartValues && heartValues.length - 1]?.speed || 0}}
+                  </span>
+                </ng-container>
+                <ng-container *ngIf="classType === '1'">
+                  <span *ngIf="chartType === 1">
+                    {{heartValues && heartValues[heartValues && heartValues.length - 1]?.pace || 0}}
+                  </span>
+                  <span *ngIf="chartType === 2">
+                    {{heartValues && heartValues[heartValues && heartValues.length - 1]?.distance || 0}}
+                  </span>
+                </ng-container>
               </div>
               <div class="hr-heart"
                 [style.color]="heartValues && hrColors[heartValues[heartValues.length - 1]?.colorIdx]"
               >
                 <i class="icon-svg_web-icon_p2_003-heart_rate"
-                  *ngIf="chartType === 0 || chartType === 2"
+                  *ngIf="(classType === '5' && (chartType === 0 || chartType === 2)) || chartType === 0"
                 ></i>
                 <i class="icon-svg_web-icon_p2_010-calorie"
-                  *ngIf="chartType === 1"
+                  *ngIf="classType === '5' && chartType === 1"
+                ></i>
+                <i class="icon-svg_web-icon_p1_025-speed"
+                  *ngIf="(classType === '6' && chartType === 1) || (classType === '2' && chartType === 2)"
+                ></i>
+                <i class="icon-svg_web-icon_p1_058-charging"
+                  *ngIf="classType === '6' && chartType === 2"
+                ></i>
+                <i class="icon-svg_web-icon_p2_034-cadence"
+                  *ngIf="classType === '2' && chartType === 1"
+                ></i>
+                <i class="icon-svg_web-icon_p2_028-pace_1km"
+                  *ngIf="classType === '1' && chartType === 1"
+                ></i>
+                <i class="icon-svg_web-icon_p2_018-distance"
+                  *ngIf="classType === '1' && chartType === 2"
                 ></i>
               </div>
             </div>
@@ -245,12 +395,38 @@
               <li (click)="handleSortCard(0, false)" [class.active]="sortType === 0">
                 {{ "SH.HeartRate" | translate}}
               </li>
-              <li (click)="handleSortCard(1, false)" [class.active]="sortType === 1">
-                {{ "SH.Calorie" | translate}}
-              </li>
-              <li (click)="handleSortCard(2, false)" [class.active]="sortType === 2">
-                {{ "SH.HeartRateZone" | translate}}
-              </li>
+              <ng-container *ngIf="classType === '5'">
+                <li (click)="handleSortCard(1, false)" [class.active]="sortType === 1">
+                  {{ "SH.Calorie" | translate}}
+                </li>
+                <li (click)="handleSortCard(2, false)" [class.active]="sortType === 2">
+                  {{ "SH.HeartRateZone" | translate}}
+                </li>
+              </ng-container>
+              <ng-container *ngIf="classType === '6'">
+                <li (click)="handleSortCard(1, false)" [class.active]="sortType === 1">
+                  {{ "SH.Speed" | translate}}
+                </li>
+                <li (click)="handleSortCard(2, false)" [class.active]="sortType === 2">
+                  {{ "SH.Watt" | translate}}
+                </li>
+              </ng-container>
+              <ng-container *ngIf="classType === '2'">
+                <li (click)="handleSortCard(1, false)" [class.active]="sortType === 1">
+                  {{ "SH.CycleCadence" | translate}}
+                </li>
+                <li (click)="handleSortCard(2, false)" [class.active]="sortType === 2">
+                  {{ "SH.Speed" | translate}}
+                </li>
+              </ng-container>
+              <ng-container *ngIf="classType === '1'">
+                <li (click)="handleSortCard(1, false)" [class.active]="sortType === 1">
+                  {{ "SH.Pace" | translate}}
+                </li>
+                <li (click)="handleSortCard(2, false)" [class.active]="sortType === 2">
+                  {{ "SH.TotalDisTance" | translate}}
+                </li>
+              </ng-container>
             </ul>
           </div>
         </div>
@@ -266,19 +442,43 @@
               <li (click)="handleSortCard(0, true)" [class.active]="sortType === 0">
                 {{ "SH.HeartRate" | translate}}
               </li>
-              <li (click)="handleSortCard(1, true)" [class.active]="sortType === 1">
-                {{ "SH.Calorie" | translate}}
-              </li>
-              <li (click)="handleSortCard(2, true)" [class.active]="sortType === 2">
-                {{ "SH.HeartRateZone" | translate}}
-              </li>
+              <ng-container *ngIf="classType === '5'">
+                <li (click)="handleSortCard(1, true)" [class.active]="sortType === 1">
+                  {{ "SH.Calorie" | translate}}
+                </li>
+                <li (click)="handleSortCard(2, true)" [class.active]="sortType === 2">
+                  {{ "SH.HeartRateZone" | translate}}
+                </li>
+              </ng-container>
+              <ng-container *ngIf="classType === '6'">
+                <li (click)="handleSortCard(1, true)" [class.active]="sortType === 1">
+                  {{ "SH.Speed" | translate}}
+                </li>
+                <li (click)="handleSortCard(2, true)" [class.active]="sortType === 2">
+                  {{ "SH.Watt" | translate}}
+                </li>
+              </ng-container>
+              <ng-container *ngIf="classType === '2'">
+                <li (click)="handleSortCard(1, true)" [class.active]="sortType === 1">
+                  {{ "SH.CycleCadence" | translate}}
+                </li>
+                <li (click)="handleSortCard(2, true)" [class.active]="sortType === 2">
+                  {{ "SH.Speed" | translate}}
+                </li>
+              </ng-container>
+              <ng-container *ngIf="classType === '1'">
+                <li (click)="handleSortCard(1, true)" [class.active]="sortType === 1">
+                  {{ "SH.Pace" | translate}}
+                </li>
+                <li (click)="handleSortCard(2, true)" [class.active]="sortType === 2">
+                  {{ "SH.TotalDisTance" | translate}}
+                </li>
+              </ng-container>
             </ul>
           </div>
         </div>
-
           <i class="icon-svg_web-icon_p1_019-full_screen"  [hidden]="dispalyMemberOptions[3]" (click)="handldeSection(2)"></i>
           <i class="icon-svg_web-icon_p1_020-narrow"  [hidden]="!dispalyMemberOptions[3]" (click)="handldeSection(2)"></i>
-
         </span>
       </div>
       <div class="content">
@@ -311,31 +511,54 @@
                 </div>
               </div>
             </div>
-            <ng-container *ngIf="classType === '1' || classType === '5'">
+            <ng-container *ngIf="classType === '5'">
               <div class="hr-card-body__other">
-                <div class="hr-card-body__pace">
-                  <div style="">{{ "SH.Calorie" | translate}}</div>
+                <div class="hr-card-body__left">
+                  <div>{{ "SH.Calorie" | translate}}</div>
                   <div class="card-params">{{ item?.calorie || 0 }}</div>
                 </div>
-                <div class="hr-card-body__distance">
-                  <div style="">{{ "SH.HeartRateZone" | translate}}</div>
+                <div class="hr-card-body__right">
+                  <div>{{ "SH.HeartRateZone" | translate}}</div>
                   <div class="card-params">{{ item?.colorIdx || 0 }}</div>
                 </div>
               </div>
             </ng-container>
             <ng-container *ngIf="classType === '2'">
               <div class="hr-card-body__other">
-                <div class="hr-card-body__pace">
-                  <div style="">配速</div>
+                <div class="hr-card-body__left">
+                  <div>{{ "SH.CycleCadence" | translate}}</div>
                   <div class="card-params">{{ item?.cadence || 0 }}</div>
                 </div>
-                <div class="hr-card-body__distance">
-                  <div style="">距離</div>
+                <div class="hr-card-body__right">
+                  <div>{{ "SH.Speed" | translate}}</div>
                   <div class="card-params">{{ item?.speed || 0 }}</div>
                 </div>
               </div>
             </ng-container>
-
+            <ng-container *ngIf="classType === '6'">
+              <div class="hr-card-body__other">
+                <div class="hr-card-body__left">
+                  <div>{{ "SH.Speed" | translate}}</div>
+                  <div class="card-params">{{ item?.speed || 0 }}</div>
+                </div>
+                <div class="hr-card-body__right">
+                  <div>{{ "SH.Watt" | translate}}</div>
+                  <div class="card-params">{{ item?.watt || 0 }}</div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="classType === '1'">
+              <div class="hr-card-body__other">
+                <div class="hr-card-body__left">
+                  <div>{{ "SH.Pace" | translate}}</div>
+                  <div class="card-params">{{ item?.pace || 0 }}</div>
+                </div>
+                <div class="hr-card-body__right">
+                  <div>{{ "SH.TotalDisTance" | translate}}</div>
+                  <div class="card-params">{{ item?.distance || 0 }}</div>
+                </div>
+              </div>
+            </ng-container>
           </div>
         </div>
       </div>

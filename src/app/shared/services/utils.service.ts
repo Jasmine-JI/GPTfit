@@ -202,4 +202,8 @@ export class UtilsService {
       return false;
     }
   }
+  formatFloat(num: number, pos: number) { // 小數點第N位四捨五入
+    const size = Math.pow(10, pos);
+    return Math.round(num * size) / size;
+  }
 }

@@ -397,12 +397,23 @@ export class CoachDashboardComponent
       let speedIdx = '';
       let cadenceIdx = '';
       let calorieIdx = '';
-      if (this.classType === '1' || this.classType === '5') {
+      let wattIdx = '';
+      let paceIdx = '';
+      let distanceIdx = '';
+      if (this.classType === '1') {
+        paceIdx = fields.findIndex(_field => _field === '81');
+        distanceIdx = fields.findIndex(_field => _field === '33');
+      }
+      if (this.classType === '5') {
         calorieIdx = fields.findIndex(_field => _field === '289');
       }
       if (this.classType === '2') {
         speedIdx = fields.findIndex(_field => _field === '113');
         cadenceIdx = fields.findIndex(_field => _field === '161');
+      }
+      if (this.classType === '6') {
+        speedIdx = fields.findIndex(_field => _field === '113');
+        wattIdx = fields.findIndex(_field => _field === '369');
       }
       if (this.userInfos.length === 0) {
         const equipSnDatas = chartDatas.map(_data => {
@@ -416,6 +427,9 @@ export class CoachDashboardComponent
           const cadence = +_data[cadenceIdx] || 0;
           const speed = +_data[speedIdx] || 0;
           const calorie = +_data[calorieIdx] || 0;
+          const watt = +_data[wattIdx] || 0;
+          const pace = +_data[paceIdx] || 0;
+          const distance = +_data[distanceIdx] || 0;
           const time = moment().unix() * 1000;
           if (this.chartType === 0) {
             this.chart.series[idx].addPoint([time, liveHr], true, false, 1000);
@@ -432,12 +446,30 @@ export class CoachDashboardComponent
             );
             sum += colorIdx;
           }
-          this.series1[idx].data.push([time, +liveHr]);
-          this.series2[idx].data.push([time, +calorie]);
-          this.series3[idx].data.push([time, +colorIdx]);
+          if (this.classType === '5') {
+            this.series1[idx].data.push([time, +liveHr]);
+            this.series2[idx].data.push([time, +calorie]);
+            this.series3[idx].data.push([time, +colorIdx]);
+          } else if (this.classType === '6') {
+            this.series1[idx].data.push([time, +liveHr]);
+            this.series2[idx].data.push([time, +speed]);
+            this.series3[idx].data.push([time, +watt]);
+          } else if (this.classType === '1') {
+            this.series1[idx].data.push([time, +liveHr]);
+            this.series2[idx].data.push([time, +pace]);
+            this.series3[idx].data.push([time, +distance]);
+          } else if (this.classType === '2') {
+            this.series1[idx].data.push([time, +liveHr]);
+            this.series2[idx].data.push([time, +cadence]);
+            this.series3[idx].data.push([time, +speed]);
+          } else {}
+
           return {
             liveHr,
             cadence,
+            pace,
+            distance,
+            watt,
             speed,
             calorie,
             userName: this.userInfos[_data[snIdx]].userName,
