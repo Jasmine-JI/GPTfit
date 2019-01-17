@@ -15,7 +15,12 @@
     "NoFindData": "Cannot find any information",
     "HeartRate": "Heart Rate",
     "Calorie": "Calorie",
-    "HeartRateZone": "HR Zone"
+    "HeartRateZone": "HR Zone",
+    "CycleCadence": "Cycle Cadence",
+    "Speed": "Speed",
+    "Watt": "Watt",
+    "Pace": "Pace",
+    "TotalDisTance": "Total Disc"
   },
   "Portal": {
     "Introduce": "Introduce",

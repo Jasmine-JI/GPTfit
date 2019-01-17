@@ -69,6 +69,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   ispaceChartTargetDisplay = false;
   istempChartTargetDisplay = false;
   iszoneChartTargetDisplay = false;
+  iswattChartTargetDisplay = false;
+
   activityInfo: any;
   fileInfo: any;
   infoDate: string;

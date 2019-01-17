@@ -215,6 +215,13 @@
             chart target
           </div>
         </div>
+        <div class="activity-block" *ngIf="!(isInitialChartDone && !iswattChartTargetDisplay)">
+          <div #wattChartTarget class="chart"
+            [class.hidden]="!iswattChartTargetDisplay"
+          >
+            chart target
+          </div>
+        </div>
         <div class="activity-block" *ngIf="!(isInitialChartDone && !iszoneChartTargetDisplay)">
           <div #zoneChartTarget class="chart"
             [class.hidden]="!iszoneChartTargetDisplay"
