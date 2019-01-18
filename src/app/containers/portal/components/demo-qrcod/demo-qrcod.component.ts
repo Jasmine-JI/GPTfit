@@ -84,8 +84,7 @@ export class DemoQrcodComponent implements OnInit {
   handleImageLoad(event): void {
     const width = event.target.width;
     const height = event.target.height;
-    this.imgClass =
-      width > height ? 'product-photo--landscape' : 'product-photo--portrait';
+    this.imgClass = width > height ? 'product-photo--portrait' : 'product-photo--landscape';
   }
   handleProductInfo(lang) {
     if (lang === 'zh-cn') {
