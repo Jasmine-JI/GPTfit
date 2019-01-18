@@ -1,9 +1,8 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { QrcodeService } from '../../../../portal/services/qrcode.service';
 import { HttpParams } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { NgProgress, NgProgressRef } from '@ngx-progressbar/core';
-import { GlobalEventsManager } from '@shared/global-events-manager';
 import { UtilsService } from '@shared/services/utils.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -14,7 +13,7 @@ import { MessageBoxComponent } from '@shared/components/message-box/message-box.
   templateUrl: './product-info.component.html',
   styleUrls: ['./product-info.component.css', '../../../group/group-style.scss']
 })
-export class ProductInfoComponent implements OnInit, OnDestroy {
+export class ProductInfoComponent implements OnInit {
   groupImg = 'http://app.alatech.com.tw/app/public_html/products/img/t0500.png';
   progressRef: NgProgressRef;
   isLoading = false;
@@ -45,14 +44,12 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
     private qrCodeService: QrcodeService,
     private progress: NgProgress,
     private route: ActivatedRoute,
-    private globalEventsManager: GlobalEventsManager,
     private utilsService: UtilsService,
     private router: Router,
     public dialog: MatDialog
   ) {}
 
   ngOnInit() {
-    this.globalEventsManager.setFooterRWD(2); // 為了讓footer長高85px
     this.deviceSN = this.route.snapshot.paramMap.get('deviceSN');
     let snNumbers = this.utilsService.getLocalStorageObject('snNumber');
     if (snNumbers && snNumbers.findIndex(_num => _num === this.deviceSN) > -1) {
@@ -88,9 +85,7 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
       }
     });
   }
-  ngOnDestroy() {
-    this.globalEventsManager.setFooterRWD(0); // 為了讓footer自己變回去預設值
-  }
+
   handleProductInfo(lang) {
     if (lang === 'zh-cn') {
       this.productInfo = this.deviceInfo.informations['relatedLinks_zh-CN'];

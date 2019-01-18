@@ -1,7 +1,7 @@
 <div class="group-info row">
-  <span class="group-handle-name group-handle-name__rwd">
+  <!-- <span class="group-handle-name group-handle-name__rwd">
     {{ 'Dashboard.Group.GroupInfo.GroupInfo' | translate}}
-  </span>
+  </span> -->
   <div class="col-md-4 group-image--area">
     <img *ngIf="groupImg"
       [src]="(groupImg | safeHtml)"
@@ -26,7 +26,7 @@
         <span class="group-handle-name">
           {{ 'Dashboard.Group.GroupInfo.GroupInfo' | translate}}
         </span>
-        <div>
+        <div class="rwd-btn_action">
           <button class="alatech-btn alatech-btn--default"
             title="{{ 'Dashboard.Group.GroupInfo.Join' | translate}}"
             *ngIf="(joinStatus === 5 || joinStatus === 3 ) && (!visitorDetail?.isGroupAdmin || groupLevel === '80')"
@@ -453,7 +453,7 @@
     </div>
   </div>
 </div>
-<div class="group-manage__action" #footerTarget>
+<!-- <div class="group-manage__action" #footerTarget>
   <button class="alatech-btn group-manage__btn"
     title="{{ 'Dashboard.Group.GroupInfo.Join' | translate}}"
     *ngIf="(joinStatus === 5 || joinStatus === 3 ) && (!visitorDetail?.isGroupAdmin || groupLevel === '80')"
@@ -488,4 +488,4 @@
   >
     {{'Dashboard.Group.GroupInfo.Manage' | translate}}
   </button>
-</div>
+</div> -->

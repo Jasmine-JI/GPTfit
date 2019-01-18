@@ -34,7 +34,7 @@ import { SignupService } from './services/signup.service';
 import { ForgetService } from './services/forget.service';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
 import { UserProfileService } from '@shared/services/user-profile.service';
-import { GroupInfoComponent } from './components/group-info/group-info.component';
+import { PortalGroupInfoComponent } from './components/portal-group-info/portal-group-info.component';
 import { FirstLoginComponent } from './components/first-login/first-login.component';
 import { CustomMaterialModule } from '@shared/custom-material.module.ts';
 import { BasicInfoComponent } from './components/user-profile/basic-info/basic-info.component';
@@ -88,7 +88,7 @@ import { ReportService } from '@shared/services/report.service';
     SignupComponent,
     ForgetpwdComponent,
     UserProfileComponent,
-    GroupInfoComponent,
+    PortalGroupInfoComponent,
     FirstLoginComponent,
     BasicInfoComponent
   ],

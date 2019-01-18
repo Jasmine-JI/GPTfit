@@ -1,8 +1,8 @@
 <div class="container" style="padding-top: 30px">
   <div class="row">
-    <span class="group-handle-name group-handle-name__rwd">
+    <!-- <span class="group-handle-name group-handle-name__rwd">
       {{ 'Dashboard.Group.GroupInfo.GroupInfo' | translate}}
-    </span>
+    </span> -->
     <div class="col-md-6 group-image--area">
       <img *ngIf="groupImg" [src]="(groupImg | safeHtml)" [class.image-is--default]="groupImg === '/assets/images/group-default.svg'">
     </div>
@@ -12,14 +12,16 @@
         <span class="group-handle-name">
           {{ 'Dashboard.Group.GroupInfo.GroupInfo' | translate}}
         </span>
-        <button class="alatech-btn alatech-btn--default"
-          style="width:140px;height:38px"
-          *ngIf="!visitorDetail?.isGroupAdmin"
-          title="{{'Dashboard.Group.GroupInfo.Join' | translate}}"
-          (click)="goDashboardGroupInfo()"
-        >
-          {{ 'Dashboard.Group.GroupInfo.Join' | translate}}
-        </button>
+        <div class="rwd-btn_action">
+          <button class="alatech-btn alatech-btn--default"
+            style="width:140px;height:38px"
+            *ngIf="!visitorDetail?.isGroupAdmin"
+            title="{{'Dashboard.Group.GroupInfo.Join' | translate}}"
+            (click)="goDashboardGroupInfo()"
+          >
+            {{ 'Dashboard.Group.GroupInfo.Join' | translate}}
+          </button>
+        </div>
       </div>
       <div style="margin-bottom: 30px;">
         <div>
@@ -42,7 +44,7 @@
     <div>
   </div>
 </div>
-<div class="group-manage__action" #footerTarget>
+<!-- <div class="group-manage__action" #footerTarget>
   <button class="alatech-btn group-manage__btn"
     *ngIf="!visitorDetail?.isGroupAdmin"
     title="{{ 'Dashboard.Group.GroupInfo.Join' | translate}}"
@@ -50,4 +52,4 @@
   >
     {{ 'Dashboard.Group.GroupInfo.Join' | translate}}
   </button>
-</div>
+</div> -->

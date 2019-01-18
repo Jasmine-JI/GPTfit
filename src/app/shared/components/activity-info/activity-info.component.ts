@@ -141,7 +141,6 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       this.isPortal = true;
     }
-    this.globalEventsManager.setFooterRWD(2); // 為了讓footer長高85px
     const fieldId = this.route.snapshot.paramMap.get('fileId');
     this.progressRef = this.ngProgress.ref();
     this.token = this.utils.getToken();
@@ -158,7 +157,6 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       });
     }
-    this.globalEventsManager.setFooterRWD(0); // 為了讓footer自己變回去預設值
   }
   getInfo(id) {
     this.isLoading = true;
@@ -172,7 +170,6 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.activityInfo = res.activityInfoLayer;
       if (res.resultCode === 402) {
         this.isShowNoRight = true;
-        this.globalEventsManager.setFooterRWD(0); // 為了讓footer自己變回去預設值
         this.isLoading = false;
         this.progressRef.complete();
         return;
