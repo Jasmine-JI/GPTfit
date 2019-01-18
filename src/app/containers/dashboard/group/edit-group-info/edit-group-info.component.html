@@ -1,8 +1,8 @@
 <div class="row">
-  <span class="group-handle-name group-handle-name__rwd">
+  <!-- <span class="group-handle-name group-handle-name__rwd">
     {{'Dashboard.Group.GroupInfo.Edit' | translate}}
     {{'Dashboard.Group.GroupInfo.GroupInfo' | translate}}
-  </span>
+  </span> -->
   <div class="col-md-4 group-image--area">
     <app-upload-file
       [isImageFileMode]="true"
@@ -24,7 +24,7 @@
           {{'Dashboard.Group.GroupInfo.Edit' | translate}}
           {{'Dashboard.Group.GroupInfo.GroupInfo' | translate}}
         </div>
-        <div>
+        <div class="rwd-btn_action">
           <button class="alatech-btn alatech-btn--default"
             title="{{'Dashboard.Group.GroupInfo.Join' | translate}}"
             *ngIf="joinStatus === 0"
@@ -40,12 +40,12 @@
             {{'Dashboard.Group.GroupInfo.Unjoin' | translate}}
           </button>
           <button class="alatech-btn alatech-btn--default"
-            title="{{'Dashboard.Group.GroupInfo.ApplyForDimiss' | translate}}"
+            title="{{'Dashboard.Group.GroupInfo.ApplyForDismiss' | translate}}"
             *ngIf="joinStatus === 2 && groupLevel && groupLevel === '30' && visitorDetail?.isCanManage"
             (click)="$event.preventDefault()"
             disabled
           >
-            {{'Dashboard.Group.GroupInfo.ApplyForDimiss' | translate}}
+            {{'Dashboard.Group.GroupInfo.ApplyForDismiss' | translate}}
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="{{'Dashboard.Group.Dismiss' | translate}} {{'Dashboard.Group.GroupInfo.Branch' | translate}}"
@@ -482,7 +482,7 @@
     </form>
   </div>
 </div>
-<div class="group-manage__action" #footerTarget>
+<!-- <div class="group-manage__action" #footerTarget>
   <button class="alatech-btn group-manage__btn" title="{{ 'Dashboard.Group.GroupInfo.Join' | translate}}" *ngIf="joinStatus === 0" (click)="handleActionGroup(1)">
     {{ 'Dashboard.Group.GroupInfo.Join' | translate}}
   </button>
@@ -544,4 +544,4 @@
   >
     {{'Dashboard.Group.GroupInfo.Finished' | translate}}
   </button>
-</div>
+</div> -->

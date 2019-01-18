@@ -14,9 +14,9 @@
 >
 </ng-progress>
 <div class="row" *ngIf="!isLoading">
-  <span class="group-handle-name group-handle-name__rwd">
+  <!-- <span class="group-handle-name group-handle-name__rwd">
     產品資訊
-  </span>
+  </span> -->
   <div class="col-md-4 product-info group-image--area">
     <img *ngIf="!deviceInfo" src={{noProductImg}}>
     <img *ngIf="deviceInfo" src={{deviceInfo?.modelImgUrl}} >
@@ -26,7 +26,7 @@
       <span class="group-handle-name">
         產品資訊
       </span>
-      <div>
+      <div class="rwd-btn_action">
         <button class="alatech-btn alatech-btn--default activty-btn"
           title="完成修改"
           style="width: 140px;height: 38px;"
@@ -147,7 +147,7 @@
   </div>
 </div>
 
-<div class="group-manage__action">
+<!-- <div class="group-manage__action">
   <button class="alatech-btn group-manage__btn"
     title="完成修改"
     (click)="manage()"
@@ -160,4 +160,4 @@
   >
     返回
   </button>
-</div>
+</div> -->

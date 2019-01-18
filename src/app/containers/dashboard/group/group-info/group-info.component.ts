@@ -1,17 +1,13 @@
 import {
   Component,
   OnInit,
-  ViewEncapsulation,
-  ViewChild,
-  ElementRef,
-  OnDestroy
+  ViewEncapsulation
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { GroupService } from '../../services/group.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { Router } from '@angular/router';
 import { UserInfoService } from '../../services/userInfo.service';
-import { GlobalEventsManager } from '@shared/global-events-manager';
 import { MatDialog } from '@angular/material';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { toMemberText } from '../desc';
@@ -23,7 +19,7 @@ import { UserProfileService } from '@shared/services/user-profile.service';
   styleUrls: ['./group-info.component.scss', '../group-style.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class GroupInfoComponent implements OnInit, OnDestroy {
+export class GroupInfoComponent implements OnInit {
   groupId: string;
   token: string;
   groupInfo: any;
@@ -60,15 +56,13 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
   isLoading = false;
   userId: number;
   commerceInfo: any;
-  @ViewChild('footerTarget')
-  footerTarget: ElementRef;
+
   constructor(
     private route: ActivatedRoute,
     private groupService: GroupService,
     private utils: UtilsService,
     private router: Router,
     private userInfoService: UserInfoService,
-    private globalEventsManager: GlobalEventsManager,
     private userProfileService: UserProfileService,
     public dialog: MatDialog
   ) {}
@@ -76,30 +70,25 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.route.params.subscribe(_params => this.handleInit());
     let isAutoApplyGroup = this.utils.getLocalStorageObject('isAutoApplyGroup');
-    setTimeout(() => {
-      this.userInfoService.getUserAccessRightDetail().subscribe(res => {
-        this.visitorDetail = res;
-        const { accessRight, isCanManage, isGroupAdmin } = this.visitorDetail;
-        if (
-          isAutoApplyGroup &&
-          (+accessRight <= 29 || isCanManage || isGroupAdmin)
-        ) {
-          // 00~29無法利用qr 掃描自動加入群組
-          this.utils.removeLocalStorageObject('isAutoApplyGroup');
-          isAutoApplyGroup = false;
-        }
-        if (isAutoApplyGroup) {
-          // 00~29無法利用qr 掃描自動加入群組
-          this.handleActionGroup(1);
-          this.utils.removeLocalStorageObject('isAutoApplyGroup');
-          isAutoApplyGroup = false;
-        }
-      });
-    }, 300);
+    this.userInfoService.getUserAccessRightDetail().subscribe(res => {
+      this.visitorDetail = res;
+      const { isGroupAdmin } = this.visitorDetail;
+      if (
+        isAutoApplyGroup &&
+        (isGroupAdmin)
+      ) {
+        // 已是該群組管理者無法利用qr 掃描自動加入群組
+        this.utils.removeLocalStorageObject('isAutoApplyGroup');
+        isAutoApplyGroup = false;
+      }
+      if (isAutoApplyGroup) {
+        this.handleActionGroup(1);
+        this.utils.removeLocalStorageObject('isAutoApplyGroup');
+        isAutoApplyGroup = false;
+      }
+    });
   }
-  ngOnDestroy() {
-    this.globalEventsManager.setFooterRWD(0); // 為了讓footer自己變回去預設值
-  }
+
   handleInit() {
     this.groupId = this.route.snapshot.paramMap.get('groupId');
     this.token = this.utils.getToken();
@@ -125,9 +114,6 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
       // console.log('%c this.isSystemMaintainer', 'color: #0ca011', res);
     });
     this.groupService.fetchGroupListDetail(body).subscribe(res => {
-      const childElementCount = this.footerTarget.nativeElement
-        .childElementCount;
-      this.globalEventsManager.setFooterRWD(childElementCount); // 為了讓footer長高85px
       this.groupInfo = res.info;
       const {
         groupIcon,

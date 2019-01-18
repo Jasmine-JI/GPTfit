@@ -10,7 +10,7 @@ import { SigninGuard } from '@shared/guards/signin/signin.guard';
 import { SignupComponent } from './components/signup/signup.component';
 import { ForgetpwdComponent } from './components/forgetpwd/forgetpwd.component';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
-import { GroupInfoComponent } from './components/group-info/group-info.component';
+import { PortalGroupInfoComponent } from './components/portal-group-info/portal-group-info.component';
 import { FirstLoginComponent } from './components/first-login/first-login.component';
 import { SportReportComponent } from '@shared/components/sport-report/sport-report.component';
 import { ActivityInfoComponent } from '@shared/components/activity-info/activity-info.component';
@@ -70,7 +70,7 @@ const routes: Routes = [
       },
       {
         path: 'group-info/:groupId',
-        component: GroupInfoComponent
+        component: PortalGroupInfoComponent
       },
       {
         path: 'first-login',
