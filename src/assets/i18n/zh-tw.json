@@ -232,7 +232,7 @@
     },
     "MyDevice": {
       "MyDevice": "我的裝置",
-      "ModeName": "產品型號",
+      "ModelName": "產品型號",
       "ModelType": "產品類別",
       "SerialNumber": "設備序號",
       "Treadmill": "跑步機",
@@ -251,7 +251,8 @@
       "Open-for-anyone": "開放任何人",
       "close": "不開放",
       "Only-me-avatar-and-file": "僅自己，頭像與運動檔案",
-      "Only-me-file": "僅自己，限運動檔案"
+      "Only-me-file": "僅自己，限運動檔案",
+      "Target": "對象"
     },
     "SportReport": {
       "SportReport": "運動報告",

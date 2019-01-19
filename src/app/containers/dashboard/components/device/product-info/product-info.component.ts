@@ -7,6 +7,7 @@ import { UtilsService } from '@shared/services/utils.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { fitPairText } from './fitPairText';
 
 @Component({
   selector: 'app-product-info',
@@ -40,6 +41,7 @@ export class ProductInfoComponent implements OnInit {
   };
   fitPairStatus: string;
   token: string;
+  fitPairTip: string;
   constructor(
     private qrCodeService: QrcodeService,
     private progress: NgProgress,
@@ -50,6 +52,8 @@ export class ProductInfoComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    const langName = this.utilsService.getLocalStorageObject('locale');
+    this.fitPairTip = fitPairText[langName];
     this.deviceSN = this.route.snapshot.paramMap.get('deviceSN');
     let snNumbers = this.utilsService.getLocalStorageObject('snNumber');
     if (snNumbers && snNumbers.findIndex(_num => _num === this.deviceSN) > -1) {
@@ -76,7 +80,6 @@ export class ProductInfoComponent implements OnInit {
           this.progressRef.complete();
           this.isLoading = false;
           this.deviceInfo = response;
-          const langName = this.utilsService.getLocalStorageObject('locale');
           this.handleProductInfo(langName);
           this.handleProductManual(langName);
         });

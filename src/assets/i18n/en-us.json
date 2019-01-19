@@ -232,7 +232,7 @@
     },
     "MyDevice": {
       "MyDevice": "My device",
-      "ModeName": "Mode name",
+      "ModelName": "Model name",
       "ModelType": "type",
       "SerialNumber": "Serial number",
       "Treadmill": "Treadmill",
@@ -251,7 +251,8 @@
       "Open-for-anyone": "Open for anyone",
       "close": "close",
       "Only-me-avatar-and-file": "Only me, avatar and file",
-      "Only-me-file": "Only me, file"
+      "Only-me-file": "Only me, file",
+      "Target": "target"
     },
     "SportReport": {
       "SportReport": "Sport report",
