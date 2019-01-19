@@ -28,7 +28,11 @@
       "PREVIOUS_PAGE": "上一页",
       "OF_LABEL": "共"
     },
-    "FooterAnnouncement": "Center 由 Alatech 提供支持 版权所有 © Alatech Co.,Ltd. 或其子公司• 版本: "
+    "FooterAnnouncement": "Center 由 Alatech 提供支持 版权所有 © Alatech Co.,Ltd. 或其子公司• 版本: ",
+    "Cancel": "取消",
+    "Confirm": "确定",
+    "Agree": "同意",
+    "Disagree": "不同意"
   },
   "Portal": {
     "Introduce": "介绍",
@@ -71,6 +75,17 @@
       "Free-to-join": "自由加入",
       "Hide": "隐藏",
       "Dismiss": "解散",
+      "CreateBrand": "建立品牌",
+      "CreatePhysicalFitnessClass": "建立体适能课程",
+      "CreateProfessionalClass": "建立专业课程",
+      "CreateCourseDescription": "建立课程说明",
+      "CreateGroup": "建立群组",
+      "Disclaimer": "免责声明",
+      "ChooseBranch": "选择分店",
+      "ClassName": "課程名稱",
+      "AssignPT": "指派课程老师",
+      "AssignPF": "指派体适能教练",
+      "AtLeastAssginAdmin": "请指派至少一位管理者",
       "MyGroup": {
         "MyGroup": "我的群组",
         "GroupList": "群组列表",
@@ -103,7 +118,7 @@
         "Brand": "品牌",
         "Branch": "分店",
         "Class": "教练课",
-        "No-more-than": "不得超过{{number}}字元",
+        "No-more-than": "※不得超过{{number}}字元",
         "FieldISRequired": "栏位为必填",
         "SelectFile": "选择档案",
         "ReUpload": "重新上传",
@@ -118,7 +133,9 @@
         "enablePT": "指定为专业老师",
         "See-user-profile": "查看个人档案",
         "Accept": "接受",
-        "Refuse": "拒绝"
+        "Refuse": "拒绝",
+        "ClassInfo-ProfessionalClass": "课程资讯-专业课程",
+        "ClassInfo-PhysicalFitnessClass": "课程资讯-体适能课程"
       },
       "SearchGroup": {
         "SearchGroup": "搜寻群组",
@@ -161,7 +178,18 @@
       "ShareSportsFile": "分享运动档案",
       "anyone-can-browse-activity-file": "'所有成员'可以看到运动档案",
       "ShareSportsReport": "分享运动报告",
-      "anyone-can-browse-activity-report": "'所有成员'可以看到运动报告"
+      "anyone-can-browse-activity-report": "'所有成员'可以看到运动报告",
+      "PrivacyOpenForTarget": "隐私权需要开放群组对象有",
+      "YouWillAdd": "您要加入的",
+      "RevisePrivacySettings": "需要更改您的隐私权设定值为上述目标对象吗？",
+      "NewActivitySetting": "'新'运动活动资料：设定新活动详细资料与路线的可见度。",
+      "NewSportsSetting": "'新'运动期间报告：设定新活动期间报告的可见度。",
+      "OnlyForPF": "仅限体适能教练",
+      "PrivacyRequireContent": "隐私权需求内容",
+      "PrivacyRequireContentTip": "※隐私权需求与建立课程类别有关，建立成功后无法修改",
+      "MemberPrivacyTip": "群组'成员'可看到彼此基本昵称与头像",
+      "PFPrivacyActivity": "'体适能教练'可观看群组成员活动详细资讯",
+      "PFPrivacyReport": "'体适能教练'可观看群组成员活动期间报告"
     },
     "MyActivity": {
       "MyActivity": "我的活动",
