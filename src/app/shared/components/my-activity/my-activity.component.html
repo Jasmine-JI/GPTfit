@@ -3,20 +3,20 @@
     <span class="user-profile-title"
       *ngIf="isPortal"
     >
-      {{userName}}的活動
+      {{userName}}{{'Portal.s-activity' | translate}}
     </span>
     <span style="color: #157fcc; font-weight:700"
       *ngIf="!isPortal"
     >
-      我的活動
+      {{'Dashboard.MyActivity.MyActivity' | translate}}
     </span>
     <div class="group-edit-bar">
       <button class="alatech-btn alatech-btn--default activty-btn"
-        title="搜尋活動"
+        title="{{'Dashboard.MyActivity.Search' | translate}}"
         [routerLink]="['/dashboard/group-search']"
         disabled
       >
-        搜尋活動
+        {{'Dashboard.MyActivity.Search' | translate}}
       </button>
     </div>
   </div>
@@ -77,7 +77,7 @@
       <mat-cell *matCellDef="let row">
         <div>
           <div>{{ (row.activityInfoLayer && row.activityInfoLayer?.totalSecond | sportTime) || ' -- ' }}</div>
-          <div><span style="color: #999;font-size:12px">消耗時間</span></div>
+          <div><span style="color: #999;font-size:12px">{{'Dashboard.MyActivity.Time' | translate}}</span></div>
         </div>
       </mat-cell>
     </ng-container>
@@ -131,32 +131,32 @@
             <span style="color: #919191;font-size: 12px"
               *ngIf=" row.activityInfoLayer.type === '1'"
             >
-              平均配速
+              {{ 'SH.AvgPace' | translate}}
             </span>
             <span style="color: #919191;font-size: 12px"
               *ngIf=" row.activityInfoLayer.type === '4'"
             >
-              平均配速
+              {{ 'SH.AvgPace' | translate}}
             </span>
             <span style="color: #919191;font-size: 12px"
               *ngIf=" row.activityInfoLayer.type === '6'"
             >
-              平均配速
+              {{ 'SH.AvgPace' | translate}}
             </span>
             <span style="color: #919191;font-size: 12px"
               *ngIf=" row.activityInfoLayer.type === '2'"
             >
-              平均速度
+               {{ 'SH.AvgSpeed' | translate}}
             </span>
             <span style="color: #919191;font-size: 12px"
               *ngIf=" row.activityInfoLayer.type === '5'"
             >
-              最大心率
+              {{ 'SH.MaxHR' | translate}}
             </span>
             <span style="color: #919191;font-size: 12px"
               *ngIf=" row.activityInfoLayer.type === '3'"
             >
-              最次數
+              {{ 'SH.TotalReps' | translate}}
             </span>
           </div>
         </div>
@@ -177,7 +177,7 @@
             {{ row.activityInfoLayer && row.activityInfoLayer?.totalDistanceMeters / 1000 || ' -- ' }}km
           </div>
           <div>
-            <span style="color: #999;font-size:12px">總距離</span>
+            <span style="color: #999;font-size:12px">{{'SH.TotalDisTance' | translate}}</span>
           </div>
         </div>
         <div *ngIf=" row.activityInfoLayer.type === '5'">
@@ -185,7 +185,7 @@
             {{ row.activityInfoLayer && row.activityInfoLayer?.calories || ' -- ' }}cal
           </div>
           <div>
-            <span style="color: #999;font-size:12px">卡路里</span>
+            <span style="color: #999;font-size:12px">{{'SH.Calorie' | translate}}</span>
           </div>
         </div>
         <div *ngIf=" row.activityInfoLayer.type === '3'">
@@ -193,7 +193,7 @@
             {{ row.activityInfoLayer && row.activityInfoLayer?.totalWeightKg || ' -- ' }}kg
           </div>
           <div>
-            <span style="color: #999;font-size:12px">總重量</span>
+            <span style="color: #999;font-size:12px">{{'SH.TotalWeight' | translate}}</span>
           </div>
         </div>
       </mat-cell>

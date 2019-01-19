@@ -32,7 +32,17 @@
     "Cancel": "Cancel",
     "Confirm": "Confirm",
     "Agree": "Agree",
-    "Disagree": "Disagree"
+    "Disagree": "Disagree",
+    "ShareSomeInfo": "Share only some information",
+    "AvgPace": "Avg pace",
+    "AvgSpeed": "Avg speed",
+    "MaxHR": "Max HR",
+    "AvgHR": "Avg HR",
+    "TotalReps": "Total reps",
+    "TotalWeight": "Total weight",
+    "By": "by",
+    "Record": "record",
+    "Create": "create"
   },
   "Portal": {
     "Introduce": "Introduce",
@@ -42,7 +52,10 @@
     "ProductType": "Product Type",
     "MainApp": "Main Application",
     "othersApp": "Secondary Application",
-    "RelatedLinks": "Related Links"
+    "RelatedLinks": "Related Links",
+    "BasicInfo": "Basic Info",
+    "ActivityRecord": "Activity record",
+    "s-activity": "'s activity"
   },
   "Dashboard": {
     "MyInfo": "My Information",
@@ -195,7 +208,18 @@
       "MyActivity": "My activity",
       "Search": "Search",
       "page": "No.[*]-[*]items、total[**]items",
-      "pageCount": "Items of page"
+      "pageCount": "Items of page",
+      "Time": "Time",
+      "TotalTime": "Total time",
+      "ActivityTime": "Activity time",
+      "RestTime": "Rest time",
+      "ElevGain": "Elev gain",
+      "ElevLoss": "Elev loss",
+      "AvgWatt": "Avg watt",
+      "MaxWatt": "Max watt",
+      "AltitudeInfo": "Altitude Info",
+      "MaxElev": "Max elev",
+      "MinElev": "Min elev"
     },
     "ActivityDetail": {
       "ActivityDetail": "Activity detail",

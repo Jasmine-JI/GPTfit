@@ -32,7 +32,17 @@
     "Cancel": "取消",
     "Confirm": "确定",
     "Agree": "同意",
-    "Disagree": "不同意"
+    "Disagree": "不同意",
+    "ShareSomeInfo": "仅公开分享部分资讯",
+    "AvgPace": "平均配速",
+    "AvgSpeed": "平均速度",
+    "MaxHR": "最大心率",
+    "AvgHR": "平均心率",
+    "TotalReps": "总次数",
+    "TotalWeight": "总重量",
+    "By": "由",
+    "Record": "纪录",
+    "Create": "建立"
   },
   "Portal": {
     "Introduce": "介绍",
@@ -42,7 +52,10 @@
     "ProductType": "产品类别",
     "MainApp": "主要App应用",
     "othersApp": "其他App应用",
-    "RelatedLinks": "相关连结"
+    "RelatedLinks": "相关连结",
+    "BasicInfo": "基本资讯",
+    "ActivityRecord": "活动纪录",
+    "s-activity": "的活动"
   },
   "Dashboard": {
     "MyInfo": "我的资讯",
@@ -195,7 +208,18 @@
       "MyActivity": "我的活动",
       "Search": "搜寻活动",
       "page": "第[*]- [*]笔，共[**]笔",
-      "pageCount": "每页显示项数"
+      "pageCount": "每页显示项数",
+      "Time": "消耗时间",
+      "TotalTime": "总时间",
+      "ActivityTime": "活动时间",
+      "RestTime": "休息时间",
+      "ElevGain": "爬升高度",
+      "ElevLoss": "下降高度",
+      "AvgWatt": "平均功率",
+      "MaxWatt": "最大功率",
+      "AltitudeInfo": "海拔资讯",
+      "MaxElev": "最高海拔",
+      "MinElev": "最低海拔"
     },
     "ActivityDetail": {
       "ActivityDetail": "详细活动",
