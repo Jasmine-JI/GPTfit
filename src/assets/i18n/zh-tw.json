@@ -28,7 +28,21 @@
       "PREVIOUS_PAGE": "上一頁",
       "OF_LABEL": "共"
     },
-    "FooterAnnouncement": "Center 是由 Alatech 提供 Copyright © Alatech Co.,Ltd. 或其子公司• 版本: "
+    "FooterAnnouncement": "Center 是由 Alatech 提供 Copyright © Alatech Co.,Ltd. 或其子公司• 版本: ",
+    "Cancel": "取消",
+    "Confirm": "確定",
+    "Agree": "同意",
+    "Disagree": "不同意",
+    "ShareSomeInfo": "僅公開分享部分資訊",
+    "AvgPace": "平均配速",
+    "AvgSpeed": "平均速度",
+    "MaxHR": "最大心率",
+    "AvgHR": "平均心率",
+    "TotalReps": "總次數",
+    "TotalWeight": "總重量",
+    "By": "由",
+    "Record": "紀錄",
+    "Create": "建立"
   },
   "Portal": {
     "Introduce": "介紹",
@@ -38,7 +52,10 @@
     "ProductType": "產品類別",
     "MainApp": "主要App應用",
     "othersApp": "其他App應用",
-    "RelatedLinks": "相關連結"
+    "RelatedLinks": "相關連結",
+    "BasicInfo": "基本資訊",
+    "ActivityRecord": "活動紀錄",
+    "s-activity": "的活動"
   },
   "Dashboard": {
     "MyInfo": "我的資訊",
@@ -71,6 +88,17 @@
       "Free-to-join": "自由加入",
       "Hide": "隱藏",
       "Dismiss": "解散",
+      "CreateBrand": "建立品牌",
+      "CreatePhysicalFitnessClass": "建立體適能課程",
+      "CreateProfessionalClass": "建立專業課程",
+      "CreateCourseDescription": "建立課程說明",
+      "CreateGroup": "建立群組",
+      "Disclaimer": "免責聲明",
+      "ChooseBranch": "選擇分店",
+      "ClassName": "課程名稱",
+      "AssignPT": "指派課程老師",
+      "AssignPF": "指派體適能教練",
+      "AtLeastAssginAdmin": "請指派至少一位管理者",
       "MyGroup": {
         "MyGroup": "我的群組",
         "GroupList": "群組列表",
@@ -103,7 +131,7 @@
         "Brand": "品牌",
         "Branch": "分店",
         "Class": "教練課",
-        "No-more-than": "不得超過{{number}}字元",
+        "No-more-than": "※不得超過{{number}}字元",
         "FieldISRequired": "欄位為必填",
         "SelectFile": "選擇檔案",
         "ReUpload": "重新上傳",
@@ -118,7 +146,9 @@
         "enablePT": "指定為專業老師",
         "See-user-profile": "查看個人檔案",
         "Accept": "接受",
-        "Refuse": "拒絕"
+        "Refuse": "拒絕",
+        "ClassInfo-ProfessionalClass": "課程資訊-專業課程",
+        "ClassInfo-PhysicalFitnessClass": "課程資訊-體適能指導"
       },
       "SearchGroup": {
         "SearchGroup": "搜尋群組",
@@ -161,13 +191,35 @@
       "ShareSportsFile": "分享運動檔案",
       "anyone-can-browse-activity-file": "'所有成員'可以看到運動檔案",
       "ShareSportsReport": "分享運動報告",
-      "anyone-can-browse-activity-report": "'所有成員'可以看到運動報告"
+      "anyone-can-browse-activity-report": "'所有成員'可以看到運動報告",
+      "PrivacyOpenForTarget": "隱私權需要開放群組對象有",
+      "YouWillAdd": "您要加入的",
+      "RevisePrivacySettings": "需要更改您的隱私權設定值為上述目標對象嗎？",
+      "NewActivitySetting": "'新'運動活動資料：設定新活動詳細資料與路線的可見度。",
+      "NewSportsSetting": "'新'運動期間報告：設定新活動期間報告的可見度。",
+      "OnlyForPF": "僅限體適能教練",
+      "PrivacyRequireContent": "隱私權需求內容",
+      "PrivacyRequireContentTip": "※隱私權需求與建立課程類別有關，建立成功後無法修改",
+      "MemberPrivacyTip": "群組'成員'可看到彼此基本暱稱與頭像",
+      "PFPrivacyActivity": "'體適能教練'可觀看群組成員活動詳細資訊",
+      "PFPrivacyReport": "'體適能教練'可觀看群組成員活動期間報告"
     },
     "MyActivity": {
       "MyActivity": "我的活動",
       "Search": "搜尋活動",
       "page": "第[*]-[*]筆、共[**]筆",
-      "pageCount": "每頁顯示項數"
+      "pageCount": "每頁顯示項數",
+      "Time": "消耗時間",
+      "TotalTime": "總時間",
+      "ActivityTime": "活動時間",
+      "RestTime": "休息時間",
+      "ElevGain": "爬升高度",
+      "ElevLoss": "下降高度",
+      "AvgWatt": "平均功率",
+      "MaxWatt": "最大功率",
+      "AltitudeInfo": "海拔資訊",
+      "MaxElev": "最高海拔",
+      "MinElev": "最低海拔"
     },
     "ActivityDetail": {
       "ActivityDetail": "詳細活動",
@@ -180,7 +232,7 @@
     },
     "MyDevice": {
       "MyDevice": "我的裝置",
-      "ModeName": "產品型號",
+      "ModelName": "產品型號",
       "ModelType": "產品類別",
       "SerialNumber": "設備序號",
       "Treadmill": "跑步機",
@@ -199,7 +251,8 @@
       "Open-for-anyone": "開放任何人",
       "close": "不開放",
       "Only-me-avatar-and-file": "僅自己，頭像與運動檔案",
-      "Only-me-file": "僅自己，限運動檔案"
+      "Only-me-file": "僅自己，限運動檔案",
+      "Target": "對象"
     },
     "SportReport": {
       "SportReport": "運動報告",

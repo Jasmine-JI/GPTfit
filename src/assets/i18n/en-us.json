@@ -28,7 +28,21 @@
       "PREVIOUS_PAGE": "Previous page",
       "OF_LABEL": "of"
     },
-    "FooterAnnouncement": "Center is powered by Alatech Copyright © Alatech Co.,Ltd. or its subsidiaries• Version: "
+    "FooterAnnouncement": "Center is powered by Alatech Copyright © Alatech Co.,Ltd. or its subsidiaries• Version: ",
+    "Cancel": "Cancel",
+    "Confirm": "Confirm",
+    "Agree": "Agree",
+    "Disagree": "Disagree",
+    "ShareSomeInfo": "Share only some information",
+    "AvgPace": "Avg pace",
+    "AvgSpeed": "Avg speed",
+    "MaxHR": "Max HR",
+    "AvgHR": "Avg HR",
+    "TotalReps": "Total reps",
+    "TotalWeight": "Total weight",
+    "By": "by",
+    "Record": "record",
+    "Create": "create"
   },
   "Portal": {
     "Introduce": "Introduce",
@@ -38,7 +52,10 @@
     "ProductType": "Product Type",
     "MainApp": "Main Application",
     "othersApp": "Secondary Application",
-    "RelatedLinks": "Related Links"
+    "RelatedLinks": "Related Links",
+    "BasicInfo": "Basic Info",
+    "ActivityRecord": "Activity record",
+    "s-activity": "'s activity"
   },
   "Dashboard": {
     "MyInfo": "My Information",
@@ -71,6 +88,17 @@
       "Free-to-join": "Free to join",
       "Hide": "Hide",
       "Dismiss": "Dismiss",
+      "CreateBrand": "Create brand",
+      "CreatePhysicalFitnessClass": "Create physical fitness class",
+      "CreateProfessionalClass": "Create professional class",
+      "CreateCourseDescription": "Create course description",
+      "CreateGroup": "Create group",
+      "Disclaimer": "Disclaimer",
+      "ChooseBranch": "Choose a branch",
+      "ClassName": "Class name",
+      "AssignPT": "Assign Professional teacher",
+      "AssignPF": "Assign Physical fitness coach",
+      "AtLeastAssginAdmin": "Please assign at least one manager",
       "MyGroup": {
         "MyGroup": "My Group",
         "GroupList": "Group List",
@@ -103,7 +131,7 @@
         "Brand": "Brand",
         "Branch": "Branch",
         "Class": "Class",
-        "No-more-than": "No more than {{number}} characters",
+        "No-more-than": "※No more than {{number}} characters",
         "FieldISRequired": "Field is required",
         "SelectFile": "Select file",
         "ReUpload": "Reupload",
@@ -118,7 +146,9 @@
         "enablePT": "Assign to be professional teacher",
         "See-user-profile": "See user profile",
         "Accept": "Accept",
-        "Refuse": "Refuse"
+        "Refuse": "Refuse",
+        "ClassInfo-ProfessionalClass": "ClassInfo-Professional class",
+        "ClassInfo-PhysicalFitnessClass": "ClassInfo-Physical fitness class"
       },
       "SearchGroup": {
         "SearchGroup": "Search",
@@ -152,7 +182,7 @@
       "To-be-destroyed": "To be destroyed"
     },
     "privacySettings": {
-      "privacySettings": "privacy settings",
+      "privacySettings": "Privacy settings",
       "MemberVisibility": "Member visibility",
       "anyone-can-see-avatar-name": "Anyone can see avatar and name",
       "cannot-see-avatar-name": "cannot see avatar",
@@ -161,13 +191,35 @@
       "ShareSportsFile": "Share sports file",
       "anyone-can-browse-activity-file": "Anyone can browse activity file",
       "ShareSportsReport": "Share sports report",
-      "anyone-can-browse-activity-report": "Anyone can browse activity report"
+      "anyone-can-browse-activity-report": "Anyone can browse activity report",
+      "PrivacyOpenForTarget": "The privacy rights need to be open for ",
+      "YouWillAdd": "You want to join ",
+      "RevisePrivacySettings": "Need to change your privacy settings to the above target?",
+      "NewActivitySetting": "'New' sports activity data: Set the visibility of new event details and routes.",
+      "NewSportsSetting": "'New' sport report: Set the visibility of the report during the new event.",
+      "OnlyForPF": "Physical fitness coach only",
+      "PrivacyRequireContent": "Privacy requirements content",
+      "PrivacyRequireContentTip": "※Privacy requirements are related to the establishment of course categories, which cannot be modified after successful establishment.",
+      "MemberPrivacyTip": "Group 'members' can see each other's basic nickname and avatar",
+      "PFPrivacyActivity": "'Physical Coach' to view group member activity details",
+      "PFPrivacyReport": "'Physical Coach' can watch the report of group member activities"
     },
     "MyActivity": {
       "MyActivity": "My activity",
       "Search": "Search",
       "page": "No.[*]-[*]items、total[**]items",
-      "pageCount": "Items of page"
+      "pageCount": "Items of page",
+      "Time": "Time",
+      "TotalTime": "Total time",
+      "ActivityTime": "Activity time",
+      "RestTime": "Rest time",
+      "ElevGain": "Elev gain",
+      "ElevLoss": "Elev loss",
+      "AvgWatt": "Avg watt",
+      "MaxWatt": "Max watt",
+      "AltitudeInfo": "Altitude Info",
+      "MaxElev": "Max elev",
+      "MinElev": "Min elev"
     },
     "ActivityDetail": {
       "ActivityDetail": "Activity detail",
@@ -180,7 +232,7 @@
     },
     "MyDevice": {
       "MyDevice": "My device",
-      "ModeName": "Mode name",
+      "ModelName": "Model name",
       "ModelType": "type",
       "SerialNumber": "Serial number",
       "Treadmill": "Treadmill",
@@ -199,7 +251,8 @@
       "Open-for-anyone": "Open for anyone",
       "close": "close",
       "Only-me-avatar-and-file": "Only me, avatar and file",
-      "Only-me-file": "Only me, file"
+      "Only-me-file": "Only me, file",
+      "Target": "target"
     },
     "SportReport": {
       "SportReport": "Sport report",

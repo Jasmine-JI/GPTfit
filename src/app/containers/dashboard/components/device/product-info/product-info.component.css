@@ -17,14 +17,17 @@
 .device-hint-box {
   position: absolute;
   border: 1px solid #ccc;
-  top: 20px;
-  left: 40px;
-  max-width: 265px;
-  width: 100%;
+  top: 27px;
+  left: -30px;
   height: auto;
+  min-width: 400px;
+  max-height: 400px;
+  overflow: scroll;
   background-color: #feffe9;
   color: black;
   padding: 10px;
+  white-space: pre-wrap;
+  word-break: break-all;
 }
 .product-info.group-image--area {
   max-width: 225px;

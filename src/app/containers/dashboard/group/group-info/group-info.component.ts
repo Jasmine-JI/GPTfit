@@ -13,6 +13,8 @@ import { MessageBoxComponent } from '@shared/components/message-box/message-box.
 import { toMemberText } from '../desc';
 import { PrivacySettingDialogComponent } from '../privacy-setting-dialog/privacy-setting-dialog.component';
 import { UserProfileService } from '@shared/services/user-profile.service';
+import { TranslateService } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-group-info',
   templateUrl: './group-info.component.html',
@@ -56,7 +58,9 @@ export class GroupInfoComponent implements OnInit {
   isLoading = false;
   userId: number;
   commerceInfo: any;
-
+  title: string;
+  confirmText: string;
+  cancelText: string;;
   constructor(
     private route: ActivatedRoute,
     private groupService: GroupService,
@@ -64,8 +68,14 @@ export class GroupInfoComponent implements OnInit {
     private router: Router,
     private userInfoService: UserInfoService,
     private userProfileService: UserProfileService,
-    public dialog: MatDialog
-  ) {}
+    public dialog: MatDialog,
+    private translate: TranslateService
+  ) {
+    this.translate.onLangChange.subscribe(() => {
+      this.getAndInitTranslations();
+    });
+    this.getAndInitTranslations();
+  }
 
   ngOnInit() {
     this.route.params.subscribe(_params => this.handleInit());
@@ -73,10 +83,7 @@ export class GroupInfoComponent implements OnInit {
     this.userInfoService.getUserAccessRightDetail().subscribe(res => {
       this.visitorDetail = res;
       const { isGroupAdmin } = this.visitorDetail;
-      if (
-        isAutoApplyGroup &&
-        (isGroupAdmin)
-      ) {
+      if (isAutoApplyGroup && isGroupAdmin) {
         // 已是該群組管理者無法利用qr 掃描自動加入群組
         this.utils.removeLocalStorageObject('isAutoApplyGroup');
         isAutoApplyGroup = false;
@@ -249,7 +256,15 @@ export class GroupInfoComponent implements OnInit {
       });
     }
   }
-
+  getAndInitTranslations() {
+    this.translate
+      .get(['Dashboard.Group.Disclaimer', 'SH.Agree', 'SH.Disagree'])
+      .subscribe(translation => {
+        this.title = translation['Dashboard.Group.Disclaimer'];
+        this.confirmText = translation['SH.Agree'];
+        this.cancelText = translation['SH.Disagree'];
+      });
+  }
   handleActionGroup(_type) {
     const body = {
       token: this.token,
@@ -258,13 +273,15 @@ export class GroupInfoComponent implements OnInit {
     };
     if (_type === 1 && this.groupLevel === '60') {
       // 申請加入
+      const langName = this.utils.getLocalStorageObject('locale');
+      const bodyText = toMemberText[langName];
       return this.dialog.open(MessageBoxComponent, {
         hasBackdrop: true,
         data: {
-          title: '免責聲明',
-          body: toMemberText,
-          confirmText: '我同意',
-          cancelText: '不同意',
+          title: this.title,
+          body: bodyText,
+          confirmText: this.confirmText,
+          cancelText: this.cancelText,
           onConfirm: () => {
             this.groupService
               .actionGroup(body)
@@ -276,10 +293,15 @@ export class GroupInfoComponent implements OnInit {
                     .subscribe(res => {
                       this.isLoading = false;
                       const {
-                        privacy: { activityTracking, activityTrackingReport }
+                        privacy: {
+                          activityTracking,
+                          activityTrackingReport
+                        }
                       } = res.info;
                       let isOnlyme = false;
-                      isOnlyme = !activityTracking.some(_val => +_val > 1);
+                      isOnlyme = !activityTracking.some(
+                        _val => +_val > 1
+                      );
                       isOnlyme = !activityTrackingReport.some(
                         _val => +_val > 1
                       );
@@ -318,21 +340,44 @@ export class GroupInfoComponent implements OnInit {
                             accessRights.push(..._diffArr);
                           }
                         }
-                        accessRights = accessRights.map(_accessRight => {
-                          if (_accessRight === '30') {
-                            return '品牌管理員';
-                          } else if (_accessRight === '40') {
-                            return '分店管理員';
-                          } else if (_accessRight === '50') {
-                            return '體適能教練';
-                          } else {
-                            return '專業老師';
-                          }
-                        });
-                        let text = '';
                         const browserLang = this.utils.getLocalStorageObject(
                           'locale'
                         );
+                        accessRights = accessRights.map(_accessRight => {
+                          if (browserLang === 'zh-tw') {
+                            if (_accessRight === '30') {
+                              return '品牌管理員';
+                            } else if (_accessRight === '40') {
+                              return '分店管理員';
+                            } else if (_accessRight === '50') {
+                              return '體適能教練';
+                            } else {
+                              return '專業老師';
+                            }
+                          } else if (browserLang === 'zh-cn') {
+                            if (_accessRight === '30') {
+                              return '品牌管理员';
+                            } else if (_accessRight === '40') {
+                              return '分店管理员';
+                            } else if (_accessRight === '50') {
+                              return '体适能教练';
+                            } else {
+                              return '专业老师';
+                            }
+                          } else {
+                            if (_accessRight === '30') {
+                              return 'Brand administrator';
+                            } else if (_accessRight === '40') {
+                              return 'Branch manager';
+                            } else if (_accessRight === '50') {
+                              return 'Physical fitness coach';
+                            } else {
+                              return 'Professional teacher';
+                            }
+                          }
+                        });
+                        let text = '';
+
                         if (browserLang.indexOf('zh') > -1) {
                           text += accessRights.join(' 、');
                         } else {
@@ -351,8 +396,10 @@ export class GroupInfoComponent implements OnInit {
                           data: {
                             targetText: text,
                             groupName: this.groupInfo.groupName,
-                            activityTrackingReportStatus: this.activityTrackingReportStatus,
-                            activityTrackingStatus: this.activityTrackingStatus,
+                            activityTrackingReportStatus: this
+                              .activityTrackingReportStatus,
+                            activityTrackingStatus: this
+                              .activityTrackingStatus,
                             activityTracking,
                             activityTrackingReport
                           }

@@ -25,6 +25,7 @@ import { forkJoin } from 'rxjs/observable/forkJoin';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { MatBottomSheet, MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA} from '@angular/material';
 import { toCoachText } from '../desc';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-edit-group-info',
@@ -531,14 +532,37 @@ export class EditGroupInfoComponent implements OnInit {
   templateUrl: 'bottom-sheet.html'
 })
 export class BottomSheetComponent {
+  title: string;
+  confirmText: string;
+  cancelText: string;
   constructor(
     private bottomSheetRef: MatBottomSheetRef<BottomSheetComponent>,
     private router: Router,
     public dialog: MatDialog,
+    private utils: UtilsService,
+    private translate: TranslateService,
     @Inject(MAT_BOTTOM_SHEET_DATA) private data: any
-  ) {}
+  ) {
+    this.translate.onLangChange.subscribe(() => {
+      this.getAndInitTranslations();
+    });
+    this.getAndInitTranslations();
+  }
   get groupId() {
     return this.data.groupId;
+  }
+  getAndInitTranslations() {
+    this.translate
+      .get([
+        'Dashboard.Group.CreateCourseDescription',
+        'SH.Agree',
+        'SH.Disagree'
+      ])
+      .subscribe(translation => {
+        this.title = translation['Dashboard.Group.CreateCourseDescription'];
+        this.confirmText = translation['SH.Agree'];
+        this.cancelText = translation['SH.Disagree'];
+      });
   }
   openLink(event: MouseEvent, type: number): void {
     let coachType = null;
@@ -550,21 +574,24 @@ export class BottomSheetComponent {
     }
     this.bottomSheetRef.dismiss();
     if (type === 1 || type === 2) {
+      const langName = this.utils.getLocalStorageObject('locale');
+      const text = toCoachText[langName];
       this.dialog.open(MessageBoxComponent, {
         hasBackdrop: true,
         data: {
-          title: '建立課程說明',
-          body: toCoachText,
-          confirmText: '我同意',
-          cancelText: '不同意',
+          title: this.title,
+          body: text,
+          confirmText: this.confirmText,
+          cancelText: this.cancelText,
           onConfirm: () => {
             this.router.navigateByUrl(
-              `/dashboard/group-info/${this.groupId}/create?createType=2&coachType=${coachType}`
+              `/dashboard/group-info/${
+                this.groupId
+              }/create?createType=2&coachType=${coachType}`
             );
           }
         }
       });
-
     }
   }
 }
