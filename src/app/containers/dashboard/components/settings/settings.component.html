@@ -1,26 +1,26 @@
 <div class="row ala-settings">
   <div class="col-md-3">
-    <span class="page-title">使用者設定</span>
+    <span class="page-title">{{'Dashboard.Settings.UserSetting' | translate}}</span>
     <ul class="nav">
       <li [class.active]="chooseIdx === 1"
         (click)="handleTab(1)"
       >
-        基本資訊
+        {{'Dashboard.Settings.BasicSetting' | translate}}
       </li>
       <li [class.active]="chooseIdx === 2"
         (click)="handleTab(2)"
       >
-        個人偏好設定
+        {{'Dashboard.Settings.PersonalPreferences' | translate}}
       </li>
       <li [class.active]="chooseIdx === 3"
         (click)="handleTab(3)"
       >
-        隱私權設定
+        {{'Dashboard.Settings.PrivacySettings' | translate}}
       </li>
       <li [class.active]="chooseIdx === 4"
         (click)="handleTab(4)"
       >
-        帳號資訊
+        {{'Dashboard.Settings.AccountInfo' | translate}}
       </li>
     </ul>
   </div>
