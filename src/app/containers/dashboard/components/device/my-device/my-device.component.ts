@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import {
   MatTableDataSource,
   MatPaginator,
@@ -7,7 +7,6 @@ import {
   MatPaginatorIntl
 } from '@angular/material';
 import { Router } from '@angular/router';
-import { GlobalEventsManager } from '@shared/global-events-manager';
 import { QrcodeService } from '../../../../portal/services/qrcode.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -18,7 +17,7 @@ import { MessageBoxComponent } from '@shared/components/message-box/message-box.
   templateUrl: './my-device.component.html',
   styleUrls: ['./my-device.component.css', '../../../group/group-style.scss']
 })
-export class MyDeviceComponent implements OnInit, OnDestroy {
+export class MyDeviceComponent implements OnInit {
   logSource = new MatTableDataSource<any>();
   totalCount: number;
   currentPage: PageEvent;
@@ -31,7 +30,6 @@ export class MyDeviceComponent implements OnInit, OnDestroy {
   constructor(
     private matPaginatorIntl: MatPaginatorIntl,
     private router: Router,
-    private globalEventsManager: GlobalEventsManager,
     private qrcodeService: QrcodeService,
     private utilsService: UtilsService,
     public dialog: MatDialog
@@ -40,7 +38,6 @@ export class MyDeviceComponent implements OnInit, OnDestroy {
   ngOnInit() {
     const queryStrings = this.utilsService.getUrlQueryStrings(location.search);
     const { pageNumber } = queryStrings;
-    this.globalEventsManager.setFooterRWD(1); // 為了讓footer長高85px
     // 分頁切換時，重新取得資料
     this.paginator.page.subscribe((page: PageEvent) => {
       this.currentPage = page;
@@ -49,25 +46,25 @@ export class MyDeviceComponent implements OnInit, OnDestroy {
       );
       this.getDeviceList();
     });
-    // 設定顯示筆數資訊文字
-    this.matPaginatorIntl.getRangeLabel = (
-      page: number,
-      pageSize: number,
-      length: number
-    ): string => {
-      if (length === 0 || pageSize === 0) {
-        return `第 0 筆、共 ${length} 筆`;
-      }
+    // // 設定顯示筆數資訊文字
+    // this.matPaginatorIntl.getRangeLabel = (
+    //   page: number,
+    //   pageSize: number,
+    //   length: number
+    // ): string => {
+    //   if (length === 0 || pageSize === 0) {
+    //     return `第 0 筆、共 ${length} 筆`;
+    //   }
 
-      length = Math.max(length, 0);
-      const startIndex = page * pageSize;
-      const endIndex =
-        startIndex < length
-          ? Math.min(startIndex + pageSize, length)
-          : startIndex + pageSize;
+    //   length = Math.max(length, 0);
+    //   const startIndex = page * pageSize;
+    //   const endIndex =
+    //     startIndex < length
+    //       ? Math.min(startIndex + pageSize, length)
+    //       : startIndex + pageSize;
 
-      return `第 ${startIndex + 1} - ${endIndex} 筆、共 ${length} 筆`;
-    };
+    //   return `第 ${startIndex + 1} - ${endIndex} 筆、共 ${length} 筆`;
+    // };
     this.currentPage = {
       pageIndex: +pageNumber - 1 || 0,
       pageSize: 10,
@@ -123,9 +120,7 @@ export class MyDeviceComponent implements OnInit, OnDestroy {
       this.getDeviceList();
     }
   }
-  ngOnDestroy() {
-    this.globalEventsManager.setFooterRWD(0); // 為了讓footer自己變回去預設值
-  }
+
   changeSort(sortInfo: Sort) {
     this.currentSort = sortInfo;
   }

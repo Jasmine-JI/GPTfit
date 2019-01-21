@@ -5,7 +5,6 @@ import {
   HostListener,
   ViewChild,
   ElementRef,
-  OnDestroy,
   Inject
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
@@ -24,9 +23,9 @@ import { MsgDialogComponent } from '../../components/msg-dialog/msg-dialog.compo
 import { MatDialog } from '@angular/material/dialog';
 import { forkJoin } from 'rxjs/observable/forkJoin';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
-import { GlobalEventsManager } from '@shared/global-events-manager';
 import { MatBottomSheet, MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA} from '@angular/material';
 import { toCoachText } from '../desc';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-edit-group-info',
@@ -34,7 +33,7 @@ import { toCoachText } from '../desc';
   styleUrls: ['./edit-group-info.component.css', '../group-style.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class EditGroupInfoComponent implements OnInit, OnDestroy {
+export class EditGroupInfoComponent implements OnInit {
   groupId: string;
   token: string;
   groupInfo: any;
@@ -81,8 +80,8 @@ export class EditGroupInfoComponent implements OnInit, OnDestroy {
   isLoading = false;
   isGroupDetailLoading = false;
   videoUrl = '';
-  @ViewChild('footerTarget')
-  footerTarget: ElementRef;
+  // @ViewChild('footerTarget')
+  // footerTarget: ElementRef;
   get groupName() {
     return this.form.get('groupName');
   }
@@ -100,7 +99,6 @@ export class EditGroupInfoComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private userInfoService: UserInfoService,
     public dialog: MatDialog,
-    private globalEventsManager: GlobalEventsManager,
     private bottomSheet: MatBottomSheet
   ) {}
   @HostListener('dragover', ['$event'])
@@ -124,9 +122,7 @@ export class EditGroupInfoComponent implements OnInit, OnDestroy {
       this.visitorDetail = res;
     });
   }
-  ngOnDestroy() {
-    this.globalEventsManager.setFooterRWD(0); // 為了讓footer自己變回去預設值
-  }
+
   handleInit() {
     this.groupId = this.route.snapshot.paramMap.get('groupId');
     this.form = this.fb.group({
@@ -357,11 +353,6 @@ export class EditGroupInfoComponent implements OnInit, OnDestroy {
           );
         }
       }
-      setTimeout(() => {
-        const childElementCount = this.footerTarget.nativeElement
-          .childElementCount;
-        this.globalEventsManager.setFooterRWD(childElementCount); // 為了讓footer長高85px
-      }, 1000); // 應該長新增教練課btn非同步延遲，所以等一秒來得到childelement
     });
   }
   changeGroupInfo({ index }) {
@@ -541,14 +532,37 @@ export class EditGroupInfoComponent implements OnInit, OnDestroy {
   templateUrl: 'bottom-sheet.html'
 })
 export class BottomSheetComponent {
+  title: string;
+  confirmText: string;
+  cancelText: string;
   constructor(
     private bottomSheetRef: MatBottomSheetRef<BottomSheetComponent>,
     private router: Router,
     public dialog: MatDialog,
+    private utils: UtilsService,
+    private translate: TranslateService,
     @Inject(MAT_BOTTOM_SHEET_DATA) private data: any
-  ) {}
+  ) {
+    this.translate.onLangChange.subscribe(() => {
+      this.getAndInitTranslations();
+    });
+    this.getAndInitTranslations();
+  }
   get groupId() {
     return this.data.groupId;
+  }
+  getAndInitTranslations() {
+    this.translate
+      .get([
+        'Dashboard.Group.CreateCourseDescription',
+        'SH.Agree',
+        'SH.Disagree'
+      ])
+      .subscribe(translation => {
+        this.title = translation['Dashboard.Group.CreateCourseDescription'];
+        this.confirmText = translation['SH.Agree'];
+        this.cancelText = translation['SH.Disagree'];
+      });
   }
   openLink(event: MouseEvent, type: number): void {
     let coachType = null;
@@ -560,21 +574,24 @@ export class BottomSheetComponent {
     }
     this.bottomSheetRef.dismiss();
     if (type === 1 || type === 2) {
+      const langName = this.utils.getLocalStorageObject('locale');
+      const text = toCoachText[langName];
       this.dialog.open(MessageBoxComponent, {
         hasBackdrop: true,
         data: {
-          title: '建立課程說明',
-          body: toCoachText,
-          confirmText: '我同意',
-          cancelText: '不同意',
+          title: this.title,
+          body: text,
+          confirmText: this.confirmText,
+          cancelText: this.cancelText,
           onConfirm: () => {
             this.router.navigateByUrl(
-              `/dashboard/group-info/${this.groupId}/create?createType=2&coachType=${coachType}`
+              `/dashboard/group-info/${
+                this.groupId
+              }/create?createType=2&coachType=${coachType}`
             );
           }
         }
       });
-
     }
   }
 }

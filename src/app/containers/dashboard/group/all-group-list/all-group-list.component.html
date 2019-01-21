@@ -46,7 +46,7 @@
     <mat-header-cell *matHeaderCellDef disableClear="true">
       狀態
     </mat-header-cell>
-    <mat-cell *matCellDef="let row">{{ row.groupStatus | groupStatus }}</mat-cell>
+    <mat-cell *matCellDef="let row">{{ row.groupStatus | groupStatus | translate }}</mat-cell>
   </ng-container>
   <mat-header-row *matHeaderRowDef="['id', 'info', 'time']"></mat-header-row>
   <mat-row *matRowDef="let logRow; columns: ['id', 'info', 'time']" (click)="goDetail(logRow.groupId)">

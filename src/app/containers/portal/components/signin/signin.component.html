@@ -2,9 +2,7 @@
   <div class="container" style="padding-top:63px">
     <div class="d-flex" style="flex-direction: column;align-items: center;;">
 
-      <div class="access-description">
-        在Ala Center上，獲得健體分析
-        <br> 生活追蹤、即時分享與競賽樂趣
+      <div class="access-description" innerHtml="{{ 'Portal.CenterDesc' | translate }}">
       </div>
       <div class="access-panel">
         <header class="access-header">
@@ -13,42 +11,43 @@
         <div class="access-panel-body">
           <form [formGroup]="form" (ngSubmit)="login(f)"#f="ngForm" novalidate>
             <div class="form-group">
-              <label for="exampleInputEmail1" class="access-text">帳號(
-                <a href="#" (click)="showPrivateMsg($event)">沒有帳號?</a>):
+              <label for="exampleInputEmail1" class="access-text">{{ 'Dashboard.Settings.Account' | translate }}(
+                <a href="#" (click)="showPrivateMsg($event)">{{'Portal.NoAccount' | translate}}?</a>):
               </label>
               <input formControlName="accountName"
                 id="exampleInputEmail1"
                 class="form-control"
-                placeholder="電子信箱或手機號碼"
+                placeholder="{{'Portal.EmailorPhoneNumber' | translate}}"
                 [attr.disabled]="isLogining ? '' : null"
                 [class.form-control--invalid]="(!form.controls['accountName'].valid && form.controls['accountName'].touched) || (f.submitted && form.get('accountName').hasError('required'))"
               >
               <div class="form__message form__message--placeholder" *ngIf="(!form.controls['accountName'].valid && form.controls['accountName'].touched) || (f.submitted && form.get('accountName').hasError('required'))">
-                請輸入您的帳號
+                {{'Portal.PlzEnterYourAccount' | translate}}
               </div>
             </div>
             <div class="form-group">
               <label for="exampleInputPassword1" class="access-text">
-                密碼(<a href="#" [routerLink]="['/forget-pwd']">忘了密碼?</a>):
+                {{ 'Dashboard.Settings.Password' | translate }}(<a href="#" [routerLink]="['/forget-pwd']">
+                  {{'Portal.ForgetPassword' | translate}}?</a>):
               </label>
               <input formControlName="password" type="password"
                 class="form-control"
-                placeholder="密碼需區分大小寫並包含數字"
+                placeholder="{{'Portal.PWAConainNum' | translate}}"
                 autocomplete="off"
                 [attr.disabled]="isLogining ? '' : null"
                 [class.form-control--invalid]="(!form.controls['password'].valid && form.controls['password'].touched) || (f.submitted && form.get('password').hasError('required'))"
               >
               <div class="form__message form__message--placeholder" *ngIf="(form.controls['password'].hasError('required') && form.controls['password'].touched) || (f.submitted && form.get('password').hasError('required'))">
-                請輸入您的密碼
+                {{'Portal.PlzEnterYourPwd' | translate}}
               </div>
               <div class="form__message form__message--placeholder" *ngIf="(form.controls['password'].hasError('pattern') && form.controls['password'].touched) || (f.submitted && form.controls['password'].hasError('pattern'))">
-                密碼需區分大小寫並包含數字
+                {{'Portal.PWAConainNum' | translate}}
               </div>
             </div>
             <div class="auth-submit">
               <app-confirm-button
                 [className]="className"
-                [content]="content"
+                [content]="'SH.Signin' | translate"
                 [disabled]="isLogining"
               >
               </app-confirm-button>

@@ -4,7 +4,7 @@
       [class.selected-flag--invalid]="isCodeInvalid"
       [class.selected-flag--disabled]="disabled"
     >
-      {{ this.countryCode || '國家/地區' }}
+      {{ this.countryCode || 'Portal.CountryRegion' | translate }}
       <i class="fa fa-caret-down async-caret"></i>
     </div>
     <input formControlName="phone" class="form-control"
@@ -13,7 +13,7 @@
       (focus)="focusEvent($event)"
       (keyup)="handlePhoneChange($event)"
       style="width: calc(100% - 105px);text-overflow: ellipsis;"
-      placeholder={{placeholder}}
+      placeholder="{{'Portal.PlzEnterYourPhoneNum' | translate}}"
       [attr.disabled]="disabled ? '' : null"
       [class.form-control--invalid]="isPhoneInvalid"
     >

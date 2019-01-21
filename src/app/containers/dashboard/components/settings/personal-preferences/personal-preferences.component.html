@@ -1,10 +1,10 @@
 <div style="display:flex;justify-content: space-between">
-  <h3>個人偏好設定</h3>
+  <h3>{{'Dashboard.Settings.PersonalPreferences' | translate}}</h3>
   <button class="alatech-btn alatech-btn--default settings-btn"
-    title="儲存"
+    title="{{'Dashboard.Settings.Save' | translate}}"
     (click)="saveSettings(settingsForm)"
   >
-    儲存
+    {{'Dashboard.Settings.Save' | translate}}
   </button>
 </div>
 <form [formGroup]="settingsForm"
@@ -12,20 +12,24 @@
   novalidate
   (ngSubmit)="saveSettings(settingsForm)"
 >
-  <label class="ala-form__label settings-label">心率</label>
+  <label class="ala-form__label settings-label">
+    {{'SH.HeartRate' | translate}}
+  </label>
   <div class="ala-list__item">
-    <label class="ala-form__label settings-item">心率演算法</label>
+    <label class="ala-form__label settings-item">
+      {{'Dashboard.Settings.HeartRateAlgorithm' | translate}}
+    </label>
     <div class="settings-control">
       <select class="form-field"
         formControlName="heartRateBase"
       >
-        <option value="0">最大心率法 HRmax</option>
-        <option value="1">儲備心率法 HRR</option>
+        <option value="0">{{'Dashboard.Settings.HRmax' | translate}}</option>
+        <option value="1">{{'Dashboard.Settings.HRR' | translate}}</option>
       </select>
     </div>
   </div>
   <div class="ala-list__item">
-    <label class="ala-form__label settings-item">最大心率</label>
+    <label class="ala-form__label settings-item">{{'SH.MaxHR' | translate}}</label>
     <div class="settings-control">
       <div style="display: inline-block">
         <app-form-text
@@ -42,7 +46,9 @@
     </div>
   </div>
   <div class="ala-list__item">
-    <label class="ala-form__label settings-item">休息心率</label>
+    <label class="ala-form__label settings-item">
+      {{'Dashboard.Settings.RestHR' | translate}}
+    </label>
     <div class="settings-control">
       <div style="display: inline-block">
         <app-form-text
@@ -59,9 +65,11 @@
     </div>
   </div>
   <hr>
-  <label class="ala-form__label settings-label">睡眠</label>
+  <label class="ala-form__label settings-label">{{'Dashboard.Settings.Sleep' | translate}}</label>
   <div class="ala-list__item">
-    <label class="ala-form__label settings-item">平時入睡時間</label>
+    <label class="ala-form__label settings-item">
+      {{'Dashboard.Settings.UsuallyFallAsleepTime' | translate}}
+    </label>
     <div class="settings-control">
       <div class="time_picker">
         <input type="time"
@@ -72,7 +80,9 @@
     </div>
   </div>
   <div class="ala-list__item">
-    <label class="ala-form__label settings-item">平時起床時間</label>
+    <label class="ala-form__label settings-item">
+      {{'Dashboard.Settings.UsuallyWakeupTime' | translate}}
+    </label>
     <div class="settings-control">
       <div class="time_picker">
         <input type="time"
@@ -83,9 +93,13 @@
     </div>
   </div>
   <hr>
-  <label class="ala-form__label settings-label">自行車</label>
+  <label class="ala-form__label settings-label">
+    {{'Dashboard.Settings.Bike' | translate}}
+  </label>
   <div class="ala-list__item">
-    <label class="ala-form__label settings-item">自行車輪徑</label>
+    <label class="ala-form__label settings-item">
+      {{'Dashboard.Settings.BicycleWheelDiameter' | translate}}
+    </label>
     <div class="settings-control">
       <div style="display: inline-block">
         <app-form-text

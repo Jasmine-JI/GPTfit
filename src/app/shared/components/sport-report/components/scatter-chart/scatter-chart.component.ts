@@ -33,8 +33,10 @@ export class ScatterChartComponent implements OnChanges {
   @Input()
   isLoading: boolean;
   @Input() timeType: number;
+  @Input() currentLang: string;
   seriesX = [];
   series = [];
+  xAxisText: string;
   constructor() {}
 
   ngOnChanges() {
@@ -140,26 +142,96 @@ export class ScatterChartComponent implements OnChanges {
         });
       let name = '';
       let color = '';
-      if (_type === '1') {
-        name = '跑步';
-        color = 'rgba(223, 83, 83, .5)';
-      } else if (_type === '2') {
-        name = '騎乘';
-        color = 'rgba(119, 152, 191, .5)';
-      } else if (_type === '3') {
-        name = '重量訓練';
-        color = 'rgba(144, 237, 125, .5)';
-      } else if (_type === '4') {
-        name = '游泳';
-        color = 'rgba(247, 163, 92, .5)';
-      } else if (_type === '5') {
-        name = '有氧運動';
-        color = 'rgba(142, 9,	156, .5)';
-      } else if (_type === '6') {
-        name = '划船';
-        color = 'rgba(153,153,153, .5)';
+      if (this.currentLang === 'zh-tw') {
+        this.xAxisText = '時間';
+        switch (_type) {
+          case '1':
+            name = '跑步';
+            color = 'rgba(223, 83, 83, .5)';
+            break;
+          case '2':
+            name = '騎乘';
+            color = 'rgba(119, 152, 191, .5)';
+            break;
+          case '3':
+            name = '重量訓練';
+            color = 'rgba(144, 237, 125, .5)';
+            break;
+          case '4':
+            name = '游泳';
+            color = 'rgba(247, 163, 92, .5)';
+            break;
+          case '5':
+            name = '有氧運動';
+            color = 'rgba(142, 9,	156, .5)';
+            break;
+          case '6':
+            name = '划船';
+            color = 'rgba(153,153,153, .5)';
+            break;
+          default:
+            name = '尚未定義';
+        }
+      } else if (this.currentLang === 'zh-cn') {
+        this.xAxisText = '时间';
+        switch (_type) {
+          case '1':
+            name = '跑步';
+            color = 'rgba(223, 83, 83, .5)';
+            break;
+          case '2':
+            name = '骑乘';
+            color = 'rgba(119, 152, 191, .5)';
+            break;
+          case '3':
+            name = '重量训练';
+            color = 'rgba(144, 237, 125, .5)';
+            break;
+          case '4':
+            name = '游泳';
+            color = 'rgba(247, 163, 92, .5)';
+            break;
+          case '5':
+            name = '有氧运动';
+            color = 'rgba(142, 9,	156, .5)';
+            break;
+          case '6':
+            name = '划船';
+            color = 'rgba(153,153,153, .5)';
+            break;
+          default:
+            name = '尚未定义';
+        }
       } else {
-        name = '尚未定義';
+        this.xAxisText = 'Time';
+        switch (_type) {
+          case '1':
+            name = 'Running';
+            color = 'rgba(223, 83, 83, .5)';
+            break;
+          case '2':
+            name = 'Ride';
+            color = 'rgba(119, 152, 191, .5)';
+            break;
+          case '3':
+            name = 'Weight training';
+            color = 'rgba(144, 237, 125, .5)';
+            break;
+          case '4':
+            name = 'Swimming';
+            color = 'rgba(247, 163, 92, .5)';
+            break;
+          case '5':
+            name = 'Aerobic exercise';
+            color = 'rgba(142, 9,	156, .5)';
+            break;
+          case '6':
+            name = 'Boating';
+            color = 'rgba(153,153,153, .5)';
+            break;
+          default:
+            name = 'not yet defined';
+        }
       }
       const serie = { name, data, color };
       this.series.push(serie);
@@ -177,7 +249,11 @@ export class ScatterChartComponent implements OnChanges {
       this.chooseType === '5-5' ||
       this.chooseType === '6-3'
     ) {
-      yAxisText = '平均心率 (bpm/min)';
+      if (this.currentLang === 'en-us') {
+        yAxisText = 'AvgHR (bpm/min)';
+      } else {
+        yAxisText = '平均心率 (bpm/min)';
+      }
     } else if (
       this.chooseType === '1-8' ||
       this.chooseType === '2-7' ||
@@ -185,45 +261,127 @@ export class ScatterChartComponent implements OnChanges {
       this.chooseType === '5-6' ||
       this.chooseType === '6-4'
     ) {
-      yAxisText = '最大心率 (bpm/min)';
+      if (this.currentLang === 'en-us') {
+        yAxisText = 'MaxHR (bpm/min)';
+      } else {
+        yAxisText = '最大心率 (bpm/min)';
+      }
     } else if (this.chooseType === '2-8') {
-      yAxisText = '平均步頻(spm)';
+      if (this.currentLang === 'en-us') {
+        yAxisText = 'Avg run candence (spm)';
+      } else if (this.currentLang === 'zh-cn') {
+        yAxisText = '平均步频 (spm)';
+      } else {
+        yAxisText = '平均步頻(spm)';
+      }
       toolTipUnit = ' spm';
     } else if (this.chooseType === '2-9') {
-      yAxisText = '最大步頻(spm)';
+      if (this.currentLang === 'en-us') {
+        yAxisText = 'Max run candence (spm)';
+      } else if (this.currentLang === 'zh-cn') {
+        yAxisText = '最大步频 (spm)';
+      } else {
+        yAxisText = '最大步頻(spm)';
+      }
       toolTipUnit = ' spm';
     } else if (this.chooseType === '3-8') {
-      yAxisText = '平均踏頻(spm)';
+      if (this.currentLang === 'en-us') {
+        yAxisText = 'Avg cycle candence(spm)';
+      } else if (this.currentLang === 'zh-cn') {
+        yAxisText = '平均踏频 (spm)';
+      } else {
+        yAxisText = '平均踏頻 (spm)';
+      }
       toolTipUnit = ' spm';
     } else if (this.chooseType === '3-9') {
-      yAxisText = '最大踏頻(spm)';
+      if (this.currentLang === 'en-us') {
+        yAxisText = 'Max cycle candence(spm)';
+      } else if (this.currentLang === 'zh-cn') {
+        yAxisText = '最大踏频 (spm)';
+      } else {
+        yAxisText = '最大踏頻 (spm)';
+      }
       toolTipUnit = ' spm';
     } else if (this.chooseType === '3-4') {
-      yAxisText = '平均速度(km/hr)';
+      if (this.currentLang === 'en-us') {
+        yAxisText = 'Avg speed(km/hr)';
+      } else if (this.currentLang === 'zh-cn') {
+        yAxisText = '平均速度 (km/hr)';
+      } else {
+        yAxisText = '平均速度 (km/hr)';
+      }
       toolTipUnit = ' km/hr';
     } else if (this.chooseType === '3-5') {
-      yAxisText = '最大速度(km/hr)';
+      if (this.currentLang === 'en-us') {
+        yAxisText = 'Max speed(km/hr)';
+      } else if (this.currentLang === 'zh-cn') {
+        yAxisText = '最大速度 (km/hr)';
+      } else {
+        yAxisText = '最大速度 (km/hr)';
+      }
       toolTipUnit = ' km/hr';
     } else if (this.chooseType === '3-10') {
-      yAxisText = '平均功率(w)';
+      if (this.currentLang === 'en-us') {
+        yAxisText = 'Avg Watt(w)';
+      } else if (this.currentLang === 'zh-cn') {
+        yAxisText = '平均功率 (w)';
+      } else {
+        yAxisText = '平均功率 (w)';
+      }
       toolTipUnit = ' w';
     } else if (this.chooseType === '3-11') {
-      yAxisText = '最大功率(w)';
+      if (this.currentLang === 'en-us') {
+        yAxisText = 'Max Watt(w)';
+      } else if (this.currentLang === 'zh-cn') {
+        yAxisText = '最大功率 (w)';
+      } else {
+        yAxisText = '最大功率 (w)';
+      }
       toolTipUnit = ' w';
     } else if (this.chooseType === '1-5' || this.chooseType === '3-4') {
-      yAxisText = '平均速度(km/hr)';
+      if (this.currentLang === 'en-us') {
+        yAxisText = 'Avg speed(km/hr)';
+      } else if (this.currentLang === 'zh-cn') {
+        yAxisText = '平均速度 (km/hr)';
+      } else {
+        yAxisText = '平均速度 (km/hr)';
+      }
       toolTipUnit = ' km/hr';
     } else if (this.chooseType === '1-6' || this.chooseType === '3-5') {
-      yAxisText = '最大速度(km/hr)';
+      if (this.currentLang === 'en-us') {
+        yAxisText = 'Max speed(km/hr)';
+      } else if (this.currentLang === 'zh-cn') {
+        yAxisText = '最大速度 (km/hr)';
+      } else {
+        yAxisText = '最大速度 (km/hr)';
+      }
       toolTipUnit = ' km/hr';
     } else if (this.chooseType === '2-4') {
-      yAxisText = '平均配速(min/km)';
+      if (this.currentLang === 'en-us') {
+        yAxisText = 'Avg pace(min/km)';
+      } else if (this.currentLang === 'zh-cn') {
+        yAxisText = '平均配速 (min/km)';
+      } else {
+        yAxisText = '平均配速 (min/km)';
+      }
       toolTipUnit = ' min/km';
     } else if (this.chooseType === '2-5') {
-      yAxisText = '最大配速(min/km)';
+      if (this.currentLang === 'en-us') {
+        yAxisText = 'Max pace(min/km)';
+      } else if (this.currentLang === 'zh-cn') {
+        yAxisText = '最大配速 (min/km)';
+      } else {
+        yAxisText = '最大配速 (min/km)';
+      }
       toolTipUnit = ' min/km';
     } else {
-      yAxisText = 'noDefine';
+      if (this.currentLang === 'en-us') {
+        yAxisText = 'noDefine';
+      } else if (this.currentLang === 'zh-cn') {
+        yAxisText = '没有定义';
+      } else {
+        yAxisText = '沒有定義';
+      }
       toolTipUnit = ' ';
     }
     const chooseType = this.chooseType;
@@ -247,7 +405,7 @@ export class ScatterChartComponent implements OnChanges {
         },
         title: {
           enabled: true,
-          text: '時間'
+          text: this.xAxisText
         },
         startOnTick: true,
         endOnTick: true,
@@ -265,12 +423,14 @@ export class ScatterChartComponent implements OnChanges {
             yVal = `${timeMin}'${timeSecond}"`;
           }
           if (timeType === 2 || timeType === 3) {
-            const startDay = moment(this.x - (86400 * 6 * 1000)).format('YYYY/MM/DD');
+            const startDay = moment(this.x - 86400 * 6 * 1000).format(
+              'YYYY/MM/DD'
+            );
             const endDay = moment(this.x).format('YYYY/MM/DD');
             return `${startDay}~${endDay}<br>
       <span style="color:${this.point.color}">●</span> ${
               this.series.name
-              }: ${yVal}${toolTipUnit}<br/>`;
+            }: ${yVal}${toolTipUnit}<br/>`;
           }
           return (
             '<b>' +

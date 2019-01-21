@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-between" style="margin-bottom: 15px">
   <span style="color: #157fcc; font-weight:700">
-    我的裝置
+    {{'Dashboard.MyDevice.MyDevice' | translate}}
   </span>
 </div>
 
@@ -9,18 +9,20 @@
  (matSortChange)="changeSort($event)"
 >
   <ng-container matColumnDef="model">
-    <mat-header-cell *matHeaderCellDef mat-sort-header>產品型號</mat-header-cell>
+    <mat-header-cell *matHeaderCellDef mat-sort-header>
+      {{'Dashboard.MyDevice.ModelName' | translate}}
+    </mat-header-cell>
     <mat-cell *matCellDef="let row">{{ row?.modelName }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="type">
     <mat-header-cell *matHeaderCellDef disableClear="true">
-      產品類別
+      {{'Dashboard.MyDevice.ModelType' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let row">{{ row?.deviceType | productType | translate }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="sn">
     <mat-header-cell *matHeaderCellDef disableClear="true">
-      設備序號
+      {{'Dashboard.MyDevice.SerialNumber' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let row">
       {{ row?.myEquipmentSN }}
@@ -45,7 +47,7 @@
 <div *ngIf="!logSource?.data || (logSource?.data && logSource?.data.length === 0)"
   style="text-align: center;padding: 30px"
 >
-  尚無相關資訊
+  {{'SH.No-information' | translate}}
 </div>
 <div class="ala-loading-shade" *ngIf="isLoading">
   <mat-spinner></mat-spinner>

@@ -1,7 +1,7 @@
 <div class="d-flex justify-content-between" style="margin-bottom: 15px">
   <span style="color: #157fcc; font-weight:700;font-size: 24px; ">
     Train live
-    <div style="color: rgb(40, 35, 45);font-weight:500">最新直播</div>
+    <div style="color: rgb(40, 35, 45);font-weight:500">{{ "Dashboard.TrainLive.NewsLive" | translate}}</div>
   </span>
 </div>
 <!-- <div *ngIf="classLists?.length === 0">
@@ -9,7 +9,7 @@
 </div> -->
 <mat-card class="example-card"
   *ngIf="isDemoMode"
-  (click)="goToClass('99999', 1)"
+  (click)="goToClass('99999', 5)"
 >
   <mat-card-header>
     <div mat-card-avatar

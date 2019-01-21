@@ -27,11 +27,11 @@
     <ng-container *ngIf="deviceInfo">
       <div class="row" style="margin-bottom: 15px">
         <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">{{"Portal.ProductName" | translate}}：</div>
-        <div class="col-sm-6 text-sm-left text-center">{{ deviceInfo?.modelName || '尚無相關資訊' }}</div>
+        <div class="col-sm-6 text-sm-left text-center">{{ deviceInfo?.modelName || 'SH.No-information' | translate }}</div>
       </div>
       <div class="row" style="margin-bottom: 15px">
         <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">{{"Portal.ProductType" | translate}}：</div>
-        <div class="col-sm-6 text-sm-left text-center">{{ (deviceInfo?.modelType | productType | translate) || '尚無相關資訊' }}</div>
+        <div class="col-sm-6 text-sm-left text-center">{{ (deviceInfo?.modelType | productType | translate) || 'SH.No-information' | translate }}</div>
       </div>
       <div class="row" style="margin-bottom: 15px" *ngIf="deviceInfo?.mainAppData">
         <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">

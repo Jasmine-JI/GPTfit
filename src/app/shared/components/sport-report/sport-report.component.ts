@@ -13,6 +13,8 @@ import * as moment from 'moment';
 import { ReportService } from '../../services/report.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { ActivatedRoute } from '@angular/router';
+import { TREE_DATA } from './treeData';
+import { TranslateService } from '@ngx-translate/core';
 /**
  * Json node data with nested structure. Each node has a filename and a value or a list of children
  */
@@ -25,77 +27,77 @@ export class FileNode {
 /**
  * The Json tree data in string. The data could be parsed into Json object
  */
-const TREE_DATA = JSON.stringify({
-  '所有運動': {
-    '活動數量': '1-1',
-    '總時間': '1-2',
-    '總距離': '1-3',
-    '消耗卡路里': '1-4',
-    '平均速度': '1-5',
-    '最大速度': '1-6',
-    '平均心率': '1-7',
-    '最大心率': '1-8'
-  },
-  '跑步': {
-    '總時間': '2-1',
-    '總距離': '2-2',
-    '消耗卡路里': '2-3',
-    '平均配速': '2-4',
-    '最大配速': '2-5',
-    '平均心率': '2-6',
-    '最大心率': '2-7',
-    '平均步頻': '2-8',
-    '最大步頻': '2-9'
-  },
-  '騎乘': {
-    '總時間': '3-1',
-    '總距離': '3-2',
-    '消耗卡路里': '3-3',
-    '平均速度': '3-4',
-    '最大速度': '3-5',
-    '平均心率': '3-6',
-    '最大心率': '3-7',
-    '平均踏頻': '3-8',
-    '最大踏頻': '3-9',
-    '平均功率': '3-10',
-    '最大功率': '3-11'
-  },
-  '有氧運動': {
-    '總時間': '6-1',
-    '消耗卡路里': '6-2',
-    '平均心率': '6-3',
-    '最大心率': '6-4'
-  },
-  '游泳': {
-    '總時間': '4-1',
-    '總距離': '4-2',
-    '消耗卡路里': '4-3',
-    '平均配速': '4-4',
-    '最大配速': '4-5',
-    '平均划水頻': '4-6',
-    '最大划水頻': '4-7'
-  },
-  '重訓': {
-    '總時間': '5-1',
-    '總重量': '5-2',
-    '總次數': '5-3',
-    '消耗卡路里': '5-4',
-    '平均心率': '5-5',
-    '最大心率': '5-6',
-    '所有肌肉概要部位資訊': {
-      '最大1RM{跟下面一起}': '5-7',
-      '總重量{跟上面一起}': '5-8',
-      '總組數{跟下面一起}': '5-9',
-      '總次數{跟上面一起}': '5-10'
-    },
-    '各個肌肉概要部位資訊': {
-      '最大1RM': '5-11',
-      '總重量': '5-12',
-      '總組數': '5-13',
-      '總次數': '5-14'
-    }
-  }
-});
+// const TREE_DATA = JSON.stringify({
+//   '所有運動': {
+//     '活動數量': '1-1',
+//     '總時間': '1-2',
+//     '總距離': '1-3',
+//     '消耗卡路里': '1-4',
+//     '平均速度': '1-5',
+//     '最大速度': '1-6',
+//     '平均心率': '1-7',
+//     '最大心率': '1-8'
+//   },
+//   '跑步': {
+//     '總時間': '2-1',
+//     '總距離': '2-2',
+//     '消耗卡路里': '2-3',
+//     '平均配速': '2-4',
+//     '最大配速': '2-5',
+//     '平均心率': '2-6',
+//     '最大心率': '2-7',
+//     '平均步頻': '2-8',
+//     '最大步頻': '2-9'
+//   },
+//   '騎乘': {
+//     '總時間': '3-1',
+//     '總距離': '3-2',
+//     '消耗卡路里': '3-3',
+//     '平均速度': '3-4',
+//     '最大速度': '3-5',
+//     '平均心率': '3-6',
+//     '最大心率': '3-7',
+//     '平均踏頻': '3-8',
+//     '最大踏頻': '3-9',
+//     '平均功率': '3-10',
+//     '最大功率': '3-11'
+//   },
+//   '有氧運動': {
+//     '總時間': '6-1',
+//     '消耗卡路里': '6-2',
+//     '平均心率': '6-3',
+//     '最大心率': '6-4'
+//   },
+//   '游泳': {
+//     '總時間': '4-1',
+//     '總距離': '4-2',
+//     '消耗卡路里': '4-3',
+//     '平均配速': '4-4',
+//     '最大配速': '4-5',
+//     '平均划水頻': '4-6',
+//     '最大划水頻': '4-7'
+//   },
+//   '重訓': {
+//     '總時間': '5-1',
+//     '總重量': '5-2',
+//     '總次數': '5-3',
+//     '消耗卡路里': '5-4',
+//     '平均心率': '5-5',
+//     '最大心率': '5-6',
+//     '所有肌肉概要部位資訊': {
+//       '最大1RM{跟下面一起}': '5-7',
+//       '總重量{跟上面一起}': '5-8',
+//       '總組數{跟下面一起}': '5-9',
+//       '總次數{跟上面一起}': '5-10'
+//     },
+//     '各個肌肉概要部位資訊': {
+//       '最大1RM': '5-11',
+//       '總重量': '5-12',
+//       '總組數': '5-13',
+//       '總次數': '5-14'
+//     }
+//   }
+// });
 
 /**
  * File database, it can build a tree structured Json object from string.
@@ -110,13 +112,18 @@ export class FileDatabase {
 
   get data(): FileNode[] { return this.dataChange.value; }
 
-  constructor() {
-    this.initialize();
+  constructor(private translate: TranslateService) {
+    this.translate.onLangChange.subscribe(() => {
+      this.getAndInitTranslations();
+    });
+    this.getAndInitTranslations();
   }
-
-  initialize() {
+  getAndInitTranslations() {
+    this.initialize(this.translate.currentLang);
+  }
+  initialize(lang) {
     // Parse the string to json object.
-    const dataObject = JSON.parse(TREE_DATA);
+    const dataObject = JSON.parse(JSON.stringify(TREE_DATA[lang]));
 
     // Build the tree nodes from Json object. The result is a list of `FileNode` with nested
     //     file node as children.
@@ -167,25 +174,32 @@ export class SportReportComponent implements OnInit {
   filterStartTime: string;
   filterEndTime: string;
   today = moment().format('YYYY/MM/DD');
-  endWeekDay = moment().add(6 - +(moment().format('d')), 'days').format('YYYY/MM/DD');
+  endWeekDay = moment()
+    .add(6 - +moment().format('d'), 'days')
+    .format('YYYY/MM/DD');
   datas = [];
   chartName = '';
-  treeData = JSON.parse(TREE_DATA);
+  treeData: any;
   periodTimes = [];
   isLoading = false;
   // to fix 之後多語系要注意
   openTreeName = '所有運動';
   targetUserId: string;
+  currentLang: string;
   @Output() showPrivacyUi = new EventEmitter();
   constructor(
     database: FileDatabase,
     private reportService: ReportService,
     private utils: UtilsService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private translate: TranslateService
   ) {
     this.nestedTreeControl = new NestedTreeControl<FileNode>(this._getChildren);
     this.nestedDataSource = new MatTreeNestedDataSource();
-
+    this.translate.onLangChange.subscribe(() => {
+      this.getAndInitTranslations();
+    });
+    this.getAndInitTranslations();
     database.dataChange.subscribe(data => (this.nestedDataSource.data = data));
     this.filterEndTime = moment().format('YYYY/MM/DD');
     this.filterStartTime = moment()
@@ -216,7 +230,7 @@ export class SportReportComponent implements OnInit {
             if (this.treeData.hasOwnProperty(sport)) {
               const _sport = this.treeData[sport];
               if (_sport[item] === this.chooseType) {
-                this.chartName = sport + item;
+                this.chartName = sport + ' ' + item;
               }
             }
           }
@@ -224,6 +238,10 @@ export class SportReportComponent implements OnInit {
       }
     }
     this.handleSportSummaryArray(body);
+  }
+  getAndInitTranslations() {
+    this.currentLang = this.translate.currentLang;
+    this.treeData = JSON.parse(JSON.stringify(TREE_DATA[this.currentLang]));
   }
   private _getChildren = (node: FileNode) => node.children;
   handleRenderChart(type) {
@@ -236,7 +254,7 @@ export class SportReportComponent implements OnInit {
             if (this.treeData.hasOwnProperty(sport)) {
               const _sport = this.treeData[sport];
               if (_sport[item] === this.chooseType) {
-                this.chartName = sport + item;
+                this.chartName = sport + ' ' + item;
               }
             }
           }
@@ -368,7 +386,9 @@ export class SportReportComponent implements OnInit {
     });
   }
   handleItem(targetNode) {
-    if (targetNode.filename === '重訓' || targetNode.filename === '游泳') {
+    if (targetNode.filename === '重訓' || targetNode.filename === '重训'
+      || targetNode.filename === 'Weighttraining' || targetNode.filename === '游泳'
+      || targetNode.filename === 'Swim') {
       return;
     }
     if (this.openTreeName === targetNode.filename) {
@@ -409,10 +429,12 @@ export class SportReportComponent implements OnInit {
         .subtract(52, 'weeks')
         .format('YYYY/MM/DD');
     }
-    const filterEndTime = moment(this.filterEndTime)
-      .format('YYYY-MM-DDT23:59:59+08:00');
-    const filterStartTime = moment(this.filterStartTime)
-      .format('YYYY-MM-DDT00:00:00+08:00');
+    const filterEndTime = moment(this.filterEndTime).format(
+      'YYYY-MM-DDT23:59:59+08:00'
+    );
+    const filterStartTime = moment(this.filterStartTime).format(
+      'YYYY-MM-DDT00:00:00+08:00'
+    );
     const body = {
       token: this.utils.getToken(),
       type: 1,
@@ -427,7 +449,10 @@ export class SportReportComponent implements OnInit {
     this.handleSportSummaryArray(body);
   }
   shiftNextTime() {
-    if (this.filterEndTime !== this.today || this.filterEndTime !== this.endWeekDay) {
+    if (
+      this.filterEndTime !== this.today ||
+      this.filterEndTime !== this.endWeekDay
+    ) {
       if (this.timeType === 0) {
         this.filterStartTime = moment(this.filterEndTime)
           .add(1, 'days')
@@ -459,9 +484,19 @@ export class SportReportComponent implements OnInit {
           .add(52, 'weeks')
           .format('YYYY/MM/DD');
       }
-      const filterEndTime = moment(this.filterEndTime).format('YYYY-MM-DDT23:59:59+08:00');
-      const filterStartTime = moment(this.filterStartTime).format('YYYY-MM-DDT00:00:00+08:00');
-      const body = { token: this.utils.getToken(), type: 1, filterStartTime, filterEndTime, targetUserId: '' };
+      const filterEndTime = moment(this.filterEndTime).format(
+        'YYYY-MM-DDT23:59:59+08:00'
+      );
+      const filterStartTime = moment(this.filterStartTime).format(
+        'YYYY-MM-DDT00:00:00+08:00'
+      );
+      const body = {
+        token: this.utils.getToken(),
+        type: 1,
+        filterStartTime,
+        filterEndTime,
+        targetUserId: ''
+      };
       if (this.timeType > 1) {
         body.type = 2;
       }
