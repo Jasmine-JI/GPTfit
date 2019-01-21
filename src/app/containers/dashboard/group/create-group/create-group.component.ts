@@ -402,6 +402,15 @@ export class CreateGroupComponent implements OnInit {
               `/dashboard/group-info/${this.groupId}/edit`
             );
           }
+          if (res.resultCode === 409) {
+            this.dialog.open(MsgDialogComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'Message',
+                body: res.resultMessage
+              }
+            });
+          }
         });
       } else if (this.createType === 2) {
         // 建立教練課
@@ -454,6 +463,15 @@ export class CreateGroupComponent implements OnInit {
               `/dashboard/group-info/${this.groupId}/edit`
             );
           }
+          if (res.resultCode === 409) {
+            this.dialog.open(MsgDialogComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'Message',
+                body: res.resultMessage
+              }
+            });
+          }
         });
       } else if (this.createType === 3) {
         const { groupName } = value;
@@ -465,6 +483,15 @@ export class CreateGroupComponent implements OnInit {
           this.isEditing = false;
           if (res.resultCode === 200) {
             this.router.navigateByUrl('/dashboard/my-group-list');
+          }
+          if (res.resultCode === 409) {
+            this.dialog.open(MsgDialogComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'Message',
+                body: res.resultMessage
+              }
+            });
           }
         });
       } else {
@@ -486,6 +513,15 @@ export class CreateGroupComponent implements OnInit {
           this.isEditing = false;
           if (res.resultCode === 200) {
             this.router.navigateByUrl('/dashboard/system/all-group-list');
+          }
+          if (res.resultCode === 409) {
+            this.dialog.open(MsgDialogComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'Message',
+                body: res.resultMessage
+              }
+            });
           }
         });
       }
