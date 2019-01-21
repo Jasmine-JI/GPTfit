@@ -2,7 +2,6 @@ import {
   Component,
   OnInit,
   ViewChild,
-  OnDestroy,
   Input,
   Output,
   EventEmitter
@@ -17,7 +16,6 @@ import {
 import { ActivityService } from '@shared/services/activity.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { Router } from '@angular/router';
-import { GlobalEventsManager } from '@shared/global-events-manager';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -25,7 +23,7 @@ import { ActivatedRoute } from '@angular/router';
   templateUrl: './my-activity.component.html',
   styleUrls: ['./my-activity.component.css']
 })
-export class MyActivityComponent implements OnInit, OnDestroy {
+export class MyActivityComponent implements OnInit {
   logSource = new MatTableDataSource<any>();
   totalCount: number;
   currentPage: PageEvent;
@@ -45,7 +43,6 @@ export class MyActivityComponent implements OnInit, OnDestroy {
     private activityService: ActivityService,
     private utils: UtilsService,
     private router: Router,
-    private globalEventsManager: GlobalEventsManager,
     private route: ActivatedRoute
   ) {}
 
@@ -53,26 +50,25 @@ export class MyActivityComponent implements OnInit, OnDestroy {
     const queryStrings = this.utils.getUrlQueryStrings(location.search);
     const { pageNumber } = queryStrings;
     this.targetUserId = this.route.snapshot.paramMap.get('userId');
-    this.globalEventsManager.setFooterRWD(1); // 為了讓footer長高85px
-    // 設定顯示筆數資訊文字
-    this.matPaginatorIntl.getRangeLabel = (
-      page: number,
-      pageSize: number,
-      length: number
-    ): string => {
-      if (length === 0 || pageSize === 0) {
-        return `第 0 筆、共 ${length} 筆`;
-      }
+    // // 設定顯示筆數資訊文字
+    // this.matPaginatorIntl.getRangeLabel = (
+    //   page: number,
+    //   pageSize: number,
+    //   length: number
+    // ): string => {
+    //   if (length === 0 || pageSize === 0) {
+    //     return `第 0 筆、共 ${length} 筆`;
+    //   }
 
-      length = Math.max(length, 0);
-      const startIndex = page * pageSize;
-      const endIndex =
-        startIndex < length
-          ? Math.min(startIndex + pageSize, length)
-          : startIndex + pageSize;
+    //   length = Math.max(length, 0);
+    //   const startIndex = page * pageSize;
+    //   const endIndex =
+    //     startIndex < length
+    //       ? Math.min(startIndex + pageSize, length)
+    //       : startIndex + pageSize;
 
-      return `第 ${startIndex + 1} - ${endIndex} 筆、共 ${length} 筆`;
-    };
+    //   return `第 ${startIndex + 1} - ${endIndex} 筆、共 ${length} 筆`;
+    // };
     this.currentPage = {
       pageIndex: (+pageNumber - 1) || 0,
       pageSize: 10,
@@ -97,9 +93,7 @@ export class MyActivityComponent implements OnInit, OnDestroy {
       this.getLists();
     });
   }
-  ngOnDestroy() {
-    this.globalEventsManager.setFooterRWD(0); // 為了讓footer自己變回去預設值
-  }
+
   changeSort(sortInfo: Sort) {
     this.currentSort = sortInfo;
     this.getLists();

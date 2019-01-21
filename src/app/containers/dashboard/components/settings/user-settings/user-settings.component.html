@@ -1,10 +1,10 @@
 <div style="display:flex;justify-content: space-between">
-  <h3>使用者資訊</h3>
+  <h3>{{'Dashboard.Settings.UserSetting' | translate}}</h3>
   <button class="alatech-btn alatech-btn--default settings-btn"
-    title="儲存"
+    title="{{'Dashboard.Settings.Save' | translate}}"
     (click)="saveSettings(settingsForm)"
   >
-    儲存
+    {{'Dashboard.Settings.Save' | translate}}
   </button>
 </div>
 <form [formGroup]="settingsForm"
@@ -12,12 +12,14 @@
   novalidate
   (ngSubmit)="saveSettings(settingsForm)"
 >
-  <label class="ala-form__label settings-label">基本資訊</label>
+  <label class="ala-form__label settings-label">
+    {{'Dashboard.Settings.BasicSetting' | translate}}
+  </label>
   <div class="ala-list__item">
     <label class="ala-form__label settings-item"
       [class.form__label--required]="true"
     >
-      頭像
+      {{'Dashboard.Settings.Avatar' | translate}}
     </label>
     <div class="settings-control" style="min-width: 250px;">
       <app-upload-file
@@ -25,11 +27,11 @@
         [imageURL]="nameIcon?.value"
         [maxFileSize]="maxFileSize"
         [disabled]="isUploading"
-        [btnText]="chooseFileText"
+        [btnText]="'Dashboard.Group.GroupInfo.SelectFile' | translate"
         [isLoading]="isUploading"
         [accept]="acceptFileExtensions.join()"
-        [reloadFileText]="reloadFileText"
-        [chooseFileText]="chooseFileText"
+        [reloadFileText]="'Dashboard.Group.GroupInfo.ReUpload' | translate"
+        [chooseFileText]="'Dashboard.Group.GroupInfo.SelectFile' | translate"
         (onChange)="handleAttachmentChange($event)"
       ></app-upload-file>
     </div>
@@ -38,7 +40,7 @@
     <label class="ala-form__label settings-item"
       [class.form__label--required]="true"
     >
-      名稱
+    {{'Dashboard.Settings.Name' | translate}}
     </label>
     <div class="settings-control" style="position: relative;">
       <app-form-text
@@ -58,7 +60,7 @@
     <label class="ala-form__label settings-item"
       [class.form__label--required]="true"
     >
-      身高
+    {{'Dashboard.Settings.Height' | translate}}
     </label>
     <div class="settings-control">
       <div style="display: inline-block">
@@ -85,7 +87,7 @@
     <label class="ala-form__label settings-item"
       [class.form__label--required]="true"
     >
-      體重
+    {{'Dashboard.Settings.Weight' | translate}}
     </label>
     <div class="settings-control">
       <div style="display: inline-block">
@@ -108,7 +110,9 @@
     </div>
   </div>
   <div class="ala-list__item">
-    <label class="ala-form__label settings-item">出生年月日</label>
+    <label class="ala-form__label settings-item">
+      {{'Dashboard.Settings.Birthday' | translate}}
+    </label>
     <div class="settings-control">
       <mat-form-field style="min-width: 275px;">
         <input matInput [matDatepicker]="picker" placeholder=""
@@ -121,18 +125,22 @@
     </div>
   </div>
   <div class="ala-list__item">
-    <label class="ala-form__label settings-item">性別</label>
+    <label class="ala-form__label settings-item">
+      {{'Dashboard.Settings.Sex' | translate}}
+    </label>
     <div class="settings-control">
       <select class="form-field"
         formControlName="gender"
       >
-        <option value="0">男</option>
-        <option value="1">女</option>
+        <option value="0">{{'Dashboard.Settings.Male' | translate}}</option>
+        <option value="1">{{'Dashboard.Settings.Female' | translate}}</option>
       </select>
     </div>
   </div>
   <div class="ala-list__item">
-    <label class="ala-form__label settings-item">介紹</label>
+    <label class="ala-form__label settings-item">
+      {{'Dashboard.Settings.Introduction' | translate}}
+    </label>
     <div class="settings-control">
       <app-form-textarea
         [maxLength]="'500'"

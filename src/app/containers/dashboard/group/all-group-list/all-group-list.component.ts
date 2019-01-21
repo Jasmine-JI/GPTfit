@@ -69,6 +69,9 @@ export class AllGroupListComponent implements OnInit {
       page: this.currentPage && this.currentPage.pageIndex.toString() || '0',
       pageCounts: this.currentPage && this.currentPage.pageSize.toString() || '10'
     };
+    if (this.groupLevel !== '00' || this.searchWords.length > 0) {
+      body.category = '3';
+    }
     this.groupService
       .fetchGroupList(body)
       .subscribe(res => {

@@ -2,8 +2,7 @@ import {
   Component,
   OnInit,
   ViewEncapsulation,
-  HostListener,
-  OnDestroy
+  HostListener
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { GroupService } from '../../services/group.service';
@@ -20,7 +19,6 @@ import { MsgDialogComponent } from '../../components/msg-dialog/msg-dialog.compo
 import { MatDialog } from '@angular/material/dialog';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
 import * as _ from 'lodash';
-import { GlobalEventsManager } from '@shared/global-events-manager';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { planDatas } from '../desc';
 import * as moment from 'moment';
@@ -31,7 +29,7 @@ import * as moment from 'moment';
   styleUrls: ['./create-group.component.scss', '../group-style.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class CreateGroupComponent implements OnInit, OnDestroy {
+export class CreateGroupComponent implements OnInit {
   groupId: string;
   token: string;
   groupInfo: any;
@@ -119,8 +117,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
     private router: Router,
     private fb: FormBuilder,
     private userInfoService: UserInfoService,
-    public dialog: MatDialog,
-    private globalEventsManager: GlobalEventsManager
+    public dialog: MatDialog
   ) {}
   @HostListener('dragover', ['$event'])
   public onDragOver(evt) {
@@ -138,7 +135,6 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
     evt.stopPropagation();
   }
   ngOnInit() {
-    this.globalEventsManager.setFooterRWD(2); // 為了讓footer長高85px
     const queryStrings = this.utils.getUrlQueryStrings(location.search);
     const { createType, coachType } = queryStrings;
     if (coachType) {
@@ -207,9 +203,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
       this.getGroupMemberList(1);
     }
   }
-  ngOnDestroy() {
-    this.globalEventsManager.setFooterRWD(0); // 為了讓footer自己變回去預設值
-  }
+
   buildForm(_type: number) {
     if (_type === 1) {
       this.formTextName = 'branchName';
@@ -408,6 +402,15 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
               `/dashboard/group-info/${this.groupId}/edit`
             );
           }
+          if (res.resultCode === 409) {
+            this.dialog.open(MsgDialogComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'Message',
+                body: res.resultMessage
+              }
+            });
+          }
         });
       } else if (this.createType === 2) {
         // 建立教練課
@@ -460,6 +463,15 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
               `/dashboard/group-info/${this.groupId}/edit`
             );
           }
+          if (res.resultCode === 409) {
+            this.dialog.open(MsgDialogComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'Message',
+                body: res.resultMessage
+              }
+            });
+          }
         });
       } else if (this.createType === 3) {
         const { groupName } = value;
@@ -471,6 +483,15 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
           this.isEditing = false;
           if (res.resultCode === 200) {
             this.router.navigateByUrl('/dashboard/my-group-list');
+          }
+          if (res.resultCode === 409) {
+            this.dialog.open(MsgDialogComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'Message',
+                body: res.resultMessage
+              }
+            });
           }
         });
       } else {
@@ -492,6 +513,15 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
           this.isEditing = false;
           if (res.resultCode === 200) {
             this.router.navigateByUrl('/dashboard/system/all-group-list');
+          }
+          if (res.resultCode === 409) {
+            this.dialog.open(MsgDialogComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'Message',
+                body: res.resultMessage
+              }
+            });
           }
         });
       }

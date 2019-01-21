@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { GroupService } from 'app/containers/dashboard/services/group.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { ActivatedRoute } from '@angular/router';
@@ -7,14 +7,14 @@ import { Router } from '@angular/router';
 import { GlobalEventsManager } from '@shared/global-events-manager';
 
 @Component({
-  selector: 'app-group-info',
-  templateUrl: './group-info.component.html',
+  selector: 'app-portal-group-info',
+  templateUrl: './portal-group-info.component.html',
   styleUrls: [
-    './group-info.component.css',
+    './portal-group-info.component.css',
     '../../../dashboard/group/group-style.scss'
   ]
 })
-export class GroupInfoComponent implements OnInit {
+export class PortalGroupInfoComponent implements OnInit, OnDestroy {
   groupInfo: any;
   groupImg: string;
   groupId: string;
@@ -22,6 +22,7 @@ export class GroupInfoComponent implements OnInit {
 
   groupLevel: string;
   visitorDetail: any;
+  subscription: any;
   constructor(
     private groupService: GroupService,
     private utils: UtilsService,
@@ -37,26 +38,29 @@ export class GroupInfoComponent implements OnInit {
     const token = this.utils.getToken() || '';
     if (token) {
       this.userInfoService.getUserDetail({ token }, this.groupId);
-      setTimeout(() => {
-        this.userInfoService.getUserAccessRightDetail().subscribe(res => {
-          this.visitorDetail = res;
-          const { isCanManage, isGroupAdmin, accessRight, isApplying } = this.visitorDetail;
-          if (this.groupInfo.groupStatus === 3 && !this.visitorDetail.isCanManage) {
-            return this.router.navigateByUrl(`/404`);
-          }
-          if (isCanManage || isGroupAdmin || accessRight !== 'none' || isApplying) {
-            this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}`);
-          }
-        });
-      } , 300);
+      this.subscription = this.userInfoService.getUserAccessRightDetail().subscribe(res => {
+        this.visitorDetail = res;
+        const {
+          isCanManage,
+          isGroupAdmin,
+          accessRight,
+          isApplying
+        } = this.visitorDetail;
+
+        if (
+          isCanManage ||
+          isGroupAdmin ||
+          accessRight !== 'none' ||
+          isApplying
+        ) {
+          this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}`);
+        }
+      });
     }
     const body = { token, groupId: this.groupId };
     this.groupService.fetchGroupListDetail(body).subscribe(res => {
       this.groupInfo = res.info;
-      const {
-        groupIcon,
-        groupStatus
-      } = this.groupInfo;
+      const { groupIcon, groupStatus } = this.groupInfo;
       if (groupStatus === 4 || groupStatus === 3) {
         return this.router.navigateByUrl(`/404`);
       }
@@ -71,5 +75,11 @@ export class GroupInfoComponent implements OnInit {
   goDashboardGroupInfo() {
     this.utils.setLocalStorageObject('isAutoApplyGroup', true);
     this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}`);
+  }
+  ngOnDestroy() {
+    const token = this.utils.getToken() || '';
+    if (token) {
+      this.subscription.unsubscribe();
+    }
   }
 }

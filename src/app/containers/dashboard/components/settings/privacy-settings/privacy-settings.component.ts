@@ -8,6 +8,7 @@ import {
 import { SettingsService } from '../../../services/settings.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { MatSnackBar } from '@angular/material';
+import { deviceHint } from './deviceHint';
 
 declare var google: any;
 
@@ -32,6 +33,7 @@ export class PrivacySettingsComponent implements OnInit {
   activityTracking = [];
   activityTrackingReport = [];
   lifeTrackingReport = [];
+  deviceTip: string;
   constructor(
     private settingsService: SettingsService,
     private utils: UtilsService,
@@ -39,6 +41,8 @@ export class PrivacySettingsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    const langName = this.utils.getLocalStorageObject('locale');
+    this.deviceTip = deviceHint[langName];
     const mapProp = {
       center: new google.maps.LatLng(24.123499, 120.66014),
       zoom: 18,

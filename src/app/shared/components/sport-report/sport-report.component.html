@@ -1,5 +1,5 @@
 <span style="color: #157fcc; font-weight:700">
-  運動報告
+  {{'Dashboard.SportReport.SportReport' | translate}}
 </span>
 <div class="row">
   <div class="col-3">
@@ -23,15 +23,19 @@
               matTreeNodeToggle
               [attr.aria-label]="'toggle ' + node.filename"
               (click)="handleItem(node)"
-              [disabled]="node.filename === '重訓' || node.filename === '游泳' || node.filename === '游泳' ? true : false"
+[disabled]="node.filename === '重訓' || node.filename === '重训' || node.filename === 'Weighttraining' ||
+node.filename ==='游泳' || node.filename === 'Swim' ? true
+: false"
             >
               <mat-icon class="mat-icon-rtl-mirror">
                 {{openTreeName === node.filename ? 'expand_more' : 'chevron_right'}}
               </mat-icon>
             </button>
             <span [style.color]="openTreeName === node.filename ? '#157fcc' : 'initial'">
-              <span [style.color]="node.filename === '重訓' || node.filename === '游泳' ? '#ada9a9' : 'initial'"
-                [style.cursor]="node.filename === '重訓' || node.filename === '游泳' ? 'not-allowed' : 'initial'"
+<span [style.color]="node.filename === '重訓' || node.filename === '重训' || node.filename === 'Weighttraining' ||
+node.filename ==='游泳' || node.filename === 'Swim' ? '#ada9a9' : 'initial'"
+                [style.cursor]="node.filename === '重訓' || node.filename === '重训' || node.filename === 'Weighttraining' ||
+node.filename ==='游泳' || node.filename === 'Swim' ? 'not-allowed' : 'initial'"
               >
                 {{node.filename}}
               </span>
@@ -46,13 +50,13 @@
   </div>
   <div class="col-9">
   <mat-tab-group  (selectedTabChange)="changeGroupInfo($event)">
-    <mat-tab label="7天">
+    <mat-tab label="7{{'Dashboard.SportReport.Day' | translate}}">
     </mat-tab>
-    <mat-tab label="30天">
+    <mat-tab label="30{{'Dashboard.SportReport.Day' | translate}}">
     </mat-tab>
-    <mat-tab label="6個月">
+    <mat-tab label="6{{'Dashboard.SportReport.Month' | translate}}">
     </mat-tab>
-    <mat-tab label="12個月">
+    <mat-tab label="12{{'Dashboard.SportReport.Month' | translate}}">
     </mat-tab>
   </mat-tab-group>
     <!-- Hello i m {{chooseType}}chart -->
@@ -89,6 +93,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
     </app-activity-levels>
     </ng-container>
@@ -100,6 +105,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-column-stacked-chart>
     </ng-container>
@@ -111,6 +117,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-column-stacked-chart>
     </ng-container>
@@ -122,6 +129,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-burn-calories>
     </ng-container>
@@ -133,6 +141,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-scatter-chart>
     </ng-container>
@@ -144,6 +153,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-scatter-chart>
     </ng-container>
@@ -155,6 +165,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-scatter-chart>
     </ng-container>
@@ -166,6 +177,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-scatter-chart>
     </ng-container>
@@ -177,6 +189,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-column-stacked-chart>
     </ng-container>
@@ -188,6 +201,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-column-stacked-chart>
     </ng-container>
@@ -199,6 +213,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-other-burn-calories>
     </ng-container>
@@ -210,6 +225,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-scatter-chart>
     </ng-container>
@@ -221,6 +237,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-scatter-chart>
     </ng-container>
@@ -232,6 +249,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-scatter-chart>
     </ng-container>
@@ -243,6 +261,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-scatter-chart>
     </ng-container>
@@ -254,6 +273,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-scatter-chart>
     </ng-container>
@@ -265,6 +285,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-scatter-chart>
     </ng-container>
@@ -276,6 +297,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-column-stacked-chart>
     </ng-container>
@@ -287,6 +309,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-column-stacked-chart>
     </ng-container>
@@ -298,6 +321,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-other-burn-calories>
     </ng-container>
@@ -309,6 +333,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-scatter-chart>
     </ng-container>
@@ -320,6 +345,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-scatter-chart>
     </ng-container>
@@ -331,6 +357,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-scatter-chart>
     </ng-container>
@@ -342,6 +369,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-scatter-chart>
     </ng-container>
@@ -353,6 +381,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-scatter-chart>
     </ng-container>
@@ -364,6 +393,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-scatter-chart>
     </ng-container>
@@ -375,6 +405,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-scatter-chart>
     </ng-container>
@@ -386,6 +417,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-scatter-chart>
     </ng-container>
@@ -397,6 +429,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-column-stacked-chart>
     </ng-container>
@@ -408,6 +441,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-column-stacked-chart>
     </ng-container>
@@ -419,6 +453,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-other-burn-calories>
     </ng-container>
@@ -430,6 +465,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-scatter-chart>
     </ng-container>
@@ -441,6 +477,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-scatter-chart>
     </ng-container>
@@ -452,6 +489,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-scatter-chart>
     </ng-container>
@@ -463,6 +501,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-scatter-chart>
     </ng-container>
@@ -474,6 +513,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-column-stacked-chart>
     </ng-container>
@@ -485,6 +525,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-column-stacked-chart>
     </ng-container>
@@ -496,6 +537,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-all-times>
     </ng-container>
@@ -507,6 +549,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-other-burn-calories>
     </ng-container>
@@ -518,6 +561,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-scatter-chart>
     </ng-container>
@@ -529,6 +573,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-scatter-chart>
     </ng-container>
@@ -540,6 +585,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-other-burn-calories>
     </ng-container>
@@ -551,6 +597,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-other-burn-calories>
     </ng-container>
@@ -562,6 +609,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-all-groups>
     </ng-container>
@@ -573,6 +621,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-all-groups>
     </ng-container>
@@ -584,6 +633,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-partial-muscle-info>
     </ng-container>
@@ -595,6 +645,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-partial-muscle-info>
     </ng-container>
@@ -606,6 +657,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-partial-muscle-info>
     </ng-container>
@@ -617,6 +669,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-partial-muscle-info>
     </ng-container>
@@ -628,6 +681,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-column-stacked-chart>
     </ng-container>
@@ -639,6 +693,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-other-burn-calories>
     </ng-container>
@@ -650,6 +705,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-scatter-chart>
     </ng-container>
@@ -661,6 +717,7 @@
         [periodTimes]="periodTimes"
         [isLoading]="isLoading"
         [timeType]="timeType"
+        [currentLang]="currentLang"
       >
       </app-scatter-chart>
     </ng-container>

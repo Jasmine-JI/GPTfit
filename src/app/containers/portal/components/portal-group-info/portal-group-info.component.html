@@ -1,0 +1,55 @@
+<div class="container" style="padding-top: 30px">
+  <div class="row">
+    <!-- <span class="group-handle-name group-handle-name__rwd">
+      {{ 'Dashboard.Group.GroupInfo.GroupInfo' | translate}}
+    </span> -->
+    <div class="col-md-6 group-image--area">
+      <img *ngIf="groupImg" [src]="(groupImg | safeHtml)" [class.image-is--default]="groupImg === '/assets/images/group-default.svg'">
+    </div>
+    <!--之後如果外部模組很多需要rwd footer高度，再另外調整成共用-->
+    <div class="col-md-6 portal-group-info">
+      <div class="group-edit-bar">
+        <span class="group-handle-name">
+          {{ 'Dashboard.Group.GroupInfo.GroupInfo' | translate}}
+        </span>
+        <div class="rwd-btn_action">
+          <button class="alatech-btn alatech-btn--default"
+            style="width:140px;height:38px"
+            *ngIf="!visitorDetail?.isGroupAdmin"
+            title="{{'Dashboard.Group.GroupInfo.Join' | translate}}"
+            (click)="goDashboardGroupInfo()"
+          >
+            {{ 'Dashboard.Group.GroupInfo.Join' | translate}}
+          </button>
+        </div>
+      </div>
+      <div style="margin-bottom: 30px;">
+        <div>
+          <label>{{ groupInfo?.groupName }}</label>
+        </div>
+        <div>
+          <label>{{ 'Dashboard.Group.GroupInfo.GroupID' | translate}}：</label>{{ dispGroupId }}
+        </div>
+        <div>
+          <label>{{ 'Dashboard.Group.GroupInfo.Level' | translate}}：</label>{{ groupLevel | groupLevelTranslate }}
+        </div>
+        <div>
+          <label>{{ 'Dashboard.Group.GroupInfo.Status' | translate}}：</label>{{ groupInfo?.groupStatus | groupStatus | translate }}
+        </div>
+        <div>
+          <label>{{ 'Dashboard.Group.GroupInfo.Introduction' | translate}}：</label>
+          <div [innerHTML]="groupInfo?.groupDesc | lineBreak"></div>
+        </div>
+      </div>
+    <div>
+  </div>
+</div>
+<!-- <div class="group-manage__action" #footerTarget>
+  <button class="alatech-btn group-manage__btn"
+    *ngIf="!visitorDetail?.isGroupAdmin"
+    title="{{ 'Dashboard.Group.GroupInfo.Join' | translate}}"
+    (click)="goDashboardGroupInfo()"
+  >
+    {{ 'Dashboard.Group.GroupInfo.Join' | translate}}
+  </button>
+</div> -->

@@ -1,13 +1,13 @@
 <div class="d-flex justify-content-between" style="margin-bottom: 15px">
   <span style="color: #157fcc; font-weight:700">
-    我的群組列表
+    {{ "Dashboard.Group.MyGroup.MyGroup" | translate}}
   </span>
   <div class="group-edit-bar">
     <button class="alatech-btn alatech-btn--default"
-      title="搜尋群組"
+      title="{{ 'Dashboard.Group.SearchGroup.SearchGroup' | translate}}"
       [routerLink]="['/dashboard/group-search']"
     >
-      搜尋群組
+      {{ "Dashboard.Group.SearchGroup.SearchGroup" | translate}}
     </button>
     <!-- <button class="alatech-btn alatech-btn--default"
       title="建立新群組"
@@ -22,38 +22,32 @@
   matSort #sortTable="matSort"
 >
   <ng-container matColumnDef="info">
-    <mat-header-cell *matHeaderCellDef>名稱</mat-header-cell>
+    <mat-header-cell *matHeaderCellDef>{{ "Dashboard.Group.MyGroup.Name" | translate}}</mat-header-cell>
     <mat-cell *matCellDef="let row">{{ row.groupName }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="time">
     <mat-header-cell *matHeaderCellDef disableClear="true">
-      身分
+      {{ "Dashboard.Group.MyGroup.Identity" | translate}}
     </mat-header-cell>
-    <mat-cell *matCellDef="let row">{{ row.groupProperty | accessName }}</mat-cell>
+    <mat-cell *matCellDef="let row">{{ row.groupProperty | accessName | translate }}</mat-cell>
   </ng-container>
   <mat-header-row *matHeaderRowDef="['info', 'time']"></mat-header-row>
   <mat-row *matRowDef="let logRow; columns: ['info', 'time']" (click)="goDetail(logRow.groupId)">
   </mat-row>
 </mat-table>
 <div *ngIf="isEmpty" style="text-align: center;padding: 30px">
-  尚無相關資訊
+  {{ "SH.No-information" | translate}}
 </div>
 <div class="ala-loading-shade" *ngIf="isLoading">
   <mat-spinner></mat-spinner>
 </div>
 <mat-paginator #paginator [length]="totalCount" [pageIndex]="currentPage?.pageIndex" [pageSize]="10" [pageSizeOptions]="[5, 10, 15]">
 </mat-paginator>
-<div class="group-manage__action">
+<!-- <div class="group-manage__action">
   <button class="alatech-btn group-manage__btn"
-    title="搜尋群組"
+    title="{{ 'Dashboard.Group.SearchGroup.SearchGroup' | translate}}"
     [routerLink]="['/dashboard/group-search']"
   >
-    搜尋群組
+    {{ "Dashboard.Group.SearchGroup.SearchGroup" | translate}}
   </button>
-  <!-- <button class="alatech-btn group-manage__btn"
-    title="建立新群組"
-    [routerLink]="['/dashboard/my-group-list/create']"
-  >
-    建立新群組
-  </button> -->
-</div>
+</div> -->

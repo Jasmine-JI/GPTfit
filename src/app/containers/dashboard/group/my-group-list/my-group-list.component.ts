@@ -2,8 +2,7 @@ import {
   Component,
   OnInit,
   ViewChild,
-  ElementRef,
-  OnDestroy
+  ElementRef
 } from '@angular/core';
 import { GroupService } from '../../services/group.service';
 import {
@@ -19,14 +18,13 @@ import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/observable/fromEvent';
 import { Router } from '@angular/router';
 import { UtilsService } from '@shared/services/utils.service';
-import { GlobalEventsManager } from '@shared/global-events-manager';
 
 @Component({
   selector: 'app-my-group-list',
   templateUrl: './my-group-list.component.html',
   styleUrls: ['./my-group-list.component.css', '../group-style.scss']
 })
-export class MyGroupListComponent implements OnInit, OnDestroy {
+export class MyGroupListComponent implements OnInit {
   logSource = new MatTableDataSource<any>();
   totalCount: number;
   currentPage: PageEvent;
@@ -44,34 +42,32 @@ export class MyGroupListComponent implements OnInit, OnDestroy {
     private groupService: GroupService,
     private matPaginatorIntl: MatPaginatorIntl,
     private router: Router,
-    private utils: UtilsService,
-    private globalEventsManager: GlobalEventsManager
+    private utils: UtilsService
   ) {
   }
 
   ngOnInit() {
     const queryStrings = this.utils.getUrlQueryStrings(location.search);
     const { pageNumber } = queryStrings;
-    this.globalEventsManager.setFooterRWD(2); // 為了讓footer長高85px
     // 設定顯示筆數資訊文字
-    this.matPaginatorIntl.getRangeLabel = (
-      page: number,
-      pageSize: number,
-      length: number
-    ): string => {
-      if (length === 0 || pageSize === 0) {
-        return `第 0 筆、共 ${length} 筆`;
-      }
+    // this.matPaginatorIntl.getRangeLabel = (
+    //   page: number,
+    //   pageSize: number,
+    //   length: number
+    // ): string => {
+    //   if (length === 0 || pageSize === 0) {
+    //     return `第 0 筆、共 ${length} 筆`;
+    //   }
 
-      length = Math.max(length, 0);
-      const startIndex = page * pageSize;
-      const endIndex =
-        startIndex < length
-          ? Math.min(startIndex + pageSize, length)
-          : startIndex + pageSize;
+    //   length = Math.max(length, 0);
+    //   const startIndex = page * pageSize;
+    //   const endIndex =
+    //     startIndex < length
+    //       ? Math.min(startIndex + pageSize, length)
+    //       : startIndex + pageSize;
 
-      return `第 ${startIndex + 1} - ${endIndex} 筆、共 ${length} 筆`;
-    };
+    //   return `第 ${startIndex + 1} - ${endIndex} 筆、共 ${length} 筆`;
+    // };
 
     this.currentPage = {
       pageIndex: (+pageNumber - 1) || 0,
@@ -120,8 +116,5 @@ export class MyGroupListComponent implements OnInit, OnDestroy {
   }
   selectTarget(_value) {
     this.selectedValue = encodeURIComponent(_value).trim();
-  }
-  ngOnDestroy() {
-    this.globalEventsManager.setFooterRWD(0); // 為了讓footer自己變回去預設值
   }
 }

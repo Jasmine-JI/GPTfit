@@ -25,7 +25,8 @@ export class ActivityLevelsComponent implements OnChanges, OnDestroy {
   @Input() periodTimes: any;
   @Input() isLoading: boolean;
   @Input() timeType: number;
-
+  @Input() currentLang: string;
+  yAxistext: string;
   seriesX = [];
   series = [];
 
@@ -43,7 +44,7 @@ export class ActivityLevelsComponent implements OnChanges, OnDestroy {
     this.initHchart();
   }
 
-  ngOnDestroy () {
+  ngOnDestroy() {
     this.chart1.destroy();
   }
   handleSportSummaryArray() {
@@ -52,51 +53,103 @@ export class ActivityLevelsComponent implements OnChanges, OnDestroy {
     this.seriesX = this.periodTimes;
     const sportTypes = [];
     this.datas.forEach((value, idx, self) => {
-      const sameIdx = self.findIndex(
-          _self => {
-            return _self.activities[0].type === value.activities[0].type;
-          });
+      const sameIdx = self.findIndex(_self => {
+        return _self.activities[0].type === value.activities[0].type;
+      });
       if (sameIdx === idx) {
         sportTypes.push(value.activities[0].type);
       }
     });
     sportTypes.sort().map(_type => {
       const data = [];
-      this.seriesX.forEach((x) => data.push([x, 0]));
+      this.seriesX.forEach(x => data.push([x, 0]));
       this.datas
         .filter(_data => _data.activities[0].type === _type)
         .forEach(_data => {
-          const idx = this.seriesX.findIndex(
-            _seriesX => {
-              return _seriesX === moment(_data.endTime.slice(0, 10)).unix() * 1000;
-            });
+          const idx = this.seriesX.findIndex(_seriesX => {
+            return (
+              _seriesX === moment(_data.endTime.slice(0, 10)).unix() * 1000
+            );
+          });
           if (idx > -1) {
             data[idx][1] = +_data.activities[0].totalActivities;
           }
         });
       let name = '';
-      switch (_type) {
-        case '1':
-          name = '跑步';
-          break;
-        case '2':
-          name = '騎乘';
-          break;
-        case '3':
-          name = '重量訓練';
-          break;
-        case '4':
-          name = '游泳';
-          break;
-        case '5':
-          name = '有氧運動';
-          break;
-        case '6':
-          name = '划船';
-          break;
-        default:
-          name = '尚未定義';
+      if (this.currentLang === 'zh-tw') {
+        this.yAxistext = '活動數量';
+        switch (_type) {
+          case '1':
+            name = '跑步';
+            break;
+          case '2':
+            name = '騎乘';
+            break;
+          case '3':
+            name = '重量訓練';
+            break;
+          case '4':
+            name = '游泳';
+            break;
+          case '5':
+            name = '有氧運動';
+            break;
+          case '6':
+            name = '划船';
+            break;
+          default:
+            name = '尚未定義';
+        }
+      } else if (this.currentLang === 'zh-cn') {
+        this.yAxistext = '活动数量';
+        switch (_type) {
+          case '1':
+            name = '跑步';
+            break;
+          case '2':
+            name = '骑乘';
+            break;
+          case '3':
+            name = '重量训练';
+            break;
+          case '4':
+            name = '游泳';
+            break;
+          case '5':
+            name = '有氧运动';
+            break;
+          case '6':
+            name = '划船';
+            break;
+          default:
+            name = '尚未定义';
+        }
+      } else {
+        this.yAxistext = 'Number of activities';
+        switch (_type) {
+          case '1':
+            name = 'Running';
+            break;
+          case '2':
+            name = 'Ride';
+            break;
+          case '3':
+            name = 'Weight training';
+            break;
+          case '4':
+            name = 'Swimming';
+            break;
+          case '5':
+            name = 'Aerobic exercise';
+            break;
+          case '6':
+            name = 'Boating';
+            break;
+          default:
+            name = 'not yet defined';
+        }
       }
+
       const serie = { name, data };
       this.series.push(serie);
     });
@@ -130,7 +183,7 @@ export class ActivityLevelsComponent implements OnChanges, OnDestroy {
         min: 0,
         tickInterval: 1,
         title: {
-          text: '活動數量'
+          text: this.yAxistext
         }
       },
       legend: {
@@ -167,14 +220,18 @@ export class ActivityLevelsComponent implements OnChanges, OnDestroy {
       }
     };
     if (this.timeType === 2 || this.timeType === 3) {
-        options.tooltip.formatter =  function() {
-        const startDay = moment(this.x - (86400 * 6 * 1000)).format('YYYY/MM/DD');
+      options.tooltip.formatter = function() {
+        const startDay = moment(this.x - 86400 * 6 * 1000).format('YYYY/MM/DD');
         const endDay = moment(this.x).format('YYYY/MM/DD');
         return `${startDay}~${endDay}<br>
-        <span style="color:${this.point.color}">●</span> ${this.series.name}: <b>${this.point.y}</b><br/>`;
+        <span style="color:${this.point.color}">●</span> ${
+          this.series.name
+        }: <b>${this.point.y}</b><br/>`;
       };
     }
-    this.chart1 = Highcharts.chart(this.activityLevelsChartTarget.nativeElement, options);
-
+    this.chart1 = Highcharts.chart(
+      this.activityLevelsChartTarget.nativeElement,
+      options
+    );
   }
 }
