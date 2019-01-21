@@ -142,7 +142,7 @@ router.post('/innerAdmin', function (req, res, next) {
         if (ids.length > 0) {
           normalIds = ids.filter(_id => userIds.findIndex(_userId => +_userId === _id.member_id) === -1);
         }
-        normalQuerys = normalIds.map(_id => `update ?? set access_right = 90 where member_id = ${_id.member_id};`);
+        normalQuerys = normalIds.map(_id => `update ?? set access_right = 90 where member_id = ${_id.member_id} and group_id = '0-0-0-0-0-0';`);
         let sql = userIds.map(_id => `update ?? set access_right = ${con.escape(targetRight)} where member_id = ${_id} and group_id = '0-0-0-0-0-0';`);
         sql = sql.concat(normalQuerys);
         let successCount = 0;
