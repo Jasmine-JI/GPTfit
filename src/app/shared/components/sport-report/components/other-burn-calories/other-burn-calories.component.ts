@@ -32,7 +32,8 @@ export class OtherBurnCaloriesComponent implements OnChanges {
   isLoading: boolean;
   @Input()
   timeType: number;
-
+  @Input() currentLang: string;
+  yAxistext: string;
   seriesX = [];
   series = [];
   constructor() {}
@@ -84,27 +85,78 @@ export class OtherBurnCaloriesComponent implements OnChanges {
           }
         });
       let name = '';
-      switch (_type) {
-        case '1':
-          name = '跑步';
-          break;
-        case '2':
-          name = '騎乘';
-          break;
-        case '3':
-          name = '重量訓練';
-          break;
-        case '4':
-          name = '游泳';
-          break;
-        case '5':
-          name = '有氧運動';
-          break;
-        case '6':
-          name = '划船';
-          break;
-        default:
-          name = '尚未定義';
+      if (this.currentLang === 'zh-tw') {
+        this.yAxistext = '消耗卡路里(Cal)';
+        switch (_type) {
+          case '1':
+            name = '跑步';
+            break;
+          case '2':
+            name = '騎乘';
+            break;
+          case '3':
+            name = '重量訓練';
+            break;
+          case '4':
+            name = '游泳';
+            break;
+          case '5':
+            name = '有氧運動';
+            break;
+          case '6':
+            name = '划船';
+            break;
+          default:
+            name = '尚未定義';
+        }
+      } else if (this.currentLang === 'zh-cn') {
+        this.yAxistext = '消耗卡路里(Cal)';
+        switch (_type) {
+          case '1':
+            name = '跑步';
+            break;
+          case '2':
+            name = '骑乘';
+            break;
+          case '3':
+            name = '重量训练';
+            break;
+          case '4':
+            name = '游泳';
+            break;
+          case '5':
+            name = '有氧运动';
+            break;
+          case '6':
+            name = '划船';
+            break;
+          default:
+            name = '尚未定义';
+        }
+      } else {
+        this.yAxistext = 'burn calories(Cal)';
+        switch (_type) {
+          case '1':
+            name = 'Running';
+            break;
+          case '2':
+            name = 'Ride';
+            break;
+          case '3':
+            name = 'Weight training';
+            break;
+          case '4':
+            name = 'Swimming';
+            break;
+          case '5':
+            name = 'Aerobic exercise';
+            break;
+          case '6':
+            name = 'Boating';
+            break;
+          default:
+            name = 'not yet defined';
+        }
       }
       const serie = { name, data };
       this.series.push(serie);
@@ -133,7 +185,7 @@ export class OtherBurnCaloriesComponent implements OnChanges {
       yAxis: {
         min: 0,
         title: {
-          text: '消耗卡路里 (cal)'
+          text: this.yAxistext
         }
       },
       tooltip: {
