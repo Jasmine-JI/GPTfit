@@ -56,7 +56,17 @@
     "RelatedLinks": "Related Links",
     "BasicInfo": "Basic Info",
     "ActivityRecord": "Activity record",
-    "s-activity": "'s activity"
+    "s-activity": "'s activity",
+    "CenterDesc": "At the Ala Center, get a fitness analysis life tracking, instant sharing and competition fun",
+    "ConnectDesc": "View your workout data from your smartphone and pair it with a compatible Alatech device to create all-weather steps, heart rate tracking, and sleep quality. And record the whole process during the exercise",
+    "ConnectTitle": "ALA Connect Mobile Edition",
+    "RaceDesc": "Interactive competition, making the road run more fun<br>Accumulate achievements",
+    "RunDesc": "It is a treadmill real route connection competition and community interaction application. When paired with a compatible Alatech treadmill, it can establish a cloud road run.<br> Simulate the actual road condition through the treadmill.",
+    "RunTitle": "ALA Cloud Run Mobile Edition",
+    "RealTimeDesc": "Create instant synchronized sports information<br>Group training is more effective",
+    "CoachTitle": "Coach Board web version",
+    "CoachDesc": "Provide coaches to watch the student's movements in time, synchronize the same activity intensity, and get better exercise efficiency. Students can also get information on the event history.",
+    "SignInNow": "Sign In Now"
   },
   "Dashboard": {
     "MyInfo": "My Information",

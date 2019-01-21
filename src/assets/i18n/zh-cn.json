@@ -56,7 +56,17 @@
     "RelatedLinks": "相关连结",
     "BasicInfo": "基本资讯",
     "ActivityRecord": "活动纪录",
-    "s-activity": "的活动"
+    "s-activity": "的活动",
+    "CenterDesc": "在Ala Center上，获得健体分析 <br/>生活追踪、 即时分享与竞赛乐趣",
+    "ConnectDesc": "从您的智慧型手机检视您的运动资料，与相容的Alatech 装置 配对后，可建立起全天候的步数、心率追踪，睡眠品质。并且在运动过程中全程纪录",
+    "ConnectTitle": "ALA Connect 行动版",
+    "RaceDesc": "互动式的竞赛，让路跑更有趣<br>累积成就，互相砥砺",
+    "RunDesc": "是一款提供跑步机真实路线连线竞赛与社群互动应用， 与相容的Alatech 跑步机配对后，可建立起云端路跑，<br> 将路线高度变化透过跑步机模拟实际路况。",
+    "RunTitle": "ALA Cloud Run 行动版",
+    "RealTimeDesc": "打造即时同步运动资讯<br>群体训练更加有效",
+    "CoachTitle": "Coach Board 网页版",
+    "CoachDesc": "提供教练及时观看学员运动状况，同步相同的活动强度，<br>获得更佳的运动效率。学员也可以获得活动历程资讯。",
+    "SignInNow": "立即登入"
   },
   "Dashboard": {
     "MyInfo": "我的资讯",
