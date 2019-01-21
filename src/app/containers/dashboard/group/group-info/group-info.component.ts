@@ -285,7 +285,7 @@ export class GroupInfoComponent implements OnInit {
           onConfirm: () => {
             this.groupService
               .actionGroup(body)
-              .subscribe(({ resultCode, info: { selfJoinStatus } }) => {
+              .subscribe(({ resultCode, resultMessage, info: { selfJoinStatus } }) => {
                 if (resultCode === 200) {
                   this.joinStatus = selfJoinStatus;
                   this.userProfileService
@@ -407,6 +407,17 @@ export class GroupInfoComponent implements OnInit {
                       }
                     });
                 }
+                if (resultCode === 401) {
+                  this.dialog.open(MessageBoxComponent, {
+                    hasBackdrop: true,
+                    data: {
+                      title: 'message',
+                      body: resultMessage,
+                      confirmText: this.confirmText,
+                      cancelText: this.cancelText
+                    }
+                  });
+                }
               });
           }
         }
@@ -416,19 +427,36 @@ export class GroupInfoComponent implements OnInit {
     const isBeenGroupMember = this.joinStatus === 2;
     this.groupService
       .actionGroup(body)
-      .subscribe(({ resultCode, info: { selfJoinStatus } }) => {
-        if (resultCode === 200) {
-          if (_type === 2 && this.groupLevel === '80' && isBeenGroupMember) {
-            this.userInfoService.getUserDetail(body, this.groupId);
+      .subscribe(
+        ({ resultCode, info: { selfJoinStatus }, resultMessage }) => {
+          if (resultCode === 200) {
+            if (
+              _type === 2 &&
+              this.groupLevel === '80' &&
+              isBeenGroupMember
+            ) {
+              this.userInfoService.getUserDetail(body, this.groupId);
+            }
+            if (_type === 2) {
+              this.joinStatus = 5;
+              this.userInfoService.getUserDetail(body, this.groupId);
+            } else {
+              this.joinStatus = selfJoinStatus;
+            }
           }
-          if (_type === 2) {
-            this.joinStatus = 5;
-            this.userInfoService.getUserDetail(body, this.groupId);
-          } else {
-            this.joinStatus = selfJoinStatus;
+          if (resultCode === 401) {
+            this.dialog.open(MessageBoxComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'message',
+                body: resultMessage,
+                confirmText: this.confirmText,
+                cancelText: this.cancelText
+              }
+            });
           }
         }
-      });
+      );
   }
   detectCheckBoxValue(arr, statusArr) {
     if (arr.findIndex(arrVal => arrVal === '1') === -1) {
