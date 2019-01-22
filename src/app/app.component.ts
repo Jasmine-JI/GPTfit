@@ -11,7 +11,7 @@ export class AppComponent {
     if (location.protocol === 'http:'
       &&
       (location.hostname === 'app.alatech.com.tw' || location.hostname === 'cloud.alatech.com.tw')) {
-      location.href = `https://${location.host}`;
+      location.href = location.href.replace('http://', 'https://');
     }
   }
 }
