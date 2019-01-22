@@ -431,37 +431,83 @@ export class CoachDashboardComponent
           const pace = +_data[paceIdx] || 0;
           const distance = +_data[distanceIdx] || 0;
           const time = moment().unix() * 1000;
-          if (this.chartType === 0) {
-            this.chart.series[idx].addPoint([time, liveHr], true, false, 1000);
-            sum += liveHr;
-          } else if (this.chartType === 1) {
-            this.chart.series[idx].addPoint([time, calorie], true, false, 1000);
-            sum += calorie;
-          } else {
-            this.chart.series[idx].addPoint(
-              [time, colorIdx],
-              true,
-              false,
-              1000
-            );
-            sum += colorIdx;
-          }
+
           if (this.classType === '5') {
             this.series1[idx].data.push([time, +liveHr]);
             this.series2[idx].data.push([time, +calorie]);
             this.series3[idx].data.push([time, +colorIdx]);
+            if (this.chartType === 0) {
+              this.chart.series[idx].addPoint([time, liveHr], true, false, 1000);
+              sum += liveHr;
+            } else if (this.chartType === 1) {
+              this.chart.series[idx].addPoint([time, calorie], true, false, 1000);
+              sum += calorie;
+            } else {
+              this.chart.series[idx].addPoint(
+                [time, colorIdx],
+                true,
+                false,
+                1000
+              );
+              sum += colorIdx;
+            }
           } else if (this.classType === '6') {
             this.series1[idx].data.push([time, +liveHr]);
             this.series2[idx].data.push([time, +speed]);
             this.series3[idx].data.push([time, +watt]);
+            if (this.chartType === 0) {
+              this.chart.series[idx].addPoint([time, liveHr], true, false, 1000);
+              sum += liveHr;
+            } else if (this.chartType === 1) {
+              this.chart.series[idx].addPoint([time, speed], true, false, 1000);
+              sum += speed;
+            } else {
+              this.chart.series[idx].addPoint(
+                [time, watt],
+                true,
+                false,
+                1000
+              );
+              sum += watt;
+            }
           } else if (this.classType === '1') {
             this.series1[idx].data.push([time, +liveHr]);
             this.series2[idx].data.push([time, +pace]);
             this.series3[idx].data.push([time, +distance]);
+            if (this.chartType === 0) {
+              this.chart.series[idx].addPoint([time, liveHr], true, false, 1000);
+              sum += liveHr;
+            } else if (this.chartType === 1) {
+              this.chart.series[idx].addPoint([time, pace], true, false, 1000);
+              sum += pace;
+            } else {
+              this.chart.series[idx].addPoint(
+                [time, distance],
+                true,
+                false,
+                1000
+              );
+              sum += distance;
+            }
           } else if (this.classType === '2') {
             this.series1[idx].data.push([time, +liveHr]);
             this.series2[idx].data.push([time, +cadence]);
             this.series3[idx].data.push([time, +speed]);
+            if (this.chartType === 0) {
+              this.chart.series[idx].addPoint([time, liveHr], true, false, 1000);
+              sum += liveHr;
+            } else if (this.chartType === 1) {
+              this.chart.series[idx].addPoint([time, cadence], true, false, 1000);
+              sum += cadence;
+            } else {
+              this.chart.series[idx].addPoint(
+                [time, speed],
+                true,
+                false,
+                1000
+              );
+              sum += speed;
+            }
           } else {}
 
           return {

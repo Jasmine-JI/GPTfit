@@ -123,6 +123,15 @@ export class MemberCapsuleComponent implements OnInit {
       if (res.resultCode === 200) {
         return this.onRemoveAdmin.emit(this.userId);
       }
+      if (res.resultCode === 401) {
+        this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          data: {
+            title: 'message',
+            body: res.resultMessage
+          }
+        });
+      }
     });
   }
   handleRemoveAdmin() {
@@ -157,6 +166,15 @@ export class MemberCapsuleComponent implements OnInit {
         if (res.resultCode === 200) {
           this.onAssignAdmin.emit(this.userId);
           this.dialog.closeAll();
+        }
+        if (res.resultCode === 401) {
+          this.dialog.open(MessageBoxComponent, {
+            hasBackdrop: true,
+            data: {
+              title: 'message',
+              body: res.resultMessage
+            }
+          });
         }
       });
     // } else {
