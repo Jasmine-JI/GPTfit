@@ -1,0 +1,45 @@
+<ng-container *ngIf="!isWrong">
+  <button class="icon-btn" (click)="openSelectorWin($event)">
+    <i class="icon-svg_web-icon_p1_021-add_friend group-icon"
+     style="font-size: 30px"
+    ></i>
+  </button>
+  <h1>
+    <label>使用者名字:</label>{{userName}}
+  </h1>
+  <div class="photo-section">
+    <label>small icon:</label>
+    <br>
+    <label>圖片尺寸:</label>{{smallIconWidth}}*{{smallIconHeight}}
+    <br>
+    <label>檔案大小(以jpg格式計算):</label>{{smallFileSize / 1024 | number: '0.1-1'}} kb
+    <br>
+    <span *ngIf="!smallIcon" style="color: #cb5e5e">沒圖片!! </span>
+    <img *ngIf="smallIcon" [src]="(smallIcon | safeHtml)" />
+  </div>
+
+  <div class="photo-section">
+    <label>middle icon:</label>
+    <br>
+    <label>圖片尺寸:</label>{{middleIconWidth}}*{{middleIconHeight}}
+    <br>
+  <label>檔案大小(以jpg格式計算):</label>{{middleFileSize / 1024 | number: '0.1-1'}} kb
+    <br>
+    <span *ngIf="!middleIcon" style="color: #cb5e5e">沒圖片!! </span>
+    <img *ngIf="middleIcon" [src]="(middleIcon | safeHtml)" />
+  </div>
+
+  <div class="photo-section">
+    <label>large icon:</label>
+    <br>
+    <label>圖片尺寸:</label>{{largeIconWidth}}*{{largeIconHeight}}
+    <br>
+    <label>檔案大小(以jpg格式計算):</label>{{largeFileSize / 1024  | number: '0.1-1'}} kb
+    <br>
+    <span *ngIf="!largeIcon" style="color: #cb5e5e">沒圖片!! </span>
+    <img *ngIf="largeIcon" [src]="(largeIcon | safeHtml)" />
+  </div>
+</ng-container>
+
+
+<span *ngIf="isWrong">你不是我們內部人員喔!!!!!!</span>
