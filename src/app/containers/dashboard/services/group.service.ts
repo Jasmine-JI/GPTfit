@@ -58,4 +58,7 @@ export class GroupService {
   fetchCommerceInfo(body) {
     return this.http.post<any>('/api/v1/center/getCommerceInfo', body);
   }
+  fetchUserAvartar(params) {
+    return this.http.get<any>(API_SERVER + 'user/userAvartar', { params });
+  }
 }

@@ -128,6 +128,15 @@
                 <!--  之後把font awesome 與material icon 擇一-->
                 內部管理員
               </li>
+              <li class="ala-sidenav-menu-item"
+                (click)="chooseItem(18, sideNav)"
+                [class.ala-sidenav-menu-item__active]="target === 18"
+                [routerLink]="['/dashboard/system/inner-test']"
+                *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer"
+              >
+                <!--  之後把font awesome 與material icon 擇一-->
+                內部測試(圖片)
+              </li>
             </mat-expansion-panel>
           </mat-accordion>
           <mat-accordion multi="false" *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper">
