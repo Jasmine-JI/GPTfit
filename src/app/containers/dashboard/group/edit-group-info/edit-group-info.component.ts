@@ -409,6 +409,14 @@ export class EditGroupInfoComponent implements OnInit {
               body: '品牌名稱已存在'
             }
           });
+        } else if (results[0].resultCode === 401) {
+          this.dialog.open(MessageBoxComponent, {
+            hasBackdrop: true,
+            data: {
+              title: 'message',
+              body: results[0].resultMessage
+            }
+          });
         } else {
           this.dialog.open(MsgDialogComponent, {
             hasBackdrop: true,

@@ -402,6 +402,15 @@ export class CreateGroupComponent implements OnInit {
               `/dashboard/group-info/${this.groupId}/edit`
             );
           }
+          if (res.resultCode === 401) {
+            this.dialog.open(MessageBoxComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'message',
+                body: res.resultMessage
+              }
+            });
+          }
           if (res.resultCode === 409) {
             this.dialog.open(MsgDialogComponent, {
               hasBackdrop: true,
@@ -463,6 +472,15 @@ export class CreateGroupComponent implements OnInit {
               `/dashboard/group-info/${this.groupId}/edit`
             );
           }
+          if (res.resultCode === 401) {
+            this.dialog.open(MessageBoxComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'message',
+                body: res.resultMessage
+              }
+            });
+          }
           if (res.resultCode === 409) {
             this.dialog.open(MsgDialogComponent, {
               hasBackdrop: true,
@@ -483,6 +501,15 @@ export class CreateGroupComponent implements OnInit {
           this.isEditing = false;
           if (res.resultCode === 200) {
             this.router.navigateByUrl('/dashboard/my-group-list');
+          }
+          if (res.resultCode === 401) {
+            this.dialog.open(MessageBoxComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'message',
+                body: res.resultMessage
+              }
+            });
           }
           if (res.resultCode === 409) {
             this.dialog.open(MsgDialogComponent, {
@@ -513,6 +540,15 @@ export class CreateGroupComponent implements OnInit {
           this.isEditing = false;
           if (res.resultCode === 200) {
             this.router.navigateByUrl('/dashboard/system/all-group-list');
+          }
+          if (res.resultCode === 401) {
+            this.dialog.open(MessageBoxComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'message',
+                body: res.resultMessage
+              }
+            });
           }
           if (res.resultCode === 409) {
             this.dialog.open(MsgDialogComponent, {
