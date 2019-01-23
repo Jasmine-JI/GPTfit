@@ -36,8 +36,7 @@ exports.checkAccessRight = function (token) {
           return reject(err);
         }
         if (rows.length > 0) {
-          if (+rows[0].accessRight >= 20) {
-            console.log('!!!!');
+          if (+rows[0].accessRight <= 20) {
             resolve(true);
           } else {
             resolve(false);

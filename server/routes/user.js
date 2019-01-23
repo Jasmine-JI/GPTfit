@@ -62,6 +62,7 @@ router.get('/userAvartar', function (req, res, next) {
         }
 
         res.json({
+          resultCode: 200,
           userName,
           smallIcon,
           middleIcon,
@@ -69,7 +70,10 @@ router.get('/userAvartar', function (req, res, next) {
         });
       });
     } else {
-      res.send('權限不符合');
+      res.json({
+        resultCode: 403,
+        rtnMsg: '你沒權限~'
+      });
     }
 
   });
