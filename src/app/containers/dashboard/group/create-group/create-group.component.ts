@@ -22,6 +22,7 @@ import * as _ from 'lodash';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { planDatas } from '../desc';
 import * as moment from 'moment';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-create-group',
@@ -77,6 +78,7 @@ export class CreateGroupComponent implements OnInit {
   chooseLabels = [];
   planDatas = planDatas;
   totalCost: number;
+  title: string;
   get groupName() {
     return this.form.get('groupName');
   }
@@ -117,7 +119,8 @@ export class CreateGroupComponent implements OnInit {
     private router: Router,
     private fb: FormBuilder,
     private userInfoService: UserInfoService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private translate: TranslateService
   ) {}
   @HostListener('dragover', ['$event'])
   public onDragOver(evt) {
@@ -202,8 +205,40 @@ export class CreateGroupComponent implements OnInit {
       });
       this.getGroupMemberList(1);
     }
+    this.translate.onLangChange.subscribe(() => {
+      this.getAndInitTranslations();
+    });
+    this.getAndInitTranslations();
   }
-
+  getAndInitTranslations() {
+    this.translate
+      .get([
+        'Dashboard.Group.BrandAdminChooseSettings',
+        'Dashboard.Group.BranchAdminChooseSettings',
+        'Dashboard.Group.PFAdminChooseSettings',
+        'Dashboard.Group.PTAdminChooseSettings',
+        'Dashboard.Group.AdminChooseSettings'
+      ])
+      .subscribe(translation => {
+        switch (this.createType) {
+          case 1:
+            this.title = translation['Dashboard.Group.BranchAdminChooseSettings'];
+            break;
+          case 2:
+            if (this.coachType === 2) {
+              this.title = translation['Dashboard.Group.PFAdminChooseSettings'];
+            } else {
+              this.title = translation['Dashboard.Group.PTAdminChooseSettings'];
+            }
+            break;
+          case 3:
+            this.title = translation['Dashboard.Group.AdminChooseSettings'];
+            break;
+          default:
+            this.title = translation['Dashboard.Group.BrandAdminChooseSettings'];
+        }
+      });
+  }
   buildForm(_type: number) {
     if (_type === 1) {
       this.formTextName = 'branchName';
@@ -427,7 +462,8 @@ export class CreateGroupComponent implements OnInit {
         body.levelType = 5;
         body.coachType = this.coachType;
         body.levelName = coachLessonName;
-        if (this.coachType === 1) { // 一般教練(課)
+        if (this.coachType === 1) {
+          // 一般教練(課)
           body.shareAvatarToMember = {
             switch: '1',
             enableAccessRight: [],
@@ -443,7 +479,8 @@ export class CreateGroupComponent implements OnInit {
             enableAccessRight: [],
             disableAccessRight: []
           };
-        } else { // 體適能教練(課)
+        } else {
+          // 體適能教練(課)
           body.shareAvatarToMember = {
             switch: '1',
             enableAccessRight: [],
@@ -709,12 +746,13 @@ export class CreateGroupComponent implements OnInit {
   openSelectorWin(_type: number, e) {
     e.preventDefault();
     this.chooseType = _type;
+
     const adminLists = _.cloneDeep(this.chooseLabels);
     if (_type !== 3) {
       this.dialog.open(PeopleSelectorWinComponent, {
         hasBackdrop: true,
         data: {
-          title: `品牌管理員選擇設定`,
+          title: this.title,
           adminLevel: `${_type}`,
           adminLists,
           onConfirm: this.handleConfirm.bind(this)
