@@ -9,6 +9,7 @@ import { MessageBoxComponent } from '@shared/components/message-box/message-box.
 import { MatSnackBar } from '@angular/material';
 import { debounce } from '@shared/utils/';
 import { UserInfoService } from '../../../services/userInfo.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-user-settings',
@@ -34,7 +35,8 @@ export class UserSettingsComponent implements OnInit {
     private utils: UtilsService,
     private dialog: MatDialog,
     private snackbar: MatSnackBar,
-    private userInfoService: UserInfoService
+    private userInfoService: UserInfoService,
+    private translate: TranslateService
   ) {
     this.handleSearchName = debounce(this.handleSearchName, 1500);
     this.handleValueArrange = debounce(this.handleValueArrange, 1500);
@@ -91,7 +93,8 @@ export class UserSettingsComponent implements OnInit {
     let tuneWeight = '';
 
     if (_value) {
-      if (type === 1) { // type 1為身高 2為體重
+      if (type === 1) {
+        // type 1為身高 2為體重
         if (+_value < 50) {
           tuneHeight = '50';
         } else if (+_value > 255) {
@@ -155,8 +158,8 @@ export class UserSettingsComponent implements OnInit {
         hasBackdrop: true,
         data: {
           title: 'Message',
-          body: `請上傳照片`,
-          confirmText: '確定'
+          body: this.translate.instant('Dashboard.Settings.PlzUploadPhotos'),
+          confirmText: this.translate.instant('SH.Confirm')
         }
       });
     }

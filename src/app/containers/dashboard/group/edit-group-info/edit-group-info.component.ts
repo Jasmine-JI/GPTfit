@@ -99,7 +99,8 @@ export class EditGroupInfoComponent implements OnInit {
     private fb: FormBuilder,
     private userInfoService: UserInfoService,
     public dialog: MatDialog,
-    private bottomSheet: MatBottomSheet
+    private bottomSheet: MatBottomSheet,
+    private translate: TranslateService
   ) {}
   @HostListener('dragover', ['$event'])
   public onDragOver(evt) {
@@ -122,7 +123,6 @@ export class EditGroupInfoComponent implements OnInit {
       this.visitorDetail = res;
     });
   }
-
   handleInit() {
     this.groupId = this.route.snapshot.paramMap.get('groupId');
     this.form = this.fb.group({
@@ -220,19 +220,21 @@ export class EditGroupInfoComponent implements OnInit {
     e.preventDefault();
     let targetName = '';
     if (type === 2) {
-      targetName = '分店';
+      targetName = this.translate.instant('Dashboard.Group.GroupInfo.Branch');
     } else if (type === 3) {
-      targetName = '課程';
+      targetName = this.translate.instant('Dashboard.Group.GroupInfo.Class');
     } else {
-      targetName = '群組';
+      targetName = this.translate.instant('Dashboard.Group.Group');
     }
     this.dialog.open(MessageBoxComponent, {
       hasBackdrop: true,
       data: {
         title: 'message',
-        body: `是否確定要解散此${targetName}?`,
-        confirmText: '確定',
-        cancelText: '取消',
+        body: this.translate.instant('Dashboard.Group.AreUSureDismiss', {
+          target: targetName
+        }),
+        confirmText: this.translate.instant('SH.Confirm'),
+        cancelText: this.translate.instant('SH.Cancel'),
         onConfirm: this.handleDimissGroup.bind(this)
       }
     });
@@ -406,7 +408,9 @@ export class EditGroupInfoComponent implements OnInit {
             hasBackdrop: true,
             data: {
               title: 'Message',
-              body: '品牌名稱已存在'
+              body: this.translate.instant(
+                'Dashboard.Group.BrandNameAlreadyExists'
+              )
             }
           });
         } else if (results[0].resultCode === 401) {
@@ -422,7 +426,9 @@ export class EditGroupInfoComponent implements OnInit {
             hasBackdrop: true,
             data: {
               title: 'Message',
-              body: '群組資訊編輯失敗'
+              body: this.translate.instant(
+                'Dashboard.Group.EditGroupInfoFailed'
+              )
             }
           });
         }
@@ -497,13 +503,12 @@ export class EditGroupInfoComponent implements OnInit {
         this.coachAdministrators = this.coachAdministrators.filter(
           _info => _info.memberId !== id
         );
-      } else if (type === 4) { // 針對教練群組，刪除一般教練或體適能教練
+      } else if (type === 4) {
+        // 針對教練群組，刪除一般教練或體適能教練
         this.normalCoaches = this.normalCoaches.filter(
           _info => _info.memberId !== id
         );
-        this.PFCoaches = this.PFCoaches.filter(
-          _info => _info.memberId !== id
-        );
+        this.PFCoaches = this.PFCoaches.filter(_info => _info.memberId !== id);
       } else {
         this.normalMemberInfos = this.normalMemberInfos.filter(
           _info => _info.memberId !== id

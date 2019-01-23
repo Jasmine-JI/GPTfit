@@ -14,6 +14,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { RightSettingWinComponent } from '../../../containers/dashboard/group/right-setting-win/right-setting-win.component';
 import { Router } from '@angular/router';
 import { MessageBoxComponent } from '../message-box/message-box.component';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-member-capsule',
@@ -51,7 +52,8 @@ export class MemberCapsuleComponent implements OnInit {
     private groupService: GroupService,
     private utils: UtilsService,
     private router: Router,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private translate: TranslateService
   ) {
     this.elementRef = myElement;
   }
@@ -139,9 +141,9 @@ export class MemberCapsuleComponent implements OnInit {
       hasBackdrop: true,
       data: {
         title: 'message',
-        body: `是否確定要刪除該管理員`,
-        confirmText: '確定',
-        cancelText: '取消',
+        body: this.translate.instant('Dashboard.Group.AreUsureRemoveAdmin'),
+        confirmText: this.translate.instant('SH.Confirm'),
+        cancelText: this.translate.instant('SH.Cancel'),
         onConfirm: this.handleEditGroupMember.bind(this)
       }
     });
@@ -156,37 +158,37 @@ export class MemberCapsuleComponent implements OnInit {
       accessRight = this.groupLevel;
     }
     // if (this.groupLevel === '80' || this.groupLevel === '60') {
-      const body = {
-        token: this.token,
-        groupId: this.groupId,
-        userId: this.userId,
-        accessRight
-      };
-      this.groupService.editGroupMember(body).subscribe(res => {
-        if (res.resultCode === 200) {
-          this.onAssignAdmin.emit(this.userId);
-          this.dialog.closeAll();
-        }
-        if (res.resultCode === 401) {
-          this.dialog.open(MessageBoxComponent, {
-            hasBackdrop: true,
-            data: {
-              title: 'message',
-              body: res.resultMessage
-            }
-          });
-        }
-      });
+    const body = {
+      token: this.token,
+      groupId: this.groupId,
+      userId: this.userId,
+      accessRight
+    };
+    this.groupService.editGroupMember(body).subscribe(res => {
+      if (res.resultCode === 200) {
+        this.onAssignAdmin.emit(this.userId);
+        this.dialog.closeAll();
+      }
+      if (res.resultCode === 401) {
+        this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          data: {
+            title: 'message',
+            body: res.resultMessage
+          }
+        });
+      }
+    });
     // } else {
-      // this.dialog.open(RightSettingWinComponent, {
-      //   hasBackdrop: true,
-      //   data: {
-      //     name: this.name,
-      //     groupId: this.groupId,
-      //     userId: this.userId,
-      //     groupLevel: this.groupLevel
-      //   }
-      // });
+    // this.dialog.open(RightSettingWinComponent, {
+    //   hasBackdrop: true,
+    //   data: {
+    //     name: this.name,
+    //     groupId: this.groupId,
+    //     userId: this.userId,
+    //     groupLevel: this.groupLevel
+    //   }
+    // });
     // }
   }
   goToManage() {
@@ -210,9 +212,11 @@ export class MemberCapsuleComponent implements OnInit {
       hasBackdrop: true,
       data: {
         title: 'message',
-        body: `是否確定要刪除該成員`,
-        confirmText: '確定',
-        cancelText: '取消',
+        body: this.translate.instant(
+          'Dashboard.Group.AreUsureRemoveMember'
+        ),
+        confirmText: this.translate.instant('SH.Confirm'),
+        cancelText: this.translate.instant('SH.Cancel'),
         onConfirm: this.handleDeleteGroupMember.bind(this)
       }
     });
@@ -235,9 +239,9 @@ export class MemberCapsuleComponent implements OnInit {
       hasBackdrop: true,
       data: {
         title: 'message',
-        body: `是否確定要移除此群組`,
-        confirmText: '確定',
-        cancelText: '取消',
+        body: this.translate.instant('Dashboard.Group.AreUsureRemoveGroup'),
+        confirmText: this.translate.instant('SH.Confirm'),
+        cancelText: this.translate.instant('SH.Cancel'),
         onConfirm: this.handleDeleteGroup.bind(this)
       }
     });

@@ -104,7 +104,16 @@
     "ConfrimPwd": "確認密碼",
     "ConfrimPwdAgain": "再次確認密碼",
     "OldPwdNotMatchNewPwd": "輸入的密碼與新密碼不符合",
-    "ResetPwdSuccess": "密碼已修改成功，請用新密碼重新登入系統 "
+    "ResetPwdSuccess": "密碼已修改成功，請用新密碼重新登入系統 ",
+    "RemoveOriginal": "解除原有的",
+    "CorrespondingAvatar-and-sports-file": "對應頭像與運動檔案",
+    "OnlyCorrespondingSportsFile": "僅對應運動檔案",
+    "RegisterProduct": "登錄產品",
+    "IfRegisterProductText": "如果要登錄產品，請登入，系統將會自動完成登錄產品的流程",
+    "IfFitPairProductText": "如果要Fit Pair產品，請登入，系統將會自動完成Fit Pair產品的流程",
+    "RemoveFitPairCompletely": "完成解除fit pair",
+    "FitPairSuccessfully": "Fit Pair成功",
+    "FitPairFailed": "Fit Pair失敗"
   },
   "Dashboard": {
     "MyInfo": "我的資訊",
@@ -160,6 +169,12 @@
       "NoEligiblePeopleFound": "找不到符合條件的人",
       "Add": "加入",
       "Remove": "移除",
+      "AreUSureDismiss": "是否確定要解散此{{target}}?",
+      "BrandNameAlreadyExists": "品牌名稱已存在",
+      "EditGroupInfoFailed": "群組資訊編輯失敗",
+      "AreUsureRemoveAdmin": "是否確定要刪除該管理員?",
+      "AreUsureRemoveMember": "是否確定要刪除該成員?",
+      "AreUsureRemoveGroup": "是否確定要移除此群組?",
       "MyGroup": {
         "MyGroup": "我的群組",
         "GroupList": "群組列表",
@@ -338,7 +353,9 @@
       "Treadmill": "跑步機",
       "Wearable": "穿戴式",
       "Flywheel": "飛輪車",
-      "RowingMachine": "划船器"
+      "RowingMachine": "划船器",
+      "BindingFailedDeviceBound": "綁定失敗，此裝置已有綁定狀態",
+      "BindingFailed": "綁定失敗"
     },
     "ProductInfo": {
       "ProductInfo": "產品資訊",
@@ -352,7 +369,8 @@
       "close": "不開放",
       "Only-me-avatar-and-file": "僅自己，頭像與運動檔案",
       "Only-me-file": "僅自己，限運動檔案",
-      "Target": "對象"
+      "Target": "對象",
+      "ChangeFailed": "變更失敗"
     },
     "SportReport": {
       "SportReport": "運動報告",
@@ -407,7 +425,11 @@
       "Password": "密碼",
       "ChangePassword": "變更密碼",
       "Application": "應用程式",
-      "ThirdPartyInteraction": "第三方互動"
+      "ThirdPartyInteraction": "第三方互動",
+      "ReBindStravaText": "您的綁定strava已失效，是否重新綁定您的strava?",
+      "UpdateStravaFailed": "更新strava狀態失敗",
+      "PlzUploadPhotos": "請上傳照片",
+      "DoUCancelCreate": "是否要取消新增{{target}}?"
     }
   }
 }

@@ -713,19 +713,21 @@ export class CreateGroupComponent implements OnInit {
     }
 
     if (this.createType === 1) {
-      typeName = '分店';
+      typeName = this.translate.instant('Dashboard.Group.GroupInfo.Branch');
     } else if (this.createType === 2) {
-      typeName = '教練課';
+      typeName = this.translate.instant('Dashboard.Group.GroupInfo.Class');
     } else if (this.createType === 3) {
-      typeName = '群組';
+      typeName = this.translate.instant('Dashboard.Group.Group');
     } else {
-      typeName = '品牌';
+      typeName = this.translate.instant('Dashboard.Group.GroupInfo.Brand');
     }
     this.dialog.open(MsgDialogComponent, {
       hasBackdrop: true,
       data: {
         title: 'Message',
-        body: `是否要取消新增${typeName}`,
+        body: this.translate.instant('Dashboard.Settings.DoUCancelCreate', {
+          target: typeName
+        }),
         href
       }
     });

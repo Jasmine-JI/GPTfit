@@ -36,8 +36,10 @@ export class HttpStatusInterceptor implements HttpInterceptor {
               hasBackdrop: true,
               data: {
                 title: 'Error',
-                body: parseBody.resultMessage + '<br>於五秒後，回到登入畫面',
-                confirmText: '確定'
+                body:
+                  parseBody.resultMessage +
+                  '<br>After five seconds, return to the login page',
+                confirmText: 'Confirm'
               }
             });
             const auth = this.injector.get(AuthService);
@@ -59,8 +61,8 @@ export class HttpStatusInterceptor implements HttpInterceptor {
               hasBackdrop: true,
               data: {
                 title: 'Error',
-                body: 'server出現問題',
-                confirmText: '確定'
+                body: 'Server had problem',
+                confirmText: 'Confirm'
               }
             });
           }

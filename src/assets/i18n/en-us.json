@@ -104,7 +104,16 @@
     "ConfrimPwd": "Confrim Password",
     "ConfrimPwdAgain": "Confrim Password again",
     "OldPwdNotMatchNewPwd": "The entered password does not match the new password",
-    "ResetPwdSuccess": "The password has been modified successfully. Please re-login to the system with the new password. "
+    "ResetPwdSuccess": "The password has been modified successfully. Please re-login to the system with the new password. ",
+    "RemoveOriginal": "Remove original ",
+    "CorrespondingAvatar-and-sports-file": "Corresponding avatar and sports file",
+    "OnlyCorrespondingSportsFile": "Only corresponding sports file",
+    "RegisterProduct": "Register product",
+    "IfRegisterProductText": "If you want to register the product, please log in and the system will automatically complete the process of logging in to the product.",
+    "IfFitPairProductText": "If you want a Fit Pair product, please log in and the system will automatically complete the process of the Fit Pair product.",
+    "RemoveFitPairCompletely": "Remove fit pair completely",
+    "FitPairSuccessfully": "Fit Pair successfully",
+    "FitPairFailed": "Fit Pair failed"
   },
   "Dashboard": {
     "MyInfo": "My Information",
@@ -160,6 +169,12 @@
       "NoEligiblePeopleFound": "No eligible people can be found",
       "Add": "Join",
       "Remove": "Remove",
+      "AreUSureDismiss": "Are you sure to dismiss this {{target}} ?",
+      "BrandNameAlreadyExists": "Brand name already exists",
+      "EditGroupInfoFailed": "Edit group info failed",
+      "AreUsureRemoveAdmin": "Are you sure to remove this administrator?",
+      "AreUsureRemoveMember": "Are you sure to remove this member?",
+      "AreUsureRemoveGroup": "Are you sure to remove this group?",
       "MyGroup": {
         "MyGroup": "My Group",
         "GroupList": "Group List",
@@ -338,7 +353,9 @@
       "Treadmill": "Treadmill",
       "Wearable": "Wearable",
       "Flywheel": "Flywheel",
-      "RowingMachine": "Rowing machine"
+      "RowingMachine": "Rowing machine",
+      "BindingFailedDeviceBound": "Binding failed, the device is already bound",
+      "BindingFailed": "Binding failed"
     },
     "ProductInfo": {
       "ProductInfo": "Product info",
@@ -352,7 +369,8 @@
       "close": "close",
       "Only-me-avatar-and-file": "Only me, avatar and file",
       "Only-me-file": "Only me, file",
-      "Target": "target"
+      "Target": "target",
+      "ChangeFailed": "Change failed"
     },
     "SportReport": {
       "SportReport": "Sport report",
@@ -407,7 +425,11 @@
       "Password": "Password",
       "ChangePassword": "Change password",
       "Application": "Application",
-      "ThirdPartyInteraction": "Third party interaction"
+      "ThirdPartyInteraction": "Third party interaction",
+      "ReBindStravaText": "Your binding strava has expired, do you re-bind your strava?",
+      "UpdateStravaFailed": "Update strava status failed",
+      "PlzUploadPhotos": "Please upload photos",
+      "DoUCancelCreate": "Do you cancel to create {{target}}?"
     }
   }
 }
