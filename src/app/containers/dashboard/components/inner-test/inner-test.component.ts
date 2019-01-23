@@ -36,7 +36,7 @@ export class InnerTestComponent implements OnInit {
     let params = new HttpParams();
     params = params.set('userId', userId.toString());
     this.groupService.fetchUserAvartar(params).subscribe(res => {
-      if (res.userName) {
+      if (res.resultCode === 200) {
         this.userName = res.userName;
         this.smallIcon = this.utils.buildBase64ImgString(res.smallIcon);
         this.middleIcon = this.utils.buildBase64ImgString(res.middleIcon);
