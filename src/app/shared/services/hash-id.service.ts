@@ -18,4 +18,15 @@ export class HashIdService {
     const groupId = numbers.join('-');
     return groupId;
   }
+  handleUserIdEncode(inputText: string) {
+    const id = this.hashIds.encode(+inputText);
+    return id;
+  }
+
+  handleUserIdDecode(inputText: string) {
+    const numbers = this.hashIds.decode(inputText);
+    if (numbers.length === 1) {
+      return numbers[0].toString();
+    }
+  }
 }

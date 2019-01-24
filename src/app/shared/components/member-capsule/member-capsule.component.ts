@@ -246,9 +246,12 @@ export class MemberCapsuleComponent implements OnInit {
       }
     });
   }
-  goToUserProfile() {
+  goToUserProfileInGroupInfo() {
     if (!this.isSubGroupInfo && !this.isHadMenu) {
-      this.router.navigateByUrl(`/user-profile/${this.userId}`);
+      this.router.navigateByUrl(`/user-profile/${this.hashIdService.handleUserIdEncode(this.userId)}`);
     }
+  }
+  goToUserProfileInEditGroupInfo() {
+    this.router.navigateByUrl(`/user-profile/${this.hashIdService.handleUserIdEncode(this.userId)}`);
   }
 }

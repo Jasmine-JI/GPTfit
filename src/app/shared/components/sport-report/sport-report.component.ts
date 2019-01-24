@@ -15,6 +15,8 @@ import { UtilsService } from '@shared/services/utils.service';
 import { ActivatedRoute } from '@angular/router';
 import { TREE_DATA } from './treeData';
 import { TranslateService } from '@ngx-translate/core';
+import { HashIdService } from '@shared/services/hash-id.service';
+
 /**
  * Json node data with nested structure. Each node has a filename and a value or a list of children
  */
@@ -192,7 +194,8 @@ export class SportReportComponent implements OnInit {
     private reportService: ReportService,
     private utils: UtilsService,
     private route: ActivatedRoute,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private hashIdService: HashIdService
   ) {
     this.nestedTreeControl = new NestedTreeControl<FileNode>(this._getChildren);
     this.nestedDataSource = new MatTreeNestedDataSource();
@@ -209,7 +212,7 @@ export class SportReportComponent implements OnInit {
 
   hasNestedChild = (_: number, nodeData: FileNode) => !nodeData.type;
   ngOnInit() {
-    this.targetUserId = this.route.snapshot.paramMap.get('userId');
+    this.targetUserId = this.hashIdService.handleUserIdDecode(this.route.snapshot.paramMap.get('userId'));
     const filterEndTime = moment().format('YYYY-MM-DDT23:59:59+08:00');
     const filterStartTime = moment()
       .subtract(6, 'days')
@@ -386,9 +389,13 @@ export class SportReportComponent implements OnInit {
     });
   }
   handleItem(targetNode) {
-    if (targetNode.filename === '重訓' || targetNode.filename === '重训'
-      || targetNode.filename === 'Weighttraining' || targetNode.filename === '游泳'
-      || targetNode.filename === 'Swim') {
+    if (
+      targetNode.filename === '重訓' ||
+      targetNode.filename === '重训' ||
+      targetNode.filename === 'Weighttraining' ||
+      targetNode.filename === '游泳' ||
+      targetNode.filename === 'Swim'
+    ) {
       return;
     }
     if (this.openTreeName === targetNode.filename) {
