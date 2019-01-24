@@ -113,7 +113,12 @@
     "IfFitPairProductText": "如果要Fit Pair产品，请登入，系统将会自动完成Fit Pair产品的流程",
     "RemoveFitPairCompletely": "完成解除fit pair",
     "FitPairSuccessfully": "Fit Pair成功",
-    "FitPairFailed": "Fit Pair失败"
+    "FitPairFailed": "Fit Pair失败",
+    "MailHadBeenSend": "信件已发送，五秒后将跳转回登入页面",
+    "LoginSuccessfully": "登入成功",
+    "PlzCheckNamePwd": "请检查使用者名称及密码",
+    "RegisterMailSuccessfully": "注册成功，请至注册信箱点击完成E-mail验证，五秒后将跳转回登入页面",
+    "RegisterPhoneSuccessfully": "注册成功，五秒后将跳转回登入页面"
   },
   "Dashboard": {
     "MyInfo": "我的资讯",
@@ -429,7 +434,10 @@
       "ReBindStravaText": "您的绑定strava已失效，是否重新绑定您的strava?",
       "UpdateStravaFailed": "更新strava状态失败",
       "PlzUploadPhotos": "请上传照片",
-      "DoUCancelCreate": "是否要取消新增{{target}}?"
+      "DoUCancelCreate": "是否要取消新增{{target}}?",
+      "UpdateUserInfoSuccessfully": "成功更新使用者资讯",
+      "UpdatePrivacySettingsSuccessfully": "成功更新隐私权设定",
+      "UpdateFailed": "更新失败"
     }
   }
 }

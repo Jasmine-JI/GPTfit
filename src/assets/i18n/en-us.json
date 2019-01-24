@@ -113,7 +113,12 @@
     "IfFitPairProductText": "If you want a Fit Pair product, please log in and the system will automatically complete the process of the Fit Pair product.",
     "RemoveFitPairCompletely": "Remove fit pair completely",
     "FitPairSuccessfully": "Fit Pair successfully",
-    "FitPairFailed": "Fit Pair failed"
+    "FitPairFailed": "Fit Pair failed",
+    "MailHadBeenSend": "Mail had been send",
+    "LoginSuccessfully": "Login successfully",
+    "PlzCheckNamePwd": "Please check name and password",
+    "RegisterMailSuccessfully": "Registration is successful, please go to the registration mailbox and click to complete the E-mail verification. After five seconds, you will be redirected back to the login page.",
+    "RegisterPhoneSuccessfully": "Registration is successful and will redirect to the login page after five seconds."
   },
   "Dashboard": {
     "MyInfo": "My Information",
@@ -429,7 +434,10 @@
       "ReBindStravaText": "Your binding strava has expired, do you re-bind your strava?",
       "UpdateStravaFailed": "Update strava status failed",
       "PlzUploadPhotos": "Please upload photos",
-      "DoUCancelCreate": "Do you cancel to create {{target}}?"
+      "DoUCancelCreate": "Do you cancel to create {{target}}?",
+      "UpdateUserInfoSuccessfully": "Update user info successfully",
+      "UpdatePrivacySettingsSuccessfully": "Update privacy settings successfully",
+      "UpdateFailed": "Update failed"
     }
   }
 }

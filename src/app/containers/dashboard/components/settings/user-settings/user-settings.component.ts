@@ -200,11 +200,19 @@ export class UserSettingsComponent implements OnInit {
         this.isSaveUserSettingLoading = false;
         if (res.resultCode === 200) {
           this.userInfoService.getUserInfo({ token, iconType: 2 });
-          this.snackbar.open('成功更新使用者資訊', 'OK', {
-            duration: 5000
-          });
+          this.snackbar.open(
+            this.translate.instant(
+              'Dashboard.Settings.UpdateUserInfoSuccessfully'
+            ),
+            'OK',
+            { duration: 5000 }
+          );
         } else {
-          this.snackbar.open('更新失敗', 'OK', { duration: 5000 });
+          this.snackbar.open(
+            this.translate.instant('Dashboard.Settings.UpdateFailed'),
+            'OK',
+            { duration: 5000 }
+          );
         }
       });
     }

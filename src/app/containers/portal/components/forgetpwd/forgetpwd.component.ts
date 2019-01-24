@@ -16,6 +16,7 @@ import { SignupResponse } from '../../models/signup-response';
 import { SignupService } from '../../services/signup.service';
 import { SMSCode } from '../../models/sms-code';
 import { equalValueValidator } from '@shared/equal-value-validator';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-forgetpwd',
@@ -48,7 +49,8 @@ export class ForgetpwdComponent implements OnInit {
     private randomCodeService: RandomCodeService,
     private utils: UtilsService,
     private forgetService: ForgetService,
-    private signupService: SignupService
+    private signupService: SignupService,
+    private translate: TranslateService
   ) {}
   get phone() {
     return this.form.get('phone');
@@ -123,20 +125,25 @@ export class ForgetpwdComponent implements OnInit {
   }
   handleForget(body) {
     this.isForgetSending = true;
-    this.forgetService.forgetPWD(body).subscribe((res: SignupResponse) => {
-      const {
-        resultCode,
-        info: { rtnMsg }
-      } = res;
-      if (resultCode === 200) {
-        this.snackbar.open('信件已發送，五秒後將跳轉回登入頁面', 'OK', {
-          duration: 5000
-        });
-        setTimeout(() => this.router.navigate(['/signin']), 5000);
-      } else {
-        this.snackbar.open(rtnMsg, 'OK', { duration: 5000 });
-      }
-    }, () => (this.isForgetSending = false));
+    this.forgetService.forgetPWD(body).subscribe(
+      (res: SignupResponse) => {
+        const {
+          resultCode,
+          info: { rtnMsg }
+        } = res;
+        if (resultCode === 200) {
+          this.snackbar.open(
+            this.translate.instant('Portal.MailHadBeenSend'),
+            'OK',
+            { duration: 5000 }
+          );
+          setTimeout(() => this.router.navigate(['/signin']), 5000);
+        } else {
+          this.snackbar.open(rtnMsg, 'OK', { duration: 5000 });
+        }
+      },
+      () => (this.isForgetSending = false)
+    );
   }
   handleRandomCode() {
     this.randomCodeService.getRandomCode().subscribe((res: RandomCode) => {
