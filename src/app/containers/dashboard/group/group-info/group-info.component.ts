@@ -14,6 +14,7 @@ import { toMemberText } from '../desc';
 import { PrivacySettingDialogComponent } from '../privacy-setting-dialog/privacy-setting-dialog.component';
 import { UserProfileService } from '@shared/services/user-profile.service';
 import { TranslateService } from '@ngx-translate/core';
+import { HashIdService } from '@shared/services/hash-id.service';
 
 @Component({
   selector: 'app-group-info',
@@ -60,7 +61,7 @@ export class GroupInfoComponent implements OnInit {
   commerceInfo: any;
   title: string;
   confirmText: string;
-  cancelText: string;;
+  cancelText: string;
   constructor(
     private route: ActivatedRoute,
     private groupService: GroupService,
@@ -69,7 +70,8 @@ export class GroupInfoComponent implements OnInit {
     private userInfoService: UserInfoService,
     private userProfileService: UserProfileService,
     public dialog: MatDialog,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private hashIdService: HashIdService
   ) {
     this.translate.onLangChange.subscribe(() => {
       this.getAndInitTranslations();
@@ -97,7 +99,7 @@ export class GroupInfoComponent implements OnInit {
   }
 
   handleInit() {
-    this.groupId = this.route.snapshot.paramMap.get('groupId');
+    this.groupId = this.hashIdService.handleGroupIdDecode(this.route.snapshot.paramMap.get('groupId'));
     this.token = this.utils.getToken();
     const body = {
       token: this.token,
@@ -285,140 +287,137 @@ export class GroupInfoComponent implements OnInit {
           onConfirm: () => {
             this.groupService
               .actionGroup(body)
-              .subscribe(({ resultCode, resultMessage, info: { selfJoinStatus } }) => {
-                if (resultCode === 200) {
-                  this.joinStatus = selfJoinStatus;
-                  this.userProfileService
-                    .getUserProfile({ token: this.token })
-                    .subscribe(res => {
-                      this.isLoading = false;
-                      const {
-                        privacy: {
-                          activityTracking,
-                          activityTrackingReport
-                        }
-                      } = res.info;
-                      let isOnlyme = false;
-                      isOnlyme = !activityTracking.some(
-                        _val => +_val > 1
-                      );
-                      isOnlyme = !activityTrackingReport.some(
-                        _val => +_val > 1
-                      );
-                      const {
-                        shareActivityToMember,
-                        shareAvatarToMember,
-                        shareReportToMember
-                      } = this.groupInfo;
-                      if (
-                        (shareActivityToMember.switch === '3' ||
-                          shareAvatarToMember.switch === '3' ||
-                          shareReportToMember.switch === '3') &&
-                        isOnlyme
-                      ) {
-                        let accessRights = [];
-                        if (shareActivityToMember.switch === '3') {
-                          accessRights.push(
-                            ...shareActivityToMember.enableAccessRight
-                          );
-                        }
-                        if (shareReportToMember.switch === '3') {
-                          const diffArr = this.utils.diff_array(
-                            accessRights,
-                            shareReportToMember.enableAccessRight
-                          );
-                          if (diffArr.length > 0) {
-                            accessRights.push(...diffArr);
-                          }
-                        }
-                        if (shareAvatarToMember.switch === '3') {
-                          const _diffArr = this.utils.diff_array(
-                            accessRights,
-                            shareAvatarToMember.enableAccessRight
-                          );
-                          if (_diffArr.length > 0) {
-                            accessRights.push(..._diffArr);
-                          }
-                        }
-                        const browserLang = this.utils.getLocalStorageObject(
-                          'locale'
+              .subscribe(
+                ({ resultCode, resultMessage, info: { selfJoinStatus } }) => {
+                  if (resultCode === 200) {
+                    this.joinStatus = selfJoinStatus;
+                    this.userProfileService
+                      .getUserProfile({ token: this.token })
+                      .subscribe(res => {
+                        this.isLoading = false;
+                        const {
+                          privacy: { activityTracking, activityTrackingReport }
+                        } = res.info;
+                        let isOnlyme = false;
+                        isOnlyme = !activityTracking.some(_val => +_val > 1);
+                        isOnlyme = !activityTrackingReport.some(
+                          _val => +_val > 1
                         );
-                        accessRights = accessRights.map(_accessRight => {
-                          if (browserLang === 'zh-tw') {
-                            if (_accessRight === '30') {
-                              return '品牌管理員';
-                            } else if (_accessRight === '40') {
-                              return '分店管理員';
-                            } else if (_accessRight === '50') {
-                              return '體適能教練';
-                            } else {
-                              return '專業老師';
-                            }
-                          } else if (browserLang === 'zh-cn') {
-                            if (_accessRight === '30') {
-                              return '品牌管理员';
-                            } else if (_accessRight === '40') {
-                              return '分店管理员';
-                            } else if (_accessRight === '50') {
-                              return '体适能教练';
-                            } else {
-                              return '专业老师';
-                            }
-                          } else {
-                            if (_accessRight === '30') {
-                              return 'Brand administrator';
-                            } else if (_accessRight === '40') {
-                              return 'Branch manager';
-                            } else if (_accessRight === '50') {
-                              return 'Physical fitness coach';
-                            } else {
-                              return 'Professional teacher';
+                        const {
+                          shareActivityToMember,
+                          shareAvatarToMember,
+                          shareReportToMember
+                        } = this.groupInfo;
+                        if (
+                          (shareActivityToMember.switch === '3' ||
+                            shareAvatarToMember.switch === '3' ||
+                            shareReportToMember.switch === '3') &&
+                          isOnlyme
+                        ) {
+                          let accessRights = [];
+                          if (shareActivityToMember.switch === '3') {
+                            accessRights.push(
+                              ...shareActivityToMember.enableAccessRight
+                            );
+                          }
+                          if (shareReportToMember.switch === '3') {
+                            const diffArr = this.utils.diff_array(
+                              accessRights,
+                              shareReportToMember.enableAccessRight
+                            );
+                            if (diffArr.length > 0) {
+                              accessRights.push(...diffArr);
                             }
                           }
-                        });
-                        let text = '';
+                          if (shareAvatarToMember.switch === '3') {
+                            const _diffArr = this.utils.diff_array(
+                              accessRights,
+                              shareAvatarToMember.enableAccessRight
+                            );
+                            if (_diffArr.length > 0) {
+                              accessRights.push(..._diffArr);
+                            }
+                          }
+                          const browserLang = this.utils.getLocalStorageObject(
+                            'locale'
+                          );
+                          accessRights = accessRights.map(_accessRight => {
+                            if (browserLang === 'zh-tw') {
+                              if (_accessRight === '30') {
+                                return '品牌管理員';
+                              } else if (_accessRight === '40') {
+                                return '分店管理員';
+                              } else if (_accessRight === '50') {
+                                return '體適能教練';
+                              } else {
+                                return '專業老師';
+                              }
+                            } else if (browserLang === 'zh-cn') {
+                              if (_accessRight === '30') {
+                                return '品牌管理员';
+                              } else if (_accessRight === '40') {
+                                return '分店管理员';
+                              } else if (_accessRight === '50') {
+                                return '体适能教练';
+                              } else {
+                                return '专业老师';
+                              }
+                            } else {
+                              if (_accessRight === '30') {
+                                return 'Brand administrator';
+                              } else if (_accessRight === '40') {
+                                return 'Branch manager';
+                              } else if (_accessRight === '50') {
+                                return 'Physical fitness coach';
+                              } else {
+                                return 'Professional teacher';
+                              }
+                            }
+                          });
+                          let text = '';
 
-                        if (browserLang.indexOf('zh') > -1) {
-                          text += accessRights.join(' 、');
-                        } else {
-                          text += accessRights.join(' ,');
-                        }
-                        this.detectCheckBoxValue(
-                          activityTracking,
-                          this.activityTrackingStatus
-                        );
-                        this.detectCheckBoxValue(
-                          activityTrackingReport,
-                          this.activityTrackingReportStatus
-                        );
-                        this.dialog.open(PrivacySettingDialogComponent, {
-                          hasBackdrop: true,
-                          data: {
-                            targetText: text,
-                            groupName: this.groupInfo.groupName,
-                            activityTrackingReportStatus: this
-                              .activityTrackingReportStatus,
-                            activityTrackingStatus: this
-                              .activityTrackingStatus,
-                            activityTracking,
-                            activityTrackingReport
+                          if (browserLang.indexOf('zh') > -1) {
+                            text += accessRights.join(' 、');
+                          } else {
+                            text += accessRights.join(' ,');
                           }
-                        });
+                          this.detectCheckBoxValue(
+                            activityTracking,
+                            this.activityTrackingStatus
+                          );
+                          this.detectCheckBoxValue(
+                            activityTrackingReport,
+                            this.activityTrackingReportStatus
+                          );
+                          this.dialog.open(PrivacySettingDialogComponent, {
+                            hasBackdrop: true,
+                            data: {
+                              targetText: text,
+                              groupName: this.groupInfo.groupName,
+                              activityTrackingReportStatus: this
+                                .activityTrackingReportStatus,
+                              activityTrackingStatus: this
+                                .activityTrackingStatus,
+                              activityTracking,
+                              activityTrackingReport
+                            }
+                          });
+                        }
+                      });
+                  }
+                  if (resultCode === 401) {
+                    this.dialog.open(MessageBoxComponent, {
+                      hasBackdrop: true,
+                      data: {
+                        title: 'message',
+                        body: resultMessage,
+                        confirmText: this.confirmText,
+                        cancelText: this.cancelText
                       }
                     });
+                  }
                 }
-                if (resultCode === 401) {
-                  this.dialog.open(MessageBoxComponent, {
-                    hasBackdrop: true,
-                    data: {
-                      title: 'message',
-                      body: resultMessage,
-                      confirmText: this.confirmText,
-                      cancelText: this.cancelText
-                    }
-                  });
-                }
-              });
+              );
           }
         }
       });
@@ -427,36 +426,30 @@ export class GroupInfoComponent implements OnInit {
     const isBeenGroupMember = this.joinStatus === 2;
     this.groupService
       .actionGroup(body)
-      .subscribe(
-        ({ resultCode, info: { selfJoinStatus }, resultMessage }) => {
-          if (resultCode === 200) {
-            if (
-              _type === 2 &&
-              this.groupLevel === '80' &&
-              isBeenGroupMember
-            ) {
-              this.userInfoService.getUserDetail(body, this.groupId);
-            }
-            if (_type === 2) {
-              this.joinStatus = 5;
-              this.userInfoService.getUserDetail(body, this.groupId);
-            } else {
-              this.joinStatus = selfJoinStatus;
-            }
+      .subscribe(({ resultCode, info: { selfJoinStatus }, resultMessage }) => {
+        if (resultCode === 200) {
+          if (_type === 2 && this.groupLevel === '80' && isBeenGroupMember) {
+            this.userInfoService.getUserDetail(body, this.groupId);
           }
-          if (resultCode === 401) {
-            this.dialog.open(MessageBoxComponent, {
-              hasBackdrop: true,
-              data: {
-                title: 'message',
-                body: resultMessage,
-                confirmText: this.confirmText,
-                cancelText: this.cancelText
-              }
-            });
+          if (_type === 2) {
+            this.joinStatus = 5;
+            this.userInfoService.getUserDetail(body, this.groupId);
+          } else {
+            this.joinStatus = selfJoinStatus;
           }
         }
-      );
+        if (resultCode === 401) {
+          this.dialog.open(MessageBoxComponent, {
+            hasBackdrop: true,
+            data: {
+              title: 'message',
+              body: resultMessage,
+              confirmText: this.confirmText,
+              cancelText: this.cancelText
+            }
+          });
+        }
+      });
   }
   detectCheckBoxValue(arr, statusArr) {
     if (arr.findIndex(arrVal => arrVal === '1') === -1) {

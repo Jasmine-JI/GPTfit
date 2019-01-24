@@ -11,6 +11,7 @@ import 'rxjs/add/operator/take';
 import { UserInfoService } from '../services/userInfo.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { UserDetail } from '../models/userDetail';
+import { HashIdService } from '@shared/services/hash-id.service';
 
 @Injectable()
 export class EditGroupGuard implements CanActivate {
@@ -18,7 +19,8 @@ export class EditGroupGuard implements CanActivate {
     private userInfoService: UserInfoService,
     private utils: UtilsService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private hashIdService: HashIdService
   ) {}
   canActivate(
     next: ActivatedRouteSnapshot,
@@ -26,7 +28,7 @@ export class EditGroupGuard implements CanActivate {
   ): Observable<boolean> | Promise<boolean> | boolean {
     const token = this.utils.getToken();
     const body = { token };
-    const visittingId = next.params.groupId;
+    const visittingId = this.hashIdService.handleGroupIdDecode(next.params.groupId);
     const role = {
       isSupervisor: false,
       isSystemDeveloper: false,
@@ -54,69 +56,86 @@ export class EditGroupGuard implements CanActivate {
       userAccessRightDetail = res;
     });
     return this.userInfoService.getMemberAccessRight(body).map(_res => {
-      const { info: { groupAccessRight } } = _res;
+      const {
+        info: { groupAccessRight }
+      } = _res;
       if (
-        groupAccessRight.findIndex(_group => _group.accessRight === '00' && _group.joinStatus === 2) >
-        -1
+        groupAccessRight.findIndex(
+          _group => _group.accessRight === '00' && _group.joinStatus === 2
+        ) > -1
       ) {
         this.userInfoService.setSupervisorStatus(true);
       }
       if (
-        groupAccessRight.findIndex(_group => _group.accessRight === '10' && _group.joinStatus === 2) >
-        -1
+        groupAccessRight.findIndex(
+          _group => _group.accessRight === '10' && _group.joinStatus === 2
+        ) > -1
       ) {
         this.userInfoService.setSystemDeveloperStatus(true);
       }
       if (
-        groupAccessRight.findIndex(_group => _group.accessRight === '20' && _group.joinStatus === 2) >
-        -1
+        groupAccessRight.findIndex(
+          _group => _group.accessRight === '20' && _group.joinStatus === 2
+        ) > -1
       ) {
         this.userInfoService.setSystemMaintainerStatus(true);
       }
       if (
-        groupAccessRight.findIndex(_group => _group.accessRight === '29' && _group.joinStatus === 2) >
-        -1
+        groupAccessRight.findIndex(
+          _group => _group.accessRight === '29' && _group.joinStatus === 2
+        ) > -1
       ) {
         this.userInfoService.setMarketingDeveloperStatus(true);
       }
       if (
-        groupAccessRight.findIndex(_group => _group.accessRight === '30' && _group.joinStatus === 2) >
-        -1
+        groupAccessRight.findIndex(
+          _group => _group.accessRight === '30' && _group.joinStatus === 2
+        ) > -1
       ) {
         this.userInfoService.setBrandAdministratorStatus(true);
       }
       if (
-        groupAccessRight.findIndex(_group => _group.accessRight === '40' && _group.joinStatus === 2) >
-        -1
+        groupAccessRight.findIndex(
+          _group => _group.accessRight === '40' && _group.joinStatus === 2
+        ) > -1
       ) {
         this.userInfoService.setBranchAdministratorStatus(true);
       }
       if (
-        groupAccessRight.findIndex(_group => _group.accessRight === '50' && _group.joinStatus === 2) >
-        -1
+        groupAccessRight.findIndex(
+          _group => _group.accessRight === '50' && _group.joinStatus === 2
+        ) > -1
       ) {
         this.userInfoService.setBroadcastProducerStatus(true);
       }
       if (
-        groupAccessRight.findIndex(_group => _group.accessRight === '60' && _group.joinStatus === 2) >
-        -1
+        groupAccessRight.findIndex(
+          _group => _group.accessRight === '60' && _group.joinStatus === 2
+        ) > -1
       ) {
         this.userInfoService.setCoachStatus(true);
       }
       if (
-        groupAccessRight.findIndex(_group => _group.accessRight === '80' && _group.joinStatus === 2) >
-        -1
+        groupAccessRight.findIndex(
+          _group => _group.accessRight === '80' && _group.joinStatus === 2
+        ) > -1
       ) {
         this.userInfoService.setGroupAdministratorStatus(true);
       }
       if (
-        groupAccessRight.findIndex(_group => _group.accessRight === '90') >
-        -1
+        groupAccessRight.findIndex(_group => _group.accessRight === '90') > -1
       ) {
         this.userInfoService.setGeneralMemberStatus(true);
       }
-      const { isSupervisor, isSystemDeveloper, isSystemMaintainer, isMarketingDeveloper } = role;
-      const idx = groupAccessRight.findIndex(_group => _group.groupId === visittingId && _group.joinStatus === 2);
+      const {
+        isSupervisor,
+        isSystemDeveloper,
+        isSystemMaintainer,
+        isMarketingDeveloper
+      } = role;
+      const idx = groupAccessRight.findIndex(
+        _group => _group.groupId === visittingId && _group.joinStatus === 2
+      );
       if (isSupervisor) {
         this.userInfoService.setUserAccessRightDetail({
           accessRight: '00',
@@ -145,7 +164,10 @@ export class EditGroupGuard implements CanActivate {
         const groupLevel = this.utils.displayGroupLevel(visittingId);
         switch (groupLevel) {
           case '30':
-            const brandIdx = groupAccessRight.findIndex(_group => _group.groupId === visittingId && _group.joinStatus === 2);
+            const brandIdx = groupAccessRight.findIndex(
+              _group =>
+                _group.groupId === visittingId && _group.joinStatus === 2
+            );
             if (brandIdx > -1) {
               this.userInfoService.setUserAccessRightDetail({
                 accessRight: groupAccessRight[brandIdx].accessRight,
@@ -161,12 +183,22 @@ export class EditGroupGuard implements CanActivate {
             }
             break;
           case '40':
-            const branchIdx = groupAccessRight.findIndex(_group => ((_group.groupId.slice(0, 5) === visittingId.slice(0, 5) && _group.accessRight === '30') || _group.groupId === visittingId) && _group.joinStatus === 2);
+            const branchIdx = groupAccessRight.findIndex(
+              _group =>
+                ((_group.groupId.slice(0, 5) === visittingId.slice(0, 5) &&
+                  _group.accessRight === '30') ||
+                  _group.groupId === visittingId) &&
+                _group.joinStatus === 2
+            );
             if (branchIdx > -1) {
               this.userInfoService.setUserAccessRightDetail({
                 accessRight: groupAccessRight[branchIdx].accessRight,
-                isCanManage: groupAccessRight[branchIdx].accessRight === '40' || groupAccessRight[branchIdx].accessRight === '30',
-                isGroupAdmin: groupAccessRight[branchIdx].accessRight === '40' || groupAccessRight[branchIdx].accessRight === '30'
+                isCanManage:
+                  groupAccessRight[branchIdx].accessRight === '40' ||
+                  groupAccessRight[branchIdx].accessRight === '30',
+                isGroupAdmin:
+                  groupAccessRight[branchIdx].accessRight === '40' ||
+                  groupAccessRight[branchIdx].accessRight === '30'
               });
             } else {
               this.userInfoService.setUserAccessRightDetail({
@@ -177,22 +209,25 @@ export class EditGroupGuard implements CanActivate {
             }
             break;
           case '60':
-            const coachIdx = groupAccessRight.findIndex(_group => ((_group.groupId.slice(0, 5) === visittingId.slice(0, 5) && _group.accessRight === '30') || (_group.groupId.slice(0, 7) === visittingId.slice(0, 7) && _group.accessRight === '40') || _group.groupId === visittingId) && _group.joinStatus === 2);
+            const coachIdx = groupAccessRight.findIndex(
+              _group =>
+                ((_group.groupId.slice(0, 5) === visittingId.slice(0, 5) &&
+                  _group.accessRight === '30') ||
+                  (_group.groupId.slice(0, 7) === visittingId.slice(0, 7) &&
+                    _group.accessRight === '40') ||
+                  _group.groupId === visittingId) &&
+                _group.joinStatus === 2
+            );
             if (coachIdx > -1) {
               this.userInfoService.setUserAccessRightDetail({
-                accessRight:
-                  groupAccessRight[coachIdx].accessRight,
+                accessRight: groupAccessRight[coachIdx].accessRight,
                 isCanManage:
-                  groupAccessRight[coachIdx].accessRight === '30'
-                  ||
-                  groupAccessRight[coachIdx].accessRight === '40'
-                  ||
+                  groupAccessRight[coachIdx].accessRight === '30' ||
+                  groupAccessRight[coachIdx].accessRight === '40' ||
                   groupAccessRight[coachIdx].accessRight === '60',
                 isGroupAdmin:
-                  groupAccessRight[coachIdx].accessRight === '30'
-                  ||
-                  groupAccessRight[coachIdx].accessRight === '40'
-                  ||
+                  groupAccessRight[coachIdx].accessRight === '30' ||
+                  groupAccessRight[coachIdx].accessRight === '40' ||
                   groupAccessRight[coachIdx].accessRight === '60'
               });
             } else {
@@ -204,7 +239,10 @@ export class EditGroupGuard implements CanActivate {
             }
             break;
           case '80':
-            const normalIdx = groupAccessRight.findIndex(_group => _group.groupId === visittingId && _group.joinStatus === 2);
+            const normalIdx = groupAccessRight.findIndex(
+              _group =>
+                _group.groupId === visittingId && _group.joinStatus === 2
+            );
             if (normalIdx > -1) {
               this.userInfoService.setUserAccessRightDetail({
                 accessRight: groupAccessRight[normalIdx].accessRight,

@@ -26,6 +26,7 @@ import { MessageBoxComponent } from '@shared/components/message-box/message-box.
 import { MatBottomSheet, MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA} from '@angular/material';
 import { toCoachText } from '../desc';
 import { TranslateService } from '@ngx-translate/core';
+import { HashIdService } from '@shared/services/hash-id.service';
 
 @Component({
   selector: 'app-edit-group-info',
@@ -100,7 +101,8 @@ export class EditGroupInfoComponent implements OnInit {
     private userInfoService: UserInfoService,
     public dialog: MatDialog,
     private bottomSheet: MatBottomSheet,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private hashIdService: HashIdService
   ) {}
   @HostListener('dragover', ['$event'])
   public onDragOver(evt) {
@@ -124,7 +126,7 @@ export class EditGroupInfoComponent implements OnInit {
     });
   }
   handleInit() {
-    this.groupId = this.route.snapshot.paramMap.get('groupId');
+    this.groupId = this.hashIdService.handleGroupIdDecode(this.route.snapshot.paramMap.get('groupId'));
     this.form = this.fb.group({
       groupStatus: ['', [Validators.required]],
       groupName: ['', [Validators.required, Validators.maxLength(32)]],
@@ -402,7 +404,7 @@ export class EditGroupInfoComponent implements OnInit {
       forkJoin([groupService, changeGroupStatus]).subscribe(results => {
         this.isGroupDetailLoading = false;
         if (results[0].resultCode === 200 && results[1].resultCode === 200) {
-          this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}`);
+          this.router.navigateByUrl(`/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}`);
         } else if (results[0].resultCode === 409) {
           this.dialog.open(MsgDialogComponent, {
             hasBackdrop: true,
@@ -476,7 +478,7 @@ export class EditGroupInfoComponent implements OnInit {
     e.preventDefault();
     if (_type === 1) {
       this.router.navigateByUrl(
-        `/dashboard/group-info/${this.groupId}/create?createType=1`
+        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}/create?createType=1`
       );
     } else {
       this.bottomSheet.open(BottomSheetComponent, {
@@ -554,6 +556,7 @@ export class BottomSheetComponent {
     public dialog: MatDialog,
     private utils: UtilsService,
     private translate: TranslateService,
+    private hashIdService: HashIdService,
     @Inject(MAT_BOTTOM_SHEET_DATA) private data: any
   ) {
     this.translate.onLangChange.subscribe(() => {
@@ -599,7 +602,7 @@ export class BottomSheetComponent {
           onConfirm: () => {
             this.router.navigateByUrl(
               `/dashboard/group-info/${
-                this.groupId
+              this.hashIdService.handleGroupIdEncode(this.groupId)
               }/create?createType=2&coachType=${coachType}`
             );
           }

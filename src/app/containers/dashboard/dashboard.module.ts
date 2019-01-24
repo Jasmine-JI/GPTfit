@@ -76,6 +76,7 @@ import { PersonalPreferencesComponent } from './components/settings/personal-pre
 import { CommercePlanTableComponent } from './group/commerce-plan-table/commerce-plan-table.component';
 import { PrivacySettingDialogComponent } from './group/privacy-setting-dialog/privacy-setting-dialog.component';
 import { InnerTestComponent } from './components/inner-test/inner-test.component';
+import { HashIdService } from '@shared/services/hash-id.service';
 
 @NgModule({
   imports: [
@@ -110,6 +111,7 @@ import { InnerTestComponent } from './components/inner-test/inner-test.component
     ReportService,
     SettingsService,
     UserProfileService,
+    HashIdService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,

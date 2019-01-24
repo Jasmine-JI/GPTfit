@@ -23,6 +23,7 @@ import { MessageBoxComponent } from '@shared/components/message-box/message-box.
 import { planDatas } from '../desc';
 import * as moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
+import { HashIdService } from '@shared/services/hash-id.service';
 
 @Component({
   selector: 'app-create-group',
@@ -120,7 +121,8 @@ export class CreateGroupComponent implements OnInit {
     private fb: FormBuilder,
     private userInfoService: UserInfoService,
     public dialog: MatDialog,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private hashIdService: HashIdService
   ) {}
   @HostListener('dragover', ['$event'])
   public onDragOver(evt) {
@@ -151,7 +153,7 @@ export class CreateGroupComponent implements OnInit {
     ) {
       this.createType = 4;
     }
-    this.groupId = this.route.snapshot.paramMap.get('groupId');
+    this.groupId = this.hashIdService.handleGroupIdDecode(this.route.snapshot.paramMap.get('groupId'));
 
     this.buildForm(this.createType);
     this.userInfoService.getSupervisorStatus().subscribe(res => {
@@ -222,7 +224,8 @@ export class CreateGroupComponent implements OnInit {
       .subscribe(translation => {
         switch (this.createType) {
           case 1:
-            this.title = translation['Dashboard.Group.BranchAdminChooseSettings'];
+            this.title =
+              translation['Dashboard.Group.BranchAdminChooseSettings'];
             break;
           case 2:
             if (this.coachType === 2) {
@@ -235,7 +238,8 @@ export class CreateGroupComponent implements OnInit {
             this.title = translation['Dashboard.Group.AdminChooseSettings'];
             break;
           default:
-            this.title = translation['Dashboard.Group.BrandAdminChooseSettings'];
+            this.title =
+              translation['Dashboard.Group.BrandAdminChooseSettings'];
         }
       });
   }
@@ -434,7 +438,7 @@ export class CreateGroupComponent implements OnInit {
           this.isEditing = false;
           if (res.resultCode === 200) {
             this.router.navigateByUrl(
-              `/dashboard/group-info/${this.groupId}/edit`
+              `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}/edit`
             );
           }
           if (res.resultCode === 401) {
@@ -506,7 +510,7 @@ export class CreateGroupComponent implements OnInit {
           this.isEditing = false;
           if (res.resultCode === 200) {
             this.router.navigateByUrl(
-              `/dashboard/group-info/${this.groupId}/edit`
+              `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}/edit`
             );
           }
           if (res.resultCode === 401) {
@@ -709,7 +713,7 @@ export class CreateGroupComponent implements OnInit {
         href = '/dashboard/system/all-group-list';
         break;
       default:
-        href = `/dashboard/group-info/${this.groupId}/edit`;
+        href = `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}/edit`;
     }
 
     if (this.createType === 1) {

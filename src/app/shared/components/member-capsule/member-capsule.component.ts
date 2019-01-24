@@ -15,6 +15,7 @@ import { RightSettingWinComponent } from '../../../containers/dashboard/group/ri
 import { Router } from '@angular/router';
 import { MessageBoxComponent } from '../message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
+import { HashIdService } from '@shared/services/hash-id.service';
 
 @Component({
   selector: 'app-member-capsule',
@@ -53,7 +54,8 @@ export class MemberCapsuleComponent implements OnInit {
     private utils: UtilsService,
     private router: Router,
     public dialog: MatDialog,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private hashIdService: HashIdService
   ) {
     this.elementRef = myElement;
   }
@@ -95,7 +97,7 @@ export class MemberCapsuleComponent implements OnInit {
   }
   toggleMenu() {
     if (this.isSubGroupInfo && !this.isHadMenu) {
-      this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}`);
+      this.router.navigateByUrl(`/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}`);
     } else {
       this.active = !this.active;
     }
@@ -192,7 +194,7 @@ export class MemberCapsuleComponent implements OnInit {
     // }
   }
   goToManage() {
-    this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}/edit`);
+    this.router.navigateByUrl(`/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}/edit`);
   }
   handleDeleteGroupMember() {
     const body = {
@@ -212,9 +214,7 @@ export class MemberCapsuleComponent implements OnInit {
       hasBackdrop: true,
       data: {
         title: 'message',
-        body: this.translate.instant(
-          'Dashboard.Group.AreUsureRemoveMember'
-        ),
+        body: this.translate.instant('Dashboard.Group.AreUsureRemoveMember'),
         confirmText: this.translate.instant('SH.Confirm'),
         cancelText: this.translate.instant('SH.Cancel'),
         onConfirm: this.handleDeleteGroupMember.bind(this)
