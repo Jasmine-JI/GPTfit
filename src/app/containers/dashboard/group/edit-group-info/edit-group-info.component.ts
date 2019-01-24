@@ -26,6 +26,7 @@ import { MessageBoxComponent } from '@shared/components/message-box/message-box.
 import { MatBottomSheet, MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA} from '@angular/material';
 import { toCoachText } from '../desc';
 import { TranslateService } from '@ngx-translate/core';
+import { HashIdService } from '@shared/services/hash-id.service';
 
 @Component({
   selector: 'app-edit-group-info',
@@ -99,7 +100,9 @@ export class EditGroupInfoComponent implements OnInit {
     private fb: FormBuilder,
     private userInfoService: UserInfoService,
     public dialog: MatDialog,
-    private bottomSheet: MatBottomSheet
+    private bottomSheet: MatBottomSheet,
+    private translate: TranslateService,
+    private hashIdService: HashIdService
   ) {}
   @HostListener('dragover', ['$event'])
   public onDragOver(evt) {
@@ -122,9 +125,11 @@ export class EditGroupInfoComponent implements OnInit {
       this.visitorDetail = res;
     });
   }
-
   handleInit() {
-    this.groupId = this.route.snapshot.paramMap.get('groupId');
+    this.groupId = this.hashIdService.handleGroupIdDecode(this.route.snapshot.paramMap.get('groupId'));
+    if (this.groupId.length === 0) {
+      return this.router.navigateByUrl('/404');
+    }
     this.form = this.fb.group({
       groupStatus: ['', [Validators.required]],
       groupName: ['', [Validators.required, Validators.maxLength(32)]],
@@ -220,19 +225,21 @@ export class EditGroupInfoComponent implements OnInit {
     e.preventDefault();
     let targetName = '';
     if (type === 2) {
-      targetName = '分店';
+      targetName = this.translate.instant('Dashboard.Group.GroupInfo.Branch');
     } else if (type === 3) {
-      targetName = '課程';
+      targetName = this.translate.instant('Dashboard.Group.GroupInfo.Class');
     } else {
-      targetName = '群組';
+      targetName = this.translate.instant('Dashboard.Group.Group');
     }
     this.dialog.open(MessageBoxComponent, {
       hasBackdrop: true,
       data: {
         title: 'message',
-        body: `是否確定要解散此${targetName}?`,
-        confirmText: '確定',
-        cancelText: '取消',
+        body: this.translate.instant('Dashboard.Group.AreUSureDismiss', {
+          target: targetName
+        }),
+        confirmText: this.translate.instant('SH.Confirm'),
+        cancelText: this.translate.instant('SH.Cancel'),
         onConfirm: this.handleDimissGroup.bind(this)
       }
     });
@@ -400,13 +407,15 @@ export class EditGroupInfoComponent implements OnInit {
       forkJoin([groupService, changeGroupStatus]).subscribe(results => {
         this.isGroupDetailLoading = false;
         if (results[0].resultCode === 200 && results[1].resultCode === 200) {
-          this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}`);
+          this.router.navigateByUrl(`/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}`);
         } else if (results[0].resultCode === 409) {
           this.dialog.open(MsgDialogComponent, {
             hasBackdrop: true,
             data: {
               title: 'Message',
-              body: '品牌名稱已存在'
+              body: this.translate.instant(
+                'Dashboard.Group.BrandNameAlreadyExists'
+              )
             }
           });
         } else if (results[0].resultCode === 401) {
@@ -422,7 +431,9 @@ export class EditGroupInfoComponent implements OnInit {
             hasBackdrop: true,
             data: {
               title: 'Message',
-              body: '群組資訊編輯失敗'
+              body: this.translate.instant(
+                'Dashboard.Group.EditGroupInfoFailed'
+              )
             }
           });
         }
@@ -470,7 +481,7 @@ export class EditGroupInfoComponent implements OnInit {
     e.preventDefault();
     if (_type === 1) {
       this.router.navigateByUrl(
-        `/dashboard/group-info/${this.groupId}/create?createType=1`
+        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}/create?createType=1`
       );
     } else {
       this.bottomSheet.open(BottomSheetComponent, {
@@ -497,13 +508,12 @@ export class EditGroupInfoComponent implements OnInit {
         this.coachAdministrators = this.coachAdministrators.filter(
           _info => _info.memberId !== id
         );
-      } else if (type === 4) { // 針對教練群組，刪除一般教練或體適能教練
+      } else if (type === 4) {
+        // 針對教練群組，刪除一般教練或體適能教練
         this.normalCoaches = this.normalCoaches.filter(
           _info => _info.memberId !== id
         );
-        this.PFCoaches = this.PFCoaches.filter(
-          _info => _info.memberId !== id
-        );
+        this.PFCoaches = this.PFCoaches.filter(_info => _info.memberId !== id);
       } else {
         this.normalMemberInfos = this.normalMemberInfos.filter(
           _info => _info.memberId !== id
@@ -549,6 +559,7 @@ export class BottomSheetComponent {
     public dialog: MatDialog,
     private utils: UtilsService,
     private translate: TranslateService,
+    private hashIdService: HashIdService,
     @Inject(MAT_BOTTOM_SHEET_DATA) private data: any
   ) {
     this.translate.onLangChange.subscribe(() => {
@@ -594,7 +605,7 @@ export class BottomSheetComponent {
           onConfirm: () => {
             this.router.navigateByUrl(
               `/dashboard/group-info/${
-                this.groupId
+              this.hashIdService.handleGroupIdEncode(this.groupId)
               }/create?createType=2&coachType=${coachType}`
             );
           }

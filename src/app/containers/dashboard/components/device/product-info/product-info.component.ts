@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { fitPairText } from './fitPairText';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-product-info',
@@ -48,7 +49,8 @@ export class ProductInfoComponent implements OnInit {
     private route: ActivatedRoute,
     private utilsService: UtilsService,
     private router: Router,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
@@ -134,8 +136,10 @@ export class ProductInfoComponent implements OnInit {
           hasBackdrop: true,
           data: {
             title: 'message',
-            body: '變更失敗',
-            confirmText: '確定'
+            body: this.translate.instant(
+              'Dashboard.ProductInfo.ChangeFailed'
+            ),
+            confirmText: this.translate.instant('SH.Confirm')
           }
         });
       }

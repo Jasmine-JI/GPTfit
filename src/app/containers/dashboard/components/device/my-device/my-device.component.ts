@@ -3,14 +3,14 @@ import {
   MatTableDataSource,
   MatPaginator,
   PageEvent,
-  Sort,
-  MatPaginatorIntl
+  Sort
 } from '@angular/material';
 import { Router } from '@angular/router';
 import { QrcodeService } from '../../../../portal/services/qrcode.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-my-device',
@@ -28,11 +28,11 @@ export class MyDeviceComponent implements OnInit {
   token: string;
   localSN: string[];
   constructor(
-    private matPaginatorIntl: MatPaginatorIntl,
     private router: Router,
     private qrcodeService: QrcodeService,
     private utilsService: UtilsService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
@@ -46,25 +46,7 @@ export class MyDeviceComponent implements OnInit {
       );
       this.getDeviceList();
     });
-    // // 設定顯示筆數資訊文字
-    // this.matPaginatorIntl.getRangeLabel = (
-    //   page: number,
-    //   pageSize: number,
-    //   length: number
-    // ): string => {
-    //   if (length === 0 || pageSize === 0) {
-    //     return `第 0 筆、共 ${length} 筆`;
-    //   }
 
-    //   length = Math.max(length, 0);
-    //   const startIndex = page * pageSize;
-    //   const endIndex =
-    //     startIndex < length
-    //       ? Math.min(startIndex + pageSize, length)
-    //       : startIndex + pageSize;
-
-    //   return `第 ${startIndex + 1} - ${endIndex} 筆、共 ${length} 筆`;
-    // };
     this.currentPage = {
       pageIndex: +pageNumber - 1 || 0,
       pageSize: 10,
@@ -99,8 +81,10 @@ export class MyDeviceComponent implements OnInit {
             hasBackdrop: true,
             data: {
               title: 'message',
-              body: '綁定失敗，此裝置已有綁定狀態',
-              confirmText: '確定'
+              body: this.translate.instant(
+                'Dashboard.MyDevice.BindingFailedDeviceBound'
+              ),
+              confirmText: this.translate.instant('SH.Confirm')
             }
           });
         }
@@ -110,8 +94,10 @@ export class MyDeviceComponent implements OnInit {
             hasBackdrop: true,
             data: {
               title: 'message',
-              body: '綁定失敗',
-              confirmText: '確定'
+              body: this.translate.instant(
+                'Dashboard.MyDevice.BindingFailed'
+              ),
+              confirmText: this.translate.instant('SH.Confirm')
             }
           });
         }

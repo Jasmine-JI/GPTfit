@@ -17,6 +17,7 @@ import { ActivityService } from '@shared/services/activity.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
+import { HashIdService } from '@shared/services/hash-id.service';
 
 @Component({
   selector: 'app-my-activity',
@@ -43,13 +44,14 @@ export class MyActivityComponent implements OnInit {
     private activityService: ActivityService,
     private utils: UtilsService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private hashIdService: HashIdService
   ) {}
 
   ngOnInit() {
     const queryStrings = this.utils.getUrlQueryStrings(location.search);
     const { pageNumber } = queryStrings;
-    this.targetUserId = this.route.snapshot.paramMap.get('userId');
+    this.targetUserId = this.hashIdService.handleUserIdDecode(this.route.snapshot.paramMap.get('userId'));
     // // 設定顯示筆數資訊文字
     // this.matPaginatorIntl.getRangeLabel = (
     //   page: number,
@@ -70,7 +72,7 @@ export class MyActivityComponent implements OnInit {
     //   return `第 ${startIndex + 1} - ${endIndex} 筆、共 ${length} 筆`;
     // };
     this.currentPage = {
-      pageIndex: (+pageNumber - 1) || 0,
+      pageIndex: +pageNumber - 1 || 0,
       pageSize: 10,
       length: null
     };
@@ -86,9 +88,14 @@ export class MyActivityComponent implements OnInit {
     this.paginator.page.subscribe((page: PageEvent) => {
       this.currentPage = page;
       if (this.isPortal) {
-        this.router.navigateByUrl(`${location.pathname}?pageNumber=${this.currentPage.pageIndex + 1}`);
+        this.router.navigateByUrl(
+          `${location.pathname}?pageNumber=${this.currentPage.pageIndex + 1}`
+        );
       } else {
-        this.router.navigateByUrl(`/dashboard/activity-list?pageNumber=${this.currentPage.pageIndex + 1}`);
+        this.router.navigateByUrl(
+          `/dashboard/activity-list?pageNumber=${this.currentPage.pageIndex +
+            1}`
+        );
       }
       this.getLists();
     });

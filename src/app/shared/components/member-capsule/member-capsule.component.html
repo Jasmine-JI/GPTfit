@@ -1,4 +1,4 @@
-<div style="display:inline-block" (click)="goToUserProfile()">
+<div style="display:inline-block" (click)="goToUserProfileInGroupInfo()">
   <div class="member-selector" [title]="title" (click)="toggleMenu()">
     <div *ngIf="icon"
       [ngStyle]="{'background-image': 'url(' + icon + ')'}"
@@ -75,7 +75,7 @@
             {{ 'Dashboard.Group.GroupInfo.enablePT' | translate}}
           </a>
         </li>
-        <li class="normal-manage" [routerLink]="['/user-profile', userId]">
+        <li class="normal-manage" (click)="goToUserProfileInEditGroupInfo()">
           <a>
             {{ 'Dashboard.Group.GroupInfo.See-user-profile' | translate}}
           </a>

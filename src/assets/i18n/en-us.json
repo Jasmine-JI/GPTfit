@@ -104,7 +104,21 @@
     "ConfrimPwd": "Confrim Password",
     "ConfrimPwdAgain": "Confrim Password again",
     "OldPwdNotMatchNewPwd": "The entered password does not match the new password",
-    "ResetPwdSuccess": "The password has been modified successfully. Please re-login to the system with the new password. "
+    "ResetPwdSuccess": "The password has been modified successfully. Please re-login to the system with the new password. ",
+    "RemoveOriginal": "Remove original ",
+    "CorrespondingAvatar-and-sports-file": "Corresponding avatar and sports file",
+    "OnlyCorrespondingSportsFile": "Only corresponding sports file",
+    "RegisterProduct": "Register product",
+    "IfRegisterProductText": "If you want to register the product, please log in and the system will automatically complete the process of logging in to the product.",
+    "IfFitPairProductText": "If you want a Fit Pair product, please log in and the system will automatically complete the process of the Fit Pair product.",
+    "RemoveFitPairCompletely": "Remove fit pair completely",
+    "FitPairSuccessfully": "Fit Pair successfully",
+    "FitPairFailed": "Fit Pair failed",
+    "MailHadBeenSend": "Mail had been send",
+    "LoginSuccessfully": "Login successfully",
+    "PlzCheckNamePwd": "Please check name and password",
+    "RegisterMailSuccessfully": "Registration is successful, please go to the registration mailbox and click to complete the E-mail verification. After five seconds, you will be redirected back to the login page.",
+    "RegisterPhoneSuccessfully": "Registration is successful and will redirect to the login page after five seconds."
   },
   "Dashboard": {
     "MyInfo": "My Information",
@@ -148,6 +162,24 @@
       "AssignPT": "Assign Professional teacher",
       "AssignPF": "Assign Physical fitness coach",
       "AtLeastAssginAdmin": "Please assign at least one manager",
+      "BrandAdminChooseSettings": "Brand administrator chooses settings",
+      "BranchAdminChooseSettings": "Branch administrator chooses settings",
+      "PFAdminChooseSettings": "Physical fitness coach administrator chooses settings",
+      "PTAdminChooseSettings": "Professional teacher administrator chooses settings",
+      "AdminChooseSettings": "Administrator chooses settings",
+      "Region": "Region",
+      "Search": "Search",
+      "SelectGroup": "Select Group",
+      "NameKeyword": "Name keyword",
+      "NoEligiblePeopleFound": "No eligible people can be found",
+      "Add": "Join",
+      "Remove": "Remove",
+      "AreUSureDismiss": "Are you sure to dismiss this {{target}} ?",
+      "BrandNameAlreadyExists": "Brand name already exists",
+      "EditGroupInfoFailed": "Edit group info failed",
+      "AreUsureRemoveAdmin": "Are you sure to remove this administrator?",
+      "AreUsureRemoveMember": "Are you sure to remove this member?",
+      "AreUsureRemoveGroup": "Are you sure to remove this group?",
       "MyGroup": {
         "MyGroup": "My Group",
         "GroupList": "Group List",
@@ -326,7 +358,9 @@
       "Treadmill": "Treadmill",
       "Wearable": "Wearable",
       "Flywheel": "Flywheel",
-      "RowingMachine": "Rowing machine"
+      "RowingMachine": "Rowing machine",
+      "BindingFailedDeviceBound": "Binding failed, the device is already bound",
+      "BindingFailed": "Binding failed"
     },
     "ProductInfo": {
       "ProductInfo": "Product info",
@@ -340,7 +374,8 @@
       "close": "close",
       "Only-me-avatar-and-file": "Only me, avatar and file",
       "Only-me-file": "Only me, file",
-      "Target": "target"
+      "Target": "target",
+      "ChangeFailed": "Change failed"
     },
     "SportReport": {
       "SportReport": "Sport report",
@@ -395,7 +430,14 @@
       "Password": "Password",
       "ChangePassword": "Change password",
       "Application": "Application",
-      "ThirdPartyInteraction": "Third party interaction"
+      "ThirdPartyInteraction": "Third party interaction",
+      "ReBindStravaText": "Your binding strava has expired, do you re-bind your strava?",
+      "UpdateStravaFailed": "Update strava status failed",
+      "PlzUploadPhotos": "Please upload photos",
+      "DoUCancelCreate": "Do you cancel to create {{target}}?",
+      "UpdateUserInfoSuccessfully": "Update user info successfully",
+      "UpdatePrivacySettingsSuccessfully": "Update privacy settings successfully",
+      "UpdateFailed": "Update failed"
     }
   }
 }
