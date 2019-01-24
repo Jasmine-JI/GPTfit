@@ -3,8 +3,6 @@ import {
   OnInit,
   ViewEncapsulation,
   HostListener,
-  ViewChild,
-  ElementRef,
   Inject
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
@@ -15,13 +13,11 @@ import { Router } from '@angular/router';
 import {
   FormBuilder,
   FormGroup,
-  FormControl,
   Validators
 } from '@angular/forms';
 import { UserInfoService } from '../../services/userInfo.service';
 import { MsgDialogComponent } from '../../components/msg-dialog/msg-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { forkJoin } from 'rxjs/observable/forkJoin';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { MatBottomSheet, MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA} from '@angular/material';
 import { toCoachText } from '../desc';
@@ -81,8 +77,7 @@ export class EditGroupInfoComponent implements OnInit {
   isLoading = false;
   isGroupDetailLoading = false;
   videoUrl = '';
-  // @ViewChild('footerTarget')
-  // footerTarget: ElementRef;
+  originalGroupStatus: number;
   get groupName() {
     return this.form.get('groupName');
   }
@@ -177,6 +172,7 @@ export class EditGroupInfoComponent implements OnInit {
         groupStatus,
         groupVideoUrl
       } = this.groupInfo;
+      this.originalGroupStatus = groupStatus;
       this.videoUrl = groupVideoUrl;
       if (groupStatus === 4) {
         this.router.navigateByUrl(`/404`);
@@ -401,14 +397,30 @@ export class EditGroupInfoComponent implements OnInit {
         changeStatus: groupStatus,
         groupLevel: this.groupLevel
       };
-      const groupService = this.groupService.editGroup(body1);
-      const changeGroupStatus = this.groupService.changeGroupStatus(body2);
       this.isGroupDetailLoading = true;
-      forkJoin([groupService, changeGroupStatus]).subscribe(results => {
+      this.groupService.editGroup(body1).subscribe(res1 => {
         this.isGroupDetailLoading = false;
-        if (results[0].resultCode === 200 && results[1].resultCode === 200) {
-          this.router.navigateByUrl(`/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}`);
-        } else if (results[0].resultCode === 409) {
+        if (res1.resultCode === 200) {
+          if (this.originalGroupStatus !== groupStatus) {
+            this.groupService.changeGroupStatus(body2).subscribe(res2 => {
+              if (res2.resultCode === 200) {
+                this.router.navigateByUrl(`/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}`);
+              } else {
+                this.dialog.open(MsgDialogComponent, {
+                  hasBackdrop: true,
+                  data: {
+                    title: 'Message',
+                    body: this.translate.instant(
+                      'Dashboard.Group.EditGroupInfoFailed'
+                    )
+                  }
+                });
+              }
+            });
+          } else {
+            this.router.navigateByUrl(`/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}`);
+          }
+        } else if (res1.resultCode === 409) {
           this.dialog.open(MsgDialogComponent, {
             hasBackdrop: true,
             data: {
@@ -418,12 +430,12 @@ export class EditGroupInfoComponent implements OnInit {
               )
             }
           });
-        } else if (results[0].resultCode === 401) {
+        } else if (res1.resultCode === 401) {
           this.dialog.open(MessageBoxComponent, {
             hasBackdrop: true,
             data: {
               title: 'message',
-              body: results[0].resultMessage
+              body: res1.resultMessage
             }
           });
         } else {
