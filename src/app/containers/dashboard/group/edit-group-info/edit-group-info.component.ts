@@ -127,6 +127,9 @@ export class EditGroupInfoComponent implements OnInit {
   }
   handleInit() {
     this.groupId = this.hashIdService.handleGroupIdDecode(this.route.snapshot.paramMap.get('groupId'));
+    if (this.groupId.length === 0) {
+      return this.router.navigateByUrl('/404');
+    }
     this.form = this.fb.group({
       groupStatus: ['', [Validators.required]],
       groupName: ['', [Validators.required, Validators.maxLength(32)]],

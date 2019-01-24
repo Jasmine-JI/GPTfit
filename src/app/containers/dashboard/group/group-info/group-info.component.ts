@@ -100,6 +100,9 @@ export class GroupInfoComponent implements OnInit {
 
   handleInit() {
     this.groupId = this.hashIdService.handleGroupIdDecode(this.route.snapshot.paramMap.get('groupId'));
+    if (this.groupId.length === 0) {
+      return this.router.navigateByUrl('/404');
+    }
     this.token = this.utils.getToken();
     const body = {
       token: this.token,

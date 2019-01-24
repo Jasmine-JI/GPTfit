@@ -29,6 +29,10 @@ export class EditGroupGuard implements CanActivate {
     const token = this.utils.getToken();
     const body = { token };
     const visittingId = this.hashIdService.handleGroupIdDecode(next.params.groupId);
+    if (visittingId.length === 0) {
+      this.router.navigateByUrl(`/404`);
+      return false;
+    }
     const role = {
       isSupervisor: false,
       isSystemDeveloper: false,

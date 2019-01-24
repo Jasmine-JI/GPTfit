@@ -154,7 +154,9 @@ export class CreateGroupComponent implements OnInit {
       this.createType = 4;
     }
     this.groupId = this.hashIdService.handleGroupIdDecode(this.route.snapshot.paramMap.get('groupId'));
-
+    if (this.groupId.length === 0) {
+      return this.router.navigateByUrl('/404');
+    }
     this.buildForm(this.createType);
     this.userInfoService.getSupervisorStatus().subscribe(res => {
       this.role.isSupervisor = res;
