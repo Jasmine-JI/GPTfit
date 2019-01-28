@@ -168,6 +168,13 @@
         </div>
       </div>
     </div>
+    <ng-container *ngIf="isShowMap">
+      <div class="ala-dashboard-title activty-title">
+        {{'Dashboard.MyActivity.Map' | translate}}
+      </div>
+      <div #gmap style="height: 400px;margin: 15px 0px"></div>
+    </ng-container>
+
     <div class="ala-dashboard-title activty-title">
       {{'Dashboard.MyActivity.Chart' | translate}}
     </div>

@@ -20,7 +20,7 @@ import { MatTableDataSource } from '@angular/material';
 import { UserInfoService } from '../../../containers/dashboard/services/userInfo.service';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
-
+declare var google: any;
 @Component({
   selector: 'app-activity-info',
   templateUrl: './activity-info.component.html',
@@ -36,11 +36,15 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     'speed',
     'distance'
   ];
-
+  isShowMap = true;
   isdisplayHcharts = true;
   chartLoading = false;
   basicLoading = false;
   rainLoading = false;
+  @ViewChild('gmap') gmapElement: ElementRef;
+  map: any;
+  startMark: any;
+  endMark: any;
 
   seriesIdx = 0;
   @ViewChild('speedChartTarget')
@@ -148,6 +152,11 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   ngAfterViewInit() {
     // this.initHchart();
+    // this.mark = new google.maps.Marker({
+    //   position: mapProp.center,
+    //   title: '大安'
+    // });
+    // this.mark.setMap(this.map);
   }
   ngOnDestroy() {
     if (!this.isShowNoRight && !this.isFileIDNotExist) {
@@ -157,6 +166,48 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       });
     }
+  }
+  handleMap() {
+    const mapProp = {
+      center: new google.maps.LatLng(24.123499, 120.66014),
+      zoom: 18,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    this.map = new google.maps.Map(this.gmapElement.nativeElement, mapProp);
+    const bounds = new google.maps.LatLngBounds();
+    const points = [];
+
+    this.activityPoints.forEach(_point => {
+      if (+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100) {
+      } else {
+        const p = new google.maps.LatLng(
+          parseFloat(_point.latitudeDegrees),
+          parseFloat(_point.longitudeDegrees)
+        );
+        bounds.extend(p);
+        points.push(p);
+      }
+    });
+    this.startMark = new google.maps.Marker({
+      position: points[0],
+      title: 'start point',
+      icon: '/assets/map_marker_start.svg'
+    });
+    this.startMark.setMap(this.map);
+    this.endMark = new google.maps.Marker({
+      position: points[points.length - 1],
+      title: 'end point',
+      icon: '/assets/map_marker_end.svg'
+    });
+    this.endMark.setMap(this.map);
+    const poly = new google.maps.Polyline({
+      path: points,
+      strokeColor: '#FF00AA',
+      strokeOpacity: 0.7,
+      strokeWeight: 4
+    });
+    poly.setMap(this.map);
+    this.map.fitBounds(bounds);
   }
   getInfo(id) {
     this.isLoading = true;
@@ -181,6 +232,12 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.isShowNoRight = false;
       this.handleLapColumns();
       this.activityPoints = res.activityPointLayer;
+      this.isShowMap = this.activityPoints.some(_point =>
+        _point.hasOwnProperty('latitudeDegrees') && +_point.latitudeDegrees !== 100
+      );
+      if (this.isShowMap) {
+        this.handleMap();
+      }
       this.dataSource.data = res.activityLapLayer;
       this.fileInfo = res.fileInfo;
       if (this.fileInfo.author.indexOf('?') > -1) {

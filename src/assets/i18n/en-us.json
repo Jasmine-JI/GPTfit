@@ -339,7 +339,8 @@
       "Distance": "Distance",
       "PaddleDynamic": "Paddle dynamic",
       "AvgRowingCandence": "Avg rowing candence",
-      "MaxRowingCandence": "Max rowing candence"
+      "MaxRowingCandence": "Max rowing candence",
+      "Map": "Map"
     },
     "ActivityDetail": {
       "ActivityDetail": "Activity detail",

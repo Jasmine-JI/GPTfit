@@ -339,7 +339,8 @@
       "Distance": "距離",
       "PaddleDynamic": "划槳動態",
       "AvgRowingCandence": "平均划頻",
-      "MaxRowingCandence": "最高划頻"
+      "MaxRowingCandence": "最高划頻",
+      "Map": "地圖"
     },
     "ActivityDetail": {
       "ActivityDetail": "詳細活動",
