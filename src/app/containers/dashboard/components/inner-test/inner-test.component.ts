@@ -46,6 +46,7 @@ export class InnerTestComponent implements OnInit {
   description: string;
   userId: string;
   hashUserId: string;
+  groupLevel: string;
   ngOnInit() {}
   getUserAvartar(userId) {
     let params = new HttpParams();
@@ -113,7 +114,8 @@ export class InnerTestComponent implements OnInit {
       const body = { groupId: this.groupId, token: this.utils.getToken() };
       this.groupService.fetchGroupListDetail(body).subscribe(res => {
         this.groupInfo = res.info;
-        const { groupIcon } = this.groupInfo;
+        const { groupIcon, groupId } = this.groupInfo;
+        this.groupLevel = this.utils.displayGroupLevel(groupId);
         this.groupImg =
           groupIcon && groupIcon.length > 0
             ? this.utils.buildBase64ImgString(groupIcon)
