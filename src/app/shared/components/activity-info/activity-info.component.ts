@@ -45,8 +45,12 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   map: any;
   startMark: any;
   endMark: any;
-
+  playerMark: any;
   seriesIdx = 0;
+  gpxPoints = [];
+  isPlayingGpx = false;
+  stopPointIdx = 0;
+  playerTimer: any;
   @ViewChild('speedChartTarget')
   speedChartTarget: ElementRef;
   @ViewChild('elevationChartTarget')
@@ -133,6 +137,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       // this.series.chart.tooltip.refresh(this); // 显示提示框
       this.series.chart.xAxis[0].drawCrosshair(event, this); // 显示十字准星线
     };
+    this.resetMkPoint = this.resetMkPoint.bind(this);
   }
 
   ngOnInit() {
@@ -150,14 +155,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     this.token = this.utils.getToken();
     this.getInfo(fieldId);
   }
-  ngAfterViewInit() {
-    // this.initHchart();
-    // this.mark = new google.maps.Marker({
-    //   position: mapProp.center,
-    //   title: '大安'
-    // });
-    // this.mark.setMap(this.map);
-  }
+  ngAfterViewInit() {}
   ngOnDestroy() {
     if (!this.isShowNoRight && !this.isFileIDNotExist) {
       Highcharts.charts.forEach((_highChart, idx) => {
@@ -175,39 +173,89 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     };
     this.map = new google.maps.Map(this.gmapElement.nativeElement, mapProp);
     const bounds = new google.maps.LatLngBounds();
-    const points = [];
-
-    this.activityPoints.forEach(_point => {
+    let isNormalPoint = false;
+    const originRealIdx = [];
+    this.activityPoints.forEach((_point, idx) => {
       if (+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100) {
+        isNormalPoint = false;
+        this.gpxPoints.push(null);
       } else {
+        if (!isNormalPoint) {
+          isNormalPoint = true;
+          originRealIdx.push(idx);
+        }
         const p = new google.maps.LatLng(
           parseFloat(_point.latitudeDegrees),
           parseFloat(_point.longitudeDegrees)
         );
-        bounds.extend(p);
-        points.push(p);
+        // bounds.extend(p);
+        this.gpxPoints.push(p);
       }
     });
+    this.gpxPoints = this.gpxPoints.map((_gpxPoint, idx) => {
+      if (!_gpxPoint) {
+        const index = originRealIdx.findIndex(_tip => _tip > idx);
+        if (index === -1) {
+          bounds.extend(this.gpxPoints[originRealIdx[originRealIdx.length - 1]]);
+          return this.gpxPoints[originRealIdx[originRealIdx.length - 1]];
+        }
+        bounds.extend(this.gpxPoints[originRealIdx[index]]);
+        return this.gpxPoints[originRealIdx[index]];
+      }
+      bounds.extend(_gpxPoint);
+      return _gpxPoint;
+    });
     this.startMark = new google.maps.Marker({
-      position: points[0],
+      position: this.gpxPoints[0],
       title: 'start point',
       icon: '/assets/map_marker_start.svg'
     });
     this.startMark.setMap(this.map);
     this.endMark = new google.maps.Marker({
-      position: points[points.length - 1],
+      position: this.gpxPoints[this.gpxPoints.length - 1],
       title: 'end point',
       icon: '/assets/map_marker_end.svg'
     });
     this.endMark.setMap(this.map);
+    this.playerMark = new google.maps.Marker({
+      position: this.gpxPoints[0],
+      icon: '/assets/map_marker_player.svg'
+    });
+    this.playerMark.setMap(this.map);
     const poly = new google.maps.Polyline({
-      path: points,
+      path: this.gpxPoints,
       strokeColor: '#FF00AA',
       strokeOpacity: 0.7,
       strokeWeight: 4
     });
     poly.setMap(this.map);
     this.map.fitBounds(bounds);
+  }
+  resetMkPoint(points, i) {
+    this.playerMark.setPosition(points[i]);
+    if (i < points.length) {
+      this.isPlayingGpx = true;
+      this.playerTimer = setTimeout(() => {
+        i++;
+        this.stopPointIdx++;
+        this.resetMkPoint(points, i);
+      }, 50);
+    } else {
+      this.stopPointIdx = 0;
+      this.isPlayingGpx = false;
+      this.playerMark.setPosition(points[0]);
+    }
+  }
+  playGpx() {
+    if (this.stopPointIdx > 0) {
+      this.resetMkPoint(this.gpxPoints, this.stopPointIdx);
+    } else {
+      this.resetMkPoint(this.gpxPoints, 0);
+    }
+  }
+  stopPlayGpx() {
+    this.isPlayingGpx = false;
+    clearTimeout(this.playerTimer);
   }
   getInfo(id) {
     this.isLoading = true;
@@ -232,8 +280,10 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.isShowNoRight = false;
       this.handleLapColumns();
       this.activityPoints = res.activityPointLayer;
-      this.isShowMap = this.activityPoints.some(_point =>
-        _point.hasOwnProperty('latitudeDegrees') && +_point.latitudeDegrees !== 100
+      this.isShowMap = this.activityPoints.some(
+        _point =>
+          _point.hasOwnProperty('latitudeDegrees') &&
+          +_point.latitudeDegrees !== 100
       );
       if (this.isShowMap) {
         this.handleMap();
@@ -343,6 +393,10 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           const event = _chart.pointer.normalize(e); // Find coordinates within the chart
           const point = _chart.series[0].searchPoint(event, true); // Get the hovered point
           if (point && point.index) {
+            if (this.isShowMap && !this.isPlayingGpx) {
+              this.playerMark.setPosition(this.gpxPoints[point.index]);
+              this.stopPointIdx = point.index;
+            }
             point.highlight(e);
           }
         }

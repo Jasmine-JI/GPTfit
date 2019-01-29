@@ -172,7 +172,23 @@
       <div class="ala-dashboard-title activty-title">
         {{'Dashboard.MyActivity.Map' | translate}}
       </div>
-      <div #gmap style="height: 400px;margin: 15px 0px"></div>
+      <div style="position: relative;">
+        <div #gmap style="height: 400px;margin: 15px 0px"></div>
+        <!-- <button class="map-play" (click)="playGpx()"
+          *ngIf="!isPlayingGpx"
+        >
+          <i class="material-icons">
+          play_arrow
+          </i>
+        </button>
+        <button class="map-play" (click)="stopPlayGpx()"
+          *ngIf="isPlayingGpx"
+        >
+          <i class="material-icons">
+            pause
+          </i>
+        </button> -->
+      </div>
     </ng-container>
 
     <div class="ala-dashboard-title activty-title">
