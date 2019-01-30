@@ -45,7 +45,7 @@
         >
           {{userLink?.userName}}
         </span>
-          {{'SH.Record' | translate}}，{{infoDate}} {{'SH.Create' | translate}}
+        <ng-container *ngIf="userLink?.userName.length > 0">{{'SH.Record' | translate}}  ，</ng-container>{{infoDate}} {{'SH.Create' | translate}}
       </p>
       <div class="d-flex" style="align-items:center">
         <div class="activty-icon">
