@@ -4,13 +4,13 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class GroupLevelNamePipe implements PipeTransform {
   transform(value: string, args: string[]): any {
     if (value === '30') {
-      return '品牌';
+      return 'Dashboard.Group.GroupInfo.Brand';
     } else if (value === '40') {
-      return '分店';
+      return 'Dashboard.Group.GroupInfo.Branch';
     } else if (value === '60') {
-      return '課程';
+      return 'Dashboard.Group.GroupInfo.Class';
     } else {
-      return '一般群組';
+      return 'Dashboard.Group.SearchGroup.NormalGroup';
     }
   }
 }
