@@ -79,7 +79,9 @@
           <label>{{ 'Dashboard.Group.GroupInfo.GroupID' | translate}}：</label>{{ group_id }}
         </div> -->
         <div>
-          <label>{{ 'Dashboard.Group.GroupInfo.Level' | translate}}：</label>{{ this.groupLevel | groupLevelTranslate }}
+          <label>{{ 'Dashboard.Group.GroupInfo.Level' | translate}}：</label>{{ this.groupLevel | groupLevelTranslate | translate }}
+          <span *ngIf="groupInfo?.coachType.length > 0 && groupInfo?.coachType === '2'"> - {{'Dashboard.Group.PhysicalFitnessCoach' | translate}}</span>
+          <span *ngIf="groupInfo?.coachType.length > 0 && groupInfo?.coachType === '1'"> - {{'Dashboard.Group.ProfessionalTeacher' | translate}}</span>
         </div>
         <div>
           <label>{{ 'Dashboard.Group.GroupInfo.Status' | translate}}：</label>{{ groupInfo?.groupStatus | groupStatus | translate }}
