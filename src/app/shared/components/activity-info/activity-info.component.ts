@@ -19,6 +19,7 @@ import { Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material';
 import { UserInfoService } from '../../../containers/dashboard/services/userInfo.service';
 import { transform, WGS84, BD09 } from 'gcoord';
+import { HashIdService } from '@shared/services/hash-id.service';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 declare var google: any;
@@ -129,7 +130,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     private ngProgress: NgProgress,
     private globalEventsManager: GlobalEventsManager,
     private router: Router,
-    private userInfoService: UserInfoService
+    private userInfoService: UserInfoService,
+    private hashIdService: HashIdService
   ) {
     /**
      * 重写内部的方法， 这里是将提示框即十字准星的隐藏函数关闭
@@ -395,7 +397,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       if (this.fileInfo.author.indexOf('?') > -1) {
         // 防止後續author會帶更多參數，先不寫死
         this.userLink.userName = this.fileInfo.author.split('?')[0];
-        this.userLink.userId = this.fileInfo.author.split('?')[1].split('=')[1];
+        this.userLink.userId = this.fileInfo.author.split('?')[1].split('=')[1].replace(')', '');
       }
       this.infoDate = this.handleDate(this.activityInfo.startTime);
       this.totalSecond = this.activityInfo.totalSecond;
@@ -577,7 +579,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   goToProfile() {
-    this.router.navigateByUrl(`/user-profile/${this.userLink.userId}`);
+    this.router.navigateByUrl(`/user-profile/${this.hashIdService.handleUserIdEncode(this.userLink.userId)}`);
   }
   goBack() {
     window.history.back();
