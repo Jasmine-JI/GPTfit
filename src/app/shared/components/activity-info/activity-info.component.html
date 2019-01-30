@@ -172,8 +172,28 @@
       <div class="ala-dashboard-title activty-title">
         {{'Dashboard.MyActivity.Map' | translate}}
       </div>
+      <div style="margin-top: 15px">
+        <mat-radio-group  [(ngModel)]="mapKind">
+          <mat-radio-button value="1"
+            (change)="handleMapKind($event)"
+          >Google</mat-radio-button>
+          <mat-radio-button value="2"
+            (change)="handleMapKind($event)"
+            color="primary"
+          >Baidu</mat-radio-button>
+        </mat-radio-group>
+      </div>
       <div style="position: relative;">
-        <div #gmap style="height: 400px;margin: 15px 0px"></div>
+        <div [style.transform]="mapKind === '2' ? 'translateY(0%)' : 'translateY(-252%)'"
+          #bmap
+          [style.height]="mapKind === '2' ? '400px' : '0px'"
+        ></div>
+
+        <div [style.transform]="mapKind === '1' ? 'translateY(0%)' : 'translateY(-370%)'"
+          #gmap
+          style="margin-bottom: 15px"
+          [style.height]="mapKind === '1' ? '400px' : '0px'"
+        ></div>
         <!-- <button class="map-play" (click)="playGpx()"
           *ngIf="!isPlayingGpx"
         >

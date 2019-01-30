@@ -18,9 +18,12 @@ import { UtilsService } from '@shared/services/utils.service';
 import { Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material';
 import { UserInfoService } from '../../../containers/dashboard/services/userInfo.service';
+import { transform, WGS84, BD09 } from 'gcoord';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 declare var google: any;
+declare var BMap: any;
+
 @Component({
   selector: 'app-activity-info',
   templateUrl: './activity-info.component.html',
@@ -43,6 +46,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   rainLoading = false;
   @ViewChild('gmap') gmapElement: ElementRef;
   map: any;
+  @ViewChild('bmap') bmapElement: ElementRef;
+  bmap: any;
   startMark: any;
   endMark: any;
   playerMark: any;
@@ -113,6 +118,9 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   isInitialChartDone = false;
   charts = [];
   finalDatas: any;
+  mapKind = '1'; // 1 google map,  2 baidu
+  gpxBmapPoints = [];
+  playBMK: any;
   constructor(
     private utils: UtilsService,
     private renderer: Renderer2,
@@ -165,7 +173,95 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
   }
-  handleMap() {
+  handleBMap() {
+    this.bmap = new BMap.Map(this.bmapElement.nativeElement);
+    let isNormalPoint = false;
+    const originRealIdx = [];
+    // let count = 0;
+    // let lonTotal = 0;
+    // let latTotal = 0;
+    this.activityPoints.forEach((_point, idx) => {
+      if (+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100) {
+        isNormalPoint = false;
+        this.gpxBmapPoints.push(null);
+      } else {
+        if (!isNormalPoint) {
+          isNormalPoint = true;
+          originRealIdx.push(idx);
+        }
+        const transformPoint = transform(
+          [
+            parseFloat(_point.longitudeDegrees),
+            parseFloat(_point.latitudeDegrees)
+          ],
+          WGS84,
+          BD09
+        );
+        const p = new BMap.Point(transformPoint[0], transformPoint[1]);
+        this.gpxBmapPoints.push(p);
+        // lonTotal = lonTotal + +_point.longitudeDegrees;
+        // latTotal = latTotal + +_point.latitudeDegrees;
+        // count++;
+      }
+    });
+    // const centerPoint = new BMap.Point(lonTotal / count, latTotal / count);
+    this.gpxBmapPoints = this.gpxBmapPoints.map((_gpxPoint, idx) => {
+      if (!_gpxPoint) {
+        const index = originRealIdx.findIndex(_tip => _tip > idx);
+        if (index === -1) {
+          return this.gpxBmapPoints[originRealIdx[originRealIdx.length - 1]];
+        }
+        return this.gpxBmapPoints[originRealIdx[index]];
+      }
+      return _gpxPoint;
+    });
+    const polyline = new BMap.Polyline(this.gpxBmapPoints); // 创建折线
+    this.bmap.centerAndZoom(
+      this.gpxBmapPoints[this.gpxBmapPoints.length - 1],
+      13
+    );
+
+    this.bmap.enableScrollWheelZoom(true);
+    const startIcon = new BMap.Icon(
+      '/assets/map_marker_start.svg',
+      new BMap.Size(33, 50),
+      {
+        anchor: new BMap.Size(16, 50)
+      }
+    );
+    const startBMK = new BMap.Marker(this.gpxBmapPoints[0], {
+      icon: startIcon
+    });
+    const endIcon = new BMap.Icon(
+      '/assets/map_marker_end.svg',
+      new BMap.Size(33, 50),
+      {
+        anchor: new BMap.Size(16, 50)
+      }
+    );
+    const endBMK = new BMap.Marker(
+      this.gpxBmapPoints[this.gpxBmapPoints.length - 1],
+      {
+        icon: endIcon
+      }
+    );
+    const playIcon = new BMap.Icon(
+      '/assets/map_marker_player.svg',
+      new BMap.Size(12, 12),
+      {
+        anchor: new BMap.Size(6, 12)
+      }
+    );
+    this.playBMK = new BMap.Marker(this.gpxBmapPoints[0], {
+      icon: playIcon
+    });
+    this.bmap.addOverlay(startBMK);
+    this.bmap.addOverlay(endBMK);
+    this.bmap.addOverlay(this.playBMK);
+
+    this.bmap.addOverlay(polyline); // 将折线覆盖到地图上
+  }
+  handleGoogleMap() {
     const mapProp = {
       center: new google.maps.LatLng(24.123499, 120.66014),
       zoom: 18,
@@ -196,7 +292,9 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       if (!_gpxPoint) {
         const index = originRealIdx.findIndex(_tip => _tip > idx);
         if (index === -1) {
-          bounds.extend(this.gpxPoints[originRealIdx[originRealIdx.length - 1]]);
+          bounds.extend(
+            this.gpxPoints[originRealIdx[originRealIdx.length - 1]]
+          );
           return this.gpxPoints[originRealIdx[originRealIdx.length - 1]];
         }
         bounds.extend(this.gpxPoints[originRealIdx[index]]);
@@ -257,6 +355,9 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isPlayingGpx = false;
     clearTimeout(this.playerTimer);
   }
+  handleMapKind(e) {
+    this.mapKind = e.value;
+  }
   getInfo(id) {
     this.isLoading = true;
 
@@ -286,7 +387,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           +_point.latitudeDegrees !== 100
       );
       if (this.isShowMap) {
-        this.handleMap();
+        this.handleGoogleMap();
+        this.handleBMap();
       }
       this.dataSource.data = res.activityLapLayer;
       this.fileInfo = res.fileInfo;
@@ -395,6 +497,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           if (point && point.index) {
             if (this.isShowMap && !this.isPlayingGpx) {
               this.playerMark.setPosition(this.gpxPoints[point.index]);
+              this.playBMK.setPosition(this.gpxBmapPoints[point.index]);
               this.stopPointIdx = point.index;
             }
             point.highlight(e);

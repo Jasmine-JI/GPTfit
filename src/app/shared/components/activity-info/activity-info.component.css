@@ -124,6 +124,9 @@ table.mat-table {
   background: rgba(250, 250, 250, 0.9);
   box-shadow: 0 0 2px #c7c7c7;
 }
+.mat-radio-button {
+  margin-right: 15px;
+}
 @media(max-width: 767px) {
   .summary-item {
     margin-right: 10px;
