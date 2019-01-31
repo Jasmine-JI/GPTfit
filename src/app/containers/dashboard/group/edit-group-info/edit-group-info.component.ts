@@ -461,11 +461,10 @@ export class EditGroupInfoComponent implements OnInit {
       const arr = code.match(re);
       let groupVideoUrl = code;
       if (arr) {
-        groupVideoUrl = arr[0].slice(4);
+        groupVideoUrl = arr[1];
         this.videoUrl = groupVideoUrl;
         this.isVideoEdit = true;
         this.form.patchValue({ groupVideoUrl });
-        this.videoUrl = this.videoUrl.slice(1, this.videoUrl.length - 1);
       } else {
         this.videoUrl = code;
       }

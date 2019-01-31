@@ -381,7 +381,7 @@
             </div>
             <div class="activity-info__area--block">
               <div>
-                {{activityInfo?.avgSpeed}}
+                {{activityInfo?.avgSpeed || 0}}
               </div>
               <span class="data-label">
                 {{'SH.AvgSpeed' | translate}}
@@ -389,7 +389,7 @@
             </div>
             <div class="activity-info__area--block">
               <div>
-                {{activityInfo?.avgMoveSpeed}}
+                {{activityInfo?.avgMoveSpeed || 0}}
               </div>
               <span class="data-label">
                 {{'Dashboard.MyActivity.AvgMovingSpeed' | translate}}
@@ -397,7 +397,7 @@
             </div>
             <div class="activity-info__area--block">
               <div>
-                {{activityInfo?.maxSpeed}}
+                {{activityInfo?.maxSpeed || 0}}
               </div>
               <span class="data-label">
                 {{'Dashboard.MyActivity.MaxSpeed' | translate}}
@@ -670,14 +670,14 @@
             *ngIf="activityInfo?.type === '4'"
           >
             <div class="ala-dashboard-title activty-title">
-              游泳動態
+              {{'Dashboard.MyActivity.SwimmingDynamics' | translate}}
             </div>
             <div class="activity-info__area--block">
               <div>
                 {{activityInfo?.swimAvgCadence || 0}}
               </div>
               <span class="data-label">
-                平均划頻(游泳)
+                {{'Dashboard.MyActivity.AvgRowingCandence' | translate}}({{'Dashboard.MyActivity.Swim' | translate}})
               </span>
             </div>
             <div class="activity-info__area--block">
@@ -685,7 +685,7 @@
                 {{activityInfo?.swimMaxCadence || 0}}
               </div>
               <span class="data-label">
-                最高划頻(游泳)
+                {{'Dashboard.MyActivity.MaxRowingCandence' | translate}}({{'Dashboard.MyActivity.Swim' | translate}})
               </span>
             </div>
           </div>
@@ -693,14 +693,14 @@
             *ngIf="activityInfo?.type === '4'"
           >
             <div class="ala-dashboard-title activty-title">
-              泳池
+              {{'Dashboard.MyActivity.SwimmingPool' | translate}}
             </div>
             <div class="activity-info__area--block">
               <div>
                 {{activityInfo?.poolLengthMeters || 0}}
               </div>
               <span class="data-label">
-                泳池長度
+                {{'Dashboard.MyActivity.PoolLength' | translate}}
               </span>
             </div>
             <div class="activity-info__area--block">
@@ -708,7 +708,7 @@
                 {{activityInfo?.poolSwimAvgCadence || 0}}
               </div>
               <span class="data-label">
-                平均划水數
+                {{'Dashboard.MyActivity.AverageStrokeNumber' | translate}}
               </span>
             </div>
           </div>
@@ -760,7 +760,7 @@
           <ng-container matColumnDef="dispName">
             <th mat-header-cell *matHeaderCellDef>
               <span *ngIf="activityInfo?.type === '3'">該組名稱</span>
-              <span *ngIf="activityInfo?.type === '4'">泳姿名稱</span>
+              <span *ngIf="activityInfo?.type === '4'">{{'Dashboard.MyActivity.SwimmingName' | translate}}</span>
             </th>
             <ng-container *ngIf="activityInfo?.type !== '4'">
               <td mat-cell *matCellDef="let element"
