@@ -340,7 +340,9 @@
       "PaddleDynamic": "Paddle dynamic",
       "AvgRowingCandence": "Avg rowing candence",
       "MaxRowingCandence": "Max rowing candence",
-      "Map": "Map"
+      "Map": "Map",
+      "SwimmingDynamics": "Swimming Dynamics",
+      "SwimmingName": "Swimming name"
     },
     "ActivityDetail": {
       "ActivityDetail": "Activity detail",

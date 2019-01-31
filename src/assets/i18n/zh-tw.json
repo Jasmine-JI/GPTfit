@@ -340,7 +340,9 @@
       "PaddleDynamic": "划槳動態",
       "AvgRowingCandence": "平均划頻",
       "MaxRowingCandence": "最高划頻",
-      "Map": "地圖"
+      "Map": "地圖",
+      "SwimmingDynamics": "游泳動態",
+      "SwimmingName": "泳姿名稱"
     },
     "ActivityDetail": {
       "ActivityDetail": "詳細活動",
