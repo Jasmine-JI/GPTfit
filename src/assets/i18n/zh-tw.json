@@ -342,7 +342,10 @@
       "MaxRowingCandence": "最高划頻",
       "Map": "地圖",
       "SwimmingDynamics": "游泳動態",
-      "SwimmingName": "泳姿名稱"
+      "SwimmingName": "泳姿名稱",
+      "SwimmingPool": "泳池",
+      "PoolLength": "泳池長度",
+      "AverageStrokeNumber": "平均划水數"
     },
     "ActivityDetail": {
       "ActivityDetail": "詳細活動",

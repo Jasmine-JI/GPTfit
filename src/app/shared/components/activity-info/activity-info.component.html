@@ -693,14 +693,14 @@
             *ngIf="activityInfo?.type === '4'"
           >
             <div class="ala-dashboard-title activty-title">
-              泳池
+              {{'Dashboard.MyActivity.SwimmingPool' | translate}}
             </div>
             <div class="activity-info__area--block">
               <div>
                 {{activityInfo?.poolLengthMeters || 0}}
               </div>
               <span class="data-label">
-                泳池長度
+                {{'Dashboard.MyActivity.PoolLength' | translate}}
               </span>
             </div>
             <div class="activity-info__area--block">
@@ -708,7 +708,7 @@
                 {{activityInfo?.poolSwimAvgCadence || 0}}
               </div>
               <span class="data-label">
-                平均划水數
+                {{'Dashboard.MyActivity.AverageStrokeNumber' | translate}}
               </span>
             </div>
           </div>
