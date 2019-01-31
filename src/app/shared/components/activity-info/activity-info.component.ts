@@ -386,7 +386,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.isShowMap = this.activityPoints.some(
         _point =>
           _point.hasOwnProperty('latitudeDegrees') &&
-          +_point.latitudeDegrees !== 100
+          +_point.latitudeDegrees !== 100 && _point.latitudeDegrees
       );
       if (this.isShowMap) {
         this.handleGoogleMap();
