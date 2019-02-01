@@ -163,7 +163,8 @@ export class GroupInfoComponent implements OnInit {
       }
       if (
         groupStatus === 4 ||
-        (groupStatus === 3 && !this.visitorDetail.isCanManage)
+        (groupStatus === 3 && !this.visitorDetail.isCanManage) ||
+        groupStatus === 5
       ) {
         this.router.navigateByUrl(`/404`);
       }
