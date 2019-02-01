@@ -46,7 +46,10 @@
     "Create": "create",
     "Not-yet-open": "(Not yet open)",
     "NameAlreadyExists": "This name already exists",
-    "Send": "Send"
+    "Send": "Send",
+    "All": "All",
+    "Keyword": "Keyword",
+    "ScopeDate": "Scope date"
   },
   "Portal": {
     "Introduce": "Introduce",

@@ -13,14 +13,43 @@
     <div class="group-edit-bar">
       <button class="alatech-btn alatech-btn--default activty-btn"
         title="{{'Dashboard.MyActivity.Search' | translate}}"
-        [routerLink]="['/dashboard/group-search']"
-        disabled
+        (click)="getLists()"
       >
         {{'Dashboard.MyActivity.Search' | translate}}
       </button>
     </div>
   </div>
-
+  <mat-form-field style="max-width: 100px;margin-right: 35px;">
+    <mat-select [(value)]="sportType" placeholder="{{ 'SH.All' | translate }}">
+      <mat-option value="99">{{ "SH.All" | translate}}</mat-option>
+      <mat-option value="1">{{ "Dashboard.SportReport.Run" | translate}}</mat-option>
+      <mat-option value="2">{{ "Dashboard.SportReport.Cycle" | translate}}</mat-option>
+      <mat-option value="3">{{ "Dashboard.SportReport.WeightTraining" | translate}}</mat-option>
+      <mat-option value="4">{{ "Dashboard.SportReport.Swim" | translate}}</mat-option>
+      <mat-option value="5">{{ "Dashboard.SportReport.Aerobic" | translate}}</mat-option>
+      <mat-option value="6">{{ "Dashboard.SportReport.Rowing" | translate}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field style="min-width: 233px;margin-right: 35px;">
+    <input matInput placeholder="{{ 'SH.Keyword' | translate}}"
+      [(ngModel)]="searchWords"
+      name="searchWords"
+    >
+  </mat-form-field>
+  <mat-form-field style="min-width: 160px;margin-right: 35px;">
+    <input matInput [matDatepicker]="picker" placeholder="{{'SH.ScopeDate' | translate}}"
+      (dateChange)="logStartDateChange($event)"
+    >
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker startView="year" [startAt]="filterStartTime"></mat-datepicker>
+  </mat-form-field>
+  <mat-form-field style="min-width: 160px;margin-right: 70px;">
+    <input matInput [matDatepicker]="picker2" placeholder="{{'SH.ScopeDate' | translate}}"
+      (dateChange)="logStartDateChange($event)"
+    >
+    <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+    <mat-datepicker #picker2 startView="year" [startAt]="filterEndTime"></mat-datepicker>
+  </mat-form-field>
   <mat-table [dataSource]="logSource"
     matSort #sortTable="matSort"
   (matSortChange)="changeSort($event)"

@@ -10,14 +10,14 @@ import {
   MatTableDataSource,
   MatPaginator,
   PageEvent,
-  Sort,
-  MatPaginatorIntl
+  Sort
 } from '@angular/material';
 import { ActivityService } from '@shared/services/activity.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { HashIdService } from '@shared/services/hash-id.service';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-my-activity',
@@ -33,6 +33,10 @@ export class MyActivityComponent implements OnInit {
   isLoading = false;
   isEmpty = false;
   targetUserId: string;
+  filterStartTime = '';
+  filterEndTime = moment().format('YYYY-MM-DDTHH:mm:ss.000+08:00');
+  sportType = '99';
+  searchWords = '';
   @Input() isPortal = false;
   @Input() userName;
   @Output() showPrivacyUi = new EventEmitter();
@@ -40,7 +44,6 @@ export class MyActivityComponent implements OnInit {
   @ViewChild('paginator')
   paginator: MatPaginator;
   constructor(
-    private matPaginatorIntl: MatPaginatorIntl,
     private activityService: ActivityService,
     private utils: UtilsService,
     private router: Router,
@@ -51,26 +54,9 @@ export class MyActivityComponent implements OnInit {
   ngOnInit() {
     const queryStrings = this.utils.getUrlQueryStrings(location.search);
     const { pageNumber } = queryStrings;
-    this.targetUserId = this.hashIdService.handleUserIdDecode(this.route.snapshot.paramMap.get('userId'));
-    // // 設定顯示筆數資訊文字
-    // this.matPaginatorIntl.getRangeLabel = (
-    //   page: number,
-    //   pageSize: number,
-    //   length: number
-    // ): string => {
-    //   if (length === 0 || pageSize === 0) {
-    //     return `第 0 筆、共 ${length} 筆`;
-    //   }
-
-    //   length = Math.max(length, 0);
-    //   const startIndex = page * pageSize;
-    //   const endIndex =
-    //     startIndex < length
-    //       ? Math.min(startIndex + pageSize, length)
-    //       : startIndex + pageSize;
-
-    //   return `第 ${startIndex + 1} - ${endIndex} 筆、共 ${length} 筆`;
-    // };
+    this.targetUserId = this.hashIdService.handleUserIdDecode(
+      this.route.snapshot.paramMap.get('userId')
+    );
     this.currentPage = {
       pageIndex: +pageNumber - 1 || 0,
       pageSize: 10,
@@ -110,12 +96,12 @@ export class MyActivityComponent implements OnInit {
     const sort = this.currentSort.direction;
     const body = {
       token: this.token,
-      type: '99',
+      type: this.sportType,
       page: (this.currentPage && this.currentPage.pageIndex.toString()) || '0',
       pageCounts:
         (this.currentPage && this.currentPage.pageSize.toString()) || '10',
-      filterStartTime: '',
-      filterEndTime: '',
+      filterStartTime: this.filterStartTime,
+      filterEndTime: this.filterEndTime,
       targetUserId: ''
     };
     if (this.targetUserId) {

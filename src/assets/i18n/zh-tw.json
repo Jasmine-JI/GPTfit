@@ -46,7 +46,10 @@
     "Create": "建立",
     "Not-yet-open": "(尚未開放)",
     "NameAlreadyExists": "此名稱已存在",
-    "Send": "送出"
+    "Send": "送出",
+    "All": "全部",
+    "Keyword": "關鍵字",
+    "ScopeDate": "範圍日期"
   },
   "Portal": {
     "Introduce": "介紹",
