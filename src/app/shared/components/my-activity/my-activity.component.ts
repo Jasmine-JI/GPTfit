@@ -10,7 +10,9 @@ import {
   MatTableDataSource,
   MatPaginator,
   PageEvent,
-  Sort
+  Sort,
+  MatDatepickerInputEvent,
+  MatInput
 } from '@angular/material';
 import { ActivityService } from '@shared/services/activity.service';
 import { UtilsService } from '@shared/services/utils.service';
@@ -34,11 +36,12 @@ export class MyActivityComponent implements OnInit {
   isEmpty = false;
   targetUserId: string;
   filterStartTime = '';
-  filterEndTime = moment().format('YYYY-MM-DDTHH:mm:ss.000+08:00');
+  filterEndTime = moment().format('YYYY-MM-DDTHH:mm:00.000+08:00');
   sportType = '99';
   searchWords = '';
   @Input() isPortal = false;
   @Input() userName;
+  @ViewChild('picker', { read: MatInput }) input: MatInput;
   @Output() showPrivacyUi = new EventEmitter();
 
   @ViewChild('paginator')
@@ -100,8 +103,12 @@ export class MyActivityComponent implements OnInit {
       page: (this.currentPage && this.currentPage.pageIndex.toString()) || '0',
       pageCounts:
         (this.currentPage && this.currentPage.pageSize.toString()) || '10',
-      filterStartTime: this.filterStartTime,
-      filterEndTime: this.filterEndTime,
+      filterStartTime: this.filterStartTime
+        ? moment(this.filterStartTime).format('YYYY-MM-DDTHH:mm:00.000+08:00')
+        : '',
+      filterEndTime: moment(this.filterEndTime).format(
+        'YYYY-MM-DDTHH:mm:00.000+08:00'
+      ),
       targetUserId: ''
     };
     if (this.targetUserId) {
@@ -125,10 +132,26 @@ export class MyActivityComponent implements OnInit {
       }
     });
   }
+  handleDateChange(
+    $event: MatDatepickerInputEvent<moment.Moment>,
+    isStartTime: boolean
+  ) {
+    const value = moment($event.value).format('YYYY-MM-DDTHH:mm:00.000+08:00');
+    if (isStartTime) {
+      this.filterStartTime = value;
+    } else {
+      this.filterEndTime = value;
+    }
+  }
   goDetail(fileId) {
     if (this.isPortal) {
       return this.router.navigateByUrl(`/activity/${fileId}`);
     }
     this.router.navigateByUrl(`/dashboard/activity/${fileId}`);
+  }
+  reset() {
+    this.filterStartTime = '';
+    this.filterEndTime = moment().format('YYYY-MM-DDTHH:mm:00.000+08:00');
+    this.sportType = '99';
   }
 }
