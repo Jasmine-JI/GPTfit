@@ -34,6 +34,8 @@ import {
   PartialMuscleInfoComponent,
   ScatterChartComponent
 } from './sport-report';
+import { NgProgressModule } from '@ngx-progressbar/core';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -42,7 +44,8 @@ import {
     ReactiveFormsModule,
     SharedModule,
     CustomMaterialModule,
-    SharedPipes
+    SharedPipes,
+    NgProgressModule
   ],
   declarations: [
     NavbarComponent,
