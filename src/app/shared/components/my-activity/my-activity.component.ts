@@ -56,7 +56,14 @@ export class MyActivityComponent implements OnInit {
 
   ngOnInit() {
     const queryStrings = this.utils.getUrlQueryStrings(location.search);
-    const { pageNumber } = queryStrings;
+    const { pageNumber, startTime, endTime, type } = queryStrings;
+    this.filterStartTime = startTime ? moment(startTime).format(
+      'YYYY-MM-DDTHH:mm:00.000+08:00'
+    ) : '';
+    this.filterEndTime = endTime ? moment(endTime).format(
+      'YYYY-MM-DDT23:59:00.000+08:00'
+    ) : moment().format('YYYY-MM-DDT23:59:00.000+08:00');
+    this.sportType = type ? type.toString() : '99';
     this.targetUserId = this.hashIdService.handleUserIdDecode(
       this.route.snapshot.paramMap.get('userId')
     );
@@ -78,12 +85,13 @@ export class MyActivityComponent implements OnInit {
       this.currentPage = page;
       if (this.isPortal) {
         this.router.navigateByUrl(
-          `${location.pathname}?pageNumber=${this.currentPage.pageIndex + 1}`
+          `${location.pathname}?pageNumber=${this.currentPage.pageIndex + 1}&
+          startTime=${this.filterStartTime.slice(0, 10)}&endTime=${this.filterEndTime.slice(0, 10)}&type=${this.sportType}`
         );
       } else {
         this.router.navigateByUrl(
           `/dashboard/activity-list?pageNumber=${this.currentPage.pageIndex +
-            1}`
+          1}&startTime=${this.filterStartTime.slice(0, 10)}&endTime=${this.filterEndTime.slice(0, 10)}&type=${this.sportType}`
         );
       }
       this.getLists();
@@ -94,9 +102,17 @@ export class MyActivityComponent implements OnInit {
     this.currentSort = sortInfo;
     this.getLists();
   }
+  search() {
+    this.currentPage.pageIndex = 0;
+    const queryStrings = this.utils.getUrlQueryStrings(location.search);
+    const { startTime, endTime, type } = queryStrings;
+    this.router.navigateByUrl(
+      `${location.pathname}?startTime=${startTime}&endTime=${endTime}&type=${type}`
+    );
+    this.getLists();
+  }
   getLists() {
     this.isLoading = true;
-    const sort = this.currentSort.direction;
     const body = {
       token: this.token,
       type: this.sportType,
