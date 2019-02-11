@@ -104,10 +104,9 @@ export class MyActivityComponent implements OnInit {
   }
   search() {
     this.currentPage.pageIndex = 0;
-    const queryStrings = this.utils.getUrlQueryStrings(location.search);
-    const { startTime, endTime, type } = queryStrings;
     this.router.navigateByUrl(
-      `${location.pathname}?startTime=${startTime}&endTime=${endTime}&type=${type}`
+      `${location.pathname}?startTime=${this.filterStartTime.slice(0, 10
+      )}&endTime=${this.filterEndTime.slice(0, 10)}&type=${this.sportType}`
     );
     this.getLists();
   }
