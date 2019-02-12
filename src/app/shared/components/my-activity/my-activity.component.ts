@@ -23,6 +23,7 @@ import * as moment from 'moment';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
+import { BreakpointObserver } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-my-activity',
@@ -56,9 +57,13 @@ export class MyActivityComponent implements OnInit {
     private route: ActivatedRoute,
     private hashIdService: HashIdService,
     public dialog: MatDialog,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private breakpointObserver: BreakpointObserver
   ) {}
-
+  // Check if device is phone or tablet
+  get isMobile() {
+    return this.breakpointObserver.isMatched('(max-width: 767px)');
+  }
   ngOnInit() {
     const queryStrings = this.utils.getUrlQueryStrings(location.search);
     const { pageNumber, startTime, endTime, type } = queryStrings;
