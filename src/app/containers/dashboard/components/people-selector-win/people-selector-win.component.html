@@ -6,21 +6,25 @@
   <div class="memberselector-area">
     <div class="memberselector__content">
       <div class="memberselector__bar-box">
-        <label>{{'Dashboard.Group.Search' | translate }}</label>
-        <select (click)="handleGroupOptions()"
-          [(ngModel)]="chooseGroupId"
-        >
-          <option value="" disabled selected>{{'Dashboard.Group.SelectGroup' | translate }}</option>
-          <option [value]="option.groupId"
-            *ngFor="let option of groupLists"
+        <ng-container *ngIf="!isInnerAdmin">
+          <label style="margin-right: 5px">{{'Dashboard.Group.Search' | translate }}</label>
+          <select (click)="handleGroupOptions()"
+            [(ngModel)]="chooseGroupId"
           >
-            {{option.groupName}}
-          </option>
-        </select>
+            <option value="" disabled selected>{{'Dashboard.Group.SelectGroup' | translate }}</option>
+            <option [value]="option.groupId"
+              *ngFor="let option of groupLists"
+            >
+              {{option.groupName}}
+            </option>
+          </select>
+        </ng-container>
         <input placeholder="{{'Dashboard.Group.NameKeyword' | translate }}"
           [(ngModel)]="keyword"
         />
-        <button class="icon-btn" (click)="search()">
+        <button class="icon-btn" (click)="search()"
+          style="margin-left: 5px"
+        >
           <i class="fa fa-search icon_fa"></i>
         </button>
       </div>
