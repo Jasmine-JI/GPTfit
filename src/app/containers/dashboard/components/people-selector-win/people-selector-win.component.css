@@ -25,6 +25,7 @@
 }
 .memberselector__bar-box {
   border-bottom: 1px solid #ccc;
+  padding: 5px 7px;
 }
 .memberselector-sl {
   width: 100%;

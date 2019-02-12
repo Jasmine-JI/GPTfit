@@ -29,6 +29,9 @@ export class PeopleSelectorWinComponent implements OnInit {
   get onChange() {
     return this.data.onDelete;
   }
+  get isInnerAdmin() {
+    return this.data.isInnerAdmin;
+  }
   areaType: number;
   constructor(
     private dialog: MatDialog,
@@ -78,11 +81,15 @@ export class PeopleSelectorWinComponent implements OnInit {
     this.groupService.getGroupList().subscribe(_res => this.groupLists = _res);
   }
   search() {
-    if (this.chooseGroupId.length > 0) {
+    if (this.chooseGroupId.length > 0 || this.isInnerAdmin) {
       let params = new HttpParams();
       params = params.set('type', '0');
       params = params.set('keyword', this.keyword);
-      params = params.set('groupId', this.chooseGroupId);
+      if (this.isInnerAdmin) {
+        params = params.set('groupId', '0-0-0-0-0-0');
+      } else {
+        params = params.set('groupId', this.chooseGroupId);
+      }
       this.groupService.searchMember(params).subscribe(_result => {
         this.fakeDatas = _result;
         this.fakeDatas = this.fakeDatas.filter(_data => {

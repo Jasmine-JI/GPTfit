@@ -46,7 +46,13 @@
     "Create": "create",
     "Not-yet-open": "(Not yet open)",
     "NameAlreadyExists": "This name already exists",
-    "Send": "Send"
+    "Send": "Send",
+    "All": "All",
+    "Keyword": "Keyword",
+    "ScopeDate": "Scope date",
+    "DateCompareWarning": "End date is earlier than start date",
+    "startDate": "Start date",
+    "endDate": "End date"
   },
   "Portal": {
     "Introduce": "Introduce",
