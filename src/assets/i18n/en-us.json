@@ -50,7 +50,9 @@
     "All": "All",
     "Keyword": "Keyword",
     "ScopeDate": "Scope date",
-    "DateCompareWarning": "End time is earlier than start time"
+    "DateCompareWarning": "End date is earlier than start date",
+    "startDate": "Start date",
+    "endDate": "End date"
   },
   "Portal": {
     "Introduce": "Introduce",

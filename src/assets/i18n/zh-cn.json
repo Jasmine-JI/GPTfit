@@ -50,7 +50,9 @@
     "All": "全部",
     "Keyword": "关键字",
     "ScopeDate": "范围日期",
-    "DateCompareWarning": "起始时间大于终止时间"
+    "DateCompareWarning": "起始时间大于终止时间",
+    "startDate": "起始日期",
+    "endDate": "结束日期"
   },
   "Portal": {
     "Introduce": "介绍",
