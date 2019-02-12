@@ -41,6 +41,7 @@
       placeholder="{{'SH.ScopeDate' | translate}}"
       (dateChange)="handleDateChange($event, true)"
       [(ngModel)]="filterStartTime"
+      [max]="filterEndTime"
     >
     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-datepicker #picker startView="year"></mat-datepicker>
@@ -50,6 +51,7 @@
       placeholder="{{'SH.ScopeDate' | translate}}"
       (dateChange)="handleDateChange($event, false)"
       [(ngModel)]="filterEndTime"
+      [min]="filterStartTime"
     >
     <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
     <mat-datepicker #picker2 startView="year" [startAt]="filterEndTime"></mat-datepicker>

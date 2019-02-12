@@ -49,7 +49,8 @@
     "Send": "送出",
     "All": "全部",
     "Keyword": "关键字",
-    "ScopeDate": "范围日期"
+    "ScopeDate": "范围日期",
+    "DateCompareWarning": "起始时间大于终止时间"
   },
   "Portal": {
     "Introduce": "介绍",

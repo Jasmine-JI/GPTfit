@@ -20,6 +20,9 @@ import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { HashIdService } from '@shared/services/hash-id.service';
 import * as moment from 'moment';
+import { MatDialog } from '@angular/material/dialog';
+import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-my-activity',
@@ -51,18 +54,20 @@ export class MyActivityComponent implements OnInit {
     private utils: UtilsService,
     private router: Router,
     private route: ActivatedRoute,
-    private hashIdService: HashIdService
+    private hashIdService: HashIdService,
+    public dialog: MatDialog,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
     const queryStrings = this.utils.getUrlQueryStrings(location.search);
     const { pageNumber, startTime, endTime, type } = queryStrings;
-    this.filterStartTime = startTime ? moment(startTime).format(
-      'YYYY-MM-DDTHH:mm:00.000+08:00'
-    ) : '';
-    this.filterEndTime = endTime ? moment(endTime).format(
-      'YYYY-MM-DDT23:59:00.000+08:00'
-    ) : moment().format('YYYY-MM-DDT23:59:00.000+08:00');
+    this.filterStartTime = startTime
+      ? moment(startTime).format('YYYY-MM-DDTHH:mm:00.000+08:00')
+      : '';
+    this.filterEndTime = endTime
+      ? moment(endTime).format('YYYY-MM-DDT23:59:00.000+08:00')
+      : moment().format('YYYY-MM-DDT23:59:00.000+08:00');
     this.sportType = type ? type.toString() : '99';
     this.targetUserId = this.hashIdService.handleUserIdDecode(
       this.route.snapshot.paramMap.get('userId')
@@ -86,12 +91,18 @@ export class MyActivityComponent implements OnInit {
       if (this.isPortal) {
         this.router.navigateByUrl(
           `${location.pathname}?pageNumber=${this.currentPage.pageIndex + 1}&
-          startTime=${this.filterStartTime.slice(0, 10)}&endTime=${this.filterEndTime.slice(0, 10)}&type=${this.sportType}`
+          startTime=${this.filterStartTime.slice(
+            0,
+            10
+          )}&endTime=${this.filterEndTime.slice(0, 10)}&type=${this.sportType}`
         );
       } else {
         this.router.navigateByUrl(
           `/dashboard/activity-list?pageNumber=${this.currentPage.pageIndex +
-          1}&startTime=${this.filterStartTime.slice(0, 10)}&endTime=${this.filterEndTime.slice(0, 10)}&type=${this.sportType}`
+            1}&startTime=${this.filterStartTime.slice(
+            0,
+            10
+          )}&endTime=${this.filterEndTime.slice(0, 10)}&type=${this.sportType}`
         );
       }
       this.getLists();
@@ -105,10 +116,31 @@ export class MyActivityComponent implements OnInit {
   search() {
     this.currentPage.pageIndex = 0;
     this.router.navigateByUrl(
-      `${location.pathname}?startTime=${this.filterStartTime.slice(0, 10
+      `${location.pathname}?startTime=${this.filterStartTime.slice(
+        0,
+        10
       )}&endTime=${this.filterEndTime.slice(0, 10)}&type=${this.sportType}`
     );
-    this.getLists();
+    let isAfter;
+    if (this.filterEndTime.length > 0 && this.filterStartTime.length === 0) {
+      isAfter = true;
+    } else {
+      isAfter = moment(this.filterEndTime).isAfter(
+        moment(this.filterStartTime)
+      );
+    }
+    if (isAfter) {
+      this.getLists();
+    } else {
+      this.dialog.open(MessageBoxComponent, {
+        hasBackdrop: true,
+        data: {
+          title: 'message',
+          body: this.translate.instant('SH.DateCompareWarning'),
+          confirmText: this.translate.instant('SH.Confirm')
+        }
+      });
+    }
   }
   getLists() {
     this.isLoading = true;
@@ -151,11 +183,14 @@ export class MyActivityComponent implements OnInit {
     $event: MatDatepickerInputEvent<moment.Moment>,
     isStartTime: boolean
   ) {
-    const value = moment($event.value).format('YYYY-MM-DDTHH:mm:00.000+08:00');
     if (isStartTime) {
-      this.filterStartTime = value;
+      this.filterStartTime = moment($event.value).format(
+        'YYYY-MM-DDTHH:mm:00.000+08:00'
+      );
     } else {
-      this.filterEndTime = value;
+      this.filterEndTime = moment($event.value).format(
+        'YYYY-MM-DDT23:59:00.000+08:00'
+      );
     }
   }
   goDetail(fileId) {
