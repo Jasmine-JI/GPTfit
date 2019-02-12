@@ -10,14 +10,14 @@
     >
       {{'Dashboard.MyActivity.MyActivity' | translate}}
     </span>
-    <!-- <div class="group-edit-bar">
+    <div class="group-edit-bar">
       <button class="alatech-btn alatech-btn--default activty-btn"
         title="{{'Dashboard.MyActivity.Search' | translate}}"
-        (click)="getLists()"
+        (click)="search()"
       >
         {{'Dashboard.MyActivity.Search' | translate}}
       </button>
-    </div> -->
+    </div>
   </div>
   <mat-form-field style="max-width: 100px;margin-right: 35px;">
     <mat-select [(value)]="sportType" placeholder="{{ 'SH.All' | translate }}">
@@ -56,7 +56,7 @@
     <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
     <mat-datepicker #picker2 startView="year" [startAt]="filterEndTime"></mat-datepicker>
   </mat-form-field>
-  <button class="icon-btn"
+  <!-- <button class="icon-btn"
     type="button"
     style="margin-right: 10px"
     (click)="search()"
@@ -64,7 +64,7 @@
     <i class="material-icons">
       search
     </i>
-  </button>
+  </button> -->
   <button class="alatech-btn alatech-btn--default alatech-btn--size-icon"
     (click)="reset()"
   >
