@@ -13,14 +13,63 @@
     <div class="group-edit-bar">
       <button class="alatech-btn alatech-btn--default activty-btn"
         title="{{'Dashboard.MyActivity.Search' | translate}}"
-        [routerLink]="['/dashboard/group-search']"
-        disabled
+        (click)="search()"
       >
         {{'Dashboard.MyActivity.Search' | translate}}
       </button>
     </div>
   </div>
-
+  <mat-form-field style="max-width: 100px;margin-right: 35px;">
+    <mat-select [(value)]="sportType" placeholder="{{ 'SH.All' | translate }}">
+      <mat-option value="99">{{ "SH.All" | translate}}</mat-option>
+      <mat-option value="1">{{ "Dashboard.SportReport.Run" | translate}}</mat-option>
+      <mat-option value="2">{{ "Dashboard.SportReport.Cycle" | translate}}</mat-option>
+      <mat-option value="3">{{ "Dashboard.SportReport.WeightTraining" | translate}}</mat-option>
+      <mat-option value="4">{{ "Dashboard.SportReport.Swim" | translate}}</mat-option>
+      <mat-option value="5">{{ "Dashboard.SportReport.Aerobic" | translate}}</mat-option>
+      <mat-option value="6">{{ "Dashboard.SportReport.Rowing" | translate}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field style="margin-right: 35px;">
+    <input matInput placeholder="{{ 'SH.Keyword' | translate}}"
+      [(ngModel)]="searchWords"
+      name="searchWords"
+    >
+  </mat-form-field>
+  <mat-form-field style="min-width: 160px;margin-right: 35px;">
+    <input matInput [matDatepicker]="picker"
+      placeholder="{{'SH.ScopeDate' | translate}}"
+      (dateChange)="handleDateChange($event, true)"
+      [(ngModel)]="filterStartTime"
+      [max]="filterEndTime"
+    >
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker [touchUi]="isMobile" #picker startView="year"></mat-datepicker>
+  </mat-form-field>
+  <mat-form-field style="min-width: 160px;margin-right: 50px;">
+    <input matInput [matDatepicker]="picker2"
+      placeholder="{{'SH.ScopeDate' | translate}}"
+      (dateChange)="handleDateChange($event, false)"
+      [(ngModel)]="filterEndTime"
+      [min]="filterStartTime"
+    >
+    <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+    <mat-datepicker [touchUi]="isMobile" #picker2 startView="year" [startAt]="filterEndTime"></mat-datepicker>
+  </mat-form-field>
+  <!-- <button class="icon-btn"
+    type="button"
+    style="margin-right: 10px"
+    (click)="search()"
+  >
+    <i class="material-icons">
+      search
+    </i>
+  </button> -->
+  <button class="alatech-btn alatech-btn--default alatech-btn--size-icon"
+    (click)="reset()"
+  >
+    Reset
+  </button>
   <mat-table [dataSource]="logSource"
     matSort #sortTable="matSort"
   (matSortChange)="changeSort($event)"
@@ -56,7 +105,7 @@
       <mat-cell *matCellDef="let row">{{  row.fileInfo && row.fileInfo?.dispName || ' -- ' }}</mat-cell>
     </ng-container>
     <ng-container matColumnDef="date">
-      <mat-header-cell *matHeaderCellDef mat-sort-header>
+      <mat-header-cell *matHeaderCellDef>
         <!-- 日期 -->
       </mat-header-cell>
       <mat-cell *matCellDef="let row">
@@ -221,13 +270,4 @@
     [pageSizeOptions]="[5, 10, 15]"
   >
   </mat-paginator>
-  <!-- <div class="group-manage__action">
-    <button class="alatech-btn group-manage__btn"
-      title="搜尋活動"
-      [routerLink]="['/dashboard/group-search']"
-      disabled
-    >
-      搜尋活動
-    </button>
-  </div> -->
 </div>

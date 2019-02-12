@@ -20,6 +20,8 @@ import { MatTableDataSource } from '@angular/material';
 import { UserInfoService } from '../../../containers/dashboard/services/userInfo.service';
 import { transform, WGS84, BD09 } from 'gcoord';
 import { HashIdService } from '@shared/services/hash-id.service';
+import chinaBorderData from './border-data_china';
+import taiwanBorderData from './border-data_taiwan';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 declare var google: any;
@@ -119,9 +121,11 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   isInitialChartDone = false;
   charts = [];
   finalDatas: any;
-  mapKind = '1'; // 1 google map,  2 baidu
+  mapKind: string; // 1 google map,  2 baidu
   gpxBmapPoints = [];
   playBMK: any;
+  isHideMapRadioBtn = false;
+  isInChinaArea: boolean;
   constructor(
     private utils: UtilsService,
     private renderer: Renderer2,
@@ -191,15 +195,23 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           isNormalPoint = true;
           originRealIdx.push(idx);
         }
-        const transformPoint = transform(
-          [
+        let p;
+        if (this.isInChinaArea) {
+          const transformPoint = transform(
+            [
+              parseFloat(_point.longitudeDegrees),
+              parseFloat(_point.latitudeDegrees)
+            ],
+            WGS84,
+            BD09
+          );
+          p = new BMap.Point(transformPoint[0], transformPoint[1]);
+        } else {
+          p = new BMap.Point(
             parseFloat(_point.longitudeDegrees),
             parseFloat(_point.latitudeDegrees)
-          ],
-          WGS84,
-          BD09
-        );
-        const p = new BMap.Point(transformPoint[0], transformPoint[1]);
+          );
+        }
         this.gpxBmapPoints.push(p);
         // lonTotal = lonTotal + +_point.longitudeDegrees;
         // latTotal = latTotal + +_point.latitudeDegrees;
@@ -220,7 +232,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     const polyline = new BMap.Polyline(this.gpxBmapPoints); // 创建折线
     this.bmap.centerAndZoom(
       this.gpxBmapPoints[this.gpxBmapPoints.length - 1],
-      13
+      16
     );
 
     this.bmap.enableScrollWheelZoom(true);
@@ -262,6 +274,25 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     this.bmap.addOverlay(this.playBMK);
 
     this.bmap.addOverlay(polyline); // 将折线覆盖到地图上
+  }
+  handleBorderData(point, vs) {
+    const x = point[0],
+      y = point[1];
+    let inside = false;
+
+    for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+      const xi = vs[i][0],
+        yi = vs[i][1];
+      const xj = vs[j][0],
+        yj = vs[j][1];
+      const intersect =
+        yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
+
+      if (intersect) {
+        inside = !inside;
+      }
+    }
+    return inside;
   }
   handleGoogleMap() {
     const mapProp = {
@@ -383,13 +414,48 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.isShowNoRight = false;
       this.handleLapColumns();
       this.activityPoints = res.activityPointLayer;
-      this.isShowMap = this.activityPoints.some(
-        _point =>
+      this.isInChinaArea = false;
+      let isInTaiwan = false;
+      let isSomeGpsPoint = false;
+      this.activityPoints.forEach(_point => {
+        if (
+          this.handleBorderData(
+            [+_point.longitudeDegrees, +_point.latitudeDegrees],
+            taiwanBorderData
+          )
+        ) {
+          isInTaiwan = true;
+        }
+        if (
+          this.handleBorderData(
+            [+_point.longitudeDegrees, +_point.latitudeDegrees],
+            chinaBorderData
+          )
+        ) {
+          this.isInChinaArea = true;
+        }
+        if (
           _point.hasOwnProperty('latitudeDegrees') &&
-          +_point.latitudeDegrees !== 100 && _point.latitudeDegrees
-      );
+          +_point.latitudeDegrees !== 100 &&
+          _point.latitudeDegrees &&
+          !isSomeGpsPoint
+        ) {
+          isSomeGpsPoint = true;
+        }
+      });
+      if (isSomeGpsPoint) {
+        this.isShowMap = true;
+      } else {
+        this.isShowMap = false;
+      }
       if (this.isShowMap) {
-        this.handleGoogleMap();
+        if (!this.isInChinaArea || isInTaiwan) {
+          this.mapKind = '1';
+          this.handleGoogleMap();
+        } else {
+          this.mapKind = '2';
+          this.isHideMapRadioBtn = true;
+        }
         this.handleBMap();
       }
       this.dataSource.data = res.activityLapLayer;
@@ -397,7 +463,10 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       if (this.fileInfo.author.indexOf('?') > -1) {
         // 防止後續author會帶更多參數，先不寫死
         this.userLink.userName = this.fileInfo.author.split('?')[0];
-        this.userLink.userId = this.fileInfo.author.split('?')[1].split('=')[1].replace(')', '');
+        this.userLink.userId = this.fileInfo.author
+          .split('?')[1]
+          .split('=')[1]
+          .replace(')', '');
       }
       this.infoDate = this.handleDate(this.activityInfo.startTime);
       this.totalSecond = this.activityInfo.totalSecond;
@@ -498,8 +567,12 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           const point = _chart.series[0].searchPoint(event, true); // Get the hovered point
           if (point && point.index) {
             if (this.isShowMap && !this.isPlayingGpx) {
-              this.playerMark.setPosition(this.gpxPoints[point.index]);
-              this.playBMK.setPosition(this.gpxBmapPoints[point.index]);
+              if (this.mapKind === '1') {
+                this.playerMark.setPosition(this.gpxPoints[point.index]);
+              }
+              if (this.mapKind === '2') {
+                this.playBMK.setPosition(this.gpxBmapPoints[point.index]);
+              }
               this.stopPointIdx = point.index;
             }
             point.highlight(e);
@@ -579,7 +652,11 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   goToProfile() {
-    this.router.navigateByUrl(`/user-profile/${this.hashIdService.handleUserIdEncode(this.userLink.userId)}`);
+    this.router.navigateByUrl(
+      `/user-profile/${this.hashIdService.handleUserIdEncode(
+        this.userLink.userId
+      )}`
+    );
   }
   goBack() {
     window.history.back();

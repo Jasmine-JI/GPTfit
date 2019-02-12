@@ -97,7 +97,8 @@ export class InnerTestComponent implements OnInit {
       data: {
         title: `人員選擇`,
         adminLists,
-        onConfirm: this.handleConfirm.bind(this)
+        onConfirm: this.handleConfirm.bind(this),
+        isInnerAdmin: true
       }
     });
   }

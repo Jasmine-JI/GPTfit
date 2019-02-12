@@ -61,6 +61,7 @@ export class CreateGroupComponent implements OnInit {
     isSupervisor: false,
     isSystemDeveloper: false,
     isSystemMaintainer: false,
+    isMarketingDeveloper: false,
     isBrandAdministrator: false,
     isBranchAdministrator: false,
     isCoach: false
@@ -166,6 +167,10 @@ export class CreateGroupComponent implements OnInit {
     this.userInfoService.getSystemMaintainerStatus().subscribe(res => {
       this.role.isSystemMaintainer = res;
       // console.log('%c this.isSystemMaintainer', 'color: #0ca011', res);
+    });
+    this.userInfoService.getMarketingDeveloperStatus().subscribe(res => {
+      this.role.isMarketingDeveloper = res;
+      // console.log('%c this.isMarketingDeveloper', 'color: #ccc', res);
     });
     this.userInfoService.getBrandAdministratorStatus().subscribe(res => {
       this.role.isBrandAdministrator = res;
@@ -753,6 +758,12 @@ export class CreateGroupComponent implements OnInit {
     this.chooseType = _type;
 
     const adminLists = _.cloneDeep(this.chooseLabels);
+    const {
+      isSupervisor,
+      isSystemDeveloper,
+      isSystemMaintainer,
+      isMarketingDeveloper
+    } = this.role;
     if (_type !== 3) {
       this.dialog.open(PeopleSelectorWinComponent, {
         hasBackdrop: true,
@@ -760,7 +771,13 @@ export class CreateGroupComponent implements OnInit {
           title: this.title,
           adminLevel: `${_type}`,
           adminLists,
-          onConfirm: this.handleConfirm.bind(this)
+          onConfirm: this.handleConfirm.bind(this),
+          isInnerAdmin:
+            _type === 4 && (
+            isSupervisor ||
+            isSystemDeveloper ||
+            isSystemMaintainer ||
+            isMarketingDeveloper)
         }
       });
     }
