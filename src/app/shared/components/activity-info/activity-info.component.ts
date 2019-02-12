@@ -20,7 +20,8 @@ import { MatTableDataSource } from '@angular/material';
 import { UserInfoService } from '../../../containers/dashboard/services/userInfo.service';
 import { transform, WGS84, BD09 } from 'gcoord';
 import { HashIdService } from '@shared/services/hash-id.service';
-import chinaBorderData from './border-data';
+import chinaBorderData from './border-data_china';
+import taiwanBorderData from './border-data_taiwan';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 declare var google: any;
@@ -124,6 +125,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   gpxBmapPoints = [];
   playBMK: any;
   isHideMapRadioBtn = false;
+  isInChinaArea: boolean;
   constructor(
     private utils: UtilsService,
     private renderer: Renderer2,
@@ -194,7 +196,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           originRealIdx.push(idx);
         }
         let p;
-        if (this.isHideMapRadioBtn) {
+        if (this.isInChinaArea) {
           const transformPoint = transform(
             [
               parseFloat(_point.longitudeDegrees),
@@ -273,14 +275,18 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.bmap.addOverlay(polyline); // 将折线覆盖到地图上
   }
-  isInChina(point, vs) {
-    const x = point[0], y = point[1];
+  handleBorderData(point, vs) {
+    const x = point[0],
+      y = point[1];
     let inside = false;
 
     for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
-      const xi = vs[i][0], yi = vs[i][1];
-      const xj = vs[j][0], yj = vs[j][1];
-      const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+      const xi = vs[i][0],
+        yi = vs[i][1];
+      const xj = vs[j][0],
+        yj = vs[j][1];
+      const intersect =
+        yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
 
       if (intersect) {
         inside = !inside;
@@ -408,23 +414,30 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.isShowNoRight = false;
       this.handleLapColumns();
       this.activityPoints = res.activityPointLayer;
-      let isInChinaArea = false;
+      this.isInChinaArea = false;
+      let isInTaiwan = false;
       let isSomeGpsPoint = false;
       this.activityPoints.forEach(_point => {
         if (
-          this.isInChina(
+          this.handleBorderData(
+            [+_point.longitudeDegrees, +_point.latitudeDegrees],
+            taiwanBorderData
+          )
+        ) {
+          isInTaiwan = true;
+        }
+        if (
+          this.handleBorderData(
             [+_point.longitudeDegrees, +_point.latitudeDegrees],
             chinaBorderData
           )
         ) {
-          isInChinaArea = true;
+          this.isInChinaArea = true;
         }
         if (
-          (
-            _point.hasOwnProperty('latitudeDegrees') &&
-            +_point.latitudeDegrees !== 100 &&
-            _point.latitudeDegrees
-          ) &&
+          _point.hasOwnProperty('latitudeDegrees') &&
+          +_point.latitudeDegrees !== 100 &&
+          _point.latitudeDegrees &&
           !isSomeGpsPoint
         ) {
           isSomeGpsPoint = true;
@@ -436,7 +449,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isShowMap = false;
       }
       if (this.isShowMap) {
-        if (!isInChinaArea) {
+        if (!this.isInChinaArea || isInTaiwan) {
           this.mapKind = '1';
           this.handleGoogleMap();
         } else {
@@ -450,7 +463,10 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       if (this.fileInfo.author.indexOf('?') > -1) {
         // 防止後續author會帶更多參數，先不寫死
         this.userLink.userName = this.fileInfo.author.split('?')[0];
-        this.userLink.userId = this.fileInfo.author.split('?')[1].split('=')[1].replace(')', '');
+        this.userLink.userId = this.fileInfo.author
+          .split('?')[1]
+          .split('=')[1]
+          .replace(')', '');
       }
       this.infoDate = this.handleDate(this.activityInfo.startTime);
       this.totalSecond = this.activityInfo.totalSecond;
@@ -636,7 +652,11 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   goToProfile() {
-    this.router.navigateByUrl(`/user-profile/${this.hashIdService.handleUserIdEncode(this.userLink.userId)}`);
+    this.router.navigateByUrl(
+      `/user-profile/${this.hashIdService.handleUserIdEncode(
+        this.userLink.userId
+      )}`
+    );
   }
   goBack() {
     window.history.back();
