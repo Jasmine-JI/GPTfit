@@ -14,6 +14,7 @@ import { RandomCode } from '../../models/random-code';
 import { SignupService } from '../../services/signup.service';
 import { SMSCode } from '../../models/sms-code';
 import { SignupResponse } from '../../models/signup-response';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-signup',
@@ -43,7 +44,8 @@ export class SignupComponent implements OnInit {
     private snackbar: MatSnackBar,
     private randomCodeService: RandomCodeService,
     private utils: UtilsService,
-    private signupService: SignupService
+    private signupService: SignupService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
@@ -125,23 +127,26 @@ export class SignupComponent implements OnInit {
   }
   handleSignup(body) {
     this.isSignupSending = true;
-    this.signupService.register(body).subscribe((res: SignupResponse) => {
-      const {
-        resultCode,
-        info: { rtnMsg }
-      } = res;
-      if (resultCode === 200) {
-        let successText = '註冊成功，請至註冊信箱點擊完成E-mail驗證，五秒後將跳轉回登入頁面';
-        if (body.phone.length > 0) {
-          successText = '註冊成功，五秒後將跳轉回登入頁面';
+    this.signupService.register(body).subscribe(
+      (res: SignupResponse) => {
+        const {
+          resultCode,
+          info: { rtnMsg }
+        } = res;
+        if (resultCode === 200) {
+          let successText = this.translate.instant('Portal.RegisterMailSuccessfully');
+          if (body.phone.length > 0) {
+            successText = this.translate.instant('Portal.RegisterPhoneSuccessfully');
+          }
+          this.snackbar.open(successText, 'OK', { duration: 5000 });
+          setTimeout(() => this.router.navigate(['/signin']), 5000);
+        } else {
+          this.isSignupSending = false;
+          this.snackbar.open(rtnMsg, 'OK', { duration: 5000 });
         }
-        this.snackbar.open(successText, 'OK', { duration: 5000 });
-        setTimeout(() => this.router.navigate(['/signin']), 5000);
-      } else {
-        this.isSignupSending = false;
-        this.snackbar.open(rtnMsg, 'OK', { duration: 5000 });
-      }
-    }, () => (this.isSignupSending = false));
+      },
+      () => (this.isSignupSending = false)
+    );
   }
   handleRandomCode() {
     this.randomCodeService.getRandomCode().subscribe((res: RandomCode) => {

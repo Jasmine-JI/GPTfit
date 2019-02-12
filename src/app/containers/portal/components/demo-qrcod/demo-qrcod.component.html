@@ -109,28 +109,28 @@
           *ngIf="isShowFitPairBtn && isFitPaired"
           (click)="fitPair('2')"
         >
-          解除原有的Fit Pair
+          {{'Portal.RemoveOriginal' | translate }}Fit Pair
         </button>
         <button class="alatech-btn alatech-btn--default"
           title="Fit Pair"
           *ngIf="isShowFitPairBtn && !isFitPaired"
           (click)="fitPair('1')"
         >
-          Fit Pair(對應頭像與運動檔案)
+          Fit Pair({{'Portal.CorrespondingAvatar-and-sports-file' | translate}})
         </button>
         <button class="alatech-btn alatech-btn--default"
           title="Fit Pair"
           *ngIf="isShowFitPairBtn && !isFitPaired"
           (click)="fitPair('3')"
         >
-          Fit Pair(僅對應運動檔案)
+          Fit Pair({{'Portal.OnlyCorrespondingSportsFile' | translate}})
         </button>
         <button class="alatech-btn alatech-btn--default"
-          title="登錄產品"
+          title="{{'Portal.RegisterProduct' | translate}}"
           *ngIf="isShowBindingBtn"
           (click)="goBinding()"
         >
-          登錄產品
+          {{'Portal.RegisterProduct' | translate}}
         </button>
       </div>
     </ng-container>

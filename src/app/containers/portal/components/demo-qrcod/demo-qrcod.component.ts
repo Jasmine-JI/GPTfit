@@ -233,9 +233,11 @@ export class DemoQrcodComponent implements OnInit {
         hasBackdrop: true,
         data: {
           title: 'message',
-          body: `如果要登入產品，請登入，系統將會自動完成登錄產品的流程`,
-          confirmText: '確定',
-          cancelText: '取消',
+          body: this.translateService.instant(
+            'Portal.IfRegisterProductText'
+          ),
+          confirmText: this.translateService.instant('SH.Confirm'),
+          cancelText: this.translateService.instant('SH.Cancel'),
           onConfirm: this.handleGoLoginPage.bind(this, 1)
         }
       });
@@ -252,9 +254,11 @@ export class DemoQrcodComponent implements OnInit {
         hasBackdrop: true,
         data: {
           title: 'message',
-          body: `如果要Fit Pair產品，請登入，系統將會自動完成Fit Pair產品的流程`,
-          confirmText: '確定',
-          cancelText: '取消',
+          body: this.translateService.instant(
+            'Portal.IfFitPairProductText'
+          ),
+          confirmText: this.translateService.instant('SH.Confirm'),
+          cancelText: this.translateService.instant('SH.Cancel'),
           onConfirm: this.handleGoLoginPage.bind(this, 2)
         }
       });
@@ -277,8 +281,10 @@ export class DemoQrcodComponent implements OnInit {
             hasBackdrop: true,
             data: {
               title: 'message',
-              body: `完成解除Fit Pairt`,
-              confirmText: '確定',
+              body: this.translateService.instant(
+                'Portal.RemoveFitPairCompletely'
+              ),
+              confirmText: this.translateService.instant('SH.Confirm'),
               onConfirm: this.uploadDevice.bind(this)
             }
           });
@@ -287,8 +293,12 @@ export class DemoQrcodComponent implements OnInit {
             hasBackdrop: true,
             data: {
               title: 'message',
-              body: `Fit Pairt成功`,
-              confirmText: '確定',
+              body: this.translateService.instant(
+                'Portal.FitPairSuccessfully'
+              ),
+              confirmText: this.translateService.instant(
+                'SH.Confirm'
+              ),
               onConfirm: this.uploadDevice.bind(this)
             }
           });
@@ -298,8 +308,8 @@ export class DemoQrcodComponent implements OnInit {
           hasBackdrop: true,
           data: {
             title: 'message',
-            body: `Fit Pair失敗`,
-            confirmText: '確定',
+            body: this.translateService.instant('Portal.FitPairFailed'),
+            confirmText: this.translateService.instant('SH.Confirm'),
             onConfirm: this.uploadDevice.bind(this)
           }
         });

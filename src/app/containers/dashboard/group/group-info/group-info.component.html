@@ -75,11 +75,13 @@
             {{ groupInfo?.groupName }}
           </label>
         </div>
-        <div>
+        <!-- <div>
           <label>{{ 'Dashboard.Group.GroupInfo.GroupID' | translate}}：</label>{{ group_id }}
-        </div>
+        </div> -->
         <div>
-          <label>{{ 'Dashboard.Group.GroupInfo.Level' | translate}}：</label>{{ this.groupLevel | groupLevelTranslate }}
+          <label>{{ 'Dashboard.Group.GroupInfo.Level' | translate}}：</label>{{ this.groupLevel | groupLevelTranslate | translate }}
+          <span *ngIf="groupInfo?.coachType.length > 0 && groupInfo?.coachType === '2'"> - {{'Dashboard.Group.PhysicalFitnessCoach' | translate}}</span>
+          <span *ngIf="groupInfo?.coachType.length > 0 && groupInfo?.coachType === '1'"> - {{'Dashboard.Group.ProfessionalTeacher' | translate}}</span>
         </div>
         <div>
           <label>{{ 'Dashboard.Group.GroupInfo.Status' | translate}}：</label>{{ groupInfo?.groupStatus | groupStatus | translate }}
@@ -453,39 +455,3 @@
     </div>
   </div>
 </div>
-<!-- <div class="group-manage__action" #footerTarget>
-  <button class="alatech-btn group-manage__btn"
-    title="{{ 'Dashboard.Group.GroupInfo.Join' | translate}}"
-    *ngIf="(joinStatus === 5 || joinStatus === 3 ) && (!visitorDetail?.isGroupAdmin || groupLevel === '80')"
-    (click)="handleActionGroup(1)"
-  >
-    {{ 'Dashboard.Group.GroupInfo.Join' | translate}}
-  </button>
-  <button class="alatech-btn group-manage__btn group-btn--waiting"
-    title="{{'Dashboard.Group.GroupInfo.Unjoin' | translate}}"
-    *ngIf="joinStatus === 1"
-    (click)="handleActionGroup(2)"
-  >
-    {{'Dashboard.Group.GroupInfo.Unjoin' | translate}}
-  </button>
-  <button class="alatech-btn group-manage__btn"
-    title="{{'Dashboard.Group.GroupInfo.LeaveGroup' | translate}}"
-    *ngIf="joinStatus === 2 &&
-    (!visitorDetail?.isGroupAdmin
-    ||
-    (groupLevel === '80' && normalGroupAdministrators && normalGroupAdministrators?.length > 1)
-    ||
-    (groupLevel === '40' && branchAdministrators && branchAdministrators?.length > 1)
-    )"
-    (click)="handleActionGroup(2)"
-  >
-    {{'Dashboard.Group.GroupInfo.LeaveGroup' | translate}}
-  </button>
-  <button class="alatech-btn group-manage__btn"
-    title="{{'Dashboard.Group.GroupInfo.Manage' | translate}}"
-    *ngIf="visitorDetail?.isCanManage"
-    (click)="goEditPage()"
-  >
-    {{'Dashboard.Group.GroupInfo.Manage' | translate}}
-  </button>
-</div> -->

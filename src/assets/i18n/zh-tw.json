@@ -104,7 +104,21 @@
     "ConfrimPwd": "確認密碼",
     "ConfrimPwdAgain": "再次確認密碼",
     "OldPwdNotMatchNewPwd": "輸入的密碼與新密碼不符合",
-    "ResetPwdSuccess": "密碼已修改成功，請用新密碼重新登入系統 "
+    "ResetPwdSuccess": "密碼已修改成功，請用新密碼重新登入系統 ",
+    "RemoveOriginal": "解除原有的",
+    "CorrespondingAvatar-and-sports-file": "對應頭像與運動檔案",
+    "OnlyCorrespondingSportsFile": "僅對應運動檔案",
+    "RegisterProduct": "登錄產品",
+    "IfRegisterProductText": "如果要登錄產品，請登入，系統將會自動完成登錄產品的流程",
+    "IfFitPairProductText": "如果要Fit Pair產品，請登入，系統將會自動完成Fit Pair產品的流程",
+    "RemoveFitPairCompletely": "完成解除fit pair",
+    "FitPairSuccessfully": "Fit Pair成功",
+    "FitPairFailed": "Fit Pair失敗",
+    "MailHadBeenSend": "信件已發送，五秒後將跳轉回登入頁面",
+    "LoginSuccessfully": "登入成功",
+    "PlzCheckNamePwd": "請檢查使用者名稱及密碼",
+    "RegisterMailSuccessfully": "註冊成功，請至註冊信箱點擊完成E-mail驗證，五秒後將跳轉回登入頁面",
+    "RegisterPhoneSuccessfully": "註冊成功，五秒後將跳轉回登入頁面"
   },
   "Dashboard": {
     "MyInfo": "我的資訊",
@@ -148,6 +162,24 @@
       "AssignPT": "指派課程老師",
       "AssignPF": "指派體適能教練",
       "AtLeastAssginAdmin": "請指派至少一位管理者",
+      "BrandAdminChooseSettings": "品牌管理員選擇設定",
+      "BranchAdminChooseSettings": "分店管理員選擇設定",
+      "PFAdminChooseSettings": "體適能教練管理員選擇設定",
+      "PTAdminChooseSettings": "專業老師管理員選擇設定",
+      "AdminChooseSettings": "管理員選擇設定",
+      "Region": "地區",
+      "Search": "搜尋",
+      "SelectGroup": "選擇群組",
+      "NameKeyword": "姓名關鍵字",
+      "NoEligiblePeopleFound": "找不到符合條件的人",
+      "Add": "加入",
+      "Remove": "移除",
+      "AreUSureDismiss": "是否確定要解散此{{target}}?",
+      "BrandNameAlreadyExists": "品牌名稱已存在",
+      "EditGroupInfoFailed": "群組資訊編輯失敗",
+      "AreUsureRemoveAdmin": "是否確定要刪除該管理員?",
+      "AreUsureRemoveMember": "是否確定要刪除該成員?",
+      "AreUsureRemoveGroup": "是否確定要移除此群組?",
       "MyGroup": {
         "MyGroup": "我的群組",
         "GroupList": "群組列表",
@@ -307,7 +339,13 @@
       "Distance": "距離",
       "PaddleDynamic": "划槳動態",
       "AvgRowingCandence": "平均划頻",
-      "MaxRowingCandence": "最高划頻"
+      "MaxRowingCandence": "最高划頻",
+      "Map": "地圖",
+      "SwimmingDynamics": "游泳動態",
+      "SwimmingName": "泳姿名稱",
+      "SwimmingPool": "泳池",
+      "PoolLength": "泳池長度",
+      "AverageStrokeNumber": "平均划水數"
     },
     "ActivityDetail": {
       "ActivityDetail": "詳細活動",
@@ -326,7 +364,9 @@
       "Treadmill": "跑步機",
       "Wearable": "穿戴式",
       "Flywheel": "飛輪車",
-      "RowingMachine": "划船器"
+      "RowingMachine": "划船器",
+      "BindingFailedDeviceBound": "綁定失敗，此裝置已有綁定狀態",
+      "BindingFailed": "綁定失敗"
     },
     "ProductInfo": {
       "ProductInfo": "產品資訊",
@@ -340,7 +380,8 @@
       "close": "不開放",
       "Only-me-avatar-and-file": "僅自己，頭像與運動檔案",
       "Only-me-file": "僅自己，限運動檔案",
-      "Target": "對象"
+      "Target": "對象",
+      "ChangeFailed": "變更失敗"
     },
     "SportReport": {
       "SportReport": "運動報告",
@@ -395,7 +436,14 @@
       "Password": "密碼",
       "ChangePassword": "變更密碼",
       "Application": "應用程式",
-      "ThirdPartyInteraction": "第三方互動"
+      "ThirdPartyInteraction": "第三方互動",
+      "ReBindStravaText": "您的綁定strava已失效，是否重新綁定您的strava?",
+      "UpdateStravaFailed": "更新strava狀態失敗",
+      "PlzUploadPhotos": "請上傳照片",
+      "DoUCancelCreate": "是否要取消新增{{target}}?",
+      "UpdateUserInfoSuccessfully": "成功更新使用者資訊",
+      "UpdatePrivacySettingsSuccessfully": "成功更新隱私權設定",
+      "UpdateFailed": "更新失敗"
     }
   }
 }

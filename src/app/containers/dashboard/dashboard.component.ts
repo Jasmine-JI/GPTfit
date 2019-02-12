@@ -17,6 +17,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { UserInfo } from './models/userInfo';
 import { NavigationEnd } from '@angular/router';
 import { version } from '@shared/version';
+import { HashIdService } from '@shared/services/hash-id.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -57,7 +58,8 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
     private userInfoService: UserInfoService,
     private utilsService: UtilsService,
     public translateService: TranslateService,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
+    private hashIdService: HashIdService
   ) {
     if (location.search.indexOf('ipm=s') > -1) {
       this.isPreviewMode = true;
@@ -115,6 +117,8 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
           this.target = 12;
         } else if (_val.url.indexOf('/dashboard/system/setting-member') > -1) {
           this.target = 13;
+        } else if (_val.url.indexOf('/dashboard/system/inner-test') > -1) {
+          this.target = 18;
         } else {
           this.target = 0;
         }
@@ -284,6 +288,9 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
     this.globalEventsManager.openCollapse(this.isCollapseOpen);
     this.isMaskShow = false;
     this.globalEventsManager.closeCollapse(false);
+  }
+  goToUserProfile(userId) {
+    this.router.navigateByUrl(`/user-profile/${this.hashIdService.handleUserIdEncode(userId)}`);
   }
   toggleSideNav(sideNav: MatSidenav) {
     this.isSideNavOpend = !this.isSideNavOpend;

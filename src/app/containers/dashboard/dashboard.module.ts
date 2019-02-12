@@ -75,6 +75,8 @@ import { UserProfileService } from '@shared/services/user-profile.service';
 import { PersonalPreferencesComponent } from './components/settings/personal-preferences/personal-preferences.component';
 import { CommercePlanTableComponent } from './group/commerce-plan-table/commerce-plan-table.component';
 import { PrivacySettingDialogComponent } from './group/privacy-setting-dialog/privacy-setting-dialog.component';
+import { InnerTestComponent } from './components/inner-test/inner-test.component';
+import { HashIdService } from '@shared/services/hash-id.service';
 
 @NgModule({
   imports: [
@@ -109,6 +111,7 @@ import { PrivacySettingDialogComponent } from './group/privacy-setting-dialog/pr
     ReportService,
     SettingsService,
     UserProfileService,
+    HashIdService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
@@ -161,7 +164,8 @@ import { PrivacySettingDialogComponent } from './group/privacy-setting-dialog/pr
     AccountInfoComponent,
     PersonalPreferencesComponent,
     CommercePlanTableComponent,
-    PrivacySettingDialogComponent
+    PrivacySettingDialogComponent,
+    InnerTestComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
