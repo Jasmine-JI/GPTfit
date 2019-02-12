@@ -38,7 +38,7 @@
   </mat-form-field>
   <mat-form-field style="min-width: 160px;margin-right: 35px;">
     <input matInput [matDatepicker]="picker"
-      placeholder="{{'SH.ScopeDate' | translate}}"
+      placeholder="{{'SH.startDate' | translate}}"
       (dateChange)="handleDateChange($event, true)"
       [(ngModel)]="filterStartTime"
       [max]="filterEndTime"
@@ -48,7 +48,7 @@
   </mat-form-field>
   <mat-form-field style="min-width: 160px;margin-right: 50px;">
     <input matInput [matDatepicker]="picker2"
-      placeholder="{{'SH.ScopeDate' | translate}}"
+      placeholder="{{'SH.endDate' | translate}}"
       (dateChange)="handleDateChange($event, false)"
       [(ngModel)]="filterEndTime"
       [min]="filterStartTime"
