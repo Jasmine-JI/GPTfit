@@ -117,7 +117,6 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   progressRef: NgProgressRef;
   totalSecond: number;
   resolutionSeconds: number;
-  isOriginalMode = false;
   isInitialChartDone = false;
   charts = [];
   finalDatas: any;
@@ -126,6 +125,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   playBMK: any;
   isHideMapRadioBtn = false;
   isInChinaArea: boolean;
+  isDebug = false;
   constructor(
     private utils: UtilsService,
     private renderer: Renderer2,
@@ -156,8 +156,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     Highcharts.charts.length = 0; // 初始化global highchart物件
-    if (location.search.indexOf('?original') > -1) {
-      this.isOriginalMode = true;
+    if (location.search.indexOf('?debug') > -1) {
+      this.isDebug = true;
     }
     if (location.pathname.indexOf('/dashboard/activity/') > -1) {
       this.isPortal = false;
@@ -399,6 +399,9 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       token: this.token,
       fileId: id
     };
+    if (this.isDebug) {
+      body['debug'] = this.isDebug.toString();
+    }
     this.activityService.fetchSportListDetail(body).subscribe(res => {
       this.activityInfo = res.activityInfoLayer;
       if (res.resultCode === 402) {
