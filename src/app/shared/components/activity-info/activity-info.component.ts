@@ -18,7 +18,7 @@ import { UtilsService } from '@shared/services/utils.service';
 import { Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material';
 import { UserInfoService } from '../../../containers/dashboard/services/userInfo.service';
-import { transform, WGS84, BD09 } from 'gcoord';
+import { transform, WGS84, BD09, GCJ02 } from 'gcoord';
 import { HashIdService } from '@shared/services/hash-id.service';
 import chinaBorderData from './border-data_china';
 import taiwanBorderData from './border-data_taiwan';
@@ -117,7 +117,6 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   progressRef: NgProgressRef;
   totalSecond: number;
   resolutionSeconds: number;
-  isOriginalMode = false;
   isInitialChartDone = false;
   charts = [];
   finalDatas: any;
@@ -126,6 +125,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   playBMK: any;
   isHideMapRadioBtn = false;
   isInChinaArea: boolean;
+  isDebug = false;
   constructor(
     private utils: UtilsService,
     private renderer: Renderer2,
@@ -156,8 +156,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     Highcharts.charts.length = 0; // 初始化global highchart物件
-    if (location.search.indexOf('?original') > -1) {
-      this.isOriginalMode = true;
+    if (location.search.indexOf('?debug') > -1) {
+      this.isDebug = true;
     }
     if (location.pathname.indexOf('/dashboard/activity/') > -1) {
       this.isPortal = false;
@@ -294,7 +294,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     return inside;
   }
-  handleGoogleMap() {
+  handleGoogleMap(isInTaiwan) {
     const mapProp = {
       center: new google.maps.LatLng(24.123499, 120.66014),
       zoom: 18,
@@ -313,11 +313,23 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           isNormalPoint = true;
           originRealIdx.push(idx);
         }
-        const p = new google.maps.LatLng(
-          parseFloat(_point.latitudeDegrees),
-          parseFloat(_point.longitudeDegrees)
-        );
-        // bounds.extend(p);
+        let p;
+        if (this.isInChinaArea && !isInTaiwan) {
+          const _transformPoint = transform(
+            [
+              parseFloat(_point.longitudeDegrees),
+              parseFloat(_point.latitudeDegrees)
+            ],
+            WGS84,
+            GCJ02
+          );
+          p = new google.maps.LatLng(_transformPoint[1], _transformPoint[0]);
+        } else {
+          p = new google.maps.LatLng(
+            parseFloat(_point.latitudeDegrees),
+            parseFloat(_point.longitudeDegrees)
+          );
+        }
         this.gpxPoints.push(p);
       }
     });
@@ -399,6 +411,9 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       token: this.token,
       fileId: id
     };
+    if (this.isDebug) {
+      body['debug'] = this.isDebug.toString();
+    }
     this.activityService.fetchSportListDetail(body).subscribe(res => {
       this.activityInfo = res.activityInfoLayer;
       if (res.resultCode === 402) {
@@ -451,11 +466,12 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       if (this.isShowMap) {
         if (!this.isInChinaArea || isInTaiwan) {
           this.mapKind = '1';
-          this.handleGoogleMap();
+          // this.handleGoogleMap();
         } else {
           this.mapKind = '2';
-          this.isHideMapRadioBtn = true;
+          // this.isHideMapRadioBtn = true;
         }
+        this.handleGoogleMap(isInTaiwan);
         this.handleBMap();
       }
       this.dataSource.data = res.activityLapLayer;
