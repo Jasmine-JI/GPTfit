@@ -1,6 +1,7 @@
 const fastXmlParser = require("fast-xml-parser");
 const fs = require("fs");
 const gcoord = require('gcoord');
+const moment = require('moment');
 
 exports.writeCloudRunGpx = function (path, fromFormat, toFormat, res) {
   let parsedGPX = fastXmlParser.parse(
@@ -9,7 +10,7 @@ exports.writeCloudRunGpx = function (path, fromFormat, toFormat, res) {
     }
   );
   const points = parsedGPX.gpx.trk.trkseg;
-
+  const coordinates = [];
   const transFormPoints = points.map(_point => {
     return _point.trkpt.map(_p => {
       const preLon = _p['@_lon'];
@@ -18,7 +19,10 @@ exports.writeCloudRunGpx = function (path, fromFormat, toFormat, res) {
       const transPt = gcoord.transform([+preLon, +preLat], gcoord[fromFormat], gcoord[toFormat])
       const latitude = transPt[1];
       const longitude = transPt[0];
-
+      coordinates.push({
+        latitudeDegrees: latitude,
+        longitudeDegrees: longitude
+      })
       return `<trkpt lat="${latitude}" lon="${longitude}">
             <ele>${altitude}</ele>
           </trkpt>
@@ -44,7 +48,9 @@ exports.writeCloudRunGpx = function (path, fromFormat, toFormat, res) {
       console.log('write gpx file successfully');
       res.status(200).json({
         resultCode: 200,
-        rtnMsg: 'success'
+        rtnMsg: 'success',
+        fileName: `${moment().format('YYYYMMDDHHmmss')}_test.gpx`,
+        coordinates
       });
     }
   });

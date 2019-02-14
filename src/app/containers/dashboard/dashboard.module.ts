@@ -77,6 +77,8 @@ import { CommercePlanTableComponent } from './group/commerce-plan-table/commerce
 import { PrivacySettingDialogComponent } from './group/privacy-setting-dialog/privacy-setting-dialog.component';
 import { InnerTestComponent } from './components/inner-test/inner-test.component';
 import { HashIdService } from '@shared/services/hash-id.service';
+import { CloudRunGpxComponent } from './components/cloud-run-gpx/cloud-run-gpx.component';
+import { InnerAdminService } from './services/inner-admin.service';
 
 @NgModule({
   imports: [
@@ -112,6 +114,7 @@ import { HashIdService } from '@shared/services/hash-id.service';
     SettingsService,
     UserProfileService,
     HashIdService,
+    InnerAdminService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
@@ -165,7 +168,8 @@ import { HashIdService } from '@shared/services/hash-id.service';
     PersonalPreferencesComponent,
     CommercePlanTableComponent,
     PrivacySettingDialogComponent,
-    InnerTestComponent
+    InnerTestComponent,
+    CloudRunGpxComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [

@@ -6,7 +6,6 @@ var writeGpx = require('../models/write_gpx');
 
 var formidable = require('formidable');
 const writeCloudRunGpx = require('../models/gpx-transform-baidu').writeCloudRunGpx;
-var moment = require('moment');
 
 router.get('/make', function (req, res, next) {
   const {
@@ -41,7 +40,7 @@ router.get('/make', function (req, res, next) {
 router.post('/download', (req, res) => {
   // FILEPATH 填入要被下載檔案的路徑
   // FILENAME 無所謂，因為會被 Angular 定義的新名稱蓋掉
-  res.download('/var/www/html/dist/test.gpx', `${moment().format('YYYYMMDDHHmm')}_test.gpx`, err => {
+  res.download('/var/www/html/dist/test.gpx', 'test.gpx', err => {
     if (err) {
       res.send(err);
     } else {
