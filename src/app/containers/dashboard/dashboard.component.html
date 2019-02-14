@@ -137,6 +137,15 @@
                 <!--  之後把font awesome 與material icon 擇一-->
                 內部測試
               </li>
+              <li class="ala-sidenav-menu-item"
+                (click)="chooseItem(19, sideNav)"
+                [class.ala-sidenav-menu-item__active]="target === 19"
+                [routerLink]="['/dashboard/system/inner-gpx']"
+                *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer"
+              >
+                <!--  之後把font awesome 與material icon 擇一-->
+                cloudRun gpx轉換
+              </li>
             </mat-expansion-panel>
           </mat-accordion>
           <mat-accordion multi="false" *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper">
