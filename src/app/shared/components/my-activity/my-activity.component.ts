@@ -66,7 +66,7 @@ export class MyActivityComponent implements OnInit {
   }
   ngOnInit() {
     const queryStrings = this.utils.getUrlQueryStrings(location.search);
-    const { pageNumber, startTime, endTime, type } = queryStrings;
+    const { pageNumber, startTime, endTime, type, searchWords } = queryStrings;
     this.filterStartTime = startTime
       ? moment(startTime).format('YYYY-MM-DDTHH:mm:00.000+08:00')
       : '';
@@ -74,6 +74,7 @@ export class MyActivityComponent implements OnInit {
       ? moment(endTime).format('YYYY-MM-DDT23:59:00.000+08:00')
       : moment().format('YYYY-MM-DDT23:59:00.000+08:00');
     this.sportType = type ? type.toString() : '99';
+    this.searchWords = searchWords && searchWords.length > 0 ? searchWords.toString() : '';
     this.targetUserId = this.hashIdService.handleUserIdDecode(
       this.route.snapshot.paramMap.get('userId')
     );
@@ -99,15 +100,17 @@ export class MyActivityComponent implements OnInit {
           startTime=${this.filterStartTime.slice(
             0,
             10
-          )}&endTime=${this.filterEndTime.slice(0, 10)}&type=${this.sportType}`
+          )}&endTime=${this.filterEndTime.slice(0, 10)}&type=${this.sportType}&searchWords=${this.searchWords}`
         );
       } else {
         this.router.navigateByUrl(
-          `/dashboard/activity-list?pageNumber=${this.currentPage.pageIndex +
-            1}&startTime=${this.filterStartTime.slice(
+          `/dashboard/activity-list?pageNumber=${this.currentPage
+            .pageIndex + 1}&startTime=${this.filterStartTime.slice(
             0,
             10
-          )}&endTime=${this.filterEndTime.slice(0, 10)}&type=${this.sportType}`
+          )}&endTime=${this.filterEndTime.slice(0, 10)}&type=${
+            this.sportType
+          }&searchWords=${this.searchWords}`
         );
       }
       this.getLists();
@@ -124,7 +127,9 @@ export class MyActivityComponent implements OnInit {
       `${location.pathname}?startTime=${this.filterStartTime.slice(
         0,
         10
-      )}&endTime=${this.filterEndTime.slice(0, 10)}&type=${this.sportType}`
+      )}&endTime=${this.filterEndTime.slice(0, 10)}&type=${
+        this.sportType
+      }&searchWords=${this.searchWords}`
     );
     let isAfter;
     if (this.filterEndTime.length > 0 && this.filterStartTime.length === 0) {
@@ -155,6 +160,7 @@ export class MyActivityComponent implements OnInit {
       page: (this.currentPage && this.currentPage.pageIndex.toString()) || '0',
       pageCounts:
         (this.currentPage && this.currentPage.pageSize.toString()) || '10',
+      searchWords: this.searchWords,
       filterStartTime: this.filterStartTime
         ? moment(this.filterStartTime).format('YYYY-MM-DDTHH:mm:00.000+08:00')
         : '',
@@ -208,5 +214,6 @@ export class MyActivityComponent implements OnInit {
     this.filterStartTime = '';
     this.filterEndTime = moment().format('YYYY-MM-DDTHH:mm:00.000+08:00');
     this.sportType = '99';
+    this.searchWords = '';
   }
 }
