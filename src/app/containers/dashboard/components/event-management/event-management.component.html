@@ -1,11 +1,11 @@
 <ng-container *ngIf="!isLoading">
   <div class="d-flex" style="margin-bottom: 15px">
     <span style="color: #157fcc; font-weight:700">
-      尚未開始的活動
+      {{'Dashboard.System.UpcomingEvent' | translate}}
     </span>
   </div>
   <div style="text-align:center" *ngIf="!isNotYetDone">
-    尚無相關資料
+    {{'Dashboard.System.NoRelevantData' | translate}}
   </div>
   <mat-accordion multi="false">
     <ng-container *ngFor="let event of events">
@@ -14,18 +14,18 @@
       >
         <mat-expansion-panel-header>
           <mat-panel-title>
-            賽事名稱: {{ event.event_name }}
+            {{'Dashboard.System.EventName' | translate}}: {{ event.event_name }}
           </mat-panel-title>
           <mat-panel-description>
-            賽事日期: {{ event?.event_time_start | unixTime }} ~ {{ event?.event_time_end | unixTime }}
+            {{'Dashboard.System.Date' | translate}}: {{ event?.event_time_start | unixTime }} ~ {{ event?.event_time_end | unixTime }}
           </mat-panel-description>
         </mat-expansion-panel-header>
         <table class="table">
           <thead>
             <tr>
-              <th>活動名稱</th>
-              <th>活動日期</th>
-              <th>操作功能</th>
+              <th>{{'Dashboard.System.EventName' | translate}}</th>
+              <th>{{'Dashboard.System.Date' | translate}}</th>
+              <th>{{'Dashboard.System.FuncofManagement' | translate}}</th>
             </tr>
           </thead>
           <tbody>
@@ -62,11 +62,11 @@
 
   <div class="d-flex" style="margin: 30px 0px 15px">
     <span style="color: #157fcc; font-weight:700">
-      已結束的活動
+      {{'Dashboard.System.PreviousEvent' | translate}}
     </span>
   </div>
   <div style="text-align:center" *ngIf="!isNotYetDone === false || events?.length === 0">
-    尚無相關資料
+    {{'Dashboard.System.NoRelevantData' | translate}}
   </div>
   <mat-accordion multi="false">
     <ng-container *ngFor="let event of events">
@@ -75,18 +75,18 @@
       >
         <mat-expansion-panel-header>
           <mat-panel-title>
-            賽事名稱: {{ event.event_name }}
+            {{'Dashboard.System.EventName' | translate}}: {{ event.event_name }}
           </mat-panel-title>
           <mat-panel-description>
-            賽事日期: {{ event?.event_time_start | unixTime }} ~ {{ event?.event_time_end | unixTime }}
+            {{'Dashboard.System.Date' | translate}}: {{ event?.event_time_start | unixTime }} ~ {{ event?.event_time_end | unixTime }}
           </mat-panel-description>
         </mat-expansion-panel-header>
         <table class="table">
           <thead>
             <tr>
-              <th>活動名稱</th>
-              <th>活動日期</th>
-              <th>操作功能</th>
+              <th>{{'Dashboard.System.EventName' | translate}}</th>
+              <th>{{'Dashboard.System.Date' | translate}}</th>
+              <th>{{'Dashboard.System.FuncofManagement' | translate}}</th>
             </tr>
           </thead>
           <tbody>
