@@ -354,7 +354,10 @@ tr.tr-only-hide {
   -ms-transform: rotate(360deg);
   transform: rotate(360deg);
 }
-
+::ng-deep .map-desc--highlight {
+  color: #157fcc;
+  font-weight: 700;
+}
 @media (min-width: 992px) {
   .container {
     min-width: 890px;

@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-between" style="margin-bottom: 15px">
   <span style="color: #157fcc; font-weight:700">
-    所有群組列表
+    {{'Dashboard.System.AllGroupList' | translate}}
   </span>
 </div>
 <mat-form-field>
@@ -35,16 +35,16 @@
   class="all-group-list"
 >
   <ng-container matColumnDef="id">
-    <mat-header-cell *matHeaderCellDef>群組ID</mat-header-cell>
+    <mat-header-cell *matHeaderCellDef>{{'Dashboard.Group.GroupInfo.GroupID' | translate}}</mat-header-cell>
     <mat-cell *matCellDef="let row">{{ utils.displayGroupId(row.groupId) }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="info">
-    <mat-header-cell *matHeaderCellDef>名稱</mat-header-cell>
+    <mat-header-cell *matHeaderCellDef>{{'Dashboard.Group.MyGroup.Name' | translate}}</mat-header-cell>
     <mat-cell *matCellDef="let row">{{ row.groupName }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="time">
     <mat-header-cell *matHeaderCellDef disableClear="true">
-      狀態
+      {{'Dashboard.Group.GroupInfo.Status' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let row">{{ row.groupStatus | groupStatus | translate }}</mat-cell>
   </ng-container>

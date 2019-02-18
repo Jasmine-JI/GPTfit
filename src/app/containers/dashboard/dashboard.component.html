@@ -116,7 +116,7 @@
                 [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
               >
                 <mat-panel-title>
-                  <i class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"></i>系統管理
+                  <i class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"></i>{{"Dashboard.System.SystemAdministration" | translate }}
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <li class="ala-sidenav-menu-item"
@@ -126,7 +126,7 @@
                 *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper"
               >
                 <!--  之後把font awesome 與material icon 擇一-->
-                內部管理員
+                {{"Dashboard.System.SystemAdministrator" | translate }}
               </li>
             </mat-expansion-panel>
           </mat-accordion>
@@ -137,7 +137,7 @@
               >
                 <mat-panel-title>
                   <!--  之後把font awesome 與material icon 擇一-->
-                  <i class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"></i>賽事管理
+                  <i class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"></i>{{"Dashboard.System.EventManagement" | translate }}
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <li class="ala-sidenav-menu-item"
@@ -145,7 +145,7 @@
                 [class.ala-sidenav-menu-item__active]="target === 6"
                 [routerLink]="['/dashboard/system/event-management']"
               >
-                賽事總覽
+                {{"Dashboard.System.TournamentOverview" | translate }}
               </li>
 
               <li class="ala-sidenav-menu-item"
@@ -153,21 +153,21 @@
                 [class.ala-sidenav-menu-item__active]="target === 7"
                 [routerLink]="['/dashboard/system/event']"
               >
-                建立與編輯賽事
+                {{"Dashboard.System.SetupEditEvents" | translate }}
               </li>
               <li class="ala-sidenav-menu-item"
                 (click)="chooseItem(8, sideNav)"
                 [class.ala-sidenav-menu-item__active]="target === 8"
                 [routerLink]="['/dashboard/system/event-calendar']"
               >
-                賽事活動日誌
+                {{"Dashboard.System.EventLog" | translate }}
               </li>
               <li class="ala-sidenav-menu-item"
                 (click)="chooseItem(9, sideNav)"
                 [class.ala-sidenav-menu-item__active]="target === 9"
                 [routerLink]="['/dashboard/system/leaderboard-settings']"
               >
-                更新排名
+                {{"Dashboard.System.UpdateRanking" | translate }}
               </li>
             </mat-expansion-panel>
           </mat-accordion>
@@ -177,7 +177,7 @@
                 [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
               >
                 <mat-panel-title>
-                  <i class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"></i>群組管理
+                  <i class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"></i>{{"Dashboard.System.GroupAdministrator" | translate }}
                 </mat-panel-title>
               </mat-expansion-panel-header>
                 <li class="ala-sidenav-menu-item"
@@ -186,7 +186,7 @@
                   *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper"
                   [routerLink]="['/dashboard/system/all-group-list']"
                 >
-                  所有群組列表
+                  {{"Dashboard.System.AllGroupList" | translate }}
                 </li>
                 <li class="ala-sidenav-menu-item"
                   (click)="chooseItem(12, sideNav)"
@@ -194,7 +194,7 @@
                   *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper"
                   [routerLink]="['/dashboard/system/create-brand-group']"
                 >
-                  建立品牌群組
+                  {{"Dashboard.System.SetupBrand" | translate }}
                 </li>
             </mat-expansion-panel>
           </mat-accordion>

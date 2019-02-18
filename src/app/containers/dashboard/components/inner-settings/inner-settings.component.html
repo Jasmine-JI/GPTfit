@@ -1,25 +1,25 @@
 <div class="d-flex" style="margin-bottom: 15px">
   <span style="color: #157fcc; font-weight:700">
-    內部人員權限設定
+    {{'Dashboard.System.AdminPermissionSetting' | translate }}
   </span>
 </div>
 <table class="table alatech-table">
   <thead>
     <tr class="tr-only-hide">
-      <th class="alatech-table__cell--head">設定項目</th>
-      <th class="alatech-table__cell--head">目前負責人員</th>
-      <th class="alatech-table__cell--head">說明</th>
-      <th class="alatech-table__cell--head">管理功能</th>
+      <th class="alatech-table__cell--head">{{'Dashboard.System.SettingItem' | translate }}</th>
+      <th class="alatech-table__cell--head">{{'Dashboard.System.Personincharge' | translate }}</th>
+      <th class="alatech-table__cell--head">{{'Dashboard.System.Description' | translate }}</th>
+      <th class="alatech-table__cell--head">{{'Dashboard.System.FuncofManagement' | translate }}</th>
     </tr>
   </thead>
   <tbody>
     <ng-container *ngIf="!isLoading">
       <tr>
-        <td class="alatech-table__cell">系統開發員權限設定(10)</td>
+        <td class="alatech-table__cell">{{'Dashboard.System.SystemAdminPermissionSetting' | translate }}(10)</td>
         <td class="alatech-table__cell"
           *ngIf="systemDevelopers.length === 0"
         >
-          尚無相關人員
+          {{'Dashboard.System.NoRelevantPerson' | translate }}
         </td>
         <td class="alatech-table__cell"
           *ngIf="systemDevelopers && systemDevelopers.length > 0"
@@ -28,7 +28,7 @@
             {{_systemDeveloper.userName}}
           </span>
         </td>
-        <td class="alatech-table__cell">設定各系統開發人員，便於申請人指定開發人員</td>
+        <td class="alatech-table__cell">{{'Dashboard.System.SystemAdminDesc' | translate }}</td>
         <td class="alatech-table__cell">
           <button class="icon-btn" (click)="openSelectorWin(10)">
             <i class="fa fa-user-plus icon_fa"></i>
@@ -36,11 +36,11 @@
         </td>
       </tr>
       <tr>
-        <td class="alatech-table__cell">系統維護員權限設定(20)</td>
+        <td class="alatech-table__cell">{{'Dashboard.System.SystemMaintainerPermissionSetting' | translate }}(20)</td>
         <td class="alatech-table__cell"
           *ngIf="systemMaintainers.length === 0"
         >
-          尚無相關人員
+          {{'Dashboard.System.NoRelevantPerson' | translate }}
         </td>
         <td class="alatech-table__cell"
           *ngIf="systemMaintainers && systemMaintainers.length > 0"
@@ -49,7 +49,7 @@
             {{_systemMaintainers.userName}}
           </span>
         </td>
-        <td class="alatech-table__cell">設定各系統維護人員，便於申請人指定維護人員</td>
+        <td class="alatech-table__cell">{{'Dashboard.System.SystemMaintainerDesc' | translate }}</td>
         <td class="alatech-table__cell">
           <button class="icon-btn" (click)="openSelectorWin(20)">
             <i class="fa fa-user-plus icon_fa"></i>
@@ -57,11 +57,11 @@
         </td>
       </tr>
       <tr>
-        <td class="alatech-table__cell">行銷與企劃權限設定(29)</td>
+        <td class="alatech-table__cell">{{'Dashboard.System.MarketingPermissionSetting' | translate }}(29)</td>
         <td class="alatech-table__cell"
           *ngIf="marketingDevelopers.length === 0"
         >
-          尚無相關人員
+          {{'Dashboard.System.NoRelevantPerson' | translate }}
         </td>
         <td class="alatech-table__cell"
           *ngIf="marketingDevelopers && marketingDevelopers.length > 0"
@@ -70,7 +70,7 @@
             {{_marketingDevelopers.userName}}
           </span>
         </td>
-        <td class="alatech-table__cell">設定各系統行銷與企劃人員，便於申請人指定行銷與企劃人員</td>
+        <td class="alatech-table__cell">{{'Dashboard.System.MarketingPermissionDesc' | translate }}</td>
         <td class="alatech-table__cell">
           <button class="icon-btn" (click)="openSelectorWin(29)">
             <i class="fa fa-user-plus icon_fa"></i>
