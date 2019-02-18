@@ -144,8 +144,8 @@ export const TREE_DATA = {
 'en-us': {
   'All sports': {
     'Number of activities': '1-1',
-    'Total time': '1-2',
-    'Total distance': '1-3',
+    'Summary time': '1-2',
+    'Summary distance': '1-3',
     'Burn calories': '1-4',
     'Average speed': '1-5',
     'Maximum speed': '1-6',
@@ -153,8 +153,8 @@ export const TREE_DATA = {
     'Maximum heart rate': '1-8'
   },
   'Run': {
-    'Total time': '2-1',
-    'Total distance': '2-2',
+    'Summary time': '2-1',
+    'Summary distance': '2-2',
     'Burn calories': '2-3',
     'Average pacement': '2-4',
     'Maximum pace': '2-5',
@@ -164,8 +164,8 @@ export const TREE_DATA = {
     'Maximum step frequency': '2-9'
   },
   'ride': {
-    'Total time': '3-1',
-    'Total distance': '3-2',
+    'Summary time': '3-1',
+    'Summary distance': '3-2',
     'Burn calories': '3-3',
     'Average speed': '3-4',
     'Maximum speed': '3-5',
@@ -177,14 +177,14 @@ export const TREE_DATA = {
     'Maximum power': '3-11'
   },
   'Aerobic exercise': {
-    'Total time': '6-1',
+    'Summary time': '6-1',
     'Burn calories': '6-2',
     'Average heart rate': '6-3',
     'Maximum heart rate': '6-4'
   },
   'Swim': {
-    'Total time': '4-1',
-    'Total distance': '4-2',
+    'Summary time': '4-1',
+    'Summary distance': '4-2',
     'Burn calories': '4-3',
     'Average pace': '4-4',
     'Maximum pace': '4-5',
@@ -192,7 +192,7 @@ export const TREE_DATA = {
     'Maximum stroke frequency': '4-7'
   },
   'Weighttraining': {
-    'Total time': '5-1',
+    'Summary time': '5-1',
     'Total weight': '5-2',
     'Total number of times': '5-3',
     'Burn calories': '5-4',
