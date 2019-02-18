@@ -46,7 +46,20 @@
     "Create": "建立",
     "Not-yet-open": "(尚未開放)",
     "NameAlreadyExists": "此名稱已存在",
-    "Send": "送出"
+    "Send": "送出",
+    "Map": {
+      "EffelTowerRoadRunning": "艾菲爾鐵塔路跑",
+      "OberwiesenfeldOlympiapark": "歐柏維森菲爾德 奧林匹克體育館",
+      "GreatWallRoadRunning": "居庸關環城路跑",
+      "AlpsHillRoad": "阿爾卑斯山道賽",
+      "KallimarmaroStadium": "帕那辛奈克體育場",
+      "WanjinshiWarmUp": "萬金石暖身賽",
+      "TheBundInternationalMarathon": "外灘國際馬拉松10K",
+      "WanjinshiMiniMarathon": "萬金石迷你馬",
+      "AlishanRoadRunningExperience": "阿里山公路路跑體驗賽",
+      "LanyuRoundabout": "蘭嶼環島",
+      "BeijingMarathon": "北京馬拉松21K"
+    }
   },
   "Portal": {
     "Introduce": "介紹",
@@ -104,7 +117,9 @@
     "ConfrimPwd": "確認密碼",
     "ConfrimPwdAgain": "再次確認密碼",
     "OldPwdNotMatchNewPwd": "輸入的密碼與新密碼不符合",
-    "ResetPwdSuccess": "密碼已修改成功，請用新密碼重新登入系統 "
+    "ResetPwdSuccess": "密碼已修改成功，請用新密碼重新登入系統 ",
+    "RegularRaceDesc": "本月進行的例行排行賽為<span class='map-desc--highlight'>指定地圖{{ mapName }}{{ distance }}KM</span><div>排行榜於每日06:00刷新，最終排名以{{ finalEventDate }} 結算成績為主</div>",
+    "FinalDayOfMonth": " 當月最後一日 23:59"
   },
   "Dashboard": {
     "MyInfo": "我的資訊",
