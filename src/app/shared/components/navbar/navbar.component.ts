@@ -47,7 +47,7 @@ export class NavbarComponent implements OnInit {
     this.login$ = this.authService.getLoginStatus();
     this.deviceWidth = window.innerWidth;
     this.href = this.router.url;
-    if (this.router.url === '/leaderboard') {
+    if (this.router.url.indexOf('/leaderboard') > -1) {
       this.isShowLeaderboard = true;
       this.navItemNum = 2;
     }

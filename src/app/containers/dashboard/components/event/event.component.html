@@ -1,7 +1,7 @@
 <div class="">
   <div class="d-flex justify-content-between" style="margin-bottom: 15px">
     <span style="color: #157fcc; font-weight:700">
-      活動賽事自訂
+      {{'Dashboard.System.SetupEditEvents' | translate}}
     </span>
     <button class="alatech-btn alatech-btn--default" title="新增活動賽事"
       (click)="toCreatePage()"
@@ -12,8 +12,8 @@
   <table class="table alatech-table">
     <thead>
       <tr class="tr-only-hide">
-        <th class="alatech-table__cell--head">主要競賽</th>
-        <th class="alatech-table__cell--head">管理功能</th>
+        <th class="alatech-table__cell--head">{{'Dashboard.System.MainEvent' | translate}}</th>
+        <th class="alatech-table__cell--head">{{'Dashboard.System.ManagementFunc' | translate}}</th>
       </tr>
     </thead>
     <tbody>
@@ -32,7 +32,7 @@
           </tr>
         </ng-container>
         <tr *ngIf="events && events.length === 0">
-          <td colspan="2" style="text-align: center">尚無活動賽事</td>
+          <td colspan="2" style="text-align: center">{{'Dashboard.System.NoRelevantData' | translate}}</td>
         </tr>
       </ng-container>
       <tr *ngIf="isLoading">
