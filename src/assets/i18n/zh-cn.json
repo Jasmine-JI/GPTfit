@@ -52,7 +52,20 @@
     "ScopeDate": "范围日期",
     "DateCompareWarning": "起始时间大于终止时间",
     "startDate": "起始日期",
-    "endDate": "结束日期"
+    "endDate": "结束日期",
+    "Map": {
+      "EffelTowerRoadRunning": "艾菲尔铁塔路跑",
+      "OberwiesenfeldOlympiapark": "欧柏维森菲尔德 奥林匹克体育馆",
+      "GreatWallRoadRunning": "居庸关环城路跑",
+      "AlpsHillRoad": "阿尔卑斯山道赛",
+      "KallimarmaroStadium": "帕那辛奈克体育场",
+      "WanjinshiWarmUp": "万金石暖身赛",
+      "TheBundInternationalMarathon": "外滩国际马拉松10K",
+      "WanjinshiMiniMarathon": "万金石迷你马",
+      "AlishanRoadRunningExperience": "阿里山公路路跑体验赛",
+      "LanyuRoundabout": "兰屿环岛",
+      "BeijingMarathon": "北京马拉松21K"
+    }
   },
   "Portal": {
     "Introduce": "介绍",
@@ -124,7 +137,9 @@
     "LoginSuccessfully": "登入成功",
     "PlzCheckNamePwd": "请检查使用者名称及密码",
     "RegisterMailSuccessfully": "注册成功，请至注册信箱点击完成E-mail验证，五秒后将跳转回登入页面",
-    "RegisterPhoneSuccessfully": "注册成功，五秒后将跳转回登入页面"
+    "RegisterPhoneSuccessfully": "注册成功，五秒后将跳转回登入页面",
+    "RegularRaceDesc": "本月进行的例行排行赛为<span class='map-desc--highlight'>指定地图{{ mapName }}{{ distance }}KM</span><div>排行榜于每日06:00刷新，最终排名以{{ finalEventDate }} 结算成绩为主</div>",
+    "FinalDayOfMonth": " 当月最后一日 23:59"
   },
   "Dashboard": {
     "MyInfo": "我的资讯",

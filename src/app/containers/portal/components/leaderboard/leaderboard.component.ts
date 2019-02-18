@@ -15,6 +15,7 @@ import { GlobalEventsManager } from '@shared/global-events-manager';
 import { forkJoin } from 'rxjs/observable/forkJoin';
 import { IMyDpOptions } from 'mydatepicker';
 import * as moment from 'moment';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-leaderboard',
@@ -101,7 +102,8 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
     private router: Router,
     private rankFormService: RankFormService,
     private mapService: MapService,
-    private globalEventsManager: GlobalEventsManager
+    private globalEventsManager: GlobalEventsManager,
+    private translate: TranslateService
   ) {
     this.handleSearchEmail = debounce(this.handleSearchEmail, 1000);
   }
@@ -164,19 +166,32 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
 
         const { sessionId } = queryStrings;
         if (sessionId) {
-          const idx = this.rankTabs.findIndex(_tab => _tab.session_id.toString() === sessionId);
+          const idx = this.rankTabs.findIndex(
+            _tab => _tab.session_id.toString() === sessionId
+          );
           this.tabIdx = idx + 1;
           this.handleRealTimeValue(this.tabIdx);
         }
         // 判斷tabIdx 並對應塞參數
         if (this.tabIdx !== 0) {
-          const { is_real_time, time_stamp_start, time_stamp_end, event_id } = this.rankTabs[this.tabIdx - 1];
+          const {
+            is_real_time,
+            time_stamp_start,
+            time_stamp_end,
+            event_id
+          } = this.rankTabs[this.tabIdx - 1];
           if (is_real_time === 1) {
             params = params.set('start_date_time', time_stamp_start);
             params = params.set('end_date_time', time_stamp_end);
           } else {
-            params = params.set('startDate', moment(time_stamp_start * 1000).format('YYYY-MM-DD'));
-            params = params.set('endDate', moment(time_stamp_end * 1000).format('YYYY-MM-DD'));
+            params = params.set(
+              'startDate',
+              moment(time_stamp_start * 1000).format('YYYY-MM-DD')
+            );
+            params = params.set(
+              'endDate',
+              moment(time_stamp_end * 1000).format('YYYY-MM-DD')
+            );
           }
           params = params.set('event_id', `${event_id}`);
         } else {
@@ -184,14 +199,19 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
           params = params.set('endDate', this.endDate);
         }
 
-        this.idx = this.mapDatas.findIndex(_data => _data.map_id === this.mapId);
+        this.idx = this.mapDatas.findIndex(
+          _data => _data.map_id === this.mapId
+        );
         if (this.idx > -1) {
           this.mapName = this.mapDatas[this.idx].map_name;
           this.distance = this.mapDatas[this.idx].distance;
           this.bgImageUrl = `url(${this.mapImages[this.mapId - 1]})`;
         }
 
-        if (this.tabIdx === 0 || this.rankTabs[this.tabIdx - 1].is_real_time === 0) {
+        if (
+          this.tabIdx === 0 ||
+          this.rankTabs[this.tabIdx - 1].is_real_time === 0
+        ) {
           this.fetchRankForm(params);
         } else {
           this.fetchRealTimeRank(params);
@@ -208,7 +228,8 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
         this.globalEventsManager.getMapOptions(searchOptions);
         this.globalEventsManager.getMapId(this.mapId);
         this.globalEventsManager.getRankTabs(this.rankTabs);
-      });
+      }
+    );
     this.globalEventsManager.getRankFormEmitter.subscribe(res => {
       if (res) {
         const {
@@ -412,7 +433,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
         this.isRealTime = false;
       }
     } else {
-      this.finalEventDate = '';
+      this.finalEventDate = this.translate.instant('Portal.FinalDayOfMonth');
       this.finalEventStamp = 0;
       this.isRealTime = false;
     }
@@ -765,7 +786,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
         this.fetchRankForm(params);
       }
     } else {
-      this.finalEventDate = '';
+      this.finalEventDate = this.translate.instant('Portal.FinalDayOfMonth');
       params = params.set('startDate', this.startDate);
       params = params.set('endDate', this.endDate);
       this.fetchRankForm(params);
