@@ -40,6 +40,7 @@ import { CustomMaterialModule } from '@shared/custom-material.module.ts';
 import { BasicInfoComponent } from './components/user-profile/basic-info/basic-info.component';
 import { ActivityService } from '@shared/services/activity.service.ts';
 import { ReportService } from '@shared/services/report.service';
+import { ActivityOtherDetailsService } from '@shared/services/activity-other-details.service';
 
 @NgModule({
   imports: [
@@ -70,6 +71,7 @@ import { ReportService } from '@shared/services/report.service';
     UserProfileService,
     ActivityService,
     ReportService,
+    ActivityOtherDetailsService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: EmptyResponseBodyErrorInterceptor,

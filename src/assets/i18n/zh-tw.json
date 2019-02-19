@@ -406,7 +406,15 @@
       "ActivityCreate": "[**活動名稱**]由[**暱稱**]建立, 於[YYYY]年[MM]月[DD]日 @ hh:mm:ss 建立",
       "Chart": "圖表",
       "Details": "詳細資料",
-      "Section": "分段資料"
+      "Section": "分段資料",
+      "DeviceInfo": "裝置資訊",
+      "Brief": "簡述",
+      "Coordinate": "座標",
+      "FileInfo": "檔案資訊",
+      "Tag": "標籤",
+      "DataVersion": "資料版本",
+      "SynchronizationDate": "同步化日期",
+      "LastEditDate": "上次編輯日期"
     },
     "MyDevice": {
       "MyDevice": "我的裝置",

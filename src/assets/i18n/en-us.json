@@ -406,7 +406,15 @@
       "ActivityCreate": "[**活動名稱**] is created by [**暱稱**], created in [YYYY] /[MM] / [DD]@hh:mm:ss",
       "Chart": "Chart",
       "Details": "Details",
-      "Section": "Section"
+      "Section": "Section",
+      "DeviceInfo": "Device info",
+      "Brief": "Brief",
+      "Coordinate": "Coordinate",
+      "FileInfo": "File info",
+      "Tag": "Tag",
+      "DataVersion": "Data version",
+      "SynchronizationDate": "Synchronization date",
+      "LastEditDate": "Last edit date"
     },
     "MyDevice": {
       "MyDevice": "My device",

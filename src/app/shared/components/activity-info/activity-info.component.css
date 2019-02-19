@@ -1,3 +1,32 @@
+/* * {
+  border: 1px solid #333;
+} */
+.other-info {
+  width: 33%;
+  min-height: 400px;
+  display: inline-block;
+  background-color: #EDEDED;
+  vertical-align: top;
+}
+.other-info--4 {
+  width: 25%;
+  min-height: 200px;
+}
+.other-info--area {
+  position: absolute;
+  width: 100%;
+  background-color: #EDEDED;
+  padding: 10px 5px;
+  left: 0;
+  font-size: 16px;
+  color: #909090;
+}
+.other-info--section {
+  padding: 0 30px;
+}
+.other-info--section + .other-info--section {
+  margin-top: -8px;
+}
 .activty-title {
   border-bottom: 2px #e5e5e5 solid;
 }

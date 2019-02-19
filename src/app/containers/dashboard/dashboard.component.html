@@ -293,7 +293,7 @@
       </header>
     </mat-drawer-content>
   </mat-drawer-container>
-  <div class="main-body">
+  <div class="main-body" #mainBody>
     <div *ngIf="!isPreviewMode"
       [class.container]="isHadContainer"
       [hidden]="isLoading"
