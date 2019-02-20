@@ -233,6 +233,9 @@
 /deep/.mat-drawer-content {
   overflow: visible!important;
 }
+/deep/ mat-drawer.mat-drawer.mat-drawer-side {
+  z-index: 3;
+}
 .minimize-main-nav .ala-dashboard-nav {
   width: 100%;
 }
