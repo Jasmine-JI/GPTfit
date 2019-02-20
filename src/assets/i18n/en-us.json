@@ -30,7 +30,8 @@
       "PREVIOUS_PAGE": "Previous page",
       "OF_LABEL": "of"
     },
-    "FooterAnnouncement": "Center is powered by Alatech Copyright © Alatech Co.,Ltd. or its subsidiaries• Version: ",
+    "FooterAnnouncement": "Center is powered by Alatech Copyright © Alatech Co.,Ltd. or its subsidiaries",
+    "SideNavVersion": " Version: {{version}}",
     "Cancel": "Cancel",
     "Confirm": "Confirm",
     "Agree": "Agree",
