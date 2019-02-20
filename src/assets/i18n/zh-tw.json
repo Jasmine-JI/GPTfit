@@ -9,7 +9,8 @@
       "treadmill": "跑步機",
       "wearable": "穿戴式裝置",
       "spinBike": "飛輪",
-      "rowMachine": "划船機"
+      "rowMachine": "划船機",
+      "sensor": "感應器"
     },
     "UserManual": "使用說明",
     "GetDocument": "取得操作手冊",
