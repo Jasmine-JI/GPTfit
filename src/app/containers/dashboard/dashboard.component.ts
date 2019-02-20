@@ -50,6 +50,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
   userId: number;
   isAlphaVersion = false;
   version: string;
+  isHideFooter = false;
   constructor(
     private globalEventsManager: GlobalEventsManager,
     private authService: AuthService,
@@ -69,9 +70,11 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
           this.isHadContainer = false;
           this.isDefaultOpend = false;
           this.isSideNavOpend = false;
+          this.isHideFooter = true;
         } else {
           this.mode = 'side';
           this.isHadContainer = true;
+          this.isHideFooter = false;
         }
         if (
           _val.url.indexOf('/dashboard/coach-dashboard') > -1 ||

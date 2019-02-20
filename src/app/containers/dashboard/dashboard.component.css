@@ -1,7 +1,14 @@
 /* * {
   border: 1px solid #fff;
 } */
-
+.version {
+  color: #fff;
+  padding: 5px 15px 5px 20px;
+  position: absolute;
+  bottom: 0;
+  font-size: 12px;
+  opacity: 0.3;
+}
 .main-body {
   width: calc(100% - 273px);
   position: relative;

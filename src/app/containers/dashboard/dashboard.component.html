@@ -221,6 +221,7 @@
           </mat-accordion>
         </mat-nav-list>
       </nav>
+      <span class="version">{{'SH.SideNavVersion' | translate: {'version': version } }}</span>
     </mat-drawer>
 
     <mat-drawer-content>
@@ -285,8 +286,9 @@
     <footer
       class="footer footer-details"
       [ngClass]="footerAddClassName"
+      [style.display]="isHideFooter ? 'none' : 'block'"
     >
-      {{'SH.FooterAnnouncement' | translate}} {{version}}
+      {{'SH.FooterAnnouncement' | translate}}
     </footer>
   </div>
 </div>
