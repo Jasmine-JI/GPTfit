@@ -30,7 +30,8 @@
       "PREVIOUS_PAGE": "上一頁",
       "OF_LABEL": "共"
     },
-    "FooterAnnouncement": "Center 是由 Alatech 提供 Copyright © Alatech Co.,Ltd. 或其子公司• 版本: ",
+    "FooterAnnouncement": "Center 是由 Alatech 提供 Copyright © Alatech Co.,Ltd. 或其子公司",
+    "SideNavVersion": " 版本: {{version}}",
     "Cancel": "取消",
     "Confirm": "確定",
     "Agree": "同意",
