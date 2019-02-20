@@ -9,7 +9,8 @@
       "treadmill": "Treadmill",
       "wearable": "Wearable",
       "spinBike": "Spin Bikes",
-      "rowMachine": "Rowing Machines"
+      "rowMachine": "Rowing Machines",
+      "sensor": "Sensor"
     },
     "UserManual": "User Manual",
     "GetDocument": "Get document",

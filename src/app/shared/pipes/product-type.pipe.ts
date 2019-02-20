@@ -11,6 +11,8 @@ export class ProductTypePipe implements PipeTransform {
       return 'SH.ProductType.spinBike';
     } else if (value === 'rowMachine' || value === '4') {
       return 'SH.ProductType.rowMachine';
+    } else if (value === 'sensor' || value === '5') {
+      return 'SH.ProductType.sensor';
     } else {
       return 'unknown type';
     }
