@@ -104,15 +104,14 @@ export class InnerSettingsComponent implements OnInit {
       targetAdminName = '系統維護員(20)';
       adminLists = _.cloneDeep(this.systemMaintainers); // 深拷貝，避免win修改先影響settings table
       isCanOpen =
-        isSupervisor || isSystemDeveloper || isSystemMaintainer ? true : false;
+        isSupervisor || isSystemDeveloper ? true : false;
     } else {
       targetAdminName = '行銷與企劃員(29)';
       adminLists = _.cloneDeep(this.marketingDevelopers); // 深拷貝，避免win修改先影響settings table
       isCanOpen =
         isSupervisor ||
         isSystemDeveloper ||
-        isSystemMaintainer ||
-        isMarketingDeveloper
+        isSystemMaintainer
           ? true
           : false;
     }
