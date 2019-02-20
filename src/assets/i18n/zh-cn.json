@@ -9,7 +9,8 @@
       "treadmill": "跑步机",
       "wearable": "穿戴式装置",
       "spinBike": "飞轮",
-      "rowMachine": "划船机"
+      "rowMachine": "划船机",
+      "sensor": "传感器"
     },
     "UserManual": "使用说明",
     "GetDocument": "取得操作手册",
@@ -29,7 +30,8 @@
       "PREVIOUS_PAGE": "上一页",
       "OF_LABEL": "共"
     },
-    "FooterAnnouncement": "Center 由 Alatech 提供支持 版权所有 © Alatech Co.,Ltd. 或其子公司• 版本: ",
+    "FooterAnnouncement": "Center 由 Alatech 提供支持 版权所有 © Alatech Co.,Ltd. 或其子公司",
+    "SideNavVersion": " 版本: {{version}}",
     "Cancel": "取消",
     "Confirm": "确定",
     "Agree": "同意",

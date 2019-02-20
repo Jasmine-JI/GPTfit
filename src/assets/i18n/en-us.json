@@ -9,7 +9,8 @@
       "treadmill": "Treadmill",
       "wearable": "Wearable",
       "spinBike": "Spin Bikes",
-      "rowMachine": "Rowing Machines"
+      "rowMachine": "Rowing Machines",
+      "sensor": "Sensor"
     },
     "UserManual": "User Manual",
     "GetDocument": "Get document",
@@ -29,7 +30,8 @@
       "PREVIOUS_PAGE": "Previous page",
       "OF_LABEL": "of"
     },
-    "FooterAnnouncement": "Center is powered by Alatech Copyright © Alatech Co.,Ltd. or its subsidiaries• Version: ",
+    "FooterAnnouncement": "Center is powered by Alatech Copyright © Alatech Co.,Ltd. or its subsidiaries",
+    "SideNavVersion": " Version: {{version}}",
     "Cancel": "Cancel",
     "Confirm": "Confirm",
     "Agree": "Agree",
