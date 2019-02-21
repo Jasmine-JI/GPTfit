@@ -5,15 +5,15 @@
 </div>
 <mat-form-field>
   <mat-select [(value)]="groupLevel">
-    <mat-option value="00">全部階層</mat-option>
-    <mat-option value="30">品牌</mat-option>
-    <mat-option value="40">分店</mat-option>
-    <mat-option value="60">課程或教練</mat-option>
-    <mat-option value="90">一般群組</mat-option>
+    <mat-option value="00">{{ "Dashboard.Group.SearchGroup.AllLevel" | translate}}</mat-option>
+    <mat-option value="30">{{ "Dashboard.Group.GroupInfo.Brand" | translate}}</mat-option>
+    <mat-option value="40">{{ "Dashboard.Group.GroupInfo.Branch" | translate}}</mat-option>
+    <mat-option value="60">{{ "Dashboard.Group.SearchGroup.ClassOrTrainer" | translate}}</mat-option>
+    <mat-option value="90">{{ "Dashboard.Group.SearchGroup.NormalGroup" | translate}}</mat-option>
   </mat-select>
 </mat-form-field>
 <mat-form-field>
-  <input matInput placeholder="群組ID或名稱搜尋"
+  <input matInput placeholder="{{ 'Dashboard.Group.SearchGroup.group-id-or-name' | translate}}"
     [matAutocomplete]="auto"
     [(ngModel)]="searchWords"
     name="searchWords"

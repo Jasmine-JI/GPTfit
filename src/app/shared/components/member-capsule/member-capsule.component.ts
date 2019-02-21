@@ -14,6 +14,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { RightSettingWinComponent } from '../../../containers/dashboard/group/right-setting-win/right-setting-win.component';
 import { Router } from '@angular/router';
 import { MessageBoxComponent } from '../message-box/message-box.component';
+import { TranslateService } from '@ngx-translate/core';
+import { HashIdService } from '@shared/services/hash-id.service';
 
 @Component({
   selector: 'app-member-capsule',
@@ -51,7 +53,9 @@ export class MemberCapsuleComponent implements OnInit {
     private groupService: GroupService,
     private utils: UtilsService,
     private router: Router,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private translate: TranslateService,
+    private hashIdService: HashIdService
   ) {
     this.elementRef = myElement;
   }
@@ -93,7 +97,7 @@ export class MemberCapsuleComponent implements OnInit {
   }
   toggleMenu() {
     if (this.isSubGroupInfo && !this.isHadMenu) {
-      this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}`);
+      this.router.navigateByUrl(`/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}`);
     } else {
       this.active = !this.active;
     }
@@ -139,9 +143,9 @@ export class MemberCapsuleComponent implements OnInit {
       hasBackdrop: true,
       data: {
         title: 'message',
-        body: `是否確定要刪除該管理員`,
-        confirmText: '確定',
-        cancelText: '取消',
+        body: this.translate.instant('Dashboard.Group.AreUsureRemoveAdmin'),
+        confirmText: this.translate.instant('SH.Confirm'),
+        cancelText: this.translate.instant('SH.Cancel'),
         onConfirm: this.handleEditGroupMember.bind(this)
       }
     });
@@ -156,41 +160,41 @@ export class MemberCapsuleComponent implements OnInit {
       accessRight = this.groupLevel;
     }
     // if (this.groupLevel === '80' || this.groupLevel === '60') {
-      const body = {
-        token: this.token,
-        groupId: this.groupId,
-        userId: this.userId,
-        accessRight
-      };
-      this.groupService.editGroupMember(body).subscribe(res => {
-        if (res.resultCode === 200) {
-          this.onAssignAdmin.emit(this.userId);
-          this.dialog.closeAll();
-        }
-        if (res.resultCode === 401) {
-          this.dialog.open(MessageBoxComponent, {
-            hasBackdrop: true,
-            data: {
-              title: 'message',
-              body: res.resultMessage
-            }
-          });
-        }
-      });
+    const body = {
+      token: this.token,
+      groupId: this.groupId,
+      userId: this.userId,
+      accessRight
+    };
+    this.groupService.editGroupMember(body).subscribe(res => {
+      if (res.resultCode === 200) {
+        this.onAssignAdmin.emit(this.userId);
+        this.dialog.closeAll();
+      }
+      if (res.resultCode === 401) {
+        this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          data: {
+            title: 'message',
+            body: res.resultMessage
+          }
+        });
+      }
+    });
     // } else {
-      // this.dialog.open(RightSettingWinComponent, {
-      //   hasBackdrop: true,
-      //   data: {
-      //     name: this.name,
-      //     groupId: this.groupId,
-      //     userId: this.userId,
-      //     groupLevel: this.groupLevel
-      //   }
-      // });
+    // this.dialog.open(RightSettingWinComponent, {
+    //   hasBackdrop: true,
+    //   data: {
+    //     name: this.name,
+    //     groupId: this.groupId,
+    //     userId: this.userId,
+    //     groupLevel: this.groupLevel
+    //   }
+    // });
     // }
   }
   goToManage() {
-    this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}/edit`);
+    this.router.navigateByUrl(`/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}/edit`);
   }
   handleDeleteGroupMember() {
     const body = {
@@ -210,9 +214,9 @@ export class MemberCapsuleComponent implements OnInit {
       hasBackdrop: true,
       data: {
         title: 'message',
-        body: `是否確定要刪除該成員`,
-        confirmText: '確定',
-        cancelText: '取消',
+        body: this.translate.instant('Dashboard.Group.AreUsureRemoveMember'),
+        confirmText: this.translate.instant('SH.Confirm'),
+        cancelText: this.translate.instant('SH.Cancel'),
         onConfirm: this.handleDeleteGroupMember.bind(this)
       }
     });
@@ -235,16 +239,19 @@ export class MemberCapsuleComponent implements OnInit {
       hasBackdrop: true,
       data: {
         title: 'message',
-        body: `是否確定要移除此群組`,
-        confirmText: '確定',
-        cancelText: '取消',
+        body: this.translate.instant('Dashboard.Group.AreUsureRemoveGroup'),
+        confirmText: this.translate.instant('SH.Confirm'),
+        cancelText: this.translate.instant('SH.Cancel'),
         onConfirm: this.handleDeleteGroup.bind(this)
       }
     });
   }
-  goToUserProfile() {
+  goToUserProfileInGroupInfo() {
     if (!this.isSubGroupInfo && !this.isHadMenu) {
-      this.router.navigateByUrl(`/user-profile/${this.userId}`);
+      this.router.navigateByUrl(`/user-profile/${this.hashIdService.handleUserIdEncode(this.userId)}`);
     }
+  }
+  goToUserProfileInEditGroupInfo() {
+    this.router.navigateByUrl(`/user-profile/${this.hashIdService.handleUserIdEncode(this.userId)}`);
   }
 }

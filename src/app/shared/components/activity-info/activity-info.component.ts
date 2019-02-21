@@ -18,8 +18,14 @@ import { UtilsService } from '@shared/services/utils.service';
 import { Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material';
 import { UserInfoService } from '../../../containers/dashboard/services/userInfo.service';
+import { transform, WGS84, BD09, GCJ02 } from 'gcoord';
+import { HashIdService } from '@shared/services/hash-id.service';
+import chinaBorderData from './border-data_china';
+import taiwanBorderData from './border-data_taiwan';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
+declare var google: any;
+declare var BMap: any;
 
 @Component({
   selector: 'app-activity-info',
@@ -36,13 +42,23 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     'speed',
     'distance'
   ];
-
+  isShowMap = true;
   isdisplayHcharts = true;
   chartLoading = false;
   basicLoading = false;
   rainLoading = false;
-
+  @ViewChild('gmap') gmapElement: ElementRef;
+  map: any;
+  @ViewChild('bmap') bmapElement: ElementRef;
+  bmap: any;
+  startMark: any;
+  endMark: any;
+  playerMark: any;
   seriesIdx = 0;
+  gpxPoints = [];
+  isPlayingGpx = false;
+  stopPointIdx = 0;
+  playerTimer: any;
   @ViewChild('speedChartTarget')
   speedChartTarget: ElementRef;
   @ViewChild('elevationChartTarget')
@@ -101,10 +117,15 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   progressRef: NgProgressRef;
   totalSecond: number;
   resolutionSeconds: number;
-  isOriginalMode = false;
   isInitialChartDone = false;
   charts = [];
   finalDatas: any;
+  mapKind: string; // 1 google map,  2 baidu
+  gpxBmapPoints = [];
+  playBMK: any;
+  isHideMapRadioBtn = false;
+  isInChinaArea: boolean;
+  isDebug = false;
   constructor(
     private utils: UtilsService,
     private renderer: Renderer2,
@@ -113,7 +134,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     private ngProgress: NgProgress,
     private globalEventsManager: GlobalEventsManager,
     private router: Router,
-    private userInfoService: UserInfoService
+    private userInfoService: UserInfoService,
+    private hashIdService: HashIdService
   ) {
     /**
      * 重写内部的方法， 这里是将提示框即十字准星的隐藏函数关闭
@@ -129,12 +151,13 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       // this.series.chart.tooltip.refresh(this); // 显示提示框
       this.series.chart.xAxis[0].drawCrosshair(event, this); // 显示十字准星线
     };
+    this.resetMkPoint = this.resetMkPoint.bind(this);
   }
 
   ngOnInit() {
     Highcharts.charts.length = 0; // 初始化global highchart物件
-    if (location.search.indexOf('?original') > -1) {
-      this.isOriginalMode = true;
+    if (location.search.indexOf('?debug') > -1) {
+      this.isDebug = true;
     }
     if (location.pathname.indexOf('/dashboard/activity/') > -1) {
       this.isPortal = false;
@@ -146,9 +169,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     this.token = this.utils.getToken();
     this.getInfo(fieldId);
   }
-  ngAfterViewInit() {
-    // this.initHchart();
-  }
+  ngAfterViewInit() {}
   ngOnDestroy() {
     if (!this.isShowNoRight && !this.isFileIDNotExist) {
       Highcharts.charts.forEach((_highChart, idx) => {
@@ -158,6 +179,230 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
   }
+  handleBMap() {
+    this.bmap = new BMap.Map(this.bmapElement.nativeElement);
+    let isNormalPoint = false;
+    const originRealIdx = [];
+    // let count = 0;
+    // let lonTotal = 0;
+    // let latTotal = 0;
+    this.activityPoints.forEach((_point, idx) => {
+      if (+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100) {
+        isNormalPoint = false;
+        this.gpxBmapPoints.push(null);
+      } else {
+        if (!isNormalPoint) {
+          isNormalPoint = true;
+          originRealIdx.push(idx);
+        }
+        let p;
+        if (this.isInChinaArea) {
+          const transformPoint = transform(
+            [
+              parseFloat(_point.longitudeDegrees),
+              parseFloat(_point.latitudeDegrees)
+            ],
+            WGS84,
+            BD09
+          );
+          p = new BMap.Point(transformPoint[0], transformPoint[1]);
+        } else {
+          p = new BMap.Point(
+            parseFloat(_point.longitudeDegrees),
+            parseFloat(_point.latitudeDegrees)
+          );
+        }
+        this.gpxBmapPoints.push(p);
+        // lonTotal = lonTotal + +_point.longitudeDegrees;
+        // latTotal = latTotal + +_point.latitudeDegrees;
+        // count++;
+      }
+    });
+    // const centerPoint = new BMap.Point(lonTotal / count, latTotal / count);
+    this.gpxBmapPoints = this.gpxBmapPoints.map((_gpxPoint, idx) => {
+      if (!_gpxPoint) {
+        const index = originRealIdx.findIndex(_tip => _tip > idx);
+        if (index === -1) {
+          return this.gpxBmapPoints[originRealIdx[originRealIdx.length - 1]];
+        }
+        return this.gpxBmapPoints[originRealIdx[index]];
+      }
+      return _gpxPoint;
+    });
+    const polyline = new BMap.Polyline(this.gpxBmapPoints); // 创建折线
+    this.bmap.centerAndZoom(
+      this.gpxBmapPoints[this.gpxBmapPoints.length - 1],
+      16
+    );
+
+    this.bmap.enableScrollWheelZoom(true);
+    const startIcon = new BMap.Icon(
+      '/assets/map_marker_start.svg',
+      new BMap.Size(33, 50),
+      {
+        anchor: new BMap.Size(16, 50)
+      }
+    );
+    const startBMK = new BMap.Marker(this.gpxBmapPoints[0], {
+      icon: startIcon
+    });
+    const endIcon = new BMap.Icon(
+      '/assets/map_marker_end.svg',
+      new BMap.Size(33, 50),
+      {
+        anchor: new BMap.Size(16, 50)
+      }
+    );
+    const endBMK = new BMap.Marker(
+      this.gpxBmapPoints[this.gpxBmapPoints.length - 1],
+      {
+        icon: endIcon
+      }
+    );
+    const playIcon = new BMap.Icon(
+      '/assets/map_marker_player.svg',
+      new BMap.Size(12, 12),
+      {
+        anchor: new BMap.Size(6, 12)
+      }
+    );
+    this.playBMK = new BMap.Marker(this.gpxBmapPoints[0], {
+      icon: playIcon
+    });
+    this.bmap.addOverlay(startBMK);
+    this.bmap.addOverlay(endBMK);
+    this.bmap.addOverlay(this.playBMK);
+
+    this.bmap.addOverlay(polyline); // 将折线覆盖到地图上
+  }
+  handleBorderData(point, vs) {
+    const x = point[0],
+      y = point[1];
+    let inside = false;
+
+    for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+      const xi = vs[i][0],
+        yi = vs[i][1];
+      const xj = vs[j][0],
+        yj = vs[j][1];
+      const intersect =
+        yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
+
+      if (intersect) {
+        inside = !inside;
+      }
+    }
+    return inside;
+  }
+  handleGoogleMap(isInTaiwan) {
+    const mapProp = {
+      center: new google.maps.LatLng(24.123499, 120.66014),
+      zoom: 18,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    this.map = new google.maps.Map(this.gmapElement.nativeElement, mapProp);
+    const bounds = new google.maps.LatLngBounds();
+    let isNormalPoint = false;
+    const originRealIdx = [];
+    this.activityPoints.forEach((_point, idx) => {
+      if (+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100) {
+        isNormalPoint = false;
+        this.gpxPoints.push(null);
+      } else {
+        if (!isNormalPoint) {
+          isNormalPoint = true;
+          originRealIdx.push(idx);
+        }
+        let p;
+        if (this.isInChinaArea && !isInTaiwan) {
+          const _transformPoint = transform(
+            [
+              parseFloat(_point.longitudeDegrees),
+              parseFloat(_point.latitudeDegrees)
+            ],
+            WGS84,
+            GCJ02
+          );
+          p = new google.maps.LatLng(_transformPoint[1], _transformPoint[0]);
+        } else {
+          p = new google.maps.LatLng(
+            parseFloat(_point.latitudeDegrees),
+            parseFloat(_point.longitudeDegrees)
+          );
+        }
+        this.gpxPoints.push(p);
+      }
+    });
+    this.gpxPoints = this.gpxPoints.map((_gpxPoint, idx) => {
+      if (!_gpxPoint) {
+        const index = originRealIdx.findIndex(_tip => _tip > idx);
+        if (index === -1) {
+          bounds.extend(
+            this.gpxPoints[originRealIdx[originRealIdx.length - 1]]
+          );
+          return this.gpxPoints[originRealIdx[originRealIdx.length - 1]];
+        }
+        bounds.extend(this.gpxPoints[originRealIdx[index]]);
+        return this.gpxPoints[originRealIdx[index]];
+      }
+      bounds.extend(_gpxPoint);
+      return _gpxPoint;
+    });
+    this.startMark = new google.maps.Marker({
+      position: this.gpxPoints[0],
+      title: 'start point',
+      icon: '/assets/map_marker_start.svg'
+    });
+    this.startMark.setMap(this.map);
+    this.endMark = new google.maps.Marker({
+      position: this.gpxPoints[this.gpxPoints.length - 1],
+      title: 'end point',
+      icon: '/assets/map_marker_end.svg'
+    });
+    this.endMark.setMap(this.map);
+    this.playerMark = new google.maps.Marker({
+      position: this.gpxPoints[0],
+      icon: '/assets/map_marker_player.svg'
+    });
+    this.playerMark.setMap(this.map);
+    const poly = new google.maps.Polyline({
+      path: this.gpxPoints,
+      strokeColor: '#FF00AA',
+      strokeOpacity: 0.7,
+      strokeWeight: 4
+    });
+    poly.setMap(this.map);
+    this.map.fitBounds(bounds);
+  }
+  resetMkPoint(points, i) {
+    this.playerMark.setPosition(points[i]);
+    if (i < points.length) {
+      this.isPlayingGpx = true;
+      this.playerTimer = setTimeout(() => {
+        i++;
+        this.stopPointIdx++;
+        this.resetMkPoint(points, i);
+      }, 50);
+    } else {
+      this.stopPointIdx = 0;
+      this.isPlayingGpx = false;
+      this.playerMark.setPosition(points[0]);
+    }
+  }
+  playGpx() {
+    if (this.stopPointIdx > 0) {
+      this.resetMkPoint(this.gpxPoints, this.stopPointIdx);
+    } else {
+      this.resetMkPoint(this.gpxPoints, 0);
+    }
+  }
+  stopPlayGpx() {
+    this.isPlayingGpx = false;
+    clearTimeout(this.playerTimer);
+  }
+  handleMapKind(e) {
+    this.mapKind = e.value;
+  }
   getInfo(id) {
     this.isLoading = true;
 
@@ -166,6 +411,9 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       token: this.token,
       fileId: id
     };
+    if (this.isDebug) {
+      body['debug'] = this.isDebug.toString();
+    }
     this.activityService.fetchSportListDetail(body).subscribe(res => {
       this.activityInfo = res.activityInfoLayer;
       if (res.resultCode === 402) {
@@ -181,12 +429,60 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.isShowNoRight = false;
       this.handleLapColumns();
       this.activityPoints = res.activityPointLayer;
+      this.isInChinaArea = false;
+      let isInTaiwan = false;
+      let isSomeGpsPoint = false;
+      this.activityPoints.forEach(_point => {
+        if (
+          this.handleBorderData(
+            [+_point.longitudeDegrees, +_point.latitudeDegrees],
+            taiwanBorderData
+          )
+        ) {
+          isInTaiwan = true;
+        }
+        if (
+          this.handleBorderData(
+            [+_point.longitudeDegrees, +_point.latitudeDegrees],
+            chinaBorderData
+          )
+        ) {
+          this.isInChinaArea = true;
+        }
+        if (
+          _point.hasOwnProperty('latitudeDegrees') &&
+          +_point.latitudeDegrees !== 100 &&
+          _point.latitudeDegrees &&
+          !isSomeGpsPoint
+        ) {
+          isSomeGpsPoint = true;
+        }
+      });
+      if (isSomeGpsPoint) {
+        this.isShowMap = true;
+      } else {
+        this.isShowMap = false;
+      }
+      if (this.isShowMap) {
+        if (!this.isInChinaArea || isInTaiwan) {
+          this.mapKind = '1';
+          // this.handleGoogleMap();
+        } else {
+          this.mapKind = '2';
+          // this.isHideMapRadioBtn = true;
+        }
+        this.handleGoogleMap(isInTaiwan);
+        this.handleBMap();
+      }
       this.dataSource.data = res.activityLapLayer;
       this.fileInfo = res.fileInfo;
       if (this.fileInfo.author.indexOf('?') > -1) {
         // 防止後續author會帶更多參數，先不寫死
         this.userLink.userName = this.fileInfo.author.split('?')[0];
-        this.userLink.userId = this.fileInfo.author.split('?')[1].split('=')[1];
+        this.userLink.userId = this.fileInfo.author
+          .split('?')[1]
+          .split('=')[1]
+          .replace(')', '');
       }
       this.infoDate = this.handleDate(this.activityInfo.startTime);
       this.totalSecond = this.activityInfo.totalSecond;
@@ -286,6 +582,15 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           const event = _chart.pointer.normalize(e); // Find coordinates within the chart
           const point = _chart.series[0].searchPoint(event, true); // Get the hovered point
           if (point && point.index) {
+            if (this.isShowMap && !this.isPlayingGpx) {
+              if (this.mapKind === '1') {
+                this.playerMark.setPosition(this.gpxPoints[point.index]);
+              }
+              if (this.mapKind === '2') {
+                this.playBMK.setPosition(this.gpxBmapPoints[point.index]);
+              }
+              this.stopPointIdx = point.index;
+            }
             point.highlight(e);
           }
         }
@@ -363,7 +668,11 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   goToProfile() {
-    this.router.navigateByUrl(`/user-profile/${this.userLink.userId}`);
+    this.router.navigateByUrl(
+      `/user-profile/${this.hashIdService.handleUserIdEncode(
+        this.userLink.userId
+      )}`
+    );
   }
   goBack() {
     window.history.back();

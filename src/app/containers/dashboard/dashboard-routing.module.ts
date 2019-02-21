@@ -34,6 +34,8 @@ import { ProductInfoComponent } from './components/device/product-info/product-i
 import { TrainLiveComponent } from './components/train-live/train-live.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { PersonalPreferencesComponent } from './components/settings/personal-preferences/personal-preferences.component';
+import { InnerTestComponent } from './components/inner-test/inner-test.component';
+import { CloudRunGpxComponent } from './components/cloud-run-gpx/cloud-run-gpx.component';
 
 const routes: Routes = [
   {
@@ -157,6 +159,16 @@ const routes: Routes = [
       {
         path: 'system/create-brand-group',
         component: CreateGroupComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/inner-test',
+        component: InnerTestComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/inner-gpx',
+        component: CloudRunGpxComponent,
         canActivate: [DashboardGuard]
       },
       {

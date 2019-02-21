@@ -1,0 +1,140 @@
+<mat-tab-group class="inner-test">
+  <mat-tab label="驗證圖片">
+    <ng-container *ngIf="!isWrong">
+      <button class="icon-btn" (click)="openSelectorWin($event)">
+        <i class="icon-svg_web-icon_p1_021-add_friend group-icon"
+        style="font-size: 30px"
+        ></i>
+      </button>
+      <h1>
+        <label>使用者名字:</label>{{userName}}
+      </h1>
+      <div class="photo-section">
+        <label>small icon:</label>
+        <br>
+        <label>圖片尺寸:</label>{{smallIconWidth}}*{{smallIconHeight}}
+        <br>
+        <label>檔案大小(以jpg格式計算):</label>{{smallFileSize / 1024 | number: '0.1-1'}} kb
+        <br>
+        <span *ngIf="!smallIcon" style="color: #cb5e5e">沒圖片!! </span>
+        <img *ngIf="smallIcon" [src]="(smallIcon | safeHtml)" />
+      </div>
+
+      <div class="photo-section">
+        <label>middle icon:</label>
+        <br>
+        <label>圖片尺寸:</label>{{middleIconWidth}}*{{middleIconHeight}}
+        <br>
+      <label>檔案大小(以jpg格式計算):</label>{{middleFileSize / 1024 | number: '0.1-1'}} kb
+        <br>
+        <span *ngIf="!middleIcon" style="color: #cb5e5e">沒圖片!! </span>
+        <img *ngIf="middleIcon" [src]="(middleIcon | safeHtml)" />
+      </div>
+
+      <div class="photo-section">
+        <label>large icon:</label>
+        <br>
+        <label>圖片尺寸:</label>{{largeIconWidth}}*{{largeIconHeight}}
+        <br>
+        <label>檔案大小(以jpg格式計算):</label>{{largeFileSize / 1024  | number: '0.1-1'}} kb
+        <br>
+        <span *ngIf="!largeIcon" style="color: #cb5e5e">沒圖片!! </span>
+        <img *ngIf="largeIcon" [src]="(largeIcon | safeHtml)" />
+      </div>
+    </ng-container>
+    <span *ngIf="isWrong">你沒有權限操作喔!!!!!!</span>
+  </mat-tab>
+  <mat-tab label="驗證Hash Group ID">
+    <div class="hashId">
+      <label>GroupId encode:</label>
+      <ul>
+        <li>
+          <div>Input</div>
+          <div>Output</div>
+        </li>
+        <li>
+          <input (keyup)="onGroupEncode($event)" type="text" />
+          <div>{{hashGroupId || 'nothing'}}</div>
+        </li>
+      </ul>
+      <label>GroupId decode:</label>
+      <ul>
+        <li>
+          <div>Input</div>
+          <div>Output</div>
+        </li>
+        <li>
+          <div>{{groupId || 'nothing'}}</div>
+          <input (keyup)="onGroupDecode($event)" />
+        </li>
+      </ul>
+    </div>
+    <div class="row">
+      <div class="col-md-4">
+        <img *ngIf="groupImg"
+          [src]="(groupImg | safeHtml)"
+          style="width: 100%"
+          [class.image-is--default]="groupImg === '/assets/images/group-default.svg'"
+        >
+      </div>
+      <div class="col-md-8">
+        <div>
+          <label>群組名稱:</label>{{ groupInfo?.groupName }}
+        </div>
+        <div>
+          <label>階層: </label>{{ this.groupLevel | groupLevelTranslate }}
+        </div>
+        <div>
+          <label>狀態: </label>{{ groupInfo?.groupStatus | groupStatus | translate }}
+        </div>
+        <div>
+          <label>介紹: </label><div [innerHTML]="groupInfo?.groupDesc | lineBreak"></div>
+        </div>
+      </div>
+    </div>
+  </mat-tab>
+  <mat-tab label="驗證Hash User ID">
+    <div class="hashId">
+      <label>UserId encode:</label>
+      <ul>
+        <li>
+          <div>Input</div>
+          <div>Output</div>
+        </li>
+        <li>
+          <input (keyup)="onUserEncode($event)" type="text" />
+          <div>{{hashUserId || 'nothing'}}</div>
+        </li>
+      </ul>
+      <label>UserId decode:</label>
+      <ul>
+        <li>
+          <div>Input</div>
+          <div>Output</div>
+        </li>
+        <li>
+          <div>{{userId || 'nothing'}}</div>
+          <input (keyup)="onUserDecode($event)" />
+        </li>
+      </ul>
+    </div>
+    <div class="row">
+      <div class="col-md-4">
+        <img *ngIf="userImg"
+          [src]="(userImg | safeHtml)"
+        >
+      </div>
+      <div class="col-md-8">
+        <div>
+          <label>名稱:</label>
+          {{userName}}
+        </div>
+        <div>
+          <label>介紹:</label>
+          {{description}}
+        </div>
+      </div>
+    </div>
+  </mat-tab>
+</mat-tab-group>
+

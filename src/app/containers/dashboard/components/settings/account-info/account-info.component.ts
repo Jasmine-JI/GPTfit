@@ -5,6 +5,7 @@ import { UtilsService } from '@shared/services/utils.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-account-info',
@@ -20,7 +21,8 @@ export class AccountInfoComponent implements OnInit {
     private utils: UtilsService,
     private settingsService: SettingsService,
     private router: Router,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
@@ -53,9 +55,9 @@ export class AccountInfoComponent implements OnInit {
         hasBackdrop: true,
         data: {
           title: 'message',
-          body: `您的綁定strava已失效，是否重新綁定您的strava?`,
-          confirmText: '確定',
-          cancelText: '取消',
+          body: this.translate.instant('Dashboard.Settings.ReBindStravaText'),
+          confirmText: this.translate.instant('SH.Confirm'),
+          cancelText: this.translate.instant('SH.Cancel'),
           onConfirm: () => {
             location.href =
               'https://www.strava.com/oauth/authorize?' +
@@ -77,8 +79,8 @@ export class AccountInfoComponent implements OnInit {
           hasBackdrop: true,
           data: {
             title: 'message',
-            body: `更新strava狀態失敗`,
-            confirmText: '確定'
+            body: this.translate.instant('Dashboard.Settings.UpdateStravaFailed'),
+            confirmText: this.translate.instant('SH.Confirm')
           }
         });
       } else {

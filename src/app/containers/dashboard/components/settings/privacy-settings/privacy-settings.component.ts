@@ -9,6 +9,7 @@ import { SettingsService } from '../../../services/settings.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { MatSnackBar } from '@angular/material';
 import { deviceHint } from './deviceHint';
+import { TranslateService } from '@ngx-translate/core';
 
 declare var google: any;
 
@@ -37,7 +38,8 @@ export class PrivacySettingsComponent implements OnInit {
   constructor(
     private settingsService: SettingsService,
     private utils: UtilsService,
-    private snackbar: MatSnackBar
+    private snackbar: MatSnackBar,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
@@ -137,11 +139,19 @@ export class PrivacySettingsComponent implements OnInit {
     }
     this.settingsService.updateUserProfile(body).subscribe(res => {
       if (res.resultCode === 200) {
-        this.snackbar.open('成功更新隱私權設定', 'OK', {
-          duration: 5000
-        });
+        this.snackbar.open(
+          this.translate.instant(
+            'Dashboard.Settings.UpdatePrivacySettingsSuccessfully'
+          ),
+          'OK',
+          { duration: 5000 }
+        );
       } else {
-        this.snackbar.open('更新失敗', 'OK', { duration: 5000 });
+        this.snackbar.open(
+          this.translate.instant('Dashboard.Settings.UpdateFailed'),
+          'OK',
+          { duration: 5000 }
+        );
       }
     });
   }

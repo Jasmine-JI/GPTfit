@@ -39,13 +39,13 @@
     </div>
     <div class="activity-block">
       <p style="color: #919191">
-        [{{ fileInfo?.dispName}}] {{'SH.By' | translate}}
+        {{ fileInfo?.dispName}} {{'SH.By' | translate}}
         <span class="activity-author"
           (click)="goToProfile()"
         >
           {{userLink?.userName}}
         </span>
-          {{'SH.Record' | translate}}，{{infoDate}} {{'SH.Create' | translate}}
+        <ng-container *ngIf="userLink?.userName.length > 0">{{'SH.Record' | translate}}  ，</ng-container>{{infoDate}} {{'SH.Create' | translate}}
       </p>
       <div class="d-flex" style="align-items:center">
         <div class="activty-icon">
@@ -168,6 +168,50 @@
         </div>
       </div>
     </div>
+    <ng-container *ngIf="isShowMap">
+      <div class="ala-dashboard-title activty-title">
+        {{'Dashboard.MyActivity.Map' | translate}}
+      </div>
+      <div style="margin-top: 15px" *ngIf="!isHideMapRadioBtn">
+        <mat-radio-group  [(ngModel)]="mapKind">
+          <mat-radio-button value="1"
+            (change)="handleMapKind($event)"
+          >Google</mat-radio-button>
+          <mat-radio-button value="2"
+            (change)="handleMapKind($event)"
+            color="primary"
+          >Baidu</mat-radio-button>
+        </mat-radio-group>
+      </div>
+      <div style="position: relative;">
+        <div [style.transform]="mapKind === '1' ? 'translateY(-252%)' : 'translateY(0%)'"
+          #bmap
+          style="height: 400px"
+          [style.height]="mapKind === '1' ? '0px' : '400px'"
+        ></div>
+
+        <div [style.transform]="mapKind === '2' ? 'translateY(-370%)' : 'translateY(0%)'"
+          #gmap
+          style="margin-bottom: 15px;height: 400px"
+          [style.height]="mapKind === '2' ? '0px' : '400px'"
+        ></div>
+        <!-- <button class="map-play" (click)="playGpx()"
+          *ngIf="!isPlayingGpx"
+        >
+          <i class="material-icons">
+          play_arrow
+          </i>
+        </button>
+        <button class="map-play" (click)="stopPlayGpx()"
+          *ngIf="isPlayingGpx"
+        >
+          <i class="material-icons">
+            pause
+          </i>
+        </button> -->
+      </div>
+    </ng-container>
+
     <div class="ala-dashboard-title activty-title">
       {{'Dashboard.MyActivity.Chart' | translate}}
     </div>
@@ -338,7 +382,7 @@
             </div>
             <div class="activity-info__area--block">
               <div>
-                {{activityInfo?.avgSpeed}}
+                {{activityInfo?.avgSpeed || 0}}
               </div>
               <span class="data-label">
                 {{'SH.AvgSpeed' | translate}}
@@ -346,7 +390,7 @@
             </div>
             <div class="activity-info__area--block">
               <div>
-                {{activityInfo?.avgMoveSpeed}}
+                {{activityInfo?.avgMoveSpeed || 0}}
               </div>
               <span class="data-label">
                 {{'Dashboard.MyActivity.AvgMovingSpeed' | translate}}
@@ -354,7 +398,7 @@
             </div>
             <div class="activity-info__area--block">
               <div>
-                {{activityInfo?.maxSpeed}}
+                {{activityInfo?.maxSpeed || 0}}
               </div>
               <span class="data-label">
                 {{'Dashboard.MyActivity.MaxSpeed' | translate}}
@@ -627,14 +671,14 @@
             *ngIf="activityInfo?.type === '4'"
           >
             <div class="ala-dashboard-title activty-title">
-              游泳動態
+              {{'Dashboard.MyActivity.SwimmingDynamics' | translate}}
             </div>
             <div class="activity-info__area--block">
               <div>
                 {{activityInfo?.swimAvgCadence || 0}}
               </div>
               <span class="data-label">
-                平均划頻(游泳)
+                {{'Dashboard.MyActivity.AvgRowingCandence' | translate}}({{'Dashboard.MyActivity.Swim' | translate}})
               </span>
             </div>
             <div class="activity-info__area--block">
@@ -642,7 +686,7 @@
                 {{activityInfo?.swimMaxCadence || 0}}
               </div>
               <span class="data-label">
-                最高划頻(游泳)
+                {{'Dashboard.MyActivity.MaxRowingCandence' | translate}}({{'Dashboard.MyActivity.Swim' | translate}})
               </span>
             </div>
           </div>
@@ -650,14 +694,14 @@
             *ngIf="activityInfo?.type === '4'"
           >
             <div class="ala-dashboard-title activty-title">
-              泳池
+              {{'Dashboard.MyActivity.SwimmingPool' | translate}}
             </div>
             <div class="activity-info__area--block">
               <div>
                 {{activityInfo?.poolLengthMeters || 0}}
               </div>
               <span class="data-label">
-                泳池長度
+                {{'Dashboard.MyActivity.PoolLength' | translate}}
               </span>
             </div>
             <div class="activity-info__area--block">
@@ -665,7 +709,7 @@
                 {{activityInfo?.poolSwimAvgCadence || 0}}
               </div>
               <span class="data-label">
-                平均划水數
+                {{'Dashboard.MyActivity.AverageStrokeNumber' | translate}}
               </span>
             </div>
           </div>
@@ -717,7 +761,7 @@
           <ng-container matColumnDef="dispName">
             <th mat-header-cell *matHeaderCellDef>
               <span *ngIf="activityInfo?.type === '3'">該組名稱</span>
-              <span *ngIf="activityInfo?.type === '4'">泳姿名稱</span>
+              <span *ngIf="activityInfo?.type === '4'">{{'Dashboard.MyActivity.SwimmingName' | translate}}</span>
             </th>
             <ng-container *ngIf="activityInfo?.type !== '4'">
               <td mat-cell *matCellDef="let element"

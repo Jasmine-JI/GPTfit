@@ -233,6 +233,9 @@
 /deep/.mat-drawer-content {
   overflow: visible!important;
 }
+/deep/ mat-drawer.mat-drawer.mat-drawer-side {
+  z-index: 3;
+}
 .minimize-main-nav .ala-dashboard-nav {
   width: 100%;
 }
@@ -264,6 +267,11 @@
 .dropdown.show .dropdown-menu.dropdown-user-menu.show {
   top: -3px !important;
   left: 5px !important;
+}
+@media (hover: none) {
+  .mat-expansion-panel:not(.mat-expanded):not([aria-disabled=true]) .mat-expansion-panel-header:hover {
+    background: initial;
+  }
 }
 
 @media(max-width: 768px) {

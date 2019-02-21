@@ -295,7 +295,8 @@ export class EnrollFormComponent implements OnInit {
       data: {
         title: `人員選擇器`,
         adminLists: list,
-        onConfirm: this.handleConfirm.bind(this)
+        onConfirm: this.handleConfirm.bind(this),
+        isInnerAdmin: true
       }
     });
   }
