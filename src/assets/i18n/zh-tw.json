@@ -176,7 +176,27 @@
       "EventName": "賽事名稱",
       "Date": "賽事日期",
       "MainEvent": "主要競賽",
-      "ManagementFunc": "管理功能"
+      "ManagementFunc": "管理功能",
+      "BrandPlan": {
+        "Plan": "方案",
+        "Fee": "費用",
+        "NumberofBranch": "分店數量",
+        "NumberofClass": "課程數量",
+        "NumberofMember": "可入會成員",
+        "NumberofAdministrator": "可建立管理員",
+        "CustomBrand": "自訂品牌營業體",
+        "Train-live-broadcast-and-record": "Train Live轉播與記錄派發",
+        "Establish-a-relationship-between-trainers-and-members": "建立培訓師與鍛鍊者關係",
+        "Advanced-equipment-maintenance-and-proactive-reminder": "進階設備維護與主動式提醒",
+        "ProfessionalTrainingProgram": "編列專業訓練計畫",
+        "GroupMemberTrainingMenu": "派發群組學員訓練菜單",
+        "trainerSportRecord": "培訓者運動紀錄",
+        "CustomBrand2": "自訂品牌",
+        "FreeTrial": "體驗方案",
+        "Studio": "工作室方案",
+        "SME": "中小企業方案",
+        "Custom": "客製方案"
+      }
     },
     "TrainLive": {
       "NewsLive": "最新直播",
@@ -292,7 +312,9 @@
         "group-id-or-name": "群組ID或名稱搜尋",
         "Name":"名稱",
         "Status": "狀態",
-        "Back": "返回"
+        "Back": "返回",
+        "AllLevel": "全部階層",
+        "ClassOrTrainer": "課程或教練"
       }
     },
     "BrandManagement": {

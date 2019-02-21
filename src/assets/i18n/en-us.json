@@ -176,7 +176,27 @@
       "EventName": "Event name",
       "Date": "Date",
       "MainEvent": "Main event",
-      "ManagementFunc": "Management function"
+      "ManagementFunc": "Management function",
+      "BrandPlan": {
+        "Plan": "Plan",
+        "Fee": "Fee",
+        "NumberofBranch": "Number of branch",
+        "NumberofClass": "Number of class",
+        "NumberofMember": "Number of member",
+        "NumberofAdministrator": "Number of administrator",
+        "CustomBrand": "Custom brand",
+        "Train-live-broadcast-and-record": "Train live broadcast and record",
+        "Establish-a-relationship-between-trainers-and-members": "Establish a relationship between trainers and members",
+        "Advanced-equipment-maintenance-and-proactive-reminder": "Advanced equipment maintenance and proactive reminder",
+        "ProfessionalTrainingProgram": "Professional training program",
+        "GroupMemberTrainingMenu": "Group member training menu",
+        "trainerSportRecord": "trainer sport record",
+        "CustomBrand2": "Custom Brand",
+        "FreeTrial": "Free trial",
+        "Studio": "Studio",
+        "SME": "SME",
+        "Custom": "Custom"
+      }
     },
     "TrainLive": {
       "NewsLive": "News Live",
@@ -224,9 +244,9 @@
       "Region": "Region",
       "Search": "Search",
       "SelectGroup": "Select Group",
-      "NameKeyword": "Name keyword",
-      "NoEligiblePeopleFound": "No eligible people can be found",
-      "Add": "Join",
+      "NameKeyword": "Name keywords",
+      "NoEligiblePeopleFound": "No results containing all your search terms were found",
+      "Add": "Add",
       "Remove": "Remove",
       "AreUSureDismiss": "Are you sure to dismiss this {{target}} ?",
       "BrandNameAlreadyExists": "Brand name already exists",
@@ -253,8 +273,8 @@
         "LeaveGroup": "Leave Group",
         "Manage": "Manage",
         "Finished": "Finished",
-        "AddBranch": "Add branch",
-        "AddClass": "Add class",
+        "AddBranch": "Create branch",
+        "AddClass": "Create class",
         "Name": "Name",
         "GroupID": "Group ID",
         "Level": "Level",
@@ -288,11 +308,13 @@
       "SearchGroup": {
         "SearchGroup": "Search",
         "Brand": "Brand",
-        "NormalGroup": "Normal group",
+        "NormalGroup": "General group",
         "group-id-or-name": "group id or name",
         "Name":"Name",
         "Status": "Status",
-        "Back": "Back"
+        "Back": "Back",
+        "AllLevel": "All level",
+        "ClassOrTrainer": "Class or trainer"
       }
     },
     "BrandManagement": {
@@ -494,7 +516,7 @@
       "ReBindStravaText": "Your binding strava has expired, do you re-bind your strava?",
       "UpdateStravaFailed": "Update strava status failed",
       "PlzUploadPhotos": "Please upload photos",
-      "DoUCancelCreate": "Do you cancel to create {{target}}?",
+      "DoUCancelCreate": "Are you sure that you want to cancel to create a {{target}}?",
       "UpdateUserInfoSuccessfully": "Update user info successfully",
       "UpdatePrivacySettingsSuccessfully": "Update privacy settings successfully",
       "UpdateFailed": "Update failed"
