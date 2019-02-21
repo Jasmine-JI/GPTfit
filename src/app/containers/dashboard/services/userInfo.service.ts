@@ -217,8 +217,7 @@ export class UserInfoService {
                   groupAccessRight[branchIdx].accessRight === '40' ||
                   groupAccessRight[branchIdx].accessRight === '30',
                 isGroupAdmin:
-                  groupAccessRight[branchIdx].accessRight === '40' ||
-                  groupAccessRight[branchIdx].accessRight === '30',
+                  groupAccessRight[branchIdx].accessRight === '40',
                 isApplying: applyIdx > -1
               });
             } else {
@@ -248,8 +247,6 @@ export class UserInfoService {
                   groupAccessRight[coachIdx].accessRight === '40' ||
                   groupAccessRight[coachIdx].accessRight === '60',
                 isGroupAdmin:
-                  groupAccessRight[coachIdx].accessRight === '30' ||
-                  groupAccessRight[coachIdx].accessRight === '40' ||
                   groupAccessRight[coachIdx].accessRight === '60',
                 isApplying: applyIdx > -1
               });
