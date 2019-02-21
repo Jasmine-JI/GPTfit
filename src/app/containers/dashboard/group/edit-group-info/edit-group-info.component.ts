@@ -382,12 +382,16 @@ export class EditGroupInfoComponent implements OnInit {
   manage({ value, valid }) {
     if (valid) {
       const { groupName, groupDesc, groupStatus, groupVideoUrl } = value;
+      const image = new Image();
+      image.src = this.finalImageLink;
       const body1 = {
         token: this.token,
         groupId: this.groupId,
         groupLevel: this.groupLevel,
         groupName,
         groupIcon: this.finalImageLink || '',
+        groupIconMid: this.utils.imageToDataUri(image, 256, 256) || '',
+        groupIconSamll: this.utils.imageToDataUri(image, 64, 64) || '',
         groupDesc,
         groupVideoUrl
       };
