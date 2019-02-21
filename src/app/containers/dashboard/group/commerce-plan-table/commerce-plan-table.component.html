@@ -1,39 +1,39 @@
 <table class="commerce-plan-table">
   <thead>
-    <th class="plan">方案</th>
+    <th class="plan">{{'Dashboard.System.BrandPlan.Plan' | translate}}</th>
     <th
       (click)="choosePlan(1)"
       [class.active-left]="planIdx === 1"
       [class.active-right]="planIdx === 1"
       [class.active-top]="planIdx === 1"
       [class.active]="planIdx === 1"
-    >體驗方案</th>
+    >{{'Dashboard.System.BrandPlan.FreeTrial' | translate}}</th>
     <th
       (click)="choosePlan(2)"
       [class.active-left]="planIdx === 2"
       [class.active-right]="planIdx === 2"
       [class.active-top]="planIdx === 2"
       [class.active]="planIdx === 2"
-    >工作室方案</th>
+    >{{'Dashboard.System.BrandPlan.Studio' | translate}}</th>
     <th
       (click)="choosePlan(3)"
       [class.active-left]="planIdx === 3"
       [class.active-right]="planIdx === 3"
       [class.active-top]="planIdx === 3"
       [class.active]="planIdx === 3"
-    >中小企業方案</th>
+    >{{'Dashboard.System.BrandPlan.SME' | translate}}</th>
     <th
       (click)="choosePlan(99)"
       [class.active-left]="planIdx === 99"
       [class.active-right]="planIdx === 99"
       [class.active-top]="planIdx === 99"
       [class.active]="planIdx === 99"
-    >客製方案</th>
+    >{{'Dashboard.System.BrandPlan.Custom' | translate}}</th>
   </thead>
   <tbody>
     <tr class="fee">
       <td class="plan">
-        費用
+        {{'Dashboard.System.BrandPlan.Fee' | translate}}
       </td>
       <td
         (click)="choosePlan(1)"
@@ -73,7 +73,7 @@
       </td>
     </tr>
     <tr>
-      <td class="plan">分店數量</td>
+      <td class="plan">{{'Dashboard.System.BrandPlan.NumberofBranch' | translate}}</td>
       <td
         (click)="choosePlan(1)"
         [class.active-left]="planIdx === 1"
@@ -102,7 +102,7 @@
       >**</td>
     </tr>
     <tr>
-      <td class="plan">課程數量</td>
+      <td class="plan">{{'Dashboard.System.BrandPlan.NumberofClass' | translate}}</td>
       <td
         (click)="choosePlan(1)"
         [class.active-left]="planIdx === 1"
@@ -129,7 +129,7 @@
       >**</td>
     </tr>
     <tr  class="custom">
-      <td class="plan">可入會成員</td>
+      <td class="plan">{{'Dashboard.System.BrandPlan.NumberofMember' | translate}}</td>
       <td
         (click)="choosePlan(1)"
         [class.active-left]="planIdx === 1"
@@ -156,7 +156,7 @@
       >**</td>
     </tr>
     <tr>
-      <td class="plan">可建立管理員</td>
+      <td class="plan">{{'Dashboard.System.BrandPlan.NumberofAdministrator' | translate}}</td>
       <td
         (click)="choosePlan(1)"
         [class.active-left]="planIdx === 1"
@@ -183,7 +183,7 @@
       >**</td>
     </tr>
     <tr class="custom">
-      <td class="plan">自訂品牌營業體</td>
+      <td class="plan">{{'Dashboard.System.BrandPlan.CustomBrand' | translate}}</td>
       <td class="check"
         (click)="choosePlan(1)"
         [class.active-left]="planIdx === 1"
@@ -210,7 +210,7 @@
       >V</td>
     </tr>
     <tr>
-      <td class="plan">Train Live轉播與記錄派發</td>
+      <td class="plan">{{'Dashboard.System.BrandPlan.Train-live-broadcast-and-record' | translate}}</td>
       <td class="check"
         (click)="choosePlan(1)"
         [class.active-left]="planIdx === 1"
@@ -237,7 +237,7 @@
       >V</td>
     </tr>
     <tr>
-      <td class="plan">建立培訓師與鍛鍊者關係</td>
+      <td class="plan">{{'Dashboard.System.BrandPlan.Establish-a-relationship-between-trainers-and-members' | translate}}</td>
       <td class="check"
         (click)="choosePlan(1)"
         [class.active-left]="planIdx === 1"
@@ -264,34 +264,7 @@
       >V</td>
     </tr>
     <tr>
-      <td class="plan unconfirmed">進階設備維護與主動式提醒</td>
-      <td class="check"
-        (click)="choosePlan(1)"
-        [class.active-left]="planIdx === 1"
-        [class.active-right]="planIdx === 1"
-        [class.active]="planIdx === 1"
-      ></td>
-      <td class="check"
-        (click)="choosePlan(2)"
-        [class.active-left]="planIdx === 2"
-        [class.active-right]="planIdx === 2"
-        [class.active]="planIdx === 2"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(3)"
-        [class.active-left]="planIdx === 3"
-        [class.active-right]="planIdx === 3"
-        [class.active]="planIdx === 3"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(99)"
-        [class.active-left]="planIdx === 99"
-        [class.active-right]="planIdx === 99"
-        [class.active]="planIdx === 99"
-      >V</td>
-    </tr>
-    <tr>
-      <td class="plan unconfirmed">編列專業訓練計畫</td>
+      <td class="plan unconfirmed">{{'Dashboard.System.BrandPlan.Advanced-equipment-maintenance-and-proactive-reminder' | translate}}</td>
       <td class="check"
         (click)="choosePlan(1)"
         [class.active-left]="planIdx === 1"
@@ -303,6 +276,33 @@
         [class.active-left]="planIdx === 2"
         [class.active-right]="planIdx === 2"
         [class.active]="planIdx === 2"
+      >V</td>
+      <td class="check"
+        (click)="choosePlan(3)"
+        [class.active-left]="planIdx === 3"
+        [class.active-right]="planIdx === 3"
+        [class.active]="planIdx === 3"
+      >V</td>
+      <td class="check"
+        (click)="choosePlan(99)"
+        [class.active-left]="planIdx === 99"
+        [class.active-right]="planIdx === 99"
+        [class.active]="planIdx === 99"
+      >V</td>
+    </tr>
+    <tr>
+      <td class="plan unconfirmed">{{'Dashboard.System.BrandPlan.ProfessionalTrainingProgram' | translate}}</td>
+      <td class="check"
+        (click)="choosePlan(1)"
+        [class.active-left]="planIdx === 1"
+        [class.active-right]="planIdx === 1"
+        [class.active]="planIdx === 1"
+      ></td>
+      <td class="check"
+        (click)="choosePlan(2)"
+        [class.active-left]="planIdx === 2"
+        [class.active-right]="planIdx === 2"
+        [class.active]="planIdx === 2"
       ></td>
       <td class="check"
         (click)="choosePlan(3)"
@@ -318,7 +318,7 @@
       >V</td>
     </tr>
     <tr>
-      <td class="plan unconfirmed">派發群組學員訓練菜單</td>
+      <td class="plan unconfirmed">{{'Dashboard.System.BrandPlan.GroupMemberTrainingMenu' | translate}}</td>
       <td class="check"
         (click)="choosePlan(1)"
         [class.active-left]="planIdx === 1"
@@ -453,7 +453,7 @@
       >V</td>
     </tr>
     <tr>
-      <td class="plan">Ala Trainer(培訓者運動紀錄)</td>
+      <td class="plan">Ala Trainer({{'Dashboard.System.BrandPlan.trainerSportRecord' | translate}})</td>
       <td class="check"
         (click)="choosePlan(1)"
         [class.active-left]="planIdx === 1"
@@ -480,7 +480,7 @@
       >V</td>
     </tr>
     <tr>
-      <td class="plan">自訂品牌Center App</td>
+      <td class="plan">{{'Dashboard.System.BrandPlan.CustomBrand2' | translate}}Center App</td>
       <td class="check"
         (click)="choosePlan(1)"
         [class.active-left]="planIdx === 1"
