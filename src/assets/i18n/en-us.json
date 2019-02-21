@@ -49,6 +49,12 @@
     "Not-yet-open": "(Not yet open)",
     "NameAlreadyExists": "This name already exists",
     "Send": "Send",
+    "All": "All",
+    "Keyword": "Keyword",
+    "ScopeDate": "Scope date",
+    "DateCompareWarning": "End date is earlier than start date",
+    "startDate": "Start date",
+    "endDate": "End date",
     "Map": {
       "EffelTowerRoadRunning": "Effel Tower Road Running",
       "OberwiesenfeldOlympiapark": "Oberwiesenfeld Olympiapark",
@@ -120,6 +126,20 @@
     "ConfrimPwdAgain": "Confrim Password again",
     "OldPwdNotMatchNewPwd": "The entered password does not match the new password",
     "ResetPwdSuccess": "The password has been modified successfully. Please re-login to the system with the new password. ",
+    "RemoveOriginal": "Remove original ",
+    "CorrespondingAvatar-and-sports-file": "Corresponding avatar and sports file",
+    "OnlyCorrespondingSportsFile": "Only corresponding sports file",
+    "RegisterProduct": "Register product",
+    "IfRegisterProductText": "If you want to register the product, please log in and the system will automatically complete the process of logging in to the product.",
+    "IfFitPairProductText": "If you want a Fit Pair product, please log in and the system will automatically complete the process of the Fit Pair product.",
+    "RemoveFitPairCompletely": "Remove fit pair completely",
+    "FitPairSuccessfully": "Fit Pair successfully",
+    "FitPairFailed": "Fit Pair failed",
+    "MailHadBeenSend": "Mail had been send",
+    "LoginSuccessfully": "Login successfully",
+    "PlzCheckNamePwd": "Please check name and password",
+    "RegisterMailSuccessfully": "Registration is successful, please go to the registration mailbox and click to complete the E-mail verification. After five seconds, you will be redirected back to the login page.",
+    "RegisterPhoneSuccessfully": "Registration is successful and will redirect to the login page after five seconds.",
     "RegularRaceDesc": "The regular season competition held this month is the designated map of <span class='map-desc--highlight'>{{ mapName }} running {{ distance }}KM</span><div>The leaderboard is refreshed at 06:00 daily, and the final ranking is based on {{ finalEventDate }}</div>",
     "FinalDayOfMonth": " the final day of the month at 23:59"
   },
@@ -156,7 +176,27 @@
       "EventName": "Event name",
       "Date": "Date",
       "MainEvent": "Main event",
-      "ManagementFunc": "Management function"
+      "ManagementFunc": "Management function",
+      "BrandPlan": {
+        "Plan": "Plan",
+        "Fee": "Fee",
+        "NumberofBranch": "Number of branch",
+        "NumberofClass": "Number of class",
+        "NumberofMember": "Number of member",
+        "NumberofAdministrator": "Number of administrator",
+        "CustomBrand": "Custom brand",
+        "Train-live-broadcast-and-record": "Train live broadcast and record",
+        "Establish-a-relationship-between-trainers-and-members": "Establish a relationship between trainers and members",
+        "Advanced-equipment-maintenance-and-proactive-reminder": "Advanced equipment maintenance and proactive reminder",
+        "ProfessionalTrainingProgram": "Professional training program",
+        "GroupMemberTrainingMenu": "Group member training menu",
+        "trainerSportRecord": "trainer sport record",
+        "CustomBrand2": "Custom Brand",
+        "FreeTrial": "Free trial",
+        "Studio": "Studio",
+        "SME": "SME",
+        "Custom": "Custom"
+      }
     },
     "TrainLive": {
       "NewsLive": "News Live",
@@ -196,6 +236,24 @@
       "AssignPT": "Assign Professional teacher",
       "AssignPF": "Assign Physical fitness coach",
       "AtLeastAssginAdmin": "Please assign at least one manager",
+      "BrandAdminChooseSettings": "Brand administrator chooses settings",
+      "BranchAdminChooseSettings": "Branch administrator chooses settings",
+      "PFAdminChooseSettings": "Physical fitness coach administrator chooses settings",
+      "PTAdminChooseSettings": "Professional teacher administrator chooses settings",
+      "AdminChooseSettings": "Administrator chooses settings",
+      "Region": "Region",
+      "Search": "Search",
+      "SelectGroup": "Select Group",
+      "NameKeyword": "Name keywords",
+      "NoEligiblePeopleFound": "No results containing all your search terms were found",
+      "Add": "Add",
+      "Remove": "Remove",
+      "AreUSureDismiss": "Are you sure to dismiss this {{target}} ?",
+      "BrandNameAlreadyExists": "Brand name already exists",
+      "EditGroupInfoFailed": "Edit group info failed",
+      "AreUsureRemoveAdmin": "Are you sure to remove this administrator?",
+      "AreUsureRemoveMember": "Are you sure to remove this member?",
+      "AreUsureRemoveGroup": "Are you sure to remove this group?",
       "MyGroup": {
         "MyGroup": "My Group",
         "GroupList": "Group List",
@@ -215,8 +273,8 @@
         "LeaveGroup": "Leave Group",
         "Manage": "Manage",
         "Finished": "Finished",
-        "AddBranch": "Add branch",
-        "AddClass": "Add class",
+        "AddBranch": "Create branch",
+        "AddClass": "Create class",
         "Name": "Name",
         "GroupID": "Group ID",
         "Level": "Level",
@@ -250,11 +308,13 @@
       "SearchGroup": {
         "SearchGroup": "Search",
         "Brand": "Brand",
-        "NormalGroup": "Normal group",
+        "NormalGroup": "General group",
         "group-id-or-name": "group id or name",
         "Name":"Name",
         "Status": "Status",
-        "Back": "Back"
+        "Back": "Back",
+        "AllLevel": "All level",
+        "ClassOrTrainer": "Class or trainer"
       }
     },
     "BrandManagement": {
@@ -355,7 +415,13 @@
       "Distance": "Distance",
       "PaddleDynamic": "Paddle dynamic",
       "AvgRowingCandence": "Avg rowing candence",
-      "MaxRowingCandence": "Max rowing candence"
+      "MaxRowingCandence": "Max rowing candence",
+      "Map": "Map",
+      "SwimmingDynamics": "Swimming Dynamics",
+      "SwimmingName": "Swimming name",
+      "SwimmingPool": "Swimming pool",
+      "PoolLength": "Pool length",
+      "AverageStrokeNumber": "Average stroke number"
     },
     "ActivityDetail": {
       "ActivityDetail": "Activity detail",
@@ -374,7 +440,9 @@
       "Treadmill": "Treadmill",
       "Wearable": "Wearable",
       "Flywheel": "Flywheel",
-      "RowingMachine": "Rowing machine"
+      "RowingMachine": "Rowing machine",
+      "BindingFailedDeviceBound": "Binding failed, the device is already bound",
+      "BindingFailed": "Binding failed"
     },
     "ProductInfo": {
       "ProductInfo": "Product info",
@@ -388,7 +456,8 @@
       "close": "close",
       "Only-me-avatar-and-file": "Only me, avatar and file",
       "Only-me-file": "Only me, file",
-      "Target": "target"
+      "Target": "target",
+      "ChangeFailed": "Change failed"
     },
     "SportReport": {
       "SportReport": "Sport report",
@@ -443,7 +512,14 @@
       "Password": "Password",
       "ChangePassword": "Change password",
       "Application": "Application",
-      "ThirdPartyInteraction": "Third party interaction"
+      "ThirdPartyInteraction": "Third party interaction",
+      "ReBindStravaText": "Your binding strava has expired, do you re-bind your strava?",
+      "UpdateStravaFailed": "Update strava status failed",
+      "PlzUploadPhotos": "Please upload photos",
+      "DoUCancelCreate": "Are you sure that you want to cancel to create a {{target}}?",
+      "UpdateUserInfoSuccessfully": "Update user info successfully",
+      "UpdatePrivacySettingsSuccessfully": "Update privacy settings successfully",
+      "UpdateFailed": "Update failed"
     }
   }
 }

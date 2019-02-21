@@ -369,6 +369,7 @@ export class ActivityService {
       ]);
       hrOptions = new Option(hrDataset, colorIdx);
       colorIdx++;
+
       finalDatas.push({ hrChartTarget: hrOptions, isSyncExtremes: true });
       chartTargets.push('hrChartTarget');
     }

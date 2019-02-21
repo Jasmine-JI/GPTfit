@@ -7,11 +7,15 @@ import { MatDatepickerInputEvent } from '@angular/material';
 import { MatSnackBar } from '@angular/material';
 import { UserInfoService } from '../../../services/userInfo.service';
 import { debounce } from '@shared/utils/';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-personal-preferences',
   templateUrl: './personal-preferences.component.html',
-  styleUrls: ['./personal-preferences.component.scss', '../settings.component.scss']
+  styleUrls: [
+    './personal-preferences.component.scss',
+    '../settings.component.scss'
+  ]
 })
 export class PersonalPreferencesComponent implements OnInit {
   settingsForm: FormGroup;
@@ -22,7 +26,8 @@ export class PersonalPreferencesComponent implements OnInit {
     private fb: FormBuilder,
     private utils: UtilsService,
     private snackbar: MatSnackBar,
-    private userInfoService: UserInfoService
+    private userInfoService: UserInfoService,
+    private translate: TranslateService
   ) {
     this.handleValueArrange = debounce(this.handleValueArrange, 1500);
   }
@@ -64,7 +69,7 @@ export class PersonalPreferencesComponent implements OnInit {
     const value = moment($event.value).format('YYYYMMDD');
     this.settingsForm.patchValue({ birthday: value });
   }
-  handleValueArrange( _value) {
+  handleValueArrange(_value) {
     let tuneSize = '';
     if (_value) {
       if (+_value === 0) {
@@ -106,11 +111,21 @@ export class PersonalPreferencesComponent implements OnInit {
         this.isSaveUserSettingLoading = false;
         if (res.resultCode === 200) {
           this.userInfoService.getUserInfo({ token, iconType: 2 });
-          this.snackbar.open('成功更新使用者資訊', 'OK', {
-            duration: 5000
-          });
+          this.snackbar.open(
+            this.translate.instant(
+              'Dashboard.Settings.UpdateUserInfoSuccessfully'
+            ),
+            'OK',
+            {
+              duration: 5000
+            }
+          );
         } else {
-          this.snackbar.open('更新失敗', 'OK', { duration: 5000 });
+          this.snackbar.open(
+            this.translate.instant('Dashboard.Settings.UpdateFailed'),
+            'OK',
+            { duration: 5000 }
+          );
         }
       });
     }

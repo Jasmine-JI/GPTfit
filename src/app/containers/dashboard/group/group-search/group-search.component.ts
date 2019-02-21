@@ -11,14 +11,14 @@ import {
   MatPaginator,
   PageEvent,
   MatSort,
-  Sort,
-  MatPaginatorIntl
+  Sort
 } from '@angular/material';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/observable/fromEvent';
 import { Router } from '@angular/router';
 import { UtilsService } from '@shared/services/utils.service';
+import { HashIdService } from '@shared/services/hash-id.service';
 
 @Component({
   selector: 'app-group-search',
@@ -47,9 +47,9 @@ export class GroupSearchComponent implements OnInit {
   filter: ElementRef;
   constructor(
     private groupService: GroupService,
-    private matPaginatorIntl: MatPaginatorIntl,
     private router: Router,
-    private utils: UtilsService
+    private utils: UtilsService,
+    private hashIdService: HashIdService
   ) {}
 
   ngOnInit() {
@@ -92,14 +92,16 @@ export class GroupSearchComponent implements OnInit {
         } else {
           this.isEmpty = false;
         }
-        const url = '/dashboard/group-search?' +
-        `pageNumber=${this.currentPage.pageIndex + 1}&searchWords=${this.searchWords.trim()}`
-        + `&groupLevel=${this.groupLevel}`;
+        const url =
+          '/dashboard/group-search?' +
+          `pageNumber=${this.currentPage.pageIndex +
+            1}&searchWords=${this.searchWords.trim()}` +
+          `&groupLevel=${this.groupLevel}`;
         this.router.navigateByUrl(url);
       });
     }
   }
   goDetail(groupId) {
-    this.router.navigateByUrl(`dashboard/group-info/${groupId}`);
+    this.router.navigateByUrl(`dashboard/group-info/${this.hashIdService.handleGroupIdEncode(groupId)}`);
   }
 }

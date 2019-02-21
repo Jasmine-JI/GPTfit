@@ -22,6 +22,8 @@ import * as _ from 'lodash';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { planDatas } from '../desc';
 import * as moment from 'moment';
+import { TranslateService } from '@ngx-translate/core';
+import { HashIdService } from '@shared/services/hash-id.service';
 
 @Component({
   selector: 'app-create-group',
@@ -59,6 +61,7 @@ export class CreateGroupComponent implements OnInit {
     isSupervisor: false,
     isSystemDeveloper: false,
     isSystemMaintainer: false,
+    isMarketingDeveloper: false,
     isBrandAdministrator: false,
     isBranchAdministrator: false,
     isCoach: false
@@ -77,6 +80,7 @@ export class CreateGroupComponent implements OnInit {
   chooseLabels = [];
   planDatas = planDatas;
   totalCost: number;
+  title: string;
   get groupName() {
     return this.form.get('groupName');
   }
@@ -117,7 +121,9 @@ export class CreateGroupComponent implements OnInit {
     private router: Router,
     private fb: FormBuilder,
     private userInfoService: UserInfoService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private translate: TranslateService,
+    private hashIdService: HashIdService
   ) {}
   @HostListener('dragover', ['$event'])
   public onDragOver(evt) {
@@ -148,8 +154,7 @@ export class CreateGroupComponent implements OnInit {
     ) {
       this.createType = 4;
     }
-    this.groupId = this.route.snapshot.paramMap.get('groupId');
-
+    this.groupId = this.hashIdService.handleGroupIdDecode(this.route.snapshot.paramMap.get('groupId'));
     this.buildForm(this.createType);
     this.userInfoService.getSupervisorStatus().subscribe(res => {
       this.role.isSupervisor = res;
@@ -162,6 +167,10 @@ export class CreateGroupComponent implements OnInit {
     this.userInfoService.getSystemMaintainerStatus().subscribe(res => {
       this.role.isSystemMaintainer = res;
       // console.log('%c this.isSystemMaintainer', 'color: #0ca011', res);
+    });
+    this.userInfoService.getMarketingDeveloperStatus().subscribe(res => {
+      this.role.isMarketingDeveloper = res;
+      // console.log('%c this.isMarketingDeveloper', 'color: #ccc', res);
     });
     this.userInfoService.getBrandAdministratorStatus().subscribe(res => {
       this.role.isBrandAdministrator = res;
@@ -202,8 +211,42 @@ export class CreateGroupComponent implements OnInit {
       });
       this.getGroupMemberList(1);
     }
+    this.translate.onLangChange.subscribe(() => {
+      this.getAndInitTranslations();
+    });
+    this.getAndInitTranslations();
   }
-
+  getAndInitTranslations() {
+    this.translate
+      .get([
+        'Dashboard.Group.BrandAdminChooseSettings',
+        'Dashboard.Group.BranchAdminChooseSettings',
+        'Dashboard.Group.PFAdminChooseSettings',
+        'Dashboard.Group.PTAdminChooseSettings',
+        'Dashboard.Group.AdminChooseSettings'
+      ])
+      .subscribe(translation => {
+        switch (this.createType) {
+          case 1:
+            this.title =
+              translation['Dashboard.Group.BranchAdminChooseSettings'];
+            break;
+          case 2:
+            if (this.coachType === 2) {
+              this.title = translation['Dashboard.Group.PFAdminChooseSettings'];
+            } else {
+              this.title = translation['Dashboard.Group.PTAdminChooseSettings'];
+            }
+            break;
+          case 3:
+            this.title = translation['Dashboard.Group.AdminChooseSettings'];
+            break;
+          default:
+            this.title =
+              translation['Dashboard.Group.BrandAdminChooseSettings'];
+        }
+      });
+  }
   buildForm(_type: number) {
     if (_type === 1) {
       this.formTextName = 'branchName';
@@ -399,7 +442,7 @@ export class CreateGroupComponent implements OnInit {
           this.isEditing = false;
           if (res.resultCode === 200) {
             this.router.navigateByUrl(
-              `/dashboard/group-info/${this.groupId}/edit`
+              `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}/edit`
             );
           }
           if (res.resultCode === 401) {
@@ -427,7 +470,8 @@ export class CreateGroupComponent implements OnInit {
         body.levelType = 5;
         body.coachType = this.coachType;
         body.levelName = coachLessonName;
-        if (this.coachType === 1) { // 一般教練(課)
+        if (this.coachType === 1) {
+          // 一般教練(課)
           body.shareAvatarToMember = {
             switch: '1',
             enableAccessRight: [],
@@ -443,7 +487,8 @@ export class CreateGroupComponent implements OnInit {
             enableAccessRight: [],
             disableAccessRight: []
           };
-        } else { // 體適能教練(課)
+        } else {
+          // 體適能教練(課)
           body.shareAvatarToMember = {
             switch: '1',
             enableAccessRight: [],
@@ -469,7 +514,7 @@ export class CreateGroupComponent implements OnInit {
           this.isEditing = false;
           if (res.resultCode === 200) {
             this.router.navigateByUrl(
-              `/dashboard/group-info/${this.groupId}/edit`
+              `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}/edit`
             );
           }
           if (res.resultCode === 401) {
@@ -672,23 +717,25 @@ export class CreateGroupComponent implements OnInit {
         href = '/dashboard/system/all-group-list';
         break;
       default:
-        href = `/dashboard/group-info/${this.groupId}/edit`;
+        href = `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}/edit`;
     }
 
     if (this.createType === 1) {
-      typeName = '分店';
+      typeName = this.translate.instant('Dashboard.Group.GroupInfo.Branch');
     } else if (this.createType === 2) {
-      typeName = '教練課';
+      typeName = this.translate.instant('Dashboard.Group.GroupInfo.Class');
     } else if (this.createType === 3) {
-      typeName = '群組';
+      typeName = this.translate.instant('Dashboard.Group.Group');
     } else {
-      typeName = '品牌';
+      typeName = this.translate.instant('Dashboard.Group.GroupInfo.Brand');
     }
     this.dialog.open(MsgDialogComponent, {
       hasBackdrop: true,
       data: {
         title: 'Message',
-        body: `是否要取消新增${typeName}`,
+        body: this.translate.instant('Dashboard.Settings.DoUCancelCreate', {
+          target: typeName
+        }),
         href
       }
     });
@@ -709,15 +756,28 @@ export class CreateGroupComponent implements OnInit {
   openSelectorWin(_type: number, e) {
     e.preventDefault();
     this.chooseType = _type;
+
     const adminLists = _.cloneDeep(this.chooseLabels);
+    const {
+      isSupervisor,
+      isSystemDeveloper,
+      isSystemMaintainer,
+      isMarketingDeveloper
+    } = this.role;
     if (_type !== 3) {
       this.dialog.open(PeopleSelectorWinComponent, {
         hasBackdrop: true,
         data: {
-          title: `品牌管理員選擇設定`,
+          title: this.title,
           adminLevel: `${_type}`,
           adminLists,
-          onConfirm: this.handleConfirm.bind(this)
+          onConfirm: this.handleConfirm.bind(this),
+          isInnerAdmin:
+            _type === 4 && (
+            isSupervisor ||
+            isSystemDeveloper ||
+            isSystemMaintainer ||
+            isMarketingDeveloper)
         }
       });
     }

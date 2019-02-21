@@ -25,14 +25,11 @@ export class DashboardGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
-    const token = this.utils.getToken();
-    const body = { token };
+
     let isSupervisor = false,
       isSystemDeveloper = false,
       isSystemMaintainer = false,
       isMarketingDeveloper = false;
-    const visittingId = next.params.groupId;
-    let isLoading = false;
     this.userInfoService.getSupervisorStatus().subscribe(res => {
       isSupervisor = res;
       // console.log('%c this.isSupervisor', 'color: #ccc', res);

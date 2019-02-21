@@ -184,10 +184,14 @@ button:focus {
   line-height: 1;
   outline: 0;
   background-color: transparent;
+  vertical-align: middle;
 }
 
 .icon-btn:hover {
   cursor: pointer;
+}
+.icon-btn .material-icons:hover {
+  color: #9b9b9b;
 }
 
 .icon_fa.fa:hover {
@@ -226,7 +230,7 @@ button:focus {
 }
 .ala-form__label {
   margin-bottom: 0px;
-  min-width: 120px;
+  min-width: 125px;
   text-align: right;
 }
 .alatech-btn {
@@ -268,7 +272,12 @@ a.alatech-btn:hover {
   background-color: #fff;
   color: #777;
 }
-
+.alatech-btn--no-padding {
+  padding: 0;
+}
+.alatech-btn--size-icon {
+  min-width: 30px;
+}
 .alatech-btn--default[disabled] {
   background-color: #EFEFEF;
 }

@@ -122,7 +122,8 @@ export class InnerSettingsComponent implements OnInit {
           title: `${targetAdminName}選擇設定`,
           adminLevel: `${_type}`,
           adminLists,
-          onConfirm: this.handleConfirm.bind(this)
+          onConfirm: this.handleConfirm.bind(this),
+          isInnerAdmin: isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper
         }
       });
     } else {

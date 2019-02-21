@@ -3,6 +3,7 @@ import { UserProfileService } from '@shared/services/user-profile.service';
 import { ActivatedRoute } from '@angular/router';
 import { UtilsService } from '@shared/services/utils.service';
 import { Router, NavigationEnd } from '@angular/router';
+import { HashIdService } from '@shared/services/hash-id.service';
 
 @Component({
   selector: 'app-user-profile',
@@ -21,13 +22,16 @@ export class UserProfileComponent implements OnInit {
     private userProfileService: UserProfileService,
     private route: ActivatedRoute,
     private utils: UtilsService,
-    private router: Router
+    private router: Router,
+    private hashIdService: HashIdService
   ) {}
 
   ngOnInit() {
-    this.userId = this.route.snapshot.paramMap.get('userId');
+    this.userId = this.hashIdService.handleUserIdDecode(this.route.snapshot.paramMap.get('userId'));
     if (this.userId) {
       this.utils.setSessionStorageObject('visitedId', this.userId);
+    } else {
+      this.router.navigateByUrl('/404');
     }
 
     this.fileId = this.route.snapshot.paramMap.get('fileId');
@@ -47,16 +51,16 @@ export class UserProfileComponent implements OnInit {
     let url = '';
     switch (this.chooseIdx) {
       case 2:
-        url = `/user-profile/${this.userId}/activity-list`;
+        url = `/user-profile/${this.hashIdService.handleUserIdEncode(this.userId)}/activity-list`;
         break;
       case 3:
-        url = `/user-profile/${this.userId}/sport-report`;
+        url = `/user-profile/${this.hashIdService.handleUserIdEncode(this.userId)}/sport-report`;
         break;
       // case 4:
       //   url = `/activity/${this.fileId}`;
       //   break;
       default:
-        url = `/user-profile/${this.userId}`;
+        url = `/user-profile/${this.hashIdService.handleUserIdEncode(this.userId)}`;
     }
     this.router.navigateByUrl(url);
     this.fetchUserProfile();
@@ -77,13 +81,13 @@ export class UserProfileComponent implements OnInit {
     });
   }
   detectUrlChange(url) {
-    if (url.indexOf(`/user-profile/${this.userId}`) > -1) {
+    if (url.indexOf(`/user-profile/${this.hashIdService.handleUserIdEncode(this.userId)}`) > -1) {
       this.chooseIdx = 1;
     }
-    if (url.indexOf(`/user-profile/${this.userId}/activity`) > -1) {
+    if (url.indexOf(`/user-profile/${this.hashIdService.handleUserIdEncode(this.userId)}/activity`) > -1) {
       this.chooseIdx = 2;
     }
-    if (url.indexOf(`/user-profile/${this.userId}/sport-report`) > -1) {
+    if (url.indexOf(`/user-profile/${this.hashIdService.handleUserIdEncode(this.userId)}/sport-report`) > -1) {
       this.chooseIdx = 3;
     }
     // if (url.indexOf(`/activity/${this.fileId}`) > -1) {

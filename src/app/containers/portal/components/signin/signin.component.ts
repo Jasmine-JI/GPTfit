@@ -83,11 +83,17 @@ export class SigninComponent implements OnInit {
       this.authService.login(body).subscribe(res => {
         this.isLogining = false;
         if (res) {
-          this.snackbar.open('登入成功', 'OK', { duration: 5000 });
+          this.snackbar.open(
+            this.translate.instant('Portal.LoginSuccessfully'),
+            'OK',
+            { duration: 5000 }
+          );
         } else {
-          this.snackbar.open('請檢查使用者名稱及密碼', 'OK', {
-            duration: 5000
-          });
+          this.snackbar.open(
+            this.translate.instant('Portal.PlzCheckNamePwd'),
+            'OK',
+            { duration: 5000 }
+          );
         }
       });
     }

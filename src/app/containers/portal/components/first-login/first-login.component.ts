@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import * as moment from 'moment';
 import { Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-first-login',
@@ -38,11 +39,13 @@ export class FirstLoginComponent implements OnInit {
     private snackbar: MatSnackBar,
     private dialog: MatDialog,
     private utils: UtilsService,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
-    const isFirstLogin = this.utils.getSessionStorageObject('isFirstLogin') || false;
+    const isFirstLogin =
+      this.utils.getSessionStorageObject('isFirstLogin') || false;
     if (!isFirstLogin) {
       return this.router.navigateByUrl('/404');
     }
@@ -66,8 +69,10 @@ export class FirstLoginComponent implements OnInit {
         hasBackdrop: true,
         data: {
           title: 'Message',
-          body: `請上傳照片`,
-          confirmText: '確定'
+          body: this.translate.instant(
+            'Dashboard.Settings.PlzUploadPhotos'
+          ),
+          confirmText: this.translate.instant('SH.Confirm')
         }
       });
     } else {

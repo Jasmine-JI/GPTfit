@@ -49,6 +49,12 @@
     "Not-yet-open": "(尚未开放)",
     "NameAlreadyExists": "此名称已存在",
     "Send": "送出",
+    "All": "全部",
+    "Keyword": "关键字",
+    "ScopeDate": "范围日期",
+    "DateCompareWarning": "起始时间大于终止时间",
+    "startDate": "起始日期",
+    "endDate": "结束日期",
     "Map": {
       "EffelTowerRoadRunning": "艾菲尔铁塔路跑",
       "OberwiesenfeldOlympiapark": "欧柏维森菲尔德 奥林匹克体育馆",
@@ -120,6 +126,20 @@
     "ConfrimPwdAgain": "再次确认密码",
     "OldPwdNotMatchNewPwd": "输入的密码与新密码不符合",
     "ResetPwdSuccess": "密码已修改成功，请用新密码重新登入系统 ",
+    "RemoveOriginal": "解除原有的",
+    "CorrespondingAvatar-and-sports-file": "对应头像与运动档案",
+    "OnlyCorrespondingSportsFile": "仅对应运动档案",
+    "RegisterProduct": "登录产品",
+    "IfRegisterProductText": "如果要登录产品，请登入，系统将会自动完成登录产品的流程",
+    "IfFitPairProductText": "如果要Fit Pair产品，请登入，系统将会自动完成Fit Pair产品的流程",
+    "RemoveFitPairCompletely": "完成解除fit pair",
+    "FitPairSuccessfully": "Fit Pair成功",
+    "FitPairFailed": "Fit Pair失败",
+    "MailHadBeenSend": "信件已发送，五秒后将跳转回登入页面",
+    "LoginSuccessfully": "登入成功",
+    "PlzCheckNamePwd": "请检查使用者名称及密码",
+    "RegisterMailSuccessfully": "注册成功，请至注册信箱点击完成E-mail验证，五秒后将跳转回登入页面",
+    "RegisterPhoneSuccessfully": "注册成功，五秒后将跳转回登入页面",
     "RegularRaceDesc": "本月进行的例行排行赛为<span class='map-desc--highlight'>指定地图{{ mapName }}{{ distance }}KM</span><div>排行榜于每日06:00刷新，最终排名以{{ finalEventDate }} 结算成绩为主</div>",
     "FinalDayOfMonth": " 当月最后一日 23:59"
   },
@@ -156,7 +176,27 @@
       "EventName": "赛事名称",
       "Date": "赛事日期",
       "MainEvent": "主要竞赛",
-      "ManagementFunc": "管理功能"
+      "ManagementFunc": "管理功能",
+      "BrandPlan": {
+        "Plan": "方案",
+        "Fee": "费用",
+        "NumberofBranch": "分店数量",
+        "NumberofClass": "课程数量",
+        "NumberofMember": "可入会成员",
+        "NumberofAdministrator": "可建立管理员",
+        "CustomBrand": "自订品牌营业体",
+        "Train-live-broadcast-and-record": "Train Live转播与记录派发",
+        "Establish-a-relationship-between-trainers-and-members": "建立培训师与锻炼者关系",
+        "Advanced-equipment-maintenance-and-proactive-reminder": "进阶设备维护与主动式提醒",
+        "ProfessionalTrainingProgram": "编列专业训练计画",
+        "GroupMemberTrainingMenu": "派发群组学员训练菜单",
+        "trainerSportRecord": "培训者运动纪录",
+        "CustomBrand2": "自订品牌",
+        "FreeTrial": "体验方案",
+        "Studio": "工作室方案",
+        "SME": "中小企业方案",
+        "Custom": "客制方案"
+      }
     },
     "TrainLive": {
       "NewsLive": "最新直播",
@@ -196,6 +236,24 @@
       "AssignPT": "指派课程老师",
       "AssignPF": "指派体适能教练",
       "AtLeastAssginAdmin": "请指派至少一位管理者",
+      "BrandAdminChooseSettings": "品牌管理员选择设定",
+      "BranchAdminChooseSettings": "分店管理员选择设定",
+      "PFAdminChooseSettings": "体适能教练管理员选择设定",
+      "PTAdminChooseSettings": "专业老师管理员选择设定",
+      "AdminChooseSettings": "管理员选择设定",
+      "Region": "地区",
+      "Search": "搜寻",
+      "SelectGroup": "选择群组",
+      "NameKeyword": "姓名关键字",
+      "NoEligiblePeopleFound": "找不到符合条件的人",
+      "Add": "加入",
+      "Remove": "移除",
+      "AreUSureDismiss": "是否确定要解散此{{target}}?",
+      "BrandNameAlreadyExists": "品牌名称已存在",
+      "EditGroupInfoFailed": "群组资讯编辑失败",
+      "AreUsureRemoveAdmin": "是否确定要删除该管理员?",
+      "AreUsureRemoveMember": "是否确定要删除该成员?",
+      "AreUsureRemoveGroup": "是否确定要移除此群组?",
       "MyGroup": {
         "MyGroup": "我的群组",
         "GroupList": "群组列表",
@@ -254,7 +312,9 @@
         "group-id-or-name": "群组ID或名称搜寻",
         "Name":"名称",
         "Status": "状态",
-        "Back": "返回"
+        "Back": "返回",
+        "AllLevel": "全部阶层",
+        "ClassOrTrainer": "课程或教练"
       }
     },
     "BrandManagement": {
@@ -355,7 +415,13 @@
       "Distance": "距离",
       "PaddleDynamic": "划桨动态",
       "AvgRowingCandence": "平均划频",
-      "MaxRowingCandence": "最高划频"
+      "MaxRowingCandence": "最高划频",
+      "Map": "地图",
+      "SwimmingDynamics": "游泳动态",
+      "SwimmingName": "泳姿名称",
+      "SwimmingPool": "泳池",
+      "PoolLength": "泳池长度",
+      "AverageStrokeNumber": "平均划水数"
     },
     "ActivityDetail": {
       "ActivityDetail": "详细活动",
@@ -374,7 +440,9 @@
       "Treadmill": "跑步机",
       "Wearable": "穿戴式",
       "Flywheel": "飞轮车",
-      "RowingMachine": "划船器"
+      "RowingMachine": "划船器",
+      "BindingFailedDeviceBound": "绑定失败，此装置已有绑定状态",
+      "BindingFailed": "绑定失败"
     },
     "ProductInfo": {
       "ProductInfo": "产品资讯",
@@ -388,7 +456,8 @@
       "close": "不开放",
       "Only-me-avatar-and-file": "仅自己，头像与运动档案",
       "Only-me-file": "仅自己，限运动档案",
-      "Target": "对象"
+      "Target": "对象",
+      "ChangeFailed": "变更失败"
     },
     "SportReport": {
       "SportReport": "运动报告",
@@ -443,7 +512,14 @@
       "Password": "密码",
       "ChangePassword": "变更密码",
       "Application": "应用程式",
-      "ThirdPartyInteraction": "第三方互动"
+      "ThirdPartyInteraction": "第三方互动",
+      "ReBindStravaText": "您的绑定strava已失效，是否重新绑定您的strava?",
+      "UpdateStravaFailed": "更新strava状态失败",
+      "PlzUploadPhotos": "请上传照片",
+      "DoUCancelCreate": "是否要取消新增{{target}}?",
+      "UpdateUserInfoSuccessfully": "成功更新使用者资讯",
+      "UpdatePrivacySettingsSuccessfully": "成功更新隐私权设定",
+      "UpdateFailed": "更新失败"
     }
   }
 }
