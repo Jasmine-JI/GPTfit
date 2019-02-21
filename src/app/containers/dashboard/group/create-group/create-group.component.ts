@@ -401,6 +401,8 @@ export class CreateGroupComponent implements OnInit {
         maxGroupMembers,
         commercePlanExpired
       } = value;
+      const image = new Image();
+      image.src = this.finalImageLink;
       const body = {
         token: this.token,
         groupId: this.groupId,
@@ -408,6 +410,8 @@ export class CreateGroupComponent implements OnInit {
         levelDesc: groupDesc,
         groupStatus,
         levelIcon: this.finalImageLink || '',
+        levelIconMid: this.utils.imageToDataUri(image, 256, 256) || '',
+        levelIconSmall: this.utils.imageToDataUri(image, 64, 64) || '',
         levelName: '',
         levelType: null,
         coachType: null,
