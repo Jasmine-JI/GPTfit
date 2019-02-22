@@ -412,7 +412,7 @@ export class CreateGroupComponent implements OnInit {
         levelDesc: groupDesc,
         groupStatus,
         levelIcon: this.finalImageLink || '',
-        levelIconMid: this.utils.imageToDataUri(image, 256, 256) || '',
+        levelIconMid: this.utils.imageToDataUri(image, 128, 128) || '',
         levelIconSmall: this.utils.imageToDataUri(image, 64, 64) || '',
         levelName: '',
         levelType: null,
