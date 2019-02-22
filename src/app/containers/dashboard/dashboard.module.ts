@@ -80,6 +80,7 @@ import { HashIdService } from '@shared/services/hash-id.service';
 import { CloudRunGpxComponent } from './components/cloud-run-gpx/cloud-run-gpx.component';
 import { InnerAdminService } from './services/inner-admin.service';
 import { ActivityOtherDetailsService } from '@shared/services/activity-other-details.service';
+import { DetectInappService } from '@shared/services/detect-inapp.service';
 
 @NgModule({
   imports: [
@@ -117,6 +118,7 @@ import { ActivityOtherDetailsService } from '@shared/services/activity-other-det
     HashIdService,
     InnerAdminService,
     ActivityOtherDetailsService,
+    DetectInappService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
