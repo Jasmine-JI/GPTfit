@@ -280,20 +280,24 @@ export class EditGroupInfoComponent implements OnInit {
           this.subBranchInfo = this.subGroupInfo.branches.filter(_branch => {
             if (_branch.groupStatus !== 4) {
               // 過濾解散群組
-              return {
-                ..._branch,
-                groupIcon: this.utils.buildBase64ImgString(_branch.groupIcon)
-              };
+              return _branch;
             }
+          }).map(_branch => {
+            return {
+              ..._branch,
+              groupIcon: this.utils.buildBase64ImgString(_branch.groupIcon)
+            };
           });
           this.subCoachInfo = this.subGroupInfo.coaches.filter(_coach => {
             if (_coach.groupStatus !== 4) {
               // 過濾解散群組
-              return {
-                ..._coach,
-                groupIcon: this.utils.buildBase64ImgString(_coach.groupIcon)
-              };
+              return _coach;
             }
+          }).map(_coach => {
+            return {
+              ..._coach,
+              groupIcon: this.utils.buildBase64ImgString(_coach.groupIcon)
+            };
           });
         } else {
           this.groupInfos = groupMemberInfo;
@@ -392,7 +396,7 @@ export class EditGroupInfoComponent implements OnInit {
         groupLevel: this.groupLevel,
         groupName,
         groupIcon: this.finalImageLink || '',
-        groupIconMid: this.utils.imageToDataUri(image, 256, 256) || '',
+        groupIconMid: this.utils.imageToDataUri(image, 128, 128) || '',
         groupIconSamll: this.utils.imageToDataUri(image, 64, 64) || '',
         groupDesc,
         groupVideoUrl
