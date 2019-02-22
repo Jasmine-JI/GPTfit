@@ -622,7 +622,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.activityPoints,
       this.activityInfo.type,
       this.resolutionSeconds,
-      hrFormatData
+      hrFormatData,
+      this.isDebug
     );
     this.finalDatas = finalDatas;
 
