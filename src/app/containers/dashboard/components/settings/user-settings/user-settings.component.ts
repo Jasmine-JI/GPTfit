@@ -21,7 +21,7 @@ export class UserSettingsComponent implements OnInit {
   reloadFileText = '重新上傳';
   chooseFileText = '選擇檔案';
   acceptFileExtensions = ['JPG', 'JPEG', 'GIF', 'PNG'];
-  maxFileSize = 1048576;
+  maxFileSize = 10485760; // 10MB
   userIcon: string;
   settingsForm: FormGroup;
   inValidText = '欄位為必填';

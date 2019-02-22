@@ -47,7 +47,7 @@ export class CloudRunGpxComponent implements OnInit {
   isUploading = false;
   originalFileName: string;
   transformFileName: string;
-  maxFileSize = 307200;
+  maxFileSize = 10485760; // 10MB
   acceptFileExtensions = ['GPX'];
   file: any;
   fromFormat: string;
