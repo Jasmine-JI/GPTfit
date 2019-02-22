@@ -159,7 +159,7 @@ export class ActivityService {
         isNoPaces = true;
       } else {
         if (!this.utils.isNumber(_point.speed)) {
-          speeds.push(_point.speed);
+          speeds.push(null);
         } else {
           speeds.push(+_point.speed);
         }
@@ -180,7 +180,7 @@ export class ActivityService {
         isNoCycleWatt = true;
       } else {
         if (!this.utils.isNumber(_point.cycleWatt)) {
-          watts.push(_point.cycleWatt);
+          watts.push(null);
         } else {
           watts.push(+_point.cycleWatt);
         }
@@ -189,7 +189,7 @@ export class ActivityService {
         isNoRowingWatt = true;
       } else {
         if (!this.utils.isNumber(_point.rowingWatt)) {
-          watts.push(_point.rowingWatt);
+          watts.push(null);
         } else {
           watts.push(+_point.rowingWatt);
         }
@@ -198,7 +198,7 @@ export class ActivityService {
         isNoElevations = true;
       } else {
         if (!_point.altitudeMeters || _point.altitudeMeters.length === 0) {
-          elevations.push(_point.altitudeMeters);
+          elevations.push(null);
         } else {
           elevations.push(+_point.altitudeMeters);
         }
@@ -226,7 +226,7 @@ export class ActivityService {
         isNoRunCadences = true;
       } else {
         if (!this.utils.isNumber(_point.runCadence)) {
-          runCadences.push(_point.runCadence);
+          runCadences.push(null);
         } else {
           runCadences.push(+_point.runCadence);
         }
@@ -235,7 +235,7 @@ export class ActivityService {
         isNoCycleCadences = true;
       } else {
         if (!this.utils.isNumber(_point.cycleCadence)) {
-          cycleCadences.push(_point.cycleCadence);
+          cycleCadences.push(null);
         } else {
           cycleCadences.push(+_point.cycleCadence);
         }
@@ -244,7 +244,7 @@ export class ActivityService {
         isNoSwimCadences = true;
       } else {
         if (!this.utils.isNumber(_point.swimCadence)) {
-          swimCadences.push(_point.swimCadence);
+          swimCadences.push(null);
         } else {
           swimCadences.push(+_point.swimCadence);
         }
@@ -253,7 +253,7 @@ export class ActivityService {
         isNoRowingCadences = true;
       } else {
         if (!this.utils.isNumber(_point.rowingCadence)) {
-          rowingCadences.push(_point.rowingCadence);
+          rowingCadences.push(null);
         } else {
           rowingCadences.push(+_point.rowingCadence);
         }
@@ -262,7 +262,7 @@ export class ActivityService {
         isNoTemps = true;
       } else {
         if (!this.utils.isNumber(_point.temp)) {
-          temps.push(_point.temp);
+          temps.push(null);
         } else {
           temps.push(+_point.temp);
         }
