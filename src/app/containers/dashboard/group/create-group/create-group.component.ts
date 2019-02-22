@@ -67,7 +67,7 @@ export class CreateGroupComponent implements OnInit {
     isCoach: false
   };
   finalImageLink: string;
-  maxFileSize = 524288;
+  maxFileSize = 10485760; // 10MB
   isUploading = false;
   isEditing = false;
   reloadFileText = '重新上傳';
@@ -154,7 +154,9 @@ export class CreateGroupComponent implements OnInit {
     ) {
       this.createType = 4;
     }
-    this.groupId = this.hashIdService.handleGroupIdDecode(this.route.snapshot.paramMap.get('groupId'));
+    this.groupId = this.hashIdService.handleGroupIdDecode(
+      this.route.snapshot.paramMap.get('groupId')
+    );
     this.buildForm(this.createType);
     this.userInfoService.getSupervisorStatus().subscribe(res => {
       this.role.isSupervisor = res;
@@ -446,7 +448,9 @@ export class CreateGroupComponent implements OnInit {
           this.isEditing = false;
           if (res.resultCode === 200) {
             this.router.navigateByUrl(
-              `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}/edit`
+              `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
+                this.groupId
+              )}/edit`
             );
           }
           if (res.resultCode === 401) {
@@ -518,7 +522,9 @@ export class CreateGroupComponent implements OnInit {
           this.isEditing = false;
           if (res.resultCode === 200) {
             this.router.navigateByUrl(
-              `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}/edit`
+              `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
+                this.groupId
+              )}/edit`
             );
           }
           if (res.resultCode === 401) {
@@ -721,7 +727,9 @@ export class CreateGroupComponent implements OnInit {
         href = '/dashboard/system/all-group-list';
         break;
       default:
-        href = `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}/edit`;
+        href = `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
+          this.groupId
+        )}/edit`;
     }
 
     if (this.createType === 1) {
@@ -777,11 +785,11 @@ export class CreateGroupComponent implements OnInit {
           adminLists,
           onConfirm: this.handleConfirm.bind(this),
           isInnerAdmin:
-            _type === 4 && (
-            isSupervisor ||
-            isSystemDeveloper ||
-            isSystemMaintainer ||
-            isMarketingDeveloper)
+            _type === 4 &&
+            (isSupervisor ||
+              isSystemDeveloper ||
+              isSystemMaintainer ||
+              isMarketingDeveloper)
         }
       });
     }
