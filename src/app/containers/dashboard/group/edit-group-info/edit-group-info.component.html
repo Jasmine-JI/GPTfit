@@ -155,6 +155,7 @@
           >
             <ng-container *ngIf="!isVideoEdit">
               <app-form-text
+                [maxLength]="9999999999"
                 [content]="videoUrl"
                 [disabled]="isGroupDetailLoading"
                 [remindText]="'Dashboard.Group.GroupInfo.enter-live-link' | translate"

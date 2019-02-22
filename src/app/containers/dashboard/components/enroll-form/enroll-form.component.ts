@@ -30,7 +30,7 @@ export class EnrollFormComponent implements OnInit {
   isIDFormatErr = false;
   isIDEnroll = false;
   acceptFileExtensions = ['xlsx'];
-  maxFileSize = 307200;
+  maxFileSize = 10485760; // 10MB
   isUploading = false;
   reloadFileText = '重新上傳';
   chooseFileText = '選擇檔案';
@@ -217,11 +217,7 @@ export class EnrollFormComponent implements OnInit {
     } else {
       this.isCodeInvalid = false;
     }
-    if (
-      valid &&
-      this.phoneErr.length === 0 &&
-      this.emailErr.length === 0
-    ) {
+    if (valid && this.phoneErr.length === 0 && this.emailErr.length === 0) {
       const data = value;
       data.pay_method = '臨櫃付款';
       data.status = '已付款';
@@ -266,7 +262,10 @@ export class EnrollFormComponent implements OnInit {
   handleConfirm(_lists) {
     const targetListLength = _lists.length;
     if (targetListLength <= 10) {
-      const newLists = _lists.filter(item => this.chooseLists.findIndex(list => list.userId === item.userId) === -1);
+      const newLists = _lists.filter(
+        item =>
+          this.chooseLists.findIndex(list => list.userId === item.userId) === -1
+      );
       this.chooseLists = this.chooseLists.concat(newLists);
     } else {
       const originListLength = this.chooseLists.length;
