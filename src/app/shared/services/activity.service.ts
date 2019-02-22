@@ -79,7 +79,7 @@ export class ActivityService {
   fetchSportListDetail(body) {
     return this.http.post<any>('/api/v2/sport/getSportListDetail', body);
   }
-  handlePoints(datas, type, resolutionSeconds, hrFormatData) {
+  handlePoints(datas, type, resolutionSeconds, hrFormatData, isDebug) {
     let colorIdx = 0;
     let isNoSpeeds = false,
       isNoElevations = false,
@@ -154,11 +154,15 @@ export class ActivityService {
     }
     datas.forEach((_point, idx) => {
       pointSeconds.push(resolutionSeconds * (idx + 1) * 1000);
-      if (!this.utils.isNumber(_point.speed)) {
+      if (!this.utils.isNumber(_point.speed) && !isDebug) {
         isNoSpeeds = true;
         isNoPaces = true;
       } else {
-        speeds.push(+_point.speed);
+        if (!this.utils.isNumber(_point.speed)) {
+          speeds.push(_point.speed);
+        } else {
+          speeds.push(+_point.speed);
+        }
       }
       if (!isNoPaces && _point.speed === 0) {
         paces.push(3600);
@@ -172,22 +176,34 @@ export class ActivityService {
         } else {
         }
       }
-      if (!this.utils.isNumber(_point.cycleWatt)) {
+      if (!this.utils.isNumber(_point.cycleWatt) && !isDebug) {
         isNoCycleWatt = true;
       } else {
-        watts.push(+_point.cycleWatt);
+        if (!this.utils.isNumber(_point.cycleWatt)) {
+          watts.push(_point.cycleWatt);
+        } else {
+          watts.push(+_point.cycleWatt);
+        }
       }
-      if (!this.utils.isNumber(_point.rowingWatt)) {
+      if (!this.utils.isNumber(_point.rowingWatt) && !isDebug) {
         isNoRowingWatt = true;
       } else {
-        watts.push(+_point.rowingWatt);
+        if (!this.utils.isNumber(_point.rowingWatt)) {
+          watts.push(_point.rowingWatt);
+        } else {
+          watts.push(+_point.rowingWatt);
+        }
       }
-      if (!_point.altitudeMeters || _point.altitudeMeters.length === 0) {
+      if ((!_point.altitudeMeters || _point.altitudeMeters.length === 0) && !isDebug) {
         isNoElevations = true;
       } else {
-        elevations.push(+_point.altitudeMeters);
+        if (!_point.altitudeMeters || _point.altitudeMeters.length === 0) {
+          elevations.push(_point.altitudeMeters);
+        } else {
+          elevations.push(+_point.altitudeMeters);
+        }
       }
-      if (!this.utils.isNumber(_point.heartRateBpm)) {
+      if (!this.utils.isNumber(_point.heartRateBpm) && !isDebug) {
         isNoHeartRates = true;
         isNoZones = true;
       } else {
@@ -206,30 +222,50 @@ export class ActivityService {
           userZoneTimes[0].y += resolutionSeconds;
         }
       }
-      if (!this.utils.isNumber(_point.runCadence)) {
+      if (!this.utils.isNumber(_point.runCadence) && !isDebug) {
         isNoRunCadences = true;
       } else {
-        runCadences.push(+_point.runCadence);
+        if (!this.utils.isNumber(_point.runCadence)) {
+          runCadences.push(_point.runCadence);
+        } else {
+          runCadences.push(+_point.runCadence);
+        }
       }
-      if (!this.utils.isNumber(_point.cycleCadence)) {
+      if (!this.utils.isNumber(_point.cycleCadence) && !isDebug) {
         isNoCycleCadences = true;
       } else {
-        cycleCadences.push(+_point.cycleCadence);
+        if (!this.utils.isNumber(_point.cycleCadence)) {
+          cycleCadences.push(_point.cycleCadence);
+        } else {
+          cycleCadences.push(+_point.cycleCadence);
+        }
       }
-      if (!this.utils.isNumber(_point.swimCadence)) {
+      if (!this.utils.isNumber(_point.swimCadence) && !isDebug) {
         isNoSwimCadences = true;
       } else {
-        swimCadences.push(+_point.swimCadence);
+        if (!this.utils.isNumber(_point.swimCadence)) {
+          swimCadences.push(_point.swimCadence);
+        } else {
+          swimCadences.push(+_point.swimCadence);
+        }
       }
-      if (!this.utils.isNumber(_point.rowingCadence)) {
+      if (!this.utils.isNumber(_point.rowingCadence) && !isDebug) {
         isNoRowingCadences = true;
       } else {
-        rowingCadences.push(+_point.rowingCadence);
+        if (!this.utils.isNumber(_point.rowingCadence)) {
+          rowingCadences.push(_point.rowingCadence);
+        } else {
+          rowingCadences.push(+_point.rowingCadence);
+        }
       }
-      if (!this.utils.isNumber(_point.temp)) {
+      if (!this.utils.isNumber(_point.temp) && !isDebug) {
         isNoTemps = true;
       } else {
-        temps.push(+_point.temp);
+        if (!this.utils.isNumber(_point.temp)) {
+          temps.push(_point.temp);
+        } else {
+          temps.push(+_point.temp);
+        }
       }
     });
     const speedDataset = {

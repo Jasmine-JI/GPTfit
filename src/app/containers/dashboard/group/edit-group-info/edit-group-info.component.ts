@@ -66,7 +66,7 @@ export class EditGroupInfoComponent implements OnInit {
     isBranchAdministrator: false,
     isCoach: false
   };
-  maxFileSize = 1048576;
+  maxFileSize = 10485760; // 10MB
   isUploading = false;
   fileLink: string;
   reloadFileText = '重新上傳';
@@ -121,7 +121,9 @@ export class EditGroupInfoComponent implements OnInit {
     });
   }
   handleInit() {
-    this.groupId = this.hashIdService.handleGroupIdDecode(this.route.snapshot.paramMap.get('groupId'));
+    this.groupId = this.hashIdService.handleGroupIdDecode(
+      this.route.snapshot.paramMap.get('groupId')
+    );
     if (this.groupId.length === 0) {
       return this.router.navigateByUrl('/404');
     }
@@ -404,7 +406,11 @@ export class EditGroupInfoComponent implements OnInit {
           if (this.originalGroupStatus !== groupStatus) {
             this.groupService.changeGroupStatus(body2).subscribe(res2 => {
               if (res2.resultCode === 200) {
-                this.router.navigateByUrl(`/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}`);
+                this.router.navigateByUrl(
+                  `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
+                    this.groupId
+                  )}`
+                );
               } else {
                 this.dialog.open(MsgDialogComponent, {
                   hasBackdrop: true,
@@ -418,7 +424,11 @@ export class EditGroupInfoComponent implements OnInit {
               }
             });
           } else {
-            this.router.navigateByUrl(`/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}`);
+            this.router.navigateByUrl(
+              `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
+                this.groupId
+              )}`
+            );
           }
         } else if (res1.resultCode === 409) {
           this.dialog.open(MsgDialogComponent, {
@@ -492,7 +502,9 @@ export class EditGroupInfoComponent implements OnInit {
     e.preventDefault();
     if (_type === 1) {
       this.router.navigateByUrl(
-        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}/create?createType=1`
+        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
+          this.groupId
+        )}/create?createType=1`
       );
     } else {
       this.bottomSheet.open(BottomSheetComponent, {
