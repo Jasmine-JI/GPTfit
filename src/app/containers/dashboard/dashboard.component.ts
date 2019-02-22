@@ -18,6 +18,9 @@ import { UserInfo } from './models/userInfo';
 import { NavigationEnd } from '@angular/router';
 import { version } from '@shared/version';
 import { HashIdService } from '@shared/services/hash-id.service';
+import { DetectInappService } from '@shared/services/detect-inapp.service';
+import { MatDialog } from '@angular/material/dialog';
+import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -60,7 +63,9 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
     private utilsService: UtilsService,
     public translateService: TranslateService,
     private cdRef: ChangeDetectorRef,
-    private hashIdService: HashIdService
+    private hashIdService: HashIdService,
+    private detectInappService: DetectInappService,
+    private dialog: MatDialog
   ) {
     if (location.search.indexOf('ipm=s') > -1) {
       this.isPreviewMode = true;
@@ -148,6 +153,26 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
   }
 
   ngOnInit() {
+    this.translateService.onLangChange.subscribe(() => {
+      if (this.detectInappService.isInApp || this.detectInappService.isIE) {
+        if (this.detectInappService.isLine) {
+          if (location.search.length === 0) {
+            location.href += '?openExternalBrowser=1';
+          } else {
+            location.href += '&openExternalBrowser=1';
+          }
+        } else {
+          this.dialog.open(MessageBoxComponent, {
+            hasBackdrop: true,
+            data: {
+              title: 'message',
+              body: this.translateService.instant('SH.BrowserTip'),
+              confirmText: this.translateService.instant('SH.Confirm')
+            }
+          });
+        }
+      }
+    });
     this.isAlphaVersion = true;
     if (location.hostname.indexOf('cloud.alatech.com.tw') > -1) {
       this.isAlphaVersion = false;
@@ -295,7 +320,9 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
     this.globalEventsManager.closeCollapse(false);
   }
   goToUserProfile(userId) {
-    this.router.navigateByUrl(`/user-profile/${this.hashIdService.handleUserIdEncode(userId)}`);
+    this.router.navigateByUrl(
+      `/user-profile/${this.hashIdService.handleUserIdEncode(userId)}`
+    );
   }
   toggleSideNav(sideNav: MatSidenav) {
     this.isSideNavOpend = !this.isSideNavOpend;

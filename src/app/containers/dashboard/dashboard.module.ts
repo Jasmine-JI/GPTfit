@@ -79,6 +79,7 @@ import { InnerTestComponent } from './components/inner-test/inner-test.component
 import { HashIdService } from '@shared/services/hash-id.service';
 import { CloudRunGpxComponent } from './components/cloud-run-gpx/cloud-run-gpx.component';
 import { InnerAdminService } from './services/inner-admin.service';
+import { DetectInappService } from '@shared/services/detect-inapp.service';
 
 @NgModule({
   imports: [
@@ -115,6 +116,7 @@ import { InnerAdminService } from './services/inner-admin.service';
     UserProfileService,
     HashIdService,
     InnerAdminService,
+    DetectInappService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
