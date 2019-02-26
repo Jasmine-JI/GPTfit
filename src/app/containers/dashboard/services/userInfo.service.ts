@@ -245,8 +245,10 @@ export class UserInfoService {
                 isCanManage:
                   groupAccessRight[coachIdx].accessRight === '30' ||
                   groupAccessRight[coachIdx].accessRight === '40' ||
+                  groupAccessRight[coachIdx].accessRight === '50' ||
                   groupAccessRight[coachIdx].accessRight === '60',
                 isGroupAdmin:
+                  groupAccessRight[coachIdx].accessRight === '50' ||
                   groupAccessRight[coachIdx].accessRight === '60',
                 isApplying: applyIdx > -1
               });
