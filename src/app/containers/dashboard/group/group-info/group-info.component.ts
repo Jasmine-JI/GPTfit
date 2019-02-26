@@ -596,7 +596,8 @@ export class GroupInfoComponent implements OnInit {
             this.groupInfos.findIndex(
               _admin =>
                 _admin.memberId === this.userId &&
-                (_admin.accessRight === '80' || _admin.accessRight === '40') &&
+                _admin.groupId === this.groupId &&
+                (+_admin.accessRight <= +this.groupLevel ) &&
                 _admin.joinStatus === 2
             ) > -1 &&
             (this.joinStatus !== 2 && !this.visitorDetail.isCanManage)
