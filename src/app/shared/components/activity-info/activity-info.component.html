@@ -26,14 +26,52 @@
     [class.container]="isPortal"
     [style.padding-top]="isPortal ? '15px' : '0px'"
   >
-    <div class="group-edit-bar" style="justify-content: flex-end;">
-      <button class="alatech-btn alatech-btn--default activty-btn"
-        title="{{'Dashboard.ActivityDetail.Back' | translate}}"
-        (click)="goBack()"
-      >
-        {{'Dashboard.ActivityDetail.Back' | translate}}
-      </button>
+    <div style="display: flex;justify-content: space-between;"
+      [class.isBrandIcon]="brandIcon.length > 0"
+    >
+      <div style="display: flex;align-items: center;min-width: 300px;width:100%">
+        <!-- <div class="user-photo" style="width: 64px;height: 64px;"> -->
+          <img *ngIf="brandIcon.length > 0"
+            [src]="brandIcon"
+          >
+        <!-- </div> -->
+        <span style="font-weight: 900;font-size:30px;margin-left:20px">
+          <!-- {{brandName}} -->
+        </span>
+      </div>
+      <div class="group-edit-bar" style="justify-content: flex-end;width:100%">
+        <span class="sportsRecord-text">
+          {{'SH.SportsRecord' | translate}}
+          <div>
+            {{ printFileDate }}
+          </div>
+        </span>
+        <button class="alatech-btn alatech-btn--default activty-btn"
+          title="{{'SH.Print' | translate}}"
+          (click)="print()"
+          *ngIf="isPrevieMode"
+        >
+          {{'SH.Print' | translate}}
+        </button>
+        <a  target="_blank"
+          [href]="previewUrl"
+          class="alatech-btn alatech-btn--default activty-btn"
+          title="{{'SH.PreviewPrint' | translate}}"
+          *ngIf="!isPrevieMode"
+          style="line-height:38px"
+        >
+          {{'SH.PreviewPrint' | translate}}
+        </a>
+        <button class="alatech-btn alatech-btn--default activty-btn"
+          title="{{'Dashboard.ActivityDetail.Back' | translate}}"
+          (click)="goBack()"
+          *ngIf="!isPrevieMode"
+        >
+          {{'Dashboard.ActivityDetail.Back' | translate}}
+        </button>
+      </div>
     </div>
+
     <div class="ala-dashboard-title activty-title">
       {{'Dashboard.ActivityDetail.Summary' | translate}}
     </div>
@@ -863,7 +901,7 @@
 </div>
 <ng-container *ngIf="isLoadedOtherDetail">
   <div class="other-info--area">
-    <div class="container other-info--section">
+    <div class="container">
       <div class="other-info">
         <div class="ala-dashboard-title activty-title">
           {{'Dashboard.ActivityDetail.DeviceInfo' | translate}}
@@ -876,11 +914,11 @@
           {{"Portal.ProductType" | translate}}：{{ (deviceInfo?.modelType | productType | translate) || 'SH.No-information' | translate }}
         </div>
       </div>
-      <div class="other-info">
+      <div class="other-info" *ngIf="classInfo">
         <div class="ala-dashboard-title activty-title">
           {{'Dashboard.TrainLive.ClassInfo' | translate}}
         </div>
-        <div style="display: flex;padding-right: 24px;align-items: center;">
+        <div style="display: flex;padding-right: 24px;align-items: center;margin-top: 10px">
           <div style="display:flex;align-items: center;">
             <div class="user-photo"
               style="margin: 0 15px"
@@ -908,11 +946,11 @@
           </div>
         </div>
       </div>
-      <div class="other-info">
+      <div class="other-info" *ngIf="coachInfo">
         <div class="ala-dashboard-title activty-title">
           {{'Dashboard.TrainLive.CoachInfo' | translate}}
         </div>
-        <div style="display:flex;align-items: center;">
+        <div style="display:flex;align-items: center;margin-top: 10px">
           <div class="user-photo user-photo--portrait" style="margin: 0 15px">
             <img [src]="coachInfo?.coachAvatar">
           </div>
@@ -929,9 +967,9 @@
           </div>
         </div>
       </div>
-    </div>
-    <div class="container other-info--section">
-      <div class="other-info other-info--4">
+    <!-- </div> -->
+    <!-- <div class="container other-info--section"> -->
+      <div class="other-info" *ngIf="fileInfo?.note">
         <div class="ala-dashboard-title activty-title">
           {{'Dashboard.ActivityDetail.Brief' | translate}}
         </div>
@@ -939,13 +977,13 @@
           {{fileInfo?.note}}
         </div>
       </div>
-      <div class="other-info other-info--4">
+      <div class="other-info" *ngIf="fileInfo?.location">
         <div class="ala-dashboard-title activty-title">
           {{'Dashboard.ActivityDetail.Coordinate' | translate}}
         </div>
         {{fileInfo?.location}}
       </div>
-      <div class="other-info other-info--4">
+      <div class="other-info" *ngIf="fileInfo">
         <div class="ala-dashboard-title activty-title">
           {{'Dashboard.ActivityDetail.FileInfo' | translate}}
         </div>
@@ -959,7 +997,7 @@
           {{'Dashboard.ActivityDetail.LastEditDate' | translate}}：{{fileInfo?.editDate}}
         </div>
       </div>
-      <div class="other-info other-info--4">
+      <div class="other-info" *ngIf="fileInfo?.tag">
         <div class="ala-dashboard-title activty-title">
           {{'Dashboard.ActivityDetail.Tag' | translate}}
         </div>

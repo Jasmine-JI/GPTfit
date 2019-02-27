@@ -68,7 +68,10 @@
       "LanyuRoundabout": "蘭嶼環島",
       "BeijingMarathon": "北京馬拉松21K"
     },
-    "BrowserTip": "本網站在Google Chrome、Firefox、Safari ，並搭配 1024 x 768 (以上)之螢幕解析度，以獲得最佳瀏覽體驗。"
+    "BrowserTip": "本網站在Google Chrome、Firefox、Safari ，並搭配 1024 x 768 (以上)之螢幕解析度，以獲得最佳瀏覽體驗。",
+    "PreviewPrint": "預覽列印",
+    "Print": "列印",
+    "SportsRecord": "運動紀錄"
   },
   "Portal": {
     "Introduce": "介紹",

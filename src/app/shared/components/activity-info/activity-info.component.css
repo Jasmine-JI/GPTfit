@@ -1,9 +1,15 @@
 /* * {
   border: 1px solid #333;
 } */
+.isBrandIcon {
+  margin-bottom: 30px;
+}
+.sportsRecord-text {
+  display: none;
+}
 .other-info {
   width: 33%;
-  min-height: 400px;
+  min-height: 200px;
   display: inline-block;
   background-color: #EDEDED;
   vertical-align: top;

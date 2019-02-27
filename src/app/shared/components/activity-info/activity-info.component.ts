@@ -24,6 +24,7 @@ import chinaBorderData from './border-data_china';
 import taiwanBorderData from './border-data_taiwan';
 import { ActivityOtherDetailsService } from '@shared/services/activity-other-details.service';
 import { debounce } from '@shared/utils/';
+import * as moment from 'moment';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 declare var google: any;
@@ -142,6 +143,11 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   coachInfo: any;
   coachDesc: string;
   totalCoachDesc: string;
+  previewUrl = location.pathname + '?ipm=s';
+  isPrevieMode = false;
+  brandIcon = '';
+  brandName = '';
+  printFileDate = '';
   constructor(
     private utils: UtilsService,
     private renderer: Renderer2,
@@ -173,9 +179,18 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
+    if (location.search.indexOf('?') > -1) {
+      this.previewUrl = location.pathname + '&ipm=s';
+    } else {
+      this.previewUrl = location.pathname + '?ipm=s';
+    }
     Highcharts.charts.length = 0; // 初始化global highchart物件
     if (location.search.indexOf('?debug') > -1) {
       this.isDebug = true;
+    }
+    if (location.search.indexOf('ipm=s') > -1) {
+      this.isPrevieMode = true;
+      this.brandIcon = '/assets/demo_logo.png';
     }
     if (location.pathname.indexOf('/dashboard/activity/') > -1) {
       this.isPortal = false;
@@ -187,13 +202,16 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     this.token = this.utils.getToken();
     this.getInfo(fieldId);
     this.activityOtherDetailsService.getOtherInfo().subscribe(res => {
-      // console.log('res: ', res);
       if (res) {
         this.isOtherDetailLoading = false;
         this.isLoadedOtherDetail = true;
         this.deviceInfo = res['deviceInfo'];
         if (res['groupInfo']) {
           this.classInfo = res['groupInfo'].info;
+          this.classInfo.groupIcon =
+            this.classInfo.groupIcon && this.classInfo.groupIcon.length > 0
+              ? this.utils.buildBase64ImgString(this.classInfo.groupIcon)
+              : '/assets/images/group-default.svg';
           const groupIcon = new Image();
           groupIcon.src = this.classInfo.groupIcon;
           this.classInfo.groupIconClassName =
@@ -201,6 +219,10 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
               ? 'user-photo--landscape'
               : 'user-photo--portrait';
           this.handleLessonInfo(this.classInfo.groupDesc);
+          // this.brandIcon = this.utils.buildBase64ImgString(
+          //   this.classInfo.groupRootInfo[2].brandIcon
+          // );
+          this.brandName = this.classInfo.groupRootInfo[2].brandName;
         }
         if (res['coachInfo']) {
           this.coachInfo = res['coachInfo'].info;
@@ -218,9 +240,19 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   scroll(e) {
     let coachId, groupId;
+    let scrollTop = null, clientHeight = null, scrollHeight = null;
+    if (e.target.scrollingElement) {
+      scrollTop = e.target.scrollingElement.scrollTop;
+      clientHeight = e.target.scrollingElement.clientHeight;
+      scrollHeight = e.target.scrollingElement.scrollHeight;
+    } else {
+      scrollTop = e.target.scrollTop;
+      clientHeight = e.target.clientHeight;
+      scrollHeight = e.target.scrollHeight;
+    }
     if (
-      e.target.scrollTop + e.target.clientHeight >=
-      e.target.scrollHeight - 100
+      scrollTop + clientHeight >=
+      scrollHeight - 100
     ) {
       if (this.fileInfo.teacher) {
         coachId = this.fileInfo.teacher.split('?userId=')[1];
@@ -575,6 +607,23 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.dataSource.data = res.activityLapLayer;
       this.fileInfo = res.fileInfo;
+      if (location.search.indexOf('ipm=s') > -1) {
+        // this.isPrevieMode = true;
+        this.isLoadedOtherDetail = true;
+        let coachId, groupId;
+        if (this.fileInfo.teacher) {
+          coachId = this.fileInfo.teacher.split('?userId=')[1];
+        }
+        if (this.fileInfo.class) {
+          groupId = this.fileInfo.class.split('?groupId=')[1];
+        }
+        this.activityOtherDetailsService.fetchOtherDetail(
+          this.fileInfo.equipmentSN,
+          coachId,
+          groupId
+        );
+        this.isOtherDetailLoading = true;
+      }
       if (this.fileInfo.author.indexOf('?') > -1) {
         // 防止後續author會帶更多參數，先不寫死
         this.userLink.userName = this.fileInfo.author.split('?')[0];
@@ -584,6 +633,9 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           .replace(')', '');
       }
       this.infoDate = this.handleDate(this.activityInfo.startTime);
+      this.printFileDate = moment(this.activityInfo.startTime).format(
+        'YYYY/MM/DD HH:mm'
+      );
       this.totalSecond = this.activityInfo.totalSecond;
       this.resolutionSeconds = +this.totalSecond / this.activityPoints.length;
       this.initHchart();
@@ -776,5 +828,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   goBack() {
     window.history.back();
+  }
+  print() {
+    window.print();
   }
 }

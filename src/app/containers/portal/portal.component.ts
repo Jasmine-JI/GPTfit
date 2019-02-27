@@ -98,6 +98,7 @@ export class PortalComponent implements OnInit {
   customMapOptions = [];
   isIntroducePage: boolean;
   isAlphaVersion = false;
+  isPreviewMode = false;
   constructor(
     private router: Router,
     private globalEventsManager: GlobalEventsManager,
@@ -107,15 +108,15 @@ export class PortalComponent implements OnInit {
     private detectInappService: DetectInappService,
     private dialog: MatDialog
   ) {
+    if (location.search.indexOf('ipm=s') > -1) {
+      this.isPreviewMode = true;
+    }
     this.handleSearchEmail = debounce(this.handleSearchEmail, 1000);
   }
 
   ngOnInit() {
     this.translateService.onLangChange.subscribe(() => {
-      if (
-        this.detectInappService.isInApp ||
-        this.detectInappService.isIE
-      ) {
+      if (this.detectInappService.isInApp || this.detectInappService.isIE) {
         if (this.detectInappService.isLine) {
           if (location.search.length === 0) {
             location.href += '?openExternalBrowser=1';
@@ -140,7 +141,10 @@ export class PortalComponent implements OnInit {
     } else {
       this.isAlphaVersion = true;
     }
-    if (this.router.url === '/' || this.router.url === '/?openExternalBrowser=1') {
+    if (
+      this.router.url === '/' ||
+      this.router.url === '/?openExternalBrowser=1'
+    ) {
       this.isIntroducePage = true;
     } else {
       this.isIntroducePage = false;

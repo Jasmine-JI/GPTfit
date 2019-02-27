@@ -2,15 +2,15 @@
 <!-- <ng-container *ngIf="!isPreviewMode">
   <app-navbar></app-navbar>
 </ng-container> -->
-<ng-container *ngIf="isPreviewMode">
+<!-- <ng-container *ngIf="isPreviewMode">
   <div class="alatech-ribbon alatech-ribbon--bg-blue"></div>
     <router-outlet></router-outlet>
-</ng-container>
+</ng-container> -->
 <div (window:resize)="onResize($event, sideNav)"
   *ngIf="!isLoading" [class.minimize-main-nav]="isSideNavOpend"
   style="display: flex;align-items: stretch;"
 >
-  <mat-drawer-container>
+  <mat-drawer-container *ngIf="!isPreviewMode">
     <mat-drawer #sideNav opened={{isDefaultOpend}} mode={{mode}}>
       <nav class="navbar ala-dashboard-nav">
         <span class="ala-dashboard-logo">
@@ -294,8 +294,10 @@
       </header>
     </mat-drawer-content>
   </mat-drawer-container>
-  <div class="main-body" #mainBody>
-    <div *ngIf="!isPreviewMode"
+  <div class="main-body" #mainBody
+    [class.preview]="isPreviewMode"
+  >
+    <div
       [class.container]="isHadContainer"
       [hidden]="isLoading"
     >

@@ -68,7 +68,10 @@
       "LanyuRoundabout": "兰屿环岛",
       "BeijingMarathon": "北京马拉松21K"
     },
-    "BrowserTip": "本网站在谷歌、火狐、Safari 浏览器，并搭配1024 x 768（以上）之萤幕解析度，以获得最佳浏览体验。"
+    "BrowserTip": "本网站在谷歌、火狐、Safari 浏览器，并搭配1024 x 768（以上）之萤幕解析度，以获得最佳浏览体验。",
+    "PreviewPrint": "预览列印",
+    "Print": "列印",
+    "SportsRecord": "运动纪录"
   },
   "Portal": {
     "Introduce": "介绍",
