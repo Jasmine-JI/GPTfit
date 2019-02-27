@@ -68,7 +68,10 @@
       "LanyuRoundabout": "Lanyu Roundabout",
       "BeijingMarathon": "Beijing Marathon 21K"
     },
-    "BrowserTip": "This site use Google Chrome, Firefox,Safari desktop browser. Can get Best user experience: 1024 x768 pixels or higher."
+    "BrowserTip": "This site use Google Chrome, Firefox,Safari desktop browser. Can get Best user experience: 1024 x768 pixels or higher.",
+    "PreviewPrint": "Preview print",
+    "Print": "Print",
+    "SportsRecord": "Sports record"
   },
   "Portal": {
     "Introduce": "Introduce",
@@ -431,7 +434,15 @@
       "ActivityCreate": "[**Activity Name***] is created by [**Nickname**], created in [YYYY] /[MM] / [DD]@hh:mm:ss",
       "Chart": "Chart",
       "Details": "Details",
-      "Section": "Section"
+      "Section": "Section",
+      "DeviceInfo": "Device info",
+      "Brief": "Brief",
+      "Coordinate": "Coordinate",
+      "FileInfo": "File info",
+      "Tag": "Tag",
+      "DataVersion": "Data version",
+      "SynchronizationDate": "Synchronization date",
+      "LastEditDate": "Last edit date"
     },
     "MyDevice": {
       "MyDevice": "My device",

@@ -17,6 +17,10 @@
   margin-top: 60px;
   overflow: auto;
 }
+.main-body.preview {
+  margin-top: 0px;
+  overflow: initial;
+}
 .container {
   padding: 30px;
   min-height: calc(100vh - 78px);
