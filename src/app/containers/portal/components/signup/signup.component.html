@@ -110,7 +110,10 @@
                   >
                     {{'Portal.EnterWrongVerificationCode' | translate}}
                   </div>
-                  <a href="#" (click)="sendSMSCode($event)" [class.ban-send]="isSMSCodSending">
+                  <a href="#" (click)="sendSMSCode($event)"
+                    [class.ban-send]="isSMSCodSending"
+                    style="text-align: right"
+                  >
                     {{'Portal.SendNewsletterVerificationCode' | translate}}
                   </a>
                 </div>

@@ -493,20 +493,24 @@ export class GroupInfoComponent implements OnInit {
           this.subBranchInfo = this.subGroupInfo.branches.filter(_branch => {
             if (_branch.groupStatus !== 4) {
               // 過濾解散群組
-              return {
-                ..._branch,
-                groupIcon: this.utils.buildBase64ImgString(_branch.groupIcon)
-              };
+              return _branch;
             }
+          }).map(_branch => {
+            return {
+              ..._branch,
+              groupIcon: this.utils.buildBase64ImgString(_branch.groupIcon)
+            };
           });
           this.subCoachInfo = this.subGroupInfo.coaches.filter(_coach => {
             if (_coach.groupStatus !== 4) {
               // 過濾解散群組
-              return {
-                ..._coach,
-                groupIcon: this.utils.buildBase64ImgString(_coach.groupIcon)
-              };
+              return _coach;
             }
+          }).map(_coach => {
+            return {
+              ..._coach,
+              groupIcon: this.utils.buildBase64ImgString(_coach.groupIcon)
+            };
           });
         } else {
           this.groupInfos = groupMemberInfo;
@@ -596,7 +600,8 @@ export class GroupInfoComponent implements OnInit {
             this.groupInfos.findIndex(
               _admin =>
                 _admin.memberId === this.userId &&
-                (_admin.accessRight === '80' || _admin.accessRight === '40') &&
+                _admin.groupId === this.groupId &&
+                (+_admin.accessRight <= +this.groupLevel ) &&
                 _admin.joinStatus === 2
             ) > -1 &&
             (this.joinStatus !== 2 && !this.visitorDetail.isCanManage)

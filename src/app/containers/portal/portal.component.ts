@@ -15,6 +15,9 @@ import { IMyDpOptions } from 'mydatepicker';
 import * as moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../shared/services/utils.service';
+import { DetectInappService } from '@shared/services/detect-inapp.service';
+import { MatDialog } from '@angular/material/dialog';
+import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -100,18 +103,44 @@ export class PortalComponent implements OnInit {
     private globalEventsManager: GlobalEventsManager,
     private rankFormService: RankFormService,
     private utilsService: UtilsService,
-    public translateService: TranslateService
+    public translateService: TranslateService,
+    private detectInappService: DetectInappService,
+    private dialog: MatDialog
   ) {
     this.handleSearchEmail = debounce(this.handleSearchEmail, 1000);
   }
 
   ngOnInit() {
+    this.translateService.onLangChange.subscribe(() => {
+      if (
+        this.detectInappService.isInApp ||
+        this.detectInappService.isIE
+      ) {
+        if (this.detectInappService.isLine) {
+          if (location.search.length === 0) {
+            location.href += '?openExternalBrowser=1';
+          } else {
+            location.href += '&openExternalBrowser=1';
+          }
+        } else {
+          this.dialog.open(MessageBoxComponent, {
+            hasBackdrop: true,
+            data: {
+              title: 'message',
+              body: this.translateService.instant('SH.BrowserTip'),
+              confirmText: this.translateService.instant('SH.Confirm')
+            }
+          });
+        }
+      }
+    });
+
     if (location.hostname.indexOf('cloud.alatech.com.tw') > -1) {
       this.isAlphaVersion = false;
     } else {
       this.isAlphaVersion = true;
     }
-    if (this.router.url === '/') {
+    if (this.router.url === '/' || this.router.url === '/?openExternalBrowser=1') {
       this.isIntroducePage = true;
     } else {
       this.isIntroducePage = false;
@@ -329,7 +358,7 @@ export class PortalComponent implements OnInit {
         mapId: this.mapId,
         groupId: this.groupId
       };
-      this.rankDatas.forEach((_data, idx) => {
+      this.rankDatas.map((_data, idx) => {
         if (idx > 0) {
           if (this.rankDatas[idx - 1].offical_time === _data.offical_time) {
             _data.rank = this.rankDatas[idx - 1].rank;

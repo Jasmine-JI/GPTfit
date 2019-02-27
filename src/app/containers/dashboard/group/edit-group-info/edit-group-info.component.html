@@ -217,7 +217,7 @@
                   <app-member-capsule
                     [role]="role"
                     [isSubGroupInfo]="true"
-                    [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer"
+                    [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || +visitorDetail?.accessRight <= 30"
                     [title]="subBrandItem?.groupName"
                     [memberInfo]="subBrandItem"
                     [name]="subBrandItem && subBrandItem?.groupName"
@@ -238,7 +238,7 @@
                   <app-member-capsule
                     [role]="role"
                     [isSubGroupInfo]="true"
-                    [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator"
+                    [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || +visitorDetail?.accessRight <= 40"
                     [title]="subBranchItem?.groupName"
                     [memberInfo]="subBranchItem"
                     [name]="subBranchItem && subBranchItem?.groupName"
@@ -260,7 +260,7 @@
                   <app-member-capsule
                     [role]="role"
                     [isSubGroupInfo]="true"
-                    [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator"
+                    [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || +visitorDetail?.accessRight <= 60"
                     [title]="subCoachItem?.groupName"
                     [memberInfo]="subCoachItem"
                     [name]="subCoachItem && subCoachItem?.groupName"
