@@ -468,4 +468,23 @@ a.ban-send:hover {
   .alatech-btn {
     display: none;
   }
+  .other-info--area {
+    position: absolute;
+    width: 100%;
+    background-color: #EDEDED !important;
+    padding: 10px 5px;
+    left: 0;
+    font-size: 16px;
+    color: #909090!important;
+  }
+  .mat-radio-group {
+    display: none;
+  }
+  .activity-info__area--block {
+    padding: 0px!important;
+  }
+  .sportsRecord-text {
+    display: initial!important;
+    text-align: right;
+  }
 }

@@ -61,7 +61,6 @@ const routes: Routes = [
         path: 'certificate/preview',
         component: CertificatePreviewComponent
       },
-
       {
         path: 'enroll/:event_id/preview',
         component: EnrollPreviewComponent,

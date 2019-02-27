@@ -1,5 +1,7 @@
-<app-navbar [isAlphaVersion]="isAlphaVersion"></app-navbar>
-<div class="main">
+<app-navbar [isAlphaVersion]="isAlphaVersion"
+  *ngIf="!isPreviewMode"
+></app-navbar>
+<div class="main" [class.preview]="isPreviewMode">
   <div class="collapse navbar-collapse search-form" id="navbarResponsive" [class.show]="isCollapseOpen">
     <form (ngSubmit)="onSubmit(rankForm, $event)" #rankForm="ngForm">
       <div class="form-group">
