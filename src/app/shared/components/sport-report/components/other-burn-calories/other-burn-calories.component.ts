@@ -140,7 +140,7 @@ export class OtherBurnCaloriesComponent implements OnChanges {
             name = 'Running';
             break;
           case '2':
-            name = 'Ride';
+            name = 'Cycling';
             break;
           case '3':
             name = 'Weight training';
@@ -149,10 +149,10 @@ export class OtherBurnCaloriesComponent implements OnChanges {
             name = 'Swimming';
             break;
           case '5':
-            name = 'Aerobic exercise';
+            name = 'Aerobic';
             break;
           case '6':
-            name = 'Boating';
+            name = 'Rower';
             break;
           default:
             name = 'not yet defined';

@@ -210,7 +210,7 @@ export class ScatterChartComponent implements OnChanges {
             color = 'rgba(223, 83, 83, .5)';
             break;
           case '2':
-            name = 'Ride';
+            name = 'Cycling';
             color = 'rgba(119, 152, 191, .5)';
             break;
           case '3':
@@ -222,11 +222,11 @@ export class ScatterChartComponent implements OnChanges {
             color = 'rgba(247, 163, 92, .5)';
             break;
           case '5':
-            name = 'Aerobic exercise';
+            name = 'Aerobic';
             color = 'rgba(142, 9,	156, .5)';
             break;
           case '6':
-            name = 'Boating';
+            name = 'Rower';
             color = 'rgba(153,153,153, .5)';
             break;
           default:
