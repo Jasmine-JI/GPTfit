@@ -400,7 +400,7 @@ a.alatech-btn:hover {
 .access-panel-body {
   height: calc(100% - 70px);
   background-color: #f4eeeb;
-  padding: 40px 75px;
+  padding: 40px 60px;
 }
 /* 修改intl-tel */
 .ala-flag .flag {

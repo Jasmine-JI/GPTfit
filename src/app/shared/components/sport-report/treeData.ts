@@ -152,7 +152,7 @@ export const TREE_DATA = {
     'Average heart rate': '1-7',
     'Maximum heart rate': '1-8'
   },
-  'Run': {
+  'Running': {
     'Summary time': '2-1',
     'Summary distance': '2-2',
     'Burn calories': '2-3',
@@ -163,7 +163,7 @@ export const TREE_DATA = {
     'Average step frequency': '2-8',
     'Maximum step frequency': '2-9'
   },
-  'ride': {
+  'Cycling': {
     'Summary time': '3-1',
     'Summary distance': '3-2',
     'Burn calories': '3-3',
@@ -176,13 +176,13 @@ export const TREE_DATA = {
     'Average power': '3-10',
     'Maximum power': '3-11'
   },
-  'Aerobic exercise': {
+  'Aerobic': {
     'Summary time': '6-1',
     'Burn calories': '6-2',
     'Average heart rate': '6-3',
     'Maximum heart rate': '6-4'
   },
-  'Swim': {
+  'Swimming': {
     'Summary time': '4-1',
     'Summary distance': '4-2',
     'Burn calories': '4-3',
@@ -191,7 +191,7 @@ export const TREE_DATA = {
     'Average stroke frequency': '4-6',
     'Maximum stroke frequency': '4-7'
   },
-  'Weighttraining': {
+  'Weight Training': {
     'Summary time': '5-1',
     'Total weight': '5-2',
     'Total number of times': '5-3',
