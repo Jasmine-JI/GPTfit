@@ -40,6 +40,7 @@ import { CustomMaterialModule } from '@shared/custom-material.module.ts';
 import { BasicInfoComponent } from './components/user-profile/basic-info/basic-info.component';
 import { ActivityService } from '@shared/services/activity.service.ts';
 import { ReportService } from '@shared/services/report.service';
+import { ActivityOtherDetailsService } from '@shared/services/activity-other-details.service';
 import { DetectInappService } from '@shared/services/detect-inapp.service';
 
 @NgModule({
@@ -71,6 +72,7 @@ import { DetectInappService } from '@shared/services/detect-inapp.service';
     UserProfileService,
     ActivityService,
     ReportService,
+    ActivityOtherDetailsService,
     DetectInappService,
     {
       provide: HTTP_INTERCEPTORS,

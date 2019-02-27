@@ -2,7 +2,9 @@
   padding-top: 63px;
   width: 100%;
 }
-
+.main.preview {
+  padding-top: 0px;
+}
 .search-form {
   position: fixed;
   z-index: 10;
