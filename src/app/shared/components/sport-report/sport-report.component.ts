@@ -27,81 +27,6 @@ export class FileNode {
 }
 
 /**
- * The Json tree data in string. The data could be parsed into Json object
- */
-// const TREE_DATA = JSON.stringify({
-//   '所有運動': {
-//     '活動數量': '1-1',
-//     '總時間': '1-2',
-//     '總距離': '1-3',
-//     '消耗卡路里': '1-4',
-//     '平均速度': '1-5',
-//     '最大速度': '1-6',
-//     '平均心率': '1-7',
-//     '最大心率': '1-8'
-//   },
-//   '跑步': {
-//     '總時間': '2-1',
-//     '總距離': '2-2',
-//     '消耗卡路里': '2-3',
-//     '平均配速': '2-4',
-//     '最大配速': '2-5',
-//     '平均心率': '2-6',
-//     '最大心率': '2-7',
-//     '平均步頻': '2-8',
-//     '最大步頻': '2-9'
-//   },
-//   '騎乘': {
-//     '總時間': '3-1',
-//     '總距離': '3-2',
-//     '消耗卡路里': '3-3',
-//     '平均速度': '3-4',
-//     '最大速度': '3-5',
-//     '平均心率': '3-6',
-//     '最大心率': '3-7',
-//     '平均踏頻': '3-8',
-//     '最大踏頻': '3-9',
-//     '平均功率': '3-10',
-//     '最大功率': '3-11'
-//   },
-//   '有氧運動': {
-//     '總時間': '6-1',
-//     '消耗卡路里': '6-2',
-//     '平均心率': '6-3',
-//     '最大心率': '6-4'
-//   },
-//   '游泳': {
-//     '總時間': '4-1',
-//     '總距離': '4-2',
-//     '消耗卡路里': '4-3',
-//     '平均配速': '4-4',
-//     '最大配速': '4-5',
-//     '平均划水頻': '4-6',
-//     '最大划水頻': '4-7'
-//   },
-//   '重訓': {
-//     '總時間': '5-1',
-//     '總重量': '5-2',
-//     '總次數': '5-3',
-//     '消耗卡路里': '5-4',
-//     '平均心率': '5-5',
-//     '最大心率': '5-6',
-//     '所有肌肉概要部位資訊': {
-//       '最大1RM{跟下面一起}': '5-7',
-//       '總重量{跟上面一起}': '5-8',
-//       '總組數{跟下面一起}': '5-9',
-//       '總次數{跟上面一起}': '5-10'
-//     },
-//     '各個肌肉概要部位資訊': {
-//       '最大1RM': '5-11',
-//       '總重量': '5-12',
-//       '總組數': '5-13',
-//       '總次數': '5-14'
-//     }
-//   }
-// });
-
-/**
  * File database, it can build a tree structured Json object from string.
  * Each node in Json object represents a file or a directory. For a file, it has filename and type.
  * For a directory, it has filename and children (a list of files or directories).
@@ -392,9 +317,9 @@ export class SportReportComponent implements OnInit {
     if (
       targetNode.filename === '重訓' ||
       targetNode.filename === '重训' ||
-      targetNode.filename === 'Weighttraining' ||
+      targetNode.filename === 'Weight Training' ||
       targetNode.filename === '游泳' ||
-      targetNode.filename === 'Swim'
+      targetNode.filename === 'Swimming'
     ) {
       return;
     }

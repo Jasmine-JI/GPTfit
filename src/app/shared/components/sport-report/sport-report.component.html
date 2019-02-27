@@ -23,8 +23,8 @@
               matTreeNodeToggle
               [attr.aria-label]="'toggle ' + node.filename"
               (click)="handleItem(node)"
-[disabled]="node.filename === '重訓' || node.filename === '重训' || node.filename === 'Weighttraining' ||
-node.filename ==='游泳' || node.filename === 'Swim' ? true
+[disabled]="node.filename === '重訓' || node.filename === '重训' || node.filename === 'Weight Training' ||
+node.filename ==='游泳' || node.filename === 'Swimming' ? true
 : false"
             >
               <mat-icon class="mat-icon-rtl-mirror">
@@ -32,10 +32,10 @@ node.filename ==='游泳' || node.filename === 'Swim' ? true
               </mat-icon>
             </button>
             <span [style.color]="openTreeName === node.filename ? '#157fcc' : 'initial'">
-<span [style.color]="node.filename === '重訓' || node.filename === '重训' || node.filename === 'Weighttraining' ||
-node.filename ==='游泳' || node.filename === 'Swim' ? '#ada9a9' : 'initial'"
-                [style.cursor]="node.filename === '重訓' || node.filename === '重训' || node.filename === 'Weighttraining' ||
-node.filename ==='游泳' || node.filename === 'Swim' ? 'not-allowed' : 'initial'"
+<span [style.color]="node.filename === '重訓' || node.filename === '重训' || node.filename === 'Weight Training' ||
+node.filename ==='游泳' || node.filename === 'Swimming' ? '#ada9a9' : 'initial'"
+                [style.cursor]="node.filename === '重訓' || node.filename === '重训' || node.filename === 'Weight Training' ||
+node.filename ==='游泳' || node.filename === 'Swimming' ? 'not-allowed' : 'initial'"
               >
                 {{node.filename}}
               </span>
