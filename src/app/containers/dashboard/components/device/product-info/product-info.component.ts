@@ -43,6 +43,7 @@ export class ProductInfoComponent implements OnInit {
   fitPairStatus: string;
   token: string;
   fitPairTip: string;
+  qrURL: string;
   constructor(
     private qrCodeService: QrcodeService,
     private progress: NgProgress,
@@ -78,6 +79,7 @@ export class ProductInfoComponent implements OnInit {
     this.qrCodeService.getDeviceDetail(body).subscribe(res => {
       this.fitPairStatus = res.info.fitPairStatus;
       if (res.resultCode === 200) {
+        this.generate();
         this.qrCodeService.getDeviceInfo(params).subscribe(response => {
           this.progressRef.complete();
           this.isLoading = false;
@@ -136,13 +138,20 @@ export class ProductInfoComponent implements OnInit {
           hasBackdrop: true,
           data: {
             title: 'message',
-            body: this.translate.instant(
-              'Dashboard.ProductInfo.ChangeFailed'
-            ),
+            body: this.translate.instant('Dashboard.ProductInfo.ChangeFailed'),
             confirmText: this.translate.instant('SH.Confirm')
           }
         });
       }
+    });
+  }
+  generate() {
+    const body = {
+      token: this.token,
+      equipmentSN: this.deviceSN
+    };
+    this.qrCodeService.getQRFitPairURL(body).subscribe(res => {
+      this.qrURL = res.info.qrURL;
     });
   }
 }
