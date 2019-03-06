@@ -469,7 +469,8 @@
       "Only-me-avatar-and-file": "仅自己，头像与运动档案",
       "Only-me-file": "仅自己，限运动档案",
       "Target": "对象",
-      "ChangeFailed": "变更失败"
+      "ChangeFailed": "变更失败",
+      "GenerateQRcode": "产生Fit Pair QR code"
     },
     "SportReport": {
       "SportReport": "运动报告",

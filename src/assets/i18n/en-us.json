@@ -469,7 +469,8 @@
       "Only-me-avatar-and-file": "Only me, avatar and workout file",
       "Only-me-file": "Only me, workout file",
       "Target": "target",
-      "ChangeFailed": "Change failed"
+      "ChangeFailed": "Change failed",
+      "GenerateQRcode": "Generate Fit Pair QR code"
     },
     "SportReport": {
       "SportReport": "Sport report",

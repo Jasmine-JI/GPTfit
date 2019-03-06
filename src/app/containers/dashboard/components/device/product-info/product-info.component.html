@@ -34,7 +34,7 @@
         <button class="alatech-btn alatech-btn--default activty-btn"
           title="{{'Dashboard.ProductInfo.Back' | translate}}"
           style="width: 140px;height: 38px;"
-          [routerLink]="['/dashboard/device']"
+          (click)="goBack()"
         >
           {{'Dashboard.ProductInfo.Back' | translate}}
         </button>
@@ -123,19 +123,40 @@
           </ng-container>
         </div>
       </div>
-      <span class="group-handle-name">{{"Portal.RelatedLinks" | translate}}：</span>
-      <div class="app-link" *ngIf="productInfo && productInfo.length > 0">
+      <ng-containr *ngIf="productInfo && productInfo.length > 0">
+        <span class="group-handle-name">{{"Portal.RelatedLinks" | translate}}：</span>
+        <div class="app-link" *ngIf="productInfo && productInfo.length > 0">
 
-        <div *ngFor="let info of productInfo">
-          <a target="_blank" href={{info?.link}}>{{info?.dispName}}</a>
+          <div *ngFor="let info of productInfo">
+            <a target="_blank" href={{info?.link}}>{{info?.dispName}}</a>
+          </div>
         </div>
-      </div>
-      <span class="group-handle-name">{{"SH.UserManual" | translate}}：</span>
-      <div class="app-link" *ngIf="productManual && productManual.length > 0">
-
-        <div>
-          <a target="_blank" href={{productManual}}>{{"SH.GetDocument" | translate}}</a>
+      </ng-containr>
+      <ng-container *ngIf="productManual && productManual.length > 0">
+        <span class="group-handle-name">{{"SH.UserManual" | translate}}：</span>
+        <div class="app-link" *ngIf="productManual && productManual.length > 0">
+          <div>
+            <a target="_blank" href={{productManual}}>{{"SH.GetDocument" | translate}}</a>
+          </div>
         </div>
-      </div>
+      </ng-container>
+      <ng-container *ngIf="qrURL">
+        <span class="group-handle-name">{{'Dashboard.ProductInfo.GenerateQRcode' | translate}}：</span>
+        <div style="margin: 25px 0">
+          <qrcode [qrdata]="qrURL" [size]="128" [level]="'M'"></qrcode>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="isAdminMode">
+        <span class="group-handle-name">Device Bond User Name：</span>{{deviceBondUserName}}
+        <div style="margin: 25px 0">
+        <button class="alatech-btn alatech-btn--default activty-btn"
+          title="解除裝置綁定"
+          style="width: 140px;height: 38px;"
+          (click)="openUnBondDeviceDialog()"
+        >
+          解除裝置綁定
+        </button>
+        </div>
+      </ng-container>
   </div>
 </div>

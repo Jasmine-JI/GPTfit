@@ -469,7 +469,8 @@
       "Only-me-avatar-and-file": "僅自己，頭像與運動檔案",
       "Only-me-file": "僅自己，限運動檔案",
       "Target": "對象",
-      "ChangeFailed": "變更失敗"
+      "ChangeFailed": "變更失敗",
+      "GenerateQRcode": "產生Fit Pair QR code"
     },
     "SportReport": {
       "SportReport": "運動報告",
