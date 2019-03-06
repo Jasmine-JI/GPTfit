@@ -10,7 +10,7 @@ export class Page404Component implements OnInit {
   constructor(private router: Router) {}
 
   ngOnInit() {
-    if (history.state >= 2) {
+    if (history.state.navigationId >= 2) {
       setTimeout(() => history.go(-2), 3000);
     } else {
       setTimeout(() => this.router.navigateByUrl('/dashboard'), 3000);

@@ -82,6 +82,7 @@ import { InnerAdminService } from './services/inner-admin.service';
 import { ActivityOtherDetailsService } from '@shared/services/activity-other-details.service';
 import { DetectInappService } from '@shared/services/detect-inapp.service';
 import { QRCodeModule } from 'angularx-qrcode';
+import { InnerDevicePairComponent } from './components/inner-device-pair/inner-device-pair.component';
 
 @NgModule({
   imports: [
@@ -175,7 +176,8 @@ import { QRCodeModule } from 'angularx-qrcode';
     CommercePlanTableComponent,
     PrivacySettingDialogComponent,
     InnerTestComponent,
-    CloudRunGpxComponent
+    CloudRunGpxComponent,
+    InnerDevicePairComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [

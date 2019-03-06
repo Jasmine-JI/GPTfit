@@ -146,6 +146,14 @@
                 <!--  之後把font awesome 與material icon 擇一-->
                 cloudRun gpx轉換
               </li>
+              <li class="ala-sidenav-menu-item"
+                (click)="chooseItem(20, sideNav)"
+                [class.ala-sidenav-menu-item__active]="target === 20"
+                [routerLink]="['/dashboard/system/device-pair-management']"
+                *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer"
+              >
+                device pair info
+              </li>
             </mat-expansion-panel>
           </mat-accordion>
           <mat-accordion multi="false" *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper">

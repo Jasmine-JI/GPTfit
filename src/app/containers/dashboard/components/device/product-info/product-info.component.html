@@ -34,7 +34,7 @@
         <button class="alatech-btn alatech-btn--default activty-btn"
           title="{{'Dashboard.ProductInfo.Back' | translate}}"
           style="width: 140px;height: 38px;"
-          [routerLink]="['/dashboard/device']"
+          (click)="goBack()"
         >
           {{'Dashboard.ProductInfo.Back' | translate}}
         </button>
@@ -144,6 +144,18 @@
         <span class="group-handle-name">{{'Dashboard.ProductInfo.GenerateQRcode' | translate}}：</span>
         <div style="margin: 25px 0">
           <qrcode [qrdata]="qrURL" [size]="128" [level]="'M'"></qrcode>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="isAdminMode">
+        <span class="group-handle-name">Device Bond User Name：</span>{{deviceBondUserName}}
+        <div style="margin: 25px 0">
+        <button class="alatech-btn alatech-btn--default activty-btn"
+          title="解除裝置綁定"
+          style="width: 140px;height: 38px;"
+          (click)="openUnBondDeviceDialog()"
+        >
+          解除裝置綁定
+        </button>
         </div>
       </ng-container>
   </div>
