@@ -132,7 +132,6 @@ button:focus {
   height: 50px;
 }
 .button.bg-btn {
-  position: fixed;
   opacity: 0.5;
 }
 
