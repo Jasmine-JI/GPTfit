@@ -1,11 +1,4 @@
 <div class="mask" [class.mask--show]="isMaskShow" (click)="touchMask()"></div>
-<!-- <ng-container *ngIf="!isPreviewMode">
-  <app-navbar></app-navbar>
-</ng-container> -->
-<!-- <ng-container *ngIf="isPreviewMode">
-  <div class="alatech-ribbon alatech-ribbon--bg-blue"></div>
-    <router-outlet></router-outlet>
-</ng-container> -->
 <div (window:resize)="onResize($event, sideNav)"
   *ngIf="!isLoading" [class.minimize-main-nav]="isSideNavOpend"
   style="display: flex;align-items: stretch;"

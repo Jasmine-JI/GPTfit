@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
+import { MAT_DIALOG_DATA } from '@angular/material';
 import { HttpParams } from '@angular/common/http';
 import { EventInfoService } from '../../services/event-info.service';
 
@@ -27,7 +27,6 @@ export class Top3DialogComponent implements OnInit {
   }
 
   constructor(
-    private dialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) private data: any,
     private eventInfoService: EventInfoService
   ) {}

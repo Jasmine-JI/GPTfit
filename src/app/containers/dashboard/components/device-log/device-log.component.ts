@@ -5,11 +5,9 @@ import {
   MatPaginator,
   PageEvent,
   MatSort,
-  Sort,
-  MatPaginatorIntl
+  Sort
 } from '@angular/material';
 import { HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/observable/fromEvent';
@@ -37,7 +35,6 @@ export class DeviceLogComponent implements OnInit {
 
   constructor(
     private deviceLogservice: DeviceLogService,
-    private matPaginatorIntl: MatPaginatorIntl,
     private router: Router,
     private utils: UtilsService
   ) {
@@ -47,26 +44,6 @@ export class DeviceLogComponent implements OnInit {
   ngOnInit() {
     const queryStrings = this.utils.getUrlQueryStrings(location.search);
     const { pageNumber } = queryStrings;
-    // // 設定顯示筆數資訊文字
-    // this.matPaginatorIntl.getRangeLabel = (
-    //   page: number,
-    //   pageSize: number,
-    //   length: number
-    // ): string => {
-    //   if (length === 0 || pageSize === 0) {
-    //     return `第 0 筆、共 ${length} 筆`;
-    //   }
-
-    //   length = Math.max(length, 0);
-    //   const startIndex = page * pageSize;
-    //   const endIndex =
-    //     startIndex < length
-    //       ? Math.min(startIndex + pageSize, length)
-    //       : startIndex + pageSize;
-
-    //   return `第 ${startIndex + 1} - ${endIndex} 筆、共 ${length} 筆`;
-    // };
-
     this.currentPage = {
       pageIndex: (+pageNumber - 1) || 0,
       pageSize: 10,

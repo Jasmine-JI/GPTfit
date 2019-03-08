@@ -4,11 +4,8 @@ import {
   ChangeDetectorRef,
   AfterViewChecked
 } from '@angular/core';
-import {
-  getUrlQueryStrings,
-} from '@shared/utils/';
 import { GlobalEventsManager } from '@shared/global-events-manager';
-import { MatSidenav, MatDrawerToggleResult } from '@angular/material';
+import { MatSidenav } from '@angular/material';
 import { AuthService } from '@shared/services/auth.service';
 import { Router } from '@angular/router';
 import { UserInfoService } from './services/userInfo.service';
