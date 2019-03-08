@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { UserInfoService } from 'app/containers/dashboard/services/userInfo.service';
 import { Router } from '@angular/router';
 import { GlobalEventsManager } from '@shared/global-events-manager';
+import { HashIdService } from '@shared/services/hash-id.service';
 
 @Component({
   selector: 'app-portal-group-info',
@@ -29,12 +30,15 @@ export class PortalGroupInfoComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private userInfoService: UserInfoService,
     private router: Router,
-    private globalEventsManager: GlobalEventsManager
+    private globalEventsManager: GlobalEventsManager,
+    private hashIdService: HashIdService
   ) {}
 
   ngOnInit() {
     this.globalEventsManager.setFooterRWD(1);
-    this.groupId = this.route.snapshot.paramMap.get('groupId');
+    this.groupId = this.hashIdService.handleGroupIdDecode(
+      this.route.snapshot.paramMap.get('groupId')
+    );
     const token = this.utils.getToken() || '';
     if (token) {
       this.userInfoService.getUserDetail({ token }, this.groupId);
@@ -53,7 +57,7 @@ export class PortalGroupInfoComponent implements OnInit, OnDestroy {
           accessRight !== 'none' ||
           isApplying
         ) {
-          this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}`);
+          this.router.navigateByUrl(`/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}`);
         }
       });
     }
@@ -74,7 +78,7 @@ export class PortalGroupInfoComponent implements OnInit, OnDestroy {
   }
   goDashboardGroupInfo() {
     this.utils.setLocalStorageObject('isAutoApplyGroup', true);
-    this.router.navigateByUrl(`/dashboard/group-info/${this.groupId}`);
+    this.router.navigateByUrl(`/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}`);
   }
   ngOnDestroy() {
     const token = this.utils.getToken() || '';

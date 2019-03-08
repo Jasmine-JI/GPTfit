@@ -132,7 +132,6 @@ button:focus {
   height: 50px;
 }
 .button.bg-btn {
-  position: fixed;
   opacity: 0.5;
 }
 
@@ -486,5 +485,8 @@ a.ban-send:hover {
   .sportsRecord-text {
     display: initial!important;
     text-align: right;
+  }
+  .activty-icon {
+    border: 2px solid #ccc;
   }
 }
