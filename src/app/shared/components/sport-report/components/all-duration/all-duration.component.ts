@@ -4,15 +4,10 @@ import {
   ViewChild,
   ElementRef,
   Input,
-  OnChanges,
-  SimpleChanges
+  OnChanges
 } from '@angular/core';
 import * as _Highcharts from 'highcharts';
 import { chart } from 'highcharts';
-// import * as Stock from 'highcharts/highstock';
-// import { ReportService } from '../../../../services/report.service';
-// import { UtilsService } from '@shared/services/utils.service';
-// import * as moment from 'moment';
 
 var Highcharts: any = _Highcharts; // 不檢查highchart型態
 

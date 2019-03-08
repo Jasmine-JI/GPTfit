@@ -1,5 +1,4 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
-import { HttpParams } from '@angular/common/http';
 
 @Component({
   selector: 'app-pagination',

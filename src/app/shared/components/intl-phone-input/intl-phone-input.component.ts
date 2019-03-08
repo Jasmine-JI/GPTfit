@@ -7,7 +7,7 @@ import {
   EventEmitter
 } from '@angular/core';
 import { codes } from '@shared/components/intl-phone-input/countryCode';
-import { FormGroup, FormControl, NgForm } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-intl-phone-input',

@@ -67,10 +67,10 @@
         <div>
           <label>
             <span *ngIf="groupLevel === '40' || groupLevel === '60'">
-              {{groupInfo?.groupRootInfo[2].brandName}} -
+              {{groupInfo?.groupRootInfo[2]?.brandName}} -
             </span>
             <span *ngIf="groupLevel === '60'">
-              {{groupInfo?.groupRootInfo[3].branchName}} -
+              {{groupInfo?.groupRootInfo[3]?.branchName}} -
             </span>
             {{ groupInfo?.groupName }}
           </label>

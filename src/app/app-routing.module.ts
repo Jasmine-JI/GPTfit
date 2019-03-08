@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { PreloadAllModules, Routes, RouterModule } from '@angular/router';
+import { Routes, RouterModule } from '@angular/router';
 import { Page404Component } from './shared/components/page404/page404.component';
 import { PortalComponent } from './containers/portal/portal.component';
 import { Page403Component } from './shared/components/page403/page403.component';
