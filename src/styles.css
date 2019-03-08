@@ -486,4 +486,7 @@ a.ban-send:hover {
     display: initial!important;
     text-align: right;
   }
+  .activty-icon {
+    border: 2px solid #ccc;
+  }
 }
