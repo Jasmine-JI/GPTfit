@@ -29,9 +29,10 @@ export class ActivityOtherDetailsService {
     params = params.set('device_sn', sn);
     const token = this.utilsService.getToken();
     const forkJoinArray = [];
-
-    const getDeviceDetail = this.qrCodeService.getDeviceInfo(params);
-    forkJoinArray.push(getDeviceDetail);
+    if (sn && sn.length > 0) {
+      const getDeviceDetail = this.qrCodeService.getDeviceInfo(params);
+      forkJoinArray.push(getDeviceDetail);
+    }
     if (groupId && coachId) {
       const body = {
         token,
@@ -48,18 +49,19 @@ export class ActivityOtherDetailsService {
       forkJoinArray.push(getUserInfo);
     }
 
+    if (forkJoinArray.length > 0) {
+      forkJoin(forkJoinArray).subscribe(res => {
+        if (groupId && coachId) {
+          this.otherInfo$.next({
+            deviceInfo: res[0],
+            coachInfo: res[2],
+            groupInfo: res[1]
+          });
+        } else {
+          this.otherInfo$.next({deviceInfo: res[0]});
+        }
+      });
+    }
 
-    forkJoin(forkJoinArray).subscribe(res => {
-      if (groupId && coachId) {
-        this.otherInfo$.next({
-          deviceInfo: res[0],
-          coachInfo: res[2],
-          groupInfo: res[1]
-        });
-      } else {
-        this.otherInfo$.next({deviceInfo: res[0]});
-      }
-
-    });
   }
 }

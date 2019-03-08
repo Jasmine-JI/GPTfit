@@ -260,7 +260,11 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       if (this.fileInfo.class) {
         groupId = this.fileInfo.class.split('?groupId=')[1];
       }
-      if (!this.isLoadedOtherDetail) {
+      if (
+        !this.isLoadedOtherDetail &&
+        ((this.fileInfo.equipmentSN && this.fileInfo.equipmentSN.length > 0)
+        || coachId || groupId)
+      ) {
         this.activityOtherDetailsService.fetchOtherDetail(
           this.fileInfo.equipmentSN,
           coachId,
