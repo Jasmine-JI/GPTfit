@@ -351,7 +351,8 @@
               </div>
             </div>
             <div class="activity-info__area"
-              *ngIf="activityInfo?.type !== '2' && activityInfo?.type !== '3' && activityInfo?.type !== '5'"
+*ngIf="activityInfo?.type !== '2' && activityInfo?.type !== '3' && activityInfo?.type !== '5' &&
+(activityInfo?.avgSpeed || activityInfo?.avgMoveSpeed || activityInfo?.maxSpeed)"
             >
               <div class="ala-dashboard-title activty-title">
                 <span *ngIf="activityInfo?.type === '1'">
@@ -364,7 +365,7 @@
                   500m{{'SH.Pace' | translate}}
                   </span>
               </div>
-              <div class="activity-info__area--block">
+              <div class="activity-info__area--block" *ngIf="activityInfo?.avgSpeed">
                 <div>
                   {{activityInfo?.avgSpeed | sportPace: activityInfo?.type}}
                 </div>
@@ -380,7 +381,7 @@
                   </span>
                 </div>
               </div>
-              <div class="activity-info__area--block">
+              <div class="activity-info__area--block" *ngIf="activityInfo?.avgMoveSpeed">
                 <div>
                   {{activityInfo?.avgMoveSpeed | sportPace: activityInfo?.type}}
                 </div>
@@ -396,7 +397,7 @@
                   </span>
                 </div>
               </div>
-              <div class="activity-info__area--block">
+              <div class="activity-info__area--block" *ngIf="activityInfo?.maxSpeed">
                 <div>
                   {{activityInfo?.maxSpeed | sportPace: activityInfo?.type}}
                 </div>
