@@ -3,7 +3,6 @@ import { Location } from '@angular/common';
 import { HttpParams } from '@angular/common/http';
 import { MapGPXService } from '@shared/services/map-gpx.service';
 import { MapService } from '@shared/services/map.service';
-import { ActivatedRoute } from '@angular/router';
 import { RankFormService } from '../../services/rank-form.service';
 import { getUrlQueryStrings, getLocalStorageObject } from '@shared/utils/';
 import { Router } from '@angular/router';

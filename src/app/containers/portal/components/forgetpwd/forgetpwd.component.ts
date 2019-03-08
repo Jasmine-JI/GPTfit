@@ -2,10 +2,8 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
-  FormControl,
   Validators
 } from '@angular/forms';
-import { AuthService } from '@shared/services/auth.service';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material';
 import { RandomCodeService } from '../../services/random-code.service';
@@ -43,7 +41,6 @@ export class ForgetpwdComponent implements OnInit {
   className = 'btn btn-primary access-btn';
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService,
     private router: Router,
     private snackbar: MatSnackBar,
     private randomCodeService: RandomCodeService,

@@ -81,25 +81,13 @@ export class GroupInfoComponent implements OnInit {
 
   ngOnInit() {
     this.route.params.subscribe(_params => this.handleInit());
-    let isAutoApplyGroup = this.utils.getLocalStorageObject('isAutoApplyGroup');
-    this.userInfoService.getUserAccessRightDetail().subscribe(res => {
-      this.visitorDetail = res;
-      const { isGroupAdmin } = this.visitorDetail;
-      if (isAutoApplyGroup && isGroupAdmin) {
-        // 已是該群組管理者無法利用qr 掃描自動加入群組
-        this.utils.removeLocalStorageObject('isAutoApplyGroup');
-        isAutoApplyGroup = false;
-      }
-      if (isAutoApplyGroup) {
-        this.handleActionGroup(1);
-        this.utils.removeLocalStorageObject('isAutoApplyGroup');
-        isAutoApplyGroup = false;
-      }
-    });
   }
 
   handleInit() {
     this.groupId = this.hashIdService.handleGroupIdDecode(this.route.snapshot.paramMap.get('groupId'));
+    if (this.groupId && this.groupId.length > 0) {
+      this.groupLevel = this.utils.displayGroupLevel(this.groupId);
+    }
     if (this.groupId.length === 0) {
       return this.router.navigateByUrl('/404');
     }
@@ -168,6 +156,21 @@ export class GroupInfoComponent implements OnInit {
       ) {
         this.router.navigateByUrl(`/404`);
       }
+      let isAutoApplyGroup = this.utils.getLocalStorageObject('isAutoApplyGroup');
+      this.userInfoService.getUserAccessRightDetail().subscribe(response => {
+        this.visitorDetail = response;
+        const { isGroupAdmin } = this.visitorDetail;
+        if (isAutoApplyGroup && isGroupAdmin) {
+          // 已是該群組管理者無法利用qr 掃描自動加入群組
+          this.utils.removeLocalStorageObject('isAutoApplyGroup');
+          isAutoApplyGroup = false;
+        }
+        if (isAutoApplyGroup) {
+          this.handleActionGroup(1);
+          this.utils.removeLocalStorageObject('isAutoApplyGroup');
+          isAutoApplyGroup = false;
+        }
+      });
     });
   }
   handleShareTarget(shareData, type) {
@@ -277,6 +280,7 @@ export class GroupInfoComponent implements OnInit {
       groupId: this.groupId,
       actionType: _type
     };
+
     if (_type === 1 && this.groupLevel === '60') {
       // 申請加入
       const langName = this.utils.getLocalStorageObject('locale');
@@ -408,8 +412,7 @@ export class GroupInfoComponent implements OnInit {
                           });
                         }
                       });
-                  }
-                  if (resultCode === 401) {
+                  } else {
                     this.dialog.open(MessageBoxComponent, {
                       hasBackdrop: true,
                       data: {
@@ -441,15 +444,13 @@ export class GroupInfoComponent implements OnInit {
           } else {
             this.joinStatus = selfJoinStatus;
           }
-        }
-        if (resultCode === 401) {
+        } else {
           this.dialog.open(MessageBoxComponent, {
             hasBackdrop: true,
             data: {
               title: 'message',
               body: resultMessage,
-              confirmText: this.confirmText,
-              cancelText: this.cancelText
+              confirmText: this.translate.instant('SH.Confirm')
             }
           });
         }

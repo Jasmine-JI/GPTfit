@@ -71,6 +71,9 @@ tr.here {
 .map-container {
   padding-top: 80px;
 }
+.mapinfo__goback-rwd--md {
+  visibility: hidden;
+}
 @media (max-width: 768px) {
   .mapinfo__goback-rwd {
     display: none;
@@ -83,6 +86,7 @@ tr.here {
   .mapinfo__goback-rwd--md {
     visibility: visible;
     z-index: 2;
+    position: fixed;
   }
   .run-info__item--collocate {
     display: inline-block;

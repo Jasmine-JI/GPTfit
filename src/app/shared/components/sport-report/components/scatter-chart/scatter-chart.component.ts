@@ -6,7 +6,6 @@ import {
   OnChanges
 } from '@angular/core';
 import { chart } from 'highcharts';
-import * as Highcharts from 'highcharts';
 import * as moment from 'moment';
 
 @Component({

@@ -1,5 +1,4 @@
 import { Component, OnInit, Inject, EventEmitter, ViewEncapsulation } from '@angular/core';
-import { Router } from '@angular/router';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
 import { GroupService } from '../../services/group.service';
 import { UtilsService } from '@shared/services/utils.service';
@@ -46,7 +45,6 @@ export class RightSettingWinComponent implements OnInit {
     return this.data.onDelete;
   }
   constructor(
-    private router: Router,
     private dialog: MatDialog,
     private groupService: GroupService,
     private utils: UtilsService,

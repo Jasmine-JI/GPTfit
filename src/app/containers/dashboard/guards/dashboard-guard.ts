@@ -2,15 +2,12 @@ import { Injectable } from '@angular/core';
 import {
   CanActivate,
   ActivatedRouteSnapshot,
-  RouterStateSnapshot,
-  ActivatedRoute,
   Router
 } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/take';
 import { UserInfoService } from '../services/userInfo.service';
 import { UtilsService } from '@shared/services/utils.service';
-import { UserDetail } from '../models/userDetail';
 import { UserInfo } from '../models/userInfo';
 
 @Injectable()
@@ -18,12 +15,10 @@ export class DashboardGuard implements CanActivate {
   constructor(
     private userInfoService: UserInfoService,
     private utils: UtilsService,
-    private route: ActivatedRoute,
     private router: Router
   ) {}
   canActivate(
     next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
 
     let isSupervisor = false,

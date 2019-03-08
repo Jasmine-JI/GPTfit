@@ -15,7 +15,6 @@ import {
   PageEvent,
   MatSort,
   Sort,
-  MatPaginatorIntl,
   MatDatepickerInputEvent
 } from '@angular/material';
 import { Observable } from 'rxjs/Observable';
@@ -26,10 +25,9 @@ import { Router } from '@angular/router';
 import * as moment from 'moment';
 import {
   BreakpointObserver,
-  BreakpointState,
   Breakpoints
 } from '@angular/cdk/layout';
-import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Location } from '@angular/common';
 import { DOCUMENT } from '@angular/platform-browser';
 import { WINDOW } from '@shared/services/window.service';
@@ -64,7 +62,6 @@ export class DeviceLogDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private deviceLogservice: DeviceLogService,
-    private matPaginatorIntl: MatPaginatorIntl,
     private router: Router,
     private breakpointObserver: BreakpointObserver,
     private fb: FormBuilder,

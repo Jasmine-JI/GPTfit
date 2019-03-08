@@ -1,17 +1,14 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { Injectable } from '@angular/core';
-import { environment } from '../../../../environments/environment';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
 import { forkJoin } from 'rxjs/observable/forkJoin';
 import { UserInfo } from '../models/userInfo';
 import { UserDetail } from '../models/userDetail';
 import { UtilsService } from '@shared/services/utils.service';
 import * as moment from 'moment';
 
-const { API_SERVER } = environment.url;
 
 @Injectable()
 export class UserInfoService {
