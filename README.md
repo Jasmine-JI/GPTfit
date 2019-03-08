@@ -10,6 +10,7 @@ npm install
 
 ## Development server
 有分為加密模式與非加密模式
+
 若要模擬加密模式的dev環境，或是要開發本機端的nodejs api server
 ```
 npm run dev-ssl-start
@@ -21,7 +22,7 @@ npm run dev-ssl-start
 npm run web-start
 ```
 
-若要api導向主機，非加密模式開發
+若要api導向234主機的資料與service，非加密模式開發
 ```
 npm start
 ```
@@ -52,7 +53,7 @@ npm run prod-build
 
 但要注意，目前在234環境build code時，pm2 不知道為何run不起nodejs api server
 雖然[腳本](https://gitlab.com/alatech_cloud/web/blob/master/reset.sh)已設置
-目前原因尚未持清楚
+目前原因尚未查清楚
 但手動再補執行
 ```
 npm run pm2-start
