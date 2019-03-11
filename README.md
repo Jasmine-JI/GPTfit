@@ -180,7 +180,7 @@ app
 ## Dependency notes
 
 | Dependency Name | 版本 | 筆記 | 專案範例連結
-|---|---|---|
+|---|---|---|---|
 **[@ngx-progressbar/core](https://github.com/murhafsousli/ngx-progressbar)** | 5.3.1 | 進度條，ex:使用於裝置資訊、QR配對頁面...等 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/activity-info/activity-info.component.html#L1)
 **[@ngx-translate/core](https://github.com/ngx-translate/core)** | 10.0.2 | 處理多語系 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/containers/portal/components/signin/signin.component.ts#L87)
 **[@angular/pwa](https://angular.io/guide/service-worker-getting-started)** | 0.8.7 | pwa模組，`但目前center還沒啟用，連結是註解掉的部分` | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/app.module.ts#L48)
