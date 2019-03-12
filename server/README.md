@@ -14,14 +14,21 @@ npm install
 This ia an GPT center nodejs api collection
 
 [GPT-center-nodejs-api-collection json連結]()
+
 please set environment => url
 
 若不會設postman環境變數，可以參考這篇[文章](https://dotblogs.com.tw/kinanson/2015/11/07/153838)
-nodejs-prod:  https://cloud.alatech.com.tw:3000/nodejs/api/
-nodejs-tst: http://192.168.1.232:3000/nodejs/api/
-nodejs-uat: https://app.alatech.com.tw:3000/nodejs/api/
-nodejs-web-dev:  https://192.168.1.235:3001/nodejs/api/
-nodejs-web-prod: http://192.168.1.235:3000/nodejs/api/
+
+
+*  nodejs-prod:  https://cloud.alatech.com.tw:3000/nodejs/api/
+
+*  nodejs-tst: http://192.168.1.232:3000/nodejs/api/
+
+*  nodejs-uat: https://app.alatech.com.tw:3000/nodejs/api/
+
+*  nodejs-web-dev:  https://192.168.1.235:3001/nodejs/api/
+
+*  nodejs-web-prod: http://192.168.1.235:3000/nodejs/api/
 
 然後headers請設置
 Authorization:{{自己的token}}
