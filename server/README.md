@@ -9,7 +9,17 @@ Npm version 5.5.1
 ```
 npm install
 ```
+## 資料夾結構
 
+```
+server/ // nodejs api server folder(正式port: 3000，開發port: 3001)
+  ├─ models/ // 程式業務邏輯與資料庫存取
+  ├─ routes/ // 負責轉發請求並回應結果
+  ├─ utils/ // 自訂 共用function
+  ├─ package.json // 此專案的腳本與使用的模組
+  ├─ server.js // api應用程式進入點
+  └─ socket-server.js // 模擬測試socket應用程式進入點(開發port: 3002)
+```
 ## Postman collection
 This ia an GPT center nodejs api collection
 
