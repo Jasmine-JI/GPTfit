@@ -26,9 +26,7 @@
     [class.container]="isPortal"
     [style.padding-top]="isPortal ? '15px' : '0px'"
   >
-    <div style="display: flex;justify-content: space-between;"
-      [class.isBrandIcon]="brandIcon.length > 0"
-    >
+    <div [class.isBrandIcon]="brandIcon.length > 0">
       <div style="display: flex;align-items: center;min-width: 300px;width:100%">
         <!-- <div class="user-photo" style="width: 64px;height: 64px;"> -->
           <img *ngIf="brandIcon.length > 0"
