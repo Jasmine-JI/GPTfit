@@ -1,0 +1,31 @@
+<h2 class="ala-dialog" style="" mat-dialog-title>
+  {{ title }}
+</h2>
+<mat-dialog-content>
+  <div style="display: flex;justify-content: center">
+    <qrcode [qrdata]="qrURL" [size]="256" [level]="'M'"></qrcode>
+  </div>
+  <div style="width: 100%;text-align: center;margin: 15px 0px;">
+    <b>{{totalGroupName}}</b>
+  </div>
+
+  <div>
+    <label style="margin-right: 10px">Link:</label>
+    <input value="{{qrURL}}" #qrUrl
+      style="width: calc(100% - 75px)"
+    >
+    <button class="icon-btn"
+      style="margin-left: 10px"
+      (click)="copyInputMessage(qrUrl)"
+    >
+      <i class="fa fa-clipboard" aria-hidden="true"
+        style="font-size: 20px;color:#333"
+      ></i>
+    </button>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions class="justify-content-end">
+  <button mat-button color="primary" *ngIf="confirmText" (click)="handleConfirm()">{{confirmText}}</button>
+  <button mat-button color="warn" *ngIf="cancelText" (click)="handleCancel()">{{cancelText}}</button>
+</mat-dialog-actions>

@@ -83,6 +83,7 @@ import { ActivityOtherDetailsService } from '@shared/services/activity-other-det
 import { DetectInappService } from '@shared/services/detect-inapp.service';
 import { QRCodeModule } from 'angularx-qrcode';
 import { InnerDevicePairComponent } from './components/inner-device-pair/inner-device-pair.component';
+import { ShareGroupInfoDialogComponent } from '@shared/components/share-group-info-dialog/share-group-info-dialog.component';
 
 @NgModule({
   imports: [
@@ -189,7 +190,8 @@ import { InnerDevicePairComponent } from './components/inner-device-pair/inner-d
     PeopleSelectorWinComponent,
     TodayLoginnerWinComponent,
     BottomSheetComponent,
-    PrivacySettingDialogComponent
+    PrivacySettingDialogComponent,
+    ShareGroupInfoDialogComponent
   ]
 })
 export class DashboardModule {}

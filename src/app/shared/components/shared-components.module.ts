@@ -35,6 +35,8 @@ import {
   ScatterChartComponent
 } from './sport-report';
 import { NgProgressModule } from '@ngx-progressbar/core';
+import { ShareGroupInfoDialogComponent } from './share-group-info-dialog/share-group-info-dialog.component';
+import { QRCodeModule } from 'angularx-qrcode';
 
 @NgModule({
   imports: [
@@ -45,7 +47,8 @@ import { NgProgressModule } from '@ngx-progressbar/core';
     SharedModule,
     CustomMaterialModule,
     SharedPipes,
-    NgProgressModule
+    NgProgressModule,
+    QRCodeModule
   ],
   declarations: [
     NavbarComponent,
@@ -73,7 +76,8 @@ import { NgProgressModule } from '@ngx-progressbar/core';
     ColumnstackedChartComponent,
     OtherBurnCaloriesComponent,
     PartialMuscleInfoComponent,
-    ScatterChartComponent
+    ScatterChartComponent,
+    ShareGroupInfoDialogComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -101,7 +105,8 @@ import { NgProgressModule } from '@ngx-progressbar/core';
     ColumnstackedChartComponent,
     OtherBurnCaloriesComponent,
     PartialMuscleInfoComponent,
-    ScatterChartComponent
+    ScatterChartComponent,
+    ShareGroupInfoDialogComponent
   ]
 })
 export class SharedComponentsModule {}

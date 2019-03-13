@@ -709,14 +709,12 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       dateArr[1] +
       dateArr[2] +
       dateArr[3] +
-      '年' +
-      ' ' +
+      '/' +
       dateArr[5] +
       dateArr[6] +
-      '月' +
+      '/' +
       dateArr[8] +
       dateArr[9] +
-      '日' +
       ' @ ' +
       time;
     return date;
