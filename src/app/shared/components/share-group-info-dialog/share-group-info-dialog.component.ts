@@ -1,19 +1,23 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
+import { MatSnackBar } from '@angular/material';
 
 @Component({
-  selector: 'app-message-box',
-  templateUrl: './message-box.component.html',
-  styleUrls: ['./message-box.component.css']
+  selector: 'app-share-group-info-dialog',
+  templateUrl: './share-group-info-dialog.component.html',
+  styleUrls: ['./share-group-info-dialog.component.scss']
 })
-export class MessageBoxComponent implements OnInit {
+export class ShareGroupInfoDialogComponent implements OnInit {
   get title() {
     return this.data.title;
   }
-
-  get groupName() {
-    return this.data.groupName;
+  get qrURL() {
+    const _url = this.data.url.replace('/dashboard/', '/');
+    return _url;
+  }
+  get totalGroupName() {
+    return this.data.totalGroupName;
   }
 
   get onConfirm() {
@@ -30,6 +34,7 @@ export class MessageBoxComponent implements OnInit {
   }
   constructor(
     private router: Router,
+    private snackbar: MatSnackBar,
     private dialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) private data: any
   ) {}
@@ -47,5 +52,15 @@ export class MessageBoxComponent implements OnInit {
       this.onCancel();
     }
     this.dialog.closeAll();
+  }
+  copyInputMessage(inputElement) {
+    inputElement.select();
+    document.execCommand('copy');
+    inputElement.setSelectionRange(0, 0);
+    this.snackbar.open(
+      'Copied!!',
+      'OK',
+      { duration: 3000 }
+    );
   }
 }
