@@ -143,7 +143,9 @@ export class PortalComponent implements OnInit {
     }
     if (
       this.router.url === '/' ||
-      this.router.url === '/?openExternalBrowser=1'
+      this.router.url === '/?openExternalBrowser=1' ||
+      this.router.url === '/#connect' ||
+      this.router.url === '/#cloudrun'
     ) {
       this.isIntroducePage = true;
     } else {

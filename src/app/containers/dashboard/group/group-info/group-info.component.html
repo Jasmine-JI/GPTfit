@@ -27,6 +27,14 @@
           {{ 'Dashboard.Group.GroupInfo.GroupInfo' | translate}}
         </span>
         <div class="rwd-btn_action">
+          <button class="icon-btn" style="margin-right: 15px;color:#919191"
+            (click)="openShareGroupInfoDialog()"
+            title="{{ 'SH.Share' | translate }}"
+          >
+            <i class="icon-svg_web-icon_p1_013-share"
+              style="font-size: 30px"
+            ></i>
+          </button>
           <button class="alatech-btn alatech-btn--default"
             title="{{ 'Dashboard.Group.GroupInfo.Join' | translate}}"
             *ngIf="(joinStatus === 5 || joinStatus === 3 ) && (!visitorDetail?.isGroupAdmin || groupLevel === '80')"
