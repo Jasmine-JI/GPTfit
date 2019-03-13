@@ -5,7 +5,8 @@ import {
   Input,
   OnChanges,
   SimpleChanges,
-  SimpleChange
+  SimpleChange,
+  ViewEncapsulation
 } from '@angular/core';
 import {
   MatTableDataSource,
@@ -19,11 +20,13 @@ import { UtilsService } from '@shared/services/utils.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
+import { MatSnackBar } from '@angular/material';
 
 @Component({
   selector: 'app-my-device',
   templateUrl: './my-device.component.html',
-  styleUrls: ['./my-device.component.css', '../../../group/group-style.scss']
+  styleUrls: ['./my-device.component.css', '../../../group/group-style.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class MyDeviceComponent implements OnInit, OnChanges {
   logSource = new MatTableDataSource<any>();
@@ -41,7 +44,8 @@ export class MyDeviceComponent implements OnInit, OnChanges {
     private qrcodeService: QrcodeService,
     private utilsService: UtilsService,
     public dialog: MatDialog,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private snackbar: MatSnackBar,
   ) {}
 
   ngOnInit() {
@@ -83,6 +87,31 @@ export class MyDeviceComponent implements OnInit, OnChanges {
           this.utilsService.removeLocalStorageObject('updateIdx');
           this.utilsService.removeLocalStorageObject('bondStatus');
           this.getDeviceList();
+          const afterBondingTip1 = this.translate.instant(
+            'Dashboard.MyDevice.AfterBondingTip1'
+          );
+          const afterBondingTip2 = this.translate.instant(
+            'Dashboard.MyDevice.AfterBondingTip2'
+          );
+          const afterBondingTip3 = this.translate.instant(
+            'Dashboard.MyDevice.AfterBondingTip3'
+          );
+          if (this.utilsService.getSessionStorageObject('bindingSN')) {
+            return this.dialog.open(MessageBoxComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'Fit pair',
+                body: `<div class="fit-pair"><div class="title">${afterBondingTip1}</div>
+  <div class="image-container"><img src="/assets/fitPairDemo.png" style="width: 100%" /></div>
+  <div class="tip2">${afterBondingTip2}</div><div>${afterBondingTip3}</div></div>`,
+                confirmText: this.translate.instant('SH.Agree'),
+                cancelText: this.translate.instant('SH.Disagree'),
+                onCancel: () => this.utilsService.removeSessionStorageObject('bindingSN'),
+                onConfirm: this.handleFitPair.bind(this)
+              }
+            });
+          }
+
         }
         if (res.resultCode === 402) {
           this.isLoading = false;
@@ -126,7 +155,10 @@ export class MyDeviceComponent implements OnInit, OnChanges {
     this.currentSort = sortInfo;
   }
   goDetail(id) {
-    if (this.targetUserId && location.pathname.indexOf('/system/device-pair-management') > -1) {
+    if (
+      this.targetUserId &&
+      location.pathname.indexOf('/system/device-pair-management') > -1
+    ) {
       this.router.navigateByUrl(`dashboard/system/device/info/${id}`);
     } else {
       this.router.navigateByUrl(`dashboard/device/info/${id}`);
@@ -149,7 +181,9 @@ export class MyDeviceComponent implements OnInit, OnChanges {
         this.logSource.data = _res.info.deviceList;
         this.totalCount = _res.info.totalCounts;
         this.logSource.data = this.logSource.data.map(_data => {
-          const idx = this.localSN.findIndex(_sn => _sn === _data.myEquipmentSN);
+          const idx = this.localSN.findIndex(
+            _sn => _sn === _data.myEquipmentSN
+          );
           if (idx > -1) {
             return {
               ..._data,
@@ -162,6 +196,30 @@ export class MyDeviceComponent implements OnInit, OnChanges {
             };
           }
         });
+      }
+    });
+  }
+  handleFitPair() {
+    const body = {
+      token: this.token,
+      myEquipmentSN: this.utilsService.getSessionStorageObject('bindingSN'),
+      fitPairStatus: '1', // 僅限我(頭像與運動檔案)
+      deviceSettingJson: ''
+    };
+    this.qrcodeService.editDeviceInfo(body).subscribe(res => {
+      this.utilsService.removeSessionStorageObject('bindingSN');
+      if (res.resultCode === 200) {
+        this.snackbar.open(
+          'enabled successfully!',
+          'OK',
+          { duration: 3000 }
+        );
+      } else {
+        this.snackbar.open(
+          'Failed to enable!',
+          'OK',
+          { duration: 3000 }
+        );
       }
     });
   }

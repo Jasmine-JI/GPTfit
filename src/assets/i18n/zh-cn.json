@@ -134,7 +134,7 @@
     "RemoveOriginal": "解除原有的",
     "CorrespondingAvatar-and-sports-file": "对应头像与运动档案",
     "OnlyCorrespondingSportsFile": "仅对应运动档案",
-    "RegisterProduct": "登录产品",
+    "RegisterProduct": "注册产品",
     "IfRegisterProductText": "如果要登录产品，请登入，系统将会自动完成登录产品的流程",
     "IfFitPairProductText": "如果要Fit Pair产品，请登入，系统将会自动完成Fit Pair产品的流程",
     "RemoveFitPairCompletely": "完成解除fit pair",
@@ -146,7 +146,9 @@
     "RegisterMailSuccessfully": "注册成功，请至注册信箱点击完成E-mail验证，五秒后将跳转回登入页面",
     "RegisterPhoneSuccessfully": "注册成功，五秒后将跳转回登入页面",
     "RegularRaceDesc": "本月进行的例行排行赛为<span class='map-desc--highlight'>指定地图{{ mapName }}{{ distance }}KM</span><div>排行榜于每日06:00刷新，最终排名以{{ finalEventDate }} 结算成绩为主</div>",
-    "FinalDayOfMonth": " 当月最后一日 23:59"
+    "FinalDayOfMonth": " 当月最后一日 23:59",
+    "UnRegisterandFitpairTip": "未注册的产品，只能使用单次Fit pair。是否要先注册产品 ?",
+    "FitPairOnce": "使用单次Fit pair"
   },
   "Dashboard": {
     "MyInfo": "我的资讯",
@@ -455,7 +457,10 @@
       "Flywheel": "飞轮车",
       "RowingMachine": "划船器",
       "BindingFailedDeviceBound": "绑定失败，此装置已有绑定状态",
-      "BindingFailed": "绑定失败"
+      "BindingFailed": "绑定失败",
+      "AfterBondingTip1": "是否启用该装置的Fit pair?",
+      "AfterBondingTip2": "在Train Live健身房内，使用心率广播时，将会纪录您的活动运动档案，并现场与他人较劲训练成效。",
+      "AfterBondingTip3": "※后续可在装置设置或个人隐私权更改设定值。"
     },
     "ProductInfo": {
       "ProductInfo": "产品资讯",

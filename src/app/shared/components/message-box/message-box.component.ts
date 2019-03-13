@@ -12,8 +12,8 @@ export class MessageBoxComponent implements OnInit {
     return this.data.title;
   }
 
-  get groupName() {
-    return this.data.groupName;
+  get body() {
+    return this.data.body;
   }
 
   get onConfirm() {
