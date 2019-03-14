@@ -1,0 +1,28 @@
+<ng-progress #progressBar [meteor]="_options.meteor" [color]="_options.color" [min]="_options.min" [speed]="_options.speed"
+  [spinner]="_options.spinner" [max]="_options.max" [spinnerPosition]="_options.spinnerPosition" [direction]="_options.direction"
+  [thick]="_options.thick" [trickleSpeed]="_options.trickleSpeed" [ease]="_options.ease">
+</ng-progress>
+<div *ngIf="isShowNoRight">
+  <div style="display: flex;flex-direction: column;align-items: center;">
+    <i class="icon-svg_web-icon_p1_059-lock" style="font-size: 100px;color: #999"></i>
+    <p class="h5" style="margin-top: 30px;color: #333;">It looks like you don't have access privileges to view this
+      life tracking.</p>
+  </div>
+</div>
+<ng-container *ngIf="!isShowNoRight">
+  <div class="group-edit-bar" style="justify-content: flex-end;width:100%">
+    <mat-form-field style="min-width: 160px;margin-right: 35px;">
+      <input matInput [matDatepicker]="picker" placeholder="選擇日期" (dateChange)="handleDateChange($event)"
+        [(ngModel)]="filterStartTime">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker [touchUi]="isMobile" #picker startView="year"></mat-datepicker>
+    </mat-form-field>
+      <button class="alatech-btn alatech-btn--default activty-btn"
+        title="搜尋單日生活追蹤資料"
+        (click)="fetchTrackingDayDetail()"
+      >
+        搜尋生活追蹤資料
+      </button>
+  </div>
+  <app-life-tracking *ngIf="!isLoading" [lifeTrackingData]="lifeTrackingData"></app-life-tracking>
+</ng-container>
