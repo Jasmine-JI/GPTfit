@@ -128,7 +128,7 @@
                 *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer"
               >
                 <!--  之後把font awesome 與material icon 擇一-->
-                使用者與群組查詢
+                {{"Dashboard.System.UserandGroupQuery" | translate }}
               </li>
               <li class="ala-sidenav-menu-item"
                 (click)="chooseItem(19, sideNav)"
@@ -137,7 +137,7 @@
                 *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer"
               >
                 <!--  之後把font awesome 與material icon 擇一-->
-                座標系統轉換
+                {{"Dashboard.System.GPSConverter" | translate }}
               </li>
               <li class="ala-sidenav-menu-item"
                 (click)="chooseItem(21, sideNav)"
@@ -146,7 +146,7 @@
                 *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer"
               >
                 <!--  之後把font awesome 與material icon 擇一-->
-                life tracking
+                {{"Dashboard.System.LifetrackingLog" | translate }}
               </li>
             </mat-expansion-panel>
           </mat-accordion>
@@ -226,7 +226,7 @@
                 <mat-panel-title>
                   <!--  之後把font awesome 與material icon 擇一-->
                   <i class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"></i>
-                  裝置管理
+                  {{"Dashboard.System.DeviceManagement" | translate }}
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <li class="ala-sidenav-menu-item"
@@ -235,7 +235,7 @@
                 [routerLink]="['/dashboard/system/device-pair-management']"
                 *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer"
               >
-                裝置查詢
+                {{"Dashboard.System.DeviceInquiry" | translate }}
               </li>
               <li class="ala-sidenav-menu-item"
                 (click)="chooseItem(5, sideNav)"
@@ -243,7 +243,7 @@
                 [routerLink]="['/dashboard/system/device_log']"
                 *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer"
               >
-                裝置日誌
+                {{"Dashboard.System.DeviceLog" | translate }}
               </li>
             </mat-expansion-panel>
           </mat-accordion>

@@ -31,6 +31,9 @@
 .fit-pair .tip2 {
   margin-bottom: 20px;
 }
+.user-for {
+  margin-top: 10px;
+}
 @media(max-width: 767px) {
   .mat-cell:last-of-type {
     overflow: initial;
