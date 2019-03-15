@@ -310,7 +310,8 @@
         "Accept": "Accept",
         "Refuse": "Refuse",
         "ClassInfo-ProfessionalClass": "ClassInfo-Professional class",
-        "ClassInfo-PhysicalFitnessClass": "ClassInfo-Physical fitness class"
+        "ClassInfo-PhysicalFitnessClass": "ClassInfo-Physical fitness class",
+        "Full": "Full"
       },
       "SearchGroup": {
         "SearchGroup": "Search",

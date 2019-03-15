@@ -310,7 +310,8 @@
         "Accept": "接受",
         "Refuse": "拒绝",
         "ClassInfo-ProfessionalClass": "课程资讯-专业课程",
-        "ClassInfo-PhysicalFitnessClass": "课程资讯-体适能课程"
+        "ClassInfo-PhysicalFitnessClass": "课程资讯-体适能课程",
+        "Full": "已满"
       },
       "SearchGroup": {
         "SearchGroup": "搜寻群组",

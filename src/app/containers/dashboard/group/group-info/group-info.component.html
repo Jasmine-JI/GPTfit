@@ -361,14 +361,34 @@
         {{ 'Dashboard.BrandManagement.TotalMember' | translate}}
       </label>
       <div class="group-list">
-        <div class="group-list-item">{{ 'Dashboard.BrandManagement.TotalAdministrators' | translate}}：
+        <div class="group-list-item"
+[class.full]="(+commerceInfo?.groupManagerStatus.currentBrandManagers) +
+(+commerceInfo?.groupManagerStatus.currentBranchManagers)
++ (+commerceInfo?.groupManagerStatus.currentFitnessCoaches) + (+commerceInfo?.groupManagerStatus.currentCoaches) +
+(+commerceInfo?.groupManagerStatus.currentGeneralGroupManagers) === (+commerceInfo?.groupManagerStatus.maxGroupManagers)"
+        >
+          {{ 'Dashboard.BrandManagement.TotalAdministrators' | translate}}：
           {{
             +commerceInfo?.groupManagerStatus.currentBrandManagers + +commerceInfo?.groupManagerStatus.currentBranchManagers
             + +commerceInfo?.groupManagerStatus.currentFitnessCoaches + +commerceInfo?.groupManagerStatus.currentCoaches + +commerceInfo?.groupManagerStatus.currentGeneralGroupManagers
           }}/{{commerceInfo?.groupManagerStatus.maxGroupManagers}}
+<span *ngIf="(+commerceInfo?.groupManagerStatus.currentBrandManagers) +
+(+commerceInfo?.groupManagerStatus.currentBranchManagers)
++ (+commerceInfo?.groupManagerStatus.currentFitnessCoaches) + (+commerceInfo?.groupManagerStatus.currentCoaches) +
+(+commerceInfo?.groupManagerStatus.currentGeneralGroupManagers) === (+commerceInfo?.groupManagerStatus.maxGroupManagers)">
+  ({{ 'Dashboard.Group.GroupInfo.Full' | translate}})
+</span>
         </div>
-        <div class="group-list-item">{{ 'Dashboard.BrandManagement.TotalMembers' | translate}}：
-          {{+commerceInfo?.groupMemberStatus.currentGroupMembers}}/{{+commerceInfo?.groupMemberStatus.maxGroupMembers}}</div>
+        <div class="group-list-item"
+[class.full]="+commerceInfo?.groupMemberStatus.currentGroupMembers ===
++commerceInfo?.groupMemberStatus.maxGroupMembers"
+        >{{ 'Dashboard.BrandManagement.TotalMembers' | translate}}：
+          {{+commerceInfo?.groupMemberStatus.currentGroupMembers}}/{{+commerceInfo?.groupMemberStatus.maxGroupMembers}}
+        <span *ngIf="+commerceInfo?.groupMemberStatus.currentGroupMembers ===
+        +commerceInfo?.groupMemberStatus.maxGroupMembers">
+          ({{ 'Dashboard.Group.GroupInfo.Full' | translate}})
+        </span>
+        </div>
       </div>
       <label  class="group-label">
         {{ 'Dashboard.BrandManagement.CurrentPlan' | translate}}
@@ -387,10 +407,22 @@
         {{ 'Dashboard.BrandManagement.Number-of-groups' | translate}}
       </label>
       <div class="group-list">
-        <div class="group-list-item">{{ 'Dashboard.BrandManagement.Number-of-branches' | translate}}
-          ：{{commerceInfo?.groupStatus.currentBranches}}/{{commerceInfo?.groupStatus.maxBranches}}</div>
-        <div class="group-list-item">{{ 'Dashboard.BrandManagement.Number-of-courses' | translate}}：
-          {{commerceInfo?.groupStatus.currentClasses}}/{{commerceInfo?.groupStatus.maxClasses}}</div>
+        <div class="group-list-item"
+          [class.full]="commerceInfo?.groupStatus.currentBranches === commerceInfo?.groupStatus.maxBranches"
+        >{{ 'Dashboard.BrandManagement.Number-of-branches' | translate}}
+          ：{{commerceInfo?.groupStatus.currentBranches}}/{{commerceInfo?.groupStatus.maxBranches}}
+          <span *ngIf="commerceInfo?.groupStatus.currentBranches === commerceInfo?.groupStatus.maxBranches">
+            ({{ 'Dashboard.Group.GroupInfo.Full' | translate}})
+          </span>
+        </div>
+        <div class="group-list-item"
+          [class.full]="commerceInfo?.groupStatus.currentClasses === commerceInfo?.groupStatus.maxClasses"
+        >{{ 'Dashboard.BrandManagement.Number-of-courses' | translate}}：
+          {{commerceInfo?.groupStatus.currentClasses}}/{{commerceInfo?.groupStatus.maxClasses}}
+          <span *ngIf="(+commerceInfo?.groupStatus.currentClasses) === (+commerceInfo?.groupStatus.maxClasses)">
+            ({{ 'Dashboard.Group.GroupInfo.Full' | translate}})
+          </span>
+        </div>
       </div>
       <label  class="group-label">
         {{ 'Dashboard.BrandManagement.Number-of-management-members' | translate}}

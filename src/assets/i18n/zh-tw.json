@@ -310,7 +310,8 @@
         "Accept": "接受",
         "Refuse": "拒絕",
         "ClassInfo-ProfessionalClass": "課程資訊-專業課程",
-        "ClassInfo-PhysicalFitnessClass": "課程資訊-體適能指導"
+        "ClassInfo-PhysicalFitnessClass": "課程資訊-體適能指導",
+        "Full": "已滿"
       },
       "SearchGroup": {
         "SearchGroup": "搜尋群組",
