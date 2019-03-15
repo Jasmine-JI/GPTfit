@@ -105,6 +105,13 @@
       </div>
       <div class="row demo-qr__action">
         <button class="alatech-btn alatech-btn--default"
+          title="{{'Portal.RegisterProduct' | translate}}"
+          *ngIf="isShowBindingBtn"
+          (click)="goBinding()"
+        >
+          {{'Portal.RegisterProduct' | translate}}
+        </button>
+        <button class="alatech-btn alatech-btn--default"
           title="Fit Pair"
           *ngIf="isShowFitPairBtn && isFitPaired"
           (click)="fitPair('2')"
@@ -124,13 +131,6 @@
           (click)="fitPair('3')"
         >
           Fit Pair({{'Portal.OnlyCorrespondingSportsFile' | translate}})
-        </button>
-        <button class="alatech-btn alatech-btn--default"
-          title="{{'Portal.RegisterProduct' | translate}}"
-          *ngIf="isShowBindingBtn"
-          (click)="goBinding()"
-        >
-          {{'Portal.RegisterProduct' | translate}}
         </button>
       </div>
     </ng-container>
