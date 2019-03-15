@@ -103,11 +103,20 @@ export class MyDeviceComponent implements OnInit, OnChanges {
                 title: 'Fit pair',
                 body: `<div class="fit-pair"><div class="title">${afterBondingTip1}</div>
   <div class="image-container"><img src="/assets/fitPairDemo.png" style="width: 100%" /></div>
-  <div class="tip2">${afterBondingTip2}</div><div>${afterBondingTip3}</div></div>`,
-                confirmText: this.translate.instant('Dashboard.MyDevice.UseForPersonal'),
-                cancelText: this.translate.instant('Dashboard.MyDevice.UseForPublic'),
-                onCancel: () => this.utilsService.removeSessionStorageObject('bindingSN'),
-                onConfirm: this.handleFitPair.bind(this)
+  <div class="tip2">${afterBondingTip2}</div><div>${afterBondingTip3}</div><div class="user-for">${this.translate.instant(
+                  'Dashboard.MyDevice.UseFor'
+                )}：</div></div>`,
+                confirmText: this.translate.instant(
+                  'Dashboard.MyDevice.Public'
+                ),
+                cancelText: this.translate.instant(
+                  'Dashboard.MyDevice.Personal'
+                ),
+                onCancel: this.handleFitPair.bind(this),
+                onConfirm: () =>
+                  this.utilsService.removeSessionStorageObject(
+                    'bindingSN'
+                  )
               }
             });
           }
