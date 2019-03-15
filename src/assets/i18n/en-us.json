@@ -460,7 +460,9 @@
       "BindingFailed": "Binding failed",
       "AfterBondingTip1": "Enable the device's Fit Pair?",
       "AfterBondingTip2": "In the Support the 'Fit pair' gym, when you using heart rate broadcast, will be record your activity profile .\nAnd on-site training with others to get activity results.",
-      "AfterBondingTip3": "※Later you can changes in device settings or personal privacy settings."
+      "AfterBondingTip3": "※Later you can changes in device settings or personal privacy settings.",
+      "UseForPublic": "Use for public",
+      "UseForPersonal": "Use for personal"
     },
     "ProductInfo": {
       "ProductInfo": "Product info",
