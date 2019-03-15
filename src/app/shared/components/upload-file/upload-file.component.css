@@ -63,6 +63,7 @@
 .profile-picture__remove-icon {
   font-size: 18px;
   color: #777;
+  transform: rotate(45deg);
 }
 
 .profile-picture__remove {

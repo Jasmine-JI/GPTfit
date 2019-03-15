@@ -3,14 +3,12 @@ import {
   CanActivate,
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
-  ActivatedRoute,
   Router
 } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/take';
 import { UserInfoService } from '../services/userInfo.service';
 import { UtilsService } from '@shared/services/utils.service';
-import { UserDetail } from '../models/userDetail';
 import { HashIdService } from '@shared/services/hash-id.service';
 
 @Injectable()
@@ -18,7 +16,6 @@ export class EditGroupGuard implements CanActivate {
   constructor(
     private userInfoService: UserInfoService,
     private utils: UtilsService,
-    private route: ActivatedRoute,
     private router: Router,
     private hashIdService: HashIdService
   ) {}

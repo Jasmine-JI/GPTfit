@@ -8,7 +8,7 @@
       *ngIf="(isUploadNewImg$ | async)"
       (click)="removePreImage()"
     >
-      <i class="fa fa-times-circle profile-picture__remove-icon"></i>
+      <i class="material-icons profile-picture__remove-icon">add_circle</i>
     </button>
     <div *ngIf="isUserAvastarMode && !fileInformation?.link" class="user-avastar-mask">
       <span>{{chooseFileText}}</span>

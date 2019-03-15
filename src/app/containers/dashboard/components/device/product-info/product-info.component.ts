@@ -43,6 +43,10 @@ export class ProductInfoComponent implements OnInit {
   fitPairStatus: string;
   token: string;
   fitPairTip: string;
+  qrURL: string;
+  isAdminMode = false;
+  deviceBondUserName: string;
+  deviceBondUserId: string;
   constructor(
     private qrCodeService: QrcodeService,
     private progress: NgProgress,
@@ -54,6 +58,9 @@ export class ProductInfoComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    if (location.pathname.indexOf('/system/device/info') > -1) {
+      this.isAdminMode = true;
+    }
     const langName = this.utilsService.getLocalStorageObject('locale');
     this.fitPairTip = fitPairText[langName];
     this.deviceSN = this.route.snapshot.paramMap.get('deviceSN');
@@ -78,6 +85,9 @@ export class ProductInfoComponent implements OnInit {
     this.qrCodeService.getDeviceDetail(body).subscribe(res => {
       this.fitPairStatus = res.info.fitPairStatus;
       if (res.resultCode === 200) {
+        this.deviceBondUserName = res.info.deviceBondUserName;
+        this.deviceBondUserId = res.info.deviceBondUserId;
+        this.generate();
         this.qrCodeService.getDeviceInfo(params).subscribe(response => {
           this.progressRef.complete();
           this.isLoading = false;
@@ -86,7 +96,15 @@ export class ProductInfoComponent implements OnInit {
           this.handleProductManual(langName);
         });
       } else {
-        this.router.navigateByUrl('dashboard/device');
+        this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          data: {
+            title: 'message',
+            body: res.resultMessage,
+            confirmText: this.translate.instant('SH.Confirm')
+          }
+        });
+        setTimeout(() => this.router.navigateByUrl('dashboard/device'), 3000);
       }
     });
   }
@@ -136,12 +154,70 @@ export class ProductInfoComponent implements OnInit {
           hasBackdrop: true,
           data: {
             title: 'message',
-            body: this.translate.instant(
-              'Dashboard.ProductInfo.ChangeFailed'
-            ),
+            body: this.translate.instant('Dashboard.ProductInfo.ChangeFailed'),
             confirmText: this.translate.instant('SH.Confirm')
           }
         });
+      }
+    });
+  }
+  generate() {
+    const body = {
+      token: this.token,
+      equipmentSN: this.deviceSN
+    };
+    this.qrCodeService.getQRFitPairURL(body).subscribe(res => {
+      this.qrURL = res.info.qrURL;
+    });
+  }
+  goBack() {
+    if (history.state.navigationId >= 2) {
+      history.back();
+    } else {
+      this.router.navigateByUrl('/dashboard/device');
+    }
+  }
+  unBondDeviceDialog() {
+    const body = {
+      token: this.token,
+      targetUserId: this.deviceBondUserId,
+      bondEquipmentSN: this.deviceSN,
+      bondStatus: '2'
+    };
+    this.qrCodeService.updateDeviceBonding(body).subscribe((res) => {
+      if (res.resultCode === 200) {
+        this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          data: {
+            title: 'message',
+            body: `解除綁訂成功`,
+            confirmText: this.translate.instant('SH.Confirm')
+          }
+        });
+        setTimeout(() => history.back(), 3000);
+      } else {
+        this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          data: {
+            title: 'message',
+            body: `解除綁訂失敗`,
+            confirmText: this.translate.instant('SH.Confirm')
+          }
+        });
+      }
+    });
+  }
+  openUnBondDeviceDialog() {
+    this.dialog.open(MessageBoxComponent, {
+      hasBackdrop: true,
+      data: {
+        title: 'message',
+        body: `您是否確定要解除綁定當前使用者：${
+          this.deviceBondUserName
+        }的sn: ${this.deviceSN}嗎`,
+        confirmText: this.translate.instant('SH.Confirm'),
+        onConfirm: () => this.unBondDeviceDialog(),
+        cancelText: 'cancel'
       }
     });
   }

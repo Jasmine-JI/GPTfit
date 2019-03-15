@@ -1,8 +1,7 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
-// import { Events } from '../models/events';
 
 const { API_SERVER } = environment.url;
 

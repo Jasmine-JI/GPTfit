@@ -1,11 +1,4 @@
 <div class="mask" [class.mask--show]="isMaskShow" (click)="touchMask()"></div>
-<!-- <ng-container *ngIf="!isPreviewMode">
-  <app-navbar></app-navbar>
-</ng-container> -->
-<!-- <ng-container *ngIf="isPreviewMode">
-  <div class="alatech-ribbon alatech-ribbon--bg-blue"></div>
-    <router-outlet></router-outlet>
-</ng-container> -->
 <div (window:resize)="onResize($event, sideNav)"
   *ngIf="!isLoading" [class.minimize-main-nav]="isSideNavOpend"
   style="display: flex;align-items: stretch;"
@@ -135,7 +128,7 @@
                 *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer"
               >
                 <!--  之後把font awesome 與material icon 擇一-->
-                內部測試
+                {{"Dashboard.System.UserandGroupQuery" | translate }}
               </li>
               <li class="ala-sidenav-menu-item"
                 (click)="chooseItem(19, sideNav)"
@@ -144,7 +137,16 @@
                 *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer"
               >
                 <!--  之後把font awesome 與material icon 擇一-->
-                cloudRun gpx轉換
+                {{"Dashboard.System.GPSConverter" | translate }}
+              </li>
+              <li class="ala-sidenav-menu-item"
+                (click)="chooseItem(21, sideNav)"
+                [class.ala-sidenav-menu-item__active]="target === 21"
+                [routerLink]="['/dashboard/system/life-tracking']"
+                *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer"
+              >
+                <!--  之後把font awesome 與material icon 擇一-->
+                {{"Dashboard.System.LifetrackingLog" | translate }}
               </li>
             </mat-expansion-panel>
           </mat-accordion>
@@ -224,16 +226,24 @@
                 <mat-panel-title>
                   <!--  之後把font awesome 與material icon 擇一-->
                   <i class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"></i>
-                  裝置管理
+                  {{"Dashboard.System.DeviceManagement" | translate }}
                 </mat-panel-title>
               </mat-expansion-panel-header>
+              <li class="ala-sidenav-menu-item"
+                (click)="chooseItem(20, sideNav)"
+                [class.ala-sidenav-menu-item__active]="target === 20"
+                [routerLink]="['/dashboard/system/device-pair-management']"
+                *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer"
+              >
+                {{"Dashboard.System.DeviceInquiry" | translate }}
+              </li>
               <li class="ala-sidenav-menu-item"
                 (click)="chooseItem(5, sideNav)"
                 [class.ala-sidenav-menu-item__active]="target === 5"
                 [routerLink]="['/dashboard/system/device_log']"
                 *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer"
               >
-                裝置日誌
+                {{"Dashboard.System.DeviceLog" | translate }}
               </li>
             </mat-expansion-panel>
           </mat-accordion>

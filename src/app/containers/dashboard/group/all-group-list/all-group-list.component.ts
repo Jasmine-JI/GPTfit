@@ -5,8 +5,7 @@ import {
   MatPaginator,
   PageEvent,
   MatSort,
-  Sort,
-  MatPaginatorIntl
+  Sort
 } from '@angular/material';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
@@ -37,7 +36,6 @@ export class AllGroupListComponent implements OnInit {
   @ViewChild('filter') filter: ElementRef;
   constructor(
     private groupService: GroupService,
-    private matPaginatorIntl: MatPaginatorIntl,
     private router: Router,
     private utils: UtilsService,
     private hashIdService: HashIdService

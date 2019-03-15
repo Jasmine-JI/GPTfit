@@ -42,6 +42,7 @@ import { ActivityService } from '@shared/services/activity.service.ts';
 import { ReportService } from '@shared/services/report.service';
 import { ActivityOtherDetailsService } from '@shared/services/activity-other-details.service';
 import { DetectInappService } from '@shared/services/detect-inapp.service';
+import { ApplicationComponent } from './components/application/application.component';
 
 @NgModule({
   imports: [
@@ -94,7 +95,8 @@ import { DetectInappService } from '@shared/services/detect-inapp.service';
     UserProfileComponent,
     PortalGroupInfoComponent,
     FirstLoginComponent,
-    BasicInfoComponent
+    BasicInfoComponent,
+    ApplicationComponent
   ],
   entryComponents: [MessageBoxComponent]
 })

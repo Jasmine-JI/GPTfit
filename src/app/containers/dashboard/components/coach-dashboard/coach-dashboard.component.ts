@@ -14,7 +14,7 @@ import {
   transition,
   animate
 } from '@angular/animations';
-import { fakeCoachInfo, demoCoachInfo, demoLessonInfo } from './fakeUsers';
+import { demoCoachInfo, demoLessonInfo } from './fakeUsers';
 import { CoachService } from '../../services/coach.service';
 import { ActivatedRoute } from '@angular/router';
 import * as Stock from 'highcharts/highstock';

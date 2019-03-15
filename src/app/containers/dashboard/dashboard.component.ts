@@ -4,11 +4,8 @@ import {
   ChangeDetectorRef,
   AfterViewChecked
 } from '@angular/core';
-import {
-  getUrlQueryStrings,
-} from '@shared/utils/';
 import { GlobalEventsManager } from '@shared/global-events-manager';
-import { MatSidenav, MatDrawerToggleResult } from '@angular/material';
+import { MatSidenav } from '@angular/material';
 import { AuthService } from '@shared/services/auth.service';
 import { Router } from '@angular/router';
 import { UserInfoService } from './services/userInfo.service';
@@ -129,6 +126,10 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
           this.target = 18;
         } else if (_val.url.indexOf('/dashboard/system/inner-gpx') > -1) {
           this.target = 19;
+        } else if (_val.url.indexOf('/dashboard/system/device-pair-management') > -1) {
+          this.target = 20;
+        } else if (_val.url.indexOf('/dashboard/system/life-tracking') > -1) {
+          this.target = 21;
         } else {
           this.target = 0;
         }

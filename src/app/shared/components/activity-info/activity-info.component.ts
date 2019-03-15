@@ -260,7 +260,11 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       if (this.fileInfo.class) {
         groupId = this.fileInfo.class.split('?groupId=')[1];
       }
-      if (!this.isLoadedOtherDetail) {
+      if (
+        !this.isLoadedOtherDetail &&
+        ((this.fileInfo.equipmentSN && this.fileInfo.equipmentSN.length > 0)
+        || coachId || groupId)
+      ) {
         this.activityOtherDetailsService.fetchOtherDetail(
           this.fileInfo.equipmentSN,
           coachId,
@@ -314,9 +318,6 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     this.bmap = new BMap.Map(this.bmapElement.nativeElement);
     let isNormalPoint = false;
     const originRealIdx = [];
-    // let count = 0;
-    // let lonTotal = 0;
-    // let latTotal = 0;
     this.activityPoints.forEach((_point, idx) => {
       if (+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100) {
         isNormalPoint = false;
@@ -344,12 +345,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           );
         }
         this.gpxBmapPoints.push(p);
-        // lonTotal = lonTotal + +_point.longitudeDegrees;
-        // latTotal = latTotal + +_point.latitudeDegrees;
-        // count++;
       }
     });
-    // const centerPoint = new BMap.Point(lonTotal / count, latTotal / count);
     this.gpxBmapPoints = this.gpxBmapPoints.map((_gpxPoint, idx) => {
       if (!_gpxPoint) {
         const index = originRealIdx.findIndex(_tip => _tip > idx);
@@ -712,14 +709,12 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       dateArr[1] +
       dateArr[2] +
       dateArr[3] +
-      '年' +
-      ' ' +
+      '/' +
       dateArr[5] +
       dateArr[6] +
-      '月' +
+      '/' +
       dateArr[8] +
       dateArr[9] +
-      '日' +
       ' @ ' +
       time;
     return date;
