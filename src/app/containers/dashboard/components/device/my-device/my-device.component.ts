@@ -107,16 +107,16 @@ export class MyDeviceComponent implements OnInit, OnChanges {
                   'Dashboard.MyDevice.UseFor'
                 )}：</div></div>`,
                 confirmText: this.translate.instant(
-                  'Dashboard.MyDevice.Public'
-                ),
-                cancelText: this.translate.instant(
                   'Dashboard.MyDevice.Personal'
                 ),
-                onCancel: this.handleFitPair.bind(this),
-                onConfirm: () =>
+                cancelText: this.translate.instant(
+                  'Dashboard.MyDevice.Public'
+                ),
+                onCancel: () =>
                   this.utilsService.removeSessionStorageObject(
                     'bindingSN'
-                  )
+                  ),
+                onConfirm: this.handleFitPair.bind(this)
               }
             });
           }
