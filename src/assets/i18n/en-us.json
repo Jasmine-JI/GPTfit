@@ -203,7 +203,13 @@
         "Studio": "Studio",
         "SME": "SME",
         "Custom": "Custom"
-      }
+      },
+      "LifetrackingLog": "Lifetracking log",
+      "UserandGroupQuery": "User and group query",
+      "GPSConverter": "GPS converter",
+      "DeviceManagement": "Device management",
+      "DeviceInquiry": "Device inquiry",
+      "DeviceLog": "Device log"
     },
     "TrainLive": {
       "NewsLive": "News Live",
@@ -462,8 +468,9 @@
       "AfterBondingTip1": "Enable the device's Fit Pair?",
       "AfterBondingTip2": "In the Support the 'Fit pair' gym, when you using heart rate broadcast, will be record your activity profile .\nAnd on-site training with others to get activity results.",
       "AfterBondingTip3": "※Later you can changes in device settings or personal privacy settings.",
-      "UseForPublic": "Use for public",
-      "UseForPersonal": "Use for personal"
+      "UseFor": "Use for",
+      "Public": "Public",
+      "Personal": "Personal"
     },
     "ProductInfo": {
       "ProductInfo": "Product info",

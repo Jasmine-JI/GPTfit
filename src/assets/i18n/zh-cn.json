@@ -203,7 +203,13 @@
         "Studio": "工作室方案",
         "SME": "中小企业方案",
         "Custom": "客制方案"
-      }
+      },
+      "LifetrackingLog": "生活追踪日志",
+      "UserandGroupQuery": "使用者与群组查询",
+      "GPSConverter": "座标系统转换",
+      "DeviceManagement": "装置管理",
+      "DeviceInquiry": "装置查询",
+      "DeviceLog": "装置日志"
     },
     "TrainLive": {
       "NewsLive": "最新直播",
@@ -462,8 +468,9 @@
       "AfterBondingTip1": "是否启用该装置的Fit pair?",
       "AfterBondingTip2": "在Train Live健身房内，使用心率广播时，将会纪录您的活动运动档案，并现场与他人较劲训练成效。",
       "AfterBondingTip3": "※后续可在装置设置或个人隐私权更改设定值。",
-      "UseForPublic": "使用于公众设施",
-      "UseForPersonal": "使用于个人装置"
+      "UseFor": "使用於",
+      "Public": "公众设施",
+      "Personal": "个人装置"
     },
     "ProductInfo": {
       "ProductInfo": "产品资讯",
