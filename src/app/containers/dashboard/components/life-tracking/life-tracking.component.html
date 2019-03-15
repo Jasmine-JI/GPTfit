@@ -10,7 +10,22 @@
   </div>
 </div>
 <ng-container *ngIf="!isShowNoRight">
-  <div class="group-edit-bar" style="justify-content: flex-end;width:100%">
+  <div class="group-edit-bar" style="justify-content: flex-end;width:100%;align-items: center;">
+    <div style="margin-right: 15px">
+      <label>選擇其他使用者(預設為自已):</label>
+      <button class="icon-btn" (click)="openSelectorWin($event)">
+        <i class="icon-svg_web-icon_p1_021-add_friend group-icon"
+        style="font-size: 30px"
+        ></i>
+      </button>
+      <div class="candidate-label" *ngIf="targetUserId && targetUserId.length > 0">
+        <div style="display: inline-block">{{targetUserName}}</div>
+        <button class="icon-btn" (click)="removeLabel(_idx)">
+          <i class="fa fa-plus icon_fa" style="transform: rotate(45deg);"></i>
+        </button>
+      </div>
+    </div>
+
     <mat-form-field style="min-width: 160px;margin-right: 35px;">
       <input matInput [matDatepicker]="picker" placeholder="選擇日期" (dateChange)="handleDateChange($event)"
         [(ngModel)]="filterStartTime">
@@ -19,7 +34,7 @@
     </mat-form-field>
       <button class="alatech-btn alatech-btn--default activty-btn"
         title="搜尋單日生活追蹤資料"
-        (click)="search()"
+        (click)="fetchTrackingDayDetail()"
       >
         搜尋生活追蹤資料
       </button>
@@ -276,69 +291,56 @@
     <div #container  [style.visibility]="isShowChart ? 'visible' : 'hidden'">
       <div class="activity-block" *ngIf="!(isInitialChartDone && !isactivityChartTargetDisplay)">
         <div #activityChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
-          chart target
         </div>
       </div>
       <div class="activity-block" *ngIf="!(isInitialChartDone && !isheartRateChartTargetDisplay)">
         <div #heartRateChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
-          chart target
         </div>
       </div>
       <div class="activity-block" *ngIf="!(isInitialChartDone && !istotalDistanceMetersChartTargetDisplay)">
         <div #totalDistanceMetersChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
-          chart target
         </div>
       </div>
       <div class="activity-block" *ngIf="!(isInitialChartDone && !istotalLifeCaloriesChartTargetDisplay)">
         <div #totalLifeCaloriesChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
-          chart target
         </div>
       </div>
       <div class="activity-block" *ngIf="!(isInitialChartDone && !istotalStepChartTargetDisplay)">
         <div #totalStepChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
-          chart target
         </div>
       </div>
       <div class="activity-block" *ngIf="!(isInitialChartDone && !isairPressureChartTargetDisplay)">
         <div #airPressureChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
-          chart target
         </div>
       </div>
       <div class="activity-block" *ngIf="!(isInitialChartDone && !iselevChartTargetDisplay)">
         <div #elevChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
-          chart target
         </div>
       </div>
       <div class="activity-block" *ngIf="!(isInitialChartDone && !isstressChartTargetDisplay)">
         <div #stressChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
-          chart target
         </div>
       </div>
       <div class="activity-block" *ngIf="!(isInitialChartDone && !istempChartTargetDisplay)">
         <div #tempChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
-          chart target
         </div>
       </div>
       <div class="activity-block" *ngIf="!(isInitialChartDone && !istotalActivityCaloriesChartTargetDisplay)">
         <div #totalActivityCaloriesChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
-          chart target
         </div>
       </div>
 
       <div class="activity-block" *ngIf="!(isInitialChartDone && !istotalElevGainChartTargetDisplay)">
         <div #totalElevGainChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
-          chart target
         </div>
       </div>
       <div class="activity-block" *ngIf="!(isInitialChartDone && !istotalElevLossChartTargetDisplay)">
         <div #totalElevLossChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
-          chart target
         </div>
       </div>
 
       <div class="activity-block" *ngIf="!(isInitialChartDone && !iswearingStatusChartTargetDisplay)">
         <div #wearingStatusChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
-          chart target
         </div>
       </div>
     </div>

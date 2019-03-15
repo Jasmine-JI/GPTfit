@@ -5,12 +5,7 @@ import {
   ElementRef,
   Renderer2,
   OnDestroy,
-  ViewEncapsulation,
-  Input,
-  SimpleChanges,
-  SimpleChange,
-  OnChanges,
-  AfterViewInit
+  ViewEncapsulation
 } from '@angular/core';
 import { LifeTrackingService } from '../../services/life-tracking.service';
 import { UtilsService } from '@shared/services/utils.service';
@@ -21,10 +16,10 @@ import { HashIdService } from '@shared/services/hash-id.service';
 import * as moment from 'moment';
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
-import * as _ from 'lodash';
+import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
+import { MatDialog } from '@angular/material/dialog';
 
-// const highcharts: any = _.cloneDeep(_Highcharts); // 不檢查highchart型態
-let Highcharts: any = _Highcharts; // 不檢查highchart型態
+const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 @Component({
   selector: 'app-life-tracking',
@@ -35,9 +30,7 @@ let Highcharts: any = _Highcharts; // 不檢查highchart型態
   ],
   encapsulation: ViewEncapsulation.None
 })
-export class LifeTrackingComponent
-  implements OnInit, OnDestroy, OnChanges, AfterViewInit {
-  @Input() lifeTrackingData: any;
+export class LifeTrackingComponent implements OnInit, OnDestroy {
   _options = {
     min: 8,
     max: 100,
@@ -115,14 +108,16 @@ export class LifeTrackingComponent
 
   isShowChart = true;
   chartTargets: any;
-  isFirstTime = true;
+  targetUserId = '';
+  targetUserName = '';
   constructor(
     private lifeTrackingService: LifeTrackingService,
     private utils: UtilsService,
     private ngProgress: NgProgress,
     private hashIdService: HashIdService,
     private router: Router,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    public dialog: MatDialog
   ) {
     /**
      * 重写内部的方法， 这里是将提示框即十字准星的隐藏函数关闭
@@ -138,107 +133,86 @@ export class LifeTrackingComponent
       // this.series.chart.tooltip.refresh(this); // 显示提示框
       this.series.chart.xAxis[0].drawCrosshair(event, this); // 显示十字准星线
     };
-    Highcharts.Chart.prototype.updateFromData = function () {
-      const _chart = this;
-      if (_chart.options.data) {
-        Highcharts.data({
-          afterComplete: function (dataOptions) {
-            Highcharts.each(dataOptions.series, function (series, i) {
-              _chart.series[i].setData(series.data, false);
-            });
-            _chart.redraw();
-          }
-        },
-          this.options);
-      }
-    };
-
   }
 
   ngOnInit() {
     this.progressRef = this.ngProgress.ref();
-    // this.fetchTrackingDayDetail();
-  }
-  ngAfterViewInit() {
     this.fetchTrackingDayDetail();
+  }
+  openSelectorWin(e) {
+    const adminLists = [];
+    e.preventDefault();
+    this.dialog.open(PeopleSelectorWinComponent, {
+      hasBackdrop: true,
+      data: {
+        title: `人員選擇`,
+        adminLists,
+        onConfirm: this.handleConfirm.bind(this),
+        isInnerAdmin: true
+      }
+    });
+  }
+  handleConfirm(_lists) {
+    const userIds = _lists.map(_list => _list.userId);
+    const userNames = _lists.map(_list => _list.userName);
 
+    this.targetUserId = userIds[0].toString();
+    this.targetUserName = userNames[0];
   }
-  // ngOnChanges(changes: SimpleChanges) {
-  //   const currentItem: SimpleChange = changes.lifeTrackingData;
-  //   if (
-  //     !currentItem.firstChange &&
-  //     currentItem.currentValue !== +currentItem.previousValue
-  //   ) {
-  //     this.fetchTrackingDayDetail();
-  //   }
-  // }
-  search() {
-    // this.unMountHChart();
-    this.fetchTrackingDayDetail();
+  removeLabel(idx) {
+    this.targetUserId = '';
+    this.targetUserName = '';
   }
   fetchTrackingDayDetail() {
     const body = {
-      // token: this.utils.getToken(),
-      token: '0d0ddafc410621067477c3cd3f2a7cbf',
+      token: this.utils.getToken(),
+      targetUserId: (this.targetUserId && this.targetUserId.toString()) || '',
       filterStartTime: this.filterStartTime,
       filterEndTime: this.filterEndTime
     };
     this.progressRef.start();
     this.lifeTrackingService.getTrackingDayDetail(body).subscribe(res => {
-    if (res.resultCode === 402) {
-      this.isShowNoRight = true;
-      this.isLoading = false;
-      this.progressRef.complete();
-      return;
-    }
-    if (res.resultCode === 401 || res.resultCode === 400) {
-      this.isFileIDNotExist = true;
-      return this.router.navigateByUrl('/404');
-    }
-    this.fileInfo = res['trackingData'][0]['fileInfo'];
-    this.lifeTrackingDayLayer = res['trackingData'][0][
-      'lifeTrackingDayLayer'
-    ];
-    if (!this.utils.isObjectEmpty(this.fileInfo)) {
-      if (this.fileInfo.author.indexOf('?') > -1) {
-        // 防止後續author會帶更多參數，先不寫死
-        this.userLink.userName = this.fileInfo.author.split('?')[0];
-        this.userLink.userId = this.fileInfo.author
-          .split('?')[1]
-          .split('=')[1]
-          .replace(')', '');
+      if (res.resultCode === 402) {
+        this.isShowNoRight = true;
+        this.isLoading = false;
+        this.progressRef.complete();
+        return;
       }
-      this.syncDate = moment(this.fileInfo.syncDate).format(
-        'YYYY/MM/DD HH:mm:SS'
-      );
-      this.editDate = moment(this.fileInfo.syncDate).format(
-        'YYYY/MM/DD HH:mm:SS'
-      );
-      this.infoDate = this.handleDate(this.fileInfo.creationDate);
-    }
+      if (res.resultCode === 401 || res.resultCode === 400) {
+        this.isFileIDNotExist = true;
+        return this.router.navigateByUrl('/404');
+      }
+      this.fileInfo = res['trackingData'][0]['fileInfo'];
+      this.lifeTrackingDayLayer =
+        res['trackingData'][0]['lifeTrackingDayLayer'];
+      if (!this.utils.isObjectEmpty(this.fileInfo)) {
+        if (this.fileInfo.author.indexOf('?') > -1) {
+          // 防止後續author會帶更多參數，先不寫死
+          this.userLink.userName = this.fileInfo.author.split('?')[0];
+          this.userLink.userId = this.fileInfo.author
+            .split('?')[1]
+            .split('=')[1]
+            .replace(')', '');
+        }
+        this.syncDate = moment(this.fileInfo.syncDate).format(
+          'YYYY/MM/DD HH:mm:SS'
+        );
+        this.editDate = moment(this.fileInfo.syncDate).format(
+          'YYYY/MM/DD HH:mm:SS'
+        );
+        this.infoDate = this.handleDate(this.fileInfo.creationDate);
+      }
 
-    this.lifeTrackingPoints = res['trackingData'][0][
-      'lifeTrackingPointLayer'
-    ];
-    console.log('this.lifeTrackingPoints: ', this.lifeTrackingPoints);
-    if (this.lifeTrackingPoints && this.lifeTrackingPoints.length > 0) {
-      this.isShowChart = true;
-      if (this.isFirstTime) {
+      this.lifeTrackingPoints =
+        res['trackingData'][0]['lifeTrackingPointLayer'];
+      if (this.lifeTrackingPoints && this.lifeTrackingPoints.length > 0) {
+        this.isShowChart = true;
         this.initHchart();
       } else {
-        for (let i = 0; i < Highcharts.charts.length; i = i + 1) {
-          const _chart: any = Highcharts.charts[i];
-          if (_chart !== undefined) {
-            _chart.updateFromData();
-          }
-        }
+        this.isShowChart = false;
       }
-
-    } else {
-      this.isShowChart = false;
-    }
-    this.progressRef.complete();
-    this.isLoading = false;
+      this.progressRef.complete();
+      this.isLoading = false;
     });
   }
   goToProfile() {
@@ -274,12 +248,21 @@ export class LifeTrackingComponent
   }
   handleSynchronizedPoint(e, finalDatas) {
     // Do something with 'event'
-    console.log('Highcharts.charts: ', Highcharts.charts);
     for (let i = 0; i < Highcharts.charts.length; i = i + 1) {
       const _chart: any = Highcharts.charts[i];
       if (_chart !== undefined) {
-        console.log('finalDatas: ', finalDatas);
-        console.log('i: ', i);
+        if (Highcharts.charts.length !== finalDatas.length) {
+          if (
+            finalDatas[i - (Highcharts.charts.length - finalDatas.length)]
+              .isSyncExtremes
+          ) {
+            const event = _chart.pointer.normalize(e); // Find coordinates within the chart
+            const point = _chart.series[0].searchPoint(event, true); // Get the hovered point
+            if (point && point.index) {
+              point.highlight(e);
+            }
+          }
+        } else {
           if (finalDatas[i].isSyncExtremes) {
             const event = _chart.pointer.normalize(e); // Find coordinates within the chart
             const point = _chart.series[0].searchPoint(event, true); // Get the hovered point
@@ -287,26 +270,18 @@ export class LifeTrackingComponent
               point.highlight(e);
             }
           }
-
+        }
       }
     }
-  }
-  unMountHChart() {
-    // Highcharts = _.cloneDeep(highcharts); // 超暴力不動原本全域變數的highchartXD，強制重置
-    this.fetchTrackingDayDetail();
-    console.log('!!!!!!!!!!!!!!!Highcharts.charts: ', Highcharts.charts);
   }
   ngOnDestroy() {
     if (!this.isShowNoRight && !this.isFileIDNotExist) {
       Highcharts.charts.forEach((_highChart, idx) => {
         if (_highChart !== undefined) {
           _highChart.destroy();
-          // Highcharts.charts.shift();
         }
       });
     }
-    // Highcharts.charts.redraw();
-
   }
   initHchart() {
     const { finalDatas, chartTargets } = this.lifeTrackingService.handlePoints(
@@ -341,22 +316,38 @@ export class LifeTrackingComponent
     this.renderer.listen(this.container.nativeElement, 'touchstart', e =>
       this.handleSynchronizedPoint(e, finalDatas)
     );
-    this.isFirstTime = false;
   }
   syncExtremes(num, finalDatas, e) {
     // 調整縮放會同步
     const thisChart = this.charts[num];
     if (e.trigger !== 'syncExtremes') {
       Highcharts.each(Highcharts.charts, function(_chart, idx) {
-
-        if (_chart !== thisChart && _chart && finalDatas[idx].isSyncExtremes) {
-          if (_chart.xAxis[0].setExtremes) {
-            _chart.xAxis[0].setExtremes(e.min, e.max, undefined, false, {
-              trigger: 'syncExtremes'
-            });
+        if (Highcharts.charts.length !== finalDatas.length) {
+          if (
+            _chart !== thisChart &&
+            _chart &&
+            finalDatas[idx - (Highcharts.charts.length - finalDatas.length)]
+              .isSyncExtremes
+          ) {
+            if (_chart.xAxis[0].setExtremes) {
+              _chart.xAxis[0].setExtremes(e.min, e.max, undefined, false, {
+                trigger: 'syncExtremes'
+              });
+            }
+          }
+        } else {
+          if (
+            _chart !== thisChart &&
+            _chart &&
+            finalDatas[idx].isSyncExtremes
+          ) {
+            if (_chart.xAxis[0].setExtremes) {
+              _chart.xAxis[0].setExtremes(e.min, e.max, undefined, false, {
+                trigger: 'syncExtremes'
+              });
+            }
           }
         }
-
       });
     }
   }

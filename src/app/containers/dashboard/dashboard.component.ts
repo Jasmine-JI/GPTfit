@@ -128,6 +128,8 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
           this.target = 19;
         } else if (_val.url.indexOf('/dashboard/system/device-pair-management') > -1) {
           this.target = 20;
+        } else if (_val.url.indexOf('/dashboard/system/life-tracking') > -1) {
+          this.target = 21;
         } else {
           this.target = 0;
         }

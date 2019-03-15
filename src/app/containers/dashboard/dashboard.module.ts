@@ -86,7 +86,6 @@ import { InnerDevicePairComponent } from './components/inner-device-pair/inner-d
 import { ShareGroupInfoDialogComponent } from '@shared/components/share-group-info-dialog/share-group-info-dialog.component';
 import { LifeTrackingComponent } from './components/life-tracking/life-tracking.component';
 import { LifeTrackingService } from './services/life-tracking.service';
-import { LifeTrackingContainerComponent } from './components/life-tracking-container/life-tracking-container.component';
 
 @NgModule({
   imports: [
@@ -183,8 +182,7 @@ import { LifeTrackingContainerComponent } from './components/life-tracking-conta
     InnerTestComponent,
     CloudRunGpxComponent,
     InnerDevicePairComponent,
-    LifeTrackingComponent,
-    LifeTrackingContainerComponent
+    LifeTrackingComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
