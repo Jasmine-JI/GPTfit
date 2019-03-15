@@ -310,7 +310,8 @@
         "Accept": "接受",
         "Refuse": "拒絕",
         "ClassInfo-ProfessionalClass": "課程資訊-專業課程",
-        "ClassInfo-PhysicalFitnessClass": "課程資訊-體適能指導"
+        "ClassInfo-PhysicalFitnessClass": "課程資訊-體適能指導",
+        "Full": "已滿"
       },
       "SearchGroup": {
         "SearchGroup": "搜尋群組",
@@ -460,7 +461,9 @@
       "BindingFailed": "綁定失敗",
       "AfterBondingTip1": "是否啟用該裝置的Fit pair?",
       "AfterBondingTip2": "在Train Live健身房內，使用心率廣播時，將會紀錄您的活動運動檔案，並現場與他人較勁訓練成效。",
-      "AfterBondingTip3": "※後續可在裝置設置或個人隱私權更改設定值。"
+      "AfterBondingTip3": "※後續可在裝置設置或個人隱私權更改設定值。",
+      "UseForPublic": "使用於公眾設施",
+      "UseForPersonal": "使用於個人裝置"
     },
     "ProductInfo": {
       "ProductInfo": "產品資訊",

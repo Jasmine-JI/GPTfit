@@ -84,6 +84,8 @@ import { DetectInappService } from '@shared/services/detect-inapp.service';
 import { QRCodeModule } from 'angularx-qrcode';
 import { InnerDevicePairComponent } from './components/inner-device-pair/inner-device-pair.component';
 import { ShareGroupInfoDialogComponent } from '@shared/components/share-group-info-dialog/share-group-info-dialog.component';
+import { LifeTrackingComponent } from './components/life-tracking/life-tracking.component';
+import { LifeTrackingService } from './services/life-tracking.service';
 
 @NgModule({
   imports: [
@@ -123,6 +125,7 @@ import { ShareGroupInfoDialogComponent } from '@shared/components/share-group-in
     InnerAdminService,
     ActivityOtherDetailsService,
     DetectInappService,
+    LifeTrackingService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
@@ -178,7 +181,8 @@ import { ShareGroupInfoDialogComponent } from '@shared/components/share-group-in
     PrivacySettingDialogComponent,
     InnerTestComponent,
     CloudRunGpxComponent,
-    InnerDevicePairComponent
+    InnerDevicePairComponent,
+    LifeTrackingComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [

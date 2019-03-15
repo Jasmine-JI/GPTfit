@@ -37,6 +37,7 @@ import { PersonalPreferencesComponent } from './components/settings/personal-pre
 import { InnerTestComponent } from './components/inner-test/inner-test.component';
 import { CloudRunGpxComponent } from './components/cloud-run-gpx/cloud-run-gpx.component';
 import { InnerDevicePairComponent } from './components/inner-device-pair/inner-device-pair.component';
+import { LifeTrackingComponent } from './components/life-tracking/life-tracking.component';
 
 const routes: Routes = [
   {
@@ -175,6 +176,10 @@ const routes: Routes = [
         path: 'system/device/info/:deviceSN',
         component: ProductInfoComponent,
         canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/life-tracking',
+        component: LifeTrackingComponent
       },
       {
         path: 'settings',

@@ -128,7 +128,7 @@
                 *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer"
               >
                 <!--  之後把font awesome 與material icon 擇一-->
-                內部測試
+                使用者與群組查詢
               </li>
               <li class="ala-sidenav-menu-item"
                 (click)="chooseItem(19, sideNav)"
@@ -137,15 +137,16 @@
                 *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer"
               >
                 <!--  之後把font awesome 與material icon 擇一-->
-                cloudRun gpx轉換
+                座標系統轉換
               </li>
               <li class="ala-sidenav-menu-item"
-                (click)="chooseItem(20, sideNav)"
-                [class.ala-sidenav-menu-item__active]="target === 20"
-                [routerLink]="['/dashboard/system/device-pair-management']"
+                (click)="chooseItem(21, sideNav)"
+                [class.ala-sidenav-menu-item__active]="target === 21"
+                [routerLink]="['/dashboard/system/life-tracking']"
                 *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer"
               >
-                device pair info
+                <!--  之後把font awesome 與material icon 擇一-->
+                life tracking
               </li>
             </mat-expansion-panel>
           </mat-accordion>
@@ -228,6 +229,14 @@
                   裝置管理
                 </mat-panel-title>
               </mat-expansion-panel-header>
+              <li class="ala-sidenav-menu-item"
+                (click)="chooseItem(20, sideNav)"
+                [class.ala-sidenav-menu-item__active]="target === 20"
+                [routerLink]="['/dashboard/system/device-pair-management']"
+                *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer"
+              >
+                裝置查詢
+              </li>
               <li class="ala-sidenav-menu-item"
                 (click)="chooseItem(5, sideNav)"
                 [class.ala-sidenav-menu-item__active]="target === 5"
