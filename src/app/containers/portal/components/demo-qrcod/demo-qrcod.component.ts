@@ -207,12 +207,12 @@ export class DemoQrcodComponent implements OnInit {
   }
   handleBindingInfo() {
     const localSN = this.utilsService.getLocalStorageObject('snNumber');
-    if (
-      this.deviceInfo.modelType === '1' ||
-      this.deviceInfo.modelType === '5' // 限定穿戴型類與感應器類裝置
-    ) {
+    // if (
+    //   this.deviceInfo.modelType === '1' ||
+    //   this.deviceInfo.modelType === '5' // 限定穿戴型類與感應器類裝置
+    // ) {
       this.utilsService.setSessionStorageObject('bindingSN', this.displayQr.device_sn);
-    }
+    // }
     if (localSN) {
       localSN.push(this.displayQr.device_sn);
       this.utilsService.setLocalStorageObject('snNumber', localSN);

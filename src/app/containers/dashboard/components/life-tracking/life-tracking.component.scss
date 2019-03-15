@@ -1,0 +1,38 @@
+/* 之後做共用 */
+.candidate-label {
+  display: inline-block;
+  margin: 0 10px 10px 0;
+  background-color: rgb(242, 242, 242);
+  border: 1px solid rgb(204, 204, 204);
+  border-radius: 3px;
+  padding: 3px 5px;
+}
+
+.life-tracking-tip {
+  color: #C780C5;
+  font-size: 14px;
+  margin-left: 10px;
+}
+.highcharts-credits {
+  display: none;
+}
+.no-datas {
+  text-align: center;
+  padding: 30px;
+}
+.fileInfo {
+  margin: 30px 0px 15px;
+  display: flex;
+  flex-wrap: wrap;
+  .fileInfo-item {
+    flex: 0 0 33%;
+    margin-bottom: 15px;
+    .life-tracking-data-name {
+      color: #6e6e6e;
+    }
+
+    .life-tracking-data-value {
+      margin-left: 10px;
+    }
+  }
+}

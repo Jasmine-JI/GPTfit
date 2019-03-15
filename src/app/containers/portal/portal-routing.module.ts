@@ -15,12 +15,17 @@ import { FirstLoginComponent } from './components/first-login/first-login.compon
 import { SportReportComponent } from '@shared/components/sport-report/sport-report.component';
 import { ActivityInfoComponent } from '@shared/components/activity-info/activity-info.component';
 import { MyActivityComponent } from '@shared/components/my-activity/my-activity.component';
+import { ApplicationComponent } from './components/application/application.component';
 
 const routes: Routes = [
   {
     path: '',
     component: PortalComponent,
     children: [
+      {
+        path: 'application',
+        component: ApplicationComponent,
+      },
       {
         path: 'resetpassword',
         component: PasswordComponent

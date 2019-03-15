@@ -1,0 +1,348 @@
+<ng-progress #progressBar [meteor]="_options.meteor" [color]="_options.color" [min]="_options.min" [speed]="_options.speed"
+  [spinner]="_options.spinner" [max]="_options.max" [spinnerPosition]="_options.spinnerPosition" [direction]="_options.direction"
+  [thick]="_options.thick" [trickleSpeed]="_options.trickleSpeed" [ease]="_options.ease">
+</ng-progress>
+<div *ngIf="isShowNoRight">
+  <div style="display: flex;flex-direction: column;align-items: center;">
+    <i class="icon-svg_web-icon_p1_059-lock" style="font-size: 100px;color: #999"></i>
+    <p class="h5" style="margin-top: 30px;color: #333;">It looks like you don't have access privileges to view this
+      life tracking.</p>
+  </div>
+</div>
+<ng-container *ngIf="!isShowNoRight">
+  <div class="group-edit-bar" style="justify-content: flex-end;width:100%;align-items: center;">
+    <div style="margin-right: 15px">
+      <label>選擇其他使用者(預設為自已):</label>
+      <button class="icon-btn" (click)="openSelectorWin($event)">
+        <i class="icon-svg_web-icon_p1_021-add_friend group-icon"
+        style="font-size: 30px"
+        ></i>
+      </button>
+      <div class="candidate-label" *ngIf="targetUserId && targetUserId.length > 0">
+        <div style="display: inline-block">{{targetUserName}}</div>
+        <button class="icon-btn" (click)="removeLabel(_idx)">
+          <i class="fa fa-plus icon_fa" style="transform: rotate(45deg);"></i>
+        </button>
+      </div>
+    </div>
+
+    <mat-form-field style="min-width: 160px;margin-right: 35px;">
+      <input matInput [matDatepicker]="picker" placeholder="選擇日期" (dateChange)="handleDateChange($event)"
+        [(ngModel)]="filterStartTime">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker [touchUi]="isMobile" #picker startView="year"></mat-datepicker>
+    </mat-form-field>
+      <button class="alatech-btn alatech-btn--default activty-btn"
+        title="搜尋單日生活追蹤資料"
+        (click)="fetchTrackingDayDetail()"
+      >
+        搜尋生活追蹤資料
+      </button>
+  </div>
+  <div class="ala-dashboard-title activty-title">
+    檔案資訊<span class="life-tracking-tip">fileInfo</span>
+  </div>
+  <ng-container *ngIf="!utils.isObjectEmpty(fileInfo)">
+    <div class="activity-block">
+      <p style="color: #919191">
+        {{ fileInfo?.dispName}} {{'SH.By' | translate}}
+        <span class="activity-author" (click)="goToProfile()">
+          {{userLink?.userName}}
+        </span>
+        <ng-container *ngIf="userLink?.userName.length > 0">{{'SH.Record' | translate}} ，</ng-container>{{infoDate}}{{fileInfo?.creationTimeZone}}
+        {{'SH.Create' | translate}}
+      </p>
+    </div>
+    <div class="fileInfo">
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">countryRegion：</span>
+        <span class="life-tracking-data-value">{{fileInfo?.countryRegion + ''|| 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">createFrom：</span>
+        <span class="life-tracking-data-value">{{fileInfo?.createFrom + ''|| 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">equipmentSN：</span>
+        <span class="life-tracking-data-value">{{fileInfo?.equipmentSN + ''|| 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">fileId：</span>
+        <span class="life-tracking-data-value">{{fileInfo?.fileId + ''|| 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">language：</span>
+        <span class="life-tracking-data-value">{{fileInfo?.language + ''|| 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">editDate：</span>
+        <span class="life-tracking-data-value">{{editDate + ''|| 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">syncDate：</span>
+        <span class="life-tracking-data-value">{{syncDate + ''|| 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">equipmentFwCode：</span>
+        <span class="life-tracking-data-value">{{fileInfo?.equipmentFwCode + ''|| 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">equipmentFwName：</span>
+        <span class="life-tracking-data-value">{{fileInfo?.equipmentFwName + ''|| 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">equipmentHwCode：</span>
+        <span class="life-tracking-data-value">{{fileInfo?.equipmentHwCode + ''|| 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">equipmentHwName：</span>
+        <span class="life-tracking-data-value">{{fileInfo?.equipmentHwName + ''|| 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">alaFormatVersionName：</span>
+        <span class="life-tracking-data-value">{{fileInfo?.alaFormatVersionName + ''|| 'null'}}</span>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="!fileInfo || fileInfo?.length === 0">
+    <div class="no-datas">fileInfo物件沒資料</div>
+  </ng-container>
+  <div class="ala-dashboard-title activty-title">
+    概要資訊<span class="life-tracking-tip">lifeTrackingDayLayer</span>
+  </div>
+  <ng-container *ngIf="!utils.isObjectEmpty(lifeTrackingDayLayer)">
+    <div class="fileInfo">
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">actualSleepTime：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.actualSleepTime + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">actualWakeTime：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.actualWakeTime + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">bodyHeight：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.bodyHeight + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">bodyWeight：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.bodyWeight + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">gender：</span>
+        <span class="life-tracking-data-value">{{(+lifeTrackingDayLayer?.gender | sex) || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">gravitySensorStatus：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.gravitySensorStatus + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">normalSleepTime：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.normalSleepTime + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">normalWakeTime：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.normalWakeTime + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">ohrSensorStatus：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.ohrSensorStatus + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">restHeartRate：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.restHeartRate + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">targetCalories：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.targetCalories + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">targetFitSecond：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.targetFitSecond + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">targetStep：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.targetStep + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">totalCalories：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.totalCalories + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">totalDeepSecond：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.totalDeepSecond + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">totalDistanceMeters：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.totalDistanceMeters + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">totalFitSecond：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.totalFitSecond + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">totalLightSecond：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.totalLightSecond + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">totalPoint：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.totalPoint + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">totalSleepSecond：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.totalSleepSecond + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">totalStep：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.totalStep + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">activityCalories：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.activityCalories + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">age：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.age + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">atmSensorStatus：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.atmSensorStatus + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">avgAirPressure：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.avgAirPressure + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">avgElev：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.avgElev + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">avgHeartRate：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.avgHeartRate + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">avgTemp：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.avgTemp + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">elevGain：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.elevGain + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">elevLoss：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.elevLoss + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">gpsSensorStatus：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.gpsSensorStatus + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">gyroSensorStatus：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.gyroSensorStatus + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">lifeCalories：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.lifeCalories + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">maxAirPressure：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.maxAirPressure + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">maxElev：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.maxElev + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">maxHeartRate：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.maxHeartRate + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">maxTemp：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.maxTemp + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">resolutionSecond：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.resolutionSecond + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">targetDistanceMeters：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.targetDistanceMeters + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">targetElevGain：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.targetElevGain + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">tempSensorStatus：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.tempSensorStatus + '' || 'null'}}</span>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="!lifeTrackingDayLayer || lifeTrackingDayLayer?.length === 0">
+    <div class="no-datas">lifeTrackingDayLayer物件沒資料</div>
+  </ng-container>
+  <div class="ala-dashboard-title activty-title">
+    {{'Dashboard.MyActivity.Chart' | translate}}<span class="life-tracking-tip">{{'lifeTrackingPointLayer: [{'}}</span>
+  </div>
+  <ng-container *ngIf="!lifeTrackingPoints || lifeTrackingPoints?.length === 0">
+    <div class="no-datas">lifeTrackingPointLayer陣列沒資料</div>
+  </ng-container>
+  <ng-container>
+    <div #container  [style.visibility]="isShowChart ? 'visible' : 'hidden'">
+      <div class="activity-block" *ngIf="!(isInitialChartDone && !isactivityChartTargetDisplay)">
+        <div #activityChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
+        </div>
+      </div>
+      <div class="activity-block" *ngIf="!(isInitialChartDone && !isheartRateChartTargetDisplay)">
+        <div #heartRateChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
+        </div>
+      </div>
+      <div class="activity-block" *ngIf="!(isInitialChartDone && !istotalDistanceMetersChartTargetDisplay)">
+        <div #totalDistanceMetersChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
+        </div>
+      </div>
+      <div class="activity-block" *ngIf="!(isInitialChartDone && !istotalLifeCaloriesChartTargetDisplay)">
+        <div #totalLifeCaloriesChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
+        </div>
+      </div>
+      <div class="activity-block" *ngIf="!(isInitialChartDone && !istotalStepChartTargetDisplay)">
+        <div #totalStepChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
+        </div>
+      </div>
+      <div class="activity-block" *ngIf="!(isInitialChartDone && !isairPressureChartTargetDisplay)">
+        <div #airPressureChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
+        </div>
+      </div>
+      <div class="activity-block" *ngIf="!(isInitialChartDone && !iselevChartTargetDisplay)">
+        <div #elevChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
+        </div>
+      </div>
+      <div class="activity-block" *ngIf="!(isInitialChartDone && !isstressChartTargetDisplay)">
+        <div #stressChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
+        </div>
+      </div>
+      <div class="activity-block" *ngIf="!(isInitialChartDone && !istempChartTargetDisplay)">
+        <div #tempChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
+        </div>
+      </div>
+      <div class="activity-block" *ngIf="!(isInitialChartDone && !istotalActivityCaloriesChartTargetDisplay)">
+        <div #totalActivityCaloriesChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
+        </div>
+      </div>
+
+      <div class="activity-block" *ngIf="!(isInitialChartDone && !istotalElevGainChartTargetDisplay)">
+        <div #totalElevGainChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
+        </div>
+      </div>
+      <div class="activity-block" *ngIf="!(isInitialChartDone && !istotalElevLossChartTargetDisplay)">
+        <div #totalElevLossChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
+        </div>
+      </div>
+
+      <div class="activity-block" *ngIf="!(isInitialChartDone && !iswearingStatusChartTargetDisplay)">
+        <div #wearingStatusChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</ng-container>
