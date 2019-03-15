@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
+import { MAT_DIALOG_DATA } from '@angular/material';
 
 @Component({
   selector: 'app-db-result-dialog',
@@ -9,7 +9,6 @@ import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
 export class DbResultDialogComponent implements OnInit {
 
   constructor(
-    private dialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
 

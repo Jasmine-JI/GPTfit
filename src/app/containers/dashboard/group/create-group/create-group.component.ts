@@ -11,7 +11,6 @@ import { Router } from '@angular/router';
 import {
   FormBuilder,
   FormGroup,
-  FormControl,
   Validators
 } from '@angular/forms';
 import { UserInfoService } from '../../services/userInfo.service';

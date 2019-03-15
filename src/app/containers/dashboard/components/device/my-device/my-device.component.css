@@ -15,6 +15,25 @@
   height: 32px;
   line-height: 32px;
 }
+.fit-pair {
+  max-width: 698px;
+  font-size: 14px;
+}
+.fit-pair .image-container {
+  display: flex;
+  justify-content: center;
+}
+.fit-pair .title {
+  text-align:center;
+  margin-bottom:15px;
+  font-size: 16px;
+}
+.fit-pair .tip2 {
+  margin-bottom: 20px;
+}
+.user-for {
+  margin-top: 10px;
+}
 @media(max-width: 767px) {
   .mat-cell:last-of-type {
     overflow: initial;
@@ -25,5 +44,14 @@
 
   .mat-badge-medium.mat-badge-above .mat-badge-content {
     top: -33px;
+  }
+  .fit-pair img {
+    width: 100%;
+  }
+  .fit-pair .image-container {
+    display: initial;
+  }
+  .fit-pair .tip2 {
+    margin: 15px 0px;
   }
 }

@@ -36,6 +36,8 @@ import { SettingsComponent } from './components/settings/settings.component';
 import { PersonalPreferencesComponent } from './components/settings/personal-preferences/personal-preferences.component';
 import { InnerTestComponent } from './components/inner-test/inner-test.component';
 import { CloudRunGpxComponent } from './components/cloud-run-gpx/cloud-run-gpx.component';
+import { InnerDevicePairComponent } from './components/inner-device-pair/inner-device-pair.component';
+import { LifeTrackingComponent } from './components/life-tracking/life-tracking.component';
 
 const routes: Routes = [
   {
@@ -82,11 +84,6 @@ const routes: Routes = [
         path: 'my-group-list',
         component: MyGroupListComponent
       },
-      // {
-      //   path: 'my-group-list/create',
-      //   component: CreateGroupComponent
-      // },
-
       {
         path: 'group-search',
         component: GroupSearchComponent
@@ -169,6 +166,20 @@ const routes: Routes = [
         path: 'system/inner-gpx',
         component: CloudRunGpxComponent,
         canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/device-pair-management',
+        component: InnerDevicePairComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/device/info/:deviceSN',
+        component: ProductInfoComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/life-tracking',
+        component: LifeTrackingComponent
       },
       {
         path: 'settings',

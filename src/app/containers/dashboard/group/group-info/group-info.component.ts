@@ -15,6 +15,7 @@ import { PrivacySettingDialogComponent } from '../privacy-setting-dialog/privacy
 import { UserProfileService } from '@shared/services/user-profile.service';
 import { TranslateService } from '@ngx-translate/core';
 import { HashIdService } from '@shared/services/hash-id.service';
+import { ShareGroupInfoDialogComponent } from '@shared/components/share-group-info-dialog/share-group-info-dialog.component';
 
 @Component({
   selector: 'app-group-info',
@@ -62,6 +63,7 @@ export class GroupInfoComponent implements OnInit {
   title: string;
   confirmText: string;
   cancelText: string;
+  totalGroupName: string; // 含母階層的群組名稱
   constructor(
     private route: ActivatedRoute,
     private groupService: GroupService,
@@ -81,25 +83,15 @@ export class GroupInfoComponent implements OnInit {
 
   ngOnInit() {
     this.route.params.subscribe(_params => this.handleInit());
-    let isAutoApplyGroup = this.utils.getLocalStorageObject('isAutoApplyGroup');
-    this.userInfoService.getUserAccessRightDetail().subscribe(res => {
-      this.visitorDetail = res;
-      const { isGroupAdmin } = this.visitorDetail;
-      if (isAutoApplyGroup && isGroupAdmin) {
-        // 已是該群組管理者無法利用qr 掃描自動加入群組
-        this.utils.removeLocalStorageObject('isAutoApplyGroup');
-        isAutoApplyGroup = false;
-      }
-      if (isAutoApplyGroup) {
-        this.handleActionGroup(1);
-        this.utils.removeLocalStorageObject('isAutoApplyGroup');
-        isAutoApplyGroup = false;
-      }
-    });
   }
 
   handleInit() {
-    this.groupId = this.hashIdService.handleGroupIdDecode(this.route.snapshot.paramMap.get('groupId'));
+    this.groupId = this.hashIdService.handleGroupIdDecode(
+      this.route.snapshot.paramMap.get('groupId')
+    );
+    if (this.groupId && this.groupId.length > 0) {
+      this.groupLevel = this.utils.displayGroupLevel(this.groupId);
+    }
     if (this.groupId.length === 0) {
       return this.router.navigateByUrl('/404');
     }
@@ -156,6 +148,21 @@ export class GroupInfoComponent implements OnInit {
           : '/assets/images/group-default.svg';
       this.group_id = this.utils.displayGroupId(groupId);
       this.groupLevel = this.utils.displayGroupLevel(groupId);
+      if (this.groupLevel === '40') {
+        this.totalGroupName =
+          this.groupInfo.groupRootInfo[2].brandName +
+          ' - ' +
+          this.groupInfo.groupName;
+      } else if (this.groupLevel === '60') {
+        this.totalGroupName =
+          this.groupInfo.groupRootInfo[2].brandName +
+          ' - ' +
+          this.groupInfo.groupRootInfo[3].branchName +
+          ' - ' +
+          this.groupInfo.groupName;
+      } else {
+        this.totalGroupName = this.groupInfo.groupName;
+      }
       if (this.groupLevel === '80') {
         this.getGroupMemberList(2);
       } else {
@@ -168,6 +175,23 @@ export class GroupInfoComponent implements OnInit {
       ) {
         this.router.navigateByUrl(`/404`);
       }
+      let isAutoApplyGroup = this.utils.getLocalStorageObject(
+        'isAutoApplyGroup'
+      );
+      this.userInfoService.getUserAccessRightDetail().subscribe(response => {
+        this.visitorDetail = response;
+        const { isGroupAdmin } = this.visitorDetail;
+        if (isAutoApplyGroup && isGroupAdmin) {
+          // 已是該群組管理者無法利用qr 掃描自動加入群組
+          this.utils.removeLocalStorageObject('isAutoApplyGroup');
+          isAutoApplyGroup = false;
+        }
+        if (isAutoApplyGroup) {
+          this.handleActionGroup(1);
+          this.utils.removeLocalStorageObject('isAutoApplyGroup');
+          isAutoApplyGroup = false;
+        }
+      });
     });
   }
   handleShareTarget(shareData, type) {
@@ -262,6 +286,17 @@ export class GroupInfoComponent implements OnInit {
       });
     }
   }
+  openShareGroupInfoDialog() {
+    this.dialog.open(ShareGroupInfoDialogComponent, {
+      hasBackdrop: true,
+      data: {
+        url: location.href,
+        title: this.translate.instant('SH.Share'),
+        totalGroupName: this.totalGroupName || '',
+        cancelText: this.translate.instant('SH.Cancel')
+      }
+    });
+  }
   getAndInitTranslations() {
     this.translate
       .get(['Dashboard.Group.Disclaimer', 'SH.Agree', 'SH.Disagree'])
@@ -277,6 +312,7 @@ export class GroupInfoComponent implements OnInit {
       groupId: this.groupId,
       actionType: _type
     };
+
     if (_type === 1 && this.groupLevel === '60') {
       // 申請加入
       const langName = this.utils.getLocalStorageObject('locale');
@@ -408,8 +444,7 @@ export class GroupInfoComponent implements OnInit {
                           });
                         }
                       });
-                  }
-                  if (resultCode === 401) {
+                  } else {
                     this.dialog.open(MessageBoxComponent, {
                       hasBackdrop: true,
                       data: {
@@ -441,15 +476,13 @@ export class GroupInfoComponent implements OnInit {
           } else {
             this.joinStatus = selfJoinStatus;
           }
-        }
-        if (resultCode === 401) {
+        } else {
           this.dialog.open(MessageBoxComponent, {
             hasBackdrop: true,
             data: {
               title: 'message',
               body: resultMessage,
-              confirmText: this.confirmText,
-              cancelText: this.cancelText
+              confirmText: this.translate.instant('SH.Confirm')
             }
           });
         }
@@ -490,28 +523,32 @@ export class GroupInfoComponent implements OnInit {
               groupIcon: this.utils.buildBase64ImgString(_brand.groupIcon)
             };
           });
-          this.subBranchInfo = this.subGroupInfo.branches.filter(_branch => {
-            if (_branch.groupStatus !== 4) {
-              // 過濾解散群組
-              return _branch;
-            }
-          }).map(_branch => {
-            return {
-              ..._branch,
-              groupIcon: this.utils.buildBase64ImgString(_branch.groupIcon)
-            };
-          });
-          this.subCoachInfo = this.subGroupInfo.coaches.filter(_coach => {
-            if (_coach.groupStatus !== 4) {
-              // 過濾解散群組
-              return _coach;
-            }
-          }).map(_coach => {
-            return {
-              ..._coach,
-              groupIcon: this.utils.buildBase64ImgString(_coach.groupIcon)
-            };
-          });
+          this.subBranchInfo = this.subGroupInfo.branches
+            .filter(_branch => {
+              if (_branch.groupStatus !== 4) {
+                // 過濾解散群組
+                return _branch;
+              }
+            })
+            .map(_branch => {
+              return {
+                ..._branch,
+                groupIcon: this.utils.buildBase64ImgString(_branch.groupIcon)
+              };
+            });
+          this.subCoachInfo = this.subGroupInfo.coaches
+            .filter(_coach => {
+              if (_coach.groupStatus !== 4) {
+                // 過濾解散群組
+                return _coach;
+              }
+            })
+            .map(_coach => {
+              return {
+                ..._coach,
+                groupIcon: this.utils.buildBase64ImgString(_coach.groupIcon)
+              };
+            });
         } else {
           this.groupInfos = groupMemberInfo;
           this.groupInfos = this.groupInfos
@@ -601,7 +638,7 @@ export class GroupInfoComponent implements OnInit {
               _admin =>
                 _admin.memberId === this.userId &&
                 _admin.groupId === this.groupId &&
-                (+_admin.accessRight <= +this.groupLevel ) &&
+                +_admin.accessRight <= +this.groupLevel &&
                 _admin.joinStatus === 2
             ) > -1 &&
             (this.joinStatus !== 2 && !this.visitorDetail.isCanManage)

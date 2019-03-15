@@ -81,6 +81,11 @@ import { CloudRunGpxComponent } from './components/cloud-run-gpx/cloud-run-gpx.c
 import { InnerAdminService } from './services/inner-admin.service';
 import { ActivityOtherDetailsService } from '@shared/services/activity-other-details.service';
 import { DetectInappService } from '@shared/services/detect-inapp.service';
+import { QRCodeModule } from 'angularx-qrcode';
+import { InnerDevicePairComponent } from './components/inner-device-pair/inner-device-pair.component';
+import { ShareGroupInfoDialogComponent } from '@shared/components/share-group-info-dialog/share-group-info-dialog.component';
+import { LifeTrackingComponent } from './components/life-tracking/life-tracking.component';
+import { LifeTrackingService } from './services/life-tracking.service';
 
 @NgModule({
   imports: [
@@ -96,7 +101,8 @@ import { DetectInappService } from '@shared/services/detect-inapp.service';
     SharedPipes,
     ReactiveFormsModule,
     SharedModule,
-    NgProgressModule
+    NgProgressModule,
+    QRCodeModule
   ],
   providers: [
     EventEnrollService,
@@ -119,6 +125,7 @@ import { DetectInappService } from '@shared/services/detect-inapp.service';
     InnerAdminService,
     ActivityOtherDetailsService,
     DetectInappService,
+    LifeTrackingService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
@@ -173,7 +180,9 @@ import { DetectInappService } from '@shared/services/detect-inapp.service';
     CommercePlanTableComponent,
     PrivacySettingDialogComponent,
     InnerTestComponent,
-    CloudRunGpxComponent
+    CloudRunGpxComponent,
+    InnerDevicePairComponent,
+    LifeTrackingComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
@@ -185,7 +194,8 @@ import { DetectInappService } from '@shared/services/detect-inapp.service';
     PeopleSelectorWinComponent,
     TodayLoginnerWinComponent,
     BottomSheetComponent,
-    PrivacySettingDialogComponent
+    PrivacySettingDialogComponent,
+    ShareGroupInfoDialogComponent
   ]
 })
 export class DashboardModule {}

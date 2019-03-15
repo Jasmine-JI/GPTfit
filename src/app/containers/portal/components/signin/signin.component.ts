@@ -2,11 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
-  FormControl,
   Validators
 } from '@angular/forms';
 import { AuthService } from '@shared/services/auth.service';
-import { setLocalStorageObject } from '@shared/utils';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material';
 import { MatDialog } from '@angular/material/dialog';

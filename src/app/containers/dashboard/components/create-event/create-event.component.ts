@@ -1,12 +1,11 @@
-import { Component, OnInit, ViewContainerRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { IMyDpOptions } from 'mydatepicker';
 import { EventInfoService } from '../../services/event-info.service';
 import {
   FormBuilder,
   FormGroup,
   Validators,
-  FormArray,
-  FormControl
+  FormArray
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MsgDialogComponent } from '../msg-dialog/msg-dialog.component';

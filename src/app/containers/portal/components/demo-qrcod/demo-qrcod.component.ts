@@ -29,9 +29,10 @@ export class DemoQrcodComponent implements OnInit {
   progressRef: NgProgressRef;
   isShowBindingBtn = false;
   isShowFitPairBtn = false;
-  fitPairType: string;
+  fitPairType: string; // 1:fit pair對應頭像與運動檔案， 2.解除fit pair 3:fit pair僅對應運動檔案
   isFitPaired: boolean;
   imgClass = 'product-photo--landscape';
+  token: string;
   constructor(
     private qrcodeService: QrcodeService,
     private progress: NgProgress,
@@ -43,6 +44,7 @@ export class DemoQrcodComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.token = this.utilsService.getToken();
     const queryStrings = getUrlQueryStrings(location.search);
     this.displayQr = queryStrings;
 
@@ -84,7 +86,8 @@ export class DemoQrcodComponent implements OnInit {
   handleImageLoad(event): void {
     const width = event.target.width;
     const height = event.target.height;
-    this.imgClass = width > height ? 'product-photo--portrait' : 'product-photo--landscape';
+    this.imgClass =
+      width > height ? 'product-photo--portrait' : 'product-photo--landscape';
   }
   handleProductInfo(lang) {
     if (lang === 'zh-cn') {
@@ -204,6 +207,12 @@ export class DemoQrcodComponent implements OnInit {
   }
   handleBindingInfo() {
     const localSN = this.utilsService.getLocalStorageObject('snNumber');
+    // if (
+    //   this.deviceInfo.modelType === '1' ||
+    //   this.deviceInfo.modelType === '5' // 限定穿戴型類與感應器類裝置
+    // ) {
+      this.utilsService.setSessionStorageObject('bindingSN', this.displayQr.device_sn);
+    // }
     if (localSN) {
       localSN.push(this.displayQr.device_sn);
       this.utilsService.setLocalStorageObject('snNumber', localSN);
@@ -227,20 +236,8 @@ export class DemoQrcodComponent implements OnInit {
     this.router.navigateByUrl(`signin`);
   }
   goBinding() {
-    const token = this.utilsService.getToken();
-    if (!token) {
-      this.dialog.open(MessageBoxComponent, {
-        hasBackdrop: true,
-        data: {
-          title: 'message',
-          body: this.translateService.instant(
-            'Portal.IfRegisterProductText'
-          ),
-          confirmText: this.translateService.instant('SH.Confirm'),
-          cancelText: this.translateService.instant('SH.Cancel'),
-          onConfirm: this.handleGoLoginPage.bind(this, 1)
-        }
-      });
+    if (!this.token) {
+      return this.handleGoLoginPage(1);
     } else {
       this.handleBindingInfo();
       this.router.navigateByUrl(`dashboard/device`);
@@ -248,32 +245,32 @@ export class DemoQrcodComponent implements OnInit {
   }
   fitPair(type) {
     this.fitPairType = type;
-    const token = this.utilsService.getToken();
-    if (!token) {
-      this.dialog.open(MessageBoxComponent, {
-        hasBackdrop: true,
-        data: {
-          title: 'message',
-          body: this.translateService.instant(
-            'Portal.IfFitPairProductText'
-          ),
-          confirmText: this.translateService.instant('SH.Confirm'),
-          cancelText: this.translateService.instant('SH.Cancel'),
-          onConfirm: this.handleGoLoginPage.bind(this, 2)
-        }
-      });
-    } else {
-      this.handleFitPair();
+    if (this.fitPairType === '2' || (!this.isShowBindingBtn && this.token)) {
+      return this.handleFitPair();
     }
-  }
+
+    return this.dialog.open(MessageBoxComponent, {
+      hasBackdrop: true,
+      data: {
+        title: 'message',
+        body: this.translateService.instant('Portal.UnRegisterandFitpairTip'),
+        confirmText: this.translateService.instant('Portal.RegisterProduct'),
+        onConfirm: this.goBinding.bind(this, 1),
+        cancelText: this.translateService.instant('Portal.FitPairOnce'),
+        onCancel: this.handleFitPair.bind(this)
+      }
+    });
+}
   handleFitPair() {
-    const token = this.utilsService.getToken();
     const { device_sn } = this.displayQr;
     const body = {
-      token,
+      token: this.token,
       fitPairType: this.fitPairType,
       pairEquipmentSN: [device_sn]
     };
+    if (!this.token) {
+      return this.handleGoLoginPage(2);
+    }
     this.qrcodeService.fitPairSetting(body).subscribe(res => {
       if (res.resultCode === 200) {
         if (this.fitPairType === '2') {
@@ -293,12 +290,8 @@ export class DemoQrcodComponent implements OnInit {
             hasBackdrop: true,
             data: {
               title: 'message',
-              body: this.translateService.instant(
-                'Portal.FitPairSuccessfully'
-              ),
-              confirmText: this.translateService.instant(
-                'SH.Confirm'
-              ),
+              body: this.translateService.instant('Portal.FitPairSuccessfully'),
+              confirmText: this.translateService.instant('SH.Confirm'),
               onConfirm: this.uploadDevice.bind(this)
             }
           });
