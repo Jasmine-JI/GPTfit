@@ -218,7 +218,7 @@
                 </li>
             </mat-expansion-panel>
           </mat-accordion>
-          <mat-accordion multi="false" *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer">
+          <mat-accordion multi="false" *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer  || isMarketingDeveloper">
             <mat-expansion-panel [expanded]="target === 5">
               <mat-expansion-panel-header  class="ala-expansion-panel-header"
                 [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
@@ -233,7 +233,7 @@
                 (click)="chooseItem(20, sideNav)"
                 [class.ala-sidenav-menu-item__active]="target === 20"
                 [routerLink]="['/dashboard/system/device-pair-management']"
-                *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer"
+                *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer  || isMarketingDeveloper"
               >
                 {{"Dashboard.System.DeviceInquiry" | translate }}
               </li>
