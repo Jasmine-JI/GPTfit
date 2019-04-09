@@ -22,7 +22,7 @@ const SERVER_CONFIG = {
   ca: null,
   cert: null
 };
-if (address === '192.168.1.235' || address === '192.168.1.234') {
+if (address === '192.168.1.231' || address === '192.168.1.235' || address === '192.168.1.234') {
   SERVER_CONFIG.key = fs.readFileSync('/etc/ssl/free.key'),
     SERVER_CONFIG.ca = fs.readFileSync('/etc/ssl/free_ca.crt'),
     SERVER_CONFIG.cert = fs.readFileSync('/etc/ssl/free.crt');
@@ -287,16 +287,25 @@ app.use(function (req, res, next) {
       'http://192.168.1.235',
       'https://192.168.1.235'
     ];
+  } else if (address === '192.168.1.231') {
+    allowedOrigins = [
+      'http://192.168.1.231:8080',
+      'https://192.168.1.231:8080',
+      'http://192.168.1.231',
+      'https://192.168.1.231'
+    ];    
   } else if (address === '192.168.1.234') {
     allowedOrigins = [
       'http://192.168.1.234',
       'http://alatechapp.alatech.com.tw',
       'http://192.168.1.235:8080',
+      'http://192.168.1.231:8080',
       'http://localhost:8080',
       'http://app.alatech.com.tw',
       'https://192.168.1.234',
       'https://alatechapp.alatech.com.tw',
       'https://192.168.1.235:8080',
+      'https://192.168.1.231:8080'
       'http://localhost:8080',
       'https://app.alatech.com.tw'
     ]; // 因為要for在家只做前端時，需要隨意的domain去call
