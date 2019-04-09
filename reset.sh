@@ -3,7 +3,7 @@ HOME="/home/project/alatech_api"
 API_SERVER="/var/web"
 IP_ADDR=$(ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p')
 rm -rf /var/www/html/dist
-mkdir /var/www/html/dist
+mkdir -p /var/www/html/dist
 echo $IP_ADDR
 if [ ! -h /var/www/html/dist/ ]; then
   mkdir dist
@@ -18,7 +18,7 @@ if [ ! -L /var/www/html/dist/app ]; then
         ln -s /var/www/html/app /var/www/html/dist/app
 fi
 tempIP=${IP_ADDR%192.168.1.235}
-if [ ${IP_ADDR#$tempIP} == "192.168.1.235" ]; then
+if [ "${IP_ADDR#$tempIP}" == "192.168.1.235" ]; then
   API_SERVER="/home/administrator/myWorkSpace/web"
   echo "!!!!!!!!!!!!!!!!!!!!!!!"
   if [ ! -L /var/www/html/dist/phpmyadmin ]; then
