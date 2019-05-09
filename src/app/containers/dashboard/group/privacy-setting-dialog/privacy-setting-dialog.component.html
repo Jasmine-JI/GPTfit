@@ -9,17 +9,21 @@
 
 <div style="margin-top: 30px;height: 250px;">
   <div class="control-list">
-    <label class="ala-form__label settings-item">{{'Dashboard.privacySettings.NewActivitySetting' | translate}}</label>
+    <label class="ala-form__label settings-item">{{'Dashsboard.privacySettings.NewActivitySetting' | translate}}</label>
     <div class="settings-control">
-      <mat-checkbox color="primary" value="4" [checked]="activityTrackingStatus[0]" (change)="handleCheckBox($event, 1, 1)"><span
-          style="font-size: 14px">{{'Dashboard.privacySettings.OnlyForPF' | translate}}</span>
+      <!--<mat-checkbox color="primary" value="4" [checked]="activityTrackingStatus[0]" (change)="handleCheckBox($event, 1, 1)"><span
+          style="font-size: 14px">{{'Dashboard.privacySettings.OnlyForPF' | translate}}</span>-->
+      <mat-checkbox color="primary" value="4" [checked]="true" (change)="handleCheckBox($event, 1, 1)"><span
+          style="font-size: 14px">{{'Dashboard.privacySettings.OnlyForPF' | translate}}</span>         
       </mat-checkbox>
     </div>
   </div>
   <div class="control-list">
     <label class="ala-form__label settings-item">{{'Dashboard.privacySettings.NewSportsSetting' | translate}}</label>
     <div class="settings-control">
-      <mat-checkbox color="primary" value="4" [checked]="activityTrackingReportStatus[0]" (change)="handleCheckBox($event, 1, 2)"><span
+      <!--<mat-checkbox color="primary" value="4" [checked]="activityTrackingReportStatus[0]" (change)="handleCheckBox($event, 1, 2)"><span
+          style="font-size: 14px">{{'Dashboard.privacySettings.OnlyForPF' | translate}}</span>-->
+      <mat-checkbox color="primary" value="4" [checked]="true" (change)="handleCheckBox($event, 1, 2)"><span
           style="font-size: 14px">{{'Dashboard.privacySettings.OnlyForPF' | translate}}</span>
       </mat-checkbox>
     </div>
