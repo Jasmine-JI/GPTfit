@@ -117,12 +117,13 @@ export class ActivityService {
       const { userHRBase, userAge, userMaxHR, userRestHR } = hrFormatData;
       if (userMaxHR && userRestHR) {
         if (userHRBase === 0) {
-          userHRZones[0] = userMaxHR * (0.5);
-          userHRZones[1] = userMaxHR * (0.6);
-          userHRZones[2] = userMaxHR * (0.65);
-          userHRZones[3] = userMaxHR * (0.75);
-          userHRZones[4] = userMaxHR * (0.85);
-          userHRZones[5] = userMaxHR * (1);
+          //區間數值採無條件捨去法
+          userHRZones[0] = Math.floor((220 - userAge) * 0.5);
+          userHRZones[1] = Math.floor((220 - userAge) * 0.6 - 1);
+          userHRZones[2] = Math.floor((220 - userAge) * 0.7 - 1);
+          userHRZones[3] = Math.floor((220 - userAge) * 0.8 - 1);
+          userHRZones[4] = Math.floor((220 - userAge) * 0.9 - 1);
+          userHRZones[5] = Math.floor((220 - userAge) * 1);
         } else {
           userHRZones[0] = (userMaxHR - userRestHR) * (0.55) + userRestHR;
           userHRZones[1] = (userMaxHR - userRestHR) * (0.6) + userRestHR;
@@ -133,12 +134,13 @@ export class ActivityService {
         }
       } else {
         if (userHRBase === 0) {
-          userHRZones[0] = (220 - userAge) * (0.5);
-          userHRZones[1] = (220 - userAge) * (0.6);
-          userHRZones[2] = (220 - userAge) * (0.65);
-          userHRZones[3] = (220 - userAge) * (0.75);
-          userHRZones[4] = (220 - userAge) * (0.85);
-          userHRZones[5] = (220 - userAge) * (1);
+          //區間數值採無條件捨去法
+          userHRZones[0] = Math.floor((220 - userAge) * 0.5);
+          userHRZones[1] = Math.floor((220 - userAge) * 0.6 - 1);
+          userHRZones[2] = Math.floor((220 - userAge) * 0.7 - 1);
+          userHRZones[3] = Math.floor((220 - userAge) * 0.8 - 1);
+          userHRZones[4] = Math.floor((220 - userAge) * 0.9 - 1);
+          userHRZones[5] = Math.floor((220 - userAge) * 1);
         } else {
           userHRZones[0] = ((220 - userAge) - userRestHR) * (0.55) + userRestHR;
           userHRZones[1] = ((220 - userAge) - userRestHR) * (0.6) + userRestHR;
@@ -208,15 +210,15 @@ export class ActivityService {
         isNoZones = true;
       } else {
         heartRates.push(+_point.heartRateBpm);
-        if (+_point.heartRateBpm >= userHRZones[0] && +_point.heartRateBpm <= userHRZones[1] - 1) {
+        if (+_point.heartRateBpm >= userHRZones[0] && +_point.heartRateBpm <= userHRZones[1]) {
           userZoneTimes[1].y = userZoneTimes[1].y + resolutionSeconds;
-        } else if (+_point.heartRateBpm >= userHRZones[1] && +_point.heartRateBpm <= userHRZones[2] - 1) {
+        } else if (+_point.heartRateBpm >= userHRZones[1] + 1 && +_point.heartRateBpm <= userHRZones[2]) {
           userZoneTimes[2].y += resolutionSeconds;
-        } else if (+_point.heartRateBpm >= userHRZones[2] && +_point.heartRateBpm <= userHRZones[3] - 1) {
+        } else if (+_point.heartRateBpm >= userHRZones[2] + 1 && +_point.heartRateBpm <= userHRZones[3]) {
           userZoneTimes[3].y += resolutionSeconds;
-        } else if (+_point.heartRateBpm >= userHRZones[3] && +_point.heartRateBpm <= userHRZones[4] - 1) {
+        } else if (+_point.heartRateBpm >= userHRZones[3] + 1 && +_point.heartRateBpm <= userHRZones[4]) {
           userZoneTimes[4].y += resolutionSeconds;
-        } else if (+_point.heartRateBpm >= userHRZones[4]) {
+        } else if (+_point.heartRateBpm >= userHRZones[4] + 1) {
           userZoneTimes[5].y += resolutionSeconds;
         } else {
           userZoneTimes[0].y += resolutionSeconds;

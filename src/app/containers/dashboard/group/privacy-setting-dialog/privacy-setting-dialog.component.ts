@@ -49,7 +49,19 @@ export class PrivacySettingDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) private data: any
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    let activityTrackingArray = [];
+    let activityTrackingReportArray = [];
+
+    //隱私權預設勾選「新運動檔案」及「新運動期間報告」開放給體適能教練
+    activityTrackingArray.push("1");
+    activityTrackingArray.push("4");
+    activityTrackingReportArray.push("1");
+    activityTrackingReportArray.push("4");
+
+    this.tempActivityTracking = activityTrackingArray;
+    this.tempActivityTrackingReport = activityTrackingReportArray;
+  }
 
   confirm() {
     this.onConfirm.emit();

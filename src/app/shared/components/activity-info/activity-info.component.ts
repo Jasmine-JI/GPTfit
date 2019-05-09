@@ -321,7 +321,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     this.activityPoints.forEach((_point, idx) => {
       if (+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100) {
         isNormalPoint = false;
-        this.gpxBmapPoints.push(null);
+        //this.gpxBmapPoints.push(null);
       } else {
         if (!isNormalPoint) {
           isNormalPoint = true;
@@ -435,7 +435,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     this.activityPoints.forEach((_point, idx) => {
       if (+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100) {
         isNormalPoint = false;
-        this.gpxPoints.push(null);
+        //this.gpxPoints.push(null);
       } else {
         if (!isNormalPoint) {
           isNormalPoint = true;

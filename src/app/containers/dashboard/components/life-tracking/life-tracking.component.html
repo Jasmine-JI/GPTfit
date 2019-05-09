@@ -276,6 +276,10 @@
         <span class="life-tracking-data-name">tempSensorStatus：</span>
         <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.tempSensorStatus + '' || 'null'}}</span>
       </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">targetSleepSecond：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.targetSleepSecond + '' || 'null'}}</span>
+      </div>      
     </div>
   </ng-container>
   <ng-container *ngIf="!lifeTrackingDayLayer || lifeTrackingDayLayer?.length === 0">
