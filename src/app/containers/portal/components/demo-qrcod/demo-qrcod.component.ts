@@ -245,7 +245,7 @@ export class DemoQrcodComponent implements OnInit {
   }
   fitPair(type) {
     this.fitPairType = type;
-    if (this.fitPairType === '2' || (!this.isShowBindingBtn && this.token)) {
+    if (this.fitPairType === '2' || (!this.isShowBindingBtn)) {
       return this.handleFitPair();
     }
 
