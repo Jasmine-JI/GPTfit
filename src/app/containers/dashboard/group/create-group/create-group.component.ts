@@ -63,7 +63,9 @@ export class CreateGroupComponent implements OnInit {
     isMarketingDeveloper: false,
     isBrandAdministrator: false,
     isBranchAdministrator: false,
-    isCoach: false
+    isCoach: false,
+    getUserId: 0,
+    getUserName: ''
   };
   finalImageLink: string;
   maxFileSize = 10485760; // 10MB
@@ -185,6 +187,14 @@ export class CreateGroupComponent implements OnInit {
       this.role.isCoach = res;
       // console.log('%c this.isCoach', 'color: #0ca011', res);
     });
+    this.userInfoService.getUserId().subscribe(res => {
+      this.role.getUserId = res;
+      // console.log('%c this.getUserId', 'color: #0ca011', res);
+    });
+    this.userInfoService.getUserName().subscribe(res => {
+      this.role.getUserName = res;
+      // console.log('%c this.getUserName', 'color: #0ca011', res);
+    });      
     this.token = this.utils.getToken();
     const body = {
       token: this.token,
@@ -209,13 +219,19 @@ export class CreateGroupComponent implements OnInit {
         this.finalImageLink = this.groupImg;
         this.group_id = this.utils.displayGroupId(groupId);
         this.groupLevel = this.utils.displayGroupLevel(groupId);
+        this.getGroupMemberList(1);
       });
-      this.getGroupMemberList(1);
     }
     this.translate.onLangChange.subscribe(() => {
       this.getAndInitTranslations();
     });
     this.getAndInitTranslations();
+    
+    //建立分店以及課程群組時，指派建立者為預設管理員。 by Vincent 2019/5/9
+    if (this.createType == 1 || this.createType == 2) {
+      this.chooseLabels.push({ "groupName": "Alatech", "userName": this.role.getUserName, "userId": this.role.getUserId });
+      this.form.patchValue({ groupManager: [ this.role.getUserId ] });
+    }
   }
   getAndInitTranslations() {
     this.translate
@@ -391,6 +407,7 @@ export class CreateGroupComponent implements OnInit {
       // 如果脫離form的判斷
       this.utils.markFormGroupTouched(this.form);
     }
+    //return
     if (valid) {
       const {
         groupDesc,

@@ -91,7 +91,8 @@ export class LifeTrackingService {
       wearingStatus = [];
 
     datas.forEach((_point, idx) => {
-      pointSeconds.push(resolutionSeconds * (idx + 1) * 1000);
+      //pointSeconds.push(resolutionSeconds * (idx + 1) * 1000);
+      pointSeconds.push(_point.pointSecond * 1000);
 
       if (!this.utils.isNumber(_point.activity)) {
         activitys.push(_point.activity);
