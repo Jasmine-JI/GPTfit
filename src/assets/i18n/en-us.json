@@ -369,12 +369,12 @@
       "NewActivitySetting": " 'New' sports activity data: Set personal visibility of new event details and routes.",
       "NewSportsSetting": "'New' sport report: Set personal visibility of the report during the new event.",
       "NewLifeTrackingSetting": "'New' Life Tracking Period Report: Set personal visibility of reports during the new life tracking period.",
-      "OnlyForPF": "Physical fitness coach only",
+      "OnlyForPF": "Gym only",
       "PrivacyRequireContent": "Privacy requirements content",
       "PrivacyRequireContentTip": "※Privacy requirements are related to the establishment of course categories, which cannot be modified after successful establishment.",
       "MemberPrivacyTip": "Group 'members' can see each other's name and avatar",
-      "PFPrivacyActivity": "'Physical Coach' can view group member activity details",
-      "PFPrivacyReport": "'Physical Coach' can view the report of group member activities"
+      "PFPrivacyActivity": "'Gym' can view group member activity details",
+      "PFPrivacyReport": "'Gym' can view the report of group member activities"
     },
     "MyActivity": {
       "MyActivity": "My sport activity",
