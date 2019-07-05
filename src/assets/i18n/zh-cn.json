@@ -369,12 +369,12 @@
       "NewActivitySetting": "'新'运动活动资料：设定新活动详细资料与路线的可见度。",
       "NewSportsSetting": "'新'运动期间报告：设定新活动期间报告的可见度。",
       "NewLifeTrackingSetting": "'新'生活追踪期间报告：设定新生活追踪期间报告的可见度。",
-      "OnlyForPF": "仅限体适能教练",
+      "OnlyForPF": "仅限健身房",
       "PrivacyRequireContent": "隐私权需求内容",
       "PrivacyRequireContentTip": "※隐私权需求与建立课程类别有关，建立成功后无法修改",
       "MemberPrivacyTip": "群组'成员'可看到彼此基本昵称与头像",
-      "PFPrivacyActivity": "'体适能教练'可观看群组成员活动详细资讯",
-      "PFPrivacyReport": "'体适能教练'可观看群组成员活动期间报告"
+      "PFPrivacyActivity": "'健身房'可观看群组成员活动详细资讯",
+      "PFPrivacyReport": "'健身房'可观看群组成员活动期间报告"
     },
     "MyActivity": {
       "MyActivity": "我的活动",
