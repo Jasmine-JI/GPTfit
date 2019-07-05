@@ -369,12 +369,12 @@
       "NewActivitySetting": "'新'運動活動資料：設定新活動詳細資料與路線的可見度。",
       "NewSportsSetting": "'新'運動期間報告：設定新活動期間報告的可見度。",
       "NewLifeTrackingSetting": "'新'生活追蹤期間報告：設定新生活追蹤期間報告的可見度。",
-      "OnlyForPF": "僅限體適能教練",
+      "OnlyForPF": "僅限健身房",
       "PrivacyRequireContent": "隱私權需求內容",
       "PrivacyRequireContentTip": "※隱私權需求與建立課程類別有關，建立成功後無法修改",
       "MemberPrivacyTip": "群組'成員'可看到彼此基本暱稱與頭像",
-      "PFPrivacyActivity": "'體適能教練'可觀看群組成員活動詳細資訊",
-      "PFPrivacyReport": "'體適能教練'可觀看群組成員活動期間報告"
+      "PFPrivacyActivity": "'健身房'可觀看群組成員活動詳細資訊",
+      "PFPrivacyReport": "'健身房'可觀看群組成員活動期間報告"
     },
     "MyActivity": {
       "MyActivity": "我的活動",

@@ -104,7 +104,11 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   iswearingStatusChartTargetDisplay = false;
 
   filterStartTime = moment().format('YYYY-MM-DDT00:00:00.000+08:00');
-  filterEndTime = moment().format('YYYY-MM-DDT23:59:59.000+08:00');
+  filterEndTime = moment().format('YYYY-MM-DDT00:00:00.000+08:00');
+  /**
+   * 此搜尋時間在轉換為GMT之後，搜尋到的生活追蹤資料會變成兩天
+   */  
+  //filterEndTime = moment().format('YYYY-MM-DDT23:59:59.000+08:00');
 
   isShowChart = true;
   chartTargets: any;
@@ -356,7 +360,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
       'YYYY-MM-DDTHH:mm:00.000+08:00'
     );
     this.filterEndTime = moment($event.value).format(
-      'YYYY-MM-DDT23:59:00.000+08:00'
+      'YYYY-MM-DDT00:00:00.000+08:00'
     );
   }
 }
