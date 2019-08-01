@@ -137,6 +137,7 @@ export class ForgetpwdComponent implements OnInit {
           setTimeout(() => this.router.navigate(['/signin']), 5000);
         } else {
           this.snackbar.open(rtnMsg, 'OK', { duration: 5000 });
+          this.isForgetSending = false;
         }
       },
       () => (this.isForgetSending = false)
