@@ -122,7 +122,7 @@ export class MyDeviceComponent implements OnInit, OnChanges {
           }
 
         }
-        if (res.resultCode === 402) {
+        if (res.resultCode === 400 && res.msgCode === 1157) {
           this.isLoading = false;
           this.dialog.open(MessageBoxComponent, {
             hasBackdrop: true,
@@ -135,7 +135,7 @@ export class MyDeviceComponent implements OnInit, OnChanges {
             }
           });
         }
-        if (res.resultCode === 400) {
+        if (res.resultCode === 400 && res.msgCode === 1012) {
           this.isLoading = false;
           this.dialog.open(MessageBoxComponent, {
             hasBackdrop: true,
@@ -183,7 +183,7 @@ export class MyDeviceComponent implements OnInit, OnChanges {
     };
     this.qrcodeService.getDeviceList(deviceBody).subscribe(_res => {
       this.isLoading = false;
-      if (_res.resultCode === 402) {
+      if (_res.resultCode === 400 || _res.resultCode === 401 || _res.resultCode === 402) {
         return this.router.navigateByUrl('/403');
       }
       if (_res.resultCode === 200) {

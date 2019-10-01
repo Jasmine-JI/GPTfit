@@ -43,6 +43,12 @@ elif [ $IP_ADDR == "192.168.1.234" ]; then
   if [ ! -h /var/www/html/dist/api ]; then
           ln -s /var/www/html/api /var/www/html/dist/api
   fi
+  if [ ! -L /var/www/html/dist/ba19f544a4fc779ec2c689184906748c ]; then
+          ln -s /var/www/html/ba19f544a4fc779ec2c689184906748c /var/www/html/dist/ba19f544a4fc779ec2c689184906748c
+  fi  
+  if [ ! -L /var/www/html/dist/d67e2f48a7425feb0a0fcedbffd9f4ad ]; then
+          ln -s /var/www/html/d67e2f48a7425feb0a0fcedbffd9f4ad /var/www/html/dist/d67e2f48a7425feb0a0fcedbffd9f4ad
+  fi
 elif [ $IP_ADDR == "192.168.1.232" ]; then
   if [ ! -h /var/www/html/dist/angular ]; then
           ln -s /var/www/html/angular /var/www/html/dist/angular
@@ -94,6 +100,12 @@ else
   fi
   if [ ! -h /var/www/html/dist/redirect.php ]; then
           ln -s $HOME/redirect/redirect.php /var/www/html/dist/
+  fi
+  if [ ! -L /var/www/html/dist/ba19f544a4fc779ec2c689184906748c ]; then
+          ln -s /var/www/html/ba19f544a4fc779ec2c689184906748c /var/www/html/dist/ba19f544a4fc779ec2c689184906748c
+  fi
+  if [ ! -L /var/www/html/dist/d67e2f48a7425feb0a0fcedbffd9f4ad ]; then
+          ln -s /var/www/html/d67e2f48a7425feb0a0fcedbffd9f4ad /var/www/html/dist/d67e2f48a7425feb0a0fcedbffd9f4ad
   fi
 fi
 cd $API_SERVER
