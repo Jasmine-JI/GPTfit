@@ -299,7 +299,7 @@ export class SportReportComponent implements OnInit {
     }
     this.reportService.fetchSportSummaryArray(body).subscribe(res => {
       this.isLoading = false;
-      if (res.resultCode === 402) {
+      if (res.resultCode === 400 || res.resultCode === 401 || res.resultCode === 402) {
         return this.showPrivacyUi.emit(true);
       }
       if (res.resultCode === 200) {
