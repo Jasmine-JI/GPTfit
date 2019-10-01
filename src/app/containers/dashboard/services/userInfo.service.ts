@@ -1,12 +1,14 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
+import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 import { forkJoin } from 'rxjs/observable/forkJoin';
 import { UserInfo } from '../models/userInfo';
 import { UserDetail } from '../models/userDetail';
 import { UtilsService } from '@shared/services/utils.service';
+import { AuthService } from '@shared/services/auth.service';
 import * as moment from 'moment';
 
 
@@ -42,10 +44,18 @@ export class UserInfoService {
     isApplying: false
   });
 
-  constructor(private http: HttpClient, private utils: UtilsService) { }
+  constructor(
+    private http: HttpClient, 
+    private utils: UtilsService, 
+    private authService: AuthService,
+    private injector: Injector,
+  ) { }
   getLogonData(body) {
     return this.http.post<any>('/api/v1/user/getLogonData', body);
   }
+  refreshToken(body) {
+    return this.http.post<any>('/api/v1/user/refreshToken', body);
+  }  
   getUserIcon(): Observable<string> {
     return this.userIcon$;
   }
@@ -291,6 +301,50 @@ export class UserInfoService {
     });
   }
   getUserInfo(body) {
+    const checkLogonData = new Promise((resolve, reject) => {
+      this.getLogonData(body).subscribe(
+        res1 => {
+          if (res1.resultCode === 400) {
+            this.redirectLoginPage();
+          } else if (res1.resultCode === 401) {
+            this.redirectLoginPage();
+          } else if (res1.resultCode === 402) {
+            const token = this.utils.getToken();
+            this.refreshToken({token}).subscribe(
+              res2 => {
+                if (res2.resultCode === 200) {
+                  const { token, tokenTimeStamp } = res2.info;
+                  this.utils.writeToken(token);
+                  this.utils.setLocalStorageObject('ala_token_time', tokenTimeStamp);
+                  resolve(false);
+                } else if (res2.resultCode === 401) {
+                  this.redirectLoginPage();
+                }
+              }
+            );
+          }
+          if (res1.resultCode !== 402 && res1.resultCode !== 400 && res1.resultCode !== 401) {
+            resolve(true);
+          }
+        }
+      );
+    });
+    return checkLogonData.then(res => {
+      if (res === false) {
+        const token = this.utils.getToken();
+        this.combineFetchProcess({ token, iconType : 2 });
+      } else {
+        this.combineFetchProcess(body);
+      }
+      return res;
+    });
+  }
+  redirectLoginPage() {
+    this.authService.logout();
+    const router = this.injector.get(Router);
+    router.navigate(['/signin']);    
+  }
+  combineFetchProcess(body) {
     const fetchMemberAccessRight = this.getMemberAccessRight(body);
     const fetchLogonData = this.getLogonData(body);
     return new Promise((resolve, reject) => {

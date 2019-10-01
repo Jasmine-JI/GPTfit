@@ -176,13 +176,13 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
     };
     this.progressRef.start();
     this.lifeTrackingService.getTrackingDayDetail(body).subscribe(res => {
-      if (res.resultCode === 402) {
+      if (res.resultCode === 401 || res.resultCode === 402) {
         this.isShowNoRight = true;
         this.isLoading = false;
         this.progressRef.complete();
         return;
       }
-      if (res.resultCode === 401 || res.resultCode === 400) {
+      if (res.resultCode === 400) {
         this.isFileIDNotExist = true;
         return this.router.navigateByUrl('/404');
       }
