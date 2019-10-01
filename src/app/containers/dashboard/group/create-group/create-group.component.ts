@@ -469,7 +469,7 @@ export class CreateGroupComponent implements OnInit {
               )}/edit`
             );
           }
-          if (res.resultCode === 401) {
+          if (res.resultCode === 400) {
             this.dialog.open(MessageBoxComponent, {
               hasBackdrop: true,
               data: {
@@ -543,7 +543,7 @@ export class CreateGroupComponent implements OnInit {
               )}/edit`
             );
           }
-          if (res.resultCode === 401) {
+          if (res.resultCode === 400) {
             this.dialog.open(MessageBoxComponent, {
               hasBackdrop: true,
               data: {
@@ -573,7 +573,7 @@ export class CreateGroupComponent implements OnInit {
           if (res.resultCode === 200) {
             this.router.navigateByUrl('/dashboard/my-group-list');
           }
-          if (res.resultCode === 401) {
+          if (res.resultCode === 400) {
             this.dialog.open(MessageBoxComponent, {
               hasBackdrop: true,
               data: {
@@ -612,7 +612,7 @@ export class CreateGroupComponent implements OnInit {
           if (res.resultCode === 200) {
             this.router.navigateByUrl('/dashboard/system/all-group-list');
           }
-          if (res.resultCode === 401) {
+          if (res.resultCode === 400) {
             this.dialog.open(MessageBoxComponent, {
               hasBackdrop: true,
               data: {

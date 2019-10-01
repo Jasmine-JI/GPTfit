@@ -33,7 +33,7 @@ export class HttpStatusInterceptor implements HttpInterceptor {
           let parseBody;
           if (typeof (event.body) !== 'object') {
             parseBody = JSON.parse(event.body);
-            if ((parseBody.msgCode === 5058 || parseBody.msgCode === 1144) && parseBody.resultCode === 402) {
+            if ((parseBody.msgCode === 5058 || parseBody.msgCode === 1144) && (parseBody.resultCode === 401 || parseBody.resultCode === 402)) {
               this.dialog.open(MessageBoxComponent, {
                 hasBackdrop: true,
                 data: {
@@ -54,7 +54,7 @@ export class HttpStatusInterceptor implements HttpInterceptor {
       },
       (err: any) => {
         if (err instanceof HttpErrorResponse) {
-          if (err.status === 401 || err.status === 403) {
+          if (err.status === 401 || err.status === 402 || err.status === 403) {
             const router = this.injector.get(Router);
             const auth = this.injector.get(AuthService);
             auth.logout();

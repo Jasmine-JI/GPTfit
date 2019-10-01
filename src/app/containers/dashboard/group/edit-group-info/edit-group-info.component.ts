@@ -448,7 +448,7 @@ export class EditGroupInfoComponent implements OnInit {
               )
             }
           });
-        } else if (res1.resultCode === 401) {
+        } else if (res1.resultCode === 400) {
           this.dialog.open(MessageBoxComponent, {
             hasBackdrop: true,
             data: {

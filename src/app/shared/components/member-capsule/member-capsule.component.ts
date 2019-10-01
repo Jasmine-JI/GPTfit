@@ -127,7 +127,7 @@ export class MemberCapsuleComponent implements OnInit {
       if (res.resultCode === 200) {
         return this.onRemoveAdmin.emit(this.userId);
       }
-      if (res.resultCode === 401) {
+      if (res.resultCode === 400) {
         this.dialog.open(MessageBoxComponent, {
           hasBackdrop: true,
           data: {
@@ -171,7 +171,7 @@ export class MemberCapsuleComponent implements OnInit {
         this.onAssignAdmin.emit(this.userId);
         this.dialog.closeAll();
       }
-      if (res.resultCode === 401) {
+      if (res.resultCode === 400) {
         this.dialog.open(MessageBoxComponent, {
           hasBackdrop: true,
           data: {
