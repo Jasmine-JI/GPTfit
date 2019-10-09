@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Injector } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { UserProfileService } from '@shared/services/user-profile.service';
 import { UtilsService } from '@shared/services/utils.service';
+import { AuthService } from '@shared/services/auth.service';
+import { UserInfoService } from '../../services/userInfo.service';
 
 @Component({
   selector: 'app-settings',
@@ -15,7 +17,10 @@ export class SettingsComponent implements OnInit {
   constructor(
     private router: Router,
     private userProfileService: UserProfileService,
-    private utils: UtilsService
+    private utils: UtilsService,
+    private userInfoService: UserInfoService,
+    private authService: AuthService,
+    private injector: Injector,
   ) {}
 
   ngOnInit() {
@@ -32,10 +37,56 @@ export class SettingsComponent implements OnInit {
       token: this.utils.getToken()
     };
     this.isLoading = true;
-    this.userProfileService.getUserProfile(body).subscribe(res => {
-      this.isLoading = false;
-      this.userData = res.info;
+    const checkUserProfileService = new Promise((resolve, reject) => {
+      this.userProfileService.getUserProfile(body).subscribe(
+        res1 => {
+          if (res1.resultCode === 400) {
+            this.redirectLoginPage();
+          } else if (res1.resultCode === 401) {
+            this.redirectLoginPage();
+          } else if (res1.resultCode === 402) {
+            const token = this.utils.getToken();
+            this.userInfoService.refreshToken({token}).subscribe(
+              res2 => {
+                if (res2.resultCode === 200) {
+                  const { token, tokenTimeStamp } = res2.info;
+                  this.utils.writeToken(token);
+                  this.utils.setLocalStorageObject('ala_token_time', tokenTimeStamp);
+                  resolve(false);
+                } else if (res2.resultCode === 401) {
+                  this.redirectLoginPage();
+                }
+              }
+            );
+          }
+          if (res1.resultCode !== 402 && res1.resultCode !== 400 && res1.resultCode !== 401) {
+            resolve(true);
+          }
+        }
+      );
+    });   
+    return checkUserProfileService.then(res => {
+      if (res === false) {
+        const token = this.utils.getToken();
+        this.getUserProfile({ token, iconType : 2 });
+      } else {
+        this.getUserProfile(body);
+      }
+      return res;
     });
+  }
+  redirectLoginPage() {
+    this.authService.logout();
+    const router = this.injector.get(Router);
+    router.navigate(['/signin']);    
+  }
+  getUserProfile(body){
+    this.userProfileService.getUserProfile(body).subscribe(
+      res => {
+        this.isLoading = false;
+        this.userData = res.info;
+      }
+    );
   }
   handleTab(_idx) {
     this.chooseIdx = _idx;
