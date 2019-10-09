@@ -83,8 +83,9 @@ export class AuthService {
   isTokenExpired(token: string = TOKEN): boolean {
     const alaToken = this.utils.getToken(token);
     if (alaToken) {
-      const tokenTimeStamp = this.utils.getLocalStorageObject('ala_token_time');
-      return this.calcTokenTime(tokenTimeStamp);
+      /*const tokenTimeStamp = this.utils.getLocalStorageObject('ala_token_time');
+      return this.calcTokenTime(tokenTimeStamp);*/
+      return false; // found token
     } else {
       return true; // no token
     }
@@ -102,9 +103,6 @@ export class AuthService {
   // when startup
   checkUser(): Observable<boolean> {
     //讓此判斷機制終止，非由本機端自行判斷。已轉換由Server判斷Token是否過期(402)或失效(401)。 2019/9/25 by Vincent.
-    this.loginStatus$.next(true);
-    return of(true);
-    /*    
     if (!this.isTokenExpired()) {
       this.loginStatus$.next(true);
       return of(true);
@@ -114,6 +112,5 @@ export class AuthService {
       this.utils.removeLocalStorageObject('ala_token_time');
       return of(false);
     }
-    */
   }
 }
