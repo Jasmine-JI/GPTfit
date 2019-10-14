@@ -24,7 +24,7 @@ router.get('/lists', function (req, res, next) {
   }
 
   let sql = `
-    select (case when e_mail is null or e_mail = '' then concat('+',u.country_code, u.phone) else e_mail end) as info,
+    select concat('[', login_acc, ']', (case when e_mail is null or e_mail = '' then concat('+',u.country_code, u.phone) else e_mail end)) as info,
     DATE_FORMAT(max(s.time), '%Y-%m-%d %H:%i:%s') as time,
     s.user_id, count(s.user_id) as number
     from ?? as s ,
@@ -37,7 +37,7 @@ router.get('/lists', function (req, res, next) {
   `;
   if (userId) {
     sql = `
-    select (case when e_mail is null or e_mail = '' then concat('+',u.country_code, u.phone) else e_mail end) as info,
+    select concat('[', login_acc, ']', (case when e_mail is null or e_mail = '' then concat('+',u.country_code, u.phone) else e_mail end)) as info,
     s.message, DATE_FORMAT(s.time, '%Y-%m-%d %H:%i:%s') as time, s.equipment_sn
     from ?? as s,
     ?? as u
