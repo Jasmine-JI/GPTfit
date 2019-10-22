@@ -543,6 +543,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       body['debug'] = this.isDebug.toString();
     }
     this.activityService.fetchSportListDetail(body).subscribe(res => {
+      //取得regionCode判斷操作是否位於大陸地區，為大陸地區一律使用百度地圖開啓 ex.zh-tw, zh-cn, en-us..
+      const regionCode = this.utils.getLocalStorageObject('locale');
       this.activityInfo = res.activityInfoLayer;
       if (res.resultCode === 401 && res.resultCode === 402) {
         this.isShowNoRight = true;
@@ -592,15 +594,21 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isShowMap = false;
       }
       if (this.isShowMap) {
-        if (!this.isInChinaArea || isInTaiwan) {
-          this.mapKind = '1';
-          // this.handleGoogleMap();
-        } else {
+        if (regionCode === "zh-cn") {
           this.mapKind = '2';
-          // this.isHideMapRadioBtn = true;
+          this.isHideMapRadioBtn = true;
+          this.handleBMap();
+        } else {
+          if (!this.isInChinaArea || isInTaiwan) {
+            this.mapKind = '1';
+            // this.handleGoogleMap();        
+          } else {
+            this.mapKind = '2';
+            //this.isHideMapRadioBtn = true;
+          }
+          this.handleGoogleMap(isInTaiwan);
+          this.handleBMap();
         }
-        this.handleGoogleMap(isInTaiwan);
-        this.handleBMap();
       }
       this.dataSource.data = res.activityLapLayer;
       this.fileInfo = res.fileInfo;
