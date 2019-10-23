@@ -199,7 +199,14 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     const fieldId = this.route.snapshot.paramMap.get('fileId');
     this.progressRef = this.ngProgress.ref();
-    this.token = this.utils.getToken();
+
+    // 新增判斷是否藉由fitness開啟個人運動詳細資料，讓使用者不用登入即可觀看-Kidin-1081022
+    if (this.route.snapshot.queryParamMap.get('access_token') === null) {
+      this.token = this.utils.getToken();
+    } else {
+      this.token = this.route.snapshot.queryParamMap.get('access_token');
+    }
+
     this.getInfo(fieldId);
     this.activityOtherDetailsService.getOtherInfo().subscribe(res => {
       if (res) {
@@ -601,7 +608,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         } else {
           if (!this.isInChinaArea || isInTaiwan) {
             this.mapKind = '1';
-            // this.handleGoogleMap();        
+            // this.handleGoogleMap();
           } else {
             this.mapKind = '2';
             //this.isHideMapRadioBtn = true;
