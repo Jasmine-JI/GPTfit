@@ -200,11 +200,11 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     const fieldId = this.route.snapshot.paramMap.get('fileId');
     this.progressRef = this.ngProgress.ref();
 
-    // 新增判斷是否藉由fitness開啟個人運動詳細資料，讓使用者不用登入即可觀看-Kidin-1081022
-    if (this.route.snapshot.queryParamMap.get('access_token') === null) {
+    // 從hid得到token後，讓使用者不用登入即可觀看個人運動詳細資料（待實做hid encode/decode）-Kidin-1081024
+    if (this.route.snapshot.queryParamMap.get('hid') === null) {
       this.token = this.utils.getToken();
     } else {
-      this.token = this.route.snapshot.queryParamMap.get('access_token');
+      this.token = this.route.snapshot.queryParamMap.get('hid');
     }
 
     this.getInfo(fieldId);

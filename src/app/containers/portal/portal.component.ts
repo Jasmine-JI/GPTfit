@@ -10,6 +10,7 @@ import {
   debounce,
   getUrlQueryStrings
 } from '@shared/utils/';
+import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { IMyDpOptions } from 'mydatepicker';
 import * as moment from 'moment';
@@ -99,7 +100,9 @@ export class PortalComponent implements OnInit {
   isIntroducePage: boolean;
   isAlphaVersion = false;
   isPreviewMode = false;
+  hideNavbar = false;  // 隱藏navbar-Kidin-1081023
   constructor(
+    private route: ActivatedRoute,
     private router: Router,
     private globalEventsManager: GlobalEventsManager,
     private rankFormService: RankFormService,
@@ -116,8 +119,10 @@ export class PortalComponent implements OnInit {
 
   ngOnInit() {
     this.translateService.onLangChange.subscribe(() => {
-      if (this.detectInappService.isInApp || this.detectInappService.isIE) {
-        if (this.detectInappService.isLine) {
+
+      // 若非使用Line或其他App或IE以外瀏覽器時，跳出解析度警示框-Kidin-1081023
+      if (this.detectInappService.isIE) {
+        if (this.detectInappService.isLine || this.detectInappService.isInApp) {
           if (location.search.length === 0) {
             location.href += '?openExternalBrowser=1';
           } else {
@@ -135,6 +140,11 @@ export class PortalComponent implements OnInit {
         }
       }
     });
+
+    // 藉由query string判斷是否隱藏Header-Kidin-1081023
+    if (this.route.snapshot.queryParamMap.get('navbar') === '0') {
+      this.hideNavbar = true;
+    }
 
     if (location.hostname.indexOf('cloud.alatech.com.tw') > -1) {
       this.isAlphaVersion = false;

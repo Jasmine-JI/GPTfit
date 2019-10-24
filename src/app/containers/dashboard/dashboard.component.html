@@ -264,13 +264,13 @@
             <i class="icon-svg_web-icon_p1_005-menu main-nav-toggle-icon"></i>
           </div>
         </div>
-        <div style="display: flex;position: fixed;right:0">
-          <div class="header-nav-item">
-            {{ userName || '' }}
-          </div>
+        <div style="display: flex;position: fixed;right:20px">
           <div class="dropdown">
             <div class="header-nav-item" id="dropdownMenu3" data-toggle="dropdown" aria-haspopup="true"
               aria-expanded="false">
+              <div class="header-nav-item" style="margin-right: 10px">
+                {{ userName || '' }}
+              </div>
               <div *ngIf="userPhoto"
               [ngStyle]="{'background-image': 'url(' + userPhoto + ')'}"
                 class="header-user-photo"

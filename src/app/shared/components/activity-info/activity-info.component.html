@@ -907,7 +907,9 @@
         <div class="ala-dashboard-title activty-title">
           {{'Dashboard.ActivityDetail.DeviceInfo' | translate}}
         </div>
-        <img src={{deviceInfo?.modelImgUrl}} style="height: 200px;width: auto">
+        <div style="display: flex; justify-content: center;">
+          <img src={{deviceInfo?.modelImgUrl}} style="height: 200px;width: auto;">
+        </div>
         <div>
           {{ 'Portal.ProductName' | translate}}：{{ deviceInfo?.modelName || 'SH.No-information' | translate }}
         </div>
@@ -919,20 +921,20 @@
         <div class="ala-dashboard-title activty-title">
           {{'Dashboard.TrainLive.ClassInfo' | translate}}
         </div>
-        <div style="display: flex;padding-right: 24px;align-items: center;margin-top: 10px">
+        <div style="display:flex; flex-direction:column; margin-top:10px">
           <div style="display:flex;align-items: center;">
             <div class="user-photo"
-              style="margin: 0 15px"
+              style="margin: 0 auto"
               [ngClass]="classInfo?.groupIconClassName"
             >
               <img [src]="classInfo?.groupIcon">
             </div>
           </div>
-          <div class="lesson-title">
+          <div class="lesson-title" style="padding-left: 10px">
             <span>
               {{classInfo?.groupName}}
             </span>
-            <span  class="lesson-title-location">
+            <span  class="lesson-title-location" style="text-align: left;">
               {{classInfo?.groupRootInfo[2].brandName}} /  {{classInfo?.groupRootInfo[3].branchName}}
             </span>
           </div>
@@ -951,13 +953,13 @@
         <div class="ala-dashboard-title activty-title">
           {{'Dashboard.TrainLive.CoachInfo' | translate}}
         </div>
-        <div style="display:flex;align-items: center;margin-top: 10px">
-          <div class="user-photo user-photo--portrait" style="margin: 0 15px">
+        <div style="display:flex; flex-direction:column; margin-top:10px">
+          <div class="user-photo user-photo--portrait" style="margin: 0 auto">
             <img [src]="coachInfo?.coachAvatar">
           </div>
-          <div class="coach-name">{{coachInfo?.name}}</div>
+          <div class="coach-name" style="padding-left: 20px">{{coachInfo?.name}}</div>
         </div>
-        <div class="introduction">
+        <div class="introduction" style="padding-top: 10px">
           {{ coachDesc }}
           <!-- {{ classInfo?.coachDesc}} --> <!-- 等之後有個人頁面在接回來 -->
           <div *ngIf="isCoachMoreDisplay"

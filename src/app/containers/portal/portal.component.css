@@ -2,6 +2,11 @@
   padding-top: 63px;
   width: 100%;
 }
+
+.hideNavbar {
+  padding-top: 0px;
+}
+
 .main.preview {
   padding-top: 0px;
 }
