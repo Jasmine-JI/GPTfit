@@ -37,7 +37,7 @@
           <!-- {{brandName}} -->
         </span>
       </div>
-      <div class="group-edit-bar" style="justify-content: flex-end;width:100%">
+      <div class="group-edit-bar" style="justify-content: flex-end;width:100%" [class.hideTwoButton]="hideTwoButton">
         <span class="sportsRecord-text">
           {{'SH.SportsRecord' | translate}}
           <div>
@@ -778,22 +778,36 @@
         </mat-tab>
         <mat-tab label="{{'Dashboard.MyActivity.LapInfo' | translate}}">
           <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-            <ng-container matColumnDef="lapIndex">
+            <ng-container matColumnDef="status-lapIndex">
               <th mat-header-cell *matHeaderCellDef>
                 <span *ngIf="activityInfo?.type !== '3'">{{'Dashboard.MyActivity.LapNumber' | translate}} No.</span>
                 <span *ngIf="activityInfo?.type === '3'">{{'Dashboard.MyActivity.SetNumber' | translate}} No.</span>
               </th>
-              <td mat-cell *matCellDef="let element; let i = index;"> {{i + 1}} </td>
-            </ng-container>
-            <ng-container matColumnDef="status">
-              <th mat-header-cell *matHeaderCellDef>{{'Dashboard.MyActivity.RestActivitySign' | translate}} </th>
-              <td mat-cell *matCellDef="let element">
-                <span *ngIf="element.type === '0'">
-                  {{'Dashboard.MyActivity.ActiveLap' | translate}}
-                </span>
-                <span *ngIf="element.type === '1'">
-                  {{'Dashboard.MyActivity.RestLap' | translate}}
-                </span>
+              <td mat-cell *matCellDef="let element; let i = index;">
+                  <i *ngIf="element.type === '1'"
+                    class="icon-svg_web-icon_p2_039-rest ala-activity-icon"
+                  ></i>
+                  <span *ngIf="element.type === '0'">
+                    <i *ngIf="activityInfo?.type === '1'"
+                      class="icon-svg_web-icon_p1_083-run ala-activity-icon"
+                    ></i>
+                    <i *ngIf="activityInfo?.type === '2'"
+                      class="icon-svg_web-icon_p1_084-cycle ala-activity-icon"
+                    ></i>
+                    <i *ngIf="activityInfo?.type === '3'"
+                      class="icon-svg_web-icon_p1_086-weight_training ala-activity-icon"
+                    ></i>
+                    <i *ngIf="activityInfo?.type === '4'"
+                      class="icon-svg_web-icon_p1_085-swim ala-activity-icon"
+                    ></i>
+                    <i *ngIf="activityInfo?.type === '5'"
+                      class="icon-svg_web-icon_p1_087-aerobic ala-activity-icon"
+                    ></i>
+                    <i *ngIf="activityInfo?.type === '6'"
+                      class="icon-svg_web-icon_p1_088-row ala-activity-icon"
+                    ></i>
+                  </span>
+                {{i + 1}}
               </td>
             </ng-container>
             <ng-container matColumnDef="dispName">
@@ -809,7 +823,6 @@
                 <td mat-cell *matCellDef="let element"
                 > {{element.lapSwimPosture}} </td>
               </ng-container>
-
             </ng-container>
             <ng-container matColumnDef="cadence">
               <th mat-header-cell *matHeaderCellDef>
