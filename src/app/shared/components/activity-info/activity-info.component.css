@@ -1,3 +1,7 @@
+.hideTwoButton {
+  display: none;
+}
+
 .isBrandIcon {
   margin-bottom: 30px;
 }
@@ -69,6 +73,9 @@
 .activity-block {
   /* margin: 25px 20px 45px; */
 }
+.ala-activity-icon {
+  font-size: 20px;
+}
 .demo-chart {
   height: 400px;
 }
@@ -92,7 +99,7 @@
 }
 .activity-info__area {
   width: calc((100% - 60px)/3);
-  margin: 0px 20px 30px 0px;
+  margin: 0px 10px 30px 10px;
 }
 .mat-tab-body {
   padding: 20px 15px;
@@ -169,15 +176,15 @@ table.mat-table {
   .activity-info__area {
     text-align: center;
   }
-  .activity-info__area + .activity-info__area {
-    margin-left: 0px;
-  }
 }
 
 @media(max-width: 820px) {
   .activity-info__area {
     width: calc((100% - 60px)/2);
-    margin: 0px 20px 30px 0px;
+    margin: 0px 10px 30px 10px;
+  }
+  .mat-tab-body {
+    padding: 20px 0px;
   }
 }
 

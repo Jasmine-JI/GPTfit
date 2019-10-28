@@ -42,8 +42,7 @@ declare var BMap: any;
 export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   dataSource = new MatTableDataSource<any>();
   displayedColumns: string[] = [
-    'lapIndex',
-    'status',
+    'status-lapIndex',
     'heartRate',
     'speed',
     'distance'
@@ -148,6 +147,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   brandIcon = '';
   brandName = '';
   printFileDate = '';
+  hideTwoButton = false; // 隱藏預覽列印和返回兩個按鈕-kidin-1081024
   constructor(
     private utils: UtilsService,
     private renderer: Renderer2,
@@ -200,13 +200,16 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     const fieldId = this.route.snapshot.paramMap.get('fileId');
     this.progressRef = this.ngProgress.ref();
 
-    // 從hid得到token後，讓使用者不用登入即可觀看個人運動詳細資料（待實做hid encode/decode）-Kidin-1081024
+    // 從hid得到token後，讓使用者不用登入即可觀看個人運動詳細資料，並隱藏預覽列印和返回按鈕（待實做hid encode/decode）-Kidin-1081024
     if (this.route.snapshot.queryParamMap.get('hid') === null) {
       this.token = this.utils.getToken();
     } else {
       this.token = this.route.snapshot.queryParamMap.get('hid');
+      if (this.route.snapshot.queryParamMap.get('navbar') === '0') {
+        this.hideTwoButton = true;
+      }
     }
-
+    
     this.getInfo(fieldId);
     this.activityOtherDetailsService.getOtherInfo().subscribe(res => {
       if (res) {
@@ -433,6 +436,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     const mapProp = {
       center: new google.maps.LatLng(24.123499, 120.66014),
       zoom: 18,
+      gestureHandling: 'cooperative', // 可以讓使用者在手機環境下使用單止滑頁面，雙指滑地圖-kidin-1081025
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
     this.map = new google.maps.Map(this.gmapElement.nativeElement, mapProp);
@@ -660,8 +664,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     switch (sportType) {
       case '1':
         this.displayedColumns = [
-          'lapIndex',
-          'status',
+          'status-lapIndex',
           'heartRate',
           'speed',
           'distance'
@@ -669,8 +672,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         break;
       case '2':
         this.displayedColumns = [
-          'lapIndex',
-          'status',
+          'status-lapIndex',
           'heartRate',
           'speed',
           'distance'
@@ -678,8 +680,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         break;
       case '3':
         this.displayedColumns = [
-          'lapIndex',
-          'status',
+          'status-lapIndex',
           'dispName',
           'totalRepo',
           'totalWeight',
@@ -688,8 +689,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         break;
       case '4':
         this.displayedColumns = [
-          'lapIndex',
-          'status',
+          'status-lapIndex',
           'dispName',
           'cadence',
           'totalRepo',
@@ -697,12 +697,11 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         ];
         break;
       case '5':
-        this.displayedColumns = ['lapIndex', 'status', 'heartRate'];
+        this.displayedColumns = ['status-lapIndex', 'heartRate'];
         break;
       case '6':
         this.displayedColumns = [
-          'lapIndex',
-          'status',
+          'status-lapIndex',
           'cadence',
           'totalRepo',
           'speed'
