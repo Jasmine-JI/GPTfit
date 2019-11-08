@@ -1,5 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-hr-zone-dialog',
@@ -7,6 +8,11 @@ import { MAT_DIALOG_DATA } from '@angular/material';
   styleUrls: ['./hr-zone-dialog.component.css']
 })
 export class HrZoneDialogComponent implements OnInit {
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private translate: TranslateService
+  ) {}
+
   get userId() {
     return this.data.userId;
   }
@@ -15,11 +21,10 @@ export class HrZoneDialogComponent implements OnInit {
   }
   get methodName() {
     if (this.data.method === 1) {
-      return '最大心率法%(%MHR)';
+      return `${this.translate.instant('Dashboard.Settings.maximalHeartRate')}%(%MHR)`;
     }
-    return '儲備心率法%(%HRR)';
+    return `${this.translate.instant('Dashboard.Settings.maximalHeartRate')}%(%HRR)`;
   }
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
 
   ngOnInit() {}
 }

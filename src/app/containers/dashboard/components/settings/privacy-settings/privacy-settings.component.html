@@ -1,5 +1,5 @@
 <h3>
-    {{'Dashboard.Settings.PrivacySettings' | translate}}
+    {{'Dashboard.Settings.set' | translate}}
   <div class="device-hint"
     (mouseenter)="mouseEnter()"
     (mouseleave)="mouseLeave()"
@@ -15,11 +15,11 @@
 <label class="ala-form__label settings-label"
   style="text-align: left"
 >
-  {{'Dashboard.Settings.CurrentPrivacySettings' | translate}}
+  {{'Dashboard.Settings.set' | translate}}
 </label>
 <div class="control-list">
   <label class="ala-form__label settings-item">
-    {{'Dashboard.privacySettings.NewActivitySetting' | translate}}
+    {{'Dashboard.privacySettings.newAvtivityData' | translate}}
   </label>
   <div class="settings-control">
     <mat-checkbox
@@ -28,14 +28,14 @@
       [checked]="activityTrackingStatus[0]"
       (change)="handleCheckBox($event, 1, 1)"
     ><span style="font-size: 14px">
-      {{'Dashboard.privacySettings.OnlyForPF' | translate}}
+      {{'Dashboard.privacySettings.objectOnly' | translate}}{{'Dashboard.privacySettings.myGym' | translate}}
     </span>
     </mat-checkbox>
   </div>
 </div>
 <div class="control-list">
   <label class="ala-form__label settings-item">
-    {{'Dashboard.privacySettings.NewSportsSetting' | translate}}
+    {{'Dashboard.privacySettings.newAvtivityReport' | translate}}
   </label>
   <div class="settings-control">
     <mat-checkbox
@@ -44,14 +44,14 @@
       [checked]="activityTrackingReportStatus[0]"
       (change)="handleCheckBox($event, 1, 2)"
     ><span style="font-size: 14px">
-      {{'Dashboard.privacySettings.OnlyForPF' | translate}}
+      {{'Dashboard.privacySettings.objectOnly' | translate}}{{'Dashboard.privacySettings.myGym' | translate}}
     </span>
     </mat-checkbox>
   </div>
 </div>
 <div class="control-list">
   <label class="ala-form__label settings-item">
-    {{'Dashboard.privacySettings.NewLifeTrackingSetting' | translate}}
+    {{'Dashboard.privacySettings.newLifeTrackingReport' | translate}}
   </label>
   <div class="settings-control">
     <mat-checkbox
@@ -60,7 +60,7 @@
       [checked]="lifeTrackingReportStatus[0]"
       (change)="handleCheckBox($event, 1, 3)"
     ><span style="font-size: 14px">
-      {{'Dashboard.privacySettings.OnlyForPF' | translate}}
+      {{'Dashboard.privacySettings.objectOnly' | translate}}{{'Dashboard.privacySettings.myGym' | translate}}
     </span>
     </mat-checkbox>
   </div>
@@ -69,11 +69,11 @@
 <label class="ala-form__label settings-label"
   style="text-align: left"
 >
-{{'Dashboard.Settings.Modify-all-data-privacy' | translate}}{{'SH.Not-yet-open' | translate}}
+{{'Dashboard.Settings.editAllDataPrivacy' | translate}}{{'SH.noOpen' | translate}}
 </label>
 <div class="control-list">
   <label class="ala-form__label settings-item">
-    {{'Dashboard.Settings.Modify-all-Activity-privacy' | translate}}
+    {{'Dashboard.Settings.editAllAvtivityDataPrivacy' | translate}}
   </label>
   <div class="settings-control">
     <select class="form-field">
@@ -83,7 +83,7 @@
 </div>
 <div class="control-list">
   <label class="ala-form__label settings-item">
-    {{'Dashboard.Settings.Modify-all-report-privacy' | translate}}
+    {{'Dashboard.Settings.editAllAvtivityReportPrivacy' | translate}}
   </label>
   <div class="settings-control">
     <select class="form-field">
@@ -93,7 +93,7 @@
 </div>
 <div class="control-list">
   <label class="ala-form__label settings-item">
-    {{'Dashboard.Settings.Modify-all-lifeTracking-privacy' | translate}}
+    {{'Dashboard.Settings.editAllLifeTrackingReport' | translate}}
   </label>
   <div class="settings-control">
     <select class="form-field">
@@ -105,25 +105,25 @@
 <label class="ala-form__label settings-label"
   style="text-align: left"
 >
-{{'Dashboard.Settings.PrivacyArea' | translate}}{{'SH.Not-yet-open' | translate}}
+{{'Dashboard.Settings.privacyArea' | translate}}{{'SH.noOpen' | translate}}
 </label>
 <div class="control-list">
   <label class="ala-form__label settings-item">
-    {{'Dashboard.Settings.PrivacyAreaHint' | translate}}
+    {{'Dashboard.Settings.privacyAreaDescription' | translate}}
   </label>
 </div>
 
 <div>
   <mat-tab-group  class="ala-tab-group">
-    <mat-tab label="{{'Dashboard.Settings.YourPrivacyArea' | translate}}">
+    <mat-tab label="{{'Dashboard.Settings.yourPrivacyArea' | translate}}">
       <div style="width: 100%;text-align: center;margin: 44px 0px 22px">
-        {{'Dashboard.Settings.CreatePrivacyArea' | translate}}
+        {{'Dashboard.Settings.areaDescription' | translate}}
       </div>
     </mat-tab>
     <mat-tab>
       <ng-template mat-tab-label>
         <mat-icon class="area-add">add</mat-icon>
-        {{'Dashboard.Settings.NewArea' | translate}}
+        {{'Dashboard.Settings.addArea' | translate}}
       </ng-template>
           <div  #gmap style="height: 400px;"></div>
     </mat-tab>

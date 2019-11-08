@@ -23,12 +23,12 @@
       >
         <li class="normal-manage" (click)="goToManage()">
           <a>
-            {{ 'Dashboard.Group.GroupInfo.Manage' | translate}}
+            {{ 'Dashboard.Group.GroupInfo.management' | translate}}
           </a>
         </li>
         <li class="warn-manage" (click)="openDeleteGroupWin()">
           <a>
-            {{'Dashboard.Group.Dismiss' | translate}} {{'Dashboard.Group.Group' | translate}}
+            {{'Dashboard.Group.disband' | translate}} {{'Dashboard.Group.group' | translate}}
           </a>
         </li>
       </ul>
@@ -42,7 +42,7 @@
       >
         <li class="warn-manage" (click)="handleRemoveAdmin()">
           <a>
-            {{ 'Dashboard.Group.GroupInfo.RemoveAdmin' | translate}}
+            {{ 'Dashboard.Group.GroupInfo.removeAdmin' | translate}}
           </a>
         </li>
       </ul>
@@ -58,31 +58,31 @@
           *ngIf="coachType !== '2' && coachType !== '1'"
         >
           <a>
-            {{ 'Dashboard.Group.GroupInfo.AssignAdmin' | translate}}
+            {{ 'Dashboard.Group.GroupInfo.assignAdmin' | translate}}
           </a>
         </li>
         <li class="normal-manage" (click)="handleAssignAdmin(1)"
           *ngIf="coachType === '2'"
         >
           <a>
-            {{ 'Dashboard.Group.GroupInfo.enableFC' | translate}}
+            {{ 'Dashboard.Group.GroupInfo.setupFitnessCoach' | translate}}
           </a>
         </li>
         <li class="normal-manage" (click)="handleAssignAdmin(2)"
           *ngIf="coachType === '1'"
         >
           <a>
-            {{ 'Dashboard.Group.GroupInfo.enablePT' | translate}}
+            {{ 'Dashboard.Group.GroupInfo.setupProfessionalTeacher' | translate}}
           </a>
         </li>
         <li class="normal-manage" (click)="goToUserProfileInEditGroupInfo()">
           <a>
-            {{ 'Dashboard.Group.GroupInfo.See-user-profile' | translate}}
+            {{ 'Dashboard.Group.GroupInfo.viewProfile' | translate}}
           </a>
         </li>
         <li class="warn-manage" (click)="handleDeleteMember()">
           <a>
-            {{ 'Dashboard.Group.GroupInfo.RemoveMember' | translate}}
+            {{ 'Dashboard.Group.GroupInfo.removeMember' | translate}}
           </a>
         </li>
       </ul>
@@ -96,12 +96,12 @@
       >
         <li class="normal-manage" (click)="handleJoinStatus(2)">
           <a>
-            {{ 'Dashboard.Group.GroupInfo.Accept' | translate}}
+            {{ 'Dashboard.Group.GroupInfo.agree' | translate}}
           </a>
         </li>
         <li class="normal-manage" (click)="handleJoinStatus(3)">
           <a>
-            {{ 'Dashboard.Group.GroupInfo.Refuse' | translate}}
+            {{ 'Dashboard.Group.GroupInfo.refuse' | translate}}
           </a>
         </li>
       </ul>

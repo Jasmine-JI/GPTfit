@@ -1,10 +1,10 @@
 <div style="display:flex;justify-content: space-between">
-  <h3>{{'Dashboard.Settings.PersonalPreferences' | translate}}</h3>
+  <h3>{{'Dashboard.Settings.personalPreferences' | translate}}</h3>
   <button class="alatech-btn alatech-btn--default settings-btn"
-    title="{{'Dashboard.Settings.Save' | translate}}"
+    title="{{'Dashboard.Settings.save' | translate}}"
     (click)="saveSettings(settingsForm)"
   >
-    {{'Dashboard.Settings.Save' | translate}}
+    {{'Dashboard.Settings.save' | translate}}
   </button>
 </div>
 <form [formGroup]="settingsForm"
@@ -13,23 +13,23 @@
   (ngSubmit)="saveSettings(settingsForm)"
 >
   <label class="ala-form__label settings-label">
-    {{'SH.HeartRate' | translate}}
+    {{'SH.hr' | translate}}
   </label>
   <div class="ala-list__item">
     <label class="ala-form__label settings-item">
-      {{'Dashboard.Settings.HeartRateAlgorithm' | translate}}
+      {{'Dashboard.Settings.hrCalculation' | translate}}
     </label>
     <div class="settings-control">
       <select class="form-field"
         formControlName="heartRateBase"
       >
-        <option value="0">{{'Dashboard.Settings.HRmax' | translate}}</option>
-        <option value="1">{{'Dashboard.Settings.HRR' | translate}}</option>
+        <option value="0">{{'Dashboard.Settings.maximalHeartRate' | translate}}</option>
+        <option value="1">{{'Dashboard.Settings.heartRateReserve' | translate}}</option>
       </select>
     </div>
   </div>
   <div class="ala-list__item">
-    <label class="ala-form__label settings-item">{{'SH.MaxHR' | translate}}</label>
+    <label class="ala-form__label settings-item">{{'SH.maxHr' | translate}}</label>
     <div class="settings-control">
       <div style="display: inline-block">
         <app-form-text
@@ -47,7 +47,7 @@
   </div>
   <div class="ala-list__item">
     <label class="ala-form__label settings-item">
-      {{'Dashboard.Settings.RestHR' | translate}}
+      {{'Dashboard.Settings.restHr' | translate}}
     </label>
     <div class="settings-control">
       <div style="display: inline-block">
@@ -65,10 +65,10 @@
     </div>
   </div>
   <hr>
-  <label class="ala-form__label settings-label">{{'Dashboard.Settings.Sleep' | translate}}</label>
+  <label class="ala-form__label settings-label">{{'Dashboard.Settings.sleep' | translate}}</label>
   <div class="ala-list__item">
     <label class="ala-form__label settings-item">
-      {{'Dashboard.Settings.UsuallyFallAsleepTime' | translate}}
+      {{'Dashboard.Settings.sleepTime' | translate}}
     </label>
     <div class="settings-control">
       <div class="time_picker">
@@ -81,7 +81,7 @@
   </div>
   <div class="ala-list__item">
     <label class="ala-form__label settings-item">
-      {{'Dashboard.Settings.UsuallyWakeupTime' | translate}}
+      {{'Dashboard.Settings.wakeUpTime' | translate}}
     </label>
     <div class="settings-control">
       <div class="time_picker">
@@ -94,11 +94,11 @@
   </div>
   <hr>
   <label class="ala-form__label settings-label">
-    {{'Dashboard.Settings.Bike' | translate}}
+    {{'Dashboard.Settings.bicycle' | translate}}
   </label>
   <div class="ala-list__item">
     <label class="ala-form__label settings-item">
-      {{'Dashboard.Settings.BicycleWheelDiameter' | translate}}
+      {{'Dashboard.Settings.wheelDiameter' | translate}}
     </label>
     <div class="settings-control">
       <div style="display: inline-block">

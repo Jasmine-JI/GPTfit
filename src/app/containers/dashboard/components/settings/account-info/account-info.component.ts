@@ -55,9 +55,9 @@ export class AccountInfoComponent implements OnInit {
         hasBackdrop: true,
         data: {
           title: 'message',
-          body: this.translate.instant('Dashboard.Settings.ReBindStravaText'),
-          confirmText: this.translate.instant('SH.Confirm'),
-          cancelText: this.translate.instant('SH.Cancel'),
+          body: this.translate.instant('Dashboard.Settings.stravaRebinding'),
+          confirmText: this.translate.instant('SH.determine'),
+          cancelText: this.translate.instant('SH.cancel'),
           onConfirm: () => {
             location.href =
               'https://www.strava.com/oauth/authorize?' +
@@ -79,8 +79,8 @@ export class AccountInfoComponent implements OnInit {
           hasBackdrop: true,
           data: {
             title: 'message',
-            body: this.translate.instant('Dashboard.Settings.UpdateStravaFailed'),
-            confirmText: this.translate.instant('SH.Confirm')
+            body: this.translate.instant('Dashboard.Settings.updateThirdPpartyFailed'),
+            confirmText: this.translate.instant('SH.determine')
           }
         });
       } else {

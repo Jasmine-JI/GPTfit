@@ -89,20 +89,26 @@ export class DemoQrcodComponent implements OnInit {
     this.imgClass =
       width > height ? 'product-photo--portrait' : 'product-photo--landscape';
   }
+  // 新增西班牙語-kidin-1081106
   handleProductInfo(lang) {
     if (lang === 'zh-cn') {
       this.productInfo = this.deviceInfo.informations['relatedLinks_zh-CN'];
     } else if (lang === 'en-us') {
       this.productInfo = this.deviceInfo.informations['relatedLinks_en-US'];
+    } else if (lang === 'es-es') {
+      this.productInfo = this.deviceInfo.informations['relatedLinks_es-ES'];
     } else {
       this.productInfo = this.deviceInfo.informations['relatedLinks_zh-TW'];
     }
   }
+  // 新增西班牙語-kidin-1081106
   handleProductManual(lang) {
     if (lang === 'zh-cn') {
       this.productManual = this.deviceInfo.informations['manual_zh-CN'];
     } else if (lang === 'en-us') {
       this.productManual = this.deviceInfo.informations['manual_en-US'];
+    } else if (lang === 'es-es') {
+      this.productManual = this.deviceInfo.informations['manual_es-ES'];
     } else {
       this.productManual = this.deviceInfo.informations['manual_zh-TW'];
     }
@@ -253,10 +259,10 @@ export class DemoQrcodComponent implements OnInit {
       hasBackdrop: true,
       data: {
         title: 'message',
-        body: this.translateService.instant('Portal.UnRegisterandFitpairTip'),
-        confirmText: this.translateService.instant('Portal.RegisterProduct'),
+        body: this.translateService.instant('Portal.singleFitpairPrecautions'),
+        confirmText: this.translateService.instant('Portal.productRegistration'),
         onConfirm: this.goBinding.bind(this, 1),
-        cancelText: this.translateService.instant('Portal.FitPairOnce'),
+        cancelText: this.translateService.instant('Portal.singleFitpair'),
         onCancel: this.handleFitPair.bind(this)
       }
     });
@@ -279,9 +285,9 @@ export class DemoQrcodComponent implements OnInit {
             data: {
               title: 'message',
               body: this.translateService.instant(
-                'Portal.RemoveFitPairCompletely'
+                'Portal.undoFitpair'
               ),
-              confirmText: this.translateService.instant('SH.Confirm'),
+              confirmText: this.translateService.instant('SH.determine'),
               onConfirm: this.uploadDevice.bind(this)
             }
           });
@@ -290,8 +296,8 @@ export class DemoQrcodComponent implements OnInit {
             hasBackdrop: true,
             data: {
               title: 'message',
-              body: this.translateService.instant('Portal.FitPairSuccessfully'),
-              confirmText: this.translateService.instant('SH.Confirm'),
+              body: this.translateService.instant('Portal.bindSuccess'),
+              confirmText: this.translateService.instant('SH.determine'),
               onConfirm: this.uploadDevice.bind(this)
             }
           });
@@ -301,8 +307,8 @@ export class DemoQrcodComponent implements OnInit {
           hasBackdrop: true,
           data: {
             title: 'message',
-            body: this.translateService.instant('Portal.FitPairFailed'),
-            confirmText: this.translateService.instant('SH.Confirm'),
+            body: this.translateService.instant('Portal.pairFailed'),
+            confirmText: this.translateService.instant('SH.determine'),
             onConfirm: this.uploadDevice.bind(this)
           }
         });

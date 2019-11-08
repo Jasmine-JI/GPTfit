@@ -4,7 +4,7 @@
       [class.selected-flag--invalid]="isCodeInvalid"
       [class.selected-flag--disabled]="disabled"
     >
-      {{ this.countryCode || 'Portal.CountryRegion' | translate }}
+      {{ this.countryCode || 'Portal.countryRegion' | translate }}
       <i class="material-icons async-caret">arrow_drop_down</i>
     </div>
     <input formControlName="phone" class="form-control"
@@ -13,7 +13,7 @@
       (focus)="focusEvent($event)"
       (keyup)="handlePhoneChange($event)"
       style="width: calc(100% - 105px);text-overflow: ellipsis;"
-      placeholder="{{'Portal.PlzEnterYourPhoneNum' | translate}}"
+      placeholder="{{'Portal.enterInfo' | translate}}{{'Portal.phone' | translate}}"
       [attr.disabled]="disabled ? '' : null"
       [class.form-control--invalid]="isPhoneInvalid"
     >

@@ -76,6 +76,7 @@ export class PasswordComponent implements OnInit {
         const { resultCode, resultMessage } = this.response;
         if (resultCode === 200) {
           this.isSuccess = true;
+          setTimeout(() => this.router.navigate(['/signin']), 5000);
         } else {
           this.resultMessage = resultMessage;
         }

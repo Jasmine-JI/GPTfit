@@ -101,28 +101,33 @@ export class ProductInfoComponent implements OnInit {
           data: {
             title: 'message',
             body: res.resultMessage,
-            confirmText: this.translate.instant('SH.Confirm')
+            confirmText: this.translate.instant('SH.determine')
           }
         });
         setTimeout(() => this.router.navigateByUrl('dashboard/device'), 3000);
       }
     });
   }
-
+  // 新增西班牙語-kidin-1081106
   handleProductInfo(lang) {
     if (lang === 'zh-cn') {
       this.productInfo = this.deviceInfo.informations['relatedLinks_zh-CN'];
     } else if (lang === 'en-us') {
       this.productInfo = this.deviceInfo.informations['relatedLinks_en-US'];
+    } else if (lang === 'es-es') {
+      this.productInfo = this.deviceInfo.informations['relatedLinks_es-ES'];
     } else {
       this.productInfo = this.deviceInfo.informations['relatedLinks_zh-TW'];
     }
   }
+  // 新增西班牙語-kidin-1081106
   handleProductManual(lang) {
     if (lang === 'zh-cn') {
       this.productManual = this.deviceInfo.informations['manual_zh-CN'];
     } else if (lang === 'en-us') {
       this.productManual = this.deviceInfo.informations['manual_en-US'];
+    } else if (lang === 'es-es') {
+      this.productManual = this.deviceInfo.informations['relatedLinks_es-ES'];
     } else {
       this.productManual = this.deviceInfo.informations['manual_zh-TW'];
     }
@@ -154,8 +159,8 @@ export class ProductInfoComponent implements OnInit {
           hasBackdrop: true,
           data: {
             title: 'message',
-            body: this.translate.instant('Dashboard.ProductInfo.ChangeFailed'),
-            confirmText: this.translate.instant('SH.Confirm')
+            body: this.translate.instant('Dashboard.ProductInfo.changeFailed'),
+            confirmText: this.translate.instant('SH.determine')
           }
         });
       }
@@ -190,8 +195,8 @@ export class ProductInfoComponent implements OnInit {
           hasBackdrop: true,
           data: {
             title: 'message',
-            body: `解除綁訂成功`,
-            confirmText: this.translate.instant('SH.Confirm')
+            body: `${this.translate.instant('Dashboard.MyDevice.unbind')}${this.translate.instant('Dashboard.MyDevice.success')}`,
+            confirmText: this.translate.instant('SH.determine')
           }
         });
         setTimeout(() => history.back(), 3000);
@@ -200,8 +205,8 @@ export class ProductInfoComponent implements OnInit {
           hasBackdrop: true,
           data: {
             title: 'message',
-            body: `解除綁訂失敗`,
-            confirmText: this.translate.instant('SH.Confirm')
+            body: `${this.translate.instant('Dashboard.MyDevice.unbind')}${this.translate.instant('Dashboard.MyDevice.failure')}`,
+            confirmText: this.translate.instant('SH.determine')
           }
         });
       }
@@ -212,10 +217,10 @@ export class ProductInfoComponent implements OnInit {
       hasBackdrop: true,
       data: {
         title: 'message',
-        body: `您是否確定要解除綁定當前使用者：${
+        body: `${this.translate.instant('Dashboard.MyDevice.continueExecution')}${
           this.deviceBondUserName
-        }的sn: ${this.deviceSN}嗎`,
-        confirmText: this.translate.instant('SH.Confirm'),
+        }${this.translate.instant('Dashboard.MyDevice.unbind')} sn: ${this.deviceSN} ?`,
+        confirmText: this.translate.instant('SH.determine'),
         onConfirm: () => this.unBondDeviceDialog(),
         cancelText: 'cancel'
       }

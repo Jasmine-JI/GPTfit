@@ -146,8 +146,8 @@ export class MyActivityComponent implements OnInit {
         hasBackdrop: true,
         data: {
           title: 'message',
-          body: this.translate.instant('SH.DateCompareWarning'),
-          confirmText: this.translate.instant('SH.Confirm')
+          body: this.translate.instant('SH.timelineIncorrect'),
+          confirmText: this.translate.instant('SH.determine')
         }
       });
     }

@@ -7,16 +7,16 @@
     <div class="col-md-6 portal-group-info">
       <div class="group-edit-bar">
         <span class="group-handle-name">
-          {{ 'Dashboard.Group.GroupInfo.GroupInfo' | translate}}
+          {{ 'Dashboard.Group.GroupInfo.groupInfo' | translate}}
         </span>
         <div class="rwd-btn_action">
           <button class="alatech-btn alatech-btn--default"
             style="width:140px;height:38px"
             *ngIf="!visitorDetail?.isGroupAdmin"
-            title="{{'Dashboard.Group.GroupInfo.Join' | translate}}"
+            title="{{'Dashboard.Group.GroupInfo.applicationsForJoin' | translate}}"
             (click)="goDashboardGroupInfo()"
           >
-            {{ 'Dashboard.Group.GroupInfo.Join' | translate}}
+            {{ 'Dashboard.Group.GroupInfo.applicationsForJoin' | translate}}
           </button>
         </div>
       </div>
@@ -25,16 +25,16 @@
           <label>{{ groupInfo?.groupName }}</label>
         </div>
         <div>
-          <label>{{ 'Dashboard.Group.GroupInfo.GroupID' | translate}}：</label>{{ dispGroupId }}
+          <label>{{ 'Dashboard.Group.GroupInfo.groupId' | translate}}：</label>{{ dispGroupId }}
         </div>
         <div>
-          <label>{{ 'Dashboard.Group.GroupInfo.Level' | translate}}：</label>{{ groupLevel | groupLevelTranslate | translate }}
+          <label>{{ 'Dashboard.Group.GroupInfo.layer' | translate}}：</label>{{ groupLevel | groupLevelTranslate | translate }}
         </div>
         <div>
-          <label>{{ 'Dashboard.Group.GroupInfo.Status' | translate}}：</label>{{ groupInfo?.groupStatus | groupStatus | translate }}
+          <label>{{ 'Dashboard.Group.GroupInfo.status' | translate}}：</label>{{ groupInfo?.groupStatus | groupStatus | translate }}
         </div>
         <div>
-          <label>{{ 'Dashboard.Group.GroupInfo.Introduction' | translate}}：</label>
+          <label>{{ 'Dashboard.Group.GroupInfo.introduction' | translate}}：</label>
           <div [innerHTML]="groupInfo?.groupDesc | lineBreak"></div>
         </div>
       </div>

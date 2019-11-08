@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-between" style="margin-bottom: 15px">
   <span style="color: #157fcc; font-weight:700">
-    {{'Dashboard.MyDevice.MyDevice' | translate}}
+    {{'Dashboard.MyDevice.myDevice' | translate}}
   </span>
 </div>
 
@@ -10,19 +10,19 @@
 >
   <ng-container matColumnDef="model">
     <mat-header-cell *matHeaderCellDef mat-sort-header>
-      {{'Dashboard.MyDevice.ModelName' | translate}}
+      {{'Dashboard.MyDevice.modeCode' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let row">{{ row?.modelName }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="type">
     <mat-header-cell *matHeaderCellDef disableClear="true">
-      {{'Dashboard.MyDevice.ModelType' | translate}}
+      {{'Dashboard.MyDevice.modeType' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let row">{{ row?.deviceType | productType | translate }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="sn">
     <mat-header-cell *matHeaderCellDef disableClear="true">
-      {{'Dashboard.MyDevice.SerialNumber' | translate}}
+      {{'Dashboard.MyDevice.deviceSerialNumber' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let row">
       {{ row?.myEquipmentSN }}
@@ -47,7 +47,7 @@
 <div *ngIf="!logSource?.data || (logSource?.data && logSource?.data.length === 0)"
   style="text-align: center;padding: 30px"
 >
-  {{'SH.No-information' | translate}}
+  {{'SH.noData' | translate}}
 </div>
 <div class="ala-loading-shade" *ngIf="isLoading">
   <mat-spinner></mat-spinner>

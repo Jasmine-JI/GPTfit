@@ -62,11 +62,11 @@ export class SigninComponent implements OnInit {
   // }
   getAndInitTranslations() {
     this.translate
-      .get(['Portal.Agree-to-the-terms', 'SH.Agree', 'SH.Disagree'])
+      .get(['Portal.clause', 'SH.agree', 'SH.disagree'])
       .subscribe(translation => {
-        this.title = translation['Portal.Agree-to-the-terms'];
-        this.confirmText = translation['SH.Agree'];
-        this.cancelText = translation['SH.Disagree'];
+        this.title = translation['Portal.clause'];
+        this.confirmText = translation['SH.agree'];
+        this.cancelText = translation['SH.disagree'];
       });
   }
   login({ valid }) {
@@ -82,13 +82,13 @@ export class SigninComponent implements OnInit {
         this.isLogining = false;
         if (res) {
           this.snackbar.open(
-            this.translate.instant('Portal.LoginSuccessfully'),
+            this.translate.instant('Portal.signSuceesfully'),
             'OK',
             { duration: 5000 }
           );
         } else {
           this.snackbar.open(
-            this.translate.instant('Portal.PlzCheckNamePwd'),
+            this.translate.instant('Portal.notSameAccount'),
             'OK',
             { duration: 5000 }
           );
@@ -102,24 +102,10 @@ export class SigninComponent implements OnInit {
   showPrivateMsg(e) {
     e.preventDefault();
     let text = '';
-    if (this.translate.currentLang === 'zh-tw') {
-      text = '我已仔細閱讀並明瞭' +
-      '<a target="_blank"href="https://www.alatech.com.tw/action-copyright.htm">『條款及條件』</a>' +
-      '、<a target="_blank" href="https://www.alatech.com.tw/action-privacy.htm">『隱私權聲明』</a>' +
-      '等所記載內容及其意義，茲同意該等條款規定，並願遵守網站現今，嗣後規範。';
-    } else if (this.translate.currentLang === 'zh-cn') {
-      text = '我已仔细阅读并明了' +
-        '<a target="_blank"href="https://www.alatech.com.tw/action-copyright.htm">『条款及条件』</a>' +
-        '、<a target="_blank" href="https://www.alatech.com.tw/action-privacy.htm">『隐私权声明』</a>' +
-        '等所记载内容及其意义，兹同意该等条款规定，并愿遵守网站现今，嗣后规范。 ';
-    } else {
-      text = 'I have read and understood ' +
-        '<a target="_blank"href="https://www.alatech.com.tw/action-copyright.htm">"Terms and Conditions"</a>' +
-        ', <a target="_blank" href="https://www.alatech.com.tw/action-privacy.htm">"Privacy Policy"</a>' +
-        'Where the contents and their meanings are agreed, I agree to the terms and conditions, ' +
-        'and I am willing to abide by the current and future standards of the website. ';
-    }
-
+    text = `${this.translate.instant('Portal.clauseContentPage1')}
+    <a target="_blank"href="https://www.alatech.com.tw/action-copyright.htm">『${this.translate.instant('Portal.clause')}』</a>
+    、 <a target="_blank" href="https://www.alatech.com.tw/action-privacy.htm">『${this.translate.instant('Portal.privacyStatement')}』</a>
+    ${this.translate.instant('Portal.clauseContentPage2')}`.replace(/\n/gm, '');
 
     this.dialog.open(MessageBoxComponent, {
       hasBackdrop: true,

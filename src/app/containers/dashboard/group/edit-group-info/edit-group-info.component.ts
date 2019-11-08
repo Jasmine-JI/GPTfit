@@ -223,21 +223,21 @@ export class EditGroupInfoComponent implements OnInit {
     e.preventDefault();
     let targetName = '';
     if (type === 2) {
-      targetName = this.translate.instant('Dashboard.Group.GroupInfo.Branch');
+      targetName = this.translate.instant('Dashboard.Group.GroupInfo.branch');
     } else if (type === 3) {
-      targetName = this.translate.instant('Dashboard.Group.GroupInfo.Class');
+      targetName = this.translate.instant('Dashboard.Group.GroupInfo.coachingClass');
     } else {
-      targetName = this.translate.instant('Dashboard.Group.Group');
+      targetName = this.translate.instant('Dashboard.Group.group');
     }
     this.dialog.open(MessageBoxComponent, {
       hasBackdrop: true,
       data: {
         title: 'message',
-        body: this.translate.instant('Dashboard.Group.AreUSureDismiss', {
+        body: this.translate.instant('Dashboard.Group.confirmDissolution', {
           target: targetName
         }),
-        confirmText: this.translate.instant('SH.Confirm'),
-        cancelText: this.translate.instant('SH.Cancel'),
+        confirmText: this.translate.instant('SH.determine'),
+        cancelText: this.translate.instant('SH.cancel'),
         onConfirm: this.handleDimissGroup.bind(this)
       }
     });
@@ -425,7 +425,7 @@ export class EditGroupInfoComponent implements OnInit {
                   data: {
                     title: 'Message',
                     body: this.translate.instant(
-                      'Dashboard.Group.EditGroupInfoFailed'
+                      'Dashboard.Group.groupEditFailed'
                     )
                   }
                 });
@@ -444,7 +444,7 @@ export class EditGroupInfoComponent implements OnInit {
             data: {
               title: 'Message',
               body: this.translate.instant(
-                'Dashboard.Group.BrandNameAlreadyExists'
+                'Dashboard.Group.duplicateBrand'
               )
             }
           });
@@ -462,7 +462,7 @@ export class EditGroupInfoComponent implements OnInit {
             data: {
               title: 'Message',
               body: this.translate.instant(
-                'Dashboard.Group.EditGroupInfoFailed'
+                'Dashboard.Group.groupEditFailed'
               )
             }
           });
@@ -604,14 +604,14 @@ export class BottomSheetComponent {
   getAndInitTranslations() {
     this.translate
       .get([
-        'Dashboard.Group.CreateCourseDescription',
-        'SH.Agree',
-        'SH.Disagree'
+        'Dashboard.Group.disclaimer',
+        'SH.agree',
+        'SH.disagree'
       ])
       .subscribe(translation => {
-        this.title = translation['Dashboard.Group.CreateCourseDescription'];
-        this.confirmText = translation['SH.Agree'];
-        this.cancelText = translation['SH.Disagree'];
+        this.title = translation['Dashboard.Group.disclaimer'];
+        this.confirmText = translation['SH.agree'];
+        this.cancelText = translation['SH.disagree'];
       });
   }
   openLink(event: MouseEvent, type: number): void {

@@ -2,7 +2,7 @@
   <div class="container signup" style="padding-top:63px">
     <div class="d-flex" style="flex-direction: column;align-items: center;;">
 
-      <div class="access-description"  innerHtml="{{ 'Portal.CenterDesc' | translate }}">
+      <div class="access-description"  innerHtml="{{ 'Portal.gptSlogan' | translate }}">
       </div>
       <div class="access-panel">
         <header class="access-header">
@@ -13,10 +13,10 @@
             <ng-container *ngIf="!isEmailMethod">
               <div class="form-group">
                 <div style="display: flex;justify-content: space-between;">
-                  <label class="access-text">{{'Portal.RegisterAccount' | translate}}:
+                  <label class="access-text">{{'Portal.signUp' | translate}}:
                   </label>
                   <a href="#" (click)="switchMethod($event)">
-                    {{'Portal.OrUseEmailRegister' | translate}}></a>
+                    {{'Portal.emailSignUp' | translate}}></a>
                 </div>
                 <div style="display: flex">
                   <div style="width: 100%">
@@ -32,7 +32,7 @@
                       style="margin-left: 118px"
                       *ngIf="(!form.controls['phone'].valid && form.controls['phone'].touched) || (f.submitted && form.get('phone').hasError('required'))"
                     >
-                      {{'Portal.PlzEnterYourPhoneNum' | translate}}
+                      {{'Portal.enterInfo' | translate}}{{'Portal.phone' | translate}}
                     </div>
                   </div>
                 </div>
@@ -41,14 +41,14 @@
             <ng-container *ngIf="isEmailMethod">
               <div class="form-group">
                 <div style="display: flex;justify-content: space-between;">
-                  <label for="exampleInputEmail1"class="access-text">{{'Portal.RegisterAccount' | translate}}:
+                  <label for="exampleInputEmail1"class="access-text">{{'Portal.signUp' | translate}}:
                   </label>
-                  <a href="#" (click)="switchMethod($event)">{{'Portal.OrUsePhoneRegister' | translate}}></a>
+                  <a href="#" (click)="switchMethod($event)">{{'Portal.phoneSignUp' | translate}}></a>
                 </div>
                 <input formControlName="email" class="form-control"
                   type="email"
                   id="exampleInputEmail1"
-                  placeholder="{{'Portal.PlzEnterYourEmail' | translate}}"
+                  placeholder="{{'Portal.enterInfo' | translate}}{{'Portal.email' | translate}}"
                   [class.form-control--invalid]="(!form.controls['email'].valid && form.controls['email'].touched) || (f.submitted &&
                   form.get('email').hasError('required'))"
                   [attr.disabled]="isSignupSending ? '' : null"
@@ -56,47 +56,47 @@
                 <div class="form__message form__message--placeholder"
                   *ngIf="(form.controls['email'].hasError('required') && form.controls['email'].touched) || (f.submitted && form.get('email').hasError('required'))"
                 >
-                  {{'Portal.PlzEnterYourEmail' | translate}}
+                  {{'Portal.enterInfo' | translate}}{{'Portal.email' | translate}}
                 </div>
                 <div class="form__message form__message--placeholder"
                   *ngIf="(form.controls['email'].hasError('pattern') && form.controls['email'].touched) || (f.submitted && form.get('email').hasError('required'))"
                 >
-                  {{'Portal.PlzEnterRightEmailFormat' | translate}}
+                  {{'Portal.emailFormat' | translate}}
                 </div>
               </div>
             </ng-container>
             <div class="form-group">
-              <label class="access-text">{{'Portal.SetPassword' | translate}}:</label>
+              <label class="access-text">{{'Portal.keyInPassword' | translate}}:</label>
               <input formControlName="password" type="password" class="form-control"
-                placeholder="{{'Portal.PWAConainNum' | translate}}"
+                placeholder="{{'Portal.passwordFormat' | translate}}"
                 autocomplete="off"
                 [class.form-control--invalid]="(!form.controls['password'].valid && form.controls['password'].touched) || (f.submitted &&
                 form.get('password').hasError('required'))"
                 [attr.disabled]="isSignupSending ? '' : null"
               >
               <div class="form__message form__message--placeholder" *ngIf="(form.controls['password'].hasError('required') && form.controls['password'].touched) || (f.submitted && form.get('password').hasError('required'))">
-                {{'Portal.PlzEnterYourPwd' | translate}}
+                {{'Portal.enterInfo' | translate}}{{'Portal.password' | translate}}
               </div>
               <div class="form__message form__message--placeholder" *ngIf="(form.controls['password'].hasError('pattern') && form.controls['password'].touched) || (f.submitted && form.controls['password'].hasError('pattern'))">
-                {{'Portal.PWAConainNum' | translate}}
+                {{'Portal.passwordFormat' | translate}}
               </div>
             </div>
             <div class="form-group">
-              <label class="access-text">{{'Portal.DisplayName' | translate}}:</label>
+              <label class="access-text">{{'Portal.nickname' | translate}}:</label>
               <input formControlName="name" type="text"
                 class="form-control"
-                placeholder="{{'Portal.WithinCharacters' | translate: { 'number': '16'} }}"
+                placeholder="{{'Portal.nameCharactersToLong' | translate}}"
                 (keyup)="onNameChange($event)"
                 [class.form-control--invalid]="(form.controls['name'].hasError('required') && form.controls['name'].touched) || (f.submitted && form.get('name').hasError('required'))"
                 [attr.disabled]="isSignupSending ? '' : null"
               >
               <div class="form__message form__message--placeholder" *ngIf="(form.controls['name'].hasError('required') && form.controls['name'].touched) || (f.submitted && form.get('name').hasError('required'))">
-                {{'Portal.PlzEnterYourName' | translate}}
+                {{'Portal.enterInfo' | translate}}{{'Portal.nickname' | translate}}
               </div>
             </div>
             <ng-container *ngIf="!isEmailMethod">
               <div class="form-group">
-                <label class="access-text">{{'Portal.NewsletterVerificationCode' | translate}}:</label>
+                <label class="access-text">{{'Portal.phoneCaptcha' | translate}}:</label>
                 <div style="display: flex;justify-content: space-between;align-items: center">
                   <input formControlName="smsCode"
                     class="form-control"
@@ -108,20 +108,20 @@
                   <div class="form__message form__message--placeholder"
                     *ngIf="isSMSCodeErr"
                   >
-                    {{'Portal.EnterWrongVerificationCode' | translate}}
+                    {{'Portal.errorCaptcha' | translate}}
                   </div>
                   <a href="#" (click)="sendSMSCode($event)"
                     [class.ban-send]="isSMSCodSending"
                     style="text-align: right"
                   >
-                    {{'Portal.SendNewsletterVerificationCode' | translate}}
+                    {{'Portal.sendCaptcha' | translate}}
                   </a>
                 </div>
               </div>
             </ng-container>
             <ng-container *ngIf="isEmailMethod">
               <div class="form-group">
-                <label class="access-text">{{'Portal.Captcha' | translate}}:</label>
+                <label class="access-text">{{'Portal.imgCaptcha' | translate}}:</label>
                 <div style="display: flex;justify-content: space-between;align-items: center">
                   <input formControlName="chartCode"
                     class="form-control"
@@ -133,7 +133,7 @@
                   <div class="form__message form__message--placeholder"
                     *ngIf="isChartCodeErr"
                   >
-                    {{'Portal.EnterWrongVerificationCode' | translate}}
+                    {{'Portal.errorCaptcha' | translate}}
                   </div>
                   <img *ngIf="randomCode"
                     [src]="randomCode?.randomCodeImg | safeHtml"
@@ -144,11 +144,11 @@
               </div>
             </ng-container>
             <div style="display: flex;justify-content: space-between;align-items: center;">
-              <a *ngIf="isEmailMethod" class="access-text" href="#" style="cursor:pointer" (click)="switchMethod($event)"><{{'Dashboard.ProductInfo.Back' | translate}}</a>
-              <a *ngIf="!isEmailMethod" class="access-text" style="cursor:pointer" [routerLink]="['/signin']"><{{'Dashboard.ProductInfo.Back' | translate}}</a>
+              <a *ngIf="isEmailMethod" class="access-text" href="#" style="cursor:pointer" (click)="switchMethod($event)"><{{'Dashboard.ProductInfo.back' | translate}}</a>
+              <a *ngIf="!isEmailMethod" class="access-text" style="cursor:pointer" [routerLink]="['/signin']"><{{'Dashboard.ProductInfo.back' | translate}}</a>
               <app-confirm-button
                 [className]="className"
-                [content]="'SH.Signup' | translate"
+                [content]="'SH.signUp' | translate"
                 [disabled]="isSignupSending"
               >
               </app-confirm-button>

@@ -167,8 +167,8 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
             hasBackdrop: true,
             data: {
               title: 'message',
-              body: this.translateService.instant('SH.BrowserTip'),
-              confirmText: this.translateService.instant('SH.Confirm')
+              body: this.translateService.instant('SH.browserError'),
+              confirmText: this.translateService.instant('SH.determine')
             }
           });
         }
