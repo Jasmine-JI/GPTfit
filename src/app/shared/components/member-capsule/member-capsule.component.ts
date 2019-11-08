@@ -143,9 +143,9 @@ export class MemberCapsuleComponent implements OnInit {
       hasBackdrop: true,
       data: {
         title: 'message',
-        body: this.translate.instant('Dashboard.Group.AreUsureRemoveAdmin'),
-        confirmText: this.translate.instant('SH.Confirm'),
-        cancelText: this.translate.instant('SH.Cancel'),
+        body: this.translate.instant('Dashboard.Group.confirmRemovalAdmin'),
+        confirmText: this.translate.instant('SH.determine'),
+        cancelText: this.translate.instant('SH.cancel'),
         onConfirm: this.handleEditGroupMember.bind(this)
       }
     });
@@ -214,9 +214,9 @@ export class MemberCapsuleComponent implements OnInit {
       hasBackdrop: true,
       data: {
         title: 'message',
-        body: this.translate.instant('Dashboard.Group.AreUsureRemoveMember'),
-        confirmText: this.translate.instant('SH.Confirm'),
-        cancelText: this.translate.instant('SH.Cancel'),
+        body: this.translate.instant('Dashboard.Group.confirmRemovalMembers'),
+        confirmText: this.translate.instant('SH.determine'),
+        cancelText: this.translate.instant('SH.cancel'),
         onConfirm: this.handleDeleteGroupMember.bind(this)
       }
     });
@@ -239,9 +239,9 @@ export class MemberCapsuleComponent implements OnInit {
       hasBackdrop: true,
       data: {
         title: 'message',
-        body: this.translate.instant('Dashboard.Group.AreUsureRemoveGroup'),
-        confirmText: this.translate.instant('SH.Confirm'),
-        cancelText: this.translate.instant('SH.Cancel'),
+        body: this.translate.instant('Dashboard.Group.confirmRemovalGroup'),
+        confirmText: this.translate.instant('SH.determine'),
+        cancelText: this.translate.instant('SH.cancel'),
         onConfirm: this.handleDeleteGroup.bind(this)
       }
     });

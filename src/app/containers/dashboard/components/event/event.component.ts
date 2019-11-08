@@ -4,6 +4,7 @@ import { EventInfoService } from '../../services/event-info.service';
 import { HttpParams } from '@angular/common/http';
 import { MsgDialogComponent } from '../msg-dialog/msg-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-event',
@@ -16,7 +17,8 @@ export class EventComponent implements OnInit {
   constructor(
     private router: Router,
     private eventInfoService: EventInfoService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
@@ -39,7 +41,7 @@ export class EventComponent implements OnInit {
       hasBackdrop: true,
       data: {
         title: 'Message',
-        body: '是否確定刪除'
+        body: this.translate.instant('Dashboard.Group.confirmDelete')
       }
     });
     removeDialogRef.componentInstance.onConfirm.subscribe(() => {
@@ -51,7 +53,7 @@ export class EventComponent implements OnInit {
           hasBackdrop: true,
           data: {
             title: 'Message',
-            body: 'Something went wrong!'
+            body: this.translate.instant('SH.error')
           }
         });
       });

@@ -200,10 +200,10 @@ export class GroupInfoComponent implements OnInit {
     let accessRights = [];
     if (browserLang === 'zh-tw') {
       if (shareData.switch === '3') {
-        text = '僅開放對象為';
+        text = '僅開放對象為';  // mark
         accessRights = shareData.enableAccessRight;
       } else {
-        text = '不開放對象為';
+        text = '不開放對象為';  // mark
         accessRights = shareData.disableAccessRight;
       }
     } else if (browserLang === 'zh-cn') {
@@ -291,19 +291,19 @@ export class GroupInfoComponent implements OnInit {
       hasBackdrop: true,
       data: {
         url: location.href,
-        title: this.translate.instant('SH.Share'),
+        title: this.translate.instant('SH.share'),
         totalGroupName: this.totalGroupName || '',
-        cancelText: this.translate.instant('SH.Cancel')
+        cancelText: this.translate.instant('SH.cancel')
       }
     });
   }
   getAndInitTranslations() {
     this.translate
-      .get(['Dashboard.Group.Disclaimer', 'SH.Agree', 'SH.Disagree'])
+      .get(['Dashboard.Group.disclaimer', 'SH.agree', 'SH.disagree'])
       .subscribe(translation => {
-        this.title = translation['Dashboard.Group.Disclaimer'];
-        this.confirmText = translation['SH.Agree'];
-        this.cancelText = translation['SH.Disagree'];
+        this.title = translation['Dashboard.Group.disclaimer'];
+        this.confirmText = translation['SH.agree'];
+        this.cancelText = translation['SH.disagree'];
       });
   }
   handleActionGroup(_type) {
@@ -482,7 +482,7 @@ export class GroupInfoComponent implements OnInit {
             data: {
               title: 'message',
               body: resultMessage,
-              confirmText: this.translate.instant('SH.Confirm')
+              confirmText: this.translate.instant('SH.determine')
             }
           });
         }

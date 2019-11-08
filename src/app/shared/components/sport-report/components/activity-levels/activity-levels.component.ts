@@ -10,6 +10,7 @@ import {
 import * as Highcharts from 'highcharts';
 import * as HighchartsNoData from 'highcharts-no-data-to-display';
 import * as moment from 'moment';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-activity-levels',
@@ -30,7 +31,7 @@ export class ActivityLevelsComponent implements OnChanges, OnDestroy {
   seriesX = [];
   series = [];
 
-  constructor() {
+  constructor(private translate: TranslateService) {
     HighchartsNoData(Highcharts);
     Highcharts.setOptions({
       global: {
@@ -76,80 +77,29 @@ export class ActivityLevelsComponent implements OnChanges, OnDestroy {
           }
         });
       let name = '';
-      if (this.currentLang === 'zh-tw') {
-        this.yAxistext = '活動數量';
-        switch (_type) {
-          case '1':
-            name = '跑步';
-            break;
-          case '2':
-            name = '騎乘';
-            break;
-          case '3':
-            name = '重量訓練';
-            break;
-          case '4':
-            name = '游泳';
-            break;
-          case '5':
-            name = '有氧運動';
-            break;
-          case '6':
-            name = '划船';
-            break;
-          default:
-            name = '尚未定義';
-        }
-      } else if (this.currentLang === 'zh-cn') {
-        this.yAxistext = '活动数量';
-        switch (_type) {
-          case '1':
-            name = '跑步';
-            break;
-          case '2':
-            name = '骑乘';
-            break;
-          case '3':
-            name = '重量训练';
-            break;
-          case '4':
-            name = '游泳';
-            break;
-          case '5':
-            name = '有氧运动';
-            break;
-          case '6':
-            name = '划船';
-            break;
-          default:
-            name = '尚未定义';
-        }
-      } else {
-        this.yAxistext = 'Number of activities';
-        switch (_type) {
-          case '1':
-            name = 'Running';
-            break;
-          case '2':
-            name = 'Cycling';
-            break;
-          case '3':
-            name = 'Weight training';
-            break;
-          case '4':
-            name = 'Swimming';
-            break;
-          case '5':
-            name = 'Aerobic';
-            break;
-          case '6':
-            name = 'Rower';
-            break;
-          default:
-            name = 'not yet defined';
-        }
+      this.yAxistext = this.translate.instant('Dashboard.SportReport.numberOfActivity');
+      switch (_type) {
+        case '1':
+          name = this.translate.instant('Dashboard.SportReport.run');
+          break;
+        case '2':
+          name = this.translate.instant('Dashboard.SportReport.cycle');
+          break;
+        case '3':
+          name = this.translate.instant('Dashboard.SportReport.actionTraining');
+          break;
+        case '4':
+          name = this.translate.instant('Dashboard.SportReport.swin');
+          break;
+        case '5':
+          name = this.translate.instant('Dashboard.SportReport.aerobic');
+          break;
+        case '6':
+          name = this.translate.instant('Dashboard.SportReport.boating');
+          break;
+        default:
+          name = this.translate.instant('Dashboard.SportReport.other');
       }
-
       const serie = { name, data };
       this.series.push(serie);
     });
@@ -193,7 +143,7 @@ export class ActivityLevelsComponent implements OnChanges, OnDestroy {
       },
       series: this.series || [],
       lang: {
-        noData: '期間尚無相關資料'
+        noData: this.translate.instant('Dashboard.SportReport.other')
       },
       noData: {
         style: {

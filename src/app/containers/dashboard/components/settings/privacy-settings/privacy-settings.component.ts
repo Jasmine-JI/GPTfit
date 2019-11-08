@@ -141,14 +141,14 @@ export class PrivacySettingsComponent implements OnInit {
       if (res.resultCode === 200) {
         this.snackbar.open(
           this.translate.instant(
-            'Dashboard.Settings.UpdatePrivacySettingsSuccessfully'
+            'Dashboard.Settings.finishEdit'
           ),
           'OK',
           { duration: 5000 }
         );
       } else {
         this.snackbar.open(
-          this.translate.instant('Dashboard.Settings.UpdateFailed'),
+          this.translate.instant('Dashboard.Settings.updateFailed'),
           'OK',
           { duration: 5000 }
         );

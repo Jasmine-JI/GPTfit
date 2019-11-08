@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 import { chart } from 'highcharts';
 import * as moment from 'moment';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-scatter-chart',
@@ -36,7 +37,7 @@ export class ScatterChartComponent implements OnChanges {
   seriesX = [];
   series = [];
   xAxisText: string;
-  constructor() {}
+  constructor(private translate: TranslateService) {}
 
   ngOnChanges() {
     this.handleSportSummaryArray();
@@ -141,96 +142,34 @@ export class ScatterChartComponent implements OnChanges {
         });
       let name = '';
       let color = '';
-      if (this.currentLang === 'zh-tw') {
-        this.xAxisText = '時間';
-        switch (_type) {
-          case '1':
-            name = '跑步';
-            color = 'rgba(223, 83, 83, .5)';
-            break;
-          case '2':
-            name = '騎乘';
-            color = 'rgba(119, 152, 191, .5)';
-            break;
-          case '3':
-            name = '重量訓練';
-            color = 'rgba(144, 237, 125, .5)';
-            break;
-          case '4':
-            name = '游泳';
-            color = 'rgba(247, 163, 92, .5)';
-            break;
-          case '5':
-            name = '有氧運動';
-            color = 'rgba(142, 9,	156, .5)';
-            break;
-          case '6':
-            name = '划船';
-            color = 'rgba(153,153,153, .5)';
-            break;
-          default:
-            name = '尚未定義';
-        }
-      } else if (this.currentLang === 'zh-cn') {
-        this.xAxisText = '时间';
-        switch (_type) {
-          case '1':
-            name = '跑步';
-            color = 'rgba(223, 83, 83, .5)';
-            break;
-          case '2':
-            name = '骑乘';
-            color = 'rgba(119, 152, 191, .5)';
-            break;
-          case '3':
-            name = '重量训练';
-            color = 'rgba(144, 237, 125, .5)';
-            break;
-          case '4':
-            name = '游泳';
-            color = 'rgba(247, 163, 92, .5)';
-            break;
-          case '5':
-            name = '有氧运动';
-            color = 'rgba(142, 9,	156, .5)';
-            break;
-          case '6':
-            name = '划船';
-            color = 'rgba(153,153,153, .5)';
-            break;
-          default:
-            name = '尚未定义';
-        }
-      } else {
-        this.xAxisText = 'Time';
-        switch (_type) {
-          case '1':
-            name = 'Running';
-            color = 'rgba(223, 83, 83, .5)';
-            break;
-          case '2':
-            name = 'Cycling';
-            color = 'rgba(119, 152, 191, .5)';
-            break;
-          case '3':
-            name = 'Weight training';
-            color = 'rgba(144, 237, 125, .5)';
-            break;
-          case '4':
-            name = 'Swimming';
-            color = 'rgba(247, 163, 92, .5)';
-            break;
-          case '5':
-            name = 'Aerobic';
-            color = 'rgba(142, 9,	156, .5)';
-            break;
-          case '6':
-            name = 'Rower';
-            color = 'rgba(153,153,153, .5)';
-            break;
-          default:
-            name = 'not yet defined';
-        }
+      this.xAxisText = this.translate.instant('Dashboard.SportReport.time');
+      switch (_type) {
+        case '1':
+          name = this.translate.instant('Dashboard.SportReport.run');
+          color = 'rgba(223, 83, 83, .5)';
+          break;
+        case '2':
+          name = this.translate.instant('Dashboard.SportReport.cycle');
+          color = 'rgba(119, 152, 191, .5)';
+          break;
+        case '3':
+          name = this.translate.instant('Dashboard.SportReport.actionTraining');
+          color = 'rgba(144, 237, 125, .5)';
+          break;
+        case '4':
+          name = this.translate.instant('Dashboard.SportReport.swin');
+          color = 'rgba(247, 163, 92, .5)';
+          break;
+        case '5':
+          name = this.translate.instant('Dashboard.SportReport.aerobic');
+          color = 'rgba(142, 9,	156, .5)';
+          break;
+        case '6':
+          name = this.translate.instant('Dashboard.SportReport.boating');
+          color = 'rgba(153,153,153, .5)';
+          break;
+        default:
+          name = this.translate.instant('Dashboard.SportReport.other');
       }
       const serie = { name, data, color };
       this.series.push(serie);
@@ -248,11 +187,7 @@ export class ScatterChartComponent implements OnChanges {
       this.chooseType === '5-5' ||
       this.chooseType === '6-3'
     ) {
-      if (this.currentLang === 'en-us') {
-        yAxisText = 'AvgHR (bpm/min)';
-      } else {
-        yAxisText = '平均心率 (bpm/min)';
-      }
+      yAxisText = `${this.translate.instant('Dashboard.SportReport.avgHr')} (bpm/min)`;
     } else if (
       this.chooseType === '1-8' ||
       this.chooseType === '2-7' ||
@@ -260,127 +195,45 @@ export class ScatterChartComponent implements OnChanges {
       this.chooseType === '5-6' ||
       this.chooseType === '6-4'
     ) {
-      if (this.currentLang === 'en-us') {
-        yAxisText = 'MaxHR (bpm/min)';
-      } else {
-        yAxisText = '最大心率 (bpm/min)';
-      }
+      yAxisText = `${this.translate.instant('Dashboard.SportReport.maxHr')} (bpm/min)`;
     } else if (this.chooseType === '2-8') {
-      if (this.currentLang === 'en-us') {
-        yAxisText = 'Avg run candence (spm)';
-      } else if (this.currentLang === 'zh-cn') {
-        yAxisText = '平均步频 (spm)';
-      } else {
-        yAxisText = '平均步頻(spm)';
-      }
+      yAxisText = `${this.translate.instant('Dashboard.SportReport.avgStepCadence')} (spm)`;
       toolTipUnit = ' spm';
     } else if (this.chooseType === '2-9') {
-      if (this.currentLang === 'en-us') {
-        yAxisText = 'Max run candence (spm)';
-      } else if (this.currentLang === 'zh-cn') {
-        yAxisText = '最大步频 (spm)';
-      } else {
-        yAxisText = '最大步頻(spm)';
-      }
+      yAxisText = `${this.translate.instant('Dashboard.SportReport.maxStepCadence')} (spm)`;
       toolTipUnit = ' spm';
     } else if (this.chooseType === '3-8') {
-      if (this.currentLang === 'en-us') {
-        yAxisText = 'Avg cycle candence(spm)';
-      } else if (this.currentLang === 'zh-cn') {
-        yAxisText = '平均踏频 (spm)';
-      } else {
-        yAxisText = '平均踏頻 (spm)';
-      }
+      yAxisText = `${this.translate.instant('Dashboard.SportReport.avgCyclingCadence')} (spm)`;
       toolTipUnit = ' spm';
     } else if (this.chooseType === '3-9') {
-      if (this.currentLang === 'en-us') {
-        yAxisText = 'Max cycle candence(spm)';
-      } else if (this.currentLang === 'zh-cn') {
-        yAxisText = '最大踏频 (spm)';
-      } else {
-        yAxisText = '最大踏頻 (spm)';
-      }
+      yAxisText = `${this.translate.instant('Dashboard.SportReport.maxCyclingCadence')} (spm)`;
       toolTipUnit = ' spm';
     } else if (this.chooseType === '3-4') {
-      if (this.currentLang === 'en-us') {
-        yAxisText = 'Avg speed(km/hr)';
-      } else if (this.currentLang === 'zh-cn') {
-        yAxisText = '平均速度 (km/hr)';
-      } else {
-        yAxisText = '平均速度 (km/hr)';
-      }
+      yAxisText = `${this.translate.instant('Dashboard.SportReport.avgSpeed')} (km/hr)`;
       toolTipUnit = ' km/hr';
     } else if (this.chooseType === '3-5') {
-      if (this.currentLang === 'en-us') {
-        yAxisText = 'Max speed(km/hr)';
-      } else if (this.currentLang === 'zh-cn') {
-        yAxisText = '最大速度 (km/hr)';
-      } else {
-        yAxisText = '最大速度 (km/hr)';
-      }
+      yAxisText = `${this.translate.instant('Dashboard.SportReport.maxSpeed')} (km/hr)`;
       toolTipUnit = ' km/hr';
     } else if (this.chooseType === '3-10') {
-      if (this.currentLang === 'en-us') {
-        yAxisText = 'Avg Watt(w)';
-      } else if (this.currentLang === 'zh-cn') {
-        yAxisText = '平均功率 (w)';
-      } else {
-        yAxisText = '平均功率 (w)';
-      }
+      yAxisText = `${this.translate.instant('Dashboard.SportReport.avgPower')} (w)`;
       toolTipUnit = ' w';
     } else if (this.chooseType === '3-11') {
-      if (this.currentLang === 'en-us') {
-        yAxisText = 'Max Watt(w)';
-      } else if (this.currentLang === 'zh-cn') {
-        yAxisText = '最大功率 (w)';
-      } else {
-        yAxisText = '最大功率 (w)';
-      }
+      yAxisText = `${this.translate.instant('Dashboard.SportReport.maxPower')} (w)`;
       toolTipUnit = ' w';
     } else if (this.chooseType === '1-5' || this.chooseType === '3-4') {
-      if (this.currentLang === 'en-us') {
-        yAxisText = 'Avg speed(km/hr)';
-      } else if (this.currentLang === 'zh-cn') {
-        yAxisText = '平均速度 (km/hr)';
-      } else {
-        yAxisText = '平均速度 (km/hr)';
-      }
+      yAxisText = `${this.translate.instant('Dashboard.SportReport.avgSpeed')} (km/hr)`;
       toolTipUnit = ' km/hr';
     } else if (this.chooseType === '1-6' || this.chooseType === '3-5') {
-      if (this.currentLang === 'en-us') {
-        yAxisText = 'Max speed(km/hr)';
-      } else if (this.currentLang === 'zh-cn') {
-        yAxisText = '最大速度 (km/hr)';
-      } else {
-        yAxisText = '最大速度 (km/hr)';
-      }
+      yAxisText = `${this.translate.instant('Dashboard.SportReport.maxSpeed')} (km/hr)`;
       toolTipUnit = ' km/hr';
     } else if (this.chooseType === '2-4') {
-      if (this.currentLang === 'en-us') {
-        yAxisText = 'Avg pace(min/km)';
-      } else if (this.currentLang === 'zh-cn') {
-        yAxisText = '平均配速 (min/km)';
-      } else {
-        yAxisText = '平均配速 (min/km)';
-      }
+      yAxisText = `${this.translate.instant('Dashboard.SportReport.avgPace')} (min/km)`;
       toolTipUnit = ' min/km';
     } else if (this.chooseType === '2-5') {
-      if (this.currentLang === 'en-us') {
-        yAxisText = 'Max pace(min/km)';
-      } else if (this.currentLang === 'zh-cn') {
-        yAxisText = '最大配速 (min/km)';
-      } else {
-        yAxisText = '最大配速 (min/km)';
-      }
+      yAxisText = `${this.translate.instant('Dashboard.SportReport.liveBestPace')} (min/km)`;
       toolTipUnit = ' min/km';
     } else {
-      if (this.currentLang === 'en-us') {
-        yAxisText = 'noDefine';
-      } else if (this.currentLang === 'zh-cn') {
-        yAxisText = '没有定义';
-      } else {
-        yAxisText = '沒有定義';
-      }
+      yAxisText = `${this.translate.instant('Dashboard.SportReport.other')}`;
       toolTipUnit = ' ';
     }
     const chooseType = this.chooseType;

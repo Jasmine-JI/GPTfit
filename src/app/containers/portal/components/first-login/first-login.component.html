@@ -2,7 +2,7 @@
   <div class="container" style="padding-top:63px">
     <div class="d-flex" style="flex-direction: column;align-items: center;;">
 
-      <div class="access-description"  innerHtml="{{ 'Portal.CenterDesc' | translate }}">
+      <div class="access-description"  innerHtml="{{ 'Portal.gptSlogan' | translate }}">
       </div>
       <div class="access-panel">
         <header class="access-header">
@@ -16,16 +16,17 @@
               [imageURL]="groupImg"
               [maxFileSize]="maxFileSize"
               [accept]="acceptFileExtensions.join()"
-              [reloadFileText]="'Dashboard.Group.GroupInfo.ReUpload' | translate"
-              [chooseFileText]="'Dashboard.Group.GroupInfo.SelectFile' | translate"
+              [reloadFileText]="'Dashboard.Group.GroupInfo.selectImg' | translate"
+              [chooseFileText]="'Dashboard.Group.GroupInfo.selectImg' | translate"
               (onChange)="handleAttachmentChange($event)"
             ></app-upload-file>
           </div>
           <form [formGroup]="form" (ngSubmit)="submit(f)" #f="ngForm" novalidate>
             <div class="form-group">
-              <label for="exampleInputEmail1" class="access-text">{{'Dashboard.Settings.Name' | translate}}
+              <label for="exampleInputEmail1" class="access-text">{{'Dashboard.Settings.name' | translate}}
               </label>
-              <input formControlName="userName" id="exampleInputEmail1" class="form-control" placeholder="我是凶狠的運動員"
+              <input formControlName="userName" id="exampleInputEmail1" class="form-control"
+                placeholder="{{'Portal.enterInfo' | translate}}{{'Portal.nickname' | translate}}"
                 [attr.disabled]="isLogining ? '' : null"
                 (keyup)="handleDuplicateStatus($event)"
                 [class.form-control--invalid]="(!form.controls['userName'].valid && form.controls['userName'].touched) || (f.submitted
@@ -35,50 +36,50 @@
                 <span [style.visibility]="(!form.controls['userName'].valid && form.controls['userName'].touched) || (f.submitted && form.get('userName').hasError('required')) ? 'initial' : 'hidden'"
                   *ngIf="!isDuplicateName && (!tempDuplicateName || this.tempDuplicateName.length === 0)"
                 >
-                  {{'Portal.PlzEnterYourName' | translate}}
+                  {{'Portal.enterInfo' | translate}}{{'Portal.nickname' | translate}}
                 </span>
                 <span *ngIf="isDuplicateName">
-                  {{'SH.NameAlreadyExists' | translate}}
+                  {{'SH.registerNameExisting' | translate}}
                 </span>
               </div>
             </div>
             <div class="form-group form-group--half">
               <label  class="access-text">
-                {{'Dashboard.Settings.Height' | translate}}
+                {{'Dashboard.Settings.bodyHeight' | translate}}
               </label>
               <input formControlName="height" type="number" class="form-control" placeholder="175"
                 autocomplete="off" [attr.disabled]="isLogining ? '' : null" [class.form-control--invalid]="(!form.controls['height'].valid && form.controls['height'].touched) || (f.submitted && form.get('height').hasError('required'))">
               <div class="form__message form__message--placeholder">
                 <span [style.visibility]="(form.controls['height'].hasError('required') && form.controls['height'].touched) || (f.submitted && form.get('height').hasError('required')) ? 'initial' : 'hidden'">
-                  {{'Portal.PlzEnterYourHeight' | translate}}
+                  {{'Portal.enterInfo' | translate}}{{'Portal.bodyHeight' | translate}}
                 </span>
               </div>
             </div>
             <div class="form-group form-group--half">
               <label  class="access-text">
-                {{'Dashboard.Settings.Weight' | translate}}
+                {{'Dashboard.Settings.bodyWeight' | translate}}
               </label>
               <input formControlName="weight" type="number" class="form-control" placeholder="75"
                 autocomplete="off" [attr.disabled]="isLogining ? '' : null" [class.form-control--invalid]="(!form.controls['weight'].valid && form.controls['weight'].touched) || (f.submitted && form.get('weight').hasError('required'))">
               <div class="form__message form__message--placeholder" [style.visibility]="(form.controls['weight'].hasError('required') && form.controls['weight'].touched) || (f.submitted && form.get('weight').hasError('required')) ? 'initial' : 'hidden'">
-                {{'Portal.PlzEnterYourWeight' | translate}}
+                {{'Portal.enterInfo' | translate}}{{'Portal.bodyWeight' | translate}}
               </div>
             </div>
             <div class="form-group form-group--half">
               <label  class="access-text">
-                {{'Dashboard.Settings.Sex' | translate}}
+                {{'Dashboard.Settings.gender' | translate}}
               </label>
               <select formControlName="gender" class="form-field"
                 style="width: 100%;height:38px;background-color: #fff"
               >
-                <option value="0">{{'Dashboard.Settings.Male' | translate}}</option>
-                <option value="1">{{'Dashboard.Settings.Female' | translate}}</option>
+                <option value="0">{{'Dashboard.Settings.male' | translate}}</option>
+                <option value="1">{{'Dashboard.Settings.female' | translate}}</option>
                 <!-- <option value="2">無</option> -->
               </select>
             </div>
             <div class="form-group form-group--half">
               <label  class="access-text">
-                {{'Dashboard.Settings.Birthday' | translate}}
+                {{'Dashboard.Settings.birthday' | translate}}
               </label>
               <mat-form-field style="max-width: 140px;">
                 <input matInput [matDatepicker]="picker" placeholder="1988/06/01"
@@ -89,7 +90,7 @@
               </mat-form-field>
             </div>
             <div class="auth-submit">
-              <app-confirm-button [className]="className" [content]="'SH.Send' | translate" [disabled]="isLogining">
+              <app-confirm-button [className]="className" [content]="'SH.send' | translate" [disabled]="isLogining">
               </app-confirm-button>
             </div>
           </form>

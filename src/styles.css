@@ -394,6 +394,7 @@ a.alatech-btn:hover {
 .access-text {
   color: #757575;
   margin-left: 12px;
+  white-space: nowrap;
 }
 
 .access-panel-body {

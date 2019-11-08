@@ -69,19 +69,17 @@ export class PersonalPreferencesComponent implements OnInit {
     const value = moment($event.value).format('YYYYMMDD');
     this.settingsForm.patchValue({ birthday: value });
   }
+  // 判斷輪徑是否為合理值-kidin-20191031
   handleValueArrange(_value) {
     let tuneSize = '';
-    if (_value) {
-      if (+_value === 0) {
-        tuneSize = '0';
-      } else if (+_value < 600) {
-        tuneSize = '600';
-      } else if (+_value > 2500) {
-        tuneSize = '2500';
-      } else {
-        tuneSize = _value;
-      }
+    if (+_value === null || +_value < 300) {
+      tuneSize = '300';
+    } else if (+_value > 2500) {
+      tuneSize = '2500';
+    } else {
+      tuneSize = _value;
     }
+
     this.settingsForm.patchValue({ wheelSize: tuneSize });
   }
   saveSettings({ value, valid }) {
@@ -113,7 +111,7 @@ export class PersonalPreferencesComponent implements OnInit {
           this.userInfoService.getUserInfo({ token, iconType: 2 });
           this.snackbar.open(
             this.translate.instant(
-              'Dashboard.Settings.UpdateUserInfoSuccessfully'
+              'Dashboard.Settings.finishEdit'
             ),
             'OK',
             {
@@ -122,7 +120,7 @@ export class PersonalPreferencesComponent implements OnInit {
           );
         } else {
           this.snackbar.open(
-            this.translate.instant('Dashboard.Settings.UpdateFailed'),
+            this.translate.instant('Dashboard.Settings.updateFailed'),
             'OK',
             { duration: 5000 }
           );

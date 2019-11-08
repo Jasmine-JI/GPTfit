@@ -592,3 +592,23 @@
 .icon-svg_web-icon_p2_040-watt:before {
   content: "\e98d";
 }
+
+.icon-svg_web-icon_p1_008-edit:before {
+  content: "\e907";
+}
+
+.icon-svg_web-icon_p1_012-close:before {
+  content: "\e90b";
+}
+
+.icon-svg_web-icon_p1_013-share:before {
+  content: "\e90c";
+}
+
+.icon-svg_web-icon_p1_059-lock:before {
+  content: "\e93a";
+}
+
+.icon-svg_web-icon_p2_087-print:before {
+  content: "\e9bc";
+}
