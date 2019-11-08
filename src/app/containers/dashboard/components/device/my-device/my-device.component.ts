@@ -88,13 +88,13 @@ export class MyDeviceComponent implements OnInit, OnChanges {
           this.utilsService.removeLocalStorageObject('bondStatus');
           this.getDeviceList();
           const afterBondingTip1 = this.translate.instant(
-            'Dashboard.MyDevice.AfterBondingTip1'
+            'Dashboard.MyDevice.enabledFitPair'
           );
           const afterBondingTip2 = this.translate.instant(
-            'Dashboard.MyDevice.AfterBondingTip2'
+            'Dashboard.MyDevice.fitpairDescription'
           );
           const afterBondingTip3 = this.translate.instant(
-            'Dashboard.MyDevice.AfterBondingTip3'
+            'Dashboard.MyDevice.changeLater'
           );
           if (this.utilsService.getSessionStorageObject('bindingSN')) {
             return this.dialog.open(MessageBoxComponent, {
@@ -104,13 +104,13 @@ export class MyDeviceComponent implements OnInit, OnChanges {
                 body: `<div class="fit-pair"><div class="title">${afterBondingTip1}</div>
   <div class="image-container"><img src="/assets/fitPairDemo.png" style="width: 100%" /></div>
   <div class="tip2">${afterBondingTip2}</div><div>${afterBondingTip3}</div><div class="user-for">${this.translate.instant(
-                  'Dashboard.MyDevice.UseFor'
+                  'Dashboard.MyDevice.useFor'
                 )}：</div></div>`,
                 confirmText: this.translate.instant(
-                  'Dashboard.MyDevice.Personal'
+                  'Dashboard.MyDevice.personal'
                 ),
                 cancelText: this.translate.instant(
-                  'Dashboard.MyDevice.Public'
+                  'Dashboard.MyDevice.gymEquipment'
                 ),
                 onCancel: () =>
                   this.utilsService.removeSessionStorageObject(
@@ -129,9 +129,9 @@ export class MyDeviceComponent implements OnInit, OnChanges {
             data: {
               title: 'message',
               body: this.translate.instant(
-                'Dashboard.MyDevice.BindingFailedDeviceBound'
+                'Dashboard.MyDevice.repair'
               ),
-              confirmText: this.translate.instant('SH.Confirm')
+              confirmText: this.translate.instant('SH.determine')
             }
           });
         }
@@ -141,8 +141,8 @@ export class MyDeviceComponent implements OnInit, OnChanges {
             hasBackdrop: true,
             data: {
               title: 'message',
-              body: this.translate.instant('Dashboard.MyDevice.BindingFailed'),
-              confirmText: this.translate.instant('SH.Confirm')
+              body: this.translate.instant('Dashboard.MyDevice.repair'),
+              confirmText: this.translate.instant('SH.determine')
             }
           });
         }

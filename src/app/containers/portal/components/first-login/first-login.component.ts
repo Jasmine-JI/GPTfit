@@ -49,6 +49,7 @@ export class FirstLoginComponent implements OnInit {
     if (!isFirstLogin) {
       return this.router.navigateByUrl('/404');
     }
+
     const userName = this.authService.userName || '';
     this.form = this.fb.group({
       userName: [userName, Validators.required],
@@ -70,9 +71,9 @@ export class FirstLoginComponent implements OnInit {
         data: {
           title: 'Message',
           body: this.translate.instant(
-            'Dashboard.Settings.PlzUploadPhotos'
+            'Dashboard.Settings.selectImg'
           ),
-          confirmText: this.translate.instant('SH.Confirm')
+          confirmText: this.translate.instant('SH.determine')
         }
       });
     } else {

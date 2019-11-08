@@ -433,7 +433,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
         this.isRealTime = false;
       }
     } else {
-      this.finalEventDate = this.translate.instant('Portal.FinalDayOfMonth');
+      this.finalEventDate = this.translate.instant('Portal.endDate');
       this.finalEventStamp = 0;
       this.isRealTime = false;
     }
@@ -786,7 +786,7 @@ export class LeaderboardComponent implements OnInit, OnDestroy {
         this.fetchRankForm(params);
       }
     } else {
-      this.finalEventDate = this.translate.instant('Portal.FinalDayOfMonth');
+      this.finalEventDate = this.translate.instant('Portal.endDate');
       params = params.set('startDate', this.startDate);
       params = params.set('endDate', this.endDate);
       this.fetchRankForm(params);

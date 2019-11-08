@@ -83,7 +83,7 @@
           <label>群組名稱:</label>{{ groupInfo?.groupName }}
         </div>
         <div>
-          <label>階層: </label>{{ this.groupLevel | groupLevelTranslate }}
+          <label>階層: </label>{{ this.groupLevel | groupLevelTranslate | translate }}
         </div>
         <div>
           <label>狀態: </label>{{ groupInfo?.groupStatus | groupStatus | translate }}

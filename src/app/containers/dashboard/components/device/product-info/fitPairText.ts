@@ -1,3 +1,4 @@
+// 通用翻譯文件keyword:"fitpairDetailDescription"-kidin-1081107
 export const fitPairText = {
   'zh-tw': `Fit pair 是由 Alatech Inc. 所開發的健身場所IoT整合系統。若您有相容的Alatech 裝置，使用Ant+或Bluetooth訊號，發送至Trina Live™ (1)，由此應用紀錄您的運動過程並即時聯網轉播。
 藉由即時活動的發送，讓健身房現場教練或指導老師清楚您的身體狀態，進而調整或改進，也增加學員間的互動與彼此砥礪。在結束活動課程後，將所有的運動歷程記錄，轉至您的活動紀錄名下，以便作為成果趨勢報告。
@@ -14,5 +15,10 @@ With the delivery of instant workout data/ info, the gym's on-site coach or inst
 
 In the instant data/info broadcast and sports records, the privacy information can be determined and set by the user.
 
-(1)   Trina LiveTM the application executed by the gym owner/trainer and equipped with WASP to assist the coach in relaying the status and record workout history.`
+(1)   Trina LiveTM the application executed by the gym owner/trainer and equipped with WASP to assist the coach in relaying the status and record workout history.`,
+  'es-es': `FitPair es un sistema de integración de entrenamiento IoT desarrollado por Alatech Inc. Si tiene un dispositivo compatible con Alatech, puede utilizar una señal Bluetooth o Ant+ para enviarla a Trina Live™ (1), que grabará el proceso del ejercicio y lo difundirá en línea inmediatamente.
+La transmisión en vivo permite al entrenador o instructor de gimnasia entender mejor su forma física, de modo que puedan ayudarlo a realizar ajustes o mejoras y la interacción entre los miembros mejorará. Después de finalizar la actividad o el curso, todos los registros del historial de ejercicios se transferirán al registro de actividades para crear un informe de tendencias.
+Al transmitir y grabar en vivo los datos del ejercicio, el usuario puede decidir y establecer la información de privacidad.
+
+(1)Trina Live ™ es una aplicación que el gimnasio ejecuta, y con la aplicación Wasp, el entrenador puede transmitir y registrar datos del historial de ejercicios en vivo.`
 };

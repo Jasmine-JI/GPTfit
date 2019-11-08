@@ -209,7 +209,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         this.hideTwoButton = true;
       }
     }
-    
+
     this.getInfo(fieldId);
     this.activityOtherDetailsService.getOtherInfo().subscribe(res => {
       if (res) {
@@ -487,23 +487,27 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       bounds.extend(_gpxPoint);
       return _gpxPoint;
     });
+    // 起始點mark
     this.startMark = new google.maps.Marker({
       position: this.gpxPoints[0],
       title: 'start point',
       icon: '/assets/map_marker_start.svg'
     });
     this.startMark.setMap(this.map);
+    // 結束點mark
     this.endMark = new google.maps.Marker({
       position: this.gpxPoints[this.gpxPoints.length - 1],
       title: 'end point',
       icon: '/assets/map_marker_end.svg'
     });
     this.endMark.setMap(this.map);
+    // 行進點mark
     this.playerMark = new google.maps.Marker({
       position: this.gpxPoints[0],
       icon: '/assets/map_marker_player.svg'
     });
     this.playerMark.setMap(this.map);
+    // 路徑
     const poly = new google.maps.Polyline({
       path: this.gpxPoints,
       strokeColor: '#FF00AA',

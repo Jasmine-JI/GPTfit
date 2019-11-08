@@ -118,6 +118,7 @@
 
 .hr-card {
   width: calc((100% - 72px) / 5);
+  min-width: 260px;
   display: inline-block;
   margin-left: 12px;
   margin-bottom: 20px;

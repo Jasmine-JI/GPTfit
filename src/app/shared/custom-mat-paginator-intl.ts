@@ -27,16 +27,16 @@ export class CustomMatPaginatorIntl extends MatPaginatorIntl
   getAndInitTranslations() {
     this.translate
       .get([
-        'SH.PAGINATOR.ITEMS_PER_PAGE',
-        'SH.PAGINATOR.NEXT_PAGE',
-        'SH.PAGINATOR.PREVIOUS_PAGE',
-        'SH.PAGINATOR.OF_LABEL'
+        'SH.PAGINATOR.pageCount',
+        'SH.PAGINATOR.nextPage',
+        'SH.PAGINATOR.previousPage',
+        'SH.PAGINATOR.total'
       ])
       .subscribe(translation => {
-        this.itemsPerPageLabel = translation['SH.PAGINATOR.ITEMS_PER_PAGE'];
-        this.nextPageLabel = translation['SH.PAGINATOR.NEXT_PAGE'];
-        this.previousPageLabel = translation['SH.PAGINATOR.PREVIOUS_PAGE'];
-        this.OF_LABEL = translation['SH.PAGINATOR.OF_LABEL'];
+        this.itemsPerPageLabel = translation['SH.PAGINATOR.pageCount'];
+        this.nextPageLabel = translation['SH.PAGINATOR.nextPage'];
+        this.previousPageLabel = translation['SH.PAGINATOR.previousPage'];
+        this.OF_LABEL = translation['SH.PAGINATOR.total'];
         this.changes.next();
       });
   }

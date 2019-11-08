@@ -28,7 +28,8 @@ export class NavbarComponent implements OnInit {
   langData = {
     'zh-tw': '繁體中文',
     'zh-cn': '简体中文',
-    'en-us': 'English'
+    'en-us': 'English',
+    'es-es': 'Español'
   };
   @Input() isAlphaVersion = false;
   constructor(

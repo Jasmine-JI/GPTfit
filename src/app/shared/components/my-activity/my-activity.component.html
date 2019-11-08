@@ -3,35 +3,35 @@
     <span class="user-profile-title"
       *ngIf="isPortal"
     >
-      {{userName}}{{'Portal.s-activity' | translate}}
+      {{userName}}{{'Portal.activity' | translate}}
     </span>
     <span style="color: #157fcc; font-weight:700"
       *ngIf="!isPortal"
     >
-      {{'Dashboard.MyActivity.MyActivity' | translate}}
+      {{'Dashboard.MyActivity.myActivities' | translate}}
     </span>
     <div class="group-edit-bar">
       <button class="alatech-btn alatech-btn--default activty-btn"
-        title="{{'Dashboard.MyActivity.Search' | translate}}"
+        title="{{'Dashboard.MyActivity.searchActivity' | translate}}"
         (click)="search()"
       >
-        {{'Dashboard.MyActivity.Search' | translate}}
+        {{'Dashboard.MyActivity.searchActivity' | translate}}
       </button>
     </div>
   </div>
   <mat-form-field style="max-width: 100px;margin-right: 35px;">
-    <mat-select [(value)]="sportType" placeholder="{{ 'SH.All' | translate }}">
-      <mat-option value="99">{{ "SH.All" | translate}}</mat-option>
-      <mat-option value="1">{{ "Dashboard.SportReport.Run" | translate}}</mat-option>
-      <mat-option value="2">{{ "Dashboard.SportReport.Cycle" | translate}}</mat-option>
-      <mat-option value="3">{{ "Dashboard.SportReport.WeightTraining" | translate}}</mat-option>
-      <mat-option value="4">{{ "Dashboard.SportReport.Swim" | translate}}</mat-option>
-      <mat-option value="5">{{ "Dashboard.SportReport.Aerobic" | translate}}</mat-option>
-      <mat-option value="6">{{ "Dashboard.SportReport.Rowing" | translate}}</mat-option>
+    <mat-select [(value)]="sportType" placeholder="{{ 'SH.all' | translate }}">
+      <mat-option value="99">{{ "SH.all" | translate}}</mat-option>
+      <mat-option value="1">{{ "Dashboard.SportReport.run" | translate}}</mat-option>
+      <mat-option value="2">{{ "Dashboard.SportReport.cycle" | translate}}</mat-option>
+      <mat-option value="3">{{ "Dashboard.SportReport.actionTraining" | translate}}</mat-option>
+      <mat-option value="4">{{ "Dashboard.SportReport.swin" | translate}}</mat-option>
+      <mat-option value="5">{{ "Dashboard.SportReport.aerobic" | translate}}</mat-option>
+      <mat-option value="6">{{ "Dashboard.SportReport.boating" | translate}}</mat-option>
     </mat-select>
   </mat-form-field>
   <mat-form-field style="margin-right: 35px;">
-    <input matInput placeholder="{{ 'SH.Keyword' | translate}}"
+    <input matInput placeholder="{{ 'SH.keyword' | translate}}"
       [(ngModel)]="searchWords"
       name="searchWords"
     >
@@ -117,7 +117,7 @@
       <mat-cell *matCellDef="let row">
         <div>
           <div>{{ (row.activityInfoLayer && row.activityInfoLayer?.totalSecond | sportTime) || ' -- ' }}</div>
-          <div><span style="color: #999;font-size:12px">{{'Dashboard.MyActivity.Time' | translate}}</span></div>
+          <div><span style="color: #999;font-size:12px">{{'Dashboard.MyActivity.consumeTime' | translate}}</span></div>
         </div>
       </mat-cell>
     </ng-container>
@@ -171,32 +171,32 @@
             <span style="color: #919191;font-size: 12px"
               *ngIf=" row.activityInfoLayer.type === '1'"
             >
-              {{ 'SH.AvgPace' | translate}}
+              {{ 'SH.avgPace' | translate}}
             </span>
             <span style="color: #919191;font-size: 12px"
               *ngIf=" row.activityInfoLayer.type === '4'"
             >
-              {{ 'SH.AvgPace' | translate}}
+              {{ 'SH.avgPace' | translate}}
             </span>
             <span style="color: #919191;font-size: 12px"
               *ngIf=" row.activityInfoLayer.type === '6'"
             >
-              {{ 'SH.AvgPace' | translate}}
+              {{ 'SH.avgPace' | translate}}
             </span>
             <span style="color: #919191;font-size: 12px"
               *ngIf=" row.activityInfoLayer.type === '2'"
             >
-               {{ 'SH.AvgSpeed' | translate}}
+               {{ 'SH.avgPace' | translate}}
             </span>
             <span style="color: #919191;font-size: 12px"
               *ngIf=" row.activityInfoLayer.type === '5'"
             >
-              {{ 'SH.MaxHR' | translate}}
+              {{ 'SH.maxHr' | translate}}
             </span>
             <span style="color: #919191;font-size: 12px"
               *ngIf=" row.activityInfoLayer.type === '3'"
             >
-              {{ 'SH.TotalReps' | translate}}
+              {{ 'SH.totalReps' | translate}}
             </span>
           </div>
         </div>
@@ -217,7 +217,7 @@
             {{ row.activityInfoLayer && row.activityInfoLayer?.totalDistanceMeters / 1000 || ' -- ' }}km
           </div>
           <div>
-            <span style="color: #999;font-size:12px">{{'SH.TotalDisTance' | translate}}</span>
+            <span style="color: #999;font-size:12px">{{'SH.totalDistance' | translate}}</span>
           </div>
         </div>
         <div *ngIf=" row.activityInfoLayer.type === '5'">
@@ -225,7 +225,7 @@
             {{ row.activityInfoLayer && row.activityInfoLayer?.calories || ' -- ' }}cal
           </div>
           <div>
-            <span style="color: #999;font-size:12px">{{'SH.Calorie' | translate}}</span>
+            <span style="color: #999;font-size:12px">{{'SH.calories' | translate}}</span>
           </div>
         </div>
         <div *ngIf=" row.activityInfoLayer.type === '3'">
@@ -233,7 +233,7 @@
             {{ row.activityInfoLayer && row.activityInfoLayer?.totalWeightKg || ' -- ' }}kg
           </div>
           <div>
-            <span style="color: #999;font-size:12px">{{'SH.TotalWeight' | translate}}</span>
+            <span style="color: #999;font-size:12px">{{'SH.totalWeight' | translate}}</span>
           </div>
         </div>
       </mat-cell>
@@ -249,7 +249,7 @@
     </mat-row>
   </mat-table>
   <div *ngIf="isEmpty" style="text-align: center;padding: 30px">
-    {{'SH.No-information' | translate}}
+    {{'SH.noData' | translate}}
   </div>
   <div class="ala-loading-shade" *ngIf="isLoading">
     <mat-spinner></mat-spinner>

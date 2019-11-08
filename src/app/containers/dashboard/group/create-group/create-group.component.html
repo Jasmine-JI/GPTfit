@@ -1,12 +1,12 @@
 <ng-container *ngIf="createType === 4 && !isShowCreateBrand">
   <div class="group-edit-bar"style="justify-content: flex-end;">
     <button class="alatech-btn alatech-btn--default"
-      title="{{ 'Dashboard.Group.CreateBrand' | translate }}"
+      title="{{ 'Dashboard.Group.create' | translate }}{{ 'Dashboard.Group.brand' | translate }}"
       (click)="handleShowCreateBrand()"
       style="width: 222px;height: 46px"
       [disabled]="!commercePlan"
     >
-      {{ 'Dashboard.Group.CreateBrand' | translate }}
+      {{ 'Dashboard.Group.create' | translate }}{{ 'Dashboard.Group.brand' | translate }}
     </button>
   </div>
     <app-commerce-plan-table (onChange)="changePlan($event)"></app-commerce-plan-table>
@@ -19,11 +19,11 @@
         [imageURL]="groupImg"
         [maxFileSize]="maxFileSize"
         [disabled]="isUploading"
-        [btnText]="this.finalImageLink ? ('Dashboard.Group.GroupInfo.ReUpload' | translate) : ('Dashboard.Group.GroupInfo.SelectFile' | translate)"
+        [btnText]="'Dashboard.Group.GroupInfo.selectImg' | translate"
         [isLoading]="isUploading"
-        [accept]="'Dashboard.Group.GroupInfo.photo-format' | translate"
-        [reloadFileText]="'Dashboard.Group.GroupInfo.ReUpload' | translate"
-        [chooseFileText]="'Dashboard.Group.GroupInfo.SelectFile' | translate"
+        [accept]="'Dashboard.Group.GroupInfo.photoRestriction' | translate"
+        [reloadFileText]="'Dashboard.Group.GroupInfo.selectImg' | translate"
+        [chooseFileText]="'Dashboard.Group.GroupInfo.selectImg' | translate"
         (onChange)="handleAttachmentChange($event)"
       ></app-upload-file>
     </div>
@@ -33,43 +33,43 @@
           <span style="color: #26abe3; font-weight:700"
             *ngIf="createType === 1"
           >
-            {{'Dashboard.Group.GroupInfo.AddBranch' | translate}}
+            {{'Dashboard.Group.GroupInfo.addBranch' | translate}}
           </span>
           <span style="color: #26abe3; font-weight:700"
             *ngIf="createType === 2"
           >
-            <span *ngIf="coachType === 1">{{'Dashboard.Group.GroupInfo.ClassInfo-ProfessionalClass' | translate}}</span>
-            <span *ngIf="coachType === 2">{{'Dashboard.Group.GroupInfo.ClassInfo-PhysicalFitnessClass' | translate}}</span>
+            <span *ngIf="coachType === 1">{{'Dashboard.Group.GroupInfo.courseInformationProfessionalClass' | translate}}</span>
+            <span *ngIf="coachType === 2">{{'Dashboard.Group.GroupInfo.courseInformationFitnessClass' | translate}}</span>
           </span>
           <span style="color: #26abe3; font-weight:700"
             *ngIf="createType === 3"
           >
-            {{'Dashboard.Group.CreateGroup' | translate}}
+          {{ 'Dashboard.Group.create' | translate }}{{ 'Dashboard.Group.group' | translate }}
           </span>
           <span style="color: #26abe3; font-weight:700"
             *ngIf="createType === 4"
           >
-            {{ 'Dashboard.Group.CreateBrand' | translate }}
+            {{ 'Dashboard.Group.create' | translate }}{{ 'Dashboard.Group.brand' | translate }}
           </span>
           <div class="rwd-btn_action">
             <button class="alatech-btn alatech-btn--default"
-              title="{{ 'SH.Cancel' | translate }}"
+              title="{{ 'SH.cancel' | translate }}"
               (click)="handleCancel($event)"
             >
-              {{ 'SH.Cancel' | translate }}
+              {{ 'SH.cancel' | translate }}
             </button>
             <button class="alatech-btn alatech-btn--default"
-              title="{{ 'Dashboard.ProductInfo.Finished' | translate }}"
+              title="{{ 'Dashboard.Group.GroupInfo.completeManagement' | translate }}"
               type="submit"
               [disabled]="isEditing"
             >
-              {{ 'Dashboard.ProductInfo.Finished' | translate }}
+              {{ 'Dashboard.Group.GroupInfo.completeManagement' | translate }}
             </button>
           </div>
         </div>
         <div class="group-edit-area">
           <div class="ala-list__item" *ngIf="createType === 3">
-            <label class="ala-form__label form__label--required">{{ 'Dashboard.Group.GroupInfo.Name' | translate}}：</label>
+            <label class="ala-form__label form__label--required">{{ 'Dashboard.Group.GroupInfo.name' | translate}}：</label>
             <app-form-text
               [content]="groupName?.value"
               [maxLength]="32"
@@ -84,7 +84,7 @@
           </div>
           <div class="ala-list__item" *ngIf="createType !== 3 && createType !== 4">
             <label class="ala-form__label">
-              {{ 'Dashboard.Group.GroupInfo.Brand' | translate}}{{ 'Dashboard.Group.GroupInfo.Name' | translate}}：
+              {{ 'Dashboard.Group.GroupInfo.brand' | translate}}{{ 'Dashboard.Group.GroupInfo.name' | translate}}：
             </label>
             <app-form-text
               [disabled]="true"
@@ -94,7 +94,7 @@
           </div>
           <div class="ala-list__item" *ngIf="createType === 4">
             <label class="ala-form__label form__label--required">
-              {{ 'Dashboard.Group.GroupInfo.Brand' | translate}}{{ 'Dashboard.Group.GroupInfo.Name' | translate}}：
+              {{ 'Dashboard.Group.GroupInfo.brand' | translate}}{{ 'Dashboard.Group.GroupInfo.name' | translate}}：
             </label>
             <app-form-text
               [content]="groupName?.value"
@@ -111,16 +111,16 @@
           <div class="ala-list__item" *ngIf="createType !== 3 && createType !== 4">
             <label class="ala-form__label form__label--required">
               <span *ngIf="createType === 1">
-                {{ 'Dashboard.Group.GroupInfo.Branch' | translate}}{{ 'Dashboard.Group.GroupInfo.Name' | translate}}：
+                {{ 'Dashboard.Group.GroupInfo.branch' | translate}}{{ 'Dashboard.Group.GroupInfo.name' | translate}}：
               </span>
-              <span *ngIf="createType === 2">{{ 'Dashboard.Group.ChooseBranch' | translate}}：</span>
+              <span *ngIf="createType === 2">{{ 'Dashboard.Group.chooseBranch' | translate}}：</span>
             </label>
             <app-form-text
               *ngIf="createType === 1"
               [content]="branchName?.value"
               [maxLength]="32"
-              [remindText]="'Dashboard.Group.GroupInfo.No-more-than' | translate: {'number': '32' }"
-              [invalidRemindText]="'Dashboard.Group.GroupInfo.FieldISRequired' | translate"
+              [remindText]="'Dashboard.Group.GroupInfo.noMoreCharacters' | translate: {'number': '32' }"
+              [invalidRemindText]="'Dashboard.Group.GroupInfo.fullField' | translate"
               [control]="form"
               [disabled]="isEditing"
               [controlName]="formTextName"
@@ -145,7 +145,7 @@
             <label class="ala-form__label"
               [class.form__label--required]="createType === 2"
             >
-              {{'Dashboard.Group.ClassName' | translate}}：
+              {{'Dashboard.Group.classTitle' | translate}}：
             </label>
             <input
               style="width: 275px"
@@ -157,8 +157,8 @@
               *ngIf="createType === 2"
               [content]="coachLessonName?.value"
               [maxLength]="32"
-              [remindText]="'Dashboard.Group.GroupInfo.No-more-than' | translate: {'number': '32' }"
-              [invalidRemindText]="'Dashboard.Group.GroupInfo.FieldISRequired' | translate"
+              [remindText]="'Dashboard.Group.GroupInfo.noMoreCharacters' | translate: {'number': '32' }"
+              [invalidRemindText]="'Dashboard.Group.GroupInfo.fullField' | translate"
               [control]="form"
               [disabled]="isEditing"
               [controlName]="formTextName"
@@ -167,18 +167,18 @@
             </app-form-text>
           </div>
           <div class="ala-list__item">
-            <label class="ala-form__label">{{ 'Dashboard.Group.GroupInfo.Status' | translate}}：</label>
+            <label class="ala-form__label">{{ 'Dashboard.Group.GroupInfo.status' | translate}}：</label>
             <select class="form-field"
               formControlName="groupStatus"
               [attr.disabled]="isEditing ? '' : null"
             >
-            <option value="1" class="form-field-option">{{ 'Dashboard.Group.Free-to-join' | translate}}</option>
-            <option value="2" class="form-field-option">{{ 'Dashboard.Group.AuditSystem' | translate}}</option>
-            <option value="3" class="form-field-option">{{ 'Dashboard.Group.Hide' | translate}}</option>
+            <option value="1" class="form-field-option">{{ 'Dashboard.Group.freeToJoin' | translate}}</option>
+            <option value="2" class="form-field-option">{{ 'Dashboard.Group.auditSystem' | translate}}</option>
+            <option value="3" class="form-field-option">{{ 'Dashboard.Group.hide' | translate}}</option>
             </select>
           </div>
           <div class="ala-list__item">
-            <label class="ala-form__label form__label--required">{{ 'Dashboard.Group.GroupInfo.Introduction' | translate}}：</label>
+            <label class="ala-form__label form__label--required">{{ 'Dashboard.Group.GroupInfo.introduction' | translate}}：</label>
             <div class="ala-form__col">
               <app-form-textarea
                 [maxLength]="textareaMaxLength"
@@ -187,7 +187,7 @@
                 [disabled]="isEditing"
                 [controlName]="formTextareaName"
                 (onChange)="handleChangeTextarea($event)"
-                [remindText]="'Dashboard.Group.GroupInfo.No-more-than' | translate: {'number': '500' }"
+                [remindText]="'Dashboard.Group.GroupInfo.noMoreCharacters' | translate: {'number': '500' }"
                 [isHadCount]="true"
                 [isInvalid]="(groupDesc.invalid && groupDesc?.touched) || (f.submitted && groupDesc.hasError('required')) || (f.submitted && groupDesc.hasError('maxLength'))"
               >
@@ -197,21 +197,21 @@
         </div>
         <ng-container *ngIf="createType === 2">
           <span style="color: #26abe3; font-weight:700">
-            {{'Dashboard.privacySettings.PrivacyRequireContent' | translate}}
+            {{'Dashboard.privacySettings.privacyRequirementsContent' | translate}}
           </span>
           <span style="font-size: 14px;margin-left: 10px">
-            {{'Dashboard.privacySettings.PrivacyRequireContentTip' | translate}}
+            {{'Dashboard.privacySettings.createClassPrivacyNotice' | translate}}
           </span>
           <ul class="group-privacy-desc">
-            <li>{{'Dashboard.privacySettings.MemberPrivacyTip' | translate}}</li>
+            <li>{{'Dashboard.privacySettings.myGroup' | translate}}{{'Dashboard.privacySettings.canSee' | translate}}{{'Dashboard.privacySettings.avatar' | translate}}{{'Dashboard.privacySettings.nickname' | translate}}</li>
             <ng-container *ngIf="coachType === 2">
-              <li>{{'Dashboard.privacySettings.PFPrivacyActivity' | translate}}</li>
-              <li>{{'Dashboard.privacySettings.PFPrivacyReport' | translate}}</li>
+              <li>{{'Dashboard.privacySettings.myGym' | translate}}{{'Dashboard.privacySettings.canSee' | translate}}{{'Dashboard.privacySettings.activityRecord' | translate}}</li>
+              <li>{{'Dashboard.privacySettings.myGym' | translate}}{{'Dashboard.privacySettings.canSee' | translate}}{{'Dashboard.privacySettings.sportReport' | translate}}</li>
             </ng-container>
           </ul>
         </ng-container>
         <span style="color: #26abe3; font-weight:700">
-          {{ 'Dashboard.Group.GroupInfo.Administrator' | translate}}
+          {{ 'Dashboard.Group.GroupInfo.administrator' | translate}}
         </span>
         <div class="ala-list__item" *ngIf="createType !== 3"
           style="margin-top: 20px"
@@ -220,9 +220,9 @@
             [class.form__label--required]="createType !== 3"
             style="min-width: 140px"
           >
-            <span *ngIf="coachType === 1">{{'Dashboard.Group.AssignPT' | translate}}：</span>
-            <span *ngIf="coachType === 2">{{'Dashboard.Group.AssignPF' | translate}}：</span>
-            <span *ngIf="coachType !== 1 && coachType !== 2">{{'Dashboard.Group.GroupInfo.AssignAdmin' | translate}}：</span>
+            <span *ngIf="coachType === 1">{{'Dashboard.Group.addTeacher' | translate}}：</span>
+            <span *ngIf="coachType === 2">{{'Dashboard.Group.addCoach' | translate}}：</span>
+            <span *ngIf="coachType !== 1 && coachType !== 2">{{'Dashboard.Group.GroupInfo.assignAdmin' | translate}}：</span>
           </label>
           <div class="ala-form__col assign-admin">
             <button class="icon-btn" (click)="openSelectorWin(createType, $event)">
@@ -231,7 +231,7 @@
             <div class="assign-admin__warning"
               *ngIf="(!groupManager.valid && groupManager.touched) || (f.submitted && groupManager.hasError('required'))"
             >
-              {{'Dashboard.Group.AtLeastAssginAdmin' | translate}}
+              {{'Dashboard.Group.addAdministrator' | translate}}
             </div>
             <div style="margin-top: 15px" *ngIf="chooseLabels && chooseLabels.length > 0">
               <ng-container *ngFor="let label of chooseLabels;let _idx = index">
@@ -398,11 +398,11 @@
   </ng-container>
   <ng-container *ngIf="createType === 4 && !isShowCreateBrand">
     <button class="alatech-btn group-manage__btn"
-      title="{{ 'Dashboard.Group.CreateBrand' | translate }}"
+      title="{{ 'Dashboard.Group.create' | translate }}{{ 'Dashboard.Group.brand' | translate }}"
       (click)="handleShowCreateBrand()"
       [disabled]="!commercePlan"
     >
-      {{ 'Dashboard.Group.CreateBrand' | translate }}
+      {{ 'Dashboard.Group.create' | translate }}{{ 'Dashboard.Group.brand' | translate }}
     </button>
   </ng-container>
 </div> -->

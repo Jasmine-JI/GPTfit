@@ -95,16 +95,16 @@ export class UserSettingsComponent implements OnInit {
     if (_value) {
       if (type === 1) {
         // type 1為身高 2為體重
-        if (+_value < 50) {
-          tuneHeight = '50';
+        if (+_value < 100) {
+          tuneHeight = '100';
         } else if (+_value > 255) {
           tuneHeight = '255';
         } else {
           tuneHeight = _value;
         }
       } else {
-        if (+_value < 30) {
-          tuneWeight = '30';
+        if (+_value < 40) {
+          tuneWeight = '40';
         } else if (+_value > 255) {
           tuneWeight = '255';
         } else {
@@ -131,9 +131,9 @@ export class UserSettingsComponent implements OnInit {
         this.userInfoService.getUserInfo({ token, iconType: 2 });
         this.settingsForm.patchValue({ name });
         this.isNameError = false;
-        this.inValidText = '欄位為必填';
+        this.inValidText = this.translate.instant('Dashboard.Settings.fullField');
       } else {
-        this.inValidText = '名稱已存在';
+        this.inValidText = `${this.translate.instant('Dashboard.Settings.name')}${this.translate.instant('Dashboard.Settings.repeat')}`;
         this.isNameError = true;
       }
     });
@@ -158,8 +158,8 @@ export class UserSettingsComponent implements OnInit {
         hasBackdrop: true,
         data: {
           title: 'Message',
-          body: this.translate.instant('Dashboard.Settings.PlzUploadPhotos'),
-          confirmText: this.translate.instant('SH.Confirm')
+          body: this.translate.instant('Dashboard.Settings.selectImg'),
+          confirmText: this.translate.instant('SH.determine')
         }
       });
     }
@@ -202,14 +202,14 @@ export class UserSettingsComponent implements OnInit {
           this.userInfoService.getUserInfo({ token, iconType: 2 });
           this.snackbar.open(
             this.translate.instant(
-              'Dashboard.Settings.UpdateUserInfoSuccessfully'
+              'Dashboard.Settings.finishEdit'
             ),
             'OK',
             { duration: 5000 }
           );
         } else {
           this.snackbar.open(
-            this.translate.instant('Dashboard.Settings.UpdateFailed'),
+            this.translate.instant('Dashboard.Settings.updateFailed'),
             'OK',
             { duration: 5000 }
           );

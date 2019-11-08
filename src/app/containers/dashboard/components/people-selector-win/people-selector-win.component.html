@@ -2,16 +2,16 @@
   {{ title }}
 </h2>
 <mat-dialog-content class="ala-selector-content">
-  <!-- <div>{{'Dashboard.Group.Region' | translate }}： 台灣</div> -->
+  <!-- <div>{{'Dashboard.Group.area' | translate }}： 台灣</div> -->
   <div class="memberselector-area">
     <div class="memberselector__content">
       <div class="memberselector__bar-box">
         <ng-container *ngIf="!isInnerAdmin">
-          <label style="margin-right: 5px">{{'Dashboard.Group.Search' | translate }}</label>
+          <label style="margin-right: 5px">{{'Dashboard.Group.search' | translate }}</label>
           <select (click)="handleGroupOptions()"
             [(ngModel)]="chooseGroupId"
           >
-            <option value="" disabled selected>{{'Dashboard.Group.SelectGroup' | translate }}</option>
+            <option value="" disabled selected>{{'Dashboard.Group.selectGroup' | translate }}</option>
             <option [value]="option.groupId"
               *ngFor="let option of groupLists"
             >
@@ -19,7 +19,7 @@
             </option>
           </select>
         </ng-container>
-        <input placeholder="{{'Dashboard.Group.NameKeyword' | translate }}"
+        <input placeholder="{{'Dashboard.Group.nameKeyword' | translate }}"
           [(ngModel)]="keyword"
         />
         <button class="icon-btn" (click)="search()"
@@ -43,24 +43,24 @@
         <li class="memberselector-sl__item memberselector-sl__item--empty"
           *ngIf="fakeDatas.length === 0"
         >
-          {{'Dashboard.Group.NoEligiblePeopleFound' | translate }}
+          {{'Dashboard.Group.canNotFind' | translate }}
         </li>
       </ul>
     </div>
     <div class="memberselector__middle">
       <button class="alatech-btn alatech-btn--default memberselector__btn"
-        title="{{'Dashboard.Group.Add' | translate }}"
+        title="{{'Dashboard.Group.join' | translate }}"
         [class.memberselector__btn--is-focused]="areaType === 1"
         (click)="assignUser()"
       >
-        {{'Dashboard.Group.Add' | translate }}<i class="fa fa-chevron-right memberselector__icon--rotate" style="margin-left: 5px"></i>
+        {{'Dashboard.Group.join' | translate }}<i class="fa fa-chevron-right memberselector__icon--rotate" style="margin-left: 5px"></i>
       </button>
       <button class="alatech-btn alatech-btn--default memberselector__btn"
-        title="{{'Dashboard.Group.Remove' | translate }}"
+        title="{{'Dashboard.Group.delete' | translate }}"
         [class.memberselector__btn--is-focused]="areaType === 2"
         (click)="removeUser()"
       >
-        <i class="fa fa-chevron-left memberselector__icon--rotate" style="margin-right: 5px"></i>{{'Dashboard.Group.Remove' | translate }}
+        <i class="fa fa-chevron-left memberselector__icon--rotate" style="margin-right: 5px"></i>{{'Dashboard.Group.delete' | translate }}
       </button>
     </div>
     <div class="memberselector__content"
@@ -79,7 +79,7 @@
         <li class="memberselector-sl__item memberselector-sl__item--empty"
           *ngIf="adminLists.length === 0"
         >
-          {{'Dashboard.Group.NoEligiblePeopleFound' | translate }}
+          {{'Dashboard.Group.canNotFind' | translate }}
         </li>
       </ul>
     </div>
@@ -87,6 +87,6 @@
 </mat-dialog-content>
 
 <mat-dialog-actions class="justify-content-end">
-  <button mat-button color="primary" (click)="confirm()">{{"SH.Confirm" | translate }}</button>
-  <button mat-button mat-dialog-close color="warn">{{"SH.Cancel" | translate }}</button>
+  <button mat-button color="primary" (click)="confirm()">{{"SH.determine" | translate }}</button>
+  <button mat-button mat-dialog-close color="warn">{{"SH.cancel" | translate }}</button>
 </mat-dialog-actions>

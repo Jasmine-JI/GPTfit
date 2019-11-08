@@ -1,25 +1,25 @@
 <div class="d-flex" style="margin-bottom: 15px">
   <span style="color: #157fcc; font-weight:700">
-    {{'Dashboard.System.AdminPermissionSetting' | translate }}
+    {{'Dashboard.System.internalStaffPermissionSetting' | translate }}
   </span>
 </div>
 <table class="table alatech-table">
   <thead>
     <tr class="tr-only-hide">
-      <th class="alatech-table__cell--head">{{'Dashboard.System.SettingItem' | translate }}</th>
-      <th class="alatech-table__cell--head">{{'Dashboard.System.Personincharge' | translate }}</th>
-      <th class="alatech-table__cell--head">{{'Dashboard.System.Description' | translate }}</th>
-      <th class="alatech-table__cell--head">{{'Dashboard.System.FuncofManagement' | translate }}</th>
+      <th class="alatech-table__cell--head">{{'Dashboard.System.settingItem' | translate }}</th>
+      <th class="alatech-table__cell--head">{{'Dashboard.System.currentResponsiblePerson' | translate }}</th>
+      <th class="alatech-table__cell--head">{{'Dashboard.System.description' | translate }}</th>
+      <th class="alatech-table__cell--head">{{'Dashboard.System.managementFunction' | translate }}</th>
     </tr>
   </thead>
   <tbody>
     <ng-container *ngIf="!isLoading">
       <tr>
-        <td class="alatech-table__cell">{{'Dashboard.System.SystemAdminPermissionSetting' | translate }}(10)</td>
+        <td class="alatech-table__cell">{{'Dashboard.System.systemDeveloper' | translate }}{{'Dashboard.System.permissionSetting' | translate }}(10)</td>
         <td class="alatech-table__cell"
           *ngIf="systemDevelopers.length === 0"
         >
-          {{'Dashboard.System.NoRelevantPerson' | translate }}
+          {{'Dashboard.System.noRelevantPersonnel' | translate }}
         </td>
         <td class="alatech-table__cell"
           *ngIf="systemDevelopers && systemDevelopers.length > 0"
@@ -28,7 +28,7 @@
             {{_systemDeveloper.userName}}
           </span>
         </td>
-        <td class="alatech-table__cell">{{'Dashboard.System.SystemAdminDesc' | translate }}</td>
+        <td class="alatech-table__cell">{{'Dashboard.System.systemDeveloperDescription' | translate }}</td>
         <td class="alatech-table__cell">
           <button class="icon-btn" (click)="openSelectorWin(10)">
             <i class="fa fa-user-plus icon_fa"></i>
@@ -36,11 +36,11 @@
         </td>
       </tr>
       <tr>
-        <td class="alatech-table__cell">{{'Dashboard.System.SystemMaintainerPermissionSetting' | translate }}(20)</td>
+        <td class="alatech-table__cell">{{'Dashboard.System.systemMaintenance' | translate }}{{'Dashboard.System.permissionSetting' | translate }}(20)</td>
         <td class="alatech-table__cell"
           *ngIf="systemMaintainers.length === 0"
         >
-          {{'Dashboard.System.NoRelevantPerson' | translate }}
+          {{'Dashboard.System.noRelevantPersonnel' | translate }}
         </td>
         <td class="alatech-table__cell"
           *ngIf="systemMaintainers && systemMaintainers.length > 0"
@@ -49,7 +49,7 @@
             {{_systemMaintainers.userName}}
           </span>
         </td>
-        <td class="alatech-table__cell">{{'Dashboard.System.SystemMaintainerDesc' | translate }}</td>
+        <td class="alatech-table__cell">{{'Dashboard.System.systemMaintainerDescription' | translate }}</td>
         <td class="alatech-table__cell">
           <button class="icon-btn" (click)="openSelectorWin(20)">
             <i class="fa fa-user-plus icon_fa"></i>
@@ -57,11 +57,11 @@
         </td>
       </tr>
       <tr>
-        <td class="alatech-table__cell">{{'Dashboard.System.MarketingPermissionSetting' | translate }}(29)</td>
+        <td class="alatech-table__cell">{{'Dashboard.System.systemMarketing' | translate }}{{'Dashboard.System.permissionSetting' | translate }}(29)</td>
         <td class="alatech-table__cell"
           *ngIf="marketingDevelopers.length === 0"
         >
-          {{'Dashboard.System.NoRelevantPerson' | translate }}
+          {{'Dashboard.System.noRelevantPersonnel' | translate }}
         </td>
         <td class="alatech-table__cell"
           *ngIf="marketingDevelopers && marketingDevelopers.length > 0"
@@ -70,7 +70,7 @@
             {{_marketingDevelopers.userName}}
           </span>
         </td>
-        <td class="alatech-table__cell">{{'Dashboard.System.MarketingPermissionDesc' | translate }}</td>
+        <td class="alatech-table__cell">{{'Dashboard.System.marketingPermissionDescription' | translate }}</td>
         <td class="alatech-table__cell">
           <button class="icon-btn" (click)="openSelectorWin(29)">
             <i class="fa fa-user-plus icon_fa"></i>

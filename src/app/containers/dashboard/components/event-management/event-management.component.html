@@ -1,11 +1,11 @@
 <ng-container *ngIf="!isLoading">
   <div class="d-flex" style="margin-bottom: 15px">
     <span style="color: #157fcc; font-weight:700">
-      {{'Dashboard.System.UpcomingEvent' | translate}}
+      {{'Dashboard.System.unstartedRaces' | translate}}
     </span>
   </div>
   <div style="text-align:center" *ngIf="!isNotYetDone">
-    {{'Dashboard.System.NoRelevantData' | translate}}
+    {{'Dashboard.System.nodata' | translate}}
   </div>
   <mat-accordion multi="false">
     <ng-container *ngFor="let event of events">
@@ -14,18 +14,18 @@
       >
         <mat-expansion-panel-header>
           <mat-panel-title>
-            {{'Dashboard.System.EventName' | translate}}: {{ event.event_name }}
+            {{'Dashboard.System.racesName' | translate}}: {{ event.event_name }}
           </mat-panel-title>
           <mat-panel-description>
-            {{'Dashboard.System.Date' | translate}}: {{ event?.event_time_start | unixTime }} ~ {{ event?.event_time_end | unixTime }}
+            {{'Dashboard.System.racesDate' | translate}}: {{ event?.event_time_start | unixTime }} ~ {{ event?.event_time_end | unixTime }}
           </mat-panel-description>
         </mat-expansion-panel-header>
         <table class="table">
           <thead>
             <tr>
-              <th>{{'Dashboard.System.EventName' | translate}}</th>
-              <th>{{'Dashboard.System.Date' | translate}}</th>
-              <th>{{'Dashboard.System.FuncofManagement' | translate}}</th>
+              <th>{{'Dashboard.System.racesName' | translate}}</th>
+              <th>{{'Dashboard.System.racesDate' | translate}}</th>
+              <th>{{'Dashboard.System.managementFunction' | translate}}</th>
             </tr>
           </thead>
           <tbody>
@@ -62,11 +62,11 @@
 
   <div class="d-flex" style="margin: 30px 0px 15px">
     <span style="color: #157fcc; font-weight:700">
-      {{'Dashboard.System.PreviousEvent' | translate}}
+      {{'Dashboard.System.endedRaces' | translate}}
     </span>
   </div>
   <div style="text-align:center" *ngIf="!isNotYetDone === false || events?.length === 0">
-    {{'Dashboard.System.NoRelevantData' | translate}}
+    {{'Dashboard.System.nodata' | translate}}
   </div>
   <mat-accordion multi="false">
     <ng-container *ngFor="let event of events">
@@ -75,18 +75,18 @@
       >
         <mat-expansion-panel-header>
           <mat-panel-title>
-            {{'Dashboard.System.EventName' | translate}}: {{ event.event_name }}
+            {{'Dashboard.System.racesName' | translate}}: {{ event.event_name }}
           </mat-panel-title>
           <mat-panel-description>
-            {{'Dashboard.System.Date' | translate}}: {{ event?.event_time_start | unixTime }} ~ {{ event?.event_time_end | unixTime }}
+            {{'Dashboard.System.racesDate' | translate}}: {{ event?.event_time_start | unixTime }} ~ {{ event?.event_time_end | unixTime }}
           </mat-panel-description>
         </mat-expansion-panel-header>
         <table class="table">
           <thead>
             <tr>
-              <th>{{'Dashboard.System.EventName' | translate}}</th>
-              <th>{{'Dashboard.System.Date' | translate}}</th>
-              <th>{{'Dashboard.System.FuncofManagement' | translate}}</th>
+              <th>{{'Dashboard.System.racesName' | translate}}</th>
+              <th>{{'Dashboard.System.racesDate' | translate}}</th>
+              <th>{{'Dashboard.System.managementFunction' | translate}}</th>
             </tr>
           </thead>
           <tbody>
