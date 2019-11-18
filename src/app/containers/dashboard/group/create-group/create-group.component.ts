@@ -689,16 +689,16 @@ export class CreateGroupComponent implements OnInit {
   handleShowCreateBrand() {
     switch (this.commercePlan) {
       case 1:
-        this.planName = this.translate.instant('Dashboard.BrandPlan.experiencePlan');
+        this.planName = this.translate.instant('Dashboard.System.BrandPlan.experiencePlan');
         break;
       case 2:
-        this.planName = this.translate.instant('Dashboard.BrandPlan.studioPlan');
+        this.planName = this.translate.instant('Dashboard.System.BrandPlan.studioPlan');
         break;
       case 3:
-        this.planName = this.translate.instant('Dashboard.BrandPlan.smePlan');
+        this.planName = this.translate.instant('Dashboard.System.BrandPlan.smePlan');
         break;
       default:
-        this.planName = this.translate.instant('Dashboard.BrandPlan.customPlan');
+        this.planName = this.translate.instant('Dashboard.System.BrandPlan.customPlan');
     }
     this.dialog.open(MessageBoxComponent, {
       hasBackdrop: true,
