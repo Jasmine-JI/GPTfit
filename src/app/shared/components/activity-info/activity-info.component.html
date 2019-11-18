@@ -37,7 +37,7 @@
           <!-- {{brandName}} -->
         </span>
       </div>
-      <div class="group-edit-bar" style="justify-content: flex-end; width:100%;" [class.hideTwoButton]="hideTwoButton">
+      <div class="group-edit-bar" style="justify-content: flex-end; width:100%;" [class.hideButton]="hideButton">
         <span class="sportsRecord-text">
           {{'SH.sportsRecord' | translate}}
           <div>
@@ -126,9 +126,21 @@
             class="icon-svg_web-icon_p1_088-row"
           ></i>
         </div>
-        <span style="color: #919191;margin-left: 15px;font-size: 26px;">
-          {{fileInfo?.dispName}}
+        <span *ngIf="!editNameMode" style="color: #919191;margin-left: 15px;font-size: 26px;">
+          {{activityName}}
         </span>
+        <i (click)="editActivityName()"
+          *ngIf="!editNameMode && !hideButton"
+          class="icon-svg_web-icon_p1_008-edit"
+          style="font-size: 20px;"
+        ></i>
+        <mat-form-field *ngIf="editNameMode" style="color: #919191;margin-left: 15px;font-size: 26px;">
+          <input matInput
+            [(ngModel)]="activityName"
+            name="activityName"
+            (keypress)="handleNewProfileName($event)"
+          >
+        </mat-form-field>
       </div>
       <div class="summary-info">
         <div class="summary-item">
@@ -206,7 +218,7 @@
         <div *ngIf="activityInfo?.type === '3'"
           class="summary-item"
         >
-          <div class="activty-info-data-value activity-info-data-unit">{{activityInfo?.weightTrainingInfo?.totalWeightKg || 0 }}
+          <div class="activty-info-data-value activity-info-data-unit">{{activityInfo?.totalWeightKg || 0 }}
             <span class="data-label">kg</span>
           </div>
           <div class="activty-info-data-name">{{'SH.totalWeight' | translate}}</div>
@@ -214,18 +226,10 @@
         <div *ngIf="activityInfo?.type === '3'"
           class="summary-item"
         >
-          <div class="activty-info-data-value activity-info-data-unit">{{activityInfo?.weightTrainingInfo?.totalReps || 0 }}
+          <div class="activty-info-data-value activity-info-data-unit">{{activityInfo?.totalReps || 0 }}
             <span class="data-label">reps</span>
           </div>
           <div class="activty-info-data-name">{{ 'SH.totalReps' | translate}}</div>
-        </div>
-        <div *ngIf="activityInfo?.type === '3'"
-          class="summary-item"
-        >
-          <div class="activty-info-data-value activity-info-data-unit">{{activityInfo?.weightTrainingInfo?.max1RmWeightKg || 0 }}
-            <span class="data-label">kg</span>
-          </div>
-          <div class="activty-info-data-name">{{ 'SH.maxBig' | translate}}1RM</div>
         </div>
         <div *ngIf="activityInfo?.type === '4'"
           class="summary-item"
@@ -288,9 +292,41 @@
         </button> -->
       </div>
     </ng-container>
+    <div class="activty-title listGroup">
+      <div class="ala-dashboard-title">
+        {{'Dashboard.MyActivity.chart' | translate}}
+      </div>
+      <mat-form-field class="selectList">
+        <mat-select [(value)]="chartKind" (selectionChange)="handleChartKind($event)">
+          <mat-option value="lineChart">{{'Dashboard.MyActivity.trendOfChange' | translate}}</mat-option>
+          <mat-option value="columnChart">{{'Dashboard.MyActivity.segmentationResolution' | translate}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field class="selectList"
+        *ngIf="activityInfo?.type === '1' || activityInfo?.type === '2' || activityInfo?.type === '4' || activityInfo?.type === '6'"
+      >
 
-    <div class="ala-dashboard-title activty-title">
-      {{'Dashboard.MyActivity.chart' | translate}}
+        <p class="selectListPrefix">{{'Dashboard.MyActivity.inAccordanceWith' | translate}}：</p>
+        <mat-select [(value)]="xaxisUnit" (selectionChange)="handleChartKind($event)">
+          <mat-option value="time">{{'Dashboard.SportReport.time' | translate}}</mat-option>
+          <mat-option value="distance">
+          {{'Dashboard.MyActivity.distance' | translate}}
+        </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field *ngIf="chartKind !== 'lineChart'" class="selectList">
+        <p class="selectListPrefix">{{'Dashboard.MyActivity.segment' | translate}}：</p>
+        <mat-select [(value)]="segUnit" (selectionChange)="handleChartKind($event)">
+          <mat-option *ngIf="xaxisUnit === 'time'" value="60s">{{'Dashboard.MyActivity.everyMinutes' | translate: {'number': 1 } }}</mat-option>
+          <mat-option *ngIf="xaxisUnit === 'time'" value="300s">{{'Dashboard.MyActivity.everyMinutes' | translate: {'number': 5 } }}</mat-option>
+          <mat-option *ngIf="xaxisUnit === 'time'" value="600s">{{'Dashboard.MyActivity.everyMinutes' | translate: {'number': 10 } }}</mat-option>
+          <mat-option *ngIf="xaxisUnit === 'time'" value="1800s">{{'Dashboard.MyActivity.everyMinutes' | translate: {'number': 30 } }}</mat-option>
+          <mat-option *ngIf="xaxisUnit === 'distance'" value="100m">{{'Dashboard.MyActivity.everyUnit' | translate}}100 m</mat-option>
+          <mat-option *ngIf="xaxisUnit === 'distance'" value="500m">{{'Dashboard.MyActivity.everyUnit' | translate}}500 m</mat-option>
+          <mat-option *ngIf="xaxisUnit === 'distance'" value="1km">{{'Dashboard.MyActivity.everyUnit' | translate}}1 km</mat-option>
+          <mat-option *ngIf="xaxisUnit === 'distance'" value="10km">{{'Dashboard.MyActivity.everyUnit' | translate}}10 km</mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
     <ng-container *ngIf="isdisplayHcharts">
       <div #container>
@@ -694,7 +730,7 @@
                 </span>
               </div>
             </div>
-            <!-- to fix -->
+          <!-- 暫時隱藏，之後用肌肉地圖替代-kidin-1081114
             <div class="activity-info__area"
               *ngIf="activityInfo?.type === '3'"
             >
@@ -738,6 +774,7 @@
                 </span>
               </div>
             </div>
+          -->
             <div class="activity-info__area"
               *ngIf="activityInfo?.type === '3'"
             >

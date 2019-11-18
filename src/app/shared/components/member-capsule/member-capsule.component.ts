@@ -143,7 +143,7 @@ export class MemberCapsuleComponent implements OnInit {
       hasBackdrop: true,
       data: {
         title: 'message',
-        body: this.translate.instant('Dashboard.Group.confirmRemovalAdmin'),
+        body: `${this.translate.instant('Dashboard.Group.GroupInfo.removeAdmin')}?`,
         confirmText: this.translate.instant('SH.determine'),
         cancelText: this.translate.instant('SH.cancel'),
         onConfirm: this.handleEditGroupMember.bind(this)

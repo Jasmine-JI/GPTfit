@@ -1,4 +1,4 @@
-.hideTwoButton {
+.hideButton {
   display: none;
 }
 
@@ -7,6 +7,28 @@
 }
 .sportsRecord-text {
   display: none;
+}
+.listGroup {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.mat-form-field-infix {
+  display: flex !important;
+  flex-direction: row !important;
+  border: 0px;
+  padding-top: 2px !important;
+}
+.mat-form-field {
+  font-size: 1rem !important;
+}
+.selectList {
+  width: fit-content !important;
+  margin-left: 10px !important;
+}
+.selectListPrefix {
+  white-space: nowrap;
+  margin: 0px;
 }
 .other-info {
   width: 33%;
@@ -214,6 +236,9 @@ th.mat-header-cell:last-child, td.mat-cell:last-child, td.mat-footer-cell:last-c
 @media(max-width: 570px) {
   .other-info {
     width: 50%;
+  }
+  .listGroup {
+    flex-direction: column;
   }
 }
 
