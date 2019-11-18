@@ -52,7 +52,7 @@
       </li>
 
       <li class="nav-item" [class.active]="navItemNum === 2"
-        *ngIf="!isShowResetPwd"
+        *ngIf="!isShowResetPwd && false"
         (click)="chooseNavItem(2)"
       >
         <a class="nav-link" [routerLink]="['/leaderboard']">{{ "SH.leaderboard" | translate}}</a>
