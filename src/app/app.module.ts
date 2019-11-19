@@ -26,7 +26,7 @@ import { environment } from '../environments/environment';
 export function startupServiceFactory(startupService: StartupService): Function { return () => startupService.load(); }
 
 export function createTranslateLoader(http: HttpClient) {
-  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+  return new TranslateHttpLoader(http, './assets/i18n/', '.json?v=' + Date.now());
 }
 @NgModule({
   declarations: [AppComponent],
