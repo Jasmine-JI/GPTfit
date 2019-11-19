@@ -12,13 +12,13 @@
       <ul class="nav">
         <li [class.active]="chooseIdx === 1"
           (click)="handleProfileItem(1)"
-        >{{'Portal.BasicInfo' | translate}}</li>
+        >{{'Portal.basicInformation' | translate}}</li>
         <li [class.active]="chooseIdx === 2 || chooseIdx === 4"
           (click)="handleProfileItem(2)"
-        >{{'Portal.ActivityRecord' | translate}}</li>
+        >{{'Portal.activityRecord' | translate}}</li>
         <li [class.active]="chooseIdx === 3"
           (click)="handleProfileItem(3)"
-        >{{'Dashboard.SportReport.SportReport' | translate}}</li>
+        >{{'Dashboard.SportReport.sportReport' | translate}}</li>
       </ul>
     </div>
     <div class="col-md-9">
@@ -43,7 +43,7 @@
         <i class="icon-svg_web-icon_p1_059-lock" style="font-size: 100px"></i>
         <p class="h5"
           style="margin-top: 30px;color: #333;"
-        >{{userName}}{{'SH.ShareSomeInfo'}}</p>
+        >{{userName}}{{'SH.shareSomeInfo' | translate}}</p>
       </div>
     </div>
   </div>

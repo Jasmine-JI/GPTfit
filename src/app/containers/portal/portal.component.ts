@@ -10,7 +10,9 @@ import {
   debounce,
   getUrlQueryStrings
 } from '@shared/utils/';
+import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
+import { AuthService } from '@shared/services/auth.service';
 import { IMyDpOptions } from 'mydatepicker';
 import * as moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
@@ -99,7 +101,10 @@ export class PortalComponent implements OnInit {
   isIntroducePage: boolean;
   isAlphaVersion = false;
   isPreviewMode = false;
+  hideNavbar = false;  // 隱藏navbar-Kidin-1081023
   constructor(
+    private route: ActivatedRoute,
+    private authService: AuthService,
     private router: Router,
     private globalEventsManager: GlobalEventsManager,
     private rankFormService: RankFormService,
@@ -116,8 +121,10 @@ export class PortalComponent implements OnInit {
 
   ngOnInit() {
     this.translateService.onLangChange.subscribe(() => {
-      if (this.detectInappService.isInApp || this.detectInappService.isIE) {
-        if (this.detectInappService.isLine) {
+
+      // 若非使用Line或其他App或IE以外瀏覽器時，跳出解析度警示框-Kidin-1081023
+      if (this.detectInappService.isIE) {
+        if (this.detectInappService.isLine || this.detectInappService.isInApp) {
           if (location.search.length === 0) {
             location.href += '?openExternalBrowser=1';
           } else {
@@ -128,13 +135,18 @@ export class PortalComponent implements OnInit {
             hasBackdrop: true,
             data: {
               title: 'message',
-              body: this.translateService.instant('SH.BrowserTip'),
-              confirmText: this.translateService.instant('SH.Confirm')
+              body: this.translateService.instant('SH.browserError'),
+              confirmText: this.translateService.instant('SH.determine')
             }
           });
         }
       }
     });
+
+    // 藉由query string判斷是否隱藏Header-Kidin-1081023
+    if (this.route.snapshot.queryParamMap.get('navbar') === '0') {
+      this.hideNavbar = true;
+    }
 
     if (location.hostname.indexOf('cloud.alatech.com.tw') > -1) {
       this.isAlphaVersion = false;
@@ -156,7 +168,7 @@ export class PortalComponent implements OnInit {
     let browserLang = this.utilsService.getLocalStorageObject('locale');
     if (!browserLang) {
       browserLang = this.translateService.getBrowserCultureLang().toLowerCase();
-      const currentLocales = ['zh-tw', 'zh-cn', 'en-us'];
+      const currentLocales = ['zh-tw', 'zh-cn', 'en-us', 'es-es'];  // 新增西班牙語系-kidin-1081106
       if (currentLocales.findIndex(_locale => _locale === browserLang) === -1) {
         browserLang = 'en-us'; // default en-us
       }

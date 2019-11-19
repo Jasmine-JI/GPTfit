@@ -4,23 +4,23 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class AccessNamePipe implements PipeTransform {
   transform(value: string, args: string[]): any {
     if (value === '00') {
-      return 'Dashboard.Group.System-SuperVisor';
+      return 'Dashboard.Group.highestAuthority';
     } else if (value === '10') {
-      return 'Dashboard.Group.System-Develop-Admin';
+      return 'Dashboard.Group.systemDeveloper';
     } else if (value === '20') {
-      return 'Dashboard.Group.System-Maintenance-Admin';
+      return 'Dashboard.Group.systemMaintenance';
     } else if (value === '29') {
-      return 'Dashboard.Group.Marketing-Business-Admin';
+      return 'Dashboard.Group.systemMarketing';
     } else if (value === '30') {
-      return 'Dashboard.Group.BrandAdministrator';
+      return 'Dashboard.Group.brandAdministrator';
     } else if (value === '40') {
-      return 'Dashboard.Group.BranchManager';
+      return 'Dashboard.Group.branchAdministrator';
     } else if (value === '50') {
-      return 'Dashboard.Group.PhysicalFitnessCoach';
+      return 'Dashboard.Group.coach';
     } else if (value === '60') {
-      return 'Dashboard.Group.ProfessionalTeacher';
+      return 'Dashboard.Group.teacher';
     } else if (value === '80') {
-      return 'Dashboard.Group.NormalGroupAdministrator';
-    } return 'Dashboard.Group.NormalMember';
+      return 'Dashboard.Group.groupAdministrator';
+    } return 'Dashboard.Group.generalMember';
   }
 }

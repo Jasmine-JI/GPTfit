@@ -1,30 +1,30 @@
 <h2 class="ala-dialog" mat-dialog-title>
-  {{'Dashboard.privacySettings.privacySettings' | translate}}
+  {{'Dashboard.privacySettings.set' | translate}}
 </h2>
 <mat-dialog-content>
-{{'Dashboard.privacySettings.YouWillAdd' | translate}} <span style="color: #108bcd">{{groupName}}</span>
-{{'Dashboard.privacySettings.PrivacyOpenForTarget' | translate}}：{{ targetText }}。
+{{'Dashboard.privacySettings.wantToJoin' | translate}} <span style="color: #108bcd">{{groupName}}</span>
+{{'Dashboard.privacySettings.privacyOpenGroupObject' | translate}}：{{ targetText }}。
 <br /><br />
-{{'Dashboard.privacySettings.RevisePrivacySettings' | translate}}
+{{'Dashboard.privacySettings.needChangeYourPrivacy' | translate}}
 
 <div style="margin-top: 30px;height: 250px;">
   <div class="control-list">
-    <label class="ala-form__label settings-item">{{'Dashsboard.privacySettings.NewActivitySetting' | translate}}</label>
+    <label class="ala-form__label settings-item">{{'Dashsboard.privacySettings.newAvtivityData' | translate}}</label>
     <div class="settings-control">
       <!--<mat-checkbox color="primary" value="4" [checked]="activityTrackingStatus[0]" (change)="handleCheckBox($event, 1, 1)"><span
           style="font-size: 14px">{{'Dashboard.privacySettings.OnlyForPF' | translate}}</span>-->
       <mat-checkbox color="primary" value="4" [checked]="true" (change)="handleCheckBox($event, 1, 1)"><span
-          style="font-size: 14px">{{'Dashboard.privacySettings.OnlyForPF' | translate}}</span>         
+          style="font-size: 14px">{{'Dashboard.privacySettings.objectOnly' | translate}}{{'Dashboard.privacySettings.myGym' | translate}}</span>
       </mat-checkbox>
     </div>
   </div>
   <div class="control-list">
-    <label class="ala-form__label settings-item">{{'Dashboard.privacySettings.NewSportsSetting' | translate}}</label>
+    <label class="ala-form__label settings-item">{{'Dashboard.privacySettings.newAvtivityReport' | translate}}</label>
     <div class="settings-control">
       <!--<mat-checkbox color="primary" value="4" [checked]="activityTrackingReportStatus[0]" (change)="handleCheckBox($event, 1, 2)"><span
-          style="font-size: 14px">{{'Dashboard.privacySettings.OnlyForPF' | translate}}</span>-->
+          style="font-size: 14px">{{'Dashboard.privacySettings.objectOnly' | translate}}{{'Dashboard.privacySettings.myGym' | translate}}</span>-->
       <mat-checkbox color="primary" value="4" [checked]="true" (change)="handleCheckBox($event, 1, 2)"><span
-          style="font-size: 14px">{{'Dashboard.privacySettings.OnlyForPF' | translate}}</span>
+          style="font-size: 14px">{{'Dashboard.privacySettings.objectOnly' | translate}}{{'Dashboard.privacySettings.myGym' | translate}}</span>
       </mat-checkbox>
     </div>
   </div>
@@ -32,6 +32,6 @@
 </mat-dialog-content>
 
 <mat-dialog-actions class="justify-content-end">
-  <button mat-button color="primary" (click)="confirm()">{{'SH.Confirm' | translate}}</button>
-  <button mat-button mat-dialog-close color="warn">{{'SH.Cancel' | translate}}</button>
+  <button mat-button color="primary" (click)="confirm()">{{'SH.determine' | translate}}</button>
+  <button mat-button mat-dialog-close color="warn">{{'SH.cancel' | translate}}</button>
 </mat-dialog-actions>

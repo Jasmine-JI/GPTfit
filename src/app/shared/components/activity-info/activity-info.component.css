@@ -1,8 +1,34 @@
+.hideButton {
+  display: none;
+}
+
 .isBrandIcon {
   margin-bottom: 30px;
 }
 .sportsRecord-text {
   display: none;
+}
+.listGroup {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.mat-form-field-infix {
+  display: flex !important;
+  flex-direction: row !important;
+  border: 0px;
+  padding-top: 2px !important;
+}
+.mat-form-field {
+  font-size: 1rem !important;
+}
+.selectList {
+  width: fit-content !important;
+  margin-left: 10px !important;
+}
+.selectListPrefix {
+  white-space: nowrap;
+  margin: 0px;
 }
 .other-info {
   width: 33%;
@@ -39,6 +65,10 @@
   height: 38px;
 }
 
+.activity-info_icon_size{
+  font-size: 30px;
+}
+
 .activty-icon {
   width: 60px;
   height: 60px;
@@ -69,6 +99,9 @@
 .activity-block {
   /* margin: 25px 20px 45px; */
 }
+.ala-activity-icon {
+  font-size: 20px;
+}
 .demo-chart {
   height: 400px;
 }
@@ -92,7 +125,10 @@
 }
 .activity-info__area {
   width: calc((100% - 60px)/3);
-  margin: 0px 20px 30px 0px;
+  margin: 0px 10px 30px 10px;
+}
+.activity-info-data-unit{
+  white-space: nowrap;
 }
 .mat-tab-body {
   padding: 20px 15px;
@@ -146,6 +182,19 @@
 table.mat-table {
   width: 100%;
 }
+
+th.mat-header-cell:first-child, td.mat-cell:first-child, td.mat-footer-cell:first-child {
+  padding-left: 0px !important;
+}
+
+th.mat-header-cell:last-child, td.mat-cell:last-child, td.mat-footer-cell:last-child {
+  padding-right: 0px !important;
+}
+
+.segmentation-info-title{
+  display: flex;
+  flex-direction: column;
+}
 .map-play {
   width: 33px;
   height: 33px;
@@ -169,7 +218,41 @@ table.mat-table {
   .activity-info__area {
     text-align: center;
   }
-  .activity-info__area + .activity-info__area {
-    margin-left: 0px;
+}
+
+@media(max-width: 820px) {
+  .activity-info__area {
+    width: calc((100% - 60px)/2);
+    margin: 0px 10px 30px 10px;
+  }
+  .mat-tab-body {
+    padding: 20px 0px;
+  }
+}
+
+@media(max-width: 570px) {
+  .other-info {
+    width: 50%;
+  }
+  .listGroup {
+    flex-direction: column;
+  }
+}
+
+@media(max-width: 430px) {
+  .other-info {
+    width: 100%;
+  }
+}
+
+@media screen and (min-width: 767px) and (max-width: 880px) {
+  .other-info {
+    width: 50%;
+  }
+}
+
+@media (min-width: 1100px) {
+  .other-info {
+    width: 25%;
   }
 }

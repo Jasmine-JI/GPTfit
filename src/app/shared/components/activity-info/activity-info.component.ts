@@ -6,7 +6,8 @@ import {
   ElementRef,
   Renderer2,
   OnDestroy,
-  ViewEncapsulation
+  ViewEncapsulation,
+  ChangeDetectorRef
 } from '@angular/core';
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
@@ -42,12 +43,15 @@ declare var BMap: any;
 export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   dataSource = new MatTableDataSource<any>();
   displayedColumns: string[] = [
-    'lapIndex',
-    'status',
+    'status-lapIndex',
     'heartRate',
     'speed',
     'distance'
   ];
+  editNameMode = false;
+  activityName = '';
+  activityNameBeforeState = '';
+  fileId = '';
   isShowMap = true;
   isdisplayHcharts = true;
   chartLoading = false;
@@ -97,6 +101,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   fileInfo: any;
   infoDate: string;
   activityPoints: any;
+  activityLaps: any;
   isLoading = false;
   token: string;
   isPortal = false;
@@ -131,6 +136,12 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   playBMK: any;
   isHideMapRadioBtn = false;
   isInChinaArea: boolean;
+  chartKind = 'lineChart';
+  chartKindBeforeState = 'lineChart';  // 此參數用來記錄chartKind之前狀態-kidin-1081112
+  xaxisUnit = 'time';
+  xaxisUnitBeforeState = 'time';  // 此參數用來記錄xaxisUnit之前狀態-kidin-1081112
+  segUnit = '60';
+  segRange: any;
   isDebug = false;
   isOtherDetailLoading = false;
   isLoadedOtherDetail = false;
@@ -148,6 +159,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   brandIcon = '';
   brandName = '';
   printFileDate = '';
+  hideButton = false; // 隱藏預覽列印和返回兩個按鈕-kidin-1081024
   constructor(
     private utils: UtilsService,
     private renderer: Renderer2,
@@ -158,7 +170,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private userInfoService: UserInfoService,
     private hashIdService: HashIdService,
-    private activityOtherDetailsService: ActivityOtherDetailsService
+    private activityOtherDetailsService: ActivityOtherDetailsService,
+    private _changeDetectionRef: ChangeDetectorRef
   ) {
     /**
      * 重写内部的方法， 这里是将提示框即十字准星的隐藏函数关闭
@@ -198,13 +211,20 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.isPortal = true;
     }
     const fieldId = this.route.snapshot.paramMap.get('fileId');
+    this.fileId = fieldId;
     this.progressRef = this.ngProgress.ref();
 
-    // 新增判斷是否藉由fitness開啟個人運動詳細資料，讓使用者不用登入即可觀看-Kidin-1081022
-    if (this.route.snapshot.queryParamMap.get('access_token') === null) {
+    // 從hid得到token後，讓使用者不用登入即可觀看個人運動詳細資料，並隱藏預覽列印和返回按鈕（待實做hid encode/decode）-Kidin-1081024
+    if (this.route.snapshot.queryParamMap.get('hid') === null) {
       this.token = this.utils.getToken();
+      if(this.token === null) {
+        return this.router.navigateByUrl('/404');
+      }
     } else {
-      this.token = this.route.snapshot.queryParamMap.get('access_token');
+      this.token = this.route.snapshot.queryParamMap.get('hid');
+      if (this.route.snapshot.queryParamMap.get('navbar') === '0') {
+        this.hideButton = true;
+      }
     }
 
     this.getInfo(fieldId);
@@ -244,6 +264,10 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
     window.addEventListener('scroll', this.scroll, true);
+  }
+  // 觸發變更偵測來使選單狀態同步，解決此頁面在免登模式出現的angular錯誤訊息-kidin-1081118
+  ngAfterContentChecked() {
+    this._changeDetectionRef.detectChanges();
   }
   scroll(e) {
     let coachId, groupId;
@@ -328,7 +352,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     this.activityPoints.forEach((_point, idx) => {
       if (+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100) {
         isNormalPoint = false;
-        //this.gpxBmapPoints.push(null);
+        // this.gpxBmapPoints.push(null);
       } else {
         if (!isNormalPoint) {
           isNormalPoint = true;
@@ -433,6 +457,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     const mapProp = {
       center: new google.maps.LatLng(24.123499, 120.66014),
       zoom: 18,
+      gestureHandling: 'cooperative', // 可以讓使用者在手機環境下使用單止滑頁面，雙指滑地圖-kidin-1081025
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
     this.map = new google.maps.Map(this.gmapElement.nativeElement, mapProp);
@@ -442,7 +467,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     this.activityPoints.forEach((_point, idx) => {
       if (+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100) {
         isNormalPoint = false;
-        //this.gpxPoints.push(null);
+        // this.gpxPoints.push(null);
       } else {
         if (!isNormalPoint) {
           isNormalPoint = true;
@@ -483,23 +508,27 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       bounds.extend(_gpxPoint);
       return _gpxPoint;
     });
+    // 起始點mark
     this.startMark = new google.maps.Marker({
       position: this.gpxPoints[0],
       title: 'start point',
       icon: '/assets/map_marker_start.svg'
     });
     this.startMark.setMap(this.map);
+    // 結束點mark
     this.endMark = new google.maps.Marker({
       position: this.gpxPoints[this.gpxPoints.length - 1],
       title: 'end point',
       icon: '/assets/map_marker_end.svg'
     });
     this.endMark.setMap(this.map);
+    // 行進點mark
     this.playerMark = new google.maps.Marker({
       position: this.gpxPoints[0],
       icon: '/assets/map_marker_player.svg'
     });
     this.playerMark.setMap(this.map);
+    // 路徑
     const poly = new google.maps.Polyline({
       path: this.gpxPoints,
       strokeColor: '#FF00AA',
@@ -538,6 +567,70 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   handleMapKind(e) {
     this.mapKind = e.value;
   }
+
+  // 判斷圖表類型、x軸參考單位、分段範圍後重繪圖表-kidin-1081114
+  handleChartKind(e) {
+    // 一旦切換圖表類型或X軸參考單位，就將分段單位切回預設-kidin-1081114
+    if (this.chartKind !== this.chartKindBeforeState) {
+      if (this.chartKind === 'lineChart') {
+        this.segUnit = 'normal';
+      } else {
+        if (this.xaxisUnit === 'time') {
+          this.segUnit = '60s';
+        } else {
+          this.segUnit = '100m';
+        }
+      }
+      this.chartKindBeforeState = this.chartKind;
+    }
+    if (this.xaxisUnit !== this.xaxisUnitBeforeState) {
+      if (this.chartKind === 'lineChart') {
+        this.segUnit = 'normal';
+      } else {
+        if (this.xaxisUnit === 'time') {
+          this.segUnit = '60s';
+        } else {
+          this.segUnit = '100m';
+        }
+      }
+      this.xaxisUnitBeforeState = this.xaxisUnit;
+    }
+    switch (this.segUnit) {
+      case '60s' :
+        this.segRange = 60000;
+        break;
+      case '300s' :
+        this.segRange = 300000;
+        break;
+      case '600s' :
+        this.segRange = 600000;
+        break;
+      case '1800s' :
+        this.segRange = 1800000;
+        break;
+      case '100m' :
+        this.segRange = 100;
+        break;
+      case '500m' :
+        this.segRange = 500;
+        break;
+      case '1km' :
+        this.segRange = 1000;
+        break;
+      case '10km' :
+        this.segRange = 10000;
+        break;
+      case 'deviceLap' :
+        this.segRange = 'deviceLap';  // 先預埋裝置分段顯示-kidin-1081113
+        break;
+      default :
+        this.segRange = 'normal'; // 先預埋常態分佈顯示-kidin-1081113
+        break;
+    }
+    Highcharts.charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081112
+    this.initHchart();
+  }
+
   getInfo(id) {
     this.isLoading = true;
 
@@ -550,9 +643,11 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       body['debug'] = this.isDebug.toString();
     }
     this.activityService.fetchSportListDetail(body).subscribe(res => {
-      //取得regionCode判斷操作是否位於大陸地區，為大陸地區一律使用百度地圖開啓 ex.zh-tw, zh-cn, en-us..
+      // 取得regionCode判斷操作是否位於大陸地區，為大陸地區一律使用百度地圖開啓 ex.zh-tw, zh-cn, en-us..
       const regionCode = this.utils.getLocalStorageObject('locale');
       this.activityInfo = res.activityInfoLayer;
+      this.activityName = res.fileInfo.dispName;
+      this.activityNameBeforeState = res.fileInfo.dispName;
       if (res.resultCode === 401 && res.resultCode === 402) {
         this.isShowNoRight = true;
         this.isLoading = false;
@@ -566,6 +661,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.isShowNoRight = false;
       this.handleLapColumns();
       this.activityPoints = res.activityPointLayer;
+      this.activityLaps = res.activityLapLayer;
       this.isInChinaArea = false;
       let isInTaiwan = false;
       let isSomeGpsPoint = false;
@@ -601,7 +697,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isShowMap = false;
       }
       if (this.isShowMap) {
-        if (regionCode === "zh-cn") {
+        if (regionCode === 'zh-cn') {
           this.mapKind = '2';
           this.isHideMapRadioBtn = true;
           this.handleBMap();
@@ -611,7 +707,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
             // this.handleGoogleMap();
           } else {
             this.mapKind = '2';
-            //this.isHideMapRadioBtn = true;
+            // this.isHideMapRadioBtn = true;
           }
           this.handleGoogleMap(isInTaiwan);
           this.handleBMap();
@@ -655,13 +751,12 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.isLoading = false;
     });
   }
-  handleLapColumns() {
+  handleLapColumns() {  // case1:跑步 case2:腳踏車 case3:重訓 case4:游泳 case5:有氧 case6:划船
     const sportType = this.activityInfo.type;
     switch (sportType) {
       case '1':
         this.displayedColumns = [
-          'lapIndex',
-          'status',
+          'status-lapIndex',
           'heartRate',
           'speed',
           'distance'
@@ -669,8 +764,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         break;
       case '2':
         this.displayedColumns = [
-          'lapIndex',
-          'status',
+          'status-lapIndex',
           'heartRate',
           'speed',
           'distance'
@@ -678,8 +772,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         break;
       case '3':
         this.displayedColumns = [
-          'lapIndex',
-          'status',
+          'status-lapIndex',
           'dispName',
           'totalRepo',
           'totalWeight',
@@ -688,8 +781,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         break;
       case '4':
         this.displayedColumns = [
-          'lapIndex',
-          'status',
+          'status-lapIndex',
           'dispName',
           'cadence',
           'totalRepo',
@@ -697,12 +789,11 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         ];
         break;
       case '5':
-        this.displayedColumns = ['lapIndex', 'status', 'heartRate'];
+        this.displayedColumns = ['status-lapIndex', 'heartRate'];
         break;
       case '6':
         this.displayedColumns = [
-          'lapIndex',
-          'status',
+          'status-lapIndex',
           'cadence',
           'totalRepo',
           'speed'
@@ -765,7 +856,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       userRestHR: null,
       userHRBase: null
     };
-    if (this.activityInfo.type !== '4') {
+    if (this.activityInfo.type !== '4') {  // 4:有氧
       this.userInfoService.getUserAge().subscribe(res => {
         hrFormatData.userAge = res;
       });
@@ -779,24 +870,22 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         hrFormatData.userHRBase = res;
       });
     }
-    const { finalDatas, chartTargets } = this.activityService.handlePoints(
+    const { finalDatas, chartTargets } = this.activityService.handleChartDatas(
       this.activityPoints,
+      this.activityLaps,
       this.activityInfo.type,
       this.resolutionSeconds,
       hrFormatData,
-      this.isDebug
+      this.isDebug,
+      this.chartKind,
+      this.xaxisUnit,
+      this.segRange
     );
     this.finalDatas = finalDatas;
 
     this.finalDatas.forEach((_option, idx) => {
       this[`is${chartTargets[idx]}Display`] = true;
-      _option[
-        chartTargets[idx]
-      ].xAxis.events.setExtremes = this.syncExtremes.bind(
-        this,
-        idx,
-        finalDatas
-      );
+
       this.charts[idx] = chart(
         this[chartTargets[idx]].nativeElement,
         _option[chartTargets[idx]]
@@ -841,5 +930,31 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   print() {
     window.print();
+  }
+  // 開啟編輯活動檔案名稱模式-kidin-1081115
+  editActivityName() {
+    this.editNameMode = true;
+  }
+  // 上傳新名稱-kidin-1081115
+  handleNewProfileName(e) {
+    if (e.key === 'Enter' && this.activityName === this.activityNameBeforeState) {
+      this.editNameMode = false;
+    } else if (e.key === 'Enter' && this.activityName === '') {
+      this.activityName = this.activityNameBeforeState;
+      this.editNameMode = false;
+    } else if (e.key === 'Enter' && this.activityName !== this.activityNameBeforeState) {
+      const body = {
+        token: this.token,
+        fileId: this.fileId,
+        fileInfo: {
+          dispName: this.activityName
+        }
+      };
+      this.activityService.fetchEditActivityProfile(body).subscribe(res => {
+        if (res) {
+          this.editNameMode = false;
+        }
+      });
+    }
   }
 }

@@ -1,19 +1,19 @@
 <div class="d-flex justify-content-between" style="margin-bottom: 15px">
   <span style="color: #157fcc; font-weight:700">
-    {{'Dashboard.System.AllGroupList' | translate}}
+    {{'Dashboard.System.listAllGroups' | translate}}
   </span>
 </div>
 <mat-form-field>
   <mat-select [(value)]="groupLevel">
-    <mat-option value="00">{{ "Dashboard.Group.SearchGroup.AllLevel" | translate}}</mat-option>
-    <mat-option value="30">{{ "Dashboard.Group.GroupInfo.Brand" | translate}}</mat-option>
-    <mat-option value="40">{{ "Dashboard.Group.GroupInfo.Branch" | translate}}</mat-option>
-    <mat-option value="60">{{ "Dashboard.Group.SearchGroup.ClassOrTrainer" | translate}}</mat-option>
-    <mat-option value="90">{{ "Dashboard.Group.SearchGroup.NormalGroup" | translate}}</mat-option>
+    <mat-option value="00">{{ "Dashboard.Group.SearchGroup.allClasses" | translate}}</mat-option>
+    <mat-option value="30">{{ "Dashboard.Group.GroupInfo.brand" | translate}}</mat-option>
+    <mat-option value="40">{{ "Dashboard.Group.GroupInfo.branch" | translate}}</mat-option>
+    <mat-option value="60">{{ "Dashboard.Group.SearchGroup.classOrCoach" | translate}}</mat-option>
+    <mat-option value="90">{{ "Dashboard.Group.SearchGroup.generalGroup" | translate}}</mat-option>
   </mat-select>
 </mat-form-field>
 <mat-form-field>
-  <input matInput placeholder="{{ 'Dashboard.Group.SearchGroup.group-id-or-name' | translate}}"
+  <input matInput placeholder="{{ 'Dashboard.Group.SearchGroup.enterGroupIdName' | translate}}"
     [matAutocomplete]="auto"
     [(ngModel)]="searchWords"
     name="searchWords"
@@ -35,16 +35,16 @@
   class="all-group-list"
 >
   <ng-container matColumnDef="id">
-    <mat-header-cell *matHeaderCellDef>{{'Dashboard.Group.GroupInfo.GroupID' | translate}}</mat-header-cell>
+    <mat-header-cell *matHeaderCellDef>{{'Dashboard.Group.GroupInfo.groupId' | translate}}</mat-header-cell>
     <mat-cell *matCellDef="let row">{{ utils.displayGroupId(row.groupId) }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="info">
-    <mat-header-cell *matHeaderCellDef>{{'Dashboard.Group.MyGroup.Name' | translate}}</mat-header-cell>
+    <mat-header-cell *matHeaderCellDef>{{'Dashboard.Group.MyGroup.name' | translate}}</mat-header-cell>
     <mat-cell *matCellDef="let row">{{ row.groupName }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="time">
     <mat-header-cell *matHeaderCellDef disableClear="true">
-      {{'Dashboard.Group.GroupInfo.Status' | translate}}
+      {{'Dashboard.Group.GroupInfo.status' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let row">{{ row.groupStatus | groupStatus | translate }}</mat-cell>
   </ng-container>

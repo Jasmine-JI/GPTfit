@@ -11,7 +11,7 @@
   </ng-progress>
   <ng-container *ngIf="!isLoading">
     <div class="row" style="margin-bottom: 15px">
-      <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">{{"Portal.ProductPhoto" | translate}}：</div>
+      <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">{{"Portal.productPhoto" | translate}}：</div>
       <div class="col-sm-6 text-sm-left text-center" [ngClass]="imgClass" style="width: 100%">
         <img *ngIf="!deviceInfo" src={{noProductImg}}>
         <img *ngIf="deviceInfo" src={{deviceInfo?.modelImgUrl}} >
@@ -19,23 +19,23 @@
     </div>
     <div class="row" style="margin-bottom: 15px">
       <div class="col-sm-6 text-sm-right text-center" [style.font-weight]="isWrong ? '200' : '700' ">
-        <span  style="font-weight: bold">{{"Portal.EquipmentSN" | translate}}</span>：
+        <span  style="font-weight: bold">{{"Portal.deviceSerialNumber" | translate}}</span>：
       </div>
-      <div *ngIf="!deviceInfo" class="col-sm-6 text-sm-left text-center">{{"SH.NoFindData" | translate}}</div>
+      <div *ngIf="!deviceInfo" class="col-sm-6 text-sm-left text-center">{{"SH.noFindData" | translate}}</div>
       <div *ngIf="deviceInfo" class="col-sm-6 text-sm-left text-center">{{ displayQr.device_sn  }}</div>
     </div>
     <ng-container *ngIf="deviceInfo">
       <div class="row" style="margin-bottom: 15px">
-        <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">{{"Portal.ProductName" | translate}}：</div>
-        <div class="col-sm-6 text-sm-left text-center">{{ deviceInfo?.modelName || 'SH.No-information' | translate }}</div>
+        <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">{{"Portal.modeCode" | translate}}：</div>
+        <div class="col-sm-6 text-sm-left text-center">{{ deviceInfo?.modelName || 'SH.noData' | translate }}</div>
       </div>
       <div class="row" style="margin-bottom: 15px">
-        <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">{{"Portal.ProductType" | translate}}：</div>
-        <div class="col-sm-6 text-sm-left text-center">{{ (deviceInfo?.modelType | productType | translate) || 'SH.No-information' | translate }}</div>
+        <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">{{"Portal.modeType" | translate}}：</div>
+        <div class="col-sm-6 text-sm-left text-center">{{ (deviceInfo?.modelType | productType | translate) || 'SH.noData' | translate }}</div>
       </div>
       <div class="row" style="margin-bottom: 15px" *ngIf="deviceInfo?.mainAppData">
         <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">
-          {{"Portal.MainApp" | translate}}：
+          {{"Portal.mainApp" | translate}}：
         </div>
         <div class="col-sm-6 text-sm-left text-center">
           <div style="margin-bottom:10px">
@@ -62,7 +62,7 @@
       </div>
       <div class="row" style="margin-bottom: 15px" *ngIf="deviceInfo?.secondaryAppData">
         <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">
-          {{"Portal.othersApp" | translate}}：
+          {{"Portal.otherApp" | translate}}：
         </div>
         <div class="col-sm-6 text-sm-left text-center">
           <div style="margin-bottom:10px">
@@ -88,7 +88,7 @@
         </div>
       </div>
       <div class="row" style="margin-bottom: 15px" *ngIf="productInfo && productInfo.length > 0">
-        <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">{{"Portal.RelatedLinks" | translate}}：</div>
+        <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">{{"Portal.relatedLinks" | translate}}：</div>
         <div class="col-sm-6 text-sm-left text-center">
           <div *ngFor="let info of productInfo">
             <a target="_blank" href={{info?.link}}>{{info?.dispName}}</a>
@@ -96,42 +96,42 @@
         </div>
       </div>
       <div class="row" style="margin-bottom: 15px" *ngIf="productManual && productManual?.length > 0">
-        <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">{{"SH.UserManual" | translate}}：</div>
+        <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">{{"SH.manual" | translate}}：</div>
         <div class="col-sm-6 text-sm-left text-center">
           <div>
-            <a target="_blank" href={{productManual}}>{{"SH.GetDocument" | translate}}</a>
+            <a target="_blank" href={{productManual}}>{{"SH.deviceManual" | translate}}</a>
           </div>
         </div>
       </div>
       <div class="row demo-qr__action">
         <button class="alatech-btn alatech-btn--default"
-          title="{{'Portal.RegisterProduct' | translate}}"
+          title="{{'Portal.productRegistration' | translate}}"
           *ngIf="isShowBindingBtn"
           (click)="goBinding()"
           style="color: #26abe3;font-weight: bold"
         >
-          {{'Portal.RegisterProduct' | translate}}
+          {{'Portal.productRegistration' | translate}}
         </button>
         <button class="alatech-btn alatech-btn--default"
           title="Fit Pair"
           *ngIf="isShowFitPairBtn && isFitPaired"
           (click)="fitPair('2')"
         >
-          {{'Portal.RemoveOriginal' | translate }}Fit Pair
+          {{'Portal.unbind' | translate }}Fit Pair
         </button>
         <button class="alatech-btn alatech-btn--default"
           title="Fit Pair"
           *ngIf="isShowFitPairBtn && !isFitPaired"
           (click)="fitPair('1')"
         >
-          Fit Pair({{'Portal.CorrespondingAvatar-and-sports-file' | translate}})
+          Fit Pair({{'Portal.avatarAndSportFile' | translate}})
         </button>
         <button class="alatech-btn alatech-btn--default"
           title="Fit Pair"
           *ngIf="isShowFitPairBtn && !isFitPaired"
           (click)="fitPair('3')"
         >
-          Fit Pair({{'Portal.OnlyCorrespondingSportsFile' | translate}})
+          Fit Pair({{'Portal.onlySportFile' | translate}})
         </button>
       </div>
     </ng-container>

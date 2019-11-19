@@ -8,6 +8,7 @@ import {
 import * as Highcharts from 'highcharts';
 import { chart } from 'highcharts';
 import * as moment from 'moment';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-column-stacked-chart',
@@ -31,7 +32,7 @@ export class ColumnstackedChartComponent implements OnChanges {
   seriesX = [];
   series = [];
 
-  constructor() {
+  constructor(private translate: TranslateService) {
     Highcharts.setOptions({
       global: {
         useUTC: false
@@ -100,75 +101,27 @@ export class ColumnstackedChartComponent implements OnChanges {
           }
         });
       let name = '';
-      if (this.currentLang === 'zh-tw') {
-        switch (_type) {
-          case '1':
-            name = '跑步';
-            break;
-          case '2':
-            name = '騎乘';
-            break;
-          case '3':
-            name = '重量訓練';
-            break;
-          case '4':
-            name = '游泳';
-            break;
-          case '5':
-            name = '有氧運動';
-            break;
-          case '6':
-            name = '划船';
-            break;
-          default:
-            name = '尚未定義';
-        }
-      } else if (this.currentLang === 'zh-cn') {
-        switch (_type) {
-          case '1':
-            name = '跑步';
-            break;
-          case '2':
-            name = '骑乘';
-            break;
-          case '3':
-            name = '重量训练';
-            break;
-          case '4':
-            name = '游泳';
-            break;
-          case '5':
-            name = '有氧运动';
-            break;
-          case '6':
-            name = '划船';
-            break;
-          default:
-            name = '尚未定义';
-        }
-      } else {
-        switch (_type) {
-          case '1':
-            name = 'Running';
-            break;
-          case '2':
-            name = 'Cycling';
-            break;
-          case '3':
-            name = 'Weight training';
-            break;
-          case '4':
-            name = 'Swimming';
-            break;
-          case '5':
-            name = 'Aerobic';
-            break;
-          case '6':
-            name = 'Rower';
-            break;
-          default:
-            name = 'not yet defined';
-        }
+      switch (_type) {
+        case '1':
+          name = this.translate.instant('Dashboard.SportReport.run');
+          break;
+        case '2':
+          name = this.translate.instant('Dashboard.SportReport.cycle');
+          break;
+        case '3':
+          name = this.translate.instant('Dashboard.SportReport.actionTraining');
+          break;
+        case '4':
+          name = this.translate.instant('Dashboard.SportReport.swin');
+          break;
+        case '5':
+          name = this.translate.instant('Dashboard.SportReport.aerobic');
+          break;
+        case '6':
+          name = this.translate.instant('Dashboard.SportReport.boating');
+          break;
+        default:
+          name = this.translate.instant('Dashboard.SportReport.other');
       }
       const serie = { name, data };
       this.series.push(serie);
@@ -210,22 +163,10 @@ export class ColumnstackedChartComponent implements OnChanges {
       this.chooseType === '5-1' ||
       this.chooseType === '6-1'
     ) {
-      if (this.currentLang === 'zh-tw') {
-        yAxisText = '總時間(min)';
-      } else if (this.currentLang === 'zh-cn') {
-        yAxisText = '总时间(min)';
-      } else {
-        yAxisText = 'Total time(min)';
-      }
+      yAxisText = `${this.translate.instant('Dashboard.SportReport.totalTime')} (min)`;
       toolTipUnit = ' ';
     } else {
-      if (this.currentLang === 'zh-tw') {
-        yAxisText = '總距離(km)';
-      } else if (this.currentLang === 'zh-cn') {
-        yAxisText = '总距离(km)';
-      } else {
-        yAxisText = 'Total Distance(km)';
-      }
+      yAxisText = `${this.translate.instant('Dashboard.SportReport.totalDistance')} (km)`;
       toolTipUnit = ' km';
     }
     const options: any = {

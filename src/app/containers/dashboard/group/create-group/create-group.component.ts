@@ -194,7 +194,7 @@ export class CreateGroupComponent implements OnInit {
     this.userInfoService.getUserName().subscribe(res => {
       this.role.getUserName = res;
       // console.log('%c this.getUserName', 'color: #0ca011', res);
-    });      
+    });
     this.token = this.utils.getToken();
     const body = {
       token: this.token,
@@ -226,7 +226,7 @@ export class CreateGroupComponent implements OnInit {
       this.getAndInitTranslations();
     });
     this.getAndInitTranslations();
-    
+
     //建立分店以及課程群組時，指派建立者為預設管理員。 by Vincent 2019/5/9
     if (this.createType == 1 || this.createType == 2) {
       this.chooseLabels.push({ "groupName": "Alatech", "userName": this.role.getUserName, "userId": this.role.getUserId });
@@ -236,31 +236,31 @@ export class CreateGroupComponent implements OnInit {
   getAndInitTranslations() {
     this.translate
       .get([
-        'Dashboard.Group.BrandAdminChooseSettings',
-        'Dashboard.Group.BranchAdminChooseSettings',
-        'Dashboard.Group.PFAdminChooseSettings',
-        'Dashboard.Group.PTAdminChooseSettings',
-        'Dashboard.Group.AdminChooseSettings'
+        'Dashboard.Group.setBrandAdministrator',
+        'Dashboard.Group.setBranchAdministrator',
+        'Dashboard.Group.setCoach',
+        'Dashboard.Group.setAeacher',
+        'Dashboard.Group.setAdministrator'
       ])
       .subscribe(translation => {
         switch (this.createType) {
           case 1:
             this.title =
-              translation['Dashboard.Group.BranchAdminChooseSettings'];
+              translation['Dashboard.Group.setBranchAdministrator'];
             break;
           case 2:
             if (this.coachType === 2) {
-              this.title = translation['Dashboard.Group.PFAdminChooseSettings'];
+              this.title = translation['Dashboard.Group.setCoach'];
             } else {
-              this.title = translation['Dashboard.Group.PTAdminChooseSettings'];
+              this.title = translation['Dashboard.Group.setAeacher'];
             }
             break;
           case 3:
-            this.title = translation['Dashboard.Group.AdminChooseSettings'];
+            this.title = translation['Dashboard.Group.setBrandAdministrator'];
             break;
           default:
             this.title =
-              translation['Dashboard.Group.BrandAdminChooseSettings'];
+              translation['Dashboard.Group.setBrandAdministrator'];
         }
       });
   }
@@ -689,24 +689,24 @@ export class CreateGroupComponent implements OnInit {
   handleShowCreateBrand() {
     switch (this.commercePlan) {
       case 1:
-        this.planName = '體驗方案';
+        this.planName = this.translate.instant('Dashboard.System.BrandPlan.experiencePlan');
         break;
       case 2:
-        this.planName = '工作室方案';
+        this.planName = this.translate.instant('Dashboard.System.BrandPlan.studioPlan');
         break;
       case 3:
-        this.planName = '中小企業方案';
+        this.planName = this.translate.instant('Dashboard.System.BrandPlan.smePlan');
         break;
       default:
-        this.planName = '客製方案';
+        this.planName = this.translate.instant('Dashboard.System.BrandPlan.customPlan');
     }
     this.dialog.open(MessageBoxComponent, {
       hasBackdrop: true,
       data: {
         title: 'Message',
         body: `您選擇的方案是否為" ${this.planName} "?`,
-        confirmText: '確定',
-        cancelText: '取消',
+        confirmText: this.translate.instant('SH.determine'),
+        cancelText: this.translate.instant('SH.cancel'),
         onConfirm: () => {
           if (this.commercePlan && this.commercePlan > 0) {
             this.isShowCreateBrand = true;
@@ -749,19 +749,19 @@ export class CreateGroupComponent implements OnInit {
     }
 
     if (this.createType === 1) {
-      typeName = this.translate.instant('Dashboard.Group.GroupInfo.Branch');
+      typeName = this.translate.instant('Dashboard.Group.GroupInfo.branch');
     } else if (this.createType === 2) {
-      typeName = this.translate.instant('Dashboard.Group.GroupInfo.Class');
+      typeName = this.translate.instant('Dashboard.Group.GroupInfo.coachingClass');
     } else if (this.createType === 3) {
-      typeName = this.translate.instant('Dashboard.Group.Group');
+      typeName = this.translate.instant('Dashboard.Group.group');
     } else {
-      typeName = this.translate.instant('Dashboard.Group.GroupInfo.Brand');
+      typeName = this.translate.instant('Dashboard.Group.GroupInfo.brand');
     }
     this.dialog.open(MsgDialogComponent, {
       hasBackdrop: true,
       data: {
         title: 'Message',
-        body: this.translate.instant('Dashboard.Settings.DoUCancelCreate', {
+        body: this.translate.instant('Dashboard.Settings.confirmCancelCreate', {
           target: typeName
         }),
         href

@@ -20,7 +20,7 @@
   <app-upload-file
     [maxFileSize]="maxFileSize"
     [disabled]="isUploading"
-    [btnText]="this.fileLink ? ('Dashboard.Group.GroupInfo.ReUpload' | translate) : ('Dashboard.Group.GroupInfo.SelectFile' | translate)"
+    btnText="Select File"
     [isLoading]="isUploading"
     [accept]="acceptFileExtensions.join()"
     (onChange)="handleAttachmentChange($event)"
@@ -51,12 +51,12 @@
   </ng-container>
 
   <ng-container matColumnDef="coordinateFormat">
-    <th mat-header-cell *matHeaderCellDef> 座標格式 </th>
+    <th mat-header-cell *matHeaderCellDef> {{'Dashboard.ActivityDetail.coordinate' | translate}} </th>
     <td mat-cell *matCellDef="let element"> {{element.coordinateFormat}} </td>
   </ng-container>
 
   <ng-container matColumnDef="desc">
-    <th mat-header-cell *matHeaderCellDef>　說明　</th>
+    <th mat-header-cell *matHeaderCellDef>　{{'Dashboard.System.description' | translate}}　</th>
     <td mat-cell *matCellDef="let element"> {{element.desc}} </td>
   </ng-container>
 
@@ -67,7 +67,7 @@
   <div class="ala-dashboard-title activty-title"
     style="margin: 15px 0px"
   >
-    {{'Dashboard.MyActivity.Map' | translate}}
+    {{'Dashboard.MyActivity.map' | translate}}
   </div>
   Baidu
   <div style="position: relative;">

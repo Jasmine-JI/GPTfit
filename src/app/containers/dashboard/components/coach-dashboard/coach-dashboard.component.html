@@ -1,12 +1,12 @@
 <div class="end-text"
   *ngIf="isClassEnd"
 >
-  {{ "Dashboard.TrainLive.LiveEnd" | translate}}
+  {{ "Dashboard.TrainLive.endLive" | translate}}
   <div style="display: flex;justify-content: center;margin-top:30px">
     <button class="alatech-btn alatech-btn--default"
       [routerLink]="['/dashboard/live/train-live']"
     >
-      {{ "Dashboard.TrainLive.BackClassList" | translate}}
+      {{ "Dashboard.TrainLive.back" | translate}}
     </button>
   </div>
 </div>
@@ -47,7 +47,7 @@
       </div>
     </div>
     <div>
-      <label class="board-title">{{ "Dashboard.TrainLive.ClassInfo" | translate}}</label>
+      <label class="board-title">{{ "Dashboard.TrainLive.courseIntroduction" | translate}}</label>
       <div>
         <div style="display: flex;padding-right: 24px;align-items: center;">
           <div style="display:flex;align-items: center;">
@@ -83,7 +83,7 @@
       </div>
     </div>
     <div>
-      <label class="board-title">{{ "Dashboard.TrainLive.CoachInfo" | translate}}</label>
+      <label class="board-title">{{ "Dashboard.TrainLive.coachIntroduction" | translate}}</label>
       <div>
         <div style="display:flex;align-items: center;">
           <div class="user-photo user-photo--portrait" style="margin: 0 15px">
@@ -108,7 +108,7 @@
   <div class="data-container">
     <ng-container>
       <div class="coach-header" *ngIf="displaySections[1]">
-        <span>{{ "Dashboard.TrainLive.LineChart" | translate}}</span>
+        <span>{{ "Dashboard.TrainLive.trend" | translate}}</span>
         <span>
           <div class="dropdown">
             <div class="trend-chart-item" id="dropdownMenu4" data-toggle="dropdown" aria-haspopup="true"
@@ -123,68 +123,68 @@
                   <li (click)="removeSeries(0)"
                     [class.active]="chartType === 0"
                   >
-                    {{ "SH.HeartRate" | translate}}
+                    {{ "SH.hr" | translate}}
                   </li>
                   <li (click)="removeSeries(1)"
                     [class.active]="chartType === 1"
                   >
-                    {{ "SH.Speed" | translate}}
+                    {{ "SH.speed" | translate}}
                   </li>
                   <li (click)="removeSeries(2)"
                     [class.active]="chartType === 2"
                   >
-                    {{ "SH.Watt" | translate}}
+                    {{ "SH.power" | translate}}
                   </li>
                 </ng-container>
                 <ng-container *ngIf="classType === '5'">
                   <li (click)="removeSeries(0)"
                     [class.active]="chartType === 0"
                   >
-                    {{ "SH.HeartRate" | translate}}
+                    {{ "SH.hr" | translate}}
                   </li>
                   <li (click)="removeSeries(1)"
                     [class.active]="chartType === 1"
                   >
-                    {{ "SH.Calorie" | translate}}
+                    {{ "SH.calories" | translate}}
                   </li>
                   <li (click)="removeSeries(2)"
                     [class.active]="chartType === 2"
                   >
-                    {{ "SH.HeartRateZone" | translate}}
+                    {{ "SH.hrZone" | translate}}
                   </li>
                 </ng-container>
                 <ng-container *ngIf="classType === '2'">
                   <li (click)="removeSeries(0)"
                     [class.active]="chartType === 0"
                   >
-                    {{ "SH.HeartRate" | translate}}
+                    {{ "SH.hr" | translate}}
                   </li>
                   <li (click)="removeSeries(1)"
                     [class.active]="chartType === 1"
                   >
-                    {{ "SH.CycleCadence" | translate}}
+                    {{ "SH.CyclingCadence" | translate}}
                   </li>
                   <li (click)="removeSeries(2)"
                     [class.active]="chartType === 2"
                   >
-                    {{ "SH.Speed" | translate}}
+                    {{ "SH.speed" | translate}}
                   </li>
                 </ng-container>
                 <ng-container *ngIf="classType === '1'">
                   <li (click)="removeSeries(0)"
                     [class.active]="chartType === 0"
                   >
-                    {{ "SH.HeartRate" | translate}}
+                    {{ "SH.hr" | translate}}
                   </li>
                   <li (click)="removeSeries(1)"
                     [class.active]="chartType === 1"
                   >
-                    {{ "SH.Pace" | translate}}
+                    {{ "SH.pace" | translate}}
                   </li>
                   <li (click)="removeSeries(2)"
                     [class.active]="chartType === 2"
                   >
-                    {{ "SH.TotalDisTance" | translate}}
+                    {{ "SH.totalDistance" | translate}}
                   </li>
                 </ng-container>
               </ul>
@@ -267,7 +267,7 @@
             </div>
           </div>
           <div class="hr-info">
-            <div class="hr-item">{{ "Dashboard.TrainLive.Avg" | translate}}</div>
+            <div class="hr-item">{{ "Dashboard.TrainLive.avg" | translate}}</div>
             <div style="display: flex;">
               <div class="hr-val">{{meanValue}}</div>
               <div class="hr-heart">
@@ -381,7 +381,7 @@
     </ng-container>
     <ng-container *ngIf="displaySections[2]">
       <div class="coach-header">
-        <span>{{ "Dashboard.TrainLive.Member" | translate}}</span>
+        <span>{{ "Dashboard.TrainLive.member" | translate}}</span>
         <span>
         <div class="dropdown" style="display:inline-block">
           <div class="trend-chart-item" id="dropdownMenu4" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -393,38 +393,38 @@
           <div class="dropdown-menu trend-chart-menu" [class.show]="isUserMenuShow" aria-labelledby="dropdownMenu4">
             <ul>
               <li (click)="handleSortCard(0, false)" [class.active]="sortType === 0">
-                {{ "SH.HeartRate" | translate}}
+                {{ "SH.hr" | translate}}
               </li>
               <ng-container *ngIf="classType === '5'">
                 <li (click)="handleSortCard(1, false)" [class.active]="sortType === 1">
-                  {{ "SH.Calorie" | translate}}
+                  {{ "SH.calories" | translate}}
                 </li>
                 <li (click)="handleSortCard(2, false)" [class.active]="sortType === 2">
-                  {{ "SH.HeartRateZone" | translate}}
+                  {{ "SH.hrZone" | translate}}
                 </li>
               </ng-container>
               <ng-container *ngIf="classType === '6'">
                 <li (click)="handleSortCard(1, false)" [class.active]="sortType === 1">
-                  {{ "SH.Speed" | translate}}
+                  {{ "SH.speed" | translate}}
                 </li>
                 <li (click)="handleSortCard(2, false)" [class.active]="sortType === 2">
-                  {{ "SH.Watt" | translate}}
+                  {{ "SH.power" | translate}}
                 </li>
               </ng-container>
               <ng-container *ngIf="classType === '2'">
                 <li (click)="handleSortCard(1, false)" [class.active]="sortType === 1">
-                  {{ "SH.CycleCadence" | translate}}
+                  {{ "SH.CyclingCadence" | translate}}
                 </li>
                 <li (click)="handleSortCard(2, false)" [class.active]="sortType === 2">
-                  {{ "SH.Speed" | translate}}
+                  {{ "SH.speed" | translate}}
                 </li>
               </ng-container>
               <ng-container *ngIf="classType === '1'">
                 <li (click)="handleSortCard(1, false)" [class.active]="sortType === 1">
-                  {{ "SH.Pace" | translate}}
+                  {{ "SH.pace" | translate}}
                 </li>
                 <li (click)="handleSortCard(2, false)" [class.active]="sortType === 2">
-                  {{ "SH.TotalDisTance" | translate}}
+                  {{ "SH.totalDistance" | translate}}
                 </li>
               </ng-container>
             </ul>
@@ -440,38 +440,38 @@
           <div class="dropdown-menu trend-chart-menu" [class.show]="isUserMenuShow" aria-labelledby="dropdownMenu4">
             <ul>
               <li (click)="handleSortCard(0, true)" [class.active]="sortType === 0">
-                {{ "SH.HeartRate" | translate}}
+                {{ "SH.hr" | translate}}
               </li>
               <ng-container *ngIf="classType === '5'">
                 <li (click)="handleSortCard(1, true)" [class.active]="sortType === 1">
-                  {{ "SH.Calorie" | translate}}
+                  {{ "SH.calories" | translate}}
                 </li>
                 <li (click)="handleSortCard(2, true)" [class.active]="sortType === 2">
-                  {{ "SH.HeartRateZone" | translate}}
+                  {{ "SH.hrZone" | translate}}
                 </li>
               </ng-container>
               <ng-container *ngIf="classType === '6'">
                 <li (click)="handleSortCard(1, true)" [class.active]="sortType === 1">
-                  {{ "SH.Speed" | translate}}
+                  {{ "SH.speed" | translate}}
                 </li>
                 <li (click)="handleSortCard(2, true)" [class.active]="sortType === 2">
-                  {{ "SH.Watt" | translate}}
+                  {{ "SH.power" | translate}}
                 </li>
               </ng-container>
               <ng-container *ngIf="classType === '2'">
                 <li (click)="handleSortCard(1, true)" [class.active]="sortType === 1">
-                  {{ "SH.CycleCadence" | translate}}
+                  {{ "SH.CyclingCadence" | translate}}
                 </li>
                 <li (click)="handleSortCard(2, true)" [class.active]="sortType === 2">
-                  {{ "SH.Speed" | translate}}
+                  {{ "SH.speed" | translate}}
                 </li>
               </ng-container>
               <ng-container *ngIf="classType === '1'">
                 <li (click)="handleSortCard(1, true)" [class.active]="sortType === 1">
-                  {{ "SH.Pace" | translate}}
+                  {{ "SH.pace" | translate}}
                 </li>
                 <li (click)="handleSortCard(2, true)" [class.active]="sortType === 2">
-                  {{ "SH.TotalDisTance" | translate}}
+                  {{ "SH.totalDistance" | translate}}
                 </li>
               </ng-container>
             </ul>
@@ -505,7 +505,7 @@
                 >
               </div>
               <div class="hr-val">
-                <div class="hr">{{ "SH.HeartRate" | translate}}</div>
+                <div class="hr">{{ "SH.hr" | translate}}</div>
                 <div class="val" [style.color]="hrColors[item?.colorIdx]">
                   {{ item?.liveHr || 0 }}
                 </div>
@@ -514,11 +514,11 @@
             <ng-container *ngIf="classType === '5'">
               <div class="hr-card-body__other">
                 <div class="hr-card-body__left">
-                  <div>{{ "SH.Calorie" | translate}}</div>
+                  <div>{{ "SH.calories" | translate}}</div>
                   <div class="card-params">{{ item?.calorie || 0 }}</div>
                 </div>
                 <div class="hr-card-body__right">
-                  <div>{{ "SH.HeartRateZone" | translate}}</div>
+                  <div>{{ "SH.hrZone" | translate}}</div>
                   <div class="card-params">{{ item?.colorIdx || 0 }}</div>
                 </div>
               </div>
@@ -526,11 +526,11 @@
             <ng-container *ngIf="classType === '2'">
               <div class="hr-card-body__other">
                 <div class="hr-card-body__left">
-                  <div>{{ "SH.CycleCadence" | translate}}</div>
+                  <div>{{ "SH.CyclingCadence" | translate}}</div>
                   <div class="card-params">{{ item?.cadence || 0 }}</div>
                 </div>
                 <div class="hr-card-body__right">
-                  <div>{{ "SH.Speed" | translate}}</div>
+                  <div>{{ "SH.speed" | translate}}</div>
                   <div class="card-params">{{ item?.speed || 0 }}</div>
                 </div>
               </div>
@@ -538,11 +538,11 @@
             <ng-container *ngIf="classType === '6'">
               <div class="hr-card-body__other">
                 <div class="hr-card-body__left">
-                  <div>{{ "SH.Speed" | translate}}</div>
+                  <div>{{ "SH.speed" | translate}}</div>
                   <div class="card-params">{{ item?.speed || 0 }}</div>
                 </div>
                 <div class="hr-card-body__right">
-                  <div>{{ "SH.Watt" | translate}}</div>
+                  <div>{{ "SH.power" | translate}}</div>
                   <div class="card-params">{{ item?.watt || 0 }}</div>
                 </div>
               </div>
@@ -550,11 +550,11 @@
             <ng-container *ngIf="classType === '1'">
               <div class="hr-card-body__other">
                 <div class="hr-card-body__left">
-                  <div>{{ "SH.Pace" | translate}}</div>
+                  <div>{{ "SH.pace" | translate}}</div>
                   <div class="card-params">{{ item?.pace || 0 }}</div>
                 </div>
                 <div class="hr-card-body__right">
-                  <div>{{ "SH.TotalDisTance" | translate}}</div>
+                  <div>{{ "SH.totalDistance" | translate}}</div>
                   <div class="card-params">{{ item?.distance || 0 }}</div>
                 </div>
               </div>

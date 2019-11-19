@@ -132,9 +132,9 @@ export class SignupComponent implements OnInit {
           info: { rtnMsg }
         } = res;
         if (resultCode === 200) {
-          let successText = this.translate.instant('Portal.RegisterMailSuccessfully');
+          let successText = this.translate.instant('Portal.registerMailSuccessfully');
           if (body.phone.length > 0) {
-            successText = this.translate.instant('Portal.RegisterPhoneSuccessfully');
+            successText = this.translate.instant('Portal.registerPhoneSuccessfully');
           }
           this.snackbar.open(successText, 'OK', { duration: 5000 });
           setTimeout(() => this.router.navigate(['/signin']), 5000);

@@ -1,13 +1,13 @@
 <div class="d-flex justify-content-between" style="margin-bottom: 15px">
   <span style="color: #157fcc; font-weight:700">
-    {{ "Dashboard.Group.MyGroup.MyGroup" | translate}}
+    {{ "Dashboard.Group.MyGroup.myGroup" | translate}}
   </span>
   <div class="group-edit-bar">
     <button class="alatech-btn alatech-btn--default"
-      title="{{ 'Dashboard.Group.SearchGroup.SearchGroup' | translate}}"
+      title="{{ 'Dashboard.Group.SearchGroup.searchGroup' | translate}}"
       [routerLink]="['/dashboard/group-search']"
     >
-      {{ "Dashboard.Group.SearchGroup.SearchGroup" | translate}}
+      {{ "Dashboard.Group.SearchGroup.searchGroup" | translate}}
     </button>
     <!-- <button class="alatech-btn alatech-btn--default"
       title="建立新群組"
@@ -22,12 +22,12 @@
   matSort #sortTable="matSort"
 >
   <ng-container matColumnDef="info">
-    <mat-header-cell *matHeaderCellDef>{{ "Dashboard.Group.MyGroup.Name" | translate}}</mat-header-cell>
+    <mat-header-cell *matHeaderCellDef>{{ "Dashboard.Group.MyGroup.name" | translate}}</mat-header-cell>
     <mat-cell *matCellDef="let row">{{ row.groupName }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="time">
     <mat-header-cell *matHeaderCellDef disableClear="true">
-      {{ "Dashboard.Group.MyGroup.Identity" | translate}}
+      {{ "Dashboard.Group.MyGroup.identity" | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let row">{{ row.groupProperty | accessName | translate }}</mat-cell>
   </ng-container>
@@ -36,7 +36,7 @@
   </mat-row>
 </mat-table>
 <div *ngIf="isEmpty" style="text-align: center;padding: 30px">
-  {{ "SH.No-information" | translate}}
+  {{ "SH.noData" | translate}}
 </div>
 <div class="ala-loading-shade" *ngIf="isLoading">
   <mat-spinner></mat-spinner>

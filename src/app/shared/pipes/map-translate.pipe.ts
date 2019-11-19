@@ -37,7 +37,7 @@ export class MapTranslatePipe implements PipeTransform {
       case 15:
         return 'SH.Map.BeijingMarathon';
       default:
-        return 'SH.No-information';
+        return 'SH.noData';
     }
   }
 }

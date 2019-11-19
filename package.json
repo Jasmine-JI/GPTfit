@@ -21,7 +21,7 @@
     "postuat-build": "npm run bash",
     "postprod-build": "npm run bash",
     "web-build": "node --max-old-space-size=1800 node_modules/@angular/cli/bin/ng build -c web  --aot --base-href /",
-    "uat-build": "ng build -c uat --aot --base-href /",
+    "uat-build": "ng build -c uat --aot --output-hashing=all --base-href /",
     "tst-build": "ng build -c tst --aot --base-href /",
     "prod-build": "ng build --prod --aot --build-optimizer --base-href /",
     "test": "ng test",

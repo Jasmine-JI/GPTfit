@@ -1,10 +1,10 @@
 <div style="display:flex;justify-content: space-between">
-  <h3>{{'Dashboard.Settings.UserSetting' | translate}}</h3>
+  <h3>{{'Dashboard.Settings.userSetting' | translate}}</h3>
   <button class="alatech-btn alatech-btn--default settings-btn"
-    title="{{'Dashboard.Settings.Save' | translate}}"
+    title="{{'Dashboard.Settings.save' | translate}}"
     (click)="saveSettings(settingsForm)"
   >
-    {{'Dashboard.Settings.Save' | translate}}
+    {{'Dashboard.Settings.save' | translate}}
   </button>
 </div>
 <form [formGroup]="settingsForm"
@@ -13,13 +13,13 @@
   (ngSubmit)="saveSettings(settingsForm)"
 >
   <label class="ala-form__label settings-label">
-    {{'Dashboard.Settings.BasicSetting' | translate}}
+    {{'Dashboard.Settings.basicSetting' | translate}}
   </label>
   <div class="ala-list__item">
     <label class="ala-form__label settings-item"
       [class.form__label--required]="true"
     >
-      {{'Dashboard.Settings.Avatar' | translate}}
+      {{'Dashboard.Settings.avatar' | translate}}
     </label>
     <div class="settings-control" style="min-width: 250px;">
       <app-upload-file
@@ -27,11 +27,11 @@
         [imageURL]="nameIcon?.value"
         [maxFileSize]="maxFileSize"
         [disabled]="isUploading"
-        [btnText]="'Dashboard.Group.GroupInfo.SelectFile' | translate"
+        [btnText]="'Dashboard.Group.GroupInfo.selectImg' | translate"
         [isLoading]="isUploading"
         [accept]="acceptFileExtensions.join()"
-        [reloadFileText]="'Dashboard.Group.GroupInfo.ReUpload' | translate"
-        [chooseFileText]="'Dashboard.Group.GroupInfo.SelectFile' | translate"
+        [reloadFileText]="'Dashboard.Group.GroupInfo.selectImg' | translate"
+        [chooseFileText]="'Dashboard.Group.GroupInfo.selectImg' | translate"
         (onChange)="handleAttachmentChange($event)"
       ></app-upload-file>
     </div>
@@ -40,7 +40,7 @@
     <label class="ala-form__label settings-item"
       [class.form__label--required]="true"
     >
-    {{'Dashboard.Settings.Name' | translate}}
+    {{'Dashboard.Settings.name' | translate}}
     </label>
     <div class="settings-control" style="position: relative;">
       <app-form-text
@@ -60,7 +60,7 @@
     <label class="ala-form__label settings-item"
       [class.form__label--required]="true"
     >
-    {{'Dashboard.Settings.Height' | translate}}
+    {{'Dashboard.Settings.bodyHeight' | translate}}
     </label>
     <div class="settings-control">
       <div style="display: inline-block">
@@ -74,7 +74,7 @@
           [controlName]="'height'"
           [isInvalid]="(!height.valid && height.touched) || (f.submitted && height.hasError('required'))"
           (onChange)="handleValueArrange(1, $event)"
-          [min]="50"
+          [min]="100"
           [max]="255"
         >
         </app-form-text>
@@ -87,7 +87,7 @@
     <label class="ala-form__label settings-item"
       [class.form__label--required]="true"
     >
-    {{'Dashboard.Settings.Weight' | translate}}
+    {{'Dashboard.Settings.bodyWeight' | translate}}
     </label>
     <div class="settings-control">
       <div style="display: inline-block">
@@ -100,7 +100,7 @@
           [invalidRemindText]="inValidText"
           [control]="settingsForm"
           [controlName]="'weight'"
-          [min]="30"
+          [min]="40"
           [max]="255"
           (onChange)="handleValueArrange(2, $event)"
         >
@@ -111,7 +111,7 @@
   </div>
   <div class="ala-list__item">
     <label class="ala-form__label settings-item">
-      {{'Dashboard.Settings.Birthday' | translate}}
+      {{'Dashboard.Settings.birthday' | translate}}
     </label>
     <div class="settings-control">
       <mat-form-field style="min-width: 275px;">
@@ -126,20 +126,20 @@
   </div>
   <div class="ala-list__item">
     <label class="ala-form__label settings-item">
-      {{'Dashboard.Settings.Sex' | translate}}
+      {{'Dashboard.Settings.gender' | translate}}
     </label>
     <div class="settings-control">
       <select class="form-field"
         formControlName="gender"
       >
-        <option value="0">{{'Dashboard.Settings.Male' | translate}}</option>
-        <option value="1">{{'Dashboard.Settings.Female' | translate}}</option>
+        <option value="0">{{'Dashboard.Settings.male' | translate}}</option>
+        <option value="1">{{'Dashboard.Settings.female' | translate}}</option>
       </select>
     </div>
   </div>
   <div class="ala-list__item">
     <label class="ala-form__label settings-item">
-      {{'Dashboard.Settings.Introduction' | translate}}
+      {{'Dashboard.Settings.introduction' | translate}}
     </label>
     <div class="settings-control">
       <app-form-textarea

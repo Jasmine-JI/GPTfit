@@ -13,7 +13,6 @@ import { ForgetService } from '../../services/forget.service';
 import { SignupResponse } from '../../models/signup-response';
 import { SignupService } from '../../services/signup.service';
 import { SMSCode } from '../../models/sms-code';
-import { equalValueValidator } from '@shared/equal-value-validator';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -33,8 +32,6 @@ export class ForgetpwdComponent implements OnInit {
   @ViewChild('f') forgetForm: any;
   isChartCodeErr = false;
   isSMSCodeErr = false;
-  isPhoneNotSame = false;
-  isEmailNotSame = false;
   isForgetSending = false;
   isSMSCodSending = false;
   content = '送出';
@@ -52,19 +49,12 @@ export class ForgetpwdComponent implements OnInit {
   get phone() {
     return this.form.get('phone');
   }
-  get confirmPhone() {
-    return this.form.get('confirmPhone');
-  }
   ngOnInit() {
     this.form = this.fb.group(
       {
         phone: ['', Validators.required],
-        confirmPhone: ['', Validators.required],
         smsCode: ['', Validators.required]
       },
-      {
-        validator: equalValueValidator('phone', 'confirmPhone')
-      }
     );
   }
 
@@ -84,11 +74,6 @@ export class ForgetpwdComponent implements OnInit {
     }
     if (valid) {
       if (this.isEmailMethod) {
-        if (value.confirmEmail === value.email) {
-          this.isEmailNotSame = false;
-        } else {
-          this.isEmailNotSame = true;
-        }
         if (this.randomCode.randomCodeVerify === value.chartCode) {
           this.isChartCodeErr = false;
           const body = {
@@ -100,11 +85,6 @@ export class ForgetpwdComponent implements OnInit {
           this.isChartCodeErr = true;
         }
       } else {
-        if (value.confirmPhone === value.phone) {
-          this.isPhoneNotSame = false;
-        } else {
-          this.isPhoneNotSame = true;
-        }
         if (this.smsVerifyCode === value.smsCode) {
           this.isSMSCodeErr = false;
           const param = {
@@ -130,11 +110,13 @@ export class ForgetpwdComponent implements OnInit {
         } = res;
         if (resultCode === 200) {
           this.snackbar.open(
-            this.translate.instant('Portal.MailHadBeenSend'),
+            this.translate.instant('Portal.sendRestPwdEmailSuccess'),
             'OK',
             { duration: 5000 }
           );
           setTimeout(() => this.router.navigate(['/signin']), 5000);
+        } else if (rtnMsg === 'This is not a registered or activation mail.') {
+          this.snackbar.open(this.translate.instant('SH.noRegisterData'), 'OK', { duration: 5000 });
         } else {
           this.snackbar.open(rtnMsg, 'OK', { duration: 5000 });
           this.isForgetSending = false;
@@ -168,32 +150,16 @@ export class ForgetpwdComponent implements OnInit {
               )
             ]
           ],
-          confirmEmail: [
-            '',
-            [
-              Validators.required,
-              Validators.pattern(
-                /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/
-              )
-            ]
-          ],
           chartCode: ['', Validators.required]
         },
-        {
-          validator: equalValueValidator('email', 'confirmEmail')
-        }
       );
       this.handleRandomCode();
     } else {
       this.form = this.fb.group(
         {
           phone: ['', Validators.required],
-          confirmPhone: ['', Validators.required],
           smsCode: ['', Validators.required]
         },
-        {
-          validator: equalValueValidator('phone', 'confirmPhone')
-        }
       );
     }
     return this.forgetForm.resetForm();
@@ -201,7 +167,6 @@ export class ForgetpwdComponent implements OnInit {
   sendSMSCode(e) {
     e.preventDefault();
     this.phone.markAsTouched();
-    this.confirmPhone.markAsTouched();
     if (!this.countryCode) {
       this.isCodeInvalid = true;
     } else {
@@ -211,13 +176,10 @@ export class ForgetpwdComponent implements OnInit {
       this.countryCode &&
       this.phone.value &&
       this.phone.valid &&
-      this.confirmPhone.value &&
-      this.confirmPhone.valid &&
-      this.confirmPhone.value === this.phone.value &&
       !this.isSMSCodSending
     ) {
-      const body = { countryCode: this.countryCode, phone: this.phone.value };
-      this.isPhoneNotSame = false;
+      const categoryNum = '2';  // 帶上category使API驗證該手機號碼是否已註冊-kidin-1081108
+      const body = { countryCode: this.countryCode, phone: this.phone.value, category: categoryNum };
       this.isSMSCodSending = true;
       this.signupService.getSMSVerifyCode(body).subscribe((res: SMSCode) => {
         this.isSMSCodSending = false;
@@ -228,11 +190,17 @@ export class ForgetpwdComponent implements OnInit {
         } = res;
         if (resultCode === 200) {
           this.smsVerifyCode = smsVerifyCode;
+          this.snackbar.open(
+            `${this.translate.instant('Portal.phoneCaptcha')} ${this.translate.instant('SH.send')}`,
+            'OK',
+            { duration: 5000 }
+          );
+        } else if (rtnMsg === 'This is not a registered or activation account.') {
+          this.snackbar.open(this.translate.instant('SH.noRegisterData'), 'OK', { duration: 5000 });
+        } else {
+          this.snackbar.open(rtnMsg, 'OK', { duration: 5000 });
         }
-        this.snackbar.open(rtnMsg, 'OK', { duration: 5000 });
       });
-    } else {
-      this.isPhoneNotSame = true;
     }
   }
 }

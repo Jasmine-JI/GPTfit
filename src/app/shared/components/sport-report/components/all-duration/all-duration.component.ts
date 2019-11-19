@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import * as _Highcharts from 'highcharts';
 import { chart } from 'highcharts';
+import { TranslateService } from '@ngx-translate/core';
 
 var Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -27,7 +28,7 @@ export class AllDurationComponent implements OnChanges, AfterViewInit {
 
   seriesX = [];
   series = [];
-  constructor() {}
+  constructor(private translate: TranslateService) {}
 
   ngOnChanges() {
     this.handleSportSummaryArray();
@@ -79,9 +80,9 @@ export class AllDurationComponent implements OnChanges, AfterViewInit {
         });
       let name = '';
       if (_type === '1') {
-        name = '跑步';
+        name = this.translate.instant('Dashboard.SportReport.run');
       } else {
-        name = '騎乘';
+        name = this.translate.instant('Dashboard.SportReport.cycle');
       }
       const serie = { name, data };
       this.series.push(serie);
@@ -101,7 +102,7 @@ export class AllDurationComponent implements OnChanges, AfterViewInit {
       yAxis: {
         min: 0,
         title: {
-          text: '總時間'
+          text: this.translate.instant('Dashboard.SportReport.totalTime')
         },
         stackLabels: {
           enabled: true,
