@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { UtilsService } from './utils.service';
 import * as Highcharts from 'highcharts';
+
 @Injectable()
 class Option {
   constructor(dataset, colorIdx) {
@@ -78,6 +79,14 @@ class Option {
 }
 @Injectable()
 export class ActivityService {
+  private userWeight = 70;  // 儲存使用者體重-kidin-1081121
+  private heavyTrainDate = [];  // 儲存重訓資料-kidin-1081121
+  private heavyTrainDateState = [];  // 備份重訓資料-kidin-1081121
+  private muscleListColor = []; // 儲存肌肉清單顏色列表-kidin-1081128
+  private focusMusclePart = false;
+  private Proficiency = 'asept';  // 儲存重訓熟練度-kidin-1081121
+  private showMusclePart = '';  // 展示部份肌肉訓練地圖-kidin-1081127
+
   constructor(private http: HttpClient, private utils: UtilsService) {}
   fetchTestData() {
     return this.http.get<any>('https://data.jianshukeji.com/jsonp?filename=json/activity.json');
@@ -130,7 +139,7 @@ export class ActivityService {
       const { userHRBase, userAge, userMaxHR, userRestHR } = hrFormatData;
       if (userMaxHR && userRestHR) {
         if (userHRBase === 0) {
-          //區間數值採無條件捨去法
+          // 區間數值採無條件捨去法
           userHRZones[0] = Math.floor((220 - userAge) * 0.5);
           userHRZones[1] = Math.floor((220 - userAge) * 0.6 - 1);
           userHRZones[2] = Math.floor((220 - userAge) * 0.7 - 1);
@@ -147,7 +156,7 @@ export class ActivityService {
         }
       } else {
         if (userHRBase === 0) {
-          //區間數值採無條件捨去法
+          // 區間數值採無條件捨去法
           userHRZones[0] = Math.floor((220 - userAge) * 0.5);
           userHRZones[1] = Math.floor((220 - userAge) * 0.6 - 1);
           userHRZones[2] = Math.floor((220 - userAge) * 0.7 - 1);
@@ -605,6 +614,7 @@ export class ActivityService {
       zoneDataset.data = zoneDataset.data.map((val, j) => val);
       zoneOptions = new Option(zoneDataset, colorIdx);
       colorIdx++;
+      zoneOptions['plotOptions'].column['pointPlacement'] = 0;
       zoneOptions['chart'].zoomType = '';
       zoneOptions['xAxis'].type = '';
       zoneOptions['xAxis'].dateTimeLabelFormats = null;
@@ -809,5 +819,71 @@ export class ActivityService {
       val,
       segYAxisData[j]
     ]);
+  }
+
+  // 儲存使用者體重-kidin-1081121
+  saveUserWeight(weight) {
+    this.userWeight = weight;
+  }
+  // 存入重訓資料-kidin-1081121
+  saveLapsData(data) {
+    this.heavyTrainDate = data;
+    this.heavyTrainDateState = data;
+  }
+  // 儲存重訓熟練度-kidin-1081121
+  saveProficiency(Proficiency) {
+    this.Proficiency = Proficiency;
+  }
+  // 針對使用者點選的肌肉清單篩選資料-kidin-1081128
+  saveMusclePart(muscleCode) {
+    if (muscleCode !== '') {
+      this.focusMusclePart = true;
+      this.showMusclePart = muscleCode;
+      const trainingData = this.heavyTrainDateState;
+      for (let i = 0; i < trainingData.length; i++) {
+        this.heavyTrainDate = trainingData.filter(data => {
+          const traininfPart = data.setWorkOutMuscleMain;
+          for (let j = 0; j < traininfPart.length; j++) {
+            if (traininfPart[j] === muscleCode) {
+              return true;
+            }
+          }
+          return false;
+        });
+      }
+    } else {
+      this.focusMusclePart = false;
+    }
+  }
+  // 儲存肌肉清單顏色設定-kidin-1081128
+  saveMuscleListColor(muscleColor) {
+    this.muscleListColor = muscleColor;
+  }
+  getLapsData() {
+    return this.heavyTrainDateState;
+  }
+  getMuscleListColor() {
+    return this.muscleListColor;
+  }
+  getAllData() {
+    if (this.focusMusclePart === true) {
+      const heavyTrainingData = {
+        userWeight: this.userWeight,
+        proficiency: this.Proficiency,
+        lapDatas: this.heavyTrainDate,
+        showMusclePart: this.showMusclePart,
+        focusMusclePart: true
+      };
+      return heavyTrainingData;
+    } else {
+      const heavyTrainingData = {
+        userWeight: this.userWeight,
+        proficiency: this.Proficiency,
+        lapDatas: this.heavyTrainDateState,
+        showMusclePart: this.showMusclePart,
+        focusMusclePart: false
+      };
+      return heavyTrainingData;
+    }
   }
 }

@@ -65,14 +65,14 @@
           *ngIf="coachType === '2'"
         >
           <a>
-            {{ 'Dashboard.Group.GroupInfo.setupFitnessCoach' | translate}}
+            {{ 'Dashboard.Group.addObject' | translate}} {{ 'Dashboard.Group.coach' | translate}}
           </a>
         </li>
         <li class="normal-manage" (click)="handleAssignAdmin(2)"
           *ngIf="coachType === '1'"
         >
           <a>
-            {{ 'Dashboard.Group.GroupInfo.setupProfessionalTeacher' | translate}}
+            {{ 'Dashboard.Group.addObject' | translate}} {{ 'Dashboard.Group.teacher' | translate}}
           </a>
         </li>
         <li class="normal-manage" (click)="goToUserProfileInEditGroupInfo()">

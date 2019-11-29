@@ -39,6 +39,7 @@
           [disabled]="isSaveUserSettingLoading"
           [control]="settingsForm"
           [controlName]="'heartRateMax'"
+          (focusout)="handleHrValueArrange('maxHr', $event)"
         >
         </app-form-text>
       </div>
@@ -58,6 +59,7 @@
           [disabled]="isSaveUserSettingLoading"
           [control]="settingsForm"
           [controlName]="'heartRateResting'"
+          (focusout)="handleHrValueArrange('restHr', $event)"
         >
         </app-form-text>
       </div>
@@ -109,9 +111,9 @@
           [disabled]="isSaveUserSettingLoading"
           [control]="settingsForm"
           [controlName]="'wheelSize'"
-          [max]="2500"
-          [min]="600"
-          (onChange)="handleValueArrange($event)"
+          [max]="9000"
+          [min]="300"
+          (focusout)="handleWheelValueArrange($event)"
         >
          </app-form-text>
       </div>
