@@ -56,7 +56,7 @@ export class FirstLoginComponent implements OnInit {
       height: [175, Validators.required],
       weight: [75, Validators.required],
       gender: 0,
-      birth: '19880601'
+      birth: ''
     });
   }
   submit({ valid, value }) {
@@ -148,8 +148,14 @@ export class FirstLoginComponent implements OnInit {
     return canvas.toDataURL().replace('data:image/png;base64,', '');
   }
   logStartDateChange($event: MatDatepickerInputEvent<moment.Moment>) {
-    const value = moment($event.value).format('YYYYMMDD');
-    this.form.patchValue({ birth: value });
+    const inputBirthdayValue = moment($event.value)
+    let value = moment($event.value).format('YYYYMMDD');
+    if (inputBirthdayValue.isBetween('19000101', moment())) {
+      this.form.patchValue({ birth: value });
+    } else {
+      value = '';
+      this.form.patchValue({ birth: value });
+    }
   }
   handleAttachmentChange(file) {
     if (file) {
@@ -165,6 +171,38 @@ export class FirstLoginComponent implements OnInit {
       } else {
         this.finalImageLink = link;
       }
+    }
+  }
+  // 判斷身高體重是否為合理值-kidin-1081120
+  handleHWValue(type, e) {
+    const inputHeightValue = e.target.value;
+    let tuneHeight = '';
+    let tuneWeight = '';
+
+    if (inputHeightValue) {
+      if (type === 1) {
+        // type 1為身高 2為體重
+        if (inputHeightValue < 100) {
+          tuneHeight = '100';
+        } else if (inputHeightValue > 255) {
+          tuneHeight = '255';
+        } else {
+          tuneHeight = inputHeightValue;
+        }
+      } else {
+        if (inputHeightValue < 40) {
+          tuneWeight = '40';
+        } else if (inputHeightValue > 255) {
+          tuneWeight = '255';
+        } else {
+          tuneWeight = inputHeightValue;
+        }
+      }
+    }
+    if (type === 1) {
+      this.form.patchValue({ height: tuneHeight });
+    } else {
+      this.form.patchValue({ weight: tuneWeight });
     }
   }
 }

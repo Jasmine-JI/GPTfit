@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ResetPasswordService } from '../../services/reset-password.service';
 import { getUrlQueryStrings } from '@shared/utils/';
@@ -8,7 +8,7 @@ import { getUrlQueryStrings } from '@shared/utils/';
   templateUrl: './password.component.html',
   styleUrls: ['./password.component.css']
 })
-export class PasswordComponent implements OnInit {
+export class PasswordComponent implements OnInit, OnDestroy {
   isSuccess = false;
   code: string;
   email: string;
@@ -19,6 +19,7 @@ export class PasswordComponent implements OnInit {
   content = '送出';
   className = 'btn btn-primary access-btn';
   isSending = false;
+  timeout: any;
   constructor(
     private resetPasswordService: ResetPasswordService,
     private router: Router
@@ -81,6 +82,12 @@ export class PasswordComponent implements OnInit {
           this.resultMessage = resultMessage;
         }
       });
+    }
+  }
+
+  ngOnDestroy() {
+    if(this.timeout) {
+      clearInterval(this.timeout);
     }
   }
 }

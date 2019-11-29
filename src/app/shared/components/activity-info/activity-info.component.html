@@ -136,6 +136,7 @@
         ></i>
         <mat-form-field *ngIf="editNameMode" style="color: #919191;margin-left: 15px;font-size: 26px;">
           <input matInput
+            [maxlength]=24
             [(ngModel)]="activityName"
             name="activityName"
             (keypress)="handleNewProfileName($event)"
@@ -176,7 +177,7 @@
           <div class="activty-info-data-name">{{'SH.maxHr' | translate}}</div>
         </div>
         <div class="summary-item">
-          <div class="activty-info-data-value activity-info-data-unit">{{activityInfo?.calories}}
+          <div class="activty-info-data-value activity-info-data-unit">{{activityInfo?.calories | number:'1.0-1'}}
             <span class="data-label">cal</span>
           </div>
           <div class="activty-info-data-name">{{'SH.calories' | translate}}</div>
@@ -184,7 +185,7 @@
         <div *ngIf="activityInfo?.type !== '3' && activityInfo?.type !== '5'"
           class="summary-item"
         >
-          <div class="activty-info-data-value activity-info-data-unit">{{activityInfo?.totalDistanceMeters / 1000}}
+          <div class="activty-info-data-value activity-info-data-unit">{{activityInfo?.totalDistanceMeters / 1000 | number:'1.0-1'}}
             <span class="data-label">km</span>
           </div>
           <div class="activty-info-data-name">{{'SH.totalDistance' | translate}}</div>
@@ -210,7 +211,7 @@
         <div *ngIf="activityInfo?.type === '2' && activityInfo?.elevGain"
           class="summary-item"
         >
-          <div class="activty-info-data-value activity-info-data-unit">{{activityInfo?.elevGain || 0 }}
+          <div class="activty-info-data-value activity-info-data-unit">{{activityInfo?.elevGain | number:'1.0-1' || 0 }}
             <span class="data-label">m</span>
           </div>
           <div class="activty-info-data-name">{{'Dashboard.MyActivity.climbGain' | translate}}</div>
@@ -218,7 +219,7 @@
         <div *ngIf="activityInfo?.type === '3'"
           class="summary-item"
         >
-          <div class="activty-info-data-value activity-info-data-unit">{{activityInfo?.totalWeightKg || 0 }}
+          <div class="activty-info-data-value activity-info-data-unit">{{activityInfo?.totalWeightKg | number:'1.0-1' || 0 }}
             <span class="data-label">kg</span>
           </div>
           <div class="activty-info-data-name">{{'SH.totalWeight' | translate}}</div>
@@ -292,6 +293,29 @@
         </button> -->
       </div>
     </ng-container>
+    <div *ngIf="activityInfo?.type === '3'"
+        style="width: 100%; height: 100%; margin-bottom: 20px;"
+    >
+      <div class="activty-title listGroup">
+        <div class="ala-dashboard-title">
+          {{'Dashboard.MyActivity.musclePart' | translate}}
+        </div>
+        <mat-form-field class="selectList">
+          <p class="selectListPrefix">{{'Dashboard.MyActivity.weightTrainingExtent' | translate}}：</p>
+          <mat-select [(value)]="Proficiency"
+            (selectionChange)="handleProficiency($event)"
+          >
+            <mat-option value="asept">{{'Dashboard.MyActivity.highRanker' | translate}}</mat-option>
+            <mat-option value="metacarpus">{{'Dashboard.MyActivity.advanced' | translate}}</mat-option>
+            <mat-option value="Novice">{{'Dashboard.MyActivity.beginner' | translate}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div *ngIf="!dataLoading" class="muscleMap">
+        <app-muscle-map #muscleMap class="muscleBodySvg"></app-muscle-map>
+        <app-muscle-train-list #muscleTrainList class="musclePartList" (click)="reRenderMuscleMap()"></app-muscle-train-list>
+      </div>
+    </div>
     <div class="activty-title listGroup">
       <div class="ala-dashboard-title">
         {{'Dashboard.MyActivity.chart' | translate}}
@@ -305,7 +329,6 @@
       <mat-form-field class="selectList"
         *ngIf="activityInfo?.type === '1' || activityInfo?.type === '2' || activityInfo?.type === '4' || activityInfo?.type === '6'"
       >
-
         <p class="selectListPrefix">{{'Dashboard.MyActivity.inAccordanceWith' | translate}}：</p>
         <mat-select [(value)]="xaxisUnit" (selectionChange)="handleChartKind($event)">
           <mat-option value="time">{{'Dashboard.SportReport.time' | translate}}</mat-option>
@@ -321,10 +344,10 @@
           <mat-option *ngIf="xaxisUnit === 'time'" value="300s">{{'Dashboard.MyActivity.everyMinutes' | translate: {'number': 5 } }}</mat-option>
           <mat-option *ngIf="xaxisUnit === 'time'" value="600s">{{'Dashboard.MyActivity.everyMinutes' | translate: {'number': 10 } }}</mat-option>
           <mat-option *ngIf="xaxisUnit === 'time'" value="1800s">{{'Dashboard.MyActivity.everyMinutes' | translate: {'number': 30 } }}</mat-option>
-          <mat-option *ngIf="xaxisUnit === 'distance'" value="100m">{{'Dashboard.MyActivity.everyUnit' | translate}}100 m</mat-option>
-          <mat-option *ngIf="xaxisUnit === 'distance'" value="500m">{{'Dashboard.MyActivity.everyUnit' | translate}}500 m</mat-option>
-          <mat-option *ngIf="xaxisUnit === 'distance'" value="1km">{{'Dashboard.MyActivity.everyUnit' | translate}}1 km</mat-option>
-          <mat-option *ngIf="xaxisUnit === 'distance'" value="10km">{{'Dashboard.MyActivity.everyUnit' | translate}}10 km</mat-option>
+          <mat-option *ngIf="xaxisUnit === 'distance'" value="100m">{{'Dashboard.MyActivity.everyUnit' | translate}} 100 m</mat-option>
+          <mat-option *ngIf="xaxisUnit === 'distance'" value="500m">{{'Dashboard.MyActivity.everyUnit' | translate}} 500 m</mat-option>
+          <mat-option *ngIf="xaxisUnit === 'distance'" value="1km">{{'Dashboard.MyActivity.everyUnit' | translate}} 1 km</mat-option>
+          <mat-option *ngIf="xaxisUnit === 'distance'" value="10km">{{'Dashboard.MyActivity.everyUnit' | translate}} 10 km</mat-option>
         </mat-select>
       </mat-form-field>
     </div>
@@ -444,8 +467,8 @@
                 <div>
                   {{activityInfo?.avgSpeed | sportPace: activityInfo?.type}}
                   <span *ngIf="activityInfo?.type === '1'" class="data-label">min/km</span>
-                  <span *ngIf="activityInfo?.type === '4'" class="data-label">min/km</span>
-                  <span *ngIf="activityInfo?.type === '6'" class="data-label">min/km</span>
+                  <span *ngIf="activityInfo?.type === '4'" class="data-label">min/100m</span>
+                  <span *ngIf="activityInfo?.type === '6'" class="data-label">min/500m</span>
                 </div>
                 <div class="data-label">
                   <span>
@@ -457,12 +480,18 @@
                 <div>
                   {{activityInfo?.avgMoveSpeed | sportPace: activityInfo?.type}}
                   <span *ngIf="activityInfo?.type === '1'" class="data-label">min/km</span>
-                  <span *ngIf="activityInfo?.type === '4'" class="data-label">min/km</span>
-                  <span *ngIf="activityInfo?.type === '6'" class="data-label">min/km</span>
+                  <span *ngIf="activityInfo?.type === '4'" class="data-label">min/100m</span>
+                  <span *ngIf="activityInfo?.type === '6'" class="data-label">min/500m</span>
                 </div>
                 <div class="data-label">
-                  <span>
-                    {{'Dashboard.MyActivity.avgPace' | translate}}
+                  <span *ngIf="activityInfo?.type === '1'">
+                    {{'Dashboard.MyActivity.bestMovingKilometerPace' | translate}}
+                  </span>
+                  <span *ngIf="activityInfo?.type === '4'">
+                    {{'Dashboard.MyActivity.avgMoving100mPace' | translate}}
+                  </span>
+                  <span *ngIf="activityInfo?.type === '6'">
+                    {{'Dashboard.MyActivity.avgMoving500mPace' | translate}}
                   </span>
                 </div>
               </div>
@@ -470,8 +499,8 @@
                 <div>
                   {{activityInfo?.maxSpeed | sportPace: activityInfo?.type}}
                   <span *ngIf="activityInfo?.type === '1'" class="data-label">min/km</span>
-                  <span *ngIf="activityInfo?.type === '4'" class="data-label">min/km</span>
-                  <span *ngIf="activityInfo?.type === '6'" class="data-label">min/km</span>
+                  <span *ngIf="activityInfo?.type === '4'" class="data-label">min/100m</span>
+                  <span *ngIf="activityInfo?.type === '6'" class="data-label">min/500m</span>
                 </div>
                 <div class="data-label">
                   <span>
@@ -488,7 +517,7 @@
               </div>
               <div class="activity-info__area--block">
                 <div>
-                  {{activityInfo?.avgSpeed || 0}}
+                  {{activityInfo?.avgSpeed | number:'1.0-1' || 0}}
                   <span class="data-label">km/h</span>
                 </div>
                 <span class="data-label">
@@ -497,7 +526,7 @@
               </div>
               <div class="activity-info__area--block">
                 <div>
-                  {{activityInfo?.avgMoveSpeed || 0}}
+                  {{activityInfo?.avgMoveSpeed | number:'1.0-1' || 0}}
                   <span class="data-label">km/h</span>
                 </div>
                 <span class="data-label">
@@ -506,7 +535,7 @@
               </div>
               <div class="activity-info__area--block">
                 <div>
-                  {{activityInfo?.maxSpeed || 0}}
+                  {{activityInfo?.maxSpeed | number:'1.0-1' || 0}}
                   <span class="data-label">km/h</span>
                 </div>
                 <span class="data-label">
@@ -643,11 +672,11 @@
                 *ngIf="activityInfo?.cycleAvgWatt || activityInfo?.rowingAvgWatt"
               >
                 <div *ngIf="activityInfo?.type === '2'">
-                  {{activityInfo?.cycleAvgWatt || 0}}
+                  {{activityInfo?.cycleAvgWatt | number:'1.0-1' || 0}}
                   <span class="data-label">w</span>
                 </div>
                 <div *ngIf="activityInfo?.type === '6'">
-                  {{activityInfo?.rowingAvgWatt || 0}}
+                  {{activityInfo?.rowingAvgWatt | number:'1.0-1' || 0}}
                   <span class="data-label">w</span>
                 </div>
                 <span class="data-label">
@@ -658,11 +687,11 @@
                 *ngIf="activityInfo?.cycleMaxWatt || activityInfo?.rowingMaxWatt"
               >
                 <div *ngIf="activityInfo?.type === '2'">
-                  {{activityInfo?.cycleMaxWatt || 0}}
+                  {{activityInfo?.cycleMaxWatt | number:'1.0-1' || 0}}
                   <span class="data-label">w</span>
                 </div>
                 <div *ngIf="activityInfo?.type === '6'">
-                  {{activityInfo?.rowingMaxWatt || 0}}
+                  {{activityInfo?.rowingMaxWatt | number:'1.0-1' || 0}}
                   <span class="data-label">w</span>
                 </div>
                 <span class="data-label">
@@ -730,51 +759,6 @@
                 </span>
               </div>
             </div>
-          <!-- 暫時隱藏，之後用肌肉地圖替代-kidin-1081114
-            <div class="activity-info__area"
-              *ngIf="activityInfo?.type === '3'"
-            >
-              <div class="ala-dashboard-title activty-title">
-                {{'Dashboard.MyActivity.musclePart' | translate}}
-              </div>
-              <div class="activity-info__area--block">
-                <div>
-                  {{activityInfo?.weightTrainingInfo?.max1RmWeightKg || 0}}
-                  <span class="data-label">kg</span>
-                </div>
-                <span class="data-label">
-                  {{'SH.maxBig' | translate}}1RM
-                </span>
-              </div>
-              <div class="activity-info__area--block">
-                <div>
-                  {{activityInfo?.weightTrainingInfo?.totalWeightKg || 0}}
-                  <span class="data-label">kg</span>
-                </div>
-                <span class="data-label">
-                  {{'Dashboard.MyActivity.cumulativeWeight' | translate}}
-                </span>
-              </div>
-              <div class="activity-info__area--block">
-                <div>
-                  {{activityInfo?.weightTrainingInfo?.totalSets || 0}}
-                  <span class="data-label">sets</span>
-                </div>
-                <span class="data-label">
-                  {{'Dashboard.MyActivity.cumulativeSets' | translate}}
-                </span>
-              </div>
-              <div class="activity-info__area--block">
-                <div>
-                  {{activityInfo?.weightTrainingInfo?.totalReps || 0}}
-                  <span class="data-label">reps</span>
-                </div>
-                <span class="data-label">
-                  {{'Dashboard.MyActivity.cumulativeReps' | translate}}
-                </span>
-              </div>
-            </div>
-          -->
             <div class="activity-info__area"
               *ngIf="activityInfo?.type === '3'"
             >

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -20,7 +20,7 @@ import { TranslateService } from '@ngx-translate/core';
   templateUrl: './forgetpwd.component.html',
   styleUrls: ['./forgetpwd.component.css']
 })
-export class ForgetpwdComponent implements OnInit {
+export class ForgetpwdComponent implements OnInit, OnDestroy {
   form: FormGroup;
   results: any;
   isEmailMethod = false;
@@ -36,6 +36,7 @@ export class ForgetpwdComponent implements OnInit {
   isSMSCodSending = false;
   content = '送出';
   className = 'btn btn-primary access-btn';
+  timeout: any;
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -114,15 +115,15 @@ export class ForgetpwdComponent implements OnInit {
             'OK',
             { duration: 5000 }
           );
-          setTimeout(() => this.router.navigate(['/signin']), 5000);
+          this.timeout = setTimeout(() => this.router.navigate(['/signin']), 5000);
         } else if (rtnMsg === 'This is not a registered or activation mail.') {
           this.snackbar.open(this.translate.instant('SH.noRegisterData'), 'OK', { duration: 5000 });
+          this.isForgetSending = false;
         } else {
           this.snackbar.open(rtnMsg, 'OK', { duration: 5000 });
           this.isForgetSending = false;
         }
-      },
-      () => (this.isForgetSending = false)
+      }
     );
   }
   handleRandomCode() {
@@ -201,6 +202,12 @@ export class ForgetpwdComponent implements OnInit {
           this.snackbar.open(rtnMsg, 'OK', { duration: 5000 });
         }
       });
+    }
+  }
+
+  ngOnDestroy() {
+    if(this.timeout) {
+      clearInterval(this.timeout);
     }
   }
 }

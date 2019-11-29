@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -20,7 +20,7 @@ import { TranslateService } from '@ngx-translate/core';
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.css']
 })
-export class SignupComponent implements OnInit {
+export class SignupComponent implements OnInit, OnDestroy {
   form: FormGroup;
   results: any;
   isEmailMethod = false;
@@ -36,6 +36,7 @@ export class SignupComponent implements OnInit {
   isSMSCodSending = false;
   content = '註冊';
   className = 'btn btn-primary access-btn';
+  timeout: any;
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -78,7 +79,7 @@ export class SignupComponent implements OnInit {
     }
   }
   public onNameChange(e: any): void {
-    const charValue = this.utils.str_cut(e.target.value, 16);
+    const charValue = this.utils.str_cut(e.target.value, 24);
     if (e.target.value !== charValue) {
       return this.form.patchValue({ name: charValue });
     }
@@ -137,7 +138,7 @@ export class SignupComponent implements OnInit {
             successText = this.translate.instant('Portal.registerPhoneSuccessfully');
           }
           this.snackbar.open(successText, 'OK', { duration: 5000 });
-          setTimeout(() => this.router.navigate(['/signin']), 5000);
+          this.timeout = setTimeout(() => this.router.navigate(['/signin']), 5000);
         } else {
           this.isSignupSending = false;
           this.snackbar.open(rtnMsg, 'OK', { duration: 5000 });
@@ -215,6 +216,12 @@ export class SignupComponent implements OnInit {
         }
         this.snackbar.open(rtnMsg, 'OK', { duration: 5000 });
       });
+    }
+  }
+
+  ngOnDestroy() {
+    if(this.timeout) {
+      clearInterval(this.timeout);
     }
   }
 }

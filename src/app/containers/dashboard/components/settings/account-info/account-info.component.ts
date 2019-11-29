@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import {  getUrlQueryStrings } from '@shared/utils/';
+import { getUrlQueryStrings } from '@shared/utils/';
 import { SettingsService } from '../../../services/settings.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { Router } from '@angular/router';

@@ -11,6 +11,7 @@ import { GroupLevelNamePipe } from './group-level-name.pipe';
 import { SportDatePipe } from '@shared/pipes/sport-date.pipe';
 import { SportTimePipe } from '@shared/pipes/sport-time.pipe';
 import { SportPacePipe } from '@shared/pipes/sport-pace.pipe';
+import { MuscleNamePipe } from './muscle-name.pipe';
 
 
 @NgModule({
@@ -29,7 +30,8 @@ import { SportPacePipe } from '@shared/pipes/sport-pace.pipe';
     GroupLevelNamePipe,
     SportDatePipe,
     SportTimePipe,
-    SportPacePipe
+    SportPacePipe,
+    MuscleNamePipe
   ],
   exports: [
     SexPipe,
@@ -43,7 +45,8 @@ import { SportPacePipe } from '@shared/pipes/sport-pace.pipe';
     GroupLevelNamePipe,
     SportDatePipe,
     SportTimePipe,
-    SportPacePipe
+    SportPacePipe,
+    MuscleNamePipe
   ]
 })
 export class SharedPipes {}
