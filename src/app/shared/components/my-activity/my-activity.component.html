@@ -186,7 +186,7 @@
             <span style="color: #919191;font-size: 12px"
               *ngIf=" row.activityInfoLayer.type === '2'"
             >
-               {{ 'SH.avgPace' | translate}}
+               {{ 'SH.avgSpeed' | translate}}
             </span>
             <span style="color: #919191;font-size: 12px"
               *ngIf=" row.activityInfoLayer.type === '5'"
@@ -214,7 +214,7 @@
       <mat-cell *matCellDef="let row">
         <div *ngIf=" row.activityInfoLayer.type !== '5' && row.activityInfoLayer.type !== '3'">
           <div >
-            {{ row.activityInfoLayer && row.activityInfoLayer?.totalDistanceMeters / 1000 || ' -- ' }}km
+            {{ row.activityInfoLayer && row.activityInfoLayer?.totalDistanceMeters / 1000 | number:'1.0-1' || ' -- ' }}km
           </div>
           <div>
             <span style="color: #999;font-size:12px">{{'SH.totalDistance' | translate}}</span>
@@ -222,7 +222,7 @@
         </div>
         <div *ngIf=" row.activityInfoLayer.type === '5'">
           <div >
-            {{ row.activityInfoLayer && row.activityInfoLayer?.calories || ' -- ' }}cal
+            {{ row.activityInfoLayer && row.activityInfoLayer?.calories | number:'1.0-1' || ' -- ' }}cal
           </div>
           <div>
             <span style="color: #999;font-size:12px">{{'SH.calories' | translate}}</span>

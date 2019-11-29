@@ -37,6 +37,8 @@ import {
 import { NgProgressModule } from '@ngx-progressbar/core';
 import { ShareGroupInfoDialogComponent } from './share-group-info-dialog/share-group-info-dialog.component';
 import { QRCodeModule } from 'angularx-qrcode';
+import { MuscleMapComponent } from './activity-info/muscleMap/muscle-map.component';
+import { MuscleTrainListComponent } from './activity-info/muscle-train-list/muscle-train-list.component';
 
 @NgModule({
   imports: [
@@ -77,7 +79,9 @@ import { QRCodeModule } from 'angularx-qrcode';
     OtherBurnCaloriesComponent,
     PartialMuscleInfoComponent,
     ScatterChartComponent,
-    ShareGroupInfoDialogComponent
+    ShareGroupInfoDialogComponent,
+    MuscleMapComponent,
+    MuscleTrainListComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [

@@ -124,9 +124,6 @@
   width: 100%;
   z-index: 10!important;
 }
-.minimize-main-nav .ala-dashboard-header {
-  width: 100%;
-}
 .mat-drawer {
   background-color: #1f2626;
   color: #fff;
@@ -227,17 +224,17 @@
 .minimize-main-nav .main-nav-list {
   overflow: hidden;
 }
-/deep/.mat-drawer-container {
+::ng-deep.mat-drawer-container {
   overflow: visible!important;
 
 }
-/deep/.mat-drawer-content {
+::ng-deep.mat-drawer-content {
   overflow: visible!important;
 }
-/deep/ mat-drawer.mat-drawer.mat-drawer-side {
+::ng-deep mat-drawer.mat-drawer.mat-drawer-side {
   z-index: 3;
 }
-.minimize-main-nav .ala-dashboard-nav {
+.minimize-main-nav .ala-dashboard-nav .ala-dashboard-header {
   width: 100%;
 }
 .header-user-photo {
@@ -312,6 +309,12 @@
     padding: 7px 15px;
     margin-left: -15px;
     background-color: #404646;
+  }
+
+  @media(max-width: 370px) {
+    .container {
+      padding: 15px;
+    }
   }
 }
 

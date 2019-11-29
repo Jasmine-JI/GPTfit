@@ -45,12 +45,12 @@
     <div class="settings-control" style="position: relative;">
       <app-form-text
         [content]="name?.value"
-        [maxLength]="32"
+        [maxLength]="24"
         [invalidRemindText]="inValidText"
         [control]="settingsForm"
         [controlName]="'name'"
         [isInvalid]="(!name.valid && name.touched) || (f.submitted && name.hasError('required')) || isNameError"
-        (onChange)="onNameChange($event, settingsForm)"
+        (focusout)="onNameChange($event, settingsForm)"
       >
       </app-form-text>
       <i class="fa fa-spinner fa-pulse fa-1x fa-fw spinner" [class.spinner-hidden]="!isNameLoading"></i>
@@ -67,13 +67,13 @@
         <app-form-text
           [type]="'number'"
           [content]="height?.value"
-          [maxLength]="32"
+          [maxLength]="24"
           [disabled]="isSaveUserSettingLoading"
           [invalidRemindText]="inValidText"
           [control]="settingsForm"
           [controlName]="'height'"
           [isInvalid]="(!height.valid && height.touched) || (f.submitted && height.hasError('required'))"
-          (onChange)="handleValueArrange(1, $event)"
+          (focusout)="handleValueArrange(1, $event)"
           [min]="100"
           [max]="255"
         >
@@ -94,7 +94,7 @@
         <app-form-text
           [type]="'number'"
           [content]="weight?.value"
-          [maxLength]="32"
+          [maxLength]="24"
           [disabled]="isSaveUserSettingLoading"
           [isInvalid]="(!weight.valid && weight.touched) || (f.submitted && weight.hasError('required'))"
           [invalidRemindText]="inValidText"
@@ -102,7 +102,7 @@
           [controlName]="'weight'"
           [min]="40"
           [max]="255"
-          (onChange)="handleValueArrange(2, $event)"
+          (focusout)="handleValueArrange(2, $event)"
         >
         </app-form-text>
       </div>
