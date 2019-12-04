@@ -685,8 +685,6 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         } else if (res.resultMessage === 'Get sport list detail fail, privacy is not match with target user.') {
           return this.router.navigateByUrl('/403');
         }
-        // 取得regionCode判斷操作是否位於大陸地區，為大陸地區一律使用百度地圖開啓 ex.zh-tw, zh-cn, en-us..
-        const regionCode = this.utils.getLocalStorageObject('locale');
         this.activityInfo = res.activityInfoLayer;
         this.activityName = res.fileInfo.dispName;
         this.activityNameBeforeState = res.fileInfo.dispName;
