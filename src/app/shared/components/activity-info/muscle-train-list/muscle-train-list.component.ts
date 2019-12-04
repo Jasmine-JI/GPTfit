@@ -24,7 +24,7 @@ export class MuscleTrainListComponent implements OnInit {
 
   // 將資料編輯過以供html讀取-kidin-1081129
   compileDatas(datas) {
-    const middleDatas = datas.filter(data => data.dispName !== '');
+    const middleDatas = datas.filter(data => data.lapIndex % 2 !== 0);
     const mainTrainingPartList = [];
     // 先篩出此次重訓主要訓練的所有肌肉部位-kidin-20191126
     for (let i = 0; i < middleDatas.length; i++) {
@@ -36,6 +36,7 @@ export class MuscleTrainListComponent implements OnInit {
         }
       }
     }
+    const pushedMusclePart = [];
     // 再根據該肌肉部位分別將重量、組數、次數相加，並取得此次訓練中該肌肉部位的最大1RM-kidin-20191126
     for (let k = 0; k < mainTrainingPartList.length; k++) {
       let totalWeight = 0,
@@ -62,14 +63,20 @@ export class MuscleTrainListComponent implements OnInit {
         totalSets: totalSets,
         OneRepMax: OneRepMax
       };
-      this.lapsDatas.push(muscleDatas);
+      if (pushedMusclePart.indexOf(mainTrainingPartList[k]) < 0) {
+        this.lapsDatas.push(muscleDatas);
+        pushedMusclePart.push(mainTrainingPartList[k]);
+      }
     }
   }
+
   initMuscleList() {
-    if (this.focusSection === undefined) {
       this.noRepeatData = this.activityService.getMuscleListColor();
-    }
+      if (this.musclePartState !== '') {
+        this.assignColor(this.focusSection, this.musclePartState);
+      }
   }
+
   // 點擊後更改背景顏色並重新繪製肌肉地圖-kidin-1091127
   handleMusclePart(code, e) {
     // 判斷是否點擊同個部位-kidin-1081129
@@ -86,16 +93,19 @@ export class MuscleTrainListComponent implements OnInit {
     }
     this.activityService.saveMusclePart(this.musclePartState);
   }
+
   // 滑鼠滑入後更改背景顏色-kidin-1091127
   handleHoverBgColor(e) {
     this.assignColor(e.target, e.target.id);
   }
+
   // 滑鼠滑出後除了聚焦的部位外移除背景顏色-kidin-1091127
   handleBgColorRecovery(e) {
     if (e.target.id !== this.musclePartState) {
       e.target.style = 'background-color: none;';
     }
   }
+
   // 根據肌肉訓練程度更改背景顏色-kidin-1081129
   assignColor(target, code) {
     for (let i = 0; i < this.noRepeatData.length; i++) {

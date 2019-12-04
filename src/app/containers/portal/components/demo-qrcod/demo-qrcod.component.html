@@ -13,51 +13,58 @@
     <div class="row" style="margin-bottom: 15px">
       <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">{{"Portal.productPhoto" | translate}}：</div>
       <div class="col-sm-6 text-sm-left text-center" [ngClass]="imgClass" style="width: 100%">
-        <img *ngIf="!deviceInfo" src={{noProductImg}}>
-        <img *ngIf="deviceInfo" src={{deviceInfo?.modelImgUrl}} >
+        <img *ngIf="!deviceInfo?.modelID" src="{{imageStoragePlace}}/img/unknown.png">
+        <img *ngIf="deviceInfo?.modelID" src="{{imageStoragePlace + deviceInfo?.modelImg}}">
       </div>
     </div>
     <div class="row" style="margin-bottom: 15px">
       <div class="col-sm-6 text-sm-right text-center" [style.font-weight]="isWrong ? '200' : '700' ">
         <span  style="font-weight: bold">{{"Portal.deviceSerialNumber" | translate}}</span>：
       </div>
-      <div *ngIf="!deviceInfo" class="col-sm-6 text-sm-left text-center">{{"SH.noFindData" | translate}}</div>
-      <div *ngIf="deviceInfo" class="col-sm-6 text-sm-left text-center">{{ displayQr.device_sn  }}</div>
+      <div *ngIf="!deviceInfo?.modelID" class="col-sm-6 text-sm-left text-center">{{"SH.noFindData" | translate}}</div>
+      <div *ngIf="deviceInfo?.modelID" class="col-sm-6 text-sm-left text-center">{{ displayQr.device_sn  }}</div>
     </div>
-    <ng-container *ngIf="deviceInfo">
+    <ng-container *ngIf="deviceInfo?.modelID">
       <div class="row" style="margin-bottom: 15px">
         <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">{{"Portal.modeCode" | translate}}：</div>
         <div class="col-sm-6 text-sm-left text-center">{{ deviceInfo?.modelName || 'SH.noData' | translate }}</div>
       </div>
       <div class="row" style="margin-bottom: 15px">
         <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">{{"Portal.modeType" | translate}}：</div>
-        <div class="col-sm-6 text-sm-left text-center">{{ (deviceInfo?.modelType | productType | translate) || 'SH.noData' | translate }}</div>
+        <div class="col-sm-6 text-sm-left text-center">{{ (deviceInfo?.modelTypeID | productType | translate) || 'SH.noData' | translate }}</div>
       </div>
-      <div class="row" style="margin-bottom: 15px" *ngIf="deviceInfo?.mainAppData">
+      <div class="row mainAppSection" *ngIf="deviceInfo?.mainApp">
         <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">
           {{"Portal.mainApp" | translate}}：
         </div>
-        <div class="col-sm-6 text-sm-left text-center">
-          <div style="margin-bottom:10px">
-            <img src={{deviceInfo?.mainAppData.appIconUrl}} style="width:20%;cursor: pointer;" (click)="swithMainApp()">
+        <div class="mainAppGroup">
+          <div class="col-sm-6 text-sm-left text-center mainApp" *ngFor="let app of mainAppList; let i = index;">
+            <div style="margin-bottom:10px">
+              <img
+                id="{{i}}"
+                src='{{imageStoragePlace + app.appIconUrl}}'
+                style="width:20%;cursor: pointer;"
+                (click)="swithMainApp($event)"
+              >
+            </div>
+            <ng-container *ngIf="isMainAppOpen.indexOf(i) !== -1">
+              <div style="margin-bottom:10px" *ngIf="app.appIosUrl.length > 0">
+                <a target="_blank" href='{{app.appIosUrl}}'>
+                  <img src='https://app.alatech.com.tw/app/public_html/products/img/getApp_01_apple.png'>
+                </a>
+              </div>
+              <div style="margin-bottom:10px" *ngIf="app.appAndroidUrl.length > 0">
+                <a target="_blank" href='{{app.appAndroidUrl}}'>
+                  <img src='https://app.alatech.com.tw/app/public_html/products/img/getApp_02_googleplay.png'>
+                </a>
+              </div>
+              <div style="margin-bottom:10px" *ngIf="app.appApkUrl.length > 0">
+                <a target="_blank" href='{{app.appApkUrl}}'>
+                  <img src='https://app.alatech.com.tw/app/public_html/products/img/getApp_03_apk.png'>
+                </a>
+              </div>
+            </ng-container>
           </div>
-          <ng-container *ngIf="isMainAppOpen">
-            <div style="margin-bottom:10px" *ngIf="deviceInfo?.mainAppData.appIosUrl.length > 0">
-              <a target="_blank" href={{deviceInfo?.mainAppData.appIosUrl}}>
-                <img src={{deviceInfo?.mainAppData.appIosImg}}>
-              </a>
-            </div>
-            <div style="margin-bottom:10px" *ngIf="deviceInfo?.mainAppData.appAndroidUrl.length > 0">
-              <a target="_blank" href={{deviceInfo?.mainAppData.appAndroidUrl}}>
-                <img src={{deviceInfo?.mainAppData.appAndroidImg}}>
-              </a>
-            </div>
-            <div style="margin-bottom:10px" *ngIf="deviceInfo?.mainAppData.appApkUrl.length > 0">
-              <a target="_blank" href={{deviceInfo?.mainAppData.appApkUrl}}>
-                <img src={{deviceInfo?.mainAppData.appApkImg}}>
-              </a>
-            </div>
-          </ng-container>
         </div>
       </div>
       <div class="row" style="margin-bottom: 15px" *ngIf="deviceInfo?.secondaryAppData">
