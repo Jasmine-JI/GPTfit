@@ -20,7 +20,7 @@ export class DemoQrcodComponent implements OnInit {
   displayQr: any;
   deviceInfo: any;
   isMainAppOpen = [];
-  isSecondAppOpen = false;
+  isSecondAppOpen = [];
   isWrong = false;
   noProductImg: string;
   isLoading: boolean;
@@ -34,6 +34,7 @@ export class DemoQrcodComponent implements OnInit {
   imgClass = 'product-photo--landscape';
   token: string;
   mainAppList = [];
+  secondaryAppList = [];
   imageStoragePlace = `http://${location.hostname}/app/public_html/products`;
   constructor(
     private qrcodeService: QrcodeService,
@@ -85,9 +86,11 @@ export class DemoQrcodComponent implements OnInit {
         this.handleProductManual(langName);
         this.handleUpload();
         this.mainAppList = this.deviceInfo.mainApp;
+        this.secondaryAppList = this.deviceInfo.secondaryApp;
       }
     });
   }
+
   handleImageLoad(event): void {
     const width = event.target.width;
     const height = event.target.height;
@@ -106,6 +109,7 @@ export class DemoQrcodComponent implements OnInit {
       this.productInfo = this.deviceInfo['relatedLinks_zh-TW'];
     }
   }
+
   // 新增西班牙語-kidin-1081106
   handleProductManual(lang) {
     if (lang === 'zh-cn') {
@@ -118,6 +122,7 @@ export class DemoQrcodComponent implements OnInit {
       this.productManual = this.deviceInfo['manual_zh-TW'];
     }
   }
+
   handleUpload() {
     const { cs, device_sn } = this.displayQr;
     const year = device_sn.slice(0, 1).charCodeAt() + 1952;
@@ -147,6 +152,7 @@ export class DemoQrcodComponent implements OnInit {
       this.isLoading = false;
     }
   }
+
   handleCScode(code, sn) {
     const weights = [2, 2, 6, 1, 8, 3, 4, 1, 1, 1, 1, 1, 1, 1];
     const arr = sn
@@ -170,6 +176,7 @@ export class DemoQrcodComponent implements OnInit {
     }
     this.isShowBindingBtn = false; // 無論是否正確，出廠日期前，皆不顯示登錄產品btn
   }
+
   uploadDevice() {
     const types = ['Wearable', 'Treadmill', 'spinBike', 'rowMachine'];
     const { modelTypeID } = this.deviceInfo;  // 改成串接後端api，故更改該key-kidin-1081203
@@ -210,6 +217,7 @@ export class DemoQrcodComponent implements OnInit {
       err => (this.isWrong = true)
     );
   }
+
   swithMainApp(e) {
     const currentId = Number(e.target.id);
     if (this.isMainAppOpen.indexOf(currentId) < 0) {
@@ -220,9 +228,18 @@ export class DemoQrcodComponent implements OnInit {
       });
     }
   }
-  swithSecondApp() {
-    this.isSecondAppOpen = !this.isSecondAppOpen;
+
+  swithSecondApp(e) {
+    const currentId = Number(e.target.id);
+    if (this.isSecondAppOpen.indexOf(currentId) < 0) {
+      this.isSecondAppOpen.push(currentId);
+    } else {
+      this.isSecondAppOpen = this.isSecondAppOpen.filter(id => {
+        return id !== currentId;
+      });
+    }
   }
+
   handleBindingInfo() {
     const localSN = this.utilsService.getLocalStorageObject('snNumber');
     // if (
@@ -243,6 +260,7 @@ export class DemoQrcodComponent implements OnInit {
     }
     this.utilsService.setLocalStorageObject('bondStatus', '1'); // 先狀態是綁訂，之後解綁訂再加判斷
   }
+
   handleGoLoginPage(type: number) {
     if (type === 1) {
       this.authService.backUrl = '/dashboard/device';
@@ -253,6 +271,7 @@ export class DemoQrcodComponent implements OnInit {
     }
     this.router.navigateByUrl(`signin`);
   }
+
   goBinding() {
     if (!this.token) {
       return this.handleGoLoginPage(1);
@@ -261,6 +280,7 @@ export class DemoQrcodComponent implements OnInit {
       this.router.navigateByUrl(`dashboard/device`);
     }
   }
+
   fitPair(type) {
     this.fitPairType = type;
     if (this.fitPairType === '2' || (!this.isShowBindingBtn)) {
@@ -278,7 +298,8 @@ export class DemoQrcodComponent implements OnInit {
         onCancel: this.handleFitPair.bind(this)
       }
     });
-}
+  }
+
   handleFitPair() {
     const { device_sn } = this.displayQr;
     const body = {
