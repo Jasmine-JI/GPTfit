@@ -147,8 +147,14 @@ export class UserSettingsComponent implements OnInit {
     }
   }
   logStartDateChange($event: MatDatepickerInputEvent<moment.Moment>) {
-    const value = moment($event.value).format('YYYYMMDD');
-    this.settingsForm.patchValue({ birthday: value });
+    const inputBirthdayValue = moment($event.value)
+    let value = moment($event.value).format('YYYYMMDD');
+    if (inputBirthdayValue.isBetween('19000101', moment())) {
+      this.settingsForm.patchValue({ birthday: value });
+    } else {
+      value = '';
+      this.settingsForm.patchValue({ birthday: value });
+    }
   }
   saveSettings({ value, valid }) {
     if (value.nameIcon && value.nameIcon.length === 0) {

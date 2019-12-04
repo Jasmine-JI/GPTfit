@@ -13,8 +13,8 @@
     <div class="row" style="margin-bottom: 15px">
       <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">{{"Portal.productPhoto" | translate}}：</div>
       <div class="col-sm-6 text-sm-left text-center" [ngClass]="imgClass" style="width: 100%">
-        <img *ngIf="!deviceInfo?.modelID" src="{{imageStoragePlace}}/img/unknown.png">
-        <img *ngIf="deviceInfo?.modelID" src="{{imageStoragePlace + deviceInfo?.modelImg}}">
+        <img class="productImg" *ngIf="!deviceInfo?.modelID" src="{{imageStoragePlace}}/img/unknown.png">
+        <img class="productImg" *ngIf="deviceInfo?.modelID" src="{{imageStoragePlace + deviceInfo?.modelImg}}">
       </div>
     </div>
     <div class="row" style="margin-bottom: 15px">
@@ -67,31 +67,38 @@
           </div>
         </div>
       </div>
-      <div class="row" style="margin-bottom: 15px" *ngIf="deviceInfo?.secondaryAppData">
+      <div class="row mainAppSection" style="margin-bottom: 15px" *ngIf="deviceInfo?.secondaryApp">
         <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">
           {{"Portal.otherApp" | translate}}：
         </div>
-        <div class="col-sm-6 text-sm-left text-center">
-          <div style="margin-bottom:10px">
-            <img src={{deviceInfo?.secondaryAppData.appIconUrl}} style="width:20%;cursor: pointer;" (click)="swithSecondApp()">
+        <div class="mainAppGroup">
+          <div class="col-sm-6 text-sm-left text-center mainApp" *ngFor="let appVice of secondaryAppList; let j = index;">
+            <div style="margin-bottom:10px">
+              <img
+                id="{{j}}"
+                src='{{imageStoragePlace + appVice.appIconUrl}}'
+                style="width:20%;cursor: pointer;"
+                (click)="swithSecondApp($event)"
+              >
+            </div>
+            <ng-container *ngIf="isSecondAppOpen.indexOf(j) !== -1">
+              <div style="margin-bottom:10px" *ngIf="appVice.appIosUrl.length > 0">
+                <a target="_blank" href={{appVice.appIosUrl}}>
+                  <img src='https://app.alatech.com.tw/app/public_html/products/img/getApp_01_apple.png'>
+                </a>
+              </div>
+              <div style="margin-bottom:10px" *ngIf="appVice.appAndroidUrl.length > 0">
+                <a target="_blank" href={{appVice.appAndroidUrl}}>
+                  <img src='https://app.alatech.com.tw/app/public_html/products/img/getApp_02_googleplay.png'>
+                </a>
+              </div>
+              <div style="margin-bottom:10px" *ngIf="appVice.appApkUrl.length > 0">
+                <a target="_blank" href={{appVice.appApkUrl}}>
+                  <img src='https://app.alatech.com.tw/app/public_html/products/img/getApp_03_apk.png'>
+                </a>
+              </div>
+            </ng-container>
           </div>
-          <ng-container *ngIf="isSecondAppOpen">
-            <div style="margin-bottom:10px" *ngIf="deviceInfo?.secondaryAppData.appIosUrl.length > 0">
-              <a target="_blank" href={{deviceInfo?.secondaryAppData.appIosUrl}}>
-                <img src={{deviceInfo?.secondaryAppData.appIosImg}}>
-              </a>
-            </div>
-            <div style="margin-bottom:10px" *ngIf="deviceInfo?.secondaryAppData.appAndroidUrl.length > 0">
-              <a target="_blank" href={{deviceInfo?.secondaryAppData.appAndroidUrl}}>
-                <img src={{deviceInfo?.secondaryAppData.appAndroidImg}}>
-              </a>
-            </div>
-            <div style="margin-bottom:10px" *ngIf="deviceInfo?.secondaryAppData.appApkUrl.length > 0">
-              <a target="_blank" href={{deviceInfo?.secondaryAppData.appApkUrl}}>
-                <img src={{deviceInfo?.secondaryAppData.appApkImg}}>
-              </a>
-            </div>
-          </ng-container>
         </div>
       </div>
       <div class="row" style="margin-bottom: 15px" *ngIf="productInfo && productInfo.length > 0">

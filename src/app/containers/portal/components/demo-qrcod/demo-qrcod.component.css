@@ -9,8 +9,9 @@
   width: 180px;
   height: 38px;
 }
+
 .product-photo--landscape img {
-  width: 100%;
+  width: auto;
   height: auto;
 }
 
@@ -33,6 +34,7 @@
 
 .mainApp {
   margin-bottom: 10px;
+  max-width: 100%;
 }
 
 .mainAppOpen {
@@ -59,8 +61,23 @@
     flex-basis: auto;
   }
 }
-@media(min-width: 1200px) {
+
+@media(max-width: 900px) {
+  .product-photo--landscape img {
+    width: 80%;
+    min-width: 200px;
+    min-height: 200px;
+  }
+}
+
+@media(max-width: 575px) {
   .product-photo--landscape img {
     width: auto;
+  }
+}
+
+@media(max-width: 380px) {
+  .product-photo--landscape img {
+    width: 50%;
   }
 }

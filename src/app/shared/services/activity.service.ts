@@ -133,7 +133,6 @@ export class ActivityService {
         { y: 0, color: '#c11920' }
       ],
       userHRZones = [0, 0, 0, 0, 0, 0];
-    if (type !== '4') {
       const { userHRBase, userAge, userMaxHR, userRestHR } = hrFormatData;
       if (userMaxHR && userRestHR) {
         if (userHRBase === 0) {
@@ -170,7 +169,6 @@ export class ActivityService {
           userHRZones[5] = ((220 - userAge) - userRestHR) * (1) + userRestHR;
         }
       }
-    }
     // 2:腳踏車 3:重訓 5:有氧
     if (type === '2' || type === '3' || type === '5') {
       isNoPaces = true;
