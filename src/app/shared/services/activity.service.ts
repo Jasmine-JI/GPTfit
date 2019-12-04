@@ -80,12 +80,10 @@ class Option {
 @Injectable()
 export class ActivityService {
   private userWeight = 70;  // 儲存使用者體重-kidin-1081121
-  private heavyTrainDate = [];  // 儲存重訓資料-kidin-1081121
+  private focusMusclePart = '';  // 儲存重訓資料-kidin-1081121
   private heavyTrainDateState = [];  // 備份重訓資料-kidin-1081121
   private muscleListColor = []; // 儲存肌肉清單顏色列表-kidin-1081128
-  private focusMusclePart = false;
   private Proficiency = 'asept';  // 儲存重訓熟練度-kidin-1081121
-  private showMusclePart = '';  // 展示部份肌肉訓練地圖-kidin-1081127
 
   constructor(private http: HttpClient, private utils: UtilsService) {}
   fetchTestData() {
@@ -825,65 +823,42 @@ export class ActivityService {
   saveUserWeight(weight) {
     this.userWeight = weight;
   }
+
   // 存入重訓資料-kidin-1081121
   saveLapsData(data) {
-    this.heavyTrainDate = data;
     this.heavyTrainDateState = data;
   }
+
   // 儲存重訓熟練度-kidin-1081121
   saveProficiency(Proficiency) {
     this.Proficiency = Proficiency;
   }
+
   // 針對使用者點選的肌肉清單篩選資料-kidin-1081128
   saveMusclePart(muscleCode) {
-    if (muscleCode !== '') {
-      this.focusMusclePart = true;
-      this.showMusclePart = muscleCode;
-      const trainingData = this.heavyTrainDateState;
-      for (let i = 0; i < trainingData.length; i++) {
-        this.heavyTrainDate = trainingData.filter(data => {
-          const traininfPart = data.setWorkOutMuscleMain;
-          for (let j = 0; j < traininfPart.length; j++) {
-            if (traininfPart[j] === muscleCode) {
-              return true;
-            }
-          }
-          return false;
-        });
-      }
-    } else {
-      this.focusMusclePart = false;
-    }
+    this.focusMusclePart = muscleCode;
   }
+
   // 儲存肌肉清單顏色設定-kidin-1081128
   saveMuscleListColor(muscleColor) {
     this.muscleListColor = muscleColor;
   }
+
   getLapsData() {
     return this.heavyTrainDateState;
   }
+
   getMuscleListColor() {
     return this.muscleListColor;
   }
+
   getAllData() {
-    if (this.focusMusclePart === true) {
-      const heavyTrainingData = {
-        userWeight: this.userWeight,
-        proficiency: this.Proficiency,
-        lapDatas: this.heavyTrainDate,
-        showMusclePart: this.showMusclePart,
-        focusMusclePart: true
-      };
-      return heavyTrainingData;
-    } else {
       const heavyTrainingData = {
         userWeight: this.userWeight,
         proficiency: this.Proficiency,
         lapDatas: this.heavyTrainDateState,
-        showMusclePart: this.showMusclePart,
-        focusMusclePart: false
+        focusMusclePart: this.focusMusclePart
       };
       return heavyTrainingData;
-    }
   }
 }

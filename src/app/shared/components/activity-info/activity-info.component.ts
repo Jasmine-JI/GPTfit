@@ -277,6 +277,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterContentChecked() {
     this._changeDetectionRef.detectChanges();
   }
+
   scroll(e) {
     let coachId, groupId;
     let scrollTop = null, clientHeight = null, scrollHeight = null;
@@ -326,6 +327,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.activityOtherDetailsService.resetOtherInfo();
   }
+
   handleLessonInfo(str) {
     this.totalLessonInfo = str.replace(/\r\n|\n/g, '').trim();
     if (this.totalLessonInfo.length > 118) {
@@ -336,6 +338,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.isLessonMoreDisplay = false;
     }
   }
+
   handleCoachInfo(str) {
     this.totalCoachDesc = str.replace(/\r\n|\n/g, '').trim();
     if (this.totalCoachDesc.length > 118) {
@@ -346,6 +349,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.isCoachMoreDisplay = false;
     }
   }
+
   handleExtendCoachInfo(type) {
     if (type === 1) {
       this.coachDesc = this.totalCoachDesc;
@@ -355,6 +359,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.isLessonMoreDisplay = false;
     }
   }
+
   handleBMap() {
     this.bmap = new BMap.Map(this.bmapElement.nativeElement);
     let isNormalPoint = false;
@@ -362,7 +367,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     this.activityPoints.forEach((_point, idx) => {
       if (+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100) {
         isNormalPoint = false;
-        // this.gpxBmapPoints.push(null);
+        this.gpxBmapPoints.push(null);  // 若使用者沒有移動，則在該點補上null值-kidin-1081203(Bug 337)
       } else {
         if (!isNormalPoint) {
           isNormalPoint = true;
@@ -444,6 +449,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.bmap.addOverlay(polyline); // 将折线覆盖到地图上
   }
+
   handleBorderData(point, vs) {
     const x = point[0],
       y = point[1];
@@ -463,6 +469,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     return inside;
   }
+
   handleGoogleMap(isInTaiwan) {
     const mapProp = {
       center: new google.maps.LatLng(24.123499, 120.66014),
@@ -477,7 +484,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     this.activityPoints.forEach((_point, idx) => {
       if (+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100) {
         isNormalPoint = false;
-        // this.gpxPoints.push(null);
+        this.gpxPoints.push(null); // 若使用者沒有移動，則在該點補上null值-kidin-1081203(Bug 337)
       } else {
         if (!isNormalPoint) {
           isNormalPoint = true;
@@ -548,6 +555,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     poly.setMap(this.map);
     this.map.fitBounds(bounds);
   }
+
   resetMkPoint(points, i) {
     this.playerMark.setPosition(points[i]);
     if (i < points.length) {
@@ -563,6 +571,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.playerMark.setPosition(points[0]);
     }
   }
+
   playGpx() {
     if (this.stopPointIdx > 0) {
       this.resetMkPoint(this.gpxPoints, this.stopPointIdx);
@@ -570,6 +579,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.resetMkPoint(this.gpxPoints, 0);
     }
   }
+
   stopPlayGpx() {
     this.isPlayingGpx = false;
     clearTimeout(this.playerTimer);
@@ -585,8 +595,9 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     this.muscleMap.initMuscleMap();
     this.muscleTrainList.initMuscleList();
   }
+
   // 使用者點擊後重繪肌肉地圖--kidin-1081129
-  reRenderMuscleMap(){
+  reRenderMuscleMap() {
     this.muscleMap.initMuscleMap();
     this.muscleTrainList.initMuscleList();
   }
@@ -667,9 +678,12 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.activityService.fetchSportListDetail(body).toPromise()
       .then(res => {
-        if (res.resultCode === 400) {
+        // 針對無該運動紀錄會無權限閱覽給予不同回應-kidin-1081203(Bug 940)
+        if (res.resultMessage === 'Request Failed') {
           this.isFileIDNotExist = true;
           return this.router.navigateByUrl('/404');
+        } else if (res.resultMessage === 'Get sport list detail fail, privacy is not match with target user.') {
+          return this.router.navigateByUrl('/403');
         }
         // 取得regionCode判斷操作是否位於大陸地區，為大陸地區一律使用百度地圖開啓 ex.zh-tw, zh-cn, en-us..
         const regionCode = this.utils.getLocalStorageObject('locale');
@@ -724,21 +738,19 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           this.isShowMap = false;
         }
         if (this.isShowMap) {
-          if (regionCode === 'zh-cn') {
-            this.mapKind = '2';
-            this.isHideMapRadioBtn = true;
-            this.handleBMap();
-          } else {
+          // 判斷google map是否可以載入，如不行就使用百度地圖並隱藏切換鈕-kidin-1081203
+          if ('google' in window && typeof google === 'object' && typeof google.maps === 'object') {
             if (!this.isInChinaArea || isInTaiwan) {
               this.mapKind = '1';
-              // this.handleGoogleMap();
+              this.handleGoogleMap(isInTaiwan);
             } else {
               this.mapKind = '2';
-              // this.isHideMapRadioBtn = true;
             }
-            this.handleGoogleMap(isInTaiwan);
-            this.handleBMap();
+          } else {
+            this.mapKind = '2';
+            this.isHideMapRadioBtn = true;
           }
+          this.handleBMap();
         }
         this.dataSource.data = res.activityLapLayer;
         this.fileInfo = res.fileInfo;
@@ -847,6 +859,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         break;
     }
   }
+
   handleDate(dateStr) {
     const arr = dateStr.split('T');
     const dateArr = arr[0].split('');
@@ -871,30 +884,32 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       time;
     return date;
   }
+
+  // 滑動Hchart時，使地圖的點跟著移動
   handleSynchronizedPoint(e, finalDatas) {
-    // Do something with 'event'
-    for (let i = 0; i < Highcharts.charts.length; i = i + 1) {
-      const _chart: any = Highcharts.charts[i];
-      if (_chart !== undefined) {
-        if (finalDatas[i].isSyncExtremes) {
-          const event = _chart.pointer.normalize(e); // Find coordinates within the chart
-          const point = _chart.series[0].searchPoint(event, true); // Get the hovered point
-          if (point && point.index) {
-            if (this.isShowMap && !this.isPlayingGpx) {
-              if (this.mapKind === '1') {
-                this.playerMark.setPosition(this.gpxPoints[point.index]);
-              }
-              if (this.mapKind === '2') {
-                this.playBMK.setPosition(this.gpxBmapPoints[point.index]);
-              }
-              this.stopPointIdx = point.index;
+    // 地圖移動以speed chart為基準-kidin-1081203(Bug 856)
+    const _chart: any = Highcharts.charts[0];
+    if (_chart !== undefined) {
+      if (finalDatas[0].isSyncExtremes) {
+        const event = _chart.pointer.normalize(e); // Find coordinates within the chart
+        const point = _chart.series[0].searchPoint(event, true); // Get the hovered point
+        if (point && point.index) {
+          if (this.isShowMap && !this.isPlayingGpx) {
+            if (this.mapKind === '1') {
+              this.playerMark.setPosition(this.gpxPoints[point.index]);
+                console.log('point=', point);
             }
-            point.highlight(e);
+            if (this.mapKind === '2') {
+              this.playBMK.setPosition(this.gpxBmapPoints[point.index]);
+            }
+            this.stopPointIdx = point.index;
           }
+          point.highlight(e);
         }
       }
     }
   }
+
   initHchart() {
     const hrFormatData = {
       userAge: 30,
@@ -902,48 +917,47 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       userRestHR: 60,
       userHRBase: 0
     };
-    if (this.activityInfo.type !== '4') {  // 4:有氧
-      if (this.passLogin === true) {
-        const body = {
-          token: this.token,
-          iconType: '2',
-        };
-        this.userInfoService.getLogonData(body).subscribe(res => {
-          if (res.resultCode !== 400) {
-            const birthday = res.info.birthday;
-            hrFormatData.userAge = moment().diff(birthday, 'years');
-            hrFormatData.userMaxHR = res.info.heartRateMax;
-            hrFormatData.userRestHR = res.info.heartRateResting;
-            hrFormatData.userHRBase = res.info.heartRateBase;
-            this.createChart(hrFormatData);
-          }
-        });
-      } else {
-        this.userInfoService.getUserAge().subscribe(res => {
-          if (res !== null) {
-            hrFormatData.userAge = res;
-          }
-        });
-        this.userInfoService.getUserMaxHR().subscribe(res => {
-          if (res !== null) {
-            hrFormatData.userMaxHR = res;
-          }
-        });
-        this.userInfoService.getUserRestHR().subscribe(res => {
-          if (res !== null) {
-            hrFormatData.userRestHR = res;
-          }
-        });
-        this.userInfoService.getUserHRBase().subscribe(res => {
-          if (res !== null) {
-            hrFormatData.userHRBase = res;
-          }
-        });
-        this.createChart(hrFormatData);
-      }
-      this.passLogin = false;
+    if (this.passLogin === true) {
+      const body = {
+        token: this.token,
+        iconType: '2',
+      };
+      this.userInfoService.getLogonData(body).subscribe(res => {
+        if (res.resultCode !== 400) {
+          const birthday = res.info.birthday;
+          hrFormatData.userAge = moment().diff(birthday, 'years');
+          hrFormatData.userMaxHR = res.info.heartRateMax;
+          hrFormatData.userRestHR = res.info.heartRateResting;
+          hrFormatData.userHRBase = res.info.heartRateBase;
+          this.createChart(hrFormatData);
+        }
+      });
+    } else {
+      this.userInfoService.getUserAge().subscribe(res => {
+        if (res !== null) {
+          hrFormatData.userAge = res;
+        }
+      });
+      this.userInfoService.getUserMaxHR().subscribe(res => {
+        if (res !== null) {
+          hrFormatData.userMaxHR = res;
+        }
+      });
+      this.userInfoService.getUserRestHR().subscribe(res => {
+        if (res !== null) {
+          hrFormatData.userRestHR = res;
+        }
+      });
+      this.userInfoService.getUserHRBase().subscribe(res => {
+        if (res !== null) {
+          hrFormatData.userHRBase = res;
+        }
+      });
+      this.createChart(hrFormatData);
     }
+    this.passLogin = false;
   }
+
   // 從initHChart()分離出來的function-kidin-1081122
   createChart(hrFormatData) {
     const { finalDatas, chartTargets } = this.activityService.handleChartDatas(
@@ -961,7 +975,13 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.finalDatas.forEach((_option, idx) => {
       this[`is${chartTargets[idx]}Display`] = true;
-
+      _option[
+        chartTargets[idx]
+      ].xAxis.events.setExtremes = this.syncExtremes.bind(
+        this,
+        idx,
+        finalDatas
+      );
       this.charts[idx] = chart(
         this[chartTargets[idx]].nativeElement,
         _option[chartTargets[idx]]
@@ -979,6 +999,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.handleSynchronizedPoint(e, finalDatas)
     );
   }
+
   syncExtremes(num, finalDatas, e) {
     // 調整縮放會同步
     const thisChart = this.charts[num];
@@ -994,6 +1015,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
   }
+
   goToProfile() {
     this.router.navigateByUrl(
       `/user-profile/${this.hashIdService.handleUserIdEncode(
@@ -1001,16 +1023,20 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       )}`
     );
   }
+
   goBack() {
     window.history.back();
   }
+
   print() {
     window.print();
   }
+
   // 開啟編輯活動檔案名稱模式-kidin-1081115
   editActivityName() {
     this.editNameMode = true;
   }
+
   // 上傳新名稱-kidin-1081115
   handleNewProfileName(e) {
     if (e.key === 'Enter' && this.activityName === this.activityNameBeforeState) {

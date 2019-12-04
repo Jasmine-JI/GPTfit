@@ -19,7 +19,7 @@ import { Router } from '@angular/router';
 export class DemoQrcodComponent implements OnInit {
   displayQr: any;
   deviceInfo: any;
-  isMainAppOpen = false;
+  isMainAppOpen = [];
   isSecondAppOpen = false;
   isWrong = false;
   noProductImg: string;
@@ -33,6 +33,8 @@ export class DemoQrcodComponent implements OnInit {
   isFitPaired: boolean;
   imgClass = 'product-photo--landscape';
   token: string;
+  mainAppList = [];
+  imageStoragePlace = `http://${location.hostname}/app/public_html/products`;
   constructor(
     private qrcodeService: QrcodeService,
     private progress: NgProgress,
@@ -60,26 +62,29 @@ export class DemoQrcodComponent implements OnInit {
         this.handleProductManual(e.lang);
       }
     });
-    let params = new HttpParams();
-    params = params.set('device_sn', this.displayQr.device_sn);
+    // 改成串接後端api(7015)-kidin-1081203
+    const body = {
+      'token': '',
+      'queryType': '1',
+      'queryArray': [this.displayQr.device_sn]
+    };
     this.progressRef = this.progress.ref();
     this.progressRef.start();
     this.isLoading = true;
-    this.qrcodeService.getDeviceInfo(params).subscribe(res => {
-      if (typeof res === 'string') {
-        this.noProductImg = `http://${
-          location.hostname
-        }/app/public_html/products/img/unknown.png`;
+    this.qrcodeService.getProductInfo(body).subscribe(res => {
+      this.deviceInfo = res.info.productInfo[0];
+      if (!this.deviceInfo.modelID) {
+        this.noProductImg = `http://${location.hostname}/app/public_html/products/img/unknown.png`;
         this.progressRef.complete();
         this.isLoading = false;
       } else {
-        this.deviceInfo = res;
         const image = new Image();
         image.addEventListener('load', e => this.handleImageLoad(e));
-        image.src = this.deviceInfo.modelImgUrl;
+        image.src = `http://${location.hostname}/app/public_html/products + ${this.deviceInfo.modelImg}`;
         this.handleProductInfo(langName);
         this.handleProductManual(langName);
         this.handleUpload();
+        this.mainAppList = this.deviceInfo.mainApp;
       }
     });
   }
@@ -92,25 +97,25 @@ export class DemoQrcodComponent implements OnInit {
   // 新增西班牙語-kidin-1081106
   handleProductInfo(lang) {
     if (lang === 'zh-cn') {
-      this.productInfo = this.deviceInfo.informations['relatedLinks_zh-CN'];
+      this.productInfo = this.deviceInfo['relatedLinks_zh-CN'];
     } else if (lang === 'en-us') {
-      this.productInfo = this.deviceInfo.informations['relatedLinks_en-US'];
+      this.productInfo = this.deviceInfo['relatedLinks_en-US'];
     } else if (lang === 'es-es') {
-      this.productInfo = this.deviceInfo.informations['relatedLinks_es-ES'];
+      this.productInfo = this.deviceInfo['relatedLinks_es-ES'];
     } else {
-      this.productInfo = this.deviceInfo.informations['relatedLinks_zh-TW'];
+      this.productInfo = this.deviceInfo['relatedLinks_zh-TW'];
     }
   }
   // 新增西班牙語-kidin-1081106
   handleProductManual(lang) {
     if (lang === 'zh-cn') {
-      this.productManual = this.deviceInfo.informations['manual_zh-CN'];
+      this.productManual = this.deviceInfo['manual_zh-CN'];
     } else if (lang === 'en-us') {
-      this.productManual = this.deviceInfo.informations['manual_en-US'];
+      this.productManual = this.deviceInfo['manual_en-US'];
     } else if (lang === 'es-es') {
-      this.productManual = this.deviceInfo.informations['manual_es-ES'];
+      this.productManual = this.deviceInfo['manual_es-ES'];
     } else {
-      this.productManual = this.deviceInfo.informations['manual_zh-TW'];
+      this.productManual = this.deviceInfo['manual_zh-TW'];
     }
   }
   handleUpload() {
@@ -167,10 +172,10 @@ export class DemoQrcodComponent implements OnInit {
   }
   uploadDevice() {
     const types = ['Wearable', 'Treadmill', 'spinBike', 'rowMachine'];
-    const { modelType } = this.deviceInfo;
+    const { modelTypeID } = this.deviceInfo;  // 改成串接後端api，故更改該key-kidin-1081203
     const { cs, device_sn } = this.displayQr;
     const typeIdx = types.findIndex(
-      _type => _type.toLowerCase() === modelType.toLowerCase()
+      _type => _type.toLowerCase() === modelTypeID.toLowerCase()
     );
     const body = {
       token: '',
@@ -205,8 +210,15 @@ export class DemoQrcodComponent implements OnInit {
       err => (this.isWrong = true)
     );
   }
-  swithMainApp() {
-    this.isMainAppOpen = !this.isMainAppOpen;
+  swithMainApp(e) {
+    const currentId = Number(e.target.id);
+    if (this.isMainAppOpen.indexOf(currentId) < 0) {
+      this.isMainAppOpen.push(currentId);
+    } else {
+      this.isMainAppOpen = this.isMainAppOpen.filter(id => {
+        return id !== currentId;
+      });
+    }
   }
   swithSecondApp() {
     this.isSecondAppOpen = !this.isSecondAppOpen;
