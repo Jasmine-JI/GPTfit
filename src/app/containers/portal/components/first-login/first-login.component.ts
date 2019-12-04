@@ -173,7 +173,7 @@ export class FirstLoginComponent implements OnInit {
       }
     }
   }
-  // 判斷身高體重是否為合理值-kidin-1081120
+  // 判斷身高體重是否為合理值-kidin-1081120(Bug 576)
   handleHWValue(type, e) {
     const inputHeightValue = e.target.value;
     let tuneHeight = '';

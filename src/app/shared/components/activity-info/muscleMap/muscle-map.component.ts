@@ -49,21 +49,17 @@ export class MuscleMapComponent implements OnInit, AfterViewInit {
         this.proficiencyCoefficient = 1;
         break;
     }
-    // 過濾休息圈資料-kidin-1081125
-    if (datas.focusMusclePart === false) {
       this.filterAllRepeatData = lapsDatas.filter(data => {
-        return data.dispName !== '';
+        return (data.lapIndex % 2 !== 0);
       });
-    } else {
       this.filterAllRepeatData = lapsDatas;
-    }
     this.filterRepeatPart();
-    if (datas.focusMusclePart === false) {
-      const allVicePart = Array.from(this.selectVicePart);
+    const allVicePart = Array.from(this.selectVicePart);
+    if (!datas.focusMusclePart) {
       for (let i = 0; i <= allVicePart.length; i++) {
         const colorVice = '#cacaca';  // 次要訓練部位顏色-kidin-1081125
         const transparencyVice = '0.5';  // 次要訓練部位色彩透明度-kidin-1081125
-        // 根據次要重訓部位訓練程度顯示顏色-kidin-1081122
+        // 根據次要重訓部位顯示顏色-kidin-1081122
         switch (allVicePart[i]) {
           case '16' :
             const bicepsInside = document.querySelectorAll('.bicepsInside') as NodeListOf<HTMLElement>;
@@ -280,7 +276,7 @@ export class MuscleMapComponent implements OnInit, AfterViewInit {
       this.userWeight = datas.userWeight;
       const trainingPart = lapData.middleCode;
       // 計算該部位訓練程度-kidin-1081128
-      let trainingLevel = 200 - ((lapData.middleOneRepMax) / this.userWeight) * 100 * this.proficiencyCoefficient;
+      let trainingLevel = (200 / (this.proficiencyCoefficient)) - ((lapData.middleOneRepMax) / this.userWeight) * 100;
       if (trainingLevel < 0) {
         trainingLevel = 0;
       }
@@ -288,6 +284,9 @@ export class MuscleMapComponent implements OnInit, AfterViewInit {
       const Brightness = '70%';  // 主訓練部位色彩明亮度-kidin-1081125
       const transparency = 0.5;  // 主訓練部位色彩透明度-kidin-1081125
       this.sendMuscleListColor(trainingPart, trainingLevel, saturation, Brightness, transparency);
+      if (datas.focusMusclePart && trainingPart !== datas.focusMusclePart) {
+        continue;
+      }
       switch (trainingPart) {
         case '16' :
           const bicepsInside = document.querySelectorAll('.bicepsInside') as NodeListOf<HTMLElement>;
@@ -496,14 +495,13 @@ export class MuscleMapComponent implements OnInit, AfterViewInit {
     }
     this.selectMaxOneRepMaxData(list);
   }
+
   // 篩選各個主要部位最大1RM資料-kidin-1081125
   selectMaxOneRepMaxData(datas) {
-    let middleCode = '';
-    let middleOneRepMax = 0;
+    const middleCode = datas[0].muscleCode;
+    let middleOneRepMax = datas[0].OneRepMax;
     for (let i = 1; i < datas.length; i++) {
-      middleCode = datas[0].muscleCode;
-      middleOneRepMax = datas[0].OneRepMax;
-      if (datas[i].muscleCode === middleCode && datas[i].OneRepMax < middleOneRepMax) {
+      if (datas[i].muscleCode === middleCode && datas[i].OneRepMax > middleOneRepMax) {
         middleOneRepMax = datas[i].OneRepMax;
       }
     }
@@ -519,6 +517,7 @@ export class MuscleMapComponent implements OnInit, AfterViewInit {
       this.selectMaxOneRepMaxData(datas);
     }
   }
+
   // 將篩選過後的資料存至service-kidin-1081129
   sendMuscleListColor(MuscleCode, level, saturation, brightness, transparency) {
     const muscleColorSets = {

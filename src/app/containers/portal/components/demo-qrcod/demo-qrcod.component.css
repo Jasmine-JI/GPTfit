@@ -18,6 +18,26 @@
   width: auto;
   height: 100%;
 }
+
+.mainAppSection {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+.mainAppGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.mainApp {
+  margin-bottom: 10px;
+}
+
+.mainAppOpen {
+  width: 330px;
+}
 @media(max-width: 575px) {
   .demo-qr__action {
     margin: 0 15px 15px;
@@ -29,6 +49,14 @@
   .demo-qr__action .alatech-btn + .alatech-btn {
     margin-left: 0px;
     margin-top: 10px;
+  }
+  .mainAppSection {
+    flex-direction: column;
+  }
+}
+@media(min-width: 576px) {
+  .mainApp {
+    flex-basis: auto;
   }
 }
 @media(min-width: 1200px) {

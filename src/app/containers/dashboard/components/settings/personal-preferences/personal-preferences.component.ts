@@ -67,7 +67,7 @@ export class PersonalPreferencesComponent implements OnInit {
     const value = moment($event.value).format('YYYYMMDD');
     this.settingsForm.patchValue({ birthday: value });
   }
-  // 判斷心律是否為合理值（focusout觸發事件）-kidin-20191120
+  // 判斷心率是否為合理值（focusout觸發事件）-kidin-20191120(Bug 578)
   handleHrValueArrange(type, e) {
     const inputHrValue = e.target.value;
     let hrValue = '';
@@ -92,7 +92,7 @@ export class PersonalPreferencesComponent implements OnInit {
       this.settingsForm.patchValue({ heartRateResting: hrValue });
     }
   }
-  // 判斷輪徑是否為合理值（改為focusout觸發事件）-kidin-20191120
+  // 判斷輪徑是否為合理值（改為focusout觸發事件）-kidin-20191120(Bug 578)
   handleWheelValueArrange(e) {
     const inputWheelValue = e.target.value;
     let tuneSize = '';
