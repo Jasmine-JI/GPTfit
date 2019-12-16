@@ -104,7 +104,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   iszoneChartTargetDisplay = false;
   iswattChartTargetDisplay = false;
 
-  Proficiency = 'metacarpus';  // 使用者重訓熟練度設定(預設老手)-kidin-1081122
+  Proficiency = 'metacarpus';  // 使用者重訓熟練度設定(預設進階者)-kidin-1081122
   activityInfo: any;
   fileInfo: any;
   infoDate: string;
@@ -184,18 +184,18 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     private _changeDetectionRef: ChangeDetectorRef
   ) {
     /**
-     * 重写内部的方法， 这里是将提示框即十字准星的隐藏函数关闭
+     * 重寫內部的方法， 這裡是將提示框即十字準星的隱藏函數關閉
      */
     Highcharts.Pointer.prototype.reset = function() {
       return undefined;
     };
     /**
-     * 高亮当前的数据点，并设置鼠标滑动状态及绘制十字准星线
+     * 聚焦當前的數據點，並設置滑鼠滑動狀態及繪製十字準星線
      */
     Highcharts.Point.prototype.highlight = function(event) {
-      this.onMouseOver(); // 显示鼠标激活标识
-      // this.series.chart.tooltip.refresh(this); // 显示提示框
-      this.series.chart.xAxis[0].drawCrosshair(event, this); // 显示十字准星线
+      this.onMouseOver(); // 顯示滑鼠啟動標示
+      // this.series.chart.tooltip.refresh(this); // 顯示提示框
+      this.series.chart.xAxis[0].drawCrosshair(event, this); // 顯示十字準星线
     };
     this.resetMkPoint = this.resetMkPoint.bind(this);
     this.scroll = debounce(this.scroll.bind(this), 1000);
@@ -782,7 +782,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           'YYYY/MM/DD HH:mm'
         );
         this.totalSecond = this.activityInfo.totalSecond;
-        this.resolutionSeconds = +this.totalSecond / this.activityPoints.length;
+        this.resolutionSeconds = this.activityInfo.resolutionSeconds;  // 修正心率區間秒數與APP有落差-kidin-1081212(Bug 985)
         this.initHchart();
         this.progressRef.complete();
         this.isLoading = false;
@@ -895,7 +895,6 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           if (this.isShowMap && !this.isPlayingGpx) {
             if (this.mapKind === '1') {
               this.playerMark.setPosition(this.gpxPoints[point.index]);
-                console.log('point=', point);
             }
             if (this.mapKind === '2') {
               this.playBMK.setPosition(this.gpxBmapPoints[point.index]);

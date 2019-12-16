@@ -73,11 +73,11 @@
   min-width: 300px;
   margin-top: 10px;
 }
-.activty-title {
+.activity-title {
   border-bottom: 2px #e5e5e5 solid;
 }
 /*之後要跟my activity 做共用*/
-.activty-btn {
+.activity-btn {
   width: 140px;
   height: 38px;
 }
@@ -86,7 +86,7 @@
   font-size: 30px;
 }
 
-.activty-icon {
+.activity-icon {
   width: 60px;
   height: 60px;
   line-height: 60px;
@@ -99,17 +99,17 @@
   align-items: center;
   color: #888;
 }
-.activty-icon-text {
+.activity-icon-text {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
-.activty-info-data-value {
+.activity-info-data-value {
   font-size: 30px;
   color: #646464;
 }
-.activty-info-data-name {
+.activity-info-data-name {
   font-size: 15px;
   color: #6e6e6e;
 }
@@ -253,7 +253,7 @@ th.mat-header-cell:last-child, td.mat-cell:last-child, td.mat-footer-cell:last-c
   .summary-item {
     margin-right: 10px;
   }
-  .activty-info-data-value {
+  .activity-info-data-value {
     font-size: 20px;
   }
   .activity-info__area {

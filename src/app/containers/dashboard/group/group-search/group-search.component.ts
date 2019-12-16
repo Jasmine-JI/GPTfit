@@ -78,8 +78,8 @@ export class GroupSearchComponent implements OnInit {
       category: '3',
       groupLevel: this.groupLevel || '30',
       searchWords: this.searchWords || '',
-      page: '0',
-      pageCounts: '10'
+      page: (this.currentPage && this.currentPage.pageIndex.toString()) || '0',  // 修復點選下一頁清單卻沒有改變的問題-kidin-1081205(Bug 956)
+      pageCounts: (this.currentPage && this.currentPage.pageSize.toString()) || '10'  // 修復每頁顯示項數失效的問題-kidin-1081205(Bug 956)
     };
     if (this.searchWords && this.searchWords.length > 0) {
       this.isLoading = true;
