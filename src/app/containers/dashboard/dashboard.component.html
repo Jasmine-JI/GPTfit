@@ -38,7 +38,7 @@
                 [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
               >
                 <mat-panel-title>
-                  <i class="icon-svg_web-icon_p1_003-peoples ala-sidenav-icon"></i>{{ "Dashboard.timelyActivity" | translate}}
+                  <i class="icon-svg_web-icon_p1_003-peoples ala-sidenav-icon"></i>{{"Dashboard.timelyActivity" | translate}}
                 </mat-panel-title>
               </mat-expansion-panel-header>
                 <!-- <li class="ala-sidenav-menu-item"
@@ -63,7 +63,7 @@
                 [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
               >
                 <mat-panel-title>
-                  <i class="icon-svg_web-icon_p1_036-friends ala-sidenav-icon"></i>{{ "Dashboard.Group.group" | translate}}
+                  <i class="icon-svg_web-icon_p1_036-friends ala-sidenav-icon"></i>{{"Dashboard.Group.group" | translate}}
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <li class="ala-sidenav-menu-item"
@@ -251,19 +251,18 @@
       </nav>
       <span class="version">{{'SH.version' | translate: {'version': version } }}</span>
     </mat-drawer>
-
     <mat-drawer-content>
       <header class="header header__color ala-dashboard-header">
-        <div class="mobile-menu-toggle">
-          <div class="main-nav-toggle"
-            [class.minimize-main-nav]="!isSideNavOpend"
-            (click)="toggleSideNav(sideNav)"
-          >
-            <i class="icon-svg_web-icon_p1_073-level_fold main-nav-toggle-icon"
-            ></i>
-            <i class="icon-svg_web-icon_p1_005-menu main-nav-toggle-icon"></i>
-          </div>
+      <div class="mobile-menu-toggle">
+        <div class="main-nav-toggle"
+          [class.minimize-main-nav]="!isSideNavOpend"
+          (click)="toggleSideNav(sideNav)"
+        >
+          <i class="icon-svg_web-icon_p1_073-level_fold main-nav-toggle-icon"
+          ></i>
+          <i class="icon-svg_web-icon_p1_005-menu main-nav-toggle-icon"></i>
         </div>
+      </div>
         <div style="display: flex;position: fixed;right:20px">
           <div class="dropdown">
             <div class="header-nav-item" id="dropdownMenu3" data-toggle="dropdown" aria-haspopup="true"

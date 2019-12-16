@@ -7,7 +7,6 @@ import { MatDatepickerInputEvent } from '@angular/material';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { MatSnackBar } from '@angular/material';
-import { debounce } from '@shared/utils/';
 import { UserInfoService } from '../../../services/userInfo.service';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -37,10 +36,7 @@ export class UserSettingsComponent implements OnInit {
     private snackbar: MatSnackBar,
     private userInfoService: UserInfoService,
     private translate: TranslateService
-  ) {
-    this.handleSearchName = debounce(this.handleSearchName, 1500);
-    this.handleValueArrange = debounce(this.handleValueArrange, 1500);
-  }
+  ) {}
   get nameIcon() {
     return <FormArray>this.settingsForm.get('nameIcon');
   }
@@ -88,27 +84,28 @@ export class UserSettingsComponent implements OnInit {
       description
     });
   }
-  handleValueArrange(type, _value) {
+  handleValueArrange(type, e) {
+    const inputHeightValue = e.target.value;
     let tuneHeight = '';
     let tuneWeight = '';
 
-    if (_value) {
+    if (inputHeightValue) {
       if (type === 1) {
         // type 1為身高 2為體重
-        if (+_value < 100) {
+        if (inputHeightValue < 100) {
           tuneHeight = '100';
-        } else if (+_value > 255) {
+        } else if (inputHeightValue > 255) {
           tuneHeight = '255';
         } else {
-          tuneHeight = _value;
+          tuneHeight = inputHeightValue;
         }
       } else {
-        if (+_value < 40) {
+        if (inputHeightValue < 40) {
           tuneWeight = '40';
-        } else if (+_value > 255) {
+        } else if (inputHeightValue > 255) {
           tuneWeight = '255';
         } else {
-          tuneWeight = _value;
+          tuneWeight = inputHeightValue;
         }
       }
     }
@@ -138,9 +135,10 @@ export class UserSettingsComponent implements OnInit {
       }
     });
   }
-  public onNameChange(text: any, form: FormGroup): void {
-    if (text.length > 0 && form.controls['name'].status === 'VALID') {
-      this.handleSearchName(text.trim());
+  public onNameChange(e: any, form: FormGroup): void {
+    const inputNameString = e.target.value;
+    if (inputNameString.length > 0 && form.controls['name'].status === 'VALID') {
+      this.handleSearchName(inputNameString);
     }
   }
   handleChangeTextarea(text: string, type: number): void {
@@ -149,8 +147,14 @@ export class UserSettingsComponent implements OnInit {
     }
   }
   logStartDateChange($event: MatDatepickerInputEvent<moment.Moment>) {
-    const value = moment($event.value).format('YYYYMMDD');
-    this.settingsForm.patchValue({ birthday: value });
+    const inputBirthdayValue = moment($event.value)
+    let value = moment($event.value).format('YYYYMMDD');
+    if (inputBirthdayValue.isBetween('19000101', moment())) {
+      this.settingsForm.patchValue({ birthday: value });
+    } else {
+      value = '';
+      this.settingsForm.patchValue({ birthday: value });
+    }
   }
   saveSettings({ value, valid }) {
     if (value.nameIcon && value.nameIcon.length === 0) {

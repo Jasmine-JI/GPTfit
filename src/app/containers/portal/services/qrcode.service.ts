@@ -36,6 +36,9 @@ export class QrcodeService {
   editDeviceInfo(body) {
     return this.http.post<any>('/api/v1/device/editDeviceInfo', body); // 7013
   }
+  getProductInfo(body) {
+    return this.http.post<any>('/api/v1/device/getProductInfo', body); // 7015
+  }
   getQRFitPairURL(body) {
     return this.http.post<any>('/api/v1/device/getQRFitPairURL', body); // 7018
   }

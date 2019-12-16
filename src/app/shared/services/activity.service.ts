@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { UtilsService } from './utils.service';
 import * as Highcharts from 'highcharts';
+
 @Injectable()
 class Option {
   constructor(dataset, colorIdx) {
@@ -78,6 +79,12 @@ class Option {
 }
 @Injectable()
 export class ActivityService {
+  private userWeight = 70;  // 儲存使用者體重-kidin-1081121
+  private focusMusclePart = '';  // 儲存重訓資料-kidin-1081121
+  private heavyTrainDateState = [];  // 備份重訓資料-kidin-1081121
+  private muscleListColor = []; // 儲存肌肉清單顏色列表-kidin-1081128
+  private Proficiency = 'asept';  // 儲存重訓熟練度-kidin-1081121
+
   constructor(private http: HttpClient, private utils: UtilsService) {}
   fetchTestData() {
     return this.http.get<any>('https://data.jianshukeji.com/jsonp?filename=json/activity.json');
@@ -126,11 +133,10 @@ export class ActivityService {
         { y: 0, color: '#c11920' }
       ],
       userHRZones = [0, 0, 0, 0, 0, 0];
-    if (type !== '4') {
       const { userHRBase, userAge, userMaxHR, userRestHR } = hrFormatData;
       if (userMaxHR && userRestHR) {
         if (userHRBase === 0) {
-          //區間數值採無條件捨去法
+          // 區間數值採無條件捨去法
           userHRZones[0] = Math.floor((220 - userAge) * 0.5);
           userHRZones[1] = Math.floor((220 - userAge) * 0.6 - 1);
           userHRZones[2] = Math.floor((220 - userAge) * 0.7 - 1);
@@ -147,7 +153,7 @@ export class ActivityService {
         }
       } else {
         if (userHRBase === 0) {
-          //區間數值採無條件捨去法
+          // 區間數值採無條件捨去法
           userHRZones[0] = Math.floor((220 - userAge) * 0.5);
           userHRZones[1] = Math.floor((220 - userAge) * 0.6 - 1);
           userHRZones[2] = Math.floor((220 - userAge) * 0.7 - 1);
@@ -163,7 +169,6 @@ export class ActivityService {
           userHRZones[5] = ((220 - userAge) - userRestHR) * (1) + userRestHR;
         }
       }
-    }
     // 2:腳踏車 3:重訓 5:有氧
     if (type === '2' || type === '3' || type === '5') {
       isNoPaces = true;
@@ -605,6 +610,7 @@ export class ActivityService {
       zoneDataset.data = zoneDataset.data.map((val, j) => val);
       zoneOptions = new Option(zoneDataset, colorIdx);
       colorIdx++;
+      zoneOptions['plotOptions'].column['pointPlacement'] = 0;
       zoneOptions['chart'].zoomType = '';
       zoneOptions['xAxis'].type = '';
       zoneOptions['xAxis'].dateTimeLabelFormats = null;
@@ -809,5 +815,48 @@ export class ActivityService {
       val,
       segYAxisData[j]
     ]);
+  }
+
+  // 儲存使用者體重-kidin-1081121
+  saveUserWeight(weight) {
+    this.userWeight = weight;
+  }
+
+  // 存入重訓資料-kidin-1081121
+  saveLapsData(data) {
+    this.heavyTrainDateState = data;
+  }
+
+  // 儲存重訓熟練度-kidin-1081121
+  saveProficiency(Proficiency) {
+    this.Proficiency = Proficiency;
+  }
+
+  // 針對使用者點選的肌肉清單篩選資料-kidin-1081128
+  saveMusclePart(muscleCode) {
+    this.focusMusclePart = muscleCode;
+  }
+
+  // 儲存肌肉清單顏色設定-kidin-1081128
+  saveMuscleListColor(muscleColor) {
+    this.muscleListColor = muscleColor;
+  }
+
+  getLapsData() {
+    return this.heavyTrainDateState;
+  }
+
+  getMuscleListColor() {
+    return this.muscleListColor;
+  }
+
+  getAllData() {
+      const heavyTrainingData = {
+        userWeight: this.userWeight,
+        proficiency: this.Proficiency,
+        lapDatas: this.heavyTrainDateState,
+        focusMusclePart: this.focusMusclePart
+      };
+      return heavyTrainingData;
   }
 }

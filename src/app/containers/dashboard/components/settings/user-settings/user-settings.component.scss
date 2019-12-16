@@ -9,7 +9,7 @@
   .form-field {
     width: 275px;
   }
-  /deep/.mat-form-field-infix {
+  ::ng-deep .mat-form-field-infix {
     border: 0;
   }
 }
