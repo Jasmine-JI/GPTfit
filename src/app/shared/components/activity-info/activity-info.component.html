@@ -44,7 +44,7 @@
             {{ printFileDate }}
           </div>
         </span>
-        <button class="alatech-btn alatech-btn--default activty-btn"
+        <button class="alatech-btn alatech-btn--default activity-btn"
           title="{{'SH.print' | translate}}"
           (click)="print()"
           *ngIf="isPrevieMode"
@@ -92,7 +92,7 @@
       </div>
     </div>
 
-    <div class="ala-dashboard-title activty-title">
+    <div class="ala-dashboard-title activity-title">
       {{'Dashboard.ActivityDetail.summary' | translate}}
     </div>
     <div class="activity-block">
@@ -106,7 +106,7 @@
         <ng-container *ngIf="userLink?.userName.length > 0">{{'SH.record' | translate}}  ，</ng-container>{{infoDate}} {{'SH.create' | translate}}
       </p>
       <div class="d-flex" style="align-items:center">
-        <div class="activty-icon">
+        <div class="activity-icon">
           <i *ngIf="activityInfo?.type === '1'"
             class="icon-svg_web-icon_p1_083-run"
           ></i>
@@ -145,61 +145,66 @@
       </div>
       <div class="summary-info">
         <div class="summary-item">
-          <div class="activty-info-data-value">{{activityInfo?.totalSecond | sportTime}}</div>
-          <div class="activty-info-data-name">{{'Dashboard.MyActivity.totalTime' | translate}}</div>
+          <div class="activity-info-data-value">{{activityInfo?.totalSecond | sportTime}}</div>
+          <div class="activity-info-data-name">{{'Dashboard.MyActivity.totalTime' | translate}}</div>
         </div>
         <div class="summary-item"
           *ngIf="activityInfo?.totalActivitySecond"
         >
-          <div class="activty-info-data-value">{{activityInfo?.totalActivitySecond | sportTime}}</div>
-          <div class="activty-info-data-name">{{'Dashboard.MyActivity.activityTime' | translate}}</div>
+          <div class="activity-info-data-value">{{activityInfo?.totalActivitySecond | sportTime}}</div>
+          <div class="activity-info-data-name">{{'Dashboard.MyActivity.activityTime' | translate}}</div>
         </div>
         <div class="summary-item"
           *ngIf="activityInfo?.totalRestSecond"
         >
-          <div class="activty-info-data-value">{{activityInfo?.totalRestSecond | sportTime}}</div>
-          <div class="activty-info-data-name">{{'Dashboard.MyActivity.restTime' | translate}}</div>
+          <div class="activity-info-data-value">{{activityInfo?.totalRestSecond | sportTime}}</div>
+          <div class="activity-info-data-name">{{'Dashboard.MyActivity.restTime' | translate}}</div>
         </div>
         <div *ngIf="activityInfo?.type !== '4' && activityInfo?.type !== '6'"
           class="summary-item"
         >
-          <div class="activty-info-data-value activity-info-data-unit">{{activityInfo?.avgHeartRateBpm}}
+          <div class="activity-info-data-value activity-info-data-unit">{{activityInfo?.avgHeartRateBpm}}
             <span class="data-label">bpm</span>
           </div>
-          <div class="activty-info-data-name">{{'SH.avgHr' | translate}}</div>
+          <div class="activity-info-data-name">{{'SH.avgHr' | translate}}</div>
         </div>
         <div *ngIf="activityInfo?.type !== '4' && activityInfo?.type !== '6'"
           class="summary-item"
         >
-          <div class="activty-info-data-value activity-info-data-unit">{{activityInfo?.maxHeartRateBpm}}
+          <div class="activity-info-data-value activity-info-data-unit">{{activityInfo?.maxHeartRateBpm}}
             <span class="data-label">bpm</span>
           </div>
-          <div class="activty-info-data-name">{{'SH.maxHr' | translate}}</div>
+          <div class="activity-info-data-name">{{'SH.maxHr' | translate}}</div>
         </div>
         <div class="summary-item">
-          <div class="activty-info-data-value activity-info-data-unit">{{activityInfo?.calories | number:'1.0-1'}}
+          <div class="activity-info-data-value activity-info-data-unit">{{activityInfo?.calories | number:'1.0-1'}}
             <span class="data-label">cal</span>
           </div>
-          <div class="activty-info-data-name">{{'SH.calories' | translate}}</div>
+          <div class="activity-info-data-name">{{'SH.calories' | translate}}</div>
         </div>
         <div *ngIf="activityInfo?.type !== '3' && activityInfo?.type !== '5'"
           class="summary-item"
         >
-          <div class="activty-info-data-value activity-info-data-unit">{{activityInfo?.totalDistanceMeters / 1000 | number:'1.0-1'}}
+          <div class="activity-info-data-value activity-info-data-unit" *ngIf="activityInfo?.totalDistanceMeters / 1000 >= 1">
+            {{activityInfo?.totalDistanceMeters / 1000 | number:'1.0-1'}}
             <span class="data-label">km</span>
           </div>
-          <div class="activty-info-data-name">{{'SH.totalDistance' | translate}}</div>
+          <div class="activity-info-data-value activity-info-data-unit" *ngIf="activityInfo?.totalDistanceMeters / 1000 < 1">
+            {{activityInfo?.totalDistanceMeters}}
+            <span class="data-label">m</span>
+          </div>
+          <div class="activity-info-data-name">{{'SH.totalDistance' | translate}}</div>
         </div>
         <div *ngIf="activityInfo?.type !== '3' && activityInfo?.type !== '5'"
           class="summary-item"
         >
-          <div class="activty-info-data-value activity-info-data-unit">{{activityInfo?.avgSpeed | sportPace: activityInfo?.type}}
+          <div class="activity-info-data-value activity-info-data-unit">{{activityInfo?.avgSpeed | sportPace: activityInfo?.type}}
             <span *ngIf="activityInfo?.type === '1'" class="data-label">1min/1km</span>
             <span *ngIf="activityInfo?.type === '4'" class="data-label">1min/100m</span>
             <span *ngIf="activityInfo?.type === '6'" class="data-label">1min/500m</span>
             <span *ngIf="activityInfo?.type !== '4' && activityInfo?.type !== '1' && activityInfo?.type !== '6'"class="data-label">km/h</span>
           </div>
-          <div class="activty-info-data-name">
+          <div class="activity-info-data-name">
             <span *ngIf="activityInfo?.type === '1' || activityInfo?.type === '4' || activityInfo?.type === '6'">
               {{'SH.avgPace' | translate}}
             </span>
@@ -211,47 +216,47 @@
         <div *ngIf="activityInfo?.type === '2' && activityInfo?.elevGain"
           class="summary-item"
         >
-          <div class="activty-info-data-value activity-info-data-unit">{{activityInfo?.elevGain | number:'1.0-1' || 0 }}
+          <div class="activity-info-data-value activity-info-data-unit">{{activityInfo?.elevGain | number:'1.0-1' || 0 }}
             <span class="data-label">m</span>
           </div>
-          <div class="activty-info-data-name">{{'Dashboard.MyActivity.climbGain' | translate}}</div>
+          <div class="activity-info-data-name">{{'Dashboard.MyActivity.climbGain' | translate}}</div>
         </div>
         <div *ngIf="activityInfo?.type === '3'"
           class="summary-item"
         >
-          <div class="activty-info-data-value activity-info-data-unit">{{activityInfo?.totalWeightKg | number:'1.0-1' || 0 }}
+          <div class="activity-info-data-value activity-info-data-unit">{{activityInfo?.totalWeightKg | number:'1.0-1' || 0 }}
             <span class="data-label">kg</span>
           </div>
-          <div class="activty-info-data-name">{{'SH.totalWeight' | translate}}</div>
+          <div class="activity-info-data-name">{{'SH.totalWeight' | translate}}</div>
         </div>
         <div *ngIf="activityInfo?.type === '3'"
           class="summary-item"
         >
-          <div class="activty-info-data-value activity-info-data-unit">{{activityInfo?.totalReps || 0 }}
+          <div class="activity-info-data-value activity-info-data-unit">{{activityInfo?.totalReps || 0 }}
             <span class="data-label">reps</span>
           </div>
-          <div class="activty-info-data-name">{{ 'SH.totalReps' | translate}}</div>
+          <div class="activity-info-data-name">{{ 'SH.totalReps' | translate}}</div>
         </div>
         <div *ngIf="activityInfo?.type === '4'"
           class="summary-item"
         >
-          <div class="activty-info-data-value activity-info-data-unit">{{activityInfo?.swimAvgCadence || 0 }}
+          <div class="activity-info-data-value activity-info-data-unit">{{activityInfo?.swimAvgCadence || 0 }}
             <span class="data-label">spm</span>
           </div>
-          <div class="activty-info-data-name">{{'Dashboard.MyActivity.avgSwimReps' | translate}}</div>
+          <div class="activity-info-data-name">{{'Dashboard.MyActivity.avgSwimReps' | translate}}</div>
         </div>
         <div *ngIf="activityInfo?.type === '6'"
           class="summary-item"
         >
-          <div class="activty-info-data-value activity-info-data-unit">{{activityInfo?.rowingAvgCadence || 0 }}
+          <div class="activity-info-data-value activity-info-data-unit">{{activityInfo?.rowingAvgCadence || 0 }}
             <span class="data-label">rpm</span>
           </div>
-          <div class="activty-info-data-name">{{'Dashboard.MyActivity.avgRowCadence' | translate}}</div>
+          <div class="activity-info-data-name">{{'Dashboard.MyActivity.avgRowCadence' | translate}}</div>
         </div>
       </div>
     </div>
     <ng-container *ngIf="isShowMap">
-      <div class="ala-dashboard-title activty-title">
+      <div class="ala-dashboard-title activity-title">
         {{'Dashboard.MyActivity.map' | translate}}
       </div>
       <div style="margin-top: 15px;" *ngIf="!isHideMapRadioBtn">
@@ -296,7 +301,7 @@
     <div *ngIf="activityInfo?.type === '3'"
         style="width: 100%; height: 100%; margin-bottom: 20px;"
     >
-      <div class="activty-title listGroup">
+      <div class="activity-title listGroup">
         <div class="ala-dashboard-title">
           {{'Dashboard.MyActivity.musclePart' | translate}}
         </div>
@@ -316,7 +321,7 @@
         <app-muscle-train-list #muscleTrainList class="musclePartList" (click)="reRenderMuscleMap()"></app-muscle-train-list>
       </div>
     </div>
-    <div class="activty-title listGroup">
+    <div class="activity-title listGroup">
       <div class="ala-dashboard-title">
         {{'Dashboard.MyActivity.chart' | translate}}
       </div>
@@ -416,7 +421,7 @@
         <mat-tab label="{{'Dashboard.MyActivity.detailsData' | translate}}">
           <div class="d-flex" style="flex-wrap: wrap;width:100%">
             <div class="activity-info__area">
-              <div class="ala-dashboard-title activty-title">
+              <div class="ala-dashboard-title activity-title">
                 {{'Dashboard.MyActivity.timing' | translate}}
               </div>
               <div class="activity-info__area--block">
@@ -433,8 +438,17 @@
                 <div>
                   {{activityInfo?.totalActivitySecond | sportTime}}
                 </div>
-                <span class="data-label">
+                <span
+                  class="data-label"
+                  *ngIf="activityInfo?.type === '1' || activityInfo?.type === '2' || activityInfo?.type === '4' || activityInfo?.type === '6'"
+                >
                   {{'Dashboard.MyActivity.movingTime' | translate}}
+                </span>
+                <span
+                  class="data-label"
+                  *ngIf="activityInfo?.type === '3' || activityInfo?.type === '5'"
+                >
+                  {{'Dashboard.MyActivity.activityTime' | translate}}
                 </span>
               </div>
               <div class="activity-info__area--block"
@@ -452,7 +466,7 @@
 *ngIf="activityInfo?.type !== '2' && activityInfo?.type !== '3' && activityInfo?.type !== '5' &&
 (activityInfo?.avgSpeed || activityInfo?.avgMoveSpeed || activityInfo?.maxSpeed)"
             >
-              <div class="ala-dashboard-title activty-title">
+              <div class="ala-dashboard-title activity-title">
                 <span *ngIf="activityInfo?.type === '1'">
                   1km{{'SH.pace' | translate}}
                 </span>
@@ -512,7 +526,7 @@
             <div class="activity-info__area"
               *ngIf="activityInfo?.type !== '3' && activityInfo?.type !== '5'"
             >
-              <div class="ala-dashboard-title activty-title">
+              <div class="ala-dashboard-title activity-title">
                 {{'SH.speed' | translate}}
               </div>
               <div class="activity-info__area--block">
@@ -546,7 +560,7 @@
             <div class="activity-info__area"
               *ngIf="activityInfo?.type !== '4' && activityInfo?.type !== '6'"
             >
-              <div class="ala-dashboard-title activty-title">
+              <div class="ala-dashboard-title activity-title">
                 {{'SH.hr' | translate}}
               </div>
               <div class="activity-info__area--block">
@@ -571,7 +585,7 @@
             <div class="activity-info__area"
               *ngIf="activityInfo?.type === '1'"
             >
-              <div class="ala-dashboard-title activty-title">
+              <div class="ala-dashboard-title activity-title">
                 {{'Dashboard.MyActivity.runDynamics' | translate}}
               </div>
               <div class="activity-info__area--block">
@@ -605,7 +619,7 @@
             <div class="activity-info__area"
               *ngIf="activityInfo?.type === '2'"
             >
-              <div class="ala-dashboard-title activty-title">
+              <div class="ala-dashboard-title activity-title">
                 {{'Dashboard.MyActivity.cyclingDynamics' | translate}}
               </div>
               <div class="activity-info__area--block">
@@ -631,7 +645,7 @@
               *ngIf="(activityInfo?.type === '1'|| activityInfo?.type === '2') &&
                 (activityInfo?.elevGain || activityInfo?.elevLoss)"
             >
-              <div class="ala-dashboard-title activty-title">
+              <div class="ala-dashboard-title activity-title">
                 {{'Dashboard.MyActivity.climb' | translate}}
               </div>
               <div class="activity-info__area--block"
@@ -665,7 +679,7 @@
               (activityInfo?.rowingAvgWatt || activityInfo?.rowingMaxWatt)
               ))"
             >
-              <div class="ala-dashboard-title activty-title">
+              <div class="ala-dashboard-title activity-title">
                 {{'SH.power' | translate}}
               </div>
               <div class="activity-info__area--block"
@@ -703,7 +717,7 @@
               *ngIf="(activityInfo?.type === '1'|| activityInfo?.type === '2') &&
               (activityInfo?.maxElev|| activityInfo?.minElev)"
             >
-              <div class="ala-dashboard-title activty-title">
+              <div class="ala-dashboard-title activity-title">
                 {{'Dashboard.MyActivity.altitude' | translate}}
               </div>
               <div class="activity-info__area--block"
@@ -733,7 +747,7 @@
               *ngIf="(activityInfo?.type !== '4'&& activityInfo?.type !== '6') &&
               (activityInfo?.maxTemp || activityInfo?.minTemp)"
             >
-              <div class="ala-dashboard-title activty-title">
+              <div class="ala-dashboard-title activity-title">
                 {{'Dashboard.MyActivity.temperature' | translate}}
               </div>
               <div class="activity-info__area--block"
@@ -762,7 +776,7 @@
             <div class="activity-info__area"
               *ngIf="activityInfo?.type === '3'"
             >
-              <div class="ala-dashboard-title activty-title">
+              <div class="ala-dashboard-title activity-title">
                 {{'Dashboard.MyActivity.sets' | translate}}
               </div>
               <div class="activity-info__area--block">
@@ -787,7 +801,7 @@
             <div class="activity-info__area"
               *ngIf="activityInfo?.type === '4'"
             >
-              <div class="ala-dashboard-title activty-title">
+              <div class="ala-dashboard-title activity-title">
                 {{'Dashboard.MyActivity.swimmingDynamics' | translate}}
               </div>
               <div class="activity-info__area--block">
@@ -812,7 +826,7 @@
             <div class="activity-info__area"
               *ngIf="activityInfo?.type === '4'"
             >
-              <div class="ala-dashboard-title activty-title">
+              <div class="ala-dashboard-title activity-title">
                 {{'Dashboard.MyActivity.SwimPool' | translate}}
               </div>
               <div class="activity-info__area--block">
@@ -837,7 +851,7 @@
             <div class="activity-info__area"
               *ngIf="activityInfo?.type === '6'"
             >
-              <div class="ala-dashboard-title activty-title">
+              <div class="ala-dashboard-title activity-title">
                 {{'Dashboard.MyActivity.rowingDynamic' | translate}}
               </div>
               <div class="activity-info__area--block">
@@ -972,7 +986,7 @@
               </ng-container>
               <ng-container *ngIf="activityInfo?.type === '4'">
                 <td mat-cell *matCellDef="let element"
-                > {{element.lapTotaStrokes}} </td>
+                > {{element.lapTotalStrokes}} </td>
               </ng-container>
               <ng-container *ngIf="activityInfo?.type === '6'">
                 <td mat-cell *matCellDef="let element"
@@ -1047,7 +1061,7 @@
   <div class="other-info--area">
     <div class="container">
       <div class="other-info">
-        <div class="ala-dashboard-title activty-title">
+        <div class="ala-dashboard-title activity-title">
           {{'Dashboard.ActivityDetail.device' | translate}}
         </div>
         <div style="display: flex; justify-content: center;">
@@ -1061,7 +1075,7 @@
         </div>
       </div>
       <div class="other-info" *ngIf="classInfo">
-        <div class="ala-dashboard-title activty-title">
+        <div class="ala-dashboard-title activity-title">
           {{'Dashboard.TrainLive.courseIntroduction' | translate}}
         </div>
         <div style="display:flex; flex-direction:column; margin-top:10px">
@@ -1093,7 +1107,7 @@
         </div>
       </div>
       <div class="other-info" *ngIf="coachInfo">
-        <div class="ala-dashboard-title activty-title">
+        <div class="ala-dashboard-title activity-title">
           {{'Dashboard.TrainLive.coachIntroduction' | translate}}
         </div>
         <div style="display:flex; flex-direction:column; margin-top:10px">
@@ -1116,7 +1130,7 @@
     <!-- </div> -->
     <!-- <div class="container other-info--section"> -->
       <div class="other-info" *ngIf="fileInfo?.note">
-        <div class="ala-dashboard-title activty-title">
+        <div class="ala-dashboard-title activity-title">
           {{'Dashboard.ActivityDetail.brief' | translate}}
         </div>
         <div>
@@ -1124,13 +1138,13 @@
         </div>
       </div>
       <div class="other-info" *ngIf="fileInfo?.location">
-        <div class="ala-dashboard-title activty-title">
+        <div class="ala-dashboard-title activity-title">
           {{'Dashboard.ActivityDetail.coordinate' | translate}}
         </div>
         {{fileInfo?.location}}
       </div>
       <div class="other-info" *ngIf="fileInfo">
-        <div class="ala-dashboard-title activty-title">
+        <div class="ala-dashboard-title activity-title">
           {{'Dashboard.ActivityDetail.fileInfo' | translate}}
         </div>
         <div>
@@ -1144,7 +1158,7 @@
         </div>
       </div>
       <div class="other-info" *ngIf="fileInfo?.tag">
-        <div class="ala-dashboard-title activty-title">
+        <div class="ala-dashboard-title activity-title">
           {{'Dashboard.ActivityDetail.tag' | translate}}
         </div>
         <div>

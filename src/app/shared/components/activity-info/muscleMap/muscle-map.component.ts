@@ -276,7 +276,7 @@ export class MuscleMapComponent implements OnInit, AfterViewInit {
       this.userWeight = datas.userWeight;
       const trainingPart = lapData.middleCode;
       // 計算該部位訓練程度-kidin-1081128
-      let trainingLevel = (200 / (this.proficiencyCoefficient)) - ((lapData.middleOneRepMax) / this.userWeight) * 100;
+      let trainingLevel = 200 - ((lapData.middleOneRepMax) / this.userWeight) * 100 * this.proficiencyCoefficient;
       if (trainingLevel < 0) {
         trainingLevel = 0;
       }
