@@ -295,7 +295,28 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
       this.isDefaultOpend = true;
       this.isSideNavOpend = true;
     }
+
+    // 使用者登入就存取身體資訊供各種圖表使用-kidin-1081212
+    const token = this.utilsService.getToken();
+    const body = {
+      token: token,
+      iconType: 2
+    };
+    this.userInfoService.getLogonData(body).subscribe(res => {
+      const data = {
+        name: res.info.name,
+        birthday: res.info.birthday,
+        heartRateBase: res.info.heartRateBase,
+        heartRateMax: res.info.heartRateMax,
+        heartRateResting: res.info.heartRateResting,
+        height: res.info.height,
+        weight: res.info.weight,
+        wheelSize: res.info.wheelSize
+      };
+      this.userInfoService.saveBodyDatas(data);
+    });
   }
+
   ngAfterViewChecked() {
     this.cdRef.detectChanges();
   }

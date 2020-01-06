@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { SettingsService } from '../../../services/settings.service';
-import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormArray, FormControl } from '@angular/forms';
 import { UtilsService } from '@shared/services/utils.service';
 import * as moment from 'moment';
 import { MatDatepickerInputEvent } from '@angular/material';
@@ -146,18 +146,19 @@ export class UserSettingsComponent implements OnInit {
       return this.settingsForm.patchValue({ description: text });
     }
   }
+
   logStartDateChange($event: MatDatepickerInputEvent<moment.Moment>) {
-    const inputBirthdayValue = moment($event.value)
+    const inputBirthdayValue = moment($event.value);
     let value = moment($event.value).format('YYYYMMDD');
-    if (inputBirthdayValue.isBetween('19000101', moment())) {
+    if (inputBirthdayValue.isBetween('19390101', moment())) {
       this.settingsForm.patchValue({ birthday: value });
     } else {
-      value = '';
+      value = (Number(moment().format('YYYYMMDD')) - 300000) + '';
       this.settingsForm.patchValue({ birthday: value });
     }
   }
   saveSettings({ value, valid }) {
-    if (value.nameIcon && value.nameIcon.length === 0) {
+    if (!value.nameIcon || value.nameIcon.length === 0) {
       return this.dialog.open(MessageBoxComponent, {
         hasBackdrop: true,
         data: {
@@ -211,6 +212,25 @@ export class UserSettingsComponent implements OnInit {
             'OK',
             { duration: 5000 }
           );
+
+          // 重新存取身體資訊供各種圖表使用-kidin-1081212
+          const key = {
+            token: token,
+            iconType: 2
+          };
+          this.userInfoService.getLogonData(key).subscribe(result => {
+            const data = {
+              name: result.info.name,
+              birthday: result.info.birthday,
+              heartRateBase: result.info.heartRateBase,
+              heartRateMax: result.info.heartRateMax,
+              heartRateResting: result.info.heartRateResting,
+              height: result.info.height,
+              weight: result.info.weight,
+              wheelSize: result.info.wheelSize
+            };
+            this.userInfoService.saveBodyDatas(data);
+          });
         } else {
           this.snackbar.open(
             this.translate.instant('Dashboard.Settings.updateFailed'),

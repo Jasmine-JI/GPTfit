@@ -7,6 +7,9 @@ const { API_SERVER } = environment.url;
 
 @Injectable()
 export class GroupService {
+
+  private groupInfo: any; // 儲存group資訊-kidin-1081210
+
   constructor(private http: HttpClient) {}
   fetchGroupList(body) {
     return this.http.post<any>('/api/v1/center/getGroupList', body);
@@ -60,5 +63,15 @@ export class GroupService {
   }
   fetchUserAvartar(params) {
     return this.http.get<any>(API_SERVER + 'user/userAvartar', { params });
+  }
+
+  // 取得group資訊-kidin-1081210
+  getGroupInfo () {
+    return this.groupInfo;
+  }
+
+  // 儲存group資訊-kidin-1081210
+  saveGroupInfo (groupData) {
+    this.groupInfo = groupData;
   }
 }

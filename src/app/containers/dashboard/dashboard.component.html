@@ -249,7 +249,16 @@
           </mat-accordion>
         </mat-nav-list>
       </nav>
-      <span class="version">{{'SH.version' | translate: {'version': version } }}</span>
+      <div class="version">
+        <footer
+          class="footer footer-details"
+          [ngClass]="footerAddClassName"
+          [style.display]="isHideFooter ? 'none' : 'block'"
+        >
+          {{'SH.footerAnnouncement' | translate}}
+          <div>{{'SH.version' | translate: {'version': version } }}</div>
+        </footer>
+      </div>
     </mat-drawer>
     <mat-drawer-content>
       <header class="header header__color ala-dashboard-header">
@@ -312,13 +321,6 @@
     >
       <router-outlet></router-outlet>
     </div>
-    <footer
-      class="footer footer-details"
-      [ngClass]="footerAddClassName"
-      [style.display]="isHideFooter ? 'none' : 'block'"
-    >
-      {{'SH.footerAnnouncement' | translate}}
-    </footer>
   </div>
 </div>
 

@@ -115,12 +115,13 @@
     </label>
     <div class="settings-control">
       <mat-form-field style="min-width: 275px;">
-        <input matInput [matDatepicker]="picker" placeholder=""
+        <input matInput name="birthday" [matDatepicker]="picker" placeholder=""
           (dateChange)="logStartDateChange($event)"
           formControlName="birthday"
+          readonly
         >
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-datepicker #picker startView="year" [startAt]="birthday"></mat-datepicker>
+        <mat-datepicker #picker startView="year" [startAt]="birthday" disabled="false"></mat-datepicker>
       </mat-form-field>
     </div>
   </div>

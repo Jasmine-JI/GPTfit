@@ -2,10 +2,10 @@
   Device_log Lists
 </div>
 <mat-form-field>
-  <input matInput placeholder="info搜尋" (keyup)="searchInfo($event)"  [matAutocomplete]="auto">
+  <input matInput placeholder="info搜尋" (keyup)="searchInfo($event)" [matAutocomplete]="auto">
 </mat-form-field>
 <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-<mat-option *ngFor="let option of infoOptions" [value]="option" (click)="selectTarget(option)">
+  <mat-option *ngFor="let option of infoOptions" [value]="option" (click)="selectTarget(option)">
     {{ option }}
   </mat-option>
 </mat-autocomplete>

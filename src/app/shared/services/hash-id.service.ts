@@ -29,4 +29,16 @@ export class HashIdService {
       return numbers[0].toString();
     }
   }
+
+  handleSearchRangeEncode(inputText: string) {
+    const id = this.hashIds.encode(+inputText);
+    return id;
+  }
+
+  handleSearchRangeDecode(inputText: string) {
+    const numbers = this.hashIds.decode(inputText);
+    if (numbers.length === 1) {
+      return numbers[0].toString();
+    }
+  }
 }

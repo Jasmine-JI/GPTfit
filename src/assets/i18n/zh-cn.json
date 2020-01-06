@@ -627,6 +627,20 @@
       "updateFailed": "更新失败",
       "fullField": "请完整填写字段",
       "repeat": "重复"
+    },
+    "GroupClass": {
+      "activityType": "运动类型",
+      "last7Days": "过去七天",
+      "last30Days": "过去30天",
+      "selectDate": "选择日期",
+      "creatTime": "建立时间",
+      "exerciseAchievement": "运动成效",
+      "enduranceZone": "耐力训练",
+      "warmUpZone": "活动暖身",
+      "aerobicZone": "有氧燃脂",
+      "marathonZone": "马拉松肌力",
+      "anaerobicZone": "无氧爆发力",
+      "limit_generalZone": "一般区"
     }
   }
 }
