@@ -2,7 +2,7 @@
   <!-- <span class="group-handle-name group-handle-name__rwd">
     {{ 'Dashboard.Group.GroupInfo.groupInfo' | translate}}
   </span> -->
-  <div class="col-md-4 group-image--area">
+  <div class="col-md-4 group-image--area" *ngIf="!isPreviewMode">
     <img *ngIf="groupImg"
       [src]="(groupImg | safeHtml)"
       [class.image-is--default]="groupImg === '/assets/images/group-default.svg'"
@@ -12,15 +12,31 @@
         (click)="handleGroupItem(1)"
       >{{ 'Dashboard.Group.GroupInfo.groupInfo' | translate}}</li>
       <li [class.active]="chooseIdx === 2"
-        *ngIf="groupLevel === '30' && visitorDetail?.isCanManage"
-        (click)="handleGroupItem(2)"
+          *ngIf="groupLevel === '30' && visitorDetail?.isCanManage"
+          (click)="handleGroupItem(2)"
       >{{ 'Dashboard.BrandManagement.brandManagement' | translate}}</li>
       <li [class.active]="chooseIdx === 3"
         (click)="handleGroupItem(3)"
       >{{ 'Dashboard.privacySettings.set' | translate}}</li>
+      <li [class.active]="chooseIdx === 4"
+          *ngIf="groupLevel === '60'"
+          (click)="handleGroupItem(4)"
+        >我的報告</li>
+      <li [class.active]="chooseIdx === 5"
+          *ngIf="groupLevel === '60' && accessRight < 60"
+          (click)="handleGroupItem(5)"
+        >課程分析</li>
+      <!-- 先用router
+        <li [class.active]="chooseIdx === 4"
+          (click)="handleGroupItem(4)"
+        >我的報告</li>
+        <li [class.active]="chooseIdx === 5"
+          (click)="handleGroupItem(5)"
+        >課程分析</li>
+      -->
     </ul>
   </div>
-  <div class="col-md-8">
+  <div [class.col-md-8]="!isPreviewMode" [class.previewPrint]="isPreviewMode">
     <ng-container *ngIf="chooseIdx === 1">
       <div class="group-edit-bar">
         <span class="group-handle-name">
@@ -487,6 +503,12 @@
           </span>
         </div>
       </div>
+    </ng-container>
+    <ng-container *ngIf="chooseIdx === 4">
+      <app-my-report></app-my-report>
+    </ng-container>
+    <ng-container *ngIf="chooseIdx === 5">
+      <app-class-analysis></app-class-analysis>
     </ng-container>
     <div style="display:flex;justify-content: center;align-items: center;height:100%"
       *ngIf="isCommerceInfoLoading"

@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AllGroupListComponent } from './all-group-list.component';
+import { ClassAnalysisComponent } from './class-analysis.component';
 
-describe('AllGroupListComponent', () => {
-  let component: AllGroupListComponent;
-  let fixture: ComponentFixture<AllGroupListComponent>;
+describe('ClassAnalysisComponent', () => {
+  let component: ClassAnalysisComponent;
+  let fixture: ComponentFixture<ClassAnalysisComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AllGroupListComponent ]
+      declarations: [ ClassAnalysisComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AllGroupListComponent);
+    fixture = TestBed.createComponent(ClassAnalysisComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

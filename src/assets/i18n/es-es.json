@@ -48,7 +48,7 @@
     "totalWeight": "Peso total",
     "by": "mediante",
     "record": "Grabar",
-    "create": "Crear",
+    "create": "Crear ",
     "noOpen": "(no abierto todavía)",
     "registerNameExisting": "Este nombre registrado ya existe.",
     "send": "Enviar",
@@ -238,7 +238,7 @@
       "freeToJoin": "Free to join",
       "hide": "Hide",
       "disband": "Disband",
-      "create": "Crear",
+      "create": "Crear ",
       "brand": "Marca",
       "courseInformationFitnessClass": "Class info - Physical fitness advising",
       "courseInformationProfessionalClass": "Class info - Professional class",
@@ -627,6 +627,20 @@
       "updateFailed": "Error de actualización.",
       "fullField": "Por favor, rellene el campo completamente.",
       "repeat": "Repetir"
+    },
+    "GroupClass": {
+      "activityType": "Tipo de ejercicio",
+      "last7Days": "Últimos 7 días",
+      "last30Days": "Últimos 30 días",
+      "selectDate": "Seleccionar una fecha",
+      "creatTime": "Hora de creación",
+      "exerciseAchievement": "Exercise Achievement",
+      "enduranceZone": "Resistencia",
+      "warmUpZone": "Calentamiento",
+      "aerobicZone": "Aeróbica",
+      "marathonZone": "De maratón",
+      "anaerobicZone": "Anaeróbica",
+      "limit_generalZone": "General"
     }
   }
 }

@@ -627,6 +627,20 @@
       "updateFailed": "更新失敗",
       "fullField": "請完整填寫欄位",
       "repeat": "重複"
+    },
+    "GroupClass": {
+      "activityType": "運動類型",
+      "last7Days": "過去7天",
+      "last30Days": "過去30天",
+      "selectDate": "選擇日期",
+      "creatTime": "建立時間",
+      "exerciseAchievement": "運動成效",
+      "enduranceZone": "耐力訓練",
+      "warmUpZone": "活動暖身",
+      "aerobicZone": "有氧燃脂",
+      "marathonZone": "馬拉松肌力",
+      "anaerobicZone": "無氧爆發力",
+      "limit_generalZone": "一般區"
     }
   }
 }

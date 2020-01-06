@@ -45,9 +45,12 @@ elif [ $IP_ADDR == "192.168.1.234" ]; then
   fi
   if [ ! -L /var/www/html/dist/ba19f544a4fc779ec2c689184906748c ]; then
           ln -s /var/www/html/ba19f544a4fc779ec2c689184906748c /var/www/html/dist/ba19f544a4fc779ec2c689184906748c
-  fi  
+  fi
   if [ ! -L /var/www/html/dist/d67e2f48a7425feb0a0fcedbffd9f4ad ]; then
           ln -s /var/www/html/d67e2f48a7425feb0a0fcedbffd9f4ad /var/www/html/dist/d67e2f48a7425feb0a0fcedbffd9f4ad
+  fi
+  if [ ! -L /var/www/html/dist/.well-known ]; then
+    ln -s /var/www/html/.well-know /var/www/html/dist/.well-know
   fi
 elif [ $IP_ADDR == "192.168.1.232" ]; then
   if [ ! -h /var/www/html/dist/angular ]; then
@@ -106,6 +109,9 @@ else
   fi
   if [ ! -L /var/www/html/dist/d67e2f48a7425feb0a0fcedbffd9f4ad ]; then
           ln -s /var/www/html/d67e2f48a7425feb0a0fcedbffd9f4ad /var/www/html/dist/d67e2f48a7425feb0a0fcedbffd9f4ad
+  fi
+  if [ ! -L /var/www/html/dist/.well-known ]; then
+          ln -s /var/www/html/.well-know /var/www/html/dist/.well-know
   fi
 fi
 cd $API_SERVER

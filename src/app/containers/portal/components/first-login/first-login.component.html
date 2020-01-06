@@ -101,11 +101,11 @@
                 <input matInput
                   [matDatepicker]="picker"
                   formControlName="birth"
-                  placeholder="1988/06/01"
                   (dateChange)="logStartDateChange($event)"
+                  readonly
                 >
                 <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-datepicker #picker startView="year" [startAt]="startDate"></mat-datepicker>
+                <mat-datepicker #picker startView="year" [startAt]="startDate" disabled="false"></mat-datepicker>
               </mat-form-field>
             </div>
             <div class="auth-submit">

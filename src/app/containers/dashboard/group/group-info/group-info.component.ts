@@ -6,7 +6,7 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { GroupService } from '../../services/group.service';
 import { UtilsService } from '@shared/services/utils.service';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { UserInfoService } from '../../services/userInfo.service';
 import { MatDialog } from '@angular/material';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
@@ -24,6 +24,9 @@ import { ShareGroupInfoDialogComponent } from '@shared/components/share-group-in
   encapsulation: ViewEncapsulation.None
 })
 export class GroupInfoComponent implements OnInit {
+  accessRight: number;
+  isPreviewMode = false;
+  hashGroupId: string;
   groupId: string;
   token: string;
   groupInfo: any;
@@ -82,12 +85,25 @@ export class GroupInfoComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (location.search.indexOf('ipm=s') > -1) {
+      this.isPreviewMode = true;
+    }
     this.route.params.subscribe(_params => this.handleInit());
+    this.detectUrlChange(location.pathname)
+    this.router.events.subscribe((val: NavigationEnd) => {
+      if (val instanceof NavigationEnd && val.url) {
+        this.detectUrlChange(val.url);
+      }
+    });
+    this.userInfoService.getUserAccessRightDetail().subscribe(response => {
+      this.accessRight = Number(response.accessRight);
+    });
   }
 
   handleInit() {
+    this.hashGroupId = this.route.snapshot.paramMap.get('groupId');
     this.groupId = this.hashIdService.handleGroupIdDecode(
-      this.route.snapshot.paramMap.get('groupId')
+      this.hashGroupId
     );
     if (this.groupId && this.groupId.length > 0) {
       this.groupLevel = this.utils.displayGroupLevel(this.groupId);
@@ -99,7 +115,8 @@ export class GroupInfoComponent implements OnInit {
     const body = {
       token: this.token,
       groupId: this.groupId,
-      findRoot: '1'
+      findRoot: '1',
+      avatarType: '1'
     };
     this.userInfoService.getUserDetail(body, this.groupId);
     this.userInfoService.getUserId().subscribe(res => {
@@ -119,6 +136,7 @@ export class GroupInfoComponent implements OnInit {
     });
     this.groupService.fetchGroupListDetail(body).subscribe(res => {
       this.groupInfo = res.info;
+      this.groupService.saveGroupInfo(this.groupInfo); // 將群組資訊存取進service減少call api次數-kidin-1081227
       const {
         groupIcon,
         groupId,
@@ -273,17 +291,27 @@ export class GroupInfoComponent implements OnInit {
     }
   }
   handleGroupItem(idx) {
-    this.chooseIdx = idx;
-    const body = {
-      token: this.token,
-      groupId: this.groupId
-    };
-    if (this.chooseIdx === 2) {
+    if (idx === 4) {
+      this.chooseIdx = idx;
+      this.router.navigateByUrl(`/dashboard/group-info/${this.hashGroupId}/my-report`);
+    } else if (idx === 5) {
+      this.chooseIdx = idx;
+      this.router.navigateByUrl(`/dashboard/group-info/${this.hashGroupId}/class-analysis`);
+    } else if (idx === 2) {
+      this.chooseIdx = idx;
+      this.router.navigateByUrl(`/dashboard/group-info/${this.hashGroupId}`);
+      const body = {
+        token: this.token,
+        groupId: this.groupId
+      };
       this.isCommerceInfoLoading = true;
       this.groupService.fetchCommerceInfo(body).subscribe(res => {
         this.isCommerceInfoLoading = false;
         this.commerceInfo = res.info;
       });
+    } else {
+      this.chooseIdx = idx;
+      this.router.navigateByUrl(`/dashboard/group-info/${this.hashGroupId}`);
     }
   }
   openShareGroupInfoDialog() {
@@ -671,7 +699,20 @@ export class GroupInfoComponent implements OnInit {
       }
     }
   }
+
+  // 切換到群組編輯頁面-kidin-1081216
   goEditPage() {
     this.router.navigateByUrl(`${location.pathname}/edit`);
+  }
+
+  // 依照網址導引至該頁面-kidin-10812217
+  detectUrlChange(url) {
+    if (url.indexOf('my-report') > -1) {
+      this.chooseIdx = 4;
+    } else if (url.indexOf('class-analysis') > -1) {
+      this.chooseIdx = 5;
+    } else if (this.chooseIdx !== 2 && this.chooseIdx !== 3) {
+      this.chooseIdx = 1;
+    }
   }
 }
