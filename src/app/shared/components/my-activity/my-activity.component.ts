@@ -39,7 +39,7 @@ export class MyActivityComponent implements OnInit {
   isLoading = false;
   isEmpty = false;
   targetUserId: string;
-  filterStartTime = '';
+  filterStartTime = moment().add(-1, 'years').format('YYYY-MM-DDTHH:mm:00.000+08:00');
   filterEndTime = moment().format('YYYY-MM-DDTHH:mm:00.000+08:00');
   sportType = '99';
   searchWords = '';
@@ -69,7 +69,7 @@ export class MyActivityComponent implements OnInit {
     const { pageNumber, startTime, endTime, type, searchWords } = queryStrings;
     this.filterStartTime = startTime
       ? moment(startTime).format('YYYY-MM-DDTHH:mm:00.000+08:00')
-      : '';
+      : moment().add(-1, 'years').format('YYYY-MM-DDTHH:mm:00.000+08:00');
     this.filterEndTime = endTime
       ? moment(endTime).format('YYYY-MM-DDT23:59:00.000+08:00')
       : moment().format('YYYY-MM-DDT23:59:00.000+08:00');
@@ -211,7 +211,7 @@ export class MyActivityComponent implements OnInit {
     this.router.navigateByUrl(`/dashboard/activity/${fileId}`);
   }
   reset() {
-    this.filterStartTime = '';
+    this.filterStartTime = moment().add(-1, 'years').format('YYYY-MM-DDTHH:mm:00.000+08:00');
     this.filterEndTime = moment().format('YYYY-MM-DDTHH:mm:00.000+08:00');
     this.sportType = '99';
     this.searchWords = '';

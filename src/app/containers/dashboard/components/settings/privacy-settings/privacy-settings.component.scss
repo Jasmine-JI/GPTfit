@@ -28,16 +28,18 @@
 .ala-form__label.settings-item {
   margin-bottom: 10px;
 }
-.mat-tab-labels {
-  justify-content: space-between;
-  .mat-tab-label-active {
-    padding: 5px;
-    background-color: transparent;
-    color: #222;
-    opacity: 1;
-    font-weight: 700;
-    .mat-icon.area-add {
+.ala-tab-group {
+  .mat-tab-labels {
+    justify-content: space-between;
+    .mat-tab-label-active {
+      padding: 5px;
+      background-color: transparent;
       color: #222;
+      opacity: 1;
+      font-weight: 700;
+      .mat-icon.area-add {
+        color: #222;
+      }
     }
   }
 }

@@ -142,7 +142,7 @@
       </ng-container>
       <ng-container *ngIf="qrURL">
         <span class="group-handle-name">{{'Dashboard.ProductInfo.createFitpairQr' | translate}}：</span>
-        <div style="margin: 25px 0">
+        <div style="border: 20px solid white; width: fit-content">
           <qrcode [qrdata]="qrURL" [size]="128" [level]="'M'"></qrcode>
         </div>
       </ng-container>

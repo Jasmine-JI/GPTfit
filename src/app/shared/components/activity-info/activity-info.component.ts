@@ -38,7 +38,7 @@ declare var BMap: any;
   selector: 'app-activity-info',
   templateUrl: './activity-info.component.html',
   styleUrls: [
-    './activity-info.component.css',
+    './activity-info.component.scss',
     '../../../containers/dashboard/components/coach-dashboard/coach-dashboard.component.scss'
   ],
   encapsulation: ViewEncapsulation.None
@@ -886,22 +886,24 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   // 滑動Hchart時，使地圖的點跟著移動
   handleSynchronizedPoint(e, finalDatas) {
     // 地圖移動以speed chart為基準-kidin-1081203(Bug 856)
-    const _chart: any = Highcharts.charts[0];
-    if (_chart !== undefined) {
-      if (finalDatas[0].isSyncExtremes) {
-        const event = _chart.pointer.normalize(e); // Find coordinates within the chart
-        const point = _chart.series[0].searchPoint(event, true); // Get the hovered point
-        if (point && point.index) {
-          if (this.isShowMap && !this.isPlayingGpx) {
-            if (this.mapKind === '1') {
-              this.playerMark.setPosition(this.gpxPoints[point.index]);
+    for (let i = 0; i < Highcharts.charts.length; i++) {
+      const _chart: any = Highcharts.charts[i];
+      if (_chart !== undefined) {
+        if (finalDatas[i].isSyncExtremes) {
+          const event = _chart.pointer.normalize(e); // Find coordinates within the chart
+          const point = _chart.series[0].searchPoint(event, true); // Get the hovered point
+          if (point && point.index) {
+            if (this.isShowMap && !this.isPlayingGpx) {
+              if (this.mapKind === '1') {
+                this.playerMark.setPosition(this.gpxPoints[point.index]);
+              }
+              if (this.mapKind === '2') {
+                this.playBMK.setPosition(this.gpxBmapPoints[point.index]);
+              }
+              this.stopPointIdx = point.index;
             }
-            if (this.mapKind === '2') {
-              this.playBMK.setPosition(this.gpxBmapPoints[point.index]);
-            }
-            this.stopPointIdx = point.index;
+            point.highlight(e);
           }
-          point.highlight(e);
         }
       }
     }
@@ -960,7 +962,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     const { finalDatas, chartTargets } = this.activityService.handleChartDatas(
       this.activityPoints,
       this.activityLaps,
-      this.activityInfo.type,
+      this.activityInfo,
       this.resolutionSeconds,
       hrFormatData,
       this.isDebug,

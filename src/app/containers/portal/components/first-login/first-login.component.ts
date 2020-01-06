@@ -56,7 +56,7 @@ export class FirstLoginComponent implements OnInit {
       height: [175, Validators.required],
       weight: [75, Validators.required],
       gender: 0,
-      birth: ''
+      birth: (Number(moment().format('YYYYMMDD')) - 300000) + ''
     });
   }
   submit({ valid, value }) {
@@ -150,10 +150,11 @@ export class FirstLoginComponent implements OnInit {
   logStartDateChange($event: MatDatepickerInputEvent<moment.Moment>) {
     const inputBirthdayValue = moment($event.value)
     let value = moment($event.value).format('YYYYMMDD');
-    if (inputBirthdayValue.isBetween('19000101', moment())) {
+    if (inputBirthdayValue.isBetween('19390101', moment())) {
       this.form.patchValue({ birth: value });
     } else {
-      value = '';
+      // 修正生日不符範圍值(預設年齡30歲)-kidin-1081216(bug 576)
+      value = (Number(moment().format('YYYYMMDD')) - 300000) + '';
       this.form.patchValue({ birth: value });
     }
   }

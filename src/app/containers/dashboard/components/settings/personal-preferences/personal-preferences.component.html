@@ -22,48 +22,51 @@
     <div class="settings-control">
       <select class="form-field"
         formControlName="heartRateBase"
+        (change)="handleHeartRateBase($event)"
       >
         <option value="0">{{'Dashboard.Settings.maximalHeartRate' | translate}}</option>
         <option value="1">{{'Dashboard.Settings.heartRateReserve' | translate}}</option>
       </select>
     </div>
   </div>
-  <div class="ala-list__item">
-    <label class="ala-form__label settings-item">{{'SH.maxHr' | translate}}</label>
-    <div class="settings-control">
-      <div style="display: inline-block">
-        <app-form-text
-          [type]="'number'"
-          [content]="heartRateMax"
-          [maxLength]="32"
-          [disabled]="isSaveUserSettingLoading"
-          [control]="settingsForm"
-          [controlName]="'heartRateMax'"
-          (focusout)="handleHrValueArrange('maxHr', $event)"
-        >
-        </app-form-text>
+  <div style="margin-top: 15px;" *ngIf="heartRateBase === '1'">
+    <div class="ala-list__item">
+      <label class="ala-form__label settings-item">{{'SH.maxHr' | translate}}</label>
+      <div class="settings-control">
+        <div style="display: inline-block">
+          <app-form-text
+            [type]="'number'"
+            [content]="heartRateMax"
+            [maxLength]="32"
+            [disabled]="isSaveUserSettingLoading"
+            [control]="settingsForm"
+            [controlName]="'heartRateMax'"
+            (focusout)="handleHrValueArrange('maxHr', $event)"
+          >
+          </app-form-text>
+        </div>
+        <span style="display: inline-block;margin-left: 10px">bpm</span>
       </div>
-      <span style="display: inline-block;margin-left: 10px">bpm</span>
     </div>
-  </div>
-  <div class="ala-list__item">
-    <label class="ala-form__label settings-item">
-      {{'Dashboard.Settings.restHr' | translate}}
-    </label>
-    <div class="settings-control">
-      <div style="display: inline-block">
-        <app-form-text
-          [type]="'number'"
-          [content]="heartRateResting"
-          [maxLength]="32"
-          [disabled]="isSaveUserSettingLoading"
-          [control]="settingsForm"
-          [controlName]="'heartRateResting'"
-          (focusout)="handleHrValueArrange('restHr', $event)"
-        >
-        </app-form-text>
+    <div class="ala-list__item">
+      <label class="ala-form__label settings-item">
+        {{'Dashboard.Settings.restHr' | translate}}
+      </label>
+      <div class="settings-control">
+        <div style="display: inline-block">
+          <app-form-text
+            [type]="'number'"
+            [content]="heartRateResting"
+            [maxLength]="32"
+            [disabled]="isSaveUserSettingLoading"
+            [control]="settingsForm"
+            [controlName]="'heartRateResting'"
+            (focusout)="handleHrValueArrange('restHr', $event)"
+          >
+          </app-form-text>
+        </div>
+        <span style="display: inline-block;margin-left: 10px">bpm</span>
       </div>
-      <span style="display: inline-block;margin-left: 10px">bpm</span>
     </div>
   </div>
   <hr>

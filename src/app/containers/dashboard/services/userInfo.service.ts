@@ -10,6 +10,7 @@ import { UserDetail } from '../models/userDetail';
 import { UtilsService } from '@shared/services/utils.service';
 import { AuthService } from '@shared/services/auth.service';
 import * as moment from 'moment';
+import { _getComponentHostLElementNode } from '@angular/core/src/render3/instructions';
 
 
 @Injectable()
@@ -44,9 +45,11 @@ export class UserInfoService {
     isApplying: false
   });
 
+  private userBodyInfo = [];
+
   constructor(
-    private http: HttpClient, 
-    private utils: UtilsService, 
+    private http: HttpClient,
+    private utils: UtilsService,
     private authService: AuthService,
     private injector: Injector,
   ) { }
@@ -55,7 +58,7 @@ export class UserInfoService {
   }
   refreshToken(body) {
     return this.http.post<any>('/api/v1/user/refreshToken', body);
-  }  
+  }
   getUserIcon(): Observable<string> {
     return this.userIcon$;
   }
@@ -342,7 +345,7 @@ export class UserInfoService {
   redirectLoginPage() {
     this.authService.logout();
     const router = this.injector.get(Router);
-    router.navigate(['/signin']);    
+    router.navigate(['/signin']);
   }
   combineFetchProcess(body) {
     const fetchMemberAccessRight = this.getMemberAccessRight(body);
@@ -451,5 +454,16 @@ export class UserInfoService {
         }
       );
     });
+  }
+
+  // 存入登入者身體資訊供圖表使用-kidin-1081212
+  saveBodyDatas (data) {
+    this.userBodyInfo.pop();
+    this.userBodyInfo.push(data);
+  }
+
+  // 取得登入者身體資訊供圖表使用-kidin-1081212
+  getBodyDatas () {
+    return this.userBodyInfo;
   }
 }

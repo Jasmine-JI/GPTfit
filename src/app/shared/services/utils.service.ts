@@ -50,7 +50,7 @@ export class UtilsService {
     } else if (value.indexOf('data:image') > -1) {
       return value;
     } else if (value.indexOf('https://') > -1) {
-      return value;      
+      return value;
     } else {
       return `data:image/jpg; base64, ${value}`.replace(/\s+/g, '');
     }
