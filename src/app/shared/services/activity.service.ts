@@ -406,13 +406,14 @@ export class ActivityService {
             }
           }
         } else {
+          // 修正心率區間可以顯示負值的問題-kidin-1090108(Bug 1040)
           heartRates.push(+_point.heartRateBpm);
-          userZoneTimes[0].y = infoDatas.totalHrZone0Second;
-          userZoneTimes[1].y = infoDatas.totalHrZone1Second;
-          userZoneTimes[2].y = infoDatas.totalHrZone2Second;
-          userZoneTimes[3].y = infoDatas.totalHrZone0Second;
-          userZoneTimes[4].y = infoDatas.totalHrZone4Second;
-          userZoneTimes[5].y = infoDatas.totalHrZone5Second;
+          userZoneTimes[0].y = infoDatas.totalHrZone0Second >= 0 ? infoDatas.totalHrZone0Second : 0;
+          userZoneTimes[1].y = infoDatas.totalHrZone1Second >= 0 ? infoDatas.totalHrZone1Second : 0;
+          userZoneTimes[2].y = infoDatas.totalHrZone2Second >= 0 ? infoDatas.totalHrZone2Second : 0;
+          userZoneTimes[3].y = infoDatas.totalHrZone3Second >= 0 ? infoDatas.totalHrZone3Second : 0;
+          userZoneTimes[4].y = infoDatas.totalHrZone4Second >= 0 ? infoDatas.totalHrZone4Second : 0;
+          userZoneTimes[5].y = infoDatas.totalHrZone5Second >= 0 ? infoDatas.totalHrZone5Second : 0;
         }
         if (!this.utils.isNumber(_point.runCadence) && !isDebug) {
           isNoRunCadences = true;
@@ -473,7 +474,7 @@ export class ActivityService {
       data: elevations,
       unit: 'm',
       type: 'area',
-      valueDecimals: 0
+      valueDecimals: 1
     };
     const hrDataset = {
       name: 'Heart rate',

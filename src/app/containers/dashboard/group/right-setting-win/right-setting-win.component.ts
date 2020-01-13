@@ -136,7 +136,8 @@ export class RightSettingWinComponent implements OnInit {
       token: this.token,
       groupId: this.groupId,
       groupLevel: '30',
-      infoType: _type
+      infoType: _type,
+      avatarType: 3
     };
     this.groupService.fetchGroupMemberList(body).subscribe(res => {
       if (res.resultCode === 200) {
@@ -151,9 +152,7 @@ export class RightSettingWinComponent implements OnInit {
                 if (_branch.groupStatus !== 4 && _branch.groupId === this.groupId) {
                   return {
                     ..._branch,
-                    groupIcon: this.utils.buildBase64ImgString(
-                      _branch.groupIcon
-                    )
+                    groupIcon: _branch.groupIcon
                   };
                 }
               }
@@ -163,9 +162,7 @@ export class RightSettingWinComponent implements OnInit {
                 if (_coach.groupStatus !== 4) {
                   return {
                     ..._coach,
-                    groupIcon: this.utils.buildBase64ImgString(
-                      _coach.groupIcon
-                    )
+                    groupIcon: _coach.groupIcon
                   };
                 }
               }
@@ -176,9 +173,7 @@ export class RightSettingWinComponent implements OnInit {
                 if (_coach.groupStatus !== 4 && _coach.groupId === this.groupId) {
                   return {
                     ..._coach,
-                    groupIcon: this.utils.buildBase64ImgString(
-                      _coach.groupIcon
-                    )
+                    groupIcon: _coach.groupIcon
                   };
                 }
               }
@@ -188,7 +183,7 @@ export class RightSettingWinComponent implements OnInit {
               if (_brand.groupStatus !== 4) {
                 return {
                   ..._brand,
-                  groupIcon: this.utils.buildBase64ImgString(_brand.groupIcon)
+                  groupIcon: _brand.groupIcon
                 };
               }
             });
@@ -196,7 +191,7 @@ export class RightSettingWinComponent implements OnInit {
               if (_branch.groupStatus !== 4) {
                 return {
                   ..._branch,
-                  groupIcon: this.utils.buildBase64ImgString(_branch.groupIcon)
+                  groupIcon: _branch.groupIcon
                 };
               }
             });
@@ -204,7 +199,7 @@ export class RightSettingWinComponent implements OnInit {
               if (_coach.groupStatus !== 4) {
                 return {
                   ..._coach,
-                  groupIcon: this.utils.buildBase64ImgString(_coach.groupIcon)
+                  groupIcon: _coach.groupIcon
                 };
               }
             });

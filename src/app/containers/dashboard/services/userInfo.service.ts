@@ -34,6 +34,7 @@ export class UserInfoService {
   isGroupAdministrator$ = new BehaviorSubject<boolean>(false);
   isGeneralMember$ = new BehaviorSubject<boolean>(false);
   userId$ = new BehaviorSubject<number>(null);
+  updatedImg$ = new BehaviorSubject<string>('');
   initialUserInfo$ = new BehaviorSubject<any>({
     isInitial: false,
     groupAccessRight: []
@@ -62,6 +63,11 @@ export class UserInfoService {
   getUserIcon(): Observable<string> {
     return this.userIcon$;
   }
+
+  getUpdatedImgStatus(): Observable<string> {
+    return this.updatedImg$;
+  }
+
   getUserName(): Observable<string> {
     return this.userName$;
   }
@@ -80,6 +86,11 @@ export class UserInfoService {
   getUserHRBase(): Observable<number> {
     return this.userHRBase$;
   }
+
+  setUpdatedImgStatus(status: string) {
+    this.updatedImg$.next(status);
+  }
+
   setSupervisorStatus(status: boolean) {
     this.isSupervisor$.next(status);
   }
@@ -335,7 +346,11 @@ export class UserInfoService {
     return checkLogonData.then(res => {
       if (res === false) {
         const token = this.utils.getToken();
-        this.combineFetchProcess({ token, iconType : 2 });
+        this.combineFetchProcess({
+          token,
+          avatarType: 2,
+          iconType : 2
+        });
       } else {
         this.combineFetchProcess(body);
       }

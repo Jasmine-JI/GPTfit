@@ -34,7 +34,8 @@ export class SettingsComponent implements OnInit {
   }
   fetchUserProfile() {
     const body = {
-      token: this.utils.getToken()
+      token: this.utils.getToken(),
+      avatarType: 2,
     };
     this.isLoading = true;
     const checkUserProfileService = new Promise((resolve, reject) => {
@@ -64,11 +65,15 @@ export class SettingsComponent implements OnInit {
           }
         }
       );
-    });   
+    });
     return checkUserProfileService.then(res => {
       if (res === false) {
         const token = this.utils.getToken();
-        this.getUserProfile({ token, iconType : 2 });
+        this.getUserProfile({
+          token,
+          avatarType: 2,
+          iconType : 2
+        });
       } else {
         this.getUserProfile(body);
       }
@@ -78,7 +83,7 @@ export class SettingsComponent implements OnInit {
   redirectLoginPage() {
     this.authService.logout();
     const router = this.injector.get(Router);
-    router.navigate(['/signin']);    
+    router.navigate(['/signin']);
   }
   getUserProfile(body){
     this.userProfileService.getUserProfile(body).subscribe(

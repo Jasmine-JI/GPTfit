@@ -47,6 +47,7 @@ export class ProductInfoComponent implements OnInit {
   isAdminMode = false;
   deviceBondUserName: string;
   deviceBondUserId: string;
+  deviceImgUrl: string;
   constructor(
     private qrCodeService: QrcodeService,
     private progress: NgProgress,
@@ -72,8 +73,7 @@ export class ProductInfoComponent implements OnInit {
     if (snNumbers && snNumbers.length === 0) {
       this.utilsService.removeLocalStorageObject('snNumber');
     }
-    let params = new HttpParams();
-    params = params.set('device_sn', this.deviceSN);
+
     this.progressRef = this.progress.ref();
     this.progressRef.start();
     this.isLoading = true;
@@ -82,16 +82,26 @@ export class ProductInfoComponent implements OnInit {
       token: this.token,
       myEquipmentSN: this.deviceSN
     };
+    const body2 = {
+      'token': '',
+      'queryType': '1',
+      'queryArray': [this.deviceSN]
+    }
     this.qrCodeService.getDeviceDetail(body).subscribe(res => {
       this.fitPairStatus = res.info.fitPairStatus;
       if (res.resultCode === 200) {
         this.deviceBondUserName = res.info.deviceBondUserName;
         this.deviceBondUserId = res.info.deviceBondUserId;
         this.generate();
-        this.qrCodeService.getDeviceInfo(params).subscribe(response => {
+        this.qrCodeService.getProductInfo(body2).subscribe(response => {
           this.progressRef.complete();
           this.isLoading = false;
-          this.deviceInfo = response;
+          this.deviceInfo = response.info.productInfo[0];
+          if (location.hostname === '192.168.1.235') {
+            this.deviceImgUrl = `http://app.alatech.com.tw/app/public_html/products${this.deviceInfo.modelImg}`;
+          } else {
+            this.deviceImgUrl = `http://${location.hostname}/app/public_html/products${this.deviceInfo.modelImg}`;
+          }
           this.handleProductInfo(langName);
           this.handleProductManual(langName);
         });

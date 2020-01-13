@@ -9,10 +9,6 @@ const { API_SERVER } = environment.url;
 export class QrcodeService {
   constructor(private http: HttpClient) {}
 
-  getDeviceInfo(params) {
-    return this.http.get(API_SERVER + 'qrPair', { params });
-  }
-
   uploadDeviceInfo(body, sn) {
     const httpOptions = {
       headers: new HttpHeaders({

@@ -61,7 +61,11 @@ export class PortalGroupInfoComponent implements OnInit, OnDestroy {
         }
       });
     }
-    const body = { token, groupId: this.groupId };
+    const body = {
+      token,
+      groupId: this.groupId,
+      avatarType: 2
+    };
     this.groupService.fetchGroupListDetail(body).subscribe(res => {
       this.groupInfo = res.info;
       const { groupIcon, groupStatus } = this.groupInfo;
@@ -70,7 +74,7 @@ export class PortalGroupInfoComponent implements OnInit, OnDestroy {
       }
       this.groupImg =
         groupIcon && groupIcon.length > 0
-          ? this.utils.buildBase64ImgString(groupIcon)
+          ? groupIcon
           : '/assets/images/group-default.svg';
       this.dispGroupId = this.utils.displayGroupId(this.groupId);
       this.groupLevel = this.utils.displayGroupLevel(this.groupId);

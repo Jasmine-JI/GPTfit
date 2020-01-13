@@ -280,7 +280,7 @@
                 {{ userName || '' }}
               </div>
               <div *ngIf="userPhoto"
-              [ngStyle]="{'background-image': 'url(' + userPhoto + ')'}"
+              [ngStyle]="{'background-image': 'url(' + userPhoto + updateQueryString + ')'}"
                 class="header-user-photo"
               ></div>
               <img *ngIf="!userPhoto" src="/assets/images/user.png" class="header-user-photo">

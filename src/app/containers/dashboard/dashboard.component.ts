@@ -18,6 +18,7 @@ import { HashIdService } from '@shared/services/hash-id.service';
 import { DetectInappService } from '@shared/services/detect-inapp.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-dashboard',
@@ -52,6 +53,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
   isAlphaVersion = false;
   version: string;
   isHideFooter = false;
+  updateQueryString = '';
   constructor(
     private globalEventsManager: GlobalEventsManager,
     private authService: AuthService,
@@ -144,6 +146,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
           const token = this.utilsService.getToken();
           const body = {
             token,
+            avatarType: 2,
             iconType: 2
           };
           this.userInfoService.getUserInfo(body).then(() => {
@@ -193,7 +196,10 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
       this.translateService.use(browserLang);
     }
     this.userInfoService.getUserIcon().subscribe(res => {
-      this.userPhoto = this.utilsService.buildBase64ImgString(res);
+      this.userPhoto = res;
+    });
+    this.userInfoService.getUpdatedImgStatus().subscribe(res => {
+      this.updateQueryString = res;
     });
     this.userInfoService.getUserName().subscribe(res => {
       this.userName = res;
@@ -300,7 +306,8 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
     const token = this.utilsService.getToken();
     const body = {
       token: token,
-      iconType: 2
+      avatarType: 2,
+      iconType: 2,
     };
     this.userInfoService.getLogonData(body).subscribe(res => {
       const data = {

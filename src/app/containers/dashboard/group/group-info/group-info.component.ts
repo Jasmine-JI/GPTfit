@@ -67,6 +67,7 @@ export class GroupInfoComponent implements OnInit {
   confirmText: string;
   cancelText: string;
   totalGroupName: string; // 含母階層的群組名稱
+  updateImgQueryString = '';
   constructor(
     private route: ActivatedRoute,
     private groupService: GroupService,
@@ -116,7 +117,7 @@ export class GroupInfoComponent implements OnInit {
       token: this.token,
       groupId: this.groupId,
       findRoot: '1',
-      avatarType: '1'
+      avatarType: '2'
     };
     this.userInfoService.getUserDetail(body, this.groupId);
     this.userInfoService.getUserId().subscribe(res => {
@@ -160,9 +161,15 @@ export class GroupInfoComponent implements OnInit {
       } else {
         this.joinStatus = 5;
       }
+
+      // 確認群組頭像是否更新-kidin-1090113
+      this.groupService.getImgUpdatedStatus().subscribe(response => {
+        this.updateImgQueryString = response;
+      });
+
       this.groupImg =
         groupIcon && groupIcon.length > 0
-          ? this.utils.buildBase64ImgString(groupIcon)
+          ? `${groupIcon}${this.updateImgQueryString}`
           : '/assets/images/group-default.svg';
       this.group_id = this.utils.displayGroupId(groupId);
       this.groupLevel = this.utils.displayGroupLevel(groupId);
@@ -360,7 +367,10 @@ export class GroupInfoComponent implements OnInit {
                   if (resultCode === 200) {
                     this.joinStatus = selfJoinStatus;
                     this.userProfileService
-                      .getUserProfile({ token: this.token })
+                      .getUserProfile({
+                        token: this.token,
+                        avatarType: 2,
+                      })
                       .subscribe(res => {
                         this.isLoading = false;
                         const {
@@ -535,7 +545,8 @@ export class GroupInfoComponent implements OnInit {
       token: this.token,
       groupId: this.groupId,
       groupLevel: this.groupLevel,
-      infoType: _type
+      infoType: _type,
+      avatarType: 3
     };
     this.groupService.fetchGroupMemberList(body).subscribe(res => {
       this.isLoading = false;
@@ -548,7 +559,7 @@ export class GroupInfoComponent implements OnInit {
           this.subBrandInfo = this.subGroupInfo.brands.map(_brand => {
             return {
               ..._brand,
-              groupIcon: this.utils.buildBase64ImgString(_brand.groupIcon)
+              groupIcon: _brand.groupIcon
             };
           });
           this.subBranchInfo = this.subGroupInfo.branches
@@ -561,7 +572,7 @@ export class GroupInfoComponent implements OnInit {
             .map(_branch => {
               return {
                 ..._branch,
-                groupIcon: this.utils.buildBase64ImgString(_branch.groupIcon)
+                groupIcon: _branch.groupIcon
               };
             });
           this.subCoachInfo = this.subGroupInfo.coaches
@@ -574,7 +585,7 @@ export class GroupInfoComponent implements OnInit {
             .map(_coach => {
               return {
                 ..._coach,
-                groupIcon: this.utils.buildBase64ImgString(_coach.groupIcon)
+                groupIcon: _coach.groupIcon
               };
             });
         } else {
@@ -583,7 +594,7 @@ export class GroupInfoComponent implements OnInit {
             .map(_info => {
               return {
                 ..._info,
-                memberIcon: this.utils.buildBase64ImgString(_info.memberIcon)
+                memberIcon: _info.memberIcon
               };
             })
             .filter(newInfo => !(typeof newInfo === 'undefined'));
