@@ -1,60 +1,87 @@
-<div class="ala-upload">
+<div class="ala-upload" [class.avastarLayout]="isUserAvastarMode">
   <div *ngIf="isImageFileMode"
     class="ala-upload-image"
     [class.ala-upload-image--vertical]="isImgVertical$ | async"
-    [class.ala-user-avastar-mode]="isUserAvastarMode"
   >
-    <button class="profile-picture__remove"
-      *ngIf="(isUploadNewImg$ | async)"
-      (click)="removePreImage()"
+    <button
+      class="profile-picture__remove"
+      *ngIf="imgCropping"
+      (click)="closeImgCropping()"
+      style="right: -30px; top: -20px"
     >
       <i class="material-icons profile-picture__remove-icon">add_circle</i>
     </button>
-    <div *ngIf="isUserAvastarMode && !fileInformation?.link" class="user-avastar-mask">
-      <span>{{chooseFileText}}</span>
-    </div>
     <img
     *ngIf="!(isUploadNewImg$ | async) && imageURL?.length > 0"
     [src]="imageURL | safeHtml"
+    [class.avastarMode]="isUserAvastarMode"
     >
     <p *ngIf="!(isUploadNewImg$ | async) && !(fileInformation?.link || imageURL)"
       style="position:absolute;top:50%;left:50%;width:100%;text-align:center;transform:translate(-50%, -50%)"
     >
       Choose a file or drag it here
     </p>
+    <mat-spinner *ngIf="isImgUpLoading"></mat-spinner>
     <img
-      *ngIf="(isUploadNewImg$ | async)"
-      [src]="(fileInformation?.link | safeHtml)"
-    >
+      [src]="croppedImage"
+      class="imgCropped"
+      *ngIf="imgSelected"
+      [class.avastarMode]="isUserAvastarMode"/>
   </div>
   <div [class.ala-upload--descrption]="isImageFileMode">
-    <label class="fileupload">
-      <button class="alatech-btn alatech-btn--default"
-        (click)="handleBtnEvent($event)"
-        [disabled]="disabled"
+    <div style="display: flex; flex-direction: row; justify-content: center;">
+      <label class="fileupload">
+        <button class="alatech-btn alatech-btn--default"
+          (click)="handleBtnEvent()"
+          *ngIf="!imgCropping"
+          [class.avastarBtn]="isUserAvastarMode"
+        >
+          {{ 'Dashboard.Group.GroupInfo.selectImg' | translate }}
+        </button>
+        <input type="file"
+          class="fileupload__input"
+          (change)="handleChange($event)"
+          accept=".jpg,.jpeg,.gif,.png"
+          #fileUpload
+          id="inputFile"
+        />
+      </label>
+      <button *ngIf="imgSelected && !imgCropping"
+        class="alatech-btn alatech-btn--default"
+        style="position: relative; z-index: 2; margin-left: 10px;"
+        (click)="reEditImg()"
       >
-        {{ btnText }}
+        {{ 'Dashboard.Group.GroupInfo.edit' | translate }}
       </button>
-      <input type="file"
-        class="fileupload__input"
-        (change)="handleChange($event)"
-        (click)="handleClick"
-        [disabled]="disabled"
-        #fileUpload
-      />
-    </label>
+    </div>
     <div
-      *ngIf="isImageFileMode"
+      *ngIf="isImageFileMode && !imgCropping && !isUserAvastarMode"
       style="margin-top:15px;font-size:12px;font-weight:400;color:#999;text-align:left"
     >
       <!-- *照片格式限{{ accept }} -->
       *{{ accept }}
-      <br>
-      <!-- *大小限制為{{ maxFileSize / 1024}} KB以內 -->
-      {{'Dashboard.Group.GroupInfo.sizeLimit' | translate: {'size': maxFileSize / 1024} }}
     </div>
   </div>
 </div>
 
+<div class="imgCropped" *ngIf="imgSelected && imgCropping">
+  <div style="margin-left: 10px">
+    <button class="alatech-btn alatech-btn--default imgEditBtn" (click)="rotateLeft()">↺</button>
+    <button class="alatech-btn alatech-btn--default imgEditBtn" (click)="rotateRight()">↻</button>
+    <button class="alatech-btn alatech-btn--default imgEditBtn" (click)="flipHorizontal()">↔</button>
+    <button class="alatech-btn alatech-btn--default imgEditBtn" (click)="flipVertical()">↕</button>
+  </div>
+  <image-cropper
+      [imageChangedEvent]="imageChangedEvent"
+      [maintainAspectRatio]="true"
+      [aspectRatio]="1 / 1"
+      [resizeToWidth]="256"
+      format="png"
+      (imageCropped)="imageCropped($event)"
+      (imageLoaded)="imageLoaded()"
+      (cropperReady)="cropperReady()"
+      (loadImageFailed)="loadImageFailed()"
+  ></image-cropper>
+</div>
 
 

@@ -58,11 +58,18 @@ export class NavbarComponent implements OnInit {
     if (this.router.url === '/') {
       this.navItemNum = 1;
     }
+
     if (this.href.indexOf('resetpassword') > -1) {
-      this.isShowResetPwd = true;
+      this.utilsService.setResetPasswordStatus(true);
     } else {
-      this.isShowResetPwd = false;
+      this.utilsService.setResetPasswordStatus(false);
     }
+
+    // 確認修改密碼是否完成-kidin-1090109（bug1043）
+    this.utilsService.getResetPasswordStatus().subscribe(res => {
+      this.isShowResetPwd = res;
+    });
+
     if (this.href.indexOf('dashboard') > -1) {
       const sessionValue = sessionStorage.web;
       if (sessionValue === '12345678') {

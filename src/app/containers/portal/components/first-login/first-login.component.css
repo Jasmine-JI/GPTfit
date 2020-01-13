@@ -1,17 +1,8 @@
-.user-photo {
-  width: 130px;
-  height: 130px;
-  border-radius: 50%;
-  margin: 0 auto;
-  overflow: hidden;
-}
 .user-photo .fileupload__input {
   width: 130px!important;
   height: 130px!important;
 }
-.user-photo .alatech-btn.alatech-btn--default {
-  display: none;
-}
+
 .user-photo .ala-upload-image {
   max-width: 130px!important;
   height: 130px!important;
@@ -30,6 +21,17 @@
 .access-panel-body.first-login {
   padding: 20px 75px;
 }
+
+.userImgCroppingMask {
+  background-color: rgba(255, 255, 255, 0.6);
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+}
+
 @media (max-width: 767px) {
   .ala-upload-image {
     min-width: initial;

@@ -213,7 +213,7 @@
         期間統計的運動成效，平均心率落點可藉由平均心率推算達到的訓練目的，以及所消耗的脂肪體重比例。
       </p>
       <div #container class="sportEfficiencyArea">
-        <div class="activity-block HRZone" *ngIf="!(initialChartComplated && !showHRZoneChartTarget)">
+        <div class="HRZone" *ngIf="!(initialChartComplated && !showHRZoneChartTarget)">
           <div class="sportEfficiency">
             <p class="chartTitle">平均心率區間落點</p>
             <p class="chartTitle">{{'Dashboard.GroupClass.enduranceZone' | translate}} {{HRZoneThree}}%</p>
@@ -222,7 +222,7 @@
             chart target
           </div>
         </div>
-        <div class="activity-block bodyQuality" *ngIf="!(initialChartComplated && !showcaloriesBurnedChartTarget)">
+        <div class="bodyQuality" *ngIf="!(initialChartComplated && !showcaloriesBurnedChartTarget)">
           <div class="sportEfficiency">
             <p class="chartTitle">{{'Dashboard.SportReport.totalCalorie' | translate}}</p>
             <p class="chartTitle">{{burnedCalories | number:'1.0-2' }}kg</p>
@@ -236,7 +236,7 @@
   </div>
   <div style="display: flex; flex-direction: column; ">
       <p class="ala-dashboard-title activity-title">個人分析</p>
-      <div class="activity-block trendChart"
+      <div class="trendChart"
           *ngIf="!(initialChartComplated && !showavgSpeedChartTarget)"
           style="width: 100%;"
           [class.hidden]="!showavgSpeedChartTarget"
@@ -249,7 +249,7 @@
           chart target
         </div>
       </div>
-      <div class="activity-block trendChart" *ngIf="!(initialChartComplated && !showavgHRChartTarget)" style="width: 100%;">
+      <div class="trendChart" *ngIf="!(initialChartComplated && !showavgHRChartTarget)" style="width: 100%;">
         <div class="sportTrend">
           <p class="chartTitle">{{'Dashboard.SportReport.avgHr' | translate}}</p>
           <p class="chartTitle">{{ avgHR | number:'1.0-2' }}bpm</p>
@@ -258,7 +258,7 @@
           chart target
         </div>
       </div>
-      <div class="activity-block trendChart" *ngIf="!(initialChartComplated && !showcaloriesChartTarget)" style="width: 100%;">
+      <div class="trendChart" *ngIf="!(initialChartComplated && !showcaloriesChartTarget)" style="width: 100%;">
         <div class="sportTrend">
           <p class="chartTitle">{{'Dashboard.SportReport.totalCalorie' | translate}}</p>
           <p class="chartTitle">{{ totalCalories | number:'1.0-2' }}cal</p>
@@ -273,9 +273,9 @@
   <div class="other-info--area otherInfoArea">
     <div class="otherInfoSection">
       <p class="ala-dashboard-title activity-title">{{'Dashboard.ActivityDetail.device' | translate}}</p>
-      <img src="{{deviceInfo?.modelImgUrl}}" style="height: auto; width: auto; max-width: 200px; max-height: 200px; margin: auto;">
+      <img src="{{this.deviceImgUrl}}" style="height: auto; width: auto; max-width: 200px; max-height: 200px; margin: auto;">
       <p>{{'Portal.modeCode' | translate}}：{{ deviceInfo?.modelName || 'SH.noData' | translate }}</p>
-      <p>{{"Portal.modeType" | translate}}：{{ (deviceInfo?.modelType | productType | translate) || 'SH.noData' | translate }}</p>
+      <p>{{"Portal.modeType" | translate}}：{{ (deviceInfo?.modelTypeID | productType | translate) || 'SH.noData' | translate }}</p>
     </div>
     <div class="otherInfoSection">
       <p class="ala-dashboard-title activity-title">{{'Dashboard.TrainLive.courseIntroduction' | translate}}</p>

@@ -198,7 +198,8 @@ export class CreateGroupComponent implements OnInit {
     this.token = this.utils.getToken();
     const body = {
       token: this.token,
-      groupId: this.groupId
+      groupId: this.groupId,
+      avatarType: 2
     };
     if (this.createType !== 3 && this.createType !== 4) {
       this.groupService.fetchGroupListDetail(body).subscribe(res => {
@@ -215,7 +216,7 @@ export class CreateGroupComponent implements OnInit {
           this.joinStatus = 0;
         }
         this.brandName = groupName;
-        this.groupImg = this.utils.buildBase64ImgString(groupIcon);
+        this.groupImg = groupIcon;
         this.finalImageLink = this.groupImg;
         this.group_id = this.utils.displayGroupId(groupId);
         this.groupLevel = this.utils.displayGroupLevel(groupId);
@@ -326,7 +327,8 @@ export class CreateGroupComponent implements OnInit {
       token: this.token,
       groupId: this.groupId,
       groupLevel: '30',
-      infoType: _type
+      infoType: _type,
+      avatarType: 3
     };
     this.groupService.fetchGroupMemberList(body).subscribe(res => {
       if (res.resultCode === 200) {
@@ -338,14 +340,14 @@ export class CreateGroupComponent implements OnInit {
           this.subBrandInfo = this.subGroupInfo.brands.map(_brand => {
             return {
               ..._brand,
-              groupIcon: this.utils.buildBase64ImgString(_brand.groupIcon)
+              groupIcon: _brand.groupIcon
             };
           });
           this.subBranchInfo = this.subGroupInfo.branches.filter(_branch => {
             if (_branch.groupStatus !== 4) {
               return {
                 ..._branch,
-                groupIcon: this.utils.buildBase64ImgString(_branch.groupIcon)
+                groupIcon: _branch.groupIcon
               };
             }
           });
@@ -353,7 +355,7 @@ export class CreateGroupComponent implements OnInit {
             if (_coach.groupStatus !== 4) {
               return {
                 ..._coach,
-                groupIcon: this.utils.buildBase64ImgString(_coach.groupIcon)
+                groupIcon: _coach.groupIcon
               };
             }
           });
@@ -374,7 +376,7 @@ export class CreateGroupComponent implements OnInit {
             .map(_info => {
               return {
                 ..._info,
-                memberIcon: this.utils.buildBase64ImgString(_info.memberIcon)
+                memberIcon: _info.memberIcon
               };
             })
             .filter(newInfo => !(typeof newInfo === 'undefined'));

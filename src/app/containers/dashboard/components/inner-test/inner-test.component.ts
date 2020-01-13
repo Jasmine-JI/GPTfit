@@ -47,6 +47,7 @@ export class InnerTestComponent implements OnInit {
   userId: string;
   hashUserId: string;
   groupLevel: string;
+
   ngOnInit() {}
   getUserAvartar(userId) {
     let params = new HttpParams();
@@ -112,14 +113,18 @@ export class InnerTestComponent implements OnInit {
         this.hashIdService.handleGroupIdDecode(this.hashGroupId) &&
       this.hashGroupId === this.hashIdService.handleGroupIdEncode(this.groupId)
     ) {
-      const body = { groupId: this.groupId, token: this.utils.getToken() };
+      const body = {
+        groupId: this.groupId,
+        token: this.utils.getToken(),
+        avatarType: 2
+      };
       this.groupService.fetchGroupListDetail(body).subscribe(res => {
         this.groupInfo = res.info;
         const { groupIcon, groupId } = this.groupInfo;
         this.groupLevel = this.utils.displayGroupLevel(groupId);
         this.groupImg =
           groupIcon && groupIcon.length > 0
-            ? this.utils.buildBase64ImgString(groupIcon)
+            ? groupIcon
             : '/assets/images/group-default.svg';
       });
     }
@@ -131,7 +136,8 @@ export class InnerTestComponent implements OnInit {
     ) {
       const body = {
         token: this.utils.getToken(),
-        targetUserId: this.userId || ''
+        targetUserId: this.userId || '',
+        avatarType: 2,
       };
       this.userProfileService.getUserProfile(body).subscribe(res => {
         const response: any = res;

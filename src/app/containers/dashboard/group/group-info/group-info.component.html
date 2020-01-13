@@ -2,10 +2,11 @@
   <!-- <span class="group-handle-name group-handle-name__rwd">
     {{ 'Dashboard.Group.GroupInfo.groupInfo' | translate}}
   </span> -->
-  <div class="col-md-4 group-image--area" *ngIf="!isPreviewMode">
+  <div class="col-md-3 group-image--area" *ngIf="!isPreviewMode">
     <img *ngIf="groupImg"
       [src]="(groupImg | safeHtml)"
       [class.image-is--default]="groupImg === '/assets/images/group-default.svg'"
+      class="groupImgSet"
     >
     <ul class="nav">
       <li [class.active]="chooseIdx === 1"
@@ -36,7 +37,7 @@
       -->
     </ul>
   </div>
-  <div [class.col-md-8]="!isPreviewMode" [class.previewPrint]="isPreviewMode">
+  <div [class.col-md-9]="!isPreviewMode" [class.previewPrint]="isPreviewMode">
     <ng-container *ngIf="chooseIdx === 1">
       <div class="group-edit-bar">
         <span class="group-handle-name">

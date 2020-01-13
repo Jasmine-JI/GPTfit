@@ -13,11 +13,8 @@
             <app-upload-file
               [isUserAvastarMode]="true"
               [isImageFileMode]="true"
-              [imageURL]="groupImg"
-              [maxFileSize]="maxFileSize"
+              [imageURL]="userImg"
               [accept]="acceptFileExtensions.join()"
-              [reloadFileText]="'Dashboard.Group.GroupInfo.selectImg' | translate"
-              [chooseFileText]="'Dashboard.Group.GroupInfo.selectImg' | translate"
               (onChange)="handleAttachmentChange($event)"
             ></app-upload-file>
           </div>

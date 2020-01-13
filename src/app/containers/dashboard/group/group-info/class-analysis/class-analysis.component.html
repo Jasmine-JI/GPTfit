@@ -45,6 +45,7 @@
               required="required"
               onkeydown="return false"
               (click)="handleShowArrow()"
+              readonly
             >
             <div class="arrow" *ngIf="showArrow">
               <div class="arrow-TimeUp" (click)="handleClickTime('hourUp')"></div>
@@ -176,7 +177,7 @@
         全體成員的運動成效，平均心率落點可藉由平均心率推算達到的訓練目的，以及全體學員消耗卡路里的統計比。
       </p>
       <div #container class="sportEfficiencyArea">
-          <div class="activity-block HRZone" *ngIf="!(initialChartComplated && !showclassHRZoneChartTarget)">
+          <div class="HRZone" *ngIf="!(initialChartComplated && !showclassHRZoneChartTarget)">
             <div class="sportEfficiency">
               <p class="chartTitle">全體心率區間落點</p>
               <p class="chartTitle">{{'Dashboard.GroupClass.enduranceZone' | translate}} {{HRZoneThree}}%</p>
@@ -185,7 +186,7 @@
               chart target
             </div>
           </div>
-          <div class="activity-block bodyQuality" *ngIf="!(initialChartComplated && !showclassCaloriesChartTarget)">
+          <div class="bodyQuality" *ngIf="!(initialChartComplated && !showclassCaloriesChartTarget)">
             <div class="sportEfficiency">
               <p class="chartTitle">{{'SH.all' | translate}} {{'Dashboard.TrainLive.member' | translate}} {{'Dashboard.SportReport.totalCalorie' | translate}}</p>
             </div>
@@ -364,9 +365,9 @@
   <div class="other-info--area otherInfoArea">
     <div class="otherInfoSection">
       <p class="ala-dashboard-title activity-title">{{'Dashboard.ActivityDetail.device' | translate}}</p>
-      <img src="{{deviceInfo?.modelImgUrl}}" style="height: auto; width: auto; max-width: 200px; max-height: 200px; margin: auto;">
+      <img src="{{this.deviceImgUrl}}" style="height: auto; width: auto; max-width: 200px; max-height: 200px; margin: auto;">
       <p>{{'Portal.modeCode' | translate}}：{{ deviceInfo?.modelName || 'SH.noData' | translate }}</p>
-      <p>{{"Portal.modeType" | translate}}：{{ (deviceInfo?.modelType | productType | translate) || 'SH.noData' | translate }}</p>
+      <p>{{"Portal.modeType" | translate}}：{{ (deviceInfo?.modelTypeID | productType | translate) || 'SH.noData' | translate }}</p>
     </div>
     <div class="otherInfoSection">
       <p class="ala-dashboard-title activity-title">{{'Dashboard.TrainLive.courseIntroduction' | translate}}</p>

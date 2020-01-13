@@ -25,6 +25,7 @@ import { stockChart } from 'highcharts/highstock';
 import { DomSanitizer } from '@angular/platform-browser';
 import { UtilsService } from '@shared/services/utils.service';
 import { getUrlQueryStrings } from '@shared/utils/';
+import { GroupService } from '../../services/group.service';
 import * as _ from 'lodash';
 export class Message {
   constructor(
@@ -103,6 +104,7 @@ export class CoachDashboardComponent
   isSectionIndividual = false;
   isCoachMoreDisplay = false;
   isLessonMoreDisplay = false;
+  updateImgQueryString: string;
 
   radius = 10;
   elementRef: ElementRef;
@@ -222,6 +224,7 @@ export class CoachDashboardComponent
   userInfos: any = [];
   constructor(
     private coachService: CoachService,
+    private groupService: GroupService,
     private route: ActivatedRoute,
     elementRef: ElementRef,
     private sanitizer: DomSanitizer,
@@ -243,20 +246,27 @@ export class CoachDashboardComponent
   }
 
   ngOnInit() {
+    // 確認群組頭像是否更新-kidin-1090113
+    this.groupService.getImgUpdatedStatus().subscribe(response => {
+      this.updateImgQueryString = response;
+    });
+
     const queryStrings = getUrlQueryStrings(location.search);
     this.classType = queryStrings.type;
     this.classId = this.route.snapshot.paramMap.get('classId');
     this.token = this.utils.getToken();
     const body = {
       token: this.token,
-      classId: this.classId
+      classId: this.classId,
+      avatarType: '2',
     };
     if (!(this.classId === '99999' && this.isDemoMode)) {
       this.coachService.fetchClassRoomDetail(body).subscribe(res => {
+        console.log(res);
         this.classInfo = res.info;
         this.classInfo.groupIcon =
           this.classInfo.groupIcon && this.classInfo.groupIcon.length > 0
-            ? this.utils.buildBase64ImgString(this.classInfo.groupIcon)
+            ? `${this.classInfo.groupIcon}${this.updateImgQueryString}`
             : '/assets/images/group-default.svg';
         const groupIcon = new Image();
         groupIcon.src = this.classInfo.groupIcon;
@@ -266,7 +276,7 @@ export class CoachDashboardComponent
             : 'user-photo--portrait';
         this.classInfo.coachAvatar =
           this.classInfo.coachAvatar && this.classInfo.coachAvatar.length > 0
-            ? this.utils.buildBase64ImgString(this.classInfo.coachAvatar)
+            ? `${this.classInfo.coachAvatar}${this.updateImgQueryString}`
             : '/assets/images/user.png';
         if (this.classInfo.groupVideoUrl.length > 0) {
           this.isHadVideoUrl = true;
@@ -540,7 +550,11 @@ export class CoachDashboardComponent
     this.meanValue = Math.round(sum / this.currentMemberNum);
   }
   handleSNInfo(snDatas: any) {
-    const body = { token: this.token, pairEquipmentSN: snDatas };
+    const body = {
+      token: this.token,
+      avatarType: '2',
+      pairEquipmentSN: snDatas
+    };
     this.coachService.fetchFitPairInfo(body).subscribe(res => {
       const datas = res.info.deviceInfo;
       const series = [];
@@ -567,7 +581,7 @@ export class CoachDashboardComponent
         this.series3.push({ name: userName, data: [] });
         userIcon =
           datas[existIdx] && datas[existIdx].pairIcon.length > 0
-            ? this.utils.buildBase64ImgString(datas[existIdx].pairIcon)
+            ? `${datas[existIdx].pairIcon}${this.updateImgQueryString}`
             : '/assets/images/user.png';
         const image = new Image();
         image.src = userIcon;
