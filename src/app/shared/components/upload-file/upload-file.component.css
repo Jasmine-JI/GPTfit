@@ -119,17 +119,6 @@
 .ala-user-avastar-mode .profile-picture__remove {
   display: none;
 }
-@media(max-width: 767px) {
-  .ala-upload-image {
-    min-width: 250px;
-  }
-  .ala-upload-image.ala-user-avastar-mode {
-    min-width: initial;
-  }
-  .profile-picture__remove-icon {
-    font-size: 30px;
-  }
-}
 
 .ala-upload-image {
   border: 1px solid #ccc;
@@ -161,7 +150,7 @@
   position: absolute;
   top: 5px;
   right: 8px;
-  z-index: 1;
+  z-index: 2;
   display: inline-block;
   vertical-align: top;
   padding: 0;
@@ -188,4 +177,39 @@
 .ala-upload--descrption .fileupload__input {
   height: 296px;
   width: 250px;
+}
+
+.imgCropped {
+  position: relative;
+  z-index: 3;
+}
+
+.imgEditBtn {
+  font-size: 18px;
+  min-width: 45px;
+}
+
+.avastarLayout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 130px;
+  margin: 0 auto;
+}
+
+.avastarMode {
+  border-radius: 50%;
+  max-width: 130px;
+}
+
+
+
+@media(max-width: 767px) {
+  .ala-upload-image.ala-user-avastar-mode {
+    min-width: initial;
+  }
+  .profile-picture__remove-icon {
+    font-size: 30px;
+  }
+
 }

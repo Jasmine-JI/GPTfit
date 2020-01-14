@@ -55,7 +55,7 @@ export class PersonalPreferencesComponent implements OnInit {
       sleep: { normalBedTime, normalWakeTime }
     } = this.userData;
 
-    this.heartRateBase = heartRateBase;
+    this.heartRateBase = +heartRateBase;
 
     this.settingsForm = this.fb.group({
       // 定義表格的預設值
@@ -135,7 +135,11 @@ export class PersonalPreferencesComponent implements OnInit {
       this.settingsService.updateUserProfile(body).subscribe(res => {
         this.isSaveUserSettingLoading = false;
         if (res.resultCode === 200) {
-          this.userInfoService.getUserInfo({ token, iconType: 2 });
+          this.userInfoService.getUserInfo({
+            token,
+            avatarType: 2,
+            iconType: 2
+          });
           this.snackbar.open(
             this.translate.instant(
               'Dashboard.Settings.finishEdit'
@@ -149,6 +153,7 @@ export class PersonalPreferencesComponent implements OnInit {
           // 重新存取身體資訊供各種圖表使用-kidin-1081212
           const key = {
             token: token,
+            avatarType: 2,
             iconType: 2
           };
           this.userInfoService.getLogonData(key).subscribe(result => {
@@ -182,6 +187,6 @@ export class PersonalPreferencesComponent implements OnInit {
   }
 
   handleHeartRateBase (e) {
-    this.heartRateBase = e.target.value;
+    this.heartRateBase = +e.target.value;
   }
 }

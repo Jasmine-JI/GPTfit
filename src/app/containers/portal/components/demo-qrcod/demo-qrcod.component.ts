@@ -73,7 +73,7 @@ export class DemoQrcodComponent implements OnInit {
     this.progressRef.start();
     this.isLoading = true;
     this.qrcodeService.getProductInfo(body).subscribe(res => {
-      this.deviceInfo = res.info.productInfo[0];
+    this.deviceInfo = res.info.productInfo[0];
       if (!this.deviceInfo.modelID) {
         this.noProductImg = `http://${location.hostname}/app/public_html/products/img/unknown.png`;
         this.progressRef.complete();

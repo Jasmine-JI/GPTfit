@@ -47,6 +47,7 @@ export class MemberCapsuleComponent implements OnInit {
   width = '100%';
   height = 'auto';
   token: string;
+  updateImgQueryString = '';
   public elementRef;
   constructor(
     myElement: ElementRef,
@@ -68,6 +69,10 @@ export class MemberCapsuleComponent implements OnInit {
   }
   handleClick() {}
   ngOnInit() {
+    this.groupService.getImgUpdatedStatus().subscribe(response => {
+      this.updateImgQueryString = response;
+    });
+    this.icon = `${this.icon}${this.updateImgQueryString}`;
     this.listenImage(this.icon);
     this.token = this.utils.getToken();
   }
@@ -235,11 +240,14 @@ export class MemberCapsuleComponent implements OnInit {
     });
   }
   openDeleteGroupWin() {
+    const targetName = this.translate.instant('Dashboard.Group.group');
     this.dialog.open(MessageBoxComponent, {
       hasBackdrop: true,
       data: {
         title: 'message',
-        body: this.translate.instant('Dashboard.Group.confirmRemovalGroup'),
+        body: this.translate.instant('Dashboard.Group.confirmDissolution', {
+          target: targetName
+        }),
         confirmText: this.translate.instant('SH.determine'),
         cancelText: this.translate.instant('SH.cancel'),
         onConfirm: this.handleDeleteGroup.bind(this)

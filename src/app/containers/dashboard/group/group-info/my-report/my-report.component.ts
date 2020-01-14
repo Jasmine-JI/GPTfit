@@ -149,6 +149,7 @@ export class MyReportComponent implements OnInit, OnDestroy {
   deviceInfo: any;
   groupData: any;
   coachInfo: any;
+  deviceImgUrl: string;
 
   // HChart設定相關-kidin-1081211
   showHRZoneChartTarget = false;
@@ -305,7 +306,7 @@ export class MyReportComponent implements OnInit, OnDestroy {
         token: this.token,
         groupId: this.groupId,
         findRoot: '1',
-        avatarType: '1'
+        avatarType: '2'
       };
 
       this.groupService.fetchGroupListDetail(groupBody).subscribe(res => {
@@ -410,13 +411,13 @@ export class MyReportComponent implements OnInit, OnDestroy {
       this.groupImg =
         (
           groupIcon && groupIcon.length > 0
-              ? this.utils.buildBase64ImgString(groupIcon)
+              ? groupIcon
               : '/assets/images/group-default.svg'
         );
       this.brandImg =
         (
           brandIcon && brandIcon.length > 0
-              ? this.utils.buildBase64ImgString(brandIcon)
+              ? brandIcon
               : '/assets/images/group-default.svg'
         );
       this.brandName = this.groupData.groupRootInfo[2].brandName;
@@ -458,18 +459,19 @@ export class MyReportComponent implements OnInit, OnDestroy {
               HRZoneFive = 0;
 
           for (let i = 0; i < this.activityLength; i++) {
-            timeCount += activity[i].activityInfoLayer.totalSecond;
-            HRCount += activity[i].activityInfoLayer.avgHeartRateBpm;
-            caloriesCount += activity[i].activityInfoLayer.calories;
+            const activityItem = activity[i].activityInfoLayer;
+            timeCount += activityItem.totalSecond;
+            HRCount += activityItem.avgHeartRateBpm;
+            caloriesCount += activityItem.calories;
 
             // 取得心率區間-kidin-1081213
-            if (activity[i].activityInfoLayer.totalHrZone0Second !== null) {
-              HRZoneZero += activity[i].activityInfoLayer.totalHrZone0Second;
-              HRZoneOne += activity[i].activityInfoLayer.totalHrZone1Second;
-              HRZoneTwo += activity[i].activityInfoLayer.totalHrZone2Second;
-              HRZoneThree += activity[i].activityInfoLayer.totalHrZone3Second;
-              HRZoneFour += activity[i].activityInfoLayer.totalHrZone4Second;
-              HRZoneFive += activity[i].activityInfoLayer.totalHrZone5Second;
+            if (activityItem.totalHrZone0Second !== null) {
+              HRZoneZero += activityItem.totalHrZone0Second > 0 ? activityItem.totalHrZone0Second : 0;
+              HRZoneOne += activityItem.totalHrZone1Second > 0 ? activityItem.totalHrZone1Second : 0;
+              HRZoneTwo += activityItem.totalHrZone2Second > 0 ? activityItem.totalHrZone2Second : 0;
+              HRZoneThree += activityItem.totalHrZone3Second > 0 ? activityItem.totalHrZone3Second : 0;
+              HRZoneFour += activityItem.totalHrZone4Second > 0 ? activityItem.totalHrZone4Second : 0;
+              HRZoneFive += activityItem.totalHrZone5Second > 0 ? activityItem.totalHrZone5Second : 0;
             } else {
               // 計算心率區間-kidin-1081213
               const hrBpm = activity[i].activityPointLayer,
@@ -494,13 +496,13 @@ export class MyReportComponent implements OnInit, OnDestroy {
             }
 
             if (this.reportCategory !== '5') {
-              distanceCount += activity[i].activityInfoLayer.totalDistanceMeters;
-              avgSpeedCount += activity[i].activityInfoLayer.avgSpeed;
-              this.avgSpeedList.unshift(activity[i].activityInfoLayer.avgSpeed);
+              distanceCount += activityItem.totalDistanceMeters;
+              avgSpeedCount += activityItem.avgSpeed;
+              this.avgSpeedList.unshift(activityItem.avgSpeed);
             }
             this.dateList.unshift(this.formatDate(activity[i].fileInfo.creationDate));
-            this.avgHRList.unshift(activity[i].activityInfoLayer.avgHeartRateBpm);
-            this.caloriesList.unshift(activity[i].activityInfoLayer.calories);
+            this.avgHRList.unshift(activityItem.avgHeartRateBpm);
+            this.caloriesList.unshift(activityItem.calories);
           }
           if (this.reportCategory !== '5') {
             this.totalDistance = distanceCount;
@@ -979,11 +981,19 @@ export class MyReportComponent implements OnInit, OnDestroy {
 
   getClassDetails (SN, coachId) {
     // 取得裝置資訊-kidin-1081218
-    let params = new HttpParams();
-    params = params.set('device_sn', SN);
-    this.qrcodeService.getDeviceInfo(params).subscribe(res => {
+    const deviceDody = {
+      'token': '',
+      'queryType': '1',
+      'queryArray': [SN]
+    };
+    this.qrcodeService.getProductInfo(deviceDody).subscribe(res => {
       if (res) {
-        this.deviceInfo = res;
+        this.deviceInfo = res.info.productInfo[0];
+        if (location.hostname === '192.168.1.235') {
+          this.deviceImgUrl = `http://app.alatech.com.tw/app/public_html/products${this.deviceInfo.modelImg}`;
+        } else {
+          this.deviceImgUrl = `http://${location.hostname}/app/public_html/products${this.deviceInfo.modelImg}`;
+        }
       }
     });
 

@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ResetPasswordService } from '../../services/reset-password.service';
 import { getUrlQueryStrings } from '@shared/utils/';
+import { UtilsService } from '../../../../shared/services/utils.service';
 
 @Component({
   selector: 'app-password',
@@ -22,7 +23,8 @@ export class PasswordComponent implements OnInit, OnDestroy {
   timeout: any;
   constructor(
     private resetPasswordService: ResetPasswordService,
-    private router: Router
+    private router: Router,
+    private utilsService: UtilsService,
   ) { }
   resetpwd = {
     newPassword: '',
@@ -77,6 +79,7 @@ export class PasswordComponent implements OnInit, OnDestroy {
         const { resultCode, resultMessage } = this.response;
         if (resultCode === 200) {
           this.isSuccess = true;
+          this.utilsService.setResetPasswordStatus(false);  // 修改完密碼後透過rxjs傳送status以解決bug1043-kidin-1090109（bug1043）
           setTimeout(() => this.router.navigate(['/signin']), 5000);
         } else {
           this.resultMessage = resultMessage;

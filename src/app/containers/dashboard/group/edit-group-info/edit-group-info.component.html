@@ -1,3 +1,4 @@
+<div class="groupImgCroppingMask" *ngIf="imgCropping"></div>
 <div class="row">
   <!-- <span class="group-handle-name group-handle-name__rwd">
     {{'Dashboard.Group.GroupInfo.edit' | translate}}
@@ -7,13 +8,8 @@
     <app-upload-file
       [isImageFileMode]="true"
       [imageURL]="groupImg"
-      [maxFileSize]="maxFileSize"
-      [disabled]="isUploading"
       [btnText]="'Dashboard.Group.GroupInfo.selectImg' | translate"
-      [isLoading]="isUploading"
       [accept]="'Dashboard.Group.GroupInfo.photoRestriction' | translate"
-      [reloadFileText]="'Dashboard.Group.GroupInfo.selectImg' | translate"
-      [chooseFileText]="'Dashboard.Group.GroupInfo.selectImg' | translate"
       (onChange)="handleAttachmentChange($event)"
     ></app-upload-file>
   </div>

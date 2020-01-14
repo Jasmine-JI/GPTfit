@@ -1,3 +1,4 @@
+<div class="imgCroppingMask" *ngIf="imgCropping"></div>
 <div style="display:flex;justify-content: space-between">
   <h3>{{'Dashboard.Settings.userSetting' | translate}}</h3>
   <button class="alatech-btn alatech-btn--default settings-btn"
@@ -10,7 +11,6 @@
 <form [formGroup]="settingsForm"
   #f="ngForm"
   novalidate
-  (ngSubmit)="saveSettings(settingsForm)"
 >
   <label class="ala-form__label settings-label">
     {{'Dashboard.Settings.basicSetting' | translate}}
@@ -25,13 +25,8 @@
       <app-upload-file
         [isImageFileMode]="true"
         [imageURL]="nameIcon?.value"
-        [maxFileSize]="maxFileSize"
-        [disabled]="isUploading"
         [btnText]="'Dashboard.Group.GroupInfo.selectImg' | translate"
-        [isLoading]="isUploading"
         [accept]="acceptFileExtensions.join()"
-        [reloadFileText]="'Dashboard.Group.GroupInfo.selectImg' | translate"
-        [chooseFileText]="'Dashboard.Group.GroupInfo.selectImg' | translate"
         (onChange)="handleAttachmentChange($event)"
       ></app-upload-file>
     </div>

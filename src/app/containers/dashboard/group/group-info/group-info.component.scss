@@ -1,3 +1,8 @@
+.groupImgSet {
+  max-height: 256px;
+  max-width: 256px;
+}
+
 .group-btn--waiting {
   background-color: #26abe3;
   color: #fff;
@@ -250,6 +255,9 @@
         flex-direction: row;
         justify-content: space-between;
       }
+    }
+    .groupImgSet {
+      margin: 0 auto;
     }
   }
 }

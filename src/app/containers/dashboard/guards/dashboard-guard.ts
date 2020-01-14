@@ -33,6 +33,7 @@ export class DashboardGuard implements CanActivate {
         const token = this.utils.getToken();
         const body = {
           token,
+          avatarType: 2,
           iconType: 2
         };
         this.userInfoService.getUserInfo(body).then(() => {

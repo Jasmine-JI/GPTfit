@@ -2,7 +2,7 @@ $arrowColor: #157fcc;
 $arrowSize: 8px;
 $arrowTopPosition: -10px;
 $arrowBottomPosition: 32px;
-$arrowHourPosition: -83px;
+$arrowHourPosition: -77px;
 $arrowAmPmPosition: -35px;
 
 
@@ -118,7 +118,7 @@ mat-header-cell:last-child, mat-cell:last-child, mat-footer-cell:last-child {
 
 
 
-@media (max-width: 1300px) {
+@media (max-width: 1200px) {
   .searchInput {
     flex-direction: column;
     margin-bottom: 10px;
@@ -137,7 +137,7 @@ mat-header-cell:last-child, mat-cell:last-child, mat-footer-cell:last-child {
   }
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1150px) {
   .fitWindow {
     flex-direction: column;
   }

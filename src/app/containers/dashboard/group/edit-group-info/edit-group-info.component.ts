@@ -23,6 +23,7 @@ import { MatBottomSheet, MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA} from '@angula
 import { toCoachText } from '../desc';
 import { TranslateService } from '@ngx-translate/core';
 import { HashIdService } from '@shared/services/hash-id.service';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-edit-group-info',
@@ -67,17 +68,18 @@ export class EditGroupInfoComponent implements OnInit {
     isCoach: false
   };
   maxFileSize = 10485760; // 10MB
-  isUploading = false;
   fileLink: string;
   reloadFileText = '重新上傳';
   chooseFileText = '選擇檔案';
   acceptFileExtensions = ['JPG', 'JPEG', 'GIF', 'PNG'];
   finalImageLink: string;
+  imgCropping = false;
   visitorDetail: any;
   isLoading = false;
   isGroupDetailLoading = false;
   videoUrl = '';
   originalGroupStatus: number;
+  updateImgQueryString = '';
   get groupName() {
     return this.form.get('groupName');
   }
@@ -119,6 +121,10 @@ export class EditGroupInfoComponent implements OnInit {
     this.userInfoService.getUserAccessRightDetail().subscribe(res => {
       this.visitorDetail = res;
     });
+
+    this.utils.getImgSelectedStatus().subscribe(res => {
+      this.imgCropping = res;
+    });
   }
   handleInit() {
     this.groupId = this.hashIdService.handleGroupIdDecode(
@@ -158,7 +164,11 @@ export class EditGroupInfoComponent implements OnInit {
       // console.log('%c this.isCoach', 'color: #0ca011', res);
     });
     this.token = this.utils.getToken();
-    const body = { token: this.token, groupId: this.groupId };
+    const body = {
+      token: this.token,
+      groupId: this.groupId,
+      avatarType: 2
+    };
     let params = new HttpParams();
     params = params.set('groupId', this.groupId);
     this.isGroupDetailLoading = true;
@@ -174,7 +184,13 @@ export class EditGroupInfoComponent implements OnInit {
         groupStatus,
         groupVideoUrl
       } = this.groupInfo;
+
       this.originalGroupStatus = groupStatus;
+
+      this.groupService.getImgUpdatedStatus().subscribe(response => {
+        this.updateImgQueryString = response;
+      });
+
       this.videoUrl = groupVideoUrl;
       if (groupStatus === 4) {
         this.router.navigateByUrl(`/404`);
@@ -190,7 +206,7 @@ export class EditGroupInfoComponent implements OnInit {
         groupStatus,
         groupVideoUrl
       });
-      this.groupImg = this.utils.buildBase64ImgString(groupIcon);
+      this.groupImg = `${groupIcon}${this.updateImgQueryString}`;
       this.finalImageLink = this.groupImg;
       this.group_id = this.utils.displayGroupId(groupId);
       this.groupLevel = this.utils.displayGroupLevel(groupId);
@@ -261,7 +277,8 @@ export class EditGroupInfoComponent implements OnInit {
       token: this.token,
       groupId: this.groupId,
       groupLevel: this.groupLevel,
-      infoType: _type
+      infoType: _type,
+      avatarType: 3
     };
     this.groupService.fetchGroupMemberList(body).subscribe(res => {
       this.isLoading = false;
@@ -274,7 +291,7 @@ export class EditGroupInfoComponent implements OnInit {
           this.subBrandInfo = this.subGroupInfo.brands.map(_brand => {
             return {
               ..._brand,
-              groupIcon: this.utils.buildBase64ImgString(_brand.groupIcon)
+              groupIcon: _brand.groupIcon
             };
           });
           this.subBranchInfo = this.subGroupInfo.branches.filter(_branch => {
@@ -285,7 +302,7 @@ export class EditGroupInfoComponent implements OnInit {
           }).map(_branch => {
             return {
               ..._branch,
-              groupIcon: this.utils.buildBase64ImgString(_branch.groupIcon)
+              groupIcon: _branch.groupIcon
             };
           });
           this.subCoachInfo = this.subGroupInfo.coaches.filter(_coach => {
@@ -296,7 +313,7 @@ export class EditGroupInfoComponent implements OnInit {
           }).map(_coach => {
             return {
               ..._coach,
-              groupIcon: this.utils.buildBase64ImgString(_coach.groupIcon)
+              groupIcon: _coach.groupIcon
             };
           });
         } else {
@@ -305,7 +322,7 @@ export class EditGroupInfoComponent implements OnInit {
             .map(_info => {
               return {
                 ..._info,
-                memberIcon: this.utils.buildBase64ImgString(_info.memberIcon)
+                memberIcon: _info.memberIcon
               };
             })
             .filter(newInfo => !(typeof newInfo === 'undefined'));
@@ -390,84 +407,89 @@ export class EditGroupInfoComponent implements OnInit {
       const { groupName, groupDesc, groupStatus, groupVideoUrl } = value;
       const image = new Image();
       image.src = this.finalImageLink;
-      const body1 = {
-        token: this.token,
-        groupId: this.groupId,
-        groupLevel: this.groupLevel,
-        groupName,
-        groupIcon: this.finalImageLink || '',
-        groupIconMid: this.utils.imageToDataUri(image, 128, 128) || '',
-        groupIconSamll: this.utils.imageToDataUri(image, 64, 64) || '',
-        groupDesc,
-        groupVideoUrl
-      };
-      const body2 = {
-        token: this.token,
-        groupId: this.groupId,
-        changeStatus: groupStatus,
-        groupLevel: this.groupLevel
-      };
-      this.isGroupDetailLoading = true;
-      this.groupService.editGroup(body1).subscribe(res1 => {
-        this.isGroupDetailLoading = false;
-        if (res1.resultCode === 200) {
-          if (this.originalGroupStatus !== groupStatus) {
-            this.groupService.changeGroupStatus(body2).subscribe(res2 => {
-              if (res2.resultCode === 200) {
-                this.router.navigateByUrl(
-                  `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
-                    this.groupId
-                  )}`
-                );
-              } else {
-                this.dialog.open(MsgDialogComponent, {
-                  hasBackdrop: true,
-                  data: {
-                    title: 'Message',
-                    body: this.translate.instant(
-                      'Dashboard.Group.groupEditFailed'
-                    )
-                  }
-                });
+      image.onload = () => {
+        const body1 = {
+          token: this.token,
+          groupId: this.groupId,
+          groupLevel: this.groupLevel,
+          groupName,
+          groupIcon: this.utils.imageToDataUri(image, 256, 256) || '',
+          groupIconMid: this.utils.imageToDataUri(image, 128, 128) || '',
+          groupIconSamll: this.utils.imageToDataUri(image, 64, 64) || '',
+          groupDesc,
+          groupVideoUrl
+        };
+        const body2 = {
+          token: this.token,
+          groupId: this.groupId,
+          changeStatus: groupStatus,
+          groupLevel: this.groupLevel
+        };
+        this.isGroupDetailLoading = true;
+        this.groupService.editGroup(body1).subscribe(res1 => {
+          this.isGroupDetailLoading = false;
+          if (res1.resultCode === 200) {
+            if (this.originalGroupStatus !== groupStatus) {
+              this.groupService.changeGroupStatus(body2).subscribe(res2 => {
+                if (res2.resultCode === 200) {
+                  this.router.navigateByUrl(
+                    `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
+                      this.groupId
+                    )}`
+                  );
+                  this.groupService.setImgUpdatedImgStatus(`?${moment().format('YYYYMMDDhhmmss')}`);
+                } else {
+                  this.dialog.open(MsgDialogComponent, {
+                    hasBackdrop: true,
+                    data: {
+                      title: 'Message',
+                      body: this.translate.instant(
+                        'Dashboard.Group.groupEditFailed'
+                      )
+                    }
+                  });
+                  this.groupService.setImgUpdatedImgStatus('');
+                }
+              });
+            } else {
+              this.router.navigateByUrl(
+                `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
+                  this.groupId
+                )}`
+              );
+              this.groupService.setImgUpdatedImgStatus(`?${moment().format('YYYYMMDDhhmmss')}`);
+            }
+          } else if (res1.resultCode === 409) {
+            this.dialog.open(MsgDialogComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'Message',
+                body: this.translate.instant(
+                  'Dashboard.Group.duplicateBrand'
+                )
+              }
+            });
+          } else if (res1.resultCode === 400) {
+            this.dialog.open(MessageBoxComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'message',
+                body: res1.resultMessage
               }
             });
           } else {
-            this.router.navigateByUrl(
-              `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
-                this.groupId
-              )}`
-            );
+            this.dialog.open(MsgDialogComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'Message',
+                body: this.translate.instant(
+                  'Dashboard.Group.groupEditFailed'
+                )
+              }
+            });
           }
-        } else if (res1.resultCode === 409) {
-          this.dialog.open(MsgDialogComponent, {
-            hasBackdrop: true,
-            data: {
-              title: 'Message',
-              body: this.translate.instant(
-                'Dashboard.Group.duplicateBrand'
-              )
-            }
-          });
-        } else if (res1.resultCode === 400) {
-          this.dialog.open(MessageBoxComponent, {
-            hasBackdrop: true,
-            data: {
-              title: 'message',
-              body: res1.resultMessage
-            }
-          });
-        } else {
-          this.dialog.open(MsgDialogComponent, {
-            hasBackdrop: true,
-            data: {
-              title: 'Message',
-              body: this.translate.instant(
-                'Dashboard.Group.groupEditFailed'
-              )
-            }
-          });
-        }
-      });
+        });
+      };
     }
   }
   public handleChangeTextarea(code: string, type: number): void {
@@ -493,9 +515,9 @@ export class EditGroupInfoComponent implements OnInit {
   }
   handleAttachmentChange(file) {
     if (file) {
-      const { isSizeCorrect, isTypeCorrect, errorMsg, link } = file;
+      const {isTypeCorrect, errorMsg, link } = file;
       this.finalImageLink = link;
-      if (!isSizeCorrect || !isTypeCorrect) {
+      if (!isTypeCorrect) {
         this.dialog.open(MsgDialogComponent, {
           hasBackdrop: true,
           data: {

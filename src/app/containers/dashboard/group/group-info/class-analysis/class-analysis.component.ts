@@ -144,6 +144,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   deviceInfo: any;
   groupData: any;
   coachInfo: any;
+  deviceImgUrl: string;
   memberSection = null;
   focusMember: string;
 
@@ -285,7 +286,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         token: this.token,
         groupId: this.groupId,
         findRoot: '1',
-        avatarType: '1'
+        avatarType: '2'
       };
 
       this.groupService.fetchGroupListDetail(groupBody).subscribe(res => {
@@ -389,13 +390,13 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     this.groupImg =
       (
         groupIcon && groupIcon.length > 0
-            ? this.utils.buildBase64ImgString(groupIcon)
+            ? groupIcon
             : '/assets/images/group-default.svg'
       );
     this.brandImg =
       (
         brandIcon && brandIcon.length > 0
-            ? this.utils.buildBase64ImgString(brandIcon)
+            ? brandIcon
             : '/assets/images/group-default.svg'
       );
     this.brandName = this.groupData.groupRootInfo[2].brandName;
@@ -438,9 +439,10 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
               HRZoneFive = 0;
 
           for (let i = 0; i < this.activityLength; i++) {
-            timeCount += this.activity[i].activityInfoLayer.totalSecond;
-            HRCount += this.activity[i].activityInfoLayer.avgHeartRateBpm;
-            caloriesCount += this.activity[i].activityInfoLayer.calories;
+            const activityItem = this.activity[i].activityInfoLayer;
+            timeCount += activityItem.totalSecond;
+            HRCount += activityItem.avgHeartRateBpm;
+            caloriesCount += activityItem.calories;
             let memberHRZoneZero = 0,
                 memberHRZoneOne = 0,
                 memberHRZoneTwo = 0,
@@ -449,20 +451,20 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
                 memberHRZoneFive = 0;
 
             // 取得心率區間-kidin-1081213
-            if (this.activity[i].activityInfoLayer.totalHrZone0Second !== null) {
-              HRZoneZero += this.activity[i].activityInfoLayer.totalHrZone0Second;
-              HRZoneOne += this.activity[i].activityInfoLayer.totalHrZone1Second;
-              HRZoneTwo += this.activity[i].activityInfoLayer.totalHrZone2Second;
-              HRZoneThree += this.activity[i].activityInfoLayer.totalHrZone3Second;
-              HRZoneFour += this.activity[i].activityInfoLayer.totalHrZone4Second;
-              HRZoneFive += this.activity[i].activityInfoLayer.totalHrZone5Second;
+            if (activityItem.totalHrZone0Second !== null) {
+              HRZoneZero += activityItem.totalHrZone0Second > 0 ? activityItem.totalHrZone0Second : 0;
+              HRZoneOne += activityItem.totalHrZone1Second > 0 ? activityItem.totalHrZone1Second : 0;
+              HRZoneTwo += activityItem.totalHrZone2Second > 0 ? activityItem.totalHrZone2Second : 0;
+              HRZoneThree += activityItem.totalHrZone3Second > 0 ? activityItem.totalHrZone3Second : 0;
+              HRZoneFour += activityItem.totalHrZone4Second > 0 ? activityItem.totalHrZone4Second : 0;
+              HRZoneFive += activityItem.totalHrZone5Second > 0 ? activityItem.totalHrZone5Second : 0;
 
-              memberHRZoneZero = this.activity[i].activityInfoLayer.totalHrZone0Second;
-              memberHRZoneOne = this.activity[i].activityInfoLayer.totalHrZone1Second;
-              memberHRZoneTwo = this.activity[i].activityInfoLayer.totalHrZone2Second;
-              memberHRZoneThree = this.activity[i].activityInfoLayer.totalHrZone3Second;
-              memberHRZoneFour = this.activity[i].activityInfoLayer.totalHrZone4Second;
-              memberHRZoneFive = this.activity[i].activityInfoLayer.totalHrZone5Second;
+              memberHRZoneZero = activityItem.totalHrZone0Second > 0 ? activityItem.totalHrZone0Second : 0;
+              memberHRZoneOne = activityItem.totalHrZone1Second > 0 ? activityItem.totalHrZone1Second : 0;
+              memberHRZoneTwo = activityItem.totalHrZone2Second > 0 ? activityItem.totalHrZone2Second : 0;
+              memberHRZoneThree = activityItem.totalHrZone3Second > 0 ? activityItem.totalHrZone3Second : 0;
+              memberHRZoneFour = activityItem.totalHrZone4Second > 0 ? activityItem.totalHrZone4Second : 0;
+              memberHRZoneFive = activityItem.totalHrZone5Second > 0 ? activityItem.totalHrZone5Second : 0;
 
               const memberTotalHRSecond =
               memberHRZoneZero +  memberHRZoneOne + memberHRZoneTwo + memberHRZoneThree + memberHRZoneFour + memberHRZoneFive;
@@ -812,11 +814,11 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
             focusMemberData = this.memberHRZoneList[this.focusMember],
             compareMemberHRZone = [
               { y: focusMemberData[0].y, z: focusMemberData[0].z, color: '#278bf1' },
-              { y: focusMemberData[1].y, z: focusMemberData[0].z, color: '#2de9fb' },
-              { y: focusMemberData[2].y, z: focusMemberData[0].z, color: '#6ff32b' },
-              { y: focusMemberData[3].y, z: focusMemberData[0].z, color: '#e0da1c' },
-              { y: focusMemberData[4].y, z: focusMemberData[0].z, color: '#f9a426' },
-              { y: focusMemberData[5].y, z: focusMemberData[0].z, color: '#fd492d' }
+              { y: focusMemberData[1].y, z: focusMemberData[1].z, color: '#2de9fb' },
+              { y: focusMemberData[2].y, z: focusMemberData[2].z, color: '#6ff32b' },
+              { y: focusMemberData[3].y, z: focusMemberData[3].z, color: '#e0da1c' },
+              { y: focusMemberData[4].y, z: focusMemberData[4].z, color: '#f9a426' },
+              { y: focusMemberData[5].y, z: focusMemberData[5].z, color: '#fd492d' }
             ],
             compareMemberSet = {
               data: compareMemberHRZone,
@@ -1013,11 +1015,19 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
   getClassDetails (SN, coachId) {
     // 取得裝置資訊-kidin-1081218
-    let params = new HttpParams();
-    params = params.set('device_sn', SN);
-    this.qrcodeService.getDeviceInfo(params).subscribe(res => {
+    const deviceDody = {
+      'token': '',
+      'queryType': '1',
+      'queryArray': [SN]
+    };
+    this.qrcodeService.getProductInfo(deviceDody).subscribe(res => {
       if (res) {
-        this.deviceInfo = res;
+        this.deviceInfo = res.info.productInfo[0];
+        if (location.hostname === '192.168.1.235') {
+          this.deviceImgUrl = `http://app.alatech.com.tw/app/public_html/products${this.deviceInfo.modelImg}`;
+        } else {
+          this.deviceImgUrl = `http://${location.hostname}/app/public_html/products${this.deviceInfo.modelImg}`;
+        }
       }
     });
 

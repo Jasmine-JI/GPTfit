@@ -35,6 +35,7 @@ import {
   ScatterChartComponent
 } from './sport-report';
 import { NgProgressModule } from '@ngx-progressbar/core';
+import { ImageCropperModule } from 'ngx-image-cropper';
 import { ShareGroupInfoDialogComponent } from './share-group-info-dialog/share-group-info-dialog.component';
 import { QRCodeModule } from 'angularx-qrcode';
 import { MuscleMapComponent } from './activity-info/muscleMap/muscle-map.component';
@@ -45,6 +46,7 @@ import { MuscleTrainListComponent } from './activity-info/muscle-train-list/musc
     CommonModule,
     RouterModule,
     FormsModule,
+    ImageCropperModule,
     ReactiveFormsModule,
     SharedModule,
     CustomMaterialModule,

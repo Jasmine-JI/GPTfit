@@ -25,14 +25,14 @@ export class FirstLoginComponent implements OnInit {
   content = '送出';
   className = 'btn btn-primary access-btn';
   isLogining = false;
-  groupImg = '/assets/images/user.png';
+  userImg = '/assets/images/user.png';
   reloadFileText = '重新上傳';
   chooseFileText = '上傳相片';
   acceptFileExtensions = ['JPG', 'JPEG', 'GIF', 'PNG'];
-  maxFileSize = 10485760; // 10MB
   finalImageLink: string;
   isDuplicateName = false;
   tempDuplicateName: string;
+  imgCropping = false;
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -57,6 +57,17 @@ export class FirstLoginComponent implements OnInit {
       weight: [75, Validators.required],
       gender: 0,
       birth: (Number(moment().format('YYYYMMDD')) - 300000) + ''
+    });
+
+    // 修復在首次登入頁面按下登出時，畫面殘留的問題-kidin-1090109(bug575)
+    this.authService.getLoginStatus().subscribe(res => {
+      if (res === false) {
+        return this.router.navigateByUrl('/signin');
+      }
+    });
+
+    this.utils.getImgSelectedStatus().subscribe(res => {
+      this.imgCropping = res;
     });
   }
   submit({ valid, value }) {
@@ -160,8 +171,8 @@ export class FirstLoginComponent implements OnInit {
   }
   handleAttachmentChange(file) {
     if (file) {
-      const { isSizeCorrect, isTypeCorrect, errorMsg, link } = file;
-      if (!isSizeCorrect || !isTypeCorrect) {
+      const {isTypeCorrect, errorMsg, link } = file;
+      if (!isTypeCorrect) {
         this.dialog.open(MessageBoxComponent, {
           hasBackdrop: true,
           data: {

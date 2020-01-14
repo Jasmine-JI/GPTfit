@@ -1,4 +1,6 @@
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs/Observable';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
@@ -9,6 +11,7 @@ const { API_SERVER } = environment.url;
 export class GroupService {
 
   private groupInfo: any; // 儲存group資訊-kidin-1081210
+  updatedGroupImg$ = new BehaviorSubject<string>('');
 
   constructor(private http: HttpClient) {}
   fetchGroupList(body) {
@@ -63,6 +66,14 @@ export class GroupService {
   }
   fetchUserAvartar(params) {
     return this.http.get<any>(API_SERVER + 'user/userAvartar', { params });
+  }
+
+  getImgUpdatedStatus(): Observable<string> {
+    return this.updatedGroupImg$;
+  }
+
+  setImgUpdatedImgStatus(status: string) {
+    this.updatedGroupImg$.next(status);
   }
 
   // 取得group資訊-kidin-1081210

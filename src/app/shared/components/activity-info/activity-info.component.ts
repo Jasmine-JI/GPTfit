@@ -170,6 +170,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   dataLoading = true;
   passLogin = false;  // 儲存是否為免登狀態-kidin-1081121
   hideButton = false; // 隱藏預覽列印和返回兩個按鈕-kidin-1081024
+  deviceImgUrl: string;
   constructor(
     private utils: UtilsService,
     private renderer: Renderer2,
@@ -240,12 +241,19 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       if (res) {
         this.isOtherDetailLoading = false;
         this.isLoadedOtherDetail = true;
-        this.deviceInfo = res['deviceInfo'];
-        if (res['groupInfo']) {
+        this.deviceInfo = res['deviceInfo'].info.productInfo[0];
+
+        if (location.hostname === '192.168.1.235') {
+          this.deviceImgUrl = `http://app.alatech.com.tw/app/public_html/products${this.deviceInfo.modelImg}`;
+        } else {
+          this.deviceImgUrl = `http://${location.hostname}/app/public_html/products${this.deviceInfo.modelImg}`;
+        }
+
+        if (this.deviceInfo) {
           this.classInfo = res['groupInfo'].info;
           this.classInfo.groupIcon =
             this.classInfo.groupIcon && this.classInfo.groupIcon.length > 0
-              ? this.utils.buildBase64ImgString(this.classInfo.groupIcon)
+              ? this.classInfo.groupIcon
               : '/assets/images/group-default.svg';
           const groupIcon = new Image();
           groupIcon.src = this.classInfo.groupIcon;
@@ -254,16 +262,14 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
               ? 'user-photo--landscape'
               : 'user-photo--portrait';
           this.handleLessonInfo(this.classInfo.groupDesc);
-          // this.brandIcon = this.utils.buildBase64ImgString(
-          //   this.classInfo.groupRootInfo[2].brandIcon
-          // );
+          // this.brandIcon = this.classInfo.groupRootInfo[2].brandIcon
           this.brandName = this.classInfo.groupRootInfo[2].brandName;
         }
         if (res['coachInfo']) {
           this.coachInfo = res['coachInfo'].info;
           this.coachInfo.coachAvatar =
             this.coachInfo.nameIcon && this.coachInfo.nameIcon.length > 0
-              ? this.utils.buildBase64ImgString(this.coachInfo.nameIcon)
+              ? this.coachInfo.nameIcon
               : '/assets/images/user.png';
           this.handleCoachInfo(this.coachInfo.description);
         }
@@ -793,6 +799,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   saveWeightTrainingData(lapData) {
       const body = {
         token: this.token,
+        avatarType: 2,
         iconType: '2',
       };
       this.userInfoService.getLogonData(body).toPromise()
@@ -919,6 +926,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.passLogin === true) {
       const body = {
         token: this.token,
+        avatarType: 2,
         iconType: '2',
       };
       this.userInfoService.getLogonData(body).subscribe(res => {
