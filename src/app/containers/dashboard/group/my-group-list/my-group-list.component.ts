@@ -34,6 +34,7 @@ export class MyGroupListComponent implements OnInit {
   token: string;
   isEmpty = false;
   isLoading = false;
+  brandType = 3;
   @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild('sortTable') sortTable: MatSort;
   @ViewChild('filter') filter: ElementRef;
@@ -72,12 +73,14 @@ export class MyGroupListComponent implements OnInit {
       this.getLists();
     });
   }
+
   getLists() {
     this.isLoading = true;
     const body = {
       token: this.token,
+      brandType: this.brandType,
       category: '2',
-      groupLevel: '90', // 撈全部列表，後端不會檢查groupLevel欄位，所以質可以亂帶
+      groupLevel: '90', // 撈全部列表，後端不會檢查groupLevel欄位，所以值可以亂帶
       searchWords: '',
       page: (this.currentPage && this.currentPage.pageIndex.toString()) || '0',
       pageCounts:

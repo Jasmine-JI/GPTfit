@@ -15,7 +15,10 @@
       <li [class.active]="chooseIdx === 2"
           *ngIf="groupLevel === '30' && visitorDetail?.isCanManage"
           (click)="handleGroupItem(2)"
-      >{{ 'Dashboard.BrandManagement.brandManagement' | translate}}</li>
+      >
+        <span *ngIf="brandType == 1">{{ 'Dashboard.BrandManagement.brandManagement' | translate}}</span>
+        <span *ngIf="brandType == 2">{{ 'other.comAdminister' | translate}}</span>
+      </li>
       <li [class.active]="chooseIdx === 3"
         (click)="handleGroupItem(3)"
       >{{ 'Dashboard.privacySettings.set' | translate}}</li>
@@ -104,9 +107,12 @@
           <label>{{ 'Dashboard.Group.GroupInfo.groupId' | translate}}：</label>{{ group_id }}
         </div> -->
         <div>
-          <label>{{ 'Dashboard.Group.GroupInfo.layer' | translate}}：</label>{{ this.groupLevel | groupLevelTranslate | translate }}
-          <span *ngIf="groupInfo?.coachType.length > 0 && groupInfo?.coachType === '2'"> - {{'Dashboard.Group.coach' | translate}}</span>
-          <span *ngIf="groupInfo?.coachType.length > 0 && groupInfo?.coachType === '1'"> - {{'Dashboard.Group.teacher' | translate}}</span>
+          <label>
+            {{ 'Dashboard.Group.GroupInfo.layer' | translate}}：
+          </label>
+          {{ groupLevel | groupLevelTranslate: brandType | translate }}
+          <span *ngIf="groupInfo?.coachType.length > 0 && groupInfo?.coachType === '2'"> - {{'other.departmentAdministrator' | translate}}</span>
+          <span *ngIf="groupInfo?.coachType.length > 0 && groupInfo?.coachType === '1'"> - {{'other.leagueAdministrator' | translate}}</span>
         </div>
         <div>
           <label>{{ 'Dashboard.Group.GroupInfo.status' | translate}}：</label>{{ groupInfo?.groupStatus | groupStatus | translate }}
@@ -122,8 +128,11 @@
             *ngIf="groupLevel !== '80'"
           >
             <ng-container  *ngIf="!isLoading">
-              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
                 {{ 'Dashboard.Group.GroupInfo.brand' | translate}}
+              </label>
+              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
+                {{ 'other.com' | translate}}
               </label>
               <div style="margin-bottom: 15px">
                 <span *ngIf="subBrandInfo && subBrandInfo.length === 0">{{'SH.noData' | translate}}</span>
@@ -140,8 +149,11 @@
                   </app-member-capsule>
                 </ng-container>
               </div>
-              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
                 {{ 'Dashboard.Group.GroupInfo.branch' | translate}}
+              </label>
+              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
+                {{ 'other.subCom' | translate}}
               </label>
               <div style="margin-bottom: 15px">
                 <span *ngIf="subBranchInfo && subBranchInfo.length === 0">{{'SH.noData' | translate}}</span>
@@ -159,8 +171,11 @@
                 </ng-container>
               </div>
 
-              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
                 {{ 'Dashboard.Group.GroupInfo.coachingClass' | translate}}
+              </label>
+              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
+                {{ 'other.department' | translate}}
               </label>
               <div style="margin-bottom: 15px" >
                 <span *ngIf="subCoachInfo && subCoachInfo.length === 0">{{'SH.noData' | translate}}</span>
@@ -187,8 +202,11 @@
           <mat-tab label="{{ 'Dashboard.Group.GroupInfo.administrator' | translate}}">
             <ng-container *ngIf="!isLoading">
               <ng-container *ngIf="groupLevel && groupLevel !== '80'">
-                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
                   {{ 'Dashboard.Group.brandAdministrator' | translate}}
+                </label>
+                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
+                  {{ 'other.comAdministrator' | translate}}
                 </label>
                 <div style="margin-bottom: 15px">
                 <span *ngIf="brandAdministrators && brandAdministrators.length === 0">{{'SH.noData' | translate}}</span>
@@ -205,9 +223,11 @@
                     </app-member-capsule>
                   </ng-container>
                 </div>
-
-                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
                   {{ 'Dashboard.Group.branchAdministrator' | translate}}
+                </label>
+                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
+                  {{ 'other.subComAdministrator' | translate}}
                 </label>
                 <div style="margin-bottom: 15px">
                   <span *ngIf="branchAdministrators && branchAdministrators.length === 0">{{'SH.noData' | translate}}</span>
@@ -225,9 +245,12 @@
                   </ng-container>
                 </div>
                 <ng-container *ngIf="groupLevel !== '60'">
-                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
                     {{ 'Dashboard.Group.GroupInfo.coachingClass' | translate}}
                     {{ 'Dashboard.Group.GroupInfo.administrator' | translate}}
+                  </label>
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
+                    {{ 'other.departmentAdministrator' | translate}}
                   </label>
                   <div style="margin-bottom: 15px" >
                     <span *ngIf="coachAdministrators && coachAdministrators.length === 0">{{'SH.noData' | translate}}</span>
@@ -246,8 +269,11 @@
                   </div>
                 </ng-container>
                 <ng-container *ngIf="groupLevel === '60'">
-                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
                     {{ 'Dashboard.Group.teacher' | translate}}
+                  </label>
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
+                    {{ 'other.leagueAdministrator' | translate}}
                   </label>
                   <div style="margin-bottom: 15px" >
                     <span *ngIf="normalCoaches && normalCoaches.length === 0">{{'SH.noData' | translate}}</span>
@@ -264,8 +290,11 @@
                       </app-member-capsule>
                     </ng-container>
                   </div>
-                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
                     {{ 'Dashboard.Group.coach' | translate}}
+                  </label>
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
+                    {{ 'other.departmentAdministrator' | translate}}
                   </label>
                   <div style="margin-bottom: 15px" >
                     <span *ngIf="PFCoaches && PFCoaches.length === 0">{{'SH.noData' | translate}}</span>
@@ -363,8 +392,11 @@
       </div>
     </ng-container>
     <ng-container *ngIf="chooseIdx === 2 && !isCommerceInfoLoading">
-      <label  class="group-label">
+      <label class="group-label" *ngIf="brandType == 1">
         {{ 'Dashboard.Group.GroupInfo.brand' | translate}}
+      </label>
+      <label class="group-label" *ngIf="brandType == 2">
+        {{ 'other.com' | translate}}
       </label>
       <div class="group-list">
         <div class="group-list-item">{{ 'Dashboard.Group.GroupInfo.status' | translate}}：
@@ -426,7 +458,9 @@
       <div class="group-list">
         <div class="group-list-item"
           [class.full]="commerceInfo?.groupStatus.currentBranches === commerceInfo?.groupStatus.maxBranches"
-        >{{ 'Dashboard.BrandManagement.numberOfBranches' | translate}}
+        >
+          <span *ngIf="brandType == 1">{{ 'Dashboard.BrandManagement.numberOfBranches' | translate}}</span>
+          <span *ngIf="brandType == 2">{{ 'other.subComNumber' | translate}}</span>
           ：{{commerceInfo?.groupStatus.currentBranches}}/{{commerceInfo?.groupStatus.maxBranches}}
           <span *ngIf="commerceInfo?.groupStatus.currentBranches === commerceInfo?.groupStatus.maxBranches">
             ({{ 'Dashboard.Group.GroupInfo.groupFull' | translate}})
@@ -434,8 +468,10 @@
         </div>
         <div class="group-list-item"
           [class.full]="commerceInfo?.groupStatus.currentClasses === commerceInfo?.groupStatus.maxClasses"
-        >{{ 'Dashboard.BrandManagement.numberOfClass' | translate}}：
-          {{commerceInfo?.groupStatus.currentClasses}}/{{commerceInfo?.groupStatus.maxClasses}}
+        >
+          <span *ngIf="brandType == 1">{{ 'Dashboard.BrandManagement.numberOfClass' | translate}}</span>
+          <span *ngIf="brandType == 2">{{ 'other.departmentNumber' | translate}}</span>
+          ：{{commerceInfo?.groupStatus.currentClasses}}/{{commerceInfo?.groupStatus.maxClasses}}
           <span *ngIf="(+commerceInfo?.groupStatus.currentClasses) === (+commerceInfo?.groupStatus.maxClasses)">
             ({{ 'Dashboard.Group.GroupInfo.groupFull' | translate}})
           </span>
@@ -445,14 +481,26 @@
         {{ 'Dashboard.BrandManagement.numberOfAdministrator' | translate}}
       </label>
       <div class="group-list">
-        <div class="group-list-item">{{ 'Dashboard.Group.brandAdministrator' | translate}}：
-          {{commerceInfo?.groupManagerStatus.currentBrandManagers}}</div>
-        <div class="group-list-item">{{ 'Dashboard.Group.branchAdministrator' | translate}}：
-          {{commerceInfo?.groupManagerStatus.currentBranchManagers}}</div>
-        <div class="group-list-item">{{ 'Dashboard.Group.coach' | translate}}：
-          {{commerceInfo?.groupManagerStatus.currentFitnessCoaches}}</div>
-        <div class="group-list-item">{{ 'Dashboard.Group.teacher' | translate}}：
-          {{commerceInfo?.groupManagerStatus.currentCoaches}}</div>
+        <div class="group-list-item">
+          <span *ngIf="brandType == 1">{{ 'Dashboard.Group.brandAdministrator' | translate}}</span>
+          <span *ngIf="brandType == 2">{{ 'other.comAdministrator' | translate}}</span>
+          ：{{commerceInfo?.groupManagerStatus.currentBrandManagers}}
+        </div>
+        <div class="group-list-item">
+          <span *ngIf="brandType == 1">{{ 'Dashboard.Group.branchAdministrator' | translate}}</span>
+          <span *ngIf="brandType == 2">{{ 'other.subComAdministrator' | translate}}</span>
+          ：{{commerceInfo?.groupManagerStatus.currentBranchManagers}}
+        </div>
+        <div class="group-list-item">
+          <span *ngIf="brandType == 1">{{ 'Dashboard.Group.coach' | translate}}</span>
+          <span *ngIf="brandType == 2">{{ 'other.departmentAdministrator' | translate}}</span>
+          ：{{commerceInfo?.groupManagerStatus.currentFitnessCoaches}}
+        </div>
+        <div class="group-list-item">
+          <span *ngIf="brandType == 1">{{ 'Dashboard.Group.teacher' | translate}}</span>
+          <span *ngIf="brandType == 2">{{ 'other.leagueAdministrator' | translate}}</span>
+          ：{{commerceInfo?.groupManagerStatus.currentCoaches}}
+        </div>
       </div>
     </ng-container>
     <ng-container *ngIf="chooseIdx === 3">

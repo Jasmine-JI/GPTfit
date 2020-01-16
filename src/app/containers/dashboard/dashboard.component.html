@@ -216,6 +216,14 @@
                 >
                   {{"Dashboard.System.createBrandGroup" | translate }}
                 </li>
+                <li class="ala-sidenav-menu-item"
+                  (click)="chooseItem(22, sideNav)"
+                  [class.ala-sidenav-menu-item__active]="target === 22"
+                  *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper"
+                  [routerLink]="['/dashboard/system/create-com-group']"
+                >
+                  {{"other.createComGroup" | translate }}
+                </li>
             </mat-expansion-panel>
           </mat-accordion>
           <mat-accordion multi="false" *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer  || isMarketingDeveloper">

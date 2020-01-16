@@ -1,4 +1,4 @@
-<div class="d-flex justify-content-between" style="margin-bottom: 15px">
+<div class="d-flex justify-content-between">
   <span style="color: #157fcc; font-weight:700">
     {{ "Dashboard.Group.MyGroup.myGroup" | translate}}
   </span>
@@ -17,7 +17,13 @@
     </button> -->
   </div>
 </div>
-
+<mat-form-field style="max-width: 100px;">
+  <mat-select [(value)]="brandType" placeholder="{{ 'Dashboard.ProductInfo.type' | translate }}" (selectionChange)="getLists()">
+    <mat-option value="3">{{ "SH.all" | translate}}</mat-option>
+    <mat-option value="1">{{ "other.gym" | translate}}</mat-option>
+    <mat-option value="2">{{ "other.com" | translate}}</mat-option>
+  </mat-select>
+</mat-form-field>
 <mat-table [dataSource]="logSource"
   matSort #sortTable="matSort"
 >
@@ -29,7 +35,7 @@
     <mat-header-cell *matHeaderCellDef disableClear="true">
       {{ "Dashboard.Group.MyGroup.identity" | translate}}
     </mat-header-cell>
-    <mat-cell *matCellDef="let row">{{ row.groupProperty | accessName | translate }}</mat-cell>
+    <mat-cell *matCellDef="let row">{{ row.groupProperty | accessName: row.brandType | translate }}</mat-cell>
   </ng-container>
   <mat-header-row *matHeaderRowDef="['info', 'time']"></mat-header-row>
   <mat-row *matRowDef="let logRow; columns: ['info', 'time']" (click)="goDetail(logRow.groupId)">

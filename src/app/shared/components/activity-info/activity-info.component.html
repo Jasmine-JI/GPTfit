@@ -652,7 +652,7 @@
                 *ngIf="activityInfo?.elevGain"
               >
                 <div>
-                  {{activityInfo?.elevGain || 0}}
+                  {{activityInfo?.elevGain | number:'1.0-1' || 0}}
                   <span class="data-label">m</span>
                 </div>
                 <span class="data-label">
@@ -663,7 +663,7 @@
                 *ngIf="activityInfo?.elevLoss"
               >
                 <div>
-                  {{activityInfo?.elevLoss || 0}}
+                  {{activityInfo?.elevLoss | number:'1.0-1' || 0}}
                   <span class="data-label">m</span>
                 </div>
                 <span class="data-label">
@@ -724,7 +724,7 @@
                 *ngIf="activityInfo?.maxElev"
               >
                 <div>
-                  {{activityInfo?.maxElev || 0}}
+                  {{activityInfo?.maxElev | number:'1.0-1' || 0}}
                   <span class="data-label">m</span>
                 </div>
                 <span class="data-label">
@@ -735,7 +735,7 @@
                 *ngIf="activityInfo?.minElev"
               >
                 <div>
-                  {{activityInfo?.minElev || 0}}
+                  {{activityInfo?.minElev | number:'1.0-1' || 0}}
                   <span class="data-label">m</span>
                 </div>
                 <span class="data-label">

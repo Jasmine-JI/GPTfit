@@ -21,7 +21,7 @@ import { HashIdService } from '@shared/services/hash-id.service';
   encapsulation: ViewEncapsulation.None
 })
 export class AllGroupListComponent implements OnInit {
-  groupLevel = '00';
+  groupLevel = '300';
   searchWords = '';
   token: string;
   logSource = new MatTableDataSource<any>();
@@ -64,10 +64,14 @@ export class AllGroupListComponent implements OnInit {
 
   getLists() {
     this.isLoading = true;
+    const brandType = this.groupLevel.slice(0, 1),
+          level = this.groupLevel.slice(1, 3);
+
     const body = {
       token: this.token,
+      brandType: brandType,
       category: '1',
-      groupLevel: this.groupLevel,
+      groupLevel: level,
       searchWords: this.searchWords,
       page: (this.currentPage && this.currentPage.pageIndex.toString()) || '0',
       pageCounts:

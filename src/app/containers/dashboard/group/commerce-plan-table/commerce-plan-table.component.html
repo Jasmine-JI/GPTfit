@@ -1,514 +1,1060 @@
-<table class="commerce-plan-table">
-  <thead>
-    <th class="plan">{{'Dashboard.System.BrandPlan.program' | translate}}</th>
-    <th
-      (click)="choosePlan(1)"
-      [class.active-left]="planIdx === 1"
-      [class.active-right]="planIdx === 1"
-      [class.active-top]="planIdx === 1"
-      [class.active]="planIdx === 1"
-    >{{'Dashboard.System.BrandPlan.experiencePlan' | translate}}</th>
-    <th
-      (click)="choosePlan(2)"
-      [class.active-left]="planIdx === 2"
-      [class.active-right]="planIdx === 2"
-      [class.active-top]="planIdx === 2"
-      [class.active]="planIdx === 2"
-    >{{'Dashboard.System.BrandPlan.studioPlan' | translate}}</th>
-    <th
-      (click)="choosePlan(3)"
-      [class.active-left]="planIdx === 3"
-      [class.active-right]="planIdx === 3"
-      [class.active-top]="planIdx === 3"
-      [class.active]="planIdx === 3"
-    >{{'Dashboard.System.BrandPlan.smePlan' | translate}}</th>
-    <th
-      (click)="choosePlan(99)"
-      [class.active-left]="planIdx === 99"
-      [class.active-right]="planIdx === 99"
-      [class.active-top]="planIdx === 99"
-      [class.active]="planIdx === 99"
-    >{{'Dashboard.System.BrandPlan.customPlan' | translate}}</th>
-  </thead>
-  <tbody>
-    <tr class="fee">
-      <td class="plan">
-        {{'Dashboard.System.BrandPlan.cost' | translate}}
-      </td>
-      <td
+<ng-container *ngIf="createTypeTable === 'brandTable'">
+  <table class="commerce-plan-table">
+    <thead>
+      <th class="plan">{{'Dashboard.System.BrandPlan.program' | translate}}</th>
+      <th
         (click)="choosePlan(1)"
         [class.active-left]="planIdx === 1"
         [class.active-right]="planIdx === 1"
+        [class.active-top]="planIdx === 1"
         [class.active]="planIdx === 1"
-      >
-        free
-        <div class="unit">1month</div>
-      </td>
-      <td
+      >{{'Dashboard.System.BrandPlan.experiencePlan' | translate}}</th>
+      <th
         (click)="choosePlan(2)"
         [class.active-left]="planIdx === 2"
         [class.active-right]="planIdx === 2"
+        [class.active-top]="planIdx === 2"
         [class.active]="planIdx === 2"
-      >
-        $ {{planDatas[1].cost | number: '.'}}
-        <div class="unit">1month</div>
-      </td>
-      <td
+      >{{'Dashboard.System.BrandPlan.studioPlan' | translate}}</th>
+      <th
         (click)="choosePlan(3)"
         [class.active-left]="planIdx === 3"
         [class.active-right]="planIdx === 3"
+        [class.active-top]="planIdx === 3"
         [class.active]="planIdx === 3"
-      >
-        $ {{planDatas[2].cost | number: '.'}}
-        <div class="unit">1month</div>
-      </td>
-      <td
+      >{{'Dashboard.System.BrandPlan.smePlan' | translate}}</th>
+      <th
         (click)="choosePlan(99)"
-        style="vertical-align: top"
         [class.active-left]="planIdx === 99"
         [class.active-right]="planIdx === 99"
+        [class.active-top]="planIdx === 99"
         [class.active]="planIdx === 99"
-      >
-        $ ***,***
-      </td>
-    </tr>
-    <tr>
-      <td class="plan">{{'Dashboard.System.BrandPlan.numberOfBranches' | translate}}</td>
-      <td
+      >{{'Dashboard.System.BrandPlan.customPlan' | translate}}</th>
+    </thead>
+    <tbody>
+      <tr class="fee">
+        <td class="plan">
+          {{'Dashboard.System.BrandPlan.cost' | translate}}
+        </td>
+        <td
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        >
+          free
+          <div class="unit">1month</div>
+        </td>
+        <td
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        >
+          $ {{planDatas[1].cost | number: '.'}}
+          <div class="unit">1month</div>
+        </td>
+        <td
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >
+          $ {{planDatas[2].cost | number: '.'}}
+          <div class="unit">1month</div>
+        </td>
+        <td
+          (click)="choosePlan(99)"
+          style="vertical-align: top"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >
+          $ ***,***
+        </td>
+      </tr>
+      <tr>
+        <td class="plan">{{'Dashboard.System.BrandPlan.numberOfBranches' | translate}}</td>
+        <td
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        >{{planDatas[0].maxBranches}}</td>
+        <td
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        >
+          {{planDatas[1].maxBranches}}
+        </td>
+        <td
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >{{planDatas[2].maxBranches}}</td>
+        <td
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >**</td>
+      </tr>
+      <tr>
+        <td class="plan">{{'Dashboard.System.BrandPlan.numberOfClass' | translate}}</td>
+        <td
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        >{{planDatas[0].maxClasses}}</td>
+        <td
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        >{{planDatas[1].maxClasses}}</td>
+        <td
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >{{planDatas[2].maxClasses}}</td>
+        <td
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >**</td>
+      </tr>
+      <tr  class="custom">
+        <td class="plan">{{'Dashboard.System.BrandPlan.memberLimit' | translate}}</td>
+        <td
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        >{{planDatas[0].maxGroupMembers}}</td>
+        <td
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        >{{planDatas[1].maxGroupMembers}}</td>
+        <td
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >{{planDatas[2].maxGroupMembers}}</td>
+        <td
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >**</td>
+      </tr>
+      <tr>
+        <td class="plan">{{'Dashboard.System.BrandPlan.administratorLimit' | translate}}</td>
+        <td
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        >{{planDatas[0].maxGroupManagers}}</td>
+        <td
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        >{{planDatas[1].maxGroupManagers}}</td>
+        <td
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >{{planDatas[2].maxGroupManagers}}</td>
+        <td
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >**</td>
+      </tr>
+      <tr class="custom">
+        <td class="plan">{{'Dashboard.System.BrandPlan.customBrand' | translate}}</td>
+        <td class="check"
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >V</td>
+      </tr>
+      <tr>
+        <td class="plan">{{'Dashboard.System.BrandPlan.broadcastRecordDistribution' | translate}}</td>
+        <td class="check"
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >V</td>
+      </tr>
+      <tr>
+        <td class="plan">{{'Dashboard.System.BrandPlan.trainingExercise' | translate}}</td>
+        <td class="check"
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >V</td>
+      </tr>
+      <tr>
+        <td class="plan unconfirmed">{{'Dashboard.System.BrandPlan.advancedEquipmentMaintenance' | translate}}</td>
+        <td class="check"
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        ></td>
+        <td class="check"
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >V</td>
+      </tr>
+      <tr>
+        <td class="plan unconfirmed">{{'Dashboard.System.BrandPlan.professionalTrainingProgram' | translate}}</td>
+        <td class="check"
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        ></td>
+        <td class="check"
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        ></td>
+        <td class="check"
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >V</td>
+      </tr>
+      <tr>
+        <td class="plan unconfirmed">{{'Dashboard.System.BrandPlan.studentTrainingMenu' | translate}}</td>
+        <td class="check"
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        ></td>
+        <td class="check"
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        ></td>
+        <td class="check"
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >V</td>
+      </tr>
+      <tr class="custom">
+        <td class="plan">Ala connect</td>
+        <td class="check"
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >V</td>
+      </tr>
+      <tr>
+        <td class="plan">Cloud Run</td>
+        <td class="check"
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >V</td>
+      </tr>
+      <tr>
+        <td class="plan">Train Live</td>
+        <td class="check"
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >V</td>
+      </tr>
+      <tr>
+        <td class="plan">Ala Fitness</td>
+        <td class="check"
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >V</td>
+      </tr>
+      <tr>
+        <td class="plan">Ala Trainer({{'Dashboard.System.BrandPlan.trainingRecord' | translate}})</td>
+        <td class="check"
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >V</td>
+      </tr>
+      <tr>
+        <td class="plan">{{'Dashboard.System.BrandPlan.customBrand' | translate}}Center App</td>
+        <td class="check"
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+          [class.active-bottom]="planIdx === 1"
+        ></td>
+        <td class="check"
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+          [class.active-bottom]="planIdx === 2"
+        ></td>
+        <td class="check"
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+          [class.active-bottom]="planIdx === 3"
+        ></td>
+        <td class="check"
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+          [class.active-bottom]="planIdx === 99"
+        >V</td>
+      </tr>
+    </tbody>
+  </table>
+</ng-container>
+<ng-container *ngIf="createTypeTable === 'comTable'">
+  <table class="commerce-plan-table">
+    <thead>
+      <th class="plan">{{'Dashboard.System.BrandPlan.program' | translate}}</th>
+      <th
         (click)="choosePlan(1)"
         [class.active-left]="planIdx === 1"
         [class.active-right]="planIdx === 1"
+        [class.active-top]="planIdx === 1"
         [class.active]="planIdx === 1"
-      >{{planDatas[0].maxBranches}}</td>
-      <td
+      >{{'Dashboard.System.BrandPlan.experiencePlan' | translate}}</th>
+      <th
         (click)="choosePlan(2)"
         [class.active-left]="planIdx === 2"
         [class.active-right]="planIdx === 2"
+        [class.active-top]="planIdx === 2"
         [class.active]="planIdx === 2"
-      >
-        {{planDatas[1].maxBranches}}
-      </td>
-      <td
+      >{{'Dashboard.System.BrandPlan.studioPlan' | translate}}</th>
+      <th
         (click)="choosePlan(3)"
         [class.active-left]="planIdx === 3"
         [class.active-right]="planIdx === 3"
+        [class.active-top]="planIdx === 3"
         [class.active]="planIdx === 3"
-      >{{planDatas[2].maxBranches}}</td>
-      <td
+      >{{'Dashboard.System.BrandPlan.smePlan' | translate}}</th>
+      <th
         (click)="choosePlan(99)"
         [class.active-left]="planIdx === 99"
         [class.active-right]="planIdx === 99"
+        [class.active-top]="planIdx === 99"
         [class.active]="planIdx === 99"
-      >**</td>
-    </tr>
-    <tr>
-      <td class="plan">{{'Dashboard.System.BrandPlan.numberOfClass' | translate}}</td>
-      <td
-        (click)="choosePlan(1)"
-        [class.active-left]="planIdx === 1"
-        [class.active-right]="planIdx === 1"
-        [class.active]="planIdx === 1"
-      >{{planDatas[0].maxClasses}}</td>
-      <td
-        (click)="choosePlan(2)"
-        [class.active-left]="planIdx === 2"
-        [class.active-right]="planIdx === 2"
-        [class.active]="planIdx === 2"
-      >{{planDatas[1].maxClasses}}</td>
-      <td
-        (click)="choosePlan(3)"
-        [class.active-left]="planIdx === 3"
-        [class.active-right]="planIdx === 3"
-        [class.active]="planIdx === 3"
-      >{{planDatas[2].maxClasses}}</td>
-      <td
-        (click)="choosePlan(99)"
-        [class.active-left]="planIdx === 99"
-        [class.active-right]="planIdx === 99"
-        [class.active]="planIdx === 99"
-      >**</td>
-    </tr>
-    <tr  class="custom">
-      <td class="plan">{{'Dashboard.System.BrandPlan.memberLimit' | translate}}</td>
-      <td
-        (click)="choosePlan(1)"
-        [class.active-left]="planIdx === 1"
-        [class.active-right]="planIdx === 1"
-        [class.active]="planIdx === 1"
-      >{{planDatas[0].maxGroupMembers}}</td>
-      <td
-        (click)="choosePlan(2)"
-        [class.active-left]="planIdx === 2"
-        [class.active-right]="planIdx === 2"
-        [class.active]="planIdx === 2"
-      >{{planDatas[1].maxGroupMembers}}</td>
-      <td
-        (click)="choosePlan(3)"
-        [class.active-left]="planIdx === 3"
-        [class.active-right]="planIdx === 3"
-        [class.active]="planIdx === 3"
-      >{{planDatas[2].maxGroupMembers}}</td>
-      <td
-        (click)="choosePlan(99)"
-        [class.active-left]="planIdx === 99"
-        [class.active-right]="planIdx === 99"
-        [class.active]="planIdx === 99"
-      >**</td>
-    </tr>
-    <tr>
-      <td class="plan">{{'Dashboard.System.BrandPlan.administratorLimit' | translate}}</td>
-      <td
-        (click)="choosePlan(1)"
-        [class.active-left]="planIdx === 1"
-        [class.active-right]="planIdx === 1"
-        [class.active]="planIdx === 1"
-      >{{planDatas[0].maxGroupManagers}}</td>
-      <td
-        (click)="choosePlan(2)"
-        [class.active-left]="planIdx === 2"
-        [class.active-right]="planIdx === 2"
-        [class.active]="planIdx === 2"
-      >{{planDatas[1].maxGroupManagers}}</td>
-      <td
-        (click)="choosePlan(3)"
-        [class.active-left]="planIdx === 3"
-        [class.active-right]="planIdx === 3"
-        [class.active]="planIdx === 3"
-      >{{planDatas[2].maxGroupManagers}}</td>
-      <td
-        (click)="choosePlan(99)"
-        [class.active-left]="planIdx === 99"
-        [class.active-right]="planIdx === 99"
-        [class.active]="planIdx === 99"
-      >**</td>
-    </tr>
-    <tr class="custom">
-      <td class="plan">{{'Dashboard.System.BrandPlan.customBrand' | translate}}</td>
-      <td class="check"
-        (click)="choosePlan(1)"
-        [class.active-left]="planIdx === 1"
-        [class.active-right]="planIdx === 1"
-        [class.active]="planIdx === 1"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(2)"
-        [class.active-left]="planIdx === 2"
-        [class.active-right]="planIdx === 2"
-        [class.active]="planIdx === 2"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(3)"
-        [class.active-left]="planIdx === 3"
-        [class.active-right]="planIdx === 3"
-        [class.active]="planIdx === 3"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(99)"
-        [class.active-left]="planIdx === 99"
-        [class.active-right]="planIdx === 99"
-        [class.active]="planIdx === 99"
-      >V</td>
-    </tr>
-    <tr>
-      <td class="plan">{{'Dashboard.System.BrandPlan.broadcastRecordDistribution' | translate}}</td>
-      <td class="check"
-        (click)="choosePlan(1)"
-        [class.active-left]="planIdx === 1"
-        [class.active-right]="planIdx === 1"
-        [class.active]="planIdx === 1"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(2)"
-        [class.active-left]="planIdx === 2"
-        [class.active-right]="planIdx === 2"
-        [class.active]="planIdx === 2"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(3)"
-        [class.active-left]="planIdx === 3"
-        [class.active-right]="planIdx === 3"
-        [class.active]="planIdx === 3"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(99)"
-        [class.active-left]="planIdx === 99"
-        [class.active-right]="planIdx === 99"
-        [class.active]="planIdx === 99"
-      >V</td>
-    </tr>
-    <tr>
-      <td class="plan">{{'Dashboard.System.BrandPlan.trainingExercise' | translate}}</td>
-      <td class="check"
-        (click)="choosePlan(1)"
-        [class.active-left]="planIdx === 1"
-        [class.active-right]="planIdx === 1"
-        [class.active]="planIdx === 1"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(2)"
-        [class.active-left]="planIdx === 2"
-        [class.active-right]="planIdx === 2"
-        [class.active]="planIdx === 2"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(3)"
-        [class.active-left]="planIdx === 3"
-        [class.active-right]="planIdx === 3"
-        [class.active]="planIdx === 3"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(99)"
-        [class.active-left]="planIdx === 99"
-        [class.active-right]="planIdx === 99"
-        [class.active]="planIdx === 99"
-      >V</td>
-    </tr>
-    <tr>
-      <td class="plan unconfirmed">{{'Dashboard.System.BrandPlan.advancedEquipmentMaintenance' | translate}}</td>
-      <td class="check"
-        (click)="choosePlan(1)"
-        [class.active-left]="planIdx === 1"
-        [class.active-right]="planIdx === 1"
-        [class.active]="planIdx === 1"
-      ></td>
-      <td class="check"
-        (click)="choosePlan(2)"
-        [class.active-left]="planIdx === 2"
-        [class.active-right]="planIdx === 2"
-        [class.active]="planIdx === 2"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(3)"
-        [class.active-left]="planIdx === 3"
-        [class.active-right]="planIdx === 3"
-        [class.active]="planIdx === 3"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(99)"
-        [class.active-left]="planIdx === 99"
-        [class.active-right]="planIdx === 99"
-        [class.active]="planIdx === 99"
-      >V</td>
-    </tr>
-    <tr>
-      <td class="plan unconfirmed">{{'Dashboard.System.BrandPlan.professionalTrainingProgram' | translate}}</td>
-      <td class="check"
-        (click)="choosePlan(1)"
-        [class.active-left]="planIdx === 1"
-        [class.active-right]="planIdx === 1"
-        [class.active]="planIdx === 1"
-      ></td>
-      <td class="check"
-        (click)="choosePlan(2)"
-        [class.active-left]="planIdx === 2"
-        [class.active-right]="planIdx === 2"
-        [class.active]="planIdx === 2"
-      ></td>
-      <td class="check"
-        (click)="choosePlan(3)"
-        [class.active-left]="planIdx === 3"
-        [class.active-right]="planIdx === 3"
-        [class.active]="planIdx === 3"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(99)"
-        [class.active-left]="planIdx === 99"
-        [class.active-right]="planIdx === 99"
-        [class.active]="planIdx === 99"
-      >V</td>
-    </tr>
-    <tr>
-      <td class="plan unconfirmed">{{'Dashboard.System.BrandPlan.studentTrainingMenu' | translate}}</td>
-      <td class="check"
-        (click)="choosePlan(1)"
-        [class.active-left]="planIdx === 1"
-        [class.active-right]="planIdx === 1"
-        [class.active]="planIdx === 1"
-      ></td>
-      <td class="check"
-        (click)="choosePlan(2)"
-        [class.active-left]="planIdx === 2"
-        [class.active-right]="planIdx === 2"
-        [class.active]="planIdx === 2"
-      ></td>
-      <td class="check"
-        (click)="choosePlan(3)"
-        [class.active-left]="planIdx === 3"
-        [class.active-right]="planIdx === 3"
-        [class.active]="planIdx === 3"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(99)"
-        [class.active-left]="planIdx === 99"
-        [class.active-right]="planIdx === 99"
-        [class.active]="planIdx === 99"
-      >V</td>
-    </tr>
-    <tr class="custom">
-      <td class="plan">Ala connect</td>
-      <td class="check"
-        (click)="choosePlan(1)"
-        [class.active-left]="planIdx === 1"
-        [class.active-right]="planIdx === 1"
-        [class.active]="planIdx === 1"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(2)"
-        [class.active-left]="planIdx === 2"
-        [class.active-right]="planIdx === 2"
-        [class.active]="planIdx === 2"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(3)"
-        [class.active-left]="planIdx === 3"
-        [class.active-right]="planIdx === 3"
-        [class.active]="planIdx === 3"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(99)"
-        [class.active-left]="planIdx === 99"
-        [class.active-right]="planIdx === 99"
-        [class.active]="planIdx === 99"
-      >V</td>
-    </tr>
-    <tr>
-      <td class="plan">Cloud Run</td>
-      <td class="check"
-        (click)="choosePlan(1)"
-        [class.active-left]="planIdx === 1"
-        [class.active-right]="planIdx === 1"
-        [class.active]="planIdx === 1"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(2)"
-        [class.active-left]="planIdx === 2"
-        [class.active-right]="planIdx === 2"
-        [class.active]="planIdx === 2"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(3)"
-        [class.active-left]="planIdx === 3"
-        [class.active-right]="planIdx === 3"
-        [class.active]="planIdx === 3"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(99)"
-        [class.active-left]="planIdx === 99"
-        [class.active-right]="planIdx === 99"
-        [class.active]="planIdx === 99"
-      >V</td>
-    </tr>
-    <tr>
-      <td class="plan">Train Live</td>
-      <td class="check"
-        (click)="choosePlan(1)"
-        [class.active-left]="planIdx === 1"
-        [class.active-right]="planIdx === 1"
-        [class.active]="planIdx === 1"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(2)"
-        [class.active-left]="planIdx === 2"
-        [class.active-right]="planIdx === 2"
-        [class.active]="planIdx === 2"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(3)"
-        [class.active-left]="planIdx === 3"
-        [class.active-right]="planIdx === 3"
-        [class.active]="planIdx === 3"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(99)"
-        [class.active-left]="planIdx === 99"
-        [class.active-right]="planIdx === 99"
-        [class.active]="planIdx === 99"
-      >V</td>
-    </tr>
-    <tr>
-      <td class="plan">Ala Fitness</td>
-      <td class="check"
-        (click)="choosePlan(1)"
-        [class.active-left]="planIdx === 1"
-        [class.active-right]="planIdx === 1"
-        [class.active]="planIdx === 1"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(2)"
-        [class.active-left]="planIdx === 2"
-        [class.active-right]="planIdx === 2"
-        [class.active]="planIdx === 2"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(3)"
-        [class.active-left]="planIdx === 3"
-        [class.active-right]="planIdx === 3"
-        [class.active]="planIdx === 3"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(99)"
-        [class.active-left]="planIdx === 99"
-        [class.active-right]="planIdx === 99"
-        [class.active]="planIdx === 99"
-      >V</td>
-    </tr>
-    <tr>
-      <td class="plan">Ala Trainer({{'Dashboard.System.BrandPlan.trainingRecord' | translate}})</td>
-      <td class="check"
-        (click)="choosePlan(1)"
-        [class.active-left]="planIdx === 1"
-        [class.active-right]="planIdx === 1"
-        [class.active]="planIdx === 1"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(2)"
-        [class.active-left]="planIdx === 2"
-        [class.active-right]="planIdx === 2"
-        [class.active]="planIdx === 2"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(3)"
-        [class.active-left]="planIdx === 3"
-        [class.active-right]="planIdx === 3"
-        [class.active]="planIdx === 3"
-      >V</td>
-      <td class="check"
-        (click)="choosePlan(99)"
-        [class.active-left]="planIdx === 99"
-        [class.active-right]="planIdx === 99"
-        [class.active]="planIdx === 99"
-      >V</td>
-    </tr>
-    <tr>
-      <td class="plan">{{'Dashboard.System.BrandPlan.customBrand' | translate}}Center App</td>
-      <td class="check"
-        (click)="choosePlan(1)"
-        [class.active-left]="planIdx === 1"
-        [class.active-right]="planIdx === 1"
-        [class.active]="planIdx === 1"
-        [class.active-bottom]="planIdx === 1"
-      ></td>
-      <td class="check"
-        (click)="choosePlan(2)"
-        [class.active-left]="planIdx === 2"
-        [class.active-right]="planIdx === 2"
-        [class.active]="planIdx === 2"
-        [class.active-bottom]="planIdx === 2"
-      ></td>
-      <td class="check"
-        (click)="choosePlan(3)"
-        [class.active-left]="planIdx === 3"
-        [class.active-right]="planIdx === 3"
-        [class.active]="planIdx === 3"
-        [class.active-bottom]="planIdx === 3"
-      ></td>
-      <td class="check"
-        (click)="choosePlan(99)"
-        [class.active-left]="planIdx === 99"
-        [class.active-right]="planIdx === 99"
-        [class.active]="planIdx === 99"
-        [class.active-bottom]="planIdx === 99"
-      >V</td>
-    </tr>
-  </tbody>
-</table>
+      >{{'Dashboard.System.BrandPlan.customPlan' | translate}}</th>
+    </thead>
+    <tbody>
+      <tr class="fee">
+        <td class="plan">
+          {{'Dashboard.System.BrandPlan.cost' | translate}}
+        </td>
+        <td
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        >
+          $ ***,***
+          <div class="unit">1month</div>
+        </td>
+        <td
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        >
+          $ ***,***
+          <div class="unit">1month</div>
+        </td>
+        <td
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >
+          $ ***,***
+          <div class="unit">1month</div>
+        </td>
+        <td
+          (click)="choosePlan(99)"
+          style="vertical-align: top"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >
+          $ ***,***
+        </td>
+      </tr>
+      <tr>
+        <td class="plan">{{'other.subComNumber' | translate}}</td>
+        <td
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        >
+          **
+        </td>
+        <td
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        >
+          **
+        </td>
+        <td
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >
+          **
+        </td>
+        <td
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >
+          **
+        </td>
+      </tr>
+      <tr>
+        <td class="plan">{{'other.departmentNumber' | translate}}</td>
+        <td
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        >
+          **
+        </td>
+        <td
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        >
+          **
+        </td>
+        <td
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >
+          **
+        </td>
+        <td
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >
+          **
+        </td>
+      </tr>
+      <tr  class="custom">
+        <td class="plan">{{'Dashboard.System.BrandPlan.memberLimit' | translate}}</td>
+        <td
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        >
+          **
+        </td>
+        <td
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        >
+          **
+        </td>
+        <td
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >
+          **
+        </td>
+        <td
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >
+          **
+        </td>
+      </tr>
+      <tr>
+        <td class="plan">{{'Dashboard.System.BrandPlan.administratorLimit' | translate}}</td>
+        <td
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        >
+          **
+        </td>
+        <td
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        >
+          **
+        </td>
+        <td
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >
+          **
+        </td>
+        <td
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >**</td>
+      </tr>
+      <tr class="custom">
+        <td class="plan">{{'other.customCom' | translate}}</td>
+        <td class="check"
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >V</td>
+      </tr>
+      <tr>
+        <td class="plan">{{'Dashboard.System.BrandPlan.broadcastRecordDistribution' | translate}}</td>
+        <td class="check"
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >V</td>
+      </tr>
+      <tr>
+        <td class="plan">{{'Dashboard.System.BrandPlan.trainingExercise' | translate}}</td>
+        <td class="check"
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >V</td>
+      </tr>
+      <tr>
+        <td class="plan unconfirmed">{{'Dashboard.System.BrandPlan.advancedEquipmentMaintenance' | translate}}</td>
+        <td class="check"
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        ></td>
+        <td class="check"
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >V</td>
+      </tr>
+      <tr>
+        <td class="plan unconfirmed">{{'Dashboard.System.BrandPlan.professionalTrainingProgram' | translate}}</td>
+        <td class="check"
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        ></td>
+        <td class="check"
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        ></td>
+        <td class="check"
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >V</td>
+      </tr>
+      <tr>
+        <td class="plan unconfirmed">{{'Dashboard.System.BrandPlan.studentTrainingMenu' | translate}}</td>
+        <td class="check"
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        ></td>
+        <td class="check"
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        ></td>
+        <td class="check"
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >V</td>
+      </tr>
+      <tr class="custom">
+        <td class="plan">Ala connect</td>
+        <td class="check"
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >V</td>
+      </tr>
+      <tr>
+        <td class="plan">Cloud Run</td>
+        <td class="check"
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >V</td>
+      </tr>
+      <tr>
+        <td class="plan">Train Live</td>
+        <td class="check"
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >V</td>
+      </tr>
+      <tr>
+        <td class="plan">Ala Fitness</td>
+        <td class="check"
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >V</td>
+      </tr>
+      <tr>
+        <td class="plan">Ala Trainer({{'Dashboard.System.BrandPlan.trainingRecord' | translate}})</td>
+        <td class="check"
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >V</td>
+      </tr>
+      <tr>
+        <td class="plan">{{'other.customCom' | translate}}Center App</td>
+        <td class="check"
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+          [class.active-bottom]="planIdx === 1"
+        ></td>
+        <td class="check"
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
+          [class.active-bottom]="planIdx === 2"
+        ></td>
+        <td class="check"
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+          [class.active-bottom]="planIdx === 3"
+        ></td>
+        <td class="check"
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+          [class.active-bottom]="planIdx === 99"
+        >V</td>
+      </tr>
+    </tbody>
+  </table>
+</ng-container>

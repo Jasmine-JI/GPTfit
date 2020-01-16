@@ -48,14 +48,18 @@
             *ngIf="(groupLevel && groupLevel === '40') && visitorDetail?.isCanManage"
             (click)="dimissGroup($event, 2)"
           >
-            {{'Dashboard.Group.disband' | translate}} {{'Dashboard.Group.GroupInfo.branch' | translate}}
+            {{'Dashboard.Group.disband' | translate}}
+            <span *ngIf="brandType == 1">{{'Dashboard.Group.GroupInfo.branch' | translate}}</span>
+            <span *ngIf="brandType == 2">{{'other.subCom' | translate}}</span>
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="{{'Dashboard.Group.disband' | translate}} {{'Dashboard.Group.GroupInfo.coachingClass' | translate}}"
             *ngIf="(groupLevel && groupLevel === '60') && visitorDetail?.isCanManage"
             (click)="dimissGroup($event, 3)"
           >
-            {{'Dashboard.Group.disband' | translate}} {{'Dashboard.Group.GroupInfo.coachingClass' | translate}}
+            {{'Dashboard.Group.disband' | translate}}
+            <span *ngIf="brandType == 1">{{'Dashboard.Group.GroupInfo.coachingClass' | translate}}</span>
+            <span *ngIf="brandType == 2">{{'other.department' | translate}}</span>
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="{{'Dashboard.Group.disband' | translate}} {{'Dashboard.Group.group' | translate}}"
@@ -69,7 +73,8 @@
             *ngIf="groupLevel && groupLevel === '30' && visitorDetail?.isCanManage"
             (click)="goCreatePage(1, $event)"
           >
-            {{'Dashboard.Group.GroupInfo.addBranch' | translate}}
+            <span *ngIf="brandType == 1">{{'Dashboard.Group.GroupInfo.addBranch' | translate}}</span>
+            <span *ngIf="brandType == 2">{{'other.addSubCom' | translate}}</span>
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="{{'Dashboard.Group.GroupInfo.addCoachingClass' | translate}}"
@@ -77,7 +82,9 @@
               && visitorDetail?.isCanManage && (subBranchInfo && subBranchInfo.length > 0)"
             (click)="goCreatePage(2, $event)"
           >
-            {{'Dashboard.Group.GroupInfo.addCoachingClass' | translate}}
+
+            <span *ngIf="brandType == 1">{{'Dashboard.Group.GroupInfo.addCoachingClass' | translate}}</span>
+            <span *ngIf="brandType == 2">{{'other.addDepartment' | translate}}</span>
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="{{'Dashboard.Group.GroupInfo.completeManagement' | translate}}"
@@ -199,12 +206,15 @@
           (selectedTabChange)="changeGroupInfo($event)"
           [selectedIndex]="0"
         >
-          <mat-tab label="{{ 'Dashboard.Group.GroupInfo.subgroup' | translate}}"
+          <mat-tab label="{{ 'Dashboard.Group.GroupInfo.subgroup' | translate }}"
             *ngIf="groupLevel !== '80'"
           >
             <ng-container *ngIf="!isLoading">
-              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
-                {{ 'Dashboard.Group.GroupInfo.brand' | translate}}
+              <label style="color: #26abe3; font-weight: 700; margin-bottom: 15px" *ngIf="brandType == 1">
+                {{ 'Dashboard.Group.GroupInfo.brand' | translate }}
+              </label>
+              <label style="color: #26abe3; font-weight: 700; margin-bottom: 15px" *ngIf="brandType == 2">
+                {{ 'other.com' | translate}}
               </label>
 
               <div style="margin-bottom: 15px">
@@ -225,8 +235,11 @@
                 </ng-container>
               </div>
 
-              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
                 {{ 'Dashboard.Group.GroupInfo.branch' | translate}}
+              </label>
+              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
+                {{ 'other.subCom' | translate}}
               </label>
               <div style="margin-bottom: 15px">
                 <span *ngIf="subBranchInfo && subBranchInfo.length === 0">{{'SH.noData' | translate}}</span>
@@ -247,8 +260,11 @@
                 </ng-container>
               </div>
 
-              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
                 {{ 'Dashboard.Group.GroupInfo.coachingClass' | translate}}
+              </label>
+              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
+                {{ 'other.department' | translate}}
               </label>
               <div style="margin-bottom: 15px">
                 <span *ngIf="subCoachInfo && subCoachInfo.length === 0">{{'SH.noData' | translate}}</span>
@@ -278,8 +294,11 @@
           <mat-tab label="{{ 'Dashboard.Group.GroupInfo.administrator' | translate}}">
             <ng-container *ngIf="!isLoading">
               <ng-container *ngIf="groupLevel && groupLevel !== '80'">
-                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
                   {{ 'Dashboard.Group.brandAdministrator' | translate}}
+                </label>
+                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
+                  {{ 'other.comAdministrator' | translate}}
                 </label>
                 <div style="margin-bottom: 15px">
                   <span *ngIf="brandAdministrators && brandAdministrators.length === 0">{{'SH.noData' | translate}}</span>
@@ -300,8 +319,11 @@
                   </ng-container>
                 </div>
 
-                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
                   {{ 'Dashboard.Group.branchAdministrator' | translate}}
+                </label>
+                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
+                  {{ 'other.subComAdministrator' | translate}}
                 </label>
                 <div style="margin-bottom: 15px">
                   <span *ngIf="branchAdministrators && branchAdministrators.length === 0">{{'SH.noData' | translate}}</span>
@@ -322,9 +344,12 @@
                   </ng-container>
                 </div>
                 <ng-container *ngIf="groupLevel !== '60'">
-                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
                     {{ 'Dashboard.Group.GroupInfo.coachingClass' | translate}}
                     {{ 'Dashboard.Group.GroupInfo.administrator' | translate}}
+                  </label>
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
+                    {{ 'other.departmentAdministrator' | translate}}
                   </label>
                   <div style="margin-bottom: 15px" >
                     <span *ngIf="coachAdministrators && coachAdministrators.length === 0">{{'SH.noData' | translate}}</span>
@@ -346,8 +371,11 @@
                   </div>
                 </ng-container>
                 <ng-container *ngIf="groupLevel === '60'">
-                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
                     {{ 'Dashboard.Group.teacher' | translate}}
+                  </label>
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
+                    {{ 'other.leagueAdministrator' | translate}}
                   </label>
                   <div style="margin-bottom: 15px">
                     <span *ngIf="normalCoaches && normalCoaches.length === 0">{{'SH.noData' | translate}}</span>
@@ -367,8 +395,11 @@
                       </app-member-capsule>
                     </ng-container>
                   </div>
-                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
                     {{ 'Dashboard.Group.coach' | translate}}
+                  </label>
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
+                    {{ 'other.departmentAdministrator' | translate}}
                   </label>
                   <div style="margin-bottom: 15px">
                     <span *ngIf="PFCoaches && PFCoaches.length === 0">{{'SH.noData' | translate}}</span>
