@@ -642,5 +642,32 @@
       "anaerobicZone": "无氧爆发力",
       "limit_generalZone": "一般区"
     }
+  },
+  "other": {
+    "createComGroup": "建立企業群組",
+    "createCom": "建立企業",
+    "comName": "企業名稱",
+    "com": "企業",
+    "subCom": "分公司",
+    "subComName": "分公司名稱",
+    "department": "部門",
+    "departmentName": "部門名稱",
+    "subComNumber": "分公司數",
+    "departmentNumber": "部門數",
+    "comAdministrator": "企業管理員",
+    "subComAdministrator": "分公司管理員",
+    "departmentAdministrator": "部門管理員",
+    "league": "社團",
+    "leagueName": "社團名稱",
+    "leagueAdministrator": "社團管理員",
+    "gym": "健身房",
+    "addSubCom": "新增分公司",
+    "addDepartment": "新增部門",
+    "addLeague": "新增社團",
+    "comAdminister": "企業管理",
+    "customCom": "自訂企業營業體",
+    "chooseSubCom": "選擇分公司",
+    "myCom": "我的企業",
+    "departmentOrleague": "部門或社團"
   }
 }

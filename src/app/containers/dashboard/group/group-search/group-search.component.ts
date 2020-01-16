@@ -28,7 +28,7 @@ import { HashIdService } from '@shared/services/hash-id.service';
 })
 export class GroupSearchComponent implements OnInit {
   // to fixed
-  groupLevel: any; //  Type 'string | string[]' is not assignable to type 'string'.  所以暫時先用any，之後找原因
+  groupLevel = '130'; //  Type 'string | string[]' is not assignable to type 'string'.  所以暫時先用any，之後找原因
   searchWords: any; //  Type 'string | string[]' is not assignable to type 'string'.  所以暫時先用any，之後找原因
   token: string;
   logSource = new MatTableDataSource<any>();
@@ -57,7 +57,6 @@ export class GroupSearchComponent implements OnInit {
     const { pageNumber, searchWords, groupLevel } = queryStrings;
 
     this.searchWords = searchWords || '';
-    this.groupLevel = groupLevel || '30';
 
     this.currentPage = {
       pageIndex: +pageNumber - 1 || 0,
@@ -73,10 +72,14 @@ export class GroupSearchComponent implements OnInit {
     });
   }
   getLists() {
+    const brandType = this.groupLevel.slice(0, 1),
+          level = this.groupLevel.slice(1, 3);
+
     const body = {
       token: this.token,
+      brandType: brandType,
       category: '3',
-      groupLevel: this.groupLevel || '30',
+      groupLevel: level || '30',
       searchWords: this.searchWords || '',
       page: (this.currentPage && this.currentPage.pageIndex.toString()) || '0',  // 修復點選下一頁清單卻沒有改變的問題-kidin-1081205(Bug 956)
       pageCounts: (this.currentPage && this.currentPage.pageSize.toString()) || '10'  // 修復每頁顯示項數失效的問題-kidin-1081205(Bug 956)

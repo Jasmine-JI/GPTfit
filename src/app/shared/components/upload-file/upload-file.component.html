@@ -4,12 +4,12 @@
     [class.ala-upload-image--vertical]="isImgVertical$ | async"
   >
     <button
-      class="profile-picture__remove"
+      class="profile-picture__Ok"
       *ngIf="imgCropping"
       (click)="closeImgCropping()"
-      style="right: -30px; top: -20px"
+      style="right: -35px; top: -20px"
     >
-      <i class="material-icons profile-picture__remove-icon">add_circle</i>
+      <i class="icon-svg_web-icon_p2_097-ok profile-picture__Ok-icon" style="font-size: 30px; border: 2px solid;"></i>
     </button>
     <img
     *ngIf="!(isUploadNewImg$ | async) && imageURL?.length > 0"
@@ -66,10 +66,18 @@
 
 <div class="imgCropped" *ngIf="imgSelected && imgCropping">
   <div style="margin-left: 10px">
-    <button class="alatech-btn alatech-btn--default imgEditBtn" (click)="rotateLeft()">↺</button>
-    <button class="alatech-btn alatech-btn--default imgEditBtn" (click)="rotateRight()">↻</button>
-    <button class="alatech-btn alatech-btn--default imgEditBtn" (click)="flipHorizontal()">↔</button>
-    <button class="alatech-btn alatech-btn--default imgEditBtn" (click)="flipVertical()">↕</button>
+    <button class="alatech-btn alatech-btn--default imgEditBtn" (click)="rotateLeft()">
+      <i class="icon-svg_web-icon_p3_003-left_turn activity-info_icon_size"></i>
+    </button>
+    <button class="alatech-btn alatech-btn--default imgEditBtn" (click)="rotateRight()">
+      <i class="icon-svg_web-icon_p3_002-right_turn activity-info_icon_size"></i>
+    </button>
+    <button class="alatech-btn alatech-btn--default imgEditBtn" (click)="flipHorizontal()">
+      <i class="icon-svg_web-icon_p3_004-horizontal_mirroring activity-info_icon_size"></i>
+    </button>
+    <button class="alatech-btn alatech-btn--default imgEditBtn" (click)="flipVertical()">
+      <i class="icon-svg_web-icon_p3_005-vertical_mirroring activity-info_icon_size"></i>
+    </button>
   </div>
   <image-cropper
       [imageChangedEvent]="imageChangedEvent"

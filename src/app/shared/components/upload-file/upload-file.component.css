@@ -60,13 +60,17 @@
   height: auto;
 }
 
-.profile-picture__remove-icon {
-  font-size: 18px;
-  color: #777;
-  transform: rotate(45deg);
+.profile-picture__Ok-icon {
+  font-size: 30px;
+  border: 2px solid;
+  border-radius: 50%;
 }
 
-.profile-picture__remove {
+.profile-picture__Ok-icon:hover {
+  color: #28fd43;
+}
+
+.profile-picture__Ok {
   position: absolute;
   top: 5px;
   right: 8px;
@@ -81,7 +85,7 @@
   background-color: transparent;
 }
 
-.profile-picture__remove:hover {
+.profile-picture__Ok:hover {
   cursor: pointer;
 }
 .ala-upload {
@@ -116,7 +120,7 @@
   z-index: 3;
   color: #fff;
 }
-.ala-user-avastar-mode .profile-picture__remove {
+.ala-user-avastar-mode .profile-picture__Ok {
   display: none;
 }
 
@@ -141,12 +145,12 @@
   height: 100%;
 }
 
-.profile-picture__remove-icon {
+.profile-picture__Ok-icon {
   font-size: 18px;
   color: #777;
 }
 
-.profile-picture__remove {
+.profile-picture__Ok {
   position: absolute;
   top: 5px;
   right: 8px;
@@ -161,7 +165,7 @@
   background-color: transparent;
 }
 
-.profile-picture__remove:hover {
+.profile-picture__Ok:hover {
   cursor: pointer;
 }
 .ala-upload {
@@ -208,7 +212,7 @@
   .ala-upload-image.ala-user-avastar-mode {
     min-width: initial;
   }
-  .profile-picture__remove-icon {
+  .profile-picture__Ok-icon {
     font-size: 30px;
   }
 

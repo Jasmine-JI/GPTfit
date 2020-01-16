@@ -170,6 +170,11 @@ const routes: Routes = [
         canActivate: [DashboardGuard]
       },
       {
+        path: 'system/create-com-group',
+        component: CreateGroupComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
         path: 'system/inner-test',
         component: InnerTestComponent,
         canActivate: [DashboardGuard]

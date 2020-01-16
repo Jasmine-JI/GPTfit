@@ -642,5 +642,32 @@
       "anaerobicZone": "Anaerobic",
       "limit_generalZone": "General"
     }
+  },
+  "other": {
+    "createComGroup": "Create enterprise group",
+    "createCom": "Create enterprise",
+    "comName": "Enterprise name",
+    "com": "Enterprise",
+    "subCom": "Branch office",
+    "subComName": "Branch office name",
+    "department": "Department",
+    "departmentName": "Department name",
+    "subComNumber": "Branch office number",
+    "departmentNumber": "Department number",
+    "comAdministrator": "Enterprise administrator",
+    "subComAdministrator": "Branch office administrator",
+    "departmentAdministrator": "Department administrator",
+    "league": "League",
+    "leagueName": "League name",
+    "leagueAdministrator": "League administrator",
+    "gym": "Gym",
+    "addSubCom": "Create branch office",
+    "addDepartment": "Create department",
+    "addLeague": "Create league",
+    "comAdminister": "Enterprise management",
+    "customCom": "Custom Enterprise ",
+    "chooseSubCom": "Choose branch office",
+    "myCom": "My enterprise",
+    "departmentOrleague": "Department or league"
   }
 }
