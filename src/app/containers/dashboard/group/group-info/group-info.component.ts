@@ -68,6 +68,7 @@ export class GroupInfoComponent implements OnInit {
   cancelText: string;
   totalGroupName: string; // 含母階層的群組名稱
   updateImgQueryString = '';
+  brandType: any;
   constructor(
     private route: ActivatedRoute,
     private groupService: GroupService,
@@ -145,8 +146,12 @@ export class GroupInfoComponent implements OnInit {
         groupStatus,
         shareActivityToMember,
         shareAvatarToMember,
-        shareReportToMember
+        shareReportToMember,
+        brandType,
       } = this.groupInfo;
+
+      this.brandType = brandType;
+
       if (shareAvatarToMember && +shareAvatarToMember.switch > 2) {
         this.handleShareTarget(shareAvatarToMember, 1);
       }

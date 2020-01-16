@@ -226,11 +226,11 @@
       </div>
       <div class="fileInfo-item">
         <span class="life-tracking-data-name">elevGain：</span>
-        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.elevGain + '' || 'null'}}</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.elevGain | number:'1.0-1' || 'null'}}</span>
       </div>
       <div class="fileInfo-item">
         <span class="life-tracking-data-name">elevLoss：</span>
-        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.elevLoss + '' || 'null'}}</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.elevLoss | number:'1.0-1' || 'null'}}</span>
       </div>
       <div class="fileInfo-item">
         <span class="life-tracking-data-name">gpsSensorStatus：</span>
@@ -250,7 +250,7 @@
       </div>
       <div class="fileInfo-item">
         <span class="life-tracking-data-name">maxElev：</span>
-        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.maxElev + '' || 'null'}}</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.maxElev | number:'1.0-1' || 'null'}}</span>
       </div>
       <div class="fileInfo-item">
         <span class="life-tracking-data-name">maxHeartRate：</span>
@@ -270,7 +270,7 @@
       </div>
       <div class="fileInfo-item">
         <span class="life-tracking-data-name">targetElevGain：</span>
-        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.targetElevGain + '' || 'null'}}</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.targetElevGain | number:'1.0-1' || 'null'}}</span>
       </div>
       <div class="fileInfo-item">
         <span class="life-tracking-data-name">tempSensorStatus：</span>

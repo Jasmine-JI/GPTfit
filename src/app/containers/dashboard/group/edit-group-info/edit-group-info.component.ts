@@ -80,6 +80,7 @@ export class EditGroupInfoComponent implements OnInit {
   videoUrl = '';
   originalGroupStatus: number;
   updateImgQueryString = '';
+  brandType: any;
   get groupName() {
     return this.form.get('groupName');
   }
@@ -182,8 +183,11 @@ export class EditGroupInfoComponent implements OnInit {
         groupDesc,
         selfJoinStatus,
         groupStatus,
-        groupVideoUrl
+        groupVideoUrl,
+        brandType
       } = this.groupInfo;
+
+      this.brandType = brandType;
 
       this.originalGroupStatus = groupStatus;
 
@@ -238,13 +242,24 @@ export class EditGroupInfoComponent implements OnInit {
   dimissGroup(e, type) {
     e.preventDefault();
     let targetName = '';
-    if (type === 2) {
-      targetName = this.translate.instant('Dashboard.Group.GroupInfo.branch');
-    } else if (type === 3) {
-      targetName = this.translate.instant('Dashboard.Group.GroupInfo.coachingClass');
+    if (+this.brandType === 1) {
+      if (type === 2) {
+        targetName = this.translate.instant('Dashboard.Group.GroupInfo.branch');
+      } else if (type === 3) {
+        targetName = this.translate.instant('Dashboard.Group.GroupInfo.coachingClass');
+      } else {
+        targetName = this.translate.instant('Dashboard.Group.group');
+      }
     } else {
-      targetName = this.translate.instant('Dashboard.Group.group');
+      if (type === 2) {
+        targetName = this.translate.instant('other.subCom');
+      } else if (type === 3) {
+        targetName = this.translate.instant('other.department');
+      } else {
+        targetName = this.translate.instant('Dashboard.Group.group');
+      }
     }
+
     this.dialog.open(MessageBoxComponent, {
       hasBackdrop: true,
       data: {
@@ -538,7 +553,7 @@ export class EditGroupInfoComponent implements OnInit {
       );
     } else {
       this.bottomSheet.open(BottomSheetComponent, {
-        data: { groupId: this.groupId }
+        data: { groupId: this.groupId, brandType: this.brandType }
       });
     }
   }
@@ -598,6 +613,7 @@ export class EditGroupInfoComponent implements OnInit {
     }
   }
 }
+
 @Component({
   selector: 'app-bottom-sheet',
   templateUrl: 'bottom-sheet.html'
@@ -623,6 +639,10 @@ export class BottomSheetComponent {
   get groupId() {
     return this.data.groupId;
   }
+  get brandType () {
+    return this.data.brandType;
+  }
+
   getAndInitTranslations() {
     this.translate
       .get([
@@ -646,24 +666,32 @@ export class BottomSheetComponent {
     }
     this.bottomSheetRef.dismiss();
     if (type === 1 || type === 2) {
-      const langName = this.utils.getLocalStorageObject('locale');
-      const text = toCoachText[langName];
-      this.dialog.open(MessageBoxComponent, {
-        hasBackdrop: true,
-        data: {
-          title: this.title,
-          body: text,
-          confirmText: this.confirmText,
-          cancelText: this.cancelText,
-          onConfirm: () => {
-            this.router.navigateByUrl(
-              `/dashboard/group-info/${
-              this.hashIdService.handleGroupIdEncode(this.groupId)
-              }/create?createType=2&coachType=${coachType}`
-            );
+      if (+this.brandType === 1) {
+        const langName = this.utils.getLocalStorageObject('locale');
+        const text = toCoachText[langName];
+        this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          data: {
+            title: this.title,
+            body: text,
+            confirmText: this.confirmText,
+            cancelText: this.cancelText,
+            onConfirm: () => {
+              this.router.navigateByUrl(
+                `/dashboard/group-info/${
+                this.hashIdService.handleGroupIdEncode(this.groupId)
+                }/create?createType=2&coachType=${coachType}`
+              );
+            }
           }
-        }
-      });
+        });
+      } else {
+        this.router.navigateByUrl(
+          `/dashboard/group-info/${
+          this.hashIdService.handleGroupIdEncode(this.groupId)
+          }/create?createType=2&coachType=${coachType}`
+        );
+      }
     }
   }
 }

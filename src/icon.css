@@ -612,3 +612,23 @@
 .icon-svg_web-icon_p2_087-print:before {
   content: "\e9bc";
 }
+
+.icon-svg_web-icon_p2_097-ok:before {
+  content: "\e9c7";
+}
+
+.icon-svg_web-icon_p3_002-right_turn:before {
+  content: "\e9cc";
+}
+
+.icon-svg_web-icon_p3_003-left_turn:before {
+  content: "\e9cd";
+}
+
+.icon-svg_web-icon_p3_004-horizontal_mirroring:before {
+  content: "\e9ce";
+}
+
+.icon-svg_web-icon_p3_005-vertical_mirroring:before {
+  content: "\e9cf";
+}
