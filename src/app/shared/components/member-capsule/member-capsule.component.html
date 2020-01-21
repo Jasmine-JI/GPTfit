@@ -64,15 +64,21 @@
         <li class="normal-manage" (click)="handleAssignAdmin(1)"
           *ngIf="coachType === '2'"
         >
-          <a>
+          <a *ngIf="brandType == 1">
             {{ 'Dashboard.Group.addObject' | translate}} {{ 'Dashboard.Group.coach' | translate}}
+          </a>
+          <a *ngIf="brandType == 2">
+            {{ 'Dashboard.Group.addObject' | translate}} {{ 'other.departmentAdministrator' | translate}}
           </a>
         </li>
         <li class="normal-manage" (click)="handleAssignAdmin(2)"
           *ngIf="coachType === '1'"
         >
-          <a>
+          <a *ngIf="brandType == 1">
             {{ 'Dashboard.Group.addObject' | translate}} {{ 'Dashboard.Group.teacher' | translate}}
+          </a>
+          <a *ngIf="brandType == 2">
+            {{ 'Dashboard.Group.addObject' | translate}} {{ 'other.leagueAdministrator' | translate}}
           </a>
         </li>
         <li class="normal-manage" (click)="goToUserProfileInEditGroupInfo()">
