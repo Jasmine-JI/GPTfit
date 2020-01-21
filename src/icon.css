@@ -582,15 +582,15 @@
 }
 
 .icon-svg_web-icon_p2_038-complex:before {
-  content: "\e98b";
-}
-
-.icon-svg_web-icon_p2_039-rest:before {
   content: "\e98c";
 }
 
-.icon-svg_web-icon_p2_040-watt:before {
+.icon-svg_web-icon_p2_039-rest:before {
   content: "\e98d";
+}
+
+.icon-svg_web-icon_p2_040-watt:before {
+  content: "\e98e";
 }
 
 .icon-svg_web-icon_p1_008-edit:before {

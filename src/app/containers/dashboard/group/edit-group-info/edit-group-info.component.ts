@@ -63,6 +63,7 @@ export class EditGroupInfoComponent implements OnInit {
     isSupervisor: false,
     isSystemDeveloper: false,
     isSystemMaintainer: false,
+    isMarketingDeveloper: false,
     isBrandAdministrator: false,
     isBranchAdministrator: false,
     isCoach: false
@@ -152,6 +153,10 @@ export class EditGroupInfoComponent implements OnInit {
       this.role.isSystemMaintainer = res;
       // console.log('%c this.isSystemMaintainer', 'color: #0ca011', res);
     });
+    this.userInfoService.getMarketingDeveloperStatus().subscribe(res => {
+      this.role.isMarketingDeveloper = res;
+      // console.log('%c this.isMarketingDeveloper', 'color: #0ca011', res);
+    });
     this.userInfoService.getBrandAdministratorStatus().subscribe(res => {
       this.role.isBrandAdministrator = res;
       // console.log('%c this.isBrandAdministrator', 'color: #0ca011', res);
@@ -225,7 +230,8 @@ export class EditGroupInfoComponent implements OnInit {
     const body = {
       token: this.token,
       groupId: this.groupId,
-      actionType: _type
+      actionType: _type,
+      brandType: this.brandType
     };
     this.groupService
       .actionGroup(body)
