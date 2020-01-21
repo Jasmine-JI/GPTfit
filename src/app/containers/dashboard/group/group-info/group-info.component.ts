@@ -224,6 +224,7 @@ export class GroupInfoComponent implements OnInit {
       });
     });
   }
+
   handleShareTarget(shareData, type) {
     const browserLang = this.utils.getLocalStorageObject('locale');
     let text = '';
@@ -257,33 +258,83 @@ export class GroupInfoComponent implements OnInit {
     accessRights = accessRights.map(_accessRight => {
       if (browserLang === 'zh-tw') {
         if (_accessRight === '30') {
-          return '品牌管理員';
+          if (this.brandType === 1) {
+            return '品牌管理員';
+          } else {
+            return '企業管理員';
+          }
         } else if (_accessRight === '40') {
-          return '分店管理員';
+          if (this.brandType === 1) {
+            return '分店管理員';
+          } else {
+            return '分公司管理員';
+          }
         } else if (_accessRight === '50') {
-          return '體適能教練';
+          if (this.brandType === 1) {
+            return '體適能教練';
+          } else {
+            return '部門管理員';
+          }
         } else {
-          return '專業老師';
+          if (this.brandType === 1) {
+            return '專業老師';
+          } else {
+            return '社團管理員';
+          }
         }
       } else if (browserLang === 'zh-cn') {
         if (_accessRight === '30') {
-          return '品牌管理员';
-        } else if (_accessRight === '40') {
-          return '分店管理员';
-        } else if (_accessRight === '50') {
-          return '体适能教练';
-        } else {
-          return '专业老师';
+          if (_accessRight === '30') {
+            if (this.brandType === 1) {
+              return '品牌管理员';
+            } else {
+              return '企業管理员';
+            }
+          } else if (_accessRight === '40') {
+            if (this.brandType === 1) {
+              return '分店管理员';
+            } else {
+              return '分公司管理员';
+            }
+          } else if (_accessRight === '50') {
+            if (this.brandType === 1) {
+              return '体适能教练';
+            } else {
+              return '部門管理员';
+            }
+          } else {
+            if (this.brandType === 1) {
+              return '专业老师';
+            } else {
+              return '社團管理员';
+            }
+          }
         }
       } else {
         if (_accessRight === '30') {
-          return 'Brand administrator';
+          if (this.brandType === 1) {
+            return 'Brand administrator';
+          } else {
+            return '企業管理員';
+          }
         } else if (_accessRight === '40') {
-          return 'Branch manager';
+          if (this.brandType === 1) {
+            return 'Branch manager';
+          } else {
+            return '分公司管理員';
+          }
         } else if (_accessRight === '50') {
-          return 'Physical fitness coach';
+          if (this.brandType === 1) {
+            return 'Physical fitness coach';
+          } else {
+            return '部門管理員';
+          }
         } else {
-          return 'Professional teacher';
+          if (this.brandType === 1) {
+            return 'Professional teacher';
+          } else {
+            return '社團管理員';
+          }
         }
       }
     });
@@ -302,6 +353,7 @@ export class GroupInfoComponent implements OnInit {
       this.shareReportTarget = text;
     }
   }
+
   handleGroupItem(idx) {
     if (idx === 4) {
       this.chooseIdx = idx;
@@ -326,6 +378,7 @@ export class GroupInfoComponent implements OnInit {
       this.router.navigateByUrl(`/dashboard/group-info/${this.hashGroupId}`);
     }
   }
+
   openShareGroupInfoDialog() {
     this.dialog.open(ShareGroupInfoDialogComponent, {
       hasBackdrop: true,
@@ -337,6 +390,7 @@ export class GroupInfoComponent implements OnInit {
       }
     });
   }
+
   getAndInitTranslations() {
     this.translate
       .get(['Dashboard.Group.disclaimer', 'SH.agree', 'SH.disagree'])
@@ -346,164 +400,161 @@ export class GroupInfoComponent implements OnInit {
         this.cancelText = translation['SH.disagree'];
       });
   }
-  handleActionGroup(_type) {
-    const body = {
-      token: this.token,
-      groupId: this.groupId,
-      actionType: _type
-    };
 
+
+  handleActionGroup(_type) {
     if (_type === 1 && this.groupLevel === '60') {
       // 申請加入
       const langName = this.utils.getLocalStorageObject('locale');
       const bodyText = toMemberText[langName];
-      return this.dialog.open(MessageBoxComponent, {
-        hasBackdrop: true,
-        data: {
-          title: this.title,
-          body: bodyText,
-          confirmText: this.confirmText,
-          cancelText: this.cancelText,
-          onConfirm: () => {
-            this.groupService
-              .actionGroup(body)
-              .subscribe(
-                ({ resultCode, resultMessage, info: { selfJoinStatus } }) => {
-                  if (resultCode === 200) {
-                    this.joinStatus = selfJoinStatus;
-                    this.userProfileService
-                      .getUserProfile({
-                        token: this.token,
-                        avatarType: 2,
-                      })
-                      .subscribe(res => {
-                        this.isLoading = false;
-                        const {
-                          privacy: { activityTracking, activityTrackingReport }
-                        } = res.info;
-                        let isOnlyme = false;
-                        isOnlyme = !activityTracking.some(_val => +_val > 1);
-                        isOnlyme = !activityTrackingReport.some(
-                          _val => +_val > 1
-                        );
-                        const {
-                          shareActivityToMember,
-                          shareAvatarToMember,
-                          shareReportToMember
-                        } = this.groupInfo;
-                        if (
-                          (shareActivityToMember.switch === '3' ||
-                            shareAvatarToMember.switch === '3' ||
-                            shareReportToMember.switch === '3') &&
-                          isOnlyme
-                        ) {
-                          let accessRights = [];
-                          if (shareActivityToMember.switch === '3') {
-                            accessRights.push(
-                              ...shareActivityToMember.enableAccessRight
-                            );
-                          }
-                          if (shareReportToMember.switch === '3') {
-                            const diffArr = this.utils.diff_array(
-                              accessRights,
-                              shareReportToMember.enableAccessRight
-                            );
-                            if (diffArr.length > 0) {
-                              accessRights.push(...diffArr);
-                            }
-                          }
-                          if (shareAvatarToMember.switch === '3') {
-                            const _diffArr = this.utils.diff_array(
-                              accessRights,
-                              shareAvatarToMember.enableAccessRight
-                            );
-                            if (_diffArr.length > 0) {
-                              accessRights.push(..._diffArr);
-                            }
-                          }
-                          const browserLang = this.utils.getLocalStorageObject(
-                            'locale'
-                          );
-                          accessRights = accessRights.map(_accessRight => {
-                            if (browserLang === 'zh-tw') {
-                              if (_accessRight === '30') {
-                                return '品牌管理員';
-                              } else if (_accessRight === '40') {
-                                return '分店管理員';
-                              } else if (_accessRight === '50') {
-                                return '體適能教練';
-                              } else {
-                                return '專業老師';
-                              }
-                            } else if (browserLang === 'zh-cn') {
-                              if (_accessRight === '30') {
-                                return '品牌管理员';
-                              } else if (_accessRight === '40') {
-                                return '分店管理员';
-                              } else if (_accessRight === '50') {
-                                return '体适能教练';
-                              } else {
-                                return '专业老师';
-                              }
-                            } else {
-                              if (_accessRight === '30') {
-                                return 'Brand administrator';
-                              } else if (_accessRight === '40') {
-                                return 'Branch manager';
-                              } else if (_accessRight === '50') {
-                                return 'Physical fitness coach';
-                              } else {
-                                return 'Professional teacher';
-                              }
-                            }
-                          });
-                          let text = '';
+      if (this.brandType === 1) {
+        return this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          data: {
+            title: this.title,
+            body: bodyText,
+            confirmText: this.confirmText,
+            cancelText: this.cancelText,
+            onConfirm: () => {
+              this.sendJoinRequest(_type);
+            }
+          }
+        });
+      } else {
+        this.sendJoinRequest(_type);
+      }
+    } else {
+      this.sendJoinRequest(_type);
+    }
+  }
 
-                          if (browserLang.indexOf('zh') > -1) {
-                            text += accessRights.join(' 、');
-                          } else {
-                            text += accessRights.join(' ,');
-                          }
-                          this.detectCheckBoxValue(
-                            activityTracking,
-                            this.activityTrackingStatus
-                          );
-                          this.detectCheckBoxValue(
-                            activityTrackingReport,
-                            this.activityTrackingReportStatus
-                          );
-                          this.dialog.open(PrivacySettingDialogComponent, {
-                            hasBackdrop: true,
-                            data: {
-                              targetText: text,
-                              groupName: this.groupInfo.groupName,
-                              activityTrackingReportStatus: this
-                                .activityTrackingReportStatus,
-                              activityTrackingStatus: this
-                                .activityTrackingStatus,
-                              activityTracking,
-                              activityTrackingReport
-                            }
-                          });
-                        }
-                      });
-                  } else {
-                    this.dialog.open(MessageBoxComponent, {
-                      hasBackdrop: true,
-                      data: {
-                        title: 'message',
-                        body: resultMessage,
-                        confirmText: this.confirmText,
-                        cancelText: this.cancelText
-                      }
-                    });
-                  }
-                }
-              );
+  // 修正加入時call兩次api造成出現錯誤訊息的問題-kidin-1090121
+  sendJoinRequest (_type) {
+    this.userProfileService
+      .getUserProfile({
+        token: this.token,
+        avatarType: 2,
+      })
+      .subscribe(res => {
+        this.isLoading = false;
+        const {
+          privacy: { activityTracking, activityTrackingReport }
+        } = res.info;
+        let isOnlyme = false;
+        isOnlyme = !activityTracking.some(_val => +_val > 1);
+        isOnlyme = !activityTrackingReport.some(
+          _val => +_val > 1
+        );
+        const {
+          shareActivityToMember,
+          shareAvatarToMember,
+          shareReportToMember
+        } = this.groupInfo;
+        if (
+          (shareActivityToMember.switch === '3' ||
+            shareAvatarToMember.switch === '3' ||
+            shareReportToMember.switch === '3') &&
+          isOnlyme
+        ) {
+          let accessRights = [];
+          if (shareActivityToMember.switch === '3') {
+            accessRights.push(
+              ...shareActivityToMember.enableAccessRight
+            );
+          }
+          if (shareReportToMember.switch === '3') {
+            const diffArr = this.utils.diff_array(
+              accessRights,
+              shareReportToMember.enableAccessRight
+            );
+            if (diffArr.length > 0) {
+              accessRights.push(...diffArr);
+            }
+          }
+          if (shareAvatarToMember.switch === '3') {
+            const _diffArr = this.utils.diff_array(
+              accessRights,
+              shareAvatarToMember.enableAccessRight
+            );
+            if (_diffArr.length > 0) {
+              accessRights.push(..._diffArr);
+            }
+          }
+          const browserLang = this.utils.getLocalStorageObject(
+            'locale'
+          );
+          accessRights = accessRights.map(_accessRight => {
+            if (browserLang === 'zh-tw') {
+              if (_accessRight === '30') {
+                return '品牌管理員';
+              } else if (_accessRight === '40') {
+                return '分店管理員';
+              } else if (_accessRight === '50') {
+                return '體適能教練';
+              } else {
+                return '專業老師';
+              }
+            } else if (browserLang === 'zh-cn') {
+              if (_accessRight === '30') {
+                return '品牌管理员';
+              } else if (_accessRight === '40') {
+                return '分店管理员';
+              } else if (_accessRight === '50') {
+                return '体适能教练';
+              } else {
+                return '专业老师';
+              }
+            } else {
+              if (_accessRight === '30') {
+                return 'Brand administrator';
+              } else if (_accessRight === '40') {
+                return 'Branch manager';
+              } else if (_accessRight === '50') {
+                return 'Physical fitness coach';
+              } else {
+                return 'Professional teacher';
+              }
+            }
+          });
+          let text = '';
+
+          if (browserLang.indexOf('zh') > -1) {
+            text += accessRights.join(' 、');
+          } else {
+            text += accessRights.join(' ,');
+          }
+          this.detectCheckBoxValue(
+            activityTracking,
+            this.activityTrackingStatus
+          );
+          this.detectCheckBoxValue(
+            activityTrackingReport,
+            this.activityTrackingReportStatus
+          );
+          if (this.brandType === 1) {
+            this.dialog.open(PrivacySettingDialogComponent, {
+              hasBackdrop: true,
+              data: {
+                targetText: text,
+                groupName: this.groupInfo.groupName,
+                activityTrackingReportStatus: this
+                  .activityTrackingReportStatus,
+                activityTrackingStatus: this
+                  .activityTrackingStatus,
+                activityTracking,
+                activityTrackingReport
+              }
+            });
           }
         }
       });
-    }
+
+    const body = {
+      token: this.token,
+      groupId: this.groupId,
+      actionType: _type,
+      brandType: this.brandType
+    };
 
     const isBeenGroupMember = this.joinStatus === 2;
     this.groupService
@@ -531,6 +582,7 @@ export class GroupInfoComponent implements OnInit {
         }
       });
   }
+
   detectCheckBoxValue(arr, statusArr) {
     if (arr.findIndex(arrVal => arrVal === '1') === -1) {
       arr.push('1');
@@ -544,6 +596,7 @@ export class GroupInfoComponent implements OnInit {
       }
     });
   }
+
   getGroupMemberList(_type) {
     this.isLoading = true;
     const body = {

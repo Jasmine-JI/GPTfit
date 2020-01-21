@@ -644,7 +644,8 @@
     }
   },
   "other": {
-    "createComGroup": "建立企業群組",
+    "createComGroup": "建立一般企業群組",
+    "createGymGroup": "建立健身品牌群組",
     "createCom": "建立企業",
     "comName": "企業名稱",
     "com": "企業",

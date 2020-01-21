@@ -317,7 +317,8 @@ export class CreateGroupComponent implements OnInit {
   handleActionGroup(_type) {
     const body = {
       groupId: this.groupId,
-      actionType: _type
+      actionType: _type,
+      brandType: this.brandType
     };
     this.groupService
       .actionGroup(body)
@@ -434,9 +435,9 @@ export class CreateGroupComponent implements OnInit {
       const image = new Image();
       if (this.finalImageLink === undefined) {
         if (location.hostname === '192.168.1.235') {
-          image.src = 'https://app.alatech.com.tw/assets/images/group.jng';
+          image.src = 'https://app.alatech.com.tw/assets/images/group.jpg';
         } else {
-          image.src = `https://${location.hostname}/assets/images/group.jng`;
+          image.src = `https://${location.hostname}/assets/images/group.jpg`;
         }
       } else {
         image.src = this.finalImageLink;

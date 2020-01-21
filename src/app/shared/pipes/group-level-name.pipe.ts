@@ -9,7 +9,7 @@ export class GroupLevelNamePipe implements PipeTransform {
       } else if (value === '40') {
         return 'Dashboard.Group.GroupInfo.branch';
       } else if (value === '60') {
-        return 'Dashboard.Group.GroupInfo.coachingClass';
+        return 'Dashboard.Group.class';
       } else {
         return 'Dashboard.Group.SearchGroup.generalGroup';
       }
@@ -19,7 +19,7 @@ export class GroupLevelNamePipe implements PipeTransform {
       } else if (value === '40') {
         return 'other.subCom';
       } else if (value === '60') {
-        return 'other.department';
+        return '';
       } else {
         return 'other.Group.SearchGroup.generalGroup';
       }

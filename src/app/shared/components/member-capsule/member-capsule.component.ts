@@ -38,6 +38,11 @@ export class MemberCapsuleComponent implements OnInit {
   @Input() groupLevel: string;
   @Input() isHadMenu = false;
   @Input() coachType: string;
+  @Input() brandType: number;
+  @Input() accessRight: string;
+  @Input() isSupervisor = false;
+  @Input() isSystemDeveloper = false;
+  @Input() isSystemMaintainer = false;
   @Output() onWaittingMemberInfoChange = new EventEmitter();
   @Output() onRemoveAdmin = new EventEmitter();
   @Output() onRemoveGroup = new EventEmitter();
@@ -113,7 +118,8 @@ export class MemberCapsuleComponent implements OnInit {
       groupId: this.groupId,
       joinUserId: this.userId,
       joinStatus: _type,
-      groupLevel: this.groupLevel
+      groupLevel: this.groupLevel,
+      brandType: this.brandType
     };
     this.groupService.updateJoinStatus(body).subscribe(res => {
       if (res.resultCode === 200) {
@@ -121,7 +127,9 @@ export class MemberCapsuleComponent implements OnInit {
       }
     });
   }
+
   handleEditGroupMember() {
+    console.log(this.isHadMenu);
     const body = {
       token: this.token,
       groupId: this.groupId,
@@ -219,7 +227,7 @@ export class MemberCapsuleComponent implements OnInit {
       hasBackdrop: true,
       data: {
         title: 'message',
-        body: this.translate.instant('Dashboard.Group.confirmRemovalMembers'),
+        body: this.translate.instant('Dashboard.Group.GroupInfo.removeMember'),
         confirmText: this.translate.instant('SH.determine'),
         cancelText: this.translate.instant('SH.cancel'),
         onConfirm: this.handleDeleteGroupMember.bind(this)
