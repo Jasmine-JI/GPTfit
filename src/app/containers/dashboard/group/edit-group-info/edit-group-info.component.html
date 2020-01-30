@@ -1,3 +1,4 @@
+<div class="groupImgCroppingMask" *ngIf="imgCropping"></div>
 <div class="row">
   <!-- <span class="group-handle-name group-handle-name__rwd">
     {{'Dashboard.Group.GroupInfo.edit' | translate}}
@@ -7,13 +8,8 @@
     <app-upload-file
       [isImageFileMode]="true"
       [imageURL]="groupImg"
-      [maxFileSize]="maxFileSize"
-      [disabled]="isUploading"
       [btnText]="'Dashboard.Group.GroupInfo.selectImg' | translate"
-      [isLoading]="isUploading"
       [accept]="'Dashboard.Group.GroupInfo.photoRestriction' | translate"
-      [reloadFileText]="'Dashboard.Group.GroupInfo.selectImg' | translate"
-      [chooseFileText]="'Dashboard.Group.GroupInfo.selectImg' | translate"
       (onChange)="handleAttachmentChange($event)"
     ></app-upload-file>
   </div>
@@ -52,14 +48,18 @@
             *ngIf="(groupLevel && groupLevel === '40') && visitorDetail?.isCanManage"
             (click)="dimissGroup($event, 2)"
           >
-            {{'Dashboard.Group.disband' | translate}} {{'Dashboard.Group.GroupInfo.branch' | translate}}
+            {{'Dashboard.Group.disband' | translate}}
+            <span *ngIf="brandType == 1">{{'Dashboard.Group.GroupInfo.branch' | translate}}</span>
+            <span *ngIf="brandType == 2">{{'other.subCom' | translate}}</span>
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="{{'Dashboard.Group.disband' | translate}} {{'Dashboard.Group.GroupInfo.coachingClass' | translate}}"
             *ngIf="(groupLevel && groupLevel === '60') && visitorDetail?.isCanManage"
             (click)="dimissGroup($event, 3)"
           >
-            {{'Dashboard.Group.disband' | translate}} {{'Dashboard.Group.GroupInfo.coachingClass' | translate}}
+            {{'Dashboard.Group.disband' | translate}}
+            <span *ngIf="brandType == 1">{{'Dashboard.Group.GroupInfo.coachingClass' | translate}}</span>
+            <span *ngIf="brandType == 2">{{'other.department' | translate}}</span>
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="{{'Dashboard.Group.disband' | translate}} {{'Dashboard.Group.group' | translate}}"
@@ -73,7 +73,8 @@
             *ngIf="groupLevel && groupLevel === '30' && visitorDetail?.isCanManage"
             (click)="goCreatePage(1, $event)"
           >
-            {{'Dashboard.Group.GroupInfo.addBranch' | translate}}
+            <span *ngIf="brandType == 1">{{'Dashboard.Group.GroupInfo.addBranch' | translate}}</span>
+            <span *ngIf="brandType == 2">{{'other.addSubCom' | translate}}</span>
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="{{'Dashboard.Group.GroupInfo.addCoachingClass' | translate}}"
@@ -81,7 +82,9 @@
               && visitorDetail?.isCanManage && (subBranchInfo && subBranchInfo.length > 0)"
             (click)="goCreatePage(2, $event)"
           >
-            {{'Dashboard.Group.GroupInfo.addCoachingClass' | translate}}
+
+            <span *ngIf="brandType == 1">{{'Dashboard.Group.GroupInfo.addCoachingClass' | translate}}</span>
+            <span *ngIf="brandType == 2">{{'other.addDepartment' | translate}}</span>
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="{{'Dashboard.Group.GroupInfo.completeManagement' | translate}}"
@@ -203,12 +206,15 @@
           (selectedTabChange)="changeGroupInfo($event)"
           [selectedIndex]="0"
         >
-          <mat-tab label="{{ 'Dashboard.Group.GroupInfo.subgroup' | translate}}"
+          <mat-tab label="{{ 'Dashboard.Group.GroupInfo.subgroup' | translate }}"
             *ngIf="groupLevel !== '80'"
           >
             <ng-container *ngIf="!isLoading">
-              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
-                {{ 'Dashboard.Group.GroupInfo.brand' | translate}}
+              <label style="color: #26abe3; font-weight: 700; margin-bottom: 15px" *ngIf="brandType == 1">
+                {{ 'Dashboard.Group.GroupInfo.brand' | translate }}
+              </label>
+              <label style="color: #26abe3; font-weight: 700; margin-bottom: 15px" *ngIf="brandType == 2">
+                {{ 'other.com' | translate}}
               </label>
 
               <div style="margin-bottom: 15px">
@@ -224,13 +230,17 @@
                     [icon]="subBrandItem?.groupIcon"
                     [groupId]="subBrandItem?.groupId"
                     [groupLevel]="groupLevel"
+                    [brandType]="this.brandType"
                   >
                   </app-member-capsule>
                 </ng-container>
               </div>
 
-              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
                 {{ 'Dashboard.Group.GroupInfo.branch' | translate}}
+              </label>
+              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
+                {{ 'other.subCom' | translate}}
               </label>
               <div style="margin-bottom: 15px">
                 <span *ngIf="subBranchInfo && subBranchInfo.length === 0">{{'SH.noData' | translate}}</span>
@@ -245,14 +255,18 @@
                     [icon]="subBranchItem?.groupIcon"
                     [groupId]="subBranchItem?.groupId"
                     [groupLevel]="groupLevel"
+                    [brandType]="this.brandType"
                     (onRemoveGroup)="handleRemoveGroup($event, 2)"
                   >
                   </app-member-capsule>
                 </ng-container>
               </div>
 
-              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
                 {{ 'Dashboard.Group.GroupInfo.coachingClass' | translate}}
+              </label>
+              <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
+                {{ 'other.department' | translate}}
               </label>
               <div style="margin-bottom: 15px">
                 <span *ngIf="subCoachInfo && subCoachInfo.length === 0">{{'SH.noData' | translate}}</span>
@@ -267,6 +281,7 @@
                     [icon]="subCoachItem?.groupIcon"
                     [groupId]="subCoachItem?.groupId"
                     [groupLevel]="groupLevel"
+                    [brandType]="this.brandType"
                     (onRemoveGroup)="handleRemoveGroup($event, 3)"
                   >
                   </app-member-capsule>
@@ -282,8 +297,11 @@
           <mat-tab label="{{ 'Dashboard.Group.GroupInfo.administrator' | translate}}">
             <ng-container *ngIf="!isLoading">
               <ng-container *ngIf="groupLevel && groupLevel !== '80'">
-                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
                   {{ 'Dashboard.Group.brandAdministrator' | translate}}
+                </label>
+                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
+                  {{ 'other.comAdministrator' | translate}}
                 </label>
                 <div style="margin-bottom: 15px">
                   <span *ngIf="brandAdministrators && brandAdministrators.length === 0">{{'SH.noData' | translate}}</span>
@@ -291,21 +309,28 @@
                     <app-member-capsule
                       [role]="role"
                       [isAdminInfo]="true"
-                      [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer"
+                      [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isMarketingDeveloper"
                       [title]="brandAdmItem?.memberName"
                       [memberInfo]="brandAdmItem"
                       [name]="brandAdmItem && brandAdmItem?.memberName"
                       [icon]="brandAdmItem?.memberIcon"
                       [groupId]="brandAdmItem?.groupId"
                       [userId]="brandAdmItem?.memberId"
+                      [brandType]="brandType"
                       (onRemoveAdmin)="handleRemoveAdmin($event, 1)"
+                      [isSupervisor]="this.role.isSupervisor"
+                      [isSystemDeveloper]="this.role.isSystemDeveloper"
+                      [isSystemMaintainer]="this.role.isSystemMaintainer"
                     >
                     </app-member-capsule>
                   </ng-container>
                 </div>
 
-                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
                   {{ 'Dashboard.Group.branchAdministrator' | translate}}
+                </label>
+                <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
+                  {{ 'other.subComAdministrator' | translate}}
                 </label>
                 <div style="margin-bottom: 15px">
                   <span *ngIf="branchAdministrators && branchAdministrators.length === 0">{{'SH.noData' | translate}}</span>
@@ -313,29 +338,33 @@
                     <app-member-capsule
                       [role]="role"
                       [isAdminInfo]="true"
-                      [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator"
+                      [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isMarketingDeveloper || role?.isBrandAdministrator"
                       [title]="branchAdmItem?.memberName"
                       [memberInfo]="branchAdmItem"
                       [name]="branchAdmItem && branchAdmItem?.memberName"
                       [icon]="branchAdmItem?.memberIcon"
                       [groupId]="branchAdmItem?.groupId"
                       [userId]="branchAdmItem?.memberId"
+                      [brandType]="this.brandType"
                       (onRemoveAdmin)="handleRemoveAdmin($event, 2)"
                     >
                     </app-member-capsule>
                   </ng-container>
                 </div>
                 <ng-container *ngIf="groupLevel !== '60'">
-                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
                     {{ 'Dashboard.Group.GroupInfo.coachingClass' | translate}}
                     {{ 'Dashboard.Group.GroupInfo.administrator' | translate}}
+                  </label>
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
+                    {{ 'other.departmentAdministrator' | translate}}
                   </label>
                   <div style="margin-bottom: 15px" >
                     <span *ngIf="coachAdministrators && coachAdministrators.length === 0">{{'SH.noData' | translate}}</span>
                     <ng-container  *ngFor="let coachAdmItem of coachAdministrators">
                       <app-member-capsule
                         [role]="role"
-                        [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator"
+                        [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isMarketingDeveloper || role?.isBrandAdministrator || role?.isBranchAdministrator"
                         [isAdminInfo]="true"
                         [title]="coachAdmItem?.memberName"
                         [memberInfo]="coachAdmItem"
@@ -343,6 +372,7 @@
                         [icon]="coachAdmItem?.memberIcon"
                         [groupId]="coachAdmItem?.groupId"
                         [userId]="coachAdmItem?.memberId"
+                        [brandType]="this.brandType"
                         (onRemoveAdmin)="handleRemoveAdmin($event, 3)"
                       >
                       </app-member-capsule>
@@ -350,15 +380,18 @@
                   </div>
                 </ng-container>
                 <ng-container *ngIf="groupLevel === '60'">
-                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
                     {{ 'Dashboard.Group.teacher' | translate}}
+                  </label>
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
+                    {{ 'other.leagueAdministrator' | translate}}
                   </label>
                   <div style="margin-bottom: 15px">
                     <span *ngIf="normalCoaches && normalCoaches.length === 0">{{'SH.noData' | translate}}</span>
                     <ng-container *ngFor="let normalCoachAdmItem of normalCoaches">
                       <app-member-capsule
                         [role]="role"
-                        [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator"
+                        [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isMarketingDeveloper || role?.isBrandAdministrator || role?.isBranchAdministrator"
                         [isAdminInfo]="true"
                         [title]="normalCoachAdmItem?.memberName"
                         [memberInfo]="normalCoachAdmItem"
@@ -366,20 +399,24 @@
                         [icon]="normalCoachAdmItem?.memberIcon"
                         [groupId]="normalCoachAdmItem?.groupId"
                         [userId]="normalCoachAdmItem?.memberId"
+                        [brandType]="this.brandType"
                         (onRemoveAdmin)="handleRemoveAdmin($event, 4)"
                       >
                       </app-member-capsule>
                     </ng-container>
                   </div>
-                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
                     {{ 'Dashboard.Group.coach' | translate}}
+                  </label>
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
+                    {{ 'other.departmentAdministrator' | translate}}
                   </label>
                   <div style="margin-bottom: 15px">
                     <span *ngIf="PFCoaches && PFCoaches.length === 0">{{'SH.noData' | translate}}</span>
                     <ng-container *ngFor="let pfCoachAdmItem of PFCoaches">
                       <app-member-capsule
                         [role]="role"
-                        [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isBrandAdministrator || role?.isBranchAdministrator"
+                        [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isMarketingDeveloper || role?.isBrandAdministrator || role?.isBranchAdministrator"
                         [isAdminInfo]="true"
                         [title]="pfCoachAdmItem?.memberName"
                         [memberInfo]="pfCoachAdmItem"
@@ -387,6 +424,7 @@
                         [icon]="pfCoachAdmItem?.memberIcon"
                         [groupId]="pfCoachAdmItem?.groupId"
                         [userId]="pfCoachAdmItem?.memberId"
+                        [brandType]="this.brandType"
                         (onRemoveAdmin)="handleRemoveAdmin($event, 4)"
                       >
                       </app-member-capsule>
@@ -408,6 +446,7 @@
                       [memberInfo]="item"
                       [name]="item && item?.memberName"
                       [icon]="item?.memberIcon"
+                      [brandType]="this.brandType"
                     >
                     </app-member-capsule>
                   </ng-container>
@@ -439,6 +478,7 @@
                     (onAssignAdmin)="handleAssignAdmin($event)"
                     (onRemoveAdmin)="handleRemoveAdmin($event, 5)"
                     [coachType]="groupInfo?.coachType"
+                    [brandType]="brandType"
                   >
                   </app-member-capsule>
                 </div>
@@ -466,6 +506,7 @@
                     [groupId]="item?.groupId"
                     [userId]="item?.memberId"
                     [groupLevel]="groupLevel"
+                    [brandType]="this.brandType"
                     (onWaittingMemberInfoChange)="handleWaittingMemberInfo($event)"
                   >
                   </app-member-capsule>

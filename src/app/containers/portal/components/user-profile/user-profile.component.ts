@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UserProfileService } from '@shared/services/user-profile.service';
+import { UserInfoService } from '../../../dashboard/services/userInfo.service';
 import { ActivatedRoute } from '@angular/router';
 import { UtilsService } from '@shared/services/utils.service';
 import { Router, NavigationEnd } from '@angular/router';
@@ -18,8 +19,10 @@ export class UserProfileComponent implements OnInit {
   description: string;
   chooseIdx = 1;
   isShowLock = false;
+  updateQueryString = '';
   constructor(
     private userProfileService: UserProfileService,
+    private userInfoService: UserInfoService,
     private route: ActivatedRoute,
     private utils: UtilsService,
     private router: Router,
@@ -68,15 +71,21 @@ export class UserProfileComponent implements OnInit {
   fetchUserProfile() {
     const body = {
       token: this.utils.getToken(),
-      targetUserId: this.userId || ''
+      targetUserId: this.userId || '',
+      avatarType: 2,
     };
+
+    this.userInfoService.getUpdatedImgStatus().subscribe(response => {
+      this.updateQueryString = response;
+    });
+
     this.userProfileService.getUserProfile(body).subscribe(res => {
       const response: any = res;
       const { name, nameIcon, description } = response.info;
       this.description = description;
       this.userName = name;
       this.userImg = nameIcon
-        ? this.utils.buildBase64ImgString(nameIcon)
+        ? `${nameIcon}${this.updateQueryString}`
         : '/assets/images/user.png';
     });
   }

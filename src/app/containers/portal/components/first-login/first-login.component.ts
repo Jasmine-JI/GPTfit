@@ -25,14 +25,14 @@ export class FirstLoginComponent implements OnInit {
   content = '送出';
   className = 'btn btn-primary access-btn';
   isLogining = false;
-  groupImg = '/assets/images/user.png';
+  userImg = '/assets/images/user.png';
   reloadFileText = '重新上傳';
   chooseFileText = '上傳相片';
   acceptFileExtensions = ['JPG', 'JPEG', 'GIF', 'PNG'];
-  maxFileSize = 10485760; // 10MB
   finalImageLink: string;
   isDuplicateName = false;
   tempDuplicateName: string;
+  imgCropping = false;
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -56,7 +56,18 @@ export class FirstLoginComponent implements OnInit {
       height: [175, Validators.required],
       weight: [75, Validators.required],
       gender: 0,
-      birth: ''
+      birth: (Number(moment().format('YYYYMMDD')) - 300000) + ''
+    });
+
+    // 修復在首次登入頁面按下登出時，畫面殘留的問題-kidin-1090109(bug575)
+    this.authService.getLoginStatus().subscribe(res => {
+      if (res === false) {
+        return this.router.navigateByUrl('/signin');
+      }
+    });
+
+    this.utils.getImgSelectedStatus().subscribe(res => {
+      this.imgCropping = res;
     });
   }
   submit({ valid, value }) {
@@ -150,17 +161,18 @@ export class FirstLoginComponent implements OnInit {
   logStartDateChange($event: MatDatepickerInputEvent<moment.Moment>) {
     const inputBirthdayValue = moment($event.value)
     let value = moment($event.value).format('YYYYMMDD');
-    if (inputBirthdayValue.isBetween('19000101', moment())) {
+    if (inputBirthdayValue.isBetween('19390101', moment())) {
       this.form.patchValue({ birth: value });
     } else {
-      value = '';
+      // 修正生日不符範圍值(預設年齡30歲)-kidin-1081216(bug 576)
+      value = (Number(moment().format('YYYYMMDD')) - 300000) + '';
       this.form.patchValue({ birth: value });
     }
   }
   handleAttachmentChange(file) {
     if (file) {
-      const { isSizeCorrect, isTypeCorrect, errorMsg, link } = file;
-      if (!isSizeCorrect || !isTypeCorrect) {
+      const {isTypeCorrect, errorMsg, link } = file;
+      if (!isTypeCorrect) {
         this.dialog.open(MessageBoxComponent, {
           hasBackdrop: true,
           data: {

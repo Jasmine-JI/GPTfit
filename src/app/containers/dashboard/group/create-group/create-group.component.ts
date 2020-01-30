@@ -51,7 +51,7 @@ export class CreateGroupComponent implements OnInit {
   inValidText = '欄位為必填';
   textareaMaxLength = 500;
   commercePlan: number;
-  isShowCreateBrand = false;
+  isShowCreateForm = false;
   form: FormGroup;
   formTextName = 'groupName';
   formTextareaName = 'groupDesc';
@@ -74,7 +74,7 @@ export class CreateGroupComponent implements OnInit {
   reloadFileText = '重新上傳';
   chooseFileText = '選擇檔案';
   acceptFileExtensions = ['JPG', 'JPEG', 'GIF', 'PNG'];
-  createType = 3; // 1為新建分店， 2為新建教練課，3為新建群組，4為新建品牌
+  createType = 3; // 1為新建分店， 2為新建教練課，3為新建群組，4為新建品牌，5為新建企業-kidin-1090114
   brandName: string;
   chooseType: number;
   coachType: number;
@@ -82,6 +82,7 @@ export class CreateGroupComponent implements OnInit {
   planDatas = planDatas;
   totalCost: number;
   title: string;
+  brandType = null;
   get groupName() {
     return this.form.get('groupName');
   }
@@ -150,11 +151,18 @@ export class CreateGroupComponent implements OnInit {
     if (createType) {
       this.createType = +createType;
     }
+
+    // 根據網址判斷欲建立何種群組-kidin-1090114
     if (
       location.pathname.indexOf('/dashboard/system/create-brand-group') > -1
     ) {
       this.createType = 4;
+    } else if (
+      location.pathname.indexOf('/dashboard/system/create-com-group') > -1
+    ) {
+      this.createType = 5;
     }
+
     this.groupId = this.hashIdService.handleGroupIdDecode(
       this.route.snapshot.paramMap.get('groupId')
     );
@@ -198,16 +206,18 @@ export class CreateGroupComponent implements OnInit {
     this.token = this.utils.getToken();
     const body = {
       token: this.token,
-      groupId: this.groupId
+      groupId: this.groupId,
+      avatarType: 2
     };
-    if (this.createType !== 3 && this.createType !== 4) {
+    if (this.createType !== 3 && this.createType !== 4 && this.createType !== 5) {
       this.groupService.fetchGroupListDetail(body).subscribe(res => {
         this.groupInfo = res.info;
         const {
           groupIcon,
           groupId,
           groupName,
-          selfJoinStatus
+          selfJoinStatus,
+          brandType
         } = this.groupInfo;
         if (selfJoinStatus) {
           this.joinStatus = selfJoinStatus;
@@ -215,7 +225,8 @@ export class CreateGroupComponent implements OnInit {
           this.joinStatus = 0;
         }
         this.brandName = groupName;
-        this.groupImg = this.utils.buildBase64ImgString(groupIcon);
+        this.brandType = brandType;
+        this.groupImg = groupIcon;
         this.finalImageLink = this.groupImg;
         this.group_id = this.utils.displayGroupId(groupId);
         this.groupLevel = this.utils.displayGroupLevel(groupId);
@@ -227,9 +238,9 @@ export class CreateGroupComponent implements OnInit {
     });
     this.getAndInitTranslations();
 
-    //建立分店以及課程群組時，指派建立者為預設管理員。 by Vincent 2019/5/9
-    if (this.createType == 1 || this.createType == 2) {
-      this.chooseLabels.push({ "groupName": "Alatech", "userName": this.role.getUserName, "userId": this.role.getUserId });
+    // 建立分店以及課程群組時，指派建立者為預設管理員。 by Vincent 2019/5/9
+    if (+this.createType === 1 || +this.createType === 2) {
+      this.chooseLabels.push({ 'groupName': 'Alatech', 'userName': this.role.getUserName, 'userId': this.role.getUserId });
       this.form.patchValue({ groupManager: [ this.role.getUserId ] });
     }
   }
@@ -282,7 +293,7 @@ export class CreateGroupComponent implements OnInit {
         groupDesc: ['', [Validators.required, Validators.maxLength(500)]],
         groupStatus: 2
       });
-    } else if (_type === 4) {
+    } else if (_type === 4 || _type === 5) {
       this.form = this.fb.group({
         groupManager: [[], [Validators.required]],
         groupName: ['', [Validators.required, Validators.maxLength(32)]],
@@ -306,7 +317,8 @@ export class CreateGroupComponent implements OnInit {
   handleActionGroup(_type) {
     const body = {
       groupId: this.groupId,
-      actionType: _type
+      actionType: _type,
+      brandType: this.brandType
     };
     this.groupService
       .actionGroup(body)
@@ -326,7 +338,8 @@ export class CreateGroupComponent implements OnInit {
       token: this.token,
       groupId: this.groupId,
       groupLevel: '30',
-      infoType: _type
+      infoType: _type,
+      avatarType: 3
     };
     this.groupService.fetchGroupMemberList(body).subscribe(res => {
       if (res.resultCode === 200) {
@@ -338,14 +351,14 @@ export class CreateGroupComponent implements OnInit {
           this.subBrandInfo = this.subGroupInfo.brands.map(_brand => {
             return {
               ..._brand,
-              groupIcon: this.utils.buildBase64ImgString(_brand.groupIcon)
+              groupIcon: _brand.groupIcon
             };
           });
           this.subBranchInfo = this.subGroupInfo.branches.filter(_branch => {
             if (_branch.groupStatus !== 4) {
               return {
                 ..._branch,
-                groupIcon: this.utils.buildBase64ImgString(_branch.groupIcon)
+                groupIcon: _branch.groupIcon
               };
             }
           });
@@ -353,7 +366,7 @@ export class CreateGroupComponent implements OnInit {
             if (_coach.groupStatus !== 4) {
               return {
                 ..._coach,
-                groupIcon: this.utils.buildBase64ImgString(_coach.groupIcon)
+                groupIcon: _coach.groupIcon
               };
             }
           });
@@ -374,7 +387,7 @@ export class CreateGroupComponent implements OnInit {
             .map(_info => {
               return {
                 ..._info,
-                memberIcon: this.utils.buildBase64ImgString(_info.memberIcon)
+                memberIcon: _info.memberIcon
               };
             })
             .filter(newInfo => !(typeof newInfo === 'undefined'));
@@ -407,7 +420,7 @@ export class CreateGroupComponent implements OnInit {
       // 如果脫離form的判斷
       this.utils.markFormGroupTouched(this.form);
     }
-    //return
+    // return
     if (valid) {
       const {
         groupDesc,
@@ -420,218 +433,240 @@ export class CreateGroupComponent implements OnInit {
         commercePlanExpired
       } = value;
       const image = new Image();
-      image.src = this.finalImageLink;
-      const body = {
-        token: this.token,
-        groupId: this.groupId,
-        groupManager,
-        levelDesc: groupDesc,
-        groupStatus,
-        levelIcon: this.finalImageLink || '',
-        levelIconMid: this.utils.imageToDataUri(image, 128, 128) || '',
-        levelIconSmall: this.utils.imageToDataUri(image, 64, 64) || '',
-        levelName: '',
-        levelType: null,
-        coachType: null,
-        commercePlan: null,
-        groupSetting: null,
-        groupManagerSetting: null,
-        groupMemberSetting: null,
-        commercePlanExpired: '',
-        shareAvatarToMember: {
-          switch: '1',
-          enableAccessRight: [],
-          disableAccessRight: []
-        },
-        shareActivityToMember: {
-          switch: '2',
-          enableAccessRight: [],
-          disableAccessRight: []
-        },
-        shareReportToMember: {
-          switch: '2',
-          enableAccessRight: [],
-          disableAccessRight: []
+      if (this.finalImageLink === undefined) {
+        if (location.hostname === '192.168.1.235') {
+          image.src = 'https://app.alatech.com.tw/assets/images/group.jpg';
+        } else {
+          image.src = `https://${location.hostname}/assets/images/group.jpg`;
+        }
+      } else {
+        image.src = this.finalImageLink;
+      }
+
+      // 確認建立的brandType-kidin-1090115
+      if (this.brandType === null) {
+        if (this.chooseType === 4) {
+          this.brandType = 1;
+        } else if (this.chooseType === 5) {
+          this.brandType = 2;
+        }
+      }
+
+      image.onload = () => {
+        const body = {
+          token: this.token,
+          brandType: this.brandType,
+          groupId: this.groupId,
+          groupManager,
+          levelDesc: groupDesc,
+          groupStatus,
+          levelIcon: this.utils.imageToDataUri(image, 256, 256) || '',
+          levelIconMid: this.utils.imageToDataUri(image, 128, 128) || '',
+          levelIconSmall: this.utils.imageToDataUri(image, 64, 64) || '',
+          levelName: '',
+          levelType: null,
+          coachType: null,
+          commercePlan: null,
+          groupSetting: null,
+          groupManagerSetting: null,
+          groupMemberSetting: null,
+          commercePlanExpired: '',
+          shareAvatarToMember: {
+            switch: '1',
+            enableAccessRight: [],
+            disableAccessRight: []
+          },
+          shareActivityToMember: {
+            switch: '2',
+            enableAccessRight: [],
+            disableAccessRight: []
+          },
+          shareReportToMember: {
+            switch: '2',
+            enableAccessRight: [],
+            disableAccessRight: []
+          }
+        };
+        if (this.createType === 1) {
+          // 建立分店或分公司
+          const { branchName } = value;
+          body.levelName = branchName;
+          body.levelType = 4;
+          this.isEditing = true;
+          this.groupService.createGroup(body).subscribe(res => {
+            this.isEditing = false;
+            if (res.resultCode === 200) {
+              this.router.navigateByUrl(
+                `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
+                  this.groupId
+                )}/edit`
+              );
+            }
+            if (res.resultCode === 400) {
+              this.dialog.open(MessageBoxComponent, {
+                hasBackdrop: true,
+                data: {
+                  title: 'message',
+                  body: res.resultMessage
+                }
+              });
+            }
+            if (res.resultCode === 409) {
+              this.dialog.open(MsgDialogComponent, {
+                hasBackdrop: true,
+                data: {
+                  title: 'Message',
+                  body: res.resultMessage
+                }
+              });
+            }
+          });
+        } else if (this.createType === 2) {
+          // 建立教練課或部門
+          const { branchId, coachLessonName } = value;
+          body.levelType = 5;
+          body.coachType = this.coachType;
+          body.levelName = coachLessonName;
+          if (this.coachType === 1) {
+            // 一般教練(課)或社團
+            body.shareAvatarToMember = {
+              switch: '1',
+              enableAccessRight: [],
+              disableAccessRight: []
+            };
+            body.shareActivityToMember = {
+              switch: '2',
+              enableAccessRight: [],
+              disableAccessRight: []
+            };
+            body.shareReportToMember = {
+              switch: '2',
+              enableAccessRight: [],
+              disableAccessRight: []
+            };
+          } else {
+            // 體適能教練(課)或部門
+            body.shareAvatarToMember = {
+              switch: '1',
+              enableAccessRight: [],
+              disableAccessRight: []
+            };
+            body.shareActivityToMember = {
+              switch: '3',
+              enableAccessRight: ['50'],
+              disableAccessRight: []
+            };
+            body.shareReportToMember = {
+              switch: '3',
+              enableAccessRight: ['50'],
+              disableAccessRight: []
+            };
+          }
+
+          if (branchId !== this.groupId) {
+            body.groupId = branchId;
+          }
+          this.isEditing = true;
+          this.groupService.createGroup(body).subscribe(res => {
+            this.isEditing = false;
+            if (res.resultCode === 200) {
+              this.router.navigateByUrl(
+                `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
+                  this.groupId
+                )}/edit`
+              );
+            }
+            if (res.resultCode === 400) {
+              this.dialog.open(MessageBoxComponent, {
+                hasBackdrop: true,
+                data: {
+                  title: 'message',
+                  body: res.resultMessage
+                }
+              });
+            }
+            if (res.resultCode === 409) {
+              this.dialog.open(MsgDialogComponent, {
+                hasBackdrop: true,
+                data: {
+                  title: 'Message',
+                  body: res.resultMessage
+                }
+              });
+            }
+          });
+        } else if (this.createType === 3) {
+          const { groupName } = value;
+          body.levelName = groupName;
+          body.levelType = 6;
+          body.groupId = '0-0-0-0-0-0';
+          this.isEditing = true;
+          this.groupService.createGroup(body).subscribe(res => {
+            this.isEditing = false;
+            if (res.resultCode === 200) {
+              this.router.navigateByUrl('/dashboard/my-group-list');
+            }
+            if (res.resultCode === 400) {
+              this.dialog.open(MessageBoxComponent, {
+                hasBackdrop: true,
+                data: {
+                  title: 'message',
+                  body: res.resultMessage
+                }
+              });
+            }
+            if (res.resultCode === 409) {
+              this.dialog.open(MsgDialogComponent, {
+                hasBackdrop: true,
+                data: {
+                  title: 'Message',
+                  body: res.resultMessage
+                }
+              });
+            }
+          });
+        } else {
+          // 建立品牌/企業-kidin-1090114
+          const { groupName } = value;
+          body.levelName = groupName;
+          body.levelType = 3;
+          body.groupId = '0-0-0-0-0-0';
+          body.commercePlan = this.commercePlan;
+          body.groupSetting = {
+            maxBranches,
+            maxClasses,
+            maxGeneralGroups: 0
+          };
+          body.groupManagerSetting = { maxGroupManagers };
+          body.groupMemberSetting = { maxGroupMembers };
+          body.commercePlanExpired = commercePlanExpired;
+          this.isEditing = true;
+          this.groupService.createGroup(body).subscribe(res => {
+            this.isEditing = false;
+            if (res.resultCode === 200) {
+              this.router.navigateByUrl('/dashboard/system/all-group-list');
+            }
+            if (res.resultCode === 400) {
+              this.dialog.open(MessageBoxComponent, {
+                hasBackdrop: true,
+                data: {
+                  title: 'message',
+                  body: res.resultMessage
+                }
+              });
+            }
+            if (res.resultCode === 409) {
+              this.dialog.open(MsgDialogComponent, {
+                hasBackdrop: true,
+                data: {
+                  title: 'Message',
+                  body: res.resultMessage
+                }
+              });
+            }
+          });
         }
       };
-      if (this.createType === 1) {
-        // 建立分店
-        const { branchName } = value;
-        body.levelName = branchName;
-        body.levelType = 4;
-        this.isEditing = true;
-        this.groupService.createGroup(body).subscribe(res => {
-          this.isEditing = false;
-          if (res.resultCode === 200) {
-            this.router.navigateByUrl(
-              `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
-                this.groupId
-              )}/edit`
-            );
-          }
-          if (res.resultCode === 400) {
-            this.dialog.open(MessageBoxComponent, {
-              hasBackdrop: true,
-              data: {
-                title: 'message',
-                body: res.resultMessage
-              }
-            });
-          }
-          if (res.resultCode === 409) {
-            this.dialog.open(MsgDialogComponent, {
-              hasBackdrop: true,
-              data: {
-                title: 'Message',
-                body: res.resultMessage
-              }
-            });
-          }
-        });
-      } else if (this.createType === 2) {
-        // 建立教練課
-        const { branchId, coachLessonName } = value;
-        body.levelType = 5;
-        body.coachType = this.coachType;
-        body.levelName = coachLessonName;
-        if (this.coachType === 1) {
-          // 一般教練(課)
-          body.shareAvatarToMember = {
-            switch: '1',
-            enableAccessRight: [],
-            disableAccessRight: []
-          };
-          body.shareActivityToMember = {
-            switch: '2',
-            enableAccessRight: [],
-            disableAccessRight: []
-          };
-          body.shareReportToMember = {
-            switch: '2',
-            enableAccessRight: [],
-            disableAccessRight: []
-          };
-        } else {
-          // 體適能教練(課)
-          body.shareAvatarToMember = {
-            switch: '1',
-            enableAccessRight: [],
-            disableAccessRight: []
-          };
-          body.shareActivityToMember = {
-            switch: '3',
-            enableAccessRight: ['50'],
-            disableAccessRight: []
-          };
-          body.shareReportToMember = {
-            switch: '3',
-            enableAccessRight: ['50'],
-            disableAccessRight: []
-          };
-        }
-
-        if (branchId !== this.groupId) {
-          body.groupId = branchId;
-        }
-        this.isEditing = true;
-        this.groupService.createGroup(body).subscribe(res => {
-          this.isEditing = false;
-          if (res.resultCode === 200) {
-            this.router.navigateByUrl(
-              `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
-                this.groupId
-              )}/edit`
-            );
-          }
-          if (res.resultCode === 400) {
-            this.dialog.open(MessageBoxComponent, {
-              hasBackdrop: true,
-              data: {
-                title: 'message',
-                body: res.resultMessage
-              }
-            });
-          }
-          if (res.resultCode === 409) {
-            this.dialog.open(MsgDialogComponent, {
-              hasBackdrop: true,
-              data: {
-                title: 'Message',
-                body: res.resultMessage
-              }
-            });
-          }
-        });
-      } else if (this.createType === 3) {
-        const { groupName } = value;
-        body.levelName = groupName;
-        body.levelType = 6;
-        body.groupId = '0-0-0-0-0-0';
-        this.isEditing = true;
-        this.groupService.createGroup(body).subscribe(res => {
-          this.isEditing = false;
-          if (res.resultCode === 200) {
-            this.router.navigateByUrl('/dashboard/my-group-list');
-          }
-          if (res.resultCode === 400) {
-            this.dialog.open(MessageBoxComponent, {
-              hasBackdrop: true,
-              data: {
-                title: 'message',
-                body: res.resultMessage
-              }
-            });
-          }
-          if (res.resultCode === 409) {
-            this.dialog.open(MsgDialogComponent, {
-              hasBackdrop: true,
-              data: {
-                title: 'Message',
-                body: res.resultMessage
-              }
-            });
-          }
-        });
-      } else {
-        const { groupName } = value;
-        body.levelName = groupName;
-        body.levelType = 3;
-        body.groupId = '0-0-0-0-0-0';
-        body.commercePlan = this.commercePlan;
-        body.groupSetting = {
-          maxBranches,
-          maxClasses,
-          maxGeneralGroups: 0
-        };
-        body.groupManagerSetting = { maxGroupManagers };
-        body.groupMemberSetting = { maxGroupMembers };
-        body.commercePlanExpired = commercePlanExpired;
-        this.isEditing = true;
-        this.groupService.createGroup(body).subscribe(res => {
-          this.isEditing = false;
-          if (res.resultCode === 200) {
-            this.router.navigateByUrl('/dashboard/system/all-group-list');
-          }
-          if (res.resultCode === 400) {
-            this.dialog.open(MessageBoxComponent, {
-              hasBackdrop: true,
-              data: {
-                title: 'message',
-                body: res.resultMessage
-              }
-            });
-          }
-          if (res.resultCode === 409) {
-            this.dialog.open(MsgDialogComponent, {
-              hasBackdrop: true,
-              data: {
-                title: 'Message',
-                body: res.resultMessage
-              }
-            });
-          }
-        });
-      }
     }
   }
   public handleChangeTextarea(code): void {
@@ -673,9 +708,9 @@ export class CreateGroupComponent implements OnInit {
   }
   handleAttachmentChange(file) {
     if (file) {
-      const { isSizeCorrect, isTypeCorrect, errorMsg, link } = file;
+      const { isTypeCorrect, errorMsg, link } = file;
       this.finalImageLink = link;
-      if (!isSizeCorrect || !isTypeCorrect) {
+      if (!isTypeCorrect) {
         this.dialog.open(MsgDialogComponent, {
           hasBackdrop: true,
           data: {
@@ -686,6 +721,7 @@ export class CreateGroupComponent implements OnInit {
       }
     }
   }
+
   handleShowCreateBrand() {
     switch (this.commercePlan) {
       case 1:
@@ -709,7 +745,8 @@ export class CreateGroupComponent implements OnInit {
         cancelText: this.translate.instant('SH.cancel'),
         onConfirm: () => {
           if (this.commercePlan && this.commercePlan > 0) {
-            this.isShowCreateBrand = true;
+              this.isShowCreateForm = true;
+
             if (this.commercePlan < 99) {
               const {
                 maxBranches,
@@ -725,12 +762,60 @@ export class CreateGroupComponent implements OnInit {
               });
             }
           } else {
-            this.isShowCreateBrand = false;
+            this.isShowCreateForm = false;
           }
         }
       }
     });
   }
+
+  // 建立企業群組-kidin-109114
+  handleShowCreateCom () {
+    switch (this.commercePlan) {
+      case 1:
+        this.planName = this.translate.instant('Dashboard.System.BrandPlan.experiencePlan');
+        break;
+      case 2:
+        this.planName = this.translate.instant('Dashboard.System.BrandPlan.studioPlan');
+        break;
+      case 3:
+        this.planName = this.translate.instant('Dashboard.System.BrandPlan.smePlan');
+        break;
+      default:
+        this.planName = this.translate.instant('Dashboard.System.BrandPlan.customPlan');
+    }
+    this.dialog.open(MessageBoxComponent, {
+      hasBackdrop: true,
+      data: {
+        title: 'Message',
+        body: `您選擇的方案是否為" ${this.planName} "?`,
+        confirmText: this.translate.instant('SH.determine'),
+        cancelText: this.translate.instant('SH.cancel'),
+        onConfirm: () => {
+          if (this.commercePlan && this.commercePlan > 0) {
+              this.isShowCreateForm = true;
+            if (this.commercePlan < 99) {
+              const {
+                maxBranches,
+                maxClasses,
+                maxGroupManagers,
+                maxGroupMembers
+              } = this.planDatas[this.commercePlan - 1];
+              this.form.patchValue({
+                maxBranches,
+                maxClasses,
+                maxGroupManagers,
+                maxGroupMembers
+              });
+            }
+          } else {
+            this.isShowCreateForm = false;
+          }
+        }
+      }
+    });
+  }
+
   handleCancel(e) {
     e.preventDefault();
     let typeName = '';
@@ -740,6 +825,7 @@ export class CreateGroupComponent implements OnInit {
         href = '/dashboard/my-group-list';
         break;
       case 4:
+      case 5:
         href = '/dashboard/system/all-group-list';
         break;
       default:
@@ -748,15 +834,34 @@ export class CreateGroupComponent implements OnInit {
         )}/edit`;
     }
 
-    if (this.createType === 1) {
-      typeName = this.translate.instant('Dashboard.Group.GroupInfo.branch');
-    } else if (this.createType === 2) {
-      typeName = this.translate.instant('Dashboard.Group.GroupInfo.coachingClass');
-    } else if (this.createType === 3) {
-      typeName = this.translate.instant('Dashboard.Group.group');
+    if (+this.brandType === 1) {
+      if (this.createType === 1) {
+        typeName = this.translate.instant('Dashboard.Group.GroupInfo.branch');
+      } else if (this.createType === 2) {
+        typeName = this.translate.instant('Dashboard.Group.GroupInfo.coachingClass');
+      } else if (this.createType === 3) {
+        typeName = this.translate.instant('Dashboard.Group.group');
+      } else if (this.createType === 4) {
+        typeName = this.translate.instant('Dashboard.Group.GroupInfo.brand');
+      } else if (this.createType === 5) {
+        typeName = this.translate.instant('other.com');
+      }
     } else {
-      typeName = this.translate.instant('Dashboard.Group.GroupInfo.brand');
+      if (this.createType === 1) {
+        typeName = this.translate.instant('other.subCom');
+      } else if (this.createType === 2 && this.coachType === 1) {
+        typeName = this.translate.instant('other.league');
+      } else if (this.createType === 2 && this.coachType === 2) {
+          typeName = this.translate.instant('other.department');
+      } else if (this.createType === 3) {
+        typeName = this.translate.instant('Dashboard.Group.group');
+      } else if (this.createType === 4) {
+        typeName = this.translate.instant('other.Group.GroupInfo.brand');
+      } else if (this.createType === 5) {
+        typeName = this.translate.instant('other.com');
+      }
     }
+
     this.dialog.open(MsgDialogComponent, {
       hasBackdrop: true,
       data: {
@@ -801,7 +906,7 @@ export class CreateGroupComponent implements OnInit {
           adminLists,
           onConfirm: this.handleConfirm.bind(this),
           isInnerAdmin:
-            _type === 4 &&
+            _type === 4 || _type === 5 &&
             (isSupervisor ||
               isSystemDeveloper ||
               isSystemMaintainer ||

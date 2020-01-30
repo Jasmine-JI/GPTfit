@@ -71,6 +71,9 @@ class Option {
           fillOpacity: 0.3,
           tooltip: {
             valueSuffix: ' ' + dataset.unit
+          },
+          dataLabels: {
+            enabled: false
           }
         }
       ]
@@ -98,10 +101,13 @@ export class ActivityService {
   fetchEditActivityProfile(body) {
     return this.http.post<any>('/api/v2/sport/editActivityProfile', body);
   }
-  handleChartDatas(pointDatas, lapDatas, type, resolutionSeconds, hrFormatData, isDebug, chartKind, xaxisUnit, segRange) {
-    let colorIdx = 0;
-    let isNoSpeeds = false,
-      isNoElevations = false,
+  fetchMultiActivityData(body) {
+    return this.http.post<any>('/api/v2/sport/getMultiActivityData', body);
+  }
+  handleChartDatas(pointDatas, lapDatas, infoDatas, resolutionSeconds, hrFormatData, isDebug, chartKind, xaxisUnit, segRange) {
+    let colorIdx = 0,
+      isNoSpeeds = false,
+      isNoElevations = true,
       isNoHeartRates = false,
       isNoRunCadences = false,
       isNoPaces = false,
@@ -124,6 +130,7 @@ export class ActivityService {
       cycleCadences = [],
       swimCadences = [],
       rowingCadences = [],
+      type = infoDatas.type,
       userZoneTimes = [
         { y: 0, color: '#2e4d9f' },
         { y: 0, color: '#2eb1e7' },
@@ -133,40 +140,44 @@ export class ActivityService {
         { y: 0, color: '#c11920' }
       ],
       userHRZones = [0, 0, 0, 0, 0, 0];
-      const { userHRBase, userAge, userMaxHR, userRestHR } = hrFormatData;
-      if (userMaxHR && userRestHR) {
-        if (userHRBase === 0) {
-          // 區間數值採無條件捨去法
-          userHRZones[0] = Math.floor((220 - userAge) * 0.5);
-          userHRZones[1] = Math.floor((220 - userAge) * 0.6 - 1);
-          userHRZones[2] = Math.floor((220 - userAge) * 0.7 - 1);
-          userHRZones[3] = Math.floor((220 - userAge) * 0.8 - 1);
-          userHRZones[4] = Math.floor((220 - userAge) * 0.9 - 1);
-          userHRZones[5] = Math.floor((220 - userAge) * 1);
+
+      // 若api無心率區間資料，則自行計算區間-kidin-1081217
+      if (infoDatas.totalHrZone0Second === null) {
+        const { userHRBase, userAge, userMaxHR, userRestHR } = hrFormatData;
+        if (userMaxHR && userRestHR) {
+          if (userHRBase === 0) {
+            // 區間數值採無條件捨去法
+            userHRZones[0] = Math.floor((220 - userAge) * 0.5);
+            userHRZones[1] = Math.floor((220 - userAge) * 0.6 - 1);
+            userHRZones[2] = Math.floor((220 - userAge) * 0.7 - 1);
+            userHRZones[3] = Math.floor((220 - userAge) * 0.8 - 1);
+            userHRZones[4] = Math.floor((220 - userAge) * 0.9 - 1);
+            userHRZones[5] = Math.floor((220 - userAge) * 1);
+          } else {
+            userHRZones[0] = (userMaxHR - userRestHR) * (0.55) + userRestHR;
+            userHRZones[1] = (userMaxHR - userRestHR) * (0.6) + userRestHR;
+            userHRZones[2] = (userMaxHR - userRestHR) * (0.65) + userRestHR;
+            userHRZones[3] = (userMaxHR - userRestHR) * (0.75) + userRestHR;
+            userHRZones[4] = (userMaxHR - userRestHR) * (0.85) + userRestHR;
+            userHRZones[5] = (userMaxHR - userRestHR) * (1) + userRestHR;
+          }
         } else {
-          userHRZones[0] = (userMaxHR - userRestHR) * (0.55) + userRestHR;
-          userHRZones[1] = (userMaxHR - userRestHR) * (0.6) + userRestHR;
-          userHRZones[2] = (userMaxHR - userRestHR) * (0.65) + userRestHR;
-          userHRZones[3] = (userMaxHR - userRestHR) * (0.75) + userRestHR;
-          userHRZones[4] = (userMaxHR - userRestHR) * (0.85) + userRestHR;
-          userHRZones[5] = (userMaxHR - userRestHR) * (1) + userRestHR;
-        }
-      } else {
-        if (userHRBase === 0) {
-          // 區間數值採無條件捨去法
-          userHRZones[0] = Math.floor((220 - userAge) * 0.5);
-          userHRZones[1] = Math.floor((220 - userAge) * 0.6 - 1);
-          userHRZones[2] = Math.floor((220 - userAge) * 0.7 - 1);
-          userHRZones[3] = Math.floor((220 - userAge) * 0.8 - 1);
-          userHRZones[4] = Math.floor((220 - userAge) * 0.9 - 1);
-          userHRZones[5] = Math.floor((220 - userAge) * 1);
-        } else {
-          userHRZones[0] = ((220 - userAge) - userRestHR) * (0.55) + userRestHR;
-          userHRZones[1] = ((220 - userAge) - userRestHR) * (0.6) + userRestHR;
-          userHRZones[2] = ((220 - userAge) - userRestHR) * (0.65) + userRestHR;
-          userHRZones[3] = ((220 - userAge) - userRestHR) * (0.75) + userRestHR;
-          userHRZones[4] = ((220 - userAge) - userRestHR) * (0.85) + userRestHR;
-          userHRZones[5] = ((220 - userAge) - userRestHR) * (1) + userRestHR;
+          if (userHRBase === 0) {
+            // 區間數值採無條件捨去法
+            userHRZones[0] = Math.floor((220 - userAge) * 0.5);
+            userHRZones[1] = Math.floor((220 - userAge) * 0.6 - 1);
+            userHRZones[2] = Math.floor((220 - userAge) * 0.7 - 1);
+            userHRZones[3] = Math.floor((220 - userAge) * 0.8 - 1);
+            userHRZones[4] = Math.floor((220 - userAge) * 0.9 - 1);
+            userHRZones[5] = Math.floor((220 - userAge) * 1);
+          } else {
+            userHRZones[0] = ((220 - userAge) - userRestHR) * (0.55) + userRestHR;
+            userHRZones[1] = ((220 - userAge) - userRestHR) * (0.6) + userRestHR;
+            userHRZones[2] = ((220 - userAge) - userRestHR) * (0.65) + userRestHR;
+            userHRZones[3] = ((220 - userAge) - userRestHR) * (0.75) + userRestHR;
+            userHRZones[4] = ((220 - userAge) - userRestHR) * (0.85) + userRestHR;
+            userHRZones[5] = ((220 - userAge) - userRestHR) * (1) + userRestHR;
+          }
         }
       }
     // 2:腳踏車 3:重訓 5:有氧
@@ -231,24 +242,33 @@ export class ActivityService {
             elevations.push(+_lap.altitudeMeters);
           }
         }
-        if (!this.utils.isNumber(_lap.lapAvgHeartRateBpm) && !isDebug) {
-          isNoHeartRates = true;
-          isNoZones = true;
-        } else {
-          heartRates.push(+_lap.lapAvgHeartRateBpm);
-          if (+_lap.lapAvgHeartRateBpm >= userHRZones[0] && +_lap.lapAvgHeartRateBpm <= userHRZones[1]) {
-            userZoneTimes[1].y = userZoneTimes[1].y + resolutionSeconds;
-          } else if (+_lap.lapAvgHeartRateBpm >= userHRZones[1] + 1 && +_lap.lapAvgHeartRateBpm <= userHRZones[2]) {
-            userZoneTimes[2].y += resolutionSeconds;
-          } else if (+_lap.lapAvgHeartRateBpm >= userHRZones[2] + 1 && +_lap.lapAvgHeartRateBpm <= userHRZones[3]) {
-            userZoneTimes[3].y += resolutionSeconds;
-          } else if (+_lap.lapAvgHeartRateBpm >= userHRZones[3] + 1 && +_lap.lapAvgHeartRateBpm <= userHRZones[4]) {
-            userZoneTimes[4].y += resolutionSeconds;
-          } else if (+_lap.lapAvgHeartRateBpm >= userHRZones[4] + 1) {
-            userZoneTimes[5].y += resolutionSeconds;
+        if (infoDatas.totalHrZone0Second === null) {
+          if (!this.utils.isNumber(_lap.lapAvgHeartRateBpm) && !isDebug) {
+            isNoHeartRates = true;
+            isNoZones = true;
           } else {
-            userZoneTimes[0].y += resolutionSeconds;
+            heartRates.push(+_lap.lapAvgHeartRateBpm);
+            if (+_lap.lapAvgHeartRateBpm >= userHRZones[0] && +_lap.lapAvgHeartRateBpm <= userHRZones[1]) {
+              userZoneTimes[1].y = userZoneTimes[1].y + resolutionSeconds;
+            } else if (+_lap.lapAvgHeartRateBpm >= userHRZones[1] + 1 && +_lap.lapAvgHeartRateBpm < userHRZones[2]) {
+              userZoneTimes[2].y += resolutionSeconds;
+            } else if (+_lap.lapAvgHeartRateBpm >= userHRZones[2] + 1 && +_lap.lapAvgHeartRateBpm < userHRZones[3]) {
+              userZoneTimes[3].y += resolutionSeconds;
+            } else if (+_lap.lapAvgHeartRateBpm >= userHRZones[3] + 1 && +_lap.lapAvgHeartRateBpm < userHRZones[4]) {
+              userZoneTimes[4].y += resolutionSeconds;
+            } else if (+_lap.lapAvgHeartRateBpm >= userHRZones[4] + 1) {
+              userZoneTimes[5].y += resolutionSeconds;
+            } else {
+              userZoneTimes[0].y += resolutionSeconds;
+            }
           }
+        } else {
+          userZoneTimes[0].y = infoDatas.totalHrZone0Second;
+          userZoneTimes[1].y = infoDatas.totalHrZone1Second;
+          userZoneTimes[2].y = infoDatas.totalHrZone2Second;
+          userZoneTimes[3].y = infoDatas.totalHrZone0Second;
+          userZoneTimes[4].y = infoDatas.totalHrZone4Second;
+          userZoneTimes[5].y = infoDatas.totalHrZone5Second;
         }
         if (!this.utils.isNumber(_lap.lapRunAvgCadence) && !isDebug) {
           isNoRunCadences = true;
@@ -297,6 +317,18 @@ export class ActivityService {
         }
       });
     } else {
+      // 新增判斷爬升高度是否皆為null值來決定是否顯示爬升圖表-kidin-1081209
+      if (!isDebug) {
+        for (let i = 0; i < pointDatas.length; i++) {
+          if (pointDatas[i].altitudeMeters !== undefined && pointDatas[i].altitudeMeters !== null) {
+            isNoElevations = false;
+            break;
+          }
+        }
+      } else {
+        isNoElevations = false;
+      }
+
       pointDatas.forEach((_point, idx) => {
         // 不同X軸參考單位-kidin-1081114
         if (xaxisUnit === 'time') {
@@ -345,33 +377,43 @@ export class ActivityService {
             watts.push(+_point.rowingWatt);
           }
         }
-        if ((!_point.altitudeMeters || _point.altitudeMeters.length === 0) && !isDebug) {
-          isNoElevations = true;
-        } else {
+        if (isNoElevations === false) {
           if (!_point.altitudeMeters || _point.altitudeMeters.length === 0) {
             elevations.push(null);
           } else {
             elevations.push(+_point.altitudeMeters);
           }
         }
-        if (!this.utils.isNumber(_point.heartRateBpm) && !isDebug) {
-          isNoHeartRates = true;
-          isNoZones = true;
-        } else {
-          heartRates.push(+_point.heartRateBpm);
-          if (+_point.heartRateBpm >= userHRZones[0] && +_point.heartRateBpm <= userHRZones[1]) {
-            userZoneTimes[1].y = userZoneTimes[1].y + resolutionSeconds;
-          } else if (+_point.heartRateBpm >= userHRZones[1] + 1 && +_point.heartRateBpm <= userHRZones[2]) {
-            userZoneTimes[2].y += resolutionSeconds;
-          } else if (+_point.heartRateBpm >= userHRZones[2] + 1 && +_point.heartRateBpm <= userHRZones[3]) {
-            userZoneTimes[3].y += resolutionSeconds;
-          } else if (+_point.heartRateBpm >= userHRZones[3] + 1 && +_point.heartRateBpm <= userHRZones[4]) {
-            userZoneTimes[4].y += resolutionSeconds;
-          } else if (+_point.heartRateBpm >= userHRZones[4] + 1) {
-            userZoneTimes[5].y += resolutionSeconds;
+        // 若api無心率區間資料，則自行計算區間-kidin-1081217
+        if (infoDatas.totalHrZone0Second === null) {
+          if (!this.utils.isNumber(_point.heartRateBpm) && !isDebug) {
+            isNoHeartRates = true;
+            isNoZones = true;
           } else {
-            userZoneTimes[0].y += resolutionSeconds;
+            heartRates.push(+_point.heartRateBpm);
+            if (+_point.heartRateBpm >= userHRZones[0] && +_point.heartRateBpm < userHRZones[1]) {
+              userZoneTimes[1].y = userZoneTimes[1].y + resolutionSeconds;
+            } else if (+_point.heartRateBpm >= userHRZones[1] + 1 && +_point.heartRateBpm <= userHRZones[2]) {
+              userZoneTimes[2].y += resolutionSeconds;
+            } else if (+_point.heartRateBpm >= userHRZones[2] + 1 && +_point.heartRateBpm <= userHRZones[3]) {
+              userZoneTimes[3].y += resolutionSeconds;
+            } else if (+_point.heartRateBpm >= userHRZones[3] + 1 && +_point.heartRateBpm <= userHRZones[4]) {
+              userZoneTimes[4].y += resolutionSeconds;
+            } else if (+_point.heartRateBpm >= userHRZones[4] + 1) {
+              userZoneTimes[5].y += resolutionSeconds;
+            } else {
+              userZoneTimes[0].y += resolutionSeconds;
+            }
           }
+        } else {
+          // 修正心率區間可以顯示負值的問題-kidin-1090108(Bug 1040)
+          heartRates.push(+_point.heartRateBpm);
+          userZoneTimes[0].y = infoDatas.totalHrZone0Second >= 0 ? infoDatas.totalHrZone0Second : 0;
+          userZoneTimes[1].y = infoDatas.totalHrZone1Second >= 0 ? infoDatas.totalHrZone1Second : 0;
+          userZoneTimes[2].y = infoDatas.totalHrZone2Second >= 0 ? infoDatas.totalHrZone2Second : 0;
+          userZoneTimes[3].y = infoDatas.totalHrZone3Second >= 0 ? infoDatas.totalHrZone3Second : 0;
+          userZoneTimes[4].y = infoDatas.totalHrZone4Second >= 0 ? infoDatas.totalHrZone4Second : 0;
+          userZoneTimes[5].y = infoDatas.totalHrZone5Second >= 0 ? infoDatas.totalHrZone5Second : 0;
         }
         if (!this.utils.isNumber(_point.runCadence) && !isDebug) {
           isNoRunCadences = true;
@@ -432,7 +474,7 @@ export class ActivityService {
       data: elevations,
       unit: 'm',
       type: 'area',
-      valueDecimals: 0
+      valueDecimals: 1
     };
     const hrDataset = {
       name: 'Heart rate',
@@ -511,25 +553,6 @@ export class ActivityService {
       tempOptions,
       zoneOptions;
     // 新增長條圖均化顯示和綜合分析顯示-kidin-1081113
-    if (!isNoSpeeds) {
-      if (chartKind === 'columnChart') {
-        speedDataset.type = 'column';
-        speedDataset.data = this.segmentData(pointUnit, speedDataset.data, segRange);
-      } else {
-        speedDataset.data = speedDataset.data.map((val, j) => [
-          pointUnit[j],
-          val
-        ]);
-      }
-      speedOptions = new Option(speedDataset, colorIdx);
-      colorIdx++;
-      if (xaxisUnit === 'distance') {
-        speedOptions['xAxis'].type = '';
-        speedOptions['xAxis'].dateTimeLabelFormats = null;
-      }
-      finalDatas.push({ speedChartTarget: speedOptions, isSyncExtremes: true });
-      chartTargets.push('speedChartTarget');
-    }
     if (!isNoCycleWatt) {
       if (chartKind === 'columnChart') {
         wattDataset.type = 'column';
@@ -614,6 +637,24 @@ export class ActivityService {
       zoneOptions['chart'].zoomType = '';
       zoneOptions['xAxis'].type = '';
       zoneOptions['xAxis'].dateTimeLabelFormats = null;
+      zoneOptions.series[0].dataLabels = {
+        enabled: true,
+        formatter: function () {
+          const costhr = Math.floor(this.y / 3600);
+          const costmin = Math.floor(Math.round(this.y - costhr * 60 * 60) / 60);
+          const costsecond = Math.round(this.y - costmin * 60);
+          const timeHr = ('0' + costhr).slice(-2);
+          const timeMin = ('0' + costmin).slice(-2);
+          const timeSecond = ('0' + costsecond).slice(-2);
+
+          if (timeHr === '00') {
+            this.y = `${timeMin}:${timeSecond}`;
+          } else {
+            this.y = `${timeHr}:${timeMin}:${timeSecond}`;
+          }
+          return this.y;
+        }
+      };
       zoneOptions['tooltip'] = {
         formatter: function () {
           const costhr = Math.floor(this.y / 3600);
@@ -789,6 +830,25 @@ export class ActivityService {
       }
       finalDatas.push({ tempChartTarget: tempOptions, isSyncExtremes: true });
       chartTargets.push('tempChartTarget');
+    }
+    if (!isNoSpeeds) {
+      if (chartKind === 'columnChart') {
+        speedDataset.type = 'column';
+        speedDataset.data = this.segmentData(pointUnit, speedDataset.data, segRange);
+      } else {
+        speedDataset.data = speedDataset.data.map((val, j) => [
+          pointUnit[j],
+          val
+        ]);
+      }
+      speedOptions = new Option(speedDataset, colorIdx);
+      colorIdx++;
+      if (xaxisUnit === 'distance') {
+        speedOptions['xAxis'].type = '';
+        speedOptions['xAxis'].dateTimeLabelFormats = null;
+      }
+      finalDatas.push({ speedChartTarget: speedOptions, isSyncExtremes: true });
+      chartTargets.push('speedChartTarget');
     }
 
     return { finalDatas, chartTargets };

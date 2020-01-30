@@ -7,103 +7,82 @@ import {
   ViewChild,
   HostListener,
   OnChanges,
-  SimpleChanges
+  SimpleChanges,
+  OnDestroy
 } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { ImageCroppedEvent } from 'ngx-image-cropper';
+import { ImageCropperComponent } from 'ngx-image-cropper';
+import { UtilsService } from '../../services/utils.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-upload-file',
   templateUrl: './upload-file.component.html',
   styleUrls: ['./upload-file.component.css']
 })
-export class UploadFileComponent implements OnInit, OnChanges {
-  @Input() maxFileSize: number;
-  @Input() disabled = false;
-  @Input() reloadFileText: string;
-  @Input() chooseFileText: string;
-  @Input() btnText = this.chooseFileText;
-  @Input() isLoading: boolean;
+export class UploadFileComponent implements OnInit, OnChanges, OnDestroy {
+  @Input() isUserAvastarMode: false;
   @Input() accept: string;
   @Input() isImageFileMode = false;
-  @Input() isUserAvastarMode = false;
   @Input() imageURL: string;
   fileInformation: any;
   isImgVertical$ = new BehaviorSubject<boolean>(false);
   isUploadNewImg$ = new BehaviorSubject<boolean>(false);
   errorMsg: string;
+  updateQueryString: string;
+
+  // 裁切圖片所需變數-kidin-1090109
+  imageChangedEvent: any = '';
+  croppedImage: any = '';
+  imgSelected = false;
+  imgCropping = false;
+  isImgUpLoading = false;
+
   @Output() onChange = new EventEmitter();
   @ViewChild('fileUpload')
   set lookUp(ref: any) {
     ref.nativeElement.value = null;
   }
 
+  // 拖曳經過時無任何事件
   @HostListener('dragover', ['$event'])
   public onDragOver(evt) {
     evt.preventDefault();
     evt.stopPropagation();
   }
+
+  // 禁止拖曳出去
   @HostListener('dragleave', ['$event'])
   public onDragLeave(evt) {
     evt.preventDefault();
     evt.stopPropagation();
   }
+
+  // 拖曳照片至定點放開後觸發圖片裁切功能
   @HostListener('drop', ['$event'])
   public onDrop(evt) {
-    evt.preventDefault();
-    evt.stopPropagation();
-    const files = evt.dataTransfer.files;
-    const acceptFileArray = this.accept;
-    if (files.length > 0) {
-      const fileReader = new FileReader();
-      fileReader.onload = e => {
-        const fileName = files[0].name.split('.');
-        const fileType = fileName[fileName.length - 1];
-        this.fileInformation = {
-          value: files[0] || null,
-          link: fileReader.result || '',
-          isTypeCorrect: false,
-          isSizeCorrect: false
-        };
-
-        if (acceptFileArray.indexOf(fileType.toUpperCase()) > -1) {
-          this.fileInformation.isTypeCorrect = true;
-        }
-        // files[0].size 為bytes
-        if (files[0].size <= this.maxFileSize) {
-          this.fileInformation.isSizeCorrect = true;
-        }
-        if (
-          this.fileInformation.isSizeCorrect &&
-          this.fileInformation.isTypeCorrect
-        ) {
-          this.listenImage(this.fileInformation.link);
-          this.isUploadNewImg$.next(true);
-          this.btnText = this.reloadFileText;
-        } else {
-          this.handleErrorMsg();
-          this.isUploadNewImg$.next(false);
-        }
-
-        return this.onChange.emit(this.fileInformation);
-      };
-      fileReader.readAsDataURL(files[0]);
-    }
+    this.handleChange(evt);
   }
-  constructor() {}
+
+  @ViewChild(ImageCropperComponent)
+  imageCropper: ImageCropperComponent;
+
+  constructor(
+    private utilsService: UtilsService,
+    private translate: TranslateService
+  ) {}
 
   ngOnInit() {}
-  ngOnChanges(changes: SimpleChanges) {
-    if (this.isImageFileMode) {
-      const { imageURL: { currentValue } } = changes;
-      if (currentValue) {
-        this.listenImage(currentValue);
-      }
-    }
+
+  // 監測是否有選擇新圖片
+  ngOnChanges(changes: SimpleChanges) { }
+
+  handleBtnEvent () {
+    const inputSection = document.getElementById('inputFile');
+    inputSection.click();
   }
-  handleClick() {}
-  handleBtnEvent(event) {
-    event.preventDefault();
-  }
+
   handleImageLoad(event): void {
     const width = event.target.width;
     const height = event.target.height;
@@ -126,23 +105,18 @@ export class UploadFileComponent implements OnInit, OnChanges {
         this.fileInformation = {
           value: files[0] || null,
           link: fileReader.result || '',
-          isTypeCorrect: false,
-          isSizeCorrect: false
+          isTypeCorrect: false
         };
         if (acceptFileArray.indexOf(fileType.toUpperCase()) > -1) {
           this.fileInformation.isTypeCorrect = true;
         }
-        // files[0].size 為bytes
-        if (files[0].size <= this.maxFileSize) {
-          this.fileInformation.isSizeCorrect = true;
-        }
-        if (
-          this.fileInformation.isSizeCorrect &&
-          this.fileInformation.isTypeCorrect
-        ) {
-          this.listenImage(this.fileInformation.link);
+        if (this.fileInformation.isTypeCorrect) {
+          this.utilsService.setImgSelectedStatus(true);
+          this.imgCropping = true;
+          this.imgSelected = true;
+          this.fileChangeEvent(event);
+
           this.isUploadNewImg$.next(true);
-          this.btnText = this.reloadFileText;
         } else {
           this.handleErrorMsg();
           this.fileInformation.link = null;
@@ -153,30 +127,64 @@ export class UploadFileComponent implements OnInit, OnChanges {
       fileReader.readAsDataURL(files[0]);
     }
   }
-  listenImage(link) {
-    // Set the image height and width
-    const image = new Image();
-    image.addEventListener('load', this.handleImageLoad.bind(this));
-    image.src = link;
-  }
-  removePreImage() {
-    this.listenImage(this.imageURL);
-    this.fileInformation.link = this.imageURL;
-    this.onChange.emit(this.fileInformation);
-    this.btnText = this.chooseFileText;
-    this.isUploadNewImg$.next(false);
-  }
+
   handleErrorMsg() {
-    const { isSizeCorrect, isTypeCorrect } = this.fileInformation;
-    if (!isSizeCorrect && !isTypeCorrect) {
-      this.fileInformation.errorMsg = `照片格式限${
-        this.accept
-      }<br/>大小限制為${this.maxFileSize / 1024} KB以內`;
-    } else if (!isSizeCorrect) {
-      this.fileInformation.errorMsg = `大小限制為${this.maxFileSize /
-        1024} KB以內`;
-    } else {
-      this.fileInformation.errorMsg = `照片格式限${this.accept}`;
+    const { isTypeCorrect } = this.fileInformation;
+    if (!isTypeCorrect) {
+      this.fileInformation.errorMsg = this.translate.instant('Dashboard.Group.GroupInfo.photoRestriction');
     }
+  }
+
+
+  // 關閉裁切功能-kidin-1090109
+  closeImgCropping() {
+    this.utilsService.setImgSelectedStatus(false);
+    this.imgCropping = false;
+  }
+
+  // 裁切圖片功能-kidin-1090109
+  fileChangeEvent(event: any): void {
+    this.imageChangedEvent = event;
+  }
+
+  // 裁切後的base64圖片-kidin-1090109
+  imageCropped(event: ImageCroppedEvent) {
+    this.croppedImage = event.base64;
+    this.fileInformation.link = event.base64;
+    return this.onChange.emit(this.fileInformation);
+  }
+
+  imageLoaded() {
+    this.isImgUpLoading = true;
+  }
+  cropperReady() {
+    this.isImgUpLoading = false;
+  }
+  loadImageFailed () {
+    console.log('Load failed');
+  }
+
+  rotateLeft() {
+    this.imageCropper.rotateLeft();
+  }
+
+  rotateRight() {
+    this.imageCropper.rotateRight();
+  }
+
+  flipHorizontal() {
+    this.imageCropper.flipHorizontal();
+  }
+
+  flipVertical() {
+    this.imageCropper.flipVertical();
+  }
+
+  reEditImg () {
+    this.imgCropping = true;
+  }
+
+  ngOnDestroy () {
+    this.utilsService.setImgSelectedStatus(false);
   }
 }

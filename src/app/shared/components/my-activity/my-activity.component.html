@@ -213,8 +213,11 @@
       </mat-header-cell>
       <mat-cell *matCellDef="let row">
         <div *ngIf=" row.activityInfoLayer.type !== '5' && row.activityInfoLayer.type !== '3'">
-          <div >
+          <div *ngIf="row.activityInfoLayer?.totalDistanceMeters >= 1000">
             {{ row.activityInfoLayer && row.activityInfoLayer?.totalDistanceMeters / 1000 | number:'1.0-1' || ' -- ' }}km
+          </div>
+          <div *ngIf="row.activityInfoLayer?.totalDistanceMeters < 1000">
+            {{ row.activityInfoLayer && row.activityInfoLayer?.totalDistanceMeters | number:'1.0-1' || ' -- ' }}m
           </div>
           <div>
             <span style="color: #999;font-size:12px">{{'SH.totalDistance' | translate}}</span>

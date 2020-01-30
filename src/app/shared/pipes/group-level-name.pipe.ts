@@ -3,14 +3,26 @@ import { Pipe, PipeTransform } from '@angular/core';
 @Pipe({name: 'groupLevelTranslate'})
 export class GroupLevelNamePipe implements PipeTransform {
   transform(value: string, args: string[]): any {
-    if (value === '30') {
-      return 'Dashboard.Group.GroupInfo.brand';
-    } else if (value === '40') {
-      return 'Dashboard.Group.GroupInfo.branch';
-    } else if (value === '60') {
-      return 'Dashboard.Group.GroupInfo.coachingClass';
+    if (+args === 1) {
+      if (value === '30') {
+        return 'Dashboard.Group.GroupInfo.brand';
+      } else if (value === '40') {
+        return 'Dashboard.Group.GroupInfo.branch';
+      } else if (value === '60') {
+        return 'Dashboard.Group.class';
+      } else {
+        return 'Dashboard.Group.SearchGroup.generalGroup';
+      }
     } else {
-      return 'Dashboard.Group.SearchGroup.generalGroup';
+      if (value === '30') {
+        return 'other.com';
+      } else if (value === '40') {
+        return 'other.subCom';
+      } else if (value === '60') {
+        return '';
+      } else {
+        return 'other.Group.SearchGroup.generalGroup';
+      }
     }
   }
 }

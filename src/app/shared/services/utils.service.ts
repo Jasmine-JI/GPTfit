@@ -2,11 +2,16 @@ import { Injectable } from '@angular/core';
 import { cloneDeep } from 'lodash';
 import { stringify, parse } from 'query-string';
 import { FormGroup } from '@angular/forms';
+import { Observable } from 'rxjs/Observable';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 export const TOKEN = 'ala_token';
 export const EMPTY_OBJECT = {};
 
 @Injectable()
 export class UtilsService {
+  isResetPassword$ = new BehaviorSubject<boolean>(false);
+  imgSelected$ = new BehaviorSubject<boolean>(false);
+
   setLocalStorageObject(key: string, value) {
     localStorage.setItem(key, JSON.stringify(value));
   }
@@ -50,7 +55,7 @@ export class UtilsService {
     } else if (value.indexOf('data:image') > -1) {
       return value;
     } else if (value.indexOf('https://') > -1) {
-      return value;      
+      return value;
     } else {
       return `data:image/jpg; base64, ${value}`.replace(/\s+/g, '');
     }
@@ -222,5 +227,21 @@ export class UtilsService {
 
     // encode image to data-uri with base64 version of compressed image
     return canvas.toDataURL().replace('data:image/png;base64,', '');
+  }
+
+  setResetPasswordStatus(status: boolean) {
+    this.isResetPassword$.next(status);
+  }
+
+  getResetPasswordStatus(): Observable<boolean> {
+    return this.isResetPassword$;
+  }
+
+  setImgSelectedStatus(status: boolean) {
+    this.imgSelected$.next(status);
+  }
+
+  getImgSelectedStatus(): Observable<boolean> {
+    return this.imgSelected$;
   }
 }

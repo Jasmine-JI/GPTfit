@@ -1,0 +1,310 @@
+<ng-container *ngIf="!isPreviewMode">
+  <div [style.visibility]="isLoading ? 'hidden': 'visible'">
+    <div class="searchReport">
+      <p style="font-size: 18px; color: #26abe3;">{{'SH.create' | translate}}{{'Dashboard.SportReport.sportReport' | translate}}</p>
+      <p>請依照您的運動屬性與課程期間建立報告</p>
+      <div class="searchInput">
+        <div class="selectArea">
+          <div class="sportCategory">
+            <p style="white-space: nowrap; margin: 0px">{{'Dashboard.GroupClass.activityType' | translate}}：</p>
+            <mat-form-field style="width: 100px;" appearance="none" class="trainLiveCategroy">
+              <mat-select [(value)]="selectCategory">
+                <mat-option value="1">{{'Dashboard.SportReport.run' | translate}}</mat-option>
+                <mat-option value="2">{{'Dashboard.SportReport.cycle' | translate}}</mat-option>
+                <mat-option value="5">{{'Dashboard.SportReport.aerobic' | translate}}</mat-option>
+                <mat-option value="6">{{'Dashboard.SportReport.boating' | translate}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="datetimeInput">
+            <p style="white-space: nowrap; margin: 0px">{{'SH.dateRange' | translate}}：</p>
+            <div style="display: flex; flex-direction: column;">
+              <div>
+                  <button
+                  name="aWeek"
+                  class="alatech-btn alatech-btn--default activty-btn btnWord"
+                  [class.BtnBgColor]="isSelected === 'aWeek'"
+                  value="week"
+                  (click)="handleActivityBtn($event)"
+                >
+                  {{'Dashboard.GroupClass.last7Days' | translate}}
+                </button>
+                <button
+                  name="aMonth"
+                  class="alatech-btn alatech-btn--default activty-btn btnWord"
+                  [class.BtnBgColor]="isSelected === 'aMonth'"
+                  value="month"
+                  (click)="handleActivityBtn($event)"
+                >
+                  {{'Dashboard.GroupClass.last30Days' | translate}}
+                </button>
+                <button
+                  name="rangeDate"
+                  class="alatech-btn alatech-btn--default activty-btn btnWord"
+                  [class.BtnBgColor]="isSelected === 'rangeDate'"
+                  (click)="handleClickSelectDate($event)"
+                >
+                  {{'Dashboard.GroupClass.selectDate' | translate}}
+                </button>
+              </div>
+              <div class="dateSelectArea" *ngIf="isSelectDateRange">
+                <mat-form-field style="width: 100px;" appearance="none">
+                  <input
+                    matInput
+                    type="text"
+                    name="classDate"
+                    class="inputDateTime"
+                    style="bottom: 0.4em;"
+                    [max]="maxStartDate"
+                    [(value)]="selectedStartDate"
+                    (dateChange)="handleStartDate($event)"
+                    [matDatepicker]="startDatepicker"
+                    required="required"
+                    onkeydown="return false"
+                    (click)="startDatepicker.opened = true"
+                  >
+                  <mat-datepicker #startDatepicker disabled="false" touchUi="true"></mat-datepicker>
+                </mat-form-field>
+                <div id="dashBetweenDate"></div>
+                <mat-form-field style="width: 100px;" appearance="none">
+                  <input
+                    matInput
+                    type="text"
+                    name="classDate"
+                    class="inputDateTime"
+                    style="bottom: 0.4em;"
+                    [min]="minEndDate"
+                    [max]="maxSelectDate"
+                    [(value)]="endDate"
+                    (dateChange)="handleEndDate($event)"
+                    [matDatepicker]="endDatepicker"
+                    required="required"
+                    onkeydown="return false"
+                    (click)="endDatepicker.opened = true"
+                  >
+                  <mat-datepicker #endDatepicker disabled="false" touchUi="true"></mat-datepicker>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button
+          class="alatech-btn alatech-btn--default activty-btn"
+          style="max-width: 70px;"
+          (click)="handleSubmitSearch('click')"
+          [class.unClickable]="!reportCompleted"
+        >
+          {{'SH.send' | translate}}
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-container>
+<ng-container *ngIf="hasResData === false && initialChartComplated" style="width: 100%; display: flex; flex-direction: row; justify-content: center;">
+  <p style="margin-top: 10px; color: gray; font-size: 18px;">{{'Dashboard.System.nodata' | translate}}</p>
+</ng-container>
+<ng-container *ngIf="!reportCompleted || !initialChartComplated" style="display:flex;justify-content: center;align-items: center;width:100%">
+  <div class="whiteMask">
+    <mat-spinner style="z-index: 3;"></mat-spinner>
+  </div>
+</ng-container>
+<ng-container *ngIf="hasResData && reportCompleted" style="width: 100%">
+  <div class="functionButton">
+    <button class="alatech-btn alatech-btn--default activity-btn"
+      title="{{'SH.print' | translate}}"
+      (click)="print()"
+      *ngIf="isPreviewMode"
+    >
+      {{'SH.print' | translate}}
+    </button>
+    <button class="alatech-btn--default"
+      (click)="goBack()"
+      *ngIf="!isPreviewMode"
+      style="border: none;"
+      style="display: none;"
+    >
+      <i class="icon-svg_web-icon_p1_013-share activity-info_icon_size"></i>
+    </button>
+    <a target="_blank"
+      [href]="previewUrl"
+      class="alatech-btn--default"
+      *ngIf="!isPreviewMode"
+    >
+      <i class="icon-svg_web-icon_p2_087-print activity-info_icon_size"></i>
+    </a>
+  </div>
+  <div class="reprotHeadArea" [class.fitWindow]="!isPreviewMode">
+    <div style="display: flex; flex-direction: row;">
+      <div style="margin-right: 10px;">
+        <img src="{{brandImg}}">
+      </div>
+      <div style="display: flex; flex-direction: column;">
+        <span class="brandName">{{brandName}}</span>
+        <span style="font-size: 14px;">{{branchName}}</span>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column;">
+      <span style="font-size: 8px; color:#919191; text-align: end;">{{'Dashboard.GroupClass.creatTime' | translate}} {{reportCreatedTime}}</span>
+      <div class="reportName">
+        <p>{{fileInfo?.dispName}}</p>
+        <p style="margin-left: 10px;">個人分析表</p>
+      </div>
+    </div>
+  </div>
+  <div style="display: flex; flex-direction: column;">
+    <span class="ala-dashboard-title activity-title">{{'Dashboard.ActivityDetail.summary' | translate}}</span>
+    <div>
+      <div class="areaDescription">
+          <span class="activity-Link" (click)="visitLink('author')">
+            {{fileInfo?.author | slice}}
+          </span>
+          在[
+            <span class="activity-Link" (click)="visitLink('class')">{{fileInfo?.dispName}}</span>
+          ]課程，於 {{reportStartDate | date:'yyyy/MM/dd'}}~{{reportEndDate | date:'yyyy/MM/dd'}} 期間所建立的
+          <span class="fileAmount">{{activityLength}}</span>
+          筆 運動紀錄報告
+      </div>
+      <div style="display: flex; flex-direction: row; margin: 10px 0px; align-items: center;">
+        <div class="activity-icon">
+          <i *ngIf="reportCategory === '1'"
+            class="icon-svg_web-icon_p1_083-run"
+          ></i>
+          <i *ngIf="reportCategory === '2'"
+            class="icon-svg_web-icon_p1_084-cycle"
+          ></i>
+          <i *ngIf="reportCategory === '5'"
+            class="icon-svg_web-icon_p1_087-aerobic"
+          ></i>
+          <i *ngIf="reportCategory === '6'"
+            class="icon-svg_web-icon_p1_088-row"
+          ></i>
+        </div>
+        <span style="margin-left: 15px; color: #919191; font-size: 26px;">{{fileInfo?.dispName}}</span>
+      </div>
+      <div class="summaryArea">
+        <div class="summaryDataArea">
+          <span class="summaryData">{{totalTime}}</span>
+          <p class="summaryDescription">{{'Dashboard.SportReport.totalTime' | translate}}</p>
+        </div>
+        <div class="summaryDataArea" *ngIf="reportCategory !== '5'">
+          <span class="summaryData" *ngIf="totalDistance >= 1000">{{totalDistance / 1000 | number:'1.0-1'}} km</span>
+          <span class="summaryData" *ngIf="totalDistance < 1000">{{totalDistance}} m</span>
+          <p class="summaryDescription">{{'Dashboard.SportReport.totalDistance' | translate}}</p>
+        </div>
+        <div class="summaryDataArea" *ngIf="reportCategory !== '5'">
+          <span class="summaryData">{{avgSpeed | number:'1.0-1'}} km/hr</span>
+          <p class="summaryDescription">{{'Dashboard.SportReport.avgSpeed' | translate}}</p>
+        </div>
+        <div class="summaryDataArea">
+          <span class="summaryData">{{avgHR | number:'1.0-1'}} bpm</span>
+          <p class="summaryDescription">{{'Dashboard.SportReport.avgHr' | translate}}</p>
+        </div>
+        <div class="summaryDataArea">
+          <span class="summaryData">{{totalCalories | number:'1.0-1'}} cal</span>
+          <p class="summaryDescription">{{'Dashboard.SportReport.totalCalorie' | translate}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="display: flex; flex-direction: column;">
+    <span class="ala-dashboard-title activity-title">{{'Dashboard.GroupClass.exerciseAchievement' | translate}}</span>
+    <div>
+      <p class="areaDescription">
+        期間統計的運動成效，平均心率落點可藉由平均心率推算達到的訓練目的，以及所消耗的脂肪體重比例。
+      </p>
+      <div #container class="sportEfficiencyArea">
+        <div class="HRZone" *ngIf="!(initialChartComplated && !showHRZoneChartTarget)">
+          <div class="sportEfficiency">
+            <p class="chartTitle">平均心率區間落點</p>
+            <p class="chartTitle">{{'Dashboard.GroupClass.enduranceZone' | translate}} {{HRZoneThree}}%</p>
+          </div>
+          <div #HRZoneChartTarget class="chart">
+            chart target
+          </div>
+        </div>
+        <div class="bodyQuality" *ngIf="!(initialChartComplated && !showcaloriesBurnedChartTarget)">
+          <div class="sportEfficiency">
+            <p class="chartTitle">{{'Dashboard.SportReport.totalCalorie' | translate}}</p>
+            <p class="chartTitle">{{burnedCalories | number:'1.0-2' }}kg</p>
+          </div>
+          <div #caloriesBurnedChartTarget class="chart">
+            chart target
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="display: flex; flex-direction: column; ">
+      <p class="ala-dashboard-title activity-title">個人分析</p>
+      <div class="trendChart"
+          *ngIf="!(initialChartComplated && !showavgSpeedChartTarget)"
+          style="width: 100%;"
+          [class.hidden]="!showavgSpeedChartTarget"
+      >
+        <div class="sportTrend">
+          <p class="chartTitle">{{'Dashboard.SportReport.avgSpeed' | translate}}</p>
+          <p class="chartTitle">{{ avgSpeed | number:'1.0-2' }}km/h</p>
+        </div>
+        <div #avgSpeedChartTarget class="chart">
+          chart target
+        </div>
+      </div>
+      <div class="trendChart" *ngIf="!(initialChartComplated && !showavgHRChartTarget)" style="width: 100%;">
+        <div class="sportTrend">
+          <p class="chartTitle">{{'Dashboard.SportReport.avgHr' | translate}}</p>
+          <p class="chartTitle">{{ avgHR | number:'1.0-2' }}bpm</p>
+        </div>
+        <div #avgHRChartTarget class="chart">
+          chart target
+        </div>
+      </div>
+      <div class="trendChart" *ngIf="!(initialChartComplated && !showcaloriesChartTarget)" style="width: 100%;">
+        <div class="sportTrend">
+          <p class="chartTitle">{{'Dashboard.SportReport.totalCalorie' | translate}}</p>
+          <p class="chartTitle">{{ totalCalories | number:'1.0-2' }}cal</p>
+        </div>
+        <div #caloriesChartTarget class="chart">
+          chart target
+        </div>
+      </div>
+  </div>
+</ng-container>
+<ng-container *ngIf="hasResData">
+  <div class="other-info--area otherInfoArea">
+    <div class="otherInfoSection">
+      <p class="ala-dashboard-title activity-title">{{'Dashboard.ActivityDetail.device' | translate}}</p>
+      <img src="{{this.deviceImgUrl}}" style="height: auto; width: auto; max-width: 200px; max-height: 200px; margin: auto;">
+      <p>{{'Portal.modeCode' | translate}}：{{ deviceInfo?.modelName || 'SH.noData' | translate }}</p>
+      <p>{{"Portal.modeType" | translate}}：{{ (deviceInfo?.modelTypeID | productType | translate) || 'SH.noData' | translate }}</p>
+    </div>
+    <div class="otherInfoSection">
+      <p class="ala-dashboard-title activity-title">{{'Dashboard.TrainLive.courseIntroduction' | translate}}</p>
+      <div style="display: flex; flex-direction: column;">
+        <div class="groupPagePhoto">
+          <img src="{{groupImg}}">
+        </div>
+        <div class="lesson-title" style="padding-left: 10px; display: flex; flex-direction: column; margin-bottom: 10px;">
+          <span class="introductionName">
+            {{groupData?.groupName}}
+          </span>
+          <span style="text-align: right; font-size: 10px;">
+            {{brandName}} /  {{branchName}}
+          </span>
+        </div>
+      </div>
+      <span>{{groupData?.groupDesc}}</span>
+    </div>
+    <div class="otherInfoSection">
+      <p class="ala-dashboard-title activity-title">{{'Dashboard.TrainLive.coachIntroduction' | translate}}</p>
+      <div style="display: flex; flex-direction: column;">
+        <div class="groupPagePhoto">
+          <img src="{{coachInfo?.nameIcon}}">
+        </div>
+        <span class="introductionName">
+          {{coachInfo?.name}}
+        </span>
+      </div>
+      <p>{{coachInfo?.description}}</p>
+    </div>
+  </div>
+</ng-container>

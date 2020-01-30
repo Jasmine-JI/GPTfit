@@ -38,6 +38,8 @@ import { InnerTestComponent } from './components/inner-test/inner-test.component
 import { CloudRunGpxComponent } from './components/cloud-run-gpx/cloud-run-gpx.component';
 import { InnerDevicePairComponent } from './components/inner-device-pair/inner-device-pair.component';
 import { LifeTrackingComponent } from './components/life-tracking/life-tracking.component';
+import { MyReportComponent } from './group/group-info/my-report/my-report.component';
+import { ClassAnalysisComponent } from './group/group-info/class-analysis/class-analysis.component';
 
 const routes: Routes = [
   {
@@ -90,7 +92,17 @@ const routes: Routes = [
       },
       {
         path: 'group-info/:groupId',
-        component: GroupInfoComponent
+        component: GroupInfoComponent,
+        children: [
+          {
+            path: 'my-report',
+            component: MyReportComponent
+          },
+          {
+            path: 'class-analysis',
+            component: ClassAnalysisComponent
+          }
+        ]
       },
       {
         path: 'group-info/:groupId/edit',
@@ -154,6 +166,11 @@ const routes: Routes = [
       },
       {
         path: 'system/create-brand-group',
+        component: CreateGroupComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/create-com-group',
         component: CreateGroupComponent,
         canActivate: [DashboardGuard]
       },

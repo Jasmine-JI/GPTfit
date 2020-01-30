@@ -86,6 +86,8 @@ import { InnerDevicePairComponent } from './components/inner-device-pair/inner-d
 import { ShareGroupInfoDialogComponent } from '@shared/components/share-group-info-dialog/share-group-info-dialog.component';
 import { LifeTrackingComponent } from './components/life-tracking/life-tracking.component';
 import { LifeTrackingService } from './services/life-tracking.service';
+import { MyReportComponent } from './group/group-info/my-report/my-report.component';
+import { ClassAnalysisComponent } from './group/group-info/class-analysis/class-analysis.component';
 
 @NgModule({
   imports: [
@@ -95,14 +97,13 @@ import { LifeTrackingService } from './services/life-tracking.service';
     FormsModule,
     MyDatePickerModule,
     CustomMaterialModule,
-    MyDatePickerModule,
     BrowserModule,
     BrowserAnimationsModule,
     SharedPipes,
     ReactiveFormsModule,
     SharedModule,
     NgProgressModule,
-    QRCodeModule
+    QRCodeModule,
   ],
   providers: [
     EventEnrollService,
@@ -182,7 +183,9 @@ import { LifeTrackingService } from './services/life-tracking.service';
     InnerTestComponent,
     CloudRunGpxComponent,
     InnerDevicePairComponent,
-    LifeTrackingComponent
+    LifeTrackingComponent,
+    MyReportComponent,
+    ClassAnalysisComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [

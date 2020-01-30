@@ -10,6 +10,7 @@ import { UserDetail } from '../models/userDetail';
 import { UtilsService } from '@shared/services/utils.service';
 import { AuthService } from '@shared/services/auth.service';
 import * as moment from 'moment';
+import { _getComponentHostLElementNode } from '@angular/core/src/render3/instructions';
 
 
 @Injectable()
@@ -33,6 +34,7 @@ export class UserInfoService {
   isGroupAdministrator$ = new BehaviorSubject<boolean>(false);
   isGeneralMember$ = new BehaviorSubject<boolean>(false);
   userId$ = new BehaviorSubject<number>(null);
+  updatedImg$ = new BehaviorSubject<string>('');
   initialUserInfo$ = new BehaviorSubject<any>({
     isInitial: false,
     groupAccessRight: []
@@ -44,9 +46,11 @@ export class UserInfoService {
     isApplying: false
   });
 
+  private userBodyInfo = [];
+
   constructor(
-    private http: HttpClient, 
-    private utils: UtilsService, 
+    private http: HttpClient,
+    private utils: UtilsService,
     private authService: AuthService,
     private injector: Injector,
   ) { }
@@ -55,10 +59,15 @@ export class UserInfoService {
   }
   refreshToken(body) {
     return this.http.post<any>('/api/v1/user/refreshToken', body);
-  }  
+  }
   getUserIcon(): Observable<string> {
     return this.userIcon$;
   }
+
+  getUpdatedImgStatus(): Observable<string> {
+    return this.updatedImg$;
+  }
+
   getUserName(): Observable<string> {
     return this.userName$;
   }
@@ -77,6 +86,11 @@ export class UserInfoService {
   getUserHRBase(): Observable<number> {
     return this.userHRBase$;
   }
+
+  setUpdatedImgStatus(status: string) {
+    this.updatedImg$.next(status);
+  }
+
   setSupervisorStatus(status: boolean) {
     this.isSupervisor$.next(status);
   }
@@ -332,7 +346,11 @@ export class UserInfoService {
     return checkLogonData.then(res => {
       if (res === false) {
         const token = this.utils.getToken();
-        this.combineFetchProcess({ token, iconType : 2 });
+        this.combineFetchProcess({
+          token,
+          avatarType: 2,
+          iconType : 2
+        });
       } else {
         this.combineFetchProcess(body);
       }
@@ -342,7 +360,7 @@ export class UserInfoService {
   redirectLoginPage() {
     this.authService.logout();
     const router = this.injector.get(Router);
-    router.navigate(['/signin']);    
+    router.navigate(['/signin']);
   }
   combineFetchProcess(body) {
     const fetchMemberAccessRight = this.getMemberAccessRight(body);
@@ -451,5 +469,16 @@ export class UserInfoService {
         }
       );
     });
+  }
+
+  // 存入登入者身體資訊供圖表使用-kidin-1081212
+  saveBodyDatas (data) {
+    this.userBodyInfo.pop();
+    this.userBodyInfo.push(data);
+  }
+
+  // 取得登入者身體資訊供圖表使用-kidin-1081212
+  getBodyDatas () {
+    return this.userBodyInfo;
   }
 }

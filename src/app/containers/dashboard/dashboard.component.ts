@@ -18,6 +18,7 @@ import { HashIdService } from '@shared/services/hash-id.service';
 import { DetectInappService } from '@shared/services/detect-inapp.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-dashboard',
@@ -52,6 +53,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
   isAlphaVersion = false;
   version: string;
   isHideFooter = false;
+  updateQueryString = '';
   constructor(
     private globalEventsManager: GlobalEventsManager,
     private authService: AuthService,
@@ -144,6 +146,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
           const token = this.utilsService.getToken();
           const body = {
             token,
+            avatarType: 2,
             iconType: 2
           };
           this.userInfoService.getUserInfo(body).then(() => {
@@ -193,7 +196,10 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
       this.translateService.use(browserLang);
     }
     this.userInfoService.getUserIcon().subscribe(res => {
-      this.userPhoto = this.utilsService.buildBase64ImgString(res);
+      this.userPhoto = res;
+    });
+    this.userInfoService.getUpdatedImgStatus().subscribe(res => {
+      this.updateQueryString = res;
     });
     this.userInfoService.getUserName().subscribe(res => {
       this.userName = res;
@@ -295,7 +301,29 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
       this.isDefaultOpend = true;
       this.isSideNavOpend = true;
     }
+
+    // 使用者登入就存取身體資訊供各種圖表使用-kidin-1081212
+    const token = this.utilsService.getToken();
+    const body = {
+      token: token,
+      avatarType: 2,
+      iconType: 2,
+    };
+    this.userInfoService.getLogonData(body).subscribe(res => {
+      const data = {
+        name: res.info.name,
+        birthday: res.info.birthday,
+        heartRateBase: res.info.heartRateBase,
+        heartRateMax: res.info.heartRateMax,
+        heartRateResting: res.info.heartRateResting,
+        height: res.info.height,
+        weight: res.info.weight,
+        wheelSize: res.info.wheelSize
+      };
+      this.userInfoService.saveBodyDatas(data);
+    });
   }
+
   ngAfterViewChecked() {
     this.cdRef.detectChanges();
   }

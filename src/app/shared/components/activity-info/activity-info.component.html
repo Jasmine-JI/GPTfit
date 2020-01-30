@@ -105,7 +105,7 @@
         </span>
         <ng-container *ngIf="userLink?.userName.length > 0">{{'SH.record' | translate}}  ，</ng-container>{{infoDate}} {{'SH.create' | translate}}
       </p>
-      <div class="d-flex" style="align-items:center">
+      <div class="d-flex matFormParent" style="align-items:center">
         <div class="activity-icon">
           <i *ngIf="activityInfo?.type === '1'"
             class="icon-svg_web-icon_p1_083-run"
@@ -301,7 +301,7 @@
     <div *ngIf="activityInfo?.type === '3'"
         style="width: 100%; height: 100%; margin-bottom: 20px;"
     >
-      <div class="activity-title listGroup">
+      <div class="activity-title listGroup matFormParent">
         <div class="ala-dashboard-title">
           {{'Dashboard.MyActivity.musclePart' | translate}}
         </div>
@@ -321,7 +321,7 @@
         <app-muscle-train-list #muscleTrainList class="musclePartList" (click)="reRenderMuscleMap()"></app-muscle-train-list>
       </div>
     </div>
-    <div class="activity-title listGroup">
+    <div class="activity-title listGroup matFormParent">
       <div class="ala-dashboard-title">
         {{'Dashboard.MyActivity.chart' | translate}}
       </div>
@@ -652,7 +652,7 @@
                 *ngIf="activityInfo?.elevGain"
               >
                 <div>
-                  {{activityInfo?.elevGain || 0}}
+                  {{activityInfo?.elevGain | number:'1.0-1' || 0}}
                   <span class="data-label">m</span>
                 </div>
                 <span class="data-label">
@@ -663,7 +663,7 @@
                 *ngIf="activityInfo?.elevLoss"
               >
                 <div>
-                  {{activityInfo?.elevLoss || 0}}
+                  {{activityInfo?.elevLoss | number:'1.0-1' || 0}}
                   <span class="data-label">m</span>
                 </div>
                 <span class="data-label">
@@ -724,7 +724,7 @@
                 *ngIf="activityInfo?.maxElev"
               >
                 <div>
-                  {{activityInfo?.maxElev || 0}}
+                  {{activityInfo?.maxElev | number:'1.0-1' || 0}}
                   <span class="data-label">m</span>
                 </div>
                 <span class="data-label">
@@ -735,7 +735,7 @@
                 *ngIf="activityInfo?.minElev"
               >
                 <div>
-                  {{activityInfo?.minElev || 0}}
+                  {{activityInfo?.minElev | number:'1.0-1' || 0}}
                   <span class="data-label">m</span>
                 </div>
                 <span class="data-label">
@@ -1065,13 +1065,13 @@
           {{'Dashboard.ActivityDetail.device' | translate}}
         </div>
         <div style="display: flex; justify-content: center;">
-          <img src={{deviceInfo?.modelImgUrl}} style="height: 200px;width: auto;">
+          <img src={{deviceImgUrl}} style="height: 200px;width: auto;">
         </div>
         <div>
           {{ 'Portal.modeCode' | translate}}：{{ deviceInfo?.modelName || 'SH.noData' | translate }}
         </div>
         <div>
-          {{"Portal.modeType" | translate}}：{{ (deviceInfo?.modelType | productType | translate) || 'SH.noData' | translate }}
+          {{"Portal.modeType" | translate}}：{{ (deviceInfo?.modelTypeID | productType | translate) || 'SH.noData' | translate }}
         </div>
       </div>
       <div class="other-info" *ngIf="classInfo">

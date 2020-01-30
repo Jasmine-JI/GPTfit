@@ -1,0 +1,403 @@
+<ng-container *ngIf="!isPreviewMode">
+  <div [style.visibility]="isLoading ? 'hidden': 'visible'">
+    <div class="searchReport">
+      <p style="font-size: 18px; color: #26abe3;">{{'SH.create' | translate}}{{'Dashboard.SportReport.sportReport' | translate}}</p>
+      <p>請依照您的運動屬性與課程期間建立報告</p>
+      <div class="searchInput">
+        <div class="selectArea">
+          <div class="sportCategory">
+            <p style="white-space: nowrap; margin: 0px">{{'Dashboard.GroupClass.activityType' | translate}}：</p>
+            <mat-form-field style="width: 100px;" appearance="none" class="trainLiveCategroy">
+              <mat-select [(value)]="selectCategory">
+                <mat-option value="1">{{'Dashboard.SportReport.run' | translate}}</mat-option>
+                <mat-option value="2">{{'Dashboard.SportReport.cycle' | translate}}</mat-option>
+                <mat-option value="5">{{'Dashboard.SportReport.aerobic' | translate}}</mat-option>
+                <mat-option value="6">{{'Dashboard.SportReport.boating' | translate}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="datetimeInput">
+            <p style="white-space: nowrap; margin: 0px">{{'Dashboard.SportReport.time' | translate}}：</p>
+            <mat-form-field style="width: 100px;" appearance="none">
+              <input
+                matInput
+                type="text"
+                name="classDate"
+                class="inputDateTime"
+                style="bottom: 0.4em;"
+                [max]="maxSelectDate"
+                [(value)]="classDate"
+                (dateChange)="handleSaveDate($event)"
+                [matDatepicker]="classDatepicker"
+                required="required"
+                onkeydown="return false"
+                (click)="classDatepicker.opened = true"
+              >
+              <mat-datepicker #classDatepicker disabled="false" touchUi="true"></mat-datepicker>
+            </mat-form-field>
+            <div id="dash"></div>
+            <input
+              type="text"
+              name="classTime"
+              class="inputDateTime"
+              style="width: 90px;"
+              [(value)]="classTime"
+              required="required"
+              onkeydown="return false"
+              (click)="handleShowArrow()"
+              readonly
+            >
+            <div class="arrow" *ngIf="showArrow">
+              <div class="arrow-TimeUp" (click)="handleClickTime('hourUp')"></div>
+              <div class="arrow-TimeDown" (click)="handleClickTime('hourDown')"></div>
+            </div>
+          </div>
+        </div>
+        <button
+          class="alatech-btn alatech-btn--default activty-btn"
+          style="max-width: 70px; margin-bottom: 10px;"
+          (click)="handleSubmitSearch('click')"
+          [class.unClickable]="!reportCompleted"
+        >
+          {{'SH.send' | translate}}
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-container>
+<ng-container *ngIf="hasResData === false && initialChartComplated" style="width: 100%; display: flex; flex-direction: row; justify-content: center;">
+  <p style="margin-top: 10px; color: gray; font-size: 18px;">{{'Dashboard.System.nodata' | translate}}</p>
+</ng-container>
+<ng-container *ngIf="!reportCompleted || !initialChartComplated" style="display:flex;justify-content: center;align-items: center;width:100%">
+  <div class="whiteMask">
+    <mat-spinner style="z-index: 3;"></mat-spinner>
+  </div>
+</ng-container>
+<ng-container *ngIf="hasResData && reportCompleted">
+  <div class="functionButton">
+    <button class="alatech-btn alatech-btn--default activity-btn"
+      title="{{'SH.print' | translate}}"
+      (click)="print()"
+      *ngIf="isPreviewMode"
+    >
+      {{'SH.print' | translate}}
+    </button>
+    <button class="alatech-btn--default"
+      (click)="goBack()"
+      *ngIf="!isPreviewMode"
+      style="border: none;"
+      style="display: none;"
+    >
+      <i class="icon-svg_web-icon_p1_013-share activity-info_icon_size"></i>
+    </button>
+    <a target="_blank"
+      [href]="previewUrl"
+      class="alatech-btn--default"
+      *ngIf="!isPreviewMode"
+    >
+      <i class="icon-svg_web-icon_p2_087-print activity-info_icon_size"></i>
+    </a>
+  </div>
+  <div class="reprotHeadArea" [class.fitWindow]="!isPreviewMode">
+    <div style="display: flex; flex-direction: row;">
+      <div style="margin-right: 10px;">
+        <img src="{{brandImg}}">
+      </div>
+      <div style="display: flex; flex-direction: column;">
+        <span class="brandName">{{brandName}}</span>
+        <span style="font-size: 14px;">{{branchName}}</span>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column;">
+      <span style="font-size: 8px; color:#919191; text-align: end;">
+        {{'Dashboard.GroupClass.creatTime' | translate}} {{reportCreatedTime}}
+      </span>
+      <div class="reportName">
+        <p>{{fileInfo?.dispName}}</p>
+        <p style="margin-left: 10px;">團體分析表</p>
+      </div>
+    </div>
+  </div>
+  <div style="display: flex; flex-direction: column;">
+    <span class="ala-dashboard-title activity-title">{{'Dashboard.ActivityDetail.summary' | translate}}</span>
+    <div>
+      <div class="areaDescription">
+        在[
+          <span class="activity-Link" (click)="visitLink('class')">{{fileInfo?.dispName}}</span>
+        ]課程，於 {{classRealDateTime}} 共
+        <span class="fileAmount">{{activityLength}}</span>
+        人，所建立運動紀錄報告
+      </div>
+      <div style="display: flex; flex-direction: row; margin: 10px 0px; align-items: center;">
+        <div class="activity-icon">
+          <i *ngIf="reportCategory === '1'"
+            class="icon-svg_web-icon_p1_083-run"
+          ></i>
+          <i *ngIf="reportCategory === '2'"
+            class="icon-svg_web-icon_p1_084-cycle"
+          ></i>
+          <i *ngIf="reportCategory === '5'"
+            class="icon-svg_web-icon_p1_087-aerobic"
+          ></i>
+          <i *ngIf="reportCategory === '6'"
+            class="icon-svg_web-icon_p1_088-row"
+          ></i>
+        </div>
+        <span style="margin-left: 15px; color: #919191; font-size: 26px;">{{fileInfo?.dispName}}</span>
+      </div>
+      <div class="summaryArea">
+        <div class="summaryDataArea">
+          <span class="summaryData">{{avgActivityTime}}</span>
+          <p class="summaryDescription">{{'Dashboard.TrainLive.avg' | translate}}{{'Dashboard.SportReport.time' | translate}}</p>
+        </div>
+        <div class="summaryDataArea" *ngIf="reportCategory !== '5'">
+          <span class="summaryData" *ngIf="avgDistance >= 1000">{{avgDistance / 1000 | number:'1.0-1'}} km</span>
+          <span class="summaryData" *ngIf="avgDistance < 1000">{{avgDistance}} m</span>
+          <p class="summaryDescription">{{'Dashboard.SportReport.totalDistance' | translate}}</p>
+        </div>
+        <div class="summaryDataArea" *ngIf="reportCategory !== '5'">
+          <span class="summaryData">{{avgSpeed | number:'1.0-1'}} km/hr</span>
+          <p class="summaryDescription">{{'Dashboard.SportReport.avgSpeed' | translate}}</p>
+        </div>
+        <div class="summaryDataArea">
+          <span class="summaryData">{{avgHR | number:'1.0-1'}} bpm</span>
+          <p class="summaryDescription">{{'Dashboard.SportReport.avgHr' | translate}}</p>
+        </div>
+        <div class="summaryDataArea">
+          <span class="summaryData">{{avgCalories | number:'1.0-1'}} cal</span>
+          <p class="summaryDescription">{{'Dashboard.SportReport.totalCalorie' | translate}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="display: flex; flex-direction: column;">
+    <span class="ala-dashboard-title activity-title">{{'Dashboard.GroupClass.exerciseAchievement' | translate}}</span>
+    <div>
+      <p class="areaDescription">
+        全體成員的運動成效，平均心率落點可藉由平均心率推算達到的訓練目的，以及全體學員消耗卡路里的統計比。
+      </p>
+      <div #container class="sportEfficiencyArea">
+          <div class="HRZone" *ngIf="!(initialChartComplated && !showclassHRZoneChartTarget)">
+            <div class="sportEfficiency">
+              <p class="chartTitle">全體心率區間落點</p>
+              <p class="chartTitle">{{'Dashboard.GroupClass.enduranceZone' | translate}} {{HRZoneThree}}%</p>
+            </div>
+            <div #classHRZoneChartTarget class="chart">
+              chart target
+            </div>
+          </div>
+          <div class="bodyQuality" *ngIf="!(initialChartComplated && !showclassCaloriesChartTarget)">
+            <div class="sportEfficiency">
+              <p class="chartTitle">{{'SH.all' | translate}} {{'Dashboard.TrainLive.member' | translate}} {{'Dashboard.SportReport.totalCalorie' | translate}}</p>
+            </div>
+            <div #classCaloriesChartTarget class="chart">
+              chart target
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+  <div style="display: flex; flex-direction: column; margin-bottom: 10px;">
+      <p class="ala-dashboard-title activity-title">個人分析</p>
+      <div>
+        <mat-table [dataSource]="tableData" matSort #sortTable="matSort" (matSortChange)="sortData()">
+          <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true" class="tableArrangement">
+              <span class="tableTitleWord">{{'Dashboard.Group.MyGroup.name' | translate}}</span>
+            </mat-header-cell>
+            <mat-cell
+              *matCellDef="let row; let i = index;"
+              class="tableArrangement"
+            >
+              {{row?.name}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="distance">
+            <mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header
+              disableClear="true"
+              class="tableArrangement"
+              [hidden]="reportCategory === '5'"
+            >
+              <div class="tableTitle">
+                <span class="tableTitleWord">{{'Dashboard.MyActivity.distance' | translate}}</span>
+                <span class="chartTitleUnit">km</span>
+              </div>
+            </mat-header-cell>
+            <mat-cell
+              *matCellDef="let row; let i = index;"
+              class="tableArrangement"
+              [hidden]="reportCategory === '5'"
+            >
+              {{row?.distance / 1000 | number:'1.0-1'}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="avgSpeed">
+            <mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header
+              disableClear="true"
+              class="tableArrangement"
+              [hidden]="reportCategory === '5'"
+            >
+              <div class="tableTitle">
+                <span class="tableTitleWord">{{'SH.avgSpeed' | translate}}</span>
+                <span class="chartTitleUnit">km/h</span>
+              </div>
+            </mat-header-cell>
+            <mat-cell
+              *matCellDef="let row; let i = index;"
+              class="tableArrangement"
+              [hidden]="reportCategory === '5'"
+            >
+              {{row?.avgSpeed}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="avgHr">
+            <mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true" class="tableArrangement">
+              <div class="tableTitle">
+                <span class="tableTitleWord">{{'SH.avgHr' | translate}}</span>
+                <span class="chartTitleUnit">bpm</span>
+              </div>
+            </mat-header-cell>
+            <mat-cell
+              *matCellDef="let row; let i = index;"
+              class="tableArrangement"
+            >
+              {{row?.avgHr}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="maxHr">
+            <mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header
+              disableClear="true"
+              class="tableArrangement"
+              [class.hideColumn]="reportCategory !== '5'"
+            >
+              <div class="tableTitle">
+                <span class="tableTitleWord">{{'SH.maxHr' | translate}}</span>
+                <span class="chartTitleUnit">bpm</span>
+              </div>
+            </mat-header-cell>
+            <mat-cell
+              *matCellDef="let row; let i = index;"
+              class="tableArrangement"
+              [class.hideColumn]="reportCategory !== '5'"
+            >
+              {{row?.maxHr}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="calories">
+            <mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header
+              disableClear="true"
+              class="tableArrangement"
+              [class.hideColumn]="reportCategory !== '5'"
+            >
+              <div class="tableTitle">
+                <span class="tableTitleWord">{{'SH.calories' | translate}}</span>
+                <span class="chartTitleUnit">cal</span>
+              </div>
+            </mat-header-cell>
+            <mat-cell
+              *matCellDef="let row; let i = index;"
+              class="tableArrangement"
+              [class.hideColumn]="reportCategory !== '5'"
+            >
+              {{row?.calories}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="avgWatt">
+            <mat-header-cell
+              *matHeaderCellDef
+              mat-sort-header
+              disableClear="true"
+              class="tableArrangement hideColumn"
+              [hidden]="reportCategory !== '2'"
+            >
+              <div class="tableTitle">
+                <span class="tableTitleWord">{{'Dashboard.MyActivity.avgPower' | translate}}</span>
+                <span class="chartTitleUnit">watt</span>
+              </div>
+            </mat-header-cell>
+            <mat-cell
+              *matCellDef="let row; let i = index;"
+              class="tableArrangement hideColumn"
+              [hidden]="reportCategory !== '2'"
+            >
+              {{row?.avgWatt}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="HRZoneChart">
+            <mat-header-cell *matHeaderCellDef disableClear="true" class="tableArrangement">
+              <div class="tableTitle">
+                <span class="tableTitleWord">{{'Dashboard.GroupClass.exerciseAchievement' | translate}}</span>
+                <span class="chartTitleUnit">{{'SH.hrZone' | translate}}</span>
+              </div>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row; let i = index;">
+              <div class="memberHRZoneChart">
+                Chart error
+              </div>
+            </mat-cell>
+          </ng-container>
+          <ng-container>
+            <mat-header-row
+              *matHeaderRowDef="['name', 'distance', 'avgSpeed', 'avgHr', 'maxHr', 'calories', 'avgWatt','HRZoneChart']"
+            >
+            </mat-header-row>
+            <mat-row
+              *matRowDef="let logRow; let j = index; columns: ['name', 'distance', 'avgSpeed', 'avgHr', 'maxHr', 'calories', 'avgWatt','HRZoneChart']"
+              (click)="handleClickMember($event)"
+              id="{{j}}"
+            >
+            </mat-row>
+          </ng-container>
+        </mat-table>
+      </div>
+      <div class="seeMoreLink" (click)="handleTableData('showAll')" [hidden]="showMore">{{'Dashboard.TrainLive.more' | translate}}</div>
+  </div>
+</ng-container>
+<ng-container *ngIf="hasResData">
+  <div class="other-info--area otherInfoArea">
+    <div class="otherInfoSection">
+      <p class="ala-dashboard-title activity-title">{{'Dashboard.ActivityDetail.device' | translate}}</p>
+      <img src="{{this.deviceImgUrl}}" style="height: auto; width: auto; max-width: 200px; max-height: 200px; margin: auto;">
+      <p>{{'Portal.modeCode' | translate}}：{{ deviceInfo?.modelName || 'SH.noData' | translate }}</p>
+      <p>{{"Portal.modeType" | translate}}：{{ (deviceInfo?.modelTypeID | productType | translate) || 'SH.noData' | translate }}</p>
+    </div>
+    <div class="otherInfoSection">
+      <p class="ala-dashboard-title activity-title">{{'Dashboard.TrainLive.courseIntroduction' | translate}}</p>
+      <div style="display: flex; flex-direction: column;">
+        <div class="groupPagePhoto">
+          <img src="{{groupImg}}">
+        </div>
+        <div class="lesson-title" style="padding-left: 10px; display: flex; flex-direction: column; margin-bottom: 10px;">
+          <span class="introductionName">
+            {{groupData?.groupName}}
+          </span>
+          <span style="text-align: right; font-size: 10px;">
+            {{brandName}} /  {{branchName}}
+          </span>
+        </div>
+      </div>
+      <span>{{groupData?.groupDesc}}</span>
+    </div>
+    <div class="otherInfoSection">
+      <p class="ala-dashboard-title activity-title">{{'Dashboard.TrainLive.coachIntroduction' | translate}}</p>
+      <div style="display: flex; flex-direction: column;">
+        <div class="groupPagePhoto">
+          <img src="{{coachInfo?.nameIcon}}">
+        </div>
+        <span class="introductionName">
+          {{coachInfo?.name}}
+        </span>
+      </div>
+      <p>{{coachInfo?.description}}</p>
+    </div>
+  </div>
+</ng-container>
+

@@ -20,6 +20,7 @@ export class PersonalPreferencesComponent implements OnInit {
   settingsForm: FormGroup;
   isSaveUserSettingLoading = false;
   blockSaveButton = false;
+  heartRateBase: number;
   @Input() userData: any;
   constructor(
     private settingsService: SettingsService,
@@ -53,6 +54,9 @@ export class PersonalPreferencesComponent implements OnInit {
       wheelSize,
       sleep: { normalBedTime, normalWakeTime }
     } = this.userData;
+
+    this.heartRateBase = +heartRateBase;
+
     this.settingsForm = this.fb.group({
       // 定義表格的預設值
       heartRateBase,
@@ -131,7 +135,11 @@ export class PersonalPreferencesComponent implements OnInit {
       this.settingsService.updateUserProfile(body).subscribe(res => {
         this.isSaveUserSettingLoading = false;
         if (res.resultCode === 200) {
-          this.userInfoService.getUserInfo({ token, iconType: 2 });
+          this.userInfoService.getUserInfo({
+            token,
+            avatarType: 2,
+            iconType: 2
+          });
           this.snackbar.open(
             this.translate.instant(
               'Dashboard.Settings.finishEdit'
@@ -141,6 +149,26 @@ export class PersonalPreferencesComponent implements OnInit {
               duration: 5000
             }
           );
+
+          // 重新存取身體資訊供各種圖表使用-kidin-1081212
+          const key = {
+            token: token,
+            avatarType: 2,
+            iconType: 2
+          };
+          this.userInfoService.getLogonData(key).subscribe(result => {
+            const data = {
+              name: result.info.name,
+              birthday: result.info.birthday,
+              heartRateBase: result.info.heartRateBase,
+              heartRateMax: result.info.heartRateMax,
+              heartRateResting: result.info.heartRateResting,
+              height: result.info.height,
+              weight: result.info.weight,
+              wheelSize: result.info.wheelSize
+            };
+            this.userInfoService.saveBodyDatas(data);
+          });
         } else {
           this.snackbar.open(
             this.translate.instant('Dashboard.Settings.updateFailed'),
@@ -156,5 +184,9 @@ export class PersonalPreferencesComponent implements OnInit {
       return '0';
     }
     return _value;
+  }
+
+  handleHeartRateBase (e) {
+    this.heartRateBase = +e.target.value;
   }
 }

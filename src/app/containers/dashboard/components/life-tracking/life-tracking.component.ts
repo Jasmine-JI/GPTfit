@@ -26,7 +26,7 @@ const Highcharts: any = _Highcharts; // 不檢查highchart型態
   templateUrl: './life-tracking.component.html',
   styleUrls: [
     './life-tracking.component.scss',
-    '../../../../shared/components/activity-info/activity-info.component.css'
+    '../../../../shared/components/activity-info/activity-info.component.scss'
   ],
   encapsulation: ViewEncapsulation.None
 })
@@ -107,7 +107,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   filterEndTime = moment().format('YYYY-MM-DDT00:00:00.000+08:00');
   /**
    * 此搜尋時間在轉換為GMT之後，搜尋到的生活追蹤資料會變成兩天
-   */  
+   */
   //filterEndTime = moment().format('YYYY-MM-DDT23:59:59.000+08:00');
 
   isShowChart = true;

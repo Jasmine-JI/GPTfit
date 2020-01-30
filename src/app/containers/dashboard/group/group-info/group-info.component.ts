@@ -6,7 +6,7 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { GroupService } from '../../services/group.service';
 import { UtilsService } from '@shared/services/utils.service';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { UserInfoService } from '../../services/userInfo.service';
 import { MatDialog } from '@angular/material';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
@@ -24,6 +24,9 @@ import { ShareGroupInfoDialogComponent } from '@shared/components/share-group-in
   encapsulation: ViewEncapsulation.None
 })
 export class GroupInfoComponent implements OnInit {
+  accessRight: number;
+  isPreviewMode = false;
+  hashGroupId: string;
   groupId: string;
   token: string;
   groupInfo: any;
@@ -64,6 +67,8 @@ export class GroupInfoComponent implements OnInit {
   confirmText: string;
   cancelText: string;
   totalGroupName: string; // 含母階層的群組名稱
+  updateImgQueryString = '';
+  brandType: any;
   constructor(
     private route: ActivatedRoute,
     private groupService: GroupService,
@@ -82,12 +87,25 @@ export class GroupInfoComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (location.search.indexOf('ipm=s') > -1) {
+      this.isPreviewMode = true;
+    }
     this.route.params.subscribe(_params => this.handleInit());
+    this.detectUrlChange(location.pathname)
+    this.router.events.subscribe((val: NavigationEnd) => {
+      if (val instanceof NavigationEnd && val.url) {
+        this.detectUrlChange(val.url);
+      }
+    });
+    this.userInfoService.getUserAccessRightDetail().subscribe(response => {
+      this.accessRight = Number(response.accessRight);
+    });
   }
 
   handleInit() {
+    this.hashGroupId = this.route.snapshot.paramMap.get('groupId');
     this.groupId = this.hashIdService.handleGroupIdDecode(
-      this.route.snapshot.paramMap.get('groupId')
+      this.hashGroupId
     );
     if (this.groupId && this.groupId.length > 0) {
       this.groupLevel = this.utils.displayGroupLevel(this.groupId);
@@ -99,7 +117,8 @@ export class GroupInfoComponent implements OnInit {
     const body = {
       token: this.token,
       groupId: this.groupId,
-      findRoot: '1'
+      findRoot: '1',
+      avatarType: '2'
     };
     this.userInfoService.getUserDetail(body, this.groupId);
     this.userInfoService.getUserId().subscribe(res => {
@@ -119,6 +138,7 @@ export class GroupInfoComponent implements OnInit {
     });
     this.groupService.fetchGroupListDetail(body).subscribe(res => {
       this.groupInfo = res.info;
+      this.groupService.saveGroupInfo(this.groupInfo); // 將群組資訊存取進service減少call api次數-kidin-1081227
       const {
         groupIcon,
         groupId,
@@ -126,8 +146,12 @@ export class GroupInfoComponent implements OnInit {
         groupStatus,
         shareActivityToMember,
         shareAvatarToMember,
-        shareReportToMember
+        shareReportToMember,
+        brandType,
       } = this.groupInfo;
+
+      this.brandType = brandType;
+
       if (shareAvatarToMember && +shareAvatarToMember.switch > 2) {
         this.handleShareTarget(shareAvatarToMember, 1);
       }
@@ -142,9 +166,15 @@ export class GroupInfoComponent implements OnInit {
       } else {
         this.joinStatus = 5;
       }
+
+      // 確認群組頭像是否更新-kidin-1090113
+      this.groupService.getImgUpdatedStatus().subscribe(response => {
+        this.updateImgQueryString = response;
+      });
+
       this.groupImg =
         groupIcon && groupIcon.length > 0
-          ? this.utils.buildBase64ImgString(groupIcon)
+          ? `${groupIcon}${this.updateImgQueryString}`
           : '/assets/images/group-default.svg';
       this.group_id = this.utils.displayGroupId(groupId);
       this.groupLevel = this.utils.displayGroupLevel(groupId);
@@ -194,6 +224,7 @@ export class GroupInfoComponent implements OnInit {
       });
     });
   }
+
   handleShareTarget(shareData, type) {
     const browserLang = this.utils.getLocalStorageObject('locale');
     let text = '';
@@ -227,33 +258,83 @@ export class GroupInfoComponent implements OnInit {
     accessRights = accessRights.map(_accessRight => {
       if (browserLang === 'zh-tw') {
         if (_accessRight === '30') {
-          return '品牌管理員';
+          if (this.brandType === 1) {
+            return '品牌管理員';
+          } else {
+            return '企業管理員';
+          }
         } else if (_accessRight === '40') {
-          return '分店管理員';
+          if (this.brandType === 1) {
+            return '分店管理員';
+          } else {
+            return '分公司管理員';
+          }
         } else if (_accessRight === '50') {
-          return '體適能教練';
+          if (this.brandType === 1) {
+            return '體適能教練';
+          } else {
+            return '部門管理員';
+          }
         } else {
-          return '專業老師';
+          if (this.brandType === 1) {
+            return '專業老師';
+          } else {
+            return '社團管理員';
+          }
         }
       } else if (browserLang === 'zh-cn') {
         if (_accessRight === '30') {
-          return '品牌管理员';
-        } else if (_accessRight === '40') {
-          return '分店管理员';
-        } else if (_accessRight === '50') {
-          return '体适能教练';
-        } else {
-          return '专业老师';
+          if (_accessRight === '30') {
+            if (this.brandType === 1) {
+              return '品牌管理员';
+            } else {
+              return '企業管理员';
+            }
+          } else if (_accessRight === '40') {
+            if (this.brandType === 1) {
+              return '分店管理员';
+            } else {
+              return '分公司管理员';
+            }
+          } else if (_accessRight === '50') {
+            if (this.brandType === 1) {
+              return '体适能教练';
+            } else {
+              return '部門管理员';
+            }
+          } else {
+            if (this.brandType === 1) {
+              return '专业老师';
+            } else {
+              return '社團管理员';
+            }
+          }
         }
       } else {
         if (_accessRight === '30') {
-          return 'Brand administrator';
+          if (this.brandType === 1) {
+            return 'Brand administrator';
+          } else {
+            return '企業管理員';
+          }
         } else if (_accessRight === '40') {
-          return 'Branch manager';
+          if (this.brandType === 1) {
+            return 'Branch manager';
+          } else {
+            return '分公司管理員';
+          }
         } else if (_accessRight === '50') {
-          return 'Physical fitness coach';
+          if (this.brandType === 1) {
+            return 'Physical fitness coach';
+          } else {
+            return '部門管理員';
+          }
         } else {
-          return 'Professional teacher';
+          if (this.brandType === 1) {
+            return 'Professional teacher';
+          } else {
+            return '社團管理員';
+          }
         }
       }
     });
@@ -272,20 +353,32 @@ export class GroupInfoComponent implements OnInit {
       this.shareReportTarget = text;
     }
   }
+
   handleGroupItem(idx) {
-    this.chooseIdx = idx;
-    const body = {
-      token: this.token,
-      groupId: this.groupId
-    };
-    if (this.chooseIdx === 2) {
+    if (idx === 4) {
+      this.chooseIdx = idx;
+      this.router.navigateByUrl(`/dashboard/group-info/${this.hashGroupId}/my-report`);
+    } else if (idx === 5) {
+      this.chooseIdx = idx;
+      this.router.navigateByUrl(`/dashboard/group-info/${this.hashGroupId}/class-analysis`);
+    } else if (idx === 2) {
+      this.chooseIdx = idx;
+      this.router.navigateByUrl(`/dashboard/group-info/${this.hashGroupId}`);
+      const body = {
+        token: this.token,
+        groupId: this.groupId
+      };
       this.isCommerceInfoLoading = true;
       this.groupService.fetchCommerceInfo(body).subscribe(res => {
         this.isCommerceInfoLoading = false;
         this.commerceInfo = res.info;
       });
+    } else {
+      this.chooseIdx = idx;
+      this.router.navigateByUrl(`/dashboard/group-info/${this.hashGroupId}`);
     }
   }
+
   openShareGroupInfoDialog() {
     this.dialog.open(ShareGroupInfoDialogComponent, {
       hasBackdrop: true,
@@ -297,6 +390,7 @@ export class GroupInfoComponent implements OnInit {
       }
     });
   }
+
   getAndInitTranslations() {
     this.translate
       .get(['Dashboard.Group.disclaimer', 'SH.agree', 'SH.disagree'])
@@ -306,161 +400,161 @@ export class GroupInfoComponent implements OnInit {
         this.cancelText = translation['SH.disagree'];
       });
   }
-  handleActionGroup(_type) {
-    const body = {
-      token: this.token,
-      groupId: this.groupId,
-      actionType: _type
-    };
 
+
+  handleActionGroup(_type) {
     if (_type === 1 && this.groupLevel === '60') {
       // 申請加入
       const langName = this.utils.getLocalStorageObject('locale');
       const bodyText = toMemberText[langName];
-      return this.dialog.open(MessageBoxComponent, {
-        hasBackdrop: true,
-        data: {
-          title: this.title,
-          body: bodyText,
-          confirmText: this.confirmText,
-          cancelText: this.cancelText,
-          onConfirm: () => {
-            this.groupService
-              .actionGroup(body)
-              .subscribe(
-                ({ resultCode, resultMessage, info: { selfJoinStatus } }) => {
-                  if (resultCode === 200) {
-                    this.joinStatus = selfJoinStatus;
-                    this.userProfileService
-                      .getUserProfile({ token: this.token })
-                      .subscribe(res => {
-                        this.isLoading = false;
-                        const {
-                          privacy: { activityTracking, activityTrackingReport }
-                        } = res.info;
-                        let isOnlyme = false;
-                        isOnlyme = !activityTracking.some(_val => +_val > 1);
-                        isOnlyme = !activityTrackingReport.some(
-                          _val => +_val > 1
-                        );
-                        const {
-                          shareActivityToMember,
-                          shareAvatarToMember,
-                          shareReportToMember
-                        } = this.groupInfo;
-                        if (
-                          (shareActivityToMember.switch === '3' ||
-                            shareAvatarToMember.switch === '3' ||
-                            shareReportToMember.switch === '3') &&
-                          isOnlyme
-                        ) {
-                          let accessRights = [];
-                          if (shareActivityToMember.switch === '3') {
-                            accessRights.push(
-                              ...shareActivityToMember.enableAccessRight
-                            );
-                          }
-                          if (shareReportToMember.switch === '3') {
-                            const diffArr = this.utils.diff_array(
-                              accessRights,
-                              shareReportToMember.enableAccessRight
-                            );
-                            if (diffArr.length > 0) {
-                              accessRights.push(...diffArr);
-                            }
-                          }
-                          if (shareAvatarToMember.switch === '3') {
-                            const _diffArr = this.utils.diff_array(
-                              accessRights,
-                              shareAvatarToMember.enableAccessRight
-                            );
-                            if (_diffArr.length > 0) {
-                              accessRights.push(..._diffArr);
-                            }
-                          }
-                          const browserLang = this.utils.getLocalStorageObject(
-                            'locale'
-                          );
-                          accessRights = accessRights.map(_accessRight => {
-                            if (browserLang === 'zh-tw') {
-                              if (_accessRight === '30') {
-                                return '品牌管理員';
-                              } else if (_accessRight === '40') {
-                                return '分店管理員';
-                              } else if (_accessRight === '50') {
-                                return '體適能教練';
-                              } else {
-                                return '專業老師';
-                              }
-                            } else if (browserLang === 'zh-cn') {
-                              if (_accessRight === '30') {
-                                return '品牌管理员';
-                              } else if (_accessRight === '40') {
-                                return '分店管理员';
-                              } else if (_accessRight === '50') {
-                                return '体适能教练';
-                              } else {
-                                return '专业老师';
-                              }
-                            } else {
-                              if (_accessRight === '30') {
-                                return 'Brand administrator';
-                              } else if (_accessRight === '40') {
-                                return 'Branch manager';
-                              } else if (_accessRight === '50') {
-                                return 'Physical fitness coach';
-                              } else {
-                                return 'Professional teacher';
-                              }
-                            }
-                          });
-                          let text = '';
+      if (this.brandType === 1) {
+        return this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          data: {
+            title: this.title,
+            body: bodyText,
+            confirmText: this.confirmText,
+            cancelText: this.cancelText,
+            onConfirm: () => {
+              this.sendJoinRequest(_type);
+            }
+          }
+        });
+      } else {
+        this.sendJoinRequest(_type);
+      }
+    } else {
+      this.sendJoinRequest(_type);
+    }
+  }
 
-                          if (browserLang.indexOf('zh') > -1) {
-                            text += accessRights.join(' 、');
-                          } else {
-                            text += accessRights.join(' ,');
-                          }
-                          this.detectCheckBoxValue(
-                            activityTracking,
-                            this.activityTrackingStatus
-                          );
-                          this.detectCheckBoxValue(
-                            activityTrackingReport,
-                            this.activityTrackingReportStatus
-                          );
-                          this.dialog.open(PrivacySettingDialogComponent, {
-                            hasBackdrop: true,
-                            data: {
-                              targetText: text,
-                              groupName: this.groupInfo.groupName,
-                              activityTrackingReportStatus: this
-                                .activityTrackingReportStatus,
-                              activityTrackingStatus: this
-                                .activityTrackingStatus,
-                              activityTracking,
-                              activityTrackingReport
-                            }
-                          });
-                        }
-                      });
-                  } else {
-                    this.dialog.open(MessageBoxComponent, {
-                      hasBackdrop: true,
-                      data: {
-                        title: 'message',
-                        body: resultMessage,
-                        confirmText: this.confirmText,
-                        cancelText: this.cancelText
-                      }
-                    });
-                  }
-                }
-              );
+  // 修正加入時call兩次api造成出現錯誤訊息的問題-kidin-1090121
+  sendJoinRequest (_type) {
+    this.userProfileService
+      .getUserProfile({
+        token: this.token,
+        avatarType: 2,
+      })
+      .subscribe(res => {
+        this.isLoading = false;
+        const {
+          privacy: { activityTracking, activityTrackingReport }
+        } = res.info;
+        let isOnlyme = false;
+        isOnlyme = !activityTracking.some(_val => +_val > 1);
+        isOnlyme = !activityTrackingReport.some(
+          _val => +_val > 1
+        );
+        const {
+          shareActivityToMember,
+          shareAvatarToMember,
+          shareReportToMember
+        } = this.groupInfo;
+        if (
+          (shareActivityToMember.switch === '3' ||
+            shareAvatarToMember.switch === '3' ||
+            shareReportToMember.switch === '3') &&
+          isOnlyme
+        ) {
+          let accessRights = [];
+          if (shareActivityToMember.switch === '3') {
+            accessRights.push(
+              ...shareActivityToMember.enableAccessRight
+            );
+          }
+          if (shareReportToMember.switch === '3') {
+            const diffArr = this.utils.diff_array(
+              accessRights,
+              shareReportToMember.enableAccessRight
+            );
+            if (diffArr.length > 0) {
+              accessRights.push(...diffArr);
+            }
+          }
+          if (shareAvatarToMember.switch === '3') {
+            const _diffArr = this.utils.diff_array(
+              accessRights,
+              shareAvatarToMember.enableAccessRight
+            );
+            if (_diffArr.length > 0) {
+              accessRights.push(..._diffArr);
+            }
+          }
+          const browserLang = this.utils.getLocalStorageObject(
+            'locale'
+          );
+          accessRights = accessRights.map(_accessRight => {
+            if (browserLang === 'zh-tw') {
+              if (_accessRight === '30') {
+                return '品牌管理員';
+              } else if (_accessRight === '40') {
+                return '分店管理員';
+              } else if (_accessRight === '50') {
+                return '體適能教練';
+              } else {
+                return '專業老師';
+              }
+            } else if (browserLang === 'zh-cn') {
+              if (_accessRight === '30') {
+                return '品牌管理员';
+              } else if (_accessRight === '40') {
+                return '分店管理员';
+              } else if (_accessRight === '50') {
+                return '体适能教练';
+              } else {
+                return '专业老师';
+              }
+            } else {
+              if (_accessRight === '30') {
+                return 'Brand administrator';
+              } else if (_accessRight === '40') {
+                return 'Branch manager';
+              } else if (_accessRight === '50') {
+                return 'Physical fitness coach';
+              } else {
+                return 'Professional teacher';
+              }
+            }
+          });
+          let text = '';
+
+          if (browserLang.indexOf('zh') > -1) {
+            text += accessRights.join(' 、');
+          } else {
+            text += accessRights.join(' ,');
+          }
+          this.detectCheckBoxValue(
+            activityTracking,
+            this.activityTrackingStatus
+          );
+          this.detectCheckBoxValue(
+            activityTrackingReport,
+            this.activityTrackingReportStatus
+          );
+          if (this.brandType === 1) {
+            this.dialog.open(PrivacySettingDialogComponent, {
+              hasBackdrop: true,
+              data: {
+                targetText: text,
+                groupName: this.groupInfo.groupName,
+                activityTrackingReportStatus: this
+                  .activityTrackingReportStatus,
+                activityTrackingStatus: this
+                  .activityTrackingStatus,
+                activityTracking,
+                activityTrackingReport
+              }
+            });
           }
         }
       });
-    }
+
+    const body = {
+      token: this.token,
+      groupId: this.groupId,
+      actionType: _type,
+      brandType: this.brandType
+    };
 
     const isBeenGroupMember = this.joinStatus === 2;
     this.groupService
@@ -488,6 +582,7 @@ export class GroupInfoComponent implements OnInit {
         }
       });
   }
+
   detectCheckBoxValue(arr, statusArr) {
     if (arr.findIndex(arrVal => arrVal === '1') === -1) {
       arr.push('1');
@@ -501,13 +596,15 @@ export class GroupInfoComponent implements OnInit {
       }
     });
   }
+
   getGroupMemberList(_type) {
     this.isLoading = true;
     const body = {
       token: this.token,
       groupId: this.groupId,
       groupLevel: this.groupLevel,
-      infoType: _type
+      infoType: _type,
+      avatarType: 3
     };
     this.groupService.fetchGroupMemberList(body).subscribe(res => {
       this.isLoading = false;
@@ -520,7 +617,7 @@ export class GroupInfoComponent implements OnInit {
           this.subBrandInfo = this.subGroupInfo.brands.map(_brand => {
             return {
               ..._brand,
-              groupIcon: this.utils.buildBase64ImgString(_brand.groupIcon)
+              groupIcon: _brand.groupIcon
             };
           });
           this.subBranchInfo = this.subGroupInfo.branches
@@ -533,7 +630,7 @@ export class GroupInfoComponent implements OnInit {
             .map(_branch => {
               return {
                 ..._branch,
-                groupIcon: this.utils.buildBase64ImgString(_branch.groupIcon)
+                groupIcon: _branch.groupIcon
               };
             });
           this.subCoachInfo = this.subGroupInfo.coaches
@@ -546,7 +643,7 @@ export class GroupInfoComponent implements OnInit {
             .map(_coach => {
               return {
                 ..._coach,
-                groupIcon: this.utils.buildBase64ImgString(_coach.groupIcon)
+                groupIcon: _coach.groupIcon
               };
             });
         } else {
@@ -555,7 +652,7 @@ export class GroupInfoComponent implements OnInit {
             .map(_info => {
               return {
                 ..._info,
-                memberIcon: this.utils.buildBase64ImgString(_info.memberIcon)
+                memberIcon: _info.memberIcon
               };
             })
             .filter(newInfo => !(typeof newInfo === 'undefined'));
@@ -671,7 +768,20 @@ export class GroupInfoComponent implements OnInit {
       }
     }
   }
+
+  // 切換到群組編輯頁面-kidin-1081216
   goEditPage() {
     this.router.navigateByUrl(`${location.pathname}/edit`);
+  }
+
+  // 依照網址導引至該頁面-kidin-10812217
+  detectUrlChange(url) {
+    if (url.indexOf('my-report') > -1) {
+      this.chooseIdx = 4;
+    } else if (url.indexOf('class-analysis') > -1) {
+      this.chooseIdx = 5;
+    } else if (this.chooseIdx !== 2 && this.chooseIdx !== 3) {
+      this.chooseIdx = 1;
+    }
   }
 }
