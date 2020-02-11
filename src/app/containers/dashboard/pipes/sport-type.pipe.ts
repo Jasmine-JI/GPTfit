@@ -6,8 +6,8 @@ export class SportTypePipe implements PipeTransform {
     const sportTypes = [
       'Dashboard.SportReport.run',
       'Dashboard.SportReport.cycle',
-      'Dashboard.SportReport.actionTraining',
-      'Dashboard.SportReport.swin',
+      'Dashboard.SportReport.weightTraining',
+      'Dashboard.SportReport.swim',
       'Dashboard.SportReport.aerobic',
       'Dashboard.SportReport.boating',
       'SH.noData'

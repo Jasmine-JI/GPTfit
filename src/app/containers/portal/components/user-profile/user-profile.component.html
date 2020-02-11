@@ -1,6 +1,6 @@
 <div class="container" style="padding-top: 30px">
   <div class="user-profile-wrapper row">
-    <div class="col-md-3">
+    <div class="col-md-2">
       <div class="avatar-wrapper">
         <img *ngIf="userImg"
           [src]="(userImg | safeHtml)"
@@ -21,7 +21,7 @@
         >{{'Dashboard.SportReport.sportReport' | translate}}</li>
       </ul>
     </div>
-    <div class="col-md-9">
+    <div class="col-md-10">
       <ng-container *ngIf="chooseIdx === 1">
         <app-basic-info
         [description]="description"

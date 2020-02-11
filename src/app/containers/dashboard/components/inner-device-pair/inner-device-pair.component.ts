@@ -38,6 +38,7 @@ export class InnerDevicePairComponent implements OnInit {
     );
   }
   watchDeviceSNDetail() {
+    this.deviceSN = this.deviceSN.toUpperCase();
     this.router.navigateByUrl(
       `/dashboard/system/device/info/${this.deviceSN}`
     );

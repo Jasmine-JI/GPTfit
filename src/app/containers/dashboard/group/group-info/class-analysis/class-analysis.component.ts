@@ -364,6 +364,16 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   getFuzzyTime () {
     const timeZoneMinite = new Date();
     const timeZone = -(timeZoneMinite.getTimezoneOffset() / 60);
+    let timeZoneStr = '';
+    if (timeZone < 10 && timeZone >= 0) {
+      timeZoneStr = `+0${timeZone}`;
+    } else if (timeZone > 10) {
+      timeZoneStr = `+${timeZone}`;
+    } else if (timeZone > -10 && timeZone < 0) {
+      timeZoneStr = `-0${timeZone}`;
+    } else {
+      timeZoneStr = `-${timeZone}`;
+    }
 
     // 取得使用者選擇的時間後，換算成24小時-kidin-1081220
     if (
@@ -377,9 +387,9 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       }
     }
     if (this.classHour < 10) {
-      this.reportStartDate = `${this.classDate}T0${this.classHour}:00:00.000+0${timeZone}:00`;
+      this.reportStartDate = `${this.classDate}T0${this.classHour}:00:00.000${timeZoneStr}:00`;
     } else {
-      this.reportStartDate = `${this.classDate}T${this.classHour}:00:00.000+0${timeZone}:00`;
+      this.reportStartDate = `${this.classDate}T${this.classHour}:00:00.000${timeZoneStr}:00`;
     }
   }
 
@@ -807,6 +817,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         return this.point.z;
       }
     };
+    classHRZoneChartOptions['series'][0].showInLegend = false;
 
     // 顯示聚焦成員的心率區間-kidin-1090102
     if (this.memberSection !== null && this.memberHRZoneList[this.focusMember] !== undefined) {

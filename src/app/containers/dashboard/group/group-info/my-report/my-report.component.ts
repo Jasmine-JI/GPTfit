@@ -385,22 +385,23 @@ export class MyReportComponent implements OnInit, OnDestroy {
   getFilterTime () {
     const timeZoneMinite = new Date();
     const timeZone = -(timeZoneMinite.getTimezoneOffset() / 60);
-    if (this.startDate === '') {
-      if (timeZone >= 0) {
-        this.reportStartDate = `${this.selectedStartDate}T00:00:00.000+0${timeZone}:00`;
-        this.reportEndDate = `${this.selectedEndDate}T23:59:59.000+0${timeZone}:00`;
-      } else {
-        this.reportStartDate = `${this.selectedStartDate}T00:00:00.000-0${-timeZone}:00`;
-        this.reportEndDate = `${this.selectedEndDate}T23:59:59.000-0${-timeZone}:00`;
-      }
+    let timeZoneStr = '';
+    if (timeZone < 10 && timeZone >= 0) {
+      timeZoneStr = `+0${timeZone}`;
+    } else if (timeZone > 10) {
+      timeZoneStr = `+${timeZone}`;
+    } else if (timeZone > -10 && timeZone < 0) {
+      timeZoneStr = `-0${timeZone}`;
     } else {
-      if (timeZone >= 0) {
-        this.reportStartDate = `${this.startDate}T00:00:00.000+0${timeZone}:00`;
-        this.reportEndDate = `${this.endDate}T23:59:59.000+0${timeZone}:00`;
-      } else {
-        this.reportStartDate = `${this.startDate}T00:00:00.000-0${-timeZone}:00`;
-        this.reportEndDate = `${this.endDate}T23:59:59.000-0${-timeZone}:00`;
-      }
+      timeZoneStr = `-${timeZone}`;
+    }
+
+    if (this.startDate === '') {
+      this.reportStartDate = `${this.selectedStartDate}T00:00:00.000${timeZoneStr}:00`;
+      this.reportEndDate = `${this.selectedEndDate}T23:59:59.000${timeZoneStr}:00`;
+    } else {
+      this.reportStartDate = `${this.startDate}T00:00:00.000${timeZoneStr}:00`;
+      this.reportEndDate = `${this.endDate}T23:59:59.000${timeZoneStr}:00`;
     }
   }
 
@@ -538,7 +539,6 @@ export class MyReportComponent implements OnInit, OnDestroy {
   // 將搜尋的類別和範圍處理過後加入query string並更新現在的url和預覽列印的url-kidin-1081226
   updateUrl (str) {
     let newUrl;
-
     if (str === 'true') {
       let startDateString,
           endDateString,
@@ -551,12 +551,19 @@ export class MyReportComponent implements OnInit, OnDestroy {
         endDateString = this.endDate;
       }
 
-    const userId = this.hashIdService.handleUserIdEncode(
-      this.fileInfo.author
-        .split('?')[1]
-        .split('=')[1]
-        .replace(')', '')
-    );
+    let userId: string;
+    if (this.fileInfo.author.indexOf('?') > 0) {
+      userId = this.hashIdService.handleUserIdEncode(
+        this.fileInfo.author
+          .split('?')[1]
+          .split('=')[1]
+          .replace(')', '')
+      );
+    } else {
+      userId = this.hashIdService.handleUserIdEncode(
+        this.fileInfo.author.replace(')', '')
+      );
+    }
 
       searchString = `sport=${this.reportCategory}&startdate=${startDateString}&enddate=${endDateString}&id=${userId}`;
 
@@ -710,6 +717,7 @@ export class MyReportComponent implements OnInit, OnDestroy {
         return this.y + '%';
       }
     };
+    HRZoneChartOptions['series'][0].showInLegend = false;
     HRZoneChartOptions['chart'].zoomType = '';
     HRZoneChartOptions['xAxis'].categories = [
       this.translateService.instant('Dashboard.GroupClass.limit_generalZone'),
