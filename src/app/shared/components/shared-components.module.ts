@@ -22,24 +22,22 @@ import { Page403Component } from './page403/page403.component';
 import { AlaIframeComponent } from './ala-iframe/ala-iframe.component';
 import { MyActivityComponent } from './my-activity/my-activity.component';
 import { ActivityInfoComponent } from './activity-info/activity-info.component';
-import {
-  SportReportComponent,
-  ActivityLevelsComponent,
-  AllDurationComponent,
-  AllGroupsComponent,
-  AllTimesComponent,
-  BurnCaloriesComponent,
-  ColumnstackedChartComponent,
-  OtherBurnCaloriesComponent,
-  PartialMuscleInfoComponent,
-  ScatterChartComponent
-} from './sport-report';
+import { SportReportComponent } from './sport-report/sport-report.component';
 import { NgProgressModule } from '@ngx-progressbar/core';
 import { ImageCropperModule } from 'ngx-image-cropper';
 import { ShareGroupInfoDialogComponent } from './share-group-info-dialog/share-group-info-dialog.component';
 import { QRCodeModule } from 'angularx-qrcode';
 import { MuscleMapComponent } from './activity-info/muscleMap/muscle-map.component';
 import { MuscleTrainListComponent } from './activity-info/muscle-train-list/muscle-train-list.component';
+import { ReportContentComponent } from './sport-report/report-content/report-content.component';
+import { RingChartComponent } from './chart/ring-chart/ring-chart.component';
+import { HrzoneChartComponent } from './chart/hrzone-chart/hrzone-chart.component';
+import { HrzoneInfoComponent } from './chart/hrzone-info/hrzone-info.component';
+import { DistributionChartComponent } from './chart/distribution-chart/distribution-chart.component';
+import { StackColumnChartComponent } from './chart/stack-column-chart/stack-column-chart.component';
+import { FilletColumnChartComponent } from './chart/fillet-column-chart/fillet-column-chart.component';
+import { CompareLineChartComponent } from './chart/compare-line-chart/compare-line-chart.component';
+import { DiscolorColumnChartComponent } from './chart/discolor-column-chart/discolor-column-chart.component';
 
 @NgModule({
   imports: [
@@ -72,18 +70,18 @@ import { MuscleTrainListComponent } from './activity-info/muscle-train-list/musc
     MyActivityComponent,
     ActivityInfoComponent,
     SportReportComponent,
-    ActivityLevelsComponent,
-    AllDurationComponent,
-    AllGroupsComponent,
-    AllTimesComponent,
-    BurnCaloriesComponent,
-    ColumnstackedChartComponent,
-    OtherBurnCaloriesComponent,
-    PartialMuscleInfoComponent,
-    ScatterChartComponent,
     ShareGroupInfoDialogComponent,
     MuscleMapComponent,
-    MuscleTrainListComponent
+    MuscleTrainListComponent,
+    ReportContentComponent,
+    RingChartComponent,
+    HrzoneChartComponent,
+    HrzoneInfoComponent,
+    DistributionChartComponent,
+    StackColumnChartComponent,
+    FilletColumnChartComponent,
+    CompareLineChartComponent,
+    DiscolorColumnChartComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -103,15 +101,6 @@ import { MuscleTrainListComponent } from './activity-info/muscle-train-list/musc
     MyActivityComponent,
     ActivityInfoComponent,
     SportReportComponent,
-    ActivityLevelsComponent,
-    AllDurationComponent,
-    AllGroupsComponent,
-    AllTimesComponent,
-    BurnCaloriesComponent,
-    ColumnstackedChartComponent,
-    OtherBurnCaloriesComponent,
-    PartialMuscleInfoComponent,
-    ScatterChartComponent,
     ShareGroupInfoDialogComponent
   ]
 })

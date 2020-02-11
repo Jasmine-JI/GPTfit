@@ -1,0 +1,183 @@
+.reportHeader {
+  margin: 10px 0px;
+  justify-content: space-between;
+}
+
+.reportTitle {
+  color: #616161;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.reportDateTime {
+  font-size: 14px;
+  color:#919191;
+  font-weight: bold;
+}
+
+.infoDataUnit {
+  font-size: 16px;
+  color:#919191;
+  font-weight: bold;
+}
+
+.sepLine {
+  border-left: 1px solid #e0e0e0;
+  height: 40px;
+  margin-top: 10px;
+}
+
+.ringChart {
+  width: 40%;
+}
+
+.distributionChartWidth {
+  margin-top: 10px;
+  width: 60%;
+}
+
+.ringChartSection {
+  margin-top: 10px;
+  width: 50%;
+}
+
+.perTypeInfo {
+  font-size: 16px;
+  margin-left: 15px;
+  margin-top: 10px;
+}
+
+.dot {
+  margin-right: 5px;
+  font-size: 16px;
+}
+
+.perTypeAvgTime {
+  margin-left: 30px;
+}
+
+.distributionChart {
+  width:100%;
+  height: auto;
+}
+
+.reportChartTitle {
+  font-weight: bold;
+  width: fit-content;
+  white-space: nowrap;
+}
+
+.separateLine {
+  margin-left: 10px;
+  border-top: 1px solid #c9c9c9;
+  width: 100%;
+}
+
+.dataContent {
+  margin: 5px 0px 0px 10px;
+  justify-content: space-between;
+}
+
+.dataMargin {
+  margin-top: 10px;
+}
+
+.dataFont {
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.reportChartSection {
+  margin-left: 30px;
+}
+
+.dataAnnotation {
+  font-size: 16px;
+  font-weight: bold;
+  color: #919191;
+}
+
+.printMark {
+  width: 100%;
+  position: absolute;
+  background-color:#ededed;
+  text-align: center;
+  font-weight: bold;
+  height:fit-content;
+}
+
+#HRZoneChart {
+  width: 55%;
+}
+
+#HRInfo {
+  width: 45%;
+  border-left: 1px solid #e5e5e5;
+}
+
+.dataNumber {
+  width: 35%;
+}
+
+.dataChart {
+  width: 65%;
+}
+
+@media (max-width: 1000px){
+  .media-1000-col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .authorInfo {
+    justify-content: flex-end;
+    margin-top: 10px;
+  }
+}
+
+@media (max-width: 769px){
+  .media-769-col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ringChart {
+    width: 100%;
+  }
+
+  .distributionChartWidth {
+    width: 100%;
+  }
+
+  #HRZoneChart {
+    width: 100%;
+  }
+
+  #HRInfo {
+    width: auto;
+    border-left: none;
+  }
+
+  .dataContent {
+    flex-direction: column;
+  }
+
+  .dataNumber {
+    width: 100%;
+  }
+
+  .dataChart {
+    width: 100%;
+  }
+
+  .reportChartSection {
+    margin-left: 0px;
+  }
+}
+
+@media (max-width: 550px){
+  .reportTitle {
+    font-size: 20px;
+  }
+
+}

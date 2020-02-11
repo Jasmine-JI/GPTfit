@@ -262,7 +262,6 @@ export class CoachDashboardComponent
     };
     if (!(this.classId === '99999' && this.isDemoMode)) {
       this.coachService.fetchClassRoomDetail(body).subscribe(res => {
-        console.log(res);
         this.classInfo = res.info;
         this.classInfo.groupIcon =
           this.classInfo.groupIcon && this.classInfo.groupIcon.length > 0

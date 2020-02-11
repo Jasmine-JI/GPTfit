@@ -70,6 +70,11 @@
     background-color: rgba(204, 204, 204, 0.1);
 }
 
+/*使css屬性background color可以列印出來*/
+@media print {
+  body {-webkit-print-color-adjust: exact;}
+  }
+
 @media(max-width: 767px) {
   .group-manage__action {
     font-weight: 500;

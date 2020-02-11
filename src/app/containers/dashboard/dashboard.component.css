@@ -22,6 +22,11 @@
   padding: 30px;
   min-height: calc(100vh - 78px);
 }
+
+.containerPrint {
+  padding: 0px;
+}
+
 .header-nav-menu-section {
 
   border-bottom: 1px solid #e5e5e5

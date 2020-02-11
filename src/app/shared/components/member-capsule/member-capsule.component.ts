@@ -129,7 +129,6 @@ export class MemberCapsuleComponent implements OnInit {
   }
 
   handleEditGroupMember() {
-    console.log(this.isHadMenu);
     const body = {
       token: this.token,
       groupId: this.groupId,
