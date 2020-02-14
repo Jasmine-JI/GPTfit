@@ -312,6 +312,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
     this.userInfoService.getLogonData(body).subscribe(res => {
       const data = {
         name: res.info.name,
+        nameId: res.info.nameId,
         birthday: res.info.birthday,
         heartRateBase: res.info.heartRateBase,
         heartRateMax: res.info.heartRateMax,

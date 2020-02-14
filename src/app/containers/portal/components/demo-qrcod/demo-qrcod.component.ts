@@ -67,7 +67,7 @@ export class DemoQrcodComponent implements OnInit {
     const body = {
       'token': '',
       'queryType': '1',
-      'queryArray': [this.displayQr.device_sn]
+      'queryArray': [this.displayQr.device_sn.toUpperCase()]
     };
     this.progressRef = this.progress.ref();
     this.progressRef.start();

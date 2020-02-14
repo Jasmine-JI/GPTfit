@@ -23,21 +23,21 @@
         (click)="handleGroupItem(3)"
       >{{ 'Dashboard.privacySettings.set' | translate}}</li>
       <li [class.active]="chooseIdx === 4"
-          *ngIf="groupLevel === '60'"
+          *ngIf="groupLevel === '60' && brandType === 1"
           (click)="handleGroupItem(4)"
-        >我的報告</li>
+      >我的報告</li>
       <li [class.active]="chooseIdx === 5"
-          *ngIf="groupLevel === '60' && accessRight < 60"
+          *ngIf="groupLevel === '60' && accessRight < 60 && brandType === 1"
           (click)="handleGroupItem(5)"
-        >課程分析</li>
-      <!-- 先用router
-        <li [class.active]="chooseIdx === 4"
-          (click)="handleGroupItem(4)"
-        >我的報告</li>
-        <li [class.active]="chooseIdx === 5"
-          (click)="handleGroupItem(5)"
-        >課程分析</li>
-      -->
+      >課程分析</li>
+      <li [class.active]="chooseIdx === 6"
+        *ngIf="groupLevel === '60' && brandType === 2"
+        (click)="handleGroupItem(6)"
+      >{{ 'Dashboard.SportReport.sportReport' | translate}}</li>
+      <li [class.active]="chooseIdx === 7"
+        *ngIf="groupLevel === '60' && accessRight < 60 && brandType === 2  && 1 === '1'"
+        (click)="handleGroupItem(7)"
+      >{{ 'other.lifeTracking' | translate}}</li>
     </ul>
   </div>
   <div [class.col-md-9]="!isPreviewMode" [class.previewPrint]="isPreviewMode">
@@ -579,6 +579,12 @@
     </ng-container>
     <ng-container *ngIf="chooseIdx === 5">
       <app-class-analysis></app-class-analysis>
+    </ng-container>
+    <ng-container *ngIf="chooseIdx === 6">
+      <app-com-report></app-com-report>
+    </ng-container>
+    <ng-container *ngIf="chooseIdx === 7">
+      <app-com-life-tracking></app-com-life-tracking>
     </ng-container>
     <div style="display:flex;justify-content: center;align-items: center;height:100%"
       *ngIf="isCommerceInfoLoading"

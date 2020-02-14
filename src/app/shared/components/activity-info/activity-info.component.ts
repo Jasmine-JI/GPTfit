@@ -1052,11 +1052,29 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.activityName = this.activityNameBeforeState;
       this.editNameMode = false;
     } else if (e.key === 'Enter' && this.activityName !== this.activityNameBeforeState) {
+      const timeZoneMinite = new Date(),
+            timeZone = -(timeZoneMinite.getTimezoneOffset() / 60),
+            editDate = moment().format('YYYY-MM-DD'),
+            editTime = moment().format('hh:mm:ss');
+
+      let timeZoneStr = '';
+      if (timeZone < 10 && timeZone >= 0) {
+        timeZoneStr = `+0${timeZone}`;
+      } else if (timeZone > 10) {
+        timeZoneStr = `+${timeZone}`;
+      } else if (timeZone > -10 && timeZone < 0) {
+        timeZoneStr = `-0${timeZone}`;
+      } else {
+        timeZoneStr = `-${timeZone}`;
+      }
+
+      // 補上傳編輯時間-kidin-1090131
       const body = {
         token: this.token,
         fileId: this.fileId,
         fileInfo: {
-          dispName: this.activityName
+          dispName: this.activityName,
+          editDate: `${editDate}T${editTime}${timeZoneStr}:00`
         }
       };
       this.activityService.fetchEditActivityProfile(body).subscribe(res => {

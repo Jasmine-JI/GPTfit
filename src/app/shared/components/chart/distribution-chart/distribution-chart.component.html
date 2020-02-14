@@ -1,0 +1,58 @@
+<svg version="1.1" baseProfile="full" xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 465 240">
+  <polyline points="30 200, 30 20, 25 20, 30 10, 35 20, 30 20" stroke="#d1d1d1" fill="#d1d1d1" stroke-width="5"/>
+  <polyline points="40 210, 450 210, 450 205, 460 210, 450 215, 450 210" stroke="#d1d1d1" fill="#d1d1d1" stroke-width="5"/>
+  <rect x="40" y="10" width="135" height="60" stroke="#5ce8dd" fill="#5ce8dd" />
+  <rect x="40" y="75" width="135" height="60" stroke="#5cd5e8" fill="#5cd5e8" />
+  <rect x="40" y="140" width="135" height="60" stroke="#5cbbe8" fill="#5cbbe8" />
+  <rect x="180" y="10" width="135" height="60" stroke="#bbe85c" fill="#bbe85c" />
+  <rect x="180" y="75" width="135" height="60" stroke="#69e85c" fill="#69e85c" />
+  <rect x="180" y="140" width="135" height="60" stroke="#5ce89d" fill="#5ce89d" />
+  <rect x="320" y="10" width="135" height="60" stroke="#e97965" fill="#e97965" />
+  <rect x="320" y="75" width="135" height="60" stroke="#e8a15c" fill="#e8a15c" />
+  <rect x="320" y="140" width="135" height="60" stroke="#e8c55c" fill="#e8c55c" />
+  <text x="247" y="235" text-anchor="middle" font-size="13" stroke="#868686" stroke-width="0.5">心率區間</text>
+
+  <text x="16" y="107" text-anchor="middle" font-size="13" transform="rotate(-90, 16, 107)" stroke="#868686" stroke-width="0.5">
+    持續時間
+  </text>
+  <foreignObject x="45" y="17" width="130" height="60">
+      <xhtml:p class="blockDescription">{{'other.hardWorkButLowIntensity' | translate}}*{{blockOne}}</p>
+  </foreignObject>
+  <foreignObject x="45" y="82" width="130" height="60">
+    <xhtml:p class="blockDescription">{{'other.needToStrengthenTrainingIntensity' | translate}}*{{blockTwo}}</p>
+  </foreignObject>
+  <foreignObject x="45" y="147" width="130" height="60">
+    <xhtml:p class="blockDescription">{{'other.insufficientAmountAndIntensity' | translate}}*{{blockThree}}</p>
+  </foreignObject>
+  <foreignObject x="185" y="17" width="130" height="60">
+    <xhtml:p class="blockDescription">{{'other.hardAndSureTraining' | translate}}*{{blockFour}}</p>
+  </foreignObject>
+  <foreignObject x="185" y="82" width="130" height="60">
+    <xhtml:p class="blockDescription">{{'other.goodAndStableTraining' | translate}}*{{blockFive}}</p>
+  </foreignObject>
+  <foreignObject x="185" y="147" width="130" height="60">
+    <xhtml:p class="blockDescription">{{'other.durationNeedsToBeStrengthened' | translate}}*{{blockSix}}</p>
+  </foreignObject>
+  <foreignObject x="325" y="17" width="130" height="60">
+    <xhtml:p class="blockDescription">{{'other.easyToCausePhysicalBurden' | translate}}*{{blockSeven}}</p>
+  </foreignObject>
+  <foreignObject x="325" y="82" width="130" height="60">
+    <xhtml:p class="blockDescription">{{'other.moderateHigh-IntensityTraining' | translate}}*{{blockEight}}</p>
+  </foreignObject>
+  <foreignObject x="325" y="147" width="130" height="60">
+    <xhtml:p class="blockDescription">{{'other.shortBurstTraining' | translate}}*{{blockNine}}</p>
+  </foreignObject>
+
+  <text
+    *ngFor="let point of points;"
+    [attr.x]="point.x"
+    [attr.y]="point.y"
+    text-anchor="middle"
+    dominant-baseline="middle"
+    font-size="10"
+    font-weight="bold"
+  >
+    ✛
+  </text>
+
+</svg>

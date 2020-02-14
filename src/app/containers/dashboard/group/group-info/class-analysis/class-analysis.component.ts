@@ -275,26 +275,28 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     this.getFuzzyTime();
 
     // 先從service取得群組資訊，若取不到再call api-kidin-1081210
-    this.groupData = this.groupService.getGroupInfo();
-    if (this.groupData) {
-      this.groupId = this.groupData.groupId;
-      this.showGroupInfo();
-    } else {
-      const urlArr = location.pathname.split('/');
-      this.groupId = this.hashIdService.handleGroupIdDecode(urlArr[urlArr.length - 2]);
-      const groupBody = {
-        token: this.token,
-        groupId: this.groupId,
-        findRoot: '1',
-        avatarType: '2'
-      };
-
-      this.groupService.fetchGroupListDetail(groupBody).subscribe(res => {
-        this.groupData = res.info;
-        this.groupService.saveGroupInfo(this.groupData);
+    this.groupService.getGroupInfo().subscribe(res => {
+      this.groupData = res;
+      if (this.groupData.hasOwnProperty('groupId')) {
+        this.groupId = this.groupData.groupId;
         this.showGroupInfo();
-      });
-    }
+      } else {
+        const urlArr = location.pathname.split('/');
+        this.groupId = this.hashIdService.handleGroupIdDecode(urlArr[urlArr.length - 2]);
+        const groupBody = {
+          token: this.token,
+          groupId: this.groupId,
+          findRoot: '1',
+          avatarType: '2'
+        };
+
+        this.groupService.fetchGroupListDetail(groupBody).subscribe(result => {
+          this.groupData = result.info;
+          this.groupService.saveGroupInfo(this.groupData);
+          this.showGroupInfo();
+        });
+      }
+    });
 
     // 根據條件取得多筆運動檔案資料-kidin-1081211
     let targetUser;
@@ -364,6 +366,16 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   getFuzzyTime () {
     const timeZoneMinite = new Date();
     const timeZone = -(timeZoneMinite.getTimezoneOffset() / 60);
+    let timeZoneStr = '';
+    if (timeZone < 10 && timeZone >= 0) {
+      timeZoneStr = `+0${timeZone}`;
+    } else if (timeZone > 10) {
+      timeZoneStr = `+${timeZone}`;
+    } else if (timeZone > -10 && timeZone < 0) {
+      timeZoneStr = `-0${timeZone}`;
+    } else {
+      timeZoneStr = `-${timeZone}`;
+    }
 
     // 取得使用者選擇的時間後，換算成24小時-kidin-1081220
     if (
@@ -377,9 +389,9 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       }
     }
     if (this.classHour < 10) {
-      this.reportStartDate = `${this.classDate}T0${this.classHour}:00:00.000+0${timeZone}:00`;
+      this.reportStartDate = `${this.classDate}T0${this.classHour}:00:00.000${timeZoneStr}:00`;
     } else {
-      this.reportStartDate = `${this.classDate}T${this.classHour}:00:00.000+0${timeZone}:00`;
+      this.reportStartDate = `${this.classDate}T${this.classHour}:00:00.000${timeZoneStr}:00`;
     }
   }
 
@@ -807,6 +819,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         return this.point.z;
       }
     };
+    classHRZoneChartOptions['series'][0].showInLegend = false;
 
     // 顯示聚焦成員的心率區間-kidin-1090102
     if (this.memberSection !== null && this.memberHRZoneList[this.focusMember] !== undefined) {
