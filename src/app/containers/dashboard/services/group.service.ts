@@ -10,8 +10,21 @@ const { API_SERVER } = environment.url;
 @Injectable()
 export class GroupService {
 
-  private groupInfo: any; // 儲存group資訊-kidin-1081210
+  groupInfo$ = new BehaviorSubject<any>({}); // 儲存group資訊-kidin-1081210
   updatedGroupImg$ = new BehaviorSubject<string>('');
+  memberList$ = new BehaviorSubject<any>({
+    groupId: '',
+    groupList: []
+  });
+
+  reportCategory$ = new BehaviorSubject<string>('99');
+  typeAllData$ = new BehaviorSubject<any>({});
+  typeRunData$ = new BehaviorSubject<any>({});
+  typeCycleData$ = new BehaviorSubject<any>({});
+  typeWeightTrainData$ = new BehaviorSubject<any>({});
+  typeSwimData$ = new BehaviorSubject<any>({});
+  typeAerobicData$ = new BehaviorSubject<any>({});
+  typeRowData$ = new BehaviorSubject<any>({});
 
   constructor(private http: HttpClient) {}
   fetchGroupList(body) {
@@ -68,21 +81,74 @@ export class GroupService {
     return this.http.get<any>(API_SERVER + 'user/userAvartar', { params });
   }
 
-  getImgUpdatedStatus(): Observable<string> {
+  getImgUpdatedStatus (): Observable<string> {
     return this.updatedGroupImg$;
   }
 
-  setImgUpdatedImgStatus(status: string) {
+  setImgUpdatedImgStatus (status: string) {
     this.updatedGroupImg$.next(status);
+  }
+
+  getMemberList (): Observable<any> {
+    return this.memberList$;
+  }
+
+  setMemberList (status: any) {
+    this.memberList$.next(status);
+  }
+
+  setReportCategory (status: string) {
+    this.reportCategory$.next(status);
+  }
+
+  getreportCategory (): Observable<string> {
+    return this.reportCategory$;
+  }
+
+  setTypeAllData (
+    dataAll: Object,
+    dataRun: Object,
+    dataCycle: Object,
+    dataWeightTrain: Object,
+    dataSwim: Object,
+    dataAerobic: Object,
+    dataRow: Object
+  ) {
+    this.typeAllData$.next(dataAll);
+    this.typeRunData$.next(dataRun);
+    this.typeCycleData$.next(dataCycle);
+    this.typeWeightTrainData$.next(dataWeightTrain);
+    this.typeSwimData$.next(dataSwim);
+    this.typeAerobicData$.next(dataAerobic);
+    this.typeRowData$.next(dataRow);
+  }
+
+  getTypeData (type: string) {
+    switch (type) {
+      case '1':
+        return this.typeRunData$;
+      case '2':
+        return this.typeCycleData$;
+      case '3':
+        return this.typeWeightTrainData$;
+      case '4':
+        return this.typeSwimData$;
+      case '5':
+        return this.typeAerobicData$;
+      case '6':
+        return this.typeRowData$;
+      default:
+        return this.typeAllData$;
+    }
   }
 
   // 取得group資訊-kidin-1081210
   getGroupInfo () {
-    return this.groupInfo;
+    return this.groupInfo$;
   }
 
   // 儲存group資訊-kidin-1081210
-  saveGroupInfo (groupData) {
-    this.groupInfo = groupData;
+  saveGroupInfo (status: object) {
+    this.groupInfo$.next(status);
   }
 }

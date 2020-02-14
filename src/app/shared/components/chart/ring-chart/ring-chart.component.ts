@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Input, OnChanges } from '@angular/core';
 
 import { TranslateService } from '@ngx-translate/core';
 import { chart } from 'highcharts';
@@ -55,9 +55,10 @@ class ChartOptions {
   styleUrls: ['./ring-chart.component.scss']
 })
 
-export class RingChartComponent implements OnInit, OnDestroy {
+export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() data: Array<number>;
+  @Input() selectType: string;  // 先預埋根據運動類型過濾落點-kidin-1090131
 
   @ViewChild('container')
   container: ElementRef;
@@ -66,54 +67,84 @@ export class RingChartComponent implements OnInit, OnDestroy {
     private translateService: TranslateService
   ) { }
 
-  ngOnInit() {
+  ngOnInit() { }
+
+  ngOnChanges() {
     this.initInfoHighChart();
   }
 
   // 初始化highChart-kidin-1081211
   initInfoHighChart () {
-
-    // 將之前生成的highchart卸除避免新生成的highchart無法顯示-kidin-1081219
-    Highcharts.charts.forEach((_highChart, idx) => {
-      if (_highChart !== undefined) {
-        _highChart.destroy();
-      }
-    });
-
     const sportPercentageDataset = []
     Highcharts.charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
     for (let i = 0; i < this.data.length; i++) {
       if (this.data[i] !== 0) {
         switch (i) {
           case 0:
-            sportPercentageDataset.push({
-              name: this.translateService.instant('Dashboard.SportReport.run'), y: this.data[0], color: '#ea5757'
-            });
+            if (this.selectType !== '1' && this.selectType !== '99') {
+              sportPercentageDataset.push({
+                name: this.translateService.instant('Dashboard.SportReport.run'), y: this.data[0], color: '#9e9e9e'
+              });
+            } else {
+              sportPercentageDataset.push({
+                name: this.translateService.instant('Dashboard.SportReport.run'), y: this.data[0], color: '#ea5757'
+              });
+            }
             break;
           case 1:
-            sportPercentageDataset.push({
-              name: this.translateService.instant('Dashboard.SportReport.cycle'), y: this.data[1], color: '#ff9a22'
-            });
+            if (this.selectType !== '2' && this.selectType !== '99') {
+              sportPercentageDataset.push({
+                name: this.translateService.instant('Dashboard.SportReport.cycle'), y: this.data[1], color: '#9e9e9e'
+              });
+            } else {
+              sportPercentageDataset.push({
+                name: this.translateService.instant('Dashboard.SportReport.cycle'), y: this.data[1], color: '#ff9a22'
+              });
+            }
           break;
           case 2:
-            sportPercentageDataset.push({
-              name: this.translateService.instant('Dashboard.SportReport.weightTraining'), y: this.data[2], color: '#f9cc3d'
-            });
+            if (this.selectType !== '3' && this.selectType !== '99') {
+              sportPercentageDataset.push({
+                name: this.translateService.instant('Dashboard.SportReport.weightTraining'), y: this.data[2], color: '#9e9e9e'
+              });
+            } else {
+              sportPercentageDataset.push({
+                name: this.translateService.instant('Dashboard.SportReport.weightTraining'), y: this.data[2], color: '#f9cc3d'
+              });
+            }
           break;
           case 3:
-            sportPercentageDataset.push({
-              name: this.translateService.instant('Dashboard.SportReport.swim'), y: this.data[3], color: '#cfef4b'
-            });
+            if (this.selectType !== '4' && this.selectType !== '99') {
+              sportPercentageDataset.push({
+                name: this.translateService.instant('Dashboard.SportReport.swim'), y: this.data[3], color: '#9e9e9e'
+              });
+            } else {
+              sportPercentageDataset.push({
+                name: this.translateService.instant('Dashboard.SportReport.swim'), y: this.data[3], color: '#cfef4b'
+              });
+            }
           break;
           case 4:
-            sportPercentageDataset.push({
-              name: this.translateService.instant('Dashboard.SportReport.aerobic'), y: this.data[4], color: '#75f25f'
-            });
+            if (this.selectType !== '5' && this.selectType !== '99') {
+              sportPercentageDataset.push({
+                name: this.translateService.instant('Dashboard.SportReport.aerobic'), y: this.data[4], color: '#9e9e9e'
+              });
+            } else {
+              sportPercentageDataset.push({
+                name: this.translateService.instant('Dashboard.SportReport.aerobic'), y: this.data[4], color: '#75f25f'
+              });
+            }
           break;
           case 5:
-            sportPercentageDataset.push({
-              name: this.translateService.instant('Dashboard.SportReport.boating'), y: this.data[5], color: '#72e8b0'
-            });
+            if (this.selectType !== '6' && this.selectType !== '99') {
+              sportPercentageDataset.push({
+                name: this.translateService.instant('Dashboard.SportReport.boating'), y: this.data[5], color: '#9e9e9e'
+              });
+            } else {
+              sportPercentageDataset.push({
+                name: this.translateService.instant('Dashboard.SportReport.aerobic'), y: this.data[4], color: '#72e8b0'
+              });
+            }
           break;
         }
       }

@@ -295,26 +295,28 @@ export class MyReportComponent implements OnInit, OnDestroy {
     this.getFilterTime();
 
     // 先從service取得群組資訊，若取不到再call api-kidin-1081210
-    this.groupData = this.groupService.getGroupInfo();
-    if (this.groupData) {
-      this.groupId = this.groupData.groupId;
-      this.showGroupInfo();
-    } else {
-      const urlArr = location.pathname.split('/');
-      this.groupId = this.hashIdService.handleGroupIdDecode(urlArr[urlArr.length - 2]);
-      const groupBody = {
-        token: this.token,
-        groupId: this.groupId,
-        findRoot: '1',
-        avatarType: '2'
-      };
-
-      this.groupService.fetchGroupListDetail(groupBody).subscribe(res => {
-        this.groupData = res.info;
-        this.groupService.saveGroupInfo(this.groupData);
+    this.groupService.getGroupInfo().subscribe(res => {
+      this.groupData = res;
+      if (this.groupData.hasOwnProperty('groupId')) {
+        this.groupId = this.groupData.groupId;
         this.showGroupInfo();
-      });
-    }
+      } else {
+        const urlArr = location.pathname.split('/');
+        this.groupId = this.hashIdService.handleGroupIdDecode(urlArr[urlArr.length - 2]);
+        const groupBody = {
+          token: this.token,
+          groupId: this.groupId,
+          findRoot: '1',
+          avatarType: '2'
+        };
+
+        this.groupService.fetchGroupListDetail(groupBody).subscribe(result => {
+          this.groupData = result.info;
+          this.groupService.saveGroupInfo(this.groupData);
+          this.showGroupInfo();
+        });
+      }
+    });
 
     // 根據條件取得多筆運動檔案資料-kidin-1081211
     let targetUser,
@@ -442,6 +444,7 @@ export class MyReportComponent implements OnInit, OnDestroy {
           this.reportCompleted = true;
           this.initialChartComplated = true;
         } else {
+          this.isSelectDateRange = false;
           this.getUserBodyInfo();
           this.hasResData = true;
           const infoData = activity[0];

@@ -61,19 +61,10 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() dateRange: string;
   @Input() sportType: string;
   @Input() chartName: string;
-  @Input() HRSetting: any;
+  @Input() hrZoneRange: any;
 
   @ViewChild('container')
   container: ElementRef;
-
-  hrZoneRange = {
-    z0: null,
-    z1: null,
-    z2: null,
-    z3: null,
-    z4: null,
-    z5: null,
-  };
 
   constructor() { }
 
@@ -98,7 +89,6 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
 
     switch (this.chartName) {
       case 'HR':
-        this.countHRRange();
         for (let i = 0; i < this.data.date.length; i++) {
           chartData.push(
             this.assignColor(this.data.date[i], this.data.HR[i], 'normal')
@@ -116,7 +106,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
             showInLegend: false,
             color: '#ff9a22',
             marker: {
-              symbol: 'triangle-down'
+              symbol: 'circle'
             }
           },
           {
@@ -125,7 +115,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
             showInLegend: false,
             color: '#75f25f',
             marker: {
-              symbol: 'triangle'
+              symbol: 'circle'
             }
           }
         ];
@@ -163,7 +153,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
             showInLegend: false,
             color: '#ff9a22',
             marker: {
-              symbol: 'diamond'
+              symbol: 'circle'
             }
           },
           {
@@ -172,7 +162,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
             showInLegend: false,
             color: '#72e8b0',
             marker: {
-              symbol: 'square'
+              symbol: 'circle'
             }
           }
         ];
@@ -227,49 +217,6 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
       chart(trendChartDiv, trendChartOptions);
     }, 0);
 
-  }
-
-  // 先計算出心率區間-kidin-1090210
-  countHRRange () {
-    const { userHRBase, userAge, userMaxHR, userRestHR } = this.HRSetting;
-
-    if (userAge !== null) {
-      if (userMaxHR && userRestHR) {
-        if (userHRBase === 0) {
-          // 區間數值採無條件捨去法
-          this.hrZoneRange['z0'] = Math.floor((220 - userAge) * 0.5);
-          this.hrZoneRange['z1'] = Math.floor((220 - userAge) * 0.6 - 1);
-          this.hrZoneRange['z2'] = Math.floor((220 - userAge) * 0.7 - 1);
-          this.hrZoneRange['z3'] = Math.floor((220 - userAge) * 0.8 - 1);
-          this.hrZoneRange['z4'] = Math.floor((220 - userAge) * 0.9 - 1);
-          this.hrZoneRange['z5'] = Math.floor((220 - userAge) * 1);
-        } else {
-          this.hrZoneRange['z0'] = (userMaxHR - userRestHR) * (0.55) + userRestHR;
-          this.hrZoneRange['z1'] = (userMaxHR - userRestHR) * (0.6) + userRestHR;
-          this.hrZoneRange['z2'] = (userMaxHR - userRestHR) * (0.65) + userRestHR;
-          this.hrZoneRange['z3'] = (userMaxHR - userRestHR) * (0.75) + userRestHR;
-          this.hrZoneRange['z4'] = (userMaxHR - userRestHR) * (0.85) + userRestHR;
-          this.hrZoneRange['z5'] = (userMaxHR - userRestHR) * (1) + userRestHR;
-        }
-      } else {
-        if (userHRBase === 0) {
-          // 區間數值採無條件捨去法
-          this.hrZoneRange['z0'] = Math.floor((220 - userAge) * 0.5);
-          this.hrZoneRange['z1'] = Math.floor((220 - userAge) * 0.6 - 1);
-          this.hrZoneRange['z2'] = Math.floor((220 - userAge) * 0.7 - 1);
-          this.hrZoneRange['z3'] = Math.floor((220 - userAge) * 0.8 - 1);
-          this.hrZoneRange['z4'] = Math.floor((220 - userAge) * 0.9 - 1);
-          this.hrZoneRange['z5'] = Math.floor((220 - userAge) * 1);
-        } else {
-          this.hrZoneRange['z0'] = ((220 - userAge) - userRestHR) * (0.55) + userRestHR;
-          this.hrZoneRange['z1'] = ((220 - userAge) - userRestHR) * (0.6) + userRestHR;
-          this.hrZoneRange['z2'] = ((220 - userAge) - userRestHR) * (0.65) + userRestHR;
-          this.hrZoneRange['z3'] = ((220 - userAge) - userRestHR) * (0.75) + userRestHR;
-          this.hrZoneRange['z4'] = ((220 - userAge) - userRestHR) * (0.85) + userRestHR;
-          this.hrZoneRange['z5'] = ((220 - userAge) - userRestHR) * (1) + userRestHR;
-        }
-      }
-    }
   }
 
   // 根據心率區間的值決定該點顏色-kidin-1090210

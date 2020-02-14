@@ -88,6 +88,8 @@ import { LifeTrackingComponent } from './components/life-tracking/life-tracking.
 import { LifeTrackingService } from './services/life-tracking.service';
 import { MyReportComponent } from './group/group-info/my-report/my-report.component';
 import { ClassAnalysisComponent } from './group/group-info/class-analysis/class-analysis.component';
+import { ComReportComponent } from './group/group-info/com-report/com-report.component';
+import { ComLifeTrackingComponent } from './group/group-info/com-life-tracking/com-life-tracking.component';
 
 @NgModule({
   imports: [
@@ -185,7 +187,9 @@ import { ClassAnalysisComponent } from './group/group-info/class-analysis/class-
     InnerDevicePairComponent,
     LifeTrackingComponent,
     MyReportComponent,
-    ClassAnalysisComponent
+    ClassAnalysisComponent,
+    ComReportComponent,
+    ComLifeTrackingComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
