@@ -1,4 +1,4 @@
-// fix time 2018/02/21
+// fix time 2019/02/12
 export const version = {
   develop: '1.1.5.1 alpha',
   release: '1.1.5.1 alpha',

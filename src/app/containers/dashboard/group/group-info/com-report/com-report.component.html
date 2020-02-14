@@ -1,12 +1,117 @@
+<ng-container *ngIf="!isPreviewMode">
+  <div class="searchReport">
+    <p style="font-size: 18px; color: #26abe3;">{{'SH.create' | translate}}{{'Dashboard.SportReport.sportReport' | translate}}</p>
+    <p>請依照您的運動屬性與課程期間建立報告</p>
+    <div class="searchInput">
+      <div class="selectArea">
+        <div class="sportCategory" *ngIf="1 ==='1'">
+          <p style="white-space: nowrap; margin: 0px">{{'Dashboard.GroupClass.activityType' | translate}}：</p>
+          <mat-form-field style="width: 100px;" appearance="none" class="trainLiveCategroy">
+            <mat-select [(value)]="reportCategory" (selectionChange)="changeSportCategory()">
+              <mat-option value="99">{{'SH.all' | translate}}</mat-option>
+              <mat-option value="1">{{'Dashboard.SportReport.run' | translate}}</mat-option>
+              <mat-option value="2">{{'Dashboard.SportReport.cycle' | translate}}</mat-option>
+              <mat-option value="3">{{'Dashboard.SportReport.weightTraining' | translate}}</mat-option>
+              <mat-option value="4">{{'Dashboard.SportReport.swim' | translate}}</mat-option>
+              <mat-option value="5">{{'Dashboard.SportReport.aerobic' | translate}}</mat-option>
+              <mat-option value="6">{{'Dashboard.SportReport.boating' | translate}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="datetimeInput">
+          <p style="white-space: nowrap; margin: 0px">{{'SH.dateRange' | translate}}：</p>
+          <div style="display: flex; flex-direction: column;">
+            <div>
+                <button
+                name="aWeek"
+                class="alatech-btn alatech-btn--default activty-btn btnWord"
+                [class.BtnBgColor]="isSelected === 'aWeek'"
+                value="week"
+                (click)="handleActivityBtn($event)"
+              >
+                {{'Dashboard.GroupClass.last7Days' | translate}}
+              </button>
+              <button
+                name="aMonth"
+                class="alatech-btn alatech-btn--default activty-btn btnWord"
+                [class.BtnBgColor]="isSelected === 'aMonth'"
+                value="month"
+                (click)="handleActivityBtn($event)"
+              >
+                {{'Dashboard.GroupClass.last30Days' | translate}}
+              </button>
+              <button
+                name="rangeDate"
+                class="alatech-btn alatech-btn--default activty-btn btnWord"
+                [class.BtnBgColor]="isSelected === 'rangeDate'"
+                (click)="handleClickSelectDate($event)"
+              >
+                {{'Dashboard.GroupClass.selectDate' | translate}}
+              </button>
+            </div>
+            <div class="dateSelectArea" *ngIf="isSelectDateRange">
+              <mat-form-field style="width: 100px;" appearance="none">
+                <input
+                  matInput
+                  type="text"
+                  name="classDate"
+                  class="inputDateTime"
+                  style="bottom: 0.4em;"
+                  [max]="maxStartDate"
+                  [(value)]="selectedStartDate"
+                  (dateChange)="handleStartDate($event)"
+                  [matDatepicker]="startDatepicker"
+                  required="required"
+                  onkeydown="return false"
+                  (click)="startDatepicker.opened = true"
+                  readonly
+                >
+                <mat-datepicker #startDatepicker disabled="false" touchUi="true"></mat-datepicker>
+              </mat-form-field>
+              <div id="dashBetweenDate"></div>
+              <mat-form-field style="width: 100px;" appearance="none">
+                <input
+                  matInput
+                  type="text"
+                  name="classDate"
+                  class="inputDateTime"
+                  style="bottom: 0.4em;"
+                  [min]="minEndDate"
+                  [max]="maxSelectDate"
+                  [(value)]="endDate"
+                  (dateChange)="handleEndDate($event)"
+                  [matDatepicker]="endDatepicker"
+                  required="required"
+                  onkeydown="return false"
+                  (click)="endDatepicker.opened = true"
+                  readonly
+                >
+                <mat-datepicker #endDatepicker disabled="false" touchUi="true"></mat-datepicker>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button
+        class="alatech-btn alatech-btn--default activty-btn"
+        style="max-width: 70px;"
+        (click)="handleSubmitSearch('click')"
+        [class.unClickable]="!reportCompleted"
+      >
+        {{'SH.send' | translate}}
+      </button>
+    </div>
+  </div>
+</ng-container>
+<ng-container *ngIf="isLoading" style="display:flex;justify-content: center;align-items: center; width:100%;">
+  <mat-spinner style="z-index: 3; margin-top: 30px; position: absolute; left: 50%;"></mat-spinner>
+  <div class="whiteMask">
+  </div>
+</ng-container>
 <ng-container *ngIf="nodata && !isLoading" style="width: 100%; display: flex; flex-direction: row; justify-content: center;">
   <p style="margin-top: 10px; color: gray; font-size: 18px;">{{'Dashboard.System.nodata' | translate}}</p>
 </ng-container>
-<ng-container *ngIf="isLoading" style="display:flex;justify-content: center;align-items: center; width:100%;">
-  <div class="whiteMask">
-    <mat-spinner style="z-index: 3; margin-top: 30px;"></mat-spinner>
-  </div>
-</ng-container>
-<ng-container *ngIf="!isLoading && !nodata" style="width: 100%; min-height: 100%; padding-bottom: 30px;">
+<ng-container *ngIf="!isLoading && !nodata && showReport" style="width: 100%; min-height: 100%; padding-bottom: 30px;">
   <div class="functionButton">
     <button class="alatech-btn alatech-btn--default activity-btn"
       title="{{'SH.print' | translate}}"
@@ -50,7 +155,7 @@
         <div class="flexCol" style="margin-left: 20px;">
           <span class="reportDateTime">從{{reportEndDate}}起，過去 {{period}} 所建立</span>
           <span *ngIf="reportCategory === '99'" class="reportTitle">
-            {{'Dashboard.SportReport.allActivity' | translate}} {{'Dashboard.SportReport.sportReport' | translate}}
+            {{'other.activityTotals' | translate}} {{'other.report' | translate}}
           </span>
           <span *ngIf="reportCategory === '1'" class="reportTitle">
             {{'Dashboard.SportReport.run' | translate}} {{'Dashboard.SportReport.sportReport' | translate}}
@@ -73,9 +178,12 @@
         </div>
       </div>
       <div class="flexRow authorInfo">
-        <span class="reportTitle" style="margin: 10px 10px 0px 0px;">{{fileInfo?.name}}</span>
+        <div class="flexCol">
+          <span class="reportTitle" style="margin: 10px 10px 0px 0px;">{{groupData?.groupName}}</span>
+          <span class="reportDateTime">{{brandName}} \ {{branchName}}</span>
+        </div>
         <div style="margin-right: 10px;">
-        <img style="width: 55px; border-radius: 50%;" src="{{fileInfo?.nameIcon}}">
+          <img style="width: 55px; border-radius: 50%;" src="{{groupImg}}">
         </div>
       </div>
     </div>
@@ -89,6 +197,11 @@
     </div>
     <div>
       <div class="summaryArea">
+        <div class="summaryDataArea">
+          <span class="summaryData">{{hasDataNumber || 0}}</span>
+          <p class="summaryDescription">{{'other.people' | translate}}</p>
+        </div>
+        <div class="sepLine"></div>
         <div class="summaryDataArea">
           <span class="summaryData">{{categoryActivityLength || 0}}</span>
           <p class="summaryDescription">{{'other.totalActivity' | translate}}</p>
@@ -265,7 +378,7 @@
           [perAvgHR]="perAvgHR"
           [perActivityTime]="perActivityTime"
           [selectType]="selectType"
-          [HRRange]="[60, hrZoneRange['z5']]"
+          [HRRange]="[60, 190]"
           *ngIf="!isLoading && !isRxjsLoading"
           class="distributionChart"
         >
@@ -539,35 +652,6 @@
           </div>
         </div>
       </div>
-      <div class="flexCol" *ngIf="reportCategory !== '99' && reportCategory !== '3'">
-        <div class="flexRow" style="align-items: center;">
-          <span class="reportChartTitle">{{'SH.hr' | translate}}</span>
-          <div class="separateLine"></div>
-        </div>
-        <div class="flexRow dataContent" [class.media-1000-dataContent]="!isPreviewMode">
-          <div class="flexRow dataNumber" [class.media-1000-dataNumber]="!isPreviewMode">
-            <div class="flexCol dataMargin" style="width: 50%;">
-              <span class="dataFont">{{bestHR | number:'1.0-0'}}</span>
-              <span class="dataAnnotation">{{'SH.maxHr' | translate}}</span>
-            </div>
-            <div class="flexCol dataMargin" style="width: 50%;">
-              <span class="dataFont">{{avgHR | number:'1.0-1'}}</span>
-              <span class="dataAnnotation">{{'SH.avgHr' | translate}}</span>
-            </div>
-          </div>
-          <div class="dataChart" [class.media-1000-dataChart]="!isPreviewMode">
-            <app-compare-line-chart
-              [data]="perHRData"
-              [dateRange]="dataDateRange"
-              [sportType]="reportCategory"
-              [chartName]="'HR'"
-              [hrZoneRange]="hrZoneRange"
-              *ngIf="!isLoading && !isRxjsLoading"
-            >
-            </app-compare-line-chart>
-          </div>
-        </div>
-      </div>
       <div class="flexCol" *ngIf="reportCategory === '4'">
         <div class="flexRow" style="align-items: center;">
           <span class="reportChartTitle">Swolf</span>
@@ -627,11 +711,6 @@
           </div>
         </div>
       </div>
-  </div>
-</ng-container>
-<ng-container *ngIf="isPreviewMode && !isLoading">
-  <div class="printMark">
-    GPT Center
   </div>
 </ng-container>
 

@@ -354,6 +354,7 @@ export class GroupInfoComponent implements OnInit {
     }
   }
 
+  // 1.群組資訊 2.品牌管理 3.隱私權設定 4.我的報告(健身房) 5.課程分析(健身房) 6.運動報告(企業) 7.生活追蹤(企業)-kidin-1090211
   handleGroupItem(idx) {
     if (idx === 4) {
       this.chooseIdx = idx;
@@ -361,6 +362,12 @@ export class GroupInfoComponent implements OnInit {
     } else if (idx === 5) {
       this.chooseIdx = idx;
       this.router.navigateByUrl(`/dashboard/group-info/${this.hashGroupId}/class-analysis`);
+    } else if (idx === 6) {
+      this.chooseIdx = idx;
+      this.router.navigateByUrl(`/dashboard/group-info/${this.hashGroupId}/com-report`);
+    } else if (idx === 7) {
+      this.chooseIdx = idx;
+      this.router.navigateByUrl(`/dashboard/group-info/${this.hashGroupId}/com-life-tracking`);
     } else if (idx === 2) {
       this.chooseIdx = idx;
       this.router.navigateByUrl(`/dashboard/group-info/${this.hashGroupId}`);
@@ -780,6 +787,10 @@ export class GroupInfoComponent implements OnInit {
       this.chooseIdx = 4;
     } else if (url.indexOf('class-analysis') > -1) {
       this.chooseIdx = 5;
+    } else if (url.indexOf('com-report') > -1) {
+      this.chooseIdx = 6;
+    } else if (url.indexOf('com-life-tracking') > -1) {
+      this.chooseIdx = 7;
     } else if (this.chooseIdx !== 2 && this.chooseIdx !== 3) {
       this.chooseIdx = 1;
     }

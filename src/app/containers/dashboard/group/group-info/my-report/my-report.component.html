@@ -62,6 +62,7 @@
                     required="required"
                     onkeydown="return false"
                     (click)="startDatepicker.opened = true"
+                    readonly
                   >
                   <mat-datepicker #startDatepicker disabled="false" touchUi="true"></mat-datepicker>
                 </mat-form-field>
@@ -81,6 +82,7 @@
                     required="required"
                     onkeydown="return false"
                     (click)="endDatepicker.opened = true"
+                    readonly
                   >
                   <mat-datepicker #endDatepicker disabled="false" touchUi="true"></mat-datepicker>
                 </mat-form-field>
@@ -104,8 +106,8 @@
   <p style="margin-top: 10px; color: gray; font-size: 18px;">{{'Dashboard.System.nodata' | translate}}</p>
 </ng-container>
 <ng-container *ngIf="!reportCompleted || !initialChartComplated" style="display:flex;justify-content: center;align-items: center;width:100%">
+  <mat-spinner style="z-index: 3; margin-top: 30px; position: absolute; left: 50%;"></mat-spinner>
   <div class="whiteMask">
-    <mat-spinner style="z-index: 3;"></mat-spinner>
   </div>
 </ng-container>
 <ng-container *ngIf="hasResData && reportCompleted" style="width: 100%">

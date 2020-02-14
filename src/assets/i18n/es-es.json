@@ -709,6 +709,10 @@
     "shortBurstTraining": "短期爆發型訓練",
     "moderateHigh-IntensityTraining": "適度高強度訓練",
     "easyToCausePhysicalBurden": "易造成身體負擔",
-    "hrStatisticsDuringThePeriod": "期間 {{number}}筆活動統計的心率區間總量，由各心率區間的占比，可得知該心率訓練成效占比為何，並可做適度的訓練調整與指標。"
+    "hrStatisticsDuringThePeriod": "期間 {{number}}筆活動統計的心率區間總量，由各心率區間的占比，可得知該心率訓練成效占比為何，並可做適度的訓練調整與指標。",
+    "lifeTracking": "Seguimiento vital",
+    "people": "people",
+    "activityTotals": "Activity Totals",
+    "report": "report"
   }
 }

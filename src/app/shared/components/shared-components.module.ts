@@ -101,7 +101,15 @@ import { DiscolorColumnChartComponent } from './chart/discolor-column-chart/disc
     MyActivityComponent,
     ActivityInfoComponent,
     SportReportComponent,
-    ShareGroupInfoDialogComponent
+    ShareGroupInfoDialogComponent,
+    RingChartComponent,
+    HrzoneChartComponent,
+    HrzoneInfoComponent,
+    DistributionChartComponent,
+    StackColumnChartComponent,
+    FilletColumnChartComponent,
+    CompareLineChartComponent,
+    DiscolorColumnChartComponent
   ]
 })
 export class SharedComponentsModule {}
