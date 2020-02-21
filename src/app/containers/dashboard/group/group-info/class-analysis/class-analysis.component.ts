@@ -686,14 +686,14 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         case '1':
           return `${this.fillTwoDigits(hour)}:${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}"`;
         case '2':
-          return `${this.fillTwoDigits(hour)}:${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}`;
+          return `${hour}:${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}`;
       }
     }
   }
 
   // 時間補零-kidin-1081211
   fillTwoDigits (num) {
-    const timeStr = '0' + num;
+    const timeStr = '0' + Math.floor(num);
     return timeStr.substr(-2);
   }
 

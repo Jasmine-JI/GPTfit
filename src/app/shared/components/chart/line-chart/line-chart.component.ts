@@ -3,8 +3,6 @@ import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input }
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
 import * as moment from 'moment';
-import { TranslateService } from '@ngx-translate/core';
-
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -13,7 +11,7 @@ class ChartOptions {
   constructor (dataset) {
     return {
       chart: {
-        type: 'column',
+        type: 'line',
         height: 110
       },
       title: {
@@ -39,14 +37,12 @@ class ChartOptions {
         min: 0,
         title: {
             text: ''
-        }
+        },
+        startOnTick: false,
+        minPadding: 0.1,
+        maxPadding: 0.01
       },
-      plotOptions: {
-        series: {
-          pointWidth: 10,
-          borderRadius: 5
-        }
-      },
+      plotOptions: {},
       tooltip: {},
       series: dataset
     };
@@ -54,83 +50,85 @@ class ChartOptions {
 }
 
 @Component({
-  selector: 'app-fillet-column-chart',
-  templateUrl: './fillet-column-chart.component.html',
-  styleUrls: ['./fillet-column-chart.component.scss']
+  selector: 'app-line-chart',
+  templateUrl: './line-chart.component.html',
+  styleUrls: ['./line-chart.component.scss']
 })
-export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy {
-
-  tooltipTitle = '';
-  dateList = [];
+export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() data: any;
   @Input() dateRange: string;
   @Input() chartName: string;
-  @Input() searchDate: Array<number>;
 
   @ViewChild('container')
   container: ElementRef;
 
-  constructor(
-    private translate: TranslateService
-  ) { }
+  constructor() { }
 
   ngOnInit() {}
 
   ngOnChanges () {
+    console.log('line', this.data, this.dateRange);
     this.initChart();
   }
 
   initChart () {
     Highcharts.charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
 
-    let trendDataset;
-    let chartData = [];
+    let trendDataset,
+        chartData = [],
+        lineColor = '';
     switch (this.chartName) {
-      case 'Calories':
-        for (let i = 0; i < this.data.date.length; i++) {
-          if (this.data.calories[i] > 0) {
-            chartData.push({
-              x: this.data.date[i],
-              y: this.data.calories[i],
-            });
-          }
-        }
-
-        this.tooltipTitle = this.translate.instant('SH.calories');
-
-        break;
-      case 'FitTime':
-        this.createDateList();
-
-        const newData = [];
-        let idx = 0;
-        for (let i = 0; i < this.dateList.length; i++) {
-          if (this.dateList[i] === this.data.date[idx]) {
-            newData.push(this.data.fitTimeList[idx]);
-            idx++;
-          } else {
-            newData.push(0);
-          }
-        }
-        chartData = newData.map((_item, index) => {
+      case 'Weight':
+        chartData = this.data.weightList.map((_item, index) => {
           return {
-            x: this.dateList[index],
-            y: _item / 60
+            x: this.data.date[index],
+            y: _item,
+            marker: {
+              enabled: false
+            }
           };
         });
 
-        this.tooltipTitle = this.translate.instant('other.fitTime');
+        lineColor = this.data.colorSet;
+
+        break;
+      case 'FatRate':
+        chartData = this.data.fatRateList.map((_item, index) => {
+          return {
+            x: this.data.date[index],
+            y: _item,
+            marker: {
+              enabled: false
+            }
+          };
+        });
+
+        lineColor = this.data.fatRateColorSet;
+
+        break;
+      case 'MuscleRate':
+        chartData = this.data.muscleRateList.map((_item, index) => {
+          return {
+            x: this.data.date[index],
+            y: _item,
+            marker: {
+              enabled: false
+            }
+          };
+        });
+
+        lineColor = this.data.muscleRateColorSet;
 
         break;
     }
 
     trendDataset = [
       {
-        name: this.tooltipTitle,
+        name: this.chartName,
         data: chartData,
         showInLegend: false,
-        color: this.data.colorSet
+        color: lineColor
       }
     ];
 
@@ -164,41 +162,6 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
       chart(trendChartDiv, trendChartOptions);
     }, 0);
 
-  }
-
-  // 根據搜尋期間，列出日期清單供圖表使用-kidin-1090220
-  createDateList () {
-    let diff,
-        weekStartDay,
-        weekEndDay;
-    if (this.dateRange === 'day') {
-      diff = (this.searchDate[1] - this.searchDate[0]) / (86400 * 1000);
-
-      for (let i = 0; i < diff + 1; i++) {
-        this.dateList.push(this.searchDate[0] + 86400 * 1000 * i);
-      }
-
-    } else if (this.dateRange === 'week') {
-
-      // 周報告開頭是星期日-kidin-1090220
-      if (moment(this.searchDate[0]).isoWeekday() !== 7) {
-        weekStartDay = this.searchDate[0] + 86400 * 1000 * (7 - moment(this.searchDate[0]).isoWeekday());
-      } else {
-        weekStartDay = this.searchDate[0];
-      }
-
-      if (moment(this.searchDate[0]).isoWeekday() !== 7) {
-        weekEndDay = this.searchDate[1] - 86400 * 1000 * moment(this.searchDate[1]).isoWeekday();
-      } else {
-        weekEndDay = this.searchDate[1];
-      }
-
-      diff = (weekEndDay - weekStartDay) / (86400 * 1000 * 7);
-
-      for (let i = 0; i < diff + 1; i++) {
-        this.dateList.push(weekStartDay + 86400 * 1000 * 7 * i);
-      }
-    }
   }
 
   ngOnDestroy () {

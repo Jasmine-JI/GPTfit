@@ -1,0 +1,214 @@
+.searchReport {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 2px #9e9e9e solid;
+}
+
+.inputDateTime {
+  height: 30px;
+  border: solid 1px gray;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.btnWord {
+  max-width: 70px;
+  line-height: 100%;
+  border-radius: 0px;
+  margin: 0px;
+  margin-bottom: 10px;
+}
+
+.btnWord:first-child {
+  border-radius: 5px 0px 0px 5px;
+}
+
+.btnWord:last-child {
+  border-radius: 0px 5px 5px 0px;
+}
+
+.BtnBgColor {
+  background-color: #21c7f9;
+  color: white;
+}
+
+#dashBetweenDate {
+  height: 2px;
+  flex: 1 0 10px;
+  background: gray;
+  margin: 0px 10px 20px 10px;
+  align-content: center;
+}
+
+.datetimeInput {
+  margin-bottom: 10px;
+}
+
+.dateSelectArea {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  max-width: 230px;
+}
+
+.reportHeader {
+  margin: 10px 0px;
+  justify-content: space-between;
+}
+
+.reportDateTime {
+  font-size: 14px;
+  color:#919191;
+  font-weight: bold;
+}
+
+.reportTitle {
+  color: #616161;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.infoDataUnit {
+  font-size: 16px;
+  color:#919191;
+  font-weight: bold;
+}
+
+.sepLine {
+  border-left: 1px solid #e0e0e0;
+  height: 40px;
+  margin-top: 10px;
+}
+
+.reportChartTitle {
+  font-weight: bold;
+  width: fit-content;
+  white-space: nowrap;
+}
+
+.durationSection {
+  margin-top: 20px;
+}
+
+.postureInfo {
+  width: 60%;
+  margin-right: 10px;
+}
+
+.postureTrend {
+  width: 40%;
+}
+
+.durationInfo {
+  width: 40%;
+}
+
+.durationChart {
+  width: 60%;
+}
+
+.infoHeader {
+  margin: 0 10px;
+  justify-content: space-between;
+}
+
+.dataDiscription {
+  margin-top: 10px;
+}
+
+.noChartData {
+  font-weight: bold;
+  color:grey;
+  margin: 10px 0px 10px 10px
+}
+
+.dataNumber {
+  margin-left: 10px;
+  width: 35%;
+}
+
+.dataChart {
+  width: 65%;
+  margin-left: 30px;
+}
+
+.dataAnnotation {
+  font-size: 16px;
+  font-weight: bold;
+  color: #919191;
+}
+
+.printMark {
+  width: 100%;
+  background-color:#ededed;
+  text-align: center;
+  font-weight: bold;
+  height:fit-content;
+}
+
+@media (max-width: 1200px) {
+  .searchInput {
+    flex-direction: column;
+    margin-bottom: 10px;
+  }
+
+  .selectArea {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 1000px){
+  .media-1000-col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .authorInfo {
+    justify-content: flex-end;
+    margin-top: 10px;
+  }
+
+  .media-1000-dataContent {
+    flex-direction: column;
+  }
+
+  .media-1000-dataNumber {
+    width: 100%;
+  }
+
+  .media-1000-dataChart {
+    width: 100%;
+    margin-left: 0px;
+  }
+}
+
+@media (max-width: 767px){
+  .durationSection {
+    flex-direction: column;
+  }
+
+  .recentBodyQuality {
+    flex-direction: column;
+  }
+
+  .rwd_wid_100per {
+    width: 100%;
+  }
+
+  .fitTimeChart {
+    flex-direction: column;
+  }
+
+  .dataChart {
+    width: 100%;
+    margin-left: 0px;
+  }
+
+}
+
+@media (max-width: 550px){
+  .reportTitle {
+    font-size: 20px;
+  }
+
+}

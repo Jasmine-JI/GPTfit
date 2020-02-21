@@ -666,13 +666,13 @@ export class MyReportComponent implements OnInit, OnDestroy {
       const hour = Math.floor((timeCount) / 3600);
       const minute = Math.floor((timeCount % 3600) / 60);
       const second = timeCount - (hour * 3600) - (minute * 60);
-      this.totalTime = `${this.fillTwoDigits(hour)}:${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}"`;
+      this.totalTime = `${hour}:${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}"`;
     }
   }
 
   // 時間補零-kidin-1081211
   fillTwoDigits (num: number) {
-    const timeStr = '0' + num;
+    const timeStr = '0' + Math.floor(num);
     return timeStr.substr(-2);
   }
 

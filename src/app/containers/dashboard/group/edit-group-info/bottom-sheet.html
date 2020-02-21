@@ -1,6 +1,7 @@
 <mat-nav-list>
   <a mat-list-item
     (click)="openLink($event, 1)"
+    *ngIf="brandType == 1"
   >
     <span mat-line *ngIf="brandType == 1">
       {{'Dashboard.Group.create' | translate}}{{'Dashboard.Group.courseInformationProfessionalClass' | translate}}
