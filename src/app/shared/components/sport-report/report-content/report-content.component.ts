@@ -882,19 +882,21 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
 
   // 使時間依照xxxx/XX/XX格式顯示-kidin-1090120
   formatTime (time: number) {
-    const hour = Math.floor((time) / 3600);
-    const minute = Math.floor((time % 3600) / 60);
-    const second = time - (hour * 3600) - (minute * 60);
+    const hour = Math.floor((time) / 3600),
+          minute = Math.floor((time % 3600) / 60),
+          second = time - (hour * 3600) - (minute * 60);
     if (hour === 0) {
+      console.log('m', minute, 's', second);
       return `${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}`;
     } else {
-      return `${this.fillTwoDigits(hour)}:${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}`;
+      console.log('h', hour, 'm',  minute, 's', second);
+      return `${hour}:${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}`;
     }
   }
 
   // 時間補零-kidin-1081211
   fillTwoDigits (num: number) {
-    const timeStr = '0' + num;
+    const timeStr = '0' + Math.floor(num);
     return timeStr.substr(-2);
   }
 

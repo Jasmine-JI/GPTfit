@@ -35,7 +35,7 @@
         (click)="handleGroupItem(6)"
       >{{ 'Dashboard.SportReport.sportReport' | translate}}</li>
       <li [class.active]="chooseIdx === 7"
-        *ngIf="groupLevel === '60' && accessRight < 60 && brandType === 2  && 1 === '1'"
+        *ngIf="groupLevel === '60' && accessRight < 60 && brandType === 2"
         (click)="handleGroupItem(7)"
       >{{ 'other.lifeTracking' | translate}}</li>
     </ul>

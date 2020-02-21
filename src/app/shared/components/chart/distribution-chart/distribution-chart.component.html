@@ -10,37 +10,175 @@
   <rect x="320" y="10" width="135" height="60" stroke="#e97965" fill="#e97965" />
   <rect x="320" y="75" width="135" height="60" stroke="#e8a15c" fill="#e8a15c" />
   <rect x="320" y="140" width="135" height="60" stroke="#e8c55c" fill="#e8c55c" />
-  <text x="247" y="235" text-anchor="middle" font-size="13" stroke="#868686" stroke-width="0.5">心率區間</text>
+  <text
+    x="247"
+    y="235"
+    text-anchor="middle"
+    font-size="13"
+    stroke="#868686"
+    stroke-width="0.5"
+    *ngIf="reportType === 'sport'"
+  >{{'SH.hrZone' | translate}}
+  </text>
+  <text
+    x="247"
+    y="235"
+    text-anchor="middle"
+    font-size="13"
+    stroke="#868686"
+    stroke-width="0.5"
+    *ngIf="reportType === 'lifeTracking'"
+  >FFMI
+  </text>
 
-  <text x="16" y="107" text-anchor="middle" font-size="13" transform="rotate(-90, 16, 107)" stroke="#868686" stroke-width="0.5">
-    持續時間
+  <text
+    x="16"
+    y="107"
+    text-anchor="middle"
+    font-size="13"
+    transform="rotate(-90, 16, 107)"
+    stroke="#868686"
+    stroke-width="0.5"
+    *ngIf="reportType === 'sport'"
+  >{{'other.timer' | translate}}
+  </text>
+  <text
+    x="16"
+    y="107"
+    text-anchor="middle"
+    font-size="13"
+    transform="rotate(-90, 16, 107)"
+    stroke="#868686"
+    stroke-width="0.5"
+    *ngIf="reportType === 'lifeTracking'"
+  >{{'other.fatRate' | translate}}
   </text>
   <foreignObject x="45" y="17" width="130" height="60">
-      <xhtml:p class="blockDescription">{{'other.hardWorkButLowIntensity' | translate}}*{{blockOne}}</p>
+    <xhtml:p class="blockDescription" *ngIf="reportType === 'sport'">
+      {{'other.hardWorkButLowIntensity' | translate}}*{{blockOne}}
+    </p>
   </foreignObject>
   <foreignObject x="45" y="82" width="130" height="60">
-    <xhtml:p class="blockDescription">{{'other.needToStrengthenTrainingIntensity' | translate}}*{{blockTwo}}</p>
+    <xhtml:p class="blockDescription" *ngIf="reportType === 'sport'">
+      {{'other.needToStrengthenTrainingIntensity' | translate}}*{{blockTwo}}
+    </p>
   </foreignObject>
   <foreignObject x="45" y="147" width="130" height="60">
-    <xhtml:p class="blockDescription">{{'other.insufficientAmountAndIntensity' | translate}}*{{blockThree}}</p>
+    <xhtml:p class="blockDescription" *ngIf="reportType === 'sport'">
+      {{'other.insufficientAmountAndIntensity' | translate}}*{{blockThree}}
+    </p>
   </foreignObject>
   <foreignObject x="185" y="17" width="130" height="60">
-    <xhtml:p class="blockDescription">{{'other.hardAndSureTraining' | translate}}*{{blockFour}}</p>
+    <xhtml:p class="blockDescription" *ngIf="reportType === 'sport'">
+      {{'other.hardAndSureTraining' | translate}}*{{blockFour}}
+    </p>
   </foreignObject>
   <foreignObject x="185" y="82" width="130" height="60">
-    <xhtml:p class="blockDescription">{{'other.goodAndStableTraining' | translate}}*{{blockFive}}</p>
+    <xhtml:p class="blockDescription" *ngIf="reportType === 'sport'">
+      {{'other.goodAndStableTraining' | translate}}*{{blockFive}}
+    </p>
   </foreignObject>
   <foreignObject x="185" y="147" width="130" height="60">
-    <xhtml:p class="blockDescription">{{'other.durationNeedsToBeStrengthened' | translate}}*{{blockSix}}</p>
+    <xhtml:p class="blockDescription" *ngIf="reportType === 'sport'">
+      {{'other.durationNeedsToBeStrengthened' | translate}}*{{blockSix}}
+    </p>
   </foreignObject>
   <foreignObject x="325" y="17" width="130" height="60">
-    <xhtml:p class="blockDescription">{{'other.easyToCausePhysicalBurden' | translate}}*{{blockSeven}}</p>
+    <xhtml:p class="blockDescription" *ngIf="reportType === 'sport'">
+      {{'other.easyToCausePhysicalBurden' | translate}}*{{blockSeven}}
+    </p>
   </foreignObject>
   <foreignObject x="325" y="82" width="130" height="60">
-    <xhtml:p class="blockDescription">{{'other.moderateHigh-IntensityTraining' | translate}}*{{blockEight}}</p>
+    <xhtml:p class="blockDescription" *ngIf="reportType === 'sport'">
+      {{'other.moderateHigh-IntensityTraining' | translate}}*{{blockEight}}
+    </p>
   </foreignObject>
   <foreignObject x="325" y="147" width="130" height="60">
-    <xhtml:p class="blockDescription">{{'other.shortBurstTraining' | translate}}*{{blockNine}}</p>
+    <xhtml:p class="blockDescription" *ngIf="reportType === 'sport'">
+      {{'other.shortBurstTraining' | translate}}*{{blockNine}}
+    </p>
+  </foreignObject>
+
+  <foreignObject x="35" y="17" width="130" height="60" *ngIf="reportType === 'lifeTracking'">
+    <xhtml:div class="flexRow" >
+      <i class="icon-svg_web-icon_p3_021-3_recessive_obesity bodyIcon"></i>
+      <xhtml:p class="blockDescription" style="white-space: normal;">
+        {{'other.recessiveObesity' | translate}}<br />
+        {{'other.people' | translate}} {{blockOne}}
+      </p>
+    </xhtml:div>
+  </foreignObject>
+  <foreignObject x="35" y="82" width="130" height="60" *ngIf="reportType === 'lifeTracking'">
+    <xhtml:div class="flexRow" >
+      <i class="icon-svg_web-icon_p3_020-2_lack_of_training bodyIcon"></i>
+      <xhtml:p class="blockDescription" style="white-space: normal;">
+        {{'other.lackOfTraining' | translate}}<br />
+        {{'other.people' | translate}} {{blockTwo}}
+      </p>
+    </xhtml:div>
+  </foreignObject>
+  <foreignObject x="35" y="147" width="130" height="60" *ngIf="reportType === 'lifeTracking'">
+    <xhtml:div class="flexRow" >
+      <i class="icon-svg_web-icon_p3_019-1_too_thin bodyIcon"></i>
+      <xhtml:p class="blockDescription" style="white-space: normal;">
+        {{'other.tooThin' | translate}}<br />
+        {{'other.people' | translate}} {{blockThree}}
+      </p>
+    </xhtml:div>
+  </foreignObject>
+  <foreignObject x="175" y="17" width="130" height="60" *ngIf="reportType === 'lifeTracking'">
+    <xhtml:div class="flexRow" >
+      <i class="icon-svg_web-icon_p3_024-6_generally_fat bodyIcon"></i>
+      <xhtml:p class="blockDescription" style="white-space: normal;">
+        {{'other.generallyFat' | translate}}<br />
+        {{'other.people' | translate}} {{blockFour}}
+      </p>
+    </xhtml:div>
+  </foreignObject>
+  <foreignObject x="175" y="82" width="130" height="60" *ngIf="reportType === 'lifeTracking'">
+    <xhtml:div class="flexRow" >
+      <i class="icon-svg_web-icon_p3_023-5_normal_posture bodyIcon"></i>
+      <xhtml:p class="blockDescription" style="white-space: normal;">
+        {{'other.normalPosture' | translate}}<br />
+        {{'other.people' | translate}} {{blockFive}}
+      </p>
+    </xhtml:div>
+  </foreignObject>
+  <foreignObject x="175" y="147" width="130" height="60" *ngIf="reportType === 'lifeTracking'">
+    <xhtml:div class="flexRow" >
+      <i class="icon-svg_web-icon_p3_022-4_generally_thin bodyIcon"></i>
+      <xhtml:p class="blockDescription" style="white-space: normal;">
+        {{'other.generallyThin' | translate}}<br />
+        {{'other.people' | translate}} {{blockSix}}
+      </p>
+    </xhtml:div>
+  </foreignObject>
+  <foreignObject x="315" y="17" width="130" height="60" *ngIf="reportType === 'lifeTracking'">
+    <xhtml:div class="flexRow" >
+      <i class="icon-svg_web-icon_p3_027-9_fat_body bodyIcon"></i>
+      <xhtml:p class="blockDescription" style="white-space: normal;">
+        {{'other.fatBody' | translate}}<br />
+        {{'other.people' | translate}} {{blockSeven}}
+      </p>
+    </xhtml:div>
+  </foreignObject>
+  <foreignObject x="315" y="82" width="130" height="60" *ngIf="reportType === 'lifeTracking'">
+    <xhtml:div class="flexRow" >
+      <i class="icon-svg_web-icon_p3_026-8_athletic bodyIcon"></i>
+      <xhtml:p class="blockDescription" style="white-space: normal;">
+        {{'other.athletic' | translate}}<br />
+        {{'other.people' | translate}} {{blockEight}}
+      </p>
+    </xhtml:div>
+  </foreignObject>
+  <foreignObject x="315" y="147" width="130" height="60" *ngIf="reportType === 'lifeTracking'">
+    <xhtml:div class="flexRow" >
+      <i class="icon-svg_web-icon_p3_025-7_bodybuilding bodyIcon"></i>
+      <xhtml:p class="blockDescription" style="white-space: normal;">
+        {{'other.bodybuilding' | translate}}<br />
+        {{'other.people' | translate}} {{blockNine}}
+      </p>
+    </xhtml:div>
   </foreignObject>
 
   <text

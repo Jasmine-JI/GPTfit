@@ -27,6 +27,10 @@ export class ReportService {
     return this.http.post<any>('/api/v2/sport/getSportSummaryArray', body);
   }
 
+  fetchTrackingSummaryArray(body) {
+    return this.http.post<any>('/api/v2/sport/getTrackingSummaryArray', body);
+  }
+
   setPeriod (status: string) {
     this.period$.next(status);
   }

@@ -164,15 +164,6 @@
   color: #919191;
 }
 
-.printMark {
-  width: 100%;
-  position: absolute;
-  background-color:#ededed;
-  text-align: center;
-  font-weight: bold;
-  height:fit-content;
-}
-
 #HRZoneChart {
   width: 55%;
 }
@@ -189,6 +180,14 @@
 .dataChart {
   width: 65%;
   margin-left: 30px;
+}
+
+.printMark {
+  width: 100%;
+  background-color:#ededed;
+  text-align: center;
+  font-weight: bold;
+  height:fit-content;
 }
 
 @media (max-width: 1200px) {
