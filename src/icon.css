@@ -345,290 +345,558 @@
   content: "\e94f";
 }
 
-.icon-svg_web-icon_p1_081-watch .path1:before {
+.icon-svg_web-icon_p1_081-watch:before {
   content: "\e950";
-  color: rgb(0, 0, 0);
-}
-
-.icon-svg_web-icon_p1_081-watch .path2:before {
-  content: "\e951";
-  margin-left: -1em;
-  color: rgb(0, 0, 0);
-}
-
-.icon-svg_web-icon_p1_081-watch .path3:before {
-  content: "\e952";
-  margin-left: -1em;
-  color: rgb(255, 255, 255);
 }
 
 .icon-svg_web-icon_p1_082-information:before {
-  content: "\e953";
+  content: "\e951";
 }
 
 .icon-svg_web-icon_p1_083-run:before {
-  content: "\e954";
+  content: "\e952";
 }
 
 .icon-svg_web-icon_p1_084-cycle:before {
-  content: "\e955";
+  content: "\e953";
 }
 
 .icon-svg_web-icon_p1_085-swim:before {
-  content: "\e956";
+  content: "\e954";
 }
 
 .icon-svg_web-icon_p1_086-weight_training:before {
-  content: "\e957";
+  content: "\e955";
 }
 
 .icon-svg_web-icon_p1_087-aerobic:before {
-  content: "\e958";
+  content: "\e956";
 }
 
 .icon-svg_web-icon_p1_088-row:before {
-  content: "\e959";
+  content: "\e957";
 }
 
 .icon-svg_web-icon_p1_089-favorite:before {
-  content: "\e95a";
+  content: "\e958";
 }
 
 .icon-svg_web-icon_p1_090-unfavorite:before {
-  content: "\e95b";
+  content: "\e959";
 }
 
 .icon-svg_web-icon_p1_091-increase:before {
-  content: "\e95c";
+  content: "\e95a";
 }
 
 .icon-svg_web-icon_p1_092-delete:before {
-  content: "\e95d";
+  content: "\e95b";
 }
 
 .icon-svg_web-icon_p1_093-bottom:before {
-  content: "\e95e";
+  content: "\e95c";
 }
 
 .icon-svg_web-icon_p1_094-top:before {
-  content: "\e95f";
+  content: "\e95d";
 }
 
 .icon-svg_web-icon_p1_095-question:before {
-  content: "\e960";
+  content: "\e95e";
 }
 
 .icon-svg_web-icon_p1_096-marvel:before {
-  content: "\e961";
+  content: "\e95f";
 }
 
 .icon-svg_web-icon_p1_097-menu_storage:before {
-  content: "\e962";
+  content: "\e960";
 }
 
 .icon-svg_web-icon_p1_098-warning:before {
-  content: "\e963";
+  content: "\e961";
 }
 
 .icon-svg_web-icon_p1_099-calendar:before {
-  content: "\e964";
+  content: "\e962";
 }
 
 .icon-svg_web-icon_p1_100-service:before {
-  content: "\e965";
+  content: "\e963";
 }
 
 .icon-svg_web-icon_p2_001-activity:before {
-  content: "\e966";
+  content: "\e964";
 }
 
 .icon-svg_web-icon_p2_002-watch:before {
-  content: "\e967";
+  content: "\e965";
 }
 
 .icon-svg_web-icon_p2_003-heart_rate:before {
-  content: "\e968";
+  content: "\e966";
 }
 
 .icon-svg_web-icon_p2_004-fit_time:before {
-  content: "\e969";
+  content: "\e967";
 }
 
 .icon-svg_web-icon_p2_005-rest_heart_rate:before {
-  content: "\e96a";
+  content: "\e968";
 }
 
 .icon-svg_web-icon_p2_006-avg_heart_rate:before {
-  content: "\e96b";
+  content: "\e969";
 }
 
 .icon-svg_web-icon_p2_007-max_heart_rate:before {
-  content: "\e96c";
+  content: "\e96a";
 }
 
 .icon-svg_web-icon_p2_008-mini_heart_rate:before {
-  content: "\e96d";
+  content: "\e96b";
 }
 
 .icon-svg_web-icon_p2_009-step:before {
-  content: "\e96e";
+  content: "\e96c";
 }
 
 .icon-svg_web-icon_p2_010-calorie:before {
-  content: "\e96f";
+  content: "\e96d";
 }
 
 .icon-svg_web-icon_p2_011-deep_sleep:before {
-  content: "\e970";
+  content: "\e96e";
 }
 
 .icon-svg_web-icon_p2_012-light_sleep:before {
-  content: "\e971";
+  content: "\e96f";
 }
 
 .icon-svg_web-icon_p2_013-wake_up:before {
-  content: "\e972";
+  content: "\e970";
 }
 
 .icon-svg_web-icon_p2_014-heart_rate:before {
-  content: "\e973";
+  content: "\e971";
 }
 
 .icon-svg_web-icon_p2_015-sleep:before {
-  content: "\e974";
+  content: "\e972";
 }
 
 .icon-svg_web-icon_p2_016-step:before {
-  content: "\e975";
+  content: "\e973";
 }
 
 .icon-svg_web-icon_p2_017-lap:before {
-  content: "\e976";
+  content: "\e974";
 }
 
 .icon-svg_web-icon_p2_018-distance:before {
-  content: "\e977";
+  content: "\e975";
 }
 
 .icon-svg_web-icon_p2_019-time:before {
-  content: "\e978";
+  content: "\e976";
 }
 
 .icon-svg_web-icon_p2_020-speed:before {
-  content: "\e979";
+  content: "\e977";
 }
 
 .icon-svg_web-icon_p2_021-altitude:before {
-  content: "\e97a";
+  content: "\e978";
 }
 
 .icon-svg_web-icon_p2_022-no_network:before {
-  content: "\e97b";
+  content: "\e979";
 }
 
 .icon-svg_web-icon_p2_023-watch_blank:before {
-  content: "\e97c";
+  content: "\e97a";
 }
 
 .icon-svg_web-icon_p2_024-watch_pointer:before {
-  content: "\e97d";
+  content: "\e97b";
 }
 
 .icon-svg_web-icon_p2_024-watch_sync:before {
-  content: "\e97e";
+  content: "\e97c";
 }
 
 .icon-svg_web-icon_p2_026-more:before {
-  content: "\e97f";
+  content: "\e97d";
 }
 
 .icon-svg_web-icon_p2_027-remind:before {
-  content: "\e980";
+  content: "\e97e";
 }
 
 .icon-svg_web-icon_p2_028-pace_1km:before {
-  content: "\e981";
+  content: "\e97f";
 }
 
 .icon-svg_web-icon_p2_029-pace_500m:before {
-  content: "\e982";
+  content: "\e980";
 }
 
 .icon-svg_web-icon_p2_030-pace_100m:before {
-  content: "\e983";
+  content: "\e981";
 }
 
 .icon-svg_web-icon_p2_031-activity_time:before {
-  content: "\e984";
+  content: "\e982";
 }
 
 .icon-svg_web-icon_p2_032-rest_time:before {
-  content: "\e985";
+  content: "\e983";
 }
 
 .icon-svg_web-icon_p2_033-weight:before {
-  content: "\e986";
+  content: "\e984";
 }
 
 .icon-svg_web-icon_p2_034-cadence:before {
-  content: "\e987";
+  content: "\e985";
 }
 
 .icon-svg_web-icon_p2_035-max_1rm:before {
-  content: "\e988";
+  content: "\e986";
 }
-.icon-svg_web-icon_p2_037-indoor_bike:before {
-  content: "\e98a";
+
+.icon-svg_web-icon_p2_036-indoor_run:before {
+  content: "\e987";
+}
+
+.icon-svg_web-icon_p2_037-bike_trainer:before {
+  content: "\e988";
 }
 
 .icon-svg_web-icon_p2_038-complex:before {
-  content: "\e98c";
+  content: "\e989";
 }
 
 .icon-svg_web-icon_p2_039-rest:before {
-  content: "\e98d";
+  content: "\e98a";
 }
 
 .icon-svg_web-icon_p2_040-watt:before {
+  content: "\e98b";
+}
+
+.icon-svg_web-icon_p2_041-stop:before {
+  content: "\e98c";
+}
+
+.icon-svg_web-icon_p2_042-indoor_bike:before {
+  content: "\e98d";
+}
+
+.icon-svg_web-icon_p2_043-walking:before {
   content: "\e98e";
 }
 
-.icon-svg_web-icon_p1_008-edit:before {
-  content: "\e907";
+.icon-svg_web-icon_p2_044-trail_running:before {
+  content: "\e98f";
 }
 
-.icon-svg_web-icon_p1_012-close:before {
-  content: "\e90b";
+.icon-svg_web-icon_p2_045-skating:before {
+  content: "\e990";
 }
 
-.icon-svg_web-icon_p1_013-share:before {
-  content: "\e90c";
+.icon-svg_web-icon_p2_046-ultramarathon:before {
+  content: "\e991";
 }
 
-.icon-svg_web-icon_p1_059-lock:before {
-  content: "\e93a";
+.icon-svg_web-icon_p2_047-pilates:before {
+  content: "\e992";
+}
+
+.icon-svg_web-icon_p2_048-yoga:before {
+  content: "\e993";
+}
+
+.icon-svg_web-icon_p2_049-streching:before {
+  content: "\e994";
+}
+
+.icon-svg_web-icon_p2_050-intervals:before {
+  content: "\e995";
+}
+
+.icon-svg_web-icon_p2_051-dance:before {
+  content: "\e996";
+}
+
+.icon-svg_web-icon_p2_052-kettlebell:before {
+  content: "\e997";
+}
+
+.icon-svg_web-icon_p2_053-gymnastics:before {
+  content: "\e999";
+}
+
+.icon-svg_web-icon_p2_055-hiking:before {
+  content: "\e99a";
+}
+
+.icon-svg_web-icon_p2_056-rock_climbing:before {
+  content: "\e99b";
+}
+
+.icon-svg_web-icon_p2_057-indoor_rock_climbing:before {
+  content: "\e99c";
+}
+
+.icon-svg_web-icon_p2_058-paragliding:before {
+  content: "\e99d";
+}
+
+.icon-svg_web-icon_p2_059-hang_gliding:before {
+  content: "\e99e";
+}
+
+.icon-svg_web-icon_p2_060-skiing:before {
+  content: "\e99f";
+}
+
+.icon-svg_web-icon_p2_061-snowboarding:before {
+  content: "\e9a0";
+}
+
+.icon-svg_web-icon_p2_062-open_water_swim:before {
+  content: "\e9a1";
+}
+
+.icon-svg_web-icon_p2_063-mountain_bike:before {
+  content: "\e9a2";
+}
+
+.icon-svg_web-icon_p2_064-trail_bike:before {
+  content: "\e9a3";
+}
+
+.icon-svg_web-icon_p2_065-part_weight_training:before {
+  content: "\e9a4";
+}
+
+.icon-svg_web-icon_p2_066-kayak:before {
+  content: "\e9a5";
+}
+
+.icon-svg_web-icon_p2_067-wind_surfing:before {
+  content: "\e9a6";
+}
+
+.icon-svg_web-icon_p2_068-surfing:before {
+  content: "\e9a7";
+}
+
+.icon-svg_web-icon_p2_069-indoor_walking:before {
+  content: "\e9a8";
+}
+
+.icon-svg_web-icon_p2_070-eliptical:before {
+  content: "\e9a9";
+}
+
+.icon-svg_web-icon_p2_071-stair_climber:before {
+  content: "\e9aa";
+}
+
+.icon-svg_web-icon_p2_072-duathlon:before {
+  content: "\e9ab";
+}
+
+.icon-svg_web-icon_p2_073-basketball:before {
+  content: "\e9ac";
+}
+
+.icon-svg_web-icon_p2_074-badminton:before {
+  content: "\e9ad";
+}
+
+.icon-svg_web-icon_p2_075-tennis:before {
+  content: "\e9ae";
+}
+
+.icon-svg_web-icon_p2_076-ping_pong:before {
+  content: "\e9af";
+}
+
+.icon-svg_web-icon_p2_077-football:before {
+  content: "\e9b0";
+}
+
+.icon-svg_web-icon_p2_078-golf:before {
+  content: "\e9b1";
+}
+
+.icon-svg_web-icon_p2_079-american_football:before {
+  content: "\e9b2";
+}
+
+.icon-svg_web-icon_p2_080-volly_ball:before {
+  content: "\e9b3";
+}
+
+.icon-svg_web-icon_p2_081-soft_ball:before {
+  content: "\e9b4";
+}
+
+.icon-svg_web-icon_p2_082-baseball:before {
+  content: "\e9b5";
+}
+
+.icon-svg_web-icon_p2_083-rugby:before {
+  content: "\e9b6";
+}
+
+.icon-svg_web-icon_p2_084-pause:before {
+  content: "\e9b7";
+}
+
+.icon-svg_web-icon_p2_085-play:before {
+  content: "\e9b8";
+}
+
+.icon-svg_web-icon_p2_086-section:before {
+  content: "\e9b9";
+}
+
+.icon-svg_web-icon_p2_065-part_weight_training:before {
+  content: "\e9a4";
 }
 
 .icon-svg_web-icon_p2_087-print:before {
-  content: "\e9bd";
+  content: "\e9ba";
+}
+
+.icon-svg_web-icon_p2_096-camera:before {
+  content: "\e9c3";
 }
 
 .icon-svg_web-icon_p2_097-ok:before {
+  content: "\e9c4";
+}
+
+.icon-svg_web-icon_p2_098-no_view:before {
+  content: "\e9c5";
+}
+
+.icon-svg_web-icon_p2_099-upload_to_cloud:before {
+  content: "\e9c6";
+}
+
+.icon-svg_web-icon_p2_100-line_chart:before {
   content: "\e9c7";
 }
 
+.icon-svg_web-icon_p3_001-bathroom_scale:before {
+  content: "\e9c8";
+}
+
 .icon-svg_web-icon_p3_002-right_turn:before {
-  content: "\e9cc";
+  content: "\e9c9";
 }
 
 .icon-svg_web-icon_p3_003-left_turn:before {
-  content: "\e9cd";
+  content: "\e9ca";
 }
 
 .icon-svg_web-icon_p3_004-horizontal_mirroring:before {
-  content: "\e9ce";
+  content: "\e9cb";
 }
 
 .icon-svg_web-icon_p3_005-vertical_mirroring:before {
+  content: "\e9cc";
+}
+
+.icon-svg_web-icon_p3_006-stratum:before {
+  content: "\e9cd";
+}
+
+.icon-svg_web-icon_p3_007-average:before {
+  content: "\e9ce";
+}
+
+.icon-svg_web-icon_p3_008-resistance:before {
   content: "\e9cf";
+}
+
+.icon-svg_web-icon_p3_009-magnetic_resistance:before {
+  content: "\e9d0";
+}
+
+.icon-svg_web-icon_p3_010-target:before {
+  content: "\e9d1";
+}
+
+.icon-svg_web-icon_p3_011-level:before {
+  content: "\e9d2";
+}
+
+.icon-svg_web-icon_p3_012-good:before {
+  content: "\e9d3";
+}
+
+.icon-svg_web-icon_p3_013-notgood:before {
+  content: "\e9d4";
+}
+
+.icon-svg_web-icon_p3_014-spinbike_fr:before {
+  content: "\e9d5";
+}
+
+.icon-svg_web-icon_p3_015-spinbike_ff:before {
+  content: "\e9d6";
+}
+
+.icon-svg_web-icon_p3_016-life_tracking:before {
+  content: "\e9d7";
+}
+
+.icon-svg_web-icon_p3_017-up:before {
+  content: "\e9d8";
+}
+
+.icon-svg_web-icon_p3_018-down:before {
+  content: "\e9d9";
+}
+
+.icon-svg_web-icon_p3_019-1_too_thin:before {
+  content: "\e9da";
+}
+
+.icon-svg_web-icon_p3_020-2_lack_of_training:before {
+  content: "\e9db";
+}
+
+.icon-svg_web-icon_p3_021-3_recessive_obesity:before {
+  content: "\e9dc";
+}
+
+.icon-svg_web-icon_p3_022-4_generally_thin:before {
+  content: "\e9dd";
+}
+
+.icon-svg_web-icon_p3_023-5_normal_posture:before {
+  content: "\e9de";
+}
+
+.icon-svg_web-icon_p3_024-6_generally_fat:before {
+  content: "\e9df";
+}
+
+.icon-svg_web-icon_p3_025-7_bodybuilding:before {
+  content: "\e9e0";
+}
+
+.icon-svg_web-icon_p3_026-8_athletic:before {
+  content: "\e9e1";
+}
+
+.icon-svg_web-icon_p3_027-9_fat_body:before {
+  content: "\e9e2";
 }

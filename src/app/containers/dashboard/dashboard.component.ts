@@ -132,6 +132,10 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
           this.target = 20;
         } else if (_val.url.indexOf('/dashboard/system/life-tracking') > -1) {
           this.target = 21;
+        } else if (_val.url.indexOf('/dashboard/system/create-com-group') > -1) {
+          this.target = 22;
+        } else if (_val.url.indexOf('/dashboard/life-tracking') > -1) {
+          this.target = 23;
         } else {
           this.target = 0;
         }
@@ -319,7 +323,8 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
         heartRateResting: res.info.heartRateResting,
         height: res.info.height,
         weight: res.info.weight,
-        wheelSize: res.info.wheelSize
+        wheelSize: res.info.wheelSize,
+        loginId: res.info.nameId
       };
       this.userInfoService.saveBodyDatas(data);
     });

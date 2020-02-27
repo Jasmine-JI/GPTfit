@@ -6,9 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { UtilsService } from '@shared/services/utils.service';
 import { HashIdService } from '@shared/services/hash-id.service';
-import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { ReportService } from '../../../../../shared/services/report.service';
-import { UserInfoService } from '../../../services/userInfo.service';
 import { GroupService } from '../../../services/group.service';
 
 @Component({
@@ -118,10 +116,8 @@ export class ComReportComponent implements OnInit, OnDestroy {
     private utilsService: UtilsService,
     private hashIdService: HashIdService,
     private route: ActivatedRoute,
-    private userProfileService: UserProfileService,
     private reportService: ReportService,
     private translate: TranslateService,
-    private userInfoService: UserInfoService,
     private groupService: GroupService
   ) { }
 
@@ -332,6 +328,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
       this.reportRangeType = 2;
       this.dataDateRange = 'week';
     }
+
     const body = {
       token: this.token || '',
       type: this.reportRangeType,
@@ -346,12 +343,12 @@ export class ComReportComponent implements OnInit, OnDestroy {
         for (let j = 0; j < res.length; j++) {
           // 計算有資料的人數，並將資料合併-kidin-1090212
           if (this.reportRangeType === 1) {
-            if (res[j].reportActivityDays.length > 0) {
+            if (res[j].reportActivityDays && res[j].reportActivityDays.length > 0) {
               this.hasDataNumber++;
               groupReportData = groupReportData.concat(res[j].reportActivityDays);
             }
           } else {
-            if (res[j].reportActivityWeeks.length > 0) {
+            if (res[j].reportActivityWeeks && res[j].reportActivityWeeks.length > 0) {
               this.hasDataNumber++;
               groupReportData = groupReportData.concat(res[j].reportActivityWeeks);
             }
@@ -971,13 +968,13 @@ export class ComReportComponent implements OnInit, OnDestroy {
     if (hour === 0) {
       return `${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}`;
     } else {
-      return `${this.fillTwoDigits(hour)}:${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}`;
+      return `${hour}:${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}`;
     }
   }
 
   // 時間補零-kidin-1081211
   fillTwoDigits (num: number) {
-    const timeStr = '0' + num;
+    const timeStr = '0' + Math.floor(num);
     return timeStr.substr(-2);
   }
 
@@ -1352,26 +1349,30 @@ export class ComReportComponent implements OnInit, OnDestroy {
 
         if (i === 0 || date[i] === date[i - 1]) {
           sameDayData += data[i];
-          if (sameDayData > oneRangeBest) {
-            oneRangeBest = sameDayData;
-          }
+          sameDayLength++;
 
           if (i === date.length - 1) {
-            finalData.push(sameDayData);
+
+            if (sameDayData / sameDayLength > oneRangeBest) {
+              oneRangeBest = sameDayData / sameDayLength;
+            }
+
+            finalData.push(sameDayData / sameDayLength);
             finalDate.push(moment(date[i], 'YYYY-MM-DD').valueOf());
           }
 
         // 若數據日期變更，則將之前的數據整合並儲存後再重新計算新的日期數據-kidin-0190210
         } else if (i !== 0 && date[i] !== date[i - 1]) {
-          if (sameDayData > oneRangeBest) {
-            oneRangeBest = sameDayData;
+          if (sameDayData / sameDayLength > oneRangeBest) {
+            oneRangeBest = sameDayData / sameDayLength;
           }
 
-          finalData.push(sameDayData);
+          finalData.push(sameDayData / sameDayLength);
           finalDate.push(moment(date[i - 1], 'YYYY-MM-DD').valueOf());
 
           if (i !== date.length - 1) {
             sameDayData = data[i];
+            sameDayLength = 1;
           } else {
             if (data[i] > oneRangeBest) {
               oneRangeBest = data[i];

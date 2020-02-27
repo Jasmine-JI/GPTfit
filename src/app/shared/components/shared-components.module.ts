@@ -38,6 +38,9 @@ import { StackColumnChartComponent } from './chart/stack-column-chart/stack-colu
 import { FilletColumnChartComponent } from './chart/fillet-column-chart/fillet-column-chart.component';
 import { CompareLineChartComponent } from './chart/compare-line-chart/compare-line-chart.component';
 import { DiscolorColumnChartComponent } from './chart/discolor-column-chart/discolor-column-chart.component';
+import { LineChartComponent } from './chart/line-chart/line-chart.component';
+import { MyLifeTrackingComponent } from './my-life-tracking/my-life-tracking.component';
+import { BodyConstituteSvgComponent } from './chart/body-constitute-svg/body-constitute-svg.component';
 
 @NgModule({
   imports: [
@@ -81,7 +84,10 @@ import { DiscolorColumnChartComponent } from './chart/discolor-column-chart/disc
     StackColumnChartComponent,
     FilletColumnChartComponent,
     CompareLineChartComponent,
-    DiscolorColumnChartComponent
+    DiscolorColumnChartComponent,
+    LineChartComponent,
+    MyLifeTrackingComponent,
+    BodyConstituteSvgComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -109,7 +115,9 @@ import { DiscolorColumnChartComponent } from './chart/discolor-column-chart/disc
     StackColumnChartComponent,
     FilletColumnChartComponent,
     CompareLineChartComponent,
-    DiscolorColumnChartComponent
+    DiscolorColumnChartComponent,
+    LineChartComponent,
+    BodyConstituteSvgComponent
   ]
 })
 export class SharedComponentsModule {}

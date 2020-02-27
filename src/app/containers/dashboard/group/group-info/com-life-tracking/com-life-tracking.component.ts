@@ -1,4 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import * as moment from 'moment';
+
+import { TranslateService } from '@ngx-translate/core';
+
+import { UtilsService } from '@shared/services/utils.service';
+import { HashIdService } from '@shared/services/hash-id.service';
+import { ReportService } from '../../../../../shared/services/report.service';
+import { GroupService } from '../../../services/group.service';
 
 @Component({
   selector: 'app-com-life-tracking',
@@ -7,9 +15,958 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ComLifeTrackingComponent implements OnInit {
 
-  constructor() { }
+  // UI控制相關變數-kidin-1090115
+  isLoading = false;
+  isPreviewMode = false;
+  reportCompleted = true;
+  initialChartComplated = false;
+  nodata = false;
+  noStepData = true;
+  noHRData = true;
+  noSleepData = true;
+  noConstituteData = true;
+  noFitTimeData = true;
+  dataDateRange = '';
+  isSelected = 'rangeDate';
+  isSelectDateRange = false;
+  maxStartDate = moment().format('YYYY-MM-DD');
+  minEndDate = moment().add(-13, 'days').format('YYYY-MM-DD');
+  maxSelectDate = moment().format('YYYY-MM-DD');
+  showReport = false;
+
+  // 資料儲存用變數-kidin-1090115
+  token: string;
+  groupLevel: string;
+  groupId: string;
+  groupData: any;
+  groupList: Array<any>;
+  groupImg: string;
+  brandImg: string;
+  brandName: string;
+  branchName: string;
+  startDate = '';
+  endDate = moment().format('YYYY-MM-DD');
+  selectedStartDate = moment().add(-13, 'days').format('YYYY-MM-DD');
+  selectedEndDate = moment().format('YYYY-MM-DD');
+  diffDay: number;
+  reportStartTime = '';
+  reportEndTime = '';
+  reportEndDate = '';
+  period = '';
+  reportStartDate = '';
+  reportRangeType = 1;
+  reportCreatedTime = moment().format('YYYY/MM/DD HH:mm');
+  previewUrl = '';
+
+  infoData = {
+    totalPeople: 0,
+    validStroke: 0,
+    avgHeight: 0,
+    avgWeight: 0,
+    avgAge: 0,
+    avgFFMI: 0
+  };
+
+  recordData = {
+    avgStep: 0,
+    avgDistance: 0,
+    stepReachReps: 0,
+    avgMaxHR: 0,
+    avgRestHR: 0,
+    avgSleepTime: '',
+    avgDeepSleepTime: '',
+    avgLightSleepTime: ''
+  };
+
+  trendData = {
+    bestFitTime: 0,
+    avgFitTime: 0
+  };
+
+  sortResultData = [];
+
+  // 圖表用數據-kidin-1090215
+  searchDate = [];
+  stepData = {
+    stepList: [],
+    targetStepList: [],
+    date: [],
+    colorSet: ['#6fd205', '#7f7f7f', '#eb5293']
+  };
+
+  HRData = {
+    maxHRList: [],
+    restHRList: [],
+    date: [],
+    colorSet: ['#e23333', '#31df93', '#ababab']
+  };
+
+  sleepData = {
+    totalSleepList: [],
+    deepSleepList: [],
+    lightSleepList: [],
+    awakeList: [],
+    date: []
+  };
+
+  weightData = {
+    weightList: [],
+    colorSet: '#e458e8'
+  };
+
+  constituteData = {
+    fatRateList: [],
+    fatRateColorSet: '#ea5757',
+    muscleRateList: [],
+    muscleRateColorSet: '#9b70e0'
+  };
+
+  FFMIData = {
+    perFatRate: [],
+    perFFMI: [],
+    gender: []
+  };
+
+  fitTimeData = {
+    fitTimeList: [],
+    date: [],
+    colorSet: '#f8b551'
+  };
+
+  constructor(
+    private utilsService: UtilsService,
+    private hashIdService: HashIdService,
+    private reportService: ReportService,
+    private translate: TranslateService,
+    private groupService: GroupService
+  ) {}
 
   ngOnInit() {
+    this.token = this.utilsService.getToken();
+
+    // 確認是否為預覽列印頁面-kidin-1090215
+    if (location.search.indexOf('ipm=s') > -1) {
+      this.isPreviewMode = true;
+    }
+
+    this.getIdListStart();
   }
 
+  // 先從rxjs取得成員ID清單，若取不到再call api-kidin-1090215
+  getIdListStart () {
+    this.groupService.getMemberList().subscribe(res => {
+      if (res.groupId === '' || res.groupId !== this.groupId) {
+        // 先從service取得群組資訊，若取不到再call api-kidin-1090215
+        this.groupService.getGroupInfo().subscribe(result => {
+          this.groupData = result;
+          if (this.groupData.hasOwnProperty('groupId')) {
+            this.groupId = this.groupData.groupId;
+            this.showGroupInfo();
+          } else {
+            const urlArr = location.pathname.split('/');
+            this.groupId = this.hashIdService.handleGroupIdDecode(urlArr[urlArr.length - 2]);
+            const groupBody = {
+              token: this.token,
+              groupId: this.groupId,
+              findRoot: '1',
+              avatarType: '2'
+            };
+
+            this.groupService.fetchGroupListDetail(groupBody).subscribe(data => {
+              this.groupData = data.info;
+              this.groupService.saveGroupInfo(this.groupData);
+              this.showGroupInfo();
+            });
+          }
+        });
+
+        this.getGroupMemberIdList();
+      } else {
+        this.groupList = res.groupList;
+      }
+    });
+  }
+
+  // 取得所有成員id list並使用rxjs儲存至service-kidin-1090215
+  getGroupMemberIdList() {
+    this.groupLevel = this.utilsService.displayGroupLevel(this.groupId);
+    const body = {
+      token: this.token,
+      groupId: this.groupId,
+      groupLevel: this.groupLevel,
+      infoType: 2,
+      avatarType: 3
+    };
+
+    this.groupService.fetchGroupMemberList(body).subscribe(res => {
+      const idList = new Set(),  // 避免id重複-kidin-1090215
+            memberList = res.info.groupMemberInfo;
+
+      for (let i = 0; i < memberList.length; i++) {
+        if (memberList[i].accessRight >= 50) {
+          idList.add(memberList[i].memberId);
+        }
+      }
+
+      this.groupList = Array.from(idList);
+      const groupListInfo = {
+        groupId: this.groupId,
+        groupList: this.groupList
+      };
+      this.groupService.setMemberList(groupListInfo);
+
+      // 確認網址是否帶有query string-kidin-1090215
+      if (
+        location.search.indexOf('startdate=') > -1 &&
+        location.search.indexOf('enddate=') > -1
+      ) {
+        this.queryStringShowData();
+      }
+    });
+
+  }
+
+  // 依query string顯示資料-kidin-1090215
+  queryStringShowData () {
+    const queryString = location.search.replace('?', '').split('&');
+    for (let i = 0; i < queryString.length; i++) {
+      if (queryString[i].indexOf('startdate=') > -1) {
+        this.selectedStartDate = queryString[i].replace('startdate=', '');
+      } else if (queryString[i].indexOf('enddate=') > -1) {
+        this.selectedEndDate = queryString[i].replace('enddate=', '');
+      }
+    }
+
+    this.handleSubmitSearch('url');
+  }
+
+  // 按下日期按鈕後記錄其選擇並更改該按鈕樣式-kidin-1090215
+  handleActivityBtn (e) {
+    if (e.target.name === 'aWeek') {
+      this.startDate = moment().add(-6, 'days').format('YYYY-MM-DD');
+    } else if (e.target.name === 'aMonth') {
+      this.startDate = moment().add(-29, 'days').format('YYYY-MM-DD');
+    }
+    this.isSelected = e.target.name;
+    this.isSelectDateRange = false;
+  }
+
+  // 點擊選擇日期區間按鈕後，選擇日期顯示與否-kidin-1090215
+  handleClickSelectDate (e) {
+    this.isSelected = e.target.name;
+    this.startDate = '';
+    if (this.isSelectDateRange === false) {
+      this.isSelectDateRange = true;
+    } else {
+      this.isSelectDateRange = false;
+    }
+  }
+
+  // 使用者選擇日期區間後紀錄其開始日期-kidin-1090215
+  handleStartDate (e) {
+    this.selectedStartDate = e.target.value.format('YYYY-MM-DD');
+    this.minEndDate = e.target.value;
+  }
+
+  // 使用者選擇日期區間後紀錄其結束日期-kidin-1090215
+  handleEndDate (e) {
+    this.selectedEndDate = e.target.value.format('YYYY-MM-DD');
+    this.maxStartDate = e.target.value;
+  }
+
+  // 使用者送出表單後顯示相關資料-kidin-1090215
+  handleSubmitSearch (act) {
+    if (act === 'click') {
+      this.updateUrl('false');
+    }
+    this.reportCompleted = false;
+    this.getFilterTime();
+    this.createReport();
+  }
+
+  // 取得當地時區並加以處理-kidin-1090215
+  getFilterTime () {
+    const timeZoneMinite = new Date();
+    const timeZone = -(timeZoneMinite.getTimezoneOffset() / 60);
+    let timeZoneStr = '';
+    if (timeZone < 10 && timeZone >= 0) {
+      timeZoneStr = `+0${timeZone}`;
+    } else if (timeZone > 10) {
+      timeZoneStr = `+${timeZone}`;
+    } else if (timeZone > -10 && timeZone < 0) {
+      timeZoneStr = `-0${timeZone}`;
+    } else {
+      timeZoneStr = `-${timeZone}`;
+    }
+
+    if (this.startDate === '') {
+      this.reportStartTime = `${this.selectedStartDate}T00:00:00.000${timeZoneStr}:00`;
+      this.reportEndTime = `${this.selectedEndDate}T23:59:59.000${timeZoneStr}:00`;
+
+      this.reportEndDate = this.selectedEndDate;
+
+      const startDay = moment(this.selectedStartDate),
+            endDay = moment(this.selectedEndDate);
+      this.diffDay = endDay.diff(startDay, 'days') + 1;
+      this.period = `${this.diffDay}${this.translate.instant(
+        'Dashboard.SportReport.day'
+      )}`;
+    } else {
+      this.reportStartTime = `${this.startDate}T00:00:00.000${timeZoneStr}:00`;
+      this.reportEndTime = `${this.endDate}T23:59:59.000${timeZoneStr}:00`;
+
+      this.reportEndDate = this.endDate;
+
+      const startDay = moment(this.startDate),
+            endDay = moment(this.endDate);
+      this.diffDay = endDay.diff(startDay, 'days') + 1;
+      this.period = `${this.diffDay}${this.translate.instant(
+        'Dashboard.SportReport.day'
+      )}`;
+    }
+  }
+
+  // 建立運動報告-kidin-1090117
+  createReport () {
+    this.isLoading = true;
+
+    this.initVariable();
+    this.infoData.totalPeople = this.groupList.length;
+
+    // 52天內取日概要陣列，52天以上取周概要陣列-kidin_1090215
+    if (this.diffDay <= 52) {
+      this.reportRangeType = 1;
+      this.dataDateRange = 'day';
+    } else {
+      this.reportRangeType = 2;
+      this.dataDateRange = 'week';
+    }
+
+    const body = {
+      token: this.token || '',
+      type: this.reportRangeType,
+      targetUserId: this.groupList,
+      filterStartTime: this.reportStartTime,
+      filterEndTime: this.reportEndTime
+    };
+
+    this.searchDate = [
+      moment(this.reportStartTime.split('T')[0], 'YYYY-MM-DD').valueOf(),
+      moment(this.reportEndTime.split('T')[0], 'YYYY-MM-DD').valueOf()
+    ];
+
+    this.reportService.fetchTrackingSummaryArray(body).subscribe(res => {
+      if (Array.isArray(res)) {
+        this.isLoading = false;
+        this.reportCompleted = true;
+
+        const currentYear = moment().year();
+
+        let groupReportData = [],
+            totalHeight = 0,
+            validHeightStroke = 0,
+            totalWeight = 0,
+            validWeightStroke = 0,
+            totalAge = 0,
+            validAgeStroke = 0,
+            totalFFMI = 0,
+            validFFMIStroke = 0;
+
+        for (let i = 0; i < res.length; i++) {
+
+          // 確認隱私權有無開放-kidin-1090215
+          if (+res[i].resultCode === 200) {
+            let lifeTrackingData;
+
+            if (this.reportRangeType === 1) {
+              lifeTrackingData = res[i].reportLifeTrackingDays;
+            } else {
+              lifeTrackingData = res[i].reportLifeTrackingWeeks;
+            }
+
+            if (lifeTrackingData.length !== 0) {
+              groupReportData = groupReportData.concat(lifeTrackingData);
+              this.infoData.validStroke += lifeTrackingData.length;
+
+              const heightList = [],
+                    weightList = [],
+                    avgList = [],
+                    muscleRateList = [],
+                    fatRateList = [],
+                    FFMI = [];
+              for (let j = 0; j < lifeTrackingData.length; j++) {
+
+                if (lifeTrackingData[j].bodyHeight !== null) {
+                  heightList.unshift(lifeTrackingData[j].bodyHeight);
+                }
+
+                if (lifeTrackingData[j].bodyWeight !== null) {
+                  weightList.unshift([
+                    moment(lifeTrackingData[j].startTime.split('T')[0], 'YYYY-MM-DD').valueOf(),
+                    lifeTrackingData[j].bodyWeight
+                  ]);
+                }
+
+                if (lifeTrackingData[j].birthYear !== null) {
+                  avgList.unshift(+currentYear - +lifeTrackingData[j].birthYear);
+                }
+
+                // FFMI＝〔體重（Kg）×（100％－體脂率）〕÷ 身高2（m）-kidin-1090215
+                if (lifeTrackingData[j].muscleRate !== null && lifeTrackingData[j].muscleRate !== 0) {
+                  muscleRateList.unshift([
+                    moment(lifeTrackingData[j].startTime.split('T')[0], 'YYYY-MM-DD').valueOf(),
+                    lifeTrackingData[j].muscleRate
+                  ]);
+
+                  fatRateList.unshift([
+                    moment(lifeTrackingData[j].startTime.split('T')[0], 'YYYY-MM-DD').valueOf(),
+                    lifeTrackingData[j].fatRate
+                  ]);
+
+                  const height = lifeTrackingData[j].bodyHeight / 100,
+                        weight = lifeTrackingData[j].bodyWeight,
+                        fatRate = lifeTrackingData[j].fatRate,
+                        countFFMI = (weight * ((100 - fatRate) / 100)) / Math.pow(height, 2);
+                  FFMI.unshift(countFFMI);
+                }
+
+              }
+
+              // 取該日期區間最新的身體數據-kidin-1090215
+              totalHeight += heightList[heightList.length - 1];
+              validHeightStroke++;
+              totalWeight += weightList[weightList.length - 1][1];
+              validWeightStroke++;
+              totalAge += avgList[avgList.length - 1];
+              validAgeStroke++;
+
+              if (FFMI.length !== 0) {
+                totalFFMI += FFMI[FFMI.length - 1];
+                validFFMIStroke++;
+              }
+
+              this.weightData.weightList.push(weightList);
+
+              if (fatRateList.length !== 0) {
+                this.noConstituteData = false;
+                this.constituteData.muscleRateList.push(muscleRateList);
+                this.constituteData.fatRateList.push(fatRateList);
+                this.FFMIData.perFatRate.push(fatRateList[fatRateList.length - 1][1]);
+              }
+
+              if (FFMI.length !== 0) {
+                this.FFMIData.perFFMI.push(FFMI[FFMI.length - 1]);
+              }
+
+              if (lifeTrackingData.length !== 0) {
+                this.FFMIData.gender.push(lifeTrackingData[lifeTrackingData.length - 1].gender);
+              }
+            }
+          }
+        }
+
+        // 若沒有任何運動數據則顯示無資料-kidin-1090212
+        if (groupReportData.length === 0) {
+          this.nodata = true;
+          this.isLoading = false;
+          this.updateUrl('false');
+        } else {
+          this.nodata = false;
+          this.showReport = true;
+          this.isSelectDateRange = false;
+          this.updateUrl('true');
+          this.sortData(groupReportData);
+          this.calData(this.sortResultData);
+        }
+
+        this.infoData.avgHeight = totalHeight / validHeightStroke;
+        this.infoData.avgWeight = totalWeight / validWeightStroke;
+        this.infoData.avgAge = totalAge / validAgeStroke;
+        this.infoData.avgFFMI = totalFFMI / validFFMIStroke;
+
+      } else {
+        console.log('Sever Error');
+        this.nodata = true;
+        this.isLoading = false;
+        this.updateUrl('false');
+      }
+    });
+  }
+
+  // 初始化變數-kidin-1090215
+  initVariable () {
+    this.noStepData = true;
+    this.noHRData = true;
+    this.noSleepData = true;
+    this.noConstituteData = true;
+    this.noFitTimeData = true;
+
+    this.infoData = {
+      totalPeople: 0,
+      validStroke: 0,
+      avgHeight: 0,
+      avgWeight: 0,
+      avgAge: 0,
+      avgFFMI: 0
+    };
+
+    this.recordData.stepReachReps = 0;
+
+    this.stepData = {
+      stepList: [],
+      targetStepList: [],
+      date: [],
+      colorSet: ['#6fd205', '#7f7f7f', '#eb5293']
+    };
+
+    this.HRData = {
+      maxHRList: [],
+      restHRList: [],
+      date: [],
+      colorSet: ['#e23333', '#31df93', '#ababab']
+    };
+
+    this.sleepData = {
+      totalSleepList: [],
+      deepSleepList: [],
+      lightSleepList: [],
+      awakeList: [],
+      date: []
+    };
+
+    this.weightData = {
+      weightList: [],
+      colorSet: '#e458e8'
+    };
+
+    this.constituteData = {
+      fatRateList: [],
+      fatRateColorSet: '#ea5757',
+      muscleRateList: [],
+      muscleRateColorSet: '#9b70e0'
+    };
+
+    this.FFMIData = {
+      perFatRate: [],
+      perFFMI: [],
+      gender: []
+    };
+
+    this.fitTimeData = {
+      fitTimeList: [],
+      date: [],
+      colorSet: '#f8b551'
+    };
+  }
+
+  // 將合併的資料進行排序
+  sortData (data) {
+    const sortResult = [...data];
+
+    let swapped = true;
+    for (let i = 0; i < data.length && swapped; i++) {
+      swapped = false;
+      for (let j = 0; j < data.length - 1 - i; j++) {
+        const frontData = moment(sortResult[j].startTime.split('T')[0]),
+              afterData = moment(sortResult[j + 1].startTime.split('T')[0]);
+        if (afterData.diff(frontData, 'days') < 0) {
+          swapped = true;
+          [sortResult[j], sortResult[j + 1]] = [sortResult[j + 1], sortResult[j]];
+        }
+      }
+    }
+
+    this.sortResultData = sortResult;
+  }
+
+  // 計算頁面所需數據-kidin-1090215
+  calData (sortData) {
+
+    const step = {
+      totalSteps: 0,
+      totalDistance: 0,
+      totalLength: 0,
+      sameTimesStep: 0,
+      sameTimesTargetStep: 0,
+      sameTimesLength: 0,
+      sameTimesDate: ''
+    },
+
+    HR = {
+      totalMaxHR: 0,
+      totalRestHR: 0,
+      totalLength: 0,
+      sameTimesMaxHR: 0,
+      sameTimesRestHR: 0,
+      sameTimesLength: 0,
+      sameTimesDate: ''
+    },
+
+    sleep = {
+      totalSleepTime: 0,
+      totalDeepSleepTime: 0,
+      totalLightSleepTime: 0,
+      totalLength: 0,
+      sameTimestotalSleepTime: 0,
+      sameTimesDeepSleepTime: 0,
+      sameTimesLightSleepTime: 0,
+      sameTimesAwakeTime: 0,
+      sameTimesLength: 0,
+      sameTimesDate: ''
+    },
+
+    fitTime = {
+      totalFitTime: 0,
+      totalLength: 0,
+      sameTimesFitTime: 0,
+      sameTimesLength: 0,
+      sameTimesDate: '',
+      bestFitTime: 0
+    };
+
+    for (let i = 0; i < sortData.length; i++) {
+
+      // 將相同日期的步數數據做整合-kidin-1090217
+      if (sortData[i].totalStep !== 0 && sortData[i].totalStep !== null) {
+        this.noStepData = false;
+        step.totalSteps += sortData[i].totalStep;
+        step.totalDistance += sortData[i].totalDistanceMeters;
+        step.totalLength++;
+
+        if (step.sameTimesStep === 0 || sortData[i].startTime === step.sameTimesDate) {
+          step.sameTimesStep += sortData[i].totalStep;
+          step.sameTimesLength++;
+          step.sameTimesDate = sortData[i].startTime;
+
+          // 周報告目標步數不能小於35000-kidin-1090219
+          if (this.dataDateRange === 'week' && sortData[i].targetStep < 5000 * 7) {
+            step.sameTimesTargetStep += 5000 * 7;
+          } else {
+            step.sameTimesTargetStep += sortData[i].targetStep;
+          }
+
+          if (i === sortData.length - 1) {
+            this.stepData.stepList.push(step.sameTimesStep / step.sameTimesLength);
+            this.stepData.targetStepList.push(step.sameTimesTargetStep / step.sameTimesLength);
+            this.stepData.date.push(moment(step.sameTimesDate.split('T')[0], 'YYYY-MM-DD').valueOf());
+            step.sameTimesLength = 0;
+
+            if (step.sameTimesStep >= step.sameTimesTargetStep) {
+              this.recordData.stepReachReps++;
+            }
+          }
+        } else if (step.sameTimesStep !== 0 && sortData[i].startTime !== step.sameTimesDate) {
+          this.stepData.stepList.push(step.sameTimesStep / step.sameTimesLength);
+          this.stepData.targetStepList.push(step.sameTimesTargetStep / step.sameTimesLength);
+          this.stepData.date.push(moment(step.sameTimesDate.split('T')[0], 'YYYY-MM-DD').valueOf());
+          step.sameTimesLength = 0;
+
+          if (step.sameTimesStep >= step.sameTimesTargetStep) {
+            this.recordData.stepReachReps++;
+          }
+
+          if (i !== sortData.length - 1) {
+            step.sameTimesStep = sortData[i].totalStep;
+            step.sameTimesLength = 1;
+            step.sameTimesDate = sortData[i].startTime;
+
+            // 周報告目標步數不能小於35000-kidin-1090219
+            if (this.dataDateRange === 'week' && sortData[i].targetStep < 5000 * 7) {
+              step.sameTimesTargetStep = 5000 * 7;
+            } else {
+              step.sameTimesTargetStep = sortData[i].targetStep;
+            }
+          } else {
+            this.stepData.stepList.push(sortData[i].totalStep);
+            this.stepData.targetStepList.push(sortData[i].targetStep);
+            this.stepData.date.push(moment(sortData[i].startTime.split('T')[0], 'YYYY-MM-DD').valueOf());
+            step.sameTimesLength = 0;
+
+            if (sortData[i].totalStep >= sortData[i].targetStep) {
+              this.recordData.stepReachReps++;
+            }
+
+            // 周報告目標步數不能小於35000-kidin-1090219
+            if (this.dataDateRange === 'week' && sortData[i].targetStep < 5000 * 7) {
+              this.stepData.targetStepList.push(5000 * 7);
+            } else {
+              this.stepData.targetStepList.push(sortData[i].targetStep);
+            }
+          }
+        }
+      }
+
+      // 將相同日期的心率數據做整合-kidin-1090217
+      if (sortData[i].maxHeartRate !== 0 && sortData[i].maxHeartRate !== null) {
+        this.noHRData = false;
+        HR.totalRestHR += sortData[i].restHeartRate;
+        HR.totalMaxHR += sortData[i].maxHeartRate;
+        HR.totalLength++;
+
+        if (HR.sameTimesRestHR === 0 || sortData[i].startTime === HR.sameTimesDate) {
+          HR.sameTimesRestHR += sortData[i].restHeartRate;
+          HR.sameTimesMaxHR += sortData[i].maxHeartRate;
+          HR.sameTimesLength++;
+          HR.sameTimesDate = sortData[i].startTime;
+
+          if (i === sortData.length - 1) {
+            this.HRData.restHRList.push(HR.sameTimesRestHR / HR.sameTimesLength);
+            this.HRData.maxHRList.push(HR.sameTimesMaxHR / HR.sameTimesLength);
+            this.HRData.date.push(moment(HR.sameTimesDate.split('T')[0], 'YYYY-MM-DD').valueOf());
+            HR.sameTimesLength = 0;
+          }
+        } else if (HR.sameTimesRestHR !== 0 && sortData[i].startTime !== HR.sameTimesDate) {
+          this.HRData.restHRList.push(HR.sameTimesRestHR / HR.sameTimesLength);
+          this.HRData.maxHRList.push(HR.sameTimesMaxHR / HR.sameTimesLength);
+          this.HRData.date.push(moment(HR.sameTimesDate.split('T')[0], 'YYYY-MM-DD').valueOf());
+          HR.sameTimesLength = 0;
+
+          if (i !== sortData.length - 1) {
+            HR.sameTimesRestHR = sortData[i].restHeartRate;
+            HR.sameTimesMaxHR = sortData[i].maxHeartRate;
+            HR.sameTimesLength = 1;
+            HR.sameTimesDate = sortData[i].startTime;
+          } else {
+            this.HRData.restHRList.push(sortData[i].restHeartRate);
+            this.HRData.maxHRList.push(sortData[i].maxHeartRate);
+            this.HRData.date.push(moment(sortData[i].startTime.split('T')[0], 'YYYY-MM-DD').valueOf());
+            HR.sameTimesLength = 0;
+          }
+        }
+      }
+
+      // 將相同日期的睡眠時間數據做整合-kidin-1090217
+      if (sortData[i].totalSleepSecond !== 0 && sortData[i].totalSleepSecond !== null) {
+        this.noSleepData = false;
+        sleep.totalSleepTime += sortData[i].totalSleepSecond;
+        sleep.totalDeepSleepTime += sortData[i].totalDeepSecond;
+        sleep.totalLightSleepTime += sortData[i].totalLightSecond;
+        sleep.totalLength++;
+
+        if (sleep.sameTimestotalSleepTime === 0 || sortData[i].startTime === sleep.sameTimesDate) {
+          sleep.sameTimestotalSleepTime += sortData[i].totalSleepSecond;
+          sleep.sameTimesDeepSleepTime += sortData[i].totalDeepSecond;
+          sleep.sameTimesLightSleepTime += sortData[i].totalLightSecond;
+          sleep.sameTimesLength++;
+          sleep.sameTimesDate = sortData[i].startTime;
+
+          if (i === sortData.length - 1) {
+            this.sleepData.totalSleepList.push(sleep.sameTimestotalSleepTime / sleep.sameTimesLength);
+            this.sleepData.deepSleepList.push(sleep.sameTimesDeepSleepTime / sleep.sameTimesLength);
+            this.sleepData.lightSleepList.push(sleep.sameTimesLightSleepTime / sleep.sameTimesLength);
+            sleep.sameTimesAwakeTime =
+              sleep.sameTimestotalSleepTime - sleep.sameTimesDeepSleepTime - sleep.sameTimesLightSleepTime;
+            this.sleepData.awakeList.push(sleep.sameTimesAwakeTime / sleep.sameTimesLength);
+            this.sleepData.date.push(moment(sleep.sameTimesDate.split('T')[0], 'YYYY-MM-DD').valueOf());
+            sleep.sameTimesLength = 0;
+          }
+        } else if (sleep.sameTimesDeepSleepTime !== 0 && sortData[i].startTime !== sleep.sameTimesDate) {
+          this.sleepData.totalSleepList.push(sleep.sameTimestotalSleepTime / sleep.sameTimesLength);
+          this.sleepData.deepSleepList.push(sleep.sameTimesDeepSleepTime / sleep.sameTimesLength);
+          this.sleepData.lightSleepList.push(sleep.sameTimesLightSleepTime / sleep.sameTimesLength);
+          sleep.sameTimesAwakeTime =
+            sleep.sameTimestotalSleepTime - sleep.sameTimesDeepSleepTime - sleep.sameTimesLightSleepTime;
+          this.sleepData.awakeList.push(sleep.sameTimesAwakeTime / sleep.sameTimesLength);
+          this.sleepData.date.push(moment(sleep.sameTimesDate.split('T')[0], 'YYYY-MM-DD').valueOf());
+          sleep.sameTimesLength = 0;
+
+          if (i !== sortData.length - 1) {
+            sleep.sameTimestotalSleepTime = sortData[i].totalSleepSecond;
+            sleep.sameTimesDeepSleepTime = sortData[i].totalDeepSecond;
+            sleep.sameTimesLightSleepTime = sortData[i].totalLightSecond;
+            sleep.sameTimesLength = 1;
+            sleep.sameTimesDate = sortData[i].startTime;
+          } else {
+            this.sleepData.totalSleepList.push(sortData[i].totalSleepSecond);
+            this.sleepData.deepSleepList.push(sortData[i].totalDeepSecond);
+            this.sleepData.lightSleepList.push(sortData[i].totalLightSecond);
+            this.sleepData.awakeList.push(
+              sortData[i].totalSleepSecond - sortData[i].totalDeepSecond - sortData[i].totalLightSecond
+              );
+            this.sleepData.date.push(moment(sortData[i].startTime.split('T')[0], 'YYYY-MM-DD').valueOf());
+            sleep.sameTimesLength = 0;
+          }
+        }
+      }
+
+      // 將相同日期的燃脂時間數據做整合-kidin-1090217
+      if (sortData[i].totalFitSecond !== 0  && sortData[i].totalFitSecond !== null) {
+        this.noFitTimeData = false;
+        fitTime.totalFitTime += sortData[i].totalFitSecond;
+        fitTime.totalLength++;
+
+        if (fitTime.sameTimesFitTime === 0 || sortData[i].startTime === fitTime.sameTimesDate) {
+          fitTime.sameTimesFitTime += sortData[i].totalFitSecond;
+          fitTime.sameTimesLength++;
+          fitTime.sameTimesDate = sortData[i].startTime;
+
+          if (i === sortData.length - 1) {
+
+            if (fitTime.sameTimesFitTime / fitTime.sameTimesLength > fitTime.bestFitTime) {
+              fitTime.bestFitTime = fitTime.sameTimesFitTime / fitTime.sameTimesLength;
+            }
+
+            this.fitTimeData.fitTimeList.push(fitTime.sameTimesFitTime / fitTime.sameTimesLength);
+            this.fitTimeData.date.push(moment(fitTime.sameTimesDate.split('T')[0], 'YYYY-MM-DD').valueOf());
+            fitTime.sameTimesLength = 0;
+          }
+        } else if (fitTime.sameTimesFitTime !== 0 && sortData[i].startTime !== fitTime.sameTimesDate) {
+
+          if (fitTime.sameTimesFitTime / fitTime.sameTimesLength > fitTime.bestFitTime) {
+            fitTime.bestFitTime = fitTime.sameTimesFitTime / fitTime.sameTimesLength;
+          }
+
+          this.fitTimeData.fitTimeList.push(fitTime.sameTimesFitTime / fitTime.sameTimesLength);
+          this.fitTimeData.date.push(moment(fitTime.sameTimesDate.split('T')[0], 'YYYY-MM-DD').valueOf());
+          fitTime.sameTimesLength = 0;
+
+          if (i !== sortData.length - 1) {
+            fitTime.sameTimesFitTime = sortData[i].totalFitSecond;
+            fitTime.sameTimesLength = 1;
+            fitTime.sameTimesDate = sortData[i].startTime;
+          } else {
+
+            if (sortData[i].totalFitSecond > fitTime.bestFitTime) {
+              fitTime.bestFitTime = sortData[i].totalFitSecond;
+            }
+
+            this.fitTimeData.fitTimeList.push(sortData[i].totalFitSecond);
+            this.fitTimeData.date.push(moment(sortData[i].startTime.split('T')[0], 'YYYY-MM-DD').valueOf());
+            fitTime.sameTimesLength = 0;
+          }
+        }
+      }
+
+    }
+
+    // 若有相同日期的數據在迴圈跑完後沒有儲存起來，則在此補上-kidin-1090217
+    if (step.sameTimesLength !== 0) {
+      this.stepData.stepList.push(step.sameTimesStep / step.sameTimesLength);
+      this.stepData.targetStepList.push(step.sameTimesTargetStep / step.sameTimesLength);
+      this.stepData.date.push(moment(step.sameTimesDate.split('T')[0], 'YYYY-MM-DD').valueOf());
+
+      if (step.sameTimesStep >= step.sameTimesTargetStep) {
+        this.recordData.stepReachReps++;
+      }
+    }
+
+    if (HR.sameTimesLength !== 0) {
+      this.HRData.restHRList.push(HR.sameTimesRestHR / HR.sameTimesLength);
+      this.HRData.maxHRList.push(HR.sameTimesMaxHR / HR.sameTimesLength);
+      this.HRData.date.push(moment(HR.sameTimesDate.split('T')[0], 'YYYY-MM-DD').valueOf());
+    }
+
+    if (sleep.sameTimesLength !== 0) {
+      this.sleepData.deepSleepList.push(sleep.sameTimesDeepSleepTime / sleep.sameTimesLength);
+      this.sleepData.lightSleepList.push(sleep.sameTimesLightSleepTime / sleep.sameTimesLength);
+      this.sleepData.awakeList.push(
+        (sleep.sameTimestotalSleepTime - sleep.sameTimesDeepSleepTime - sleep.sameTimesLightSleepTime) / sleep.sameTimesLength
+        );
+      this.sleepData.date.push(moment(sleep.sameTimesDate.split('T')[0], 'YYYY-MM-DD').valueOf());
+    }
+
+    if (fitTime.sameTimesLength !== 0) {
+      this.fitTimeData.fitTimeList.push(fitTime.sameTimesFitTime / fitTime.sameTimesLength);
+      this.fitTimeData.date.push(moment(fitTime.sameTimesDate.split('T')[0], 'YYYY-MM-DD').valueOf());
+    }
+
+    this.recordData.avgStep = (step.totalSteps / step.totalLength);
+    this.recordData.avgDistance = (step.totalDistance / step.totalLength);
+    this.recordData.avgMaxHR = HR.totalMaxHR / HR.totalLength;
+    this.recordData.avgRestHR = HR.totalRestHR / HR.totalLength;
+    this.recordData.avgSleepTime = this.formatTime(sleep.totalSleepTime / sleep.totalLength);
+    this.recordData.avgDeepSleepTime = this.formatTime(sleep.totalDeepSleepTime / sleep.totalLength || 0);
+    this.recordData.avgLightSleepTime = this.formatTime(sleep.totalLightSleepTime / sleep.totalLength || 0);
+
+    this.trendData.bestFitTime = fitTime.bestFitTime / 60;
+    this.trendData.avgFitTime = (fitTime.totalFitTime / fitTime.totalLength) / 60;
+
+  }
+
+  // 將搜尋的類別和範圍處理過後加入query string並更新現在的url和預覽列印的url-kidin-1090205
+  updateUrl (hasData) {
+    let newUrl;
+    if (hasData === 'true') {
+      const startDateString = this.reportStartTime.split('T')[0],
+            endDateString = this.reportEndTime.split('T')[0];
+      let searchString;
+
+      searchString =
+        `startdate=${startDateString}&enddate=${endDateString}`;
+
+      if (location.search.indexOf('?') > -1) {
+        if (
+          location.search.indexOf('startdate=') > -1 &&
+          location.search.indexOf('enddate=') > -1
+        ) {
+          // 將舊的sr query string換成新的-kidin-1090205
+          const preUrl = location.pathname;
+          const queryString = location.search.replace('?', '').split('&');
+          let newSufUrl = '';
+          for (let i = 0; i < queryString.length; i++) {
+            if (
+              queryString[i].indexOf('startdate=') === -1 &&
+              queryString[i].indexOf('enddate=') === -1
+            ) {
+              newSufUrl = `${newSufUrl}&${queryString[i]}`;
+            }
+          }
+          newUrl = `${preUrl}?${searchString}${newSufUrl}`;
+        } else {
+          newUrl = location.pathname + location.search + `&${searchString}`;
+        }
+      } else {
+        newUrl = location.pathname + `?${searchString}`;
+      }
+      this.previewUrl = newUrl + '&ipm=s';
+    } else {
+      newUrl = location.pathname;
+    }
+
+    if (history.pushState) {
+      window.history.pushState({path: newUrl}, '', newUrl);
+    }
+  }
+
+  // 顯示群組資料-kidin-1081227
+  showGroupInfo () {
+    const groupIcon = this.groupData.groupIcon;
+      const brandIcon = this.groupData.groupRootInfo[2].brandIcon;
+      this.groupImg =
+        (
+          groupIcon && groupIcon.length > 0
+              ? groupIcon
+              : '/assets/images/group-default.svg'
+        );
+      this.brandImg =
+        (
+          brandIcon && brandIcon.length > 0
+              ? brandIcon
+              : '/assets/images/group-default.svg'
+        );
+      this.brandName = this.groupData.groupRootInfo[2].brandName;
+      this.branchName = this.groupData.groupRootInfo[3].branchName;
+  }
+
+  // 將秒數轉換成其他時間格式-kidin-1090217
+  formatTime (second) {
+    const totalSec = Math.round(second),
+          hr = Math.floor(totalSec / 3600),
+          min = Math.round((totalSec - hr * 3600) / 60);
+
+    // 剛好59分30秒～59分59秒四捨五入後進位的情況-kidin-1090217
+    if (min === 60) {
+      return `${hr + 1}:00`;
+    } else if (hr === 0 && min === 0) {
+      return `-:--`;
+    } else {
+      const timeTotalMin = ('0' + min).slice(-2);
+      return `${hr}:${timeTotalMin}`;
+    }
+
+  }
+
+  print() {
+    window.print();
+  }
 }

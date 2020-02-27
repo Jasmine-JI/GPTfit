@@ -11,6 +11,10 @@ li {
   }
 }
 
+.listSection {
+  left: 30px;
+}
+
 /* 之後做共用 */
 .mat-tab-label.mat-tab-label-active {
   padding: 5px;
@@ -132,6 +136,7 @@ li {
 
 .summaryData {
   font-size: 24px;
+  font-weight: bold;
   color: #646464;
 }
 
@@ -196,6 +201,13 @@ li {
     margin-right: 20px;
     white-space: nowrap;
   }
+}
+
+@media (max-width: 575px){
+  .listSection {
+    left: 0px;
+  }
+
 }
 
 @media (max-width: 550px){

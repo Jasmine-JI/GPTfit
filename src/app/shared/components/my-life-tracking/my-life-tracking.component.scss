@@ -1,54 +1,32 @@
-.searchReport {
+.activity-icon {
+  width: 60px;
+  height: 60px;
+  line-height: 60px;
+  font-size: 35px;
+  box-shadow: 0 0 0 2px #ccc;
+  border-radius: 50%;
+  background-color: #fafafa;
   display: flex;
-  flex-direction: column;
-  border-bottom: 2px #9e9e9e solid;
+  justify-content: center;
+  align-items: center;
+  color: #888;
 }
 
-.inputDateTime {
-  height: 30px;
-  border: solid 1px gray;
-  border-radius: 5px;
-  text-align: center;
+.activity-btn {
+  width: 140px;
+  height: 38px;
 }
 
-.btnWord {
-  max-width: 70px;
-  line-height: 100%;
-  border-radius: 0px;
-  margin: 0px;
-  margin-bottom: 10px;
+.activity-info_icon_size{
+  font-size: 30px;
 }
 
-.btnWord:first-child {
-  border-radius: 5px 0px 0px 5px;
-}
-
-.btnWord:last-child {
-  border-radius: 0px 5px 5px 0px;
-}
-
-.BtnBgColor {
-  background-color: #21c7f9;
-  color: white;
-}
-
-#dashBetweenDate {
-  height: 2px;
-  flex: 1 0 10px;
-  background: gray;
-  margin: 0px 10px 20px 10px;
-  align-content: center;
-}
-
-.datetimeInput {
-  margin-bottom: 10px;
-}
-
-.dateSelectArea {
+.functionButton {
   display: flex;
   flex-direction: row;
-  align-items: center;
-  max-width: 230px;
+  justify-content: flex-end;
+  width: 100%;
+  margin: 10px 0px;
 }
 
 .reportHeader {
@@ -68,10 +46,28 @@
   font-weight: bold;
 }
 
+.activity-title {
+  border-bottom: 2px #e5e5e5 solid;
+}
+
+.summaryArea {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
 .infoDataUnit {
   font-size: 16px;
   color:#919191;
   font-weight: bold;
+}
+
+.summarySepData {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 120px;
 }
 
 .sepLine {
@@ -88,6 +84,23 @@
 
 .durationSection {
   margin-top: 20px;
+}
+
+.summaryData {
+  font-size: 24px;
+  font-weight: bold;
+  color: #646464;
+}
+
+.summaryDescription {
+  font-size: 15px;
+  color: #6e6e6e;
+}
+
+.areaDescription {
+  font-size: 16px;
+  color:#919191;
+  margin-left: 10px;
 }
 
 .postureInfo {
@@ -144,6 +157,32 @@
   text-align: center;
   font-weight: bold;
   height:fit-content;
+}
+
+.tableCol tr {
+  height: 100px;
+}
+
+.myBodySvg {
+  width: 35%;
+}
+
+.myBodyInfo {
+  margin: 0 auto;
+  height: auto;
+}
+
+.constituteTd {
+  text-align: end;
+}
+
+.commentText {
+  margin-top: 5px;
+  width: fit-content;
+  padding: 0px 10px;
+  color: white;
+  border-radius: 20px;
+  white-space: nowrap;
 }
 
 @media (max-width: 1200px) {
@@ -204,6 +243,26 @@
     margin-left: 0px;
   }
 
+  .summaryArea {
+    justify-content: space-around;
+  }
+
+}
+
+@media (max-width: 569px){
+  .media-569-col {
+    flex-direction: column;
+    margin: 0 auto;
+  }
+
+  .myBodySvg {
+    width: 100%;
+  }
+
+  .myBodyInfo {
+    margin: 0;
+    height: auto;
+  }
 }
 
 @media (max-width: 550px){

@@ -35,7 +35,7 @@
         (click)="handleGroupItem(6)"
       >{{ 'Dashboard.SportReport.sportReport' | translate}}</li>
       <li [class.active]="chooseIdx === 7"
-        *ngIf="groupLevel === '60' && accessRight < 60 && brandType === 2  && 1 === '1'"
+        *ngIf="groupLevel === '60' && accessRight < 60 && brandType === 2"
         (click)="handleGroupItem(7)"
       >{{ 'other.lifeTracking' | translate}}</li>
     </ul>
@@ -136,6 +136,7 @@
         <mat-tab-group (selectedTabChange)="changeGroupInfo($event)" class="ala-tab-group">
           <mat-tab label="{{ 'Dashboard.Group.GroupInfo.subgroup' | translate}}"
             *ngIf="groupLevel !== '80'"
+            [disabled]="isLoading"
           >
             <ng-container  *ngIf="!isLoading">
               <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
@@ -212,7 +213,7 @@
               <mat-spinner></mat-spinner>
             </div>
           </mat-tab>
-          <mat-tab label="{{ 'Dashboard.Group.GroupInfo.administrator' | translate}}">
+          <mat-tab label="{{ 'Dashboard.Group.GroupInfo.administrator' | translate}}" [disabled]="isLoading">
             <ng-container *ngIf="!isLoading">
               <ng-container *ngIf="groupLevel && groupLevel !== '80'">
                 <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
@@ -359,7 +360,7 @@
               <mat-spinner></mat-spinner>
             </div>
           </mat-tab>
-          <mat-tab label="{{ 'Dashboard.Group.generalMember' | translate}}">
+          <mat-tab label="{{ 'Dashboard.Group.generalMember' | translate}}" [disabled]="isLoading">
             <ng-container *ngIf="!isLoading">
               <span *ngIf="normalMemberInfos && normalMemberInfos.length === 0">{{'SH.noData' | translate}}</span>
               <ng-container  *ngFor="let item of normalMemberInfos">
@@ -384,7 +385,7 @@
               <mat-spinner></mat-spinner>
             </div>
           </mat-tab>
-          <mat-tab label="{{ 'Dashboard.Group.GroupInfo.pendingMember' | translate}}">
+          <mat-tab label="{{ 'Dashboard.Group.GroupInfo.pendingMember' | translate}}" [disabled]="isLoading">
             <ng-container *ngIf="!isLoading">
               <span *ngIf="groupInfos && groupInfos.length === 0">{{'SH.noData' | translate}}</span>
               <ng-container  *ngFor="let item of groupInfos">

@@ -643,14 +643,13 @@ export class ActivityService {
           const costhr = Math.floor(this.y / 3600);
           const costmin = Math.floor(Math.round(this.y - costhr * 60 * 60) / 60);
           const costsecond = Math.round(this.y - costmin * 60);
-          const timeHr = ('0' + costhr).slice(-2);
           const timeMin = ('0' + costmin).slice(-2);
           const timeSecond = ('0' + costsecond).slice(-2);
 
-          if (timeHr === '00') {
+          if (costhr === 0) {
             this.y = `${timeMin}:${timeSecond}`;
           } else {
-            this.y = `${timeHr}:${timeMin}:${timeSecond}`;
+            this.y = `${costhr}:${timeMin}:${timeSecond}`;
           }
           return this.y;
         }
@@ -660,11 +659,10 @@ export class ActivityService {
           const costhr = Math.floor(this.y / 3600);
           const costmin = Math.floor(Math.round(this.y - costhr * 60 * 60) / 60);
           const costsecond = Math.round(this.y - costmin * 60);
-          const timeHr = ('0' + costhr).slice(-2);
           const timeMin = ('0' + costmin).slice(-2);
           const timeSecond = ('0' + costsecond).slice(-2);
 
-          this.y = `${timeHr}:${timeMin}:${timeSecond}`;
+          this.y = `${costhr}:${timeMin}:${timeSecond}`;
           return this.y;
         }
       };

@@ -639,6 +639,8 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     if (this.sortTable && this.sortTable.hasOwnProperty('active')) {
       this.sortData();
     }
+
+    this.initMemberHRZoneChart();
   }
 
   // 取得真實的上課時間（取資料第一位的時間）-kidin-1081223
@@ -686,14 +688,14 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         case '1':
           return `${this.fillTwoDigits(hour)}:${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}"`;
         case '2':
-          return `${this.fillTwoDigits(hour)}:${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}`;
+          return `${hour}:${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}`;
       }
     }
   }
 
   // 時間補零-kidin-1081211
   fillTwoDigits (num) {
-    const timeStr = '0' + num;
+    const timeStr = '0' + Math.floor(num);
     return timeStr.substr(-2);
   }
 
@@ -759,12 +761,6 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
   // 初始化highChart-kidin-1081211
   initInfoHighChart () {
-    // 將之前生成的highchart卸除避免新生成的highchart無法顯示-kidin-1081219
-    Highcharts.charts.forEach((_highChart, idx) => {
-      if (_highChart !== undefined) {
-        _highChart.destroy();
-      }
-    });
     Highcharts.charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
     this.chartDatas.length = 0;
     this.chartTargetList.length = 0;

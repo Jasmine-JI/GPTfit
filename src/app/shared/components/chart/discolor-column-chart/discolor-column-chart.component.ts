@@ -3,6 +3,7 @@ import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input }
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
 import * as moment from 'moment';
+import { TranslateService } from '@ngx-translate/core';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -37,7 +38,8 @@ class ChartOptions {
         min: 0,
         title: {
             text: ''
-        }
+        },
+        tickAmount: 1
       },
       plotOptions: {
         series: {
@@ -58,15 +60,20 @@ class ChartOptions {
 })
 export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestroy {
 
+  dateList = [];
+
   @Input() data: any;
   @Input() dateRange: string;
   @Input() sportType: string;
   @Input() chartName: string;
+  @Input() searchDate: Array<number>;
 
   @ViewChild('container')
   container: ElementRef;
 
-  constructor() { }
+  constructor(
+    private translate: TranslateService
+  ) { }
 
   ngOnInit() {}
 
@@ -75,12 +82,6 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
   }
 
   initChart () {
-    // 將之前生成的highchart卸除避免新生成的highchart無法顯示-kidin-1081219
-    Highcharts.charts.forEach((_highChart, idx) => {
-      if (_highChart !== undefined) {
-        _highChart.destroy();
-      }
-    });
     Highcharts.charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
 
     let trendDataset;
@@ -132,28 +133,93 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
           );
         }
         break;
+      case 'Step': // 生活追蹤步數資料-kidin-1090218
+        this.createDateList();
+        const newData = [],
+              newTargetData = [];
+        let index = 0;
+        for (let i = 0; i < this.dateList.length; i++) {
+          if (this.dateList[i] === this.data.date[index]) {
+            newData.push(this.data.stepList[index]);
+            newTargetData.push(this.data.targetStepList[index]);
+            index++;
+          } else {
+            newData.push(0);
+            newTargetData.push(0);
+          }
+        }
+
+        for (let i = 0; i < this.dateList.length; i++) {
+          if (newData[i] - newTargetData[i] >= 0) {
+            chartData.push(
+              {
+                x: this.dateList[i],
+                y: newData[i],
+                z: newData[i],  // tooltip數據用-kidin-1090218
+                t: newTargetData[i],  // tooltip數據用-kidin-1090218
+                color: this.data.colorSet[2]
+              }
+            );
+          } else {
+            const discolorPoint = newData[i] / newTargetData[i];
+            chartData.push(
+              {
+                x: this.dateList[i],
+                y: newTargetData[i],
+                z: newData[i],  // tooltip數據用-kidin-1090218
+                t: newTargetData[i],  // tooltip數據用-kidin-1090218
+                color: {
+                  linearGradient: {
+                    x1: 0,
+                    x2: 0,
+                    y1: 1,
+                    y2: 0
+                  },
+                  stops: [
+                    [0, this.data.colorSet[0]],
+                    [discolorPoint, this.data.colorSet[0]],
+                    [discolorPoint + 0.01, this.data.colorSet[1]],
+                    [1, this.data.colorSet[1]]
+                  ]
+                }
+              }
+            );
+          }
+        }
+        break;
     }
 
-    trendDataset = [
-      {
-        name: this.chartName,
-        data: chartData,
-        showInLegend: false,
-        color: {
-          linearGradient: {
-            x1: 0,
-            x2: 0,
-            y1: 0,
-            y2: 1
-          },
-          stops: [
-            [0, this.data.colorSet[2]],
-            [0.5, this.data.colorSet[1]],
-            [1, this.data.colorSet[0]]
-          ]
+    if (this.chartName === 'Step') {
+      trendDataset = [
+        {
+          name: [this.translate.instant('other.StepCount'), this.translate.instant('other.targetStep')],
+          data: chartData,
+          showInLegend: false
         }
-      }
-    ];
+      ];
+    } else {
+      trendDataset = [
+        {
+          name: this.chartName,
+          data: chartData,
+          showInLegend: false,
+          color: {
+            linearGradient: {
+              x1: 0,
+              x2: 0,
+              y1: 0,
+              y2: 1
+            },
+            stops: [
+              [0, this.data.colorSet[2]],
+              [0.5, this.data.colorSet[1]],
+              [1, this.data.colorSet[0]]
+            ]
+          }
+        }
+      ];
+    }
+
 
     const trendChartOptions = new ChartOptions(trendDataset),
           trendChartDiv = this.container.nativeElement;
@@ -285,6 +351,27 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
 
         };
         break;
+      case 'Step':
+        // 設定浮動提示框顯示格式-kidin-1090204
+        trendChartOptions['tooltip'] = {
+          formatter: function () {
+            if (this.series.xAxis.tickInterval === 30 * 24 * 4600 * 1000) {
+              return `${moment(this.x).format('YYYY/MM/DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY/MM/DD')}
+                <br/>${this.series.name[1]}: ${this.point.t.toFixed(1)}
+                <br/>${this.series.name[0]}: ${this.point.z.toFixed(1)}`;
+
+            } else {
+              return `${moment(this.x).format('YYYY/MM/DD')}
+                <br/>${this.series.name[1]}: ${this.point.t.toFixed(1)}
+                <br/>${this.series.name[0]}: ${this.point.z.toFixed(1)}`;
+            }
+          }
+        };
+
+        // 設定圖表高度-kidin-1090221
+        trendChartOptions['chart'].height = 170;
+
+        break;
     }
 
     // 設定圖表x軸時間間距-kidin-1090204
@@ -298,6 +385,42 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
     setTimeout(() => {
       chart(trendChartDiv, trendChartOptions);
     }, 0);
+
+  }
+
+  // 根據搜尋期間，列出日期清單供圖表使用-kidin-1090220
+  createDateList () {
+    let diff,
+        weekStartDay,
+        weekEndDay;
+    if (this.dateRange === 'day') {
+      diff = (this.searchDate[1] - this.searchDate[0]) / (86400 * 1000);
+
+      for (let i = 0; i < diff + 1; i++) {
+        this.dateList.push(this.searchDate[0] + 86400 * 1000 * i);
+      }
+
+    } else if (this.dateRange === 'week') {
+
+      // 周報告開頭是星期日-kidin-1090220
+      if (moment(this.searchDate[0]).isoWeekday() !== 7) {
+        weekStartDay = this.searchDate[0] + 86400 * 1000 * (7 - moment(this.searchDate[0]).isoWeekday());
+      } else {
+        weekStartDay = this.searchDate[0];
+      }
+
+      if (moment(this.searchDate[0]).isoWeekday() !== 7) {
+        weekEndDay = this.searchDate[1] - 86400 * 1000 * moment(this.searchDate[1]).isoWeekday();
+      } else {
+        weekEndDay = this.searchDate[1];
+      }
+
+      diff = (weekEndDay - weekStartDay) / (86400 * 1000 * 7);
+
+      for (let i = 0; i < diff + 1; i++) {
+        this.dateList.push(weekStartDay + 86400 * 1000 * 7 * i);
+      }
+    }
 
   }
 

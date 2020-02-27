@@ -1,94 +1,40 @@
-<ng-container *ngIf="!isPreviewMode">
-  <div class="searchReport">
-    <p style="font-size: 18px; color: #26abe3;">{{'SH.create' | translate}}{{'Dashboard.SportReport.sportReport' | translate}}</p>
-    <p>請依照您的選擇期間建立報告</p>
-    <div class="searchInput">
-      <div class="selectArea">
-        <div class="datetimeInput">
-          <p style="white-space: nowrap; margin: 0px">{{'SH.dateRange' | translate}}：</p>
-          <div style="display: flex; flex-direction: column;">
-            <div>
-                <button
-                name="aWeek"
-                class="alatech-btn alatech-btn--default activty-btn btnWord"
-                [class.BtnBgColor]="isSelected === 'aWeek'"
-                value="week"
-                (click)="handleActivityBtn($event)"
-              >
-                {{'Dashboard.GroupClass.last7Days' | translate}}
-              </button>
-              <button
-                name="aMonth"
-                class="alatech-btn alatech-btn--default activty-btn btnWord"
-                [class.BtnBgColor]="isSelected === 'aMonth'"
-                value="month"
-                (click)="handleActivityBtn($event)"
-              >
-                {{'Dashboard.GroupClass.last30Days' | translate}}
-              </button>
-              <button
-                name="rangeDate"
-                class="alatech-btn alatech-btn--default activty-btn btnWord"
-                [class.BtnBgColor]="isSelected === 'rangeDate'"
-                (click)="handleClickSelectDate($event)"
-              >
-                {{'Dashboard.GroupClass.selectDate' | translate}}
-              </button>
-            </div>
-            <div class="dateSelectArea" *ngIf="isSelectDateRange">
-              <mat-form-field style="width: 100px;" appearance="none">
-                <input
-                  matInput
-                  type="text"
-                  name="classDate"
-                  class="inputDateTime"
-                  style="bottom: 0.4em;"
-                  [max]="maxStartDate"
-                  [(value)]="selectedStartDate"
-                  (dateChange)="handleStartDate($event)"
-                  [matDatepicker]="startDatepicker"
-                  required="required"
-                  onkeydown="return false"
-                  (click)="startDatepicker.opened = true"
-                  readonly
-                >
-                <mat-datepicker #startDatepicker disabled="false" touchUi="true"></mat-datepicker>
-              </mat-form-field>
-              <div id="dashBetweenDate"></div>
-              <mat-form-field style="width: 100px;" appearance="none">
-                <input
-                  matInput
-                  type="text"
-                  name="classDate"
-                  class="inputDateTime"
-                  style="bottom: 0.4em;"
-                  [min]="minEndDate"
-                  [max]="maxSelectDate"
-                  [(value)]="selectedEndDate"
-                  (dateChange)="handleEndDate($event)"
-                  [matDatepicker]="endDatepicker"
-                  required="required"
-                  onkeydown="return false"
-                  (click)="endDatepicker.opened = true"
-                  readonly
-                >
-                <mat-datepicker #endDatepicker disabled="false" touchUi="true"></mat-datepicker>
-              </mat-form-field>
-            </div>
-          </div>
-        </div>
-      </div>
-      <button
-        class="alatech-btn alatech-btn--default activty-btn"
-        style="max-width: 70px;"
-        (click)="handleSubmitSearch('click')"
-        [class.unClickable]="!reportCompleted"
-      >
-        {{'SH.send' | translate}}
-      </button>
-    </div>
+<div class="col-12 media-940-maxwidth" [class.reportPreviewMode]="isPreviewMode">
+  <mat-tab-group
+    (selectedTabChange)="changeGroupInfo($event, 'default')"
+    [selectedIndex]="selectedIndex"
+    *ngIf="!isPreviewMode"
+  >
+    <mat-tab label="7{{'Dashboard.SportReport.day' | translate}}">
+    </mat-tab>
+    <mat-tab label="30{{'Dashboard.SportReport.day' | translate}}">
+    </mat-tab>
+    <mat-tab label="6{{'Dashboard.SportReport.month' | translate}}">
+    </mat-tab>
+    <mat-tab label="12{{'Dashboard.SportReport.month' | translate}}">
+    </mat-tab>
+  </mat-tab-group>
+  <!-- Hello i m {{chooseType}}chart -->
+  <div style="font-weight: 700;letter-spacing: 1.5px;margin: 15px 0px;display:flex" *ngIf="!isPreviewMode">
+    <button mat-icon-button
+      (click)="shiftPreTime()"
+      class="report-time-btn"
+    >
+      <mat-icon style="cursor: pointer">
+        keyboard_arrow_left
+      </mat-icon>
+    </button>
+    <button mat-icon-button
+      (click)="shiftNextTime()"
+      [disabled]="filterEndTime === today || filterEndTime === endWeekDay"
+      class="report-time-btn"
+    >
+      <mat-icon style="cursor: pointer">
+        keyboard_arrow_right
+      </mat-icon>
+    </button>
+    {{filterStartTime}} - {{filterEndTime}}
   </div>
-</ng-container>
+</div>
 <ng-container *ngIf="isLoading" style="display:flex;justify-content: center;align-items: center; width:100%;">
   <mat-spinner style="z-index: 3; margin-top: 30px; position: absolute; left: 50%;"></mat-spinner>
   <div class="whiteMask">
@@ -128,12 +74,9 @@
         </div>
       </div>
       <div class="flexRow authorInfo">
-        <div class="flexCol">
-          <span class="reportTitle" style="margin: 10px 10px 0px 0px;">{{groupData?.groupName}}</span>
-          <span class="reportDateTime">{{brandName}} \ {{branchName}}</span>
-        </div>
+        <span class="reportTitle" style="margin: 10px 10px 0px 0px;">{{fileInfo?.name}}</span>
         <div style="margin-right: 10px;">
-          <img style="width: 55px; border-radius: 50%;" src="{{groupImg}}">
+          <img style="width: 55px; border-radius: 50%;" src="{{fileInfo?.nameIcon}}">
         </div>
       </div>
     </div>
@@ -148,41 +91,45 @@
     <div>
       <div class="summaryArea">
         <div class="summaryDataArea">
-          <span class="summaryData">{{infoData.totalPeople || 0}}</span>
-          <p class="summaryDescription">{{'other.totalPeople' | translate}}</p>
-        </div>
-        <div class="sepLine"></div>
-        <div class="summaryDataArea">
           <span class="summaryData">{{infoData.validStroke || 0}}</span>
           <p class="summaryDescription">{{'other.numberOfValidPens' | translate}}</p>
         </div>
-        <div class="sepLine"></div>
-        <div class="summaryDataArea">
-          <span class="summaryData">{{infoData.avgHeight || 0 | number:'1.0-1'}}</span>
-          <p class="summaryDescription">
-            {{'Dashboard.TrainLive.avg' | translate}} {{'Portal.bodyHeight' | translate}}
-          </p>
+        <div class="summarySepData">
+          <div class="sepLine"></div>
+          <div class="summaryDataArea">
+            <span class="summaryData">{{infoData.height || 0 | number:'1.0-1'}}</span>
+            <p class="summaryDescription">
+              {{'Portal.bodyHeight' | translate}}
+            </p>
+          </div>
         </div>
-        <div class="sepLine"></div>
-        <div class="summaryDataArea">
-          <span class="summaryData">{{infoData.avgWeight || 0 | number:'1.0-1'}}</span>
-          <p class="summaryDescription">
-            {{'Dashboard.TrainLive.avg' | translate}} {{'Portal.bodyWeight' | translate}}
-          </p>
+        <div class="summarySepData">
+          <div class="sepLine"></div>
+          <div class="summaryDataArea">
+            <span class="summaryData">{{infoData.weight || 0 | number:'1.0-1'}}</span>
+            <p class="summaryDescription">
+              {{'Portal.bodyWeight' | translate}}
+            </p>
+          </div>
         </div>
-        <div class="sepLine"></div>
-        <div class="summaryDataArea">
-          <span class="summaryData">{{infoData.avgAge || 0 | number:'1.0-0'}}</span>
-          <p class="summaryDescription">
-            {{'Dashboard.TrainLive.avg' | translate}} {{'other.age' | translate}}
-          </p>
+        <div class="summarySepData">
+          <div class="sepLine"></div>
+          <div class="summaryDataArea">
+            <span class="summaryData">{{infoData.age || 0 | number:'1.0-0'}}</span>
+            <p class="summaryDescription">
+              {{'other.age' | translate}}
+            </p>
+          </div>
         </div>
-        <div class="sepLine"></div>
-        <div class="summaryDataArea">
-          <span class="summaryData">{{infoData.avgFFMI || 0 | number:'1.0-1'}}</span>
-          <p class="summaryDescription">
-            {{'Dashboard.TrainLive.avg' | translate}} FFMI
-          </p>
+        <div class="summarySepData">
+          <div class="sepLine"></div>
+          <div class="summaryDataArea">
+            <span class="summaryData" *ngIf="infoData.gender === 0">Male</span>
+            <span class="summaryData" *ngIf="infoData.gender === 1">Female</span>
+            <p class="summaryDescription">
+              {{'Dashboard.Settings.gender' | translate}}
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -309,31 +256,101 @@
     </div>
     <div class="flexRow recentBodyQuality" style="margin-top: 20px;">
       <div class="flexCol postureInfo rwd_wid_100per">
-        <span class="reportChartTitle">{{'other.bodyDistribution' | translate}}</span>
-        <span class="areaDescription" style="margin: 10px 0 0 10px;">{{'other.bodyDistributionReportDescription' | translate}}</span>
-        <app-distribution-chart
-          [perFFMI]="FFMIData.perFFMI"
-          [perFatRate]="FFMIData.perFatRate"
-          [gender]="FFMIData.gender"
-          [searchDate]="searchDate"
-          style="margin-top: 20px;"
-        ></app-distribution-chart>
+        <div class="flexRow media-569-col">
+          <app-body-constitute-svg
+            class="myBodySvg"
+            [fatRate]="infoData.fatRate"
+            [muscleRate]="infoData.muscleRate"
+            [bodyWeight]="infoData.weight"
+            [FFMI]="infoData.FFMI"
+            [gender]="infoData.gender"
+          >
+          </app-body-constitute-svg>
+          <div class="myBodyInfo">
+            <table>
+              <div>
+                <td class="tableCol constituteTd" style="padding-right: 5px;">
+                  <tr>
+                    <span class="dataAnnotation">{{'Portal.bodyWeight' | translate}}</span><br/>
+                    <span class="summaryData">{{infoData.weight}}Kg</span>
+                  </tr>
+                  <tr>
+                    <span style="color: #ffba4e;">●</span>
+                    <span class="dataAnnotation">{{'other.fatRate' | translate}}</span><br/>
+                    <span class="summaryData">{{infoData.fatRate}}%</span>
+                  </tr>
+                  <tr>
+                    <span style="color: #31e4d9;">●</span>
+                    <span class="dataAnnotation">{{'other.muscleRate' | translate}}</span><br/>
+                    <span class="summaryData">{{infoData.muscleRate}}%</span>
+                  </tr>
+                  <tr>
+                    <span class="dataAnnotation">FFMI</span><br/>
+                    <span class="summaryData">{{infoData.FFMI | number: '1.0-1'}}</span>
+                  </tr>
+                </td>
+                <td class="tableCol" style="text-align: start;">
+                  <tr><br/><br/></tr>
+                  <tr>
+                    <br/>
+                    <div class="commentText" [style.background-color]="infoData.fatRateColor">{{infoData.fatRateComment}}</div>
+                  </tr>
+                  <tr>
+                    <br/>
+                    <div class="commentText" [style.background-color]="infoData.muscleRateColor">{{infoData.muscleRateComment}}</div>
+                  </tr>
+                </td>
+              </div>
+              <td class="tableCol constituteTd" style="padding: 0 5px 0 20px;">
+                <tr>
+                  <span class="dataAnnotation">{{'other.skeletonRate' | translate}}</span><br/>
+                  <span class="summaryData">{{infoData.skeletonRate}}%</span>
+                </tr>
+                <tr>
+                  <span class="dataAnnotation">{{'other.moistureRate' | translate}}</span><br/>
+                  <span class="summaryData">{{infoData.moistureRate}}%</span>
+                </tr>
+                <tr>
+                  <span class="dataAnnotation">{{'other.proteinRate' | translate}}</span><br/>
+                  <span class="summaryData">{{infoData.proteinRate}}%</span>
+                </tr>
+                <tr>
+                  <span class="dataAnnotation">{{'other.basalMetabolism' | translate}}</span><br/>
+                  <span class="summaryData">{{infoData.basalMetabolicRate}}</span>
+                </tr>
+              </td>
+              <td class="tableCol" style="text-align: start;">
+                <tr><br/><br/></tr>
+                <tr>
+                  <br/>
+                  <div class="commentText" [style.background-color]="infoData.moistureRateColor">{{infoData.moistureRateComment}}</div>
+                </tr>
+              </td>
+            </table>
+          </div>
+        </div>
+        <!---
+        <span class="dataAnnotation" style="margin-top: 10px;">
+          <i class="icon-svg_web-icon_p3_001-bathroom_scale" style="font-size: 22px;"></i>
+          {{'other.update' | translate}} {{'Dashboard.SportReport.time' | translate}}
+        </span>
+        --->
       </div>
       <div class="flexCol postureTrend rwd_wid_100per">
         <div>
           <span class="reportChartTitle">{{'Dashboard.TrainLive.avg' | translate}} {{'other.weightTrend' | translate}}</span>
-          <app-compare-line-chart
+          <app-line-chart
             [data]="weightData"
             [dateRange]="dataDateRange"
             [chartName]="'Weight'"
             [searchDate]="searchDate"
             [chartHeight]="120"
-          ></app-compare-line-chart>
+          ></app-line-chart>
         </div>
         <div class="flexCol">
           <span class="reportChartTitle">{{'Dashboard.TrainLive.avg' | translate}} {{'other.bodyFatTrend' | translate}}</span>
           <span class="noChartData" *ngIf="noConstituteData">{{'Dashboard.System.nodata' | translate}}</span>
-          <app-compare-line-chart
+          <app-line-chart
             [data]="constituteData"
             [dateRange]="dataDateRange"
             [chartName]="'FatRate'"
@@ -341,12 +358,12 @@
             [chartHeight]="120"
             *ngIf="!noConstituteData"
           >
-          </app-compare-line-chart>
+          </app-line-chart>
         </div>
         <div class="flexCol">
           <span class="reportChartTitle">{{'Dashboard.TrainLive.avg' | translate}} {{'other.muscleRateTrend' | translate}}</span>
           <span class="noChartData" *ngIf="noConstituteData">{{'Dashboard.System.nodata' | translate}}</span>
-          <app-compare-line-chart
+          <app-line-chart
             [data]="constituteData"
             [dateRange]="dataDateRange"
             [chartName]="'MuscleRate'"
@@ -354,12 +371,12 @@
             [chartHeight]="120"
             *ngIf="!noConstituteData"
           >
-          </app-compare-line-chart>
+          </app-line-chart>
         </div>
       </div>
     </div>
   </div>
-  <div class="flexCol">
+  <div class="flexCol" style="margin-top: 10px;">
     <div class="activity-title">
       <span class="ala-dashboard-title">
         {{'Dashboard.TrainLive.trend' | translate}}
