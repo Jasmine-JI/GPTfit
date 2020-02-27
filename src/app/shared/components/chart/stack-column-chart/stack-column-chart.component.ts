@@ -41,7 +41,8 @@ class ChartOptions {
         },
         startOnTick: false,
         minPadding: 0.01,
-        maxPadding: 0.01
+        maxPadding: 0.01,
+        tickAmount: 1
       },
       tooltip: {},
       plotOptions: {

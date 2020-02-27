@@ -130,7 +130,7 @@
           {{activityName}}
         </span>
         <i (click)="editActivityName()"
-          *ngIf="!editNameMode && !hideButton"
+          *ngIf="!editNameMode && !hideButton && loginId == userLink.userId"
           class="icon-svg_web-icon_p1_008-edit"
           style="font-size: 20px;"
         ></i>

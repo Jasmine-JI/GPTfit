@@ -171,6 +171,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   passLogin = false;  // 儲存是否為免登狀態-kidin-1081121
   hideButton = false; // 隱藏預覽列印和返回兩個按鈕-kidin-1081024
   deviceImgUrl: string;
+  loginId: number;
+
   constructor(
     private utils: UtilsService,
     private renderer: Renderer2,
@@ -937,6 +939,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           hrFormatData.userRestHR = res.info.heartRateResting;
           hrFormatData.userHRBase = res.info.heartRateBase;
           this.createChart(hrFormatData);
+
+          this.loginId = +res.info.nameId;  // 取得登入者id來確認是否為該運動檔案持有人-kidin-1090225
         }
       });
     } else {
@@ -960,6 +964,14 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           hrFormatData.userHRBase = res;
         }
       });
+
+      // 取得登入者id來確認是否為該運動檔案持有人-kidin-1090225
+      this.userInfoService.getUserId().subscribe(res => {
+        if (res !== null) {
+          this.loginId = +res;
+        }
+      });
+
       this.createChart(hrFormatData);
     }
     this.passLogin = false;

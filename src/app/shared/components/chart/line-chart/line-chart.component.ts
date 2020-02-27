@@ -3,6 +3,7 @@ import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input }
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
 import * as moment from 'moment';
+import { TranslateService } from '@ngx-translate/core';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -34,13 +35,13 @@ class ChartOptions {
         }
       },
       yAxis: {
-        min: 0,
         title: {
             text: ''
         },
         startOnTick: false,
-        minPadding: 0.1,
-        maxPadding: 0.01
+        minPadding: 0.01,
+        maxPadding: 0.01,
+        tickAmount: 1
       },
       plotOptions: {},
       tooltip: {},
@@ -58,17 +59,22 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() data: any;
   @Input() dateRange: string;
+  @Input() sportType: string;
   @Input() chartName: string;
+  @Input() hrZoneRange: any;
+  @Input() searchDate: Array<number>;
+  @Input() chartHeight: number;
 
   @ViewChild('container')
   container: ElementRef;
 
-  constructor() { }
+  constructor(
+    private translate: TranslateService
+  ) { }
 
   ngOnInit() {}
 
   ngOnChanges () {
-    console.log('line', this.data, this.dateRange);
     this.initChart();
   }
 
@@ -77,47 +83,51 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
 
     let trendDataset,
         chartData = [],
-        lineColor = '';
+        lineColor = '',
+        chartName = '';
     switch (this.chartName) {
       case 'Weight':
         chartData = this.data.weightList.map((_item, index) => {
           return {
-            x: this.data.date[index],
-            y: _item,
+            x: _item[0],
+            y: _item[1],
             marker: {
               enabled: false
             }
           };
         });
 
+        chartName = this.translate.instant('Portal.bodyWeight');
         lineColor = this.data.colorSet;
 
         break;
       case 'FatRate':
         chartData = this.data.fatRateList.map((_item, index) => {
           return {
-            x: this.data.date[index],
-            y: _item,
+            x: _item[0],
+            y: _item[1],
             marker: {
               enabled: false
             }
           };
         });
 
+        chartName = this.translate.instant('other.fatRate');
         lineColor = this.data.fatRateColorSet;
 
         break;
       case 'MuscleRate':
         chartData = this.data.muscleRateList.map((_item, index) => {
           return {
-            x: this.data.date[index],
-            y: _item,
+            x: _item[0],
+            y: _item[1],
             marker: {
               enabled: false
             }
           };
         });
 
+        chartName = this.translate.instant('other.muscleRate');
         lineColor = this.data.muscleRateColorSet;
 
         break;
@@ -125,7 +135,7 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
 
     trendDataset = [
       {
-        name: this.chartName,
+        name: chartName,
         data: chartData,
         showInLegend: false,
         color: lineColor
