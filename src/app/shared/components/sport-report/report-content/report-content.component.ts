@@ -1,5 +1,6 @@
 import { Component, OnInit, Output, OnChanges, OnDestroy, EventEmitter } from '@angular/core';
 import * as moment from 'moment';
+import { first } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 
 import { TranslateService } from '@ngx-translate/core';
@@ -132,6 +133,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
           this.reportStartTime = response[0].value;
           this.reportEndTime = response[1].value;
           this.reportEndDate = this.reportEndTime.split('T')[0].replace(/-/g, '/');
+          this.checkReportEndDate();
           this.switchPeriod(response[2].value);
           this.createReport();
         });
@@ -144,6 +146,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
         this.reportStartTime = response[0].value;
         this.reportEndTime = response[1].value;
         this.reportEndDate = this.reportEndTime.split('T')[0].replace(/-/g, '/');
+        this.checkReportEndDate();
         this.switchPeriod(response[2].value);
         this.createReport();
       });
@@ -159,9 +162,19 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnChanges () {}
 
+  // 確認週報告日期是否為未來日期-kidin-1090227(Bug 1082)
+  checkReportEndDate () {
+    const checkDate = moment(this.reportEndDate, 'YYYY/MM/DD');
+    if (checkDate.diff(moment(), 'day') > 0) {
+      this.reportEndDate = moment().format('YYYY/MM/DD');
+    }
+  }
+
   // 建立運動報告-kidin-1090117
   createReport() {
     this.isLoading = true;
+
+
 
     // 取得目標年齡-kidin-1090205
     const getLoginBody = {
@@ -237,28 +250,28 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
       case '7':
         this.reportRangeType = 1;
         this.selectPeriod = '7';
-        this.period = `7${this.translate.instant(
+        this.period = `7 ${this.translate.instant(
           'Dashboard.SportReport.day'
         )}`;
       break;
       case '30':
         this.reportRangeType = 1;
         this.selectPeriod = '30';
-        this.period = `30${this.translate.instant(
+        this.period = `30 ${this.translate.instant(
           'Dashboard.SportReport.day'
         )}`;
       break;
       case '182':
         this.reportRangeType = 2;
         this.selectPeriod = '182';
-        this.period = `6${this.translate.instant(
+        this.period = `6 ${this.translate.instant(
           'Dashboard.SportReport.month'
         )}`;
       break;
       case '364':
         this.reportRangeType = 2;
         this.selectPeriod = '364';
-        this.period = `12${this.translate.instant(
+        this.period = `12 ${this.translate.instant(
           'Dashboard.SportReport.month'
         )}`;
       break;
@@ -886,10 +899,8 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
           minute = Math.floor((time % 3600) / 60),
           second = time - (hour * 3600) - (minute * 60);
     if (hour === 0) {
-      console.log('m', minute, 's', second);
       return `${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}`;
     } else {
-      console.log('h', hour, 'm',  minute, 's', second);
       return `${hour}:${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}`;
     }
   }
@@ -903,7 +914,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
   // 根據運動類別使用rxjs從service取得資料-kidin-1090120
   loadCategoryData (type: string) {
     this.isRxjsLoading = true;
-    this.reportService.getTypeData(type).subscribe(res => {
+    this.reportService.getTypeData(type).pipe(first()).subscribe(res => {
       this.categoryActivityLength = res.activityLength;
       this.updateUrl('true');
       if (this.categoryActivityLength === undefined || this.categoryActivityLength === 0) {

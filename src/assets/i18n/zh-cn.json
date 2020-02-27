@@ -748,8 +748,21 @@
     "timer": "持续时间",
     "fatRate": "脂肪率",
     "muscleRate": "肌肉率",
+    "skeletonRate": "骨骼率",
+    "moistureRate": "水份率",
+    "proteinRate": "蛋白质率",
+    "basalMetabolism": "基础代谢",
     "ttlNumberUnit": "共{{number}}",
     "bodyDistributionReportDescription": "將除脂指數與體脂率做象限分析圖，可觀察出該群體的體態分布。可用來決定制定目標的依據或觀察群體是否有改善體態。",
-    "targetStep": "目标步数"
+    "targetStep": "目标步数",
+    "myReport": "我的报告",
+    "high": "偏高",
+    "good": "良好",
+    "Standard": "標準",
+    "low": "偏低",
+    "muscleKg": "肌肉重",
+    "fatKg": "脂肪重",
+    "glossaries": "體態",
+    "update": "更新"
   }
 }

@@ -614,7 +614,6 @@ export class GroupInfoComponent implements OnInit {
       avatarType: 3
     };
     this.groupService.fetchGroupMemberList(body).subscribe(res => {
-      this.isLoading = false;
       if (res.resultCode === 200) {
         const {
           info: { groupMemberInfo, subGroupInfo }
@@ -752,6 +751,7 @@ export class GroupInfoComponent implements OnInit {
           }
         }
       }
+      this.isLoading = false;
     });
   }
   changeGroupInfo({ index }) {

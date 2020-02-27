@@ -38,7 +38,8 @@ class ChartOptions {
         min: 0,
         title: {
             text: ''
-        }
+        },
+        tickAmount: 1
       },
       plotOptions: {
         series: {
@@ -134,7 +135,6 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         break;
       case 'Step': // 生活追蹤步數資料-kidin-1090218
         this.createDateList();
-
         const newData = [],
               newTargetData = [];
         let index = 0;

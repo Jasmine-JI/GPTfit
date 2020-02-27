@@ -433,7 +433,7 @@ export class CreateGroupComponent implements OnInit {
         commercePlanExpired
       } = value;
       const image = new Image();
-      if (this.finalImageLink === undefined) {
+      if (this.finalImageLink === undefined || this.finalImageLink === null || this.finalImageLink === '') {
         if (location.hostname === '192.168.1.235') {
           image.src = 'https://app.alatech.com.tw/assets/images/group.jpg';
         } else {

@@ -39,6 +39,8 @@ import { FilletColumnChartComponent } from './chart/fillet-column-chart/fillet-c
 import { CompareLineChartComponent } from './chart/compare-line-chart/compare-line-chart.component';
 import { DiscolorColumnChartComponent } from './chart/discolor-column-chart/discolor-column-chart.component';
 import { LineChartComponent } from './chart/line-chart/line-chart.component';
+import { MyLifeTrackingComponent } from './my-life-tracking/my-life-tracking.component';
+import { BodyConstituteSvgComponent } from './chart/body-constitute-svg/body-constitute-svg.component';
 
 @NgModule({
   imports: [
@@ -83,7 +85,9 @@ import { LineChartComponent } from './chart/line-chart/line-chart.component';
     FilletColumnChartComponent,
     CompareLineChartComponent,
     DiscolorColumnChartComponent,
-    LineChartComponent
+    LineChartComponent,
+    MyLifeTrackingComponent,
+    BodyConstituteSvgComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -112,7 +116,8 @@ import { LineChartComponent } from './chart/line-chart/line-chart.component';
     FilletColumnChartComponent,
     CompareLineChartComponent,
     DiscolorColumnChartComponent,
-    LineChartComponent
+    LineChartComponent,
+    BodyConstituteSvgComponent
   ]
 })
 export class SharedComponentsModule {}

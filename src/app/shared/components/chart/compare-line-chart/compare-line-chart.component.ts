@@ -35,12 +35,12 @@ class ChartOptions {
         }
       },
       yAxis: {
-        min: 0,
         title: {
             text: ''
         },
-        minPadding: 0.1,
-        maxPadding: 0.01
+        minPadding: 0.01,
+        maxPadding: 0.01,
+        tickAmount: 1
       },
       plotOptions: {},
       tooltip: {},
@@ -73,7 +73,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
   container: ElementRef;
 
   constructor(
-    private translate: TranslateService,
+    private translate: TranslateService
   ) { }
 
   ngOnInit() {}
@@ -369,7 +369,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
           }
 
           trendDataset.push({
-            name: this.translate.instant('other.fatRate'),
+            name: this.translate.instant('other.muscleRate'),
             data: muscleRateData,
             showInLegend: false,
             color: this.data.muscleRateColorSet,

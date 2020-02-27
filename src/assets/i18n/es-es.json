@@ -748,8 +748,21 @@
     "timer": "Duración",
     "fatRate": "Porcentaje de grasa corporal",
     "muscleRate": "Porcentaje de masa muscular",
+    "skeletonRate": "Porcentaje de masa ósea",
+    "moistureRate": "Porcentaje de agua",
+    "proteinRate": "Porcentaje de proteínas",
+    "basalMetabolism": "基礎代謝",
     "ttlNumberUnit": "TTL. {{number}}",
     "bodyDistributionReportDescription": "將除脂指數與體脂率做象限分析圖，可觀察出該群體的體態分布。可用來決定制定目標的依據或觀察群體是否有改善體態。",
-    "targetStep": "Recuento de pasos totales"
+    "targetStep": "Recuento de pasos totales",
+    "myReport": "我的報告",
+    "high": "偏高",
+    "good": "良好",
+    "Standard": "標準",
+    "low": "偏低",
+    "muscleKg": "肌肉重",
+    "fatKg": "脂肪重",
+    "glossaries": "體態",
+    "update": "更新"
   }
 }

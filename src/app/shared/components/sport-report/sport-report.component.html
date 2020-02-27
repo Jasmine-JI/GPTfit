@@ -103,20 +103,20 @@
     </li>
   </div>
   <div class="col-10 media-940-maxwidth" [class.reportPreviewMode]="isPreviewMode">
-  <mat-tab-group
-    (selectedTabChange)="changeGroupInfo($event, 'default')"
-    [selectedIndex]="selectedIndex"
-    *ngIf="!isPreviewMode"
-  >
-    <mat-tab label="7{{'Dashboard.SportReport.day' | translate}}">
-    </mat-tab>
-    <mat-tab label="30{{'Dashboard.SportReport.day' | translate}}">
-    </mat-tab>
-    <mat-tab label="6{{'Dashboard.SportReport.month' | translate}}">
-    </mat-tab>
-    <mat-tab label="12{{'Dashboard.SportReport.month' | translate}}">
-    </mat-tab>
-  </mat-tab-group>
+    <mat-tab-group
+      (selectedTabChange)="changeGroupInfo($event, 'default')"
+      [selectedIndex]="selectedIndex"
+      *ngIf="!isPreviewMode"
+    >
+      <mat-tab label="7{{'Dashboard.SportReport.day' | translate}}">
+      </mat-tab>
+      <mat-tab label="30{{'Dashboard.SportReport.day' | translate}}">
+      </mat-tab>
+      <mat-tab label="6{{'Dashboard.SportReport.month' | translate}}">
+      </mat-tab>
+      <mat-tab label="12{{'Dashboard.SportReport.month' | translate}}">
+      </mat-tab>
+    </mat-tab-group>
     <!-- Hello i m {{chooseType}}chart -->
     <div style="font-weight: 700;letter-spacing: 1.5px;margin: 15px 0px;display:flex" *ngIf="!isPreviewMode">
       <button mat-icon-button

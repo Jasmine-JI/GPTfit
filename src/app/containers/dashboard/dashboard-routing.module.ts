@@ -42,6 +42,7 @@ import { MyReportComponent } from './group/group-info/my-report/my-report.compon
 import { ClassAnalysisComponent } from './group/group-info/class-analysis/class-analysis.component';
 import { ComReportComponent } from './group/group-info/com-report/com-report.component';
 import { ComLifeTrackingComponent } from './group/group-info/com-life-tracking/com-life-tracking.component';
+import { MyLifeTrackingComponent } from '@shared/components/my-life-tracking/my-life-tracking.component';
 
 const routes: Routes = [
   {
@@ -241,6 +242,10 @@ const routes: Routes = [
       {
         path: 'sport-report',
         component: SportReportComponent
+      },
+      {
+        path: 'life-tracking',
+        component: MyLifeTrackingComponent
       },
       {
         path: 'device',
