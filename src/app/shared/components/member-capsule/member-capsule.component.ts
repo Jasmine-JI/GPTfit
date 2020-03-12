@@ -79,7 +79,7 @@ export class MemberCapsuleComponent implements OnInit {
     });
     this.icon = `${this.icon}${this.updateImgQueryString}`;
     this.listenImage(this.icon);
-    this.token = this.utils.getToken();
+    this.token = this.utils.getToken() || '';
   }
   listenImage(link) {
     // Set the image height and width

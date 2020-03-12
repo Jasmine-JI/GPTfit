@@ -16,6 +16,8 @@ import { SportReportComponent } from '@shared/components/sport-report/sport-repo
 import { ActivityInfoComponent } from '@shared/components/activity-info/activity-info.component';
 import { MyActivityComponent } from '@shared/components/my-activity/my-activity.component';
 import { ApplicationComponent } from './components/application/application.component';
+import { Page404Component } from '../../shared/components/page404/page404.component';
+import { Page403Component } from '../../shared/components/page403/page403.component';
 
 const routes: Routes = [
   {
@@ -80,7 +82,9 @@ const routes: Routes = [
       {
         path: 'first-login',
         component: FirstLoginComponent
-      }
+      },
+      { path: '404', component: Page404Component },
+      { path: '403', component: Page403Component }
     ]
   }
 ];

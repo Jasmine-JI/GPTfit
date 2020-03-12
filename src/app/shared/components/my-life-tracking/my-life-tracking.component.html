@@ -272,17 +272,17 @@
                 <td class="tableCol constituteTd" style="padding-right: 5px;">
                   <tr>
                     <span class="dataAnnotation">{{'Portal.bodyWeight' | translate}}</span><br/>
-                    <span class="summaryData">{{infoData.weight}}Kg</span>
+                    <span class="summaryData">{{infoData.weight | number: '1.0-1'}}Kg</span>
                   </tr>
                   <tr>
                     <span style="color: #ffba4e;">●</span>
                     <span class="dataAnnotation">{{'other.fatRate' | translate}}</span><br/>
-                    <span class="summaryData">{{infoData.fatRate}}%</span>
+                    <span class="summaryData">{{infoData.fatRate | number: '1.0-1'}}%</span>
                   </tr>
                   <tr>
                     <span style="color: #31e4d9;">●</span>
                     <span class="dataAnnotation">{{'other.muscleRate' | translate}}</span><br/>
-                    <span class="summaryData">{{infoData.muscleRate}}%</span>
+                    <span class="summaryData">{{infoData.muscleRate | number: '1.0-1'}}%</span>
                   </tr>
                   <tr>
                     <span class="dataAnnotation">FFMI</span><br/>
@@ -304,19 +304,19 @@
               <td class="tableCol constituteTd" style="padding: 0 5px 0 20px;">
                 <tr>
                   <span class="dataAnnotation">{{'other.skeletonRate' | translate}}</span><br/>
-                  <span class="summaryData">{{infoData.skeletonRate}}%</span>
+                  <span class="summaryData">{{infoData.skeletonRate | number: '1.0-1'}}%</span>
                 </tr>
                 <tr>
                   <span class="dataAnnotation">{{'other.moistureRate' | translate}}</span><br/>
-                  <span class="summaryData">{{infoData.moistureRate}}%</span>
+                  <span class="summaryData">{{infoData.moistureRate | number: '1.0-1'}}%</span>
                 </tr>
                 <tr>
                   <span class="dataAnnotation">{{'other.proteinRate' | translate}}</span><br/>
-                  <span class="summaryData">{{infoData.proteinRate}}%</span>
+                  <span class="summaryData">{{infoData.proteinRate | number: '1.0-1'}}%</span>
                 </tr>
                 <tr>
                   <span class="dataAnnotation">{{'other.basalMetabolism' | translate}}</span><br/>
-                  <span class="summaryData">{{infoData.basalMetabolicRate}}</span>
+                  <span class="summaryData">{{infoData.basalMetabolicRate | number: '1.0-1'}}</span>
                 </tr>
               </td>
               <td class="tableCol" style="text-align: start;">

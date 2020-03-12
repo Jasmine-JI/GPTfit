@@ -113,7 +113,7 @@ export class GroupInfoComponent implements OnInit {
     if (this.groupId.length === 0) {
       return this.router.navigateByUrl('/404');
     }
-    this.token = this.utils.getToken();
+    this.token = this.utils.getToken() || '';
     const body = {
       token: this.token,
       groupId: this.groupId,
@@ -414,22 +414,19 @@ export class GroupInfoComponent implements OnInit {
       // 申請加入
       const langName = this.utils.getLocalStorageObject('locale');
       const bodyText = toMemberText[langName];
-      if (this.brandType === 1) {
-        return this.dialog.open(MessageBoxComponent, {
-          hasBackdrop: true,
-          data: {
-            title: this.title,
-            body: bodyText,
-            confirmText: this.confirmText,
-            cancelText: this.cancelText,
-            onConfirm: () => {
-              this.sendJoinRequest(_type);
-            }
+      return this.dialog.open(MessageBoxComponent, {
+        hasBackdrop: true,
+        data: {
+          title: this.title,
+          body: bodyText,
+          confirmText: this.confirmText,
+          cancelText: this.cancelText,
+          onConfirm: () => {
+            this.sendJoinRequest(_type);
           }
-        });
-      } else {
-        this.sendJoinRequest(_type);
-      }
+        }
+      });
+
     } else {
       this.sendJoinRequest(_type);
     }
@@ -538,7 +535,8 @@ export class GroupInfoComponent implements OnInit {
             activityTrackingReport,
             this.activityTrackingReportStatus
           );
-          if (this.brandType === 1) {
+
+          if (_type === 1) {
             this.dialog.open(PrivacySettingDialogComponent, {
               hasBackdrop: true,
               data: {

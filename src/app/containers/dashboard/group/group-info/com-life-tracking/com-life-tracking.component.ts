@@ -1,5 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatTableDataSource, MatSort, Sort } from '@angular/material';
+import SimpleLinearRegression from 'ml-regression-simple-linear';
 import * as moment from 'moment';
+import { first } from 'rxjs/operators';
+import { ActivatedRoute } from '@angular/router';
 
 import { TranslateService } from '@ngx-translate/core';
 
@@ -15,6 +19,9 @@ import { GroupService } from '../../../services/group.service';
 })
 export class ComLifeTrackingComponent implements OnInit {
 
+  @ViewChild('sortTable')
+  sortTable: MatSort;
+
   // UI控制相關變數-kidin-1090115
   isLoading = false;
   isPreviewMode = false;
@@ -27,12 +34,19 @@ export class ComLifeTrackingComponent implements OnInit {
   noConstituteData = true;
   noFitTimeData = true;
   dataDateRange = '';
-  isSelected = 'rangeDate';
+  isSelected = 'aWeek';
   isSelectDateRange = false;
   maxStartDate = moment().format('YYYY-MM-DD');
   minEndDate = moment().add(-13, 'days').format('YYYY-MM-DD');
   maxSelectDate = moment().format('YYYY-MM-DD');
   showReport = false;
+  showAll = false;
+  personalMenu = {
+    show: false,
+    x: null,
+    y: null
+  };
+  checkClickEvent = false;
 
   // 資料儲存用變數-kidin-1090115
   token: string;
@@ -42,9 +56,9 @@ export class ComLifeTrackingComponent implements OnInit {
   groupList: Array<any>;
   groupImg: string;
   brandImg: string;
-  brandName: string;
-  branchName: string;
-  startDate = '';
+  brandName = '';
+  branchName = '';
+  startDate = moment().add(-6, 'days').format('YYYY-MM-DD');
   endDate = moment().format('YYYY-MM-DD');
   selectedStartDate = moment().add(-13, 'days').format('YYYY-MM-DD');
   selectedEndDate = moment().format('YYYY-MM-DD');
@@ -84,6 +98,12 @@ export class ComLifeTrackingComponent implements OnInit {
   };
 
   sortResultData = [];
+  personalData = new MatTableDataSource<any>();
+  allPersonalData = [];
+  personalPage = {
+    info: '',
+    report: ''
+  };
 
   // 圖表用數據-kidin-1090215
   searchDate = [];
@@ -134,12 +154,15 @@ export class ComLifeTrackingComponent implements OnInit {
   };
 
   constructor(
+    private route: ActivatedRoute,
     private utilsService: UtilsService,
     private hashIdService: HashIdService,
     private reportService: ReportService,
     private translate: TranslateService,
     private groupService: GroupService
-  ) {}
+  ) {
+    document.addEventListener('click', this.hideMenu.bind(this));
+  }
 
   ngOnInit() {
     this.token = this.utilsService.getToken();
@@ -150,21 +173,24 @@ export class ComLifeTrackingComponent implements OnInit {
     }
 
     this.getIdListStart();
+    this.personalData.sort = this.sortTable;
   }
 
   // 先從rxjs取得成員ID清單，若取不到再call api-kidin-1090215
   getIdListStart () {
-    this.groupService.getMemberList().subscribe(res => {
+    const hashGroupId = this.route.snapshot.paramMap.get('groupId');
+
+    this.groupId = this.hashIdService.handleGroupIdDecode(hashGroupId);
+    this.groupLevel = this.utilsService.displayGroupLevel(this.groupId);
+
+    this.groupService.getMemberList().pipe(first()).subscribe(res => {
       if (res.groupId === '' || res.groupId !== this.groupId) {
         // 先從service取得群組資訊，若取不到再call api-kidin-1090215
         this.groupService.getGroupInfo().subscribe(result => {
           this.groupData = result;
           if (this.groupData.hasOwnProperty('groupId')) {
-            this.groupId = this.groupData.groupId;
             this.showGroupInfo();
           } else {
-            const urlArr = location.pathname.split('/');
-            this.groupId = this.hashIdService.handleGroupIdDecode(urlArr[urlArr.length - 2]);
             const groupBody = {
               token: this.token,
               groupId: this.groupId,
@@ -183,32 +209,66 @@ export class ComLifeTrackingComponent implements OnInit {
         this.getGroupMemberIdList();
       } else {
         this.groupList = res.groupList;
+        this.groupService.getGroupInfo().subscribe(result => {
+          this.groupData = result;
+          this.showGroupInfo();
+        });
+
+        this.handleSubmitSearch('click');
       }
     });
   }
 
-  // 取得所有成員id list並使用rxjs儲存至service-kidin-1090215
+  // 取得所有成員id list並使用rxjs儲存至service-kidin-10900310
   getGroupMemberIdList() {
-    this.groupLevel = this.utilsService.displayGroupLevel(this.groupId);
     const body = {
       token: this.token,
       groupId: this.groupId,
       groupLevel: this.groupLevel,
-      infoType: 2,
+      infoType: 5,
       avatarType: 3
     };
 
     this.groupService.fetchGroupMemberList(body).subscribe(res => {
-      const idList = new Set(),  // 避免id重複-kidin-1090215
+      const list = new Set(),  // 避免id重複-kidin-1090211
             memberList = res.info.groupMemberInfo;
 
       for (let i = 0; i < memberList.length; i++) {
-        if (memberList[i].accessRight >= 50) {
-          idList.add(memberList[i].memberId);
+        const memberGroupIdArr = memberList[i].groupId.split('-'),
+              groupIdArr = this.groupId.split('-');
+        switch (this.groupLevel) {
+          case '30':
+            memberGroupIdArr.length = 3;
+            groupIdArr.length = 3;
+            if (memberList[i].accessRight >= 50 && JSON.stringify(memberGroupIdArr) === JSON.stringify(groupIdArr)) {
+              list.add({
+                id: memberList[i].memberId,
+                name: memberList[i].memberName
+              });
+            }
+            break;
+          case '40':
+            memberGroupIdArr.length = 4;
+            groupIdArr.length = 4;
+            if (memberList[i].accessRight >= 50 && JSON.stringify(memberGroupIdArr) === JSON.stringify(groupIdArr)) {
+              list.add({
+                id: memberList[i].memberId,
+                name: memberList[i].memberName
+              });
+            }
+            break;
+          case '60':
+            if (memberList[i].accessRight >= 50 && memberList[i].groupId === this.groupId) {
+              list.add({
+                id: memberList[i].memberId,
+                name: memberList[i].memberName
+              });
+            }
+            break;
         }
       }
 
-      this.groupList = Array.from(idList);
+      this.groupList = Array.from(list);
       const groupListInfo = {
         groupId: this.groupId,
         groupList: this.groupList
@@ -221,6 +281,8 @@ export class ComLifeTrackingComponent implements OnInit {
         location.search.indexOf('enddate=') > -1
       ) {
         this.queryStringShowData();
+      } else {
+        this.handleSubmitSearch('click');
       }
     });
 
@@ -249,6 +311,7 @@ export class ComLifeTrackingComponent implements OnInit {
     }
     this.isSelected = e.target.name;
     this.isSelectDateRange = false;
+    this.handleSubmitSearch('click');
   }
 
   // 點擊選擇日期區間按鈕後，選擇日期顯示與否-kidin-1090215
@@ -342,10 +405,15 @@ export class ComLifeTrackingComponent implements OnInit {
       this.dataDateRange = 'week';
     }
 
+    const groupIdList = [];
+    for (let i = 0; i < this.groupList.length; i++) {
+      groupIdList.push(this.groupList[i].id);
+    }
+
     const body = {
       token: this.token || '',
       type: this.reportRangeType,
-      targetUserId: this.groupList,
+      targetUserId: groupIdList,
       filterStartTime: this.reportStartTime,
       filterEndTime: this.reportEndTime
     };
@@ -357,8 +425,7 @@ export class ComLifeTrackingComponent implements OnInit {
 
     this.reportService.fetchTrackingSummaryArray(body).subscribe(res => {
       if (Array.isArray(res)) {
-        this.isLoading = false;
-        this.reportCompleted = true;
+        this.reportCompleted = false;
 
         const currentYear = moment().year();
 
@@ -383,6 +450,8 @@ export class ComLifeTrackingComponent implements OnInit {
             } else {
               lifeTrackingData = res[i].reportLifeTrackingWeeks;
             }
+
+            this.allPersonalData.push(this.getPersonalStatistics(lifeTrackingData, i));
 
             if (lifeTrackingData.length !== 0) {
               groupReportData = groupReportData.concat(lifeTrackingData);
@@ -465,10 +534,17 @@ export class ComLifeTrackingComponent implements OnInit {
           }
         }
 
+        this.personalData.data = this.allPersonalData.slice();
+        if (this.personalData.data.length > 20) {
+          this.personalData.data.length = 20;
+          this.showAll = false;
+        } else {
+          this.showAll = true;
+        }
+
         // 若沒有任何運動數據則顯示無資料-kidin-1090212
         if (groupReportData.length === 0) {
           this.nodata = true;
-          this.isLoading = false;
           this.updateUrl('false');
         } else {
           this.nodata = false;
@@ -483,18 +559,25 @@ export class ComLifeTrackingComponent implements OnInit {
         this.infoData.avgWeight = totalWeight / validWeightStroke;
         this.infoData.avgAge = totalAge / validAgeStroke;
         this.infoData.avgFFMI = totalFFMI / validFFMIStroke;
+        this.reportCompleted = true;
+        this.isLoading = false;
 
       } else {
-        console.log('Sever Error');
         this.nodata = true;
         this.isLoading = false;
         this.updateUrl('false');
+        this.reportCompleted = true;
       }
     });
   }
 
   // 初始化變數-kidin-1090215
   initVariable () {
+    if (this.sortTable && this.sortTable.hasOwnProperty('active')) {
+      this.sortTable.sort({id: '', start: 'asc', disableClear: false});
+      delete this.sortTable['active'];
+    }
+
     this.noStepData = true;
     this.noHRData = true;
     this.noSleepData = true;
@@ -557,6 +640,9 @@ export class ComLifeTrackingComponent implements OnInit {
       date: [],
       colorSet: '#f8b551'
     };
+
+    this.personalData.data.length = 0;
+    this.allPersonalData = [];
   }
 
   // 將合併的資料進行排序
@@ -883,6 +969,184 @@ export class ComLifeTrackingComponent implements OnInit {
 
   }
 
+  // 計算個人生活追蹤統計資料-kidin-1090302
+  getPersonalStatistics (data, index) {
+    if (data.length !== 0) {
+
+      let totalStep = 0,
+          haveStepTimes = 0,
+          totalSleepTime = 0,
+          haveSleepTimes = 0,
+          idx = 1;
+
+      const step = [],
+            stepXPoint = [],
+            restHR = [],
+            restHRXPoint = [],
+            weight = [],
+            weightXPoint = [],
+            fatRateData = [],
+            FFMIData = [];
+
+      for (let i = 0; i < data.length; i++) {
+        idx++;
+
+        if (data[i].totalStep !== 0 && data[i].totalStep !== null) {
+          totalStep += data[i].totalStep;
+          step.unshift(data[i].totalStep);
+          stepXPoint.push(idx);
+          haveStepTimes++;
+        }
+
+        if (data[i].totalSleepSecond !== 0 && data[i].totalSleepSecond !== null) {
+          totalSleepTime += data[i].totalSleepSecond;
+          haveSleepTimes++;
+        }
+
+        if (data[i].restHeartRate !== null && data[i].restHeartRate !== 0) {
+          restHR.unshift(data[i].restHeartRate);
+          restHRXPoint.push(idx);
+        }
+
+        if (data[i].bodyWeight !== null && data[i].bodyWeight !== 0) {
+          weight.unshift(data[i].bodyWeight);
+          weightXPoint.push(idx);
+        }
+
+        if (data[i].fatRate !== null && data[i].fatRate !== 0) {
+          fatRateData.unshift(data[i].fatRate);
+          const w = data[i].bodyWeight,
+                h = data[i].bodyHeight,
+                f = data[i].fatRate;
+          FFMIData.unshift((w * (100 - f) / 100) / Math.pow((h / 100), 2));
+        }
+      }
+
+      const age = moment().year() - +data[0].birthYear;
+
+      const stepRegression = new SimpleLinearRegression(stepXPoint, step),
+            restHRRegression = new SimpleLinearRegression(restHRXPoint, restHR),
+            weightRegression = new SimpleLinearRegression(weightXPoint, weight);
+
+      return {
+        id: index,
+        name: this.groupList[index].name,
+        avgStep: totalStep / haveStepTimes || '--',
+        avgSleep: this.formatTime(totalSleepTime / haveSleepTimes),
+        restHR: restHR[restHR.length - 1] || '--',
+        weight: weight[weight.length - 1] || '--',
+        fatRate: fatRateData[fatRateData.length - 1] || '--',
+        fatRateComment: this.getFatRateComment(fatRateData[fatRateData.length - 1], data[0].gender, age),
+        FFMIComment: this.getFFMIComment(fatRateData[fatRateData.length - 1], FFMIData[FFMIData.length - 1], data[0].gender) || '--',
+        stepRegression: stepRegression.slope,
+        restHRRegression: restHRRegression.slope,
+        weightRegression: weightRegression.slope
+      };
+
+    } else {
+      return {
+        id: index,
+        name: this.groupList[index].name,
+        avgStep: '--',
+        avgSleep: '-:--',
+        restHR: '--',
+        weight: '--',
+        fatRate: '--',
+        fatRateComment: {
+          comment: '',
+          color: ''
+        },
+        FFMIComment: '--',
+        stepRegression: '--',
+        restHRRegression: '--',
+        weightRegression: '--'
+      };
+    }
+  }
+
+  // 取得體脂肪評語-kidin-1090302
+  getFatRateComment (fatRate, gender, age) {
+    let boundary;
+    if (gender === 0) {
+      if (age < 30) {
+        boundary = [14, 20];
+      } else {
+        boundary = [17, 25];
+      }
+    } else {
+      if (age < 30) {
+        boundary = [17, 25];
+      } else {
+        boundary = [20, 30];
+      }
+    }
+
+    if (fatRate < boundary[0] && fatRate > 0) {
+      return {
+        comment: this.translate.instant('other.low'),
+        color: '#2398c3'
+      };
+    } else if (fatRate < boundary[1] && fatRate >= boundary[0]) {
+      return {
+        comment: this.translate.instant('other.Standard'),
+        color: '#5bbb26'
+      };
+    } else if (fatRate >= boundary[1]) {
+      return {
+        comment: this.translate.instant('other.high'),
+        color: '#ffae00'
+      };
+    } else {
+      return {
+        comment: '',
+        color: ''
+      };
+    }
+  }
+
+  // 取得FFMI評語-kidin-1090302
+  getFFMIComment (fatRate, FFMI, gender) {
+    let FFMIBoundary,
+        FatRateBoundary;
+
+    if (gender === 0) {
+      FFMIBoundary = [18, 21, 28];
+      FatRateBoundary = [17, 21, 50];
+    } else {
+      FFMIBoundary = [15, 18, 25];
+      FatRateBoundary = [23, 27, 56];
+    }
+
+    if (FFMI < FFMIBoundary[0]) {
+      if (fatRate <= FatRateBoundary[0]) {
+        return this.translate.instant('other.tooThin');
+      } else if (fatRate > FatRateBoundary[0] && fatRate <= FatRateBoundary[1]) {
+        return this.translate.instant('other.lackOfTraining');
+      } else {
+        return this.translate.instant('other.recessiveObesity');
+      }
+
+    } else if (FFMI >= FFMIBoundary[0] && FFMI <= FFMIBoundary[1]) {
+      if (fatRate <= FatRateBoundary[0]) {
+        return this.translate.instant('other.generallyThin');
+      } else if (fatRate > FatRateBoundary[0] && fatRate <= FatRateBoundary[1]) {
+        return this.translate.instant('other.normalPosture');
+      } else {
+        return this.translate.instant('other.generallyFat');
+      }
+
+    } else if (FFMI > FFMIBoundary[1]) {
+      if (fatRate <= FatRateBoundary[0]) {
+        return this.translate.instant('other.bodybuilding');
+      } else if (fatRate > FatRateBoundary[0] && fatRate <= FatRateBoundary[1]) {
+        return this.translate.instant('other.athletic');
+      } else {
+        return this.translate.instant('other.fatBody');
+      }
+
+    }
+  }
+
   // 將搜尋的類別和範圍處理過後加入query string並更新現在的url和預覽列印的url-kidin-1090205
   updateUrl (hasData) {
     let newUrl;
@@ -928,42 +1192,139 @@ export class ComLifeTrackingComponent implements OnInit {
     }
   }
 
-  // 顯示群組資料-kidin-1081227
+  // 顯示群組資料-kidin-1090310
   showGroupInfo () {
     const groupIcon = this.groupData.groupIcon;
+    this.groupImg =
+      (
+        groupIcon && groupIcon.length > 0
+            ? groupIcon
+            : '/assets/images/group-default.svg'
+      );
+
+    if (+this.groupLevel > 30 && this.groupData.groupRootInfo[2]) {
       const brandIcon = this.groupData.groupRootInfo[2].brandIcon;
-      this.groupImg =
-        (
-          groupIcon && groupIcon.length > 0
-              ? groupIcon
-              : '/assets/images/group-default.svg'
-        );
       this.brandImg =
-        (
-          brandIcon && brandIcon.length > 0
-              ? brandIcon
-              : '/assets/images/group-default.svg'
-        );
+      (
+        brandIcon && brandIcon.length > 0
+            ? brandIcon
+            : '/assets/images/group-default.svg'
+      );
+
       this.brandName = this.groupData.groupRootInfo[2].brandName;
+    }
+
+    if (+this.groupLevel > 40 && this.groupData.groupRootInfo[3]) {
       this.branchName = this.groupData.groupRootInfo[3].branchName;
+    }
   }
 
   // 將秒數轉換成其他時間格式-kidin-1090217
   formatTime (second) {
-    const totalSec = Math.round(second),
+    if (second) {
+      const totalSec = Math.round(second),
           hr = Math.floor(totalSec / 3600),
           min = Math.round((totalSec - hr * 3600) / 60);
 
-    // 剛好59分30秒～59分59秒四捨五入後進位的情況-kidin-1090217
-    if (min === 60) {
-      return `${hr + 1}:00`;
-    } else if (hr === 0 && min === 0) {
-      return `-:--`;
+      // 剛好59分30秒～59分59秒四捨五入後進位的情況-kidin-1090217
+      if (min === 60) {
+        return `${hr + 1}:00`;
+      } else if (hr === 0 && min === 0) {
+        return `-:--`;
+      } else {
+        const timeTotalMin = ('0' + min).slice(-2);
+        return `${hr}:${timeTotalMin}`;
+      }
     } else {
-      const timeTotalMin = ('0' + min).slice(-2);
-      return `${hr}:${timeTotalMin}`;
+      return `-:--`;
     }
 
+  }
+
+  // 顯示所有個人分析列表-kidin-1090305
+  showAllPersonData () {
+    this.showAll = true;
+    this.personalData.data = this.allPersonalData.slice();
+
+    if (this.sortTable && this.sortTable.hasOwnProperty('active')) {
+      this.sortPersonData();
+    }
+  }
+
+  // 依據點選的項目進行排序-kidin-1090305
+  sortPersonData () {
+    const sortCategory = this.sortTable.active,
+          sortDirection = this.sortTable.direction,
+          sortResult = [...this.personalData.data];
+
+    let swapped = true;
+
+    for (let i = 0; i < sortResult.length && swapped; i++) {
+      swapped = false;
+      for (let j = 0; j < sortResult.length - 1 - i; j++) {
+        if (sortDirection === 'asc') {
+
+          if (sortResult[j][sortCategory] > sortResult[j + 1][sortCategory] || sortResult[j][sortCategory] === '--') {
+            swapped = true;
+            [sortResult[j], sortResult[j + 1]] = [sortResult[j + 1], sortResult[j]];
+          }
+
+        } else {
+
+          if (sortResult[j][sortCategory] < sortResult[j + 1][sortCategory] || sortResult[j][sortCategory] === '--') {
+            swapped = true;
+            [sortResult[j], sortResult[j + 1]] = [sortResult[j + 1], sortResult[j]];
+          }
+
+        }
+
+      }
+    }
+
+    this.personalData.data = sortResult;
+  }
+
+  // 依據點選的成員顯示選單-kidin-1090102
+  handleClickMember (e) {
+    this.checkClickEvent = true;
+    const user = e.currentTarget.id,
+          hashUserId = this.hashIdService.handleUserIdEncode(this.groupList[user].id);
+
+    this.personalPage = {
+      info: `/user-profile/${hashUserId}`,
+      report: `/user-profile/${hashUserId}/sport-report`
+    };
+
+    if (e.view.innerWidth - e.clientX < 200) {
+      this.personalMenu = {
+        show: true,
+        x: `${e.view.innerWidth - 200}px`,
+        y: `${e.clientY}px`
+      };
+    } else {
+      this.personalMenu = {
+        show: true,
+        x: `${e.clientX}px`,
+        y: `${e.clientY}px`
+      };
+    }
+
+    window.addEventListener('scroll', this.hideMenu.bind(this), true);
+  }
+
+  // 隱藏個人選單-kidin-1090310
+  hideMenu () {
+    if (this.checkClickEvent === false) {
+      this.personalMenu = {
+        show: false,
+        x: '',
+        y: ''
+      };
+    } else {
+      this.checkClickEvent = false;
+    }
+
+    window.removeEventListener('scroll', this.hideMenu.bind(this), true);
   }
 
   print() {

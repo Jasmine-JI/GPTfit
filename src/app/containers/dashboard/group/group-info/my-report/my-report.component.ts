@@ -291,7 +291,7 @@ export class MyReportComponent implements OnInit, OnDestroy {
       this.updateUrl('false');
     }
     this.reportCategory = this.selectCategory;
-    this.token = this.utils.getToken();
+    this.token = this.utils.getToken() || '';
     this.getFilterTime();
 
     // 先從service取得群組資訊，若取不到再call api-kidin-1081210

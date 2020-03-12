@@ -44,7 +44,7 @@ export class AllGroupListComponent implements OnInit {
   ngOnInit() {
     const queryStrings = this.utils.getUrlQueryStrings(location.search);
     const { pageNumber } = queryStrings;
-    this.token = this.utils.getToken();
+    this.token = this.utils.getToken() || '';
     this.currentPage = {
       pageIndex: +pageNumber - 1 || 0,
       pageSize: 10,

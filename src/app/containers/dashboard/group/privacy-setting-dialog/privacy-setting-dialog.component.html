@@ -3,7 +3,7 @@
 </h2>
 <mat-dialog-content>
 {{'Dashboard.privacySettings.wantToJoin' | translate}} <span style="color: #108bcd">{{groupName}}</span>
-{{'Dashboard.privacySettings.privacyOpenGroupObject' | translate}}：{{ targetText }}。
+{{'Dashboard.privacySettings.privacyOpenGroupObject' | translate}}：{{'Dashboard.Group.MyGroup.groupAdministrator' | translate}}。
 <br /><br />
 {{'Dashboard.privacySettings.needChangeYourPrivacy' | translate}}
 
@@ -14,7 +14,8 @@
       <!--<mat-checkbox color="primary" value="4" [checked]="activityTrackingStatus[0]" (change)="handleCheckBox($event, 1, 1)"><span
           style="font-size: 14px">{{'Dashboard.privacySettings.OnlyForPF' | translate}}</span>-->
       <mat-checkbox color="primary" value="4" [checked]="true" (change)="handleCheckBox($event, 1, 1)"><span
-          style="font-size: 14px">{{'Dashboard.privacySettings.objectOnly' | translate}}{{'Dashboard.privacySettings.myGym' | translate}}</span>
+          style="font-size: 14px">
+          {{'Dashboard.privacySettings.objectOnly' | translate}}{{'Dashboard.Group.MyGroup.groupAdministrator' | translate}}</span>
       </mat-checkbox>
     </div>
   </div>
@@ -24,7 +25,17 @@
       <!--<mat-checkbox color="primary" value="4" [checked]="activityTrackingReportStatus[0]" (change)="handleCheckBox($event, 1, 2)"><span
           style="font-size: 14px">{{'Dashboard.privacySettings.objectOnly' | translate}}{{'Dashboard.privacySettings.myGym' | translate}}</span>-->
       <mat-checkbox color="primary" value="4" [checked]="true" (change)="handleCheckBox($event, 1, 2)"><span
-          style="font-size: 14px">{{'Dashboard.privacySettings.objectOnly' | translate}}{{'Dashboard.privacySettings.myGym' | translate}}</span>
+          style="font-size: 14px">
+          {{'Dashboard.privacySettings.objectOnly' | translate}}{{'Dashboard.Group.MyGroup.groupAdministrator' | translate}}</span>
+      </mat-checkbox>
+    </div>
+  </div>
+  <div class="control-list">
+    <label class="ala-form__label settings-item">{{'Dashboard.privacySettings.newLifeTrackingReport' | translate}}</label>
+    <div class="settings-control">
+      <mat-checkbox color="primary" value="4" [checked]="true" (change)="handleCheckBox($event, 1, 3)"><span
+          style="font-size: 14px">
+          {{'Dashboard.privacySettings.objectOnly' | translate}}{{'Dashboard.Group.MyGroup.groupAdministrator' | translate}}</span>
       </mat-checkbox>
     </div>
   </div>

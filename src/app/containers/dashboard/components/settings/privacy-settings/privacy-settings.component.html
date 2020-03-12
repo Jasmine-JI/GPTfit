@@ -21,14 +21,26 @@
   <label class="ala-form__label settings-item">
     {{'Dashboard.privacySettings.newAvtivityData' | translate}}
   </label>
-  <div class="settings-control">
+  <div class="settings-control flexCol">
     <mat-checkbox
       color="primary"
       value="4"
-      [checked]="activityTrackingStatus[0]"
+      [checked]="activityTracking.status[0]"
+      (change)="handleCheckBox($event, 0, 1)"
+    ><span style="font-size: 14px">
+      {{'Dashboard.privacySettings.objectOnly' | translate}}
+      {{'other.myObject' | translate}}{{'other.gymBrand' | translate}}/{{'other.company' | translate}}
+      {{'Dashboard.Group.GroupInfo.administrator' | translate}}
+    </span>
+    </mat-checkbox>
+    <mat-checkbox
+      color="primary"
+      value="99"
+      style="margin-left: 0px;"
+      [checked]="activityTracking.status[1]"
       (change)="handleCheckBox($event, 1, 1)"
     ><span style="font-size: 14px">
-      {{'Dashboard.privacySettings.objectOnly' | translate}}{{'Dashboard.privacySettings.myGym' | translate}}
+      {{'Dashboard.privacySettings.allMember' | translate}}
     </span>
     </mat-checkbox>
   </div>
@@ -37,14 +49,27 @@
   <label class="ala-form__label settings-item">
     {{'Dashboard.privacySettings.newAvtivityReport' | translate}}
   </label>
-  <div class="settings-control">
+  <div class="settings-control flexCol">
     <mat-checkbox
       color="primary"
       value="4"
-      [checked]="activityTrackingReportStatus[0]"
+      style="margin-left: 0px;"
+      [checked]="activityTrackingReport.status[0]"
+      (change)="handleCheckBox($event, 0, 2)"
+    ><span style="font-size: 14px">
+      {{'Dashboard.privacySettings.objectOnly' | translate}}
+      {{'other.myObject' | translate}}{{'other.gymBrand' | translate}}/{{'other.company' | translate}}
+      {{'Dashboard.Group.GroupInfo.administrator' | translate}}
+    </span>
+    </mat-checkbox>
+    <mat-checkbox
+      color="primary"
+      value="99"
+      style="margin-left: 0px;"
+      [checked]="activityTrackingReport.status[1]"
       (change)="handleCheckBox($event, 1, 2)"
     ><span style="font-size: 14px">
-      {{'Dashboard.privacySettings.objectOnly' | translate}}{{'Dashboard.privacySettings.myGym' | translate}}
+      {{'Dashboard.privacySettings.allMember' | translate}}
     </span>
     </mat-checkbox>
   </div>
@@ -53,14 +78,26 @@
   <label class="ala-form__label settings-item">
     {{'Dashboard.privacySettings.newLifeTrackingReport' | translate}}
   </label>
-  <div class="settings-control">
+  <div class="settings-control flexCol">
     <mat-checkbox
       color="primary"
       value="4"
-      [checked]="lifeTrackingReportStatus[0]"
+      [checked]="lifeTrackingReport.status[0]"
+      (change)="handleCheckBox($event, 0, 3)"
+    ><span style="font-size: 14px">
+      {{'Dashboard.privacySettings.objectOnly' | translate}}
+      {{'other.myObject' | translate}}{{'other.gymBrand' | translate}}/{{'other.company' | translate}}
+      {{'Dashboard.Group.GroupInfo.administrator' | translate}}
+    </span>
+    </mat-checkbox>
+    <mat-checkbox
+      color="primary"
+      value="99"
+      style="margin-left: 0px;"
+      [checked]="lifeTrackingReport.status[1]"
       (change)="handleCheckBox($event, 1, 3)"
     ><span style="font-size: 14px">
-      {{'Dashboard.privacySettings.objectOnly' | translate}}{{'Dashboard.privacySettings.myGym' | translate}}
+      {{'Dashboard.privacySettings.allMember' | translate}}
     </span>
     </mat-checkbox>
   </div>

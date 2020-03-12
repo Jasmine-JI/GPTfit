@@ -30,7 +30,7 @@ export class TrainLiveComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     const body = {
-      token: this.utils.getToken(),
+      token: this.utils.getToken() || '',
       classType: '7'
     };
     this.coachService.fetchClassRoomList(body).subscribe(res => {

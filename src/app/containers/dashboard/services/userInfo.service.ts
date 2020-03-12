@@ -323,7 +323,7 @@ export class UserInfoService {
           } else if (res1.resultCode === 401) {
             this.redirectLoginPage();
           } else if (res1.resultCode === 402) {
-            const token = this.utils.getToken();
+            const token = this.utils.getToken() || '';
             this.refreshToken({token}).subscribe(
               res2 => {
                 if (res2.resultCode === 200) {
@@ -345,7 +345,7 @@ export class UserInfoService {
     });
     return checkLogonData.then(res => {
       if (res === false) {
-        const token = this.utils.getToken();
+        const token = this.utils.getToken() || '';
         this.combineFetchProcess({
           token,
           avatarType: 2,

@@ -127,7 +127,7 @@ export class UserSettingsComponent implements OnInit {
     }
   }
   handleSearchName(name) {
-    const token = this.utils.getToken();
+    const token = this.utils.getToken() || '';
     const body = {
       token,
       name
@@ -194,7 +194,7 @@ export class UserSettingsComponent implements OnInit {
         gender,
         description
       } = value;
-      const token = this.utils.getToken();
+      const token = this.utils.getToken() || '';
       const image = new Image();
       const icon = {
         iconLarge: '',

@@ -28,12 +28,22 @@ export class PrivacySettingsComponent implements OnInit {
   @Input() userData: any;
   map: any;
   mark: any;
-  activityTrackingStatus = [false]; // ['mycoach'] 順序是暫時的，等其他選項確定再補
-  activityTrackingReportStatus = [false]; // ['mycoach'] 順序是暫時的，等其他選項確定再補
-  lifeTrackingReportStatus = [false]; // ['mycoach'] 順序是暫時的，等其他選項確定再補
-  activityTracking = [];
-  activityTrackingReport = [];
-  lifeTrackingReport = [];
+
+  activityTracking = {
+    checkedList: [],
+    status: [false, false]
+  };
+
+  activityTrackingReport = {
+    checkedList: [],
+    status: [false, false]
+  };
+
+  lifeTrackingReport = {
+    checkedList: [],
+    status: [false, false]
+  };
+
   deviceTip: string;
   constructor(
     private settingsService: SettingsService,
@@ -61,21 +71,12 @@ export class PrivacySettingsComponent implements OnInit {
       activityTrackingReport,
       lifeTrackingReport
     } = this.userData.privacy;
-    this.activityTracking = activityTracking;
-    this.detectCheckBoxValue(
-      this.activityTracking,
-      this.activityTrackingStatus
-    );
-    this.activityTrackingReport = activityTrackingReport;
-    this.detectCheckBoxValue(
-      this.activityTrackingReport,
-      this.activityTrackingReportStatus
-    );
-    this.lifeTrackingReport = lifeTrackingReport;
-    this.detectCheckBoxValue(
-      this.lifeTrackingReport,
-      this.lifeTrackingReportStatus
-    );
+    this.activityTracking.checkedList = activityTracking;
+    this.detectCheckBoxValue(this.activityTracking);
+    this.activityTrackingReport.checkedList = activityTrackingReport;
+    this.detectCheckBoxValue(this.activityTrackingReport);
+    this.lifeTrackingReport.checkedList = lifeTrackingReport;
+    this.detectCheckBoxValue(this.lifeTrackingReport);
   }
   mouseEnter() {
     this.isDisplayBox = true;
@@ -84,59 +85,95 @@ export class PrivacySettingsComponent implements OnInit {
     this.isDisplayBox = false;
   }
   handleCheckBox(event, idx, type) {
-    let tempArr = [];
-    let tempStatus = [];
-    if (type === 1) {
-      tempArr = this.activityTracking;
-      tempStatus = this.activityTrackingStatus;
-    } else if (type === 2) {
-      tempArr = this.activityTrackingReport;
-      tempStatus = this.activityTrackingReportStatus;
-    } else {
-      tempArr = this.lifeTrackingReport;
-      tempStatus = this.lifeTrackingReportStatus;
+
+    switch (type) {
+      case 1:
+        this.activityTracking = this.changeCheckedData(event, idx, this.activityTracking);
+        break;
+      case 2:
+        this.activityTrackingReport = this.changeCheckedData(event, idx, this.activityTrackingReport);
+        break;
+      default:
+        this.lifeTrackingReport = this.changeCheckedData(event, idx, this.lifeTrackingReport);
+        break;
     }
-    if (event.checked) {
-      tempStatus[idx] = true;
-      tempArr.push(event.source.value);
-    } else {
-      tempStatus[idx] = false;
-      const i = tempArr.findIndex(
-        x => x.value === event.source.value
-      );
-      tempArr.splice(i, 1);
-    }
-    this.handlePrivacySetting(tempArr, type);
+
+    this.handlePrivacySetting();
   }
-  detectCheckBoxValue(arr, statusArr) {
-    if (arr.findIndex(arrVal => arrVal === '1') === -1) {
-      arr.push('1');
+
+  // 取得新的設定值-kidin-1090304
+  changeCheckedData (e, idx, oldData) {
+    if (e.checked) {
+      const set = new Set(oldData.checkedList);
+      if (e.source.value === '99') {
+        for (let i = 0; i < oldData.status.length; i++) {
+          oldData.status[i] = true;
+        }
+
+        set.add('4');
+        set.add('99');
+      } else {
+        set.add('4');
+      }
+
+      return {
+        checkedList: Array.from(set),
+        status: oldData.status
+      };
+
+    } else {
+      const list = oldData.checkedList,
+            status = oldData.status;
+      if (list.indexOf('99') > 0 && e.source.value !== '99') {
+        status[idx] = false;
+        status[status.length - 1] = false;
+
+        const i = list.indexOf(e.source.value);
+        list.splice(i, 1);
+
+        const j = list.indexOf('99');
+        list.splice(j, 1);
+      } else {
+        status[idx] = false;
+
+        const i = list.indexOf(e.source.value);
+        list.splice(i, 1);
+      }
+
+      return {
+        checkedList: list,
+        status: oldData.status
+      };
     }
-    arr.forEach((_arr, idx) => {
+  }
+
+  detectCheckBoxValue(set) {
+    if (set.checkedList.findIndex(arrVal => arrVal === '1') === -1) {
+      set.checkedList.push('1');
+    }
+    set.checkedList.forEach((_arr, idx) => {
       if (_arr === '') {
-        arr.splice(idx, 1);
+        set.checkedList.splice(idx, 1);
       }
       if (_arr === '4') {
-        statusArr[0] = true;
+        set.status[0] = true;
+      }
+      if (_arr === '99') {
+        set.status[1] = true;
       }
     });
   }
-  handlePrivacySetting(arr, type) {
+
+  handlePrivacySetting() {
     const body = {
-      token: this.utils.getToken(),
+      token: this.utils.getToken() || '',
       privacy: {
-        activityTracking: this.activityTracking,
-        activityTrackingReport: this.activityTrackingReport,
-        lifeTrackingReport: this.lifeTrackingReport
+        activityTracking: this.activityTracking.checkedList,
+        activityTrackingReport: this.activityTrackingReport.checkedList,
+        lifeTrackingReport: this.lifeTrackingReport.checkedList
       }
     };
-    if (type === 1) {
-      body.privacy.activityTracking = arr;
-    } else if (type === 2) {
-      body.privacy.activityTrackingReport = arr;
-    } else {
-      body.privacy.lifeTrackingReport = arr;
-    }
+
     this.settingsService.updateUserProfile(body).subscribe(res => {
       if (res.resultCode === 200) {
         this.snackbar.open(

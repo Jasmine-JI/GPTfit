@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as moment from 'moment';
-
 import { TranslateService } from '@ngx-translate/core';
 
 import { UtilsService } from '@shared/services/utils.service';
@@ -50,8 +49,8 @@ export class MyLifeTrackingComponent implements OnInit {
     .format('YYYY/MM/DD');
   startDate = '';
   endDate = moment().format('YYYY-MM-DD');
-  diffDay: number;
   reportEndDate = '';
+  selectPeriod = '';
   period = `7 ${this.translate.instant('Dashboard.SportReport.day')}`;
   reportRangeType = 1;
   reportCreatedTime = moment().format('YYYY/MM/DD HH:mm');
@@ -99,7 +98,7 @@ export class MyLifeTrackingComponent implements OnInit {
 
   // 圖表用數據-kidin-1090215
   searchDate = [];
-  stepData = {
+  stepData: any = {
     stepList: [],
     targetStepList: [],
     date: [],
@@ -113,7 +112,7 @@ export class MyLifeTrackingComponent implements OnInit {
     colorSet: ['#e23333', '#31df93', '#ababab']
   };
 
-  sleepData = {
+  sleepData: any = {
     totalSleepList: [],
     deepSleepList: [],
     lightSleepList: [],
@@ -133,7 +132,7 @@ export class MyLifeTrackingComponent implements OnInit {
     muscleRateColorSet: '#9b70e0'
   };
 
-  fitTimeData = {
+  fitTimeData: any = {
     fitTimeList: [],
     date: [],
     colorSet: '#f8b551'
@@ -149,6 +148,7 @@ export class MyLifeTrackingComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+
     this.token = this.utilsService.getToken();
 
     // 確認是否為預覽列印頁面-kidin-1090215
@@ -160,7 +160,8 @@ export class MyLifeTrackingComponent implements OnInit {
     this.getTimeZone();
     if (
       location.search.indexOf('startdate=') > -1 &&
-      location.search.indexOf('enddate=') > -1
+      location.search.indexOf('enddate=') > -1 &&
+      location.search.indexOf('selectPeriod=') > -1
     ) {
       this.queryStringShowData();
       this.getUserId();
@@ -169,9 +170,6 @@ export class MyLifeTrackingComponent implements OnInit {
       this.reportStartTime = moment()
         .subtract(6, 'days')
         .format(`YYYY-MM-DDT00:00:00${this.timeZoneStr}`);
-
-      this.reportService.setReportTime(this.reportStartTime, this.reportEndTime);
-      this.reportService.setPeriod('7');
 
       this.generateTimePeriod();
       this.getUserId();
@@ -208,8 +206,38 @@ export class MyLifeTrackingComponent implements OnInit {
         this.reportEndTime = moment(queryString[i]
           .replace('enddate=', ''), 'YYYY-MM-DD')
           .format(`YYYY-MM-DDT23:59:59${this.timeZoneStr}`);
+      } else if (queryString[i].indexOf('selectPeriod=') > -1) {
+        this.selectPeriod = queryString[i].replace('selectPeriod=', '');
+
+        switch (this.selectPeriod) {
+          case '7':
+            this.selectedIndex = 0;
+            this.reportRangeType = 1;
+            this.dataDateRange = 'day';
+            this.period = `7 ${this.translate.instant('Dashboard.SportReport.day')}`;
+            break;
+          case '30':
+            this.selectedIndex = 1;
+            this.reportRangeType = 1;
+            this.dataDateRange = 'day';
+            this.period = `30 ${this.translate.instant('Dashboard.SportReport.day')}`;
+            break;
+          case '182':
+            this.selectedIndex = 2;
+            this.reportRangeType = 2;
+            this.dataDateRange = 'week';
+            this.period = `6 ${this.translate.instant('Dashboard.SportReport.month')}`;
+            break;
+          default:
+            this.selectedIndex = 3;
+            this.reportRangeType = 2;
+            this.dataDateRange = 'week';
+            this.period = `12 ${this.translate.instant('Dashboard.SportReport.month')}`;
+            break;
+        }
       }
     }
+
   }
 
   // 取得userId-kidin-1090224
@@ -239,6 +267,7 @@ export class MyLifeTrackingComponent implements OnInit {
     if (this.timeType === 0) {
       this.reportRangeType = 1;
       this.dataDateRange = 'day';
+      this.selectPeriod = '7';
       this.period = `7 ${this.translate.instant('Dashboard.SportReport.day')}`;
       this.filterStartTime = moment()
         .subtract(6, 'days')
@@ -246,6 +275,7 @@ export class MyLifeTrackingComponent implements OnInit {
     } else if (this.timeType === 1) {
       this.reportRangeType = 1;
       this.dataDateRange = 'day';
+      this.selectPeriod = '30';
       this.period = `30 ${this.translate.instant('Dashboard.SportReport.day')}`;
       this.filterStartTime = moment()
         .subtract(29, 'days')
@@ -253,6 +283,7 @@ export class MyLifeTrackingComponent implements OnInit {
     } else if (this.timeType === 2) {
       this.reportRangeType = 2;
       this.dataDateRange = 'week';
+      this.selectPeriod = '182';
       this.period = `6 ${this.translate.instant('Dashboard.SportReport.month')}`;
       this.filterStartTime = moment()
         .subtract(day, 'days')
@@ -264,6 +295,7 @@ export class MyLifeTrackingComponent implements OnInit {
     } else {
       this.reportRangeType = 2;
       this.dataDateRange = 'week';
+      this.selectPeriod = '364';
       this.period = `12 ${this.translate.instant('Dashboard.SportReport.month')}`;
       this.filterStartTime = moment()
         .subtract(day, 'days')
@@ -560,6 +592,7 @@ export class MyLifeTrackingComponent implements OnInit {
                 FFMI.unshift(countFFMI);
               }
 
+              // 步數資料-kidin-1090304
               if (lifeTrackingData[j].totalStep !== 0 && lifeTrackingData[j].totalStep !== null) {
                 this.noStepData = false;
                 step.totalSteps += lifeTrackingData[j].totalStep;
@@ -578,7 +611,7 @@ export class MyLifeTrackingComponent implements OnInit {
 
               }
 
-              // 將相同日期的心率數據做整合-kidin-1090217
+              // 休息心率資料-kidin-1090304
               if (lifeTrackingData[j].maxHeartRate !== 0 && lifeTrackingData[j].maxHeartRate !== null) {
                 this.noHRData = false;
                 HR.totalRestHR += lifeTrackingData[j].restHeartRate;
@@ -590,7 +623,7 @@ export class MyLifeTrackingComponent implements OnInit {
                 this.HRData.date.unshift(moment(lifeTrackingData[j].startTime.split('T')[0], 'YYYY-MM-DD').valueOf());
               }
 
-              // 將相同日期的睡眠時間數據做整合-kidin-1090217
+              // 睡眠資料-kidin-1090304
               if (lifeTrackingData[j].totalSleepSecond !== 0 && lifeTrackingData[j].totalSleepSecond !== null) {
                 this.noSleepData = false;
                 sleep.totalSleepTime += lifeTrackingData[j].totalSleepSecond;
@@ -607,7 +640,7 @@ export class MyLifeTrackingComponent implements OnInit {
                 this.sleepData.date.unshift(moment(lifeTrackingData[j].startTime.split('T')[0], 'YYYY-MM-DD').valueOf());
               }
 
-              // 將相同日期的燃脂時間數據做整合-kidin-1090217
+              // 燃脂時間資料-kidin-1090304
               if (lifeTrackingData[j].totalFitSecond !== 0  && lifeTrackingData[j].totalFitSecond !== null) {
                 this.noFitTimeData = false;
                 fitTime.totalFitTime += lifeTrackingData[j].totalFitSecond;
@@ -622,6 +655,33 @@ export class MyLifeTrackingComponent implements OnInit {
               }
 
             }
+
+            this.stepData = this.filterRepeatData(
+              this.stepData.date,
+              this.stepData.stepList,
+              this.stepData.targetStepList,
+              [],
+              [],
+              'step'
+            );
+
+            this.sleepData = this.filterRepeatData(
+              this.sleepData.date,
+              this.sleepData.totalSleepList,
+              this.sleepData.deepSleepList,
+              this.sleepData.lightSleepList,
+              this.sleepData.awakeList,
+              'sleep'
+            );
+
+            this.fitTimeData = this.filterRepeatData(
+              this.fitTimeData.date,
+              this.fitTimeData.fitTimeList,
+              [],
+              [],
+              [],
+              'fitTime'
+            );
 
             this.weightData.weightList = weightList;
 
@@ -754,12 +814,13 @@ export class MyLifeTrackingComponent implements OnInit {
       let searchString;
 
       searchString =
-        `startdate=${startDateString}&enddate=${endDateString}`;
+        `startdate=${startDateString}&enddate=${endDateString}&selectPeriod=${this.selectPeriod}`;
 
       if (location.search.indexOf('?') > -1) {
         if (
           location.search.indexOf('startdate=') > -1 &&
-          location.search.indexOf('enddate=') > -1
+          location.search.indexOf('enddate=') > -1 &&
+          location.search.indexOf('selectPeriod=') > -1
         ) {
           // 將舊的sr query string換成新的-kidin-1090205
           const preUrl = location.pathname;
@@ -768,7 +829,8 @@ export class MyLifeTrackingComponent implements OnInit {
           for (let i = 0; i < queryString.length; i++) {
             if (
               queryString[i].indexOf('startdate=') === -1 &&
-              queryString[i].indexOf('enddate=') === -1
+              queryString[i].indexOf('enddate=') === -1 &&
+              queryString[i].indexOf('selectPeriod=') === -1
             ) {
               newSufUrl = `${newSufUrl}&${queryString[i]}`;
             }
@@ -813,6 +875,95 @@ export class MyLifeTrackingComponent implements OnInit {
     const checkDate = moment(this.reportEndDate, 'YYYY/MM/DD');
     if (checkDate.diff(moment(), 'day') > 0) {
       this.reportEndDate = moment().format('YYYY/MM/DD');
+    }
+  }
+
+  // 過濾重複日期的資料，並只抓取重複有效值的最後一筆-kidin-1090304
+  filterRepeatData (date, dataA, dataB, dataC, dataD, type) {
+    const resDate = [],
+          resDataA = [],
+          resDataB = [],
+          resDataC = [],
+          resDataD = [];
+    let sameDay = null,
+        sameDayDataA = null,
+        sameDayDataB = null,
+        sameDayDataC = null,
+        sameDayDataD = null,
+        reachTargetTimes = 0;
+
+    for (let i = 0; i < date.length; i++) {
+      if (date[i] !== date[i + 1] && sameDay === null) {
+        resDate.push(date[i]);
+        resDataA.push(dataA[i]);
+        resDataB.push(dataB[i]);
+        resDataC.push(dataC[i]);
+        resDataD.push(dataD[i]);
+
+        if (type === 'step' && dataA[i] > dataB[i]) {
+          reachTargetTimes++;
+        }
+
+      } else if (date[i] !== date[i + 1] && sameDay !== null) {
+        resDate.push(sameDay);
+        resDataA.push(sameDayDataA);
+        resDataB.push(sameDayDataB);
+        resDataC.push(sameDayDataC);
+        resDataD.push(sameDayDataD);
+
+        if (type === 'step' && sameDayDataA > sameDayDataB) {
+          reachTargetTimes++;
+        }
+
+        sameDay = null,
+        sameDayDataA = null,
+        sameDayDataB = null;
+        sameDayDataC = null,
+        sameDayDataD = null;
+      } else if (date[i] === date[i + 1]) {
+        sameDay = date[i];
+        sameDayDataA = dataA[i];
+        sameDayDataB = dataB[i];
+        sameDayDataC = dataC[i];
+        sameDayDataD = dataD[i];
+      }
+
+    }
+
+    switch (type) {
+      case 'step':
+        this.recordData.stepReachReps = reachTargetTimes;
+
+        return {
+          stepList: resDataA,
+          targetStepList: resDataB,
+          date: resDate,
+          colorSet: ['#6fd205', '#7f7f7f', '#eb5293']
+        };
+      case 'sleep':
+        if (this.sleepData.deepSleepList[0] !== undefined) {
+          return {
+            totalSleepList: resDataA,
+            deepSleepList: resDataB,
+            lightSleepList: resDataC,
+            awakeList: resDataD,
+            date: resDate
+          };
+        } else {
+          return {
+            totalSleepList: resDataA,
+            deepSleepList: dataB,
+            lightSleepList: dataC,
+            awakeList: dataD,
+            date: resDate
+          };
+        }
+      case 'fitTime':
+        return {
+          fitTimeList: resDataA,
+          date: resDate,
+          colorSet: '#f8b551'
+        };
     }
   }
 

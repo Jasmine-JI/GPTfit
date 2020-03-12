@@ -138,7 +138,6 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   avgHR: number;
   avgCalories: number;
   totalCalories: number;
-  userData: any;
   userHRZones = [0, 0, 0, 0, 0, 0];
   HRZoneThree = 0;
   deviceInfo: any;
@@ -271,7 +270,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       this.updateUrl('false');
     }
     this.reportCategory = this.selectCategory;
-    this.token = this.utils.getToken();
+    this.token = this.utils.getToken() || '';
     this.getFuzzyTime();
 
     // 先從service取得群組資訊，若取不到再call api-kidin-1081210
@@ -629,7 +628,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         avgHr: this.activity[i].activityInfoLayer.avgHeartRateBpm,
         maxHr: this.activity[i].activityInfoLayer.maxHeartRateBpm,
         calories: this.activity[i].activityInfoLayer.calories,
-        avgWatt: this.activity[i].activityInfoLayer.cycleAvgWatt,
+        avgWatt: this.activity[i].activityInfoLayer.cycleAvgWatt
       };
 
       middleData.push(sourceObj);
@@ -961,7 +960,8 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         height: 40,
         style: {
             overflow: 'visible'
-        }
+        },
+        backgroundColor: 'transparent'
       };
       this.memberHRZoneOptions[i]['xAxis'] = {
         labels: {

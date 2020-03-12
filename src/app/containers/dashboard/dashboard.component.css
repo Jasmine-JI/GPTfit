@@ -277,6 +277,12 @@
   }
 }
 
+@media (max-width: 991px) {
+  .container {
+    max-width: 95%;
+  }
+}
+
 @media(max-width: 768px) {
   .footer-details.footer-rwd--1 {
     margin-bottom: 84px;
@@ -315,11 +321,11 @@
     margin-left: -15px;
     background-color: #404646;
   }
+}
 
-  @media(max-width: 370px) {
-    .container {
-      padding: 15px;
-    }
+@media(max-width: 370px) {
+  .container {
+    padding: 15px;
   }
 }
 

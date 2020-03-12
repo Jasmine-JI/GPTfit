@@ -2,11 +2,11 @@
   <span
     [style.color]="highestHRZoneColor"
     style="font-weight: bold; margin: 20px 0px;"
-    *ngIf="!noHRZoneData"
+    *ngIf="!noHRZoneData && type !== 'personalAnalysis'"
   >
   {{'other.maxProportion' | translate}} {{highestHRZone}} {{highestHRZoneValue | number: '0.1-1'}}%
   </span>
-  <span style="font-weight: bold; color:grey;" *ngIf="noHRZoneData">
+  <span style="font-weight: bold; color:grey;" *ngIf="noHRZoneData && type !== 'personalAnalysis'">
     {{'Dashboard.System.nodata' | translate}}
   </span>
   <div #container style="width: 100%;">
