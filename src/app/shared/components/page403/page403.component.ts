@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-page403',
@@ -7,20 +6,13 @@ import { Router } from '@angular/router';
   styleUrls: ['./page403.component.css']
 })
 export class Page403Component implements OnInit, OnDestroy {
-  count = 5;
-  constructor(private router: Router) {}
-  countDown: any;
+
+  constructor() {}
+
   ngOnInit() {
-    this.countDown = setInterval(() => {
-      this.count--;
-      if (this.count < 0) {
-        this.router.navigate(['/dashboard']);
-      }
-    }, 1000);
+
   }
   ngOnDestroy() {
-    if (this.count < 0) {
-      clearInterval(this.countDown);
-    }
+
   }
 }

@@ -34,7 +34,7 @@ export class SettingsComponent implements OnInit {
   }
   fetchUserProfile() {
     const body = {
-      token: this.utils.getToken(),
+      token: this.utils.getToken() || '',
       avatarType: 2,
     };
     this.isLoading = true;
@@ -46,7 +46,7 @@ export class SettingsComponent implements OnInit {
           } else if (res1.resultCode === 401) {
             this.redirectLoginPage();
           } else if (res1.resultCode === 402) {
-            const token = this.utils.getToken();
+            const token = this.utils.getToken() || '';
             this.userInfoService.refreshToken({token}).subscribe(
               res2 => {
                 if (res2.resultCode === 200) {
@@ -68,7 +68,7 @@ export class SettingsComponent implements OnInit {
     });
     return checkUserProfileService.then(res => {
       if (res === false) {
-        const token = this.utils.getToken();
+        const token = this.utils.getToken() || '';
         this.getUserProfile({
           token,
           avatarType: 2,

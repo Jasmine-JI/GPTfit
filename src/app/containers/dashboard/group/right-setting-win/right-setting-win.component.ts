@@ -52,7 +52,7 @@ export class RightSettingWinComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.token = this.utils.getToken();
+    this.token = this.utils.getToken() || '';
     this.getGroupMemberList(1);
   }
   confirm() {

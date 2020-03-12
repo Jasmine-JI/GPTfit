@@ -56,7 +56,7 @@ export class SportReportComponent implements OnInit {
       location.search.indexOf('sport=') > -1 &&
       location.search.indexOf('startdate=') > -1 &&
       location.search.indexOf('enddate=') > -1 &&
-      location.search.indexOf('selectPeriod=')
+      location.search.indexOf('selectPeriod=') > -1
     ) {
       this.queryStringShowData();
     } else {

@@ -72,6 +72,7 @@
     "lodash": "^4.17.15",
     "mapbox": "1.0.0-beta9",
     "material-design-icons": "3.0.1",
+    "ml-regression-simple-linear": "^2.0.2",
     "moment": "2.20.1",
     "mydatepicker": "2.6.1",
     "mysql": "2.15.0",

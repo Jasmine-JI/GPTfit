@@ -10,7 +10,7 @@
           center
           <span class="alpha-text" *ngIf="isAlphaVersion">alpha</span>
         </span>
-        <mat-nav-list>
+        <mat-nav-list style="z-index: 3;">
           <!--<mat-accordion multi="false">
             <mat-expansion-panel [expanded]="target === 1">
               <mat-expansion-panel-header  class="ala-expansion-panel-header"
@@ -276,14 +276,14 @@
         </mat-nav-list>
       </nav>
       <div class="version">
-        <footer
+        <div
           class="footer footer-details"
           [ngClass]="footerAddClassName"
           [style.display]="isHideFooter ? 'none' : 'block'"
         >
           {{'SH.footerAnnouncement' | translate}}
           <div>{{'SH.version' | translate: {'version': version } }}</div>
-        </footer>
+        </div>
       </div>
     </mat-drawer>
     <mat-drawer-content>

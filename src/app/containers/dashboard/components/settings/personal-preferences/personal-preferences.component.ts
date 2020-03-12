@@ -119,7 +119,7 @@ export class PersonalPreferencesComponent implements OnInit {
         normalBedTime,
         normalWakeTime
       } = value;
-      const token = this.utils.getToken();
+      const token = this.utils.getToken() || '';
       const body = {
         token,
         heartRateBase,

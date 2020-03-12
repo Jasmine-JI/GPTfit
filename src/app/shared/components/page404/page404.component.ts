@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-page404',
@@ -7,21 +7,15 @@ import { Router } from '@angular/router';
   styleUrls: ['./page404.component.css']
 })
 export class Page404Component implements OnInit, OnDestroy {
-  timeout: any;
+  redirectUrl: string;
 
-  constructor(private router: Router) {}
+  constructor(
+    private translate: TranslateService
+  ) {}
 
   ngOnInit() {
-    if (history.state.navigationId >= 2) {
-      this.timeout = setTimeout(() => history.go(-2), 3000);
-    } else {
-      this.timeout = setTimeout(() => this.router.navigateByUrl('/dashboard'), 3000);
-    }
+    this.redirectUrl = `https://${location.hostname}`;
   }
 
-  ngOnDestroy() {
-    if(this.timeout) {
-      clearInterval(this.timeout);
-    }
-  }
+  ngOnDestroy() { }
 }

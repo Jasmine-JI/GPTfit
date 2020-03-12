@@ -93,6 +93,7 @@ import { BodyConstituteSvgComponent } from './chart/body-constitute-svg/body-con
   exports: [
     NavbarComponent,
     Page404Component,
+    Page403Component,
     LoadingComponent,
     PaginationComponent,
     UploadFileComponent,

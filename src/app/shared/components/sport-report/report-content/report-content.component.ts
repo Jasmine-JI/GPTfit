@@ -213,7 +213,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
     };
 
     this.reportService.fetchSportSummaryArray(body).subscribe(res => {
-      if (res.resultCode === 400 || res.resultCode === 401 || res.resultCode === 402) {
+      if (res.resultCode === 400 || res.resultCode === 401 || res.resultCode === 402 || res.resultCode === 403) {
         this.isLoading = false;
         this.updateUrl('false');
         return this.showPrivacyUi.emit(true);

@@ -21,7 +21,7 @@ export class TokenInterceptor implements HttpInterceptor {
     } else {
       appVersion = version.develop;
     }
-    const token = this.utils.getToken();
+    const token = this.utils.getToken() || '';
     let newRequest = request.clone({
       setHeaders: {
         Accept: 'application/json',

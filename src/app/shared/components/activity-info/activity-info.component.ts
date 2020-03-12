@@ -111,7 +111,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   activityPoints: any;
   activityLaps: any;
   isLoading = false;
-  token: string;
+  token = '';
   isPortal = false;
   isShowNoRight = false;
   isFileIDNotExist = false;
@@ -229,7 +229,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // 從hid得到token後，讓使用者不用登入即可觀看個人運動詳細資料，並隱藏預覽列印和返回按鈕（待實做hid encode/decode）-Kidin-1081024
     if (this.route.snapshot.queryParamMap.get('hid') === null) {
-      this.token = this.utils.getToken();
+      this.token = this.utils.getToken() || '';
     } else {
       this.token = this.route.snapshot.queryParamMap.get('hid');
       this.passLogin = true;
@@ -373,7 +373,9 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     let isNormalPoint = false;
     const originRealIdx = [];
     this.activityPoints.forEach((_point, idx) => {
-      if (+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100) {
+      if ((+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100)
+        || (_point.latitudeDegrees === null && _point.longitudeDegrees === null)
+      ) {
         isNormalPoint = false;
         this.gpxBmapPoints.push(null);  // 若使用者沒有移動，則在該點補上null值-kidin-1081203(Bug 337)
       } else {
@@ -490,7 +492,9 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     let isNormalPoint = false;
     const originRealIdx = [];
     this.activityPoints.forEach((_point, idx) => {
-      if (+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100) {
+      if ((+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100)
+        || (_point.latitudeDegrees === null && _point.longitudeDegrees === null)
+      ) {
         isNormalPoint = false;
         this.gpxPoints.push(null); // 若使用者沒有移動，則在該點補上null值-kidin-1081203(Bug 337)
       } else {
@@ -687,10 +691,10 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     this.activityService.fetchSportListDetail(body).toPromise()
       .then(res => {
         // 針對無該運動紀錄會無權限閱覽給予不同回應-kidin-1081203(Bug 940)
-        if (res.resultMessage === 'Request Failed') {
+        if (res.resultCode === 400) {
           this.isFileIDNotExist = true;
           return this.router.navigateByUrl('/404');
-        } else if (res.resultMessage === 'Get sport list detail fail, privacy is not match with target user.') {
+        } else if (res.resultCode === 403) {
           return this.router.navigateByUrl('/403');
         }
         this.activityInfo = res.activityInfoLayer;
@@ -699,7 +703,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.activityInfo.type === '3') {
           this.saveWeightTrainingData(res.activityLapLayer);
         }
-        if (res.resultCode === 401 && res.resultCode === 402) {
+        if (res.resultCode === 401 || res.resultCode === 402) {
           this.isShowNoRight = true;
           this.isLoading = false;
           this.progressRef.complete();

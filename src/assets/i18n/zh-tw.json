@@ -764,6 +764,17 @@
     "muscleKg": "肌肉重",
     "fatKg": "脂肪重",
     "glossaries": "體態",
-    "update": "更新"
+    "update": "更新",
+    "personalAnalysis": "個人分析",
+    "gymBrand": "健身品牌",
+    "companyAdmin": "企業管理員",
+    "company": "企業經營",
+    "myObject": "我的",
+    "bodyFat": "體脂肪",
+    "personalInformation": "根據性別、年齡、生理數據...等差異性，會給予不同的素質評斷，對於系統評估若有疑問，可洽詢相關的體適能教練或專業的家庭醫師，獲取更好的身體素質建議。",
+    "weekFrequency": "週活動頻率",
+    "activityPreference": "活動偏好",
+    "webError404": "找不到頁面或未開放，可嘗試登入後再試一次。",
+    "webError403": "您似乎沒有查看此活動的權限。"
   }
 }
