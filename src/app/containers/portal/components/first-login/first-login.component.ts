@@ -97,7 +97,7 @@ export class FirstLoginComponent implements OnInit {
 
     const { userName, height, weight, gender, birth } = value;
     const body = {
-      token: this.utils.getToken(),
+      token: this.utils.getToken() || '',
       icon,
       name: userName,
       height,

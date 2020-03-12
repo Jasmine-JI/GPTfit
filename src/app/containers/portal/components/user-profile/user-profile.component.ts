@@ -70,7 +70,7 @@ export class UserProfileComponent implements OnInit {
   }
   fetchUserProfile() {
     const body = {
-      token: this.utils.getToken(),
+      token: this.utils.getToken() || '',
       targetUserId: this.userId || '',
       avatarType: 2,
     };

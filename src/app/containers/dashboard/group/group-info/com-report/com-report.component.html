@@ -180,7 +180,8 @@
       <div class="flexRow authorInfo">
         <div class="flexCol">
           <span class="reportTitle" style="margin: 10px 10px 0px 0px;">{{groupData?.groupName}}</span>
-          <span class="reportDateTime">{{brandName}} \ {{branchName}}</span>
+          <span class="reportDateTime" *ngIf="branchName !== ''">{{brandName}} \ {{branchName}}</span>
+          <span class="reportDateTime" *ngIf="branchName === '' && brandName !== ''">{{brandName}}</span>
         </div>
         <div style="margin-right: 10px;">
           <img style="width: 55px; border-radius: 50%;" src="{{groupImg}}">
@@ -400,6 +401,7 @@
           <div>
             <app-hrzone-chart
               [data]="typeHrZone"
+              [type]="'mixHrZone'"
               *ngIf="!isLoading && !isRxjsLoading"
             ></app-hrzone-chart>
           </div>
@@ -713,9 +715,199 @@
         </div>
       </div>
   </div>
-</ng-container>
-<ng-container *ngIf="isPreviewMode && !isLoading">
-  <div class="printMark">
+  <div class="printMark" *ngIf="isPreviewMode && !isLoading" class="printMark">
+    GPT Center
+  </div>
+  <div class="pageBreak" *ngIf="isPreviewMode"></div>
+  <div class="flexCol" style="margin-bottom: 50px;" (scroll)="onWindowScroll()">
+    <div class="activity-title">
+      <span class="ala-dashboard-title">
+        {{'other.personalAnalysis' | translate}}
+      </span>
+    </div>
+    <div class="areaDescription">
+      {{'other.personalInformation' | translate}}
+    </div>
+    <div style="margin-top: 10px;">
+      <mat-table [dataSource]="personalData" matSort #sortTable="matSort" (matSortChange)="sortPersonData()">
+        <ng-container matColumnDef="name">
+          <mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true" class="tableArrangement">
+            <span class="tableTitleWord">{{'Dashboard.Group.MyGroup.name' | translate}}</span>
+          </mat-header-cell>
+          <mat-cell
+            *matCellDef="let row; let i = index;"
+            class="tableArrangement tableContent"
+          >
+            <span style="text-align: center;">{{row?.name}}</span>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="totalActivityNum">
+          <mat-header-cell
+            *matHeaderCellDef
+            mat-sort-header
+            disableClear="true"
+            class="tableArrangement"
+          >
+            <div class="tableTitle">
+              <span class="tableTitleWord">{{'other.totalActivity' | translate}}</span>
+              <span class="chartTitleUnit">times</span>
+            </div>
+          </mat-header-cell>
+          <mat-cell
+            *matCellDef="let row; let i = index;"
+            class="tableArrangement tableContent"
+          >
+            <span>{{row?.totalActivityNum}}</span>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="weekFrequency">
+          <mat-header-cell
+            *matHeaderCellDef
+            mat-sort-header
+            disableClear="true"
+            class="tableArrangement"
+          >
+            <div class="tableTitle">
+              <span class="tableTitleWord">
+                {{'other.weekFrequency' | translate}}
+              </span>
+              <span class="chartTitleUnit">times/week</span>
+            </div>
+          </mat-header-cell>
+          <mat-cell
+            *matCellDef="let row; let i = index;"
+            class="tableArrangement tableContent"
+          >
+            <span *ngIf="row?.weekFrequency !== '--'">{{row?.weekFrequency | number:'1.0-0'}}</span>
+            <span *ngIf="row?.weekFrequency === '--'">{{row?.weekFrequency}}</span>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="avgTime">
+          <mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true" class="tableArrangement">
+            <div class="tableTitle">
+              <span class="tableTitleWord">
+                {{'Dashboard.TrainLive.avg' | translate}} {{'Dashboard.SportReport.time' | translate}}
+              </span>
+              <span class="chartTitleUnit">time</span>
+            </div>
+          </mat-header-cell>
+          <mat-cell
+            *matCellDef="let row; let i = index;"
+            class="tableArrangement tableContent"
+          >
+            <span>{{row?.avgTime}}</span>
+            <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.timeRegression > 0"></i>
+            <span [style.width]="row?.timeRegression === 0 ? '20px': '0px'"></span>
+            <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.timeRegression < 0"></i>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="avgCalories">
+          <mat-header-cell
+            *matHeaderCellDef
+            mat-sort-header
+            disableClear="true"
+            class="tableArrangement hideColumn-500"
+          >
+            <div class="tableTitle">
+              <span class="tableTitleWord">
+                {{'Dashboard.TrainLive.avg' | translate}} {{'SH.calories' | translate}}
+              </span>
+              <span class="chartTitleUnit">cal</span>
+            </div>
+          </mat-header-cell>
+          <mat-cell
+            *matCellDef="let row; let i = index;"
+            class="tableArrangement hideColumn-500 tableContent"
+          >
+            <span *ngIf="row?.avgCalories !== '--'">{{row?.avgCalories | number:'1.0-0'}}</span>
+            <span *ngIf="row?.avgCalories === '--'">{{row?.avgCalories}}</span>
+            <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.caloriesRegression > 0"></i>
+            <span [style.width]="row?.caloriesRegression === 0 ? '20px': '0px'"></span>
+            <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.caloriesRegression < 0"></i>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="likeType">
+          <mat-header-cell
+            *matHeaderCellDef
+            disableClear="true"
+            class="tableArrangement hideColumn-630"
+          >
+            <div class="tableTitle">
+              <span class="tableTitleWord">{{'other.activityPreference' | translate}}</span>
+              <span class="chartTitleUnit">type</span>
+            </div>
+          </mat-header-cell>
+          <mat-cell
+            *matCellDef="let row; let i = index;"
+            class="tableArrangement hideColumn-630 tableContent personalAnalysisIcon"
+          >
+            <i [class]="row?.likeType[0]" *ngIf="row?.likeType.length > 0"></i>
+            <i [class]="row?.likeType[1]" *ngIf="row?.likeType.length > 1"></i>
+            <i [class]="row?.likeType[2]" *ngIf="row?.likeType.length > 2"></i>
+            <span *ngIf="row?.likeType.length === 0" style="font-size: 14px;">--</span>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="HRZone">
+          <mat-header-cell
+            *matHeaderCellDef
+            disableClear="true"
+            class="tableArrangement hideColumn-950"
+          >
+            <div class="tableTitle">
+              <span class="tableTitleWord">{{'SH.hrZone' | translate}}</span>
+              <span class="chartTitleUnit">{{'SH.hrZone' | translate}}</span>
+            </div>
+          </mat-header-cell>
+          <mat-cell
+            *matCellDef="let row; let i = index;"
+            class="tableArrangement hideColumn-950 tableContent"
+          >
+            <div style="width: 100%;" *ngIf="row?.HRZone !== '--'">
+              <app-hrzone-chart
+                [data]="row?.HRZone"
+                [type]="'personalAnalysis'"
+                *ngIf="!isLoading && !isRxjsLoading"
+              ></app-hrzone-chart>
+            </div>
+            <span *ngIf="row?.HRZone === '--'">--</span>
+          </mat-cell>
+        </ng-container>
+        <ng-container>
+          <mat-header-row
+            *matHeaderRowDef="['name', 'totalActivityNum', 'weekFrequency', 'avgTime', 'avgCalories', 'likeType', 'HRZone']"
+          >
+          </mat-header-row>
+          <mat-row
+            *matRowDef="
+              let logRow;
+              let j = index;
+              columns: ['name', 'totalActivityNum', 'weekFrequency', 'avgTime', 'avgCalories', 'likeType', 'HRZone']
+            "
+            (click)="handleClickMember($event)"
+            id="{{logRow?.id}}"
+          >
+          </mat-row>
+        </ng-container>
+      </mat-table>
+    </div>
+    <div class="seeMoreLink" (click)="showAllPersonData()" [hidden]="showAll">
+      {{'Dashboard.TrainLive.more' | translate}}
+    </div>
+  </div>
+  <div
+    class="flexCol personalMenu"
+    [style.top]="personalMenu.show ? personalMenu.y : null"
+    [style.left]="personalMenu.show ? personalMenu.x : null"
+    *ngIf="personalMenu.show"
+  >
+    <a target="_blank" class="personalMenuList" [href]="personalPage.info">
+      {{'Portal.basicInformation' | translate}}
+    </a>
+    <a target="_blank" class="personalMenuList" [href]="personalPage.report">
+      {{'Dashboard.SportReport.sportReport' | translate}}
+    </a>
+  </div>
+  <div *ngIf="isPreviewMode && !isLoading" class="printMark">
     GPT Center
   </div>
 </ng-container>

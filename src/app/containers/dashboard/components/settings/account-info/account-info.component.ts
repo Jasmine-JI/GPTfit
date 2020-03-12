@@ -31,7 +31,7 @@ export class AccountInfoComponent implements OnInit {
 
     if (code && code.length > 0) {
       const body = {
-        token: this.utils.getToken(),
+        token: this.utils.getToken() || '',
         thirdPartyAgency: '0',
         switch: '1',
         code,
@@ -65,7 +65,7 @@ export class AccountInfoComponent implements OnInit {
               `redirect_uri=${
                 this.stravaApiDomain
               }/api/v1/strava/redirect_uri` +
-              '/1/AlaCenter&scope=write&state=mystate&approval_prompt=force';
+              '/1/AlaCenter&state=mystate&approval_prompt=force';
           }
         }
       });
@@ -101,10 +101,10 @@ export class AccountInfoComponent implements OnInit {
         'https://www.strava.com/oauth/authorize?' +
         `client_id=${this.clientId}&response_type=code&` +
         `redirect_uri=${this.stravaApiDomain}/api/v1/strava/redirect_uri` +
-        '/1/AlaCenter&scope=write&state=mystate&approval_prompt=force');
+        '/1/AlaCenter&state=mystate&approval_prompt=force');
     }
     const body = {
-      token: this.utils.getToken(),
+      token: this.utils.getToken() || '',
       thirdPartyAgency: '0',
       switch: this.stravaStatus ? '1' : '0',
       code: '',

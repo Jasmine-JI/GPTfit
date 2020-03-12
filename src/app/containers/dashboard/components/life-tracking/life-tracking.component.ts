@@ -169,7 +169,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   }
   fetchTrackingDayDetail() {
     const body = {
-      token: this.utils.getToken(),
+      token: this.utils.getToken() || '',
       targetUserId: (this.targetUserId && this.targetUserId.toString()) || '',
       filterStartTime: this.filterStartTime,
       filterEndTime: this.filterEndTime

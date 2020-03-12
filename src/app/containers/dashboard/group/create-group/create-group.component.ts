@@ -203,7 +203,7 @@ export class CreateGroupComponent implements OnInit {
       this.role.getUserName = res;
       // console.log('%c this.getUserName', 'color: #0ca011', res);
     });
-    this.token = this.utils.getToken();
+    this.token = this.utils.getToken() || '';
     const body = {
       token: this.token,
       groupId: this.groupId,

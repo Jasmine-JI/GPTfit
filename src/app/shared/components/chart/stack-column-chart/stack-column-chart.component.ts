@@ -381,7 +381,6 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
         }
       ];
     }
-
     const chartOptions = new ChartOptions(dataSet),
           chartDiv = this.container.nativeElement;
 

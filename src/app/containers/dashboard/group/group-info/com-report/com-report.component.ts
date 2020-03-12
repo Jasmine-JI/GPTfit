@@ -1,5 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
+import { MatTableDataSource, MatSort, Sort } from '@angular/material';
+
+import SimpleLinearRegression from 'ml-regression-simple-linear';
 import * as moment from 'moment';
+import { first } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 
 import { TranslateService } from '@ngx-translate/core';
@@ -16,6 +20,9 @@ import { GroupService } from '../../../services/group.service';
 })
 export class ComReportComponent implements OnInit, OnDestroy {
 
+  @ViewChild('sortTable')
+  sortTable: MatSort;
+
   // UI控制相關變數-kidin-1090115
   isLoading = false;
   isRxjsLoading = true;
@@ -24,13 +31,20 @@ export class ComReportComponent implements OnInit, OnDestroy {
   initialChartComplated = false;
   nodata = false;
   dataDateRange = '';
-  isSelected = 'rangeDate';
+  isSelected = 'aWeek';
   isSelectDateRange = false;
   maxStartDate = moment().format('YYYY-MM-DD');
   minEndDate = moment().add(-13, 'days').format('YYYY-MM-DD');
   maxSelectDate = moment().format('YYYY-MM-DD');
   showReport = false;
   selectType = '99';
+  showAll = false;
+  personalMenu = {
+    show: false,
+    x: null,
+    y: null
+  };
+  checkClickEvent = false;
 
   // 資料儲存用變數-kidin-1090115
   token: string;
@@ -40,9 +54,9 @@ export class ComReportComponent implements OnInit, OnDestroy {
   groupList: Array<any>;
   groupImg: string;
   brandImg: string;
-  brandName: string;
-  branchName: string;
-  startDate = '';
+  brandName = '';
+  branchName = '';
+  startDate = moment().add(-6, 'days').format('YYYY-MM-DD');
   endDate = moment().format('YYYY-MM-DD');
   selectedStartDate = moment().add(-13, 'days').format('YYYY-MM-DD');
   selectedEndDate = moment().format('YYYY-MM-DD');
@@ -85,6 +99,12 @@ export class ComReportComponent implements OnInit, OnDestroy {
   avgSpeed = 0;
   bestPower = 0;
   avgPower = 0;
+  personalData = new MatTableDataSource<any>();
+  allPersonalData = [];
+  personalPage = {
+    info: '',
+    report: ''
+  };
 
   // 圖表用數據-kidin-1090115
   perTypeLength = [];
@@ -119,7 +139,9 @@ export class ComReportComponent implements OnInit, OnDestroy {
     private reportService: ReportService,
     private translate: TranslateService,
     private groupService: GroupService
-  ) { }
+  ) {
+    document.addEventListener('click', this.hideMenu.bind(this));
+  }
 
   ngOnInit() {
     this.token = this.utilsService.getToken();
@@ -132,27 +154,30 @@ export class ComReportComponent implements OnInit, OnDestroy {
     this.getIdListStart();
 
     // 使用rxjs訂閱運動類別使運動類別更改時可以即時切換-kidin-1090121
-    this.groupService.getreportCategory().subscribe(res => {
+    this.groupService.getreportCategory().pipe(first()).subscribe(res => {
       this.reportCategory = res;
       this.loadCategoryData(res);
     });
-  }
 
-  ngOnChanges () {}
+    this.personalData.sort = this.sortTable;
+
+  }
 
   // 先從rxjs取得成員ID清單，若取不到再call api-kidin-1090211
   getIdListStart () {
-    this.groupService.getMemberList().subscribe(res => {
+    const hashGroupId = this.route.snapshot.paramMap.get('groupId');
+
+    this.groupId = this.hashIdService.handleGroupIdDecode(hashGroupId);
+    this.groupLevel = this.utilsService.displayGroupLevel(this.groupId);
+
+    this.groupService.getMemberList().pipe(first()).subscribe(res => {
       if (res.groupId === '' || res.groupId !== this.groupId) {
         // 先從service取得群組資訊，若取不到再call api-kidin-1081210
         this.groupService.getGroupInfo().subscribe(result => {
           this.groupData = result;
           if (this.groupData.hasOwnProperty('groupId')) {
-            this.groupId = this.groupData.groupId;
             this.showGroupInfo();
           } else {
-            const urlArr = location.pathname.split('/');
-            this.groupId = this.hashIdService.handleGroupIdDecode(urlArr[urlArr.length - 2]);
             const groupBody = {
               token: this.token,
               groupId: this.groupId,
@@ -171,32 +196,66 @@ export class ComReportComponent implements OnInit, OnDestroy {
         this.getGroupMemberIdList();
       } else {
         this.groupList = res.groupList;
+        this.groupService.getGroupInfo().subscribe(result => {
+          this.groupData = result;
+          this.showGroupInfo();
+        });
+
+        this.handleSubmitSearch('click');
       }
     });
   }
 
-  // 取得所有成員id list並使用rxjs儲存至service-kidin-1090211
+  // 取得所有成員id list並使用rxjs儲存至service-kidin-10900310
   getGroupMemberIdList() {
-    this.groupLevel = this.utilsService.displayGroupLevel(this.groupId);
     const body = {
       token: this.token,
       groupId: this.groupId,
       groupLevel: this.groupLevel,
-      infoType: 2,
+      infoType: 5,
       avatarType: 3
     };
 
     this.groupService.fetchGroupMemberList(body).subscribe(res => {
-      const idList = new Set(),  // 避免id重複-kidin-1090211
+      const list = new Set(),  // 避免id重複-kidin-1090211
             memberList = res.info.groupMemberInfo;
 
       for (let i = 0; i < memberList.length; i++) {
-        if (memberList[i].accessRight >= 50) {
-          idList.add(memberList[i].memberId);
+        const memberGroupIdArr = memberList[i].groupId.split('-'),
+              groupIdArr = this.groupId.split('-');
+        switch (this.groupLevel) {
+          case '30':
+            memberGroupIdArr.length = 3;
+            groupIdArr.length = 3;
+            if (memberList[i].accessRight >= 50 && JSON.stringify(memberGroupIdArr) === JSON.stringify(groupIdArr)) {
+              list.add({
+                id: memberList[i].memberId,
+                name: memberList[i].memberName
+              });
+            }
+            break;
+          case '40':
+            memberGroupIdArr.length = 4;
+            groupIdArr.length = 4;
+            if (memberList[i].accessRight >= 50 && JSON.stringify(memberGroupIdArr) === JSON.stringify(groupIdArr)) {
+              list.add({
+                id: memberList[i].memberId,
+                name: memberList[i].memberName
+              });
+            }
+            break;
+          case '60':
+            if (memberList[i].accessRight >= 50 && memberList[i].groupId === this.groupId) {
+              list.add({
+                id: memberList[i].memberId,
+                name: memberList[i].memberName
+              });
+            }
+            break;
         }
       }
 
-      this.groupList = Array.from(idList);
+      this.groupList = Array.from(list);
       const groupListInfo = {
         groupId: this.groupId,
         groupList: this.groupList
@@ -209,6 +268,8 @@ export class ComReportComponent implements OnInit, OnDestroy {
         location.search.indexOf('enddate=') > -1
       ) {
         this.queryStringShowData();
+      } else {
+        this.handleSubmitSearch('click');
       }
     });
 
@@ -237,6 +298,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
     }
     this.isSelected = e.target.name;
     this.isSelectDateRange = false;
+    this.handleSubmitSearch('click');
   }
 
   // 點擊選擇日期區間按鈕後，選擇日期顯示與否-kidin-1081209
@@ -329,30 +391,51 @@ export class ComReportComponent implements OnInit, OnDestroy {
       this.dataDateRange = 'week';
     }
 
+    const groupIdList = [];
+    for (let i = 0; i < this.groupList.length; i++) {
+      groupIdList.push(this.groupList[i].id);
+    }
+
     const body = {
       token: this.token || '',
       type: this.reportRangeType,
-      targetUserId: this.groupList,
+      targetUserId: groupIdList,
       filterStartTime: this.reportStartTime,
-      filterEndTime: this.reportEndTime
+      filterEndTime: this.reportEndTime,
+      improveFormat: '2'
     };
 
+    const summaryData = [];
     this.reportService.fetchSportSummaryArray(body).subscribe(res => {
       if (Array.isArray(res)) {
         let groupReportData = [];
         for (let j = 0; j < res.length; j++) {
           // 計算有資料的人數，並將資料合併-kidin-1090212
           if (this.reportRangeType === 1) {
+            this.allPersonalData.push(this.getPersonalStatistics(res[j].reportActivityDays, j));
+
             if (res[j].reportActivityDays && res[j].reportActivityDays.length > 0) {
               this.hasDataNumber++;
               groupReportData = groupReportData.concat(res[j].reportActivityDays);
+              summaryData.push(res[j].reportActivityDays);
             }
           } else {
+            this.allPersonalData.push(this.getPersonalStatistics(res[j].reportActivityWeeks, j));
+
             if (res[j].reportActivityWeeks && res[j].reportActivityWeeks.length > 0) {
               this.hasDataNumber++;
               groupReportData = groupReportData.concat(res[j].reportActivityWeeks);
+              summaryData.push(res[j].reportActivityWeeks);
             }
           }
+        }
+
+        this.personalData.data = this.allPersonalData.slice();
+        if (this.personalData.data.length > 20) {
+          this.personalData.data.length = 20;
+          this.showAll = false;
+        } else {
+          this.showAll = true;
         }
 
         // 若沒有任何運動數據則顯示無資料-kidin-1090212
@@ -369,7 +452,6 @@ export class ComReportComponent implements OnInit, OnDestroy {
           this.calPerCategoryData();
         }
       } else {
-        console.log('Sever Error');
         this.nodata = true;
         this.isLoading = false;
         this.updateUrl('false');
@@ -399,6 +481,8 @@ export class ComReportComponent implements OnInit, OnDestroy {
     this.perTypeTime = [];
     this.typeHrZone = [];
     this.perDate = [];
+    this.personalData.data.length = 0;
+    this.allPersonalData = [];
   }
 
   // 將合併的資料進行排序
@@ -535,280 +619,283 @@ export class ComReportComponent implements OnInit, OnDestroy {
         typeRowHrZoneThree = 0,
         typeRowHrZoneFour = 0,
         typeRowHrZoneFive = 0;
-
     for (let i = 0; i < this.activitiesList.length; i++) {
-      this.activityLength += +this.activitiesList[i].activities[0]['totalActivities'];
-      typeAllTotalTrainTime += +this.activitiesList[i].activities[0]['totalSecond'];
-      typeList.push(this.activitiesList[i].activities[0]['type']);
-      typeAllCalories.push(this.activitiesList[i].activities[0]['calories']);
-      typeAllDataDate.push(this.activitiesList[i].startTime.split('T')[0]);
-      typeAllavgHr.push(this.activitiesList[i].activities[0]['avgHeartRateBpm']);
-      typeAllActivityTime.push(
-        this.activitiesList[i].activities[0]['totalSecond'] / this.activitiesList[i].activities[0]['totalActivities']
-      );
+      for (let j = 0; j < this.activitiesList[i].activities.length; j++) {
+        const perData = this.activitiesList[i].activities[j];
 
-      // 確認是否有距離數據-kidin-1090204
-      if (this.activitiesList[i].activities[0]['totalDistanceMeters']) {
-        typeAllTotalDistance += this.activitiesList[i].activities[0]['totalDistanceMeters'];
-      }
+        this.activityLength += +perData['totalActivities'];
+        typeAllTotalTrainTime += +perData['totalSecond'];
+        typeList.push(perData['type']);
+        typeAllCalories.push(perData['calories']);
+        typeAllDataDate.push(this.activitiesList[i].startTime.split('T')[0]);
+        typeAllavgHr.push(perData['avgHeartRateBpm']);
+        typeAllActivityTime.push(
+          +perData['totalSecond'] / perData['totalActivities']
+        );
 
-      // 確認是否有重量數據-kidin-1090204
-      if (this.activitiesList[i].activities[0]['totalWeightKg']) {
-        typeAllTotalWeight += this.activitiesList[i].activities[0]['totalWeightKg'];
-      }
-
-      // 活動成效分佈圖和心率區間趨勢用資料-kidin-1090203
-      if (this.activitiesList[i].activities[0]['totalHrZone0Second'] !== null) {
-        typeAllHrZoneZero += this.activitiesList[i].activities[0]['totalHrZone0Second'];
-        typeAllHrZoneOne += this.activitiesList[i].activities[0]['totalHrZone1Second'];
-        typeAllHrZoneTwo += this.activitiesList[i].activities[0]['totalHrZone2Second'];
-        typeAllHrZoneThree += this.activitiesList[i].activities[0]['totalHrZone3Second'];
-        typeAllHrZoneFour += this.activitiesList[i].activities[0]['totalHrZone4Second'];
-        typeAllHrZoneFive += this.activitiesList[i].activities[0]['totalHrZone5Second'];
-        if (
-          this.activitiesList[i].activities[0]['totalHrZone0Second'] +
-          this.activitiesList[i].activities[0]['totalHrZone1Second'] +
-          this.activitiesList[i].activities[0]['totalHrZone2Second'] +
-          this.activitiesList[i].activities[0]['totalHrZone3Second'] +
-          this.activitiesList[i].activities[0]['totalHrZone4Second'] +
-          this.activitiesList[i].activities[0]['totalHrZone5Second'] !== 0
-        ) {
-          typeAllHrZoneData.push([
-            this.activitiesList[i].activities[0].type,
-            this.activitiesList[i].activities[0]['totalHrZone0Second'],
-            this.activitiesList[i].activities[0]['totalHrZone1Second'],
-            this.activitiesList[i].activities[0]['totalHrZone2Second'],
-            this.activitiesList[i].activities[0]['totalHrZone3Second'],
-            this.activitiesList[i].activities[0]['totalHrZone4Second'],
-            this.activitiesList[i].activities[0]['totalHrZone5Second'],
-            this.activitiesList[i].startTime.split('T')[0]
-          ]);
+        // 確認是否有距離數據-kidin-1090204
+        if (perData['totalDistanceMeters']) {
+          typeAllTotalDistance += perData['totalDistanceMeters'];
         }
-      }
 
-      // 根據不同類別計算數據-kidin-1090204
-      switch (this.activitiesList[i].activities[0].type) {
-        case '1':
-          typeRunLength += +this.activitiesList[i].activities[0]['totalActivities'];
-          typeRunTotalTrainTime += +this.activitiesList[i].activities[0]['totalSecond'];
-          typeRunCalories.push(this.activitiesList[i].activities[0]['calories']);
-          typeRunTotalDistance += this.activitiesList[i].activities[0]['totalDistanceMeters'];
-          typeRunDataDate.push(this.activitiesList[i].startTime.split('T')[0]);
-          typeRunSpeed.push(this.activitiesList[i].activities[0]['avgSpeed']);
-          typeRunMaxSpeed.push(this.activitiesList[i].activities[0]['avgMaxSpeed']);
-          typeRunCadence.push(this.activitiesList[i].activities[0]['runAvgCadence']);
-          typeRunMaxCadence.push(this.activitiesList[i].activities[0]['avgRunMaxCadence']);
-          typeRunHR.push(this.activitiesList[i].activities[0]['avgHeartRateBpm']);
-          typeRunMaxHR.push(this.activitiesList[i].activities[0]['avgMaxHeartRateBpm']);
+        // 確認是否有重量數據-kidin-1090204
+        if (perData['totalWeightKg']) {
+          typeAllTotalWeight += perData['totalWeightKg'];
+        }
 
-
-          // 確認是否有心率數據-kidin-1090204
-          if (this.activitiesList[i].activities[0]['totalHrZone0Second'] !== null) {
-            typeRunHrZoneZero += this.activitiesList[i].activities[0]['totalHrZone0Second'];
-            typeRunHrZoneOne += this.activitiesList[i].activities[0]['totalHrZone1Second'];
-            typeRunHrZoneTwo += this.activitiesList[i].activities[0]['totalHrZone2Second'];
-            typeRunHrZoneThree += this.activitiesList[i].activities[0]['totalHrZone3Second'];
-            typeRunHrZoneFour += this.activitiesList[i].activities[0]['totalHrZone4Second'];
-            typeRunHrZoneFive += this.activitiesList[i].activities[0]['totalHrZone5Second'];
-            if (
-              this.activitiesList[i].activities[0]['totalHrZone0Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone1Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone2Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone3Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone4Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone5Second'] !== 0
-            ) {
-              typeRunHrZoneData.push([
-                this.activitiesList[i].activities[0].type,
-                this.activitiesList[i].activities[0]['totalHrZone0Second'],
-                this.activitiesList[i].activities[0]['totalHrZone1Second'],
-                this.activitiesList[i].activities[0]['totalHrZone2Second'],
-                this.activitiesList[i].activities[0]['totalHrZone3Second'],
-                this.activitiesList[i].activities[0]['totalHrZone4Second'],
-                this.activitiesList[i].activities[0]['totalHrZone5Second'],
-                this.activitiesList[i].startTime.split('T')[0]
-              ]);
-            }
+        // 活動成效分佈圖和心率區間趨勢用資料-kidin-1090203
+        if (perData['totalHrZone0Second'] !== null) {
+          typeAllHrZoneZero += perData['totalHrZone0Second'];
+          typeAllHrZoneOne += perData['totalHrZone1Second'];
+          typeAllHrZoneTwo += perData['totalHrZone2Second'];
+          typeAllHrZoneThree += perData['totalHrZone3Second'];
+          typeAllHrZoneFour += perData['totalHrZone4Second'];
+          typeAllHrZoneFive += perData['totalHrZone5Second'];
+          if (
+            perData['totalHrZone0Second'] +
+            perData['totalHrZone1Second'] +
+            perData['totalHrZone2Second'] +
+            perData['totalHrZone3Second'] +
+            perData['totalHrZone4Second'] +
+            perData['totalHrZone5Second'] !== 0
+          ) {
+            typeAllHrZoneData.push([
+              perData.type,
+              perData['totalHrZone0Second'],
+              perData['totalHrZone1Second'],
+              perData['totalHrZone2Second'],
+              perData['totalHrZone3Second'],
+              perData['totalHrZone4Second'],
+              perData['totalHrZone5Second'],
+              this.activitiesList[i].startTime.split('T')[0]
+            ]);
           }
+        }
 
-          break;
-        case '2':
-          typeCycleLength += +this.activitiesList[i].activities[0]['totalActivities'];
-          typeCycleTotalTrainTime += +this.activitiesList[i].activities[0]['totalSecond'];
-          typeCycleCalories.push(this.activitiesList[i].activities[0]['calories']);
-          typeCycleTotalDistance += this.activitiesList[i].activities[0]['totalDistanceMeters'];
-          typeCycleDataDate.push(this.activitiesList[i].startTime.split('T')[0]);
-          typeCycleSpeed.push(this.activitiesList[i].activities[0]['avgSpeed']);
-          typeCycleMaxSpeed.push(this.activitiesList[i].activities[0]['avgMaxSpeed']);
-          typeCycleCadence.push(this.activitiesList[i].activities[0]['cycleAvgCadence']);
-          typeCycleMaxCadence.push(this.activitiesList[i].activities[0]['avgCycleMaxCadence']);
-          typeCycleHR.push(this.activitiesList[i].activities[0]['avgHeartRateBpm']);
-          typeCycleMaxHR.push(this.activitiesList[i].activities[0]['avgMaxHeartRateBpm']);
-          typeCyclePower.push(this.activitiesList[i].activities[0]['cycleAvgWatt']);
-          typeCycleMaxPower.push(this.activitiesList[i].activities[0]['avgCycleMaxWatt']);
+        // 根據不同類別計算數據-kidin-1090204
+        switch (perData.type) {
+          case '1':
+            typeRunLength += +perData['totalActivities'];
+            typeRunTotalTrainTime += +perData['totalSecond'];
+            typeRunCalories.push(perData['calories']);
+            typeRunTotalDistance += perData['totalDistanceMeters'];
+            typeRunDataDate.push(this.activitiesList[i].startTime.split('T')[0]);
+            typeRunSpeed.push(perData['avgSpeed']);
+            typeRunMaxSpeed.push(perData['avgMaxSpeed']);
+            typeRunCadence.push(perData['runAvgCadence']);
+            typeRunMaxCadence.push(perData['avgRunMaxCadence']);
+            typeRunHR.push(perData['avgHeartRateBpm']);
+            typeRunMaxHR.push(perData['avgMaxHeartRateBpm']);
 
-          if (this.activitiesList[i].activities[0]['totalHrZone0Second'] !== null) {
-            typeCycleHrZoneZero += this.activitiesList[i].activities[0]['totalHrZone0Second'];
-            typeCycleHrZoneOne += this.activitiesList[i].activities[0]['totalHrZone1Second'];
-            typeCycleHrZoneTwo += this.activitiesList[i].activities[0]['totalHrZone2Second'];
-            typeCycleHrZoneThree += this.activitiesList[i].activities[0]['totalHrZone3Second'];
-            typeCycleHrZoneFour += this.activitiesList[i].activities[0]['totalHrZone4Second'];
-            typeCycleHrZoneFive += this.activitiesList[i].activities[0]['totalHrZone5Second'];
-            if (
-              this.activitiesList[i].activities[0]['totalHrZone0Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone1Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone2Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone3Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone4Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone5Second'] !== 0
-            ) {
-              typeCycleHrZoneData.push([
-                this.activitiesList[i].activities[0].type,
-                this.activitiesList[i].activities[0]['totalHrZone0Second'],
-                this.activitiesList[i].activities[0]['totalHrZone1Second'],
-                this.activitiesList[i].activities[0]['totalHrZone2Second'],
-                this.activitiesList[i].activities[0]['totalHrZone3Second'],
-                this.activitiesList[i].activities[0]['totalHrZone4Second'],
-                this.activitiesList[i].activities[0]['totalHrZone5Second'],
-                this.activitiesList[i].startTime.split('T')[0]
-              ]);
+
+            // 確認是否有心率數據-kidin-1090204
+            if (perData['totalHrZone0Second'] !== null) {
+              typeRunHrZoneZero += perData['totalHrZone0Second'];
+              typeRunHrZoneOne += perData['totalHrZone1Second'];
+              typeRunHrZoneTwo += perData['totalHrZone2Second'];
+              typeRunHrZoneThree += perData['totalHrZone3Second'];
+              typeRunHrZoneFour += perData['totalHrZone4Second'];
+              typeRunHrZoneFive += perData['totalHrZone5Second'];
+              if (
+                perData['totalHrZone0Second'] +
+                perData['totalHrZone1Second'] +
+                perData['totalHrZone2Second'] +
+                perData['totalHrZone3Second'] +
+                perData['totalHrZone4Second'] +
+                perData['totalHrZone5Second'] !== 0
+              ) {
+                typeRunHrZoneData.push([
+                  perData.type,
+                  perData['totalHrZone0Second'],
+                  perData['totalHrZone1Second'],
+                  perData['totalHrZone2Second'],
+                  perData['totalHrZone3Second'],
+                  perData['totalHrZone4Second'],
+                  perData['totalHrZone5Second'],
+                  this.activitiesList[i].startTime.split('T')[0]
+                ]);
+              }
             }
-          }
 
-          break;
-        case '3':
-          typeWeightTrainLength += +this.activitiesList[i].activities[0]['totalActivities'];
-          typeWeightTrainTotalTrainTime += +this.activitiesList[i].activities[0]['totalSecond'];
-          typeWeightTrainCalories.push(this.activitiesList[i].activities[0]['calories']);
-          typeWeightTrainTotalWeight += this.activitiesList[i].activities[0]['totalWeightKg'];
-          typeWeightTrainDataDate.push(this.activitiesList[i].startTime.split('T')[0]);
+            break;
+          case '2':
+            typeCycleLength += +perData['totalActivities'];
+            typeCycleTotalTrainTime += +perData['totalSecond'];
+            typeCycleCalories.push(perData['calories']);
+            typeCycleTotalDistance += perData['totalDistanceMeters'];
+            typeCycleDataDate.push(this.activitiesList[i].startTime.split('T')[0]);
+            typeCycleSpeed.push(perData['avgSpeed']);
+            typeCycleMaxSpeed.push(perData['avgMaxSpeed']);
+            typeCycleCadence.push(perData['cycleAvgCadence']);
+            typeCycleMaxCadence.push(perData['avgCycleMaxCadence']);
+            typeCycleHR.push(perData['avgHeartRateBpm']);
+            typeCycleMaxHR.push(perData['avgMaxHeartRateBpm']);
+            typeCyclePower.push(perData['cycleAvgWatt']);
+            typeCycleMaxPower.push(perData['avgCycleMaxWatt']);
 
-          break;
-        case '4':
-          typeSwimLength += +this.activitiesList[i].activities[0]['totalActivities'];
-          typeSwimTotalTrainTime += +this.activitiesList[i].activities[0]['totalSecond'];
-          typeSwimCalories.push(this.activitiesList[i].activities[0]['calories']);
-          typeSwimTotalDistance += this.activitiesList[i].activities[0]['totalDistanceMeters'];
-          typeSwimDataDate.push(this.activitiesList[i].startTime.split('T')[0]);
-          typeSwimSpeed.push(this.activitiesList[i].activities[0]['avgSpeed']);
-          typeSwimMaxSpeed.push(this.activitiesList[i].activities[0]['avgMaxSpeed']);
-          typeSwimCadence.push(this.activitiesList[i].activities[0]['swimAvgCadence']);
-          typeSwimMaxCadence.push(this.activitiesList[i].activities[0]['avgSwimMaxCadence']);
-          typeSwimSwolf.push(this.activitiesList[i].activities[0]['avgSwolf']);
-          typeSwimMaxSwolf.push(this.activitiesList[i].activities[0]['bestSwolf']);
-          typeSwimHR.push(this.activitiesList[i].activities[0]['avgHeartRateBpm']);
-          typeSwimMaxHR.push(this.activitiesList[i].activities[0]['avgMaxHeartRateBpm']);
-
-          if (this.activitiesList[i].activities[0]['totalHrZone0Second'] !== null) {
-            typeSwimHrZoneZero += this.activitiesList[i].activities[0]['totalHrZone0Second'];
-            typeSwimHrZoneOne += this.activitiesList[i].activities[0]['totalHrZone1Second'];
-            typeSwimHrZoneTwo += this.activitiesList[i].activities[0]['totalHrZone2Second'];
-            typeSwimHrZoneThree += this.activitiesList[i].activities[0]['totalHrZone3Second'];
-            typeSwimHrZoneFour += this.activitiesList[i].activities[0]['totalHrZone4Second'];
-            typeSwimHrZoneFive += this.activitiesList[i].activities[0]['totalHrZone5Second'];
-            if (
-              this.activitiesList[i].activities[0]['totalHrZone0Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone1Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone2Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone3Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone4Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone5Second'] !== 0
-            ) {
-              typeSwimHrZoneData.push([
-                this.activitiesList[i].activities[0].type,
-                this.activitiesList[i].activities[0]['totalHrZone0Second'],
-                this.activitiesList[i].activities[0]['totalHrZone1Second'],
-                this.activitiesList[i].activities[0]['totalHrZone2Second'],
-                this.activitiesList[i].activities[0]['totalHrZone3Second'],
-                this.activitiesList[i].activities[0]['totalHrZone4Second'],
-                this.activitiesList[i].activities[0]['totalHrZone5Second'],
-                this.activitiesList[i].startTime.split('T')[0]
-              ]);
+            if (perData['totalHrZone0Second'] !== null) {
+              typeCycleHrZoneZero += perData['totalHrZone0Second'];
+              typeCycleHrZoneOne += perData['totalHrZone1Second'];
+              typeCycleHrZoneTwo += perData['totalHrZone2Second'];
+              typeCycleHrZoneThree += perData['totalHrZone3Second'];
+              typeCycleHrZoneFour += perData['totalHrZone4Second'];
+              typeCycleHrZoneFive += perData['totalHrZone5Second'];
+              if (
+                perData['totalHrZone0Second'] +
+                perData['totalHrZone1Second'] +
+                perData['totalHrZone2Second'] +
+                perData['totalHrZone3Second'] +
+                perData['totalHrZone4Second'] +
+                perData['totalHrZone5Second'] !== 0
+              ) {
+                typeCycleHrZoneData.push([
+                  perData.type,
+                  perData['totalHrZone0Second'],
+                  perData['totalHrZone1Second'],
+                  perData['totalHrZone2Second'],
+                  perData['totalHrZone3Second'],
+                  perData['totalHrZone4Second'],
+                  perData['totalHrZone5Second'],
+                  this.activitiesList[i].startTime.split('T')[0]
+                ]);
+              }
             }
-          }
 
-          break;
-        case '5':
-          typeAerobicLength += +this.activitiesList[i].activities[0]['totalActivities'];
-          typeAerobicTotalTrainTime += +this.activitiesList[i].activities[0]['totalSecond'];
-          typeAerobicCalories.push(this.activitiesList[i].activities[0]['calories']);
-          typeAerobicDataDate.push(this.activitiesList[i].startTime.split('T')[0]);
-          typeAerobicHR.push(this.activitiesList[i].activities[0]['avgHeartRateBpm']);
-          typeAerobicMaxHR.push(this.activitiesList[i].activities[0]['avgMaxHeartRateBpm']);
+            break;
+          case '3':
+            typeWeightTrainLength += +perData['totalActivities'];
+            typeWeightTrainTotalTrainTime += +perData['totalSecond'];
+            typeWeightTrainCalories.push(perData['calories']);
+            typeWeightTrainTotalWeight += perData['totalWeightKg'];
+            typeWeightTrainDataDate.push(this.activitiesList[i].startTime.split('T')[0]);
 
-          if (this.activitiesList[i].activities[0]['totalHrZone0Second'] !== null) {
-            typeAerobicHrZoneZero += this.activitiesList[i].activities[0]['totalHrZone0Second'];
-            typeAerobicHrZoneOne += this.activitiesList[i].activities[0]['totalHrZone1Second'];
-            typeAerobicHrZoneTwo += this.activitiesList[i].activities[0]['totalHrZone2Second'];
-            typeAerobicHrZoneThree += this.activitiesList[i].activities[0]['totalHrZone3Second'];
-            typeAerobicHrZoneFour += this.activitiesList[i].activities[0]['totalHrZone4Second'];
-            typeAerobicHrZoneFive += this.activitiesList[i].activities[0]['totalHrZone5Second'];
-            if (
-              this.activitiesList[i].activities[0]['totalHrZone0Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone1Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone2Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone3Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone4Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone5Second'] !== 0
-            ) {
-              typeAerobicHrZoneData.push([
-                this.activitiesList[i].activities[0].type,
-                this.activitiesList[i].activities[0]['totalHrZone0Second'],
-                this.activitiesList[i].activities[0]['totalHrZone1Second'],
-                this.activitiesList[i].activities[0]['totalHrZone2Second'],
-                this.activitiesList[i].activities[0]['totalHrZone3Second'],
-                this.activitiesList[i].activities[0]['totalHrZone4Second'],
-                this.activitiesList[i].activities[0]['totalHrZone5Second'],
-                this.activitiesList[i].startTime.split('T')[0]
-              ]);
+            break;
+          case '4':
+            typeSwimLength += +perData['totalActivities'];
+            typeSwimTotalTrainTime += +perData['totalSecond'];
+            typeSwimCalories.push(perData['calories']);
+            typeSwimTotalDistance += perData['totalDistanceMeters'];
+            typeSwimDataDate.push(this.activitiesList[i].startTime.split('T')[0]);
+            typeSwimSpeed.push(perData['avgSpeed']);
+            typeSwimMaxSpeed.push(perData['avgMaxSpeed']);
+            typeSwimCadence.push(perData['swimAvgCadence']);
+            typeSwimMaxCadence.push(perData['avgSwimMaxCadence']);
+            typeSwimSwolf.push(perData['avgSwolf']);
+            typeSwimMaxSwolf.push(perData['bestSwolf']);
+            typeSwimHR.push(perData['avgHeartRateBpm']);
+            typeSwimMaxHR.push(perData['avgMaxHeartRateBpm']);
+
+            if (perData['totalHrZone0Second'] !== null) {
+              typeSwimHrZoneZero += perData['totalHrZone0Second'];
+              typeSwimHrZoneOne += perData['totalHrZone1Second'];
+              typeSwimHrZoneTwo += perData['totalHrZone2Second'];
+              typeSwimHrZoneThree += perData['totalHrZone3Second'];
+              typeSwimHrZoneFour += perData['totalHrZone4Second'];
+              typeSwimHrZoneFive += perData['totalHrZone5Second'];
+              if (
+                perData['totalHrZone0Second'] +
+                perData['totalHrZone1Second'] +
+                perData['totalHrZone2Second'] +
+                perData['totalHrZone3Second'] +
+                perData['totalHrZone4Second'] +
+                perData['totalHrZone5Second'] !== 0
+              ) {
+                typeSwimHrZoneData.push([
+                  perData.type,
+                  perData['totalHrZone0Second'],
+                  perData['totalHrZone1Second'],
+                  perData['totalHrZone2Second'],
+                  perData['totalHrZone3Second'],
+                  perData['totalHrZone4Second'],
+                  perData['totalHrZone5Second'],
+                  this.activitiesList[i].startTime.split('T')[0]
+                ]);
+              }
             }
-          }
 
-          break;
-        case '6':
-          typeRowLength += +this.activitiesList[i].activities[0]['totalActivities'];
-          typeRowTotalTrainTime += +this.activitiesList[i].activities[0]['totalSecond'];
-          typeRowCalories.push(this.activitiesList[i].activities[0]['calories']);
-          typeRowTotalDistance += this.activitiesList[i].activities[0]['totalDistanceMeters'];
-          typeRowDataDate.push(this.activitiesList[i].startTime.split('T')[0]);
-          typeRowSpeed.push(this.activitiesList[i].activities[0]['avgSpeed']);
-          typeRowMaxSpeed.push(this.activitiesList[i].activities[0]['avgMaxSpeed']);
-          typeRowCadence.push(this.activitiesList[i].activities[0]['rowingAvgCadence']);
-          typeRowMaxCadence.push(this.activitiesList[i].activities[0]['avgRowingMaxCadence']);
-          typeRowHR.push(this.activitiesList[i].activities[0]['avgHeartRateBpm']);
-          typeRowMaxHR.push(this.activitiesList[i].activities[0]['avgMaxHeartRateBpm']);
-          typeRowPower.push(this.activitiesList[i].activities[0]['rowingAvgWatt']);
-          typeRowMaxPower.push(this.activitiesList[i].activities[0]['rowingMaxWatt']);
+            break;
+          case '5':
+            typeAerobicLength += +perData['totalActivities'];
+            typeAerobicTotalTrainTime += +perData['totalSecond'];
+            typeAerobicCalories.push(perData['calories']);
+            typeAerobicDataDate.push(this.activitiesList[i].startTime.split('T')[0]);
+            typeAerobicHR.push(perData['avgHeartRateBpm']);
+            typeAerobicMaxHR.push(perData['avgMaxHeartRateBpm']);
 
-          if (this.activitiesList[i].activities[0]['totalHrZone0Second'] !== null) {
-            typeRowHrZoneZero += this.activitiesList[i].activities[0]['totalHrZone0Second'];
-            typeRowHrZoneOne += this.activitiesList[i].activities[0]['totalHrZone1Second'];
-            typeRowHrZoneTwo += this.activitiesList[i].activities[0]['totalHrZone2Second'];
-            typeRowHrZoneThree += this.activitiesList[i].activities[0]['totalHrZone3Second'];
-            typeRowHrZoneFour += this.activitiesList[i].activities[0]['totalHrZone4Second'];
-            typeRowHrZoneFive += this.activitiesList[i].activities[0]['totalHrZone5Second'];
-            if (
-              this.activitiesList[i].activities[0]['totalHrZone0Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone1Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone2Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone3Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone4Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone5Second'] !== 0
-            ) {
-              typeRowHrZoneData.push([
-                this.activitiesList[i].activities[0].type,
-                this.activitiesList[i].activities[0]['totalHrZone0Second'],
-                this.activitiesList[i].activities[0]['totalHrZone1Second'],
-                this.activitiesList[i].activities[0]['totalHrZone2Second'],
-                this.activitiesList[i].activities[0]['totalHrZone3Second'],
-                this.activitiesList[i].activities[0]['totalHrZone4Second'],
-                this.activitiesList[i].activities[0]['totalHrZone5Second'],
-                this.activitiesList[i].startTime.split('T')[0]
-              ]);
+            if (perData['totalHrZone0Second'] !== null) {
+              typeAerobicHrZoneZero += perData['totalHrZone0Second'];
+              typeAerobicHrZoneOne += perData['totalHrZone1Second'];
+              typeAerobicHrZoneTwo += perData['totalHrZone2Second'];
+              typeAerobicHrZoneThree += perData['totalHrZone3Second'];
+              typeAerobicHrZoneFour += perData['totalHrZone4Second'];
+              typeAerobicHrZoneFive += perData['totalHrZone5Second'];
+              if (
+                perData['totalHrZone0Second'] +
+                perData['totalHrZone1Second'] +
+                perData['totalHrZone2Second'] +
+                perData['totalHrZone3Second'] +
+                perData['totalHrZone4Second'] +
+                perData['totalHrZone5Second'] !== 0
+              ) {
+                typeAerobicHrZoneData.push([
+                  perData.type,
+                  perData['totalHrZone0Second'],
+                  perData['totalHrZone1Second'],
+                  perData['totalHrZone2Second'],
+                  perData['totalHrZone3Second'],
+                  perData['totalHrZone4Second'],
+                  perData['totalHrZone5Second'],
+                  this.activitiesList[i].startTime.split('T')[0]
+                ]);
+              }
             }
-          }
 
-          break;
+            break;
+          case '6':
+            typeRowLength += +perData['totalActivities'];
+            typeRowTotalTrainTime += +perData['totalSecond'];
+            typeRowCalories.push(perData['calories']);
+            typeRowTotalDistance += perData['totalDistanceMeters'];
+            typeRowDataDate.push(this.activitiesList[i].startTime.split('T')[0]);
+            typeRowSpeed.push(perData['avgSpeed']);
+            typeRowMaxSpeed.push(perData['avgMaxSpeed']);
+            typeRowCadence.push(perData['rowingAvgCadence']);
+            typeRowMaxCadence.push(perData['avgRowingMaxCadence']);
+            typeRowHR.push(perData['avgHeartRateBpm']);
+            typeRowMaxHR.push(perData['avgMaxHeartRateBpm']);
+            typeRowPower.push(perData['rowingAvgWatt']);
+            typeRowMaxPower.push(perData['rowingMaxWatt']);
+
+            if (perData['totalHrZone0Second'] !== null) {
+              typeRowHrZoneZero += perData['totalHrZone0Second'];
+              typeRowHrZoneOne += perData['totalHrZone1Second'];
+              typeRowHrZoneTwo += perData['totalHrZone2Second'];
+              typeRowHrZoneThree += perData['totalHrZone3Second'];
+              typeRowHrZoneFour += perData['totalHrZone4Second'];
+              typeRowHrZoneFive += perData['totalHrZone5Second'];
+              if (
+                perData['totalHrZone0Second'] +
+                perData['totalHrZone1Second'] +
+                perData['totalHrZone2Second'] +
+                perData['totalHrZone3Second'] +
+                perData['totalHrZone4Second'] +
+                perData['totalHrZone5Second'] !== 0
+              ) {
+                typeRowHrZoneData.push([
+                  perData.type,
+                  perData['totalHrZone0Second'],
+                  perData['totalHrZone1Second'],
+                  perData['totalHrZone2Second'],
+                  perData['totalHrZone3Second'],
+                  perData['totalHrZone4Second'],
+                  perData['totalHrZone5Second'],
+                  this.activitiesList[i].startTime.split('T')[0]
+                ]);
+              }
+            }
+
+            break;
+        }
       }
     }
 
@@ -1400,6 +1487,200 @@ export class ComReportComponent implements OnInit, OnDestroy {
     }
   }
 
+  // 計算個人運動統計資料-kidin-1090302
+  getPersonalStatistics (data, index) {
+
+    if (data && data.length !== 0) {
+
+      let totalActivityNum = 0,
+            totalActivityTime = 0,
+            totalCalories = 0,
+            recordStartTime,
+            idx = 1;
+
+      const typeCount = [
+              {type: 'run', count: 0},
+              {type: 'cycle', count: 0},
+              {type: 'weightTraining', count: 0},
+              {type: 'swim', count: 0},
+              {type: 'aerobic', count: 0},
+              {type: 'row', count: 0}
+            ],
+            perHRZone = {
+              z0: 0,
+              z1: 0,
+              z2: 0,
+              z3: 0,
+              z4: 0,
+              z5: 0
+            },
+            xPoint = [],
+            activityTime = [],
+            calories = [];
+
+      for (let i = 0; i < data.length; i++) {
+        idx++;
+
+        if (i === data.length - 1) {
+          recordStartTime = moment(data[i].startTime.split('T')[0]);
+        }
+
+        for (let j = 0; j < data[i].activities.length; j++) {
+          const perData = data[i].activities[j];
+
+          totalActivityNum += perData.totalActivities;
+          totalActivityTime += +perData.totalSecond;
+          totalCalories += perData.calories;
+          perHRZone.z0 += perData.totalHrZone0Second;
+          perHRZone.z1 += perData.totalHrZone1Second;
+          perHRZone.z2 += perData.totalHrZone2Second;
+          perHRZone.z3 += perData.totalHrZone3Second;
+          perHRZone.z4 += perData.totalHrZone4Second;
+          perHRZone.z5 += perData.totalHrZone5Second;
+
+          activityTime.unshift(perData.totalSecond);
+          calories.unshift(perData.calories);
+          xPoint.push(idx);
+
+          switch (+perData.type) {
+            case 1:
+              typeCount[0].count += perData.totalActivities;
+              break;
+            case 2:
+              typeCount[1].count += perData.totalActivities;
+              break;
+            case 3:
+              typeCount[2].count += perData.totalActivities;
+              break;
+            case 4:
+              typeCount[3].count += perData.totalActivities;
+              break;
+            case 5:
+              typeCount[4].count += perData.totalActivities;
+              break;
+            case 6:
+              typeCount[5].count += perData.totalActivities;
+              break;
+          }
+        }
+
+      }
+
+      const recordEndTime = moment(this.reportEndTime.split('T')[0]),
+            timeRegression = new SimpleLinearRegression(xPoint, activityTime),
+            caloriesRegression = new SimpleLinearRegression(xPoint, calories);
+
+      let timePeroid;
+      if (this.dataDateRange === 'day') {
+        timePeroid = this.diffDay;
+      } else {
+        timePeroid = recordEndTime.diff(recordStartTime, 'days');
+      }
+
+      return {
+        id: index,
+        name: this.groupList[index].name,
+        userId: this.groupList[index].id,
+        totalActivityNum: totalActivityNum,
+        weekFrequency: (totalActivityNum / timePeroid) * 7,
+        avgTime: this.formatHmTime(totalActivityTime / totalActivityNum),
+        timeRegression: timeRegression.slope,
+        avgCalories: totalCalories / totalActivityNum,
+        caloriesRegression: caloriesRegression.slope,
+        likeType: this.findLikeType(typeCount),
+        HRZone: [
+          perHRZone.z0,
+          perHRZone.z1,
+          perHRZone.z2,
+          perHRZone.z3,
+          perHRZone.z4,
+          perHRZone.z5
+        ]
+      };
+
+    } else {
+      return {
+        id: index,
+        name: this.groupList[index].name,
+        userId: this.groupList[index].id,
+        totalActivityNum: '--',
+        weekFrequency: '--',
+        avgTime: '-:--',
+        timeRegression: '--',
+        avgCalories: '--',
+        caloriesRegression: '--',
+        likeType: [],
+        HRZone: '--'
+      };
+    }
+
+  }
+
+  // 將秒數轉換成個人分析需要的時間格式-kidin-1090217
+  formatHmTime (second) {
+    if (second) {
+      const totalSec = Math.round(second),
+          hr = Math.floor(totalSec / 3600),
+          min = Math.round((totalSec - hr * 3600) / 60);
+
+      // 剛好59分30秒～59分59秒四捨五入後進位的情況-kidin-1090217
+      if (min === 60) {
+        return `${hr + 1}:00`;
+      } else if (hr === 0 && min === 0) {
+        return `0:00`;
+      } else {
+        const timeTotalMin = ('0' + min).slice(-2);
+        return `${hr}:${timeTotalMin}`;
+      }
+    } else {
+      return `-:--`;
+    }
+
+  }
+
+  // 根據運動類型依運動檔案多寡進行排序，並取前三多的項目-kidin-1090309
+  findLikeType (type) {
+    const filterZero = type.filter(_type => {
+      return (_type.count !== 0);
+    });
+
+    let swapped = true;
+    for (let i = 0; i < filterZero.length && swapped; i++) {
+
+      swapped = false;
+      for (let j = 0; j < filterZero.length - 1 - i; j++) {
+        if (filterZero[j].count < filterZero[j + 1].count) {
+          swapped = true;
+          [filterZero[j], filterZero[j + 1]] = [filterZero[j + 1], filterZero[j]];
+        }
+      }
+    }
+
+    if (filterZero.length > 3) {
+      filterZero.length = 3;
+    }
+
+    const preference = filterZero.map(_item => {
+      switch (_item.type) {
+        case 'run':
+          return 'icon-svg_web-icon_p1_083-run';
+        case 'cycle':
+          return 'icon-svg_web-icon_p1_084-cycle';
+        case 'weightTraining':
+          return 'icon-svg_web-icon_p1_086-weight_training';
+        case 'swim':
+          return 'icon-svg_web-icon_p1_085-swim';
+        case 'aerobic':
+          return 'icon-svg_web-icon_p1_087-aerobic';
+        case 'row':
+          return 'icon-svg_web-icon_p1_088-row';
+      }
+    });
+
+    return preference;
+
+  }
+
   // 將搜尋的類別和範圍處理過後加入query string並更新現在的url和預覽列印的url-kidin-1090205
   updateUrl (hasData) {
     let newUrl;
@@ -1445,24 +1726,31 @@ export class ComReportComponent implements OnInit, OnDestroy {
     }
   }
 
-  // 顯示群組資料-kidin-1081227
+  // 顯示群組資料-kidin-1090310
   showGroupInfo () {
     const groupIcon = this.groupData.groupIcon;
+    this.groupImg =
+      (
+        groupIcon && groupIcon.length > 0
+            ? groupIcon
+            : '/assets/images/group-default.svg'
+      );
+
+    if (+this.groupLevel > 30 && this.groupData.groupRootInfo[2]) {
       const brandIcon = this.groupData.groupRootInfo[2].brandIcon;
-      this.groupImg =
-        (
-          groupIcon && groupIcon.length > 0
-              ? groupIcon
-              : '/assets/images/group-default.svg'
-        );
       this.brandImg =
-        (
-          brandIcon && brandIcon.length > 0
-              ? brandIcon
-              : '/assets/images/group-default.svg'
-        );
+      (
+        brandIcon && brandIcon.length > 0
+            ? brandIcon
+            : '/assets/images/group-default.svg'
+      );
+
       this.brandName = this.groupData.groupRootInfo[2].brandName;
+    }
+
+    if (+this.groupLevel > 40 && this.groupData.groupRootInfo[3]) {
       this.branchName = this.groupData.groupRootInfo[3].branchName;
+    }
   }
 
   // 切換運動類型-kidin-1090212
@@ -1477,6 +1765,92 @@ export class ComReportComponent implements OnInit, OnDestroy {
     } else {
       this.selectType = category;
     }
+  }
+
+  // 顯示所有個人分析列表-kidin-1090305
+  showAllPersonData () {
+    this.showAll = true;
+    this.personalData.data = this.allPersonalData.slice();
+
+    if (this.sortTable && this.sortTable.hasOwnProperty('active')) {
+      this.sortPersonData();
+    }
+  }
+
+  // 依據點選的項目進行排序-kidin-1090305
+  sortPersonData () {
+    const sortCategory = this.sortTable.active,
+          sortDirection = this.sortTable.direction,
+          sortResult = [...this.personalData.data];
+
+    let swapped = true;
+
+    for (let i = 0; i < sortResult.length && swapped; i++) {
+      swapped = false;
+      for (let j = 0; j < sortResult.length - 1 - i; j++) {
+        if (sortDirection === 'asc') {
+
+          if (sortResult[j][sortCategory] > sortResult[j + 1][sortCategory] || sortResult[j][sortCategory] === '--') {
+            swapped = true;
+            [sortResult[j], sortResult[j + 1]] = [sortResult[j + 1], sortResult[j]];
+          }
+
+        } else {
+
+          if (sortResult[j][sortCategory] < sortResult[j + 1][sortCategory] || sortResult[j][sortCategory] === '--') {
+            swapped = true;
+            [sortResult[j], sortResult[j + 1]] = [sortResult[j + 1], sortResult[j]];
+          }
+
+        }
+
+      }
+    }
+
+    this.personalData.data = sortResult;
+  }
+
+  // 依據點選的成員顯示選單-kidin-1090102
+  handleClickMember (e) {
+    this.checkClickEvent = true;
+    const user = e.currentTarget.id,
+          hashUserId = this.hashIdService.handleUserIdEncode(this.groupList[user].id);
+
+    this.personalPage = {
+      info: `/user-profile/${hashUserId}`,
+      report: `/user-profile/${hashUserId}/sport-report`
+    };
+
+    if (e.view.innerWidth - e.clientX < 200) {
+      this.personalMenu = {
+        show: true,
+        x: `${e.view.innerWidth - 200}px`,
+        y: `${e.clientY}px`
+      };
+    } else {
+      this.personalMenu = {
+        show: true,
+        x: `${e.clientX}px`,
+        y: `${e.clientY}px`
+      };
+    }
+
+    window.addEventListener('scroll', this.hideMenu.bind(this), true);
+  }
+
+  // 隱藏個人選單-kidin-1090310
+  hideMenu () {
+    if (this.checkClickEvent === false) {
+      this.personalMenu = {
+        show: false,
+        x: '',
+        y: ''
+      };
+    } else {
+      this.checkClickEvent = false;
+    }
+
+    window.removeEventListener('scroll', this.hideMenu.bind(this), true);
   }
 
   print() {

@@ -30,7 +30,7 @@ export class DashboardGuard implements CanActivate {
     return this.userInfoService.getInitialUserInfoStatus().map((res: UserInfo) => {
       const { isInitial } = res;
       if (!isInitial) {
-        const token = this.utils.getToken();
+        const token = this.utils.getToken() || '';
         const body = {
           token,
           avatarType: 2,
