@@ -32,7 +32,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
   // 資料儲存用變數-kidin-1090115
   @Output() showPrivacyUi = new EventEmitter();
   token: string;
-  userId: string;
+  userId: number;
   reportCategory = '99';
   reportStartTime = '';
   reportEndTime = '';
@@ -126,7 +126,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
       };
       this.userProfileService.getUserProfile(userBody).subscribe(res => {
         this.fileInfo = res.info;
-        this.userId = this.fileInfo.nameId;
+        this.userId = +this.fileInfo.nameId;
 
         // 使用rxjs訂閱搜索日期使搜索日期更改時可以即時切換-kidin-1090121
         this.reportService.getReportAdditon().subscribe(response => {
@@ -139,7 +139,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
         });
       });
     } else {
-      this.userId = this.hashIdService.handleUserIdDecode(hashUserId);
+      this.userId = +this.hashIdService.handleUserIdDecode(hashUserId);
 
       // 使用rxjs訂閱搜索日期使搜索日期更改時可以即時切換-kidin-1090121
       this.reportService.getReportAdditon().subscribe(response => {
@@ -207,36 +207,37 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
     const body = {
       token: this.token || '',
       type: this.reportRangeType,
-      targetUserId: this.userId,
+      targetUserId: [this.userId],
       filterStartTime: this.reportStartTime,
-      filterEndTime: this.reportEndTime
+      filterEndTime: this.reportEndTime,
+      improveFormat: 2
     };
 
     this.reportService.fetchSportSummaryArray(body).subscribe(res => {
-      if (res.resultCode === 400 || res.resultCode === 401 || res.resultCode === 402 || res.resultCode === 403) {
+      if (res[0].resultCode === 400 || res[0].resultCode === 401 || res[0].resultCode === 402 || res[0].resultCode === 403) {
         this.isLoading = false;
         this.updateUrl('false');
         return this.showPrivacyUi.emit(true);
-      } else if (res.resultCode === 200) {
+      } else if (res[0].resultCode === 200) {
         this.showPrivacyUi.emit(false);
-        const dataLength = res.reportInfo.totalPoint;
+        const dataLength = res[0].reportInfo.totalPoint;
         if (dataLength === 0) {
           this.nodata = true;
           this.isLoading = false;
           this.updateUrl('false');
         } else {
           if (this.reportRangeType === 1) {
-            this.activitiesList = res.reportActivityDays;
+            this.activitiesList = res[0].reportActivityDays;
             this.dataDateRange = 'day';
             this.updateUrl('true');
           } else {
-            this.activitiesList = res.reportActivityWeeks;
+            this.activitiesList = res[0].reportActivityWeeks;
             this.dataDateRange = 'week';
             this.updateUrl('true');
           }
 
           this.showReport = true;
-          this.calPerCategoryData(dataLength);
+          this.calPerCategoryData();
         }
       } else {
         console.log('Sever Error');
@@ -246,36 +247,39 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
 
   // 依據選擇的搜索日期切換顯示-kidin-1090121
   switchPeriod (period: string) {
-    switch (period) {
-      case '7':
-        this.reportRangeType = 1;
-        this.selectPeriod = '7';
-        this.period = `7 ${this.translate.instant(
-          'Dashboard.SportReport.day'
-        )}`;
-      break;
-      case '30':
-        this.reportRangeType = 1;
-        this.selectPeriod = '30';
-        this.period = `30 ${this.translate.instant(
-          'Dashboard.SportReport.day'
-        )}`;
-      break;
-      case '182':
-        this.reportRangeType = 2;
-        this.selectPeriod = '182';
-        this.period = `6 ${this.translate.instant(
-          'Dashboard.SportReport.month'
-        )}`;
-      break;
-      case '364':
-        this.reportRangeType = 2;
-        this.selectPeriod = '364';
-        this.period = `12 ${this.translate.instant(
-          'Dashboard.SportReport.month'
-        )}`;
-      break;
-    }
+    // 用get方法確認translate套件已完成載入(Bug 1147)-kidin-1090316
+    this.translate.get('hello.world').subscribe(() => {
+      switch (period) {
+        case '7':
+          this.reportRangeType = 1;
+          this.selectPeriod = '7';
+          this.period = `7 ${this.translate.instant(
+            'Dashboard.SportReport.day'
+          )}`;
+        break;
+        case '30':
+          this.reportRangeType = 1;
+          this.selectPeriod = '30';
+          this.period = `30 ${this.translate.instant(
+            'Dashboard.SportReport.day'
+          )}`;
+        break;
+        case '182':
+          this.reportRangeType = 2;
+          this.selectPeriod = '182';
+          this.period = `6 ${this.translate.instant(
+            'Dashboard.SportReport.month'
+          )}`;
+        break;
+        case '364':
+          this.reportRangeType = 2;
+          this.selectPeriod = '364';
+          this.period = `12 ${this.translate.instant(
+            'Dashboard.SportReport.month'
+          )}`;
+        break;
+      }
+    });
   }
 
   // 取得使用者資訊並計算心率區間範圍()-kidin-1090203
@@ -355,7 +359,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   // 計算各種所需數據-kidin-1090120
-  calPerCategoryData (dataLength) {
+  calPerCategoryData () {
     const typeList = [],
           typeAllHrZoneData = [],
           typeAllCalories = [],
@@ -469,289 +473,298 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
         typeRowHrZoneFour = 0,
         typeRowHrZoneFive = 0;
 
-    for (let i = 0; i < dataLength; i++) {
-      this.activityLength += +this.activitiesList[i].activities[0]['totalActivities'];
-      typeAllTotalTrainTime += +this.activitiesList[i].activities[0]['totalSecond'];
-      typeList.unshift(this.activitiesList[i].activities[0]['type']);
-      typeAllCalories.unshift(this.activitiesList[i].activities[0]['calories']);
+    for (let i = 0; i < this.activitiesList.length; i++) {
       typeAllDataDate.unshift(this.activitiesList[i].startTime.split('T')[0]);
-      typeAllavgHr.unshift(this.activitiesList[i].activities[0]['avgHeartRateBpm']);
-      typeAllActivityTime.unshift(
-        this.activitiesList[i].activities[0]['totalSecond'] / this.activitiesList[i].activities[0]['totalActivities']
-      );
 
-      // 確認是否有距離數據-kidin-1090204
-      if (this.activitiesList[i].activities[0]['totalDistanceMeters']) {
-        typeAllTotalDistance += this.activitiesList[i].activities[0]['totalDistanceMeters'];
-      }
+      let sameDayCalories = 0;
+      for (let j = 0; j < this.activitiesList[i].activities.length; j++) {
+        const perStrokeData = this.activitiesList[i].activities[j];
 
-      // 確認是否有重量數據-kidin-1090204
-      if (this.activitiesList[i].activities[0]['totalWeightKg']) {
-        typeAllTotalWeight += this.activitiesList[i].activities[0]['totalWeightKg'];
-      }
+        sameDayCalories += perStrokeData['calories'];
 
-      // 活動成效分佈圖和心率區間趨勢用資料-kidin-1090203
-      if (this.activitiesList[i].activities[0]['totalHrZone0Second'] !== null) {
-        typeAllHrZoneZero += this.activitiesList[i].activities[0]['totalHrZone0Second'];
-        typeAllHrZoneOne += this.activitiesList[i].activities[0]['totalHrZone1Second'];
-        typeAllHrZoneTwo += this.activitiesList[i].activities[0]['totalHrZone2Second'];
-        typeAllHrZoneThree += this.activitiesList[i].activities[0]['totalHrZone3Second'];
-        typeAllHrZoneFour += this.activitiesList[i].activities[0]['totalHrZone4Second'];
-        typeAllHrZoneFive += this.activitiesList[i].activities[0]['totalHrZone5Second'];
-        if (
-          this.activitiesList[i].activities[0]['totalHrZone0Second'] +
-          this.activitiesList[i].activities[0]['totalHrZone1Second'] +
-          this.activitiesList[i].activities[0]['totalHrZone2Second'] +
-          this.activitiesList[i].activities[0]['totalHrZone3Second'] +
-          this.activitiesList[i].activities[0]['totalHrZone4Second'] +
-          this.activitiesList[i].activities[0]['totalHrZone5Second'] !== 0
-        ) {
-          typeAllHrZoneData.unshift([
-            this.activitiesList[i].activities[0].type,
-            this.activitiesList[i].activities[0]['totalHrZone0Second'],
-            this.activitiesList[i].activities[0]['totalHrZone1Second'],
-            this.activitiesList[i].activities[0]['totalHrZone2Second'],
-            this.activitiesList[i].activities[0]['totalHrZone3Second'],
-            this.activitiesList[i].activities[0]['totalHrZone4Second'],
-            this.activitiesList[i].activities[0]['totalHrZone5Second'],
-            this.activitiesList[i].startTime.split('T')[0]
-          ]);
+        this.activityLength += +perStrokeData['totalActivities'];
+        typeAllTotalTrainTime += +perStrokeData['totalSecond'];
+        typeList.unshift(perStrokeData['type']);
+        typeAllavgHr.unshift(perStrokeData['avgHeartRateBpm']);
+        typeAllActivityTime.unshift(
+          perStrokeData['totalSecond'] / perStrokeData['totalActivities']
+        );
+
+        // 確認是否有距離數據-kidin-1090204
+        if (perStrokeData['totalDistanceMeters']) {
+          typeAllTotalDistance += perStrokeData['totalDistanceMeters'];
+        }
+
+        // 確認是否有重量數據-kidin-1090204
+        if (perStrokeData['totalWeightKg']) {
+          typeAllTotalWeight += perStrokeData['totalWeightKg'];
+        }
+
+        // 活動成效分佈圖和心率區間趨勢用資料-kidin-1090203
+        if (perStrokeData['totalHrZone0Second'] !== null) {
+          typeAllHrZoneZero += perStrokeData['totalHrZone0Second'];
+          typeAllHrZoneOne += perStrokeData['totalHrZone1Second'];
+          typeAllHrZoneTwo += perStrokeData['totalHrZone2Second'];
+          typeAllHrZoneThree += perStrokeData['totalHrZone3Second'];
+          typeAllHrZoneFour += perStrokeData['totalHrZone4Second'];
+          typeAllHrZoneFive += perStrokeData['totalHrZone5Second'];
+          if (
+            perStrokeData['totalHrZone0Second'] +
+            perStrokeData['totalHrZone1Second'] +
+            perStrokeData['totalHrZone2Second'] +
+            perStrokeData['totalHrZone3Second'] +
+            perStrokeData['totalHrZone4Second'] +
+            perStrokeData['totalHrZone5Second'] !== 0
+          ) {
+            typeAllHrZoneData.unshift([
+              perStrokeData.type,
+              perStrokeData['totalHrZone0Second'],
+              perStrokeData['totalHrZone1Second'],
+              perStrokeData['totalHrZone2Second'],
+              perStrokeData['totalHrZone3Second'],
+              perStrokeData['totalHrZone4Second'],
+              perStrokeData['totalHrZone5Second'],
+              this.activitiesList[i].startTime.split('T')[0]
+            ]);
+          }
+        }
+
+        // 根據不同類別計算數據-kidin-1090204
+        switch (perStrokeData.type) {
+          case '1':
+            typeRunLength += +perStrokeData['totalActivities'];
+            typeRunTotalTrainTime += +perStrokeData['totalSecond'];
+            typeRunCalories.unshift(perStrokeData['calories']);
+            typeRunTotalDistance += perStrokeData['totalDistanceMeters'];
+            typeRunDataDate.unshift(this.activitiesList[i].startTime.split('T')[0]);
+            typeRunSpeed.unshift(perStrokeData['avgSpeed']);
+            typeRunMaxSpeed.unshift(perStrokeData['avgMaxSpeed']);
+            typeRunCadence.unshift(perStrokeData['runAvgCadence']);
+            typeRunMaxCadence.unshift(perStrokeData['avgRunMaxCadence']);
+            typeRunHR.unshift(perStrokeData['avgHeartRateBpm']);
+            typeRunMaxHR.unshift(perStrokeData['avgMaxHeartRateBpm']);
+
+
+            // 確認是否有心率數據-kidin-1090204
+            if (perStrokeData['totalHrZone0Second'] !== null) {
+              typeRunHrZoneZero += perStrokeData['totalHrZone0Second'];
+              typeRunHrZoneOne += perStrokeData['totalHrZone1Second'];
+              typeRunHrZoneTwo += perStrokeData['totalHrZone2Second'];
+              typeRunHrZoneThree += perStrokeData['totalHrZone3Second'];
+              typeRunHrZoneFour += perStrokeData['totalHrZone4Second'];
+              typeRunHrZoneFive += perStrokeData['totalHrZone5Second'];
+              if (
+                perStrokeData['totalHrZone0Second'] +
+                perStrokeData['totalHrZone1Second'] +
+                perStrokeData['totalHrZone2Second'] +
+                perStrokeData['totalHrZone3Second'] +
+                perStrokeData['totalHrZone4Second'] +
+                perStrokeData['totalHrZone5Second'] !== 0
+              ) {
+                typeRunHrZoneData.unshift([
+                  perStrokeData.type,
+                  perStrokeData['totalHrZone0Second'],
+                  perStrokeData['totalHrZone1Second'],
+                  perStrokeData['totalHrZone2Second'],
+                  perStrokeData['totalHrZone3Second'],
+                  perStrokeData['totalHrZone4Second'],
+                  perStrokeData['totalHrZone5Second'],
+                  this.activitiesList[i].startTime.split('T')[0]
+                ]);
+              }
+            }
+
+            break;
+          case '2':
+            typeCycleLength += +perStrokeData['totalActivities'];
+            typeCycleTotalTrainTime += +perStrokeData['totalSecond'];
+            typeCycleCalories.unshift(perStrokeData['calories']);
+            typeCycleTotalDistance += perStrokeData['totalDistanceMeters'];
+            typeCycleDataDate.unshift(this.activitiesList[i].startTime.split('T')[0]);
+            typeCycleSpeed.unshift(perStrokeData['avgSpeed']);
+            typeCycleMaxSpeed.unshift(perStrokeData['avgMaxSpeed']);
+            typeCycleCadence.unshift(perStrokeData['cycleAvgCadence']);
+            typeCycleMaxCadence.unshift(perStrokeData['avgCycleMaxCadence']);
+            typeCycleHR.unshift(perStrokeData['avgHeartRateBpm']);
+            typeCycleMaxHR.unshift(perStrokeData['avgMaxHeartRateBpm']);
+            typeCyclePower.unshift(perStrokeData['cycleAvgWatt']);
+            typeCycleMaxPower.unshift(perStrokeData['avgCycleMaxWatt']);
+
+            if (perStrokeData['totalHrZone0Second'] !== null) {
+              typeCycleHrZoneZero += perStrokeData['totalHrZone0Second'];
+              typeCycleHrZoneOne += perStrokeData['totalHrZone1Second'];
+              typeCycleHrZoneTwo += perStrokeData['totalHrZone2Second'];
+              typeCycleHrZoneThree += perStrokeData['totalHrZone3Second'];
+              typeCycleHrZoneFour += perStrokeData['totalHrZone4Second'];
+              typeCycleHrZoneFive += perStrokeData['totalHrZone5Second'];
+              if (
+                perStrokeData['totalHrZone0Second'] +
+                perStrokeData['totalHrZone1Second'] +
+                perStrokeData['totalHrZone2Second'] +
+                perStrokeData['totalHrZone3Second'] +
+                perStrokeData['totalHrZone4Second'] +
+                perStrokeData['totalHrZone5Second'] !== 0
+              ) {
+                typeCycleHrZoneData.unshift([
+                  perStrokeData.type,
+                  perStrokeData['totalHrZone0Second'],
+                  perStrokeData['totalHrZone1Second'],
+                  perStrokeData['totalHrZone2Second'],
+                  perStrokeData['totalHrZone3Second'],
+                  perStrokeData['totalHrZone4Second'],
+                  perStrokeData['totalHrZone5Second'],
+                  this.activitiesList[i].startTime.split('T')[0]
+                ]);
+              }
+            }
+
+            break;
+          case '3':
+            typeWeightTrainLength += +perStrokeData['totalActivities'];
+            typeWeightTrainTotalTrainTime += +perStrokeData['totalSecond'];
+            typeWeightTrainCalories.unshift(perStrokeData['calories']);
+            typeWeightTrainTotalWeight += perStrokeData['totalWeightKg'];
+            typeWeightTrainDataDate.unshift(this.activitiesList[i].startTime.split('T')[0]);
+
+            break;
+          case '4':
+            typeSwimLength += +perStrokeData['totalActivities'];
+            typeSwimTotalTrainTime += +perStrokeData['totalSecond'];
+            typeSwimCalories.unshift(perStrokeData['calories']);
+            typeSwimTotalDistance += perStrokeData['totalDistanceMeters'];
+            typeSwimDataDate.unshift(this.activitiesList[i].startTime.split('T')[0]);
+            typeSwimSpeed.unshift(perStrokeData['avgSpeed']);
+            typeSwimMaxSpeed.unshift(perStrokeData['avgMaxSpeed']);
+            typeSwimCadence.unshift(perStrokeData['swimAvgCadence']);
+            typeSwimMaxCadence.unshift(perStrokeData['avgSwimMaxCadence']);
+            typeSwimSwolf.unshift(perStrokeData['avgSwolf']);
+            typeSwimMaxSwolf.unshift(perStrokeData['bestSwolf']);
+            typeSwimHR.unshift(perStrokeData['avgHeartRateBpm']);
+            typeSwimMaxHR.unshift(perStrokeData['avgMaxHeartRateBpm']);
+
+            if (perStrokeData['totalHrZone0Second'] !== null) {
+              typeSwimHrZoneZero += perStrokeData['totalHrZone0Second'];
+              typeSwimHrZoneOne += perStrokeData['totalHrZone1Second'];
+              typeSwimHrZoneTwo += perStrokeData['totalHrZone2Second'];
+              typeSwimHrZoneThree += perStrokeData['totalHrZone3Second'];
+              typeSwimHrZoneFour += perStrokeData['totalHrZone4Second'];
+              typeSwimHrZoneFive += perStrokeData['totalHrZone5Second'];
+              if (
+                perStrokeData['totalHrZone0Second'] +
+                perStrokeData['totalHrZone1Second'] +
+                perStrokeData['totalHrZone2Second'] +
+                perStrokeData['totalHrZone3Second'] +
+                perStrokeData['totalHrZone4Second'] +
+                perStrokeData['totalHrZone5Second'] !== 0
+              ) {
+                typeSwimHrZoneData.unshift([
+                  perStrokeData.type,
+                  perStrokeData['totalHrZone0Second'],
+                  perStrokeData['totalHrZone1Second'],
+                  perStrokeData['totalHrZone2Second'],
+                  perStrokeData['totalHrZone3Second'],
+                  perStrokeData['totalHrZone4Second'],
+                  perStrokeData['totalHrZone5Second'],
+                  this.activitiesList[i].startTime.split('T')[0]
+                ]);
+              }
+            }
+
+            break;
+          case '5':
+            typeAerobicLength += +perStrokeData['totalActivities'];
+            typeAerobicTotalTrainTime += +perStrokeData['totalSecond'];
+            typeAerobicCalories.unshift(perStrokeData['calories']);
+            typeAerobicDataDate.unshift(this.activitiesList[i].startTime.split('T')[0]);
+            typeAerobicHR.unshift(perStrokeData['avgHeartRateBpm']);
+            typeAerobicMaxHR.unshift(perStrokeData['avgMaxHeartRateBpm']);
+
+            if (perStrokeData['totalHrZone0Second'] !== null) {
+              typeAerobicHrZoneZero += perStrokeData['totalHrZone0Second'];
+              typeAerobicHrZoneOne += perStrokeData['totalHrZone1Second'];
+              typeAerobicHrZoneTwo += perStrokeData['totalHrZone2Second'];
+              typeAerobicHrZoneThree += perStrokeData['totalHrZone3Second'];
+              typeAerobicHrZoneFour += perStrokeData['totalHrZone4Second'];
+              typeAerobicHrZoneFive += perStrokeData['totalHrZone5Second'];
+              if (
+                perStrokeData['totalHrZone0Second'] +
+                perStrokeData['totalHrZone1Second'] +
+                perStrokeData['totalHrZone2Second'] +
+                perStrokeData['totalHrZone3Second'] +
+                perStrokeData['totalHrZone4Second'] +
+                perStrokeData['totalHrZone5Second'] !== 0
+              ) {
+                typeAerobicHrZoneData.unshift([
+                  perStrokeData.type,
+                  perStrokeData['totalHrZone0Second'],
+                  perStrokeData['totalHrZone1Second'],
+                  perStrokeData['totalHrZone2Second'],
+                  perStrokeData['totalHrZone3Second'],
+                  perStrokeData['totalHrZone4Second'],
+                  perStrokeData['totalHrZone5Second'],
+                  this.activitiesList[i].startTime.split('T')[0]
+                ]);
+              }
+            }
+
+            break;
+          case '6':
+            typeRowLength += +perStrokeData['totalActivities'];
+            typeRowTotalTrainTime += +perStrokeData['totalSecond'];
+            typeRowCalories.unshift(perStrokeData['calories']);
+            typeRowTotalDistance += perStrokeData['totalDistanceMeters'];
+            typeRowDataDate.unshift(this.activitiesList[i].startTime.split('T')[0]);
+            typeRowSpeed.unshift(perStrokeData['avgSpeed']);
+            typeRowMaxSpeed.unshift(perStrokeData['avgMaxSpeed']);
+            typeRowCadence.unshift(perStrokeData['rowingAvgCadence']);
+            typeRowMaxCadence.unshift(perStrokeData['avgRowingMaxCadence']);
+            typeRowHR.unshift(perStrokeData['avgHeartRateBpm']);
+            typeRowMaxHR.unshift(perStrokeData['avgMaxHeartRateBpm']);
+            typeRowPower.unshift(perStrokeData['rowingAvgWatt']);
+            typeRowMaxPower.unshift(perStrokeData['rowingMaxWatt']);
+
+            if (perStrokeData['totalHrZone0Second'] !== null) {
+              typeRowHrZoneZero += perStrokeData['totalHrZone0Second'];
+              typeRowHrZoneOne += perStrokeData['totalHrZone1Second'];
+              typeRowHrZoneTwo += perStrokeData['totalHrZone2Second'];
+              typeRowHrZoneThree += perStrokeData['totalHrZone3Second'];
+              typeRowHrZoneFour += perStrokeData['totalHrZone4Second'];
+              typeRowHrZoneFive += perStrokeData['totalHrZone5Second'];
+              if (
+                perStrokeData['totalHrZone0Second'] +
+                perStrokeData['totalHrZone1Second'] +
+                perStrokeData['totalHrZone2Second'] +
+                perStrokeData['totalHrZone3Second'] +
+                perStrokeData['totalHrZone4Second'] +
+                perStrokeData['totalHrZone5Second'] !== 0
+              ) {
+                typeRowHrZoneData.unshift([
+                  perStrokeData.type,
+                  perStrokeData['totalHrZone0Second'],
+                  perStrokeData['totalHrZone1Second'],
+                  perStrokeData['totalHrZone2Second'],
+                  perStrokeData['totalHrZone3Second'],
+                  perStrokeData['totalHrZone4Second'],
+                  perStrokeData['totalHrZone5Second'],
+                  this.activitiesList[i].startTime.split('T')[0]
+                ]);
+              }
+            }
+
+            break;
         }
       }
 
-      // 根據不同類別計算數據-kidin-1090204
-      switch (this.activitiesList[i].activities[0].type) {
-        case '1':
-          typeRunLength += +this.activitiesList[i].activities[0]['totalActivities'];
-          typeRunTotalTrainTime += +this.activitiesList[i].activities[0]['totalSecond'];
-          typeRunCalories.unshift(this.activitiesList[i].activities[0]['calories']);
-          typeRunTotalDistance += this.activitiesList[i].activities[0]['totalDistanceMeters'];
-          typeRunDataDate.unshift(this.activitiesList[i].startTime.split('T')[0]);
-          typeRunSpeed.unshift(this.activitiesList[i].activities[0]['avgSpeed']);
-          typeRunMaxSpeed.unshift(this.activitiesList[i].activities[0]['avgMaxSpeed']);
-          typeRunCadence.unshift(this.activitiesList[i].activities[0]['runAvgCadence']);
-          typeRunMaxCadence.unshift(this.activitiesList[i].activities[0]['avgRunMaxCadence']);
-          typeRunHR.unshift(this.activitiesList[i].activities[0]['avgHeartRateBpm']);
-          typeRunMaxHR.unshift(this.activitiesList[i].activities[0]['avgMaxHeartRateBpm']);
-
-
-          // 確認是否有心率數據-kidin-1090204
-          if (this.activitiesList[i].activities[0]['totalHrZone0Second'] !== null) {
-            typeRunHrZoneZero += this.activitiesList[i].activities[0]['totalHrZone0Second'];
-            typeRunHrZoneOne += this.activitiesList[i].activities[0]['totalHrZone1Second'];
-            typeRunHrZoneTwo += this.activitiesList[i].activities[0]['totalHrZone2Second'];
-            typeRunHrZoneThree += this.activitiesList[i].activities[0]['totalHrZone3Second'];
-            typeRunHrZoneFour += this.activitiesList[i].activities[0]['totalHrZone4Second'];
-            typeRunHrZoneFive += this.activitiesList[i].activities[0]['totalHrZone5Second'];
-            if (
-              this.activitiesList[i].activities[0]['totalHrZone0Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone1Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone2Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone3Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone4Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone5Second'] !== 0
-            ) {
-              typeRunHrZoneData.unshift([
-                this.activitiesList[i].activities[0].type,
-                this.activitiesList[i].activities[0]['totalHrZone0Second'],
-                this.activitiesList[i].activities[0]['totalHrZone1Second'],
-                this.activitiesList[i].activities[0]['totalHrZone2Second'],
-                this.activitiesList[i].activities[0]['totalHrZone3Second'],
-                this.activitiesList[i].activities[0]['totalHrZone4Second'],
-                this.activitiesList[i].activities[0]['totalHrZone5Second'],
-                this.activitiesList[i].startTime.split('T')[0]
-              ]);
-            }
-          }
-
-          break;
-        case '2':
-          typeCycleLength += +this.activitiesList[i].activities[0]['totalActivities'];
-          typeCycleTotalTrainTime += +this.activitiesList[i].activities[0]['totalSecond'];
-          typeCycleCalories.unshift(this.activitiesList[i].activities[0]['calories']);
-          typeCycleTotalDistance += this.activitiesList[i].activities[0]['totalDistanceMeters'];
-          typeCycleDataDate.unshift(this.activitiesList[i].startTime.split('T')[0]);
-          typeCycleSpeed.unshift(this.activitiesList[i].activities[0]['avgSpeed']);
-          typeCycleMaxSpeed.unshift(this.activitiesList[i].activities[0]['avgMaxSpeed']);
-          typeCycleCadence.unshift(this.activitiesList[i].activities[0]['cycleAvgCadence']);
-          typeCycleMaxCadence.unshift(this.activitiesList[i].activities[0]['avgCycleMaxCadence']);
-          typeCycleHR.unshift(this.activitiesList[i].activities[0]['avgHeartRateBpm']);
-          typeCycleMaxHR.unshift(this.activitiesList[i].activities[0]['avgMaxHeartRateBpm']);
-          typeCyclePower.unshift(this.activitiesList[i].activities[0]['cycleAvgWatt']);
-          typeCycleMaxPower.unshift(this.activitiesList[i].activities[0]['avgCycleMaxWatt']);
-
-          if (this.activitiesList[i].activities[0]['totalHrZone0Second'] !== null) {
-            typeCycleHrZoneZero += this.activitiesList[i].activities[0]['totalHrZone0Second'];
-            typeCycleHrZoneOne += this.activitiesList[i].activities[0]['totalHrZone1Second'];
-            typeCycleHrZoneTwo += this.activitiesList[i].activities[0]['totalHrZone2Second'];
-            typeCycleHrZoneThree += this.activitiesList[i].activities[0]['totalHrZone3Second'];
-            typeCycleHrZoneFour += this.activitiesList[i].activities[0]['totalHrZone4Second'];
-            typeCycleHrZoneFive += this.activitiesList[i].activities[0]['totalHrZone5Second'];
-            if (
-              this.activitiesList[i].activities[0]['totalHrZone0Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone1Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone2Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone3Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone4Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone5Second'] !== 0
-            ) {
-              typeCycleHrZoneData.unshift([
-                this.activitiesList[i].activities[0].type,
-                this.activitiesList[i].activities[0]['totalHrZone0Second'],
-                this.activitiesList[i].activities[0]['totalHrZone1Second'],
-                this.activitiesList[i].activities[0]['totalHrZone2Second'],
-                this.activitiesList[i].activities[0]['totalHrZone3Second'],
-                this.activitiesList[i].activities[0]['totalHrZone4Second'],
-                this.activitiesList[i].activities[0]['totalHrZone5Second'],
-                this.activitiesList[i].startTime.split('T')[0]
-              ]);
-            }
-          }
-
-          break;
-        case '3':
-          typeWeightTrainLength += +this.activitiesList[i].activities[0]['totalActivities'];
-          typeWeightTrainTotalTrainTime += +this.activitiesList[i].activities[0]['totalSecond'];
-          typeWeightTrainCalories.unshift(this.activitiesList[i].activities[0]['calories']);
-          typeWeightTrainTotalWeight += this.activitiesList[i].activities[0]['totalWeightKg'];
-          typeWeightTrainDataDate.unshift(this.activitiesList[i].startTime.split('T')[0]);
-
-          break;
-        case '4':
-          typeSwimLength += +this.activitiesList[i].activities[0]['totalActivities'];
-          typeSwimTotalTrainTime += +this.activitiesList[i].activities[0]['totalSecond'];
-          typeSwimCalories.unshift(this.activitiesList[i].activities[0]['calories']);
-          typeSwimTotalDistance += this.activitiesList[i].activities[0]['totalDistanceMeters'];
-          typeSwimDataDate.unshift(this.activitiesList[i].startTime.split('T')[0]);
-          typeSwimSpeed.unshift(this.activitiesList[i].activities[0]['avgSpeed']);
-          typeSwimMaxSpeed.unshift(this.activitiesList[i].activities[0]['avgMaxSpeed']);
-          typeSwimCadence.unshift(this.activitiesList[i].activities[0]['swimAvgCadence']);
-          typeSwimMaxCadence.unshift(this.activitiesList[i].activities[0]['avgSwimMaxCadence']);
-          typeSwimSwolf.unshift(this.activitiesList[i].activities[0]['avgSwolf']);
-          typeSwimMaxSwolf.unshift(this.activitiesList[i].activities[0]['bestSwolf']);
-          typeSwimHR.unshift(this.activitiesList[i].activities[0]['avgHeartRateBpm']);
-          typeSwimMaxHR.unshift(this.activitiesList[i].activities[0]['avgMaxHeartRateBpm']);
-
-          if (this.activitiesList[i].activities[0]['totalHrZone0Second'] !== null) {
-            typeSwimHrZoneZero += this.activitiesList[i].activities[0]['totalHrZone0Second'];
-            typeSwimHrZoneOne += this.activitiesList[i].activities[0]['totalHrZone1Second'];
-            typeSwimHrZoneTwo += this.activitiesList[i].activities[0]['totalHrZone2Second'];
-            typeSwimHrZoneThree += this.activitiesList[i].activities[0]['totalHrZone3Second'];
-            typeSwimHrZoneFour += this.activitiesList[i].activities[0]['totalHrZone4Second'];
-            typeSwimHrZoneFive += this.activitiesList[i].activities[0]['totalHrZone5Second'];
-            if (
-              this.activitiesList[i].activities[0]['totalHrZone0Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone1Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone2Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone3Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone4Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone5Second'] !== 0
-            ) {
-              typeSwimHrZoneData.unshift([
-                this.activitiesList[i].activities[0].type,
-                this.activitiesList[i].activities[0]['totalHrZone0Second'],
-                this.activitiesList[i].activities[0]['totalHrZone1Second'],
-                this.activitiesList[i].activities[0]['totalHrZone2Second'],
-                this.activitiesList[i].activities[0]['totalHrZone3Second'],
-                this.activitiesList[i].activities[0]['totalHrZone4Second'],
-                this.activitiesList[i].activities[0]['totalHrZone5Second'],
-                this.activitiesList[i].startTime.split('T')[0]
-              ]);
-            }
-          }
-
-          break;
-        case '5':
-          typeAerobicLength += +this.activitiesList[i].activities[0]['totalActivities'];
-          typeAerobicTotalTrainTime += +this.activitiesList[i].activities[0]['totalSecond'];
-          typeAerobicCalories.unshift(this.activitiesList[i].activities[0]['calories']);
-          typeAerobicDataDate.unshift(this.activitiesList[i].startTime.split('T')[0]);
-          typeAerobicHR.unshift(this.activitiesList[i].activities[0]['avgHeartRateBpm']);
-          typeAerobicMaxHR.unshift(this.activitiesList[i].activities[0]['avgMaxHeartRateBpm']);
-
-          if (this.activitiesList[i].activities[0]['totalHrZone0Second'] !== null) {
-            typeAerobicHrZoneZero += this.activitiesList[i].activities[0]['totalHrZone0Second'];
-            typeAerobicHrZoneOne += this.activitiesList[i].activities[0]['totalHrZone1Second'];
-            typeAerobicHrZoneTwo += this.activitiesList[i].activities[0]['totalHrZone2Second'];
-            typeAerobicHrZoneThree += this.activitiesList[i].activities[0]['totalHrZone3Second'];
-            typeAerobicHrZoneFour += this.activitiesList[i].activities[0]['totalHrZone4Second'];
-            typeAerobicHrZoneFive += this.activitiesList[i].activities[0]['totalHrZone5Second'];
-            if (
-              this.activitiesList[i].activities[0]['totalHrZone0Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone1Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone2Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone3Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone4Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone5Second'] !== 0
-            ) {
-              typeAerobicHrZoneData.unshift([
-                this.activitiesList[i].activities[0].type,
-                this.activitiesList[i].activities[0]['totalHrZone0Second'],
-                this.activitiesList[i].activities[0]['totalHrZone1Second'],
-                this.activitiesList[i].activities[0]['totalHrZone2Second'],
-                this.activitiesList[i].activities[0]['totalHrZone3Second'],
-                this.activitiesList[i].activities[0]['totalHrZone4Second'],
-                this.activitiesList[i].activities[0]['totalHrZone5Second'],
-                this.activitiesList[i].startTime.split('T')[0]
-              ]);
-            }
-          }
-
-          break;
-        case '6':
-          typeRowLength += +this.activitiesList[i].activities[0]['totalActivities'];
-          typeRowTotalTrainTime += +this.activitiesList[i].activities[0]['totalSecond'];
-          typeRowCalories.unshift(this.activitiesList[i].activities[0]['calories']);
-          typeRowTotalDistance += this.activitiesList[i].activities[0]['totalDistanceMeters'];
-          typeRowDataDate.unshift(this.activitiesList[i].startTime.split('T')[0]);
-          typeRowSpeed.unshift(this.activitiesList[i].activities[0]['avgSpeed']);
-          typeRowMaxSpeed.unshift(this.activitiesList[i].activities[0]['avgMaxSpeed']);
-          typeRowCadence.unshift(this.activitiesList[i].activities[0]['rowingAvgCadence']);
-          typeRowMaxCadence.unshift(this.activitiesList[i].activities[0]['avgRowingMaxCadence']);
-          typeRowHR.unshift(this.activitiesList[i].activities[0]['avgHeartRateBpm']);
-          typeRowMaxHR.unshift(this.activitiesList[i].activities[0]['avgMaxHeartRateBpm']);
-          typeRowPower.unshift(this.activitiesList[i].activities[0]['rowingAvgWatt']);
-          typeRowMaxPower.unshift(this.activitiesList[i].activities[0]['rowingMaxWatt']);
-
-          if (this.activitiesList[i].activities[0]['totalHrZone0Second'] !== null) {
-            typeRowHrZoneZero += this.activitiesList[i].activities[0]['totalHrZone0Second'];
-            typeRowHrZoneOne += this.activitiesList[i].activities[0]['totalHrZone1Second'];
-            typeRowHrZoneTwo += this.activitiesList[i].activities[0]['totalHrZone2Second'];
-            typeRowHrZoneThree += this.activitiesList[i].activities[0]['totalHrZone3Second'];
-            typeRowHrZoneFour += this.activitiesList[i].activities[0]['totalHrZone4Second'];
-            typeRowHrZoneFive += this.activitiesList[i].activities[0]['totalHrZone5Second'];
-            if (
-              this.activitiesList[i].activities[0]['totalHrZone0Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone1Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone2Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone3Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone4Second'] +
-              this.activitiesList[i].activities[0]['totalHrZone5Second'] !== 0
-            ) {
-              typeRowHrZoneData.unshift([
-                this.activitiesList[i].activities[0].type,
-                this.activitiesList[i].activities[0]['totalHrZone0Second'],
-                this.activitiesList[i].activities[0]['totalHrZone1Second'],
-                this.activitiesList[i].activities[0]['totalHrZone2Second'],
-                this.activitiesList[i].activities[0]['totalHrZone3Second'],
-                this.activitiesList[i].activities[0]['totalHrZone4Second'],
-                this.activitiesList[i].activities[0]['totalHrZone5Second'],
-                this.activitiesList[i].startTime.split('T')[0]
-              ]);
-            }
-          }
-
-          break;
-      }
+      typeAllCalories.unshift(sameDayCalories);
     }
 
-    const typeAllAvgTrainTime = (typeAllTotalTrainTime / this.activityLength) || 0,
-          typeRunAvgTrainTime = (typeRunTotalTrainTime / typeRunLength) || 0,
-          typeCycleAvgTrainTime = (typeCycleTotalTrainTime / typeCycleLength) || 0,
-          typeWeightTrainAvgTrainTime = (typeWeightTrainTotalTrainTime / typeWeightTrainLength) || 0,
-          typeSwimAvgTrainTime = (typeSwimTotalTrainTime / typeSwimLength) || 0,
-          typeAerobicAvgTrainTime = (typeAerobicTotalTrainTime / typeAerobicLength) || 0,
-          typeRowAvgTrainTime = (typeRowTotalTrainTime / typeRowLength) || 0;
+    const typeAllAvgTrainTime = (typeAllTotalTrainTime / typeAllDataDate.length) || 0,
+          typeRunAvgTrainTime = (typeRunTotalTrainTime / typeRunDataDate.length) || 0,
+          typeCycleAvgTrainTime = (typeCycleTotalTrainTime / typeCycleDataDate.length) || 0,
+          typeWeightTrainAvgTrainTime = (typeWeightTrainTotalTrainTime / typeWeightTrainDataDate.length) || 0,
+          typeSwimAvgTrainTime = (typeSwimTotalTrainTime / typeSwimDataDate.length) || 0,
+          typeAerobicAvgTrainTime = (typeAerobicTotalTrainTime / typeAerobicDataDate.length) || 0,
+          typeRowAvgTrainTime = (typeRowTotalTrainTime / typeRowDataDate.length) || 0;
 
     const typeAllData = {
       activityLength: this.activityLength,

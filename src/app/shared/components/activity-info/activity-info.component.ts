@@ -489,14 +489,22 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     };
     this.map = new google.maps.Map(this.gmapElement.nativeElement, mapProp);
     const bounds = new google.maps.LatLngBounds();
-    let isNormalPoint = false;
+    let isNormalPoint = false,
+        fillData = null;
     const originRealIdx = [];
+
+    // 若使用者沒有移動，則在該點補上null值或填補值-kidin-1081203(Bug 337)(Bug 1141)
     this.activityPoints.forEach((_point, idx) => {
-      if ((+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100)
-        || (_point.latitudeDegrees === null && _point.longitudeDegrees === null)
+      if (fillData === null
+        && ((+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100)
+        || (_point.latitudeDegrees === null && _point.longitudeDegrees === null))
       ) {
         isNormalPoint = false;
-        this.gpxPoints.push(null); // 若使用者沒有移動，則在該點補上null值-kidin-1081203(Bug 337)
+        this.gpxPoints.push(null);
+      } else if ((+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100)
+      || (_point.latitudeDegrees === null && _point.longitudeDegrees === null)) {
+        isNormalPoint = false;
+        this.gpxPoints.push(fillData);
       } else {
         if (!isNormalPoint) {
           isNormalPoint = true;
@@ -520,6 +528,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           );
         }
         this.gpxPoints.push(p);
+        fillData = p;
       }
     });
     this.gpxPoints = this.gpxPoints.map((_gpxPoint, idx) => {

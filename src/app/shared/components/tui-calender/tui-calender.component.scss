@@ -1,0 +1,14 @@
+.active {
+  color: white;
+  background-color: #21c7f9;
+}
+
+@media (max-width: 1020px) {
+  .ctrlButton {
+    flex-direction: column;
+  }
+
+  .calendarRange {
+    margin: 8px 0px;
+  }
+}

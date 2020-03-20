@@ -774,6 +774,8 @@
     "weekFrequency": "週活動頻率",
     "activityPreference": "活動偏好",
     "webError404": "Page not found or not accessed, You can try again after signing in.",
-    "webError403": "It seems like you don’t have permission to access."
+    "webError403": "It seems like you don’t have permission to access.",
+    "today": "Hoy",
+    "month": "Mes"
   }
 }

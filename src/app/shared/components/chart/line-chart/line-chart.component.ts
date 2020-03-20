@@ -43,7 +43,11 @@ class ChartOptions {
         maxPadding: 0.01,
         tickAmount: 1
       },
-      plotOptions: {},
+      plotOptions: {
+        series: {
+          lineWidth: 5
+      }
+      },
       tooltip: {},
       series: dataset
     };
@@ -59,6 +63,7 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() data: any;
   @Input() dateRange: string;
+  @Input() dateList: Array<number>;
   @Input() sportType: string;
   @Input() chartName: string;
   @Input() hrZoneRange: any;
@@ -87,45 +92,21 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
         chartName = '';
     switch (this.chartName) {
       case 'Weight':
-        chartData = this.data.weightList.map((_item, index) => {
-          return {
-            x: _item[0],
-            y: _item[1],
-            marker: {
-              enabled: false
-            }
-          };
-        });
+        chartData = this.mergeData(this.data.weightList);
 
         chartName = this.translate.instant('Portal.bodyWeight');
         lineColor = this.data.colorSet;
 
         break;
       case 'FatRate':
-        chartData = this.data.fatRateList.map((_item, index) => {
-          return {
-            x: _item[0],
-            y: _item[1],
-            marker: {
-              enabled: false
-            }
-          };
-        });
+        chartData = this.mergeData(this.data.fatRateList);
 
         chartName = this.translate.instant('other.fatRate');
         lineColor = this.data.fatRateColorSet;
 
         break;
       case 'MuscleRate':
-        chartData = this.data.muscleRateList.map((_item, index) => {
-          return {
-            x: _item[0],
-            y: _item[1],
-            marker: {
-              enabled: false
-            }
-          };
-        });
+        chartData = this.mergeData(this.data.muscleRateList);
 
         chartName = this.translate.instant('other.muscleRate');
         lineColor = this.data.muscleRateColorSet;
@@ -138,7 +119,13 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
         name: chartName,
         data: chartData,
         showInLegend: false,
-        color: lineColor
+        color: {
+          linearGradient : [0, '50%', 0, 0],
+          stops : lineColor
+        },
+        marker: {
+          enabled: false
+        }
       }
     ];
 
@@ -151,6 +138,13 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       trendChartOptions['xAxis'].tickInterval = 30 * 24 * 4600 * 1000;  // 間距一個月
     }
+
+    // 設定圖表y軸四捨五入取至整數-kidin-1090204
+      trendChartOptions['yAxis'].labels = {
+        formatter: function () {
+          return this.value.toFixed(0);
+        }
+      };
 
     // 設定浮動提示框顯示格式-kidin-1090204
     trendChartOptions['tooltip'] = {
@@ -172,6 +166,26 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
       chart(trendChartDiv, trendChartOptions);
     }, 0);
 
+  }
+
+  // 將每個人的數據相加做平均-kidin-1090316
+  mergeData (data) {
+    const newData = [];
+    for (let i = 0; i < this.dateList.length; i++) {
+
+      let totalWeight = 0,
+          hasDataNum = 0;
+      for (let j = 0; j < data.length; j++) {
+        if (data[j].length !== 0) {
+          totalWeight += data[j][i][1];
+          hasDataNum++;
+        }
+      }
+
+      newData.push([this.dateList[i], totalWeight / hasDataNum]);
+    }
+
+    return newData;
   }
 
   ngOnDestroy () {

@@ -105,7 +105,7 @@ import { ComLifeTrackingComponent } from './group/group-info/com-life-tracking/c
     ReactiveFormsModule,
     SharedModule,
     NgProgressModule,
-    QRCodeModule,
+    QRCodeModule
   ],
   providers: [
     EventEnrollService,
