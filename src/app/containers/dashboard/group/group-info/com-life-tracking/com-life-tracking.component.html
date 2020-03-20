@@ -323,39 +323,42 @@
       <div class="flexCol postureTrend rwd_wid_100per">
         <div>
           <span class="reportChartTitle">{{'Dashboard.TrainLive.avg' | translate}} {{'other.weightTrend' | translate}}</span>
-          <app-compare-line-chart
+          <app-line-chart
             [data]="weightData"
             [dateRange]="dataDateRange"
+            [dateList]="chartTimeStamp"
             [chartName]="'Weight'"
             [searchDate]="searchDate"
             [chartHeight]="120"
-          ></app-compare-line-chart>
+          ></app-line-chart>
         </div>
         <div class="flexCol">
           <span class="reportChartTitle">{{'Dashboard.TrainLive.avg' | translate}} {{'other.bodyFatTrend' | translate}}</span>
           <span class="noChartData" *ngIf="noConstituteData">{{'Dashboard.System.nodata' | translate}}</span>
-          <app-compare-line-chart
+          <app-line-chart
             [data]="constituteData"
             [dateRange]="dataDateRange"
+            [dateList]="chartTimeStamp"
             [chartName]="'FatRate'"
             [searchDate]="searchDate"
             [chartHeight]="120"
             *ngIf="!noConstituteData"
           >
-          </app-compare-line-chart>
+          </app-line-chart>
         </div>
         <div class="flexCol">
           <span class="reportChartTitle">{{'Dashboard.TrainLive.avg' | translate}} {{'other.muscleRateTrend' | translate}}</span>
           <span class="noChartData" *ngIf="noConstituteData">{{'Dashboard.System.nodata' | translate}}</span>
-          <app-compare-line-chart
+          <app-line-chart
             [data]="constituteData"
             [dateRange]="dataDateRange"
+            [dateList]="chartTimeStamp"
             [chartName]="'MuscleRate'"
             [searchDate]="searchDate"
             [chartHeight]="120"
             *ngIf="!noConstituteData"
           >
-          </app-compare-line-chart>
+          </app-line-chart>
         </div>
       </div>
     </div>

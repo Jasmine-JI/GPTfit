@@ -103,6 +103,8 @@
           <span class="summaryData">{{avgTime || 0}}</span>
           <p class="summaryDescription">
             {{'Dashboard.TrainLive.avg' | translate}} {{'Dashboard.MyActivity.activityTime' | translate}}
+            <span *ngIf="dataDateRange === 'day'">({{'Dashboard.SportReport.day' | translate}})</span>
+            <span *ngIf="dataDateRange === 'week'">({{'other.week' | translate}})</span>
           </p>
         </div>
         <div class="sepLine"></div>
@@ -122,8 +124,8 @@
         <div class="sepLine"></div>
         <div class="summaryDataArea">
           <div *ngIf="avgCalories >= 1000">
-            <span class="summaryData">{{avgCalories / 1000 | number:'1.0-2' || 0}}</span>
-            <span class="infoDataUnit"> kcal</span>
+            <span class="summaryData">{{avgCalories / 1000 | number:'1.0-2' || 0}}k</span>
+            <span class="infoDataUnit"> cal</span>
           </div>
           <div *ngIf="avgCalories < 1000">
             <span class="summaryData">{{avgCalories | number:'1.0-1' || 0}}</span>
@@ -131,6 +133,8 @@
           </div>
           <p class="summaryDescription">
             {{'Dashboard.TrainLive.avg' | translate}} {{'Dashboard.SportReport.totalCalorie' | translate}}
+            <span *ngIf="dataDateRange === 'day'">({{'Dashboard.SportReport.day' | translate}})</span>
+            <span *ngIf="dataDateRange === 'week'">({{'other.week' | translate}})</span>
           </p>
         </div>
         <div class="sepLine" *ngIf="reportCategory !== '99' && reportCategory !== '3' && reportCategory !== '5'"></div>
