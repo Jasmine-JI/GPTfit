@@ -201,6 +201,8 @@ export class UserInfoService {
         const applyIdx = groupAccessRight.findIndex(
           _group => _group.groupId === visittingId && _group.joinStatus === 1
         );
+
+        // 修正解散的分店後依然可以管理其他分店下面的課程(Bug 1151)-kidin-1090317
         switch (groupLevel) {
           case '30':
             const brandIdx = groupAccessRight.findIndex(
@@ -226,7 +228,7 @@ export class UserInfoService {
           case '40':
             const branchIdx = groupAccessRight.findIndex(
               _group =>
-                ((_group.groupId.slice(0, 5) === visittingId.slice(0, 5) &&
+                ((_group.groupId.split('-')[2] === visittingId.split('-')[2] &&
                   _group.accessRight === '30') ||
                   _group.groupId === visittingId) &&
                 _group.joinStatus === 2
@@ -253,9 +255,10 @@ export class UserInfoService {
           case '60':
             const coachIdx = groupAccessRight.findIndex(
               _group =>
-                ((_group.groupId.slice(0, 5) === visittingId.slice(0, 5) &&
+                ((_group.groupId.split('-')[2] === visittingId.split('-')[2] &&
                   _group.accessRight === '30') ||
-                  (_group.groupId.slice(0, 7) === visittingId.slice(0, 7) &&
+                  (_group.groupId.split('-')[2] === visittingId.split('-')[2] &&
+                    _group.groupId.split('-')[3] === visittingId.split('-')[3] &&
                     _group.accessRight === '40') ||
                   _group.groupId === visittingId) &&
                 _group.joinStatus === 2

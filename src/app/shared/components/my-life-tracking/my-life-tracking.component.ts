@@ -97,6 +97,7 @@ export class MyLifeTrackingComponent implements OnInit {
   sortResultData = [];
 
   // 圖表用數據-kidin-1090215
+  chartTimeStamp = [];
   searchDate = [];
   stepData: any = {
     stepList: [],
@@ -122,14 +123,24 @@ export class MyLifeTrackingComponent implements OnInit {
 
   weightData = {
     weightList: [],
-    colorSet: '#e458e8'
+    colorSet: [
+      [0, '#7ee33a'],
+      [0.5, 'yellow'],
+      [1, 'red']
+    ]
   };
 
   constituteData = {
     fatRateList: [],
-    fatRateColorSet: '#ea5757',
+    fatRateColorSet: [
+      [0, '#e0a63a'],
+      [1, '#e04fc4']
+    ],
     muscleRateList: [],
-    muscleRateColorSet: '#9b70e0'
+    muscleRateColorSet: [
+      [0, '#3ae5da'],
+      [1, '#299fc6']
+    ]
   };
 
   fitTimeData: any = {
@@ -478,6 +489,8 @@ export class MyLifeTrackingComponent implements OnInit {
       moment(this.reportEndTime.split('T')[0], 'YYYY-MM-DD').valueOf()
     ];
 
+    this.createTimeStampArr(+this.selectPeriod);
+
     this.reportService.fetchTrackingSummaryArray(body).subscribe(res => {
       if (Array.isArray(res)) {
         this.reportCompleted = true;
@@ -683,12 +696,18 @@ export class MyLifeTrackingComponent implements OnInit {
               'fitTime'
             );
 
-            this.weightData.weightList = weightList;
+            // 比照多人report資料格式-kidin-1090316
+            const fillWeightData = this.fillVacancyData(weightList);
+            this.weightData.weightList = [fillWeightData];
 
             if (muscleRateList.length !== 0) {
               this.noConstituteData = false;
-              this.constituteData.muscleRateList = muscleRateList;
-              this.constituteData.fatRateList = fatRateList;
+
+              const fillmuscleRateData = this.fillVacancyData(muscleRateList);
+              this.constituteData.muscleRateList = [fillmuscleRateData];
+
+              const fillfatRateData = this.fillVacancyData(fatRateList);
+              this.constituteData.fatRateList = [fillfatRateData];
             }
 
             // 取該期間最新的身體素質-kidin-1090224
@@ -788,14 +807,24 @@ export class MyLifeTrackingComponent implements OnInit {
 
     this.weightData = {
       weightList: [],
-      colorSet: '#e458e8'
+      colorSet: [
+        [0, '#7ee33a'],
+        [0.5, 'yellow'],
+        [1, 'red']
+      ]
     };
 
     this.constituteData = {
       fatRateList: [],
-      fatRateColorSet: '#ea5757',
+      fatRateColorSet: [
+        [0, '#e0a63a'],
+        [1, '#e04fc4']
+      ],
       muscleRateList: [],
-      muscleRateColorSet: '#9b70e0'
+      muscleRateColorSet: [
+        [0, '#3ae5da'],
+        [1, '#299fc6']
+      ]
     };
 
     this.fitTimeData = {
@@ -803,6 +832,88 @@ export class MyLifeTrackingComponent implements OnInit {
       date: [],
       colorSet: '#f8b551'
     };
+
+    this.chartTimeStamp = [];
+  }
+
+  // 建立報告期間的timeStamp讓圖表使用-kidin-1090312
+  createTimeStampArr (range) {
+
+    this.searchDate = [
+      moment(this.reportStartTime.split('T')[0], 'YYYY-MM-DD').valueOf(),
+      moment(this.reportEndTime.split('T')[0], 'YYYY-MM-DD').valueOf()
+    ];
+
+    if (this.dataDateRange === 'day') {
+
+      for (let i = 0; i < range; i++) {
+        this.chartTimeStamp.push(this.searchDate[0] + 86400000 * i);
+      }
+
+    } else {
+      const weekCoefficient = this.findDate();
+
+      for (let i = 0; i < weekCoefficient.weekNum; i++) {
+        this.chartTimeStamp.push(weekCoefficient.startDate + 86400000 * i * 7);
+      }
+
+    }
+
+  }
+
+  // 根據搜索時間取得周報告第一周的開始日期和週數-kidin-1090312
+  findDate () {
+
+    const week = {
+      startDate: 0,
+      weekNum: 0
+    };
+
+    let weekEndDate;
+
+    // 周報告開頭是星期日-kidin-1090312
+    if (moment(this.searchDate[0]).isoWeekday() !== 7) {
+      week.startDate = this.searchDate[0] + 86400 * 1000 * (7 - moment(this.searchDate[0]).isoWeekday());
+    } else {
+      week.startDate = this.searchDate[0];
+    }
+
+    if (moment(this.searchDate[0]).isoWeekday() !== 7) {
+      weekEndDate = this.searchDate[1] - 86400 * 1000 * moment(this.searchDate[1]).isoWeekday();
+    } else {
+      weekEndDate = this.searchDate[1];
+    }
+
+    week.weekNum = ((weekEndDate - week.startDate) / (86400 * 1000 * 7)) + 1;
+
+    return week;
+  }
+
+  // 依據選取日期和報告類型（日/週）將缺漏的數值以其他日期現有數值填補-kidin-1090313
+  fillVacancyData (data) {
+
+    if (data.length === 0) {
+      return [];
+    } else {
+
+      let idx = 0;
+      const newData = [];
+
+      for (let i = 0; i < this.chartTimeStamp.length; i++) {
+
+        if (idx >= data.length) {
+          newData.push([this.chartTimeStamp[i], data[data.length - 1][1]]);
+        } else if (this.chartTimeStamp[i] !== data[idx][0]) {
+          newData.push([this.chartTimeStamp[i], data[idx][1]]);
+        } else {
+          newData.push(data[idx]);
+          idx++;
+        }
+
+      }
+
+      return newData;
+    }
   }
 
   // 將搜尋的類別和範圍處理過後加入query string並更新現在的url和預覽列印的url-kidin-1090205

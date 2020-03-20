@@ -22,6 +22,7 @@ export class DistributionChartComponent implements OnInit, OnChanges {
   xBoundary = [];
   yBoundary = [];
 
+  floatText = false;
   reportType = '';
 
   points = [];  // 落點用變數-kidin-1090130
@@ -68,14 +69,26 @@ export class DistributionChartComponent implements OnInit, OnChanges {
 
   // 運動報告用圖表-kidin-1090218
   initRePortChart () {
-    // 定義心率在每個區塊的x軸邊界值-kidin-1090213
-    const range = Math.floor((this.HRRange[1] - this.HRRange[0]) / 3),
-          boundary = [
-            +this.HRRange[0],
-            +this.HRRange[0] + range,
-            +this.HRRange[0] + range * 2,
-            +this.HRRange[1]
-          ];
+    // 定義心率在每個區塊的x軸邊界值，取不到心率區間則設z5的預設值為190-kidin-1090213
+    let range,
+        boundary;
+    if (this.HRRange[1] === 'Z5') {
+      range = Math.floor((190 - this.HRRange[0]) / 3),
+      boundary = [
+        +this.HRRange[0],
+        +this.HRRange[0] + range,
+        +this.HRRange[0] + range * 2,
+        190
+      ];
+    } else {
+      range = Math.floor((this.HRRange[1] - this.HRRange[0]) / 3),
+      boundary = [
+        +this.HRRange[0],
+        +this.HRRange[0] + range,
+        +this.HRRange[0] + range * 2,
+        +this.HRRange[1]
+      ];
+    }
 
     for (let i = 0; i < this.perAvgHR.length; i++) {
       if (this.selectType === '99' || this.typeList[i] === this.selectType) {
@@ -236,4 +249,12 @@ export class DistributionChartComponent implements OnInit, OnChanges {
     }
   }
 
+  // 圖表文字上浮與否-kidin-1090317
+  floatChartText () {
+    if (this.floatText === false) {
+      this.floatText = true;
+    } else {
+      this.floatText = false;
+    }
+  }
 }

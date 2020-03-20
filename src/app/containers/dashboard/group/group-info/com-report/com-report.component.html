@@ -235,12 +235,12 @@
         </div>
         <div class="sepLine"></div>
         <div class="summaryDataArea">
-          <div *ngIf="avgCalories >= 1000">
-            <span class="summaryData">{{avgCalories / 1000 || 0 | number:'1.0-2'}}k</span>
+          <div *ngIf="avgPersonCalories >= 1000">
+            <span class="summaryData">{{avgPersonCalories / 1000 || 0 | number:'1.0-2'}}k</span>
             <span class="infoDataUnit"> cal</span>
           </div>
-          <div *ngIf="avgCalories < 1000">
-            <span class="summaryData">{{avgCalories || 0 | number:'1.0-1'}}</span>
+          <div *ngIf="avgPersonCalories < 1000">
+            <span class="summaryData">{{avgPersonCalories || 0 | number:'1.0-1'}}</span>
             <span class="infoDataUnit"> cal</span>
           </div>
           <p class="summaryDescription">
@@ -766,6 +766,7 @@
             mat-sort-header
             disableClear="true"
             class="tableArrangement"
+            [hidden]="diffDay < 14"
           >
             <div class="tableTitle">
               <span class="tableTitleWord">
@@ -777,16 +778,18 @@
           <mat-cell
             *matCellDef="let row; let i = index;"
             class="tableArrangement tableContent"
+            [hidden]="diffDay < 14"
           >
-            <span *ngIf="row?.weekFrequency !== '--'">{{row?.weekFrequency | number:'1.0-0'}}</span>
+            <span *ngIf="row?.weekFrequency !== '--' && row?.weekFrequency >= 1">{{row?.weekFrequency | number:'1.0-0'}}</span>
+            <span *ngIf="row?.weekFrequency !== '--' && row?.weekFrequency < 1">&lt; 1</span>
             <span *ngIf="row?.weekFrequency === '--'">{{row?.weekFrequency}}</span>
           </mat-cell>
         </ng-container>
-        <ng-container matColumnDef="avgTime">
+        <ng-container matColumnDef="totalTime">
           <mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true" class="tableArrangement">
             <div class="tableTitle">
               <span class="tableTitleWord">
-                {{'Dashboard.TrainLive.avg' | translate}} {{'Dashboard.SportReport.time' | translate}}
+                {{'Dashboard.MyActivity.totalTime' | translate}}
               </span>
               <span class="chartTitleUnit">time</span>
             </div>
@@ -795,13 +798,13 @@
             *matCellDef="let row; let i = index;"
             class="tableArrangement tableContent"
           >
-            <span>{{row?.avgTime}}</span>
+            <span>{{row?.totalTime}}</span>
             <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.timeRegression > 0"></i>
             <span [style.width]="row?.timeRegression === 0 ? '20px': '0px'"></span>
             <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.timeRegression < 0"></i>
           </mat-cell>
         </ng-container>
-        <ng-container matColumnDef="avgCalories">
+        <ng-container matColumnDef="totalCalories">
           <mat-header-cell
             *matHeaderCellDef
             mat-sort-header
@@ -810,7 +813,7 @@
           >
             <div class="tableTitle">
               <span class="tableTitleWord">
-                {{'Dashboard.TrainLive.avg' | translate}} {{'SH.calories' | translate}}
+                {{'other.totalCalories' | translate}}
               </span>
               <span class="chartTitleUnit">cal</span>
             </div>
@@ -819,8 +822,8 @@
             *matCellDef="let row; let i = index;"
             class="tableArrangement hideColumn-500 tableContent"
           >
-            <span *ngIf="row?.avgCalories !== '--'">{{row?.avgCalories | number:'1.0-0'}}</span>
-            <span *ngIf="row?.avgCalories === '--'">{{row?.avgCalories}}</span>
+            <span *ngIf="row?.totalCalories !== '--'">{{row?.totalCalories | number:'1.0-0'}}</span>
+            <span *ngIf="row?.totalCalories === '--'">{{row?.totalCalories}}</span>
             <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.caloriesRegression > 0"></i>
             <span [style.width]="row?.caloriesRegression === 0 ? '20px': '0px'"></span>
             <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.caloriesRegression < 0"></i>
@@ -874,14 +877,14 @@
         </ng-container>
         <ng-container>
           <mat-header-row
-            *matHeaderRowDef="['name', 'totalActivityNum', 'weekFrequency', 'avgTime', 'avgCalories', 'likeType', 'HRZone']"
+            *matHeaderRowDef="['name', 'totalActivityNum', 'weekFrequency', 'totalTime', 'totalCalories', 'likeType', 'HRZone']"
           >
           </mat-header-row>
           <mat-row
             *matRowDef="
               let logRow;
               let j = index;
-              columns: ['name', 'totalActivityNum', 'weekFrequency', 'avgTime', 'avgCalories', 'likeType', 'HRZone']
+              columns: ['name', 'totalActivityNum', 'weekFrequency', 'totalTime', 'totalCalories', 'likeType', 'HRZone']
             "
             (click)="handleClickMember($event)"
             id="{{logRow?.id}}"

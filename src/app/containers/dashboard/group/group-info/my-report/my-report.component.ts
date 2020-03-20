@@ -104,7 +104,7 @@ export class MyReportComponent implements OnInit, OnDestroy {
   reportCompleted = true;
   isPreviewMode = false;
   isLoading = false;
-  isSelected = 'rangeDate';
+  isSelected = 'aWeek';
   isSelectDateRange = false;
   hasResData: boolean;
   maxStartDate = moment().format('YYYY-MM-DD');
@@ -116,7 +116,7 @@ export class MyReportComponent implements OnInit, OnDestroy {
   // 資料儲存用變數-kidin-1081210
   token: string;
   previewUrl: string;
-  startDate = '';
+  startDate = moment().add(-6, 'days').format('YYYY-MM-DD');
   endDate = moment().format('YYYY-MM-DD');
   selectedStartDate = moment().add(-13, 'days').format('YYYY-MM-DD');
   selectedEndDate = moment().format('YYYY-MM-DD');
@@ -226,6 +226,8 @@ export class MyReportComponent implements OnInit, OnDestroy {
       location.search.indexOf('id=')
     ) {
       this.queryStringShowData();
+    } else {
+      this.handleSubmitSearch('click');
     }
 
     Highcharts.charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
@@ -238,7 +240,8 @@ export class MyReportComponent implements OnInit, OnDestroy {
       if (queryString[i].indexOf('sport=') > -1) {
         this.selectCategory = queryString[i].replace('sport=', '');
       } else if (queryString[i].indexOf('startdate=') > -1) {
-        this.selectedStartDate = queryString[i].replace('startdate=', '');
+        this.startDate = queryString[i].replace('startdate=', '');
+        this.selectedStartDate = this.startDate;
       } else if (queryString[i].indexOf('enddate=') > -1) {
         this.selectedEndDate = queryString[i].replace('enddate=', '');
       } else if (queryString[i].indexOf('id=') > -1) {
@@ -334,7 +337,8 @@ export class MyReportComponent implements OnInit, OnDestroy {
         type: '1',
         fuzzyTime: [],
         filterStartTime: this.reportStartDate,
-        filterEndTime: this.reportEndDate
+        filterEndTime: this.reportEndDate,
+        filterSameTime: '1'
       },
       searchRule: {
         activity: this.reportCategory,

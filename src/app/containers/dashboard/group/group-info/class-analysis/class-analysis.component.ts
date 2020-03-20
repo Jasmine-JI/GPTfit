@@ -6,7 +6,6 @@ import * as _Highcharts from 'highcharts';
 import { HttpParams } from '@angular/common/http';
 
 import { Router } from '@angular/router';
-
 import { TranslateService } from '@ngx-translate/core';
 import { HashIdService } from '@shared/services/hash-id.service';
 
@@ -17,7 +16,6 @@ import { ActivityService } from '../../../../../shared/services/activity.service
 import { ActivityOtherDetailsService } from '../../../../../shared/services/activity-other-details.service';
 import { QrcodeService } from '../../../../portal/services/qrcode.service';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
-
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -103,24 +101,20 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   reportCompleted = true;
   isPreviewMode = false;
   isLoading = false;
-  showArrow = false;
   hasResData: boolean;
   maxSelectDate = moment().format('YYYY-MM-DD');
   initialChartComplated = true;
   showMore = false;
   isDebug = false;
+  hideCalendar = false;
 
   // 資料儲存用變數-kidin-1081210
   tableData = new MatTableDataSource<any>();
   token: string;
   previewUrl: string;
-  classDate = moment().format('YYYY-MM-DD');
-  classHour: number;
-  adjustTime = 0;
-  classTime = moment().format(' hh:00 a');
   reportCreatedTime = moment().format('YYYY/MM/DD HH:mm');
+  classTime: number;
   reportStartDate = '';
-  selectCategory = '1';
   reportCategory = '1';
   classRealDateTime: string;
   brandImg: string;
@@ -213,8 +207,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
     if (
       location.search.indexOf('sport=') > -1 &&
-      location.search.indexOf('classdate=') > -1 &&
-      location.search.indexOf('classhour=') > -1
+      location.search.indexOf('classTime=') > -1
     ) {
       this.queryStringShowData();
     }
@@ -224,41 +217,34 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     this.tableData.sort = this.sortTable;
   }
 
+  // 點選日曆某課程後隱藏日曆並產生報告-kidin-1090319
+  switchToReport (info) {
+    this.hideCalendar = true;
+    this.reportCategory = info.type;
+    this.classTime = info.time;
+    this.reportStartDate = moment(info.time).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+    this.handleSubmitSearch('click');
+  }
+
+  // 返回行事曆-kidin-1090319
+  returnCalendar () {
+    this.hideCalendar = false;
+  }
+
   // 依query string顯示資料-kidin-20191226
   queryStringShowData () {
+    this.hideCalendar = true;
     const queryString = location.search.replace('?', '').split('&');
     for (let i = 0; i < queryString.length; i++) {
       if (queryString[i].indexOf('sport=') > -1) {
-        this.selectCategory = queryString[i].replace('sport=', '');
-      } else if (queryString[i].indexOf('classdate=') > -1) {
-        this.classDate = queryString[i].replace('classdate=', '');
-      } else if (queryString[i].indexOf('classhour=') > -1) {
-        this.classHour = Number(queryString[i].replace('classhour=', ''));
+        this.reportCategory = queryString[i].replace('sport=', '');
+      } else if (queryString[i].indexOf('classTime=') > -1) {
+        this.classTime = +queryString[i].replace('classTime=', '');
+        this.reportStartDate = moment(this.classTime).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
       }
     }
 
     this.handleSubmitSearch('url');
-  }
-
-  // 取得使用者選擇的日期-kidin-20181226
-  handleSaveDate (e) {
-    this.classDate = e.target.value.format('YYYY-MM-DD');
-  }
-
-  // 顯示調整時間的按鈕-kidin-1081220
-  handleShowArrow () {
-    this.showArrow = true;
-  }
-
-  // 調整小時的按鈕-kidin-1081226
-  handleClickTime (str) {
-    if (str === 'hourUp') {
-      this.adjustTime++;
-      this.classTime = moment().add(+this.adjustTime, 'hours').format(' hh:00 a');
-    } else if (str === 'hourDown') {
-      this.adjustTime--;
-      this.classTime = moment().add(+this.adjustTime, 'hours').format(' hh:00 a');
-    }
   }
 
   // 使用者送出表單後顯示相關資料-kidin-1081209
@@ -266,12 +252,12 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     this.initialChartComplated = false;
     this.reportCompleted = false;
     this.initVariable();
+
     if (act === 'click') {
       this.updateUrl('false');
     }
-    this.reportCategory = this.selectCategory;
+
     this.token = this.utils.getToken() || '';
-    this.getFuzzyTime();
 
     // 先從service取得群組資訊，若取不到再call api-kidin-1081210
     this.groupService.getGroupInfo().subscribe(res => {
@@ -310,7 +296,8 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         type: '2',
         fuzzyTime: [this.reportStartDate],
         filterStartTime: '',
-        filterEndTime: ''
+        filterEndTime: '',
+        filterSameTime: '1'
       },
       searchRule: {
         activity: this.reportCategory,
@@ -341,7 +328,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       this.sortTable.sort({id: '', start: 'asc', disableClear: false});
       delete this.sortTable['active'];
     }
-    this.showArrow = false;
+
     this.showMore = false;
     this.initialChartComplated = false;
     this.showclassHRZoneChartTarget = false;
@@ -359,39 +346,6 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     this.memberSection = null;
     this.memberHRZoneList = [];
     this.memberHRZoneOptions = [];
-  }
-
-  // 取得當地時區並加以處理-kidin-1081210
-  getFuzzyTime () {
-    const timeZoneMinite = new Date();
-    const timeZone = -(timeZoneMinite.getTimezoneOffset() / 60);
-    let timeZoneStr = '';
-    if (timeZone < 10 && timeZone >= 0) {
-      timeZoneStr = `+0${timeZone}`;
-    } else if (timeZone > 10) {
-      timeZoneStr = `+${timeZone}`;
-    } else if (timeZone > -10 && timeZone < 0) {
-      timeZoneStr = `-0${timeZone}`;
-    } else {
-      timeZoneStr = `-${timeZone}`;
-    }
-
-    // 取得使用者選擇的時間後，換算成24小時-kidin-1081220
-    if (
-      location.search.indexOf('sport=') === -1 ||
-      location.search.indexOf('classdate=') === -1 ||
-      location.search.indexOf('classhour=') === -1
-    ) {
-      this.classHour = Number(this.classTime.replace(' ', '').split(':')[0]);
-      if ((this.classTime.indexOf('pm') > -1 && this.classHour !== 12) || (this.classTime.indexOf('am') > -1 && this.classHour === 12)) {
-        this.classHour += 12;
-      }
-    }
-    if (this.classHour < 10) {
-      this.reportStartDate = `${this.classDate}T0${this.classHour}:00:00.000${timeZoneStr}:00`;
-    } else {
-      this.reportStartDate = `${this.classDate}T${this.classHour}:00:00.000${timeZoneStr}:00`;
-    }
   }
 
   // 顯示群組資料-kidin-1081227
@@ -559,19 +513,12 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     let newUrl;
 
     if (str === 'true') {
-      let searchString;
-
-      if (this.classHour < 10) {
-        searchString = `sport=${this.reportCategory}&classdate=${this.classDate}&classhour=0${this.classHour}`;
-      } else {
-        searchString = `sport=${this.reportCategory}&classdate=${this.classDate}&classhour=${this.classHour}`;
-      }
+      const searchString = `sport=${this.reportCategory}&classTime=${this.classTime}`;
 
       if (location.search.indexOf('?') > -1) {
         if (
           location.search.indexOf('sport=') > -1 &&
-          location.search.indexOf('classdate=') > -1 &&
-          location.search.indexOf('classhour=') > -1
+          location.search.indexOf('classTime=') > -1
         ) {
           // 將舊的sr query string換成新的-kidin-1081226
           const preUrl = location.pathname;
@@ -580,8 +527,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
           for (let i = 0; i < queryString.length; i++) {
             if (
               queryString[i].indexOf('sport=') === -1 &&
-              queryString[i].indexOf('classdate=') === -1 &&
-              queryString[i].indexOf('classhour=') === -1
+              queryString[i].indexOf('classTime=') === -1
             ) {
               newSufUrl = `${newSufUrl}&${queryString[i]}`;
             }

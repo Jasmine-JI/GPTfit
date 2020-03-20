@@ -65,6 +65,7 @@ npm run pm2-start
 npm run pm2-kill
 ```
 是kill掉nodejs api server process
+（235環境無效，需要再下netstat -tlunp | grep 3000 查到pid後，再下kill -9 pid碼 進行刪除）
 ## 資料夾結構
 
 ```

@@ -106,6 +106,7 @@ export class ComLifeTrackingComponent implements OnInit {
   };
 
   // 圖表用數據-kidin-1090215
+  chartTimeStamp = [];
   searchDate = [];
   stepData = {
     stepList: [],
@@ -131,14 +132,24 @@ export class ComLifeTrackingComponent implements OnInit {
 
   weightData = {
     weightList: [],
-    colorSet: '#e458e8'
+    colorSet: [
+      [0, '#7ee33a'],
+      [0.5, 'yellow'],
+      [1, 'red']
+    ]
   };
 
   constituteData = {
     fatRateList: [],
-    fatRateColorSet: '#ea5757',
+    fatRateColorSet: [
+      [0, '#e0a63a'],
+      [1, '#e04fc4']
+    ],
     muscleRateList: [],
-    muscleRateColorSet: '#9b70e0'
+    muscleRateColorSet: [
+      [0, '#3ae5da'],
+      [1, '#299fc6']
+    ]
   };
 
   FFMIData = {
@@ -230,7 +241,8 @@ export class ComLifeTrackingComponent implements OnInit {
     };
 
     this.groupService.fetchGroupMemberList(body).subscribe(res => {
-      const list = new Set(),  // 避免id重複-kidin-1090211
+      const listId = new Set(),  // 避免id重複(Bug 1150)-kidin-1090211
+            listName = new Set(),
             memberList = res.info.groupMemberInfo;
 
       for (let i = 0; i < memberList.length; i++) {
@@ -241,34 +253,37 @@ export class ComLifeTrackingComponent implements OnInit {
             memberGroupIdArr.length = 3;
             groupIdArr.length = 3;
             if (memberList[i].accessRight >= 50 && JSON.stringify(memberGroupIdArr) === JSON.stringify(groupIdArr)) {
-              list.add({
-                id: memberList[i].memberId,
-                name: memberList[i].memberName
-              });
+              listId.add(memberList[i].memberId);
+              listName.add(memberList[i].memberName);
             }
             break;
           case '40':
             memberGroupIdArr.length = 4;
             groupIdArr.length = 4;
             if (memberList[i].accessRight >= 50 && JSON.stringify(memberGroupIdArr) === JSON.stringify(groupIdArr)) {
-              list.add({
-                id: memberList[i].memberId,
-                name: memberList[i].memberName
-              });
+              listId.add(memberList[i].memberId);
+              listName.add(memberList[i].memberName);
             }
             break;
           case '60':
             if (memberList[i].accessRight >= 50 && memberList[i].groupId === this.groupId) {
-              list.add({
-                id: memberList[i].memberId,
-                name: memberList[i].memberName
-              });
+              listId.add(memberList[i].memberId);
+              listName.add(memberList[i].memberName);
             }
             break;
         }
       }
 
-      this.groupList = Array.from(list);
+      const listIdArr = Array.from(listId),
+            listNameArr = Array.from(listName),
+            list = listIdArr.map((_id, _idx) => {
+              return {
+                id: _id,
+                name: listNameArr[_idx]
+              };
+            });
+
+      this.groupList = list;
       const groupListInfo = {
         groupId: this.groupId,
         groupList: this.groupList
@@ -362,7 +377,7 @@ export class ComLifeTrackingComponent implements OnInit {
       timeZoneStr = `-${timeZone}`;
     }
 
-    if (this.startDate === '') {
+    if (this.startDate === '' || this.isPreviewMode) {
       this.reportStartTime = `${this.selectedStartDate}T00:00:00.000${timeZoneStr}:00`;
       this.reportEndTime = `${this.selectedEndDate}T23:59:59.000${timeZoneStr}:00`;
 
@@ -405,6 +420,8 @@ export class ComLifeTrackingComponent implements OnInit {
       this.dataDateRange = 'week';
     }
 
+    this.createTimeStampArr(this.diffDay);
+
     const groupIdList = [];
     for (let i = 0; i < this.groupList.length; i++) {
       groupIdList.push(this.groupList[i].id);
@@ -417,11 +434,6 @@ export class ComLifeTrackingComponent implements OnInit {
       filterStartTime: this.reportStartTime,
       filterEndTime: this.reportEndTime
     };
-
-    this.searchDate = [
-      moment(this.reportStartTime.split('T')[0], 'YYYY-MM-DD').valueOf(),
-      moment(this.reportEndTime.split('T')[0], 'YYYY-MM-DD').valueOf()
-    ];
 
     this.reportService.fetchTrackingSummaryArray(body).subscribe(res => {
       if (Array.isArray(res)) {
@@ -469,19 +481,17 @@ export class ComLifeTrackingComponent implements OnInit {
                   heightList.unshift(lifeTrackingData[j].bodyHeight);
                 }
 
-                if (lifeTrackingData[j].bodyWeight !== null) {
-                  weightList.unshift([
-                    moment(lifeTrackingData[j].startTime.split('T')[0], 'YYYY-MM-DD').valueOf(),
-                    lifeTrackingData[j].bodyWeight
-                  ]);
-                }
+                weightList.unshift([
+                  moment(lifeTrackingData[j].startTime.split('T')[0], 'YYYY-MM-DD').valueOf(),
+                  lifeTrackingData[j].bodyWeight
+                ]);
 
                 if (lifeTrackingData[j].birthYear !== null) {
                   avgList.unshift(+currentYear - +lifeTrackingData[j].birthYear);
                 }
 
-                // FFMI＝〔體重（Kg）×（100％－體脂率）〕÷ 身高2（m）-kidin-1090215
                 if (lifeTrackingData[j].muscleRate !== null && lifeTrackingData[j].muscleRate !== 0) {
+                  // FFMI＝〔體重（Kg）×（100％－體脂率）〕÷ 身高2（m）-kidin-1090215
                   muscleRateList.unshift([
                     moment(lifeTrackingData[j].startTime.split('T')[0], 'YYYY-MM-DD').valueOf(),
                     lifeTrackingData[j].muscleRate
@@ -498,7 +508,6 @@ export class ComLifeTrackingComponent implements OnInit {
                         countFFMI = (weight * ((100 - fatRate) / 100)) / Math.pow(height, 2);
                   FFMI.unshift(countFFMI);
                 }
-
               }
 
               // 取該日期區間最新的身體數據-kidin-1090215
@@ -514,12 +523,17 @@ export class ComLifeTrackingComponent implements OnInit {
                 validFFMIStroke++;
               }
 
-              this.weightData.weightList.push(weightList);
+              const fillWeightData = this.fillVacancyData(weightList);
+              this.weightData.weightList.push(fillWeightData);
 
               if (fatRateList.length !== 0) {
                 this.noConstituteData = false;
-                this.constituteData.muscleRateList.push(muscleRateList);
-                this.constituteData.fatRateList.push(fatRateList);
+
+                const fillmuscleRateData = this.fillVacancyData(muscleRateList);
+                this.constituteData.muscleRateList.push(fillmuscleRateData);
+
+                const fillfatRateData = this.fillVacancyData(fatRateList);
+                this.constituteData.fatRateList.push(fillfatRateData);
                 this.FFMIData.perFatRate.push(fatRateList[fatRateList.length - 1][1]);
               }
 
@@ -619,14 +633,24 @@ export class ComLifeTrackingComponent implements OnInit {
 
     this.weightData = {
       weightList: [],
-      colorSet: '#e458e8'
+      colorSet: [
+        [0, '#7ee33a'],
+        [0.5, 'yellow'],
+        [1, 'red']
+      ]
     };
 
     this.constituteData = {
       fatRateList: [],
-      fatRateColorSet: '#ea5757',
+      fatRateColorSet: [
+        [0, '#e0a63a'],
+        [1, '#e04fc4']
+      ],
       muscleRateList: [],
-      muscleRateColorSet: '#9b70e0'
+      muscleRateColorSet: [
+        [0, '#3ae5da'],
+        [1, '#299fc6']
+      ]
     };
 
     this.FFMIData = {
@@ -643,6 +667,86 @@ export class ComLifeTrackingComponent implements OnInit {
 
     this.personalData.data.length = 0;
     this.allPersonalData = [];
+    this.chartTimeStamp = [];
+  }
+
+  // 建立報告期間的timeStamp讓圖表使用-kidin-1090312
+  createTimeStampArr (range) {
+
+    this.searchDate = [
+      moment(this.reportStartTime.split('T')[0], 'YYYY-MM-DD').valueOf(),
+      moment(this.reportEndTime.split('T')[0], 'YYYY-MM-DD').valueOf()
+    ];
+
+    if (this.dataDateRange === 'day') {
+
+      for (let i = 0; i < range; i++) {
+        this.chartTimeStamp.push(this.searchDate[0] + 86400000 * i);
+      }
+
+    } else {
+      const weekCoefficient = this.findDate();
+
+      for (let i = 0; i < weekCoefficient.weekNum; i++) {
+        this.chartTimeStamp.push(weekCoefficient.startDate + 86400000 * i * 7);
+      }
+
+    }
+
+  }
+
+  // 根據搜索時間取得周報告第一周的開始日期和週數-kidin-1090312
+  findDate () {
+
+    const week = {
+      startDate: 0,
+      weekNum: 0
+    };
+
+    let weekEndDate;
+
+    // 周報告開頭是星期日-kidin-1090312
+    if (moment(this.searchDate[0]).isoWeekday() !== 7) {
+      week.startDate = this.searchDate[0] + 86400 * 1000 * (7 - moment(this.searchDate[0]).isoWeekday());
+    } else {
+      week.startDate = this.searchDate[0];
+    }
+
+    if (moment(this.searchDate[0]).isoWeekday() !== 7) {
+      weekEndDate = this.searchDate[1] - 86400 * 1000 * moment(this.searchDate[1]).isoWeekday();
+    } else {
+      weekEndDate = this.searchDate[1];
+    }
+
+    week.weekNum = ((weekEndDate - week.startDate) / (86400 * 1000 * 7)) + 1;
+
+    return week;
+  }
+
+  // 依據選取日期和報告類型（日/週）將缺漏的數值以其他日期現有數值填補-kidin-1090313
+  fillVacancyData (data) {
+    if (data.length === 0) {
+      return [];
+    } else {
+
+      let idx = 0;
+      const newData = [];
+
+      for (let i = 0; i < this.chartTimeStamp.length; i++) {
+
+        if (idx >= data.length) {
+          newData.push([this.chartTimeStamp[i], data[data.length - 1][1]]);
+        } else if (this.chartTimeStamp[i] !== data[idx][0]) {
+          newData.push([this.chartTimeStamp[i], data[idx][1]]);
+        } else {
+          newData.push(data[idx]);
+          idx++;
+        }
+
+      }
+
+      return newData;
+    }
   }
 
   // 將合併的資料進行排序
@@ -1038,9 +1142,9 @@ export class ComLifeTrackingComponent implements OnInit {
         fatRate: fatRateData[fatRateData.length - 1] || '--',
         fatRateComment: this.getFatRateComment(fatRateData[fatRateData.length - 1], data[0].gender, age),
         FFMIComment: this.getFFMIComment(fatRateData[fatRateData.length - 1], FFMIData[FFMIData.length - 1], data[0].gender) || '--',
-        stepRegression: stepRegression.slope,
-        restHRRegression: restHRRegression.slope,
-        weightRegression: weightRegression.slope
+        stepRegression: stepRegression.slope || 0,
+        restHRRegression: restHRRegression.slope || 0,
+        weightRegression: weightRegression.slope || 0
       };
 
     } else {

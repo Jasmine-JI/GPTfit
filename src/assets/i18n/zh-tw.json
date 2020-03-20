@@ -775,6 +775,8 @@
     "weekFrequency": "週活動頻率",
     "activityPreference": "活動偏好",
     "webError404": "找不到頁面或未開放，可嘗試登入後再試一次。",
-    "webError403": "您似乎沒有查看此活動的權限。"
+    "webError403": "您似乎沒有查看此活動的權限。",
+    "today": "今天",
+    "month": "月"
   }
 }

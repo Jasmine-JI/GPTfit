@@ -2,7 +2,8 @@ import {
   Component,
   OnInit,
   Output,
-  EventEmitter
+  EventEmitter,
+  OnDestroy
 } from '@angular/core';
 import { ViewEncapsulation } from '@angular/core';
 import * as moment from 'moment';
@@ -15,7 +16,7 @@ import { ReportService } from '../../services/report.service';
   styleUrls: ['./sport-report.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class SportReportComponent implements OnInit {
+export class SportReportComponent implements OnInit, OnDestroy {
   @Output() showPrivacyUi = new EventEmitter();
 
   isPreviewMode = false;
@@ -339,5 +340,10 @@ export class SportReportComponent implements OnInit {
   // 將隱私權pass給父組件-kidin-1090205
   emitPrivacy (e) {
     this.showPrivacyUi.emit(e);
+  }
+
+  // 頁面卸除時將所選類別改回全部類型(Bug 1149)-kidin-1090316
+  ngOnDestroy () {
+    this.reportService.setReportCategory('99');
   }
 }

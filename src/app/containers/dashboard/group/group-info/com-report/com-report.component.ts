@@ -77,7 +77,8 @@ export class ComReportComponent implements OnInit, OnDestroy {
   totalTime = '';
   avgTime = '';
   totalCalories = 0;
-  avgCalories = 0;
+  avgCalories = 0;  // 日平均卡路里-kidin-1090320
+  avgPersonCalories = 0;  // 人數平均卡路里-kidin-1090320
   totalDistance = 0;
   totalWeight = 0;
   totalHrZoneZero = 0;
@@ -151,14 +152,13 @@ export class ComReportComponent implements OnInit, OnDestroy {
       this.isPreviewMode = true;
     }
 
-    this.getIdListStart();
-
     // 使用rxjs訂閱運動類別使運動類別更改時可以即時切換-kidin-1090121
     this.groupService.getreportCategory().pipe(first()).subscribe(res => {
       this.reportCategory = res;
       this.loadCategoryData(res);
     });
 
+    this.getIdListStart();
     this.personalData.sort = this.sortTable;
 
   }
@@ -217,45 +217,50 @@ export class ComReportComponent implements OnInit, OnDestroy {
     };
 
     this.groupService.fetchGroupMemberList(body).subscribe(res => {
-      const list = new Set(),  // 避免id重複-kidin-1090211
+      const listId = new Set(),  // 避免id重複(Bug 1150)-kidin-1090211
+            listName = new Set(),
             memberList = res.info.groupMemberInfo;
 
       for (let i = 0; i < memberList.length; i++) {
         const memberGroupIdArr = memberList[i].groupId.split('-'),
               groupIdArr = this.groupId.split('-');
+
         switch (this.groupLevel) {
           case '30':
             memberGroupIdArr.length = 3;
             groupIdArr.length = 3;
             if (memberList[i].accessRight >= 50 && JSON.stringify(memberGroupIdArr) === JSON.stringify(groupIdArr)) {
-              list.add({
-                id: memberList[i].memberId,
-                name: memberList[i].memberName
-              });
+              listId.add(memberList[i].memberId);
+              listName.add(memberList[i].memberName);
             }
             break;
           case '40':
             memberGroupIdArr.length = 4;
             groupIdArr.length = 4;
             if (memberList[i].accessRight >= 50 && JSON.stringify(memberGroupIdArr) === JSON.stringify(groupIdArr)) {
-              list.add({
-                id: memberList[i].memberId,
-                name: memberList[i].memberName
-              });
+              listId.add(memberList[i].memberId);
+              listName.add(memberList[i].memberName);
             }
             break;
           case '60':
             if (memberList[i].accessRight >= 50 && memberList[i].groupId === this.groupId) {
-              list.add({
-                id: memberList[i].memberId,
-                name: memberList[i].memberName
-              });
+              listId.add(memberList[i].memberId);
+              listName.add(memberList[i].memberName);
             }
             break;
         }
       }
 
-      this.groupList = Array.from(list);
+      const listIdArr = Array.from(listId),
+            listNameArr = Array.from(listName),
+            list = listIdArr.map((_id, _idx) => {
+              return {
+                id: _id,
+                name: listNameArr[_idx]
+              };
+            });
+
+      this.groupList = list;
       const groupListInfo = {
         groupId: this.groupId,
         groupList: this.groupList
@@ -349,7 +354,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
       timeZoneStr = `-${timeZone}`;
     }
 
-    if (this.startDate === '') {
+    if (this.startDate === '' || this.isPreviewMode) {
       this.reportStartTime = `${this.selectedStartDate}T00:00:00.000${timeZoneStr}:00`;
       this.reportEndTime = `${this.selectedEndDate}T23:59:59.000${timeZoneStr}:00`;
 
@@ -474,6 +479,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
     this.totalHrZoneFour = 0;
     this.totalHrZoneFive = 0;
     this.avgCalories = 0;
+    this.avgPersonCalories = 0;
     this.totalCalories = 0;
     this.groupService.setTypeAllData({}, {}, {}, {}, {}, {}, {});
     this.perHrZoneData = [];
@@ -619,7 +625,9 @@ export class ComReportComponent implements OnInit, OnDestroy {
         typeRowHrZoneThree = 0,
         typeRowHrZoneFour = 0,
         typeRowHrZoneFive = 0;
+
     for (let i = 0; i < this.activitiesList.length; i++) {
+
       for (let j = 0; j < this.activitiesList[i].activities.length; j++) {
         const perData = this.activitiesList[i].activities[j];
 
@@ -899,13 +907,13 @@ export class ComReportComponent implements OnInit, OnDestroy {
       }
     }
 
-    const typeAllAvgTrainTime = (typeAllTotalTrainTime / this.activityLength) || 0,
-          typeRunAvgTrainTime = (typeRunTotalTrainTime / typeRunLength) || 0,
-          typeCycleAvgTrainTime = (typeCycleTotalTrainTime / typeCycleLength) || 0,
-          typeWeightTrainAvgTrainTime = (typeWeightTrainTotalTrainTime / typeWeightTrainLength) || 0,
-          typeSwimAvgTrainTime = (typeSwimTotalTrainTime / typeSwimLength) || 0,
-          typeAerobicAvgTrainTime = (typeAerobicTotalTrainTime / typeAerobicLength) || 0,
-          typeRowAvgTrainTime = (typeRowTotalTrainTime / typeRowLength) || 0;
+    const typeAllAvgTrainTime = (typeAllTotalTrainTime / this.hasDataNumber) || 0,
+          typeRunAvgTrainTime = (typeRunTotalTrainTime / this.hasDataNumber) || 0,
+          typeCycleAvgTrainTime = (typeCycleTotalTrainTime / this.hasDataNumber) || 0,
+          typeWeightTrainAvgTrainTime = (typeWeightTrainTotalTrainTime / this.hasDataNumber) || 0,
+          typeSwimAvgTrainTime = (typeSwimTotalTrainTime / this.hasDataNumber) || 0,
+          typeAerobicAvgTrainTime = (typeAerobicTotalTrainTime / this.hasDataNumber) || 0,
+          typeRowAvgTrainTime = (typeRowTotalTrainTime / this.hasDataNumber) || 0;
 
     const typeAllData = {
       activityLength: this.activityLength,
@@ -1091,6 +1099,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
         this.totalCalories = res.perCaloriesData.totalCalories;
         this.bestCalories = res.perCaloriesData.oneRangeBestCalories;
         this.avgCalories = res.perCaloriesData.avgCalories;
+        this.avgPersonCalories = res.perCaloriesData.avgPersonCalories;
         this.typeList = res.typeList;
         this.perAvgHR = res.perAvgHR;
         this.perActivityTime = res.perActivityTime;
@@ -1356,6 +1365,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
             colorSet: ['#f8b551'],
             oneRangeBestCalories: oneRangeBest,
             avgCalories: total / date.length,
+            avgPersonCalories: total / this.hasDataNumber,
             totalCalories: total
           };
         case 'cadence':
@@ -1375,15 +1385,6 @@ export class ComReportComponent implements OnInit, OnDestroy {
             colorSet: ['#aafc42', '#d6ff38', '#f56300'],
             oneRangeBestHR: oneRangeBest,
             avgHR: perTypeAvg
-          };
-        case 'calories':
-          return {
-            calories: finalData,
-            bestCalories: bestFinalData,
-            date: finalDate,
-            colorSet: ['#f8b551'],
-            oneRangeBestCalories: oneRangeBest,
-            avgCalories: perTypeAvg
           };
         case 'swolf':
           return {
@@ -1481,6 +1482,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
             colorSet: '#f8b551',
             oneRangeBestCalories: oneRangeBest,
             avgCalories: total / date.length,
+            avgPersonCalories: total / this.hasDataNumber,
             totalCalories: total
           };
       }
@@ -1525,6 +1527,8 @@ export class ComReportComponent implements OnInit, OnDestroy {
           recordStartTime = moment(data[i].startTime.split('T')[0]);
         }
 
+        let oneDayActivityTime = 0,
+            oneDayCalories = 0;
         for (let j = 0; j < data[i].activities.length; j++) {
           const perData = data[i].activities[j];
 
@@ -1538,9 +1542,8 @@ export class ComReportComponent implements OnInit, OnDestroy {
           perHRZone.z4 += perData.totalHrZone4Second;
           perHRZone.z5 += perData.totalHrZone5Second;
 
-          activityTime.unshift(perData.totalSecond);
-          calories.unshift(perData.calories);
-          xPoint.push(idx);
+          oneDayActivityTime += +perData.totalSecond;
+          oneDayCalories += perData.calories;
 
           switch (+perData.type) {
             case 1:
@@ -1564,6 +1567,9 @@ export class ComReportComponent implements OnInit, OnDestroy {
           }
         }
 
+        activityTime.unshift(oneDayActivityTime);
+        calories.unshift(oneDayCalories);
+        xPoint.push(idx);
       }
 
       const recordEndTime = moment(this.reportEndTime.split('T')[0]),
@@ -1583,10 +1589,10 @@ export class ComReportComponent implements OnInit, OnDestroy {
         userId: this.groupList[index].id,
         totalActivityNum: totalActivityNum,
         weekFrequency: (totalActivityNum / timePeroid) * 7,
-        avgTime: this.formatHmTime(totalActivityTime / totalActivityNum),
-        timeRegression: timeRegression.slope,
-        avgCalories: totalCalories / totalActivityNum,
-        caloriesRegression: caloriesRegression.slope,
+        totalTime: this.formatHmTime(totalActivityTime),
+        timeRegression: timeRegression.slope || 0,
+        totalCalories: totalCalories,
+        caloriesRegression: caloriesRegression.slope || 0,
         likeType: this.findLikeType(typeCount),
         HRZone: [
           perHRZone.z0,
@@ -1605,9 +1611,9 @@ export class ComReportComponent implements OnInit, OnDestroy {
         userId: this.groupList[index].id,
         totalActivityNum: '--',
         weekFrequency: '--',
-        avgTime: '-:--',
+        totalTime: '-:--',
         timeRegression: '--',
-        avgCalories: '--',
+        totalCalories: '--',
         caloriesRegression: '--',
         likeType: [],
         HRZone: '--'
