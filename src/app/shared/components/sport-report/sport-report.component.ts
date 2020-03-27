@@ -342,8 +342,9 @@ export class SportReportComponent implements OnInit, OnDestroy {
     this.showPrivacyUi.emit(e);
   }
 
-  // 頁面卸除時將所選類別改回全部類型(Bug 1149)-kidin-1090316
+  // 頁面卸除時將所選類別改回全部類型(Bug 1149)，並將url reset避免污染其他頁面-kidin-1090325
   ngOnDestroy () {
     this.reportService.setReportCategory('99');
+    window.history.pushState({path: location.pathname}, '', location.pathname);
   }
 }

@@ -90,6 +90,7 @@ import { MyReportComponent } from './group/group-info/my-report/my-report.compon
 import { ClassAnalysisComponent } from './group/group-info/class-analysis/class-analysis.component';
 import { ComReportComponent } from './group/group-info/com-report/com-report.component';
 import { ComLifeTrackingComponent } from './group/group-info/com-life-tracking/com-life-tracking.component';
+import { ModifyBoxComponent } from './components/settings/privacy-settings/modify-box/modify-box.component';
 
 @NgModule({
   imports: [
@@ -189,7 +190,8 @@ import { ComLifeTrackingComponent } from './group/group-info/com-life-tracking/c
     MyReportComponent,
     ClassAnalysisComponent,
     ComReportComponent,
-    ComLifeTrackingComponent
+    ComLifeTrackingComponent,
+    ModifyBoxComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
@@ -202,7 +204,8 @@ import { ComLifeTrackingComponent } from './group/group-info/com-life-tracking/c
     TodayLoginnerWinComponent,
     BottomSheetComponent,
     PrivacySettingDialogComponent,
-    ShareGroupInfoDialogComponent
+    ShareGroupInfoDialogComponent,
+    ModifyBoxComponent
   ]
 })
 export class DashboardModule {}

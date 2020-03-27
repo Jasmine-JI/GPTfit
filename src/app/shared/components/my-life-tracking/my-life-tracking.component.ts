@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
@@ -13,7 +13,7 @@ import { UserProfileService } from '../../services/user-profile.service';
   templateUrl: './my-life-tracking.component.html',
   styleUrls: ['./my-life-tracking.component.scss']
 })
-export class MyLifeTrackingComponent implements OnInit {
+export class MyLifeTrackingComponent implements OnInit, OnDestroy {
 
   // UI控制相關變數-kidin-1090115
   isLoading = false;
@@ -50,7 +50,7 @@ export class MyLifeTrackingComponent implements OnInit {
   startDate = '';
   endDate = moment().format('YYYY-MM-DD');
   reportEndDate = '';
-  selectPeriod = '';
+  selectPeriod = '7';
   period = `7 ${this.translate.instant('Dashboard.SportReport.day')}`;
   reportRangeType = 1;
   reportCreatedTime = moment().format('YYYY/MM/DD HH:mm');
@@ -891,7 +891,7 @@ export class MyLifeTrackingComponent implements OnInit {
 
   // 依據選取日期和報告類型（日/週）將缺漏的數值以其他日期現有數值填補-kidin-1090313
   fillVacancyData (data) {
-
+console.log(data);
     if (data.length === 0) {
       return [];
     } else {
@@ -901,12 +901,18 @@ export class MyLifeTrackingComponent implements OnInit {
 
       for (let i = 0; i < this.chartTimeStamp.length; i++) {
 
-        if (idx >= data.length) {
-          newData.push([this.chartTimeStamp[i], data[data.length - 1][1]]);
-        } else if (this.chartTimeStamp[i] !== data[idx][0]) {
-          newData.push([this.chartTimeStamp[i], data[idx][1]]);
+        if (idx === 0 || idx >= data.length || data[idx][0] !== data[idx - 1][0]) {
+
+          if (idx >= data.length) {
+            newData.push([this.chartTimeStamp[i], data[data.length - 1][1]]);
+          } else if (this.chartTimeStamp[i] !== data[idx][0]) {
+            newData.push([this.chartTimeStamp[i], data[idx][1]]);
+          } else {
+            newData.push(data[idx]);
+            idx++;
+          }
+
         } else {
-          newData.push(data[idx]);
           idx++;
         }
 
@@ -958,9 +964,11 @@ export class MyLifeTrackingComponent implements OnInit {
       newUrl = location.pathname;
     }
 
+    /***待api 支援 debug mode-kidin-1090326
     if (history.pushState) {
       window.history.pushState({path: newUrl}, '', newUrl);
     }
+    ***/
   }
 
   // 將秒數轉換成其他時間格式-kidin-1090217
@@ -1230,5 +1238,10 @@ export class MyLifeTrackingComponent implements OnInit {
 
   print() {
     window.print();
+  }
+
+  // 頁面卸除後將url reset避免污染其他頁面-kidin-1090325
+  ngOnDestroy () {
+    window.history.pushState({path: location.pathname}, '', location.pathname);
   }
 }

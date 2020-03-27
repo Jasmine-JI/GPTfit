@@ -24,12 +24,12 @@ const SERVER_CONFIG = {
 };
 if (address === '192.168.1.231' || address === '192.168.1.235' || address === '192.168.1.234') {
   SERVER_CONFIG.key = fs.readFileSync('/etc/ssl/free.key'),
-    SERVER_CONFIG.ca = fs.readFileSync('/etc/ssl/free_ca.crt'),
-    SERVER_CONFIG.cert = fs.readFileSync('/etc/ssl/free.crt');
+  SERVER_CONFIG.ca = fs.readFileSync('/etc/ssl/free_ca.crt'),
+  SERVER_CONFIG.cert = fs.readFileSync('/etc/ssl/free.crt');
 } else {
   SERVER_CONFIG.key = fs.readFileSync('/etc/ssl/130/offical_130_no_pem.key'),
-    SERVER_CONFIG.ca = fs.readFileSync('/etc/ssl/130/offical_public_130.crt'),
-    SERVER_CONFIG.cert = fs.readFileSync('/etc/ssl/130/offical_130.cer');
+  SERVER_CONFIG.ca = fs.readFileSync('/etc/ssl/130/offical_public_130.crt'),
+  SERVER_CONFIG.cert = fs.readFileSync('/etc/ssl/130/offical_130.cer');
 }
 
 // Init app
@@ -293,7 +293,7 @@ app.use(function (req, res, next) {
       'https://192.168.1.231:8080',
       'http://192.168.1.231',
       'https://192.168.1.231'
-    ];    
+    ];
   } else if (address === '192.168.1.234') {
     allowedOrigins = [
       'http://192.168.1.234',

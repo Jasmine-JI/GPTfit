@@ -42,6 +42,7 @@ import { LineChartComponent } from './chart/line-chart/line-chart.component';
 import { MyLifeTrackingComponent } from './my-life-tracking/my-life-tracking.component';
 import { BodyConstituteSvgComponent } from './chart/body-constitute-svg/body-constitute-svg.component';
 import { TuiCalenderComponent } from './tui-calender/tui-calender.component';
+import { HoverHintComponent } from './hover-hint/hover-hint.component';
 
 @NgModule({
   imports: [
@@ -89,7 +90,8 @@ import { TuiCalenderComponent } from './tui-calender/tui-calender.component';
     LineChartComponent,
     MyLifeTrackingComponent,
     BodyConstituteSvgComponent,
-    TuiCalenderComponent
+    TuiCalenderComponent,
+    HoverHintComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -121,7 +123,8 @@ import { TuiCalenderComponent } from './tui-calender/tui-calender.component';
     DiscolorColumnChartComponent,
     LineChartComponent,
     BodyConstituteSvgComponent,
-    TuiCalenderComponent
+    TuiCalenderComponent,
+    HoverHintComponent
   ]
 })
 export class SharedComponentsModule {}

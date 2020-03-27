@@ -108,6 +108,8 @@ export class ComReportComponent implements OnInit, OnDestroy {
   };
 
   // 圖表用數據-kidin-1090115
+  chartTimeStamp = [];
+  searchDate = [];
   perTypeLength = [];
   perTypeTime = [];
   typeHrZone = [];
@@ -454,6 +456,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
           this.isSelectDateRange = false;
           this.updateUrl('true');
           this.sortData(groupReportData);
+          this.createTimeStampArr(this.diffDay);
           this.calPerCategoryData();
         }
       } else {
@@ -489,6 +492,61 @@ export class ComReportComponent implements OnInit, OnDestroy {
     this.perDate = [];
     this.personalData.data.length = 0;
     this.allPersonalData = [];
+    this.chartTimeStamp = [];
+    this.searchDate = [];
+  }
+
+  // 建立報告期間的timeStamp讓圖表使用-kidin-1090324
+  createTimeStampArr (range) {
+
+    this.searchDate = [
+      moment(this.reportStartTime.split('T')[0], 'YYYY-MM-DD').valueOf(),
+      moment(this.reportEndTime.split('T')[0], 'YYYY-MM-DD').valueOf()
+    ];
+
+    if (this.dataDateRange === 'day') {
+
+      for (let i = 0; i < range; i++) {
+        this.chartTimeStamp.push(this.searchDate[0] + 86400000 * i);
+      }
+
+    } else {
+      const weekCoefficient = this.findDate();
+
+      for (let i = 0; i < weekCoefficient.weekNum; i++) {
+        this.chartTimeStamp.push(weekCoefficient.startDate + 86400000 * i * 7);
+      }
+
+    }
+
+  }
+
+  // 根據搜索時間取得周報告第一周的開始日期和週數-kidin-1090324
+  findDate () {
+
+    const week = {
+      startDate: 0,
+      weekNum: 0
+    };
+
+    let weekEndDate;
+
+    // 周報告開頭是星期日-kidin-1090312
+    if (moment(this.searchDate[0]).isoWeekday() !== 7) {
+      week.startDate = this.searchDate[0] + 86400 * 1000 * (7 - moment(this.searchDate[0]).isoWeekday());
+    } else {
+      week.startDate = this.searchDate[0];
+    }
+
+    if (moment(this.searchDate[0]).isoWeekday() !== 7) {
+      weekEndDate = this.searchDate[1] - 86400 * 1000 * moment(this.searchDate[1]).isoWeekday();
+    } else {
+      weekEndDate = this.searchDate[1];
+    }
+
+    week.weekNum = ((weekEndDate - week.startDate) / (86400 * 1000 * 7)) + 1;
+
+    return week;
   }
 
   // 將合併的資料進行排序
@@ -936,7 +994,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
         typeAerobicAvgTrainTime,
         typeRowAvgTrainTime
       ],
-      perHrZoneData: typeAllHrZoneData,
+      perHrZoneData: this.computeSameHRZoneData(typeAllHrZoneData),
       perCaloriesData: this.computeSameDayData(typeAllCalories, [], typeAllDataDate, 'calories'),
       typeList: typeList,
       perAvgHR: typeAllavgHr,
@@ -954,7 +1012,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
       HrZoneThree: typeRunHrZoneThree,
       HrZoneFour: typeRunHrZoneFour,
       HrZoneFive: typeRunHrZoneFive,
-      perHrZoneData: typeRunHrZoneData,
+      perHrZoneData: this.computeSameHRZoneData(typeRunHrZoneData),
       perCaloriesData: this.computeSameDayData(typeRunCalories, [], typeRunDataDate, 'calories'),
       perPaceData: this.computeSameDayPace(typeRunSpeed, typeRunMaxSpeed, typeRunDataDate, 1),
       perCadenceData: this.computeSameDayData(typeRunCadence, typeRunMaxCadence, typeRunDataDate, 'cadence'),
@@ -972,7 +1030,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
       HrZoneThree: typeCycleHrZoneThree,
       HrZoneFour: typeCycleHrZoneFour,
       HrZoneFive: typeCycleHrZoneFive,
-      perHrZoneData: typeCycleHrZoneData,
+      perHrZoneData: this.computeSameHRZoneData(typeCycleHrZoneData),
       perCaloriesData: this.computeSameDayData(typeCycleCalories, [], typeCycleDataDate, 'calories'),
       perSpeedData: this.computeSameDayData(typeCycleSpeed, typeCycleMaxSpeed, typeCycleDataDate, 'speed'),
       perCadenceData: this.computeSameDayData(typeCycleCadence, typeCycleMaxCadence, typeCycleDataDate, 'cadence'),
@@ -999,7 +1057,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
       HrZoneThree: typeSwimHrZoneThree,
       HrZoneFour: typeSwimHrZoneFour,
       HrZoneFive: typeSwimHrZoneFive,
-      perHrZoneData: typeSwimHrZoneData,
+      perHrZoneData: this.computeSameHRZoneData(typeSwimHrZoneData),
       perCaloriesData: this.computeSameDayData(typeSwimCalories, [], typeSwimDataDate, 'calories'),
       perPaceData: this.computeSameDayPace(typeSwimSpeed, typeSwimMaxSpeed, typeSwimDataDate, 4),
       perCadenceData: this.computeSameDayData(typeSwimCadence, typeSwimMaxCadence, typeSwimDataDate, 'cadence'),
@@ -1017,7 +1075,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
       HrZoneThree: typeAerobicHrZoneThree,
       HrZoneFour: typeAerobicHrZoneFour,
       HrZoneFive: typeAerobicHrZoneFive,
-      perHrZoneData: typeAerobicHrZoneData,
+      perHrZoneData: this.computeSameHRZoneData(typeAerobicHrZoneData),
       perCaloriesData: this.computeSameDayData(typeAerobicCalories, [], typeAerobicDataDate, 'calories'),
       perHRData: this.computeSameDayData(typeAerobicHR, typeAerobicMaxHR, typeAerobicDataDate, 'HR')
     };
@@ -1033,7 +1091,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
       HrZoneThree: typeRowHrZoneThree,
       HrZoneFour: typeRowHrZoneFour,
       HrZoneFive: typeRowHrZoneFive,
-      perHrZoneData: typeRowHrZoneData,
+      perHrZoneData: this.computeSameHRZoneData(typeRowHrZoneData),
       perCaloriesData: this.computeSameDayData(typeRowCalories, [], typeRowDataDate, 'calories'),
       perPaceData: this.computeSameDayPace(typeRowSpeed, typeRowMaxSpeed, typeRowDataDate, 6),
       perCadenceData: this.computeSameDayData(typeRowCadence, typeRowMaxCadence, typeRowDataDate, 'cadence'),
@@ -1303,6 +1361,77 @@ export class ComReportComponent implements OnInit, OnDestroy {
     }
   }
 
+  // 將日期相同的心率區間做整合並轉成highcharts所需的資料格式-kidin-1090325
+  computeSameHRZoneData (data: Array<number>) {
+    const finalData = {
+        zoneZero: [],
+        zoneOne: [],
+        zoneTwo: [],
+        zoneThree: [],
+        zoneFour: [],
+        zoneFive: []
+      },
+      sameDayData = {
+        zoneZero: 0,
+        zoneOne: 0,
+        zoneTwo: 0,
+        zoneThree: 0,
+        zoneFour: 0,
+        zoneFive: 0
+      };
+
+    for (let i = 0; i < data.length; i++) {
+
+      if (i === 0 || data[i][7] === data[i - 1][7]) {
+        sameDayData.zoneZero += data[i][1],
+        sameDayData.zoneOne += data[i][2],
+        sameDayData.zoneTwo += data[i][3],
+        sameDayData.zoneThree += data[i][4],
+        sameDayData.zoneFour += data[i][5],
+        sameDayData.zoneFive += data[i][6];
+
+        if (i === data.length - 1) {
+          const timeStamp = moment(data[i][7], 'YYYY-MM-DD').valueOf();
+          finalData.zoneZero.push([timeStamp, sameDayData.zoneZero]);
+          finalData.zoneOne.push([timeStamp, sameDayData.zoneOne]);
+          finalData.zoneTwo.push([timeStamp, sameDayData.zoneTwo]);
+          finalData.zoneThree.push([timeStamp, sameDayData.zoneThree]);
+          finalData.zoneFour.push([timeStamp, sameDayData.zoneFour]);
+          finalData.zoneFive.push([timeStamp, sameDayData.zoneFive]);
+
+        }
+      } else {
+        let timeStamp = moment(data[i - 1][7], 'YYYY-MM-DD').valueOf();
+        finalData.zoneZero.push([timeStamp, sameDayData.zoneZero]);
+        finalData.zoneOne.push([timeStamp, sameDayData.zoneOne]);
+        finalData.zoneTwo.push([timeStamp, sameDayData.zoneTwo]);
+        finalData.zoneThree.push([timeStamp, sameDayData.zoneThree]);
+        finalData.zoneFour.push([timeStamp, sameDayData.zoneFour]);
+        finalData.zoneFive.push([timeStamp, sameDayData.zoneFive]);
+
+        if (i !== data.length - 1 ) {
+          sameDayData.zoneZero = data[i][1],
+          sameDayData.zoneOne = data[i][2],
+          sameDayData.zoneTwo = data[i][3],
+          sameDayData.zoneThree = data[i][4],
+          sameDayData.zoneFour = data[i][5],
+          sameDayData.zoneFive = data[i][6];
+        } else {
+          timeStamp = moment(data[i][7], 'YYYY-MM-DD').valueOf();
+          finalData.zoneZero.push([timeStamp, data[i][1]]);
+          finalData.zoneOne.push([timeStamp, data[i][2]]);
+          finalData.zoneTwo.push([timeStamp, data[i][3]]);
+          finalData.zoneThree.push([timeStamp, data[i][4]]);
+          finalData.zoneFour.push([timeStamp, data[i][5]]);
+          finalData.zoneFive.push([timeStamp, data[i][6]]);
+        }
+
+      }
+    }
+
+    return this.fillVacancyData(finalData, [], 'HRZone');
+  }
+
   // 將日期相同的數據做整合-kidin-1090210
   computeSameDayData (data: Array<number>, bestData: Array<number>, date: Array<string>, type: string) {
     const finalDate = [],
@@ -1359,9 +1488,9 @@ export class ComReportComponent implements OnInit, OnDestroy {
       switch (type) {
         case 'calories':
           return {
-            calories: finalData,
+            calories: this.fillVacancyData(finalData, finalDate, 'calories'),
             bestcalories: bestFinalData,
-            date: finalDate,
+            date: this.chartTimeStamp,
             colorSet: ['#f8b551'],
             oneRangeBestCalories: oneRangeBest,
             avgCalories: total / date.length,
@@ -1477,8 +1606,8 @@ export class ComReportComponent implements OnInit, OnDestroy {
       switch (type) {
         case 'calories':
           return {
-            calories: finalData,
-            date: finalDate,
+            calories: this.fillVacancyData(finalData, finalDate, 'calories'),
+            date: this.chartTimeStamp,
             colorSet: '#f8b551',
             oneRangeBestCalories: oneRangeBest,
             avgCalories: total / date.length,
@@ -1487,6 +1616,89 @@ export class ComReportComponent implements OnInit, OnDestroy {
           };
       }
     }
+  }
+
+  // 依據選取日期和報告類型（日/週）將缺漏的數值以0填補-kidin-1090324
+  fillVacancyData (data, date, type) {
+    switch (type) {
+      case 'HRZone':
+        if (data.zoneZero.length === 0) {
+          return {
+            zoneZero: [],
+            zoneOne: [],
+            zoneTwo: [],
+            zoneThree: [],
+            zoneFour: [],
+            zoneFive: []
+          };
+
+        } else {
+          let idx = 0;
+          const newData = {
+            zoneZero: [],
+            zoneOne: [],
+            zoneTwo: [],
+            zoneThree: [],
+            zoneFour: [],
+            zoneFive: []
+          };
+
+          for (let i = 0; i < this.chartTimeStamp.length; i++) {
+
+            if (idx >= data.zoneZero.length) {
+              newData.zoneZero.push([this.chartTimeStamp[i], 0]);
+              newData.zoneOne.push([this.chartTimeStamp[i], 0]);
+              newData.zoneTwo.push([this.chartTimeStamp[i], 0]);
+              newData.zoneThree.push([this.chartTimeStamp[i], 0]);
+              newData.zoneFour.push([this.chartTimeStamp[i], 0]);
+              newData.zoneFive.push([this.chartTimeStamp[i], 0]);
+            } else if (this.chartTimeStamp[i] !== data.zoneZero[idx][0]) {
+              newData.zoneZero.push([this.chartTimeStamp[i], 0]);
+              newData.zoneOne.push([this.chartTimeStamp[i], 0]);
+              newData.zoneTwo.push([this.chartTimeStamp[i], 0]);
+              newData.zoneThree.push([this.chartTimeStamp[i], 0]);
+              newData.zoneFour.push([this.chartTimeStamp[i], 0]);
+              newData.zoneFive.push([this.chartTimeStamp[i], 0]);
+            } else {
+              newData.zoneZero.push([this.chartTimeStamp[i], data.zoneZero[idx][1]]);
+              newData.zoneOne.push([this.chartTimeStamp[i], data.zoneOne[idx][1]]);
+              newData.zoneTwo.push([this.chartTimeStamp[i], data.zoneTwo[idx][1]]);
+              newData.zoneThree.push([this.chartTimeStamp[i], data.zoneThree[idx][1]]);
+              newData.zoneFour.push([this.chartTimeStamp[i], data.zoneFour[idx][1]]);
+              newData.zoneFive.push([this.chartTimeStamp[i], data.zoneFive[idx][1]]);
+              idx++;
+            }
+
+          }
+
+          return newData;
+        }
+
+      default:
+        if (data.length === 0) {
+          return [];
+        } else {
+
+          let idx = 0;
+          const newData = [];
+
+          for (let i = 0; i < this.chartTimeStamp.length; i++) {
+
+            if (idx >= date.length) {
+              newData.push(0);
+            } else if (this.chartTimeStamp[i] !== date[idx]) {
+              newData.push(0);
+            } else {
+              newData.push(data[idx]);
+              idx++;
+            }
+
+          }
+
+          return newData;
+        }
+    }
+
   }
 
   // 計算個人運動統計資料-kidin-1090302
@@ -1727,9 +1939,11 @@ export class ComReportComponent implements OnInit, OnDestroy {
       newUrl = location.pathname;
     }
 
+    /***待api支援debug mode-kidin-1090327
     if (history.pushState) {
       window.history.pushState({path: newUrl}, '', newUrl);
     }
+    ***/
   }
 
   // 顯示群組資料-kidin-1090310

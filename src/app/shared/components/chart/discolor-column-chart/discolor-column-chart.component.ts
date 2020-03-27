@@ -35,13 +35,19 @@ class ChartOptions {
         }
       },
       yAxis: {
-        min: 0,
         title: {
             text: ''
         },
+        startOnTick: false,
+        endOntick: true,
+        minPadding: 0.001,
+        maxPadding: 0.001,
         tickAmount: 1
       },
       plotOptions: {
+        column: {
+          pointPlacement: 0.3
+        },
         series: {
           pointWidth: 10,
           borderRadius: 5
@@ -61,6 +67,9 @@ class ChartOptions {
 export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestroy {
 
   dateList = [];
+  highestPoint = 0;
+  lowestPoint = 3600;
+  dataLength: number;
 
   @Input() data: any;
   @Input() dateRange: string;
@@ -89,7 +98,18 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
 
     switch (this.chartName) {
       case 'Pace':
+        this.dataLength = this.data.date.length;
+
         for (let i = 0; i < this.data.date.length; i++) {
+
+          if (this.data.pace[i] > this.highestPoint) {
+            this.highestPoint = this.data.pace[i];
+          }
+
+          if (this.data.bestPace[i] !== null && this.data.bestPace[i] < this.lowestPoint) {
+            this.lowestPoint = this.data.bestPace[i];
+          }
+
           chartData.push(
             {
               x: this.data.date[i],
@@ -101,7 +121,18 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
 
         break;
       case 'Cadence':
+        this.dataLength = this.data.date.length;
+
         for (let i = 0; i < this.data.date.length; i++) {
+
+          if (this.data.bestCadence[i] > this.highestPoint) {
+            this.highestPoint = this.data.bestCadence[i];
+          }
+
+          if (this.data.cadence[i] !== null && this.data.cadence[i] < this.lowestPoint) {
+            this.lowestPoint = this.data.cadence[i];
+          }
+
           chartData.push(
             {
               x: this.data.date[i],
@@ -112,7 +143,18 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         }
         break;
       case 'Swolf':
+        this.dataLength = this.data.date.length;
+
         for (let i = 0; i < this.data.date.length; i++) {
+
+          if (this.data.swolf[i] > this.highestPoint) {
+            this.highestPoint = this.data.swolf[i];
+          }
+
+          if (this.data.bestSwolf[i] !== null && this.data.bestSwolf[i] < this.lowestPoint) {
+            this.lowestPoint = this.data.bestSwolf[i];
+          }
+
           chartData.push(
             {
               x: this.data.date[i],
@@ -123,7 +165,18 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         }
         break;
       case 'Speed':
+        this.dataLength = this.data.date.length;
+
         for (let i = 0; i < this.data.date.length; i++) {
+
+          if (this.data.bestSpeed[i] > this.highestPoint) {
+            this.highestPoint = this.data.bestSpeed[i];
+          }
+
+          if (this.data.speed[i] !== null && this.data.speed[i] < this.lowestPoint) {
+            this.lowestPoint = this.data.speed[i];
+          }
+
           chartData.push(
             {
               x: this.data.date[i],
@@ -138,6 +191,8 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         const newData = [],
               newTargetData = [];
         let index = 0;
+        this.dataLength = this.dateList.length;
+
         for (let i = 0; i < this.dateList.length; i++) {
           if (this.dateList[i] === this.data.date[index]) {
             newData.push(this.data.stepList[index]);
@@ -227,7 +282,8 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
     switch (this.chartName) {
       case 'Pace':
         trendChartOptions['yAxis'].reversed = true; // 將y軸反轉-kidin-1090206
-        trendChartOptions['yAxis'].max = 3600;
+        trendChartOptions['yAxis'].max = this.highestPoint + 1;
+        trendChartOptions['yAxis'].min = this.lowestPoint - 1;
 
         // 設定圖表y軸單位格式-kidin-1090204
         trendChartOptions['yAxis'].labels = {
@@ -296,6 +352,9 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
 
         break;
       case 'Cadence':
+        trendChartOptions['yAxis'].max = this.highestPoint + 1;
+        trendChartOptions['yAxis'].min = this.lowestPoint - 1;
+
         // 設定浮動提示框顯示格式-kidin-1090204
         trendChartOptions['tooltip'] = {
           formatter: function () {
@@ -315,6 +374,8 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         break;
       case 'Swolf':
         trendChartOptions['yAxis'].reversed = true; // 將y軸反轉-kidin-1090206
+        trendChartOptions['yAxis'].max = this.highestPoint + 1;
+        trendChartOptions['yAxis'].min = this.lowestPoint - 1;
 
         // 設定浮動提示框顯示格式-kidin-1090204
         trendChartOptions['tooltip'] = {
@@ -334,6 +395,9 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         };
         break;
       case 'Speed':
+        trendChartOptions['yAxis'].max = this.highestPoint + 1;
+        trendChartOptions['yAxis'].min = this.lowestPoint - 1;
+
         // 設定浮動提示框顯示格式-kidin-1090204
         trendChartOptions['tooltip'] = {
           formatter: function () {
@@ -371,11 +435,16 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         // 設定圖表高度-kidin-1090221
         trendChartOptions['chart'].height = 170;
 
+        // 設定柱子寬度-kidin-1090324
+        trendChartOptions['plotOptions'].series['pointWidth'] = null;
+
         break;
     }
 
     // 設定圖表x軸時間間距-kidin-1090204
-    if (this.dateRange === 'day') {
+    if (this.dateRange === 'day' && this.dataLength <= 7) {
+      trendChartOptions['xAxis'].tickInterval = 24 * 3600 * 1000;  // 間距一天
+    } else if (this.dateRange === 'day' && this.dataLength > 7) {
       trendChartOptions['xAxis'].tickInterval = 7 * 24 * 3600 * 1000;  // 間距一週
     } else {
       trendChartOptions['xAxis'].tickInterval = 30 * 24 * 4600 * 1000;  // 間距一個月

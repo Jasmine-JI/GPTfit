@@ -70,6 +70,9 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() searchDate: Array<number>;
   @Input() chartHeight: number;
 
+  highestPoint = 0;
+  lowestPoint = 100;
+
   @ViewChild('container')
   container: ElementRef;
 
@@ -93,21 +96,18 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
     switch (this.chartName) {
       case 'Weight':
         chartData = this.mergeData(this.data.weightList);
-
         chartName = this.translate.instant('Portal.bodyWeight');
         lineColor = this.data.colorSet;
 
         break;
       case 'FatRate':
         chartData = this.mergeData(this.data.fatRateList);
-
         chartName = this.translate.instant('other.fatRate');
         lineColor = this.data.fatRateColorSet;
 
         break;
       case 'MuscleRate':
         chartData = this.mergeData(this.data.muscleRateList);
-
         chartName = this.translate.instant('other.muscleRate');
         lineColor = this.data.muscleRateColorSet;
 
@@ -133,18 +133,24 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
           trendChartDiv = this.container.nativeElement;
 
     // 設定圖表x軸時間間距-kidin-1090204
-    if (this.dateRange === 'day') {
+    if (this.dateRange === 'day' && chartData.length <= 7) {
+      trendChartOptions['xAxis'].tickInterval = 24 * 3600 * 1000;  // 間距一天
+    } else if (this.dateRange === 'day' && chartData.length > 7) {
       trendChartOptions['xAxis'].tickInterval = 7 * 24 * 3600 * 1000;  // 間距一週
     } else {
       trendChartOptions['xAxis'].tickInterval = 30 * 24 * 4600 * 1000;  // 間距一個月
     }
 
     // 設定圖表y軸四捨五入取至整數-kidin-1090204
-      trendChartOptions['yAxis'].labels = {
-        formatter: function () {
-          return this.value.toFixed(0);
-        }
-      };
+    trendChartOptions['yAxis'].labels = {
+      formatter: function () {
+        return this.value.toFixed(0);
+      }
+    };
+
+    // 設定y軸最大最小值-kidin-1090326
+    trendChartOptions['yAxis'].max = this.highestPoint + 1;
+    trendChartOptions['yAxis'].min = this.lowestPoint - 1;
 
     // 設定浮動提示框顯示格式-kidin-1090204
     trendChartOptions['tooltip'] = {
@@ -173,16 +179,24 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
     const newData = [];
     for (let i = 0; i < this.dateList.length; i++) {
 
-      let totalWeight = 0,
+      let total = 0,
           hasDataNum = 0;
       for (let j = 0; j < data.length; j++) {
         if (data[j].length !== 0) {
-          totalWeight += data[j][i][1];
+          total += data[j][i][1];
           hasDataNum++;
+        }
+
+        if (data[j][i][1] > this.highestPoint) {
+          this.highestPoint = data[j][i][1];
+        }
+
+        if (data[j][i][1] < this.lowestPoint) {
+          this.lowestPoint = data[j][i][1];
         }
       }
 
-      newData.push([this.dateList[i], totalWeight / hasDataNum]);
+      newData.push([this.dateList[i], total / hasDataNum]);
     }
 
     return newData;
