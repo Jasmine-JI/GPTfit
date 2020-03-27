@@ -293,14 +293,14 @@
             <app-ring-chart [data]="perTypeTime" [selectType]="selectType" *ngIf="!isLoading && !isRxjsLoading"></app-ring-chart>
           </div>
         </div>
-        <div class="flexRow" style="flex-wrap: wrap; justify-content: space-around;">
+        <div class="flexRow" style="flex-wrap: wrap;">
           <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[0] !== 0" (click)="assignCategory('1')">
             <div class="flexRow">
               <span
                 class="dot"
                 [style.color]="selectType === '1' || selectType === '99' ? '#ea5757' : '#9e9e9e'"
               >●</span>
-              <span>
+              <span class="perTypeTitle">
                 {{'Dashboard.SportReport.run' | translate}} {{perTypeLength[0]}} {{'other.perStroke' | translate}}
               </span>
             </div>
@@ -312,7 +312,7 @@
                 class="dot"
                 [style.color]="selectType === '2' || selectType === '99' ? '#ff9a22' : '#9e9e9e'"
               >●</span>
-              <span>
+              <span class="perTypeTitle">
                 {{'Dashboard.SportReport.cycle' | translate}} {{perTypeLength[1]}} {{'other.perStroke' | translate}}
               </span>
             </div>
@@ -324,7 +324,7 @@
                 class="dot"
                 [style.color]="selectType === '3' || selectType === '99' ? '#f9cc3d' : '#9e9e9e'"
               >●</span>
-              <span>
+              <span class="perTypeTitle">
                 {{'Dashboard.SportReport.weightTraining' | translate}} {{perTypeLength[2]}} {{'other.perStroke' | translate}}
               </span>
             </div>
@@ -336,7 +336,7 @@
                 class="dot"
                 [style.color]="selectType === '4' || selectType === '99' ? '#cfef4b' : '#9e9e9e'"
               >●</span>
-              <span>
+              <span class="perTypeTitle">
                 {{'Dashboard.SportReport.swim' | translate}} {{perTypeLength[3]}} {{'other.perStroke' | translate}}
               </span>
             </div>
@@ -348,7 +348,7 @@
                 class="dot"
                 [style.color]="selectType === '5' || selectType === '99' ? '#75f25f' : '#9e9e9e'"
               >●</span>
-              <span>
+              <span class="perTypeTitle">
                 {{'Dashboard.SportReport.aerobic' | translate}} {{perTypeLength[4]}} {{'other.perStroke' | translate}}
               </span>
             </div>
@@ -360,7 +360,7 @@
                 class="dot"
                 [style.color]="selectType === '6' || selectType === '99' ? '#72e8b0' : '#9e9e9e'"
               >●</span>
-              <span>
+              <span class="perTypeTitle">
                 {{'Dashboard.SportReport.boating' | translate}} {{perTypeLength[5]}} {{'other.perStroke' | translate}}
               </span>
             </div>
@@ -369,7 +369,7 @@
         </div>
       </div>
       <div class="flexCol distributionChartWidth">
-        <span style="font-weight: bold;">
+        <span style="font-weight: bold; margin-bottom: 15px;">
           {{'other.activityEffectivenessMap' | translate}}
           <span *ngIf="dataDateRange === 'day'">({{'Dashboard.SportReport.day' | translate}})</span>
           <span *ngIf="dataDateRange === 'week'">({{'other.week' | translate}})</span>

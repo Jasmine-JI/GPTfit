@@ -14,11 +14,13 @@ import { HashIdService } from '@shared/services/hash-id.service';
 })
 export class TuiCalenderComponent implements OnInit, OnChanges {
 
+  @Input() isDebug: boolean;
+
   @Output() classTime: EventEmitter<any> = new EventEmitter();
 
   // UI用變數-kidin-1090319
   isLoading = false;
-  calendarType = 'week';
+  calendarType = 'month';
 
   // 資料儲存用變數-kidin-1090319
   groupId: string;
@@ -39,7 +41,7 @@ export class TuiCalenderComponent implements OnInit, OnChanges {
     this.groupId = this.hashIdService.handleGroupIdDecode(hashGroupId);
 
     this.calendar = new Calendar('#calendar', {
-      defaultView: 'week',  // 預設以週做顯示-kidin-1090318
+      defaultView: 'month',  // 預設以週做顯示-kidin-1090318
       taskView: false,
       isReadOnly: true,
       month: {
@@ -124,6 +126,13 @@ export class TuiCalenderComponent implements OnInit, OnChanges {
 
   // 取得課程時間-kidin-1090318
   getClassTime () {
+    let targetUser;
+    if (this.isDebug) {
+      targetUser = '99';
+    } else {
+      targetUser = '2';
+    }
+
     this.isLoading = true;
     this.getCalendarDate();
 
@@ -138,7 +147,7 @@ export class TuiCalenderComponent implements OnInit, OnChanges {
       },
       searchRule: {
         activity: '99',
-        targetUser: '2',
+        targetUser: targetUser,
         fileInfo: {
           author: '',
           dispName: '',

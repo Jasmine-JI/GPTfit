@@ -1,15 +1,58 @@
+$strokeWidth: 4px;
+$blockOneStrokeColor: #5fb3ac;
+$blockTwoStrokeColor: #47a4b2;
+$blockThreeStrokeColor: #4791b2;
+$blockFourStrokeColor: #91b247;
+$blockFiveStrokeColor: #52b247;
+$blockSixStrokeColor: #47b279;
+$blockSevenStrokeColor: #b25c4d;
+$blockEightStrokeColor: #b27d47;
+$blockNineStrokeColor: #b29847;
+
 .blockDescription {
-  font-size: 13px;
+  font-size: 14px;
   color:white;
   font-weight: bold;
   letter-spacing: 1px;
 }
 
-.shadowText {
-  text-shadow: 1px 1px 1px black
-}
-
 .bodyIcon {
   font-size: 42px;
   color: white;
+}
+
+.blockOne {
+  -webkit-text-stroke: $strokeWidth $blockOneStrokeColor;
+}
+
+.blockTwo {
+  -webkit-text-stroke: $strokeWidth $blockTwoStrokeColor;
+}
+
+.blockThree {
+  -webkit-text-stroke: $strokeWidth $blockThreeStrokeColor;
+}
+
+.blockFour {
+  -webkit-text-stroke: $strokeWidth $blockFourStrokeColor;
+}
+
+.blockFive {
+  -webkit-text-stroke: $strokeWidth $blockFiveStrokeColor;
+}
+
+.blockSix {
+  -webkit-text-stroke: $strokeWidth $blockSixStrokeColor;
+}
+
+.blockSeven {
+  -webkit-text-stroke: $strokeWidth $blockSevenStrokeColor;
+}
+
+.blockEight {
+  -webkit-text-stroke: $strokeWidth $blockEightStrokeColor;
+}
+
+.blockNine {
+  -webkit-text-stroke: $strokeWidth $blockNineStrokeColor;
 }

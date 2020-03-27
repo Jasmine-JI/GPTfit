@@ -74,6 +74,8 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
   avgPower = 0;
 
   // 圖表用數據-kidin-1090115
+  chartTimeStamp = [];
+  searchDate = [];
   perTypeLength = [];
   perTypeTime = [];
   typeHrZone = [];
@@ -174,34 +176,8 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
   createReport() {
     this.isLoading = true;
 
-
-
-    // 取得目標年齡-kidin-1090205
-    const getLoginBody = {
-      avatarType: 2,
-      iconType: 2,
-      token: this.token
-    };
-    this.userInfoService.getLogonData(getLoginBody).subscribe(res => {
-      if (res.resultCode !== +200 || +this.userId !== +res.info.nameId) {
-        this.hrZoneRange['HRBase'] = 0;
-        this.hrZoneRange['z0'] = 'Z0';
-        this.hrZoneRange['z1'] = 'Z1';
-        this.hrZoneRange['z2'] = 'Z2';
-        this.hrZoneRange['z3'] = 'Z3';
-        this.hrZoneRange['z4'] = 'Z4';
-        this.hrZoneRange['z5'] = 'Z5';
-      } else {
-          const userAge = moment().diff(res.info.birthday, 'years'),
-                userHRBase = res.info.heartRateBase,
-                userMaxHR = res.info.heartRateMax,
-                userRestHR = res.info.heartRateResting;
-
-        this.getUserBodyInfo(userHRBase, userAge, userMaxHR, userRestHR);
-      }
-    });
-
     this.initVariable();
+    this.getUserInfo();
 
     // 1個月內取日概要陣列，半年以上取周概要陣列-kidin_1090122
     const body = {
@@ -237,6 +213,11 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
           }
 
           this.showReport = true;
+
+          const startDay = moment(this.reportStartTime),
+                endDay = moment(this.reportEndTime);
+
+          this.createTimeStampArr(endDay.diff(startDay, 'days') + 1);
           this.calPerCategoryData();
         }
       } else {
@@ -278,6 +259,33 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
             'Dashboard.SportReport.month'
           )}`;
         break;
+      }
+    });
+  }
+
+  // 取得登入者資訊-kidin-1090326
+  getUserInfo () {
+    const getLoginBody = {
+      avatarType: 2,
+      iconType: 2,
+      token: this.token
+    };
+    this.userInfoService.getLogonData(getLoginBody).subscribe(res => {
+      if (res.resultCode !== +200 || +this.userId !== +res.info.nameId) {
+        this.hrZoneRange['HRBase'] = 0;
+        this.hrZoneRange['z0'] = 'Z0';
+        this.hrZoneRange['z1'] = 'Z1';
+        this.hrZoneRange['z2'] = 'Z2';
+        this.hrZoneRange['z3'] = 'Z3';
+        this.hrZoneRange['z4'] = 'Z4';
+        this.hrZoneRange['z5'] = 'Z5';
+      } else {
+          const userAge = moment().diff(res.info.birthday, 'years'),
+                userHRBase = res.info.heartRateBase,
+                userMaxHR = res.info.heartRateMax,
+                userRestHR = res.info.heartRateResting;
+
+        this.getUserBodyInfo(userHRBase, userAge, userMaxHR, userRestHR);
       }
     });
   }
@@ -356,6 +364,61 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
     this.perTypeTime = [];
     this.typeHrZone = [];
     this.perDate = [];
+    this.chartTimeStamp = [];
+    this.searchDate = [];
+  }
+
+  // 建立報告期間的timeStamp讓圖表使用-kidin-1090324
+  createTimeStampArr (range) {
+
+    this.searchDate = [
+      moment(this.reportStartTime.split('T')[0], 'YYYY-MM-DD').valueOf(),
+      moment(this.reportEndTime.split('T')[0], 'YYYY-MM-DD').valueOf()
+    ];
+
+    if (this.dataDateRange === 'day') {
+
+      for (let i = 0; i < range; i++) {
+        this.chartTimeStamp.push(this.searchDate[0] + 86400000 * i);
+      }
+
+    } else {
+      const weekCoefficient = this.findDate();
+
+      for (let i = 0; i < weekCoefficient.weekNum; i++) {
+        this.chartTimeStamp.push(weekCoefficient.startDate + 86400000 * i * 7);
+      }
+
+    }
+
+  }
+
+  // 根據搜索時間取得周報告第一周的開始日期和週數-kidin-1090324
+  findDate () {
+
+    const week = {
+      startDate: 0,
+      weekNum: 0
+    };
+
+    let weekEndDate;
+
+    // 周報告開頭是星期日-kidin-1090312
+    if (moment(this.searchDate[0]).isoWeekday() !== 7) {
+      week.startDate = this.searchDate[0] + 86400 * 1000 * (7 - moment(this.searchDate[0]).isoWeekday());
+    } else {
+      week.startDate = this.searchDate[0];
+    }
+
+    if (moment(this.searchDate[0]).isoWeekday() !== 7) {
+      weekEndDate = this.searchDate[1] - 86400 * 1000 * moment(this.searchDate[1]).isoWeekday();
+    } else {
+      weekEndDate = this.searchDate[1];
+    }
+
+    week.weekNum = ((weekEndDate - week.startDate) / (86400 * 1000 * 7)) + 1;
+
+    return week;
   }
 
   // 計算各種所需數據-kidin-1090120
@@ -787,7 +850,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
         typeAerobicAvgTrainTime,
         typeRowAvgTrainTime
       ],
-      perHrZoneData: typeAllHrZoneData,
+      perHrZoneData: this.computeSameHRZoneData(typeAllHrZoneData),
       perCaloriesData: this.computeSameDayData(typeAllCalories, [], typeAllDataDate, 'calories'),
       typeList: typeList,
       perAvgHR: typeAllavgHr,
@@ -805,7 +868,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
       HrZoneThree: typeRunHrZoneThree,
       HrZoneFour: typeRunHrZoneFour,
       HrZoneFive: typeRunHrZoneFive,
-      perHrZoneData: typeRunHrZoneData,
+      perHrZoneData: this.computeSameHRZoneData(typeRunHrZoneData),
       perCaloriesData: this.computeSameDayData(typeRunCalories, [], typeRunDataDate, 'calories'),
       perPaceData: this.computePace(typeRunSpeed, typeRunMaxSpeed, typeRunDataDate, 1),
       perCadenceData: this.computeSportData(typeRunCadence, typeRunMaxCadence, typeRunDataDate, 'cadence'),
@@ -823,7 +886,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
       HrZoneThree: typeCycleHrZoneThree,
       HrZoneFour: typeCycleHrZoneFour,
       HrZoneFive: typeCycleHrZoneFive,
-      perHrZoneData: typeCycleHrZoneData,
+      perHrZoneData: this.computeSameHRZoneData(typeCycleHrZoneData),
       perCaloriesData: this.computeSameDayData(typeCycleCalories, [], typeCycleDataDate, 'calories'),
       perSpeedData: this.computeSportData(typeCycleSpeed, typeCycleMaxSpeed, typeCycleDataDate, 'speed'),
       perCadenceData: this.computeSportData(typeCycleCadence, typeCycleMaxCadence, typeCycleDataDate, 'cadence'),
@@ -850,7 +913,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
       HrZoneThree: typeSwimHrZoneThree,
       HrZoneFour: typeSwimHrZoneFour,
       HrZoneFive: typeSwimHrZoneFive,
-      perHrZoneData: typeSwimHrZoneData,
+      perHrZoneData: this.computeSameHRZoneData(typeSwimHrZoneData),
       perCaloriesData: this.computeSameDayData(typeSwimCalories, [], typeSwimDataDate, 'calories'),
       perPaceData: this.computePace(typeSwimSpeed, typeSwimMaxSpeed, typeSwimDataDate, 4),
       perCadenceData: this.computeSportData(typeSwimCadence, typeSwimMaxCadence, typeSwimDataDate, 'cadence'),
@@ -868,7 +931,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
       HrZoneThree: typeAerobicHrZoneThree,
       HrZoneFour: typeAerobicHrZoneFour,
       HrZoneFive: typeAerobicHrZoneFive,
-      perHrZoneData: typeAerobicHrZoneData,
+      perHrZoneData: this.computeSameHRZoneData(typeAerobicHrZoneData),
       perCaloriesData: this.computeSameDayData(typeAerobicCalories, [], typeAerobicDataDate, 'calories'),
       perHRData: this.computeSportData(typeAerobicHR, typeAerobicMaxHR, typeAerobicDataDate, 'HR')
     };
@@ -884,7 +947,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
       HrZoneThree: typeRowHrZoneThree,
       HrZoneFour: typeRowHrZoneFour,
       HrZoneFive: typeRowHrZoneFive,
-      perHrZoneData: typeRowHrZoneData,
+      perHrZoneData: this.computeSameHRZoneData(typeRowHrZoneData),
       perCaloriesData: this.computeSameDayData(typeRowCalories, [], typeRowDataDate, 'calories'),
       perPaceData: this.computePace(typeRowSpeed, typeRowMaxSpeed, typeRowDataDate, 6),
       perCadenceData: this.computeSportData(typeRowCadence, typeRowMaxCadence, typeRowDataDate, 'cadence'),
@@ -1052,9 +1115,9 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
     const colorSet = ['#6a4db8', '#e04c62', '#ffd451'];
 
     return {
-      pace,
-      bestPace,
-      date: finalDate,
+      pace: this.fillVacancyData(pace, finalDate, 'pace'),
+      bestPace: this.fillVacancyData(bestPace, finalDate, 'pace'),
+      date: this.chartTimeStamp,
       colorSet,
       oneRangeBestPace: perTypeBestPace,
       avgPace: perTypeAvgPace
@@ -1124,63 +1187,63 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
     switch (type) {
       case 'cadence':
         return {
-          cadence: finalData,
-          bestCadence: bestFinalData,
-          date: finalDate,
+          cadence: this.fillVacancyData(finalData, finalDate, 'cadence'),
+          bestCadence: this.fillVacancyData(bestFinalData, finalDate, 'cadence'),
+          date: this.chartTimeStamp,
           colorSet: ['#aafc42', '#d6ff38', '#f56300'],
           oneRangeBestCadence: oneRangeBest,
           avgCadence: perTypeAvg
         };
       case 'heartRate':
         return {
-          HR: finalData,
-          bestHR: bestFinalData,
-          date: finalDate,
+          HR: this.fillVacancyData(finalData, finalDate, 'heartRate'),
+          bestHR: this.fillVacancyData(bestFinalData, finalDate, 'heartRate'),
+          date: this.chartTimeStamp,
           colorSet: ['#aafc42', '#d6ff38', '#f56300'],
           oneRangeBestHR: oneRangeBest,
           avgHR: perTypeAvg
         };
       case 'calories':
         return {
-          calories: finalData,
-          bestCalories: bestFinalData,
-          date: finalDate,
+          calories: this.fillVacancyData(finalData, finalDate, 'calories'),
+          bestCalories: this.fillVacancyData(bestFinalData, finalDate, 'calories'),
+          date: this.chartTimeStamp,
           colorSet: ['#f8b551'],
           oneRangeBestCalories: oneRangeBest,
           avgCalories: perTypeAvg
         };
       case 'swolf':
         return {
-          swolf: finalData,
-          bestSwolf: bestFinalData,
-          date: finalDate,
+          swolf: this.fillVacancyData(finalData, finalDate, 'swolf'),
+          bestSwolf: this.fillVacancyData(bestFinalData, finalDate, 'swolf'),
+          date: this.chartTimeStamp,
           colorSet: ['#aafc42', '#d6ff38', '#7fd9ff'],
           oneRangeBestSwolf: oneRangeBest,
           avgSwolf: perTypeAvg
         };
       case 'speed':
         return {
-          speed: finalData,
-          bestSpeed: bestFinalData,
-          date: finalDate,
+          speed: this.fillVacancyData(finalData, finalDate, 'speed'),
+          bestSpeed: this.fillVacancyData(bestFinalData, finalDate, 'speed'),
+          date: this.chartTimeStamp,
           colorSet: ['#ff00ff', '#ffff00', '#ffff00'],
           oneRangeBestSpeed: oneRangeBest,
           avgSpeed: perTypeAvg
         };
       case 'power':
         return {
-          power: finalData,
-          bestPower: bestFinalData,
-          date: finalDate,
+          power: this.fillVacancyData(finalData, finalDate, 'power'),
+          bestPower: this.fillVacancyData(bestFinalData, finalDate, 'power'),
+          date: this.chartTimeStamp,
           colorSet: ['#aafc42', '#d6ff38', '#f56300'],
           oneRangeBestPower: oneRangeBest,
           avgPower: perTypeAvg
         };
       case 'HR':
         return {
-          HR: finalData,
-          bestHR: bestFinalData,
-          date: finalDate,
+          HR: this.fillVacancyData(finalData, finalDate, 'HR'),
+          bestHR: this.fillVacancyData(bestFinalData, finalDate, 'HR'),
+          date: this.chartTimeStamp,
           colorSet: [
             'rgb(70, 156, 245)',
             'rgb(64, 218, 232)',
@@ -1193,6 +1256,77 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
           avgHR: perTypeAvg
         };
     }
+  }
+
+  // 將日期相同的心率區間做整合並轉成highcharts所需的資料格式-kidin-1090325
+  computeSameHRZoneData (data: Array<number>) {
+    const finalData = {
+        zoneZero: [],
+        zoneOne: [],
+        zoneTwo: [],
+        zoneThree: [],
+        zoneFour: [],
+        zoneFive: []
+      },
+      sameDayData = {
+        zoneZero: 0,
+        zoneOne: 0,
+        zoneTwo: 0,
+        zoneThree: 0,
+        zoneFour: 0,
+        zoneFive: 0
+      };
+
+    for (let i = 0; i < data.length; i++) {
+
+      if (i === 0 || data[i][7] === data[i - 1][7]) {
+        sameDayData.zoneZero += data[i][1],
+        sameDayData.zoneOne += data[i][2],
+        sameDayData.zoneTwo += data[i][3],
+        sameDayData.zoneThree += data[i][4],
+        sameDayData.zoneFour += data[i][5],
+        sameDayData.zoneFive += data[i][6];
+
+        if (i === data.length - 1) {
+          const timeStamp = moment(data[i][7], 'YYYY-MM-DD').valueOf();
+          finalData.zoneZero.push([timeStamp, sameDayData.zoneZero]);
+          finalData.zoneOne.push([timeStamp, sameDayData.zoneOne]);
+          finalData.zoneTwo.push([timeStamp, sameDayData.zoneTwo]);
+          finalData.zoneThree.push([timeStamp, sameDayData.zoneThree]);
+          finalData.zoneFour.push([timeStamp, sameDayData.zoneFour]);
+          finalData.zoneFive.push([timeStamp, sameDayData.zoneFive]);
+
+        }
+      } else {
+        let timeStamp = moment(data[i - 1][7], 'YYYY-MM-DD').valueOf();
+        finalData.zoneZero.push([timeStamp, sameDayData.zoneZero]);
+        finalData.zoneOne.push([timeStamp, sameDayData.zoneOne]);
+        finalData.zoneTwo.push([timeStamp, sameDayData.zoneTwo]);
+        finalData.zoneThree.push([timeStamp, sameDayData.zoneThree]);
+        finalData.zoneFour.push([timeStamp, sameDayData.zoneFour]);
+        finalData.zoneFive.push([timeStamp, sameDayData.zoneFive]);
+
+        if (i !== data.length - 1 ) {
+          sameDayData.zoneZero = data[i][1],
+          sameDayData.zoneOne = data[i][2],
+          sameDayData.zoneTwo = data[i][3],
+          sameDayData.zoneThree = data[i][4],
+          sameDayData.zoneFour = data[i][5],
+          sameDayData.zoneFive = data[i][6];
+        } else {
+          timeStamp = moment(data[i][7], 'YYYY-MM-DD').valueOf();
+          finalData.zoneZero.push([timeStamp, data[i][1]]);
+          finalData.zoneOne.push([timeStamp, data[i][2]]);
+          finalData.zoneTwo.push([timeStamp, data[i][3]]);
+          finalData.zoneThree.push([timeStamp, data[i][4]]);
+          finalData.zoneFour.push([timeStamp, data[i][5]]);
+          finalData.zoneFive.push([timeStamp, data[i][6]]);
+        }
+
+      }
+    }
+
+    return this.fillVacancyData(finalData, [], 'HRZone');
   }
 
   // 將日期相同的數據做整合-kidin-1090210
@@ -1251,9 +1385,9 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
       switch (type) {
         case 'calories':
           return {
-            calories: finalData,
+            calories: this.fillVacancyData(finalData, finalDate, 'calories'),
             bestcalories: bestFinalData,
-            date: finalDate,
+            date: this.chartTimeStamp,
             colorSet: ['#f8b551'],
             oneRangeBestCalories: oneRangeBest,
             avgCalories: total / date.length,
@@ -1303,14 +1437,107 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
       switch (type) {
         case 'calories':
           return {
-            calories: finalData,
-            date: finalDate,
+            calories: this.fillVacancyData(finalData, finalDate, 'calories'),
+            date: this.chartTimeStamp,
             colorSet: '#f8b551',
             oneRangeBestCalories: oneRangeBest,
             avgCalories: total / date.length,
             totalCalories: total
           };
       }
+    }
+  }
+
+  // 依據選取日期和報告類型（日/週）將缺漏的數值以0填補，並去除重複日期的資料-kidin-1090324
+  fillVacancyData (data, date, type) {
+    switch (type) {
+      case 'HRZone':
+        if (data.zoneZero.length === 0) {
+          return {
+            zoneZero: [],
+            zoneOne: [],
+            zoneTwo: [],
+            zoneThree: [],
+            zoneFour: [],
+            zoneFive: []
+          };
+
+        } else {
+          let idx = 0;
+          const newData = {
+            zoneZero: [],
+            zoneOne: [],
+            zoneTwo: [],
+            zoneThree: [],
+            zoneFour: [],
+            zoneFive: []
+          };
+
+          for (let i = 0; i < this.chartTimeStamp.length; i++) {
+
+            if (idx === 0 || idx >= data.zoneZero.length || data.zoneZero[idx][0] !== data.zoneZero[idx - 1][0]) {
+
+              if (idx >= data.zoneZero.length) {
+                newData.zoneZero.push([this.chartTimeStamp[i], 0]);
+                newData.zoneOne.push([this.chartTimeStamp[i], 0]);
+                newData.zoneTwo.push([this.chartTimeStamp[i], 0]);
+                newData.zoneThree.push([this.chartTimeStamp[i], 0]);
+                newData.zoneFour.push([this.chartTimeStamp[i], 0]);
+                newData.zoneFive.push([this.chartTimeStamp[i], 0]);
+              } else if (this.chartTimeStamp[i] !== data.zoneZero[idx][0]) {
+                newData.zoneZero.push([this.chartTimeStamp[i], 0]);
+                newData.zoneOne.push([this.chartTimeStamp[i], 0]);
+                newData.zoneTwo.push([this.chartTimeStamp[i], 0]);
+                newData.zoneThree.push([this.chartTimeStamp[i], 0]);
+                newData.zoneFour.push([this.chartTimeStamp[i], 0]);
+                newData.zoneFive.push([this.chartTimeStamp[i], 0]);
+              } else {
+                newData.zoneZero.push([this.chartTimeStamp[i], data.zoneZero[idx][1]]);
+                newData.zoneOne.push([this.chartTimeStamp[i], data.zoneOne[idx][1]]);
+                newData.zoneTwo.push([this.chartTimeStamp[i], data.zoneTwo[idx][1]]);
+                newData.zoneThree.push([this.chartTimeStamp[i], data.zoneThree[idx][1]]);
+                newData.zoneFour.push([this.chartTimeStamp[i], data.zoneFour[idx][1]]);
+                newData.zoneFive.push([this.chartTimeStamp[i], data.zoneFive[idx][1]]);
+                idx++;
+              }
+
+            } else {
+              idx++;
+            }
+
+          }
+
+          return newData;
+        }
+
+      default:
+        if (data.length === 0) {
+          return [];
+        } else {
+
+          let idx = 0;
+          const newData = [];
+
+          for (let i = 0; i < this.chartTimeStamp.length; i++) {
+
+            if (idx === 0 || idx >= date.length || date[idx] !== date[idx - 1]) {
+
+              if (idx >= date.length) {
+                newData.push(null);
+              } else if (this.chartTimeStamp[i] !== date[idx]) {
+                newData.push(null);
+              } else {
+                newData.push(data[idx]);
+                idx++;
+              }
+
+            } else {
+              idx++;
+            }
+          }
+
+          return newData;
+        }
     }
   }
 
@@ -1358,9 +1585,11 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
       newUrl = location.pathname;
     }
 
+    /******待api 支援 debug mode-kidin-1090326
     if (history.pushState) {
       window.history.pushState({path: newUrl}, '', newUrl);
     }
+    ********/
   }
 
   // 點擊運定項目後該類別相關資料特別顯示-kidin-1090214

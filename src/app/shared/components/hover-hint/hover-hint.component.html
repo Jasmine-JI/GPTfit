@@ -1,0 +1,15 @@
+<span
+  class="device-hint"
+  [style.width]="isDisplayBox ? 'calc(100% - 340px)' : '20px'"
+  (mouseenter)="mouseEnter()"
+  (mouseleave)="mouseLeave()"
+>
+  <mat-icon style="color: #157fcc; font-size: 16px;">help</mat-icon>
+  <div
+    class="device-hint-box"
+    [style.width]="isDisplayBox ? '100%' : ''"
+    *ngIf="isDisplayBox"
+  >
+    {{hint}}
+  </div>
+</span>

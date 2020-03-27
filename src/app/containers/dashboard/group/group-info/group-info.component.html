@@ -23,7 +23,7 @@
         (click)="handleGroupItem(3)"
       >{{ 'Dashboard.privacySettings.set' | translate}}</li>
       <li [class.active]="chooseIdx === 4"
-          *ngIf="groupLevel === '60' && accessRight < 60 && brandType === 1"
+          *ngIf="groupLevel === '60' && brandType === 1"
           (click)="handleGroupItem(4)"
       >我的報告</li>
       <li [class.active]="chooseIdx === 5"

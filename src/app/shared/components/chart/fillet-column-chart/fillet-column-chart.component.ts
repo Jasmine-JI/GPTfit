@@ -39,12 +39,20 @@ class ChartOptions {
         min: 0,
         title: {
             text: ''
-        }
+        },
+        startOnTick: false,
+        minPadding: 0.01,
+        maxPadding: 0.01,
+        tickAmount: 1
       },
       plotOptions: {
+        column: {
+          stacking: 'normal',
+          pointPlacement: 0.3,
+        },
         series: {
-          pointWidth: 10,
-          borderRadius: 5
+          pointWidth: null,
+          borderRadius: 5,
         }
       },
       tooltip: {},
@@ -89,7 +97,7 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
     switch (this.chartName) {
       case 'Calories':
         for (let i = 0; i < this.data.date.length; i++) {
-          if (this.data.calories[i] > 0) {
+          if (this.data.calories[i] >= 0) {
             chartData.push({
               x: this.data.date[i],
               y: this.data.calories[i],
@@ -138,7 +146,9 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
           trendChartDiv = this.container.nativeElement;
 
     // 設定圖表x軸時間間距-kidin-1090204
-    if (this.dateRange === 'day') {
+    if (this.dateRange === 'day' && this.data.date.length <= 7) {
+      trendChartOptions['xAxis'].tickInterval = 24 * 3600 * 1000;  // 間距一天
+    } else if (this.dateRange === 'day' && this.data.date.length > 7) {
       trendChartOptions['xAxis'].tickInterval = 7 * 24 * 3600 * 1000;  // 間距一週
     } else {
       trendChartOptions['xAxis'].tickInterval = 30 * 24 * 4600 * 1000;  // 間距一個月

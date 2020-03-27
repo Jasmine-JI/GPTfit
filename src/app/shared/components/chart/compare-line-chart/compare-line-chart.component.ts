@@ -42,7 +42,14 @@ class ChartOptions {
         maxPadding: 0.01,
         tickAmount: 1
       },
-      plotOptions: {},
+      plotOptions: {
+        series: {
+          connectNulls: true
+        },
+        spline: {
+          pointPlacement: 'on'
+        }
+      },
       tooltip: {},
       series: dataset
     };
@@ -60,6 +67,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
 
   firstSunday: number;
   lastSunday: number;
+  dataLength: number;
 
   @Input() data: any;
   @Input() dateRange: string;
@@ -101,6 +109,8 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
 
     switch (this.chartName) {
       case 'HR':
+        this.dataLength = this.data.date.length;
+
         for (let i = 0; i < this.data.date.length; i++) {
           chartData.push(
             this.assignColor(this.data.date[i], this.data.HR[i], 'normal')
@@ -134,6 +144,8 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
 
         break;
       case 'Power':
+        this.dataLength = this.data.date.length;
+
         for (let i = 0; i < this.data.date.length; i++) {
           chartData.push(
             {
@@ -212,6 +224,8 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
           }
         }
 
+        this.dataLength = this.data.date.length;
+
         for (let i = 0; i < this.data.date.length; i++) {
           chartData.push(
             {
@@ -263,6 +277,8 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
       case 'Weight':
 
         trendDataset = [];
+        this.dataLength = this.data.weightList.length;
+
         for (let i = 0; i < this.data.weightList.length; i++) {
 
           // 若搜尋的第一天（週）或最後一天（週）沒有數據，則用前後數據遞補-kidin-1090220
@@ -303,6 +319,8 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
       case 'FatRate':
 
         trendDataset = [];
+        this.dataLength = this.data.fatRateList.length;
+
         for (let i = 0; i < this.data.fatRateList.length; i++) {
 
           // 若搜尋的第一天（週）或最後一天（週）沒有數據，則用前後數據遞補-kidin-1090220
@@ -343,6 +361,8 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
       case 'MuscleRate':
 
         trendDataset = [];
+        this.dataLength = this.data.muscleRateList.length;
+
         for (let i = 0; i < this.data.muscleRateList.length; i++) {
 
           // 若搜尋的第一天（週）或最後一天（週）沒有數據，則用前後數據遞補-kidin-1090220
@@ -414,7 +434,9 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     // 設定圖表x軸時間間距-kidin-1090204
-    if (this.dateRange === 'day') {
+    if (this.dateRange === 'day' && this.dataLength <= 7) {
+      trendChartOptions['xAxis'].tickInterval = 24 * 3600 * 1000;  // 間距一天
+    } else if (this.dateRange === 'day' && this.dataLength > 7) {
       trendChartOptions['xAxis'].tickInterval = 7 * 24 * 3600 * 1000;  // 間距一週
     } else {
       trendChartOptions['xAxis'].tickInterval = 30 * 24 * 4600 * 1000;  // 間距一個月

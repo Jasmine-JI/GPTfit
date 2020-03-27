@@ -313,8 +313,9 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         ((this.fileInfo.equipmentSN && this.fileInfo.equipmentSN.length > 0)
         || coachId || groupId)
       ) {
+        const [sn] = this.fileInfo.equipmentSN;
         this.activityOtherDetailsService.fetchOtherDetail(
-          this.fileInfo.equipmentSN,
+          sn,
           coachId,
           groupId
         );
@@ -338,8 +339,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
 
   handleLessonInfo(str) {
     this.totalLessonInfo = str.replace(/\r\n|\n/g, '').trim();
-    if (this.totalLessonInfo.length > 118) {
-      this.lessonInfo = this.totalLessonInfo.substring(0, 118);
+    if (this.totalLessonInfo.length > 40) {
+      this.lessonInfo = this.totalLessonInfo.substring(0, 40);
       this.isLessonMoreDisplay = true;
     } else {
       this.lessonInfo = this.totalLessonInfo;
@@ -349,8 +350,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
 
   handleCoachInfo(str) {
     this.totalCoachDesc = str.replace(/\r\n|\n/g, '').trim();
-    if (this.totalCoachDesc.length > 118) {
-      this.coachDesc = this.totalCoachDesc.substring(0, 118);
+    if (this.totalCoachDesc.length > 40) {
+      this.coachDesc = this.totalCoachDesc.substring(0, 40);
       this.isCoachMoreDisplay = true;
     } else {
       this.coachDesc = this.totalCoachDesc;
@@ -370,14 +371,20 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
 
   handleBMap() {
     this.bmap = new BMap.Map(this.bmapElement.nativeElement);
-    let isNormalPoint = false;
+    let isNormalPoint = false,
+        fillData = null;
     const originRealIdx = [];
     this.activityPoints.forEach((_point, idx) => {
-      if ((+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100)
+      if (fillData === null
+        && (+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100)
         || (_point.latitudeDegrees === null && _point.longitudeDegrees === null)
       ) {
         isNormalPoint = false;
         this.gpxBmapPoints.push(null);  // 若使用者沒有移動，則在該點補上null值-kidin-1081203(Bug 337)
+      } else if ((+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100)
+      || (_point.latitudeDegrees === null && _point.longitudeDegrees === null)) {
+        isNormalPoint = false;
+        this.gpxPoints.push(fillData);
       } else {
         if (!isNormalPoint) {
           isNormalPoint = true;
@@ -401,6 +408,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           );
         }
         this.gpxBmapPoints.push(p);
+        fillData = p;
       }
     });
     this.gpxBmapPoints = this.gpxBmapPoints.map((_gpxPoint, idx) => {
@@ -783,8 +791,9 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           if (this.fileInfo.class) {
             groupId = this.fileInfo.class.split('?groupId=')[1];
           }
+          const [sn] = this.fileInfo.equipmentSN;
           this.activityOtherDetailsService.fetchOtherDetail(
-            this.fileInfo.equipmentSN,
+            sn,
             coachId,
             groupId
           );

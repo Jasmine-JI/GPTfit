@@ -107,6 +107,8 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   showMore = false;
   isDebug = false;
   hideCalendar = false;
+  showAllLessonInfo = false;
+  showAllCoachInfo = false;
 
   // 資料儲存用變數-kidin-1081210
   tableData = new MatTableDataSource<any>();
@@ -140,6 +142,10 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   deviceImgUrl: string;
   memberSection = null;
   focusMember: string;
+  lessonTotalInfo: string;
+  lessonPartInfo: string;
+  coachTotalInfo: string;
+  coachPartInfo: string;
 
   // HChart設定相關-kidin-1081211
   showclassHRZoneChartTarget = false;
@@ -228,6 +234,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
   // 返回行事曆-kidin-1090319
   returnCalendar () {
+    this.updateUrl(false);
     this.hideCalendar = false;
   }
 
@@ -290,6 +297,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     } else {
       targetUser = '2';
     }
+
     const body = {
       token: this.token,
       searchTime: {
@@ -366,6 +374,8 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       );
     this.brandName = this.groupData.groupRootInfo[2].brandName;
     this.branchName = this.groupData.groupRootInfo[3].branchName;
+
+    this.handleInfo(this.groupData.groupDesc, 'lessonInfo');
   }
 
   // 取得多筆活動資料並處理-kidin-1081211
@@ -546,10 +556,17 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
       this.previewUrl = newUrl + '&ipm=s';
     } else {
-      newUrl = location.pathname;
+
+      if (this.isDebug) {
+        newUrl = `${location.pathname}?debug=`;
+      } else {
+        newUrl = location.pathname;
+      }
+
       if (history.pushState) {
         window.history.pushState({path: newUrl}, '', newUrl);
       }
+
     }
   }
 
@@ -973,7 +990,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     const deviceDody = {
       'token': '',
       'queryType': '1',
-      'queryArray': [SN]
+      'queryArray': SN
     };
     this.qrcodeService.getProductInfo(deviceDody).subscribe(res => {
       if (res) {
@@ -996,6 +1013,8 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       if (res) {
         this.coachInfo = res.info;
       }
+
+      this.handleInfo(this.coachInfo.description, 'coachInfo');
     });
 
   }
@@ -1096,6 +1115,50 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       this.sortHRZoneChart();
     } else {
       this.initMemberHRZoneChart();
+    }
+  }
+
+  // 將過長的介紹隱藏-kidin-1090326
+  handleInfo(str, type) {
+    switch (type) {
+      case 'lessonInfo':
+        this.lessonTotalInfo = str.replace(/\r\n|\n/g, '').trim();
+        if (this.lessonTotalInfo.length > 40) {
+          this.lessonPartInfo = this.lessonTotalInfo.substring(0, 40);
+          this.showAllLessonInfo = false;
+        } else {
+          this.lessonPartInfo = this.lessonTotalInfo;
+          this.showAllLessonInfo = true;
+        }
+
+        break;
+      case 'coachInfo':
+        this.coachTotalInfo = str.replace(/\r\n|\n/g, '').trim();
+        if (this.coachTotalInfo.length > 40) {
+          this.coachPartInfo = this.coachTotalInfo.substring(0, 40);
+          this.showAllCoachInfo = false;
+        } else {
+          this.coachPartInfo = this.coachTotalInfo;
+          this.showAllCoachInfo = true;
+        }
+
+        break;
+    }
+  }
+
+  // 將過長的介紹全顯示-kidin-1090326
+  handleExtendCoachInfo(type) {
+    switch (type) {
+      case 'lessonInfo':
+        this.lessonPartInfo = this.lessonTotalInfo;
+        this.showAllLessonInfo = true;
+
+        break;
+      case 'coachInfo':
+        this.coachPartInfo = this.coachTotalInfo;
+        this.showAllCoachInfo = true;
+
+        break;
     }
   }
 
