@@ -1291,9 +1291,11 @@ export class ComLifeTrackingComponent implements OnInit {
       newUrl = location.pathname;
     }
 
+    /***待api支援debug mode-kidin-1090327
     if (history.pushState) {
       window.history.pushState({path: newUrl}, '', newUrl);
     }
+    ***/
   }
 
   // 顯示群組資料-kidin-1090310

@@ -11,7 +11,8 @@ class ChartOptions {
   constructor (dataset) {
     return {
       chart: {
-        height: 100
+        height: 150,
+        margin: [0, 0, 0, 0]
       },
       title: {
         text: ''
@@ -25,7 +26,7 @@ class ChartOptions {
       plotOptions: {
         pie: {
             dataLabels: {
-                distance: 0,
+                distance: -10,
                 formatter: function () {
                   return this.point.percentage.toFixed(0) + '%';
                 },
@@ -42,7 +43,7 @@ class ChartOptions {
       },
       series: [{
         type: 'pie',
-        innerSize: '60%',
+        innerSize: '70%',
         data: dataset
       }]
     };

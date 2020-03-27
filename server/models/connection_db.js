@@ -66,7 +66,7 @@ function reconnect(connection) {
   //- Create a new one
   connection = mysql.createPool(connectInfo);
 
-  //- Try to reconnect
+  /***- Try to reconnect
   connection.getConnection(function (err) {
     if (err) {
       //- Try to connect every 2 seconds.
@@ -90,6 +90,7 @@ function reconnect(connection) {
       return connection;
     }
   });
+  ***/
 }
 // 對於非同步沒處理到的reject的處理
 process.on('unhandledRejection', (reason, promise) => {

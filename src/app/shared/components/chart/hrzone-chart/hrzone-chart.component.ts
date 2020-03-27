@@ -11,7 +11,7 @@ class ChartOptions {
   constructor (dataset) {
     return {
       chart: {
-        height: 250
+        height: 300
       },
       title: {
         text: ''
@@ -90,8 +90,9 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
 
   // 初始化highChart-kidin-1081211
   initInfoHighChart () {
-
     Highcharts.charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
+    this.highestHRZoneValue = 0;
+
     const totalSecond = this.data.reduce((accumulator, current) => accumulator + current),
           zoneZeroPercentage = (this.data[0] / totalSecond) * 100,
           zoneOnePercentage = (this.data[1] / totalSecond) * 100,
@@ -174,13 +175,13 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
 
       // 處理列印時highchart無法自適應造成跑版的問題-kidin-1090211
       if (location.search.indexOf('ipm=s') > -1) {
-        HRChartOptions['chart'].width = 530;
+        HRChartOptions['chart'].width = 540;
       }
 
       // 根據圖表清單依序將圖表顯示出來-kidin-1081217
       setTimeout(() => {
         chart(HRChartDiv, HRChartOptions);
-      }, 0);
+      }, 200);
 
     } else {
 
@@ -238,7 +239,7 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
       // 根據圖表清單依序將圖表顯示出來-kidin-1081217
       setTimeout(() => {
         chart(HRChartDiv, HRChartOptions);
-      }, 0);
+      }, 200);
 
     }
 

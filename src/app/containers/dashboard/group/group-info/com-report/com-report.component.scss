@@ -105,13 +105,17 @@
 }
 
 .perTypeInfo {
-  font-size: 16px;
+  font-size: 14px;
   margin-left: 15px;
-  margin-top: 10px;
 
   &:hover{
     cursor: pointer;;
   }
+}
+
+.perTypeTitle {
+  color: #5a5a5a;
+  font-weight: bold;
 }
 
 .dot {

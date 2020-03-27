@@ -45,7 +45,7 @@ Authorization:{{自己的token}}
 因為nodejs設置的middleware有一層會檢查
 
 
-235 server db password: 1234
+235 server db password: a1atech
 
 
 ### 取得Device log列表

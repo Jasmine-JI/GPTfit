@@ -1,10 +1,12 @@
 {
   "/api": {
-    "target": "https://app.alatech.com.tw:5443",
-    "secure": false
+    "target": "http://192.168.1.234:5555",
+    "secure": false,
+    "changeOrigin": true
   },
   "/race_test": {
-    "target": "https://app.alatech.com.tw:5443",
-    "secure": false
+    "target": "http://192.168.1.234:5555",
+    "secure": false,
+    "changeOrigin": true
   }
 }

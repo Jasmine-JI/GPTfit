@@ -1064,11 +1064,16 @@
         <div class="ala-dashboard-title activity-title">
           {{'Dashboard.ActivityDetail.device' | translate}}
         </div>
-        <div style="display: flex; justify-content: center;">
-          <img src={{deviceImgUrl}} style="height: 200px;width: auto;">
+        <div style="display:flex;align-items: center;margin-top: 10px;">
+          <div class="user-photo"
+            style="margin: 0 auto"
+            [ngClass]="classInfo?.groupIconClassName"
+          >
+            <img src={{deviceImgUrl}} style="width: 100px; height: auto;">
+          </div>
         </div>
-        <div>
-          {{ 'Portal.modeCode' | translate}}：{{ deviceInfo?.modelName || 'SH.noData' | translate }}
+        <div class="lesson-title">
+          {{ deviceInfo?.modelName || 'SH.noData' | translate }}
         </div>
         <div>
           {{"Portal.modeType" | translate}}：{{ (deviceInfo?.modelTypeID | productType | translate) || 'SH.noData' | translate }}
@@ -1102,7 +1107,7 @@
             style="color: #5fbae3;cursor:pointer;text-align: right"
             (click)="handleExtendCoachInfo(2)"
           >
-            {{ "Dashboard.TrainLive.more" | translate}}...
+            ...{{ "Dashboard.TrainLive.more" | translate}}
           </div>
         </div>
       </div>
@@ -1114,7 +1119,7 @@
           <div class="user-photo user-photo--portrait" style="margin: 0 auto">
             <img [src]="coachInfo?.coachAvatar">
           </div>
-          <div class="coach-name" style="padding-left: 20px">{{coachInfo?.name}}</div>
+          <div class="lesson-title" style="padding-left: 20px">{{coachInfo?.name}}</div>
         </div>
         <div class="introduction" style="padding-top: 10px">
           {{ coachDesc }}

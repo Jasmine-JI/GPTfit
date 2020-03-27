@@ -91,7 +91,7 @@ export class GroupInfoComponent implements OnInit {
       this.isPreviewMode = true;
     }
     this.route.params.subscribe(_params => this.handleInit());
-    this.detectUrlChange(location.pathname)
+    this.detectUrlChange(location.pathname);
     this.router.events.subscribe((val: NavigationEnd) => {
       if (val instanceof NavigationEnd && val.url) {
         this.detectUrlChange(val.url);
@@ -100,6 +100,7 @@ export class GroupInfoComponent implements OnInit {
     this.userInfoService.getUserAccessRightDetail().subscribe(response => {
       this.accessRight = Number(response.accessRight);
     });
+
   }
 
   handleInit() {

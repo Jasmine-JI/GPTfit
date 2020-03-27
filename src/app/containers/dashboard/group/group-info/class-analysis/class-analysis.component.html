@@ -7,7 +7,7 @@
   </div>
 </ng-container>
 <ng-container *ngIf="!isPreviewMode">
-  <app-tui-calender (classTime)="switchToReport($event)" [hidden]="hideCalendar"></app-tui-calender>
+  <app-tui-calender (classTime)="switchToReport($event)" [hidden]="hideCalendar" [isDebug]="isDebug"></app-tui-calender>
 </ng-container>
 <ng-container
   *ngIf="hasResData === false && initialChartComplated"
@@ -316,8 +316,10 @@
   <div class="other-info--area otherInfoArea">
     <div class="otherInfoSection">
       <p class="ala-dashboard-title activity-title">{{'Dashboard.ActivityDetail.device' | translate}}</p>
-      <img src="{{this.deviceImgUrl}}" style="height: auto; width: auto; max-width: 200px; max-height: 200px; margin: auto;">
-      <p>{{'Portal.modeCode' | translate}}：{{ deviceInfo?.modelName || 'SH.noData' | translate }}</p>
+      <img src="{{this.deviceImgUrl}}" style="height: auto; width: auto; width: 100px; height: 100px; margin: 0 auto;">
+      <span class="introductionName">
+        {{ deviceInfo?.modelName || 'SH.noData' | translate }}
+      </span>
       <p>{{"Portal.modeType" | translate}}：{{ (deviceInfo?.modelTypeID | productType | translate) || 'SH.noData' | translate }}</p>
     </div>
     <div class="otherInfoSection">
@@ -335,7 +337,14 @@
           </span>
         </div>
       </div>
-      <span>{{groupData?.groupDesc}}</span>
+      <span>{{lessonPartInfo}}</span>
+      <div
+        *ngIf="!showAllLessonInfo"
+        style="color: #5fbae3;cursor:pointer;text-align: right"
+        (click)="handleExtendCoachInfo('lessonInfo')"
+      >
+        ...{{ "Dashboard.TrainLive.more" | translate}}
+      </div>
     </div>
     <div class="otherInfoSection">
       <p class="ala-dashboard-title activity-title">{{'Dashboard.TrainLive.coachIntroduction' | translate}}</p>
@@ -347,7 +356,14 @@
           {{coachInfo?.name}}
         </span>
       </div>
-      <p>{{coachInfo?.description}}</p>
+      <p>{{coachPartInfo}}</p>
+      <div
+        *ngIf="!showAllCoachInfo"
+        style="color: #5fbae3;cursor:pointer;text-align: right"
+        (click)="handleExtendCoachInfo('coachInfo')"
+      >
+        ...{{ "Dashboard.TrainLive.more" | translate}}
+      </div>
     </div>
   </div>
 </ng-container>

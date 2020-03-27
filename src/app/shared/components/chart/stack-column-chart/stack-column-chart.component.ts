@@ -47,10 +47,11 @@ class ChartOptions {
       tooltip: {},
       plotOptions: {
         column: {
-            stacking: 'normal'
+            stacking: 'normal',
+            pointPlacement: 0.3,
         },
         series: {
-          pointWidth: 10
+          pointWidth: null
         }
       },
       series: dataset
@@ -69,7 +70,7 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
 
   dateList = [];
 
-  @Input() perHrZoneData: Array<any>;  // 心率區間用變數-kidin-1090218
+  @Input() perHrZoneData: any;  // 心率區間用變數-kidin-1090218
   @Input() dateRange: string;
 
   @Input() data: any;  // 生活追蹤用變數-kidin-1090218
@@ -103,100 +104,40 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
 
     Highcharts.charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
 
-    const zoneZero = [],
-          zoneOne = [],
-          zoneTwo = [],
-          zoneThree = [],
-          zoneFour = [],
-          zoneFive = [];
-    let sameDayZoneZero = 0,
-        sameDayZoneOne = 0,
-        sameDayZoneTwo = 0,
-        sameDayZoneThree = 0,
-        sameDayZoneFour = 0,
-        sameDayZoneFive = 0;
-    for (let i = 0; i < this.perHrZoneData.length; i++) {
-      // 將日期重複的心率區間相加-kidin-1090203
-      if (i === 0 || this.perHrZoneData[i][7] === this.perHrZoneData[i - 1][7]) {
-        sameDayZoneZero += this.perHrZoneData[i][1],
-        sameDayZoneOne += this.perHrZoneData[i][2],
-        sameDayZoneTwo += this.perHrZoneData[i][3],
-        sameDayZoneThree += this.perHrZoneData[i][4],
-        sameDayZoneFour += this.perHrZoneData[i][5],
-        sameDayZoneFive += this.perHrZoneData[i][6];
-
-        if (i === this.perHrZoneData.length - 1) {
-          const timeStamp = moment(this.perHrZoneData[i][7], 'YYYY-MM-DD').valueOf();
-          zoneZero.push([timeStamp, sameDayZoneZero]);
-          zoneOne.push([timeStamp, sameDayZoneOne]);
-          zoneTwo.push([timeStamp, sameDayZoneTwo]);
-          zoneThree.push([timeStamp, sameDayZoneThree]);
-          zoneFour.push([timeStamp, sameDayZoneFour]);
-          zoneFive.push([timeStamp, sameDayZoneFive]);
-        }
-      } else {
-        let timeStamp = moment(this.perHrZoneData[i - 1][7], 'YYYY-MM-DD').valueOf();
-        zoneZero.push([timeStamp, sameDayZoneZero]);
-        zoneOne.push([timeStamp, sameDayZoneOne]);
-        zoneTwo.push([timeStamp, sameDayZoneTwo]);
-        zoneThree.push([timeStamp, sameDayZoneThree]);
-        zoneFour.push([timeStamp, sameDayZoneFour]);
-        zoneFive.push([timeStamp, sameDayZoneFive]);
-
-        if (i !== this.perHrZoneData.length - 1 ) {
-          sameDayZoneZero = this.perHrZoneData[i][1],
-          sameDayZoneOne = this.perHrZoneData[i][2],
-          sameDayZoneTwo = this.perHrZoneData[i][3],
-          sameDayZoneThree = this.perHrZoneData[i][4],
-          sameDayZoneFour = this.perHrZoneData[i][5],
-          sameDayZoneFive = this.perHrZoneData[i][6];
-        } else {
-          timeStamp = moment(this.perHrZoneData[i][7], 'YYYY-MM-DD').valueOf();
-          zoneZero.push([timeStamp, this.perHrZoneData[i][1]]);
-          zoneOne.push([timeStamp, this.perHrZoneData[i][2]]);
-          zoneTwo.push([timeStamp, this.perHrZoneData[i][3]]);
-          zoneThree.push([timeStamp, this.perHrZoneData[i][4]]);
-          zoneFour.push([timeStamp, this.perHrZoneData[i][5]]);
-          zoneFive.push([timeStamp, this.perHrZoneData[i][6]]);
-        }
-
-      }
-    }
-
     const HRTrendDataset = [
       {
         name: 'Zone5',
-        data: zoneFive,
+        data: this.perHrZoneData.zoneFive,
         showInLegend: false,
         color: '#f36953'
       },
       {
         name: 'Zone4',
-        data: zoneFour,
+        data: this.perHrZoneData.zoneFour,
         showInLegend: false,
         color: '#f3b353'
       },
       {
         name: 'Zone3',
-        data: zoneThree,
+        data: this.perHrZoneData.zoneThree,
         showInLegend: false,
         color: '#f7f25b'
       },
       {
         name: 'Zone2',
-        data: zoneTwo,
+        data: this.perHrZoneData.zoneTwo,
         showInLegend: false,
         color: '#abf784'
       },
       {
         name: 'Zone1',
-        data: zoneOne,
+        data: this.perHrZoneData.zoneOne,
         showInLegend: false,
         color: '#64e0ec'
       },
       {
         name: 'Zone0',
-        data: zoneZero,
+        data: this.perHrZoneData.zoneZero,
         showInLegend: false,
         color: '#70b1f3'
       }
@@ -206,7 +147,9 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
           HRTrendChartDiv = this.container.nativeElement;
 
     // 設定圖表x軸時間間距-kidin-1090204
-    if (this.dateRange === 'day') {
+    if (this.dateRange === 'day' && this.perHrZoneData.zoneZero.length <= 7) {
+      HRTrendChartOptions['xAxis'].tickInterval = 24 * 3600 * 1000;  // 間距一天
+    } else if (this.dateRange === 'day' && this.perHrZoneData.zoneZero.length > 7) {
       HRTrendChartOptions['xAxis'].tickInterval = 7 * 24 * 3600 * 1000;  // 間距一週
     } else {
       HRTrendChartOptions['xAxis'].tickInterval = 30 * 24 * 4600 * 1000;  // 間距一個月
@@ -299,8 +242,7 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
     const newTotalData = [],
           newDeepSleepData = [],
           newLightSleepData = [],
-          newAwakeData = [],
-          newTargetData = [];
+          newAwakeData = [];
 
     let idx = 0;
     for (let i = 0; i < this.dateList.length; i++) {
@@ -388,7 +330,9 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
     chartOptions['chart'].height = 170;
 
     // 設定圖表x軸時間間距-kidin-1090204
-    if (this.dateRange === 'day') {
+    if (this.dateRange === 'day' && this.dateList.length <= 7) {
+      chartOptions['xAxis'].tickInterval = 24 * 3600 * 1000;  // 間距一天
+    } else if (this.dateRange === 'day' && this.dateList.length > 7) {
       chartOptions['xAxis'].tickInterval = 7 * 24 * 3600 * 1000;  // 間距一週
     } else {
       chartOptions['xAxis'].tickInterval = 30 * 24 * 4600 * 1000;  // 間距一個月
