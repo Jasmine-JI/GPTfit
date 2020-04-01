@@ -1,6 +1,6 @@
 // fix time 2019/02/14
 export const version = {
-  develop: '1.1.5.4 alpha',
-  release: '1.1.5.4 alpha',
+  develop: '1.1.5.6 alpha',
+  release: '1.1.5.6 alpha',
   master: '1.1.5'
 };

@@ -43,6 +43,7 @@ import { MyLifeTrackingComponent } from './my-life-tracking/my-life-tracking.com
 import { BodyConstituteSvgComponent } from './chart/body-constitute-svg/body-constitute-svg.component';
 import { TuiCalenderComponent } from './tui-calender/tui-calender.component';
 import { HoverHintComponent } from './hover-hint/hover-hint.component';
+import { DateRangePickerComponent } from './date-range-picker/date-range-picker.component';
 
 @NgModule({
   imports: [
@@ -91,7 +92,8 @@ import { HoverHintComponent } from './hover-hint/hover-hint.component';
     MyLifeTrackingComponent,
     BodyConstituteSvgComponent,
     TuiCalenderComponent,
-    HoverHintComponent
+    HoverHintComponent,
+    DateRangePickerComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -124,7 +126,8 @@ import { HoverHintComponent } from './hover-hint/hover-hint.component';
     LineChartComponent,
     BodyConstituteSvgComponent,
     TuiCalenderComponent,
-    HoverHintComponent
+    HoverHintComponent,
+    DateRangePickerComponent
   ]
 })
 export class SharedComponentsModule {}

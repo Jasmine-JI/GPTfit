@@ -12,4 +12,8 @@ export class SettingsService {
   updateThirdParty(body) {
     return this.http.post<any>('/api/v1/user/thirdPartyAccess', body);
   }
+
+  editPrivacy (body) {
+    return this.http.post<any>('/api/v2/sport/editPrivacy', body);
+  }
 }

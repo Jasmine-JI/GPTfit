@@ -235,94 +235,68 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
 
   // 生活追蹤用圖表-kidin-1090218
   initSleepChart () {
-
     Highcharts.charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
     this.createDateList();
 
-    const newTotalData = [],
-          newDeepSleepData = [],
+    const newDeepSleepData = [],
           newLightSleepData = [],
           newAwakeData = [];
 
     let idx = 0;
     for (let i = 0; i < this.dateList.length; i++) {
       if (this.dateList[i] === this.data.date[idx]) {
-        if (this.data.lightSleepList[0]) {
-          newLightSleepData.push(this.data.lightSleepList[idx]);
-          newDeepSleepData.push(this.data.deepSleepList[idx]);
-          newAwakeData.push(this.data.awakeList[idx]);
-        } else {
-          newTotalData.push(this.data.totalSleepList[idx]);
-        }
-
+        newLightSleepData.push(this.data.lightSleepList[idx]);
+        newDeepSleepData.push(this.data.deepSleepList[idx]);
+        newAwakeData.push(this.data.awakeList[idx]);
         idx++;
+
       } else {
-        if (this.data.lightSleepList[0]) {
-          newLightSleepData.push(0);
-          newDeepSleepData.push(0);
-          newAwakeData.push(0);
-        } else {
-          newTotalData.push(0);
-        }
+        newLightSleepData.push(0);
+        newDeepSleepData.push(0);
+        newAwakeData.push(0);
       }
     }
 
     let deepSleepData = [],
         lightSleepData = [],
         awakeData = [],
-        totalSleepData = [],
         dataSet;
-    if (this.data.lightSleepList[0]) {
-      this.noData = false;
 
-      deepSleepData = newDeepSleepData.map((_data, index) => {
-        return [this.dateList[index], _data];
-      });
+    this.noData = false;
 
-      lightSleepData = newLightSleepData.map((_data, index) => {
-        return [this.dateList[index], _data];
-      });
+    deepSleepData = newDeepSleepData.map((_data, index) => {
+      return [this.dateList[index], _data];
+    });
 
-      awakeData = newAwakeData.map((_data, index) => {
-        return [this.dateList[index], _data];
-      });
+    lightSleepData = newLightSleepData.map((_data, index) => {
+      return [this.dateList[index], _data];
+    });
 
-      dataSet = [
-        {
-          name: this.translate.instant('other.deepSleep'),
-          data: deepSleepData,
-          showInLegend: false,
-          color: '#35a8c9'
-        },
-        {
-          name: this.translate.instant('other.lightSleep'),
-          data: lightSleepData,
-          showInLegend: false,
-          color: '#1e61bb'
-        },
-        {
-          name: this.translate.instant('other.wideAwake'),
-          data: awakeData,
-          showInLegend: false,
-          color: '#ccff00'
-        }
-      ];
-    } else {
-      this.noData = false;
+    awakeData = newAwakeData.map((_data, index) => {
+      return [this.dateList[index], _data];
+    });
 
-      totalSleepData = newTotalData.map((_data, index) => {
-        return [this.dateList[index], _data];
-      });
+    dataSet = [
+      {
+        name: this.translate.instant('other.lightSleep'),
+        data: lightSleepData,
+        showInLegend: false,
+        color: '#35a8c9'
+      },
+      {
+        name: this.translate.instant('other.deepSleep'),
+        data: deepSleepData,
+        showInLegend: false,
+        color: '#1e61bb'
+      },
+      {
+        name: this.translate.instant('other.wideAwake'),
+        data: awakeData,
+        showInLegend: false,
+        color: '#ccff00'
+      }
+    ];
 
-      dataSet = [
-        {
-          name: this.translate.instant('other.totalSleepTime'),
-          data: totalSleepData,
-          showInLegend: false,
-          color: '#35a8c9'
-        }
-      ];
-    }
     const chartOptions = new ChartOptions(dataSet),
           chartDiv = this.container.nativeElement;
 
@@ -372,17 +346,8 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
       formatter: function () {
         const yVal = this.y;
 
-        let costhr = Math.floor(yVal / 3600),
-            costmin = Math.floor((yVal - costhr * 60 * 60) / 60);
-        const costsecond = Math.round(yVal - costmin * 60);
-
-        if (costsecond !== 0) {
-          costmin++;
-          if (costmin === 60) {
-            costmin = 0;
-            costhr++;
-          }
-        }
+        const costhr = Math.floor(yVal / 3600),
+              costmin = Math.floor((yVal - costhr * 60 * 60) / 60);
 
         const timeMin = ('0' + costmin).slice(-2);
 
@@ -399,7 +364,7 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
         const yTotal = this.total;
 
         let totalHr = Math.floor(yTotal / 3600),
-            totalmin = Math.floor(Math.round(yTotal - totalHr * 60 * 60) / 60);
+            totalmin = Math.round((yTotal - totalHr * 60 * 60) / 60);
         const totalsecond = Math.round(yTotal - totalmin * 60),
               timeTotalMin = ('0' + totalmin).slice(-2);
 

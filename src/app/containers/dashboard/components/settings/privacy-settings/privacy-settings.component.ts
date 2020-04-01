@@ -6,8 +6,10 @@ import {
   Input
 } from '@angular/core';
 import { SettingsService } from '../../../services/settings.service';
+import { ModifyBoxComponent } from './modify-box/modify-box.component';
 import { UtilsService } from '@shared/services/utils.service';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar, MatDialog, MAT_CHECKBOX_CLICK_ACTION } from '@angular/material';
+
 import { deviceHint } from './deviceHint';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -20,28 +22,40 @@ declare var google: any;
     './privacy-settings.component.scss',
     '../settings.component.scss'
   ],
+  providers: [
+    { provide: MAT_CHECKBOX_CLICK_ACTION, useValue: 'noop' }
+  ],
   encapsulation: ViewEncapsulation.None
 })
 export class PrivacySettingsComponent implements OnInit {
   isDisplayBox = false;
+  showBatchChangeBox = false;
+  showModifyBox = false;
+  editing = false;
+
   @ViewChild('gmap') gmapElement: any;
   @Input() userData: any;
   map: any;
   mark: any;
 
+  editObject: string;
+
   activityTracking = {
-    checkedList: [],
-    status: [false, false]
+    openObj: ['1'],
+    showPerObj: true,
+    showConfirmBtn: false
   };
 
   activityTrackingReport = {
-    checkedList: [],
-    status: [false, false]
+    openObj: ['1'],
+    showPerObj: true,
+    showConfirmBtn: false
   };
 
   lifeTrackingReport = {
-    checkedList: [],
-    status: [false, false]
+    openObj: ['1'],
+    showPerObj: true,
+    showConfirmBtn: false
   };
 
   deviceTip: string;
@@ -49,7 +63,8 @@ export class PrivacySettingsComponent implements OnInit {
     private settingsService: SettingsService,
     private utils: UtilsService,
     private snackbar: MatSnackBar,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -71,12 +86,14 @@ export class PrivacySettingsComponent implements OnInit {
       activityTrackingReport,
       lifeTrackingReport
     } = this.userData.privacy;
-    this.activityTracking.checkedList = activityTracking;
-    this.detectCheckBoxValue(this.activityTracking);
-    this.activityTrackingReport.checkedList = activityTrackingReport;
-    this.detectCheckBoxValue(this.activityTrackingReport);
-    this.lifeTrackingReport.checkedList = lifeTrackingReport;
-    this.detectCheckBoxValue(this.lifeTrackingReport);
+    this.activityTracking.openObj = activityTracking;
+    this.detectCheckBoxValue('file');
+    this.activityTrackingReport.openObj = activityTrackingReport;
+    this.detectCheckBoxValue('sportFile');
+    this.lifeTrackingReport.openObj = lifeTrackingReport;
+    this.detectCheckBoxValue('lifeTracking');
+
+    this.editObject = this.translate.instant('other.data');
   }
   mouseEnter() {
     this.isDisplayBox = true;
@@ -84,93 +101,197 @@ export class PrivacySettingsComponent implements OnInit {
   mouseLeave() {
     this.isDisplayBox = false;
   }
-  handleCheckBox(event, idx, type) {
 
+  /** 選擇開放隱私權的對象-kidin-1090327
+   *  1:僅自己 2:我的朋友 3:我的群組 4:我的健身房教練 99:所有人
+   */
+  selectModifyRange (type, obj) {
+    this.editing = true;
+
+    let radioBtn;
     switch (type) {
-      case 1:
-        this.activityTracking = this.changeCheckedData(event, idx, this.activityTracking);
-        break;
-      case 2:
-        this.activityTrackingReport = this.changeCheckedData(event, idx, this.activityTrackingReport);
-        break;
-      default:
-        this.lifeTrackingReport = this.changeCheckedData(event, idx, this.lifeTrackingReport);
-        break;
-    }
+      case 'file':
+        radioBtn = document.getElementById('selectFileAll');
+        this.activityTracking.showConfirmBtn = true;
 
-    this.handlePrivacySetting();
-  }
+        switch (obj) {
+          case '99':
+            if (this.activityTracking.openObj.indexOf(obj) >= 0) {
 
-  // 取得新的設定值-kidin-1090304
-  changeCheckedData (e, idx, oldData) {
-    if (e.checked) {
-      const set = new Set(oldData.checkedList);
-      if (e.source.value === '99') {
-        for (let i = 0; i < oldData.status.length; i++) {
-          oldData.status[i] = true;
+              setTimeout(() => {
+                radioBtn.classList.remove('mat-radio-checked');
+              }, 0);
+
+              this.activityTracking.openObj.length = 1;
+              this.activityTracking.showPerObj = true;
+            } else {
+              radioBtn.classList.add('mat-radio-checked');
+              this.activityTracking.openObj.length = 1;
+              this.activityTracking.openObj.push('99');
+              this.activityTracking.showPerObj = false;
+            }
+            break;
+          case '4':
+            if (this.activityTracking.openObj.indexOf(obj) > 0) {
+              this.activityTracking.openObj = this.activityTracking.openObj.filter(_obj => {
+                return _obj !== obj;
+              });
+            } else {
+              this.activityTracking.openObj.push(obj);
+              this.activityTracking.openObj.sort();
+            }
+
+            break;
         }
+        break;
 
-        set.add('4');
-        set.add('99');
-      } else {
-        set.add('4');
-      }
+      case 'sportReport':
+        radioBtn = document.getElementById('selectSportReportAll');
+        this.activityTrackingReport.showConfirmBtn = true;
 
-      return {
-        checkedList: Array.from(set),
-        status: oldData.status
-      };
+        switch (obj) {
+          case '99':
+            if (this.activityTrackingReport.openObj.indexOf(obj) >= 0) {
 
-    } else {
-      const list = oldData.checkedList,
-            status = oldData.status;
-      if (list.indexOf('99') > 0 && e.source.value !== '99') {
-        status[idx] = false;
-        status[status.length - 1] = false;
+              setTimeout(() => {
+                radioBtn.classList.remove('mat-radio-checked');
+              }, 0);
 
-        const i = list.indexOf(e.source.value);
-        list.splice(i, 1);
+              this.activityTrackingReport.openObj.length = 1;
+              this.activityTrackingReport.showPerObj = true;
+            } else {
+              radioBtn.classList.add('mat-radio-checked');
+              this.activityTrackingReport.openObj.length = 1;
+              this.activityTrackingReport.openObj.push('99');
+              this.activityTrackingReport.showPerObj = false;
+            }
+            break;
+          case '4':
+            if (this.activityTrackingReport.openObj.indexOf(obj) > 0) {
+              this.activityTrackingReport.openObj = this.activityTrackingReport.openObj.filter(_obj => {
+                return _obj !== obj;
+              });
+            } else {
+              this.activityTrackingReport.openObj.push(obj);
+              this.activityTrackingReport.openObj.sort();
+            }
 
-        const j = list.indexOf('99');
-        list.splice(j, 1);
-      } else {
-        status[idx] = false;
+            break;
+        }
+        break;
 
-        const i = list.indexOf(e.source.value);
-        list.splice(i, 1);
-      }
+      case 'lifeTracking':
+        radioBtn = document.getElementById('selectLifeTranckingAll');
+        this.lifeTrackingReport.showConfirmBtn = true;
 
-      return {
-        checkedList: list,
-        status: oldData.status
-      };
+        switch (obj) {
+          case '99':
+            if (this.lifeTrackingReport.openObj.indexOf(obj) >= 0) {
+
+              setTimeout(() => {
+                radioBtn.classList.remove('mat-radio-checked');
+              }, 0);
+
+              this.lifeTrackingReport.openObj.length = 1;
+              this.lifeTrackingReport.showPerObj = true;
+            } else {
+              radioBtn.classList.add('mat-radio-checked');
+              this.lifeTrackingReport.openObj.length = 1;
+              this.lifeTrackingReport.openObj.push('99');
+              this.lifeTrackingReport.showPerObj = false;
+            }
+            break;
+          case '4':
+            if (this.lifeTrackingReport.openObj.indexOf(obj) > 0) {
+              this.lifeTrackingReport.openObj = this.lifeTrackingReport.openObj.filter(_obj => {
+                return _obj !== obj;
+              });
+            } else {
+              this.lifeTrackingReport.openObj.push(obj);
+              this.lifeTrackingReport.openObj.sort();
+            }
+
+            break;
+        }
+        break;
     }
+
   }
 
-  detectCheckBoxValue(set) {
-    if (set.checkedList.findIndex(arrVal => arrVal === '1') === -1) {
-      set.checkedList.push('1');
+  detectCheckBoxValue(type) {
+
+    let radioBtn;
+    switch (type) {
+      case 'file':
+
+        if (this.activityTracking.openObj.indexOf('99') >= 0) {
+
+          setTimeout(() => {
+            radioBtn = document.getElementById('selectFileAll');
+            radioBtn.classList.add('mat-radio-checked');
+          }, 0);
+
+          this.activityTracking.showPerObj = false;
+        } else if (this.activityTracking.openObj.indexOf('4') >= 0) {
+          this.activityTracking.showPerObj = true;
+        }
+        break;
+
+      case 'sportFile':
+
+        if (this.activityTrackingReport.openObj.indexOf('99') >= 0) {
+
+          setTimeout(() => {
+            radioBtn = document.getElementById('selectSportReportAll');
+            radioBtn.classList.add('mat-radio-checked');
+          }, 0);
+
+          this.activityTrackingReport.showPerObj = false;
+        } else if (this.activityTrackingReport.openObj.indexOf('4') >= 0) {
+          this.activityTrackingReport.showPerObj = true;
+        }
+        break;
+
+      case 'lifeTracking':
+
+        if (this.lifeTrackingReport.openObj.indexOf('99') >= 0) {
+
+          setTimeout(() => {
+            radioBtn = document.getElementById('selectLifeTranckingAll');
+            radioBtn.classList.add('mat-radio-checked');
+          }, 0);
+
+          this.lifeTrackingReport.showPerObj = false;
+        } else if (this.lifeTrackingReport.openObj.indexOf('4') >= 0) {
+          this.lifeTrackingReport.showPerObj = true;
+        }
+        break;
+
     }
-    set.checkedList.forEach((_arr, idx) => {
-      if (_arr === '') {
-        set.checkedList.splice(idx, 1);
-      }
-      if (_arr === '4') {
-        set.status[0] = true;
-      }
-      if (_arr === '99') {
-        set.status[1] = true;
-      }
-    });
+
   }
 
-  handlePrivacySetting() {
+  handlePrivacySetting(type) {
+    switch (type) {
+      case 'file':
+        this.activityTracking.showConfirmBtn = false;
+        break;
+
+      case 'sportFile':
+        this.activityTrackingReport.showConfirmBtn = false;
+        break;
+
+      case 'lifeTracking':
+        this.lifeTrackingReport.showConfirmBtn = false;
+        break;
+    }
+
     const body = {
       token: this.utils.getToken() || '',
       privacy: {
-        activityTracking: this.activityTracking.checkedList,
-        activityTrackingReport: this.activityTrackingReport.checkedList,
-        lifeTrackingReport: this.lifeTrackingReport.checkedList
+        activityTracking: this.activityTracking.openObj,
+        activityTrackingReport: this.activityTrackingReport.openObj,
+        lifeTrackingReport: this.lifeTrackingReport.openObj
       }
     };
 
@@ -191,5 +312,22 @@ export class PrivacySettingsComponent implements OnInit {
         );
       }
     });
+  }
+
+  // 取得輸入框顯示與否的狀態-kidin-1090326
+  showBox (e) {
+    this.showBatchChangeBox = e;
+  }
+
+  // 顯示批次修改框-kidin-1090326
+  showBatchModification (type) {
+    this.dialog.open(ModifyBoxComponent, {
+      hasBackdrop: true,
+      minWidth: '330px',
+      data: {
+        type: type
+      }
+    });
+
   }
 }

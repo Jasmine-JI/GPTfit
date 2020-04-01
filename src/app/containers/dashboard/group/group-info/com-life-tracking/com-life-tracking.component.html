@@ -6,86 +6,12 @@
       <div class="selectArea">
         <div class="datetimeInput">
           <p style="white-space: nowrap; margin: 0px">{{'SH.dateRange' | translate}}：</p>
-          <div style="display: flex; flex-direction: column;">
-            <div>
-                <button
-                name="aWeek"
-                class="alatech-btn alatech-btn--default activty-btn btnWord"
-                [class.BtnBgColor]="isSelected === 'aWeek'"
-                value="week"
-                (click)="handleActivityBtn($event)"
-              >
-                {{'Dashboard.GroupClass.last7Days' | translate}}
-              </button>
-              <button
-                name="aMonth"
-                class="alatech-btn alatech-btn--default activty-btn btnWord"
-                [class.BtnBgColor]="isSelected === 'aMonth'"
-                value="month"
-                (click)="handleActivityBtn($event)"
-              >
-                {{'Dashboard.GroupClass.last30Days' | translate}}
-              </button>
-              <button
-                name="rangeDate"
-                class="alatech-btn alatech-btn--default activty-btn btnWord"
-                [class.BtnBgColor]="isSelected === 'rangeDate'"
-                (click)="handleClickSelectDate($event)"
-              >
-                {{'Dashboard.GroupClass.selectDate' | translate}}
-              </button>
-            </div>
-            <div class="dateSelectArea" *ngIf="isSelectDateRange">
-              <mat-form-field style="width: 100px;" appearance="none">
-                <input
-                  matInput
-                  type="text"
-                  name="classDate"
-                  class="inputDateTime"
-                  style="bottom: 0.4em;"
-                  [max]="maxStartDate"
-                  [(value)]="selectedStartDate"
-                  (dateChange)="handleStartDate($event)"
-                  [matDatepicker]="startDatepicker"
-                  required="required"
-                  onkeydown="return false"
-                  (click)="startDatepicker.opened = true"
-                  readonly
-                >
-                <mat-datepicker #startDatepicker disabled="false" touchUi="true"></mat-datepicker>
-              </mat-form-field>
-              <div id="dashBetweenDate"></div>
-              <mat-form-field style="width: 100px;" appearance="none">
-                <input
-                  matInput
-                  type="text"
-                  name="classDate"
-                  class="inputDateTime"
-                  style="bottom: 0.4em;"
-                  [min]="minEndDate"
-                  [max]="maxSelectDate"
-                  [(value)]="selectedEndDate"
-                  (dateChange)="handleEndDate($event)"
-                  [matDatepicker]="endDatepicker"
-                  required="required"
-                  onkeydown="return false"
-                  (click)="endDatepicker.opened = true"
-                  readonly
-                >
-                <mat-datepicker #endDatepicker disabled="false" touchUi="true"></mat-datepicker>
-              </mat-form-field>
-            </div>
-          </div>
+          <app-date-range-picker
+            (selectDateRange)="getSelectDate($event)"
+            [default]="'lastWeek'"
+          ></app-date-range-picker>
         </div>
       </div>
-      <button
-        class="alatech-btn alatech-btn--default activty-btn"
-        style="max-width: 70px;"
-        (click)="handleSubmitSearch('click')"
-        [class.unClickable]="!reportCompleted"
-      >
-        {{'SH.send' | translate}}
-      </button>
     </div>
   </div>
 </ng-container>
@@ -280,7 +206,7 @@
             <span class="summaryData">{{recordData.avgDeepSleepTime || '0:00'}}</span>
             <span>{{'Dashboard.TrainLive.avg' | translate}} {{'other.deepSleep' | translate}}</span>
           </div>
-          <div class="flexCol">
+          <div class="flexCol" style="margin-left: 10px;">
             <span class="summaryData">{{recordData.avgLightSleepTime || '0:00'}}</span>
             <span>{{'Dashboard.TrainLive.avg' | translate}} {{'other.lightSleep' | translate}}</span>
           </div>
@@ -446,6 +372,7 @@
             class="tableArrangement tableContent"
           >
             <span *ngIf="row?.avgStep !== '--'">{{row?.avgStep | number:'1.0-0'}}</span>
+            <span [style.width]="row?.stepRegression === 0 ? '20px': '0px'"></span>
             <span *ngIf="row?.avgStep === '--'">{{row?.avgStep}}</span>
             <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.stepRegression > 0"></i>
             <span *ngIf="row?.stepRegression === 0"></span>

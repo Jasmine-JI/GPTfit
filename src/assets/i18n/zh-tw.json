@@ -787,6 +787,10 @@
     "batchEditPrivacy": "批次修改{{object}}隱私權",
     "modify": "修改",
     "data": "資料",
-    "confirm": "確認"
+    "confirm": "確認",
+    "thisWeek": "本週",
+    "lastWeek": "上週",
+    "thisMonth": "本月",
+    "lastMonth": "上個月"
   }
 }

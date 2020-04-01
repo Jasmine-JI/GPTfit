@@ -34,11 +34,6 @@ export class ComLifeTrackingComponent implements OnInit {
   noConstituteData = true;
   noFitTimeData = true;
   dataDateRange = '';
-  isSelected = 'aWeek';
-  isSelectDateRange = false;
-  maxStartDate = moment().format('YYYY-MM-DD');
-  minEndDate = moment().add(-13, 'days').format('YYYY-MM-DD');
-  maxSelectDate = moment().format('YYYY-MM-DD');
   showReport = false;
   showAll = false;
   personalMenu = {
@@ -47,6 +42,7 @@ export class ComLifeTrackingComponent implements OnInit {
     y: null
   };
   checkClickEvent = false;
+  hadGroupMemberList = false;
 
   // 資料儲存用變數-kidin-1090115
   token: string;
@@ -58,16 +54,13 @@ export class ComLifeTrackingComponent implements OnInit {
   brandImg: string;
   brandName = '';
   branchName = '';
-  startDate = moment().add(-6, 'days').format('YYYY-MM-DD');
-  endDate = moment().format('YYYY-MM-DD');
-  selectedStartDate = moment().add(-13, 'days').format('YYYY-MM-DD');
-  selectedEndDate = moment().format('YYYY-MM-DD');
+  selectDate = {
+    startDate: moment().subtract(6, 'days').format('YYYY-MM-DDT00:00:00.000Z'),
+    endDate: moment().format('YYYY-MM-DDT23:59:59.999Z')
+  };
   diffDay: number;
-  reportStartTime = '';
-  reportEndTime = '';
   reportEndDate = '';
   period = '';
-  reportStartDate = '';
   reportRangeType = 1;
   reportCreatedTime = moment().format('YYYY/MM/DD HH:mm');
   previewUrl = '';
@@ -183,7 +176,6 @@ export class ComLifeTrackingComponent implements OnInit {
       this.isPreviewMode = true;
     }
 
-    this.getIdListStart();
     this.personalData.sort = this.sortTable;
   }
 
@@ -308,48 +300,25 @@ export class ComLifeTrackingComponent implements OnInit {
     const queryString = location.search.replace('?', '').split('&');
     for (let i = 0; i < queryString.length; i++) {
       if (queryString[i].indexOf('startdate=') > -1) {
-        this.selectedStartDate = queryString[i].replace('startdate=', '');
+        this.selectDate.startDate = moment(queryString[i].replace('startdate=', '')).format('YYYY-MM-DDT00:00:00.000Z');
       } else if (queryString[i].indexOf('enddate=') > -1) {
-        this.selectedEndDate = queryString[i].replace('enddate=', '');
+        this.selectDate.endDate = moment(queryString[i].replace('enddate=', '')).format('YYYY-MM-DDT23:59:59.999Z');
       }
     }
 
     this.handleSubmitSearch('url');
   }
 
-  // 按下日期按鈕後記錄其選擇並更改該按鈕樣式-kidin-1090215
-  handleActivityBtn (e) {
-    if (e.target.name === 'aWeek') {
-      this.startDate = moment().add(-6, 'days').format('YYYY-MM-DD');
-    } else if (e.target.name === 'aMonth') {
-      this.startDate = moment().add(-29, 'days').format('YYYY-MM-DD');
-    }
-    this.isSelected = e.target.name;
-    this.isSelectDateRange = false;
-    this.handleSubmitSearch('click');
-  }
+  // 取得所選日期-kidin-1090331
+  getSelectDate (date) {
+    this.selectDate = date;
 
-  // 點擊選擇日期區間按鈕後，選擇日期顯示與否-kidin-1090215
-  handleClickSelectDate (e) {
-    this.isSelected = e.target.name;
-    this.startDate = '';
-    if (this.isSelectDateRange === false) {
-      this.isSelectDateRange = true;
+    if (this.hadGroupMemberList === false) {
+      this.getIdListStart();
     } else {
-      this.isSelectDateRange = false;
+      this.handleSubmitSearch('click');
     }
-  }
 
-  // 使用者選擇日期區間後紀錄其開始日期-kidin-1090215
-  handleStartDate (e) {
-    this.selectedStartDate = e.target.value.format('YYYY-MM-DD');
-    this.minEndDate = e.target.value;
-  }
-
-  // 使用者選擇日期區間後紀錄其結束日期-kidin-1090215
-  handleEndDate (e) {
-    this.selectedEndDate = e.target.value.format('YYYY-MM-DD');
-    this.maxStartDate = e.target.value;
   }
 
   // 使用者送出表單後顯示相關資料-kidin-1090215
@@ -358,55 +327,16 @@ export class ComLifeTrackingComponent implements OnInit {
       this.updateUrl('false');
     }
     this.reportCompleted = false;
-    this.getFilterTime();
     this.createReport();
-  }
-
-  // 取得當地時區並加以處理-kidin-1090215
-  getFilterTime () {
-    const timeZoneMinite = new Date();
-    const timeZone = -(timeZoneMinite.getTimezoneOffset() / 60);
-    let timeZoneStr = '';
-    if (timeZone < 10 && timeZone >= 0) {
-      timeZoneStr = `+0${timeZone}`;
-    } else if (timeZone > 10) {
-      timeZoneStr = `+${timeZone}`;
-    } else if (timeZone > -10 && timeZone < 0) {
-      timeZoneStr = `-0${timeZone}`;
-    } else {
-      timeZoneStr = `-${timeZone}`;
-    }
-
-    if (this.startDate === '' || this.isPreviewMode) {
-      this.reportStartTime = `${this.selectedStartDate}T00:00:00.000${timeZoneStr}:00`;
-      this.reportEndTime = `${this.selectedEndDate}T23:59:59.000${timeZoneStr}:00`;
-
-      this.reportEndDate = this.selectedEndDate;
-
-      const startDay = moment(this.selectedStartDate),
-            endDay = moment(this.selectedEndDate);
-      this.diffDay = endDay.diff(startDay, 'days') + 1;
-      this.period = `${this.diffDay}${this.translate.instant(
-        'Dashboard.SportReport.day'
-      )}`;
-    } else {
-      this.reportStartTime = `${this.startDate}T00:00:00.000${timeZoneStr}:00`;
-      this.reportEndTime = `${this.endDate}T23:59:59.000${timeZoneStr}:00`;
-
-      this.reportEndDate = this.endDate;
-
-      const startDay = moment(this.startDate),
-            endDay = moment(this.endDate);
-      this.diffDay = endDay.diff(startDay, 'days') + 1;
-      this.period = `${this.diffDay}${this.translate.instant(
-        'Dashboard.SportReport.day'
-      )}`;
-    }
   }
 
   // 建立運動報告-kidin-1090117
   createReport () {
     this.isLoading = true;
+    this.diffDay = moment(this.selectDate.endDate).diff(moment(this.selectDate.startDate), 'days') + 1;
+    this.period = `${this.diffDay}${this.translate.instant(
+      'Dashboard.SportReport.day'
+    )}`;
 
     this.initVariable();
     this.infoData.totalPeople = this.groupList.length;
@@ -431,12 +361,13 @@ export class ComLifeTrackingComponent implements OnInit {
       token: this.token || '',
       type: this.reportRangeType,
       targetUserId: groupIdList,
-      filterStartTime: this.reportStartTime,
-      filterEndTime: this.reportEndTime
+      filterStartTime: this.selectDate.startDate,
+      filterEndTime: this.selectDate.endDate
     };
 
     this.reportService.fetchTrackingSummaryArray(body).subscribe(res => {
       if (Array.isArray(res)) {
+        this.reportEndDate = moment(this.selectDate.endDate.split('T')[0]).format('YYYY/MM/DD');
         this.reportCompleted = false;
 
         const currentYear = moment().year();
@@ -535,15 +466,10 @@ export class ComLifeTrackingComponent implements OnInit {
                 const fillfatRateData = this.fillVacancyData(fatRateList);
                 this.constituteData.fatRateList.push(fillfatRateData);
                 this.FFMIData.perFatRate.push(fatRateList[fatRateList.length - 1][1]);
-              }
-
-              if (FFMI.length !== 0) {
                 this.FFMIData.perFFMI.push(FFMI[FFMI.length - 1]);
-              }
-
-              if (lifeTrackingData.length !== 0) {
                 this.FFMIData.gender.push(lifeTrackingData[lifeTrackingData.length - 1].gender);
               }
+
             }
           }
         }
@@ -563,7 +489,6 @@ export class ComLifeTrackingComponent implements OnInit {
         } else {
           this.nodata = false;
           this.showReport = true;
-          this.isSelectDateRange = false;
           this.updateUrl('true');
           this.sortData(groupReportData);
           this.calData(this.sortResultData);
@@ -674,8 +599,8 @@ export class ComLifeTrackingComponent implements OnInit {
   createTimeStampArr (range) {
 
     this.searchDate = [
-      moment(this.reportStartTime.split('T')[0], 'YYYY-MM-DD').valueOf(),
-      moment(this.reportEndTime.split('T')[0], 'YYYY-MM-DD').valueOf()
+      moment(this.selectDate.startDate.split('T')[0], 'YYYY-MM-DD').valueOf(),
+      moment(this.selectDate.endDate.split('T')[0], 'YYYY-MM-DD').valueOf()
     ];
 
     if (this.dataDateRange === 'day') {
@@ -797,7 +722,7 @@ export class ComLifeTrackingComponent implements OnInit {
       totalDeepSleepTime: 0,
       totalLightSleepTime: 0,
       totalLength: 0,
-      sameTimestotalSleepTime: 0,
+      sameTimesTotalSleepTime: 0,
       sameTimesDeepSleepTime: 0,
       sameTimesLightSleepTime: 0,
       sameTimesAwakeTime: 0,
@@ -887,7 +812,7 @@ export class ComLifeTrackingComponent implements OnInit {
       }
 
       // 將相同日期的心率數據做整合-kidin-1090217
-      if (sortData[i].maxHeartRate !== 0 && sortData[i].maxHeartRate !== null) {
+      if ((sortData[i].maxHeartRate !== 0 || sortData[i].restHeartRate !== 0) && sortData[i].restHeartRate !== null) {
         this.noHRData = false;
         HR.totalRestHR += sortData[i].restHeartRate;
         HR.totalMaxHR += sortData[i].maxHeartRate;
@@ -929,43 +854,51 @@ export class ComLifeTrackingComponent implements OnInit {
       if (sortData[i].totalSleepSecond !== 0 && sortData[i].totalSleepSecond !== null) {
         this.noSleepData = false;
         sleep.totalSleepTime += sortData[i].totalSleepSecond;
-        sleep.totalDeepSleepTime += sortData[i].totalDeepSecond;
-        sleep.totalLightSleepTime += sortData[i].totalLightSecond;
         sleep.totalLength++;
 
-        if (sleep.sameTimestotalSleepTime === 0 || sortData[i].startTime === sleep.sameTimesDate) {
-          sleep.sameTimestotalSleepTime += sortData[i].totalSleepSecond;
-          sleep.sameTimesDeepSleepTime += sortData[i].totalDeepSecond;
-          sleep.sameTimesLightSleepTime += sortData[i].totalLightSecond;
+        if (sortData[i].totalDeepSecond !== null && sortData[i].totalLightSecond !== null) {
+          sleep.totalDeepSleepTime += sortData[i].totalDeepSecond;
+          sleep.totalLightSleepTime += sortData[i].totalLightSecond;
+        }
+
+        if (sleep.sameTimesTotalSleepTime === 0 || sortData[i].startTime === sleep.sameTimesDate) {
+          sleep.sameTimesTotalSleepTime += sortData[i].totalSleepSecond;
           sleep.sameTimesLength++;
           sleep.sameTimesDate = sortData[i].startTime;
 
+          if (sortData[i].totalDeepSecond !== null && sortData[i].totalLightSecond !== null) {
+            sleep.sameTimesDeepSleepTime += sortData[i].totalDeepSecond;
+            sleep.sameTimesLightSleepTime += sortData[i].totalLightSecond;
+          }
+
           if (i === sortData.length - 1) {
-            this.sleepData.totalSleepList.push(sleep.sameTimestotalSleepTime / sleep.sameTimesLength);
+            this.sleepData.totalSleepList.push(sleep.sameTimesTotalSleepTime / sleep.sameTimesLength);
             this.sleepData.deepSleepList.push(sleep.sameTimesDeepSleepTime / sleep.sameTimesLength);
             this.sleepData.lightSleepList.push(sleep.sameTimesLightSleepTime / sleep.sameTimesLength);
             sleep.sameTimesAwakeTime =
-              sleep.sameTimestotalSleepTime - sleep.sameTimesDeepSleepTime - sleep.sameTimesLightSleepTime;
+              sleep.sameTimesTotalSleepTime - sleep.sameTimesDeepSleepTime - sleep.sameTimesLightSleepTime;
             this.sleepData.awakeList.push(sleep.sameTimesAwakeTime / sleep.sameTimesLength);
             this.sleepData.date.push(moment(sleep.sameTimesDate.split('T')[0], 'YYYY-MM-DD').valueOf());
-            sleep.sameTimesLength = 0;
           }
-        } else if (sleep.sameTimesDeepSleepTime !== 0 && sortData[i].startTime !== sleep.sameTimesDate) {
-          this.sleepData.totalSleepList.push(sleep.sameTimestotalSleepTime / sleep.sameTimesLength);
+        } else if (sortData[i].startTime !== sleep.sameTimesDate) {
+          this.sleepData.totalSleepList.push(sleep.sameTimesTotalSleepTime / sleep.sameTimesLength);
           this.sleepData.deepSleepList.push(sleep.sameTimesDeepSleepTime / sleep.sameTimesLength);
           this.sleepData.lightSleepList.push(sleep.sameTimesLightSleepTime / sleep.sameTimesLength);
           sleep.sameTimesAwakeTime =
-            sleep.sameTimestotalSleepTime - sleep.sameTimesDeepSleepTime - sleep.sameTimesLightSleepTime;
+            sleep.sameTimesTotalSleepTime - sleep.sameTimesDeepSleepTime - sleep.sameTimesLightSleepTime;
           this.sleepData.awakeList.push(sleep.sameTimesAwakeTime / sleep.sameTimesLength);
           this.sleepData.date.push(moment(sleep.sameTimesDate.split('T')[0], 'YYYY-MM-DD').valueOf());
-          sleep.sameTimesLength = 0;
 
           if (i !== sortData.length - 1) {
-            sleep.sameTimestotalSleepTime = sortData[i].totalSleepSecond;
-            sleep.sameTimesDeepSleepTime = sortData[i].totalDeepSecond;
-            sleep.sameTimesLightSleepTime = sortData[i].totalLightSecond;
+            sleep.sameTimesTotalSleepTime = sortData[i].totalSleepSecond;
             sleep.sameTimesLength = 1;
             sleep.sameTimesDate = sortData[i].startTime;
+
+            if (sortData[i].totalDeepSecond !== null && sortData[i].totalLightSecond !== null) {
+              sleep.sameTimesDeepSleepTime = sortData[i].totalDeepSecond;
+              sleep.sameTimesLightSleepTime = sortData[i].totalLightSecond;
+            }
+
           } else {
             this.sleepData.totalSleepList.push(sortData[i].totalSleepSecond);
             this.sleepData.deepSleepList.push(sortData[i].totalDeepSecond);
@@ -977,6 +910,7 @@ export class ComLifeTrackingComponent implements OnInit {
             sleep.sameTimesLength = 0;
           }
         }
+
       }
 
       // 將相同日期的燃脂時間數據做整合-kidin-1090217
@@ -1047,10 +981,11 @@ export class ComLifeTrackingComponent implements OnInit {
     }
 
     if (sleep.sameTimesLength !== 0) {
+      this.sleepData.totalSleepList.push(sleep.sameTimesTotalSleepTime / sleep.sameTimesLength);
       this.sleepData.deepSleepList.push(sleep.sameTimesDeepSleepTime / sleep.sameTimesLength);
       this.sleepData.lightSleepList.push(sleep.sameTimesLightSleepTime / sleep.sameTimesLength);
       this.sleepData.awakeList.push(
-        (sleep.sameTimestotalSleepTime - sleep.sameTimesDeepSleepTime - sleep.sameTimesLightSleepTime) / sleep.sameTimesLength
+        (sleep.sameTimesTotalSleepTime - sleep.sameTimesDeepSleepTime - sleep.sameTimesLightSleepTime) / sleep.sameTimesLength
         );
       this.sleepData.date.push(moment(sleep.sameTimesDate.split('T')[0], 'YYYY-MM-DD').valueOf());
     }
@@ -1255,8 +1190,8 @@ export class ComLifeTrackingComponent implements OnInit {
   updateUrl (hasData) {
     let newUrl;
     if (hasData === 'true') {
-      const startDateString = this.reportStartTime.split('T')[0],
-            endDateString = this.reportEndTime.split('T')[0];
+      const startDateString = this.selectDate.startDate.split('T')[0],
+            endDateString = this.selectDate.endDate.split('T')[0];
       let searchString;
 
       searchString =
@@ -1370,16 +1305,42 @@ export class ComLifeTrackingComponent implements OnInit {
       for (let j = 0; j < sortResult.length - 1 - i; j++) {
         if (sortDirection === 'asc') {
 
-          if (sortResult[j][sortCategory] > sortResult[j + 1][sortCategory] || sortResult[j][sortCategory] === '--') {
-            swapped = true;
-            [sortResult[j], sortResult[j + 1]] = [sortResult[j + 1], sortResult[j]];
+          if (sortCategory === 'avgSleep' && sortResult[j][sortCategory] !== '-:--') {
+            const sortA = this.timeStringSwitchNum(sortResult[j][sortCategory]),
+                  sortB = this.timeStringSwitchNum(sortResult[j + 1][sortCategory]);
+
+            if (sortA > sortB) {
+              swapped = true;
+              [sortResult[j], sortResult[j + 1]] = [sortResult[j + 1], sortResult[j]];
+            }
+
+          } else {
+
+            if (sortResult[j][sortCategory] > sortResult[j + 1][sortCategory] || sortResult[j][sortCategory] === '--') {
+              swapped = true;
+              [sortResult[j], sortResult[j + 1]] = [sortResult[j + 1], sortResult[j]];
+            }
+
           }
 
         } else {
 
-          if (sortResult[j][sortCategory] < sortResult[j + 1][sortCategory] || sortResult[j][sortCategory] === '--') {
-            swapped = true;
-            [sortResult[j], sortResult[j + 1]] = [sortResult[j + 1], sortResult[j]];
+          if (sortCategory === 'avgSleep' && sortResult[j][sortCategory] !== '-:--') {
+            const sortA = this.timeStringSwitchNum(sortResult[j][sortCategory]),
+                  sortB = this.timeStringSwitchNum(sortResult[j + 1][sortCategory]);
+
+            if (sortA < sortB) {
+              swapped = true;
+              [sortResult[j], sortResult[j + 1]] = [sortResult[j + 1], sortResult[j]];
+            }
+
+          } else {
+
+            if (sortResult[j][sortCategory] < sortResult[j + 1][sortCategory] || sortResult[j][sortCategory] === '--') {
+              swapped = true;
+              [sortResult[j], sortResult[j + 1]] = [sortResult[j + 1], sortResult[j]];
+            }
+
           }
 
         }
@@ -1431,6 +1392,12 @@ export class ComLifeTrackingComponent implements OnInit {
     }
 
     window.removeEventListener('scroll', this.hideMenu.bind(this), true);
+  }
+
+  // 將時間字串轉數字(分鐘)-kidin-1090401
+  timeStringSwitchNum (time) {
+    const min = (+time.split(':')[0] * 60) + +time.split(':')[1];
+    return min;
   }
 
   print() {

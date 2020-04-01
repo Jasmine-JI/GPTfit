@@ -110,9 +110,6 @@ export class MyReportComponent implements OnInit, OnDestroy {
   isSelected = 'aWeek';
   isSelectDateRange = false;
   hasResData: boolean;
-  maxStartDate = moment().format('YYYY-MM-DD');
-  minEndDate = moment().add(-13, 'days').format('YYYY-MM-DD');
-  maxSelectDate = moment().format('YYYY-MM-DD');
   initialChartComplated = true;
   isDebug = false;
   showAllLessonInfo = false;
@@ -121,17 +118,16 @@ export class MyReportComponent implements OnInit, OnDestroy {
   // 資料儲存用變數-kidin-1081210
   token: string;
   previewUrl: string;
-  startDate = moment().add(-6, 'days').format('YYYY-MM-DD');
-  endDate = moment().format('YYYY-MM-DD');
-  selectedStartDate = moment().add(-13, 'days').format('YYYY-MM-DD');
-  selectedEndDate = moment().format('YYYY-MM-DD');
-  reportStartDate = '';
-  reportEndDate = '';
   userId: string;
-  reportCreatedTime = moment().format('YYYY/MM/DD HH:mm');
   brandImg: string;
   brandName: string;
   branchName: string;
+  selectDate = {
+    startDate: moment().subtract(6, 'days').format('YYYY-MM-DDT00:00:00.000Z'),
+    endDate: moment().format('YYYY-MM-DDT23:59:59.999Z')
+  };
+  startDate: string;
+  reportCreatedTime = moment().format('YYYY/MM/DD HH:mm');
   groupImg: string;
   groupId: string;
   activityLength: number;
@@ -239,8 +235,6 @@ export class MyReportComponent implements OnInit, OnDestroy {
       location.search.indexOf('id=')
     ) {
       this.queryStringShowData();
-    } else {
-      this.handleSubmitSearch('click');
     }
 
     Highcharts.charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
@@ -252,9 +246,9 @@ export class MyReportComponent implements OnInit, OnDestroy {
     for (let i = 0; i < queryString.length; i++) {
       if (queryString[i].indexOf('startdate=') > -1) {
         this.startDate = queryString[i].replace('startdate=', '');
-        this.selectedStartDate = this.startDate;
+        this.selectDate.startDate = moment(this.startDate).format('YYYY-MM-DDT00:00:00.000Z');
       } else if (queryString[i].indexOf('enddate=') > -1) {
-        this.selectedEndDate = queryString[i].replace('enddate=', '');
+        this.selectDate.endDate = moment(queryString[i].replace('enddate=', '')).format('YYYY-MM-DDT23:59:59.999Z');
       } else if (queryString[i].indexOf('id=') > -1) {
         this.userId = this.hashIdService.handleGroupIdDecode(queryString[i].replace('id=', ''));
       }
@@ -285,16 +279,11 @@ export class MyReportComponent implements OnInit, OnDestroy {
     }
   }
 
-  // 使用者選擇日期區間後紀錄其開始日期-kidin-1081209
-  handleStartDate (e) {
-    this.selectedStartDate = e.target.value.format('YYYY-MM-DD');
-    this.minEndDate = e.target.value;
-  }
+  // 取得所選日期-kidin-1090331
+  getSelectDate (date) {
+    this.selectDate = date;
+    this.handleSubmitSearch('click');
 
-  // 使用者選擇日期區間後紀錄其結束日期-kidin-1081209
-  handleEndDate (e) {
-    this.selectedEndDate = e.target.value.format('YYYY-MM-DD');
-    this.maxStartDate = e.target.value;
   }
 
   // 使用者送出表單後顯示相關資料-kidin-1081209
@@ -309,7 +298,6 @@ export class MyReportComponent implements OnInit, OnDestroy {
       this.updateUrl('false');
     }
 
-    this.getFilterTime();
     this.getGroupInfo();
 
     // 根據條件取得多筆運動檔案資料-kidin-1081211
@@ -327,8 +315,8 @@ export class MyReportComponent implements OnInit, OnDestroy {
       searchTime: {
         type: '1',
         fuzzyTime: [],
-        filterStartTime: this.reportStartDate,
-        filterEndTime: this.reportEndDate,
+        filterStartTime: this.selectDate.startDate,
+        filterEndTime: this.selectDate.endDate,
         filterSameTime: '1'
       },
       searchRule: {
@@ -481,30 +469,6 @@ export class MyReportComponent implements OnInit, OnDestroy {
       this.hrZoneRange['z3'] = 'Z3';
       this.hrZoneRange['z4'] = 'Z4';
       this.hrZoneRange['z5'] = 'Z5';
-    }
-  }
-
-  // 取得當地時區並加以處理-kidin-1081210
-  getFilterTime () {
-    const timeZoneMinite = new Date();
-    const timeZone = -(timeZoneMinite.getTimezoneOffset() / 60);
-    let timeZoneStr = '';
-    if (timeZone < 10 && timeZone >= 0) {
-      timeZoneStr = `+0${timeZone}`;
-    } else if (timeZone > 10) {
-      timeZoneStr = `+${timeZone}`;
-    } else if (timeZone > -10 && timeZone < 0) {
-      timeZoneStr = `-0${timeZone}`;
-    } else {
-      timeZoneStr = `-${timeZone}`;
-    }
-
-    if (this.startDate === '') {
-      this.reportStartDate = `${this.selectedStartDate}T00:00:00.000${timeZoneStr}:00`;
-      this.reportEndDate = `${this.selectedEndDate}T23:59:59.000${timeZoneStr}:00`;
-    } else {
-      this.reportStartDate = `${this.startDate}T00:00:00.000${timeZoneStr}:00`;
-      this.reportEndDate = `${this.endDate}T23:59:59.000${timeZoneStr}:00`;
     }
   }
 
@@ -668,30 +632,23 @@ export class MyReportComponent implements OnInit, OnDestroy {
   updateUrl (str) {
     let newUrl;
     if (str === 'true') {
-      let startDateString,
-          endDateString,
-          searchString;
-      if (this.startDate === '') {
-        startDateString = this.selectedStartDate;
-        endDateString = this.selectedEndDate;
-      } else {
-        startDateString = this.startDate;
-        endDateString = this.endDate;
-      }
+      const startDateString = this.selectDate.startDate.split('T')[0],
+            endDateString = this.selectDate.endDate.split('T')[0];
+      let searchString;
 
-    let userId: string;
-    if (this.fileInfo.author.indexOf('?') > 0) {
-      userId = this.hashIdService.handleUserIdEncode(
-        this.fileInfo.author
-          .split('?')[1]
-          .split('=')[1]
-          .replace(')', '')
-      );
-    } else {
-      userId = this.hashIdService.handleUserIdEncode(
-        this.fileInfo.author.replace(')', '')
-      );
-    }
+      let userId: string;
+      if (this.fileInfo.author.indexOf('?') > 0) {
+        userId = this.hashIdService.handleUserIdEncode(
+          this.fileInfo.author
+            .split('?')[1]
+            .split('=')[1]
+            .replace(')', '')
+        );
+      } else {
+        userId = this.hashIdService.handleUserIdEncode(
+          this.fileInfo.author.replace(')', '')
+        );
+      }
 
       searchString = `startdate=${startDateString}&enddate=${endDateString}&id=${userId}`;
 
