@@ -783,9 +783,13 @@
     "sportsStatisticsInformation": "運動統計報告，是一段期間內計算了您各類型的運動數據、心率...等，不會有地理位置資訊。",
     "lifeStatistics": "生活統計報告",
     "lifeStatisticsInformation": "生活統計報告，是一段期間計算與統計您的日常生活心率、睡眠、步數、年齡、身高、體重、身體素質...等資訊。",
-    "batchEditPrivacy": "批次修改[**object**]隱私權",
+    "batchEditPrivacy": "批次修改{{object}}隱私權",
     "modify": "modify",
     "data": "data",
-    "confirm": "Confirmar"
+    "confirm": "Confirmar",
+    "thisWeek": "This week",
+    "lastWeek": "Last week",
+    "thisMonth": "This Month",
+    "lastMonth": "Last Month"
   }
 }

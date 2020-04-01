@@ -21,6 +21,7 @@ export class PrivacySettingDialogComponent implements OnInit {
   tempActivityTrackingStatus: string[];
   tempLifeTracking: string[];
   tempLifeTrackingStatus: string[];
+  showBatchChangeBox = false;
   @Output() onConfirm: EventEmitter<any> = new EventEmitter();
 
   get activityTrackingReport() {
@@ -129,5 +130,10 @@ export class PrivacySettingDialogComponent implements OnInit {
       tempArr = this.tempLifeTracking;
       tempStatus = this.tempLifeTrackingStatus;
     }
+  }
+
+  // 取得輸入框顯示與否的狀態-kidin-1090326
+  showBox (e) {
+    this.showBatchChangeBox = e;
   }
 }

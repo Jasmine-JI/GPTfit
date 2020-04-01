@@ -7,86 +7,12 @@
         <div class="selectArea">
           <div class="datetimeInput">
             <p style="white-space: nowrap; margin: 0px">{{'SH.dateRange' | translate}}：</p>
-            <div style="display: flex; flex-direction: column;">
-              <div>
-                  <button
-                  name="aWeek"
-                  class="alatech-btn alatech-btn--default activty-btn btnWord"
-                  [class.BtnBgColor]="isSelected === 'aWeek'"
-                  value="week"
-                  (click)="handleActivityBtn($event)"
-                >
-                  {{'Dashboard.GroupClass.last7Days' | translate}}
-                </button>
-                <button
-                  name="aMonth"
-                  class="alatech-btn alatech-btn--default activty-btn btnWord"
-                  [class.BtnBgColor]="isSelected === 'aMonth'"
-                  value="month"
-                  (click)="handleActivityBtn($event)"
-                >
-                  {{'Dashboard.GroupClass.last30Days' | translate}}
-                </button>
-                <button
-                  name="rangeDate"
-                  class="alatech-btn alatech-btn--default activty-btn btnWord"
-                  [class.BtnBgColor]="isSelected === 'rangeDate'"
-                  (click)="handleClickSelectDate($event)"
-                >
-                  {{'Dashboard.GroupClass.selectDate' | translate}}
-                </button>
-              </div>
-              <div class="dateSelectArea" *ngIf="isSelectDateRange">
-                <mat-form-field style="width: 100px;" appearance="none">
-                  <input
-                    matInput
-                    type="text"
-                    name="classDate"
-                    class="inputDateTime"
-                    style="bottom: 0.4em;"
-                    [max]="maxStartDate"
-                    [(value)]="selectedStartDate"
-                    (dateChange)="handleStartDate($event)"
-                    [matDatepicker]="startDatepicker"
-                    required="required"
-                    onkeydown="return false"
-                    (click)="startDatepicker.opened = true"
-                    readonly
-                  >
-                  <mat-datepicker #startDatepicker disabled="false" touchUi="true"></mat-datepicker>
-                </mat-form-field>
-                <div id="dashBetweenDate"></div>
-                <mat-form-field style="width: 100px;" appearance="none">
-                  <input
-                    matInput
-                    type="text"
-                    name="classDate"
-                    class="inputDateTime"
-                    style="bottom: 0.4em;"
-                    [min]="minEndDate"
-                    [max]="maxSelectDate"
-                    [(value)]="selectedEndDate"
-                    (dateChange)="handleEndDate($event)"
-                    [matDatepicker]="endDatepicker"
-                    required="required"
-                    onkeydown="return false"
-                    (click)="endDatepicker.opened = true"
-                    readonly
-                  >
-                  <mat-datepicker #endDatepicker disabled="false" touchUi="true"></mat-datepicker>
-                </mat-form-field>
-              </div>
-            </div>
+            <app-date-range-picker
+              (selectDateRange)="getSelectDate($event)"
+              [default]="'lastWeek'"
+            ></app-date-range-picker>
           </div>
         </div>
-        <button
-          class="alatech-btn alatech-btn--default activty-btn"
-          style="max-width: 70px;"
-          (click)="handleSubmitSearch('click')"
-          [class.unClickable]="!reportCompleted"
-        >
-          {{'SH.send' | translate}}
-        </button>
       </div>
     </div>
   </div>
