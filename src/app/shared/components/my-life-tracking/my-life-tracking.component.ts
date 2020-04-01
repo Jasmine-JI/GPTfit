@@ -697,17 +697,20 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
             );
 
             // 比照多人report資料格式-kidin-1090316
-            const fillWeightData = this.fillVacancyData(weightList);
+            const filterWeightData = this.filterRepeatBodyData(weightList),
+                  fillWeightData = this.fillVacancyData(filterWeightData);
             this.weightData.weightList = [fillWeightData];
 
             if (muscleRateList.length !== 0) {
               this.noConstituteData = false;
 
-              const fillmuscleRateData = this.fillVacancyData(muscleRateList);
-              this.constituteData.muscleRateList = [fillmuscleRateData];
+              const filterMuscleRateData = this.filterRepeatBodyData(muscleRateList),
+                    fillMuscleRateData = this.fillVacancyData(filterMuscleRateData);
+              this.constituteData.muscleRateList = [fillMuscleRateData];
 
-              const fillfatRateData = this.fillVacancyData(fatRateList);
-              this.constituteData.fatRateList = [fillfatRateData];
+              const filterFatRateData = this.filterRepeatBodyData(fatRateList),
+                    fillFatRateData = this.fillVacancyData(filterFatRateData);
+              this.constituteData.fatRateList = [fillFatRateData];
             }
 
             // 取該期間最新的身體素質-kidin-1090224
@@ -891,7 +894,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
 
   // 依據選取日期和報告類型（日/週）將缺漏的數值以其他日期現有數值填補-kidin-1090313
   fillVacancyData (data) {
-console.log(data);
+
     if (data.length === 0) {
       return [];
     } else {
@@ -901,18 +904,12 @@ console.log(data);
 
       for (let i = 0; i < this.chartTimeStamp.length; i++) {
 
-        if (idx === 0 || idx >= data.length || data[idx][0] !== data[idx - 1][0]) {
-
-          if (idx >= data.length) {
-            newData.push([this.chartTimeStamp[i], data[data.length - 1][1]]);
-          } else if (this.chartTimeStamp[i] !== data[idx][0]) {
-            newData.push([this.chartTimeStamp[i], data[idx][1]]);
-          } else {
-            newData.push(data[idx]);
-            idx++;
-          }
-
+        if (idx >= data.length) {
+          newData.push([this.chartTimeStamp[i], data[data.length - 1][1]]);
+        } else if (this.chartTimeStamp[i] !== data[idx][0]) {
+          newData.push([this.chartTimeStamp[i], data[idx][1]]);
         } else {
+          newData.push(data[idx]);
           idx++;
         }
 
@@ -1084,6 +1081,18 @@ console.log(data);
           colorSet: '#f8b551'
         };
     }
+  }
+
+  // 過濾身體素質重複日期的資料-kidin-1090330
+  filterRepeatBodyData (bodyData) {
+    const newData = [];
+    bodyData.map((_data, idx) => {
+      if (idx === 0 || bodyData[idx][0] !== bodyData[idx - 1][0]) {
+        newData.push(_data);
+      }
+    });
+
+    return newData;
   }
 
   // 依性別和年紀，分別為體脂率、肌肉率、水分率多寡下評語-kidin-1090225

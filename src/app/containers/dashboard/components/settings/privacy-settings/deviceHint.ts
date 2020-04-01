@@ -6,13 +6,11 @@ export const deviceHint = {
 
 隱私權選項
 
-○僅限自己：將只有您能看見。
-
 ○僅限體適能教練：您同意的體適能教練才能看見。
 
-○僅限朋友：您的朋友能看見。
+○僅限朋友：您的朋友能看見。（未開放）
 
-○僅限朋友與群組：您的朋友與同群組夥伴都能看見。
+○僅限朋友與群組：您的朋友與同群組夥伴都能看見。（未開放）
 
 ○每個人：一般大眾都將能看見`,
   'zh-cn': `
@@ -21,13 +19,11 @@ export const deviceHint = {
 
 隐私权选项
 
-○仅限自己：将只有您能看见。
-
 ○仅限体适能教练：您同意的体适能教练才能看见。
 
-○仅限朋友：您的朋友能看见。
+○仅限朋友：您的朋友能看见。（未开放）
 
-○仅限朋友与群组：您的朋友与同群组伙伴都能看见。
+○仅限朋友与群组：您的朋友与同群组伙伴都能看见。（未开放）
 
 ○每个人：一般大众都将能看见`,
   'en-us': `
@@ -36,13 +32,11 @@ The physical fitness and health information shared with you may include your hea
 
 Privacy option
 
-○Only for yourself: only you can see.
-
 ○Physical fitness coach only: The physical fitness coach you agree with can only be seen.
 
-○Only friends: Your friends can see.
+○Only friends: Your friends can see.(Not release)
 
-○Only friends and groups: Your friends and group partners can see.
+○Only friends and groups: Your friends and group partners can see.(Not release)
 
 ○Everyone: the general public will be able to see`,
   'es-es': `
@@ -51,13 +45,11 @@ The physical fitness and health information shared with you may include your hea
 
 Privacy option
 
-○Only for yourself: only you can see.
-
 ○Physical fitness coach only: The physical fitness coach you agree with can only be seen.
 
-○Only friends: Your friends can see.
+○Only friends: Your friends can see.(Not release)
 
-○Only friends and groups: Your friends and group partners can see.
+○Only friends and groups: Your friends and group partners can see.(Not release)
 
 ○Everyone: the general public will be able to see`
 }

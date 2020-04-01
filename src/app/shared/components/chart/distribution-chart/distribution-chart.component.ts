@@ -272,6 +272,7 @@ export class DistributionChartComponent implements OnInit, OnChanges {
 
       let y;
       if (this.perFFMI[i] < this.xBoundary[0]) {
+
         if (+this.perFatRate[i] <= this.yBoundary[0]) {
           y = this.getYPoint(this.perFatRate[i], 0, 196, this.yBoundary[0], this.yBoundary[2]);
           this.blockThree.stroke++;
@@ -294,6 +295,7 @@ export class DistributionChartComponent implements OnInit, OnChanges {
         });
 
       } else if (this.perFFMI[i] >= this.xBoundary[0] && this.perFFMI[i] <= this.xBoundary[1]) {
+
         if (+this.perFatRate[i] <= this.yBoundary[0]) {
           y = this.getYPoint(this.perFatRate[i], 0, 196, this.yBoundary[0], this.yBoundary[2]);
           this.blockSix.stroke++;

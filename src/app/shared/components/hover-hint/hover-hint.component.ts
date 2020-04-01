@@ -10,6 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 export class HoverHintComponent implements OnInit, OnChanges {
 
   @Input() type: string;
+  @Input() leftPosition: boolean;
   @Output() showBox = new EventEmitter();
 
   isDisplayBox = false;
