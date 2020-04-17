@@ -9,7 +9,7 @@
             <p style="white-space: nowrap; margin: 0px">{{'SH.dateRange' | translate}}：</p>
             <app-date-range-picker
               (selectDateRange)="getSelectDate($event)"
-              [default]="'lastWeek'"
+              [default]="'last7Days'"
             ></app-date-range-picker>
           </div>
         </div>

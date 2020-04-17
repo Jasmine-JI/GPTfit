@@ -306,4 +306,12 @@ export class UserSettingsComponent implements OnInit {
       }
     }
   }
+
+  // 取消按enter鍵(Bug 1104)-kidin-1090415
+  handleKeyDown (e) {
+    if (e.key === 'Enter') {
+      return false;
+    }
+  }
+
 }

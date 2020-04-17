@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 
 import { TranslateService } from '@ngx-translate/core';
 
+import { ActivityService } from '../../../services/activity.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { HashIdService } from '@shared/services/hash-id.service';
 import { UserProfileService } from '../../../services/user-profile.service';
@@ -28,6 +29,9 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
   dataDateRange = '';
   showReport = false;
   selectType = '99';
+  proficiency = 'metacarpus'; // 預設進階者
+  description: string;
+  handleMuscleData = false;
 
   // 資料儲存用變數-kidin-1090115
   @Output() showPrivacyUi = new EventEmitter();
@@ -74,6 +78,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
   avgPower = 0;
 
   // 圖表用數據-kidin-1090115
+  userWeight = 70; // 預設使用者體重為70kg
   chartTimeStamp = [];
   searchDate = [];
   perTypeLength = [];
@@ -101,8 +106,17 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
     z5: 'Z5',
   };
   typeList = [];
+  trainingPart = [];
+  proficiencyCoefficient = 2;
+  level = ['1%', '50%', '100%'];
+  muscleTrendList: Array<any> = [];
+
+  // rxjs管理-kidin-1090401
+  categoryRxjs: any;
+  dateRxjs: any;
 
   constructor(
+    private activityService: ActivityService,
     private utilsService: UtilsService,
     private hashIdService: HashIdService,
     private route: ActivatedRoute,
@@ -113,13 +127,40 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.token = this.utilsService.getToken();
+    this.token = this.utilsService.getToken() || '';
+    this.getUserWeight();
+    this.getRxjsData();
+
+    // 確認ngx translate套件已經載入再產生翻譯-kidin-1090415
+    this.translate.get('hello.world').subscribe(() => {
+      this.description = this.translate.instant('other.muscleColorIllustration');
+    });
 
     // 確認是否為預覽列印頁面-kidin-1090205
     if (location.search.indexOf('ipm=s') > -1) {
       this.isPreviewMode = true;
+      this.getProficiency(location.search);
+    }
+  }
+
+  ngOnChanges () {}
+
+  // 從query string取得重訓程度-kidin-1090415
+  getProficiency (query) {
+    const queryString = query.replace('?', '').split('&');
+    for (let i = 0; i < queryString.length; i++) {
+
+      if (queryString[i].indexOf('selectProficiency=') > -1) {
+        const proficiency = queryString[i].replace('selectProficiency=', '');
+        this.handleproficiency(+proficiency);
+      }
+
     }
 
+  }
+
+  // 從rxjs取得儲存數據-kidin-1090415
+  getRxjsData () {
     const hashUserId = this.route.snapshot.paramMap.get('userId');
     if (hashUserId === null) {
       const userBody = {
@@ -131,7 +172,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
         this.userId = +this.fileInfo.nameId;
 
         // 使用rxjs訂閱搜索日期使搜索日期更改時可以即時切換-kidin-1090121
-        this.reportService.getReportAdditon().subscribe(response => {
+        this.dateRxjs = this.reportService.getReportAdditon().subscribe(response => {
           this.reportStartTime = response[0].value;
           this.reportEndTime = response[1].value;
           this.reportEndDate = this.reportEndTime.split('T')[0].replace(/-/g, '/');
@@ -144,7 +185,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
       this.userId = +this.hashIdService.handleUserIdDecode(hashUserId);
 
       // 使用rxjs訂閱搜索日期使搜索日期更改時可以即時切換-kidin-1090121
-      this.reportService.getReportAdditon().subscribe(response => {
+      this.dateRxjs = this.reportService.getReportAdditon().subscribe(response => {
         this.reportStartTime = response[0].value;
         this.reportEndTime = response[1].value;
         this.reportEndDate = this.reportEndTime.split('T')[0].replace(/-/g, '/');
@@ -155,14 +196,33 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     // 使用rxjs訂閱運動類別使運動類別更改時可以即時切換-kidin-1090121
-    this.reportService.getreportCategory().subscribe(res => {
+    this.categoryRxjs = this.reportService.getreportCategory().subscribe(res => {
       this.selectType = '99';
       this.reportCategory = res;
       this.loadCategoryData(res);
     });
   }
 
-  ngOnChanges () {}
+  // 先從service取得使用者體重，若為default 70就call api取得並存回service-kidin-1081121
+  getUserWeight () {
+    this.userWeight = this.activityService.getUserWeight();
+    if (this.userWeight === 70) {
+      const body = {
+        token: this.utilsService.getToken() || '',
+        avatarType: 2,
+        iconType: '2',
+      };
+      this.userInfoService.getLogonData(body).toPromise()
+        .then(res => {
+          if (res.resultCode !== 400) {
+            this.userWeight = res.info.weight;
+            this.activityService.saveUserWeight(this.userWeight);
+          }
+        });
+
+    }
+
+  }
 
   // 確認週報告日期是否為未來日期-kidin-1090227(Bug 1082)
   checkReportEndDate () {
@@ -185,8 +245,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
       type: this.reportRangeType,
       targetUserId: [this.userId],
       filterStartTime: this.reportStartTime,
-      filterEndTime: this.reportEndTime,
-      improveFormat: 2
+      filterEndTime: this.reportEndTime
     };
 
     this.reportService.fetchSportSummaryArray(body).subscribe(res => {
@@ -346,6 +405,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
   // 初始化變數
   initVariable () {
     this.nodata = false;
+    this.handleMuscleData = false;
     this.activityLength = 0;
     this.totalTime = '00:00';
     this.avgTime = '00:00';
@@ -366,6 +426,8 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
     this.perDate = [];
     this.chartTimeStamp = [];
     this.searchDate = [];
+    this.trainingPart = [];
+    this.muscleTrendList = [];
   }
 
   // 建立報告期間的timeStamp讓圖表使用-kidin-1090324
@@ -688,6 +750,10 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
             typeWeightTrainCalories.unshift(perStrokeData['calories']);
             typeWeightTrainTotalWeight += perStrokeData['totalWeightKg'];
             typeWeightTrainDataDate.unshift(this.activitiesList[i].startTime.split('T')[0]);
+            this.trainingPart.unshift({
+              part: perStrokeData['weightTrainingInfo'],
+              startDate: moment(this.activitiesList[i].startTime.split('T')[0], 'YYYY-MM-DD').valueOf()
+            });
 
             break;
           case '4':
@@ -900,6 +966,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
       avgTime: this.formatTime(typeWeightTrainAvgTrainTime),
       weightKg: typeWeightTrainTotalWeight,
       perCaloriesData: this.computeSameDayData(typeWeightTrainCalories, [], typeWeightTrainDataDate, 'calories'),
+      trainingPart: this.trainingPart
     };
 
     const typeSwimData = {
@@ -1018,12 +1085,13 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
         this.perAvgHR = res.perAvgHR;
         this.perActivityTime = res.perActivityTime;
 
-        if (res.distance) {
+        if (res.distance || res.distance === 0) {
           this.totalDistance = res.distance;
         }
 
-        if (res.weightKg) {
+        if (res.weightKg || res.weightKg === 0) {
           this.totalWeight = res.weightKg;
+          this.trainingPart = res.trainingPart;
         }
 
         if (res.perSpeedData) {
@@ -1115,8 +1183,8 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
     const colorSet = ['#6a4db8', '#e04c62', '#ffd451'];
 
     return {
-      pace: this.fillVacancyData(pace, finalDate, 'pace'),
-      bestPace: this.fillVacancyData(bestPace, finalDate, 'pace'),
+      pace: this.fillVacancyData(pace, finalDate, 'avg', 'pace'),
+      bestPace: this.fillVacancyData(bestPace, finalDate, 'min', 'pace'),
       date: this.chartTimeStamp,
       colorSet,
       oneRangeBestPace: perTypeBestPace,
@@ -1187,8 +1255,8 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
     switch (type) {
       case 'cadence':
         return {
-          cadence: this.fillVacancyData(finalData, finalDate, 'cadence'),
-          bestCadence: this.fillVacancyData(bestFinalData, finalDate, 'cadence'),
+          cadence: this.fillVacancyData(finalData, finalDate, 'avg', 'cadence'),
+          bestCadence: this.fillVacancyData(bestFinalData, finalDate, 'max', 'cadence'),
           date: this.chartTimeStamp,
           colorSet: ['#aafc42', '#d6ff38', '#f56300'],
           oneRangeBestCadence: oneRangeBest,
@@ -1196,26 +1264,17 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
         };
       case 'heartRate':
         return {
-          HR: this.fillVacancyData(finalData, finalDate, 'heartRate'),
-          bestHR: this.fillVacancyData(bestFinalData, finalDate, 'heartRate'),
+          HR: this.fillVacancyData(finalData, finalDate, 'avg', 'heartRate'),
+          bestHR: this.fillVacancyData(bestFinalData, finalDate, 'max', 'heartRate'),
           date: this.chartTimeStamp,
           colorSet: ['#aafc42', '#d6ff38', '#f56300'],
           oneRangeBestHR: oneRangeBest,
           avgHR: perTypeAvg
         };
-      case 'calories':
-        return {
-          calories: this.fillVacancyData(finalData, finalDate, 'calories'),
-          bestCalories: this.fillVacancyData(bestFinalData, finalDate, 'calories'),
-          date: this.chartTimeStamp,
-          colorSet: ['#f8b551'],
-          oneRangeBestCalories: oneRangeBest,
-          avgCalories: perTypeAvg
-        };
       case 'swolf':
         return {
-          swolf: this.fillVacancyData(finalData, finalDate, 'swolf'),
-          bestSwolf: this.fillVacancyData(bestFinalData, finalDate, 'swolf'),
+          swolf: this.fillVacancyData(finalData, finalDate, 'avg', 'swolf'),
+          bestSwolf: this.fillVacancyData(bestFinalData, finalDate, 'min', 'swolf'),
           date: this.chartTimeStamp,
           colorSet: ['#aafc42', '#d6ff38', '#7fd9ff'],
           oneRangeBestSwolf: oneRangeBest,
@@ -1223,8 +1282,8 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
         };
       case 'speed':
         return {
-          speed: this.fillVacancyData(finalData, finalDate, 'speed'),
-          bestSpeed: this.fillVacancyData(bestFinalData, finalDate, 'speed'),
+          speed: this.fillVacancyData(finalData, finalDate, 'avg', 'speed'),
+          bestSpeed: this.fillVacancyData(bestFinalData, finalDate, 'max', 'speed'),
           date: this.chartTimeStamp,
           colorSet: ['#ff00ff', '#ffff00', '#ffff00'],
           oneRangeBestSpeed: oneRangeBest,
@@ -1232,8 +1291,8 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
         };
       case 'power':
         return {
-          power: this.fillVacancyData(finalData, finalDate, 'power'),
-          bestPower: this.fillVacancyData(bestFinalData, finalDate, 'power'),
+          power: this.fillVacancyData(finalData, finalDate, 'avg', 'power'),
+          bestPower: this.fillVacancyData(bestFinalData, finalDate, 'max', 'power'),
           date: this.chartTimeStamp,
           colorSet: ['#aafc42', '#d6ff38', '#f56300'],
           oneRangeBestPower: oneRangeBest,
@@ -1241,8 +1300,8 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
         };
       case 'HR':
         return {
-          HR: this.fillVacancyData(finalData, finalDate, 'HR'),
-          bestHR: this.fillVacancyData(bestFinalData, finalDate, 'HR'),
+          HR: this.fillVacancyData(finalData, finalDate, 'avg', 'HR'),
+          bestHR: this.fillVacancyData(bestFinalData, finalDate, 'max', 'HR'),
           date: this.chartTimeStamp,
           colorSet: [
             'rgb(70, 156, 245)',
@@ -1326,7 +1385,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
       }
     }
 
-    return this.fillVacancyData(finalData, [], 'HRZone');
+    return this.fillVacancyData(finalData, [], 'avg', 'HRZone');
   }
 
   // 將日期相同的數據做整合-kidin-1090210
@@ -1385,7 +1444,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
       switch (type) {
         case 'calories':
           return {
-            calories: this.fillVacancyData(finalData, finalDate, 'calories'),
+            calories: this.fillVacancyData(finalData, finalDate, 'avg', 'calories'),
             bestcalories: bestFinalData,
             date: this.chartTimeStamp,
             colorSet: ['#f8b551'],
@@ -1437,7 +1496,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
       switch (type) {
         case 'calories':
           return {
-            calories: this.fillVacancyData(finalData, finalDate, 'calories'),
+            calories: this.fillVacancyData(finalData, finalDate, 'add', 'calories'),
             date: this.chartTimeStamp,
             colorSet: '#f8b551',
             oneRangeBestCalories: oneRangeBest,
@@ -1448,8 +1507,8 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  // 依據選取日期和報告類型（日/週）將缺漏的數值以0填補，並去除重複日期的資料-kidin-1090324
-  fillVacancyData (data, date, type) {
+  // 依據選取日期和報告類型（日/週）將缺漏的數值以0填補，並處理重複日期的資料-kidin-1090324
+  fillVacancyData (data, date, act, type) {
     switch (type) {
       case 'HRZone':
         if (data.zoneZero.length === 0) {
@@ -1473,11 +1532,26 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
             zoneFive: []
           };
 
+          let sameDateData = [];  // 處理週報告跨年會有重複週別的問題
           for (let i = 0; i < this.chartTimeStamp.length; i++) {
 
-            if (idx === 0 || idx >= data.zoneZero.length || data.zoneZero[idx][0] !== data.zoneZero[idx - 1][0]) {
+            if (idx === 0
+                || idx >= data.zoneZero.length
+                || (data.zoneZero[idx + 1] && data.zoneZero[idx][0] !== data.zoneZero[idx + 1][0])
+              ) {
 
-              if (idx >= data.zoneZero.length) {
+              if (sameDateData.length !== 0 && this.chartTimeStamp[i] === data.zoneZero[idx][0]) {
+
+                newData.zoneZero.push([this.chartTimeStamp[i], (sameDateData[0] + data.zoneZero[idx][1]) / 2]);
+                newData.zoneOne.push([this.chartTimeStamp[i], (sameDateData[1] + data.zoneOne[idx][1]) / 2]);
+                newData.zoneTwo.push([this.chartTimeStamp[i], (sameDateData[2] + data.zoneTwo[idx][1]) / 2]);
+                newData.zoneThree.push([this.chartTimeStamp[i], (sameDateData[3] + data.zoneThree[idx][1]) / 2]);
+                newData.zoneFour.push([this.chartTimeStamp[i], (sameDateData[4] + data.zoneFour[idx][1]) / 2]);
+                newData.zoneFive.push([this.chartTimeStamp[i], (sameDateData[5] + data.zoneFive[idx][1]) / 2]);
+
+                sameDateData.length = 0;
+                idx++;
+              } else if (idx >= data.zoneZero.length) {
                 newData.zoneZero.push([this.chartTimeStamp[i], 0]);
                 newData.zoneOne.push([this.chartTimeStamp[i], 0]);
                 newData.zoneTwo.push([this.chartTimeStamp[i], 0]);
@@ -1501,6 +1575,18 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
                 idx++;
               }
 
+            } else if (data.zoneZero[idx + 1] && data.zoneZero[idx][0] === data.zoneZero[idx + 1][0]) {
+              sameDateData = [
+                data.zoneZero[idx][1],
+                data.zoneOne[idx][1],
+                data.zoneTwo[idx][1],
+                data.zoneThree[idx][1],
+                data.zoneFour[idx][1],
+                data.zoneFive[idx][1],
+              ];
+
+              idx++;
+              i--;
             } else {
               idx++;
             }
@@ -1515,12 +1601,46 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
           return [];
         } else {
 
-          let idx = 0;
+          let idx = 0,
+              sameDateData = 0;
           const newData = [];
 
           for (let i = 0; i < this.chartTimeStamp.length; i++) {
 
-            if (idx === 0 || idx >= date.length || date[idx] !== date[idx - 1]) {
+            if (sameDateData !== 0 && this.chartTimeStamp[i] === date[idx]) {
+
+              switch (act) {
+                case 'avg':
+                  newData.push((sameDateData + data[idx]) / 2);
+                  break;
+                case 'max':
+                  newData.push(
+                    sameDateData > data[idx] ? sameDateData : data[idx]
+                  );
+                  break;
+                case 'min':
+                  newData.push(
+                    sameDateData > data[idx] ? data[idx] : sameDateData
+                  );
+                  break;
+                case 'add':
+                  newData.push(sameDateData + data[idx]);
+                  break;
+              }
+
+              sameDateData = 0;
+              idx++;
+
+            } else if (date[idx + 1] && date[idx] === date[idx + 1]) {
+              sameDateData = data[idx];
+              idx++;
+              i--;
+
+            } else if (
+              idx === 0
+              || idx >= date.length
+              || (date[idx + 1] && date[idx] !== date[idx + 1])
+            ) {
 
               if (idx >= date.length) {
                 newData.push(null);
@@ -1541,6 +1661,152 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  // 點擊運定項目後該類別相關資料特別顯示-kidin-1090214
+  assignCategory (category) {
+    if (category === this.selectType) {
+      this.selectType = '99';
+    } else {
+      this.selectType = category;
+    }
+  }
+
+  // 新增該部位趨勢圖表-kidin-1090406
+  handleClickMuscleList (data) {
+
+    const muscleGroup = data[0];
+    for (let i = 0; i < muscleGroup.length; i++) {
+
+      if (this.handleMuscleData === false) {
+
+        const partList = [];
+        for (const list in muscleGroup[i].trainList) {
+
+          if (muscleGroup[i].trainList.hasOwnProperty(list)) {
+
+            partList.push([
+              list,
+              [
+                this.chartTimeStamp,
+                this.fillVacancyData(
+                  muscleGroup[i].trainList[list].oneRepMaxChartData,
+                  muscleGroup[i].trainList[list].date,
+                  'max',
+                  'muscle'
+                  ),
+                this.fillVacancyData(
+                  muscleGroup[i].trainList[list].oneRepWeightChartData,
+                  muscleGroup[i].trainList[list].date,
+                  'avg',
+                  'muscle'
+                  )
+              ]
+            ]);
+
+          }
+
+        }
+
+        const model = {
+          id: muscleGroup[i].id,
+          name: muscleGroup[i].name,
+          isFold: true,
+          isFocus: false,
+          muscleGroupData: [   // 訓練肌群數據for圖表
+            this.chartTimeStamp,
+            this.fillVacancyData(
+              muscleGroup[i].muscleGroupData.oneRepMaxChartData,
+              muscleGroup[i].muscleGroupData.date,
+              'max',
+              'muscle'
+              ),
+            this.fillVacancyData(
+              muscleGroup[i].muscleGroupData.oneRepWeightChartData,
+              muscleGroup[i].muscleGroupData.date,
+              'avg',
+              'muscle'
+              )
+          ],
+          trainList: partList  // 訓練部位清單數據for圖表
+        };
+
+        this.muscleTrendList.push(model);
+
+        if (i === muscleGroup.length - 1) {
+          this.handleMuscleData = true;
+        }
+
+      }
+
+      this.muscleTrendList[i].isFocus = muscleGroup[i].isFocus;
+
+      if (this.isPreviewMode && data[1] === 'init') {
+        this.muscleTrendList[i].isFold = muscleGroup[i].isFold;
+      }
+
+    }
+
+    this.updateUrl('true');
+  }
+
+  // 切換重訓程度-kidin-1090406
+  handleproficiency (e) {
+    if (e === +e) {
+
+      switch (e) {
+        case 1:
+          this.proficiency = 'asept';
+          this.proficiencyCoefficient = 1;
+          this.level = ['1%', '100%', '200%'];
+          break;
+        case 2:
+          this.proficiency = 'metacarpus';
+          this.proficiencyCoefficient = 2;
+          this.level = ['1%', '50%', '100%'];
+          break;
+        case 4:
+          this.proficiency = 'Novice';
+          this.proficiencyCoefficient = 4;
+          this.level = ['1%', '25%', '50%'];
+          break;
+      }
+
+    } else {
+
+      switch (e.value) {
+        case 'asept':
+          this.proficiencyCoefficient = 1;
+          this.level = ['1%', '100%', '200%'];
+          break;
+        case 'metacarpus':
+          this.proficiencyCoefficient = 2;
+          this.level = ['1%', '50%', '100%'];
+          break;
+        case 'Novice':
+          this.proficiencyCoefficient = 4;
+          this.level = ['1%', '25%', '50%'];
+          break;
+      }
+
+    }
+
+    this.updateUrl('true');
+  }
+
+  // 重訓圖表收合-kidin-1090414
+  handleChartFold (idx, act) {
+    if (this.muscleTrendList[idx].hasOwnProperty('isFold')) {
+
+      if (this.muscleTrendList[idx].isFold === false || act !== undefined) {
+        this.muscleTrendList[idx].isFold = true;
+      } else {
+        this.muscleTrendList[idx].isFold = false;
+      }
+
+    }
+
+    this.updateUrl('true');
+  }
+
   // 將搜尋的類別和範圍處理過後加入query string並更新現在的url和預覽列印的url-kidin-1090205
   updateUrl (hasData) {
     let newUrl;
@@ -1549,8 +1815,29 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
             endDateString = this.reportEndTime.split('T')[0];
       let searchString;
 
-      searchString =
+      if (this.reportCategory === '3') {
+
+        let selectMuscle = '';
+        for (let i = 0; i < this.muscleTrendList.length; i++) {
+
+          if (this.muscleTrendList[i].isFocus === true) {
+
+            if (this.muscleTrendList[i].isFold === true) {
+              selectMuscle += `g${this.muscleTrendList[i].id}`;  // 收合用g表示
+            } else {
+              selectMuscle += `m${this.muscleTrendList[i].id}`;  // 展開用m表示
+            }
+
+          }
+
+        }
+
+        searchString =
+        `sport=${this.reportCategory}&startdate=${startDateString}&enddate=${endDateString}&selectPeriod=${this.selectPeriod}&selectProficiency=${this.proficiencyCoefficient}&selectMuscle=${selectMuscle}`;
+      } else {
+        searchString =
         `sport=${this.reportCategory}&startdate=${startDateString}&enddate=${endDateString}&selectPeriod=${this.selectPeriod}`;
+      }
 
       if (location.search.indexOf('?') > -1) {
         if (
@@ -1592,21 +1879,16 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
     ********/
   }
 
-  // 點擊運定項目後該類別相關資料特別顯示-kidin-1090214
-  assignCategory (category) {
-    if (category === this.selectType) {
-      this.selectType = '99';
-    } else {
-      this.selectType = category;
-    }
-  }
-
   print() {
     window.print();
   }
 
   ngOnDestroy () {
     this.showReport = false;
+
+    // 將rxjs取消訂閱避免內存洩漏-kidin-1090407
+    this.categoryRxjs.unsubscribe();
+    this.dateRxjs.unsubscribe();
   }
 
 }

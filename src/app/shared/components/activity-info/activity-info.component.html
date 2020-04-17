@@ -307,8 +307,8 @@
         </div>
         <mat-form-field class="selectList">
           <p class="selectListPrefix">{{'Dashboard.MyActivity.weightTrainingExtent' | translate}}：</p>
-          <mat-select [(value)]="Proficiency"
-            (selectionChange)="handleProficiency($event)"
+          <mat-select [(value)]="proficiency"
+            (selectionChange)="handleproficiency($event)"
           >
             <mat-option value="asept">{{'Dashboard.MyActivity.highRanker' | translate}}</mat-option>
             <mat-option value="metacarpus">{{'Dashboard.MyActivity.advanced' | translate}}</mat-option>

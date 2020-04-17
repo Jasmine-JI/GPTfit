@@ -24,7 +24,7 @@ export class ActivityOtherDetailsService {
     return this.otherInfo$.next(null);
   }
   fetchOtherDetail(sn, coachId, groupId) {
-    const token = this.utilsService.getToken(),
+    const token = this.utilsService.getToken() || '',
           forkJoinArray = [];
     if (sn && sn.length > 0) {
       // 改接7015-kidin-1090113

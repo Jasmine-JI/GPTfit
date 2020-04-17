@@ -73,7 +73,7 @@ export class MyDeviceComponent implements OnInit, OnChanges {
     const updateIdx = this.utilsService.getLocalStorageObject('updateIdx');
     this.localSN = this.utilsService.getLocalStorageObject('snNumber') || [];
     const bondStatus = this.utilsService.getLocalStorageObject('bondStatus');
-    this.token = this.utilsService.getToken();
+    this.token = this.utilsService.getToken() || '';
 
     this.isLoading = true;
     if (this.localSN && bondStatus && updateIdx) {

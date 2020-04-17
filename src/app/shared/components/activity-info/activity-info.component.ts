@@ -104,7 +104,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   iszoneChartTargetDisplay = false;
   iswattChartTargetDisplay = false;
 
-  Proficiency = 'metacarpus';  // 使用者重訓熟練度設定(預設進階者)-kidin-1081122
+  proficiency = 'metacarpus';  // 使用者重訓熟練度設定(預設進階者)-kidin-1081122
   activityInfo: any;
   fileInfo: any;
   infoDate: string;
@@ -251,7 +251,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           this.deviceImgUrl = `http://${location.hostname}/app/public_html/products${this.deviceInfo.modelImg}`;
         }
 
-        if (this.deviceInfo) {
+        if (this.classInfo) {
           this.classInfo = res['groupInfo'].info;
           this.classInfo.groupIcon =
             this.classInfo.groupIcon && this.classInfo.groupIcon.length > 0
@@ -618,9 +618,9 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // 根據重訓熟練度重繪肌肉地圖-kidin-1081114
-  handleProficiency(e) {
-    this.Proficiency = e.value;
-    this.activityService.saveProficiency(this.Proficiency);
+  handleproficiency(e) {
+    this.proficiency = e.value;
+    this.activityService.saveproficiency(this.proficiency);
     this.muscleMap.initMuscleMap();
     this.muscleTrainList.initMuscleList();
   }
@@ -718,7 +718,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         this.activityName = res.fileInfo.dispName;
         this.activityNameBeforeState = res.fileInfo.dispName;
         if (this.activityInfo.type === '3') {
-          this.saveWeightTrainingData(res.activityLapLayer);
+          this.saveWeightTrainingData(res.activityInfoLayer);
         }
         if (res.resultCode === 401 || res.resultCode === 402) {
           this.isShowNoRight = true;
@@ -820,7 +820,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // 將user體重另外存取以提供給肌肉地圖使用-kidin-1081121
-  saveWeightTrainingData(lapData) {
+  saveWeightTrainingData(data) {
       const body = {
         token: this.token,
         avatarType: 2,
@@ -832,8 +832,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
             const weight = res.info.weight;
             this.activityService.saveUserWeight(weight);
           }
-          this.activityService.saveLapsData(lapData);
-          this.activityService.saveProficiency(this.Proficiency);
+          this.activityService.saveLapsData(data);
+          this.activityService.saveproficiency(this.proficiency);
           this.dataLoading = false;
         });
   }

@@ -247,6 +247,58 @@
 
 // ------------------------------
 
+.groupEditSelect {
+
+  .mat-form-field-wrapper {
+    padding-bottom: 0 !important;
+
+    .mat-form-field-flex {
+
+      .mat-form-field-infix {
+        display: flex !important;
+        flex-direction: row !important;
+        border: 0px;
+        padding-top: 2px !important;
+      }
+
+    }
+
+  }
+
+  .mat-form-field-underline {
+    top: 20px !important;
+  }
+
+}
+
+.editManageInput {
+  width: 50px;
+
+  input {
+    text-align: center;
+  }
+
+  .mat-form-field-wrapper {
+    padding-bottom: 0 !important;
+
+    .mat-form-field-flex {
+
+      .mat-form-field-infix {
+        display: flex !important;
+        flex-direction: row !important;
+        border: 0px;
+        padding-top: 2px !important;
+      }
+
+    }
+
+    .mat-form-field-underline {
+      top: 20px !important;
+    }
+
+  }
+
+}
 
 @media(max-width: 767px) {
   .group-info.row {

@@ -1,0 +1,129 @@
+$listBorderColor: rgb(229, 229, 229);
+
+.muscleMap {
+  width: 55%;
+}
+
+.musclePartList {
+  width: 45%;
+  max-height: 500px;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.muscleGroupList {
+  align-items: center;
+  justify-content: center;
+  width: 47%;
+  border: 1px solid grey;
+  border-radius: 5px;
+  padding: 2px 0px;
+  min-width: 120px;
+  max-height: 160px;
+  margin: 2px 0px;
+  cursor: pointer;
+
+  i {
+    font-size: 40px;
+  }
+}
+
+.muscleMapSvg {
+  height: 80px;
+}
+
+.musclePartInfo {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  margin-left: 10px;
+}
+
+.muscleData {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-left: 5px;
+}
+
+.muscleDataText {
+  margin: 0px;
+  text-align: end;
+}
+
+@media(max-width: 1200px) {
+  .musclePartList {
+    max-height: 415px;
+  }
+}
+
+@media(max-width: 940px) {
+
+  .muscleMap {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .muscleMapDistribution {
+    width: 60%;
+    margin: 0 auto;
+  }
+
+  .musclePartList {
+    width: 60%;
+    margin: 0 auto;
+  }
+}
+
+@media(max-width: 840px) {
+  .muscleMapDistribution {
+    width: 70%;
+  }
+
+  .musclePartList {
+    width: 70%;
+  }
+}
+
+@media(max-width: 740px) {
+  .muscleMapDistribution {
+    width: 80%;
+  }
+
+  .musclePartList {
+    width: 80%;
+  }
+}
+
+@media(max-width: 640px) {
+  .muscleMapDistribution {
+    width: 90%;
+  }
+
+  .musclePartList {
+    width: 90%;
+  }
+}
+
+@media(max-width: 540px) {
+  .muscleMapDistribution {
+    width: 100%;
+  }
+
+  .musclePartList {
+    width: 100%;
+  }
+
+}
+
+@media print {
+  .media-940-Col {
+    flex-direction: row;
+  }
+
+  .musclePartList {
+    width: 100%;
+  }
+}

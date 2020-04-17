@@ -181,6 +181,21 @@ li {
 
 /* --------------- */
 
+.muscleMatFormParent .mat-form-field-infix {
+  display: flex !important;
+  flex-direction: row !important;
+  border: 0px;
+  padding-top: 2px !important;
+}
+
+.muscleMatFormParent .mat-form-field-appearance-legacy .mat-form-field-wrapper {
+  padding-bottom: 0 !important;
+}
+
+.muscleMatFormParent .mat-form-field-appearance-legacy .mat-form-field-wrapper .mat-form-field-underline {
+  top: 20px !important;
+}
+
 @media (max-width: 940px){
   .media-940-Col {
     display: flex;
