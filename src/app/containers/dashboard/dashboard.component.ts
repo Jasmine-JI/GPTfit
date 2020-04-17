@@ -147,7 +147,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
         const { isInitial } = res;
         if (!isInitial) {
           this.isLoading = true;
-          const token = this.utilsService.getToken();
+          const token = this.utilsService.getToken() || '';
           const body = {
             token,
             avatarType: 2,
@@ -307,7 +307,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
     }
 
     // 使用者登入就存取身體資訊供各種圖表使用-kidin-1081212
-    const token = this.utilsService.getToken();
+    const token = this.utilsService.getToken() || '';
     const body = {
       token: token,
       avatarType: 2,

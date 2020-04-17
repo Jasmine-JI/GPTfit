@@ -76,7 +76,7 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
 
   // 初始化highChart-kidin-1081211
   initInfoHighChart () {
-    const sportPercentageDataset = []
+    const sportPercentageDataset = [];
     Highcharts.charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
     for (let i = 0; i < this.data.length; i++) {
       if (this.data[i] !== 0) {
@@ -143,7 +143,7 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
               });
             } else {
               sportPercentageDataset.push({
-                name: this.translateService.instant('Dashboard.SportReport.aerobic'), y: this.data[4], color: '#72e8b0'
+                name: this.translateService.instant('Dashboard.SportReport.boating'), y: this.data[4], color: '#72e8b0'
               });
             }
           break;
@@ -155,18 +155,9 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
           ringChartDiv = this.container.nativeElement;
 
     // 根據圖表清單依序將圖表顯示出來-kidin-1081217
-    setTimeout(() => {
-      chart(ringChartDiv, ringChartOptions);
-    }, 0);
+    chart(ringChartDiv, ringChartOptions);
   }
 
-  ngOnDestroy () {
-    // 將之前生成的highchart卸除避免新生成的highchart無法顯示-kidin-1081219
-    Highcharts.charts.forEach((_highChart, idx) => {
-      if (_highChart !== undefined) {
-        _highChart.destroy();
-      }
-    });
-  }
+  ngOnDestroy () {}
 
 }

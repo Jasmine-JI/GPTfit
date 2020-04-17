@@ -44,6 +44,8 @@ import { BodyConstituteSvgComponent } from './chart/body-constitute-svg/body-con
 import { TuiCalenderComponent } from './tui-calender/tui-calender.component';
 import { HoverHintComponent } from './hover-hint/hover-hint.component';
 import { DateRangePickerComponent } from './date-range-picker/date-range-picker.component';
+import { MuscleMapChartComponent } from './chart/muscle-map/muscle-map-chart/muscle-map-chart.component';
+import { MuscleSvgIconComponent } from './chart/muscle-map/muscle-svg-icon/muscle-svg-icon.component';
 
 @NgModule({
   imports: [
@@ -93,7 +95,9 @@ import { DateRangePickerComponent } from './date-range-picker/date-range-picker.
     BodyConstituteSvgComponent,
     TuiCalenderComponent,
     HoverHintComponent,
-    DateRangePickerComponent
+    DateRangePickerComponent,
+    MuscleMapChartComponent,
+    MuscleSvgIconComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -127,7 +131,9 @@ import { DateRangePickerComponent } from './date-range-picker/date-range-picker.
     BodyConstituteSvgComponent,
     TuiCalenderComponent,
     HoverHintComponent,
-    DateRangePickerComponent
+    DateRangePickerComponent,
+    MuscleMapChartComponent,
+    MuscleSvgIconComponent
   ]
 })
 export class SharedComponentsModule {}

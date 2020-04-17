@@ -112,6 +112,7 @@
       <mat-form-field style="min-width: 275px;">
         <input matInput name="birthday" [matDatepicker]="picker" placeholder=""
           (dateChange)="logStartDateChange($event)"
+          (keydown)="handleKeyDown($event)"
           formControlName="birthday"
           readonly
         >

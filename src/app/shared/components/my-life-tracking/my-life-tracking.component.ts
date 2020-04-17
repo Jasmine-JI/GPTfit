@@ -106,7 +106,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
     colorSet: ['#6fd205', '#7f7f7f', '#eb5293']
   };
 
-  HRData = {
+  HRData: any = {
     maxHRList: [],
     restHRList: [],
     date: [],
@@ -160,7 +160,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    this.token = this.utilsService.getToken();
+    this.token = this.utilsService.getToken() || '';
 
     // 確認是否為預覽列印頁面-kidin-1090215
     if (location.search.indexOf('ipm=s') > -1) {
@@ -175,15 +175,14 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
       location.search.indexOf('selectPeriod=') > -1
     ) {
       this.queryStringShowData();
-      this.getUserId();
+      this.getUserId('url');
     } else {
       this.reportEndTime = moment().format(`YYYY-MM-DDT23:59:59${this.timeZoneStr}`);
       this.reportStartTime = moment()
         .subtract(6, 'days')
         .format(`YYYY-MM-DDT00:00:00${this.timeZoneStr}`);
 
-      this.generateTimePeriod();
-      this.getUserId();
+      this.getUserId('click');
     }
 
   }
@@ -252,7 +251,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
   }
 
   // 取得userId-kidin-1090224
-  getUserId () {
+  getUserId (action) {
     const hashUserId = this.route.snapshot.paramMap.get('userId');
     if (hashUserId === null) {
       const userBody = {
@@ -262,12 +261,24 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
       this.userProfileService.getUserProfile(userBody).subscribe(res => {
         this.fileInfo = res.info;
         this.userId = this.fileInfo.nameId;
-        this.createReport();
+
+        if (action === 'click') {
+          this.generateTimePeriod();
+        } else {
+          this.createReport();
+        }
+
       });
     } else {
       this.userId = this.hashIdService.handleUserIdDecode(hashUserId);
-      this.createReport();
+
+      if (action === 'click') {
+          this.generateTimePeriod();
+        } else {
+          this.createReport();
+        }
     }
+
   }
 
   // 選擇日期長度-kidin-1090224
@@ -470,7 +481,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
     this.createReport();
   }
 
-  // 建立運動報告-kidin-1090117
+  // 建立報告-kidin-1090117
   createReport () {
     this.isLoading = true;
 
@@ -675,7 +686,18 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
               this.stepData.targetStepList,
               [],
               [],
+              'add',
               'step'
+            );
+
+            this.HRData = this.filterRepeatData(
+              this.HRData.date,
+              this.HRData.restHRList,
+              this.HRData.maxHRList,
+              [],
+              [],
+              'avg',
+              'hr'
             );
 
             this.sleepData = this.filterRepeatData(
@@ -684,6 +706,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
               this.sleepData.deepSleepList,
               this.sleepData.lightSleepList,
               this.sleepData.awakeList,
+              'avg',
               'sleep'
             );
 
@@ -693,6 +716,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
               [],
               [],
               [],
+              'add',
               'fitTime'
             );
 
@@ -995,7 +1019,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
   }
 
   // 過濾重複日期的資料，並只抓取重複有效值的最後一筆-kidin-1090304
-  filterRepeatData (date, dataA, dataB, dataC, dataD, type) {
+  filterRepeatData (date, dataA, dataB, dataC, dataD, act, type) {
     const resDate = [],
           resDataA = [],
           resDataB = [],
@@ -1021,12 +1045,25 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
         }
 
       } else if (date[i] !== date[i + 1] && sameDay !== null) {
-        resDate.push(sameDay);
-        resDataA.push(sameDayDataA);
-        resDataB.push(sameDayDataB);
-        resDataC.push(sameDayDataC);
-        resDataD.push(sameDayDataD);
 
+        switch (act) {
+          case 'add':
+            resDate.push(sameDay);
+            resDataA.push(sameDayDataA + dataA[i]);
+            resDataB.push(sameDayDataB + dataB[i]);
+            resDataC.push(sameDayDataC + dataC[i]);
+            resDataD.push(sameDayDataD + dataD[i]);
+            break;
+          case 'avg':
+            resDate.push(sameDay);
+            resDataA.push((sameDayDataA + dataA[i]) / 2);
+            resDataB.push((sameDayDataB + dataB[i]) / 2);
+            resDataC.push((sameDayDataC + dataC[i]) / 2);
+            resDataD.push((sameDayDataD + dataD[i]) / 2);
+            break;
+        }
+
+        sameDay = null;
         if (type === 'step' && sameDayDataA > sameDayDataB) {
           reachTargetTimes++;
         }
@@ -1038,10 +1075,10 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
         sameDayDataD = null;
       } else if (date[i] === date[i + 1]) {
         sameDay = date[i];
-        sameDayDataA = dataA[i];
-        sameDayDataB = dataB[i];
-        sameDayDataC = dataC[i];
-        sameDayDataD = dataD[i];
+        sameDayDataA += dataA[i];
+        sameDayDataB += dataB[i];
+        sameDayDataC += dataC[i];
+        sameDayDataD += dataD[i];
       }
 
     }
@@ -1055,6 +1092,13 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
           targetStepList: resDataB,
           date: resDate,
           colorSet: ['#6fd205', '#7f7f7f', '#eb5293']
+        };
+      case 'hr':
+        return {
+          restHRList: resDataA,
+          maxHRList: resDataB,
+          date: resDate,
+          colorSet: ['#e23333', '#31df93', '#ababab']
         };
       case 'sleep':
         if (this.sleepData.deepSleepList[0] !== undefined) {

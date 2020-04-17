@@ -790,6 +790,8 @@
     "thisWeek": "本周",
     "lastWeek": "上周",
     "thisMonth": "本月",
-    "lastMonth": "上個月"
+    "lastMonth": "上個月",
+    "armMuscles": "手臂肌群",
+    "loading": "载入中..."
   }
 }

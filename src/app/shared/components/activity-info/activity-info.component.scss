@@ -19,6 +19,15 @@
   border: 0px;
   padding-top: 2px !important;
 }
+
+.matFormParent .mat-form-field-appearance-legacy .mat-form-field-wrapper {
+  padding-bottom: 0 !important;
+}
+
+.matFormParent .mat-form-field-appearance-legacy .mat-form-field-wrapper .mat-form-field-underline {
+  top: 20px !important;
+}
+
 .mat-form-field {
   font-size: 1rem !important;
 }
@@ -66,6 +75,7 @@
   height: 50%;
   max-height: 500px;
   overflow-y: scroll;
+  cursor: pointer;
 }
 .muscleBodySvg {
   width:50%;

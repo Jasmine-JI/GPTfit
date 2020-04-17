@@ -84,9 +84,9 @@ class Option {
 export class ActivityService {
   private userWeight = 70;  // 儲存使用者體重-kidin-1081121
   private focusMusclePart = '';  // 儲存重訓資料-kidin-1081121
-  private heavyTrainDateState = [];  // 備份重訓資料-kidin-1081121
+  private heavyTrainDateState: any = [];  // 備份重訓資料-kidin-1081121
   private muscleListColor = []; // 儲存肌肉清單顏色列表-kidin-1081128
-  private Proficiency = 'asept';  // 儲存重訓熟練度-kidin-1081121
+  private proficiency = 'asept';  // 儲存重訓熟練度-kidin-1081121
 
   constructor(private http: HttpClient, private utils: UtilsService) {}
   fetchTestData() {
@@ -886,8 +886,8 @@ export class ActivityService {
   }
 
   // 儲存重訓熟練度-kidin-1081121
-  saveProficiency(Proficiency) {
-    this.Proficiency = Proficiency;
+  saveproficiency(proficiency) {
+    this.proficiency = proficiency;
   }
 
   // 針對使用者點選的肌肉清單篩選資料-kidin-1081128
@@ -908,11 +908,15 @@ export class ActivityService {
     return this.muscleListColor;
   }
 
+  getUserWeight () {
+    return this.userWeight;
+  }
+
   getAllData() {
       const heavyTrainingData = {
         userWeight: this.userWeight,
-        proficiency: this.Proficiency,
-        lapDatas: this.heavyTrainDateState,
+        proficiency: this.proficiency,
+        infoDatas: this.heavyTrainDateState,
         focusMusclePart: this.focusMusclePart
       };
       return heavyTrainingData;

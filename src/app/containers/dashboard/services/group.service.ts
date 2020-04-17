@@ -81,6 +81,10 @@ export class GroupService {
     return this.http.get<any>(API_SERVER + 'user/userAvartar', { params });
   }
 
+  editGroupManage (body) {
+    return this.http.post<any>('/api/v1/center/editCommerceInfo', body);
+  }
+
   getImgUpdatedStatus (): Observable<string> {
     return this.updatedGroupImg$;
   }

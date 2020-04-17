@@ -790,6 +790,8 @@
     "thisWeek": "This week",
     "lastWeek": "Last week",
     "thisMonth": "This Month",
-    "lastMonth": "Last Month"
+    "lastMonth": "Last Month",
+    "armMuscles": "Arm Muscles",
+    "loading": "Loading..."
   }
 }

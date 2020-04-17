@@ -83,19 +83,22 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
     private translate: TranslateService,
   ) { }
 
-  ngOnInit () { }
+  ngOnInit () {}
 
   ngOnChanges () {
-    if (this.perHrZoneData) {
-      if (this.perHrZoneData.length === 0) {
-        this.noData = true;
-      } else {
-        this.noData = false;
+
+    setTimeout(() => {
+      if (this.perHrZoneData) {
+        if (this.perHrZoneData.length === 0) {
+          this.noData = true;
+        } else {
+          this.noData = false;
+        }
+        this.initHRChart();
+      } else if (this.data) {
+        this.initSleepChart();
       }
-      this.initHRChart();
-    } else if (this.data) {
-      this.initSleepChart();
-    }
+    }, 0);
 
   }
 
@@ -227,9 +230,7 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
     };
 
     // 根據圖表清單依序將圖表顯示出來-kidin-1081217
-    setTimeout(() => {
-      chart(HRTrendChartDiv, HRTrendChartOptions);
-    }, 0);
+    chart(HRTrendChartDiv, HRTrendChartOptions);
 
   }
 
@@ -401,9 +402,7 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
     };
 
     // 根據圖表清單依序將圖表顯示出來-kidin-1081217
-    setTimeout(() => {
-      chart(chartDiv, chartOptions);
-    }, 0);
+    chart(chartDiv, chartOptions);
   }
 
   // 根據搜尋期間，列出日期清單供圖表使用-kidin-1090220
@@ -442,13 +441,6 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
 
   }
 
-  ngOnDestroy () {
-    // 將之前生成的highchart卸除避免新生成的highchart無法顯示-kidin-1081219
-    Highcharts.charts.forEach((_highChart, idx) => {
-      if (_highChart !== undefined) {
-        _highChart.destroy();
-      }
-    });
-  }
+  ngOnDestroy () {}
 
 }
