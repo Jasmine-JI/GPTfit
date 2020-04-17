@@ -76,6 +76,8 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
   @Input() sportType: string;
   @Input() chartName: string;
   @Input() searchDate: Array<number>;
+  @Input() userWeight: number;
+  @Input() proficiencyCoefficient: number;
 
   @ViewChild('container')
   container: ElementRef;
@@ -84,7 +86,8 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
     private translate: TranslateService
   ) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+  }
 
   ngOnChanges () {
     this.initChart();
@@ -242,37 +245,88 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
           }
         }
         break;
+      case 'Muscle':
+        const saturation = '100%',  // 主訓練部位色彩飽和度
+              Brightness = '70%',  // 主訓練部位色彩明亮度
+              transparency = 1;  // 主訓練部位色彩透明度
+
+        this.dataLength = this.data[0].length;
+
+        for (let i = 0; i < this.dataLength; i++) {
+
+          if (this.data[1][i] > this.highestPoint) {
+            this.highestPoint = this.data[1][i];
+          }
+
+          if (this.data[2][i] !== null && this.data[2][i] < this.lowestPoint) {
+            this.lowestPoint = this.data[2][i];
+          }
+
+          // 計算當天該部位訓練程度-kidin-1090406
+          let trainingLevel = 200 - ((this.data[1][i]) / this.userWeight) * 100 * this.proficiencyCoefficient;
+          if (trainingLevel < 0) {
+            trainingLevel = 0;
+          }
+
+          chartData.push(
+            {
+              x: this.data[0][i],
+              y: this.data[1][i],
+              low: this.data[2][i],
+              color: `hsla(${trainingLevel}, ${saturation}, ${Brightness}, ${transparency})`
+            }
+          );
+
+        }
+
+        break;
     }
 
-    if (this.chartName === 'Step') {
-      trendDataset = [
-        {
-          name: [this.translate.instant('other.StepCount'), this.translate.instant('other.targetStep')],
-          data: chartData,
-          showInLegend: false
-        }
-      ];
-    } else {
-      trendDataset = [
-        {
-          name: this.chartName,
-          data: chartData,
-          showInLegend: false,
-          color: {
-            linearGradient: {
-              x1: 0,
-              x2: 0,
-              y1: 0,
-              y2: 1
-            },
-            stops: [
-              [0, this.data.colorSet[2]],
-              [0.5, this.data.colorSet[1]],
-              [1, this.data.colorSet[0]]
-            ]
+    switch (this.chartName) {
+      case 'Step':
+        trendDataset = [
+          {
+            name: [this.translate.instant('other.StepCount'), this.translate.instant('other.targetStep')],
+            data: chartData,
+            showInLegend: false
           }
-        }
-      ];
+        ];
+
+        break;
+      case 'Muscle':
+
+        trendDataset = [
+          {
+            name: this.chartName,
+            data: chartData,
+            showInLegend: false
+          }
+        ];
+
+        break;
+      default:
+        trendDataset = [
+          {
+            name: this.chartName,
+            data: chartData,
+            showInLegend: false,
+            color: {
+              linearGradient: {
+                x1: 0,
+                x2: 0,
+                y1: 0,
+                y2: 1
+              },
+              stops: [
+                [0, this.data.colorSet[2]],
+                [0.5, this.data.colorSet[1]],
+                [1, this.data.colorSet[0]]
+              ]
+            }
+          }
+        ];
+
+        break;
     }
 
 
@@ -439,6 +493,27 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         trendChartOptions['plotOptions'].series['pointWidth'] = null;
 
         break;
+      case 'Muscle':
+        trendChartOptions['yAxis'].max = this.highestPoint + 1;
+        trendChartOptions['yAxis'].min = this.lowestPoint - 1;
+
+        // 設定浮動提示框顯示格式-kidin-1090204
+        trendChartOptions['tooltip'] = {
+          formatter: function () {
+            if (this.series.xAxis.tickInterval === 30 * 24 * 4600 * 1000) {
+              return `${moment(this.x).format('YYYY/MM/DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY/MM/DD')}
+                <br/>1RM: ${this.point.y.toFixed(1)}
+                <br/>Avg Rep: ${this.point.low.toFixed(1)}`;
+            } else {
+              return `${moment(this.x).format('YYYY/MM/DD')}
+                <br/>1RM: ${this.point.y.toFixed(1)}
+                <br/>Avg Rep: ${this.point.low.toFixed(1)}`;
+            }
+
+          }
+
+        };
+        break;
     }
 
     // 設定圖表x軸時間間距-kidin-1090204
@@ -451,9 +526,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
     }
 
     // 根據圖表清單依序將圖表顯示出來-kidin-1081217
-    setTimeout(() => {
-      chart(trendChartDiv, trendChartOptions);
-    }, 0);
+    chart(trendChartDiv, trendChartOptions);
 
   }
 
@@ -494,12 +567,6 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
   }
 
   ngOnDestroy () {
-    // 將之前生成的highchart卸除避免新生成的highchart無法顯示-kidin-1081219
-    Highcharts.charts.forEach((_highChart, idx) => {
-      if (_highChart !== undefined) {
-        _highChart.destroy();
-      }
-    });
   }
 
 }

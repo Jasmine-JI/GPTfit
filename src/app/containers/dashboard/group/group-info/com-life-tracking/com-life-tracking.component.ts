@@ -169,11 +169,12 @@ export class ComLifeTrackingComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.token = this.utilsService.getToken();
+    this.token = this.utilsService.getToken() || '';
 
-    // 確認是否為預覽列印頁面-kidin-1090215
+    // 確認是否為預覽列印頁面-kidin-1090205
     if (location.search.indexOf('ipm=s') > -1) {
       this.isPreviewMode = true;
+      this.getIdListStart();
     }
 
     this.personalData.sort = this.sortTable;

@@ -7,8 +7,10 @@ import {
 } from '@angular/core';
 import { ViewEncapsulation } from '@angular/core';
 import * as moment from 'moment';
+import * as _Highcharts from 'highcharts';
 import { ReportService } from '../../services/report.service';
 
+const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 @Component({
   selector: 'app-sport-report',
@@ -342,9 +344,17 @@ export class SportReportComponent implements OnInit, OnDestroy {
     this.showPrivacyUi.emit(e);
   }
 
-  // 頁面卸除時將所選類別改回全部類型(Bug 1149)，並將url reset避免污染其他頁面-kidin-1090325
   ngOnDestroy () {
+    // 頁面卸除時將所選類別改回全部類型(Bug 1149)，並將url reset避免污染其他頁面-kidin-1090325
     this.reportService.setReportCategory('99');
     window.history.pushState({path: location.pathname}, '', location.pathname);
+
+    // 將之前生成的highchart卸除避免新生成的highchart無法顯示-kidin-1081219
+    Highcharts.charts.forEach((_highChart, idx) => {
+      if (_highChart !== undefined) {
+        _highChart.destroy();
+      }
+    });
+
   }
 }

@@ -35,4 +35,12 @@ export class FormTextComponent implements OnInit {
     const value = event.target.value;
     this.onChange.emit(value);
   }
+
+  // 取消按enter鍵(Bug 1104)-kidin-1090415
+  handleKeyDown (e) {
+    if (e.key === 'Enter') {
+      return false;
+    }
+  }
+
 }

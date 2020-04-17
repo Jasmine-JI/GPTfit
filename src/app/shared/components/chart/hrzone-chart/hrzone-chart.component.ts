@@ -245,13 +245,6 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
 
   }
 
-  ngOnDestroy () {
-    // 將之前生成的highchart卸除避免新生成的highchart無法顯示-kidin-1081219
-    Highcharts.charts.forEach((_highChart, idx) => {
-      if (_highChart !== undefined) {
-        _highChart.destroy();
-      }
-    });
-  }
+  ngOnDestroy () {}
 
 }

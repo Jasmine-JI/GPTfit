@@ -77,7 +77,7 @@ export class ProductInfoComponent implements OnInit {
     this.progressRef = this.progress.ref();
     this.progressRef.start();
     this.isLoading = true;
-    this.token = this.utilsService.getToken();
+    this.token = this.utilsService.getToken() || '';
     const body = {
       token: this.token,
       myEquipmentSN: this.deviceSN

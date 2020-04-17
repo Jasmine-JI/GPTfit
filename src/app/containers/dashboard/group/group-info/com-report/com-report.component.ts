@@ -3,6 +3,7 @@ import { MatTableDataSource, MatSort, Sort } from '@angular/material';
 
 import SimpleLinearRegression from 'ml-regression-simple-linear';
 import * as moment from 'moment';
+import * as _Highcharts from 'highcharts';
 import { first } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 
@@ -12,6 +13,8 @@ import { UtilsService } from '@shared/services/utils.service';
 import { HashIdService } from '@shared/services/hash-id.service';
 import { ReportService } from '../../../../../shared/services/report.service';
 import { GroupService } from '../../../services/group.service';
+
+const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 @Component({
   selector: 'app-com-report',
@@ -140,18 +143,19 @@ export class ComReportComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.token = this.utilsService.getToken();
-
-    // 確認是否為預覽列印頁面-kidin-1090205
-    if (location.search.indexOf('ipm=s') > -1) {
-      this.isPreviewMode = true;
-    }
+    this.token = this.utilsService.getToken() || '';
 
     // 使用rxjs訂閱運動類別使運動類別更改時可以即時切換-kidin-1090121
     this.groupService.getreportCategory().pipe(first()).subscribe(res => {
       this.reportCategory = res;
       this.loadCategoryData(res);
     });
+
+    // 確認是否為預覽列印頁面-kidin-1090205
+    if (location.search.indexOf('ipm=s') > -1) {
+      this.isPreviewMode = true;
+      this.getIdListStart();
+    }
 
     this.personalData.sort = this.sortTable;
 
@@ -339,8 +343,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
       type: this.reportRangeType,
       targetUserId: groupIdList,
       filterStartTime: this.selectDate.startDate,
-      filterEndTime: this.selectDate.endDate,
-      improveFormat: '2'
+      filterEndTime: this.selectDate.endDate
     };
 
     const summaryData = [];
@@ -1638,10 +1641,10 @@ export class ComReportComponent implements OnInit, OnDestroy {
     if (data && data.length !== 0) {
 
       let totalActivityNum = 0,
-            totalActivityTime = 0,
-            totalCalories = 0,
-            recordStartTime,
-            idx = 1;
+          totalActivityTime = 0,
+          totalCalories = 0,
+          recordStartTime,
+          idx = 1;
 
       const typeCount = [
               {type: 'run', count: 0},
@@ -2045,6 +2048,12 @@ export class ComReportComponent implements OnInit, OnDestroy {
   ngOnDestroy () {
     this.showReport = false;
 
+    // 將之前生成的highchart卸除避免新生成的highchart無法顯示-kidin-1081219
+    Highcharts.charts.forEach((_highChart, idx) => {
+      if (_highChart !== undefined) {
+        _highChart.destroy();
+      }
+    });
   }
 
 }

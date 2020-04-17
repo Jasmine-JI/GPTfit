@@ -170,9 +170,7 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
     };
 
     // 根據圖表清單依序將圖表顯示出來-kidin-1081217
-    setTimeout(() => {
-      chart(trendChartDiv, trendChartOptions);
-    }, 0);
+    chart(trendChartDiv, trendChartOptions);
 
   }
 
@@ -211,13 +209,6 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
     }
   }
 
-  ngOnDestroy () {
-    // 將之前生成的highchart卸除避免新生成的highchart無法顯示-kidin-1081219
-    Highcharts.charts.forEach((_highChart, idx) => {
-      if (_highChart !== undefined) {
-        _highChart.destroy();
-      }
-    });
-  }
+  ngOnDestroy () {}
 
 }

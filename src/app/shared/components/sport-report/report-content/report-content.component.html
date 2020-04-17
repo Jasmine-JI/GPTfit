@@ -319,16 +319,32 @@
     </div>
   </div>
   <div class="flexCol" *ngIf="reportCategory === '3'">
-    <span class="ala-dashboard-title activity-title">{{'other.weightTrainingEffectiveness' | translate}}</span>
+    <div class="activity-title muscleMatFormParent">
+      <span class="ala-dashboard-title">
+        {{'other.weightTrainingEffectiveness' | translate}}
+      </span>
+      <mat-form-field class="selectList">
+        <p class="selectListPrefix">{{'Dashboard.MyActivity.weightTrainingExtent' | translate}}：</p>
+        <mat-select [(value)]="proficiency"
+          (selectionChange)="handleproficiency($event)"
+        >
+          <mat-option value="asept">{{'Dashboard.MyActivity.highRanker' | translate}}</mat-option>
+          <mat-option value="metacarpus">{{'Dashboard.MyActivity.advanced' | translate}}</mat-option>
+          <mat-option value="Novice">{{'Dashboard.MyActivity.beginner' | translate}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
     <div>
-      <p class="areaDescription">
-        {{'other.muscleColorIllustration' | translate}}
-      </p>
-      <div class="HRZone">
-        <div class="chart">
-          chart target
-        </div>
-      </div>
+      <app-muscle-map-chart
+        [description]="description"
+        [data]="trainingPart"
+        [proficiencyCoefficient]="proficiencyCoefficient"
+        [level]="level"
+        [page]="'report'"
+        [userWeight]="userWeight"
+        [timeStamp]="chartTimeStamp"
+        (clickData)="handleClickMuscleList($event)"
+      ></app-muscle-map-chart>
     </div>
   </div>
   <div class="flexCol" *ngIf="reportCategory === '3'">
@@ -337,9 +353,60 @@
       <p class="areaDescription">
         {{'other.trainingTrendDescription' | translate}}
       </p>
-      <div class="HRZone">
-        <div class="chart">
-          chart target
+      <div *ngFor="let list of muscleTrendList; let idx = index;">
+        <div class="flexCol" *ngIf="list.isFocus">
+          <div class="flexRow muscleChartList">
+            <div class="flexRow">
+              <div class="flexCol" style="align-items: center;">
+                <app-muscle-svg-icon
+                  style="width: 80px;"
+                  [muscleGroupId]="list.id"
+                ></app-muscle-svg-icon>
+                <span>{{ list.name }}</span>
+              </div>
+              <i
+                class="icon-svg_web-icon_p1_006-unfold foldIcon"
+                *ngIf="list.isFold"
+                (click)="handleChartFold(idx)"
+              ></i>
+              <i
+                class="icon-svg_web-icon_p1_007-fold foldIcon"
+                *ngIf="!list.isFold"
+                (click)="handleChartFold(idx)"
+              ></i>
+            </div>
+            <app-discolor-column-chart
+              class="muscleTrendChart"
+              [data]="list.muscleGroupData"
+              [dateRange]="dataDateRange"
+              [sportType]="reportCategory"
+              [proficiencyCoefficient]="proficiencyCoefficient"
+              [userWeight]="userWeight"
+              [chartName]="'Muscle'"
+            ></app-discolor-column-chart>
+          </div>
+          <div  *ngIf="!list.isFold">
+            <div *ngFor="let part of list.trainList;">
+              <div class="flexRow muscleChartList">
+                <div class="flexCol" style="align-items: center;">
+                  <app-muscle-svg-icon
+                    style="width: 80px; margin-left: 20px;"
+                    [muscleCode]="[part[0]]"
+                  ></app-muscle-svg-icon>
+                  <span>{{ part[0] | muscleName }}</span>
+                </div>
+                <app-discolor-column-chart
+                  class="muscleTrendChart"
+                  [data]="part[1]"
+                  [dateRange]="dataDateRange"
+                  [sportType]="reportCategory"
+                  [proficiencyCoefficient]="proficiencyCoefficient"
+                  [userWeight]="userWeight"
+                  [chartName]="'Muscle'"
+                ></app-discolor-column-chart>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
