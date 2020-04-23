@@ -623,13 +623,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
                 step.totalDistance += lifeTrackingData[j].totalDistanceMeters;
                 step.totalLength++;
 
-                // 周報告目標步數不能小於35000-kidin-1090219
-                if (this.dataDateRange === 'week' && lifeTrackingData[j].targetStep < 5000 * 7) {
-                  this.stepData.targetStepList.unshift(35000);
-                } else {
-                  this.stepData.targetStepList.unshift(lifeTrackingData[j].targetStep);
-                }
-
+                this.stepData.targetStepList.unshift(lifeTrackingData[j].targetStep);
                 this.stepData.stepList.unshift(lifeTrackingData[j].totalStep);
                 this.stepData.date.unshift(moment(lifeTrackingData[j].startTime.split('T')[0], 'YYYY-MM-DD').valueOf());
 
