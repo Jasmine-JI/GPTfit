@@ -310,7 +310,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       if (
         !this.isLoadedOtherDetail &&
-        ((this.fileInfo.equipmentSN && this.fileInfo.equipmentSN.length > 0)
+        ((this.fileInfo.equipmentSN && this.fileInfo.equipmentSN.length > 0 && this.fileInfo.equipmentSN[0] !== '')
         || coachId || groupId)
       ) {
         const [sn] = this.fileInfo.equipmentSN;

@@ -46,6 +46,9 @@
       <div class="group-edit-bar">
         <span class="group-handle-name">
           {{ 'Dashboard.Group.GroupInfo.groupInfo' | translate}}
+          <span style="color: red;" *ngIf="commerceInfo?.commerceStatus === '2' && !editManageMode">
+            -({{ 'Dashboard.BrandManagement.outOfService' | translate}})
+          </span>
         </span>
         <div class="rwd-btn_action">
           <button class="icon-btn" style="margin-right: 15px;color:#919191"

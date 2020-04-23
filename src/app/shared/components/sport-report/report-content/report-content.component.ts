@@ -1535,23 +1535,42 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
           let sameDateData = [];  // 處理週報告跨年會有重複週別的問題
           for (let i = 0; i < this.chartTimeStamp.length; i++) {
 
-            if (idx === 0
-                || idx >= data.zoneZero.length
-                || (data.zoneZero[idx + 1] && data.zoneZero[idx][0] !== data.zoneZero[idx + 1][0])
+            if (sameDateData.length !== 0 && this.chartTimeStamp[i] === data.zoneZero[idx][0]) {
+              newData.zoneZero.push([this.chartTimeStamp[i], (sameDateData[0] + data.zoneZero[idx][1]) / 2]);
+              newData.zoneOne.push([this.chartTimeStamp[i], (sameDateData[1] + data.zoneOne[idx][1]) / 2]);
+              newData.zoneTwo.push([this.chartTimeStamp[i], (sameDateData[2] + data.zoneTwo[idx][1]) / 2]);
+              newData.zoneThree.push([this.chartTimeStamp[i], (sameDateData[3] + data.zoneThree[idx][1]) / 2]);
+              newData.zoneFour.push([this.chartTimeStamp[i], (sameDateData[4] + data.zoneFour[idx][1]) / 2]);
+              newData.zoneFive.push([this.chartTimeStamp[i], (sameDateData[5] + data.zoneFive[idx][1]) / 2]);
+
+              sameDateData.length = 0;
+              idx++;
+            } else if (data.zoneZero[idx + 1] && data.zoneZero[idx][0] === data.zoneZero[idx + 1][0]) {
+              sameDateData = [
+                data.zoneZero[idx][1],
+                data.zoneOne[idx][1],
+                data.zoneTwo[idx][1],
+                data.zoneThree[idx][1],
+                data.zoneFour[idx][1],
+                data.zoneFive[idx][1],
+              ];
+              idx++;
+              i--;
+            } else if (data.zoneZero[idx] && this.chartTimeStamp[i] === data.zoneZero[idx][0]) {
+              newData.zoneZero.push(data.zoneZero[idx]);
+              newData.zoneOne.push(data.zoneOne[idx]);
+              newData.zoneTwo.push(data.zoneTwo[idx]);
+              newData.zoneThree.push(data.zoneThree[idx]);
+              newData.zoneFour.push(data.zoneFour[idx]);
+              newData.zoneFive.push(data.zoneFive[idx]);
+
+              idx++;
+            } else if (
+              idx === 0
+              || idx >= data.zoneZero.length
+              || (data.zoneZero[idx + 1] && data.zoneZero[idx][0] !== data.zoneZero[idx + 1][0])
               ) {
-
-              if (sameDateData.length !== 0 && this.chartTimeStamp[i] === data.zoneZero[idx][0]) {
-
-                newData.zoneZero.push([this.chartTimeStamp[i], (sameDateData[0] + data.zoneZero[idx][1]) / 2]);
-                newData.zoneOne.push([this.chartTimeStamp[i], (sameDateData[1] + data.zoneOne[idx][1]) / 2]);
-                newData.zoneTwo.push([this.chartTimeStamp[i], (sameDateData[2] + data.zoneTwo[idx][1]) / 2]);
-                newData.zoneThree.push([this.chartTimeStamp[i], (sameDateData[3] + data.zoneThree[idx][1]) / 2]);
-                newData.zoneFour.push([this.chartTimeStamp[i], (sameDateData[4] + data.zoneFour[idx][1]) / 2]);
-                newData.zoneFive.push([this.chartTimeStamp[i], (sameDateData[5] + data.zoneFive[idx][1]) / 2]);
-
-                sameDateData.length = 0;
-                idx++;
-              } else if (idx >= data.zoneZero.length) {
+               if (idx >= data.zoneZero.length) {
                 newData.zoneZero.push([this.chartTimeStamp[i], 0]);
                 newData.zoneOne.push([this.chartTimeStamp[i], 0]);
                 newData.zoneTwo.push([this.chartTimeStamp[i], 0]);
@@ -1566,29 +1585,23 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
                 newData.zoneFour.push([this.chartTimeStamp[i], 0]);
                 newData.zoneFive.push([this.chartTimeStamp[i], 0]);
               } else {
-                newData.zoneZero.push([this.chartTimeStamp[i], data.zoneZero[idx][1]]);
-                newData.zoneOne.push([this.chartTimeStamp[i], data.zoneOne[idx][1]]);
-                newData.zoneTwo.push([this.chartTimeStamp[i], data.zoneTwo[idx][1]]);
-                newData.zoneThree.push([this.chartTimeStamp[i], data.zoneThree[idx][1]]);
-                newData.zoneFour.push([this.chartTimeStamp[i], data.zoneFour[idx][1]]);
-                newData.zoneFive.push([this.chartTimeStamp[i], data.zoneFive[idx][1]]);
+                newData.zoneZero.push(data.zoneZero[idx]);
+                newData.zoneOne.push(data.zoneOne[idx]);
+                newData.zoneTwo.push(data.zoneTwo[idx]);
+                newData.zoneThree.push(data.zoneThree[idx]);
+                newData.zoneFour.push(data.zoneFour[idx]);
+                newData.zoneFive.push(data.zoneFive[idx]);
+
                 idx++;
               }
 
-            } else if (data.zoneZero[idx + 1] && data.zoneZero[idx][0] === data.zoneZero[idx + 1][0]) {
-              sameDateData = [
-                data.zoneZero[idx][1],
-                data.zoneOne[idx][1],
-                data.zoneTwo[idx][1],
-                data.zoneThree[idx][1],
-                data.zoneFour[idx][1],
-                data.zoneFive[idx][1],
-              ];
-
-              idx++;
-              i--;
             } else {
-              idx++;
+              newData.zoneZero.push([this.chartTimeStamp[i], 0]);
+              newData.zoneOne.push([this.chartTimeStamp[i], 0]);
+              newData.zoneTwo.push([this.chartTimeStamp[i], 0]);
+              newData.zoneThree.push([this.chartTimeStamp[i], 0]);
+              newData.zoneFour.push([this.chartTimeStamp[i], 0]);
+              newData.zoneFive.push([this.chartTimeStamp[i], 0]);
             }
 
           }
@@ -1602,9 +1615,8 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
         } else {
 
           let idx = 0,
-              sameDateData = 0;
+              sameDateData = 0;  // 處理週報告跨年會有重複週別的問題
           const newData = [];
-
           for (let i = 0; i < this.chartTimeStamp.length; i++) {
 
             if (sameDateData !== 0 && this.chartTimeStamp[i] === date[idx]) {
@@ -1636,6 +1648,9 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
               idx++;
               i--;
 
+            } else if (this.chartTimeStamp[i] === date[idx]) {
+              newData.push(data[idx]);
+              idx++;
             } else if (
               idx === 0
               || idx >= date.length
@@ -1652,7 +1667,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
               }
 
             } else {
-              idx++;
+              newData.push(null);
             }
           }
 
