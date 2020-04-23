@@ -792,6 +792,7 @@
     "thisMonth": "This Month",
     "lastMonth": "Last Month",
     "armMuscles": "Arm Muscles",
-    "loading": "Carga..."
+    "loading": "Carga...",
+    "uploadActivityData": "Cargar datos de ejercicio"
   }
 }

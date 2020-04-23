@@ -502,12 +502,12 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
           formatter: function () {
             if (this.series.xAxis.tickInterval === 30 * 24 * 4600 * 1000) {
               return `${moment(this.x).format('YYYY/MM/DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY/MM/DD')}
-                <br/>1RM: ${this.point.y.toFixed(1)}
-                <br/>Avg Rep: ${this.point.low.toFixed(1)}`;
+                <br/>1RM: ${this.point.y.toFixed(1)}K
+                <br/>Avg Weight: ${this.point.low.toFixed(1)}`;
             } else {
               return `${moment(this.x).format('YYYY/MM/DD')}
                 <br/>1RM: ${this.point.y.toFixed(1)}
-                <br/>Avg Rep: ${this.point.low.toFixed(1)}`;
+                <br/>Avg Weight: ${this.point.low.toFixed(1)}`;
             }
 
           }

@@ -793,6 +793,7 @@
     "thisMonth": "本月",
     "lastMonth": "上個月",
     "armMuscles": "手臂肌群",
-    "loading": "載入中..."
+    "loading": "載入中...",
+    "uploadActivityData": "上傳運動資料"
   }
 }
