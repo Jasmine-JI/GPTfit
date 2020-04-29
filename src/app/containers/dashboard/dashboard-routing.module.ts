@@ -43,6 +43,7 @@ import { ClassAnalysisComponent } from './group/group-info/class-analysis/class-
 import { ComReportComponent } from './group/group-info/com-report/com-report.component';
 import { ComLifeTrackingComponent } from './group/group-info/com-life-tracking/com-life-tracking.component';
 import { MyLifeTrackingComponent } from '@shared/components/my-life-tracking/my-life-tracking.component';
+import { QrcodeUploadComponent } from './components/qrcode-upload/qrcode-upload.component';
 
 const routes: Routes = [
   {
@@ -258,6 +259,10 @@ const routes: Routes = [
       {
         path: 'live/train-live',
         component: TrainLiveComponent
+      },
+      {
+        path: 'qrupload/activityfile',
+        component: QrcodeUploadComponent
       }
     ]
   },

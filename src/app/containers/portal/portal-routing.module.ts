@@ -18,6 +18,7 @@ import { MyActivityComponent } from '@shared/components/my-activity/my-activity.
 import { ApplicationComponent } from './components/application/application.component';
 import { Page404Component } from '../../shared/components/page404/page404.component';
 import { Page403Component } from '../../shared/components/page403/page403.component';
+import { QrcodeUploadComponent } from '../dashboard/components/qrcode-upload/qrcode-upload.component';
 
 const routes: Routes = [
   {
@@ -82,6 +83,10 @@ const routes: Routes = [
       {
         path: 'first-login',
         component: FirstLoginComponent
+      },
+      {
+        path: 'qrupload/activityfile',
+        component: QrcodeUploadComponent
       },
       { path: '404', component: Page404Component },
       { path: '403', component: Page403Component }

@@ -1,0 +1,56 @@
+<div class="flexCol" style="align-items: center;">
+  <div class="flexCol" style="align-items: center;">
+    <img src="./assets/logoTitle.png" alt="Alatech Logo" style="max-width: 300px; margin: 20px 0px;">
+    <div class="avatar-wrapper">
+      <img *ngIf="userInfo && userInfo.nameIcon"
+        [src]="(userInfo.nameIcon | safeHtml)"
+      >
+    </div>
+    <h1
+      style="font-weight: bold; color: #6b6a6a;"
+      *ngIf="displayInfo.type === '2'"
+    >
+      {{'SH.ProductType.spinBike' | translate}}
+    </h1>
+  </div>
+  <div class="flexCol" style="margin-left: 25px;">
+    <table>
+      <td class="description">
+        <tr>
+          <span>{{'Dashboard.MyActivity.totalTime' | translate}}</span><br/>
+        </tr>
+        <tr>
+          <span>{{'SH.calories' | translate}}</span><br/>
+        </tr>
+        <tr>
+          <span>{{'SH.avgSpeed' | translate}}</span><br/>
+        </tr>
+        <tr>
+          <span>{{'Dashboard.GroupClass.creatTime' | translate}}</span><br/>
+        </tr>
+      </td>
+      <td class="data">
+        <tr>
+          <span>{{displayInfo.totalTime}}</span>
+        </tr>
+        <tr>
+          <span>{{displayInfo.calories}} cal</span>
+        </tr>
+        <tr>
+          <span>{{displayInfo.avgSpeed}} km/h</span>
+        </tr>
+        <tr>
+          <span>{{displayInfo.createdTime}}</span>
+        </tr>
+      </td>
+    </table>
+  </div>
+  <button
+    class="uploadFileBtn"
+    [style.pointer-event]="uploading === true ? 'none' : ''"
+    (click)="uploadFile()"
+  >
+    <span *ngIf="uploading === false">{{ 'other.uploadActivityData' | translate }}</span>
+    <span *ngIf="uploading === true">{{ 'other.waitingToUploadData' | translate }}</span>
+  </button>
+</div>
