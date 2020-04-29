@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Injectable } from '@angular/core';
 import { UtilsService } from './utils.service';
@@ -96,6 +96,11 @@ export class ActivityService {
 
   // 使用nodejs先將數據下載成文件再上傳至server-kidin-1090421
   uploadSportFile (body) {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Access-Control-Allow-Origin': '*'
+      })
+    };
     return this.http.post<any>(API_SERVER + 'uploadSportFile', body);
   }
 
@@ -114,6 +119,11 @@ export class ActivityService {
   fetchMultiActivityData(body) {
     return this.http.post<any>('/api/v2/sport/getMultiActivityData', body);
   }
+
+  deleteActivityData (body) {
+    return this.http.post<any>('/api/v2/sport/deleteActivityData', body);
+  }
+
   handleChartDatas(pointDatas, lapDatas, infoDatas, resolutionSeconds, hrFormatData, isDebug, chartKind, xaxisUnit, segRange) {
     let colorIdx = 0,
       isNoSpeeds = false,
