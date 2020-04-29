@@ -793,6 +793,9 @@
     "lastMonth": "Last Month",
     "armMuscles": "Arm Muscles",
     "loading": "Carga...",
-    "uploadActivityData": "Cargar datos de ejercicio"
+    "uploadActivityData": "Cargar datos de ejercicio",
+    "uploadFailed": "Error de carga",
+    "uploadSuccess": "Carga correcta",
+    "waitingToUploadData": "Esperando para cargar"
   }
 }

@@ -309,7 +309,7 @@
                     <app-member-capsule
                       [role]="role"
                       [isAdminInfo]="true"
-                      [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isMarketingDeveloper"
+                      [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isMarketingDeveloper || +visitorDetail?.accessRight <= 30"
                       [title]="brandAdmItem?.memberName"
                       [memberInfo]="brandAdmItem"
                       [name]="brandAdmItem && brandAdmItem?.memberName"
@@ -317,7 +317,7 @@
                       [groupId]="brandAdmItem?.groupId"
                       [userId]="brandAdmItem?.memberId"
                       [brandType]="brandType"
-                      (onRemoveAdmin)="handleRemoveAdmin($event, 1)"
+                      (onRemoveAdmin)="handleRemoveAdmin($event, 1, brandAdmItem?.groupId)"
                       [isSupervisor]="this.role.isSupervisor"
                       [isSystemDeveloper]="this.role.isSystemDeveloper"
                       [isSystemMaintainer]="this.role.isSystemMaintainer"
@@ -338,7 +338,7 @@
                     <app-member-capsule
                       [role]="role"
                       [isAdminInfo]="true"
-                      [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isMarketingDeveloper || role?.isBrandAdministrator"
+                      [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isMarketingDeveloper || role?.isBrandAdministrator || +visitorDetail?.accessRight <= 40"
                       [title]="branchAdmItem?.memberName"
                       [memberInfo]="branchAdmItem"
                       [name]="branchAdmItem && branchAdmItem?.memberName"
@@ -346,7 +346,7 @@
                       [groupId]="branchAdmItem?.groupId"
                       [userId]="branchAdmItem?.memberId"
                       [brandType]="this.brandType"
-                      (onRemoveAdmin)="handleRemoveAdmin($event, 2)"
+                      (onRemoveAdmin)="handleRemoveAdmin($event, 2, branchAdmItem?.groupId)"
                     >
                     </app-member-capsule>
                   </ng-container>
@@ -364,7 +364,7 @@
                     <ng-container  *ngFor="let coachAdmItem of coachAdministrators">
                       <app-member-capsule
                         [role]="role"
-                        [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isMarketingDeveloper || role?.isBrandAdministrator || role?.isBranchAdministrator"
+                        [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isMarketingDeveloper || role?.isBrandAdministrator || role?.isBranchAdministrator || +visitorDetail?.accessRight <= 50"
                         [isAdminInfo]="true"
                         [title]="coachAdmItem?.memberName"
                         [memberInfo]="coachAdmItem"
@@ -373,7 +373,7 @@
                         [groupId]="coachAdmItem?.groupId"
                         [userId]="coachAdmItem?.memberId"
                         [brandType]="this.brandType"
-                        (onRemoveAdmin)="handleRemoveAdmin($event, 3)"
+                        (onRemoveAdmin)="handleRemoveAdmin($event, 3, coachAdmItem?.groupId)"
                       >
                       </app-member-capsule>
                     </ng-container>
@@ -391,7 +391,7 @@
                     <ng-container *ngFor="let normalCoachAdmItem of normalCoaches">
                       <app-member-capsule
                         [role]="role"
-                        [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isMarketingDeveloper || role?.isBrandAdministrator || role?.isBranchAdministrator"
+                        [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isMarketingDeveloper || role?.isBrandAdministrator || role?.isBranchAdministrator || +visitorDetail?.accessRight <= 60"
                         [isAdminInfo]="true"
                         [title]="normalCoachAdmItem?.memberName"
                         [memberInfo]="normalCoachAdmItem"
@@ -400,7 +400,7 @@
                         [groupId]="normalCoachAdmItem?.groupId"
                         [userId]="normalCoachAdmItem?.memberId"
                         [brandType]="this.brandType"
-                        (onRemoveAdmin)="handleRemoveAdmin($event, 4)"
+                        (onRemoveAdmin)="handleRemoveAdmin($event, 4, normalCoachAdmItem?.groupId)"
                       >
                       </app-member-capsule>
                     </ng-container>
@@ -416,7 +416,7 @@
                     <ng-container *ngFor="let pfCoachAdmItem of PFCoaches">
                       <app-member-capsule
                         [role]="role"
-                        [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isMarketingDeveloper || role?.isBrandAdministrator || role?.isBranchAdministrator"
+                        [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isMarketingDeveloper || role?.isBrandAdministrator || role?.isBranchAdministrator || +visitorDetail?.accessRight <= 50"
                         [isAdminInfo]="true"
                         [title]="pfCoachAdmItem?.memberName"
                         [memberInfo]="pfCoachAdmItem"
@@ -425,7 +425,7 @@
                         [groupId]="pfCoachAdmItem?.groupId"
                         [userId]="pfCoachAdmItem?.memberId"
                         [brandType]="this.brandType"
-                        (onRemoveAdmin)="handleRemoveAdmin($event, 4)"
+                        (onRemoveAdmin)="handleRemoveAdmin($event, 4, pfCoachAdmItem?.groupId)"
                       >
                       </app-member-capsule>
                     </ng-container>
@@ -476,7 +476,7 @@
                     [userId]="item?.memberId"
                     [groupLevel]="groupLevel"
                     (onAssignAdmin)="handleAssignAdmin($event)"
-                    (onRemoveAdmin)="handleRemoveAdmin($event, 5)"
+                    (onRemoveAdmin)="handleRemoveAdmin($event, 5, item?.groupId)"
                     [coachType]="groupInfo?.coachType"
                     [brandType]="brandType"
                   >

@@ -56,7 +56,8 @@ export class DeviceLogDetailComponent implements OnInit {
   isLoadingResults = false;
   isRateLimitReached = false;
 
-  @ViewChild('paginator') paginator: MatPaginator;
+  @ViewChild('paginatorA') paginatorA: MatPaginator;
+  @ViewChild('paginatorB') paginatorB: MatPaginator;
   @ViewChild('sortTable') sortTable: MatSort;
   @ViewChild('f') form: any;
   constructor(
@@ -117,7 +118,13 @@ export class DeviceLogDetailComponent implements OnInit {
     };
     this.getLists();
     // 分頁切換時，重新取得資料
-    this.paginator.page.subscribe((page: PageEvent) => {
+    this.paginatorA.page.subscribe((page: PageEvent) => {
+      this.currentPage = page;
+      this.router.navigateByUrl(`${location.pathname}?pageNumber=${this.currentPage.pageIndex + 1}`);
+      this.getLists();
+    });
+
+    this.paginatorB.page.subscribe((page: PageEvent) => {
       this.currentPage = page;
       this.router.navigateByUrl(`${location.pathname}?pageNumber=${this.currentPage.pageIndex + 1}`);
       this.getLists();

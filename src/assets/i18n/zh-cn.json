@@ -793,6 +793,9 @@
     "lastMonth": "上個月",
     "armMuscles": "手臂肌群",
     "loading": "载入中...",
-    "uploadActivityData": "上传运动数据"
+    "uploadActivityData": "上传运动数据",
+    "uploadFailed": "上传失败",
+    "uploadSuccess": "上传成功",
+    "waitingToUploadData": "等待上传中"
   }
 }

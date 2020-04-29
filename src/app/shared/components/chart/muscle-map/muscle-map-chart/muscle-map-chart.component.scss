@@ -1,6 +1,6 @@
 $listBorderColor: rgb(229, 229, 229);
 
-.muscleMap {
+.muscleMapSec {
   width: 55%;
 }
 
@@ -60,7 +60,7 @@ $listBorderColor: rgb(229, 229, 229);
 
 @media(max-width: 940px) {
 
-  .muscleMap {
+  .muscleMapSec {
     display: flex;
     flex-direction: column;
     width: 100%;
