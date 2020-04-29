@@ -13,11 +13,14 @@ export class MuscleMapComponent implements OnInit, AfterViewInit {
   userWeight: number;
   colorSets = [];
   selectMaxOneRepMax = [];
+  baseUrl = window.location.href;
+
 
   constructor(private activityService: ActivityService) {}
 
   ngOnInit() {
     this.initMuscleMap();
+    this.fixSvgUrls();
   }
 
   initMuscleMap() {
@@ -479,6 +482,18 @@ export class MuscleMapComponent implements OnInit, AfterViewInit {
     };
     this.colorSets.push(muscleColorSets);
     this.activityService.saveMuscleListColor(this.colorSets);
+  }
+
+  // 解決safari在使用linearGradient時，無法正常顯示的問題-kidin-1090428
+  fixSvgUrls () {
+    const svgArr = document.querySelectorAll('#linearGradientBar');
+
+    for (let i = 0; i < svgArr.length; i++) {
+      const element = svgArr[i],
+            maskId = element.getAttribute('fill').replace('url(', '').replace(')', '');
+      element.setAttribute('fill', `url(${this.baseUrl + maskId})`);
+    }
+
   }
 
 }

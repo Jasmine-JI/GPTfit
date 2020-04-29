@@ -29,7 +29,8 @@ export class DeviceLogComponent implements OnInit {
   selectedValue = '';
   isLoading = false;
 
-  @ViewChild('paginator') paginator: MatPaginator;
+  @ViewChild('paginatorA') paginatorA: MatPaginator;
+  @ViewChild('paginatorB') paginatorB: MatPaginator;
   @ViewChild('sortTable') sortTable: MatSort;
   @ViewChild('filter') filter: ElementRef;
 
@@ -57,7 +58,14 @@ export class DeviceLogComponent implements OnInit {
     this.getLists();
 
     // 分頁切換時，重新取得資料
-    this.paginator.page.subscribe((page: PageEvent) => {
+    this.paginatorA.page.subscribe((page: PageEvent) => {
+      this.currentPage = page;
+      this.router.navigateByUrl(`/dashboard/system/device_log?pageNumber=${this.currentPage.pageIndex + 1}`);
+      this.getLists();
+    });
+
+    // 分頁切換時，重新取得資料
+    this.paginatorB.page.subscribe((page: PageEvent) => {
       this.currentPage = page;
       this.router.navigateByUrl(`/dashboard/system/device_log?pageNumber=${this.currentPage.pageIndex + 1}`);
       this.getLists();

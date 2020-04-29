@@ -793,6 +793,9 @@
     "lastMonth": "Last Month",
     "armMuscles": "Arm Muscles",
     "loading": "Loading...",
-    "uploadActivityData": "Upload exercise data"
+    "uploadActivityData": "Upload exercise data",
+    "uploadFailed": "Upload failed",
+    "uploadSuccess": "Upload success",
+    "waitingToUploadData": "Waiting for upload"
   }
 }

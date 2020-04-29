@@ -1,5 +1,4 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
-
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -23,6 +22,9 @@ export class BodyConstituteSvgComponent implements OnInit, OnChanges {
     commentY: 70
   };
 
+  baseUrl = window.location.href;
+  textXOffset = 0;
+
   @Input() fatRate: number;
   @Input() muscleRate: number;
   @Input() bodyWeight: number;
@@ -33,7 +35,9 @@ export class BodyConstituteSvgComponent implements OnInit, OnChanges {
     private translate: TranslateService
   ) { }
 
-  ngOnInit () {}
+  ngOnInit () {
+    this.fixSvgUrls();
+  }
 
   ngOnChanges () {
     this.initVar();
@@ -112,6 +116,18 @@ export class BodyConstituteSvgComponent implements OnInit, OnChanges {
         this.info.comment = this.translate.instant('other.fatBody');
       }
     }
+  }
+
+  // 解決safari在使用mask時，無法正常顯示的問題-kidin-1090428
+  fixSvgUrls () {
+    const svgArr = document.querySelectorAll('#bodyConstituteChart [mask]');
+
+    for (let i = 0; i < svgArr.length; i++) {
+      const element = svgArr[i],
+            maskId = element.getAttribute('mask').replace('url(', '').replace(')', '');
+      element.setAttribute('mask', `url(${this.baseUrl + maskId})`);
+    }
+
   }
 
 }

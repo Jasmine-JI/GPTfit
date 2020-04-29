@@ -143,7 +143,7 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
               });
             } else {
               sportPercentageDataset.push({
-                name: this.translateService.instant('Dashboard.SportReport.boating'), y: this.data[4], color: '#72e8b0'
+                name: this.translateService.instant('Dashboard.SportReport.boating'), y: this.data[5], color: '#72e8b0'
               });
             }
           break;

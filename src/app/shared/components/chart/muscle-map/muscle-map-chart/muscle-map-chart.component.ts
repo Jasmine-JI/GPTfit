@@ -20,6 +20,7 @@ export class MuscleMapChartComponent implements OnInit, OnChanges {
   @Output() clickData = new EventEmitter;
 
   showAllTrainColor = false;
+  baseUrl = window.location.href;
 
   muscleGroupList = [
     {
@@ -94,7 +95,9 @@ export class MuscleMapChartComponent implements OnInit, OnChanges {
     private translate: TranslateService
   ) {}
 
-  ngOnInit () {}
+  ngOnInit () {
+    this.fixSvgUrls();
+  }
 
   ngOnChanges (e) {
 
@@ -709,6 +712,18 @@ export class MuscleMapChartComponent implements OnInit, OnChanges {
 
       }
 
+    }
+
+  }
+
+  // 解決safari在使用linearGradient時，無法正常顯示的問題-kidin-1090428
+  fixSvgUrls () {
+    const svgArr = document.querySelectorAll('#linearGradientBar');
+
+    for (let i = 0; i < svgArr.length; i++) {
+      const element = svgArr[i],
+            maskId = element.getAttribute('fill').replace('url(', '').replace(')', '');
+      element.setAttribute('fill', `url(${this.baseUrl + maskId})`);
     }
 
   }
