@@ -74,7 +74,7 @@ app.use(function (req, res, next) {
       'https://192.168.1.231:8080',
       'http://192.168.1.231',
       'https://192.168.1.231'
-    ];     
+    ];
   } else if (address === '192.168.1.234') {
     allowedOrigins = [
       'http://192.168.1.234',
@@ -170,6 +170,7 @@ var center = require('./routes/center.js');
 var uploadFile = require('./routes/uploadFile.js');
 var sport = require('./routes/sport.js');
 var auth = require('./routes/auth.js');
+var uploadSportFile = require('./routes/uploadSportFile.js');
 
 app.use('/nodejs/api/rankForm', rankForm.unprotected);
 app.use('/nodejs/api/rankForm', authMiddleware, rankForm.protected);
@@ -188,12 +189,13 @@ app.use('/nodejs/api/center', authMiddleware, center);
 app.use('/nodejs/api/uploadFile', authMiddleware, uploadFile);
 app.use('/nodejs/api/sport', authMiddleware, sport);
 app.use('/nodejs/api/auth', auth);
+app.use('/nodejs/api/uploadSportFile', uploadSportFile);
 
 // Start the server
 const port = process.env.PORT || 3001;
-// app.listen(port, function () {
-//   console.log('Server running at ' + port);
-// });
-https.createServer(SERVER_CONFIG, app).listen(port, function() {
-  console.log('HTTPS sever started at ' + port);
-});
+ app.listen(port, function () {
+   console.log('Server running at ' + port);
+ });
+//https.createServer(SERVER_CONFIG, app).listen(port, function() {
+//  console.log('HTTPS sever started at ' + port);
+//});

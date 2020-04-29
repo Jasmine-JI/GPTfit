@@ -91,6 +91,7 @@ import { ClassAnalysisComponent } from './group/group-info/class-analysis/class-
 import { ComReportComponent } from './group/group-info/com-report/com-report.component';
 import { ComLifeTrackingComponent } from './group/group-info/com-life-tracking/com-life-tracking.component';
 import { ModifyBoxComponent } from './components/settings/privacy-settings/modify-box/modify-box.component';
+import { QrcodeUploadComponent } from './components/qrcode-upload/qrcode-upload.component';
 
 @NgModule({
   imports: [
@@ -191,7 +192,8 @@ import { ModifyBoxComponent } from './components/settings/privacy-settings/modif
     ClassAnalysisComponent,
     ComReportComponent,
     ComLifeTrackingComponent,
-    ModifyBoxComponent
+    ModifyBoxComponent,
+    QrcodeUploadComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [

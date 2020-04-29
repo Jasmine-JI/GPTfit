@@ -317,14 +317,14 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
       const data = {
         name: res.info.name,
         nameId: res.info.nameId,
+        nameIcon: res.info.nameIcon,
         birthday: res.info.birthday,
         heartRateBase: res.info.heartRateBase,
         heartRateMax: res.info.heartRateMax,
         heartRateResting: res.info.heartRateResting,
         height: res.info.height,
         weight: res.info.weight,
-        wheelSize: res.info.wheelSize,
-        loginId: res.info.nameId
+        wheelSize: res.info.wheelSize
       };
       this.userInfoService.saveBodyDatas(data);
     });

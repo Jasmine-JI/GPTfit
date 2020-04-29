@@ -83,6 +83,13 @@
           <i class="icon-svg_web-icon_p2_087-print activity-info_icon_size"></i>
         </a>
         <button class="alatech-btn--default"
+          (click)="checkDeleteSportFile()"
+          *ngIf="!isPrevieMode"
+          style="border: none;"
+        >
+          <i class="icon-svg_web-icon_p1_009-delete activity-info_icon_size"></i>
+        </button>
+        <button class="alatech-btn--default"
           (click)="goBack()"
           *ngIf="!isPrevieMode"
           style="border: none;"

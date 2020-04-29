@@ -81,9 +81,13 @@ export class DistributionChartComponent implements OnInit, OnChanges {
     percentage: '0%'
   };
 
+  baseUrl = window.location.href;
+
   constructor() { }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.fixSvgUrls();
+  }
 
   ngOnChanges () {
     this.initVariable();
@@ -385,6 +389,18 @@ export class DistributionChartComponent implements OnInit, OnChanges {
     this.blockSeven.percentage = `${((this.blockSeven.stroke / total) * 100).toFixed(0)}%`;
     this.blockEight.percentage = `${((this.blockEight.stroke / total) * 100).toFixed(0)}%`;
     this.blockNine.percentage = `${((this.blockNine.stroke / total) * 100).toFixed(0)}%`;
+  }
+
+  // 解決safari在使用linearGradient時，無法正常顯示的問題-kidin-1090428
+  fixSvgUrls () {
+    const svgArr = document.querySelectorAll('#distributeChart [fill]');
+
+    for (let i = 0; i < svgArr.length; i++) {
+      const element = svgArr[i],
+            maskId = element.getAttribute('fill').replace('url(', '').replace(')', '');
+      element.setAttribute('fill', `url(${this.baseUrl + maskId})`);
+    }
+
   }
 
 }
