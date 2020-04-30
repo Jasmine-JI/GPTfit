@@ -109,7 +109,7 @@
 }
 
 .areaDescription {
-  font-size: 8px;
+  font-size: 16px;
   color:#919191;
   margin-left: 10px;
 }
@@ -158,6 +158,7 @@
 
 .summaryData {
   font-size: 24px;
+  font-weight: bold;
   color: #646464;
 }
 
@@ -212,8 +213,8 @@
 }
 
 .groupPagePhoto {
-  width: 70px;
-  height: 70px;
+  width: 100px;
+  height: 100px;
   display: flex;
   justify-content: center;
   border-radius: 50%;
@@ -245,6 +246,59 @@
 }
 
 // ------------------------------
+
+.groupEditSelect {
+
+  .mat-form-field-wrapper {
+    padding-bottom: 0 !important;
+
+    .mat-form-field-flex {
+
+      .mat-form-field-infix {
+        display: flex !important;
+        flex-direction: row !important;
+        border: 0px;
+        padding-top: 2px !important;
+      }
+
+    }
+
+  }
+
+  .mat-form-field-underline {
+    top: 20px !important;
+  }
+
+}
+
+.editManageInput {
+  width: 50px;
+
+  input {
+    text-align: center;
+  }
+
+  .mat-form-field-wrapper {
+    padding-bottom: 0 !important;
+
+    .mat-form-field-flex {
+
+      .mat-form-field-infix {
+        display: flex !important;
+        flex-direction: row !important;
+        border: 0px;
+        padding-top: 2px !important;
+      }
+
+    }
+
+    .mat-form-field-underline {
+      top: 20px !important;
+    }
+
+  }
+
+}
 
 @media(max-width: 767px) {
   .group-info.row {

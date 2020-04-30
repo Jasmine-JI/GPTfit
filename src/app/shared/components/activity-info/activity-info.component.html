@@ -130,7 +130,7 @@
           {{activityName}}
         </span>
         <i (click)="editActivityName()"
-          *ngIf="!editNameMode && !hideButton"
+          *ngIf="!editNameMode && !hideButton && loginId == userLink.userId"
           class="icon-svg_web-icon_p1_008-edit"
           style="font-size: 20px;"
         ></i>
@@ -307,8 +307,8 @@
         </div>
         <mat-form-field class="selectList">
           <p class="selectListPrefix">{{'Dashboard.MyActivity.weightTrainingExtent' | translate}}：</p>
-          <mat-select [(value)]="Proficiency"
-            (selectionChange)="handleProficiency($event)"
+          <mat-select [(value)]="proficiency"
+            (selectionChange)="handleproficiency($event)"
           >
             <mat-option value="asept">{{'Dashboard.MyActivity.highRanker' | translate}}</mat-option>
             <mat-option value="metacarpus">{{'Dashboard.MyActivity.advanced' | translate}}</mat-option>
@@ -810,7 +810,7 @@
                   <span class="data-label">spm</span>
                 </div>
                 <span class="data-label">
-                  {{'Dashboard.MyActivity.avgSwimReps' | translate}}({{'Dashboard.MyActivity.swin' | translate}})
+                  {{'Dashboard.MyActivity.avgSwimReps' | translate}}({{'Dashboard.MyActivity.swim' | translate}})
                 </span>
               </div>
               <div class="activity-info__area--block">
@@ -819,7 +819,7 @@
                   <span class="data-label">spm</span>
                 </div>
                 <span class="data-label">
-                  {{'Dashboard.MyActivity.baetSwimReps' | translate}}({{'Dashboard.MyActivity.swin' | translate}})
+                  {{'Dashboard.MyActivity.baetSwimReps' | translate}}({{'Dashboard.MyActivity.swim' | translate}})
                 </span>
               </div>
             </div>
@@ -974,7 +974,7 @@
                   <span *ngIf="activityInfo?.type === '3'">{{'Dashboard.MyActivity.reps' | translate}}</span>
                   <span *ngIf="activityInfo?.type === '4' || activityInfo?.type === '6'">
                     {{'Dashboard.MyActivity.numberOfStrokes' | translate}}
-                    <span *ngIf="activityInfo?.type === '4'">({{'Dashboard.MyActivity.swin' | translate}})</span>
+                    <span *ngIf="activityInfo?.type === '4'">({{'Dashboard.MyActivity.swim' | translate}})</span>
                     <span *ngIf="activityInfo?.type === '6'">({{'Dashboard.MyActivity.row' | translate}})</span>
                   </span>
                   <span class="data-label">reps</span>
@@ -1064,11 +1064,16 @@
         <div class="ala-dashboard-title activity-title">
           {{'Dashboard.ActivityDetail.device' | translate}}
         </div>
-        <div style="display: flex; justify-content: center;">
-          <img src={{deviceImgUrl}} style="height: 200px;width: auto;">
+        <div style="display:flex;align-items: center;margin-top: 10px;">
+          <div class="user-photo"
+            style="margin: 0 auto"
+            [ngClass]="classInfo?.groupIconClassName"
+          >
+            <img src={{deviceImgUrl}} style="width: 100px; height: auto;">
+          </div>
         </div>
-        <div>
-          {{ 'Portal.modeCode' | translate}}：{{ deviceInfo?.modelName || 'SH.noData' | translate }}
+        <div class="lesson-title">
+          {{ deviceInfo?.modelName || 'SH.noData' | translate }}
         </div>
         <div>
           {{"Portal.modeType" | translate}}：{{ (deviceInfo?.modelTypeID | productType | translate) || 'SH.noData' | translate }}
@@ -1102,7 +1107,7 @@
             style="color: #5fbae3;cursor:pointer;text-align: right"
             (click)="handleExtendCoachInfo(2)"
           >
-            {{ "Dashboard.TrainLive.more" | translate}}...
+            ...{{ "Dashboard.TrainLive.more" | translate}}
           </div>
         </div>
       </div>
@@ -1114,7 +1119,7 @@
           <div class="user-photo user-photo--portrait" style="margin: 0 auto">
             <img [src]="coachInfo?.coachAvatar">
           </div>
-          <div class="coach-name" style="padding-left: 20px">{{coachInfo?.name}}</div>
+          <div class="lesson-title" style="padding-left: 20px">{{coachInfo?.name}}</div>
         </div>
         <div class="introduction" style="padding-top: 10px">
           {{ coachDesc }}

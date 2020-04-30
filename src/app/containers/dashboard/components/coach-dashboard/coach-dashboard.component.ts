@@ -254,7 +254,7 @@ export class CoachDashboardComponent
     const queryStrings = getUrlQueryStrings(location.search);
     this.classType = queryStrings.type;
     this.classId = this.route.snapshot.paramMap.get('classId');
-    this.token = this.utils.getToken();
+    this.token = this.utils.getToken() || '';
     const body = {
       token: this.token,
       classId: this.classId,
@@ -262,7 +262,6 @@ export class CoachDashboardComponent
     };
     if (!(this.classId === '99999' && this.isDemoMode)) {
       this.coachService.fetchClassRoomDetail(body).subscribe(res => {
-        console.log(res);
         this.classInfo = res.info;
         this.classInfo.groupIcon =
           this.classInfo.groupIcon && this.classInfo.groupIcon.length > 0

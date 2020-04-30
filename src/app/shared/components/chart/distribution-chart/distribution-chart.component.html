@@ -1,0 +1,639 @@
+<svg
+  version="1.1"
+  baseProfile="full"
+  xmlns="http://www.w3.org/2000/svg"
+  width="100%" viewBox="0 0 465 240"
+  style="cursor: pointer;"
+  id='distributeChart'
+  (click)="floatChartText()"
+>
+
+  <defs>
+    <linearGradient id="blockOneColor" x1="0%" x2="100%">
+      <stop [attr.offset]="blockOne.percentage" stop-color="#5ce8dd" />
+      <stop [attr.offset]="blockOne.percentage" stop-color="#d5f9f6" />
+    </linearGradient>
+    <linearGradient id="blockTwoColor" x1="0%" x2="100%">
+      <stop [attr.offset]="blockTwo.percentage" stop-color="#5cd5e8" />
+      <stop [attr.offset]="blockTwo.percentage" stop-color="#d5f4f9" />
+    </linearGradient>
+    <linearGradient id="blockThreeColor" x1="0%" x2="100%">
+      <stop [attr.offset]="blockThree.percentage" stop-color="#5cbbe8" />
+      <stop [attr.offset]="blockThree.percentage" stop-color="#d5edf9" />
+    </linearGradient>
+    <linearGradient id="blockFourColor" x1="0%" x2="100%">
+      <stop [attr.offset]="blockFour.percentage" stop-color="#bbe85c" />
+      <stop [attr.offset]="blockFour.percentage" stop-color="#edf9d5" />
+    </linearGradient>
+    <linearGradient id="blockFiveColor" x1="0%" x2="100%">
+      <stop [attr.offset]="blockFive.percentage" stop-color="#69e85c" />
+      <stop [attr.offset]="blockFive.percentage" stop-color="#d9f8d6" />
+    </linearGradient>
+    <linearGradient id="blockSixColor" x1="0%" x2="100%">
+      <stop [attr.offset]="blockSix.percentage" stop-color="#5ce89d" />
+      <stop [attr.offset]="blockSix.percentage" stop-color="#d6f8e7" />
+    </linearGradient>
+    <linearGradient id="blockSevenColor" x1="0%" x2="100%">
+      <stop [attr.offset]="blockSeven.percentage" stop-color="#e97965" />
+      <stop [attr.offset]="blockSeven.percentage" stop-color="#f9dcd8" />
+    </linearGradient>
+    <linearGradient id="blockEightColor" x1="0%" x2="100%">
+      <stop [attr.offset]="blockEight.percentage" stop-color="#e8a15c" />
+      <stop [attr.offset]="blockEight.percentage" stop-color="#f8e7d5" />
+    </linearGradient>
+    <linearGradient id="blockNineColor" x1="0%" x2="100%">
+      <stop [attr.offset]="blockNine.percentage" stop-color="#e8c55c" />
+      <stop [attr.offset]="blockNine.percentage" stop-color="#faf0d5" />
+    </linearGradient>
+  </defs>
+
+  <polyline points="30 200, 30 20, 25 20, 30 10, 35 20, 30 20" stroke="#d1d1d1" fill="#d1d1d1" stroke-width="5"/>
+  <polyline points="40 210, 450 210, 450 205, 460 210, 450 215, 450 210" stroke="#d1d1d1" fill="#d1d1d1" stroke-width="5"/>
+  <rect x="40" y="10" width="135" height="60" stroke="none" fill="url(#blockOneColor)" />
+  <rect x="40" y="75" width="135" height="60" stroke="none" fill="url(#blockTwoColor)" />
+  <rect x="40" y="140" width="135" height="60" stroke="none" fill="url(#blockThreeColor)" />
+  <rect x="180" y="10" width="135" height="60" stroke="none" fill="url(#blockFourColor)" />
+  <rect x="180" y="75" width="135" height="60" stroke="none" fill="url(#blockFiveColor)" />
+  <rect x="180" y="140" width="135" height="60" stroke="none" fill="url(#blockSixColor)" />
+  <rect x="320" y="10" width="135" height="60" stroke="none" fill="url(#blockSevenColor)" />
+  <rect x="320" y="75" width="135" height="60" stroke="none" fill="url(#blockEightColor)" />
+  <rect x="320" y="140" width="135" height="60" stroke="none" fill="url(#blockNineColor)" />
+  <text
+    x="247"
+    y="235"
+    text-anchor="middle"
+    font-size="13"
+    stroke="#868686"
+    stroke-width="0.5"
+    *ngIf="reportType === 'sport'"
+  >{{'SH.hrZone' | translate}}
+  </text>
+  <text
+    x="247"
+    y="235"
+    text-anchor="middle"
+    font-size="13"
+    stroke="#868686"
+    stroke-width="0.5"
+    *ngIf="reportType === 'lifeTracking'"
+  >FFMI
+  </text>
+
+  <text
+    x="16"
+    y="107"
+    text-anchor="middle"
+    font-size="13"
+    transform="rotate(-90, 16, 107)"
+    stroke="#868686"
+    stroke-width="0.5"
+    *ngIf="reportType === 'sport'"
+  >{{'other.timer' | translate}}
+  </text>
+  <text
+    x="16"
+    y="107"
+    text-anchor="middle"
+    font-size="13"
+    transform="rotate(-90, 16, 107)"
+    stroke="#868686"
+    stroke-width="0.5"
+    *ngIf="reportType === 'lifeTracking'"
+  >{{'other.fatRate' | translate}}
+  </text>
+  <g id="sport" *ngIf="reportType === 'sport'" [attr.opacity]="floatText ? 0 : 0.5">
+    <foreignObject x="45" y="17" width="130" height="60">
+      <xhtml:p class="blockDescription blockOne">
+        {{'other.hardWorkButLowIntensity' | translate}}{{blockOne.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="45" y="82" width="130" height="60">
+      <xhtml:p class="blockDescription blockTwo">
+        {{'other.needToStrengthenTrainingIntensity' | translate}}{{blockTwo.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="45" y="147" width="130" height="60">
+      <xhtml:p class="blockDescription blockThree">
+        {{'other.insufficientAmountAndIntensity' | translate}}{{blockThree.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="185" y="17" width="130" height="60">
+      <xhtml:p class="blockDescription blockFour">
+        {{'other.hardAndSureTraining' | translate}}{{blockFour.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="185" y="82" width="130" height="60">
+      <xhtml:p class="blockDescription blockFive">
+        {{'other.goodAndStableTraining' | translate}}{{blockFive.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="185" y="147" width="130" height="60">
+      <xhtml:p class="blockDescription blockSix">
+        {{'other.durationNeedsToBeStrengthened' | translate}}{{blockSix.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="325" y="17" width="130" height="60">
+      <xhtml:p class="blockDescription blockSeven">
+        {{'other.easyToCausePhysicalBurden' | translate}}{{blockSeven.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="325" y="82" width="130" height="60">
+      <xhtml:p class="blockDescription blockEight">
+        {{'other.moderateHigh-IntensityTraining' | translate}}{{blockEight.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="325" y="147" width="130" height="60">
+      <xhtml:p class="blockDescription blockNine">
+        {{'other.shortBurstTraining' | translate}}{{blockNine.percentage}}
+      </p>
+    </foreignObject>
+
+    <foreignObject x="45" y="17" width="130" height="60">
+      <xhtml:p class="blockDescription">
+        {{'other.hardWorkButLowIntensity' | translate}}{{blockOne.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="45" y="82" width="130" height="60">
+      <xhtml:p class="blockDescription">
+        {{'other.needToStrengthenTrainingIntensity' | translate}}{{blockTwo.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="45" y="147" width="130" height="60">
+      <xhtml:p class="blockDescription">
+        {{'other.insufficientAmountAndIntensity' | translate}}{{blockThree.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="185" y="17" width="130" height="60">
+      <xhtml:p class="blockDescription">
+        {{'other.hardAndSureTraining' | translate}}{{blockFour.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="185" y="82" width="130" height="60">
+      <xhtml:p class="blockDescription">
+        {{'other.goodAndStableTraining' | translate}}{{blockFive.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="185" y="147" width="130" height="60">
+      <xhtml:p class="blockDescription">
+        {{'other.durationNeedsToBeStrengthened' | translate}}{{blockSix.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="325" y="17" width="130" height="60">
+      <xhtml:p class="blockDescription">
+        {{'other.easyToCausePhysicalBurden' | translate}}{{blockSeven.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="325" y="82" width="130" height="60">
+      <xhtml:p class="blockDescription">
+        {{'other.moderateHigh-IntensityTraining' | translate}}{{blockEight.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="325" y="147" width="130" height="60">
+      <xhtml:p class="blockDescription">
+        {{'other.shortBurstTraining' | translate}}{{blockNine.percentage}}
+      </p>
+    </foreignObject>
+  </g>
+
+  <g id="lifeTracking" *ngIf="reportType === 'lifeTracking'" [attr.opacity]="floatText ? 0 : 0.5">
+    <foreignObject x="35" y="17" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_021-3_recessive_obesity bodyIcon blockOne"></i>
+        <xhtml:p class="blockDescription blockOne" style="white-space: normal;">
+          {{'other.recessiveObesity' | translate}}<br />
+          {{'other.people' | translate}} {{blockOne.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="35" y="82" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_020-2_lack_of_training bodyIcon blockTwo"></i>
+        <xhtml:p class="blockDescription blockTwo" style="white-space: normal;">
+          {{'other.lackOfTraining' | translate}}<br />
+          {{'other.people' | translate}} {{blockTwo.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="35" y="147" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_019-1_too_thin bodyIcon blockThree"></i>
+        <xhtml:p class="blockDescription blockThree" style="white-space: normal;">
+          {{'other.tooThin' | translate}}<br />
+          {{'other.people' | translate}} {{blockThree.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="175" y="17" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_024-6_generally_fat bodyIcon blockFour"></i>
+        <xhtml:p class="blockDescription blockFour" style="white-space: normal;">
+          {{'other.generallyFat' | translate}}<br />
+          {{'other.people' | translate}} {{blockFour.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="175" y="82" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_023-5_normal_posture bodyIcon blockFive"></i>
+        <xhtml:p class="blockDescription blockFive" style="white-space: normal;">
+          {{'other.normalPosture' | translate}}<br />
+          {{'other.people' | translate}} {{blockFive.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="175" y="147" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_022-4_generally_thin bodyIcon blockSix"></i>
+        <xhtml:p class="blockDescription blockSix" style="white-space: normal;">
+          {{'other.generallyThin' | translate}}<br />
+          {{'other.people' | translate}} {{blockSix.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="315" y="17" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_027-9_fat_body bodyIcon blockSeven"></i>
+        <xhtml:p class="blockDescription blockSeven" style="white-space: normal;">
+          {{'other.fatBody' | translate}}<br />
+          {{'other.people' | translate}} {{blockSeven.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="315" y="82" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_026-8_athletic bodyIcon blockEight"></i>
+        <xhtml:p class="blockDescription blockEight" style="white-space: normal;">
+          {{'other.athletic' | translate}}<br />
+          {{'other.people' | translate}} {{blockEight.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="315" y="147" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_025-7_bodybuilding bodyIcon blockNine"></i>
+        <xhtml:p class="blockDescription blockNine" style="white-space: normal;">
+          {{'other.bodybuilding' | translate}}<br />
+          {{'other.people' | translate}} {{blockNine.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+
+    <foreignObject x="35" y="17" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_021-3_recessive_obesity bodyIcon"></i>
+        <xhtml:p class="blockDescription" style="white-space: normal;">
+          {{'other.recessiveObesity' | translate}}<br />
+          {{'other.people' | translate}} {{blockOne.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="35" y="82" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_020-2_lack_of_training bodyIcon"></i>
+        <xhtml:p class="blockDescription" style="white-space: normal;">
+          {{'other.lackOfTraining' | translate}}<br />
+          {{'other.people' | translate}} {{blockTwo.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="35" y="147" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_019-1_too_thin bodyIcon"></i>
+        <xhtml:p class="blockDescription" style="white-space: normal;">
+          {{'other.tooThin' | translate}}<br />
+          {{'other.people' | translate}} {{blockThree.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="175" y="17" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_024-6_generally_fat bodyIcon"></i>
+        <xhtml:p class="blockDescription" style="white-space: normal;">
+          {{'other.generallyFat' | translate}}<br />
+          {{'other.people' | translate}} {{blockFour.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="175" y="82" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_023-5_normal_posture bodyIcon"></i>
+        <xhtml:p class="blockDescription" style="white-space: normal;">
+          {{'other.normalPosture' | translate}}<br />
+          {{'other.people' | translate}} {{blockFive.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="175" y="147" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_022-4_generally_thin bodyIcon"></i>
+        <xhtml:p class="blockDescription" style="white-space: normal;">
+          {{'other.generallyThin' | translate}}<br />
+          {{'other.people' | translate}} {{blockSix.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="315" y="17" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_027-9_fat_body bodyIcon"></i>
+        <xhtml:p class="blockDescription" style="white-space: normal;">
+          {{'other.fatBody' | translate}}<br />
+          {{'other.people' | translate}} {{blockSeven.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="315" y="82" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_026-8_athletic bodyIcon"></i>
+        <xhtml:p class="blockDescription" style="white-space: normal;">
+          {{'other.athletic' | translate}}<br />
+          {{'other.people' | translate}} {{blockEight.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="315" y="147" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_025-7_bodybuilding bodyIcon"></i>
+        <xhtml:p class="blockDescription" style="white-space: normal;">
+          {{'other.bodybuilding' | translate}}<br />
+          {{'other.people' | translate}} {{blockNine.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+  </g>
+
+  <g>
+    <text
+      *ngFor="let point of points;"
+      [attr.x]="point.x"
+      [attr.y]="point.y"
+      [attr.stroke]="floatText ? 'rgba(0, 0, 0, 0.1)': ''"
+      [attr.fill]="floatText ? 'rgba(0, 0, 0, 0.1)': ''"
+      text-anchor="middle"
+      dominant-baseline="middle"
+      font-size="10"
+      font-weight="bold"
+    >
+      ✛
+    </text>
+  </g>
+
+  <g *ngIf="reportType === 'sport' && floatText === true">
+    <foreignObject x="45" y="17" width="130" height="60">
+      <xhtml:p class="blockDescription blockOne">
+        {{'other.hardWorkButLowIntensity' | translate}}{{blockOne.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="45" y="82" width="130" height="60">
+      <xhtml:p class="blockDescription blockTwo">
+        {{'other.needToStrengthenTrainingIntensity' | translate}}{{blockTwo.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="45" y="147" width="130" height="60">
+      <xhtml:p class="blockDescription blockThree">
+        {{'other.insufficientAmountAndIntensity' | translate}}{{blockThree.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="185" y="17" width="130" height="60">
+      <xhtml:p class="blockDescription blockFour">
+        {{'other.hardAndSureTraining' | translate}}{{blockFour.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="185" y="82" width="130" height="60">
+      <xhtml:p class="blockDescription blockFive">
+        {{'other.goodAndStableTraining' | translate}}{{blockFive.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="185" y="147" width="130" height="60">
+      <xhtml:p class="blockDescription blockSix">
+        {{'other.durationNeedsToBeStrengthened' | translate}}{{blockSix.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="325" y="17" width="130" height="60">
+      <xhtml:p class="blockDescription blockSeven">
+        {{'other.easyToCausePhysicalBurden' | translate}}{{blockSeven.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="325" y="82" width="130" height="60">
+      <xhtml:p class="blockDescription blockEight">
+        {{'other.moderateHigh-IntensityTraining' | translate}}{{blockEight.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="325" y="147" width="130" height="60">
+      <xhtml:p class="blockDescription blockNine">
+        {{'other.shortBurstTraining' | translate}}{{blockNine.percentage}}
+      </p>
+    </foreignObject>
+
+    <foreignObject x="45" y="17" width="130" height="60">
+      <xhtml:p class="blockDescription">
+        {{'other.hardWorkButLowIntensity' | translate}}{{blockOne.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="45" y="82" width="130" height="60">
+      <xhtml:p class="blockDescription">
+        {{'other.needToStrengthenTrainingIntensity' | translate}}{{blockTwo.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="45" y="147" width="130" height="60">
+      <xhtml:p class="blockDescription">
+        {{'other.insufficientAmountAndIntensity' | translate}}{{blockThree.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="185" y="17" width="130" height="60">
+      <xhtml:p class="blockDescription">
+        {{'other.hardAndSureTraining' | translate}}{{blockFour.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="185" y="82" width="130" height="60">
+      <xhtml:p class="blockDescription">
+        {{'other.goodAndStableTraining' | translate}}{{blockFive.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="185" y="147" width="130" height="60">
+      <xhtml:p class="blockDescription">
+        {{'other.durationNeedsToBeStrengthened' | translate}}{{blockSix.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="325" y="17" width="130" height="60">
+      <xhtml:p class="blockDescription">
+        {{'other.easyToCausePhysicalBurden' | translate}}{{blockSeven.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="325" y="82" width="130" height="60">
+      <xhtml:p class="blockDescription">
+        {{'other.moderateHigh-IntensityTraining' | translate}}{{blockEight.percentage}}
+      </p>
+    </foreignObject>
+    <foreignObject x="325" y="147" width="130" height="60">
+      <xhtml:p class="blockDescription">
+        {{'other.shortBurstTraining' | translate}}{{blockNine.percentage}}
+      </p>
+    </foreignObject>
+  </g>
+
+  <g *ngIf="reportType === 'lifeTracking' && floatText === true">
+    <foreignObject x="35" y="17" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_021-3_recessive_obesity bodyIcon blockOne"></i>
+        <xhtml:p class="blockDescription blockOne" style="white-space: normal;">
+          {{'other.recessiveObesity' | translate}}<br />
+          {{'other.people' | translate}} {{blockOne.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="35" y="82" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_020-2_lack_of_training bodyIcon blockTwo"></i>
+        <xhtml:p class="blockDescription blockTwo" style="white-space: normal;">
+          {{'other.lackOfTraining' | translate}}<br />
+          {{'other.people' | translate}} {{blockTwo.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="35" y="147" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_019-1_too_thin bodyIcon blockThree"></i>
+        <xhtml:p class="blockDescription blockThree" style="white-space: normal;">
+          {{'other.tooThin' | translate}}<br />
+          {{'other.people' | translate}} {{blockThree.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="175" y="17" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_024-6_generally_fat bodyIcon blockFour"></i>
+        <xhtml:p class="blockDescription blockFour" style="white-space: normal;">
+          {{'other.generallyFat' | translate}}<br />
+          {{'other.people' | translate}} {{blockFour.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="175" y="82" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_023-5_normal_posture bodyIcon blockFive"></i>
+        <xhtml:p class="blockDescription blockFive" style="white-space: normal;">
+          {{'other.normalPosture' | translate}}<br />
+          {{'other.people' | translate}} {{blockFive.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="175" y="147" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_022-4_generally_thin bodyIcon blockSix"></i>
+        <xhtml:p class="blockDescription blockSix" style="white-space: normal;">
+          {{'other.generallyThin' | translate}}<br />
+          {{'other.people' | translate}} {{blockSix.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="315" y="17" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_027-9_fat_body bodyIcon blockSeven"></i>
+        <xhtml:p class="blockDescription blockSeven" style="white-space: normal;">
+          {{'other.fatBody' | translate}}<br />
+          {{'other.people' | translate}} {{blockSeven.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="315" y="82" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_026-8_athletic bodyIcon blockEight"></i>
+        <xhtml:p class="blockDescription blockEight" style="white-space: normal;">
+          {{'other.athletic' | translate}}<br />
+          {{'other.people' | translate}} {{blockEight.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="315" y="147" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_025-7_bodybuilding bodyIcon blockNine"></i>
+        <xhtml:p class="blockDescription blockNine" style="white-space: normal;">
+          {{'other.bodybuilding' | translate}}<br />
+          {{'other.people' | translate}} {{blockNine.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+
+    <foreignObject x="35" y="17" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_021-3_recessive_obesity bodyIcon"></i>
+        <xhtml:p class="blockDescription" style="white-space: normal;">
+          {{'other.recessiveObesity' | translate}}<br />
+          {{'other.people' | translate}} {{blockOne.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="35" y="82" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_020-2_lack_of_training bodyIcon"></i>
+        <xhtml:p class="blockDescription" style="white-space: normal;">
+          {{'other.lackOfTraining' | translate}}<br />
+          {{'other.people' | translate}} {{blockTwo.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="35" y="147" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_019-1_too_thin bodyIcon"></i>
+        <xhtml:p class="blockDescription" style="white-space: normal;">
+          {{'other.tooThin' | translate}}<br />
+          {{'other.people' | translate}} {{blockThree.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="175" y="17" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_024-6_generally_fat bodyIcon"></i>
+        <xhtml:p class="blockDescription" style="white-space: normal;">
+          {{'other.generallyFat' | translate}}<br />
+          {{'other.people' | translate}} {{blockFour.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="175" y="82" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_023-5_normal_posture bodyIcon"></i>
+        <xhtml:p class="blockDescription" style="white-space: normal;">
+          {{'other.normalPosture' | translate}}<br />
+          {{'other.people' | translate}} {{blockFive.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="175" y="147" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_022-4_generally_thin bodyIcon"></i>
+        <xhtml:p class="blockDescription" style="white-space: normal;">
+          {{'other.generallyThin' | translate}}<br />
+          {{'other.people' | translate}} {{blockSix.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="315" y="17" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_027-9_fat_body bodyIcon"></i>
+        <xhtml:p class="blockDescription" style="white-space: normal;">
+          {{'other.fatBody' | translate}}<br />
+          {{'other.people' | translate}} {{blockSeven.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="315" y="82" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_026-8_athletic bodyIcon"></i>
+        <xhtml:p class="blockDescription" style="white-space: normal;">
+          {{'other.athletic' | translate}}<br />
+          {{'other.people' | translate}} {{blockEight.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+    <foreignObject x="315" y="147" width="130" height="60">
+      <xhtml:div class="flexRow" >
+        <i class="icon-svg_web-icon_p3_025-7_bodybuilding bodyIcon"></i>
+        <xhtml:p class="blockDescription" style="white-space: normal;">
+          {{'other.bodybuilding' | translate}}<br />
+          {{'other.people' | translate}} {{blockNine.percentage}}
+        </p>
+      </xhtml:div>
+    </foreignObject>
+  </g>
+</svg>

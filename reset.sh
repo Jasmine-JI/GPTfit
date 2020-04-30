@@ -19,7 +19,7 @@ if [ ! -L /var/www/html/dist/app ]; then
 fi
 tempIP=${IP_ADDR%192.168.1.235}
 if [ "${IP_ADDR#$tempIP}" == "192.168.1.235" ]; then
-  API_SERVER="/home/administrator/myWorkSpace/web"
+  API_SERVER="/home/dezhi/web"
   echo "!!!!!!!!!!!!!!!!!!!!!!!"
   if [ ! -L /var/www/html/dist/phpmyadmin ]; then
           ln -s /usr/share/phpmyadmin /var/www/html/dist/phpmyadmin

@@ -17,7 +17,7 @@ if (address === '192.168.1.235' || address === '172.17.0.1') {
   connectInfo = {
     host: "localhost",
     user: "root",
-    password: "1234",
+    password: "A1atech",
     database: "alatech",
     multipleStatements: true
   };
@@ -66,7 +66,7 @@ function reconnect(connection) {
   //- Create a new one
   connection = mysql.createPool(connectInfo);
 
-  //- Try to reconnect
+  /***- Try to reconnect
   connection.getConnection(function (err) {
     if (err) {
       //- Try to connect every 2 seconds.
@@ -75,7 +75,7 @@ function reconnect(connection) {
       if (reconnectNum % 12 === 0) {
         const mailOptions = {
           from: 'noreply@alatech.com.tw',
-          to: 'roy_lee@alatech.com.tw;buddalee1stlove@gmail.com',
+          to: 'kidin_liu@alatech.com.tw;',
           subject: `${address}主機，nodejs發生錯誤囉!!`,
           text: `
               資料庫連線發生錯誤處理<br>
@@ -90,6 +90,7 @@ function reconnect(connection) {
       return connection;
     }
   });
+  ***/
 }
 // 對於非同步沒處理到的reject的處理
 process.on('unhandledRejection', (reason, promise) => {

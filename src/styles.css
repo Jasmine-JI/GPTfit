@@ -424,6 +424,16 @@ a.ban-send:hover {
   text-decoration: none;
 }
 
+.flexCol {
+  display: flex;
+  flex-direction: column;
+}
+
+.flexRow {
+  display: flex;
+  flex-direction: row;
+}
+
 @media(max-width: 991px) {
   .access-bg {
     margin-top: -63px;

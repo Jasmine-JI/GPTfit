@@ -104,14 +104,14 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   iszoneChartTargetDisplay = false;
   iswattChartTargetDisplay = false;
 
-  Proficiency = 'metacarpus';  // 使用者重訓熟練度設定(預設進階者)-kidin-1081122
+  proficiency = 'metacarpus';  // 使用者重訓熟練度設定(預設進階者)-kidin-1081122
   activityInfo: any;
   fileInfo: any;
   infoDate: string;
   activityPoints: any;
   activityLaps: any;
   isLoading = false;
-  token: string;
+  token = '';
   isPortal = false;
   isShowNoRight = false;
   isFileIDNotExist = false;
@@ -171,6 +171,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   passLogin = false;  // 儲存是否為免登狀態-kidin-1081121
   hideButton = false; // 隱藏預覽列印和返回兩個按鈕-kidin-1081024
   deviceImgUrl: string;
+  loginId: number;
+
   constructor(
     private utils: UtilsService,
     private renderer: Renderer2,
@@ -227,7 +229,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // 從hid得到token後，讓使用者不用登入即可觀看個人運動詳細資料，並隱藏預覽列印和返回按鈕（待實做hid encode/decode）-Kidin-1081024
     if (this.route.snapshot.queryParamMap.get('hid') === null) {
-      this.token = this.utils.getToken();
+      this.token = this.utils.getToken() || '';
     } else {
       this.token = this.route.snapshot.queryParamMap.get('hid');
       this.passLogin = true;
@@ -249,7 +251,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           this.deviceImgUrl = `http://${location.hostname}/app/public_html/products${this.deviceInfo.modelImg}`;
         }
 
-        if (this.deviceInfo) {
+        if (this.classInfo) {
           this.classInfo = res['groupInfo'].info;
           this.classInfo.groupIcon =
             this.classInfo.groupIcon && this.classInfo.groupIcon.length > 0
@@ -308,11 +310,12 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       if (
         !this.isLoadedOtherDetail &&
-        ((this.fileInfo.equipmentSN && this.fileInfo.equipmentSN.length > 0)
+        ((this.fileInfo.equipmentSN && this.fileInfo.equipmentSN.length > 0 && this.fileInfo.equipmentSN[0] !== '')
         || coachId || groupId)
       ) {
+        const [sn] = this.fileInfo.equipmentSN;
         this.activityOtherDetailsService.fetchOtherDetail(
-          this.fileInfo.equipmentSN,
+          sn,
           coachId,
           groupId
         );
@@ -336,8 +339,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
 
   handleLessonInfo(str) {
     this.totalLessonInfo = str.replace(/\r\n|\n/g, '').trim();
-    if (this.totalLessonInfo.length > 118) {
-      this.lessonInfo = this.totalLessonInfo.substring(0, 118);
+    if (this.totalLessonInfo.length > 40) {
+      this.lessonInfo = this.totalLessonInfo.substring(0, 40);
       this.isLessonMoreDisplay = true;
     } else {
       this.lessonInfo = this.totalLessonInfo;
@@ -347,8 +350,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
 
   handleCoachInfo(str) {
     this.totalCoachDesc = str.replace(/\r\n|\n/g, '').trim();
-    if (this.totalCoachDesc.length > 118) {
-      this.coachDesc = this.totalCoachDesc.substring(0, 118);
+    if (this.totalCoachDesc.length > 40) {
+      this.coachDesc = this.totalCoachDesc.substring(0, 40);
       this.isCoachMoreDisplay = true;
     } else {
       this.coachDesc = this.totalCoachDesc;
@@ -368,12 +371,20 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
 
   handleBMap() {
     this.bmap = new BMap.Map(this.bmapElement.nativeElement);
-    let isNormalPoint = false;
+    let isNormalPoint = false,
+        fillData = null;
     const originRealIdx = [];
     this.activityPoints.forEach((_point, idx) => {
-      if (+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100) {
+      if (fillData === null
+        && (+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100)
+        || (_point.latitudeDegrees === null && _point.longitudeDegrees === null)
+      ) {
         isNormalPoint = false;
         this.gpxBmapPoints.push(null);  // 若使用者沒有移動，則在該點補上null值-kidin-1081203(Bug 337)
+      } else if ((+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100)
+      || (_point.latitudeDegrees === null && _point.longitudeDegrees === null)) {
+        isNormalPoint = false;
+        this.gpxPoints.push(fillData);
       } else {
         if (!isNormalPoint) {
           isNormalPoint = true;
@@ -397,6 +408,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           );
         }
         this.gpxBmapPoints.push(p);
+        fillData = p;
       }
     });
     this.gpxBmapPoints = this.gpxBmapPoints.map((_gpxPoint, idx) => {
@@ -485,12 +497,22 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     };
     this.map = new google.maps.Map(this.gmapElement.nativeElement, mapProp);
     const bounds = new google.maps.LatLngBounds();
-    let isNormalPoint = false;
+    let isNormalPoint = false,
+        fillData = null;
     const originRealIdx = [];
+
+    // 若使用者沒有移動，則在該點補上null值或填補值-kidin-1081203(Bug 337)(Bug 1141)
     this.activityPoints.forEach((_point, idx) => {
-      if (+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100) {
+      if (fillData === null
+        && ((+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100)
+        || (_point.latitudeDegrees === null && _point.longitudeDegrees === null))
+      ) {
         isNormalPoint = false;
-        this.gpxPoints.push(null); // 若使用者沒有移動，則在該點補上null值-kidin-1081203(Bug 337)
+        this.gpxPoints.push(null);
+      } else if ((+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100)
+      || (_point.latitudeDegrees === null && _point.longitudeDegrees === null)) {
+        isNormalPoint = false;
+        this.gpxPoints.push(fillData);
       } else {
         if (!isNormalPoint) {
           isNormalPoint = true;
@@ -514,6 +536,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           );
         }
         this.gpxPoints.push(p);
+        fillData = p;
       }
     });
     this.gpxPoints = this.gpxPoints.map((_gpxPoint, idx) => {
@@ -595,9 +618,9 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // 根據重訓熟練度重繪肌肉地圖-kidin-1081114
-  handleProficiency(e) {
-    this.Proficiency = e.value;
-    this.activityService.saveProficiency(this.Proficiency);
+  handleproficiency(e) {
+    this.proficiency = e.value;
+    this.activityService.saveproficiency(this.proficiency);
     this.muscleMap.initMuscleMap();
     this.muscleTrainList.initMuscleList();
   }
@@ -685,19 +708,19 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     this.activityService.fetchSportListDetail(body).toPromise()
       .then(res => {
         // 針對無該運動紀錄會無權限閱覽給予不同回應-kidin-1081203(Bug 940)
-        if (res.resultMessage === 'Request Failed') {
+        if (res.resultCode === 400) {
           this.isFileIDNotExist = true;
           return this.router.navigateByUrl('/404');
-        } else if (res.resultMessage === 'Get sport list detail fail, privacy is not match with target user.') {
+        } else if (res.resultCode === 403) {
           return this.router.navigateByUrl('/403');
         }
         this.activityInfo = res.activityInfoLayer;
         this.activityName = res.fileInfo.dispName;
         this.activityNameBeforeState = res.fileInfo.dispName;
         if (this.activityInfo.type === '3') {
-          this.saveWeightTrainingData(res.activityLapLayer);
+          this.saveWeightTrainingData(res.activityInfoLayer);
         }
-        if (res.resultCode === 401 && res.resultCode === 402) {
+        if (res.resultCode === 401 || res.resultCode === 402) {
           this.isShowNoRight = true;
           this.isLoading = false;
           this.progressRef.complete();
@@ -768,8 +791,9 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           if (this.fileInfo.class) {
             groupId = this.fileInfo.class.split('?groupId=')[1];
           }
+          const [sn] = this.fileInfo.equipmentSN;
           this.activityOtherDetailsService.fetchOtherDetail(
-            this.fileInfo.equipmentSN,
+            sn,
             coachId,
             groupId
           );
@@ -796,7 +820,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // 將user體重另外存取以提供給肌肉地圖使用-kidin-1081121
-  saveWeightTrainingData(lapData) {
+  saveWeightTrainingData(data) {
       const body = {
         token: this.token,
         avatarType: 2,
@@ -808,8 +832,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
             const weight = res.info.weight;
             this.activityService.saveUserWeight(weight);
           }
-          this.activityService.saveLapsData(lapData);
-          this.activityService.saveProficiency(this.Proficiency);
+          this.activityService.saveLapsData(data);
+          this.activityService.saveproficiency(this.proficiency);
           this.dataLoading = false;
         });
   }
@@ -937,6 +961,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           hrFormatData.userRestHR = res.info.heartRateResting;
           hrFormatData.userHRBase = res.info.heartRateBase;
           this.createChart(hrFormatData);
+
+          this.loginId = +res.info.nameId;  // 取得登入者id來確認是否為該運動檔案持有人-kidin-1090225
         }
       });
     } else {
@@ -960,6 +986,14 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           hrFormatData.userHRBase = res;
         }
       });
+
+      // 取得登入者id來確認是否為該運動檔案持有人-kidin-1090225
+      this.userInfoService.getUserId().subscribe(res => {
+        if (res !== null) {
+          this.loginId = +res;
+        }
+      });
+
       this.createChart(hrFormatData);
     }
     this.passLogin = false;
@@ -1052,11 +1086,29 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.activityName = this.activityNameBeforeState;
       this.editNameMode = false;
     } else if (e.key === 'Enter' && this.activityName !== this.activityNameBeforeState) {
+      const timeZoneMinite = new Date(),
+            timeZone = -(timeZoneMinite.getTimezoneOffset() / 60),
+            editDate = moment().format('YYYY-MM-DD'),
+            editTime = moment().format('hh:mm:ss');
+
+      let timeZoneStr = '';
+      if (timeZone < 10 && timeZone >= 0) {
+        timeZoneStr = `+0${timeZone}`;
+      } else if (timeZone > 10) {
+        timeZoneStr = `+${timeZone}`;
+      } else if (timeZone > -10 && timeZone < 0) {
+        timeZoneStr = `-0${timeZone}`;
+      } else {
+        timeZoneStr = `-${timeZone}`;
+      }
+
+      // 補上傳編輯時間-kidin-1090131
       const body = {
         token: this.token,
         fileId: this.fileId,
         fileInfo: {
-          dispName: this.activityName
+          dispName: this.activityName,
+          editDate: `${editDate}T${editTime}${timeZoneStr}:00`
         }
       };
       this.activityService.fetchEditActivityProfile(body).subscribe(res => {

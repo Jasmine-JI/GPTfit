@@ -3,11 +3,12 @@
     {{ 'Dashboard.Group.GroupInfo.groupInfo' | translate}}
   </span> -->
   <div class="col-md-3 group-image--area" *ngIf="!isPreviewMode">
-    <img *ngIf="groupImg"
+    <img *ngIf="groupImg && !isGroupInfoLoading"
       [src]="(groupImg | safeHtml)"
       [class.image-is--default]="groupImg === '/assets/images/group-default.svg'"
       class="groupImgSet"
     >
+    <mat-spinner [diameter]="100" *ngIf="isGroupInfoLoading"></mat-spinner>
     <ul class="nav">
       <li [class.active]="chooseIdx === 1"
         (click)="handleGroupItem(1)"
@@ -23,21 +24,21 @@
         (click)="handleGroupItem(3)"
       >{{ 'Dashboard.privacySettings.set' | translate}}</li>
       <li [class.active]="chooseIdx === 4"
-          *ngIf="groupLevel === '60'"
+          *ngIf="groupLevel === '60' && brandType === 1 && !isOutage"
           (click)="handleGroupItem(4)"
-        >我的報告</li>
+      >我的報告</li>
       <li [class.active]="chooseIdx === 5"
-          *ngIf="groupLevel === '60' && accessRight < 60"
+          *ngIf="groupLevel === '60' && accessRight < 60 && brandType === 1 && !isOutage"
           (click)="handleGroupItem(5)"
-        >課程分析</li>
-      <!-- 先用router
-        <li [class.active]="chooseIdx === 4"
-          (click)="handleGroupItem(4)"
-        >我的報告</li>
-        <li [class.active]="chooseIdx === 5"
-          (click)="handleGroupItem(5)"
-        >課程分析</li>
-      -->
+      >課程分析</li>
+      <li [class.active]="chooseIdx === 6"
+        *ngIf="accessRight < 60 && brandType === 2 && !isOutage"
+        (click)="handleGroupItem(6)"
+      >{{ 'Dashboard.SportReport.sportReport' | translate}}</li>
+      <li [class.active]="chooseIdx === 7"
+        *ngIf="accessRight < 60 && brandType === 2 && !isOutage"
+        (click)="handleGroupItem(7)"
+      >{{ 'other.lifeTracking' | translate}}</li>
     </ul>
   </div>
   <div [class.col-md-9]="!isPreviewMode" [class.previewPrint]="isPreviewMode">
@@ -45,11 +46,15 @@
       <div class="group-edit-bar">
         <span class="group-handle-name">
           {{ 'Dashboard.Group.GroupInfo.groupInfo' | translate}}
+          <span style="color: red;" *ngIf="commerceInfo?.commerceStatus === '2' && !editManageMode">
+            -({{ 'Dashboard.BrandManagement.outOfService' | translate}})
+          </span>
         </span>
         <div class="rwd-btn_action">
           <button class="icon-btn" style="margin-right: 15px;color:#919191"
             (click)="openShareGroupInfoDialog()"
             title="{{ 'SH.share' | translate }}"
+            *ngIf="!isOutage"
           >
             <i class="icon-svg_web-icon_p1_013-share"
               style="font-size: 30px"
@@ -57,14 +62,14 @@
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="{{ 'Dashboard.Group.GroupInfo.applicationsForJoin' | translate}}"
-            *ngIf="(joinStatus === 5 || joinStatus === 3 ) && (!visitorDetail?.isGroupAdmin || groupLevel === '80')"
+            *ngIf="(joinStatus === 5 || joinStatus === 3 ) && (!visitorDetail?.isGroupAdmin || groupLevel === '80') && !isOutage"
             (click)="handleActionGroup(1)"
           >
             {{ 'Dashboard.Group.GroupInfo.applicationsForJoin' | translate}}
           </button>
           <button class="alatech-btn alatech-btn--default group-btn--waiting"
             title="{{'Dashboard.Group.GroupInfo.cancelJoin' | translate}}"
-            *ngIf="joinStatus === 1"
+            *ngIf="joinStatus === 1 && !isOutage"
             (click)="handleActionGroup(2)"
           >
             {{'Dashboard.Group.GroupInfo.cancelJoin' | translate}}
@@ -73,18 +78,19 @@
             title="{{'Dashboard.Group.GroupInfo.exitGroup' | translate}}"
             *ngIf="joinStatus === 2 &&
             (!visitorDetail?.isGroupAdmin
-            ||
+             ||
             (groupLevel === '80' && normalGroupAdministrators && normalGroupAdministrators?.length > 1)
-            ||
+             ||
             (groupLevel === '40' && branchAdministrators && branchAdministrators?.length > 1)
-            )"
+            )
+             && !isOutage"
             (click)="handleActionGroup(2)"
           >
             {{'Dashboard.Group.GroupInfo.exitGroup' | translate}}
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="{{'Dashboard.Group.GroupInfo.management' | translate}}"
-            *ngIf="visitorDetail?.isCanManage"
+            *ngIf="visitorDetail?.isCanManage && !isOutage"
             (click)="goEditPage()"
           >
             {{'Dashboard.Group.GroupInfo.management' | translate}}
@@ -136,6 +142,7 @@
         <mat-tab-group (selectedTabChange)="changeGroupInfo($event)" class="ala-tab-group">
           <mat-tab label="{{ 'Dashboard.Group.GroupInfo.subgroup' | translate}}"
             *ngIf="groupLevel !== '80'"
+            [disabled]="isLoading"
           >
             <ng-container  *ngIf="!isLoading">
               <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
@@ -212,7 +219,7 @@
               <mat-spinner></mat-spinner>
             </div>
           </mat-tab>
-          <mat-tab label="{{ 'Dashboard.Group.GroupInfo.administrator' | translate}}">
+          <mat-tab label="{{ 'Dashboard.Group.GroupInfo.administrator' | translate}}" [disabled]="isLoading">
             <ng-container *ngIf="!isLoading">
               <ng-container *ngIf="groupLevel && groupLevel !== '80'">
                 <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
@@ -359,7 +366,7 @@
               <mat-spinner></mat-spinner>
             </div>
           </mat-tab>
-          <mat-tab label="{{ 'Dashboard.Group.generalMember' | translate}}">
+          <mat-tab label="{{ 'Dashboard.Group.generalMember' | translate}}" [disabled]="isLoading">
             <ng-container *ngIf="!isLoading">
               <span *ngIf="normalMemberInfos && normalMemberInfos.length === 0">{{'SH.noData' | translate}}</span>
               <ng-container  *ngFor="let item of normalMemberInfos">
@@ -384,7 +391,7 @@
               <mat-spinner></mat-spinner>
             </div>
           </mat-tab>
-          <mat-tab label="{{ 'Dashboard.Group.GroupInfo.pendingMember' | translate}}">
+          <mat-tab label="{{ 'Dashboard.Group.GroupInfo.pendingMember' | translate}}" [disabled]="isLoading">
             <ng-container *ngIf="!isLoading">
               <span *ngIf="groupInfos && groupInfos.length === 0">{{'SH.noData' | translate}}</span>
               <ng-container  *ngFor="let item of groupInfos">
@@ -413,6 +420,30 @@
       </div>
     </ng-container>
     <ng-container *ngIf="chooseIdx === 2 && !isCommerceInfoLoading">
+      <div class="flexRow" style="margin-bottom: 10px;">
+        <button
+          class="alatech-btn alatech-btn--default"
+          *ngIf="+accessRight <= 29 && !editManageMode"
+          (click)="editMode(true)"
+        >
+          {{'Dashboard.Group.GroupInfo.edit' | translate}}
+        </button>
+        <button
+          class="alatech-btn alatech-btn--default"
+          *ngIf="editManageMode"
+          (click)="editManage()"
+        >
+          {{'Dashboard.Settings.finishEdit' | translate}}
+        </button>
+        <button
+          class="alatech-btn alatech-btn--default"
+          style="color: red; border-color: red; margin-left: 100px;"
+          *ngIf="editManageMode"
+          (click)="editMode(false)"
+        >
+          {{'SH.cancel' | translate}}
+        </button>
+      </div>
       <label class="group-label" *ngIf="brandType == 1">
         {{ 'Dashboard.Group.GroupInfo.brand' | translate}}
       </label>
@@ -421,43 +452,104 @@
       </label>
       <div class="group-list">
         <div class="group-list-item">{{ 'Dashboard.Group.GroupInfo.status' | translate}}：
-          <span *ngIf="commerceInfo?.commerceStatus === '1'">{{ 'Dashboard.BrandManagement.InOperation' | translate}}</span>
-          <span *ngIf="commerceInfo?.commerceStatus === '2'">{{ 'Dashboard.BrandManagement.outOfService' | translate}}</span>
-          <span *ngIf="commerceInfo?.commerceStatus === '3'">{{ 'Dashboard.BrandManagement.outOfBusiness' | translate}}</span>
-          <span *ngIf="commerceInfo?.commerceStatus === '4'">{{ 'Dashboard.BrandManagement.toBeDestroyed' | translate}}</span>
+          <span *ngIf="commerceInfo?.commerceStatus === '1' && !editManageMode">
+            {{ 'Dashboard.BrandManagement.InOperation' | translate}}
+          </span>
+          <span *ngIf="commerceInfo?.commerceStatus === '2' && !editManageMode">
+            {{ 'Dashboard.BrandManagement.outOfService' | translate}}
+          </span>
+          <span *ngIf="commerceInfo?.commerceStatus === '3' && !editManageMode">
+            {{ 'Dashboard.BrandManagement.outOfBusiness' | translate}}
+          </span>
+          <span *ngIf="commerceInfo?.commerceStatus === '4' && !editManageMode">
+            {{ 'Dashboard.BrandManagement.toBeDestroyed' | translate}}
+          </span>
+          <span *ngIf="editManageMode" class="groupEditSelect">
+            <mat-form-field style="width: 120px; text-align: center;">
+              <mat-select
+                [(value)]="editContent.status"
+              >
+                <mat-option value="1">
+                  {{'Dashboard.BrandManagement.InOperation' | translate}}
+                </mat-option>
+                <mat-option value="2">
+                  {{'Dashboard.BrandManagement.outOfService' | translate}}
+                </mat-option>
+                <mat-option value="3" *ngIf="accessRight <= 10">
+                  {{'Dashboard.BrandManagement.outOfBusiness' | translate}}
+                </mat-option>
+                <mat-option value="4" *ngIf="accessRight <= 10">
+                  {{'Dashboard.BrandManagement.toBeDestroyed' | translate}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </span>
         </div>
       </div>
       <label  class="group-label">
-        {{ 'Dashboard.BrandManagement.totalMember' | translate}}
+        {{'Dashboard.BrandManagement.totalMember' | translate}}
       </label>
       <div class="group-list">
         <div class="group-list-item"
 [class.full]="(+commerceInfo?.groupManagerStatus.currentBrandManagers) +
 (+commerceInfo?.groupManagerStatus.currentBranchManagers)
 + (+commerceInfo?.groupManagerStatus.currentFitnessCoaches) + (+commerceInfo?.groupManagerStatus.currentCoaches) +
-(+commerceInfo?.groupManagerStatus.currentGeneralGroupManagers) === (+commerceInfo?.groupManagerStatus.maxGroupManagers)"
+(+commerceInfo?.groupManagerStatus.currentGeneralGroupManagers) >= (+commerceInfo?.groupManagerStatus.maxGroupManagers)
+&& !editManageMode
+"
         >
           {{ 'Dashboard.BrandManagement.numberOfAdministrators' | translate}}：
-          {{
-            +commerceInfo?.groupManagerStatus.currentBrandManagers + +commerceInfo?.groupManagerStatus.currentBranchManagers
-            + +commerceInfo?.groupManagerStatus.currentFitnessCoaches + +commerceInfo?.groupManagerStatus.currentCoaches + +commerceInfo?.groupManagerStatus.currentGeneralGroupManagers
-          }}/{{commerceInfo?.groupManagerStatus.maxGroupManagers}}
+          <span *ngIf="!editManageMode">
+            {{
+              +commerceInfo?.groupManagerStatus.currentBrandManagers + +commerceInfo?.groupManagerStatus.currentBranchManagers
+              + +commerceInfo?.groupManagerStatus.currentFitnessCoaches + +commerceInfo?.groupManagerStatus.currentCoaches + +commerceInfo?.groupManagerStatus.currentGeneralGroupManagers
+            }}/{{commerceInfo?.groupManagerStatus.maxGroupManagers}}
+          </span>
 <span *ngIf="(+commerceInfo?.groupManagerStatus.currentBrandManagers) +
-(+commerceInfo?.groupManagerStatus.currentBranchManagers)
-+ (+commerceInfo?.groupManagerStatus.currentFitnessCoaches) + (+commerceInfo?.groupManagerStatus.currentCoaches) +
-(+commerceInfo?.groupManagerStatus.currentGeneralGroupManagers) === (+commerceInfo?.groupManagerStatus.maxGroupManagers)">
+  (+commerceInfo?.groupManagerStatus.currentBranchManagers)
+  + (+commerceInfo?.groupManagerStatus.currentFitnessCoaches) + (+commerceInfo?.groupManagerStatus.currentCoaches) +
+  (+commerceInfo?.groupManagerStatus.currentGeneralGroupManagers) >= (+commerceInfo?.groupManagerStatus.maxGroupManagers)
+  && !editManageMode
+">
   ({{ 'Dashboard.Group.GroupInfo.groupFull' | translate}})
 </span>
+          <span *ngIf="editManageMode">
+            <mat-form-field class="editManageInput">
+              <input matInput
+                [(ngModel)]="editContent.administratorNum"
+                [maxlength]="5"
+                (change)="checkValue($event, 'administratorNum')"
+                name="administratorNum"
+                required
+              >
+            </mat-form-field>
+          </span>
         </div>
         <div class="group-list-item"
-[class.full]="+commerceInfo?.groupMemberStatus.currentGroupMembers ===
-+commerceInfo?.groupMemberStatus.maxGroupMembers"
+[class.full]="+commerceInfo?.groupMemberStatus.currentGroupMembers >=
++commerceInfo?.groupMemberStatus.maxGroupMembers && !editManageMode"
         >{{ 'Dashboard.BrandManagement.totalNumberPeople' | translate}}：
-          {{+commerceInfo?.groupMemberStatus.currentGroupMembers}}/{{+commerceInfo?.groupMemberStatus.maxGroupMembers}}
-        <span *ngIf="+commerceInfo?.groupMemberStatus.currentGroupMembers ===
-        +commerceInfo?.groupMemberStatus.maxGroupMembers">
-          ({{ 'Dashboard.Group.GroupInfo.groupFull' | translate}})
-        </span>
+          <span *ngIf="!editManageMode">
+            {{+commerceInfo?.groupMemberStatus.currentGroupMembers}}/{{+commerceInfo?.groupMemberStatus.maxGroupMembers}}
+          </span>
+
+          <span *ngIf="+commerceInfo?.groupMemberStatus.currentGroupMembers >=
+            +commerceInfo?.groupMemberStatus.maxGroupMembers
+            && !editManageMode
+          ">
+            ({{ 'Dashboard.Group.GroupInfo.groupFull' | translate}})
+          </span>
+          <span *ngIf="editManageMode">
+            <mat-form-field class="editManageInput">
+              <input matInput
+                [(ngModel)]="editContent.memberNum"
+                [maxlength]="5"
+                name="memberNum"
+                required
+                (change)="checkValue($event, 'memberNum')"
+              >
+            </mat-form-field>
+          </span>
         </div>
       </div>
       <label  class="group-label">
@@ -465,36 +557,94 @@
       </label>
       <div class="group-list">
         <div class="group-list-item">{{ 'Dashboard.BrandManagement.currentPlan' | translate}}：
-          <span *ngIf="commerceInfo?.commercePlan === '1'">{{ 'Dashboard.BrandManagement.experiencePlan' | translate}}</span>
-          <span *ngIf="commerceInfo?.commercePlan === '2'">{{ 'Dashboard.BrandManagement.studioPlan' | translate}}</span>
-          <span *ngIf="commerceInfo?.commercePlan === '3'">{{ 'Dashboard.BrandManagement.smePlan' | translate}}</span>
-          <span *ngIf="commerceInfo?.commercePlan === '99'">{{ 'Dashboard.BrandManagement.customPlan' | translate}}</span>
+          <span *ngIf="commerceInfo?.commercePlan === '1' && !editManageMode">
+            {{ 'Dashboard.BrandManagement.experiencePlan' | translate}}
+          </span>
+          <span *ngIf="commerceInfo?.commercePlan === '2' && !editManageMode">
+            {{ 'Dashboard.BrandManagement.studioPlan' | translate}}
+          </span>
+          <span *ngIf="commerceInfo?.commercePlan === '3' && !editManageMode">
+            {{ 'Dashboard.BrandManagement.smePlan' | translate}}
+          </span>
+          <span *ngIf="commerceInfo?.commercePlan === '99' && !editManageMode">
+            {{ 'Dashboard.BrandManagement.customPlan' | translate}}
+          </span>
+          <span *ngIf="editManageMode" class="groupEditSelect">
+            <mat-form-field style="width: 150px; text-align: center;">
+              <mat-select
+                [(value)]="editContent.plan"
+                (selectionChange)="editManageContent($event)"
+              >
+                <mat-option value="1">{{'Dashboard.BrandManagement.experiencePlan' | translate}}</mat-option>
+                <mat-option value="2">{{'Dashboard.BrandManagement.studioPlan' | translate}}</mat-option>
+                <mat-option value="3">{{'Dashboard.BrandManagement.smePlan' | translate}}</mat-option>
+                <mat-option value="99">{{'Dashboard.BrandManagement.customPlan' | translate}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </span>
         </div>
         <div class="group-list-item">{{ 'Dashboard.BrandManagement.authorizationDueDate' | translate}}：
-          {{(commerceInfo?.commercePlanExpired) | date: 'y/MM/dd'}}</div>
+          <span *ngIf="!editManageMode">
+            {{(commerceInfo?.commercePlanExpired) | date: 'y/MM/dd'}}
+          </span>
+          <span *ngIf="editManageMode">
+            <app-date-range-picker
+              (selectDateRange)="getSelectDate($event)"
+              [pickerType]="'singlePicker'"
+              [refStartDate]="commerceInfo?.commercePlanExpired"
+              [default]="'nextYear'"
+            ></app-date-range-picker>
+          </span>
+        </div>
       </div>
       <label  class="group-label">
         {{ 'Dashboard.BrandManagement.numberOfGroups' | translate}}
       </label>
       <div class="group-list">
         <div class="group-list-item"
-          [class.full]="commerceInfo?.groupStatus.currentBranches === commerceInfo?.groupStatus.maxBranches"
+          [class.full]="+commerceInfo?.groupStatus.currentBranches >= +commerceInfo?.groupStatus.maxBranches && !editManageMode"
         >
-          <span *ngIf="brandType == 1">{{ 'Dashboard.BrandManagement.numberOfBranches' | translate}}</span>
-          <span *ngIf="brandType == 2">{{ 'other.subComNumber' | translate}}</span>
-          ：{{commerceInfo?.groupStatus.currentBranches}}/{{commerceInfo?.groupStatus.maxBranches}}
-          <span *ngIf="commerceInfo?.groupStatus.currentBranches === commerceInfo?.groupStatus.maxBranches">
+          <span *ngIf="brandType == 1">{{ 'Dashboard.BrandManagement.numberOfBranches' | translate}}：</span>
+          <span *ngIf="brandType == 2">{{ 'other.subComNumber' | translate}}：</span>
+          <span *ngIf="!editManageMode">
+            {{commerceInfo?.groupStatus.currentBranches}}/{{commerceInfo?.groupStatus.maxBranches}}
+          </span>
+          <span *ngIf="+commerceInfo?.groupStatus.currentBranches >= +commerceInfo?.groupStatus.maxBranches && !editManageMode">
             ({{ 'Dashboard.Group.GroupInfo.groupFull' | translate}})
+          </span>
+          <span *ngIf="editManageMode">
+            <mat-form-field class="editManageInput">
+              <input matInput
+                [(ngModel)]="editContent.branchNum"
+                [maxlength]="5"
+                (change)="checkValue($event, 'branchNum')"
+                name="branchNum"
+                required
+              >
+            </mat-form-field>
           </span>
         </div>
         <div class="group-list-item"
-          [class.full]="commerceInfo?.groupStatus.currentClasses === commerceInfo?.groupStatus.maxClasses"
+          [class.full]="+commerceInfo?.groupStatus.currentClasses >= +commerceInfo?.groupStatus.maxClasses && !editManageMode"
         >
-          <span *ngIf="brandType == 1">{{ 'Dashboard.BrandManagement.numberOfClass' | translate}}</span>
-          <span *ngIf="brandType == 2">{{ 'other.departmentNumber' | translate}}</span>
-          ：{{commerceInfo?.groupStatus.currentClasses}}/{{commerceInfo?.groupStatus.maxClasses}}
-          <span *ngIf="(+commerceInfo?.groupStatus.currentClasses) === (+commerceInfo?.groupStatus.maxClasses)">
+          <span *ngIf="brandType == 1">{{ 'Dashboard.BrandManagement.numberOfClass' | translate}}：</span>
+          <span *ngIf="brandType == 2">{{ 'other.departmentNumber' | translate}}：</span>
+          <span *ngIf="!editManageMode">
+            {{commerceInfo?.groupStatus.currentClasses}}/{{commerceInfo?.groupStatus.maxClasses}}
+          </span>
+          <span *ngIf="(+commerceInfo?.groupStatus.currentClasses) >= (+commerceInfo?.groupStatus.maxClasses)">
             ({{ 'Dashboard.Group.GroupInfo.groupFull' | translate}})
+          </span>
+          <span *ngIf="editManageMode">
+            <mat-form-field class="editManageInput">
+              <input matInput
+                [(ngModel)]="editContent.classORdepartmentNum"
+                [maxlength]="5"
+                (change)="checkValue($event, 'classORdepartmentNum')"
+                name="classORdepartmentNum"
+                required
+              >
+            </mat-form-field>
           </span>
         </div>
       </div>
@@ -579,6 +729,12 @@
     </ng-container>
     <ng-container *ngIf="chooseIdx === 5">
       <app-class-analysis></app-class-analysis>
+    </ng-container>
+    <ng-container *ngIf="chooseIdx === 6">
+      <app-com-report></app-com-report>
+    </ng-container>
+    <ng-container *ngIf="chooseIdx === 7">
+      <app-com-life-tracking></app-com-life-tracking>
     </ng-container>
     <div style="display:flex;justify-content: center;align-items: center;height:100%"
       *ngIf="isCommerceInfoLoading"

@@ -1,6 +1,5 @@
 .device-hint {
   display: inline-block;
-  margin-left: 10px;
   position: relative;
   width: calc(100% - 340px);
   .device-hint-box {
@@ -27,6 +26,9 @@
 }
 .ala-form__label.settings-item {
   margin-bottom: 10px;
+  text-align: left;
+  display: flex;
+  flex-direction: row;
 }
 .ala-tab-group {
   .mat-tab-labels {
@@ -48,4 +50,16 @@
 }
 .mat-tab-group.mat-primary .mat-ink-bar {
   background-color: #26abe3;
+}
+
+.batchModification {
+  text-decoration: underline;
+  cursor: pointer;
+  color: #919191;
+  margin-bottom: 15px;
+}
+
+.confirmBtn {
+  width: 75px;
+  margin-top: 20px;
 }

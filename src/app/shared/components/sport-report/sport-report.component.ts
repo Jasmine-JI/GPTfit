@@ -1,195 +1,142 @@
-import { NestedTreeControl } from '@angular/cdk/tree';
 import {
   Component,
-  Injectable,
   OnInit,
   Output,
-  EventEmitter
+  EventEmitter,
+  OnDestroy
 } from '@angular/core';
-import { MatTreeNestedDataSource } from '@angular/material/tree';
-import { BehaviorSubject } from 'rxjs';
 import { ViewEncapsulation } from '@angular/core';
 import * as moment from 'moment';
+import * as _Highcharts from 'highcharts';
 import { ReportService } from '../../services/report.service';
-import { UtilsService } from '@shared/services/utils.service';
-import { ActivatedRoute } from '@angular/router';
-import { TREE_DATA } from './treeData';
-import { TranslateService } from '@ngx-translate/core';
-import { HashIdService } from '@shared/services/hash-id.service';
 
-/**
- * Json node data with nested structure. Each node has a filename and a value or a list of children
- */
-export class FileNode {
-  children: FileNode[];
-  filename: string;
-  type: any;
-}
+const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
-/**
- * File database, it can build a tree structured Json object from string.
- * Each node in Json object represents a file or a directory. For a file, it has filename and type.
- * For a directory, it has filename and children (a list of files or directories).
- * The input will be a json object string, and the output is a list of `FileNode` with nested
- * structure.
- */
-@Injectable()
-export class FileDatabase {
-  dataChange = new BehaviorSubject<FileNode[]>([]);
-
-  get data(): FileNode[] { return this.dataChange.value; }
-
-  constructor(private translate: TranslateService) {
-    this.translate.onLangChange.subscribe(() => {
-      this.getAndInitTranslations();
-    });
-    this.getAndInitTranslations();
-  }
-  getAndInitTranslations() {
-    this.initialize(this.translate.currentLang);
-  }
-  initialize(lang) {
-    // Parse the string to json object.
-    const dataObject = JSON.parse(JSON.stringify(TREE_DATA[lang]));
-
-    // Build the tree nodes from Json object. The result is a list of `FileNode` with nested
-    //     file node as children.
-    const data = this.buildFileTree(dataObject, 0);
-
-    // Notify the change.
-    this.dataChange.next(data);
-  }
-
-  /**
-   * Build the file structure tree. The `value` is the Json object, or a sub-tree of a Json object.
-   * The return value is the list of `FileNode`.
-   */
-  buildFileTree(obj: object, level: number): FileNode[] {
-    return Object.keys(obj).reduce<FileNode[]>((accumulator, key) => {
-      const value = obj[key];
-      const node = new FileNode();
-      node.filename = key;
-
-      if (value != null) {
-        if (typeof value === 'object') {
-          node.children = this.buildFileTree(value, level + 1);
-        } else {
-          node.type = value;
-        }
-      }
-
-      return accumulator.concat(node);
-    }, []);
-  }
-}
-
-/**
- * @title Tree with nested nodes
- */
 @Component({
   selector: 'app-sport-report',
   templateUrl: './sport-report.component.html',
-  styleUrls: ['./sport-report.component.css'],
+  styleUrls: ['./sport-report.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  providers: [FileDatabase]
 })
-export class SportReportComponent implements OnInit {
-  nestedTreeControl: NestedTreeControl<FileNode>;
-  nestedDataSource: MatTreeNestedDataSource<FileNode>;
-  chooseType = '1-1';
+export class SportReportComponent implements OnInit, OnDestroy {
+  @Output() showPrivacyUi = new EventEmitter();
+
+  isPreviewMode = false;
+  chooseType = '99';
   timeType = 0;
   filterStartTime: string;
   filterEndTime: string;
+  reportStartTime: string;
+  reportEndTime: string;
   today = moment().format('YYYY/MM/DD');
   endWeekDay = moment()
     .add(6 - +moment().format('d'), 'days')
     .format('YYYY/MM/DD');
   datas = [];
-  chartName = '';
-  treeData: any;
   periodTimes = [];
   isLoading = false;
-  // to fix 之後多語系要注意
-  openTreeName = '所有運動';
-  targetUserId: string;
-  currentLang: string;
-  @Output() showPrivacyUi = new EventEmitter();
+  timeZoneStr = '';
+  selectedIndex = 0;
+
   constructor(
-    database: FileDatabase,
-    private reportService: ReportService,
-    private utils: UtilsService,
-    private route: ActivatedRoute,
-    private translate: TranslateService,
-    private hashIdService: HashIdService
+    private reportService: ReportService
   ) {
-    this.nestedTreeControl = new NestedTreeControl<FileNode>(this._getChildren);
-    this.nestedDataSource = new MatTreeNestedDataSource();
-    this.translate.onLangChange.subscribe(() => {
-      this.getAndInitTranslations();
-    });
-    this.getAndInitTranslations();
-    database.dataChange.subscribe(data => (this.nestedDataSource.data = data));
     this.filterEndTime = moment().format('YYYY/MM/DD');
     this.filterStartTime = moment()
       .subtract(6, 'days')
       .format('YYYY/MM/DD');
   }
 
-  hasNestedChild = (_: number, nodeData: FileNode) => !nodeData.type;
   ngOnInit() {
-    this.targetUserId = this.hashIdService.handleUserIdDecode(this.route.snapshot.paramMap.get('userId'));
-    const filterEndTime = moment().format('YYYY-MM-DDT23:59:59+08:00');
-    const filterStartTime = moment()
-      .subtract(6, 'days')
-      .format('YYYY-MM-DDT00:00:00+08:00');
-    this.generateTimePeriod();
-    const body = {
-      token: this.utils.getToken(),
-      type: 1,
-      filterStartTime,
-      filterEndTime,
-      targetUserId: ''
-    };
+    // 確認是否為預覽列印頁面-kidin-1090205
+    if (location.search.indexOf('ipm=s') > -1) {
+      this.isPreviewMode = true;
+    }
 
-    if (this.treeData) {
-      for (const sport in this.treeData) {
-        if (this.treeData.hasOwnProperty(sport)) {
-          for (const item in this.treeData[sport]) {
-            if (this.treeData.hasOwnProperty(sport)) {
-              const _sport = this.treeData[sport];
-              if (_sport[item] === this.chooseType) {
-                this.chartName = sport + ' ' + item;
-              }
-            }
-          }
+    // 確認url是否有query string-kidin-1090205
+    this.getTimeZone();
+    if (
+      location.search.indexOf('sport=') > -1 &&
+      location.search.indexOf('startdate=') > -1 &&
+      location.search.indexOf('enddate=') > -1 &&
+      location.search.indexOf('selectPeriod=') > -1
+    ) {
+      this.queryStringShowData();
+    } else {
+      this.reportEndTime = moment().format(`YYYY-MM-DDT23:59:59${this.timeZoneStr}`);
+      this.reportStartTime = moment()
+        .subtract(6, 'days')
+        .format(`YYYY-MM-DDT00:00:00${this.timeZoneStr}`);
+
+      this.reportService.setReportTime(this.reportStartTime, this.reportEndTime);
+      this.reportService.setPeriod('7');
+
+      this.generateTimePeriod();
+    }
+  }
+
+  // 依query string顯示資料-kidin-20191226
+  queryStringShowData () {
+    const queryString = location.search.replace('?', '').split('&');
+    for (let i = 0; i < queryString.length; i++) {
+      if (queryString[i].indexOf('sport=') > -1) {
+        this.handleRenderChart(queryString[i].replace('sport=', ''));
+      } else if (queryString[i].indexOf('startdate=') > -1) {
+        this.filterStartTime = queryString[i].replace('startdate=', '').replace(/-/g, '/');
+        this.reportStartTime = moment(queryString[i]
+          .replace('startdate=', ''), 'YYYY-MM-DD')
+          .format(`YYYY-MM-DDT00:00:00${this.timeZoneStr}`);
+      } else if (queryString[i].indexOf('enddate=') > -1) {
+        this.filterEndTime = queryString[i].replace('enddate=', '').replace(/-/g, '/');
+        this.reportEndTime = moment(queryString[i]
+          .replace('enddate=', ''), 'YYYY-MM-DD')
+          .format(`YYYY-MM-DDT23:59:59${this.timeZoneStr}`);
+      } else if (queryString[i].indexOf('selectPeriod=') > -1) {
+        this.reportService.setPeriod(queryString[i].replace('selectPeriod=', ''));
+        switch (queryString[i].replace('selectPeriod=', '')) {
+          case '7':
+            this.selectedIndex = 0;
+            this.changeGroupInfo(this.selectedIndex, 'url');
+            break;
+          case '30':
+            this.selectedIndex = 1;
+            this.changeGroupInfo(this.selectedIndex, 'url');
+            break;
+          case '182':
+            this.selectedIndex = 2;
+            this.changeGroupInfo(this.selectedIndex, 'url');
+            break;
+          default:
+            this.selectedIndex = 3;
+            this.changeGroupInfo(this.selectedIndex, 'url');
+            break;
         }
       }
     }
-    this.handleSportSummaryArray(body);
+    this.reportService.setReportTime(this.reportStartTime, this.reportEndTime);
   }
-  getAndInitTranslations() {
-    this.currentLang = this.translate.currentLang;
-    this.treeData = JSON.parse(JSON.stringify(TREE_DATA[this.currentLang]));
+
+  // 取得當地時區並加以處理-kidin-1090205
+  getTimeZone () {
+    const timeZoneMinite = new Date();
+    const timeZone = -(timeZoneMinite.getTimezoneOffset() / 60);
+    if (timeZone < 10 && timeZone >= 0) {
+      this.timeZoneStr = `+0${timeZone}:00`;
+    } else if (timeZone > 10) {
+      this.timeZoneStr = `+${timeZone}:00`;
+    } else if (timeZone > -10 && timeZone < 0) {
+      this.timeZoneStr = `-0${timeZone}:00`;
+    } else {
+      this.timeZoneStr = `-${timeZone}:00`;
+    }
   }
-  private _getChildren = (node: FileNode) => node.children;
-  handleRenderChart(type) {
+
+  // 切換運動type-kidin-1090205
+  handleRenderChart (type) {
     this.chooseType = type;
-    // chartName generate
-    if (this.treeData) {
-      for (const sport in this.treeData) {
-        if (this.treeData.hasOwnProperty(sport)) {
-          for (const item in this.treeData[sport]) {
-            if (this.treeData.hasOwnProperty(sport)) {
-              const _sport = this.treeData[sport];
-              if (_sport[item] === this.chooseType) {
-                this.chartName = sport + ' ' + item;
-              }
-            }
-          }
-        }
-      }
-    }
+    this.reportService.setReportCategory(this.chooseType);
   }
+
   generateTimePeriod() {
     this.periodTimes = [];
     let stamp = moment(this.filterStartTime).unix();
@@ -216,119 +163,89 @@ export class SportReportComponent implements OnInit {
       }
     }
   }
-  changeGroupInfo({ index }) {
-    this.timeType = index;
-    this.filterEndTime = moment().format('YYYY/MM/DD');
-    const day = moment().format('d');
-    if (this.timeType === 0) {
-      this.filterStartTime = moment()
-        .subtract(6, 'days')
-        .format('YYYY/MM/DD');
-    } else if (this.timeType === 1) {
-      this.filterStartTime = moment()
-        .subtract(29, 'days')
-        .format('YYYY/MM/DD');
-    } else if (this.timeType === 2) {
-      this.filterStartTime = moment()
-        .subtract(day, 'days')
-        .subtract(26, 'weeks')
-        .format('YYYY/MM/DD');
-      this.filterEndTime = moment()
-        .add(6 - +day, 'days')
-        .format('YYYY/MM/DD');
-    } else {
-      this.filterStartTime = moment()
-        .subtract(day, 'days')
-        .subtract(52, 'weeks')
-        .format('YYYY/MM/DD');
-      this.filterEndTime = moment()
-        .add(6 - +day, 'days')
-        .format('YYYY/MM/DD');
-    }
-    this.generateTimePeriod();
-    let filterEndTime = moment().format('YYYY-MM-DDT23:59:59+08:00');
 
-    let body = {};
-    let filterStartTime = '';
-    if (this.timeType === 0) {
-      filterStartTime = moment()
-        .subtract(6, 'days')
-        .format('YYYY-MM-DDT00:00:00+08:00');
-    } else if (this.timeType === 1) {
-      filterStartTime = moment()
-        .subtract(29, 'days')
-        .format('YYYY-MM-DDT00:00:00+08:00');
-    } else if (this.timeType === 2) {
-      filterStartTime = moment()
-        .subtract(day, 'days')
-        .subtract(26, 'weeks')
-        .format('YYYY-MM-DDT00:00:00+08:00');
-      filterEndTime = moment()
-        .add(6 - +day, 'days')
-        .format('YYYY-MM-DDT23:59:59+08:00');
-    } else {
-      filterStartTime = moment()
-        .subtract(day, 'days')
-        .subtract(52, 'weeks')
-        .format('YYYY-MM-DDT00:00:00+08:00');
-      filterEndTime = moment()
-        .add(6 - +day, 'days')
-        .format('YYYY-MM-DDT23:59:59+08:00');
-    }
-    if (this.timeType <= 1) {
-      body = {
-        token: this.utils.getToken(),
-        type: 1,
-        filterStartTime,
-        filterEndTime
-      };
-    } else {
-      body = {
-        token: this.utils.getToken(),
-        type: 2,
-        filterStartTime,
-        filterEndTime
-      };
-    }
-    this.handleSportSummaryArray(body);
-  }
-  handleSportSummaryArray(body) {
-    this.isLoading = true;
-    if (this.targetUserId) {
-      body.targetUserId = this.targetUserId;
-    }
-    this.reportService.fetchSportSummaryArray(body).subscribe(res => {
-      this.isLoading = false;
-      if (res.resultCode === 400 || res.resultCode === 401 || res.resultCode === 402) {
-        return this.showPrivacyUi.emit(true);
+  changeGroupInfo(e, method) {
+    if (method === 'url') {
+      this.timeType = e;
+      if (this.timeType === 0) {
+        this.reportService.setPeriod('7');
+      } else if (this.timeType === 1) {
+        this.reportService.setPeriod('30');
+      } else if (this.timeType === 2) {
+        this.reportService.setPeriod('182');
+      } else {
+        this.reportService.setPeriod('364');
       }
-      if (res.resultCode === 200) {
-        const { reportActivityDays, reportActivityWeeks } = res;
-        if (body.type === 1) {
-          this.datas = reportActivityDays;
-        } else {
-          this.datas = reportActivityWeeks;
-        }
-        this.showPrivacyUi.emit(false);
-      }
-    });
-  }
-  handleItem(targetNode) {
-    if (
-      targetNode.filename === '重訓' ||
-      targetNode.filename === '重训' ||
-      targetNode.filename === 'Weight Training' ||
-      targetNode.filename === '游泳' ||
-      targetNode.filename === 'Swimming'
-    ) {
-      return;
-    }
-    if (this.openTreeName === targetNode.filename) {
-      this.openTreeName = '';
     } else {
-      this.openTreeName = targetNode.filename;
+      this.timeType = e.index;
+      this.filterEndTime = moment().format('YYYY/MM/DD');
+      const day = moment().format('d');
+      if (this.timeType === 0) {
+        this.filterStartTime = moment()
+          .subtract(6, 'days')
+          .format('YYYY/MM/DD');
+        this.reportService.setPeriod('7');
+      } else if (this.timeType === 1) {
+        this.filterStartTime = moment()
+          .subtract(29, 'days')
+          .format('YYYY/MM/DD');
+        this.reportService.setPeriod('30');
+      } else if (this.timeType === 2) {
+        this.filterStartTime = moment()
+          .subtract(day, 'days')
+          .subtract(26, 'weeks')
+          .format('YYYY/MM/DD');
+        this.filterEndTime = moment()
+          .add(6 - +day, 'days')
+          .format('YYYY/MM/DD');
+        this.reportService.setPeriod('182');
+      } else {
+        this.filterStartTime = moment()
+          .subtract(day, 'days')
+          .subtract(52, 'weeks')
+          .format('YYYY/MM/DD');
+        this.filterEndTime = moment()
+          .add(6 - +day, 'days')
+          .format('YYYY/MM/DD');
+        this.reportService.setPeriod('364');
+      }
+      this.generateTimePeriod();
+      let filterEndTime = moment().format(`YYYY-MM-DDT23:59:59${this.timeZoneStr}`);
+
+      let filterStartTime = '';
+      if (this.timeType === 0) {
+        filterStartTime = moment()
+          .subtract(6, 'days')
+          .format(`YYYY-MM-DDT00:00:00${this.timeZoneStr}`);
+      } else if (this.timeType === 1) {
+        filterStartTime = moment()
+          .subtract(29, 'days')
+          .format(`YYYY-MM-DDT00:00:00${this.timeZoneStr}`);
+      } else if (this.timeType === 2) {
+        filterStartTime = moment()
+          .subtract(day, 'days')
+          .subtract(26, 'weeks')
+          .format(`YYYY-MM-DDT00:00:00${this.timeZoneStr}`);
+        filterEndTime = moment()
+          .add(6 - +day, 'days')
+          .format(`YYYY-MM-DDT23:59:59${this.timeZoneStr}`);
+      } else {
+        filterStartTime = moment()
+          .subtract(day, 'days')
+          .subtract(52, 'weeks')
+          .format(`YYYY-MM-DDT00:00:00${this.timeZoneStr}`);
+        filterEndTime = moment()
+          .add(6 - +day, 'days')
+          .format(`YYYY-MM-DDT23:59:59${this.timeZoneStr}`);
+      }
+
+      this.reportStartTime = filterStartTime;
+      this.reportEndTime = filterEndTime;
     }
+
+    this.reportService.setReportTime(this.reportStartTime, this.reportEndTime);
   }
+
   shiftPreTime() {
     if (this.timeType === 0) {
       this.filterEndTime = moment(this.filterStartTime)
@@ -361,25 +278,18 @@ export class SportReportComponent implements OnInit {
         .subtract(52, 'weeks')
         .format('YYYY/MM/DD');
     }
-    const filterEndTime = moment(this.filterEndTime).format(
-      'YYYY-MM-DDT23:59:59+08:00'
+    this.reportEndTime = moment(this.filterEndTime).format(
+      `YYYY-MM-DDT23:59:59${this.timeZoneStr}`
     );
-    const filterStartTime = moment(this.filterStartTime).format(
-      'YYYY-MM-DDT00:00:00+08:00'
+    this.reportStartTime = moment(this.filterStartTime).format(
+      `YYYY-MM-DDT00:00:00${this.timeZoneStr}`
     );
-    const body = {
-      token: this.utils.getToken(),
-      type: 1,
-      filterStartTime,
-      filterEndTime,
-      targetUserId: ''
-    };
-    if (this.timeType > 1) {
-      body.type = 2;
-    }
+
+    this.reportService.setReportTime(this.reportStartTime, this.reportEndTime);
+
     this.generateTimePeriod();
-    this.handleSportSummaryArray(body);
   }
+
   shiftNextTime() {
     if (
       this.filterEndTime !== this.today ||
@@ -416,24 +326,35 @@ export class SportReportComponent implements OnInit {
           .add(52, 'weeks')
           .format('YYYY/MM/DD');
       }
-      const filterEndTime = moment(this.filterEndTime).format(
-        'YYYY-MM-DDT23:59:59+08:00'
+      this.reportEndTime = moment(this.filterEndTime).format(
+        `YYYY-MM-DDT23:59:59${this.timeZoneStr}`
       );
-      const filterStartTime = moment(this.filterStartTime).format(
-        'YYYY-MM-DDT00:00:00+08:00'
+      this.reportStartTime = moment(this.filterStartTime).format(
+        `YYYY-MM-DDT00:00:00${this.timeZoneStr}`
       );
-      const body = {
-        token: this.utils.getToken(),
-        type: 1,
-        filterStartTime,
-        filterEndTime,
-        targetUserId: ''
-      };
-      if (this.timeType > 1) {
-        body.type = 2;
-      }
+
+      this.reportService.setReportTime(this.reportStartTime, this.reportEndTime);
+
       this.generateTimePeriod();
-      this.handleSportSummaryArray(body);
     }
+  }
+
+  // 將隱私權pass給父組件-kidin-1090205
+  emitPrivacy (e) {
+    this.showPrivacyUi.emit(e);
+  }
+
+  ngOnDestroy () {
+    // 頁面卸除時將所選類別改回全部類型(Bug 1149)，並將url reset避免污染其他頁面-kidin-1090325
+    this.reportService.setReportCategory('99');
+    window.history.pushState({path: location.pathname}, '', location.pathname);
+
+    // 將之前生成的highchart卸除避免新生成的highchart無法顯示-kidin-1081219
+    Highcharts.charts.forEach((_highChart, idx) => {
+      if (_highChart !== undefined) {
+        _highChart.destroy();
+      }
+    });
+
   }
 }

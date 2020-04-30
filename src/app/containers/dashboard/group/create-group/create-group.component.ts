@@ -203,7 +203,7 @@ export class CreateGroupComponent implements OnInit {
       this.role.getUserName = res;
       // console.log('%c this.getUserName', 'color: #0ca011', res);
     });
-    this.token = this.utils.getToken();
+    this.token = this.utils.getToken() || '';
     const body = {
       token: this.token,
       groupId: this.groupId,
@@ -433,7 +433,7 @@ export class CreateGroupComponent implements OnInit {
         commercePlanExpired
       } = value;
       const image = new Image();
-      if (this.finalImageLink === undefined) {
+      if (this.finalImageLink === undefined || this.finalImageLink === null || this.finalImageLink === '') {
         if (location.hostname === '192.168.1.235') {
           image.src = 'https://app.alatech.com.tw/assets/images/group.jpg';
         } else {

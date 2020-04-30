@@ -23,7 +23,7 @@ export class EditGroupGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
-    const token = this.utils.getToken();
+    const token = this.utils.getToken() || '';
     const body = { token };
     const visittingId = this.hashIdService.handleGroupIdDecode(next.params.groupId);
     if (visittingId.length === 0) {

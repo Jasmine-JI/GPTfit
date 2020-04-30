@@ -132,6 +132,10 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
           this.target = 20;
         } else if (_val.url.indexOf('/dashboard/system/life-tracking') > -1) {
           this.target = 21;
+        } else if (_val.url.indexOf('/dashboard/system/create-com-group') > -1) {
+          this.target = 22;
+        } else if (_val.url.indexOf('/dashboard/life-tracking') > -1) {
+          this.target = 23;
         } else {
           this.target = 0;
         }
@@ -143,7 +147,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
         const { isInitial } = res;
         if (!isInitial) {
           this.isLoading = true;
-          const token = this.utilsService.getToken();
+          const token = this.utilsService.getToken() || '';
           const body = {
             token,
             avatarType: 2,
@@ -303,7 +307,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
     }
 
     // 使用者登入就存取身體資訊供各種圖表使用-kidin-1081212
-    const token = this.utilsService.getToken();
+    const token = this.utilsService.getToken() || '';
     const body = {
       token: token,
       avatarType: 2,
@@ -312,13 +316,15 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
     this.userInfoService.getLogonData(body).subscribe(res => {
       const data = {
         name: res.info.name,
+        nameId: res.info.nameId,
         birthday: res.info.birthday,
         heartRateBase: res.info.heartRateBase,
         heartRateMax: res.info.heartRateMax,
         heartRateResting: res.info.heartRateResting,
         height: res.info.height,
         weight: res.info.weight,
-        wheelSize: res.info.wheelSize
+        wheelSize: res.info.wheelSize,
+        loginId: res.info.nameId
       };
       this.userInfoService.saveBodyDatas(data);
     });

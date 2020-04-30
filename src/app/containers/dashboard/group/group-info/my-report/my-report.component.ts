@@ -24,7 +24,7 @@ class ChartOptions {
   constructor (dataset, colorIdx) {
     return {
       chart: {
-        height: 300,
+        height: 400,
         spacingTop: 20,
         spacingBottom: 20,
         zoomType: 'x'
@@ -51,7 +51,10 @@ class ChartOptions {
           max: null,
           tickInterval: null,
           labels: null
-        }
+        },
+        minPadding: 0.01,
+        maxPadding: 0.01,
+        tickAmount: 1
       },
       plotOptions: {
         column: {
@@ -104,31 +107,27 @@ export class MyReportComponent implements OnInit, OnDestroy {
   reportCompleted = true;
   isPreviewMode = false;
   isLoading = false;
-  isSelected = 'rangeDate';
+  isSelected = 'aWeek';
   isSelectDateRange = false;
   hasResData: boolean;
-  maxStartDate = moment().format('YYYY-MM-DD');
-  minEndDate = moment().add(-13, 'days').format('YYYY-MM-DD');
-  maxSelectDate = moment().format('YYYY-MM-DD');
   initialChartComplated = true;
   isDebug = false;
+  showAllLessonInfo = false;
+  showAllCoachInfo = false;
 
   // 資料儲存用變數-kidin-1081210
   token: string;
   previewUrl: string;
-  startDate = '';
-  endDate = moment().format('YYYY-MM-DD');
-  selectedStartDate = moment().add(-13, 'days').format('YYYY-MM-DD');
-  selectedEndDate = moment().format('YYYY-MM-DD');
-  reportStartDate = '';
-  reportEndDate = '';
-  selectCategory = '1';
-  reportCategory = '1';
   userId: string;
-  reportCreatedTime = moment().format('YYYY/MM/DD HH:mm');
   brandImg: string;
   brandName: string;
   branchName: string;
+  selectDate = {
+    startDate: moment().subtract(6, 'days').format('YYYY-MM-DDT00:00:00.000Z'),
+    endDate: moment().format('YYYY-MM-DDT23:59:59.999Z')
+  };
+  startDate: string;
+  reportCreatedTime = moment().format('YYYY/MM/DD HH:mm');
   groupImg: string;
   groupId: string;
   activityLength: number;
@@ -144,17 +143,19 @@ export class MyReportComponent implements OnInit, OnDestroy {
   avgHRList: Array<any>;
   caloriesList: Array<any>;
   userData: any;
-  userHRZones = [0, 0, 0, 0, 0, 0];
-  HRZoneThree = 0;
   deviceInfo: any;
   groupData: any;
   coachInfo: any;
   deviceImgUrl: string;
+  lessonTotalInfo: string;
+  lessonPartInfo: string;
+  coachTotalInfo: string;
+  coachPartInfo: string;
+  avgHRZone: string;
 
-  // HChart設定相關-kidin-1081211
+  // 圖表用數據-kidin-1081211
   showHRZoneChartTarget = false;
   showcaloriesBurnedChartTarget = false;
-  showavgSpeedChartTarget = false;
   showavgHRChartTarget = false;
   showcaloriesChartTarget = false;
   charts = [];
@@ -169,6 +170,15 @@ export class MyReportComponent implements OnInit, OnDestroy {
     { y: 0, color: '#f36953' }
   ];
   colorIdx = 0;
+  hrZoneRange = {
+    HRBase: 0,
+    z0: 'Z0',
+    z1: 'Z1',
+    z2: 'Z2',
+    z3: 'Z3',
+    z4: 'Z4',
+    z5: 'Z5',
+  };
 
   @ViewChild('container')
   container: ElementRef;
@@ -220,7 +230,6 @@ export class MyReportComponent implements OnInit, OnDestroy {
     }
 
     if (
-      location.search.indexOf('sport=') > -1 &&
       location.search.indexOf('startdate=') > -1 &&
       location.search.indexOf('enddate=') > -1 &&
       location.search.indexOf('id=')
@@ -235,12 +244,11 @@ export class MyReportComponent implements OnInit, OnDestroy {
   queryStringShowData () {
     const queryString = location.search.replace('?', '').split('&');
     for (let i = 0; i < queryString.length; i++) {
-      if (queryString[i].indexOf('sport=') > -1) {
-        this.selectCategory = queryString[i].replace('sport=', '');
-      } else if (queryString[i].indexOf('startdate=') > -1) {
-        this.selectedStartDate = queryString[i].replace('startdate=', '');
+      if (queryString[i].indexOf('startdate=') > -1) {
+        this.startDate = queryString[i].replace('startdate=', '');
+        this.selectDate.startDate = moment(this.startDate).format('YYYY-MM-DDT00:00:00.000Z');
       } else if (queryString[i].indexOf('enddate=') > -1) {
-        this.selectedEndDate = queryString[i].replace('enddate=', '');
+        this.selectDate.endDate = moment(queryString[i].replace('enddate=', '')).format('YYYY-MM-DDT23:59:59.999Z');
       } else if (queryString[i].indexOf('id=') > -1) {
         this.userId = this.hashIdService.handleGroupIdDecode(queryString[i].replace('id=', ''));
       }
@@ -271,50 +279,26 @@ export class MyReportComponent implements OnInit, OnDestroy {
     }
   }
 
-  // 使用者選擇日期區間後紀錄其開始日期-kidin-1081209
-  handleStartDate (e) {
-    this.selectedStartDate = e.target.value.format('YYYY-MM-DD');
-    this.minEndDate = e.target.value;
-  }
+  // 取得所選日期-kidin-1090331
+  getSelectDate (date) {
+    this.selectDate = date;
+    this.handleSubmitSearch('click');
 
-  // 使用者選擇日期區間後紀錄其結束日期-kidin-1081209
-  handleEndDate (e) {
-    this.selectedEndDate = e.target.value.format('YYYY-MM-DD');
-    this.maxStartDate = e.target.value;
   }
 
   // 使用者送出表單後顯示相關資料-kidin-1081209
   handleSubmitSearch (act) {
+    this.token = this.utils.getToken() || '';
     this.reportCompleted = false;
+
     this.initVariable();
+    this.getUserInfo();
+
     if (act === 'click') {
       this.updateUrl('false');
     }
-    this.reportCategory = this.selectCategory;
-    this.token = this.utils.getToken();
-    this.getFilterTime();
 
-    // 先從service取得群組資訊，若取不到再call api-kidin-1081210
-    this.groupData = this.groupService.getGroupInfo();
-    if (this.groupData) {
-      this.groupId = this.groupData.groupId;
-      this.showGroupInfo();
-    } else {
-      const urlArr = location.pathname.split('/');
-      this.groupId = this.hashIdService.handleGroupIdDecode(urlArr[urlArr.length - 2]);
-      const groupBody = {
-        token: this.token,
-        groupId: this.groupId,
-        findRoot: '1',
-        avatarType: '2'
-      };
-
-      this.groupService.fetchGroupListDetail(groupBody).subscribe(res => {
-        this.groupData = res.info;
-        this.groupService.saveGroupInfo(this.groupData);
-        this.showGroupInfo();
-      });
-    }
+    this.getGroupInfo();
 
     // 根據條件取得多筆運動檔案資料-kidin-1081211
     let targetUser,
@@ -331,11 +315,12 @@ export class MyReportComponent implements OnInit, OnDestroy {
       searchTime: {
         type: '1',
         fuzzyTime: [],
-        filterStartTime: this.reportStartDate,
-        filterEndTime: this.reportEndDate
+        filterStartTime: this.selectDate.startDate,
+        filterEndTime: this.selectDate.endDate,
+        filterSameTime: '1'
       },
       searchRule: {
-        activity: this.reportCategory,
+        activity: '99',
         targetUser: targetUser,
         fileInfo: {
           author: author,
@@ -358,12 +343,38 @@ export class MyReportComponent implements OnInit, OnDestroy {
     this.sendRequest(body);
   }
 
+  // 取得群組資訊-kidin-1090326
+  getGroupInfo () {
+    // 先從service取得群組資訊，若取不到再call api-kidin-1081210
+    this.groupService.getGroupInfo().subscribe(res => {
+      this.groupData = res;
+      if (this.groupData.hasOwnProperty('groupId')) {
+        this.groupId = this.groupData.groupId;
+        this.showGroupInfo();
+      } else {
+        const urlArr = location.pathname.split('/');
+        this.groupId = this.hashIdService.handleGroupIdDecode(urlArr[urlArr.length - 2]);
+        const groupBody = {
+          token: this.token,
+          groupId: this.groupId,
+          findRoot: '1',
+          avatarType: '2'
+        };
+
+        this.groupService.fetchGroupListDetail(groupBody).subscribe(result => {
+          this.groupData = result.info;
+          this.groupService.saveGroupInfo(this.groupData);
+          this.showGroupInfo();
+        });
+      }
+    });
+  }
+
   // 初始化變數-kidin-1081211
   initVariable () {
     this.initialChartComplated = false;
     this.showHRZoneChartTarget = false;
     this.showcaloriesBurnedChartTarget = false;
-    this.showavgSpeedChartTarget = false;
     this.showavgHRChartTarget = false;
     this.showcaloriesChartTarget = false;
     this.dateList = [];
@@ -381,26 +392,83 @@ export class MyReportComponent implements OnInit, OnDestroy {
     this.colorIdx = 0;
   }
 
-  // 取得當地時區並加以處理-kidin-1081210
-  getFilterTime () {
-    const timeZoneMinite = new Date();
-    const timeZone = -(timeZoneMinite.getTimezoneOffset() / 60);
-    if (this.startDate === '') {
-      if (timeZone >= 0) {
-        this.reportStartDate = `${this.selectedStartDate}T00:00:00.000+0${timeZone}:00`;
-        this.reportEndDate = `${this.selectedEndDate}T23:59:59.000+0${timeZone}:00`;
+  // 取得登入者資訊-kidin-1090326
+  getUserInfo () {
+    const getLoginBody = {
+      avatarType: 2,
+      iconType: 2,
+      token: this.token
+    };
+    this.userInfoService.getLogonData(getLoginBody).subscribe(res => {
+      if (res.resultCode !== +200 || +this.userId !== +res.info.nameId) {
+        this.hrZoneRange['HRBase'] = 0;
+        this.hrZoneRange['z0'] = 'Z0';
+        this.hrZoneRange['z1'] = 'Z1';
+        this.hrZoneRange['z2'] = 'Z2';
+        this.hrZoneRange['z3'] = 'Z3';
+        this.hrZoneRange['z4'] = 'Z4';
+        this.hrZoneRange['z5'] = 'Z5';
       } else {
-        this.reportStartDate = `${this.selectedStartDate}T00:00:00.000-0${-timeZone}:00`;
-        this.reportEndDate = `${this.selectedEndDate}T23:59:59.000-0${-timeZone}:00`;
+          const userAge = moment().diff(res.info.birthday, 'years'),
+                userHRBase = res.info.heartRateBase,
+                userMaxHR = res.info.heartRateMax,
+                userRestHR = res.info.heartRateResting;
+
+        this.getUserBodyInfo(userHRBase, userAge, userMaxHR, userRestHR);
+      }
+    });
+  }
+
+  // 取得使用者資訊並計算心率區間範圍()-kidin-1090203
+  getUserBodyInfo (userHRBase, userAge, userMaxHR, userRestHR) {
+    if (userAge !== null) {
+      if (userMaxHR && userRestHR) {
+        if (userHRBase === 0) {
+          // 區間數值採無條件捨去法
+          this.hrZoneRange['HRBase'] = userHRBase;
+          this.hrZoneRange['z0'] = Math.floor((220 - userAge) * 0.5) + '';
+          this.hrZoneRange['z1'] = Math.floor((220 - userAge) * 0.6 - 1) + '';
+          this.hrZoneRange['z2'] = Math.floor((220 - userAge) * 0.7 - 1) + '';
+          this.hrZoneRange['z3'] = Math.floor((220 - userAge) * 0.8 - 1) + '';
+          this.hrZoneRange['z4'] = Math.floor((220 - userAge) * 0.9 - 1) + '';
+          this.hrZoneRange['z5'] = Math.floor((220 - userAge) * 1) + '';
+        } else {
+          this.hrZoneRange['HRBase'] = userHRBase;
+          this.hrZoneRange['z0'] = Math.floor((userMaxHR - userRestHR) * (0.55)) + userRestHR;
+          this.hrZoneRange['z1'] = Math.floor((userMaxHR - userRestHR) * (0.6)) + userRestHR;
+          this.hrZoneRange['z2'] = Math.floor((userMaxHR - userRestHR) * (0.65)) + userRestHR;
+          this.hrZoneRange['z3'] = Math.floor((userMaxHR - userRestHR) * (0.75)) + userRestHR;
+          this.hrZoneRange['z4'] = Math.floor((userMaxHR - userRestHR) * (0.85)) + userRestHR;
+          this.hrZoneRange['z5'] = Math.floor((userMaxHR - userRestHR) * (1)) + userRestHR;
+        }
+      } else {
+        if (userHRBase === 0) {
+          // 區間數值採無條件捨去法
+          this.hrZoneRange['HRBase'] = userHRBase;
+          this.hrZoneRange['z0'] = Math.floor((220 - userAge) * 0.5) + '';
+          this.hrZoneRange['z1'] = Math.floor((220 - userAge) * 0.6 - 1) + '';
+          this.hrZoneRange['z2'] = Math.floor((220 - userAge) * 0.7 - 1) + '';
+          this.hrZoneRange['z3'] = Math.floor((220 - userAge) * 0.8 - 1) + '';
+          this.hrZoneRange['z4'] = Math.floor((220 - userAge) * 0.9 - 1) + '';
+          this.hrZoneRange['z5'] = Math.floor((220 - userAge) * 1) + '';
+        } else {
+          this.hrZoneRange['HRBase'] = userHRBase;
+          this.hrZoneRange['z0'] = Math.floor(((220 - userAge) - userRestHR) * (0.55)) + userRestHR;
+          this.hrZoneRange['z1'] = Math.floor(((220 - userAge) - userRestHR) * (0.6)) + userRestHR;
+          this.hrZoneRange['z2'] = Math.floor(((220 - userAge) - userRestHR) * (0.65)) + userRestHR;
+          this.hrZoneRange['z3'] = Math.floor(((220 - userAge) - userRestHR) * (0.75)) + userRestHR;
+          this.hrZoneRange['z4'] = Math.floor(((220 - userAge) - userRestHR) * (0.85)) + userRestHR;
+          this.hrZoneRange['z5'] = Math.floor(((220 - userAge) - userRestHR) * (1)) + userRestHR;
+        }
       }
     } else {
-      if (timeZone >= 0) {
-        this.reportStartDate = `${this.startDate}T00:00:00.000+0${timeZone}:00`;
-        this.reportEndDate = `${this.endDate}T23:59:59.000+0${timeZone}:00`;
-      } else {
-        this.reportStartDate = `${this.startDate}T00:00:00.000-0${-timeZone}:00`;
-        this.reportEndDate = `${this.endDate}T23:59:59.000-0${-timeZone}:00`;
-      }
+      this.hrZoneRange['HRBase'] = 0;
+      this.hrZoneRange['z0'] = 'Z0';
+      this.hrZoneRange['z1'] = 'Z1';
+      this.hrZoneRange['z2'] = 'Z2';
+      this.hrZoneRange['z3'] = 'Z3';
+      this.hrZoneRange['z4'] = 'Z4';
+      this.hrZoneRange['z5'] = 'Z5';
     }
   }
 
@@ -422,6 +490,8 @@ export class MyReportComponent implements OnInit, OnDestroy {
         );
       this.brandName = this.groupData.groupRootInfo[2].brandName;
       this.branchName = this.groupData.groupRootInfo[3].branchName;
+
+      this.handleInfo(this.groupData.groupDesc, 'lessonInfo');
   }
 
   // 取得多筆活動資料並處理-kidin-1081211
@@ -441,7 +511,7 @@ export class MyReportComponent implements OnInit, OnDestroy {
           this.reportCompleted = true;
           this.initialChartComplated = true;
         } else {
-          this.getUserBodyInfo();
+          this.isSelectDateRange = false;
           this.hasResData = true;
           const infoData = activity[0];
           this.fileInfo = infoData.fileInfo;
@@ -449,8 +519,6 @@ export class MyReportComponent implements OnInit, OnDestroy {
           let timeCount = 0,
               HRCount = 0,
               caloriesCount = 0,
-              distanceCount = 0,
-              avgSpeedCount = 0,
               HRZoneZero = 0,
               HRZoneOne = 0,
               HRZoneTwo = 0,
@@ -478,15 +546,15 @@ export class MyReportComponent implements OnInit, OnDestroy {
               resolutionSeconds = 3;
               for (let j = 0; j < hrBpm.length; j++) {
                 if (hrBpm[j].heartRateBpm !== 0) {
-                  if (hrBpm[j].heartRateBpm.heartRateBpm >= this.userHRZones[0] && hrBpm[j].heartRateBpm < this.userHRZones[1]) {
+                  if (hrBpm[j].heartRateBpm.heartRateBpm >= this.hrZoneRange.z0 && hrBpm[j].heartRateBpm < this.hrZoneRange.z1) {
                     HRZoneOne += resolutionSeconds;
-                  } else if (hrBpm[j].heartRateBpm >= this.userHRZones[1] + 1 && hrBpm[j].heartRateBpm < this.userHRZones[2]) {
+                  } else if (hrBpm[j].heartRateBpm >= this.hrZoneRange.z1 + 1 && hrBpm[j].heartRateBpm < this.hrZoneRange.z2) {
                     HRZoneTwo += resolutionSeconds;
-                  } else if (hrBpm[j].heartRateBpm >= this.userHRZones[2] + 1 && hrBpm[j].heartRateBpm < this.userHRZones[3]) {
+                  } else if (hrBpm[j].heartRateBpm >= this.hrZoneRange.z2 + 1 && hrBpm[j].heartRateBpm < this.hrZoneRange.z3) {
                     HRZoneThree += resolutionSeconds;
-                  } else if (hrBpm[j].heartRateBpm >= this.userHRZones[3] + 1 && hrBpm[j].heartRateBpm < this.userHRZones[4]) {
+                  } else if (hrBpm[j].heartRateBpm >= this.hrZoneRange.z3 + 1 && hrBpm[j].heartRateBpm < this.hrZoneRange.z4) {
                     HRZoneFour += resolutionSeconds;
-                  } else if (hrBpm[j].heartRateBpm >= this.userHRZones[4] + 1) {
+                  } else if (hrBpm[j].heartRateBpm >= this.hrZoneRange.z4 + 1) {
                     HRZoneFive += resolutionSeconds;
                   } else {
                     HRZoneZero += resolutionSeconds;
@@ -495,18 +563,9 @@ export class MyReportComponent implements OnInit, OnDestroy {
               }
             }
 
-            if (this.reportCategory !== '5') {
-              distanceCount += activityItem.totalDistanceMeters;
-              avgSpeedCount += activityItem.avgSpeed;
-              this.avgSpeedList.unshift(activityItem.avgSpeed);
-            }
             this.dateList.unshift(this.formatDate(activity[i].fileInfo.creationDate));
             this.avgHRList.unshift(activityItem.avgHeartRateBpm);
             this.caloriesList.unshift(activityItem.calories);
-          }
-          if (this.reportCategory !== '5') {
-            this.totalDistance = distanceCount;
-            this.avgSpeed = avgSpeedCount / this.activityLength;
           }
 
           this.calculateTotalTime(timeCount);
@@ -523,7 +582,7 @@ export class MyReportComponent implements OnInit, OnDestroy {
             this.HRZoneColorSet[4].y = this.handleMathRound((HRZoneFour / totalHRSecond) * 100);
             this.HRZoneColorSet[5].y = this.handleMathRound((HRZoneFive / totalHRSecond) * 100);
 
-            this.HRZoneThree = this.HRZoneColorSet[3].y;
+            this.findAvgHRZone(this.HRZoneColorSet);
           }
           const coachId = this.fileInfo.teacher.split('?userId=')[1];
           this.initHighChart();
@@ -535,34 +594,66 @@ export class MyReportComponent implements OnInit, OnDestroy {
     this.reportCompleted = true;
   }
 
+  // 取得平均心率座落的區間-kidin-1090326
+  findAvgHRZone (hrZone) {
+    let mostHRZone = 0,
+        idx = 0;
+
+    for (let i = 0; i < hrZone.length; i++) {
+      if (hrZone[i].y > mostHRZone) {
+        mostHRZone = hrZone[i].y;
+        idx = i;
+      }
+    }
+
+    switch (idx) {
+      case 0:
+        this.avgHRZone = `${this.translateService.instant('Dashboard.GroupClass.limit_generalZone')} ${mostHRZone}%`;
+        break;
+      case 1:
+        this.avgHRZone = `${this.translateService.instant('Dashboard.GroupClass.warmUpZone')} ${mostHRZone}%`;
+        break;
+      case 2:
+        this.avgHRZone = `${this.translateService.instant('Dashboard.GroupClass.aerobicZone')} ${mostHRZone}%`;
+        break;
+      case 3:
+        this.avgHRZone = `${this.translateService.instant('Dashboard.GroupClass.enduranceZone')} ${mostHRZone}%`;
+        break;
+      case 4:
+        this.avgHRZone = `${this.translateService.instant('Dashboard.GroupClass.marathonZone')} ${mostHRZone}%`;
+        break;
+      case 5:
+        this.avgHRZone = `${this.translateService.instant('Dashboard.GroupClass.anaerobicZone')} ${mostHRZone}%`;
+        break;
+    }
+  }
+
   // 將搜尋的類別和範圍處理過後加入query string並更新現在的url和預覽列印的url-kidin-1081226
   updateUrl (str) {
     let newUrl;
-
     if (str === 'true') {
-      let startDateString,
-          endDateString,
-          searchString;
-      if (this.startDate === '') {
-        startDateString = this.selectedStartDate;
-        endDateString = this.selectedEndDate;
+      const startDateString = this.selectDate.startDate.split('T')[0],
+            endDateString = this.selectDate.endDate.split('T')[0];
+      let searchString;
+
+      let userId: string;
+      if (this.fileInfo.author.indexOf('?') > 0) {
+        userId = this.hashIdService.handleUserIdEncode(
+          this.fileInfo.author
+            .split('?')[1]
+            .split('=')[1]
+            .replace(')', '')
+        );
       } else {
-        startDateString = this.startDate;
-        endDateString = this.endDate;
+        userId = this.hashIdService.handleUserIdEncode(
+          this.fileInfo.author.replace(')', '')
+        );
       }
 
-    const userId = this.hashIdService.handleUserIdEncode(
-      this.fileInfo.author
-        .split('?')[1]
-        .split('=')[1]
-        .replace(')', '')
-    );
-
-      searchString = `sport=${this.reportCategory}&startdate=${startDateString}&enddate=${endDateString}&id=${userId}`;
+      searchString = `startdate=${startDateString}&enddate=${endDateString}&id=${userId}`;
 
       if (location.search.indexOf('?') > -1) {
         if (
-          location.search.indexOf('sport=') > -1 &&
           location.search.indexOf('startdate=') > -1 &&
           location.search.indexOf('enddate=') > -1 &&
           location.search.indexOf('id=') > -1
@@ -573,7 +664,6 @@ export class MyReportComponent implements OnInit, OnDestroy {
           let newSufUrl = '';
           for (let i = 0; i < queryString.length; i++) {
             if (
-              queryString[i].indexOf('sport=') === -1 &&
               queryString[i].indexOf('startdate=') === -1 &&
               queryString[i].indexOf('enddate=') === -1 &&
               queryString[i].indexOf('id=') === -1
@@ -598,52 +688,6 @@ export class MyReportComponent implements OnInit, OnDestroy {
     }
   }
 
-  // 取得使用者資訊並計算心率區間範圍(待2020/4月拿掉)-kidin-1081213
-  getUserBodyInfo () {
-    [this.userData] = this.userInfoService.getBodyDatas();
-
-    const userAge =  moment().diff(this.userData.birthday, 'years'),
-          userHRBase = this.userData.heartRateBase,
-          userMaxHR = this.userData.heartRateMax,
-          userRestHR = this.userData.heartRateResting;
-
-    if (userMaxHR && userRestHR) {
-      if (userHRBase === 0) {
-        // 區間數值採無條件捨去法
-        this.userHRZones[0] = Math.floor((220 - userAge) * 0.5);
-        this.userHRZones[1] = Math.floor((220 - userAge) * 0.6 - 1);
-        this.userHRZones[2] = Math.floor((220 - userAge) * 0.7 - 1);
-        this.userHRZones[3] = Math.floor((220 - userAge) * 0.8 - 1);
-        this.userHRZones[4] = Math.floor((220 - userAge) * 0.9 - 1);
-        this.userHRZones[5] = Math.floor((220 - userAge) * 1);
-      } else {
-        this.userHRZones[0] = (userMaxHR - userRestHR) * (0.55) + userRestHR;
-        this.userHRZones[1] = (userMaxHR - userRestHR) * (0.6) + userRestHR;
-        this.userHRZones[2] = (userMaxHR - userRestHR) * (0.65) + userRestHR;
-        this.userHRZones[3] = (userMaxHR - userRestHR) * (0.75) + userRestHR;
-        this.userHRZones[4] = (userMaxHR - userRestHR) * (0.85) + userRestHR;
-        this.userHRZones[5] = (userMaxHR - userRestHR) * (1) + userRestHR;
-      }
-    } else {
-      if (userHRBase === 0) {
-        // 區間數值採無條件捨去法
-        this.userHRZones[0] = Math.floor((220 - userAge) * 0.5);
-        this.userHRZones[1] = Math.floor((220 - userAge) * 0.6 - 1);
-        this.userHRZones[2] = Math.floor((220 - userAge) * 0.7 - 1);
-        this.userHRZones[3] = Math.floor((220 - userAge) * 0.8 - 1);
-        this.userHRZones[4] = Math.floor((220 - userAge) * 0.9 - 1);
-        this.userHRZones[5] = Math.floor((220 - userAge) * 1);
-      } else {
-        this.userHRZones[0] = ((220 - userAge) - userRestHR) * (0.55) + userRestHR;
-        this.userHRZones[1] = ((220 - userAge) - userRestHR) * (0.6) + userRestHR;
-        this.userHRZones[2] = ((220 - userAge) - userRestHR) * (0.65) + userRestHR;
-        this.userHRZones[3] = ((220 - userAge) - userRestHR) * (0.75) + userRestHR;
-        this.userHRZones[4] = ((220 - userAge) - userRestHR) * (0.85) + userRestHR;
-        this.userHRZones[5] = ((220 - userAge) - userRestHR) * (1) + userRestHR;
-      }
-    }
-  }
-
   // 計算多筆資料合計的總運動時間-kidin-1081211
   calculateTotalTime (timeCount) {
     if (timeCount < 60) {
@@ -656,13 +700,13 @@ export class MyReportComponent implements OnInit, OnDestroy {
       const hour = Math.floor((timeCount) / 3600);
       const minute = Math.floor((timeCount % 3600) / 60);
       const second = timeCount - (hour * 3600) - (minute * 60);
-      this.totalTime = `${this.fillTwoDigits(hour)}:${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}"`;
+      this.totalTime = `${hour}:${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}"`;
     }
   }
 
   // 時間補零-kidin-1081211
   fillTwoDigits (num: number) {
-    const timeStr = '0' + num;
+    const timeStr = '0' + Math.floor(num);
     return timeStr.substr(-2);
   }
 
@@ -710,6 +754,7 @@ export class MyReportComponent implements OnInit, OnDestroy {
         return this.y + '%';
       }
     };
+    HRZoneChartOptions['series'][0].showInLegend = false;
     HRZoneChartOptions['chart'].zoomType = '';
     HRZoneChartOptions['xAxis'].categories = [
       this.translateService.instant('Dashboard.GroupClass.limit_generalZone'),
@@ -728,109 +773,7 @@ export class MyReportComponent implements OnInit, OnDestroy {
     this.chartDatas.push({ HRZoneChartTarget: HRZoneChartOptions, isSyncExtremes: false });
     this.chartTargetList.push('HRZoneChartTarget');
 
-    // 卡路里圖表（待身體素質實裝後改成身體素質圖表）-kidin-1081213
-    const userHeight = this.userData.height,
-          userWeight = this.userData.weight;
-
-    const caloriesBurnedDataset = {
-      name: `近期身體素質：身高${userHeight}cm,體重${userWeight}kg`,
-      data: [
-        {
-          name: this.translateService.instant('Portal.bodyWeight'),
-          y: (userWeight * 7700 - this.totalCalories),
-          color: '#ff9292'
-        },
-        {
-          name: this.translateService.instant('Dashboard.SportReport.totalCalorie'),
-          y: this.totalCalories,
-          color: '#fd0000'
-        }
-      ],
-      unit: '',
-      type: 'pie',
-      valueDecimals: 1
-    };
-    const caloriesBurnedOptions = new ChartOptions(caloriesBurnedDataset, this.colorIdx);
-    caloriesBurnedOptions['chart'].zoomType = '';
-    caloriesBurnedOptions['tooltip'] = {
-      pointFormat: '{point.percentage:.1f}%'
-    };
-    caloriesBurnedOptions['title'].align = 'center';
-    caloriesBurnedOptions['title'].x = 0;
-    caloriesBurnedOptions['title'].y = 200;
-    caloriesBurnedOptions['title'].style = {
-      color: 'gray',
-      fontSize: 12
-    };
-    caloriesBurnedOptions['series'][0].innerSize = '80%';
-    caloriesBurnedOptions['plotOptions'] = {
-      pie: {
-        dataLabels: {
-          enabled: true,
-          distance: -50,
-          style: {
-            fontWeight: 'bold',
-            color: 'white'
-          }
-        },
-        startAngle: -90,
-        endAngle: 90,
-        center: ['50%', '60%'],
-        size: '100%'
-      }
-    };
-
-    this.chartDatas.push({ caloriesBurnedChartTarget: caloriesBurnedOptions, isSyncExtremes: false });
-    this.chartTargetList.push('caloriesBurnedChartTarget');
-
-    // 折線圖高度設定-kidin-1081227
-    let chartHeight = 220;
-    if (this.reportCategory !== '5') {
-      chartHeight = 180;
-    }
-
-    if (this.reportCategory !== '5') {
-      // 平均速度圖表-kidin-1081216
-      const avgSpeedDataset = {
-        name: 'Average Speed',
-        data: this.avgSpeedList,
-        unit: 'km/h',
-        type: 'area',
-        valueDecimals: 1
-      };
-      this.colorIdx = 0;
-      const avgSpeedChartOptions = new ChartOptions(avgSpeedDataset, this.colorIdx);
-      avgSpeedChartOptions['chart'].height = chartHeight;
-      avgSpeedChartOptions['xAxis'].categories = this.dateList;
-      avgSpeedChartOptions['plotOptions'] = {
-        area: {
-          fillColor: {
-              linearGradient: {
-                  x1: 0,
-                  y1: 0,
-                  x2: 0,
-                  y2: 1
-              },
-              stops: [
-                  [0, Highcharts.getOptions().colors[this.colorIdx]],
-                  [1, Highcharts.Color(Highcharts.getOptions().colors[this.colorIdx]).setOpacity(0).get('rgba')]
-              ]
-          },
-          marker: {
-              radius: 2
-          },
-          lineWidth: 1,
-          states: {
-              hover: {
-                  lineWidth: 1
-              }
-          }
-        }
-      };
-
-      this.chartDatas.push({ avgSpeedChartTarget: avgSpeedChartOptions, isSyncExtremes: true });
-      this.chartTargetList.push('avgSpeedChartTarget');
-    }
+    const chartHeight = 260;  // 折線圖高度設定-kidin-1081227
 
     // 平均心率圖表-kidin-1081216
     const avgHRDataset = {
@@ -984,7 +927,7 @@ export class MyReportComponent implements OnInit, OnDestroy {
     const deviceDody = {
       'token': '',
       'queryType': '1',
-      'queryArray': [SN]
+      'queryArray': SN
     };
     this.qrcodeService.getProductInfo(deviceDody).subscribe(res => {
       if (res) {
@@ -1007,6 +950,8 @@ export class MyReportComponent implements OnInit, OnDestroy {
       if (res) {
         this.coachInfo = res.info;
       }
+
+      this.handleInfo(this.coachInfo.description, 'coachInfo');
     });
 
   }
@@ -1031,6 +976,50 @@ export class MyReportComponent implements OnInit, OnDestroy {
           .replace(')', '')
         )}`
       );
+    }
+  }
+
+  // 將過長的介紹隱藏-kidin-1090326
+  handleInfo(str, type) {
+    switch (type) {
+      case 'lessonInfo':
+        this.lessonTotalInfo = str.replace(/\r\n|\n/g, '').trim();
+        if (this.lessonTotalInfo.length > 40) {
+          this.lessonPartInfo = this.lessonTotalInfo.substring(0, 40);
+          this.showAllLessonInfo = false;
+        } else {
+          this.lessonPartInfo = this.lessonTotalInfo;
+          this.showAllLessonInfo = true;
+        }
+
+        break;
+      case 'coachInfo':
+        this.coachTotalInfo = str.replace(/\r\n|\n/g, '').trim();
+        if (this.coachTotalInfo.length > 40) {
+          this.coachPartInfo = this.coachTotalInfo.substring(0, 40);
+          this.showAllCoachInfo = false;
+        } else {
+          this.coachPartInfo = this.coachTotalInfo;
+          this.showAllCoachInfo = true;
+        }
+
+        break;
+    }
+  }
+
+  // 將過長的介紹全顯示-kidin-1090326
+  handleExtendCoachInfo(type) {
+    switch (type) {
+      case 'lessonInfo':
+        this.lessonPartInfo = this.lessonTotalInfo;
+        this.showAllLessonInfo = true;
+
+        break;
+      case 'coachInfo':
+        this.coachPartInfo = this.coachTotalInfo;
+        this.showAllCoachInfo = true;
+
+        break;
     }
   }
 

@@ -12,14 +12,15 @@ export class MuscleMapComponent implements OnInit, AfterViewInit {
   proficiencyCoefficient = 2;  // 根據使用者熟練度不同而有不同係數-kidin-1081122
   userWeight: number;
   colorSets = [];
-  filterAllRepeatData = [];
   selectMaxOneRepMax = [];
-  selectVicePart = new Set();
+  baseUrl = window.location.href;
+
 
   constructor(private activityService: ActivityService) {}
 
   ngOnInit() {
     this.initMuscleMap();
+    this.fixSvgUrls();
   }
 
   initMuscleMap() {
@@ -28,10 +29,11 @@ export class MuscleMapComponent implements OnInit, AfterViewInit {
     allBodyPath.forEach(body => {
       body.style.fill = 'none';
     });
+
     this.colorSets = [];
     this.selectMaxOneRepMax = [];
     const datas = this.activityService.getAllData();
-    const lapsDatas = datas.lapDatas;
+
     switch (datas.proficiency) {
       case 'Novice' :
         this.mediumGrade = '25%';
@@ -49,13 +51,12 @@ export class MuscleMapComponent implements OnInit, AfterViewInit {
         this.proficiencyCoefficient = 1;
         break;
     }
-      this.filterAllRepeatData = lapsDatas.filter(data => {
-        return (data.lapIndex % 2 !== 0);
-      });
-      this.filterAllRepeatData = lapsDatas;
-    this.filterRepeatPart();
-    const allVicePart = Array.from(this.selectVicePart);
+
     if (!datas.focusMusclePart) {
+      const allVicePart = datas.infoDatas.useViceMuscle.filter(_data => {
+        return +_data !== 0 && _data !== null;
+      });
+
       for (let i = 0; i <= allVicePart.length; i++) {
         const colorVice = '#cacaca';  // 次要訓練部位顏色-kidin-1081125
         const transparencyVice = '0.5';  // 次要訓練部位色彩透明度-kidin-1081125
@@ -271,12 +272,14 @@ export class MuscleMapComponent implements OnInit, AfterViewInit {
     }
 
     // 根據主要重訓部位訓練程度顯示不同顏色-kidin-1081122
-    for (let i = 0; i < this.selectMaxOneRepMax.length; i++) {
-      const lapData = this.selectMaxOneRepMax[i];
+    const allMainPart = datas.infoDatas.weightTrainingInfo;
+    for (let i = 0; i < allMainPart.length; i++) {
+      const onePart = allMainPart[i];
       this.userWeight = datas.userWeight;
-      const trainingPart = lapData.middleCode;
+      const trainingPart = onePart.muscle;
+
       // 計算該部位訓練程度-kidin-1081128
-      let trainingLevel = 200 - ((lapData.middleOneRepMax) / this.userWeight) * 100 * this.proficiencyCoefficient;
+      let trainingLevel = 200 - ((onePart.max1RmWeightKg) / this.userWeight) * 100 * this.proficiencyCoefficient;
       if (trainingLevel < 0) {
         trainingLevel = 0;
       }
@@ -470,54 +473,6 @@ export class MuscleMapComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {}
 
-  // 篩選所需資料-kidin-1081125
-  filterRepeatPart() {
-    const list = [];
-    for (let i = 0; i < this.filterAllRepeatData.length; i++) {
-      const mainPartCode = this.filterAllRepeatData[i].setWorkOutMuscleMain;
-      const vicePartCode = this.filterAllRepeatData[i].setWorkOutMuscleVice;
-      // 篩選主要部位資料-kidin-1081125
-      for (let j = 0; j < mainPartCode.length; j++) {
-        if (mainPartCode[j] !== '0') {
-          const newData = {
-            muscleCode: mainPartCode[j],
-            OneRepMax: this.filterAllRepeatData[i].setOneRepMax
-          };
-          list.push(newData);
-        }
-      }
-      // 篩選次要部位資料-kidin-1081125
-      for (let k = 0; k < vicePartCode.length; k ++) {
-        if (vicePartCode[k] !== '0') {
-          this.selectVicePart.add(vicePartCode[k]);
-        }
-      }
-    }
-    this.selectMaxOneRepMaxData(list);
-  }
-
-  // 篩選各個主要部位最大1RM資料-kidin-1081125
-  selectMaxOneRepMaxData(datas) {
-    const middleCode = datas[0].muscleCode;
-    let middleOneRepMax = datas[0].OneRepMax;
-    for (let i = 1; i < datas.length; i++) {
-      if (datas[i].muscleCode === middleCode && datas[i].OneRepMax > middleOneRepMax) {
-        middleOneRepMax = datas[i].OneRepMax;
-      }
-    }
-    const filterData = {
-      middleCode: middleCode,
-      middleOneRepMax: middleOneRepMax
-    };
-    this.selectMaxOneRepMax.push(filterData);
-    datas = datas.filter(data => {
-      return data.muscleCode !== middleCode;
-    });
-    if (datas.length !== 0) {
-      this.selectMaxOneRepMaxData(datas);
-    }
-  }
-
   // 將篩選過後的資料存至service-kidin-1081129
   sendMuscleListColor(MuscleCode, level, saturation, brightness, transparency) {
     const muscleColorSets = {
@@ -527,6 +482,18 @@ export class MuscleMapComponent implements OnInit, AfterViewInit {
     };
     this.colorSets.push(muscleColorSets);
     this.activityService.saveMuscleListColor(this.colorSets);
+  }
+
+  // 解決safari在使用linearGradient時，無法正常顯示的問題-kidin-1090428
+  fixSvgUrls () {
+    const svgArr = document.querySelectorAll('#linearGradientBar');
+
+    for (let i = 0; i < svgArr.length; i++) {
+      const element = svgArr[i],
+            maskId = element.getAttribute('fill').replace('url(', '').replace(')', '');
+      element.setAttribute('fill', `url(${this.baseUrl + maskId})`);
+    }
+
   }
 
 }

@@ -2,9 +2,7 @@ import {
   Component,
   OnInit,
   ViewChild,
-  Input,
-  Output,
-  EventEmitter
+  Input
 } from '@angular/core';
 import {
   MatTableDataSource,
@@ -46,7 +44,6 @@ export class MyActivityComponent implements OnInit {
   @Input() isPortal = false;
   @Input() userName;
   @ViewChild('picker', { read: MatInput }) input: MatInput;
-  @Output() showPrivacyUi = new EventEmitter();
 
   @ViewChild('paginator')
   paginator: MatPaginator;
@@ -88,7 +85,7 @@ export class MyActivityComponent implements OnInit {
       active: '',
       direction: ''
     };
-    this.token = this.utils.getToken();
+    this.token = this.utils.getToken() || '';
     this.getLists();
 
     // 分頁切換時，重新取得資料
@@ -174,9 +171,7 @@ export class MyActivityComponent implements OnInit {
     }
     this.activityService.fetchSportList(body).subscribe(res => {
       this.isLoading = false;
-      if (res.resultCode === 400 || res.resultCode === 401 || res.resultCode === 402) {
-        return this.showPrivacyUi.emit(true);
-      }
+
       if (res.resultCode === 200) {
         this.logSource.data = res.info;
 
@@ -186,7 +181,6 @@ export class MyActivityComponent implements OnInit {
         } else {
           this.isEmpty = false;
         }
-        this.showPrivacyUi.emit(false);
       }
     });
   }

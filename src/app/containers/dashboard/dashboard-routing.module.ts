@@ -40,6 +40,9 @@ import { InnerDevicePairComponent } from './components/inner-device-pair/inner-d
 import { LifeTrackingComponent } from './components/life-tracking/life-tracking.component';
 import { MyReportComponent } from './group/group-info/my-report/my-report.component';
 import { ClassAnalysisComponent } from './group/group-info/class-analysis/class-analysis.component';
+import { ComReportComponent } from './group/group-info/com-report/com-report.component';
+import { ComLifeTrackingComponent } from './group/group-info/com-life-tracking/com-life-tracking.component';
+import { MyLifeTrackingComponent } from '@shared/components/my-life-tracking/my-life-tracking.component';
 
 const routes: Routes = [
   {
@@ -101,7 +104,15 @@ const routes: Routes = [
           {
             path: 'class-analysis',
             component: ClassAnalysisComponent
-          }
+          },
+          {
+            path: 'com-report',
+            component: ComReportComponent
+          },
+          {
+            path: 'com-life-tracking',
+            component: ComLifeTrackingComponent
+          },
         ]
       },
       {
@@ -231,6 +242,10 @@ const routes: Routes = [
       {
         path: 'sport-report',
         component: SportReportComponent
+      },
+      {
+        path: 'life-tracking',
+        component: MyLifeTrackingComponent
       },
       {
         path: 'device',

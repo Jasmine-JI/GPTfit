@@ -1,0 +1,66 @@
+<h2 mat-dialog-title class="ala-dialog">
+  {{ title }}
+</h2>
+<mat-dialog-content class="post-form">
+  <div [style.margin-bottom]="dateRange === '1' ? '0' : '15px'">
+    <mat-radio-group [(ngModel)]="dateRange">
+      <mat-radio-button
+        style="margin-right: 15px;"
+        value="99"
+        color="primary"
+        (change)="selectDateRange($event)"
+      >
+        {{ 'SH.all' | translate }}
+      </mat-radio-button>
+      <mat-radio-button
+        value="1"
+        color="primary"
+        (change)="selectDateRange($event)"
+      >
+        {{ 'Dashboard.GroupClass.selectDate' | translate }}
+      </mat-radio-button>
+    </mat-radio-group>
+  </div>
+  <div *ngIf="dateRange === '1'">
+    <p>{{ 'SH.dateRange' | translate }}</p>
+    <div class="dateSelectArea" style="margin: 0 0 15px 50px;">
+      <app-date-range-picker
+        (selectDateRange)="getSelectDate($event)"
+        [default]="'last30Days'"
+      ></app-date-range-picker>
+    </div>
+  </div>
+  <div class="flexCol">
+    <span style="margin-bottom: 15px;">{{ title }} {{ 'Dashboard.ProductInfo.object' | translate }}</span>
+    <div class="flexCol" style="margin-right: 20px;">
+      <mat-radio-group>
+        <mat-radio-button
+          value="99"
+          id="selectObj"
+          color="primary"
+          (click)="selectModifyRange('99')"
+        >
+          {{'Dashboard.privacySettings.allMember' | translate}}
+        </mat-radio-button>
+      </mat-radio-group>
+      <div *ngIf="showPerObj">
+        <mat-checkbox
+          color="primary"
+          (click)="selectModifyRange('4')"
+        >
+          {{ 'other.myObject' | translate }}
+          {{ 'other.gymBrand' | translate }}
+          /
+          {{ 'other.company' | translate }}
+          {{ 'Dashboard.Group.GroupInfo.administrator' | translate }}
+        </mat-checkbox>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions class="flexRow" style="justify-content: space-between;">
+  <button mat-button mat-dialog-close>{{ 'SH.cancel' | translate }}</button>
+  <button mat-button color="warn" style="font-weight: bold;" (click)="handleConfirm()">
+    {{ 'other.confirm' | translate }} {{ 'other.modify' | translate }}
+  </button>
+</mat-dialog-actions>

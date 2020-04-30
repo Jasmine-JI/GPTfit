@@ -115,7 +115,7 @@ export class InnerTestComponent implements OnInit {
     ) {
       const body = {
         groupId: this.groupId,
-        token: this.utils.getToken(),
+        token: this.utils.getToken() || '',
         avatarType: 2
       };
       this.groupService.fetchGroupListDetail(body).subscribe(res => {
@@ -135,7 +135,7 @@ export class InnerTestComponent implements OnInit {
       this.hashUserId === this.hashIdService.handleUserIdEncode(this.userId)
     ) {
       const body = {
-        token: this.utils.getToken(),
+        token: this.utils.getToken() || '',
         targetUserId: this.userId || '',
         avatarType: 2,
       };

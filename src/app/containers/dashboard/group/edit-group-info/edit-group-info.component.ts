@@ -82,6 +82,7 @@ export class EditGroupInfoComponent implements OnInit {
   originalGroupStatus: number;
   updateImgQueryString = '';
   brandType: any;
+  accessRight = 90;
   get groupName() {
     return this.form.get('groupName');
   }
@@ -169,7 +170,7 @@ export class EditGroupInfoComponent implements OnInit {
       this.role.isCoach = res;
       // console.log('%c this.isCoach', 'color: #0ca011', res);
     });
-    this.token = this.utils.getToken();
+    this.token = this.utils.getToken() || '';
     const body = {
       token: this.token,
       groupId: this.groupId,
@@ -563,34 +564,38 @@ export class EditGroupInfoComponent implements OnInit {
       });
     }
   }
+
   handleWaittingMemberInfo(id: string) {
     if (id) {
       this.groupInfos = this.groupInfos.filter(_info => _info.memberId !== id);
     }
   }
-  handleRemoveAdmin(id: string, type: number) {
+
+  handleRemoveAdmin(id: string, type: number, targetGroupId: string) {
     if (id) {
       if (type === 1) {
         this.brandAdministrators = this.brandAdministrators.filter(
-          _info => _info.memberId !== id
+          _info => (_info.memberId !== id || _info.groupId !== targetGroupId)
         );
       } else if (type === 2) {
         this.branchAdministrators = this.branchAdministrators.filter(
-          _info => _info.memberId !== id
+          _info => (_info.memberId !== id || _info.groupId !== targetGroupId)
         );
       } else if (type === 3) {
         this.coachAdministrators = this.coachAdministrators.filter(
-          _info => _info.memberId !== id
+          _info => (_info.memberId !== id || _info.groupId !== targetGroupId)
         );
       } else if (type === 4) {
         // 針對教練群組，刪除一般教練或體適能教練
         this.normalCoaches = this.normalCoaches.filter(
-          _info => _info.memberId !== id
+          _info => (_info.memberId !== id || _info.groupId !== targetGroupId)
         );
-        this.PFCoaches = this.PFCoaches.filter(_info => _info.memberId !== id);
+        this.PFCoaches = this.PFCoaches.filter(
+          _info => (_info.memberId !== id || _info.groupId !== targetGroupId)
+        );
       } else {
         this.normalMemberInfos = this.normalMemberInfos.filter(
-          _info => _info.memberId !== id
+          _info => (_info.memberId !== id || _info.groupId !== targetGroupId)
         );
       }
     }

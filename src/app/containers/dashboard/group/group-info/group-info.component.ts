@@ -17,6 +17,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { HashIdService } from '@shared/services/hash-id.service';
 import { ShareGroupInfoDialogComponent } from '@shared/components/share-group-info-dialog/share-group-info-dialog.component';
 
+
+import * as moment from 'moment';
+
 @Component({
   selector: 'app-group-info',
   templateUrl: './group-info.component.html',
@@ -60,6 +63,7 @@ export class GroupInfoComponent implements OnInit {
   };
   chooseIdx = 1;
   visitorDetail: any;
+  isGroupInfoLoading = false;
   isLoading = false;
   userId: number;
   commerceInfo: any;
@@ -69,6 +73,19 @@ export class GroupInfoComponent implements OnInit {
   totalGroupName: string; // 含母階層的群組名稱
   updateImgQueryString = '';
   brandType: any;
+  editManageMode = false;
+  editContent = {
+    status: '1',
+    plan: '1',
+    administratorNum: '4',
+    memberNum: '20',
+    expire: '',
+    branchNum: '1',
+    classORdepartmentNum: '2'
+  };
+  isCustomPlan = false;
+  isOutage = true;
+
   constructor(
     private route: ActivatedRoute,
     private groupService: GroupService,
@@ -90,19 +107,25 @@ export class GroupInfoComponent implements OnInit {
     if (location.search.indexOf('ipm=s') > -1) {
       this.isPreviewMode = true;
     }
+
     this.route.params.subscribe(_params => this.handleInit());
-    this.detectUrlChange(location.pathname)
+    this.detectUrlChange(location.pathname);
+
     this.router.events.subscribe((val: NavigationEnd) => {
       if (val instanceof NavigationEnd && val.url) {
         this.detectUrlChange(val.url);
       }
     });
+
     this.userInfoService.getUserAccessRightDetail().subscribe(response => {
       this.accessRight = Number(response.accessRight);
     });
+
+    this.checkManageStatus();
   }
 
   handleInit() {
+    this.isGroupInfoLoading = true;
     this.hashGroupId = this.route.snapshot.paramMap.get('groupId');
     this.groupId = this.hashIdService.handleGroupIdDecode(
       this.hashGroupId
@@ -113,7 +136,7 @@ export class GroupInfoComponent implements OnInit {
     if (this.groupId.length === 0) {
       return this.router.navigateByUrl('/404');
     }
-    this.token = this.utils.getToken();
+    this.token = this.utils.getToken() || '';
     const body = {
       token: this.token,
       groupId: this.groupId,
@@ -222,7 +245,10 @@ export class GroupInfoComponent implements OnInit {
           isAutoApplyGroup = false;
         }
       });
+
+      this.isGroupInfoLoading = false;
     });
+
   }
 
   handleShareTarget(shareData, type) {
@@ -354,29 +380,68 @@ export class GroupInfoComponent implements OnInit {
     }
   }
 
+  // 1.群組資訊 2.品牌管理 3.隱私權設定 4.我的報告(健身房) 5.課程分析(健身房) 6.運動報告(企業) 7.生活追蹤(企業)-kidin-1090211
   handleGroupItem(idx) {
+    this.editManageMode = false;
     if (idx === 4) {
       this.chooseIdx = idx;
       this.router.navigateByUrl(`/dashboard/group-info/${this.hashGroupId}/my-report`);
     } else if (idx === 5) {
       this.chooseIdx = idx;
       this.router.navigateByUrl(`/dashboard/group-info/${this.hashGroupId}/class-analysis`);
+    } else if (idx === 6) {
+      this.chooseIdx = idx;
+      this.router.navigateByUrl(`/dashboard/group-info/${this.hashGroupId}/com-report`);
+    } else if (idx === 7) {
+      this.chooseIdx = idx;
+      this.router.navigateByUrl(`/dashboard/group-info/${this.hashGroupId}/com-life-tracking`);
     } else if (idx === 2) {
       this.chooseIdx = idx;
       this.router.navigateByUrl(`/dashboard/group-info/${this.hashGroupId}`);
-      const body = {
-        token: this.token,
-        groupId: this.groupId
-      };
-      this.isCommerceInfoLoading = true;
-      this.groupService.fetchCommerceInfo(body).subscribe(res => {
-        this.isCommerceInfoLoading = false;
-        this.commerceInfo = res.info;
-      });
+      this.checkManageStatus();
     } else {
       this.chooseIdx = idx;
       this.router.navigateByUrl(`/dashboard/group-info/${this.hashGroupId}`);
     }
+  }
+
+  // 確認群組營運狀態-kidin-1090414
+  checkManageStatus () {
+
+    const body = {
+      token: this.token,
+      groupId: `0-0-${this.groupId.split('-')[2]}-0-0-0`
+    };
+
+    this.isCommerceInfoLoading = true;
+    this.groupService.fetchCommerceInfo(body).subscribe(res => {
+      this.isCommerceInfoLoading = false;
+      this.commerceInfo = res.info;
+
+      this.editContent = {
+        status: this.commerceInfo.commerceStatus,
+        plan: this.commerceInfo.commercePlan,
+        administratorNum: this.commerceInfo.groupManagerStatus.maxGroupManagers,
+        memberNum: this.commerceInfo.groupMemberStatus.maxGroupMembers,
+        expire: this.commerceInfo.commercePlanExpired,
+        branchNum: this.commerceInfo.groupStatus.maxBranches,
+        classORdepartmentNum: this.commerceInfo.groupStatus.maxClasses
+      };
+
+      // 若為停運中或授權到期，則關閉任何分享、管理按鈕、報告功能-kidin-1090414
+      setTimeout(() => {
+        const expireDate = moment(this.commerceInfo.commercePlanExpired).valueOf(),
+            today = moment().valueOf();
+
+        if (this.commerceInfo.commerceStatus !== '1'
+          || expireDate - today < 0) {
+          this.isOutage = true;
+        } else {
+          this.isOutage = false;
+        }
+      }, 0);
+
+    });
   }
 
   openShareGroupInfoDialog() {
@@ -407,22 +472,19 @@ export class GroupInfoComponent implements OnInit {
       // 申請加入
       const langName = this.utils.getLocalStorageObject('locale');
       const bodyText = toMemberText[langName];
-      if (this.brandType === 1) {
-        return this.dialog.open(MessageBoxComponent, {
-          hasBackdrop: true,
-          data: {
-            title: this.title,
-            body: bodyText,
-            confirmText: this.confirmText,
-            cancelText: this.cancelText,
-            onConfirm: () => {
-              this.sendJoinRequest(_type);
-            }
+      return this.dialog.open(MessageBoxComponent, {
+        hasBackdrop: true,
+        data: {
+          title: this.title,
+          body: bodyText,
+          confirmText: this.confirmText,
+          cancelText: this.cancelText,
+          onConfirm: () => {
+            this.sendJoinRequest(_type);
           }
-        });
-      } else {
-        this.sendJoinRequest(_type);
-      }
+        }
+      });
+
     } else {
       this.sendJoinRequest(_type);
     }
@@ -531,7 +593,8 @@ export class GroupInfoComponent implements OnInit {
             activityTrackingReport,
             this.activityTrackingReportStatus
           );
-          if (this.brandType === 1) {
+
+          if (_type === 1) {
             this.dialog.open(PrivacySettingDialogComponent, {
               hasBackdrop: true,
               data: {
@@ -560,6 +623,23 @@ export class GroupInfoComponent implements OnInit {
     this.groupService
       .actionGroup(body)
       .subscribe(({ resultCode, info: { selfJoinStatus }, resultMessage }) => {
+
+        let message;
+        switch (resultMessage) {
+          case 'Commerce stopped[2]!':  // 停運中
+            message = `${this.translate.instant('Dashboard.Group.group')}
+              ${this.translate.instant('Dashboard.BrandManagement.outOfService')}`;
+            break;
+          case 'Commerce stopped[3]!':  // 歇業
+            message = `${this.translate.instant('Dashboard.Group.group')}
+            ${this.translate.instant('Dashboard.BrandManagement.outOfBusiness')}`;
+            break;
+          case 'Commerce stopped[4]!':  // 待銷毀
+            message = `${this.translate.instant('Dashboard.Group.group')}
+            ${this.translate.instant('Dashboard.BrandManagement.toBeDestroyed')}`;
+            break;
+        }
+
         if (resultCode === 200) {
           if (_type === 2 && this.groupLevel === '80' && isBeenGroupMember) {
             this.userInfoService.getUserDetail(body, this.groupId);
@@ -575,7 +655,7 @@ export class GroupInfoComponent implements OnInit {
             hasBackdrop: true,
             data: {
               title: 'message',
-              body: resultMessage,
+              body: message,
               confirmText: this.translate.instant('SH.determine')
             }
           });
@@ -607,7 +687,6 @@ export class GroupInfoComponent implements OnInit {
       avatarType: 3
     };
     this.groupService.fetchGroupMemberList(body).subscribe(res => {
-      this.isLoading = false;
       if (res.resultCode === 200) {
         const {
           info: { groupMemberInfo, subGroupInfo }
@@ -745,6 +824,7 @@ export class GroupInfoComponent implements OnInit {
           }
         }
       }
+      this.isLoading = false;
     });
   }
   changeGroupInfo({ index }) {
@@ -780,8 +860,154 @@ export class GroupInfoComponent implements OnInit {
       this.chooseIdx = 4;
     } else if (url.indexOf('class-analysis') > -1) {
       this.chooseIdx = 5;
+    } else if (url.indexOf('com-report') > -1) {
+      this.chooseIdx = 6;
+    } else if (url.indexOf('com-life-tracking') > -1) {
+      this.chooseIdx = 7;
     } else if (this.chooseIdx !== 2 && this.chooseIdx !== 3) {
       this.chooseIdx = 1;
     }
+  }
+
+  // 開啟/關閉編輯模式-kidin-1090409
+  editMode (action) {
+    this.editManageMode = action;
+
+    if (this.editContent.plan === '99') {
+      setTimeout(() => {
+        this.setReadonly(false);
+      }, 0);
+    } else {
+      setTimeout(() => {
+        this.setReadonly(true);
+      }, 0);
+    }
+  }
+
+  // 若為客製方案，則允許編輯其他欄位，其他方案則固定內容-kidin-1090409
+  editManageContent (e) {
+    switch (e.value) {
+      case '1':
+        this.editContent.branchNum = '1';
+        this.editContent.classORdepartmentNum = '2';
+        this.editContent.administratorNum = '4';
+        this.editContent.memberNum = '20';
+        this.isCustomPlan = false;
+        this.setReadonly(true);
+
+        break;
+      case '2':
+        this.editContent.branchNum = '3';
+        this.editContent.classORdepartmentNum = '10';
+        this.editContent.administratorNum = '25';
+        this.editContent.memberNum = '1000';
+        this.isCustomPlan = false;
+        this.setReadonly(true);
+
+        break;
+      case '3':
+        this.editContent.branchNum = '10';
+        this.editContent.classORdepartmentNum = '80';
+        this.editContent.administratorNum = '200';
+        this.editContent.memberNum = '10000';
+        this.isCustomPlan = false;
+        this.setReadonly(true);
+
+        break;
+
+      case '99':
+        this.setReadonly(false);
+
+        break;
+    }
+
+  }
+
+  // 若非客製方案則不允許方案內容編輯-kidin-1090409
+  setReadonly (action) {
+    const planContent = document.querySelectorAll('.editManageInput input');
+    if (action) {
+
+      for (let i = 0; i < planContent.length; i++) {
+        planContent[i].setAttribute('readonly', 'readonly');
+        planContent[i].setAttribute('style', 'color: #919191;');
+      }
+
+    } else {
+
+      for (let i = 0; i < planContent.length; i++) {
+        planContent[i].removeAttribute('readonly');
+        planContent[i].setAttribute('style', 'color: black;');
+      }
+
+    }
+  }
+
+  // 取得所選日期-kidin-1090409
+  getSelectDate (date) {
+    this.editContent.expire = moment(date.startDate).format('YYYY-MM-DDT12:00:00.000Z');
+  }
+
+  // 確認客製方案皆輸入值，且不為0，否則轉為體驗方案預設值-kidin-1090410
+  checkValue (e , item) {
+    const value = +e.target.value,
+          defaultSetting = {
+            administratorNum: '4',
+            memberNum: '20',
+            branchNum: '1',
+            classORdepartmentNum: '2'
+          };
+
+    if (!this.utils.isNumber(value) || value <= 0 || value === null) {
+      this.editContent[item] = defaultSetting[item];
+    }
+
+  }
+
+  // 編輯品牌/企業管理設定-kidin-1090409
+  editManage () {
+    const body = {
+      token: this.utils.getToken() || '',
+      groupId: this.groupId,
+      commercePlan: this.editContent.plan,
+      commercePlanExpired: this.editContent.expire,
+      commerceStatus: this.editContent.status,
+      groupSetting: {
+        maxBranches: this.editContent.branchNum,
+        maxClasses: this.editContent.classORdepartmentNum,
+        maxGeneralGroups: '0'
+      },
+      groupManagerSetting: {
+        maxGroupManagers: this.editContent.administratorNum
+      },
+      groupMemberSetting: {
+        maxGroupMembers: this.editContent.memberNum
+      }
+    };
+
+    this.groupService.editGroupManage(body).subscribe(res => {
+
+      if (+res.resultCode === 200) {
+        this.isCommerceInfoLoading = true;
+        this.groupService.fetchCommerceInfo(body).subscribe(result => {
+          this.isCommerceInfoLoading = false;
+          this.commerceInfo = result.info;
+        });
+
+        this.checkManageStatus();
+
+        this.editManageMode = false;
+      } else {
+        this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          data: {
+            title: 'Error',
+            body: 'Please try again.',
+            confirmText: 'Confirm'
+          }
+        });
+      }
+
+    });
   }
 }

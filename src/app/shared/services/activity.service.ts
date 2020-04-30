@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { Injectable } from '@angular/core';
 import { UtilsService } from './utils.service';
+import { environment } from '../../../environments/environment';
 import * as Highcharts from 'highcharts';
 
 @Injectable()
@@ -80,15 +81,24 @@ class Option {
     };
   }
 }
+
+const { API_SERVER } = environment.url;
+
 @Injectable()
 export class ActivityService {
   private userWeight = 70;  // 儲存使用者體重-kidin-1081121
   private focusMusclePart = '';  // 儲存重訓資料-kidin-1081121
-  private heavyTrainDateState = [];  // 備份重訓資料-kidin-1081121
+  private heavyTrainDateState: any = [];  // 備份重訓資料-kidin-1081121
   private muscleListColor = []; // 儲存肌肉清單顏色列表-kidin-1081128
-  private Proficiency = 'asept';  // 儲存重訓熟練度-kidin-1081121
+  private proficiency = 'asept';  // 儲存重訓熟練度-kidin-1081121
 
   constructor(private http: HttpClient, private utils: UtilsService) {}
+
+  // 使用nodejs先將數據下載成文件再上傳至server-kidin-1090421
+  uploadSportFile (body) {
+    return this.http.post<any>(API_SERVER + 'uploadSportFile', body);
+  }
+
   fetchTestData() {
     return this.http.get<any>('https://data.jianshukeji.com/jsonp?filename=json/activity.json');
   }
@@ -643,14 +653,13 @@ export class ActivityService {
           const costhr = Math.floor(this.y / 3600);
           const costmin = Math.floor(Math.round(this.y - costhr * 60 * 60) / 60);
           const costsecond = Math.round(this.y - costmin * 60);
-          const timeHr = ('0' + costhr).slice(-2);
           const timeMin = ('0' + costmin).slice(-2);
           const timeSecond = ('0' + costsecond).slice(-2);
 
-          if (timeHr === '00') {
+          if (costhr === 0) {
             this.y = `${timeMin}:${timeSecond}`;
           } else {
-            this.y = `${timeHr}:${timeMin}:${timeSecond}`;
+            this.y = `${costhr}:${timeMin}:${timeSecond}`;
           }
           return this.y;
         }
@@ -660,11 +669,10 @@ export class ActivityService {
           const costhr = Math.floor(this.y / 3600);
           const costmin = Math.floor(Math.round(this.y - costhr * 60 * 60) / 60);
           const costsecond = Math.round(this.y - costmin * 60);
-          const timeHr = ('0' + costhr).slice(-2);
           const timeMin = ('0' + costmin).slice(-2);
           const timeSecond = ('0' + costsecond).slice(-2);
 
-          this.y = `${timeHr}:${timeMin}:${timeSecond}`;
+          this.y = `${costhr}:${timeMin}:${timeSecond}`;
           return this.y;
         }
       };
@@ -717,18 +725,44 @@ export class ActivityService {
         }
       };
       paceOptions['yAxis'].reversed = true;
-      paceOptions['tooltip'] = {
-        formatter: function () {
-          let yVal = this.y;
-          const costminperkm = Math.floor(yVal / 60);
-          const costsecondperkm = Math.round(yVal - costminperkm * 60);
-          const timeMin = ('0' + costminperkm).slice(-2);
-          const timeSecond = ('0' + costsecondperkm).slice(-2);
-          yVal = `${timeMin}'${timeSecond}"`;
-          return yVal;
-        },
-        split: true
-      };
+      if (xaxisUnit === 'distance') {
+        paceOptions['tooltip'] = {
+          formatter: function () {
+            let yVal = this.y;
+            const costminperkm = Math.floor(yVal / 60);
+            const costsecondperkm = Math.round(yVal - costminperkm * 60);
+            const timeMin = ('0' + costminperkm).slice(-2);
+            const timeSecond = ('0' + costsecondperkm).slice(-2);
+            yVal = `${timeMin}'${timeSecond}"`;
+
+            return [this.x, yVal];
+          },
+          split: true
+        };
+      } else {
+        paceOptions['tooltip'] = {
+          formatter: function () {
+            let yVal = this.y;
+            const costminperkm = Math.floor(yVal / 60);
+            const costsecondperkm = Math.round(yVal - costminperkm * 60);
+            const timeMin = ('0' + costminperkm).slice(-2);
+            const timeSecond = ('0' + costsecondperkm).slice(-2);
+            yVal = `${timeMin}'${timeSecond}"`;
+
+            const xPointHr = Math.floor(this.x / (3600000)),
+                  xPointMin = Math.floor((this.x - (xPointHr * 3600000)) / 60000),
+                  xPointSec = (this.x - (xPointHr * 3600000) - (xPointMin * 60000)) / 1000,
+                  xHrString = ('0' + xPointHr).slice(-2),
+                  xMinString = ('0' + xPointMin).slice(-2),
+                  xSecString = ('0' + xPointSec).slice(-2),
+                  xVal = `${xHrString}:${xMinString}:${xSecString}`;
+
+            return [xVal, yVal];
+          },
+          split: true
+        };
+      }
+
       if (xaxisUnit === 'distance') {
         paceOptions['xAxis'].type = '';
         paceOptions['xAxis'].dateTimeLabelFormats = null;
@@ -751,6 +785,34 @@ export class ActivityService {
       if (xaxisUnit === 'distance') {
         runCadenceOptions['xAxis'].type = '';
         runCadenceOptions['xAxis'].dateTimeLabelFormats = null;
+        runCadenceOptions['tooltip'] = {
+          formatter: function () {
+            return [this.x, this.y];
+          },
+          split: true
+        };
+      } else {
+        runCadenceOptions['tooltip'] = {
+          formatter: function () {
+            let yVal = this.y;
+            const costminperkm = Math.floor(yVal / 60);
+            const costsecondperkm = Math.round(yVal - costminperkm * 60);
+            const timeMin = ('0' + costminperkm).slice(-2);
+            const timeSecond = ('0' + costsecondperkm).slice(-2);
+            yVal = `${timeMin}'${timeSecond}"`;
+
+            const xPointHr = Math.floor(this.x / (3600000)),
+                  xPointMin = Math.floor((this.x - (xPointHr * 3600000)) / 60000),
+                  xPointSec = (this.x - (xPointHr * 3600000) - (xPointMin * 60000)) / 1000,
+                  xHrString = ('0' + xPointHr).slice(-2),
+                  xMinString = ('0' + xPointMin).slice(-2),
+                  xSecString = ('0' + xPointSec).slice(-2),
+                  xVal = `${xHrString}:${xMinString}:${xSecString}`;
+
+            return [xVal, this.y];
+          },
+          split: true
+        };
       }
       finalDatas.push({ cadenceChartTarget: runCadenceOptions, isSyncExtremes: true });
       chartTargets.push('cadenceChartTarget');
@@ -770,6 +832,34 @@ export class ActivityService {
       if (xaxisUnit === 'distance') {
         cycleCadenceOptions['xAxis'].type = '';
         cycleCadenceOptions['xAxis'].dateTimeLabelFormats = null;
+        cycleCadenceOptions['tooltip'] = {
+          formatter: function () {
+            return [this.x, this.y];
+          },
+          split: true
+        };
+      } else {
+        cycleCadenceOptions['tooltip'] = {
+          formatter: function () {
+            let yVal = this.y;
+            const costminperkm = Math.floor(yVal / 60);
+            const costsecondperkm = Math.round(yVal - costminperkm * 60);
+            const timeMin = ('0' + costminperkm).slice(-2);
+            const timeSecond = ('0' + costsecondperkm).slice(-2);
+            yVal = `${timeMin}'${timeSecond}"`;
+
+            const xPointHr = Math.floor(this.x / (3600000)),
+                  xPointMin = Math.floor((this.x - (xPointHr * 3600000)) / 60000),
+                  xPointSec = (this.x - (xPointHr * 3600000) - (xPointMin * 60000)) / 1000,
+                  xHrString = ('0' + xPointHr).slice(-2),
+                  xMinString = ('0' + xPointMin).slice(-2),
+                  xSecString = ('0' + xPointSec).slice(-2),
+                  xVal = `${xHrString}:${xMinString}:${xSecString}`;
+
+            return [xVal, this.y];
+          },
+          split: true
+        };
       }
       finalDatas.push({ cadenceChartTarget: cycleCadenceOptions, isSyncExtremes: true });
       chartTargets.push('cadenceChartTarget');
@@ -789,6 +879,27 @@ export class ActivityService {
       if (xaxisUnit === 'distance') {
         swimCadenceOptions['xAxis'].type = '';
         swimCadenceOptions['xAxis'].dateTimeLabelFormats = null;
+        swimCadenceOptions['tooltip'] = {
+          formatter: function () {
+            return [this.x, this.y];
+          },
+          split: true
+        };
+      } else {
+        swimCadenceOptions['tooltip'] = {
+          formatter: function () {
+            const xPointHr = Math.floor(this.x / (3600000)),
+                  xPointMin = Math.floor((this.x - (xPointHr * 3600000)) / 60000),
+                  xPointSec = (this.x - (xPointHr * 3600000) - (xPointMin * 60000)) / 1000,
+                  xHrString = ('0' + xPointHr).slice(-2),
+                  xMinString = ('0' + xPointMin).slice(-2),
+                  xSecString = ('0' + xPointSec).slice(-2),
+                  xVal = `${xHrString}:${xMinString}:${xSecString}`;
+
+            return [xVal, this.y];
+          },
+          split: true
+        };
       }
       finalDatas.push({ cadenceChartTarget: swimCadenceOptions, isSyncExtremes: true });
       chartTargets.push('cadenceChartTarget');
@@ -888,8 +999,8 @@ export class ActivityService {
   }
 
   // 儲存重訓熟練度-kidin-1081121
-  saveProficiency(Proficiency) {
-    this.Proficiency = Proficiency;
+  saveproficiency(proficiency) {
+    this.proficiency = proficiency;
   }
 
   // 針對使用者點選的肌肉清單篩選資料-kidin-1081128
@@ -910,11 +1021,15 @@ export class ActivityService {
     return this.muscleListColor;
   }
 
+  getUserWeight () {
+    return this.userWeight;
+  }
+
   getAllData() {
       const heavyTrainingData = {
         userWeight: this.userWeight,
-        proficiency: this.Proficiency,
-        lapDatas: this.heavyTrainDateState,
+        proficiency: this.proficiency,
+        infoDatas: this.heavyTrainDateState,
         focusMusclePart: this.focusMusclePart
       };
       return heavyTrainingData;

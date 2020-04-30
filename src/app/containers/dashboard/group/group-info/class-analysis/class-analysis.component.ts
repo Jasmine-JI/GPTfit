@@ -6,7 +6,6 @@ import * as _Highcharts from 'highcharts';
 import { HttpParams } from '@angular/common/http';
 
 import { Router } from '@angular/router';
-
 import { TranslateService } from '@ngx-translate/core';
 import { HashIdService } from '@shared/services/hash-id.service';
 
@@ -17,7 +16,6 @@ import { ActivityService } from '../../../../../shared/services/activity.service
 import { ActivityOtherDetailsService } from '../../../../../shared/services/activity-other-details.service';
 import { QrcodeService } from '../../../../portal/services/qrcode.service';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
-
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -103,24 +101,22 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   reportCompleted = true;
   isPreviewMode = false;
   isLoading = false;
-  showArrow = false;
   hasResData: boolean;
   maxSelectDate = moment().format('YYYY-MM-DD');
   initialChartComplated = true;
   showMore = false;
   isDebug = false;
+  hideCalendar = false;
+  showAllLessonInfo = false;
+  showAllCoachInfo = false;
 
   // 資料儲存用變數-kidin-1081210
   tableData = new MatTableDataSource<any>();
   token: string;
   previewUrl: string;
-  classDate = moment().format('YYYY-MM-DD');
-  classHour: number;
-  adjustTime = 0;
-  classTime = moment().format(' hh:00 a');
   reportCreatedTime = moment().format('YYYY/MM/DD HH:mm');
+  classTime: number;
   reportStartDate = '';
-  selectCategory = '1';
   reportCategory = '1';
   classRealDateTime: string;
   brandImg: string;
@@ -138,7 +134,6 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   avgHR: number;
   avgCalories: number;
   totalCalories: number;
-  userData: any;
   userHRZones = [0, 0, 0, 0, 0, 0];
   HRZoneThree = 0;
   deviceInfo: any;
@@ -147,6 +142,10 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   deviceImgUrl: string;
   memberSection = null;
   focusMember: string;
+  lessonTotalInfo: string;
+  lessonPartInfo: string;
+  coachTotalInfo: string;
+  coachPartInfo: string;
 
   // HChart設定相關-kidin-1081211
   showclassHRZoneChartTarget = false;
@@ -214,8 +213,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
     if (
       location.search.indexOf('sport=') > -1 &&
-      location.search.indexOf('classdate=') > -1 &&
-      location.search.indexOf('classhour=') > -1
+      location.search.indexOf('classTime=') > -1
     ) {
       this.queryStringShowData();
     }
@@ -225,41 +223,35 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     this.tableData.sort = this.sortTable;
   }
 
+  // 點選日曆某課程後隱藏日曆並產生報告-kidin-1090319
+  switchToReport (info) {
+    this.hideCalendar = true;
+    this.reportCategory = info.type;
+    this.classTime = info.time;
+    this.reportStartDate = moment(info.time).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+    this.handleSubmitSearch('click');
+  }
+
+  // 返回行事曆-kidin-1090319
+  returnCalendar () {
+    this.updateUrl(false);
+    this.hideCalendar = false;
+  }
+
   // 依query string顯示資料-kidin-20191226
   queryStringShowData () {
+    this.hideCalendar = true;
     const queryString = location.search.replace('?', '').split('&');
     for (let i = 0; i < queryString.length; i++) {
       if (queryString[i].indexOf('sport=') > -1) {
-        this.selectCategory = queryString[i].replace('sport=', '');
-      } else if (queryString[i].indexOf('classdate=') > -1) {
-        this.classDate = queryString[i].replace('classdate=', '');
-      } else if (queryString[i].indexOf('classhour=') > -1) {
-        this.classHour = Number(queryString[i].replace('classhour=', ''));
+        this.reportCategory = queryString[i].replace('sport=', '');
+      } else if (queryString[i].indexOf('classTime=') > -1) {
+        this.classTime = +queryString[i].replace('classTime=', '');
+        this.reportStartDate = moment(this.classTime).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
       }
     }
 
     this.handleSubmitSearch('url');
-  }
-
-  // 取得使用者選擇的日期-kidin-20181226
-  handleSaveDate (e) {
-    this.classDate = e.target.value.format('YYYY-MM-DD');
-  }
-
-  // 顯示調整時間的按鈕-kidin-1081220
-  handleShowArrow () {
-    this.showArrow = true;
-  }
-
-  // 調整小時的按鈕-kidin-1081226
-  handleClickTime (str) {
-    if (str === 'hourUp') {
-      this.adjustTime++;
-      this.classTime = moment().add(+this.adjustTime, 'hours').format(' hh:00 a');
-    } else if (str === 'hourDown') {
-      this.adjustTime--;
-      this.classTime = moment().add(+this.adjustTime, 'hours').format(' hh:00 a');
-    }
   }
 
   // 使用者送出表單後顯示相關資料-kidin-1081209
@@ -267,34 +259,36 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     this.initialChartComplated = false;
     this.reportCompleted = false;
     this.initVariable();
+
     if (act === 'click') {
       this.updateUrl('false');
     }
-    this.reportCategory = this.selectCategory;
-    this.token = this.utils.getToken();
-    this.getFuzzyTime();
+
+    this.token = this.utils.getToken() || '';
 
     // 先從service取得群組資訊，若取不到再call api-kidin-1081210
-    this.groupData = this.groupService.getGroupInfo();
-    if (this.groupData) {
-      this.groupId = this.groupData.groupId;
-      this.showGroupInfo();
-    } else {
-      const urlArr = location.pathname.split('/');
-      this.groupId = this.hashIdService.handleGroupIdDecode(urlArr[urlArr.length - 2]);
-      const groupBody = {
-        token: this.token,
-        groupId: this.groupId,
-        findRoot: '1',
-        avatarType: '2'
-      };
-
-      this.groupService.fetchGroupListDetail(groupBody).subscribe(res => {
-        this.groupData = res.info;
-        this.groupService.saveGroupInfo(this.groupData);
+    this.groupService.getGroupInfo().subscribe(res => {
+      this.groupData = res;
+      if (this.groupData.hasOwnProperty('groupId')) {
+        this.groupId = this.groupData.groupId;
         this.showGroupInfo();
-      });
-    }
+      } else {
+        const urlArr = location.pathname.split('/');
+        this.groupId = this.hashIdService.handleGroupIdDecode(urlArr[urlArr.length - 2]);
+        const groupBody = {
+          token: this.token,
+          groupId: this.groupId,
+          findRoot: '1',
+          avatarType: '2'
+        };
+
+        this.groupService.fetchGroupListDetail(groupBody).subscribe(result => {
+          this.groupData = result.info;
+          this.groupService.saveGroupInfo(this.groupData);
+          this.showGroupInfo();
+        });
+      }
+    });
 
     // 根據條件取得多筆運動檔案資料-kidin-1081211
     let targetUser;
@@ -303,13 +297,15 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     } else {
       targetUser = '2';
     }
+
     const body = {
       token: this.token,
       searchTime: {
         type: '2',
         fuzzyTime: [this.reportStartDate],
         filterStartTime: '',
-        filterEndTime: ''
+        filterEndTime: '',
+        filterSameTime: '1'
       },
       searchRule: {
         activity: this.reportCategory,
@@ -340,7 +336,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       this.sortTable.sort({id: '', start: 'asc', disableClear: false});
       delete this.sortTable['active'];
     }
-    this.showArrow = false;
+
     this.showMore = false;
     this.initialChartComplated = false;
     this.showclassHRZoneChartTarget = false;
@@ -358,29 +354,6 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     this.memberSection = null;
     this.memberHRZoneList = [];
     this.memberHRZoneOptions = [];
-  }
-
-  // 取得當地時區並加以處理-kidin-1081210
-  getFuzzyTime () {
-    const timeZoneMinite = new Date();
-    const timeZone = -(timeZoneMinite.getTimezoneOffset() / 60);
-
-    // 取得使用者選擇的時間後，換算成24小時-kidin-1081220
-    if (
-      location.search.indexOf('sport=') === -1 ||
-      location.search.indexOf('classdate=') === -1 ||
-      location.search.indexOf('classhour=') === -1
-    ) {
-      this.classHour = Number(this.classTime.replace(' ', '').split(':')[0]);
-      if ((this.classTime.indexOf('pm') > -1 && this.classHour !== 12) || (this.classTime.indexOf('am') > -1 && this.classHour === 12)) {
-        this.classHour += 12;
-      }
-    }
-    if (this.classHour < 10) {
-      this.reportStartDate = `${this.classDate}T0${this.classHour}:00:00.000+0${timeZone}:00`;
-    } else {
-      this.reportStartDate = `${this.classDate}T${this.classHour}:00:00.000+0${timeZone}:00`;
-    }
   }
 
   // 顯示群組資料-kidin-1081227
@@ -401,6 +374,8 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       );
     this.brandName = this.groupData.groupRootInfo[2].brandName;
     this.branchName = this.groupData.groupRootInfo[3].branchName;
+
+    this.handleInfo(this.groupData.groupDesc, 'lessonInfo');
   }
 
   // 取得多筆活動資料並處理-kidin-1081211
@@ -548,19 +523,12 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     let newUrl;
 
     if (str === 'true') {
-      let searchString;
-
-      if (this.classHour < 10) {
-        searchString = `sport=${this.reportCategory}&classdate=${this.classDate}&classhour=0${this.classHour}`;
-      } else {
-        searchString = `sport=${this.reportCategory}&classdate=${this.classDate}&classhour=${this.classHour}`;
-      }
+      const searchString = `sport=${this.reportCategory}&classTime=${this.classTime}`;
 
       if (location.search.indexOf('?') > -1) {
         if (
           location.search.indexOf('sport=') > -1 &&
-          location.search.indexOf('classdate=') > -1 &&
-          location.search.indexOf('classhour=') > -1
+          location.search.indexOf('classTime=') > -1
         ) {
           // 將舊的sr query string換成新的-kidin-1081226
           const preUrl = location.pathname;
@@ -569,8 +537,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
           for (let i = 0; i < queryString.length; i++) {
             if (
               queryString[i].indexOf('sport=') === -1 &&
-              queryString[i].indexOf('classdate=') === -1 &&
-              queryString[i].indexOf('classhour=') === -1
+              queryString[i].indexOf('classTime=') === -1
             ) {
               newSufUrl = `${newSufUrl}&${queryString[i]}`;
             }
@@ -589,10 +556,17 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
       this.previewUrl = newUrl + '&ipm=s';
     } else {
-      newUrl = location.pathname;
+
+      if (this.isDebug) {
+        newUrl = `${location.pathname}?debug=`;
+      } else {
+        newUrl = location.pathname;
+      }
+
       if (history.pushState) {
         window.history.pushState({path: newUrl}, '', newUrl);
       }
+
     }
   }
 
@@ -617,7 +591,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         avgHr: this.activity[i].activityInfoLayer.avgHeartRateBpm,
         maxHr: this.activity[i].activityInfoLayer.maxHeartRateBpm,
         calories: this.activity[i].activityInfoLayer.calories,
-        avgWatt: this.activity[i].activityInfoLayer.cycleAvgWatt,
+        avgWatt: this.activity[i].activityInfoLayer.cycleAvgWatt
       };
 
       middleData.push(sourceObj);
@@ -627,6 +601,8 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     if (this.sortTable && this.sortTable.hasOwnProperty('active')) {
       this.sortData();
     }
+
+    this.initMemberHRZoneChart();
   }
 
   // 取得真實的上課時間（取資料第一位的時間）-kidin-1081223
@@ -674,14 +650,14 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         case '1':
           return `${this.fillTwoDigits(hour)}:${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}"`;
         case '2':
-          return `${this.fillTwoDigits(hour)}:${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}`;
+          return `${hour}:${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}`;
       }
     }
   }
 
   // 時間補零-kidin-1081211
   fillTwoDigits (num) {
-    const timeStr = '0' + num;
+    const timeStr = '0' + Math.floor(num);
     return timeStr.substr(-2);
   }
 
@@ -747,12 +723,6 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
   // 初始化highChart-kidin-1081211
   initInfoHighChart () {
-    // 將之前生成的highchart卸除避免新生成的highchart無法顯示-kidin-1081219
-    Highcharts.charts.forEach((_highChart, idx) => {
-      if (_highChart !== undefined) {
-        _highChart.destroy();
-      }
-    });
     Highcharts.charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
     this.chartDatas.length = 0;
     this.chartTargetList.length = 0;
@@ -807,6 +777,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         return this.point.z;
       }
     };
+    classHRZoneChartOptions['series'][0].showInLegend = false;
 
     // 顯示聚焦成員的心率區間-kidin-1090102
     if (this.memberSection !== null && this.memberHRZoneList[this.focusMember] !== undefined) {
@@ -952,7 +923,8 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         height: 40,
         style: {
             overflow: 'visible'
-        }
+        },
+        backgroundColor: 'transparent'
       };
       this.memberHRZoneOptions[i]['xAxis'] = {
         labels: {
@@ -1018,7 +990,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     const deviceDody = {
       'token': '',
       'queryType': '1',
-      'queryArray': [SN]
+      'queryArray': SN
     };
     this.qrcodeService.getProductInfo(deviceDody).subscribe(res => {
       if (res) {
@@ -1041,6 +1013,8 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       if (res) {
         this.coachInfo = res.info;
       }
+
+      this.handleInfo(this.coachInfo.description, 'coachInfo');
     });
 
   }
@@ -1141,6 +1115,50 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       this.sortHRZoneChart();
     } else {
       this.initMemberHRZoneChart();
+    }
+  }
+
+  // 將過長的介紹隱藏-kidin-1090326
+  handleInfo(str, type) {
+    switch (type) {
+      case 'lessonInfo':
+        this.lessonTotalInfo = str.replace(/\r\n|\n/g, '').trim();
+        if (this.lessonTotalInfo.length > 40) {
+          this.lessonPartInfo = this.lessonTotalInfo.substring(0, 40);
+          this.showAllLessonInfo = false;
+        } else {
+          this.lessonPartInfo = this.lessonTotalInfo;
+          this.showAllLessonInfo = true;
+        }
+
+        break;
+      case 'coachInfo':
+        this.coachTotalInfo = str.replace(/\r\n|\n/g, '').trim();
+        if (this.coachTotalInfo.length > 40) {
+          this.coachPartInfo = this.coachTotalInfo.substring(0, 40);
+          this.showAllCoachInfo = false;
+        } else {
+          this.coachPartInfo = this.coachTotalInfo;
+          this.showAllCoachInfo = true;
+        }
+
+        break;
+    }
+  }
+
+  // 將過長的介紹全顯示-kidin-1090326
+  handleExtendCoachInfo(type) {
+    switch (type) {
+      case 'lessonInfo':
+        this.lessonPartInfo = this.lessonTotalInfo;
+        this.showAllLessonInfo = true;
+
+        break;
+      case 'coachInfo':
+        this.coachPartInfo = this.coachTotalInfo;
+        this.showAllCoachInfo = true;
+
+        break;
     }
   }
 

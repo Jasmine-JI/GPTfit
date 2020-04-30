@@ -47,7 +47,7 @@ export class DemoQrcodComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.token = this.utilsService.getToken();
+    this.token = this.utilsService.getToken() || '';
     const queryStrings = getUrlQueryStrings(location.search);
     this.displayQr = queryStrings;
 
@@ -67,7 +67,7 @@ export class DemoQrcodComponent implements OnInit {
     const body = {
       'token': '',
       'queryType': '1',
-      'queryArray': [this.displayQr.device_sn]
+      'queryArray': [this.displayQr.device_sn.toUpperCase()]
     };
     this.progressRef = this.progress.ref();
     this.progressRef.start();

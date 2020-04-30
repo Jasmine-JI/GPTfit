@@ -5,97 +5,14 @@
       <p>請依照您的運動屬性與課程期間建立報告</p>
       <div class="searchInput">
         <div class="selectArea">
-          <div class="sportCategory">
-            <p style="white-space: nowrap; margin: 0px">{{'Dashboard.GroupClass.activityType' | translate}}：</p>
-            <mat-form-field style="width: 100px;" appearance="none" class="trainLiveCategroy">
-              <mat-select [(value)]="selectCategory">
-                <mat-option value="1">{{'Dashboard.SportReport.run' | translate}}</mat-option>
-                <mat-option value="2">{{'Dashboard.SportReport.cycle' | translate}}</mat-option>
-                <mat-option value="5">{{'Dashboard.SportReport.aerobic' | translate}}</mat-option>
-                <mat-option value="6">{{'Dashboard.SportReport.boating' | translate}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
           <div class="datetimeInput">
             <p style="white-space: nowrap; margin: 0px">{{'SH.dateRange' | translate}}：</p>
-            <div style="display: flex; flex-direction: column;">
-              <div>
-                  <button
-                  name="aWeek"
-                  class="alatech-btn alatech-btn--default activty-btn btnWord"
-                  [class.BtnBgColor]="isSelected === 'aWeek'"
-                  value="week"
-                  (click)="handleActivityBtn($event)"
-                >
-                  {{'Dashboard.GroupClass.last7Days' | translate}}
-                </button>
-                <button
-                  name="aMonth"
-                  class="alatech-btn alatech-btn--default activty-btn btnWord"
-                  [class.BtnBgColor]="isSelected === 'aMonth'"
-                  value="month"
-                  (click)="handleActivityBtn($event)"
-                >
-                  {{'Dashboard.GroupClass.last30Days' | translate}}
-                </button>
-                <button
-                  name="rangeDate"
-                  class="alatech-btn alatech-btn--default activty-btn btnWord"
-                  [class.BtnBgColor]="isSelected === 'rangeDate'"
-                  (click)="handleClickSelectDate($event)"
-                >
-                  {{'Dashboard.GroupClass.selectDate' | translate}}
-                </button>
-              </div>
-              <div class="dateSelectArea" *ngIf="isSelectDateRange">
-                <mat-form-field style="width: 100px;" appearance="none">
-                  <input
-                    matInput
-                    type="text"
-                    name="classDate"
-                    class="inputDateTime"
-                    style="bottom: 0.4em;"
-                    [max]="maxStartDate"
-                    [(value)]="selectedStartDate"
-                    (dateChange)="handleStartDate($event)"
-                    [matDatepicker]="startDatepicker"
-                    required="required"
-                    onkeydown="return false"
-                    (click)="startDatepicker.opened = true"
-                  >
-                  <mat-datepicker #startDatepicker disabled="false" touchUi="true"></mat-datepicker>
-                </mat-form-field>
-                <div id="dashBetweenDate"></div>
-                <mat-form-field style="width: 100px;" appearance="none">
-                  <input
-                    matInput
-                    type="text"
-                    name="classDate"
-                    class="inputDateTime"
-                    style="bottom: 0.4em;"
-                    [min]="minEndDate"
-                    [max]="maxSelectDate"
-                    [(value)]="endDate"
-                    (dateChange)="handleEndDate($event)"
-                    [matDatepicker]="endDatepicker"
-                    required="required"
-                    onkeydown="return false"
-                    (click)="endDatepicker.opened = true"
-                  >
-                  <mat-datepicker #endDatepicker disabled="false" touchUi="true"></mat-datepicker>
-                </mat-form-field>
-              </div>
-            </div>
+            <app-date-range-picker
+              (selectDateRange)="getSelectDate($event)"
+              [default]="'last7Days'"
+            ></app-date-range-picker>
           </div>
         </div>
-        <button
-          class="alatech-btn alatech-btn--default activty-btn"
-          style="max-width: 70px;"
-          (click)="handleSubmitSearch('click')"
-          [class.unClickable]="!reportCompleted"
-        >
-          {{'SH.send' | translate}}
-        </button>
       </div>
     </div>
   </div>
@@ -104,8 +21,8 @@
   <p style="margin-top: 10px; color: gray; font-size: 18px;">{{'Dashboard.System.nodata' | translate}}</p>
 </ng-container>
 <ng-container *ngIf="!reportCompleted || !initialChartComplated" style="display:flex;justify-content: center;align-items: center;width:100%">
+  <mat-spinner style="z-index: 3; margin-top: 30px; position: absolute; left: 50%;"></mat-spinner>
   <div class="whiteMask">
-    <mat-spinner style="z-index: 3;"></mat-spinner>
   </div>
 </ng-container>
 <ng-container *ngIf="hasResData && reportCompleted" style="width: 100%">
@@ -166,18 +83,7 @@
       </div>
       <div style="display: flex; flex-direction: row; margin: 10px 0px; align-items: center;">
         <div class="activity-icon">
-          <i *ngIf="reportCategory === '1'"
-            class="icon-svg_web-icon_p1_083-run"
-          ></i>
-          <i *ngIf="reportCategory === '2'"
-            class="icon-svg_web-icon_p1_084-cycle"
-          ></i>
-          <i *ngIf="reportCategory === '5'"
-            class="icon-svg_web-icon_p1_087-aerobic"
-          ></i>
-          <i *ngIf="reportCategory === '6'"
-            class="icon-svg_web-icon_p1_088-row"
-          ></i>
+          <i class="icon-svg_web-icon_p2_038-complex"></i>
         </div>
         <span style="margin-left: 15px; color: #919191; font-size: 26px;">{{fileInfo?.dispName}}</span>
       </div>
@@ -185,15 +91,6 @@
         <div class="summaryDataArea">
           <span class="summaryData">{{totalTime}}</span>
           <p class="summaryDescription">{{'Dashboard.SportReport.totalTime' | translate}}</p>
-        </div>
-        <div class="summaryDataArea" *ngIf="reportCategory !== '5'">
-          <span class="summaryData" *ngIf="totalDistance >= 1000">{{totalDistance / 1000 | number:'1.0-1'}} km</span>
-          <span class="summaryData" *ngIf="totalDistance < 1000">{{totalDistance}} m</span>
-          <p class="summaryDescription">{{'Dashboard.SportReport.totalDistance' | translate}}</p>
-        </div>
-        <div class="summaryDataArea" *ngIf="reportCategory !== '5'">
-          <span class="summaryData">{{avgSpeed | number:'1.0-1'}} km/hr</span>
-          <p class="summaryDescription">{{'Dashboard.SportReport.avgSpeed' | translate}}</p>
         </div>
         <div class="summaryDataArea">
           <span class="summaryData">{{avgHR | number:'1.0-1'}} bpm</span>
@@ -213,42 +110,23 @@
         期間統計的運動成效，平均心率落點可藉由平均心率推算達到的訓練目的，以及所消耗的脂肪體重比例。
       </p>
       <div #container class="sportEfficiencyArea">
-        <div class="HRZone" *ngIf="!(initialChartComplated && !showHRZoneChartTarget)">
+        <div class="HRZone" *ngIf="!(initialChartComplated && !showHRZoneChartTarget)" style="width: 55%;">
           <div class="sportEfficiency">
             <p class="chartTitle">平均心率區間落點</p>
-            <p class="chartTitle">{{'Dashboard.GroupClass.enduranceZone' | translate}} {{HRZoneThree}}%</p>
+            <p class="chartTitle">{{avgHRZone}}</p>
           </div>
-          <div #HRZoneChartTarget class="chart">
+          <div #HRZoneChartTarget class="chart" style="margin-right: 10px;">
             chart target
           </div>
         </div>
-        <div class="bodyQuality" *ngIf="!(initialChartComplated && !showcaloriesBurnedChartTarget)">
-          <div class="sportEfficiency">
-            <p class="chartTitle">{{'Dashboard.SportReport.totalCalorie' | translate}}</p>
-            <p class="chartTitle">{{burnedCalories | number:'1.0-2' }}kg</p>
-          </div>
-          <div #caloriesBurnedChartTarget class="chart">
-            chart target
-          </div>
+        <div style="width: 45%; height: 100%;">
+          <app-hrzone-info [hrZoneRange]="hrZoneRange"></app-hrzone-info>
         </div>
       </div>
     </div>
   </div>
   <div style="display: flex; flex-direction: column; ">
       <p class="ala-dashboard-title activity-title">個人分析</p>
-      <div class="trendChart"
-          *ngIf="!(initialChartComplated && !showavgSpeedChartTarget)"
-          style="width: 100%;"
-          [class.hidden]="!showavgSpeedChartTarget"
-      >
-        <div class="sportTrend">
-          <p class="chartTitle">{{'Dashboard.SportReport.avgSpeed' | translate}}</p>
-          <p class="chartTitle">{{ avgSpeed | number:'1.0-2' }}km/h</p>
-        </div>
-        <div #avgSpeedChartTarget class="chart">
-          chart target
-        </div>
-      </div>
       <div class="trendChart" *ngIf="!(initialChartComplated && !showavgHRChartTarget)" style="width: 100%;">
         <div class="sportTrend">
           <p class="chartTitle">{{'Dashboard.SportReport.avgHr' | translate}}</p>
@@ -273,8 +151,8 @@
   <div class="other-info--area otherInfoArea">
     <div class="otherInfoSection">
       <p class="ala-dashboard-title activity-title">{{'Dashboard.ActivityDetail.device' | translate}}</p>
-      <img src="{{this.deviceImgUrl}}" style="height: auto; width: auto; max-width: 200px; max-height: 200px; margin: auto;">
-      <p>{{'Portal.modeCode' | translate}}：{{ deviceInfo?.modelName || 'SH.noData' | translate }}</p>
+      <img src="{{this.deviceImgUrl}}" style="width: 100px; height: 100px; margin: 0 auto;">
+      <span class="introductionName">{{ deviceInfo?.modelName || 'SH.noData' | translate }}</span>
       <p>{{"Portal.modeType" | translate}}：{{ (deviceInfo?.modelTypeID | productType | translate) || 'SH.noData' | translate }}</p>
     </div>
     <div class="otherInfoSection">
@@ -292,7 +170,14 @@
           </span>
         </div>
       </div>
-      <span>{{groupData?.groupDesc}}</span>
+      <span>{{lessonPartInfo}}</span>
+      <div
+        *ngIf="!showAllLessonInfo"
+        style="color: #5fbae3;cursor:pointer;text-align: right"
+        (click)="handleExtendCoachInfo('lessonInfo')"
+      >
+        ...{{ "Dashboard.TrainLive.more" | translate}}
+      </div>
     </div>
     <div class="otherInfoSection">
       <p class="ala-dashboard-title activity-title">{{'Dashboard.TrainLive.coachIntroduction' | translate}}</p>
@@ -304,7 +189,14 @@
           {{coachInfo?.name}}
         </span>
       </div>
-      <p>{{coachInfo?.description}}</p>
+      <p>{{coachPartInfo}}</p>
+      <div
+        *ngIf="!showAllCoachInfo"
+        style="color: #5fbae3;cursor:pointer;text-align: right"
+        (click)="handleExtendCoachInfo('coachInfo')"
+      >
+        ...{{ "Dashboard.TrainLive.more" | translate}}
+      </div>
     </div>
   </div>
 </ng-container>

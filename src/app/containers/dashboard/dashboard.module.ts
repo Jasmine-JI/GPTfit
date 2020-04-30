@@ -88,6 +88,9 @@ import { LifeTrackingComponent } from './components/life-tracking/life-tracking.
 import { LifeTrackingService } from './services/life-tracking.service';
 import { MyReportComponent } from './group/group-info/my-report/my-report.component';
 import { ClassAnalysisComponent } from './group/group-info/class-analysis/class-analysis.component';
+import { ComReportComponent } from './group/group-info/com-report/com-report.component';
+import { ComLifeTrackingComponent } from './group/group-info/com-life-tracking/com-life-tracking.component';
+import { ModifyBoxComponent } from './components/settings/privacy-settings/modify-box/modify-box.component';
 
 @NgModule({
   imports: [
@@ -103,7 +106,7 @@ import { ClassAnalysisComponent } from './group/group-info/class-analysis/class-
     ReactiveFormsModule,
     SharedModule,
     NgProgressModule,
-    QRCodeModule,
+    QRCodeModule
   ],
   providers: [
     EventEnrollService,
@@ -185,7 +188,10 @@ import { ClassAnalysisComponent } from './group/group-info/class-analysis/class-
     InnerDevicePairComponent,
     LifeTrackingComponent,
     MyReportComponent,
-    ClassAnalysisComponent
+    ClassAnalysisComponent,
+    ComReportComponent,
+    ComLifeTrackingComponent,
+    ModifyBoxComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
@@ -198,7 +204,8 @@ import { ClassAnalysisComponent } from './group/group-info/class-analysis/class-
     TodayLoginnerWinComponent,
     BottomSheetComponent,
     PrivacySettingDialogComponent,
-    ShareGroupInfoDialogComponent
+    ShareGroupInfoDialogComponent,
+    ModifyBoxComponent
   ]
 })
 export class DashboardModule {}

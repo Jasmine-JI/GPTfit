@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, Inject, EventEmitter, Output, Input } from '@angular/core';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
 import { UtilsService } from '@shared/services/utils.service';
 import { SettingsService } from '../../services/settings.service';
@@ -19,7 +19,11 @@ export class PrivacySettingDialogComponent implements OnInit {
   tempActivityTracking: string[];
   tempActivityTrackingReportStatus: string[];
   tempActivityTrackingStatus: string[];
+  tempLifeTracking: string[];
+  tempLifeTrackingStatus: string[];
+  showBatchChangeBox = false;
   @Output() onConfirm: EventEmitter<any> = new EventEmitter();
+
   get activityTrackingReport() {
     this.tempActivityTrackingReport = [...this.data.activityTrackingReport];
     return this.data.activityTrackingReport;
@@ -50,29 +54,45 @@ export class PrivacySettingDialogComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    let activityTrackingArray = [];
-    let activityTrackingReportArray = [];
+    const activityTrackingArray = [],
+          activityTrackingReportArray = [],
+          lifeTrackingReportArray = [];
 
-    //隱私權預設勾選「新運動檔案」及「新運動期間報告」開放給體適能教練
-    activityTrackingArray.push("1");
-    activityTrackingArray.push("4");
-    activityTrackingReportArray.push("1");
-    activityTrackingReportArray.push("4");
+    // 隱私權預設勾選「新運動檔案」及「新運動期間報告」開放給體適能教練
+    activityTrackingArray.push('1');
+    activityTrackingArray.push('4');
+    activityTrackingReportArray.push('1');
+    activityTrackingReportArray.push('4');
+    lifeTrackingReportArray.push('1');
+    lifeTrackingReportArray.push('4');
 
     this.tempActivityTracking = activityTrackingArray;
     this.tempActivityTrackingReport = activityTrackingReportArray;
+    this.tempLifeTracking = lifeTrackingReportArray;
   }
 
   confirm() {
     this.onConfirm.emit();
-    const body = {
-      token: this.utils.getToken(),
-      privacy: {
-        activityTracking: this.tempActivityTracking,
-        activityTrackingReport: this.tempActivityTrackingReport
-        // lifeTrackingReport: this.lifeTrackingReport
-      }
-    };
+    let body;
+    if (this.tempActivityTracking.length !== 0) {
+      body = {
+        token: this.utils.getToken() || '',
+        privacy: {
+          activityTracking: this.tempActivityTracking,
+          activityTrackingReport: this.tempActivityTrackingReport,
+          lifeTrackingReport: this.tempLifeTracking
+        }
+      };
+    } else {
+      body = {
+        token: this.utils.getToken() || '',
+        privacy: {
+          activityTracking: this.tempActivityTracking,
+          activityTrackingReport: this.tempActivityTrackingReport
+        }
+      };
+    }
+
 
     this.settingsService.updateUserProfile(body).subscribe(() => {
       this.dialog.closeAll();
@@ -89,8 +109,8 @@ export class PrivacySettingDialogComponent implements OnInit {
       tempArr = [...this.activityTrackingReport];
       tempStatus = [...this.activityTrackingReportStatus];
     } else {
-      // tempArr = this.lifeTrackingReport;
-      // tempStatus = this.lifeTrackingReportStatus;
+      tempArr = this.tempLifeTracking;
+      tempStatus = this.tempLifeTrackingStatus;
     }
     if (event.checked) {
       tempStatus[idx] = true;
@@ -107,8 +127,13 @@ export class PrivacySettingDialogComponent implements OnInit {
       this.tempActivityTrackingReport = [...tempArr];
       this.tempActivityTrackingReportStatus = [...tempStatus];
     } else {
-      // tempArr = this.lifeTrackingReport;
-      // tempStatus = this.lifeTrackingReportStatus;
+      tempArr = this.tempLifeTracking;
+      tempStatus = this.tempLifeTrackingStatus;
     }
+  }
+
+  // 取得輸入框顯示與否的狀態-kidin-1090326
+  showBox (e) {
+    this.showBatchChangeBox = e;
   }
 }

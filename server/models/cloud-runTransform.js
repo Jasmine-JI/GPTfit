@@ -2,7 +2,7 @@ const fastXmlParser = require("fast-xml-parser");
 const fs = require("fs");
 const gcoord = require('gcoord');
 let parsedGPX = fastXmlParser.parse(
-  fs.readFileSync("/home/administrator/myWorkSpace/web/server/models/beijin_marathon_21k-cj02.gpx", "utf8"), {
+  fs.readFileSync("/home/dezhi/web/server/models/beijin_marathon_21k-cj02.gpx", "utf8"), {
     ignoreAttributes: false
   }
 );

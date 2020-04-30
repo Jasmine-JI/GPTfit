@@ -9,8 +9,10 @@ export class GroupStatusPipe implements PipeTransform {
       return 'Dashboard.Group.auditSystem';
     } else if (value === 3) {
       return 'Dashboard.Group.hide';
-    } else {
+    } else if (value === 4) {
       return 'Dashboard.Group.disband';
+    } else {
+      return 'other.loading';
     }
   }
 }

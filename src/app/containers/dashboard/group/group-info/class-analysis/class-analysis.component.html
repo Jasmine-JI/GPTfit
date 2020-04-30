@@ -1,102 +1,53 @@
-<ng-container *ngIf="!isPreviewMode">
+<ng-container *ngIf="!hideCalendar && !isPreviewMode">
   <div [style.visibility]="isLoading ? 'hidden': 'visible'">
     <div class="searchReport">
       <p style="font-size: 18px; color: #26abe3;">{{'SH.create' | translate}}{{'Dashboard.SportReport.sportReport' | translate}}</p>
       <p>請依照您的運動屬性與課程期間建立報告</p>
-      <div class="searchInput">
-        <div class="selectArea">
-          <div class="sportCategory">
-            <p style="white-space: nowrap; margin: 0px">{{'Dashboard.GroupClass.activityType' | translate}}：</p>
-            <mat-form-field style="width: 100px;" appearance="none" class="trainLiveCategroy">
-              <mat-select [(value)]="selectCategory">
-                <mat-option value="1">{{'Dashboard.SportReport.run' | translate}}</mat-option>
-                <mat-option value="2">{{'Dashboard.SportReport.cycle' | translate}}</mat-option>
-                <mat-option value="5">{{'Dashboard.SportReport.aerobic' | translate}}</mat-option>
-                <mat-option value="6">{{'Dashboard.SportReport.boating' | translate}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-          <div class="datetimeInput">
-            <p style="white-space: nowrap; margin: 0px">{{'Dashboard.SportReport.time' | translate}}：</p>
-            <mat-form-field style="width: 100px;" appearance="none">
-              <input
-                matInput
-                type="text"
-                name="classDate"
-                class="inputDateTime"
-                style="bottom: 0.4em;"
-                [max]="maxSelectDate"
-                [(value)]="classDate"
-                (dateChange)="handleSaveDate($event)"
-                [matDatepicker]="classDatepicker"
-                required="required"
-                onkeydown="return false"
-                (click)="classDatepicker.opened = true"
-              >
-              <mat-datepicker #classDatepicker disabled="false" touchUi="true"></mat-datepicker>
-            </mat-form-field>
-            <div id="dash"></div>
-            <input
-              type="text"
-              name="classTime"
-              class="inputDateTime"
-              style="width: 90px;"
-              [(value)]="classTime"
-              required="required"
-              onkeydown="return false"
-              (click)="handleShowArrow()"
-              readonly
-            >
-            <div class="arrow" *ngIf="showArrow">
-              <div class="arrow-TimeUp" (click)="handleClickTime('hourUp')"></div>
-              <div class="arrow-TimeDown" (click)="handleClickTime('hourDown')"></div>
-            </div>
-          </div>
-        </div>
-        <button
-          class="alatech-btn alatech-btn--default activty-btn"
-          style="max-width: 70px; margin-bottom: 10px;"
-          (click)="handleSubmitSearch('click')"
-          [class.unClickable]="!reportCompleted"
-        >
-          {{'SH.send' | translate}}
-        </button>
-      </div>
     </div>
   </div>
 </ng-container>
-<ng-container *ngIf="hasResData === false && initialChartComplated" style="width: 100%; display: flex; flex-direction: row; justify-content: center;">
+<ng-container *ngIf="!isPreviewMode">
+  <app-tui-calender (classTime)="switchToReport($event)" [hidden]="hideCalendar" [isDebug]="isDebug"></app-tui-calender>
+</ng-container>
+<ng-container
+  *ngIf="hasResData === false && initialChartComplated"
+  style="width: 100%; display: flex; flex-direction: row; justify-content: center;"
+>
+  <span (click)="returnCalendar()" style="cursor: pointer; color: #0089ff">&lt;&lt; 返回</span>
   <p style="margin-top: 10px; color: gray; font-size: 18px;">{{'Dashboard.System.nodata' | translate}}</p>
 </ng-container>
 <ng-container *ngIf="!reportCompleted || !initialChartComplated" style="display:flex;justify-content: center;align-items: center;width:100%">
+  <mat-spinner style="z-index: 3; margin-top: 30px; position: absolute; left: 50%;"></mat-spinner>
   <div class="whiteMask">
-    <mat-spinner style="z-index: 3;"></mat-spinner>
   </div>
 </ng-container>
-<ng-container *ngIf="hasResData && reportCompleted">
-  <div class="functionButton">
-    <button class="alatech-btn alatech-btn--default activity-btn"
-      title="{{'SH.print' | translate}}"
-      (click)="print()"
-      *ngIf="isPreviewMode"
-    >
-      {{'SH.print' | translate}}
-    </button>
-    <button class="alatech-btn--default"
-      (click)="goBack()"
-      *ngIf="!isPreviewMode"
-      style="border: none;"
-      style="display: none;"
-    >
-      <i class="icon-svg_web-icon_p1_013-share activity-info_icon_size"></i>
-    </button>
-    <a target="_blank"
-      [href]="previewUrl"
-      class="alatech-btn--default"
-      *ngIf="!isPreviewMode"
-    >
-      <i class="icon-svg_web-icon_p2_087-print activity-info_icon_size"></i>
-    </a>
+<ng-container *ngIf="hasResData && reportCompleted && hideCalendar">
+  <div class="functionButton" [style.justify-content]="isPreviewMode ? '' : 'space-between'">
+    <span (click)="returnCalendar()" style="cursor: pointer; color: #0089ff" *ngIf="!isPreviewMode">&lt;&lt; 返回</span>
+    <div>
+      <button class="alatech-btn alatech-btn--default activity-btn"
+        title="{{'SH.print' | translate}}"
+        (click)="print()"
+        *ngIf="isPreviewMode"
+      >
+        {{'SH.print' | translate}}
+      </button>
+      <button class="alatech-btn--default"
+        (click)="goBack()"
+        *ngIf="!isPreviewMode"
+        style="border: none;"
+        style="display: none;"
+      >
+        <i class="icon-svg_web-icon_p1_013-share activity-info_icon_size"></i>
+      </button>
+      <a target="_blank"
+        [href]="previewUrl"
+        class="alatech-btn--default"
+        *ngIf="!isPreviewMode"
+      >
+        <i class="icon-svg_web-icon_p2_087-print activity-info_icon_size"></i>
+      </a>
+    </div>
   </div>
   <div class="reprotHeadArea" [class.fitWindow]="!isPreviewMode">
     <div style="display: flex; flex-direction: row;">
@@ -361,12 +312,14 @@
       <div class="seeMoreLink" (click)="handleTableData('showAll')" [hidden]="showMore">{{'Dashboard.TrainLive.more' | translate}}</div>
   </div>
 </ng-container>
-<ng-container *ngIf="hasResData">
+<ng-container *ngIf="hasResData && hideCalendar">
   <div class="other-info--area otherInfoArea">
     <div class="otherInfoSection">
       <p class="ala-dashboard-title activity-title">{{'Dashboard.ActivityDetail.device' | translate}}</p>
-      <img src="{{this.deviceImgUrl}}" style="height: auto; width: auto; max-width: 200px; max-height: 200px; margin: auto;">
-      <p>{{'Portal.modeCode' | translate}}：{{ deviceInfo?.modelName || 'SH.noData' | translate }}</p>
+      <img src="{{this.deviceImgUrl}}" style="height: auto; width: auto; width: 100px; height: 100px; margin: 0 auto;">
+      <span class="introductionName">
+        {{ deviceInfo?.modelName || 'SH.noData' | translate }}
+      </span>
       <p>{{"Portal.modeType" | translate}}：{{ (deviceInfo?.modelTypeID | productType | translate) || 'SH.noData' | translate }}</p>
     </div>
     <div class="otherInfoSection">
@@ -384,7 +337,14 @@
           </span>
         </div>
       </div>
-      <span>{{groupData?.groupDesc}}</span>
+      <span>{{lessonPartInfo}}</span>
+      <div
+        *ngIf="!showAllLessonInfo"
+        style="color: #5fbae3;cursor:pointer;text-align: right"
+        (click)="handleExtendCoachInfo('lessonInfo')"
+      >
+        ...{{ "Dashboard.TrainLive.more" | translate}}
+      </div>
     </div>
     <div class="otherInfoSection">
       <p class="ala-dashboard-title activity-title">{{'Dashboard.TrainLive.coachIntroduction' | translate}}</p>
@@ -396,8 +356,14 @@
           {{coachInfo?.name}}
         </span>
       </div>
-      <p>{{coachInfo?.description}}</p>
+      <p>{{coachPartInfo}}</p>
+      <div
+        *ngIf="!showAllCoachInfo"
+        style="color: #5fbae3;cursor:pointer;text-align: right"
+        (click)="handleExtendCoachInfo('coachInfo')"
+      >
+        ...{{ "Dashboard.TrainLive.more" | translate}}
+      </div>
     </div>
   </div>
 </ng-container>
-

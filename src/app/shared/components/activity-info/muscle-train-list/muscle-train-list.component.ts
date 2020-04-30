@@ -7,7 +7,7 @@ import { ActivityService } from '../../../services/activity.service';
   styleUrls: ['./muscle-train-list.component.scss']
 })
 export class MuscleTrainListComponent implements OnInit {
-  lapsDatas = [];
+
   musclePartState = '';  // 紀錄現在聚焦的肌肉部位-kidin-1081129
   focusSection: any;  // 紀錄現在聚焦的html區塊-kidin-1081129
   noRepeatData = [];  // 紀錄篩選過後的資料-kidin-1081129
@@ -15,59 +15,10 @@ export class MuscleTrainListComponent implements OnInit {
   constructor(public activityService: ActivityService) {
   }
 
-  originLapDatas = this.activityService.getLapsData();
+  trainList = this.activityService.getLapsData().weightTrainingInfo;
 
   ngOnInit() {
-    this.compileDatas(this.originLapDatas);
-      this.initMuscleList();
-  }
-
-  // 將資料編輯過以供html讀取-kidin-1081129
-  compileDatas(datas) {
-    const middleDatas = datas.filter(data => data.lapIndex % 2 !== 0);
-    const mainTrainingPartList = [];
-    // 先篩出此次重訓主要訓練的所有肌肉部位-kidin-20191126
-    for (let i = 0; i < middleDatas.length; i++) {
-      const mainTrainPart = middleDatas[i].setWorkOutMuscleMain;
-      const listLength = mainTrainingPartList.length;
-      for (let j = 0; j < mainTrainPart.length; j++) {
-        if (mainTrainPart[j] !== '0' && mainTrainPart[j] !== mainTrainingPartList[listLength - 1 ]) {
-          mainTrainingPartList.push(mainTrainPart[j]);
-        }
-      }
-    }
-    const pushedMusclePart = [];
-    // 再根據該肌肉部位分別將重量、組數、次數相加，並取得此次訓練中該肌肉部位的最大1RM-kidin-20191126
-    for (let k = 0; k < mainTrainingPartList.length; k++) {
-      let totalWeight = 0,
-          totalReps = 0,
-          totalSets = 0,
-          OneRepMax = 0;
-      for (let l = 0; l < middleDatas.length; l++) {
-        const mainTrainingPart = middleDatas[l].setWorkOutMuscleMain;
-        for (let m = 0; m < mainTrainingPart.length; m++) {
-          if ( mainTrainingPart[m] === mainTrainingPartList[k]) {
-            totalWeight = totalWeight + middleDatas[l].setTotalWeightKg;
-            totalReps = totalReps + middleDatas[l].setTotalReps;
-            totalSets++;
-            if (middleDatas[l].setOneRepMax > OneRepMax) {
-              OneRepMax = middleDatas[l].setOneRepMax;
-            }
-          }
-        }
-      }
-      const muscleDatas = {
-        muscleCode: mainTrainingPartList[k],
-        totalWeight: totalWeight,
-        totalReps: totalReps,
-        totalSets: totalSets,
-        OneRepMax: OneRepMax
-      };
-      if (pushedMusclePart.indexOf(mainTrainingPartList[k]) < 0) {
-        this.lapsDatas.push(muscleDatas);
-        pushedMusclePart.push(mainTrainingPartList[k]);
-      }
-    }
+    this.initMuscleList();
   }
 
   initMuscleList() {

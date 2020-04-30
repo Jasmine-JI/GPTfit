@@ -10,7 +10,7 @@
           center
           <span class="alpha-text" *ngIf="isAlphaVersion">alpha</span>
         </span>
-        <mat-nav-list>
+        <mat-nav-list style="z-index: 3;">
           <!--<mat-accordion multi="false">
             <mat-expansion-panel [expanded]="target === 1">
               <mat-expansion-panel-header  class="ala-expansion-panel-header"
@@ -96,13 +96,31 @@
           >
             <i class="icon-svg_web-icon_p1_010-treadmill ala-sidenav-icon"></i>{{"Dashboard.MyDevice.myDevice" | translate }}
           </li>
-          <li class="ala-sidenav-item"
-            (click)="chooseItem(16, sideNav)"
-            [class.ala-sidenav-menu-item__active]="target === 16"
-            [routerLink]="['/dashboard/sport-report']"
-          >
-            <i class="icon-svg_web-icon_p1_037-chart ala-sidenav-icon"></i>{{"Dashboard.SportReport.sportReport" | translate }}
-          </li>
+          <mat-accordion multi="false">
+            <mat-expansion-panel>
+              <mat-expansion-panel-header  class="ala-expansion-panel-header"
+                [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
+              >
+                <mat-panel-title>
+                  <i class="icon-svg_web-icon_p1_037-chart ala-sidenav-icon"></i>{{"other.myReport" | translate}}
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <li class="ala-sidenav-menu-item"
+                (click)="chooseItem(16, sideNav)"
+                [class.ala-sidenav-menu-item__active]="target === 16"
+                [routerLink]="['/dashboard/sport-report']"
+              >
+                {{"Dashboard.SportReport.sportReport" | translate }}
+              </li>
+              <li class="ala-sidenav-menu-item"
+                (click)="chooseItem(23, sideNav)"
+                [class.ala-sidenav-menu-item__active]="target === 23"
+                [routerLink]="['/dashboard/life-tracking']"
+              >
+                {{"other.lifeTracking" | translate}}
+              </li>
+            </mat-expansion-panel>
+          </mat-accordion>
           <mat-accordion multi="false" *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper">
             <mat-expansion-panel [expanded]="target === 13">
               <mat-expansion-panel-header  class="ala-expansion-panel-header"
@@ -192,7 +210,7 @@
             </mat-expansion-panel>
           </mat-accordion>
           <mat-accordion multi="false" *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper">
-            <mat-expansion-panel [expanded]="target === 11 || target === 12">
+            <mat-expansion-panel [expanded]="target === 11 || target === 12 || target === 22">
               <mat-expansion-panel-header  class="ala-expansion-panel-header"
                 [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
               >
@@ -258,14 +276,14 @@
         </mat-nav-list>
       </nav>
       <div class="version">
-        <footer
+        <div
           class="footer footer-details"
           [ngClass]="footerAddClassName"
           [style.display]="isHideFooter ? 'none' : 'block'"
         >
           {{'SH.footerAnnouncement' | translate}}
           <div>{{'SH.version' | translate: {'version': version } }}</div>
-        </footer>
+        </div>
       </div>
     </mat-drawer>
     <mat-drawer-content>
@@ -280,7 +298,7 @@
           <i class="icon-svg_web-icon_p1_005-menu main-nav-toggle-icon"></i>
         </div>
       </div>
-        <div style="display: flex;position: fixed;right:20px">
+        <div style="display: flex; position: fixed; right: 20px">
           <div class="dropdown">
             <div class="header-nav-item" id="dropdownMenu3" data-toggle="dropdown" aria-haspopup="true"
               aria-expanded="false">
@@ -325,6 +343,7 @@
   >
     <div
       [class.container]="isHadContainer"
+      [class.containerPrint]="isPreviewMode"
       [hidden]="isLoading"
     >
       <router-outlet></router-outlet>

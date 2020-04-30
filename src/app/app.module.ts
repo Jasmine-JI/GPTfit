@@ -21,6 +21,7 @@ import { MatPaginatorIntl } from '@angular/material';
 import { CustomMatPaginatorIntl } from '@shared/custom-mat-paginator-intl';
 // import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
+import { CommonModule } from '@angular/common';
 
 export function startupServiceFactory(startupService: StartupService): Function { return () => startupService.load(); }
 
@@ -36,6 +37,7 @@ export function createTranslateLoader(http: HttpClient) {
     DashboardModule,
     SharedComponentsModule,
     BrowserAnimationsModule,
+    CommonModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
