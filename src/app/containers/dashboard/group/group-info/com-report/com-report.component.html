@@ -1,7 +1,7 @@
 <ng-container *ngIf="!isPreviewMode">
   <div class="searchReport">
     <p style="font-size: 18px; color: #26abe3;">{{'SH.create' | translate}}{{'Dashboard.SportReport.sportReport' | translate}}</p>
-    <p>請依照您的選擇期間建立運動報告</p>
+    <p>{{'other.followExerciseTypeCreate' | translate}}</p>
     <div class="searchInput">
       <div class="selectArea">
         <div class="sportCategory" *ngIf="1 ==='1'">
@@ -646,10 +646,46 @@
   </div>
   <div class="pageBreak" *ngIf="isPreviewMode"></div>
   <div class="flexCol" style="margin-bottom: 50px;" (scroll)="onWindowScroll()">
-    <div class="activity-title">
+    <div class="flexRow activity-title" style="justify-content: space-between;">
       <span class="ala-dashboard-title">
         {{'other.personalAnalysis' | translate}}
       </span>
+      <div *ngIf="!isPreviewMode">
+        <i
+          class="icon-svg_web-icon_p1_001-setting"
+          style="font-size: 25px; cursor: pointer;"
+          (click)="showTableList()"
+        ></i>
+        <div
+          class="flexCol personalMenu"
+          style="position: absolute; right: 20px; padding: 10px;"
+          *ngIf="showTableMenu"
+        >
+          <div id='checkboxMenu' class="tableCheckbox" *ngFor="let list of tableTypeList">
+            <mat-checkbox
+              color="primary"
+              value="{{list.id}}"
+              [checked]="list.checked"
+              (change)="handleChangeTableType($event)"
+              *ngIf="!(diffDay < 14 && list.id === 1)"
+              [style.pointer-events]="
+                (tableCheckedNum >= 5 && list.checked === false)
+                || (tableCheckedNum <= 2 && list.checked === true)
+                ? 'none' : ''
+              "
+              [style.color]="
+                (tableCheckedNum >= 5 && list.checked === false)
+                || (tableCheckedNum <= 2 && list.checked === true)
+                ? '#ababab' : ''
+              "
+            >
+              <span style="font-size: 14px">
+                {{ list.i18n }}
+              </span>
+            </mat-checkbox>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="areaDescription">
       {{'other.personalInformation' | translate}}
@@ -673,6 +709,7 @@
             mat-sort-header
             disableClear="true"
             class="tableArrangement"
+            [style.display]="tableTypeList[0].checked ? '' : 'none'"
           >
             <div class="tableTitle">
               <span class="tableTitleWord">{{'other.totalActivity' | translate}}</span>
@@ -682,6 +719,7 @@
           <mat-cell
             *matCellDef="let row; let i = index;"
             class="tableArrangement tableContent"
+            [style.display]="tableTypeList[0].checked ? '' : 'none'"
           >
             <span>{{row?.totalActivityNum}}</span>
           </mat-cell>
@@ -692,6 +730,7 @@
             mat-sort-header
             disableClear="true"
             class="tableArrangement"
+            [style.display]="tableTypeList[1].checked ? '' : 'none'"
             [hidden]="diffDay < 14"
           >
             <div class="tableTitle">
@@ -704,6 +743,7 @@
           <mat-cell
             *matCellDef="let row; let i = index;"
             class="tableArrangement tableContent"
+            [style.display]="tableTypeList[1].checked ? '' : 'none'"
             [hidden]="diffDay < 14"
           >
             <span *ngIf="row?.weekFrequency !== '--' && row?.weekFrequency >= 1">{{row?.weekFrequency | number:'1.0-0'}}</span>
@@ -712,7 +752,13 @@
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="totalTime">
-          <mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true" class="tableArrangement">
+          <mat-header-cell
+            *matHeaderCellDef
+            mat-sort-header
+            disableClear="true"
+            class="tableArrangement"
+            [style.display]="tableTypeList[2].checked ? '' : 'none'"
+          >
             <div class="tableTitle">
               <span class="tableTitleWord">
                 {{'Dashboard.MyActivity.totalTime' | translate}}
@@ -723,11 +769,38 @@
           <mat-cell
             *matCellDef="let row; let i = index;"
             class="tableArrangement tableContent"
+            [style.display]="tableTypeList[2].checked ? '' : 'none'"
           >
             <span>{{row?.totalTime}}</span>
             <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.timeRegression > 0"></i>
             <span [style.width]="row?.timeRegression === 0 ? '20px': '0px'"></span>
             <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.timeRegression < 0"></i>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="fitTime">
+          <mat-header-cell
+            *matHeaderCellDef
+            mat-sort-header
+            disableClear="true"
+            class="tableArrangement"
+            [style.display]="tableTypeList[3].checked ? '' : 'none'"
+          >
+            <div class="tableTitle">
+              <span class="tableTitleWord">
+                {{'conflict.fitTime' | translate}}
+              </span>
+              <span class="chartTitleUnit">time</span>
+            </div>
+          </mat-header-cell>
+          <mat-cell
+            *matCellDef="let row; let i = index;"
+            class="tableArrangement tableContent"
+            [style.display]="tableTypeList[3].checked ? '' : 'none'"
+          >
+            <span>{{row?.fitTime}}</span>
+            <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.fitTimeRegression > 0"></i>
+            <span [style.width]="row?.fitTimeRegression === 0 ? '20px': '0px'"></span>
+            <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.fitTimeRegression < 0"></i>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="totalCalories">
@@ -736,6 +809,7 @@
             mat-sort-header
             disableClear="true"
             class="tableArrangement hideColumn-500"
+            [style.display]="tableTypeList[4].checked ? '' : 'none'"
           >
             <div class="tableTitle">
               <span class="tableTitleWord">
@@ -747,6 +821,7 @@
           <mat-cell
             *matCellDef="let row; let i = index;"
             class="tableArrangement hideColumn-500 tableContent"
+            [style.display]="tableTypeList[4].checked ? '' : 'none'"
           >
             <span *ngIf="row?.totalCalories !== '--'">{{row?.totalCalories | number:'1.0-0'}}</span>
             <span *ngIf="row?.totalCalories === '--'">{{row?.totalCalories}}</span>
@@ -760,6 +835,7 @@
             *matHeaderCellDef
             disableClear="true"
             class="tableArrangement hideColumn-630"
+            [style.display]="tableTypeList[5].checked ? '' : 'none'"
           >
             <div class="tableTitle">
               <span class="tableTitleWord">{{'other.activityPreference' | translate}}</span>
@@ -769,6 +845,7 @@
           <mat-cell
             *matCellDef="let row; let i = index;"
             class="tableArrangement hideColumn-630 tableContent personalAnalysisIcon"
+            [style.display]="tableTypeList[5].checked ? '' : 'none'"
           >
             <i [class]="row?.likeType[0]" *ngIf="row?.likeType.length > 0"></i>
             <i [class]="row?.likeType[1]" *ngIf="row?.likeType.length > 1"></i>
@@ -781,6 +858,7 @@
             *matHeaderCellDef
             disableClear="true"
             class="tableArrangement hideColumn-950"
+            [style.display]="tableTypeList[6].checked ? '' : 'none'"
           >
             <div class="tableTitle">
               <span class="tableTitleWord">{{'SH.hrZone' | translate}}</span>
@@ -790,6 +868,7 @@
           <mat-cell
             *matCellDef="let row; let i = index;"
             class="tableArrangement hideColumn-950 tableContent"
+            [style.display]="tableTypeList[6].checked ? '' : 'none'"
           >
             <div style="width: 100%;" *ngIf="row?.HRZone !== '--'">
               <app-hrzone-chart
@@ -803,15 +882,11 @@
         </ng-container>
         <ng-container>
           <mat-header-row
-            *matHeaderRowDef="['name', 'totalActivityNum', 'weekFrequency', 'totalTime', 'totalCalories', 'likeType', 'HRZone']"
+            *matHeaderRowDef="headerRowDef"
           >
           </mat-header-row>
           <mat-row
-            *matRowDef="
-              let logRow;
-              let j = index;
-              columns: ['name', 'totalActivityNum', 'weekFrequency', 'totalTime', 'totalCalories', 'likeType', 'HRZone']
-            "
+            *matRowDef="let logRow; let j = index; columns: headerRowDef"
             (click)="handleClickMember($event)"
             id="{{logRow?.id}}"
           >

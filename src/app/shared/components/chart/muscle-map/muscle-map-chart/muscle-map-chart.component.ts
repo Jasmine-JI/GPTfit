@@ -113,8 +113,6 @@ export class MuscleMapChartComponent implements OnInit, OnChanges {
       this.assignMuscleMapColor(this.muscleGroupList);
     }, 0);
 
-    this.sortMuscleGroup();
-
     // 確認是否為預覽列印頁面-kidin-1090205
     if (location.search.indexOf('ipm=s') > -1) {
       this.checkChartStatus(location.search);
@@ -130,6 +128,7 @@ export class MuscleMapChartComponent implements OnInit, OnChanges {
 
     }
 
+    this.sortMuscleGroup();
     this.emitData('init');
   }
 

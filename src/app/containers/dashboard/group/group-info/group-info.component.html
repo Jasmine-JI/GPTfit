@@ -592,7 +592,7 @@
               (selectDateRange)="getSelectDate($event)"
               [pickerType]="'singlePicker'"
               [refStartDate]="commerceInfo?.commercePlanExpired"
-              [default]="'nextYear'"
+              [default]="commerceInfo?.commercePlanExpired"
             ></app-date-range-picker>
           </span>
         </div>

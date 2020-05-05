@@ -20,7 +20,7 @@ export class QrcodeUploadComponent implements OnInit {
 
   uploading = false;
   translatedInfo: any = {};
-  displayInfo: object = {
+  displayInfo: any = {
     type: '2',
     totalTime: '--',
     calories: '--',

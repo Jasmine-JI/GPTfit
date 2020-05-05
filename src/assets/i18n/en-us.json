@@ -796,6 +796,10 @@
     "uploadActivityData": "Upload exercise data",
     "uploadFailed": "Upload failed",
     "uploadSuccess": "Upload success",
-    "waitingToUploadData": "Waiting for upload"
+    "waitingToUploadData": "Waiting for upload",
+    "followExerciseTypeCreate": "Create your report according to your workout "
+  },
+  "conflict": {
+    "fitTime": "Fit Time"
   }
 }
