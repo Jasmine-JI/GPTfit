@@ -121,6 +121,12 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
           endDate: moment().subtract(-1, 'year').format('YYYY-MM-DDT23:59:59.999Z')
         };
         break;
+      default:
+        this.defaultDate = {
+          startDate: moment(this.default).format('YYYY-MM-DDT00:00:00.000Z'),
+          endDate: moment(this.default).format('YYYY-MM-DDT23:59:59.999Z')
+        };
+        break;
     }
   }
 

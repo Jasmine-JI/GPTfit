@@ -796,6 +796,10 @@
     "uploadActivityData": "Cargar datos de ejercicio",
     "uploadFailed": "Error de carga",
     "uploadSuccess": "Carga correcta",
-    "waitingToUploadData": "Esperando para cargar"
+    "waitingToUploadData": "Esperando para cargar",
+    "followExerciseTypeCreate": "Create your report according to your workout "
+  },
+  "conflict": {
+    "fitTime": "Fit Time"
   }
 }

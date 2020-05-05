@@ -192,10 +192,12 @@ app.use('/nodejs/api/auth', auth);
 app.use('/nodejs/api/uploadSportFile', uploadSportFile);
 
 // Start the server
+/*
 const port = process.env.PORT || 3001;
  app.listen(port, function () {
    console.log('Server running at ' + port);
  });
-//https.createServer(SERVER_CONFIG, app).listen(port, function() {
-//  console.log('HTTPS sever started at ' + port);
-//});
+ */
+https.createServer(SERVER_CONFIG, app).listen(port, function() {
+  console.log('HTTPS sever started at ' + port);
+});

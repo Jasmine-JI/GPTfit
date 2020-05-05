@@ -309,7 +309,7 @@
                     <app-member-capsule
                       [role]="role"
                       [isAdminInfo]="true"
-                      [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isMarketingDeveloper || +visitorDetail?.accessRight <= 30"
+                      [isHadMenu]="role?.isSupervisor || role?.isSystemDeveloper || role?.isSystemMaintainer || role?.isMarketingDeveloper"
                       [title]="brandAdmItem?.memberName"
                       [memberInfo]="brandAdmItem"
                       [name]="brandAdmItem && brandAdmItem?.memberName"
