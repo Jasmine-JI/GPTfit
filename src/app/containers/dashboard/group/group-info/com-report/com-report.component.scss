@@ -276,6 +276,11 @@
   }
 }
 
+::ng-deep.tableCheckbox .mat-checkbox-checked.mat-primary .mat-checkbox-background,
+.tableCheckbox .mat-checkbox-indeterminate.mat-primary .mat-checkbox-background {
+  background-color: #26abe3 !important;
+}
+
 mat-header-cell:first-child, mat-cell:first-child, mat-footer-cell:first-child {
   padding-left: 0px !important;
 }

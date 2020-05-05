@@ -797,6 +797,10 @@
     "uploadActivityData": "上傳運動資料",
     "uploadFailed": "上傳失敗",
     "uploadSuccess": "上傳成功",
-    "waitingToUploadData": "等待上傳中"
+    "waitingToUploadData": "等待上傳中",
+    "followExerciseTypeCreate": "請依照您的運動屬性與課程期間建立報告"
+  },
+  "conflict": {
+    "fitTime": "Fit 時間"
   }
 }

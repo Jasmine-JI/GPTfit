@@ -386,6 +386,7 @@ var qrPair = require('./server/routes/qrPair.js');
 var user = require('./server/routes/user.js');
 var center = require('./server/routes/center.js');
 var sport = require('./server/routes/sport.js');
+var uploadSportFile = require('./server/routes/uploadSportFile.js');
 
 app.use('/nodejs/api/rankForm', rankForm.unprotected);
 app.use('/nodejs/api/rankForm', authMiddleware, rankForm.protected);
@@ -402,6 +403,7 @@ app.use('/nodejs/api/coach', authMiddleware, coach);
 app.use('/nodejs/api/user', authMiddleware, user);
 app.use('/nodejs/api/center', authMiddleware, center);
 app.use('/nodejs/api/sport', authMiddleware, sport);
+app.use('/nodejs/api/uploadSportFile', uploadSportFile);
 
 
 // Start the server
