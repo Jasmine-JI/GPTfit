@@ -92,7 +92,11 @@ export class ComReportComponent implements OnInit, OnDestroy {
       checked: false
     }
   ];
-  tableCheckedNum = 5;
+  tableTypeListOpt = {
+    max: 5,
+    min: 2,
+    tableCheckedNum: 5
+  };
 
   // 資料儲存用變數-kidin-1090115
   token: string;
@@ -340,7 +344,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
         this.queryStringShowData();
       } else {
         this.handleSubmitSearch('click');
-        this.handleTableList('02456');  // 預設顯示總筆數、總時間、總卡路里、活動偏好、心率圖表
+        this.assignChoooseNum(document.body.clientWidth);
       }
     });
 
@@ -2111,6 +2115,28 @@ export class ComReportComponent implements OnInit, OnDestroy {
     window.removeEventListener('scroll', this.hideMenu.bind(this), true);
   }
 
+  // 依照使用者的視窗大小，決定個人分析設定可點選的項目多寡
+  assignChoooseNum (width) {
+
+    if (width > 950) {
+      this.handleTableList('02456');  // 預設顯示總筆數、總時間、總卡路里、活動偏好、心率圖表
+    } else if (width > 630) {
+      this.handleTableList('0245');  // 預設顯示總筆數、總時間、總卡路里、活動偏好
+      this.tableTypeListOpt.max = 4;
+      this.tableTypeListOpt.tableCheckedNum = 4;
+    } else if (width > 500) {
+      this.handleTableList('024');  // 預設顯示總筆數、總時間、總卡路里
+      this.tableTypeListOpt.max = 3;
+      this.tableTypeListOpt.tableCheckedNum = 3;
+    } else {
+      this.handleTableList('02');  // 預設顯示總筆數、總時間
+      this.tableTypeListOpt.max = 2;
+      this.tableTypeListOpt.min = 1;
+      this.tableTypeListOpt.tableCheckedNum = 2;
+    }
+
+  }
+
   // 顯示個人分析數據類型選單-kidin-1090504
   showTableList () {
 
@@ -2128,9 +2154,9 @@ export class ComReportComponent implements OnInit, OnDestroy {
     this.updateUrl('true');
 
     if (e.checked === false) {
-      this.tableCheckedNum--;
+      this.tableTypeListOpt.tableCheckedNum--;
     } else {
-      this.tableCheckedNum++;
+      this.tableTypeListOpt.tableCheckedNum++;
     }
 
   }
