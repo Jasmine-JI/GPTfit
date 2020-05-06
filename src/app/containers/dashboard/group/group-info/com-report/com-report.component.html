@@ -669,13 +669,13 @@
               (change)="handleChangeTableType($event)"
               *ngIf="!(diffDay < 14 && list.id === 1)"
               [style.pointer-events]="
-                (tableCheckedNum >= 5 && list.checked === false)
-                || (tableCheckedNum <= 2 && list.checked === true)
+                (tableTypeListOpt.tableCheckedNum >= tableTypeListOpt.max && list.checked === false)
+                || (tableTypeListOpt.tableCheckedNum <= tableTypeListOpt.min && list.checked === true)
                 ? 'none' : ''
               "
               [style.color]="
-                (tableCheckedNum >= 5 && list.checked === false)
-                || (tableCheckedNum <= 2 && list.checked === true)
+                (tableTypeListOpt.tableCheckedNum >= tableTypeListOpt.max && list.checked === false)
+                || (tableTypeListOpt.tableCheckedNum <= tableTypeListOpt.min && list.checked === true)
                 ? '#ababab' : ''
               "
             >
@@ -808,7 +808,7 @@
             *matHeaderCellDef
             mat-sort-header
             disableClear="true"
-            class="tableArrangement hideColumn-500"
+            class="tableArrangement"
             [style.display]="tableTypeList[4].checked ? '' : 'none'"
           >
             <div class="tableTitle">
@@ -820,7 +820,7 @@
           </mat-header-cell>
           <mat-cell
             *matCellDef="let row; let i = index;"
-            class="tableArrangement hideColumn-500 tableContent"
+            class="tableArrangement tableContent"
             [style.display]="tableTypeList[4].checked ? '' : 'none'"
           >
             <span *ngIf="row?.totalCalories !== '--'">{{row?.totalCalories | number:'1.0-0'}}</span>
@@ -834,7 +834,7 @@
           <mat-header-cell
             *matHeaderCellDef
             disableClear="true"
-            class="tableArrangement hideColumn-630"
+            class="tableArrangement"
             [style.display]="tableTypeList[5].checked ? '' : 'none'"
           >
             <div class="tableTitle">
@@ -844,7 +844,7 @@
           </mat-header-cell>
           <mat-cell
             *matCellDef="let row; let i = index;"
-            class="tableArrangement hideColumn-630 tableContent personalAnalysisIcon"
+            class="tableArrangement tableContent personalAnalysisIcon"
             [style.display]="tableTypeList[5].checked ? '' : 'none'"
           >
             <i [class]="row?.likeType[0]" *ngIf="row?.likeType.length > 0"></i>
@@ -857,7 +857,7 @@
           <mat-header-cell
             *matHeaderCellDef
             disableClear="true"
-            class="tableArrangement hideColumn-950"
+            class="tableArrangement"
             [style.display]="tableTypeList[6].checked ? '' : 'none'"
           >
             <div class="tableTitle">
@@ -867,7 +867,7 @@
           </mat-header-cell>
           <mat-cell
             *matCellDef="let row; let i = index;"
-            class="tableArrangement hideColumn-950 tableContent"
+            class="tableArrangement tableContent"
             [style.display]="tableTypeList[6].checked ? '' : 'none'"
           >
             <div style="width: 100%;" *ngIf="row?.HRZone !== '--'">

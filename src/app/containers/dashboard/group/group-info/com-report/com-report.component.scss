@@ -325,12 +325,6 @@ mat-header-cell:last-child, mat-cell:last-child, mat-footer-cell:last-child {
   }
 }
 
-@media (max-width: 950px){
-  .hideColumn-950 {
-    display: none;
-  }
-}
-
 @media (max-width: 769px){
   .media-769-col {
     display: flex;
@@ -362,9 +356,6 @@ mat-header-cell:last-child, mat-cell:last-child, mat-footer-cell:last-child {
 }
 
 @media (max-width: 630px){
-  .hideColumn-630 {
-    display: none;
-  }
 
   .tableTitleWord {
     font-size: 14px;
@@ -380,12 +371,6 @@ mat-header-cell:last-child, mat-cell:last-child, mat-footer-cell:last-child {
     font-size: 20px;
   }
 
-}
-
-@media (max-width: 500px) {
-  .hideColumn-500 {
-    display: none;
-  }
 }
 
 @media print {
