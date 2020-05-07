@@ -1020,7 +1020,6 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.segRange
     );
     this.finalDatas = finalDatas;
-
     this.finalDatas.forEach((_option, idx) => {
       this[`is${chartTargets[idx]}Display`] = true;
       _option[

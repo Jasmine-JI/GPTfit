@@ -35,6 +35,7 @@ export class MyGroupListComponent implements OnInit {
   isEmpty = false;
   isLoading = false;
   brandType = 3;
+  currentBrandType = 3;
   @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild('sortTable') sortTable: MatSort;
   @ViewChild('filter') filter: ElementRef;
@@ -76,6 +77,13 @@ export class MyGroupListComponent implements OnInit {
 
   getLists() {
     this.isLoading = true;
+
+    // 切換群組類型就將頁碼切回第一頁(Bug 1207)-kidin-1090507
+    if (this.brandType !== this.currentBrandType) {
+      this.currentPage.pageIndex = 0;
+      this.currentBrandType = this.brandType;
+    }
+
     const body = {
       token: this.token,
       brandType: this.brandType,
