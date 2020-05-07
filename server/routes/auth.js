@@ -13,10 +13,10 @@ router.get('/strava/callback', function (req, res, next) {
       res.redirect(`https://app.alatech.com.tw/dashboard/settings/account-info?code=${code}`);
       break;
     case '3':
-      res.redirect(`http://localhost/?state=mystate&code=${code}&scope=write`);
+      res.redirect(`http://localhost/?state=mystate&code=${code}`);
       break;
     case '4':
-      res.redirect(`ALAconnect://3rd.strava?state=mystate&code=${code}&scope=write`);
+      res.redirect(`ALAconnect://3rd.strava?state=mystate&code=${code}`);
       break;
     default:
       res.redirect('https://app.alatech.com.tw/404');

@@ -644,7 +644,8 @@
     }
   },
   "other": {
-    "createComGroup": "建立企業群組",
+    "createComGroup": "建立一般企業群組",
+    "createGymGroup": "建立健身品牌群組",
     "createCom": "建立企業",
     "comName": "企業名稱",
     "com": "企業",
@@ -796,6 +797,13 @@
     "uploadActivityData": "上传运动数据",
     "uploadFailed": "上传失败",
     "uploadSuccess": "上传成功",
-    "waitingToUploadData": "等待上传中"
+    "waitingToUploadData": "等待上传中",
+    "followExerciseTypeCreate": "请依照您的运动属性与课程期间建立报告",
+    "keyInCaptcha": "请输入图形验证码，可点击图片刷新",
+    "countryRegionCode": "请选择国家/地区代码",
+    "pai": "个人化活动指标"
+  },
+  "conflict": {
+    "benefitime": "效益时间"
   }
 }

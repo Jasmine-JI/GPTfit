@@ -43,7 +43,75 @@ export class ComReportComponent implements OnInit, OnDestroy {
     y: null
   };
   checkClickEvent = false;
+  showTableMenu = false;
   hadGroupMemberList = false;
+  headerRowDef = [
+    'name',
+    'totalActivityNum',
+    'weekFrequency',
+    'totalTime',
+    'fitTime',
+    'pai',
+    'totalCalories',
+    'likeType',
+    'HRZone'
+  ];
+  tableTypeList = [  // name為必須欄位，故不開放設定
+    {
+      id: 0,
+      rowType: 'totalActivityNum',
+      i18n: '',
+      checked: false
+    },
+    {
+      id: 1,
+      rowType: 'weekFrequency',
+      i18n: '',
+      checked: false
+    },
+    {
+      id: 2,
+      rowType: 'totalTime',
+      i18n: '',
+      checked: false
+    },
+    {
+      id: 3,
+      rowType: 'fitTime',
+      i18n: '',
+      checked: false
+    },
+    {
+      id: 4,
+      rowType: 'pai',
+      i18n: '',
+      checked: false
+    },
+    {
+      id: 5,
+      rowType: 'totalCalories',
+      i18n: '',
+      checked: false
+    },
+    {
+      id: 6,
+      rowType: 'likeType',
+      i18n: '',
+      checked: false
+    },
+    {
+      id: 7,
+      rowType: 'HRZone',
+      i18n: '',
+      checked: false
+    }
+  ];
+  tableTypeListOpt = {
+    max: 5,
+    min: 2,
+    tableCheckedNum: 5,
+    isInit: false
+  };
 
   // 資料儲存用變數-kidin-1090115
   token: string;
@@ -144,6 +212,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.token = this.utilsService.getToken() || '';
+    this.loadTableTypeList();
 
     // 使用rxjs訂閱運動類別使運動類別更改時可以即時切換-kidin-1090121
     this.groupService.getreportCategory().pipe(first()).subscribe(res => {
@@ -158,6 +227,21 @@ export class ComReportComponent implements OnInit, OnDestroy {
     }
 
     this.personalData.sort = this.sortTable;
+
+  }
+
+  // 確認ngx translate套件已經載入再產生翻譯-kidin-1090415
+  loadTableTypeList () {
+    this.translate.get('hello.world').subscribe(() => {
+      this.tableTypeList[0].i18n = this.translate.instant('other.totalActivity');
+      this.tableTypeList[1].i18n = this.translate.instant('other.weekFrequency');
+      this.tableTypeList[2].i18n = this.translate.instant('Dashboard.MyActivity.totalTime');
+      this.tableTypeList[3].i18n = this.translate.instant('conflict.benefitime');
+      this.tableTypeList[4].i18n = this.translate.instant('other.pai');
+      this.tableTypeList[5].i18n = this.translate.instant('other.totalCalories');
+      this.tableTypeList[6].i18n = this.translate.instant('other.activityPreference');
+      this.tableTypeList[7].i18n = this.translate.instant('SH.hrZone');
+    });
 
   }
 
@@ -270,7 +354,8 @@ export class ComReportComponent implements OnInit, OnDestroy {
       // 確認網址是否帶有query string-kidin-1090212
       if (
         location.search.indexOf('startdate=') > -1 &&
-        location.search.indexOf('enddate=') > -1
+        location.search.indexOf('enddate=') > -1 &&
+        location.search.indexOf('tb=') > -1
       ) {
         this.queryStringShowData();
       } else {
@@ -288,7 +373,10 @@ export class ComReportComponent implements OnInit, OnDestroy {
         this.selectDate.startDate = moment(queryString[i].replace('startdate=', '')).format('YYYY-MM-DDT00:00:00.000Z');
       } else if (queryString[i].indexOf('enddate=') > -1) {
         this.selectDate.endDate = moment(queryString[i].replace('enddate=', '')).format('YYYY-MM-DDT23:59:59.999Z');
+      } else if (queryString[i].indexOf('tb=') > -1) {
+        this.handleTableList(queryString[i].replace('tb=', ''));
       }
+
     }
 
     this.handleSubmitSearch('url');
@@ -392,6 +480,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
           this.sortData(groupReportData);
           this.createTimeStampArr(this.diffDay);
           this.calPerCategoryData();
+          this.assignChoooseNum(document.body.clientWidth);
         }
       } else {
         this.nodata = true;
@@ -1652,7 +1741,8 @@ export class ComReportComponent implements OnInit, OnDestroy {
               {type: 'weightTraining', count: 0},
               {type: 'swim', count: 0},
               {type: 'aerobic', count: 0},
-              {type: 'row', count: 0}
+              {type: 'row', count: 0},
+              {type: 'ball', count: 0}
             ],
             perHRZone = {
               z0: 0,
@@ -1664,7 +1754,17 @@ export class ComReportComponent implements OnInit, OnDestroy {
             },
             xPoint = [],
             activityTime = [],
-            calories = [];
+            fitTimeArr = [],
+            calories = [],
+            paiWeightingFactor = {  // PAI加權係數
+              z0: 0,
+              z1: 0.5,
+              z2: 1,
+              z3: 1.5,
+              z4: 2,
+              z5: 2.5
+            },
+            paiArr = [];
 
       for (let i = 0; i < data.length; i++) {
         idx++;
@@ -1674,7 +1774,9 @@ export class ComReportComponent implements OnInit, OnDestroy {
         }
 
         let oneDayActivityTime = 0,
-            oneDayCalories = 0;
+            oneDayCalories = 0,
+            oneDayFitTime = 0,
+            oneDayPAI = 0;
         for (let j = 0; j < data[i].activities.length; j++) {
           const perData = data[i].activities[j];
 
@@ -1690,37 +1792,49 @@ export class ComReportComponent implements OnInit, OnDestroy {
 
           oneDayActivityTime += +perData.totalSecond;
           oneDayCalories += perData.calories;
+          oneDayFitTime += (
+            perData.totalHrZone2Second
+            + perData.totalHrZone3Second
+            + perData.totalHrZone4Second
+            + perData.totalHrZone5Second
+          );
 
-          switch (+perData.type) {
-            case 1:
-              typeCount[0].count += perData.totalActivities;
-              break;
-            case 2:
-              typeCount[1].count += perData.totalActivities;
-              break;
-            case 3:
-              typeCount[2].count += perData.totalActivities;
-              break;
-            case 4:
-              typeCount[3].count += perData.totalActivities;
-              break;
-            case 5:
-              typeCount[4].count += perData.totalActivities;
-              break;
-            case 6:
-              typeCount[5].count += perData.totalActivities;
-              break;
-          }
+          oneDayPAI += (
+            perData.totalHrZone0Second * paiWeightingFactor.z0
+            + perData.totalHrZone1Second * paiWeightingFactor.z1
+            + perData.totalHrZone2Second * paiWeightingFactor.z2
+            + perData.totalHrZone3Second * paiWeightingFactor.z3
+            + perData.totalHrZone4Second * paiWeightingFactor.z4
+            + perData.totalHrZone5Second * paiWeightingFactor.z5
+          );
+
+          typeCount[+perData.type - 1].count += perData.totalActivities;
         }
 
         activityTime.unshift(oneDayActivityTime);
+        fitTimeArr.unshift(oneDayFitTime);
         calories.unshift(oneDayCalories);
         xPoint.push(idx);
+        paiArr.unshift(oneDayPAI / (1285 * 7));
+
       }
 
       const recordEndTime = moment(this.selectDate.endDate.split('T')[0]),
             timeRegression = new SimpleLinearRegression(xPoint, activityTime),
-            caloriesRegression = new SimpleLinearRegression(xPoint, calories);
+            fitTimeRegression = new SimpleLinearRegression(xPoint, fitTimeArr),
+            caloriesRegression = new SimpleLinearRegression(xPoint, calories),
+            paiRegression = new SimpleLinearRegression(xPoint, paiArr),
+            fitTime = perHRZone.z2 + perHRZone.z3 + perHRZone.z4 + perHRZone.z5;
+
+      let pai: number;
+      pai = (((  // PAI公式=((加權後運動秒數 / 週數) / 週目標時間)*100
+        perHRZone.z0 * paiWeightingFactor.z0
+        + perHRZone.z1 * paiWeightingFactor.z1
+        + perHRZone.z2 * paiWeightingFactor.z2
+        + perHRZone.z3 * paiWeightingFactor.z3
+        + perHRZone.z4 * paiWeightingFactor.z4
+        + perHRZone.z5 * paiWeightingFactor.z5
+      ) / (this.diffDay / 7)) / (1285 * 7)) * 100;
 
       let timePeroid;
       if (this.dataDateRange === 'day') {
@@ -1737,6 +1851,10 @@ export class ComReportComponent implements OnInit, OnDestroy {
         weekFrequency: (totalActivityNum / timePeroid) * 7,
         totalTime: this.formatHmTime(totalActivityTime),
         timeRegression: timeRegression.slope || 0,
+        fitTime: this.formatHmTime(fitTime),
+        fitTimeRegression: fitTimeRegression.slope || 0,
+        pai: +pai.toFixed(0),
+        paiRegression: paiRegression.slope || 0,
         totalCalories: totalCalories,
         caloriesRegression: caloriesRegression.slope || 0,
         likeType: this.findLikeType(typeCount),
@@ -1759,6 +1877,10 @@ export class ComReportComponent implements OnInit, OnDestroy {
         weekFrequency: '--',
         totalTime: '-:--',
         timeRegression: '--',
+        fitTime: '-:--',
+        fitTimeRegression: '--',
+        pai: '--',
+        paiRegression: '--',
         totalCalories: '--',
         caloriesRegression: '--',
         likeType: [],
@@ -1839,15 +1961,25 @@ export class ComReportComponent implements OnInit, OnDestroy {
     if (hasData === 'true') {
       const startDateString = this.selectDate.startDate.split('T')[0],
             endDateString = this.selectDate.endDate.split('T')[0];
-      let searchString;
+      let tableMenuString = '',
+          searchString;
+
+      for (let i = 0; i < this.tableTypeList.length; i++) {
+
+        if (this.tableTypeList[i].checked === true) {
+          tableMenuString += i;
+        }
+
+      }
 
       searchString =
-        `startdate=${startDateString}&enddate=${endDateString}`;
+        `startdate=${startDateString}&enddate=${endDateString}&tb=${tableMenuString}`;
 
       if (location.search.indexOf('?') > -1) {
         if (
           location.search.indexOf('startdate=') > -1 &&
-          location.search.indexOf('enddate=') > -1
+          location.search.indexOf('enddate=') > -1 &&
+          location.search.indexOf('tb=') > -1
         ) {
           // 將舊的sr query string換成新的-kidin-1090205
           const preUrl = location.pathname;
@@ -1856,7 +1988,8 @@ export class ComReportComponent implements OnInit, OnDestroy {
           for (let i = 0; i < queryString.length; i++) {
             if (
               queryString[i].indexOf('startdate=') === -1 &&
-              queryString[i].indexOf('enddate=') === -1
+              queryString[i].indexOf('enddate=') === -1 &&
+              location.search.indexOf('tb=') > -1
             ) {
               newSufUrl = `${newSufUrl}&${queryString[i]}`;
             }
@@ -1944,7 +2077,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
       for (let j = 0; j < sortResult.length - 1 - i; j++) {
         if (sortDirection === 'asc') {
 
-          if (sortCategory === 'totalTime' && sortResult[j][sortCategory] !== '-:--') {
+          if ((sortCategory === 'totalTime' || sortCategory === 'fitTime') && sortResult[j][sortCategory] !== '-:--') {
 
             const sortA = this.timeStringSwitchNum(sortResult[j][sortCategory]),
                   sortB = this.timeStringSwitchNum(sortResult[j + 1][sortCategory]);
@@ -1965,7 +2098,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
 
         } else {
 
-          if (sortCategory === 'totalTime' && sortResult[j][sortCategory] !== '-:--') {
+          if ((sortCategory === 'totalTime' || sortCategory === 'fitTime') && sortResult[j][sortCategory] !== '-:--') {
             const sortA = this.timeStringSwitchNum(sortResult[j][sortCategory]),
                   sortB = this.timeStringSwitchNum(sortResult[j + 1][sortCategory]);
 
@@ -2032,6 +2165,66 @@ export class ComReportComponent implements OnInit, OnDestroy {
     }
 
     window.removeEventListener('scroll', this.hideMenu.bind(this), true);
+  }
+
+  // 依照使用者的視窗大小，決定個人分析設定可點選的項目多寡
+  assignChoooseNum (width) {
+
+    if (this.tableTypeListOpt.isInit === false) {
+
+      if (width > 950) {
+        this.handleTableList('02567');  // 預設顯示總筆數、總時間、總卡路里、活動偏好、心率圖表
+      } else if (width > 630) {
+        this.handleTableList('0256');  // 預設顯示總筆數、總時間、總卡路里、活動偏好
+        this.tableTypeListOpt.max = 4;
+        this.tableTypeListOpt.tableCheckedNum = 4;
+      } else if (width > 500) {
+        this.handleTableList('025');  // 預設顯示總筆數、總時間、總卡路里
+        this.tableTypeListOpt.max = 3;
+        this.tableTypeListOpt.tableCheckedNum = 3;
+      } else {
+        this.handleTableList('02');  // 預設顯示總筆數、總時間
+        this.tableTypeListOpt.max = 2;
+        this.tableTypeListOpt.min = 1;
+        this.tableTypeListOpt.tableCheckedNum = 2;
+      }
+
+      this.tableTypeListOpt.isInit = true;
+    }
+
+  }
+
+  // 顯示個人分析數據類型選單-kidin-1090504
+  showTableList () {
+
+    if (this.showTableMenu === true) {
+      this.showTableMenu = false;
+    } else {
+      this.showTableMenu = true;
+    }
+
+  }
+
+  // 使用者點擊checkbox後顯示/隱藏該項目數據-kidin-1090505
+  handleChangeTableType (e) {
+    this.tableTypeList[+e.source.value].checked = e.checked;
+    this.updateUrl('true');
+
+    if (e.checked === false) {
+      this.tableTypeListOpt.tableCheckedNum--;
+    } else {
+      this.tableTypeListOpt.tableCheckedNum++;
+    }
+
+  }
+
+  // 根據query string顯示個人分析的數據-kidin-1090505
+  handleTableList (listNum) {
+
+    for (let i = 0; i < listNum.length; i++) {
+      this.tableTypeList[+listNum[i]].checked = true;
+    }
+
   }
 
   // 將時間字串轉數字(分鐘)-kidin-1090401

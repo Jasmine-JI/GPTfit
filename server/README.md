@@ -664,3 +664,25 @@ Define:
   }
 ]
 ```
+## 運動檔案
+
+### 上傳運動檔案 N2101
+
+```
+Host https://xxx.xxx.xx.xx/nodejs/api/raceEventInfo
+PORT 3000 or 3001
+Method POST
+Description 收到運動數據後下載at檔並包成formdata上傳至api 2101
+```
+
+**Response JSON**
+```
+[
+  {
+    resultCode: "", // 200: 連接成功，400: 連接失敗。
+    resultMessage: "", // 回應訊息
+    msgCode: "",  // 訊息編碼
+    nodejsApiCode: "N2101",  // nodejs用api編碼
+  }
+]
+```

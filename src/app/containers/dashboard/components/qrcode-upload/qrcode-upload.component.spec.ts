@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ComReportComponent } from './com-report.component';
+import { QrcodeUploadComponent } from './qrcode-upload.component';
 
-describe('ComReportComponent', () => {
-  let component: ComReportComponent;
-  let fixture: ComponentFixture<ComReportComponent>;
+describe('QrcodeUploadComponent', () => {
+  let component: QrcodeUploadComponent;
+  let fixture: ComponentFixture<QrcodeUploadComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ComReportComponent ]
+      declarations: [ QrcodeUploadComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ComReportComponent);
+    fixture = TestBed.createComponent(QrcodeUploadComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

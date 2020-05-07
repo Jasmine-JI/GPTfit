@@ -644,7 +644,8 @@
     }
   },
   "other": {
-    "createComGroup": "Create enterprise group",
+    "createComGroup": "Create enterprise Group",
+    "createGymGroup": "Create Gym Group",
     "createCom": "Create enterprise",
     "comName": "Enterprise name",
     "com": "Enterprise",
@@ -796,6 +797,13 @@
     "uploadActivityData": "Upload exercise data",
     "uploadFailed": "Upload failed",
     "uploadSuccess": "Upload success",
-    "waitingToUploadData": "Waiting for upload"
+    "waitingToUploadData": "Waiting for upload",
+    "followExerciseTypeCreate": "Create your report according to your workout ",
+    "keyInCaptcha": "Please enter the image verification code, or click on the image to reload.",
+    "countryRegionCode": "Please select a country/region code",
+    "pai": "PAI"
+  },
+  "conflict": {
+    "benefitime": "Benefit Time"
   }
 }

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Injectable } from '@angular/core';
 import { UtilsService } from './utils.service';
@@ -114,6 +114,11 @@ export class ActivityService {
   fetchMultiActivityData(body) {
     return this.http.post<any>('/api/v2/sport/getMultiActivityData', body);
   }
+
+  deleteActivityData (body) {
+    return this.http.post<any>('/api/v2/sport/deleteActivityData', body);
+  }
+
   handleChartDatas(pointDatas, lapDatas, infoDatas, resolutionSeconds, hrFormatData, isDebug, chartKind, xaxisUnit, segRange) {
     let colorIdx = 0,
       isNoSpeeds = false,
@@ -429,7 +434,7 @@ export class ActivityService {
           isNoRunCadences = true;
         } else {
           if (!this.utils.isNumber(_point.runCadence)) {
-            runCadences.push(null);
+            isNoRunCadences = true;
           } else {
             runCadences.push(+_point.runCadence);
           }
@@ -438,7 +443,7 @@ export class ActivityService {
           isNoCycleCadences = true;
         } else {
           if (!this.utils.isNumber(_point.cycleCadence)) {
-            cycleCadences.push(null);
+            isNoCycleCadences = true;
           } else {
             cycleCadences.push(+_point.cycleCadence);
           }
@@ -447,7 +452,7 @@ export class ActivityService {
           isNoSwimCadences = true;
         } else {
           if (!this.utils.isNumber(_point.swimCadence)) {
-            swimCadences.push(null);
+            isNoSwimCadences = true;
           } else {
             swimCadences.push(+_point.swimCadence);
           }
@@ -456,7 +461,7 @@ export class ActivityService {
           isNoRowingCadences = true;
         } else {
           if (!this.utils.isNumber(_point.rowingCadence)) {
-            rowingCadences.push(null);
+            isNoRowingCadences = true;
           } else {
             rowingCadences.push(+_point.rowingCadence);
           }

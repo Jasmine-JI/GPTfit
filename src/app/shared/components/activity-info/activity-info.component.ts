@@ -21,14 +21,18 @@ import { Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material';
 import { UserInfoService } from '../../../containers/dashboard/services/userInfo.service';
 import { MuscleMapComponent } from './muscleMap/muscle-map.component';
+import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { MuscleTrainListComponent } from './muscle-train-list/muscle-train-list.component';
 import { transform, WGS84, BD09, GCJ02 } from 'gcoord';
 import { HashIdService } from '@shared/services/hash-id.service';
+import { TranslateService } from '@ngx-translate/core';
 import chinaBorderData from './border-data_china';
 import taiwanBorderData from './border-data_taiwan';
 import { ActivityOtherDetailsService } from '@shared/services/activity-other-details.service';
 import { debounce } from '@shared/utils/';
 import * as moment from 'moment';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 declare var google: any;
@@ -184,6 +188,9 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     private userInfoService: UserInfoService,
     private hashIdService: HashIdService,
     private activityOtherDetailsService: ActivityOtherDetailsService,
+    private translate: TranslateService,
+    private dialog: MatDialog,
+    private snackbar: MatSnackBar,
     private _changeDetectionRef: ChangeDetectorRef
   ) {
     /**
@@ -245,9 +252,9 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isLoadedOtherDetail = true;
         this.deviceInfo = res['deviceInfo'].info.productInfo[0];
 
-        if (location.hostname === '192.168.1.235') {
+        if (this.deviceInfo && location.hostname === '192.168.1.235') {
           this.deviceImgUrl = `http://app.alatech.com.tw/app/public_html/products${this.deviceInfo.modelImg}`;
-        } else {
+        } else if (this.deviceInfo) {
           this.deviceImgUrl = `http://${location.hostname}/app/public_html/products${this.deviceInfo.modelImg}`;
         }
 
@@ -799,7 +806,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           );
           this.isOtherDetailLoading = true;
         }
-        if (this.fileInfo.author.indexOf('?') > -1) {
+        if (this.fileInfo.author && this.fileInfo.author.indexOf('?') > -1) {
           // 防止後續author會帶更多參數，先不寫死
           this.userLink.userName = this.fileInfo.author.split('?')[0];
           this.userLink.userId = this.fileInfo.author
@@ -1013,7 +1020,6 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.segRange
     );
     this.finalDatas = finalDatas;
-
     this.finalDatas.forEach((_option, idx) => {
       this[`is${chartTargets[idx]}Display`] = true;
       _option[
@@ -1118,4 +1124,71 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
   }
+
+  // 確認是否刪除運動檔案-kidin-1090428
+  checkDeleteSportFile () {
+
+    return this.dialog.open(MessageBoxComponent, {
+      hasBackdrop: true,
+      data: {
+        title: 'Message',
+        body: `${this.translate.instant(
+          'Dashboard.privacySettings.file'
+        )}${this.translate.instant(
+          'Dashboard.Group.confirmDelete'
+        )}`,
+        confirmText: this.translate.instant(
+          'SH.determine'
+        ),
+        cancelText: this.translate.instant(
+          'SH.cancel'
+        ),
+        onCancel: () => {
+          return false;
+        },
+        onConfirm: this.deleteSportFile.bind(this)
+      }
+    });
+
+  }
+
+  // 刪除運動檔案後導回運動列表-kidin-1090428
+  deleteSportFile () {
+    const body = {
+      token: this.token,
+      fileId: [this.fileId]
+    };
+
+    this.activityService.deleteActivityData(body).subscribe(res => {
+      if (+res.resultCode === 200) {
+        this.snackbar.open(
+          `${this.translate.instant(
+            'Dashboard.Group.delete'
+          )}
+          ${this.translate.instant(
+            'Dashboard.MyDevice.success'
+          )}`,
+          'OK',
+          { duration: 2000 }
+        );
+
+        setTimeout(() => {
+          this.router.navigateByUrl('/dashboard/activity-list');
+        }, 2000);
+      } else {
+        this.snackbar.open(
+          `${this.translate.instant(
+            'Dashboard.Group.delete'
+          )}
+          ${this.translate.instant(
+            'Dashboard.MyDevice.failure'
+          )}`,
+          'OK',
+          { duration: 2000 }
+        );
+      }
+    });
+
+  }
+
 }

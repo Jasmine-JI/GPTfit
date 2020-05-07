@@ -31,6 +31,7 @@ export class AllGroupListComponent implements OnInit {
   infoOptions: any;
   selectedValue = '';
   isLoading = false;
+
   @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild('sortTable') sortTable: MatSort;
   @ViewChild('filter') filter: ElementRef;
@@ -50,7 +51,7 @@ export class AllGroupListComponent implements OnInit {
       pageSize: 10,
       length: null
     };
-    this.getLists();
+    this.getLists('changePage');
     // 分頁切換時，重新取得資料
     this.paginator.page.subscribe((page: PageEvent) => {
       this.currentPage = page;
@@ -58,14 +59,18 @@ export class AllGroupListComponent implements OnInit {
         `/dashboard/system/all-group-list?pageNumber=${this.currentPage
           .pageIndex + 1}`
       );
-      this.getLists();
+      this.getLists('changePage');
     });
   }
 
-  getLists() {
+  getLists(act) {
     this.isLoading = true;
     const brandType = this.groupLevel.slice(0, 1),
           level = this.groupLevel.slice(1, 3);
+
+    if (act === 'submit') {
+      this.currentPage.pageIndex = 0;
+    }
 
     const body = {
       token: this.token,

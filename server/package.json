@@ -13,6 +13,7 @@
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
     "fast-xml-parser": "^3.12.13",
+    "form-data": "^3.0.0",
     "formidable": "^1.2.1",
     "gcoord": "^0.2.0",
     "helmet": "^3.12.1",
