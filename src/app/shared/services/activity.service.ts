@@ -96,11 +96,6 @@ export class ActivityService {
 
   // 使用nodejs先將數據下載成文件再上傳至server-kidin-1090421
   uploadSportFile (body) {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Access-Control-Allow-Origin': '*'
-      })
-    };
     return this.http.post<any>(API_SERVER + 'uploadSportFile', body);
   }
 
@@ -439,7 +434,7 @@ export class ActivityService {
           isNoRunCadences = true;
         } else {
           if (!this.utils.isNumber(_point.runCadence)) {
-            runCadences.push(null);
+            isNoRunCadences = true;
           } else {
             runCadences.push(+_point.runCadence);
           }
@@ -448,7 +443,7 @@ export class ActivityService {
           isNoCycleCadences = true;
         } else {
           if (!this.utils.isNumber(_point.cycleCadence)) {
-            cycleCadences.push(null);
+            isNoCycleCadences = true;
           } else {
             cycleCadences.push(+_point.cycleCadence);
           }
@@ -457,7 +452,7 @@ export class ActivityService {
           isNoSwimCadences = true;
         } else {
           if (!this.utils.isNumber(_point.swimCadence)) {
-            swimCadences.push(null);
+            isNoSwimCadences = true;
           } else {
             swimCadences.push(+_point.swimCadence);
           }
@@ -466,7 +461,7 @@ export class ActivityService {
           isNoRowingCadences = true;
         } else {
           if (!this.utils.isNumber(_point.rowingCadence)) {
-            rowingCadences.push(null);
+            isNoRowingCadences = true;
           } else {
             rowingCadences.push(+_point.rowingCadence);
           }

@@ -787,7 +787,7 @@
           >
             <div class="tableTitle">
               <span class="tableTitleWord">
-                {{'conflict.fitTime' | translate}}
+                {{'conflict.benefitime' | translate}}
               </span>
               <span class="chartTitleUnit">time</span>
             </div>
@@ -803,13 +803,38 @@
             <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.fitTimeRegression < 0"></i>
           </mat-cell>
         </ng-container>
-        <ng-container matColumnDef="totalCalories">
+        <ng-container matColumnDef="pai">
           <mat-header-cell
             *matHeaderCellDef
             mat-sort-header
             disableClear="true"
             class="tableArrangement"
             [style.display]="tableTypeList[4].checked ? '' : 'none'"
+          >
+            <div class="tableTitle">
+              <span class="tableTitleWord">
+                {{'other.pai' | translate}}
+              </span>
+            </div>
+          </mat-header-cell>
+          <mat-cell
+            *matCellDef="let row; let i = index;"
+            class="tableArrangement tableContent"
+            [style.display]="tableTypeList[4].checked ? '' : 'none'"
+          >
+            <span>{{row?.pai}}</span>
+            <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.paiRegression > 0"></i>
+            <span [style.width]="row?.paiRegression === 0 ? '20px': '0px'"></span>
+            <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.paiRegression < 0"></i>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="totalCalories">
+          <mat-header-cell
+            *matHeaderCellDef
+            mat-sort-header
+            disableClear="true"
+            class="tableArrangement"
+            [style.display]="tableTypeList[5].checked ? '' : 'none'"
           >
             <div class="tableTitle">
               <span class="tableTitleWord">
@@ -821,7 +846,7 @@
           <mat-cell
             *matCellDef="let row; let i = index;"
             class="tableArrangement tableContent"
-            [style.display]="tableTypeList[4].checked ? '' : 'none'"
+            [style.display]="tableTypeList[5].checked ? '' : 'none'"
           >
             <span *ngIf="row?.totalCalories !== '--'">{{row?.totalCalories | number:'1.0-0'}}</span>
             <span *ngIf="row?.totalCalories === '--'">{{row?.totalCalories}}</span>
@@ -835,7 +860,7 @@
             *matHeaderCellDef
             disableClear="true"
             class="tableArrangement"
-            [style.display]="tableTypeList[5].checked ? '' : 'none'"
+            [style.display]="tableTypeList[6].checked ? '' : 'none'"
           >
             <div class="tableTitle">
               <span class="tableTitleWord">{{'other.activityPreference' | translate}}</span>
@@ -845,7 +870,7 @@
           <mat-cell
             *matCellDef="let row; let i = index;"
             class="tableArrangement tableContent personalAnalysisIcon"
-            [style.display]="tableTypeList[5].checked ? '' : 'none'"
+            [style.display]="tableTypeList[6].checked ? '' : 'none'"
           >
             <i [class]="row?.likeType[0]" *ngIf="row?.likeType.length > 0"></i>
             <i [class]="row?.likeType[1]" *ngIf="row?.likeType.length > 1"></i>
@@ -858,7 +883,7 @@
             *matHeaderCellDef
             disableClear="true"
             class="tableArrangement"
-            [style.display]="tableTypeList[6].checked ? '' : 'none'"
+            [style.display]="tableTypeList[7].checked ? '' : 'none'"
           >
             <div class="tableTitle">
               <span class="tableTitleWord">{{'SH.hrZone' | translate}}</span>
@@ -868,7 +893,7 @@
           <mat-cell
             *matCellDef="let row; let i = index;"
             class="tableArrangement tableContent"
-            [style.display]="tableTypeList[6].checked ? '' : 'none'"
+            [style.display]="tableTypeList[7].checked ? '' : 'none'"
           >
             <div style="width: 100%;" *ngIf="row?.HRZone !== '--'">
               <app-hrzone-chart

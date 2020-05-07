@@ -798,9 +798,12 @@
     "uploadFailed": "上傳失敗",
     "uploadSuccess": "上傳成功",
     "waitingToUploadData": "等待上傳中",
-    "followExerciseTypeCreate": "請依照您的運動屬性與課程期間建立報告"
+    "followExerciseTypeCreate": "請依照您的運動屬性與課程期間建立報告",
+    "keyInCaptcha": "請輸入圖形驗證碼，可點擊圖片刷新",
+    "countryRegionCode": "請選擇國家/地區代碼",
+    "pai": "個人化活動指標"
   },
   "conflict": {
-    "fitTime": "Fit 時間"
+    "benefitime": "效益時間"
   }
 }

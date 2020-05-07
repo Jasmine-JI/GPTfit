@@ -106,7 +106,6 @@ web
 │   ├─ main.ts  整個專案的入口點，Angular通過這個檔案來啟動專案
 │   ├─ manifest.json  允許將站點添加至手機主屏幕，是PWA提供的一項重要功能
 │   ├─ polyfills.ts  主要是用來匯入一些必要庫，為了讓Angular能正常執行在老舊瀏覽器版本下
-│   ├─ styles.css  整個網頁應用程式共用的樣式設定檔
 │   ├─ styles.scss  整個網頁應用程式共用的樣式設定檔(scss版本，希望css檔慢慢變成以scss 去做預處理開發)
 │   ├─ tsconfig.app.json  TypeScript編譯器的配置,新增第三方依賴的時候會修改這個檔案
 │   ├─ tsconfig.spec.json  跟 tsconfig.app.json 用途類似，不過主要是針對測試檔。
@@ -204,3 +203,20 @@ app
 **[moment](http://momentjs.com/)** | 2.20.1|處理時間格式的函式庫 | None
 **[mydatepicker](https://github.com/kekeh/mydatepicker#readme)** | 2.6.1|日期選擇器元件，目前使用於外部排行版與賽事管理系統，建議可以慢慢替換成material design(因為那時還沒出...) | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/containers/portal/portal.component.ts#L15)
 **[query-string](https://github.com/sindresorhus/query-string#readmee)** | 6.1.0| 用来做url查询参数的解析| [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/services/utils.service.ts#L3)
+**[ml-regression-simple-linear](https://www.npmjs.com/package/ml-regression-simple-linear)** | 2.1.1| 用来做群組report的簡單回歸分析(若有更新套件，需在路徑./var/web/node_modules/ml-regression-simple-linear/regression-simple-linear.d.ts，刪除 第20行，並在第8行追加 "export default"在"class SimpleLinearRegression extends BaseRegression {" 前面，避免報錯)
+| [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/dashboard/group/group-info/com-life-tracking/com-life-tracking.component.ts#L3)
+**[tui-calendar](https://ui.toast.com/tui-calendar/)** | 1.12.11| 行事曆套件(若有更新套件，需在路徑./var/web/node_modules/tui-calendar/dist/tui-calendar.css，刪除以下程式碼（css樣式），"
+.tui-full-calendar-weekday-schedule-bullet {
+  position: absolute;
+  padding: 0;
+  width: 6px;
+  height: 6px;
+  top: 6px;
+  left: 0;
+  border-radius: 50%;
+}
+"
+，來刪除內建的小白點樣式)
+| [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/tui-calender/tui-calender.component.ts)
+**[daterangepicker](https://www.daterangepicker.com)** | 3.0.5| 可以雙開的日期選擇器
+| [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/date-range-picker/date-range-picker.component.ts)
