@@ -644,7 +644,8 @@
     }
   },
   "other": {
-    "createComGroup": "Create enterprise group",
+    "createComGroup": "Create enterprise Group",
+    "createGymGroup": "Create Gym Group",
     "createCom": "Create enterprise",
     "comName": "Enterprise name",
     "com": "Enterprise",
@@ -797,9 +798,12 @@
     "uploadFailed": "Error de carga",
     "uploadSuccess": "Carga correcta",
     "waitingToUploadData": "Esperando para cargar",
-    "followExerciseTypeCreate": "Create your report according to your workout "
+    "followExerciseTypeCreate": "Create your report according to your workout ",
+    "keyInCaptcha": "Introduzca el código de comprobación de imagen. Haga clic en la imagen para volver a cargar.",
+    "countryRegionCode": "Seleccione un código de país o región",
+    "pai": "PAI"
   },
   "conflict": {
-    "fitTime": "Fit Time"
+    "benefitime": "Benefit Time"
   }
 }

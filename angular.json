@@ -25,7 +25,6 @@
               "src/icon.css",
               "src/styles-app-loading.css",
               "node_modules/leaflet/dist/leaflet.css",
-              "src/styles.css",
               "src/styles.scss",
               "node_modules/bootstrap/dist/css/bootstrap.css",
               "node_modules/font-awesome/css/font-awesome.min.css",
@@ -169,7 +168,7 @@
               "src/icon.css",
               "src/styles-app-loading.css",
               "node_modules/leaflet/dist/leaflet.css",
-              "src/styles.css",
+              "src/styles.scss",
               "node_modules/bootstrap/dist/css/bootstrap.css",
               "node_modules/font-awesome/css/font-awesome.min.css",
               "node_modules/dragula/dist/dragula.css"

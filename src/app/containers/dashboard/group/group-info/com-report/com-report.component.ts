@@ -51,43 +51,57 @@ export class ComReportComponent implements OnInit, OnDestroy {
     'weekFrequency',
     'totalTime',
     'fitTime',
+    'pai',
     'totalCalories',
     'likeType',
     'HRZone'
   ];
-  tableTypeList = [
+  tableTypeList = [  // name為必須欄位，故不開放設定
     {
       id: 0,
+      rowType: 'totalActivityNum',
       i18n: '',
       checked: false
     },
     {
       id: 1,
+      rowType: 'weekFrequency',
       i18n: '',
       checked: false
     },
     {
       id: 2,
+      rowType: 'totalTime',
       i18n: '',
       checked: false
     },
     {
       id: 3,
+      rowType: 'fitTime',
       i18n: '',
       checked: false
     },
     {
       id: 4,
+      rowType: 'pai',
       i18n: '',
       checked: false
     },
     {
       id: 5,
+      rowType: 'totalCalories',
       i18n: '',
       checked: false
     },
     {
       id: 6,
+      rowType: 'likeType',
+      i18n: '',
+      checked: false
+    },
+    {
+      id: 7,
+      rowType: 'HRZone',
       i18n: '',
       checked: false
     }
@@ -95,7 +109,8 @@ export class ComReportComponent implements OnInit, OnDestroy {
   tableTypeListOpt = {
     max: 5,
     min: 2,
-    tableCheckedNum: 5
+    tableCheckedNum: 5,
+    isInit: false
   };
 
   // 資料儲存用變數-kidin-1090115
@@ -221,10 +236,11 @@ export class ComReportComponent implements OnInit, OnDestroy {
       this.tableTypeList[0].i18n = this.translate.instant('other.totalActivity');
       this.tableTypeList[1].i18n = this.translate.instant('other.weekFrequency');
       this.tableTypeList[2].i18n = this.translate.instant('Dashboard.MyActivity.totalTime');
-      this.tableTypeList[3].i18n = this.translate.instant('conflict.fitTime');
-      this.tableTypeList[4].i18n = this.translate.instant('other.totalCalories');
-      this.tableTypeList[5].i18n = this.translate.instant('other.activityPreference');
-      this.tableTypeList[6].i18n = this.translate.instant('SH.hrZone');
+      this.tableTypeList[3].i18n = this.translate.instant('conflict.benefitime');
+      this.tableTypeList[4].i18n = this.translate.instant('other.pai');
+      this.tableTypeList[5].i18n = this.translate.instant('other.totalCalories');
+      this.tableTypeList[6].i18n = this.translate.instant('other.activityPreference');
+      this.tableTypeList[7].i18n = this.translate.instant('SH.hrZone');
     });
 
   }
@@ -344,7 +360,6 @@ export class ComReportComponent implements OnInit, OnDestroy {
         this.queryStringShowData();
       } else {
         this.handleSubmitSearch('click');
-        this.assignChoooseNum(document.body.clientWidth);
       }
     });
 
@@ -465,6 +480,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
           this.sortData(groupReportData);
           this.createTimeStampArr(this.diffDay);
           this.calPerCategoryData();
+          this.assignChoooseNum(document.body.clientWidth);
         }
       } else {
         this.nodata = true;
@@ -1725,7 +1741,8 @@ export class ComReportComponent implements OnInit, OnDestroy {
               {type: 'weightTraining', count: 0},
               {type: 'swim', count: 0},
               {type: 'aerobic', count: 0},
-              {type: 'row', count: 0}
+              {type: 'row', count: 0},
+              {type: 'ball', count: 0}
             ],
             perHRZone = {
               z0: 0,
@@ -1738,7 +1755,16 @@ export class ComReportComponent implements OnInit, OnDestroy {
             xPoint = [],
             activityTime = [],
             fitTimeArr = [],
-            calories = [];
+            calories = [],
+            paiWeightingFactor = {  // PAI加權係數
+              z0: 0,
+              z1: 0.5,
+              z2: 1,
+              z3: 1.5,
+              z4: 2,
+              z5: 2.5
+            },
+            paiArr = [];
 
       for (let i = 0; i < data.length; i++) {
         idx++;
@@ -1749,7 +1775,8 @@ export class ComReportComponent implements OnInit, OnDestroy {
 
         let oneDayActivityTime = 0,
             oneDayCalories = 0,
-            oneDayFitTime = 0;
+            oneDayFitTime = 0,
+            oneDayPAI = 0;
         for (let j = 0; j < data[i].activities.length; j++) {
           const perData = data[i].activities[j];
 
@@ -1766,11 +1793,19 @@ export class ComReportComponent implements OnInit, OnDestroy {
           oneDayActivityTime += +perData.totalSecond;
           oneDayCalories += perData.calories;
           oneDayFitTime += (
-            perData.totalHrZone1Second
-            + perData.totalHrZone2Second
+            perData.totalHrZone2Second
             + perData.totalHrZone3Second
             + perData.totalHrZone4Second
             + perData.totalHrZone5Second
+          );
+
+          oneDayPAI += (
+            perData.totalHrZone0Second * paiWeightingFactor.z0
+            + perData.totalHrZone1Second * paiWeightingFactor.z1
+            + perData.totalHrZone2Second * paiWeightingFactor.z2
+            + perData.totalHrZone3Second * paiWeightingFactor.z3
+            + perData.totalHrZone4Second * paiWeightingFactor.z4
+            + perData.totalHrZone5Second * paiWeightingFactor.z5
           );
 
           typeCount[+perData.type - 1].count += perData.totalActivities;
@@ -1780,13 +1815,26 @@ export class ComReportComponent implements OnInit, OnDestroy {
         fitTimeArr.unshift(oneDayFitTime);
         calories.unshift(oneDayCalories);
         xPoint.push(idx);
+        paiArr.unshift(oneDayPAI / (1285 * 7));
+
       }
 
       const recordEndTime = moment(this.selectDate.endDate.split('T')[0]),
             timeRegression = new SimpleLinearRegression(xPoint, activityTime),
             fitTimeRegression = new SimpleLinearRegression(xPoint, fitTimeArr),
             caloriesRegression = new SimpleLinearRegression(xPoint, calories),
-            fitTime = perHRZone.z1 + perHRZone.z2 + perHRZone.z3 + perHRZone.z4 + perHRZone.z5;
+            paiRegression = new SimpleLinearRegression(xPoint, paiArr),
+            fitTime = perHRZone.z2 + perHRZone.z3 + perHRZone.z4 + perHRZone.z5;
+
+      let pai: number;
+      pai = (((  // PAI公式=((加權後運動秒數 / 週數) / 週目標時間)*100
+        perHRZone.z0 * paiWeightingFactor.z0
+        + perHRZone.z1 * paiWeightingFactor.z1
+        + perHRZone.z2 * paiWeightingFactor.z2
+        + perHRZone.z3 * paiWeightingFactor.z3
+        + perHRZone.z4 * paiWeightingFactor.z4
+        + perHRZone.z5 * paiWeightingFactor.z5
+      ) / (this.diffDay / 7)) / (1285 * 7)) * 100;
 
       let timePeroid;
       if (this.dataDateRange === 'day') {
@@ -1805,6 +1853,8 @@ export class ComReportComponent implements OnInit, OnDestroy {
         timeRegression: timeRegression.slope || 0,
         fitTime: this.formatHmTime(fitTime),
         fitTimeRegression: fitTimeRegression.slope || 0,
+        pai: +pai.toFixed(0),
+        paiRegression: paiRegression.slope || 0,
         totalCalories: totalCalories,
         caloriesRegression: caloriesRegression.slope || 0,
         likeType: this.findLikeType(typeCount),
@@ -1829,6 +1879,8 @@ export class ComReportComponent implements OnInit, OnDestroy {
         timeRegression: '--',
         fitTime: '-:--',
         fitTimeRegression: '--',
+        pai: '--',
+        paiRegression: '--',
         totalCalories: '--',
         caloriesRegression: '--',
         likeType: [],
@@ -2118,21 +2170,26 @@ export class ComReportComponent implements OnInit, OnDestroy {
   // 依照使用者的視窗大小，決定個人分析設定可點選的項目多寡
   assignChoooseNum (width) {
 
-    if (width > 950) {
-      this.handleTableList('02456');  // 預設顯示總筆數、總時間、總卡路里、活動偏好、心率圖表
-    } else if (width > 630) {
-      this.handleTableList('0245');  // 預設顯示總筆數、總時間、總卡路里、活動偏好
-      this.tableTypeListOpt.max = 4;
-      this.tableTypeListOpt.tableCheckedNum = 4;
-    } else if (width > 500) {
-      this.handleTableList('024');  // 預設顯示總筆數、總時間、總卡路里
-      this.tableTypeListOpt.max = 3;
-      this.tableTypeListOpt.tableCheckedNum = 3;
-    } else {
-      this.handleTableList('02');  // 預設顯示總筆數、總時間
-      this.tableTypeListOpt.max = 2;
-      this.tableTypeListOpt.min = 1;
-      this.tableTypeListOpt.tableCheckedNum = 2;
+    if (this.tableTypeListOpt.isInit === false) {
+
+      if (width > 950) {
+        this.handleTableList('02567');  // 預設顯示總筆數、總時間、總卡路里、活動偏好、心率圖表
+      } else if (width > 630) {
+        this.handleTableList('0256');  // 預設顯示總筆數、總時間、總卡路里、活動偏好
+        this.tableTypeListOpt.max = 4;
+        this.tableTypeListOpt.tableCheckedNum = 4;
+      } else if (width > 500) {
+        this.handleTableList('025');  // 預設顯示總筆數、總時間、總卡路里
+        this.tableTypeListOpt.max = 3;
+        this.tableTypeListOpt.tableCheckedNum = 3;
+      } else {
+        this.handleTableList('02');  // 預設顯示總筆數、總時間
+        this.tableTypeListOpt.max = 2;
+        this.tableTypeListOpt.min = 1;
+        this.tableTypeListOpt.tableCheckedNum = 2;
+      }
+
+      this.tableTypeListOpt.isInit = true;
     }
 
   }

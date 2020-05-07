@@ -55,28 +55,33 @@ export class DeviceLogComponent implements OnInit {
       active: '',
       direction: ''
     };
-    this.getLists();
+    this.getLists('changePage');
 
     // 分頁切換時，重新取得資料
     this.paginatorA.page.subscribe((page: PageEvent) => {
       this.currentPage = page;
       this.router.navigateByUrl(`/dashboard/system/device_log?pageNumber=${this.currentPage.pageIndex + 1}`);
-      this.getLists();
+      this.getLists('changePage');
     });
 
     // 分頁切換時，重新取得資料
     this.paginatorB.page.subscribe((page: PageEvent) => {
       this.currentPage = page;
       this.router.navigateByUrl(`/dashboard/system/device_log?pageNumber=${this.currentPage.pageIndex + 1}`);
-      this.getLists();
+      this.getLists('changePage');
     });
   }
   changeSort(sortInfo: Sort) {
     this.currentSort = sortInfo;
-    this.getLists();
+    this.getLists('changePage');
   }
-  getLists() {
+  getLists(act) {
     this.isLoading = true;
+
+    if (act === 'submit') {
+      this.currentPage.pageIndex = 0;
+    }
+
     let params = new HttpParams();
     const pageNumber = (this.currentPage.pageIndex + 1).toString();
     const pageSize = this.currentPage.pageSize.toString();
@@ -105,6 +110,7 @@ export class DeviceLogComponent implements OnInit {
   search(e) {
     if (this.selectedValue.length > 0) {
       let params = new HttpParams();
+      this.currentPage.pageIndex = 0;
       const pageNumber = (this.currentPage.pageIndex + 1).toString();
       const pageSize = this.currentPage.pageSize.toString();
       const sort = this.currentSort.direction;

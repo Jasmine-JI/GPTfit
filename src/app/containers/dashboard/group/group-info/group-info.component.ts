@@ -623,21 +623,20 @@ export class GroupInfoComponent implements OnInit {
     this.groupService
       .actionGroup(body)
       .subscribe(({ resultCode, info: { selfJoinStatus }, resultMessage }) => {
-
+console.log('message', resultMessage);
         let message;
         switch (resultMessage) {
           case 'Commerce stopped[2]!':  // 停運中
-            message = `${this.translate.instant('Dashboard.Group.group')}
-              ${this.translate.instant('Dashboard.BrandManagement.outOfService')}`;
+            message = `${this.translate.instant('Dashboard.Group.group')} ${this.translate.instant('Dashboard.BrandManagement.outOfService')}`;
             break;
           case 'Commerce stopped[3]!':  // 歇業
-            message = `${this.translate.instant('Dashboard.Group.group')}
-            ${this.translate.instant('Dashboard.BrandManagement.outOfBusiness')}`;
+            message = `${this.translate.instant('Dashboard.Group.group')} ${this.translate.instant('Dashboard.BrandManagement.outOfBusiness')}`;
             break;
           case 'Commerce stopped[4]!':  // 待銷毀
-            message = `${this.translate.instant('Dashboard.Group.group')}
-            ${this.translate.instant('Dashboard.BrandManagement.toBeDestroyed')}`;
+            message = `${this.translate.instant('Dashboard.Group.group')} ${this.translate.instant('Dashboard.BrandManagement.toBeDestroyed')}`;
             break;
+          case 'This group member number more than commerce plan restrictions.': // 已滿員
+            message = `${this.translate.instant('Dashboard.Group.group')} ${this.translate.instant('Dashboard.Group.GroupInfo.groupFull')}`;
         }
 
         if (resultCode === 200) {

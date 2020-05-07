@@ -2,8 +2,6 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const FormData = require('form-data');
-const os = require('os');
-const request = require('request');
 
 let uploaded = false;
 
