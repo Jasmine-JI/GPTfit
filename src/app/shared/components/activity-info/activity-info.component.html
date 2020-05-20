@@ -146,9 +146,19 @@
             [maxlength]=24
             [(ngModel)]="activityName"
             name="activityName"
-            (keypress)="handleNewProfileName($event)"
+            (keypress)="handleNewProfileName($event, 'keypress')"
           >
         </mat-form-field>
+        <i (click)="cancelEdit()"
+          *ngIf="editNameMode && !hideButton"
+          class="icon-svg_web-icon_p1_012-close"
+          style="font-size: 20px; color: red; cursor: pointer;"
+        ></i>
+        <i (click)="handleNewProfileName($event, 'click')"
+          *ngIf="editNameMode && !hideButton"
+          class="icon-svg_web-icon_p2_097-ok"
+          style="font-size: 20px; color: green; cursor: pointer;"
+        ></i>
       </div>
       <div class="summary-info">
         <div class="summary-item">

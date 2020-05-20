@@ -1,0 +1,60 @@
+<div class="flexCol" *ngIf="emailLinkString.emailLinkString !== 0">
+  <div class="flexRow appHeader">
+    <i
+      class="icon-svg_web-icon_p1_073-level_fold"
+      style="font-size: 30px; cursor: pointer;"
+      (click)="turnBack()"
+    ></i>
+    <span class="appview-header appview-header-position">
+      {{ 'other.switch' | translate }} {{ 'Portal.account' | translate }}
+    </span>
+  </div>
+  <div class="flexCol" style="margin-top: 10px;">
+    <div class="flexCol appDiv">
+      <span class="formTitle">{{ 'other.switching' | translate }}</span>
+      <span style="font-size: 14px; font-weight: bold;">{{ accountInfo.account }}</span>
+    </div>
+    <div class="flexCol appDiv" *ngIf="accountInfo.type === 2">
+      <span class="formTitle">{{ 'Portal.phoneCaptcha' | translate }}</span>
+      <div>
+        <input
+          style="margin: 0px; width: 100%;"
+          placeholder="{{ phonePlaceholder }}"
+          (focusout)="checkPhoneCaptcha($event)"
+        />
+        <span class="formCue" *ngIf="this.phoneCaptcha.cue !== ''">{{ phoneCaptcha.cue }}</span>
+      </div>
+    </div>
+    <div
+      class="flexCol appDiv"
+      [style.display]="imgCaptcha.show ? '' : 'none'"
+    >
+      <span class="formTitle">{{ 'Portal.imgCaptcha' | translate }}</span>
+      <div class="flexRow">
+        <input
+          placeholder="{{ imgCaptcha.placeholder }}"
+          (focusout)="checkImgCaptcha($event)"
+        />
+        <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha">
+      </div>
+      <span class="formCue" *ngIf="imgCaptcha.show && imgCaptcha.cue !== ''">
+        {{ imgCaptcha.cue }}
+      </span>
+    </div>
+    <button
+      class="appview-btn"
+      [class.appview-btn-unclickable]="sendingPhoneCaptcha"
+      *ngIf="accountInfo.type === 2"
+      (click)="reciprocal()"
+    >
+      <span>{{ 'SH.send' | translate }}({{ timeCount }}s)</span>
+    </button>
+  </div>
+  <button
+    class="appview-btn"
+    [class.appview-btn-unclickable]="(accountInfo.type === 2 && phoneCaptcha.value === '') || sending"
+    (click)="submit()"
+  >
+    <span>{{ 'other.switch' | translate }}</span>
+  </button>
+</div>

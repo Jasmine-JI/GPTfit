@@ -1084,14 +1084,20 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     this.editNameMode = true;
   }
 
+  // 關閉編輯活動檔案名稱模式-kidin-1090514
+  cancelEdit () {
+    this.editNameMode = false;
+    this.activityName = this.activityNameBeforeState;
+  }
+
   // 上傳新名稱-kidin-1081115
-  handleNewProfileName(e) {
-    if (e.key === 'Enter' && this.activityName === this.activityNameBeforeState) {
+  handleNewProfileName(e, act) {
+    if (((act === 'keypress' && e.key === 'Enter') || act === 'click') && this.activityName === this.activityNameBeforeState) {
       this.editNameMode = false;
-    } else if (e.key === 'Enter' && this.activityName === '') {
+    } else if (((act === 'keypress' && e.key === 'Enter') || act === 'click') && this.activityName === '') {
       this.activityName = this.activityNameBeforeState;
       this.editNameMode = false;
-    } else if (e.key === 'Enter' && this.activityName !== this.activityNameBeforeState) {
+    } else if (((act === 'keypress' && e.key === 'Enter') || act === 'click') && this.activityName !== this.activityNameBeforeState) {
       const timeZoneMinite = new Date(),
             timeZone = -(timeZoneMinite.getTimezoneOffset() / 60),
             editDate = moment().format('YYYY-MM-DD'),

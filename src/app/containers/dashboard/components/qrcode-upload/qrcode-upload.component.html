@@ -47,7 +47,7 @@
   </div>
   <button
     class="uploadFileBtn"
-    [style.pointer-event]="uploading === true ? 'none' : ''"
+    [style.pointer-event]="uploading === true || loadingUserData ? 'none' : ''"
     (click)="uploadFile()"
   >
     <span *ngIf="uploading === false">{{ 'other.uploadActivityData' | translate }}</span>

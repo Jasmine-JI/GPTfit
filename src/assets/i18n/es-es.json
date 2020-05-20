@@ -801,9 +801,26 @@
     "followExerciseTypeCreate": "Create your report according to your workout ",
     "keyInCaptcha": "Introduzca el código de comprobación de imagen. Haga clic en la imagen para volver a cargar.",
     "countryRegionCode": "Seleccione un código de país o región",
-    "pai": "PAI"
+    "pai": "PAI",
+    "upTo": "Up to {{number}}.",
+    "switch": "Habilitar",
+    "switching": "You are activating account.",
+    "sendSmsSuccess": "Mensaje de comprobación ha sido ",
+    "noSmsCode": "Did not enter MSN Verification Code",
+    "smsVerificationInstructions": "Verify phone number, please select “Send Verification Code” and enter the code into the box.",
+    "unverifiedAccount": "Your account has not been verified. Please verify your email immediately to avoid loosing important data. Tap on the button below, a new verification email will be sent right away. ",
+    "sendCaptchaChackEmail": "Se ha enviado una carta de comprobación. Por favor revise su correo electrónico.",
+    "resetPassword": "Restablecer la contraseña",
+    "reset": "Restablecer",
+    "keyInNewPassword": "Introduzca una nueva contraseña",
+    "newPassword": "Ｎew Password"
   },
   "conflict": {
     "benefitime": "Benefit Time"
+  },
+  "custom": {
+    "changeAccount": "您正在變更帳號",
+    "newAccountWellBe": "將帳號變更為",
+    "changePassword": "您正在變更密碼"
   }
 }

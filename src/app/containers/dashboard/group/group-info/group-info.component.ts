@@ -623,7 +623,7 @@ export class GroupInfoComponent implements OnInit {
     this.groupService
       .actionGroup(body)
       .subscribe(({ resultCode, info: { selfJoinStatus }, resultMessage }) => {
-console.log('message', resultMessage);
+
         let message;
         switch (resultMessage) {
           case 'Commerce stopped[2]!':  // 停運中
@@ -637,6 +637,7 @@ console.log('message', resultMessage);
             break;
           case 'This group member number more than commerce plan restrictions.': // 已滿員
             message = `${this.translate.instant('Dashboard.Group.group')} ${this.translate.instant('Dashboard.Group.GroupInfo.groupFull')}`;
+            break;
         }
 
         if (resultCode === 200) {

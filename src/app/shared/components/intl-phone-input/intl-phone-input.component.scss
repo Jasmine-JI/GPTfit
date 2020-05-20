@@ -5,7 +5,7 @@
   border-radius: 3px;
   background-color: #fff;
   padding: 0.375rem 0.75rem;
-  width: 190px;
+  width: 90px;
   height: 38px;
   color: #757575;
 }
@@ -24,10 +24,11 @@
 }
 
 .ala-intl-tel.dropdown-menu {
-  width: 350px;
+  width: 270px;
   max-height: 200px;
   overflow-x: hidden;
 }
+
 .dropdown-menu.show {
   word-break: break-all;
   padding: 0px;
@@ -80,6 +81,16 @@
 .clearable {
   position: relative;
   display: flex;
+
+  .input {
+    outline: none;
+    border: none;
+    border-bottom: 1px solid #d4d4d4;
+    width: 100%;
+    text-overflow: ellipsis;
+    padding: 0;
+  }
+
 }
 
 .spinner {
@@ -97,4 +108,15 @@
   display: none;
 }
 
-
+.selected-flag-v2 {
+  position: relative;
+  border: none;
+  display: inline-block;
+  background-color: #fff;
+  padding: 0.375rem 1.5rem 0.375rem 0.5rem;
+  width: fit-content;
+  height: 38px;
+  color: black;
+  font-size: 16px;
+  font-weight: bold;
+}

@@ -60,6 +60,23 @@ export class UserInfoService {
   refreshToken(body) {
     return this.http.post<any>('/api/v1/user/refreshToken', body);
   }
+
+  fetchEnableAccount (body) {  // v2 1002
+    return this.http.post<any>('/api/v2/user/enableAccount', body);
+  }
+
+  fetchForgetpwd (body) {  // v2 1004
+    return this.http.post<any>('/api/v2/user/resetPassword', body);
+  }
+
+  fetchEditAccountInfo (body) {  // v2 1005
+    return this.http.post<any>('/api/v2/user/editAccount', body);
+  }
+
+  fetchUserInfo (body) {  // v2 1010
+    return this.http.post<any>('/api/v2/user/getUserProfile', body);
+  }
+
   getUserIcon(): Observable<string> {
     return this.userIcon$;
   }
