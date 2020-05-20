@@ -43,6 +43,18 @@ import { ReportService } from '@shared/services/report.service';
 import { ActivityOtherDetailsService } from '@shared/services/activity-other-details.service';
 import { DetectInappService } from '@shared/services/detect-inapp.service';
 import { ApplicationComponent } from './components/application/application.component';
+import { AppSignupComponent } from './components/app-sign/app-signup/app-signup.component';
+import { AppSigninComponent } from './components/app-sign/app-signin/app-signin.component';
+import { AppEnableComponent } from './components/app-sign/app-enable/app-enable.component';
+import { AppForgetpwComponent } from './components/app-sign/app-forgetpw/app-forgetpw.component';
+import { AppModifypwComponent } from './components/app-sign/app-modifypw/app-modifypw.component';
+import { AppChangeAccountComponent } from './components/app-sign/app-change-account/app-change-account.component';
+import { SignupV2Component } from './components/web-sign/signup-v2/signup-v2.component';
+import { SigninV2Component } from './components/web-sign/signin-v2/signin-v2.component';
+import { EnableAccountComponent } from './components/web-sign/enable-account/enable-account.component';
+import { ChangeAccountComponent } from './components/web-sign/change-account/change-account.component';
+import { ForgetpwV2Component } from './components/web-sign/forgetpw-v2/forgetpw-v2.component';
+import { ModifypwV2Component } from './components/web-sign/modifypw-v2/modifypw-v2.component';
 
 @NgModule({
   imports: [
@@ -96,7 +108,19 @@ import { ApplicationComponent } from './components/application/application.compo
     PortalGroupInfoComponent,
     FirstLoginComponent,
     BasicInfoComponent,
-    ApplicationComponent
+    ApplicationComponent,
+    AppSignupComponent,
+    SignupV2Component,
+    AppSigninComponent,
+    SigninV2Component,
+    EnableAccountComponent,
+    AppEnableComponent,
+    AppChangeAccountComponent,
+    AppForgetpwComponent,
+    AppModifypwComponent,
+    ChangeAccountComponent,
+    ForgetpwV2Component,
+    ModifypwV2Component
   ],
   entryComponents: [MessageBoxComponent]
 })

@@ -18,6 +18,7 @@ import * as md5 from 'md5';
 })
 export class QrcodeUploadComponent implements OnInit {
 
+  loadingUserData = true;
   uploading = false;
   translatedInfo: any = {};
   displayInfo: any = {
@@ -67,7 +68,14 @@ export class QrcodeUploadComponent implements OnInit {
   getUserInfo () {
 
     setTimeout (() => {
-      this.userInfo = this.userInfoService.getBodyDatas()[0];
+
+      if (this.userInfoService.getBodyDatas().length === 0) {
+        this.getUserInfo();
+      } else {
+        this.userInfo = this.userInfoService.getBodyDatas()[0];
+        this.loadingUserData = false;
+      }
+
     }, 0);
 
   }

@@ -29,6 +29,15 @@ export class AccountInfoComponent implements OnInit {
     const queryStrings = getUrlQueryStrings(location.search);
     const { code } = queryStrings;
 
+    if (
+      location.hostname === 'alatechcloud.alatech.com.tw' ||
+      location.hostname === '152.101.90.130' ||
+      location.hostname === 'cloud.alatech.com.tw'
+    ) {
+      this.clientId = '30796';
+      this.stravaApiDomain = 'https://cloud.alatech.com.tw:5443';
+    }
+
     if (code && code.length > 0) {
       const body = {
         token: this.utils.getToken() || '',
@@ -39,14 +48,7 @@ export class AccountInfoComponent implements OnInit {
       };
       return this.handleThirdPartyAccess(body);
     }
-    if (
-      location.hostname === 'alatechcloud.alatech.com.tw' ||
-      location.hostname === '152.101.90.130' ||
-      location.hostname === 'cloud.alatech.com.tw'
-    ) {
-      this.clientId = '30796';
-      this.stravaApiDomain = 'https://cloud.alatech.com.tw:5443';
-    }
+
     const { strava, stravaValid } = this.userData.thirdPartyAgency;
     this.stravaStatus = strava === '1';
     if (stravaValid === 'false' && this.stravaStatus) {
@@ -65,7 +67,7 @@ export class AccountInfoComponent implements OnInit {
               `redirect_uri=${
                 this.stravaApiDomain
               }/api/v1/strava/redirect_uri` +
-              '/1/AlaCenter&state=mystate&approval_prompt=force';
+              '/1/AlaCenter&state=mystate&approval_prompt=force&scope=activity:write,read';
           }
         }
       });
@@ -101,7 +103,7 @@ export class AccountInfoComponent implements OnInit {
         'https://www.strava.com/oauth/authorize?' +
         `client_id=${this.clientId}&response_type=code&` +
         `redirect_uri=${this.stravaApiDomain}/api/v1/strava/redirect_uri` +
-        '/1/AlaCenter&state=mystate&approval_prompt=force');
+        '/1/AlaCenter&state=mystate&approval_prompt=force&scope=activity:write,read');
     }
     const body = {
       token: this.utils.getToken() || '',

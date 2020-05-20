@@ -64,6 +64,48 @@ export class AuthService {
       }
     );
   }
+
+  loginServerV2(body) {  // v2-1003
+    return this.http.post<any>('/api/v2/user/signIn', body);
+  }
+
+  loginV2(loginData): Observable<boolean> {
+    return this.loginServerV2(loginData).map(
+      (res: any) => {
+        if (res.processResult.resultCode === 200) {
+          const name = res.userProfile.nickname,
+                token = res.signIn.token;
+          this.loginStatus$.next(true);
+          // to remove
+          this.currentUser$.next(name);
+          this.userName = name;
+          this.utils.writeToken(token);
+          const router = this.injector.get(Router);
+          if (res.signIn.counter <= 1) {
+            this.utils.setSessionStorageObject('isFirstLogin', true);
+            router.navigate(['/first-login']);
+          } else if (this.backUrl.length > 0) {
+            location.href = this.backUrl; // 為了讓登入的api request payload清除掉
+          } else {
+            // router.navigate(['/dashboard']);
+            location.href = '/dashboard'; // 為了讓登入的api request payload清除掉
+          }
+          return true;
+        } else {
+          return false; // can not login
+        }
+      },
+      (err: HttpErrorResponse) => {
+        if (err.error instanceof Error) {
+          console.log('client-side error');
+        } else {
+          console.log('server-side error');
+        }
+        return of(false);
+      }
+    );
+  }
+
   logout() {
     this.loginStatus$.next(false);
     this.currentUser$.next(null);

@@ -1,4 +1,4 @@
-<div class="dropdown">
+<div class="dropdown" *ngIf="uiVersion !== 'v2'">
   <div class="clearable" [formGroup]="control" >
     <div class="selected-flag"  (click)="openActive($event)"
       [class.selected-flag--invalid]="isCodeInvalid"
@@ -22,6 +22,31 @@
   </div>
   <ul class="dropdown-menu ala-intl-tel" *ngIf="countryOptions && countryOptions.length > 0" [class.show]="active && countryOptions.length > 0">
     <li *ngFor="let o of countryOptions; let i = index" (click)="chooseCountry(i)"[ngClass]="{'selected' : selectedOption && o.code === selectedOption.code }">
+       {{ o.name }}<span class="dial-code">{{ o.code }}</span>
+    </li>
+  </ul>
+</div>
+
+<div class="dropdown" *ngIf="uiVersion === 'v2'">
+  <div class="flexCol clearable">
+    <div class="selected-flag-v2" (click)="openActive($event)">
+      {{ this.countryCode || 'Portal.countryRegion' | translate }}
+      <i class="material-icons async-caret">arrow_drop_down</i>
+    </div>
+    <input
+      type="tel"
+      (focus)="focusEvent($event)"
+      (focusout)="emitPhoneNum()"
+      (keyup)="handlePhoneChange($event)"
+      [(value)]="currentValue"
+      style="margin-top: 0;"
+      placeholder="{{'Portal.enterInfo' | translate}}{{'Portal.phone' | translate}}"
+    >
+    <i class="fa fa-spinner fa-pulse fa-1x fa-fw spinner" [class.spinner-hidden]="!isLoading"></i>
+    <span class="formCue" *ngIf="phoneCue !== ''">{{ phoneCue }}</span>
+  </div>
+  <ul class="dropdown-menu ala-intl-tel" *ngIf="countryOptions && countryOptions.length > 0" [class.show]="active && countryOptions.length > 0">
+    <li *ngFor="let o of countryOptions; let i = index" (click)="chooseCountry(i)">
        {{ o.name }}<span class="dial-code">{{ o.code }}</span>
     </li>
   </ul>

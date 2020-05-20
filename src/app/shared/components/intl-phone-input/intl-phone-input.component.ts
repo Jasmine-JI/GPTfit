@@ -1,6 +1,7 @@
 import {
   Component,
   OnInit,
+  OnChanges,
   HostListener,
   Input,
   Output,
@@ -8,40 +9,77 @@ import {
 } from '@angular/core';
 import { codes } from '@shared/components/intl-phone-input/countryCode';
 import { FormGroup } from '@angular/forms';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-intl-phone-input',
   templateUrl: './intl-phone-input.component.html',
-  styleUrls: ['./intl-phone-input.component.css']
+  styleUrls: ['./intl-phone-input.component.scss']
 })
-export class IntlPhoneInputComponent implements OnInit {
+export class IntlPhoneInputComponent implements OnInit, OnChanges {
   active = false; // select options的開關
   phone = '';
   isClearIconShow = false;
   countryOptions: any;
   countryCode: any;
+
   @Input() isPhoneInvalid: boolean;
   @Input() isCodeInvalid: boolean;
   @Input() control: FormGroup;
   @Input() isLoading: boolean;
   @Input() disabled = false;
   @Input() placeholder: string;
+  @Input() uiVersion: string;
+  @Input() regPhone: any;
+  @Input() phoneCue: string;
+  @Input() currentValue: string;
+  @Input() currentCountryCode: number;
+
   @Output() onChange = new EventEmitter();
-  constructor() {}
+  @Output() focusoutPhoneInt = new EventEmitter();
+
+  constructor(
+    public translate: TranslateService
+  ) {}
+
   ngOnInit() {
     this.countryOptions = codes;
+
+    if (this.currentValue) {
+      this.phone = this.currentValue;
+      this.emitPhoneNum();
+    }
+
   }
+
+  ngOnChanges () {
+
+    if (this.currentCountryCode) {
+      this.countryCode = `+${this.currentCountryCode}`;
+      this.onChange.emit(this.countryCode);
+      this.emitPhoneNum();
+    }
+
+  }
+
   @HostListener('document:click')
+
   close() {
     this.active = false;
   }
+
   clear() {
-    this.control.patchValue({ phone: '' });
+    if (this.control) {
+      this.control.patchValue({ phone: '' });
+    }
+
     this.isClearIconShow = false;
   }
+
   handlePhoneChange(e) {
     this.phone = e.target.value.trim();
   }
+
   public inputEvent(e: any, isUpMode: boolean = false): void {
     if (e.target.value.length > 0 && this.phone) {
       this.isClearIconShow = true;
@@ -49,6 +87,7 @@ export class IntlPhoneInputComponent implements OnInit {
       this.isClearIconShow = false;
     }
   }
+
   public focusEvent(e: any, isUpMode: boolean = false): void {
     if (e.target.value.length > 0 && this.phone) {
       this.isClearIconShow = true;
@@ -56,14 +95,46 @@ export class IntlPhoneInputComponent implements OnInit {
       this.isClearIconShow = false;
     }
   }
+
   openActive(event: any) {
     event.stopPropagation();
     if (!this.disabled) {
       this.active = !this.active;
     }
   }
+
   chooseCountry(idx) {
     this.countryCode = this.countryOptions[idx].code;
     this.onChange.emit(this.countryCode);
+
+    if (this.phone.length > 0) {
+      this.emitPhoneNum ();
+    }
+
+    if (this.phoneCue === this.translate.instant('other.countryRegionCode')) {
+      this.phoneCue = '';
+    }
+
   }
+
+  // 當輸入完手機號碼後傳給父組件-kidin-1090504
+  emitPhoneNum () {
+
+    if (this.phone[0] === '0') {
+      this.phone = this.phone.slice(1, this.phone.length);
+    }
+
+    if (this.countryCode === undefined) {
+      this.phoneCue = this.translate.instant('other.countryRegionCode');
+      this.focusoutPhoneInt.emit('');
+    } else if (this.phone.length > 0 && this.regPhone.test(this.phone)) {
+      this.phoneCue = '';
+      this.focusoutPhoneInt.emit(this.phone);
+    } else {
+      this.phoneCue = this.translate.instant('Portal.phoneFormat');
+      this.focusoutPhoneInt.emit('');
+    }
+
+  }
+
 }

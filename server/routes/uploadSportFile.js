@@ -32,12 +32,13 @@ router.post('/', function (req, res, next) {
       );
       form.append('uploadData', JSON.stringify(uploadData));
 
-      let host;
+      let host,
+          errMsg;
       switch (body.hostname) {
         case 'cloud.alatech.com.tw':
         case '152.101.90.130':
-          host = '152.101.90.130';
-          break
+          host = '127.0.0.1';
+          break;
         default:
           host = '192.168.1.234';
           break;
@@ -67,6 +68,7 @@ router.post('/', function (req, res, next) {
       }, (err, result) => {
         if (err) {
           uploaded = false;
+          errMsg = err;
         } else {
           uploaded = true;
 
@@ -91,7 +93,7 @@ router.post('/', function (req, res, next) {
             resultMessage: "Upload sport file failed.",
             msgCode: "4002",
             nodejsApiCode: "N2101",
-            info: err
+            errMsg: errMsg
           });
         }
       }, 2000);
