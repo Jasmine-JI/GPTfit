@@ -380,15 +380,15 @@ export class DistributionChartComponent implements OnInit, OnChanges {
 
   // 計算每個區塊的百分比-kidin-1090324
   calPercentage (total) {
-    this.blockOne.percentage = `${((this.blockOne.stroke / total) * 100).toFixed(0)}%`;
-    this.blockTwo.percentage = `${((this.blockTwo.stroke / total) * 100).toFixed(0)}%`;
-    this.blockThree.percentage = `${((this.blockThree.stroke / total) * 100).toFixed(0)}%`;
-    this.blockFour.percentage = `${((this.blockFour.stroke / total) * 100).toFixed(0)}%`;
-    this.blockFive.percentage = `${((this.blockFive.stroke / total) * 100).toFixed(0)}%`;
-    this.blockSix.percentage = `${((this.blockSix.stroke / total) * 100).toFixed(0)}%`;
-    this.blockSeven.percentage = `${((this.blockSeven.stroke / total) * 100).toFixed(0)}%`;
-    this.blockEight.percentage = `${((this.blockEight.stroke / total) * 100).toFixed(0)}%`;
-    this.blockNine.percentage = `${((this.blockNine.stroke / total) * 100).toFixed(0)}%`;
+    this.blockOne.percentage = `${((this.blockOne.stroke / total || 0) * 100).toFixed(0)}%`;
+    this.blockTwo.percentage = `${((this.blockTwo.stroke / total || 0) * 100).toFixed(0)}%`;
+    this.blockThree.percentage = `${((this.blockThree.stroke / total || 0) * 100).toFixed(0)}%`;
+    this.blockFour.percentage = `${((this.blockFour.stroke / total || 0) * 100).toFixed(0)}%`;
+    this.blockFive.percentage = `${((this.blockFive.stroke / total || 0) * 100).toFixed(0)}%`;
+    this.blockSix.percentage = `${((this.blockSix.stroke / total || 0) * 100).toFixed(0)}%`;
+    this.blockSeven.percentage = `${((this.blockSeven.stroke / total || 0) * 100).toFixed(0)}%`;
+    this.blockEight.percentage = `${((this.blockEight.stroke / total || 0) * 100).toFixed(0)}%`;
+    this.blockNine.percentage = `${((this.blockNine.stroke / total || 0) * 100).toFixed(0)}%`;
   }
 
   // 解決safari在使用linearGradient時，無法正常顯示的問題-kidin-1090428

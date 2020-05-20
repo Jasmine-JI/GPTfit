@@ -313,6 +313,7 @@ app.use(function (req, res, next) {
     allowedOrigins = ['http://192.168.1.232:8080'];
   } else {
     allowedOrigins = [
+      'http://152.101.90.130',
       'http://alatechcloud.alatech.com.tw:8080',
       'https://alatechcloud.alatech.com.tw:8080',
       'http://alatechcloud.alatech.com.tw',

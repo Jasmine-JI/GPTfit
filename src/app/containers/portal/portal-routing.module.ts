@@ -19,6 +19,18 @@ import { ApplicationComponent } from './components/application/application.compo
 import { Page404Component } from '../../shared/components/page404/page404.component';
 import { Page403Component } from '../../shared/components/page403/page403.component';
 import { QrcodeUploadComponent } from '../dashboard/components/qrcode-upload/qrcode-upload.component';
+import { AppSignupComponent } from './components/app-sign/app-signup/app-signup.component';
+import { AppSigninComponent } from './components/app-sign/app-signin/app-signin.component';
+import { AppEnableComponent } from './components/app-sign/app-enable/app-enable.component';
+import { AppForgetpwComponent } from './components/app-sign/app-forgetpw/app-forgetpw.component';
+import { AppModifypwComponent } from './components/app-sign/app-modifypw/app-modifypw.component';
+import { AppChangeAccountComponent } from './components/app-sign/app-change-account/app-change-account.component';
+import { SignupV2Component } from './components/web-sign/signup-v2/signup-v2.component';
+import { SigninV2Component } from './components/web-sign/signin-v2/signin-v2.component';
+import { EnableAccountComponent } from './components/web-sign/enable-account/enable-account.component';
+import { ChangeAccountComponent } from './components/web-sign/change-account/change-account.component';
+import { ForgetpwV2Component } from './components/web-sign/forgetpw-v2/forgetpw-v2.component';
+import { ModifypwV2Component } from './components/web-sign/modifypw-v2/modifypw-v2.component';
 
 const routes: Routes = [
   {
@@ -87,6 +99,54 @@ const routes: Routes = [
       {
         path: 'qrupload/activityfile',
         component: QrcodeUploadComponent
+      },
+      {
+        path: 'register',
+        component: AppSignupComponent
+      },
+      {
+        path: 'signIn',
+        component: AppSigninComponent
+      },
+      {
+        path: 'enableAccount',
+        component: AppEnableComponent
+      },
+      {
+        path: 'resetPassword',
+        component: AppForgetpwComponent
+      },
+      {
+        path: 'editPassword',
+        component: AppModifypwComponent
+      },
+      {
+        path: 'changeAccount',
+        component: AppChangeAccountComponent
+      },
+      {
+        path: 'signup-v2',
+        component: SignupV2Component
+      },
+      {
+        path: 'signin-v2',
+        component: SigninV2Component
+      },
+      {
+        path: 'enable-account',
+        component: EnableAccountComponent
+      },
+      {
+        path: 'change-account',
+        component: ChangeAccountComponent
+      },
+      {
+        path: 'forgetpw-v2',
+        component: ForgetpwV2Component
+      },
+      {
+        path: 'modifypw-v2',
+        component: ModifypwV2Component
       },
       { path: '404', component: Page404Component },
       { path: '403', component: Page403Component }

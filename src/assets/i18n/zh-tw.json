@@ -801,9 +801,26 @@
     "followExerciseTypeCreate": "請依照您的運動屬性與課程期間建立報告",
     "keyInCaptcha": "請輸入圖形驗證碼，可點擊圖片刷新",
     "countryRegionCode": "請選擇國家/地區代碼",
-    "pai": "個人化活動指標"
+    "pai": "個人化活動指標",
+    "upTo": "最多{{number}}項",
+    "switch": "啟用",
+    "switching": "您正在啟用帳號",
+    "sendSmsSuccess": "已送出驗證簡訊",
+    "noSmsCode": "未填寫簡訊驗證碼",
+    "smsVerificationInstructions": "驗證手機號碼是否為本人，請點選發送驗證碼並且將驗證碼輸入至欄位",
+    "unverifiedAccount": "您的帳號未驗證，請立即驗證信箱以免遺失重要資料。點擊以下按鈕，我們會立即發送新的驗證信。",
+    "sendCaptchaChackEmail": "已送出驗證信，請檢查您的信箱",
+    "resetPassword": "重設密碼",
+    "reset": "重設",
+    "keyInNewPassword": "輸入新密碼",
+    "newPassword": "新密碼"
   },
   "conflict": {
     "benefitime": "效益時間"
+  },
+  "custom": {
+    "changeAccount": "您正在變更帳號",
+    "newAccountWellBe": "將帳號變更為",
+    "changePassword": "您正在變更密碼"
   }
 }

@@ -23,6 +23,7 @@
           <app-date-range-picker
             (selectDateRange)="getSelectDate($event)"
             [default]="'last7Days'"
+            [style.pointer-events]="isLoading? 'none' : ''"
           ></app-date-range-picker>
         </div>
       </div>
@@ -684,6 +685,9 @@
               </span>
             </mat-checkbox>
           </div>
+          <span style="font-size: 8px; color: red;">
+            ({{ 'other.upTo' | translate: {'number': this.tableTypeListOpt.max} }})
+          </span>
         </div>
       </div>
     </div>

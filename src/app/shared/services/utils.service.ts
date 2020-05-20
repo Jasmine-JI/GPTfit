@@ -11,6 +11,7 @@ export const EMPTY_OBJECT = {};
 export class UtilsService {
   isResetPassword$ = new BehaviorSubject<boolean>(false);
   imgSelected$ = new BehaviorSubject<boolean>(false);
+  hideNavbar$ = new BehaviorSubject<boolean>(false);
 
   setLocalStorageObject(key: string, value) {
     localStorage.setItem(key, JSON.stringify(value));
@@ -243,5 +244,13 @@ export class UtilsService {
 
   getImgSelectedStatus(): Observable<boolean> {
     return this.imgSelected$;
+  }
+
+  setHideNavbarStatus(status: boolean) {
+    this.hideNavbar$.next(status);
+  }
+
+  getHideNavbarStatus(): Observable<boolean> {
+    return this.hideNavbar$;
   }
 }

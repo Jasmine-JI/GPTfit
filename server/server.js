@@ -94,6 +94,7 @@ app.use(function (req, res, next) {
     allowedOrigins = ['http://192.168.1.232:8080'];
   } else {
     allowedOrigins = [
+      'http://152.101.90.130',
       'http://alatechcloud.alatech.com.tw:8080',
       'https://alatechcloud.alatech.com.tw:8080',
       'http://alatechcloud.alatech.com.tw',
@@ -192,12 +193,12 @@ app.use('/nodejs/api/auth', auth);
 app.use('/nodejs/api/uploadSportFile', uploadSportFile);
 
 // Start the server
-/*
 const port = process.env.PORT || 3001;
+/*
  app.listen(port, function () {
    console.log('Server running at ' + port);
  });
- */
+*/
 https.createServer(SERVER_CONFIG, app).listen(port, function() {
   console.log('HTTPS sever started at ' + port);
 });
