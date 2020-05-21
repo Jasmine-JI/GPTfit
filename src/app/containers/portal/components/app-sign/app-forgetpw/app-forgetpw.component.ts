@@ -184,9 +184,9 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
   // 返回app-kidin-1090513
   turnBack () {
     if (this.appSys === 1) {
-      (window as any).webkit.messageHandlers.webviewReturn.postMessage();
+      (window as any).webkit.closeWebView.postMessage();
     } else if (this.appSys === 2) {
-      (window as any).android.webviewReturn();
+      (window as any).android.closeWebView();
     } else {
       this.router.navigateByUrl('/signIn');
     }
@@ -253,15 +253,17 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
 
   // 確認使用者信箱格式-kidin-1090511
   checkEmail (e) {
-    const inputEmail = e.currentTarget.value;
+    if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout' || e.type === undefined) {
+      const inputEmail = e.currentTarget.value;
 
-    if (inputEmail.length === 0 || !this.regCheck.email.test(inputEmail)) {
-      this.cue.email = this.translate.instant('Portal.emailFormat');
-      this.dataIncomplete = true;
-    } else {
-      this.formValue.email = inputEmail;
-      this.cue.email = '';
-      this.dataIncomplete = false;
+      if (inputEmail.length === 0 || !this.regCheck.email.test(inputEmail)) {
+        this.cue.email = this.translate.instant('Portal.emailFormat');
+        this.dataIncomplete = true;
+      } else {
+        this.formValue.email = inputEmail;
+        this.cue.email = '';
+        this.dataIncomplete = false;
+      }
     }
 
   }
@@ -346,6 +348,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
       } else if (resultInfo.resultCode === 200) {
         this.dialog.open(MessageBoxComponent, {
           hasBackdrop: true,
+          disableClose: true,
           data: {
             title: 'Message',
             body: this.translate.instant('other.sendSmsSuccess'),
@@ -376,19 +379,21 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
 
   // 確認手機驗證碼是否符合-kidin-1090515
   checkPhoneCaptcha (e) {
-    const inputPhoneCaptcha = e.currentTarget.value;
-    if (inputPhoneCaptcha.length < 6) {
-      this.cue.verificationCode = this.translate.instant('Portal.errorCaptcha');
-    } else {
-      this.formValue.verificationCode = inputPhoneCaptcha;
-      this.cue.verificationCode = '';
-
-      if (!this.phoneFormIncomplete) {
-        this.dataIncomplete = false;
+    if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
+      const inputPhoneCaptcha = e.currentTarget.value;
+      if (inputPhoneCaptcha.length < 6) {
+        this.cue.verificationCode = this.translate.instant('Portal.errorCaptcha');
       } else {
-        this.dataIncomplete = true;
-      }
+        this.formValue.verificationCode = inputPhoneCaptcha;
+        this.cue.verificationCode = '';
 
+        if (!this.phoneFormIncomplete) {
+          this.dataIncomplete = false;
+        } else {
+          this.dataIncomplete = true;
+        }
+
+      }
     }
 
   }
@@ -418,15 +423,17 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
 
   // 確認密碼格式-kidin-1090511
   checkPassword (e) {
-    const inputPassword = e.currentTarget.value;
+    if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
+      const inputPassword = e.currentTarget.value;
 
-    if (!this.regCheck.password.test(inputPassword)) {
-      this.cue.password = this.translate.instant('Portal.passwordFormat');
-      this.dataIncomplete = true;
-    } else {
-      this.formValue.password = inputPassword;
-      this.cue.password = '';
-      this.dataIncomplete = false;
+      if (!this.regCheck.password.test(inputPassword)) {
+        this.cue.password = this.translate.instant('Portal.passwordFormat');
+        this.dataIncomplete = true;
+      } else {
+        this.formValue.password = inputPassword;
+        this.cue.password = '';
+        this.dataIncomplete = false;
+      }
     }
 
   }
@@ -514,7 +521,18 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
     this.userInfoService.fetchForgetpwd(body).subscribe(res => {
 
       if (res.processResult.resultCode !== 200) {
-        const msgBody = 'Server error! Please try again.';
+
+        let msgBody;
+        switch (res.processResult.apiReturnMessage) {
+          case 'Post fail, account was reset password.':
+          case 'Reset password fail, reset time expired.':
+            msgBody = this.translate.instant('custom.linkFailure');
+            break;
+          default:
+            msgBody = 'Server error! Please try again.';
+            break;
+        }
+
         this.showMsgBox(msgBody);
       } else {
         this.formValue.resetPasswordFlow = 3;
@@ -562,15 +580,13 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
 
   }
 
-  // 引導回app或web登入頁-kidin-1090518
-  sendEmailSuccess () {
+  // 傳token回app-kidin-1090518
+  sendTokenToApp (token) {
 
-    if (this.appSys === 0) {
-      this.router.navigateByUrl('/signIn');
-    } else if (this.appSys === 1) {
-      (window as any).webkit.messageHandlers.webviewReturn.postMessage(this.newToken);
-    } else {
-      (window as any).android.webviewReturn(this.newToken);
+    if (this.appSys === 1) {
+      (window as any).webkit.messageHandlers.refreshToken.postMessage(token);
+    } else if (this.appSys === 2) {
+      (window as any).android.refreshToken(token);
     }
 
   }
@@ -601,6 +617,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
         msgBody = this.translate.instant('Portal.passwordResetComplete');
         this.newToken = res.resetPassword.newToken;
         this.utils.writeToken(this.newToken);  // 直接在瀏覽器幫使用者登入
+        this.sendTokenToApp(this.newToken);
       }
 
       this.showMsgBox(msgBody);
@@ -614,13 +631,14 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
 
     this.dialog.open(MessageBoxComponent, {
       hasBackdrop: true,
+      disableClose: true,
       data: {
         title: 'Message',
         body: msg,
         confirmText: this.translate.instant(
           'SH.determine'
         ),
-        onConfirm: this.sendEmailSuccess.bind(this)
+        onConfirm: this.turnBack.bind(this)
       }
     });
 

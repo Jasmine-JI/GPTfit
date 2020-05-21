@@ -44,12 +44,6 @@ export class IntlPhoneInputComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.countryOptions = codes;
-
-    if (this.currentValue) {
-      this.phone = this.currentValue;
-      this.emitPhoneNum();
-    }
-
   }
 
   ngOnChanges () {
@@ -58,6 +52,13 @@ export class IntlPhoneInputComponent implements OnInit, OnChanges {
       this.countryCode = `+${this.currentCountryCode}`;
       this.onChange.emit(this.countryCode);
       this.emitPhoneNum();
+    }
+
+    if (this.currentValue) {
+      this.phone = this.currentValue;
+      this.emitPhoneNum();
+    } else {
+      this.currentValue = '';
     }
 
   }

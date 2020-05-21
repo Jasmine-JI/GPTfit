@@ -34,6 +34,7 @@
             placeholder="{{ placeholder.email }}"
             [(value)]="currentAccount"
             (focusout)="checkEmail($event)"
+            (keypress)="checkEmail($event)"
             *ngIf="formValue.type === 1"
           />
           <span class="formCue" *ngIf="formValue.type === 1 && cue.email !== ''">{{ cue.email }}</span>
@@ -60,6 +61,7 @@
             style="margin: 0px; width: 100%;"
             placeholder="{{ placeholder.verificationCode }}"
             (focusout)="checkPhoneCaptcha($event)"
+            (keypress)="checkPhoneCaptcha($event)"
           />
           <span class="formCue" *ngIf="cue.verificationCode !== ''">{{ cue.verificationCode }}</span>
         </div>
@@ -73,6 +75,7 @@
           <input
             placeholder="{{ placeholder.imgCaptcha }}"
             (focusout)="checkImgCaptcha($event)"
+            (keypress)="checkImgCaptcha($event)"
           />
           <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha">
         </div>
@@ -102,6 +105,7 @@
           [(ngModel)]="formValue.password"
           style="border-bottom: none; width: 95%;"
           (focusout)="checkPassword($event)"
+          (keypress)="checkPassword($event)"
         />
         <i
           class="icon-svg_web-icon_p1_081-watch"
