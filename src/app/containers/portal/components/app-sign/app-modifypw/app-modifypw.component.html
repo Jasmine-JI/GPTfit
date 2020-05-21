@@ -29,6 +29,7 @@
           [(ngModel)]="editBody.oldPassword"
           style="border-bottom: none; width: 95%;"
           (focusout)="checkPassword($event, 'oldPassword')"
+          (keypress)="checkPassword($event, 'oldPassword')"
         />
         <i
           class="icon-svg_web-icon_p1_081-watch"
@@ -37,7 +38,7 @@
           (click)="toggleDisplayPW('oldPassword')"
         ></i>
       </span>
-      <span class="formCue" *ngIf="cue.password !== ''">{{ cue.oldPassword }}</span>
+      <span class="formCue" *ngIf="cue.oldPassword !== ''">{{ cue.oldPassword }}</span>
     </div>
     <div class="flexCol appDiv"  style="min-height: 120px;">
       <span class="formTitle">{{ 'other.newPassword' | translate }}</span>
@@ -49,6 +50,7 @@
           [(ngModel)]="editBody.newPassword"
           style="border-bottom: none; width: 95%;"
           (focusout)="checkPassword($event, 'newPassword')"
+          (keypress)="checkPassword($event, 'newPassword')"
         />
         <i
           class="icon-svg_web-icon_p1_081-watch"
@@ -57,7 +59,7 @@
           (click)="toggleDisplayPW('newPassword')"
         ></i>
       </span>
-      <span class="formCue" *ngIf="cue.password !== ''">{{ cue.newPassword }}</span>
+      <span class="formCue" *ngIf="cue.newPassword !== ''">{{ cue.newPassword }}</span>
     </div>
     <div
       class="flexCol appDiv"
@@ -66,12 +68,13 @@
       <span class="formTitle">{{ 'Portal.imgCaptcha' | translate }}</span>
       <div class="flexRow">
         <input
-          placeholder="{{ placeholder.imgCaptcha }}"
+          placeholder="{{ imgCaptcha.placeholder }}"
           (focusout)="checkImgCaptcha($event)"
+          (keypress)="checkImgCaptcha($event)"
         />
         <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha">
       </div>
-      <span class="formCue" *ngIf="imgCaptcha.show && signupCue.imgCaptcha !== ''">
+      <span class="formCue" *ngIf="imgCaptcha.show && imgCaptcha.cue !== ''">
         {{ imgCaptcha.cue }}
       </span>
     </div>

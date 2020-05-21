@@ -163,9 +163,9 @@ export class AppEnableComponent implements OnInit, OnDestroy {
   // 返回app-kidin-1090513
   turnBack () {
     if (this.appInfo.sys === 1) {
-      (window as any).webkit.messageHandlers.webviewReturn.postMessage(this.appInfo.token);
+      (window as any).webkit.messageHandlers.closeWebView.postMessage();
     } else if (this.appInfo.sys === 2) {
-      (window as any).android.webviewReturn(this.appInfo.token);
+      (window as any).android.closeWebView();
     } else {
       this.router.navigateByUrl('/signIn');
     }
@@ -220,6 +220,7 @@ export class AppEnableComponent implements OnInit, OnDestroy {
       } else if (resultInfo.resultCode === 200) {
         this.dialog.open(MessageBoxComponent, {
           hasBackdrop: true,
+          disableClose: true,
           data: {
             title: 'Message',
             body: this.translate.instant('other.sendSmsSuccess'),
@@ -237,25 +238,29 @@ export class AppEnableComponent implements OnInit, OnDestroy {
 
   // 確認手機驗證碼是否符合-kidin-1090515
   checkPhoneCaptcha (e) {
-    const inputPhoneCaptcha = e.currentTarget.value;
-    if (inputPhoneCaptcha.length < 6) {
-      this.phoneCaptcha.cue = this.translate.instant('Portal.errorCaptcha');
-    } else {
-      this.phoneCaptcha.value = inputPhoneCaptcha;
-      this.phoneCaptcha.cue = '';
+    if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
+      const inputPhoneCaptcha = e.currentTarget.value;
+      if (inputPhoneCaptcha.length < 6) {
+        this.phoneCaptcha.cue = this.translate.instant('Portal.errorCaptcha');
+      } else {
+        this.phoneCaptcha.value = inputPhoneCaptcha;
+        this.phoneCaptcha.cue = '';
+      }
     }
 
   }
 
   // 確認是否填寫圖形驗證碼欄位-kidin-1090514
   checkImgCaptcha (e) {
-    const inputImgCaptcha = e.currentTarget.value;
+    if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
+      const inputImgCaptcha = e.currentTarget.value;
 
-    if (inputImgCaptcha.length === 0) {
-      this.imgCaptcha.cue = this.translate.instant('Portal.errorCaptcha');
-    } else {
-      this.imgCaptcha.code = inputImgCaptcha;
-      this.imgCaptcha.cue = '';
+      if (inputImgCaptcha.length === 0) {
+        this.imgCaptcha.cue = this.translate.instant('Portal.errorCaptcha');
+      } else {
+        this.imgCaptcha.code = inputImgCaptcha;
+        this.imgCaptcha.cue = '';
+      }
     }
 
   }
@@ -323,29 +328,25 @@ export class AppEnableComponent implements OnInit, OnDestroy {
 
     this.signupService.fetchEnableAccount(body).subscribe(res => {
 
+      let msgBody;
       if (res.processResult.resultCode !== 200) {
-        const msgBody = 'Server error! Please try again.';
-        this.showMsgBox(msgBody);
+
+        switch (res.processResult.apiReturnMessage) {
+          case 'Enable account fail, account was enabled.':  // 已啟用後再次點擊啟用信件，則當作啟用成功-kidin-1090520
+            msgBody = `${this.translate.instant('other.switch')} ${this.translate.instant('Dashboard.MyDevice.success')}`;
+            break;
+          default:
+            msgBody = 'Server error! Please try again.';
+            break;
+        }
+
       } else {
-        const msgBody = `${this.translate.instant('other.switch')} ${this.translate.instant('Dashboard.MyDevice.success')}`;
-        this.showMsgBox(msgBody);
+        msgBody = `${this.translate.instant('other.switch')} ${this.translate.instant('Dashboard.MyDevice.success')}`;
       }
 
+      this.showMsgBox(msgBody);
       this.sending = false;
     });
-
-  }
-
-  // 寄送完驗證信後，引導回app或web登入頁-kidin-1090518
-  sendEmailSuccess () {
-
-    if (this.appInfo.sys === 0) {
-      this.router.navigateByUrl('/signIn');
-    } else if (this.appInfo.sys === 1) {
-      (window as any).webkit.messageHandlers.webviewReturn.postMessage(this.appInfo.token);
-    } else {
-      (window as any).android.webviewReturn(this.appInfo.token);
-    }
 
   }
 
@@ -354,13 +355,14 @@ export class AppEnableComponent implements OnInit, OnDestroy {
 
     this.dialog.open(MessageBoxComponent, {
       hasBackdrop: true,
+      disableClose: true,
       data: {
         title: 'Message',
         body: msg,
         confirmText: this.translate.instant(
           'SH.determine'
         ),
-        onConfirm: this.sendEmailSuccess.bind(this)
+        onConfirm: this.turnBack.bind(this)
       }
     });
 

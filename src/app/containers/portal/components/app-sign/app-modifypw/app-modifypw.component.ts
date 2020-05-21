@@ -49,7 +49,8 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
     show: false,
     imgCode: '',
     code: '',
-    cue: ''
+    cue: '',
+    placeholder: ''
   };
 
   constructor(
@@ -138,9 +139,9 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
   // 返回app-kidin-1090513
   turnBack () {
     if (this.appSys === 1) {
-      (window as any).webkit.messageHandlers.webviewReturn.postMessage(this.editBody.token);
+      (window as any).webkit.messageHandlers.closeWebView.postMessage();
     } else if (this.appSys === 2) {
-      (window as any).android.webviewReturn(this.editBody.token);
+      (window as any).android.closeWebView();
     } else {
       this.router.navigateByUrl('/signIn');
     }
@@ -172,26 +173,44 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
 
   // 確認密碼格式-kidin-1090511
   checkPassword (e, obj) {
-    const inputPassword = e.currentTarget.value,
-          regPWD = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,20}$/;
+    if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
+      const inputPassword = e.currentTarget.value,
+            regPWD = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,20}$/;
 
-    if (!regPWD.test(inputPassword)) {
-      this.cue[obj] = this.translate.instant('Portal.passwordFormat');
-    } else {
-      this.editBody[obj] = inputPassword;
-      this.cue[obj] = '';
+      if (!regPWD.test(inputPassword)) {
+        this.cue[obj] = this.translate.instant('Portal.passwordFormat');
+      } else {
+        this.editBody[obj] = inputPassword;
+        this.cue[obj] = '';
+      }
+
+      if (
+        this.editBody.oldPassword.length > 0
+        && this.editBody.newPassword.length > 0
+        && this.cue.oldPassword.length === 0
+        && this.cue.newPassword.length === 0
+      ) {
+        this.dataIncomplete = false;
+      } else {
+        this.dataIncomplete = true;
+      }
     }
 
-    if (
-      this.editBody.oldPassword.length > 0
-      && this.editBody.newPassword.length > 0
-      && this.cue.oldPassword.length === 0
-      && this.cue.newPassword.length === 0
-    ) {
-      this.dataIncomplete = false;
-    } else {
-      this.dataIncomplete = true;
+  }
+
+  // 確認是否填寫圖形驗證碼欄位-kidin-1090514
+  checkImgCaptcha (e) {
+    if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
+      const inputImgCaptcha = e.currentTarget.value;
+
+      if (inputImgCaptcha.length === 0) {
+        this.imgCaptcha.cue = this.translate.instant('Portal.errorCaptcha');
+      } else {
+        this.imgCaptcha.code = inputImgCaptcha;
+        this.imgCaptcha.cue = '';
+      }
     }
+
   }
 
   // 送出修改密碼-kidin-1090519
@@ -250,6 +269,7 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
       } else {
         this.newToken = res.editAccount.newToken;
         this.utils.writeToken(this.newToken);  // 直接在瀏覽器幫使用者登入
+        this.finishEdit(this.newToken);
         this.sending = false;
 
         this.snackbar.open(
@@ -259,7 +279,7 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
         );
 
         setTimeout(() => {
-          this.finishEdit();
+          this.turnBack();
         }, 1000);
 
       }
@@ -269,13 +289,11 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
   }
 
   // 返回app並回傳新token-kidin-1090518
-  finishEdit () {
+  finishEdit (token) {
     if (this.appSys === 1) {
-      (window as any).webkit.messageHandlers.webviewReturn.postMessage(this.newToken);
+      (window as any).webkit.messageHandlers.refreshToken.postMessage(token);
     } else if (this.appSys === 2) {
-      (window as any).android.webviewReturn(this.newToken);
-    } else {
-      this.router.navigateByUrl('/signIn');
+      (window as any).android.refreshToken(token);
     }
 
   }

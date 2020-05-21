@@ -821,6 +821,7 @@
   "custom": {
     "changeAccount": "您正在變更帳號",
     "newAccountWellBe": "將帳號變更為",
-    "changePassword": "您正在變更密碼"
+    "changePassword": "您正在變更密碼",
+    "linkFailure": "連結已失效，請重新操作"
   }
 }

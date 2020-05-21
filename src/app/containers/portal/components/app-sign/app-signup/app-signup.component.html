@@ -21,6 +21,7 @@
   <div class="flexCol" style="margin-top: 10px;">
     <div class="flexCol appDiv">
       <app-custom-select
+        style="margin-bottom: 10px;"
         [selectLists]="selectLists"
         [fontOpt]="fontOpt"
         [position]="position"
@@ -32,6 +33,7 @@
           style="width: 100%;"
           placeholder="{{ placeholder.email }}"
           (focusout)="checkEmail($event)"
+          (keypress)="checkEmail($event)"
           *ngIf="signupData.type === 1"
         />
       </div>
@@ -58,6 +60,7 @@
           [(ngModel)]="signupData.password"
           style="border-bottom: none; width: 95%;"
           (focusout)="checkPassword($event)"
+          (keypress)="checkPassword($event)"
         />
         <i
           class="icon-svg_web-icon_p1_081-watch"
@@ -73,6 +76,7 @@
       <input
         placeholder="{{ placeholder.nickname }}"
         (focusout)="checkNickname($event)"
+        (keypress)="checkNickname($event)"
       />
       <span class="formCue" *ngIf="signupCue.nickname !== ''">{{ signupCue.nickname }}</span>
     </div>
@@ -85,6 +89,7 @@
         <input
           placeholder="{{ placeholder.imgCaptcha }}"
           (focusout)="checkImgCaptcha($event)"
+          (keypress)="checkImgCaptcha($event)"
         />
         <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha">
       </div>
