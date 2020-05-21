@@ -1,4 +1,4 @@
-<div class="flexCol" *ngIf="emailLinkString.emailLinkString !== 0">
+<div class="flexCol" *ngIf="emailLinkString.enableAccountFlow === 0">
   <div class="flexRow appHeader">
     <i
       class="icon-svg_web-icon_p1_073-level_fold"
@@ -21,6 +21,7 @@
           style="margin: 0px; width: 100%;"
           placeholder="{{ phonePlaceholder }}"
           (focusout)="checkPhoneCaptcha($event)"
+          (keypress)="checkPhoneCaptcha($event)"
         />
         <span class="formCue" *ngIf="this.phoneCaptcha.cue !== ''">{{ phoneCaptcha.cue }}</span>
       </div>
@@ -34,6 +35,7 @@
         <input
           placeholder="{{ imgCaptcha.placeholder }}"
           (focusout)="checkImgCaptcha($event)"
+          (keypress)="checkImgCaptcha($event)"
         />
         <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha">
       </div>

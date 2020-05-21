@@ -83,7 +83,8 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
     show: false,
     imgCode: '',
     code: '',
-    cue: ''
+    cue: '',
+    placeholder: ''
   };
 
   constructor(
@@ -174,9 +175,9 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
   // 返回app-kidin-1090513
   turnBack () {
     if (this.appSys === 1) {
-      (window as any).webkit.messageHandlers.webviewReturn.postMessage(this.editBody.token);
+      (window as any).webkit.messageHandlers.closeWebView.postMessage();
     } else if (this.appSys === 2) {
-      (window as any).android.webviewReturn(this.editBody.token);
+      (window as any).android.closeWebView();
     } else {
       this.router.navigateByUrl('/signIn');
     }
@@ -191,18 +192,21 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
 
   // 確認使用者信箱格式-kidin-1090511
   checkEmail (e) {
-    const inputEmail = e.currentTarget.value;
+    if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
+      const inputEmail = e.currentTarget.value;
 
-    if (inputEmail.length === 0 || !this.regCheck.email.test(inputEmail)) {
-      this.cue.email = this.translate.instant('Portal.emailFormat');
-      this.regCheck.emailPass = false;
-    } else {
-      this.editBody.newEmail = inputEmail;
-      this.cue.email = '';
-      this.regCheck.emailPass = true;
+      if (inputEmail.length === 0 || !this.regCheck.email.test(inputEmail)) {
+        this.cue.email = this.translate.instant('Portal.emailFormat');
+        this.regCheck.emailPass = false;
+      } else {
+        this.editBody.newEmail = inputEmail;
+        this.cue.email = '';
+        this.regCheck.emailPass = true;
+      }
+
+      this.checkAll(this.regCheck);
     }
 
-    this.checkAll(this.regCheck);
   }
 
   // 將使用者輸入的密碼進行隱藏-kidin-1090430
@@ -230,18 +234,21 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
 
   // 確認密碼格式-kidin-1090511
   checkPassword (e) {
-    const inputPassword = e.currentTarget.value;
+    if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
+      const inputPassword = e.currentTarget.value;
 
-    if (!this.regCheck.password.test(inputPassword)) {
-      this.cue.password = this.translate.instant('Portal.passwordFormat');
-      this.regCheck.passwordPass = false;
-    } else {
-      this.editBody.oldPassword = inputPassword;
-      this.cue.password = '';
-      this.regCheck.passwordPass = true;
+      if (!this.regCheck.password.test(inputPassword)) {
+        this.cue.password = this.translate.instant('Portal.passwordFormat');
+        this.regCheck.passwordPass = false;
+      } else {
+        this.editBody.oldPassword = inputPassword;
+        this.cue.password = '';
+        this.regCheck.passwordPass = true;
+      }
+
+      this.checkAll(this.regCheck);
     }
 
-    this.checkAll(this.regCheck);
   }
 
   // 取得使用者輸入的國碼-kidin-1090504
@@ -262,6 +269,21 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
     }
 
     this.checkAll(this.regCheck);
+  }
+
+  // 確認是否填寫圖形驗證碼欄位-kidin-1090514
+  checkImgCaptcha (e) {
+    if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
+      const inputImgCaptcha = e.currentTarget.value;
+
+      if (inputImgCaptcha.length === 0) {
+        this.imgCaptcha.cue = this.translate.instant('Portal.errorCaptcha');
+      } else {
+        this.imgCaptcha.code = inputImgCaptcha;
+        this.imgCaptcha.cue = '';
+      }
+    }
+
   }
 
   // 確認是否所有欄位皆已完成-kidin-1090512
@@ -358,9 +380,16 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
         this.newToken = res.editAccount.newToken;
         this.utils.writeToken(this.newToken);  // 直接在瀏覽器幫使用者登入
 
+        if (this.appSys === 1) {
+          (window as any).webkit.messageHandlers.registerSuccess.postMessage(this.newToken);
+        } else if (this.appSys === 2) {
+          (window as any).android.registerSuccess(this.newToken);
+        }
+
         const N = '\n';
         this.dialog.open(MessageBoxComponent, {
           hasBackdrop: true,
+          disableClose: true,
           data: {
             title: 'Message',
             body: `${this.translate.instant('other.modify')} ${this.translate.instant('Dashboard.MyDevice.success')}${
@@ -373,7 +402,7 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
             cancelText: this.translate.instant(
               'SH.cancel'
             ),
-            onCancel: this.finishEdit.bind(this),
+            onCancel: this.turnBack.bind(this),
             onConfirm: this.toEnableAccount.bind(this)
           }
         });
@@ -382,18 +411,6 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
 
       this.sending = false;
     });
-
-  }
-
-  // 返回app並回傳新token-kidin-1090518
-  finishEdit () {
-    if (this.appSys === 1) {
-      (window as any).webkit.messageHandlers.webviewReturn.postMessage(this.newToken);
-    } else if (this.appSys === 2) {
-      (window as any).android.webviewReturn(this.newToken);
-    } else {
-      this.router.navigateByUrl('/signIn');
-    }
 
   }
 

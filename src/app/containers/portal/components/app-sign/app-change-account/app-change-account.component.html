@@ -9,7 +9,7 @@
       {{ 'other.modify' | translate }} {{ 'Portal.account' | translate }}
     </span>
   </div>
-  <div class="appDiv" style="min-height: initial;">
+  <div class="flexCol appDiv" style="min-height: initial;">
     <span class="app-alert" style="font-size: 20px; font-weight: bold;">{{ 'custom.changeAccount' | translate }}</span>
     <span style="font-size: 14px; font-weight: bold;">{{ accountInfo.oldAccount }}</span>
   </div>
@@ -24,6 +24,7 @@
           [(ngModel)]="editBody.oldPassword"
           style="border-bottom: none; width: 95%;"
           (focusout)="checkPassword($event)"
+          (keypress)="checkPassword($event)"
         />
         <i
           class="icon-svg_web-icon_p1_081-watch"
@@ -54,6 +55,7 @@
           style="width: 100%;"
           placeholder="{{ placeholder.email }}"
           (focusout)="checkEmail($event)"
+          (keypress)="checkEmail($event)"
           *ngIf="editBody.newAccountType === 1"
         />
       </div>
@@ -77,12 +79,13 @@
       <span class="formTitle">{{ 'Portal.imgCaptcha' | translate }}</span>
       <div class="flexRow">
         <input
-          placeholder="{{ placeholder.imgCaptcha }}"
+          placeholder="{{ imgCaptcha.placeholder }}"
           (focusout)="checkImgCaptcha($event)"
+          (keypress)="checkImgCaptcha($event)"
         />
         <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha">
       </div>
-      <span class="formCue" *ngIf="imgCaptcha.show && signupCue.imgCaptcha !== ''">
+      <span class="formCue" *ngIf="imgCaptcha.show && imgCaptcha.cue !== ''">
         {{ imgCaptcha.cue }}
       </span>
     </div>
