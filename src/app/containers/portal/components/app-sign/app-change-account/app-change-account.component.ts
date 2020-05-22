@@ -4,6 +4,7 @@ import { UtilsService } from '@shared/services/utils.service';
 import { UserInfoService } from '../../../../dashboard/services/userInfo.service';
 import { SignupService } from '../../../services/signup.service';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material';
@@ -20,6 +21,7 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
   sending = false;
   newToken = '';
   appSys = 1;  // 0:web, 1:ios, 2:android
+  ip = '';
 
   editBody: any = {
     editType: 2,
@@ -93,7 +95,8 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
     private signupService: SignupService,
     private userInfoService: UserInfoService,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    public getClientIp: GetClientIpService
   ) { }
 
   ngOnInit() {
@@ -153,7 +156,7 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
       token: this.utils.getToken() || ''
     };
 
-    this.userInfoService.fetchUserInfo(body).subscribe(res => {
+    this.userInfoService.fetchUserInfo(body, this.ip).subscribe(res => {
 
       const profile = res.userProfile;
       if (profile.email) {
@@ -324,7 +327,7 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
         unlockKey: this.imgCaptcha.code
       };
 
-      this.signupService.fetchCaptcha(releaseBody).subscribe(res => {
+      this.signupService.fetchCaptcha(releaseBody, this.ip).subscribe(res => {
         if (res.processResult.resultCode === 200) {
           this.imgCaptcha.show = false;
           this.submit();
@@ -343,7 +346,7 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
   // 傳送變更表單-kidin-1090514
   sendFormInfo () {
 
-    this.userInfoService.fetchEditAccountInfo(this.editBody).subscribe(res => {
+    this.userInfoService.fetchEditAccountInfo(this.editBody, this.ip).subscribe(res => {
       if (res.processResult.resultCode !== 200) {
 
         switch (res.processResult.apiReturnMessage) {
@@ -368,7 +371,7 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
               imgLockCode: res.processResult.imgLockCode
             };
 
-            this.signupService.fetchCaptcha(captchaBody).subscribe(captchaRes => {
+            this.signupService.fetchCaptcha(captchaBody, this.ip).subscribe(captchaRes => {
               this.imgCaptcha.show = true;
               this.imgCaptcha.imgCode = `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`;
             });

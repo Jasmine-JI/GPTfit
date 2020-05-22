@@ -194,6 +194,54 @@
         </div>
       </div>
     </section>
+    <section>
+      <div class="home-fitness-description">
+        <div class="home-header-title">
+          <h1 innerHtml="{{ 'other.fitnessSlogan' | translate }}"></h1>
+        </div>
+      </div>
+    </section>
+    <section>
+      <div class="container">
+        <div class="">
+          <div style="display: flex;align-items: center;justify-content: center">
+            <div class="message">
+              <h3 style="margin-bottom: 15px;font-weight: 700">{{ 'other.alaFitness' | translate }}</h3>
+              <p style="font-size:19px; margin-bottom: 80px; max-width: 550px;"
+                innerHtml="{{ 'other.fitnessInfo' | translate }}"
+              >
+              </p>
+              <div class="app-link-container">
+                <a target="_blank" class="app-link"
+                  href="https://apps.apple.com/us/app/alatech-fitness/id1456714279"
+                  alt="ala cloud run Apple ios app"
+                >
+                  <img class="app-icon" src="/assets/images/introduce/getApp_01_apple.png">
+                </a>
+                <a target="_blank" class="app-link"
+                  href="https://play.google.com/store/apps/details?id=pack.alatech.fitness"
+                  alt="ala cloud run android google app"
+                >
+                  <img class="app-icon" src="/assets/images/introduce/getApp_02_googleplay.png">
+                </a>
+                <a target="_blank" class="app-link"
+                  href="https://www.alatech.com.tw/upload_files/alatech/website/alafitness.apk"
+                  alt="ala cloud run apk download"
+                >
+                  <img class="app-icon" src="/assets/images/introduce/getApp_03_apk.png">
+                </a>
+              </div>
+            </div>
+            <img
+              class="coach-img"
+              style="max-width: 300px; margin: 10px;"
+              src="/assets/images/introduce/fitness_screenshot.png"
+              alt="ala coach Board web"
+            >
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
   <router-outlet></router-outlet>
 </div>

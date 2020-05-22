@@ -365,13 +365,14 @@ export class ActivityService {
         if (!isNoPaces && _point.speed === 0) {
           paces.push(3600);
         } else {
+
+          // 配合雲跑無條件捨去
           if (type === '1') {  // 1:跑步
-            paces.push((60 / +_point.speed) * 60);
+            paces.push(Math.floor((60 / +_point.speed) * 60));
           } else if (type === '4') {  // 4:游泳
-            paces.push(((60 / +_point.speed) * 60) / 10);
+            paces.push(Math.floor(((60 / +_point.speed) * 60) / 10));
           } else if (type === '6') {  // 6:划船
-            paces.push(((60 / +_point.speed) * 60) / 2);
-          } else {
+            paces.push(Math.floor(((60 / +_point.speed) * 60) / 2));
           }
         }
         if (!this.utils.isNumber(_point.cycleWatt) && !isDebug) {

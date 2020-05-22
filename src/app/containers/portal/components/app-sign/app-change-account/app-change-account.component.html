@@ -21,6 +21,7 @@
           type="password"
           id="signupPW"
           placeholder="{{ placeholder.password }}"
+          maxlength="20"
           [(ngModel)]="editBody.oldPassword"
           style="border-bottom: none; width: 95%;"
           (focusout)="checkPassword($event)"
@@ -80,6 +81,7 @@
       <div class="flexRow">
         <input
           placeholder="{{ imgCaptcha.placeholder }}"
+          maxlength="8"
           (focusout)="checkImgCaptcha($event)"
           (keypress)="checkImgCaptcha($event)"
         />

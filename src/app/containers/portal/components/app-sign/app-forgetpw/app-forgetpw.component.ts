@@ -4,6 +4,7 @@ import { UtilsService } from '@shared/services/utils.service';
 import { UserInfoService } from '../../../../dashboard/services/userInfo.service';
 import { SignupService } from '../../../services/signup.service';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material';
@@ -26,6 +27,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
   timeCount = 30;
   currentAccount = '';
   newToken = '';
+  ip = '';
 
   formValue = {
     resetPasswordFlow: 1,
@@ -101,7 +103,8 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
     private signupService: SignupService,
     private userInfoService: UserInfoService,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    public getClientIp: GetClientIpService
   ) { }
 
   ngOnInit() {
@@ -109,6 +112,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
     this.createPlaceholder();
     this.getUrlString(location.search);
     this.getDeviceSys();
+    this.getClientIpaddress();
   }
 
   // 確認ngx translate套件已經載入再產生翻譯-kidin-1090430
@@ -178,6 +182,14 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
     if (this.formValue.verificationCode.length !== 0) {
       this.submit();
     }
+
+  }
+
+  // 取得使用者ip位址-kidin-1090521
+  getClientIpaddress () {
+    this.getClientIp.requestJsonp('https://api.ipify.org', 'format=jsonp', 'callback').subscribe(res => {
+      this.ip = (res as any).ip;
+    });
 
   }
 
@@ -314,7 +326,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
       project: this.formValue.project
     };
 
-    this.userInfoService.fetchForgetpwd(body).subscribe(res => {
+    this.userInfoService.fetchForgetpwd(body, this.ip).subscribe(res => {
 
       const resultInfo = res.processResult;
       if (resultInfo.resultCode !== 200) {
@@ -328,7 +340,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
               imgLockCode: res.processResult.imgLockCode
             };
 
-            this.signupService.fetchCaptcha(captchaBody).subscribe(captchaRes => {
+            this.signupService.fetchCaptcha(captchaBody, this.ip).subscribe(captchaRes => {
               this.imgCaptcha = {
                 show: true,
                 imgCode: `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`,
@@ -448,7 +460,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
         unlockKey: this.imgCaptcha.code
       };
 
-      this.signupService.fetchCaptcha(releaseBody).subscribe(res => {
+      this.signupService.fetchCaptcha(releaseBody, this.ip).subscribe(res => {
         if (res.processResult.resultCode === 200) {
           this.imgCaptcha.show = false;
           this.submit();
@@ -483,7 +495,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
       project: this.formValue.project
     };
 
-    this.userInfoService.fetchForgetpwd(body).subscribe(res => {
+    this.userInfoService.fetchForgetpwd(body, this.ip).subscribe(res => {
 
       if (res.processResult.resultCode !== 200) {
 
@@ -518,7 +530,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
       project: this.formValue.project
     };
 
-    this.userInfoService.fetchForgetpwd(body).subscribe(res => {
+    this.userInfoService.fetchForgetpwd(body, this.ip).subscribe(res => {
 
       if (res.processResult.resultCode !== 200) {
 
@@ -556,7 +568,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
       project: this.formValue.project
     };
 
-    this.userInfoService.fetchForgetpwd(body).subscribe(res => {
+    this.userInfoService.fetchForgetpwd(body, this.ip).subscribe(res => {
 
       if (res.processResult.resultCode !== 200) {
 
@@ -608,7 +620,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
       body.mobileNumber = this.formValue.phone;
     }
 
-    this.userInfoService.fetchForgetpwd(body).subscribe(res => {
+    this.userInfoService.fetchForgetpwd(body, this.ip).subscribe(res => {
 
       let msgBody;
       if (res.processResult.resultCode !== 200) {

@@ -468,7 +468,7 @@ export class GroupInfoComponent implements OnInit {
 
 
   handleActionGroup(_type) {
-    if (_type === 1 && this.groupLevel === '60') {
+    if (_type === 1) {
       // 申請加入
       const langName = this.utils.getLocalStorageObject('locale');
       const bodyText = toMemberText[langName];
