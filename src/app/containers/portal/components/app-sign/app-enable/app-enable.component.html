@@ -20,6 +20,7 @@
         <input
           style="margin: 0px; width: 100%;"
           placeholder="{{ phonePlaceholder }}"
+          maxlength="8"
           (focusout)="checkPhoneCaptcha($event)"
           (keypress)="checkPhoneCaptcha($event)"
         />
@@ -34,6 +35,7 @@
       <div class="flexRow">
         <input
           placeholder="{{ imgCaptcha.placeholder }}"
+          maxlength="8"
           (focusout)="checkImgCaptcha($event)"
           (keypress)="checkImgCaptcha($event)"
         />

@@ -3,6 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '@shared/services/utils.service';
 import { SignupService } from '../../../services/signup.service';
 import { UserInfoService } from '../../../../dashboard/services/userInfo.service';
+import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 
 import { MatSnackBar } from '@angular/material';
 import { Router } from '@angular/router';
@@ -18,6 +19,7 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
   dataIncomplete = true;
   newToken = '';
   sending = false;
+  ip = '';
 
   displayPW = {
     oldPassword: false,
@@ -59,7 +61,8 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
     private signupService: SignupService,
     private userInfoService: UserInfoService,
     private router: Router,
-    private snackbar: MatSnackBar
+    private snackbar: MatSnackBar,
+    public getClientIp: GetClientIpService
   ) { }
 
   ngOnInit() {
@@ -68,6 +71,7 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
     this.getDeviceSys();
     this.getUrlString(location.search);
     this.getUserInfo();
+    this.getClientIpaddress();
   }
 
   // 確認ngx translate套件已經載入再產生翻譯-kidin-1090430
@@ -113,6 +117,14 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
 
   }
 
+    // 取得使用者ip位址-kidin-1090521
+    getClientIpaddress () {
+      this.getClientIp.requestJsonp('https://api.ipify.org', 'format=jsonp', 'callback').subscribe(res => {
+        this.ip = (res as any).ip;
+      });
+
+    }
+
   // 使用token取得使用者帳號資訊-kidin-1090514
   getUserInfo () {
     const body = {
@@ -120,7 +132,7 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
       token: this.utils.getToken() || ''
     };
 
-    this.userInfoService.fetchUserInfo(body).subscribe(res => {
+    this.userInfoService.fetchUserInfo(body, this.ip).subscribe(res => {
 
       const profile = res.userProfile;
       if (profile.email) {
@@ -224,7 +236,7 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
         unlockKey: this.imgCaptcha.code
       };
 
-      this.signupService.fetchCaptcha(releaseBody).subscribe(res => {
+      this.signupService.fetchCaptcha(releaseBody, this.ip).subscribe(res => {
         if (res.processResult.resultCode === 200) {
           this.imgCaptcha.show = false;
           this.submit();
@@ -243,7 +255,7 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
   // 傳送變更表單-kidin-1090514
   sendFormInfo () {
 
-    this.userInfoService.fetchEditAccountInfo(this.editBody).subscribe(res => {
+    this.userInfoService.fetchEditAccountInfo(this.editBody, this.ip).subscribe(res => {
       if (res.processResult.resultCode !== 200) {
 
         switch (res.processResult.apiReturnMessage) {
@@ -257,7 +269,7 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
               imgLockCode: res.processResult.imgLockCode
             };
 
-            this.signupService.fetchCaptcha(captchaBody).subscribe(captchaRes => {
+            this.signupService.fetchCaptcha(captchaBody, this.ip).subscribe(captchaRes => {
               this.imgCaptcha.show = true;
               this.imgCaptcha.imgCode = `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`;
             });

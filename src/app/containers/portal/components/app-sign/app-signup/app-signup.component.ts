@@ -3,6 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { SignupService } from '../../../services/signup.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material';
@@ -21,6 +22,7 @@ export class AppSignupComponent implements OnInit, OnDestroy {
   dataIncomplete = true;
   needImgCaptcha = false;
   newToken: string;
+  ip = '';
 
   // 驗證用
   regCheck = {
@@ -100,13 +102,15 @@ export class AppSignupComponent implements OnInit, OnDestroy {
     private signupService: SignupService,
     private utils: UtilsService,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    public getClientIp: GetClientIpService
   ) { }
 
   ngOnInit() {
     this.utils.setHideNavbarStatus(true);
     this.createPlaceholder();
     this.getAppId(location.search);
+    this.getClientIpaddress();
   }
 
   // 返回app-kidin-1090513
@@ -158,6 +162,14 @@ export class AppSignupComponent implements OnInit, OnDestroy {
       }
 
     }
+
+  }
+
+  // 取得使用者ip位址-kidin-1090521
+  getClientIpaddress () {
+    this.getClientIp.requestJsonp('https://api.ipify.org', 'format=jsonp', 'callback').subscribe(res => {
+      this.ip = (res as any).ip;
+    });
 
   }
 
@@ -324,7 +336,7 @@ export class AppSignupComponent implements OnInit, OnDestroy {
         unlockKey: this.signupData.imgCaptcha
       };
 
-      this.signupService.fetchCaptcha(releaseBody).subscribe(res => {
+      this.signupService.fetchCaptcha(releaseBody, this.ip).subscribe(res => {
         if (res.processResult.resultCode === 200) {
           this.imgCaptcha.show = false;
           this.submit();
@@ -357,7 +369,7 @@ export class AppSignupComponent implements OnInit, OnDestroy {
       body.mobileNumber = this.signupData.phone;
     }
 
-    this.signupService.fetchRegister(body).subscribe(res => {
+    this.signupService.fetchRegister(body, this.ip).subscribe(res => {
 
       if (res.processResult.resultCode !== 200) {
 
@@ -384,7 +396,7 @@ export class AppSignupComponent implements OnInit, OnDestroy {
               imgLockCode: res.processResult.imgLockCode
             };
 
-            this.signupService.fetchCaptcha(captchaBody).subscribe(captchaRes => {
+            this.signupService.fetchCaptcha(captchaBody, this.ip).subscribe(captchaRes => {
               this.imgCaptcha = {
                 show: true,
                 imgCode: `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`
@@ -436,6 +448,7 @@ export class AppSignupComponent implements OnInit, OnDestroy {
       this.router.navigateByUrl('/signIn');
     }
 
+    this.turnBack();
   }
 
   // 轉導至啟用帳號頁面-kidin-1090513

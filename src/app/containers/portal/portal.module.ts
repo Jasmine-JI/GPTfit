@@ -1,7 +1,7 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
 
 import { PortalRoutingModule } from './portal-routing.module';
 import { PortalComponent } from './portal.component';
@@ -61,6 +61,7 @@ import { ModifypwV2Component } from './components/web-sign/modifypw-v2/modifypw-
     CommonModule,
     PortalRoutingModule,
     HttpClientModule,
+    HttpClientJsonpModule,
     FormsModule,
     MyDatePickerModule,
     SharedComponentsModule,

@@ -11,7 +11,12 @@ import { version } from '../version';
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
-  constructor(public utils: UtilsService) {}
+
+  constructor(
+    public utils: UtilsService
+  ) {}
+
+
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     let appVersion;
     if (location.hostname.indexOf('cloud.alatech.com.tw') > -1) {
@@ -21,7 +26,9 @@ export class TokenInterceptor implements HttpInterceptor {
     } else {
       appVersion = version.develop;
     }
+
     const token = this.utils.getToken() || '';
+
     let newRequest = request.clone({
       setHeaders: {
         Accept: 'application/json',
@@ -38,6 +45,7 @@ export class TokenInterceptor implements HttpInterceptor {
         regionCode: 'TW'
       }
     });
+
     if (token) {
       newRequest = newRequest.clone({
         setHeaders: {
@@ -45,6 +53,7 @@ export class TokenInterceptor implements HttpInterceptor {
         }
       });
     }
+
     return next.handle(newRequest);
   }
 }

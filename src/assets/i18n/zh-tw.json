@@ -813,7 +813,10 @@
     "resetPassword": "重設密碼",
     "reset": "重設",
     "keyInNewPassword": "輸入新密碼",
-    "newPassword": "新密碼"
+    "newPassword": "新密碼",
+    "alaFitness": "Ala Fitness",
+    "fitnessSlogan": "全方位型的運動記錄器<br />運動型感應器的最佳夥伴",
+    "fitnessInfo": "無論是室內的標準FTMS大型健身器材，或戶外運動的感應器都難不倒它做運動紀錄，是陪伴你運動生活的最好選擇。"
   },
   "conflict": {
     "benefitime": "效益時間"
