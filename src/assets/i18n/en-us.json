@@ -813,7 +813,10 @@
     "resetPassword": "Reset the password",
     "reset": "Reset",
     "keyInNewPassword": "Enter a new password",
-    "newPassword": "Ｎew Password"
+    "newPassword": "Ｎew Password",
+    "alaFitness": "Ala Fitness",
+    "fitnessSlogan": "Full-function activity tracker<br />Your best workout companion",
+    "fitnessInfo": "No matter if you are an avid indoor fitness guru or an outdoor activist, Train Live is your lifelong training recorder!"
   },
   "conflict": {
     "benefitime": "Benefit Time"

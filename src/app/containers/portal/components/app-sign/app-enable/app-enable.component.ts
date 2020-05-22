@@ -4,6 +4,7 @@ import { UtilsService } from '@shared/services/utils.service';
 import { SignupService } from '../../../services/signup.service';
 import { UserInfoService } from '../../../../dashboard/services/userInfo.service';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
@@ -16,6 +17,7 @@ import { Router } from '@angular/router';
 export class AppEnableComponent implements OnInit, OnDestroy {
 
   sending = false;
+  ip = '';
 
   accountInfo = {
     type: 1,  // 1：信箱 2：手機
@@ -61,7 +63,8 @@ export class AppEnableComponent implements OnInit, OnDestroy {
     private signupService: SignupService,
     private userInfoService: UserInfoService,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    public getClientIp: GetClientIpService
   ) { }
 
   ngOnInit() {
@@ -70,6 +73,7 @@ export class AppEnableComponent implements OnInit, OnDestroy {
     this.getDeviceSys();
     this.getUrlString(location.search);
     this.getUserInfo();
+    this.getClientIpaddress();
   }
 
   // 確認ngx translate套件已經載入再產生翻譯-kidin-1090430
@@ -139,7 +143,7 @@ export class AppEnableComponent implements OnInit, OnDestroy {
       token: this.utils.getToken() || ''
     };
 
-    this.userInfoService.fetchUserInfo(body).subscribe(res => {
+    this.userInfoService.fetchUserInfo(body, this.ip).subscribe(res => {
 
       const profile = res.userProfile;
       if (profile.email) {
@@ -156,6 +160,14 @@ export class AppEnableComponent implements OnInit, OnDestroy {
         };
       }
 
+    });
+
+  }
+
+  // 取得使用者ip位址-kidin-1090521
+  getClientIpaddress () {
+    this.getClientIp.requestJsonp('https://api.ipify.org', 'format=jsonp', 'callback').subscribe(res => {
+      this.ip = (res as any).ip;
     });
 
   }
@@ -195,7 +207,7 @@ export class AppEnableComponent implements OnInit, OnDestroy {
       project: this.appInfo.project
     };
 
-    this.userInfoService.fetchEnableAccount(body).subscribe(res => {
+    this.userInfoService.fetchEnableAccount(body, this.ip).subscribe(res => {
 
       const resultInfo = res.processResult;
       if (
@@ -207,7 +219,7 @@ export class AppEnableComponent implements OnInit, OnDestroy {
           imgLockCode: res.processResult.imgLockCode
         };
 
-        this.signupService.fetchCaptcha(captchaBody).subscribe(captchaRes => {
+        this.signupService.fetchCaptcha(captchaBody, this.ip).subscribe(captchaRes => {
           this.imgCaptcha = {
             show: true,
             imgCode: `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`,
@@ -275,7 +287,7 @@ export class AppEnableComponent implements OnInit, OnDestroy {
         unlockKey: this.imgCaptcha.code
       };
 
-      this.signupService.fetchCaptcha(releaseBody).subscribe(res => {
+      this.signupService.fetchCaptcha(releaseBody, this.ip).subscribe(res => {
         if (res.processResult.resultCode === 200) {
           this.imgCaptcha.show = false;
           this.submit();
@@ -298,7 +310,7 @@ export class AppEnableComponent implements OnInit, OnDestroy {
         body.enableAccountFlow = 1;
       }
 
-      this.signupService.fetchEnableAccount(body).subscribe(res => {
+      this.signupService.fetchEnableAccount(body, this.ip).subscribe(res => {
 
         if (res.processResult.resultCode !== 200) {
           const msgBody = 'Server error! Please try again.';
@@ -326,7 +338,7 @@ export class AppEnableComponent implements OnInit, OnDestroy {
   emailEnable (body) {
     this.sending = true;
 
-    this.signupService.fetchEnableAccount(body).subscribe(res => {
+    this.signupService.fetchEnableAccount(body, this.ip).subscribe(res => {
 
       let msgBody;
       if (res.processResult.resultCode !== 200) {

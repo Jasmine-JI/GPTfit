@@ -59,6 +59,7 @@
           placeholder="{{ placeholder.password }}"
           [(ngModel)]="signupData.password"
           style="border-bottom: none; width: 95%;"
+          maxlength="20"
           (focusout)="checkPassword($event)"
           (keypress)="checkPassword($event)"
         />
@@ -75,6 +76,7 @@
       <span class="formTitle">{{ 'Portal.nickname' | translate }}</span>
       <input
         placeholder="{{ placeholder.nickname }}"
+        maxlength="24"
         (focusout)="checkNickname($event)"
         (keypress)="checkNickname($event)"
       />
@@ -88,6 +90,7 @@
       <div class="flexRow">
         <input
           placeholder="{{ placeholder.imgCaptcha }}"
+          maxlength="8"
           (focusout)="checkImgCaptcha($event)"
           (keypress)="checkImgCaptcha($event)"
         />

@@ -60,6 +60,7 @@
           <input
             style="margin: 0px; width: 100%;"
             placeholder="{{ placeholder.verificationCode }}"
+            maxlength="8"
             (focusout)="checkPhoneCaptcha($event)"
             (keypress)="checkPhoneCaptcha($event)"
           />
@@ -74,6 +75,7 @@
         <div class="flexRow">
           <input
             placeholder="{{ placeholder.imgCaptcha }}"
+            maxlength="8"
             (focusout)="checkImgCaptcha($event)"
             (keypress)="checkImgCaptcha($event)"
           />
@@ -102,6 +104,7 @@
           type="password"
           id="signupPW"
           placeholder="{{ placeholder.password }}"
+          maxlength="20"
           [(ngModel)]="formValue.password"
           style="border-bottom: none; width: 95%;"
           (focusout)="checkPassword($event)"
