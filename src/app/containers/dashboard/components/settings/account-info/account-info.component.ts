@@ -17,6 +17,8 @@ export class AccountInfoComponent implements OnInit {
   stravaStatus: boolean;
   clientId = '30689';
   stravaApiDomain = 'https://app.alatech.com.tw:5443';
+  enableAccount = false;
+
   constructor(
     private utils: UtilsService,
     private settingsService: SettingsService,
@@ -114,4 +116,10 @@ export class AccountInfoComponent implements OnInit {
     };
     this.handleThirdPartyAccess(body);
   }
+
+  // 轉導至編輯密碼-kidin-1090529
+  navigateToEditPwd () {
+    this.router.navigateByUrl('/editPassword-web');
+  }
+
 }

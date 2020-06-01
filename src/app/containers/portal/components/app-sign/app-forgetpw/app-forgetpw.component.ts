@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '@shared/services/utils.service';
 import { UserInfoService } from '../../../../dashboard/services/userInfo.service';
+import { AuthService } from '../../../../../shared/services/auth.service';
 import { SignupService } from '../../../services/signup.service';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
@@ -17,7 +18,7 @@ import { MatDialog } from '@angular/material';
 export class AppForgetpwComponent implements OnInit, OnDestroy {
 
   sending = false;
-  appSys = 1;
+  appSys = 0;  // 0: web, 1: ios, 2: android
   isKeyin = false;
   showSendPhoneCaptcha = false;
   sendingPhoneCaptcha = false;
@@ -28,6 +29,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
   currentAccount = '';
   newToken = '';
   ip = '';
+  pcView = false;
 
   formValue = {
     resetPasswordFlow: 1,
@@ -58,17 +60,15 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
     color: '#aaaaaa'
   };
 
+  webFontOpt = {
+    size: '16px',
+    weight: 'normal',
+    color: '#757575'
+  };
+
   position = {
     bottom: '25px',
     zIndex: 101
-  };
-
-  placeholder = {
-    account: '',
-    email: '',
-    phone: '',
-    verificationCode: '',
-    password: ''
   };
 
   cue = {
@@ -84,8 +84,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
     show: false,
     imgCode: '',
     cue: '',
-    code: '',
-    placeholder: ''
+    code: ''
   };
 
   // 驗證用
@@ -100,6 +99,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
   constructor(
     private translate: TranslateService,
     private utils: UtilsService,
+    private authService: AuthService,
     private signupService: SignupService,
     private userInfoService: UserInfoService,
     private dialog: MatDialog,
@@ -108,23 +108,18 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.utils.setHideNavbarStatus(true);
-    this.createPlaceholder();
+
+    if (location.pathname.indexOf('web') > 0) {
+      this.pcView = true;
+      this.utils.setHideNavbarStatus(false);
+    } else {
+      this.pcView = false;
+      this.utils.setHideNavbarStatus(true);
+      this.getDeviceSys();
+    }
+
     this.getUrlString(location.search);
-    this.getDeviceSys();
     this.getClientIpaddress();
-  }
-
-  // 確認ngx translate套件已經載入再產生翻譯-kidin-1090430
-  createPlaceholder () {
-
-    this.translate.get('hello.world').subscribe(() => {
-      this.placeholder.account = `${this.translate.instant('Portal.enterInfo')} ${this.translate.instant('Portal.account')}`;
-      this.placeholder.phone = `${this.translate.instant('Portal.enterInfo')} ${this.translate.instant('Portal.phoneCaptcha')}`;
-      this.placeholder.email = `${this.translate.instant('Portal.enterInfo')} ${this.translate.instant('Portal.email')}`;
-      this.placeholder.password = `${this.translate.instant('Portal.enterInfo')} ${this.translate.instant('Portal.password')}`;
-    });
-
   }
 
   // 取得裝置平台-kidin-1090518
@@ -161,6 +156,11 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
           break;
         case 'p':
           this.formValue.project = +query[i].split('=')[1];
+
+          if (+query[i].split('=')[1] === 0) {
+            this.pcView = true;
+          }
+
           break;
         case 'vc':
           this.formValue.verificationCode = query[i].split('=')[1];
@@ -200,7 +200,13 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
     } else if (this.appSys === 2) {
       (window as any).android.closeWebView();
     } else {
-      this.router.navigateByUrl('/signIn');
+
+      if (this.pcView === true) {
+        this.router.navigateByUrl('/signIn-web');
+      } else {
+        this.router.navigateByUrl('/signIn');
+      }
+
     }
 
   }
@@ -345,8 +351,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
                 show: true,
                 imgCode: `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`,
                 cue: '',
-                code: '',
-                placeholder: this.translate.instant('Portal.imgCaptcha')
+                code: ''
               };
             });
 
@@ -504,7 +509,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
             this.cue.email = this.translate.instant('SH.noRegisterData');
             break;
           default:
-            const msgBody = 'Server error! Please try again.';
+            const msgBody = 'Server error! Please try again later.';
             this.showMsgBox(msgBody);
             break;
         }
@@ -541,7 +546,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
             msgBody = this.translate.instant('custom.linkFailure');
             break;
           default:
-            msgBody = 'Server error! Please try again.';
+            msgBody = 'Server error! Please try again later.';
             break;
         }
 
@@ -577,7 +582,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
             this.cue.verificationCode = this.translate.instant('Portal.errorCaptcha');
             break;
           default:
-            const msgBody = 'Server error! Please try again.';
+            const msgBody = 'Server error! Please try again later.';
             this.showMsgBox(msgBody);
             break;
         }
@@ -624,11 +629,12 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
 
       let msgBody;
       if (res.processResult.resultCode !== 200) {
-        msgBody = 'Server error! Please try again.';
+        msgBody = 'Server error! Please try again later.';
       } else {
         msgBody = this.translate.instant('Portal.passwordResetComplete');
         this.newToken = res.resetPassword.newToken;
         this.utils.writeToken(this.newToken);  // 直接在瀏覽器幫使用者登入
+        this.authService.setLoginStatus(true);
         this.sendTokenToApp(this.newToken);
       }
 

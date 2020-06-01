@@ -8,7 +8,8 @@
   >
     {{ currentSelect?.i18n }}
     <span
-      style="margin-left: 10px; color: #239fd9; font-size: 16px;"
+      style="margin-left: 10px; font-size: 16px;"
+      [style.color]="triangleColor ? triangleColor : 'black'"
     >▼</span>
   </span>
   <div

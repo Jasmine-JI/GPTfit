@@ -49,12 +49,9 @@ import { AppEnableComponent } from './components/app-sign/app-enable/app-enable.
 import { AppForgetpwComponent } from './components/app-sign/app-forgetpw/app-forgetpw.component';
 import { AppModifypwComponent } from './components/app-sign/app-modifypw/app-modifypw.component';
 import { AppChangeAccountComponent } from './components/app-sign/app-change-account/app-change-account.component';
-import { SignupV2Component } from './components/web-sign/signup-v2/signup-v2.component';
-import { SigninV2Component } from './components/web-sign/signin-v2/signin-v2.component';
-import { EnableAccountComponent } from './components/web-sign/enable-account/enable-account.component';
-import { ChangeAccountComponent } from './components/web-sign/change-account/change-account.component';
-import { ForgetpwV2Component } from './components/web-sign/forgetpw-v2/forgetpw-v2.component';
-import { ModifypwV2Component } from './components/web-sign/modifypw-v2/modifypw-v2.component';
+import { AppQrcodeLoginComponent } from './components/app-sign/app-qrcode-login/app-qrcode-login.component';
+import { AppFirstLoginComponent } from './components/app-sign/app-first-login/app-first-login.component';
+import { QRCodeModule } from 'angularx-qrcode';
 
 @NgModule({
   imports: [
@@ -69,7 +66,8 @@ import { ModifypwV2Component } from './components/web-sign/modifypw-v2/modifypw-
     NgProgressModule,
     ReactiveFormsModule,
     SharedModule,
-    CustomMaterialModule
+    CustomMaterialModule,
+    QRCodeModule
   ],
   providers: [
     MapGPXService,
@@ -111,17 +109,13 @@ import { ModifypwV2Component } from './components/web-sign/modifypw-v2/modifypw-
     BasicInfoComponent,
     ApplicationComponent,
     AppSignupComponent,
-    SignupV2Component,
     AppSigninComponent,
-    SigninV2Component,
-    EnableAccountComponent,
     AppEnableComponent,
     AppChangeAccountComponent,
     AppForgetpwComponent,
     AppModifypwComponent,
-    ChangeAccountComponent,
-    ForgetpwV2Component,
-    ModifypwV2Component
+    AppQrcodeLoginComponent,
+    AppFirstLoginComponent
   ],
   entryComponents: [MessageBoxComponent]
 })

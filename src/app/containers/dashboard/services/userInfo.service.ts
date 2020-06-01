@@ -91,14 +91,8 @@ export class UserInfoService {
     return this.http.post<any>('/api/v2/user/editAccount', body, httpOptions);
   }
 
-  fetchUserInfo (body, ip) {  // v2 1010
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'remoteAddr': `${ip}`,
-      })
-    };
-
-    return this.http.post<any>('/api/v2/user/getUserProfile', body, httpOptions);
+  fetchUserInfo (body) {  // v2 1010
+    return this.http.post<any>('/api/v2/user/getUserProfile', body);
   }
 
   getUserIcon(): Observable<string> {

@@ -20,8 +20,8 @@
 <mat-form-field style="max-width: 100px;">
   <mat-select [(value)]="brandType" placeholder="{{ 'Dashboard.ProductInfo.type' | translate }}" (selectionChange)="getLists()">
     <mat-option value="3">{{ "SH.all" | translate}}</mat-option>
-    <mat-option value="1">{{ "other.gym" | translate}}</mat-option>
-    <mat-option value="2">{{ "other.com" | translate}}</mat-option>
+    <mat-option value="1">{{ "other.gymBrand" | translate}}</mat-option>
+    <mat-option value="2">{{ "custom.ComGroup" | translate}}</mat-option>
   </mat-select>
 </mat-form-field>
 <mat-table [dataSource]="logSource"

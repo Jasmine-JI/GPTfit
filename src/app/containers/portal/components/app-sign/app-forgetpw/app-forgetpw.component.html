@@ -1,139 +1,288 @@
-<div class="flexCol">
-  <div class="flexRow appHeader" style="justify-content: space-between;">
-    <i
-      class="icon-svg_web-icon_p1_073-level_fold"
-      style="font-size: 30px; cursor: pointer;"
-      (click)="turnBack()"
-    ></i>
-    <span class="appview-header appview-header-position">
-      {{ 'other.resetPassword' | translate }}
-    </span>
-  </div>
-  <div *ngIf="formValue.resetPasswordFlow <= 2">
-    <div class="flexCol appDiv" *ngIf="!isKeyin">
-      <span class="formTitle">{{ 'Portal.account' | translate }}</span>
-      <input
-        placeholder="{{ placeholder.account }}"
-        (focusout)="determineAccountType($event)"
-      />
-      <span class="formCue" *ngIf="cue.account !== ''">{{ cue.account }}</span>
+<ng-container *ngIf="!pcView">
+  <div class="flexCol">
+    <div class="flexRow appHeader" style="justify-content: space-between;">
+      <i
+        class="icon-svg_web-icon_p1_073-level_fold"
+        style="font-size: 30px; cursor: pointer;"
+        (click)="turnBack()"
+      ></i>
+      <span class="appview-header appview-header-position">
+        {{ 'other.resetPassword' | translate }}
+      </span>
     </div>
-    <div class="flexCol" style="margin-top: 10px;">
-      <div class="flexCol appDiv" *ngIf="isKeyin">
-        <app-custom-select
-          [selectLists]="selectLists"
-          [fontOpt]="fontOpt"
-          [position]="position"
-          [currentSelectId]="formValue.type - 1"
-          (selectItem)="getAccountType($event)"
+    <div *ngIf="formValue.resetPasswordFlow <= 2">
+      <div class="flexCol appDiv" *ngIf="!isKeyin">
+        <span class="formTitle">{{ 'Portal.account' | translate }}</span>
+        <input
+          placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Portal.account' | translate }}"
+          (focusout)="determineAccountType($event)"
+        />
+        <span class="formCue" *ngIf="cue.account !== ''">{{ cue.account }}</span>
+      </div>
+      <div class="flexCol" style="margin-top: 10px;">
+        <div class="flexCol appDiv" *ngIf="isKeyin">
+          <app-custom-select
+            [selectLists]="selectLists"
+            [fontOpt]="fontOpt"
+            [position]="position"
+            [triangleColor]="'#239fd9'"
+            [currentSelectId]="formValue.type - 1"
+            (selectItem)="getAccountType($event)"
+          >
+          </app-custom-select>
+          <div>
+            <input
+              style="width: 100%;"
+              placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Portal.email' | translate }}"
+              [(value)]="currentAccount"
+              (focusout)="checkEmail($event)"
+              (keypress)="checkEmail($event)"
+              *ngIf="formValue.type === 1"
+            />
+            <span class="formCue" *ngIf="formValue.type === 1 && cue.email !== ''">{{ cue.email }}</span>
+          </div>
+          <div class="flexRow" *ngIf="formValue.type === 2">
+            <app-intl-phone-input
+              (onChange)="onCodeChange($event)"
+              (focusoutPhoneInt)="getPhoneNum($event)"
+              [currentValue]="currentAccount"
+              [currentCountryCode]="formValue.countryCode"
+              [uiVersion]="'v2'"
+              [regPhone]="regCheck.phone"
+              [phoneCue]="cue.phone"
+              style="width: 100%;"
+            ></app-intl-phone-input>
+          </div>
+          <span class="formCue" *ngIf="formValue.type === 2 && cue.phone !== ''">{{ cue.phone }}</span>
+        </div>
+        <div class="flexCol appDiv" *ngIf="formValue.type === 2 && !phoneFormIncomplete">
+          <span class="formTitle">{{ 'Portal.phoneCaptcha' | translate }}</span>
+          <div>
+            <input
+              style="margin: 0px; width: 100%;"
+              placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Portal.phoneCaptcha' | translate }}"
+              maxlength="8"
+              (focusout)="checkPhoneCaptcha($event)"
+              (keypress)="checkPhoneCaptcha($event)"
+            />
+            <span class="formCue" *ngIf="cue.verificationCode !== ''">{{ cue.verificationCode }}</span>
+          </div>
+        </div>
+        <div
+          class="flexCol appDiv"
+          [style.display]="imgCaptcha.show ? '' : 'none'"
         >
-        </app-custom-select>
-        <div>
-          <input
-            style="width: 100%;"
-            placeholder="{{ placeholder.email }}"
-            [(value)]="currentAccount"
-            (focusout)="checkEmail($event)"
-            (keypress)="checkEmail($event)"
-            *ngIf="formValue.type === 1"
-          />
-          <span class="formCue" *ngIf="formValue.type === 1 && cue.email !== ''">{{ cue.email }}</span>
-        </div>
-        <div class="flexRow" *ngIf="formValue.type === 2">
-          <app-intl-phone-input
-            (onChange)="onCodeChange($event)"
-            (focusoutPhoneInt)="getPhoneNum($event)"
-            [currentValue]="currentAccount"
-            [currentCountryCode]="formValue.countryCode"
-            [uiVersion]="'v2'"
-            [regPhone]="regCheck.phone"
-            [phoneCue]="cue.phone"
-            [placeholder]="placeholder.phone"
-            style="width: 100%;"
-          ></app-intl-phone-input>
-        </div>
-        <span class="formCue" *ngIf="formValue.type === 2 && cue.phone !== ''">{{ cue.phone }}</span>
-      </div>
-      <div class="flexCol appDiv" *ngIf="formValue.type === 2 && !phoneFormIncomplete">
-        <span class="formTitle">{{ 'Portal.phoneCaptcha' | translate }}</span>
-        <div>
-          <input
-            style="margin: 0px; width: 100%;"
-            placeholder="{{ placeholder.verificationCode }}"
-            maxlength="8"
-            (focusout)="checkPhoneCaptcha($event)"
-            (keypress)="checkPhoneCaptcha($event)"
-          />
-          <span class="formCue" *ngIf="cue.verificationCode !== ''">{{ cue.verificationCode }}</span>
+          <span class="formTitle">{{ 'Portal.imgCaptcha' | translate }}</span>
+          <div class="flexRow">
+            <input
+              placeholder="{{ 'Portal.imgCaptcha' | translate }}"
+              maxlength="8"
+              (focusout)="checkImgCaptcha($event)"
+              (keypress)="checkImgCaptcha($event)"
+            />
+            <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha">
+          </div>
+          <span class="formCue" *ngIf="imgCaptcha.show && signupCue.imgCaptcha !== ''">
+            {{ signupCue.imgCaptcha }}
+          </span>
         </div>
       </div>
-      <div
-        class="flexCol appDiv"
-        [style.display]="imgCaptcha.show ? '' : 'none'"
-      >
-        <span class="formTitle">{{ 'Portal.imgCaptcha' | translate }}</span>
-        <div class="flexRow">
-          <input
-            placeholder="{{ placeholder.imgCaptcha }}"
-            maxlength="8"
-            (focusout)="checkImgCaptcha($event)"
-            (keypress)="checkImgCaptcha($event)"
-          />
-          <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha">
-        </div>
-        <span class="formCue" *ngIf="imgCaptcha.show && signupCue.imgCaptcha !== ''">
-          {{ signupCue.imgCaptcha }}
+    </div>
+    <div *ngIf="formValue.resetPasswordFlow === 3">
+      <div class="flexCol appDiv" style="min-height: initial;">
+        <span class="app-alert" style="font-size: 20px; font-weight: bold;">{{ 'custom.changePassword' | translate }}</span>
+        <span style="font-size: 14px; font-weight: bold;" *ngIf="formValue.type === 1">
+          {{ formValue.email }}
+        </span>
+        <span style="font-size: 14px; font-weight: bold;" *ngIf="formValue.type === 2">
+          +{{ formValue.countryCode }} {{ formValue.phone }}
         </span>
       </div>
-    </div>
-  </div>
-  <div *ngIf="formValue.resetPasswordFlow === 3">
-    <div class="flexCol appDiv" style="min-height: initial;">
-      <span class="app-alert" style="font-size: 20px; font-weight: bold;">{{ 'custom.changePassword' | translate }}</span>
-      <span style="font-size: 14px; font-weight: bold;" *ngIf="formValue.type === 1">
-        {{ formValue.email }}
-      </span>
-      <span style="font-size: 14px; font-weight: bold;" *ngIf="formValue.type === 2">
-        +{{ formValue.countryCode }} {{ formValue.phone }}
-      </span>
-    </div>
-    <div class="flexCol appDiv">
-      <span class="formTitle">{{ 'Portal.password' | translate }}</span>
-      <span style="border-bottom: 1px solid #d4d4d4; white-space: nowrap;">
+      <div class="flexCol appDiv">
+        <span class="formTitle">{{ 'Portal.password' | translate }}</span>
         <input
           type="password"
           id="signupPW"
-          placeholder="{{ placeholder.password }}"
+          placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Portal.password' | translate }}"
           maxlength="20"
           [(ngModel)]="formValue.password"
-          style="border-bottom: none; width: 95%;"
           (focusout)="checkPassword($event)"
           (keypress)="checkPassword($event)"
         />
         <i
-          class="icon-svg_web-icon_p1_081-watch"
-          style="font-size: 24px; cursor: pointer;"
+          class="icon-svg_web-icon_p1_081-watch inputIcon"
           [style.color]="displayPW ? 'black' : '#aaaaaa'"
           (click)="toggleDisplayPW()"
         ></i>
-      </span>
-      <span class="formCue" *ngIf="cue.password !== ''">{{ cue.password }}</span>
+        <span class="formCue" *ngIf="cue.password !== ''">{{ cue.password }}</span>
+      </div>
+    </div>
+    <button
+      class="appview-btn"
+      [class.appview-btn-unclickable]="sendingPhoneCaptcha"
+      *ngIf="formValue.type === 2 && formValue.resetPasswordFlow !== 3 && !phoneFormIncomplete"
+      (click)="reciprocal()"
+    >
+      <span>{{ 'SH.send' | translate }}({{ timeCount }}s)</span>
+    </button>
+    <button
+      class="appview-btn"
+      [class.appview-btn-unclickable]="sending || dataIncomplete"
+      (click)="submit()"
+    >
+      <span *ngIf="formValue.type === 1">{{ 'SH.send' | translate }}</span>
+      <span *ngIf="formValue.type === 2">{{ 'other.reset' | translate }}</span>
+    </button>
+  </div>
+</ng-container>
+<ng-container *ngIf="pcView">
+  <div class="access-bg">
+    <div class="container signup" style="padding-top:63px">
+      <div class="d-flex" style="flex-direction: column;align-items: center;">
+        <div class="access-panel" style="margin-top: 30px;">
+          <header class="access-header">
+            <img src="assets/attacus_logo.png" style="width: 36%">
+          </header>
+          <div class="access-panel-body">
+            <div *ngIf="formValue.resetPasswordFlow <= 2">
+              <div class="flexCol webDiv" *ngIf="!isKeyin">
+                <span class="access-text" style="margin-bottom: 10px;">{{ 'Portal.account' | translate }}</span>
+                <input
+                  placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Portal.account' | translate }}"
+                  class="form-control"
+                  (focusout)="determineAccountType($event)"
+                />
+                <span class="form__message form__message--placeholder" *ngIf="cue.account !== ''">{{ cue.account }}</span>
+              </div>
+              <div class="flexCol" style="margin-top: 10px;">
+                <div class="flexCol webDiv" *ngIf="isKeyin">
+                  <app-custom-select
+                    [selectLists]="selectLists"
+                    [fontOpt]="webFontOpt"
+                    [position]="position"
+                    [triangleColor]="'#239fd9'"
+                    [currentSelectId]="formValue.type - 1"
+                    (selectItem)="getAccountType($event)"
+                  >
+                  </app-custom-select>
+                  <div>
+                    <input
+                      style="width: 100%;"
+                      class="form-control"
+                      placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Portal.email' | translate }}"
+                      [(value)]="currentAccount"
+                      (focusout)="checkEmail($event)"
+                      (keypress)="checkEmail($event)"
+                      *ngIf="formValue.type === 1"
+                    />
+                    <span class="form__message form__message--placeholder" *ngIf="formValue.type === 1 && cue.email !== ''">{{ cue.email }}</span>
+                  </div>
+                  <div class="flexRow" *ngIf="formValue.type === 2">
+                    <app-intl-phone-input
+                      (onChange)="onCodeChange($event)"
+                      (focusoutPhoneInt)="getPhoneNum($event)"
+                      [currentValue]="currentAccount"
+                      [currentCountryCode]="formValue.countryCode"
+                      [uiVersion]="'v2'"
+                      [webUi]="true"
+                      [regPhone]="regCheck.phone"
+                      [phoneCue]="cue.phone"
+                      style="width: 100%;"
+                    ></app-intl-phone-input>
+                  </div>
+                  <span class="form__message form__message--placeholder" *ngIf="formValue.type === 2 && cue.phone !== ''">{{ cue.phone }}</span>
+                </div>
+                <div class="flexCol webDiv" *ngIf="formValue.type === 2 && !phoneFormIncomplete">
+                  <span class="access-text" style="margin-bottom: 10px;">{{ 'Portal.phoneCaptcha' | translate }}</span>
+                  <div>
+                    <input
+                      style="margin: 0px; width: 100%;"
+                      class="form-control"
+                      placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Portal.phoneCaptcha' | translate }}"
+                      maxlength="8"
+                      (focusout)="checkPhoneCaptcha($event)"
+                      (keypress)="checkPhoneCaptcha($event)"
+                    />
+                    <span class="form__message form__message--placeholder" *ngIf="cue.verificationCode !== ''">{{ cue.verificationCode }}</span>
+                  </div>
+                </div>
+                <div
+                  class="flexCol webDiv"
+                  [style.display]="imgCaptcha.show ? '' : 'none'"
+                >
+                  <span class="access-text" style="margin-bottom: 10px;">{{ 'Portal.imgCaptcha' | translate }}</span>
+                  <div class="flexRow">
+                    <input
+                      placeholder="{{ 'Portal.imgCaptcha' | translate }}"
+                      class="form-control"
+                      maxlength="8"
+                      (focusout)="checkImgCaptcha($event)"
+                      (keypress)="checkImgCaptcha($event)"
+                    />
+                    <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha">
+                  </div>
+                  <span class="form__message form__message--placeholder" *ngIf="imgCaptcha.show && signupCue.imgCaptcha !== ''">
+                    {{ signupCue.imgCaptcha }}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="formValue.resetPasswordFlow === 3">
+              <div class="flexCol webDiv" style="min-height: initial;">
+                <span class="app-alert" style="font-size: 20px; font-weight: bold;">{{ 'custom.changePassword' | translate }}</span>
+                <span style="font-size: 14px; font-weight: bold;" *ngIf="formValue.type === 1">
+                  {{ formValue.email }}
+                </span>
+                <span style="font-size: 14px; font-weight: bold;" *ngIf="formValue.type === 2">
+                  +{{ formValue.countryCode }} {{ formValue.phone }}
+                </span>
+              </div>
+              <div class="flexCol webDiv">
+                <span class="access-text" style="margin-bottom: 10px;">{{ 'Portal.password' | translate }}</span>
+                <input
+                  type="password"
+                  id="signupPW"
+                  placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Portal.password' | translate }}"
+                  class="form-control"
+                  maxlength="20"
+                  [(ngModel)]="formValue.password"
+                  (focusout)="checkPassword($event)"
+                  (keypress)="checkPassword($event)"
+                />
+                <i
+                  class="icon-svg_web-icon_p1_081-watch inputIcon"
+                  style="top: -30px; left: 90%;"
+                  [style.color]="displayPW ? 'black' : '#aaaaaa'"
+                  (click)="toggleDisplayPW()"
+                ></i>
+                <span class="form__message form__message--placeholder" *ngIf="cue.password !== ''">{{ cue.password }}</span>
+              </div>
+            </div>
+            <button
+              class="btn btn-primary access-btn"
+              [class.appview-btn-unclickable]="sendingPhoneCaptcha"
+              [style.background]="sending || sendingPhoneCaptcha ? '#2b819b54' : ''"
+              *ngIf="formValue.type === 2 && formValue.resetPasswordFlow !== 3 && !phoneFormIncomplete"
+              (click)="reciprocal()"
+            >
+              <span>{{ 'SH.send' | translate }}({{ timeCount }}s)</span>
+            </button>
+            <div style="display: flex;justify-content: space-between; align-items: center; margin-top: 20px;">
+              <a class="access-text" style="cursor:pointer" [routerLink]="['/signIn-web']"><{{'Dashboard.ProductInfo.back' | translate}}</a>
+              <button
+                class="btn btn-primary access-btn"
+                [class.appview-btn-unclickable]="sending || dataIncomplete"
+                [style.background]="sending || dataIncomplete ? '#2b819b54' : ''"
+                (click)="submit()"
+              >
+                <span *ngIf="formValue.type === 1">{{ 'SH.send' | translate }}</span>
+                <span *ngIf="formValue.type === 2">{{ 'other.reset' | translate }}</span>
+                <i *ngIf="sending" class="fa fa-spinner fa-pulse"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  <button
-    class="appview-btn"
-    [class.appview-btn-unclickable]="sendingPhoneCaptcha"
-    *ngIf="formValue.type === 2 && formValue.resetPasswordFlow !== 3 && !phoneFormIncomplete"
-    (click)="reciprocal()"
-  >
-    <span>{{ 'SH.send' | translate }}({{ timeCount }}s)</span>
-  </button>
-  <button
-    class="appview-btn"
-    [class.appview-btn-unclickable]="sending || dataIncomplete"
-    (click)="submit()"
-  >
-    <span *ngIf="formValue.type === 1">{{ 'SH.send' | translate }}</span>
-    <span *ngIf="formValue.type === 2">{{ 'other.reset' | translate }}</span>
-  </button>
-</div>
+</ng-container>

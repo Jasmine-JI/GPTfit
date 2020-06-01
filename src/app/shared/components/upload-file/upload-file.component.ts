@@ -19,13 +19,14 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-upload-file',
   templateUrl: './upload-file.component.html',
-  styleUrls: ['./upload-file.component.css']
+  styleUrls: ['./upload-file.component.scss']
 })
 export class UploadFileComponent implements OnInit, OnChanges, OnDestroy {
   @Input() isUserAvastarMode: false;
   @Input() accept: string;
   @Input() isImageFileMode = false;
   @Input() imageURL: string;
+
   fileInformation: any;
   isImgVertical$ = new BehaviorSubject<boolean>(false);
   isUploadNewImg$ = new BehaviorSubject<boolean>(false);

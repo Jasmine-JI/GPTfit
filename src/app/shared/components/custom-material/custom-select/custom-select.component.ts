@@ -13,10 +13,12 @@ export class CustomSelectComponent implements OnInit, OnChanges {
   @Input() position: any;
   @Input() fontOpt: any;
   @Input() currentSelectId: number;
+  @Input() triangleColor: string;
 
   @Output() selectItem = new EventEmitter;
 
   showOptions = false;
+  checkClickEvent = false;
   currentSelect = {
     id: 0,
     i18n: 'Choose'
@@ -24,7 +26,9 @@ export class CustomSelectComponent implements OnInit, OnChanges {
 
   constructor(
     public translate: TranslateService,
-  ) { }
+  ) {
+    document.addEventListener('click', this.closeMenu.bind(this));
+  }
 
   ngOnInit() {
   }
@@ -56,11 +60,17 @@ export class CustomSelectComponent implements OnInit, OnChanges {
   // 打開選單
   openMenu () {
     this.showOptions = true;
+    this.checkClickEvent = true;
   }
 
   // 關閉選單
   closeMenu () {
-    this.showOptions = false;
+    if (this.checkClickEvent) {
+      this.checkClickEvent = false;
+    } else {
+      this.showOptions = false;
+    }
+
   }
 
   // 點選項目後回傳父組件-kidin-1090506

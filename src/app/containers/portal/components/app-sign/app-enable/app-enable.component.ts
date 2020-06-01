@@ -5,6 +5,7 @@ import { SignupService } from '../../../services/signup.service';
 import { UserInfoService } from '../../../../dashboard/services/userInfo.service';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
+import { AuthService } from '@shared/services/auth.service';
 
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
@@ -18,6 +19,7 @@ export class AppEnableComponent implements OnInit, OnDestroy {
 
   sending = false;
   ip = '';
+  pcView = false;
 
   accountInfo = {
     type: 1,  // 1：信箱 2：手機
@@ -49,11 +51,9 @@ export class AppEnableComponent implements OnInit, OnDestroy {
     show: false,
     imgCode: '',
     cue: '',
-    code: '',
-    placeholder: ''
+    code: ''
   };
 
-  phonePlaceholder: string;
   timeCount = 30;
   sendingPhoneCaptcha = false;
 
@@ -61,6 +61,7 @@ export class AppEnableComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private utils: UtilsService,
     private signupService: SignupService,
+    private authService: AuthService,
     private userInfoService: UserInfoService,
     private dialog: MatDialog,
     private router: Router,
@@ -68,19 +69,33 @@ export class AppEnableComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.utils.setHideNavbarStatus(true);
+    if (location.pathname.indexOf('web') > 0) {
+      this.pcView = true;
+      this.utils.setHideNavbarStatus(false);
+    } else {
+      this.pcView = false;
+      this.utils.setHideNavbarStatus(true);
+      this.getDeviceSys();
+    }
+
     this.createPlaceholder();
-    this.getDeviceSys();
     this.getUrlString(location.search);
     this.getUserInfo();
     this.getClientIpaddress();
+
+    // 在首次登入頁面按下登出時，跳轉回登入頁-kidin-1090109(bug575)
+    this.authService.getLoginStatus().subscribe(res => {
+      if (res === false && this.pcView === true) {
+        return this.router.navigateByUrl('/signIn-web');
+      }
+    });
+
   }
 
   // 確認ngx translate套件已經載入再產生翻譯-kidin-1090430
   createPlaceholder () {
 
     this.translate.get('hello.world').subscribe(() => {
-      this.phonePlaceholder = `${this.translate.instant('Portal.enterInfo')} ${this.translate.instant('Portal.phoneCaptcha')}`;
       this.phoneCaptcha.cue = this.translate.instant('other.smsVerificationInstructions');
     });
 
@@ -112,6 +127,11 @@ export class AppEnableComponent implements OnInit, OnDestroy {
         case 'p':
           this.appInfo.project = +query[i].split('=')[1];
           this.emailLinkString.project = +query[i].split('=')[1];
+
+          if (+query[i].split('=')[1] === 0) {
+            this.pcView = true;
+          }
+
           break;
         case 'eaf':
           this.emailLinkString.enableAccountFlow = +query[i].split('=')[1];
@@ -139,11 +159,10 @@ export class AppEnableComponent implements OnInit, OnDestroy {
   // 使用token取得使用者帳號資訊-kidin-1090514
   getUserInfo () {
     const body = {
-      signInType: 3,
       token: this.utils.getToken() || ''
     };
 
-    this.userInfoService.fetchUserInfo(body, this.ip).subscribe(res => {
+    this.userInfoService.fetchUserInfo(body).subscribe(res => {
 
       const profile = res.userProfile;
       if (profile.email) {
@@ -179,7 +198,13 @@ export class AppEnableComponent implements OnInit, OnDestroy {
     } else if (this.appInfo.sys === 2) {
       (window as any).android.closeWebView();
     } else {
-      this.router.navigateByUrl('/signIn');
+
+      if (this.pcView === true) {
+        this.router.navigateByUrl('/signIn-web');
+      } else {
+        this.router.navigateByUrl('/signIn');
+      }
+
     }
 
   }
@@ -224,8 +249,7 @@ export class AppEnableComponent implements OnInit, OnDestroy {
             show: true,
             imgCode: `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`,
             cue: '',
-            code: '',
-            placeholder: this.translate.instant('Portal.imgCaptcha')
+            code: ''
           };
         });
 
@@ -313,7 +337,7 @@ export class AppEnableComponent implements OnInit, OnDestroy {
       this.signupService.fetchEnableAccount(body, this.ip).subscribe(res => {
 
         if (res.processResult.resultCode !== 200) {
-          const msgBody = 'Server error! Please try again.';
+          const msgBody = 'Server error! Please try again later.';
           this.showMsgBox(msgBody);
         } else {
 
@@ -348,7 +372,7 @@ export class AppEnableComponent implements OnInit, OnDestroy {
             msgBody = `${this.translate.instant('other.switch')} ${this.translate.instant('Dashboard.MyDevice.success')}`;
             break;
           default:
-            msgBody = 'Server error! Please try again.';
+            msgBody = 'Server error! Please try again later.';
             break;
         }
 
