@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { AuthService } from '../../../../../shared/services/auth.service';
 import { SignupService } from '../../../services/signup.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
@@ -23,6 +24,7 @@ export class AppSignupComponent implements OnInit, OnDestroy {
   needImgCaptcha = false;
   newToken: string;
   ip = '';
+  pcView = false;
 
   // 驗證用
   regCheck = {
@@ -55,18 +57,15 @@ export class AppSignupComponent implements OnInit, OnDestroy {
     color: '#aaaaaa'
   };
 
+  webFontOpt = {
+    size: '16px',
+    weight: 'normal',
+    color: '#757575'
+  };
+
   position = {
     bottom: '25px',
     zIndex: 101
-  };
-
-  placeholder: any = {
-    email: '',
-    countryCode: '',
-    phone: '',
-    password: '',
-    nickname: '',
-    imgCaptcha: ''
   };
 
   // 儲存表單內容
@@ -103,13 +102,20 @@ export class AppSignupComponent implements OnInit, OnDestroy {
     private utils: UtilsService,
     private dialog: MatDialog,
     private router: Router,
-    public getClientIp: GetClientIpService
+    public getClientIp: GetClientIpService,
+    private authService: AuthService
   ) { }
 
   ngOnInit() {
-    this.utils.setHideNavbarStatus(true);
-    this.createPlaceholder();
-    this.getAppId(location.search);
+    if (location.pathname.indexOf('web') > 0) {
+      this.pcView = true;
+      this.utils.setHideNavbarStatus(false);
+    } else {
+      this.pcView = false;
+      this.utils.setHideNavbarStatus(true);
+      this.getAppId(location.search);
+    }
+
     this.getClientIpaddress();
   }
 
@@ -120,23 +126,15 @@ export class AppSignupComponent implements OnInit, OnDestroy {
     } else if (this.appSys === 2) {
       (window as any).android.closeWebView();
     } else {
-      this.router.navigateByUrl('/signIn');
+
+      if (this.pcView) {
+        this.router.navigateByUrl('/signIn-web');
+      } else {
+        this.router.navigateByUrl('/signIn');
+      }
+
+
     }
-
-  }
-
-  // 確認ngx translate套件已經載入再產生翻譯-kidin-1090430
-  createPlaceholder () {
-      this.translate.get('hello.world').subscribe(() => {
-
-        this.placeholder = {
-          email: `${this.translate.instant('Portal.enterInfo')} ${this.translate.instant('Portal.email')}`,
-          phone: `${this.translate.instant('Portal.enterInfo')} ${this.translate.instant('Portal.phone')}`,
-          password: `${this.translate.instant('Portal.enterInfo')} ${this.translate.instant('Portal.password')}`,
-          nickname: `${this.translate.instant('Portal.enterInfo')} ${this.translate.instant('Portal.nickname')}`,
-          imgCaptcha: `${this.translate.instant('Portal.imgCaptcha')}`
-        };
-      });
 
   }
 
@@ -409,6 +407,7 @@ export class AppSignupComponent implements OnInit, OnDestroy {
       } else {
         this.newToken = res.register.token;
         this.utils.writeToken(this.newToken);  // 直接在瀏覽器幫使用者登入
+        this.authService.setLoginStatus(true);
 
         const N = '\n';
         this.dialog.open(MessageBoxComponent, {
@@ -445,7 +444,13 @@ export class AppSignupComponent implements OnInit, OnDestroy {
     } else if (this.appSys === 2) {
       (window as any).android.registerSuccess(this.newToken);
     } else {
-      this.router.navigateByUrl('/signIn');
+
+      if (this.pcView) {
+        this.router.navigateByUrl('/signIn-web');
+      } else {
+        this.router.navigateByUrl('/signIn');
+      }
+
     }
 
     this.turnBack();
@@ -454,7 +459,13 @@ export class AppSignupComponent implements OnInit, OnDestroy {
   // 轉導至啟用帳號頁面-kidin-1090513
   toEnableAccount () {
     this.utils.setHideNavbarStatus(false);
-    this.router.navigateByUrl(`/enableAccount`);
+
+    if (this.pcView === true) {
+      this.router.navigateByUrl(`/enableAccount-web`);
+    } else {
+      this.router.navigateByUrl(`/enableAccount`);
+    }
+
   }
 
   // 離開頁面則取消隱藏navbar-kidin-1090514

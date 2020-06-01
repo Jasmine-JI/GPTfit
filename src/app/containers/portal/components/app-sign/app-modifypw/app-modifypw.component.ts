@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { AuthService } from '../../../../../shared/services/auth.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { SignupService } from '../../../services/signup.service';
 import { UserInfoService } from '../../../../dashboard/services/userInfo.service';
@@ -15,11 +16,12 @@ import { Router } from '@angular/router';
 })
 export class AppModifypwComponent implements OnInit, OnDestroy {
 
-  appSys = 1; // 0: web 1: ios 2: android
+  appSys = 0; // 0: web 1: ios 2: android
   dataIncomplete = true;
   newToken = '';
   sending = false;
   ip = '';
+  pcView = false;
 
   displayPW = {
     oldPassword: false,
@@ -31,12 +33,6 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
     token: '',
     oldPassword: '',
     newAccountType: 0,
-    newPassword: ''
-  };
-
-  // 欄位提示
-  placeholder = {
-    oldPassword: '',
     newPassword: ''
   };
 
@@ -58,28 +54,34 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
   constructor(
     private translate: TranslateService,
     private utils: UtilsService,
+    private authService: AuthService,
     private signupService: SignupService,
     private userInfoService: UserInfoService,
     private router: Router,
     private snackbar: MatSnackBar,
-    public getClientIp: GetClientIpService
+    private getClientIp: GetClientIpService
   ) { }
 
   ngOnInit() {
-    this.utils.setHideNavbarStatus(true);
-    this.createPlaceholder();
-    this.getDeviceSys();
+
+    if (location.pathname.indexOf('web') > 0) {
+      this.pcView = true;
+      this.utils.setHideNavbarStatus(false);
+    } else {
+      this.pcView = false;
+      this.utils.setHideNavbarStatus(true);
+      this.getDeviceSys();
+    }
+
     this.getUrlString(location.search);
     this.getUserInfo();
     this.getClientIpaddress();
-  }
 
-  // 確認ngx translate套件已經載入再產生翻譯-kidin-1090430
-  createPlaceholder () {
-
-    this.translate.get('hello.world').subscribe(() => {
-      this.placeholder.oldPassword = this.translate.instant('Portal.keyInPassword');
-      this.placeholder.newPassword = this.translate.instant('other.keyInNewPassword');
+    // 在首次登入頁面按下登出時，跳轉回登入頁-kidin-1090109(bug575)
+    this.authService.getLoginStatus().subscribe(res => {
+      if (res === false && this.pcView === true) {
+        return this.router.navigateByUrl('/signIn-web');
+      }
     });
 
   }
@@ -117,22 +119,21 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
 
   }
 
-    // 取得使用者ip位址-kidin-1090521
-    getClientIpaddress () {
-      this.getClientIp.requestJsonp('https://api.ipify.org', 'format=jsonp', 'callback').subscribe(res => {
-        this.ip = (res as any).ip;
-      });
+  // 取得使用者ip位址-kidin-1090521
+  getClientIpaddress () {
+    this.getClientIp.requestJsonp('https://api.ipify.org', 'format=jsonp', 'callback').subscribe(res => {
+      this.ip = (res as any).ip;
+    });
 
-    }
+  }
 
   // 使用token取得使用者帳號資訊-kidin-1090514
   getUserInfo () {
     const body = {
-      signInType: 3,
       token: this.utils.getToken() || ''
     };
 
-    this.userInfoService.fetchUserInfo(body, this.ip).subscribe(res => {
+    this.userInfoService.fetchUserInfo(body).subscribe(res => {
 
       const profile = res.userProfile;
       if (profile.email) {
@@ -155,7 +156,7 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
     } else if (this.appSys === 2) {
       (window as any).android.closeWebView();
     } else {
-      this.router.navigateByUrl('/signIn');
+      this.router.navigateByUrl('/dashboard/settings/account-info');
     }
 
   }
@@ -281,6 +282,7 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
       } else {
         this.newToken = res.editAccount.newToken;
         this.utils.writeToken(this.newToken);  // 直接在瀏覽器幫使用者登入
+        this.authService.setLoginStatus(true);
         this.finishEdit(this.newToken);
         this.sending = false;
 

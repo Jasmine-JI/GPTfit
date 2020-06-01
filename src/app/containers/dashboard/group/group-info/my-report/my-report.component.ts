@@ -691,16 +691,16 @@ export class MyReportComponent implements OnInit, OnDestroy {
   // 計算多筆資料合計的總運動時間-kidin-1081211
   calculateTotalTime (timeCount) {
     if (timeCount < 60) {
-      this.totalTime = `00:${this.fillTwoDigits(timeCount)}"`;
+      this.totalTime = `00:${this.fillTwoDigits(timeCount)}`;
     } else if ( timeCount < 3600) {
       const minute = Math.floor((timeCount) / 60);
       const second = timeCount % 60;
-      this.totalTime = `${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}"`;
+      this.totalTime = `${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}`;
     } else {
       const hour = Math.floor((timeCount) / 3600);
       const minute = Math.floor((timeCount % 3600) / 60);
       const second = timeCount - (hour * 3600) - (minute * 60);
-      this.totalTime = `${hour}:${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}"`;
+      this.totalTime = `${hour}:${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}`;
     }
   }
 

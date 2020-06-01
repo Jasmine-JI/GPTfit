@@ -10,6 +10,7 @@ import {
 import { codes } from '@shared/components/intl-phone-input/countryCode';
 import { FormGroup } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-intl-phone-input',
@@ -28,18 +29,20 @@ export class IntlPhoneInputComponent implements OnInit, OnChanges {
   @Input() control: FormGroup;
   @Input() isLoading: boolean;
   @Input() disabled = false;
-  @Input() placeholder: string;
   @Input() uiVersion: string;
   @Input() regPhone: any;
   @Input() phoneCue: string;
   @Input() currentValue: string;
   @Input() currentCountryCode: number;
+  @Input() qrcodeLink: boolean;
+  @Input() webUi: boolean;
 
   @Output() onChange = new EventEmitter();
   @Output() focusoutPhoneInt = new EventEmitter();
 
   constructor(
-    public translate: TranslateService
+    public translate: TranslateService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -136,6 +139,11 @@ export class IntlPhoneInputComponent implements OnInit, OnChanges {
       this.focusoutPhoneInt.emit('');
     }
 
+  }
+
+  // 轉導至qrcode sign頁面-kidin-1090527
+  navigateToQrcodeSign () {
+    this.router.navigateByUrl('/signInQrcode');
   }
 
 }

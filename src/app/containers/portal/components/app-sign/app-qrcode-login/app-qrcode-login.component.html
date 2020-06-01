@@ -1,0 +1,71 @@
+<ng-container *ngIf="!pcView">
+  <div class="flexCol" style="align-items: center;">
+    <div class="flexRow appHeader">
+      <i
+        class="icon-svg_web-icon_p1_073-level_fold"
+        style="font-size: 30px; cursor: pointer;"
+        (click)="cancelLogin()"
+      ></i>
+      <span class="appview-header appview-header-position">
+        QR {{ 'SH.logIn' | translate }}
+      </span>
+    </div>
+    <img src="./assets/logoTitle.png" alt="Alatech Logo" style="max-width: 300px; margin: 20px 0px; width: 75%;">
+    <ng-container *ngIf="displayPage === 'login'">
+      <div class="flexCol" style="align-items: center;" >
+        <span style="margin-bottom: 30px; font-weight: bold; color: #5b5b5b; font-size: 18px;">{{ 'custom.confirmQrLogin' | translate }}</span>
+        <div class="avatar-wrapper">
+          <img *ngIf="userInfo && userInfo.icon"
+            [src]="(userInfo.icon | safeHtml)"
+          >
+        </div>
+        <h1
+          style="font-weight: bold; font-size: 20px;"
+        >
+          {{ userInfo.name }}
+        </h1>
+      </div>
+      <button
+        class="appview-btn"
+        [class.appview-btn-unclickable]="qrLoginStatus === 'logging' || qrLoginStatus === 'success'"
+        (click)="qrcodeLogin()"
+      >
+        <span *ngIf="qrLoginStatus !== 'success'">{{ 'SH.logIn' | translate }}{{loggingDot}}</span>
+        <span *ngIf="qrLoginStatus === 'success'">{{ 'Portal.signSuceesfully' | translate }}</span>
+      </button>
+    </ng-container>
+    <ng-container *ngIf="displayPage === 'showQrcode'">
+      <div class="flexCol" style="align-items: center;">
+        <qrcode [qrdata]="qrURL" [size]="128" [level]="'M'" *ngIf="cue === ''"></qrcode>
+        <span *ngIf="cue !== ''" style="margin: 50px; color: #ff9090; font-size: 20px; font-weight: bold;">
+          {{ cue }}
+        </span>
+        <span class="formTitle" style="margin: 20px;">{{ 'custom.scanLogin' | translate }}</span>
+      </div>
+    </ng-container>
+  </div>
+</ng-container>
+<ng-container *ngIf="pcView">
+  <div class="access-bg">
+    <div class="container signup" style="padding-top:63px">
+      <div class="d-flex" style="flex-direction: column;align-items: center;;">
+        <div class="access-panel" style="margin-top: 30px;">
+          <header class="access-header">
+            <img src="assets/attacus_logo.png" style="width: 36%">
+          </header>
+          <div class="access-panel-body">
+            <ng-container *ngIf="displayPage === 'showQrcode'">
+              <div class="flexCol" style="align-items: center;">
+                <qrcode [qrdata]="qrURL" [size]="128" [level]="'M'" *ngIf="cue === ''"></qrcode>
+                <span *ngIf="cue !== ''" style="margin: 50px; color: #ff9090; font-size: 20px; font-weight: bold;">
+                  {{ cue }}
+                </span>
+                <span class="formTitle" style="margin: 20px;">{{ 'custom.scanLogin' | translate }}</span>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
