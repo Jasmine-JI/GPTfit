@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SigninV2Component } from './signin-v2.component';
+import { AppQrcodeLoginComponent } from './app-qrcode-login.component';
 
-describe('SigninV2Component', () => {
-  let component: SigninV2Component;
-  let fixture: ComponentFixture<SigninV2Component>;
+describe('AppQrcodeLoginComponent', () => {
+  let component: AppQrcodeLoginComponent;
+  let fixture: ComponentFixture<AppQrcodeLoginComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SigninV2Component ]
+      declarations: [ AppQrcodeLoginComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SigninV2Component);
+    fixture = TestBed.createComponent(AppQrcodeLoginComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

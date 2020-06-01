@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '@shared/services/utils.service';
+import { AuthService } from '../../../../../shared/services/auth.service';
 import { UserInfoService } from '../../../../dashboard/services/userInfo.service';
 import { SignupService } from '../../../services/signup.service';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
@@ -20,8 +21,9 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
   dataIncomplete = true;
   sending = false;
   newToken = '';
-  appSys = 1;  // 0:web, 1:ios, 2:android
+  appSys = 0;  // 0:web, 1:ios, 2:android
   ip = '';
+  pcView = false;
 
   editBody: any = {
     editType: 2,
@@ -34,11 +36,6 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
     password: '',
     email: '',
     phone: ''
-  };
-
-  placeholder = {
-    password: '',
-    email: ''
   };
 
   accountInfo = {
@@ -75,6 +72,12 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
     color: '#aaaaaa'
   };
 
+  webFontOpt = {
+    size: '16px',
+    weight: 'normal',
+    color: '#757575'
+  };
+
   position = {
     bottom: '25px',
     zIndex: 101
@@ -92,6 +95,7 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
   constructor(
     private translate: TranslateService,
     private utils: UtilsService,
+    private authService: AuthService,
     private signupService: SignupService,
     private userInfoService: UserInfoService,
     private dialog: MatDialog,
@@ -100,19 +104,24 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.utils.setHideNavbarStatus(true);
-    this.createPlaceholder();
-    this.getDeviceSys();
+
+    if (location.pathname.indexOf('web') > 0) {
+      this.pcView = true;
+      this.utils.setHideNavbarStatus(false);
+    } else {
+      this.pcView = false;
+      this.utils.setHideNavbarStatus(true);
+      this.getDeviceSys();
+    }
+
     this.getUrlString(location.search);
     this.getUserInfo();
-  }
 
-  // 確認ngx translate套件已經載入再產生翻譯-kidin-1090430
-  createPlaceholder () {
-
-    this.translate.get('hello.world').subscribe(() => {
-      this.placeholder.email = `${this.translate.instant('Portal.enterInfo')} ${this.translate.instant('Portal.email')}`;
-      this.placeholder.password = `${this.translate.instant('Portal.enterInfo')} ${this.translate.instant('Portal.password')}`;
+    // 在首次登入頁面按下登出時，跳轉回登入頁-kidin-1090109(bug575)
+    this.authService.getLoginStatus().subscribe(res => {
+      if (res === false && this.pcView === true) {
+        return this.router.navigateByUrl('/signIn-web');
+      }
     });
 
   }
@@ -152,11 +161,10 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
   // 使用token取得使用者帳號資訊-kidin-1090514
   getUserInfo () {
     const body = {
-      signInType: 3,
       token: this.utils.getToken() || ''
     };
 
-    this.userInfoService.fetchUserInfo(body, this.ip).subscribe(res => {
+    this.userInfoService.fetchUserInfo(body).subscribe(res => {
 
       const profile = res.userProfile;
       if (profile.email) {
@@ -182,7 +190,13 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
     } else if (this.appSys === 2) {
       (window as any).android.closeWebView();
     } else {
-      this.router.navigateByUrl('/signIn');
+
+      if (this.pcView === true) {
+        this.router.navigateByUrl('/signIn-web');
+      } else {
+        this.router.navigateByUrl('/signIn');
+      }
+
     }
 
   }
@@ -382,6 +396,7 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
       } else {
         this.newToken = res.editAccount.newToken;
         this.utils.writeToken(this.newToken);  // 直接在瀏覽器幫使用者登入
+        this.authService.setLoginStatus(true);
 
         if (this.appSys === 1) {
           (window as any).webkit.messageHandlers.registerSuccess.postMessage(this.newToken);
@@ -420,7 +435,12 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
   // 轉導至啟用帳號頁面-kidin-1090513
   toEnableAccount () {
     this.utils.setHideNavbarStatus(false);
-    this.router.navigateByUrl(`/enableAccount`);
+    if (this.pcView === true) {
+      this.router.navigateByUrl(`/enableAccount-web`);
+    } else {
+      this.router.navigateByUrl(`/enableAccount`);
+    }
+
   }
 
   // 離開頁面則取消隱藏navbar-kidin-1090514

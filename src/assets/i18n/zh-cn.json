@@ -644,7 +644,7 @@
     }
   },
   "other": {
-    "createComGroup": "建立一般企業群組",
+    "createComGroup": "建立企業經營群組",
     "createGymGroup": "建立健身品牌群組",
     "createCom": "建立企業",
     "comName": "企業名稱",
@@ -816,15 +816,23 @@
     "newPassword": "新密码",
     "alaFitness": "Ala Fitness",
     "fitnessSlogan": "全方位型的运动记录器<br />运动型传感器的最佳伙伴",
-    "fitnessInfo": "无论是室内的标准FTMS大型健身器材，或户外运动的传感器都难不倒它做运动纪录，是陪伴你运动生活的最好选择。"
+    "fitnessInfo": "无论是室内的标准FTMS大型健身器材，或户外运动的传感器都难不倒它做运动纪录，是陪伴你运动生活的最好选择。",
+    "wrongFormat": "错误的格式",
+    "wrongRange": "不合理的范围值",
+    "errorAccountPassword": "错误的账号或密码"
   },
   "conflict": {
     "benefitime": "效益时间"
   },
   "custom": {
-    "changeAccount": "您正在變更帳號",
-    "newAccountWellBe": "將帳號變更為",
-    "changePassword": "您正在變更密碼",
-    "linkFailure": "連結已失效，請重新操作"
+    "changeAccount": "您正在变更帐号",
+    "newAccountWellBe": "将帐号变更为",
+    "changePassword": "您正在变更密码",
+    "linkFailure": "连结已失效，请重新操作",
+    "confirmQrLogin": "确认是否登入未知装置？",
+    "scanLogin": "扫描登入",
+    "idle": "闲置过久请重新操作",
+    "ComGroup": "企业经营",
+    "improperOpe": "不正当操作，请稍后再试"
   }
 }

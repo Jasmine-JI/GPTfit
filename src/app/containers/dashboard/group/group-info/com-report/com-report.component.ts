@@ -988,13 +988,13 @@ export class ComReportComponent implements OnInit, OnDestroy {
       }
     }
 
-    const typeAllAvgTrainTime = (typeAllTotalTrainTime / this.hasDataNumber) || 0,
-          typeRunAvgTrainTime = (typeRunTotalTrainTime / this.hasDataNumber) || 0,
-          typeCycleAvgTrainTime = (typeCycleTotalTrainTime / this.hasDataNumber) || 0,
-          typeWeightTrainAvgTrainTime = (typeWeightTrainTotalTrainTime / this.hasDataNumber) || 0,
-          typeSwimAvgTrainTime = (typeSwimTotalTrainTime / this.hasDataNumber) || 0,
-          typeAerobicAvgTrainTime = (typeAerobicTotalTrainTime / this.hasDataNumber) || 0,
-          typeRowAvgTrainTime = (typeRowTotalTrainTime / this.hasDataNumber) || 0;
+    const typeAllAvgTrainTime = (typeAllTotalTrainTime) || 0,
+          typeRunAvgTrainTime = (typeRunTotalTrainTime) || 0,
+          typeCycleAvgTrainTime = (typeCycleTotalTrainTime) || 0,
+          typeWeightTrainAvgTrainTime = (typeWeightTrainTotalTrainTime) || 0,
+          typeSwimAvgTrainTime = (typeSwimTotalTrainTime) || 0,
+          typeAerobicAvgTrainTime = (typeAerobicTotalTrainTime) || 0,
+          typeRowAvgTrainTime = (typeRowTotalTrainTime) || 0;
 
     const typeAllData = {
       activityLength: this.activityLength,

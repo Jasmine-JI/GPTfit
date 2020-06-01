@@ -1,92 +1,184 @@
-<div class="flexCol">
-  <div class="flexRow appHeader" style="justify-content: space-between;">
-    <i
-      class="icon-svg_web-icon_p1_073-level_fold"
-      style="font-size: 30px; cursor: pointer;"
-      (click)="turnBack()"
-    ></i>
-    <span class="appview-header appview-header-position">
-      {{ 'other.modify' | translate }} {{ 'Portal.password' | translate }}
-    </span>
-  </div>
-  <div class="flexCol appDiv" style="min-height: initial;">
-    <span class="app-alert" style="font-size: 20px; font-weight: bold;">{{ 'custom.changePassword' | translate }}</span>
-    <span style="font-size: 14px; font-weight: bold;" *ngIf="editBody.editType === 1">
-      {{ editBody.newEmail }}
-    </span>
-    <span style="font-size: 14px; font-weight: bold;" *ngIf="editBody.editType === 2">
-      +{{ editBody.newCountryCode }} {{ editBody.newMobileNumber }}
-    </span>
-  </div>
-  <div class="flexCol" style="margin-top: 10px;">
-    <div class="flexCol appDiv" style="min-height: 120px;">
-      <span class="formTitle">{{ 'Portal.password' | translate }}</span>
-      <span style="border-bottom: 1px solid #d4d4d4; white-space: nowrap;">
+<ng-container *ngIf="!pcView">
+  <div class="flexCol">
+    <div class="flexRow appHeader" style="justify-content: space-between;">
+      <i
+        class="icon-svg_web-icon_p1_073-level_fold"
+        style="font-size: 30px; cursor: pointer;"
+        (click)="turnBack()"
+      ></i>
+      <span class="appview-header appview-header-position">
+        {{ 'other.modify' | translate }} {{ 'Portal.password' | translate }}
+      </span>
+    </div>
+    <div class="flexCol appDiv" style="min-height: initial;">
+      <span class="app-alert" style="font-size: 20px; font-weight: bold;">{{ 'custom.changePassword' | translate }}</span>
+      <span style="font-size: 14px; font-weight: bold;" *ngIf="editBody.editType === 1">
+        {{ editBody.newEmail }}
+      </span>
+      <span style="font-size: 14px; font-weight: bold;" *ngIf="editBody.editType === 2">
+        +{{ editBody.newCountryCode }} {{ editBody.newMobileNumber }}
+      </span>
+    </div>
+    <div class="flexCol" style="margin-top: 10px;">
+      <div class="flexCol appDiv" style="min-height: 120px;">
+        <span class="formTitle">{{ 'Portal.password' | translate }}</span>
         <input
           type="password"
           id="oldPassword"
-          placeholder="{{ placeholder.oldPassword }}"
+          placeholder="{{ 'Portal.keyInPassword' | translate }}"
           maxlength="20"
           [(ngModel)]="editBody.oldPassword"
-          style="border-bottom: none; width: 95%;"
           (focusout)="checkPassword($event, 'oldPassword')"
           (keypress)="checkPassword($event, 'oldPassword')"
         />
         <i
-          class="icon-svg_web-icon_p1_081-watch"
-          style="font-size: 24px; cursor: pointer;"
-          [style.color]="displayPW.oldPassword ? 'black' : '#aaaaaa'"
+          class="icon-svg_web-icon_p1_081-watch inputIcon"
+          [style.color]="displayPW ? 'black' : '#aaaaaa'"
           (click)="toggleDisplayPW('oldPassword')"
         ></i>
-      </span>
-      <span class="formCue" *ngIf="cue.oldPassword !== ''">{{ cue.oldPassword }}</span>
-    </div>
-    <div class="flexCol appDiv"  style="min-height: 120px;">
-      <span class="formTitle">{{ 'other.newPassword' | translate }}</span>
-      <span style="border-bottom: 1px solid #d4d4d4; white-space: nowrap;">
+
+        <span class="formCue" *ngIf="cue.oldPassword !== ''">{{ cue.oldPassword }}</span>
+      </div>
+      <div class="flexCol appDiv"  style="min-height: 120px;">
+        <span class="formTitle">{{ 'other.newPassword' | translate }}</span>
         <input
           type="password"
           id="newPassword"
-          placeholder="{{ placeholder.newPassword }}"
+          placeholder="{{ 'other.keyInNewPassword' | translate }}"
           maxlength="20"
           [(ngModel)]="editBody.newPassword"
-          style="border-bottom: none; width: 95%;"
           (focusout)="checkPassword($event, 'newPassword')"
           (keypress)="checkPassword($event, 'newPassword')"
         />
         <i
-          class="icon-svg_web-icon_p1_081-watch"
-          style="font-size: 24px; cursor: pointer;"
-          [style.color]="displayPW.newPassword ? 'black' : '#aaaaaa'"
+          class="icon-svg_web-icon_p1_081-watch inputIcon"
+          [style.color]="displayPW ? 'black' : '#aaaaaa'"
           (click)="toggleDisplayPW('newPassword')"
         ></i>
-      </span>
-      <span class="formCue" *ngIf="cue.newPassword !== ''">{{ cue.newPassword }}</span>
-    </div>
-    <div
-      class="flexCol appDiv"
-      [style.display]="imgCaptcha.show ? '' : 'none'"
-    >
-      <span class="formTitle">{{ 'Portal.imgCaptcha' | translate }}</span>
-      <div class="flexRow">
-        <input
-          placeholder="{{ imgCaptcha.placeholder }}"
-          maxlength="8"
-          (focusout)="checkImgCaptcha($event)"
-          (keypress)="checkImgCaptcha($event)"
-        />
-        <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha">
+        <span class="formCue" *ngIf="cue.newPassword !== ''">{{ cue.newPassword }}</span>
       </div>
-      <span class="formCue" *ngIf="imgCaptcha.show && imgCaptcha.cue !== ''">
-        {{ imgCaptcha.cue }}
-      </span>
+      <div
+        class="flexCol appDiv"
+        [style.display]="imgCaptcha.show ? '' : 'none'"
+      >
+        <span class="formTitle">{{ 'Portal.imgCaptcha' | translate }}</span>
+        <div class="flexRow">
+          <input
+            placeholder="{{ imgCaptcha.placeholder }}"
+            maxlength="8"
+            (focusout)="checkImgCaptcha($event)"
+            (keypress)="checkImgCaptcha($event)"
+          />
+          <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha">
+        </div>
+        <span class="formCue" *ngIf="imgCaptcha.show && imgCaptcha.cue !== ''">
+          {{ imgCaptcha.cue }}
+        </span>
+      </div>
+    </div>
+    <button
+      class="appview-btn"
+      [class.appview-btn-unclickable]="sending || dataIncomplete"
+      (click)="submit()"
+    >
+      <span>{{ 'SH.send' | translate }}</span>
+    </button>
+  </div>
+</ng-container>
+<ng-container *ngIf="pcView">
+  <div class="access-bg">
+    <div class="container signup" style="padding-top:63px">
+      <div class="d-flex" style="flex-direction: column;align-items: center;;">
+        <div class="access-panel" style="margin-top: 30px;">
+          <header class="access-header">
+            <img src="assets/attacus_logo.png" style="width: 36%">
+          </header>
+          <div class="access-panel-body">
+            <div class="flexCol" style="min-height: initial;">
+              <span class="app-alert" style="font-size: 20px; font-weight: bold;">{{ 'custom.changePassword' | translate }}</span>
+              <span style="font-size: 14px; font-weight: bold;" *ngIf="editBody.editType === 1">
+                {{ editBody.newEmail }}
+              </span>
+              <span style="font-size: 14px; font-weight: bold;" *ngIf="editBody.editType === 2">
+                +{{ editBody.newCountryCode }} {{ editBody.newMobileNumber }}
+              </span>
+            </div>
+            <div class="flexCol" style="margin-top: 10px;">
+              <div class="flexCol" style="min-height: 120px;">
+                <span class="access-text" style="margin-bottom: 10px;">{{ 'Portal.password' | translate }}</span>
+                <input
+                  type="password"
+                  id="oldPassword"
+                  placeholder="{{ 'Portal.keyInPassword' | translate }}"
+                  class="form-control"
+                  maxlength="20"
+                  [(ngModel)]="editBody.oldPassword"
+                  (focusout)="checkPassword($event, 'oldPassword')"
+                  (keypress)="checkPassword($event, 'oldPassword')"
+                />
+                <i
+                  class="icon-svg_web-icon_p1_081-watch inputIcon"
+                  style="top: -30px; left: 90%;"
+                  [style.color]="displayPW ? 'black' : '#aaaaaa'"
+                  (click)="toggleDisplayPW('oldPassword')"
+                ></i>
+                <span class="form__message form__message--placeholder" *ngIf="cue.oldPassword !== ''">{{ cue.oldPassword }}</span>
+              </div>
+              <div class="flexCol"  style="min-height: 120px;">
+                <span class="access-text" style="margin-bottom: 10px;">{{ 'other.newPassword' | translate }}</span>
+                <input
+                  type="password"
+                  id="newPassword"
+                  placeholder="{{ 'other.keyInNewPassword' | translate }}"
+                  class="form-control"
+                  maxlength="20"
+                  [(ngModel)]="editBody.newPassword"
+                  (focusout)="checkPassword($event, 'newPassword')"
+                  (keypress)="checkPassword($event, 'newPassword')"
+                />
+                <i
+                  class="icon-svg_web-icon_p1_081-watch inputIcon"
+                  style="top: -30px; left: 90%;"
+                  [style.color]="displayPW ? 'black' : '#aaaaaa'"
+                  (click)="toggleDisplayPW('newPassword')"
+                ></i>
+                <span class="form__message form__message--placeholder" *ngIf="cue.newPassword !== ''">{{ cue.newPassword }}</span>
+              </div>
+              <div
+                class="flexCol"
+                [style.display]="imgCaptcha.show ? '' : 'none'"
+              >
+                <span class="access-text" style="margin-bottom: 10px;">{{ 'Portal.imgCaptcha' | translate }}</span>
+                <div class="flexRow">
+                  <input
+                    placeholder="{{ imgCaptcha.placeholder }}"
+                    class="form-control"
+                    maxlength="8"
+                    (focusout)="checkImgCaptcha($event)"
+                    (keypress)="checkImgCaptcha($event)"
+                  />
+                  <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha">
+                </div>
+                <span class="form__message form__message--placeholder" *ngIf="imgCaptcha.show && imgCaptcha.cue !== ''">
+                  {{ imgCaptcha.cue }}
+                </span>
+              </div>
+              <div style="display: flex;justify-content: space-between; align-items: center; margin-top: 20px;">
+                <a class="access-text" style="cursor:pointer" [routerLink]="['/dashboard/settings/account-info']"><{{'Dashboard.ProductInfo.back' | translate}}</a>
+                <button
+                  class="btn btn-primary access-btn"
+                  [class.appview-btn-unclickable]="sending || dataIncomplete"
+                  [style.background]="sending || dataIncomplete ? '#2b819b54' : ''"
+                  (click)="submit()"
+                >
+                  <span *ngIf="!sending">{{ 'SH.send' | translate }}</span>
+                  <i *ngIf="sending" class="fa fa-spinner fa-pulse"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  <button
-    class="appview-btn"
-    [class.appview-btn-unclickable]="sending || dataIncomplete"
-    (click)="submit()"
-  >
-    <span>{{ 'SH.send' | translate }}</span>
-  </button>
-</div>
+</ng-container>

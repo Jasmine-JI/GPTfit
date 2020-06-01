@@ -627,7 +627,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     if (time < 60) {
       switch (format) {
         case '1':
-          return `00:${this.fillTwoDigits(time)}"`;
+          return `00:${this.fillTwoDigits(time)}`;
         case '2':
           return `00:${this.fillTwoDigits(time)}`;
       }
@@ -637,7 +637,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
       switch (format) {
         case '1':
-          return `${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}"`;
+          return `${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}`;
         case '2':
           return `${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}`;
       }
@@ -648,7 +648,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
       switch (format) {
         case '1':
-          return `${this.fillTwoDigits(hour)}:${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}"`;
+          return `${this.fillTwoDigits(hour)}:${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}`;
         case '2':
           return `${hour}:${this.fillTwoDigits(minute)}:${this.fillTwoDigits(second)}`;
       }

@@ -764,7 +764,7 @@
     "muscleKg": "肌肉重",
     "fatKg": "脂肪重",
     "glossaries": "體態",
-    "update": "更新",
+    "update": "Update",
     "personalAnalysis": "Personal Analysis",
     "gymBrand": "Gym",
     "companyAdmin": "Company admin",
@@ -816,15 +816,23 @@
     "newPassword": "Ｎew Password",
     "alaFitness": "Ala Fitness",
     "fitnessSlogan": "Full-function activity tracker<br />Your best workout companion",
-    "fitnessInfo": "No matter if you are an avid indoor fitness guru or an outdoor activist, Train Live is your lifelong training recorder!"
+    "fitnessInfo": "No matter if you are an avid indoor fitness guru or an outdoor activist, Train Live is your lifelong training recorder!",
+    "wrongFormat": "Wrong format",
+    "wrongRange": "Invalid range",
+    "errorAccountPassword": "Incorrect account or password"
   },
   "conflict": {
     "benefitime": "Benefit Time"
   },
   "custom": {
-    "changeAccount": "您正在變更帳號",
-    "newAccountWellBe": "將帳號變更為",
-    "changePassword": "您正在變更密碼",
-    "linkFailure": "連結已失效，請重新操作"
+    "changeAccount": "You are changing account.",
+    "newAccountWellBe": "Change account to",
+    "changePassword": "You are changing your password.",
+    "linkFailure": "The link has expired, please try again.",
+    "confirmQrLogin": "Whether to log in to an unknown device？",
+    "scanLogin": "Scan for logging",
+    "idle": "Please re-operate for too long",
+    "ComGroup": "Business management",
+    "improperOpe": "Improper operation. Please try again later."
   }
 }

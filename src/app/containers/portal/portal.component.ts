@@ -526,9 +526,5 @@ export class PortalComponent implements OnInit {
     this.isMaskShow = false;
     this.globalEventsManager.closeCollapse(false);
   }
-  handleSignin(e) {
-    e.preventDefault();
-    this.isIntroducePage = false;
-    this.router.navigateByUrl('/signin');
-  }
+
 }

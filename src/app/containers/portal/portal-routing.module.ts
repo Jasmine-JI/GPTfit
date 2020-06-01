@@ -25,12 +25,8 @@ import { AppEnableComponent } from './components/app-sign/app-enable/app-enable.
 import { AppForgetpwComponent } from './components/app-sign/app-forgetpw/app-forgetpw.component';
 import { AppModifypwComponent } from './components/app-sign/app-modifypw/app-modifypw.component';
 import { AppChangeAccountComponent } from './components/app-sign/app-change-account/app-change-account.component';
-import { SignupV2Component } from './components/web-sign/signup-v2/signup-v2.component';
-import { SigninV2Component } from './components/web-sign/signin-v2/signin-v2.component';
-import { EnableAccountComponent } from './components/web-sign/enable-account/enable-account.component';
-import { ChangeAccountComponent } from './components/web-sign/change-account/change-account.component';
-import { ForgetpwV2Component } from './components/web-sign/forgetpw-v2/forgetpw-v2.component';
-import { ModifypwV2Component } from './components/web-sign/modifypw-v2/modifypw-v2.component';
+import { AppQrcodeLoginComponent } from './components/app-sign/app-qrcode-login/app-qrcode-login.component';
+import { AppFirstLoginComponent } from './components/app-sign/app-first-login/app-first-login.component';
 
 const routes: Routes = [
   {
@@ -106,7 +102,8 @@ const routes: Routes = [
       },
       {
         path: 'signIn',
-        component: AppSigninComponent
+        component: AppSigninComponent,
+        canActivate: [SigninGuard]
       },
       {
         path: 'enableAccount',
@@ -125,28 +122,49 @@ const routes: Routes = [
         component: AppChangeAccountComponent
       },
       {
-        path: 'signup-v2',
-        component: SignupV2Component
+        path: 'qrSignIn',
+        component: AppQrcodeLoginComponent
       },
       {
-        path: 'signin-v2',
-        component: SigninV2Component
+        path: 'signInQrcode',
+        component: AppQrcodeLoginComponent
       },
       {
-        path: 'enable-account',
-        component: EnableAccountComponent
+        path: 'firstLogin',
+        component: AppFirstLoginComponent
       },
       {
-        path: 'change-account',
-        component: ChangeAccountComponent
+        path: 'register-web',
+        component: AppSignupComponent
       },
       {
-        path: 'forgetpw-v2',
-        component: ForgetpwV2Component
+        path: 'signIn-web',
+        component: AppSigninComponent,
+        canActivate: [SigninGuard]
       },
       {
-        path: 'modifypw-v2',
-        component: ModifypwV2Component
+        path: 'enableAccount-web',
+        component: AppEnableComponent
+      },
+      {
+        path: 'resetPassword-web',
+        component: AppForgetpwComponent
+      },
+      {
+        path: 'editPassword-web',
+        component: AppModifypwComponent
+      },
+      {
+        path: 'changeAccount-web',
+        component: AppChangeAccountComponent
+      },
+      {
+        path: 'signInQrcode-web',
+        component: AppQrcodeLoginComponent
+      },
+      {
+        path: 'firstLogin-web',
+        component: AppFirstLoginComponent
       },
       { path: '404', component: Page404Component },
       { path: '403', component: Page403Component }

@@ -1,7 +1,8 @@
-<div class="ala-upload" [class.avastarLayout]="isUserAvastarMode">
+<div class="flexCol ala-upload" style="align-items: center;" [class.avastarLayout]="isUserAvastarMode">
   <div *ngIf="isImageFileMode"
     class="ala-upload-image"
     [class.ala-upload-image--vertical]="isImgVertical$ | async"
+    [class.avastarMode]="isUserAvastarMode"
   >
     <button
       class="profile-picture__Ok"
@@ -41,6 +42,8 @@
         </button>
         <input type="file"
           class="fileupload__input"
+          [style.height]="isUserAvastarMode ? '130px' : '296px'"
+          [style.width]="isUserAvastarMode ? '130px' : '250px'"
           (change)="handleChange($event)"
           accept=".jpg,.jpeg,.gif,.png"
           #fileUpload

@@ -6,6 +6,7 @@ import { UtilsService } from '@shared/services/utils.service';
 import { ActivityService } from '../../../../shared/services/activity.service';
 import { A3FormatPipe } from '../../../../shared/pipes/a3-format.pipe';
 import { MatSnackBar } from '@angular/material';
+import { AuthService } from '../../../../shared/services/auth.service';
 
 import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
@@ -35,6 +36,7 @@ export class QrcodeUploadComponent implements OnInit {
     private userInfoService: UserInfoService,
     private utils: UtilsService,
     private activityService: ActivityService,
+    private auth: AuthService,
     private snackbar: MatSnackBar,
     private translate: TranslateService,
     private a3Format: A3FormatPipe
@@ -42,8 +44,12 @@ export class QrcodeUploadComponent implements OnInit {
 
   ngOnInit() {
 
-    // 先轉導至dashboard
-    if (location.pathname.indexOf('dashboard') < 0) {
+    // 未登入則導至登入頁，接著導至dashboard以取得user infomation-kidin-1090525
+    const token = this.utils.getToken() || '';
+    if (token.length === 0) {
+      this.auth.backUrl = location.href;
+      this.router.navigateByUrl('/signin');
+    } else if (location.pathname.indexOf('dashboard') < 0) {
       this.router.navigateByUrl(
         `/dashboard${location.pathname}${location.search}`
       );
