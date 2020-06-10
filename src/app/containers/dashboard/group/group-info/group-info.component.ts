@@ -656,7 +656,7 @@ export class GroupInfoComponent implements OnInit {
             data: {
               title: 'message',
               body: message,
-              confirmText: this.translate.instant('SH.determine')
+              confirmText: this.translate.instant('other.confirm')
             }
           });
         }
@@ -693,6 +693,7 @@ export class GroupInfoComponent implements OnInit {
         } = res;
         if (_type === 1) {
           this.subGroupInfo = subGroupInfo;
+          this.groupService.saveAllLevelGroupInfo(subGroupInfo);
           this.subBrandInfo = this.subGroupInfo.brands.map(_brand => {
             return {
               ..._brand,

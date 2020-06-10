@@ -174,7 +174,7 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
                   title: 'Message',
                   body: `Server error.<br />Please try again later.`,
                   confirmText: this.translate.instant(
-                    'SH.determine'
+                    'other.confirm'
                   )
                 }
               });
@@ -202,7 +202,7 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
                       title: 'Message',
                       body: `Server error.<br />Please try again later.`,
                       confirmText: this.translate.instant(
-                        'SH.determine'
+                        'other.confirm'
                       )
                     }
                   });
@@ -275,7 +275,7 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
           title: 'Message',
           body: `Guid Error`,
           confirmText: this.translate.instant(
-            'SH.determine'
+            'other.confirm'
           )
         }
       });
@@ -293,7 +293,7 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
                   title: 'Message',
                   body: `Guid Error`,
                   confirmText: this.translate.instant(
-                    'SH.determine'
+                    'other.confirm'
                   )
                 }
               });
@@ -306,7 +306,7 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
                   title: 'Message',
                   body: `${this.translate.instant('SH.logIn')} ${this.translate.instant('Dashboard.MyDevice.failure')}`,
                   confirmText: this.translate.instant(
-                    'SH.determine'
+                    'other.confirm'
                   )
                 }
               });
