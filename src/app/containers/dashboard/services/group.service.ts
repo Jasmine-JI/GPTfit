@@ -11,6 +11,7 @@ const { API_SERVER } = environment.url;
 export class GroupService {
 
   groupInfo$ = new BehaviorSubject<any>({}); // 儲存group資訊-kidin-1081210
+  allLevelGroupInfo$ = new BehaviorSubject<any>({}); // 儲存 同"品牌/企業" group 資訊-kidin-1090604
   updatedGroupImg$ = new BehaviorSubject<string>('');
   memberList$ = new BehaviorSubject<any>({
     groupId: '',
@@ -155,4 +156,15 @@ export class GroupService {
   saveGroupInfo (status: object) {
     this.groupInfo$.next(status);
   }
+
+  // 取得group資訊-kidin-1081210
+  getAllLevelGroupInfo () {
+    return this.allLevelGroupInfo$;
+  }
+
+  // 儲存group資訊-kidin-1081210
+  saveAllLevelGroupInfo (status: any) {
+    this.allLevelGroupInfo$.next(status);
+  }
+
 }

@@ -819,7 +819,11 @@
     "fitnessInfo": "No matter if you are an avid indoor fitness guru or an outdoor activist, Train Live is your lifelong training recorder!",
     "wrongFormat": "Wrong format",
     "wrongRange": "Invalid range",
-    "errorAccountPassword": "Incorrect account or password"
+    "errorAccountPassword": "Incorrect account or password",
+    "groupAnalysis": "Group Analysis",
+    "fieldDisplay": "Field display",
+    "filter": "Filter",
+    "numberOf": "Items"
   },
   "conflict": {
     "benefitime": "Benefit Time"

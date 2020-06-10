@@ -156,7 +156,7 @@ export class MemberCapsuleComponent implements OnInit {
       data: {
         title: 'message',
         body: `${this.translate.instant('Dashboard.Group.GroupInfo.removeAdmin')}?`,
-        confirmText: this.translate.instant('SH.determine'),
+        confirmText: this.translate.instant('other.confirm'),
         cancelText: this.translate.instant('SH.cancel'),
         onConfirm: this.handleEditGroupMember.bind(this)
       }
@@ -227,7 +227,7 @@ export class MemberCapsuleComponent implements OnInit {
       data: {
         title: 'message',
         body: this.translate.instant('Dashboard.Group.GroupInfo.removeMember'),
-        confirmText: this.translate.instant('SH.determine'),
+        confirmText: this.translate.instant('other.confirm'),
         cancelText: this.translate.instant('SH.cancel'),
         onConfirm: this.handleDeleteGroupMember.bind(this)
       }
@@ -255,7 +255,7 @@ export class MemberCapsuleComponent implements OnInit {
         body: this.translate.instant('Dashboard.Group.confirmDissolution', {
           target: targetName
         }),
-        confirmText: this.translate.instant('SH.determine'),
+        confirmText: this.translate.instant('other.confirm'),
         cancelText: this.translate.instant('SH.cancel'),
         onConfirm: this.handleDeleteGroup.bind(this)
       }

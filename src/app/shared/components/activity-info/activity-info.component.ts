@@ -1144,7 +1144,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           'Dashboard.Group.confirmDelete'
         )}`,
         confirmText: this.translate.instant(
-          'SH.determine'
+          'other.confirm'
         ),
         cancelText: this.translate.instant(
           'SH.cancel'

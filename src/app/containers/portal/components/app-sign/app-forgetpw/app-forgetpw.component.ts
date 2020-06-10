@@ -370,7 +370,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
             title: 'Message',
             body: this.translate.instant('other.sendSmsSuccess'),
             confirmText: this.translate.instant(
-              'SH.determine'
+              'other.confirm'
             )
           }
         });
@@ -654,7 +654,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
         title: 'Message',
         body: msg,
         confirmText: this.translate.instant(
-          'SH.determine'
+          'other.confirm'
         ),
         onConfirm: this.turnBack.bind(this)
       }

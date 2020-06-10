@@ -819,7 +819,11 @@
     "fitnessInfo": "無論是室內的標準FTMS大型健身器材，或戶外運動的感應器都難不倒它做運動紀錄，是陪伴你運動生活的最好選擇。",
     "wrongFormat": "錯誤的格式",
     "wrongRange": "不合理的範圍值",
-    "errorAccountPassword": "錯誤的帳號或密碼"
+    "errorAccountPassword": "錯誤的帳號或密碼",
+    "groupAnalysis": "團體分析",
+    "fieldDisplay": "欄位顯示",
+    "filter": "篩選",
+    "numberOf": "筆數"
   },
   "conflict": {
     "benefitime": "效益時間"

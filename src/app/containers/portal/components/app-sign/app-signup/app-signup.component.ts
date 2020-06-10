@@ -420,7 +420,7 @@ export class AppSignupComponent implements OnInit, OnDestroy {
               this.translate.instant('other.switch')} ${this.translate.instant('Portal.account')}?
             `,
             confirmText: this.translate.instant(
-              'SH.determine'
+              'other.confirm'
             ),
             cancelText: this.translate.instant(
               'SH.cancel'

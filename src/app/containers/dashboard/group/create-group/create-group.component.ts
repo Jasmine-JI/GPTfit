@@ -741,7 +741,7 @@ export class CreateGroupComponent implements OnInit {
       data: {
         title: 'Message',
         body: `您選擇的方案是否為" ${this.planName} "?`,
-        confirmText: this.translate.instant('SH.determine'),
+        confirmText: this.translate.instant('other.confirm'),
         cancelText: this.translate.instant('SH.cancel'),
         onConfirm: () => {
           if (this.commercePlan && this.commercePlan > 0) {
@@ -789,7 +789,7 @@ export class CreateGroupComponent implements OnInit {
       data: {
         title: 'Message',
         body: `您選擇的方案是否為" ${this.planName} "?`,
-        confirmText: this.translate.instant('SH.determine'),
+        confirmText: this.translate.instant('other.confirm'),
         cancelText: this.translate.instant('SH.cancel'),
         onConfirm: () => {
           if (this.commercePlan && this.commercePlan > 0) {

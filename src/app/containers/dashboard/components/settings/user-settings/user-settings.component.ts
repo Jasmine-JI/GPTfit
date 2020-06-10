@@ -180,7 +180,7 @@ export class UserSettingsComponent implements OnInit {
         data: {
           title: 'Message',
           body: this.translate.instant('Dashboard.Settings.selectImg'),
-          confirmText: this.translate.instant('SH.determine')
+          confirmText: this.translate.instant('other.confirm')
         }
       });
     }

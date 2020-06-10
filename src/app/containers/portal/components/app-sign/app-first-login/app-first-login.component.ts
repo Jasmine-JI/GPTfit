@@ -247,7 +247,7 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
             title: 'Message',
             body: 'Server error.<br />Please try again later.',
             confirmText: this.translate.instant(
-              'SH.determine'
+              'other.confirm'
             )
           }
         });
@@ -266,7 +266,7 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
             title: 'Message',
             body: msg,
             confirmText: this.translate.instant(
-              'SH.determine'
+              'other.confirm'
             ),
             onConfirm: this.navigateToDashboard.bind(this)
           }

@@ -33,7 +33,7 @@
         />
         <i
           class="icon-svg_web-icon_p1_081-watch inputIcon"
-          [style.color]="displayPW ? 'black' : '#aaaaaa'"
+          [style.color]="displayPW.oldPassword ? 'black' : '#aaaaaa'"
           (click)="toggleDisplayPW('oldPassword')"
         ></i>
 
@@ -52,7 +52,7 @@
         />
         <i
           class="icon-svg_web-icon_p1_081-watch inputIcon"
-          [style.color]="displayPW ? 'black' : '#aaaaaa'"
+          [style.color]="displayPW.newPassword ? 'black' : '#aaaaaa'"
           (click)="toggleDisplayPW('newPassword')"
         ></i>
         <span class="formCue" *ngIf="cue.newPassword !== ''">{{ cue.newPassword }}</span>
@@ -119,7 +119,7 @@
                 <i
                   class="icon-svg_web-icon_p1_081-watch inputIcon"
                   style="top: -30px; left: 90%;"
-                  [style.color]="displayPW ? 'black' : '#aaaaaa'"
+                  [style.color]="displayPW.oldPassword ? 'black' : '#aaaaaa'"
                   (click)="toggleDisplayPW('oldPassword')"
                 ></i>
                 <span class="form__message form__message--placeholder" *ngIf="cue.oldPassword !== ''">{{ cue.oldPassword }}</span>
@@ -139,7 +139,7 @@
                 <i
                   class="icon-svg_web-icon_p1_081-watch inputIcon"
                   style="top: -30px; left: 90%;"
-                  [style.color]="displayPW ? 'black' : '#aaaaaa'"
+                  [style.color]="displayPW.newPassword ? 'black' : '#aaaaaa'"
                   (click)="toggleDisplayPW('newPassword')"
                 ></i>
                 <span class="form__message form__message--placeholder" *ngIf="cue.newPassword !== ''">{{ cue.newPassword }}</span>
