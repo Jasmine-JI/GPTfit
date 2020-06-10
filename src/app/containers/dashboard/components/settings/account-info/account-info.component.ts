@@ -60,7 +60,7 @@ export class AccountInfoComponent implements OnInit {
         data: {
           title: 'message',
           body: this.translate.instant('Dashboard.Settings.stravaRebinding'),
-          confirmText: this.translate.instant('SH.determine'),
+          confirmText: this.translate.instant('other.confirm'),
           cancelText: this.translate.instant('SH.cancel'),
           onConfirm: () => {
             location.href =
@@ -84,7 +84,7 @@ export class AccountInfoComponent implements OnInit {
           data: {
             title: 'message',
             body: this.translate.instant('Dashboard.Settings.updateThirdPpartyFailed'),
-            confirmText: this.translate.instant('SH.determine')
+            confirmText: this.translate.instant('other.confirm')
           }
         });
       } else {

@@ -136,7 +136,7 @@ export class PortalComponent implements OnInit {
             data: {
               title: 'message',
               body: this.translateService.instant('SH.browserError'),
-              confirmText: this.translateService.instant('SH.determine')
+              confirmText: this.translateService.instant('other.confirm')
             }
           });
         }

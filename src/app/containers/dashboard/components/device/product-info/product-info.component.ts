@@ -111,7 +111,7 @@ export class ProductInfoComponent implements OnInit {
           data: {
             title: 'message',
             body: res.resultMessage,
-            confirmText: this.translate.instant('SH.determine')
+            confirmText: this.translate.instant('other.confirm')
           }
         });
         setTimeout(() => this.router.navigateByUrl('dashboard/device'), 3000);
@@ -170,7 +170,7 @@ export class ProductInfoComponent implements OnInit {
           data: {
             title: 'message',
             body: this.translate.instant('Dashboard.ProductInfo.changeFailed'),
-            confirmText: this.translate.instant('SH.determine')
+            confirmText: this.translate.instant('other.confirm')
           }
         });
       }
@@ -206,7 +206,7 @@ export class ProductInfoComponent implements OnInit {
           data: {
             title: 'message',
             body: `${this.translate.instant('Dashboard.MyDevice.unbind')}${this.translate.instant('Dashboard.MyDevice.success')}`,
-            confirmText: this.translate.instant('SH.determine')
+            confirmText: this.translate.instant('other.confirm')
           }
         });
         setTimeout(() => history.back(), 3000);
@@ -216,7 +216,7 @@ export class ProductInfoComponent implements OnInit {
           data: {
             title: 'message',
             body: `${this.translate.instant('Dashboard.MyDevice.unbind')}${this.translate.instant('Dashboard.MyDevice.failure')}`,
-            confirmText: this.translate.instant('SH.determine')
+            confirmText: this.translate.instant('other.confirm')
           }
         });
       }
@@ -230,7 +230,7 @@ export class ProductInfoComponent implements OnInit {
         body: `${this.translate.instant('Dashboard.MyDevice.continueExecution')}${
           this.deviceBondUserName
         }${this.translate.instant('Dashboard.MyDevice.unbind')} sn: ${this.deviceSN} ?`,
-        confirmText: this.translate.instant('SH.determine'),
+        confirmText: this.translate.instant('other.confirm'),
         onConfirm: () => this.unBondDeviceDialog(),
         cancelText: 'cancel'
       }

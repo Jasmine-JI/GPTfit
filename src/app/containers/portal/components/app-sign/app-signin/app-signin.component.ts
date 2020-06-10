@@ -294,7 +294,7 @@ export class AppSigninComponent implements OnInit, OnDestroy {
                 title: 'Message',
                 body: `Server error.<br />Please try again later.`,
                 confirmText: this.translate.instant(
-                  'SH.determine'
+                  'other.confirm'
                 )
               }
             });

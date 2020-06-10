@@ -320,7 +320,7 @@ export class DemoQrcodComponent implements OnInit {
               body: this.translateService.instant(
                 'Portal.undoFitpair'
               ),
-              confirmText: this.translateService.instant('SH.determine'),
+              confirmText: this.translateService.instant('other.confirm'),
               onConfirm: this.uploadDevice.bind(this)
             }
           });
@@ -330,7 +330,7 @@ export class DemoQrcodComponent implements OnInit {
             data: {
               title: 'message',
               body: this.translateService.instant('Portal.bindSuccess'),
-              confirmText: this.translateService.instant('SH.determine'),
+              confirmText: this.translateService.instant('other.confirm'),
               onConfirm: this.uploadDevice.bind(this)
             }
           });
@@ -341,7 +341,7 @@ export class DemoQrcodComponent implements OnInit {
           data: {
             title: 'message',
             body: this.translateService.instant('Portal.pairFailed'),
-            confirmText: this.translateService.instant('SH.determine'),
+            confirmText: this.translateService.instant('other.confirm'),
             onConfirm: this.uploadDevice.bind(this)
           }
         });

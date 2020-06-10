@@ -90,7 +90,7 @@ export class FirstLoginComponent implements OnInit {
           body: this.translate.instant(
             'Dashboard.Settings.selectImg'
           ),
-          confirmText: this.translate.instant('SH.determine')
+          confirmText: this.translate.instant('other.confirm')
         }
       });
     } else {
