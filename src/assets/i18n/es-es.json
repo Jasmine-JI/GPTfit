@@ -823,7 +823,8 @@
     "groupAnalysis": "Group Analysis",
     "fieldDisplay": "Visualización de campos",
     "filter": "Filtro",
-    "numberOf": "Items"
+    "numberOf": "Items",
+    "perCapita": "Per capita"
   },
   "conflict": {
     "benefitime": "Benefit Time"
