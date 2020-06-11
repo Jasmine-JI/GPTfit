@@ -38,10 +38,13 @@ export class ComReportComponent implements OnInit, OnDestroy {
   dataDateRange = '';
   showReport = false;
   selectType = '99';
+  sortStatus = false;
   showAll = {
     group: false,
     person: false
   };
+
+  mouseEnterMenu = false;
 
   groupMenu = {
     show: false,
@@ -63,6 +66,11 @@ export class ComReportComponent implements OnInit, OnDestroy {
   };
 
   hadGroupMemberList = false;
+
+  sortCategory = {
+    group: '',
+    person: ''
+  };
 
   groupHeaderRowDef = [
     'name',
@@ -417,16 +425,16 @@ export class ComReportComponent implements OnInit, OnDestroy {
 
       this.groupTableTypeList.column[0].i18n = this.translate.instant('other.people');
       this.groupTableTypeList.column[1].i18n =
-      `${this.translate.instant('Dashboard.TrainLive.avg')} ${this.translate.instant('other.numberOf')}`;
+      `${this.translate.instant('other.perCapita')} ${this.translate.instant('other.numberOf')}`;
       this.groupTableTypeList.column[2].i18n = this.translate.instant('other.weekFrequency');
       this.groupTableTypeList.column[3].i18n =
-        `${this.translate.instant('Dashboard.TrainLive.avg')} ${this.translate.instant('Dashboard.MyActivity.timing')}`;
+        `${this.translate.instant('other.perCapita')} ${this.translate.instant('Dashboard.MyActivity.timing')}`;
       this.groupTableTypeList.column[4].i18n =
-        `${this.translate.instant('Dashboard.TrainLive.avg')} ${this.translate.instant('conflict.benefitime')}`;
+        `${this.translate.instant('other.perCapita')} ${this.translate.instant('conflict.benefitime')}`;
       this.groupTableTypeList.column[5].i18n =
-        `${this.translate.instant('Dashboard.TrainLive.avg')} ${this.translate.instant('other.pai')}`;
+        `${this.translate.instant('other.perCapita')} ${this.translate.instant('other.pai')}`;
       this.groupTableTypeList.column[6].i18n =
-        `${this.translate.instant('Dashboard.TrainLive.avg')} ${this.translate.instant('SH.calories')}`;
+        `${this.translate.instant('other.perCapita')} ${this.translate.instant('SH.calories')}`;
       this.groupTableTypeList.column[7].i18n = this.translate.instant('SH.hrZone');
 
       this.personTableTypeList.filter[0].i18n = this.translate.instant('other.com');
@@ -851,7 +859,8 @@ export class ComReportComponent implements OnInit, OnDestroy {
             totalCalories: 0,
             avgCalories: 0,
             caloriesRegression: 0,
-            HRZone: [0, 0, 0, 0, 0, 0]
+            HRZone: [0, 0, 0, 0, 0, 0],
+            ratio: '0px'
           }
 
         });
@@ -960,6 +969,11 @@ export class ComReportComponent implements OnInit, OnDestroy {
   // 初始化變數
   initVariable () {
     this.nodata = false;
+    this.sortStatus = false;
+    this.showAll = {
+      group: false,
+      person: false
+    };
     this.hasDataNumber = 0;
     this.activityLength = 0;
     this.totalTime = '00:00';
@@ -2369,7 +2383,8 @@ export class ComReportComponent implements OnInit, OnDestroy {
           perHRZone.z3,
           perHRZone.z4,
           perHRZone.z5
-        ]
+        ],
+        ratio: '0px'
       };
 
     } else {
@@ -2381,15 +2396,16 @@ export class ComReportComponent implements OnInit, OnDestroy {
         totalActivityNum: '--',
         weekFrequency: '--',
         totalTime: '-:--',
-        timeRegression: '--',
+        timeRegression: 0,
         fitTime: '-:--',
-        fitTimeRegression: '--',
+        fitTimeRegression: 0,
         pai: '--',
-        paiRegression: '--',
+        paiRegression: 0,
         totalCalories: '--',
-        caloriesRegression: '--',
+        caloriesRegression: 0,
         likeType: [],
-        HRZone: '--'
+        HRZone: '--',
+        ratio: '0px'
       };
     }
 
@@ -2936,7 +2952,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
     this.groupService.setReportCategory(this.reportCategory);
   }
 
-  // 點擊運定項目後該類別相關資料特別顯示-kidin-1090214
+  // 點擊運動項目後該類別相關資料特別顯示-kidin-1090214
   assignCategory (category) {
     if (category === this.selectType) {
       this.selectType = '99';
@@ -2960,10 +2976,13 @@ export class ComReportComponent implements OnInit, OnDestroy {
 
   // 依據點選的項目對個人分析進行排序-kidin-1090610
   sortGroupData () {
-
+    this.sortStatus = true;
     const sortCategory = this.groupSortTable.active,
-          sortDirection = this.groupSortTable.direction,
-          sortResult = this.tableData.backUp.group.slice();
+          sortDirection = this.groupSortTable.direction;
+    this.sortCategory.group = sortCategory;
+
+    let sortResult = this.tableData.backUp.group.slice();
+    sortResult = this.getTargetRatio(sortResult, sortCategory, 'group');
 
     let swapped = true;
     for (let i = 0; i < sortResult.length && swapped; i++) {
@@ -2974,7 +2993,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
               nextItem = sortResult[j + 1]['data'];
         if (sortDirection === 'asc') {
 
-          if ((sortCategory === 'avgTime' || sortCategory === 'avgFitTime') && currentItem[sortCategory] !== '-:--') {
+          if ((sortCategory === 'avgTime' || sortCategory === 'avgFitTime')) {
 
             const sortA = this.timeStringSwitchNum(currentItem[sortCategory]),
                   sortB = this.timeStringSwitchNum(nextItem[sortCategory]);
@@ -2986,7 +3005,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
 
           } else {
 
-            if (currentItem[sortCategory] > nextItem[sortCategory] || currentItem[sortCategory] === '--') {
+            if (currentItem[sortCategory] > nextItem[sortCategory] || nextItem[sortCategory] === '--') {
               swapped = true;
               [sortResult[j], sortResult[j + 1]] = [sortResult[j + 1], sortResult[j]];
             }
@@ -2995,7 +3014,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
 
         } else {
 
-          if ((sortCategory === 'avgTime' || sortCategory === 'avgFitTime') && currentItem[sortCategory] !== '-:--') {
+          if ((sortCategory === 'avgTime' || sortCategory === 'avgFitTime')) {
             const sortA = this.timeStringSwitchNum(currentItem[sortCategory]),
                   sortB = this.timeStringSwitchNum(nextItem[sortCategory]);
 
@@ -3026,8 +3045,11 @@ export class ComReportComponent implements OnInit, OnDestroy {
   sortPersonData () {
 
     const sortCategory = this.personSortTable.active,
-          sortDirection = this.personSortTable.direction,
-          sortResult = this.tableData.backUp.person.slice();
+          sortDirection = this.personSortTable.direction;
+    this.sortCategory.person = sortCategory;
+
+    let sortResult = this.tableData.backUp.person.slice();
+    sortResult = this.getTargetRatio(sortResult, sortCategory, 'person');
 
     let swapped = true;
     for (let i = 0; i < sortResult.length && swapped; i++) {
@@ -3035,7 +3057,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
       for (let j = 0; j < sortResult.length - 1 - i; j++) {
         if (sortDirection === 'asc') {
 
-          if ((sortCategory === 'totalTime' || sortCategory === 'fitTime') && sortResult[j][sortCategory] !== '-:--') {
+          if ((sortCategory === 'totalTime' || sortCategory === 'fitTime')) {
 
             const sortA = this.timeStringSwitchNum(sortResult[j][sortCategory]),
                   sortB = this.timeStringSwitchNum(sortResult[j + 1][sortCategory]);
@@ -3047,7 +3069,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
 
           } else {
 
-            if (sortResult[j][sortCategory] > sortResult[j + 1][sortCategory] || sortResult[j][sortCategory] === '--') {
+            if (sortResult[j][sortCategory] > sortResult[j + 1][sortCategory] || sortResult[j + 1][sortCategory] === '--') {
               swapped = true;
               [sortResult[j], sortResult[j + 1]] = [sortResult[j + 1], sortResult[j]];
             }
@@ -3056,7 +3078,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
 
         } else {
 
-          if ((sortCategory === 'totalTime' || sortCategory === 'fitTime') && sortResult[j][sortCategory] !== '-:--') {
+          if ((sortCategory === 'totalTime' || sortCategory === 'fitTime')) {
             const sortA = this.timeStringSwitchNum(sortResult[j][sortCategory]),
                   sortB = this.timeStringSwitchNum(sortResult[j + 1][sortCategory]);
 
@@ -3081,6 +3103,71 @@ export class ComReportComponent implements OnInit, OnDestroy {
 
     this.tableData.display.person.data = sortResult;
     this.checkDataLength();
+  }
+
+  // 將指定類別的數據視覺化呈現-kidin-1090611
+  getTargetRatio (data: Array<any>, category: string, type: string) {
+
+    let max = 0; // 取最大值為100%
+    for (let i = 0; i < data.length; i++) {
+
+      let _data;
+      if (type === 'group') {
+        _data = data[i]['data'][category];
+      } else {
+        _data = data[i][category];
+      }
+
+      if (typeof _data === 'string' && _data !== '--') {
+
+        if (this.timeStringSwitchNum(_data) > max) {
+          max = this.timeStringSwitchNum(_data);
+        }
+
+      } else if (typeof _data === 'number') {
+
+        if (_data > max) {
+          max = _data;
+        }
+
+      }
+
+    }
+
+    for (let j = 0; j < data.length; j++) {
+
+      let _item;
+      if (type === 'group') {
+        _item = data[j]['data'];
+      } else {
+        _item = data[j];
+      }
+
+      if (typeof _item[category] === 'string') {
+
+        if (_item[category] === '--') {
+          _item.ratio = '0px';
+        } else {
+          _item.ratio = `${(this.timeStringSwitchNum(_item[category]) / max) * this.getColumnWidth('group')}px`;
+        }
+
+      } else {
+        _item.ratio = `${(_item[category] / max) * this.getColumnWidth('group')}px`;
+      }
+
+    }
+
+    return data;
+  }
+
+  // 取得列表欄位大小-kidin-1090611
+  getColumnWidth (type: string) {
+    if (document.getElementById(`${type}Name`) !== null) {
+      return document.getElementById(`${type}Name`).clientWidth;
+    } else {
+      return 0;
+    }
+
   }
 
   // 依據點選的成員顯示選單-kidin-1090102
@@ -3116,8 +3203,19 @@ export class ComReportComponent implements OnInit, OnDestroy {
     window.addEventListener('scroll', this.hideMenu.bind(this), true);
   }
 
+  // 聚焦時，取消滾動綁定事件-kidin-1090611
+  handleScrollEvent (enter: boolean) {
+
+    if (enter) {
+      this.mouseEnterMenu = true;
+    } else {
+      this.mouseEnterMenu = false;
+    }
+
+  }
+
   // 取得目標群組成員名單-kidin-1090610
-  getTargetGroupMemberList (groupId) {
+  getTargetGroupMemberList (groupId: string) {
     const list = [],
           gidLen = groupId.split('-').length;
 
@@ -3183,7 +3281,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
   }
 
   // 取得目標使用者所屬群組-kidin-1090610
-  getTargetBelongGroup (userId) {
+  getTargetBelongGroup (userId: string) {
 
     for (let i = 0; i < this.lowGroupList.length; i++) {
 
@@ -3203,23 +3301,27 @@ export class ComReportComponent implements OnInit, OnDestroy {
 
   // 隱藏個人選單-kidin-1090310
   hideMenu () {
-    if (this.checkClickEvent === false) {
-      this.groupMenu = {
-        show: false,
-        x: '',
-        y: ''
-      };
 
-      this.personalMenu = {
-        show: false,
-        x: '',
-        y: ''
-      };
-    } else {
-      this.checkClickEvent = false;
+    if (!this.mouseEnterMenu) {
+
+      if (this.checkClickEvent === false) {
+        this.groupMenu = {
+          show: false,
+          x: '',
+          y: ''
+        };
+
+        this.personalMenu = {
+          show: false,
+          x: '',
+          y: ''
+        };
+      } else {
+        this.checkClickEvent = false;
+      }
+
     }
 
-    window.removeEventListener('scroll', this.hideMenu.bind(this), true);
   }
 
   // 依照使用者的視窗大小，決定個人分析設定可點選的項目多寡-kidin-1090609
@@ -3493,11 +3595,14 @@ export class ComReportComponent implements OnInit, OnDestroy {
       gColOpt = opt.group.column.split('-');
       pColOpt = opt.person.column.split('-');
 
+      this.tableTypeListOpt.tableCheckedNum.group.column = gColOpt.length;
+      this.tableTypeListOpt.tableCheckedNum.person.column = pColOpt.length;
+
       if (+this.groupLevel <= 30) {
-        this.tableTypeListOpt.tableCheckedNum.group.filter = 3;
-        this.tableTypeListOpt.tableCheckedNum.person.filter = 3;
         gFilOpt = opt.group.filter.split('-');
         pFilOpt = opt.person.filter.split('-');
+        this.tableTypeListOpt.tableCheckedNum.group.filter = gFilOpt.length;
+        this.tableTypeListOpt.tableCheckedNum.person.filter = pFilOpt.length;
       } else if (+this.groupLevel <= 40) {
         this.tableTypeListOpt.tableCheckedNum.group.filter = 2;
         this.tableTypeListOpt.tableCheckedNum.person.filter = 2;
@@ -3533,9 +3638,15 @@ export class ComReportComponent implements OnInit, OnDestroy {
   }
 
   // 將時間字串轉數字(分鐘)-kidin-1090401
-  timeStringSwitchNum (time) {
-    const min = (+time.split(':')[0] * 60) + +time.split(':')[1];
-    return min;
+  timeStringSwitchNum (time: string) {
+
+    if (time === '-:--') {
+      return 0;
+    } else {
+      const min = (+time.split(':')[0] * 60) + +time.split(':')[1];
+      return min;
+    }
+
   }
 
   print() {

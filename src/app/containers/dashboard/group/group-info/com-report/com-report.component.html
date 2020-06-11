@@ -726,12 +726,18 @@
       <mat-table [dataSource]="tableData.display.group.data" matSort #groupSortTable="matSort"  (matSortChange)="sortGroupData()">
         <ng-container matColumnDef="name">
           <mat-header-cell *matHeaderCellDef disableClear="true" class="tableArrangement">
-            <span class="tableTitleWord">{{'Dashboard.Group.MyGroup.name' | translate}}</span>
+            <span
+              id="groupName"
+              class="tableTitleWord"
+              style="text-align: start;"
+            >
+              {{'Dashboard.Group.MyGroup.name' | translate}}
+            </span>
           </mat-header-cell>
           <mat-cell
             *matCellDef="let row; let i = index;"
             class="tableArrangement tableContent flexCol"
-            style="align-items: flex-start;"
+            style="align-items: flex-start; justify-content: center;"
           >
             <span style="text-align: start; font-size: 10px; color: #c5c5c5;">{{row?.data.gName.upLevelName}}</span>
             <span style="text-align: start;">{{row?.data.gName.groupName}}</span>
@@ -742,7 +748,7 @@
             *matHeaderCellDef
             mat-sort-header
             disableClear="true"
-            class="tableArrangement"
+            class="flexCenter tableArrangement"
             [style.display]="groupTableTypeList.column[0].checked ? '' : 'none'"
           >
             <span class="tableTitleWord">{{'other.people' | translate}}</span>
@@ -752,7 +758,12 @@
             class="tableArrangement tableContent"
             [style.display]="groupTableTypeList.column[0].checked ? '' : 'none'"
           >
-            <span style="text-align: center;">{{row?.data.memberNum | number: '1.0-0'}}</span>
+            <div
+              class="visualizeData"
+              [style.width]="sortStatus ? row?.data.ratio : '0px'"
+              *ngIf="sortCategory.group === 'memberNum'"
+            ></div>
+            <span class="setIn">{{row?.data.memberNum | number: '1.0-0'}}</span>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="avgActivityNum">
@@ -760,12 +771,12 @@
             *matHeaderCellDef
             mat-sort-header
             disableClear="true"
-            class="tableArrangement"
+            class="flexCenter tableArrangement"
             [style.display]="groupTableTypeList.column[1].checked ? '' : 'none'"
           >
             <div class="tableTitle">
               <span class="tableTitleWord">
-                {{'Dashboard.TrainLive.avg' | translate}} {{'other.numberOf' | translate}}
+                {{'other.perCapita' | translate}} {{'other.numberOf' | translate}}
               </span>
               <span class="chartTitleUnit">times</span>
             </div>
@@ -775,7 +786,12 @@
             class="tableArrangement tableContent"
             [style.display]="groupTableTypeList.column[1].checked ? '' : 'none'"
           >
-            <span>{{row?.data.avgActivityNum | number: '1.0-0'}}</span>
+            <div
+              class="visualizeData"
+              [style.width]="sortStatus ? row?.data.ratio : '0px'"
+              *ngIf="sortCategory.group === 'avgActivityNum'"
+            ></div>
+            <span class="setIn">{{row?.data.avgActivityNum | number: '1.0-0'}}</span>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="weekFrequency">
@@ -783,7 +799,7 @@
             *matHeaderCellDef
             mat-sort-header
             disableClear="true"
-            class="tableArrangement"
+            class="flexCenter tableArrangement"
             [style.display]="groupTableTypeList.column[2].checked ? '' : 'none'"
             [hidden]="diffDay < 14"
           >
@@ -800,9 +816,20 @@
             [style.display]="groupTableTypeList.column[2].checked ? '' : 'none'"
             [hidden]="diffDay < 14"
           >
-            <span *ngIf="row?.data.weekFrequency !== '--' && row?.data.weekFrequency >= 1">{{row?.data.weekFrequency | number:'1.0-0'}}</span>
-            <span *ngIf="row?.data.weekFrequency !== '--' && row?.data.weekFrequency < 1">&lt; 1</span>
-            <span *ngIf="row?.data.weekFrequency === '--'">{{row?.data.weekFrequency}}</span>
+            <div
+              class="visualizeData"
+              [style.width]="sortStatus ? row?.data.ratio : '0px'"
+              *ngIf="sortCategory.group === 'weekFrequency'"
+            ></div>
+            <span class="setIn" *ngIf="row?.data.weekFrequency !== '--' && row?.data.weekFrequency >= 1">
+              {{row?.data.weekFrequency | number:'1.0-0'}}
+            </span>
+            <span class="setIn" *ngIf="row?.data.weekFrequency !== '--' && row?.data.weekFrequency < 1">
+              &lt; 1
+            </span>
+            <span class="setIn" *ngIf="row?.data.weekFrequency === '--'">
+              {{row?.data.weekFrequency}}
+            </span>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="avgTime">
@@ -810,12 +837,12 @@
             *matHeaderCellDef
             mat-sort-header
             disableClear="true"
-            class="tableArrangement"
+            class="flexCenter tableArrangement"
             [style.display]="groupTableTypeList.column[3].checked ? '' : 'none'"
           >
             <div class="tableTitle">
               <span class="tableTitleWord">
-                {{'Dashboard.TrainLive.avg' | translate}} {{'Dashboard.MyActivity.timing' | translate}}
+                {{'other.perCapita' | translate}} {{'Dashboard.MyActivity.timing' | translate}}
               </span>
               <span class="chartTitleUnit">time</span>
             </div>
@@ -825,10 +852,16 @@
             class="tableArrangement tableContent"
             [style.display]="groupTableTypeList.column[3].checked ? '' : 'none'"
           >
-            <span>{{row?.data.avgTime}}</span>
-            <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.data.timeRegression > 0"></i>
-            <span [style.width]="row?.data.timeRegression === 0 ? '20px': '0px'"></span>
-            <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.data.timeRegression < 0"></i>
+            <div
+              class="visualizeData"
+              [style.width]="sortStatus ? row?.data.ratio : '0px'"
+              *ngIf="sortCategory.group === 'avgTime'"
+            ></div>
+            <div class="setIn">
+              <span [class.fixPlace]="row?.data.timeRegression === 0">{{row?.data.avgTime}}</span>
+              <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.data.timeRegression > 0"></i>
+              <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.data.timeRegression < 0"></i>
+            </div>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="avgFitTime">
@@ -836,12 +869,12 @@
             *matHeaderCellDef
             mat-sort-header
             disableClear="true"
-            class="tableArrangement"
+            class="flexCenter tableArrangement"
             [style.display]="groupTableTypeList.column[4].checked ? '' : 'none'"
           >
             <div class="tableTitle">
               <span class="tableTitleWord">
-                {{'Dashboard.TrainLive.avg' | translate}} {{'conflict.benefitime' | translate}}
+                {{'other.perCapita' | translate}} {{'conflict.benefitime' | translate}}
               </span>
               <span class="chartTitleUnit">time</span>
             </div>
@@ -851,10 +884,16 @@
             class="tableArrangement tableContent"
             [style.display]="groupTableTypeList.column[4].checked ? '' : 'none'"
           >
-            <span>{{row?.data.avgFitTime}}</span>
-            <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.data.fitTimeRegression > 0"></i>
-            <span [style.width]="row?.data.fitTimeRegression === 0 ? '20px': '0px'"></span>
-            <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.data.fitTimeRegression < 0"></i>
+            <div
+              class="visualizeData"
+              [style.width]="sortStatus ? row?.data.ratio : '0px'"
+              *ngIf="sortCategory.group === 'avgFitTime'"
+            ></div>
+            <div class="setIn">
+              <span [class.fixPlace]="row?.data.fitTimeRegression === 0">{{row?.data.avgFitTime}}</span>
+              <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.data.fitTimeRegression > 0"></i>
+              <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.data.fitTimeRegression < 0"></i>
+            </div>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="avgPai">
@@ -862,12 +901,12 @@
             *matHeaderCellDef
             mat-sort-header
             disableClear="true"
-            class="tableArrangement"
+            class="flexCenter tableArrangement"
             [style.display]="groupTableTypeList.column[5].checked ? '' : 'none'"
           >
             <div class="tableTitle">
               <span class="tableTitleWord">
-                {{'Dashboard.TrainLive.avg' | translate}} {{'other.pai' | translate}}
+                {{'other.perCapita' | translate}} {{'other.pai' | translate}}
               </span>
             </div>
           </mat-header-cell>
@@ -876,10 +915,16 @@
             class="tableArrangement tableContent"
             [style.display]="groupTableTypeList.column[5].checked ? '' : 'none'"
           >
-            <span>{{row?.data.avgPai | number: '1.0-0'}}</span>
-            <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.data.paiRegression > 0"></i>
-            <span [style.width]="row?.data.paiRegression === 0 ? '20px': '0px'"></span>
-            <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.data.paiRegression < 0"></i>
+            <div
+              class="visualizeData"
+              [style.width]="sortStatus ? row?.data.ratio : '0px'"
+              *ngIf="sortCategory.group === 'avgPai'"
+            ></div>
+            <div class="setIn">
+              <span [class.fixPlace]="row?.data.paiRegression === 0">{{row?.data.avgPai | number: '1.0-0'}}</span>
+              <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.data.paiRegression > 0"></i>
+              <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.data.paiRegression < 0"></i>
+            </div>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="avgCalories">
@@ -887,12 +932,12 @@
             *matHeaderCellDef
             mat-sort-header
             disableClear="true"
-            class="tableArrangement"
+            class="flexCenter tableArrangement"
             [style.display]="groupTableTypeList.column[6].checked ? '' : 'none'"
           >
             <div class="tableTitle">
               <span class="tableTitleWord">
-                {{'Dashboard.TrainLive.avg' | translate}} {{'SH.calories' | translate}}
+                {{'other.perCapita' | translate}} {{'SH.calories' | translate}}
               </span>
               <span class="chartTitleUnit">cal</span>
             </div>
@@ -902,18 +947,28 @@
             class="tableArrangement tableContent"
             [style.display]="groupTableTypeList.column[6].checked ? '' : 'none'"
           >
-            <span *ngIf="row?.data.avgCalories !== '--'">{{row?.data.avgCalories | number:'1.0-0'}}</span>
-            <span *ngIf="row?.data.avgCalories === '--'">{{row?.data.avgCalories}}</span>
-            <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.data.caloriesRegression > 0"></i>
-            <span [style.width]="row?.data.caloriesRegression === 0 ? '20px': '0px'"></span>
-            <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.data.caloriesRegression < 0"></i>
+            <div
+              class="visualizeData"
+              [style.width]="sortStatus ? row?.data.ratio : '0px'"
+              *ngIf="sortCategory.group === 'avgCalories'"
+            ></div>
+            <div class="setIn">
+              <span [class.fixPlace]="row?.data.caloriesRegression === 0" *ngIf="row?.data.avgCalories !== '--'">
+                {{row?.data.avgCalories | number:'1.0-0'}}
+              </span>
+              <span [class.fixPlace]="row?.data.caloriesRegression === 0" *ngIf="row?.data.avgCalories === '--'">
+                {{row?.data.avgCalories}}
+              </span>
+              <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.data.caloriesRegression > 0"></i>
+              <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.data.caloriesRegression < 0"></i>
+            </div>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="HRZone">
           <mat-header-cell
             *matHeaderCellDef
             disableClear="true"
-            class="tableArrangement"
+            class="flexCenter tableArrangement"
             [style.display]="groupTableTypeList.column[7].checked ? '' : 'none'"
           >
             <div class="tableTitle">
@@ -933,7 +988,7 @@
                 *ngIf="!isLoading && !isRxjsLoading"
               ></app-hrzone-chart>
             </div>
-            <span *ngIf="row?.data.HRZone === '--'">--</span>
+            <span class="setIn" *ngIf="row?.data.HRZone === '--'">--</span>
           </mat-cell>
         </ng-container>
         <ng-container>
@@ -959,6 +1014,8 @@
     [style.top]="groupMenu.show ? groupMenu.y : null"
     [style.left]="groupMenu.show ? groupMenu.x : null"
     *ngIf="groupMenu.show"
+    (mouseenter)="handleScrollEvent(true)"
+    (mouseleave)="handleScrollEvent(false)"
   >
     <div class="flexCol" style="padding: 15px 15px 0px 15px;">
       <span style="color: #656565; font-weight: bold;">{{'Dashboard.TrainLive.member' | translate}}</span>
@@ -1064,12 +1121,25 @@
     <div style="margin-top: 10px;">
       <mat-table [dataSource]="tableData.display.person.data" matSort #personSortTable="matSort"  (matSortChange)="sortPersonData()">
         <ng-container matColumnDef="name">
-          <mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true" class="tableArrangement">
-            <span class="tableTitleWord">{{'Dashboard.Group.MyGroup.name' | translate}}</span>
+          <mat-header-cell
+            *matHeaderCellDef
+            mat-sort-header
+            disableClear="true"
+            class="tableArrangement"
+            style="justify-content: flex-start;"
+          >
+            <span
+              id="personName"
+              class="tableTitleWord"
+              style="text-align: start;"
+            >
+              {{'Dashboard.Group.MyGroup.name' | translate}}
+            </span>
           </mat-header-cell>
           <mat-cell
             *matCellDef="let row; let i = index;"
-            class="tableArrangement tableContent"
+            class="tableArrangement tableContent flexCol"
+            style="align-items: flex-start; justify-content: center;"
           >
             <span style="text-align: center;">{{row?.name}}</span>
           </mat-cell>
@@ -1079,7 +1149,7 @@
             *matHeaderCellDef
             mat-sort-header
             disableClear="true"
-            class="tableArrangement"
+            class="flexCenter tableArrangement"
             [style.display]="personTableTypeList.column[0].checked ? '' : 'none'"
           >
             <div class="tableTitle">
@@ -1092,7 +1162,12 @@
             class="tableArrangement tableContent"
             [style.display]="personTableTypeList.column[0].checked ? '' : 'none'"
           >
-            <span>{{row?.totalActivityNum}}</span>
+            <div
+              class="visualizeData"
+              [style.width]="row?.ratio"
+              *ngIf="sortCategory.person === 'totalActivityNum'"
+            ></div>
+            <span class="setIn">{{row?.totalActivityNum}}</span>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="weekFrequency">
@@ -1100,7 +1175,7 @@
             *matHeaderCellDef
             mat-sort-header
             disableClear="true"
-            class="tableArrangement"
+            class="flexCenter tableArrangement"
             [style.display]="personTableTypeList.column[1].checked ? '' : 'none'"
             [hidden]="diffDay < 14"
           >
@@ -1117,9 +1192,20 @@
             [style.display]="personTableTypeList.column[1].checked ? '' : 'none'"
             [hidden]="diffDay < 14"
           >
-            <span *ngIf="row?.weekFrequency !== '--' && row?.weekFrequency >= 1">{{row?.weekFrequency | number:'1.0-0'}}</span>
-            <span *ngIf="row?.weekFrequency !== '--' && row?.weekFrequency < 1">&lt; 1</span>
-            <span *ngIf="row?.weekFrequency === '--'">{{row?.weekFrequency}}</span>
+            <div
+              class="visualizeData"
+              [style.width]="row?.ratio"
+              *ngIf="sortCategory.person === 'weekFrequency'"
+            ></div>
+            <span class="setIn" *ngIf="row?.weekFrequency !== '--' && row?.weekFrequency >= 1">
+              {{row?.weekFrequency | number:'1.0-0'}}
+            </span>
+            <span class="setIn" *ngIf="row?.weekFrequency !== '--' && row?.weekFrequency < 1">
+              &lt; 1
+            </span>
+            <span class="setIn" *ngIf="row?.weekFrequency === '--'">
+              {{row?.weekFrequency}}
+            </span>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="totalTime">
@@ -1127,11 +1213,11 @@
             *matHeaderCellDef
             mat-sort-header
             disableClear="true"
-            class="tableArrangement"
+            class="flexCenter tableArrangement"
             [style.display]="personTableTypeList.column[2].checked ? '' : 'none'"
           >
             <div class="tableTitle">
-              <span class="tableTitleWord">
+              <span class="flexCenter tableTitleWord">
                 {{'Dashboard.MyActivity.totalTime' | translate}}
               </span>
               <span class="chartTitleUnit">time</span>
@@ -1142,10 +1228,16 @@
             class="tableArrangement tableContent"
             [style.display]="personTableTypeList.column[2].checked ? '' : 'none'"
           >
-            <span>{{row?.totalTime}}</span>
-            <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.timeRegression > 0"></i>
-            <span [style.width]="row?.timeRegression === 0 ? '20px': '0px'"></span>
-            <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.timeRegression < 0"></i>
+            <div
+              class="visualizeData"
+              [style.width]="row?.ratio"
+              *ngIf="sortCategory.person === 'totalTime'"
+            ></div>
+            <div class="setIn">
+              <span [class.fixPlace]="row?.timeRegression === 0">{{row?.totalTime}}</span>
+              <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.timeRegression > 0"></i>
+              <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.timeRegression < 0"></i>
+            </div>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="fitTime">
@@ -1153,7 +1245,7 @@
             *matHeaderCellDef
             mat-sort-header
             disableClear="true"
-            class="tableArrangement"
+            class="flexCenter tableArrangement"
             [style.display]="personTableTypeList.column[3].checked ? '' : 'none'"
           >
             <div class="tableTitle">
@@ -1168,10 +1260,16 @@
             class="tableArrangement tableContent"
             [style.display]="personTableTypeList.column[3].checked ? '' : 'none'"
           >
-            <span>{{row?.fitTime}}</span>
-            <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.fitTimeRegression > 0"></i>
-            <span [style.width]="row?.fitTimeRegression === 0 ? '20px': '0px'"></span>
-            <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.fitTimeRegression < 0"></i>
+            <div
+              class="visualizeData"
+              [style.width]="row?.ratio"
+              *ngIf="sortCategory.person === 'fitTime'"
+            ></div>
+            <div class="setIn">
+              <span [class.fixPlace]="row?.fitTimeRegression === 0">{{row?.fitTime}}</span>
+              <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.fitTimeRegression > 0"></i>
+              <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.fitTimeRegression < 0"></i>
+            </div>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="pai">
@@ -1179,7 +1277,7 @@
             *matHeaderCellDef
             mat-sort-header
             disableClear="true"
-            class="tableArrangement"
+            class="flexCenter tableArrangement"
             [style.display]="personTableTypeList.column[4].checked ? '' : 'none'"
           >
             <div class="tableTitle">
@@ -1193,10 +1291,16 @@
             class="tableArrangement tableContent"
             [style.display]="personTableTypeList.column[4].checked ? '' : 'none'"
           >
-            <span>{{row?.pai}}</span>
-            <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.paiRegression > 0"></i>
-            <span [style.width]="row?.paiRegression === 0 ? '20px': '0px'"></span>
-            <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.paiRegression < 0"></i>
+            <div
+              class="visualizeData"
+              [style.width]="row?.ratio"
+              *ngIf="sortCategory.person === 'pai'"
+            ></div>
+            <div class="setIn">
+              <span [class.fixPlace]="row?.paiRegression === 0">{{row?.pai}}</span>
+              <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.paiRegression > 0"></i>
+              <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.paiRegression < 0"></i>
+            </div>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="totalCalories">
@@ -1204,7 +1308,7 @@
             *matHeaderCellDef
             mat-sort-header
             disableClear="true"
-            class="tableArrangement"
+            class="flexCenter tableArrangement"
             [style.display]="personTableTypeList.column[5].checked ? '' : 'none'"
           >
             <div class="tableTitle">
@@ -1219,18 +1323,28 @@
             class="tableArrangement tableContent"
             [style.display]="personTableTypeList.column[5].checked ? '' : 'none'"
           >
-            <span *ngIf="row?.totalCalories !== '--'">{{row?.totalCalories | number:'1.0-0'}}</span>
-            <span *ngIf="row?.totalCalories === '--'">{{row?.totalCalories}}</span>
-            <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.caloriesRegression > 0"></i>
-            <span [style.width]="row?.caloriesRegression === 0 ? '20px': '0px'"></span>
-            <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.caloriesRegression < 0"></i>
+            <div
+              class="visualizeData"
+              [style.width]="row?.ratio"
+              *ngIf="sortCategory.person === 'totalCalories'"
+            ></div>
+            <div class="setIn">
+              <span [class.fixPlace]="row?.caloriesRegression === 0" *ngIf="row?.totalCalories !== '--'">
+                {{row?.totalCalories | number:'1.0-0'}}
+              </span>
+              <span [class.fixPlace]="row?.caloriesRegression === 0" *ngIf="row?.totalCalories === '--'">
+                {{row?.totalCalories}}
+              </span>
+              <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.caloriesRegression > 0"></i>
+              <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.caloriesRegression < 0"></i>
+            </div>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="likeType">
           <mat-header-cell
             *matHeaderCellDef
             disableClear="true"
-            class="tableArrangement"
+            class="flexCenter tableArrangement"
             [style.display]="personTableTypeList.column[6].checked ? '' : 'none'"
           >
             <div class="tableTitle">
@@ -1243,17 +1357,19 @@
             class="tableArrangement tableContent tableAnalysisIcon"
             [style.display]="personTableTypeList.column[6].checked ? '' : 'none'"
           >
-            <i [class]="row?.likeType[0]" *ngIf="row?.likeType.length > 0"></i>
-            <i [class]="row?.likeType[1]" *ngIf="row?.likeType.length > 1"></i>
-            <i [class]="row?.likeType[2]" *ngIf="row?.likeType.length > 2"></i>
-            <span *ngIf="row?.likeType.length === 0" style="font-size: 14px;">--</span>
+            <div class="setIn">
+              <i [class]="row?.likeType[0]" *ngIf="row?.likeType.length > 0"></i>
+              <i [class]="row?.likeType[1]" *ngIf="row?.likeType.length > 1"></i>
+              <i [class]="row?.likeType[2]" *ngIf="row?.likeType.length > 2"></i>
+              <span *ngIf="row?.likeType.length === 0" style="font-size: 14px;">--</span>
+            </div>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="HRZone">
           <mat-header-cell
             *matHeaderCellDef
             disableClear="true"
-            class="tableArrangement"
+            class="flexCenter tableArrangement"
             [style.display]="personTableTypeList.column[7].checked ? '' : 'none'"
           >
             <div class="tableTitle">
@@ -1273,7 +1389,7 @@
                 *ngIf="!isLoading && !isRxjsLoading"
               ></app-hrzone-chart>
             </div>
-            <span *ngIf="row?.HRZone === '--'">--</span>
+            <span class="setIn" *ngIf="row?.HRZone === '--'">--</span>
           </mat-cell>
         </ng-container>
         <ng-container>
@@ -1299,6 +1415,8 @@
     [style.top]="personalMenu.show ? personalMenu.y : null"
     [style.left]="personalMenu.show ? personalMenu.x : null"
     *ngIf="personalMenu.show"
+    (mouseenter)="handleScrollEvent(true)"
+    (mouseleave)="handleScrollEvent(false)"
   >
     <div class="flexCol" style="padding: 15px 15px 0px 15px;">
       <span style="color: #656565; font-weight: bold;">{{'Dashboard.Group.MyGroup.groupList' | translate}}</span>
