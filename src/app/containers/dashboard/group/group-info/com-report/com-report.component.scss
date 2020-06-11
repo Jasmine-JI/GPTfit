@@ -210,8 +210,23 @@
 }
 
 .tableArrangement {
-  display: flex;
-  justify-content: center;
+
+  .visualizeData {
+    height: 40px;
+    background-color: #dbf3ff;
+    position: absolute;
+  }
+
+  .setIn {
+    margin: 0 auto;
+    z-index: 3;
+  }
+
+}
+
+.fixPlace {
+  position: relative;
+  right: 10px;
 }
 
 .chartTitleUnit {

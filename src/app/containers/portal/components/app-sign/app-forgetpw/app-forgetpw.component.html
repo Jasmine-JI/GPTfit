@@ -82,8 +82,8 @@
             />
             <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha">
           </div>
-          <span class="formCue" *ngIf="imgCaptcha.show && signupCue.imgCaptcha !== ''">
-            {{ signupCue.imgCaptcha }}
+          <span class="formCue" *ngIf="imgCaptcha.show && imgCaptcha.cue !== ''">
+            {{ imgCaptcha.cue }}
           </span>
         </div>
       </div>
@@ -221,8 +221,8 @@
                     />
                     <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha">
                   </div>
-                  <span class="form__message form__message--placeholder" *ngIf="imgCaptcha.show && signupCue.imgCaptcha !== ''">
-                    {{ signupCue.imgCaptcha }}
+                  <span class="form__message form__message--placeholder" *ngIf="imgCaptcha.show && imgCaptcha.cue !== ''">
+                    {{ imgCaptcha.cue }}
                   </span>
                 </div>
               </div>

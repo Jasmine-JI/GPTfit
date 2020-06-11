@@ -801,7 +801,7 @@
     "followExerciseTypeCreate": "请依照您的运动属性与课程期间建立报告",
     "keyInCaptcha": "请输入图形验证码，可点击图片刷新",
     "countryRegionCode": "请选择国家/地区代码",
-    "pai": "个人化活动指标",
+    "pai": "活动指标",
     "upTo": "最多{{number}}项",
     "switch": "启用",
     "switching": "您正在启用账号",
@@ -823,7 +823,8 @@
     "groupAnalysis": "团体分析",
     "fieldDisplay": "栏位显示",
     "filter": "筛选",
-    "numberOf": "筆数"
+    "numberOf": "筆数",
+    "perCapita": "人均"
   },
   "conflict": {
     "benefitime": "效益时间"

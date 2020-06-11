@@ -638,6 +638,9 @@ export class GroupInfoComponent implements OnInit {
           case 'This group member number more than commerce plan restrictions.': // 已滿員
             message = `${this.translate.instant('Dashboard.Group.group')} ${this.translate.instant('Dashboard.Group.GroupInfo.groupFull')}`;
             break;
+          default:
+            message = resultMessage;
+            break;
         }
 
         if (resultCode === 200) {
