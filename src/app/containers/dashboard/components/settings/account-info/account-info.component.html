@@ -3,17 +3,24 @@
   {{'Portal.basicInformation' | translate}}
 </label>
 <div class="ala-list__item">
-  <label class="ala-form__label settings-item">{{'Dashboard.Settings.account' | translate}}</label>
-  <div class="settings-control">
+  <label class="ala-form__label settings-item">
+    {{'Dashboard.Settings.account' | translate}}
+  </label>
+  <div class="flexRow settings-control">
     <span style="color:#919191">
       {{userData?.account}}
+    </span>
+    <span *ngIf="enableAccount">
+      (<a href="/enableAccount-web" style="color:#26abe3">
+        {{ 'other.switch' | translate }} {{'Dashboard.Settings.account' | translate}}
+      </a>)
     </span>
   </div>
 </div>
 <div class="ala-list__item">
   <label class="ala-form__label settings-item">{{'Dashboard.Settings.password' | translate}}</label>
   <div class="settings-control">
-    <span style="color:#cb5e5e;text-decoration: underline">
+    <span style="color:#cb5e5e;text-decoration: underline; cursor: pointer;" (click)="navigateToEditPwd()">
       {{'Dashboard.Settings.changePassword' | translate}}
     </span>
   </div>

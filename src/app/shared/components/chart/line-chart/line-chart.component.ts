@@ -185,16 +185,19 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
           hasDataNum++;
         }
 
-        if (data[j][i][1] > this.highestPoint) {
-          this.highestPoint = data[j][i][1];
-        }
-
-        if (data[j][i][1] < this.lowestPoint) {
-          this.lowestPoint = data[j][i][1];
-        }
       }
 
       newData.push([this.dateList[i], total / hasDataNum]);
+
+      if (total / hasDataNum > this.highestPoint) {
+        this.highestPoint = total / hasDataNum;
+      }
+
+      if (total / hasDataNum < this.lowestPoint) {
+        this.lowestPoint = total / hasDataNum;
+      }
+
+
     }
 
     return newData;

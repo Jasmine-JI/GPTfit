@@ -1,3 +1,7 @@
+/* You can add global styles to this file, and also import other style files */
+/* @import "~@angular/material/prebuilt-themes/pink-bluegrey.css"; */
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+
 .alpha-text {
   color: #F2850C;
   font-size: 14px;
@@ -46,6 +50,132 @@
   margin-bottom: 15px;
 }
 
+.appHeader {
+  margin-top: 10px;
+  border-bottom: 1px solid #d4d4d4;
+  width: 100%;
+}
+
+.appDiv {
+  width: 90%;
+  min-height: 85px;
+  margin: 5px 0px 5px 10px;
+
+  input {
+    outline: none;
+    border: none;
+    border-bottom: 1px solid #d4d4d4;
+    margin-top: 10px;
+  }
+
+  input::placeholder {
+    color: black;
+    font-size: 14px;
+    font-weight: bold;
+    padding-left: 10px;
+  }
+
+}
+
+.webDiv {
+  margin: 15px 0px;
+}
+
+.appview-header {
+  margin: auto 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.appview-header-position {
+  margin: auto auto;
+  position: relative;
+  left: -15px;
+}
+
+.appview-btn {
+  width: 90%;
+  margin: 20px auto 20px auto;
+  color: white;
+  font-weight: bold;
+  font-size: 24px;
+  background-color: #23a0da;
+  border: none;
+  border-radius: 30px;
+  height: 60px;
+}
+
+.appview-btn-unclickable {
+  pointer-events: none;
+  background-color: #bde2f4;
+}
+
+.avatar-wrapper {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto;
+  margin-bottom: 30px;
+
+  img {
+    width: 100%;
+  }
+}
+
+.formTitle {
+  font-size: 20px;
+  font-weight: bold;
+  color: #aaaaaa;
+}
+
+.formSelect {
+  width: 150px !important;
+
+  .mat-select-value {
+    font-size: 20px;
+    font-weight: bold;
+    color: #aaaaaa;
+  }
+
+  .mat-select-arrow-wrapper {
+
+    .mat-select-arrow {
+      color: #239fd9;
+      border-top: 10px solid;
+    }
+
+  }
+
+}
+
+.appView-imgCaptcha {
+  width: 100px;
+  margin-left: 20px;
+}
+
+.formCue {
+  font-size: 14px;
+  font-weight: bold;
+  color: #595959;
+}
+
+.app-alert {
+  color: #b53333
+}
+
+.inputIcon {
+  position: relative;
+  top: -25px;
+  width: 10px;
+  left: 95%;
+  z-index: 1;
+  font-size: 24px;
+  cursor: pointer;
+  height: 0px;
+}
+
 /*定義滾動條高寬及背景 高寬分別對應橫豎滾動條的尺寸*/
 ::-webkit-scrollbar
 {
@@ -68,6 +198,513 @@
     border-radius: 10px;
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
     background-color: rgba(204, 204, 204, 0.1);
+}
+
+.session_area .mat-checkbox-inner-container {
+  height: 14px;
+  width: 14px;
+}
+.mat-checkbox + .mat-checkbox {
+  margin-left: 10px;
+}
+.mat-dialog-container {
+  padding-top: 0px !important;
+}
+.ala-dialog.mat-dialog-title {
+  margin: 0 -24px 20px;
+  background-color: #2f4349;
+  color: #fff;
+  padding: 8px 25px;
+  text-align: center;
+}
+.mat-progress-spinner circle, .mat-spinner circle {
+  stroke: #108bcd;
+}
+.ng-bar-placeholder {
+  height: 5px!important;
+}
+
+body,
+html {
+  font-family: 'Microsoft JhengHei', sans-serif !important;
+  height: 100%;
+  margin: 0;
+}
+
+/* loading */
+.ala-loading-shade {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0px;
+  right: 0;
+  background: rgba(0, 0, 0, 0.15);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* form field */
+.form-field {
+  height: 30px;
+  max-width: 100%;
+  padding: 0px 10px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #CCC;
+  border-radius: 3px;
+  background-color: transparent;
+  outline: 0;
+}
+.form-field[disabled] {
+  border-color: #9B9B9B;
+  background-color: #EFEFEF;
+  opacity: .65;
+}
+.form-control.form-control--invalid {
+  border: 1px solid #c75353;
+  box-shadow: rgba(163, 50, 50, .34) 0 0 4px 0;
+}
+
+.form-control.form-control--invalid {
+  border: 1px solid #c75353;
+  box-shadow: rgba(163, 50, 50, .34) 0 0 4px 0;
+}
+
+.form-field.form-field--invalid {
+  border: 1px solid #c75353;
+  box-shadow: rgba(163, 50, 50, .34) 0 0 4px 0;
+}
+/* textarea */
+textarea.form-field {
+  height: auto;
+  min-height: 72px;
+  padding: 10px;
+  background-color: #fff;
+}
+
+/* button */
+.button {
+  border-radius: 5px;
+  background-color: #26abe3;
+  text-align: center;
+  padding: 0px;
+  width: 100%;
+  border: 0px;
+  color: #fff;
+  height: 30px;
+  cursor: pointer;
+  line-height: 30px;
+  text-align: center;
+  transition: 0.3s;
+}
+
+.button:hover {
+  background: #1c89bf;
+}
+button:focus {
+  outline: none!important;
+}
+
+.button:hover,
+.button:active,
+.button:visited,
+.button:focus {
+  color: #fff;
+  outline: none;
+}
+.button.search-form__button {
+  font-size: 20px;
+  vertical-align: middle;
+  display: inline-block;
+  width: 30px;
+  margin-bottom: 0px;
+}
+
+.bg-btn {
+  cursor: pointer;
+  border-radius: 100%;
+  font-size: 20px;
+  color: #fff;
+  width: 50px;
+  height: 50px;
+}
+.button.bg-btn {
+  opacity: 0.5;
+}
+
+.button.bg-btn:hover {
+  opacity: 1;
+}
+
+.mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 0;
+  width: 0;
+  background: rgba(0, 0, 0, .8);
+  z-index: 3;
+  opacity: 0;
+  transition: opacity .3s ease-in-out,
+  height .1s ease-in-out .3s,
+  width .1s ease-in-out .3s;
+}
+
+.mask--show {
+  height: 100vh;
+  width: 100vw;
+  opacity: 1;
+  transition: opacity .3s ease-in-out;
+}
+
+.form__label--required:before {
+  content: '*';
+  color: #cb5e5e;
+}
+
+.form__message {
+  color: #cb5e5e;
+  font-size: 12px;
+}
+.form__message--placeholder {
+  margin-left: 12px;
+  font-size: 16px;
+}
+
+.icon-btn {
+  display: inline-block;
+  vertical-align: top;
+  padding: 0;
+  margin: 0;
+  border: none;
+  line-height: 1;
+  outline: 0;
+  background-color: transparent;
+  vertical-align: middle;
+}
+
+.icon-btn:hover {
+  cursor: pointer;
+}
+.icon-btn .material-icons:hover {
+  color: #9b9b9b;
+}
+
+.icon_fa.fa:hover {
+  color: #9b9b9b;
+}
+.icon_fa.fa {
+  font-size: 22px;
+  color: #777;
+}
+.icon-btn + .icon-btn {
+  margin-left: 10px;
+}
+.ala-formtext {
+  display: flex;
+  flex-direction: column;
+}
+
+.ala-list__item {
+  display: flex;
+}
+.ala-list__item + .ala-list__item {
+  margin-top: 15px;
+}
+
+.ala-form__remind  {
+  display: inline-block;
+  padding-top: 5px;
+  font-size: 12px;
+  font-weight: normal;
+  cursor: default;
+  color: #9b9b9b;
+}
+
+.ala-form__remind--is-invalid {
+  color: #C75353;
+}
+.ala-form__label {
+  margin-bottom: 0px;
+  min-width: 125px;
+  text-align: right;
+}
+.alatech-btn {
+  display: inline-block;
+  vertical-align: middle;
+  min-width: 75px;
+  height: 30px;
+  padding: 0;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: transparent;
+  border-radius: 4px;
+  background-color: transparent;
+  font-size: 12px;
+  font-weight: 400;
+}
+.alatech-btn:hover {
+  cursor: pointer;
+}
+.alatech-btn[disabled] {
+  opacity: .65;
+  cursor: not-allowed;
+}
+a.alatech-btn {
+  line-height: 30px;
+  text-align: center;
+  text-decoration: none;
+}
+a.alatech-btn:hover {
+  text-decoration: none;
+}
+.alatech-btn + .alatech-btn {
+  margin-left: 10px;
+}
+.alatech-btn--default {
+  border-color: #9b9b9b;
+  background-color: #fff;
+  color: #777;
+}
+.alatech-btn--no-padding {
+  padding: 0;
+}
+.alatech-btn--size-icon {
+  min-width: 30px;
+}
+.alatech-btn--default[disabled] {
+  background-color: #EFEFEF;
+}
+.alatech-btn--default:hover {
+  border-color: #CCC;
+  color: #9B9B9B;
+}
+.alatech-btn--default[disabled]:hover {
+  border-color: #9B9B9B;
+  color: #777;
+}
+
+.alatech-table__cell--head {
+  font-weight: 700;
+  font-size: 14px;
+  background-image: linear-gradient(to bottom, #eee, #d8d8d8);
+  text-align: center;
+  border: 1px solid #ccc;
+}
+
+.alatech-table__cell {
+  padding: 10px;
+  border-top: 1px solid #ccc;
+  color: #4a4a4a;
+  text-align: center;
+  font-size: 18px;
+}
+
+.alatech-table {
+  border: 1px solid #ccc;
+}
+
+.alatech-footer {
+  text-align: right;
+  height: 45px;
+  background-color: #f0eeee;
+  padding: 8px 11px 7px;
+}
+.searchbar-menu--text,
+.searchbar-menu--text__rwd {
+  font-weight: 500;
+  color: #999;
+  margin-right: 10px;
+  cursor: pointer;
+}
+.searchbar-menu--text.active {
+  margin-bottom: 4px;
+  border-bottom: 2px solid #263147;
+  color: #263147;
+}
+
+.searchbar-menu--text__rwd.active {
+  margin-bottom: 4px;
+  border-bottom: 2px solid #263147;
+  color: #008bcd;
+}
+
+.event-form {
+  position: relative;
+}
+
+.ala-lineframe__title {
+  position: absolute;
+  top: -12px;
+  left: 25px;
+  padding: 0px 10px;
+  background-color: #fff;
+  font-weight: 700;
+}
+
+.ala-dashboard-title {
+  color: #157fcc;
+  font-weight: 700;
+}
+/* about auth page */
+.access-bg {
+  margin-top: -63px;
+  min-height: 100vh;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  background-image: url('/assets/images/center_bg.jpg');
+}
+
+.access-description {
+  color: #fff;
+  font-size: 40px;
+  margin: 100px 0 80px;
+}
+
+.access-panel {
+  max-width: 520px;
+  width: 100%;
+  border: 1px solid;
+}
+
+.access-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70px;
+  background-color: #2f4349;
+}
+
+.btn-primary.access-btn {
+  background-color: #2b819b;
+  width: 125px;
+}
+.btn-primary.access-btn:hover {
+  cursor: pointer;
+}
+.btn-primary.access-btn[disabled]:hover {
+  cursor: wait;
+}
+.access-text {
+  color: #757575;
+  margin-left: 12px;
+  white-space: nowrap;
+}
+
+.access-panel-body {
+  height: calc(100% - 70px);
+  background-color: #f4eeeb;
+  padding: 40px 60px;
+}
+/* 修改intl-tel */
+.ala-flag .flag {
+  display: none !important;
+  background: transparent;
+}
+
+.input-group-addon {
+  background-color: #fff!important;
+}
+.auth-submit {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0;
+}
+
+a.ban-send,
+a.ban-send:hover {
+  color: #ccc;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+.flexCol {
+  display: flex;
+  flex-direction: column;
+}
+
+.flexRow {
+  display: flex;
+  flex-direction: row;
+}
+
+.flexCenter {
+  align-items: center;
+  justify-content: center;
+}
+
+@media(max-width: 991px) {
+  .access-bg {
+    margin-top: -63px;
+  }
+}
+
+@media(max-width: 768px) {
+  .access-header {
+    height: 50px;
+  }
+  .access-panel {
+    max-width: 400px;
+  }
+  .access-panel-body {
+    padding: 30px 15px;
+    height: calc(100% - 50px);
+  }
+  .access-description {
+    margin: 30px 0;
+    font-size: 25px;
+  }
+}
+
+
+/* about font family */
+@font-face {
+  font-family: 'ITC';
+  src: url('/assets/fonts/ITC Avant Garde Gothic Demi.ttf');
+  src: url('/assets/fonts/itc_avant_garde_gothic_demi-webfont.woff'); /*為了IE可吃到此字體*/
+
+  font-weight: 700;
+  font-style: normal;
+}
+.dropdown-menu.dropdown-menu-lang {
+  top: 47px;
+  left: -81px;
+}
+
+
+/* about print */
+@media print {
+  .alatech-btn {
+    display: none;
+  }
+  .other-info--area {
+    position: absolute;
+    width: 100%;
+    background-color: #EDEDED !important;
+    padding: 10px 5px;
+    left: 0;
+    font-size: 16px;
+    color: #909090!important;
+  }
+  .mat-radio-group {
+    display: none;
+  }
+  .activity-info__area--block {
+    padding: 0px!important;
+  }
+  .sportsRecord-text {
+    display: initial!important;
+    text-align: right;
+  }
+  .activty-icon {
+    border: 2px solid #ccc;
+  }
 }
 
 /*使css屬性background color可以列印出來*/

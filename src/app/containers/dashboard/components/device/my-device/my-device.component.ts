@@ -131,7 +131,7 @@ export class MyDeviceComponent implements OnInit, OnChanges {
               body: this.translate.instant(
                 'Dashboard.MyDevice.repair'
               ),
-              confirmText: this.translate.instant('SH.determine')
+              confirmText: this.translate.instant('other.confirm')
             }
           });
         }
@@ -142,7 +142,7 @@ export class MyDeviceComponent implements OnInit, OnChanges {
             data: {
               title: 'message',
               body: this.translate.instant('Dashboard.MyDevice.repair'),
-              confirmText: this.translate.instant('SH.determine')
+              confirmText: this.translate.instant('other.confirm')
             }
           });
         }

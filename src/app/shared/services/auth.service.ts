@@ -28,6 +28,7 @@ export class AuthService {
   loginServer(body) {
     return this.http.post<any>('/api/v1/user/login', body);
   }
+
   login(loginData): Observable<boolean> {
     return this.loginServer(loginData).map(
       (res: Response) => {
@@ -64,6 +65,11 @@ export class AuthService {
       }
     );
   }
+
+  loginServerV2(body) {  // v2-1003
+    return this.http.post<any>('/api/v2/user/signIn', body);
+  }
+
   logout() {
     this.loginStatus$.next(false);
     this.currentUser$.next(null);
@@ -71,12 +77,23 @@ export class AuthService {
     this.utils.removeLocalStorageObject('ala_token_time');
     this.backUrl = '';
   }
+
+  setLoginStatus(status) {
+    this.loginStatus$.next(status);
+  }
+
   getLoginStatus(): Observable<boolean> {
     return this.loginStatus$;
   }
+
+  setCurrentUser(name) {
+    this.currentUser$.next(name);
+  }
+
   getCurrentUser(): Observable<User> {
     return this.currentUser$;
   }
+
   updateUserProfile(body) {
     return this.http.post<any>('/api/v1/user/updateUserProfile', body);
   }

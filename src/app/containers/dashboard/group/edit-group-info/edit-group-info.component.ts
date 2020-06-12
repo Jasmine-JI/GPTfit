@@ -274,7 +274,7 @@ export class EditGroupInfoComponent implements OnInit {
         body: this.translate.instant('Dashboard.Group.confirmDissolution', {
           target: targetName
         }),
-        confirmText: this.translate.instant('SH.determine'),
+        confirmText: this.translate.instant('other.confirm'),
         cancelText: this.translate.instant('SH.cancel'),
         onConfirm: this.handleDimissGroup.bind(this)
       }

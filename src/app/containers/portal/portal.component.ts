@@ -25,7 +25,7 @@ import { MessageBoxComponent } from '@shared/components/message-box/message-box.
   // tslint:disable-next-line:component-selector
   selector: 'portal',
   templateUrl: './portal.component.html',
-  styleUrls: ['./portal.component.css']
+  styleUrls: ['./portal.component.scss']
 })
 export class PortalComponent implements OnInit {
   isMaskShow = false;
@@ -136,17 +136,14 @@ export class PortalComponent implements OnInit {
             data: {
               title: 'message',
               body: this.translateService.instant('SH.browserError'),
-              confirmText: this.translateService.instant('SH.determine')
+              confirmText: this.translateService.instant('other.confirm')
             }
           });
         }
       }
     });
 
-    // 藉由query string判斷是否隱藏Header-Kidin-1081023
-    if (this.route.snapshot.queryParamMap.get('navbar') === '0') {
-      this.hideNavbar = true;
-    }
+    this.checkHideNavabar();
 
     if (location.hostname.indexOf('cloud.alatech.com.tw') > -1) {
       this.isAlphaVersion = false;
@@ -216,9 +213,28 @@ export class PortalComponent implements OnInit {
       this.rankTabs = datas;
     });
   }
+
+  // 是否隱藏Header-Kidin-1081023
+  checkHideNavabar () {
+    let rxHideNavbar = false;
+    this.utilsService.getHideNavbarStatus().subscribe(res => {
+      rxHideNavbar = res;
+
+      if (this.route.snapshot.queryParamMap.get('navbar') === '0'
+        || rxHideNavbar
+      ) {
+        setTimeout(() => {  // 解決angular檢查前後狀態報錯的問題
+          this.hideNavbar = true;
+        }, 0);
+      }
+    });
+
+  }
+
   selectMap(id) {
     this.mapId = id;
   }
+
   handleGetRankForm(params) {
     params = params.set('mapId', this.mapId.toString());
     if (this.tabIdx === 0) {
@@ -510,9 +526,5 @@ export class PortalComponent implements OnInit {
     this.isMaskShow = false;
     this.globalEventsManager.closeCollapse(false);
   }
-  handleSignin(e) {
-    e.preventDefault();
-    this.isIntroducePage = false;
-    this.router.navigateByUrl('/signin');
-  }
+
 }

@@ -144,7 +144,7 @@ export class MyActivityComponent implements OnInit {
         data: {
           title: 'message',
           body: this.translate.instant('SH.timelineIncorrect'),
-          confirmText: this.translate.instant('SH.determine')
+          confirmText: this.translate.instant('other.confirm')
         }
       });
     }

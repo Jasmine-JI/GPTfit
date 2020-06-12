@@ -46,6 +46,7 @@ import { HoverHintComponent } from './hover-hint/hover-hint.component';
 import { DateRangePickerComponent } from './date-range-picker/date-range-picker.component';
 import { MuscleMapChartComponent } from './chart/muscle-map/muscle-map-chart/muscle-map-chart.component';
 import { MuscleSvgIconComponent } from './chart/muscle-map/muscle-svg-icon/muscle-svg-icon.component';
+import { CustomSelectComponent } from './custom-material/custom-select/custom-select.component';
 
 @NgModule({
   imports: [
@@ -97,7 +98,8 @@ import { MuscleSvgIconComponent } from './chart/muscle-map/muscle-svg-icon/muscl
     HoverHintComponent,
     DateRangePickerComponent,
     MuscleMapChartComponent,
-    MuscleSvgIconComponent
+    MuscleSvgIconComponent,
+    CustomSelectComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -133,7 +135,8 @@ import { MuscleSvgIconComponent } from './chart/muscle-map/muscle-svg-icon/muscl
     HoverHintComponent,
     DateRangePickerComponent,
     MuscleMapChartComponent,
-    MuscleSvgIconComponent
+    MuscleSvgIconComponent,
+    CustomSelectComponent
   ]
 })
 export class SharedComponentsModule {}

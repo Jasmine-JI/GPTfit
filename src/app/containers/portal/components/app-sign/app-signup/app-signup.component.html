@@ -1,0 +1,222 @@
+<ng-container *ngIf="!pcView">
+  <div class="flexCol">
+    <div class="flexRow appHeader" style="justify-content: space-between;">
+      <i
+        class="icon-svg_web-icon_p1_073-level_fold"
+        style="font-size: 30px; cursor: pointer;"
+        (click)="turnBack()"
+      ></i>
+      <span class="appview-header" style="left: 15px;">
+        {{ 'SH.signUp' | translate }}
+      </span>
+      <span
+        class="appview-header"
+        style="position: relative; right:20px; cursor: pointer;"
+        [style.pointer-events]="sending || dataIncomplete ? 'none' : ''"
+        [style.color]="sending || dataIncomplete ? '#bde2f4' : '#23a0da'"
+        (click)="submit()"
+      >
+        {{ 'Dashboard.Group.join' | translate }}
+      </span>
+    </div>
+    <div class="flexCol" style="margin-top: 10px;">
+      <div class="flexCol appDiv">
+        <app-custom-select
+          style="margin-bottom: 10px;"
+          [selectLists]="selectLists"
+          [fontOpt]="fontOpt"
+          [position]="position"
+          [triangleColor]="'#239fd9'"
+          (selectItem)="this.getAccountType($event)"
+        >
+        </app-custom-select>
+        <div>
+          <input
+            style="width: 100%;"
+            placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Portal.email' | translate }}"
+            (focusout)="checkEmail($event)"
+            (keypress)="checkEmail($event)"
+            *ngIf="signupData.type === 1"
+          />
+        </div>
+        <div class="flexRow" *ngIf="signupData.type === 2">
+          <app-intl-phone-input
+            (onChange)="onCodeChange($event)"
+            (focusoutPhoneInt)="getPhoneNum($event)"
+            [uiVersion]="'v2'"
+            [regPhone]="regCheck.phone"
+            [phoneCue]="signupCue.phone"
+            style="width: 100%;"
+          ></app-intl-phone-input>
+        </div>
+        <span class="formCue" *ngIf="signupData.type === 1 && signupCue.email !== ''">{{ signupCue.email }}</span>
+      </div>
+      <div class="flexCol appDiv">
+        <span class="formTitle">{{ 'Portal.password' | translate }}</span>
+        <input
+          type="password"
+          id="signupPW"
+          placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Portal.password' | translate }}"
+          [(ngModel)]="signupData.password"
+          maxlength="20"
+          (focusout)="checkPassword($event)"
+          (keypress)="checkPassword($event)"
+        />
+        <i
+          class="icon-svg_web-icon_p1_081-watch inputIcon"
+          [style.color]="displayPW ? 'black' : '#aaaaaa'"
+          (click)="toggleDisplayPW()"
+        ></i>
+        <span class="formCue" *ngIf="signupCue.password !== ''">{{ signupCue.password }}</span>
+      </div>
+      <div class="flexCol appDiv">
+        <span class="formTitle">{{ 'Portal.nickname' | translate }}</span>
+        <input
+          placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Portal.nickname' | translate }}"
+          maxlength="24"
+          (focusout)="checkNickname($event)"
+          (keypress)="checkNickname($event)"
+        />
+        <span class="formCue" *ngIf="signupCue.nickname !== ''">{{ signupCue.nickname }}</span>
+      </div>
+      <div
+        class="flexCol appDiv"
+        [style.display]="imgCaptcha.show ? '' : 'none'"
+      >
+        <span class="formTitle">{{ 'Portal.imgCaptcha' | translate }}</span>
+        <div class="flexRow">
+          <input
+            placeholder="{{ 'Portal.imgCaptcha' | translate }}"
+            maxlength="8"
+            (focusout)="checkImgCaptcha($event)"
+            (keypress)="checkImgCaptcha($event)"
+          />
+          <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha">
+        </div>
+        <span class="formCue" *ngIf="imgCaptcha.show && signupCue.imgCaptcha !== ''">
+          {{ signupCue.imgCaptcha }}
+        </span>
+      </div>
+    </div>
+    <button
+      class="appview-btn"
+      [class.appview-btn-unclickable]="sending || dataIncomplete"
+      (click)="submit()"
+    >
+      <span>{{ 'Dashboard.Group.join' | translate }}</span>
+    </button>
+  </div>
+</ng-container>
+<ng-container *ngIf="pcView">
+  <div class="access-bg">
+    <div class="container signup" style="padding-top:63px">
+      <div class="d-flex" style="flex-direction: column;align-items: center;;">
+        <div class="access-description"  innerHtml="{{ 'Portal.gptSlogan' | translate }}">
+        </div>
+        <div class="access-panel">
+          <header class="access-header">
+            <img src="assets/attacus_logo.png" style="width: 36%">
+          </header>
+          <div class="access-panel-body">
+            <div class="flexCol" style="margin-top: 10px;">
+              <div class="flexCol webDiv">
+                <app-custom-select
+                  style="margin: 0 0 10px 12px;"
+                  [selectLists]="selectLists"
+                  [fontOpt]="webFontOpt"
+                  [position]="position"
+                  [triangleColor]="'#239fd9'"
+                  (selectItem)="this.getAccountType($event)"
+                >
+                </app-custom-select>
+                <div>
+                  <input
+                    style="width: 100%;"
+                    class="form-control"
+                    placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Portal.email' | translate }}"
+                    (focusout)="checkEmail($event)"
+                    (keypress)="checkEmail($event)"
+                    *ngIf="signupData.type === 1"
+                  />
+                </div>
+                <div class="flexRow" *ngIf="signupData.type === 2">
+                  <app-intl-phone-input
+                    (onChange)="onCodeChange($event)"
+                    (focusoutPhoneInt)="getPhoneNum($event)"
+                    [uiVersion]="'v2'"
+                    [webUi]="true"
+                    [regPhone]="regCheck.phone"
+                    [phoneCue]="signupCue.phone"
+                    style="width: 100%;"
+                  ></app-intl-phone-input>
+                </div>
+                <span class="form__message form__message--placeholder" *ngIf="signupData.type === 1 && signupCue.email !== ''">{{ signupCue.email }}</span>
+              </div>
+              <div class="flexCol webDiv">
+                <span class="access-text" style="margin-bottom: 10px;">{{ 'Portal.password' | translate }}</span>
+                <input
+                  type="password"
+                  id="signupPW"
+                  class="form-control"
+                  placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Portal.password' | translate }}"
+                  [(ngModel)]="signupData.password"
+                  maxlength="20"
+                  (focusout)="checkPassword($event)"
+                  (keypress)="checkPassword($event)"
+                />
+                <i
+                  class="icon-svg_web-icon_p1_081-watch inputIcon"
+                  style="top: -30px; left: 90%;"
+                  [style.color]="displayPW ? 'black' : '#aaaaaa'"
+                  (click)="toggleDisplayPW()"
+                ></i>
+                <span class="form__message form__message--placeholder" *ngIf="signupCue.password !== ''">{{ signupCue.password }}</span>
+              </div>
+              <div class="flexCol webDiv">
+                <span class="access-text" style="margin-bottom: 10px;">{{ 'Portal.nickname' | translate }}</span>
+                <input
+                  placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Portal.nickname' | translate }}"
+                  class="form-control"
+                  maxlength="24"
+                  (focusout)="checkNickname($event)"
+                  (keypress)="checkNickname($event)"
+                />
+                <span class="form__message form__message--placeholder" *ngIf="signupCue.nickname !== ''">{{ signupCue.nickname }}</span>
+              </div>
+              <div
+                class="flexCol webDiv"
+                [style.display]="imgCaptcha.show ? '' : 'none'"
+              >
+                <span class="access-text" style="margin-bottom: 10px;">{{ 'Portal.imgCaptcha' | translate }}</span>
+                <div class="flexRow">
+                  <input
+                    placeholder="{{ 'Portal.imgCaptcha' | translate }}"
+                    maxlength="8"
+                    (focusout)="checkImgCaptcha($event)"
+                    (keypress)="checkImgCaptcha($event)"
+                  />
+                  <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha">
+                </div>
+                <span class="form__message form__message--placeholder" *ngIf="imgCaptcha.show && signupCue.imgCaptcha !== ''">
+                  {{ signupCue.imgCaptcha }}
+                </span>
+              </div>
+              <div style="display: flex;justify-content: space-between; align-items: center; margin-top: 20px;">
+                <a class="access-text" style="cursor:pointer" [routerLink]="['/signIn-web']"><{{'Dashboard.ProductInfo.back' | translate}}</a>
+                <button
+                  class="btn btn-primary access-btn"
+                  [class.appview-btn-unclickable]="sending || dataIncomplete"
+                  [style.background]="sending || dataIncomplete ? '#2b819b54' : ''"
+                  (click)="submit()"
+                >
+                  <span *ngIf="!sending">{{ 'SH.signUp' | translate }}</span>
+                  <i *ngIf="sending" class="fa fa-spinner fa-pulse"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>

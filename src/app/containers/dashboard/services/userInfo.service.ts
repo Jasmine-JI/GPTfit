@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 
 import { Injectable, Injector } from '@angular/core';
 import { Router } from '@angular/router';
@@ -60,6 +60,41 @@ export class UserInfoService {
   refreshToken(body) {
     return this.http.post<any>('/api/v1/user/refreshToken', body);
   }
+
+  fetchEnableAccount (body, ip) {  // v2 1002
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'remoteAddr': `${ip}`,
+      })
+    };
+
+    return this.http.post<any>('/api/v2/user/enableAccount', body, httpOptions);
+  }
+
+  fetchForgetpwd (body, ip) {  // v2 1004
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'remoteAddr': `${ip}`,
+      })
+    };
+
+    return this.http.post<any>('/api/v2/user/resetPassword', body, httpOptions);
+  }
+
+  fetchEditAccountInfo (body, ip) {  // v2 1005
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'remoteAddr': `${ip}`,
+      })
+    };
+
+    return this.http.post<any>('/api/v2/user/editAccount', body, httpOptions);
+  }
+
+  fetchUserInfo (body) {  // v2 1010
+    return this.http.post<any>('/api/v2/user/getUserProfile', body);
+  }
+
   getUserIcon(): Observable<string> {
     return this.userIcon$;
   }

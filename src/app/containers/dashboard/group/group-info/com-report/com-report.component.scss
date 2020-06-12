@@ -210,8 +210,23 @@
 }
 
 .tableArrangement {
-  display: flex;
-  justify-content: center;
+
+  .visualizeData {
+    height: 40px;
+    background-color: #dbf3ff;
+    position: absolute;
+  }
+
+  .setIn {
+    margin: 0 auto;
+    z-index: 3;
+  }
+
+}
+
+.fixPlace {
+  position: relative;
+  right: 10px;
 }
 
 .chartTitleUnit {
@@ -248,11 +263,11 @@
   }
 }
 
-.personalAnalysisIcon {
+.tableAnalysisIcon {
   font-size: 20px;
 }
 
-.personalMenu {
+.tableMenu {
   position: fixed;
   z-index: 5;
   background-color: white;
@@ -260,9 +275,41 @@
   width: fit-content;
   border: 1px solid #dedede;
   box-shadow: 3px 3px grey;
+  width: 250px;
 }
 
-.personalMenuList {
+.tableMenuTitle {
+  display: block;
+  font-weight: bold;
+  font-size: 14px;
+  color: #003c67;
+}
+
+.tableListSection {
+
+  padding: 5px;
+  border: 1px solid #bcbcbc;
+  height: 150px;
+  overflow-y: scroll;
+
+  div {
+    white-space: pre-wrap;
+    font-size: 10px;
+
+    span {
+      display: inline-block;
+      background-color: #dedede;
+      border-radius: 5px;
+      font-weight: bold;
+      margin: 3px;
+      cursor: pointer;
+    }
+
+  }
+
+}
+
+.tableMenuList {
   margin: 2px;
   padding: 5px 20px 5px 10px;
   color: #656565;

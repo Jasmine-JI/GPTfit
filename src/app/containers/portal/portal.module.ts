@@ -1,7 +1,7 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
 
 import { PortalRoutingModule } from './portal-routing.module';
 import { PortalComponent } from './portal.component';
@@ -43,12 +43,22 @@ import { ReportService } from '@shared/services/report.service';
 import { ActivityOtherDetailsService } from '@shared/services/activity-other-details.service';
 import { DetectInappService } from '@shared/services/detect-inapp.service';
 import { ApplicationComponent } from './components/application/application.component';
+import { AppSignupComponent } from './components/app-sign/app-signup/app-signup.component';
+import { AppSigninComponent } from './components/app-sign/app-signin/app-signin.component';
+import { AppEnableComponent } from './components/app-sign/app-enable/app-enable.component';
+import { AppForgetpwComponent } from './components/app-sign/app-forgetpw/app-forgetpw.component';
+import { AppModifypwComponent } from './components/app-sign/app-modifypw/app-modifypw.component';
+import { AppChangeAccountComponent } from './components/app-sign/app-change-account/app-change-account.component';
+import { AppQrcodeLoginComponent } from './components/app-sign/app-qrcode-login/app-qrcode-login.component';
+import { AppFirstLoginComponent } from './components/app-sign/app-first-login/app-first-login.component';
+import { QRCodeModule } from 'angularx-qrcode';
 
 @NgModule({
   imports: [
     CommonModule,
     PortalRoutingModule,
     HttpClientModule,
+    HttpClientJsonpModule,
     FormsModule,
     MyDatePickerModule,
     SharedComponentsModule,
@@ -56,7 +66,8 @@ import { ApplicationComponent } from './components/application/application.compo
     NgProgressModule,
     ReactiveFormsModule,
     SharedModule,
-    CustomMaterialModule
+    CustomMaterialModule,
+    QRCodeModule
   ],
   providers: [
     MapGPXService,
@@ -96,7 +107,15 @@ import { ApplicationComponent } from './components/application/application.compo
     PortalGroupInfoComponent,
     FirstLoginComponent,
     BasicInfoComponent,
-    ApplicationComponent
+    ApplicationComponent,
+    AppSignupComponent,
+    AppSigninComponent,
+    AppEnableComponent,
+    AppChangeAccountComponent,
+    AppForgetpwComponent,
+    AppModifypwComponent,
+    AppQrcodeLoginComponent,
+    AppFirstLoginComponent
   ],
   entryComponents: [MessageBoxComponent]
 })

@@ -44,11 +44,7 @@ export class FirstLoginComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    const isFirstLogin =
-      this.utils.getSessionStorageObject('isFirstLogin') || false;
-    if (!isFirstLogin) {
-      return this.router.navigateByUrl('/404');
-    }
+    // this.checkFirstLogin();
 
     const userName = this.authService.userName || '';
     this.form = this.fb.group({
@@ -70,6 +66,16 @@ export class FirstLoginComponent implements OnInit {
       this.imgCropping = res;
     });
   }
+
+  // 確認是否在第一次登入頁面編輯過個人資料
+  checkFirstLogin () {
+    const isFirstLogin = this.utils.getSessionStorageObject('isFirstLogin') || false;
+    if (!isFirstLogin) {
+      return this.router.navigateByUrl('/404');
+    }
+
+  }
+
   submit({ valid, value }) {
     const icon = {
       iconLarge: '',
@@ -84,7 +90,7 @@ export class FirstLoginComponent implements OnInit {
           body: this.translate.instant(
             'Dashboard.Settings.selectImg'
           ),
-          confirmText: this.translate.instant('SH.determine')
+          confirmText: this.translate.instant('other.confirm')
         }
       });
     } else {

@@ -1,0 +1,37 @@
+<div>
+  <span
+    id="currentSelect"
+    [style.font-size]="fontOpt && fontOpt.size ? fontOpt.size : '16px'"
+    [style.font-weight]="fontOpt && fontOpt.weight ? fontOpt.weight : 'bold'"
+    [style.color]="fontOpt && fontOpt.color ? fontOpt.color : 'black'"
+    (click)="openMenu()"
+  >
+    {{ currentSelect?.i18n }}
+    <span
+      style="margin-left: 10px; font-size: 16px;"
+      [style.color]="triangleColor ? triangleColor : 'black'"
+    >▼</span>
+  </span>
+  <div
+    style="z-index: 101; position: relative;"
+    [style.bottom]="position && position.bottom ? position.bottom : '20px'"
+  >
+    <div
+      class="selectMenu"
+      [style.min-width]="size ? size.minWidth : '150px'"
+      [style.max-width]="size ? size.maxWidth : '200px'"
+      [style.max-height]="size ? size.maxHeight : '200px'"
+      *ngIf="showOptions"
+    >
+      <div
+        style="padding: 5px 10px;"
+        *ngFor="let list of selectLists; let idx = index;"
+        id="{{ idx }}"
+        [style.background-color]="currentSelect.id === idx ? '#e0e0e0': 'none'"
+        (click)="selectOpt($event)"
+      >
+        <span>{{ list.i18n }}</span>
+      </div>
+    </div>
+  </div>
+</div>

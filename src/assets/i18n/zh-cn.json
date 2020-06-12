@@ -644,7 +644,7 @@
     }
   },
   "other": {
-    "createComGroup": "建立一般企業群組",
+    "createComGroup": "建立企業經營群組",
     "createGymGroup": "建立健身品牌群組",
     "createCom": "建立企業",
     "comName": "企業名稱",
@@ -801,9 +801,43 @@
     "followExerciseTypeCreate": "请依照您的运动属性与课程期间建立报告",
     "keyInCaptcha": "请输入图形验证码，可点击图片刷新",
     "countryRegionCode": "请选择国家/地区代码",
-    "pai": "个人化活动指标"
+    "pai": "活动指标",
+    "upTo": "最多{{number}}项",
+    "switch": "启用",
+    "switching": "您正在启用账号",
+    "sendSmsSuccess": "已送出验证简讯",
+    "noSmsCode": "未填写简讯验证码",
+    "smsVerificationInstructions": "验证手机号码是否为本人，请点选发送验证码并且将验证码输入至字段",
+    "unverifiedAccount": "您的账号未验证，请立即验证信箱以免遗失重要数据。点击以下按钮，我们会立即发送新的验证信。",
+    "sendCaptchaChackEmail": "已送出验证信，请检查您的信箱",
+    "resetPassword": "重设密码",
+    "reset": "重设",
+    "keyInNewPassword": "输入新密码",
+    "newPassword": "新密码",
+    "alaFitness": "Ala Fitness",
+    "fitnessSlogan": "全方位型的运动记录器<br />运动型传感器的最佳伙伴",
+    "fitnessInfo": "无论是室内的标准FTMS大型健身器材，或户外运动的传感器都难不倒它做运动纪录，是陪伴你运动生活的最好选择。",
+    "wrongFormat": "错误的格式",
+    "wrongRange": "不合理的范围值",
+    "errorAccountPassword": "错误的账号或密码",
+    "groupAnalysis": "团体分析",
+    "fieldDisplay": "栏位显示",
+    "filter": "筛选",
+    "numberOf": "筆数",
+    "perCapita": "人均"
   },
   "conflict": {
     "benefitime": "效益时间"
+  },
+  "custom": {
+    "changeAccount": "您正在变更帐号",
+    "newAccountWellBe": "将帐号变更为",
+    "changePassword": "您正在变更密码",
+    "linkFailure": "连结已失效，请重新操作",
+    "confirmQrLogin": "确认是否登入未知装置？",
+    "scanLogin": "扫描登入",
+    "idle": "闲置过久请重新操作",
+    "ComGroup": "企业经营",
+    "improperOpe": "不正当操作，请稍后再试"
   }
 }

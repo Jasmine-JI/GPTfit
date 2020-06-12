@@ -764,7 +764,7 @@
     "muscleKg": "肌肉重",
     "fatKg": "脂肪重",
     "glossaries": "體態",
-    "update": "更新",
+    "update": "Update",
     "personalAnalysis": "Personal Analysis",
     "gymBrand": "Gym",
     "companyAdmin": "Company admin",
@@ -801,9 +801,43 @@
     "followExerciseTypeCreate": "Create your report according to your workout ",
     "keyInCaptcha": "Introduzca el código de comprobación de imagen. Haga clic en la imagen para volver a cargar.",
     "countryRegionCode": "Seleccione un código de país o región",
-    "pai": "PAI"
+    "pai": "PAI",
+    "upTo": "Up to {{number}}.",
+    "switch": "Habilitar",
+    "switching": "You are activating account.",
+    "sendSmsSuccess": "Mensaje de comprobación ha sido ",
+    "noSmsCode": "Did not enter MSN Verification Code",
+    "smsVerificationInstructions": "Verify phone number, please select “Send Verification Code” and enter the code into the box.",
+    "unverifiedAccount": "Your account has not been verified. Please verify your email immediately to avoid loosing important data. Tap on the button below, a new verification email will be sent right away. ",
+    "sendCaptchaChackEmail": "Se ha enviado una carta de comprobación. Por favor revise su correo electrónico.",
+    "resetPassword": "Restablecer la contraseña",
+    "reset": "Restablecer",
+    "keyInNewPassword": "Introduzca una nueva contraseña",
+    "newPassword": "Ｎew Password",
+    "alaFitness": "Ala Fitness",
+    "fitnessSlogan": "Full-function activity tracker<br />Your best workout companion",
+    "fitnessInfo": "No matter if you are an avid indoor fitness guru or an outdoor activist, Train Live is your lifelong training recorder!",
+    "wrongFormat": "Formato incorrecto",
+    "wrongRange": "Intervalo no razonable",
+    "errorAccountPassword": "Cuenta o contraseña incorrecta",
+    "groupAnalysis": "Group Analysis",
+    "fieldDisplay": "Visualización de campos",
+    "filter": "Filtro",
+    "numberOf": "Items",
+    "perCapita": "Per capita"
   },
   "conflict": {
     "benefitime": "Benefit Time"
+  },
+  "custom": {
+    "changeAccount": "You are changing account.",
+    "newAccountWellBe": "Change account to",
+    "changePassword": "You are changing your password.",
+    "linkFailure": "The link has expired, please try again.",
+    "confirmQrLogin": "Whether to log in to an unknown device？",
+    "scanLogin": "Scan for logging",
+    "idle": "Please re-operate for too long",
+    "ComGroup": "Business management",
+    "improperOpe": "Improper operation. Please try again later."
   }
 }

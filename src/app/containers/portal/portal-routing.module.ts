@@ -19,6 +19,14 @@ import { ApplicationComponent } from './components/application/application.compo
 import { Page404Component } from '../../shared/components/page404/page404.component';
 import { Page403Component } from '../../shared/components/page403/page403.component';
 import { QrcodeUploadComponent } from '../dashboard/components/qrcode-upload/qrcode-upload.component';
+import { AppSignupComponent } from './components/app-sign/app-signup/app-signup.component';
+import { AppSigninComponent } from './components/app-sign/app-signin/app-signin.component';
+import { AppEnableComponent } from './components/app-sign/app-enable/app-enable.component';
+import { AppForgetpwComponent } from './components/app-sign/app-forgetpw/app-forgetpw.component';
+import { AppModifypwComponent } from './components/app-sign/app-modifypw/app-modifypw.component';
+import { AppChangeAccountComponent } from './components/app-sign/app-change-account/app-change-account.component';
+import { AppQrcodeLoginComponent } from './components/app-sign/app-qrcode-login/app-qrcode-login.component';
+import { AppFirstLoginComponent } from './components/app-sign/app-first-login/app-first-login.component';
 
 const routes: Routes = [
   {
@@ -87,6 +95,76 @@ const routes: Routes = [
       {
         path: 'qrupload/activityfile',
         component: QrcodeUploadComponent
+      },
+      {
+        path: 'register',
+        component: AppSignupComponent
+      },
+      {
+        path: 'signIn',
+        component: AppSigninComponent,
+        canActivate: [SigninGuard]
+      },
+      {
+        path: 'enableAccount',
+        component: AppEnableComponent
+      },
+      {
+        path: 'resetPassword',
+        component: AppForgetpwComponent
+      },
+      {
+        path: 'editPassword',
+        component: AppModifypwComponent
+      },
+      {
+        path: 'changeAccount',
+        component: AppChangeAccountComponent
+      },
+      {
+        path: 'qrSignIn',
+        component: AppQrcodeLoginComponent
+      },
+      {
+        path: 'signInQrcode',
+        component: AppQrcodeLoginComponent
+      },
+      {
+        path: 'firstLogin',
+        component: AppFirstLoginComponent
+      },
+      {
+        path: 'register-web',
+        component: AppSignupComponent
+      },
+      {
+        path: 'signIn-web',
+        component: AppSigninComponent,
+        canActivate: [SigninGuard]
+      },
+      {
+        path: 'enableAccount-web',
+        component: AppEnableComponent
+      },
+      {
+        path: 'resetPassword-web',
+        component: AppForgetpwComponent
+      },
+      {
+        path: 'editPassword-web',
+        component: AppModifypwComponent
+      },
+      {
+        path: 'changeAccount-web',
+        component: AppChangeAccountComponent
+      },
+      {
+        path: 'signInQrcode-web',
+        component: AppQrcodeLoginComponent
+      },
+      {
+        path: 'firstLogin-web',
+        component: AppFirstLoginComponent
       },
       { path: '404', component: Page404Component },
       { path: '403', component: Page403Component }

@@ -17,6 +17,8 @@ export class AccountInfoComponent implements OnInit {
   stravaStatus: boolean;
   clientId = '30689';
   stravaApiDomain = 'https://app.alatech.com.tw:5443';
+  enableAccount = false;
+
   constructor(
     private utils: UtilsService,
     private settingsService: SettingsService,
@@ -29,6 +31,15 @@ export class AccountInfoComponent implements OnInit {
     const queryStrings = getUrlQueryStrings(location.search);
     const { code } = queryStrings;
 
+    if (
+      location.hostname === 'alatechcloud.alatech.com.tw' ||
+      location.hostname === '152.101.90.130' ||
+      location.hostname === 'cloud.alatech.com.tw'
+    ) {
+      this.clientId = '30796';
+      this.stravaApiDomain = 'https://cloud.alatech.com.tw:5443';
+    }
+
     if (code && code.length > 0) {
       const body = {
         token: this.utils.getToken() || '',
@@ -39,14 +50,7 @@ export class AccountInfoComponent implements OnInit {
       };
       return this.handleThirdPartyAccess(body);
     }
-    if (
-      location.hostname === 'alatechcloud.alatech.com.tw' ||
-      location.hostname === '152.101.90.130' ||
-      location.hostname === 'cloud.alatech.com.tw'
-    ) {
-      this.clientId = '30796';
-      this.stravaApiDomain = 'https://cloud.alatech.com.tw:5443';
-    }
+
     const { strava, stravaValid } = this.userData.thirdPartyAgency;
     this.stravaStatus = strava === '1';
     if (stravaValid === 'false' && this.stravaStatus) {
@@ -56,7 +60,7 @@ export class AccountInfoComponent implements OnInit {
         data: {
           title: 'message',
           body: this.translate.instant('Dashboard.Settings.stravaRebinding'),
-          confirmText: this.translate.instant('SH.determine'),
+          confirmText: this.translate.instant('other.confirm'),
           cancelText: this.translate.instant('SH.cancel'),
           onConfirm: () => {
             location.href =
@@ -65,7 +69,7 @@ export class AccountInfoComponent implements OnInit {
               `redirect_uri=${
                 this.stravaApiDomain
               }/api/v1/strava/redirect_uri` +
-              '/1/AlaCenter&state=mystate&approval_prompt=force';
+              '/1/AlaCenter&state=mystate&approval_prompt=force&scope=activity:write,read';
           }
         }
       });
@@ -80,7 +84,7 @@ export class AccountInfoComponent implements OnInit {
           data: {
             title: 'message',
             body: this.translate.instant('Dashboard.Settings.updateThirdPpartyFailed'),
-            confirmText: this.translate.instant('SH.determine')
+            confirmText: this.translate.instant('other.confirm')
           }
         });
       } else {
@@ -101,7 +105,7 @@ export class AccountInfoComponent implements OnInit {
         'https://www.strava.com/oauth/authorize?' +
         `client_id=${this.clientId}&response_type=code&` +
         `redirect_uri=${this.stravaApiDomain}/api/v1/strava/redirect_uri` +
-        '/1/AlaCenter&state=mystate&approval_prompt=force');
+        '/1/AlaCenter&state=mystate&approval_prompt=force&scope=activity:write,read');
     }
     const body = {
       token: this.utils.getToken() || '',
@@ -112,4 +116,10 @@ export class AccountInfoComponent implements OnInit {
     };
     this.handleThirdPartyAccess(body);
   }
+
+  // 轉導至編輯密碼-kidin-1090529
+  navigateToEditPwd () {
+    this.router.navigateByUrl('/editPassword-web');
+  }
+
 }
