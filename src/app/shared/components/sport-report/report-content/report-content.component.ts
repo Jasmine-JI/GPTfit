@@ -467,7 +467,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
 
     // 周報告開頭是星期日-kidin-1090312
     if (moment(this.searchDate[0]).isoWeekday() !== 7) {
-      week.startDate = this.searchDate[0] + 86400 * 1000 * (7 - moment(this.searchDate[0]).isoWeekday());
+      week.startDate = this.searchDate[0] - 86400 * 1000 * moment(this.searchDate[0]).isoWeekday();
     } else {
       week.startDate = this.searchDate[0];
     }
@@ -887,13 +887,13 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
       typeAllCalories.unshift(sameDayCalories);
     }
 
-    const typeAllAvgTrainTime = (typeAllTotalTrainTime / typeAllDataDate.length) || 0,
-          typeRunAvgTrainTime = (typeRunTotalTrainTime / typeRunDataDate.length) || 0,
-          typeCycleAvgTrainTime = (typeCycleTotalTrainTime / typeCycleDataDate.length) || 0,
-          typeWeightTrainAvgTrainTime = (typeWeightTrainTotalTrainTime / typeWeightTrainDataDate.length) || 0,
-          typeSwimAvgTrainTime = (typeSwimTotalTrainTime / typeSwimDataDate.length) || 0,
-          typeAerobicAvgTrainTime = (typeAerobicTotalTrainTime / typeAerobicDataDate.length) || 0,
-          typeRowAvgTrainTime = (typeRowTotalTrainTime / typeRowDataDate.length) || 0;
+    const typeAllAvgTrainTime = (typeAllTotalTrainTime / this.activityLength) || 0,
+          typeRunAvgTrainTime = (typeRunTotalTrainTime / typeRunLength) || 0,
+          typeCycleAvgTrainTime = (typeCycleTotalTrainTime / typeCycleLength) || 0,
+          typeWeightTrainAvgTrainTime = (typeWeightTrainTotalTrainTime / typeWeightTrainLength) || 0,
+          typeSwimAvgTrainTime = (typeSwimTotalTrainTime / typeSwimLength) || 0,
+          typeAerobicAvgTrainTime = (typeAerobicTotalTrainTime / typeAerobicLength) || 0,
+          typeRowAvgTrainTime = (typeRowTotalTrainTime / typeRowLength) || 0;
 
     const typeAllData = {
       activityLength: this.activityLength,
@@ -1848,10 +1848,20 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         searchString =
-        `sport=${this.reportCategory}&startdate=${startDateString}&enddate=${endDateString}&selectPeriod=${this.selectPeriod}&selectProficiency=${this.proficiencyCoefficient}&selectMuscle=${selectMuscle}`;
+        `sport=${this.reportCategory
+        }&startdate=${startDateString
+        }&enddate=${endDateString
+        }&selectPeriod=${this.selectPeriod
+        }&selectProficiency=${this.proficiencyCoefficient
+        }&selectMuscle=${selectMuscle
+        }`;
       } else {
         searchString =
-        `sport=${this.reportCategory}&startdate=${startDateString}&enddate=${endDateString}&selectPeriod=${this.selectPeriod}`;
+        `sport=${this.reportCategory
+        }&startdate=${startDateString
+        }&enddate=${endDateString
+        }&selectPeriod=${this.selectPeriod
+        }`;
       }
 
       if (location.search.indexOf('?') > -1) {

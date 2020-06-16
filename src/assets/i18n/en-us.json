@@ -824,7 +824,8 @@
     "fieldDisplay": "Field display",
     "filter": "Filter",
     "numberOf": "Items",
-    "perCapita": "Per capita"
+    "perCapita": "Per capita",
+    "lastNumberUnit": "Last {{number}} {{unit}}"
   },
   "conflict": {
     "benefitime": "Benefit Time"

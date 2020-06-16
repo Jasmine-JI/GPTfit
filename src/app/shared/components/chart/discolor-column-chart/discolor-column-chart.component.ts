@@ -546,7 +546,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
 
       // 周報告開頭是星期日-kidin-1090220
       if (moment(this.searchDate[0]).isoWeekday() !== 7) {
-        weekStartDay = this.searchDate[0] + 86400 * 1000 * (7 - moment(this.searchDate[0]).isoWeekday());
+        weekStartDay = this.searchDate[0] - 86400 * 1000 * moment(this.searchDate[0]).isoWeekday();
       } else {
         weekStartDay = this.searchDate[0];
       }

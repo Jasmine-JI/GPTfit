@@ -190,7 +190,7 @@ export class ComLifeTrackingComponent implements OnInit {
     this.groupService.getMemberList().pipe(first()).subscribe(res => {
       if (res.groupId === '' || res.groupId !== this.groupId) {
         // 先從service取得群組資訊，若取不到再call api-kidin-1090215
-        this.groupService.getGroupInfo().subscribe(result => {
+        this.groupService.getGroupInfo().pipe(first()).subscribe(result => {
           this.groupData = result;
           if (this.groupData.hasOwnProperty('groupId')) {
             this.showGroupInfo();
@@ -213,7 +213,7 @@ export class ComLifeTrackingComponent implements OnInit {
         this.getGroupMemberIdList();
       } else {
         this.groupList = res.groupList;
-        this.groupService.getGroupInfo().subscribe(result => {
+        this.groupService.getGroupInfo().pipe(first()).subscribe(result => {
           this.groupData = result;
           this.showGroupInfo();
         });
@@ -633,7 +633,7 @@ export class ComLifeTrackingComponent implements OnInit {
 
     // 周報告開頭是星期日-kidin-1090312
     if (moment(this.searchDate[0]).isoWeekday() !== 7) {
-      week.startDate = this.searchDate[0] + 86400 * 1000 * (7 - moment(this.searchDate[0]).isoWeekday());
+      week.startDate = this.searchDate[0] - 86400 * 1000 * moment(this.searchDate[0]).isoWeekday();
     } else {
       week.startDate = this.searchDate[0];
     }

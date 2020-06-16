@@ -22,7 +22,7 @@
           <p style="white-space: nowrap; margin: 0px">{{'SH.dateRange' | translate}}：</p>
           <app-date-range-picker
             (selectDateRange)="getSelectDate($event)"
-            [default]="'last7Days'"
+            [default]="defaultDate"
             [style.pointer-events]="isLoading? 'none' : ''"
           ></app-date-range-picker>
         </div>
@@ -143,7 +143,7 @@
         <div class="summaryDataArea">
           <span class="summaryData">{{avgTime || 0}}</span>
           <p class="summaryDescription">
-            {{'Dashboard.TrainLive.avg' | translate}} {{'Dashboard.MyActivity.activityTime' | translate}}
+            {{'other.perCapita' | translate}} {{'Dashboard.MyActivity.timing' | translate}}
           </p>
         </div>
         <div class="sepLine"></div>
@@ -171,7 +171,7 @@
             <span class="infoDataUnit"> cal</span>
           </div>
           <p class="summaryDescription">
-            {{'Dashboard.TrainLive.avg' | translate}} {{'Dashboard.SportReport.totalCalorie' | translate}}
+            {{'other.perCapita' | translate}} {{'Dashboard.SportReport.totalCalorie' | translate}}
           </p>
         </div>
         <div class="sepLine" *ngIf="reportCategory !== '99' && reportCategory !== '3' && reportCategory !== '5'"></div>
@@ -665,6 +665,10 @@
         <div
           class="flexCol tableMenu"
           style="position: absolute; right: 20px; padding: 10px; max-height: 300px; overflow-y: auto;"
+          (mouseenter)="handleScrollEvent(true, 'table')"
+          (mouseleave)="handleScrollEvent(false, 'table')"
+          (touchstart)="handleScrollEvent(true, 'table')"
+          (touchend)="handleScrollEvent(false, 'table')"
           *ngIf="showTableMenu.group"
         >
           <div *ngIf="+groupLevel <= 40">
@@ -725,9 +729,8 @@
     <div style="margin-top: 10px;">
       <mat-table [dataSource]="tableData.display.group.data" matSort #groupSortTable="matSort"  (matSortChange)="sortGroupData()">
         <ng-container matColumnDef="name">
-          <mat-header-cell *matHeaderCellDef disableClear="true" class="tableArrangement">
+          <mat-header-cell *matHeaderCellDef disableClear="true" class="tableArrangement" id="groupName">
             <span
-              id="groupName"
               class="tableTitleWord"
               style="text-align: start;"
             >
@@ -740,7 +743,12 @@
             style="align-items: flex-start; justify-content: center;"
           >
             <span style="text-align: start; font-size: 10px; color: #c5c5c5;">{{row?.data.gName.upLevelName}}</span>
-            <span style="text-align: start;">{{row?.data.gName.groupName}}</span>
+            <span
+              style="text-align: start;"
+              [style.color]="groupMenu.focusGid === row?.gid ? '#157fcc' : ''"
+            >
+              {{row?.data.gName.groupName}}
+            </span>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="memberNum">
@@ -858,9 +866,19 @@
               *ngIf="sortCategory.group === 'avgTime'"
             ></div>
             <div class="setIn">
-              <span [class.fixPlace]="row?.data.timeRegression === 0">{{row?.data.avgTime}}</span>
-              <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.data.timeRegression > 0"></i>
-              <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.data.timeRegression < 0"></i>
+              <span
+                [class.fixPlace]="row?.data.timeRegression === 0 || row?.data.avgTime === '-:--'"
+              >
+                {{row?.data.avgTime}}
+              </span>
+              <i
+                class="icon-svg_web-icon_p3_017-up upArrow"
+                *ngIf="row?.data.timeRegression > 0 && row?.data.avgTime !== '-:--'"
+              ></i>
+              <i
+                class="icon-svg_web-icon_p3_018-down downArrow"
+                *ngIf="row?.data.timeRegression < 0 && row?.data.avgTime !== '-:--'"
+              ></i>
             </div>
           </mat-cell>
         </ng-container>
@@ -890,9 +908,17 @@
               *ngIf="sortCategory.group === 'avgFitTime'"
             ></div>
             <div class="setIn">
-              <span [class.fixPlace]="row?.data.fitTimeRegression === 0">{{row?.data.avgFitTime}}</span>
-              <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.data.fitTimeRegression > 0"></i>
-              <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.data.fitTimeRegression < 0"></i>
+              <span
+                [class.fixPlace]="row?.data.fitTimeRegression === 0 || row?.data.avgFitTime === '-:--'"
+              >
+                {{row?.data.avgFitTime}}
+              </span>
+              <i
+                class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.data.fitTimeRegression > 0 && row?.data.avgFitTime !== '-:--'"
+              ></i>
+              <i
+                class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.data.fitTimeRegression < 0 && row?.data.avgFitTime !== '-:--'"
+              ></i>
             </div>
           </mat-cell>
         </ng-container>
@@ -921,9 +947,19 @@
               *ngIf="sortCategory.group === 'avgPai'"
             ></div>
             <div class="setIn">
-              <span [class.fixPlace]="row?.data.paiRegression === 0">{{row?.data.avgPai | number: '1.0-0'}}</span>
-              <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.data.paiRegression > 0"></i>
-              <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.data.paiRegression < 0"></i>
+              <span
+                [class.fixPlace]="row?.data.paiRegression === 0"
+              >
+                {{row?.data.avgPai | number: '1.0-0'}}
+              </span>
+              <i
+                class="icon-svg_web-icon_p3_017-up upArrow"
+                *ngIf="row?.data.paiRegression > 0"
+              ></i>
+              <i
+                class="icon-svg_web-icon_p3_018-down downArrow"
+                *ngIf="row?.data.paiRegression < 0"
+              ></i>
             </div>
           </mat-cell>
         </ng-container>
@@ -1014,8 +1050,10 @@
     [style.top]="groupMenu.show ? groupMenu.y : null"
     [style.left]="groupMenu.show ? groupMenu.x : null"
     *ngIf="groupMenu.show"
-    (mouseenter)="handleScrollEvent(true)"
-    (mouseleave)="handleScrollEvent(false)"
+    (mouseenter)="handleScrollEvent(true, 'menu')"
+    (mouseleave)="handleScrollEvent(false, 'menu')"
+    (touchstart)="handleScrollEvent(true, 'menu')"
+    (touchend)="handleScrollEvent(false, 'menu')"
   >
     <div class="flexCol" style="padding: 15px 15px 0px 15px;">
       <span style="color: #656565; font-weight: bold;">{{'Dashboard.TrainLive.member' | translate}}</span>
@@ -1042,10 +1080,9 @@
     GPT Center
   </div>
   <div class="pageBreak" *ngIf="isPreviewMode"></div>
-
   <div
     class="flexCol"
-    style="margin-bottom: 50px;"
+    style="margin-bottom: 30px;"
     (scroll)="onWindowScroll()"
   >
     <div class="flexRow activity-title" style="justify-content: space-between;">
@@ -1061,6 +1098,10 @@
         <div
           class="flexCol tableMenu"
           style="position: absolute; right: 20px; padding: 10px; max-height: 300px; overflow-y: auto;"
+          (mouseenter)="handleScrollEvent(true, 'table')"
+          (mouseleave)="handleScrollEvent(false, 'table')"
+          (touchstart)="handleScrollEvent(true, 'table')"
+          (touchend)="handleScrollEvent(false, 'table')"
           *ngIf="showTableMenu.person"
         >
           <div *ngIf="+groupLevel <= 40">
@@ -1127,9 +1168,9 @@
             disableClear="true"
             class="tableArrangement"
             style="justify-content: flex-start;"
+            id="personName"
           >
             <span
-              id="personName"
               class="tableTitleWord"
               style="text-align: start;"
             >
@@ -1140,6 +1181,7 @@
             *matCellDef="let row; let i = index;"
             class="tableArrangement tableContent flexCol"
             style="align-items: flex-start; justify-content: center;"
+            [style.color]="personalMenu.focusId === row?.userId ? '#157fcc': ''"
           >
             <span style="text-align: center;">{{row?.name}}</span>
           </mat-cell>
@@ -1415,8 +1457,10 @@
     [style.top]="personalMenu.show ? personalMenu.y : null"
     [style.left]="personalMenu.show ? personalMenu.x : null"
     *ngIf="personalMenu.show"
-    (mouseenter)="handleScrollEvent(true)"
-    (mouseleave)="handleScrollEvent(false)"
+    (mouseenter)="handleScrollEvent(true, 'menu')"
+    (mouseleave)="handleScrollEvent(false, 'menu')"
+    (touchstart)="handleScrollEvent(true, 'menu')"
+    (touchend)="handleScrollEvent(false, 'menu')"
   >
     <div class="flexCol" style="padding: 15px 15px 0px 15px;">
       <span style="color: #656565; font-weight: bold;">{{'Dashboard.Group.MyGroup.groupList' | translate}}</span>
