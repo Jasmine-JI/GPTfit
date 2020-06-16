@@ -337,16 +337,22 @@ export class AppEnableComponent implements OnInit, OnDestroy {
       this.signupService.fetchEnableAccount(body, this.ip).subscribe(res => {
 
         if (res.processResult.resultCode !== 200) {
-          const msgBody = 'Server error! Please try again later.';
-          this.showMsgBox(msgBody);
+          let msgBody;
+          if (res.processResult.apiReturnMessage === `Post fail, parmameter 'project' or 'token' or 'userId' error.`) {
+            msgBody = this.translate.instant('Portal.errorCaptcha');
+          } else {
+            msgBody = 'Server error! Please try again later.';
+          }
+
+          this.showMsgBox(msgBody, false);
         } else {
 
           if (this.accountInfo.type === 1) {
             const msgBody = this.translate.instant('other.sendCaptchaChackEmail');
-            this.showMsgBox(msgBody);
+            this.showMsgBox(msgBody, true);
           } else {
             const msgBody = `${this.translate.instant('other.switch')} ${this.translate.instant('Dashboard.MyDevice.success')}`;
-            this.showMsgBox(msgBody);
+            this.showMsgBox(msgBody, true);
           }
 
         }
@@ -376,31 +382,50 @@ export class AppEnableComponent implements OnInit, OnDestroy {
             break;
         }
 
+        this.showMsgBox(msgBody, false);
       } else {
         msgBody = `${this.translate.instant('other.switch')} ${this.translate.instant('Dashboard.MyDevice.success')}`;
+        this.showMsgBox(msgBody, true);
       }
 
-      this.showMsgBox(msgBody);
       this.sending = false;
     });
 
   }
 
   // 顯示彈跳視窗訊息-kidin-1090518
-  showMsgBox (msg) {
+  showMsgBox (msg: string, navigate: boolean) {
 
-    this.dialog.open(MessageBoxComponent, {
-      hasBackdrop: true,
-      disableClose: true,
-      data: {
-        title: 'Message',
-        body: msg,
-        confirmText: this.translate.instant(
-          'other.confirm'
-        ),
-        onConfirm: this.turnBack.bind(this)
-      }
-    });
+    if (navigate) {
+
+      this.dialog.open(MessageBoxComponent, {
+        hasBackdrop: true,
+        disableClose: true,
+        data: {
+          title: 'Message',
+          body: msg,
+          confirmText: this.translate.instant(
+            'other.confirm'
+          ),
+          onConfirm: this.turnBack.bind(this)
+        }
+      });
+
+    } else {
+
+      this.dialog.open(MessageBoxComponent, {
+        hasBackdrop: true,
+        disableClose: true,
+        data: {
+          title: 'Message',
+          body: msg,
+          confirmText: this.translate.instant(
+            'other.confirm'
+          )
+        }
+      });
+
+    }
 
   }
 
