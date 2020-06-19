@@ -201,7 +201,7 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
         weekEndDay = this.searchDate[1];
       }
 
-      diff = (weekEndDay - weekStartDay) / (86400 * 1000 * 7);
+      diff = ((weekEndDay - weekStartDay) / (86400 * 1000 * 7)) + 1;
 
       for (let i = 0; i < diff + 1; i++) {
         this.dateList.push(weekStartDay + 86400 * 1000 * 7 * i);

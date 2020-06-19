@@ -211,64 +211,72 @@ export class AppEnableComponent implements OnInit, OnDestroy {
 
   // 倒數計時倒數計時並取得server手機驗證碼-kidin-1090519
   reciprocal () {
-    this.sendingPhoneCaptcha = true;
 
-    const btnInterval = setInterval(() => {
-      this.timeCount--;
+    if (this.imgCaptcha.show) {
+      this.removeCaptcha('reciprocal');
+    } else {
 
-      if (this.timeCount === 0) {
-        this.sendingPhoneCaptcha = false;
-        this.timeCount = 30;
+      this.sendingPhoneCaptcha = true;
 
-        // 設any處理typescript報錯：Argument of type 'Timer' is not assignable to parameter of type 'number'-kidin-1090515
-        window.clearInterval(btnInterval as any);
-      }
+      const body = {
+        enableAccountFlow: 1,
+        token: this.appInfo.token,
+        project: this.appInfo.project
+      };
 
-    }, 1000);
+      this.userInfoService.fetchEnableAccount(body, this.ip).subscribe(res => {
 
-    const body = {
-      enableAccountFlow: 1,
-      token: this.appInfo.token,
-      project: this.appInfo.project
-    };
-
-    this.userInfoService.fetchEnableAccount(body, this.ip).subscribe(res => {
-
-      const resultInfo = res.processResult;
-      if (
-        resultInfo.resultCode !== 200
-        && (resultInfo.apiReturnMessage === 'Found attack, update status to lock!' || resultInfo.apiReturnMessage === 'Found lock!')
-      ) {
-        const captchaBody = {
-          unlockFlow: 1,
-          imgLockCode: res.processResult.imgLockCode
-        };
-
-        this.signupService.fetchCaptcha(captchaBody, this.ip).subscribe(captchaRes => {
-          this.imgCaptcha = {
-            show: true,
-            imgCode: `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`,
-            cue: '',
-            code: ''
+        const resultInfo = res.processResult;
+        if (
+          resultInfo.resultCode !== 200
+          && (resultInfo.apiReturnMessage === 'Found attack, update status to lock!' || resultInfo.apiReturnMessage === 'Found lock!')
+        ) {
+          const captchaBody = {
+            unlockFlow: 1,
+            imgLockCode: res.processResult.imgLockCode
           };
-        });
 
-      } else if (resultInfo.resultCode === 200) {
-        this.dialog.open(MessageBoxComponent, {
-          hasBackdrop: true,
-          disableClose: true,
-          data: {
-            title: 'Message',
-            body: this.translate.instant('other.sendSmsSuccess'),
-            confirmText: this.translate.instant(
-              'other.confirm'
-            )
-          }
-        });
+          this.signupService.fetchCaptcha(captchaBody, this.ip).subscribe(captchaRes => {
+            this.imgCaptcha = {
+              show: true,
+              imgCode: `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`,
+              cue: '',
+              code: ''
+            };
+          });
 
-      }
+          this.sendingPhoneCaptcha = false;
+        } else if (resultInfo.resultCode === 200) {
+          this.dialog.open(MessageBoxComponent, {
+            hasBackdrop: true,
+            disableClose: true,
+            data: {
+              title: 'Message',
+              body: this.translate.instant('other.sendSmsSuccess'),
+              confirmText: this.translate.instant(
+                'other.confirm'
+              )
+            }
+          });
 
-    });
+          const btnInterval = setInterval(() => {
+            this.timeCount--;
+
+            if (this.timeCount === 0) {
+              this.sendingPhoneCaptcha = false;
+              this.timeCount = 30;
+
+              // 設any處理typescript報錯：Argument of type 'Timer' is not assignable to parameter of type 'number'-kidin-1090515
+              window.clearInterval(btnInterval as any);
+            }
+
+          }, 1000);
+
+        }
+
+      });
+
+    }
 
   }
 
@@ -303,24 +311,12 @@ export class AppEnableComponent implements OnInit, OnDestroy {
 
   // 進行啟用帳號流程-kidin-1090515
   submit () {
-    this.sending = true;
 
     if (this.imgCaptcha.show) {
-      const releaseBody = {
-        unlockFlow: 2,
-        unlockKey: this.imgCaptcha.code
-      };
-
-      this.signupService.fetchCaptcha(releaseBody, this.ip).subscribe(res => {
-        if (res.processResult.resultCode === 200) {
-          this.imgCaptcha.show = false;
-          this.submit();
-        } else {
-          this.imgCaptcha.cue = this.translate.instant('Portal.errorCaptcha');
-        }
-
-      });
+      this.removeCaptcha('submit');
     } else {
+      this.sending = true;
+
       const body = {
         enableAccountFlow: 2,
         token: this.appInfo.token,
@@ -338,7 +334,10 @@ export class AppEnableComponent implements OnInit, OnDestroy {
 
         if (res.processResult.resultCode !== 200) {
           let msgBody;
-          if (res.processResult.apiReturnMessage === `Post fail, parmameter 'project' or 'token' or 'userId' error.`) {
+          if (
+            res.processResult.apiReturnMessage === `Post fail, parmameter 'project' or 'token' or 'userId' error.`
+            || res.processResult.apiReturnMessage === `Post fail, check 'userId' error with verification code.`
+          ) {
             msgBody = this.translate.instant('Portal.errorCaptcha');
           } else {
             msgBody = 'Server error! Please try again later.';
@@ -361,6 +360,31 @@ export class AppEnableComponent implements OnInit, OnDestroy {
       });
 
     }
+
+  }
+
+  // 解除圖碼鎖定-kidin-1090618
+  removeCaptcha (action: string) {
+    const releaseBody = {
+      unlockFlow: 2,
+      unlockKey: this.imgCaptcha.code
+    };
+
+    this.signupService.fetchCaptcha(releaseBody, this.ip).subscribe(res => {
+      if (res.processResult.resultCode === 200) {
+        this.imgCaptcha.show = false;
+
+        if (action === 'submit') {
+          this.submit();
+        } else {
+          this.reciprocal();
+        }
+
+      } else {
+        this.imgCaptcha.cue = this.translate.instant('Portal.errorCaptcha');
+      }
+
+    });
 
   }
 
