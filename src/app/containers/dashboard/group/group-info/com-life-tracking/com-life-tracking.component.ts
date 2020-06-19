@@ -188,7 +188,7 @@ export class ComLifeTrackingComponent implements OnInit {
     this.groupLevel = this.utilsService.displayGroupLevel(this.groupId);
 
     this.groupService.getMemberList().pipe(first()).subscribe(res => {
-      if (res.groupId === '' || res.groupId !== this.groupId) {
+      if (res.groupId === '' || res.groupId !== this.groupId || true) { // 待團體分析實作後再將判斷式改回-kidin-1090616
         // 先從service取得群組資訊，若取不到再call api-kidin-1090215
         this.groupService.getGroupInfo().pipe(first()).subscribe(result => {
           this.groupData = result;
@@ -992,7 +992,11 @@ export class ComLifeTrackingComponent implements OnInit {
     }
 
     if (fitTime.sameTimesLength !== 0) {
-      this.fitTimeData.fitTimeList.push(fitTime.sameTimesFitTime / fitTime.sameTimesLength);
+      this.fitTimeData.fitTimeList.push(fitTime.sameTimesFitTime);
+      if (fitTime.sameTimesFitTime / fitTime.sameTimesLength > fitTime.bestFitTime) {
+        fitTime.bestFitTime = fitTime.sameTimesFitTime / fitTime.sameTimesLength;
+      }
+
       this.fitTimeData.date.push(moment(fitTime.sameTimesDate.split('T')[0], 'YYYY-MM-DD').valueOf());
     }
 

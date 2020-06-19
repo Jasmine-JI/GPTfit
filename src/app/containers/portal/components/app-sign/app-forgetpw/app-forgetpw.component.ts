@@ -322,75 +322,82 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
 
   // 倒數計時並取得server手機驗證碼-kidin-1090519
   reciprocal () {
-    this.sendingPhoneCaptcha = true;
 
-    const body = {
-      resetPasswordFlow: 1,
-      accountType: 2,
-      countryCode: this.formValue.countryCode,
-      mobileNumber: this.formValue.phone,
-      project: this.formValue.project
-    };
+    if (this.imgCaptcha.show) {
+      this.removeCaptcha('reciprocal');
+    } else {
 
-    this.userInfoService.fetchForgetpwd(body, this.ip).subscribe(res => {
+      this.sendingPhoneCaptcha = true;
 
-      const resultInfo = res.processResult;
-      if (resultInfo.resultCode !== 200) {
+      const body = {
+        resetPasswordFlow: 1,
+        accountType: 2,
+        countryCode: this.formValue.countryCode,
+        mobileNumber: this.formValue.phone,
+        project: this.formValue.project
+      };
 
-        switch (resultInfo.apiReturnMessage) {
-          case 'Found attack, update status to lock!':
-          case 'Found lock!':
+      this.userInfoService.fetchForgetpwd(body, this.ip).subscribe(res => {
 
-            const captchaBody = {
-              unlockFlow: 1,
-              imgLockCode: res.processResult.imgLockCode
-            };
+        const resultInfo = res.processResult;
+        if (resultInfo.resultCode !== 200) {
 
-            this.signupService.fetchCaptcha(captchaBody, this.ip).subscribe(captchaRes => {
-              this.imgCaptcha = {
-                show: true,
-                imgCode: `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`,
-                cue: '',
-                code: ''
+          switch (resultInfo.apiReturnMessage) {
+            case 'Found attack, update status to lock!':
+            case 'Found lock!':
+
+              const captchaBody = {
+                unlockFlow: 1,
+                imgLockCode: res.processResult.imgLockCode
               };
-            });
 
-            break;
-          case 'Post fail, account is not existing.':
-            this.cue.phone = this.translate.instant('SH.noRegisterData');
-            break;
+              this.signupService.fetchCaptcha(captchaBody, this.ip).subscribe(captchaRes => {
+                this.imgCaptcha = {
+                  show: true,
+                  imgCode: `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`,
+                  cue: '',
+                  code: ''
+                };
+              });
+
+              break;
+            case 'Post fail, account is not existing.':
+              this.cue.phone = this.translate.instant('SH.noRegisterData');
+              break;
+          }
+
+          this.sendingPhoneCaptcha = false;
+        } else if (resultInfo.resultCode === 200) {
+          this.dialog.open(MessageBoxComponent, {
+            hasBackdrop: true,
+            disableClose: true,
+            data: {
+              title: 'Message',
+              body: this.translate.instant('other.sendSmsSuccess'),
+              confirmText: this.translate.instant(
+                'other.confirm'
+              )
+            }
+          });
+
+          const btnInterval = setInterval(() => {
+            this.timeCount--;
+
+            if (this.timeCount === 0) {
+              this.sendingPhoneCaptcha = false;
+              this.timeCount = 30;
+
+              // 設any處理typescript報錯：Argument of type 'Timer' is not assignable to parameter of type 'number'-kidin-1090515
+              window.clearInterval(btnInterval as any);
+            }
+
+          }, 1000);
+
         }
 
-        this.sendingPhoneCaptcha = false;
-      } else if (resultInfo.resultCode === 200) {
-        this.dialog.open(MessageBoxComponent, {
-          hasBackdrop: true,
-          disableClose: true,
-          data: {
-            title: 'Message',
-            body: this.translate.instant('other.sendSmsSuccess'),
-            confirmText: this.translate.instant(
-              'other.confirm'
-            )
-          }
-        });
+      });
 
-        const btnInterval = setInterval(() => {
-          this.timeCount--;
-
-          if (this.timeCount === 0) {
-            this.sendingPhoneCaptcha = false;
-            this.timeCount = 30;
-
-            // 設any處理typescript報錯：Argument of type 'Timer' is not assignable to parameter of type 'number'-kidin-1090515
-            window.clearInterval(btnInterval as any);
-          }
-
-        }, 1000);
-
-      }
-
-    });
+    }
 
   }
 
@@ -460,21 +467,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
     this.sending = true;
 
     if (this.imgCaptcha.show) {
-      const releaseBody = {
-        unlockFlow: 2,
-        unlockKey: this.imgCaptcha.code
-      };
-
-      this.signupService.fetchCaptcha(releaseBody, this.ip).subscribe(res => {
-        if (res.processResult.resultCode === 200) {
-          this.imgCaptcha.show = false;
-          this.submit();
-        } else {
-          this.imgCaptcha.cue = this.translate.instant('Portal.errorCaptcha');
-          this.sending = false;
-        }
-
-      });
+      this.removeCaptcha('submit');
     } else {
 
       if (this.formValue.type === 1 && this.formValue.resetPasswordFlow === 1) {
@@ -520,6 +513,46 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
       }
 
       this.sending = false;
+    });
+
+  }
+
+  // 確認是否填寫圖形驗證碼欄位-kidin-1090514
+  checkImgCaptcha (e) {
+    if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
+      const inputImgCaptcha = e.currentTarget.value;
+
+      if (inputImgCaptcha.length === 0) {
+        this.imgCaptcha.cue = this.translate.instant('Portal.errorCaptcha');
+      } else {
+        this.imgCaptcha.code = inputImgCaptcha;
+        this.imgCaptcha.cue = '';
+      }
+    }
+
+  }
+
+  // 解除圖碼鎖定-kidin-1090618
+  removeCaptcha (action: string) {
+    const releaseBody = {
+      unlockFlow: 2,
+      unlockKey: this.imgCaptcha.code
+    };
+
+    this.signupService.fetchCaptcha(releaseBody, this.ip).subscribe(res => {
+      if (res.processResult.resultCode === 200) {
+        this.imgCaptcha.show = false;
+
+        if (action === 'submit') {
+          this.submit();
+        } else {
+          this.reciprocal();
+        }
+
+      } else {
+        this.imgCaptcha.cue = this.translate.instant('Portal.errorCaptcha');
+      }
+
     });
 
   }
