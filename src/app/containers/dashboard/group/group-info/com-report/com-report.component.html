@@ -126,7 +126,7 @@
     <div>
       <div class="summaryArea">
         <div class="summaryDataArea">
-          <span class="summaryData">{{hasDataNumber || 0}}</span>
+          <span class="summaryData">{{passPrivacyNum || 0}}</span>
           <p class="summaryDescription">{{'other.people' | translate}}</p>
         </div>
         <div class="sepLine"></div>
@@ -650,7 +650,6 @@
   <div
     class="flexCol"
     style="margin-bottom: 50px;"
-    (scroll)="onWindowScroll()"
   >
     <div class="flexRow activity-title" style="justify-content: space-between;">
       <span class="ala-dashboard-title">
@@ -768,10 +767,16 @@
           >
             <div
               class="visualizeData"
-              [style.width]="sortStatus ? row?.data.ratio : '0px'"
+              [style.width]="sortStatus.group ? row?.data.ratio : '0px'"
               *ngIf="sortCategory.group === 'memberNum'"
             ></div>
-            <span class="setIn">{{row?.data.memberNum | number: '1.0-0'}}</span>
+            <div class="flexRow setIn">
+              <i
+                class="icon-svg_web-icon_p1_059-lock lockIcon"
+                *ngIf="row?.data.notPassPrivacyNum > 0"
+              ></i>
+              <span>{{row?.data.memberNum | number: '1.0-0'}}</span>
+            </div>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="avgActivityNum">
@@ -796,7 +801,7 @@
           >
             <div
               class="visualizeData"
-              [style.width]="sortStatus ? row?.data.ratio : '0px'"
+              [style.width]="sortStatus.group ? row?.data.ratio : '0px'"
               *ngIf="sortCategory.group === 'avgActivityNum'"
             ></div>
             <span class="setIn">{{row?.data.avgActivityNum | number: '1.0-0'}}</span>
@@ -826,7 +831,7 @@
           >
             <div
               class="visualizeData"
-              [style.width]="sortStatus ? row?.data.ratio : '0px'"
+              [style.width]="sortStatus.group ? row?.data.ratio : '0px'"
               *ngIf="sortCategory.group === 'weekFrequency'"
             ></div>
             <span class="setIn" *ngIf="row?.data.weekFrequency !== '--' && row?.data.weekFrequency >= 1">
@@ -862,7 +867,7 @@
           >
             <div
               class="visualizeData"
-              [style.width]="sortStatus ? row?.data.ratio : '0px'"
+              [style.width]="sortStatus.group ? row?.data.ratio : '0px'"
               *ngIf="sortCategory.group === 'avgTime'"
             ></div>
             <div class="setIn">
@@ -904,7 +909,7 @@
           >
             <div
               class="visualizeData"
-              [style.width]="sortStatus ? row?.data.ratio : '0px'"
+              [style.width]="sortStatus.group ? row?.data.ratio : '0px'"
               *ngIf="sortCategory.group === 'avgFitTime'"
             ></div>
             <div class="setIn">
@@ -943,7 +948,7 @@
           >
             <div
               class="visualizeData"
-              [style.width]="sortStatus ? row?.data.ratio : '0px'"
+              [style.width]="sortStatus.group ? row?.data.ratio : '0px'"
               *ngIf="sortCategory.group === 'avgPai'"
             ></div>
             <div class="setIn">
@@ -985,7 +990,7 @@
           >
             <div
               class="visualizeData"
-              [style.width]="sortStatus ? row?.data.ratio : '0px'"
+              [style.width]="sortStatus.group ? row?.data.ratio : '0px'"
               *ngIf="sortCategory.group === 'avgCalories'"
             ></div>
             <div class="setIn">
@@ -1064,6 +1069,10 @@
             (click)="goMemberPage(member.id)"
             *ngFor="let member of groupPage.memberList"
           >
+            <i
+              class="icon-svg_web-icon_p1_059-lock lockIcon"
+              *ngIf="!member.passPrivacy"
+            ></i>
             {{ member.name }}
           </span>
         </div>
@@ -1206,10 +1215,14 @@
           >
             <div
               class="visualizeData"
-              [style.width]="row?.ratio"
+              [style.width]="sortStatus.person ? row?.ratio : '0px'"
               *ngIf="sortCategory.person === 'totalActivityNum'"
             ></div>
-            <span class="setIn">{{row?.totalActivityNum}}</span>
+            <span class="setIn" *ngIf="row?.passPrivacy">{{row?.totalActivityNum}}</span>
+            <i
+              class="icon-svg_web-icon_p1_059-lock lockIcon setIn"
+              *ngIf="!row?.passPrivacy"
+            ></i>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="weekFrequency">
@@ -1236,7 +1249,7 @@
           >
             <div
               class="visualizeData"
-              [style.width]="row?.ratio"
+              [style.width]="sortStatus.person ? row?.ratio : '0px'"
               *ngIf="sortCategory.person === 'weekFrequency'"
             ></div>
             <span class="setIn" *ngIf="row?.weekFrequency !== '--' && row?.weekFrequency >= 1">
@@ -1245,9 +1258,13 @@
             <span class="setIn" *ngIf="row?.weekFrequency !== '--' && row?.weekFrequency < 1">
               &lt; 1
             </span>
-            <span class="setIn" *ngIf="row?.weekFrequency === '--'">
+            <span class="setIn" *ngIf="row?.weekFrequency === '--' && row?.passPrivacy">
               {{row?.weekFrequency}}
             </span>
+            <i
+              class="icon-svg_web-icon_p1_059-lock lockIcon setIn "
+              *ngIf="!row?.passPrivacy"
+            ></i>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="totalTime">
@@ -1272,13 +1289,17 @@
           >
             <div
               class="visualizeData"
-              [style.width]="row?.ratio"
+              [style.width]="sortStatus.person ? row?.ratio : '0px'"
               *ngIf="sortCategory.person === 'totalTime'"
             ></div>
             <div class="setIn">
-              <span [class.fixPlace]="row?.timeRegression === 0">{{row?.totalTime}}</span>
+              <span [class.fixPlace]="row?.timeRegression === 0" *ngIf="row?.passPrivacy">{{row?.totalTime}}</span>
               <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.timeRegression > 0"></i>
               <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.timeRegression < 0"></i>
+              <i
+                class="icon-svg_web-icon_p1_059-lock lockIcon fixPlace"
+                *ngIf="!row?.passPrivacy"
+              ></i>
             </div>
           </mat-cell>
         </ng-container>
@@ -1304,13 +1325,17 @@
           >
             <div
               class="visualizeData"
-              [style.width]="row?.ratio"
+              [style.width]="sortStatus.person ? row?.ratio : '0px'"
               *ngIf="sortCategory.person === 'fitTime'"
             ></div>
             <div class="setIn">
-              <span [class.fixPlace]="row?.fitTimeRegression === 0">{{row?.fitTime}}</span>
+              <span [class.fixPlace]="row?.fitTimeRegression === 0" *ngIf="row?.passPrivacy">{{row?.fitTime}}</span>
               <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.fitTimeRegression > 0"></i>
               <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.fitTimeRegression < 0"></i>
+              <i
+                class="icon-svg_web-icon_p1_059-lock lockIcon fixPlace"
+                *ngIf="!row?.passPrivacy"
+              ></i>
             </div>
           </mat-cell>
         </ng-container>
@@ -1335,13 +1360,17 @@
           >
             <div
               class="visualizeData"
-              [style.width]="row?.ratio"
+              [style.width]="sortStatus.person ? row?.ratio : '0px'"
               *ngIf="sortCategory.person === 'pai'"
             ></div>
             <div class="setIn">
-              <span [class.fixPlace]="row?.paiRegression === 0">{{row?.pai}}</span>
+              <span [class.fixPlace]="row?.paiRegression === 0" *ngIf="row?.passPrivacy">{{row?.pai}}</span>
               <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.paiRegression > 0"></i>
               <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.paiRegression < 0"></i>
+              <i
+                class="icon-svg_web-icon_p1_059-lock lockIcon fixPlace"
+                *ngIf="!row?.passPrivacy"
+              ></i>
             </div>
           </mat-cell>
         </ng-container>
@@ -1367,18 +1396,22 @@
           >
             <div
               class="visualizeData"
-              [style.width]="row?.ratio"
+              [style.width]="sortStatus.person ? row?.ratio : '0px'"
               *ngIf="sortCategory.person === 'totalCalories'"
             ></div>
             <div class="setIn">
               <span [class.fixPlace]="row?.caloriesRegression === 0" *ngIf="row?.totalCalories !== '--'">
                 {{row?.totalCalories | number:'1.0-0'}}
               </span>
-              <span [class.fixPlace]="row?.caloriesRegression === 0" *ngIf="row?.totalCalories === '--'">
+              <span [class.fixPlace]="row?.caloriesRegression === 0" *ngIf="row?.totalCalories === '--' && row?.passPrivacy">
                 {{row?.totalCalories}}
               </span>
               <i class="icon-svg_web-icon_p3_017-up upArrow" *ngIf="row?.caloriesRegression > 0"></i>
               <i class="icon-svg_web-icon_p3_018-down downArrow" *ngIf="row?.caloriesRegression < 0"></i>
+              <i
+                class="icon-svg_web-icon_p1_059-lock lockIcon fixPlace"
+                *ngIf="!row?.passPrivacy"
+              ></i>
             </div>
           </mat-cell>
         </ng-container>
@@ -1403,7 +1436,11 @@
               <i [class]="row?.likeType[0]" *ngIf="row?.likeType.length > 0"></i>
               <i [class]="row?.likeType[1]" *ngIf="row?.likeType.length > 1"></i>
               <i [class]="row?.likeType[2]" *ngIf="row?.likeType.length > 2"></i>
-              <span *ngIf="row?.likeType.length === 0" style="font-size: 14px;">--</span>
+              <span *ngIf="row?.likeType.length === 0 && row?.passPrivacy" style="font-size: 14px;">--</span>
+              <i
+                class="icon-svg_web-icon_p1_059-lock lockIcon"
+                *ngIf="!row?.passPrivacy"
+              ></i>
             </div>
           </mat-cell>
         </ng-container>
@@ -1431,7 +1468,11 @@
                 *ngIf="!isLoading && !isRxjsLoading"
               ></app-hrzone-chart>
             </div>
-            <span class="setIn" *ngIf="row?.HRZone === '--'">--</span>
+            <span class="setIn" *ngIf="row?.HRZone === '--' && row?.passPrivacy">--</span>
+            <i
+              class="icon-svg_web-icon_p1_059-lock lockIcon setIn"
+              *ngIf="!row?.passPrivacy"
+            ></i>
           </mat-cell>
         </ng-container>
         <ng-container>

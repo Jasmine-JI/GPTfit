@@ -39,7 +39,10 @@ export class ComReportComponent implements OnInit, OnDestroy {
   dataDateRange = '';
   showReport = false;
   selectType = '99';
-  sortStatus = false;
+  sortStatus = {
+    group: false,
+    person: false
+  };
   showAll = {
     group: false,
     person: false
@@ -341,6 +344,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
   reportRangeType = 1;
   reportCreatedTime = moment().format('YYYY/MM/DD HH:mm');
   hasDataNumber = 0;
+  passPrivacyNum = 0;
   activitiesList: Array<any>;
   previewUrl = '';
   activityLength = 0;
@@ -429,9 +433,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
     private reportService: ReportService,
     private translate: TranslateService,
     private groupService: GroupService
-  ) {
-    document.addEventListener('click', this.hideMenu.bind(this));
-  }
+  ) {}
 
   ngOnInit() {
     this.token = this.utilsService.getToken() || '';
@@ -732,13 +734,15 @@ export class ComReportComponent implements OnInit, OnDestroy {
         if (middleObj[middleGroupId] && this.getGroupName(list[i].groupId, false) !== 'groupDisband') {
           middleObj[middleGroupId].add(JSON.stringify({
               id: list[i].id,
-              name: list[i].name
+              name: list[i].name,
+              passPrivacy: true
           }));
         } else if (middleGroupId !== `${highGroupId}-0` && this.getGroupName(list[i].groupId, false) !== 'groupDisband') {
           middleObj[middleGroupId] = new Set();
           middleObj[middleGroupId].add(JSON.stringify({
             id: list[i].id,
-            name: list[i].name
+            name: list[i].name,
+            passPrivacy: true
           }));
 
         }
@@ -748,13 +752,15 @@ export class ComReportComponent implements OnInit, OnDestroy {
           if (highObj[highGroupId] && this.getGroupName(list[i].groupId, false) !== 'groupDisband') {
             highObj[highGroupId].add(JSON.stringify({
                 id: list[i].id,
-                name: list[i].name
+                name: list[i].name,
+                passPrivacy: true
             }));
           } else if (highGroupId !== `${superGroupId}-0` && this.getGroupName(list[i].groupId, false) !== 'groupDisband') {
             highObj[highGroupId] = new Set();
             highObj[highGroupId].add(JSON.stringify({
               id: list[i].id,
-              name: list[i].name
+              name: list[i].name,
+              passPrivacy: true
             }));
 
           }
@@ -764,13 +770,15 @@ export class ComReportComponent implements OnInit, OnDestroy {
             if (superObj[superGroupId] && this.getGroupName(list[i].groupId, false) !== 'groupDisband') {
               superObj[superGroupId].add(JSON.stringify({
                   id: list[i].id,
-                  name: list[i].name
+                  name: list[i].name,
+                  passPrivacy: true
               }));
             } else if (this.getGroupName(list[i].groupId, false) !== 'groupDisband') {
               superObj[superGroupId] = new Set();
               superObj[superGroupId].add(JSON.stringify({
                 id: list[i].id,
-                name: list[i].name
+                name: list[i].name,
+                passPrivacy: true
               }));
 
             }
@@ -907,6 +915,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
                 upLevelName: this.getGroupName(revertGid, true)
               },
               memberNum: memArr.length,
+              notPassPrivacyNum: 0,
               totalActivityNum: 0,
               avgActivityNum: 0,
               weekFrequency: 0,
@@ -964,7 +973,6 @@ export class ComReportComponent implements OnInit, OnDestroy {
     )}`;
 
     this.initVariable();
-
     // 52天內取日概要陣列，52天以上取周概要陣列-kidin_1090211
     if (this.diffDay <= 52) {
       this.reportRangeType = 1;
@@ -973,6 +981,8 @@ export class ComReportComponent implements OnInit, OnDestroy {
       this.reportRangeType = 2;
       this.dataDateRange = 'week';
     }
+
+    this.createTimeStampArr(this.diffDay);
 
     const groupIdList = [];
     for (let i = 0; i < this.lowGroupList.length; i++) {
@@ -994,10 +1004,19 @@ export class ComReportComponent implements OnInit, OnDestroy {
 
           let groupReportData = [];
           for (let j = 0; j < res.length; j++) {
+
+            if (res[j].resultCode !== 403) {
+              this.passPrivacyNum++;
+            }
+
             const userIndex = this.getIndex(res[j].userId);
             // 計算有資料的人數，並將資料合併，及計算群組和個人分析資料-kidin-1090212
             if (this.reportRangeType === 1) {
-              this.tableData.backUp.person.push(this.getPersonalStatistics(res[j].reportActivityDays, userIndex));
+              this.tableData.backUp.person.push(this.getPersonalStatistics(
+                res[j].reportActivityDays,
+                res[j].resultCode,
+                userIndex
+              ));
 
               if (res[j].reportActivityDays && res[j].reportActivityDays.length > 0) {
                 this.hasDataNumber++;
@@ -1005,7 +1024,11 @@ export class ComReportComponent implements OnInit, OnDestroy {
                 summaryData.push(res[j].reportActivityDays);
               }
             } else {
-              this.tableData.backUp.person.push(this.getPersonalStatistics(res[j].reportActivityWeeks, userIndex));
+              this.tableData.backUp.person.push(this.getPersonalStatistics(
+                res[j].reportActivityWeeks,
+                res[j].resultCode,
+                userIndex
+              ));
 
               if (res[j].reportActivityWeeks && res[j].reportActivityWeeks.length > 0) {
                 this.hasDataNumber++;
@@ -1028,7 +1051,6 @@ export class ComReportComponent implements OnInit, OnDestroy {
             this.showReport = true;
             this.updateUrl('true');
             this.sortData(groupReportData);
-            this.createTimeStampArr(this.diffDay);
             this.calPerCategoryData();
             this.getTableOpt();
           }
@@ -1049,12 +1071,16 @@ export class ComReportComponent implements OnInit, OnDestroy {
   // 初始化變數
   initVariable () {
     this.nodata = false;
-    this.sortStatus = false;
+    this.sortStatus = {
+      group: false,
+      person: false
+    };
     this.showAll = {
       group: false,
       person: false
     };
     this.hasDataNumber = 0;
+    this.passPrivacyNum = 0;
     this.activityLength = 0;
     this.totalTime = '00:00';
     this.avgTime = '00:00';
@@ -1083,6 +1109,18 @@ export class ComReportComponent implements OnInit, OnDestroy {
     this.superCountModel = {};
     this.highCountModel = {};
     this.middleCountModel = {};
+
+    // 藉由深拷貝進行初始化-kidin-1090618
+    this.middleGroupList = lodash.cloneDeep(this.initGroupList.getMiddleModel);
+    if (+this.groupLevel <= 40) {
+      this.highGroupList = lodash.cloneDeep(this.initGroupList.getHighModel);
+
+      if (+this.groupLevel <= 40) {
+        this.superGroupList = lodash.cloneDeep(this.initGroupList.getSuperModel);
+      }
+
+    }
+
   }
 
   // 建立報告期間的timeStamp讓圖表使用-kidin-1090324
@@ -1127,7 +1165,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
       week.startDate = this.searchDate[0];
     }
 
-    if (moment(this.searchDate[0]).isoWeekday() !== 7) {
+    if (moment(this.searchDate[1]).isoWeekday() !== 7) {
       weekEndDate = this.searchDate[1] - 86400 * 1000 * moment(this.searchDate[1]).isoWeekday();
     } else {
       weekEndDate = this.searchDate[1];
@@ -1566,7 +1604,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
       }
     }
 
-    const typeAllAvgTrainTime = (typeAllTotalTrainTime / this.hasDataNumber) || 0,
+    const typeAllAvgTrainTime = (typeAllTotalTrainTime / this.passPrivacyNum) || 0,
           typeRunAvgTrainTime = (typeRunTotalTrainTime) || 0,
           typeCycleAvgTrainTime = (typeCycleTotalTrainTime) || 0,
           typeWeightTrainAvgTrainTime = (typeWeightTrainTotalTrainTime) || 0,
@@ -2095,7 +2133,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
             colorSet: ['#f8b551'],
             oneRangeBestCalories: oneRangeBest,
             avgCalories: total / date.length,
-            avgPersonCalories: total / this.hasDataNumber,
+            avgPersonCalories: total / this.passPrivacyNum,
             totalCalories: total
           };
         case 'cadence':
@@ -2212,7 +2250,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
             colorSet: '#f8b551',
             oneRangeBestCalories: oneRangeBest,
             avgCalories: total / date.length,
-            avgPersonCalories: total / this.hasDataNumber,
+            avgPersonCalories: total / this.passPrivacyNum,
             totalCalories: total
           };
       }
@@ -2303,7 +2341,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
   }
 
   // 計算個人運動統計資料-kidin-1090302
-  getPersonalStatistics (data, index) {
+  getPersonalStatistics (data: Array<any>, resultCode: number, index: number) {
 
     if (data && data.length !== 0) {
 
@@ -2431,19 +2469,21 @@ export class ComReportComponent implements OnInit, OnDestroy {
       }
 
       this.countPerGroupData(
-        this.lowGroupList[index].belongGroup,
+        this.lowGroupList[index],
         totalActivityNum,
         totalActivityTime,
         fitTime,
         pai,
         totalCalories,
-        perHRZone
+        perHRZone,
+        resultCode
       );
 
       return {
         id: index,
         name: this.lowGroupList[index].name,
         userId: this.lowGroupList[index].id,
+        passPrivacy: true,
         belongGroup: this.lowGroupList[index].belongGroup,
         totalActivityNum: totalActivityNum,
         weekFrequency: (totalActivityNum / timePeroid) * 7,
@@ -2468,10 +2508,11 @@ export class ComReportComponent implements OnInit, OnDestroy {
       };
 
     } else {
-      return {
+      const memInfo = {
         id: index,
         name: this.lowGroupList[index].name,
         userId: this.lowGroupList[index].id,
+        passPrivacy: true,
         belongGroup: this.lowGroupList[index].belongGroup,
         totalActivityNum: '--',
         weekFrequency: '--',
@@ -2487,6 +2528,31 @@ export class ComReportComponent implements OnInit, OnDestroy {
         HRZone: '--',
         ratio: '0px'
       };
+
+      if (resultCode === 403) {
+        memInfo.passPrivacy = false;
+
+        this.countPerGroupData(
+          this.lowGroupList[index],
+          0,
+          0,
+          0,
+          0,
+          0,
+          {
+            z0: 0,
+            z1: 0,
+            z2: 0,
+            z3: 0,
+            z4: 0,
+            z5: 0
+          },
+          resultCode
+        );
+
+      }
+
+      return memInfo;
     }
 
   }
@@ -2648,21 +2714,21 @@ export class ComReportComponent implements OnInit, OnDestroy {
 
   // 將個人數據加總至所屬群組，供團體分析用數據-kidin-1090605
   countPerGroupData (
-    belongGroup,
+    info,
     totalActivityNum,
     totalActivityTime,
     fitTime,
     pai,
     totalCalories,
-    perHRZone
+    perHRZone,
+    resultCode,
   ) {
-    this.middleGroupList = lodash.cloneDeep(this.initGroupList.getMiddleModel);  // 深拷貝
     const filterSet = new Set();
-    for (let i = 0; i < belongGroup.length; i++) {
+    for (let i = 0; i < info.belongGroup.length; i++) {
 
       for (let mIdx = 0; mIdx < this.middleGroupList.length; mIdx++) {
 
-        if (this.getPartGroupId(belongGroup[i].gid, 5) === this.middleGroupList[mIdx].gid) {
+        if (this.getPartGroupId(info.belongGroup[i].gid, 5) === this.middleGroupList[mIdx].gid) {
           this.middleGroupList[mIdx].data.totalActivityNum += totalActivityNum;
           this.middleGroupList[mIdx].data.totalSecond += totalActivityTime;
           this.middleGroupList[mIdx].data.fitSecond += fitTime;
@@ -2670,18 +2736,31 @@ export class ComReportComponent implements OnInit, OnDestroy {
           this.middleGroupList[mIdx].data.totalCalories += totalCalories;
           this.middleGroupList[mIdx].data.HRZone =
             this.middleGroupList[mIdx].data.HRZone.map((hr: number, idx: number) => hr + perHRZone[`z${idx}`]);
+
+          if (resultCode === 403) {
+            this.middleGroupList[mIdx].data.notPassPrivacyNum++;
+
+            for (let k = 0; k < this.middleGroupList[mIdx].member.length; k++) {
+
+              if (this.middleGroupList[mIdx].member[k].id === info.id) {
+                this.middleGroupList[mIdx].member[k].passPrivacy = false;
+              }
+
+            }
+
+          }
+
         }
 
       }
 
       if (+this.groupLevel <= 40) {
-        filterSet.add(`${this.getPartGroupId(belongGroup[i].gid, 4)}`);
+        filterSet.add(`${this.getPartGroupId(info.belongGroup[i].gid, 4)}`);
       }
 
     }
 
     if (+this.groupLevel <= 40) {
-      this.highGroupList = lodash.cloneDeep(this.initGroupList.getHighModel); // 深拷貝
       const filterArr = Array.from(filterSet);
       for (let j = 0; j < filterArr.length; j++) {
 
@@ -2696,6 +2775,19 @@ export class ComReportComponent implements OnInit, OnDestroy {
             this.highGroupList[hIdx].data.HRZone =
               this.highGroupList[hIdx].data.HRZone.map((hr: number, idx: number) => hr + perHRZone[`z${idx}`]);
 
+            if (resultCode === 403) {
+              this.highGroupList[hIdx].data.notPassPrivacyNum++;
+
+              for (let k = 0; k < this.highGroupList[hIdx].member.length; k++) {
+
+                if (this.highGroupList[hIdx].member[k].id === info.id) {
+                  this.highGroupList[hIdx].member[k].passPrivacy = false;
+                }
+
+              }
+
+            }
+
           }
 
         }
@@ -2705,7 +2797,6 @@ export class ComReportComponent implements OnInit, OnDestroy {
     }
 
     if (+this.groupLevel <= 30) {
-      this.superGroupList = lodash.cloneDeep(this.initGroupList.getSuperModel); // 深拷貝
       this.superGroupList[0].data.totalActivityNum += totalActivityNum;
       this.superGroupList[0].data.totalSecond += totalActivityTime;
       this.superGroupList[0].data.fitSecond += fitTime;
@@ -2713,6 +2804,20 @@ export class ComReportComponent implements OnInit, OnDestroy {
       this.superGroupList[0].data.totalCalories += totalCalories;
       this.superGroupList[0].data.HRZone =
         this.superGroupList[0].data.HRZone.map((hr: number, idx: number) => hr + perHRZone[`z${idx}`]);
+
+      if (resultCode === 403) {
+        this.superGroupList[0].data.notPassPrivacyNum++;
+
+        for (let k = 0; k < this.superGroupList[0].member.length; k++) {
+
+          if (this.superGroupList[0].member[k].id === info.id) {
+            this.superGroupList[0].member[k].passPrivacy = false;
+          }
+
+        }
+
+      }
+
     }
 
   }
@@ -2724,21 +2829,21 @@ export class ComReportComponent implements OnInit, OnDestroy {
     if (this.dataDateRange === 'day') {
       timePeroid = this.diffDay;
     } else {
-      timePeroid = this.findWeekReportDate();
+      timePeroid = this.findDate().weekNum;
     }
 
     for (let i = 0; i < this.middleGroupList.length; i++) {
       const regression = this.getGroupDataRegression(this.middleGroupList[i].gid),
             mData = this.middleGroupList[i].getData;
-      mData.avgActivityNum = mData.totalActivityNum / mData.memberNum;
-      mData.avgTime = this.formatHmTime(mData.totalSecond / mData.memberNum);
+      mData.avgActivityNum = mData.totalActivityNum / (mData.memberNum - mData.notPassPrivacyNum) || 0;
+      mData.avgTime = this.formatHmTime(mData.totalSecond / (mData.memberNum - mData.notPassPrivacyNum));
       mData.timeRegression = regression.activityTimeRgs;
-      mData.weekFrequency = ((mData.totalActivityNum / mData.memberNum) / timePeroid) * 7;
-      mData.avgFitTime = this.formatHmTime(mData.fitSecond / mData.memberNum);
+      mData.weekFrequency = ((mData.totalActivityNum / (mData.memberNum - mData.notPassPrivacyNum)) / timePeroid) * 7 || 0;
+      mData.avgFitTime = this.formatHmTime(mData.fitSecond / (mData.memberNum - mData.notPassPrivacyNum));
       mData.fitTimeRegression = regression.fitTimeRgs;
-      mData.avgPai = mData.pai / mData.memberNum;
+      mData.avgPai = mData.pai / (mData.memberNum - mData.notPassPrivacyNum) || 0;
       mData.paiRegression = regression.paiRgs;
-      mData.avgCalories = mData.totalCalories / mData.memberNum;
+      mData.avgCalories = mData.totalCalories / (mData.memberNum - mData.notPassPrivacyNum) || 0;
       mData.caloriesRegression = regression.caloriesRgs;
     }
 
@@ -2747,15 +2852,15 @@ export class ComReportComponent implements OnInit, OnDestroy {
       for (let j = 0; j < this.highGroupList.length; j++) {
         const regression = this.getGroupDataRegression(this.highGroupList[j].gid),
               hData = this.highGroupList[j].getData;
-        hData.avgActivityNum = hData.totalActivityNum / hData.memberNum;
-        hData.avgTime = this.formatHmTime(hData.totalSecond / hData.memberNum);
+        hData.avgActivityNum = hData.totalActivityNum / (hData.memberNum - hData.notPassPrivacyNum) || 0;
+        hData.avgTime = this.formatHmTime(hData.totalSecond / (hData.memberNum - hData.notPassPrivacyNum));
         hData.timeRegression = regression.activityTimeRgs;
-        hData.weekFrequency = ((hData.totalActivityNum / hData.memberNum) / timePeroid) * 7;
-        hData.avgFitTime = this.formatHmTime(hData.fitSecond / hData.memberNum);
+        hData.weekFrequency = ((hData.totalActivityNum / (hData.memberNum - hData.notPassPrivacyNum)) / timePeroid) * 7 || 0;
+        hData.avgFitTime = this.formatHmTime(hData.fitSecond / (hData.memberNum - hData.notPassPrivacyNum));
         hData.fitTimeRegression = regression.fitTimeRgs;
-        hData.avgPai = hData.pai / hData.memberNum;
+        hData.avgPai = hData.pai / (hData.memberNum - hData.notPassPrivacyNum) || 0;
         hData.paiRegression = regression.paiRgs;
-        hData.avgCalories = hData.totalCalories / hData.memberNum;
+        hData.avgCalories = hData.totalCalories / (hData.memberNum - hData.notPassPrivacyNum) || 0;
         hData.caloriesRegression = regression.caloriesRgs;
       }
 
@@ -2764,15 +2869,15 @@ export class ComReportComponent implements OnInit, OnDestroy {
         for (let k = 0; k < this.superGroupList.length; k++) {
           const regression = this.getGroupDataRegression(this.superGroupList[k].gid),
                 sData = this.superGroupList[k].getData;
-          sData.avgActivityNum = sData.totalActivityNum / sData.memberNum;
-          sData.avgTime = this.formatHmTime(sData.totalSecond / sData.memberNum);
+          sData.avgActivityNum = sData.totalActivityNum / (sData.memberNum - sData.notPassPrivacyNum) || 0;
+          sData.avgTime = this.formatHmTime(sData.totalSecond / (sData.memberNum - sData.notPassPrivacyNum));
           sData.timeRegression = regression.activityTimeRgs;
-          sData.weekFrequency = ((sData.totalActivityNum / sData.memberNum) / timePeroid) * 7;
-          sData.avgFitTime = this.formatHmTime(sData.fitSecond / sData.memberNum);
+          sData.weekFrequency = ((sData.totalActivityNum / (sData.memberNum - sData.notPassPrivacyNum)) / timePeroid) * 7 || 0;
+          sData.avgFitTime = this.formatHmTime(sData.fitSecond / (sData.memberNum - sData.notPassPrivacyNum));
           sData.fitTimeRegression = regression.fitTimeRgs;
-          sData.avgPai = sData.pai / sData.memberNum;
+          sData.avgPai = sData.pai / (sData.memberNum - sData.notPassPrivacyNum) || 0;
           sData.paiRegression = regression.paiRgs;
-          sData.avgCalories = sData.totalCalories / sData.memberNum;
+          sData.avgCalories = sData.totalCalories / (sData.memberNum - sData.notPassPrivacyNum) || 0;
           sData.caloriesRegression = regression.caloriesRgs;
         }
 
@@ -2785,11 +2890,18 @@ export class ComReportComponent implements OnInit, OnDestroy {
   // 確認群組分析和個人分析的資料長度決定是否部份隱藏-kidin-1090610
   checkDataLength (type: string) {
 
-    if (this.tableData.display[type].data.length <= 8 || this.showAll[type] === true) {
-      this.showAll[type] = true;
+    if (type !== 'all') {
+
+      if (this.tableData.display[type].data.length <= 8 || this.showAll[type] === true) {
+        this.showAll[type] = true;
+      } else {
+        this.tableData.display[type].data.length = 8;
+        this.showAll[type] = false;
+      }
+
     } else {
-      this.tableData.display[type].data.length = 8;
-      this.showAll[type] = false;
+      this.checkDataLength('person');
+      this.checkDataLength('group');
     }
 
   }
@@ -2830,14 +2942,12 @@ export class ComReportComponent implements OnInit, OnDestroy {
 
       // 周報告開頭是星期日-kidin-1090312
       if (moment(this.selectDate.startDate).isoWeekday() !== 7) {
-        startDate = moment(this.selectDate.startDate).valueOf() + 86400 * 1000 * moment(this.selectDate.startDate).isoWeekday();
+        startDate = moment(this.selectDate.startDate).valueOf() - 86400 * 1000 * moment(this.selectDate.startDate).isoWeekday();
       } else {
         startDate = moment(this.selectDate.startDate).valueOf();
       }
 
-
-
-      for (let i = 0; i < this.findWeekReportDate(); i++) {
+      for (let i = 0; i < this.findDate().weekNum; i++) {
         const nextDate = moment(startDate + 1000 * 60 * 60 * 24 * 7 * i).format('YYYY-MM-DD');
         model[nextDate] = Object.create(data);
       }
@@ -2845,41 +2955,6 @@ export class ComReportComponent implements OnInit, OnDestroy {
     }
 
     return model;
-  }
-
-  // 根據搜索時間取得週數-kidin-1090312
-  findWeekReportDate () {
-
-    const week = {
-      startDate: 0,
-      weekNum: 0
-    };
-
-    let weekEndDate;
-
-    // 周報告開頭是星期日-kidin-1090312
-    if (moment(this.selectDate.startDate).isoWeekday() !== 7) {
-      week.startDate = moment(this.selectDate.startDate).valueOf() + 86400 * 1000 * (7 - moment(this.selectDate.startDate).isoWeekday());
-    } else {
-      week.startDate = moment(this.selectDate.startDate).valueOf();
-    }
-
-    if (moment(this.searchDate[0]).isoWeekday() !== 7) {
-      weekEndDate = moment(this.selectDate.endDate).valueOf() - 86400 * 1000 * moment(this.selectDate.endDate).isoWeekday();
-    } else {
-      weekEndDate = moment(this.selectDate.endDate).valueOf();
-    }
-
-    week.weekNum = ((weekEndDate - week.startDate) / (86400 * 1000 * 7));
-
-    let timePeroid;
-    if (this.dataDateRange === 'day') {
-      timePeroid = this.diffDay / 7;
-    } else {
-      timePeroid =  week.weekNum;
-    }
-
-    return timePeroid;
   }
 
   // 將秒數轉換成個人分析需要的時間格式-kidin-1090217
@@ -3048,9 +3123,9 @@ export class ComReportComponent implements OnInit, OnDestroy {
 
   }
 
-  // 依據點選的項目對個人分析進行排序-kidin-1090610
+  // 依據點選的項目對群組分析進行排序-kidin-1090610
   sortGroupData () {
-    this.sortStatus = true;
+    this.sortStatus.group = true;
     const sortCategory = this.groupSortTable.active,
           sortDirection = this.groupSortTable.direction;
     this.sortCategory.group = sortCategory;
@@ -3117,12 +3192,13 @@ export class ComReportComponent implements OnInit, OnDestroy {
 
   // 依據點選的項目對個人分析進行排序-kidin-1090305
   sortPersonData () {
+    this.sortStatus.person = true;
 
     const sortCategory = this.personSortTable.active,
           sortDirection = this.personSortTable.direction;
     this.sortCategory.person = sortCategory;
 
-    let sortResult = this.tableData.backUp.person.slice();
+    let sortResult = this.tableData.display.person.data.slice();
     sortResult = this.getTargetRatio(sortResult, sortCategory, 'person');
 
     let swapped = true;
@@ -3286,12 +3362,11 @@ export class ComReportComponent implements OnInit, OnDestroy {
       y: menuPosition.y
     };
 
-    window.addEventListener('scroll', this.hideMenu.bind(this), true);
+    this.addScrollListener();
   }
 
   // 聚焦時，取消滾動或滑動事件-kidin-1090611
   handleScrollEvent (enter: boolean, type: string) {
-    this.checkClickEvent = true;
     this.mouseEnter[type] = enter;
   }
 
@@ -3300,13 +3375,13 @@ export class ComReportComponent implements OnInit, OnDestroy {
     const gidLen = groupId.split('-').length;
 
     if (gidLen === 3) {
-      return this.superGroupList[0].member;
+      return this.checkMemPrivacy(this.superGroupList[0].member);
     } else if (gidLen === 4) {
 
       for (let i = 0; i < this.highGroupList.length; i++) {
 
         if (this.highGroupList[i].gid === groupId) {
-          return this.highGroupList[i].member;
+          return this.checkMemPrivacy(this.highGroupList[i].member);
         }
 
       }
@@ -3316,13 +3391,32 @@ export class ComReportComponent implements OnInit, OnDestroy {
       for (let i = 0; i < this.middleGroupList.length; i++) {
 
         if (this.middleGroupList[i].gid === groupId) {
-          return this.middleGroupList[i].member;
+          return this.checkMemPrivacy(this.middleGroupList[i].member);
         }
 
       }
 
     }
 
+  }
+
+  // 確認群組內成員隱私權狀態-kidin-1090619
+  checkMemPrivacy (memList: Array<any>) {
+
+    for (let i = 0; i < memList.length; i++) {
+
+      for (let j = 0; j < this.tableData.backUp.person.length; j++) {
+
+        if (+this.tableData.backUp.person[j].userId === memList[i].id) {
+          memList[i].passPrivacy = this.tableData.backUp.person[j].passPrivacy;
+          break;
+        }
+
+      }
+
+    }
+
+    return memList;
   }
 
   // 導至個人資訊頁-kidin-1090610
@@ -3374,7 +3468,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
       y: menuPosition.y
     };
 
-    window.addEventListener('scroll', this.hideMenu.bind(this), true);
+    this.addScrollListener();
   }
 
   // 取得目標使用者所屬群組-kidin-1090610
@@ -3396,6 +3490,17 @@ export class ComReportComponent implements OnInit, OnDestroy {
     window.open(`/dashboard/group-info/${hashGroupId}`);
   }
 
+  // 加入滾動/划動監聽器，目前因結構關係無法用HostListener，且目前無法使用removeEventListener移除監聽，待處理-kidin-1090618
+  addScrollListener () {
+    document.addEventListener('scroll', this.hideMenu.bind(this), true);
+  }
+
+  // 加入點擊監聽器-kidin-1090618
+  @HostListener ('document:click', [])
+  onClick () {
+    this.hideMenu();
+  }
+
   // 隱藏群組和個人選單和設定-kidin-1090310
   hideMenu () {
 
@@ -3415,6 +3520,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
           x: '',
           y: ''
         };
+
       } else {
         this.checkClickEvent = false;
       }
@@ -3443,19 +3549,19 @@ export class ComReportComponent implements OnInit, OnDestroy {
       person: '0-2-5-6-7' // 預設顯示總筆數、總時間、總卡路里、活動偏好、心率圖表
     };
 
-    if (width < 950) {
-      this.tableTypeListOpt.setMax = 4;
-      defaultCol.group = '0-3-4-6'; // 預設顯示總人數、總時間、效益時間、人均總卡路里
-      defaultCol.person = '0-2-5-6';  // 預設顯示總筆數、總時間、總卡路里、活動偏好
-    } else if (width < 630) {
-      this.tableTypeListOpt.setMax = 3;
-      defaultCol.group = '0-3-4'; // 預設顯示總人數、總時間、效益時間
-      defaultCol.person = '0-2-5';  // 預設顯示總筆數、總時間、總卡路里
-    } else if (width < 500) {
+    if (width < 500) {
       this.tableTypeListOpt.setMax = 2;
       this.tableTypeListOpt.setMin = 1;
       defaultCol.group = '0-3'; // 預設顯示總人數、總時間
       defaultCol.person = '0-2';  // 預設顯示總筆數、總時間
+    } else if (width < 630) {
+      this.tableTypeListOpt.setMax = 3;
+      defaultCol.group = '0-3-4'; // 預設顯示總人數、總時間、效益時間
+      defaultCol.person = '0-2-5';  // 預設顯示總筆數、總時間、總卡路里
+    } else if (width < 950) {
+      this.tableTypeListOpt.setMax = 4;
+      defaultCol.group = '0-3-4-6'; // 預設顯示總人數、總時間、效益時間、人均總卡路里
+      defaultCol.person = '0-2-5-6';  // 預設顯示總筆數、總時間、總卡路里、活動偏好
     }
 
     this.tableTypeListOpt.tableCheckedNum.group.column = this.tableTypeListOpt.getMax;
@@ -3517,6 +3623,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
       this.showTableMenu[type] = true;
     }
 
+    this.addScrollListener();
   }
 
   // 使用者點擊團體或個人分析checkbox後顯示/隱藏該項目數據-kidin-1090608
@@ -3532,8 +3639,10 @@ export class ComReportComponent implements OnInit, OnDestroy {
 
     if (func === 'filter') {
       this.filterGroupData(type);
+      this.checkDataLength(type);
     }
 
+    this.sortStatus[type] = false;
   }
 
   // 根據篩選條件過濾數據-kidin-1090609
@@ -3633,7 +3742,6 @@ export class ComReportComponent implements OnInit, OnDestroy {
       });
 
       this.showAll.person = false;
-      this.checkDataLength('person');
     } else {
       this.filterGroupData('group');
       this.filterGroupData('person');
@@ -3747,7 +3855,13 @@ export class ComReportComponent implements OnInit, OnDestroy {
     }
 
     for (let j = 0; j < gColOpt.length; j++) {
-      this.groupTableTypeList.column[+gColOpt[j]].checked = true;
+
+      if (this.groupTableTypeList.column[+gColOpt[j]].id !== 2 || this.diffDay > 52) {
+        this.groupTableTypeList.column[+gColOpt[j]].checked = true;
+      } else {
+        this.tableTypeListOpt.tableCheckedNum.group.column--;
+      }
+
     }
 
 
@@ -3756,10 +3870,17 @@ export class ComReportComponent implements OnInit, OnDestroy {
     }
 
     for (let l = 0; l < pColOpt.length; l++) {
-      this.personTableTypeList.column[+pColOpt[l]].checked = true;
+
+      if (this.personTableTypeList.column[+pColOpt[l]].id !== 1 || this.diffDay > 52) {
+        this.personTableTypeList.column[+pColOpt[l]].checked = true;
+      } else {
+        this.tableTypeListOpt.tableCheckedNum.person.column--;
+      }
+
     }
 
     this.filterGroupData('all');
+    this.checkDataLength('all');
   }
 
   // 將時間字串轉數字(分鐘)-kidin-1090401
@@ -3788,6 +3909,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
         _highChart.destroy();
       }
     });
+
   }
 
 }
