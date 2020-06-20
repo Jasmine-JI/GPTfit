@@ -894,7 +894,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
 
     // 周報告開頭是星期日-kidin-1090312
     if (moment(this.searchDate[0]).isoWeekday() !== 7) {
-      week.startDate = this.searchDate[0] + 86400 * 1000 * (7 - moment(this.searchDate[0]).isoWeekday());
+      week.startDate = this.searchDate[0] - 86400 * 1000 * moment(this.searchDate[0]).isoWeekday();
     } else {
       week.startDate = this.searchDate[0];
     }

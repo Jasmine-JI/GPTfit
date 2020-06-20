@@ -102,9 +102,7 @@
         <div class="summaryDataArea">
           <span class="summaryData">{{avgTime || 0}}</span>
           <p class="summaryDescription">
-            {{'Dashboard.TrainLive.avg' | translate}} {{'Dashboard.MyActivity.activityTime' | translate}}
-            <span *ngIf="dataDateRange === 'day'">({{'Dashboard.SportReport.day' | translate}})</span>
-            <span *ngIf="dataDateRange === 'week'">({{'other.week' | translate}})</span>
+            {{'Dashboard.TrainLive.avg' | translate}} {{'Dashboard.MyActivity.timing' | translate}}
           </p>
         </div>
         <div class="sepLine"></div>
@@ -115,7 +113,7 @@
               <span class="infoDataUnit"> cal</span>
             </div>
             <div *ngIf="totalCalories < 1000">
-              <span class="summaryData">{{totalCalories | number:'1.0-0' || 0}}</span>
+              <span class="summaryData">{{totalCalories | number:'1.0-1' || 0}}</span>
               <span class="infoDataUnit"> cal</span>
             </div>
           </div>
@@ -123,18 +121,16 @@
         </div>
         <div class="sepLine"></div>
         <div class="summaryDataArea">
-          <div *ngIf="avgCalories >= 1000">
-            <span class="summaryData">{{avgCalories / 1000 | number:'1.0-2' || 0}}k</span>
+          <div *ngIf="(totalCalories / categoryActivityLength) >= 1000">
+            <span class="summaryData">{{(totalCalories / categoryActivityLength) / 1000 | number:'1.0-2' || 0}}k</span>
             <span class="infoDataUnit"> cal</span>
           </div>
-          <div *ngIf="avgCalories < 1000">
-            <span class="summaryData">{{avgCalories | number:'1.0-1' || 0}}</span>
+          <div *ngIf="(totalCalories / categoryActivityLength) < 1000">
+            <span class="summaryData">{{(totalCalories / categoryActivityLength) | number:'1.0-1' || 0}}</span>
             <span class="infoDataUnit"> cal</span>
           </div>
           <p class="summaryDescription">
             {{'Dashboard.TrainLive.avg' | translate}} {{'Dashboard.SportReport.totalCalorie' | translate}}
-            <span *ngIf="dataDateRange === 'day'">({{'Dashboard.SportReport.day' | translate}})</span>
-            <span *ngIf="dataDateRange === 'week'">({{'other.week' | translate}})</span>
           </p>
         </div>
         <div class="sepLine" *ngIf="reportCategory !== '99' && reportCategory !== '3' && reportCategory !== '5'"></div>
@@ -412,7 +408,11 @@
     </div>
   </div>
   <div class="flexCol">
-      <p class="ala-dashboard-title activity-title">{{'Dashboard.TrainLive.trend' | translate}}</p>
+      <p class="ala-dashboard-title activity-title">
+        <span *ngIf="dataDateRange === 'day'">{{'Dashboard.SportReport.day' | translate}}</span>
+        <span *ngIf="dataDateRange === 'week'">{{'other.week' | translate}}</span>
+        {{'Dashboard.TrainLive.trend' | translate}}
+      </p>
       <div class="flexCol" *ngIf="reportCategory === '2'">
         <div class="flexRow" style="align-items: center;">
           <span class="reportChartTitle">{{'SH.speed' | translate}}</span>
@@ -421,7 +421,7 @@
         <div class="flexRow dataContent" [class.media-1000-dataContent]="!isPreviewMode">
           <div class="flexRow dataNumber" [class.media-1000-dataNumber]="!isPreviewMode">
             <div class="flexCol dataMargin" style="width: 50%;">
-              <span class="dataFont">{{bestSpeed || 0 | number:'1.0-0'}}</span>
+              <span class="dataFont">{{bestSpeed || 0 | number:'1.0-1'}}</span>
               <span class="dataAnnotation">{{'other.maxSpeedPerHour' | translate}}</span>
             </div>
             <div class="flexCol dataMargin" style="width: 50%;">
@@ -479,7 +479,7 @@
         <div class="flexRow dataContent" [class.media-1000-dataContent]="!isPreviewMode">
           <div class="flexRow dataNumber" [class.media-1000-dataNumber]="!isPreviewMode">
             <div class="flexCol dataMargin" style="width: 50%;">
-              <span class="dataFont">{{bestPower || 0 | number:'1.0-0'}}</span>
+              <span class="dataFont">{{bestPower || 0 | number:'1.0-1'}}</span>
               <span class="dataAnnotation">{{'Dashboard.SportReport.maxPower' | translate}}</span>
             </div>
             <div class="flexCol dataMargin" style="width: 50%;">
@@ -620,7 +620,7 @@
         <div class="flexRow dataContent" [class.media-1000-dataContent]="!isPreviewMode">
           <div class="flexRow dataNumber" [class.media-1000-dataNumber]="!isPreviewMode">
             <div class="flexCol dataMargin" style="width: 50%;">
-              <span class="dataFont">{{bestHR || 0 | number:'1.0-0'}}</span>
+              <span class="dataFont">{{bestHR || 0 | number:'1.0-1'}}</span>
               <span class="dataAnnotation">{{'SH.maxHr' | translate}}</span>
             </div>
             <div class="flexCol dataMargin" style="width: 50%;">
@@ -679,7 +679,7 @@
           <div class="flexRow dataNumber" [class.media-1000-dataNumber]="!isPreviewMode">
             <div class="flexCol dataMargin" style="width: 50%;">
               <span class="dataFont" *ngIf="bestCalories / 1000 >= 1">{{bestCalories / 1000 || 0 | number:'1.0-1'}}kcal</span>
-              <span class="dataFont" *ngIf="bestCalories / 1000 < 1">{{bestCalories || 0 | number:'1.0-0'}}cal</span>
+              <span class="dataFont" *ngIf="bestCalories / 1000 < 1">{{bestCalories || 0 | number:'1.0-1'}}cal</span>
               <span class="dataAnnotation">{{'SH.maxBig' | translate}} {{'SH.calories' | translate}}</span>
             </div>
             <div class="flexCol dataMargin" style="width: 50%;">

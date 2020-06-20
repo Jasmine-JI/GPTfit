@@ -489,8 +489,8 @@
           </mat-header-row>
           <mat-row
             *matRowDef="let logRow; let j = index; columns: ['name', 'avgStep', 'avgSleep', 'restHR', 'weight', 'fatRate', 'FFMIComment']"
-            (click)="handleClickMember($event)"
-            id="{{j}}"
+            (click)="handleClickMember($event, logRow)"
+            id="{{logRow?.id}}"
           >
           </mat-row>
         </ng-container>

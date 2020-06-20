@@ -421,7 +421,7 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
 
       // 周報告開頭是星期日-kidin-1090220
       if (moment(this.searchDate[0]).isoWeekday() !== 7) {
-        weekStartDay = this.searchDate[0] + 86400 * 1000 * (7 - moment(this.searchDate[0]).isoWeekday());
+        weekStartDay = this.searchDate[0] - 86400 * 1000 * moment(this.searchDate[0]).isoWeekday();
       } else {
         weekStartDay = this.searchDate[0];
       }
@@ -432,7 +432,7 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
         weekEndDay = this.searchDate[1];
       }
 
-      diff = (weekEndDay - weekStartDay) / (86400 * 1000 * 7);
+      diff = ((weekEndDay - weekStartDay) / (86400 * 1000 * 7)) + 1;
 
       for (let i = 0; i < diff + 1; i++) {
         this.dateList.push(weekStartDay + 86400 * 1000 * 7 * i);

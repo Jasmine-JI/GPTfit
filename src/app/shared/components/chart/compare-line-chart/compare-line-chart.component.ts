@@ -535,7 +535,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
 
     // 周報告開頭是星期日-kidin-1090220
     if (moment(this.searchDate[0]).isoWeekday() !== 7) {
-      this.firstSunday = this.searchDate[0] + 86400 * 1000 * (7 - moment(this.searchDate[0]).isoWeekday());
+      this.firstSunday = this.searchDate[0] - 86400 * 1000 * moment(this.searchDate[0]).isoWeekday();
     } else {
       this.firstSunday = this.searchDate[0];
     }

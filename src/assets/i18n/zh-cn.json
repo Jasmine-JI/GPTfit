@@ -824,7 +824,8 @@
     "fieldDisplay": "栏位显示",
     "filter": "筛选",
     "numberOf": "筆数",
-    "perCapita": "人均"
+    "perCapita": "人均",
+    "lastNumberUnit": "过去{{number}}{{unit}}"
   },
   "conflict": {
     "benefitime": "效益时间"
