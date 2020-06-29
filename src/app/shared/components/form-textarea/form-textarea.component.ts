@@ -23,7 +23,7 @@ export class FormTextareaComponent implements OnInit, OnChanges {
   @Input() maxLength = DEFAULT_MAXLENGTH.TEXTAREA;
   @Input() invalidRemindText: string;
   @Input() remindText: string;
-  @Input() placeholder = '請輸入';
+  @Input() placeholder = 'Please enter';
   @Output() onChange = new EventEmitter();
   @Input() control: FormGroup;
   @Input() controlName: string;

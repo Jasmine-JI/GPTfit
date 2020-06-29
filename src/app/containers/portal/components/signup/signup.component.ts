@@ -21,6 +21,12 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrls: ['./signup.component.css']
 })
 export class SignupComponent implements OnInit, OnDestroy {
+  i18n = {
+    email: '',
+    phone: '',
+    password: '',
+    nickName: '',
+  };
   form: FormGroup;
   results: any;
   isEmailMethod = false;
@@ -45,7 +51,12 @@ export class SignupComponent implements OnInit, OnDestroy {
     private utils: UtilsService,
     private signupService: SignupService,
     private translate: TranslateService
-  ) {}
+  ) {
+    translate.onLangChange.subscribe(() => {
+      this.getTranslate();
+    });
+
+  }
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -61,6 +72,21 @@ export class SignupComponent implements OnInit, OnDestroy {
       smsCode: ['', Validators.required]
     });
   }
+
+  // 取得多國語系翻譯-kidin-1090620
+  getTranslate () {
+    this.translate.get('hollo word').subscribe(() => {
+      this.i18n = {
+        email: this.translate.instant('universal_userAccount_email'),
+        phone: this.translate.instant('universal_userAccount_phone'),
+        password: this.translate.instant('universal_userAccount_password'),
+        nickName: this.translate.instant('universal_userAccount_nickname')
+      };
+
+    });
+
+  }
+
   get email() {
     return this.form.get('email');
   }
@@ -133,9 +159,9 @@ export class SignupComponent implements OnInit, OnDestroy {
           info: { rtnMsg }
         } = res;
         if (resultCode === 200) {
-          let successText = this.translate.instant('Portal.registerMailSuccessfully');
+          let successText = this.translate.instant('universal_userAccount_registerMailSuccessfully');
           if (body.phone.length > 0) {
-            successText = this.translate.instant('Portal.registerPhoneSuccessfully');
+            successText = this.translate.instant('universal_userAccount_registerPhoneSuccessfully');
           }
           this.snackbar.open(successText, 'OK', { duration: 5000 });
           this.timeout = setTimeout(() => this.router.navigate(['/signin']), 5000);

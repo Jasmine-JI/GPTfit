@@ -20,7 +20,6 @@ import { MsgDialogComponent } from '../../components/msg-dialog/msg-dialog.compo
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { MatBottomSheet, MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA} from '@angular/material';
-import { toCoachText } from '../desc';
 import { TranslateService } from '@ngx-translate/core';
 import { HashIdService } from '@shared/services/hash-id.service';
 import * as moment from 'moment';
@@ -216,7 +215,7 @@ export class EditGroupInfoComponent implements OnInit {
         groupStatus,
         groupVideoUrl
       });
-      this.groupImg = `${groupIcon}${this.updateImgQueryString}`;
+      this.groupImg = `${groupIcon} ${this.updateImgQueryString}`;
       this.finalImageLink = this.groupImg;
       this.group_id = this.utils.displayGroupId(groupId);
       this.groupLevel = this.utils.displayGroupLevel(groupId);
@@ -251,19 +250,19 @@ export class EditGroupInfoComponent implements OnInit {
     let targetName = '';
     if (+this.brandType === 1) {
       if (type === 2) {
-        targetName = this.translate.instant('Dashboard.Group.GroupInfo.branch');
+        targetName = this.translate.instant('universal_group_branch');
       } else if (type === 3) {
-        targetName = this.translate.instant('Dashboard.Group.GroupInfo.coachingClass');
+        targetName = this.translate.instant('universal_group_coachingClass');
       } else {
-        targetName = this.translate.instant('Dashboard.Group.group');
+        targetName = this.translate.instant('universal_group_group');
       }
     } else {
       if (type === 2) {
-        targetName = this.translate.instant('other.subCom');
+        targetName = this.translate.instant('universal_group_companyBranch');
       } else if (type === 3) {
-        targetName = this.translate.instant('other.department');
+        targetName = this.translate.instant('universal_group_department');
       } else {
-        targetName = this.translate.instant('Dashboard.Group.group');
+        targetName = this.translate.instant('universal_group_group');
       }
     }
 
@@ -271,11 +270,11 @@ export class EditGroupInfoComponent implements OnInit {
       hasBackdrop: true,
       data: {
         title: 'message',
-        body: this.translate.instant('Dashboard.Group.confirmDissolution', {
-          target: targetName
+        body: this.translate.instant('universal_group_confirmDissolution', {
+          groupName: targetName
         }),
-        confirmText: this.translate.instant('other.confirm'),
-        cancelText: this.translate.instant('SH.cancel'),
+        confirmText: this.translate.instant('universal_operating_confirm'),
+        cancelText: this.translate.instant('universal_operating_cancel'),
         onConfirm: this.handleDimissGroup.bind(this)
       }
     });
@@ -466,7 +465,7 @@ export class EditGroupInfoComponent implements OnInit {
                     data: {
                       title: 'Message',
                       body: this.translate.instant(
-                        'Dashboard.Group.groupEditFailed'
+                        'universal_group_groupEditFailed'
                       )
                     }
                   });
@@ -487,7 +486,7 @@ export class EditGroupInfoComponent implements OnInit {
               data: {
                 title: 'Message',
                 body: this.translate.instant(
-                  'Dashboard.Group.duplicateBrand'
+                  'universal_group_duplicateBrand'
                 )
               }
             });
@@ -505,7 +504,7 @@ export class EditGroupInfoComponent implements OnInit {
               data: {
                 title: 'Message',
                 body: this.translate.instant(
-                  'Dashboard.Group.groupEditFailed'
+                  'universal_group_groupEditFailed'
                 )
               }
             });
@@ -657,14 +656,14 @@ export class BottomSheetComponent {
   getAndInitTranslations() {
     this.translate
       .get([
-        'Dashboard.Group.disclaimer',
-        'SH.agree',
-        'SH.disagree'
+        'universal_group_disclaimer',
+        'universal_operating_agree',
+        'universal_operating_disagree'
       ])
       .subscribe(translation => {
-        this.title = translation['Dashboard.Group.disclaimer'];
-        this.confirmText = translation['SH.agree'];
-        this.cancelText = translation['SH.disagree'];
+        this.title = translation['universal_group_disclaimer'];
+        this.confirmText = translation['universal_operating_agree'];
+        this.cancelText = translation['universal_operating_disagree'];
       });
   }
   openLink(event: MouseEvent, type: number): void {
@@ -678,8 +677,7 @@ export class BottomSheetComponent {
     this.bottomSheetRef.dismiss();
     if (type === 1 || type === 2) {
       if (+this.brandType === 1) {
-        const langName = this.utils.getLocalStorageObject('locale');
-        const text = toCoachText[langName];
+        const text = this.translate.instant('universal_group_createClassStatement');
         this.dialog.open(MessageBoxComponent, {
           hasBackdrop: true,
           data: {

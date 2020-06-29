@@ -252,7 +252,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
 
         trendDataset = [
           {
-            name: this.translate.instant('SH.maxHr'),
+            name: this.translate.instant('universal_userProfile_maxHr'),
             data: chartBestData,
             showInLegend: false,
             color: '#ababab',
@@ -262,7 +262,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
             }
           },
           {
-            name: this.translate.instant('Dashboard.Settings.restHr'),
+            name: this.translate.instant('universal_userProfile_restHr'),
             data: chartData,
             showInLegend: false,
             color: '#ababab',
@@ -305,7 +305,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
           }
 
           trendDataset.push({
-            name: this.translate.instant('Portal.bodyWeight'),
+            name: this.translate.instant('universal_userProfile_bodyWeight'),
             data: weightData,
             showInLegend: false,
             color: this.data.colorSet,
@@ -347,7 +347,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
           }
 
           trendDataset.push({
-            name: this.translate.instant('other.fatRate'),
+            name: this.translate.instant('universal_lifeTracking_fatRate'),
             data: fatRateData,
             showInLegend: false,
             color: this.data.fatRateColorSet,
@@ -389,7 +389,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
           }
 
           trendDataset.push({
-            name: this.translate.instant('other.muscleRate'),
+            name: this.translate.instant('universal_userProfile_muscleRate'),
             data: muscleRateData,
             showInLegend: false,
             color: this.data.muscleRateColorSet,

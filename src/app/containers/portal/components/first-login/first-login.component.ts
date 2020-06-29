@@ -20,6 +20,11 @@ import { TranslateService } from '@ngx-translate/core';
   encapsulation: ViewEncapsulation.None
 })
 export class FirstLoginComponent implements OnInit {
+  i18n = {
+    nickName: '',
+    bodyHeight: '',
+    bodyWeight: ''
+  };
   startDate = new Date(1988, 6, 1);
   form: FormGroup;
   content = '送出';
@@ -41,7 +46,12 @@ export class FirstLoginComponent implements OnInit {
     private utils: UtilsService,
     private router: Router,
     private translate: TranslateService
-  ) {}
+  ) {
+    translate.onLangChange.subscribe(() => {
+      this.getTranslate();
+    });
+
+  }
 
   ngOnInit() {
     // this.checkFirstLogin();
@@ -67,6 +77,19 @@ export class FirstLoginComponent implements OnInit {
     });
   }
 
+  // 取得多國語系翻譯-kidin-1090620
+  getTranslate () {
+    this.translate.get('hollo word').subscribe(() => {
+      this.i18n = {
+        bodyHeight: this.translate.instant('universal_userProfile_bodyHeight'),
+        bodyWeight: this.translate.instant('universal_userProfile_bodyWeight'),
+        nickName: this.translate.instant('universal_userAccount_nickname')
+      };
+
+    });
+
+  }
+
   // 確認是否在第一次登入頁面編輯過個人資料
   checkFirstLogin () {
     const isFirstLogin = this.utils.getSessionStorageObject('isFirstLogin') || false;
@@ -88,9 +111,9 @@ export class FirstLoginComponent implements OnInit {
         data: {
           title: 'Message',
           body: this.translate.instant(
-            'Dashboard.Settings.selectImg'
+            'universal_operating_selectImg'
           ),
-          confirmText: this.translate.instant('other.confirm')
+          confirmText: this.translate.instant('universal_operating_confirm')
         }
       });
     } else {

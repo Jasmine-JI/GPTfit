@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { MatTableDataSource, MatSort, Sort } from '@angular/material';
 import * as moment from 'moment';
 import { chart } from 'highcharts';
@@ -97,6 +97,7 @@ class ChartOptions {
   styleUrls: ['./class-analysis.component.scss']
 })
 export class ClassAnalysisComponent implements OnInit, OnDestroy {
+
   // UI操控相關變數-kidin-1081210
   reportCompleted = true;
   isPreviewMode = false;
@@ -111,6 +112,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   showAllCoachInfo = false;
 
   // 資料儲存用變數-kidin-1081210
+  classLink: HTMLElement;
   tableData = new MatTableDataSource<any>();
   token: string;
   previewUrl: string;
@@ -399,7 +401,6 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
           this.hasResData = true;
           const infoData = this.activity[0];
           this.fileInfo = infoData.fileInfo;
-          this.classRealDateTime = this.getClassRealDateTime();
 
           let timeCount = 0,
               HRCount = 0,
@@ -512,10 +513,33 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
           this.initMemberHRZoneChart();
           this.getClassDetails(this.fileInfo.equipmentSN, coachId);
           this.updateUrl('true');
+
+          setTimeout(() => {
+            this.getReportInfo();
+          });
+
         }
+
       }
+
     });
     this.reportCompleted = true;
+  }
+
+  // 取得變數內容並將部分變數替換成html element-kidin-1090623
+  getReportInfo () {
+    const targetDiv = document.getElementById('reportInfo');
+    this.translateService.get('hollow world').subscribe(() => {
+      targetDiv.innerHTML = this.translateService.instant('universal_group_sportsRecordReportClass', {
+        'class': `<span id="classLink" class="activity-Link">${this.fileInfo.dispName}</span>`,
+        'dateTime': this.getClassRealDateTime(),
+        'number': `<span class="fileAmount">${this.activityLength}</span>`
+      });
+
+    });
+
+    this.classLink = document.getElementById('classLink');
+    this.classLink.addEventListener('click', this.visitLink.bind(this));
   }
 
   // 將搜尋的類別和範圍處理過後加入query string並更新現在的url和預覽列印的url-kidin-1081226
@@ -542,7 +566,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
               newSufUrl = `${newSufUrl}&${queryString[i]}`;
             }
           }
-          newUrl = `${preUrl}?${searchString}${newSufUrl}`;
+          newUrl = `${preUrl}?${searchString} ${newSufUrl}`;
         } else {
           newUrl = location.pathname + location.search + `&${searchString}`;
         }
@@ -758,12 +782,12 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     classHRZoneChartOptions['plotOptions'].column['pointPlacement'] = 0;
     classHRZoneChartOptions['chart'].zoomType = '';
     classHRZoneChartOptions['xAxis'].categories = [
-      this.translateService.instant('Dashboard.GroupClass.limit_generalZone'),
-      this.translateService.instant('Dashboard.GroupClass.warmUpZone'),
-      this.translateService.instant('Dashboard.GroupClass.aerobicZone'),
-      this.translateService.instant('Dashboard.GroupClass.enduranceZone'),
-      this.translateService.instant('Dashboard.GroupClass.marathonZone'),
-      this.translateService.instant('Dashboard.GroupClass.anaerobicZone')
+      this.translateService.instant('universal_activityData_limit_generalZone'),
+      this.translateService.instant('universal_activityData_warmUpZone'),
+      this.translateService.instant('universal_activityData_aerobicZone'),
+      this.translateService.instant('universal_activityData_enduranceZone'),
+      this.translateService.instant('universal_activityData_marathonZone'),
+      this.translateService.instant('universal_activityData_anaerobicZone')
     ];
     classHRZoneChartOptions['yAxis'].labels = {
       formatter: function () {
@@ -858,7 +882,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     };
     const classCaloriesOptions = new ChartOptions(classCaloriesDataset);
     classCaloriesOptions['tooltip'] = {
-      pointFormat: `${this.translateService.instant('SH.PAGINATOR.total')}{point.y}人`
+      pointFormat: `${this.translateService.instant('universal_adjective_total')}{point.y}人`
     };
     classCaloriesOptions['title'].align = 'center';
     classCaloriesOptions['title'].x = 0;
@@ -1020,26 +1044,11 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   }
 
   // 根據使用者點選的連結導引至該頁面-kidin-1081223
-  visitLink(queryStr) {
-    if (queryStr === 'author') {
-      this.router.navigateByUrl(
-        `/user-profile/${this.hashIdService.handleUserIdEncode(
-          this.fileInfo.author
-            .split('?')[1]
-            .split('=')[1]
-            .replace(')', '')
-        )}`
-      );
-    } else if (queryStr === 'class') {
-      this.router.navigateByUrl(
-        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
-          this.fileInfo.class
-          .split('?')[1]
-          .split('=')[1]
-          .replace(')', '')
-        )}`
-      );
-    }
+  visitLink() {
+    this.router.navigateByUrl(
+      `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.fileInfo.class)}`
+    );
+
   }
 
   // 依據點選的項目進行排序-kidin-1090102
@@ -1173,6 +1182,11 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         _highChart.destroy();
       }
     });
+
+    if (this.classLink) {
+      this.classLink.removeEventListener('click', this.visitLink.bind(this));
+    }
+
   }
 
 }

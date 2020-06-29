@@ -291,10 +291,10 @@ export class DemoQrcodComponent implements OnInit {
       hasBackdrop: true,
       data: {
         title: 'message',
-        body: this.translateService.instant('Portal.singleFitpairPrecautions'),
-        confirmText: this.translateService.instant('Portal.productRegistration'),
+        body: this.translateService.instant('universal_uiFitpair_singleFitpairPrecautions'),
+        confirmText: this.translateService.instant('universal_deviceSetting_productRegistration'),
         onConfirm: this.goBinding.bind(this, 1),
-        cancelText: this.translateService.instant('Portal.singleFitpair'),
+        cancelText: this.translateService.instant('universal_uiFitpair_singleFitpair'),
         onCancel: this.handleFitPair.bind(this)
       }
     });
@@ -318,9 +318,9 @@ export class DemoQrcodComponent implements OnInit {
             data: {
               title: 'message',
               body: this.translateService.instant(
-                'Portal.undoFitpair'
+                'universal_uiFitpair_undoFitpair'
               ),
-              confirmText: this.translateService.instant('other.confirm'),
+              confirmText: this.translateService.instant('universal_operating_confirm'),
               onConfirm: this.uploadDevice.bind(this)
             }
           });
@@ -329,8 +329,8 @@ export class DemoQrcodComponent implements OnInit {
             hasBackdrop: true,
             data: {
               title: 'message',
-              body: this.translateService.instant('Portal.bindSuccess'),
-              confirmText: this.translateService.instant('other.confirm'),
+              body: this.translateService.instant('universal_btDevice_bindSuccess'),
+              confirmText: this.translateService.instant('universal_operating_confirm'),
               onConfirm: this.uploadDevice.bind(this)
             }
           });
@@ -340,8 +340,8 @@ export class DemoQrcodComponent implements OnInit {
           hasBackdrop: true,
           data: {
             title: 'message',
-            body: this.translateService.instant('Portal.pairFailed'),
-            confirmText: this.translateService.instant('other.confirm'),
+            body: this.translateService.instant('universal_popUpMessage_pairFailed'),
+            confirmText: this.translateService.instant('universal_operating_confirm'),
             onConfirm: this.uploadDevice.bind(this)
           }
         });

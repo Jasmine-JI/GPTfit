@@ -7,7 +7,7 @@
     font-weight="bold"
     *ngIf="hrZoneRange.HRBase === 0"
   >
-    {{"Dashboard.Settings.maximalHeartRate" | translate}}
+    {{"universal_userProfile_maximalHeartRate" | translate}}
   </text>
   <text
     x="180"
@@ -16,7 +16,7 @@
     font-size="16"
     font-weight="bold"
     *ngIf="hrZoneRange.HRBase === 1">
-    {{"Dashboard.Settings.heartRateReserve" | translate}}
+    {{"universal_userProfile_heartRateReserve" | translate}}
   </text>
   <text x="180" y="30" text-anchor="middle" font-size="10" stroke="#ff9292" fill="#ff9292">{{hrZoneRange.z5}}</text>
   <rect x="177" y="34" width="6" height="40" rx="3" ry="3" stroke="#ff9292" fill="#ff9292" />
@@ -33,38 +33,38 @@
 
   <foreignObject class="flexCol" x="205" y="17" width="145" height="90">
     <xhtml:span class="hrzoneDescription descriptionTitle" style="color:#ff9292;">
-      {{"Dashboard.GroupClass.anaerobicZone" | translate}} 90%~
+      {{"universal_activityData_anaerobicZone" | translate}} 90%~
     </span>
-    <xhtml:span class="hrzoneDescription">{{"other.zone5" | translate}}</span>
+    <xhtml:span class="hrzoneDescription">{{"universal_sportsTerm_zone5" | translate}}</span>
   </foreignObject>
   <foreignObject class="flexCol" x="15" y="71" width="145" height="90">
     <xhtml:span class="hrzoneDescription descriptionTitle" style="color:#ffc92f; text-align: right;">
-      80~90% {{"Dashboard.GroupClass.marathonZone" | translate}}
+      80~90% {{"universal_activityData_marathonZone" | translate}}
     </span>
-    <xhtml:span class="hrzoneDescription textRight">{{"other.zone4" | translate}}</span>
+    <xhtml:span class="hrzoneDescription textRight">{{"universal_sportsTerm_zone4" | translate}}</span>
   </foreignObject>
   <foreignObject class="flexCol" x="205" y="125" width="145" height="90">
     <xhtml:span class="hrzoneDescription descriptionTitle" style="color:#e6df84;">
-      {{"Dashboard.GroupClass.enduranceZone" | translate}} 70~80%
+      {{"universal_activityData_enduranceZone" | translate}} 70~80%
     </span>
-    <xhtml:span class="hrzoneDescription">{{"other.zone3" | translate}}</span>
+    <xhtml:span class="hrzoneDescription">{{"universal_sportsTerm_zone3" | translate}}</span>
   </foreignObject>
   <foreignObject class="flexCol" x="15" y="179" width="145" height="90">
     <xhtml:span class="hrzoneDescription descriptionTitle" style="color:#cde2b4; text-align: right;">
-      60~70% {{"Dashboard.GroupClass.aerobicZone" | translate}}
+      60~70% {{"universal_activityData_aerobicZone" | translate}}
     </span>
-    <xhtml:span class="hrzoneDescription textRight">{{"other.zone2" | translate}}</span>
+    <xhtml:span class="hrzoneDescription textRight">{{"universal_sportsTerm_zone2" | translate}}</span>
   </foreignObject>
   <foreignObject class="flexCol" x="205" y="233" width="145" height="90">
     <xhtml:span class="hrzoneDescription descriptionTitle" style="color:#a3d6ee;">
-      {{"Dashboard.GroupClass.warmUpZone" | translate}} 50~60%
+      {{"universal_activityData_warmUpZone" | translate}} 50~60%
     </span>
-    <xhtml:span class="hrzoneDescription">{{"other.zone1" | translate}}</span>
+    <xhtml:span class="hrzoneDescription">{{"universal_sportsTerm_zone1" | translate}}</span>
   </foreignObject>
   <foreignObject class="flexCol" x="15" y="287" width="145" height="90">
     <xhtml:span class="hrzoneDescription descriptionTitle" style="color:#7fa6ff; text-align: right;">
-      ~50% {{"Dashboard.GroupClass.limit_generalZone" | translate}}
+      ~50% {{"universal_activityData_limit_generalZone" | translate}}
     </span>
-    <xhtml:span class="hrzoneDescription textRight">{{"other.zone0" | translate}}</span>
+    <xhtml:span class="hrzoneDescription textRight">{{"universal_sportsTerm_zone0" | translate}}</span>
   </foreignObject>
 </svg>

@@ -45,12 +45,12 @@
   <ng-container *ngIf="!utils.isObjectEmpty(fileInfo)">
     <div class="activity-block">
       <p style="color: #919191">
-        {{ fileInfo?.dispName}} {{'SH.by' | translate}}
+        {{ fileInfo?.dispName}} {{'universal_activityData_by' | translate}}
         <span class="activity-author" (click)="goToProfile()">
           {{userLink?.userName}}
         </span>
-        <ng-container *ngIf="userLink?.userName.length > 0">{{'SH.record' | translate}} ，</ng-container>{{infoDate}}{{fileInfo?.creationTimeZone}}
-        {{'SH.create' | translate}}
+        <ng-container *ngIf="userLink?.userName.length > 0">{{'universal_activityData_record' | translate}} ，</ng-container>{{infoDate}}{{fileInfo?.creationTimeZone}}
+        {{'universal_activityData_create' | translate}}
       </p>
     </div>
     <div class="fileInfo">
@@ -286,7 +286,7 @@
     <div class="no-datas">lifeTrackingDayLayer物件沒資料</div>
   </ng-container>
   <div class="ala-dashboard-title activty-title">
-    {{'Dashboard.MyActivity.chart' | translate}}<span class="life-tracking-tip">{{'lifeTrackingPointLayer: [{'}}</span>
+    {{'universal_vocabulary_chart' | translate}}<span class="life-tracking-tip">{{'lifeTrackingPointLayer: [{'}}</span>
   </div>
   <ng-container *ngIf="!lifeTrackingPoints || lifeTrackingPoints?.length === 0">
     <div class="no-datas">lifeTrackingPointLayer陣列沒資料</div>

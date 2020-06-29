@@ -28,6 +28,10 @@ export class CustomSelectComponent implements OnInit, OnChanges {
     public translate: TranslateService,
   ) {
     document.addEventListener('click', this.closeMenu.bind(this));
+    translate.onLangChange.subscribe(() => {
+      this.getTranslate();
+    });
+
   }
 
   ngOnInit() {
@@ -35,7 +39,6 @@ export class CustomSelectComponent implements OnInit, OnChanges {
 
   ngOnChanges () {
     this.getTranslate();
-
   }
 
   // 取得翻譯-kidin-1090507

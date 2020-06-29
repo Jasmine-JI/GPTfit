@@ -10,7 +10,6 @@ import { ModifyBoxComponent } from './modify-box/modify-box.component';
 import { UtilsService } from '@shared/services/utils.service';
 import { MatSnackBar, MatDialog, MAT_CHECKBOX_CLICK_ACTION } from '@angular/material';
 
-import { deviceHint } from './deviceHint';
 import { TranslateService } from '@ngx-translate/core';
 
 declare var google: any;
@@ -28,6 +27,13 @@ declare var google: any;
   encapsulation: ViewEncapsulation.None
 })
 export class PrivacySettingsComponent implements OnInit {
+  i18n = {  // 可能再增加新的翻譯
+    gym: '',
+    description: '',
+    admin: '',
+    sameGroup: '',
+    friends: ''
+  };
   isDisplayBox = false;
   showBatchChangeBox = false;
   showModifyBox = false;
@@ -68,8 +74,8 @@ export class PrivacySettingsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    const langName = this.utils.getLocalStorageObject('locale');
-    this.deviceTip = deviceHint[langName];
+    this.getTranslate();
+
     const mapProp = {
       center: new google.maps.LatLng(24.123499, 120.66014),
       zoom: 18,
@@ -93,8 +99,24 @@ export class PrivacySettingsComponent implements OnInit {
     this.lifeTrackingReport.openObj = lifeTrackingReport;
     this.detectCheckBoxValue('lifeTracking');
 
-    this.editObject = this.translate.instant('other.data');
+    this.editObject = this.translate.instant('universal_vocabulary_data');
   }
+
+  // 待多國語系套件載完再產生翻譯-kidin-1090623
+  getTranslate () {
+    this.translate.get('hollow world').subscribe(() => {
+      this.i18n = {
+        gym: this.translate.instant('universal_group_gym'),
+        description: this.translate.instant('universal_privacy_addSportsPrivacyStatement'),
+        admin: this.translate.instant('universal_group_groupAdministrator'),
+        sameGroup: this.translate.instant('universal_privacy_myGroupMember'),
+        friends: this.translate.instant('universal_privacy_myFriend')
+      };
+
+    });
+
+  }
+
   mouseEnter() {
     this.isDisplayBox = true;
   }
@@ -299,14 +321,14 @@ export class PrivacySettingsComponent implements OnInit {
       if (res.resultCode === 200) {
         this.snackbar.open(
           this.translate.instant(
-            'Dashboard.Settings.finishEdit'
+            'universal_operating_finishEdit'
           ),
           'OK',
           { duration: 5000 }
         );
       } else {
         this.snackbar.open(
-          this.translate.instant('Dashboard.Settings.updateFailed'),
+          this.translate.instant('universal_popUpMessage_updateFailed'),
           'OK',
           { duration: 5000 }
         );

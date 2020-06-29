@@ -85,7 +85,7 @@ export class UserProfileComponent implements OnInit {
       this.description = description;
       this.userName = name;
       this.userImg = nameIcon
-        ? `${nameIcon}${this.updateQueryString}`
+        ? `${nameIcon} ${this.updateQueryString}`
         : '/assets/images/user.png';
     });
   }

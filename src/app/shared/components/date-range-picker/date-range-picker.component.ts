@@ -52,17 +52,17 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
             format: 'YYYY/MM/DD'
           },
           ranges: {
-            [`1 ${this.translate.instant('Dashboard.SportReport.month')}`]:
+            [`1 ${this.translate.instant('universal_time_month')}`]:
               [moment(this.refStartDate).subtract(-1, 'month'), moment(this.refStartDate).subtract(-1, 'month')],
-            [`2 ${this.translate.instant('Dashboard.SportReport.month')}`]:
+            [`2 ${this.translate.instant('universal_time_month')}`]:
               [moment(this.refStartDate).subtract(-2, 'month'), moment(this.refStartDate).subtract(-2, 'month')],
-            [`3 ${this.translate.instant('Dashboard.SportReport.month')}`]:
+            [`3 ${this.translate.instant('universal_time_month')}`]:
               [moment(this.refStartDate).subtract(-3, 'month'), moment(this.refStartDate).subtract(-3, 'month')],
-            [`6 ${this.translate.instant('Dashboard.SportReport.month')}`]:
+            [`6 ${this.translate.instant('universal_time_month')}`]:
               [moment(this.refStartDate).subtract(-6, 'month'), moment(this.refStartDate).subtract(-6, 'month')],
-            [`1 ${this.translate.instant('Dashboard.SportReport.year')}`]:
+            [`1 ${this.translate.instant('universal_time_year')}`]:
               [moment(this.refStartDate).subtract(-1, 'year'), moment(this.refStartDate).subtract(-1, 'year')],
-            [`2 ${this.translate.instant('Dashboard.SportReport.year')}`]:
+            [`2 ${this.translate.instant('universal_time_year')}`]:
               [moment(this.refStartDate).subtract(-2, 'year'), moment(this.refStartDate).subtract(-2, 'year')]
           },
           showCustomRangeLabel: false,
@@ -79,15 +79,15 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
             format: 'YYYY/MM/DD'
           },
           ranges: {
-            [this.translate.instant('other.today')]: [moment(), moment()],
-            [this.translate.instant('Dashboard.GroupClass.last7Days')]: [moment().subtract(6, 'days'), moment()],
-            [this.translate.instant('Dashboard.GroupClass.last30Days')]: [moment().subtract(29, 'days'), moment()],
-            [this.translate.instant('other.thisWeek')]: [moment().startOf('week'), moment().endOf('week')],
-            [this.translate.instant('other.lastWeek')]:
+            [this.translate.instant('universal_time_today')]: [moment(), moment()],
+            [this.translate.instant('universal_time_last7Days')]: [moment().subtract(6, 'days'), moment()],
+            [this.translate.instant('universal_time_last30Days')]: [moment().subtract(29, 'days'), moment()],
+            [this.translate.instant('universal_time_thisWeek')]: [moment().startOf('week'), moment().endOf('week')],
+            [this.translate.instant('universal_time_lastWeek')]:
               [moment().subtract(1, 'week').startOf('week'), moment().subtract(1, 'week').endOf('week')],
-            [this.translate.instant('other.thisMonth')]:
+            [this.translate.instant('universal_time_thisMonth')]:
               [moment().startOf('month'), moment().endOf('month')],
-            [this.translate.instant('other.lastMonth')]:
+            [this.translate.instant('universal_time_lastMonth')]:
               [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
           },
         showCustomRangeLabel: false,

@@ -1,6 +1,6 @@
 <div class="group-info row">
   <!-- <span class="group-handle-name group-handle-name__rwd">
-    {{ 'Dashboard.Group.GroupInfo.groupInfo' | translate}}
+    {{ 'universal_group_groupInfo' | translate}}
   </span> -->
   <div class="col-md-3 group-image--area" *ngIf="!isPreviewMode">
     <img *ngIf="groupImg && !isGroupInfoLoading"
@@ -12,48 +12,48 @@
     <ul class="nav">
       <li [class.active]="chooseIdx === 1"
         (click)="handleGroupItem(1)"
-      >{{ 'Dashboard.Group.GroupInfo.groupInfo' | translate}}</li>
+      >{{ 'universal_group_groupInfo' | translate}}</li>
       <li [class.active]="chooseIdx === 2"
           *ngIf="groupLevel === '30' && visitorDetail?.isCanManage"
           (click)="handleGroupItem(2)"
       >
-        <span *ngIf="brandType == 1">{{ 'Dashboard.BrandManagement.brandManagement' | translate}}</span>
-        <span *ngIf="brandType == 2">{{ 'other.comAdminister' | translate}}</span>
+        <span *ngIf="brandType == 1">{{ 'universal_group_brandManagement' | translate}}</span>
+        <span *ngIf="brandType == 2">{{ 'universal_group_enterprise' | translate}} {{ 'universal_group_management' | translate}}</span>
       </li>
-      <li [class.active]="chooseIdx === 3"
+      <li [class.active]="chooseIdx === 3 && accessRight < 30"
         (click)="handleGroupItem(3)"
-      >{{ 'Dashboard.privacySettings.set' | translate}}</li>
+      >{{ 'universal_privacy_set' | translate}}</li>
       <li [class.active]="chooseIdx === 4"
           *ngIf="groupLevel === '60' && brandType === 1 && !isOutage"
           (click)="handleGroupItem(4)"
-      >我的報告</li>
+      >{{ 'universal_group_myReport' | translate}}</li>
       <li [class.active]="chooseIdx === 5"
           *ngIf="groupLevel === '60' && accessRight < 60 && brandType === 1 && !isOutage"
           (click)="handleGroupItem(5)"
-      >課程分析</li>
+      >{{ 'universal_group_classReport' | translate}}</li>
       <li [class.active]="chooseIdx === 6"
         *ngIf="brandType === 2 && !isOutage"
         (click)="handleGroupItem(6)"
-      >{{ 'Dashboard.SportReport.sportReport' | translate}}</li>
+      >{{ 'universal_activityData_sportReport' | translate}}</li>
       <li [class.active]="chooseIdx === 7"
         *ngIf="brandType === 2 && !isOutage"
         (click)="handleGroupItem(7)"
-      >{{ 'other.lifeTracking' | translate}}</li>
+      >{{ 'universal_lifeTracking_lifeTracking' | translate}}</li>
     </ul>
   </div>
   <div [class.col-md-9]="!isPreviewMode" [class.previewPrint]="isPreviewMode">
     <ng-container *ngIf="chooseIdx === 1">
       <div class="group-edit-bar">
         <span class="group-handle-name">
-          {{ 'Dashboard.Group.GroupInfo.groupInfo' | translate}}
+          {{ 'universal_group_groupInfo' | translate}}
           <span style="color: red;" *ngIf="commerceInfo?.commerceStatus === '2' && !editManageMode">
-            -({{ 'Dashboard.BrandManagement.outOfService' | translate}})
+            -({{ 'universal_group_outOfService' | translate}})
           </span>
         </span>
         <div class="rwd-btn_action">
           <button class="icon-btn" style="margin-right: 15px;color:#919191"
             (click)="openShareGroupInfoDialog()"
-            title="{{ 'SH.share' | translate }}"
+            title="{{ 'universal_operating_share' | translate }}"
             *ngIf="!isOutage"
           >
             <i class="icon-svg_web-icon_p1_013-share"
@@ -61,21 +61,21 @@
             ></i>
           </button>
           <button class="alatech-btn alatech-btn--default"
-            title="{{ 'Dashboard.Group.GroupInfo.applicationsForJoin' | translate}}"
+            title="{{ 'universal_group_applicationsForJoin' | translate}}"
             *ngIf="(joinStatus === 5 || joinStatus === 3 ) && (!visitorDetail?.isGroupAdmin || groupLevel === '80') && !isOutage"
             (click)="handleActionGroup(1)"
           >
-            {{ 'Dashboard.Group.GroupInfo.applicationsForJoin' | translate}}
+            {{ 'universal_group_applicationsForJoin' | translate}}
           </button>
           <button class="alatech-btn alatech-btn--default group-btn--waiting"
-            title="{{'Dashboard.Group.GroupInfo.cancelJoin' | translate}}"
+            title="{{'universal_group_cancelJoin' | translate}}"
             *ngIf="joinStatus === 1 && !isOutage"
             (click)="handleActionGroup(2)"
           >
-            {{'Dashboard.Group.GroupInfo.cancelJoin' | translate}}
+            {{'universal_group_cancelJoin' | translate}}
           </button>
           <button class="alatech-btn alatech-btn--default"
-            title="{{'Dashboard.Group.GroupInfo.exitGroup' | translate}}"
+            title="{{'universal_group_exitGroup' | translate}}"
             *ngIf="joinStatus === 2 &&
             (!visitorDetail?.isGroupAdmin
              ||
@@ -86,14 +86,14 @@
              && !isOutage"
             (click)="handleActionGroup(2)"
           >
-            {{'Dashboard.Group.GroupInfo.exitGroup' | translate}}
+            {{'universal_group_exitGroup' | translate}}
           </button>
           <button class="alatech-btn alatech-btn--default"
-            title="{{'Dashboard.Group.GroupInfo.management' | translate}}"
+            title="{{'universal_group_management' | translate}}"
             *ngIf="visitorDetail?.isCanManage && !isOutage"
             (click)="goEditPage()"
           >
-            {{'Dashboard.Group.GroupInfo.management' | translate}}
+            {{'universal_group_management' | translate}}
           </button>
         </div>
       </div>
@@ -110,49 +110,49 @@
           </label>
         </div>
         <!-- <div>
-          <label>{{ 'Dashboard.Group.GroupInfo.groupId' | translate}}：</label>{{ group_id }}
+          <label>{{ 'universal_group_groupId' | translate}}：</label>{{ group_id }}
         </div> -->
         <div>
           <label>
-            {{ 'Dashboard.Group.GroupInfo.layer' | translate}}：
+            {{ 'universal_group_layer' | translate}}：
           </label>
           {{ groupLevel | groupLevelTranslate: brandType | translate }}
           <span *ngIf="groupInfo?.coachType.length > 0 && groupInfo?.coachType === '2' && brandType == 1">
-            - {{'Dashboard.Group.GroupInfo.coachingClass' | translate}}
+            - {{'universal_group_coachingClass' | translate}}
           </span>
           <span *ngIf="groupInfo?.coachType.length > 0 && groupInfo?.coachType === '1' && brandType == 1">
-            - {{'Dashboard.Group.GroupInfo.teacher' | translate}}
+            - {{'universal_group_teacher' | translate}}
           </span>
           <span *ngIf="groupInfo?.coachType.length > 0 && groupInfo?.coachType === '2' && brandType == 2">
-            {{'other.department' | translate}}
+            {{'universal_group_department' | translate}}
           </span>
           <span *ngIf="groupInfo?.coachType.length > 0 && groupInfo?.coachType === '1' && brandType == 2">
-            {{'other.league' | translate}}
+            {{'universal_group_generalGroup' | translate}}
           </span>
         </div>
         <div>
-          <label>{{ 'Dashboard.Group.GroupInfo.status' | translate}}：</label>{{ groupInfo?.groupStatus | groupStatus | translate }}
+          <label>{{ 'universal_group_status' | translate}}：</label>{{ groupInfo?.groupStatus | groupStatus | translate }}
         </div>
         <div>
-          <label>{{ 'Dashboard.Group.GroupInfo.introduction' | translate}}：</label>
+          <label>{{ 'universal_group_introduction' | translate}}：</label>
           <div [innerHTML]="groupInfo?.groupDesc | lineBreak"></div>
         </div>
       </div>
       <div>
         <mat-tab-group (selectedTabChange)="changeGroupInfo($event)" class="ala-tab-group">
-          <mat-tab label="{{ 'Dashboard.Group.GroupInfo.subgroup' | translate}}"
+          <mat-tab label="{{ 'universal_group_subgroup' | translate}}"
             *ngIf="groupLevel !== '80'"
             [disabled]="isLoading"
           >
             <ng-container  *ngIf="!isLoading">
               <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
-                {{ 'Dashboard.Group.GroupInfo.brand' | translate}}
+                {{ 'universal_group_brand' | translate}}
               </label>
               <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
-                {{ 'other.com' | translate}}
+                {{ 'universal_group_enterprise' | translate}}
               </label>
               <div style="margin-bottom: 15px">
-                <span *ngIf="subBrandInfo && subBrandInfo.length === 0">{{'SH.noData' | translate}}</span>
+                <span *ngIf="subBrandInfo && subBrandInfo.length === 0">{{'universal_status_noData' | translate}}</span>
                 <ng-container  *ngFor="let subBrandItem of subBrandInfo">
                   <app-member-capsule
                     [role]="role"
@@ -168,13 +168,13 @@
                 </ng-container>
               </div>
               <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
-                {{ 'Dashboard.Group.GroupInfo.branch' | translate}}
+                {{ 'universal_group_branch' | translate}}
               </label>
               <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
-                {{ 'other.subCom' | translate}}
+                {{ 'universal_group_companyBranch' | translate}}
               </label>
               <div style="margin-bottom: 15px">
-                <span *ngIf="subBranchInfo && subBranchInfo.length === 0">{{'SH.noData' | translate}}</span>
+                <span *ngIf="subBranchInfo && subBranchInfo.length === 0">{{'universal_status_noData' | translate}}</span>
                 <ng-container  *ngFor="let subBranchItem of subBranchInfo">
                   <app-member-capsule
                     [role]="role"
@@ -191,13 +191,13 @@
               </div>
 
               <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
-                {{ 'Dashboard.Group.GroupInfo.coachingClass' | translate}}
+                {{ 'universal_group_coachingClass' | translate}}
               </label>
               <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
-                {{ 'other.department' | translate}}
+                {{ 'universal_group_department' | translate}}
               </label>
               <div style="margin-bottom: 15px" >
-                <span *ngIf="subCoachInfo && subCoachInfo.length === 0">{{'SH.noData' | translate}}</span>
+                <span *ngIf="subCoachInfo && subCoachInfo.length === 0">{{'universal_status_noData' | translate}}</span>
                 <ng-container  *ngFor="let subCoachItem of subCoachInfo">
                   <app-member-capsule
                     [role]="role"
@@ -219,17 +219,17 @@
               <mat-spinner></mat-spinner>
             </div>
           </mat-tab>
-          <mat-tab label="{{ 'Dashboard.Group.GroupInfo.administrator' | translate}}" [disabled]="isLoading">
+          <mat-tab label="{{ 'universal_group_administrator' | translate}}" [disabled]="isLoading">
             <ng-container *ngIf="!isLoading">
               <ng-container *ngIf="groupLevel && groupLevel !== '80'">
                 <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
-                  {{ 'Dashboard.Group.brandAdministrator' | translate}}
+                  {{ 'universal_group_brandAdministrator' | translate}}
                 </label>
                 <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
-                  {{ 'other.comAdministrator' | translate}}
+                  {{ 'universal_group_companyAdmin' | translate}}
                 </label>
                 <div style="margin-bottom: 15px">
-                <span *ngIf="brandAdministrators && brandAdministrators.length === 0">{{'SH.noData' | translate}}</span>
+                <span *ngIf="brandAdministrators && brandAdministrators.length === 0">{{'universal_status_noData' | translate}}</span>
                   <ng-container  *ngFor="let brandAdmItem of brandAdministrators">
                     <app-member-capsule
                       [role]="role"
@@ -245,13 +245,13 @@
                   </ng-container>
                 </div>
                 <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
-                  {{ 'Dashboard.Group.branchAdministrator' | translate}}
+                  {{ 'universal_group_branchAdministrator' | translate}}
                 </label>
                 <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
-                  {{ 'other.subComAdministrator' | translate}}
+                  {{ 'universal_group_branchAdmin' | translate}}
                 </label>
                 <div style="margin-bottom: 15px">
-                  <span *ngIf="branchAdministrators && branchAdministrators.length === 0">{{'SH.noData' | translate}}</span>
+                  <span *ngIf="branchAdministrators && branchAdministrators.length === 0">{{'universal_status_noData' | translate}}</span>
                   <ng-container  *ngFor="let branchAdmItem of branchAdministrators">
                     <app-member-capsule
                       [role]="role"
@@ -268,14 +268,14 @@
                 </div>
                 <ng-container *ngIf="groupLevel !== '60'">
                   <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
-                    {{ 'Dashboard.Group.GroupInfo.coachingClass' | translate}}
-                    {{ 'Dashboard.Group.GroupInfo.administrator' | translate}}
+                    {{ 'universal_group_coachingClass' | translate}}
+                    {{ 'universal_group_administrator' | translate}}
                   </label>
                   <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
-                    {{ 'other.departmentAdministrator' | translate}}
+                    {{ 'universal_group_departmentAdmin' | translate}}
                   </label>
                   <div style="margin-bottom: 15px" >
-                    <span *ngIf="coachAdministrators && coachAdministrators.length === 0">{{'SH.noData' | translate}}</span>
+                    <span *ngIf="coachAdministrators && coachAdministrators.length === 0">{{'universal_status_noData' | translate}}</span>
                     <ng-container  *ngFor="let coachAdmItem of coachAdministrators">
                       <app-member-capsule
                         [role]="role"
@@ -293,13 +293,13 @@
                 </ng-container>
                 <ng-container *ngIf="groupLevel === '60'">
                   <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
-                    {{ 'Dashboard.Group.teacher' | translate}}
+                    {{ 'universal_group_teacher' | translate}}
                   </label>
-                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
-                    {{ 'other.leagueAdministrator' | translate}}
+                  <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2 && false">
+                    {{ 'universal_group_administrator' | translate}}
                   </label>
-                  <div style="margin-bottom: 15px" >
-                    <span *ngIf="normalCoaches && normalCoaches.length === 0">{{'SH.noData' | translate}}</span>
+                  <div style="margin-bottom: 15px" *ngIf="brandType !== 2">
+                    <span *ngIf="normalCoaches && normalCoaches.length === 0">{{'universal_status_noData' | translate}}</span>
                     <ng-container  *ngFor="let normalCoachAdmItem of normalCoaches">
                       <app-member-capsule
                         [role]="role"
@@ -315,13 +315,13 @@
                     </ng-container>
                   </div>
                   <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
-                    {{ 'Dashboard.Group.coach' | translate}}
+                    {{ 'universal_group_coach' | translate}}
                   </label>
                   <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 2">
-                    {{ 'other.departmentAdministrator' | translate}}
+                    {{ 'universal_group_departmentAdmin' | translate}}
                   </label>
                   <div style="margin-bottom: 15px" >
-                    <span *ngIf="PFCoaches && PFCoaches.length === 0">{{'SH.noData' | translate}}</span>
+                    <span *ngIf="PFCoaches && PFCoaches.length === 0">{{'universal_status_noData' | translate}}</span>
                     <ng-container  *ngFor="let pfCoachAdmItem of PFCoaches">
                       <app-member-capsule
                         [role]="role"
@@ -340,10 +340,10 @@
               </ng-container>
               <ng-container *ngIf="groupLevel && groupLevel === '80'">
                 <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
-                  {{ 'Dashboard.Group.GroupInfo.administrator' | translate}}
+                  {{ 'universal_group_administrator' | translate}}
                 </label>
                 <div style="margin-bottom: 15px" >
-                  <span *ngIf="groupInfos && groupInfos.length === 0">{{'SH.noData' | translate}}</span>
+                  <span *ngIf="groupInfos && groupInfos.length === 0">{{'universal_status_noData' | translate}}</span>
                   <ng-container  *ngFor="let item of groupInfos">
                     <app-member-capsule
                       [role]="role"
@@ -366,9 +366,9 @@
               <mat-spinner></mat-spinner>
             </div>
           </mat-tab>
-          <mat-tab label="{{ 'Dashboard.Group.generalMember' | translate}}" [disabled]="isLoading">
+          <mat-tab label="{{ 'universal_group_generalMember' | translate}}" [disabled]="isLoading">
             <ng-container *ngIf="!isLoading">
-              <span *ngIf="normalMemberInfos && normalMemberInfos.length === 0">{{'SH.noData' | translate}}</span>
+              <span *ngIf="normalMemberInfos && normalMemberInfos.length === 0">{{'universal_status_noData' | translate}}</span>
               <ng-container  *ngFor="let item of normalMemberInfos">
                 <div style="margin-bottom: 15px;display:inline-block">
                   <app-member-capsule
@@ -391,9 +391,9 @@
               <mat-spinner></mat-spinner>
             </div>
           </mat-tab>
-          <mat-tab label="{{ 'Dashboard.Group.GroupInfo.pendingMember' | translate}}" [disabled]="isLoading">
+          <mat-tab label="{{ 'universal_group_pendingMember' | translate}}" [disabled]="isLoading">
             <ng-container *ngIf="!isLoading">
-              <span *ngIf="groupInfos && groupInfos.length === 0">{{'SH.noData' | translate}}</span>
+              <span *ngIf="groupInfos && groupInfos.length === 0">{{'universal_status_noData' | translate}}</span>
               <ng-container  *ngFor="let item of groupInfos">
                 <div style="margin-bottom: 15px;display:inline-block">
                   <app-member-capsule
@@ -426,14 +426,14 @@
           *ngIf="+accessRight <= 29 && !editManageMode"
           (click)="editMode(true)"
         >
-          {{'Dashboard.Group.GroupInfo.edit' | translate}}
+          {{'universal_operating_edit' | translate}}
         </button>
         <button
           class="alatech-btn alatech-btn--default"
           *ngIf="editManageMode"
           (click)="editManage()"
         >
-          {{'Dashboard.Settings.finishEdit' | translate}}
+          {{'universal_operating_finishEdit' | translate}}
         </button>
         <button
           class="alatech-btn alatech-btn--default"
@@ -441,28 +441,28 @@
           *ngIf="editManageMode"
           (click)="editMode(false)"
         >
-          {{'SH.cancel' | translate}}
+          {{'universal_operating_cancel' | translate}}
         </button>
       </div>
       <label class="group-label" *ngIf="brandType == 1">
-        {{ 'Dashboard.Group.GroupInfo.brand' | translate}}
+        {{ 'universal_group_brand' | translate}}
       </label>
       <label class="group-label" *ngIf="brandType == 2">
-        {{ 'other.com' | translate}}
+        {{ 'universal_group_enterprise' | translate}}
       </label>
       <div class="group-list">
-        <div class="group-list-item">{{ 'Dashboard.Group.GroupInfo.status' | translate}}：
+        <div class="group-list-item">{{ 'universal_group_status' | translate}}：
           <span *ngIf="commerceInfo?.commerceStatus === '1' && !editManageMode">
-            {{ 'Dashboard.BrandManagement.InOperation' | translate}}
+            {{ 'universal_group_InOperation' | translate}}
           </span>
           <span *ngIf="commerceInfo?.commerceStatus === '2' && !editManageMode">
-            {{ 'Dashboard.BrandManagement.outOfService' | translate}}
+            {{ 'universal_group_outOfService' | translate}}
           </span>
           <span *ngIf="commerceInfo?.commerceStatus === '3' && !editManageMode">
-            {{ 'Dashboard.BrandManagement.outOfBusiness' | translate}}
+            {{ 'universal_group_outOfBusiness' | translate}}
           </span>
           <span *ngIf="commerceInfo?.commerceStatus === '4' && !editManageMode">
-            {{ 'Dashboard.BrandManagement.toBeDestroyed' | translate}}
+            {{ 'universal_group_toBeDestroyed' | translate}}
           </span>
           <span *ngIf="editManageMode" class="groupEditSelect">
             <mat-form-field style="width: 120px; text-align: center;">
@@ -470,16 +470,16 @@
                 [(value)]="editContent.status"
               >
                 <mat-option value="1">
-                  {{'Dashboard.BrandManagement.InOperation' | translate}}
+                  {{'universal_group_InOperation' | translate}}
                 </mat-option>
                 <mat-option value="2">
-                  {{'Dashboard.BrandManagement.outOfService' | translate}}
+                  {{'universal_group_outOfService' | translate}}
                 </mat-option>
                 <mat-option value="3" *ngIf="accessRight <= 10">
-                  {{'Dashboard.BrandManagement.outOfBusiness' | translate}}
+                  {{'universal_group_outOfBusiness' | translate}}
                 </mat-option>
                 <mat-option value="4" *ngIf="accessRight <= 10">
-                  {{'Dashboard.BrandManagement.toBeDestroyed' | translate}}
+                  {{'universal_group_toBeDestroyed' | translate}}
                 </mat-option>
               </mat-select>
             </mat-form-field>
@@ -487,7 +487,7 @@
         </div>
       </div>
       <label  class="group-label">
-        {{'Dashboard.BrandManagement.totalMember' | translate}}
+        {{'universal_group_totalMember' | translate}}
       </label>
       <div class="group-list">
         <div class="group-list-item"
@@ -498,7 +498,7 @@
 && !editManageMode
 "
         >
-          {{ 'Dashboard.BrandManagement.numberOfAdministrators' | translate}}：
+          {{ 'universal_group_numberOfAdministrators' | translate}}：
           <span *ngIf="!editManageMode">
             {{
               +commerceInfo?.groupManagerStatus.currentBrandManagers + +commerceInfo?.groupManagerStatus.currentBranchManagers
@@ -511,7 +511,7 @@
   (+commerceInfo?.groupManagerStatus.currentGeneralGroupManagers) >= (+commerceInfo?.groupManagerStatus.maxGroupManagers)
   && !editManageMode
 ">
-  ({{ 'Dashboard.Group.GroupInfo.groupFull' | translate}})
+  ({{ 'universal_status_groupFull' | translate}})
 </span>
           <span *ngIf="editManageMode">
             <mat-form-field class="editManageInput">
@@ -528,7 +528,7 @@
         <div class="group-list-item"
 [class.full]="+commerceInfo?.groupMemberStatus.currentGroupMembers >=
 +commerceInfo?.groupMemberStatus.maxGroupMembers && !editManageMode"
-        >{{ 'Dashboard.BrandManagement.totalNumberPeople' | translate}}：
+        >{{ 'universal_group_totalNumberPeople' | translate}}：
           <span *ngIf="!editManageMode">
             {{+commerceInfo?.groupMemberStatus.currentGroupMembers}}/{{+commerceInfo?.groupMemberStatus.maxGroupMembers}}
           </span>
@@ -537,7 +537,7 @@
             +commerceInfo?.groupMemberStatus.maxGroupMembers
             && !editManageMode
           ">
-            ({{ 'Dashboard.Group.GroupInfo.groupFull' | translate}})
+            ({{ 'universal_status_groupFull' | translate}})
           </span>
           <span *ngIf="editManageMode">
             <mat-form-field class="editManageInput">
@@ -553,21 +553,21 @@
         </div>
       </div>
       <label  class="group-label">
-        {{ 'Dashboard.BrandManagement.currentPlan' | translate}}
+        {{ 'universal_group_currentPlan' | translate}}
       </label>
       <div class="group-list">
-        <div class="group-list-item">{{ 'Dashboard.BrandManagement.currentPlan' | translate}}：
+        <div class="group-list-item">{{ 'universal_group_currentPlan' | translate}}：
           <span *ngIf="commerceInfo?.commercePlan === '1' && !editManageMode">
-            {{ 'Dashboard.BrandManagement.experiencePlan' | translate}}
+            {{ 'universal_group_experiencePlan' | translate}}
           </span>
           <span *ngIf="commerceInfo?.commercePlan === '2' && !editManageMode">
-            {{ 'Dashboard.BrandManagement.studioPlan' | translate}}
+            {{ 'universal_group_studioPlan' | translate}}
           </span>
           <span *ngIf="commerceInfo?.commercePlan === '3' && !editManageMode">
-            {{ 'Dashboard.BrandManagement.smePlan' | translate}}
+            {{ 'universal_group_smePlan' | translate}}
           </span>
           <span *ngIf="commerceInfo?.commercePlan === '99' && !editManageMode">
-            {{ 'Dashboard.BrandManagement.customPlan' | translate}}
+            {{ 'universal_group_customPlan' | translate}}
           </span>
           <span *ngIf="editManageMode" class="groupEditSelect">
             <mat-form-field style="width: 150px; text-align: center;">
@@ -575,15 +575,15 @@
                 [(value)]="editContent.plan"
                 (selectionChange)="editManageContent($event)"
               >
-                <mat-option value="1">{{'Dashboard.BrandManagement.experiencePlan' | translate}}</mat-option>
-                <mat-option value="2">{{'Dashboard.BrandManagement.studioPlan' | translate}}</mat-option>
-                <mat-option value="3">{{'Dashboard.BrandManagement.smePlan' | translate}}</mat-option>
-                <mat-option value="99">{{'Dashboard.BrandManagement.customPlan' | translate}}</mat-option>
+                <mat-option value="1">{{'universal_group_experiencePlan' | translate}}</mat-option>
+                <mat-option value="2">{{'universal_group_studioPlan' | translate}}</mat-option>
+                <mat-option value="3">{{'universal_group_smePlan' | translate}}</mat-option>
+                <mat-option value="99">{{'universal_group_customPlan' | translate}}</mat-option>
               </mat-select>
             </mat-form-field>
           </span>
         </div>
-        <div class="group-list-item">{{ 'Dashboard.BrandManagement.authorizationDueDate' | translate}}：
+        <div class="group-list-item">{{ 'universal_group_authorizationDueDate' | translate}}：
           <span *ngIf="!editManageMode">
             {{(commerceInfo?.commercePlanExpired) | date: 'y/MM/dd'}}
           </span>
@@ -598,19 +598,19 @@
         </div>
       </div>
       <label  class="group-label">
-        {{ 'Dashboard.BrandManagement.numberOfGroups' | translate}}
+        {{ 'universal_group_numberOfGroups' | translate}}
       </label>
       <div class="group-list">
         <div class="group-list-item"
           [class.full]="+commerceInfo?.groupStatus.currentBranches >= +commerceInfo?.groupStatus.maxBranches && !editManageMode"
         >
-          <span *ngIf="brandType == 1">{{ 'Dashboard.BrandManagement.numberOfBranches' | translate}}：</span>
-          <span *ngIf="brandType == 2">{{ 'other.subComNumber' | translate}}：</span>
+          <span *ngIf="brandType == 1">{{ 'universal_group_numberOfBranches' | translate}}：</span>
+          <span *ngIf="brandType == 2">{{ 'universal_group_branches' | translate}}：</span>
           <span *ngIf="!editManageMode">
             {{commerceInfo?.groupStatus.currentBranches}}/{{commerceInfo?.groupStatus.maxBranches}}
           </span>
           <span *ngIf="+commerceInfo?.groupStatus.currentBranches >= +commerceInfo?.groupStatus.maxBranches && !editManageMode">
-            ({{ 'Dashboard.Group.GroupInfo.groupFull' | translate}})
+            ({{ 'universal_status_groupFull' | translate}})
           </span>
           <span *ngIf="editManageMode">
             <mat-form-field class="editManageInput">
@@ -627,13 +627,13 @@
         <div class="group-list-item"
           [class.full]="+commerceInfo?.groupStatus.currentClasses >= +commerceInfo?.groupStatus.maxClasses && !editManageMode"
         >
-          <span *ngIf="brandType == 1">{{ 'Dashboard.BrandManagement.numberOfClass' | translate}}：</span>
-          <span *ngIf="brandType == 2">{{ 'other.departmentNumber' | translate}}：</span>
+          <span *ngIf="brandType == 1">{{ 'universal_group_numberOfClass' | translate}}：</span>
+          <span *ngIf="brandType == 2">{{ 'universal_group_numberOfDepartments' | translate}}：</span>
           <span *ngIf="!editManageMode">
             {{commerceInfo?.groupStatus.currentClasses}}/{{commerceInfo?.groupStatus.maxClasses}}
           </span>
           <span *ngIf="(+commerceInfo?.groupStatus.currentClasses) >= (+commerceInfo?.groupStatus.maxClasses)">
-            ({{ 'Dashboard.Group.GroupInfo.groupFull' | translate}})
+            ({{ 'universal_status_groupFull' | translate}})
           </span>
           <span *ngIf="editManageMode">
             <mat-form-field class="editManageInput">
@@ -649,42 +649,42 @@
         </div>
       </div>
       <label  class="group-label">
-        {{ 'Dashboard.BrandManagement.numberOfAdministrator' | translate}}
+        {{ 'universal_group_numberOfAdministrator' | translate}}
       </label>
       <div class="group-list">
         <div class="group-list-item">
-          <span *ngIf="brandType == 1">{{ 'Dashboard.Group.brandAdministrator' | translate}}</span>
-          <span *ngIf="brandType == 2">{{ 'other.comAdministrator' | translate}}</span>
+          <span *ngIf="brandType == 1">{{ 'universal_group_brandAdministrator' | translate}}</span>
+          <span *ngIf="brandType == 2">{{ 'universal_group_companyAdmin' | translate}}</span>
           ：{{commerceInfo?.groupManagerStatus.currentBrandManagers}}
         </div>
         <div class="group-list-item">
-          <span *ngIf="brandType == 1">{{ 'Dashboard.Group.branchAdministrator' | translate}}</span>
-          <span *ngIf="brandType == 2">{{ 'other.subComAdministrator' | translate}}</span>
+          <span *ngIf="brandType == 1">{{ 'universal_group_branchAdministrator' | translate}}</span>
+          <span *ngIf="brandType == 2">{{ 'universal_group_branchAdmin' | translate}}</span>
           ：{{commerceInfo?.groupManagerStatus.currentBranchManagers}}
         </div>
         <div class="group-list-item">
-          <span *ngIf="brandType == 1">{{ 'Dashboard.Group.coach' | translate}}</span>
-          <span *ngIf="brandType == 2">{{ 'other.departmentAdministrator' | translate}}</span>
+          <span *ngIf="brandType == 1">{{ 'universal_group_coach' | translate}}</span>
+          <span *ngIf="brandType == 2">{{ 'universal_group_departmentAdmin' | translate}}</span>
           ：{{commerceInfo?.groupManagerStatus.currentFitnessCoaches}}
         </div>
-        <div class="group-list-item">
-          <span *ngIf="brandType == 1">{{ 'Dashboard.Group.teacher' | translate}}</span>
-          <span *ngIf="brandType == 2">{{ 'other.leagueAdministrator' | translate}}</span>
+        <div class="group-list-item" *ngIf="brandType !== 2">
+          <span *ngIf="brandType == 1">{{ 'universal_group_teacher' | translate}}</span>
+          <span *ngIf="brandType == 2">{{ 'universal_group_administrator' | translate}}</span>
           ：{{commerceInfo?.groupManagerStatus.currentCoaches}}
         </div>
       </div>
     </ng-container>
     <ng-container *ngIf="chooseIdx === 3">
       <label  class="group-label">
-        {{ 'Dashboard.privacySettings.groupMemberVisibility' | translate}}
+        {{ 'universal_privacy_groupMemberVisibility' | translate}}
       </label>
       <div class="group-list">
         <div class="group-list-item">
           <span *ngIf="groupInfo?.shareAvatarToMember && groupInfo?.shareAvatarToMember.switch === '1'">
-            {{ 'Dashboard.privacySettings.allMember' | translate}}{{ 'Dashboard.privacySettings.canSee' | translate}}{{ 'Dashboard.privacySettings.avatar' | translate}}{{ 'Dashboard.privacySettings.nickname' | translate}}
+            {{'universal_group_canSee' | translate: {'object': i18n.allMember, 'info': i18n.nickname} }}
           </span>
           <span *ngIf="groupInfo?.shareAvatarToMember && groupInfo?.shareAvatarToMember.switch === '2'">
-            {{ 'Dashboard.privacySettings.notOpenVisibility' | translate}}
+            {{ 'universal_privacy_notOpenVisibility' | translate}}
           </span>
           <span *ngIf="groupInfo?.shareAvatarToMember && (groupInfo?.shareAvatarToMember.switch === '3' || groupInfo?.shareAvatarToMember.switch === '4')">
             {{shareAvatarTarget}}
@@ -692,15 +692,15 @@
         </div>
       </div>
       <label  class="group-label">
-        {{ 'Dashboard.privacySettings.shareSportsFile' | translate}}
+        {{ 'universal_privacy_shareSportsFile' | translate}}
       </label>
       <div class="group-list">
         <div class="group-list-item">
           <span *ngIf="groupInfo?.shareActivityToMember && groupInfo?.shareActivityToMember.switch === '1'">
-            {{ 'Dashboard.privacySettings.allMember' | translate}}{{ 'Dashboard.privacySettings.canSee' | translate}}{{ 'Dashboard.privacySettings.file' | translate}}
+            {{'universal_group_canSee' | translate: {'object': i18n.allMember, 'info': i18n.file} }}
           </span>
           <span *ngIf="groupInfo?.shareActivityToMember && groupInfo?.shareActivityToMember.switch === '2'">
-            {{ 'Dashboard.privacySettings.notOpenVisibility' | translate}}
+            {{ 'universal_privacy_notOpenVisibility' | translate}}
           </span>
           <span *ngIf="groupInfo?.shareActivityToMember && (groupInfo?.shareActivityToMember.switch === '3' || groupInfo?.shareActivityToMember.switch === '4')">
             {{shareActivityTarget}}
@@ -708,15 +708,15 @@
         </div>
       </div>
       <label  class="group-label">
-        {{ 'Dashboard.privacySettings.shareSportsReport' | translate}}
+        {{ 'universal_privacy_shareSportsReport' | translate}}
       </label>
       <div class="group-list">
         <div class="group-list-item">
           <span *ngIf="groupInfo?.shareReportToMember && groupInfo?.shareReportToMember.switch === '1'">
-            {{ 'Dashboard.privacySettings.allMember' | translate}}{{ 'Dashboard.privacySettings.canSee' | translate}}{{ 'Dashboard.privacySettings.sportReport' | translate}}
+            {{'universal_group_canSee' | translate: {'object': i18n.allMember, 'info': i18n.sportReport} }}
           </span>
           <span *ngIf="groupInfo?.shareReportToMember && groupInfo?.shareReportToMember.switch === '2'">
-            {{ 'Dashboard.privacySettings.notOpenSportsReport' | translate}}
+            {{ 'universal_privacy_notOpenSportsReport' | translate}}
           </span>
           <span *ngIf="groupInfo?.shareReportToMember && (groupInfo?.shareReportToMember.switch === '3' || groupInfo?.shareReportToMember.switch === '4')">
             {{shareReportTarget}}

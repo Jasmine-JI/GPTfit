@@ -1,23 +1,23 @@
 <div class="d-flex justify-content-between" style="margin-bottom: 15px">
   <span style="color: #157fcc; font-weight:700">
-    {{'Dashboard.System.listAllGroups' | translate}}
+    {{'universal_group_listAllGroups' | translate}}
   </span>
 </div>
 <mat-form-field>
   <mat-select [(value)]="groupLevel">
-    <mat-option value="300">{{ "Dashboard.Group.SearchGroup.allClasses" | translate}}</mat-option>
-    <mat-option value="130">{{ "other.gymBrand" | translate}}</mat-option>
-    <mat-option value="140">{{ "Dashboard.Group.GroupInfo.branch" | translate}}</mat-option>
-    <mat-option value="160">{{ "Dashboard.Group.SearchGroup.classOrCoach" | translate}}</mat-option>
-    <mat-option value="190">{{ "Dashboard.Group.SearchGroup.generalGroup" | translate}}</mat-option>
-    <mat-option value="230">{{ "custom.ComGroup" | translate}}</mat-option>
-    <mat-option value="240">{{ "other.subCom" | translate}}</mat-option>
-    <mat-option value="260">{{ "other.departmentOrleague" | translate}}</mat-option>
-    <mat-option value="290">{{ "Dashboard.Group.SearchGroup.generalGroup" | translate}}</mat-option>
+    <mat-option value="300">{{ "universal_group_allClasses" | translate}}</mat-option>
+    <mat-option value="130">{{ "universal_group_gym" | translate}}</mat-option>
+    <mat-option value="140">{{ "universal_group_branch" | translate}}</mat-option>
+    <mat-option value="160">{{ "universal_group_classOrCoach" | translate}}</mat-option>
+    <mat-option value="190">{{ "universal_group_generalGroup" | translate}}</mat-option>
+    <mat-option value="230">{{ "universal_group_enterprise" | translate}}</mat-option>
+    <mat-option value="240">{{ "universal_group_companyBranch" | translate}}</mat-option>
+    <mat-option value="260">{{ "universal_group_departmentOrleague" | translate}}</mat-option>
+    <mat-option value="290">{{ "universal_group_generalGroup" | translate}}</mat-option>
   </mat-select>
 </mat-form-field>
 <mat-form-field>
-  <input matInput placeholder="{{ 'Dashboard.Group.SearchGroup.enterGroupIdName' | translate}}"
+  <input matInput placeholder="{{ 'universal_group_enterGroupIdName' | translate}}"
     [matAutocomplete]="auto"
     [(ngModel)]="searchWords"
     name="searchWords"
@@ -39,16 +39,16 @@
   class="all-group-list"
 >
   <ng-container matColumnDef="id">
-    <mat-header-cell *matHeaderCellDef>{{'Dashboard.Group.GroupInfo.groupId' | translate}}</mat-header-cell>
+    <mat-header-cell *matHeaderCellDef>{{'universal_group_groupId' | translate}}</mat-header-cell>
     <mat-cell *matCellDef="let row">{{ utils.displayGroupId(row.groupId) }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="info">
-    <mat-header-cell *matHeaderCellDef>{{'Dashboard.Group.MyGroup.name' | translate}}</mat-header-cell>
+    <mat-header-cell *matHeaderCellDef>{{'universal_activityData_name' | translate}}</mat-header-cell>
     <mat-cell *matCellDef="let row">{{ row.groupName }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="time">
     <mat-header-cell *matHeaderCellDef disableClear="true">
-      {{'Dashboard.Group.GroupInfo.status' | translate}}
+      {{'universal_group_status' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let row">{{ row.groupStatus | groupStatus | translate }}</mat-cell>
   </ng-container>

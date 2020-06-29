@@ -7,16 +7,16 @@
     <div class="col-md-6 portal-group-info">
       <div class="group-edit-bar">
         <span class="group-handle-name">
-          {{ 'Dashboard.Group.GroupInfo.groupInfo' | translate}}
+          {{ 'universal_group_groupInfo' | translate}}
         </span>
         <div class="rwd-btn_action">
           <button class="alatech-btn alatech-btn--default"
             style="width:140px;height:38px"
             *ngIf="!visitorDetail?.isGroupAdmin"
-            title="{{'Dashboard.Group.GroupInfo.applicationsForJoin' | translate}}"
+            title="{{'universal_group_applicationsForJoin' | translate}}"
             (click)="goDashboardGroupInfo()"
           >
-            {{ 'Dashboard.Group.GroupInfo.applicationsForJoin' | translate}}
+            {{ 'universal_group_applicationsForJoin' | translate}}
           </button>
         </div>
       </div>
@@ -25,16 +25,16 @@
           <label>{{ groupInfo?.groupName }}</label>
         </div>
         <div>
-          <label>{{ 'Dashboard.Group.GroupInfo.groupId' | translate}}：</label>{{ dispGroupId }}
+          <label>{{ 'universal_group_groupId' | translate}}：</label>{{ dispGroupId }}
         </div>
         <div>
-          <label>{{ 'Dashboard.Group.GroupInfo.layer' | translate}}：</label>{{ groupLevel | groupLevelTranslate | translate }}
+          <label>{{ 'universal_group_layer' | translate}}：</label>{{ groupLevel | groupLevelTranslate | translate }}
         </div>
         <div>
-          <label>{{ 'Dashboard.Group.GroupInfo.status' | translate}}：</label>{{ groupInfo?.groupStatus | groupStatus | translate }}
+          <label>{{ 'universal_group_status' | translate}}：</label>{{ groupInfo?.groupStatus | groupStatus | translate }}
         </div>
         <div>
-          <label>{{ 'Dashboard.Group.GroupInfo.introduction' | translate}}：</label>
+          <label>{{ 'universal_group_introduction' | translate}}：</label>
           <div [innerHTML]="groupInfo?.groupDesc | lineBreak"></div>
         </div>
       </div>

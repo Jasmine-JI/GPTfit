@@ -17,6 +17,13 @@ import { MatDialog } from '@angular/material';
 })
 export class AppForgetpwComponent implements OnInit, OnDestroy {
 
+  i18n = {
+    account: '',
+    email: '',
+    phone: '',
+    password: '',
+    verificationCode: ''
+  };
   sending = false;
   appSys = 0;  // 0: web, 1: ios, 2: android
   isKeyin = false;
@@ -46,11 +53,11 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
   selectLists = [
     {
       name: 'email',
-      i18nKey: 'Portal.email'
+      i18nKey: 'universal_userAccount_email'
     },
     {
       name: 'phone',
-      i18nKey: 'Portal.phone'
+      i18nKey: 'universal_userAccount_phone'
     }
   ];
 
@@ -105,7 +112,12 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private router: Router,
     public getClientIp: GetClientIpService
-  ) { }
+  ) {
+    translate.onLangChange.subscribe(() => {
+      this.getTranslate();
+    });
+
+  }
 
   ngOnInit() {
 
@@ -120,6 +132,21 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
 
     this.getUrlString(location.search);
     this.getClientIpaddress();
+  }
+
+  // 取得多國語系翻譯-kidin-1090620
+  getTranslate () {
+    this.translate.get('hollo word').subscribe(() => {
+      this.i18n = {
+        account: this.translate.instant('universal_userAccount_account'),
+        email: this.translate.instant('universal_userAccount_email'),
+        phone: this.translate.instant('universal_userAccount_phone'),
+        password: this.translate.instant('universal_userAccount_newPassword'),
+        verificationCode: this.translate.instant('universal_userAccount_phoneCaptcha')
+      };
+
+    });
+
   }
 
   // 取得裝置平台-kidin-1090518
@@ -275,7 +302,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
       const inputEmail = e.currentTarget.value;
 
       if (inputEmail.length === 0 || !this.regCheck.email.test(inputEmail)) {
-        this.cue.email = this.translate.instant('Portal.emailFormat');
+        this.cue.email = 'universal_userAccount_emailFormat';
         this.dataIncomplete = true;
       } else {
         this.formValue.email = inputEmail;
@@ -362,7 +389,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
 
               break;
             case 'Post fail, account is not existing.':
-              this.cue.phone = this.translate.instant('SH.noRegisterData');
+              this.cue.phone = 'universal_userAccount_noRegisterData';
               break;
           }
 
@@ -373,9 +400,9 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
             disableClose: true,
             data: {
               title: 'Message',
-              body: this.translate.instant('other.sendSmsSuccess'),
+              body: this.translate.instant('universal_userAccount_sendSmsSuccess'),
               confirmText: this.translate.instant(
-                'other.confirm'
+                'universal_operating_confirm'
               )
             }
           });
@@ -406,7 +433,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
       const inputPhoneCaptcha = e.currentTarget.value;
       if (inputPhoneCaptcha.length < 6) {
-        this.cue.verificationCode = this.translate.instant('Portal.errorCaptcha');
+        this.cue.verificationCode = 'universal_userAccount_errorCaptcha';
       } else {
         this.formValue.verificationCode = inputPhoneCaptcha;
         this.cue.verificationCode = '';
@@ -451,7 +478,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
       const inputPassword = e.currentTarget.value;
 
       if (!this.regCheck.password.test(inputPassword)) {
-        this.cue.password = this.translate.instant('Portal.passwordFormat');
+        this.cue.password = 'universal_userAccount_passwordFormat';
         this.dataIncomplete = true;
       } else {
         this.formValue.password = inputPassword;
@@ -499,7 +526,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
 
         switch (res.processResult.apiReturnMessage) {
           case 'Post fail, account is not existing.':
-            this.cue.email = this.translate.instant('SH.noRegisterData');
+            this.cue.email = 'universal_userAccount_noRegisterData';
             break;
           default:
             const msgBody = 'Server error! Please try again later.';
@@ -508,7 +535,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
         }
 
       } else {
-        const msgBody = this.translate.instant('other.sendCaptchaChackEmail');
+        const msgBody = this.translate.instant('universal_userAccount_sendCaptchaChackEmail');
         this.showMsgBox(msgBody);
       }
 
@@ -523,7 +550,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
       const inputImgCaptcha = e.currentTarget.value;
 
       if (inputImgCaptcha.length === 0) {
-        this.imgCaptcha.cue = this.translate.instant('Portal.errorCaptcha');
+        this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
       } else {
         this.imgCaptcha.code = inputImgCaptcha;
         this.imgCaptcha.cue = '';
@@ -550,7 +577,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
         }
 
       } else {
-        this.imgCaptcha.cue = this.translate.instant('Portal.errorCaptcha');
+        this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
       }
 
     });
@@ -576,7 +603,8 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
         switch (res.processResult.apiReturnMessage) {
           case 'Post fail, account was reset password.':
           case 'Reset password fail, reset time expired.':
-            msgBody = this.translate.instant('custom.linkFailure');
+          case 'Check and verification code is invalid.':
+            msgBody = this.translate.instant('universal_userAccount_linkHasExpired');
             break;
           default:
             msgBody = 'Server error! Please try again later.';
@@ -612,7 +640,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
 
         switch (res.processResult.apiReturnMessage) {
           case 'SMS Code error.':
-            this.cue.verificationCode = this.translate.instant('Portal.errorCaptcha');
+            this.cue.verificationCode = 'universal_userAccount_errorCaptcha';
             break;
           default:
             const msgBody = 'Server error! Please try again later.';
@@ -664,7 +692,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
       if (res.processResult.resultCode !== 200) {
         msgBody = 'Server error! Please try again later.';
       } else {
-        msgBody = this.translate.instant('Portal.passwordResetComplete');
+        msgBody = this.translate.instant('universal_userAccount_passwordResetComplete');
         this.newToken = res.resetPassword.newToken;
         this.utils.writeToken(this.newToken);  // 直接在瀏覽器幫使用者登入
         this.authService.setLoginStatus(true);
@@ -687,7 +715,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
         title: 'Message',
         body: msg,
         confirmText: this.translate.instant(
-          'other.confirm'
+          'universal_operating_confirm'
         ),
         onConfirm: this.turnBack.bind(this)
       }
@@ -697,6 +725,7 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
 
   // 離開頁面則取消隱藏navbar-kidin-1090514
   ngOnDestroy () {
+    console.log('destroy');
     this.utils.setHideNavbarStatus(false);
   }
 

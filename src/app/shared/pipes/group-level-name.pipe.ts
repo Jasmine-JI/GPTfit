@@ -5,23 +5,23 @@ export class GroupLevelNamePipe implements PipeTransform {
   transform(value: string, args: string[]): any {
     if (+args === 1) {
       if (value === '30') {
-        return 'Dashboard.Group.GroupInfo.brand';
+        return 'universal_group_brand';
       } else if (value === '40') {
-        return 'Dashboard.Group.GroupInfo.branch';
+        return 'universal_group_branch';
       } else if (value === '60') {
-        return 'Dashboard.Group.class';
+        return 'universal_group_class';
       } else {
-        return 'Dashboard.Group.SearchGroup.generalGroup';
+        return 'universal_group_generalGroup';
       }
     } else {
       if (value === '30') {
-        return 'other.com';
+        return 'universal_group_enterprise';
       } else if (value === '40') {
-        return 'other.subCom';
+        return 'universal_group_companyBranch';
       } else if (value === '60') {
         return '';
       } else {
-        return 'other.Group.SearchGroup.generalGroup';
+        return 'universal_group_generalGroup';
       }
     }
   }

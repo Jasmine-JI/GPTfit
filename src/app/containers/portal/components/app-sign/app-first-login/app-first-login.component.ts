@@ -17,6 +17,11 @@ import { SignupService } from '../../../services/signup.service';
 })
 export class AppFirstLoginComponent implements OnInit, OnDestroy {
 
+  i18n = {
+    birthday: '',
+    bodyHeight: '',
+    bodyWeight: ''
+  };
   sending = false;
   dataIncomplete = false;
   acceptFileExtensions = ['JPG', 'JPEG', 'GIF', 'PNG'];
@@ -55,9 +60,15 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private userInfoService: UserInfoService,
     private signupService: SignupService
-  ) {}
+  ) {
+    translate.onLangChange.subscribe(() => {
+      this.getTranslate();
+    });
+
+  }
 
   ngOnInit() {
+    this.getTranslate();
 
     if (location.pathname.indexOf('web') > 0) {
       this.pcView = true;
@@ -76,6 +87,19 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
       if (res === false && this.pcView === true) {
         return this.router.navigateByUrl('/signIn-web');
       }
+    });
+
+  }
+
+  // 取得多國語系翻譯-kidin-1090620
+  getTranslate () {
+    this.translate.get('hollo word').subscribe(() => {
+      this.i18n = {
+        birthday: this.translate.instant('universal_userProfile_birthday'),
+        bodyHeight: this.translate.instant('universal_userProfile_bodyHeight'),
+        bodyWeight: this.translate.instant('universal_userProfile_bodyWeight')
+      };
+
     });
 
   }
@@ -170,7 +194,7 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
   // 不符合日期格式則取符合格式片段並給予提示-kidin-1090526
   errorDateFormat(e) {
     e.preventDefault();
-    this.cue.birthday = this.translate.instant('other.wrongFormat');
+    this.cue.birthday = 'universal_status_wrongFormat';
   }
 
   // 確認身高是否為異常值-kidin-1090525
@@ -182,10 +206,10 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
         this.editBody.userProfile.bodyHeight = 175;
       } else if (+height < 100) {
         this.editBody.userProfile.bodyHeight = 100;
-        this.cue.bodyHeight = this.translate.instant('other.wrongRange');
+        this.cue.bodyHeight = 'universal_status_wrongRange';
       } else if (+height > 255) {
         this.editBody.userProfile.bodyHeight = 255;
-        this.cue.bodyHeight = this.translate.instant('other.wrongRange');
+        this.cue.bodyHeight = 'universal_status_wrongRange';
       } else {
         this.editBody.userProfile.bodyHeight = +height;
         this.cue.bodyHeight = '';
@@ -210,10 +234,10 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
         this.editBody.userProfile.bodyWeight = 70;
       } else if (+weight < 40) {
         this.editBody.userProfile.bodyWeight = 40;
-        this.cue.bodyWeight = this.translate.instant('other.wrongRange');
+        this.cue.bodyWeight = 'universal_status_wrongRange';
       } else if (+weight > 255) {
         this.editBody.userProfile.bodyWeight = 255;
-        this.cue.bodyWeight = this.translate.instant('other.wrongRange');
+        this.cue.bodyWeight = 'universal_status_wrongRange';
       } else {
         this.editBody.userProfile.bodyWeight = +weight;
         this.cue.bodyWeight = '';
@@ -247,16 +271,16 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
             title: 'Message',
             body: 'Server error.<br />Please try again later.',
             confirmText: this.translate.instant(
-              'other.confirm'
+              'universal_operating_confirm'
             )
           }
         });
 
       } else {
         const msg = `${
-          this.translate.instant('other.update')} ${
-          this.translate.instant('Dashboard.info')} ${
-          this.translate.instant('Dashboard.MyDevice.success')}
+          this.translate.instant('universal_operating_update')} ${
+          this.translate.instant('universal_userProfile_info')} ${
+          this.translate.instant('universal_status_success')}
         `;
 
         this.dialog.open(MessageBoxComponent, {
@@ -266,7 +290,7 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
             title: 'Message',
             body: msg,
             confirmText: this.translate.instant(
-              'other.confirm'
+              'universal_operating_confirm'
             ),
             onConfirm: this.navigateToDashboard.bind(this)
           }

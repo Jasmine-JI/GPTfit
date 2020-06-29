@@ -1,5 +1,5 @@
 <h2 class="ala-dialog group-dialog" mat-dialog-title>
-  {{ name }} {{'Dashboard.System.permissionSetting' | translate}}
+  {{ name }} {{'universal_group_permissionSetting' | translate}}
 </h2>
 <mat-dialog-content class="right-setting">
   <!-- <app-form-text
@@ -17,7 +17,9 @@
             (click)="handlechooseBrandItem(brandIndex + '', subBrandItem.groupId, subBrandItem?.groupName)"
           >
             <mat-panel-title>{{subBrandItem?.groupName}}
-              <span class="hint" *ngIf="chooseItem === brandIndex + ''">({{'Dashboard.Group.GroupInfo.setupObject' | translate}}{{'Dashboard.Group.brandAdministrator' | translate}})</span>
+              <span class="hint" *ngIf="chooseItem === brandIndex + ''">
+                ({{'universal_group_setupObject' | translate: {'position': i18n.brandAdministrator} }})
+              </span>
             </mat-panel-title>
           </mat-expansion-panel-header>
           <mat-accordion multi="false">
@@ -29,7 +31,9 @@
                 (click)="handlechooseBranchItem(brandIndex+ '-' + branchIndex, subBranchItem.groupId, subBranchItem?.groupName)"
               >
                 <mat-panel-title>{{subBranchItem?.groupName}}
-                  <span class="hint"*ngIf="chooseItem === brandIndex + '-' + branchIndex">({{'Dashboard.Group.GroupInfo.setupObject' | translate}}{{'Dashboard.Group.branchAdministrator' | translate}})</span>
+                  <span class="hint"*ngIf="chooseItem === brandIndex + '-' + branchIndex">
+                    ({{'universal_group_setupObject' | translate: {'position': i18n.branchAdministrator} }})
+                  </span>
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <li class="coach-lesson-item"
@@ -38,12 +42,14 @@
                 [class.active]="chooseItem === brandIndex + '-' + branchIndex + '-' + coachIndex"
               >
                 {{coachItem?.groupName}}
-                <span class="hint" *ngIf="chooseItem === brandIndex + '-' + branchIndex + '-' + coachIndex">({{'Dashboard.Group.GroupInfo.setupObject' | translate}}{{'Dashboard.Group.class' | translate}}{{'Dashboard.Group.GroupInfo.administrator' | translate}})</span>
+                <span class="hint" *ngIf="chooseItem === brandIndex + '-' + branchIndex + '-' + coachIndex">
+                  ({{'universal_group_setupObject' | translate: {'position': i18n.classAdministrator} }})
+                </span>
               </li>
               <li class="coach-lesson-item"
                 *ngIf="dispalyCoachInfo?.length === 0"
               >
-                {{'Dashboard.System.noRelevantPersonnel' | translate}}{{'Dashboard.Group.class' | translate}}
+                {{'universal_group_noRelevantPersonnel' | translate}} {{'universal_group_class' | translate}}
               </li>
             </mat-expansion-panel>
           </mat-accordion>
@@ -62,16 +68,20 @@
           (click)="handlechooseBranchItem(branchIndex + '', subBranchItem.groupId, subBranchItem?.groupName)"
         >
           <mat-panel-title>{{subBranchItem?.groupName}}
-            <span class="hint" *ngIf="chooseItem === branchIndex + ''">({{'Dashboard.Group.GroupInfo.setupObject' | translate}}{{'Dashboard.Group.branchAdministrator' | translate}})</span>
+            <span class="hint" *ngIf="chooseItem === branchIndex + ''">
+              ({{'universal_group_setupObject' | translate: {'position': i18n.branchAdministrator} }})
+            </span>
           </mat-panel-title>
         </mat-expansion-panel-header>
           <li class="coach-lesson-item" *ngFor="let coachItem of dispalyCoachInfo;let coachIndex = index" (click)="handlechooseLessonItem(brandIndex + '-' + branchIndex + '-' + coachIndex, coachItem.groupId, coachItem?.groupName)"
             [class.active]="chooseItem === brandIndex + '-' + branchIndex + '-' + coachIndex">
             {{coachItem?.groupName}}
-            <span class="hint" *ngIf="chooseItem === brandIndex + '-' + branchIndex + '-' + coachIndex">({{'Dashboard.Group.GroupInfo.setupObject' | translate}}{{'Dashboard.Group.class' | translate}}{{'Dashboard.Group.GroupInfo.administrator' | translate}})</span>
+            <span class="hint" *ngIf="chooseItem === brandIndex + '-' + branchIndex + '-' + coachIndex">
+              ({{'universal_group_setupObject' | translate: {'position': i18n.classAdministrator} }})
+            </span>
           </li>
           <li class="coach-lesson-item" *ngIf="dispalyCoachInfo?.length === 0">
-            {{'Dashboard.System.noRelevantPersonnel' | translate}}{{'Dashboard.Group.class' | translate}}
+            {{'universal_group_noRelevantPersonnel' | translate}} {{'universal_group_class' | translate}}
           </li>
       </mat-expansion-panel>
     </mat-accordion>
@@ -79,6 +89,6 @@
 </mat-dialog-content>
 
 <mat-dialog-actions class="justify-content-end">
-  <button mat-button color="primary" (click)="confirm()" [disabled]="chooseItem.length === 0">{{'other.confirm' | translate}}</button>
-  <button mat-button mat-dialog-close color="warn">{{'SH.cancel' | translate}}</button>
+  <button mat-button color="primary" (click)="confirm()" [disabled]="chooseItem.length === 0">{{'universal_operating_confirm' | translate}}</button>
+  <button mat-button mat-dialog-close color="warn">{{'universal_operating_cancel' | translate}}</button>
 </mat-dialog-actions>

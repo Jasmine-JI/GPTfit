@@ -4,7 +4,7 @@
       [class.selected-flag--invalid]="isCodeInvalid"
       [class.selected-flag--disabled]="disabled"
     >
-      {{ this.countryCode || 'Portal.countryRegion' | translate }}
+      {{ this.countryCode || 'universal_userAccount_countryRegion' | translate }}
       <i class="material-icons async-caret">arrow_drop_down</i>
     </div>
     <input formControlName="phone" class="form-control"
@@ -13,7 +13,7 @@
       (focus)="focusEvent($event)"
       (keyup)="handlePhoneChange($event)"
       style="width: calc(100% - 105px);text-overflow: ellipsis;"
-      placeholder="{{'Portal.enterInfo' | translate}}{{'Portal.phone' | translate}}"
+      placeholder="{{'universal_userAccount_enterInfo' | translate: {'info': phoneI18n} }}"
       [attr.disabled]="disabled ? '' : null"
       [class.form-control--invalid]="isPhoneInvalid"
     >
@@ -35,7 +35,7 @@
       [style.width]="webUi ? '170px' : ''"
       (click)="openActive($event)"
     >
-      {{ this.countryCode || 'Portal.countryRegion' | translate }}
+      {{ this.countryCode || 'universal_userAccount_countryRegion' | translate }}
       <i class="material-icons async-caret">arrow_drop_down</i>
     </div>
     <input
@@ -46,7 +46,7 @@
       [(value)]="currentValue"
       style="margin-top: 0;"
       [style.padding]="webUi ? '0.375rem 0.75rem' : ''"
-      placeholder="{{'Portal.enterInfo' | translate}}{{'Portal.phone' | translate}}"
+      placeholder="{{'universal_userAccount_enterInfo' | translate: {'info': phoneI18n} }}"
     >
     <i
       class="icon-svg_web-icon_p1_004-qr_code inputIcon"
@@ -60,9 +60,17 @@
       [class.formCue]="!webUi"
       [class.form__message]="webUi"
       [class.form__message--placeholder]="webUi"
-      *ngIf="phoneCue !== ''"
+      *ngIf="phoneCue === 'accountRepeat'"
     >
-      {{ phoneCue }}
+      {{ 'universal_userAccount_account' | translate }} {{ 'universal_deviceSetting_repeat' | translate }}
+    </span>
+    <span
+      [class.formCue]="!webUi"
+      [class.form__message]="webUi"
+      [class.form__message--placeholder]="webUi"
+      *ngIf="phoneCue !== '' && phoneCue !== 'accountRepeat'"
+    >
+      {{ phoneCue | translate }}
     </span>
   </div>
   <ul

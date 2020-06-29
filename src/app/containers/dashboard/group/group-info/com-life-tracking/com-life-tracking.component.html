@@ -1,11 +1,17 @@
 <ng-container *ngIf="!isPreviewMode">
   <div class="searchReport">
-    <p style="font-size: 18px; color: #26abe3;">{{'SH.create' | translate}}{{'Dashboard.SportReport.sportReport' | translate}}</p>
-    <p>請依照您的選擇期間建立報告</p>
+    <p style="font-size: 18px; color: #26abe3;">
+      {{'universal_activityData_create' | translate
+    }} {{
+      'universal_lifeTracking_lifeTracking' | translate
+    }} {{
+      'universal_activityData_report' | translate
+    }}
+    </p>
     <div class="searchInput">
       <div class="selectArea">
         <div class="datetimeInput">
-          <p style="white-space: nowrap; margin: 0px">{{'SH.dateRange' | translate}}：</p>
+          <p style="white-space: nowrap; margin: 0px">{{'universal_activityData_dateRange' | translate}}：</p>
           <app-date-range-picker
             (selectDateRange)="getSelectDate($event)"
             [default]="'last7Days'"
@@ -22,16 +28,16 @@
   </div>
 </ng-container>
 <ng-container *ngIf="nodata && !isLoading" style="width: 100%; display: flex; flex-direction: row; justify-content: center;">
-  <p style="margin-top: 10px; color: gray; font-size: 18px;">{{'Dashboard.System.nodata' | translate}}</p>
+  <p style="margin-top: 10px; color: gray; font-size: 18px;">{{'universal_status_noData' | translate}}</p>
 </ng-container>
 <ng-container *ngIf="!isLoading && !nodata && showReport" style="width: 100%; min-height: 100%; padding-bottom: 30px;">
   <div class="functionButton">
     <button class="alatech-btn alatech-btn--default activity-btn"
-      title="{{'SH.print' | translate}}"
+      title="{{'universal_operating_print' | translate}}"
       (click)="print()"
       *ngIf="isPreviewMode"
     >
-      {{'SH.print' | translate}}
+      {{'universal_operating_print' | translate}}
     </button>
     <a target="_blank"
       [href]="previewUrl"
@@ -48,9 +54,11 @@
           <i class="icon-svg_web-icon_p3_016-life_tracking"></i>
         </div>
         <div class="flexCol" style="margin-left: 20px;">
-          <span class="reportDateTime">從{{reportEndDate}}起，過去 {{period}} 所建立</span>
+          <span class="reportDateTime">
+            {{'universal_group_buildFromTime' | translate: {'date': reportEndDate, 'range': period} }}
+          </span>
           <span class="reportTitle">
-            {{'other.lifeTracking' | translate}} {{'other.report' | translate}}
+            {{'universal_lifeTracking_lifeTracking' | translate}} {{'universal_activityData_report' | translate}}
           </span>
         </div>
       </div>
@@ -68,48 +76,48 @@
   </div>
   <div class="flexCol">
     <div class="activity-title flexRow" style="justify-content: space-between;">
-      <span class="ala-dashboard-title">{{'Dashboard.ActivityDetail.summary' | translate}}</span>
+      <span class="ala-dashboard-title">{{'universal_activityData_summary' | translate}}</span>
       <span class="reportDateTime" style="text-align: end;">
-        {{'Dashboard.GroupClass.creatTime' | translate}} {{reportCreatedTime}}
+        {{'universal_activityData_creatTime' | translate}} {{reportCreatedTime}}
       </span>
     </div>
     <div>
       <div class="summaryArea">
         <div class="summaryDataArea">
           <span class="summaryData">{{infoData.totalPeople || 0}}</span>
-          <p class="summaryDescription">{{'other.totalPeople' | translate}}</p>
+          <p class="summaryDescription">{{'universal_activityData_totalPeople' | translate}}</p>
         </div>
         <div class="sepLine"></div>
         <div class="summaryDataArea">
           <span class="summaryData">{{infoData.validStroke || 0}}</span>
-          <p class="summaryDescription">{{'other.numberOfValidPens' | translate}}</p>
+          <p class="summaryDescription">{{'universal_activityData_numberOfValidPens' | translate}}</p>
         </div>
         <div class="sepLine"></div>
         <div class="summaryDataArea">
           <span class="summaryData">{{infoData.avgHeight || 0 | number:'1.0-1'}}</span>
           <p class="summaryDescription">
-            {{'Dashboard.TrainLive.avg' | translate}} {{'Portal.bodyHeight' | translate}}
+            {{'universal_adjective_avg' | translate}} {{'universal_userProfile_bodyHeight' | translate}}
           </p>
         </div>
         <div class="sepLine"></div>
         <div class="summaryDataArea">
           <span class="summaryData">{{infoData.avgWeight || 0 | number:'1.0-1'}}</span>
           <p class="summaryDescription">
-            {{'Dashboard.TrainLive.avg' | translate}} {{'Portal.bodyWeight' | translate}}
+            {{'universal_adjective_avg' | translate}} {{'universal_userProfile_bodyWeight' | translate}}
           </p>
         </div>
         <div class="sepLine"></div>
         <div class="summaryDataArea">
           <span class="summaryData">{{infoData.avgAge || 0 | number:'1.0-0'}}</span>
           <p class="summaryDescription">
-            {{'Dashboard.TrainLive.avg' | translate}} {{'other.age' | translate}}
+            {{'universal_adjective_avg' | translate}} {{'universal_userProfile_age' | translate}}
           </p>
         </div>
         <div class="sepLine"></div>
         <div class="summaryDataArea">
           <span class="summaryData">{{infoData.avgFFMI || 0 | number:'1.0-1'}}</span>
           <p class="summaryDescription">
-            {{'Dashboard.TrainLive.avg' | translate}} FFMI
+            {{'universal_adjective_avg' | translate}} FFMI
           </p>
         </div>
       </div>
@@ -118,18 +126,12 @@
   <div class="flexCol">
     <div class="activity-title flexRow">
       <span class="ala-dashboard-title">
-        <span *ngIf="dataDateRange === 'day'">
-          {{'Dashboard.SportReport.day' | translate}}
-        </span>
-        <span *ngIf="dataDateRange === 'week'">
-          {{'other.week' | translate}}
-        </span>
-         間日常生活紀錄
+        {{'universal_group_dailyLifeRecord' | translate: {'range': dateRangeTranslate} }}
       </span>
     </div>
     <div class="flexRow durationSection">
       <div class="flexCol durationInfo rwd_wid_100per">
-        <span class="reportChartTitle">{{'other.StepCount' | translate}}</span>
+        <span class="reportChartTitle">{{'universal_userProfile_StepCount' | translate}}</span>
         <div class="flexRow infoHeader">
           <div class="flexCol">
             <span class="summaryData" *ngIf="recordData.avgStep / 100000 >= 1">
@@ -138,23 +140,23 @@
             <span class="summaryData" *ngIf="recordData.avgStep / 100000 < 1">
               {{recordData.avgStep | number: '1.0-0'}}
             </span>
-            <span>{{'other.avgSteps' | translate}}</span>
+            <span>{{'universal_deviceSetting_avgSteps' | translate}}</span>
           </div>
           <div class="flexCol" style="margin-left: 10px;">
             <span class="summaryData">{{recordData.avgDistance / 1000 | number: '1.0-1'}}</span>
-            <span>{{'Dashboard.TrainLive.avg' | translate}} {{'Dashboard.MyActivity.distance' | translate}}km</span>
+            <span>{{'universal_adjective_avg' | translate}} {{'universal_activityData_distance' | translate}}km</span>
           </div>
           <div class="flexCol">
             <span class="summaryData">{{recordData.stepReachReps}}</span>
-            <span>{{'other.complianceTimes' | translate}}</span>
+            <span>{{'universal_activityData_complianceTimes' | translate}}</span>
           </div>
         </div>
         <span class="areaDescription dataDiscription">
-          {{'other.stepReportDescription' | translate}}
+          {{'universal_activityData_stepReportDescription' | translate}}
         </span>
       </div>
       <div class="durationChart rwd_wid_100per">
-        <span class="noChartData" *ngIf="noStepData">{{'Dashboard.System.nodata' | translate}}</span>
+        <span class="noChartData" *ngIf="noStepData">{{'universal_status_noData' | translate}}</span>
         <app-discolor-column-chart
           [data]="stepData"
           [dateRange]="dataDateRange"
@@ -167,23 +169,23 @@
     </div>
     <div class="flexRow  durationSection">
       <div class="flexCol durationInfo rwd_wid_100per">
-        <span class="reportChartTitle">{{'SH.hr' | translate}}</span>
+        <span class="reportChartTitle">{{'universal_activityData_hr' | translate}}</span>
         <div class="flexRow infoHeader">
           <div class="flexCol">
             <span class="summaryData">{{recordData.avgMaxHR | number: '1.0-1'}}</span>
-            <span>{{'Dashboard.TrainLive.avg' | translate}} {{'SH.maxHr' | translate}}</span>
+            <span>{{'universal_adjective_avg' | translate}} {{'universal_userProfile_maxHr' | translate}}</span>
           </div>
           <div class="flexCol">
             <span class="summaryData">{{recordData.avgRestHR | number: '1.0-1'}}</span>
-            <span>{{'Dashboard.TrainLive.avg' | translate}} {{'Dashboard.Settings.restHr' | translate}}</span>
+            <span>{{'universal_adjective_avg' | translate}} {{'universal_userProfile_restHr' | translate}}</span>
           </div>
         </div>
         <span class="areaDescription dataDiscription">
-          {{'other.hrReportDescription' | translate}}
+          {{'universal_activityData_hrReportDescription' | translate}}
         </span>
       </div>
       <div class="durationChart rwd_wid_100per">
-        <span class="noChartData" *ngIf="noHRData">{{'Dashboard.System.nodata' | translate}}</span>
+        <span class="noChartData" *ngIf="noHRData">{{'universal_status_noData' | translate}}</span>
         <app-compare-line-chart
           [data]="HRData"
           [dateRange]="dataDateRange"
@@ -197,27 +199,27 @@
     </div>
     <div class="flexRow  durationSection" style="width: 100%;">
       <div class="flexCol durationInfo rwd_wid_100per">
-        <span class="reportChartTitle">{{'Dashboard.Settings.sleep' | translate}}</span>
+        <span class="reportChartTitle">{{'universal_lifeTracking_sleep' | translate}}</span>
         <div class="flexRow infoHeader">
           <div class="flexCol">
             <span class="summaryData">{{recordData.avgSleepTime || '0:00'}}</span>
-            <span>{{'Dashboard.TrainLive.avg' | translate}} {{'Dashboard.Settings.sleep' | translate}}</span>
+            <span>{{'universal_adjective_avg' | translate}} {{'universal_lifeTracking_sleep' | translate}}</span>
           </div>
           <div class="flexCol" style="margin-left: 10px;">
             <span class="summaryData">{{recordData.avgDeepSleepTime || '0:00'}}</span>
-            <span>{{'Dashboard.TrainLive.avg' | translate}} {{'other.deepSleep' | translate}}</span>
+            <span>{{'universal_adjective_avg' | translate}} {{'universal_lifeTracking_deepSleep' | translate}}</span>
           </div>
           <div class="flexCol" style="margin-left: 10px;">
             <span class="summaryData">{{recordData.avgLightSleepTime || '0:00'}}</span>
-            <span>{{'Dashboard.TrainLive.avg' | translate}} {{'other.lightSleep' | translate}}</span>
+            <span>{{'universal_adjective_avg' | translate}} {{'universal_lifeTracking_lightSleep' | translate}}</span>
           </div>
         </div>
         <span class="areaDescription dataDiscription">
-          {{'other.sleepReportInstructions' | translate}}
+          {{'universal_activityData_sleepReportInstructions' | translate}}
         </span>
       </div>
       <div class="durationChart rwd_wid_100per">
-        <span class="noChartData" *ngIf="noSleepData">{{'Dashboard.System.nodata' | translate}}</span>
+        <span class="noChartData" *ngIf="noSleepData">{{'universal_status_noData' | translate}}</span>
         <app-stack-column-chart
           [data]="sleepData"
           [dateRange]="dataDateRange"
@@ -232,13 +234,13 @@
   <div class="flexCol" style="margin-top: 10px;">
     <div class="activity-title">
       <span class="ala-dashboard-title">
-        {{'other.recentFitness' | translate}}
+        {{'universal_activityData_recentFitness' | translate}}
       </span>
     </div>
     <div class="flexRow recentBodyQuality" style="margin-top: 20px;">
       <div class="flexCol postureInfo rwd_wid_100per">
-        <span class="reportChartTitle">{{'other.bodyDistribution' | translate}}</span>
-        <span class="areaDescription" style="margin: 10px 0 0 10px;">{{'other.bodyDistributionReportDescription' | translate}}</span>
+        <span class="reportChartTitle">{{'universal_activityData_bodyDistribution' | translate}}</span>
+        <span class="areaDescription" style="margin: 10px 0 0 10px;">{{'universal_activityData_bodyDistributionReportDescription' | translate}}</span>
         <app-distribution-chart
           [perFFMI]="FFMIData.perFFMI"
           [perFatRate]="FFMIData.perFatRate"
@@ -249,7 +251,7 @@
       </div>
       <div class="flexCol postureTrend rwd_wid_100per">
         <div>
-          <span class="reportChartTitle">{{'Dashboard.TrainLive.avg' | translate}} {{'other.weightTrend' | translate}}</span>
+          <span class="reportChartTitle">{{'universal_adjective_avg' | translate}} {{'universal_activityData_weightTrend' | translate}}</span>
           <app-line-chart
             [data]="weightData"
             [dateRange]="dataDateRange"
@@ -260,8 +262,8 @@
           ></app-line-chart>
         </div>
         <div class="flexCol">
-          <span class="reportChartTitle">{{'Dashboard.TrainLive.avg' | translate}} {{'other.bodyFatTrend' | translate}}</span>
-          <span class="noChartData" *ngIf="noConstituteData">{{'Dashboard.System.nodata' | translate}}</span>
+          <span class="reportChartTitle">{{'universal_adjective_avg' | translate}} {{'universal_activityData_bodyFatTrend' | translate}}</span>
+          <span class="noChartData" *ngIf="noConstituteData">{{'universal_status_noData' | translate}}</span>
           <app-line-chart
             [data]="constituteData"
             [dateRange]="dataDateRange"
@@ -274,8 +276,8 @@
           </app-line-chart>
         </div>
         <div class="flexCol">
-          <span class="reportChartTitle">{{'Dashboard.TrainLive.avg' | translate}} {{'other.muscleRateTrend' | translate}}</span>
-          <span class="noChartData" *ngIf="noConstituteData">{{'Dashboard.System.nodata' | translate}}</span>
+          <span class="reportChartTitle">{{'universal_adjective_avg' | translate}} {{'universal_activityData_muscleRateTrend' | translate}}</span>
+          <span class="noChartData" *ngIf="noConstituteData">{{'universal_status_noData' | translate}}</span>
           <app-line-chart
             [data]="constituteData"
             [dateRange]="dataDateRange"
@@ -293,12 +295,12 @@
   <div class="flexCol">
     <div class="activity-title">
       <span class="ala-dashboard-title">
-        {{'Dashboard.TrainLive.trend' | translate}}
+        {{'universal_activityData_trend' | translate}}
       </span>
     </div>
     <div class="flexCol">
       <div class="flexRow" style="align-items: center; margin-top: 10px;">
-        <span class="reportChartTitle">{{'other.fitTime' | translate}}</span>
+        <span class="reportChartTitle">{{'universal_userProfile_fitTime' | translate}}</span>
         <div class="separateLine"></div>
       </div>
       <div class="flexRow fitTimeChart" [class.media-1000-dataContent]="!isPreviewMode">
@@ -306,18 +308,18 @@
           <div class="flexCol dataMargin" style="width: 50%;">
             <span class="dataFont summaryData">{{trendData.bestFitTime | number:'1.0-0'}}</span>
             <span class="dataAnnotation">
-              {{'other.maxHight' | translate}} {{'other.minutes' | translate}}
+              {{'universal_adjective_maxHight' | translate}} {{'universal_activityData_minutes' | translate}}
             </span>
           </div>
           <div class="flexCol dataMargin" style="width: 50%;">
             <span class="dataFont summaryData">{{trendData.avgFitTime | number:'1.0-1'}}</span>
             <span class="dataAnnotation">
-              {{'Dashboard.TrainLive.avg' | translate}} {{'other.minutes' | translate}}
+              {{'universal_adjective_avg' | translate}} {{'universal_activityData_minutes' | translate}}
             </span>
           </div>
         </div>
         <div class="dataChart" [class.media-1000-dataChart]="!isPreviewMode">
-          <span class="noChartData" *ngIf="noFitTimeData">{{'Dashboard.System.nodata' | translate}}</span>
+          <span class="noChartData" *ngIf="noFitTimeData">{{'universal_status_noData' | translate}}</span>
           <app-fillet-column-chart
             [data]="fitTimeData"
             [dateRange]="dataDateRange"
@@ -337,17 +339,17 @@
   <div class="flexCol">
     <div class="activity-title">
       <span class="ala-dashboard-title">
-        {{'other.personalAnalysis' | translate}}
+        {{'universal_group_personalAnalysis' | translate}}
       </span>
     </div>
     <div class="areaDescription">
-      {{'other.personalInformation' | translate}}
+      {{'universal_activityData_personalInformation' | translate}}
     </div>
     <div style="margin-top: 10px;">
       <mat-table [dataSource]="personalData" matSort #sortTable="matSort" (matSortChange)="sortPersonData()">
         <ng-container matColumnDef="name">
           <mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true" class="tableArrangement">
-            <span class="tableTitleWord">{{'Dashboard.Group.MyGroup.name' | translate}}</span>
+            <span class="tableTitleWord">{{'universal_activityData_name' | translate}}</span>
           </mat-header-cell>
           <mat-cell
             *matCellDef="let row; let i = index;"
@@ -364,7 +366,7 @@
             class="tableArrangement"
           >
             <div class="tableTitle">
-              <span class="tableTitleWord">{{'other.avgSteps' | translate}}</span>
+              <span class="tableTitleWord">{{'universal_deviceSetting_avgSteps' | translate}}</span>
               <span class="chartTitleUnit">step</span>
             </div>
           </mat-header-cell>
@@ -389,7 +391,7 @@
           >
             <div class="tableTitle">
               <span class="tableTitleWord">
-                {{'Dashboard.TrainLive.avg' | translate}} {{'Dashboard.Settings.sleep' | translate}}
+                {{'universal_adjective_avg' | translate}} {{'universal_lifeTracking_sleep' | translate}}
               </span>
               <span class="chartTitleUnit">time</span>
             </div>
@@ -404,7 +406,7 @@
         <ng-container matColumnDef="restHR">
           <mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true" class="tableArrangement">
             <div class="tableTitle">
-              <span class="tableTitleWord">{{'Dashboard.Settings.restHr' | translate}}</span>
+              <span class="tableTitleWord">{{'universal_userProfile_restHr' | translate}}</span>
               <span class="chartTitleUnit">bpm</span>
             </div>
           </mat-header-cell>
@@ -426,7 +428,7 @@
             class="tableArrangement hideColumn-500"
           >
             <div class="tableTitle">
-              <span class="tableTitleWord">{{'Portal.bodyWeight' | translate}}</span>
+              <span class="tableTitleWord">{{'universal_userProfile_bodyWeight' | translate}}</span>
               <span class="chartTitleUnit">kg</span>
             </div>
           </mat-header-cell>
@@ -448,7 +450,7 @@
             class="tableArrangement hideColumn-630"
           >
             <div class="tableTitle">
-              <span class="tableTitleWord">{{'other.bodyFat' | translate}}</span>
+              <span class="tableTitleWord">{{'universal_userProfile_bodyFat' | translate}}</span>
               <span class="chartTitleUnit">%</span>
             </div>
           </mat-header-cell>
@@ -471,7 +473,7 @@
             class="tableArrangement hideColumn-950"
           >
             <div class="tableTitle">
-              <span class="tableTitleWord">{{'other.glossaries' | translate}}</span>
+              <span class="tableTitleWord">{{'universal_activityData_posture' | translate}}</span>
               <span class="chartTitleUnit">body</span>
             </div>
           </mat-header-cell>
@@ -496,7 +498,7 @@
         </ng-container>
       </mat-table>
     </div>
-    <div class="seeMoreLink" (click)="showAllPersonData()" [hidden]="showAll">{{'Dashboard.TrainLive.more' | translate}}</div>
+    <div class="seeMoreLink" (click)="showAllPersonData()" [hidden]="showAll">{{'universal_operating_more' | translate}}</div>
   </div>
   <div
     class="flexCol personalMenu"
@@ -505,10 +507,10 @@
     *ngIf="personalMenu.show"
   >
     <a target="_blank" class="personalMenuList" [href]="personalPage.info">
-      {{'Portal.basicInformation' | translate}}
+      {{'universal_userProfile_basicInformation' | translate}}
     </a>
     <a target="_blank" class="personalMenuList" [href]="personalPage.report" hidden>
-      {{'Dashboard.SportReport.sportReport' | translate}}
+      {{'universal_activityData_sportReport' | translate}}
     </a>
   </div>
   <div *ngIf="isPreviewMode && !isLoading" class="printMark">

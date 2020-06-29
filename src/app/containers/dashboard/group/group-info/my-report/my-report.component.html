@@ -1,16 +1,17 @@
 <ng-container *ngIf="!isPreviewMode">
   <div [style.visibility]="isLoading ? 'hidden': 'visible'">
     <div class="searchReport">
-      <p style="font-size: 18px; color: #26abe3;">{{'SH.create' | translate}}{{'Dashboard.SportReport.sportReport' | translate}}</p>
-      <p>請依照您的運動屬性與課程期間建立報告</p>
+      <p style="font-size: 18px; color: #26abe3;">{{'universal_activityData_create' | translate}} {{'universal_activityData_sportReport' | translate}}</p>
+      <p>{{'universal_group_followExerciseTypeCreate' | translate}}</p>
       <div class="searchInput">
         <div class="selectArea">
           <div class="datetimeInput">
-            <p style="white-space: nowrap; margin: 0px">{{'SH.dateRange' | translate}}：</p>
+            <p style="white-space: nowrap; margin: 0px">{{'universal_activityData_dateRange' | translate}}：</p>
             <app-date-range-picker
               (selectDateRange)="getSelectDate($event)"
               [default]="'last7Days'"
               [style.pointer-events]="isLoading? 'none' : ''"
+              (click)="changeSubmitStatus()"
             ></app-date-range-picker>
           </div>
         </div>
@@ -19,7 +20,7 @@
   </div>
 </ng-container>
 <ng-container *ngIf="hasResData === false && initialChartComplated" style="width: 100%; display: flex; flex-direction: row; justify-content: center;">
-  <p style="margin-top: 10px; color: gray; font-size: 18px;">{{'Dashboard.System.nodata' | translate}}</p>
+  <p style="margin-top: 10px; color: gray; font-size: 18px;">{{'universal_status_noData' | translate}}</p>
 </ng-container>
 <ng-container *ngIf="!reportCompleted || !initialChartComplated" style="display:flex;justify-content: center;align-items: center;width:100%">
   <mat-spinner style="z-index: 3; margin-top: 30px; position: absolute; left: 50%;"></mat-spinner>
@@ -29,11 +30,11 @@
 <ng-container *ngIf="hasResData && reportCompleted" style="width: 100%">
   <div class="functionButton">
     <button class="alatech-btn alatech-btn--default activity-btn"
-      title="{{'SH.print' | translate}}"
+      title="{{'universal_operating_print' | translate}}"
       (click)="print()"
       *ngIf="isPreviewMode"
     >
-      {{'SH.print' | translate}}
+      {{'universal_operating_print' | translate}}
     </button>
     <button class="alatech-btn--default"
       (click)="goBack()"
@@ -62,25 +63,21 @@
       </div>
     </div>
     <div style="display: flex; flex-direction: column;">
-      <span style="font-size: 8px; color:#919191; text-align: end;">{{'Dashboard.GroupClass.creatTime' | translate}} {{reportCreatedTime}}</span>
+      <span style="font-size: 8px; color:#919191; text-align: end;">{{'universal_activityData_creatTime' | translate}} {{reportCreatedTime}}</span>
       <div class="reportName">
         <p>{{fileInfo?.dispName}}</p>
-        <p style="margin-left: 10px;">個人分析表</p>
+        <p style="margin-left: 10px;">{{'universal_group_personalAnalysis' | translate}}</p>
       </div>
     </div>
   </div>
   <div style="display: flex; flex-direction: column;">
-    <span class="ala-dashboard-title activity-title">{{'Dashboard.ActivityDetail.summary' | translate}}</span>
+    <span class="ala-dashboard-title activity-title">{{'universal_activityData_summary' | translate}}</span>
     <div>
-      <div class="areaDescription">
-          <span class="activity-Link" (click)="visitLink('author')">
+      <div class="flexRow areaDescription">
+          <span class="activity-Link" style="white-space: nowrap;" (click)="visitAuthor()">
             {{fileInfo?.author | slice}}
           </span>
-          在[
-            <span class="activity-Link" (click)="visitLink('class')">{{fileInfo?.dispName}}</span>
-          ]課程，於 {{reportStartDate | date:'yyyy/MM/dd'}}~{{reportEndDate | date:'yyyy/MM/dd'}} 期間所建立的
-          <span class="fileAmount">{{activityLength}}</span>
-          筆 運動紀錄報告
+          <div id="reportInfo" class="areaDescription"></div>
       </div>
       <div style="display: flex; flex-direction: row; margin: 10px 0px; align-items: center;">
         <div class="activity-icon">
@@ -91,29 +88,29 @@
       <div class="summaryArea">
         <div class="summaryDataArea">
           <span class="summaryData">{{totalTime}}</span>
-          <p class="summaryDescription">{{'Dashboard.SportReport.totalTime' | translate}}</p>
+          <p class="summaryDescription">{{'universal_activityData_totalTime' | translate}}</p>
         </div>
         <div class="summaryDataArea">
           <span class="summaryData">{{avgHR | number:'1.0-1'}} bpm</span>
-          <p class="summaryDescription">{{'Dashboard.SportReport.avgHr' | translate}}</p>
+          <p class="summaryDescription">{{'universal_activityData_avgHr' | translate}}</p>
         </div>
         <div class="summaryDataArea">
           <span class="summaryData">{{totalCalories | number:'1.0-1'}} cal</span>
-          <p class="summaryDescription">{{'Dashboard.SportReport.totalCalorie' | translate}}</p>
+          <p class="summaryDescription">{{'universal_activityData_totalCalorie' | translate}}</p>
         </div>
       </div>
     </div>
   </div>
   <div style="display: flex; flex-direction: column;">
-    <span class="ala-dashboard-title activity-title">{{'Dashboard.GroupClass.exerciseAchievement' | translate}}</span>
+    <span class="ala-dashboard-title activity-title">{{'universal_activityData_exerciseAchievement' | translate}}</span>
     <div>
       <p class="areaDescription">
-        期間統計的運動成效，平均心率落點可藉由平均心率推算達到的訓練目的，以及所消耗的脂肪體重比例。
+        {{'universal_group_exerciseEffectiveness' | translate}}
       </p>
       <div #container class="sportEfficiencyArea">
         <div class="HRZone" *ngIf="!(initialChartComplated && !showHRZoneChartTarget)" style="width: 55%;">
           <div class="sportEfficiency">
-            <p class="chartTitle">平均心率區間落點</p>
+            <p class="chartTitle">{{'universal_group_hrZoneLandingPoint' | translate}}</p>
             <p class="chartTitle">{{avgHRZone}}</p>
           </div>
           <div #HRZoneChartTarget class="chart" style="margin-right: 10px;">
@@ -127,10 +124,10 @@
     </div>
   </div>
   <div style="display: flex; flex-direction: column; ">
-      <p class="ala-dashboard-title activity-title">個人分析</p>
+      <p class="ala-dashboard-title activity-title">{{'universal_group_personalAnalysis' | translate}}</p>
       <div class="trendChart" *ngIf="!(initialChartComplated && !showavgHRChartTarget)" style="width: 100%;">
         <div class="sportTrend">
-          <p class="chartTitle">{{'Dashboard.SportReport.avgHr' | translate}}</p>
+          <p class="chartTitle">{{'universal_activityData_avgHr' | translate}}</p>
           <p class="chartTitle">{{ avgHR | number:'1.0-2' }}bpm</p>
         </div>
         <div #avgHRChartTarget class="chart">
@@ -139,7 +136,7 @@
       </div>
       <div class="trendChart" *ngIf="!(initialChartComplated && !showcaloriesChartTarget)" style="width: 100%;">
         <div class="sportTrend">
-          <p class="chartTitle">{{'Dashboard.SportReport.totalCalorie' | translate}}</p>
+          <p class="chartTitle">{{'universal_activityData_totalCalorie' | translate}}</p>
           <p class="chartTitle">{{ totalCalories | number:'1.0-2' }}cal</p>
         </div>
         <div #caloriesChartTarget class="chart">
@@ -151,13 +148,13 @@
 <ng-container *ngIf="hasResData">
   <div class="other-info--area otherInfoArea">
     <div class="otherInfoSection">
-      <p class="ala-dashboard-title activity-title">{{'Dashboard.ActivityDetail.device' | translate}}</p>
+      <p class="ala-dashboard-title activity-title">{{'universal_deviceSetting_device' | translate}}</p>
       <img src="{{this.deviceImgUrl}}" style="width: 100px; height: 100px; margin: 0 auto;">
-      <span class="introductionName">{{ deviceInfo?.modelName || 'SH.noData' | translate }}</span>
-      <p>{{"Portal.modeType" | translate}}：{{ (deviceInfo?.modelTypeID | productType | translate) || 'SH.noData' | translate }}</p>
+      <span class="introductionName">{{ deviceInfo?.modelName || 'universal_status_noData' | translate }}</span>
+      <p>{{"universal_deviceSetting_modeType" | translate}}：{{ (deviceInfo?.modelTypeID | productType | translate) || 'universal_status_noData' | translate }}</p>
     </div>
     <div class="otherInfoSection">
-      <p class="ala-dashboard-title activity-title">{{'Dashboard.TrainLive.courseIntroduction' | translate}}</p>
+      <p class="ala-dashboard-title activity-title">{{'universal_group_courseIntroduction' | translate}}</p>
       <div style="display: flex; flex-direction: column;">
         <div class="groupPagePhoto">
           <img src="{{groupImg}}">
@@ -177,11 +174,11 @@
         style="color: #5fbae3;cursor:pointer;text-align: right"
         (click)="handleExtendCoachInfo('lessonInfo')"
       >
-        ...{{ "Dashboard.TrainLive.more" | translate}}
+        ...{{ "universal_operating_more" | translate}}
       </div>
     </div>
     <div class="otherInfoSection">
-      <p class="ala-dashboard-title activity-title">{{'Dashboard.TrainLive.coachIntroduction' | translate}}</p>
+      <p class="ala-dashboard-title activity-title">{{'universal_group_coachIntroduction' | translate}}</p>
       <div style="display: flex; flex-direction: column;">
         <div class="groupPagePhoto">
           <img src="{{coachInfo?.nameIcon}}">
@@ -196,7 +193,7 @@
         style="color: #5fbae3;cursor:pointer;text-align: right"
         (click)="handleExtendCoachInfo('coachInfo')"
       >
-        ...{{ "Dashboard.TrainLive.more" | translate}}
+        ...{{ "universal_operating_more" | translate}}
       </div>
     </div>
   </div>

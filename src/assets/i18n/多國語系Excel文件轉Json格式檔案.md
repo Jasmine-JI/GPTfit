@@ -10,8 +10,11 @@
 
 ### 將txt檔轉碼並轉為Json格式檔案
 1. 新增py檔並將最下方程式碼依檔案名稱和路經修改後貼上並存檔，在 terminal 執行 `python fileName.py` 即可將所有txt檔轉為Json格式檔案。
+
 2. 檢查生成的json檔有無問題（如有空鍵，回文件將文件內的換行刪除再重頭開始轉換流程）。
+
 3. 使用編輯器比較功能，比較舊有同語系Json檔跟新Json檔，是否有變更變數，並調整。
+
 4. 最後將所有Json檔複製貼到專案指定路徑底下即可（./web/src/assets/i18n）。
 
 ```python
@@ -96,14 +99,15 @@ for i in range(len(fileList)):
 
         # 將json檔整理過
         finalContent = json.dumps(obj, ensure_ascii = False)\
+            .replace('\u00A0', '')\
             .replace("[**", r"{{")\
             .replace("**]", r"}}")\
+            .replace(r"{{break}}", r"<br />")\
             .replace("(縮字)", '')\
             .replace("(缩字)", '')\
             .replace(r'\"', '')\
             .replace(',', ',\n')\
             .replace('++', ',')\
-            .replace('\u00A0', ' ')\
             .replace(r' ":', r'":')
 
         jsonPath = './json/%s.json' % fileList[i]
