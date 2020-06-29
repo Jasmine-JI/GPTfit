@@ -51,7 +51,7 @@ export class QrcodeUploadComponent implements OnInit {
       this.router.navigateByUrl('/signin');
     } else if (location.pathname.indexOf('dashboard') < 0) {
       this.router.navigateByUrl(
-        `/dashboard${location.pathname}${location.search}`
+        `/dashboard${location.pathname} ${location.search}`
       );
     } else {
       this.getUserInfo();
@@ -146,7 +146,7 @@ export class QrcodeUploadComponent implements OnInit {
       if (+res.resultCode === 200) {
         this.snackbar.open(
           this.translate.instant(
-            'other.uploadSuccess'
+            'universal_popUpMessage_uploadSuccess'
           ),
           'OK',
           { duration: 2000 }
@@ -160,7 +160,7 @@ export class QrcodeUploadComponent implements OnInit {
         this.uploading = false;
         this.snackbar.open(
           this.translate.instant(
-            'other.uploadFailed'
+            'universal_popUpMessage_uploadFailed'
           ),
           'OK',
           { duration: 2000 }

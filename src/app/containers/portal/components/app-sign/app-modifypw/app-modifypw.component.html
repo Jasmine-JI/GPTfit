@@ -7,11 +7,11 @@
         (click)="turnBack()"
       ></i>
       <span class="appview-header appview-header-position">
-        {{ 'other.modify' | translate }} {{ 'Portal.password' | translate }}
+        {{ 'universal_operating_modify' | translate }} {{ 'universal_userAccount_password' | translate }}
       </span>
     </div>
     <div class="flexCol appDiv" style="min-height: initial;">
-      <span class="app-alert" style="font-size: 20px; font-weight: bold;">{{ 'custom.changePassword' | translate }}</span>
+      <span class="app-alert" style="font-size: 20px; font-weight: bold;">{{ 'universal_userAccount_changingPassword' | translate }}</span>
       <span style="font-size: 14px; font-weight: bold;" *ngIf="editBody.editType === 1">
         {{ editBody.newEmail }}
       </span>
@@ -21,11 +21,11 @@
     </div>
     <div class="flexCol" style="margin-top: 10px;">
       <div class="flexCol appDiv" style="min-height: 120px;">
-        <span class="formTitle">{{ 'Portal.password' | translate }}</span>
+        <span class="formTitle">{{ 'universal_userAccount_password' | translate }}</span>
         <input
           type="password"
           id="oldPassword"
-          placeholder="{{ 'Portal.keyInPassword' | translate }}"
+          placeholder="{{ 'universal_userAccount_enterOldPassword' | translate }}"
           maxlength="20"
           [(ngModel)]="editBody.oldPassword"
           (focusout)="checkPassword($event, 'oldPassword')"
@@ -36,15 +36,14 @@
           [style.color]="displayPW.oldPassword ? 'black' : '#aaaaaa'"
           (click)="toggleDisplayPW('oldPassword')"
         ></i>
-
-        <span class="formCue" *ngIf="cue.oldPassword !== ''">{{ cue.oldPassword }}</span>
+        <span class="formCue" *ngIf="cue.oldPassword !== ''">{{ cue.oldPassword | translate}}</span>
       </div>
       <div class="flexCol appDiv"  style="min-height: 120px;">
-        <span class="formTitle">{{ 'other.newPassword' | translate }}</span>
+        <span class="formTitle">{{ 'universal_userAccount_newPassword' | translate }}</span>
         <input
           type="password"
           id="newPassword"
-          placeholder="{{ 'other.keyInNewPassword' | translate }}"
+          placeholder="{{ 'universal_userAccount_keyInNewPassword' | translate }}"
           maxlength="20"
           [(ngModel)]="editBody.newPassword"
           (focusout)="checkPassword($event, 'newPassword')"
@@ -55,13 +54,13 @@
           [style.color]="displayPW.newPassword ? 'black' : '#aaaaaa'"
           (click)="toggleDisplayPW('newPassword')"
         ></i>
-        <span class="formCue" *ngIf="cue.newPassword !== ''">{{ cue.newPassword }}</span>
+        <span class="formCue" *ngIf="cue.newPassword !== ''">{{ cue.newPassword | translate }}</span>
       </div>
       <div
         class="flexCol appDiv"
         [style.display]="imgCaptcha.show ? '' : 'none'"
       >
-        <span class="formTitle">{{ 'Portal.imgCaptcha' | translate }}</span>
+        <span class="formTitle">{{ 'universal_userAccount_imgCaptcha' | translate }}</span>
         <div class="flexRow">
           <input
             placeholder="{{ imgCaptcha.placeholder }}"
@@ -72,7 +71,7 @@
           <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha">
         </div>
         <span class="formCue" *ngIf="imgCaptcha.show && imgCaptcha.cue !== ''">
-          {{ imgCaptcha.cue }}
+          {{ imgCaptcha.cue | translate }}
         </span>
       </div>
     </div>
@@ -81,7 +80,7 @@
       [class.appview-btn-unclickable]="sending || dataIncomplete"
       (click)="submit()"
     >
-      <span>{{ 'SH.send' | translate }}</span>
+      <span>{{ 'universal_operating_send' | translate }}</span>
     </button>
   </div>
 </ng-container>
@@ -95,7 +94,7 @@
           </header>
           <div class="access-panel-body">
             <div class="flexCol" style="min-height: initial;">
-              <span class="app-alert" style="font-size: 20px; font-weight: bold;">{{ 'custom.changePassword' | translate }}</span>
+              <span class="app-alert" style="font-size: 20px; font-weight: bold;">{{ 'universal_userAccount_changingPassword' | translate }}</span>
               <span style="font-size: 14px; font-weight: bold;" *ngIf="editBody.editType === 1">
                 {{ editBody.newEmail }}
               </span>
@@ -105,11 +104,11 @@
             </div>
             <div class="flexCol" style="margin-top: 10px;">
               <div class="flexCol" style="min-height: 120px;">
-                <span class="access-text" style="margin-bottom: 10px;">{{ 'Portal.password' | translate }}</span>
+                <span class="access-text" style="margin-bottom: 10px;">{{ 'universal_userAccount_password' | translate }}</span>
                 <input
                   type="password"
                   id="oldPassword"
-                  placeholder="{{ 'Portal.keyInPassword' | translate }}"
+                  placeholder="{{ 'universal_userAccount_enterOldPassword' | translate }}"
                   class="form-control"
                   maxlength="20"
                   [(ngModel)]="editBody.oldPassword"
@@ -122,14 +121,14 @@
                   [style.color]="displayPW.oldPassword ? 'black' : '#aaaaaa'"
                   (click)="toggleDisplayPW('oldPassword')"
                 ></i>
-                <span class="form__message form__message--placeholder" *ngIf="cue.oldPassword !== ''">{{ cue.oldPassword }}</span>
+                <span class="form__message form__message--placeholder" *ngIf="cue.oldPassword !== ''">{{ cue.oldPassword | translate }}</span>
               </div>
               <div class="flexCol"  style="min-height: 120px;">
-                <span class="access-text" style="margin-bottom: 10px;">{{ 'other.newPassword' | translate }}</span>
+                <span class="access-text" style="margin-bottom: 10px;">{{ 'universal_userAccount_newPassword' | translate }}</span>
                 <input
                   type="password"
                   id="newPassword"
-                  placeholder="{{ 'other.keyInNewPassword' | translate }}"
+                  placeholder="{{ 'universal_userAccount_keyInNewPassword' | translate }}"
                   class="form-control"
                   maxlength="20"
                   [(ngModel)]="editBody.newPassword"
@@ -142,13 +141,13 @@
                   [style.color]="displayPW.newPassword ? 'black' : '#aaaaaa'"
                   (click)="toggleDisplayPW('newPassword')"
                 ></i>
-                <span class="form__message form__message--placeholder" *ngIf="cue.newPassword !== ''">{{ cue.newPassword }}</span>
+                <span class="form__message form__message--placeholder" *ngIf="cue.newPassword !== ''">{{ cue.newPassword | translate }}</span>
               </div>
               <div
                 class="flexCol"
                 [style.display]="imgCaptcha.show ? '' : 'none'"
               >
-                <span class="access-text" style="margin-bottom: 10px;">{{ 'Portal.imgCaptcha' | translate }}</span>
+                <span class="access-text" style="margin-bottom: 10px;">{{ 'universal_userAccount_imgCaptcha' | translate }}</span>
                 <div class="flexRow">
                   <input
                     placeholder="{{ imgCaptcha.placeholder }}"
@@ -160,18 +159,18 @@
                   <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha">
                 </div>
                 <span class="form__message form__message--placeholder" *ngIf="imgCaptcha.show && imgCaptcha.cue !== ''">
-                  {{ imgCaptcha.cue }}
+                  {{ imgCaptcha.cue | translate }}
                 </span>
               </div>
               <div style="display: flex;justify-content: space-between; align-items: center; margin-top: 20px;">
-                <a class="access-text" style="cursor:pointer" [routerLink]="['/dashboard/settings/account-info']"><{{'Dashboard.ProductInfo.back' | translate}}</a>
+                <a class="access-text" style="cursor:pointer" [routerLink]="['/dashboard/settings/account-info']"><{{'universal_operating_back' | translate}}</a>
                 <button
                   class="btn btn-primary access-btn"
                   [class.appview-btn-unclickable]="sending || dataIncomplete"
                   [style.background]="sending || dataIncomplete ? '#2b819b54' : ''"
                   (click)="submit()"
                 >
-                  <span *ngIf="!sending">{{ 'SH.send' | translate }}</span>
+                  <span *ngIf="!sending">{{ 'universal_operating_send' | translate }}</span>
                   <i *ngIf="sending" class="fa fa-spinner fa-pulse"></i>
                 </button>
               </div>

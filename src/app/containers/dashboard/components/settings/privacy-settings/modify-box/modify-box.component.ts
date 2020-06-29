@@ -14,7 +14,9 @@ import { SettingsService } from '../../../../services/settings.service';
 export class ModifyBoxComponent implements OnInit {
 
   @Input() editFileType: string;
-
+  i18n = {  // 可能再增加新的翻譯
+    gym: ''
+  };
   showPerObj = true;
   type: string;
   title: string;
@@ -35,19 +37,23 @@ export class ModifyBoxComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.translate.get('hollow world').subscribe(() => {
+      this.i18n.gym = this.translate.instant('universal_group_gym');
+    });
+
     let target;
     switch (this.data.type) {
       case '1':  // 運動檔案
-        target = `${this.translate.instant('other.eventArchive')}`;
-        this.title = `${this.translate.instant('other.batchEditPrivacy', {object: target})}`;
+        target = `${this.translate.instant('universal_activityData_eventArchive')}`;
+        this.title = `${this.translate.instant('universal_privacy_batchEditPrivacy', {object: target})}`;
         break;
       case '2':  // 運動報告
-        target = `${this.translate.instant('other.sportsStatistics')}`;
-        this.title = `${this.translate.instant('other.batchEditPrivacy', {object: target})}`;
+        target = `${this.translate.instant('universal_activityData_sportsStatistics')}`;
+        this.title = `${this.translate.instant('universal_privacy_batchEditPrivacy', {object: target})}`;
         break;
       case '3':  // 生活追蹤報告
-        target = `${this.translate.instant('other.lifeStatistics')}`;
-        this.title = `${this.translate.instant('other.batchEditPrivacy', {object: target})}`;
+        target = `${this.translate.instant('universal_lifeTracking_lifeStatistics')}`;
+        this.title = `${this.translate.instant('universal_privacy_batchEditPrivacy', {object: target})}`;
         break;
     }
 
@@ -127,14 +133,14 @@ export class ModifyBoxComponent implements OnInit {
       if (res.resultCode === 200) {
         this.snackbar.open(
           this.translate.instant(
-            'Dashboard.Settings.finishEdit'
+            'universal_operating_finishEdit'
           ),
           'OK',
           { duration: 5000 }
         );
       } else {
         this.snackbar.open(
-          this.translate.instant('Dashboard.Settings.updateFailed'),
+          this.translate.instant('universal_popUpMessage_updateFailed'),
           'OK',
           { duration: 5000 }
         );

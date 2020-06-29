@@ -21,9 +21,9 @@ export class HrZoneDialogComponent implements OnInit {
   }
   get methodName() {
     if (this.data.method === 1) {
-      return `${this.translate.instant('Dashboard.Settings.maximalHeartRate')}%(%MHR)`;
+      return `${this.translate.instant('universal_userProfile_maximalHeartRate')}%(%MHR)`;
     }
-    return `${this.translate.instant('Dashboard.Settings.maximalHeartRate')}%(%HRR)`;
+    return `${this.translate.instant('universal_userProfile_maximalHeartRate')}%(%HRR)`;
   }
 
   ngOnInit() {}

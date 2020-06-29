@@ -4,15 +4,15 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class GroupStatusPipe implements PipeTransform {
   transform(value: number, args: string[]): any {
     if (value === 1) {
-      return 'Dashboard.Group.freeToJoin';
+      return 'universal_group_freeToJoin';
     } else if (value === 2) {
-      return 'Dashboard.Group.auditSystem';
+      return 'universal_group_auditSystem';
     } else if (value === 3) {
-      return 'Dashboard.Group.hide';
+      return 'universal_operating_hide';
     } else if (value === 4) {
-      return 'Dashboard.Group.disband';
+      return 'universal_operating_disband';
     } else {
-      return 'other.loading';
+      return 'universal_status_loading';
     }
   }
 }

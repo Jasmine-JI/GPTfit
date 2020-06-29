@@ -1,8 +1,8 @@
 <ng-container *ngIf="!hideCalendar && !isPreviewMode">
   <div [style.visibility]="isLoading ? 'hidden': 'visible'">
     <div class="searchReport">
-      <p style="font-size: 18px; color: #26abe3;">{{'SH.create' | translate}}{{'Dashboard.SportReport.sportReport' | translate}}</p>
-      <p>請依照您的運動屬性與課程期間建立報告</p>
+      <p style="font-size: 18px; color: #26abe3;">{{'universal_activityData_create' | translate}} {{'universal_activityData_sportReport' | translate}}</p>
+      <p>{{'universal_group_followExerciseTypeCreate' | translate}}</p>
     </div>
   </div>
 </ng-container>
@@ -13,8 +13,10 @@
   *ngIf="hasResData === false && initialChartComplated"
   style="width: 100%; display: flex; flex-direction: row; justify-content: center;"
 >
-  <span (click)="returnCalendar()" style="cursor: pointer; color: #0089ff">&lt;&lt; 返回</span>
-  <p style="margin-top: 10px; color: gray; font-size: 18px;">{{'Dashboard.System.nodata' | translate}}</p>
+  <span (click)="returnCalendar()" style="cursor: pointer; color: #0089ff">
+    &lt;&lt; {{'universal_operating_back' | translate}}
+  </span>
+  <p style="margin-top: 10px; color: gray; font-size: 18px;">{{'universal_status_noData' | translate}}</p>
 </ng-container>
 <ng-container *ngIf="!reportCompleted || !initialChartComplated" style="display:flex;justify-content: center;align-items: center;width:100%">
   <mat-spinner style="z-index: 3; margin-top: 30px; position: absolute; left: 50%;"></mat-spinner>
@@ -23,14 +25,16 @@
 </ng-container>
 <ng-container *ngIf="hasResData && reportCompleted && hideCalendar">
   <div class="functionButton" [style.justify-content]="isPreviewMode ? '' : 'space-between'">
-    <span (click)="returnCalendar()" style="cursor: pointer; color: #0089ff" *ngIf="!isPreviewMode">&lt;&lt; 返回</span>
+    <span (click)="returnCalendar()" style="cursor: pointer; color: #0089ff" *ngIf="!isPreviewMode">
+      &lt;&lt; {{'universal_operating_back' | translate}}
+    </span>
     <div>
       <button class="alatech-btn alatech-btn--default activity-btn"
-        title="{{'SH.print' | translate}}"
+        title="{{'universal_operating_print' | translate}}"
         (click)="print()"
         *ngIf="isPreviewMode"
       >
-        {{'SH.print' | translate}}
+        {{'universal_operating_print' | translate}}
       </button>
       <button class="alatech-btn--default"
         (click)="goBack()"
@@ -61,24 +65,18 @@
     </div>
     <div style="display: flex; flex-direction: column;">
       <span style="font-size: 8px; color:#919191; text-align: end;">
-        {{'Dashboard.GroupClass.creatTime' | translate}} {{reportCreatedTime}}
+        {{'universal_activityData_creatTime' | translate}} {{reportCreatedTime}}
       </span>
       <div class="reportName">
         <p>{{fileInfo?.dispName}}</p>
-        <p style="margin-left: 10px;">團體分析表</p>
+        <p style="margin-left: 10px;">{{'universal_group_groupAnalysis' | translate}}</p>
       </div>
     </div>
   </div>
   <div style="display: flex; flex-direction: column;">
-    <span class="ala-dashboard-title activity-title">{{'Dashboard.ActivityDetail.summary' | translate}}</span>
+    <span class="ala-dashboard-title activity-title">{{'universal_activityData_summary' | translate}}</span>
     <div>
-      <div class="areaDescription">
-        在[
-          <span class="activity-Link" (click)="visitLink('class')">{{fileInfo?.dispName}}</span>
-        ]課程，於 {{classRealDateTime}} 共
-        <span class="fileAmount">{{activityLength}}</span>
-        人，所建立運動紀錄報告
-      </div>
+      <div id="reportInfo" class="areaDescription"></div>
       <div style="display: flex; flex-direction: row; margin: 10px 0px; align-items: center;">
         <div class="activity-icon">
           <i *ngIf="reportCategory === '1'"
@@ -99,39 +97,39 @@
       <div class="summaryArea">
         <div class="summaryDataArea">
           <span class="summaryData">{{avgActivityTime}}</span>
-          <p class="summaryDescription">{{'Dashboard.TrainLive.avg' | translate}}{{'Dashboard.SportReport.time' | translate}}</p>
+          <p class="summaryDescription">{{'universal_adjective_avg' | translate}} {{'universal_activityData_time' | translate}}</p>
         </div>
         <div class="summaryDataArea" *ngIf="reportCategory !== '5'">
           <span class="summaryData" *ngIf="avgDistance >= 1000">{{avgDistance / 1000 | number:'1.0-1'}} km</span>
           <span class="summaryData" *ngIf="avgDistance < 1000">{{avgDistance}} m</span>
-          <p class="summaryDescription">{{'Dashboard.SportReport.totalDistance' | translate}}</p>
+          <p class="summaryDescription">{{'universal_activityData_totalDistance' | translate}}</p>
         </div>
         <div class="summaryDataArea" *ngIf="reportCategory !== '5'">
           <span class="summaryData">{{avgSpeed | number:'1.0-1'}} km/hr</span>
-          <p class="summaryDescription">{{'Dashboard.SportReport.avgSpeed' | translate}}</p>
+          <p class="summaryDescription">{{'universal_activityData_avgSpeed' | translate}}</p>
         </div>
         <div class="summaryDataArea">
           <span class="summaryData">{{avgHR | number:'1.0-1'}} bpm</span>
-          <p class="summaryDescription">{{'Dashboard.SportReport.avgHr' | translate}}</p>
+          <p class="summaryDescription">{{'universal_activityData_avgHr' | translate}}</p>
         </div>
         <div class="summaryDataArea">
           <span class="summaryData">{{avgCalories | number:'1.0-1'}} cal</span>
-          <p class="summaryDescription">{{'Dashboard.SportReport.totalCalorie' | translate}}</p>
+          <p class="summaryDescription">{{'universal_activityData_totalCalorie' | translate}}</p>
         </div>
       </div>
     </div>
   </div>
   <div style="display: flex; flex-direction: column;">
-    <span class="ala-dashboard-title activity-title">{{'Dashboard.GroupClass.exerciseAchievement' | translate}}</span>
+    <span class="ala-dashboard-title activity-title">{{'universal_activityData_exerciseAchievement' | translate}}</span>
     <div>
       <p class="areaDescription">
-        全體成員的運動成效，平均心率落點可藉由平均心率推算達到的訓練目的，以及全體學員消耗卡路里的統計比。
+        {{'universal_group_allMembersReport' | translate}}
       </p>
       <div #container class="sportEfficiencyArea">
           <div class="HRZone" *ngIf="!(initialChartComplated && !showclassHRZoneChartTarget)">
             <div class="sportEfficiency">
-              <p class="chartTitle">全體心率區間落點</p>
-              <p class="chartTitle">{{'Dashboard.GroupClass.enduranceZone' | translate}} {{HRZoneThree}}%</p>
+              <p class="chartTitle">{{'universal_activityData_hrZoneFallPoint' | translate}}</p>
+              <p class="chartTitle">{{'universal_activityData_enduranceZone' | translate}} {{HRZoneThree}}%</p>
             </div>
             <div #classHRZoneChartTarget class="chart">
               chart target
@@ -139,7 +137,7 @@
           </div>
           <div class="bodyQuality" *ngIf="!(initialChartComplated && !showclassCaloriesChartTarget)">
             <div class="sportEfficiency">
-              <p class="chartTitle">{{'SH.all' | translate}} {{'Dashboard.TrainLive.member' | translate}} {{'Dashboard.SportReport.totalCalorie' | translate}}</p>
+              <p class="chartTitle">{{'universal_adjective_all' | translate}} {{'universal_group_member' | translate}} {{'universal_activityData_totalCalorie' | translate}}</p>
             </div>
             <div #classCaloriesChartTarget class="chart">
               chart target
@@ -149,12 +147,12 @@
     </div>
   </div>
   <div style="display: flex; flex-direction: column; margin-bottom: 10px;">
-      <p class="ala-dashboard-title activity-title">個人分析</p>
+      <p class="ala-dashboard-title activity-title">{{'universal_group_personalAnalysis' | translate}}</p>
       <div>
         <mat-table [dataSource]="tableData" matSort #sortTable="matSort" (matSortChange)="sortData()">
           <ng-container matColumnDef="name">
             <mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true" class="tableArrangement">
-              <span class="tableTitleWord">{{'Dashboard.Group.MyGroup.name' | translate}}</span>
+              <span class="tableTitleWord">{{'universal_activityData_name' | translate}}</span>
             </mat-header-cell>
             <mat-cell
               *matCellDef="let row; let i = index;"
@@ -172,7 +170,7 @@
               [hidden]="reportCategory === '5'"
             >
               <div class="tableTitle">
-                <span class="tableTitleWord">{{'Dashboard.MyActivity.distance' | translate}}</span>
+                <span class="tableTitleWord">{{'universal_activityData_distance' | translate}}</span>
                 <span class="chartTitleUnit">km</span>
               </div>
             </mat-header-cell>
@@ -193,7 +191,7 @@
               [hidden]="reportCategory === '5'"
             >
               <div class="tableTitle">
-                <span class="tableTitleWord">{{'SH.avgSpeed' | translate}}</span>
+                <span class="tableTitleWord">{{'universal_activityData_limit_avgSpeed' | translate}}</span>
                 <span class="chartTitleUnit">km/h</span>
               </div>
             </mat-header-cell>
@@ -208,7 +206,7 @@
           <ng-container matColumnDef="avgHr">
             <mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true" class="tableArrangement">
               <div class="tableTitle">
-                <span class="tableTitleWord">{{'SH.avgHr' | translate}}</span>
+                <span class="tableTitleWord">{{'universal_activityData_avgHr' | translate}}</span>
                 <span class="chartTitleUnit">bpm</span>
               </div>
             </mat-header-cell>
@@ -228,7 +226,7 @@
               [class.hideColumn]="reportCategory !== '5'"
             >
               <div class="tableTitle">
-                <span class="tableTitleWord">{{'SH.maxHr' | translate}}</span>
+                <span class="tableTitleWord">{{'universal_userProfile_maxHr' | translate}}</span>
                 <span class="chartTitleUnit">bpm</span>
               </div>
             </mat-header-cell>
@@ -249,7 +247,7 @@
               [class.hideColumn]="reportCategory !== '5'"
             >
               <div class="tableTitle">
-                <span class="tableTitleWord">{{'SH.calories' | translate}}</span>
+                <span class="tableTitleWord">{{'universal_userProfile_calories' | translate}}</span>
                 <span class="chartTitleUnit">cal</span>
               </div>
             </mat-header-cell>
@@ -270,7 +268,7 @@
               [hidden]="reportCategory !== '2'"
             >
               <div class="tableTitle">
-                <span class="tableTitleWord">{{'Dashboard.MyActivity.avgPower' | translate}}</span>
+                <span class="tableTitleWord">{{'universal_activityData_avgPower' | translate}}</span>
                 <span class="chartTitleUnit">watt</span>
               </div>
             </mat-header-cell>
@@ -285,8 +283,8 @@
           <ng-container matColumnDef="HRZoneChart">
             <mat-header-cell *matHeaderCellDef disableClear="true" class="tableArrangement">
               <div class="tableTitle">
-                <span class="tableTitleWord">{{'Dashboard.GroupClass.exerciseAchievement' | translate}}</span>
-                <span class="chartTitleUnit">{{'SH.hrZone' | translate}}</span>
+                <span class="tableTitleWord">{{'universal_activityData_exerciseAchievement' | translate}}</span>
+                <span class="chartTitleUnit">{{'universal_activityData_hrZone' | translate}}</span>
               </div>
             </mat-header-cell>
             <mat-cell *matCellDef="let row; let i = index;">
@@ -309,21 +307,21 @@
           </ng-container>
         </mat-table>
       </div>
-      <div class="seeMoreLink" (click)="handleTableData('showAll')" [hidden]="showMore">{{'Dashboard.TrainLive.more' | translate}}</div>
+      <div class="seeMoreLink" (click)="handleTableData('showAll')" [hidden]="showMore">{{'universal_operating_more' | translate}}</div>
   </div>
 </ng-container>
 <ng-container *ngIf="hasResData && hideCalendar">
   <div class="other-info--area otherInfoArea">
     <div class="otherInfoSection">
-      <p class="ala-dashboard-title activity-title">{{'Dashboard.ActivityDetail.device' | translate}}</p>
+      <p class="ala-dashboard-title activity-title">{{'universal_deviceSetting_device' | translate}}</p>
       <img src="{{this.deviceImgUrl}}" style="height: auto; width: auto; width: 100px; height: 100px; margin: 0 auto;">
       <span class="introductionName">
-        {{ deviceInfo?.modelName || 'SH.noData' | translate }}
+        {{ deviceInfo?.modelName || 'universal_status_noData' | translate }}
       </span>
-      <p>{{"Portal.modeType" | translate}}：{{ (deviceInfo?.modelTypeID | productType | translate) || 'SH.noData' | translate }}</p>
+      <p>{{"universal_deviceSetting_modeType" | translate}}：{{ (deviceInfo?.modelTypeID | productType | translate) || 'universal_status_noData' | translate }}</p>
     </div>
     <div class="otherInfoSection">
-      <p class="ala-dashboard-title activity-title">{{'Dashboard.TrainLive.courseIntroduction' | translate}}</p>
+      <p class="ala-dashboard-title activity-title">{{'universal_group_courseIntroduction' | translate}}</p>
       <div style="display: flex; flex-direction: column;">
         <div class="groupPagePhoto">
           <img src="{{groupImg}}">
@@ -343,11 +341,11 @@
         style="color: #5fbae3;cursor:pointer;text-align: right"
         (click)="handleExtendCoachInfo('lessonInfo')"
       >
-        ...{{ "Dashboard.TrainLive.more" | translate}}
+        ...{{ "universal_operating_more" | translate}}
       </div>
     </div>
     <div class="otherInfoSection">
-      <p class="ala-dashboard-title activity-title">{{'Dashboard.TrainLive.coachIntroduction' | translate}}</p>
+      <p class="ala-dashboard-title activity-title">{{'universal_group_coachIntroduction' | translate}}</p>
       <div style="display: flex; flex-direction: column;">
         <div class="groupPagePhoto">
           <img src="{{coachInfo?.nameIcon}}">
@@ -362,7 +360,7 @@
         style="color: #5fbae3;cursor:pointer;text-align: right"
         (click)="handleExtendCoachInfo('coachInfo')"
       >
-        ...{{ "Dashboard.TrainLive.more" | translate}}
+        ...{{ "universal_operating_more" | translate}}
       </div>
     </div>
   </div>

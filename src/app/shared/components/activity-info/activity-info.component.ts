@@ -1120,7 +1120,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         fileId: this.fileId,
         fileInfo: {
           dispName: this.activityName,
-          editDate: `${editDate}T${editTime}${timeZoneStr}:00`
+          editDate: `${editDate}T${editTime} ${timeZoneStr}:00`
         }
       };
       this.activityService.fetchEditActivityProfile(body).subscribe(res => {
@@ -1139,15 +1139,15 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       data: {
         title: 'Message',
         body: `${this.translate.instant(
-          'Dashboard.privacySettings.file'
-        )}${this.translate.instant(
-          'Dashboard.Group.confirmDelete'
+          'universal_activityData_file'
+        )} ${this.translate.instant(
+          'universal_popUpMessage_confirmDelete'
         )}`,
         confirmText: this.translate.instant(
-          'other.confirm'
+          'universal_operating_confirm'
         ),
         cancelText: this.translate.instant(
-          'SH.cancel'
+          'universal_operating_cancel'
         ),
         onCancel: () => {
           return false;
@@ -1169,10 +1169,10 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       if (+res.resultCode === 200) {
         this.snackbar.open(
           `${this.translate.instant(
-            'Dashboard.Group.delete'
+            'universal_operating_delete'
           )}
           ${this.translate.instant(
-            'Dashboard.MyDevice.success'
+            'universal_status_success'
           )}`,
           'OK',
           { duration: 2000 }
@@ -1184,10 +1184,10 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       } else {
         this.snackbar.open(
           `${this.translate.instant(
-            'Dashboard.Group.delete'
+            'universal_operating_delete'
           )}
           ${this.translate.instant(
-            'Dashboard.MyDevice.failure'
+            'universal_status_failure'
           )}`,
           'OK',
           { duration: 2000 }

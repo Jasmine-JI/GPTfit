@@ -48,6 +48,12 @@ export class MemberCapsuleComponent implements OnInit {
   @Output() onRemoveGroup = new EventEmitter();
   @Output() onAssignAdmin = new EventEmitter();
 
+  i18n = {
+    teacher: '',
+    coach: '',
+    leagueAdministrator: '',
+    departmentAdministrator: ''
+  };
   active = false;
   width = '100%';
   height = 'auto';
@@ -74,13 +80,30 @@ export class MemberCapsuleComponent implements OnInit {
   }
   handleClick() {}
   ngOnInit() {
+    this.getTranslate();
+
     this.groupService.getImgUpdatedStatus().subscribe(response => {
       this.updateImgQueryString = response;
     });
-    this.icon = `${this.icon}${this.updateImgQueryString}`;
+    this.icon = `${this.icon} ${this.updateImgQueryString}`;
     this.listenImage(this.icon);
     this.token = this.utils.getToken() || '';
   }
+
+  // 待套件載好再取得多國語系翻譯-kidin-1090622
+  getTranslate () {
+    this.translate.get('hollow world').subscribe(() => {
+      this.i18n = {
+        teacher: this.translate.instant('universal_group_teacher'),
+        coach: this.translate.instant('universal_group_coach'),
+        leagueAdministrator: this.translate.instant('universal_group_administrator'),
+        departmentAdministrator: this.translate.instant('universal_group_departmentAdmin')
+      };
+
+    });
+
+  }
+
   listenImage(link) {
     // Set the image height and width
     const image = new Image();
@@ -155,9 +178,9 @@ export class MemberCapsuleComponent implements OnInit {
       hasBackdrop: true,
       data: {
         title: 'message',
-        body: `${this.translate.instant('Dashboard.Group.GroupInfo.removeAdmin')}?`,
-        confirmText: this.translate.instant('other.confirm'),
-        cancelText: this.translate.instant('SH.cancel'),
+        body: `${this.translate.instant('universal_group_removeAdmin')}?`,
+        confirmText: this.translate.instant('universal_operating_confirm'),
+        cancelText: this.translate.instant('universal_operating_cancel'),
         onConfirm: this.handleEditGroupMember.bind(this)
       }
     });
@@ -226,9 +249,9 @@ export class MemberCapsuleComponent implements OnInit {
       hasBackdrop: true,
       data: {
         title: 'message',
-        body: this.translate.instant('Dashboard.Group.GroupInfo.removeMember'),
-        confirmText: this.translate.instant('other.confirm'),
-        cancelText: this.translate.instant('SH.cancel'),
+        body: this.translate.instant('universal_group_removeMember'),
+        confirmText: this.translate.instant('universal_operating_confirm'),
+        cancelText: this.translate.instant('universal_operating_cancel'),
         onConfirm: this.handleDeleteGroupMember.bind(this)
       }
     });
@@ -247,16 +270,16 @@ export class MemberCapsuleComponent implements OnInit {
     });
   }
   openDeleteGroupWin() {
-    const targetName = this.translate.instant('Dashboard.Group.group');
+    const targetName = this.translate.instant('universal_group_group');
     this.dialog.open(MessageBoxComponent, {
       hasBackdrop: true,
       data: {
         title: 'message',
-        body: this.translate.instant('Dashboard.Group.confirmDissolution', {
-          target: targetName
+        body: this.translate.instant('universal_group_confirmDissolution', {
+          groupName: targetName
         }),
-        confirmText: this.translate.instant('other.confirm'),
-        cancelText: this.translate.instant('SH.cancel'),
+        confirmText: this.translate.instant('universal_operating_confirm'),
+        cancelText: this.translate.instant('universal_operating_cancel'),
         onConfirm: this.handleDeleteGroup.bind(this)
       }
     });

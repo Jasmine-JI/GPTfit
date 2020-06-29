@@ -132,7 +132,7 @@ export class UploadFileComponent implements OnInit, OnChanges, OnDestroy {
   handleErrorMsg() {
     const { isTypeCorrect } = this.fileInformation;
     if (!isTypeCorrect) {
-      this.fileInformation.errorMsg = this.translate.instant('Dashboard.Group.GroupInfo.photoRestriction');
+      this.fileInformation.errorMsg = this.translate.instant('universal_status_photoRestriction');
     }
   }
 

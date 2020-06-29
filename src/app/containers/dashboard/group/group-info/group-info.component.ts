@@ -10,7 +10,6 @@ import { Router, NavigationEnd } from '@angular/router';
 import { UserInfoService } from '../../services/userInfo.service';
 import { MatDialog } from '@angular/material';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
-import { toMemberText } from '../desc';
 import { PrivacySettingDialogComponent } from '../privacy-setting-dialog/privacy-setting-dialog.component';
 import { UserProfileService } from '@shared/services/user-profile.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -27,6 +26,22 @@ import * as moment from 'moment';
   encapsulation: ViewEncapsulation.None
 })
 export class GroupInfoComponent implements OnInit {
+  i18n = {
+    allMember: '',
+    nickname: '',
+    file: '',
+    sportReport: '',
+    openObj: '',
+    notOpenObj: '',
+    brandAdmin: '',
+    branchAdmin: '',
+    coach: '',
+    teacher: '',
+    comAdmin: '',
+    subComAdmin: '',
+    departmentAdmin: '',
+    myGym: ''
+  };
   accessRight: number;
   isPreviewMode = false;
   hashGroupId: string;
@@ -197,7 +212,7 @@ export class GroupInfoComponent implements OnInit {
 
       this.groupImg =
         groupIcon && groupIcon.length > 0
-          ? `${groupIcon}${this.updateImgQueryString}`
+          ? `${groupIcon} ${this.updateImgQueryString}`
           : '/assets/images/group-default.svg';
       this.group_id = this.utils.displayGroupId(groupId);
       this.groupLevel = this.utils.displayGroupLevel(groupId);
@@ -255,114 +270,41 @@ export class GroupInfoComponent implements OnInit {
     const browserLang = this.utils.getLocalStorageObject('locale');
     let text = '';
     let accessRights = [];
-    if (browserLang === 'zh-tw') {
-      if (shareData.switch === '3') {
-        text = '僅開放對象為';  // mark
-        accessRights = shareData.enableAccessRight;
-      } else {
-        text = '不開放對象為';  // mark
-        accessRights = shareData.disableAccessRight;
-      }
-    } else if (browserLang === 'zh-cn') {
-      if (shareData.switch === '3') {
-        text = '仅开放对象为';
-        accessRights = shareData.enableAccessRight;
-      } else {
-        text = '不开放对象为';
-        accessRights = shareData.disableAccessRight;
-      }
+    if (shareData.switch === '3') {
+      text = this.i18n.openObj;  // mark
+      accessRights = shareData.enableAccessRight;
     } else {
-      if (shareData.switch === '3') {
-        text = 'Only for ';
-        accessRights = shareData.enableAccessRight;
-      } else {
-        text = 'Not for ';
-        accessRights = shareData.disableAccessRight;
-      }
+      text = this.i18n.notOpenObj;  // mark
+      accessRights = shareData.disableAccessRight;
     }
 
     accessRights = accessRights.map(_accessRight => {
-      if (browserLang === 'zh-tw') {
-        if (_accessRight === '30') {
-          if (this.brandType === 1) {
-            return '品牌管理員';
-          } else {
-            return '企業管理員';
-          }
-        } else if (_accessRight === '40') {
-          if (this.brandType === 1) {
-            return '分店管理員';
-          } else {
-            return '分公司管理員';
-          }
-        } else if (_accessRight === '50') {
-          if (this.brandType === 1) {
-            return '體適能教練';
-          } else {
-            return '部門管理員';
-          }
+      if (_accessRight === '30') {
+        if (this.brandType === 1) {
+          return this.i18n.brandAdmin;
         } else {
-          if (this.brandType === 1) {
-            return '專業老師';
-          } else {
-            return '社團管理員';
-          }
+          return this.i18n.comAdmin;
         }
-      } else if (browserLang === 'zh-cn') {
-        if (_accessRight === '30') {
-          if (_accessRight === '30') {
-            if (this.brandType === 1) {
-              return '品牌管理员';
-            } else {
-              return '企業管理员';
-            }
-          } else if (_accessRight === '40') {
-            if (this.brandType === 1) {
-              return '分店管理员';
-            } else {
-              return '分公司管理员';
-            }
-          } else if (_accessRight === '50') {
-            if (this.brandType === 1) {
-              return '体适能教练';
-            } else {
-              return '部門管理员';
-            }
-          } else {
-            if (this.brandType === 1) {
-              return '专业老师';
-            } else {
-              return '社團管理员';
-            }
-          }
+      } else if (_accessRight === '40') {
+        if (this.brandType === 1) {
+          return this.i18n.branchAdmin;
+        } else {
+          return this.i18n.subComAdmin;
+        }
+      } else if (_accessRight === '50') {
+        if (this.brandType === 1) {
+          return this.i18n.coach;
+        } else {
+          return this.i18n.departmentAdmin;
         }
       } else {
-        if (_accessRight === '30') {
-          if (this.brandType === 1) {
-            return 'Brand administrator';
-          } else {
-            return '企業管理員';
-          }
-        } else if (_accessRight === '40') {
-          if (this.brandType === 1) {
-            return 'Branch manager';
-          } else {
-            return '分公司管理員';
-          }
-        } else if (_accessRight === '50') {
-          if (this.brandType === 1) {
-            return 'Physical fitness coach';
-          } else {
-            return '部門管理員';
-          }
+        if (this.brandType === 1) {
+          return this.i18n.teacher;
         } else {
-          if (this.brandType === 1) {
-            return 'Professional teacher';
-          } else {
-            return '社團管理員';
-          }
+          return this.i18n.departmentAdmin;
         }
       }
+
     });
 
     if (browserLang.indexOf('zh') > -1) {
@@ -449,29 +391,73 @@ export class GroupInfoComponent implements OnInit {
       hasBackdrop: true,
       data: {
         url: location.href,
-        title: this.translate.instant('SH.share'),
+        title: this.translate.instant('universal_operating_share'),
         totalGroupName: this.totalGroupName || '',
-        cancelText: this.translate.instant('SH.cancel')
+        cancelText: this.translate.instant('universal_operating_cancel')
       }
     });
   }
 
   getAndInitTranslations() {
     this.translate
-      .get(['Dashboard.Group.disclaimer', 'SH.agree', 'SH.disagree'])
+      .get([
+        'universal_group_disclaimer',
+        'universal_operating_agree',
+        'universal_operating_disagree',
+        'universal_privacy_allMember',
+        'universal_vocabulary_avatar',
+        'universal_userAccount_nickname',
+        'universal_activityData_file',
+        'universal_activityData_sportReport',
+        'universal_privacy_openOnlyObject',
+        'universal_privacy_notOpenObject',
+        'universal_group_brandAdministrator',
+        'universal_group_branchAdministrator',
+        'universal_group_coach',
+        'universal_group_teacher',
+        'universal_group_companyAdmin',
+        'universal_group_branchAdmin',
+        'universal_group_departmentAdmin',
+        'universal_privacy_myGym'
+      ])
       .subscribe(translation => {
-        this.title = translation['Dashboard.Group.disclaimer'];
-        this.confirmText = translation['SH.agree'];
-        this.cancelText = translation['SH.disagree'];
+        this.title = translation['universal_group_disclaimer'];
+        this.confirmText = translation['universal_operating_agree'];
+        this.cancelText = translation['universal_operating_disagree'];
+
+        this.i18n = {
+          allMember: translation['universal_privacy_allMember'],
+          nickname: `${translation['universal_vocabulary_avatar']
+            } ${translation['universal_userAccount_nickname']
+          }`,
+          file: translation['universal_activityData_file'],
+          sportReport: translation['universal_activityData_sportReport'],
+          openObj: translation['universal_privacy_openOnlyObject'],
+          notOpenObj: translation['universal_privacy_notOpenObject'],
+          brandAdmin: translation['universal_group_brandAdministrator'],
+          branchAdmin: translation['universal_group_branchAdministrator'],
+          coach: translation['universal_group_coach'],
+          teacher: translation['universal_group_teacher'],
+          comAdmin: translation['universal_group_companyAdmin'],
+          subComAdmin: translation['universal_group_branchAdmin'],
+          departmentAdmin: translation['universal_group_departmentAdmin'],
+          myGym: `"${translation['universal_privacy_myGym']}"`
+        };
+
       });
+
   }
 
 
   handleActionGroup(_type) {
     if (_type === 1) {
       // 申請加入
-      const langName = this.utils.getLocalStorageObject('locale');
-      const bodyText = toMemberText[langName];
+      const bodyText = this.translate.instant(
+        'universal_group_joinClassStatement',
+        {
+          'object': this.i18n.myGym
+        }
+      );
       return this.dialog.open(MessageBoxComponent, {
         hasBackdrop: true,
         data: {
@@ -546,37 +532,31 @@ export class GroupInfoComponent implements OnInit {
             'locale'
           );
           accessRights = accessRights.map(_accessRight => {
-            if (browserLang === 'zh-tw') {
+
+            if (this.brandType === 1) {
+
               if (_accessRight === '30') {
-                return '品牌管理員';
+                return this.i18n.brandAdmin;
               } else if (_accessRight === '40') {
-                return '分店管理員';
+                return this.i18n.branchAdmin;
               } else if (_accessRight === '50') {
-                return '體適能教練';
+                return this.i18n.coach;
               } else {
-                return '專業老師';
+                return this.i18n.teacher;
               }
-            } else if (browserLang === 'zh-cn') {
-              if (_accessRight === '30') {
-                return '品牌管理员';
-              } else if (_accessRight === '40') {
-                return '分店管理员';
-              } else if (_accessRight === '50') {
-                return '体适能教练';
-              } else {
-                return '专业老师';
-              }
+
             } else {
+
               if (_accessRight === '30') {
-                return 'Brand administrator';
+                return this.i18n.comAdmin;
               } else if (_accessRight === '40') {
-                return 'Branch manager';
+                return this.i18n.subComAdmin;
               } else if (_accessRight === '50') {
-                return 'Physical fitness coach';
-              } else {
-                return 'Professional teacher';
+                return this.i18n.departmentAdmin;
               }
+
             }
+
           });
           let text = '';
 
@@ -627,23 +607,23 @@ export class GroupInfoComponent implements OnInit {
         let message;
         switch (resultMessage) {
           case 'Commerce stopped[2]!':  // 停運中
-            message = `${this.translate.instant('Dashboard.Group.group')
-              } ${this.translate.instant('Dashboard.BrandManagement.outOfService')
+            message = `${this.translate.instant('universal_group_group')
+              } ${this.translate.instant('universal_group_outOfService')
               }`;
             break;
           case 'Commerce stopped[3]!':  // 歇業
-            message = `${this.translate.instant('Dashboard.Group.group')
-              } ${this.translate.instant('Dashboard.BrandManagement.outOfBusiness')
+            message = `${this.translate.instant('universal_group_group')
+              } ${this.translate.instant('universal_group_outOfBusiness')
               }`;
             break;
           case 'Commerce stopped[4]!':  // 待銷毀
-            message = `${this.translate.instant('Dashboard.Group.group')
-              } ${this.translate.instant('Dashboard.BrandManagement.toBeDestroyed')
+            message = `${this.translate.instant('universal_group_group')
+              } ${this.translate.instant('universal_group_toBeDestroyed')
               }`;
             break;
           case 'This group member number more than commerce plan restrictions.': // 已滿員
-            message = `${this.translate.instant('Dashboard.Group.group')
-              } ${this.translate.instant('Dashboard.Group.GroupInfo.groupFull')
+            message = `${this.translate.instant('universal_group_group')
+              } ${this.translate.instant('universal_status_groupFull')
               }`;
             break;
           default:
@@ -667,7 +647,7 @@ export class GroupInfoComponent implements OnInit {
             data: {
               title: 'message',
               body: message,
-              confirmText: this.translate.instant('other.confirm')
+              confirmText: this.translate.instant('universal_operating_confirm')
             }
           });
         }

@@ -35,7 +35,8 @@ export class AppEnableComponent implements OnInit, OnDestroy {
 
   phoneCaptcha = {
     cue: '',
-    value: ''
+    value: '',
+    placeholder: ''
   };
 
   // 由email連結得到的參數
@@ -66,7 +67,11 @@ export class AppEnableComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private router: Router,
     public getClientIp: GetClientIpService
-  ) { }
+  ) {
+    translate.onLangChange.subscribe(() => {
+      this.createPlaceholder();
+    });
+  }
 
   ngOnInit() {
     if (location.pathname.indexOf('web') > 0) {
@@ -96,7 +101,7 @@ export class AppEnableComponent implements OnInit, OnDestroy {
   createPlaceholder () {
 
     this.translate.get('hello.world').subscribe(() => {
-      this.phoneCaptcha.cue = this.translate.instant('other.smsVerificationInstructions');
+      this.phoneCaptcha.placeholder = this.translate.instant('universal_userAccount_phoneCaptcha');
     });
 
   }
@@ -252,9 +257,9 @@ export class AppEnableComponent implements OnInit, OnDestroy {
             disableClose: true,
             data: {
               title: 'Message',
-              body: this.translate.instant('other.sendSmsSuccess'),
+              body: this.translate.instant('universal_userAccount_sendSmsSuccess'),
               confirmText: this.translate.instant(
-                'other.confirm'
+                'universal_operating_confirm'
               )
             }
           });
@@ -285,7 +290,7 @@ export class AppEnableComponent implements OnInit, OnDestroy {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
       const inputPhoneCaptcha = e.currentTarget.value;
       if (inputPhoneCaptcha.length < 6) {
-        this.phoneCaptcha.cue = this.translate.instant('Portal.errorCaptcha');
+        this.phoneCaptcha.cue = 'universal_userAccount_errorCaptcha';
       } else {
         this.phoneCaptcha.value = inputPhoneCaptcha;
         this.phoneCaptcha.cue = '';
@@ -300,7 +305,7 @@ export class AppEnableComponent implements OnInit, OnDestroy {
       const inputImgCaptcha = e.currentTarget.value;
 
       if (inputImgCaptcha.length === 0) {
-        this.imgCaptcha.cue = this.translate.instant('Portal.errorCaptcha');
+        this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
       } else {
         this.imgCaptcha.code = inputImgCaptcha;
         this.imgCaptcha.cue = '';
@@ -338,7 +343,7 @@ export class AppEnableComponent implements OnInit, OnDestroy {
             res.processResult.apiReturnMessage === `Post fail, parmameter 'project' or 'token' or 'userId' error.`
             || res.processResult.apiReturnMessage === `Post fail, check 'userId' error with verification code.`
           ) {
-            msgBody = this.translate.instant('Portal.errorCaptcha');
+            msgBody = this.translate.instant('universal_userAccount_errorCaptcha');
           } else {
             msgBody = 'Server error! Please try again later.';
           }
@@ -347,10 +352,12 @@ export class AppEnableComponent implements OnInit, OnDestroy {
         } else {
 
           if (this.accountInfo.type === 1) {
-            const msgBody = this.translate.instant('other.sendCaptchaChackEmail');
+            const msgBody = this.translate.instant('universal_userAccount_sendCaptchaChackEmail');
             this.showMsgBox(msgBody, true);
           } else {
-            const msgBody = `${this.translate.instant('other.switch')} ${this.translate.instant('Dashboard.MyDevice.success')}`;
+            const msgBody = `${this.translate.instant('universal_deviceSetting_switch')
+              } ${this.translate.instant('universal_status_success')
+            }`;
             this.showMsgBox(msgBody, true);
           }
 
@@ -381,7 +388,7 @@ export class AppEnableComponent implements OnInit, OnDestroy {
         }
 
       } else {
-        this.imgCaptcha.cue = this.translate.instant('Portal.errorCaptcha');
+        this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
       }
 
     });
@@ -399,7 +406,7 @@ export class AppEnableComponent implements OnInit, OnDestroy {
 
         switch (res.processResult.apiReturnMessage) {
           case 'Enable account fail, account was enabled.':  // 已啟用後再次點擊啟用信件，則當作啟用成功-kidin-1090520
-            msgBody = `${this.translate.instant('other.switch')} ${this.translate.instant('Dashboard.MyDevice.success')}`;
+            msgBody = `${this.translate.instant('universal_deviceSetting_switch')} ${this.translate.instant('universal_status_success')}`;
             break;
           default:
             msgBody = 'Server error! Please try again later.';
@@ -408,7 +415,7 @@ export class AppEnableComponent implements OnInit, OnDestroy {
 
         this.showMsgBox(msgBody, false);
       } else {
-        msgBody = `${this.translate.instant('other.switch')} ${this.translate.instant('Dashboard.MyDevice.success')}`;
+        msgBody = `${this.translate.instant('universal_deviceSetting_switch')} ${this.translate.instant('universal_status_success')}`;
         this.showMsgBox(msgBody, true);
       }
 
@@ -429,7 +436,7 @@ export class AppEnableComponent implements OnInit, OnDestroy {
           title: 'Message',
           body: msg,
           confirmText: this.translate.instant(
-            'other.confirm'
+            'universal_operating_confirm'
           ),
           onConfirm: this.turnBack.bind(this)
         }
@@ -444,7 +451,7 @@ export class AppEnableComponent implements OnInit, OnDestroy {
           title: 'Message',
           body: msg,
           confirmText: this.translate.instant(
-            'other.confirm'
+            'universal_operating_confirm'
           )
         }
       });

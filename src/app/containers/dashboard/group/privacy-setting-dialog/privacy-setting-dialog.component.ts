@@ -2,6 +2,7 @@ import { Component, OnInit, Inject, EventEmitter, Output, Input } from '@angular
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
 import { UtilsService } from '@shared/services/utils.service';
 import { SettingsService } from '../../services/settings.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-privacy-setting-dialog',
@@ -12,6 +13,9 @@ import { SettingsService } from '../../services/settings.service';
   ]
 })
 export class PrivacySettingDialogComponent implements OnInit {
+  i18n = {  // 可能再增加新的翻譯
+    gym: ''
+  };
   groupId: string;
   token: string;
   shareTargetText: string;
@@ -50,10 +54,15 @@ export class PrivacySettingDialogComponent implements OnInit {
     private dialog: MatDialog,
     private utils: UtilsService,
     private settingsService: SettingsService,
+    private translate: TranslateService,
     @Inject(MAT_DIALOG_DATA) private data: any
   ) {}
 
   ngOnInit() {
+    this.translate.get('hollow world').subscribe(() => {
+      this.i18n.gym = this.translate.instant('universal_group_gym');
+    });
+
     const activityTrackingArray = [],
           activityTrackingReportArray = [],
           lifeTrackingReportArray = [];

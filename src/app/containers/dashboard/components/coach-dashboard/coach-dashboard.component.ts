@@ -265,7 +265,7 @@ export class CoachDashboardComponent
         this.classInfo = res.info;
         this.classInfo.groupIcon =
           this.classInfo.groupIcon && this.classInfo.groupIcon.length > 0
-            ? `${this.classInfo.groupIcon}${this.updateImgQueryString}`
+            ? `${this.classInfo.groupIcon} ${this.updateImgQueryString}`
             : '/assets/images/group-default.svg';
         const groupIcon = new Image();
         groupIcon.src = this.classInfo.groupIcon;
@@ -275,7 +275,7 @@ export class CoachDashboardComponent
             : 'user-photo--portrait';
         this.classInfo.coachAvatar =
           this.classInfo.coachAvatar && this.classInfo.coachAvatar.length > 0
-            ? `${this.classInfo.coachAvatar}${this.updateImgQueryString}`
+            ? `${this.classInfo.coachAvatar} ${this.updateImgQueryString}`
             : '/assets/images/user.png';
         if (this.classInfo.groupVideoUrl.length > 0) {
           this.isHadVideoUrl = true;
@@ -580,7 +580,7 @@ export class CoachDashboardComponent
         this.series3.push({ name: userName, data: [] });
         userIcon =
           datas[existIdx] && datas[existIdx].pairIcon.length > 0
-            ? `${datas[existIdx].pairIcon}${this.updateImgQueryString}`
+            ? `${datas[existIdx].pairIcon} ${this.updateImgQueryString}`
             : '/assets/images/user.png';
         const image = new Image();
         image.src = userIcon;

@@ -191,7 +191,7 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
             regPWD = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,20}$/;
 
       if (!regPWD.test(inputPassword)) {
-        this.cue[obj] = this.translate.instant('Portal.passwordFormat');
+        this.cue[obj] = 'universal_userAccount_passwordFormat';
       } else {
         this.editBody[obj] = inputPassword;
         this.cue[obj] = '';
@@ -217,7 +217,7 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
       const inputImgCaptcha = e.currentTarget.value;
 
       if (inputImgCaptcha.length === 0) {
-        this.imgCaptcha.cue = this.translate.instant('Portal.errorCaptcha');
+        this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
       } else {
         this.imgCaptcha.code = inputImgCaptcha;
         this.imgCaptcha.cue = '';
@@ -242,7 +242,7 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
           this.imgCaptcha.show = false;
           this.submit();
         } else {
-          this.imgCaptcha.cue = this.translate.instant('Portal.errorCaptcha');
+          this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
           this.sending = false;
         }
 
@@ -261,7 +261,7 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
 
         switch (res.processResult.apiReturnMessage) {
           case 'Edit account fail, old password is not correct.':
-            this.cue.oldPassword = this.translate.instant('Portal.notSamePassword');
+            this.cue.oldPassword = 'universal_userAccount_notSamePassword';
             break;
           case 'Found attack, update status to lock!':
           case 'Found lock!':
@@ -287,7 +287,7 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
         this.sending = false;
 
         this.snackbar.open(
-          `${this.translate.instant('other.modify')} ${this.translate.instant('Dashboard.MyDevice.success')}`,
+          `${this.translate.instant('universal_operating_modify')} ${this.translate.instant('universal_status_success')}`,
           'OK',
           { duration: 1000 }
         );

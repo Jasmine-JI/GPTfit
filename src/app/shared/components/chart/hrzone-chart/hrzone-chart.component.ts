@@ -123,27 +123,27 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
 
       switch (highestHRZoneIndex) {
         case 0:
-          this.highestHRZone = this.translateService.instant('Dashboard.GroupClass.limit_generalZone');
+          this.highestHRZone = this.translateService.instant('universal_activityData_limit_generalZone');
           this.highestHRZoneColor = 'rgb(70, 156, 245)';
           break;
         case 1:
-          this.highestHRZone = this.translateService.instant('Dashboard.GroupClass.warmUpZone');
+          this.highestHRZone = this.translateService.instant('universal_activityData_warmUpZone');
           this.highestHRZoneColor = 'rgb(64, 218, 232)';
           break;
         case 2:
-          this.highestHRZone = this.translateService.instant('Dashboard.GroupClass.aerobicZone');
+          this.highestHRZone = this.translateService.instant('universal_activityData_aerobicZone');
           this.highestHRZoneColor = 'rgb(86, 255, 0)';
           break;
         case 3:
-          this.highestHRZone = this.translateService.instant('Dashboard.GroupClass.enduranceZone');
+          this.highestHRZone = this.translateService.instant('universal_activityData_enduranceZone');
           this.highestHRZoneColor = 'rgb(214, 207, 1)';
           break;
         case 4:
-          this.highestHRZone = this.translateService.instant('Dashboard.GroupClass.marathonZone');
+          this.highestHRZone = this.translateService.instant('universal_activityData_marathonZone');
           this.highestHRZoneColor = 'rgb(234, 164, 4)';
           break;
         case 5:
-          this.highestHRZone = this.translateService.instant('Dashboard.GroupClass.anaerobicZone');
+          this.highestHRZone = this.translateService.instant('universal_activityData_anaerobicZone');
           this.highestHRZoneColor = 'rgba(243, 105, 83)';
           break;
       }
@@ -159,12 +159,12 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
       };
 
       HRChartOptions['xAxis'].categories = [
-        this.translateService.instant('Dashboard.GroupClass.limit_generalZone'),
-        this.translateService.instant('Dashboard.GroupClass.warmUpZone'),
-        this.translateService.instant('Dashboard.GroupClass.aerobicZone'),
-        this.translateService.instant('Dashboard.GroupClass.enduranceZone'),
-        this.translateService.instant('Dashboard.GroupClass.marathonZone'),
-        this.translateService.instant('Dashboard.GroupClass.anaerobicZone')
+        this.translateService.instant('universal_activityData_limit_generalZone'),
+        this.translateService.instant('universal_activityData_warmUpZone'),
+        this.translateService.instant('universal_activityData_aerobicZone'),
+        this.translateService.instant('universal_activityData_enduranceZone'),
+        this.translateService.instant('universal_activityData_marathonZone'),
+        this.translateService.instant('universal_activityData_anaerobicZone')
       ];
 
       HRChartOptions['yAxis'].labels = {

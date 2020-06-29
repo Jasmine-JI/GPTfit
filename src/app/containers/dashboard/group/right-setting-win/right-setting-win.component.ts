@@ -3,6 +3,7 @@ import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
 import { GroupService } from '../../services/group.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-right-setting-win',
@@ -11,6 +12,11 @@ import { MessageBoxComponent } from '@shared/components/message-box/message-box.
   encapsulation: ViewEncapsulation.None
 })
 export class RightSettingWinComponent implements OnInit {
+  i18n = {
+    brandAdministrator: '',
+    branchAdministrator: '',
+    classAdministrator: ''
+  };
   onConfirm = new EventEmitter();
   searchWord = '';
   placeholder = '搜尋';
@@ -48,13 +54,31 @@ export class RightSettingWinComponent implements OnInit {
     private dialog: MatDialog,
     private groupService: GroupService,
     private utils: UtilsService,
+    private translate: TranslateService,
     @Inject(MAT_DIALOG_DATA) private data: any
   ) {}
 
   ngOnInit() {
+    this.getTranslate();
     this.token = this.utils.getToken() || '';
     this.getGroupMemberList(1);
   }
+
+  // 待多國語系套件載入完成後再產生翻譯-kidin-1090622
+  getTranslate () {
+    this.translate.get('hollow world').subscribe(() => {
+      this.i18n = {
+        brandAdministrator: this.translate.instant('universal_group_brandAdministrator'),
+        branchAdministrator: this.translate.instant('universal_group_branchAdministrator'),
+        classAdministrator: `${this.translate.instant('universal_group_class')
+          } ${this.translate.instant('universal_group_administrator')
+        }`
+      };
+
+    });
+
+  }
+
   confirm() {
     this.onConfirm.emit();
     if (this.chooseItem !== '') {
@@ -62,9 +86,15 @@ export class RightSettingWinComponent implements OnInit {
         hasBackdrop: true,
         data: {
           title: 'Message',
-          body: `是否要指派${this.name}為${this.chooseGroupName}的管理員`,
-          confirmText: '確定',
-          cancelText: '取消',
+          body: this.translate.instant(
+            'universal_group_assignAdministrator',
+            {
+              'name': this.name,
+              'group': this.chooseGroupName
+            }
+          ),
+          confirmText: this.translate.instant('universal_operating_confirm'),
+          cancelText: this.translate.instant('universal_operating_cancel'),
           onConfirm: this.handleConfirm.bind(this)
         }
       });

@@ -135,8 +135,8 @@ export class PortalComponent implements OnInit {
             hasBackdrop: true,
             data: {
               title: 'message',
-              body: this.translateService.instant('SH.browserError'),
-              confirmText: this.translateService.instant('other.confirm')
+              body: this.translateService.instant('universal_popUpMessage_browserError'),
+              confirmText: this.translateService.instant('universal_operating_confirm')
             }
           });
         }
@@ -165,7 +165,16 @@ export class PortalComponent implements OnInit {
     let browserLang = this.utilsService.getLocalStorageObject('locale');
     if (!browserLang) {
       browserLang = this.translateService.getBrowserCultureLang().toLowerCase();
-      const currentLocales = ['zh-tw', 'zh-cn', 'en-us', 'es-es'];  // 新增西班牙語系-kidin-1081106
+      const currentLocales = [
+        'zh-tw',
+        'zh-cn',
+        'en-us',
+        'es-es',
+        'de-de',
+        'fr-fr',
+        'it-it',
+        'pt-pt'
+      ];  // 新增文件全語系-kidin-1090629
       if (currentLocales.findIndex(_locale => _locale === browserLang) === -1) {
         browserLang = 'en-us'; // default en-us
       }
@@ -226,7 +235,13 @@ export class PortalComponent implements OnInit {
         setTimeout(() => {  // 解決angular檢查前後狀態報錯的問題
           this.hideNavbar = true;
         }, 0);
+      } else {
+        setTimeout(() => {  // 解決angular檢查前後狀態報錯的問題
+          this.hideNavbar = false;
+        }, 0);
+
       }
+
     });
 
   }

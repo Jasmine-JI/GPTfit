@@ -17,6 +17,10 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrls: ['./signin.component.css']
 })
 export class SigninComponent implements OnInit {
+  i18n = {
+    account: '',
+    password: ''
+  };
   form: FormGroup;
   results: any;
   content = '登入';
@@ -40,6 +44,7 @@ export class SigninComponent implements OnInit {
   }
 
   ngOnInit() {
+
     this.form = this.fb.group({
       accountName: ['', Validators.required],
       password: [
@@ -62,11 +67,20 @@ export class SigninComponent implements OnInit {
   // }
   getAndInitTranslations() {
     this.translate
-      .get(['Portal.clause', 'SH.agree', 'SH.disagree'])
+      .get([
+        'universal_userAccount_clause',
+        'universal_operating_agree',
+        'universal_operating_disagree',
+        'universal_userAccount_account',
+        'universal_userAccount_password'
+      ])
       .subscribe(translation => {
-        this.title = translation['Portal.clause'];
-        this.confirmText = translation['SH.agree'];
-        this.cancelText = translation['SH.disagree'];
+        this.title = translation['universal_userAccount_clause'];
+        this.confirmText = translation['universal_operating_agree'];
+        this.cancelText = translation['universal_operating_disagree'];
+
+        this.i18n.account = translation['universal_userAccount_account'];
+        this.i18n.password = translation['universal_userAccount_password'];
       });
   }
   login({ valid }) {
@@ -82,13 +96,13 @@ export class SigninComponent implements OnInit {
         this.isLogining = false;
         if (res) {
           this.snackbar.open(
-            this.translate.instant('Portal.signSuceesfully'),
+            this.translate.instant('universal_userAccount_signSuceesfully'),
             'OK',
             { duration: 5000 }
           );
         } else {
           this.snackbar.open(
-            this.translate.instant('Portal.notSameAccount'),
+            this.translate.instant('universal_userAccount_notSameAccount'),
             'OK',
             { duration: 5000 }
           );
@@ -102,10 +116,10 @@ export class SigninComponent implements OnInit {
   showPrivateMsg(e) {
     e.preventDefault();
     let text = '';
-    text = `${this.translate.instant('Portal.clauseContentPage1')}
-    <a target="_blank"href="https://www.alatech.com.tw/action-copyright.htm">『${this.translate.instant('Portal.clause')}』</a>
-    、 <a target="_blank" href="https://www.alatech.com.tw/action-privacy.htm">『${this.translate.instant('Portal.privacyStatement')}』</a>
-    ${this.translate.instant('Portal.clauseContentPage2')}`.replace(/\n/gm, '');
+    text = `${this.translate.instant('universal_userAccount_clauseContentPage1')}
+    <a target="_blank"href="https://www.alatech.com.tw/action-copyright.htm">『${this.translate.instant('universal_userAccount_clause')}』</a>
+    、 <a target="_blank" href="https://www.alatech.com.tw/action-privacy.htm">『${this.translate.instant('universal_userAccount_privacyStatement')}』</a>
+    ${this.translate.instant('universal_userAccount_clauseContentPage2')}`.replace(/\n/gm, '');
 
     this.dialog.open(MessageBoxComponent, {
       hasBackdrop: true,

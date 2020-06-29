@@ -1,7 +1,7 @@
 <div class="">
   <div class="d-flex justify-content-between" style="margin-bottom: 15px">
     <span style="color: #157fcc; font-weight:700">
-      {{'Dashboard.System.createAndEditRaces' | translate}}
+      {{'universal_race_createAndEditRaces' | translate}}
     </span>
     <button class="alatech-btn alatech-btn--default" title="新增活動賽事"
       (click)="toCreatePage()"
@@ -12,8 +12,8 @@
   <table class="table alatech-table">
     <thead>
       <tr class="tr-only-hide">
-        <th class="alatech-table__cell--head">{{'Dashboard.System.mainRaces' | translate}}</th>
-        <th class="alatech-table__cell--head">{{'Dashboard.System.managementFunction' | translate}}</th>
+        <th class="alatech-table__cell--head">{{'universal_race_mainRaces' | translate}}</th>
+        <th class="alatech-table__cell--head">{{'universal_system_managementFunction' | translate}}</th>
       </tr>
     </thead>
     <tbody>
@@ -32,7 +32,7 @@
           </tr>
         </ng-container>
         <tr *ngIf="events && events.length === 0">
-          <td colspan="2" style="text-align: center">{{'Dashboard.System.nodata' | translate}}</td>
+          <td colspan="2" style="text-align: center">{{'universal_status_noData' | translate}}</td>
         </tr>
       </ng-container>
       <tr *ngIf="isLoading">

@@ -1,13 +1,13 @@
 <div class="d-flex justify-content-between">
   <span style="color: #157fcc; font-weight:700">
-    {{ "Dashboard.Group.MyGroup.myGroup" | translate}}
+    {{ "universal_group_myGroup" | translate}}
   </span>
   <div class="group-edit-bar">
     <button class="alatech-btn alatech-btn--default"
-      title="{{ 'Dashboard.Group.SearchGroup.searchGroup' | translate}}"
+      title="{{ 'universal_group_searchGroup' | translate}}"
       [routerLink]="['/dashboard/group-search']"
     >
-      {{ "Dashboard.Group.SearchGroup.searchGroup" | translate}}
+      {{ "universal_group_searchGroup" | translate}}
     </button>
     <!-- <button class="alatech-btn alatech-btn--default"
       title="建立新群組"
@@ -18,22 +18,22 @@
   </div>
 </div>
 <mat-form-field style="max-width: 100px;">
-  <mat-select [(value)]="brandType" placeholder="{{ 'Dashboard.ProductInfo.type' | translate }}" (selectionChange)="getLists()">
-    <mat-option value="3">{{ "SH.all" | translate}}</mat-option>
-    <mat-option value="1">{{ "other.gymBrand" | translate}}</mat-option>
-    <mat-option value="2">{{ "custom.ComGroup" | translate}}</mat-option>
+  <mat-select [(value)]="brandType" placeholder="{{ 'universal_activityData_type' | translate }}" (selectionChange)="getLists()">
+    <mat-option value="3">{{ "universal_adjective_all" | translate}}</mat-option>
+    <mat-option value="1">{{ "universal_group_gym" | translate}}</mat-option>
+    <mat-option value="2">{{ "universal_group_enterprise" | translate}}</mat-option>
   </mat-select>
 </mat-form-field>
 <mat-table [dataSource]="logSource"
   matSort #sortTable="matSort"
 >
   <ng-container matColumnDef="info">
-    <mat-header-cell *matHeaderCellDef>{{ "Dashboard.Group.MyGroup.name" | translate}}</mat-header-cell>
+    <mat-header-cell *matHeaderCellDef>{{ "universal_activityData_name" | translate}}</mat-header-cell>
     <mat-cell *matCellDef="let row">{{ row.groupName }}</mat-cell>
   </ng-container>
   <ng-container matColumnDef="time">
     <mat-header-cell *matHeaderCellDef disableClear="true">
-      {{ "Dashboard.Group.MyGroup.identity" | translate}}
+      {{ "universal_group_identity" | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let row">{{ row.groupProperty | accessName: row.brandType | translate }}</mat-cell>
   </ng-container>
@@ -42,7 +42,7 @@
   </mat-row>
 </mat-table>
 <div *ngIf="isEmpty" style="text-align: center;padding: 30px">
-  {{ "SH.noData" | translate}}
+  {{ "universal_status_noData" | translate}}
 </div>
 <div class="ala-loading-shade" *ngIf="isLoading">
   <mat-spinner></mat-spinner>

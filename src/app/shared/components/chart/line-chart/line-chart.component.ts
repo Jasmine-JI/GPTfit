@@ -96,19 +96,19 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
     switch (this.chartName) {
       case 'Weight':
         chartData = this.mergeData(this.data.weightList);
-        chartName = this.translate.instant('Portal.bodyWeight');
+        chartName = this.translate.instant('universal_userProfile_bodyWeight');
         lineColor = this.data.colorSet;
 
         break;
       case 'FatRate':
         chartData = this.mergeData(this.data.fatRateList);
-        chartName = this.translate.instant('other.fatRate');
+        chartName = this.translate.instant('universal_lifeTracking_fatRate');
         lineColor = this.data.fatRateColorSet;
 
         break;
       case 'MuscleRate':
         chartData = this.mergeData(this.data.muscleRateList);
-        chartName = this.translate.instant('other.muscleRate');
+        chartName = this.translate.instant('universal_userProfile_muscleRate');
         lineColor = this.data.muscleRateColorSet;
 
         break;

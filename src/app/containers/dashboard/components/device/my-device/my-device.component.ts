@@ -88,13 +88,13 @@ export class MyDeviceComponent implements OnInit, OnChanges {
           this.utilsService.removeLocalStorageObject('bondStatus');
           this.getDeviceList();
           const afterBondingTip1 = this.translate.instant(
-            'Dashboard.MyDevice.enabledFitPair'
+            'universal_uiFitpair_enabledFitPair'
           );
           const afterBondingTip2 = this.translate.instant(
-            'Dashboard.MyDevice.fitpairDescription'
+            'universal_uiFitpair_fitpairDescription'
           );
           const afterBondingTip3 = this.translate.instant(
-            'Dashboard.MyDevice.changeLater'
+            'universal_deviceSetting_changeLater'
           );
           if (this.utilsService.getSessionStorageObject('bindingSN')) {
             return this.dialog.open(MessageBoxComponent, {
@@ -104,13 +104,13 @@ export class MyDeviceComponent implements OnInit, OnChanges {
                 body: `<div class="fit-pair"><div class="title">${afterBondingTip1}</div>
   <div class="image-container"><img src="/assets/fitPairDemo.png" style="width: 100%" /></div>
   <div class="tip2">${afterBondingTip2}</div><div>${afterBondingTip3}</div><div class="user-for">${this.translate.instant(
-                  'Dashboard.MyDevice.useFor'
+                  'universal_deviceSetting_useFor'
                 )}：</div></div>`,
                 confirmText: this.translate.instant(
-                  'Dashboard.MyDevice.personal'
+                  'universal_deviceSetting_personal'
                 ),
                 cancelText: this.translate.instant(
-                  'Dashboard.MyDevice.gymEquipment'
+                  'universal_deviceSetting_gymEquipment'
                 ),
                 onCancel: () =>
                   this.utilsService.removeSessionStorageObject(
@@ -129,9 +129,9 @@ export class MyDeviceComponent implements OnInit, OnChanges {
             data: {
               title: 'message',
               body: this.translate.instant(
-                'Dashboard.MyDevice.repair'
+                'universal_ota_repair'
               ),
-              confirmText: this.translate.instant('other.confirm')
+              confirmText: this.translate.instant('universal_operating_confirm')
             }
           });
         }
@@ -141,8 +141,8 @@ export class MyDeviceComponent implements OnInit, OnChanges {
             hasBackdrop: true,
             data: {
               title: 'message',
-              body: this.translate.instant('Dashboard.MyDevice.repair'),
-              confirmText: this.translate.instant('other.confirm')
+              body: this.translate.instant('universal_ota_repair'),
+              confirmText: this.translate.instant('universal_operating_confirm')
             }
           });
         }
