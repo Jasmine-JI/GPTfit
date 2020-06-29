@@ -2,7 +2,7 @@
   <div class="container" style="padding-top:63px">
     <div class="d-flex" style="flex-direction: column;align-items: center;;">
 
-      <div class="access-description" innerHtml="{{ 'Portal.gptSlogan' | translate }}">
+      <div class="access-description" innerHtml="{{ 'universal_app_gptSlogan' | translate }}">
       </div>
       <div class="access-panel">
         <header class="access-header">
@@ -11,43 +11,43 @@
         <div class="access-panel-body">
           <form [formGroup]="form" (ngSubmit)="login(f)"#f="ngForm" novalidate>
             <div class="form-group">
-              <label for="exampleInputEmail1" class="access-text">{{ 'Dashboard.Settings.account' | translate }}(
-                <a href="#" (click)="showPrivateMsg($event)">{{'Portal.signUp' | translate}}</a>):
+              <label for="exampleInputEmail1" class="access-text">{{ 'universal_userAccount_account' | translate }}(
+                <a href="#" (click)="showPrivateMsg($event)">{{'universal_userAccount_signUp' | translate}}</a>):
               </label>
               <input formControlName="accountName"
                 id="exampleInputEmail1"
                 class="form-control"
-                placeholder="{{'Portal.emailPerPhone' | translate}}"
+                placeholder="{{'universal_userAccount_emailPerPhone' | translate}}"
                 [attr.disabled]="isLogining ? '' : null"
                 [class.form-control--invalid]="(!form.controls['accountName'].valid && form.controls['accountName'].touched) || (f.submitted && form.get('accountName').hasError('required'))"
               >
               <div class="form__message form__message--placeholder" *ngIf="(!form.controls['accountName'].valid && form.controls['accountName'].touched) || (f.submitted && form.get('accountName').hasError('required'))">
-                {{'Portal.enterInfo' | translate}}{{'Portal.account' | translate}}
+                {{'universal_userAccount_enterInfo' | translate: {'info': i18n.account} }}
               </div>
             </div>
             <div class="form-group">
               <label for="exampleInputPassword1" class="access-text">
-                {{ 'Dashboard.Settings.password' | translate }}(<a href="#" [routerLink]="['/forget-pwd']">
-                  {{'Portal.forgetPassword' | translate}}</a>):
+                {{ 'universal_userAccount_password' | translate }}(<a href="#" [routerLink]="['/forget-pwd']">
+                  {{'universal_userAccount_forgetPassword' | translate}}</a>):
               </label>
               <input formControlName="password" type="password"
                 class="form-control"
-                placeholder="{{'Portal.passwordFormat' | translate}}"
+                placeholder="{{'universal_userAccount_passwordFormat' | translate}}"
                 autocomplete="off"
                 [attr.disabled]="isLogining ? '' : null"
                 [class.form-control--invalid]="(!form.controls['password'].valid && form.controls['password'].touched) || (f.submitted && form.get('password').hasError('required'))"
               >
               <div class="form__message form__message--placeholder" *ngIf="(form.controls['password'].hasError('required') && form.controls['password'].touched) || (f.submitted && form.get('password').hasError('required'))">
-                {{'Portal.enterInfo' | translate}}{{'Portal.password' | translate}}
+                {{'universal_userAccount_enterInfo' | translate: {'info': i18n.password} }}
               </div>
               <div class="form__message form__message--placeholder" *ngIf="(form.controls['password'].hasError('pattern') && form.controls['password'].touched) || (f.submitted && form.controls['password'].hasError('pattern'))">
-                {{'Portal.passwordFormat' | translate}}
+                {{'universal_userAccount_passwordFormat' | translate}}
               </div>
             </div>
             <div class="auth-submit">
               <app-confirm-button
                 [className]="className"
-                [content]="'SH.logIn' | translate"
+                [content]="'universal_userAccount_logIn' | translate"
                 [disabled]="isLogining"
               >
               </app-confirm-button>

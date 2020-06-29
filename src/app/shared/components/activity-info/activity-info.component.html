@@ -39,17 +39,17 @@
       </div>
       <div class="group-edit-bar" style="justify-content: flex-end; width:100%;" [class.hideButton]="hideButton">
         <span class="sportsRecord-text">
-          {{'SH.sportsRecord' | translate}}
+          {{'universal_activityData_sportsRecord' | translate}}
           <div>
             {{ printFileDate }}
           </div>
         </span>
         <button class="alatech-btn alatech-btn--default activity-btn"
-          title="{{'SH.print' | translate}}"
+          title="{{'universal_operating_print' | translate}}"
           (click)="print()"
           *ngIf="isPrevieMode"
         >
-          {{'SH.print' | translate}}
+          {{'universal_operating_print' | translate}}
         </button>
         <button class="alatech-btn--default"
           (click)="goBack()"
@@ -100,17 +100,17 @@
     </div>
 
     <div class="ala-dashboard-title activity-title">
-      {{'Dashboard.ActivityDetail.summary' | translate}}
+      {{'universal_activityData_summary' | translate}}
     </div>
     <div class="activity-block">
       <p style="color: #919191">
-        {{ fileInfo?.dispName}} {{'SH.by' | translate}}
+        {{ fileInfo?.dispName}} {{'universal_activityData_by' | translate}}
         <span class="activity-author"
           (click)="goToProfile()"
         >
           {{userLink?.userName}}
         </span>
-        <ng-container *ngIf="userLink?.userName.length > 0">{{'SH.record' | translate}}  ，</ng-container>{{infoDate}} {{'SH.create' | translate}}
+        <ng-container *ngIf="userLink?.userName.length > 0">{{'universal_activityData_record' | translate}}  ，</ng-container>{{infoDate}} {{'universal_activityData_create' | translate}}
       </p>
       <div class="d-flex matFormParent" style="align-items:center">
         <div class="activity-icon">
@@ -163,19 +163,19 @@
       <div class="summary-info">
         <div class="summary-item">
           <div class="activity-info-data-value">{{activityInfo?.totalSecond | sportTime}}</div>
-          <div class="activity-info-data-name">{{'Dashboard.MyActivity.totalTime' | translate}}</div>
+          <div class="activity-info-data-name">{{'universal_activityData_limit_totalTime' | translate}}</div>
         </div>
         <div class="summary-item"
           *ngIf="activityInfo?.totalActivitySecond"
         >
           <div class="activity-info-data-value">{{activityInfo?.totalActivitySecond | sportTime}}</div>
-          <div class="activity-info-data-name">{{'Dashboard.MyActivity.activityTime' | translate}}</div>
+          <div class="activity-info-data-name">{{'universal_activityData_activityTime' | translate}}</div>
         </div>
         <div class="summary-item"
           *ngIf="activityInfo?.totalRestSecond"
         >
           <div class="activity-info-data-value">{{activityInfo?.totalRestSecond | sportTime}}</div>
-          <div class="activity-info-data-name">{{'Dashboard.MyActivity.restTime' | translate}}</div>
+          <div class="activity-info-data-name">{{'universal_activityData_restTime' | translate}}</div>
         </div>
         <div *ngIf="activityInfo?.type !== '4' && activityInfo?.type !== '6'"
           class="summary-item"
@@ -183,7 +183,7 @@
           <div class="activity-info-data-value activity-info-data-unit">{{activityInfo?.avgHeartRateBpm}}
             <span class="data-label">bpm</span>
           </div>
-          <div class="activity-info-data-name">{{'SH.avgHr' | translate}}</div>
+          <div class="activity-info-data-name">{{'universal_activityData_avgHr' | translate}}</div>
         </div>
         <div *ngIf="activityInfo?.type !== '4' && activityInfo?.type !== '6'"
           class="summary-item"
@@ -191,13 +191,13 @@
           <div class="activity-info-data-value activity-info-data-unit">{{activityInfo?.maxHeartRateBpm}}
             <span class="data-label">bpm</span>
           </div>
-          <div class="activity-info-data-name">{{'SH.maxHr' | translate}}</div>
+          <div class="activity-info-data-name">{{'universal_userProfile_maxHr' | translate}}</div>
         </div>
         <div class="summary-item">
           <div class="activity-info-data-value activity-info-data-unit">{{activityInfo?.calories | number:'1.0-1'}}
             <span class="data-label">cal</span>
           </div>
-          <div class="activity-info-data-name">{{'SH.calories' | translate}}</div>
+          <div class="activity-info-data-name">{{'universal_userProfile_calories' | translate}}</div>
         </div>
         <div *ngIf="activityInfo?.type !== '3' && activityInfo?.type !== '5'"
           class="summary-item"
@@ -210,7 +210,7 @@
             {{activityInfo?.totalDistanceMeters}}
             <span class="data-label">m</span>
           </div>
-          <div class="activity-info-data-name">{{'SH.totalDistance' | translate}}</div>
+          <div class="activity-info-data-name">{{'universal_activityData_totalDistance' | translate}}</div>
         </div>
         <div *ngIf="activityInfo?.type !== '3' && activityInfo?.type !== '5'"
           class="summary-item"
@@ -223,10 +223,10 @@
           </div>
           <div class="activity-info-data-name">
             <span *ngIf="activityInfo?.type === '1' || activityInfo?.type === '4' || activityInfo?.type === '6'">
-              {{'SH.avgPace' | translate}}
+              {{'universal_activityData_avgPace' | translate}}
             </span>
             <span *ngIf="activityInfo?.type !== '4' && activityInfo?.type !== '1' && activityInfo?.type !== '6'">
-              {{'SH.avgSpeed' | translate}}
+              {{'universal_activityData_limit_avgSpeed' | translate}}
             </span>
           </div>
         </div>
@@ -236,7 +236,7 @@
           <div class="activity-info-data-value activity-info-data-unit">{{activityInfo?.elevGain | number:'1.0-1' || 0 }}
             <span class="data-label">m</span>
           </div>
-          <div class="activity-info-data-name">{{'Dashboard.MyActivity.climbGain' | translate}}</div>
+          <div class="activity-info-data-name">{{'universal_activityData_climbGain' | translate}}</div>
         </div>
         <div *ngIf="activityInfo?.type === '3'"
           class="summary-item"
@@ -244,7 +244,7 @@
           <div class="activity-info-data-value activity-info-data-unit">{{activityInfo?.totalWeightKg | number:'1.0-1' || 0 }}
             <span class="data-label">kg</span>
           </div>
-          <div class="activity-info-data-name">{{'SH.totalWeight' | translate}}</div>
+          <div class="activity-info-data-name">{{'universal_activityData_totalWeight' | translate}}</div>
         </div>
         <div *ngIf="activityInfo?.type === '3'"
           class="summary-item"
@@ -252,7 +252,7 @@
           <div class="activity-info-data-value activity-info-data-unit">{{activityInfo?.totalReps || 0 }}
             <span class="data-label">reps</span>
           </div>
-          <div class="activity-info-data-name">{{ 'SH.totalReps' | translate}}</div>
+          <div class="activity-info-data-name">{{ 'universal_activityData_totalReps' | translate}}</div>
         </div>
         <div *ngIf="activityInfo?.type === '4'"
           class="summary-item"
@@ -260,7 +260,7 @@
           <div class="activity-info-data-value activity-info-data-unit">{{activityInfo?.swimAvgCadence || 0 }}
             <span class="data-label">spm</span>
           </div>
-          <div class="activity-info-data-name">{{'Dashboard.MyActivity.avgSwimReps' | translate}}</div>
+          <div class="activity-info-data-name">{{'universal_activityData_avgSwimReps' | translate}}</div>
         </div>
         <div *ngIf="activityInfo?.type === '6'"
           class="summary-item"
@@ -268,13 +268,13 @@
           <div class="activity-info-data-value activity-info-data-unit">{{activityInfo?.rowingAvgCadence || 0 }}
             <span class="data-label">rpm</span>
           </div>
-          <div class="activity-info-data-name">{{'Dashboard.MyActivity.avgRowCadence' | translate}}</div>
+          <div class="activity-info-data-name">{{'universal_activityData_avgRowCadence' | translate}}</div>
         </div>
       </div>
     </div>
     <ng-container *ngIf="isShowMap">
       <div class="ala-dashboard-title activity-title">
-        {{'Dashboard.MyActivity.map' | translate}}
+        {{'universal_activityData_map' | translate}}
       </div>
       <div style="margin-top: 15px;" *ngIf="!isHideMapRadioBtn">
         <mat-radio-group  [(ngModel)]="mapKind" style="display: flex;">
@@ -320,16 +320,16 @@
     >
       <div class="activity-title listGroup matFormParent">
         <div class="ala-dashboard-title">
-          {{'Dashboard.MyActivity.musclePart' | translate}}
+          {{'universal_activityData_musclePart' | translate}}
         </div>
         <mat-form-field class="selectList">
-          <p class="selectListPrefix">{{'Dashboard.MyActivity.weightTrainingExtent' | translate}}：</p>
+          <p class="selectListPrefix">{{'universal_activityData_weightTrainingExtent' | translate}}：</p>
           <mat-select [(value)]="proficiency"
             (selectionChange)="handleproficiency($event)"
           >
-            <mat-option value="asept">{{'Dashboard.MyActivity.highRanker' | translate}}</mat-option>
-            <mat-option value="metacarpus">{{'Dashboard.MyActivity.advanced' | translate}}</mat-option>
-            <mat-option value="Novice">{{'Dashboard.MyActivity.beginner' | translate}}</mat-option>
+            <mat-option value="asept">{{'universal_activityData_highRanker' | translate}}</mat-option>
+            <mat-option value="metacarpus">{{'universal_activityData_advanced' | translate}}</mat-option>
+            <mat-option value="Novice">{{'universal_activityData_beginner' | translate}}</mat-option>
           </mat-select>
         </mat-form-field>
       </div>
@@ -340,36 +340,44 @@
     </div>
     <div class="activity-title listGroup matFormParent">
       <div class="ala-dashboard-title">
-        {{'Dashboard.MyActivity.chart' | translate}}
+        {{'universal_vocabulary_chart' | translate}}
       </div>
       <mat-form-field class="selectList">
         <mat-select [(value)]="chartKind" (selectionChange)="handleChartKind($event)">
-          <mat-option value="lineChart">{{'Dashboard.MyActivity.trendOfChange' | translate}}</mat-option>
-          <mat-option value="columnChart">{{'Dashboard.MyActivity.segmentationResolution' | translate}}</mat-option>
+          <mat-option value="lineChart">{{'universal_activityData_trendOfChange' | translate}}</mat-option>
+          <mat-option value="columnChart">{{'universal_activityData_segmentationResolution' | translate}}</mat-option>
         </mat-select>
       </mat-form-field>
       <mat-form-field class="selectList"
         *ngIf="activityInfo?.type === '1' || activityInfo?.type === '2' || activityInfo?.type === '4' || activityInfo?.type === '6'"
       >
-        <p class="selectListPrefix">{{'Dashboard.MyActivity.inAccordanceWith' | translate}}：</p>
+        <p class="selectListPrefix">{{'universal_activityData_inAccordanceWith' | translate}}：</p>
         <mat-select [(value)]="xaxisUnit" (selectionChange)="handleChartKind($event)">
-          <mat-option value="time">{{'Dashboard.SportReport.time' | translate}}</mat-option>
+          <mat-option value="time">{{'universal_activityData_time' | translate}}</mat-option>
           <mat-option value="distance">
-          {{'Dashboard.MyActivity.distance' | translate}}
+          {{'universal_activityData_distance' | translate}}
         </mat-option>
         </mat-select>
       </mat-form-field>
       <mat-form-field *ngIf="chartKind !== 'lineChart'" class="selectList">
-        <p class="selectListPrefix">{{'Dashboard.MyActivity.segment' | translate}}：</p>
+        <p class="selectListPrefix">{{'universal_activityData_segment' | translate}}：</p>
         <mat-select [(value)]="segUnit" (selectionChange)="handleChartKind($event)">
-          <mat-option *ngIf="xaxisUnit === 'time'" value="60s">{{'Dashboard.MyActivity.everyMinutes' | translate: {'number': 1 } }}</mat-option>
-          <mat-option *ngIf="xaxisUnit === 'time'" value="300s">{{'Dashboard.MyActivity.everyMinutes' | translate: {'number': 5 } }}</mat-option>
-          <mat-option *ngIf="xaxisUnit === 'time'" value="600s">{{'Dashboard.MyActivity.everyMinutes' | translate: {'number': 10 } }}</mat-option>
-          <mat-option *ngIf="xaxisUnit === 'time'" value="1800s">{{'Dashboard.MyActivity.everyMinutes' | translate: {'number': 30 } }}</mat-option>
-          <mat-option *ngIf="xaxisUnit === 'distance'" value="100m">{{'Dashboard.MyActivity.everyUnit' | translate}} 100 m</mat-option>
-          <mat-option *ngIf="xaxisUnit === 'distance'" value="500m">{{'Dashboard.MyActivity.everyUnit' | translate}} 500 m</mat-option>
-          <mat-option *ngIf="xaxisUnit === 'distance'" value="1km">{{'Dashboard.MyActivity.everyUnit' | translate}} 1 km</mat-option>
-          <mat-option *ngIf="xaxisUnit === 'distance'" value="10km">{{'Dashboard.MyActivity.everyUnit' | translate}} 10 km</mat-option>
+          <mat-option *ngIf="xaxisUnit === 'time'" value="60s">{{'universal_activityData_everyMinutes' | translate: {'number': 1 } }}</mat-option>
+          <mat-option *ngIf="xaxisUnit === 'time'" value="300s">{{'universal_activityData_everyMinutes' | translate: {'number': 5 } }}</mat-option>
+          <mat-option *ngIf="xaxisUnit === 'time'" value="600s">{{'universal_activityData_everyMinutes' | translate: {'number': 10 } }}</mat-option>
+          <mat-option *ngIf="xaxisUnit === 'time'" value="1800s">{{'universal_activityData_everyMinutes' | translate: {'number': 30 } }}</mat-option>
+          <mat-option *ngIf="xaxisUnit === 'distance'" value="100m">
+            {{'universal_activityData_everyUnit' | translate: {'number': 100, 'unit': 'm'} }}
+          </mat-option>
+          <mat-option *ngIf="xaxisUnit === 'distance'" value="500m">
+            {{'universal_activityData_everyUnit' | translate: {'number': 500, 'unit': 'm'} }}
+          </mat-option>
+          <mat-option *ngIf="xaxisUnit === 'distance'" value="1km">
+            {{'universal_activityData_everyUnit' | translate: {'number': 1, 'unit': 'km'} }}
+          </mat-option>
+          <mat-option *ngIf="xaxisUnit === 'distance'" value="10km">
+            {{'universal_activityData_everyUnit' | translate: {'number': 10, 'unit': 'km'} }}
+          </mat-option>
         </mat-select>
       </mat-form-field>
     </div>
@@ -435,18 +443,18 @@
     </ng-container>
     <p style="page-break-inside:avoid">
       <mat-tab-group>
-        <mat-tab label="{{'Dashboard.MyActivity.detailsData' | translate}}">
+        <mat-tab label="{{'universal_activityData_detailsData' | translate}}">
           <div class="d-flex" style="flex-wrap: wrap;width:100%">
             <div class="activity-info__area">
               <div class="ala-dashboard-title activity-title">
-                {{'Dashboard.MyActivity.timing' | translate}}
+                {{'universal_activityData_timing' | translate}}
               </div>
               <div class="activity-info__area--block">
                 <div>
                   {{activityInfo?.totalSecond | sportTime}}
                 </div>
                 <span class="data-label">
-                  {{'Dashboard.MyActivity.totalTime' | translate}}
+                  {{'universal_activityData_limit_totalTime' | translate}}
                 </span>
               </div>
               <div class="activity-info__area--block"
@@ -459,13 +467,13 @@
                   class="data-label"
                   *ngIf="activityInfo?.type === '1' || activityInfo?.type === '2' || activityInfo?.type === '4' || activityInfo?.type === '6'"
                 >
-                  {{'Dashboard.MyActivity.movingTime' | translate}}
+                  {{'universal_activityData_movingTime' | translate}}
                 </span>
                 <span
                   class="data-label"
                   *ngIf="activityInfo?.type === '3' || activityInfo?.type === '5'"
                 >
-                  {{'Dashboard.MyActivity.activityTime' | translate}}
+                  {{'universal_activityData_activityTime' | translate}}
                 </span>
               </div>
               <div class="activity-info__area--block"
@@ -475,7 +483,7 @@
                   {{activityInfo?.totalRestSecond | sportTime}}
                 </div>
                 <span class="data-label">
-                  {{'Dashboard.MyActivity.restTime' | translate}}
+                  {{'universal_activityData_restTime' | translate}}
                 </span>
               </div>
             </div>
@@ -485,13 +493,13 @@
             >
               <div class="ala-dashboard-title activity-title">
                 <span *ngIf="activityInfo?.type === '1'">
-                  1km{{'SH.pace' | translate}}
+                  1km{{'universal_activityData_pace' | translate}}
                 </span>
                 <span *ngIf="activityInfo?.type === '4'">
-                  100m{{'SH.pace' | translate}}
+                  100m{{'universal_activityData_pace' | translate}}
                 </span>
                 <span *ngIf="activityInfo?.type === '6'">
-                  500m{{'SH.pace' | translate}}
+                  500m{{'universal_activityData_pace' | translate}}
                   </span>
               </div>
               <div class="activity-info__area--block" *ngIf="activityInfo?.avgSpeed">
@@ -503,7 +511,7 @@
                 </div>
                 <div class="data-label">
                   <span>
-                    {{'SH.avgPace' | translate}}
+                    {{'universal_activityData_avgPace' | translate}}
                   </span>
                 </div>
               </div>
@@ -516,13 +524,13 @@
                 </div>
                 <div class="data-label">
                   <span *ngIf="activityInfo?.type === '1'">
-                    {{'Dashboard.MyActivity.bestMovingKilometerPace' | translate}}
+                    {{'universal_activityData_bestMovingKilometerPace' | translate}}
                   </span>
                   <span *ngIf="activityInfo?.type === '4'">
-                    {{'Dashboard.MyActivity.avgMoving100mPace' | translate}}
+                    {{'universal_activityData_avgMoving100mPace' | translate}}
                   </span>
                   <span *ngIf="activityInfo?.type === '6'">
-                    {{'Dashboard.MyActivity.avgMoving500mPace' | translate}}
+                    {{'universal_activityData_avgMoving500mPace' | translate}}
                   </span>
                 </div>
               </div>
@@ -535,7 +543,7 @@
                 </div>
                 <div class="data-label">
                   <span>
-                    {{'Dashboard.MyActivity.liveBestPace' | translate}}
+                    {{'universal_activityData_liveBestPace' | translate}}
                   </span>
                 </div>
               </div>
@@ -544,7 +552,7 @@
               *ngIf="activityInfo?.type !== '3' && activityInfo?.type !== '5'"
             >
               <div class="ala-dashboard-title activity-title">
-                {{'SH.speed' | translate}}
+                {{'universal_activityData_speed' | translate}}
               </div>
               <div class="activity-info__area--block">
                 <div>
@@ -552,7 +560,7 @@
                   <span class="data-label">km/h</span>
                 </div>
                 <span class="data-label">
-                  {{'SH.avgSpeed' | translate}}
+                  {{'universal_activityData_limit_avgSpeed' | translate}}
                 </span>
               </div>
               <div class="activity-info__area--block">
@@ -561,7 +569,7 @@
                   <span class="data-label">km/h</span>
                 </div>
                 <span class="data-label">
-                  {{'Dashboard.MyActivity.avgMovingSpeed' | translate}}
+                  {{'universal_activityData_avgMovingSpeed' | translate}}
                 </span>
               </div>
               <div class="activity-info__area--block">
@@ -570,7 +578,7 @@
                   <span class="data-label">km/h</span>
                 </div>
                 <span class="data-label">
-                  {{'Dashboard.MyActivity.maxSpeed' | translate}}
+                  {{'universal_activityData_maxSpeed' | translate}}
                 </span>
               </div>
             </div>
@@ -578,7 +586,7 @@
               *ngIf="activityInfo?.type !== '4' && activityInfo?.type !== '6'"
             >
               <div class="ala-dashboard-title activity-title">
-                {{'SH.hr' | translate}}
+                {{'universal_activityData_hr' | translate}}
               </div>
               <div class="activity-info__area--block">
                 <div>
@@ -586,7 +594,7 @@
                   <span class="data-label">bpm</span>
                 </div>
                 <span class="data-label">
-                  {{ 'SH.avgHr' | translate}}
+                  {{ 'universal_activityData_avgHr' | translate}}
                 </span>
               </div>
               <div class="activity-info__area--block">
@@ -595,7 +603,7 @@
                   <span class="data-label">bpm</span>
                 </div>
                 <span class="data-label">
-                  {{ 'SH.maxHr' | translate}}
+                  {{ 'universal_userProfile_maxHr' | translate}}
                 </span>
               </div>
             </div>
@@ -603,7 +611,7 @@
               *ngIf="activityInfo?.type === '1'"
             >
               <div class="ala-dashboard-title activity-title">
-                {{'Dashboard.MyActivity.runDynamics' | translate}}
+                {{'universal_activityData_runDynamics' | translate}}
               </div>
               <div class="activity-info__area--block">
                 <div>
@@ -611,7 +619,7 @@
                   <span class="data-label">spm</span>
                 </div>
                 <span class="data-label">
-                  {{'Dashboard.MyActivity.avgStepCadence' | translate}}
+                  {{'universal_activityData_avgStepCadence' | translate}}
                 </span>
               </div>
               <div class="activity-info__area--block">
@@ -620,7 +628,7 @@
                   <span class="data-label">spm</span>
                 </div>
                 <span class="data-label">
-                  {{'Dashboard.MyActivity.maxStepCadence' | translate}}
+                  {{'universal_activityData_maxStepCadence' | translate}}
                 </span>
               </div>
               <div class="activity-info__area--block">
@@ -629,7 +637,7 @@
                   <span class="data-label">cm</span>
                 </div>
                 <span class="data-label">
-                  {{'Dashboard.MyActivity.avgStepLength' | translate}}
+                  {{'universal_activityData_avgStepLength' | translate}}
                 </span>
               </div>
             </div>
@@ -637,7 +645,7 @@
               *ngIf="activityInfo?.type === '2'"
             >
               <div class="ala-dashboard-title activity-title">
-                {{'Dashboard.MyActivity.cyclingDynamics' | translate}}
+                {{'universal_activityData_cyclingDynamics' | translate}}
               </div>
               <div class="activity-info__area--block">
                 <div>
@@ -645,7 +653,7 @@
                   <span class="data-label">rpm</span>
                 </div>
                 <span class="data-label">
-                  {{'Dashboard.MyActivity.avgCyclingCadence' | translate}}
+                  {{'universal_activityData_avgCyclingCadence' | translate}}
                 </span>
               </div>
               <div class="activity-info__area--block">
@@ -654,7 +662,7 @@
                   <span class="data-label">rpm</span>
                 </div>
                 <span class="data-label">
-                  {{'Dashboard.MyActivity.maxCyclingCadence' | translate}}
+                  {{'universal_activityData_maxCyclingCadence' | translate}}
                 </span>
               </div>
             </div>
@@ -663,7 +671,7 @@
                 (activityInfo?.elevGain || activityInfo?.elevLoss)"
             >
               <div class="ala-dashboard-title activity-title">
-                {{'Dashboard.MyActivity.climb' | translate}}
+                {{'universal_activityData_climb' | translate}}
               </div>
               <div class="activity-info__area--block"
                 *ngIf="activityInfo?.elevGain"
@@ -673,7 +681,7 @@
                   <span class="data-label">m</span>
                 </div>
                 <span class="data-label">
-                  {{'Dashboard.MyActivity.climbGain' | translate}}
+                  {{'universal_activityData_climbGain' | translate}}
                 </span>
               </div>
               <div class="activity-info__area--block"
@@ -684,7 +692,7 @@
                   <span class="data-label">m</span>
                 </div>
                 <span class="data-label">
-                  {{'Dashboard.MyActivity.climbLoss' | translate}}
+                  {{'universal_activityData_climbLoss' | translate}}
                 </span>
               </div>
             </div>
@@ -697,7 +705,7 @@
               ))"
             >
               <div class="ala-dashboard-title activity-title">
-                {{'SH.power' | translate}}
+                {{'universal_activityData_power' | translate}}
               </div>
               <div class="activity-info__area--block"
                 *ngIf="activityInfo?.cycleAvgWatt || activityInfo?.rowingAvgWatt"
@@ -711,7 +719,7 @@
                   <span class="data-label">w</span>
                 </div>
                 <span class="data-label">
-                  {{'Dashboard.MyActivity.avgPower' | translate}}
+                  {{'universal_activityData_avgPower' | translate}}
                 </span>
               </div>
               <div class="activity-info__area--block"
@@ -726,7 +734,7 @@
                   <span class="data-label">w</span>
                 </div>
                 <span class="data-label">
-                  {{'Dashboard.MyActivity.maxPower' | translate}}
+                  {{'universal_activityData_maxPower' | translate}}
                 </span>
               </div>
             </div>
@@ -735,7 +743,7 @@
               (activityInfo?.maxElev|| activityInfo?.minElev)"
             >
               <div class="ala-dashboard-title activity-title">
-                {{'Dashboard.MyActivity.altitude' | translate}}
+                {{'universal_activityData_altitude' | translate}}
               </div>
               <div class="activity-info__area--block"
                 *ngIf="activityInfo?.maxElev"
@@ -745,7 +753,7 @@
                   <span class="data-label">m</span>
                 </div>
                 <span class="data-label">
-                  {{'Dashboard.MyActivity.maxAltitude' | translate}}
+                  {{'universal_activityData_maxAltitude' | translate}}
                 </span>
               </div>
               <div class="activity-info__area--block"
@@ -756,7 +764,7 @@
                   <span class="data-label">m</span>
                 </div>
                 <span class="data-label">
-                  {{'Dashboard.MyActivity.minAltitude' | translate}}
+                  {{'universal_activityData_minAltitude' | translate}}
                 </span>
               </div>
             </div>
@@ -765,7 +773,7 @@
               (activityInfo?.maxTemp || activityInfo?.minTemp)"
             >
               <div class="ala-dashboard-title activity-title">
-                {{'Dashboard.MyActivity.temperature' | translate}}
+                {{'universal_activityData_temperature' | translate}}
               </div>
               <div class="activity-info__area--block"
               *ngIf="activityInfo?.maxTemp"
@@ -775,7 +783,7 @@
                   <span class="data-label">°C</span>
                 </div>
                 <span class="data-label">
-                  {{'Dashboard.MyActivity.maxTemperature' | translate}}
+                  {{'universal_activityData_maxTemperature' | translate}}
                 </span>
               </div>
               <div class="activity-info__area--block"
@@ -786,7 +794,7 @@
                   <span class="data-label">°C</span>
                 </div>
                 <span class="data-label">
-                  {{'Dashboard.MyActivity.lowTemperature' | translate}}
+                  {{'universal_activityData_lowTemperature' | translate}}
                 </span>
               </div>
             </div>
@@ -794,7 +802,7 @@
               *ngIf="activityInfo?.type === '3'"
             >
               <div class="ala-dashboard-title activity-title">
-                {{'Dashboard.MyActivity.sets' | translate}}
+                {{'universal_activityData_sets' | translate}}
               </div>
               <div class="activity-info__area--block">
                 <div>
@@ -802,7 +810,7 @@
                   <span class="data-label">sets</span>
                 </div>
                 <span class="data-label">
-                  {{'Dashboard.MyActivity.totalSets' | translate}}
+                  {{'universal_activityData_totalSets' | translate}}
                 </span>
               </div>
               <div class="activity-info__area--block">
@@ -811,7 +819,7 @@
                   <span class="data-label">reps</span>
                 </div>
                 <span class="data-label">
-                  {{ 'SH.totalReps' | translate}}
+                  {{ 'universal_activityData_totalReps' | translate}}
                 </span>
               </div>
             </div>
@@ -819,7 +827,7 @@
               *ngIf="activityInfo?.type === '4'"
             >
               <div class="ala-dashboard-title activity-title">
-                {{'Dashboard.MyActivity.swimmingDynamics' | translate}}
+                {{'universal_activityData_swinmingDynamics' | translate}}
               </div>
               <div class="activity-info__area--block">
                 <div>
@@ -827,7 +835,7 @@
                   <span class="data-label">spm</span>
                 </div>
                 <span class="data-label">
-                  {{'Dashboard.MyActivity.avgSwimReps' | translate}}({{'Dashboard.MyActivity.swim' | translate}})
+                  {{'universal_activityData_avgSwimReps' | translate}}({{'universal_activityData_swin' | translate}})
                 </span>
               </div>
               <div class="activity-info__area--block">
@@ -836,7 +844,7 @@
                   <span class="data-label">spm</span>
                 </div>
                 <span class="data-label">
-                  {{'Dashboard.MyActivity.baetSwimReps' | translate}}({{'Dashboard.MyActivity.swim' | translate}})
+                  {{'universal_activityData_maxSwimmingCadence' | translate}}({{'universal_activityData_swin' | translate}})
                 </span>
               </div>
             </div>
@@ -844,7 +852,7 @@
               *ngIf="activityInfo?.type === '4'"
             >
               <div class="ala-dashboard-title activity-title">
-                {{'Dashboard.MyActivity.SwimPool' | translate}}
+                {{'universal_activityData_swinPool' | translate}}
               </div>
               <div class="activity-info__area--block">
                 <div>
@@ -852,7 +860,7 @@
                   <span class="data-label">m</span>
                 </div>
                 <span class="data-label">
-                  {{'Dashboard.MyActivity.poolLength' | translate}}
+                  {{'universal_activityData_poolLength' | translate}}
                 </span>
               </div>
               <div class="activity-info__area--block">
@@ -861,7 +869,7 @@
                   <span class="data-label">spm</span>
                 </div>
                 <span class="data-label">
-                  {{'Dashboard.MyActivity.avgStrokeCadence' | translate}}
+                  {{'universal_activityData_avgStrokeCadence' | translate}}
                 </span>
               </div>
             </div>
@@ -869,7 +877,7 @@
               *ngIf="activityInfo?.type === '6'"
             >
               <div class="ala-dashboard-title activity-title">
-                {{'Dashboard.MyActivity.rowingDynamic' | translate}}
+                {{'universal_activityData_rowingDynamic' | translate}}
               </div>
               <div class="activity-info__area--block">
                 <div>
@@ -877,7 +885,7 @@
                   <span class="data-label">rpm</span>
                 </div>
                 <span class="data-label">
-                  {{'Dashboard.MyActivity.avgRowCadence' | translate}}({{'Dashboard.MyActivity.row' | translate}})
+                  {{'universal_activityData_avgRowCadence' | translate}}({{'universal_activityData_row' | translate}})
                 </span>
               </div>
               <div class="activity-info__area--block">
@@ -886,18 +894,18 @@
                   <span class="data-label">rpm</span>
                 </div>
                 <span class="data-label">
-                  {{'Dashboard.MyActivity.baetRowReps' | translate}}({{'Dashboard.MyActivity.row' | translate}})
+                  {{'universal_activityData_baetRowReps' | translate}}({{'universal_activityData_row' | translate}})
                 </span>
               </div>
             </div>
           </div>
         </mat-tab>
-        <mat-tab label="{{'Dashboard.MyActivity.segmentationData' | translate}}">
+        <mat-tab label="{{'universal_activityData_segmentationData' | translate}}">
           <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
             <ng-container matColumnDef="status-lapIndex">
               <th mat-header-cell *matHeaderCellDef>
                 <div>
-                  <span>{{'Dashboard.MyActivity.numero' | translate}}</span>
+                  <span>{{'universal_activityData_numero' | translate}}</span>
                 </div>
               </th>
               <td mat-cell *matCellDef="let element; let i = index;">
@@ -929,8 +937,8 @@
             </ng-container>
             <ng-container matColumnDef="dispName">
               <th mat-header-cell *matHeaderCellDef>
-                <span *ngIf="activityInfo?.type === '3'">{{'Dashboard.MyActivity.setName' | translate}}</span>
-                <span *ngIf="activityInfo?.type === '4'">{{'Dashboard.MyActivity.swimPosture' | translate}}</span>
+                <span *ngIf="activityInfo?.type === '3'">{{'universal_activityData_setName' | translate}}</span>
+                <span *ngIf="activityInfo?.type === '4'">{{'universal_activityData_swinPosture' | translate}}</span>
               </th>
               <ng-container *ngIf="activityInfo?.type !== '4'">
                 <td mat-cell *matCellDef="let element"
@@ -939,19 +947,19 @@
               <ng-container *ngIf="activityInfo?.type === '4'">
                 <td mat-cell *matCellDef="let element">
                   <span *ngIf="element.lapSwimPosture === '1'">
-                    {{'Dashboard.MyActivity.individualMedley' | translate}}
+                    {{'universal_activityData_individualMedley' | translate}}
                   </span>
                   <span *ngIf="element.lapSwimPosture === '2'">
-                    {{'Dashboard.MyActivity.freestyle' | translate}}
+                    {{'universal_activityData_freestyle' | translate}}
                   </span>
                   <span *ngIf="element.lapSwimPosture === '3'">
-                    {{'Dashboard.MyActivity.breastStroke' | translate}}
+                    {{'universal_activityData_breastStroke' | translate}}
                   </span>
                   <span *ngIf="element.lapSwimPosture === '4'">
-                    {{'Dashboard.MyActivity.backStroke' | translate}}
+                    {{'universal_activityData_backStroke' | translate}}
                   </span>
                   <span *ngIf="element.lapSwimPosture === '5'">
-                    {{'Dashboard.MyActivity.butterflyStroke' | translate}}
+                    {{'universal_activityData_butterflyStroke' | translate}}
                   </span>
                 </td>
               </ng-container>
@@ -960,15 +968,15 @@
               <th mat-header-cell *matHeaderCellDef>
                 <div *ngIf="activityInfo?.type !== '3'" class="segmentation-info-title">
                   <span *ngIf="activityInfo?.type === '4'">
-                    {{'Dashboard.MyActivity.avgSwimReps' | translate}}
+                    {{'universal_activityData_avgSwimReps' | translate}}
                   </span>
                   <span *ngIf="activityInfo?.type === '6'">
-                    {{'Dashboard.MyActivity.avgRowCadence' | translate}}
+                    {{'universal_activityData_avgRowCadence' | translate}}
                   </span>
                   <span class="data-label">rpm</span>
                 </div>
                 <div *ngIf="activityInfo?.type === '3'" class="segmentation-info-title">
-                  <span>{{'Dashboard.MyActivity.liveTempo' | translate}}</span>
+                  <span>{{'universal_activityData_liveTempo' | translate}}</span>
                   <span class="data-label">spm</span>
                 </div>
               </th>
@@ -988,11 +996,11 @@
             <ng-container matColumnDef="totalRepo">
               <th mat-header-cell *matHeaderCellDef>
                 <div class="segmentation-info-title">
-                  <span *ngIf="activityInfo?.type === '3'">{{'Dashboard.MyActivity.reps' | translate}}</span>
+                  <span *ngIf="activityInfo?.type === '3'">{{'universal_activityData_setReps' | translate}}</span>
                   <span *ngIf="activityInfo?.type === '4' || activityInfo?.type === '6'">
-                    {{'Dashboard.MyActivity.numberOfStrokes' | translate}}
-                    <span *ngIf="activityInfo?.type === '4'">({{'Dashboard.MyActivity.swim' | translate}})</span>
-                    <span *ngIf="activityInfo?.type === '6'">({{'Dashboard.MyActivity.row' | translate}})</span>
+                    {{'universal_activityData_numberOfStrokes' | translate}}
+                    <span *ngIf="activityInfo?.type === '4'">({{'universal_activityData_swin' | translate}})</span>
+                    <span *ngIf="activityInfo?.type === '6'">({{'universal_activityData_row' | translate}})</span>
                   </span>
                   <span class="data-label">reps</span>
                 </div>
@@ -1013,7 +1021,7 @@
             <ng-container matColumnDef="totalWeight">
               <th mat-header-cell *matHeaderCellDef>
                 <div class="segmentation-info-title">
-                  {{'Dashboard.MyActivity.setWeight' | translate}}
+                  {{'universal_activityData_setWeight' | translate}}
                   <span class="data-label">kg</span>
                 </div>
               </th>
@@ -1023,7 +1031,7 @@
             <ng-container matColumnDef="heartRate">
               <th mat-header-cell *matHeaderCellDef>
                 <div class="segmentation-info-title">
-                  <span>{{ 'SH.avgHr' | translate}}</span>
+                  <span>{{ 'universal_activityData_avgHr' | translate}}</span>
                   <span class="data-label">bpm</span>
                 </div>
               </th>
@@ -1032,21 +1040,21 @@
             <ng-container matColumnDef="speed">
               <th mat-header-cell *matHeaderCellDef>
                 <div *ngIf="activityInfo?.type === '1'" class="segmentation-info-title">
-                  <span>{{'SH.avgPace' | translate}}</span>
+                  <span>{{'universal_activityData_avgPace' | translate}}</span>
                   <span class="data-label">min/km</span>
                 </div>
                 <div *ngIf="activityInfo?.type === '4'" class="segmentation-info-title">
-                  <span>{{'SH.avgPace' | translate}}</span>
+                  <span>{{'universal_activityData_avgPace' | translate}}</span>
                   <span class="data-label">min/100m</span>
                 </div>
                 <div *ngIf="activityInfo?.type === '6'" class="segmentation-info-title">
-                  <span>{{'SH.avgPace' | translate}}</span>
+                  <span>{{'universal_activityData_avgPace' | translate}}</span>
                   <span class="data-label">min/500m</span>
                 </div>
                 <div *ngIf="activityInfo?.type !== '4' && activityInfo?.type !== '1' && activityInfo?.type !== '6'"
                       class="segmentation-info-title"
                 >
-                  <span>{{'SH.avgSpeed' | translate}}</span>
+                  <span>{{'universal_activityData_limit_avgSpeed' | translate}}</span>
                   <span>km/h</span>
                 </div>
               </th>
@@ -1055,7 +1063,7 @@
             <ng-container matColumnDef="distance">
               <th mat-header-cell *matHeaderCellDef>
                 <div class="segmentation-info-title">
-                  <span>{{'Dashboard.MyActivity.distance' | translate}}</span>
+                  <span>{{'universal_activityData_distance' | translate}}</span>
                   <span>km</span>
                 </div>
               </th>
@@ -1079,7 +1087,7 @@
     <div class="container">
       <div class="other-info">
         <div class="ala-dashboard-title activity-title">
-          {{'Dashboard.ActivityDetail.device' | translate}}
+          {{'universal_deviceSetting_device' | translate}}
         </div>
         <div style="display:flex;align-items: center;margin-top: 10px;">
           <div class="user-photo"
@@ -1090,15 +1098,15 @@
           </div>
         </div>
         <div class="lesson-title">
-          {{ deviceInfo?.modelName || 'SH.noData' | translate }}
+          {{ deviceInfo?.modelName || 'universal_status_noData' | translate }}
         </div>
         <div>
-          {{"Portal.modeType" | translate}}：{{ (deviceInfo?.modelTypeID | productType | translate) || 'SH.noData' | translate }}
+          {{"universal_deviceSetting_modeType" | translate}}：{{ (deviceInfo?.modelTypeID | productType | translate) || 'universal_status_noData' | translate }}
         </div>
       </div>
       <div class="other-info" *ngIf="classInfo">
         <div class="ala-dashboard-title activity-title">
-          {{'Dashboard.TrainLive.courseIntroduction' | translate}}
+          {{'universal_group_courseIntroduction' | translate}}
         </div>
         <div style="display:flex; flex-direction:column; margin-top:10px">
           <div style="display:flex;align-items: center;">
@@ -1124,13 +1132,13 @@
             style="color: #5fbae3;cursor:pointer;text-align: right"
             (click)="handleExtendCoachInfo(2)"
           >
-            ...{{ "Dashboard.TrainLive.more" | translate}}
+            ...{{ "universal_operating_more" | translate}}
           </div>
         </div>
       </div>
       <div class="other-info" *ngIf="coachInfo">
         <div class="ala-dashboard-title activity-title">
-          {{'Dashboard.TrainLive.coachIntroduction' | translate}}
+          {{'universal_group_coachIntroduction' | translate}}
         </div>
         <div style="display:flex; flex-direction:column; margin-top:10px">
           <div class="user-photo user-photo--portrait" style="margin: 0 auto">
@@ -1145,7 +1153,7 @@
             style="color: #5fbae3;cursor:pointer;text-align: right"
             (click)="handleExtendCoachInfo(1)"
           >
-            {{ "Dashboard.TrainLive.more" | translate}}...
+            {{ "universal_operating_more" | translate}}...
           </div>
         </div>
       </div>
@@ -1153,7 +1161,7 @@
     <!-- <div class="container other-info--section"> -->
       <div class="other-info" *ngIf="fileInfo?.note">
         <div class="ala-dashboard-title activity-title">
-          {{'Dashboard.ActivityDetail.brief' | translate}}
+          {{'universal_vocabulary_brief' | translate}}
         </div>
         <div>
           {{fileInfo?.note}}
@@ -1161,27 +1169,27 @@
       </div>
       <div class="other-info" *ngIf="fileInfo?.location">
         <div class="ala-dashboard-title activity-title">
-          {{'Dashboard.ActivityDetail.coordinate' | translate}}
+          {{'universal_activityData_coordinate' | translate}}
         </div>
         {{fileInfo?.location}}
       </div>
       <div class="other-info" *ngIf="fileInfo">
         <div class="ala-dashboard-title activity-title">
-          {{'Dashboard.ActivityDetail.fileInfo' | translate}}
+          {{'universal_activityData_fileInfo' | translate}}
         </div>
         <div>
-          {{'Dashboard.ActivityDetail.dataFormatVersion' | translate}}：{{fileInfo?.versionName}}
+          {{'universal_activityData_dataFormatVersion' | translate}}：{{fileInfo?.versionName}}
         </div>
         <div>
-          {{'Dashboard.ActivityDetail.syncDate' | translate}}：{{fileInfo?.syncDate}}
+          {{'universal_activityData_syncDate' | translate}}：{{fileInfo?.syncDate}}
         </div>
         <div>
-          {{'Dashboard.ActivityDetail.editTime' | translate}}：{{fileInfo?.editDate}}
+          {{'universal_activityData_editTime' | translate}}：{{fileInfo?.editDate}}
         </div>
       </div>
       <div class="other-info" *ngIf="fileInfo?.tag">
         <div class="ala-dashboard-title activity-title">
-          {{'Dashboard.ActivityDetail.tag' | translate}}
+          {{'universal_activityData_tag' | translate}}
         </div>
         <div>
           {{fileInfo?.tag}}

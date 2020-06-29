@@ -286,7 +286,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
       case 'Step':
         trendDataset = [
           {
-            name: [this.translate.instant('other.StepCount'), this.translate.instant('other.targetStep')],
+            name: [this.translate.instant('universal_userProfile_StepCount'), this.translate.instant('universal_lifeTracking_targetStep')],
             data: chartData,
             showInLegend: false
           }

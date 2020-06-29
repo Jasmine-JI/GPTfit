@@ -1,23 +1,40 @@
 <h3>
-    {{'Dashboard.Settings.set' | translate}}
+    {{'universal_privacy_set' | translate}}
   <div class="device-hint"
     (mouseenter)="mouseEnter()"
     (mouseleave)="mouseLeave()"
   >
     <mat-icon style="color: #157fcc">help</mat-icon>
     <div class="device-hint-box" *ngIf="isDisplayBox">
-      {{deviceTip}}
+      <p [innerHTML]="i18n.description"></p>
+      <p>
+        ※{{'universal_privacy_privacyOption' | translate}}
+      </p>
+      <div>
+        <p>
+          ○{{'universal_group_objectOnly' | translate: {'object': i18n.admin} }}：{{'universal_privacy_yourAdministrator' | translate}}
+        </p>
+        <p>
+          ○{{'universal_group_objectOnly' | translate: {'object': i18n.sameGroup} }} {{'universal_status_noOpen' | translate}}
+        </p>
+        <p>
+          ○{{'universal_group_objectOnly' | translate: {'object': i18n.friends} }} {{'universal_status_noOpen' | translate}}
+        </p>
+        <p>
+          ○{{'universal_privacy_allMember' | translate}}：{{'universal_privacy_anyoneCanSee' | translate}}
+        </p>
+      </div>
     </div>
   </div>
 </h3>
 <label class="ala-form__label settings-label"
   style="text-align: left"
 >
-  {{'Dashboard.Settings.set' | translate}}
+  {{'universal_privacy_set' | translate}}
 </label>
 <div class="control-list">
   <label class="ala-form__label settings-item" [style.width]="showBatchChangeBox ? '100%': 'fit-content'">
-    {{'Dashboard.privacySettings.newAvtivityData' | translate}}
+    {{'universal_privacy_newAvtivityData' | translate}}
     <app-hover-hint [type]="'sportsFile'" [leftPosition]="true" (showBox)="showBox($event)"></app-hover-hint>
   </label>
   <div class="settings-control flexCol">
@@ -29,21 +46,19 @@
           color="primary"
           (click)="selectModifyRange('file', '99')"
         >
-          {{'Dashboard.privacySettings.allMember' | translate}}
+          {{'universal_privacy_allMember' | translate}}
         </mat-radio-button>
       </mat-radio-group>
       <div *ngIf="activityTracking.showPerObj">
         <mat-checkbox
-          id="selectFileObj"
           color="primary"
           [checked]="activityTracking.openObj.indexOf('4') >= 0"
           (click)="selectModifyRange('file', '4')"
         >
-          {{ 'other.myObject' | translate }}
-          {{ 'other.gymBrand' | translate }}
+          {{ 'universal_group_myObject' | translate: {'object': i18n.gym} }}
           /
-          {{ 'other.company' | translate }}
-          {{ 'Dashboard.Group.GroupInfo.administrator' | translate }}
+          {{ 'universal_group_enterprise' | translate }}
+          {{ 'universal_group_administrator' | translate }}
         </mat-checkbox>
       </div>
     </div>
@@ -51,13 +66,13 @@
       (click)="handlePrivacySetting('file')"
       *ngIf="activityTracking.showConfirmBtn"
     >
-      {{'other.confirm' | translate}}
+      {{'universal_operating_confirm' | translate}}
     </button>
   </div>
 </div>
 <div class="control-list">
   <label class="ala-form__label settings-item" [style.width]="showBatchChangeBox ? '100%': 'fit-content'">
-    {{'Dashboard.privacySettings.newAvtivityReport' | translate}}
+    {{'universal_privacy_newAvtivityReport' | translate}}
     <app-hover-hint [type]="'sportsReport'" [leftPosition]="true" (showBox)="showBox($event)"></app-hover-hint>
   </label>
   <div class="settings-control flexCol">
@@ -69,7 +84,7 @@
           color="primary"
           (click)="selectModifyRange('sportReport', '99')"
         >
-          {{'Dashboard.privacySettings.allMember' | translate}}
+          {{'universal_privacy_allMember' | translate}}
         </mat-radio-button>
       </mat-radio-group>
       <div *ngIf="activityTrackingReport.showPerObj">
@@ -79,11 +94,10 @@
           [checked]="activityTrackingReport.openObj.indexOf('4') >= 0"
           (click)="selectModifyRange('sportReport', '4')"
         >
-          {{ 'other.myObject' | translate }}
-          {{ 'other.gymBrand' | translate }}
+          {{ 'universal_group_myObject' | translate: {'object': i18n.gym} }}
           /
-          {{ 'other.company' | translate }}
-          {{ 'Dashboard.Group.GroupInfo.administrator' | translate }}
+          {{ 'universal_group_enterprise' | translate }}
+          {{ 'universal_group_administrator' | translate }}
         </mat-checkbox>
       </div>
     </div>
@@ -91,13 +105,13 @@
       (click)="handlePrivacySetting('sportFile')"
       *ngIf="activityTrackingReport.showConfirmBtn"
     >
-      {{'other.confirm' | translate}}
+      {{'universal_operating_confirm' | translate}}
     </button>
   </div>
 </div>
 <div class="control-list">
   <label class="ala-form__label settings-item" [style.width]="showBatchChangeBox ? '100%': 'fit-content'">
-    {{'Dashboard.privacySettings.newLifeTrackingReport' | translate}}
+    {{'universal_privacy_newLifeTrackingReport' | translate}}
     <app-hover-hint [type]="'lifeTrackingReport'" [leftPosition]="true" (showBox)="showBox($event)"></app-hover-hint>
   </label>
   <div class="settings-control flexCol">
@@ -109,7 +123,7 @@
           color="primary"
           (click)="selectModifyRange('lifeTracking', '99')"
         >
-          {{'Dashboard.privacySettings.allMember' | translate}}
+          {{'universal_privacy_allMember' | translate}}
         </mat-radio-button>
       </mat-radio-group>
       <div *ngIf="lifeTrackingReport.showPerObj">
@@ -119,11 +133,10 @@
           [checked]="lifeTrackingReport.openObj.indexOf('4') >= 0"
           (click)="selectModifyRange('lifeTracking', '4')"
         >
-          {{ 'other.myObject' | translate }}
-          {{ 'other.gymBrand' | translate }}
+          {{ 'universal_group_myObject' | translate: {'object': i18n.gym} }}
           /
-          {{ 'other.company' | translate }}
-          {{ 'Dashboard.Group.GroupInfo.administrator' | translate }}
+          {{ 'universal_group_enterprise' | translate }}
+          {{ 'universal_group_administrator' | translate }}
         </mat-checkbox>
       </div>
     </div>
@@ -131,7 +144,7 @@
       (click)="handlePrivacySetting('lifeTracking')"
       *ngIf="lifeTrackingReport.showConfirmBtn"
     >
-      {{'other.confirm' | translate}}
+      {{'universal_operating_confirm' | translate}}
     </button>
   </div>
 </div>
@@ -139,7 +152,7 @@
 <label class="ala-form__label settings-label"
   style="text-align: left"
 >
-  {{'other.batchEditPrivacy' | translate: {'object': editObject } }}
+  {{'universal_privacy_batchEditPrivacy' | translate: {'object': editObject } }}
 </label>
 <div class="flexCol">
   <div
@@ -147,7 +160,7 @@
     [style.width]="showBatchChangeBox ? '100%': 'fit-content'"
     (click)="showBatchModification('1')"
   >
-    {{'other.eventArchive' | translate }}
+    {{'universal_activityData_eventArchive' | translate }}
     <app-hover-hint [type]="'sportsFile'" (showBox)="showBox($event)"></app-hover-hint>
   </div>
   <div
@@ -155,7 +168,7 @@
     [style.width]="showBatchChangeBox ? '100%': 'fit-content'"
     (click)="showBatchModification('2')"
   >
-    {{'other.sportsStatistics' | translate }}
+    {{'universal_activityData_sportsStatistics' | translate }}
     <app-hover-hint [type]="'sportsReport'" (showBox)="showBox($event)"></app-hover-hint>
   </div>
   <div
@@ -163,7 +176,7 @@
     [style.width]="showBatchChangeBox ? '100%': 'fit-content'"
     (click)="showBatchModification('3')"
   >
-    {{'other.lifeStatistics' | translate }}
+    {{'universal_lifeTracking_lifeStatistics' | translate }}
     <app-hover-hint [type]="'lifeTrackingReport'" (showBox)="showBox($event)"></app-hover-hint>
   </div>
 </div>
@@ -171,25 +184,25 @@
 <label class="ala-form__label settings-label"
   style="text-align: left"
 >
-{{'Dashboard.Settings.privacyArea' | translate}}{{'SH.noOpen' | translate}}
+ {{'universal_privacy_privacyArea' | translate}} {{'universal_status_noOpen' | translate}}
 </label>
 <div class="control-list">
   <label class="ala-form__label settings-item">
-    {{'Dashboard.Settings.privacyAreaDescription' | translate}}
+    {{'universal_privacy_privacyAreaDescription' | translate}}
   </label>
 </div>
 
 <div>
   <mat-tab-group  class="ala-tab-group">
-    <mat-tab label="{{'Dashboard.Settings.yourPrivacyArea' | translate}}">
+    <mat-tab label="{{'universal_privacy_yourPrivacyArea' | translate}}">
       <div style="width: 100%;text-align: center;margin: 44px 0px 22px">
-        {{'Dashboard.Settings.areaDescription' | translate}}
+        {{'universal_privacy_areaDescription' | translate}}
       </div>
     </mat-tab>
     <mat-tab>
       <ng-template mat-tab-label>
         <mat-icon class="area-add">add</mat-icon>
-        {{'Dashboard.Settings.addArea' | translate}}
+        {{'universal_privacy_addArea' | translate}}
       </ng-template>
           <div  #gmap style="height: 400px;"></div>
     </mat-tab>

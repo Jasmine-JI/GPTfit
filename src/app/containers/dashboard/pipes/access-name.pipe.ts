@@ -5,44 +5,44 @@ export class AccessNamePipe implements PipeTransform {
   transform(value: string, args: string[]): any {
     if (+args === 1) {
       if (value === '00') {
-        return 'Dashboard.Group.highestAuthority';
+        return 'universal_group_highestAuthority';
       } else if (value === '10') {
-        return 'Dashboard.Group.systemDeveloper';
+        return 'universal_group_systemDeveloper';
       } else if (value === '20') {
-        return 'Dashboard.Group.systemMaintenance';
+        return 'universal_group_systemMaintenance';
       } else if (value === '29') {
-        return 'Dashboard.Group.systemMarketing';
+        return 'universal_group_systemMarketing';
       } else if (value === '30') {
-        return 'Dashboard.Group.brandAdministrator';
+        return 'universal_group_brandAdministrator';
       } else if (value === '40') {
-        return 'Dashboard.Group.branchAdministrator';
+        return 'universal_group_branchAdministrator';
       } else if (value === '50') {
-        return 'Dashboard.Group.coach';
+        return 'universal_group_coach';
       } else if (value === '60') {
-        return 'Dashboard.Group.teacher';
+        return 'universal_group_teacher';
       } else if (value === '80') {
-        return 'Dashboard.Group.groupAdministrator';
-      } return 'Dashboard.Group.generalMember';
+        return 'universal_group_groupAdministrator';
+      } return 'universal_group_generalMember';
     } else {
       if (value === '00') {
-        return 'Dashboard.Group.highestAuthority';
+        return 'universal_group_highestAuthority';
       } else if (value === '10') {
-        return 'Dashboard.Group.systemDeveloper';
+        return 'universal_group_systemDeveloper';
       } else if (value === '20') {
-        return 'Dashboard.Group.systemMaintenance';
+        return 'universal_group_systemMaintenance';
       } else if (value === '29') {
-        return 'Dashboard.Group.systemMarketing';
+        return 'universal_group_systemMarketing';
       } else if (value === '30') {
-        return 'other.comAdministrator';
+        return 'universal_group_companyAdmin';
       } else if (value === '40') {
-        return 'other.subComAdministrator';
+        return 'universal_group_branchAdmin';
       } else if (value === '50') {
-        return 'other.departmentAdministrator';
+        return 'universal_group_departmentAdmin';
       } else if (value === '60') {
-        return 'other.leagueAdministrator';
+        return 'universal_group_administrator';
       } else if (value === '80') {
-        return 'Dashboard.Group.groupAdministrator';
-      } return 'Dashboard.Group.generalMember';
+        return 'universal_group_groupAdministrator';
+      } return 'universal_group_generalMember';
     }
   }
 }

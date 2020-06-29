@@ -4,13 +4,13 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class SportTypePipe implements PipeTransform {
   transform(value: string, args: string[]): any {
     const sportTypes = [
-      'Dashboard.SportReport.run',
-      'Dashboard.SportReport.cycle',
-      'Dashboard.SportReport.weightTraining',
-      'Dashboard.SportReport.swim',
-      'Dashboard.SportReport.aerobic',
-      'Dashboard.SportReport.boating',
-      'SH.noData'
+      'universal_activityData_run',
+      'universal_activityData_cycle',
+      'universal_activityData_weightTraining',
+      'universal_activityData_swin',
+      'universal_activityData_aerobic',
+      'universal_sportsName_boating',
+      'universal_status_noData'
     ];
     return sportTypes[+value - 1];
   }

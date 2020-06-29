@@ -80,7 +80,7 @@ export class UserSettingsComponent implements OnInit {
     this.settingsForm = this.fb.group({
       // 定義表格的預設值
       nameIcon: [
-        `${nameIcon}${this.updateQueryString}`,
+        `${nameIcon} ${this.updateQueryString}`,
         Validators.required
       ],
       name: [name, Validators.required],
@@ -143,9 +143,9 @@ export class UserSettingsComponent implements OnInit {
         });
         this.settingsForm.patchValue({ name });
         this.isNameError = false;
-        this.inValidText = this.translate.instant('Dashboard.Settings.fullField');
+        this.inValidText = this.translate.instant('universal_userAccount_fullField');
       } else {
-        this.inValidText = `${this.translate.instant('Dashboard.Settings.name')}${this.translate.instant('Dashboard.Settings.repeat')}`;
+        this.inValidText = `${this.translate.instant('universal_activityData_name')} ${this.translate.instant('universal_deviceSetting_repeat')}`;
         this.isNameError = true;
       }
     });
@@ -179,8 +179,8 @@ export class UserSettingsComponent implements OnInit {
         hasBackdrop: true,
         data: {
           title: 'Message',
-          body: this.translate.instant('Dashboard.Settings.selectImg'),
-          confirmText: this.translate.instant('other.confirm')
+          body: this.translate.instant('universal_operating_selectImg'),
+          confirmText: this.translate.instant('universal_operating_confirm')
         }
       });
     }
@@ -232,7 +232,7 @@ export class UserSettingsComponent implements OnInit {
 
             this.snackbar.open(
               this.translate.instant(
-                'Dashboard.Settings.finishEdit'
+                'universal_operating_finishEdit'
               ),
               'OK',
               { duration: 5000 }
@@ -259,7 +259,7 @@ export class UserSettingsComponent implements OnInit {
             });
           } else {
             this.snackbar.open(
-              this.translate.instant('Dashboard.Settings.updateFailed'),
+              this.translate.instant('universal_popUpMessage_updateFailed'),
               'OK',
               { duration: 5000 }
             );

@@ -7,7 +7,6 @@ import { Subject } from 'rxjs/Subject';
 export class CustomMatPaginatorIntl extends MatPaginatorIntl
   implements OnDestroy {
   unsubscribe: Subject<void> = new Subject<void>();
-  OF_LABEL = 'of';
 
   constructor(private translate: TranslateService) {
     super();
@@ -27,38 +26,37 @@ export class CustomMatPaginatorIntl extends MatPaginatorIntl
   getAndInitTranslations() {
     this.translate
       .get([
-        'SH.PAGINATOR.pageCount',
-        'SH.PAGINATOR.nextPage',
-        'SH.PAGINATOR.previousPage',
-        'SH.PAGINATOR.total'
+        'universal_status_pageCount',
+        'universal_operating_nextPage',
+        'universal_operating_previousPage'
       ])
       .subscribe(translation => {
-        this.itemsPerPageLabel = translation['SH.PAGINATOR.pageCount'];
-        this.nextPageLabel = translation['SH.PAGINATOR.nextPage'];
-        this.previousPageLabel = translation['SH.PAGINATOR.previousPage'];
-        this.OF_LABEL = translation['SH.PAGINATOR.total'];
+        this.itemsPerPageLabel = translation['universal_status_pageCount'];
+        this.nextPageLabel = translation['universal_operating_nextPage'];
+        this.previousPageLabel = translation['universal_operating_previousPage'];
         this.changes.next();
       });
   }
 
   getRangeLabel = (page: number, pageSize: number, length: number) => {
+    let startIndex = page * pageSize;
+    let endIndex = startIndex < length ? Math.min(startIndex + pageSize, length) : startIndex + pageSize;
+
     if (length === 0 || pageSize === 0) {
-      return `0 ${this.OF_LABEL} ${length}`;
+      startIndex = -1;
+      endIndex = 0;
     }
+
     length = Math.max(length, 0);
-    const startIndex = page * pageSize;
-    const endIndex =
-      startIndex < length
-        ? Math.min(startIndex + pageSize, length)
-        : startIndex + pageSize;
-    let text = '';
-    if (this.translate.currentLang === 'zh-tw') {
-      text = `第${startIndex + 1} - ${endIndex}筆 ${this.OF_LABEL} ${length} 筆`;
-    } else if (this.translate.currentLang === 'zh-cn') {
-      text = `第${startIndex + 1} - ${endIndex}笔 ${this.OF_LABEL} ${length} 笔`;
-    } else {
-      text = `${startIndex + 1} - ${endIndex} ${this.OF_LABEL} ${length}`;
-    }
+    const text = this.translate.instant(
+      'universal_status_page',
+      {
+        'number1': startIndex + 1,
+        'number2': endIndex,
+        'number3': length
+      }
+    );
+
     return text;
   }
 }

@@ -23,12 +23,12 @@
       >
         <li class="normal-manage" (click)="goToManage()">
           <a>
-            {{ 'Dashboard.Group.GroupInfo.management' | translate}}
+            {{ 'universal_group_management' | translate}}
           </a>
         </li>
         <li class="warn-manage" (click)="openDeleteGroupWin()">
           <a>
-            {{'Dashboard.Group.disband' | translate}} {{'Dashboard.Group.group' | translate}}
+            {{'universal_operating_disband' | translate}} {{'universal_group_group' | translate}}
           </a>
         </li>
       </ul>
@@ -42,7 +42,7 @@
       >
         <li class="warn-manage" (click)="handleRemoveAdmin()">
           <a>
-            {{ 'Dashboard.Group.GroupInfo.removeAdmin' | translate}}
+            {{ 'universal_group_removeAdmin' | translate}}
           </a>
         </li>
       </ul>
@@ -58,37 +58,37 @@
           *ngIf="coachType !== '2' && coachType !== '1'"
         >
           <a>
-            {{ 'Dashboard.Group.GroupInfo.assignAdmin' | translate}}
+            {{ 'universal_group_assignAdmin' | translate}}
           </a>
         </li>
         <li class="normal-manage" (click)="handleAssignAdmin(1)"
           *ngIf="coachType === '2'"
         >
           <a *ngIf="brandType == 1">
-            {{ 'Dashboard.Group.addObject' | translate}} {{ 'Dashboard.Group.coach' | translate}}
+            {{'universal_group_addObject' | translate: {'position': i18n.coach} }}
           </a>
           <a *ngIf="brandType == 2">
-            {{ 'Dashboard.Group.addObject' | translate}} {{ 'other.departmentAdministrator' | translate}}
+            {{'universal_group_addObject' | translate: {'position': i18n.departmentAdministrator} }}
           </a>
         </li>
         <li class="normal-manage" (click)="handleAssignAdmin(2)"
           *ngIf="coachType === '1'"
         >
           <a *ngIf="brandType == 1">
-            {{ 'Dashboard.Group.addObject' | translate}} {{ 'Dashboard.Group.teacher' | translate}}
+            {{'universal_group_addObject' | translate: {'position': i18n.teacher} }}
           </a>
           <a *ngIf="brandType == 2">
-            {{ 'Dashboard.Group.addObject' | translate}} {{ 'other.leagueAdministrator' | translate}}
+            {{'universal_group_addObject' | translate: {'position': i18n.leagueAdministrator} }}
           </a>
         </li>
         <li class="normal-manage" (click)="goToUserProfileInEditGroupInfo()">
           <a>
-            {{ 'Dashboard.Group.GroupInfo.viewProfile' | translate}}
+            {{ 'universal_group_viewProfile' | translate}}
           </a>
         </li>
         <li class="warn-manage" (click)="handleDeleteMember()">
           <a>
-            {{ 'Dashboard.Group.GroupInfo.removeMember' | translate}}
+            {{ 'universal_group_removeMember' | translate}}
           </a>
         </li>
       </ul>
@@ -102,12 +102,12 @@
       >
         <li class="normal-manage" (click)="handleJoinStatus(2)">
           <a>
-            {{ 'Dashboard.Group.GroupInfo.agree' | translate}}
+            {{ 'universal_operating_agree' | translate}}
           </a>
         </li>
         <li class="normal-manage" (click)="handleJoinStatus(3)">
           <a>
-            {{ 'Dashboard.Group.GroupInfo.refuse' | translate}}
+            {{ 'universal_operating_refuse' | translate}}
           </a>
         </li>
       </ul>

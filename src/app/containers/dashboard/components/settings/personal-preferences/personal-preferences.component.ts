@@ -142,7 +142,7 @@ export class PersonalPreferencesComponent implements OnInit {
           });
           this.snackbar.open(
             this.translate.instant(
-              'Dashboard.Settings.finishEdit'
+              'universal_operating_finishEdit'
             ),
             'OK',
             {
@@ -171,7 +171,7 @@ export class PersonalPreferencesComponent implements OnInit {
           });
         } else {
           this.snackbar.open(
-            this.translate.instant('Dashboard.Settings.updateFailed'),
+            this.translate.instant('universal_popUpMessage_updateFailed'),
             'OK',
             { duration: 5000 }
           );

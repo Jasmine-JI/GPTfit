@@ -279,19 +279,19 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
 
     dataSet = [
       {
-        name: this.translate.instant('other.lightSleep'),
+        name: this.translate.instant('universal_lifeTracking_lightSleep'),
         data: lightSleepData,
         showInLegend: false,
         color: '#35a8c9'
       },
       {
-        name: this.translate.instant('other.deepSleep'),
+        name: this.translate.instant('universal_lifeTracking_deepSleep'),
         data: deepSleepData,
         showInLegend: false,
         color: '#1e61bb'
       },
       {
-        name: this.translate.instant('other.wideAwake'),
+        name: this.translate.instant('universal_lifeTracking_wideAwake'),
         data: awakeData,
         showInLegend: false,
         color: '#ccff00'

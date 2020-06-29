@@ -17,6 +17,10 @@ import { MatDialog } from '@angular/material';
 })
 export class AppChangeAccountComponent implements OnInit, OnDestroy {
 
+  i18n = {
+    email: '',
+    password: ''
+  };
   displayPW = false;
   dataIncomplete = true;
   sending = false;
@@ -58,11 +62,11 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
   selectLists = [
     {
       name: 'email',
-      i18nKey: 'Portal.email'
+      i18nKey: 'universal_userAccount_email'
     },
     {
       name: 'phone',
-      i18nKey: 'Portal.phone'
+      i18nKey: 'universal_userAccount_phone'
     }
   ];
 
@@ -101,7 +105,12 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private router: Router,
     public getClientIp: GetClientIpService
-  ) { }
+  ) {
+    translate.onLangChange.subscribe(() => {
+      this.getTranslate();
+    });
+
+  }
 
   ngOnInit() {
 
@@ -122,6 +131,18 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
       if (res === false && this.pcView === true) {
         return this.router.navigateByUrl('/signIn-web');
       }
+    });
+
+  }
+
+  // 取得多國語系翻譯-kidin-1090620
+  getTranslate () {
+    this.translate.get('hollo word').subscribe(() => {
+      this.i18n = {
+        email: this.translate.instant('universal_userAccount_account'),
+        password: this.translate.instant('universal_userAccount_password')
+      };
+
     });
 
   }
@@ -213,7 +234,7 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
       const inputEmail = e.currentTarget.value;
 
       if (inputEmail.length === 0 || !this.regCheck.email.test(inputEmail)) {
-        this.cue.email = this.translate.instant('Portal.emailFormat');
+        this.cue.email = 'universal_userAccount_emailFormat';
         this.regCheck.emailPass = false;
       } else {
         this.editBody.newEmail = inputEmail;
@@ -255,7 +276,7 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
       const inputPassword = e.currentTarget.value;
 
       if (!this.regCheck.password.test(inputPassword)) {
-        this.cue.password = this.translate.instant('Portal.passwordFormat');
+        this.cue.password = 'universal_userAccount_passwordFormat';
         this.regCheck.passwordPass = false;
       } else {
         this.editBody.oldPassword = inputPassword;
@@ -294,7 +315,7 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
       const inputImgCaptcha = e.currentTarget.value;
 
       if (inputImgCaptcha.length === 0) {
-        this.imgCaptcha.cue = this.translate.instant('Portal.errorCaptcha');
+        this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
       } else {
         this.imgCaptcha.code = inputImgCaptcha;
         this.imgCaptcha.cue = '';
@@ -346,7 +367,7 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
           this.imgCaptcha.show = false;
           this.submit();
         } else {
-          this.imgCaptcha.cue = this.translate.instant('Portal.errorCaptcha');
+          this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
           this.sending = false;
         }
 
@@ -367,16 +388,14 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
           case 'Change account is existing.':
 
             if (this.editBody.newAccountType === 1) {
-              this.cue.email =
-                `${this.translate.instant('Dashboard.Settings.account')} ${this.translate.instant('Dashboard.Settings.repeat')}`;
+              this.cue.email = 'accountRepeat';
             } else {
-              this.cue.phone =
-                `${this.translate.instant('Dashboard.Settings.account')} ${this.translate.instant('Dashboard.Settings.repeat')}`;
+              this.cue.phone = 'accountRepeat';
             }
 
             break;
           case 'Change account fail, old password is not correct.':
-            this.cue.password = this.translate.instant('Portal.notSamePassword');
+            this.cue.password = 'universal_userAccount_notSamePassword';
             break;
           case 'Found attack, update status to lock!':
           case 'Found lock!':
@@ -410,15 +429,15 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
           disableClose: true,
           data: {
             title: 'Message',
-            body: `${this.translate.instant('other.modify')} ${this.translate.instant('Dashboard.MyDevice.success')}${
-              N}${this.translate.instant('Dashboard.MyDevice.continueExecution')} ${
-              this.translate.instant('other.switch')} ${this.translate.instant('Portal.account')}?
+            body: `${this.translate.instant('universal_operating_modify')} ${this.translate.instant('universal_status_success')} ${
+              N} ${this.translate.instant('universal_popUpMessage_continueExecution')} ${
+              this.translate.instant('universal_deviceSetting_switch')} ${this.translate.instant('universal_userAccount_account')}?
             `,
             confirmText: this.translate.instant(
-              'other.confirm'
+              'universal_operating_confirm'
             ),
             cancelText: this.translate.instant(
-              'SH.cancel'
+              'universal_operating_cancel'
             ),
             onCancel: this.turnBack.bind(this),
             onConfirm: this.toEnableAccount.bind(this)

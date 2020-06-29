@@ -29,7 +29,11 @@ export class NavbarComponent implements OnInit {
     'zh-tw': '繁體中文',
     'zh-cn': '简体中文',
     'en-us': 'English',
-    'es-es': 'Español'
+    'es-es': 'Español',
+    'de-de': 'Deutsche',
+    'fr-fr': 'français',
+    'it-it': 'italiano',
+    'pt-pt': 'Português'
   };
   @Input() isAlphaVersion = false;
   constructor(

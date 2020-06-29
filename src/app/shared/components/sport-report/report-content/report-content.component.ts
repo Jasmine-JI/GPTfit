@@ -133,7 +133,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
 
     // 確認ngx translate套件已經載入再產生翻譯-kidin-1090415
     this.translate.get('hello.world').subscribe(() => {
-      this.description = this.translate.instant('other.muscleColorIllustration');
+      this.description = this.translate.instant('universal_activityData_muscleColorIllustration');
     });
 
     // 確認是否為預覽列印頁面-kidin-1090205
@@ -294,28 +294,28 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
           this.reportRangeType = 1;
           this.selectPeriod = '7';
           this.period = `7 ${this.translate.instant(
-            'Dashboard.SportReport.day'
+            'universal_time_day'
           )}`;
         break;
         case '30':
           this.reportRangeType = 1;
           this.selectPeriod = '30';
           this.period = `30 ${this.translate.instant(
-            'Dashboard.SportReport.day'
+            'universal_time_day'
           )}`;
         break;
         case '182':
           this.reportRangeType = 2;
           this.selectPeriod = '182';
           this.period = `6 ${this.translate.instant(
-            'Dashboard.SportReport.month'
+            'universal_time_month'
           )}`;
         break;
         case '364':
           this.reportRangeType = 2;
           this.selectPeriod = '364';
           this.period = `12 ${this.translate.instant(
-            'Dashboard.SportReport.month'
+            'universal_time_month'
           )}`;
         break;
       }
@@ -1885,7 +1885,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
               newSufUrl = `${newSufUrl}&${queryString[i]}`;
             }
           }
-          newUrl = `${preUrl}?${searchString}${newSufUrl}`;
+          newUrl = `${preUrl}?${searchString} ${newSufUrl}`;
         } else {
           newUrl = location.pathname + location.search + `&${searchString}`;
         }

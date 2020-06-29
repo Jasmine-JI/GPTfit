@@ -14,6 +14,11 @@ import { MatDialog } from '@angular/material';
 })
 export class AppSigninComponent implements OnInit, OnDestroy {
 
+  i18n = {
+    account: '',
+    email: '',
+    password: ''
+  };
   loginStatus = 'check';  // check: 等待登入; logging：登入中; success： 成功;
   loggingDot = '';
   isKeyin = false;
@@ -31,11 +36,11 @@ export class AppSigninComponent implements OnInit, OnDestroy {
   selectLists = [
     {
       name: 'email',
-      i18nKey: 'Portal.email'
+      i18nKey: 'universal_userAccount_email'
     },
     {
       name: 'phone',
-      i18nKey: 'Portal.phone'
+      i18nKey: 'universal_userAccount_phone'
     }
   ];
 
@@ -57,7 +62,6 @@ export class AppSigninComponent implements OnInit, OnDestroy {
   };
 
   cue = {
-    account: '',
     email: '',
     password: '',
     signResult: ''
@@ -80,7 +84,12 @@ export class AppSigninComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private dialog: MatDialog,
     private router: Router
-  ) {}
+  ) {
+    translate.onLangChange.subscribe(() => {
+      this.getTranslate();
+    });
+
+  }
 
   ngOnInit() {
 
@@ -91,6 +100,19 @@ export class AppSigninComponent implements OnInit, OnDestroy {
       this.pcView = false;
       this.utils.setHideNavbarStatus(true);
     }
+
+  }
+
+  // 取得多國語系翻譯-kidin-1090620
+  getTranslate () {
+    this.translate.get('hollo word').subscribe(() => {
+      this.i18n = {
+        account: this.translate.instant('universal_userAccount_account'),
+        email: this.translate.instant('universal_userAccount_email'),
+        password: this.translate.instant('universal_userAccount_password')
+      };
+
+    });
 
   }
 
@@ -165,7 +187,7 @@ export class AppSigninComponent implements OnInit, OnDestroy {
       const inputEmail = e.currentTarget.value;
 
       if (inputEmail.length === 0 || !this.regCheck.email.test(inputEmail)) {
-        this.cue.email = this.translate.instant('Portal.emailFormat');
+        this.cue.email = 'universal_userAccount_emailFormat';
         this.regCheck.emailPass = false;
       } else {
         this.loginBody.email = inputEmail;
@@ -226,7 +248,7 @@ export class AppSigninComponent implements OnInit, OnDestroy {
       const inputPassword = e.currentTarget.value;
 
       if (!this.regCheck.password.test(inputPassword)) {
-        this.cue.password = this.translate.instant('Portal.passwordFormat');
+        this.cue.password = 'universal_userAccount_passwordFormat';
         this.regCheck.passwordPass = false;
       } else {
         this.loginBody.password = inputPassword;
@@ -285,7 +307,7 @@ export class AppSigninComponent implements OnInit, OnDestroy {
           case 'Sign in fail, found error mobile number or country code.':
           case 'Sign in fail, found error email.':
           case 'Sign in fail, found error password.':
-            this.cue.signResult = this.translate.instant('other.errorAccountPassword');
+            this.cue.signResult = 'universal_userAccount_errorAccountPassword';
             break;
           default:
             this.dialog.open(MessageBoxComponent, {
@@ -294,7 +316,7 @@ export class AppSigninComponent implements OnInit, OnDestroy {
                 title: 'Message',
                 body: `Server error.<br />Please try again later.`,
                 confirmText: this.translate.instant(
-                  'other.confirm'
+                  'universal_operating_confirm'
                 )
               }
             });
@@ -340,18 +362,18 @@ export class AppSigninComponent implements OnInit, OnDestroy {
   showPrivateMsg(e) {
     e.preventDefault();
     let text = '';
-    text = `${this.translate.instant('Portal.clauseContentPage1')}
-    <a target="_blank"href="https://www.alatech.com.tw/action-copyright.htm">『${this.translate.instant('Portal.clause')}』</a>
-    、 <a target="_blank" href="https://www.alatech.com.tw/action-privacy.htm">『${this.translate.instant('Portal.privacyStatement')}』</a>
-    ${this.translate.instant('Portal.clauseContentPage2')}`.replace(/\n/gm, '');
+    text = `${this.translate.instant('universal_userAccount_clauseContentPage1')}
+    <a target="_blank"href="https://www.alatech.com.tw/action-copyright.htm">『${this.translate.instant('universal_userAccount_clause')}』</a>
+    、 <a target="_blank" href="https://www.alatech.com.tw/action-privacy.htm">『${this.translate.instant('universal_userAccount_privacyStatement')}』</a>
+    ${this.translate.instant('universal_userAccount_clauseContentPage2')}`.replace(/\n/gm, '');
 
     let title,
         confirmText,
         cancelText;
-    this.translate.get(['Portal.clause', 'SH.agree', 'SH.disagree']).subscribe(translation => {
-        title = translation['Portal.clause'];
-        confirmText = translation['SH.agree'];
-        cancelText = translation['SH.disagree'];
+    this.translate.get(['universal_userAccount_clause', 'universal_operating_agree', 'universal_operating_disagree']).subscribe(translation => {
+        title = translation['universal_userAccount_clause'];
+        confirmText = translation['universal_operating_agree'];
+        cancelText = translation['universal_operating_disagree'];
     });
 
     this.dialog.open(MessageBoxComponent, {

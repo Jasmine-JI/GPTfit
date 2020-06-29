@@ -23,6 +23,7 @@ export class IntlPhoneInputComponent implements OnInit, OnChanges {
   isClearIconShow = false;
   countryOptions: any;
   countryCode: any;
+  phoneI18n = '';
 
   @Input() isPhoneInvalid: boolean;
   @Input() isCodeInvalid: boolean;
@@ -43,9 +44,15 @@ export class IntlPhoneInputComponent implements OnInit, OnChanges {
   constructor(
     public translate: TranslateService,
     private router: Router
-  ) {}
+  ) {
+    translate.onLangChange.subscribe(() => {
+      this.getTranslate();
+    });
+
+  }
 
   ngOnInit() {
+    this.getTranslate();
     this.countryOptions = codes;
   }
 
@@ -64,6 +71,13 @@ export class IntlPhoneInputComponent implements OnInit, OnChanges {
       this.currentValue = '';
     }
 
+  }
+
+  // 取得多國語系翻譯-kidin-1090629
+  getTranslate () {
+    this.translate.get('hollo world').subscribe(() => {
+      this.phoneI18n = this.translate.instant('universal_userAccount_phone');
+    });
   }
 
   @HostListener('document:click')
@@ -115,7 +129,7 @@ export class IntlPhoneInputComponent implements OnInit, OnChanges {
       this.emitPhoneNum ();
     }
 
-    if (this.phoneCue === this.translate.instant('other.countryRegionCode')) {
+    if (this.phoneCue === 'universal_userAccount_countryRegionCode') {
       this.phoneCue = '';
     }
 
@@ -129,13 +143,13 @@ export class IntlPhoneInputComponent implements OnInit, OnChanges {
     }
 
     if (this.countryCode === undefined) {
-      this.phoneCue = this.translate.instant('other.countryRegionCode');
+      this.phoneCue = 'universal_userAccount_countryRegionCode';
       this.focusoutPhoneInt.emit('');
     } else if (this.phone.length > 0 && this.regPhone.test(this.phone)) {
       this.phoneCue = '';
       this.focusoutPhoneInt.emit(this.phone);
     } else {
-      this.phoneCue = this.translate.instant('Portal.phoneFormat');
+      this.phoneCue = 'universal_userAccount_phoneFormat';
       this.focusoutPhoneInt.emit('');
     }
 

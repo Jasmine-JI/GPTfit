@@ -2,16 +2,16 @@
   {{ title }}
 </h2>
 <mat-dialog-content class="ala-selector-content">
-  <!-- <div>{{'Dashboard.Group.area' | translate }}： 台灣</div> -->
+  <!-- <div>{{'universal_group_area' | translate }}： 台灣</div> -->
   <div class="memberselector-area">
     <div class="memberselector__content">
       <div class="memberselector__bar-box">
         <ng-container *ngIf="!isInnerAdmin">
-          <label style="margin-right: 5px">{{'Dashboard.Group.search' | translate }}</label>
+          <label style="margin-right: 5px">{{'universal_operating_search' | translate }}</label>
           <select (click)="handleGroupOptions()"
             [(ngModel)]="chooseGroupId"
           >
-            <option value="" disabled selected>{{'Dashboard.Group.selectGroup' | translate }}</option>
+            <option value="" disabled selected>{{'universal_group_selectGroup' | translate }}</option>
             <option [value]="option.groupId"
               *ngFor="let option of groupLists"
             >
@@ -19,7 +19,7 @@
             </option>
           </select>
         </ng-container>
-        <input placeholder="{{'Dashboard.Group.nameKeyword' | translate }}"
+        <input placeholder="{{'universal_group_nameKeyword' | translate }}"
           [(ngModel)]="keyword"
         />
         <button class="icon-btn" (click)="search()"
@@ -43,24 +43,24 @@
         <li class="memberselector-sl__item memberselector-sl__item--empty"
           *ngIf="fakeDatas.length === 0"
         >
-          {{'Dashboard.Group.canNotFind' | translate }}
+          {{'universal_group_canNotFind' | translate }}
         </li>
       </ul>
     </div>
     <div class="memberselector__middle">
       <button class="alatech-btn alatech-btn--default memberselector__btn"
-        title="{{'Dashboard.Group.join' | translate }}"
+        title="{{'universal_operating_join' | translate }}"
         [class.memberselector__btn--is-focused]="areaType === 1"
         (click)="assignUser()"
       >
-        {{'Dashboard.Group.join' | translate }}<i class="fa fa-chevron-right memberselector__icon--rotate" style="margin-left: 5px"></i>
+        {{'universal_operating_join' | translate }}<i class="fa fa-chevron-right memberselector__icon--rotate" style="margin-left: 5px"></i>
       </button>
       <button class="alatech-btn alatech-btn--default memberselector__btn"
-        title="{{'Dashboard.Group.delete' | translate }}"
+        title="{{'universal_operating_delete' | translate }}"
         [class.memberselector__btn--is-focused]="areaType === 2"
         (click)="removeUser()"
       >
-        <i class="fa fa-chevron-left memberselector__icon--rotate" style="margin-right: 5px"></i>{{'Dashboard.Group.delete' | translate }}
+        <i class="fa fa-chevron-left memberselector__icon--rotate" style="margin-right: 5px"></i>{{'universal_operating_delete' | translate }}
       </button>
     </div>
     <div class="memberselector__content"
@@ -79,7 +79,7 @@
         <li class="memberselector-sl__item memberselector-sl__item--empty"
           *ngIf="adminLists.length === 0"
         >
-          {{'Dashboard.Group.canNotFind' | translate }}
+          {{'universal_group_canNotFind' | translate }}
         </li>
       </ul>
     </div>
@@ -87,6 +87,6 @@
 </mat-dialog-content>
 
 <mat-dialog-actions class="justify-content-end">
-  <button mat-button color="primary" (click)="confirm()">{{"other.confirm" | translate }}</button>
-  <button mat-button mat-dialog-close color="warn">{{"SH.cancel" | translate }}</button>
+  <button mat-button color="primary" (click)="confirm()">{{"universal_operating_confirm" | translate }}</button>
+  <button mat-button mat-dialog-close color="warn">{{"universal_operating_cancel" | translate }}</button>
 </mat-dialog-actions>

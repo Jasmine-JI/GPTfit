@@ -41,7 +41,7 @@ export class EventComponent implements OnInit {
       hasBackdrop: true,
       data: {
         title: 'Message',
-        body: this.translate.instant('Dashboard.Group.confirmDelete')
+        body: this.translate.instant('universal_popUpMessage_confirmDelete')
       }
     });
     removeDialogRef.componentInstance.onConfirm.subscribe(() => {
@@ -53,7 +53,7 @@ export class EventComponent implements OnInit {
           hasBackdrop: true,
           data: {
             title: 'Message',
-            body: this.translate.instant('SH.error')
+            body: this.translate.instant('universal_popUpMessage_error')
           }
         });
       });

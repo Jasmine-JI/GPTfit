@@ -105,7 +105,7 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
           }
         }
 
-        this.tooltipTitle = this.translate.instant('SH.calories');
+        this.tooltipTitle = this.translate.instant('universal_userProfile_calories');
 
         break;
       case 'FitTime':
@@ -128,7 +128,7 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
           };
         });
 
-        this.tooltipTitle = this.translate.instant('other.fitTime');
+        this.tooltipTitle = this.translate.instant('universal_userProfile_fitTime');
 
         break;
     }

@@ -16,6 +16,11 @@ import { MatDialog } from '@angular/material';
 })
 export class AppSignupComponent implements OnInit, OnDestroy {
 
+  i18n = {
+    email: '',
+    password: '',
+    nickname: ''
+  };
   appSys = 0;  // 0:web, 1:ios, 2:android
   focusForm = '';
   displayPW = false;
@@ -43,11 +48,11 @@ export class AppSignupComponent implements OnInit, OnDestroy {
   selectLists = [
     {
       name: 'email',
-      i18nKey: 'Portal.email'
+      i18nKey: 'universal_userAccount_email'
     },
     {
       name: 'phone',
-      i18nKey: 'Portal.phone'
+      i18nKey: 'universal_userAccount_phone'
     }
   ];
 
@@ -104,7 +109,12 @@ export class AppSignupComponent implements OnInit, OnDestroy {
     private router: Router,
     public getClientIp: GetClientIpService,
     private authService: AuthService
-  ) { }
+  ) {
+    translate.onLangChange.subscribe(() => {
+      this.getTranslate();
+    });
+
+  }
 
   ngOnInit() {
     if (location.pathname.indexOf('web') > 0) {
@@ -117,6 +127,19 @@ export class AppSignupComponent implements OnInit, OnDestroy {
     }
 
     this.getClientIpaddress();
+  }
+
+  // 取得多國語系翻譯-kidin-1090620
+  getTranslate () {
+    this.translate.get('hollo word').subscribe(() => {
+      this.i18n = {
+        email: this.translate.instant('universal_userAccount_email'),
+        password: this.translate.instant('universal_userAccount_password'),
+        nickname: this.translate.instant('universal_userAccount_nickname')
+      };
+
+    });
+
   }
 
   // 返回app-kidin-1090513
@@ -183,7 +206,7 @@ export class AppSignupComponent implements OnInit, OnDestroy {
       const inputEmail = e.currentTarget.value;
 
       if (inputEmail.length === 0 || !this.regCheck.email.test(inputEmail)) {
-        this.signupCue.email = this.translate.instant('Portal.emailFormat');
+        this.signupCue.email = 'errorFormat';
         this.regCheck.emailPass = false;
       } else {
         this.signupData.email = inputEmail;
@@ -225,7 +248,7 @@ export class AppSignupComponent implements OnInit, OnDestroy {
       const inputPassword = e.currentTarget.value;
 
       if (!this.regCheck.password.test(inputPassword)) {
-        this.signupCue.password = this.translate.instant('Portal.passwordFormat');
+        this.signupCue.password = 'errorFormat';
         this.regCheck.passwordPass = false;
       } else {
         this.signupData.password = inputPassword;
@@ -264,7 +287,7 @@ export class AppSignupComponent implements OnInit, OnDestroy {
       const inputNickname = e.currentTarget.value;
 
       if (!this.regCheck.nickname.test(inputNickname)) {
-        this.signupCue.nickname = this.translate.instant('Portal.nameCharactersToLong');
+        this.signupCue.nickname = 'errorFormat';
         this.regCheck.nicknamePass = false;
       } else {
         this.signupData.nickname = inputNickname;
@@ -283,7 +306,7 @@ export class AppSignupComponent implements OnInit, OnDestroy {
       const inputImgCaptcha = e.currentTarget.value;
 
       if (inputImgCaptcha.length === 0) {
-        this.signupCue.imgCaptcha = this.translate.instant('Portal.errorCaptcha');
+        this.signupCue.imgCaptcha = 'errorValue';
       } else {
         this.signupData.imgCaptcha = inputImgCaptcha;
         this.signupCue.imgCaptcha = '';
@@ -339,7 +362,7 @@ export class AppSignupComponent implements OnInit, OnDestroy {
           this.imgCaptcha.show = false;
           this.submit();
         } else {
-          this.signupCue.imgCaptcha = this.translate.instant('Portal.errorCaptcha');
+          this.signupCue.imgCaptcha = 'errorValue';
           this.sending = false;
         }
 
@@ -375,17 +398,14 @@ export class AppSignupComponent implements OnInit, OnDestroy {
           case 'Register account is existing.':
 
             if (this.signupData.type === 1) {
-              this.signupCue.email =
-                `${this.translate.instant('Dashboard.Settings.account')} ${this.translate.instant('Dashboard.Settings.repeat')}`;
+              this.signupCue.email = 'accountRepeat';
             } else {
-              this.signupCue.phone =
-                `${this.translate.instant('Dashboard.Settings.account')} ${this.translate.instant('Dashboard.Settings.repeat')}`;
+              this.signupCue.phone = 'accountRepeat';
             }
 
             break;
           case 'Register name is existing.':
-            this.signupCue.nickname =
-              `${this.translate.instant('Portal.nickname')} ${this.translate.instant('Dashboard.Settings.repeat')}`;
+            this.signupCue.nickname = 'nicknameRepeat';
             break;
           case 'Found attack, update status to lock!':
           case 'Found lock!':
@@ -415,15 +435,15 @@ export class AppSignupComponent implements OnInit, OnDestroy {
           disableClose: true,
           data: {
             title: 'Message',
-            body: `${this.translate.instant('Dashboard.MyDevice.success')} ${this.translate.instant('SH.signUp')}${
-              N}${this.translate.instant('Dashboard.MyDevice.continueExecution')} ${
-              this.translate.instant('other.switch')} ${this.translate.instant('Portal.account')}?
+            body: `${this.translate.instant('universal_status_success')} ${this.translate.instant('universal_userAccount_signUp')} ${
+              N} ${this.translate.instant('universal_popUpMessage_continueExecution')} ${
+              this.translate.instant('universal_deviceSetting_switch')} ${this.translate.instant('universal_userAccount_account')}?
             `,
             confirmText: this.translate.instant(
-              'other.confirm'
+              'universal_operating_confirm'
             ),
             cancelText: this.translate.instant(
-              'SH.cancel'
+              'universal_operating_cancel'
             ),
             onCancel: this.finishSignup.bind(this),
             onConfirm: this.toEnableAccount.bind(this)

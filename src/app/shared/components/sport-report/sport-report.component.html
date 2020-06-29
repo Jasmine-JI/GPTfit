@@ -1,5 +1,5 @@
 <span style="color: #157fcc; font-weight:700; font-size: 20px;" *ngIf="!isPreviewMode">
-  {{'Dashboard.SportReport.sportReport' | translate}}
+  {{'universal_activityData_sportReport' | translate}}
 </span>
 <div class="row media-940-Col">
   <div class="col-2 media-940-Row media-940-maxwidth listSection" *ngIf="!isPreviewMode">
@@ -14,7 +14,7 @@
         *ngIf="chooseType === '99'"
       ></i>
       <span>
-        {{'Dashboard.SportReport.allActivity' | translate}}
+        {{'universal_activityData_allActivity' | translate}}
       </span>
     </li>
     <li
@@ -28,7 +28,7 @@
         *ngIf="chooseType === '1'"
       ></i>
       <span>
-        {{'Dashboard.SportReport.run' | translate}}
+        {{'universal_activityData_run' | translate}}
       </span>
     </li>
     <li
@@ -42,7 +42,7 @@
         *ngIf="chooseType === '2'"
       ></i>
       <span>
-        {{'Dashboard.SportReport.cycle' | translate}}
+        {{'universal_activityData_cycle' | translate}}
       </span>
     </li>
     <li
@@ -56,7 +56,7 @@
         *ngIf="chooseType === '3'"
       ></i>
       <span>
-        {{'Dashboard.SportReport.weightTraining' | translate}}
+        {{'universal_activityData_weightTraining' | translate}}
       </span>
     </li>
     <li
@@ -70,7 +70,7 @@
         *ngIf="chooseType === '4'"
       ></i>
       <span>
-        {{'Dashboard.SportReport.swim' | translate}}
+        {{'universal_activityData_swin' | translate}}
       </span>
     </li>
     <li
@@ -84,7 +84,7 @@
         *ngIf="chooseType === '5'"
       ></i>
       <span>
-        {{'Dashboard.SportReport.aerobic' | translate}}
+        {{'universal_activityData_aerobic' | translate}}
       </span>
     </li>
     <li
@@ -98,7 +98,7 @@
         *ngIf="chooseType === '6'"
       ></i>
       <span>
-        {{'Dashboard.SportReport.boating' | translate}}
+        {{'universal_sportsName_boating' | translate}}
       </span>
     </li>
   </div>
@@ -108,13 +108,13 @@
       [selectedIndex]="selectedIndex"
       *ngIf="!isPreviewMode"
     >
-      <mat-tab label="7{{'Dashboard.SportReport.day' | translate}}">
+      <mat-tab label="7{{'universal_time_day' | translate}}">
       </mat-tab>
-      <mat-tab label="30{{'Dashboard.SportReport.day' | translate}}">
+      <mat-tab label="30{{'universal_time_day' | translate}}">
       </mat-tab>
-      <mat-tab label="6{{'Dashboard.SportReport.month' | translate}}">
+      <mat-tab label="6{{'universal_time_month' | translate}}">
       </mat-tab>
-      <mat-tab label="12{{'Dashboard.SportReport.month' | translate}}">
+      <mat-tab label="12{{'universal_time_month' | translate}}">
       </mat-tab>
     </mat-tab-group>
     <!-- Hello i m {{chooseType}}chart -->

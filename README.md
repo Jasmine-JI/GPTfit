@@ -180,7 +180,10 @@ app
 ## Dependency notes
 
 | Dependency Name | 版本 | 筆記 | 專案範例連結
-|---|---|---|---|
+
+| ---  | ---  | ---  | ---  |
+| ---- | ---- | ---- | ---- |
+|      |      |      |      |
 **[@ngx-progressbar/core](https://github.com/murhafsousli/ngx-progressbar)** | 5.3.1 | 進度條，ex:使用於裝置資訊、QR配對頁面...等 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/activity-info/activity-info.component.html#L1)
 **[@ngx-translate/core](https://github.com/ngx-translate/core)** | 10.0.2 | 處理多語系 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/containers/portal/components/signin/signin.component.ts#L87)
 **[@angular/pwa](https://angular.io/guide/service-worker-getting-started)** | 0.8.7 | pwa模組，`但目前center還沒啟用，連結是註解掉的部分` | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/app.module.ts#L48)
@@ -203,9 +206,20 @@ app
 **[moment](http://momentjs.com/)** | 2.20.1|處理時間格式的函式庫 | None
 **[mydatepicker](https://github.com/kekeh/mydatepicker#readme)** | 2.6.1|日期選擇器元件，目前使用於外部排行版與賽事管理系統，建議可以慢慢替換成material design(因為那時還沒出...) | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/containers/portal/portal.component.ts#L15)
 **[query-string](https://github.com/sindresorhus/query-string#readmee)** | 6.1.0| 用来做url查询参数的解析| [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/services/utils.service.ts#L3)
-**[ml-regression-simple-linear](https://www.npmjs.com/package/ml-regression-simple-linear)** | 2.1.1| 用来做群組report的簡單回歸分析(若有更新套件，需在路徑./var/web/node_modules/ml-regression-simple-linear/regression-simple-linear.d.ts，刪除 第20行，並在第8行追加 "export default"在"class SimpleLinearRegression extends BaseRegression {" 前面，避免報錯)
-| [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/dashboard/group/group-info/com-life-tracking/com-life-tracking.component.ts#L3)
-**[tui-calendar](https://ui.toast.com/tui-calendar/)** | 1.12.11| 行事曆套件(若有更新套件，需在路徑./var/web/node_modules/tui-calendar/dist/tui-calendar.css，刪除以下程式碼（css樣式），"
+**[ml-regression-simple-linear](https://www.npmjs.com/package/ml-regression-simple-linear)** | 2.1.1| 用来做群組report的簡單回歸分析 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/dashboard/group/group-info/com-life-tracking/com-life-tracking.component.ts#L3)
+**[tui-calendar](https://ui.toast.com/tui-calendar/)** | 1.12.11| 行事曆套件 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/tui-calender/tui-calender.component.ts)
+**[daterangepicker](https://www.daterangepicker.com)** | 3.0.5| 可以雙開的日期選擇器| [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/date-range-picker/date-range-picker.component.ts)
+
+## 套件修改
+若有更新套件，請修改以下套件避免報錯或跑版
+
+### tui-calendar
+
+> 路徑：./var/web/node_modules/tui-calendar/dist/tui-calendar.css
+> 說明：刪除小白點樣式。
+
+```scss
+// 刪除此樣式
 .tui-full-calendar-weekday-schedule-bullet {
   position: absolute;
   padding: 0;
@@ -215,8 +229,14 @@ app
   left: 0;
   border-radius: 50%;
 }
-"
-，來刪除內建的小白點樣式)
-| [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/tui-calender/tui-calender.component.ts)
-**[daterangepicker](https://www.daterangepicker.com)** | 3.0.5| 可以雙開的日期選擇器
-| [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/date-range-picker/date-range-picker.component.ts)
+```
+
+### ml-regression-simple-linear
+> 路徑：./var/web/node_modules/ml-regression-simple-linear/regression-simple-linear.d.ts
+> 說明：修改套件輸出檔案的寫法避免報錯。
+
+```javascript
+// 將輸出類修改成以下形式，並刪除最後export = SimpleLinearRegression;
+export default class SimpleLinearRegression extends BaseRegression
+```
+

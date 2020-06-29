@@ -26,7 +26,7 @@ export class MuscleMapChartComponent implements OnInit, OnChanges {
     {
       id: 1,
       icon: 'icon-svg_web-icon_p3_028-hand_muscle',
-      name: this.translate.instant('other.armMuscles'),
+      name: this.translate.instant('universal_muscleName_armMuscles'),
       isFocus: false,
       isFold: true,
       oneRepMax: 0,
@@ -37,7 +37,7 @@ export class MuscleMapChartComponent implements OnInit, OnChanges {
     {
       id: 2,
       icon: 'icon-svg_web-icon_p3_033-chest_muscles',
-      name: this.translate.instant('Dashboard.MyActivity.MuscleName.pectoralsMuscle'),
+      name: this.translate.instant('universal_muscleName_pectoralsMuscle'),
       isFocus: false,
       isFold: true,
       oneRepMax: 0,
@@ -48,7 +48,7 @@ export class MuscleMapChartComponent implements OnInit, OnChanges {
     {
       id: 3,
       icon: 'icon-svg_web-icon_p3_032-shoulder_muscles',
-      name: this.translate.instant('Dashboard.MyActivity.MuscleName.shoulderMuscle'),
+      name: this.translate.instant('universal_muscleName_shoulderMuscle'),
       isFocus: false,
       isFold: true,
       oneRepMax: 0,
@@ -59,7 +59,7 @@ export class MuscleMapChartComponent implements OnInit, OnChanges {
     {
       id: 4,
       icon: 'icon-svg_web-icon_p3_031-back_muscles',
-      name: this.translate.instant('Dashboard.MyActivity.MuscleName.backMuscle'),
+      name: this.translate.instant('universal_muscleName_backMuscle'),
       isFocus: false,
       isFold: true,
       oneRepMax: 0,
@@ -70,7 +70,7 @@ export class MuscleMapChartComponent implements OnInit, OnChanges {
     {
       id: 5,
       icon: 'icon-svg_web-icon_p3_030-abdominal_muscles',
-      name: this.translate.instant('Dashboard.MyActivity.MuscleName.abdominalMuscle'),
+      name: this.translate.instant('universal_muscleName_abdominalMuscle'),
       isFocus: false,
       isFold: true,
       oneRepMax: 0,
@@ -81,7 +81,7 @@ export class MuscleMapChartComponent implements OnInit, OnChanges {
     {
       id: 6,
       icon: 'icon-svg_web-icon_p3_029-foot_muscles',
-      name: this.translate.instant('Dashboard.MyActivity.MuscleName.legMuscle'),
+      name: this.translate.instant('universal_muscleName_legMuscle'),
       isFocus: false,
       isFold: true,
       oneRepMax: 0,

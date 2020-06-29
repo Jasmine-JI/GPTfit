@@ -75,7 +75,7 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
         this.waitQrcodeLogin();
       } else {
         this.translate.get('hello.world').subscribe(() => {
-          this.cue = this.translate.instant('custom.improperOpe');
+          this.cue = 'universal_userAccount_improperOperation';
         });
 
       }
@@ -137,10 +137,10 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
         this.utils.setLocalStorageObject('count', `${this.currentTimeStamp}1`);
         return true;
       } else if (count > 4) {  // 操作超過五次前端上鎖
-        this.cue = this.translate.instant('custom.improperOpe');
+        this.cue = 'universal_userAccount_improperOperation';
         return false;
       } else {
-        this.utils.setLocalStorageObject('count', `${timeStamp}${count + 1}`);
+        this.utils.setLocalStorageObject('count', `${timeStamp} ${count + 1}`);
         return true;
       }
 
@@ -174,7 +174,7 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
                   title: 'Message',
                   body: `Server error.<br />Please try again later.`,
                   confirmText: this.translate.instant(
-                    'other.confirm'
+                    'universal_operating_confirm'
                   )
                 }
               });
@@ -193,7 +193,7 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
 
               switch (response.processResult.apiReturnMessage) {
                 case 'Waiting for QR sign in time out.':
-                  this.cue = this.translate.instant('custom.idle');
+                  this.cue = 'universal_userAccount_idleForTooLong';
                   break;
                 default:
                   this.dialog.open(MessageBoxComponent, {
@@ -202,7 +202,7 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
                       title: 'Message',
                       body: `Server error.<br />Please try again later.`,
                       confirmText: this.translate.instant(
-                        'other.confirm'
+                        'universal_operating_confirm'
                       )
                     }
                   });
@@ -210,7 +210,7 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
               }
 
             } else {
-              this.cue = this.translate.instant('Portal.signSuceesfully');
+              this.cue = 'universal_userAccount_signSuceesfully';
               const token = response.qrSignIn.token;
               this.utils.writeToken(token);
               this.auth.setLoginStatus(true);
@@ -275,7 +275,7 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
           title: 'Message',
           body: `Guid Error`,
           confirmText: this.translate.instant(
-            'other.confirm'
+            'universal_operating_confirm'
           )
         }
       });
@@ -293,7 +293,7 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
                   title: 'Message',
                   body: `Guid Error`,
                   confirmText: this.translate.instant(
-                    'other.confirm'
+                    'universal_operating_confirm'
                   )
                 }
               });
@@ -304,9 +304,9 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
                 hasBackdrop: true,
                 data: {
                   title: 'Message',
-                  body: `${this.translate.instant('SH.logIn')} ${this.translate.instant('Dashboard.MyDevice.failure')}`,
+                  body: `${this.translate.instant('universal_userAccount_logIn')} ${this.translate.instant('universal_status_failure')}`,
                   confirmText: this.translate.instant(
-                    'other.confirm'
+                    'universal_operating_confirm'
                   )
                 }
               });
