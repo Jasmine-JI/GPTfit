@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject, EventEmitter, Output, Input } from '@angular/core';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UtilsService } from '@shared/services/utils.service';
 import { SettingsService } from '../../services/settings.service';
 import { TranslateService } from '@ngx-translate/core';

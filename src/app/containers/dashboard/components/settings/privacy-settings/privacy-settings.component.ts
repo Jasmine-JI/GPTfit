@@ -8,7 +8,9 @@ import {
 import { SettingsService } from '../../../services/settings.service';
 import { ModifyBoxComponent } from './modify-box/modify-box.component';
 import { UtilsService } from '@shared/services/utils.service';
-import { MatSnackBar, MatDialog, MAT_CHECKBOX_CLICK_ACTION } from '@angular/material';
+import { MAT_CHECKBOX_CLICK_ACTION } from '@angular/material/checkbox';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { TranslateService } from '@ngx-translate/core';
 

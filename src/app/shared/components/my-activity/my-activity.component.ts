@@ -4,14 +4,11 @@ import {
   ViewChild,
   Input
 } from '@angular/core';
-import {
-  MatTableDataSource,
-  MatPaginator,
-  PageEvent,
-  Sort,
-  MatDatepickerInputEvent,
-  MatInput
-} from '@angular/material';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { MatInput } from '@angular/material/input';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { Sort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { ActivityService } from '@shared/services/activity.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { Router } from '@angular/router';

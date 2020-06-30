@@ -11,7 +11,7 @@ import { LifeTrackingService } from '../../services/life-tracking.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { NgProgress, NgProgressRef } from '@ngx-progressbar/core';
 import { Router } from '@angular/router';
-import { MatDatepickerInputEvent } from '@angular/material';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { HashIdService } from '@shared/services/hash-id.service';
 import * as moment from 'moment';
 import { chart } from 'highcharts';

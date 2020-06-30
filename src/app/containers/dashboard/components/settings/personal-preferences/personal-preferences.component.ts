@@ -3,8 +3,8 @@ import { SettingsService } from '../../../services/settings.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { UtilsService } from '@shared/services/utils.service';
 import * as moment from 'moment';
-import { MatDatepickerInputEvent } from '@angular/material';
-import { MatSnackBar } from '@angular/material';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserInfoService } from '../../../services/userInfo.service';
 import { TranslateService } from '@ngx-translate/core';
 

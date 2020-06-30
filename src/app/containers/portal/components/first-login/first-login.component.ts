@@ -6,7 +6,8 @@ import {
 } from '@angular/forms';
 import { AuthService } from '@shared/services/auth.service';
 import { UtilsService } from '@shared/services/utils.service';
-import { MatSnackBar, MatDatepickerInputEvent } from '@angular/material';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import * as moment from 'moment';

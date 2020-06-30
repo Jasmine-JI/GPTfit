@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation, Inject } from '@angular/core';
 import { EventEnrollService } from '../../services/event-enroll.service';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-today-loginner-win',

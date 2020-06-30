@@ -1,12 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { DeviceLogService } from '../../services/device-log.service';
-import {
-  MatTableDataSource,
-  MatPaginator,
-  PageEvent,
-  MatSort,
-  Sort
-} from '@angular/material';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSort, Sort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { HttpParams } from '@angular/common/http';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';

@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject, EventEmitter, ViewEncapsulation } from '@angular/core';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { GroupService } from '../../services/group.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';

@@ -8,7 +8,7 @@ import { MessageBoxComponent } from '@shared/components/message-box/message-box.
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 
 import { TranslateService } from '@ngx-translate/core';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import * as moment from 'moment';
 
