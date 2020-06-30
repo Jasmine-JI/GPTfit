@@ -9,14 +9,10 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { DeviceLogService } from '../../services/device-log.service';
 import { HttpParams } from '@angular/common/http';
-import {
-  MatTableDataSource,
-  MatPaginator,
-  PageEvent,
-  MatSort,
-  Sort,
-  MatDatepickerInputEvent
-} from '@angular/material';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSort, Sort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';

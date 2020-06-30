@@ -18,7 +18,7 @@ import { NgProgress, NgProgressRef } from '@ngx-progressbar/core';
 import { GlobalEventsManager } from '@shared/global-events-manager';
 import { UtilsService } from '@shared/services/utils.service';
 import { Router } from '@angular/router';
-import { MatTableDataSource } from '@angular/material';
+import { MatTableDataSource } from '@angular/material/table';
 import { UserInfoService } from '../../../containers/dashboard/services/userInfo.service';
 import { MuscleMapComponent } from './muscleMap/muscle-map.component';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
@@ -32,7 +32,7 @@ import { ActivityOtherDetailsService } from '@shared/services/activity-other-det
 import { debounce } from '@shared/utils/';
 import * as moment from 'moment';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 declare var google: any;

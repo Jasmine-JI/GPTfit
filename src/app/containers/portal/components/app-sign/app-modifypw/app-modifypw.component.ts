@@ -6,7 +6,7 @@ import { SignupService } from '../../../services/signup.service';
 import { UserInfoService } from '../../../../dashboard/services/userInfo.service';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 
 @Component({

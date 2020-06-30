@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatTableDataSource, MatSort, Sort } from '@angular/material';
+import { MatSort, Sort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import SimpleLinearRegression from 'ml-regression-simple-linear';
 import * as moment from 'moment';
 import { first } from 'rxjs/operators';

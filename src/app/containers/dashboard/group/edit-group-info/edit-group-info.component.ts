@@ -19,7 +19,7 @@ import { UserInfoService } from '../../services/userInfo.service';
 import { MsgDialogComponent } from '../../components/msg-dialog/msg-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
-import { MatBottomSheet, MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA} from '@angular/material';
+import { MatBottomSheet, MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
 import { TranslateService } from '@ngx-translate/core';
 import { HashIdService } from '@shared/services/hash-id.service';
 import * as moment from 'moment';

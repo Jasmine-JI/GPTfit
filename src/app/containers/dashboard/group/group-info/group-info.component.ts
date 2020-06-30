@@ -8,7 +8,7 @@ import { GroupService } from '../../services/group.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { UserInfoService } from '../../services/userInfo.service';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { PrivacySettingDialogComponent } from '../privacy-setting-dialog/privacy-setting-dialog.component';
 import { UserProfileService } from '@shared/services/user-profile.service';

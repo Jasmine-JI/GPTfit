@@ -6,7 +6,7 @@ import {
 } from '@angular/forms';
 import { AuthService } from '@shared/services/auth.service';
 import { Router } from '@angular/router';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';

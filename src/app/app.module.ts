@@ -17,7 +17,7 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { NgProgressModule } from '@ngx-progressbar/core';
-import { MatPaginatorIntl } from '@angular/material';
+import { MatPaginatorIntl } from '@angular/material/paginator';
 import { CustomMatPaginatorIntl } from '@shared/custom-mat-paginator-intl';
 // import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
