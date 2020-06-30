@@ -28,8 +28,8 @@ import {
   Breakpoints
 } from '@angular/cdk/layout';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Location } from '@angular/common';
-import { DOCUMENT } from '@angular/platform-browser';
+import { Location, DOCUMENT } from '@angular/common';
+
 import { WINDOW } from '@shared/services/window.service';
 import { UtilsService } from '@shared/services/utils.service';
 
