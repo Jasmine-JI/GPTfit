@@ -23,7 +23,7 @@
               <label for="exampleInputEmail1" class="access-text">{{'universal_activityData_name' | translate}}
               </label>
               <input formControlName="userName" id="exampleInputEmail1" class="form-control"
-                placeholder="{{'universal_userAccount_enterInfo' | translate: {'info': i18n.nickname} }}"
+                placeholder="{{'universal_userAccount_enterInfo' | translate: {'info': i18n.nickName} }}"
                 [maxlength]="24"
                 [attr.disabled]="isLogining ? '' : null"
                 (keyup)="handleDuplicateStatus($event)"
@@ -34,7 +34,7 @@
                 <span [style.visibility]="(!form.controls['userName'].valid && form.controls['userName'].touched) || (f.submitted && form.get('userName').hasError('required')) ? 'initial' : 'hidden'"
                   *ngIf="!isDuplicateName && (!tempDuplicateName || this.tempDuplicateName.length === 0)"
                 >
-                  {{'universal_userAccount_enterInfo' | translate: {'info': i18n.nickname} }}
+                  {{'universal_userAccount_enterInfo' | translate: {'info': i18n.nickName} }}
                 </span>
                 <span *ngIf="isDuplicateName">
                   {{'universal_userAccount_registerNameExisting' | translate}}
