@@ -6,13 +6,9 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import { GroupService } from '../../services/group.service';
-import {
-  MatTableDataSource,
-  MatPaginator,
-  PageEvent,
-  MatSort,
-  Sort
-} from '@angular/material';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSort, Sort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/observable/fromEvent';
@@ -40,11 +36,11 @@ export class GroupSearchComponent implements OnInit {
   isEmpty = true;
   isLoading = false;
 
-  @ViewChild('paginator')
+  @ViewChild('paginator', {static: true})
   paginator: MatPaginator;
-  @ViewChild('sortTable')
+  @ViewChild('sortTable', {static: false})
   sortTable: MatSort;
-  @ViewChild('filter')
+  @ViewChild('filter', {static: false})
   filter: ElementRef;
   constructor(
     private groupService: GroupService,

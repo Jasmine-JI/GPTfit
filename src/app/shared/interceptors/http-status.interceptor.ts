@@ -12,7 +12,7 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/do';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../components/message-box/message-box.component';
 
 @Injectable()

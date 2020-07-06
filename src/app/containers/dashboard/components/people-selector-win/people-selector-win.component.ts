@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject, Output, HostListener } from '@angular/core';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { GroupService } from '../../services/group.service';
 import { HttpParams } from '@angular/common/http';
 

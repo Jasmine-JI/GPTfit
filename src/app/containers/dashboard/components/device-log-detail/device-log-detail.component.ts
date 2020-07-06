@@ -9,14 +9,10 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { DeviceLogService } from '../../services/device-log.service';
 import { HttpParams } from '@angular/common/http';
-import {
-  MatTableDataSource,
-  MatPaginator,
-  PageEvent,
-  MatSort,
-  Sort,
-  MatDatepickerInputEvent
-} from '@angular/material';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSort, Sort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
@@ -28,8 +24,8 @@ import {
   Breakpoints
 } from '@angular/cdk/layout';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Location } from '@angular/common';
-import { DOCUMENT } from '@angular/platform-browser';
+import { Location, DOCUMENT } from '@angular/common';
+
 import { WINDOW } from '@shared/services/window.service';
 import { UtilsService } from '@shared/services/utils.service';
 
@@ -56,10 +52,10 @@ export class DeviceLogDetailComponent implements OnInit {
   isLoadingResults = false;
   isRateLimitReached = false;
 
-  @ViewChild('paginatorA') paginatorA: MatPaginator;
-  @ViewChild('paginatorB') paginatorB: MatPaginator;
-  @ViewChild('sortTable') sortTable: MatSort;
-  @ViewChild('f') form: any;
+  @ViewChild('paginatorA', {static: true}) paginatorA: MatPaginator;
+  @ViewChild('paginatorB', {static: true}) paginatorB: MatPaginator;
+  @ViewChild('sortTable', {static: false}) sortTable: MatSort;
+  @ViewChild('f', {static: false}) form: any;
   constructor(
     private route: ActivatedRoute,
     private deviceLogservice: DeviceLogService,

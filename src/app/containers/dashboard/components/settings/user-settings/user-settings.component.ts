@@ -3,10 +3,10 @@ import { SettingsService } from '../../../services/settings.service';
 import { FormGroup, FormBuilder, Validators, FormArray, FormControl } from '@angular/forms';
 import { UtilsService } from '@shared/services/utils.service';
 import * as moment from 'moment';
-import { MatDatepickerInputEvent } from '@angular/material';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserInfoService } from '../../../services/userInfo.service';
 import { TranslateService } from '@ngx-translate/core';
 

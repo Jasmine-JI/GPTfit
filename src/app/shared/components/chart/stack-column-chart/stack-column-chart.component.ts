@@ -76,7 +76,7 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() data: any;  // 生活追蹤用變數-kidin-1090218
   @Input() searchDate: Array<number>;
 
-  @ViewChild('container')
+  @ViewChild('container', {static: false})
   container: ElementRef;
 
   constructor(
@@ -86,27 +86,21 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit () {}
 
   ngOnChanges () {
-
-    setTimeout(() => {
-      if (this.perHrZoneData) {
-        if (this.perHrZoneData.length === 0) {
-          this.noData = true;
-        } else {
-          this.noData = false;
-        }
-        this.initHRChart();
-      } else if (this.data) {
-        this.initSleepChart();
+    if (this.perHrZoneData) {
+      if (this.perHrZoneData.length === 0) {
+        this.noData = true;
+      } else {
+        this.noData = false;
       }
-    }, 0);
+      this.initHRChart();
+    } else if (this.data) {
+      this.initSleepChart();
+    }
 
   }
 
   // 心率用圖表-kidin-1090218
   initHRChart () {
-
-    Highcharts.charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
-
     const HRTrendDataset = [
       {
         name: 'Zone5',
@@ -146,8 +140,7 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
       }
     ];
 
-    const HRTrendChartOptions = new ChartOptions(HRTrendDataset),
-          HRTrendChartDiv = this.container.nativeElement;
+    const HRTrendChartOptions = new ChartOptions(HRTrendDataset);
 
     // 設定圖表x軸時間間距-kidin-1090204
     if (this.dateRange === 'day' && this.perHrZoneData.zoneZero.length <= 7) {
@@ -229,14 +222,11 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
 
     };
 
-    // 根據圖表清單依序將圖表顯示出來-kidin-1081217
-    chart(HRTrendChartDiv, HRTrendChartOptions);
-
+    this.createChart(HRTrendChartOptions);
   }
 
   // 生活追蹤用圖表-kidin-1090218
   initSleepChart () {
-    Highcharts.charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
     this.createDateList();
 
     const newDeepSleepData = [],
@@ -298,8 +288,7 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
       }
     ];
 
-    const chartOptions = new ChartOptions(dataSet),
-          chartDiv = this.container.nativeElement;
+    const chartOptions = new ChartOptions(dataSet);
 
     // 設定圖表高度-kidin-1090221
     chartOptions['chart'].height = 170;
@@ -401,8 +390,7 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
 
     };
 
-    // 根據圖表清單依序將圖表顯示出來-kidin-1081217
-    chart(chartDiv, chartOptions);
+    this.createChart(chartOptions);
   }
 
   // 根據搜尋期間，列出日期清單供圖表使用-kidin-1090220
@@ -438,6 +426,20 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
         this.dateList.push(weekStartDay + 86400 * 1000 * 7 * i);
       }
     }
+
+  }
+
+  // 確認取得元素才建立圖表-kidin-1090706
+  createChart (option: ChartOptions) {
+
+    setTimeout (() => {
+      if (!this.container) {
+        this.createChart(option);
+      } else {
+        const chartDiv = this.container.nativeElement;
+        chart(chartDiv, option);
+      }
+    }, 200);
 
   }
 

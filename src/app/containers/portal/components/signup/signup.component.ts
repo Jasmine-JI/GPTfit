@@ -6,7 +6,7 @@ import {
   Validators
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { RandomCodeService } from '../../services/random-code.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { RandomCode } from '../../models/random-code';
@@ -35,7 +35,7 @@ export class SignupComponent implements OnInit, OnDestroy {
   randomCode: RandomCode;
   isCodeInvalid = false;
   smsVerifyCode: string;
-  @ViewChild('f') signupForm: any;
+  @ViewChild('f', {static: false}) signupForm: any;
   isChartCodeErr = false;
   isSMSCodeErr = false;
   isSignupSending = false;

@@ -8,19 +8,16 @@ import {
   SimpleChange,
   ViewEncapsulation
 } from '@angular/core';
-import {
-  MatTableDataSource,
-  MatPaginator,
-  PageEvent,
-  Sort
-} from '@angular/material';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { Sort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { QrcodeService } from '../../../../portal/services/qrcode.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-my-device',
@@ -34,7 +31,7 @@ export class MyDeviceComponent implements OnInit, OnChanges {
   currentPage: PageEvent;
   currentSort: Sort;
   isLoading = false;
-  @ViewChild('paginator')
+  @ViewChild('paginator', {static: true})
   paginator: MatPaginator;
   token: string;
   localSN: string[];

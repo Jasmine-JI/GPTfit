@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener } from '@angular/core';
-import { MatTableDataSource, MatSort, Sort } from '@angular/material';
+import { MatSort, Sort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import * as moment from 'moment';
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
@@ -169,13 +170,13 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   memberHRZoneList = [];
   memberHRZoneOptions = [];
 
-  @ViewChild('container')
+  @ViewChild('container', {static: false})
   container: ElementRef;
-  @ViewChild('classHRZoneChartTarget')
+  @ViewChild('classHRZoneChartTarget', {static: false})
   classHRZoneChartTarget: ElementRef;
-  @ViewChild('classCaloriesChartTarget')
+  @ViewChild('classCaloriesChartTarget', {static: false})
   classCaloriesChartTarget: ElementRef;
-  @ViewChild('sortTable')
+  @ViewChild('sortTable', {static: false})
   sortTable: MatSort;
 
   constructor(

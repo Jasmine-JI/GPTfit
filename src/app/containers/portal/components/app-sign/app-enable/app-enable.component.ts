@@ -7,7 +7,7 @@ import { MessageBoxComponent } from '@shared/components/message-box/message-box.
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 import { AuthService } from '@shared/services/auth.service';
 
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 
 @Component({

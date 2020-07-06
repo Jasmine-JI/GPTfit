@@ -5,7 +5,7 @@ import {
   AfterViewChecked
 } from '@angular/core';
 import { GlobalEventsManager } from '@shared/global-events-manager';
-import { MatSidenav } from '@angular/material';
+import { MatSidenav } from '@angular/material/sidenav';
 import { AuthService } from '@shared/services/auth.service';
 import { Router } from '@angular/router';
 import { UserInfoService } from './services/userInfo.service';

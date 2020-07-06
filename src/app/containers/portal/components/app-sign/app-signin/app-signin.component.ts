@@ -5,7 +5,7 @@ import { AuthService } from '../../../../../shared/services/auth.service';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 
 import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-app-signin',

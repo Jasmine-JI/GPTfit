@@ -11,7 +11,7 @@ import { LifeTrackingService } from '../../services/life-tracking.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { NgProgress, NgProgressRef } from '@ngx-progressbar/core';
 import { Router } from '@angular/router';
-import { MatDatepickerInputEvent } from '@angular/material';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { HashIdService } from '@shared/services/hash-id.service';
 import * as moment from 'moment';
 import { chart } from 'highcharts';
@@ -61,33 +61,33 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   finalDatas: any;
   charts = [];
   isInitialChartDone = false;
-  @ViewChild('container')
+  @ViewChild('container', {static: false})
   container: ElementRef;
-  @ViewChild('activityChartTarget')
+  @ViewChild('activityChartTarget', {static: false})
   activityChartTarget: ElementRef;
-  @ViewChild('airPressureChartTarget')
+  @ViewChild('airPressureChartTarget', {static: false})
   airPressureChartTarget: ElementRef;
-  @ViewChild('elevChartTarget')
+  @ViewChild('elevChartTarget', {static: false})
   elevChartTarget: ElementRef;
-  @ViewChild('heartRateChartTarget')
+  @ViewChild('heartRateChartTarget', {static: false})
   heartRateChartTarget: ElementRef;
-  @ViewChild('stressChartTarget')
+  @ViewChild('stressChartTarget', {static: false})
   stressChartTarget: ElementRef;
-  @ViewChild('tempChartTarget')
+  @ViewChild('tempChartTarget', {static: false})
   tempChartTarget: ElementRef;
-  @ViewChild('totalActivityCaloriesChartTarget')
+  @ViewChild('totalActivityCaloriesChartTarget', {static: false})
   totalActivityCaloriesChartTarget: ElementRef;
-  @ViewChild('totalDistanceMetersChartTarget')
+  @ViewChild('totalDistanceMetersChartTarget', {static: false})
   totalDistanceMetersChartTarget: ElementRef;
-  @ViewChild('totalElevGainChartTarget')
+  @ViewChild('totalElevGainChartTarget', {static: false})
   totalElevGainChartTarget: ElementRef;
-  @ViewChild('totalElevLossChartTarget')
+  @ViewChild('totalElevLossChartTarget', {static: false})
   totalElevLossChartTarget: ElementRef;
-  @ViewChild('totalLifeCaloriesChartTarget')
+  @ViewChild('totalLifeCaloriesChartTarget', {static: false})
   totalLifeCaloriesChartTarget: ElementRef;
-  @ViewChild('totalStepChartTarget')
+  @ViewChild('totalStepChartTarget', {static: false})
   totalStepChartTarget: ElementRef;
-  @ViewChild('wearingStatusChartTarget')
+  @ViewChild('wearingStatusChartTarget', {static: false})
   wearingStatusChartTarget: ElementRef;
   isactivityChartTargetDisplay = false;
   isairPressureChartTargetDisplay = false;

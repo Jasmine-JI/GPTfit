@@ -5,7 +5,7 @@ import { UserInfoService } from '../../services/userInfo.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { ActivityService } from '../../../../shared/services/activity.service';
 import { A3FormatPipe } from '../../../../shared/pipes/a3-format.pipe';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '../../../../shared/services/auth.service';
 
 import { TranslateService } from '@ngx-translate/core';

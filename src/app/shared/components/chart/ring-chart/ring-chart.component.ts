@@ -61,7 +61,7 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() data: Array<number>;
   @Input() selectType: string;  // 先預埋根據運動類型過濾落點-kidin-1090131
 
-  @ViewChild('container')
+  @ViewChild('container', {static: false})
   container: ElementRef;
 
   constructor(
@@ -77,7 +77,6 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
   // 初始化highChart-kidin-1081211
   initInfoHighChart () {
     const sportPercentageDataset = [];
-    Highcharts.charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
     for (let i = 0; i < this.data.length; i++) {
       if (this.data[i] !== 0) {
         switch (i) {
@@ -151,11 +150,23 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
       }
     }
 
-    const ringChartOptions = new ChartOptions(sportPercentageDataset),
-          ringChartDiv = this.container.nativeElement;
-
     // 根據圖表清單依序將圖表顯示出來-kidin-1081217
-    chart(ringChartDiv, ringChartOptions);
+    const ringChartOptions = new ChartOptions(sportPercentageDataset);
+    this.createChart(ringChartOptions);
+  }
+
+  // 確認取得元素才建立圖表-kidin-1090706
+  createChart (option: ChartOptions) {
+
+    setTimeout (() => {
+      if (!this.container) {
+        this.createChart(option);
+      } else {
+        const chartDiv = this.container.nativeElement;
+        chart(chartDiv, option);
+      }
+    }, 200);
+
   }
 
   ngOnDestroy () {}

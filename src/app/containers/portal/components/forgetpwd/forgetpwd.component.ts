@@ -5,7 +5,7 @@ import {
   Validators
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { RandomCodeService } from '../../services/random-code.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { RandomCode } from '../../models/random-code';
@@ -33,7 +33,7 @@ export class ForgetpwdComponent implements OnInit, OnDestroy {
   randomCode: RandomCode;
   isCodeInvalid = false;
   smsVerifyCode: string;
-  @ViewChild('f') forgetForm: any;
+  @ViewChild('f', {static: false}) forgetForm: any;
   isChartCodeErr = false;
   isSMSCodeErr = false;
   isForgetSending = false;

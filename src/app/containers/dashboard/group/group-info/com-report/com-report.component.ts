@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
-import { MatTableDataSource, MatSort, Sort } from '@angular/material';
+import { MatSort, Sort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 
 import SimpleLinearRegression from 'ml-regression-simple-linear';
 import * as moment from 'moment';
@@ -24,9 +25,9 @@ const Highcharts: any = _Highcharts; // 不檢查highchart型態
 })
 export class ComReportComponent implements OnInit, OnDestroy {
 
-  @ViewChild('groupSortTable')
+  @ViewChild('groupSortTable', {static: false})
   groupSortTable: MatSort;
-  @ViewChild('personSortTable')
+  @ViewChild('personSortTable', {static: false})
   personSortTable: MatSort;
 
   // UI控制相關變數-kidin-1090115

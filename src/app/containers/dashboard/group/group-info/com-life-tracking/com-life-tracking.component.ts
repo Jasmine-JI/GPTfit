@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatTableDataSource, MatSort, Sort } from '@angular/material';
+import { MatSort, Sort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import SimpleLinearRegression from 'ml-regression-simple-linear';
 import * as moment from 'moment';
 import { first } from 'rxjs/operators';
@@ -19,7 +20,7 @@ import { GroupService } from '../../../services/group.service';
 })
 export class ComLifeTrackingComponent implements OnInit {
 
-  @ViewChild('sortTable')
+  @ViewChild('sortTable', {static: false})
   sortTable: MatSort;
 
   // UI控制相關變數-kidin-1090115
@@ -238,7 +239,7 @@ export class ComLifeTrackingComponent implements OnInit {
       const listId = new Set(),  // 避免id重複(Bug 1150)-kidin-1090211
             listName = new Set(),
             memberList = res.info.groupMemberInfo;
-console.log(res);
+
       for (let i = 0; i < memberList.length; i++) {
         const memberGroupIdArr = memberList[i].groupId.split('-'),
               groupIdArr = this.groupId.split('-');
@@ -276,7 +277,7 @@ console.log(res);
                 name: listNameArr[_idx]
               };
             });
-console.log(list);
+
       this.groupList = list;
       const groupListInfo = {
         groupId: this.groupId,
