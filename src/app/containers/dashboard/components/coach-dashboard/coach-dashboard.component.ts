@@ -17,22 +17,25 @@ import {
 import { demoCoachInfo, demoLessonInfo } from './fakeUsers';
 import { CoachService } from '../../services/coach.service';
 import { ActivatedRoute } from '@angular/router';
-import * as Stock from 'highcharts/highstock';
+import * as _Highcharts from 'highcharts';
 import { WebSocketSubject } from 'rxjs/observable/dom/WebSocketSubject';
 import * as moment from 'moment';
 import { stockChart } from 'highcharts/highstock';
 
-import { DomSanitizer } from '@angular/platform-browser';
 import { UtilsService } from '@shared/services/utils.service';
 import { getUrlQueryStrings } from '@shared/utils/';
 import { GroupService } from '../../services/group.service';
 import * as _ from 'lodash';
+
 export class Message {
   constructor(
     public classMemberDataField: any,
     public classMemberDataFieldValue: any
   ) {}
 }
+
+const Highcharts: any = _Highcharts; // 不檢查highchart型態
+
 @Component({
   selector: 'app-coach-dashboard',
   templateUrl: './coach-dashboard.component.html',
@@ -227,10 +230,9 @@ export class CoachDashboardComponent
     private groupService: GroupService,
     private route: ActivatedRoute,
     elementRef: ElementRef,
-    private sanitizer: DomSanitizer,
     private utils: UtilsService
   ) {
-    Stock.setOptions({ global: { useUTC: false } });
+    Highcharts.setOptions({ global: { useUTC: false } });
     this.elementRef = elementRef;
     let hostName = 'app.alatech.com.tw';
     if (location.hostname === 'cloud.alatech.com.tw') {
@@ -265,7 +267,7 @@ export class CoachDashboardComponent
         this.classInfo = res.info;
         this.classInfo.groupIcon =
           this.classInfo.groupIcon && this.classInfo.groupIcon.length > 0
-            ? `${this.classInfo.groupIcon} ${this.updateImgQueryString}`
+            ? `${this.classInfo.groupIcon}${this.updateImgQueryString}`
             : '/assets/images/group-default.svg';
         const groupIcon = new Image();
         groupIcon.src = this.classInfo.groupIcon;
@@ -279,9 +281,6 @@ export class CoachDashboardComponent
             : '/assets/images/user.png';
         if (this.classInfo.groupVideoUrl.length > 0) {
           this.isHadVideoUrl = true;
-          this.classInfo.groupVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-            this.classInfo.groupVideoUrl
-          );
         } else {
           this.isHadVideoUrl = false;
         }
@@ -309,9 +308,7 @@ export class CoachDashboardComponent
     if (this.classId === '99999' && this.isDemoMode) {
       this.classInfo.groupIcon = '/assets/demo/demoClass.jpg';
       this.classInfo.coachAvatar = '/assets/demo/coach.png';
-      this.classInfo.groupVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-        this.handleVideoUrl('https://www.youtube.com/embed/eHiDLxBhHGs')
-      );
+      this.classInfo.groupVideoUrl = this.handleVideoUrl('https://www.youtube.com/embed/eHiDLxBhHGs')
       this.handleCoachInfo(demoCoachInfo);
       this.handleLessonInfo(demoLessonInfo);
 

@@ -33,7 +33,7 @@ export class ForgetpwdComponent implements OnInit, OnDestroy {
   randomCode: RandomCode;
   isCodeInvalid = false;
   smsVerifyCode: string;
-  @ViewChild('f') forgetForm: any;
+  @ViewChild('f', {static: false}) forgetForm: any;
   isChartCodeErr = false;
   isSMSCodeErr = false;
   isForgetSending = false;

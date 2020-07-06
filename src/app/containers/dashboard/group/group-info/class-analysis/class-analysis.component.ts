@@ -170,13 +170,13 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   memberHRZoneList = [];
   memberHRZoneOptions = [];
 
-  @ViewChild('container')
+  @ViewChild('container', {static: false})
   container: ElementRef;
-  @ViewChild('classHRZoneChartTarget')
+  @ViewChild('classHRZoneChartTarget', {static: false})
   classHRZoneChartTarget: ElementRef;
-  @ViewChild('classCaloriesChartTarget')
+  @ViewChild('classCaloriesChartTarget', {static: false})
   classCaloriesChartTarget: ElementRef;
-  @ViewChild('sortTable')
+  @ViewChild('sortTable', {static: false})
   sortTable: MatSort;
 
   constructor(

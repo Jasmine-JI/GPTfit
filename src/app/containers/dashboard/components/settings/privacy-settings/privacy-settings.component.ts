@@ -41,7 +41,7 @@ export class PrivacySettingsComponent implements OnInit {
   showModifyBox = false;
   editing = false;
 
-  @ViewChild('gmap') gmapElement: any;
+  @ViewChild('gmap', {static: true}) gmapElement: any;
   @Input() userData: any;
   map: any;
   mark: any;

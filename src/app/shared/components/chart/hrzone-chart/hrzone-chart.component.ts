@@ -69,7 +69,7 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() isPrint: boolean;
   @Input() type: string;
 
-  @ViewChild('container')
+  @ViewChild('container', {static: false})
   container: ElementRef;
 
   constructor(
@@ -90,7 +90,6 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
 
   // 初始化highChart-kidin-1081211
   initInfoHighChart () {
-    Highcharts.charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
     this.highestHRZoneValue = 0;
 
     const totalSecond = this.data.reduce((accumulator, current) => accumulator + current),
@@ -148,8 +147,7 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
           break;
       }
 
-      const HRChartOptions = new ChartOptions(sportPercentageDataset),
-            HRChartDiv = this.container.nativeElement;
+      const HRChartOptions = new ChartOptions(sportPercentageDataset);
 
       HRChartOptions['series'][0].dataLabels = {
         enabled: true,
@@ -178,15 +176,11 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
         HRChartOptions['chart'].width = 540;
       }
 
-      // 根據圖表清單依序將圖表顯示出來-kidin-1081217
-      setTimeout(() => {
-        chart(HRChartDiv, HRChartOptions);
-      }, 200);
+      this.createChart(HRChartOptions);
 
     } else {
 
-      const HRChartOptions = new ChartOptions(sportPercentageDataset),
-            HRChartDiv = this.container.nativeElement;
+      const HRChartOptions = new ChartOptions(sportPercentageDataset);
 
       HRChartOptions['chart'] = {
         margin: [2, 0, 2, 0],
@@ -235,13 +229,22 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
       };
 
       HRChartOptions['chart'].zoomType = '';
-
-      // 根據圖表清單依序將圖表顯示出來-kidin-1081217
-      setTimeout(() => {
-        chart(HRChartDiv, HRChartOptions);
-      }, 200);
-
+      this.createChart(HRChartOptions);
     }
+
+  }
+
+  // 確認取得元素才建立圖表-kidin-1090706
+  createChart (option: ChartOptions) {
+
+    setTimeout (() => {
+      if (!this.container) {
+        this.createChart(option);
+      } else {
+        const chartDiv = this.container.nativeElement;
+        chart(chartDiv, option);
+      }
+    }, 200);
 
   }
 

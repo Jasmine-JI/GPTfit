@@ -25,10 +25,10 @@ export class DeviceLogComponent implements OnInit {
   selectedValue = '';
   isLoading = false;
 
-  @ViewChild('paginatorA') paginatorA: MatPaginator;
-  @ViewChild('paginatorB') paginatorB: MatPaginator;
-  @ViewChild('sortTable') sortTable: MatSort;
-  @ViewChild('filter') filter: ElementRef;
+  @ViewChild('paginatorA', {static: true}) paginatorA: MatPaginator;
+  @ViewChild('paginatorB', {static: true}) paginatorB: MatPaginator;
+  @ViewChild('sortTable', {static: false}) sortTable: MatSort;
+  @ViewChild('filter', {static: false}) filter: ElementRef;
 
   constructor(
     private deviceLogservice: DeviceLogService,

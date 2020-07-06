@@ -25,6 +25,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
   templateUrl: './my-activity.component.html',
   styleUrls: ['./my-activity.component.css']
 })
+
 export class MyActivityComponent implements OnInit {
   logSource = new MatTableDataSource<any>();
   totalCount: number;
@@ -42,7 +43,7 @@ export class MyActivityComponent implements OnInit {
   @Input() userName;
   @ViewChild('picker', { read: MatInput }) input: MatInput;
 
-  @ViewChild('paginator')
+  @ViewChild('paginator', {static: true})
   paginator: MatPaginator;
   constructor(
     private activityService: ActivityService,

@@ -11,7 +11,9 @@ import { HashIdService } from '@shared/services/hash-id.service';
 import { UserProfileService } from '../../../services/user-profile.service';
 import { ReportService } from '../../../services/report.service';
 import { UserInfoService } from '../../../../containers/dashboard/services/userInfo.service';
+import * as _Highcharts from 'highcharts';
 
+const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 @Component({
   selector: 'app-report-content',
@@ -1057,6 +1059,15 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
   // 根據運動類別使用rxjs從service取得資料-kidin-1090120
   loadCategoryData (type: string) {
     this.isRxjsLoading = true;
+
+    // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
+    Highcharts.charts.forEach((_highChart, idx) => {
+      if (_highChart !== undefined) {
+        _highChart.destroy();
+      }
+    });
+    Highcharts.charts.length = 0;
+
     this.reportService.getTypeData(type).pipe(first()).subscribe(res => {
       this.categoryActivityLength = res.activityLength;
       this.updateUrl('true');

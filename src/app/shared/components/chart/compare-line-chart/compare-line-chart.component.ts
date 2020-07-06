@@ -77,7 +77,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() searchDate: Array<number>;
   @Input() chartHeight: number;
 
-  @ViewChild('container')
+  @ViewChild('container', {static: false})
   container: ElementRef;
 
   constructor(
@@ -101,8 +101,6 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   initChart () {
-    Highcharts.charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
-
     let trendDataset;
     const chartData = [],
           chartBestData = [];
@@ -402,8 +400,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
         break;
     }
 
-    const trendChartOptions = new ChartOptions(trendDataset),
-          trendChartDiv = this.container.nativeElement;
+    const trendChartOptions = new ChartOptions(trendDataset);
 
     // 以後可能會個別設定，故不寫死-kidin-1090221
     switch (this.chartName) {
@@ -442,9 +439,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
       trendChartOptions['xAxis'].tickInterval = 30 * 24 * 4600 * 1000;  // 間距一個月
     }
 
-    // 根據圖表清單依序將圖表顯示出來-kidin-1081217
-    chart(trendChartDiv, trendChartOptions);
-
+    this.createChart(trendChartOptions);
   }
 
   // 根據心率區間的值決定該點顏色-kidin-1090210
@@ -545,6 +540,20 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       this.lastSunday = this.searchDate[1];
     }
+
+  }
+
+  // 確認取得元素才建立圖表-kidin-1090706
+  createChart (option: ChartOptions) {
+
+    setTimeout (() => {
+      if (!this.container) {
+        this.createChart(option);
+      } else {
+        const chartDiv = this.container.nativeElement;
+        chart(chartDiv, option);
+      }
+    }, 200);
 
   }
 

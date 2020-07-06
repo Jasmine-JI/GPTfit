@@ -36,11 +36,11 @@ export class GroupSearchComponent implements OnInit {
   isEmpty = true;
   isLoading = false;
 
-  @ViewChild('paginator')
+  @ViewChild('paginator', {static: true})
   paginator: MatPaginator;
-  @ViewChild('sortTable')
+  @ViewChild('sortTable', {static: false})
   sortTable: MatSort;
-  @ViewChild('filter')
+  @ViewChild('filter', {static: false})
   filter: ElementRef;
   constructor(
     private groupService: GroupService,
