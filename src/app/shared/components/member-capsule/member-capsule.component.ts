@@ -85,7 +85,7 @@ export class MemberCapsuleComponent implements OnInit {
     this.groupService.getImgUpdatedStatus().subscribe(response => {
       this.updateImgQueryString = response;
     });
-    this.icon = `${this.icon} ${this.updateImgQueryString}`;
+    this.icon = `${this.icon}${this.updateImgQueryString}`;
     this.listenImage(this.icon);
     this.token = this.utils.getToken() || '';
   }

@@ -10,7 +10,6 @@ import { UserDetail } from '../models/userDetail';
 import { UtilsService } from '@shared/services/utils.service';
 import { AuthService } from '@shared/services/auth.service';
 import * as moment from 'moment';
-import { _getComponentHostLElementNode } from '@angular/core/src/render3/instructions';
 
 
 @Injectable()

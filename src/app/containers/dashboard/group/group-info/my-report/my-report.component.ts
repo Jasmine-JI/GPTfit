@@ -182,17 +182,17 @@ export class MyReportComponent implements OnInit, OnDestroy {
     z5: 'Z5',
   };
 
-  @ViewChild('container')
+  @ViewChild('container', {static: false})
   container: ElementRef;
-  @ViewChild('HRZoneChartTarget')
+  @ViewChild('HRZoneChartTarget', {static: false})
   HRZoneChartTarget: ElementRef;
-  @ViewChild('caloriesBurnedChartTarget')
+  @ViewChild('caloriesBurnedChartTarget', {static: false})
   caloriesBurnedChartTarget: ElementRef;
-  @ViewChild('avgSpeedChartTarget')
+  @ViewChild('avgSpeedChartTarget', {static: false})
   avgSpeedChartTarget: ElementRef;
-  @ViewChild('avgHRChartTarget')
+  @ViewChild('avgHRChartTarget', {static: false})
   avgHRChartTarget: ElementRef;
-  @ViewChild('caloriesChartTarget')
+  @ViewChild('caloriesChartTarget', {static: false})
   caloriesChartTarget: ElementRef;
 
   constructor(
@@ -899,7 +899,7 @@ export class MyReportComponent implements OnInit, OnDestroy {
       this.renderer.listen(this.container.nativeElement, 'touchstart', e =>
         this.handleSynchronizedPoint(e, this.chartDatas)
       );
-    }, 0);
+    }, 3000);
   }
 
   // 調整縮放會同步-kidin-1081212

@@ -64,9 +64,9 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   chartLoading = false;
   basicLoading = false;
   rainLoading = false;
-  @ViewChild('gmap') gmapElement: ElementRef;
+  @ViewChild('gmap', {static: false}) gmapElement: ElementRef;
   map: any;
-  @ViewChild('bmap') bmapElement: ElementRef;
+  @ViewChild('bmap', {static: false}) bmapElement: ElementRef;
   bmap: any;
   startMark: any;
   endMark: any;
@@ -76,27 +76,27 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   isPlayingGpx = false;
   stopPointIdx = 0;
   playerTimer: any;
-  @ViewChild('speedChartTarget')
+  @ViewChild('speedChartTarget', {static: false})
   speedChartTarget: ElementRef;
-  @ViewChild('elevationChartTarget')
+  @ViewChild('elevationChartTarget', {static: false})
   elevationChartTarget: ElementRef;
-  @ViewChild('container')
+  @ViewChild('container', {static: false})
   container: ElementRef;
-  @ViewChild('hrChartTarget')
+  @ViewChild('hrChartTarget', {static: false})
   hrChartTarget: ElementRef;
-  @ViewChild('cadenceChartTarget')
+  @ViewChild('cadenceChartTarget', {static: false})
   cadenceChartTarget: ElementRef;
-  @ViewChild('paceChartTarget')
+  @ViewChild('paceChartTarget', {static: false})
   paceChartTarget: ElementRef;
-  @ViewChild('tempChartTarget')
+  @ViewChild('tempChartTarget', {static: false})
   tempChartTarget: ElementRef;
-  @ViewChild('zoneChartTarget')
+  @ViewChild('zoneChartTarget', {static: false})
   zoneChartTarget: ElementRef;
-  @ViewChild('wattChartTarget')
+  @ViewChild('wattChartTarget', {static: false})
   wattChartTarget: ElementRef;
-  @ViewChild('muscleMap')
+  @ViewChild('muscleMap', {static: false})
   muscleMap: MuscleMapComponent;
-  @ViewChild('muscleTrainList')
+  @ViewChild('muscleTrainList', {static: false})
   muscleTrainList: MuscleTrainListComponent;
 
   isspeedChartTargetDisplay = false;
@@ -391,7 +391,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       } else if ((+_point.latitudeDegrees === 100 && +_point.longitudeDegrees === 100)
       || (_point.latitudeDegrees === null && _point.longitudeDegrees === null)) {
         isNormalPoint = false;
-        this.gpxPoints.push(fillData);
+        this.gpxBmapPoints.push(fillData);
       } else {
         if (!isNormalPoint) {
           isNormalPoint = true;
@@ -546,6 +546,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         fillData = p;
       }
     });
+
     this.gpxPoints = this.gpxPoints.map((_gpxPoint, idx) => {
       if (!_gpxPoint) {
         const index = originRealIdx.findIndex(_tip => _tip > idx);
@@ -555,12 +556,15 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           );
           return this.gpxPoints[originRealIdx[originRealIdx.length - 1]];
         }
+
         bounds.extend(this.gpxPoints[originRealIdx[index]]);
         return this.gpxPoints[originRealIdx[index]];
       }
+
       bounds.extend(_gpxPoint);
       return _gpxPoint;
     });
+
     // 起始點mark
     this.startMark = new google.maps.Marker({
       position: this.gpxPoints[0],
@@ -772,20 +776,38 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           this.isShowMap = false;
         }
         if (this.isShowMap) {
-          // 判斷google map是否可以載入，如不行就使用百度地圖並隱藏切換鈕-kidin-1081203
+
+          const mapCheck = {
+            google: '',
+            bmap: ''
+          };
+
+          // 判斷bidu map是否可以載入-kidin-1081203
+          if ('BMAP_NORMAL_MAP' in window) {
+            this.mapKind = '2';
+            this.handleBMap();
+            mapCheck.bmap = 'checked';
+          }
+
+          // 判斷google map是否可以載入-kidin-1081203
           if ('google' in window && typeof google === 'object' && typeof google.maps === 'object') {
             if (!this.isInChinaArea || isInTaiwan) {
               this.mapKind = '1';
               this.handleGoogleMap(isInTaiwan);
-            } else {
-              this.mapKind = '2';
+              mapCheck.google = 'checked';
             }
-          } else {
-            this.mapKind = '2';
+          }
+
+          // 若有一個地圖無法順利載入就隱藏地圖切換鈕，兩個都無法載入就隱藏地圖-kidin-1090702
+          if (mapCheck.google !== 'checked' && mapCheck.bmap !== 'checked') {
+            this.isHideMapRadioBtn = true;
+            this.isShowMap = false;
+          } else if (mapCheck.google !== 'checked' || mapCheck.bmap !== 'checked') {
             this.isHideMapRadioBtn = true;
           }
-          this.handleBMap();
+
         }
+
         this.dataSource.data = res.activityLapLayer;
         this.fileInfo = res.fileInfo;
         if (location.search.indexOf('ipm=s') > -1) {

@@ -215,7 +215,7 @@ export class EditGroupInfoComponent implements OnInit {
         groupStatus,
         groupVideoUrl
       });
-      this.groupImg = `${groupIcon} ${this.updateImgQueryString}`;
+      this.groupImg = `${groupIcon}${this.updateImgQueryString}`;
       this.finalImageLink = this.groupImg;
       this.group_id = this.utils.displayGroupId(groupId);
       this.groupLevel = this.utils.displayGroupLevel(groupId);

@@ -52,10 +52,10 @@ export class DeviceLogDetailComponent implements OnInit {
   isLoadingResults = false;
   isRateLimitReached = false;
 
-  @ViewChild('paginatorA') paginatorA: MatPaginator;
-  @ViewChild('paginatorB') paginatorB: MatPaginator;
-  @ViewChild('sortTable') sortTable: MatSort;
-  @ViewChild('f') form: any;
+  @ViewChild('paginatorA', {static: true}) paginatorA: MatPaginator;
+  @ViewChild('paginatorB', {static: true}) paginatorB: MatPaginator;
+  @ViewChild('sortTable', {static: false}) sortTable: MatSort;
+  @ViewChild('f', {static: false}) form: any;
   constructor(
     private route: ActivatedRoute,
     private deviceLogservice: DeviceLogService,

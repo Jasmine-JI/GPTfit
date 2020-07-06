@@ -31,7 +31,7 @@ export class MyDeviceComponent implements OnInit, OnChanges {
   currentPage: PageEvent;
   currentSort: Sort;
   isLoading = false;
-  @ViewChild('paginator')
+  @ViewChild('paginator', {static: true})
   paginator: MatPaginator;
   token: string;
   localSN: string[];

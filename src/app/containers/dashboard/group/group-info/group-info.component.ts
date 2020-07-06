@@ -212,7 +212,7 @@ export class GroupInfoComponent implements OnInit {
 
       this.groupImg =
         groupIcon && groupIcon.length > 0
-          ? `${groupIcon} ${this.updateImgQueryString}`
+          ? `${groupIcon}${this.updateImgQueryString}`
           : '/assets/images/group-default.svg';
       this.group_id = this.utils.displayGroupId(groupId);
       this.groupLevel = this.utils.displayGroupLevel(groupId);

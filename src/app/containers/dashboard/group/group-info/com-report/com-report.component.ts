@@ -25,9 +25,9 @@ const Highcharts: any = _Highcharts; // 不檢查highchart型態
 })
 export class ComReportComponent implements OnInit, OnDestroy {
 
-  @ViewChild('groupSortTable')
+  @ViewChild('groupSortTable', {static: false})
   groupSortTable: MatSort;
-  @ViewChild('personSortTable')
+  @ViewChild('personSortTable', {static: false})
   personSortTable: MatSort;
 
   // UI控制相關變數-kidin-1090115

@@ -49,7 +49,7 @@ export class EnrollFormComponent implements OnInit {
   session_id: string;
   eventInfo: any;
   signupMethod: number;
-  @ViewChild('f')
+  @ViewChild('f', {static: false})
   form: any;
   complexForm: FormGroup;
   counrtyCode: string;

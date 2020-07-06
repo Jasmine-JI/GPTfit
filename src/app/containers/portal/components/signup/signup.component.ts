@@ -35,7 +35,7 @@ export class SignupComponent implements OnInit, OnDestroy {
   randomCode: RandomCode;
   isCodeInvalid = false;
   smsVerifyCode: string;
-  @ViewChild('f') signupForm: any;
+  @ViewChild('f', {static: false}) signupForm: any;
   isChartCodeErr = false;
   isSMSCodeErr = false;
   isSignupSending = false;

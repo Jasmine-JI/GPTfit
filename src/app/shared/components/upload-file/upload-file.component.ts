@@ -41,7 +41,7 @@ export class UploadFileComponent implements OnInit, OnChanges, OnDestroy {
   isImgUpLoading = false;
 
   @Output() onChange = new EventEmitter();
-  @ViewChild('fileUpload')
+  @ViewChild('fileUpload', {static: false})
   set lookUp(ref: any) {
     ref.nativeElement.value = null;
   }
@@ -66,7 +66,7 @@ export class UploadFileComponent implements OnInit, OnChanges, OnDestroy {
     this.handleChange(evt);
   }
 
-  @ViewChild(ImageCropperComponent)
+  @ViewChild(ImageCropperComponent, {static: false})
   imageCropper: ImageCropperComponent;
 
   constructor(

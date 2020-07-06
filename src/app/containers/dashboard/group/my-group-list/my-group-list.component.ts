@@ -32,9 +32,9 @@ export class MyGroupListComponent implements OnInit {
   isLoading = false;
   brandType = 3;
   currentBrandType = 3;
-  @ViewChild('paginator') paginator: MatPaginator;
-  @ViewChild('sortTable') sortTable: MatSort;
-  @ViewChild('filter') filter: ElementRef;
+  @ViewChild('paginator', {static: true}) paginator: MatPaginator;
+  @ViewChild('sortTable', {static: false}) sortTable: MatSort;
+  @ViewChild('filter', {static: false}) filter: ElementRef;
 
   constructor(
     private groupService: GroupService,

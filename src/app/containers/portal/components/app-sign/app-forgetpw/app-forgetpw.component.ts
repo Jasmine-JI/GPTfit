@@ -725,7 +725,6 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
 
   // 離開頁面則取消隱藏navbar-kidin-1090514
   ngOnDestroy () {
-    console.log('destroy');
     this.utils.setHideNavbarStatus(false);
   }
 
