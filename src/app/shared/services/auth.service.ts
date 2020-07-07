@@ -4,7 +4,7 @@ import {
 } from '@angular/common/http';
 
 import { Injectable, Injector } from '@angular/core';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { BehaviorSubject } from 'rxjs';
 import { User } from '../models/user';
 import { Response } from '../models/response';
 import { Observable } from 'rxjs/Observable';

@@ -5,7 +5,6 @@ import { AuthService } from '../../../../../shared/services/auth.service';
 import { UserInfoService } from '../../../../dashboard/services/userInfo.service';
 import { SignupService } from '../../../services/signup.service';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
-import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -103,8 +102,7 @@ export class AppChangeAccountComponent implements OnInit, OnDestroy {
     private signupService: SignupService,
     private userInfoService: UserInfoService,
     private dialog: MatDialog,
-    private router: Router,
-    public getClientIp: GetClientIpService
+    private router: Router
   ) {
     translate.onLangChange.subscribe(() => {
       this.getTranslate();
