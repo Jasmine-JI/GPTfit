@@ -2,8 +2,7 @@ import { Injectable } from '@angular/core';
 import { cloneDeep } from 'lodash';
 import { stringify, parse } from 'query-string';
 import { FormGroup } from '@angular/forms';
-import { Observable } from 'rxjs/Observable';
-import { BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 export const TOKEN = 'ala_token';
 export const EMPTY_OBJECT = {};
 

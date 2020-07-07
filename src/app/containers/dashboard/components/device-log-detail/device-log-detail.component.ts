@@ -13,10 +13,8 @@ import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/debounceTime';
-import 'rxjs/add/operator/distinctUntilChanged';
-import 'rxjs/add/observable/fromEvent';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import * as moment from 'moment';
 import {
@@ -79,7 +77,9 @@ export class DeviceLogDetailComponent implements OnInit {
     const { pageNumber } = queryStrings;
     this.isHandset$ = this.breakpointObserver
       .observe(Breakpoints.Handset)
-      .map(match => match.matches);
+      .pipe(
+        map(match => match.matches)
+      );
 
     this.userId = this.route.snapshot.paramMap.get('userId');
 

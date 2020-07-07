@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
 import { QrcodeService } from '../../containers/portal/services/qrcode.service';
 import { UtilsService } from './utils.service';
-import { BehaviorSubject } from 'rxjs';
-import { Observable } from 'rxjs/Observable';
+import { Observable, BehaviorSubject, forkJoin } from 'rxjs';
 import { GroupService } from '../../containers/dashboard/services/group.service';
-import { forkJoin } from 'rxjs/observable/forkJoin';
 import { UserProfileService } from './user-profile.service';
 
 @Injectable()

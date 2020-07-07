@@ -7,7 +7,7 @@ import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import * as moment from 'moment';
 import { MsgDialogComponent } from '../msg-dialog/msg-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { forkJoin } from 'rxjs/observable/forkJoin';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-edit-event',
