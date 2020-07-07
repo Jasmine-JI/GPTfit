@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { QrcodeService } from '../../../../portal/services/qrcode.service';
-import { HttpParams } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { NgProgress, NgProgressRef } from '@ngx-progressbar/core';
 import { UtilsService } from '@shared/services/utils.service';
@@ -85,7 +84,7 @@ export class ProductInfoComponent implements OnInit {
       'token': '',
       'queryType': '1',
       'queryArray': [this.deviceSN]
-    }
+    };
     this.qrCodeService.getDeviceDetail(body).subscribe(res => {
       this.fitPairStatus = res.info.fitPairStatus;
       if (res.resultCode === 200) {

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 
 import * as moment from 'moment';
 import { Observable } from 'rxjs/Observable';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { BehaviorSubject } from 'rxjs';
 
 
 @Injectable()

@@ -10,7 +10,7 @@ import {
   SimpleChanges,
   OnDestroy
 } from '@angular/core';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { BehaviorSubject } from 'rxjs';
 import { ImageCroppedEvent } from 'ngx-image-cropper';
 import { ImageCropperComponent } from 'ngx-image-cropper';
 import { UtilsService } from '../../services/utils.service';
