@@ -4,7 +4,8 @@ import {
   ActivatedRouteSnapshot,
   Router
 } from '@angular/router';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import 'rxjs/add/operator/take';
 import { UserInfoService } from '../services/userInfo.service';
 import { UtilsService } from '@shared/services/utils.service';
@@ -27,36 +28,39 @@ export class DashboardGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
   ): Observable<boolean> | Promise<boolean> | boolean {
 
-    return this.userInfoService.getInitialUserInfoStatus().map((res: UserInfo) => {
-      const { isInitial } = res;
-      if (!isInitial) {
-        const token = this.utils.getToken() || '';
-        const body = {
-          token,
-          avatarType: 2,
-          iconType: 2
-        };
-        this.userInfoService.getUserInfo(body).then(() => {
+    return this.userInfoService.getInitialUserInfoStatus().pipe(
+      map((res: UserInfo) => {
+        const { isInitial } = res;
+        if (!isInitial) {
+          const token = this.utils.getToken() || '';
+          const body = {
+            token,
+            avatarType: 2,
+            iconType: 2
+          };
+          this.userInfoService.getUserInfo(body).then(() => {
+            this.getAuthority();
+            if (this.isSupervisor || this.isSystemDeveloper || this.isSystemMaintainer || this.isMarketingDeveloper) {
+              this.utils.handleNextUrl(next);
+              this.router.navigateByUrl(`/dashboard${this.utils.handleNextUrl(next)}`);
+              return true;
+            } else {
+              this.router.navigateByUrl(`/403`);
+              return false;
+            }
+          });
+        } else {
           this.getAuthority();
           if (this.isSupervisor || this.isSystemDeveloper || this.isSystemMaintainer || this.isMarketingDeveloper) {
-            this.utils.handleNextUrl(next);
-            this.router.navigateByUrl(`/dashboard${this.utils.handleNextUrl(next)}`);
             return true;
           } else {
             this.router.navigateByUrl(`/403`);
             return false;
           }
-        });
-      } else {
-        this.getAuthority();
-        if (this.isSupervisor || this.isSystemDeveloper || this.isSystemMaintainer || this.isMarketingDeveloper) {
-          return true;
-        } else {
-          this.router.navigateByUrl(`/403`);
-          return false;
         }
-      }
-    });
+      })
+    );
+
   }
 
   getAuthority () {
