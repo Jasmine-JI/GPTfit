@@ -2,9 +2,8 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 
 import { Injectable, Injector } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
-import { Observable } from 'rxjs/Observable';
-import { forkJoin } from 'rxjs/observable/forkJoin';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { forkJoin } from 'rxjs';
 import { UserInfo } from '../models/userInfo';
 import { UserDetail } from '../models/userDetail';
 import { UtilsService } from '@shared/services/utils.service';

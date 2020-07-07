@@ -4,11 +4,11 @@ import {
 } from '@angular/common/http';
 
 import { Injectable, Injector } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { User } from '../models/user';
 import { Response } from '../models/response';
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
+import { map } from 'rxjs/operators';
+import { of } from 'rxjs';
 import { UtilsService, TOKEN } from '@shared/services/utils.service';
 import { Router } from '@angular/router';
 import * as moment from 'moment';
@@ -30,40 +30,43 @@ export class AuthService {
   }
 
   login(loginData): Observable<boolean> {
-    return this.loginServer(loginData).map(
-      (res: Response) => {
-        if (res.resultCode === 200) {
-          const { name, token, tokenTimeStamp } = res.info;
-          this.loginStatus$.next(true);
-          // to remove
-          this.currentUser$.next(name);
-          this.userName = name;
-          this.utils.writeToken(token);
-          this.utils.setLocalStorageObject('ala_token_time', tokenTimeStamp);
-          const router = this.injector.get(Router);
-          if (res.info.firstLogin === '2') {
-            this.utils.setSessionStorageObject('isFirstLogin', true);
-            router.navigate(['/first-login']);
-          } else if (this.backUrl.length > 0) {
-            location.href = this.backUrl; // 為了讓登入的api request payload清除掉
+    return this.loginServer(loginData).pipe(
+      map(
+        (res: Response) => {
+          if (res.resultCode === 200) {
+            const { name, token, tokenTimeStamp } = res.info;
+            this.loginStatus$.next(true);
+            // to remove
+            this.currentUser$.next(name);
+            this.userName = name;
+            this.utils.writeToken(token);
+            this.utils.setLocalStorageObject('ala_token_time', tokenTimeStamp);
+            const router = this.injector.get(Router);
+            if (res.info.firstLogin === '2') {
+              this.utils.setSessionStorageObject('isFirstLogin', true);
+              router.navigate(['/first-login']);
+            } else if (this.backUrl.length > 0) {
+              location.href = this.backUrl; // 為了讓登入的api request payload清除掉
+            } else {
+              // router.navigate(['/dashboard']);
+              location.href = '/dashboard'; // 為了讓登入的api request payload清除掉
+            }
+            return true;
           } else {
-            // router.navigate(['/dashboard']);
-            location.href = '/dashboard'; // 為了讓登入的api request payload清除掉
+            return false; // can not login
           }
-          return true;
-        } else {
-          return false; // can not login
+        },
+        (err: HttpErrorResponse) => {
+          if (err.error instanceof Error) {
+            console.log('client-side error');
+          } else {
+            console.log('server-side error');
+          }
+          return of(false);
         }
-      },
-      (err: HttpErrorResponse) => {
-        if (err.error instanceof Error) {
-          console.log('client-side error');
-        } else {
-          console.log('server-side error');
-        }
-        return of(false);
-      }
+      )
     );
+
   }
 
   loginServerV2(body) {  // v2-1003

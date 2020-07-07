@@ -5,7 +5,8 @@ import {
   RouterStateSnapshot,
   Router
 } from '@angular/router';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
+import { take, map } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
 import 'rxjs/add/operator/take';
 
@@ -20,16 +21,19 @@ export class SigninGuard implements CanActivate {
   }
   checkLogin(): Observable<boolean> {
     // 儲存現在的 URL，這樣登入後可以直接回來這個頁面
-    return this.authService
-      .getLoginStatus()
-      .take(1)
-      .map(res => {
+    return this.authService.getLoginStatus().pipe(
+      take(1),
+      map(res => {
         if (res) {
           // 導回dashboard頁面
           this.router.navigate(['/dashboard']);
           return false;
         }
         return true;
-      });
+      })
+
+    );
+
   }
+
 }

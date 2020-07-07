@@ -248,7 +248,6 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getInfo(fieldId);
     this.activityOtherDetailsService.getOtherInfo().subscribe(res => {
       if (res) {
-        this.isOtherDetailLoading = false;
         this.isLoadedOtherDetail = true;
         this.deviceInfo = res['deviceInfo'].info.productInfo[0];
 
@@ -285,12 +284,10 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
 
         window.removeEventListener('scroll', this.scroll, true);
       }
+
+      this.isOtherDetailLoading = false;
     });
     window.addEventListener('scroll', this.scroll, true);
-  }
-  // 觸發變更偵測來使選單狀態同步，解決此頁面在免登模式出現的angular錯誤訊息-kidin-1081118
-  ngAfterContentChecked() {
-    this._changeDetectionRef.detectChanges();
   }
 
   scroll(e) {
@@ -315,10 +312,14 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       if (this.fileInfo.class) {
         groupId = this.fileInfo.class.split('?groupId=')[1];
       }
+
       if (
         !this.isLoadedOtherDetail &&
-        ((this.fileInfo.equipmentSN && this.fileInfo.equipmentSN.length > 0 && this.fileInfo.equipmentSN[0] !== '')
-        || coachId || groupId)
+        (
+          (this.fileInfo.equipmentSN && this.fileInfo.equipmentSN.length > 0 && this.fileInfo.equipmentSN[0] !== '')
+          || coachId
+          || groupId
+        )
       ) {
         const [sn] = this.fileInfo.equipmentSN;
         this.activityOtherDetailsService.fetchOtherDetail(

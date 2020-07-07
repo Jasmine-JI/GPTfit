@@ -3,7 +3,7 @@ import { GlobalEventsManager } from '@shared/global-events-manager';
 import { Router } from '@angular/router';
 import { WINDOW } from '@shared/services/window.service';
 import { AuthService } from '@shared/services/auth.service';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../services/utils.service';
 

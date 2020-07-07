@@ -18,7 +18,7 @@ import { demoCoachInfo, demoLessonInfo } from './fakeUsers';
 import { CoachService } from '../../services/coach.service';
 import { ActivatedRoute } from '@angular/router';
 import * as _Highcharts from 'highcharts';
-import { WebSocketSubject } from 'rxjs/observable/dom/WebSocketSubject';
+import { webSocket } from 'rxjs/webSocket';
 import * as moment from 'moment';
 import { stockChart } from 'highcharts/highstock';
 
@@ -221,7 +221,7 @@ export class CoachDashboardComponent
   ];
   classImage =
     'https://www.healthcenterhoornsevaart.nl/wp-content/uploads/2018/02/combat-630x300.jpg';
-  private socket$: WebSocketSubject<any>;
+  private socket$: any;
 
   public serverMessages: Message;
   userInfos: any = [];
@@ -238,7 +238,7 @@ export class CoachDashboardComponent
     if (location.hostname === 'cloud.alatech.com.tw') {
       hostName = 'cloud.alatech.com.tw';
     }
-    this.socket$ = new WebSocketSubject(`wss://${hostName}:9000/train`);
+    this.socket$ = webSocket(`wss://${hostName}:9000/train`);
 
     this.socket$.subscribe(
       message => this.display(message),
