@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '@shared/services/utils.service';
 import { UserInfoService } from '../../../../dashboard/services/userInfo.service';
@@ -15,7 +15,7 @@ import { MatDialog } from '@angular/material/dialog';
   templateUrl: './app-forgetpw.component.html',
   styleUrls: ['./app-forgetpw.component.scss']
 })
-export class AppForgetpwComponent implements OnInit, OnDestroy {
+export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   i18n = {
     account: '',
@@ -120,7 +120,15 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.getUrlString(location.search);
+    this.getClientIpaddress();
+  }
 
+  /**
+   * 因應ios嵌入webkit物件時間點較後面，故在此生命週期才判斷裝置平台
+   * @author kidin-1090710
+   */
+  ngAfterViewInit () {
     if (location.pathname.indexOf('web') > 0) {
       this.pcView = true;
       this.utils.setHideNavbarStatus(false);
@@ -130,8 +138,6 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
       this.getDeviceSys();
     }
 
-    this.getUrlString(location.search);
-    this.getClientIpaddress();
   }
 
   // 取得多國語系翻譯-kidin-1090620
@@ -223,9 +229,9 @@ export class AppForgetpwComponent implements OnInit, OnDestroy {
   // 返回app-kidin-1090513
   turnBack () {
     if (this.appSys === 1) {
-      (window as any).webkit.closeWebView.postMessage();
+      (window as any).webkit.closeWebView.postMessage('Close');
     } else if (this.appSys === 2) {
-      (window as any).android.closeWebView();
+      (window as any).android.closeWebView('Close');
     } else {
 
       if (this.pcView === true) {

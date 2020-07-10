@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../../../shared/services/auth.service';
 import { SignupService } from '../../../services/signup.service';
@@ -14,7 +14,7 @@ import { MatDialog } from '@angular/material/dialog';
   templateUrl: './app-signup.component.html',
   styleUrls: ['./app-signup.component.scss']
 })
-export class AppSignupComponent implements OnInit, OnDestroy {
+export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   i18n = {
     email: '',
@@ -117,6 +117,14 @@ export class AppSignupComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.getClientIpaddress();
+  }
+
+  /**
+   * 因應ios嵌入webkit物件時間點較後面，故在此生命週期才判斷裝置平台
+   * @author kidin-1090710
+   */
+  ngAfterViewInit () {
     if (location.pathname.indexOf('web') > 0) {
       this.pcView = true;
       this.utils.setHideNavbarStatus(false);
@@ -126,7 +134,6 @@ export class AppSignupComponent implements OnInit, OnDestroy {
       this.getAppId(location.search);
     }
 
-    this.getClientIpaddress();
   }
 
   // 取得多國語系翻譯-kidin-1090620
@@ -145,9 +152,9 @@ export class AppSignupComponent implements OnInit, OnDestroy {
   // 返回app-kidin-1090513
   turnBack () {
     if (this.appSys === 1) {
-      (window as any).webkit.messageHandlers.closeWebView.postMessage();
+      (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
     } else if (this.appSys === 2) {
-      (window as any).android.closeWebView();
+      (window as any).android.closeWebView('Close');
     } else {
 
       if (this.pcView) {
