@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '@shared/services/utils.service';
 import { SignupService } from '../../../services/signup.service';
@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
   templateUrl: './app-enable.component.html',
   styleUrls: ['./app-enable.component.scss']
 })
-export class AppEnableComponent implements OnInit, OnDestroy {
+export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
   sending = false;
   ip = '';
@@ -74,15 +74,6 @@ export class AppEnableComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    if (location.pathname.indexOf('web') > 0) {
-      this.pcView = true;
-      this.utils.setHideNavbarStatus(false);
-    } else {
-      this.pcView = false;
-      this.utils.setHideNavbarStatus(true);
-      this.getDeviceSys();
-    }
-
     this.createPlaceholder();
     this.getUrlString(location.search);
     this.getUserInfo();
@@ -94,6 +85,22 @@ export class AppEnableComponent implements OnInit, OnDestroy {
         return this.router.navigateByUrl('/signIn-web');
       }
     });
+
+  }
+
+  /**
+   * 因應ios嵌入webkit物件時間點較後面，故在此生命週期才判斷裝置平台
+   * @author kidin-1090710
+   */
+  ngAfterViewInit () {
+    if (location.pathname.indexOf('web') > 0) {
+      this.pcView = true;
+      this.utils.setHideNavbarStatus(false);
+    } else {
+      this.pcView = false;
+      this.utils.setHideNavbarStatus(true);
+      this.getDeviceSys();
+    }
 
   }
 
@@ -199,9 +206,9 @@ export class AppEnableComponent implements OnInit, OnDestroy {
   // 返回app-kidin-1090513
   turnBack () {
     if (this.appInfo.sys === 1) {
-      (window as any).webkit.messageHandlers.closeWebView.postMessage();
+      (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
     } else if (this.appInfo.sys === 2) {
-      (window as any).android.closeWebView();
+      (window as any).android.closeWebView('Close');
     } else {
 
       if (this.pcView === true) {
