@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../../../shared/services/auth.service';
 import { UtilsService } from '@shared/services/utils.service';
@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
   templateUrl: './app-modifypw.component.html',
   styleUrls: ['./app-modifypw.component.scss']
 })
-export class AppModifypwComponent implements OnInit, OnDestroy {
+export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   appSys = 0; // 0: web 1: ios 2: android
   dataIncomplete = true;
@@ -63,16 +63,6 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-
-    if (location.pathname.indexOf('web') > 0) {
-      this.pcView = true;
-      this.utils.setHideNavbarStatus(false);
-    } else {
-      this.pcView = false;
-      this.utils.setHideNavbarStatus(true);
-      this.getDeviceSys();
-    }
-
     this.getUrlString(location.search);
     this.getUserInfo();
     this.getClientIpaddress();
@@ -83,6 +73,22 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
         return this.router.navigateByUrl('/signIn-web');
       }
     });
+
+  }
+
+  /**
+   * 因應ios嵌入webkit物件時間點較後面，故在此生命週期才判斷裝置平台
+   * @author kidin-1090710
+   */
+  ngAfterViewInit () {
+    if (location.pathname.indexOf('web') > 0) {
+      this.pcView = true;
+      this.utils.setHideNavbarStatus(false);
+    } else {
+      this.pcView = false;
+      this.utils.setHideNavbarStatus(true);
+      this.getDeviceSys();
+    }
 
   }
 
@@ -152,9 +158,9 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
   // 返回app-kidin-1090513
   turnBack () {
     if (this.appSys === 1) {
-      (window as any).webkit.messageHandlers.closeWebView.postMessage();
+      (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
     } else if (this.appSys === 2) {
-      (window as any).android.closeWebView();
+      (window as any).android.closeWebView('Close');
     } else {
       this.router.navigateByUrl('/dashboard/settings/account-info');
     }
