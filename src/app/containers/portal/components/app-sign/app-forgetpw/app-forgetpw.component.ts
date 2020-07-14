@@ -668,9 +668,9 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
   sendTokenToApp (token) {
 
     if (this.appSys === 1) {
-      (window as any).webkit.messageHandlers.refreshToken.postMessage(token);
+      (window as any).webkit.messageHandlers.returnToken.postMessage(token);
     } else if (this.appSys === 2) {
-      (window as any).android.refreshToken(token);
+      (window as any).android.returnToken(token);
     }
 
   }
