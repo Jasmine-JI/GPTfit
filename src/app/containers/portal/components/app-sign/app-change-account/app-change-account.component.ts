@@ -422,9 +422,9 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
         this.authService.setLoginStatus(true);
 
         if (this.appSys === 1) {
-          (window as any).webkit.messageHandlers.registerSuccess.postMessage(this.newToken);
+          (window as any).webkit.messageHandlers.returnToken.postMessage(this.newToken);
         } else if (this.appSys === 2) {
-          (window as any).android.registerSuccess(this.newToken);
+          (window as any).android.returnToken(this.newToken);
         }
 
         const N = '\n';

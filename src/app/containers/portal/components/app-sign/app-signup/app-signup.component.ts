@@ -467,9 +467,9 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   // 返回app並回傳token-kidin-1090513
   finishSignup () {
     if (this.appSys === 1) {
-      (window as any).webkit.messageHandlers.registerSuccess.postMessage(this.newToken);
+      (window as any).webkit.messageHandlers.returnToken.postMessage(this.newToken);
     } else if (this.appSys === 2) {
-      (window as any).android.registerSuccess(this.newToken);
+      (window as any).android.returnToken(this.newToken);
     } else {
 
       if (this.pcView) {
@@ -483,9 +483,14 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     this.turnBack();
   }
 
-  // 轉導至啟用帳號頁面-kidin-1090513
+  // 回傳token並轉導至啟用帳號頁面-kidin-1090513
   toEnableAccount () {
     this.utils.setHideNavbarStatus(false);
+    if (this.appSys === 1) {
+      (window as any).webkit.messageHandlers.returnToken.postMessage(this.newToken);
+    } else if (this.appSys === 2) {
+      (window as any).android.returnToken(this.newToken);
+    }
 
     if (this.pcView === true) {
       this.router.navigateByUrl(`/enableAccount-web`);

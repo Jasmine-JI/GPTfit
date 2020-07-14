@@ -308,12 +308,12 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  // 返回app並回傳新token-kidin-1090518
+  // 回傳新token-kidin-1090518
   finishEdit (token) {
     if (this.appSys === 1) {
-      (window as any).webkit.messageHandlers.refreshToken.postMessage(token);
+      (window as any).webkit.messageHandlers.returnToken.postMessage(token);
     } else if (this.appSys === 2) {
-      (window as any).android.refreshToken(token);
+      (window as any).android.returnToken(token);
     }
 
   }

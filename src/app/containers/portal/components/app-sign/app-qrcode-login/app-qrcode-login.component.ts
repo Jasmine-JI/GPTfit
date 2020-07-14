@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 
 import { AuthService } from '../../../../../shared/services/auth.service';
 import { UtilsService } from '@shared/services/utils.service';
@@ -17,7 +17,7 @@ import * as moment from 'moment';
   templateUrl: './app-qrcode-login.component.html',
   styleUrls: ['./app-qrcode-login.component.scss']
 })
-export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
+export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
   qrLoginStatus = 'check';  // check: 等待登入; logging：登入中; success： 成功;
   loggingDot = '';
@@ -30,6 +30,7 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
   callIpCount = 0;
   currentTimeStamp = moment().valueOf();
   pcView = false;
+  appSys = 0;
 
   userInfo = {
     icon: '',
@@ -59,14 +60,6 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
 
     if (location.pathname === '/signInQrcode' || location.pathname === '/signInQrcode-web') {
 
-      if (location.pathname.indexOf('web') > 0) {
-        this.pcView = true;
-        this.utils.setHideNavbarStatus(false);
-      } else {
-        this.pcView = false;
-        this.utils.setHideNavbarStatus(true);
-      }
-
       this.getClientIpaddress();
       this.displayPage = 'showQrcode';
 
@@ -92,6 +85,49 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
         this.getUserInfo();
       }
 
+    }
+
+  }
+
+  ngAfterViewInit() {
+    if (location.pathname.indexOf('web') > 0) {
+      this.pcView = true;
+      this.utils.setHideNavbarStatus(false);
+    } else {
+      this.pcView = false;
+      this.utils.setHideNavbarStatus(true);
+      this.getAppId();
+    }
+
+  }
+
+  // 返回app-kidin-1090513
+  turnBack () {
+    if (this.appSys === 1) {
+      (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
+    } else if (this.appSys === 2) {
+      (window as any).android.closeWebView('Close');
+    } else {
+
+      if (this.pcView) {
+        this.router.navigateByUrl('/signIn-web');
+      } else {
+        this.router.navigateByUrl('/signIn');
+      }
+
+
+    }
+
+  }
+
+  // 取得註冊來源平台、類型和ID-kidin-1090512
+  getAppId () {
+    if ((window as any).webkit) {
+      this.appSys = 1;
+    } else if ((window as any).android) {
+      this.appSys = 2;
+    } else {
+      this.appSys = 0;
     }
 
   }
@@ -212,15 +248,7 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
             } else {
               this.cue = 'universal_userAccount_signSuceesfully';
               const token = response.qrSignIn.token;
-              this.utils.writeToken(token);
-              this.auth.setLoginStatus(true);
-
-              if (this.auth.backUrl.length > 0) {
-                location.href = this.auth.backUrl;
-              } else {
-                location.href = '/dashboard';
-              }
-
+              this.userLogin(token);
             }
 
           });
@@ -229,6 +257,27 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
 
       });
     }
+  }
+
+  // 使用者登入-kidin-1090714
+  userLogin (token: string) {
+    if (this.appSys === 1) {
+      (window as any).webkit.messageHandlers.returnToken.postMessage(token);
+      (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
+    } else if (this.appSys === 2) {
+      (window as any).android.returnToken(token);
+      (window as any).android.closeWebView('Close');
+    } else {
+      this.utils.writeToken(token);
+      this.auth.setLoginStatus(true);
+      if (this.auth.backUrl.length > 0) {
+        location.href = this.auth.backUrl;
+      } else {
+        location.href = '/dashboard';
+      }
+
+    }
+
   }
 
   // 取得url query string-kidin-1090514
@@ -340,11 +389,6 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
 
     }, 500);
 
-  }
-
-  // 不登入並導回登入頁2-kidin-1090525
-  cancelLogin () {
-    this.router.navigateByUrl('/signIn');
   }
 
   // 離開頁面則取消隱藏navbar-kidin-1090514
