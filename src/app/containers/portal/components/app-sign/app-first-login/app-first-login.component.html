@@ -78,6 +78,7 @@
       (click)="submit()"
     >
       <span>{{ 'universal_operating_send' | translate }}</span>
+      <i *ngIf="sending" class="fa fa-spinner fa-pulse"></i>
     </button>
   </div>
 </ng-container>

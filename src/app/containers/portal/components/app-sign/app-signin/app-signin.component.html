@@ -93,7 +93,8 @@
       [class.appview-btn-unclickable]="loginStatus !== 'check' || dataIncomplete"
       (click)="login()"
     >
-      <span *ngIf="loginStatus !== 'success'">{{ 'universal_userAccount_logIn' | translate }}{{loggingDot}}</span>
+      <span *ngIf="loginStatus !== 'success'">{{ 'universal_userAccount_logIn' | translate }}</span>
+      <i *ngIf="loginStatus !== 'logging'" class="fa fa-spinner fa-pulse"></i>
       <span *ngIf="loginStatus === 'success'">{{ 'universal_userAccount_signSuceesfully' | translate }}</span>
     </button>
     <div class="flexCol" style="align-items: center;">

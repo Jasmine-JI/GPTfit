@@ -2,11 +2,22 @@ import { Component, OnInit, Input, OnChanges } from '@angular/core';
 
 import { TranslateService } from '@ngx-translate/core';
 
+/**
+ * 運動成效分佈圖
+ * @註 適用日報告和週報告，以及不同運動類型(全類型其不同類型的點不合併)。
+ * @export
+ * @class DistributionChartComponent
+ * @implements {OnInit}
+ * @implements {OnChanges}
+ * @author kidin-1090715
+ */
 @Component({
   selector: 'app-distribution-chart',
   templateUrl: './distribution-chart.component.html',
   styleUrls: ['./distribution-chart.component.scss']
 })
+
+
 export class DistributionChartComponent implements OnInit, OnChanges {
   // 運動報告用變數-kidin-1090218
   @Input() typeList: Array<string>;

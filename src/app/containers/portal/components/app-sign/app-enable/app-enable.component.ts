@@ -239,25 +239,45 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
       this.userInfoService.fetchEnableAccount(body, this.ip).subscribe(res => {
 
         const resultInfo = res.processResult;
-        if (
-          resultInfo.resultCode !== 200
-          && (resultInfo.apiReturnMessage === 'Found attack, update status to lock!' || resultInfo.apiReturnMessage === 'Found lock!')
-        ) {
-          const captchaBody = {
-            unlockFlow: 1,
-            imgLockCode: res.processResult.imgLockCode
-          };
+        if (resultInfo.resultCode !== 200) {
 
-          this.signupService.fetchCaptcha(captchaBody, this.ip).subscribe(captchaRes => {
-            this.imgCaptcha = {
-              show: true,
-              imgCode: `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`,
-              cue: '',
-              code: ''
-            };
-          });
+          switch (resultInfo.apiReturnMessage) {
+            case 'Found attack, update status to lock!':
+            case 'Found lock!':
+              const captchaBody = {
+                unlockFlow: 1,
+                imgLockCode: res.processResult.imgLockCode
+              };
 
-          this.sendingPhoneCaptcha = false;
+              this.signupService.fetchCaptcha(captchaBody, this.ip).subscribe(captchaRes => {
+                this.imgCaptcha = {
+                  show: true,
+                  imgCode: `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`,
+                  cue: '',
+                  code: ''
+                };
+              });
+
+              this.sendingPhoneCaptcha = false;
+              break;
+
+            default:
+              this.dialog.open(MessageBoxComponent, {
+                hasBackdrop: true,
+                data: {
+                  title: 'Message',
+                  body: `Server error.<br />Please try again later.`,
+                  confirmText: this.translate.instant(
+                    'universal_operating_confirm'
+                  ),
+                  onConfirm: this.turnBack.bind(this)
+                }
+              });
+
+              console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+              break;
+          }
+
         } else if (resultInfo.resultCode === 200) {
           this.dialog.open(MessageBoxComponent, {
             hasBackdrop: true,
@@ -346,16 +366,36 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
         if (res.processResult.resultCode !== 200) {
           let msgBody;
-          if (
-            res.processResult.apiReturnMessage === `Post fail, parmameter 'project' or 'token' or 'userId' error.`
-            || res.processResult.apiReturnMessage === `Post fail, check 'userId' error with verification code.`
-          ) {
-            msgBody = this.translate.instant('universal_userAccount_errorCaptcha');
-          } else {
-            msgBody = 'Server error! Please try again later.';
+          switch (res.processResult.apiReturnMessage) {
+            case `Post fail, parmameter 'project' or 'token' or 'userId' error.`:
+            case `Post fail, check 'userId' error with verification code.`:
+              msgBody = this.translate.instant('universal_userAccount_errorCaptcha');
+              this.showMsgBox(msgBody, false);
+              break;
+            case 'Found attack, update status to lock!':
+            case 'Found lock!':
+              const captchaBody = {
+                unlockFlow: 1,
+                imgLockCode: res.processResult.imgLockCode
+              };
+
+              this.signupService.fetchCaptcha(captchaBody, this.ip).subscribe(captchaRes => {
+                this.imgCaptcha = {
+                  show: true,
+                  imgCode: `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`,
+                  cue: '',
+                  code: ''
+                };
+              });
+
+              break;
+            default:
+              msgBody = 'Server error!<br /> Please try again later.';
+              console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+              this.showMsgBox(msgBody, true);
+              break;
           }
 
-          this.showMsgBox(msgBody, false);
         } else {
 
           if (this.accountInfo.type === 1) {
@@ -395,7 +435,28 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
       } else {
-        this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
+        switch (res.processResult.apiReturnMessage) {
+          case 'Found a wrong unlock key.':
+            this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
+            this.sending = false;
+            break;
+          default:
+            this.dialog.open(MessageBoxComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'Message',
+                body: `Server error.<br />Please try again later.`,
+                confirmText: this.translate.instant(
+                  'universal_operating_confirm'
+                ),
+                onConfirm: this.turnBack.bind(this)
+              }
+            });
+
+            console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+            break;
+        }
+
       }
 
     });
@@ -416,11 +477,11 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
             msgBody = `${this.translate.instant('universal_deviceSetting_switch')} ${this.translate.instant('universal_status_success')}`;
             break;
           default:
-            msgBody = 'Server error! Please try again later.';
+            msgBody = 'Server error!<br /> Please try again later.';
             break;
         }
 
-        this.showMsgBox(msgBody, false);
+        this.showMsgBox(msgBody, true);
       } else {
         msgBody = `${this.translate.instant('universal_deviceSetting_switch')} ${this.translate.instant('universal_status_success')}`;
         this.showMsgBox(msgBody, true);

@@ -8,6 +8,8 @@ import { GetClientIpService } from '../../../../../shared/services/get-client-ip
 
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 
 @Component({
   selector: 'app-app-modifypw',
@@ -59,7 +61,8 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
     private userInfoService: UserInfoService,
     private router: Router,
     private snackbar: MatSnackBar,
-    private getClientIp: GetClientIpService
+    private getClientIp: GetClientIpService,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit() {
@@ -248,8 +251,29 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
           this.imgCaptcha.show = false;
           this.submit();
         } else {
-          this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
-          this.sending = false;
+
+          switch (res.processResult.apiReturnMessage) {
+            case 'Found a wrong unlock key.':
+              this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
+              this.sending = false;
+              break;
+            default:
+              this.dialog.open(MessageBoxComponent, {
+                hasBackdrop: true,
+                data: {
+                  title: 'Message',
+                  body: `Server error.<br />Please try again later.`,
+                  confirmText: this.translate.instant(
+                    'universal_operating_confirm'
+                  ),
+                  onConfirm: this.turnBack.bind(this)
+                }
+              });
+
+              console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+              break;
+          }
+
         }
 
       });
@@ -282,6 +306,20 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
             });
 
             break;
+          default:
+            this.dialog.open(MessageBoxComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'Message',
+                body: `Server error.<br />Please try again later.`,
+                confirmText: this.translate.instant(
+                  'universal_operating_confirm'
+                ),
+                onConfirm: this.turnBack.bind(this)
+              }
+            });
+
+            console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
         }
 
         this.sending = false;

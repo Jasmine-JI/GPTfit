@@ -229,7 +229,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
   // 返回app-kidin-1090513
   turnBack () {
     if (this.appSys === 1) {
-      (window as any).webkit.closeWebView.postMessage('Close');
+      (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
     } else if (this.appSys === 2) {
       (window as any).android.closeWebView('Close');
     } else {
@@ -397,6 +397,11 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
             case 'Post fail, account is not existing.':
               this.cue.phone = 'universal_userAccount_noRegisterData';
               break;
+            default:
+              const msgBody = 'Server error!<br /> Please try again later.';
+              this.showMsgBox(msgBody);
+              console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+              break;
           }
 
           this.sendingPhoneCaptcha = false;
@@ -535,8 +540,9 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
             this.cue.email = 'universal_userAccount_noRegisterData';
             break;
           default:
-            const msgBody = 'Server error! Please try again later.';
+            const msgBody = 'Server error!<br /> Please try again later.';
             this.showMsgBox(msgBody);
+            console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
             break;
         }
 
@@ -583,7 +589,19 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
       } else {
-        this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
+
+        switch (res.processResult.apiReturnMessage) {
+          case 'Found a wrong unlock key.':
+            this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
+            this.sending = false;
+            break;
+          default:
+            const msgBody = `Server error.<br />Please try again later.`;
+            this.showMsgBox(msgBody);
+            console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+            break;
+        }
+
       }
 
     });
@@ -613,7 +631,8 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
             msgBody = this.translate.instant('universal_userAccount_linkHasExpired');
             break;
           default:
-            msgBody = 'Server error! Please try again later.';
+            msgBody = 'Server error!<br /> Please try again later.';
+            console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
             break;
         }
 
@@ -649,8 +668,9 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
             this.cue.verificationCode = 'universal_userAccount_errorCaptcha';
             break;
           default:
-            const msgBody = 'Server error! Please try again later.';
+            const msgBody = 'Server error!<br /> Please try again later.';
             this.showMsgBox(msgBody);
+            console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
             break;
         }
 
@@ -696,7 +716,8 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
 
       let msgBody;
       if (res.processResult.resultCode !== 200) {
-        msgBody = 'Server error! Please try again later.';
+        msgBody = 'Server error!<br /> Please try again later.';
+        console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
       } else {
         msgBody = this.translate.instant('universal_userAccount_passwordResetComplete');
         this.newToken = res.resetPassword.newToken;

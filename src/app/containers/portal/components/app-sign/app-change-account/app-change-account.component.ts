@@ -371,8 +371,28 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
           this.imgCaptcha.show = false;
           this.submit();
         } else {
-          this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
-          this.sending = false;
+
+          switch (res.processResult.apiReturnMessage) {
+            case 'Found a wrong unlock key.':
+              this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
+              this.sending = false;
+              break;
+            default:
+              this.dialog.open(MessageBoxComponent, {
+                hasBackdrop: true,
+                data: {
+                  title: 'Message',
+                  body: `Server error.<br />Please try again later.`,
+                  confirmText: this.translate.instant(
+                    'universal_operating_confirm'
+                  ),
+                  onConfirm: this.turnBack.bind(this)
+                }
+              });
+
+              console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+              break;
+          }
         }
 
       });
@@ -413,6 +433,21 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
               this.imgCaptcha.imgCode = `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`;
             });
 
+            break;
+          default:
+            this.dialog.open(MessageBoxComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'Message',
+                body: `Server error.<br />Please try again later.`,
+                confirmText: this.translate.instant(
+                  'universal_operating_confirm'
+                ),
+                onConfirm: this.turnBack.bind(this)
+              }
+            });
+
+            console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
             break;
         }
 

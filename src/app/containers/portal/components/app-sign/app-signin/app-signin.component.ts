@@ -20,7 +20,6 @@ export class AppSigninComponent implements OnInit, OnDestroy {
     password: ''
   };
   loginStatus = 'check';  // check: 等待登入; logging：登入中; success： 成功;
-  loggingDot = '';
   isKeyin = false;
   displayPW = false;
   dataIncomplete = true;
@@ -282,8 +281,6 @@ export class AppSigninComponent implements OnInit, OnDestroy {
   // 登入-kidin-1090527
   login () {
     this.loginStatus = 'logging';
-    this.processingDot();
-
     this.authService.loginServerV2(this.loginBody).subscribe(res => {
 
       if (res.processResult.resultCode === 200) {
@@ -317,9 +314,12 @@ export class AppSigninComponent implements OnInit, OnDestroy {
                 body: `Server error.<br />Please try again later.`,
                 confirmText: this.translate.instant(
                   'universal_operating_confirm'
-                )
+                ),
+                onConfirm: this.turnBack.bind(this)
               }
             });
+
+            console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
             break;
         }
 
@@ -327,23 +327,6 @@ export class AppSigninComponent implements OnInit, OnDestroy {
       }
 
     });
-
-  }
-
-  // 登入中按鈕顯示動態效果-kidin-1090525
-  processingDot () {
-    const dot = setInterval(() => {
-      this.loggingDot += '.';
-      if (this.loggingDot === '....' || this.loginStatus === 'check' || this.loginStatus === 'success') {
-        this.loggingDot = '';
-
-        if (this.loginStatus === 'check' || this.loginStatus === 'success') {
-          window.clearInterval(dot as any);
-        }
-
-      }
-
-    }, 500);
 
   }
 
