@@ -211,9 +211,12 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
                   body: `Server error.<br />Please try again later.`,
                   confirmText: this.translate.instant(
                     'universal_operating_confirm'
-                  )
+                  ),
+                  onConfirm: this.turnBack.bind(this)
                 }
               });
+
+              console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
               break;
 
           }
@@ -239,9 +242,12 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
                       body: `Server error.<br />Please try again later.`,
                       confirmText: this.translate.instant(
                         'universal_operating_confirm'
-                      )
+                      ),
+                      onConfirm: this.turnBack.bind(this)
                     }
                   });
+
+                  console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
                   break;
               }
 
@@ -353,12 +359,15 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
                 hasBackdrop: true,
                 data: {
                   title: 'Message',
-                  body: `${this.translate.instant('universal_userAccount_logIn')} ${this.translate.instant('universal_status_failure')}`,
+                  body: `Server error.<br />Please try again later.`,
                   confirmText: this.translate.instant(
                     'universal_operating_confirm'
-                  )
+                  ),
+                  onConfirm: this.turnBack.bind(this)
                 }
               });
+
+              console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
               break;
 
           }

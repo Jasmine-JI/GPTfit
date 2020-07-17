@@ -55,10 +55,13 @@ npm run prod-build
 雖然[腳本](https://gitlab.com/alatech_cloud/web/blob/master/reset.sh)已設置
 目前原因尚未查清楚
 但手動再補執行
+
 ```
 npm run pm2-start
 ```
 即可run起 nodejs api server
+
+若仍run不起nodejs api server，檢查server.js檔，其SERVER_CONFIG所讀取的ssl憑證檔案路徑或副檔名是否有更動
 
 順便一提
 ```

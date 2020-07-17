@@ -132,6 +132,7 @@
     >
       <span *ngIf="formValue.type === 1">{{ 'universal_operating_send' | translate }}</span>
       <span *ngIf="formValue.type === 2">{{ 'universal_operating_reset' | translate }}</span>
+      <i *ngIf="sending" class="fa fa-spinner fa-pulse"></i>
     </button>
   </div>
 </ng-container>

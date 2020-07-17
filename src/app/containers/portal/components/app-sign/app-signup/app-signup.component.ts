@@ -9,6 +9,18 @@ import { GetClientIpService } from '../../../../../shared/services/get-client-ip
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
+interface RegCheck {
+  email: RegExp;
+  emailPass: boolean;
+  password: RegExp;
+  passwordPass: boolean;
+  nickname: RegExp;
+  nicknamePass: boolean;
+  phone: RegExp;
+  phonePass: boolean;
+  countryCodePass: boolean;
+}
+
 @Component({
   selector: 'app-app-signup',
   templateUrl: './app-signup.component.html',
@@ -32,7 +44,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   pcView = false;
 
   // 驗證用
-  regCheck = {
+  regCheck: RegCheck = {
     email: /^.{1,63}@[a-zA-Z0-9]{2,63}.[a-zA-Z]{2,63}(.[a-zA-Z]{2,63})?$/,
     emailPass: false,
     password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,20}$/,
@@ -116,7 +128,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.getClientIpaddress();
   }
 
@@ -124,7 +136,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * 因應ios嵌入webkit物件時間點較後面，故在此生命週期才判斷裝置平台
    * @author kidin-1090710
    */
-  ngAfterViewInit () {
+  ngAfterViewInit(): void {
     if (location.pathname.indexOf('web') > 0) {
       this.pcView = true;
       this.utils.setHideNavbarStatus(false);
@@ -136,8 +148,11 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  // 取得多國語系翻譯-kidin-1090620
-  getTranslate () {
+  /**
+   * 待套件載入完成再取得多國語系翻譯
+   * @author kidin-1090717
+   */
+  getTranslate(): void {
     this.translate.get('hollo word').subscribe(() => {
       this.i18n = {
         email: this.translate.instant('universal_userAccount_email'),
@@ -149,8 +164,11 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  // 返回app-kidin-1090513
-  turnBack () {
+  /**
+   * 返回app或導回登入頁
+   * @author kidin-1090717
+   */
+  turnBack(): void {
     if (this.appSys === 1) {
       (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
     } else if (this.appSys === 2) {
@@ -168,8 +186,12 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  // 取得註冊來源平台、類型和ID-kidin-1090512
-  getAppId (urlStr) {
+  /**
+   * 取得註冊來源平台、類型和ID
+   * @param urlStr {string}
+   * @author kidin-1090512
+   */
+  getAppId(urlStr: string): void {
     if ((window as any).webkit) {
       this.appSys = 1;
     } else if ((window as any).android) {
@@ -193,22 +215,33 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  // 取得使用者ip位址-kidin-1090521
-  getClientIpaddress () {
+  /**
+   * 取得使用者ip位址
+   * @author kidin-1090521
+   */
+  getClientIpaddress(): void {
     this.getClientIp.requestJsonp('https://api.ipify.org', 'format=jsonp', 'callback').subscribe(res => {
       this.ip = (res as any).ip;
     });
 
   }
 
-  // 取得使用者選擇的帳號類型
-  getAccountType (e) {
+  /**
+   * 取得使用者選擇的帳號類型
+   * @param e {string}
+   * @author kidin-1090717
+   */
+  getAccountType(e: string): void {
     this.signupData.type = +e + 1;
     this.checkAll(this.regCheck);
   }
 
-  // 確認使用者信箱格式-kidin-1090511
-  checkEmail (e) {
+  /**
+   * 確認使用者信箱格式
+   * @param e {MouseEvent | KeyboardEvent}
+   * @author kidin-1090511
+   */
+  checkEmail(e: any): void {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
       const inputEmail = e.currentTarget.value;
 
@@ -226,8 +259,11 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  // 將使用者輸入的密碼進行隱藏-kidin-1090430
-  hidePassword () {
+  /**
+   * 將使用者輸入的密碼進行隱藏
+   * @author kidin-1090430
+   */
+  hidePassword(): void {
     const pwInputType = (<HTMLInputElement>document.getElementById('signupPW'));
 
     if (this.displayPW === true) {
@@ -238,8 +274,11 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  // 顯示密碼-kidin-1090429
-  toggleDisplayPW () {
+  /**
+   * 顯示密碼
+   * @author kidin-1090429
+   */
+  toggleDisplayPW(): void {
     if (this.displayPW === false) {
       this.displayPW = true;
     } else {
@@ -249,8 +288,12 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     this.hidePassword();
   }
 
-  // 確認密碼格式-kidin-1090511
-  checkPassword (e) {
+  /**
+   * 確認密碼格式
+   * @param e {MouseEvent | KeyboardEvent}
+   * @author kidin-1090511
+   */
+  checkPassword(e: any): void {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
       const inputPassword = e.currentTarget.value;
 
@@ -268,28 +311,40 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  // 取得使用者輸入的國碼-kidin-1090504
-  onCodeChange (countryCode) {
+  /**
+   * 取得使用者輸入的國碼
+   * @param countryCode {string}
+   * @author kidin-1090504
+   */
+  onCodeChange(countryCode: string): void {
     this.signupData.countryCode = +countryCode;
     this.regCheck.countryCodePass = true;
 
     this.checkAll(this.regCheck);
   }
 
-  // 取得使用者輸入的電話號碼-kidin-
-  getPhoneNum (phoneNum) {
+  /**
+   * 取得使用者輸入的電話號碼
+   * @param phoneNum {string}
+   * @author kidin-1090717
+   */
+  getPhoneNum (phoneNum: string): void {
     if (phoneNum.length === 0) {
       this.regCheck.phonePass = false;
     } else {
-      this.signupData.phone = phoneNum;
+      this.signupData.phone = +phoneNum;
       this.regCheck.phonePass = true;
     }
 
     this.checkAll(this.regCheck);
   }
 
-  // 確認暱稱格式-kidin-1090511
-  checkNickname (e) {
+  /**
+   * 確認暱稱格式
+   * @param e MouseEvent | KeyboardEvent
+   * @author kidin-1090511
+   */
+  checkNickname (e: any) {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
       const inputNickname = e.currentTarget.value;
 
@@ -307,8 +362,12 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  // 確認是否填寫圖形驗證碼欄位-kidin-1090514
-  checkImgCaptcha (e) {
+  /**
+   * 確認是否填寫圖形驗證碼欄位
+   * @param e {MouseEvent | KeyboardEvent}
+   * @author kidin-1090514
+   */
+  checkImgCaptcha (e: any) {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
       const inputImgCaptcha = e.currentTarget.value;
 
@@ -324,8 +383,12 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  // 確認是否所有欄位皆已完成-kidin-1090512
-  checkAll (check) {
+  /**
+   * 確認是否所有欄位皆已完成
+   * @param check {object}
+   * @author kidin-1090512
+   */
+  checkAll(check: RegCheck): void {
     if (this.signupData.type === 1) {
 
       if (!check.emailPass
@@ -354,8 +417,11 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // 進行註冊流程-kidin-1090429
-  submit () {
+  /**
+   * 進行註冊流程
+   * @author kidin-1090429
+   */
+  submit(): void {
     this.sending = true;
 
     if (this.imgCaptcha.show) {
@@ -369,8 +435,29 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
           this.imgCaptcha.show = false;
           this.submit();
         } else {
-          this.signupCue.imgCaptcha = 'errorValue';
-          this.sending = false;
+
+          switch (res.processResult.apiReturnMessage) {
+            case 'Found a wrong unlock key.':
+              this.signupCue.imgCaptcha = 'errorValue';
+              this.sending = false;
+              break;
+            default:
+              this.dialog.open(MessageBoxComponent, {
+                hasBackdrop: true,
+                data: {
+                  title: 'Message',
+                  body: `Server error.<br />Please try again later.`,
+                  confirmText: this.translate.instant(
+                    'universal_operating_confirm'
+                  ),
+                  onConfirm: this.turnBack.bind(this)
+                }
+              });
+
+              console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+              break;
+          }
+
         }
 
       });
@@ -380,8 +467,11 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  // 傳送註冊表單-kidin-1090514
-  sendFormInfo () {
+  /**
+   * 傳送註冊表單
+   * @author kidin-1090514
+   */
+  sendFormInfo(): void {
     const body: any = {
       registerType: this.signupData.type,
       name: this.signupData.nickname,
@@ -429,11 +519,26 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
             });
 
             break;
+          default:
+            this.dialog.open(MessageBoxComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'Message',
+                body: `Server error.<br />Please try again later.`,
+                confirmText: this.translate.instant(
+                  'universal_operating_confirm'
+                ),
+                onConfirm: this.turnBack.bind(this)
+              }
+            });
+
+            console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+            break;
         }
 
       } else {
         this.newToken = res.register.token;
-        this.utils.writeToken(this.newToken);  // 直接在瀏覽器幫使用者登入
+        this.saveToken(this.newToken);
         this.authService.setLoginStatus(true);
 
         const N = '\n';
@@ -464,8 +569,11 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  // 返回app並回傳token-kidin-1090513
-  finishSignup () {
+  /**
+   * 返回app並回傳token
+   * @author kidin-1090513
+   */
+  finishSignup(): void {
     if (this.appSys === 1) {
       (window as any).webkit.messageHandlers.returnToken.postMessage(this.newToken);
     } else if (this.appSys === 2) {
@@ -483,14 +591,28 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     this.turnBack();
   }
 
-  // 回傳token並轉導至啟用帳號頁面-kidin-1090513
-  toEnableAccount () {
-    this.utils.setHideNavbarStatus(false);
+  /**
+   * 儲存token或將token傳回app
+   * @param token {string}
+   * @author kidin-1090717
+   */
+  saveToken(token: string): void {
+    this.utils.writeToken(token);  // 直接在瀏覽器幫使用者登入
+
     if (this.appSys === 1) {
-      (window as any).webkit.messageHandlers.returnToken.postMessage(this.newToken);
+      (window as any).webkit.messageHandlers.returnToken.postMessage(token);
     } else if (this.appSys === 2) {
-      (window as any).android.returnToken(this.newToken);
+      (window as any).android.returnToken(token);
     }
+
+  }
+
+  /**
+   * 轉導至啟用帳號頁面
+   * @author kidin-1090513
+   */
+  toEnableAccount(): void {
+    this.utils.setHideNavbarStatus(false);
 
     if (this.pcView === true) {
       this.router.navigateByUrl(`/enableAccount-web`);
@@ -500,8 +622,11 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  // 離開頁面則取消隱藏navbar-kidin-1090514
-  ngOnDestroy () {
+  /**
+   * 離開頁面則取消隱藏navbar
+   * @author kidin-1090717
+   */
+  ngOnDestroy(): void {
     this.utils.setHideNavbarStatus(false);
   }
 
