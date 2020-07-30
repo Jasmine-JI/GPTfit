@@ -7,6 +7,8 @@ import { SignupService } from '../../../services/signup.service';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -16,6 +18,8 @@ import { MatDialog } from '@angular/material/dialog';
   styleUrls: ['./app-forgetpw.component.scss']
 })
 export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  private ngUnsubscribe = new Subject();
 
   i18n = {
     account: '',
@@ -113,15 +117,27 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     public getClientIp: GetClientIpService
   ) {
-    translate.onLangChange.subscribe(() => {
+    translate.onLangChange.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
       this.getTranslate();
     });
 
   }
 
   ngOnInit() {
-    this.getUrlString(location.search);
     this.getClientIpaddress();
+    this.getTranslate();
+
+    if (location.pathname.indexOf('web') > 0) {
+      this.pcView = true;
+      this.utils.setHideNavbarStatus(false);
+    } else {
+      this.pcView = false;
+      this.utils.setHideNavbarStatus(true);
+    }
+
+    this.getUrlString(location.search);
   }
 
   /**
@@ -129,12 +145,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1090710
    */
   ngAfterViewInit () {
-    if (location.pathname.indexOf('web') > 0) {
-      this.pcView = true;
-      this.utils.setHideNavbarStatus(false);
-    } else {
-      this.pcView = false;
-      this.utils.setHideNavbarStatus(true);
+    if (this.pcView === false) {
       this.getDeviceSys();
     }
 
@@ -142,7 +153,9 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 取得多國語系翻譯-kidin-1090620
   getTranslate () {
-    this.translate.get('hollo word').subscribe(() => {
+    this.translate.get('hollo word').pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
       this.i18n = {
         account: this.translate.instant('universal_userAccount_account'),
         email: this.translate.instant('universal_userAccount_email'),
@@ -750,9 +763,11 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  // 離開頁面則取消隱藏navbar-kidin-1090514
+  // 離開頁面則取消隱藏navbar和取消rxjs訂閱-kidin-1090514
   ngOnDestroy () {
     this.utils.setHideNavbarStatus(false);
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
 

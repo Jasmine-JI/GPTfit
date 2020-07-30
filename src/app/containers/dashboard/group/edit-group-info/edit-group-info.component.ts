@@ -31,12 +31,13 @@ import * as moment from 'moment';
   encapsulation: ViewEncapsulation.None
 })
 export class EditGroupInfoComponent implements OnInit {
+
   groupId: string;
   token: string;
   groupInfo: any;
   groupImg: string;
   group_id: string;
-  groupLevel: string;
+  groupLevel: number;
   groupInfos: any;
   joinStatus = 0;
   subGroupInfo: any;
@@ -58,15 +59,6 @@ export class EditGroupInfoComponent implements OnInit {
   formTextName = 'groupName';
   formUrlName = 'groupVideoUrl';
   formTextareaName = 'groupDesc';
-  role = {
-    isSupervisor: false,
-    isSystemDeveloper: false,
-    isSystemMaintainer: false,
-    isMarketingDeveloper: false,
-    isBrandAdministrator: false,
-    isBranchAdministrator: false,
-    isCoach: false
-  };
   maxFileSize = 10485760; // 10MB
   fileLink: string;
   reloadFileText = '重新上傳';
@@ -81,7 +73,8 @@ export class EditGroupInfoComponent implements OnInit {
   originalGroupStatus: number;
   updateImgQueryString = '';
   brandType: any;
-  accessRight = 90;
+  maxAccessRight = 99;
+
   get groupName() {
     return this.form.get('groupName');
   }
@@ -118,8 +111,10 @@ export class EditGroupInfoComponent implements OnInit {
     evt.preventDefault();
     evt.stopPropagation();
   }
+
   ngOnInit() {
     this.route.params.subscribe(_params => this.handleInit());
+    this.getUserProfile();
     this.userInfoService.getUserAccessRightDetail().subscribe(res => {
       this.visitorDetail = res;
     });
@@ -128,6 +123,7 @@ export class EditGroupInfoComponent implements OnInit {
       this.imgCropping = res;
     });
   }
+
   handleInit() {
     this.groupId = this.hashIdService.handleGroupIdDecode(
       this.route.snapshot.paramMap.get('groupId')
@@ -141,40 +137,14 @@ export class EditGroupInfoComponent implements OnInit {
       groupDesc: ['', [Validators.required, Validators.maxLength(500)]],
       groupVideoUrl: ['']
     });
-    this.userInfoService.getSupervisorStatus().subscribe(res => {
-      this.role.isSupervisor = res;
-      // console.log('%c this.isSupervisor', 'color: #0ca011', res);
-    });
-    this.userInfoService.getSystemDeveloperStatus().subscribe(res => {
-      this.role.isSystemDeveloper = res;
-      // console.log('%c this.isSystemDeveloper', 'color: #0ca011', res);
-    });
-    this.userInfoService.getSystemMaintainerStatus().subscribe(res => {
-      this.role.isSystemMaintainer = res;
-      // console.log('%c this.isSystemMaintainer', 'color: #0ca011', res);
-    });
-    this.userInfoService.getMarketingDeveloperStatus().subscribe(res => {
-      this.role.isMarketingDeveloper = res;
-      // console.log('%c this.isMarketingDeveloper', 'color: #0ca011', res);
-    });
-    this.userInfoService.getBrandAdministratorStatus().subscribe(res => {
-      this.role.isBrandAdministrator = res;
-      // console.log('%c this.isBrandAdministrator', 'color: #0ca011', res);
-    });
-    this.userInfoService.getBranchAdministratorStatus().subscribe(res => {
-      this.role.isBranchAdministrator = res;
-      // console.log('%c this.isBranchAdministrator', 'color: #0ca011', res);
-    });
-    this.userInfoService.getCoachStatus().subscribe(res => {
-      this.role.isCoach = res;
-      // console.log('%c this.isCoach', 'color: #0ca011', res);
-    });
+
     this.token = this.utils.getToken() || '';
     const body = {
       token: this.token,
       groupId: this.groupId,
       avatarType: 2
     };
+
     let params = new HttpParams();
     params = params.set('groupId', this.groupId);
     this.isGroupDetailLoading = true;
@@ -218,14 +188,26 @@ export class EditGroupInfoComponent implements OnInit {
       this.groupImg = `${groupIcon}${this.updateImgQueryString}`;
       this.finalImageLink = this.groupImg;
       this.group_id = this.utils.displayGroupId(groupId);
-      this.groupLevel = this.utils.displayGroupLevel(groupId);
-      if (this.groupLevel === '80') {
+      this.groupLevel = +this.utils.displayGroupLevel(groupId);
+      if (this.groupLevel === 80) {
         this.getGroupMemberList(2);
       } else {
         this.getGroupMemberList(1);
       }
     });
   }
+
+  /**
+   * 取得使用者權限
+   * @author kidin-1090729
+   */
+  getUserProfile() {
+    this.groupService.checkAccessRight(this.groupId).subscribe(res => {
+      this.maxAccessRight = res[0];
+    });
+
+  }
+
   handleActionGroup(_type) {
     const body = {
       token: this.token,
@@ -245,6 +227,7 @@ export class EditGroupInfoComponent implements OnInit {
         }
       });
   }
+
   dimissGroup(e, type) {
     e.preventDefault();
     let targetName = '';
@@ -279,19 +262,22 @@ export class EditGroupInfoComponent implements OnInit {
       }
     });
   }
+
   handleDimissGroup() {
     const body = {
       token: this.token,
       groupId: this.groupId,
       changeStatus: '4',
-      groupLevel: this.groupLevel
+      groupLevel: this.groupLevel + ''
     };
     this.groupService.changeGroupStatus(body).subscribe(_res => {
       if (_res.resultCode === 200) {
         this.router.navigateByUrl(`/dashboard/my-group-list`);
       }
     });
+
   }
+
   getGroupMemberList(_type) {
     this.isLoading = true;
     const body = {
@@ -301,6 +287,7 @@ export class EditGroupInfoComponent implements OnInit {
       infoType: _type,
       avatarType: 3
     };
+
     this.groupService.fetchGroupMemberList(body).subscribe(res => {
       this.isLoading = false;
       if (res.resultCode === 200) {
@@ -350,7 +337,7 @@ export class EditGroupInfoComponent implements OnInit {
           this.brandAdministrators = this.groupInfos.filter(
             _info => _info.accessRight === '30'
           );
-          if (this.groupLevel === '40') {
+          if (this.groupLevel === 40) {
             this.branchAdministrators = this.groupInfos.filter(
               _info =>
                 _info.accessRight === '40' && _info.groupId === this.groupId
@@ -369,7 +356,7 @@ export class EditGroupInfoComponent implements OnInit {
               }
             });
           }
-          if (this.groupLevel === '60') {
+          if (this.groupLevel === 60) {
             // 如果是教練課群組
             this.normalCoaches = this.groupInfos.filter(
               // 一般教練
@@ -402,8 +389,9 @@ export class EditGroupInfoComponent implements OnInit {
       }
     });
   }
+
   changeGroupInfo({ index }) {
-    if (this.groupLevel === '80') {
+    if (this.groupLevel === 80) {
       if (index === 0) {
         this.getGroupMemberList(index + 2);
       } else if (index === 1) {
@@ -423,6 +411,7 @@ export class EditGroupInfoComponent implements OnInit {
       }
     }
   }
+
   manage({ value, valid }) {
     if (valid) {
       const { groupName, groupDesc, groupStatus, groupVideoUrl } = value;
@@ -432,7 +421,7 @@ export class EditGroupInfoComponent implements OnInit {
         const body1 = {
           token: this.token,
           groupId: this.groupId,
-          groupLevel: this.groupLevel,
+          groupLevel: this.groupLevel + '',
           groupName,
           groupIcon: this.utils.imageToDataUri(image, 256, 256) || '',
           groupIconMid: this.utils.imageToDataUri(image, 128, 128) || '',
@@ -444,7 +433,7 @@ export class EditGroupInfoComponent implements OnInit {
           token: this.token,
           groupId: this.groupId,
           changeStatus: groupStatus,
-          groupLevel: this.groupLevel
+          groupLevel: this.groupLevel + ''
         };
         this.isGroupDetailLoading = true;
         this.groupService.editGroup(body1).subscribe(res1 => {
@@ -513,6 +502,7 @@ export class EditGroupInfoComponent implements OnInit {
       };
     }
   }
+
   public handleChangeTextarea(code: string, type: number): void {
     if (type === 1) {
       return this.form.patchValue({ groupDesc: code });
@@ -531,9 +521,11 @@ export class EditGroupInfoComponent implements OnInit {
       }
     }
   }
+
   switchVideoLink() {
     this.isVideoEdit = !this.isVideoEdit;
   }
+
   handleAttachmentChange(file) {
     if (file) {
       const {isTypeCorrect, errorMsg, link } = file;
@@ -549,6 +541,7 @@ export class EditGroupInfoComponent implements OnInit {
       }
     }
   }
+
   goCreatePage(_type, e) {
     e.preventDefault();
     if (_type === 1) {
@@ -599,6 +592,7 @@ export class EditGroupInfoComponent implements OnInit {
       }
     }
   }
+
   handleRemoveGroup(id: string, type: number) {
     if (id) {
       if (id === this.groupId) {
@@ -615,6 +609,7 @@ export class EditGroupInfoComponent implements OnInit {
       }
     }
   }
+
   handleAssignAdmin(id: string) {
     if (id) {
       this.normalMemberInfos = this.normalMemberInfos.filter(
@@ -622,6 +617,7 @@ export class EditGroupInfoComponent implements OnInit {
       );
     }
   }
+
 }
 
 @Component({
@@ -666,6 +662,7 @@ export class BottomSheetComponent {
         this.cancelText = translation['universal_operating_disagree'];
       });
   }
+
   openLink(event: MouseEvent, type: number): void {
     let coachType = null;
     if (type === 1 || type === 2) {
@@ -703,4 +700,5 @@ export class BottomSheetComponent {
       }
     }
   }
+
 }

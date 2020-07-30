@@ -80,7 +80,7 @@ export class PasswordComponent implements OnInit, OnDestroy {
         if (resultCode === 200) {
           this.isSuccess = true;
           this.utilsService.setResetPasswordStatus(false);  // 修改完密碼後透過rxjs傳送status以解決bug1043-kidin-1090109（bug1043）
-          setTimeout(() => this.router.navigate(['/signin']), 5000);
+          setTimeout(() => this.router.navigate(['/signIn-web']), 5000);
         } else {
           this.resultMessage = resultMessage;
         }

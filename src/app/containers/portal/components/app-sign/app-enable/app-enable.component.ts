@@ -2,13 +2,18 @@ import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '@shared/services/utils.service';
 import { SignupService } from '../../../services/signup.service';
+import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { UserInfoService } from '../../../../dashboard/services/userInfo.service';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 import { AuthService } from '@shared/services/auth.service';
 
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+
+const errorMsg = 'Server error!<br /> Please try again later.';
 
 @Component({
   selector: 'app-app-enable',
@@ -16,6 +21,8 @@ import { Router } from '@angular/router';
   styleUrls: ['./app-enable.component.scss']
 })
 export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  private ngUnsubscribe = new Subject();
 
   sending = false;
   ip = '';
@@ -39,6 +46,12 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
     placeholder: ''
   };
 
+  logMessage = {
+    enable: '',
+    success: '',
+    confirm: ''
+  };
+
   // 由email連結得到的參數
   emailLinkString = {
     enableAccountFlow: 0,
@@ -58,26 +71,40 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
   timeCount = 30;
   sendingPhoneCaptcha = false;
 
+  enableSuccess = false; // app v2上架後刪除
+
   constructor(
     private translate: TranslateService,
     private utils: UtilsService,
     private signupService: SignupService,
     private authService: AuthService,
+    private userProfileService: UserProfileService,
     private userInfoService: UserInfoService,
     private dialog: MatDialog,
     private router: Router,
     public getClientIp: GetClientIpService
   ) {
-    translate.onLangChange.subscribe(() => {
+    translate.onLangChange.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
       this.createPlaceholder();
     });
   }
 
   ngOnInit() {
     this.createPlaceholder();
+    this.getClientIpaddress();
+
+    if (location.pathname.indexOf('web') > 0) {
+      this.pcView = true;
+      this.utils.setHideNavbarStatus(false);
+    } else {
+      this.pcView = false;
+      this.utils.setHideNavbarStatus(true);
+    }
+
     this.getUrlString(location.search);
     this.getUserInfo();
-    this.getClientIpaddress();
 
     // 在首次登入頁面按下登出時，跳轉回登入頁-kidin-1090109(bug575)
     this.authService.getLoginStatus().subscribe(res => {
@@ -93,12 +120,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1090710
    */
   ngAfterViewInit () {
-    if (location.pathname.indexOf('web') > 0) {
-      this.pcView = true;
-      this.utils.setHideNavbarStatus(false);
-    } else {
-      this.pcView = false;
-      this.utils.setHideNavbarStatus(true);
+    if (this.pcView === false) {
       this.getDeviceSys();
     }
 
@@ -107,8 +129,16 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
   // 確認ngx translate套件已經載入再產生翻譯-kidin-1090430
   createPlaceholder () {
 
-    this.translate.get('hello.world').subscribe(() => {
+    this.translate.get('hello.world').pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
       this.phoneCaptcha.placeholder = this.translate.instant('universal_userAccount_phoneCaptcha');
+      this.logMessage = {
+        enable: 'universal_deviceSetting_switch',
+        success: 'universal_status_success',
+        confirm: 'universal_operating_confirm'
+      };
+
     });
 
   }
@@ -171,10 +201,10 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
   // 使用token取得使用者帳號資訊-kidin-1090514
   getUserInfo () {
     const body = {
-      token: this.utils.getToken() || ''
+      token: this.appInfo.token || ''
     };
 
-    this.userInfoService.fetchUserInfo(body).subscribe(res => {
+    this.userProfileService.getUserProfile(body).subscribe(res => {
 
       const profile = res.userProfile;
       if (profile.email) {
@@ -262,34 +292,14 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
               break;
 
             default:
-              this.dialog.open(MessageBoxComponent, {
-                hasBackdrop: true,
-                data: {
-                  title: 'Message',
-                  body: `Server error.<br />Please try again later.`,
-                  confirmText: this.translate.instant(
-                    'universal_operating_confirm'
-                  ),
-                  onConfirm: this.turnBack.bind(this)
-                }
-              });
-
+              this.showMsgBox(errorMsg, true);
               console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
               break;
           }
 
         } else if (resultInfo.resultCode === 200) {
-          this.dialog.open(MessageBoxComponent, {
-            hasBackdrop: true,
-            disableClose: true,
-            data: {
-              title: 'Message',
-              body: this.translate.instant('universal_userAccount_sendSmsSuccess'),
-              confirmText: this.translate.instant(
-                'universal_operating_confirm'
-              )
-            }
-          });
+          const msg = this.translate.instant('universal_userAccount_sendSmsSuccess');
+          this.showMsgBox(msg, false);
 
           const btnInterval = setInterval(() => {
             this.timeCount--;
@@ -390,9 +400,9 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
               break;
             default:
-              msgBody = 'Server error!<br /> Please try again later.';
+              msgBody = errorMsg;
               console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
-              this.showMsgBox(msgBody, true);
+              this.showMsgBox(errorMsg, true);
               break;
           }
 
@@ -402,6 +412,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
             const msgBody = this.translate.instant('universal_userAccount_sendCaptchaChackEmail');
             this.showMsgBox(msgBody, true);
           } else {
+            this.enableSuccess = true; // app v2上架後刪除此行
             const msgBody = `${this.translate.instant('universal_deviceSetting_switch')
               } ${this.translate.instant('universal_status_success')
             }`;
@@ -475,14 +486,17 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
         switch (res.processResult.apiReturnMessage) {
           case 'Enable account fail, account was enabled.':  // 已啟用後再次點擊啟用信件，則當作啟用成功-kidin-1090520
             msgBody = `${this.translate.instant('universal_deviceSetting_switch')} ${this.translate.instant('universal_status_success')}`;
+            this.enableSuccess = true; // app v2上架後刪除此行
             break;
           default:
-            msgBody = 'Server error!<br /> Please try again later.';
+            msgBody = errorMsg;
+            console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
             break;
         }
 
         this.showMsgBox(msgBody, true);
       } else {
+        this.enableSuccess = true; // app v2上架後刪除此行
         msgBody = `${this.translate.instant('universal_deviceSetting_switch')} ${this.translate.instant('universal_status_success')}`;
         this.showMsgBox(msgBody, true);
       }
@@ -497,18 +511,36 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (navigate) {
 
-      this.dialog.open(MessageBoxComponent, {
-        hasBackdrop: true,
-        disableClose: true,
-        data: {
-          title: 'Message',
-          body: msg,
-          confirmText: this.translate.instant(
-            'universal_operating_confirm'
-          ),
-          onConfirm: this.turnBack.bind(this)
-        }
-      });
+      // 待app v2上架後移除此判斷-kidin-1090724
+      if (!this.pcView || this.enableSuccess) {
+        this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          disableClose: true,
+          data: {
+            title: 'Message',
+            body: msg,
+            confirmText: this.translate.instant(
+              'universal_operating_confirm'
+            ),
+            onConfirm: this.turnBack.bind(this)
+          }
+        });
+
+      } else {
+        this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          disableClose: true,
+          data: {
+            title: 'Message',
+            body: msg,
+            confirmText: this.translate.instant(
+              'universal_operating_confirm'
+            ),
+            onConfirm: () => this.router.navigateByUrl('/')
+          }
+        });
+
+      }
 
     } else {
 
@@ -531,6 +563,9 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
   // 離開頁面則取消隱藏navbar-kidin-1090514
   ngOnDestroy () {
     this.utils.setHideNavbarStatus(false);
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+
   }
 
 }

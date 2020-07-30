@@ -6,6 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { UtilsService } from '@shared/services/utils.service';
 import { SettingsService } from '../../../../services/settings.service';
+import { UserProfileService } from '../../../../../../shared/services/user-profile.service';
 
 @Component({
   selector: 'app-modify-box',
@@ -26,11 +27,12 @@ export class ModifyBoxComponent implements OnInit {
     startDate: '',
     endDate: ''
   };
-  openObj = ['1'];
+  openObj = [1];
 
   constructor(
     private utils: UtilsService,
     private settingsService: SettingsService,
+    private userProfileService: UserProfileService,
     private translate: TranslateService,
     private dialog: MatDialog,
     private snackbar: MatSnackBar,
@@ -83,7 +85,7 @@ export class ModifyBoxComponent implements OnInit {
     const radioBtn = document.getElementById('selectObj');
 
     switch (obj) {
-      case '99':
+      case 99:
         if (this.openObj.indexOf(obj) >= 0) {
           radioBtn.classList.remove('mat-radio-checked');
           this.openObj.length = 1;
@@ -91,7 +93,7 @@ export class ModifyBoxComponent implements OnInit {
         } else {
           radioBtn.classList.add('mat-radio-checked');
           this.openObj.length = 1;
-          this.openObj.push('99');
+          this.openObj.push(99);
           this.showPerObj = false;
         }
         break;
@@ -132,6 +134,13 @@ export class ModifyBoxComponent implements OnInit {
 
     this.settingsService.editPrivacy(body).subscribe(res => {
       if (res.resultCode === 200) {
+
+        const refreshBody = {
+          token: this.utils.getToken() || ''
+        };
+
+        this.userProfileService.refreshUserProfile(refreshBody);
+
         this.snackbar.open(
           this.translate.instant(
             'universal_operating_finishEdit'

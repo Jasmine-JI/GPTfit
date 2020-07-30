@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { QrcodeService } from '../../../../portal/services/qrcode.service';
 import { ActivatedRoute } from '@angular/router';
 import { NgProgress, NgProgressRef } from '@ngx-progressbar/core';
@@ -7,13 +7,20 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
+import { UserProfileService } from '../../../../../shared/services/user-profile.service';
+import { Subject } from 'rxjs';
+import { takeUntil, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-product-info',
   templateUrl: './product-info.component.html',
   styleUrls: ['./product-info.component.css', '../../../group/group-style.scss']
 })
-export class ProductInfoComponent implements OnInit {
+export class ProductInfoComponent implements OnInit, OnDestroy {
+
+  private ngUnsubscribe = new Subject();
+
+  userMaxAccessRight = 99;
   groupImg = 'http://app.alatech.com.tw/app/public_html/products/img/t0500.png';
   progressRef: NgProgressRef;
   isLoading = false;
@@ -39,6 +46,8 @@ export class ProductInfoComponent implements OnInit {
     thick: false
   };
   fitPairStatus: string;
+  deviceEnableDate: string;
+  deviceBondDate: string;
   token: string;
   fitPairTip: string;
   qrURL: string;
@@ -51,6 +60,7 @@ export class ProductInfoComponent implements OnInit {
     private progress: NgProgress,
     private route: ActivatedRoute,
     private utilsService: UtilsService,
+    private userProfileService: UserProfileService,
     private router: Router,
     public dialog: MatDialog,
     private translate: TranslateService
@@ -58,6 +68,7 @@ export class ProductInfoComponent implements OnInit {
 
   ngOnInit() {
     this.getTranslate();
+    this.getUserAccessRight();
     if (location.pathname.indexOf('/system/device/info') > -1) {
       this.isAdminMode = true;
     }
@@ -87,6 +98,8 @@ export class ProductInfoComponent implements OnInit {
     };
     this.qrCodeService.getDeviceDetail(body).subscribe(res => {
       this.fitPairStatus = res.info.fitPairStatus;
+      this.deviceBondDate = res.info.deviceBondDate;
+      this.deviceEnableDate = res.info.deviceEnableDate;
       if (res.resultCode === 200) {
         this.deviceBondUserName = res.info.deviceBondUserName;
         this.deviceBondUserId = res.info.deviceBondUserId;
@@ -121,6 +134,20 @@ export class ProductInfoComponent implements OnInit {
   getTranslate () {
     this.translate.get('hollow world').subscribe(() => {
       this.fitPairTip = this.translate.instant('universal_uiFitpair_fitpairDetailDescription');
+    });
+
+  }
+
+  /**
+   * 取得使用者系統最高權限
+   * @author kidin-1090729
+   */
+  getUserAccessRight() {
+    this.userProfileService.getRxUserProfile().pipe(
+      map(res => res.systemAccessRight),
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
+      this.userMaxAccessRight = res[0];
     });
 
   }
@@ -243,4 +270,14 @@ export class ProductInfoComponent implements OnInit {
       }
     });
   }
+
+  /**
+   * 解除rxjs訂閱
+   * @author kidin-1090722
+   */
+  ngOnDestroy(): void {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
 }

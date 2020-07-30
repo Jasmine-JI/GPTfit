@@ -86,7 +86,6 @@ const { API_SERVER } = environment.url;
 
 @Injectable()
 export class ActivityService {
-  private userWeight = 70;  // 儲存使用者體重-kidin-1081121
   private focusMusclePart = '';  // 儲存重訓資料-kidin-1081121
   private heavyTrainDateState: any = [];  // 備份重訓資料-kidin-1081121
   private muscleListColor = []; // 儲存肌肉清單顏色列表-kidin-1081128
@@ -994,11 +993,6 @@ export class ActivityService {
     ]);
   }
 
-  // 儲存使用者體重-kidin-1081121
-  saveUserWeight(weight) {
-    this.userWeight = weight;
-  }
-
   // 存入重訓資料-kidin-1081121
   saveLapsData(data) {
     this.heavyTrainDateState = data;
@@ -1027,13 +1021,8 @@ export class ActivityService {
     return this.muscleListColor;
   }
 
-  getUserWeight () {
-    return this.userWeight;
-  }
-
   getAllData() {
       const heavyTrainingData = {
-        userWeight: this.userWeight,
         proficiency: this.proficiency,
         infoDatas: this.heavyTrainDateState,
         focusMusclePart: this.focusMusclePart

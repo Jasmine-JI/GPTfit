@@ -29,6 +29,7 @@ please set environment => url
 
 若不會設postman環境變數，可以參考這篇[文章](https://dotblogs.com.tw/kinanson/2015/11/07/153838)
 
+*  nodejs-prod:  https://www.gptfit.com:3000/nodejs/api/ (待轉址)
 
 *  nodejs-prod:  https://cloud.alatech.com.tw:3000/nodejs/api/
 

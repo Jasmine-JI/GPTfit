@@ -237,6 +237,8 @@ export class CoachDashboardComponent
     let hostName = 'app.alatech.com.tw';
     if (location.hostname === 'cloud.alatech.com.tw') {
       hostName = 'cloud.alatech.com.tw';
+    } else if (location.hostname === 'www.gptfit.com') {
+      hostName = 'www.gptfit.com';
     }
     this.socket$ = webSocket(`wss://${hostName}:9000/train`);
 

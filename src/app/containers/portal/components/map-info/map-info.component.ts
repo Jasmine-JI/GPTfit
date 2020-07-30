@@ -70,7 +70,8 @@ export class MapInfoComponent implements OnInit, AfterViewInit {
     const hosts = [
       '192.168.1.235',
       'app.alatech.com.tw',
-      'cloud.alatech.com.tw'
+      'cloud.alatech.com.tw',
+      'www.gptfit.com'
     ];
     const hostName = getLocalStorageObject('hostName');
     const isHostName = hostName ? hosts.some(

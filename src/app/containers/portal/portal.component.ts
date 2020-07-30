@@ -145,7 +145,10 @@ export class PortalComponent implements OnInit {
 
     this.checkHideNavabar();
 
-    if (location.hostname.indexOf('cloud.alatech.com.tw') > -1) {
+    if (
+      location.hostname.indexOf('cloud.alatech.com.tw') > -1
+      || location.hostname.indexOf('www.gptfit.com') > -1
+    ) {
       this.isAlphaVersion = false;
     } else {
       this.isAlphaVersion = true;

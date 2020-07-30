@@ -47,6 +47,7 @@ import { DateRangePickerComponent } from './date-range-picker/date-range-picker.
 import { MuscleMapChartComponent } from './chart/muscle-map/muscle-map-chart/muscle-map-chart.component';
 import { MuscleSvgIconComponent } from './chart/muscle-map/muscle-svg-icon/muscle-svg-icon.component';
 import { CustomSelectComponent } from './custom-material/custom-select/custom-select.component';
+import { ReportFilterComponent } from './report-filter/report-filter.component';
 
 @NgModule({
   imports: [
@@ -99,7 +100,8 @@ import { CustomSelectComponent } from './custom-material/custom-select/custom-se
     DateRangePickerComponent,
     MuscleMapChartComponent,
     MuscleSvgIconComponent,
-    CustomSelectComponent
+    CustomSelectComponent,
+    ReportFilterComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [

@@ -3,7 +3,8 @@ import {
   OnInit,
   ViewEncapsulation,
   ViewChild,
-  Input
+  Input,
+  OnChanges
 } from '@angular/core';
 import { SettingsService } from '../../../services/settings.service';
 import { ModifyBoxComponent } from './modify-box/modify-box.component';
@@ -13,6 +14,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { TranslateService } from '@ngx-translate/core';
+import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 
 declare var google: any;
 
@@ -28,7 +30,7 @@ declare var google: any;
   ],
   encapsulation: ViewEncapsulation.None
 })
-export class PrivacySettingsComponent implements OnInit {
+export class PrivacySettingsComponent implements OnInit, OnChanges {
   i18n = {  // 可能再增加新的翻譯
     gym: '',
     description: '',
@@ -49,19 +51,19 @@ export class PrivacySettingsComponent implements OnInit {
   editObject: string;
 
   activityTracking = {
-    openObj: ['1'],
+    openObj: [1],
     showPerObj: true,
     showConfirmBtn: false
   };
 
   activityTrackingReport = {
-    openObj: ['1'],
+    openObj: [1],
     showPerObj: true,
     showConfirmBtn: false
   };
 
   lifeTrackingReport = {
-    openObj: ['1'],
+    openObj: [1],
     showPerObj: true,
     showConfirmBtn: false
   };
@@ -72,10 +74,13 @@ export class PrivacySettingsComponent implements OnInit {
     private utils: UtilsService,
     private snackbar: MatSnackBar,
     private translate: TranslateService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private userProfileService: UserProfileService
   ) {}
 
-  ngOnInit() {
+  ngOnInit() {}
+
+  ngOnChanges() {
     this.getTranslate();
 
     const mapProp = {
@@ -83,28 +88,38 @@ export class PrivacySettingsComponent implements OnInit {
       zoom: 18,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
+
     this.map = new google.maps.Map(this.gmapElement.nativeElement, mapProp);
     this.mark = new google.maps.Marker({
       position: mapProp.center,
       title: '大安'
     });
-    this.mark.setMap(this.map);
-    const {
-      activityTracking,
-      activityTrackingReport,
-      lifeTrackingReport
-    } = this.userData.privacy;
-    this.activityTracking.openObj = activityTracking;
-    this.detectCheckBoxValue('file');
-    this.activityTrackingReport.openObj = activityTrackingReport;
-    this.detectCheckBoxValue('sportFile');
-    this.lifeTrackingReport.openObj = lifeTrackingReport;
-    this.detectCheckBoxValue('lifeTracking');
 
-    this.editObject = this.translate.instant('universal_vocabulary_data');
+    this.mark.setMap(this.map);
+
+    if (this.userData.privacy) {
+      const {
+        activityTracking,
+        activityTrackingReport,
+        lifeTrackingReport
+      } = this.userData.privacy;
+
+      this.activityTracking.openObj = activityTracking.map(_obj => +_obj); // api v1 轉 api v2 型態改number
+      this.detectCheckBoxValue('file');
+      this.activityTrackingReport.openObj = activityTrackingReport.map(_obj => +_obj); // api v1 轉 api v2 型態改number
+      this.detectCheckBoxValue('sportFile');
+      this.lifeTrackingReport.openObj = lifeTrackingReport.map(_obj => +_obj); // api v1 轉 api v2 型態改number
+      this.detectCheckBoxValue('lifeTracking');
+
+      this.editObject = this.translate.instant('universal_vocabulary_data');
+    }
+
   }
 
-  // 待多國語系套件載完再產生翻譯-kidin-1090623
+  /**
+   * 待多國語系套件載完再產生翻譯
+   * @author kidin-1090723
+   */
   getTranslate () {
     this.translate.get('hollow world').subscribe(() => {
       this.i18n = {
@@ -119,27 +134,39 @@ export class PrivacySettingsComponent implements OnInit {
 
   }
 
+  /**
+   * 滑鼠滑入顯示提示框
+   * @event
+   */
   mouseEnter() {
     this.isDisplayBox = true;
   }
+
+  /**
+   *
+   */
   mouseLeave() {
     this.isDisplayBox = false;
   }
 
-  /** 選擇開放隱私權的對象-kidin-1090327
-   *  1:僅自己 2:我的朋友 3:我的群組 4:我的健身房教練 99:所有人
+  /**
+   * 選擇開放隱私權的對象-kidin-1090327
+   * 1:僅自己 2:我的朋友 3:我的群組 4:我的健身房教練 99:所有人
+   * @param type {string}
+   * @param obj {number}
+   * @author
    */
-  selectModifyRange (type, obj) {
+  selectModifyRange (type: string, obj: number) {
     this.editing = true;
 
-    let radioBtn;
+    let radioBtn: HTMLElement;
     switch (type) {
       case 'file':
         radioBtn = document.getElementById('selectFileAll');
         this.activityTracking.showConfirmBtn = true;
 
         switch (obj) {
-          case '99':
+          case 99:
             if (this.activityTracking.openObj.indexOf(obj) >= 0) {
 
               setTimeout(() => {
@@ -151,11 +178,11 @@ export class PrivacySettingsComponent implements OnInit {
             } else {
               radioBtn.classList.add('mat-radio-checked');
               this.activityTracking.openObj.length = 1;
-              this.activityTracking.openObj.push('99');
+              this.activityTracking.openObj.push(99);
               this.activityTracking.showPerObj = false;
             }
             break;
-          case '4':
+          case 4:
             if (this.activityTracking.openObj.indexOf(obj) > 0) {
               this.activityTracking.openObj = this.activityTracking.openObj.filter(_obj => {
                 return _obj !== obj;
@@ -174,7 +201,7 @@ export class PrivacySettingsComponent implements OnInit {
         this.activityTrackingReport.showConfirmBtn = true;
 
         switch (obj) {
-          case '99':
+          case 99:
             if (this.activityTrackingReport.openObj.indexOf(obj) >= 0) {
 
               setTimeout(() => {
@@ -186,11 +213,11 @@ export class PrivacySettingsComponent implements OnInit {
             } else {
               radioBtn.classList.add('mat-radio-checked');
               this.activityTrackingReport.openObj.length = 1;
-              this.activityTrackingReport.openObj.push('99');
+              this.activityTrackingReport.openObj.push(99);
               this.activityTrackingReport.showPerObj = false;
             }
             break;
-          case '4':
+          case 4:
             if (this.activityTrackingReport.openObj.indexOf(obj) > 0) {
               this.activityTrackingReport.openObj = this.activityTrackingReport.openObj.filter(_obj => {
                 return _obj !== obj;
@@ -209,7 +236,7 @@ export class PrivacySettingsComponent implements OnInit {
         this.lifeTrackingReport.showConfirmBtn = true;
 
         switch (obj) {
-          case '99':
+          case 99:
             if (this.lifeTrackingReport.openObj.indexOf(obj) >= 0) {
 
               setTimeout(() => {
@@ -221,11 +248,11 @@ export class PrivacySettingsComponent implements OnInit {
             } else {
               radioBtn.classList.add('mat-radio-checked');
               this.lifeTrackingReport.openObj.length = 1;
-              this.lifeTrackingReport.openObj.push('99');
+              this.lifeTrackingReport.openObj.push(99);
               this.lifeTrackingReport.showPerObj = false;
             }
             break;
-          case '4':
+          case 4:
             if (this.lifeTrackingReport.openObj.indexOf(obj) > 0) {
               this.lifeTrackingReport.openObj = this.lifeTrackingReport.openObj.filter(_obj => {
                 return _obj !== obj;
@@ -248,7 +275,7 @@ export class PrivacySettingsComponent implements OnInit {
     switch (type) {
       case 'file':
 
-        if (this.activityTracking.openObj.indexOf('99') >= 0) {
+        if (this.activityTracking.openObj.indexOf(99) >= 0) {
 
           setTimeout(() => {
             radioBtn = document.getElementById('selectFileAll');
@@ -256,14 +283,14 @@ export class PrivacySettingsComponent implements OnInit {
           }, 0);
 
           this.activityTracking.showPerObj = false;
-        } else if (this.activityTracking.openObj.indexOf('4') >= 0) {
+        } else if (this.activityTracking.openObj.indexOf(4) >= 0) {
           this.activityTracking.showPerObj = true;
         }
         break;
 
       case 'sportFile':
 
-        if (this.activityTrackingReport.openObj.indexOf('99') >= 0) {
+        if (this.activityTrackingReport.openObj.indexOf(99) >= 0) {
 
           setTimeout(() => {
             radioBtn = document.getElementById('selectSportReportAll');
@@ -271,14 +298,14 @@ export class PrivacySettingsComponent implements OnInit {
           }, 0);
 
           this.activityTrackingReport.showPerObj = false;
-        } else if (this.activityTrackingReport.openObj.indexOf('4') >= 0) {
+        } else if (this.activityTrackingReport.openObj.indexOf(4) >= 0) {
           this.activityTrackingReport.showPerObj = true;
         }
         break;
 
       case 'lifeTracking':
 
-        if (this.lifeTrackingReport.openObj.indexOf('99') >= 0) {
+        if (this.lifeTrackingReport.openObj.indexOf(99) >= 0) {
 
           setTimeout(() => {
             radioBtn = document.getElementById('selectLifeTranckingAll');
@@ -286,7 +313,7 @@ export class PrivacySettingsComponent implements OnInit {
           }, 0);
 
           this.lifeTrackingReport.showPerObj = false;
-        } else if (this.lifeTrackingReport.openObj.indexOf('4') >= 0) {
+        } else if (this.lifeTrackingReport.openObj.indexOf(4) >= 0) {
           this.lifeTrackingReport.showPerObj = true;
         }
         break;
@@ -310,17 +337,27 @@ export class PrivacySettingsComponent implements OnInit {
         break;
     }
 
+    const token = this.utils.getToken() || '';
     const body = {
-      token: this.utils.getToken() || '',
-      privacy: {
-        activityTracking: this.activityTracking.openObj,
-        activityTrackingReport: this.activityTrackingReport.openObj,
-        lifeTrackingReport: this.lifeTrackingReport.openObj
+      token,
+      userProfile: {
+        privacy: {
+          activityTracking: this.activityTracking.openObj,
+          activityTrackingReport: this.activityTrackingReport.openObj,
+          lifeTrackingReport: this.lifeTrackingReport.openObj
+        }
+
       }
+
     };
 
     this.settingsService.updateUserProfile(body).subscribe(res => {
-      if (res.resultCode === 200) {
+      if (res.processResult.resultCode === 200) {
+        // 重新存取身體資訊供各種圖表使用-kidin-1081212
+        this.userProfileService.refreshUserProfile({
+          token,
+        });
+
         this.snackbar.open(
           this.translate.instant(
             'universal_operating_finishEdit'

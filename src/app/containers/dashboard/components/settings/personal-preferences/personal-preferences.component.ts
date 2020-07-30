@@ -1,12 +1,10 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnChanges } from '@angular/core';
 import { SettingsService } from '../../../services/settings.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { UtilsService } from '@shared/services/utils.service';
-import * as moment from 'moment';
-import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { UserInfoService } from '../../../services/userInfo.service';
 import { TranslateService } from '@ngx-translate/core';
+import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 
 @Component({
   selector: 'app-personal-preferences',
@@ -16,7 +14,7 @@ import { TranslateService } from '@ngx-translate/core';
     '../settings.component.scss'
   ]
 })
-export class PersonalPreferencesComponent implements OnInit {
+export class PersonalPreferencesComponent implements OnInit, OnChanges {
   settingsForm: FormGroup;
   isSaveUserSettingLoading = false;
   blockSaveButton = false;
@@ -27,8 +25,8 @@ export class PersonalPreferencesComponent implements OnInit {
     private fb: FormBuilder,
     private utils: UtilsService,
     private snackbar: MatSnackBar,
-    private userInfoService: UserInfoService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private userProfileService: UserProfileService
   ) {}
   get heartRateMax() {
     return (
@@ -46,13 +44,17 @@ export class PersonalPreferencesComponent implements OnInit {
       (this.settingsForm && this.settingsForm.get('wheelSize').value) || null
     );
   }
-  ngOnInit() {
+
+  ngOnInit(): void {}
+
+  ngOnChanges(): void {
     const {
       heartRateBase,
       heartRateMax,
       heartRateResting,
       wheelSize,
-      sleep: { normalBedTime, normalWakeTime }
+      normalBedTime,
+      normalWakeTime
     } = this.userData;
 
     this.heartRateBase = +heartRateBase;
@@ -67,13 +69,16 @@ export class PersonalPreferencesComponent implements OnInit {
       wheelSize
     });
   }
-  logStartDateChange($event: MatDatepickerInputEvent<moment.Moment>) {
-    const value = moment($event.value).format('YYYYMMDD');
-    this.settingsForm.patchValue({ birthday: value });
-  }
-  // 判斷心率是否為合理值（focusout觸發事件）-kidin-20191120(Bug 578)
-  handleHrValueArrange(type, e) {
-    const inputHrValue = e.target.value;
+
+  /**
+   * 判斷心率是否為合理值(Bug 578)
+   * @event focusout
+   * @param type {string}-欄位類別
+   * @param e {FocusEvent}
+   * @author kidin-1090723
+   */
+  handleHrValueArrange(type: string, e: FocusEvent) {
+    const inputHrValue = (e as any).target.value;
     let hrValue = '';
 
     if (type === 'maxHr') {
@@ -96,9 +101,15 @@ export class PersonalPreferencesComponent implements OnInit {
       this.settingsForm.patchValue({ heartRateResting: hrValue });
     }
   }
-  // 判斷輪徑是否為合理值（改為focusout觸發事件）-kidin-20191120(Bug 578)
-  handleWheelValueArrange(e) {
-    const inputWheelValue = e.target.value;
+
+  /**
+   * 判斷輪徑是否為合理值(Bug 578)
+   * @event focusout
+   * @param e {FocusEvent}
+   * @author kidin-20191120
+   */
+  handleWheelValueArrange(e: FocusEvent) {
+    const inputWheelValue = (e as any).target.value;
     let tuneSize = '';
     if (inputWheelValue >= 300 && inputWheelValue <= 9000) {
       tuneSize = inputWheelValue;
@@ -109,6 +120,12 @@ export class PersonalPreferencesComponent implements OnInit {
     }
     this.settingsForm.patchValue({ wheelSize: tuneSize });
   }
+
+  /**
+   * 當使用者按下儲存時，call api更新資料
+   * @param { value, valid }
+   * @author kidin-1090723
+   */
   saveSettings({ value, valid }) {
     if (valid) {
       const {
@@ -119,27 +136,29 @@ export class PersonalPreferencesComponent implements OnInit {
         normalBedTime,
         normalWakeTime
       } = value;
+
       const token = this.utils.getToken() || '';
       const body = {
         token,
-        heartRateBase,
-        heartRateMax: this.handleEmptyValue(heartRateMax),
-        heartRateResting: this.handleEmptyValue(heartRateResting),
-        wheelSize: this.handleEmptyValue(wheelSize),
-        sleep: {
+        userProfile: {
+          heartRateBase,
+          heartRateMax,
+          heartRateResting,
+          wheelSize,
           normalBedTime,
           normalWakeTime
         }
+
       };
       this.isSaveUserSettingLoading = true;
       this.settingsService.updateUserProfile(body).subscribe(res => {
         this.isSaveUserSettingLoading = false;
-        if (res.resultCode === 200) {
-          this.userInfoService.getUserInfo({
+        if (res.processResult.resultCode === 200) {
+          // 重新存取身體資訊供各種圖表使用-kidin-1081212
+          this.userProfileService.refreshUserProfile({
             token,
-            avatarType: 2,
-            iconType: 2
           });
+
           this.snackbar.open(
             this.translate.instant(
               'universal_operating_finishEdit'
@@ -150,25 +169,6 @@ export class PersonalPreferencesComponent implements OnInit {
             }
           );
 
-          // 重新存取身體資訊供各種圖表使用-kidin-1081212
-          const key = {
-            token: token,
-            avatarType: 2,
-            iconType: 2
-          };
-          this.userInfoService.getLogonData(key).subscribe(result => {
-            const data = {
-              name: result.info.name,
-              birthday: result.info.birthday,
-              heartRateBase: result.info.heartRateBase,
-              heartRateMax: result.info.heartRateMax,
-              heartRateResting: result.info.heartRateResting,
-              height: result.info.height,
-              weight: result.info.weight,
-              wheelSize: result.info.wheelSize
-            };
-            this.userInfoService.saveBodyDatas(data);
-          });
         } else {
           this.snackbar.open(
             this.translate.instant('universal_popUpMessage_updateFailed'),
@@ -179,14 +179,14 @@ export class PersonalPreferencesComponent implements OnInit {
       });
     }
   }
-  handleEmptyValue(_value) {
-    if (this.utils.isStringEmpty(_value)) {
-      return '0';
-    }
-    return _value;
+
+  /**
+   * 取得使用者選擇的心率演算法
+   * @event change
+   * @param e {changeEvent}
+   */
+  handleHeartRateBase (e: Event) {
+    this.heartRateBase = +(e as any).target.value;
   }
 
-  handleHeartRateBase (e) {
-    this.heartRateBase = +e.target.value;
-  }
 }

@@ -14,21 +14,21 @@
         (click)="handleGroupItem(1)"
       >{{ 'universal_group_groupInfo' | translate}}</li>
       <li [class.active]="chooseIdx === 2"
-          *ngIf="groupLevel === '30' && visitorDetail?.isCanManage"
+          *ngIf="groupLevel === 30 && accessRight[0] <= groupLevel"
           (click)="handleGroupItem(2)"
       >
         <span *ngIf="brandType == 1">{{ 'universal_group_brandManagement' | translate}}</span>
         <span *ngIf="brandType == 2">{{ 'universal_group_enterprise' | translate}} {{ 'universal_group_management' | translate}}</span>
       </li>
-      <li [class.active]="chooseIdx === 3 && accessRight < 30"
+      <li [class.active]="chooseIdx === 3 && accessRight[0] < 30"
         (click)="handleGroupItem(3)"
       >{{ 'universal_privacy_set' | translate}}</li>
       <li [class.active]="chooseIdx === 4"
-          *ngIf="groupLevel === '60' && brandType === 1 && !isOutage"
+          *ngIf="groupLevel === 60 && brandType === 1 && !isOutage"
           (click)="handleGroupItem(4)"
       >{{ 'universal_group_myReport' | translate}}</li>
       <li [class.active]="chooseIdx === 5"
-          *ngIf="groupLevel === '60' && accessRight < 60 && brandType === 1 && !isOutage"
+          *ngIf="groupLevel === 60 && accessRight[0] < 60 && brandType === 1 && !isOutage"
           (click)="handleGroupItem(5)"
       >{{ 'universal_group_classReport' | translate}}</li>
       <li [class.active]="chooseIdx === 6"
@@ -62,7 +62,7 @@
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="{{ 'universal_group_applicationsForJoin' | translate}}"
-            *ngIf="(joinStatus === 5 || joinStatus === 3 ) && (!visitorDetail?.isGroupAdmin || groupLevel === '80') && !isOutage"
+            *ngIf="(joinStatus === 5 || joinStatus === 3 ) && (!visitorDetail?.isGroupAdmin || groupLevel === 80) && !isOutage"
             (click)="handleActionGroup(1)"
           >
             {{ 'universal_group_applicationsForJoin' | translate}}
@@ -79,9 +79,9 @@
             *ngIf="joinStatus === 2 &&
             (!visitorDetail?.isGroupAdmin
              ||
-            (groupLevel === '80' && normalGroupAdministrators && normalGroupAdministrators?.length > 1)
+            (groupLevel === 80 && normalGroupAdministrators && normalGroupAdministrators?.length > 1)
              ||
-            (groupLevel === '40' && branchAdministrators && branchAdministrators?.length > 1)
+            (groupLevel === 40 && branchAdministrators && branchAdministrators?.length > 1)
             )
              && !isOutage"
             (click)="handleActionGroup(2)"
@@ -90,7 +90,7 @@
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="{{'universal_group_management' | translate}}"
-            *ngIf="visitorDetail?.isCanManage && !isOutage"
+            *ngIf="accessRight[0] <= groupLevel && !isOutage"
             (click)="goEditPage()"
           >
             {{'universal_group_management' | translate}}
@@ -100,10 +100,10 @@
       <div style="margin-bottom: 30px;">
         <div>
           <label>
-            <span *ngIf="groupLevel === '40' || groupLevel === '60'">
+            <span *ngIf="groupLevel === 40 || groupLevel === 60">
               {{groupInfo?.groupRootInfo[2]?.brandName}} -
             </span>
-            <span *ngIf="groupLevel === '60'">
+            <span *ngIf="groupLevel === 60">
               {{groupInfo?.groupRootInfo[3]?.branchName}} -
             </span>
             {{ groupInfo?.groupName }}
@@ -141,7 +141,7 @@
       <div>
         <mat-tab-group (selectedTabChange)="changeGroupInfo($event)" class="ala-tab-group">
           <mat-tab label="{{ 'universal_group_subgroup' | translate}}"
-            *ngIf="groupLevel !== '80'"
+            *ngIf="groupLevel !== 80"
             [disabled]="isLoading"
           >
             <ng-container  *ngIf="!isLoading">
@@ -155,7 +155,6 @@
                 <span *ngIf="subBrandInfo && subBrandInfo.length === 0">{{'universal_status_noData' | translate}}</span>
                 <ng-container  *ngFor="let subBrandItem of subBrandInfo">
                   <app-member-capsule
-                    [role]="role"
                     [isSubGroupInfo]="true"
                     [title]="subBrandItem?.groupName"
                     [memberInfo]="subBrandItem"
@@ -177,7 +176,6 @@
                 <span *ngIf="subBranchInfo && subBranchInfo.length === 0">{{'universal_status_noData' | translate}}</span>
                 <ng-container  *ngFor="let subBranchItem of subBranchInfo">
                   <app-member-capsule
-                    [role]="role"
                     [isSubGroupInfo]="true"
                     [title]="subBranchItem?.groupName"
                     [memberInfo]="subBranchItem"
@@ -200,7 +198,6 @@
                 <span *ngIf="subCoachInfo && subCoachInfo.length === 0">{{'universal_status_noData' | translate}}</span>
                 <ng-container  *ngFor="let subCoachItem of subCoachInfo">
                   <app-member-capsule
-                    [role]="role"
                     [isSubGroupInfo]="true"
                     [title]="subCoachItem?.groupName"
                     [memberInfo]="subCoachItem"
@@ -221,7 +218,7 @@
           </mat-tab>
           <mat-tab label="{{ 'universal_group_administrator' | translate}}" [disabled]="isLoading">
             <ng-container *ngIf="!isLoading">
-              <ng-container *ngIf="groupLevel && groupLevel !== '80'">
+              <ng-container *ngIf="groupLevel && groupLevel !== 80">
                 <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
                   {{ 'universal_group_brandAdministrator' | translate}}
                 </label>
@@ -232,7 +229,6 @@
                 <span *ngIf="brandAdministrators && brandAdministrators.length === 0">{{'universal_status_noData' | translate}}</span>
                   <ng-container  *ngFor="let brandAdmItem of brandAdministrators">
                     <app-member-capsule
-                      [role]="role"
                       [isAdminInfo]="true"
                       [title]="brandAdmItem?.memberName"
                       [memberInfo]="brandAdmItem"
@@ -254,7 +250,6 @@
                   <span *ngIf="branchAdministrators && branchAdministrators.length === 0">{{'universal_status_noData' | translate}}</span>
                   <ng-container  *ngFor="let branchAdmItem of branchAdministrators">
                     <app-member-capsule
-                      [role]="role"
                       [isAdminInfo]="true"
                       [title]="branchAdmItem?.memberName"
                       [memberInfo]="branchAdmItem"
@@ -266,7 +261,7 @@
                     </app-member-capsule>
                   </ng-container>
                 </div>
-                <ng-container *ngIf="groupLevel !== '60'">
+                <ng-container *ngIf="groupLevel !== 60">
                   <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
                     {{ 'universal_group_coachingClass' | translate}}
                     {{ 'universal_group_administrator' | translate}}
@@ -278,7 +273,6 @@
                     <span *ngIf="coachAdministrators && coachAdministrators.length === 0">{{'universal_status_noData' | translate}}</span>
                     <ng-container  *ngFor="let coachAdmItem of coachAdministrators">
                       <app-member-capsule
-                        [role]="role"
                         [isAdminInfo]="true"
                         [title]="coachAdmItem?.memberName"
                         [memberInfo]="coachAdmItem"
@@ -291,7 +285,7 @@
                     </ng-container>
                   </div>
                 </ng-container>
-                <ng-container *ngIf="groupLevel === '60'">
+                <ng-container *ngIf="groupLevel === 60">
                   <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px" *ngIf="brandType == 1">
                     {{ 'universal_group_teacher' | translate}}
                   </label>
@@ -302,7 +296,6 @@
                     <span *ngIf="normalCoaches && normalCoaches.length === 0">{{'universal_status_noData' | translate}}</span>
                     <ng-container  *ngFor="let normalCoachAdmItem of normalCoaches">
                       <app-member-capsule
-                        [role]="role"
                         [isAdminInfo]="true"
                         [title]="normalCoachAdmItem?.memberName"
                         [memberInfo]="normalCoachAdmItem"
@@ -324,7 +317,6 @@
                     <span *ngIf="PFCoaches && PFCoaches.length === 0">{{'universal_status_noData' | translate}}</span>
                     <ng-container  *ngFor="let pfCoachAdmItem of PFCoaches">
                       <app-member-capsule
-                        [role]="role"
                         [isAdminInfo]="true"
                         [title]="pfCoachAdmItem?.memberName"
                         [memberInfo]="pfCoachAdmItem"
@@ -338,7 +330,7 @@
                   </div>
                 </ng-container>
               </ng-container>
-              <ng-container *ngIf="groupLevel && groupLevel === '80'">
+              <ng-container *ngIf="groupLevel && groupLevel === 80">
                 <label style="color: #26abe3; font-weight: 700;margin-bottom: 15px">
                   {{ 'universal_group_administrator' | translate}}
                 </label>
@@ -346,7 +338,6 @@
                   <span *ngIf="groupInfos && groupInfos.length === 0">{{'universal_status_noData' | translate}}</span>
                   <ng-container  *ngFor="let item of groupInfos">
                     <app-member-capsule
-                      [role]="role"
                       [isAdminInfo]="true"
                       [title]="item?.memberName"
                       [memberInfo]="item"
@@ -372,7 +363,6 @@
               <ng-container  *ngFor="let item of normalMemberInfos">
                 <div style="margin-bottom: 15px;display:inline-block">
                   <app-member-capsule
-                    [role]="role"
                     [isNormalMemberInfo]="true"
                     [title]="item?.memberName"
                     [memberInfo]="item"
@@ -397,7 +387,6 @@
               <ng-container  *ngFor="let item of groupInfos">
                 <div style="margin-bottom: 15px;display:inline-block">
                   <app-member-capsule
-                    [role]="role"
                     [isWaittingMemberInfo]="true"
                     [title]="item?.memberName"
                     [memberInfo]="item"
@@ -423,7 +412,7 @@
       <div class="flexRow" style="margin-bottom: 10px;">
         <button
           class="alatech-btn alatech-btn--default"
-          *ngIf="+accessRight <= 29 && !editManageMode"
+          *ngIf="accessRight[0] <= 29 && !editManageMode"
           (click)="editMode(true)"
         >
           {{'universal_operating_edit' | translate}}
@@ -475,10 +464,10 @@
                 <mat-option value="2">
                   {{'universal_group_outOfService' | translate}}
                 </mat-option>
-                <mat-option value="3" *ngIf="accessRight <= 10">
+                <mat-option value="3" *ngIf="accessRight[0] <= 10">
                   {{'universal_group_outOfBusiness' | translate}}
                 </mat-option>
-                <mat-option value="4" *ngIf="accessRight <= 10">
+                <mat-option value="4" *ngIf="accessRight[0] <= 10">
                   {{'universal_group_toBeDestroyed' | translate}}
                 </mat-option>
               </mat-select>

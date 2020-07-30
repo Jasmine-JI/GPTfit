@@ -116,7 +116,7 @@
               <a *ngIf="isEmailMethod" class="access-text" href="#" style="cursor:pointer" (click)="switchMethod($event)">
                 <{{'universal_operating_back' | translate}}
               </a>
-              <a *ngIf="!isEmailMethod" class="access-text" style="cursor:pointer" [routerLink]="['/signin']">
+              <a *ngIf="!isEmailMethod" class="access-text" style="cursor:pointer" [routerLink]="['/signIn-web']">
                 <{{'universal_operating_back' | translate}}
               </a>
               <app-confirm-button

@@ -4,6 +4,7 @@ import { GroupService } from '../../services/group.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
+import { UserProfileService } from '../../../../shared/services/user-profile.service';
 
 @Component({
   selector: 'app-right-setting-win',
@@ -53,6 +54,7 @@ export class RightSettingWinComponent implements OnInit {
   constructor(
     private dialog: MatDialog,
     private groupService: GroupService,
+    private userProfileService: UserProfileService,
     private utils: UtilsService,
     private translate: TranslateService,
     @Inject(MAT_DIALOG_DATA) private data: any
@@ -115,6 +117,10 @@ export class RightSettingWinComponent implements OnInit {
         } else {
           this.groupService.editGroupMember(body2).subscribe(response => {
             if (response.resultCode === 200) {
+              const body = {
+                token: this.token
+              };
+              this.userProfileService.refreshUserProfile(body);
               this.dialog.closeAll();
             }
           });
@@ -123,6 +129,10 @@ export class RightSettingWinComponent implements OnInit {
     } else {
       this.groupService.editGroupMember(body2).subscribe(res => {
         if (res.resultCode === 200) {
+          const body = {
+            token: this.token
+          };
+          this.userProfileService.refreshUserProfile(body);
           this.dialog.closeAll();
         }
       });

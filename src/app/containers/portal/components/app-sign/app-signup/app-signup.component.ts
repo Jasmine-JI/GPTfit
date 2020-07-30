@@ -6,6 +6,8 @@ import { UtilsService } from '@shared/services/utils.service';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -27,6 +29,8 @@ interface RegCheck {
   styleUrls: ['./app-signup.component.scss']
 })
 export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  private ngUnsubscribe = new Subject();
 
   i18n = {
     email: '',
@@ -122,7 +126,9 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     public getClientIp: GetClientIpService,
     private authService: AuthService
   ) {
-    translate.onLangChange.subscribe(() => {
+    translate.onLangChange.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
       this.getTranslate();
     });
 
@@ -130,6 +136,16 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.getClientIpaddress();
+    this.getTranslate();
+
+    if (location.pathname.indexOf('web') > 0) {
+      this.pcView = true;
+      this.utils.setHideNavbarStatus(false);
+    } else {
+      this.pcView = false;
+      this.utils.setHideNavbarStatus(true);
+
+    }
   }
 
   /**
@@ -137,12 +153,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1090710
    */
   ngAfterViewInit(): void {
-    if (location.pathname.indexOf('web') > 0) {
-      this.pcView = true;
-      this.utils.setHideNavbarStatus(false);
-    } else {
-      this.pcView = false;
-      this.utils.setHideNavbarStatus(true);
+    if (this.pcView === false) {
       this.getAppId(location.search);
     }
 
@@ -153,7 +164,9 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1090717
    */
   getTranslate(): void {
-    this.translate.get('hollo word').subscribe(() => {
+    this.translate.get('hollo word').pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
       this.i18n = {
         email: this.translate.instant('universal_userAccount_email'),
         password: this.translate.instant('universal_userAccount_password'),
@@ -541,26 +554,33 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
         this.saveToken(this.newToken);
         this.authService.setLoginStatus(true);
 
-        const N = '\n';
-        this.dialog.open(MessageBoxComponent, {
-          hasBackdrop: true,
-          disableClose: true,
-          data: {
-            title: 'Message',
-            body: `${this.translate.instant('universal_status_success')} ${this.translate.instant('universal_userAccount_signUp')} ${
-              N} ${this.translate.instant('universal_popUpMessage_continueExecution')} ${
-              this.translate.instant('universal_deviceSetting_switch')} ${this.translate.instant('universal_userAccount_account')}?
-            `,
-            confirmText: this.translate.instant(
-              'universal_operating_confirm'
-            ),
-            cancelText: this.translate.instant(
-              'universal_operating_cancel'
-            ),
-            onCancel: this.finishSignup.bind(this),
-            onConfirm: this.toEnableAccount.bind(this)
-          }
-        });
+        // web先強迫要啟用帳號，待app v2上架後拿掉此判斷-kidin-1090724
+        if (!this.pcView) {
+          const N = '\n';
+          this.dialog.open(MessageBoxComponent, {
+            hasBackdrop: true,
+            disableClose: true,
+            data: {
+              title: 'Message',
+              body: `${this.translate.instant('universal_status_success')} ${this.translate.instant('universal_userAccount_signUp')} ${
+                N} ${this.translate.instant('universal_popUpMessage_continueExecution')} ${
+                this.translate.instant('universal_deviceSetting_switch')} ${this.translate.instant('universal_userAccount_account')}?
+              `,
+              confirmText: this.translate.instant(
+                'universal_operating_confirm'
+              ),
+              cancelText: this.translate.instant(
+                'universal_operating_cancel'
+              ),
+              onCancel: this.finishSignup.bind(this),
+              onConfirm: this.toEnableAccount.bind(this)
+            }
+
+          });
+
+        } else {
+          this.router.navigateByUrl(`/enableAccount-web`);
+        }
 
       }
 
@@ -570,25 +590,26 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * 返回app並回傳token
+   * 返回app並回傳token或導引至第一次登入頁面
    * @author kidin-1090513
    */
   finishSignup(): void {
     if (this.appSys === 1) {
       (window as any).webkit.messageHandlers.returnToken.postMessage(this.newToken);
+      this.turnBack();
     } else if (this.appSys === 2) {
       (window as any).android.returnToken(this.newToken);
+      this.turnBack();
     } else {
 
       if (this.pcView) {
-        this.router.navigateByUrl('/signIn-web');
+        this.router.navigateByUrl('/firstLogin-web');
       } else {
-        this.router.navigateByUrl('/signIn');
+        this.router.navigateByUrl('/firstLogin');
       }
 
     }
 
-    this.turnBack();
   }
 
   /**
@@ -623,11 +644,14 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * 離開頁面則取消隱藏navbar
+   * 離開頁面則取消隱藏navbar和取消訂閱
    * @author kidin-1090717
    */
   ngOnDestroy(): void {
     this.utils.setHideNavbarStatus(false);
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+
   }
 
 

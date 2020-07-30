@@ -181,10 +181,10 @@
       <p class="ala-dashboard-title activity-title">{{'universal_group_coachIntroduction' | translate}}</p>
       <div style="display: flex; flex-direction: column;">
         <div class="groupPagePhoto">
-          <img src="{{coachInfo?.nameIcon}}">
+          <img src="{{coachInfo?.avatarUrl}}" (error)="this.coachInfo.avatarUrl='/assets/images/user2.png'">
         </div>
         <span class="introductionName">
-          {{coachInfo?.name}}
+          {{coachInfo?.nickname}}
         </span>
       </div>
       <p>{{coachPartInfo}}</p>

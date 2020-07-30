@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { getUrlQueryStrings } from '@shared/utils/';
 import { SettingsService } from '../../../services/settings.service';
 import { UtilsService } from '@shared/services/utils.service';
@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
+import { AuthService } from '../../../../../shared/services/auth.service';
 
 @Component({
   selector: 'app-account-info',
@@ -13,71 +14,117 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrls: ['./account-info.component.scss', '../settings.component.scss']
 })
 export class AccountInfoComponent implements OnInit {
-  @Input() userData: any;
-  stravaStatus: boolean;
-  clientId = '30689';
+  stravaStatus = false;
+  clientId = 30689;
   stravaApiDomain = 'https://app.alatech.com.tw:5443';
-  enableAccount = false;
+  account: string;
+  accountStatus: number;
+  thirdPartyAgency: Array<any>;
 
   constructor(
     private utils: UtilsService,
     private settingsService: SettingsService,
     private router: Router,
     public dialog: MatDialog,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private auth: AuthService
   ) {}
 
   ngOnInit() {
-    const queryStrings = getUrlQueryStrings(location.search);
-    const { code } = queryStrings;
+    this.getThirdPartyAgency();
+    this.checkDomain();
+    this.handleQueryStrings();
+  }
 
+  /**
+   * call api 1003取得包含第三方的帳號資訊
+   * @author kidin-1090723
+   */
+  getThirdPartyAgency(): void {
+    const body = {
+      signInType: 3,
+      token: this.utils.getToken() || ''
+    };
+
+    this.auth.loginServerV2(body).subscribe(res => {
+      this.thirdPartyAgency = res.thirdPartyAgency;
+      this.accountStatus = res.signIn.accountStatus;
+
+      switch (res.signIn.accountType) {
+        case 1:
+          this.account = res.userProfile.email;
+          break;
+        case 2:
+          this.account = `+${res.userProfile.countryCode} ${res.userProfile.mobileNumber}`;
+          break;
+        default:
+          this.account = 'Unknow';
+          break;
+      }
+
+      const status = this.thirdPartyAgency.filter(_thirdParty => _thirdParty.interface === 1).map(_strava => _strava.status);
+      if (status.length === 0) {
+        this.stravaStatus = false;
+      } else {
+        this.stravaStatus = status[0];
+      }
+
+    });
+
+  }
+
+  /**
+   * 確認網域來變更strava client id 和 domain
+   * @author kidin-1090723
+   */
+  checkDomain(): void {
     if (
       location.hostname === 'alatechcloud.alatech.com.tw' ||
       location.hostname === '152.101.90.130' ||
-      location.hostname === 'cloud.alatech.com.tw'
+      location.hostname === 'cloud.alatech.com.tw' ||
+      location.hostname === 'www.gptfit.com'
     ) {
-      this.clientId = '30796';
-      this.stravaApiDomain = 'https://cloud.alatech.com.tw:5443';
+      this.clientId = 30796;
+      if (location.hostname === 'cloud.alatech.com.tw') {
+        this.stravaApiDomain = 'https://cloud.alatech.com.tw:5443';
+      } else if (location.hostname === 'www.gptfit.com') {
+        this.stravaApiDomain = 'https://www.gptfit.com:5443';
+      }
+
     }
+
+  }
+
+  /**
+   * 取得url的search string，並根據內容進行下一步
+   * @author kidin-1090723
+   */
+  handleQueryStrings(): void {
+    const queryStrings = getUrlQueryStrings(location.search);
+    const { code } = queryStrings;
 
     if (code && code.length > 0) {
       const body = {
         token: this.utils.getToken() || '',
-        thirdPartyAgency: '0',
-        switch: '1',
-        code,
+        switch: true,
+        thirdPartyAgency: 1,
+        thirdPartyAgencyCode: code,
         clientId: this.clientId
       };
-      return this.handleThirdPartyAccess(body);
+
+      this.handleStravaAccess(body);
     }
 
-    const { strava, stravaValid } = this.userData.thirdPartyAgency;
-    this.stravaStatus = strava === '1';
-    if (stravaValid === 'false' && this.stravaStatus) {
-      this.stravaStatus = false;
-      return this.dialog.open(MessageBoxComponent, {
-        hasBackdrop: true,
-        data: {
-          title: 'message',
-          body: this.translate.instant('universal_popUpMessage_stravaRebinding'),
-          confirmText: this.translate.instant('universal_operating_confirm'),
-          cancelText: this.translate.instant('universal_operating_cancel'),
-          onConfirm: () => {
-            location.href =
-              'https://www.strava.com/oauth/authorize?' +
-              `client_id=${this.clientId}&response_type=code&` +
-              `redirect_uri=${
-                this.stravaApiDomain
-              }/api/v1/strava/redirect_uri` +
-              '/1/AlaCenter&state=mystate&approval_prompt=force&scope=activity:write,read';
-          }
-        }
-      });
-    }
   }
-  handleThirdPartyAccess(body) {
+
+  /**
+   * 更新同步strava的狀態
+   * @param body {object}
+   * @author kidin-1090723
+   */
+  handleStravaAccess(body: any): void {
     this.settingsService.updateThirdParty(body).subscribe(res => {
-      if (res.resultCode !== 200) {
+      if (res.processResult.resultCode !== 200) {
         this.stravaStatus = false;
         this.dialog.open(MessageBoxComponent, {
           hasBackdrop: true,
@@ -88,18 +135,25 @@ export class AccountInfoComponent implements OnInit {
           }
         });
       } else {
-        if (body.code.length === 0) {
+        if (body.thirdPartyAgencyCode.length === 0) {
           this.stravaStatus = false;
         } else {
           this.stravaStatus = true;
         }
       }
+
       this.router.navigateByUrl('/dashboard/settings/account-info');
     });
-  }
-  handleStravaStatus(value) {
-    this.stravaStatus = value.checked;
 
+  }
+
+  /**
+   * 使用者切換strava開關後更新同步strava狀態
+   * @event change
+   * @param value {changeEvent}
+   */
+  handleStravaStatus(value: Event): any {
+    this.stravaStatus = (value as any).checked;
     if (this.stravaStatus) {
       return (location.href =
         'https://www.strava.com/oauth/authorize?' +
@@ -107,19 +161,25 @@ export class AccountInfoComponent implements OnInit {
         `redirect_uri=${this.stravaApiDomain}/api/v1/strava/redirect_uri` +
         '/1/AlaCenter&state=mystate&approval_prompt=force&scope=activity:write,read');
     }
+
     const body = {
       token: this.utils.getToken() || '',
-      thirdPartyAgency: '0',
-      switch: this.stravaStatus ? '1' : '0',
-      code: '',
+      switch: this.stravaStatus,
+      thirdPartyAgency: 1,
+      thirdPartyAgencyCode: '',
       clientId: this.clientId
     };
-    this.handleThirdPartyAccess(body);
+
+    this.handleStravaAccess(body);
   }
 
-  // 轉導至編輯密碼-kidin-1090529
-  navigateToEditPwd () {
-    this.router.navigateByUrl('/editPassword-web');
+  /**
+   * 轉導至指定頁面
+   * @param url {string}
+   * @author kidin-1090529
+   */
+  navigateToAssignPage (url: string) {
+    this.router.navigateByUrl(url);
   }
 
 }

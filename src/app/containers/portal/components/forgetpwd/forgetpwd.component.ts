@@ -140,7 +140,7 @@ export class ForgetpwdComponent implements OnInit, OnDestroy {
             'OK',
             { duration: 5000 }
           );
-          this.timeout = setTimeout(() => this.router.navigate(['/signin']), 5000);
+          this.timeout = setTimeout(() => this.router.navigate(['/signIn-web']), 5000);
         } else if (rtnMsg === 'This is not a registered or activation mail.') {
           this.snackbar.open(this.translate.instant('universal_userAccount_noRegisterData'), 'OK', { duration: 5000 });
           this.isForgetSending = false;

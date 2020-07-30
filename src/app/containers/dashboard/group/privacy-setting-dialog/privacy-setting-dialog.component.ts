@@ -3,6 +3,7 @@ import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UtilsService } from '@shared/services/utils.service';
 import { SettingsService } from '../../services/settings.service';
 import { TranslateService } from '@ngx-translate/core';
+import { UserProfileService } from '../../../../shared/services/user-profile.service';
 
 @Component({
   selector: 'app-privacy-setting-dialog',
@@ -54,6 +55,7 @@ export class PrivacySettingDialogComponent implements OnInit {
     private dialog: MatDialog,
     private utils: UtilsService,
     private settingsService: SettingsService,
+    private userProfileService: UserProfileService,
     private translate: TranslateService,
     @Inject(MAT_DIALOG_DATA) private data: any
   ) {}
@@ -104,6 +106,13 @@ export class PrivacySettingDialogComponent implements OnInit {
 
 
     this.settingsService.updateUserProfile(body).subscribe(() => {
+      // 重新存取身體資訊供各種圖表使用-kidin-1081212
+      const refreshBody = {
+        token : this.utils.getToken() || ''
+      };
+      this.userProfileService.refreshUserProfile({
+        token: refreshBody
+      });
       this.dialog.closeAll();
     });
 

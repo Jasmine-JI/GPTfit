@@ -1,30 +1,27 @@
-import { Component, OnInit, Injector } from '@angular/core';
+import { Component, OnInit, Injector, OnDestroy } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { UserProfileService } from '@shared/services/user-profile.service';
-import { UtilsService } from '@shared/services/utils.service';
-import { AuthService } from '@shared/services/auth.service';
-import { UserInfoService } from '../../services/userInfo.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss']
 })
-export class SettingsComponent implements OnInit {
+export class SettingsComponent implements OnInit, OnDestroy {
+
+  private ngUnsubscribe = new Subject();
+
   chooseIdx = 1;
   userData: any;
-  isLoading =  false;
   constructor(
     private router: Router,
-    private userProfileService: UserProfileService,
-    private utils: UtilsService,
-    private userInfoService: UserInfoService,
-    private authService: AuthService,
-    private injector: Injector,
+    private userProfileService: UserProfileService
   ) {}
 
   ngOnInit() {
-    this.fetchUserProfile();
+    this.getUserProfile();
     this.detectUrlChange(location.pathname);
     this.router.events.subscribe((val: NavigationEnd) => {
       if (val instanceof NavigationEnd && val.url) {
@@ -32,67 +29,26 @@ export class SettingsComponent implements OnInit {
       }
     });
   }
-  fetchUserProfile() {
-    const body = {
-      token: this.utils.getToken() || '',
-      avatarType: 2,
-    };
-    this.isLoading = true;
-    const checkUserProfileService = new Promise((resolve, reject) => {
-      this.userProfileService.getUserProfile(body).subscribe(
-        res1 => {
-          if (res1.resultCode === 400) {
-            this.redirectLoginPage();
-          } else if (res1.resultCode === 401) {
-            this.redirectLoginPage();
-          } else if (res1.resultCode === 402) {
-            const token = this.utils.getToken() || '';
-            this.userInfoService.refreshToken({token}).subscribe(
-              res2 => {
-                if (res2.resultCode === 200) {
-                  const { token, tokenTimeStamp } = res2.info;
-                  this.utils.writeToken(token);
-                  this.utils.setLocalStorageObject('ala_token_time', tokenTimeStamp);
-                  resolve(false);
-                } else if (res2.resultCode === 401) {
-                  this.redirectLoginPage();
-                }
-              }
-            );
-          }
-          if (res1.resultCode !== 402 && res1.resultCode !== 400 && res1.resultCode !== 401) {
-            resolve(true);
-          }
-        }
-      );
+
+  /**
+   * 從rxjs取得使用者資料
+   * @author kidin-1090723
+   */
+  getUserProfile() {
+    this.userProfileService.getRxUserProfile().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
+      this.userData = res;
     });
-    return checkUserProfileService.then(res => {
-      if (res === false) {
-        const token = this.utils.getToken() || '';
-        this.getUserProfile({
-          token,
-          avatarType: 2,
-          iconType : 2
-        });
-      } else {
-        this.getUserProfile(body);
-      }
-      return res;
-    });
+
   }
-  redirectLoginPage() {
-    this.authService.logout();
-    const router = this.injector.get(Router);
-    router.navigate(['/signin']);
-  }
-  getUserProfile(body){
-    this.userProfileService.getUserProfile(body).subscribe(
-      res => {
-        this.isLoading = false;
-        this.userData = res.info;
-      }
-    );
-  }
+
+  /**
+   * 根據使用者點選的項目導引至該頁面
+   * @event click
+   * @param _idx {number}
+   * @author kidin-1090723
+   */
   handleTab(_idx) {
     this.chooseIdx = _idx;
     let url = '';
@@ -109,9 +65,15 @@ export class SettingsComponent implements OnInit {
       default:
         url = '/dashboard/settings/account-info';
     }
+
     this.router.navigateByUrl(url);
-    this.fetchUserProfile();
   }
+
+  /**
+   * 根據url判斷所在頁面，並顯示該頁面
+   * @param url {string}
+   * @author kidin-1090723
+   */
   detectUrlChange(url) {
     if (url.indexOf('/dashboard/settings/user-settings') > -1) {
       this.chooseIdx = 1;
@@ -126,4 +88,14 @@ export class SettingsComponent implements OnInit {
       this.chooseIdx = 4;
     }
   }
+
+  /**
+   * 取消rxjs訂閱
+   * @author kidin-1090723
+   */
+  ngOnDestroy(): void {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
 }
