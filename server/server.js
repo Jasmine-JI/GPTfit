@@ -102,7 +102,10 @@ app.use(function (req, res, next) {
       'https://152.101.90.130:8080',
       'https://cloud.alatech.com.tw',
       'https://cloud.alatech.com.tw:8080',
-      'http://cloud.alatech.com.tw:8080'
+      'http://cloud.alatech.com.tw:8080',
+      'https://www.gptfit.com',
+      'https://www.gptfit.com:8080',
+      'http://www.gptfit.com:8080'
     ];
   }
   var origin = req.headers.origin;

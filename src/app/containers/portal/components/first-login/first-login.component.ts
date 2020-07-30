@@ -69,7 +69,7 @@ export class FirstLoginComponent implements OnInit {
     // 修復在首次登入頁面按下登出時，畫面殘留的問題-kidin-1090109(bug575)
     this.authService.getLoginStatus().subscribe(res => {
       if (res === false) {
-        return this.router.navigateByUrl('/signin');
+        return this.router.navigateByUrl('/signIn-web');
       }
     });
 

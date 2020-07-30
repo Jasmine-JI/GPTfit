@@ -145,7 +145,7 @@
             </ng-container>
             <div style="display: flex;justify-content: space-between;align-items: center;">
               <a *ngIf="isEmailMethod" class="access-text" href="#" style="cursor:pointer" (click)="switchMethod($event)"><{{'universal_operating_back' | translate}}</a>
-              <a *ngIf="!isEmailMethod" class="access-text" style="cursor:pointer" [routerLink]="['/signin']"><{{'universal_operating_back' | translate}}</a>
+              <a *ngIf="!isEmailMethod" class="access-text" style="cursor:pointer" [routerLink]="['/signIn-web']"><{{'universal_operating_back' | translate}}</a>
               <app-confirm-button
                 [className]="className"
                 [content]="'universal_userAccount_signUp' | translate"

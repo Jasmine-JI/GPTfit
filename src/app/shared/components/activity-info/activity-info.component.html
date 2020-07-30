@@ -334,7 +334,7 @@
         </mat-form-field>
       </div>
       <div *ngIf="!dataLoading" class="muscleMap">
-        <app-muscle-map #muscleMap class="muscleBodySvg"></app-muscle-map>
+        <app-muscle-map #muscleMap class="muscleBodySvg" [userWeight]="userWeight"></app-muscle-map>
         <app-muscle-train-list #muscleTrainList class="musclePartList" (click)="reRenderMuscleMap()"></app-muscle-train-list>
       </div>
     </div>

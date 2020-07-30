@@ -2,10 +2,13 @@ import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '@shared/services/utils.service';
 import { AuthService } from '../../../../../shared/services/auth.service';
+import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { UserInfoService } from '../../../../dashboard/services/userInfo.service';
 import { SignupService } from '../../../services/signup.service';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -15,6 +18,8 @@ import { MatDialog } from '@angular/material/dialog';
   styleUrls: ['./app-change-account.component.scss']
 })
 export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  private ngUnsubscribe = new Subject();
 
   i18n = {
     email: '',
@@ -100,11 +105,14 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
     private utils: UtilsService,
     private authService: AuthService,
     private signupService: SignupService,
+    private userProfileService: UserProfileService,
     private userInfoService: UserInfoService,
     private dialog: MatDialog,
     private router: Router
   ) {
-    translate.onLangChange.subscribe(() => {
+    translate.onLangChange.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
       this.getTranslate();
     });
 
@@ -113,9 +121,20 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
   ngOnInit() {
     this.getUrlString(location.search);
     this.getUserInfo();
+    this.getTranslate();
+
+    if (location.pathname.indexOf('web') > 0) {
+      this.pcView = true;
+      this.utils.setHideNavbarStatus(false);
+    } else {
+      this.pcView = false;
+      this.utils.setHideNavbarStatus(true);
+    }
 
     // 在首次登入頁面按下登出時，跳轉回登入頁-kidin-1090109(bug575)
-    this.authService.getLoginStatus().subscribe(res => {
+    this.authService.getLoginStatus().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
       if (res === false && this.pcView === true) {
         return this.router.navigateByUrl('/signIn-web');
       }
@@ -128,12 +147,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
    * @author kidin-1090710
    */
   ngAfterViewInit () {
-    if (location.pathname.indexOf('web') > 0) {
-      this.pcView = true;
-      this.utils.setHideNavbarStatus(false);
-    } else {
-      this.pcView = false;
-      this.utils.setHideNavbarStatus(true);
+    if (this.pcView === false) {
       this.getDeviceSys();
     }
 
@@ -141,7 +155,9 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
 
   // 取得多國語系翻譯-kidin-1090620
   getTranslate () {
-    this.translate.get('hollo word').subscribe(() => {
+    this.translate.get('hollo word').pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
       this.i18n = {
         email: this.translate.instant('universal_userAccount_account'),
         password: this.translate.instant('universal_userAccount_password')
@@ -189,7 +205,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
       token: this.utils.getToken() || ''
     };
 
-    this.userInfoService.fetchUserInfo(body).subscribe(res => {
+    this.userProfileService.getUserProfile(body).subscribe(res => {
 
       const profile = res.userProfile;
       if (profile.email) {
@@ -504,6 +520,8 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
   // 離開頁面則取消隱藏navbar-kidin-1090514
   ngOnDestroy () {
     this.utils.setHideNavbarStatus(false);
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
 

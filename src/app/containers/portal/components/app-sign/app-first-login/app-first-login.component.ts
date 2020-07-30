@@ -3,9 +3,11 @@ import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { AuthService } from '@shared/services/auth.service';
-import { UserInfoService } from '../../../../dashboard/services/userInfo.service';
+import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { UtilsService } from '@shared/services/utils.service';
 import { SignupService } from '../../../services/signup.service';
@@ -16,6 +18,8 @@ import { SignupService } from '../../../services/signup.service';
   styleUrls: ['./app-first-login.component.scss']
 })
 export class AppFirstLoginComponent implements OnInit, OnDestroy {
+
+  private ngUnsubscribe = new Subject();
 
   i18n = {
     birthday: '',
@@ -58,10 +62,12 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private router: Router,
     private authService: AuthService,
-    private userInfoService: UserInfoService,
+    private userProfileService: UserProfileService,
     private signupService: SignupService
   ) {
-    translate.onLangChange.subscribe(() => {
+    translate.onLangChange.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
       this.getTranslate();
     });
 
@@ -83,7 +89,9 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
     this.getUserInfo();
 
     // 在首次登入頁面按下登出時，跳轉回登入頁-kidin-1090109(bug575)
-    this.authService.getLoginStatus().subscribe(res => {
+    this.authService.getLoginStatus().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
       if (res === false && this.pcView === true) {
         return this.router.navigateByUrl('/signIn-web');
       }
@@ -93,7 +101,9 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
 
   // 取得多國語系翻譯-kidin-1090620
   getTranslate () {
-    this.translate.get('hollo word').subscribe(() => {
+    this.translate.get('hollo word').pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
       this.i18n = {
         birthday: this.translate.instant('universal_userProfile_birthday'),
         bodyHeight: this.translate.instant('universal_userProfile_bodyHeight'),
@@ -128,7 +138,7 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
       token: this.utils.getToken() || ''
     };
 
-    this.userInfoService.fetchUserInfo(body).subscribe(res => {
+    this.userProfileService.getUserProfile(body).subscribe(res => {
       this.nickName = res.userProfile.nickname;
     });
 
@@ -330,9 +340,11 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
 
   }
 
-  // 離開頁面則取消隱藏navbar-kidin-1090514
+  // 離開頁面則取消隱藏navbar及取消rxjs訂閱-kidin-1090514
   ngOnDestroy () {
     this.utils.setHideNavbarStatus(false);
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
 }

@@ -42,25 +42,31 @@ export class PeopleSelectorWinComponent implements OnInit {
   onClick() {
     this.areaType = 0;
   }
+
   ngOnInit() {
     this.handleGroupOptions();
   }
+
   confirm() {
     this.data.onConfirm(this.adminLists);
     this.dialog.closeAll();
   }
+
   handleBtnColor(_areaType, e) {
     e.stopPropagation();
     this.areaType = _areaType;
   }
+
   handleItem(idx) {
     this.chooseExistIndex = -1;
     this.chooseIndex = idx;
   }
+
   handleExistItem(idx) {
     this.chooseIndex = -1;
     this.chooseExistIndex = idx;
   }
+
   assignUser() {
     if (this.chooseIndex > -1) {
       const chooseData = this.fakeDatas[this.chooseIndex];
@@ -69,6 +75,7 @@ export class PeopleSelectorWinComponent implements OnInit {
       this.chooseIndex = -1;
     }
   }
+
   removeUser() {
     if (this.chooseExistIndex > -1) {
       const chooseData = this.adminLists[this.chooseExistIndex];
@@ -77,9 +84,11 @@ export class PeopleSelectorWinComponent implements OnInit {
       this.chooseExistIndex = -1;
     }
   }
+
   handleGroupOptions() {
     this.groupService.getGroupList().subscribe(_res => this.groupLists = _res);
   }
+
   search() {
     if (this.chooseGroupId.length > 0 || this.isInnerAdmin) {
       let params = new HttpParams();
@@ -90,12 +99,14 @@ export class PeopleSelectorWinComponent implements OnInit {
       } else {
         params = params.set('groupId', this.chooseGroupId);
       }
+
       this.groupService.searchMember(params).subscribe(_result => {
         this.fakeDatas = _result;
         this.fakeDatas = this.fakeDatas.filter(_data => {
           return this.adminLists.findIndex(_adminList => _data.userId === _adminList.userId) === -1;
         });
       });
+
     } else {
       this.fakeDatas = [];
     }

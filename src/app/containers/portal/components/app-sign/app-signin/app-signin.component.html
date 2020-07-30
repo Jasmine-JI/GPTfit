@@ -27,15 +27,18 @@
       </div>
       <div class="flexCol" style="margin-top: 10px;">
         <div class="flexCol appDiv" *ngIf="isKeyin">
-          <app-custom-select
-            [selectLists]="selectLists"
-            [fontOpt]="fontOpt"
-            [position]="position"
-            [triangleColor]="'#239fd9'"
-            [currentSelectId]="loginBody.signInType - 1"
-            (selectItem)="getAccountType($event)"
-          >
-          </app-custom-select>
+          <div class="flexRow">
+            <app-custom-select
+              [selectLists]="selectLists"
+              [fontOpt]="webFontOpt"
+              [position]="position"
+              [triangleColor]="'#239fd9'"
+              [currentSelectId]="loginBody.signInType - 1"
+              (selectItem)="getAccountType($event)"
+            >
+            </app-custom-select>
+            (&nbsp;<a href="#" (click)="showPrivateMsg($event)">{{'universal_userAccount_signUp' | translate}}</a>&nbsp;)
+          </div>
           <div *ngIf="loginBody.signInType === 1">
             <input
               style="width: 100%;"
@@ -137,15 +140,18 @@
               </div>
               <div class="flexCol" style="margin-top: 10px;">
                 <div class="flexCol" *ngIf="isKeyin">
-                  <app-custom-select
-                    [selectLists]="selectLists"
-                    [fontOpt]="webFontOpt"
-                    [position]="position"
-                    [triangleColor]="'#239fd9'"
-                    [currentSelectId]="loginBody.signInType - 1"
-                    (selectItem)="getAccountType($event)"
-                  >
-                  </app-custom-select>
+                  <div class="flexRow">
+                    <app-custom-select
+                      [selectLists]="selectLists"
+                      [fontOpt]="webFontOpt"
+                      [position]="position"
+                      [triangleColor]="'#239fd9'"
+                      [currentSelectId]="loginBody.signInType - 1"
+                      (selectItem)="getAccountType($event)"
+                    >
+                    </app-custom-select>
+                    (&nbsp;<a href="#" (click)="showPrivateMsg($event)">{{'universal_userAccount_signUp' | translate}}</a>&nbsp;)
+                  </div>
                   <div *ngIf="loginBody.signInType === 1">
                     <input
                       class="form-control"
@@ -212,8 +218,7 @@
                 {{ 'universal_userAccount_errorAccountPassword' | translate }}
               </span>
             </div>
-            <div style="display: flex;justify-content: space-between; align-items: center; margin-top: 20px;">
-              <a class="access-text" style="cursor:pointer" [routerLink]="['/signIn-web']"><{{'universal_operating_back' | translate}}</a>
+            <div style="display: flex;justify-content: flex-end; align-items: center; margin-top: 20px;">
               <button
                 class="btn btn-primary access-btn"
                 [class.appview-btn-unclickable]="loginStatus !== 'check' || dataIncomplete"

@@ -23,9 +23,9 @@ import { HashIdService } from '@shared/services/hash-id.service';
   encapsulation: ViewEncapsulation.None
 })
 export class GroupSearchComponent implements OnInit {
-  // to fixed
-  groupLevel = '130'; //  Type 'string | string[]' is not assignable to type 'string'.  所以暫時先用any，之後找原因
-  searchWords: any; //  Type 'string | string[]' is not assignable to type 'string'.  所以暫時先用any，之後找原因
+
+  groupLevel = '130';
+  searchWords: String | string[];
   token: string;
   logSource = new MatTableDataSource<any>();
   totalCount: number;
@@ -85,6 +85,7 @@ export class GroupSearchComponent implements OnInit {
       page: (this.currentPage && this.currentPage.pageIndex.toString()) || '0',  // 修復點選下一頁清單卻沒有改變的問題-kidin-1081205(Bug 956)
       pageCounts: (this.currentPage && this.currentPage.pageSize.toString()) || '10'  // 修復每頁顯示項數失效的問題-kidin-1081205(Bug 956)
     };
+
     if (this.searchWords && this.searchWords.length > 0) {
       this.isLoading = true;
       this.groupService.fetchGroupList(body).subscribe(res => {
@@ -99,7 +100,7 @@ export class GroupSearchComponent implements OnInit {
         const url =
           '/dashboard/group-search?' +
           `pageNumber=${this.currentPage.pageIndex +
-            1}&searchWords=${this.searchWords.trim()}` +
+            1}&searchWords=${(this.searchWords as string).trim()}` +
           `&groupLevel=${this.groupLevel}`;
         this.router.navigateByUrl(url);
       });

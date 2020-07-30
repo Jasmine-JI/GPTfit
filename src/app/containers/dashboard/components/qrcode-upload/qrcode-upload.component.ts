@@ -1,13 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { UserInfoService } from '../../services/userInfo.service';
+import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { ActivityService } from '../../../../shared/services/activity.service';
 import { A3FormatPipe } from '../../../../shared/pipes/a3-format.pipe';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '../../../../shared/services/auth.service';
 
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
 import * as md5 from 'md5';
@@ -17,7 +19,9 @@ import * as md5 from 'md5';
   templateUrl: './qrcode-upload.component.html',
   styleUrls: ['./qrcode-upload.component.scss']
 })
-export class QrcodeUploadComponent implements OnInit {
+export class QrcodeUploadComponent implements OnInit, OnDestroy {
+
+  private ngUnsubscribe = new Subject();
 
   loadingUserData = true;
   uploading = false;
@@ -33,7 +37,7 @@ export class QrcodeUploadComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private userInfoService: UserInfoService,
+    private userProfileService: UserProfileService,
     private utils: UtilsService,
     private activityService: ActivityService,
     private auth: AuthService,
@@ -48,10 +52,10 @@ export class QrcodeUploadComponent implements OnInit {
     const token = this.utils.getToken() || '';
     if (token.length === 0) {
       this.auth.backUrl = location.href;
-      this.router.navigateByUrl('/signin');
+      this.router.navigateByUrl('/signIn-web');
     } else if (location.pathname.indexOf('dashboard') < 0) {
       this.router.navigateByUrl(
-        `/dashboard${location.pathname} ${location.search}`
+        `/dashboard${location.pathname}${location.search}`
       );
     } else {
       this.getUserInfo();
@@ -72,17 +76,12 @@ export class QrcodeUploadComponent implements OnInit {
 
   // 取得個人資訊-kidin-1090420
   getUserInfo () {
-
-    setTimeout (() => {
-
-      if (this.userInfoService.getBodyDatas().length === 0) {
-        this.getUserInfo();
-      } else {
-        this.userInfo = this.userInfoService.getBodyDatas()[0];
-        this.loadingUserData = false;
-      }
-
-    }, 0);
+    this.userProfileService.getRxUserProfile().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
+      this.userInfo = res;
+      this.loadingUserData = false;
+    });
 
   }
 
@@ -198,6 +197,11 @@ export class QrcodeUploadComponent implements OnInit {
   fillTwoDigits (num) {
     const timeStr = '0' + Math.floor(num);
     return timeStr.substr(-2);
+  }
+
+  ngOnDestroy(): void {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
 }

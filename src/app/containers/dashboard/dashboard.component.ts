@@ -2,13 +2,15 @@ import {
   Component,
   OnInit,
   ChangeDetectorRef,
-  AfterViewChecked
+  AfterViewChecked,
+  OnDestroy
 } from '@angular/core';
 import { GlobalEventsManager } from '@shared/global-events-manager';
 import { MatSidenav } from '@angular/material/sidenav';
 import { AuthService } from '@shared/services/auth.service';
 import { Router } from '@angular/router';
 import { UserInfoService } from './services/userInfo.service';
+import { UserProfileService } from '../../shared/services/user-profile.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { TranslateService } from '@ngx-translate/core';
 import { UserInfo } from './models/userInfo';
@@ -18,14 +20,20 @@ import { HashIdService } from '@shared/services/hash-id.service';
 import { DetectInappService } from '@shared/services/detect-inapp.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
-import * as moment from 'moment';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { UserProfileInfo } from '../dashboard/models/userProfileInfo';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent implements OnInit, AfterViewChecked {
+export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
+
+  private ngUnsubscribe = new Subject();
+
+  userProfile = <UserProfileInfo>{};
   isPreviewMode = false;
   isLoading = false;
   isMaskShow = false;
@@ -34,19 +42,9 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
   isSideNavOpend: boolean;
   mode = 'side';
   isDefaultOpend: boolean;
-  userName: string;
-  userPhoto: string;
   isUserMenuShow = false;
-  isSupervisor = false;
-  isBrandAdministrator = false;
-  isSystemDeveloper = false;
-  isSystemMaintainer = false;
-  isMarketingDeveloper = false;
-  isBranchAdministrator = false;
-  isBroadcastProducer = false;
-  isCoach = false;
-  isGroupAdministrator = false;
-  isGeneralMember = false;
+  accountStatus = 1; // 1:未啟用 2:已啟用
+
   isHadContainer = true;
   footerAddClassName = '';
   userId: number;
@@ -64,11 +62,14 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
     private cdRef: ChangeDetectorRef,
     private hashIdService: HashIdService,
     private detectInappService: DetectInappService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private userProfileService: UserProfileService
   ) {
+
     if (location.search.indexOf('ipm=s') > -1) {
       this.isPreviewMode = true;
     }
+
     this.router.events.subscribe(_val => {
       if (_val instanceof NavigationEnd) {
         if (_val.url.indexOf('/dashboard/coach-dashboard') > -1) {
@@ -139,8 +140,11 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
         } else {
           this.target = 0;
         }
+
       }
+
     });
+
     this.userInfoService
       .getInitialUserInfoStatus()
       .subscribe((res: UserInfo) => {
@@ -149,19 +153,36 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
           this.isLoading = true;
           const token = this.utilsService.getToken() || '';
           const body = {
-            token,
-            avatarType: 2,
-            iconType: 2
+            signInType: 3,
+            token
           };
-          this.userInfoService.getUserInfo(body).then(() => {
-            this.isLoading = false;
+
+          // 使用api v2 1003確認或刷新token和取得帳號狀態
+          this.authService.loginServerV2(body).subscribe(loginRes => {
+            this.accountStatus = loginRes.signIn.accountStatus;
+            if (loginRes.signIn.accountStatus === 1) {  // 待app v2 上架再刪除此段-kidin-1090724
+              this.router.navigateByUrl(`/enableAccount-web`);
+            }
+
           });
+
         }
+
       });
+
+    this.userProfileService.getRxUserProfile().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
+      this.isLoading = false;
+      this.userProfile = (res as UserProfileInfo);
+    });
+
   }
 
   ngOnInit() {
-    this.translateService.onLangChange.subscribe(() => {
+    this.translateService.onLangChange.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
       if (this.detectInappService.isInApp || this.detectInappService.isIE) {
         if (this.detectInappService.isLine) {
           if (location.search.length === 0) {
@@ -181,8 +202,11 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
         }
       }
     });
+
     this.isAlphaVersion = true;
-    if (location.hostname.indexOf('cloud.alatech.com.tw') > -1) {
+    if (location.hostname.indexOf('cloud.alatech.com.tw') > -1
+      || location.hostname.indexOf('www.gptfit.com') > -1
+    ) {
       this.isAlphaVersion = false;
       this.version = version.master;
     } else if (location.hostname.indexOf('app.alatech.com.tw') > -1) {
@@ -199,93 +223,19 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
     } else {
       this.translateService.use(browserLang);
     }
-    this.userInfoService.getUserIcon().subscribe(res => {
-      this.userPhoto = res;
-    });
+
     this.userInfoService.getUpdatedImgStatus().subscribe(res => {
       this.updateQueryString = res;
     });
-    this.userInfoService.getUserName().subscribe(res => {
-      this.userName = res;
-    });
+
     this.userInfoService.getUserId().subscribe(res => {
       this.userId = res;
     });
-    this.userInfoService.getSupervisorStatus().subscribe(res => {
-      this.isSupervisor = res;
-      // console.log('%c this.isSupervisor', 'color: #108bcd', this.isSupervisor);
-    });
-    this.userInfoService.getSystemDeveloperStatus().subscribe(res => {
-      this.isSystemDeveloper = res;
-      // console.log(
-      //   '%c this.isSystemDeveloper',
-      //   'color: #108bcd',
-      //   this.isSystemDeveloper
-      // );
-    });
-    this.userInfoService.getSystemMaintainerStatus().subscribe(res => {
-      this.isSystemMaintainer = res;
-      // console.log(
-      //   '%c this.isSystemMaintainer',
-      //   'color: #108bcd',
-      //   this.isSystemMaintainer
-      // );
-    });
-    this.userInfoService.getMarketingDeveloperStatus().subscribe(res => {
-      this.isMarketingDeveloper = res;
-      // console.log(
-      //   '%c this.isMarketingDeveloper',
-      //   'color: #108bcd',
-      //   this.isMarketingDeveloper
-      // );
-    });
-    this.userInfoService.getBrandAdministratorStatus().subscribe(res => {
-      this.isBrandAdministrator = res;
-      // console.log(
-      //   '%c this.isBrandAdministrator',
-      //   'color: #108bcd',
-      //   this.isBrandAdministrator
-      // );
-    });
-    this.userInfoService.getBranchAdministratorStatus().subscribe(res => {
-      this.isBranchAdministrator = res;
-      // console.log(
-      //   '%c this.isBranchAdministrator',
-      //   'color: #108bcd',
-      //   this.isBranchAdministrator
-      // );
-    });
-    this.userInfoService.getBroadcastProducerStatus().subscribe(res => {
-      this.isBroadcastProducer = res;
-      // console.log(
-      //   '%c this.isBroadcastProducer',
-      //   'color: #108bcd',
-      //   this.isBroadcastProducer
-      // );
-    });
-    this.userInfoService.getCoachStatus().subscribe(res => {
-      this.isCoach = res;
-      // console.log('%c this.isCoach', 'color: #108bcd', this.isCoach);
-    });
-    this.userInfoService.getGroupAdministratorStatus().subscribe(res => {
-      this.isGroupAdministrator = res;
-      // console.log(
-      //   '%c this.isGroupAdministrator',
-      //   'color: #108bcd',
-      //   this.isGroupAdministrator
-      // );
-    });
-    this.userInfoService.getGeneralMemberStatus().subscribe(res => {
-      this.isGeneralMember = res;
-      // console.log(
-      //   '%c this.isGeneralMember',
-      //   'color: #108bcd',
-      //   this.isGeneralMember
-      // );
-    });
+
     this.globalEventsManager.showNavBarEmitter.subscribe(mode => {
       this.isMaskShow = mode;
     });
+
     this.globalEventsManager.setFooterRWDEmitter.subscribe(_num => {
       if (_num > 0) {
         this.footerAddClassName = `footer-rwd--${_num}`;
@@ -293,6 +243,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
         this.footerAddClassName = '';
       }
     });
+
     if (window.innerWidth < 769) {
       this.mode = 'over';
       this.isDefaultOpend = false;
@@ -306,35 +257,17 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
       this.isSideNavOpend = true;
     }
 
-    // 使用者登入就存取身體資訊供各種圖表使用-kidin-1081212
-    const token = this.utilsService.getToken() || '';
-    const body = {
-      token: token,
-      avatarType: 2,
-      iconType: 2,
-    };
-    this.userInfoService.getLogonData(body).subscribe(res => {
-      const data = {
-        name: res.info.name,
-        nameId: res.info.nameId,
-        nameIcon: res.info.nameIcon,
-        birthday: res.info.birthday,
-        heartRateBase: res.info.heartRateBase,
-        heartRateMax: res.info.heartRateMax,
-        heartRateResting: res.info.heartRateResting,
-        height: res.info.height,
-        weight: res.info.weight,
-        wheelSize: res.info.wheelSize
-      };
-      this.userInfoService.saveBodyDatas(data);
-    });
   }
 
   ngAfterViewChecked() {
     this.cdRef.detectChanges();
   }
+
   onResize(event, sideNav) {
-    if (event.target.innerWidth < 769) {
+    if (
+      (location.pathname.indexOf('/dashboard/group-info-v2') > -1 && event.target.innerWidth < 1000)
+      || event.target.innerWidth < 769
+    ) {
       // this.toggleSideNav(sideNav);
       this.mode = 'over';
       this.isDefaultOpend = false;
@@ -348,17 +281,20 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
       this.isSideNavOpend = true;
     }
   }
+
   touchMask() {
     this.isCollapseOpen = false;
     this.globalEventsManager.openCollapse(this.isCollapseOpen);
     this.isMaskShow = false;
     this.globalEventsManager.closeCollapse(false);
   }
+
   goToUserProfile(userId) {
     this.router.navigateByUrl(
       `/user-profile/${this.hashIdService.handleUserIdEncode(userId)}`
     );
   }
+
   toggleSideNav(sideNav: MatSidenav) {
     this.isSideNavOpend = !this.isSideNavOpend;
     return sideNav.toggle().then(result => {
@@ -380,14 +316,35 @@ export class DashboardComponent implements OnInit, AfterViewChecked {
       }
     });
   }
+
   chooseItem(_target, sidenav) {
     this.target = _target;
     if (window.innerWidth < 769 && this.target > 0) {
       this.toggleSideNav(sidenav);
     }
   }
+
   logout() {
     this.authService.logout();
-    this.router.navigate(['/signin']);
+    this.router.navigate(['/signIn-web']);
   }
+
+  /**
+   * 轉導至啟用帳號頁面
+   * @author kidin-1090513
+   */
+  toEnableAccount(): void {
+    this.router.navigateByUrl(`/enableAccount-web`);
+  }
+
+
+  /**
+   * 解除rxjs訂閱
+   * @author kidin-1090722
+   */
+  ngOnDestroy(): void {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
 }

@@ -269,7 +269,7 @@ export class DemoQrcodComponent implements OnInit {
       this.authService.backUrl = location.pathname + location.search;
       this.utilsService.setLocalStorageObject('fitPairType', this.fitPairType);
     }
-    this.router.navigateByUrl(`signin`);
+    this.router.navigateByUrl(`signIn-web`);
   }
 
   goBinding() {

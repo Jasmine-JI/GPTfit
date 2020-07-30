@@ -6,20 +6,18 @@ import {
   ElementRef,
   Renderer2,
   OnDestroy,
-  ViewEncapsulation,
-  ChangeDetectorRef,
-  Output
+  ViewEncapsulation
 } from '@angular/core';
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
 import { ActivityService } from '../../services/activity.service';
 import { ActivatedRoute } from '@angular/router';
 import { NgProgress, NgProgressRef } from '@ngx-progressbar/core';
-import { GlobalEventsManager } from '@shared/global-events-manager';
 import { UtilsService } from '@shared/services/utils.service';
 import { Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
 import { UserInfoService } from '../../../containers/dashboard/services/userInfo.service';
+import { UserProfileService } from '../../../shared/services/user-profile.service';
 import { MuscleMapComponent } from './muscleMap/muscle-map.component';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { MuscleTrainListComponent } from './muscle-train-list/muscle-train-list.component';
@@ -33,6 +31,8 @@ import { debounce } from '@shared/utils/';
 import * as moment from 'moment';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 declare var google: any;
@@ -48,6 +48,9 @@ declare var BMap: any;
   encapsulation: ViewEncapsulation.None
 })
 export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  private ngUnsubscribe = new Subject();
+
   dataSource = new MatTableDataSource<any>();
   displayedColumns: string[] = [
     'status-lapIndex',
@@ -176,6 +179,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   hideButton = false; // 隱藏預覽列印和返回兩個按鈕-kidin-1081024
   deviceImgUrl: string;
   loginId: number;
+  userWeight = 70; // 預設體重70kg
 
   constructor(
     private utils: UtilsService,
@@ -183,7 +187,6 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     private activityService: ActivityService,
     private route: ActivatedRoute,
     private ngProgress: NgProgress,
-    private globalEventsManager: GlobalEventsManager,
     private router: Router,
     private userInfoService: UserInfoService,
     private hashIdService: HashIdService,
@@ -191,7 +194,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     private translate: TranslateService,
     private dialog: MatDialog,
     private snackbar: MatSnackBar,
-    private _changeDetectionRef: ChangeDetectorRef
+    private userProfileService: UserProfileService
   ) {
     /**
      * 重寫內部的方法， 這裡是將提示框即十字準星的隱藏函數關閉
@@ -333,17 +336,6 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {}
-
-  ngOnDestroy() {
-    if (!this.isShowNoRight && !this.isFileIDNotExist) {
-      Highcharts.charts.forEach((_highChart, idx) => {
-        if (_highChart !== undefined) {
-          _highChart.destroy();
-        }
-      });
-    }
-    this.activityOtherDetailsService.resetOtherInfo();
-  }
 
   handleLessonInfo(str) {
     this.totalLessonInfo = str.replace(/\r\n|\n/g, '').trim();
@@ -625,6 +617,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isPlayingGpx = false;
     clearTimeout(this.playerTimer);
   }
+
   handleMapKind(e) {
     this.mapKind = e.value;
   }
@@ -726,18 +719,24 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         } else if (res.resultCode === 403) {
           return this.router.navigateByUrl('/403');
         }
+
         this.activityInfo = res.activityInfoLayer;
         this.activityName = res.fileInfo.dispName;
         this.activityNameBeforeState = res.fileInfo.dispName;
+
         if (this.activityInfo.type === '3') {
-          this.saveWeightTrainingData(res.activityInfoLayer);
+          this.activityService.saveLapsData(res.activityInfoLayer);
+          this.activityService.saveproficiency(this.proficiency);
+          this.dataLoading = false;
         }
+
         if (res.resultCode === 401 || res.resultCode === 402) {
           this.isShowNoRight = true;
           this.isLoading = false;
           this.progressRef.complete();
           return;
         }
+
         this.isShowNoRight = false;
         this.handleLapColumns();
         this.activityPoints = res.activityPointLayer;
@@ -754,6 +753,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           ) {
             isInTaiwan = true;
           }
+
           if (
             this.handleBorderData(
               [+_point.longitudeDegrees, +_point.latitudeDegrees],
@@ -762,6 +762,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           ) {
             this.isInChinaArea = true;
           }
+
           if (
             _point.hasOwnProperty('latitudeDegrees') &&
             +_point.latitudeDegrees !== 100 &&
@@ -771,11 +772,13 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
             isSomeGpsPoint = true;
           }
         });
+
         if (isSomeGpsPoint) {
           this.isShowMap = true;
         } else {
           this.isShowMap = false;
         }
+
         if (this.isShowMap) {
 
           const mapCheck = {
@@ -847,25 +850,6 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         this.progressRef.complete();
         this.isLoading = false;
       });
-  }
-
-  // 將user體重另外存取以提供給肌肉地圖使用-kidin-1081121
-  saveWeightTrainingData(data) {
-      const body = {
-        token: this.token,
-        avatarType: 2,
-        iconType: '2',
-      };
-      this.userInfoService.getLogonData(body).toPromise()
-        .then(res => {
-          if (res.resultCode !== 400) {
-            const weight = res.info.weight;
-            this.activityService.saveUserWeight(weight);
-          }
-          this.activityService.saveLapsData(data);
-          this.activityService.saveproficiency(this.proficiency);
-          this.dataLoading = false;
-        });
   }
 
   handleLapColumns() {  // case1:跑步 case2:腳踏車 case3:重訓 case4:游泳 case5:有氧 case6:划船
@@ -977,55 +961,56 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       userRestHR: 60,
       userHRBase: 0
     };
+
     if (this.passLogin === true) {
       const body = {
-        token: this.token,
-        avatarType: 2,
-        iconType: '2',
+        token: this.token
       };
-      this.userInfoService.getLogonData(body).subscribe(res => {
-        if (res.resultCode !== 400) {
-          const birthday = res.info.birthday;
+
+      this.userProfileService.getUserProfile(body).subscribe(res => {
+        if (res.processResult.resultCode !== 200) {
+          console.log('Serve Error!', res.processResult.apiReturnMessage);
+        } else {
+          const userProfile = res.userProfile;
+          const birthday = userProfile['birthday'];
           hrFormatData.userAge = moment().diff(birthday, 'years');
-          hrFormatData.userMaxHR = res.info.heartRateMax;
-          hrFormatData.userRestHR = res.info.heartRateResting;
-          hrFormatData.userHRBase = res.info.heartRateBase;
+          hrFormatData.userMaxHR = userProfile['heartRateMax'];
+          hrFormatData.userRestHR = userProfile['heartRateResting'];
+          hrFormatData.userHRBase = userProfile['heartRateBase'];
+          this.userWeight = userProfile['bodyWeight'];
           this.createChart(hrFormatData);
 
-          this.loginId = +res.info.nameId;  // 取得登入者id來確認是否為該運動檔案持有人-kidin-1090225
+          this.loginId = userProfile['userId'];  // 取得登入者id來確認是否為該運動檔案持有人-kidin-1090225
         }
+
       });
+
     } else {
-      this.userInfoService.getUserAge().subscribe(res => {
-        if (res !== null) {
-          hrFormatData.userAge = res;
-        }
-      });
-      this.userInfoService.getUserMaxHR().subscribe(res => {
-        if (res !== null) {
-          hrFormatData.userMaxHR = res;
-        }
-      });
-      this.userInfoService.getUserRestHR().subscribe(res => {
-        if (res !== null) {
-          hrFormatData.userRestHR = res;
-        }
-      });
-      this.userInfoService.getUserHRBase().subscribe(res => {
-        if (res !== null) {
-          hrFormatData.userHRBase = res;
-        }
-      });
 
-      // 取得登入者id來確認是否為該運動檔案持有人-kidin-1090225
-      this.userInfoService.getUserId().subscribe(res => {
-        if (res !== null) {
-          this.loginId = +res;
-        }
-      });
+      if (this.token.length !== 0) {
+        this.userProfileService.getRxUserProfile().pipe(
+          takeUntil(this.ngUnsubscribe)
+        ).subscribe(res => {
+          this.loginId = res['userId'];  // 取得登入者id來確認是否為該運動檔案持有人-kidin-1090225
 
-      this.createChart(hrFormatData);
+          if (this.loginId === this.userLink.userId) {  // 確認該檔案和登入者是否為同一人
+            const birthday = res['birthday'];
+            hrFormatData.userAge = moment().diff(birthday, 'years');
+            hrFormatData.userMaxHR = res['heartRateMax'];
+            hrFormatData.userRestHR = res['heartRateResting'];
+            hrFormatData.userHRBase = res['heartRateBase'];
+            this.userWeight = res['bodyWeight'];
+          }
+
+          this.createChart(hrFormatData);
+        });
+
+      } else {
+        this.createChart(hrFormatData);
+      }
+
     }
+
     this.passLogin = false;
   }
 
@@ -1218,6 +1203,20 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
+  }
+
+  ngOnDestroy() {
+    if (!this.isShowNoRight && !this.isFileIDNotExist) {
+      Highcharts.charts.forEach((_highChart, idx) => {
+        if (_highChart !== undefined) {
+          _highChart.destroy();
+        }
+      });
+    }
+
+    this.activityOtherDetailsService.resetOtherInfo();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
 }
