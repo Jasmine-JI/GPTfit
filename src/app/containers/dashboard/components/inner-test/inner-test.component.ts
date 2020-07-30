@@ -7,6 +7,13 @@ import { PeopleSelectorWinComponent } from '../../components/people-selector-win
 import { HashIdService } from '@shared/services/hash-id.service';
 import { debounce } from '@shared/utils/';
 import { UserProfileService } from '@shared/services/user-profile.service';
+import { AuthService } from '../../../../shared/services/auth.service';
+import { Router } from '@angular/router';
+import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { TranslateService } from '@ngx-translate/core';
+import { last } from 'rxjs/operators';
+
+const errorMsg = 'Server Error!<br />Please try again later.';
 
 @Component({
   selector: 'app-inner-test',
@@ -19,7 +26,10 @@ export class InnerTestComponent implements OnInit {
     private utils: UtilsService,
     public dialog: MatDialog,
     private hashIdService: HashIdService,
-    private userProfileService: UserProfileService
+    private userProfileService: UserProfileService,
+    private auth: AuthService,
+    private router: Router,
+    private translate: TranslateService
   ) {
     this.onGroupEncode = debounce(this.onGroupEncode, 1000);
     this.onGroupDecode = debounce(this.onGroupDecode, 1000);
@@ -47,6 +57,7 @@ export class InnerTestComponent implements OnInit {
   userId: string;
   hashUserId: string;
   groupLevel: string;
+  flag = 402;
 
   ngOnInit() {}
   getUserAvartar(userId) {
@@ -129,26 +140,31 @@ export class InnerTestComponent implements OnInit {
       });
     }
   }
+
   fetchUserProfile() {
-    if (
-      this.userId === this.hashIdService.handleUserIdDecode(this.hashUserId) &&
-      this.hashUserId === this.hashIdService.handleUserIdEncode(this.userId)
-    ) {
+    if (this.userId || this.hashUserId) {
+
       const body = {
-        token: this.utils.getToken() || '',
-        targetUserId: this.userId || '',
-        avatarType: 2,
+        targetUserId: this.userId || this.hashIdService.handleUserIdDecode(this.hashUserId)
       };
-      this.userProfileService.getUserProfile(body).subscribe(res => {
-        const response: any = res;
-        const { name, nameIcon, description } = response.info;
-        this.description = description;
-        this.userName = name;
-        this.userImg = nameIcon
-          ? this.utils.buildBase64ImgString(nameIcon)
-          : '/assets/images/user.png';
+
+      this.userProfileService.getUserProfile(body).pipe(
+        last()
+      ).subscribe(res => {
+        if (res.processResult.resultCode !== 200) {
+          console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`)
+        } else {
+          const response: any = res.userProfile;
+          const { nickname, avatarUrl, description } = response;
+          this.description = description;
+          this.userName = nickname;
+          this.userImg = avatarUrl ? avatarUrl : '/assets/images/user.png';
+        }
+
       });
+
     }
+
   }
   onGroupEncode(e) {
     this.hashGroupId = this.hashIdService.handleGroupIdEncode(e.target.value);
@@ -166,4 +182,41 @@ export class InnerTestComponent implements OnInit {
     this.userId = this.hashIdService.handleUserIdDecode(e.target.value);
     this.fetchUserProfile();
   }
+
+  // 顯示彈跳視窗訊息-kidin-1090518
+  showMsgBox (msg: string, navigate: boolean) {
+
+    if (navigate) {
+
+      this.dialog.open(MessageBoxComponent, {
+        hasBackdrop: true,
+        disableClose: true,
+        data: {
+          title: 'Message',
+          body: msg,
+          confirmText: this.translate.instant(
+            'universal_operating_confirm'
+          ),
+          onConfirm: this.router.navigateByUrl('/signIn-web')
+        }
+      });
+
+    } else {
+
+      this.dialog.open(MessageBoxComponent, {
+        hasBackdrop: true,
+        disableClose: true,
+        data: {
+          title: 'Message',
+          body: msg,
+          confirmText: this.translate.instant(
+            'universal_operating_confirm'
+          )
+        }
+      });
+
+    }
+
+  }
+
 }

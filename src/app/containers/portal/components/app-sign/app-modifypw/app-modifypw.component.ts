@@ -3,6 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../../../shared/services/auth.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { SignupService } from '../../../services/signup.service';
+import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { UserInfoService } from '../../../../dashboard/services/userInfo.service';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 
@@ -58,6 +59,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
     private utils: UtilsService,
     private authService: AuthService,
     private signupService: SignupService,
+    private userProfileService: UserProfileService,
     private userInfoService: UserInfoService,
     private router: Router,
     private snackbar: MatSnackBar,
@@ -69,6 +71,14 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getUrlString(location.search);
     this.getUserInfo();
     this.getClientIpaddress();
+
+    if (location.pathname.indexOf('web') > 0) {
+      this.pcView = true;
+      this.utils.setHideNavbarStatus(false);
+    } else {
+      this.pcView = false;
+      this.utils.setHideNavbarStatus(true);
+    }
 
     // 在首次登入頁面按下登出時，跳轉回登入頁-kidin-1090109(bug575)
     this.authService.getLoginStatus().subscribe(res => {
@@ -84,12 +94,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1090710
    */
   ngAfterViewInit () {
-    if (location.pathname.indexOf('web') > 0) {
-      this.pcView = true;
-      this.utils.setHideNavbarStatus(false);
-    } else {
-      this.pcView = false;
-      this.utils.setHideNavbarStatus(true);
+    if (this.pcView === false) {
       this.getDeviceSys();
     }
 
@@ -142,7 +147,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
       token: this.utils.getToken() || ''
     };
 
-    this.userInfoService.fetchUserInfo(body).subscribe(res => {
+    this.userProfileService.getUserProfile(body).subscribe(res => {
 
       const profile = res.userProfile;
       if (profile.email) {

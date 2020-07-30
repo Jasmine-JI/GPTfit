@@ -15,27 +15,33 @@ export class UtilsService {
   setLocalStorageObject(key: string, value) {
     localStorage.setItem(key, JSON.stringify(value));
   }
+
   getLocalStorageObject(key: string) {
     const value = localStorage.getItem(key);
     return value && JSON.parse(value);
   }
+
   setSessionStorageObject(key: string, value) {
     sessionStorage.setItem(key, JSON.stringify(value));
   }
+
   getSessionStorageObject(key: string) {
     const value = sessionStorage.getItem(key);
     return value && JSON.parse(value);
   }
+
   removeLocalStorageObject(key: string) {
     if (this.getLocalStorageObject(key)) {
       localStorage.removeItem(key);
     }
   }
+
   removeSessionStorageObject(key: string) {
     if (this.getSessionStorageObject(key)) {
       sessionStorage.removeItem(key);
     }
   }
+
   writeToken(value: string, token: string = TOKEN) {
     localStorage.setItem(token, value);
   }
@@ -49,6 +55,7 @@ export class UtilsService {
       localStorage.removeItem(token);
     }
   }
+
   buildBase64ImgString(value: string) {
     if (!value) {
       return '';
@@ -60,6 +67,7 @@ export class UtilsService {
       return `data:image/jpg; base64, ${value}`.replace(/\s+/g, '');
     }
   }
+
   getUrlQueryStrings(_search: string) {
     const search = _search || window.location.search;
     if (!search) {
@@ -67,6 +75,7 @@ export class UtilsService {
     }
     return parse(search);
   }
+
   str_cut(str, max_length) {
     let m = 0,
       str_return = '';
@@ -84,12 +93,14 @@ export class UtilsService {
     }
     return str_return;
   }
+
   isStringEmpty(string) {
     if (typeof string !== 'string') {
       return true;
     }
     return string.trim().length === 0;
   }
+
   isObjectEmpty(object) {
     if (!object) {
       return true;
@@ -126,6 +137,7 @@ export class UtilsService {
       }
     }
   }
+
   displayGroupLevel(_id: string) {
     if (_id) {
       const arr = _id.split('-').splice(2, 4);
@@ -140,9 +152,11 @@ export class UtilsService {
       }
     }
   }
+
   replaceCarriageReturn(string = '', format = '') {
     return string.replace(/(\r\n|\r|\n)/gm, format);
   }
+
   markFormGroupTouched(formGroup: FormGroup) {
     (<any>Object).values(formGroup.controls).forEach(control => {
       control.markAsTouched();
@@ -169,6 +183,7 @@ export class UtilsService {
     }
     return finalUrl;
   }
+
   detectBrowser() {
     const sUsrAg = navigator.userAgent;
     if (sUsrAg.indexOf('Firefox') > -1) {
@@ -188,6 +203,7 @@ export class UtilsService {
       return 'unknown';
     }
   }
+
   diff_array(originalArray: string[], targetArray: string[]) {
     const diffArr = targetArray;
     for (let i = 0; i < originalArray.length; i++) {
@@ -209,10 +225,12 @@ export class UtilsService {
       return false;
     }
   }
+
   formatFloat(num: number, pos: number) { // 小數點第N位四捨五入
     const size = Math.pow(10, pos);
     return Math.round(num * size) / size;
   }
+
   imageToDataUri(img, width, height) {
     // create an off-screen canvas
     const canvas = document.createElement('canvas'),

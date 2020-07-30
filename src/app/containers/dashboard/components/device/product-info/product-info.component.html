@@ -53,6 +53,12 @@
       <div style="margin-bottom: 50px">
         {{'universal_deviceSetting_dateOfManufacture' | translate}}：{{ deviceInfo?.date || 'universal_status_noData' | translate }}
       </div>
+      <div style="margin-bottom: 50px" *ngIf="userMaxAccessRight < 30">
+        啟用日期：{{ deviceEnableDate || 'universal_status_noData' | translate }}
+      </div>
+      <div style="margin-bottom: 50px" *ngIf="userMaxAccessRight < 30">
+        註冊日期：{{ deviceBondDate || 'universal_status_noData' | translate }}
+      </div>
       <div style="margin-bottom: 50px">
         Fit pair {{'universal_vocabulary_object' | translate}}：
         <select  [(ngModel)]="fitPairStatus" style="width: 186px">

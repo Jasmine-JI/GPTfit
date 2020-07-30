@@ -126,8 +126,10 @@
                 <span>{{ 'universal_operating_send' | translate }}({{ timeCount }}s)</span>
               </button>
             </div>
-            <div style="display: flex;justify-content: space-between; align-items: center; margin-top: 20px;">
+            <div style="display: flex; justify-content: flex-end; align-items: center; margin-top: 20px;">
+<!-- 接回後記得調整css
               <a class="access-text" style="cursor:pointer" [routerLink]="['/signIn-web']"><{{'universal_operating_back' | translate}}</a>
+-->
               <button
                 class="btn btn-primary access-btn"
                 [class.appview-btn-unclickable]="(accountInfo.type === 2 && phoneCaptcha.value === '') || sending"

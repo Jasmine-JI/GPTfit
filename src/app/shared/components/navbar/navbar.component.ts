@@ -56,7 +56,7 @@ export class NavbarComponent implements OnInit {
       this.isShowLeaderboard = true;
       this.navItemNum = 2;
     }
-    if (this.router.url === '/signin') {
+    if (this.router.url === '/signIn-web') {
       this.navItemNum = 3;
     }
     if (this.router.url === '/') {

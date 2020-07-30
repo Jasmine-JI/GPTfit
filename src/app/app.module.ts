@@ -23,6 +23,7 @@ import { CustomMatPaginatorIntl } from '@shared/custom-mat-paginator-intl';
 import { environment } from '../environments/environment';
 import { CommonModule } from '@angular/common';
 import { A3FormatPipe } from './shared/pipes/a3-format.pipe';
+import { GroupIdSlicePipe } from './shared/pipes/group-id-slice.pipe';
 
 export function startupServiceFactory(startupService: StartupService): Function { return () => startupService.load(); }
 
@@ -55,6 +56,7 @@ export function createTranslateLoader(http: HttpClient) {
     AuthGuard,
     SigninGuard,
     A3FormatPipe,
+    GroupIdSlicePipe,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
@@ -66,7 +68,7 @@ export function createTranslateLoader(http: HttpClient) {
       multi: true
     },
     {
-      provide: APP_INITIALIZER,
+      provide: APP_INITIALIZER,  // 在頁面載入前就先從localstorage取token狀態判斷是否登入
       useFactory: startupServiceFactory,
       deps: [StartupService, Injector],
       multi: true

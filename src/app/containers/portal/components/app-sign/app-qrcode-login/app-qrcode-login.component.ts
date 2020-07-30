@@ -3,10 +3,12 @@ import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { AuthService } from '../../../../../shared/services/auth.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { SignupService } from '../../../services/signup.service';
-import { UserInfoService } from '../../../../dashboard/services/userInfo.service';
+import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -18,6 +20,7 @@ import * as moment from 'moment';
   styleUrls: ['./app-qrcode-login.component.scss']
 })
 export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy {
+  private ngUnsubscribe = new Subject();
 
   qrLoginStatus = 'check';  // check: 等待登入; logging：登入中; success： 成功;
   loggingDot = '';
@@ -47,7 +50,7 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
     private translate: TranslateService,
     private utils: UtilsService,
     private signupService: SignupService,
-    private userInfoService: UserInfoService,
+    private userProfileService: UserProfileService,
     private auth: AuthService,
     private dialog: MatDialog,
     private router: Router,
@@ -57,45 +60,12 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
   ngOnInit() {
     this.loginBody.token = this.utils.getToken() || '';
     this.getClientIpaddress();
-
-    if (location.pathname === '/signInQrcode' || location.pathname === '/signInQrcode-web') {
-
-      this.getClientIpaddress();
-      this.displayPage = 'showQrcode';
-
-      if (this.checkFrequency()) {
-        this.createLoginQrcode();
-        this.waitQrcodeLogin();
-      } else {
-        this.translate.get('hello.world').subscribe(() => {
-          this.cue = 'universal_userAccount_improperOperation';
-        });
-
-      }
-
-    } else {
-      this.utils.setHideNavbarStatus(true);
-      this.displayPage = 'login';
-
-      if (this.loginBody.token.length === 0) {
-        this.auth.backUrl = location.href;
-        this.router.navigateByUrl('/signIn');
-      } else {
-        this.getUrlString(location.search);
-        this.getUserInfo();
-      }
-
-    }
+    this.checkPage(location.pathname);
 
   }
 
   ngAfterViewInit() {
-    if (location.pathname.indexOf('web') > 0) {
-      this.pcView = true;
-      this.utils.setHideNavbarStatus(false);
-    } else {
-      this.pcView = false;
-      this.utils.setHideNavbarStatus(true);
+    if (this.pcView === false) {
       this.getAppId();
     }
 
@@ -116,6 +86,53 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
       }
 
 
+    }
+
+  }
+
+  /**
+   * 根據url顯示該頁面
+   * @param pathname {string}
+   * @author kidin-1090720
+   */
+  checkPage(pathname: string): void {
+    if (pathname === '/signInQrcode' || pathname === '/signInQrcode-web') {
+
+      this.getClientIpaddress();
+      this.displayPage = 'showQrcode';
+
+      if (this.checkFrequency()) {
+        this.createLoginQrcode();
+        this.waitQrcodeLogin();
+      } else {
+        this.translate.get('hello.world').pipe(
+          takeUntil(this.ngUnsubscribe)
+        ).subscribe(() => {
+          this.cue = 'universal_userAccount_improperOperation';
+        });
+
+      }
+
+    } else {
+      this.utils.setHideNavbarStatus(true);
+      this.displayPage = 'login';
+
+      if (this.loginBody.token.length === 0) {
+        this.auth.backUrl = location.href;
+        this.router.navigateByUrl('/signIn');
+      } else {
+        this.getUrlString(location.search);
+        this.getUserInfo();
+      }
+
+    }
+
+    if (pathname.indexOf('web') > 0) {
+      this.pcView = true;
+      this.utils.setHideNavbarStatus(false);
+    } else {
+      this.pcView = false;
+      this.utils.setHideNavbarStatus(true);
     }
 
   }
@@ -310,7 +327,7 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
       token: this.utils.getToken() || ''
     };
 
-    this.userInfoService.fetchUserInfo(body).subscribe(res => {
+    this.userProfileService.getUserProfile(body).subscribe(res => {
       const profile = res.userProfile;
       this.userInfo.name = profile.nickname;
       this.userInfo.icon = `${profile.avatarUrl}?${profile.editTimestamp}`;
@@ -403,6 +420,8 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
   // 離開頁面則取消隱藏navbar-kidin-1090514
   ngOnDestroy () {
     this.utils.setHideNavbarStatus(false);
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
 }

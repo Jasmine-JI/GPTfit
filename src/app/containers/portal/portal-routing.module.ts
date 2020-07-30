@@ -3,15 +3,10 @@ import { Routes, RouterModule } from '@angular/router';
 import { PortalComponent } from './portal.component';
 import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
 import { MapInfoComponent } from './components/map-info/map-info.component';
-import { PasswordComponent } from './components/password/password.component';
 import { DemoQrcodComponent } from './components/demo-qrcod/demo-qrcod.component';
-import { SigninComponent } from './components/signin/signin.component';
 import { SigninGuard } from '@shared/guards/signin/signin.guard';
-import { SignupComponent } from './components/signup/signup.component';
-import { ForgetpwdComponent } from './components/forgetpwd/forgetpwd.component';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
 import { PortalGroupInfoComponent } from './components/portal-group-info/portal-group-info.component';
-import { FirstLoginComponent } from './components/first-login/first-login.component';
 import { SportReportComponent } from '@shared/components/sport-report/sport-report.component';
 import { ActivityInfoComponent } from '@shared/components/activity-info/activity-info.component';
 import { MyActivityComponent } from '@shared/components/my-activity/my-activity.component';
@@ -19,6 +14,7 @@ import { ApplicationComponent } from './components/application/application.compo
 import { Page404Component } from '../../shared/components/page404/page404.component';
 import { Page403Component } from '../../shared/components/page403/page403.component';
 import { QrcodeUploadComponent } from '../dashboard/components/qrcode-upload/qrcode-upload.component';
+
 import { AppSignupComponent } from './components/app-sign/app-signup/app-signup.component';
 import { AppSigninComponent } from './components/app-sign/app-signin/app-signin.component';
 import { AppEnableComponent } from './components/app-sign/app-enable/app-enable.component';
@@ -38,10 +34,6 @@ const routes: Routes = [
         component: ApplicationComponent,
       },
       {
-        path: 'resetpassword',
-        component: PasswordComponent
-      },
-      {
         path: 'leaderboard',
         component: LeaderboardComponent
       },
@@ -52,19 +44,6 @@ const routes: Routes = [
       {
         path: 'pair',
         component: DemoQrcodComponent
-      },
-      {
-        path: 'signin',
-        component: SigninComponent,
-        canActivate: [SigninGuard]
-      },
-      {
-        path: 'signup',
-        component: SignupComponent
-      },
-      {
-        path: 'forget-pwd',
-        component: ForgetpwdComponent
       },
       {
         path: 'activity/:fileId',
@@ -90,7 +69,7 @@ const routes: Routes = [
       },
       {
         path: 'first-login',
-        component: FirstLoginComponent
+        component: AppFirstLoginComponent
       },
       {
         path: 'qrupload/activityfile',

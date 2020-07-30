@@ -4,6 +4,7 @@ import { UtilsService } from '@shared/services/utils.service';
 import { AuthService } from '../../../../../shared/services/auth.service';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 
+import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -14,6 +15,7 @@ import { MatDialog } from '@angular/material/dialog';
 })
 export class AppSigninComponent implements OnInit, OnDestroy {
 
+  subscription: Subscription[] = [];
   i18n = {
     account: '',
     email: '',
@@ -84,13 +86,18 @@ export class AppSigninComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private router: Router
   ) {
-    translate.onLangChange.subscribe(() => {
-      this.getTranslate();
-    });
+    // 當語系變換就重新取得翻譯-kidin-1090720
+    this.subscription.push(
+      this.translate.onLangChange.subscribe(() => {
+        this.getTranslate();
+      })
+
+    );
 
   }
 
   ngOnInit() {
+    this.getTranslate();
 
     if (location.pathname.indexOf('web') > 0) {
       this.pcView = true;
@@ -104,14 +111,21 @@ export class AppSigninComponent implements OnInit, OnDestroy {
 
   // 取得多國語系翻譯-kidin-1090620
   getTranslate () {
-    this.translate.get('hollo word').subscribe(() => {
-      this.i18n = {
-        account: this.translate.instant('universal_userAccount_account'),
-        email: this.translate.instant('universal_userAccount_email'),
-        password: this.translate.instant('universal_userAccount_password')
-      };
+    this.subscription.push(
+        this.translate.get([
+        'universal_userAccount_account',
+        'universal_userAccount_email',
+        'universal_userAccount_password'
+      ]).subscribe(res => {
+        this.i18n = {
+          account: res['universal_userAccount_account'],
+          email: res['universal_userAccount_email'],
+          password: res['universal_userAccount_password']
+        };
 
-    });
+      })
+
+    );
 
   }
 
@@ -291,7 +305,7 @@ export class AppSigninComponent implements OnInit, OnDestroy {
         this.loginStatus = 'success';
 
         if (res.signIn.counter <= 1) {
-          this.router.navigateByUrl('/firstLogin');
+          this.router.navigateByUrl('/firstLogin-web');
         } else if (this.authService.backUrl.length > 0) {
           location.href = this.authService.backUrl; // 為了讓登入的api request payload清除掉
         } else {
@@ -350,14 +364,21 @@ export class AppSigninComponent implements OnInit, OnDestroy {
     、 <a target="_blank" href="https://www.alatech.com.tw/action-privacy.htm">『${this.translate.instant('universal_userAccount_privacyStatement')}』</a>
     ${this.translate.instant('universal_userAccount_clauseContentPage2')}`.replace(/\n/gm, '');
 
-    let title,
-        confirmText,
-        cancelText;
-    this.translate.get(['universal_userAccount_clause', 'universal_operating_agree', 'universal_operating_disagree']).subscribe(translation => {
-        title = translation['universal_userAccount_clause'];
-        confirmText = translation['universal_operating_agree'];
-        cancelText = translation['universal_operating_disagree'];
-    });
+    let title: string,
+        confirmText: string,
+        cancelText: string;
+
+     this.subscription.push(this.translate.get([
+        'universal_userAccount_clause',
+        'universal_operating_agree',
+        'universal_operating_disagree'
+      ]).subscribe(res => {
+        title = res['universal_userAccount_clause'];
+        confirmText = res['universal_operating_agree'];
+        cancelText = res['universal_operating_disagree'];
+      })
+
+     );
 
     this.dialog.open(MessageBoxComponent, {
       hasBackdrop: true,
@@ -380,6 +401,7 @@ export class AppSigninComponent implements OnInit, OnDestroy {
   // 離開頁面則取消隱藏navbar和清除Interval-kidin-1090514
   ngOnDestroy () {
     this.utils.setHideNavbarStatus(false);
+    this.subscription.forEach(_subscription => _subscription.unsubscribe());
   }
 
 }

@@ -1,7 +1,8 @@
 import {
   Component,
   OnInit,
-  ViewEncapsulation
+  ViewEncapsulation,
+  OnDestroy
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { GroupService } from '../../services/group.service';
@@ -16,8 +17,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { HashIdService } from '@shared/services/hash-id.service';
 import { ShareGroupInfoDialogComponent } from '@shared/components/share-group-info-dialog/share-group-info-dialog.component';
 
-
 import * as moment from 'moment';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-group-info',
@@ -25,7 +27,10 @@ import * as moment from 'moment';
   styleUrls: ['./group-info.component.scss', '../group-style.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class GroupInfoComponent implements OnInit {
+export class GroupInfoComponent implements OnInit, OnDestroy {
+
+  private ngUnsubscribe = new Subject();
+
   i18n = {
     allMember: '',
     nickname: '',
@@ -42,7 +47,7 @@ export class GroupInfoComponent implements OnInit {
     departmentAdmin: '',
     myGym: ''
   };
-  accessRight: number;
+  accessRight = [99];
   isPreviewMode = false;
   hashGroupId: string;
   groupId: string;
@@ -50,7 +55,7 @@ export class GroupInfoComponent implements OnInit {
   groupInfo: any;
   groupImg: string;
   group_id: string;
-  groupLevel: string;
+  groupLevel: number;
   groupInfos: any;
   normalMemberInfos: any;
   joinStatus = 5;
@@ -71,13 +76,7 @@ export class GroupInfoComponent implements OnInit {
   activityTrackingStatus = [false]; // ['mycoach'] 順序是暫時的，等其他選項確定再補
   activityTrackingReportStatus = [false]; // ['mycoach'] 順序是暫時的，等其他選項確定再補
   lifeTrackingReportStatus = [false]; // ['mycoach'] 順序是暫時的，等其他選項確定再補
-  role = {
-    isSupervisor: false,
-    isSystemDeveloper: false,
-    isSystemMaintainer: false
-  };
   chooseIdx = 1;
-  visitorDetail: any;
   isGroupInfoLoading = false;
   isLoading = false;
   userId: number;
@@ -132,8 +131,8 @@ export class GroupInfoComponent implements OnInit {
       }
     });
 
-    this.userInfoService.getUserAccessRightDetail().subscribe(response => {
-      this.accessRight = Number(response.accessRight);
+    this.groupService.checkAccessRight(this.groupId).subscribe(res => {
+      this.accessRight = res;
     });
 
     this.checkManageStatus();
@@ -146,11 +145,12 @@ export class GroupInfoComponent implements OnInit {
       this.hashGroupId
     );
     if (this.groupId && this.groupId.length > 0) {
-      this.groupLevel = this.utils.displayGroupLevel(this.groupId);
+      this.groupLevel = +this.utils.displayGroupLevel(this.groupId);
     }
     if (this.groupId.length === 0) {
       return this.router.navigateByUrl('/404');
     }
+
     this.token = this.utils.getToken() || '';
     const body = {
       token: this.token,
@@ -158,22 +158,11 @@ export class GroupInfoComponent implements OnInit {
       findRoot: '1',
       avatarType: '2'
     };
-    this.userInfoService.getUserDetail(body, this.groupId);
+
     this.userInfoService.getUserId().subscribe(res => {
       this.userId = res;
     });
-    this.userInfoService.getSupervisorStatus().subscribe(res => {
-      this.role.isSupervisor = res;
-      // console.log('%c this.isSupervisor', 'color: #0ca011', res);
-    });
-    this.userInfoService.getSystemDeveloperStatus().subscribe(res => {
-      this.role.isSystemDeveloper = res;
-      // console.log('%c this.isSystemDeveloper', 'color: #0ca011', res);
-    });
-    this.userInfoService.getSystemMaintainerStatus().subscribe(res => {
-      this.role.isSystemMaintainer = res;
-      // console.log('%c this.isSystemMaintainer', 'color: #0ca011', res);
-    });
+
     this.groupService.fetchGroupListDetail(body).subscribe(res => {
       this.groupInfo = res.info;
       this.groupService.saveGroupInfo(this.groupInfo); // 將群組資訊存取進service減少call api次數-kidin-1081227
@@ -215,13 +204,13 @@ export class GroupInfoComponent implements OnInit {
           ? `${groupIcon}${this.updateImgQueryString}`
           : '/assets/images/group-default.svg';
       this.group_id = this.utils.displayGroupId(groupId);
-      this.groupLevel = this.utils.displayGroupLevel(groupId);
-      if (this.groupLevel === '40') {
+      this.groupLevel = +this.utils.displayGroupLevel(groupId);
+      if (this.groupLevel === 40) {
         this.totalGroupName =
           this.groupInfo.groupRootInfo[2].brandName +
           ' - ' +
           this.groupInfo.groupName;
-      } else if (this.groupLevel === '60') {
+      } else if (this.groupLevel === 60) {
         this.totalGroupName =
           this.groupInfo.groupRootInfo[2].brandName +
           ' - ' +
@@ -231,35 +220,36 @@ export class GroupInfoComponent implements OnInit {
       } else {
         this.totalGroupName = this.groupInfo.groupName;
       }
-      if (this.groupLevel === '80') {
+
+      if (this.groupLevel === 80) {
         this.getGroupMemberList(2);
       } else {
         this.getGroupMemberList(1);
       }
+
       if (
         groupStatus === 4 ||
-        (groupStatus === 3 && !this.visitorDetail.isCanManage) ||
+        (groupStatus === 3 && this.accessRight[0] > this.groupLevel) ||
         groupStatus === 5
       ) {
         this.router.navigateByUrl(`/404`);
       }
+
       let isAutoApplyGroup = this.utils.getLocalStorageObject(
         'isAutoApplyGroup'
       );
-      this.userInfoService.getUserAccessRightDetail().subscribe(response => {
-        this.visitorDetail = response;
-        const { isGroupAdmin } = this.visitorDetail;
-        if (isAutoApplyGroup && isGroupAdmin) {
-          // 已是該群組管理者無法利用qr 掃描自動加入群組
-          this.utils.removeLocalStorageObject('isAutoApplyGroup');
-          isAutoApplyGroup = false;
-        }
-        if (isAutoApplyGroup) {
-          this.handleActionGroup(1);
-          this.utils.removeLocalStorageObject('isAutoApplyGroup');
-          isAutoApplyGroup = false;
-        }
-      });
+
+      if (isAutoApplyGroup && this.accessRight.findIndex(_accessRight => _accessRight === this.groupLevel) > -1) {
+        // 已是該群組管理者無法利用qr 掃描自動加入群組
+        this.utils.removeLocalStorageObject('isAutoApplyGroup');
+        isAutoApplyGroup = false;
+      }
+
+      if (isAutoApplyGroup) {
+        this.handleActionGroup(1);
+        this.utils.removeLocalStorageObject('isAutoApplyGroup');
+        isAutoApplyGroup = false;
+      }
 
       this.isGroupInfoLoading = false;
     });
@@ -478,16 +468,15 @@ export class GroupInfoComponent implements OnInit {
 
   // 修正加入時call兩次api造成出現錯誤訊息的問題-kidin-1090121
   sendJoinRequest (_type) {
-    this.userProfileService
-      .getUserProfile({
-        token: this.token,
-        avatarType: 2,
-      })
-      .subscribe(res => {
+
+    this.userProfileService.getRxUserProfile().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
         this.isLoading = false;
         const {
           privacy: { activityTracking, activityTrackingReport }
-        } = res.info;
+        } = res;
+
         let isOnlyme = false;
         isOnlyme = !activityTracking.some(_val => +_val > 1);
         isOnlyme = !activityTrackingReport.some(
@@ -632,12 +621,15 @@ export class GroupInfoComponent implements OnInit {
         }
 
         if (resultCode === 200) {
-          if (_type === 2 && this.groupLevel === '80' && isBeenGroupMember) {
-            this.userInfoService.getUserDetail(body, this.groupId);
-          }
+
           if (_type === 2) {
             this.joinStatus = 5;
-            this.userInfoService.getUserDetail(body, this.groupId);
+
+            const refreshBody = {
+              token: this.token
+            };
+            this.userProfileService.refreshUserProfile(refreshBody);
+
           } else {
             this.joinStatus = selfJoinStatus;
           }
@@ -673,7 +665,7 @@ export class GroupInfoComponent implements OnInit {
     const body = {
       token: this.token,
       groupId: this.groupId,
-      groupLevel: this.groupLevel,
+      groupLevel: this.groupLevel + '',
       infoType: _type,
       avatarType: 3
     };
@@ -730,7 +722,7 @@ export class GroupInfoComponent implements OnInit {
           this.brandAdministrators = this.groupInfos.filter(
             _info => _info.accessRight === '30'
           );
-          if (this.groupLevel === '40') {
+          if (this.groupLevel === 40) {
             if (_type === 2) {
               this.branchAdministrators = this.groupInfos.filter(
                 _info =>
@@ -755,7 +747,7 @@ export class GroupInfoComponent implements OnInit {
               });
             }
           }
-          if (this.groupLevel === '60') {
+          if (this.groupLevel === 60) {
             // 如果是教練課群組
             this.normalCoaches = this.groupInfos.filter(
               // 一般教練
@@ -806,13 +798,16 @@ export class GroupInfoComponent implements OnInit {
               _admin =>
                 _admin.memberId === this.userId &&
                 _admin.groupId === this.groupId &&
-                +_admin.accessRight <= +this.groupLevel &&
+                +_admin.accessRight <= this.groupLevel &&
                 _admin.joinStatus === 2
             ) > -1 &&
-            (this.joinStatus !== 2 && !this.visitorDetail.isCanManage)
+            (this.joinStatus !== 2 && this.accessRight[0] > this.groupLevel)
           ) {
             this.joinStatus = 2;
-            this.userInfoService.getUserDetail(body, this.groupId);
+            const refreshBody = {
+              token: this.token
+            };
+            this.userProfileService.refreshUserProfile(refreshBody);
           }
         }
       }
@@ -820,7 +815,7 @@ export class GroupInfoComponent implements OnInit {
     });
   }
   changeGroupInfo({ index }) {
-    if (this.groupLevel === '80') {
+    if (this.groupLevel === 80) {
       if (index === 0) {
         this.getGroupMemberList(index + 2);
       } else if (index === 1) {
@@ -1002,4 +997,14 @@ export class GroupInfoComponent implements OnInit {
 
     });
   }
+
+  /**
+   * 解除rxjs訂閱
+   * @author kidin-1090722
+   */
+  ngOnDestroy(): void {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
 }

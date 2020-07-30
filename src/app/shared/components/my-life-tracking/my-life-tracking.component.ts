@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { UtilsService } from '@shared/services/utils.service';
 import { HashIdService } from '@shared/services/hash-id.service';
@@ -14,6 +16,8 @@ import { UserProfileService } from '../../services/user-profile.service';
   styleUrls: ['./my-life-tracking.component.scss']
 })
 export class MyLifeTrackingComponent implements OnInit, OnDestroy {
+
+  private ngUnsubscribe = new Subject();
 
   // UI控制相關變數-kidin-1090115
   isLoading = false;
@@ -254,13 +258,12 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
   getUserId (action) {
     const hashUserId = this.route.snapshot.paramMap.get('userId');
     if (hashUserId === null) {
-      const userBody = {
-        token: this.token,
-        avatarType: '2'
-      };
-      this.userProfileService.getUserProfile(userBody).subscribe(res => {
-        this.fileInfo = res.info;
-        this.userId = this.fileInfo.nameId;
+
+      this.userProfileService.getRxUserProfile().pipe(
+        takeUntil(this.ngUnsubscribe)
+      ).subscribe(res => {
+        this.fileInfo = res;
+        this.userId = this.fileInfo.userId;
 
         if (action === 'click') {
           this.generateTimePeriod();
@@ -1287,8 +1290,10 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
     window.print();
   }
 
-  // 頁面卸除後將url reset避免污染其他頁面-kidin-1090325
+  // 頁面卸除後將url reset避免污染其他頁面及解除rxjs訂閱-kidin-1090325
   ngOnDestroy () {
     window.history.pushState({path: location.pathname}, '', location.pathname);
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 }

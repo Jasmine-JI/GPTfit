@@ -36,6 +36,7 @@ router.post('/', function (req, res, next) {
           errMsg;
       switch (body.hostname) {
         case 'cloud.alatech.com.tw':
+        case 'www.gptfit.com':
         case '152.101.90.130':
           host = '127.0.0.1';
           break;

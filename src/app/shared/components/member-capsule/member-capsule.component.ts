@@ -16,6 +16,7 @@ import { Router } from '@angular/router';
 import { MessageBoxComponent } from '../message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
 import { HashIdService } from '@shared/services/hash-id.service';
+import { UserProfileService } from '../../services/user-profile.service';
 
 @Component({
   selector: 'app-member-capsule',
@@ -28,7 +29,6 @@ export class MemberCapsuleComponent implements OnInit {
   @Input() icon: string;
   @Input() name: string;
   @Input() title: string;
-  @Input() role: any;
   @Input() isSubGroupInfo = false;
   @Input() isAdminInfo = false;
   @Input() isNormalMemberInfo = false;
@@ -40,9 +40,6 @@ export class MemberCapsuleComponent implements OnInit {
   @Input() coachType: string;
   @Input() brandType: number;
   @Input() accessRight: string;
-  @Input() isSupervisor = false;
-  @Input() isSystemDeveloper = false;
-  @Input() isSystemMaintainer = false;
   @Output() onWaittingMemberInfoChange = new EventEmitter();
   @Output() onRemoveAdmin = new EventEmitter();
   @Output() onRemoveGroup = new EventEmitter();
@@ -64,6 +61,7 @@ export class MemberCapsuleComponent implements OnInit {
     myElement: ElementRef,
     private groupService: GroupService,
     private utils: UtilsService,
+    private userProfileService: UserProfileService,
     private router: Router,
     public dialog: MatDialog,
     private translate: TranslateService,
@@ -160,6 +158,10 @@ export class MemberCapsuleComponent implements OnInit {
     };
     this.groupService.editGroupMember(body).subscribe(res => {
       if (res.resultCode === 200) {
+        const refreshBody = {
+          token: this.token
+        };
+        this.userProfileService.refreshUserProfile(refreshBody);
         return this.onRemoveAdmin.emit(this.userId);
       }
       if (res.resultCode === 400) {
@@ -203,6 +205,10 @@ export class MemberCapsuleComponent implements OnInit {
     };
     this.groupService.editGroupMember(body).subscribe(res => {
       if (res.resultCode === 200) {
+        const refreshBody = {
+          token: this.token
+        };
+        this.userProfileService.refreshUserProfile(refreshBody);
         this.onAssignAdmin.emit(this.userId);
         this.dialog.closeAll();
       }

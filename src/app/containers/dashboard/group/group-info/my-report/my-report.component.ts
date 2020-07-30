@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy, Renderer2, ViewChild, ElementRef } from '
 import * as moment from 'moment';
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
-import { HttpParams } from '@angular/common/http';
 
 import { Router } from '@angular/router';
 
@@ -16,6 +15,9 @@ import { ActivityService } from '../../../../../shared/services/activity.service
 import { ActivityOtherDetailsService } from '../../../../../shared/services/activity-other-details.service';
 import { QrcodeService } from '../../../../portal/services/qrcode.service';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
+
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -103,6 +105,8 @@ class ChartOptions {
 })
 export class MyReportComponent implements OnInit, OnDestroy {
 
+  private ngUnsubscribe = new Subject();
+
   // UI操控相關變數-kidin-1081210
   reportCompleted = true;
   isPreviewMode = false;
@@ -146,7 +150,11 @@ export class MyReportComponent implements OnInit, OnDestroy {
   userData: any;
   deviceInfo: any;
   groupData: any;
-  coachInfo: any;
+  coachInfo = {
+    nickname: '',
+    avatarUrl: '',
+    description: ''
+  };
   deviceImgUrl: string;
   lessonTotalInfo: string;
   lessonPartInfo: string;
@@ -205,22 +213,21 @@ export class MyReportComponent implements OnInit, OnDestroy {
     private userInfoService: UserInfoService,
     private qrcodeService: QrcodeService,
     private userProfileService: UserProfileService,
-    private activityService: ActivityService,
-    private activityOtherDetailsService: ActivityOtherDetailsService
-    ) {
-      // 改寫內部設定
-      // 將提示框即十字準星的隱藏函數關閉
-      Highcharts.Pointer.prototype.reset = function() {
-        return undefined;
-      };
-      /**
-       * 聚焦當前的數據點，並設置滑鼠滑動狀態及繪製十字準星線
-       */
-      Highcharts.Point.prototype.highlight = function(event) {
-        this.onMouseOver(); // 顯示滑鼠啟動標示
-        this.series.chart.xAxis[0].drawCrosshair(event, this); // 顯示十字準星线
-      };
-    }
+    private activityService: ActivityService
+  ) {
+    // 改寫內部設定
+    // 將提示框即十字準星的隱藏函數關閉
+    Highcharts.Pointer.prototype.reset = function() {
+      return undefined;
+    };
+    /**
+     * 聚焦當前的數據點，並設置滑鼠滑動狀態及繪製十字準星線
+     */
+    Highcharts.Point.prototype.highlight = function(event) {
+      this.onMouseOver(); // 顯示滑鼠啟動標示
+      this.series.chart.xAxis[0].drawCrosshair(event, this); // 顯示十字準星线
+    };
+  }
 
   ngOnInit() {
     if (location.search.indexOf('ipm=s') > -1) {
@@ -333,7 +340,9 @@ export class MyReportComponent implements OnInit, OnDestroy {
   // 取得群組資訊-kidin-1090326
   getGroupInfo () {
     // 先從service取得群組資訊，若取不到再call api-kidin-1081210
-    this.groupService.getGroupInfo().subscribe(res => {
+    this.groupService.getGroupInfo().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
       this.groupData = res;
       if (this.groupData.hasOwnProperty('groupId')) {
         this.groupId = this.groupData.groupId;
@@ -381,13 +390,10 @@ export class MyReportComponent implements OnInit, OnDestroy {
 
   // 取得登入者資訊-kidin-1090326
   getUserInfo () {
-    const getLoginBody = {
-      avatarType: 2,
-      iconType: 2,
-      token: this.token
-    };
-    this.userInfoService.getLogonData(getLoginBody).subscribe(res => {
-      if (res.resultCode !== +200 || +this.userId !== +res.info.nameId) {
+    this.userProfileService.getRxUserProfile().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
+      if (+this.userId !== res.userId) {
         this.hrZoneRange['HRBase'] = 0;
         this.hrZoneRange['z0'] = 'Z0';
         this.hrZoneRange['z1'] = 'Z1';
@@ -396,14 +402,16 @@ export class MyReportComponent implements OnInit, OnDestroy {
         this.hrZoneRange['z4'] = 'Z4';
         this.hrZoneRange['z5'] = 'Z5';
       } else {
-          const userAge = moment().diff(res.info.birthday, 'years'),
-                userHRBase = res.info.heartRateBase,
-                userMaxHR = res.info.heartRateMax,
-                userRestHR = res.info.heartRateResting;
+        const userAge = moment().diff(res.birthday, 'years'),
+              userHRBase = res.heartRateBase,
+              userMaxHR = res.heartRateMax,
+              userRestHR = res.heartRateResting;
 
         this.getUserBodyInfo(userHRBase, userAge, userMaxHR, userRestHR);
       }
+
     });
+
   }
 
   // 取得使用者資訊並計算心率區間範圍()-kidin-1090203
@@ -413,7 +421,7 @@ export class MyReportComponent implements OnInit, OnDestroy {
         if (userHRBase === 0) {
           // 區間數值採無條件捨去法
           this.hrZoneRange['HRBase'] = userHRBase;
-          this.hrZoneRange['z0'] = Math.floor((220 - userAge) * 0.5) + '';
+          this.hrZoneRange['z0'] = Math.floor((220 - userAge) * 0.5 - 1) + '';
           this.hrZoneRange['z1'] = Math.floor((220 - userAge) * 0.6 - 1) + '';
           this.hrZoneRange['z2'] = Math.floor((220 - userAge) * 0.7 - 1) + '';
           this.hrZoneRange['z3'] = Math.floor((220 - userAge) * 0.8 - 1) + '';
@@ -432,7 +440,7 @@ export class MyReportComponent implements OnInit, OnDestroy {
         if (userHRBase === 0) {
           // 區間數值採無條件捨去法
           this.hrZoneRange['HRBase'] = userHRBase;
-          this.hrZoneRange['z0'] = Math.floor((220 - userAge) * 0.5) + '';
+          this.hrZoneRange['z0'] = Math.floor((220 - userAge) * 0.5 - 1) + '';
           this.hrZoneRange['z1'] = Math.floor((220 - userAge) * 0.6 - 1) + '';
           this.hrZoneRange['z2'] = Math.floor((220 - userAge) * 0.7 - 1) + '';
           this.hrZoneRange['z3'] = Math.floor((220 - userAge) * 0.8 - 1) + '';
@@ -958,9 +966,17 @@ export class MyReportComponent implements OnInit, OnDestroy {
       targetUserId: coachId,
       avatarType: '2'
     };
+
     this.userProfileService.getUserProfile(bodyForCoach).subscribe(res => {
-      if (res) {
-        this.coachInfo = res.info;
+      if (res.processResult.resultCode === 200) {
+        this.coachInfo = res.userProfile;
+      } else {
+        this.coachInfo = {
+          avatarUrl: '/assets/images/user2.png',
+          description: '',
+          nickname: 'No data'
+        };
+
       }
 
       this.handleInfo(this.coachInfo.description, 'coachInfo');
@@ -1048,6 +1064,9 @@ export class MyReportComponent implements OnInit, OnDestroy {
     if (this.classLink) {
       this.classLink.removeEventListener('click', this.visitClass.bind(this));
     }
+
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
 
   }
 

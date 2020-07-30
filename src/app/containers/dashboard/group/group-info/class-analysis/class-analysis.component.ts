@@ -1,10 +1,9 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import * as moment from 'moment';
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
-import { HttpParams } from '@angular/common/http';
 
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -12,11 +11,11 @@ import { HashIdService } from '@shared/services/hash-id.service';
 
 import { GroupService } from '../../../services/group.service';
 import { UtilsService } from '@shared/services/utils.service';
-import { UserInfoService } from '../../../services/userInfo.service';
 import { ActivityService } from '../../../../../shared/services/activity.service';
-import { ActivityOtherDetailsService } from '../../../../../shared/services/activity-other-details.service';
 import { QrcodeService } from '../../../../portal/services/qrcode.service';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -99,6 +98,8 @@ class ChartOptions {
 })
 export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
+  private ngUnsubscribe = new Subject();
+
   // UI操控相關變數-kidin-1081210
   reportCompleted = true;
   isPreviewMode = false;
@@ -141,7 +142,11 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   HRZoneThree = 0;
   deviceInfo: any;
   groupData: any;
-  coachInfo: any;
+  coachInfo = {
+    nickname: '',
+    avatarUrl: '',
+    description: ''
+  };
   deviceImgUrl: string;
   memberSection = null;
   focusMember: string;
@@ -185,11 +190,9 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     private translateService: TranslateService,
     private groupService: GroupService,
     private utils: UtilsService,
-    private userInfoService: UserInfoService,
     private qrcodeService: QrcodeService,
     private userProfileService: UserProfileService,
-    private activityService: ActivityService,
-    private activityOtherDetailsService: ActivityOtherDetailsService
+    private activityService: ActivityService
     ) {
       // 改寫內部設定
       // 將提示框即十字準星的隱藏函數關閉
@@ -270,7 +273,9 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     this.token = this.utils.getToken() || '';
 
     // 先從service取得群組資訊，若取不到再call api-kidin-1081210
-    this.groupService.getGroupInfo().subscribe(res => {
+    this.groupService.getGroupInfo().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
       this.groupData = res;
       if (this.groupData.hasOwnProperty('groupId')) {
         this.groupId = this.groupData.groupId;
@@ -1030,13 +1035,19 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
     // 取得教練資訊-kidin-1081218
     const bodyForCoach = {
-      token: this.token,
-      targetUserId: coachId,
-      avatarType: '2'
+      targetUserId: coachId
     };
+
     this.userProfileService.getUserProfile(bodyForCoach).subscribe(res => {
-      if (res) {
-        this.coachInfo = res.info;
+      if (res.processResult.resultCode === 200) {
+        this.coachInfo = res.userProfile;
+      } else {
+        this.coachInfo = {
+          avatarUrl: '/assets/images/user2.png',
+          description: '',
+          nickname: 'No data'
+        };
+
       }
 
       this.handleInfo(this.coachInfo.description, 'coachInfo');
@@ -1187,6 +1198,9 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     if (this.classLink) {
       this.classLink.removeEventListener('click', this.visitLink.bind(this));
     }
+
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
 
   }
 

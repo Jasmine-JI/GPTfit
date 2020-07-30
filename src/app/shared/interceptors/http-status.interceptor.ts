@@ -34,24 +34,19 @@ export class HttpStatusInterceptor implements HttpInterceptor {
             let parseBody;
             if (typeof (event.body) !== 'object') {
               parseBody = JSON.parse(event.body);
-              if (
-                (
-                  parseBody.msgCode === 5058 || parseBody.msgCode === 1144) &&
-                  (parseBody.resultCode === 401 || parseBody.resultCode === 402)
-              ) {
+              if (parseBody.processResult && parseBody.processResult.resultCode === 401) {
                 this.dialog.open(MessageBoxComponent, {
                   hasBackdrop: true,
                   data: {
                     title: 'Error',
                     body:
-                      parseBody.resultMessage +
-                      '<br>After five seconds, return to the login page',
+                      '<br>Login identity error, Please Login again!',
                     confirmText: 'Confirm'
                   }
                 });
                 const auth = this.injector.get(AuthService);
                 auth.logout();
-                setTimeout(() => location.href = '/signin', 5000);
+                setTimeout(() => location.href = '/signIn-web', 5000);
               }
             }
 
@@ -63,7 +58,7 @@ export class HttpStatusInterceptor implements HttpInterceptor {
               const router = this.injector.get(Router);
               const auth = this.injector.get(AuthService);
               auth.logout();
-              router.navigate(['/signin']);
+              router.navigate(['/signIn-web']);
             }
             if (err.status === 504) {
               this.dialog.open(MessageBoxComponent, {

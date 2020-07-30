@@ -41,10 +41,10 @@ export class ReportService {
   setReportTime (startTime: string, endTime: string) {
     this.reportStartTime$.next(startTime);
     this.reportEndTime$.next(endTime);
-    this.setgetReportAdditon();
+    this.setReportAddition();
   }
 
-  setgetReportAdditon () {
+  setReportAddition () {
     this.addition$.next([this.reportStartTime$, this.reportEndTime$, this.period$]);
   }
 
@@ -70,7 +70,7 @@ export class ReportService {
     return this.reportCategory$;
   }
 
-  getReportAdditon (): Observable<Array<BehaviorSubject<string>>> {
+  getReportAddition (): Observable<Array<BehaviorSubject<string>>> {
     return this.addition$;
   }
 

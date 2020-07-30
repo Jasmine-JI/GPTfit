@@ -18,7 +18,7 @@
       *ngIf="!(login$| async)"
       (click)="chooseNavItem(3)"
     >
-      <a class="nav-link" [routerLink]="['/signin']">{{"universal_userAccount_logIn" | translate}}</a>
+      <a class="nav-link" [routerLink]="['/signIn-web']">{{"universal_userAccount_logIn" | translate}}</a>
     </li>
     <li class="nav-item nav-rwd" style="list-style: none;" *ngIf="(login$| async)">
       <a class="nav-link" (click)="logout()">{{ "universal_userAccount_logOut" | translate}}</a>
@@ -69,7 +69,7 @@
         *ngIf="!(login$| async)"
         (click)="chooseNavItem(3)"
       >
-        <a class="nav-link" [routerLink]="['/signin']">{{"universal_userAccount_logIn" | translate}}</a>
+        <a class="nav-link" [routerLink]="['/signIn-web']">{{"universal_userAccount_logIn" | translate}}</a>
       </li>
       <li class="nav-item nav-rwd__hamburger" style="list-style: none;" *ngIf="(login$| async)">
         <a class="nav-link" (click)="logout()">{{ "universal_userAccount_logOut" | translate}}</a>

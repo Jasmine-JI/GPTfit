@@ -41,26 +41,16 @@ export class PortalGroupInfoComponent implements OnInit, OnDestroy {
     );
     const token = this.utils.getToken() || '';
     if (token) {
-      this.userInfoService.getUserDetail({ token }, this.groupId);
-      this.subscription = this.userInfoService.getUserAccessRightDetail().subscribe(res => {
-        this.visitorDetail = res;
-        const {
-          isCanManage,
-          isGroupAdmin,
-          accessRight,
-          isApplying
-        } = this.visitorDetail;
 
-        if (
-          isCanManage ||
-          isGroupAdmin ||
-          accessRight !== 'none' ||
-          isApplying
-        ) {
+      this.groupService.checkAccessRight(this.groupId).subscribe(res => {
+        if (res[0] > 99) {
           this.router.navigateByUrl(`/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}`);
         }
+
       });
+
     }
+
     const body = {
       token,
       groupId: this.groupId,

@@ -2,7 +2,8 @@ import {
   Component,
   OnInit,
   ViewEncapsulation,
-  HostListener
+  HostListener,
+  OnDestroy
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { GroupService } from '../../services/group.service';
@@ -13,7 +14,7 @@ import {
   FormGroup,
   Validators
 } from '@angular/forms';
-import { UserInfoService } from '../../services/userInfo.service';
+import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { MsgDialogComponent } from '../../components/msg-dialog/msg-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
@@ -23,6 +24,8 @@ import { planDatas } from '../desc';
 import * as moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 import { HashIdService } from '@shared/services/hash-id.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-create-group',
@@ -30,7 +33,10 @@ import { HashIdService } from '@shared/services/hash-id.service';
   styleUrls: ['./create-group.component.scss', '../group-style.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class CreateGroupComponent implements OnInit {
+export class CreateGroupComponent implements OnInit, OnDestroy {
+
+  private ngUnsubscribe = new Subject();
+
   i18n = {
     teacher: '',
     coach: '',
@@ -68,15 +74,9 @@ export class CreateGroupComponent implements OnInit {
   formTextareaName = 'groupDesc';
   planName: string;
   role = {
-    isSupervisor: false,
-    isSystemDeveloper: false,
-    isSystemMaintainer: false,
-    isMarketingDeveloper: false,
-    isBrandAdministrator: false,
-    isBranchAdministrator: false,
-    isCoach: false,
-    getUserId: 0,
-    getUserName: ''
+    accessRight: 99,
+    userId: null,
+    userName: ''
   };
   finalImageLink: string;
   maxFileSize = 10485760; // 10MB
@@ -133,7 +133,7 @@ export class CreateGroupComponent implements OnInit {
     private utils: UtilsService,
     private router: Router,
     private fb: FormBuilder,
-    private userInfoService: UserInfoService,
+    private userProfileService: UserProfileService,
     public dialog: MatDialog,
     private translate: TranslateService,
     private hashIdService: HashIdService
@@ -154,12 +154,12 @@ export class CreateGroupComponent implements OnInit {
     evt.stopPropagation();
   }
   ngOnInit() {
-
     const queryStrings = this.utils.getUrlQueryStrings(location.search);
     const { createType, coachType } = queryStrings;
     if (coachType) {
       this.coachType = +coachType;
     }
+
     if (createType) {
       this.createType = +createType;
     }
@@ -178,49 +178,16 @@ export class CreateGroupComponent implements OnInit {
     this.groupId = this.hashIdService.handleGroupIdDecode(
       this.route.snapshot.paramMap.get('groupId')
     );
+
     this.buildForm(this.createType);
-    this.userInfoService.getSupervisorStatus().subscribe(res => {
-      this.role.isSupervisor = res;
-      // console.log('%c this.isSupervisor', 'color: #0ca011', res);
-    });
-    this.userInfoService.getSystemDeveloperStatus().subscribe(res => {
-      this.role.isSystemDeveloper = res;
-      // console.log('%c this.isSystemDeveloper', 'color: #0ca011', res);
-    });
-    this.userInfoService.getSystemMaintainerStatus().subscribe(res => {
-      this.role.isSystemMaintainer = res;
-      // console.log('%c this.isSystemMaintainer', 'color: #0ca011', res);
-    });
-    this.userInfoService.getMarketingDeveloperStatus().subscribe(res => {
-      this.role.isMarketingDeveloper = res;
-      // console.log('%c this.isMarketingDeveloper', 'color: #ccc', res);
-    });
-    this.userInfoService.getBrandAdministratorStatus().subscribe(res => {
-      this.role.isBrandAdministrator = res;
-      // console.log('%c this.isBrandAdministrator', 'color: #0ca011', res);
-    });
-    this.userInfoService.getBranchAdministratorStatus().subscribe(res => {
-      this.role.isBranchAdministrator = res;
-      // console.log('%c this.isBranchAdministrator', 'color: #0ca011', res);
-    });
-    this.userInfoService.getCoachStatus().subscribe(res => {
-      this.role.isCoach = res;
-      // console.log('%c this.isCoach', 'color: #0ca011', res);
-    });
-    this.userInfoService.getUserId().subscribe(res => {
-      this.role.getUserId = res;
-      // console.log('%c this.getUserId', 'color: #0ca011', res);
-    });
-    this.userInfoService.getUserName().subscribe(res => {
-      this.role.getUserName = res;
-      // console.log('%c this.getUserName', 'color: #0ca011', res);
-    });
+    this.getCreatorInfo();
     this.token = this.utils.getToken() || '';
     const body = {
       token: this.token,
       groupId: this.groupId,
       avatarType: 2
     };
+
     if (this.createType !== 3 && this.createType !== 4 && this.createType !== 5) {
       this.groupService.fetchGroupListDetail(body).subscribe(res => {
         this.groupInfo = res.info;
@@ -231,11 +198,13 @@ export class CreateGroupComponent implements OnInit {
           selfJoinStatus,
           brandType
         } = this.groupInfo;
+
         if (selfJoinStatus) {
           this.joinStatus = selfJoinStatus;
         } else {
           this.joinStatus = 0;
         }
+
         this.brandName = groupName;
         this.brandType = brandType;
         this.groupImg = groupIcon;
@@ -245,16 +214,39 @@ export class CreateGroupComponent implements OnInit {
         this.getGroupMemberList(1);
       });
     }
+
     this.translate.onLangChange.subscribe(() => {
       this.getAndInitTranslations();
     });
-    this.getAndInitTranslations();
 
-    // 建立分店以及課程群組時，指派建立者為預設管理員。 by Vincent 2019/5/9
-    if (+this.createType === 1 || +this.createType === 2) {
-      this.chooseLabels.push({ 'groupName': 'Alatech', 'userName': this.role.getUserName, 'userId': this.role.getUserId });
-      this.form.patchValue({ groupManager: [ this.role.getUserId ] });
-    }
+    this.getAndInitTranslations();
+  }
+
+  /**
+   * 取得創群組者（登入者）的部份資訊
+   * @author kidin-1090728
+   */
+  getCreatorInfo() {
+    this.userProfileService.getRxUserProfile().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
+      if (res['systemAccessRight']) {
+        this.role = {
+          accessRight: res['systemAccessRight'][0],
+          userId: res['userId'],
+          userName: res['nickname']
+        };
+
+        // 建立分店以及課程群組時，指派建立者為預設管理員。 by Vincent 2019/5/9
+        if (+this.createType === 1 || +this.createType === 2) {
+          this.chooseLabels.push({ 'groupName': 'Alatech', 'userName': this.role.userName, 'userId': this.role.userId });
+          this.form.patchValue({ groupManager: [ this.role.userId ] });
+        }
+
+      }
+
+    });
+
   }
 
   getAndInitTranslations() {
@@ -313,6 +305,7 @@ export class CreateGroupComponent implements OnInit {
 
       });
   }
+
   buildForm(_type: number) {
     if (_type === 1) {
       this.formTextName = 'branchName';
@@ -352,6 +345,7 @@ export class CreateGroupComponent implements OnInit {
       });
     }
   }
+
   handleActionGroup(_type) {
     const body = {
       groupId: this.groupId,
@@ -442,6 +436,7 @@ export class CreateGroupComponent implements OnInit {
       }
     });
   }
+
   changeGroupInfo({ index }) {
     if (index === 0) {
       this.getGroupMemberList(1);
@@ -453,6 +448,7 @@ export class CreateGroupComponent implements OnInit {
       this.getGroupMemberList(4);
     }
   }
+
   manage({ valid, value, submitted }) {
     if (!submitted) {
       // 如果脫離form的判斷
@@ -539,6 +535,12 @@ export class CreateGroupComponent implements OnInit {
                   this.groupId
                 )}/edit`
               );
+
+              // 創建群組後更新使用者group accessRight
+              const refreshBody = {
+                token: this.token
+              };
+              this.userProfileService.refreshUserProfile(refreshBody);
             }
             if (res.resultCode === 400) {
               this.dialog.open(MessageBoxComponent, {
@@ -707,9 +709,11 @@ export class CreateGroupComponent implements OnInit {
       };
     }
   }
+
   public handleChangeTextarea(code): void {
     this.form.patchValue({ groupDesc: code });
   }
+
   handleExpireTime(e) {
     let date = '';
     switch (e.value) {
@@ -744,6 +748,7 @@ export class CreateGroupComponent implements OnInit {
     }
     this.form.patchValue({ commercePlanExpired: date });
   }
+
   handleAttachmentChange(file) {
     if (file) {
       const { isTypeCorrect, errorMsg, link } = file;
@@ -915,30 +920,28 @@ export class CreateGroupComponent implements OnInit {
       }
     });
   }
+
   changePlan(_planIdx) {
     this.commercePlan = _planIdx;
   }
+
   removeLabel(idx) {
     this.chooseLabels.splice(idx, 1);
     const userIds = this.chooseLabels.map(_label => _label.userId);
     this.form.patchValue({ groupManager: userIds });
   }
+
   handleConfirm(_lists) {
     const userIds = _lists.map(_list => _list.userId);
     this.form.patchValue({ groupManager: userIds });
     this.chooseLabels = _lists;
   }
+
   openSelectorWin(_type: number, e) {
     e.preventDefault();
     this.chooseType = _type;
 
     const adminLists = _.cloneDeep(this.chooseLabels);
-    const {
-      isSupervisor,
-      isSystemDeveloper,
-      isSystemMaintainer,
-      isMarketingDeveloper
-    } = this.role;
     if (_type !== 3) {
       this.dialog.open(PeopleSelectorWinComponent, {
         hasBackdrop: true,
@@ -949,12 +952,19 @@ export class CreateGroupComponent implements OnInit {
           onConfirm: this.handleConfirm.bind(this),
           isInnerAdmin:
             _type === 4 || _type === 5 &&
-            (isSupervisor ||
-              isSystemDeveloper ||
-              isSystemMaintainer ||
-              isMarketingDeveloper)
+            (this.role.accessRight < 30)
         }
       });
     }
   }
+
+  /**
+   * 解除rxjs訂閱
+   * @author kidin-1090722
+   */
+  ngOnDestroy(): void {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
 }
