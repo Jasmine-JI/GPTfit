@@ -281,7 +281,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           this.coachInfo.coachAvatar =
             this.coachInfo.nameIcon && this.coachInfo.nameIcon.length > 0
               ? this.coachInfo.nameIcon
-              : '/assets/images/user.png';
+              : '/assets/images/user2.png';
           this.handleCoachInfo(this.coachInfo.description);
         }
 

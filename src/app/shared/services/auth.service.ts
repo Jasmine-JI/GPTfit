@@ -81,25 +81,13 @@ export class AuthService {
     return this.currentUser$;
   }
 
-  isTokenExpired(token: string = TOKEN): boolean {
+  isLogin(token: string = TOKEN): boolean {
     const alaToken = this.utils.getToken(token);
     if (alaToken) {
-      return false; // found token
-    } else {
-      return true; // no token
-    }
-  }
-
-  // when startup
-  checkUser(): Observable<boolean> {
-    // 讓此判斷機制終止，非由本機端自行判斷。已轉換由Server判斷Token是否過期(402)或失效(401)。 2019/9/25 by Vincent.
-    if (!this.isTokenExpired()) {
       this.loginStatus$.next(true);
-      return of(true);
+      return true; // found token
     } else {
-      // 'no token or token is expired'
-      this.utils.removeToken();
-      return of(false);
+      return false; // no token
     }
   }
 

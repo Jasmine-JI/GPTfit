@@ -20,9 +20,8 @@ export class PortalGroupInfoComponent implements OnInit, OnDestroy {
   groupImg: string;
   groupId: string;
   dispGroupId: string;
-
-  groupLevel: string;
-  visitorDetail: any;
+  isGroupAdmin = false;
+  groupLevel: number;
   subscription: any;
   constructor(
     private groupService: GroupService,
@@ -39,10 +38,12 @@ export class PortalGroupInfoComponent implements OnInit, OnDestroy {
     this.groupId = this.hashIdService.handleGroupIdDecode(
       this.route.snapshot.paramMap.get('groupId')
     );
+    this.groupLevel = this.utils.displayGroupLevel(this.groupId);
     const token = this.utils.getToken() || '';
     if (token) {
 
       this.groupService.checkAccessRight(this.groupId).subscribe(res => {
+        this.isGroupAdmin = res.some(_accessRight => _accessRight === this.groupLevel);
         if (res[0] > 99) {
           this.router.navigateByUrl(`/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}`);
         }
@@ -56,6 +57,7 @@ export class PortalGroupInfoComponent implements OnInit, OnDestroy {
       groupId: this.groupId,
       avatarType: 2
     };
+
     this.groupService.fetchGroupListDetail(body).subscribe(res => {
       this.groupInfo = res.info;
       const { groupIcon, groupStatus } = this.groupInfo;
@@ -67,17 +69,20 @@ export class PortalGroupInfoComponent implements OnInit, OnDestroy {
           ? groupIcon
           : '/assets/images/group-default.svg';
       this.dispGroupId = this.utils.displayGroupId(this.groupId);
-      this.groupLevel = this.utils.displayGroupLevel(this.groupId);
     });
+
   }
+
   goDashboardGroupInfo() {
     this.utils.setLocalStorageObject('isAutoApplyGroup', true);
     this.router.navigateByUrl(`/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}`);
   }
+
   ngOnDestroy() {
     const token = this.utils.getToken() || '';
     if (token) {
       this.subscription.unsubscribe();
     }
   }
+
 }

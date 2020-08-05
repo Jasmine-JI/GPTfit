@@ -286,7 +286,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
 
   // 資料儲存用變數-kidin-1090115
   token: string;
-  groupLevel: string;
+  groupLevel: number;
   groupId: string;
   groupData: any;
   allLevelGroupData: any;  // 群組本身資料
@@ -530,7 +530,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
               this.groupService.saveAllLevelGroupInfo(this.allLevelGroupData);
               this.getIdListStart();
             } else {
-              console.log('Server error');
+              console.log('Error');
             }
 
           });
@@ -612,7 +612,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
               groupIdArr = this.groupId.split('-');
 
         switch (this.groupLevel) {
-          case '30':
+          case 30:
             memberGroupIdArr.length = 3;
             groupIdArr.length = 3;
             if (memberList[i].accessRight >= 30 && JSON.stringify(memberGroupIdArr) === JSON.stringify(groupIdArr)) {
@@ -623,7 +623,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
               });
             }
             break;
-          case '40':
+          case 40:
             memberGroupIdArr.length = 4;
             groupIdArr.length = 4;
             if (memberList[i].accessRight >= 40 && JSON.stringify(memberGroupIdArr) === JSON.stringify(groupIdArr)) {
@@ -634,7 +634,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
               });
             }
             break;
-          case '60':
+          case 60:
             if (memberList[i].accessRight >= 50 && memberList[i].groupId === this.groupId) {
               memlist.push({
                 id: memberList[i].memberId,

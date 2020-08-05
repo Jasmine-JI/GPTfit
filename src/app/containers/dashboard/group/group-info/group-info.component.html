@@ -62,7 +62,7 @@
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="{{ 'universal_group_applicationsForJoin' | translate}}"
-            *ngIf="(joinStatus === 5 || joinStatus === 3 ) && (!visitorDetail?.isGroupAdmin || groupLevel === 80) && !isOutage"
+            *ngIf="(joinStatus === 5 || joinStatus === 3 ) && (!isGroupAdmin || groupLevel === 80) && !isOutage"
             (click)="handleActionGroup(1)"
           >
             {{ 'universal_group_applicationsForJoin' | translate}}
@@ -77,7 +77,7 @@
           <button class="alatech-btn alatech-btn--default"
             title="{{'universal_group_exitGroup' | translate}}"
             *ngIf="joinStatus === 2 &&
-            (!visitorDetail?.isGroupAdmin
+            (isGroupAdmin
              ||
             (groupLevel === 80 && normalGroupAdministrators && normalGroupAdministrators?.length > 1)
              ||

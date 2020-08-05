@@ -7,6 +7,7 @@ import { MessageBoxComponent } from '@shared/components/message-box/message-box.
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { formTest } from '../../../models/form-test';
 
 @Component({
   selector: 'app-app-signin',
@@ -14,6 +15,8 @@ import { MatDialog } from '@angular/material/dialog';
   styleUrls: ['./app-signin.component.scss']
 })
 export class AppSigninComponent implements OnInit, OnDestroy {
+
+  readonly formReg = formTest;
 
   subscription: Subscription[] = [];
   i18n = {
@@ -70,12 +73,12 @@ export class AppSigninComponent implements OnInit, OnDestroy {
 
   // 驗證用
   regCheck = {
-    email: /^.{1,63}@[a-zA-Z0-9]{2,63}.[a-zA-Z]{2,63}(.[a-zA-Z]{2,63})?$/,
+    email: this.formReg.email,
     emailPass: false,
-    phone: /^([1-9][0-9]+)$/,
+    phone: this.formReg.phone,
     phonePass: false,
     countryCodePass: false,
-    password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,20}$/,
+    password: this.formReg.password,
     passwordPass: false
   };
 
@@ -325,7 +328,7 @@ export class AppSigninComponent implements OnInit, OnDestroy {
               hasBackdrop: true,
               data: {
                 title: 'Message',
-                body: `Server error.<br />Please try again later.`,
+                body: `Error.<br />Please try again later.`,
                 confirmText: this.translate.instant(
                   'universal_operating_confirm'
                 ),

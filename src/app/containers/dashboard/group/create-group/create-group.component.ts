@@ -53,7 +53,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
   groupInfo: any;
   groupImg: string;
   group_id: string;
-  groupLevel: string;
+  groupLevel: number;
   groupInfos: any;
   joinStatus = 0;
   subGroupInfo: any;
@@ -402,7 +402,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
               };
             }
           });
-          if (this.groupLevel === '40') {
+          if (this.groupLevel === 40) {
             this.subBranchInfo = this.subGroupInfo.branches.filter(_branch => {
               if (_branch.groupId === this.groupId) {
                 return _branch;

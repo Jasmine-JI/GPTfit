@@ -44,7 +44,7 @@ router.get('/userAvartar', function (req, res, next) {
   checkAccessRight(token).then(_res => {
     if (_res) {
       const sql = `
-        select login_acc, icon_small, icon_middle, icon_large from ?? where user_id = ?;
+        select login_acc, icon_small, icon_middle, icon_large, e_mail, phone, country_code, active_status, time_stamp, timestamp_reset_passwd from ?? where user_id = ?;
       `;
       con.query(sql, ['user_profile', userId], function (err, rows) {
         if (err) {
@@ -59,6 +59,12 @@ router.get('/userAvartar', function (req, res, next) {
           smallIcon = rows[0].icon_small;
           middleIcon = rows[0].icon_middle;
           largeIcon = rows[0].icon_large;
+          email = rows[0].e_mail || '';
+          countryCode = rows[0].country_code || '';
+          phone = rows[0].phone || '';
+          enableStatus = rows[0].active_status;
+          lastLogin = rows[0].time_stamp;
+          lastResetPwd = rows[0].timestamp_reset_passwd;
         }
 
         res.json({
@@ -66,7 +72,13 @@ router.get('/userAvartar', function (req, res, next) {
           userName,
           smallIcon,
           middleIcon,
-          largeIcon
+          largeIcon,
+          email,
+          countryCode,
+          phone,
+          enableStatus,
+          lastLogin,
+          lastResetPwd
         });
       });
     } else {

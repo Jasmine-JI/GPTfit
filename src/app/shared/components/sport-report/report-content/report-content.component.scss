@@ -154,13 +154,21 @@
   justify-content: space-between;
 }
 
+.fold__content {
+  width: 20%;
+}
+
+.muscleContentTrendChart {
+  width: 75%
+}
+
 .muscleTrendChart {
   width: 80%;
 }
 
 .foldIcon {
   position: relative;
-  margin: 30px 0 0 10px;
+  margin: 10px 0 0 10px;
   font-size: 20px;
   cursor: pointer;
 }
@@ -200,15 +208,12 @@
     flex-direction: column;
   }
 
-  .ringChart {
-    width: 100%;
-  }
-
-  .distributionChartWidth {
-    width: 100%;
-  }
-
-  #HRZoneChart {
+  .ringChart,
+  .distributionChartWidth,
+  #HRZoneChart,
+  .muscleTrendChart,
+  .muscleContentTrendChart,
+  .fold__content {
     width: 100%;
   }
 
@@ -219,10 +224,6 @@
 
   .muscleChartList {
     flex-direction: column;
-  }
-
-  .muscleTrendChart {
-    width: 100%;
   }
 
 }

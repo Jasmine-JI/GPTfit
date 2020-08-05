@@ -44,6 +44,7 @@ import { ComReportComponent } from './group/group-info/com-report/com-report.com
 import { ComLifeTrackingComponent } from './group/group-info/com-life-tracking/com-life-tracking.component';
 import { MyLifeTrackingComponent } from '@shared/components/my-life-tracking/my-life-tracking.component';
 import { QrcodeUploadComponent } from './components/qrcode-upload/qrcode-upload.component';
+import { GroupInfoComponent as GroupInfoV2Component } from './group-v2/group-info/group-info.component';
 
 const routes: Routes = [
   {
@@ -263,6 +264,10 @@ const routes: Routes = [
       {
         path: 'qrupload/activityfile',
         component: QrcodeUploadComponent
+      },
+      {
+        path: 'group-info-v2/:groupId',
+        component: GroupInfoV2Component
       }
     ]
   },

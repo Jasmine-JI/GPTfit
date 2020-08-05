@@ -12,8 +12,24 @@ import { Router } from '@angular/router';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
 import { last } from 'rxjs/operators';
+import * as moment from 'moment';
 
-const errorMsg = 'Server Error!<br />Please try again later.';
+const errorMsg = 'Error!<br />Please try again later.';
+
+interface UserInfo {
+  userName: string;
+  userId: number;
+  userPageLink: string;
+  smallIcon: string;
+  middleIcon: string;
+  largeIcon: string;
+  email: string;
+  countryCode: string;
+  phone: string;
+  enableStatus: string;
+  lastLogin: string;
+  lastResetPwd: string;
+}
 
 @Component({
   selector: 'app-inner-test',
@@ -34,10 +50,23 @@ export class InnerTestComponent implements OnInit {
     this.onGroupEncode = debounce(this.onGroupEncode, 1000);
     this.onGroupDecode = debounce(this.onGroupDecode, 1000);
   }
-  userName: string;
-  smallIcon: string;
-  middleIcon: string;
-  largeIcon: string;
+
+  userInfo: UserInfo = {
+    userName: '',
+    userId: null,
+    userPageLink: '',
+    smallIcon: '',
+    middleIcon: '',
+    largeIcon: '',
+    email: '',
+    countryCode: '',
+    phone: '',
+    enableStatus: '',
+    lastLogin: '',
+    lastResetPwd: ''
+  };
+
+  nickname: string;
   smallIconWidth: number;
   smallIconHeight: number;
   middleIconWidth: number;
@@ -52,11 +81,11 @@ export class InnerTestComponent implements OnInit {
   hashGroupId: string;
   groupInfo: any;
   groupImg = '/assets/images/group-default.svg';
-  userImg = '/assets/images/user.png';
+  userImg = '/assets/images/user2.png';
   description: string;
   userId: string;
   hashUserId: string;
-  groupLevel: string;
+  groupLevel: number;
   flag = 402;
 
   ngOnInit() {}
@@ -65,13 +94,24 @@ export class InnerTestComponent implements OnInit {
     params = params.set('userId', userId.toString());
     this.groupService.fetchUserAvartar(params).subscribe(res => {
       if (res.resultCode === 200) {
-        this.userName = res.userName;
-        this.smallIcon = this.utils.buildBase64ImgString(res.smallIcon);
-        this.middleIcon = this.utils.buildBase64ImgString(res.middleIcon);
-        this.largeIcon = this.utils.buildBase64ImgString(res.largeIcon);
-        this.handleAvartarInfo(this.smallIcon, 1);
-        this.handleAvartarInfo(this.middleIcon, 2);
-        this.handleAvartarInfo(this.largeIcon, 3);
+        this.userInfo = {
+          userName: res.userName,
+          userId: +userId,
+          userPageLink: `https://${location.hostname}/user-profile/${this.hashIdService.handleUserIdEncode(userId)}`,
+          smallIcon: this.utils.buildBase64ImgString(res.smallIcon),
+          middleIcon: this.utils.buildBase64ImgString(res.middleIcon),
+          largeIcon: this.utils.buildBase64ImgString(res.largeIcon),
+          email: res.email,
+          countryCode: res.countryCode,
+          phone: res.phone,
+          enableStatus: res.enableStatus,
+          lastLogin: moment.unix(+res.lastLogin).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+          lastResetPwd: moment.unix(+res.lastResetPwd).format('YYYY-MM-DDTHH:mm:ss.SSSZ')
+        };
+
+        this.handleAvartarInfo(this.userInfo.smallIcon, 1);
+        this.handleAvartarInfo(this.userInfo.middleIcon, 2);
+        this.handleAvartarInfo(this.userInfo.largeIcon, 3);
       } else {
         this.isWrong = true;
       }
@@ -152,13 +192,13 @@ export class InnerTestComponent implements OnInit {
         last()
       ).subscribe(res => {
         if (res.processResult.resultCode !== 200) {
-          console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`)
+          console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
         } else {
           const response: any = res.userProfile;
           const { nickname, avatarUrl, description } = response;
           this.description = description;
-          this.userName = nickname;
-          this.userImg = avatarUrl ? avatarUrl : '/assets/images/user.png';
+          this.nickname = nickname;
+          this.userImg = avatarUrl ? avatarUrl : '/assets/images/user2.png';
         }
 
       });
