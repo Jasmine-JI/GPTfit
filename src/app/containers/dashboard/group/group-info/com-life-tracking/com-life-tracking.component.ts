@@ -47,7 +47,7 @@ export class ComLifeTrackingComponent implements OnInit {
 
   // 資料儲存用變數-kidin-1090115
   token: string;
-  groupLevel: string;
+  groupLevel: number;
   groupId: string;
   groupData: any;
   groupList: Array<any>;
@@ -244,7 +244,7 @@ export class ComLifeTrackingComponent implements OnInit {
         const memberGroupIdArr = memberList[i].groupId.split('-'),
               groupIdArr = this.groupId.split('-');
         switch (this.groupLevel) {
-          case '30':
+          case 30:
             memberGroupIdArr.length = 3;
             groupIdArr.length = 3;
             if (memberList[i].accessRight >= 30 && JSON.stringify(memberGroupIdArr) === JSON.stringify(groupIdArr)) {
@@ -252,7 +252,7 @@ export class ComLifeTrackingComponent implements OnInit {
               listName.add(memberList[i].memberName);
             }
             break;
-          case '40':
+          case 40:
             memberGroupIdArr.length = 4;
             groupIdArr.length = 4;
             if (memberList[i].accessRight >= 40 && JSON.stringify(memberGroupIdArr) === JSON.stringify(groupIdArr)) {
@@ -260,7 +260,7 @@ export class ComLifeTrackingComponent implements OnInit {
               listName.add(memberList[i].memberName);
             }
             break;
-          case '60':
+          case 60:
             if (memberList[i].accessRight >= 50 && memberList[i].groupId === this.groupId) {
               listId.add(memberList[i].memberId);
               listName.add(memberList[i].memberName);

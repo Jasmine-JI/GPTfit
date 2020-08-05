@@ -354,24 +354,24 @@
       <div *ngFor="let list of muscleTrendList; let idx = index;">
         <div class="flexCol" *ngIf="list.isFocus">
           <div class="flexRow muscleChartList">
-            <div class="flexRow">
-              <div class="flexCol" style="align-items: center;">
+            <div class="flexCol">
+              <div class="flexRow" style="align-items: center;">
                 <app-muscle-svg-icon
                   style="width: 80px;"
                   [muscleGroupId]="list.id"
                 ></app-muscle-svg-icon>
-                <span>{{ list.name }}</span>
+                <i
+                  class="icon-svg_web-icon_p1_006-unfold foldIcon"
+                  *ngIf="list.isFold"
+                  (click)="handleChartFold(idx)"
+                ></i>
+                <i
+                  class="icon-svg_web-icon_p1_007-fold foldIcon"
+                  *ngIf="!list.isFold"
+                  (click)="handleChartFold(idx)"
+                ></i>
               </div>
-              <i
-                class="icon-svg_web-icon_p1_006-unfold foldIcon"
-                *ngIf="list.isFold"
-                (click)="handleChartFold(idx)"
-              ></i>
-              <i
-                class="icon-svg_web-icon_p1_007-fold foldIcon"
-                *ngIf="!list.isFold"
-                (click)="handleChartFold(idx)"
-              ></i>
+              <span>{{ list.name }}</span>
             </div>
             <app-discolor-column-chart
               class="muscleTrendChart"
@@ -386,15 +386,18 @@
           <div  *ngIf="!list.isFold">
             <div *ngFor="let part of list.trainList;">
               <div class="flexRow muscleChartList">
-                <div class="flexCol" style="align-items: center;">
+                <div
+                  class="flexCol fold__content"
+                  style="align-items: flex-start; margin-left: 20px;"
+                >
                   <app-muscle-svg-icon
-                    style="width: 80px; margin-left: 20px;"
+                    style="width: 80px;"
                     [muscleCode]="[part[0]]"
                   ></app-muscle-svg-icon>
                   <span>{{ part[0] | muscleName }}</span>
                 </div>
                 <app-discolor-column-chart
-                  class="muscleTrendChart"
+                  class="muscleContentTrendChart"
                   [data]="part[1]"
                   [dateRange]="dataDateRange"
                   [sportType]="reportCategory"

@@ -13,7 +13,7 @@ import { takeUntil } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 
-const errorMsg = 'Server error!<br /> Please try again later.';
+const errorMsg = 'Error!<br /> Please try again later.';
 
 @Component({
   selector: 'app-app-enable',
@@ -106,7 +106,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getUrlString(location.search);
     this.getUserInfo();
 
-    // 在首次登入頁面按下登出時，跳轉回登入頁-kidin-1090109(bug575)
+    // 按下登出時，跳轉回登入頁-kidin-1090109
     this.authService.getLoginStatus().subscribe(res => {
       if (res === false && this.pcView === true) {
         return this.router.navigateByUrl('/signIn-web');
@@ -245,6 +245,24 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
         this.router.navigateByUrl('/signIn-web');
       } else {
         this.router.navigateByUrl('/signIn');
+      }
+
+    }
+
+  }
+
+  // 待app v2 上架後移除此function-kidin-1090803
+  turnFirstLoginOrBack () {
+    if (this.appInfo.sys === 1) {
+      (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
+    } else if (this.appInfo.sys === 2) {
+      (window as any).android.closeWebView('Close');
+    } else {
+
+      if (this.pcView === true) {
+        this.router.navigateByUrl('/firstLogin-web');
+      } else {
+        this.router.navigateByUrl('/firstLogin');
       }
 
     }
@@ -413,8 +431,8 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
             this.showMsgBox(msgBody, true);
           } else {
             this.enableSuccess = true; // app v2上架後刪除此行
-            const msgBody = `${this.translate.instant('universal_deviceSetting_switch')
-              } ${this.translate.instant('universal_status_success')
+            const msgBody = `${this.logMessage.enable
+              } ${this.logMessage.success
             }`;
             this.showMsgBox(msgBody, true);
           }
@@ -456,10 +474,8 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
               hasBackdrop: true,
               data: {
                 title: 'Message',
-                body: `Server error.<br />Please try again later.`,
-                confirmText: this.translate.instant(
-                  'universal_operating_confirm'
-                ),
+                body: `Error.<br />Please try again later.`,
+                confirmText: this.logMessage.confirm,
                 onConfirm: this.turnBack.bind(this)
               }
             });
@@ -485,7 +501,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
         switch (res.processResult.apiReturnMessage) {
           case 'Enable account fail, account was enabled.':  // 已啟用後再次點擊啟用信件，則當作啟用成功-kidin-1090520
-            msgBody = `${this.translate.instant('universal_deviceSetting_switch')} ${this.translate.instant('universal_status_success')}`;
+            msgBody = `${this.logMessage.enable} ${this.logMessage.success}`;
             this.enableSuccess = true; // app v2上架後刪除此行
             break;
           default:
@@ -497,7 +513,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
         this.showMsgBox(msgBody, true);
       } else {
         this.enableSuccess = true; // app v2上架後刪除此行
-        msgBody = `${this.translate.instant('universal_deviceSetting_switch')} ${this.translate.instant('universal_status_success')}`;
+        msgBody = `${this.logMessage.enable} ${this.logMessage.success}`;
         this.showMsgBox(msgBody, true);
       }
 
@@ -519,10 +535,8 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
           data: {
             title: 'Message',
             body: msg,
-            confirmText: this.translate.instant(
-              'universal_operating_confirm'
-            ),
-            onConfirm: this.turnBack.bind(this)
+            confirmText: this.logMessage.confirm,
+            onConfirm: this.turnFirstLoginOrBack.bind(this)
           }
         });
 
@@ -533,9 +547,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
           data: {
             title: 'Message',
             body: msg,
-            confirmText: this.translate.instant(
-              'universal_operating_confirm'
-            ),
+            confirmText: this.logMessage.confirm,
             onConfirm: () => this.router.navigateByUrl('/')
           }
         });
@@ -550,9 +562,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
         data: {
           title: 'Message',
           body: msg,
-          confirmText: this.translate.instant(
-            'universal_operating_confirm'
-          )
+          confirmText: this.logMessage.confirm
         }
       });
 

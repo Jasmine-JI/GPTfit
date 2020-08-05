@@ -35,7 +35,7 @@ export class MemberCapsuleComponent implements OnInit {
   @Input() isWaittingMemberInfo = false;
   @Input() groupId: string;
   @Input() userId: string;
-  @Input() groupLevel: string;
+  @Input() groupLevel: number;
   @Input() isHadMenu = false;
   @Input() coachType: string;
   @Input() brandType: number;
@@ -194,9 +194,9 @@ export class MemberCapsuleComponent implements OnInit {
     } else if (type === 1) {
       accessRight = '50';
     } else {
-      accessRight = this.groupLevel;
+      accessRight = this.groupLevel + '';
     }
-    // if (this.groupLevel === '80' || this.groupLevel === '60') {
+    // if (this.groupLevel === 80 || this.groupLevel === 60) {
     const body = {
       token: this.token,
       groupId: this.groupId,

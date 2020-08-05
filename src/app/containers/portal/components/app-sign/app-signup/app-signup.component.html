@@ -81,6 +81,7 @@
         <input
           placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.nickname} }}"
           maxlength="24"
+          [(ngModel)]="signupData.nickname"
           (focusout)="checkNickname($event)"
           (keypress)="checkNickname($event)"
         />
@@ -198,6 +199,7 @@
                   placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.nickname} }}"
                   class="form-control"
                   maxlength="24"
+                  [(ngModel)]="signupData.nickname"
                   (focusout)="checkNickname($event)"
                   (keypress)="checkNickname($event)"
                 />

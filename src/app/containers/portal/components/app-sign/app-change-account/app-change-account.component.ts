@@ -11,6 +11,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { formTest } from '../../../models/form-test';
 
 @Component({
   selector: 'app-app-change-account',
@@ -20,6 +21,8 @@ import { MatDialog } from '@angular/material/dialog';
 export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private ngUnsubscribe = new Subject();
+
+  readonly formReg = formTest;
 
   i18n = {
     email: '',
@@ -53,11 +56,11 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
 
   // 驗證用
   regCheck = {
-    email: /^.{1,63}@[a-zA-Z0-9]{2,63}.[a-zA-Z]{2,63}(.[a-zA-Z]{2,63})?$/,
+    email: this.formReg.email,
     emailPass: false,
-    password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,20}$/,
+    password: this.formReg.password,
     passwordPass: false,
-    phone: /^([1-9][0-9]+)$/,
+    phone: this.formReg.phone,
     phonePass: false,
     countryCodePass: false
   };
@@ -398,7 +401,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
                 hasBackdrop: true,
                 data: {
                   title: 'Message',
-                  body: `Server error.<br />Please try again later.`,
+                  body: `Error.<br />Please try again later.`,
                   confirmText: this.translate.instant(
                     'universal_operating_confirm'
                   ),
@@ -455,7 +458,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
               hasBackdrop: true,
               data: {
                 title: 'Message',
-                body: `Server error.<br />Please try again later.`,
+                body: `Error.<br />Please try again later.`,
                 confirmText: this.translate.instant(
                   'universal_operating_confirm'
                 ),

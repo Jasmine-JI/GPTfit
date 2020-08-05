@@ -1,5 +1,5 @@
 <mat-tab-group class="inner-test">
-  <mat-tab label="驗證圖片">
+  <mat-tab label="查詢使用者">
     <ng-container *ngIf="!isWrong">
       <label>選擇使用者:</label>
       <button class="icon-btn" (click)="openSelectorWin($event)">
@@ -8,8 +8,29 @@
         ></i>
       </button>
       <h1>
-        <label>使用者名字:</label>{{userName}}
+        <label>使用者名字:</label><span>{{ userInfo.userName }}</span>
       </h1>
+
+      <div class="photo-section flexCol">
+        <span>使用者 Id：{{ userInfo.userId }}</span>
+        <div class="flexRow">
+          <span>使用者連結：</span>
+          <a [href]="userInfo.userPageLink" target="_blank">{{ userInfo.userPageLink }}</a>
+        </div>
+        <div class="flexRow">
+          <span>帳號：</span>
+          <span *ngIf="userInfo.email !== ''">{{ userInfo.email }}</span>
+          <span *ngIf="userInfo.phone !== ''">+{{ userInfo.countryCode }} {{ userInfo.phone }}</span>
+        </div>
+        <div class="flexRow">
+          <span>啟用狀態：</span>
+          <span *ngIf="userInfo.enableStatus === 'true'">已啟用</span>
+          <span *ngIf="userInfo.enableStatus === 'false'">未啟用</span>
+        </div>
+        <span>最後登入時間：{{ userInfo.lastLogin }}</span>
+        <span>最後修改密碼時間：{{ userInfo.lastResetPwd }}</span>
+      </div>
+
       <div class="photo-section">
         <label>small icon:</label>
         <br>
@@ -17,8 +38,8 @@
         <br>
         <label>檔案大小(以jpg格式計算):</label>{{smallFileSize / 1024 | number: '0.1-1'}} kb
         <br>
-        <span *ngIf="!smallIcon" style="color: #cb5e5e">沒圖片!! </span>
-        <img *ngIf="smallIcon" [src]="(smallIcon | safeHtml)" />
+        <span *ngIf="!userInfo.smallIcon" style="color: #cb5e5e">沒圖片!! </span>
+        <img *ngIf="userInfo.smallIcon" [src]="(userInfo.smallIcon | safeHtml)" />
       </div>
 
       <div class="photo-section">
@@ -28,8 +49,8 @@
         <br>
       <label>檔案大小(以jpg格式計算):</label>{{middleFileSize / 1024 | number: '0.1-1'}} kb
         <br>
-        <span *ngIf="!middleIcon" style="color: #cb5e5e">沒圖片!! </span>
-        <img *ngIf="middleIcon" [src]="(middleIcon | safeHtml)" />
+        <span *ngIf="!userInfo.middleIcon" style="color: #cb5e5e">沒圖片!! </span>
+        <img *ngIf="userInfo.middleIcon" [src]="(userInfo.middleIcon | safeHtml)" />
       </div>
 
       <div class="photo-section">
@@ -39,8 +60,8 @@
         <br>
         <label>檔案大小(以jpg格式計算):</label>{{largeFileSize / 1024  | number: '0.1-1'}} kb
         <br>
-        <span *ngIf="!largeIcon" style="color: #cb5e5e">沒圖片!! </span>
-        <img *ngIf="largeIcon" [src]="(largeIcon | safeHtml)" />
+        <span *ngIf="!userInfo.largeIcon" style="color: #cb5e5e">沒圖片!! </span>
+        <img *ngIf="userInfo.largeIcon" [src]="(userInfo.largeIcon | safeHtml)" />
       </div>
     </ng-container>
     <span *ngIf="isWrong">你沒有權限操作喔!!!!!!</span>
@@ -128,7 +149,7 @@
       <div class="col-md-8">
         <div>
           <label>名稱:</label>
-          {{userName}}
+          {{nickname}}
         </div>
         <div>
           <label>介紹:</label>

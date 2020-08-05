@@ -38,6 +38,7 @@ export class PeopleSelectorWinComponent implements OnInit {
     private groupService: GroupService,
     @Inject(MAT_DIALOG_DATA) private data: any
   ) {}
+
   @HostListener('document:click')
   onClick() {
     this.areaType = 0;

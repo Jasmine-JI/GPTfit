@@ -10,6 +10,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { formTest } from '../../../models/form-test';
 
 interface RegCheck {
   email: RegExp;
@@ -32,6 +33,8 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private ngUnsubscribe = new Subject();
 
+  readonly formReg = formTest;
+
   i18n = {
     email: '',
     password: '',
@@ -49,13 +52,13 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 驗證用
   regCheck: RegCheck = {
-    email: /^.{1,63}@[a-zA-Z0-9]{2,63}.[a-zA-Z]{2,63}(.[a-zA-Z]{2,63})?$/,
+    email: this.formReg.email,
     emailPass: false,
-    password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,20}$/,
+    password: this.formReg.password,
     passwordPass: false,
-    nickname: /^[^!@#$%^&*()=|{}"?<>;:+-\/\\]{4,24}$/,
+    nickname: this.formReg.nickname,
     nicknamePass: false,
-    phone: /^([1-9][0-9]+)$/,
+    phone: this.formReg.phone,
     phonePass: false,
     countryCodePass: false
   };
@@ -359,13 +362,12 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   checkNickname (e: any) {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
-      const inputNickname = e.currentTarget.value;
+      this.signupData.nickname = this.trimWhiteSpace(e.currentTarget.value);
 
-      if (!this.regCheck.nickname.test(inputNickname)) {
+      if (!this.regCheck.nickname.test(this.signupData.nickname)) {
         this.signupCue.nickname = 'errorFormat';
         this.regCheck.nicknamePass = false;
       } else {
-        this.signupData.nickname = inputNickname;
         this.signupCue.nickname = '';
         this.regCheck.nicknamePass = true;
       }
@@ -373,6 +375,16 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
       this.checkAll(this.regCheck);
     }
 
+  }
+
+  /**
+   * 去除前後空白
+   * @param str {string}
+   * @returns {string}
+   * @author kidin-1090803
+   */
+  trimWhiteSpace(str: string): string {
+    return str.replace(/(^[\s]*)|([\s]*$)/g, '');
   }
 
   /**
@@ -459,7 +471,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
                 hasBackdrop: true,
                 data: {
                   title: 'Message',
-                  body: `Server error.<br />Please try again later.`,
+                  body: `Error.<br />Please try again later.`,
                   confirmText: this.translate.instant(
                     'universal_operating_confirm'
                   ),
@@ -537,7 +549,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
               hasBackdrop: true,
               data: {
                 title: 'Message',
-                body: `Server error.<br />Please try again later.`,
+                body: `Error.<br />Please try again later.`,
                 confirmText: this.translate.instant(
                   'universal_operating_confirm'
                 ),

@@ -55,8 +55,4 @@ export class SignupService {
     return <any> this.http.post('/api/v2/user/qrSignIn', body, httpOptions);
   }
 
-  fetchUpdateUserProfile (body) {  // v2-1011
-    return <any> this.http.post('/api/v2/user/editUserProfile', body);
-  }
-
 }
