@@ -11,6 +11,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { formTest } from '../../../models/form-test';
 
 @Component({
   selector: 'app-app-forgetpw',
@@ -21,12 +22,15 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private ngUnsubscribe = new Subject();
 
+  readonly formReg = formTest;
+
   i18n = {
     account: '',
     email: '',
     phone: '',
     password: '',
-    verificationCode: ''
+    verificationCode: '',
+    errorCaptcha: ''
   };
   sending = false;
   appSys = 0;  // 0: web, 1: ios, 2: android
@@ -100,11 +104,11 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 驗證用
   regCheck = {
-    email: /^.{1,63}@[a-zA-Z0-9]{2,63}.[a-zA-Z]{2,63}(.[a-zA-Z]{2,63})?$/,
-    phone: /^([1-9][0-9]+)$/,
+    email: this.formReg.email,
+    phone: this.formReg.phone,
     phonePass: false,
     countryCodePass: false,
-    password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,20}$/
+    password: this.formReg.password
   };
 
   constructor(
@@ -161,7 +165,8 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
         email: this.translate.instant('universal_userAccount_email'),
         phone: this.translate.instant('universal_userAccount_phone'),
         password: this.translate.instant('universal_userAccount_newPassword'),
-        verificationCode: this.translate.instant('universal_userAccount_phoneCaptcha')
+        verificationCode: this.translate.instant('universal_userAccount_phoneCaptcha'),
+        errorCaptcha: this.translate.instant('universal_userAccount_errorCaptcha')
       };
 
     });
@@ -391,27 +396,13 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
           switch (resultInfo.apiReturnMessage) {
             case 'Found attack, update status to lock!':
             case 'Found lock!':
-
-              const captchaBody = {
-                unlockFlow: 1,
-                imgLockCode: res.processResult.imgLockCode
-              };
-
-              this.signupService.fetchCaptcha(captchaBody, this.ip).subscribe(captchaRes => {
-                this.imgCaptcha = {
-                  show: true,
-                  imgCode: `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`,
-                  cue: '',
-                  code: ''
-                };
-              });
-
+              this.getImgCaptcha(res.processResult.imgLockCode);
               break;
             case 'Post fail, account is not existing.':
               this.cue.phone = 'universal_userAccount_noRegisterData';
               break;
             default:
-              const msgBody = 'Server error!<br /> Please try again later.';
+              const msgBody = 'Error!<br /> Please try again later.';
               this.showMsgBox(msgBody);
               console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
               break;
@@ -457,7 +448,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
       const inputPhoneCaptcha = e.currentTarget.value;
       if (inputPhoneCaptcha.length < 6) {
-        this.cue.verificationCode = 'universal_userAccount_errorCaptcha';
+        this.cue.verificationCode = this.i18n.errorCaptcha;
       } else {
         this.formValue.verificationCode = inputPhoneCaptcha;
         this.cue.verificationCode = '';
@@ -549,11 +540,15 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
       if (res.processResult.resultCode !== 200) {
 
         switch (res.processResult.apiReturnMessage) {
+          case 'Found attack, update status to lock!':
+          case 'Found lock!':
+            this.getImgCaptcha(res.processResult.imgLockCode);
+            break;
           case 'Post fail, account is not existing.':
             this.cue.email = 'universal_userAccount_noRegisterData';
             break;
           default:
-            const msgBody = 'Server error!<br /> Please try again later.';
+            const msgBody = 'Error!<br /> Please try again later.';
             this.showMsgBox(msgBody);
             console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
             break;
@@ -575,7 +570,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
       const inputImgCaptcha = e.currentTarget.value;
 
       if (inputImgCaptcha.length === 0) {
-        this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
+        this.imgCaptcha.cue = this.i18n.errorCaptcha;
       } else {
         this.imgCaptcha.code = inputImgCaptcha;
         this.imgCaptcha.cue = '';
@@ -605,11 +600,11 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
 
         switch (res.processResult.apiReturnMessage) {
           case 'Found a wrong unlock key.':
-            this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
+            this.imgCaptcha.cue = this.i18n.errorCaptcha;
             this.sending = false;
             break;
           default:
-            const msgBody = `Server error.<br />Please try again later.`;
+            const msgBody = `Error.<br />Please try again later.`;
             this.showMsgBox(msgBody);
             console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
             break;
@@ -638,13 +633,17 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
 
         let msgBody;
         switch (res.processResult.apiReturnMessage) {
+          case 'Found attack, update status to lock!':
+          case 'Found lock!':
+            this.getImgCaptcha(res.processResult.imgLockCode);
+            break;
           case 'Post fail, account was reset password.':
           case 'Reset password fail, reset time expired.':
           case 'Check and verification code is invalid.':
             msgBody = this.translate.instant('universal_userAccount_linkHasExpired');
             break;
           default:
-            msgBody = 'Server error!<br /> Please try again later.';
+            msgBody = 'Error!<br /> Please try again later.';
             console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
             break;
         }
@@ -677,11 +676,16 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
       if (res.processResult.resultCode !== 200) {
 
         switch (res.processResult.apiReturnMessage) {
+          case 'Found attack, update status to lock!':
+          case 'Found lock!':
+            this.getImgCaptcha(res.processResult.imgLockCode);
+            break;
           case 'SMS Code error.':
-            this.cue.verificationCode = 'universal_userAccount_errorCaptcha';
+          case 'Get phone and sms infomation is not enough.':
+            this.cue.verificationCode = this.i18n.errorCaptcha;
             break;
           default:
-            const msgBody = 'Server error!<br /> Please try again later.';
+            const msgBody = 'Error!<br /> Please try again later.';
             this.showMsgBox(msgBody);
             console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
             break;
@@ -729,7 +733,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
 
       let msgBody;
       if (res.processResult.resultCode !== 200) {
-        msgBody = 'Server error!<br /> Please try again later.';
+        msgBody = 'Error!<br /> Please try again later.';
         console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
       } else {
         msgBody = this.translate.instant('universal_userAccount_passwordResetComplete');
@@ -741,6 +745,28 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.showMsgBox(msgBody);
       this.sending = false;
+    });
+
+  }
+
+  /**
+   * 取得圖碼
+   * @param code {string}-imgLockCode
+   * @author kidin-1090803
+   */
+  getImgCaptcha(code: string) {
+    const captchaBody = {
+      unlockFlow: 1,
+      imgLockCode: code
+    };
+
+    this.signupService.fetchCaptcha(captchaBody, this.ip).subscribe(captchaRes => {
+      this.imgCaptcha = {
+        show: true,
+        imgCode: `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`,
+        cue: '',
+        code: ''
+      };
     });
 
   }

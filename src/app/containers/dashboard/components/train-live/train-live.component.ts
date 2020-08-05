@@ -39,7 +39,7 @@ export class TrainLiveComponent implements OnInit, AfterViewInit {
         _list.coachAvatar =
           _list.coachAvatar && _list.coachAvatar.length > 0
             ? this.utils.buildBase64ImgString(_list.coachAvatar)
-            : '/assets/images/user.png';
+            : '/assets/images/user2.png';
         _list.groupDesc = this.handleClassInfo(_list.groupDesc);
         return _list;
       });

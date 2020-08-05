@@ -8,12 +8,11 @@
       <div class="memberselector__bar-box">
         <ng-container *ngIf="!isInnerAdmin">
           <label style="margin-right: 5px">{{'universal_operating_search' | translate }}</label>
-          <select (click)="handleGroupOptions()"
-            [(ngModel)]="chooseGroupId"
-          >
+          <select [(ngModel)]="chooseGroupId">
             <option value="" disabled selected>{{'universal_group_selectGroup' | translate }}</option>
-            <option [value]="option.groupId"
+            <option
               *ngFor="let option of groupLists"
+              [value]="option.groupId"
             >
               {{option.groupName}}
             </option>

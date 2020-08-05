@@ -11,6 +11,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { formTest } from '../../../models/form-test';
 
 @Component({
   selector: 'app-app-modifypw',
@@ -18,6 +19,8 @@ import { MessageBoxComponent } from '@shared/components/message-box/message-box.
   styleUrls: ['./app-modifypw.component.scss']
 })
 export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  readonly passwordReg = formTest.password;
 
   appSys = 0; // 0: web 1: ios 2: android
   dataIncomplete = true;
@@ -202,7 +205,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
   checkPassword (e, obj) {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
       const inputPassword = e.currentTarget.value,
-            regPWD = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,20}$/;
+            regPWD = this.passwordReg;
 
       if (!regPWD.test(inputPassword)) {
         this.cue[obj] = 'universal_userAccount_passwordFormat';
@@ -267,7 +270,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
                 hasBackdrop: true,
                 data: {
                   title: 'Message',
-                  body: `Server error.<br />Please try again later.`,
+                  body: `Error.<br />Please try again later.`,
                   confirmText: this.translate.instant(
                     'universal_operating_confirm'
                   ),
@@ -316,7 +319,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
               hasBackdrop: true,
               data: {
                 title: 'Message',
-                body: `Server error.<br />Please try again later.`,
+                body: `Error.<br />Please try again later.`,
                 confirmText: this.translate.instant(
                   'universal_operating_confirm'
                 ),

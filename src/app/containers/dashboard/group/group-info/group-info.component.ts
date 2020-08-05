@@ -48,6 +48,7 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
     myGym: ''
   };
   accessRight = [99];
+  isGroupAdmin = false;
   isPreviewMode = false;
   hashGroupId: string;
   groupId: string;
@@ -111,9 +112,12 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private hashIdService: HashIdService
   ) {
-    this.translate.onLangChange.subscribe(() => {
+    this.translate.onLangChange.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
       this.getAndInitTranslations();
     });
+
     this.getAndInitTranslations();
   }
 
@@ -125,14 +129,12 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
     this.route.params.subscribe(_params => this.handleInit());
     this.detectUrlChange(location.pathname);
 
-    this.router.events.subscribe((val: NavigationEnd) => {
+    this.router.events.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe((val: NavigationEnd) => {
       if (val instanceof NavigationEnd && val.url) {
         this.detectUrlChange(val.url);
       }
-    });
-
-    this.groupService.checkAccessRight(this.groupId).subscribe(res => {
-      this.accessRight = res;
     });
 
     this.checkManageStatus();
@@ -144,9 +146,11 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
     this.groupId = this.hashIdService.handleGroupIdDecode(
       this.hashGroupId
     );
+
     if (this.groupId && this.groupId.length > 0) {
-      this.groupLevel = +this.utils.displayGroupLevel(this.groupId);
+      this.groupLevel = this.utils.displayGroupLevel(this.groupId);
     }
+
     if (this.groupId.length === 0) {
       return this.router.navigateByUrl('/404');
     }
@@ -204,7 +208,6 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
           ? `${groupIcon}${this.updateImgQueryString}`
           : '/assets/images/group-default.svg';
       this.group_id = this.utils.displayGroupId(groupId);
-      this.groupLevel = +this.utils.displayGroupLevel(groupId);
       if (this.groupLevel === 40) {
         this.totalGroupName =
           this.groupInfo.groupRootInfo[2].brandName +
@@ -841,8 +844,13 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl(`${location.pathname}/edit`);
   }
 
-  // 依照網址導引至該頁面-kidin-10812217
+  // 重新確認群組權限並依照網址導引至該頁面-kidin-10812217
   detectUrlChange(url) {
+    this.groupService.checkAccessRight(this.groupId).subscribe(res => {
+      this.accessRight = res;
+      this.isGroupAdmin = this.accessRight.some(_accessRight => _accessRight === this.groupLevel);
+    });
+
     if (url.indexOf('my-report') > -1) {
       this.chooseIdx = 4;
     } else if (url.indexOf('class-analysis') > -1) {

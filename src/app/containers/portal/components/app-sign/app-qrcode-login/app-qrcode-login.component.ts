@@ -225,7 +225,7 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
                 hasBackdrop: true,
                 data: {
                   title: 'Message',
-                  body: `Server error.<br />Please try again later.`,
+                  body: `Error.<br />Please try again later.`,
                   confirmText: this.translate.instant(
                     'universal_operating_confirm'
                   ),
@@ -256,7 +256,7 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
                     hasBackdrop: true,
                     data: {
                       title: 'Message',
-                      body: `Server error.<br />Please try again later.`,
+                      body: `Error.<br />Please try again later.`,
                       confirmText: this.translate.instant(
                         'universal_operating_confirm'
                       ),
@@ -376,7 +376,7 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
                 hasBackdrop: true,
                 data: {
                   title: 'Message',
-                  body: `Server error.<br />Please try again later.`,
+                  body: `Error.<br />Please try again later.`,
                   confirmText: this.translate.instant(
                     'universal_operating_confirm'
                   ),

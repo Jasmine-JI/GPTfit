@@ -12,7 +12,7 @@
         <div class="rwd-btn_action">
           <button class="alatech-btn alatech-btn--default"
             style="width:140px;height:38px"
-            *ngIf="!visitorDetail?.isGroupAdmin"
+            *ngIf="!isGroupAdmin"
             title="{{'universal_group_applicationsForJoin' | translate}}"
             (click)="goDashboardGroupInfo()"
           >

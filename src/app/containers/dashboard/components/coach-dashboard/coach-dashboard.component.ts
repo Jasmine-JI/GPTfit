@@ -280,7 +280,7 @@ export class CoachDashboardComponent
         this.classInfo.coachAvatar =
           this.classInfo.coachAvatar && this.classInfo.coachAvatar.length > 0
             ? `${this.classInfo.coachAvatar} ${this.updateImgQueryString}`
-            : '/assets/images/user.png';
+            : '/assets/images/user2.png';
         if (this.classInfo.groupVideoUrl.length > 0) {
           this.isHadVideoUrl = true;
         } else {
@@ -580,7 +580,7 @@ export class CoachDashboardComponent
         userIcon =
           datas[existIdx] && datas[existIdx].pairIcon.length > 0
             ? `${datas[existIdx].pairIcon} ${this.updateImgQueryString}`
-            : '/assets/images/user.png';
+            : '/assets/images/user2.png';
         const image = new Image();
         image.src = userIcon;
         const width = image.width;

@@ -10,6 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserInfoService } from '../../../services/userInfo.service';
 import { TranslateService } from '@ngx-translate/core';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
+import { formTest } from '../../../../portal/models/form-test';
 
 @Component({
   selector: 'app-user-settings',
@@ -17,6 +18,9 @@ import { UserProfileService } from '../../../../../shared/services/user-profile.
   styleUrls: ['./user-settings.component.scss', '../settings.component.scss']
 })
 export class UserSettingsComponent implements OnInit, OnChanges {
+
+  readonly nicknameReg = formTest.nickname;
+
   reloadFileText = '重新上傳';
   chooseFileText = '選擇檔案';
   acceptFileExtensions = ['JPG', 'JPEG', 'GIF', 'PNG'];
@@ -85,7 +89,7 @@ export class UserSettingsComponent implements OnInit, OnChanges {
     this.settingsForm = this.fb.group({
       // 定義表格的預設值
       nameIcon: [
-        `${avatarUrl} ${this.updateQueryString}`,
+        `${avatarUrl}${this.updateQueryString}`,
         Validators.required
       ],
       name: [nickname, Validators.required],
@@ -144,35 +148,44 @@ export class UserSettingsComponent implements OnInit, OnChanges {
   }
 
   /**
-   * call api 1011更新會員資料來確認是否暱稱重複
+   * 去除暱稱頭尾空白，並call api 1011更新會員資料來確認是否暱稱重複
    * @param name {string}
    * @author kidin-1090723
    */
   handleSearchName(name: string): void {
-    const token = this.utils.getToken() || '';
-    const body = {
-      token,
-      userProfile: {
-        nickname: name
-      }
-    };
+    const trimNickname = name.replace(/(^[\s]*)|([\s]*$)/g, '');
+    this.settingsForm.patchValue({name: trimNickname});
 
-    this.isNameLoading = true;
-    this.settingsService.updateUserProfile(body).subscribe(res => {
-      this.isNameLoading = false;
-      if (res.processResult.resultCode === 200) {
-        this.userProfileService.refreshUserProfile({
-          token,
-        });
-        this.settingsForm.patchValue({ name });
-        this.isNameError = false;
-        this.inValidText = this.translate.instant('universal_userAccount_fullField');
-      } else {
-        this.inValidText = `${this.translate.instant('universal_activityData_name')} ${this.translate.instant('universal_deviceSetting_repeat')}`;
-        this.isNameError = true;
-      }
+    if (!this.nicknameReg.test(trimNickname)) {
+      this.inValidText = this.translate.instant('universal_userAccount_nameCharactersToLong');
+      this.isNameError = true;
+    } else {
+      const token = this.utils.getToken() || '';
+      const body = {
+        token,
+        userProfile: {
+          nickname: trimNickname
+        }
+      };
 
-    });
+      this.isNameLoading = true;
+      this.settingsService.updateUserProfile(body).subscribe(res => {
+        this.isNameLoading = false;
+        if (res.processResult.resultCode === 200) {
+          this.userProfileService.refreshUserProfile({
+            token,
+          });
+
+          this.isNameError = false;
+          this.inValidText = this.translate.instant('universal_userAccount_fullField');
+        } else {
+          this.inValidText = `${this.translate.instant('universal_activityData_name')} ${this.translate.instant('universal_deviceSetting_repeat')}`;
+          this.isNameError = true;
+        }
+
+      });
+
+    }
 
   }
 

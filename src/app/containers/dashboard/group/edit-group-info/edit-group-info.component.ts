@@ -66,7 +66,6 @@ export class EditGroupInfoComponent implements OnInit {
   acceptFileExtensions = ['JPG', 'JPEG', 'GIF', 'PNG'];
   finalImageLink: string;
   imgCropping = false;
-  visitorDetail: any;
   isLoading = false;
   isGroupDetailLoading = false;
   videoUrl = '';
@@ -115,9 +114,6 @@ export class EditGroupInfoComponent implements OnInit {
   ngOnInit() {
     this.route.params.subscribe(_params => this.handleInit());
     this.getUserProfile();
-    this.userInfoService.getUserAccessRightDetail().subscribe(res => {
-      this.visitorDetail = res;
-    });
 
     this.utils.getImgSelectedStatus().subscribe(res => {
       this.imgCropping = res;
@@ -188,7 +184,7 @@ export class EditGroupInfoComponent implements OnInit {
       this.groupImg = `${groupIcon}${this.updateImgQueryString}`;
       this.finalImageLink = this.groupImg;
       this.group_id = this.utils.displayGroupId(groupId);
-      this.groupLevel = +this.utils.displayGroupLevel(groupId);
+      this.groupLevel = this.utils.displayGroupLevel(groupId);
       if (this.groupLevel === 80) {
         this.getGroupMemberList(2);
       } else {

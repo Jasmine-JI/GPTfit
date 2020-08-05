@@ -142,13 +142,13 @@ export class UtilsService {
     if (_id) {
       const arr = _id.split('-').splice(2, 4);
       if (+arr[3] > 0) {
-        return '80';
+        return 80;
       } else if (+arr[2] > 0) {
-        return '60';
+        return 60;
       } else if (+arr[1] > 0) {
-        return '40';
+        return 40;
       } else {
-        return '30';
+        return 30;
       }
     }
   }

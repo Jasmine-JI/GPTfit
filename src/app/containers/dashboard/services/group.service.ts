@@ -396,7 +396,7 @@ export class GroupService {
   saveAllLevelGroupData(
     token: string,
     groupId: string,
-    groupLevel: string
+    groupLevel: number
   ) {
     const body = {
       token,

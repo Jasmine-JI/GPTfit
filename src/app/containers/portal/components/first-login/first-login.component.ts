@@ -31,7 +31,7 @@ export class FirstLoginComponent implements OnInit {
   content = '送出';
   className = 'btn btn-primary access-btn';
   isLogining = false;
-  userImg = '/assets/images/user.png';
+  userImg = '/assets/images/user2.png';
   reloadFileText = '重新上傳';
   chooseFileText = '上傳相片';
   acceptFileExtensions = ['JPG', 'JPEG', 'GIF', 'PNG'];
