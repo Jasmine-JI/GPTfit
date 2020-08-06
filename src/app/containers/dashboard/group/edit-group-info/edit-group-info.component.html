@@ -45,7 +45,7 @@
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="{{'universal_operating_disband' | translate}} {{'universal_group_branch' | translate}}"
-            *ngIf="(groupLevel && groupLevel === 40) && maxAccessRight <= groupLevel"
+            *ngIf="(groupLevel && groupLevel === 40) && maxAccessRight < 40"
             (click)="dimissGroup($event, 2)"
           >
             {{'universal_operating_disband' | translate}}
@@ -54,7 +54,7 @@
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="{{'universal_operating_disband' | translate}} {{'universal_group_coachingClass' | translate}}"
-            *ngIf="(groupLevel && groupLevel === 60) && maxAccessRight <= groupLevel"
+            *ngIf="(groupLevel && groupLevel === 60) && maxAccessRight < 50"
             (click)="dimissGroup($event, 3)"
           >
             {{'universal_operating_disband' | translate}}
@@ -63,14 +63,14 @@
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="{{'universal_operating_disband' | translate}} {{'universal_group_group' | translate}}"
-            *ngIf="(groupLevel && groupLevel === 80) && maxAccessRight <= groupLevel"
+            *ngIf="(groupLevel && groupLevel === 80) && maxAccessRight < groupLevel"
             (click)="dimissGroup($event, 4)"
           >
             {{'universal_operating_disband' | translate}} {{'universal_group_group' | translate}}
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="{{'universal_group_addBranch' | translate}}"
-            *ngIf="groupLevel && groupLevel === 30 && maxAccessRight <= groupLevel"
+            *ngIf="groupLevel && groupLevel === 30 && maxAccessRight < 30"
             (click)="goCreatePage(1, $event)"
           >
             <span *ngIf="brandType == 1">{{'universal_group_addBranch' | translate}}</span>
@@ -222,7 +222,8 @@
                 <ng-container  *ngFor="let subBrandItem of subBrandInfo">
                   <app-member-capsule
                     [isSubGroupInfo]="true"
-                    [isHadMenu]="maxAccessRight <= 20 || maxAccessRight === 30"
+                    [isHadMenu]="maxAccessRight <= 30"
+                    [canDisband]="maxAccessRight < 30"
                     [title]="subBrandItem?.groupName"
                     [memberInfo]="subBrandItem"
                     [name]="subBrandItem && subBrandItem?.groupName"
@@ -246,7 +247,8 @@
                 <ng-container  *ngFor="let subBranchItem of subBranchInfo">
                   <app-member-capsule
                     [isSubGroupInfo]="true"
-                    [isHadMenu]="maxAccessRight <= 20 || (maxAccessRight >= 30 && maxAccessRight <= 40)"
+                    [isHadMenu]="maxAccessRight <= 30"
+                    [canDisband]="maxAccessRight < 40"
                     [title]="subBranchItem?.groupName"
                     [memberInfo]="subBranchItem"
                     [name]="subBranchItem && subBranchItem?.groupName"
@@ -271,7 +273,8 @@
                 <ng-container  *ngFor="let subCoachItem of subCoachInfo">
                   <app-member-capsule
                     [isSubGroupInfo]="true"
-                    [isHadMenu]="maxAccessRight <= 20 || (maxAccessRight >= 30 && maxAccessRight <= 60)"
+                    [isHadMenu]="maxAccessRight <= 40"
+                    [canDisband]="maxAccessRight < 50"
                     [title]="subCoachItem?.groupName"
                     [memberInfo]="subCoachItem"
                     [name]="subCoachItem && subCoachItem?.groupName"
@@ -381,7 +384,7 @@
                     <span *ngIf="normalCoaches && normalCoaches.length === 0">{{'universal_status_noData' | translate}}</span>
                     <ng-container *ngFor="let normalCoachAdmItem of normalCoaches">
                       <app-member-capsule
-                        [isHadMenu]="maxAccessRight <= 60"
+                        [isHadMenu]="maxAccessRight < 50 || maxAccessRight === 60"
                         [isAdminInfo]="true"
                         [title]="normalCoachAdmItem?.memberName"
                         [memberInfo]="normalCoachAdmItem"

@@ -17,6 +17,40 @@
         <img class="productImg" *ngIf="deviceInfo?.modelID" src="{{imageStoragePlace + deviceInfo?.modelImg}}">
       </div>
     </div>
+    <div class="row demo-qr__action">
+      <button class="alatech-btn alatech-btn--default"
+        title="{{'universal_deviceSetting_productRegistration' | translate}}"
+        *ngIf="isShowBindingBtn"
+        (click)="goBinding()"
+        style="color: #26abe3;font-weight: bold; font-size: 20px;"
+      >
+        {{'universal_deviceSetting_productRegistration' | translate}}
+      </button>
+      <button class="alatech-btn alatech-btn--default"
+        title="Fit Pair"
+        *ngIf="isShowFitPairBtn && isFitPaired"
+        (click)="fitPair('2')"
+        style="font-size: 20px;"
+      >
+        {{'universal_uiFitpair_undoFitpair' | translate }}
+      </button>
+      <button class="alatech-btn alatech-btn--default"
+        title="Fit Pair"
+        *ngIf="isShowFitPairBtn && !isFitPaired"
+        (click)="fitPair('1')"
+        style="font-size: 20px;"
+      >
+        Fit Pair
+      </button>
+      <button class="alatech-btn alatech-btn--default"
+        title="Fit Pair"
+        *ngIf="isShowFitPairBtn && !isFitPaired"
+        (click)="fitPair('3')"
+        hidden
+      >
+        Fit Pair({{'universal_uiFitpair_onlySportFile' | translate}})
+      </button>
+    </div>
     <div class="row" style="margin-bottom: 15px">
       <div class="col-sm-6 text-sm-right text-center" [style.font-weight]="isWrong ? '200' : '700' ">
         <span  style="font-weight: bold">{{"universal_deviceSetting_deviceSerialNumber" | translate}}</span>：
@@ -116,37 +150,6 @@
             <a target="_blank" href={{productManual}}>{{"universal_deviceSetting_deviceManual" | translate}}</a>
           </div>
         </div>
-      </div>
-      <div class="row demo-qr__action">
-        <button class="alatech-btn alatech-btn--default"
-          title="{{'universal_deviceSetting_productRegistration' | translate}}"
-          *ngIf="isShowBindingBtn"
-          (click)="goBinding()"
-          style="color: #26abe3;font-weight: bold"
-        >
-          {{'universal_deviceSetting_productRegistration' | translate}}
-        </button>
-        <button class="alatech-btn alatech-btn--default"
-          title="Fit Pair"
-          *ngIf="isShowFitPairBtn && isFitPaired"
-          (click)="fitPair('2')"
-        >
-          {{'universal_uiFitpair_undoFitpair' | translate }}
-        </button>
-        <button class="alatech-btn alatech-btn--default"
-          title="Fit Pair"
-          *ngIf="isShowFitPairBtn && !isFitPaired"
-          (click)="fitPair('1')"
-        >
-          Fit Pair({{'universal_uiFitpair_avatarAndSportFile' | translate}})
-        </button>
-        <button class="alatech-btn alatech-btn--default"
-          title="Fit Pair"
-          *ngIf="isShowFitPairBtn && !isFitPaired"
-          (click)="fitPair('3')"
-        >
-          Fit Pair({{'universal_uiFitpair_onlySportFile' | translate}})
-        </button>
       </div>
     </ng-container>
   </ng-container>

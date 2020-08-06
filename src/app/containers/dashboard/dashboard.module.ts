@@ -92,6 +92,7 @@ import { ComReportComponent } from './group/group-info/com-report/com-report.com
 import { ComLifeTrackingComponent } from './group/group-info/com-life-tracking/com-life-tracking.component';
 import { ModifyBoxComponent } from './components/settings/privacy-settings/modify-box/modify-box.component';
 import { QrcodeUploadComponent } from './components/qrcode-upload/qrcode-upload.component';
+/*
 import { GroupInfoComponent as GroupInfoV2Component } from './group-v2/group-info/group-info.component';
 import { SearchGroupComponent } from './group-v2/search-group/search-group.component';
 import { EditGroupComponent } from './group-v2/group-info/edit-group/edit-group.component';
@@ -101,6 +102,7 @@ import { CommercePlanComponent } from './group-v2/group-info/commerce-plan/comme
 import { MemberListComponent } from './group-v2/group-info/member-list/member-list.component';
 import { GroupArchitectureComponent } from './group-v2/group-info/group-architecture/group-architecture.component';
 import { CloudrunReportComponent } from './group-v2/group-info/cloudrun-report/cloudrun-report.component';
+*/
 
 @NgModule({
   imports: [
@@ -203,6 +205,7 @@ import { CloudrunReportComponent } from './group-v2/group-info/cloudrun-report/c
     ComLifeTrackingComponent,
     ModifyBoxComponent,
     QrcodeUploadComponent,
+    /*
     GroupInfoV2Component,
     SearchGroupComponent,
     EditGroupComponent,
@@ -212,6 +215,7 @@ import { CloudrunReportComponent } from './group-v2/group-info/cloudrun-report/c
     MemberListComponent,
     GroupArchitectureComponent,
     CloudrunReportComponent
+    */
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
