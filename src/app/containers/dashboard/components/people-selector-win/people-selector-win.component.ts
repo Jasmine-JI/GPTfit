@@ -15,6 +15,7 @@ export class PeopleSelectorWinComponent implements OnInit {
   groupLists: any;
   chooseGroupId = '';
   keyword = '';
+
   get title() {
     return this.data.title;
   }
@@ -23,15 +24,22 @@ export class PeopleSelectorWinComponent implements OnInit {
     return this.data.adminLevel;
   }
 
+  get type() {
+    return this.data.type;
+  }
+
   get adminLists() {
     return this.data.adminLists || [];
   }
+
   get onChange() {
     return this.data.onDelete;
   }
+
   get isInnerAdmin() {
     return this.data.isInnerAdmin;
   }
+
   areaType: number;
   constructor(
     private dialog: MatDialog,
@@ -49,7 +57,7 @@ export class PeopleSelectorWinComponent implements OnInit {
   }
 
   confirm() {
-    this.data.onConfirm(this.adminLists);
+    this.data.onConfirm(this.type, this.adminLists);
     this.dialog.closeAll();
   }
 
@@ -90,11 +98,17 @@ export class PeopleSelectorWinComponent implements OnInit {
     this.groupService.getGroupList().subscribe(_res => this.groupLists = _res);
   }
 
+  /**
+   * 根據查詢類型進行搜尋
+   * @author kidin-1090806
+   */
   search() {
     if (this.chooseGroupId.length > 0 || this.isInnerAdmin) {
       let params = new HttpParams();
       params = params.set('type', '0');
       params = params.set('keyword', this.keyword);
+      params = params.set('searchType', this.type);
+
       if (this.isInnerAdmin) {
         params = params.set('groupId', '0-0-0-0-0-0');
       } else {
@@ -112,4 +126,5 @@ export class PeopleSelectorWinComponent implements OnInit {
       this.fakeDatas = [];
     }
   }
+
 }

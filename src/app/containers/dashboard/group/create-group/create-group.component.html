@@ -163,12 +163,12 @@
             >
             </app-form-text>
             <app-form-text
-              *ngIf="createType === 2 && groupLevel === '40'"
+              *ngIf="createType === 2 && groupLevel === 40"
               [content]="subBranchInfo && subBranchInfo[0]?.groupName || ''"
               [disabled]="true"
             >
             </app-form-text>
-            <select *ngIf="createType === 2 && groupLevel === '30'" formControlName="branchId" class="form-field"
+            <select *ngIf="createType === 2 && groupLevel === 30" formControlName="branchId" class="form-field"
               [class.form-field--invalid]="(!branchId.valid && branchId.touched) || (f.submitted && branchId.hasError('required'))"
             >
               <ng-container  *ngFor="let subBranchItem of subBranchInfo">

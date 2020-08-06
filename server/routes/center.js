@@ -206,6 +206,7 @@ router.get('/innerAdmin', function (req, res, next) {
   });
 
 });
+
 router.get('/searchMember', function (req, res, next) {
   const {
     con,
@@ -213,34 +214,78 @@ router.get('/searchMember', function (req, res, next) {
       keyword,
       groupId,
       accessRight,
-      type // 0: 沒有權限的篩選， 1: 有
+      type, // 0: 沒有權限的篩選， 1: 有
+      searchType // 1: userId 2:帳號
     }
   } = req;
-  const groupIdQuery = groupId && groupId.length > 0 ? ` and g.group_id = ?` : '';
-  let additionalVal = groupId;
-  if (type === '1') {
-    additionalVal = accessRight;
-  }
-  const accessRightQuery = accessRight && accessRight.length > 0 ? ` and m.access_right = ?` : '';
 
-  const sql = `
-    select u.login_acc as userName, g.group_name as groupName, m.member_id as userId
-    from ?? m, ?? g, ?? u
-    where u.login_acc like ? '%' and g.group_id = m.group_id and m.member_id = u.user_id ${groupIdQuery} ${accessRightQuery};
-  `;
-  con.query(sql, ['group_member_info', 'group_info', 'user_profile', keyword, additionalVal], function (err, rows) {
-    if (err) {
-      console.log(err);
-      return res.status(500).send({
-        errorMessage: err.sqlMessage
+  const token = req.headers['authorization'];
+  getUserId(token).then((_res) => {
+    if (res) {
+
+      if (searchType === 1) {
+
+        const groupIdQuery = groupId && groupId.length > 0 ? ` and g.group_id = ?` : '';
+        let additionalVal = groupId;
+        if (type === '1') {
+          additionalVal = accessRight;
+        }
+        const accessRightQuery = accessRight && accessRight.length > 0 ? ` and m.access_right = ?` : '';
+
+        const sql = `
+          select u.login_acc as userName, g.group_name as groupName, m.member_id as userId
+          from ?? m, ?? g, ?? u
+          where u.login_acc like ? '%' and g.group_id = m.group_id and m.member_id = u.user_id ${groupIdQuery} ${accessRightQuery};
+        `;
+        con.query(sql, ['group_member_info', 'group_info', 'user_profile', keyword, additionalVal], function (err, rows) {
+          if (err) {
+            console.log(err);
+            return res.status(500).send({
+              errorMessage: err.sqlMessage
+            });
+          }
+          if (rows) {
+            return res.json(rows);
+          }
+        });
+
+      } else {
+        const phoneReg = /^([0-9]+)$/,
+              emailReg = /^\S{1,63}@[a-zA-Z0-9]{2,63}.[a-zA-Z]{2,63}(.[a-zA-Z]{2,63})?$/;
+
+        let sql = '';
+        if (phoneReg.test(keyword)) {
+          sql = `select user_id, login_acc, phone as phone from ?? where phone like ? '%'`;
+        } else {
+          sql = `select user_id, login_acc, e_mail as e_mail from ?? where e_mail like ? '%'`;
+        }
+
+        con.query(sql, ['user_profile', keyword], function (err, rows) {
+          if (err) {
+            console.log(err);
+            return res.status(500).send({
+              errorMessage: err.sqlMessage
+            });
+          }
+          if (rows) {
+            return res.json(rows);
+          }
+        });
+
+      }
+
+    } else {
+      res.json({
+        resultCode: 403,
+        rtnMsg: '你沒權限~'
       });
+
     }
-    if (rows) {
-      return res.json(rows);
-    }
+
   });
 
 });
+
 router.post('/actionGroup', function (req, res, next) {
   const {
     con,

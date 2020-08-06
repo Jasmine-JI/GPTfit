@@ -77,11 +77,10 @@
           <button class="alatech-btn alatech-btn--default"
             title="{{'universal_group_exitGroup' | translate}}"
             *ngIf="joinStatus === 2 &&
-            (isGroupAdmin
-             ||
-            (groupLevel === 80 && normalGroupAdministrators && normalGroupAdministrators?.length > 1)
-             ||
-            (groupLevel === 40 && branchAdministrators && branchAdministrators?.length > 1)
+            (!isGroupAdmin
+              || (groupLevel === 40 && branchAdministrators && branchAdministrators?.length > 1)
+              || (groupLevel === 60 && coachAdministrators && coachAdministrators?.length > 1)
+              || (groupLevel === 80 && normalGroupAdministrators && normalGroupAdministrators?.length > 1)
             )
              && !isOutage"
             (click)="handleActionGroup(2)"

@@ -1,12 +1,22 @@
 <mat-tab-group class="inner-test">
   <mat-tab label="查詢使用者">
     <ng-container *ngIf="!isWrong">
-      <label>選擇使用者:</label>
-      <button class="icon-btn" (click)="openSelectorWin($event)">
-        <i class="icon-svg_web-icon_p1_021-add_friend group-icon"
-        style="font-size: 30px"
-        ></i>
-      </button>
+      <div>
+        <label>使用暱稱選擇使用者:</label>
+        <button class="icon-btn" (click)="openSelectorWin(1, $event)">
+          <i class="icon-svg_web-icon_p1_021-add_friend group-icon"
+          style="font-size: 30px"
+          ></i>
+        </button>
+      </div>
+      <div>
+        <label>使用帳號選擇使用者:</label>
+        <button class="icon-btn" (click)="openSelectorWin(2, $event)">
+          <i class="icon-svg_web-icon_p1_021-add_friend group-icon"
+          style="font-size: 30px"
+          ></i>
+        </button>
+      </div>
       <h1>
         <label>使用者名字:</label><span>{{ userInfo.userName }}</span>
       </h1>
@@ -16,6 +26,10 @@
         <div class="flexRow">
           <span>使用者連結：</span>
           <a [href]="userInfo.userPageLink" target="_blank">{{ userInfo.userPageLink }}</a>
+        </div>
+        <div class="flexRow">
+          <span>使用者裝置日誌：</span>
+          <a [href]="userInfo.userDeviceLog" target="_blank">{{ userInfo.userDeviceLog }}</a>
         </div>
         <div class="flexRow">
           <span>帳號：</span>

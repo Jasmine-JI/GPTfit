@@ -848,7 +848,15 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
   detectUrlChange(url) {
     this.groupService.checkAccessRight(this.groupId).subscribe(res => {
       this.accessRight = res;
-      this.isGroupAdmin = this.accessRight.some(_accessRight => _accessRight === this.groupLevel);
+      this.isGroupAdmin = this.accessRight.some(_accessRight => {
+        if (this.groupLevel === 60) {
+          return _accessRight === 50 || _accessRight === 60;
+        } else  {
+          return _accessRight === this.groupLevel;
+        }
+
+      });
+console.log('isAdmin', this.isGroupAdmin, this.accessRight, this.groupLevel);
     });
 
     if (url.indexOf('my-report') > -1) {

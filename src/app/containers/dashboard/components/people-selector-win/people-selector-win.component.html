@@ -18,8 +18,15 @@
             </option>
           </select>
         </ng-container>
-        <input placeholder="{{'universal_group_nameKeyword' | translate }}"
+        <input
+          placeholder="{{'universal_group_nameKeyword' | translate }}"
           [(ngModel)]="keyword"
+          *ngIf="type === 1"
+        />
+        <input
+          placeholder="{{'universal_userAccount_account' | translate }}"
+          [(ngModel)]="keyword"
+          *ngIf="type === 2"
         />
         <button class="icon-btn" (click)="search()"
           style="margin-left: 5px"
@@ -36,7 +43,9 @@
             (click)="handleItem(_idx)"
             [class.memberselector-sl__item--is-selected]="chooseIndex === _idx"
           >
-            {{item.groupName}}/{{item.userName}}
+            <span *ngIf="type === 1">{{item.groupName}}/{{item.userName}}</span>
+            <span *ngIf="type === 2 && item.e_mail">{{item.login_acc}}/{{item.e_mail}}</span>
+            <span *ngIf="type === 2 && item.phone">{{item.login_acc}}/{{item.phone}}</span>
           </li>
         </ng-container>
         <li class="memberselector-sl__item memberselector-sl__item--empty"
@@ -72,7 +81,9 @@
             (click)="handleExistItem(_idx)"
             [class.memberselector-sl__item--is-selected]="chooseExistIndex === _idx"
           >
-            {{item.groupName}}/{{item.userName}}
+            <span *ngIf="type === 1">{{item.groupName}}/{{item.userName}}</span>
+            <span *ngIf="type === 2 && item.e_mail">{{item.login_acc}}/{{item.e_mail}}</span>
+            <span *ngIf="type === 2 && item.phone">{{item.login_acc}}/{{item.phone}}</span>
           </li>
         </ng-container>
         <li class="memberselector-sl__item memberselector-sl__item--empty"

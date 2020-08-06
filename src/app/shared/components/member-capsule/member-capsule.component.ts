@@ -37,6 +37,7 @@ export class MemberCapsuleComponent implements OnInit {
   @Input() userId: string;
   @Input() groupLevel: number;
   @Input() isHadMenu = false;
+  @Input() canDisband = false;
   @Input() coachType: string;
   @Input() brandType: number;
   @Input() accessRight: string;

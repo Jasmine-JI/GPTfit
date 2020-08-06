@@ -26,7 +26,7 @@
             {{ 'universal_group_management' | translate}}
           </a>
         </li>
-        <li class="warn-manage" (click)="openDeleteGroupWin()">
+        <li class="warn-manage" (click)="openDeleteGroupWin()" *ngIf="canDisband">
           <a>
             {{'universal_operating_disband' | translate}} {{'universal_group_group' | translate}}
           </a>
