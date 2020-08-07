@@ -20,6 +20,7 @@ interface UserInfo {
   userName: string;
   userId: number;
   userPageLink: string;
+  userDeviceLog: string;
   smallIcon: string;
   middleIcon: string;
   largeIcon: string;
@@ -55,6 +56,7 @@ export class InnerTestComponent implements OnInit {
     userName: '',
     userId: null,
     userPageLink: '',
+    userDeviceLog: '',
     smallIcon: '',
     middleIcon: '',
     largeIcon: '',
@@ -89,15 +91,31 @@ export class InnerTestComponent implements OnInit {
   flag = 402;
 
   ngOnInit() {}
-  getUserAvartar(userId) {
+
+  /**
+   * 使用userId或帳號查詢使用者資訊
+   * @param userId {string}- userId或帳號
+   * @author kidin-1090806
+   */
+  getUserAvartar(userId: number): void {
     let params = new HttpParams();
     params = params.set('userId', userId.toString());
+
     this.groupService.fetchUserAvartar(params).subscribe(res => {
       if (res.resultCode === 200) {
+
+        let lastResetPwd: string;
+        if (res.lastResetPwd !== null && res.lastResetPwd !== '') {
+          lastResetPwd = moment.unix(+res.lastResetPwd).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+        } else {
+          lastResetPwd = '未重設';
+        }
+
         this.userInfo = {
           userName: res.userName,
-          userId: +userId,
-          userPageLink: `https://${location.hostname}/user-profile/${this.hashIdService.handleUserIdEncode(userId)}`,
+          userId: userId,
+          userPageLink: `https://${location.hostname}/user-profile/${this.hashIdService.handleUserIdEncode(userId.toString())}`,
+          userDeviceLog: `https://${location.hostname}/dashboard/system/device_log/detail/${userId}`,
           smallIcon: this.utils.buildBase64ImgString(res.smallIcon),
           middleIcon: this.utils.buildBase64ImgString(res.middleIcon),
           largeIcon: this.utils.buildBase64ImgString(res.largeIcon),
@@ -106,7 +124,7 @@ export class InnerTestComponent implements OnInit {
           phone: res.phone,
           enableStatus: res.enableStatus,
           lastLogin: moment.unix(+res.lastLogin).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-          lastResetPwd: moment.unix(+res.lastResetPwd).format('YYYY-MM-DDTHH:mm:ss.SSSZ')
+          lastResetPwd: lastResetPwd
         };
 
         this.handleAvartarInfo(this.userInfo.smallIcon, 1);
@@ -117,6 +135,7 @@ export class InnerTestComponent implements OnInit {
       }
     });
   }
+
   handleAvartarInfo(icon, type) {
     const image = new Image();
     image.src = icon;
@@ -141,23 +160,46 @@ export class InnerTestComponent implements OnInit {
       }
     }, 500);
   }
-  openSelectorWin(e) {
+
+  /**
+   * 根據類別開啟選擇器頁面
+   * @param type {number}- 1: userId 2:帳號
+   * @param e {MouseEvent}
+   * @author kidin-1090806
+   */
+  openSelectorWin(type: number, e: MouseEvent): void {
     const adminLists = [];
     e.preventDefault();
     this.dialog.open(PeopleSelectorWinComponent, {
       hasBackdrop: true,
       data: {
         title: `人員選擇`,
+        type,
         adminLists,
         onConfirm: this.handleConfirm.bind(this),
         isInnerAdmin: true
       }
+
     });
+
   }
-  handleConfirm(_lists) {
-    const userIds = _lists.map(_list => _list.userId);
+
+  /**
+   * 點選確認後送出查詢
+   * @param _lists {array}
+   * @author kidin-1090806
+   */
+  handleConfirm(type: number, _lists: Array<any>): void {
+    let userIds: Array<number>;
+    if (type === 1) {
+      userIds = _lists.map(_list => _list.userId);
+    } else {
+      userIds = _lists.map(_list => _list.user_id);
+    }
+
     this.getUserAvartar(userIds[0]);
   }
+
   fetchGroupInfo() {
     if (
       this.groupId ===

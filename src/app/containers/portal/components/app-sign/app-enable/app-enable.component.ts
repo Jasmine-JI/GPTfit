@@ -134,9 +134,9 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
     ).subscribe(() => {
       this.phoneCaptcha.placeholder = this.translate.instant('universal_userAccount_phoneCaptcha');
       this.logMessage = {
-        enable: 'universal_deviceSetting_switch',
-        success: 'universal_status_success',
-        confirm: 'universal_operating_confirm'
+        enable: this.translate.instant('universal_deviceSetting_switch'),
+        success: this.translate.instant('universal_status_success'),
+        confirm: this.translate.instant('universal_operating_confirm')
       };
 
     });

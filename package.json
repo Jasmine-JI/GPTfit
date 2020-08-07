@@ -20,7 +20,7 @@
     "posttst-build": "npm run bash",
     "postuat-build": "npm run bash",
     "postprod-build": "npm run bash",
-    "web-build": "ng build -c web --aot --base-href /",
+    "web-build": "ng build -c web --aot --output-hashing=all --base-href /",
     "uat-build": "ng build -c uat --aot --output-hashing=all --base-href /",
     "tst-build": "ng build -c tst --aot --base-href /",
     "prod-build": "ng build --prod --aot --build-optimizer --output-hashing=all --base-href /",

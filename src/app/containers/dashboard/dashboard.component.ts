@@ -43,7 +43,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   mode = 'side';
   isDefaultOpend: boolean;
   isUserMenuShow = false;
-  accountStatus = 1; // 1:未啟用 2:已啟用
+  accountStatus = 2; // 1:未啟用 2:已啟用
 
   isHadContainer = true;
   footerAddClassName = '';
