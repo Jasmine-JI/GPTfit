@@ -46,7 +46,7 @@ export class TodayLoginnerWinComponent implements OnInit {
     }
   }
   confirm() {
-    this.data.onConfirm(this.collectLists);
+    this.data.onConfirm(1, this.collectLists);
     this.dialog.closeAll();
   }
 }

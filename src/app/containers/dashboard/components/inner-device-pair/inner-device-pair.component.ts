@@ -25,12 +25,13 @@ export class InnerDevicePairComponent implements OnInit {
       data: {
         title: `人員選擇`,
         adminLists,
+        type: 1,
         onConfirm: this.handleConfirm.bind(this),
         isInnerAdmin: true
       }
     });
   }
-  handleConfirm(_lists) {
+  handleConfirm(type, _lists) {
     const userIds = _lists.map(_list => _list.userId);
     this.targetUserId = userIds[0];
     this.router.navigateByUrl(

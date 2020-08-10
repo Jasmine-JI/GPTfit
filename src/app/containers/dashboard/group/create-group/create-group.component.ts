@@ -931,7 +931,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
     this.form.patchValue({ groupManager: userIds });
   }
 
-  handleConfirm(_lists) {
+  handleConfirm(type, _lists) {
     const userIds = _lists.map(_list => _list.userId);
     this.form.patchValue({ groupManager: userIds });
     this.chooseLabels = _lists;
@@ -949,6 +949,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
           title: this.title,
           adminLevel: `${_type}`,
           adminLists,
+          type: 1,
           onConfirm: this.handleConfirm.bind(this),
           isInnerAdmin:
             _type === 4 || _type === 5 &&

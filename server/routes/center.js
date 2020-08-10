@@ -223,7 +223,7 @@ router.get('/searchMember', function (req, res, next) {
   getUserId(token).then((_res) => {
     if (res) {
 
-      if (searchType === 1) {
+      if (+searchType === 1) {
 
         const groupIdQuery = groupId && groupId.length > 0 ? ` and g.group_id = ?` : '';
         let additionalVal = groupId;

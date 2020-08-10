@@ -259,7 +259,8 @@ export class EnrollFormComponent implements OnInit {
   showCheckEnrollDialog() {
     this.dialog.open(MsgDialogComponent, { hasBackdrop: true });
   }
-  handleConfirm(_lists) {
+
+  handleConfirm(type, _lists) {
     const targetListLength = _lists.length;
     if (targetListLength <= 10) {
       const newLists = _lists.filter(
@@ -272,9 +273,11 @@ export class EnrollFormComponent implements OnInit {
       alert(`最多一次操作為10筆，目前還可加入${10 - originListLength}`);
     }
   }
+
   removeLabel(idx) {
     this.chooseLists.splice(idx, 1);
   }
+
   openTodayLoginWin(e) {
     e.preventDefault();
     const list = _.cloneDeep(this.chooseLists);
@@ -294,6 +297,7 @@ export class EnrollFormComponent implements OnInit {
       data: {
         title: `人員選擇器`,
         adminLists: list,
+        type: 1,
         onConfirm: this.handleConfirm.bind(this),
         isInnerAdmin: true
       }
