@@ -521,7 +521,7 @@
   content: "\e97b";
 }
 
-.icon-svg_web-icon_p2_024-watch_sync:before {
+.icon-svg_web-icon_p2_025-watch_sync:before {
   content: "\e97c";
 }
 
@@ -999,4 +999,64 @@
 
 .icon-svg_web-icon_p3_052-local_pressure:before {
   content: "\e9fb";
+}
+
+.icon-svg_web-icon_p3_053-gravity_z:before {
+  content: "\e9fc";
+}
+
+.icon-svg_web-icon_p3_054-gravity_x:before {
+  content: "\e9fd";
+}
+
+.icon-svg_web-icon_p3_055-gravity_y:before {
+  content: "\e9fe";
+}
+
+.icon-svg_web-icon_p3_056-ball:before {
+  content: "\e9ff";
+}
+
+.icon-svg_web-icon_p3_057-football:before {
+  content: "\ea00";
+}
+
+.icon-svg_web-icon_p3_058-basketball:before {
+  content: "\ea01";
+}
+
+.icon-svg_web-icon_p3_059-baseball:before {
+  content: "\ea02";
+}
+
+.icon-svg_web-icon_p3_060-volleyball:before {
+  content: "\ea03";
+}
+
+.icon-svg_web-icon_p3_061-american_football:before {
+  content: "\ea04";
+}
+
+.icon-svg_web-icon_p3_062-tennis:before {
+  content: "\ea05";
+}
+
+.icon-svg_web-icon_p3_063-badminton:before {
+  content: "\ea06";
+}
+
+.icon-svg_web-icon_p3_064-pingpong:before {
+  content: "\ea07";
+}
+
+.icon-svg_web-icon_p3_065-ball_type:before {
+  content: "\ea08";
+}
+
+.icon-svg_web-icon_p3_066-all_muscles:before {
+  content: "\ea09";
+}
+
+.icon-svg_web-icon_p3_067-story:before {
+  content: "\ea0a";
 }

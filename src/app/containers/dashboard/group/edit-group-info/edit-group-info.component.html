@@ -70,7 +70,7 @@
           </button>
           <button class="alatech-btn alatech-btn--default"
             title="{{'universal_group_addBranch' | translate}}"
-            *ngIf="groupLevel && groupLevel === 30 && maxAccessRight < 30"
+            *ngIf="groupLevel && groupLevel === 30 && maxAccessRight <= 30"
             (click)="goCreatePage(1, $event)"
           >
             <span *ngIf="brandType == 1">{{'universal_group_addBranch' | translate}}</span>

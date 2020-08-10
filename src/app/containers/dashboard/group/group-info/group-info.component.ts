@@ -856,7 +856,7 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
         }
 
       });
-console.log('isAdmin', this.isGroupAdmin, this.accessRight, this.groupLevel);
+
     });
 
     if (url.indexOf('my-report') > -1) {

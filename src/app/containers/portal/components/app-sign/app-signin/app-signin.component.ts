@@ -139,7 +139,6 @@ export class AppSigninComponent implements OnInit, OnDestroy {
 
   // 判斷使用者輸入的帳號切換帳號類型-kidin-1090518
   determineAccountType (e) {
-
     const account = e.target.value,
           numReg = /^([0-9]*)$/;
     if (account.length !== 0) {
@@ -199,18 +198,16 @@ export class AppSigninComponent implements OnInit, OnDestroy {
 
   // 確認使用者信箱格式-kidin-1090511
   checkEmail (e) {
-    if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout' || e.type === undefined) {
-      const inputEmail = e.currentTarget.value;
+    this.loginBody.email = e.currentTarget.value;
 
-      if (inputEmail.length === 0 || !this.regCheck.email.test(inputEmail)) {
-        this.cue.email = 'universal_userAccount_emailFormat';
-        this.regCheck.emailPass = false;
-      } else {
-        this.loginBody.email = inputEmail;
-        this.cue.email = '';
-        this.regCheck.emailPass = true;
-      }
+    if (this.loginBody.email.length === 0 || !this.regCheck.email.test(this.loginBody.email)) {
+      this.cue.email = 'universal_userAccount_emailFormat';
+      this.regCheck.emailPass = false;
+    } else {
+      this.cue.email = '';
+      this.regCheck.emailPass = true;
     }
+
 
     this.checkAll();
   }
@@ -261,13 +258,12 @@ export class AppSigninComponent implements OnInit, OnDestroy {
   // 確認密碼格式-kidin-1090511
   checkPassword (e) {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
-      const inputPassword = e.currentTarget.value;
+      this.loginBody.password = e.currentTarget.value;
 
-      if (!this.regCheck.password.test(inputPassword)) {
+      if (!this.regCheck.password.test(this.loginBody.password)) {
         this.cue.password = 'universal_userAccount_passwordFormat';
         this.regCheck.passwordPass = false;
       } else {
-        this.loginBody.password = inputPassword;
         this.cue.password = '';
         this.regCheck.passwordPass = true;
       }
@@ -278,7 +274,6 @@ export class AppSigninComponent implements OnInit, OnDestroy {
 
   // 確認是否所有欄位皆已完成-kidin-1090512
   checkAll () {
-
     if (!this.regCheck.passwordPass) {
       this.dataIncomplete = true;
     } else {
@@ -295,55 +290,81 @@ export class AppSigninComponent implements OnInit, OnDestroy {
 
   }
 
+  /**
+   * 針對自動填入多檢查一次
+   * @returns boolean
+   * @author -kidin-1090810
+   */
+  doulbleCheck(): boolean {
+
+    let pass = true;
+    if (!this.formReg.password.test(this.loginBody.password)) {
+      pass = false;
+    }
+
+    if (this.formReg.email.test(this.loginBody.email)) {
+      this.loginBody.signInType = 1;
+    } else if (this.formReg.phone.test(this.loginBody.phone)) {
+      this.loginBody.signInType = 2;
+    } else {
+      pass = false;
+    }
+
+    return pass;
+  }
+
   // 登入-kidin-1090527
   login () {
-    this.loginStatus = 'logging';
-    this.authService.loginServerV2(this.loginBody).subscribe(res => {
+    this.checkAll();
+    if (this.doulbleCheck() || this.dataIncomplete === false) {
+      this.loginStatus = 'logging';
+      this.authService.loginServerV2(this.loginBody).subscribe(res => {
 
-      if (res.processResult.resultCode === 200) {
-        this.cue.signResult = '';
-        const token = res.signIn.token;
-        this.utils.writeToken(token);
-        this.authService.setLoginStatus(true);
-        this.loginStatus = 'success';
+        if (res.processResult.resultCode === 200) {
+          this.cue.signResult = '';
+          const token = res.signIn.token;
+          this.utils.writeToken(token);
+          this.authService.setLoginStatus(true);
+          this.loginStatus = 'success';
 
-        if (res.signIn.counter <= 1) {
-          this.router.navigateByUrl('/firstLogin-web');
-        } else if (this.authService.backUrl.length > 0) {
-          location.href = this.authService.backUrl; // 為了讓登入的api request payload清除掉
+          if (res.signIn.counter <= 1) {
+            this.router.navigateByUrl('/firstLogin-web');
+          } else if (this.authService.backUrl.length > 0) {
+            location.href = this.authService.backUrl; // 為了讓登入的api request payload清除掉
+          } else {
+            location.href = '/dashboard'; // 為了讓登入的api request payload清除掉
+          }
+
         } else {
-          location.href = '/dashboard'; // 為了讓登入的api request payload清除掉
+
+          switch (res.processResult.apiReturnMessage) {
+            case 'Sign in fail, found error mobile number or country code.':
+            case 'Sign in fail, found error email.':
+            case 'Sign in fail, found error password.':
+              this.cue.signResult = 'universal_userAccount_errorAccountPassword';
+              break;
+            default:
+              this.dialog.open(MessageBoxComponent, {
+                hasBackdrop: true,
+                data: {
+                  title: 'Message',
+                  body: `Error.<br />Please try again later.`,
+                  confirmText: this.translate.instant(
+                    'universal_operating_confirm'
+                  ),
+                  onConfirm: this.turnBack.bind(this)
+                }
+              });
+
+              break;
+          }
+
+          this.loginStatus = 'check';
         }
 
-      } else {
+      });
 
-        switch (res.processResult.apiReturnMessage) {
-          case 'Sign in fail, found error mobile number or country code.':
-          case 'Sign in fail, found error email.':
-          case 'Sign in fail, found error password.':
-            this.cue.signResult = 'universal_userAccount_errorAccountPassword';
-            break;
-          default:
-            this.dialog.open(MessageBoxComponent, {
-              hasBackdrop: true,
-              data: {
-                title: 'Message',
-                body: `Error.<br />Please try again later.`,
-                confirmText: this.translate.instant(
-                  'universal_operating_confirm'
-                ),
-                onConfirm: this.turnBack.bind(this)
-              }
-            });
-
-            console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
-            break;
-        }
-
-        this.loginStatus = 'check';
-      }
-
-    });
+    }
 
   }
 

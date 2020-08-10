@@ -6,8 +6,8 @@
       </span>
       <span
         style="position: absolute; right:20px; cursor: pointer;"
-        [style.pointer-events]="sending || dataIncomplete ? 'none' : ''"
-        [style.color]="sending || dataIncomplete ? '#bde2f4' : '#23a0da'"
+        [style.pointer-events]="sending ? 'none' : ''"
+        [style.color]="sending ? '#bde2f4' : '#23a0da'"
         (click)="submit()"
       >{{ 'universal_operating_send' | translate }}</span>
     </div>
@@ -45,8 +45,7 @@
         placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.birthday } }}, ex. 19910505"
         maxlength="8"
         [(ngModel)]="editBody.userProfile.birthday"
-        (focusout)="checkBirthday($event)"
-        (keypress)="checkBirthday($event)"
+        (change)="checkBirthday($event)"
       />
       <span class="formCue" *ngIf="cue.birthday !== ''">{{ cue.birthday | translate }}</span>
     </div>
@@ -74,7 +73,7 @@
     </div>
     <button
       class="appview-btn"
-      [class.appview-btn-unclickable]="sending || dataIncomplete"
+      [class.appview-btn-unclickable]="sending"
       (click)="submit()"
     >
       <span>{{ 'universal_operating_send' | translate }}</span>
@@ -130,8 +129,8 @@
                 maxlength="8"
                 class="form-control"
                 [(ngModel)]="editBody.userProfile.birthday"
-                (focusout)="checkBirthday($event)"
-                (keypress)="checkBirthday($event)"
+                (keypress)="lockUnNum($event)"
+                (change)="checkBirthday($event)"
               />
               <span class="form__message form__message--placeholder" *ngIf="cue.birthday !== ''">
                 {{ cue.birthday | translate }}
@@ -164,8 +163,8 @@
             <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
               <button
                 class="btn btn-primary access-btn"
-                [class.appview-btn-unclickable]="sending || dataIncomplete"
-                [style.background]="sending || dataIncomplete ? '#2b819b54' : ''"
+                [class.appview-btn-unclickable]="sending"
+                [style.background]="sending ? '#2b819b54' : ''"
                 (click)="submit()"
               >
                 <span *ngIf="!sending">{{ 'universal_operating_send' | translate }}</span>
