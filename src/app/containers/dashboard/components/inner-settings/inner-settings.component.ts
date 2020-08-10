@@ -63,7 +63,7 @@ export class InnerSettingsComponent implements OnInit, OnDestroy {
 
   }
 
-  handleConfirm(_lists) {
+  handleConfirm(type, _lists) {
     const userIds = _lists.map(_list => _list.userId);
     this.isLoading = true;
     const body = { targetRight: this.chooseType, userIds };
@@ -105,6 +105,7 @@ export class InnerSettingsComponent implements OnInit, OnDestroy {
           title: `${targetAdminName}選擇設定`,
           adminLevel: `${_type}`,
           adminLists,
+          type: 1,
           onConfirm: this.handleConfirm.bind(this),
           isInnerAdmin: this.maxAccessRight < 30 ? true : false
         }

@@ -27,7 +27,6 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
     bodyWeight: ''
   };
   sending = false;
-  dataIncomplete = false;
   acceptFileExtensions = ['JPG', 'JPEG', 'GIF', 'PNG'];
   userImg = '/assets/images/user2.png';
   finalImageLink: string;
@@ -144,59 +143,67 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
 
   }
 
+  /**
+   * 使使用者無法輸入非數字
+   * @param e {KeyBoardEvent}
+   */
+  lockUnNum(e: KeyboardEvent) {
+    const numReg = /\d+$/;
+    if (!numReg.test(e.key)) {
+      e.preventDefault();
+    }
+
+  }
+
   // 確認生日是否為異常值-kidin-1090525
   checkBirthday (e) {
-    const inputBirthday = e.currentTarget.value,
-          currentYear = +moment().year();
-    if ((e.type === 'keypress' && e.key === 'Enter') || e.type === 'focusout') {
+    this.cue.birthday = '';
+    const inputBirthday = e.currentTarget.value;
 
-      if (inputBirthday.length === 0) {
-        this.editBody.userProfile.birthday = +`${currentYear - 30}0101`;
-      } else if (+inputBirthday < +`${currentYear - 80}0101`) {
-        this.editBody.userProfile.birthday = +`${currentYear - 80}0101`;
-      } else if (+inputBirthday > +`${currentYear - 12}1231`) {
-        this.editBody.userProfile.birthday = +`${currentYear - 12}1231`;
-      } else {
-        this.editBody.userProfile.birthday = +inputBirthday;
-        this.cue.birthday = '';
-      }
-
+    if (inputBirthday.length < 8) {
+      this.editBody.userProfile.birthday = 19900101;
+      this.errorDateFormat(e);
     } else {
-      const tempValue = inputBirthday + e.key,
-            numReg = /\d+$/,
-            monthReg = /[0][1-9]|[1][0-2]/,  // 01-12月
+      let year = inputBirthday.slice(0, 4),
+          month = inputBirthday.slice(4, 6),
+          day = inputBirthday.slice(6, 8);
+      const monthReg = /[0][1-9]|[1][0-2]/,  // 01-12月
             dayReg = /[0][1-9]|[1-2][0-9]|[3][0-1]/,  // 01-31日
             bigMonthReg = /[0][13578]|[1][02]/,  // 大月
-            smallMonthReg = /[0][469]|[1][1]/;  // 小月，2月另外判斷
+            smallMonthReg = /[0][469]|[1][1]/,  // 小月，2月另外判斷
+            currentYear = +moment().year();
 
-      // 限制不符合日期格式的按鍵
-      if (!numReg.test(e.key) || (inputBirthday.length === 0 && +e.key === 0)) {
-        e.preventDefault();
-      } else if (tempValue[3] && +tempValue.slice(0, 4) > currentYear - 12) {
-        this.editBody.userProfile.birthday = currentYear - 12;
+      // 先判斷年份是否合乎範圍值
+      if (year < currentYear - 80) {
+        year = currentYear - 80;
         this.errorDateFormat(e);
-      } else if (tempValue[5] && !monthReg.test(tempValue.slice(4, 6))) {
-        this.editBody.userProfile.birthday = tempValue.slice(0, 4);
+      } else if (year > currentYear - 12) {
+        year = currentYear - 12;
         this.errorDateFormat(e);
-      } else if (tempValue[7] && !dayReg.test(tempValue.slice(6, 8))) {
-        this.editBody.userProfile.birthday = tempValue.slice(0, 6);
-        this.errorDateFormat(e);
-      } else if (bigMonthReg.test(tempValue.slice(4, 6)) && +tempValue.slice(6, 8) > 31) {
-        this.editBody.userProfile.birthday = tempValue.slice(0, 6);
-        this.errorDateFormat(e);
-      } else if (smallMonthReg.test(tempValue.slice(4, 6)) && +tempValue.slice(6, 8) > 30) {
-        this.editBody.userProfile.birthday = tempValue.slice(0, 6);
-        this.errorDateFormat(e);
-      } else if (tempValue.slice(4, 6) === '02' && +tempValue.slice(6, 8) > 28 && +tempValue.slice(0, 4) % 4 !== 0) {
-        this.editBody.userProfile.birthday = tempValue.slice(0, 6);
-        this.errorDateFormat(e);
-      } else if (tempValue.slice(4, 6) === '02' && +tempValue.slice(6, 8) > 29 && +tempValue.slice(0, 4) % 4 === 0) {
-        this.editBody.userProfile.birthday = tempValue.slice(0, 6);
-        this.errorDateFormat(e);
-      } else {
-        this.cue.birthday = '';
       }
 
+      // 再判斷月份是否合乎範圍值
+      if (!monthReg.test(month)) {
+        month = `01`;
+        this.errorDateFormat(e);
+      }
+
+      // 最後判斷日是否合乎範圍值（包含大小月和閏年）
+      if (!dayReg.test(day)) {
+        day = `31`;
+        this.errorDateFormat(e);
+      } else if (smallMonthReg.test(month) && +day > 30) {
+        day = `30`;
+        this.errorDateFormat(e);
+      } else if (month === '02' && +day > 28 && year % 4 !== 0) {
+        day = `28`;
+        this.errorDateFormat(e);
+      } else if (month === '02' && +day > 29 && year % 4 === 0) {
+        day = `29`;
+        this.errorDateFormat(e);
+      }
+
+      this.editBody.userProfile.birthday = +`${year}${month}${day}`;
     }
 
   }
@@ -204,7 +211,7 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
   // 不符合日期格式則取符合格式片段並給予提示-kidin-1090526
   errorDateFormat(e) {
     e.preventDefault();
-    this.cue.birthday = 'universal_status_wrongFormat';
+    this.cue.birthday = 'universal_status_wrongRange';
   }
 
   // 確認身高是否為異常值-kidin-1090525
