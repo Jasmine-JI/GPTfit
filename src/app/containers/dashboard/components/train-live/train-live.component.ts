@@ -39,22 +39,26 @@ export class TrainLiveComponent implements OnInit, AfterViewInit {
         _list.coachAvatar =
           _list.coachAvatar && _list.coachAvatar.length > 0
             ? this.utils.buildBase64ImgString(_list.coachAvatar)
-            : '/assets/images/user.png';
+            : '/assets/images/user2.png';
         _list.groupDesc = this.handleClassInfo(_list.groupDesc);
         return _list;
       });
     });
   }
+
   ngAfterViewInit() {
     this.handleEllipsis(this.descElement.nativeElement);
   }
+
   goToClass(id, type) {
     this.router.navigateByUrl(`/dashboard/coach-dashboard/${id}?type=${type}`);
   }
+
   hasOverflow(el, height) {
     const currentHeight = +this.computeStyle(el, 'height').replace('px', '');
     return currentHeight > height;
   }
+
   handleClassInfo(str) {
     let classInfo = str.replace(/\r\n|\n/g, '').trim();
     if (classInfo.length > 50) {
@@ -62,6 +66,7 @@ export class TrainLiveComponent implements OnInit, AfterViewInit {
     }
     return classInfo;
   }
+
   handleEllipsis(el) {
     let text = el.innerText.split(' ');
     while (this.hasOverflow(el, 70) && text.length > 0) {
@@ -69,6 +74,7 @@ export class TrainLiveComponent implements OnInit, AfterViewInit {
       el.innerText = `${text.join(' ')}...`;
     }
   }
+
   computeStyle(elem, prop) {
     if (!window.getComputedStyle) {
       window.getComputedStyle = function(el: any, pseudo) {

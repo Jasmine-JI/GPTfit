@@ -76,7 +76,7 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
   @Input() chartName: string;
   @Input() searchDate: Array<number>;
 
-  @ViewChild('container')
+  @ViewChild('container', {static: false})
   container: ElementRef;
 
   constructor(
@@ -90,8 +90,6 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   initChart () {
-    Highcharts.charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
-
     let trendDataset;
     let chartData = [];
     switch (this.chartName) {
@@ -105,7 +103,7 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
           }
         }
 
-        this.tooltipTitle = this.translate.instant('SH.calories');
+        this.tooltipTitle = this.translate.instant('universal_userProfile_calories');
 
         break;
       case 'FitTime':
@@ -128,7 +126,7 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
           };
         });
 
-        this.tooltipTitle = this.translate.instant('other.fitTime');
+        this.tooltipTitle = this.translate.instant('universal_userProfile_fitTime');
 
         break;
     }
@@ -142,8 +140,7 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
       }
     ];
 
-    const trendChartOptions = new ChartOptions(trendDataset),
-          trendChartDiv = this.container.nativeElement;
+    const trendChartOptions = new ChartOptions(trendDataset);
 
     // 設定圖表x軸時間間距-kidin-1090204
     if (this.dateRange === 'day' && this.data.date.length <= 7) {
@@ -169,9 +166,7 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
 
     };
 
-    // 根據圖表清單依序將圖表顯示出來-kidin-1081217
-    chart(trendChartDiv, trendChartOptions);
-
+    this.createChart(trendChartOptions);
   }
 
   // 根據搜尋期間，列出日期清單供圖表使用-kidin-1090220
@@ -207,6 +202,20 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
         this.dateList.push(weekStartDay + 86400 * 1000 * 7 * i);
       }
     }
+  }
+
+  // 確認取得元素才建立圖表-kidin-1090706
+  createChart (option: ChartOptions) {
+
+    setTimeout (() => {
+      if (!this.container) {
+        this.createChart(option);
+      } else {
+        const chartDiv = this.container.nativeElement;
+        chart(chartDiv, option);
+      }
+    }, 200);
+
   }
 
   ngOnDestroy () {}

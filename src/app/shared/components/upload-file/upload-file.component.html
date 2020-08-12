@@ -13,9 +13,10 @@
       <i class="icon-svg_web-icon_p2_097-ok profile-picture__Ok-icon" style="font-size: 30px; border: 2px solid;"></i>
     </button>
     <img
-    *ngIf="!(isUploadNewImg$ | async) && imageURL?.length > 0"
-    [src]="imageURL | safeHtml"
-    [class.avastarMode]="isUserAvastarMode"
+      *ngIf="!(isUploadNewImg$ | async) && imageURL?.length > 0"
+      [src]="imageURL | safeHtml"
+      [class.avastarMode]="isUserAvastarMode"
+      (error)="this.imageURL='/assets/images/user2.png'"
     >
     <p *ngIf="!(isUploadNewImg$ | async) && !(fileInformation?.link || imageURL)"
       style="position:absolute;top:50%;left:50%;width:100%;text-align:center;transform:translate(-50%, -50%)"
@@ -27,7 +28,8 @@
       [src]="croppedImage"
       class="imgCropped"
       *ngIf="imgSelected"
-      [class.avastarMode]="isUserAvastarMode"/>
+      [class.avastarMode]="isUserAvastarMode"
+    />
   </div>
   <div [class.ala-upload--descrption]="isImageFileMode">
     <div style="display: flex; flex-direction: row; justify-content: center;">
@@ -38,7 +40,7 @@
           style="line-height: 1;"
           [class.avastarBtn]="isUserAvastarMode"
         >
-          {{ 'Dashboard.Group.GroupInfo.selectImg' | translate }}
+          {{ 'universal_operating_selectImg' | translate }}
         </button>
         <input type="file"
           class="fileupload__input"
@@ -55,7 +57,7 @@
         style="position: relative; z-index: 2; margin-left: 10px;"
         (click)="reEditImg()"
       >
-        {{ 'Dashboard.Group.GroupInfo.edit' | translate }}
+        {{ 'universal_operating_edit' | translate }}
       </button>
     </div>
     <div

@@ -1,7 +1,9 @@
 import { Component, OnInit, Inject, EventEmitter, Output, Input } from '@angular/core';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UtilsService } from '@shared/services/utils.service';
 import { SettingsService } from '../../services/settings.service';
+import { TranslateService } from '@ngx-translate/core';
+import { UserProfileService } from '../../../../shared/services/user-profile.service';
 
 @Component({
   selector: 'app-privacy-setting-dialog',
@@ -12,6 +14,9 @@ import { SettingsService } from '../../services/settings.service';
   ]
 })
 export class PrivacySettingDialogComponent implements OnInit {
+  i18n = {  // 可能再增加新的翻譯
+    gym: ''
+  };
   groupId: string;
   token: string;
   shareTargetText: string;
@@ -50,10 +55,16 @@ export class PrivacySettingDialogComponent implements OnInit {
     private dialog: MatDialog,
     private utils: UtilsService,
     private settingsService: SettingsService,
+    private userProfileService: UserProfileService,
+    private translate: TranslateService,
     @Inject(MAT_DIALOG_DATA) private data: any
   ) {}
 
   ngOnInit() {
+    this.translate.get('hollow world').subscribe(() => {
+      this.i18n.gym = this.translate.instant('universal_group_gym');
+    });
+
     const activityTrackingArray = [],
           activityTrackingReportArray = [],
           lifeTrackingReportArray = [];
@@ -95,6 +106,13 @@ export class PrivacySettingDialogComponent implements OnInit {
 
 
     this.settingsService.updateUserProfile(body).subscribe(() => {
+      // 重新存取身體資訊供各種圖表使用-kidin-1081212
+      const refreshBody = {
+        token : this.utils.getToken() || ''
+      };
+      this.userProfileService.refreshUserProfile({
+        token: refreshBody
+      });
       this.dialog.closeAll();
     });
 

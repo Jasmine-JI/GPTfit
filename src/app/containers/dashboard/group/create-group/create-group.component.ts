@@ -2,7 +2,8 @@ import {
   Component,
   OnInit,
   ViewEncapsulation,
-  HostListener
+  HostListener,
+  OnDestroy
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { GroupService } from '../../services/group.service';
@@ -13,7 +14,7 @@ import {
   FormGroup,
   Validators
 } from '@angular/forms';
-import { UserInfoService } from '../../services/userInfo.service';
+import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { MsgDialogComponent } from '../../components/msg-dialog/msg-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
@@ -23,6 +24,8 @@ import { planDatas } from '../desc';
 import * as moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 import { HashIdService } from '@shared/services/hash-id.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-create-group',
@@ -30,13 +33,27 @@ import { HashIdService } from '@shared/services/hash-id.service';
   styleUrls: ['./create-group.component.scss', '../group-style.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class CreateGroupComponent implements OnInit {
+export class CreateGroupComponent implements OnInit, OnDestroy {
+
+  private ngUnsubscribe = new Subject();
+
+  i18n = {
+    teacher: '',
+    coach: '',
+    leagueAdministrator: '',
+    departmentAdministrator: '',
+    myGroup: '',
+    nickname: '',
+    myGym: '',
+    activityRecord: '',
+    sportReport: ''
+  };
   groupId: string;
   token: string;
   groupInfo: any;
   groupImg: string;
   group_id: string;
-  groupLevel: string;
+  groupLevel: number;
   groupInfos: any;
   joinStatus = 0;
   subGroupInfo: any;
@@ -57,15 +74,9 @@ export class CreateGroupComponent implements OnInit {
   formTextareaName = 'groupDesc';
   planName: string;
   role = {
-    isSupervisor: false,
-    isSystemDeveloper: false,
-    isSystemMaintainer: false,
-    isMarketingDeveloper: false,
-    isBrandAdministrator: false,
-    isBranchAdministrator: false,
-    isCoach: false,
-    getUserId: 0,
-    getUserName: ''
+    accessRight: 99,
+    userId: null,
+    userName: ''
   };
   finalImageLink: string;
   maxFileSize = 10485760; // 10MB
@@ -122,7 +133,7 @@ export class CreateGroupComponent implements OnInit {
     private utils: UtilsService,
     private router: Router,
     private fb: FormBuilder,
-    private userInfoService: UserInfoService,
+    private userProfileService: UserProfileService,
     public dialog: MatDialog,
     private translate: TranslateService,
     private hashIdService: HashIdService
@@ -148,6 +159,7 @@ export class CreateGroupComponent implements OnInit {
     if (coachType) {
       this.coachType = +coachType;
     }
+
     if (createType) {
       this.createType = +createType;
     }
@@ -166,49 +178,16 @@ export class CreateGroupComponent implements OnInit {
     this.groupId = this.hashIdService.handleGroupIdDecode(
       this.route.snapshot.paramMap.get('groupId')
     );
+
     this.buildForm(this.createType);
-    this.userInfoService.getSupervisorStatus().subscribe(res => {
-      this.role.isSupervisor = res;
-      // console.log('%c this.isSupervisor', 'color: #0ca011', res);
-    });
-    this.userInfoService.getSystemDeveloperStatus().subscribe(res => {
-      this.role.isSystemDeveloper = res;
-      // console.log('%c this.isSystemDeveloper', 'color: #0ca011', res);
-    });
-    this.userInfoService.getSystemMaintainerStatus().subscribe(res => {
-      this.role.isSystemMaintainer = res;
-      // console.log('%c this.isSystemMaintainer', 'color: #0ca011', res);
-    });
-    this.userInfoService.getMarketingDeveloperStatus().subscribe(res => {
-      this.role.isMarketingDeveloper = res;
-      // console.log('%c this.isMarketingDeveloper', 'color: #ccc', res);
-    });
-    this.userInfoService.getBrandAdministratorStatus().subscribe(res => {
-      this.role.isBrandAdministrator = res;
-      // console.log('%c this.isBrandAdministrator', 'color: #0ca011', res);
-    });
-    this.userInfoService.getBranchAdministratorStatus().subscribe(res => {
-      this.role.isBranchAdministrator = res;
-      // console.log('%c this.isBranchAdministrator', 'color: #0ca011', res);
-    });
-    this.userInfoService.getCoachStatus().subscribe(res => {
-      this.role.isCoach = res;
-      // console.log('%c this.isCoach', 'color: #0ca011', res);
-    });
-    this.userInfoService.getUserId().subscribe(res => {
-      this.role.getUserId = res;
-      // console.log('%c this.getUserId', 'color: #0ca011', res);
-    });
-    this.userInfoService.getUserName().subscribe(res => {
-      this.role.getUserName = res;
-      // console.log('%c this.getUserName', 'color: #0ca011', res);
-    });
+    this.getCreatorInfo();
     this.token = this.utils.getToken() || '';
     const body = {
       token: this.token,
       groupId: this.groupId,
       avatarType: 2
     };
+
     if (this.createType !== 3 && this.createType !== 4 && this.createType !== 5) {
       this.groupService.fetchGroupListDetail(body).subscribe(res => {
         this.groupInfo = res.info;
@@ -219,11 +198,13 @@ export class CreateGroupComponent implements OnInit {
           selfJoinStatus,
           brandType
         } = this.groupInfo;
+
         if (selfJoinStatus) {
           this.joinStatus = selfJoinStatus;
         } else {
           this.joinStatus = 0;
         }
+
         this.brandName = groupName;
         this.brandType = brandType;
         this.groupImg = groupIcon;
@@ -233,48 +214,98 @@ export class CreateGroupComponent implements OnInit {
         this.getGroupMemberList(1);
       });
     }
+
     this.translate.onLangChange.subscribe(() => {
       this.getAndInitTranslations();
     });
-    this.getAndInitTranslations();
 
-    // 建立分店以及課程群組時，指派建立者為預設管理員。 by Vincent 2019/5/9
-    if (+this.createType === 1 || +this.createType === 2) {
-      this.chooseLabels.push({ 'groupName': 'Alatech', 'userName': this.role.getUserName, 'userId': this.role.getUserId });
-      this.form.patchValue({ groupManager: [ this.role.getUserId ] });
-    }
+    this.getAndInitTranslations();
   }
+
+  /**
+   * 取得創群組者（登入者）的部份資訊
+   * @author kidin-1090728
+   */
+  getCreatorInfo() {
+    this.userProfileService.getRxUserProfile().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
+      if (res['systemAccessRight']) {
+        this.role = {
+          accessRight: res['systemAccessRight'][0],
+          userId: res['userId'],
+          userName: res['nickname']
+        };
+
+        // 建立分店以及課程群組時，指派建立者為預設管理員。 by Vincent 2019/5/9
+        if (+this.createType === 1 || +this.createType === 2) {
+          this.chooseLabels.push({ 'groupName': 'Alatech', 'userName': this.role.userName, 'userId': this.role.userId });
+          this.form.patchValue({ groupManager: [ this.role.userId ] });
+        }
+
+      }
+
+    });
+
+  }
+
   getAndInitTranslations() {
     this.translate
       .get([
-        'Dashboard.Group.setBrandAdministrator',
-        'Dashboard.Group.setBranchAdministrator',
-        'Dashboard.Group.setCoach',
-        'Dashboard.Group.setAeacher',
-        'Dashboard.Group.setAdministrator'
+        'universal_group_setBrandAdministrator',
+        'universal_group_setBranchAdministrator',
+        'universal_group_setCoach',
+        'universal_group_setAeacher',
+        'universal_group_setAdministrator',
+        'universal_group_teacher',
+        'universal_group_coach',
+        'universal_group_administrator',
+        'universal_group_departmentAdmin',
+        'universal_group_myGroup',
+        'universal_vocabulary_avatar',
+        'universal_userAccount_nickname',
+        'universal_privacy_myGym',
+        'universal_activityData_activityRecord',
+        'universal_activityData_sportReport'
       ])
       .subscribe(translation => {
         switch (this.createType) {
           case 1:
             this.title =
-              translation['Dashboard.Group.setBranchAdministrator'];
+              translation['universal_group_setBranchAdministrator'];
             break;
           case 2:
             if (this.coachType === 2) {
-              this.title = translation['Dashboard.Group.setCoach'];
+              this.title = translation['universal_group_setCoach'];
             } else {
-              this.title = translation['Dashboard.Group.setAeacher'];
+              this.title = translation['universal_group_setAeacher'];
             }
             break;
           case 3:
-            this.title = translation['Dashboard.Group.setBrandAdministrator'];
+            this.title = translation['universal_group_setBrandAdministrator'];
             break;
           default:
             this.title =
-              translation['Dashboard.Group.setBrandAdministrator'];
+              translation['universal_group_setBrandAdministrator'];
         }
+
+        this.i18n = {
+          teacher: translation['universal_group_teacher'],
+          coach: translation['universal_group_coach'],
+          leagueAdministrator: translation['universal_group_administrator'],
+          departmentAdministrator: translation['universal_group_departmentAdmin'],
+          myGroup: translation['universal_group_myGroup'],
+          nickname: `${translation['universal_vocabulary_avatar']
+            } ${translation['universal_userAccount_nickname']
+          }`,
+          myGym: translation['universal_privacy_myGym'],
+          activityRecord: translation['universal_activityData_activityRecord'],
+          sportReport: translation['universal_activityData_sportReport']
+        };
+
       });
   }
+
   buildForm(_type: number) {
     if (_type === 1) {
       this.formTextName = 'branchName';
@@ -314,6 +345,7 @@ export class CreateGroupComponent implements OnInit {
       });
     }
   }
+
   handleActionGroup(_type) {
     const body = {
       groupId: this.groupId,
@@ -370,7 +402,7 @@ export class CreateGroupComponent implements OnInit {
               };
             }
           });
-          if (this.groupLevel === '40') {
+          if (this.groupLevel === 40) {
             this.subBranchInfo = this.subGroupInfo.branches.filter(_branch => {
               if (_branch.groupId === this.groupId) {
                 return _branch;
@@ -404,6 +436,7 @@ export class CreateGroupComponent implements OnInit {
       }
     });
   }
+
   changeGroupInfo({ index }) {
     if (index === 0) {
       this.getGroupMemberList(1);
@@ -415,6 +448,7 @@ export class CreateGroupComponent implements OnInit {
       this.getGroupMemberList(4);
     }
   }
+
   manage({ valid, value, submitted }) {
     if (!submitted) {
       // 如果脫離form的判斷
@@ -501,6 +535,12 @@ export class CreateGroupComponent implements OnInit {
                   this.groupId
                 )}/edit`
               );
+
+              // 創建群組後更新使用者group accessRight
+              const refreshBody = {
+                token: this.token
+              };
+              this.userProfileService.refreshUserProfile(refreshBody);
             }
             if (res.resultCode === 400) {
               this.dialog.open(MessageBoxComponent, {
@@ -669,9 +709,11 @@ export class CreateGroupComponent implements OnInit {
       };
     }
   }
+
   public handleChangeTextarea(code): void {
     this.form.patchValue({ groupDesc: code });
   }
+
   handleExpireTime(e) {
     let date = '';
     switch (e.value) {
@@ -706,6 +748,7 @@ export class CreateGroupComponent implements OnInit {
     }
     this.form.patchValue({ commercePlanExpired: date });
   }
+
   handleAttachmentChange(file) {
     if (file) {
       const { isTypeCorrect, errorMsg, link } = file;
@@ -725,24 +768,26 @@ export class CreateGroupComponent implements OnInit {
   handleShowCreateBrand() {
     switch (this.commercePlan) {
       case 1:
-        this.planName = this.translate.instant('Dashboard.System.BrandPlan.experiencePlan');
+        this.planName = this.translate.instant('universal_group_experiencePlan');
         break;
       case 2:
-        this.planName = this.translate.instant('Dashboard.System.BrandPlan.studioPlan');
+        this.planName = this.translate.instant('universal_group_studioPlan');
         break;
       case 3:
-        this.planName = this.translate.instant('Dashboard.System.BrandPlan.smePlan');
+        this.planName = this.translate.instant('universal_group_smePlan');
         break;
       default:
-        this.planName = this.translate.instant('Dashboard.System.BrandPlan.customPlan');
+        this.planName = this.translate.instant('universal_group_customPlan');
     }
     this.dialog.open(MessageBoxComponent, {
       hasBackdrop: true,
       data: {
         title: 'Message',
-        body: `您選擇的方案是否為" ${this.planName} "?`,
-        confirmText: this.translate.instant('other.confirm'),
-        cancelText: this.translate.instant('SH.cancel'),
+        body: this.translate.instant('universal_group_youSelectProgram', {
+          'projectName': this.planName
+        }),
+        confirmText: this.translate.instant('universal_operating_confirm'),
+        cancelText: this.translate.instant('universal_operating_cancel'),
         onConfirm: () => {
           if (this.commercePlan && this.commercePlan > 0) {
               this.isShowCreateForm = true;
@@ -773,24 +818,26 @@ export class CreateGroupComponent implements OnInit {
   handleShowCreateCom () {
     switch (this.commercePlan) {
       case 1:
-        this.planName = this.translate.instant('Dashboard.System.BrandPlan.experiencePlan');
+        this.planName = this.translate.instant('universal_group_experiencePlan');
         break;
       case 2:
-        this.planName = this.translate.instant('Dashboard.System.BrandPlan.studioPlan');
+        this.planName = this.translate.instant('universal_group_studioPlan');
         break;
       case 3:
-        this.planName = this.translate.instant('Dashboard.System.BrandPlan.smePlan');
+        this.planName = this.translate.instant('universal_group_smePlan');
         break;
       default:
-        this.planName = this.translate.instant('Dashboard.System.BrandPlan.customPlan');
+        this.planName = this.translate.instant('universal_group_customPlan');
     }
     this.dialog.open(MessageBoxComponent, {
       hasBackdrop: true,
       data: {
         title: 'Message',
-        body: `您選擇的方案是否為" ${this.planName} "?`,
-        confirmText: this.translate.instant('other.confirm'),
-        cancelText: this.translate.instant('SH.cancel'),
+        body: this.translate.instant('universal_group_youSelectProgram', {
+          'projectName': this.planName
+        }),
+        confirmText: this.translate.instant('universal_operating_confirm'),
+        cancelText: this.translate.instant('universal_operating_cancel'),
         onConfirm: () => {
           if (this.commercePlan && this.commercePlan > 0) {
               this.isShowCreateForm = true;
@@ -836,29 +883,29 @@ export class CreateGroupComponent implements OnInit {
 
     if (+this.brandType === 1) {
       if (this.createType === 1) {
-        typeName = this.translate.instant('Dashboard.Group.GroupInfo.branch');
+        typeName = this.translate.instant('universal_group_branch');
       } else if (this.createType === 2) {
-        typeName = this.translate.instant('Dashboard.Group.GroupInfo.coachingClass');
+        typeName = this.translate.instant('universal_group_coachingClass');
       } else if (this.createType === 3) {
-        typeName = this.translate.instant('Dashboard.Group.group');
+        typeName = this.translate.instant('universal_group_group');
       } else if (this.createType === 4) {
-        typeName = this.translate.instant('Dashboard.Group.GroupInfo.brand');
+        typeName = this.translate.instant('universal_group_brand');
       } else if (this.createType === 5) {
-        typeName = this.translate.instant('other.com');
+        typeName = this.translate.instant('universal_group_enterprise');
       }
     } else {
       if (this.createType === 1) {
-        typeName = this.translate.instant('other.subCom');
+        typeName = this.translate.instant('universal_group_companyBranch');
       } else if (this.createType === 2 && this.coachType === 1) {
-        typeName = this.translate.instant('other.league');
+        typeName = this.translate.instant('universal_group_generalGroup');
       } else if (this.createType === 2 && this.coachType === 2) {
-          typeName = this.translate.instant('other.department');
+          typeName = this.translate.instant('universal_group_department');
       } else if (this.createType === 3) {
-        typeName = this.translate.instant('Dashboard.Group.group');
+        typeName = this.translate.instant('universal_group_group');
       } else if (this.createType === 4) {
-        typeName = this.translate.instant('other.Group.GroupInfo.brand');
+        typeName = this.translate.instant('universal_group_brand');
       } else if (this.createType === 5) {
-        typeName = this.translate.instant('other.com');
+        typeName = this.translate.instant('universal_group_enterprise');
       }
     }
 
@@ -866,37 +913,35 @@ export class CreateGroupComponent implements OnInit {
       hasBackdrop: true,
       data: {
         title: 'Message',
-        body: this.translate.instant('Dashboard.Settings.confirmCancelCreate', {
-          target: typeName
+        body: this.translate.instant('universal_popUpMessage_confirmCancelCreate', {
+          deviceName: typeName
         }),
         href
       }
     });
   }
+
   changePlan(_planIdx) {
     this.commercePlan = _planIdx;
   }
+
   removeLabel(idx) {
     this.chooseLabels.splice(idx, 1);
     const userIds = this.chooseLabels.map(_label => _label.userId);
     this.form.patchValue({ groupManager: userIds });
   }
-  handleConfirm(_lists) {
+
+  handleConfirm(type, _lists) {
     const userIds = _lists.map(_list => _list.userId);
     this.form.patchValue({ groupManager: userIds });
     this.chooseLabels = _lists;
   }
+
   openSelectorWin(_type: number, e) {
     e.preventDefault();
     this.chooseType = _type;
 
     const adminLists = _.cloneDeep(this.chooseLabels);
-    const {
-      isSupervisor,
-      isSystemDeveloper,
-      isSystemMaintainer,
-      isMarketingDeveloper
-    } = this.role;
     if (_type !== 3) {
       this.dialog.open(PeopleSelectorWinComponent, {
         hasBackdrop: true,
@@ -904,15 +949,23 @@ export class CreateGroupComponent implements OnInit {
           title: this.title,
           adminLevel: `${_type}`,
           adminLists,
+          type: 1,
           onConfirm: this.handleConfirm.bind(this),
           isInnerAdmin:
             _type === 4 || _type === 5 &&
-            (isSupervisor ||
-              isSystemDeveloper ||
-              isSystemMaintainer ||
-              isMarketingDeveloper)
+            (this.role.accessRight < 30)
         }
       });
     }
   }
+
+  /**
+   * 解除rxjs訂閱
+   * @author kidin-1090722
+   */
+  ngOnDestroy(): void {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
 }

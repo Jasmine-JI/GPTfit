@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../../../shared/services/auth.service';
 import { SignupService } from '../../../services/signup.service';
@@ -6,16 +6,40 @@ import { UtilsService } from '@shared/services/utils.service';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { formTest } from '../../../models/form-test';
+
+interface RegCheck {
+  email: RegExp;
+  emailPass: boolean;
+  password: RegExp;
+  passwordPass: boolean;
+  nickname: RegExp;
+  nicknamePass: boolean;
+  phone: RegExp;
+  phonePass: boolean;
+  countryCodePass: boolean;
+}
 
 @Component({
   selector: 'app-app-signup',
   templateUrl: './app-signup.component.html',
   styleUrls: ['./app-signup.component.scss']
 })
-export class AppSignupComponent implements OnInit, OnDestroy {
+export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
+  private ngUnsubscribe = new Subject();
+
+  readonly formReg = formTest;
+
+  i18n = {
+    email: '',
+    password: '',
+    nickname: ''
+  };
   appSys = 0;  // 0:web, 1:ios, 2:android
   focusForm = '';
   displayPW = false;
@@ -27,14 +51,14 @@ export class AppSignupComponent implements OnInit, OnDestroy {
   pcView = false;
 
   // 驗證用
-  regCheck = {
-    email: /^.{1,63}@[a-zA-Z0-9]{2,63}.[a-zA-Z]{2,63}(.[a-zA-Z]{2,63})?$/,
+  regCheck: RegCheck = {
+    email: this.formReg.email,
     emailPass: false,
-    password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,20}$/,
+    password: this.formReg.password,
     passwordPass: false,
-    nickname: /^[^!@#$%^&*()=|{}"?<>;:+-\/\\]{4,24}$/,
+    nickname: this.formReg.nickname,
     nicknamePass: false,
-    phone: /^([1-9][0-9]+)$/,
+    phone: this.formReg.phone,
     phonePass: false,
     countryCodePass: false
   };
@@ -43,11 +67,11 @@ export class AppSignupComponent implements OnInit, OnDestroy {
   selectLists = [
     {
       name: 'email',
-      i18nKey: 'Portal.email'
+      i18nKey: 'universal_userAccount_email'
     },
     {
       name: 'phone',
-      i18nKey: 'Portal.phone'
+      i18nKey: 'universal_userAccount_phone'
     }
   ];
 
@@ -104,27 +128,67 @@ export class AppSignupComponent implements OnInit, OnDestroy {
     private router: Router,
     public getClientIp: GetClientIpService,
     private authService: AuthService
-  ) { }
+  ) {
+    translate.onLangChange.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      this.getTranslate();
+    });
 
-  ngOnInit() {
+  }
+
+  ngOnInit(): void {
+    this.getClientIpaddress();
+    this.getTranslate();
+
     if (location.pathname.indexOf('web') > 0) {
       this.pcView = true;
       this.utils.setHideNavbarStatus(false);
     } else {
       this.pcView = false;
       this.utils.setHideNavbarStatus(true);
+
+    }
+  }
+
+  /**
+   * 因應ios嵌入webkit物件時間點較後面，故在此生命週期才判斷裝置平台
+   * @author kidin-1090710
+   */
+  ngAfterViewInit(): void {
+    if (this.pcView === false) {
       this.getAppId(location.search);
     }
 
-    this.getClientIpaddress();
   }
 
-  // 返回app-kidin-1090513
-  turnBack () {
+  /**
+   * 待套件載入完成再取得多國語系翻譯
+   * @author kidin-1090717
+   */
+  getTranslate(): void {
+    this.translate.get('hollo word').pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      this.i18n = {
+        email: this.translate.instant('universal_userAccount_email'),
+        password: this.translate.instant('universal_userAccount_password'),
+        nickname: this.translate.instant('universal_userAccount_nickname')
+      };
+
+    });
+
+  }
+
+  /**
+   * 返回app或導回登入頁
+   * @author kidin-1090717
+   */
+  turnBack(): void {
     if (this.appSys === 1) {
-      (window as any).webkit.messageHandlers.closeWebView.postMessage();
+      (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
     } else if (this.appSys === 2) {
-      (window as any).android.closeWebView();
+      (window as any).android.closeWebView('Close');
     } else {
 
       if (this.pcView) {
@@ -138,8 +202,12 @@ export class AppSignupComponent implements OnInit, OnDestroy {
 
   }
 
-  // 取得註冊來源平台、類型和ID-kidin-1090512
-  getAppId (urlStr) {
+  /**
+   * 取得註冊來源平台、類型和ID
+   * @param urlStr {string}
+   * @author kidin-1090512
+   */
+  getAppId(urlStr: string): void {
     if ((window as any).webkit) {
       this.appSys = 1;
     } else if ((window as any).android) {
@@ -163,27 +231,38 @@ export class AppSignupComponent implements OnInit, OnDestroy {
 
   }
 
-  // 取得使用者ip位址-kidin-1090521
-  getClientIpaddress () {
+  /**
+   * 取得使用者ip位址
+   * @author kidin-1090521
+   */
+  getClientIpaddress(): void {
     this.getClientIp.requestJsonp('https://api.ipify.org', 'format=jsonp', 'callback').subscribe(res => {
       this.ip = (res as any).ip;
     });
 
   }
 
-  // 取得使用者選擇的帳號類型
-  getAccountType (e) {
+  /**
+   * 取得使用者選擇的帳號類型
+   * @param e {string}
+   * @author kidin-1090717
+   */
+  getAccountType(e: string): void {
     this.signupData.type = +e + 1;
     this.checkAll(this.regCheck);
   }
 
-  // 確認使用者信箱格式-kidin-1090511
-  checkEmail (e) {
+  /**
+   * 確認使用者信箱格式
+   * @param e {MouseEvent | KeyboardEvent}
+   * @author kidin-1090511
+   */
+  checkEmail(e: any): void {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
       const inputEmail = e.currentTarget.value;
 
       if (inputEmail.length === 0 || !this.regCheck.email.test(inputEmail)) {
-        this.signupCue.email = this.translate.instant('Portal.emailFormat');
+        this.signupCue.email = 'errorFormat';
         this.regCheck.emailPass = false;
       } else {
         this.signupData.email = inputEmail;
@@ -196,8 +275,11 @@ export class AppSignupComponent implements OnInit, OnDestroy {
 
   }
 
-  // 將使用者輸入的密碼進行隱藏-kidin-1090430
-  hidePassword () {
+  /**
+   * 將使用者輸入的密碼進行隱藏
+   * @author kidin-1090430
+   */
+  hidePassword(): void {
     const pwInputType = (<HTMLInputElement>document.getElementById('signupPW'));
 
     if (this.displayPW === true) {
@@ -208,8 +290,11 @@ export class AppSignupComponent implements OnInit, OnDestroy {
 
   }
 
-  // 顯示密碼-kidin-1090429
-  toggleDisplayPW () {
+  /**
+   * 顯示密碼
+   * @author kidin-1090429
+   */
+  toggleDisplayPW(): void {
     if (this.displayPW === false) {
       this.displayPW = true;
     } else {
@@ -219,13 +304,17 @@ export class AppSignupComponent implements OnInit, OnDestroy {
     this.hidePassword();
   }
 
-  // 確認密碼格式-kidin-1090511
-  checkPassword (e) {
+  /**
+   * 確認密碼格式
+   * @param e {MouseEvent | KeyboardEvent}
+   * @author kidin-1090511
+   */
+  checkPassword(e: any): void {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
       const inputPassword = e.currentTarget.value;
 
       if (!this.regCheck.password.test(inputPassword)) {
-        this.signupCue.password = this.translate.instant('Portal.passwordFormat');
+        this.signupCue.password = 'errorFormat';
         this.regCheck.passwordPass = false;
       } else {
         this.signupData.password = inputPassword;
@@ -238,36 +327,47 @@ export class AppSignupComponent implements OnInit, OnDestroy {
 
   }
 
-  // 取得使用者輸入的國碼-kidin-1090504
-  onCodeChange (countryCode) {
+  /**
+   * 取得使用者輸入的國碼
+   * @param countryCode {string}
+   * @author kidin-1090504
+   */
+  onCodeChange(countryCode: string): void {
     this.signupData.countryCode = +countryCode;
     this.regCheck.countryCodePass = true;
 
     this.checkAll(this.regCheck);
   }
 
-  // 取得使用者輸入的電話號碼-kidin-
-  getPhoneNum (phoneNum) {
+  /**
+   * 取得使用者輸入的電話號碼
+   * @param phoneNum {string}
+   * @author kidin-1090717
+   */
+  getPhoneNum (phoneNum: string): void {
     if (phoneNum.length === 0) {
       this.regCheck.phonePass = false;
     } else {
-      this.signupData.phone = phoneNum;
+      this.signupData.phone = +phoneNum;
       this.regCheck.phonePass = true;
     }
 
     this.checkAll(this.regCheck);
   }
 
-  // 確認暱稱格式-kidin-1090511
-  checkNickname (e) {
+  /**
+   * 確認暱稱格式
+   * @param e MouseEvent | KeyboardEvent
+   * @author kidin-1090511
+   */
+  checkNickname (e: any) {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
-      const inputNickname = e.currentTarget.value;
+      this.signupData.nickname = this.trimWhiteSpace(e.currentTarget.value);
 
-      if (!this.regCheck.nickname.test(inputNickname)) {
-        this.signupCue.nickname = this.translate.instant('Portal.nameCharactersToLong');
+      if (!this.regCheck.nickname.test(this.signupData.nickname)) {
+        this.signupCue.nickname = 'errorFormat';
         this.regCheck.nicknamePass = false;
       } else {
-        this.signupData.nickname = inputNickname;
         this.signupCue.nickname = '';
         this.regCheck.nicknamePass = true;
       }
@@ -277,13 +377,27 @@ export class AppSignupComponent implements OnInit, OnDestroy {
 
   }
 
-  // 確認是否填寫圖形驗證碼欄位-kidin-1090514
-  checkImgCaptcha (e) {
+  /**
+   * 去除前後空白
+   * @param str {string}
+   * @returns {string}
+   * @author kidin-1090803
+   */
+  trimWhiteSpace(str: string): string {
+    return str.replace(/(^[\s]*)|([\s]*$)/g, '');
+  }
+
+  /**
+   * 確認是否填寫圖形驗證碼欄位
+   * @param e {MouseEvent | KeyboardEvent}
+   * @author kidin-1090514
+   */
+  checkImgCaptcha (e: any) {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
       const inputImgCaptcha = e.currentTarget.value;
 
       if (inputImgCaptcha.length === 0) {
-        this.signupCue.imgCaptcha = this.translate.instant('Portal.errorCaptcha');
+        this.signupCue.imgCaptcha = 'errorValue';
       } else {
         this.signupData.imgCaptcha = inputImgCaptcha;
         this.signupCue.imgCaptcha = '';
@@ -294,8 +408,12 @@ export class AppSignupComponent implements OnInit, OnDestroy {
 
   }
 
-  // 確認是否所有欄位皆已完成-kidin-1090512
-  checkAll (check) {
+  /**
+   * 確認是否所有欄位皆已完成
+   * @param check {object}
+   * @author kidin-1090512
+   */
+  checkAll(check: RegCheck): void {
     if (this.signupData.type === 1) {
 
       if (!check.emailPass
@@ -324,8 +442,11 @@ export class AppSignupComponent implements OnInit, OnDestroy {
     }
   }
 
-  // 進行註冊流程-kidin-1090429
-  submit () {
+  /**
+   * 進行註冊流程
+   * @author kidin-1090429
+   */
+  submit(): void {
     this.sending = true;
 
     if (this.imgCaptcha.show) {
@@ -339,8 +460,29 @@ export class AppSignupComponent implements OnInit, OnDestroy {
           this.imgCaptcha.show = false;
           this.submit();
         } else {
-          this.signupCue.imgCaptcha = this.translate.instant('Portal.errorCaptcha');
-          this.sending = false;
+
+          switch (res.processResult.apiReturnMessage) {
+            case 'Found a wrong unlock key.':
+              this.signupCue.imgCaptcha = 'errorValue';
+              this.sending = false;
+              break;
+            default:
+              this.dialog.open(MessageBoxComponent, {
+                hasBackdrop: true,
+                data: {
+                  title: 'Message',
+                  body: `Error.<br />Please try again later.`,
+                  confirmText: this.translate.instant(
+                    'universal_operating_confirm'
+                  ),
+                  onConfirm: this.turnBack.bind(this)
+                }
+              });
+
+              console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+              break;
+          }
+
         }
 
       });
@@ -350,8 +492,11 @@ export class AppSignupComponent implements OnInit, OnDestroy {
 
   }
 
-  // 傳送註冊表單-kidin-1090514
-  sendFormInfo () {
+  /**
+   * 傳送註冊表單
+   * @author kidin-1090514
+   */
+  sendFormInfo(): void {
     const body: any = {
       registerType: this.signupData.type,
       name: this.signupData.nickname,
@@ -375,17 +520,14 @@ export class AppSignupComponent implements OnInit, OnDestroy {
           case 'Register account is existing.':
 
             if (this.signupData.type === 1) {
-              this.signupCue.email =
-                `${this.translate.instant('Dashboard.Settings.account')} ${this.translate.instant('Dashboard.Settings.repeat')}`;
+              this.signupCue.email = 'accountRepeat';
             } else {
-              this.signupCue.phone =
-                `${this.translate.instant('Dashboard.Settings.account')} ${this.translate.instant('Dashboard.Settings.repeat')}`;
+              this.signupCue.phone = 'accountRepeat';
             }
 
             break;
           case 'Register name is existing.':
-            this.signupCue.nickname =
-              `${this.translate.instant('Portal.nickname')} ${this.translate.instant('Dashboard.Settings.repeat')}`;
+            this.signupCue.nickname = 'nicknameRepeat';
             break;
           case 'Found attack, update status to lock!':
           case 'Found lock!':
@@ -402,33 +544,55 @@ export class AppSignupComponent implements OnInit, OnDestroy {
             });
 
             break;
+          default:
+            this.dialog.open(MessageBoxComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'Message',
+                body: `Error.<br />Please try again later.`,
+                confirmText: this.translate.instant(
+                  'universal_operating_confirm'
+                ),
+                onConfirm: this.turnBack.bind(this)
+              }
+            });
+
+            console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+            break;
         }
 
       } else {
         this.newToken = res.register.token;
-        this.utils.writeToken(this.newToken);  // 直接在瀏覽器幫使用者登入
+        this.saveToken(this.newToken);
         this.authService.setLoginStatus(true);
 
-        const N = '\n';
-        this.dialog.open(MessageBoxComponent, {
-          hasBackdrop: true,
-          disableClose: true,
-          data: {
-            title: 'Message',
-            body: `${this.translate.instant('Dashboard.MyDevice.success')} ${this.translate.instant('SH.signUp')}${
-              N}${this.translate.instant('Dashboard.MyDevice.continueExecution')} ${
-              this.translate.instant('other.switch')} ${this.translate.instant('Portal.account')}?
-            `,
-            confirmText: this.translate.instant(
-              'other.confirm'
-            ),
-            cancelText: this.translate.instant(
-              'SH.cancel'
-            ),
-            onCancel: this.finishSignup.bind(this),
-            onConfirm: this.toEnableAccount.bind(this)
-          }
-        });
+        // web先強迫要啟用帳號，待app v2上架後拿掉此判斷-kidin-1090724
+        if (!this.pcView) {
+          const N = '\n';
+          this.dialog.open(MessageBoxComponent, {
+            hasBackdrop: true,
+            disableClose: true,
+            data: {
+              title: 'Message',
+              body: `${this.translate.instant('universal_status_success')} ${this.translate.instant('universal_userAccount_signUp')} ${
+                N} ${this.translate.instant('universal_popUpMessage_continueExecution')} ${
+                this.translate.instant('universal_deviceSetting_switch')} ${this.translate.instant('universal_userAccount_account')}?
+              `,
+              confirmText: this.translate.instant(
+                'universal_operating_confirm'
+              ),
+              cancelText: this.translate.instant(
+                'universal_operating_cancel'
+              ),
+              onCancel: this.finishSignup.bind(this),
+              onConfirm: this.toEnableAccount.bind(this)
+            }
+
+          });
+
+        } else {
+          this.router.navigateByUrl(`/enableAccount-web`);
+        }
 
       }
 
@@ -437,27 +601,50 @@ export class AppSignupComponent implements OnInit, OnDestroy {
 
   }
 
-  // 返回app並回傳token-kidin-1090513
-  finishSignup () {
+  /**
+   * 返回app並回傳token或導引至第一次登入頁面
+   * @author kidin-1090513
+   */
+  finishSignup(): void {
     if (this.appSys === 1) {
-      (window as any).webkit.messageHandlers.registerSuccess.postMessage(this.newToken);
+      (window as any).webkit.messageHandlers.returnToken.postMessage(this.newToken);
+      this.turnBack();
     } else if (this.appSys === 2) {
-      (window as any).android.registerSuccess(this.newToken);
+      (window as any).android.returnToken(this.newToken);
+      this.turnBack();
     } else {
 
       if (this.pcView) {
-        this.router.navigateByUrl('/signIn-web');
+        this.router.navigateByUrl('/firstLogin-web');
       } else {
-        this.router.navigateByUrl('/signIn');
+        this.router.navigateByUrl('/firstLogin');
       }
 
     }
 
-    this.turnBack();
   }
 
-  // 轉導至啟用帳號頁面-kidin-1090513
-  toEnableAccount () {
+  /**
+   * 儲存token或將token傳回app
+   * @param token {string}
+   * @author kidin-1090717
+   */
+  saveToken(token: string): void {
+    this.utils.writeToken(token);  // 直接在瀏覽器幫使用者登入
+
+    if (this.appSys === 1) {
+      (window as any).webkit.messageHandlers.returnToken.postMessage(token);
+    } else if (this.appSys === 2) {
+      (window as any).android.returnToken(token);
+    }
+
+  }
+
+  /**
+   * 轉導至啟用帳號頁面
+   * @author kidin-1090513
+   */
+  toEnableAccount(): void {
     this.utils.setHideNavbarStatus(false);
 
     if (this.pcView === true) {
@@ -468,9 +655,15 @@ export class AppSignupComponent implements OnInit, OnDestroy {
 
   }
 
-  // 離開頁面則取消隱藏navbar-kidin-1090514
-  ngOnDestroy () {
+  /**
+   * 離開頁面則取消隱藏navbar和取消訂閱
+   * @author kidin-1090717
+   */
+  ngOnDestroy(): void {
     this.utils.setHideNavbarStatus(false);
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+
   }
 
 

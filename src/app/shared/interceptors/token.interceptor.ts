@@ -6,7 +6,7 @@ import {
   HttpInterceptor
 } from '@angular/common/http';
 import { UtilsService } from '../services/utils.service';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { version } from '../version';
 
 @Injectable()
@@ -16,10 +16,17 @@ export class TokenInterceptor implements HttpInterceptor {
     public utils: UtilsService
   ) {}
 
-
+  /**
+   * 根據不同環境顯示版本號和設置api header
+   * @param request {HttpRequest<any>}
+   * @param next {HttpHandler}
+   */
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     let appVersion;
-    if (location.hostname.indexOf('cloud.alatech.com.tw') > -1) {
+    if (
+      location.hostname.indexOf('cloud.alatech.com.tw') > -1
+      || location.hostname.indexOf('www.gptfit.com') > -1
+    ) {
       appVersion = version.master;
     } else if (location.hostname.indexOf('app.alatech.com.tw') > -1) {
       appVersion = version.release;

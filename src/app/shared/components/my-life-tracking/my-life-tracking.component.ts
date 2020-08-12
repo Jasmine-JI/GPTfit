@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { UtilsService } from '@shared/services/utils.service';
 import { HashIdService } from '@shared/services/hash-id.service';
@@ -14,6 +16,8 @@ import { UserProfileService } from '../../services/user-profile.service';
   styleUrls: ['./my-life-tracking.component.scss']
 })
 export class MyLifeTrackingComponent implements OnInit, OnDestroy {
+
+  private ngUnsubscribe = new Subject();
 
   // UI控制相關變數-kidin-1090115
   isLoading = false;
@@ -51,7 +55,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
   endDate = moment().format('YYYY-MM-DD');
   reportEndDate = '';
   selectPeriod = '7';
-  period = `7 ${this.translate.instant('Dashboard.SportReport.day')}`;
+  period = `7 ${this.translate.instant('universal_time_day')}`;
   reportRangeType = 1;
   reportCreatedTime = moment().format('YYYY/MM/DD HH:mm');
   timeZoneStr = '';
@@ -224,25 +228,25 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
             this.selectedIndex = 0;
             this.reportRangeType = 1;
             this.dataDateRange = 'day';
-            this.period = `7 ${this.translate.instant('Dashboard.SportReport.day')}`;
+            this.period = `7 ${this.translate.instant('universal_time_day')}`;
             break;
           case '30':
             this.selectedIndex = 1;
             this.reportRangeType = 1;
             this.dataDateRange = 'day';
-            this.period = `30 ${this.translate.instant('Dashboard.SportReport.day')}`;
+            this.period = `30 ${this.translate.instant('universal_time_day')}`;
             break;
           case '182':
             this.selectedIndex = 2;
             this.reportRangeType = 2;
             this.dataDateRange = 'week';
-            this.period = `6 ${this.translate.instant('Dashboard.SportReport.month')}`;
+            this.period = `6 ${this.translate.instant('universal_time_month')}`;
             break;
           default:
             this.selectedIndex = 3;
             this.reportRangeType = 2;
             this.dataDateRange = 'week';
-            this.period = `12 ${this.translate.instant('Dashboard.SportReport.month')}`;
+            this.period = `12 ${this.translate.instant('universal_time_month')}`;
             break;
         }
       }
@@ -254,13 +258,12 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
   getUserId (action) {
     const hashUserId = this.route.snapshot.paramMap.get('userId');
     if (hashUserId === null) {
-      const userBody = {
-        token: this.token,
-        avatarType: '2'
-      };
-      this.userProfileService.getUserProfile(userBody).subscribe(res => {
-        this.fileInfo = res.info;
-        this.userId = this.fileInfo.nameId;
+
+      this.userProfileService.getRxUserProfile().pipe(
+        takeUntil(this.ngUnsubscribe)
+      ).subscribe(res => {
+        this.fileInfo = res;
+        this.userId = this.fileInfo.userId;
 
         if (action === 'click') {
           this.generateTimePeriod();
@@ -290,7 +293,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
       this.reportRangeType = 1;
       this.dataDateRange = 'day';
       this.selectPeriod = '7';
-      this.period = `7 ${this.translate.instant('Dashboard.SportReport.day')}`;
+      this.period = `7 ${this.translate.instant('universal_time_day')}`;
       this.filterStartTime = moment()
         .subtract(6, 'days')
         .format('YYYY/MM/DD');
@@ -298,7 +301,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
       this.reportRangeType = 1;
       this.dataDateRange = 'day';
       this.selectPeriod = '30';
-      this.period = `30 ${this.translate.instant('Dashboard.SportReport.day')}`;
+      this.period = `30 ${this.translate.instant('universal_time_day')}`;
       this.filterStartTime = moment()
         .subtract(29, 'days')
         .format('YYYY/MM/DD');
@@ -306,7 +309,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
       this.reportRangeType = 2;
       this.dataDateRange = 'week';
       this.selectPeriod = '182';
-      this.period = `6 ${this.translate.instant('Dashboard.SportReport.month')}`;
+      this.period = `6 ${this.translate.instant('universal_time_month')}`;
       this.filterStartTime = moment()
         .subtract(day, 'days')
         .subtract(26, 'weeks')
@@ -318,7 +321,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
       this.reportRangeType = 2;
       this.dataDateRange = 'week';
       this.selectPeriod = '364';
-      this.period = `12 ${this.translate.instant('Dashboard.SportReport.month')}`;
+      this.period = `12 ${this.translate.instant('universal_time_month')}`;
       this.filterStartTime = moment()
         .subtract(day, 'days')
         .subtract(52, 'weeks')
@@ -967,7 +970,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
               newSufUrl = `${newSufUrl}&${queryString[i]}`;
             }
           }
-          newUrl = `${preUrl}?${searchString}${newSufUrl}`;
+          newUrl = `${preUrl}?${searchString} ${newSufUrl}`;
         } else {
           newUrl = location.pathname + location.search + `&${searchString}`;
         }
@@ -1139,70 +1142,70 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
       if (body.gender === 0) {
 
         if (body.muscleRate < 42 && body.muscleRate > 0) {
-          this.infoData.muscleRateComment = this.translate.instant('other.low');
+          this.infoData.muscleRateComment = this.translate.instant('universal_activityData_low');
           this.infoData.muscleRateColor = '#ec6941';
         } else if (body.muscleRate < 56 && body.muscleRate >= 42) {
-          this.infoData.muscleRateComment = this.translate.instant('other.Standard');
+          this.infoData.muscleRateComment = this.translate.instant('universal_activityData_Standard');
           this.infoData.muscleRateColor = '#43ca81';
         } else if (body.muscleRate >= 56) {
-          this.infoData.muscleRateComment = this.translate.instant('other.good');
+          this.infoData.muscleRateComment = this.translate.instant('universal_activityData_good');
           this.infoData.muscleRateColor = '#2398c3';
         }
 
         if (body.fatRate < 14 && body.fatRate > 0) {
-          this.infoData.fatRateComment = this.translate.instant('other.low');
+          this.infoData.fatRateComment = this.translate.instant('universal_activityData_low');
           this.infoData.fatRateColor = '#2398c3';
         } else if (body.fatRate < 20 && body.fatRate >= 14) {
-          this.infoData.fatRateComment = this.translate.instant('other.Standard');
+          this.infoData.fatRateComment = this.translate.instant('universal_activityData_Standard');
           this.infoData.fatRateColor = '#43ca81';
         } else if (body.fatRate >= 20) {
-          this.infoData.fatRateComment = this.translate.instant('other.high');
+          this.infoData.fatRateComment = this.translate.instant('universal_activityData_high');
           this.infoData.fatRateColor = '#ec6941';
         }
 
         if (body.moistureRate < 55 && body.moistureRate > 0) {
-          this.infoData.moistureRateComment = this.translate.instant('other.low');
+          this.infoData.moistureRateComment = this.translate.instant('universal_activityData_low');
           this.infoData.moistureRateColor = '#ec6941';
         } else if (body.moistureRate < 65 && body.moistureRate >= 55) {
-          this.infoData.moistureRateComment = this.translate.instant('other.Standard');
+          this.infoData.moistureRateComment = this.translate.instant('universal_activityData_Standard');
           this.infoData.moistureRateColor = '#43ca81';
         } else if (body.moistureRate >= 65) {
-          this.infoData.moistureRateComment = this.translate.instant('other.high');
+          this.infoData.moistureRateComment = this.translate.instant('universal_activityData_high');
           this.infoData.moistureRateColor = '#2398c3';
         }
 
       } else {
 
         if (body.muscleRate < 35 && body.muscleRate > 0) {
-          this.infoData.muscleRateComment = this.translate.instant('other.low');
+          this.infoData.muscleRateComment = this.translate.instant('universal_activityData_low');
           this.infoData.muscleRateColor = '#ec6941';
         } else if (body.muscleRate < 41 && body.muscleRate >= 35) {
-          this.infoData.muscleRateComment = this.translate.instant('other.Standard');
+          this.infoData.muscleRateComment = this.translate.instant('universal_activityData_Standard');
           this.infoData.muscleRateColor = '#43ca81';
         } else if (body.muscleRate >= 41) {
-          this.infoData.muscleRateComment = this.translate.instant('other.good');
+          this.infoData.muscleRateComment = this.translate.instant('universal_activityData_good');
           this.infoData.muscleRateColor = '#2398c3';
         }
 
         if (body.fatRate < 17 && body.fatRate > 0) {
-          this.infoData.fatRateComment = this.translate.instant('other.low');
+          this.infoData.fatRateComment = this.translate.instant('universal_activityData_low');
           this.infoData.fatRateColor = '#2398c3';
         } else if (body.fatRate < 25 && body.fatRate >= 17) {
-          this.infoData.fatRateComment = this.translate.instant('other.Standard');
+          this.infoData.fatRateComment = this.translate.instant('universal_activityData_Standard');
           this.infoData.fatRateColor = '#43ca81';
         } else if (body.fatRate >= 25) {
-          this.infoData.fatRateComment = this.translate.instant('other.high');
+          this.infoData.fatRateComment = this.translate.instant('universal_activityData_high');
           this.infoData.fatRateColor = '#ec6941';
         }
 
         if (body.moistureRate < 45 && body.moistureRate > 0) {
-          this.infoData.moistureRateComment = this.translate.instant('other.low');
+          this.infoData.moistureRateComment = this.translate.instant('universal_activityData_low');
           this.infoData.moistureRateColor = '#ec6941';
         } else if (body.moistureRate < 60 && body.moistureRate >= 45) {
-          this.infoData.moistureRateComment = this.translate.instant('other.Standard');
+          this.infoData.moistureRateComment = this.translate.instant('universal_activityData_Standard');
           this.infoData.moistureRateColor = '#43ca81';
         } else if (body.moistureRate >= 60) {
-          this.infoData.moistureRateComment = this.translate.instant('other.high');
+          this.infoData.moistureRateComment = this.translate.instant('universal_activityData_high');
           this.infoData.moistureRateColor = '#2398c3';
         }
 
@@ -1211,70 +1214,70 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
       if (body.gender === 0) {
 
         if (body.muscleRate < 40 && body.muscleRate > 0) {
-          this.infoData.muscleRateComment = this.translate.instant('other.low');
+          this.infoData.muscleRateComment = this.translate.instant('universal_activityData_low');
           this.infoData.muscleRateColor = '#ec6941';
         } else if (body.muscleRate < 50 && body.muscleRate >= 40) {
-          this.infoData.muscleRateComment = this.translate.instant('other.Standard');
+          this.infoData.muscleRateComment = this.translate.instant('universal_activityData_Standard');
           this.infoData.muscleRateColor = '#43ca81';
         } else if (body.muscleRate >= 50) {
-          this.infoData.muscleRateComment = this.translate.instant('other.good');
+          this.infoData.muscleRateComment = this.translate.instant('universal_activityData_good');
           this.infoData.muscleRateColor = '#2398c3';
         }
 
         if (body.fatRate < 17 && body.fatRate > 0) {
-          this.infoData.fatRateComment = this.translate.instant('other.low');
+          this.infoData.fatRateComment = this.translate.instant('universal_activityData_low');
           this.infoData.fatRateColor = '#2398c3';
         } else if (body.fatRate < 25 && body.fatRate >= 17) {
-          this.infoData.fatRateComment = this.translate.instant('other.Standard');
+          this.infoData.fatRateComment = this.translate.instant('universal_activityData_Standard');
           this.infoData.fatRateColor = '#43ca81';
         } else if (body.fatRate >= 25) {
-          this.infoData.fatRateComment = this.translate.instant('other.high');
+          this.infoData.fatRateComment = this.translate.instant('universal_activityData_high');
           this.infoData.fatRateColor = '#ec6941';
         }
 
         if (body.moistureRate < 55 && body.moistureRate > 0) {
-          this.infoData.moistureRateComment = this.translate.instant('other.low');
+          this.infoData.moistureRateComment = this.translate.instant('universal_activityData_low');
           this.infoData.moistureRateColor = '#ec6941';
         } else if (body.moistureRate < 65 && body.moistureRate >= 55) {
-          this.infoData.moistureRateComment = this.translate.instant('other.Standard');
+          this.infoData.moistureRateComment = this.translate.instant('universal_activityData_Standard');
           this.infoData.moistureRateColor = '#43ca81';
         } else if (body.moistureRate >= 65) {
-          this.infoData.moistureRateComment = this.translate.instant('other.high');
+          this.infoData.moistureRateComment = this.translate.instant('universal_activityData_high');
           this.infoData.moistureRateColor = '#2398c3';
         }
 
       } else {
 
         if (body.muscleRate < 31 && body.muscleRate > 0) {
-          this.infoData.muscleRateComment = this.translate.instant('other.low');
+          this.infoData.muscleRateComment = this.translate.instant('universal_activityData_low');
           this.infoData.muscleRateColor = '#ec6941';
         } else if (body.muscleRate < 36 && body.muscleRate >= 31) {
-          this.infoData.muscleRateComment = this.translate.instant('other.Standard');
+          this.infoData.muscleRateComment = this.translate.instant('universal_activityData_Standard');
           this.infoData.muscleRateColor = '#43ca81';
         } else if (body.muscleRate >= 36) {
-          this.infoData.muscleRateComment = this.translate.instant('other.good');
+          this.infoData.muscleRateComment = this.translate.instant('universal_activityData_good');
           this.infoData.muscleRateColor = '#2398c3';
         }
 
         if (body.fatRate < 20 && body.fatRate > 0) {
-          this.infoData.fatRateComment = this.translate.instant('other.low');
+          this.infoData.fatRateComment = this.translate.instant('universal_activityData_low');
           this.infoData.fatRateColor = '#2398c3';
         } else if (body.fatRate < 30 && body.fatRate >= 20) {
-          this.infoData.fatRateComment = this.translate.instant('other.Standard');
+          this.infoData.fatRateComment = this.translate.instant('universal_activityData_Standard');
           this.infoData.fatRateColor = '#43ca81';
         } else if (body.fatRate >= 30) {
-          this.infoData.fatRateComment = this.translate.instant('other.high');
+          this.infoData.fatRateComment = this.translate.instant('universal_activityData_high');
           this.infoData.fatRateColor = '#ec6941';
         }
 
         if (body.moistureRate < 45 && body.moistureRate > 0) {
-          this.infoData.moistureRateComment = this.translate.instant('other.low');
+          this.infoData.moistureRateComment = this.translate.instant('universal_activityData_low');
           this.infoData.moistureRateColor = '#ec6941';
         } else if (body.moistureRate < 60 && body.moistureRate >= 45) {
-          this.infoData.moistureRateComment = this.translate.instant('other.Standard');
+          this.infoData.moistureRateComment = this.translate.instant('universal_activityData_Standard');
           this.infoData.moistureRateColor = '#43ca81';
         } else if (body.moistureRate >= 60) {
-          this.infoData.moistureRateComment = this.translate.instant('other.high');
+          this.infoData.moistureRateComment = this.translate.instant('universal_activityData_high');
           this.infoData.moistureRateColor = '#2398c3';
         }
 
@@ -1287,8 +1290,10 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
     window.print();
   }
 
-  // 頁面卸除後將url reset避免污染其他頁面-kidin-1090325
+  // 頁面卸除後將url reset避免污染其他頁面及解除rxjs訂閱-kidin-1090325
   ngOnDestroy () {
     window.history.pushState({path: location.pathname}, '', location.pathname);
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 }

@@ -4,14 +4,11 @@ import {
   ViewChild,
   Input
 } from '@angular/core';
-import {
-  MatTableDataSource,
-  MatPaginator,
-  PageEvent,
-  Sort,
-  MatDatepickerInputEvent,
-  MatInput
-} from '@angular/material';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { MatInput } from '@angular/material/input';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { Sort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { ActivityService } from '@shared/services/activity.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { Router } from '@angular/router';
@@ -28,6 +25,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
   templateUrl: './my-activity.component.html',
   styleUrls: ['./my-activity.component.css']
 })
+
 export class MyActivityComponent implements OnInit {
   logSource = new MatTableDataSource<any>();
   totalCount: number;
@@ -45,7 +43,7 @@ export class MyActivityComponent implements OnInit {
   @Input() userName;
   @ViewChild('picker', { read: MatInput }) input: MatInput;
 
-  @ViewChild('paginator')
+  @ViewChild('paginator', {static: true})
   paginator: MatPaginator;
   constructor(
     private activityService: ActivityService,
@@ -143,8 +141,8 @@ export class MyActivityComponent implements OnInit {
         hasBackdrop: true,
         data: {
           title: 'message',
-          body: this.translate.instant('SH.timelineIncorrect'),
-          confirmText: this.translate.instant('other.confirm')
+          body: this.translate.instant('universal_race_timelineIncorrect'),
+          confirmText: this.translate.instant('universal_operating_confirm')
         }
       });
     }

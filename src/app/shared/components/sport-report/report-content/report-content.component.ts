@@ -1,17 +1,17 @@
 import { Component, OnInit, Output, OnChanges, OnDestroy, EventEmitter } from '@angular/core';
 import * as moment from 'moment';
-import { first } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { first, takeUntil, tap, switchMap } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
-
 import { TranslateService } from '@ngx-translate/core';
 
-import { ActivityService } from '../../../services/activity.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { HashIdService } from '@shared/services/hash-id.service';
 import { UserProfileService } from '../../../services/user-profile.service';
 import { ReportService } from '../../../services/report.service';
-import { UserInfoService } from '../../../../containers/dashboard/services/userInfo.service';
+import * as _Highcharts from 'highcharts';
 
+const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 @Component({
   selector: 'app-report-content',
@@ -19,6 +19,8 @@ import { UserInfoService } from '../../../../containers/dashboard/services/userI
   styleUrls: ['./report-content.component.scss']
 })
 export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
+
+  private ngUnsubscribe = new Subject();
 
   // UI控制相關變數-kidin-1090115
   isLoading = true;
@@ -111,29 +113,22 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
   level = ['1%', '50%', '100%'];
   muscleTrendList: Array<any> = [];
 
-  // rxjs管理-kidin-1090401
-  categoryRxjs: any;
-  dateRxjs: any;
-
   constructor(
-    private activityService: ActivityService,
     private utilsService: UtilsService,
     private hashIdService: HashIdService,
     private route: ActivatedRoute,
     private userProfileService: UserProfileService,
     private reportService: ReportService,
-    private translate: TranslateService,
-    private userInfoService: UserInfoService
+    private translate: TranslateService
   ) { }
 
   ngOnInit() {
     this.token = this.utilsService.getToken() || '';
-    this.getUserWeight();
     this.getRxjsData();
 
     // 確認ngx translate套件已經載入再產生翻譯-kidin-1090415
     this.translate.get('hello.world').subscribe(() => {
-      this.description = this.translate.instant('other.muscleColorIllustration');
+      this.description = this.translate.instant('universal_activityData_muscleColorIllustration');
     });
 
     // 確認是否為預覽列印頁面-kidin-1090205
@@ -163,29 +158,48 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
   getRxjsData () {
     const hashUserId = this.route.snapshot.paramMap.get('userId');
     if (hashUserId === null) {
-      const userBody = {
-        token: this.token,
-        avatarType: '2'
-      };
-      this.userProfileService.getUserProfile(userBody).subscribe(res => {
-        this.fileInfo = res.info;
-        this.userId = +this.fileInfo.nameId;
+      this.userProfileService.getRxUserProfile().pipe(
+        tap(userProfileRes => {
+          this.fileInfo = userProfileRes;
+          this.userWeight = this.fileInfo.bodyWeight;
+          this.userId = this.fileInfo.userId;
 
+          // 取得登入者心率區間-kidin-1090727
+          const userAge = moment().diff(this.fileInfo.birthday, 'years'),
+                userHRBase = this.fileInfo.heartRateBase,
+                userMaxHR = this.fileInfo.heartRateMax,
+                userRestHR = this.fileInfo.heartRateResting;
+
+          this.getUserBodyInfo(userHRBase, userAge, userMaxHR, userRestHR);
+        }),
         // 使用rxjs訂閱搜索日期使搜索日期更改時可以即時切換-kidin-1090121
-        this.dateRxjs = this.reportService.getReportAdditon().subscribe(response => {
-          this.reportStartTime = response[0].value;
-          this.reportEndTime = response[1].value;
-          this.reportEndDate = this.reportEndTime.split('T')[0].replace(/-/g, '/');
-          this.checkReportEndDate();
-          this.switchPeriod(response[2].value);
-          this.createReport();
-        });
-      });
+        switchMap(() => this.reportService.getReportAddition().pipe(
+          tap(reportAddition => {
+            this.reportStartTime = reportAddition[0].value;
+            this.reportEndTime = reportAddition[1].value;
+            this.reportEndDate = this.reportEndTime.split('T')[0].replace(/-/g, '/');
+            this.checkReportEndDate();
+            this.switchPeriod(reportAddition[2].value);
+            this.createReport();
+          })
+        )),
+        takeUntil(this.ngUnsubscribe)
+      ).subscribe();
+
     } else {
       this.userId = +this.hashIdService.handleUserIdDecode(hashUserId);
+      this.hrZoneRange['HRBase'] = 0;
+      this.hrZoneRange['z0'] = 'Z0';
+      this.hrZoneRange['z1'] = 'Z1';
+      this.hrZoneRange['z2'] = 'Z2';
+      this.hrZoneRange['z3'] = 'Z3';
+      this.hrZoneRange['z4'] = 'Z4';
+      this.hrZoneRange['z5'] = 'Z5';
 
       // 使用rxjs訂閱搜索日期使搜索日期更改時可以即時切換-kidin-1090121
-      this.dateRxjs = this.reportService.getReportAdditon().subscribe(response => {
+      this.reportService.getReportAddition().pipe(
+        takeUntil(this.ngUnsubscribe)
+      ).subscribe(response => {
         this.reportStartTime = response[0].value;
         this.reportEndTime = response[1].value;
         this.reportEndDate = this.reportEndTime.split('T')[0].replace(/-/g, '/');
@@ -196,32 +210,13 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     // 使用rxjs訂閱運動類別使運動類別更改時可以即時切換-kidin-1090121
-    this.categoryRxjs = this.reportService.getreportCategory().subscribe(res => {
+    this.reportService.getreportCategory().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
       this.selectType = '99';
       this.reportCategory = res;
       this.loadCategoryData(res);
     });
-  }
-
-  // 先從service取得使用者體重，若為default 70就call api取得並存回service-kidin-1081121
-  getUserWeight () {
-    this.userWeight = this.activityService.getUserWeight();
-    if (this.userWeight === 70) {
-      const body = {
-        token: this.utilsService.getToken() || '',
-        avatarType: 2,
-        iconType: '2',
-      };
-      this.userInfoService.getLogonData(body).toPromise()
-        .then(res => {
-          if (res.resultCode !== 400) {
-            this.userWeight = res.info.weight;
-            this.activityService.saveUserWeight(this.userWeight);
-          }
-        });
-
-    }
-
   }
 
   // 確認週報告日期是否為未來日期-kidin-1090227(Bug 1082)
@@ -234,55 +229,57 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
 
   // 建立運動報告-kidin-1090117
   createReport() {
-    this.isLoading = true;
+    if (this.userId) {
+      this.isLoading = true;
+      this.initVariable();
 
-    this.initVariable();
-    this.getUserInfo();
+      // 1個月內取日概要陣列，半年以上取周概要陣列-kidin_1090122
+      const body = {
+        token: this.token || '',
+        type: this.reportRangeType,
+        targetUserId: [this.userId],
+        filterStartTime: this.reportStartTime,
+        filterEndTime: this.reportEndTime
+      };
 
-    // 1個月內取日概要陣列，半年以上取周概要陣列-kidin_1090122
-    const body = {
-      token: this.token || '',
-      type: this.reportRangeType,
-      targetUserId: [this.userId],
-      filterStartTime: this.reportStartTime,
-      filterEndTime: this.reportEndTime
-    };
-
-    this.reportService.fetchSportSummaryArray(body).subscribe(res => {
-      if (res[0].resultCode === 400 || res[0].resultCode === 401 || res[0].resultCode === 402 || res[0].resultCode === 403) {
-        this.isLoading = false;
-        this.updateUrl('false');
-        return this.showPrivacyUi.emit(true);
-      } else if (res[0].resultCode === 200) {
-        this.showPrivacyUi.emit(false);
-        const dataLength = res[0].reportInfo.totalPoint;
-        if (dataLength === 0) {
-          this.nodata = true;
+      this.reportService.fetchSportSummaryArray(body).subscribe(res => {
+        if (res[0].resultCode === 400 || res[0].resultCode === 401 || res[0].resultCode === 402 || res[0].resultCode === 403) {
           this.isLoading = false;
           this.updateUrl('false');
-        } else {
-          if (this.reportRangeType === 1) {
-            this.activitiesList = res[0].reportActivityDays;
-            this.dataDateRange = 'day';
-            this.updateUrl('true');
+          return this.showPrivacyUi.emit(true);
+        } else if (res[0].resultCode === 200) {
+          this.showPrivacyUi.emit(false);
+          const dataLength = res[0].reportInfo.totalPoint;
+          if (dataLength === 0) {
+            this.nodata = true;
+            this.isLoading = false;
+            this.updateUrl('false');
           } else {
-            this.activitiesList = res[0].reportActivityWeeks;
-            this.dataDateRange = 'week';
-            this.updateUrl('true');
+            if (this.reportRangeType === 1) {
+              this.activitiesList = res[0].reportActivityDays;
+              this.dataDateRange = 'day';
+              this.updateUrl('true');
+            } else {
+              this.activitiesList = res[0].reportActivityWeeks;
+              this.dataDateRange = 'week';
+              this.updateUrl('true');
+            }
+
+            this.showReport = true;
+
+            const startDay = moment(this.reportStartTime),
+                  endDay = moment(this.reportEndTime);
+
+            this.createTimeStampArr(endDay.diff(startDay, 'days') + 1);
+            this.calPerCategoryData();
           }
-
-          this.showReport = true;
-
-          const startDay = moment(this.reportStartTime),
-                endDay = moment(this.reportEndTime);
-
-          this.createTimeStampArr(endDay.diff(startDay, 'days') + 1);
-          this.calPerCategoryData();
+        } else {
+          console.log('Sever Error');
         }
-      } else {
-        console.log('Sever Error');
-      }
-    });
+      });
+
+    }
+
   }
 
   // 依據選擇的搜索日期切換顯示-kidin-1090121
@@ -294,57 +291,30 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
           this.reportRangeType = 1;
           this.selectPeriod = '7';
           this.period = `7 ${this.translate.instant(
-            'Dashboard.SportReport.day'
+            'universal_time_day'
           )}`;
         break;
         case '30':
           this.reportRangeType = 1;
           this.selectPeriod = '30';
           this.period = `30 ${this.translate.instant(
-            'Dashboard.SportReport.day'
+            'universal_time_day'
           )}`;
         break;
         case '182':
           this.reportRangeType = 2;
           this.selectPeriod = '182';
           this.period = `6 ${this.translate.instant(
-            'Dashboard.SportReport.month'
+            'universal_time_month'
           )}`;
         break;
         case '364':
           this.reportRangeType = 2;
           this.selectPeriod = '364';
           this.period = `12 ${this.translate.instant(
-            'Dashboard.SportReport.month'
+            'universal_time_month'
           )}`;
         break;
-      }
-    });
-  }
-
-  // 取得登入者資訊-kidin-1090326
-  getUserInfo () {
-    const getLoginBody = {
-      avatarType: 2,
-      iconType: 2,
-      token: this.token
-    };
-    this.userInfoService.getLogonData(getLoginBody).subscribe(res => {
-      if (res.resultCode !== +200 || +this.userId !== +res.info.nameId) {
-        this.hrZoneRange['HRBase'] = 0;
-        this.hrZoneRange['z0'] = 'Z0';
-        this.hrZoneRange['z1'] = 'Z1';
-        this.hrZoneRange['z2'] = 'Z2';
-        this.hrZoneRange['z3'] = 'Z3';
-        this.hrZoneRange['z4'] = 'Z4';
-        this.hrZoneRange['z5'] = 'Z5';
-      } else {
-          const userAge = moment().diff(res.info.birthday, 'years'),
-                userHRBase = res.info.heartRateBase,
-                userMaxHR = res.info.heartRateMax,
-                userRestHR = res.info.heartRateResting;
-
-        this.getUserBodyInfo(userHRBase, userAge, userMaxHR, userRestHR);
       }
     });
   }
@@ -1057,6 +1027,15 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
   // 根據運動類別使用rxjs從service取得資料-kidin-1090120
   loadCategoryData (type: string) {
     this.isRxjsLoading = true;
+
+    // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
+    Highcharts.charts.forEach((_highChart, idx) => {
+      if (_highChart !== undefined) {
+        _highChart.destroy();
+      }
+    });
+    Highcharts.charts.length = 0;
+
     this.reportService.getTypeData(type).pipe(first()).subscribe(res => {
       this.categoryActivityLength = res.activityLength;
       this.updateUrl('true');
@@ -1091,6 +1070,9 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
 
         if (res.weightKg || res.weightKg === 0) {
           this.totalWeight = res.weightKg;
+        }
+
+        if (res.trainingPart) {
           this.trainingPart = res.trainingPart;
         }
 
@@ -1885,7 +1867,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
               newSufUrl = `${newSufUrl}&${queryString[i]}`;
             }
           }
-          newUrl = `${preUrl}?${searchString}${newSufUrl}`;
+          newUrl = `${preUrl}?${searchString} ${newSufUrl}`;
         } else {
           newUrl = location.pathname + location.search + `&${searchString}`;
         }
@@ -1910,10 +1892,8 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnDestroy () {
     this.showReport = false;
-
-    // 將rxjs取消訂閱避免內存洩漏-kidin-1090407
-    this.categoryRxjs.unsubscribe();
-    this.dateRxjs.unsubscribe();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
 }

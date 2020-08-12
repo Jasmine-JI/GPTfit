@@ -73,7 +73,7 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
   highestPoint = 0;
   lowestPoint = 100;
 
-  @ViewChild('container')
+  @ViewChild('container', {static: false})
   container: ElementRef;
 
   constructor(
@@ -87,8 +87,6 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   initChart () {
-    Highcharts.charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
-
     let trendDataset,
         chartData = [],
         lineColor = '',
@@ -96,19 +94,19 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
     switch (this.chartName) {
       case 'Weight':
         chartData = this.mergeData(this.data.weightList);
-        chartName = this.translate.instant('Portal.bodyWeight');
+        chartName = this.translate.instant('universal_userProfile_bodyWeight');
         lineColor = this.data.colorSet;
 
         break;
       case 'FatRate':
         chartData = this.mergeData(this.data.fatRateList);
-        chartName = this.translate.instant('other.fatRate');
+        chartName = this.translate.instant('universal_lifeTracking_fatRate');
         lineColor = this.data.fatRateColorSet;
 
         break;
       case 'MuscleRate':
         chartData = this.mergeData(this.data.muscleRateList);
-        chartName = this.translate.instant('other.muscleRate');
+        chartName = this.translate.instant('universal_userProfile_muscleRate');
         lineColor = this.data.muscleRateColorSet;
 
         break;
@@ -129,8 +127,7 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
       }
     ];
 
-    const trendChartOptions = new ChartOptions(trendDataset),
-          trendChartDiv = this.container.nativeElement;
+    const trendChartOptions = new ChartOptions(trendDataset);
 
     // 設定圖表x軸時間間距-kidin-1090204
     if (this.dateRange === 'day' && chartData.length <= 7) {
@@ -167,9 +164,7 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
 
     };
 
-    // 根據圖表清單依序將圖表顯示出來-kidin-1081217
-    chart(trendChartDiv, trendChartOptions);
-
+    this.createChart(trendChartOptions);
   }
 
   // 將每個人的數據相加做平均-kidin-1090316
@@ -201,6 +196,20 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     return newData;
+  }
+
+  // 確認取得元素才建立圖表-kidin-1090706
+  createChart (option: ChartOptions) {
+
+    setTimeout (() => {
+      if (!this.container) {
+        this.createChart(option);
+      } else {
+        const chartDiv = this.container.nativeElement;
+        chart(chartDiv, option);
+      }
+    }, 200);
+
   }
 
   ngOnDestroy () {}

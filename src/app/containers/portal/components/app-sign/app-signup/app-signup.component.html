@@ -7,7 +7,7 @@
         (click)="turnBack()"
       ></i>
       <span class="appview-header" style="left: 15px;">
-        {{ 'SH.signUp' | translate }}
+        {{ 'universal_userAccount_signUp' | translate }}
       </span>
       <span
         class="appview-header"
@@ -16,7 +16,7 @@
         [style.color]="sending || dataIncomplete ? '#bde2f4' : '#23a0da'"
         (click)="submit()"
       >
-        {{ 'Dashboard.Group.join' | translate }}
+        {{ 'universal_operating_join' | translate }}
       </span>
     </div>
     <div class="flexCol" style="margin-top: 10px;">
@@ -33,7 +33,7 @@
         <div>
           <input
             style="width: 100%;"
-            placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Portal.email' | translate }}"
+            placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.email } }} "
             (focusout)="checkEmail($event)"
             (keypress)="checkEmail($event)"
             *ngIf="signupData.type === 1"
@@ -49,14 +49,19 @@
             style="width: 100%;"
           ></app-intl-phone-input>
         </div>
-        <span class="formCue" *ngIf="signupData.type === 1 && signupCue.email !== ''">{{ signupCue.email }}</span>
+        <span class="formCue" *ngIf="signupData.type === 1 && signupCue.email === 'errorFormat'">
+          {{ 'universal_userAccount_emailFormat' | translate }}
+        </span>
+        <span class="formCue" *ngIf="signupData.type === 1 && signupCue.email === 'accountRepeat'">
+          {{ 'universal_userAccount_account' | translate }} {{ 'universal_deviceSetting_repeat' | translate }}
+        </span>
       </div>
       <div class="flexCol appDiv">
-        <span class="formTitle">{{ 'Portal.password' | translate }}</span>
+        <span class="formTitle">{{ 'universal_userAccount_password' | translate }}</span>
         <input
           type="password"
           id="signupPW"
-          placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Portal.password' | translate }}"
+          placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.password} }}"
           [(ngModel)]="signupData.password"
           maxlength="20"
           (focusout)="checkPassword($event)"
@@ -67,34 +72,42 @@
           [style.color]="displayPW ? 'black' : '#aaaaaa'"
           (click)="toggleDisplayPW()"
         ></i>
-        <span class="formCue" *ngIf="signupCue.password !== ''">{{ signupCue.password }}</span>
+        <span class="formCue" *ngIf="signupCue.password === 'errorFormat'">
+          {{ 'universal_userAccount_passwordFormat' | translate }}
+        </span>
       </div>
       <div class="flexCol appDiv">
-        <span class="formTitle">{{ 'Portal.nickname' | translate }}</span>
+        <span class="formTitle">{{ 'universal_userAccount_nickname' | translate }}</span>
         <input
-          placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Portal.nickname' | translate }}"
+          placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.nickname} }}"
           maxlength="24"
+          [(ngModel)]="signupData.nickname"
           (focusout)="checkNickname($event)"
           (keypress)="checkNickname($event)"
         />
-        <span class="formCue" *ngIf="signupCue.nickname !== ''">{{ signupCue.nickname }}</span>
+        <span class="formCue" *ngIf="signupCue.nickname === 'errorFormat'">
+          {{ 'universal_userAccount_nameCharactersToLong' | translate }}
+        </span>
+        <span class="formCue" *ngIf="signupCue.nickname === 'nicknameRepeat'">
+          {{ 'universal_userAccount_nickname' | translate }} {{ 'universal_deviceSetting_repeat' | translate }}
+        </span>
       </div>
       <div
         class="flexCol appDiv"
         [style.display]="imgCaptcha.show ? '' : 'none'"
       >
-        <span class="formTitle">{{ 'Portal.imgCaptcha' | translate }}</span>
+        <span class="formTitle">{{ 'universal_userAccount_imgCaptcha' | translate }}</span>
         <div class="flexRow">
           <input
-            placeholder="{{ 'Portal.imgCaptcha' | translate }}"
+            placeholder="{{ 'universal_userAccount_imgCaptcha' | translate }}"
             maxlength="8"
             (focusout)="checkImgCaptcha($event)"
             (keypress)="checkImgCaptcha($event)"
           />
           <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha">
         </div>
-        <span class="formCue" *ngIf="imgCaptcha.show && signupCue.imgCaptcha !== ''">
-          {{ signupCue.imgCaptcha }}
+        <span class="formCue" *ngIf="imgCaptcha.show && signupCue.imgCaptcha === 'errorValue'">
+          {{ 'universal_userAccount_errorCaptcha' | translate }}
         </span>
       </div>
     </div>
@@ -103,7 +116,8 @@
       [class.appview-btn-unclickable]="sending || dataIncomplete"
       (click)="submit()"
     >
-      <span>{{ 'Dashboard.Group.join' | translate }}</span>
+      <span>{{ 'universal_operating_join' | translate }}</span>
+      <i *ngIf="sending" class="fa fa-spinner fa-pulse"></i>
     </button>
   </div>
 </ng-container>
@@ -111,7 +125,7 @@
   <div class="access-bg">
     <div class="container signup" style="padding-top:63px">
       <div class="d-flex" style="flex-direction: column;align-items: center;;">
-        <div class="access-description"  innerHtml="{{ 'Portal.gptSlogan' | translate }}">
+        <div class="access-description"  innerHtml="{{ 'universal_app_gptSlogan' | translate }}">
         </div>
         <div class="access-panel">
           <header class="access-header">
@@ -133,7 +147,7 @@
                   <input
                     style="width: 100%;"
                     class="form-control"
-                    placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Portal.email' | translate }}"
+                    placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.email} }}"
                     (focusout)="checkEmail($event)"
                     (keypress)="checkEmail($event)"
                     *ngIf="signupData.type === 1"
@@ -150,15 +164,20 @@
                     style="width: 100%;"
                   ></app-intl-phone-input>
                 </div>
-                <span class="form__message form__message--placeholder" *ngIf="signupData.type === 1 && signupCue.email !== ''">{{ signupCue.email }}</span>
+                <span class="form__message form__message--placeholder" *ngIf="signupData.type === 1 && signupCue.email === 'errorFormat'">
+                  {{ 'universal_userAccount_emailFormat' | translate }}
+                </span>
+                <span class="form__message form__message--placeholder" *ngIf="signupData.type === 1 && signupCue.email === 'accountRepeat'">
+                  {{ 'universal_userAccount_account' | translate }} {{ 'universal_deviceSetting_repeat' | translate }}
+                </span>
               </div>
               <div class="flexCol webDiv">
-                <span class="access-text" style="margin-bottom: 10px;">{{ 'Portal.password' | translate }}</span>
+                <span class="access-text" style="margin-bottom: 10px;">{{ 'universal_userAccount_password' | translate }}</span>
                 <input
                   type="password"
                   id="signupPW"
                   class="form-control"
-                  placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Portal.password' | translate }}"
+                  placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.password} }}"
                   [(ngModel)]="signupData.password"
                   maxlength="20"
                   (focusout)="checkPassword($event)"
@@ -170,46 +189,54 @@
                   [style.color]="displayPW ? 'black' : '#aaaaaa'"
                   (click)="toggleDisplayPW()"
                 ></i>
-                <span class="form__message form__message--placeholder" *ngIf="signupCue.password !== ''">{{ signupCue.password }}</span>
+                <span class="form__message form__message--placeholder" *ngIf="signupCue.password === 'errorFormat'">
+                  {{ 'universal_userAccount_passwordFormat' | translate }}
+                </span>
               </div>
               <div class="flexCol webDiv">
-                <span class="access-text" style="margin-bottom: 10px;">{{ 'Portal.nickname' | translate }}</span>
+                <span class="access-text" style="margin-bottom: 10px;">{{ 'universal_userAccount_nickname' | translate }}</span>
                 <input
-                  placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Portal.nickname' | translate }}"
+                  placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.nickname} }}"
                   class="form-control"
                   maxlength="24"
+                  [(ngModel)]="signupData.nickname"
                   (focusout)="checkNickname($event)"
                   (keypress)="checkNickname($event)"
                 />
-                <span class="form__message form__message--placeholder" *ngIf="signupCue.nickname !== ''">{{ signupCue.nickname }}</span>
+                <span class="form__message form__message--placeholder" *ngIf="signupCue.nickname === 'errorFormat'">
+                  {{ 'universal_userAccount_nameCharactersToLong' | translate }}
+                </span>
+                <span class="form__message form__message--placeholder" *ngIf="signupCue.nickname === 'nicknameRepeat'">
+                  {{ 'universal_userAccount_nickname' | translate }} {{ 'universal_deviceSetting_repeat' | translate }}
+                </span>
               </div>
               <div
                 class="flexCol webDiv"
                 [style.display]="imgCaptcha.show ? '' : 'none'"
               >
-                <span class="access-text" style="margin-bottom: 10px;">{{ 'Portal.imgCaptcha' | translate }}</span>
+                <span class="access-text" style="margin-bottom: 10px;">{{ 'universal_userAccount_imgCaptcha' | translate }}</span>
                 <div class="flexRow">
                   <input
-                    placeholder="{{ 'Portal.imgCaptcha' | translate }}"
+                    placeholder="{{ 'universal_userAccount_imgCaptcha' | translate }}"
                     maxlength="8"
                     (focusout)="checkImgCaptcha($event)"
                     (keypress)="checkImgCaptcha($event)"
                   />
                   <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha">
                 </div>
-                <span class="form__message form__message--placeholder" *ngIf="imgCaptcha.show && signupCue.imgCaptcha !== ''">
-                  {{ signupCue.imgCaptcha }}
+                <span class="form__message form__message--placeholder" *ngIf="imgCaptcha.show && signupCue.imgCaptcha === 'errorValue'">
+                  {{ 'universal_userAccount_errorCaptcha' | translate }}
                 </span>
               </div>
               <div style="display: flex;justify-content: space-between; align-items: center; margin-top: 20px;">
-                <a class="access-text" style="cursor:pointer" [routerLink]="['/signIn-web']"><{{'Dashboard.ProductInfo.back' | translate}}</a>
+                <a class="access-text" style="cursor:pointer" [routerLink]="['/signIn-web']"><{{'universal_operating_back' | translate}}</a>
                 <button
                   class="btn btn-primary access-btn"
                   [class.appview-btn-unclickable]="sending || dataIncomplete"
                   [style.background]="sending || dataIncomplete ? '#2b819b54' : ''"
                   (click)="submit()"
                 >
-                  <span *ngIf="!sending">{{ 'SH.signUp' | translate }}</span>
+                  <span *ngIf="!sending">{{ 'universal_userAccount_signUp' | translate }}</span>
                   <i *ngIf="sending" class="fa fa-spinner fa-pulse"></i>
                 </button>
               </div>

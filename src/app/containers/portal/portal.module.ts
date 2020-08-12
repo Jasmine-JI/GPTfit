@@ -12,7 +12,6 @@ import { MapGPXService } from '@shared/services/map-gpx.service';
 import { RankFormService } from './services/rank-form.service';
 import { MapService } from '@shared/services/map.service';
 import { GlobalEventsManager } from '@shared/global-events-manager';
-import { PasswordComponent } from './components/password/password.component';
 import { ResetPasswordService } from './services/reset-password.service';
 import { EmptyResponseBodyErrorInterceptor } from './services/empty-response-body-error-interceptor';
 import { PatternValidator } from '@angular/forms';
@@ -22,20 +21,16 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { DemoQrcodComponent } from './components/demo-qrcod/demo-qrcod.component';
 import { QrcodeService } from './services/qrcode.service';
 import { NgProgressModule } from '@ngx-progressbar/core';
-import { SigninComponent } from './components/signin/signin.component';
 import { AuthService } from '@shared/services/auth.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { SharedModule } from '@shared/shared.module';
-import { SignupComponent } from './components/signup/signup.component';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
-import { ForgetpwdComponent } from './components/forgetpwd/forgetpwd.component';
 import { RandomCodeService } from './services/random-code.service';
 import { SignupService } from './services/signup.service';
 import { ForgetService } from './services/forget.service';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
 import { UserProfileService } from '@shared/services/user-profile.service';
 import { PortalGroupInfoComponent } from './components/portal-group-info/portal-group-info.component';
-import { FirstLoginComponent } from './components/first-login/first-login.component';
 import { CustomMaterialModule } from '@shared/custom-material.module.ts';
 import { BasicInfoComponent } from './components/user-profile/basic-info/basic-info.component';
 import { ActivityService } from '@shared/services/activity.service.ts';
@@ -98,14 +93,9 @@ import { QRCodeModule } from 'angularx-qrcode';
     PortalComponent,
     LeaderboardComponent,
     MapInfoComponent,
-    PasswordComponent,
     DemoQrcodComponent,
-    SigninComponent,
-    SignupComponent,
-    ForgetpwdComponent,
     UserProfileComponent,
     PortalGroupInfoComponent,
-    FirstLoginComponent,
     BasicInfoComponent,
     ApplicationComponent,
     AppSignupComponent,

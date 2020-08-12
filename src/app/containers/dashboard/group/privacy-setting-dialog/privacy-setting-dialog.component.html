@@ -1,16 +1,16 @@
 <h2 class="ala-dialog" mat-dialog-title>
-  {{'Dashboard.privacySettings.set' | translate}}
+  {{'universal_privacy_set' | translate}}
 </h2>
 <mat-dialog-content>
-{{'Dashboard.privacySettings.wantToJoin' | translate}} <span style="color: #108bcd">{{groupName}}</span>
-{{'Dashboard.privacySettings.privacyOpenGroupObject' | translate}}：{{'Dashboard.Group.MyGroup.groupAdministrator' | translate}}。
+{{'universal_privacy_wantToJoin' | translate}} <span style="color: #108bcd">{{groupName}}</span>
+{{'universal_group_privacyOpenGroupObject' | translate}}：{{'universal_group_groupAdministrator' | translate}}。
 <br /><br />
-{{'Dashboard.privacySettings.needChangeYourPrivacy' | translate}}
+{{'universal_privacy_needChangeYourPrivacy' | translate}}
 
 <div style="margin-top: 30px;height: 250px;">
   <div class="control-list">
     <label class="ala-form__label settings-item" [style.width]="showBatchChangeBox ? '100%': 'fit-content'">
-      {{'Dashboard.privacySettings.newAvtivityData' | translate}}
+      {{'universal_privacy_newAvtivityData' | translate}}
       <app-hover-hint [type]="'sportsFile'" [leftPosition]="true" (showBox)="showBox($event)"></app-hover-hint>
     </label>
     <div class="settings-control">
@@ -18,47 +18,44 @@
           style="font-size: 14px">{{'Dashboard.privacySettings.OnlyForPF' | translate}}</span>-->
       <mat-checkbox color="primary" value="4" [checked]="true" (change)="handleCheckBox($event, 1, 1)">
         <span style="font-size: 14px">
-          {{ 'other.myObject' | translate }}
-          {{ 'other.gymBrand' | translate }}
+          {{ 'universal_group_myObject' | translate: {'object': i18n.gym} }}
           /
-          {{ 'other.company' | translate }}
-          {{ 'Dashboard.Group.GroupInfo.administrator' | translate }}
+          {{ 'universal_group_enterprise' | translate }}
+          {{ 'universal_group_administrator' | translate }}
         </span>
       </mat-checkbox>
     </div>
   </div>
   <div class="control-list">
     <label class="ala-form__label settings-item" [style.width]="showBatchChangeBox ? '100%': 'fit-content'">
-      {{'Dashboard.privacySettings.newAvtivityReport' | translate}}
+      {{'universal_privacy_newAvtivityReport' | translate}}
       <app-hover-hint [type]="'sportsReport'" [leftPosition]="true" (showBox)="showBox($event)"></app-hover-hint>
     </label>
     <div class="settings-control">
       <!--<mat-checkbox color="primary" value="4" [checked]="activityTrackingReportStatus[0]" (change)="handleCheckBox($event, 1, 2)"><span
-          style="font-size: 14px">{{'Dashboard.privacySettings.objectOnly' | translate}}{{'Dashboard.privacySettings.myGym' | translate}}</span>-->
+          style="font-size: 14px">{{'universal_group_objectOnly' | translate: {'object': myGym} }}</span>-->
       <mat-checkbox color="primary" value="4" [checked]="true" (change)="handleCheckBox($event, 1, 2)">
         <span style="font-size: 14px">
-          {{ 'other.myObject' | translate }}
-          {{ 'other.gymBrand' | translate }}
+          {{ 'universal_group_myObject' | translate: {'object': i18n.gym} }}
           /
-          {{ 'other.company' | translate }}
-          {{ 'Dashboard.Group.GroupInfo.administrator' | translate }}
+          {{ 'universal_group_enterprise' | translate }}
+          {{ 'universal_group_administrator' | translate }}
         </span>
       </mat-checkbox>
     </div>
   </div>
   <div class="control-list">
     <label class="ala-form__label settings-item" [style.width]="showBatchChangeBox ? '100%': 'fit-content'">
-      {{'Dashboard.privacySettings.newLifeTrackingReport' | translate}}
+      {{'universal_privacy_newLifeTrackingReport' | translate}}
       <app-hover-hint [type]="'lifeTrackingReport'" [leftPosition]="true" (showBox)="showBox($event)"></app-hover-hint>
     </label>
     <div class="settings-control">
       <mat-checkbox color="primary" value="4" [checked]="true" (change)="handleCheckBox($event, 1, 3)">
         <span style="font-size: 14px">
-          {{ 'other.myObject' | translate }}
-          {{ 'other.gymBrand' | translate }}
+          {{ 'universal_group_myObject' | translate: {'object': i18n.gym} }}
           /
-          {{ 'other.company' | translate }}
-          {{ 'Dashboard.Group.GroupInfo.administrator' | translate }}
+          {{ 'universal_group_enterprise' | translate }}
+          {{ 'universal_group_administrator' | translate }}
         </span>
       </mat-checkbox>
     </div>
@@ -67,6 +64,6 @@
 </mat-dialog-content>
 
 <mat-dialog-actions class="justify-content-end">
-  <button mat-button color="primary" (click)="confirm()">{{'other.confirm' | translate}}</button>
-  <button mat-button mat-dialog-close color="warn">{{'SH.cancel' | translate}}</button>
+  <button mat-button color="primary" (click)="confirm()">{{'universal_operating_confirm' | translate}}</button>
+  <button mat-button mat-dialog-close color="warn">{{'universal_operating_cancel' | translate}}</button>
 </mat-dialog-actions>

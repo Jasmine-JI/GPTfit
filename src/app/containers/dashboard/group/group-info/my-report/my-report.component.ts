@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy, Renderer2, ViewChild, ElementRef } from '
 import * as moment from 'moment';
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
-import { HttpParams } from '@angular/common/http';
 
 import { Router } from '@angular/router';
 
@@ -16,6 +15,9 @@ import { ActivityService } from '../../../../../shared/services/activity.service
 import { ActivityOtherDetailsService } from '../../../../../shared/services/activity-other-details.service';
 import { QrcodeService } from '../../../../portal/services/qrcode.service';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
+
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -103,6 +105,8 @@ class ChartOptions {
 })
 export class MyReportComponent implements OnInit, OnDestroy {
 
+  private ngUnsubscribe = new Subject();
+
   // UI操控相關變數-kidin-1081210
   reportCompleted = true;
   isPreviewMode = false;
@@ -114,6 +118,7 @@ export class MyReportComponent implements OnInit, OnDestroy {
   isDebug = false;
   showAllLessonInfo = false;
   showAllCoachInfo = false;
+  urlOpenReprot = false;
 
   // 資料儲存用變數-kidin-1081210
   token: string;
@@ -145,13 +150,18 @@ export class MyReportComponent implements OnInit, OnDestroy {
   userData: any;
   deviceInfo: any;
   groupData: any;
-  coachInfo: any;
+  coachInfo = {
+    nickname: '',
+    avatarUrl: '',
+    description: ''
+  };
   deviceImgUrl: string;
   lessonTotalInfo: string;
   lessonPartInfo: string;
   coachTotalInfo: string;
   coachPartInfo: string;
   avgHRZone: string;
+  classLink: HTMLElement;
 
   // 圖表用數據-kidin-1081211
   showHRZoneChartTarget = false;
@@ -180,17 +190,17 @@ export class MyReportComponent implements OnInit, OnDestroy {
     z5: 'Z5',
   };
 
-  @ViewChild('container')
+  @ViewChild('container', {static: false})
   container: ElementRef;
-  @ViewChild('HRZoneChartTarget')
+  @ViewChild('HRZoneChartTarget', {static: false})
   HRZoneChartTarget: ElementRef;
-  @ViewChild('caloriesBurnedChartTarget')
+  @ViewChild('caloriesBurnedChartTarget', {static: false})
   caloriesBurnedChartTarget: ElementRef;
-  @ViewChild('avgSpeedChartTarget')
+  @ViewChild('avgSpeedChartTarget', {static: false})
   avgSpeedChartTarget: ElementRef;
-  @ViewChild('avgHRChartTarget')
+  @ViewChild('avgHRChartTarget', {static: false})
   avgHRChartTarget: ElementRef;
-  @ViewChild('caloriesChartTarget')
+  @ViewChild('caloriesChartTarget', {static: false})
   caloriesChartTarget: ElementRef;
 
   constructor(
@@ -203,22 +213,21 @@ export class MyReportComponent implements OnInit, OnDestroy {
     private userInfoService: UserInfoService,
     private qrcodeService: QrcodeService,
     private userProfileService: UserProfileService,
-    private activityService: ActivityService,
-    private activityOtherDetailsService: ActivityOtherDetailsService
-    ) {
-      // 改寫內部設定
-      // 將提示框即十字準星的隱藏函數關閉
-      Highcharts.Pointer.prototype.reset = function() {
-        return undefined;
-      };
-      /**
-       * 聚焦當前的數據點，並設置滑鼠滑動狀態及繪製十字準星線
-       */
-      Highcharts.Point.prototype.highlight = function(event) {
-        this.onMouseOver(); // 顯示滑鼠啟動標示
-        this.series.chart.xAxis[0].drawCrosshair(event, this); // 顯示十字準星线
-      };
-    }
+    private activityService: ActivityService
+  ) {
+    // 改寫內部設定
+    // 將提示框即十字準星的隱藏函數關閉
+    Highcharts.Pointer.prototype.reset = function() {
+      return undefined;
+    };
+    /**
+     * 聚焦當前的數據點，並設置滑鼠滑動狀態及繪製十字準星線
+     */
+    Highcharts.Point.prototype.highlight = function(event) {
+      this.onMouseOver(); // 顯示滑鼠啟動標示
+      this.series.chart.xAxis[0].drawCrosshair(event, this); // 顯示十字準星线
+    };
+  }
 
   ngOnInit() {
     if (location.search.indexOf('ipm=s') > -1) {
@@ -234,6 +243,7 @@ export class MyReportComponent implements OnInit, OnDestroy {
       location.search.indexOf('enddate=') > -1 &&
       location.search.indexOf('id=')
     ) {
+      this.urlOpenReprot = true;
       this.queryStringShowData();
     }
 
@@ -257,32 +267,16 @@ export class MyReportComponent implements OnInit, OnDestroy {
     this.handleSubmitSearch('url');
   }
 
-  // 按下日期按鈕後記錄其選擇並更改該按鈕樣式-kidin-1081210
-  handleActivityBtn (e) {
-    if (e.target.name === 'aWeek') {
-      this.startDate = moment().add(-6, 'days').format('YYYY-MM-DD');
-    } else if (e.target.name === 'aMonth') {
-      this.startDate = moment().add(-29, 'days').format('YYYY-MM-DD');
-    }
-    this.isSelected = e.target.name;
-    this.isSelectDateRange = false;
-  }
-
-  // 點擊選擇日期區間按鈕後，選擇日期顯示與否-kidin-1081209
-  handleClickSelectDate (e) {
-    this.isSelected = e.target.name;
-    this.startDate = '';
-    if (this.isSelectDateRange === false) {
-      this.isSelectDateRange = true;
-    } else {
-      this.isSelectDateRange = false;
-    }
+  changeSubmitStatus () {
+    this.urlOpenReprot = false;
   }
 
   // 取得所選日期-kidin-1090331
   getSelectDate (date) {
-    this.selectDate = date;
-    this.handleSubmitSearch('click');
+    if (this.urlOpenReprot === false) {
+      this.selectDate = date;
+      this.handleSubmitSearch('click');
+    }
 
   }
 
@@ -346,7 +340,9 @@ export class MyReportComponent implements OnInit, OnDestroy {
   // 取得群組資訊-kidin-1090326
   getGroupInfo () {
     // 先從service取得群組資訊，若取不到再call api-kidin-1081210
-    this.groupService.getGroupInfo().subscribe(res => {
+    this.groupService.getGroupInfo().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
       this.groupData = res;
       if (this.groupData.hasOwnProperty('groupId')) {
         this.groupId = this.groupData.groupId;
@@ -394,13 +390,10 @@ export class MyReportComponent implements OnInit, OnDestroy {
 
   // 取得登入者資訊-kidin-1090326
   getUserInfo () {
-    const getLoginBody = {
-      avatarType: 2,
-      iconType: 2,
-      token: this.token
-    };
-    this.userInfoService.getLogonData(getLoginBody).subscribe(res => {
-      if (res.resultCode !== +200 || +this.userId !== +res.info.nameId) {
+    this.userProfileService.getRxUserProfile().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
+      if (+this.userId !== res.userId) {
         this.hrZoneRange['HRBase'] = 0;
         this.hrZoneRange['z0'] = 'Z0';
         this.hrZoneRange['z1'] = 'Z1';
@@ -409,14 +402,16 @@ export class MyReportComponent implements OnInit, OnDestroy {
         this.hrZoneRange['z4'] = 'Z4';
         this.hrZoneRange['z5'] = 'Z5';
       } else {
-          const userAge = moment().diff(res.info.birthday, 'years'),
-                userHRBase = res.info.heartRateBase,
-                userMaxHR = res.info.heartRateMax,
-                userRestHR = res.info.heartRateResting;
+        const userAge = moment().diff(res.birthday, 'years'),
+              userHRBase = res.heartRateBase,
+              userMaxHR = res.heartRateMax,
+              userRestHR = res.heartRateResting;
 
         this.getUserBodyInfo(userHRBase, userAge, userMaxHR, userRestHR);
       }
+
     });
+
   }
 
   // 取得使用者資訊並計算心率區間範圍()-kidin-1090203
@@ -426,7 +421,7 @@ export class MyReportComponent implements OnInit, OnDestroy {
         if (userHRBase === 0) {
           // 區間數值採無條件捨去法
           this.hrZoneRange['HRBase'] = userHRBase;
-          this.hrZoneRange['z0'] = Math.floor((220 - userAge) * 0.5) + '';
+          this.hrZoneRange['z0'] = Math.floor((220 - userAge) * 0.5 - 1) + '';
           this.hrZoneRange['z1'] = Math.floor((220 - userAge) * 0.6 - 1) + '';
           this.hrZoneRange['z2'] = Math.floor((220 - userAge) * 0.7 - 1) + '';
           this.hrZoneRange['z3'] = Math.floor((220 - userAge) * 0.8 - 1) + '';
@@ -445,7 +440,7 @@ export class MyReportComponent implements OnInit, OnDestroy {
         if (userHRBase === 0) {
           // 區間數值採無條件捨去法
           this.hrZoneRange['HRBase'] = userHRBase;
-          this.hrZoneRange['z0'] = Math.floor((220 - userAge) * 0.5) + '';
+          this.hrZoneRange['z0'] = Math.floor((220 - userAge) * 0.5 - 1) + '';
           this.hrZoneRange['z1'] = Math.floor((220 - userAge) * 0.6 - 1) + '';
           this.hrZoneRange['z2'] = Math.floor((220 - userAge) * 0.7 - 1) + '';
           this.hrZoneRange['z3'] = Math.floor((220 - userAge) * 0.8 - 1) + '';
@@ -588,10 +583,35 @@ export class MyReportComponent implements OnInit, OnDestroy {
           this.initHighChart();
           this.getClassDetails(this.fileInfo.equipmentSN, coachId);
           this.updateUrl('true');
+
+          setTimeout(() => {
+            this.getReportInfo();
+          });
+
         }
+
       }
+
     });
+
     this.reportCompleted = true;
+  }
+
+  // 取得變數內容並將部分變數替換成html element-kidin-1090623
+  getReportInfo () {
+    const targetDiv = document.getElementById('reportInfo');
+    this.translateService.get('hollow world').subscribe(() => {
+      targetDiv.innerHTML = this.translateService.instant('universal_group_myReportOnPeriod', {
+        'class': `[<span id="classLink" class="activity-Link">${this.fileInfo.dispName}</span>]`,
+        'startDate': moment(this.selectDate.startDate).format('YYYY/MM/DD'),
+        'endDate': moment(this.selectDate.endDate).format('YYYY/MM/DD'),
+        'number': `<span class="fileAmount">${this.activityLength}</span>`
+      });
+
+    });
+
+    this.classLink = document.getElementById('classLink');
+    this.classLink.addEventListener('click', this.visitClass.bind(this));
   }
 
   // 取得平均心率座落的區間-kidin-1090326
@@ -608,22 +628,22 @@ export class MyReportComponent implements OnInit, OnDestroy {
 
     switch (idx) {
       case 0:
-        this.avgHRZone = `${this.translateService.instant('Dashboard.GroupClass.limit_generalZone')} ${mostHRZone}%`;
+        this.avgHRZone = `${this.translateService.instant('universal_activityData_limit_generalZone')} ${mostHRZone}%`;
         break;
       case 1:
-        this.avgHRZone = `${this.translateService.instant('Dashboard.GroupClass.warmUpZone')} ${mostHRZone}%`;
+        this.avgHRZone = `${this.translateService.instant('universal_activityData_warmUpZone')} ${mostHRZone}%`;
         break;
       case 2:
-        this.avgHRZone = `${this.translateService.instant('Dashboard.GroupClass.aerobicZone')} ${mostHRZone}%`;
+        this.avgHRZone = `${this.translateService.instant('universal_activityData_aerobicZone')} ${mostHRZone}%`;
         break;
       case 3:
-        this.avgHRZone = `${this.translateService.instant('Dashboard.GroupClass.enduranceZone')} ${mostHRZone}%`;
+        this.avgHRZone = `${this.translateService.instant('universal_activityData_enduranceZone')} ${mostHRZone}%`;
         break;
       case 4:
-        this.avgHRZone = `${this.translateService.instant('Dashboard.GroupClass.marathonZone')} ${mostHRZone}%`;
+        this.avgHRZone = `${this.translateService.instant('universal_activityData_marathonZone')} ${mostHRZone}%`;
         break;
       case 5:
-        this.avgHRZone = `${this.translateService.instant('Dashboard.GroupClass.anaerobicZone')} ${mostHRZone}%`;
+        this.avgHRZone = `${this.translateService.instant('universal_activityData_anaerobicZone')} ${mostHRZone}%`;
         break;
     }
   }
@@ -671,7 +691,7 @@ export class MyReportComponent implements OnInit, OnDestroy {
               newSufUrl = `${newSufUrl}&${queryString[i]}`;
             }
           }
-          newUrl = `${preUrl}?${searchString}${newSufUrl}`;
+          newUrl = `${preUrl}?${searchString} ${newSufUrl}`;
         } else {
           newUrl = location.pathname + location.search + `&${searchString}`;
         }
@@ -757,12 +777,12 @@ export class MyReportComponent implements OnInit, OnDestroy {
     HRZoneChartOptions['series'][0].showInLegend = false;
     HRZoneChartOptions['chart'].zoomType = '';
     HRZoneChartOptions['xAxis'].categories = [
-      this.translateService.instant('Dashboard.GroupClass.limit_generalZone'),
-      this.translateService.instant('Dashboard.GroupClass.warmUpZone'),
-      this.translateService.instant('Dashboard.GroupClass.aerobicZone'),
-      this.translateService.instant('Dashboard.GroupClass.enduranceZone'),
-      this.translateService.instant('Dashboard.GroupClass.marathonZone'),
-      this.translateService.instant('Dashboard.GroupClass.anaerobicZone')
+      this.translateService.instant('universal_activityData_limit_generalZone'),
+      this.translateService.instant('universal_activityData_warmUpZone'),
+      this.translateService.instant('universal_activityData_aerobicZone'),
+      this.translateService.instant('universal_activityData_enduranceZone'),
+      this.translateService.instant('universal_activityData_marathonZone'),
+      this.translateService.instant('universal_activityData_anaerobicZone')
     ];
     HRZoneChartOptions['yAxis'].labels = {
       formatter: function () {
@@ -887,7 +907,7 @@ export class MyReportComponent implements OnInit, OnDestroy {
       this.renderer.listen(this.container.nativeElement, 'touchstart', e =>
         this.handleSynchronizedPoint(e, this.chartDatas)
       );
-    }, 0);
+    }, 3000);
   }
 
   // 調整縮放會同步-kidin-1081212
@@ -946,9 +966,17 @@ export class MyReportComponent implements OnInit, OnDestroy {
       targetUserId: coachId,
       avatarType: '2'
     };
+
     this.userProfileService.getUserProfile(bodyForCoach).subscribe(res => {
-      if (res) {
-        this.coachInfo = res.info;
+      if (res.processResult.resultCode === 200) {
+        this.coachInfo = res.userProfile;
+      } else {
+        this.coachInfo = {
+          avatarUrl: '/assets/images/user2.png',
+          description: '',
+          nickname: 'No data'
+        };
+
       }
 
       this.handleInfo(this.coachInfo.description, 'coachInfo');
@@ -956,27 +984,24 @@ export class MyReportComponent implements OnInit, OnDestroy {
 
   }
 
-  // 根據使用者點選的連結導引至該頁面-kidin-1081223
-  visitLink(queryStr) {
-    if (queryStr === 'author') {
-      this.router.navigateByUrl(
-        `/user-profile/${this.hashIdService.handleUserIdEncode(
-          this.fileInfo.author
-            .split('?')[1]
-            .split('=')[1]
-            .replace(')', '')
-        )}`
-      );
-    } else if (queryStr === 'class') {
-      this.router.navigateByUrl(
-        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
-          this.fileInfo.class
+  // 連結至個人頁面-kidin-1081223
+  visitAuthor() {
+    this.router.navigateByUrl(
+      `/user-profile/${this.hashIdService.handleUserIdEncode(
+        this.fileInfo.author
           .split('?')[1]
           .split('=')[1]
           .replace(')', '')
-        )}`
-      );
-    }
+      )}`
+    );
+
+  }
+
+  // 連結至課程頁面-kidin-1090624
+  visitClass () {
+    this.router.navigateByUrl(
+      `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.fileInfo.class)}`
+    );
   }
 
   // 將過長的介紹隱藏-kidin-1090326
@@ -1033,6 +1058,16 @@ export class MyReportComponent implements OnInit, OnDestroy {
       if (_highChart !== undefined) {
         _highChart.destroy();
       }
+
     });
+
+    if (this.classLink) {
+      this.classLink.removeEventListener('click', this.visitClass.bind(this));
+    }
+
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+
   }
+
 }

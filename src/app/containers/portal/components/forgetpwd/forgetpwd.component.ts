@@ -5,7 +5,7 @@ import {
   Validators
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { RandomCodeService } from '../../services/random-code.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { RandomCode } from '../../models/random-code';
@@ -21,6 +21,10 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrls: ['./forgetpwd.component.css']
 })
 export class ForgetpwdComponent implements OnInit, OnDestroy {
+  i18n = {
+    email: '',
+    phone: ''
+  };
   form: FormGroup;
   results: any;
   isEmailMethod = false;
@@ -29,7 +33,7 @@ export class ForgetpwdComponent implements OnInit, OnDestroy {
   randomCode: RandomCode;
   isCodeInvalid = false;
   smsVerifyCode: string;
-  @ViewChild('f') forgetForm: any;
+  @ViewChild('f', {static: false}) forgetForm: any;
   isChartCodeErr = false;
   isSMSCodeErr = false;
   isForgetSending = false;
@@ -46,11 +50,19 @@ export class ForgetpwdComponent implements OnInit, OnDestroy {
     private forgetService: ForgetService,
     private signupService: SignupService,
     private translate: TranslateService
-  ) {}
+  ) {
+    translate.onLangChange.subscribe(() => {
+      this.getTranslate();
+    });
+
+  }
+
   get phone() {
     return this.form.get('phone');
   }
+
   ngOnInit() {
+
     this.form = this.fb.group(
       {
         phone: ['', Validators.required],
@@ -67,6 +79,19 @@ export class ForgetpwdComponent implements OnInit, OnDestroy {
       this.isCodeInvalid = false;
     }
   }
+
+  // 取得多國語系翻譯-kidin-1090620
+  getTranslate () {
+    this.translate.get('hollo word').subscribe(() => {
+      this.i18n = {
+        email: this.translate.instant('universal_userAccount_email'),
+        phone: this.translate.instant('universal_userAccount_phone')
+      };
+
+    });
+
+  }
+
   forget({ valid, value }) {
     if (!this.countryCode) {
       this.isCodeInvalid = true;
@@ -111,13 +136,13 @@ export class ForgetpwdComponent implements OnInit, OnDestroy {
         } = res;
         if (resultCode === 200) {
           this.snackbar.open(
-            this.translate.instant('Portal.sendRestPwdEmailSuccess'),
+            this.translate.instant('universal_userAccount_sendRestPwdEmailSuccess'),
             'OK',
             { duration: 5000 }
           );
-          this.timeout = setTimeout(() => this.router.navigate(['/signin']), 5000);
+          this.timeout = setTimeout(() => this.router.navigate(['/signIn-web']), 5000);
         } else if (rtnMsg === 'This is not a registered or activation mail.') {
-          this.snackbar.open(this.translate.instant('SH.noRegisterData'), 'OK', { duration: 5000 });
+          this.snackbar.open(this.translate.instant('universal_userAccount_noRegisterData'), 'OK', { duration: 5000 });
           this.isForgetSending = false;
         } else {
           this.snackbar.open(rtnMsg, 'OK', { duration: 5000 });
@@ -192,12 +217,12 @@ export class ForgetpwdComponent implements OnInit, OnDestroy {
         if (resultCode === 200) {
           this.smsVerifyCode = smsVerifyCode;
           this.snackbar.open(
-            `${this.translate.instant('Portal.phoneCaptcha')} ${this.translate.instant('SH.send')}`,
+            `${this.translate.instant('universal_userAccount_phoneCaptcha')} ${this.translate.instant('universal_operating_send')}`,
             'OK',
             { duration: 5000 }
           );
         } else if (rtnMsg === 'This is not a registered or activation account.') {
-          this.snackbar.open(this.translate.instant('SH.noRegisterData'), 'OK', { duration: 5000 });
+          this.snackbar.open(this.translate.instant('universal_userAccount_noRegisterData'), 'OK', { duration: 5000 });
         } else {
           this.snackbar.open(rtnMsg, 'OK', { duration: 5000 });
         }

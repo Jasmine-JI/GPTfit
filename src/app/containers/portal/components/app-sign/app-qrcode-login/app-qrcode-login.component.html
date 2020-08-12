@@ -4,16 +4,16 @@
       <i
         class="icon-svg_web-icon_p1_073-level_fold"
         style="font-size: 30px; cursor: pointer;"
-        (click)="cancelLogin()"
+        (click)="turnBack()"
       ></i>
       <span class="appview-header appview-header-position">
-        QR {{ 'SH.logIn' | translate }}
+        QR {{ 'universal_userAccount_logIn' | translate }}
       </span>
     </div>
     <img src="./assets/logoTitle.png" alt="Alatech Logo" style="max-width: 300px; margin: 20px 0px; width: 75%;">
     <ng-container *ngIf="displayPage === 'login'">
       <div class="flexCol" style="align-items: center;" >
-        <span style="margin-bottom: 30px; font-weight: bold; color: #5b5b5b; font-size: 18px;">{{ 'custom.confirmQrLogin' | translate }}</span>
+        <span style="margin-bottom: 30px; font-weight: bold; color: #5b5b5b; font-size: 18px;">{{ 'universal_userAccount_unknownDevice' | translate }}</span>
         <div class="avatar-wrapper">
           <img *ngIf="userInfo && userInfo.icon"
             [src]="(userInfo.icon | safeHtml)"
@@ -30,17 +30,17 @@
         [class.appview-btn-unclickable]="qrLoginStatus === 'logging' || qrLoginStatus === 'success'"
         (click)="qrcodeLogin()"
       >
-        <span *ngIf="qrLoginStatus !== 'success'">{{ 'SH.logIn' | translate }}{{loggingDot}}</span>
-        <span *ngIf="qrLoginStatus === 'success'">{{ 'Portal.signSuceesfully' | translate }}</span>
+        <span *ngIf="qrLoginStatus !== 'success'">{{ 'universal_userAccount_logIn' | translate }}{{loggingDot}}</span>
+        <span *ngIf="qrLoginStatus === 'success'">{{ 'universal_userAccount_signSuceesfully' | translate }}</span>
       </button>
     </ng-container>
     <ng-container *ngIf="displayPage === 'showQrcode'">
       <div class="flexCol" style="align-items: center;">
         <qrcode [qrdata]="qrURL" [size]="128" [level]="'M'" *ngIf="cue === ''"></qrcode>
         <span *ngIf="cue !== ''" style="margin: 50px; color: #ff9090; font-size: 20px; font-weight: bold;">
-          {{ cue }}
+          {{ cue | translate }}
         </span>
-        <span class="formTitle" style="margin: 20px;">{{ 'custom.scanLogin' | translate }}</span>
+        <span class="formTitle" style="margin: 20px;">{{ 'universal_userAccount_scanLogin' | translate }}</span>
       </div>
     </ng-container>
   </div>
@@ -58,9 +58,9 @@
               <div class="flexCol" style="align-items: center;">
                 <qrcode [qrdata]="qrURL" [size]="128" [level]="'M'" *ngIf="cue === ''"></qrcode>
                 <span *ngIf="cue !== ''" style="margin: 50px; color: #ff9090; font-size: 20px; font-weight: bold;">
-                  {{ cue }}
+                  {{ cue | translate }}
                 </span>
-                <span class="formTitle" style="margin: 20px;">{{ 'custom.scanLogin' | translate }}</span>
+                <span class="formTitle" style="margin: 20px;">{{ 'universal_userAccount_scanLogin' | translate }}</span>
               </div>
             </ng-container>
           </div>

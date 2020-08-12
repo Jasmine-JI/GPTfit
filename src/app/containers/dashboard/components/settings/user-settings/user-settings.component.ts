@@ -1,21 +1,26 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnChanges } from '@angular/core';
 import { SettingsService } from '../../../services/settings.service';
 import { FormGroup, FormBuilder, Validators, FormArray, FormControl } from '@angular/forms';
 import { UtilsService } from '@shared/services/utils.service';
 import * as moment from 'moment';
-import { MatDatepickerInputEvent } from '@angular/material';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserInfoService } from '../../../services/userInfo.service';
 import { TranslateService } from '@ngx-translate/core';
+import { UserProfileService } from '../../../../../shared/services/user-profile.service';
+import { formTest } from '../../../../portal/models/form-test';
 
 @Component({
   selector: 'app-user-settings',
   templateUrl: './user-settings.component.html',
   styleUrls: ['./user-settings.component.scss', '../settings.component.scss']
 })
-export class UserSettingsComponent implements OnInit {
+export class UserSettingsComponent implements OnInit, OnChanges {
+
+  readonly nicknameReg = formTest.nickname;
+
   reloadFileText = '重新上傳';
   chooseFileText = '選擇檔案';
   acceptFileExtensions = ['JPG', 'JPEG', 'GIF', 'PNG'];
@@ -36,7 +41,8 @@ export class UserSettingsComponent implements OnInit {
     private dialog: MatDialog,
     private snackbar: MatSnackBar,
     private userInfoService: UserInfoService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private userProfileService: UserProfileService
   ) {}
   get nameIcon() {
     return <FormArray>this.settingsForm.get('nameIcon');
@@ -61,12 +67,15 @@ export class UserSettingsComponent implements OnInit {
       (this.settingsForm && this.settingsForm.get('description').value) || null
     );
   }
-  ngOnInit() {
+
+  ngOnInit(): void {}
+
+  ngOnChanges(): void {
     const {
-      name,
-      nameIcon,
-      height,
-      weight,
+      nickname,
+      avatarUrl,
+      bodyHeight,
+      bodyWeight,
       birthday,
       description
     } = this.userData;
@@ -80,12 +89,12 @@ export class UserSettingsComponent implements OnInit {
     this.settingsForm = this.fb.group({
       // 定義表格的預設值
       nameIcon: [
-        `${nameIcon}${this.updateQueryString}`,
+        `${avatarUrl}${this.updateQueryString}`,
         Validators.required
       ],
-      name: [name, Validators.required],
-      height: [height, Validators.required],
-      weight: [weight, Validators.required],
+      name: [nickname, Validators.required],
+      height: [bodyHeight, Validators.required],
+      weight: [bodyWeight, Validators.required],
       birthday,
       gender,
       description
@@ -94,9 +103,18 @@ export class UserSettingsComponent implements OnInit {
     this.utils.getImgSelectedStatus().subscribe(res => {
       this.imgCropping = res;
     });
+
   }
-  handleValueArrange(type, e) {
-    const inputHeightValue = e.target.value;
+
+  /**
+   * 若使用者輸入的身高或體重不符合合理值就將其轉為合理值上限或下限
+   * @event focusout
+   * @param type {number}
+   * @param e {FocusoutEvent}
+   * @author kidin-1090723
+   */
+  handleValueArrange(type: number, e: FocusEvent): void {
+    const inputHeightValue = (e as any).target.value;
     let tuneHeight = '';
     let tuneWeight = '';
 
@@ -120,48 +138,88 @@ export class UserSettingsComponent implements OnInit {
         }
       }
     }
+
     if (type === 1) {
       this.settingsForm.patchValue({ height: tuneHeight });
     } else {
       this.settingsForm.patchValue({ weight: tuneWeight });
     }
+
   }
-  handleSearchName(name) {
-    const token = this.utils.getToken() || '';
-    const body = {
-      token,
-      name
-    };
-    this.isNameLoading = true;
-    this.settingsService.updateUserProfile(body).subscribe(res => {
-      this.isNameLoading = false;
-      if (res.resultCode === 200) {
-        this.userInfoService.getUserInfo({
-          token,
-          avatarType: 2,
-          iconType: 2
-        });
-        this.settingsForm.patchValue({ name });
-        this.isNameError = false;
-        this.inValidText = this.translate.instant('Dashboard.Settings.fullField');
-      } else {
-        this.inValidText = `${this.translate.instant('Dashboard.Settings.name')}${this.translate.instant('Dashboard.Settings.repeat')}`;
-        this.isNameError = true;
-      }
-    });
+
+  /**
+   * 去除暱稱頭尾空白，並call api 1011更新會員資料來確認是否暱稱重複
+   * @param name {string}
+   * @author kidin-1090723
+   */
+  handleSearchName(name: string): void {
+    const trimNickname = name.replace(/(^[\s]*)|([\s]*$)/g, '');
+    this.settingsForm.patchValue({name: trimNickname});
+
+    if (!this.nicknameReg.test(trimNickname)) {
+      this.inValidText = this.translate.instant('universal_userAccount_nameCharactersToLong');
+      this.isNameError = true;
+    } else {
+      const token = this.utils.getToken() || '';
+      const body = {
+        token,
+        userProfile: {
+          nickname: trimNickname
+        }
+      };
+
+      this.isNameLoading = true;
+      this.settingsService.updateUserProfile(body).subscribe(res => {
+        this.isNameLoading = false;
+        if (res.processResult.resultCode === 200) {
+          this.userProfileService.refreshUserProfile({
+            token,
+          });
+
+          this.isNameError = false;
+          this.inValidText = this.translate.instant('universal_userAccount_fullField');
+        } else {
+          this.inValidText = `${this.translate.instant('universal_activityData_name')} ${this.translate.instant('universal_deviceSetting_repeat')}`;
+          this.isNameError = true;
+        }
+
+      });
+
+    }
+
   }
-  public onNameChange(e: any, form: FormGroup): void {
-    const inputNameString = e.target.value;
+
+  /**
+   * 當使用者輸入暱稱完畢後，自動call api確認是否重複暱稱重複
+   * @event {FocusoutEvent}
+   * @param e {FocusEvent}
+   * @param form {FormGroup}
+   * @author kidin-1090723
+   */
+  public onNameChange(e: FocusEvent, form: FormGroup): void {
+    const inputNameString = (e as any).target.value;
     if (inputNameString.length > 0 && form.controls['name'].status === 'VALID') {
       this.handleSearchName(inputNameString);
     }
   }
+
+  /**
+   * 處理使用者輸入自我介紹
+   * @param text {string}
+   * @param type {number}
+   * @author kidin-1090723
+   */
   handleChangeTextarea(text: string, type: number): void {
     if (type === 1) {
       return this.settingsForm.patchValue({ description: text });
     }
   }
 
+  /**
+   * 處理不合理生日日期
+   * @param $event {MatDatepickerInputEvent}
+   * @author kidin-1090723
+   */
   logStartDateChange($event: MatDatepickerInputEvent<moment.Moment>) {
     const inputBirthdayValue = moment($event.value);
     let value = moment($event.value).format('YYYYMMDD');
@@ -173,17 +231,24 @@ export class UserSettingsComponent implements OnInit {
     }
   }
 
+  /**
+   * 使用者點選儲存後，call api更新使用者資料。
+   * @event click
+   * @param {value, valid}
+   * @author kidin-1090723
+   */
   saveSettings({ value, valid }) {
     if (!value.nameIcon || value.nameIcon.length === 0) {
       return this.dialog.open(MessageBoxComponent, {
         hasBackdrop: true,
         data: {
           title: 'Message',
-          body: this.translate.instant('Dashboard.Settings.selectImg'),
-          confirmText: this.translate.instant('other.confirm')
+          body: this.translate.instant('universal_operating_selectImg'),
+          confirmText: this.translate.instant('universal_operating_confirm')
         }
       });
     }
+
     if (valid && !this.isNameError) {
       const {
         name,
@@ -196,35 +261,39 @@ export class UserSettingsComponent implements OnInit {
       } = value;
       const token = this.utils.getToken() || '';
       const image = new Image();
-      const icon = {
-        iconLarge: '',
-        iconMid: '',
-        iconSmall: ''
+      const avatar = {
+        large: '',
+        mid: '',
+        small: ''
       };
       image.src = nameIcon;
 
       image.onload = () => {
-        icon.iconLarge = this.imageToDataUri(image, 256, 256);
-        icon.iconMid = this.imageToDataUri(image, 128, 128);
-        icon.iconSmall = this.imageToDataUri(image, 64, 64);
+        avatar.large = this.imageToDataUri(image, 256, 256);
+        avatar.mid = this.imageToDataUri(image, 128, 128);
+        avatar.small = this.imageToDataUri(image, 64, 64);
+
         const body = {
           token,
-          name,
-          icon,
-          height: this.handleEmptyValue(height),
-          weight: this.handleEmptyValue(weight),
-          birthday,
-          gender,
-          description
+          userProfile: {
+            nickname: name,
+            avatar,
+            bodyHeight: height,
+            bodyWeight: weight,
+            birthday,
+            gender,
+            description
+          }
+
         };
+
         this.isSaveUserSettingLoading = true;
         this.settingsService.updateUserProfile(body).subscribe(res => {
           this.isSaveUserSettingLoading = false;
-          if (res.resultCode === 200) {
-            this.userInfoService.getUserInfo({
+          if (res.processResult.resultCode === 200) {
+            // 重新存取身體資訊供各種圖表使用-kidin-1081212
+            this.userProfileService.refreshUserProfile({
               token,
-              avatarType: 2,
-              iconType: 2
             });
 
             // 此字串為更新頭像時，icon url添加的query string-kidin-1090107
@@ -232,50 +301,32 @@ export class UserSettingsComponent implements OnInit {
 
             this.snackbar.open(
               this.translate.instant(
-                'Dashboard.Settings.finishEdit'
+                'universal_operating_finishEdit'
               ),
               'OK',
               { duration: 5000 }
             );
 
-            // 重新存取身體資訊供各種圖表使用-kidin-1081212
-            const key = {
-              token: token,
-              avatarType: 2,
-              iconType: 2
-            };
-            this.userInfoService.getLogonData(key).subscribe(result => {
-              const data = {
-                name: result.info.name,
-                birthday: result.info.birthday,
-                heartRateBase: result.info.heartRateBase,
-                heartRateMax: result.info.heartRateMax,
-                heartRateResting: result.info.heartRateResting,
-                height: result.info.height,
-                weight: result.info.weight,
-                wheelSize: result.info.wheelSize
-              };
-              this.userInfoService.saveBodyDatas(data);
-            });
           } else {
             this.snackbar.open(
-              this.translate.instant('Dashboard.Settings.updateFailed'),
+              this.translate.instant('universal_popUpMessage_updateFailed'),
               'OK',
               { duration: 5000 }
             );
             this.userInfoService.setUpdatedImgStatus('');
           }
         });
-      }
+      };
     }
   }
-  handleEmptyValue(_value) {
-    if (this.utils.isStringEmpty(_value)) {
-      return '0';
-    }
-    return _value;
-  }
-  imageToDataUri(img, width, height) {
+
+  /**
+   * 將圖片裁切成所需大小並轉成base64
+   * @param img {Image}
+   * @param width {number}
+   * @param height {number}
+   */
+  imageToDataUri(img: any, width: number, height: number) {
     // create an off-screen canvas
     const canvas = document.createElement('canvas'),
       ctx = canvas.getContext('2d');
@@ -290,7 +341,13 @@ export class UserSettingsComponent implements OnInit {
     // encode image to data-uri with base64 version of compressed image
     return canvas.toDataURL().replace('data:image/png;base64,', '');
   }
-  handleAttachmentChange(file) {
+
+  /**
+   * 處理使用者選擇完照片
+   * @param file any
+   * @author kidin-1090723
+   */
+  handleAttachmentChange(file: any): void {
     if (file) {
       const { isTypeCorrect, errorMsg, link } = file;
       if (!isTypeCorrect) {
@@ -305,10 +362,16 @@ export class UserSettingsComponent implements OnInit {
         this.settingsForm.patchValue({nameIcon: link});
       }
     }
+
   }
 
-  // 取消按enter鍵(Bug 1104)-kidin-1090415
-  handleKeyDown (e) {
+  /**
+   * 輸入生日時禁止使用enter鍵(Bug 1104)
+   * @event keydown
+   * @param e {keyBoardEvent}
+   * @author kidin-1090723
+   */
+  handleKeyDown(e: KeyboardEvent): boolean {
     if (e.key === 'Enter') {
       return false;
     }

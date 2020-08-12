@@ -79,23 +79,20 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
   @Input() userWeight: number;
   @Input() proficiencyCoefficient: number;
 
-  @ViewChild('container')
+  @ViewChild('container', {static: true})
   container: ElementRef;
 
   constructor(
     private translate: TranslateService
   ) { }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   ngOnChanges () {
     this.initChart();
   }
 
   initChart () {
-    Highcharts.charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
-
     let trendDataset;
     const chartData = [];
 
@@ -286,7 +283,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
       case 'Step':
         trendDataset = [
           {
-            name: [this.translate.instant('other.StepCount'), this.translate.instant('other.targetStep')],
+            name: [this.translate.instant('universal_userProfile_StepCount'), this.translate.instant('universal_lifeTracking_targetStep')],
             data: chartData,
             showInLegend: false
           }
@@ -329,9 +326,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         break;
     }
 
-
-    const trendChartOptions = new ChartOptions(trendDataset),
-          trendChartDiv = this.container.nativeElement;
+    const trendChartOptions = new ChartOptions(trendDataset);
 
     switch (this.chartName) {
       case 'Pace':
@@ -525,9 +520,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
       trendChartOptions['xAxis'].tickInterval = 30 * 24 * 4600 * 1000;  // 間距一個月
     }
 
-    // 根據圖表清單依序將圖表顯示出來-kidin-1081217
-    chart(trendChartDiv, trendChartOptions);
-
+    this.createChart(trendChartOptions);
   }
 
   // 根據搜尋期間，列出日期清單供圖表使用-kidin-1090220
@@ -566,7 +559,21 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
 
   }
 
-  ngOnDestroy () {
+  // 確認取得元素才建立圖表-kidin-1090706
+  createChart (option: ChartOptions) {
+
+    setTimeout (() => {
+      if (!this.container) {
+        this.createChart(option);
+      } else {
+
+        const chartDiv = this.container.nativeElement;
+        chart(chartDiv, option);
+      }
+    }, 200);
+
   }
+
+  ngOnDestroy () {}
 
 }

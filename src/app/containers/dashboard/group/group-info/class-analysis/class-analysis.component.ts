@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { MatTableDataSource, MatSort, Sort } from '@angular/material';
+import { MatSort, Sort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import * as moment from 'moment';
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
-import { HttpParams } from '@angular/common/http';
 
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -11,11 +11,11 @@ import { HashIdService } from '@shared/services/hash-id.service';
 
 import { GroupService } from '../../../services/group.service';
 import { UtilsService } from '@shared/services/utils.service';
-import { UserInfoService } from '../../../services/userInfo.service';
 import { ActivityService } from '../../../../../shared/services/activity.service';
-import { ActivityOtherDetailsService } from '../../../../../shared/services/activity-other-details.service';
 import { QrcodeService } from '../../../../portal/services/qrcode.service';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -97,6 +97,9 @@ class ChartOptions {
   styleUrls: ['./class-analysis.component.scss']
 })
 export class ClassAnalysisComponent implements OnInit, OnDestroy {
+
+  private ngUnsubscribe = new Subject();
+
   // UI操控相關變數-kidin-1081210
   reportCompleted = true;
   isPreviewMode = false;
@@ -111,6 +114,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   showAllCoachInfo = false;
 
   // 資料儲存用變數-kidin-1081210
+  classLink: HTMLElement;
   tableData = new MatTableDataSource<any>();
   token: string;
   previewUrl: string;
@@ -138,7 +142,11 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   HRZoneThree = 0;
   deviceInfo: any;
   groupData: any;
-  coachInfo: any;
+  coachInfo = {
+    nickname: '',
+    avatarUrl: '',
+    description: ''
+  };
   deviceImgUrl: string;
   memberSection = null;
   focusMember: string;
@@ -167,13 +175,13 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   memberHRZoneList = [];
   memberHRZoneOptions = [];
 
-  @ViewChild('container')
+  @ViewChild('container', {static: false})
   container: ElementRef;
-  @ViewChild('classHRZoneChartTarget')
+  @ViewChild('classHRZoneChartTarget', {static: false})
   classHRZoneChartTarget: ElementRef;
-  @ViewChild('classCaloriesChartTarget')
+  @ViewChild('classCaloriesChartTarget', {static: false})
   classCaloriesChartTarget: ElementRef;
-  @ViewChild('sortTable')
+  @ViewChild('sortTable', {static: false})
   sortTable: MatSort;
 
   constructor(
@@ -182,11 +190,9 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     private translateService: TranslateService,
     private groupService: GroupService,
     private utils: UtilsService,
-    private userInfoService: UserInfoService,
     private qrcodeService: QrcodeService,
     private userProfileService: UserProfileService,
-    private activityService: ActivityService,
-    private activityOtherDetailsService: ActivityOtherDetailsService
+    private activityService: ActivityService
     ) {
       // 改寫內部設定
       // 將提示框即十字準星的隱藏函數關閉
@@ -267,7 +273,9 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     this.token = this.utils.getToken() || '';
 
     // 先從service取得群組資訊，若取不到再call api-kidin-1081210
-    this.groupService.getGroupInfo().subscribe(res => {
+    this.groupService.getGroupInfo().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
       this.groupData = res;
       if (this.groupData.hasOwnProperty('groupId')) {
         this.groupId = this.groupData.groupId;
@@ -399,7 +407,6 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
           this.hasResData = true;
           const infoData = this.activity[0];
           this.fileInfo = infoData.fileInfo;
-          this.classRealDateTime = this.getClassRealDateTime();
 
           let timeCount = 0,
               HRCount = 0,
@@ -512,10 +519,33 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
           this.initMemberHRZoneChart();
           this.getClassDetails(this.fileInfo.equipmentSN, coachId);
           this.updateUrl('true');
+
+          setTimeout(() => {
+            this.getReportInfo();
+          });
+
         }
+
       }
+
     });
     this.reportCompleted = true;
+  }
+
+  // 取得變數內容並將部分變數替換成html element-kidin-1090623
+  getReportInfo () {
+    const targetDiv = document.getElementById('reportInfo');
+    this.translateService.get('hollow world').subscribe(() => {
+      targetDiv.innerHTML = this.translateService.instant('universal_group_sportsRecordReportClass', {
+        'class': `<span id="classLink" class="activity-Link">${this.fileInfo.dispName}</span>`,
+        'dateTime': this.getClassRealDateTime(),
+        'number': `<span class="fileAmount">${this.activityLength}</span>`
+      });
+
+    });
+
+    this.classLink = document.getElementById('classLink');
+    this.classLink.addEventListener('click', this.visitLink.bind(this));
   }
 
   // 將搜尋的類別和範圍處理過後加入query string並更新現在的url和預覽列印的url-kidin-1081226
@@ -542,7 +572,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
               newSufUrl = `${newSufUrl}&${queryString[i]}`;
             }
           }
-          newUrl = `${preUrl}?${searchString}${newSufUrl}`;
+          newUrl = `${preUrl}?${searchString} ${newSufUrl}`;
         } else {
           newUrl = location.pathname + location.search + `&${searchString}`;
         }
@@ -758,12 +788,12 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     classHRZoneChartOptions['plotOptions'].column['pointPlacement'] = 0;
     classHRZoneChartOptions['chart'].zoomType = '';
     classHRZoneChartOptions['xAxis'].categories = [
-      this.translateService.instant('Dashboard.GroupClass.limit_generalZone'),
-      this.translateService.instant('Dashboard.GroupClass.warmUpZone'),
-      this.translateService.instant('Dashboard.GroupClass.aerobicZone'),
-      this.translateService.instant('Dashboard.GroupClass.enduranceZone'),
-      this.translateService.instant('Dashboard.GroupClass.marathonZone'),
-      this.translateService.instant('Dashboard.GroupClass.anaerobicZone')
+      this.translateService.instant('universal_activityData_limit_generalZone'),
+      this.translateService.instant('universal_activityData_warmUpZone'),
+      this.translateService.instant('universal_activityData_aerobicZone'),
+      this.translateService.instant('universal_activityData_enduranceZone'),
+      this.translateService.instant('universal_activityData_marathonZone'),
+      this.translateService.instant('universal_activityData_anaerobicZone')
     ];
     classHRZoneChartOptions['yAxis'].labels = {
       formatter: function () {
@@ -858,7 +888,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     };
     const classCaloriesOptions = new ChartOptions(classCaloriesDataset);
     classCaloriesOptions['tooltip'] = {
-      pointFormat: `${this.translateService.instant('SH.PAGINATOR.total')}{point.y}人`
+      pointFormat: `${this.translateService.instant('universal_adjective_total')}{point.y}人`
     };
     classCaloriesOptions['title'].align = 'center';
     classCaloriesOptions['title'].x = 0;
@@ -1005,13 +1035,19 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
     // 取得教練資訊-kidin-1081218
     const bodyForCoach = {
-      token: this.token,
-      targetUserId: coachId,
-      avatarType: '2'
+      targetUserId: coachId
     };
+
     this.userProfileService.getUserProfile(bodyForCoach).subscribe(res => {
-      if (res) {
-        this.coachInfo = res.info;
+      if (res.processResult.resultCode === 200) {
+        this.coachInfo = res.userProfile;
+      } else {
+        this.coachInfo = {
+          avatarUrl: '/assets/images/user2.png',
+          description: '',
+          nickname: 'No data'
+        };
+
       }
 
       this.handleInfo(this.coachInfo.description, 'coachInfo');
@@ -1020,26 +1056,11 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   }
 
   // 根據使用者點選的連結導引至該頁面-kidin-1081223
-  visitLink(queryStr) {
-    if (queryStr === 'author') {
-      this.router.navigateByUrl(
-        `/user-profile/${this.hashIdService.handleUserIdEncode(
-          this.fileInfo.author
-            .split('?')[1]
-            .split('=')[1]
-            .replace(')', '')
-        )}`
-      );
-    } else if (queryStr === 'class') {
-      this.router.navigateByUrl(
-        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(
-          this.fileInfo.class
-          .split('?')[1]
-          .split('=')[1]
-          .replace(')', '')
-        )}`
-      );
-    }
+  visitLink() {
+    this.router.navigateByUrl(
+      `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.fileInfo.class)}`
+    );
+
   }
 
   // 依據點選的項目進行排序-kidin-1090102
@@ -1173,6 +1194,14 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         _highChart.destroy();
       }
     });
+
+    if (this.classLink) {
+      this.classLink.removeEventListener('click', this.visitLink.bind(this));
+    }
+
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+
   }
 
 }

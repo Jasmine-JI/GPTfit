@@ -1,31 +1,31 @@
 <div class="row ala-settings">
   <div class="col-md-3">
-    <span class="page-title">{{'Dashboard.Settings.userSetting' | translate}}</span>
+    <span class="page-title">{{'universal_userProfile_userSetting' | translate}}</span>
     <ul class="nav">
       <li [class.active]="chooseIdx === 1"
         (click)="handleTab(1)"
       >
-        {{'Dashboard.Settings.basicSetting' | translate}}
+        {{'universal_userProfile_basicSetting' | translate}}
       </li>
       <li [class.active]="chooseIdx === 2"
         (click)="handleTab(2)"
       >
-        {{'Dashboard.Settings.personalPreferences' | translate}}
+        {{'universal_userProfile_personalPreferences' | translate}}
       </li>
       <li [class.active]="chooseIdx === 3"
         (click)="handleTab(3)"
       >
-        {{'Dashboard.Settings.set' | translate}}
+        {{'universal_privacy_set' | translate}}
       </li>
       <li [class.active]="chooseIdx === 4"
         (click)="handleTab(4)"
       >
-        {{'Dashboard.Settings.accountInformation' | translate}}
+        {{'universal_vocabulary_accountInformation' | translate}}
       </li>
     </ul>
   </div>
   <div class="col-md-9">
-    <ng-container *ngIf="!isLoading">
+    <ng-container>
       <app-user-settings [userData]="userData"
       *ngIf="chooseIdx === 1 && userData"
       ></app-user-settings>
@@ -39,10 +39,5 @@
       *ngIf="chooseIdx === 4 && userData"
       ></app-account-info>
     </ng-container>
-    <div style="display:flex;justify-content: center;align-items: center;height:100%"
-      *ngIf="isLoading"
-    >
-      <mat-spinner></mat-spinner>
-    </div>
   </div>
 </div>

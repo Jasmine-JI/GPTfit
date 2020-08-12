@@ -1,4 +1,4 @@
-import queryString from 'query-string';
+import { stringify, parse } from 'query-string';
 import { cloneDeep } from 'lodash';
 
 export const EMPTY_OBJECT = {};
@@ -19,13 +19,13 @@ export function buildUrlQueryStrings(_params) {
   //     if (!params[key]) delete params[key];
   //   }
   // }
-  return queryString.stringify(params);
+  return stringify(params);
 }
 
 export function getUrlQueryStrings(_search) {
   const search = _search || window.location.search;
   if (!search) return EMPTY_OBJECT;
-  return queryString.parse(search);
+  return parse(search);
 }
 
 export function buildPageMeta(_meta) {

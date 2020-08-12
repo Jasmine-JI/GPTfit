@@ -1,11 +1,11 @@
 <div class="imgCroppingMask" *ngIf="imgCropping"></div>
 <div style="display:flex;justify-content: space-between">
-  <h3>{{'Dashboard.Settings.userSetting' | translate}}</h3>
+  <h3>{{'universal_userProfile_userSetting' | translate}}</h3>
   <button class="alatech-btn alatech-btn--default settings-btn"
-    title="{{'Dashboard.Settings.save' | translate}}"
+    title="{{'universal_operating_save' | translate}}"
     (click)="saveSettings(settingsForm)"
   >
-    {{'Dashboard.Settings.save' | translate}}
+    {{'universal_operating_save' | translate}}
   </button>
 </div>
 <form [formGroup]="settingsForm"
@@ -13,19 +13,19 @@
   novalidate
 >
   <label class="ala-form__label settings-label">
-    {{'Dashboard.Settings.basicSetting' | translate}}
+    {{'universal_userProfile_basicSetting' | translate}}
   </label>
   <div class="ala-list__item">
     <label class="ala-form__label settings-item"
       [class.form__label--required]="true"
     >
-      {{'Dashboard.Settings.avatar' | translate}}
+      {{'universal_vocabulary_avatar' | translate}}
     </label>
     <div class="settings-control" style="min-width: 250px;">
       <app-upload-file
         [isImageFileMode]="true"
         [imageURL]="nameIcon?.value"
-        [btnText]="'Dashboard.Group.GroupInfo.selectImg' | translate"
+        [btnText]="'universal_operating_selectImg' | translate"
         [accept]="acceptFileExtensions.join()"
         (onChange)="handleAttachmentChange($event)"
       ></app-upload-file>
@@ -35,7 +35,7 @@
     <label class="ala-form__label settings-item"
       [class.form__label--required]="true"
     >
-    {{'Dashboard.Settings.name' | translate}}
+    {{'universal_activityData_name' | translate}}
     </label>
     <div class="settings-control" style="position: relative;">
       <app-form-text
@@ -55,7 +55,7 @@
     <label class="ala-form__label settings-item"
       [class.form__label--required]="true"
     >
-    {{'Dashboard.Settings.bodyHeight' | translate}}
+    {{'universal_userProfile_bodyHeight' | translate}}
     </label>
     <div class="settings-control">
       <div style="display: inline-block">
@@ -82,7 +82,7 @@
     <label class="ala-form__label settings-item"
       [class.form__label--required]="true"
     >
-    {{'Dashboard.Settings.bodyWeight' | translate}}
+    {{'universal_userProfile_bodyWeight' | translate}}
     </label>
     <div class="settings-control">
       <div style="display: inline-block">
@@ -106,7 +106,7 @@
   </div>
   <div class="ala-list__item">
     <label class="ala-form__label settings-item">
-      {{'Dashboard.Settings.birthday' | translate}}
+      {{'universal_userProfile_birthday' | translate}}
     </label>
     <div class="settings-control">
       <mat-form-field style="min-width: 275px;">
@@ -123,20 +123,20 @@
   </div>
   <div class="ala-list__item">
     <label class="ala-form__label settings-item">
-      {{'Dashboard.Settings.gender' | translate}}
+      {{'universal_userProfile_gender' | translate}}
     </label>
     <div class="settings-control">
       <select class="form-field"
         formControlName="gender"
       >
-        <option value="0">{{'Dashboard.Settings.male' | translate}}</option>
-        <option value="1">{{'Dashboard.Settings.female' | translate}}</option>
+        <option value="0">{{'universal_userProfile_male' | translate}}</option>
+        <option value="1">{{'universal_userProfile_female' | translate}}</option>
       </select>
     </div>
   </div>
   <div class="ala-list__item">
     <label class="ala-form__label settings-item">
-      {{'Dashboard.Settings.introduction' | translate}}
+      {{'universal_group_introduction' | translate}}
     </label>
     <div class="settings-control">
       <app-form-textarea

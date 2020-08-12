@@ -3,7 +3,7 @@ import { GlobalEventsManager } from '@shared/global-events-manager';
 import { Router } from '@angular/router';
 import { WINDOW } from '@shared/services/window.service';
 import { AuthService } from '@shared/services/auth.service';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../services/utils.service';
 
@@ -29,7 +29,11 @@ export class NavbarComponent implements OnInit {
     'zh-tw': '繁體中文',
     'zh-cn': '简体中文',
     'en-us': 'English',
-    'es-es': 'Español'
+    'es-es': 'Español',
+    'de-de': 'Deutsche',
+    'fr-fr': 'français',
+    'it-it': 'italiano',
+    'pt-pt': 'Português'
   };
   @Input() isAlphaVersion = false;
   constructor(
@@ -52,7 +56,7 @@ export class NavbarComponent implements OnInit {
       this.isShowLeaderboard = true;
       this.navItemNum = 2;
     }
-    if (this.router.url === '/signin') {
+    if (this.router.url === '/signIn-web') {
       this.navItemNum = 3;
     }
     if (this.router.url === '/') {

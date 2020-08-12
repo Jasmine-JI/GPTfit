@@ -26,13 +26,13 @@ export class HoverHintComponent implements OnInit, OnChanges {
     // 根據不同區塊顯示不同提示框-kidin-1090326
     switch (this.type) {
       case 'sportsFile':
-        this.hint = this.translate.instant('other.eventFileInformation');
+        this.hint = this.translate.instant('universal_activityData_eventFileInformation');
         break;
       case 'sportsReport':
-        this.hint = this.translate.instant('other.sportsStatisticsInformation');
+        this.hint = this.translate.instant('universal_activityData_sportsStatisticsInformation');
         break;
       case 'lifeTrackingReport':
-        this.hint = this.translate.instant('other.lifeStatisticsInformation');
+        this.hint = this.translate.instant('universal_lifeTracking_lifeStatisticsInformation');
         break;
     }
   }

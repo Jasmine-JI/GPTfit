@@ -1,10 +1,10 @@
 <div style="display:flex;justify-content: space-between">
-  <h3>{{'Dashboard.Settings.personalPreferences' | translate}}</h3>
+  <h3>{{'universal_userProfile_personalPreferences' | translate}}</h3>
   <button class="alatech-btn alatech-btn--default settings-btn"
-    title="{{'Dashboard.Settings.save' | translate}}"
+    title="{{'universal_operating_save' | translate}}"
     (click)="saveSettings(settingsForm)"
   >
-    {{'Dashboard.Settings.save' | translate}}
+    {{'universal_operating_save' | translate}}
   </button>
 </div>
 <form [formGroup]="settingsForm"
@@ -13,25 +13,25 @@
   (ngSubmit)="saveSettings(settingsForm)"
 >
   <label class="ala-form__label settings-label">
-    {{'SH.hr' | translate}}
+    {{'universal_activityData_hr' | translate}}
   </label>
   <div class="ala-list__item">
     <label class="ala-form__label settings-item">
-      {{'Dashboard.Settings.hrCalculation' | translate}}
+      {{'universal_userProfile_hrCalculation' | translate}}
     </label>
     <div class="settings-control">
       <select class="form-field"
         formControlName="heartRateBase"
         (change)="handleHeartRateBase($event)"
       >
-        <option value="0">{{'Dashboard.Settings.maximalHeartRate' | translate}}</option>
-        <option value="1">{{'Dashboard.Settings.heartRateReserve' | translate}}</option>
+        <option value="0">{{'universal_userProfile_maximalHeartRate' | translate}}</option>
+        <option value="1">{{'universal_userProfile_heartRateReserve' | translate}}</option>
       </select>
     </div>
   </div>
   <div style="margin-top: 15px;" *ngIf="heartRateBase === 1">
     <div class="ala-list__item">
-      <label class="ala-form__label settings-item">{{'SH.maxHr' | translate}}</label>
+      <label class="ala-form__label settings-item">{{'universal_userProfile_maxHr' | translate}}</label>
       <div class="settings-control">
         <div style="display: inline-block">
           <app-form-text
@@ -50,7 +50,7 @@
     </div>
     <div class="ala-list__item">
       <label class="ala-form__label settings-item">
-        {{'Dashboard.Settings.restHr' | translate}}
+        {{'universal_userProfile_restHr' | translate}}
       </label>
       <div class="settings-control">
         <div style="display: inline-block">
@@ -70,10 +70,10 @@
     </div>
   </div>
   <hr>
-  <label class="ala-form__label settings-label">{{'Dashboard.Settings.sleep' | translate}}</label>
+  <label class="ala-form__label settings-label">{{'universal_lifeTracking_sleep' | translate}}</label>
   <div class="ala-list__item">
     <label class="ala-form__label settings-item">
-      {{'Dashboard.Settings.sleepTime' | translate}}
+      {{'universal_lifeTracking_sleepTime' | translate}}
     </label>
     <div class="settings-control">
       <div class="time_picker">
@@ -86,7 +86,7 @@
   </div>
   <div class="ala-list__item">
     <label class="ala-form__label settings-item">
-      {{'Dashboard.Settings.wakeUpTime' | translate}}
+      {{'universal_lifeTracking_wakeUpTime' | translate}}
     </label>
     <div class="settings-control">
       <div class="time_picker">
@@ -99,11 +99,11 @@
   </div>
   <hr>
   <label class="ala-form__label settings-label">
-    {{'Dashboard.Settings.bicycle' | translate}}
+    {{'universal_userProfile_bicycle' | translate}}
   </label>
   <div class="ala-list__item">
     <label class="ala-form__label settings-item">
-      {{'Dashboard.Settings.wheelDiameter' | translate}}
+      {{'universal_userProfile_wheelDiameter' | translate}}
     </label>
     <div class="settings-control">
       <div style="display: inline-block">

@@ -21,61 +21,65 @@
   <div class="col-md-8">
     <div class="group-edit-bar">
       <span class="group-handle-name">
-        {{'Dashboard.ProductInfo.productInfo' | translate}}
+        {{'universal_deviceSetting_productInfo' | translate}}
       </span>
       <div class="rwd-btn_action">
         <button class="alatech-btn alatech-btn--default activty-btn"
-          title="{{'Dashboard.ProductInfo.finishEdit' | translate}}"
+          title="{{'universal_operating_finishEdit' | translate}}"
           style="width: 140px;height: 38px;"
           (click)="manage()"
         >
-          {{'Dashboard.ProductInfo.finishEdit' | translate}}
+          {{'universal_operating_finishEdit' | translate}}
         </button>
         <button class="alatech-btn alatech-btn--default activty-btn"
-          title="{{'Dashboard.ProductInfo.back' | translate}}"
+          title="{{'universal_operating_back' | translate}}"
           style="width: 140px;height: 38px;"
           (click)="goBack()"
         >
-          {{'Dashboard.ProductInfo.back' | translate}}
+          {{'universal_operating_back' | translate}}
         </button>
       </div>
     </div>
     <div style="color: #919191">
       <div style="margin-bottom: 50px">
-        {{"Portal.deviceSerialNumber" | translate}}：{{ deviceSN || 'SH.noData' | translate }}
+        {{"universal_deviceSetting_deviceSerialNumber" | translate}}：{{ deviceSN || 'universal_status_noData' | translate }}
       </div>
       <div style="margin-bottom: 50px">
-        {{"Portal.modeCode" | translate}}：{{ deviceInfo?.modelName || 'SH.noData' | translate }}
+        {{"universal_deviceSetting_modeCode" | translate}}：{{ deviceInfo?.modelName || 'universal_status_noData' | translate }}
       </div>
       <div style="margin-bottom: 50px">
-        {{"Portal.modeType" | translate}}：{{ (deviceInfo?.modelTypeID | productType | translate) || 'SH.noData' | translate }}
+        {{"universal_deviceSetting_modeType" | translate}}：{{ (deviceInfo?.modelTypeID | productType | translate) || 'universal_status_noData' | translate }}
       </div>
       <div style="margin-bottom: 50px">
-        {{'Dashboard.ProductInfo.dateOfManufacture' | translate}}：{{ deviceInfo?.date || 'SH.noData' | translate }}
+        {{'universal_deviceSetting_dateOfManufacture' | translate}}：{{ deviceInfo?.date || 'universal_status_noData' | translate }}
+      </div>
+      <div style="margin-bottom: 50px" *ngIf="userMaxAccessRight < 30">
+        啟用日期：{{ deviceEnableDate || 'universal_status_noData' | translate }}
+      </div>
+      <div style="margin-bottom: 50px" *ngIf="userMaxAccessRight < 30">
+        註冊日期：{{ deviceBondDate || 'universal_status_noData' | translate }}
       </div>
       <div style="margin-bottom: 50px">
-        Fit pair {{'Dashboard.ProductInfo.object' | translate}}：
+        Fit pair {{'universal_vocabulary_object' | translate}}：
         <select  [(ngModel)]="fitPairStatus" style="width: 186px">
-          <option value="0">{{'Dashboard.ProductInfo.private' | translate}}</option>
-          <option value="1">{{'Dashboard.ProductInfo.onlyMe' | translate}},{{'Dashboard.ProductInfo.avatarAndSportFile' | translate}}</option>
-          <option value="2">{{'Dashboard.ProductInfo.onlyMe' | translate}},{{'Dashboard.ProductInfo.onlySportFile' | translate}}</option>
-          <option value="3">{{'Dashboard.ProductInfo.openToAnyone' | translate}}</option>
+          <option value="0">{{'universal_uiFitpair_private' | translate}}</option>
+          <option value="1">{{'universal_privacy_onlyMe' | translate}},{{'universal_uiFitpair_avatarAndSportFile' | translate}}</option>
+          <option value="2">{{'universal_privacy_onlyMe' | translate}},{{'universal_uiFitpair_onlySportFile' | translate}}</option>
+          <option value="3">{{'universal_uiFitpair_openToAnyone' | translate}}</option>
         </select>
         <div class="device-hint"
           (mouseenter)="mouseEnter()"
           (mouseleave)="mouseLeave()"
         >
           ※Fit pair
-          <div class="device-hint-box" *ngIf="isDisplayBox">
-            {{fitPairTip}}
-          </div>
+          <div class="device-hint-box" *ngIf="isDisplayBox" [innerHTML]="fitPairTip"></div>
         </div>
       </div>
     </div>
 
       <div class="app-link" *ngIf="deviceInfo?.mainAppData">
         <div>
-          <span class="group-handle-name">{{"Portal.mainApp" | translate}}：</span>
+          <span class="group-handle-name">{{"universal_deviceSetting_mainApp" | translate}}：</span>
           <div style="margin: 25px 0">
             <img src={{deviceInfo?.mainAppData.appIconUrl}}  (click)="swithMainApp()">
           </div>
@@ -100,7 +104,7 @@
       </div>
       <div class="app-link" *ngIf="deviceInfo?.secondaryAppData">
         <div>
-          <span class="group-handle-name">{{"Portal.otherApp" | translate}}：</span>
+          <span class="group-handle-name">{{"universal_deviceSetting_otherApp" | translate}}：</span>
           <div style="margin: 25px 0">
             <img src={{deviceInfo?.secondaryAppData.appIconUrl}}  (click)="swithSecondApp()">
           </div>
@@ -124,7 +128,7 @@
         </div>
       </div>
       <ng-containr *ngIf="productInfo && productInfo.length > 0">
-        <span class="group-handle-name">{{"Portal.relatedLinks" | translate}}：</span>
+        <span class="group-handle-name">{{"universal_deviceSetting_relatedLinks" | translate}}：</span>
         <div class="app-link" *ngIf="productInfo && productInfo.length > 0">
 
           <div *ngFor="let info of productInfo">
@@ -133,28 +137,28 @@
         </div>
       </ng-containr>
       <ng-container *ngIf="productManual && productManual.length > 0">
-        <span class="group-handle-name">{{"SH.manual" | translate}}：</span>
+        <span class="group-handle-name">{{"universal_vocabulary_manual" | translate}}：</span>
         <div class="app-link" *ngIf="productManual && productManual.length > 0">
           <div>
-            <a target="_blank" href={{productManual}}>{{"SH.deviceManual" | translate}}</a>
+            <a target="_blank" href={{productManual}}>{{"universal_deviceSetting_deviceManual" | translate}}</a>
           </div>
         </div>
       </ng-container>
       <ng-container *ngIf="qrURL">
-        <span class="group-handle-name">{{'Dashboard.ProductInfo.createFitpairQr' | translate}}：</span>
+        <span class="group-handle-name">{{'universal_uiFitpair_createFitpairQr' | translate}}：</span>
         <div style="border: 20px solid white; width: fit-content">
           <qrcode [qrdata]="qrURL" [size]="128" [level]="'M'"></qrcode>
         </div>
       </ng-container>
       <ng-container *ngIf="isAdminMode">
-        <span class="group-handle-name">Device Bond User Name：</span>{{deviceBondUserName}}
+        <span class="group-handle-name">註冊持有人：</span>{{deviceBondUserName}}
         <div style="margin: 25px 0">
         <button class="alatech-btn alatech-btn--default activty-btn"
-          title="{{'Dashboard.MyDevice.unbind' | translate}}{{'Dashboard.ActivityDetail.device' | translate}}"
+          title="{{'universal_uiFitpair_unbind' | translate}} {{'universal_deviceSetting_device' | translate}}"
           style="width: 140px;height: 38px;"
           (click)="openUnBondDeviceDialog()"
         >
-          {{'Dashboard.MyDevice.unbind' | translate}}{{'Dashboard.ActivityDetail.device' | translate}}
+          {{'universal_uiFitpair_unbind' | translate}} {{'universal_deviceSetting_device' | translate}}
         </button>
         </div>
       </ng-container>

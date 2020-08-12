@@ -17,22 +17,25 @@ import {
 import { demoCoachInfo, demoLessonInfo } from './fakeUsers';
 import { CoachService } from '../../services/coach.service';
 import { ActivatedRoute } from '@angular/router';
-import * as Stock from 'highcharts/highstock';
-import { WebSocketSubject } from 'rxjs/observable/dom/WebSocketSubject';
+import * as _Highcharts from 'highcharts';
+import { webSocket } from 'rxjs/webSocket';
 import * as moment from 'moment';
 import { stockChart } from 'highcharts/highstock';
 
-import { DomSanitizer } from '@angular/platform-browser';
 import { UtilsService } from '@shared/services/utils.service';
 import { getUrlQueryStrings } from '@shared/utils/';
 import { GroupService } from '../../services/group.service';
 import * as _ from 'lodash';
+
 export class Message {
   constructor(
     public classMemberDataField: any,
     public classMemberDataFieldValue: any
   ) {}
 }
+
+const Highcharts: any = _Highcharts; // 不檢查highchart型態
+
 @Component({
   selector: 'app-coach-dashboard',
   templateUrl: './coach-dashboard.component.html',
@@ -218,7 +221,7 @@ export class CoachDashboardComponent
   ];
   classImage =
     'https://www.healthcenterhoornsevaart.nl/wp-content/uploads/2018/02/combat-630x300.jpg';
-  private socket$: WebSocketSubject<any>;
+  private socket$: any;
 
   public serverMessages: Message;
   userInfos: any = [];
@@ -227,16 +230,17 @@ export class CoachDashboardComponent
     private groupService: GroupService,
     private route: ActivatedRoute,
     elementRef: ElementRef,
-    private sanitizer: DomSanitizer,
     private utils: UtilsService
   ) {
-    Stock.setOptions({ global: { useUTC: false } });
+    Highcharts.setOptions({ global: { useUTC: false } });
     this.elementRef = elementRef;
     let hostName = 'app.alatech.com.tw';
     if (location.hostname === 'cloud.alatech.com.tw') {
       hostName = 'cloud.alatech.com.tw';
+    } else if (location.hostname === 'www.gptfit.com') {
+      hostName = 'www.gptfit.com';
     }
-    this.socket$ = new WebSocketSubject(`wss://${hostName}:9000/train`);
+    this.socket$ = webSocket(`wss://${hostName}:9000/train`);
 
     this.socket$.subscribe(
       message => this.display(message),
@@ -275,13 +279,10 @@ export class CoachDashboardComponent
             : 'user-photo--portrait';
         this.classInfo.coachAvatar =
           this.classInfo.coachAvatar && this.classInfo.coachAvatar.length > 0
-            ? `${this.classInfo.coachAvatar}${this.updateImgQueryString}`
-            : '/assets/images/user.png';
+            ? `${this.classInfo.coachAvatar} ${this.updateImgQueryString}`
+            : '/assets/images/user2.png';
         if (this.classInfo.groupVideoUrl.length > 0) {
           this.isHadVideoUrl = true;
-          this.classInfo.groupVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-            this.classInfo.groupVideoUrl
-          );
         } else {
           this.isHadVideoUrl = false;
         }
@@ -309,9 +310,7 @@ export class CoachDashboardComponent
     if (this.classId === '99999' && this.isDemoMode) {
       this.classInfo.groupIcon = '/assets/demo/demoClass.jpg';
       this.classInfo.coachAvatar = '/assets/demo/coach.png';
-      this.classInfo.groupVideoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-        this.handleVideoUrl('https://www.youtube.com/embed/eHiDLxBhHGs')
-      );
+      this.classInfo.groupVideoUrl = this.handleVideoUrl('https://www.youtube.com/embed/eHiDLxBhHGs')
       this.handleCoachInfo(demoCoachInfo);
       this.handleLessonInfo(demoLessonInfo);
 
@@ -580,8 +579,8 @@ export class CoachDashboardComponent
         this.series3.push({ name: userName, data: [] });
         userIcon =
           datas[existIdx] && datas[existIdx].pairIcon.length > 0
-            ? `${datas[existIdx].pairIcon}${this.updateImgQueryString}`
-            : '/assets/images/user.png';
+            ? `${datas[existIdx].pairIcon} ${this.updateImgQueryString}`
+            : '/assets/images/user2.png';
         const image = new Image();
         image.src = userIcon;
         const width = image.width;

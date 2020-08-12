@@ -29,7 +29,7 @@ if (address === '192.168.1.231' || address === '192.168.1.235' || address === '1
 } else {
   SERVER_CONFIG.key = fs.readFileSync('/etc/ssl/130/offical_130_no_pem.key'),
   SERVER_CONFIG.ca = fs.readFileSync('/etc/ssl/130/offical_public_130.crt'),
-  SERVER_CONFIG.cert = fs.readFileSync('/etc/ssl/130/offical_130.cer');
+  SERVER_CONFIG.cert = fs.readFileSync('/etc/ssl/130/offical_130.crt');
 }
 
 // Init app
@@ -230,6 +230,8 @@ const runMapTask = function () {
             } = _res;
             datas[idx].img_url = datas[idx].img_url.replace('127.0.0.1', 'cloud.alatech.com.tw');
             datas[idx].gpx_url = datas[idx].gpx_url.replace('127.0.0.1', 'cloud.alatech.com.tw');
+            // datas[idx].img_url = datas[idx].img_url.replace('127.0.0.1', 'www.gptfit.com');
+            // datas[idx].gpx_url = datas[idx].gpx_url.replace('127.0.0.1', 'www.gptfit.com');
             datas[idx].img_url += info[0].FileName1080p.replace('1080', 'web_bg');
             datas[idx].gpx_url += info[0].GPXName;
             datas[idx].left_top_coordinate = info[0].leftTopCoordinateLat;
@@ -321,7 +323,10 @@ app.use(function (req, res, next) {
       'https://152.101.90.130:8080',
       'https://cloud.alatech.com.tw',
       'https://cloud.alatech.com.tw:8080',
-      'http://cloud.alatech.com.tw:8080'
+      'http://cloud.alatech.com.tw:8080',
+      'https://www.gptfit.com',
+      'https://www.gptfit.com:8080',
+      'http://www.gptfit.com:8080'
     ];
   }
 

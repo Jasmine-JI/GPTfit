@@ -4,13 +4,13 @@
     [selectedIndex]="selectedIndex"
     *ngIf="!isPreviewMode"
   >
-    <mat-tab label="7{{'Dashboard.SportReport.day' | translate}}">
+    <mat-tab label="7{{'universal_time_day' | translate}}">
     </mat-tab>
-    <mat-tab label="30{{'Dashboard.SportReport.day' | translate}}">
+    <mat-tab label="30{{'universal_time_day' | translate}}">
     </mat-tab>
-    <mat-tab label="6{{'Dashboard.SportReport.month' | translate}}">
+    <mat-tab label="6{{'universal_time_month' | translate}}">
     </mat-tab>
-    <mat-tab label="12{{'Dashboard.SportReport.month' | translate}}">
+    <mat-tab label="12{{'universal_time_month' | translate}}">
     </mat-tab>
   </mat-tab-group>
   <!-- Hello i m {{chooseType}}chart -->
@@ -41,16 +41,16 @@
   </div>
 </ng-container>
 <ng-container *ngIf="nodata && !isLoading" style="width: 100%; display: flex; flex-direction: row; justify-content: center;">
-  <p style="margin-top: 10px; color: gray; font-size: 18px;">{{'Dashboard.System.nodata' | translate}}</p>
+  <p style="margin-top: 10px; color: gray; font-size: 18px;">{{'universal_status_noData' | translate}}</p>
 </ng-container>
 <ng-container *ngIf="!isLoading && !nodata && showReport" style="width: 100%; min-height: 100%; padding-bottom: 30px;">
   <div class="functionButton">
     <button class="alatech-btn alatech-btn--default activity-btn"
-      title="{{'SH.print' | translate}}"
+      title="{{'universal_operating_print' | translate}}"
       (click)="print()"
       *ngIf="isPreviewMode"
     >
-      {{'SH.print' | translate}}
+      {{'universal_operating_print' | translate}}
     </button>
     <a target="_blank"
       [href]="previewUrl"
@@ -67,39 +67,41 @@
           <i class="icon-svg_web-icon_p3_016-life_tracking"></i>
         </div>
         <div class="flexCol" style="margin-left: 20px;">
-          <span class="reportDateTime">從{{reportEndDate}}起，過去 {{period}} 所建立</span>
+          <span class="reportDateTime">
+            {{'universal_group_buildFromTime' | translate: {'date': reportEndDate, 'range': period} }}
+          </span>
           <span class="reportTitle">
-            {{'other.lifeTracking' | translate}} {{'other.report' | translate}}
+            {{'universal_lifeTracking_lifeTracking' | translate}} {{'universal_activityData_report' | translate}}
           </span>
         </div>
       </div>
       <div class="flexRow authorInfo">
-        <span class="reportTitle" style="margin: 10px 10px 0px 0px;">{{fileInfo?.name}}</span>
+        <span class="reportTitle" style="margin: 10px 10px 0px 0px;">{{fileInfo?.nickname}}</span>
         <div style="margin-right: 10px;">
-          <img style="width: 55px; border-radius: 50%;" src="{{fileInfo?.nameIcon}}">
+          <img style="width: 55px; border-radius: 50%;" src="{{fileInfo?.avatarUrl}}">
         </div>
       </div>
     </div>
   </div>
   <div class="flexCol">
     <div class="activity-title flexRow" style="justify-content: space-between;">
-      <span class="ala-dashboard-title">{{'Dashboard.ActivityDetail.summary' | translate}}</span>
+      <span class="ala-dashboard-title">{{'universal_activityData_summary' | translate}}</span>
       <span class="reportDateTime" style="text-align: end;">
-        {{'Dashboard.GroupClass.creatTime' | translate}} {{reportCreatedTime}}
+        {{'universal_activityData_creatTime' | translate}} {{reportCreatedTime}}
       </span>
     </div>
     <div>
       <div class="summaryArea">
         <div class="summaryDataArea">
           <span class="summaryData">{{infoData.validStroke || 0}}</span>
-          <p class="summaryDescription">{{'other.numberOfValidPens' | translate}}</p>
+          <p class="summaryDescription">{{'universal_activityData_numberOfValidPens' | translate}}</p>
         </div>
         <div class="summarySepData">
           <div class="sepLine"></div>
           <div class="summaryDataArea">
             <span class="summaryData">{{infoData.height || 0 | number:'1.0-1'}}</span>
             <p class="summaryDescription">
-              {{'Portal.bodyHeight' | translate}}
+              {{'universal_userProfile_bodyHeight' | translate}}
             </p>
           </div>
         </div>
@@ -108,7 +110,7 @@
           <div class="summaryDataArea">
             <span class="summaryData">{{infoData.weight || 0 | number:'1.0-1'}}</span>
             <p class="summaryDescription">
-              {{'Portal.bodyWeight' | translate}}
+              {{'universal_userProfile_bodyWeight' | translate}}
             </p>
           </div>
         </div>
@@ -117,7 +119,7 @@
           <div class="summaryDataArea">
             <span class="summaryData">{{infoData.age || 0 | number:'1.0-0'}}</span>
             <p class="summaryDescription">
-              {{'other.age' | translate}}
+              {{'universal_userProfile_age' | translate}}
             </p>
           </div>
         </div>
@@ -127,7 +129,7 @@
             <span class="summaryData" *ngIf="infoData.gender === 0">Male</span>
             <span class="summaryData" *ngIf="infoData.gender === 1">Female</span>
             <p class="summaryDescription">
-              {{'Dashboard.Settings.gender' | translate}}
+              {{'universal_userProfile_gender' | translate}}
             </p>
           </div>
         </div>
@@ -138,17 +140,17 @@
     <div class="activity-title flexRow">
       <span class="ala-dashboard-title">
         <span *ngIf="dataDateRange === 'day'">
-          {{'Dashboard.SportReport.day' | translate}}
+          {{'universal_time_day' | translate}}
         </span>
         <span *ngIf="dataDateRange === 'week'">
-          {{'other.week' | translate}}
+          {{'universal_time_week' | translate}}
         </span>
          間日常生活紀錄
       </span>
     </div>
     <div class="flexRow durationSection">
       <div class="flexCol durationInfo rwd_wid_100per">
-        <span class="reportChartTitle">{{'other.StepCount' | translate}}</span>
+        <span class="reportChartTitle">{{'universal_userProfile_StepCount' | translate}}</span>
         <div class="flexRow infoHeader">
           <div class="flexCol">
             <span class="summaryData" *ngIf="recordData.avgStep / 100000 >= 1">
@@ -157,23 +159,23 @@
             <span class="summaryData" *ngIf="recordData.avgStep / 100000 < 1">
               {{recordData.avgStep | number: '1.0-0'}}
             </span>
-            <span>{{'other.avgSteps' | translate}}</span>
+            <span>{{'universal_deviceSetting_avgSteps' | translate}}</span>
           </div>
           <div class="flexCol" style="margin-left: 10px;">
             <span class="summaryData">{{recordData.avgDistance / 1000 | number: '1.0-1'}}</span>
-            <span>{{'Dashboard.TrainLive.avg' | translate}} {{'Dashboard.MyActivity.distance' | translate}}km</span>
+            <span>{{'universal_adjective_avg' | translate}} {{'universal_activityData_distance' | translate}}km</span>
           </div>
           <div class="flexCol">
             <span class="summaryData">{{recordData.stepReachReps}}</span>
-            <span>{{'other.complianceTimes' | translate}}</span>
+            <span>{{'universal_activityData_complianceTimes' | translate}}</span>
           </div>
         </div>
         <span class="areaDescription dataDiscription">
-          {{'other.stepReportDescription' | translate}}
+          {{'universal_activityData_stepReportDescription' | translate}}
         </span>
       </div>
       <div class="durationChart rwd_wid_100per">
-        <span class="noChartData" *ngIf="noStepData">{{'Dashboard.System.nodata' | translate}}</span>
+        <span class="noChartData" *ngIf="noStepData">{{'universal_status_noData' | translate}}</span>
         <app-discolor-column-chart
           [data]="stepData"
           [dateRange]="dataDateRange"
@@ -186,23 +188,23 @@
     </div>
     <div class="flexRow  durationSection">
       <div class="flexCol durationInfo rwd_wid_100per">
-        <span class="reportChartTitle">{{'SH.hr' | translate}}</span>
+        <span class="reportChartTitle">{{'universal_activityData_hr' | translate}}</span>
         <div class="flexRow infoHeader">
           <div class="flexCol">
             <span class="summaryData">{{recordData.avgMaxHR | number: '1.0-1'}}</span>
-            <span>{{'Dashboard.TrainLive.avg' | translate}} {{'SH.maxHr' | translate}}</span>
+            <span>{{'universal_adjective_avg' | translate}} {{'universal_userProfile_maxHr' | translate}}</span>
           </div>
           <div class="flexCol">
             <span class="summaryData">{{recordData.avgRestHR | number: '1.0-1'}}</span>
-            <span>{{'Dashboard.TrainLive.avg' | translate}} {{'Dashboard.Settings.restHr' | translate}}</span>
+            <span>{{'universal_adjective_avg' | translate}} {{'universal_userProfile_restHr' | translate}}</span>
           </div>
         </div>
         <span class="areaDescription dataDiscription">
-          {{'other.hrReportDescription' | translate}}
+          {{'universal_activityData_hrReportDescription' | translate}}
         </span>
       </div>
       <div class="durationChart rwd_wid_100per">
-        <span class="noChartData" *ngIf="noHRData">{{'Dashboard.System.nodata' | translate}}</span>
+        <span class="noChartData" *ngIf="noHRData">{{'universal_status_noData' | translate}}</span>
         <app-compare-line-chart
           [data]="HRData"
           [dateRange]="dataDateRange"
@@ -216,27 +218,27 @@
     </div>
     <div class="flexRow  durationSection" style="width: 100%;">
       <div class="flexCol durationInfo rwd_wid_100per">
-        <span class="reportChartTitle">{{'Dashboard.Settings.sleep' | translate}}</span>
+        <span class="reportChartTitle">{{'universal_lifeTracking_sleep' | translate}}</span>
         <div class="flexRow infoHeader">
           <div class="flexCol">
             <span class="summaryData">{{recordData.avgSleepTime || '0:00'}}</span>
-            <span>{{'Dashboard.TrainLive.avg' | translate}} {{'Dashboard.Settings.sleep' | translate}}</span>
+            <span>{{'universal_adjective_avg' | translate}} {{'universal_lifeTracking_sleep' | translate}}</span>
           </div>
           <div class="flexCol" style="margin-left: 10px;">
             <span class="summaryData">{{recordData.avgDeepSleepTime || '0:00'}}</span>
-            <span>{{'Dashboard.TrainLive.avg' | translate}} {{'other.deepSleep' | translate}}</span>
+            <span>{{'universal_adjective_avg' | translate}} {{'universal_lifeTracking_deepSleep' | translate}}</span>
           </div>
           <div class="flexCol">
             <span class="summaryData">{{recordData.avgLightSleepTime || '0:00'}}</span>
-            <span>{{'Dashboard.TrainLive.avg' | translate}} {{'other.lightSleep' | translate}}</span>
+            <span>{{'universal_adjective_avg' | translate}} {{'universal_lifeTracking_lightSleep' | translate}}</span>
           </div>
         </div>
         <span class="areaDescription dataDiscription">
-          {{'other.sleepReportInstructions' | translate}}
+          {{'universal_activityData_sleepReportInstructions' | translate}}
         </span>
       </div>
       <div class="durationChart rwd_wid_100per">
-        <span class="noChartData" *ngIf="noSleepData">{{'Dashboard.System.nodata' | translate}}</span>
+        <span class="noChartData" *ngIf="noSleepData">{{'universal_status_noData' | translate}}</span>
         <app-stack-column-chart
           [data]="sleepData"
           [dateRange]="dataDateRange"
@@ -251,7 +253,7 @@
   <div class="flexCol" style="margin-top: 10px;">
     <div class="activity-title">
       <span class="ala-dashboard-title">
-        {{'other.recentFitness' | translate}}
+        {{'universal_activityData_recentFitness' | translate}}
       </span>
     </div>
     <div class="flexRow recentBodyQuality" style="margin-top: 20px;">
@@ -271,17 +273,17 @@
               <div>
                 <td class="tableCol constituteTd" style="padding-right: 5px;">
                   <tr>
-                    <span class="dataAnnotation">{{'Portal.bodyWeight' | translate}}</span><br/>
+                    <span class="dataAnnotation">{{'universal_userProfile_bodyWeight' | translate}}</span><br/>
                     <span class="summaryData">{{infoData.weight | number: '1.0-1'}}Kg</span>
                   </tr>
                   <tr>
                     <span style="color: #ffba4e;">●</span>
-                    <span class="dataAnnotation">{{'other.fatRate' | translate}}</span><br/>
+                    <span class="dataAnnotation">{{'universal_lifeTracking_fatRate' | translate}}</span><br/>
                     <span class="summaryData">{{infoData.fatRate | number: '1.0-1'}}%</span>
                   </tr>
                   <tr>
                     <span style="color: #31e4d9;">●</span>
-                    <span class="dataAnnotation">{{'other.muscleRate' | translate}}</span><br/>
+                    <span class="dataAnnotation">{{'universal_userProfile_muscleRate' | translate}}</span><br/>
                     <span class="summaryData">{{infoData.muscleRate | number: '1.0-1'}}%</span>
                   </tr>
                   <tr>
@@ -303,19 +305,19 @@
               </div>
               <td class="tableCol constituteTd" style="padding: 0 5px 0 20px;">
                 <tr>
-                  <span class="dataAnnotation">{{'other.skeletonRate' | translate}}</span><br/>
+                  <span class="dataAnnotation">{{'universal_lifeTracking_skeletonRate' | translate}}</span><br/>
                   <span class="summaryData">{{infoData.skeletonRate | number: '1.0-1'}}%</span>
                 </tr>
                 <tr>
-                  <span class="dataAnnotation">{{'other.moistureRate' | translate}}</span><br/>
+                  <span class="dataAnnotation">{{'universal_lifeTracking_moistureRate' | translate}}</span><br/>
                   <span class="summaryData">{{infoData.moistureRate | number: '1.0-1'}}%</span>
                 </tr>
                 <tr>
-                  <span class="dataAnnotation">{{'other.proteinRate' | translate}}</span><br/>
+                  <span class="dataAnnotation">{{'universal_lifeTracking_proteinRate' | translate}}</span><br/>
                   <span class="summaryData">{{infoData.proteinRate | number: '1.0-1'}}%</span>
                 </tr>
                 <tr>
-                  <span class="dataAnnotation">{{'other.basalMetabolism' | translate}}</span><br/>
+                  <span class="dataAnnotation">{{'universal_activityData_basalMetabolism' | translate}}</span><br/>
                   <span class="summaryData">{{infoData.basalMetabolicRate | number: '1.0-1'}}</span>
                 </tr>
               </td>
@@ -332,13 +334,13 @@
         <!---
         <span class="dataAnnotation" style="margin-top: 10px;">
           <i class="icon-svg_web-icon_p3_001-bathroom_scale" style="font-size: 22px;"></i>
-          {{'other.update' | translate}} {{'Dashboard.SportReport.time' | translate}}
+          {{'universal_operating_update' | translate}} {{'universal_activityData_time' | translate}}
         </span>
         --->
       </div>
       <div class="flexCol postureTrend rwd_wid_100per">
         <div>
-          <span class="reportChartTitle">{{'Dashboard.TrainLive.avg' | translate}} {{'other.weightTrend' | translate}}</span>
+          <span class="reportChartTitle">{{'universal_adjective_avg' | translate}} {{'universal_activityData_weightTrend' | translate}}</span>
           <app-line-chart
             [data]="weightData"
             [dateRange]="dataDateRange"
@@ -349,8 +351,8 @@
           ></app-line-chart>
         </div>
         <div class="flexCol">
-          <span class="reportChartTitle">{{'Dashboard.TrainLive.avg' | translate}} {{'other.bodyFatTrend' | translate}}</span>
-          <span class="noChartData" *ngIf="noConstituteData">{{'Dashboard.System.nodata' | translate}}</span>
+          <span class="reportChartTitle">{{'universal_adjective_avg' | translate}} {{'universal_activityData_bodyFatTrend' | translate}}</span>
+          <span class="noChartData" *ngIf="noConstituteData">{{'universal_status_noData' | translate}}</span>
           <app-line-chart
             [data]="constituteData"
             [dateRange]="dataDateRange"
@@ -363,8 +365,8 @@
           </app-line-chart>
         </div>
         <div class="flexCol">
-          <span class="reportChartTitle">{{'Dashboard.TrainLive.avg' | translate}} {{'other.muscleRateTrend' | translate}}</span>
-          <span class="noChartData" *ngIf="noConstituteData">{{'Dashboard.System.nodata' | translate}}</span>
+          <span class="reportChartTitle">{{'universal_adjective_avg' | translate}} {{'universal_activityData_muscleRateTrend' | translate}}</span>
+          <span class="noChartData" *ngIf="noConstituteData">{{'universal_status_noData' | translate}}</span>
           <app-line-chart
             [data]="constituteData"
             [dateRange]="dataDateRange"
@@ -382,12 +384,12 @@
   <div class="flexCol" style="margin-top: 10px;">
     <div class="activity-title">
       <span class="ala-dashboard-title">
-        {{'Dashboard.TrainLive.trend' | translate}}
+        {{'universal_activityData_trend' | translate}}
       </span>
     </div>
     <div class="flexCol">
       <div class="flexRow" style="align-items: center; margin-top: 10px;">
-        <span class="reportChartTitle">{{'other.fitTime' | translate}}</span>
+        <span class="reportChartTitle">{{'universal_userProfile_fitTime' | translate}}</span>
         <div class="separateLine"></div>
       </div>
       <div class="flexRow fitTimeChart" [class.media-1000-dataContent]="!isPreviewMode">
@@ -395,18 +397,18 @@
           <div class="flexCol dataMargin" style="width: 50%;">
             <span class="dataFont summaryData">{{trendData.bestFitTime | number:'1.0-0'}}</span>
             <span class="dataAnnotation">
-              {{'other.maxHight' | translate}} {{'other.minutes' | translate}}
+              {{'universal_adjective_maxHight' | translate}} {{'universal_activityData_minutes' | translate}}
             </span>
           </div>
           <div class="flexCol dataMargin" style="width: 50%;">
             <span class="dataFont summaryData">{{trendData.avgFitTime | number:'1.0-1'}}</span>
             <span class="dataAnnotation">
-              {{'Dashboard.TrainLive.avg' | translate}} {{'other.minutes' | translate}}
+              {{'universal_adjective_avg' | translate}} {{'universal_activityData_minutes' | translate}}
             </span>
           </div>
         </div>
         <div class="dataChart" [class.media-1000-dataChart]="!isPreviewMode">
-          <span class="noChartData" *ngIf="noFitTimeData">{{'Dashboard.System.nodata' | translate}}</span>
+          <span class="noChartData" *ngIf="noFitTimeData">{{'universal_status_noData' | translate}}</span>
           <app-fillet-column-chart
             [data]="fitTimeData"
             [dateRange]="dataDateRange"

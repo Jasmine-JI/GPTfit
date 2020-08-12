@@ -4,10 +4,7 @@
     *ngIf="brandType == 1"
   >
     <span mat-line *ngIf="brandType == 1">
-      {{'Dashboard.Group.create' | translate}}{{'Dashboard.Group.courseInformationProfessionalClass' | translate}}
-    </span>
-    <span mat-line *ngIf="brandType == 2">
-      {{'other.addLeague' | translate}}
+      {{'universal_activityData_create' | translate}} {{'universal_group_courseInformationProfessionalClass' | translate}}
     </span>
     <!-- <span mat-line>新增一般教練課程</span> -->
   </a>
@@ -15,16 +12,16 @@
     (click)="openLink($event, 2)"
   >
     <span mat-line *ngIf="brandType == 1">
-      {{'Dashboard.Group.create' | translate}}{{'Dashboard.Group.courseInformationFitnessClass' | translate}}
+      {{'universal_activityData_create' | translate}} {{'universal_group_courseInformationFitnessClass' | translate}}
     </span>
     <span mat-line *ngIf="brandType == 2">
-      {{'other.addDepartment' | translate}}
+      {{'universal_group_addDepartment' | translate}}
     </span>
     <!-- <span mat-line>新增體適能教練專屬課程</span> -->
   </a>
   <a mat-list-item
     (click)="openLink($event, 3)"
   >
-    <span mat-line>{{ 'SH.cancel' | translate }}</span>
+    <span mat-line>{{ 'universal_operating_cancel' | translate }}</span>
   </a>
 </mat-nav-list>

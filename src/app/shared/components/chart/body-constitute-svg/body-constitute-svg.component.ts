@@ -18,7 +18,7 @@ export class BodyConstituteSvgComponent implements OnInit, OnChanges {
     muscleInfoY: 450,
     fatWeight: 0,
     fatInfoY: 250,
-    comment: this.translate.instant('SH.noData'),
+    comment: this.translate.instant('universal_status_noData'),
     commentY: 70
   };
 
@@ -61,7 +61,7 @@ export class BodyConstituteSvgComponent implements OnInit, OnChanges {
       muscleInfoY: 450,
       fatWeight: 0,
       fatInfoY: 250,
-      comment: this.translate.instant('SH.noData'),
+      comment: this.translate.instant('universal_status_noData'),
       commentY: 70
     };
   }
@@ -93,27 +93,27 @@ export class BodyConstituteSvgComponent implements OnInit, OnChanges {
 
     if (this.FFMI < FFMIBoundary[0]) {
       if (this.fatRate < fatRateBoundary[0]) {
-        this.info.comment = this.translate.instant('other.tooThin');
+        this.info.comment = this.translate.instant('universal_activityData_tooThin');
       } else if (this.fatRate < fatRateBoundary[1] && this.fatRate >= fatRateBoundary[0]) {
-        this.info.comment = this.translate.instant('other.lackOfTraining');
+        this.info.comment = this.translate.instant('universal_activityData_lackOfTraining');
       } else {
-        this.info.comment = this.translate.instant('other.recessiveObesity');
+        this.info.comment = this.translate.instant('universal_activityData_recessiveObesity');
       }
     } else if (this.FFMI < FFMIBoundary[1] && this.FFMI >= FFMIBoundary[0]) {
       if (this.fatRate < fatRateBoundary[0]) {
-        this.info.comment = this.translate.instant('other.generallyThin');
+        this.info.comment = this.translate.instant('universal_activityData_generallyThin');
       } else if (this.fatRate < fatRateBoundary[1] && this.fatRate >= fatRateBoundary[0]) {
-        this.info.comment = this.translate.instant('other.normalPosture');
+        this.info.comment = this.translate.instant('universal_activityData_normalPosture');
       } else {
-        this.info.comment = this.translate.instant('other.generallyFat');
+        this.info.comment = this.translate.instant('universal_activityData_generallyFat');
       }
     } else {
       if (this.fatRate < fatRateBoundary[0]) {
-        this.info.comment = this.translate.instant('other.bodybuilding');
+        this.info.comment = this.translate.instant('universal_activityData_bodybuilding');
       } else if (this.fatRate < fatRateBoundary[1] && this.fatRate >= fatRateBoundary[0]) {
-        this.info.comment = this.translate.instant('other.athletic');
+        this.info.comment = this.translate.instant('universal_activityData_athletic');
       } else {
-        this.info.comment = this.translate.instant('other.fatBody');
+        this.info.comment = this.translate.instant('universal_activityData_fatBody');
       }
     }
   }

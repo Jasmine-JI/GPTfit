@@ -1,40 +1,40 @@
 <ng-container *ngIf="createTypeTable === 'brandTable'">
   <table class="commerce-plan-table">
     <thead>
-      <th class="plan">{{'Dashboard.System.BrandPlan.program' | translate}}</th>
+      <th class="plan">{{'universal_group_program' | translate}}</th>
       <th
         (click)="choosePlan(1)"
         [class.active-left]="planIdx === 1"
         [class.active-right]="planIdx === 1"
         [class.active-top]="planIdx === 1"
         [class.active]="planIdx === 1"
-      >{{'Dashboard.System.BrandPlan.experiencePlan' | translate}}</th>
+      >{{'universal_group_experiencePlan' | translate}}</th>
       <th
         (click)="choosePlan(2)"
         [class.active-left]="planIdx === 2"
         [class.active-right]="planIdx === 2"
         [class.active-top]="planIdx === 2"
         [class.active]="planIdx === 2"
-      >{{'Dashboard.System.BrandPlan.studioPlan' | translate}}</th>
+      >{{'universal_group_studioPlan' | translate}}</th>
       <th
         (click)="choosePlan(3)"
         [class.active-left]="planIdx === 3"
         [class.active-right]="planIdx === 3"
         [class.active-top]="planIdx === 3"
         [class.active]="planIdx === 3"
-      >{{'Dashboard.System.BrandPlan.smePlan' | translate}}</th>
+      >{{'universal_group_smePlan' | translate}}</th>
       <th
         (click)="choosePlan(99)"
         [class.active-left]="planIdx === 99"
         [class.active-right]="planIdx === 99"
         [class.active-top]="planIdx === 99"
         [class.active]="planIdx === 99"
-      >{{'Dashboard.System.BrandPlan.customPlan' | translate}}</th>
+      >{{'universal_group_customPlan' | translate}}</th>
     </thead>
     <tbody>
       <tr class="fee">
         <td class="plan">
-          {{'Dashboard.System.BrandPlan.cost' | translate}}
+          {{'universal_group_cost' | translate}}
         </td>
         <td
           (click)="choosePlan(1)"
@@ -74,7 +74,7 @@
         </td>
       </tr>
       <tr>
-        <td class="plan">{{'Dashboard.System.BrandPlan.numberOfBranches' | translate}}</td>
+        <td class="plan">{{'universal_group_numberOfBranches' | translate}}</td>
         <td
           (click)="choosePlan(1)"
           [class.active-left]="planIdx === 1"
@@ -103,7 +103,7 @@
         >**</td>
       </tr>
       <tr>
-        <td class="plan">{{'Dashboard.System.BrandPlan.numberOfClass' | translate}}</td>
+        <td class="plan">{{'universal_group_numberOfClass' | translate}}</td>
         <td
           (click)="choosePlan(1)"
           [class.active-left]="planIdx === 1"
@@ -130,7 +130,7 @@
         >**</td>
       </tr>
       <tr  class="custom">
-        <td class="plan">{{'Dashboard.System.BrandPlan.memberLimit' | translate}}</td>
+        <td class="plan">{{'universal_group_memberLimit' | translate}}</td>
         <td
           (click)="choosePlan(1)"
           [class.active-left]="planIdx === 1"
@@ -157,7 +157,7 @@
         >**</td>
       </tr>
       <tr>
-        <td class="plan">{{'Dashboard.System.BrandPlan.administratorLimit' | translate}}</td>
+        <td class="plan">{{'universal_group_administratorLimit' | translate}}</td>
         <td
           (click)="choosePlan(1)"
           [class.active-left]="planIdx === 1"
@@ -184,7 +184,7 @@
         >**</td>
       </tr>
       <tr class="custom">
-        <td class="plan">{{'Dashboard.System.BrandPlan.customBrand' | translate}}</td>
+        <td class="plan">{{'universal_group_customBrand' | translate}}</td>
         <td class="check"
           (click)="choosePlan(1)"
           [class.active-left]="planIdx === 1"
@@ -211,7 +211,7 @@
         >V</td>
       </tr>
       <tr>
-        <td class="plan">{{'Dashboard.System.BrandPlan.broadcastRecordDistribution' | translate}}</td>
+        <td class="plan">{{'universal_group_broadcastRecordDistribution' | translate}}</td>
         <td class="check"
           (click)="choosePlan(1)"
           [class.active-left]="planIdx === 1"
@@ -238,7 +238,7 @@
         >V</td>
       </tr>
       <tr>
-        <td class="plan">{{'Dashboard.System.BrandPlan.trainingExercise' | translate}}</td>
+        <td class="plan">{{'universal_group_trainingExercise' | translate}}</td>
         <td class="check"
           (click)="choosePlan(1)"
           [class.active-left]="planIdx === 1"
@@ -265,34 +265,7 @@
         >V</td>
       </tr>
       <tr>
-        <td class="plan unconfirmed">{{'Dashboard.System.BrandPlan.advancedEquipmentMaintenance' | translate}}</td>
-        <td class="check"
-          (click)="choosePlan(1)"
-          [class.active-left]="planIdx === 1"
-          [class.active-right]="planIdx === 1"
-          [class.active]="planIdx === 1"
-        ></td>
-        <td class="check"
-          (click)="choosePlan(2)"
-          [class.active-left]="planIdx === 2"
-          [class.active-right]="planIdx === 2"
-          [class.active]="planIdx === 2"
-        >V</td>
-        <td class="check"
-          (click)="choosePlan(3)"
-          [class.active-left]="planIdx === 3"
-          [class.active-right]="planIdx === 3"
-          [class.active]="planIdx === 3"
-        >V</td>
-        <td class="check"
-          (click)="choosePlan(99)"
-          [class.active-left]="planIdx === 99"
-          [class.active-right]="planIdx === 99"
-          [class.active]="planIdx === 99"
-        >V</td>
-      </tr>
-      <tr>
-        <td class="plan unconfirmed">{{'Dashboard.System.BrandPlan.professionalTrainingProgram' | translate}}</td>
+        <td class="plan unconfirmed">{{'universal_group_advancedEquipmentMaintenance' | translate}}</td>
         <td class="check"
           (click)="choosePlan(1)"
           [class.active-left]="planIdx === 1"
@@ -304,6 +277,33 @@
           [class.active-left]="planIdx === 2"
           [class.active-right]="planIdx === 2"
           [class.active]="planIdx === 2"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >V</td>
+      </tr>
+      <tr>
+        <td class="plan unconfirmed">{{'universal_group_professionalTrainingProgram' | translate}}</td>
+        <td class="check"
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        ></td>
+        <td class="check"
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
         ></td>
         <td class="check"
           (click)="choosePlan(3)"
@@ -319,7 +319,7 @@
         >V</td>
       </tr>
       <tr>
-        <td class="plan unconfirmed">{{'Dashboard.System.BrandPlan.studentTrainingMenu' | translate}}</td>
+        <td class="plan unconfirmed">{{'universal_group_studentTrainingMenu' | translate}}</td>
         <td class="check"
           (click)="choosePlan(1)"
           [class.active-left]="planIdx === 1"
@@ -454,7 +454,7 @@
         >V</td>
       </tr>
       <tr>
-        <td class="plan">Ala Trainer({{'Dashboard.System.BrandPlan.trainingRecord' | translate}})</td>
+        <td class="plan">Ala Trainer({{'universal_group_trainingRecord' | translate}})</td>
         <td class="check"
           (click)="choosePlan(1)"
           [class.active-left]="planIdx === 1"
@@ -481,7 +481,7 @@
         >V</td>
       </tr>
       <tr>
-        <td class="plan">{{'Dashboard.System.BrandPlan.customBrand' | translate}}Center App</td>
+        <td class="plan">{{'universal_group_customBrand' | translate}} Center App</td>
         <td class="check"
           (click)="choosePlan(1)"
           [class.active-left]="planIdx === 1"
@@ -517,40 +517,40 @@
 <ng-container *ngIf="createTypeTable === 'comTable'">
   <table class="commerce-plan-table">
     <thead>
-      <th class="plan">{{'Dashboard.System.BrandPlan.program' | translate}}</th>
+      <th class="plan">{{'universal_group_program' | translate}}</th>
       <th
         (click)="choosePlan(1)"
         [class.active-left]="planIdx === 1"
         [class.active-right]="planIdx === 1"
         [class.active-top]="planIdx === 1"
         [class.active]="planIdx === 1"
-      >{{'Dashboard.System.BrandPlan.experiencePlan' | translate}}</th>
+      >{{'universal_group_experiencePlan' | translate}}</th>
       <th
         (click)="choosePlan(2)"
         [class.active-left]="planIdx === 2"
         [class.active-right]="planIdx === 2"
         [class.active-top]="planIdx === 2"
         [class.active]="planIdx === 2"
-      >{{'Dashboard.System.BrandPlan.studioPlan' | translate}}</th>
+      >{{'universal_group_studioPlan' | translate}}</th>
       <th
         (click)="choosePlan(3)"
         [class.active-left]="planIdx === 3"
         [class.active-right]="planIdx === 3"
         [class.active-top]="planIdx === 3"
         [class.active]="planIdx === 3"
-      >{{'Dashboard.System.BrandPlan.smePlan' | translate}}</th>
+      >{{'universal_group_smePlan' | translate}}</th>
       <th
         (click)="choosePlan(99)"
         [class.active-left]="planIdx === 99"
         [class.active-right]="planIdx === 99"
         [class.active-top]="planIdx === 99"
         [class.active]="planIdx === 99"
-      >{{'Dashboard.System.BrandPlan.customPlan' | translate}}</th>
+      >{{'universal_group_customPlan' | translate}}</th>
     </thead>
     <tbody>
       <tr class="fee">
         <td class="plan">
-          {{'Dashboard.System.BrandPlan.cost' | translate}}
+          {{'universal_group_cost' | translate}}
         </td>
         <td
           (click)="choosePlan(1)"
@@ -590,7 +590,7 @@
         </td>
       </tr>
       <tr>
-        <td class="plan">{{'other.subComNumber' | translate}}</td>
+        <td class="plan">{{'universal_group_branches' | translate}}</td>
         <td
           (click)="choosePlan(1)"
           [class.active-left]="planIdx === 1"
@@ -625,7 +625,7 @@
         </td>
       </tr>
       <tr>
-        <td class="plan">{{'other.departmentNumber' | translate}}</td>
+        <td class="plan">{{'universal_group_numberOfDepartments' | translate}}</td>
         <td
           (click)="choosePlan(1)"
           [class.active-left]="planIdx === 1"
@@ -660,7 +660,7 @@
         </td>
       </tr>
       <tr  class="custom">
-        <td class="plan">{{'Dashboard.System.BrandPlan.memberLimit' | translate}}</td>
+        <td class="plan">{{'universal_group_memberLimit' | translate}}</td>
         <td
           (click)="choosePlan(1)"
           [class.active-left]="planIdx === 1"
@@ -695,7 +695,7 @@
         </td>
       </tr>
       <tr>
-        <td class="plan">{{'Dashboard.System.BrandPlan.administratorLimit' | translate}}</td>
+        <td class="plan">{{'universal_group_administratorLimit' | translate}}</td>
         <td
           (click)="choosePlan(1)"
           [class.active-left]="planIdx === 1"
@@ -728,7 +728,7 @@
         >**</td>
       </tr>
       <tr class="custom">
-        <td class="plan">{{'other.customCom' | translate}}</td>
+        <td class="plan">{{'universal_group_customizedEnterprise' | translate}}</td>
         <td class="check"
           (click)="choosePlan(1)"
           [class.active-left]="planIdx === 1"
@@ -755,7 +755,7 @@
         >V</td>
       </tr>
       <tr>
-        <td class="plan">{{'Dashboard.System.BrandPlan.broadcastRecordDistribution' | translate}}</td>
+        <td class="plan">{{'universal_group_broadcastRecordDistribution' | translate}}</td>
         <td class="check"
           (click)="choosePlan(1)"
           [class.active-left]="planIdx === 1"
@@ -782,7 +782,7 @@
         >V</td>
       </tr>
       <tr>
-        <td class="plan">{{'Dashboard.System.BrandPlan.trainingExercise' | translate}}</td>
+        <td class="plan">{{'universal_group_trainingExercise' | translate}}</td>
         <td class="check"
           (click)="choosePlan(1)"
           [class.active-left]="planIdx === 1"
@@ -809,34 +809,7 @@
         >V</td>
       </tr>
       <tr>
-        <td class="plan unconfirmed">{{'Dashboard.System.BrandPlan.advancedEquipmentMaintenance' | translate}}</td>
-        <td class="check"
-          (click)="choosePlan(1)"
-          [class.active-left]="planIdx === 1"
-          [class.active-right]="planIdx === 1"
-          [class.active]="planIdx === 1"
-        ></td>
-        <td class="check"
-          (click)="choosePlan(2)"
-          [class.active-left]="planIdx === 2"
-          [class.active-right]="planIdx === 2"
-          [class.active]="planIdx === 2"
-        >V</td>
-        <td class="check"
-          (click)="choosePlan(3)"
-          [class.active-left]="planIdx === 3"
-          [class.active-right]="planIdx === 3"
-          [class.active]="planIdx === 3"
-        >V</td>
-        <td class="check"
-          (click)="choosePlan(99)"
-          [class.active-left]="planIdx === 99"
-          [class.active-right]="planIdx === 99"
-          [class.active]="planIdx === 99"
-        >V</td>
-      </tr>
-      <tr>
-        <td class="plan unconfirmed">{{'Dashboard.System.BrandPlan.professionalTrainingProgram' | translate}}</td>
+        <td class="plan unconfirmed">{{'universal_group_advancedEquipmentMaintenance' | translate}}</td>
         <td class="check"
           (click)="choosePlan(1)"
           [class.active-left]="planIdx === 1"
@@ -848,6 +821,33 @@
           [class.active-left]="planIdx === 2"
           [class.active-right]="planIdx === 2"
           [class.active]="planIdx === 2"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(3)"
+          [class.active-left]="planIdx === 3"
+          [class.active-right]="planIdx === 3"
+          [class.active]="planIdx === 3"
+        >V</td>
+        <td class="check"
+          (click)="choosePlan(99)"
+          [class.active-left]="planIdx === 99"
+          [class.active-right]="planIdx === 99"
+          [class.active]="planIdx === 99"
+        >V</td>
+      </tr>
+      <tr>
+        <td class="plan unconfirmed">{{'universal_group_professionalTrainingProgram' | translate}}</td>
+        <td class="check"
+          (click)="choosePlan(1)"
+          [class.active-left]="planIdx === 1"
+          [class.active-right]="planIdx === 1"
+          [class.active]="planIdx === 1"
+        ></td>
+        <td class="check"
+          (click)="choosePlan(2)"
+          [class.active-left]="planIdx === 2"
+          [class.active-right]="planIdx === 2"
+          [class.active]="planIdx === 2"
         ></td>
         <td class="check"
           (click)="choosePlan(3)"
@@ -863,7 +863,7 @@
         >V</td>
       </tr>
       <tr>
-        <td class="plan unconfirmed">{{'Dashboard.System.BrandPlan.studentTrainingMenu' | translate}}</td>
+        <td class="plan unconfirmed">{{'universal_group_studentTrainingMenu' | translate}}</td>
         <td class="check"
           (click)="choosePlan(1)"
           [class.active-left]="planIdx === 1"
@@ -998,7 +998,7 @@
         >V</td>
       </tr>
       <tr>
-        <td class="plan">Ala Trainer({{'Dashboard.System.BrandPlan.trainingRecord' | translate}})</td>
+        <td class="plan">Ala Trainer({{'universal_group_trainingRecord' | translate}})</td>
         <td class="check"
           (click)="choosePlan(1)"
           [class.active-left]="planIdx === 1"
@@ -1025,7 +1025,7 @@
         >V</td>
       </tr>
       <tr>
-        <td class="plan">{{'other.customCom' | translate}}Center App</td>
+        <td class="plan">{{'universal_group_customizedEnterprise' | translate}} Center App</td>
         <td class="check"
           (click)="choosePlan(1)"
           [class.active-left]="planIdx === 1"

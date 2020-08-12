@@ -1,24 +1,25 @@
 import {
   Component,
   OnInit,
-  ViewEncapsulation
+  ViewEncapsulation,
+  OnDestroy
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { GroupService } from '../../services/group.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { UserInfoService } from '../../services/userInfo.service';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
-import { toMemberText } from '../desc';
 import { PrivacySettingDialogComponent } from '../privacy-setting-dialog/privacy-setting-dialog.component';
 import { UserProfileService } from '@shared/services/user-profile.service';
 import { TranslateService } from '@ngx-translate/core';
 import { HashIdService } from '@shared/services/hash-id.service';
 import { ShareGroupInfoDialogComponent } from '@shared/components/share-group-info-dialog/share-group-info-dialog.component';
 
-
 import * as moment from 'moment';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-group-info',
@@ -26,8 +27,28 @@ import * as moment from 'moment';
   styleUrls: ['./group-info.component.scss', '../group-style.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class GroupInfoComponent implements OnInit {
-  accessRight: number;
+export class GroupInfoComponent implements OnInit, OnDestroy {
+
+  private ngUnsubscribe = new Subject();
+
+  i18n = {
+    allMember: '',
+    nickname: '',
+    file: '',
+    sportReport: '',
+    openObj: '',
+    notOpenObj: '',
+    brandAdmin: '',
+    branchAdmin: '',
+    coach: '',
+    teacher: '',
+    comAdmin: '',
+    subComAdmin: '',
+    departmentAdmin: '',
+    myGym: ''
+  };
+  accessRight = [99];
+  isGroupAdmin = false;
   isPreviewMode = false;
   hashGroupId: string;
   groupId: string;
@@ -35,7 +56,7 @@ export class GroupInfoComponent implements OnInit {
   groupInfo: any;
   groupImg: string;
   group_id: string;
-  groupLevel: string;
+  groupLevel: number;
   groupInfos: any;
   normalMemberInfos: any;
   joinStatus = 5;
@@ -56,13 +77,7 @@ export class GroupInfoComponent implements OnInit {
   activityTrackingStatus = [false]; // ['mycoach'] 順序是暫時的，等其他選項確定再補
   activityTrackingReportStatus = [false]; // ['mycoach'] 順序是暫時的，等其他選項確定再補
   lifeTrackingReportStatus = [false]; // ['mycoach'] 順序是暫時的，等其他選項確定再補
-  role = {
-    isSupervisor: false,
-    isSystemDeveloper: false,
-    isSystemMaintainer: false
-  };
   chooseIdx = 1;
-  visitorDetail: any;
   isGroupInfoLoading = false;
   isLoading = false;
   userId: number;
@@ -97,9 +112,12 @@ export class GroupInfoComponent implements OnInit {
     private translate: TranslateService,
     private hashIdService: HashIdService
   ) {
-    this.translate.onLangChange.subscribe(() => {
+    this.translate.onLangChange.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
       this.getAndInitTranslations();
     });
+
     this.getAndInitTranslations();
   }
 
@@ -111,14 +129,12 @@ export class GroupInfoComponent implements OnInit {
     this.route.params.subscribe(_params => this.handleInit());
     this.detectUrlChange(location.pathname);
 
-    this.router.events.subscribe((val: NavigationEnd) => {
+    this.router.events.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe((val: NavigationEnd) => {
       if (val instanceof NavigationEnd && val.url) {
         this.detectUrlChange(val.url);
       }
-    });
-
-    this.userInfoService.getUserAccessRightDetail().subscribe(response => {
-      this.accessRight = Number(response.accessRight);
     });
 
     this.checkManageStatus();
@@ -130,12 +146,15 @@ export class GroupInfoComponent implements OnInit {
     this.groupId = this.hashIdService.handleGroupIdDecode(
       this.hashGroupId
     );
+
     if (this.groupId && this.groupId.length > 0) {
       this.groupLevel = this.utils.displayGroupLevel(this.groupId);
     }
+
     if (this.groupId.length === 0) {
       return this.router.navigateByUrl('/404');
     }
+
     this.token = this.utils.getToken() || '';
     const body = {
       token: this.token,
@@ -143,22 +162,11 @@ export class GroupInfoComponent implements OnInit {
       findRoot: '1',
       avatarType: '2'
     };
-    this.userInfoService.getUserDetail(body, this.groupId);
+
     this.userInfoService.getUserId().subscribe(res => {
       this.userId = res;
     });
-    this.userInfoService.getSupervisorStatus().subscribe(res => {
-      this.role.isSupervisor = res;
-      // console.log('%c this.isSupervisor', 'color: #0ca011', res);
-    });
-    this.userInfoService.getSystemDeveloperStatus().subscribe(res => {
-      this.role.isSystemDeveloper = res;
-      // console.log('%c this.isSystemDeveloper', 'color: #0ca011', res);
-    });
-    this.userInfoService.getSystemMaintainerStatus().subscribe(res => {
-      this.role.isSystemMaintainer = res;
-      // console.log('%c this.isSystemMaintainer', 'color: #0ca011', res);
-    });
+
     this.groupService.fetchGroupListDetail(body).subscribe(res => {
       this.groupInfo = res.info;
       this.groupService.saveGroupInfo(this.groupInfo); // 將群組資訊存取進service減少call api次數-kidin-1081227
@@ -200,13 +208,12 @@ export class GroupInfoComponent implements OnInit {
           ? `${groupIcon}${this.updateImgQueryString}`
           : '/assets/images/group-default.svg';
       this.group_id = this.utils.displayGroupId(groupId);
-      this.groupLevel = this.utils.displayGroupLevel(groupId);
-      if (this.groupLevel === '40') {
+      if (this.groupLevel === 40) {
         this.totalGroupName =
           this.groupInfo.groupRootInfo[2].brandName +
           ' - ' +
           this.groupInfo.groupName;
-      } else if (this.groupLevel === '60') {
+      } else if (this.groupLevel === 60) {
         this.totalGroupName =
           this.groupInfo.groupRootInfo[2].brandName +
           ' - ' +
@@ -216,35 +223,36 @@ export class GroupInfoComponent implements OnInit {
       } else {
         this.totalGroupName = this.groupInfo.groupName;
       }
-      if (this.groupLevel === '80') {
+
+      if (this.groupLevel === 80) {
         this.getGroupMemberList(2);
       } else {
         this.getGroupMemberList(1);
       }
+
       if (
         groupStatus === 4 ||
-        (groupStatus === 3 && !this.visitorDetail.isCanManage) ||
+        (groupStatus === 3 && this.accessRight[0] > this.groupLevel) ||
         groupStatus === 5
       ) {
         this.router.navigateByUrl(`/404`);
       }
+
       let isAutoApplyGroup = this.utils.getLocalStorageObject(
         'isAutoApplyGroup'
       );
-      this.userInfoService.getUserAccessRightDetail().subscribe(response => {
-        this.visitorDetail = response;
-        const { isGroupAdmin } = this.visitorDetail;
-        if (isAutoApplyGroup && isGroupAdmin) {
-          // 已是該群組管理者無法利用qr 掃描自動加入群組
-          this.utils.removeLocalStorageObject('isAutoApplyGroup');
-          isAutoApplyGroup = false;
-        }
-        if (isAutoApplyGroup) {
-          this.handleActionGroup(1);
-          this.utils.removeLocalStorageObject('isAutoApplyGroup');
-          isAutoApplyGroup = false;
-        }
-      });
+
+      if (isAutoApplyGroup && this.accessRight.findIndex(_accessRight => _accessRight === this.groupLevel) > -1) {
+        // 已是該群組管理者無法利用qr 掃描自動加入群組
+        this.utils.removeLocalStorageObject('isAutoApplyGroup');
+        isAutoApplyGroup = false;
+      }
+
+      if (isAutoApplyGroup) {
+        this.handleActionGroup(1);
+        this.utils.removeLocalStorageObject('isAutoApplyGroup');
+        isAutoApplyGroup = false;
+      }
 
       this.isGroupInfoLoading = false;
     });
@@ -255,114 +263,41 @@ export class GroupInfoComponent implements OnInit {
     const browserLang = this.utils.getLocalStorageObject('locale');
     let text = '';
     let accessRights = [];
-    if (browserLang === 'zh-tw') {
-      if (shareData.switch === '3') {
-        text = '僅開放對象為';  // mark
-        accessRights = shareData.enableAccessRight;
-      } else {
-        text = '不開放對象為';  // mark
-        accessRights = shareData.disableAccessRight;
-      }
-    } else if (browserLang === 'zh-cn') {
-      if (shareData.switch === '3') {
-        text = '仅开放对象为';
-        accessRights = shareData.enableAccessRight;
-      } else {
-        text = '不开放对象为';
-        accessRights = shareData.disableAccessRight;
-      }
+    if (shareData.switch === '3') {
+      text = this.i18n.openObj;  // mark
+      accessRights = shareData.enableAccessRight;
     } else {
-      if (shareData.switch === '3') {
-        text = 'Only for ';
-        accessRights = shareData.enableAccessRight;
-      } else {
-        text = 'Not for ';
-        accessRights = shareData.disableAccessRight;
-      }
+      text = this.i18n.notOpenObj;  // mark
+      accessRights = shareData.disableAccessRight;
     }
 
     accessRights = accessRights.map(_accessRight => {
-      if (browserLang === 'zh-tw') {
-        if (_accessRight === '30') {
-          if (this.brandType === 1) {
-            return '品牌管理員';
-          } else {
-            return '企業管理員';
-          }
-        } else if (_accessRight === '40') {
-          if (this.brandType === 1) {
-            return '分店管理員';
-          } else {
-            return '分公司管理員';
-          }
-        } else if (_accessRight === '50') {
-          if (this.brandType === 1) {
-            return '體適能教練';
-          } else {
-            return '部門管理員';
-          }
+      if (_accessRight === '30') {
+        if (this.brandType === 1) {
+          return this.i18n.brandAdmin;
         } else {
-          if (this.brandType === 1) {
-            return '專業老師';
-          } else {
-            return '社團管理員';
-          }
+          return this.i18n.comAdmin;
         }
-      } else if (browserLang === 'zh-cn') {
-        if (_accessRight === '30') {
-          if (_accessRight === '30') {
-            if (this.brandType === 1) {
-              return '品牌管理员';
-            } else {
-              return '企業管理员';
-            }
-          } else if (_accessRight === '40') {
-            if (this.brandType === 1) {
-              return '分店管理员';
-            } else {
-              return '分公司管理员';
-            }
-          } else if (_accessRight === '50') {
-            if (this.brandType === 1) {
-              return '体适能教练';
-            } else {
-              return '部門管理员';
-            }
-          } else {
-            if (this.brandType === 1) {
-              return '专业老师';
-            } else {
-              return '社團管理员';
-            }
-          }
+      } else if (_accessRight === '40') {
+        if (this.brandType === 1) {
+          return this.i18n.branchAdmin;
+        } else {
+          return this.i18n.subComAdmin;
+        }
+      } else if (_accessRight === '50') {
+        if (this.brandType === 1) {
+          return this.i18n.coach;
+        } else {
+          return this.i18n.departmentAdmin;
         }
       } else {
-        if (_accessRight === '30') {
-          if (this.brandType === 1) {
-            return 'Brand administrator';
-          } else {
-            return '企業管理員';
-          }
-        } else if (_accessRight === '40') {
-          if (this.brandType === 1) {
-            return 'Branch manager';
-          } else {
-            return '分公司管理員';
-          }
-        } else if (_accessRight === '50') {
-          if (this.brandType === 1) {
-            return 'Physical fitness coach';
-          } else {
-            return '部門管理員';
-          }
+        if (this.brandType === 1) {
+          return this.i18n.teacher;
         } else {
-          if (this.brandType === 1) {
-            return 'Professional teacher';
-          } else {
-            return '社團管理員';
-          }
+          return this.i18n.departmentAdmin;
         }
       }
+
     });
 
     if (browserLang.indexOf('zh') > -1) {
@@ -449,29 +384,73 @@ export class GroupInfoComponent implements OnInit {
       hasBackdrop: true,
       data: {
         url: location.href,
-        title: this.translate.instant('SH.share'),
+        title: this.translate.instant('universal_operating_share'),
         totalGroupName: this.totalGroupName || '',
-        cancelText: this.translate.instant('SH.cancel')
+        cancelText: this.translate.instant('universal_operating_cancel')
       }
     });
   }
 
   getAndInitTranslations() {
     this.translate
-      .get(['Dashboard.Group.disclaimer', 'SH.agree', 'SH.disagree'])
+      .get([
+        'universal_group_disclaimer',
+        'universal_operating_agree',
+        'universal_operating_disagree',
+        'universal_privacy_allMember',
+        'universal_vocabulary_avatar',
+        'universal_userAccount_nickname',
+        'universal_activityData_file',
+        'universal_activityData_sportReport',
+        'universal_privacy_openOnlyObject',
+        'universal_privacy_notOpenObject',
+        'universal_group_brandAdministrator',
+        'universal_group_branchAdministrator',
+        'universal_group_coach',
+        'universal_group_teacher',
+        'universal_group_companyAdmin',
+        'universal_group_branchAdmin',
+        'universal_group_departmentAdmin',
+        'universal_privacy_myGym'
+      ])
       .subscribe(translation => {
-        this.title = translation['Dashboard.Group.disclaimer'];
-        this.confirmText = translation['SH.agree'];
-        this.cancelText = translation['SH.disagree'];
+        this.title = translation['universal_group_disclaimer'];
+        this.confirmText = translation['universal_operating_agree'];
+        this.cancelText = translation['universal_operating_disagree'];
+
+        this.i18n = {
+          allMember: translation['universal_privacy_allMember'],
+          nickname: `${translation['universal_vocabulary_avatar']
+            } ${translation['universal_userAccount_nickname']
+          }`,
+          file: translation['universal_activityData_file'],
+          sportReport: translation['universal_activityData_sportReport'],
+          openObj: translation['universal_privacy_openOnlyObject'],
+          notOpenObj: translation['universal_privacy_notOpenObject'],
+          brandAdmin: translation['universal_group_brandAdministrator'],
+          branchAdmin: translation['universal_group_branchAdministrator'],
+          coach: translation['universal_group_coach'],
+          teacher: translation['universal_group_teacher'],
+          comAdmin: translation['universal_group_companyAdmin'],
+          subComAdmin: translation['universal_group_branchAdmin'],
+          departmentAdmin: translation['universal_group_departmentAdmin'],
+          myGym: `"${translation['universal_privacy_myGym']}"`
+        };
+
       });
+
   }
 
 
   handleActionGroup(_type) {
     if (_type === 1) {
       // 申請加入
-      const langName = this.utils.getLocalStorageObject('locale');
-      const bodyText = toMemberText[langName];
+      const bodyText = this.translate.instant(
+        'universal_group_joinClassStatement',
+        {
+          'object': this.i18n.myGym
+        }
+      );
       return this.dialog.open(MessageBoxComponent, {
         hasBackdrop: true,
         data: {
@@ -492,16 +471,15 @@ export class GroupInfoComponent implements OnInit {
 
   // 修正加入時call兩次api造成出現錯誤訊息的問題-kidin-1090121
   sendJoinRequest (_type) {
-    this.userProfileService
-      .getUserProfile({
-        token: this.token,
-        avatarType: 2,
-      })
-      .subscribe(res => {
+
+    this.userProfileService.getRxUserProfile().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
         this.isLoading = false;
         const {
           privacy: { activityTracking, activityTrackingReport }
-        } = res.info;
+        } = res;
+
         let isOnlyme = false;
         isOnlyme = !activityTracking.some(_val => +_val > 1);
         isOnlyme = !activityTrackingReport.some(
@@ -546,37 +524,31 @@ export class GroupInfoComponent implements OnInit {
             'locale'
           );
           accessRights = accessRights.map(_accessRight => {
-            if (browserLang === 'zh-tw') {
+
+            if (this.brandType === 1) {
+
               if (_accessRight === '30') {
-                return '品牌管理員';
+                return this.i18n.brandAdmin;
               } else if (_accessRight === '40') {
-                return '分店管理員';
+                return this.i18n.branchAdmin;
               } else if (_accessRight === '50') {
-                return '體適能教練';
+                return this.i18n.coach;
               } else {
-                return '專業老師';
+                return this.i18n.teacher;
               }
-            } else if (browserLang === 'zh-cn') {
-              if (_accessRight === '30') {
-                return '品牌管理员';
-              } else if (_accessRight === '40') {
-                return '分店管理员';
-              } else if (_accessRight === '50') {
-                return '体适能教练';
-              } else {
-                return '专业老师';
-              }
+
             } else {
+
               if (_accessRight === '30') {
-                return 'Brand administrator';
+                return this.i18n.comAdmin;
               } else if (_accessRight === '40') {
-                return 'Branch manager';
+                return this.i18n.subComAdmin;
               } else if (_accessRight === '50') {
-                return 'Physical fitness coach';
-              } else {
-                return 'Professional teacher';
+                return this.i18n.departmentAdmin;
               }
+
             }
+
           });
           let text = '';
 
@@ -627,23 +599,23 @@ export class GroupInfoComponent implements OnInit {
         let message;
         switch (resultMessage) {
           case 'Commerce stopped[2]!':  // 停運中
-            message = `${this.translate.instant('Dashboard.Group.group')
-              } ${this.translate.instant('Dashboard.BrandManagement.outOfService')
+            message = `${this.translate.instant('universal_group_group')
+              } ${this.translate.instant('universal_group_outOfService')
               }`;
             break;
           case 'Commerce stopped[3]!':  // 歇業
-            message = `${this.translate.instant('Dashboard.Group.group')
-              } ${this.translate.instant('Dashboard.BrandManagement.outOfBusiness')
+            message = `${this.translate.instant('universal_group_group')
+              } ${this.translate.instant('universal_group_outOfBusiness')
               }`;
             break;
           case 'Commerce stopped[4]!':  // 待銷毀
-            message = `${this.translate.instant('Dashboard.Group.group')
-              } ${this.translate.instant('Dashboard.BrandManagement.toBeDestroyed')
+            message = `${this.translate.instant('universal_group_group')
+              } ${this.translate.instant('universal_group_toBeDestroyed')
               }`;
             break;
           case 'This group member number more than commerce plan restrictions.': // 已滿員
-            message = `${this.translate.instant('Dashboard.Group.group')
-              } ${this.translate.instant('Dashboard.Group.GroupInfo.groupFull')
+            message = `${this.translate.instant('universal_group_group')
+              } ${this.translate.instant('universal_status_groupFull')
               }`;
             break;
           default:
@@ -652,12 +624,15 @@ export class GroupInfoComponent implements OnInit {
         }
 
         if (resultCode === 200) {
-          if (_type === 2 && this.groupLevel === '80' && isBeenGroupMember) {
-            this.userInfoService.getUserDetail(body, this.groupId);
-          }
+
           if (_type === 2) {
             this.joinStatus = 5;
-            this.userInfoService.getUserDetail(body, this.groupId);
+
+            const refreshBody = {
+              token: this.token
+            };
+            this.userProfileService.refreshUserProfile(refreshBody);
+
           } else {
             this.joinStatus = selfJoinStatus;
           }
@@ -667,7 +642,7 @@ export class GroupInfoComponent implements OnInit {
             data: {
               title: 'message',
               body: message,
-              confirmText: this.translate.instant('other.confirm')
+              confirmText: this.translate.instant('universal_operating_confirm')
             }
           });
         }
@@ -693,7 +668,7 @@ export class GroupInfoComponent implements OnInit {
     const body = {
       token: this.token,
       groupId: this.groupId,
-      groupLevel: this.groupLevel,
+      groupLevel: this.groupLevel + '',
       infoType: _type,
       avatarType: 3
     };
@@ -750,7 +725,7 @@ export class GroupInfoComponent implements OnInit {
           this.brandAdministrators = this.groupInfos.filter(
             _info => _info.accessRight === '30'
           );
-          if (this.groupLevel === '40') {
+          if (this.groupLevel === 40) {
             if (_type === 2) {
               this.branchAdministrators = this.groupInfos.filter(
                 _info =>
@@ -775,7 +750,7 @@ export class GroupInfoComponent implements OnInit {
               });
             }
           }
-          if (this.groupLevel === '60') {
+          if (this.groupLevel === 60) {
             // 如果是教練課群組
             this.normalCoaches = this.groupInfos.filter(
               // 一般教練
@@ -826,13 +801,16 @@ export class GroupInfoComponent implements OnInit {
               _admin =>
                 _admin.memberId === this.userId &&
                 _admin.groupId === this.groupId &&
-                +_admin.accessRight <= +this.groupLevel &&
+                +_admin.accessRight <= this.groupLevel &&
                 _admin.joinStatus === 2
             ) > -1 &&
-            (this.joinStatus !== 2 && !this.visitorDetail.isCanManage)
+            (this.joinStatus !== 2 && this.accessRight[0] > this.groupLevel)
           ) {
             this.joinStatus = 2;
-            this.userInfoService.getUserDetail(body, this.groupId);
+            const refreshBody = {
+              token: this.token
+            };
+            this.userProfileService.refreshUserProfile(refreshBody);
           }
         }
       }
@@ -840,7 +818,7 @@ export class GroupInfoComponent implements OnInit {
     });
   }
   changeGroupInfo({ index }) {
-    if (this.groupLevel === '80') {
+    if (this.groupLevel === 80) {
       if (index === 0) {
         this.getGroupMemberList(index + 2);
       } else if (index === 1) {
@@ -866,8 +844,21 @@ export class GroupInfoComponent implements OnInit {
     this.router.navigateByUrl(`${location.pathname}/edit`);
   }
 
-  // 依照網址導引至該頁面-kidin-10812217
+  // 重新確認群組權限並依照網址導引至該頁面-kidin-10812217
   detectUrlChange(url) {
+    this.groupService.checkAccessRight(this.groupId).subscribe(res => {
+      this.accessRight = res;
+      this.isGroupAdmin = this.accessRight.some(_accessRight => {
+        if (this.groupLevel === 60) {
+          return _accessRight === 50 || _accessRight === 60;
+        } else  {
+          return _accessRight === this.groupLevel;
+        }
+
+      });
+
+    });
+
     if (url.indexOf('my-report') > -1) {
       this.chooseIdx = 4;
     } else if (url.indexOf('class-analysis') > -1) {
@@ -1022,4 +1013,14 @@ export class GroupInfoComponent implements OnInit {
 
     });
   }
+
+  /**
+   * 解除rxjs訂閱
+   * @author kidin-1090722
+   */
+  ngOnDestroy(): void {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
 }

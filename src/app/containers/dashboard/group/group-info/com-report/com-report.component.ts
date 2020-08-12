@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
-import { MatTableDataSource, MatSort, Sort } from '@angular/material';
+import { MatSort, Sort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 
 import SimpleLinearRegression from 'ml-regression-simple-linear';
 import * as moment from 'moment';
@@ -24,9 +25,9 @@ const Highcharts: any = _Highcharts; // 不檢查highchart型態
 })
 export class ComReportComponent implements OnInit, OnDestroy {
 
-  @ViewChild('groupSortTable')
+  @ViewChild('groupSortTable', {static: false})
   groupSortTable: MatSort;
-  @ViewChild('personSortTable')
+  @ViewChild('personSortTable', {static: false})
   personSortTable: MatSort;
 
   // UI控制相關變數-kidin-1090115
@@ -285,7 +286,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
 
   // 資料儲存用變數-kidin-1090115
   token: string;
-  groupLevel: string;
+  groupLevel: number;
   groupId: string;
   groupData: any;
   allLevelGroupData: any;  // 群組本身資料
@@ -381,6 +382,10 @@ export class ComReportComponent implements OnInit, OnDestroy {
       group: new MatTableDataSource<any>(),
       person: new MatTableDataSource<any>()
     },
+    relay: { // 已處理過Array長度完整的資料
+      group: [],
+      person: []
+    },
     backUp: {  // 備份完整資料供matTable排序或全顯示時使用
       group: [],
       person: []
@@ -458,36 +463,36 @@ export class ComReportComponent implements OnInit, OnDestroy {
   // 確認ngx translate套件已經載入再產生翻譯-kidin-1090415
   loadTableTypeList () {
     this.translate.get('hello.world').subscribe(() => {
-      this.groupTableTypeList.filter[0].i18n = this.translate.instant('other.com');
-      this.groupTableTypeList.filter[1].i18n = this.translate.instant('other.subCom');
-      this.groupTableTypeList.filter[2].i18n = this.translate.instant('other.department');
+      this.groupTableTypeList.filter[0].i18n = this.translate.instant('universal_group_enterprise');
+      this.groupTableTypeList.filter[1].i18n = this.translate.instant('universal_group_companyBranch');
+      this.groupTableTypeList.filter[2].i18n = this.translate.instant('universal_group_department');
 
-      this.groupTableTypeList.column[0].i18n = this.translate.instant('other.people');
+      this.groupTableTypeList.column[0].i18n = this.translate.instant('universal_activityData_people');
       this.groupTableTypeList.column[1].i18n =
-      `${this.translate.instant('other.perCapita')} ${this.translate.instant('other.numberOf')}`;
-      this.groupTableTypeList.column[2].i18n = this.translate.instant('other.weekFrequency');
+      `${this.translate.instant('universal_activityData_perCapita')} ${this.translate.instant('universal_activityData_numberOf')}`;
+      this.groupTableTypeList.column[2].i18n = this.translate.instant('universal_activityData_weeklyActivityFrequency');
       this.groupTableTypeList.column[3].i18n =
-        `${this.translate.instant('other.perCapita')} ${this.translate.instant('Dashboard.MyActivity.timing')}`;
+        `${this.translate.instant('universal_activityData_perCapita')} ${this.translate.instant('universal_activityData_timing')}`;
       this.groupTableTypeList.column[4].i18n =
-        `${this.translate.instant('other.perCapita')} ${this.translate.instant('conflict.benefitime')}`;
+        `${this.translate.instant('universal_activityData_perCapita')} ${this.translate.instant('universal_activityData_benefitime')}`;
       this.groupTableTypeList.column[5].i18n =
-        `${this.translate.instant('other.perCapita')} ${this.translate.instant('other.pai')}`;
+        `${this.translate.instant('universal_activityData_perCapita')} ${this.translate.instant('universal_activityData_pai')}`;
       this.groupTableTypeList.column[6].i18n =
-        `${this.translate.instant('other.perCapita')} ${this.translate.instant('SH.calories')}`;
-      this.groupTableTypeList.column[7].i18n = this.translate.instant('SH.hrZone');
+        `${this.translate.instant('universal_activityData_perCapita')} ${this.translate.instant('universal_userProfile_calories')}`;
+      this.groupTableTypeList.column[7].i18n = this.translate.instant('universal_activityData_hrZone');
 
-      this.personTableTypeList.filter[0].i18n = this.translate.instant('other.com');
-      this.personTableTypeList.filter[1].i18n = this.translate.instant('other.subCom');
-      this.personTableTypeList.filter[2].i18n = this.translate.instant('other.department');
+      this.personTableTypeList.filter[0].i18n = this.translate.instant('universal_group_enterprise');
+      this.personTableTypeList.filter[1].i18n = this.translate.instant('universal_group_companyBranch');
+      this.personTableTypeList.filter[2].i18n = this.translate.instant('universal_group_department');
 
-      this.personTableTypeList.column[0].i18n = this.translate.instant('other.totalActivity');
-      this.personTableTypeList.column[1].i18n = this.translate.instant('other.weekFrequency');
-      this.personTableTypeList.column[2].i18n = this.translate.instant('Dashboard.MyActivity.totalTime');
-      this.personTableTypeList.column[3].i18n = this.translate.instant('conflict.benefitime');
-      this.personTableTypeList.column[4].i18n = this.translate.instant('other.pai');
-      this.personTableTypeList.column[5].i18n = this.translate.instant('other.totalCalories');
-      this.personTableTypeList.column[6].i18n = this.translate.instant('other.activityPreference');
-      this.personTableTypeList.column[7].i18n = this.translate.instant('SH.hrZone');
+      this.personTableTypeList.column[0].i18n = this.translate.instant('universal_activityData_totalActivity');
+      this.personTableTypeList.column[1].i18n = this.translate.instant('universal_activityData_weeklyActivityFrequency');
+      this.personTableTypeList.column[2].i18n = this.translate.instant('universal_activityData_limit_totalTime');
+      this.personTableTypeList.column[3].i18n = this.translate.instant('universal_activityData_benefitime');
+      this.personTableTypeList.column[4].i18n = this.translate.instant('universal_activityData_pai');
+      this.personTableTypeList.column[5].i18n = this.translate.instant('universal_activityData_totalCalories');
+      this.personTableTypeList.column[6].i18n = this.translate.instant('universal_activityData_activityPreferences');
+      this.personTableTypeList.column[7].i18n = this.translate.instant('universal_activityData_hrZone');
     });
 
   }
@@ -525,7 +530,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
               this.groupService.saveAllLevelGroupInfo(this.allLevelGroupData);
               this.getIdListStart();
             } else {
-              console.log('Server error');
+              console.log('Error');
             }
 
           });
@@ -607,7 +612,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
               groupIdArr = this.groupId.split('-');
 
         switch (this.groupLevel) {
-          case '30':
+          case 30:
             memberGroupIdArr.length = 3;
             groupIdArr.length = 3;
             if (memberList[i].accessRight >= 30 && JSON.stringify(memberGroupIdArr) === JSON.stringify(groupIdArr)) {
@@ -618,7 +623,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
               });
             }
             break;
-          case '40':
+          case 40:
             memberGroupIdArr.length = 4;
             groupIdArr.length = 4;
             if (memberList[i].accessRight >= 40 && JSON.stringify(memberGroupIdArr) === JSON.stringify(groupIdArr)) {
@@ -629,7 +634,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
               });
             }
             break;
-          case '60':
+          case 60:
             if (memberList[i].accessRight >= 50 && memberList[i].groupId === this.groupId) {
               memlist.push({
                 id: memberList[i].memberId,
@@ -968,8 +973,8 @@ export class ComReportComponent implements OnInit, OnDestroy {
   createReport () {
     this.isLoading = true;
     this.diffDay = moment(this.selectDate.endDate).diff(moment(this.selectDate.startDate), 'days') + 1;
-    this.period = `${this.diffDay}${this.translate.instant(
-      'Dashboard.SportReport.day'
+    this.period = `${this.diffDay} ${this.translate.instant(
+      'universal_time_day'
     )}`;
 
     this.initVariable();
@@ -1102,6 +1107,8 @@ export class ComReportComponent implements OnInit, OnDestroy {
     this.perDate = [];
     this.tableData.display.group.data.length = 0;
     this.tableData.display.person.data.length = 0;
+    this.tableData.relay.group = [];
+    this.tableData.relay.person = [];
     this.tableData.backUp.group = [];
     this.tableData.backUp.person = [];
     this.chartTimeStamp = [];
@@ -2891,8 +2898,9 @@ export class ComReportComponent implements OnInit, OnDestroy {
   checkDataLength (type: string) {
 
     if (type !== 'all') {
+      this.tableData.display[type].data = this.tableData.relay[type].slice();
 
-      if (this.tableData.display[type].data.length <= 8 || this.showAll[type] === true) {
+      if (this.tableData.relay[type].length <= 8 || this.showAll[type] === true) {
         this.showAll[type] = true;
       } else {
         this.tableData.display[type].data.length = 8;
@@ -3050,7 +3058,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
               newSufUrl = `${newSufUrl}&${queryString[i]}`;
             }
           }
-          newUrl = `${preUrl}?${searchString}${newSufUrl}`;
+          newUrl = `${preUrl}?${searchString} ${newSufUrl}`;
         } else {
           newUrl = location.pathname + location.search + `&${searchString}`;
         }
@@ -3113,14 +3121,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
   // 顯示所有個人分析列表-kidin-1090305
   showAllData (type: string) {
     this.showAll[type] = true;
-    this.tableData.display[type].data = this.tableData.backUp[type].slice();
-
-    if (type === 'person' && this.personSortTable && this.personSortTable.hasOwnProperty('active')) {
-      this.sortPersonData();
-    } else if (type === 'group' && this.groupSortTable && this.groupSortTable.hasOwnProperty('active')) {
-      this.sortGroupData();
-    }
-
+    this.tableData.display[type].data = this.tableData.relay[type].slice();
   }
 
   // 依據點選的項目對群組分析進行排序-kidin-1090610
@@ -3186,7 +3187,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
       }
     }
 
-    this.tableData.display.group.data = sortResult;
+    this.tableData.relay.group = sortResult;
     this.checkDataLength('group');
   }
 
@@ -3198,7 +3199,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
           sortDirection = this.personSortTable.direction;
     this.sortCategory.person = sortCategory;
 
-    let sortResult = this.tableData.display.person.data.slice();
+    let sortResult = this.tableData.relay.person.slice();
     sortResult = this.getTargetRatio(sortResult, sortCategory, 'person');
 
     let swapped = true;
@@ -3251,7 +3252,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
       }
     }
 
-    this.tableData.display.person.data = sortResult;
+    this.tableData.relay.person = sortResult;
     this.checkDataLength('person');
   }
 
@@ -3665,7 +3666,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
       }
 
       this.tableData.backUp.group = filterArr;
-      this.tableData.display.group.data = this.tableData.backUp.group.slice();
+      this.tableData.relay.group = this.tableData.backUp.group.slice();
       this.showAll.group = false;
       this.checkDataLength('group');
     } else if (type === 'person') {
@@ -3680,7 +3681,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
       }
 
       const filterData = this.tableData.backUp.person.slice();
-      this.tableData.display.person.data = filterData.filter(data => {
+      this.tableData.relay.person = filterData.filter(data => {
 
         let pass = false;
         for (let j = 0; j < data.belongGroup.length; j++) {

@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatTableDataSource, MatSort, Sort } from '@angular/material';
+import { MatSort, Sort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import SimpleLinearRegression from 'ml-regression-simple-linear';
 import * as moment from 'moment';
 import { first } from 'rxjs/operators';
@@ -19,7 +20,7 @@ import { GroupService } from '../../../services/group.service';
 })
 export class ComLifeTrackingComponent implements OnInit {
 
-  @ViewChild('sortTable')
+  @ViewChild('sortTable', {static: false})
   sortTable: MatSort;
 
   // UI控制相關變數-kidin-1090115
@@ -46,7 +47,7 @@ export class ComLifeTrackingComponent implements OnInit {
 
   // 資料儲存用變數-kidin-1090115
   token: string;
-  groupLevel: string;
+  groupLevel: number;
   groupId: string;
   groupData: any;
   groupList: Array<any>;
@@ -61,6 +62,7 @@ export class ComLifeTrackingComponent implements OnInit {
   diffDay: number;
   reportEndDate = '';
   period = '';
+  dateRangeTranslate = '';
   reportRangeType = 1;
   reportCreatedTime = moment().format('YYYY/MM/DD HH:mm');
   previewUrl = '';
@@ -242,23 +244,23 @@ export class ComLifeTrackingComponent implements OnInit {
         const memberGroupIdArr = memberList[i].groupId.split('-'),
               groupIdArr = this.groupId.split('-');
         switch (this.groupLevel) {
-          case '30':
+          case 30:
             memberGroupIdArr.length = 3;
             groupIdArr.length = 3;
-            if (memberList[i].accessRight >= 50 && JSON.stringify(memberGroupIdArr) === JSON.stringify(groupIdArr)) {
+            if (memberList[i].accessRight >= 30 && JSON.stringify(memberGroupIdArr) === JSON.stringify(groupIdArr)) {
               listId.add(memberList[i].memberId);
               listName.add(memberList[i].memberName);
             }
             break;
-          case '40':
+          case 40:
             memberGroupIdArr.length = 4;
             groupIdArr.length = 4;
-            if (memberList[i].accessRight >= 50 && JSON.stringify(memberGroupIdArr) === JSON.stringify(groupIdArr)) {
+            if (memberList[i].accessRight >= 40 && JSON.stringify(memberGroupIdArr) === JSON.stringify(groupIdArr)) {
               listId.add(memberList[i].memberId);
               listName.add(memberList[i].memberName);
             }
             break;
-          case '60':
+          case 60:
             if (memberList[i].accessRight >= 50 && memberList[i].groupId === this.groupId) {
               listId.add(memberList[i].memberId);
               listName.add(memberList[i].memberName);
@@ -335,8 +337,8 @@ export class ComLifeTrackingComponent implements OnInit {
   createReport () {
     this.isLoading = true;
     this.diffDay = moment(this.selectDate.endDate).diff(moment(this.selectDate.startDate), 'days') + 1;
-    this.period = `${this.diffDay}${this.translate.instant(
-      'Dashboard.SportReport.day'
+    this.period = `${this.diffDay} ${this.translate.instant(
+      'universal_time_day'
     )}`;
 
     this.initVariable();
@@ -346,9 +348,11 @@ export class ComLifeTrackingComponent implements OnInit {
     if (this.diffDay <= 52) {
       this.reportRangeType = 1;
       this.dataDateRange = 'day';
+      this.dateRangeTranslate = this.translate.instant('universal_time_day');
     } else {
       this.reportRangeType = 2;
       this.dataDateRange = 'week';
+      this.dateRangeTranslate = this.translate.instant('universal_time_week');
     }
 
     this.createTimeStampArr(this.diffDay);
@@ -1127,17 +1131,17 @@ export class ComLifeTrackingComponent implements OnInit {
 
     if (fatRate < boundary[0] && fatRate > 0) {
       return {
-        comment: this.translate.instant('other.low'),
+        comment: this.translate.instant('universal_activityData_low'),
         color: '#2398c3'
       };
     } else if (fatRate < boundary[1] && fatRate >= boundary[0]) {
       return {
-        comment: this.translate.instant('other.Standard'),
+        comment: this.translate.instant('universal_activityData_Standard'),
         color: '#5bbb26'
       };
     } else if (fatRate >= boundary[1]) {
       return {
-        comment: this.translate.instant('other.high'),
+        comment: this.translate.instant('universal_activityData_high'),
         color: '#ffae00'
       };
     } else {
@@ -1163,29 +1167,29 @@ export class ComLifeTrackingComponent implements OnInit {
 
     if (FFMI < FFMIBoundary[0]) {
       if (fatRate <= FatRateBoundary[0]) {
-        return this.translate.instant('other.tooThin');
+        return this.translate.instant('universal_activityData_tooThin');
       } else if (fatRate > FatRateBoundary[0] && fatRate <= FatRateBoundary[1]) {
-        return this.translate.instant('other.lackOfTraining');
+        return this.translate.instant('universal_activityData_lackOfTraining');
       } else {
-        return this.translate.instant('other.recessiveObesity');
+        return this.translate.instant('universal_activityData_recessiveObesity');
       }
 
     } else if (FFMI >= FFMIBoundary[0] && FFMI <= FFMIBoundary[1]) {
       if (fatRate <= FatRateBoundary[0]) {
-        return this.translate.instant('other.generallyThin');
+        return this.translate.instant('universal_activityData_generallyThin');
       } else if (fatRate > FatRateBoundary[0] && fatRate <= FatRateBoundary[1]) {
-        return this.translate.instant('other.normalPosture');
+        return this.translate.instant('universal_activityData_normalPosture');
       } else {
-        return this.translate.instant('other.generallyFat');
+        return this.translate.instant('universal_activityData_generallyFat');
       }
 
     } else if (FFMI > FFMIBoundary[1]) {
       if (fatRate <= FatRateBoundary[0]) {
-        return this.translate.instant('other.bodybuilding');
+        return this.translate.instant('universal_activityData_bodybuilding');
       } else if (fatRate > FatRateBoundary[0] && fatRate <= FatRateBoundary[1]) {
-        return this.translate.instant('other.athletic');
+        return this.translate.instant('universal_activityData_athletic');
       } else {
-        return this.translate.instant('other.fatBody');
+        return this.translate.instant('universal_activityData_fatBody');
       }
 
     }
@@ -1219,7 +1223,7 @@ export class ComLifeTrackingComponent implements OnInit {
               newSufUrl = `${newSufUrl}&${queryString[i]}`;
             }
           }
-          newUrl = `${preUrl}?${searchString}${newSufUrl}`;
+          newUrl = `${preUrl}?${searchString} ${newSufUrl}`;
         } else {
           newUrl = location.pathname + location.search + `&${searchString}`;
         }

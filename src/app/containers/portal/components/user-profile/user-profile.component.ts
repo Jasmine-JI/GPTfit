@@ -46,6 +46,7 @@ export class UserProfileComponent implements OnInit {
     });
     this.fetchUserProfile();
   }
+
   handleProfileItem(idx) {
     this.chooseIdx = idx;
     if (!this.userId) {
@@ -68,11 +69,10 @@ export class UserProfileComponent implements OnInit {
     this.router.navigateByUrl(url);
     this.fetchUserProfile();
   }
+
   fetchUserProfile() {
     const body = {
-      token: this.utils.getToken() || '',
       targetUserId: this.userId || '',
-      avatarType: 2,
     };
 
     this.userInfoService.getUpdatedImgStatus().subscribe(response => {
@@ -80,15 +80,20 @@ export class UserProfileComponent implements OnInit {
     });
 
     this.userProfileService.getUserProfile(body).subscribe(res => {
-      const response: any = res;
-      const { name, nameIcon, description } = response.info;
-      this.description = description;
-      this.userName = name;
-      this.userImg = nameIcon
-        ? `${nameIcon}${this.updateQueryString}`
-        : '/assets/images/user.png';
+
+      if (res.processResult.resultCode !== 200) {
+        this.router.navigateByUrl('/404');
+      } else {
+        const { nickname, avatarUrl, description } = res.userProfile;
+        this.description = description;
+        this.userName = nickname;
+        this.userImg = avatarUrl ? `${avatarUrl} ${this.updateQueryString}` : '/assets/images/user2.png';
+      }
+
     });
+
   }
+
   detectUrlChange(url) {
     if (url.indexOf(`/user-profile/${this.hashIdService.handleUserIdEncode(this.userId)}`) > -1) {
       this.chooseIdx = 1;
@@ -103,7 +108,9 @@ export class UserProfileComponent implements OnInit {
     //   this.chooseIdx = 4;
     // }
   }
+
   handlePrivacyLock(isShowLock) {
     this.isShowLock = isShowLock;
   }
+
 }

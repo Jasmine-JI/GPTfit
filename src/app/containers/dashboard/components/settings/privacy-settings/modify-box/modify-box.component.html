@@ -10,19 +10,19 @@
         color="primary"
         (change)="selectDateRange($event)"
       >
-        {{ 'SH.all' | translate }}
+        {{ 'universal_adjective_all' | translate }}
       </mat-radio-button>
       <mat-radio-button
         value="1"
         color="primary"
         (change)="selectDateRange($event)"
       >
-        {{ 'Dashboard.GroupClass.selectDate' | translate }}
+        {{ 'universal_operating_selectDate' | translate }}
       </mat-radio-button>
     </mat-radio-group>
   </div>
   <div *ngIf="dateRange === '1'">
-    <p>{{ 'SH.dateRange' | translate }}</p>
+    <p>{{ 'universal_activityData_dateRange' | translate }}</p>
     <div class="dateSelectArea" style="margin: 0 0 15px 50px;">
       <app-date-range-picker
         (selectDateRange)="getSelectDate($event)"
@@ -31,36 +31,35 @@
     </div>
   </div>
   <div class="flexCol">
-    <span style="margin-bottom: 15px;">{{ title }} {{ 'Dashboard.ProductInfo.object' | translate }}</span>
+    <span style="margin-bottom: 15px;">{{ title }} {{ 'universal_vocabulary_object' | translate }}</span>
     <div class="flexCol" style="margin-right: 20px;">
       <mat-radio-group>
         <mat-radio-button
           value="99"
           id="selectObj"
           color="primary"
-          (click)="selectModifyRange('99')"
+          (click)="selectModifyRange(99)"
         >
-          {{'Dashboard.privacySettings.allMember' | translate}}
+          {{'universal_privacy_allMember' | translate}}
         </mat-radio-button>
       </mat-radio-group>
       <div *ngIf="showPerObj">
         <mat-checkbox
           color="primary"
-          (click)="selectModifyRange('4')"
+          (click)="selectModifyRange(4)"
         >
-          {{ 'other.myObject' | translate }}
-          {{ 'other.gymBrand' | translate }}
+          {{ 'universal_group_myObject' | translate: {'object': i18n.gym} }}
           /
-          {{ 'other.company' | translate }}
-          {{ 'Dashboard.Group.GroupInfo.administrator' | translate }}
+          {{ 'universal_group_enterprise' | translate }}
+          {{ 'universal_group_administrator' | translate }}
         </mat-checkbox>
       </div>
     </div>
   </div>
 </mat-dialog-content>
 <mat-dialog-actions class="flexRow" style="justify-content: space-between;">
-  <button mat-button mat-dialog-close>{{ 'SH.cancel' | translate }}</button>
+  <button mat-button mat-dialog-close>{{ 'universal_operating_cancel' | translate }}</button>
   <button mat-button color="warn" style="font-weight: bold;" (click)="handleConfirm()">
-    {{ 'other.confirm' | translate }} {{ 'other.modify' | translate }}
+    {{ 'universal_operating_confirm' | translate }} {{ 'universal_operating_modify' | translate }}
   </button>
 </mat-dialog-actions>

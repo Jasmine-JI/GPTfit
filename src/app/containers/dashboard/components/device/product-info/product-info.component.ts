@@ -1,21 +1,26 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { QrcodeService } from '../../../../portal/services/qrcode.service';
-import { HttpParams } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { NgProgress, NgProgressRef } from '@ngx-progressbar/core';
 import { UtilsService } from '@shared/services/utils.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
-import { fitPairText } from './fitPairText';
 import { TranslateService } from '@ngx-translate/core';
+import { UserProfileService } from '../../../../../shared/services/user-profile.service';
+import { Subject } from 'rxjs';
+import { takeUntil, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-product-info',
   templateUrl: './product-info.component.html',
   styleUrls: ['./product-info.component.css', '../../../group/group-style.scss']
 })
-export class ProductInfoComponent implements OnInit {
+export class ProductInfoComponent implements OnInit, OnDestroy {
+
+  private ngUnsubscribe = new Subject();
+
+  userMaxAccessRight = 99;
   groupImg = 'http://app.alatech.com.tw/app/public_html/products/img/t0500.png';
   progressRef: NgProgressRef;
   isLoading = false;
@@ -41,6 +46,8 @@ export class ProductInfoComponent implements OnInit {
     thick: false
   };
   fitPairStatus: string;
+  deviceEnableDate: string;
+  deviceBondDate: string;
   token: string;
   fitPairTip: string;
   qrURL: string;
@@ -53,17 +60,19 @@ export class ProductInfoComponent implements OnInit {
     private progress: NgProgress,
     private route: ActivatedRoute,
     private utilsService: UtilsService,
+    private userProfileService: UserProfileService,
     private router: Router,
     public dialog: MatDialog,
     private translate: TranslateService
   ) {}
 
   ngOnInit() {
+    this.getTranslate();
+    this.getUserAccessRight();
     if (location.pathname.indexOf('/system/device/info') > -1) {
       this.isAdminMode = true;
     }
     const langName = this.utilsService.getLocalStorageObject('locale');
-    this.fitPairTip = fitPairText[langName];
     this.deviceSN = this.route.snapshot.paramMap.get('deviceSN');
     let snNumbers = this.utilsService.getLocalStorageObject('snNumber');
     if (snNumbers && snNumbers.findIndex(_num => _num === this.deviceSN) > -1) {
@@ -86,9 +95,11 @@ export class ProductInfoComponent implements OnInit {
       'token': '',
       'queryType': '1',
       'queryArray': [this.deviceSN]
-    }
+    };
     this.qrCodeService.getDeviceDetail(body).subscribe(res => {
       this.fitPairStatus = res.info.fitPairStatus;
+      this.deviceBondDate = res.info.deviceBondDate;
+      this.deviceEnableDate = res.info.deviceEnableDate;
       if (res.resultCode === 200) {
         this.deviceBondUserName = res.info.deviceBondUserName;
         this.deviceBondUserId = res.info.deviceBondUserId;
@@ -111,13 +122,36 @@ export class ProductInfoComponent implements OnInit {
           data: {
             title: 'message',
             body: res.resultMessage,
-            confirmText: this.translate.instant('other.confirm')
+            confirmText: this.translate.instant('universal_operating_confirm')
           }
         });
         setTimeout(() => this.router.navigateByUrl('dashboard/device'), 3000);
       }
     });
   }
+
+  // 待多國語系套件載入後再生成翻譯-kidin-1090623
+  getTranslate () {
+    this.translate.get('hollow world').subscribe(() => {
+      this.fitPairTip = this.translate.instant('universal_uiFitpair_fitpairDetailDescription');
+    });
+
+  }
+
+  /**
+   * 取得使用者系統最高權限
+   * @author kidin-1090729
+   */
+  getUserAccessRight() {
+    this.userProfileService.getRxUserProfile().pipe(
+      map(res => res.systemAccessRight),
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
+      this.userMaxAccessRight = res[0];
+    });
+
+  }
+
   // 新增西班牙語-kidin-1081106
   handleProductInfo(lang) {
     if (lang === 'zh-cn') {
@@ -169,8 +203,8 @@ export class ProductInfoComponent implements OnInit {
           hasBackdrop: true,
           data: {
             title: 'message',
-            body: this.translate.instant('Dashboard.ProductInfo.changeFailed'),
-            confirmText: this.translate.instant('other.confirm')
+            body: this.translate.instant('universal_popUpMessage_changeFailed'),
+            confirmText: this.translate.instant('universal_operating_confirm')
           }
         });
       }
@@ -205,8 +239,8 @@ export class ProductInfoComponent implements OnInit {
           hasBackdrop: true,
           data: {
             title: 'message',
-            body: `${this.translate.instant('Dashboard.MyDevice.unbind')}${this.translate.instant('Dashboard.MyDevice.success')}`,
-            confirmText: this.translate.instant('other.confirm')
+            body: `${this.translate.instant('universal_uiFitpair_unbind')} ${this.translate.instant('universal_status_success')}`,
+            confirmText: this.translate.instant('universal_operating_confirm')
           }
         });
         setTimeout(() => history.back(), 3000);
@@ -215,8 +249,8 @@ export class ProductInfoComponent implements OnInit {
           hasBackdrop: true,
           data: {
             title: 'message',
-            body: `${this.translate.instant('Dashboard.MyDevice.unbind')}${this.translate.instant('Dashboard.MyDevice.failure')}`,
-            confirmText: this.translate.instant('other.confirm')
+            body: `${this.translate.instant('universal_uiFitpair_unbind')} ${this.translate.instant('universal_status_failure')}`,
+            confirmText: this.translate.instant('universal_operating_confirm')
           }
         });
       }
@@ -227,13 +261,23 @@ export class ProductInfoComponent implements OnInit {
       hasBackdrop: true,
       data: {
         title: 'message',
-        body: `${this.translate.instant('Dashboard.MyDevice.continueExecution')}${
+        body: `${this.translate.instant('universal_popUpMessage_continueExecution')} ${
           this.deviceBondUserName
-        }${this.translate.instant('Dashboard.MyDevice.unbind')} sn: ${this.deviceSN} ?`,
-        confirmText: this.translate.instant('other.confirm'),
+        } ${this.translate.instant('universal_uiFitpair_unbind')} sn: ${this.deviceSN} ?`,
+        confirmText: this.translate.instant('universal_operating_confirm'),
         onConfirm: () => this.unBondDeviceDialog(),
         cancelText: 'cancel'
       }
     });
   }
+
+  /**
+   * 解除rxjs訂閱
+   * @author kidin-1090722
+   */
+  ngOnDestroy(): void {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
 }

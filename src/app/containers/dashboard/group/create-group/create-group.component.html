@@ -1,12 +1,12 @@
 <ng-container *ngIf="createType === 4 && !isShowCreateForm">
   <div class="group-edit-bar"style="justify-content: flex-end;">
     <button class="alatech-btn alatech-btn--default"
-      title="{{ 'Dashboard.Group.create' | translate }}{{ 'Dashboard.Group.brand' | translate }}"
+      title="{{ 'universal_activityData_create' | translate }} {{ 'universal_group_brand' | translate }}"
       (click)="handleShowCreateBrand()"
       style="width: 222px;height: 46px"
       [disabled]="!commercePlan"
     >
-      {{ 'Dashboard.Group.create' | translate }}{{ 'Dashboard.Group.brand' | translate }}
+      {{ 'universal_activityData_create' | translate }} {{ 'universal_group_brand' | translate }}
     </button>
   </div>
     <app-commerce-plan-table (onChange)="changePlan($event)" [createType]="4"></app-commerce-plan-table>
@@ -14,12 +14,12 @@
 <ng-container *ngIf="createType === 5 && !isShowCreateForm">
   <div class="group-edit-bar"style="justify-content: flex-end;">
     <button class="alatech-btn alatech-btn--default"
-      title="{{ 'Dashboard.Group.create' | translate }}{{ 'Dashboard.Group.brand' | translate }}"
+      title="{{ 'universal_activityData_create' | translate }} {{ 'universal_group_brand' | translate }}"
       (click)="handleShowCreateCom()"
       style="width: 222px;height: 46px"
       [disabled]="!commercePlan"
     >
-      {{ 'other.createCom' | translate }}
+      {{ 'universal_activityData_create' | translate }} {{ 'universal_group_enterprise' | translate }}
     </button>
   </div>
     <app-commerce-plan-table (onChange)="changePlan($event)" [createType]="5"></app-commerce-plan-table>
@@ -32,11 +32,11 @@
         [imageURL]="groupImg"
         [maxFileSize]="maxFileSize"
         [disabled]="isUploading"
-        [btnText]="'Dashboard.Group.GroupInfo.selectImg' | translate"
+        [btnText]="'universal_operating_selectImg' | translate"
         [isLoading]="isUploading"
-        [accept]="'Dashboard.Group.GroupInfo.photoRestriction' | translate"
-        [reloadFileText]="'Dashboard.Group.GroupInfo.selectImg' | translate"
-        [chooseFileText]="'Dashboard.Group.GroupInfo.selectImg' | translate"
+        [accept]="'universal_status_photoRestriction' | translate"
+        [reloadFileText]="'universal_operating_selectImg' | translate"
+        [chooseFileText]="'universal_operating_selectImg' | translate"
         (onChange)="handleAttachmentChange($event)"
       ></app-upload-file>
     </div>
@@ -46,55 +46,55 @@
           <span style="color: #26abe3; font-weight:700"
             *ngIf="createType === 1 && brandType == 1"
           >
-            {{'Dashboard.Group.GroupInfo.addBranch' | translate}}
+            {{'universal_group_addBranch' | translate}}
           </span>
           <span style="color: #26abe3; font-weight:700"
             *ngIf="createType === 1 && brandType == 2"
           >
-            {{'other.addSubCom' | translate}}
+            {{'universal_group_addBranchOffice' | translate}}
           </span>
           <span style="color: #26abe3; font-weight:700"
             *ngIf="createType === 2"
           >
-            <span *ngIf="coachType === 1 && brandType == 1">{{'Dashboard.Group.GroupInfo.courseInformationProfessionalClass' | translate}}</span>
-            <span *ngIf="coachType === 2 && brandType == 1">{{'Dashboard.Group.GroupInfo.courseInformationFitnessClass' | translate}}</span>
-            <span *ngIf="coachType === 1 && brandType == 2">{{'other.league' | translate}}</span>
-            <span *ngIf="coachType === 2 && brandType == 2">{{'other.department' | translate}}</span>
+            <span *ngIf="coachType === 1 && brandType == 1">{{'universal_group_courseInformationProfessionalClass' | translate}}</span>
+            <span *ngIf="coachType === 2 && brandType == 1">{{'universal_group_courseInformationFitnessClass' | translate}}</span>
+            <span *ngIf="coachType === 1 && brandType == 2">{{'universal_group_generalGroup' | translate}}</span>
+            <span *ngIf="coachType === 2 && brandType == 2">{{'universal_group_department' | translate}}</span>
           </span>
           <span style="color: #26abe3; font-weight:700"
             *ngIf="createType === 3"
           >
-          {{ 'Dashboard.Group.create' | translate }}{{ 'Dashboard.Group.group' | translate }}
+          {{ 'universal_activityData_create' | translate }} {{ 'universal_group_group' | translate }}
           </span>
           <span style="color: #26abe3; font-weight:700"
             *ngIf="createType === 4"
           >
-            {{ 'Dashboard.Group.create' | translate }}{{ 'Dashboard.Group.brand' | translate }}
+            {{ 'universal_activityData_create' | translate }} {{ 'universal_group_brand' | translate }}
           </span>
           <span style="color: #26abe3; font-weight:700"
             *ngIf="createType === 5"
           >
-            {{ 'other.createCom' | translate }}
+            {{ 'universal_activityData_create' | translate }}
           </span>
           <div class="rwd-btn_action">
             <button class="alatech-btn alatech-btn--default"
-              title="{{ 'SH.cancel' | translate }}"
+              title="{{ 'universal_operating_cancel' | translate }}"
               (click)="handleCancel($event)"
             >
-              {{ 'SH.cancel' | translate }}
+              {{ 'universal_operating_cancel' | translate }}
             </button>
             <button class="alatech-btn alatech-btn--default"
-              title="{{ 'Dashboard.Group.GroupInfo.completeManagement' | translate }}"
+              title="{{ 'universal_group_completeManagement' | translate }}"
               type="submit"
               [disabled]="isEditing"
             >
-              {{ 'Dashboard.Group.GroupInfo.completeManagement' | translate }}
+              {{ 'universal_group_completeManagement' | translate }}
             </button>
           </div>
         </div>
         <div class="group-edit-area">
           <div class="ala-list__item" *ngIf="createType === 3">
-            <label class="ala-form__label form__label--required">{{ 'Dashboard.Group.GroupInfo.name' | translate}}：</label>
+            <label class="ala-form__label form__label--required">{{ 'universal_activityData_name' | translate}}：</label>
             <app-form-text
               [content]="groupName?.value"
               [maxLength]="32"
@@ -109,10 +109,10 @@
           </div>
           <div class="ala-list__item" *ngIf="createType !== 3 && createType !== 4 && createType !== 5">
             <label class="ala-form__label" *ngIf="brandType == 1">
-              {{ 'Dashboard.Group.GroupInfo.brand' | translate}}{{ 'Dashboard.Group.GroupInfo.name' | translate}}：
+              {{ 'universal_group_brand' | translate}} {{ 'universal_activityData_name' | translate}}：
             </label>
             <label class="ala-form__label" *ngIf="brandType == 2">
-              {{ 'other.comName' | translate}}：
+              {{ 'universal_group_enterprise' | translate}} {{ 'universal_activityData_name' | translate}}：
             </label>
             <app-form-text
               [disabled]="true"
@@ -122,10 +122,10 @@
           </div>
           <div class="ala-list__item" *ngIf="createType === 4 || createType === 5">
             <label class="ala-form__label form__label--required" *ngIf="createType === 4">
-              {{ 'Dashboard.Group.GroupInfo.brand' | translate}}{{ 'Dashboard.Group.GroupInfo.name' | translate}}：
+              {{ 'universal_group_brand' | translate}} {{ 'universal_activityData_name' | translate}}：
             </label>
             <label class="ala-form__label form__label--required" *ngIf="createType === 5">
-              {{ 'other.comName' | translate}}：
+              {{ 'universal_group_enterprise' | translate}} {{ 'universal_activityData_name' | translate}}：
             </label>
             <app-form-text
               [content]="groupName?.value"
@@ -142,20 +142,20 @@
           <div class="ala-list__item" *ngIf="createType !== 3 && createType !== 4 && createType !== 5">
             <label class="ala-form__label form__label--required">
               <span *ngIf="createType === 1 && brandType == 1">
-                {{ 'Dashboard.Group.GroupInfo.branch' | translate}}{{ 'Dashboard.Group.GroupInfo.name' | translate}}：
+                {{ 'universal_group_branch' | translate}} {{ 'universal_activityData_name' | translate}}：
               </span>
               <span *ngIf="createType === 1 && brandType == 2">
-                {{ 'other.subComName' | translate}}：
+                {{ 'universal_group_companyBranch' | translate}} {{ 'universal_activityData_name' | translate}}：
               </span>
-              <span *ngIf="createType === 2 && brandType == 1">{{ 'Dashboard.Group.chooseBranch' | translate}}：</span>
-              <span *ngIf="createType === 2 && brandType == 2">{{ 'other.chooseSubCom' | translate}}：</span>
+              <span *ngIf="createType === 2 && brandType == 1">{{ 'universal_group_chooseBranch' | translate}}：</span>
+              <span *ngIf="createType === 2 && brandType == 2">{{ 'universal_group_selectBranchOffice' | translate}}：</span>
             </label>
             <app-form-text
               *ngIf="createType === 1"
               [content]="branchName?.value"
               [maxLength]="32"
-              [remindText]="'Dashboard.Group.GroupInfo.noMoreCharacters' | translate: {'number': '32' }"
-              [invalidRemindText]="'Dashboard.Group.GroupInfo.fullField' | translate"
+              [remindText]="'universal_status_noMoreCharacters' | translate: {'number': '32' }"
+              [invalidRemindText]="'universal_userAccount_fullField' | translate"
               [control]="form"
               [disabled]="isEditing"
               [controlName]="formTextName"
@@ -163,12 +163,12 @@
             >
             </app-form-text>
             <app-form-text
-              *ngIf="createType === 2 && groupLevel === '40'"
+              *ngIf="createType === 2 && groupLevel === 40"
               [content]="subBranchInfo && subBranchInfo[0]?.groupName || ''"
               [disabled]="true"
             >
             </app-form-text>
-            <select *ngIf="createType === 2 && groupLevel === '30'" formControlName="branchId" class="form-field"
+            <select *ngIf="createType === 2 && groupLevel === 30" formControlName="branchId" class="form-field"
               [class.form-field--invalid]="(!branchId.valid && branchId.touched) || (f.submitted && branchId.hasError('required'))"
             >
               <ng-container  *ngFor="let subBranchItem of subBranchInfo">
@@ -181,19 +181,19 @@
               [class.form__label--required]="createType === 2 && brandType == 1"
               *ngIf="brandType == 1"
             >
-              {{'Dashboard.Group.classTitle' | translate}}：
+              {{'universal_group_classTitle' | translate}}：
             </label>
             <label class="ala-form__label"
               [class.form__label--required]="createType === 2 && brandType == 2"
               *ngIf="coachType === 1 && brandType == 2"
             >
-              {{'other.leagueName' | translate}}：
+              {{'universal_activityData_name' | translate}}：
             </label>
             <label class="ala-form__label"
               [class.form__label--required]="createType === 2 && brandType == 2"
               *ngIf="(coachType === 2 || createType === 1 ) && brandType == 2"
             >
-              {{'other.departmentName' | translate}}：
+              {{'universal_group_department' | translate}} {{'universal_activityData_name' | translate}}：
             </label>
             <input
               style="width: 275px"
@@ -205,8 +205,8 @@
               *ngIf="createType === 2"
               [content]="coachLessonName?.value"
               [maxLength]="32"
-              [remindText]="'Dashboard.Group.GroupInfo.noMoreCharacters' | translate: {'number': '32' }"
-              [invalidRemindText]="'Dashboard.Group.GroupInfo.fullField' | translate"
+              [remindText]="'universal_status_noMoreCharacters' | translate: {'number': '32' }"
+              [invalidRemindText]="'universal_userAccount_fullField' | translate"
               [control]="form"
               [disabled]="isEditing"
               [controlName]="formTextName"
@@ -215,18 +215,18 @@
             </app-form-text>
           </div>
           <div class="ala-list__item">
-            <label class="ala-form__label">{{ 'Dashboard.Group.GroupInfo.status' | translate}}：</label>
+            <label class="ala-form__label">{{ 'universal_group_status' | translate}}：</label>
             <select class="form-field"
               formControlName="groupStatus"
               [attr.disabled]="isEditing ? '' : null"
             >
-            <option value="1" class="form-field-option">{{ 'Dashboard.Group.freeToJoin' | translate}}</option>
-            <option value="2" class="form-field-option">{{ 'Dashboard.Group.auditSystem' | translate}}</option>
-            <option value="3" class="form-field-option">{{ 'Dashboard.Group.hide' | translate}}</option>
+            <option value="1" class="form-field-option">{{ 'universal_group_freeToJoin' | translate}}</option>
+            <option value="2" class="form-field-option">{{ 'universal_group_auditSystem' | translate}}</option>
+            <option value="3" class="form-field-option">{{ 'universal_operating_hide' | translate}}</option>
             </select>
           </div>
           <div class="ala-list__item">
-            <label class="ala-form__label form__label--required">{{ 'Dashboard.Group.GroupInfo.introduction' | translate}}：</label>
+            <label class="ala-form__label form__label--required">{{ 'universal_group_introduction' | translate}}：</label>
             <div class="ala-form__col">
               <app-form-textarea
                 [maxLength]="textareaMaxLength"
@@ -235,7 +235,7 @@
                 [disabled]="isEditing"
                 [controlName]="formTextareaName"
                 (onChange)="handleChangeTextarea($event)"
-                [remindText]="'Dashboard.Group.GroupInfo.noMoreCharacters' | translate: { 'number': '500' }"
+                [remindText]="'universal_status_noMoreCharacters' | translate: { 'number': '500' }"
                 [isHadCount]="true"
                 [isInvalid]="(groupDesc.invalid && groupDesc?.touched) || (f.submitted && groupDesc.hasError('required')) || (f.submitted && groupDesc.hasError('maxLength'))"
               >
@@ -245,25 +245,35 @@
         </div>
         <ng-container *ngIf="createType === 2">
           <span style="color: #26abe3; font-weight:700">
-            {{'Dashboard.privacySettings.privacyRequirementsContent' | translate}}
+            {{'universal_privacy_privacyRequirementsContent' | translate}}
           </span>
           <span style="font-size: 14px;margin-left: 10px" *ngIf="brandType == 1">
-            {{'Dashboard.privacySettings.createClassPrivacyNotice' | translate}}
+            {{'universal_privacy_createClassPrivacyNotice' | translate}}
           </span>
           <ul class="group-privacy-desc">
-            <li>{{'Dashboard.privacySettings.myGroup' | translate}}{{'Dashboard.privacySettings.canSee' | translate}}{{'Dashboard.privacySettings.avatar' | translate}}{{'Dashboard.privacySettings.nickname' | translate}}</li>
+            <li>
+              {{'universal_group_canSee' | translate: {'object': i18n.myGroup, 'info': i18n.nickname} }}
+            </li>
             <ng-container *ngIf="coachType === 2 && brandType == 1">
-              <li>{{'Dashboard.privacySettings.myGym' | translate}}{{'Dashboard.privacySettings.canSee' | translate}}{{'Dashboard.privacySettings.activityRecord' | translate}}</li>
-              <li>{{'Dashboard.privacySettings.myGym' | translate}}{{'Dashboard.privacySettings.canSee' | translate}}{{'Dashboard.privacySettings.sportReport' | translate}}</li>
+              <li>
+                {{'universal_group_canSee' | translate: {'object': i18n.myGym, 'info': i18n.activityRecord} }}
+              </li>
+              <li>
+                {{'universal_group_canSee' | translate: {'object': i18n.myGym, 'info': i18n.sportReport} }}
+              </li>
             </ng-container>
             <ng-container *ngIf="coachType === 2 && brandType == 2">
-              <li>{{'Dashboard.privacySettings.myGroup' | translate}}{{'Dashboard.privacySettings.canSee' | translate}}{{'Dashboard.privacySettings.activityRecord' | translate}}</li>
-              <li>{{'Dashboard.privacySettings.myGroup' | translate}}{{'Dashboard.privacySettings.canSee' | translate}}{{'Dashboard.privacySettings.sportReport' | translate}}</li>
+              <li>
+                {{'universal_group_canSee' | translate: {'object': i18n.myGroup, 'info': i18n.activityRecord} }}
+              </li>
+              <li>
+                {{'universal_group_canSee' | translate: {'object': i18n.myGroup, 'info': i18n.sportReport} }}
+              </li>
             </ng-container>
           </ul>
         </ng-container>
         <span style="color: #26abe3; font-weight:700">
-          {{ 'Dashboard.Group.GroupInfo.administrator' | translate}}
+          {{ 'universal_group_administrator' | translate}}
         </span>
         <div class="ala-list__item" *ngIf="createType !== 3"
           style="margin-top: 20px"
@@ -272,11 +282,21 @@
             [class.form__label--required]="createType !== 3"
             style="min-width: 140px"
           >
-            <span *ngIf="coachType === 1 && brandType == 1">{{'Dashboard.Group.addObject' | translate}}{{'Dashboard.Group.teacher' | translate}}：</span>
-            <span *ngIf="coachType === 2 && brandType == 1">{{'Dashboard.Group.addObject' | translate}}{{'Dashboard.Group.coach' | translate}}：</span>
-            <span *ngIf="coachType === 1 && brandType == 2">{{'Dashboard.Group.addObject' | translate}}{{'other.leagueAdministrator' | translate}}：</span>
-            <span *ngIf="coachType === 2 && brandType == 2">{{'Dashboard.Group.addObject' | translate}}{{'other.departmentAdministrator' | translate}}：</span>
-            <span *ngIf="coachType !== 1 && coachType !== 2">{{'Dashboard.Group.GroupInfo.assignAdmin' | translate}}：</span>
+            <span *ngIf="coachType === 1 && brandType == 1">
+              {{'universal_group_addObject' | translate: {'position': i18n.teacher} }}：
+            </span>
+            <span *ngIf="coachType === 2 && brandType == 1">
+              {{'universal_group_addObject' | translate: {'position': i18n.coach} }}：
+            </span>
+            <span *ngIf="coachType === 1 && brandType == 2">
+              {{'universal_group_addObject' | translate: {'position': i18n.leagueAdministrator} }}：
+            </span>
+            <span *ngIf="coachType === 2 && brandType == 2">
+              {{'universal_group_addObject' | translate: {'position': i18n.departmentAdministrator} }}：
+            </span>
+            <span *ngIf="coachType !== 1 && coachType !== 2">
+              {{'universal_group_assignAdmin' | translate}}：
+            </span>
           </label>
           <div class="ala-form__col assign-admin">
             <button class="icon-btn" (click)="openSelectorWin(createType, $event)">
@@ -285,7 +305,7 @@
             <div class="assign-admin__warning"
               *ngIf="(!groupManager.valid && groupManager.touched) || (f.submitted && groupManager.hasError('required'))"
             >
-              {{'Dashboard.Group.addAdministrator' | translate}}
+              {{'universal_group_addAdministrator' | translate}}
             </div>
             <div style="margin-top: 15px" *ngIf="chooseLabels && chooseLabels.length > 0">
               <ng-container *ngFor="let label of chooseLabels;let _idx = index">
@@ -466,11 +486,11 @@
   </ng-container>
   <ng-container *ngIf="createType === 4 && !isShowCreateBrand">
     <button class="alatech-btn group-manage__btn"
-      title="{{ 'Dashboard.Group.create' | translate }}{{ 'Dashboard.Group.brand' | translate }}"
+      title="{{ 'universal_activityData_create' | translate }} {{ 'universal_group_brand' | translate }}"
       (click)="handleShowCreateBrand()"
       [disabled]="!commercePlan"
     >
-      {{ 'Dashboard.Group.create' | translate }}{{ 'Dashboard.Group.brand' | translate }}
+      {{ 'universal_activityData_create' | translate }} {{ 'universal_group_brand' | translate }}
     </button>
   </ng-container>
 </div> -->

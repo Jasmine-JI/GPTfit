@@ -1,21 +1,28 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '@shared/services/utils.service';
 import { SignupService } from '../../../services/signup.service';
+import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { UserInfoService } from '../../../../dashboard/services/userInfo.service';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 import { AuthService } from '@shared/services/auth.service';
 
-import { MatDialog } from '@angular/material';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+
+const errorMsg = 'Error!<br /> Please try again later.';
 
 @Component({
   selector: 'app-app-enable',
   templateUrl: './app-enable.component.html',
   styleUrls: ['./app-enable.component.scss']
 })
-export class AppEnableComponent implements OnInit, OnDestroy {
+export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  private ngUnsubscribe = new Subject();
 
   sending = false;
   ip = '';
@@ -35,7 +42,14 @@ export class AppEnableComponent implements OnInit, OnDestroy {
 
   phoneCaptcha = {
     cue: '',
-    value: ''
+    value: '',
+    placeholder: ''
+  };
+
+  logMessage = {
+    enable: '',
+    success: '',
+    confirm: ''
   };
 
   // 由email連結得到的參數
@@ -57,33 +71,42 @@ export class AppEnableComponent implements OnInit, OnDestroy {
   timeCount = 30;
   sendingPhoneCaptcha = false;
 
+  enableSuccess = false; // app v2上架後刪除
+
   constructor(
     private translate: TranslateService,
     private utils: UtilsService,
     private signupService: SignupService,
     private authService: AuthService,
+    private userProfileService: UserProfileService,
     private userInfoService: UserInfoService,
     private dialog: MatDialog,
     private router: Router,
     public getClientIp: GetClientIpService
-  ) { }
+  ) {
+    translate.onLangChange.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      this.createPlaceholder();
+    });
+  }
 
   ngOnInit() {
+    this.createPlaceholder();
+    this.getClientIpaddress();
+
     if (location.pathname.indexOf('web') > 0) {
       this.pcView = true;
       this.utils.setHideNavbarStatus(false);
     } else {
       this.pcView = false;
       this.utils.setHideNavbarStatus(true);
-      this.getDeviceSys();
     }
 
-    this.createPlaceholder();
     this.getUrlString(location.search);
     this.getUserInfo();
-    this.getClientIpaddress();
 
-    // 在首次登入頁面按下登出時，跳轉回登入頁-kidin-1090109(bug575)
+    // 按下登出時，跳轉回登入頁-kidin-1090109
     this.authService.getLoginStatus().subscribe(res => {
       if (res === false && this.pcView === true) {
         return this.router.navigateByUrl('/signIn-web');
@@ -92,11 +115,30 @@ export class AppEnableComponent implements OnInit, OnDestroy {
 
   }
 
+  /**
+   * 因應ios嵌入webkit物件時間點較後面，故在此生命週期才判斷裝置平台
+   * @author kidin-1090710
+   */
+  ngAfterViewInit () {
+    if (this.pcView === false) {
+      this.getDeviceSys();
+    }
+
+  }
+
   // 確認ngx translate套件已經載入再產生翻譯-kidin-1090430
   createPlaceholder () {
 
-    this.translate.get('hello.world').subscribe(() => {
-      this.phoneCaptcha.cue = this.translate.instant('other.smsVerificationInstructions');
+    this.translate.get('hello.world').pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      this.phoneCaptcha.placeholder = this.translate.instant('universal_userAccount_phoneCaptcha');
+      this.logMessage = {
+        enable: this.translate.instant('universal_deviceSetting_switch'),
+        success: this.translate.instant('universal_status_success'),
+        confirm: this.translate.instant('universal_operating_confirm')
+      };
+
     });
 
   }
@@ -159,10 +201,10 @@ export class AppEnableComponent implements OnInit, OnDestroy {
   // 使用token取得使用者帳號資訊-kidin-1090514
   getUserInfo () {
     const body = {
-      token: this.utils.getToken() || ''
+      token: this.appInfo.token || ''
     };
 
-    this.userInfoService.fetchUserInfo(body).subscribe(res => {
+    this.userProfileService.getUserProfile(body).subscribe(res => {
 
       const profile = res.userProfile;
       if (profile.email) {
@@ -194,15 +236,33 @@ export class AppEnableComponent implements OnInit, OnDestroy {
   // 返回app-kidin-1090513
   turnBack () {
     if (this.appInfo.sys === 1) {
-      (window as any).webkit.messageHandlers.closeWebView.postMessage();
+      (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
     } else if (this.appInfo.sys === 2) {
-      (window as any).android.closeWebView();
+      (window as any).android.closeWebView('Close');
     } else {
 
       if (this.pcView === true) {
         this.router.navigateByUrl('/signIn-web');
       } else {
         this.router.navigateByUrl('/signIn');
+      }
+
+    }
+
+  }
+
+  // 待app v2 上架後移除此function-kidin-1090803
+  turnFirstLoginOrBack () {
+    if (this.appInfo.sys === 1) {
+      (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
+    } else if (this.appInfo.sys === 2) {
+      (window as any).android.closeWebView('Close');
+    } else {
+
+      if (this.pcView === true) {
+        this.router.navigateByUrl('/firstLogin-web');
+      } else {
+        this.router.navigateByUrl('/firstLogin');
       }
 
     }
@@ -227,37 +287,37 @@ export class AppEnableComponent implements OnInit, OnDestroy {
       this.userInfoService.fetchEnableAccount(body, this.ip).subscribe(res => {
 
         const resultInfo = res.processResult;
-        if (
-          resultInfo.resultCode !== 200
-          && (resultInfo.apiReturnMessage === 'Found attack, update status to lock!' || resultInfo.apiReturnMessage === 'Found lock!')
-        ) {
-          const captchaBody = {
-            unlockFlow: 1,
-            imgLockCode: res.processResult.imgLockCode
-          };
+        if (resultInfo.resultCode !== 200) {
 
-          this.signupService.fetchCaptcha(captchaBody, this.ip).subscribe(captchaRes => {
-            this.imgCaptcha = {
-              show: true,
-              imgCode: `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`,
-              cue: '',
-              code: ''
-            };
-          });
+          switch (resultInfo.apiReturnMessage) {
+            case 'Found attack, update status to lock!':
+            case 'Found lock!':
+              const captchaBody = {
+                unlockFlow: 1,
+                imgLockCode: res.processResult.imgLockCode
+              };
 
-          this.sendingPhoneCaptcha = false;
+              this.signupService.fetchCaptcha(captchaBody, this.ip).subscribe(captchaRes => {
+                this.imgCaptcha = {
+                  show: true,
+                  imgCode: `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`,
+                  cue: '',
+                  code: ''
+                };
+              });
+
+              this.sendingPhoneCaptcha = false;
+              break;
+
+            default:
+              this.showMsgBox(errorMsg, true);
+              console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+              break;
+          }
+
         } else if (resultInfo.resultCode === 200) {
-          this.dialog.open(MessageBoxComponent, {
-            hasBackdrop: true,
-            disableClose: true,
-            data: {
-              title: 'Message',
-              body: this.translate.instant('other.sendSmsSuccess'),
-              confirmText: this.translate.instant(
-                'other.confirm'
-              )
-            }
-          });
+          const msg = this.translate.instant('universal_userAccount_sendSmsSuccess');
+          this.showMsgBox(msg, false);
 
           const btnInterval = setInterval(() => {
             this.timeCount--;
@@ -285,7 +345,7 @@ export class AppEnableComponent implements OnInit, OnDestroy {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
       const inputPhoneCaptcha = e.currentTarget.value;
       if (inputPhoneCaptcha.length < 6) {
-        this.phoneCaptcha.cue = this.translate.instant('Portal.errorCaptcha');
+        this.phoneCaptcha.cue = 'universal_userAccount_errorCaptcha';
       } else {
         this.phoneCaptcha.value = inputPhoneCaptcha;
         this.phoneCaptcha.cue = '';
@@ -300,7 +360,7 @@ export class AppEnableComponent implements OnInit, OnDestroy {
       const inputImgCaptcha = e.currentTarget.value;
 
       if (inputImgCaptcha.length === 0) {
-        this.imgCaptcha.cue = this.translate.instant('Portal.errorCaptcha');
+        this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
       } else {
         this.imgCaptcha.code = inputImgCaptcha;
         this.imgCaptcha.cue = '';
@@ -334,23 +394,46 @@ export class AppEnableComponent implements OnInit, OnDestroy {
 
         if (res.processResult.resultCode !== 200) {
           let msgBody;
-          if (
-            res.processResult.apiReturnMessage === `Post fail, parmameter 'project' or 'token' or 'userId' error.`
-            || res.processResult.apiReturnMessage === `Post fail, check 'userId' error with verification code.`
-          ) {
-            msgBody = this.translate.instant('Portal.errorCaptcha');
-          } else {
-            msgBody = 'Server error! Please try again later.';
+          switch (res.processResult.apiReturnMessage) {
+            case `Post fail, parmameter 'project' or 'token' or 'userId' error.`:
+            case `Post fail, check 'userId' error with verification code.`:
+              msgBody = this.translate.instant('universal_userAccount_errorCaptcha');
+              this.showMsgBox(msgBody, false);
+              break;
+            case 'Found attack, update status to lock!':
+            case 'Found lock!':
+              const captchaBody = {
+                unlockFlow: 1,
+                imgLockCode: res.processResult.imgLockCode
+              };
+
+              this.signupService.fetchCaptcha(captchaBody, this.ip).subscribe(captchaRes => {
+                this.imgCaptcha = {
+                  show: true,
+                  imgCode: `data:image/png;base64,${captchaRes.captcha.randomCodeImg}`,
+                  cue: '',
+                  code: ''
+                };
+              });
+
+              break;
+            default:
+              msgBody = errorMsg;
+              console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+              this.showMsgBox(errorMsg, true);
+              break;
           }
 
-          this.showMsgBox(msgBody, false);
         } else {
 
           if (this.accountInfo.type === 1) {
-            const msgBody = this.translate.instant('other.sendCaptchaChackEmail');
+            const msgBody = this.translate.instant('universal_userAccount_sendCaptchaChackEmail');
             this.showMsgBox(msgBody, true);
           } else {
-            const msgBody = `${this.translate.instant('other.switch')} ${this.translate.instant('Dashboard.MyDevice.success')}`;
+            this.enableSuccess = true; // app v2上架後刪除此行
+            const msgBody = `${this.logMessage.enable
+              } ${this.logMessage.success
+            }`;
             this.showMsgBox(msgBody, true);
           }
 
@@ -381,7 +464,26 @@ export class AppEnableComponent implements OnInit, OnDestroy {
         }
 
       } else {
-        this.imgCaptcha.cue = this.translate.instant('Portal.errorCaptcha');
+        switch (res.processResult.apiReturnMessage) {
+          case 'Found a wrong unlock key.':
+            this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
+            this.sending = false;
+            break;
+          default:
+            this.dialog.open(MessageBoxComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'Message',
+                body: `Error.<br />Please try again later.`,
+                confirmText: this.logMessage.confirm,
+                onConfirm: this.turnBack.bind(this)
+              }
+            });
+
+            console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+            break;
+        }
+
       }
 
     });
@@ -399,16 +501,19 @@ export class AppEnableComponent implements OnInit, OnDestroy {
 
         switch (res.processResult.apiReturnMessage) {
           case 'Enable account fail, account was enabled.':  // 已啟用後再次點擊啟用信件，則當作啟用成功-kidin-1090520
-            msgBody = `${this.translate.instant('other.switch')} ${this.translate.instant('Dashboard.MyDevice.success')}`;
+            msgBody = `${this.logMessage.enable} ${this.logMessage.success}`;
+            this.enableSuccess = true; // app v2上架後刪除此行
             break;
           default:
-            msgBody = 'Server error! Please try again later.';
+            msgBody = errorMsg;
+            console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
             break;
         }
 
-        this.showMsgBox(msgBody, false);
+        this.showMsgBox(msgBody, true);
       } else {
-        msgBody = `${this.translate.instant('other.switch')} ${this.translate.instant('Dashboard.MyDevice.success')}`;
+        this.enableSuccess = true; // app v2上架後刪除此行
+        msgBody = `${this.logMessage.enable} ${this.logMessage.success}`;
         this.showMsgBox(msgBody, true);
       }
 
@@ -422,18 +527,32 @@ export class AppEnableComponent implements OnInit, OnDestroy {
 
     if (navigate) {
 
-      this.dialog.open(MessageBoxComponent, {
-        hasBackdrop: true,
-        disableClose: true,
-        data: {
-          title: 'Message',
-          body: msg,
-          confirmText: this.translate.instant(
-            'other.confirm'
-          ),
-          onConfirm: this.turnBack.bind(this)
-        }
-      });
+      // 待app v2上架後移除此判斷-kidin-1090724
+      if (!this.pcView || this.enableSuccess) {
+        this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          disableClose: true,
+          data: {
+            title: 'Message',
+            body: msg,
+            confirmText: this.logMessage.confirm,
+            onConfirm: this.turnFirstLoginOrBack.bind(this)
+          }
+        });
+
+      } else {
+        this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          disableClose: true,
+          data: {
+            title: 'Message',
+            body: msg,
+            confirmText: this.logMessage.confirm,
+            onConfirm: () => this.router.navigateByUrl('/')
+          }
+        });
+
+      }
 
     } else {
 
@@ -443,9 +562,7 @@ export class AppEnableComponent implements OnInit, OnDestroy {
         data: {
           title: 'Message',
           body: msg,
-          confirmText: this.translate.instant(
-            'other.confirm'
-          )
+          confirmText: this.logMessage.confirm
         }
       });
 
@@ -456,6 +573,9 @@ export class AppEnableComponent implements OnInit, OnDestroy {
   // 離開頁面則取消隱藏navbar-kidin-1090514
   ngOnDestroy () {
     this.utils.setHideNavbarStatus(false);
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+
   }
 
 }

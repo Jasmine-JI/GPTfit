@@ -1,20 +1,26 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../../../shared/services/auth.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { SignupService } from '../../../services/signup.service';
+import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { UserInfoService } from '../../../../dashboard/services/userInfo.service';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { formTest } from '../../../models/form-test';
 
 @Component({
   selector: 'app-app-modifypw',
   templateUrl: './app-modifypw.component.html',
   styleUrls: ['./app-modifypw.component.scss']
 })
-export class AppModifypwComponent implements OnInit, OnDestroy {
+export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  readonly passwordReg = formTest.password;
 
   appSys = 0; // 0: web 1: ios 2: android
   dataIncomplete = true;
@@ -56,13 +62,18 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
     private utils: UtilsService,
     private authService: AuthService,
     private signupService: SignupService,
+    private userProfileService: UserProfileService,
     private userInfoService: UserInfoService,
     private router: Router,
     private snackbar: MatSnackBar,
-    private getClientIp: GetClientIpService
+    private getClientIp: GetClientIpService,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit() {
+    this.getUrlString(location.search);
+    this.getUserInfo();
+    this.getClientIpaddress();
 
     if (location.pathname.indexOf('web') > 0) {
       this.pcView = true;
@@ -70,12 +81,7 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
     } else {
       this.pcView = false;
       this.utils.setHideNavbarStatus(true);
-      this.getDeviceSys();
     }
-
-    this.getUrlString(location.search);
-    this.getUserInfo();
-    this.getClientIpaddress();
 
     // 在首次登入頁面按下登出時，跳轉回登入頁-kidin-1090109(bug575)
     this.authService.getLoginStatus().subscribe(res => {
@@ -83,6 +89,17 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
         return this.router.navigateByUrl('/signIn-web');
       }
     });
+
+  }
+
+  /**
+   * 因應ios嵌入webkit物件時間點較後面，故在此生命週期才判斷裝置平台
+   * @author kidin-1090710
+   */
+  ngAfterViewInit () {
+    if (this.pcView === false) {
+      this.getDeviceSys();
+    }
 
   }
 
@@ -133,7 +150,7 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
       token: this.utils.getToken() || ''
     };
 
-    this.userInfoService.fetchUserInfo(body).subscribe(res => {
+    this.userProfileService.getUserProfile(body).subscribe(res => {
 
       const profile = res.userProfile;
       if (profile.email) {
@@ -152,9 +169,9 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
   // 返回app-kidin-1090513
   turnBack () {
     if (this.appSys === 1) {
-      (window as any).webkit.messageHandlers.closeWebView.postMessage();
+      (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
     } else if (this.appSys === 2) {
-      (window as any).android.closeWebView();
+      (window as any).android.closeWebView('Close');
     } else {
       this.router.navigateByUrl('/dashboard/settings/account-info');
     }
@@ -188,10 +205,10 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
   checkPassword (e, obj) {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
       const inputPassword = e.currentTarget.value,
-            regPWD = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,20}$/;
+            regPWD = this.passwordReg;
 
       if (!regPWD.test(inputPassword)) {
-        this.cue[obj] = this.translate.instant('Portal.passwordFormat');
+        this.cue[obj] = 'universal_userAccount_passwordFormat';
       } else {
         this.editBody[obj] = inputPassword;
         this.cue[obj] = '';
@@ -217,7 +234,7 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
       const inputImgCaptcha = e.currentTarget.value;
 
       if (inputImgCaptcha.length === 0) {
-        this.imgCaptcha.cue = this.translate.instant('Portal.errorCaptcha');
+        this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
       } else {
         this.imgCaptcha.code = inputImgCaptcha;
         this.imgCaptcha.cue = '';
@@ -242,8 +259,29 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
           this.imgCaptcha.show = false;
           this.submit();
         } else {
-          this.imgCaptcha.cue = this.translate.instant('Portal.errorCaptcha');
-          this.sending = false;
+
+          switch (res.processResult.apiReturnMessage) {
+            case 'Found a wrong unlock key.':
+              this.imgCaptcha.cue = 'universal_userAccount_errorCaptcha';
+              this.sending = false;
+              break;
+            default:
+              this.dialog.open(MessageBoxComponent, {
+                hasBackdrop: true,
+                data: {
+                  title: 'Message',
+                  body: `Error.<br />Please try again later.`,
+                  confirmText: this.translate.instant(
+                    'universal_operating_confirm'
+                  ),
+                  onConfirm: this.turnBack.bind(this)
+                }
+              });
+
+              console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+              break;
+          }
+
         }
 
       });
@@ -261,7 +299,7 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
 
         switch (res.processResult.apiReturnMessage) {
           case 'Edit account fail, old password is not correct.':
-            this.cue.oldPassword = this.translate.instant('Portal.notSamePassword');
+            this.cue.oldPassword = 'universal_userAccount_notSamePassword';
             break;
           case 'Found attack, update status to lock!':
           case 'Found lock!':
@@ -276,6 +314,20 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
             });
 
             break;
+          default:
+            this.dialog.open(MessageBoxComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'Message',
+                body: `Error.<br />Please try again later.`,
+                confirmText: this.translate.instant(
+                  'universal_operating_confirm'
+                ),
+                onConfirm: this.turnBack.bind(this)
+              }
+            });
+
+            console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
         }
 
         this.sending = false;
@@ -287,7 +339,7 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
         this.sending = false;
 
         this.snackbar.open(
-          `${this.translate.instant('other.modify')} ${this.translate.instant('Dashboard.MyDevice.success')}`,
+          `${this.translate.instant('universal_operating_modify')} ${this.translate.instant('universal_status_success')}`,
           'OK',
           { duration: 1000 }
         );
@@ -302,12 +354,12 @@ export class AppModifypwComponent implements OnInit, OnDestroy {
 
   }
 
-  // 返回app並回傳新token-kidin-1090518
+  // 回傳新token-kidin-1090518
   finishEdit (token) {
     if (this.appSys === 1) {
-      (window as any).webkit.messageHandlers.refreshToken.postMessage(token);
+      (window as any).webkit.messageHandlers.returnToken.postMessage(token);
     } else if (this.appSys === 2) {
-      (window as any).android.refreshToken(token);
+      (window as any).android.returnToken(token);
     }
 
   }

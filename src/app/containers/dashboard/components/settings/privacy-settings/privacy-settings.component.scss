@@ -24,12 +24,14 @@
 .control-list {
   margin-bottom: 15px;
 }
-.ala-form__label.settings-item {
+
+.hint__section {
   margin-bottom: 10px;
   text-align: left;
   display: flex;
   flex-direction: row;
 }
+
 .ala-tab-group {
   .mat-tab-labels {
     justify-content: space-between;

@@ -6,18 +6,18 @@
       class="alatech-btn alatech-btn--default activty-btn"
       [class.active]="calendarType === 'week'"
       (click)="switchCalendar('week')"
-      >{{'other.week' | translate}}</button>
+      >{{'universal_time_week' | translate}}</button>
       <button
         type="button"
         class="alatech-btn alatech-btn--default activty-btn"
         [class.active]="calendarType === 'month'"
         (click)="switchCalendar('month')"
-      >{{'other.month' | translate}}</button>
+      >{{'universal_time_months' | translate}}</button>
       <button
         type="button"
         class="alatech-btn alatech-btn--default activty-btn"
         (click)="switchCalendar('today')"
-      >{{'other.today' | translate}}</button>
+      >{{'universal_time_today' | translate}}</button>
     </span>
     <div class="flexRow calendarRange" style="white-space: nowrap;">
       <button type="button" class="btn btn-default btn-sm move-day" (click)="switchCalendar('prev')">

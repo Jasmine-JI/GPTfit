@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation, Inject } from '@angular/core';
 import { EventEnrollService } from '../../services/event-enroll.service';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-today-loginner-win',
@@ -46,7 +46,7 @@ export class TodayLoginnerWinComponent implements OnInit {
     }
   }
   confirm() {
-    this.data.onConfirm(this.collectLists);
+    this.data.onConfirm(1, this.collectLists);
     this.dialog.closeAll();
   }
 }

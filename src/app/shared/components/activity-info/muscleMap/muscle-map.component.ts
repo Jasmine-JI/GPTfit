@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnChanges, AfterViewInit, Input } from '@angular/core';
 import { ActivityService } from '../../../services/activity.service';
 
 @Component({
@@ -6,19 +6,20 @@ import { ActivityService } from '../../../services/activity.service';
   templateUrl: './muscle-map.component.html',
   styleUrls: ['./muscle-map.component.scss']
 })
-export class MuscleMapComponent implements OnInit, AfterViewInit {
+export class MuscleMapComponent implements OnInit, OnChanges, AfterViewInit {
+  @Input() userWeight = 70; // 預設體重70kg
   mediumGrade = '50%';  // 中等強度設定-kidin-1081122
   highIntensityLevel = '100%';  // 高等強度設定-kidin-1081122
   proficiencyCoefficient = 2;  // 根據使用者熟練度不同而有不同係數-kidin-1081122
-  userWeight: number;
   colorSets = [];
   selectMaxOneRepMax = [];
   baseUrl = window.location.href;
 
-
   constructor(private activityService: ActivityService) {}
 
-  ngOnInit() {
+  ngOnInit() {}
+
+  ngOnChanges(): void {
     this.initMuscleMap();
     this.fixSvgUrls();
   }
@@ -275,7 +276,6 @@ export class MuscleMapComponent implements OnInit, AfterViewInit {
     const allMainPart = datas.infoDatas.weightTrainingInfo;
     for (let i = 0; i < allMainPart.length; i++) {
       const onePart = allMainPart[i];
-      this.userWeight = datas.userWeight;
       const trainingPart = onePart.muscle;
 
       // 計算該部位訓練程度-kidin-1081128

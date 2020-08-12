@@ -17,7 +17,7 @@
                 [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
               >
                 <mat-panel-title>
-                  <i class="icon-svg_web-icon_p1_002-trophy ala-sidenav-icon"></i>{{ "SH.leaderboard" | translate}}
+                  <i class="icon-svg_web-icon_p1_002-trophy ala-sidenav-icon"></i>{{ "universal_race_leaderboard" | translate}}
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <a
@@ -38,7 +38,7 @@
                 [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
               >
                 <mat-panel-title>
-                  <i class="icon-svg_web-icon_p1_003-peoples ala-sidenav-icon"></i>{{"Dashboard.timelyActivity" | translate}}
+                  <i class="icon-svg_web-icon_p1_003-peoples ala-sidenav-icon"></i>{{"universal_activityData_timelyActivity" | translate}}
                 </mat-panel-title>
               </mat-expansion-panel-header>
                 <!-- <li class="ala-sidenav-menu-item"
@@ -63,7 +63,7 @@
                 [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
               >
                 <mat-panel-title>
-                  <i class="icon-svg_web-icon_p1_036-friends ala-sidenav-icon"></i>{{"Dashboard.Group.group" | translate}}
+                  <i class="icon-svg_web-icon_p1_036-friends ala-sidenav-icon"></i>{{"universal_group_group" | translate}}
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <li class="ala-sidenav-menu-item"
@@ -71,14 +71,14 @@
                 [class.ala-sidenav-menu-item__active]="target === 10"
                 [routerLink]="['/dashboard/my-group-list']"
               >
-                {{"Dashboard.Group.MyGroup.myGroup" | translate}}
+                {{"universal_group_myGroup" | translate}}
               </li>
               <li class="ala-sidenav-menu-item"
                 (click)="chooseItem(17, sideNav)"
                 [class.ala-sidenav-menu-item__active]="target === 17"
                 [routerLink]="['/dashboard/group-search']"
               >
-                {{"Dashboard.Group.SearchGroup.searchGroup" | translate}}
+                {{"universal_group_searchGroup" | translate}}
               </li>
             </mat-expansion-panel>
           </mat-accordion>
@@ -87,14 +87,14 @@
             [class.ala-sidenav-menu-item__active]="target === 14"
             [routerLink]="['/dashboard/activity-list']"
           >
-            <i class="icon-svg_web-icon_p1_083-run ala-sidenav-icon"></i>{{"Dashboard.MyActivity.myActivities" | translate}}
+            <i class="icon-svg_web-icon_p1_083-run ala-sidenav-icon"></i>{{"universal_activityData_myActivities" | translate}}
           </li>
           <li class="ala-sidenav-item"
             (click)="chooseItem(15, sideNav)"
             [class.ala-sidenav-menu-item__active]="target === 15"
             [routerLink]="['/dashboard/device']"
           >
-            <i class="icon-svg_web-icon_p1_010-treadmill ala-sidenav-icon"></i>{{"Dashboard.MyDevice.myDevice" | translate }}
+            <i class="icon-svg_web-icon_p1_010-treadmill ala-sidenav-icon"></i>{{"universal_deviceSetting_myDevice" | translate }}
           </li>
           <mat-accordion multi="false">
             <mat-expansion-panel>
@@ -102,7 +102,7 @@
                 [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
               >
                 <mat-panel-title>
-                  <i class="icon-svg_web-icon_p1_037-chart ala-sidenav-icon"></i>{{"other.myReport" | translate}}
+                  <i class="icon-svg_web-icon_p1_037-chart ala-sidenav-icon"></i>{{"universal_group_myReport" | translate}}
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <li class="ala-sidenav-menu-item"
@@ -110,72 +110,72 @@
                 [class.ala-sidenav-menu-item__active]="target === 16"
                 [routerLink]="['/dashboard/sport-report']"
               >
-                {{"Dashboard.SportReport.sportReport" | translate }}
+                {{"universal_activityData_sportReport" | translate }}
               </li>
               <li class="ala-sidenav-menu-item"
                 (click)="chooseItem(23, sideNav)"
                 [class.ala-sidenav-menu-item__active]="target === 23"
                 [routerLink]="['/dashboard/life-tracking']"
               >
-                {{"other.lifeTracking" | translate}}
+                {{"universal_lifeTracking_lifeTracking" | translate}}
               </li>
             </mat-expansion-panel>
           </mat-accordion>
-          <mat-accordion multi="false" *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper">
+          <mat-accordion multi="false" *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30">
             <mat-expansion-panel [expanded]="target === 13">
               <mat-expansion-panel-header  class="ala-expansion-panel-header"
                 [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
               >
                 <mat-panel-title>
-                  <i class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"></i>{{"Dashboard.System.systemManagement" | translate }}
+                  <i class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"></i>{{"universal_system_systemManagement" | translate }}
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <li class="ala-sidenav-menu-item"
                 (click)="chooseItem(13, sideNav)"
                 [class.ala-sidenav-menu-item__active]="target === 13"
                 [routerLink]="['/dashboard/system/setting-member']"
-                *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper"
+                *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30"
               >
                 <!--  之後把font awesome 與material icon 擇一-->
-                {{"Dashboard.System.internalAdministrator" | translate }}
+                {{"universal_system_internalAdministrator" | translate }}
               </li>
               <li class="ala-sidenav-menu-item"
                 (click)="chooseItem(18, sideNav)"
                 [class.ala-sidenav-menu-item__active]="target === 18"
                 [routerLink]="['/dashboard/system/inner-test']"
-                *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer"
+                *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 29"
               >
                 <!--  之後把font awesome 與material icon 擇一-->
-                {{"Dashboard.System.rserGroupQuery" | translate }}
+                {{"universal_group_rserGroupQuery" | translate }}
               </li>
               <li class="ala-sidenav-menu-item"
                 (click)="chooseItem(19, sideNav)"
                 [class.ala-sidenav-menu-item__active]="target === 19"
                 [routerLink]="['/dashboard/system/inner-gpx']"
-                *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer"
+                *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 20"
               >
                 <!--  之後把font awesome 與material icon 擇一-->
-                {{"Dashboard.System.coordinateSystemConversion" | translate }}
+                {{"universal_system_coordinateSystemConversion" | translate }}
               </li>
               <li class="ala-sidenav-menu-item"
                 (click)="chooseItem(21, sideNav)"
                 [class.ala-sidenav-menu-item__active]="target === 21"
                 [routerLink]="['/dashboard/system/life-tracking']"
-                *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer"
+                *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 20"
               >
                 <!--  之後把font awesome 與material icon 擇一-->
-                {{"Dashboard.System.lifetrackingLog" | translate }}
+                {{"universal_system_lifetrackingLog" | translate }}
               </li>
             </mat-expansion-panel>
           </mat-accordion>
-          <mat-accordion multi="false" *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper">
+          <mat-accordion multi="false" *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30">
             <mat-expansion-panel [expanded]="target === 6 || target === 7 || target === 8|| target === 9">
               <mat-expansion-panel-header  class="ala-expansion-panel-header"
                 [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
               >
                 <mat-panel-title>
                   <!--  之後把font awesome 與material icon 擇一-->
-                  <i class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"></i>{{"Dashboard.System.racesManagement" | translate }}
+                  <i class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"></i>{{"universal_race_racesManagement" | translate }}
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <li class="ala-sidenav-menu-item"
@@ -183,7 +183,7 @@
                 [class.ala-sidenav-menu-item__active]="target === 6"
                 [routerLink]="['/dashboard/system/event-management']"
               >
-                {{"Dashboard.System.racesOverview" | translate }}
+                {{"universal_race_racesOverview" | translate }}
               </li>
 
               <li class="ala-sidenav-menu-item"
@@ -191,60 +191,60 @@
                 [class.ala-sidenav-menu-item__active]="target === 7"
                 [routerLink]="['/dashboard/system/event']"
               >
-                {{"Dashboard.System.createAndEditRaces" | translate }}
+                {{"universal_race_createAndEditRaces" | translate }}
               </li>
               <li class="ala-sidenav-menu-item"
                 (click)="chooseItem(8, sideNav)"
                 [class.ala-sidenav-menu-item__active]="target === 8"
                 [routerLink]="['/dashboard/system/event-calendar']"
               >
-                {{"Dashboard.System.racesLog" | translate }}
+                {{"universal_race_racesLog" | translate }}
               </li>
               <li class="ala-sidenav-menu-item"
                 (click)="chooseItem(9, sideNav)"
                 [class.ala-sidenav-menu-item__active]="target === 9"
                 [routerLink]="['/dashboard/system/leaderboard-settings']"
               >
-                {{"Dashboard.System.updateRanking" | translate }}
+                {{"universal_race_updateRanking" | translate }}
               </li>
             </mat-expansion-panel>
           </mat-accordion>
-          <mat-accordion multi="false" *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper">
+          <mat-accordion multi="false" *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30">
             <mat-expansion-panel [expanded]="target === 11 || target === 12 || target === 22">
               <mat-expansion-panel-header  class="ala-expansion-panel-header"
                 [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
               >
                 <mat-panel-title>
-                  <i class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"></i>{{"Dashboard.System.groupManagement" | translate }}
+                  <i class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"></i>{{"universal_group_groupManagement" | translate }}
                 </mat-panel-title>
               </mat-expansion-panel-header>
                 <li class="ala-sidenav-menu-item"
                   (click)="chooseItem(11, sideNav)"
                   [class.ala-sidenav-menu-item__active]="target === 11"
-                  *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper"
+                  *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30"
                   [routerLink]="['/dashboard/system/all-group-list']"
                 >
-                  {{"Dashboard.System.listAllGroups" | translate }}
+                  {{"universal_group_listAllGroups" | translate }}
                 </li>
                 <li class="ala-sidenav-menu-item"
                   (click)="chooseItem(12, sideNav)"
                   [class.ala-sidenav-menu-item__active]="target === 12"
-                  *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper"
+                  *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30"
                   [routerLink]="['/dashboard/system/create-brand-group']"
                 >
-                  {{"other.createGymGroup" | translate }}
+                  {{"universal_activityData_create" | translate }} {{"universal_group_gym" | translate }} {{"universal_group_group" | translate }}
                 </li>
                 <li class="ala-sidenav-menu-item"
                   (click)="chooseItem(22, sideNav)"
                   [class.ala-sidenav-menu-item__active]="target === 22"
-                  *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer || isMarketingDeveloper"
+                  *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30"
                   [routerLink]="['/dashboard/system/create-com-group']"
                 >
-                  {{"other.createComGroup" | translate }}
+                  {{"universal_activityData_create" | translate }} {{"universal_group_company" | translate }} {{"universal_group_group" | translate }}
                 </li>
             </mat-expansion-panel>
           </mat-accordion>
-          <mat-accordion multi="false" *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer  || isMarketingDeveloper">
+          <mat-accordion multi="false" *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30">
             <mat-expansion-panel [expanded]="target === 5">
               <mat-expansion-panel-header  class="ala-expansion-panel-header"
                 [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
@@ -252,24 +252,24 @@
                 <mat-panel-title>
                   <!--  之後把font awesome 與material icon 擇一-->
                   <i class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"></i>
-                  {{"Dashboard.System.deviceManagement" | translate }}
+                  {{"universal_deviceSetting_deviceManagement" | translate }}
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <li class="ala-sidenav-menu-item"
                 (click)="chooseItem(20, sideNav)"
                 [class.ala-sidenav-menu-item__active]="target === 20"
                 [routerLink]="['/dashboard/system/device-pair-management']"
-                *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer  || isMarketingDeveloper"
+                *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30"
               >
-                {{"Dashboard.System.deviceInquiry" | translate }}
+                {{"universal_deviceSetting_deviceInquiry" | translate }}
               </li>
               <li class="ala-sidenav-menu-item"
                 (click)="chooseItem(5, sideNav)"
                 [class.ala-sidenav-menu-item__active]="target === 5"
                 [routerLink]="['/dashboard/system/device_log']"
-                *ngIf="isSupervisor || isSystemDeveloper || isSystemMaintainer"
+                *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 20"
               >
-                {{"Dashboard.System.deviceLog" | translate }}
+                {{"universal_deviceSetting_deviceLog" | translate }}
               </li>
             </mat-expansion-panel>
           </mat-accordion>
@@ -281,8 +281,8 @@
           [ngClass]="footerAddClassName"
           [style.display]="isHideFooter ? 'none' : 'block'"
         >
-          {{'SH.footerAnnouncement' | translate}}
-          <div>{{'SH.version' | translate: {'version': version } }}</div>
+          {{'universal_vocabulary_footerAnnouncement' | translate: {'appName': 'Center' } }}
+          <div>{{'universal_ota_version' | translate}}: {{version}}</div>
         </div>
       </div>
     </mat-drawer>
@@ -303,13 +303,18 @@
             <div class="header-nav-item" id="dropdownMenu3" data-toggle="dropdown" aria-haspopup="true"
               aria-expanded="false">
               <div class="header-nav-item" style="margin-right: 10px">
-                {{ userName || '' }}
+                {{ userProfile.nickname || '' }}
               </div>
-              <div *ngIf="userPhoto"
-              [ngStyle]="{'background-image': 'url(' + userPhoto + updateQueryString + ')'}"
+              <img
+                [src]="userProfile.avatarUrl"
                 class="header-user-photo"
-              ></div>
-              <img *ngIf="!userPhoto" src="/assets/images/user.png" class="header-user-photo">
+                (error)="this.userProfile.avatarUrl='/assets/images/user2.png'"
+              >
+              <i
+                class="icon-svg_web-icon_p1_069-about"
+                style="color: #ff3838; font-size: 30px; position: absolute; right: -15px; bottom: 0px;"
+                *ngIf="accountStatus === 1"
+              ></i>
             </div>
             <div class="dropdown-menu dropdown-user-menu" [class.show]="isUserMenuShow"
                aria-labelledby="dropdownMenu3"
@@ -323,15 +328,18 @@
               </div>
               <div class="header-nav-menu-section">
                 <ul>
-                  <li (click)="goToUserProfile(userId)">
-                    {{ "Dashboard.info" | translate}}
+                  <li style="color: #ff3838; font-weight: bold;" [routerLink]="['/enableAccount-web']" *ngIf="accountStatus === 1">
+                    {{ "universal_deviceSetting_switch" | translate}} {{ "universal_userAccount_account" | translate}}
+                  </li>
+                  <li (click)="goToUserProfile(userProfile.userId)">
+                    {{ "universal_userProfile_info" | translate}}
                   </li>
                   <li [routerLink]="['/dashboard/settings']">
-                    {{ "Dashboard.accountManagement" | translate}}
+                    {{ "universal_system_accountManagement" | translate}}
                   </li>
                 </ul>
               </div>
-              <button class="dropdown-item" type="button" (click)="logout()">{{ "SH.logOut" | translate}}</button>
+              <button class="dropdown-item" type="button" (click)="logout()">{{ "universal_userAccount_logOut" | translate}}</button>
             </div>
           </div>
         </div>

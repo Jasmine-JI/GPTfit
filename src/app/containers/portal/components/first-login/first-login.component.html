@@ -2,7 +2,7 @@
   <div class="container" style="padding-top:63px">
     <div class="d-flex" style="flex-direction: column;align-items: center;;">
 
-      <div class="access-description"  innerHtml="{{ 'Portal.gptSlogan' | translate }}">
+      <div class="access-description"  innerHtml="{{ 'universal_app_gptSlogan' | translate }}">
       </div>
       <div class="access-panel">
         <header class="access-header">
@@ -20,10 +20,10 @@
           </div>
           <form [formGroup]="form" (ngSubmit)="submit(f)" #f="ngForm" novalidate>
             <div class="form-group">
-              <label for="exampleInputEmail1" class="access-text">{{'Dashboard.Settings.name' | translate}}
+              <label for="exampleInputEmail1" class="access-text">{{'universal_activityData_name' | translate}}
               </label>
               <input formControlName="userName" id="exampleInputEmail1" class="form-control"
-                placeholder="{{'Portal.enterInfo' | translate}}{{'Portal.nickname' | translate}}"
+                placeholder="{{'universal_userAccount_enterInfo' | translate: {'info': i18n.nickName} }}"
                 [maxlength]="24"
                 [attr.disabled]="isLogining ? '' : null"
                 (keyup)="handleDuplicateStatus($event)"
@@ -34,16 +34,16 @@
                 <span [style.visibility]="(!form.controls['userName'].valid && form.controls['userName'].touched) || (f.submitted && form.get('userName').hasError('required')) ? 'initial' : 'hidden'"
                   *ngIf="!isDuplicateName && (!tempDuplicateName || this.tempDuplicateName.length === 0)"
                 >
-                  {{'Portal.enterInfo' | translate}}{{'Portal.nickname' | translate}}
+                  {{'universal_userAccount_enterInfo' | translate: {'info': i18n.nickName} }}
                 </span>
                 <span *ngIf="isDuplicateName">
-                  {{'SH.registerNameExisting' | translate}}
+                  {{'universal_userAccount_registerNameExisting' | translate}}
                 </span>
               </div>
             </div>
             <div class="form-group form-group--half">
               <label  class="access-text">
-                {{'Dashboard.Settings.bodyHeight' | translate}}
+                {{'universal_userProfile_bodyHeight' | translate}}
               </label>
               <input formControlName="height"
                 type="number"
@@ -56,13 +56,13 @@
                 >
               <div class="form__message form__message--placeholder">
                 <span [style.visibility]="(form.controls['height'].hasError('required') && form.controls['height'].touched) || (f.submitted && form.get('height').hasError('required')) ? 'initial' : 'hidden'">
-                  {{'Portal.enterInfo' | translate}}{{'Portal.bodyHeight' | translate}}
+                  {{'universal_userAccount_enterInfo' | translate: {'info': i18n.bodyHeight} }}
                 </span>
               </div>
             </div>
             <div class="form-group form-group--half">
               <label  class="access-text">
-                {{'Dashboard.Settings.bodyWeight' | translate}}
+                {{'universal_userProfile_bodyWeight' | translate}}
               </label>
               <input formControlName="weight"
                 type="number"
@@ -75,24 +75,24 @@
                 >
               <div class="form__message form__message--placeholder"
                 [style.visibility]="(form.controls['weight'].hasError('required') && form.controls['weight'].touched) || (f.submitted && form.get('weight').hasError('required')) ? 'initial' : 'hidden'">
-                {{'Portal.enterInfo' | translate}}{{'Portal.bodyWeight' | translate}}
+                {{'universal_userAccount_enterInfo' | translate: {'info': i18n.bodyWeight} }}
               </div>
             </div>
             <div class="form-group form-group--half">
               <label  class="access-text">
-                {{'Dashboard.Settings.gender' | translate}}
+                {{'universal_userProfile_gender' | translate}}
               </label>
               <select formControlName="gender" class="form-field"
                 style="width: 100%;height:38px;background-color: #fff"
               >
-                <option value="0">{{'Dashboard.Settings.male' | translate}}</option>
-                <option value="1">{{'Dashboard.Settings.female' | translate}}</option>
+                <option value="0">{{'universal_userProfile_male' | translate}}</option>
+                <option value="1">{{'universal_userProfile_female' | translate}}</option>
                 <!-- <option value="2">無</option> -->
               </select>
             </div>
             <div class="form-group form-group--half">
               <label  class="access-text">
-                {{'Dashboard.Settings.birthday' | translate}}
+                {{'universal_userProfile_birthday' | translate}}
               </label>
               <mat-form-field style="max-width: 140px;">
                 <input matInput
@@ -106,7 +106,7 @@
               </mat-form-field>
             </div>
             <div class="auth-submit">
-              <app-confirm-button [className]="className" [content]="'SH.send' | translate" [disabled]="isLogining">
+              <app-confirm-button [className]="className" [content]="'universal_operating_send' | translate" [disabled]="isLogining">
               </app-confirm-button>
             </div>
           </form>

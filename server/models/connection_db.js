@@ -15,7 +15,7 @@ var connectInfo = {};
  console.log('address: ', address);
 if (address === '192.168.1.235' || address === '172.17.0.1') {
   connectInfo = {
-    host: "localhost",
+    host: "192.168.1.234",
     user: "root",
     password: "A1atech",
     database: "alatech",

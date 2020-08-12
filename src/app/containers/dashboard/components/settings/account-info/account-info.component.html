@@ -1,37 +1,46 @@
-<h3>{{'Dashboard.Settings.accountInformation' | translate}}</h3>
-<label class="ala-form__label settings-label">
-  {{'Portal.basicInformation' | translate}}
-</label>
+<h3>{{'universal_vocabulary_accountInformation' | translate}}</h3>
+<div class="flexRow">
+  <label class="ala-form__label settings-label">
+    {{'universal_userProfile_basicInformation' | translate}}
+  </label>
+  <span *ngIf="accountStatus === 1">
+    (<span style="color:#cb5e5e; text-decoration: underline;" (click)="navigateToAssignPage('/enableAccount-web')">
+      {{ 'universal_deviceSetting_switch' | translate }} {{'universal_userAccount_account' | translate}}
+    </span>)
+  </span>
+</div>
 <div class="ala-list__item">
   <label class="ala-form__label settings-item">
-    {{'Dashboard.Settings.account' | translate}}
+    {{'universal_userAccount_account' | translate}}
   </label>
   <div class="flexRow settings-control">
     <span style="color:#919191">
-      {{userData?.account}}
+      {{ account }}
     </span>
-    <span *ngIf="enableAccount">
-      (<a href="/enableAccount-web" style="color:#26abe3">
-        {{ 'other.switch' | translate }} {{'Dashboard.Settings.account' | translate}}
-      </a>)
+<!--
+    <span>
+      (<span style="color:#cb5e5e; text-decoration: underline;" (click)="navigateToAssignPage('/changeAccount-web')">
+        {{ 'universal_operating_edit' | translate }} {{'universal_userAccount_account' | translate}}
+      </span>)
     </span>
+-->
   </div>
 </div>
 <div class="ala-list__item">
-  <label class="ala-form__label settings-item">{{'Dashboard.Settings.password' | translate}}</label>
+  <label class="ala-form__label settings-item">{{'universal_userAccount_password' | translate}}</label>
   <div class="settings-control">
-    <span style="color:#cb5e5e;text-decoration: underline; cursor: pointer;" (click)="navigateToEditPwd()">
-      {{'Dashboard.Settings.changePassword' | translate}}
+    <span style="color:#cb5e5e;text-decoration: underline; cursor: pointer;" (click)="navigateToAssignPage('/editPassword-web')">
+      {{'universal_userProfile_changePassword' | translate}}
     </span>
   </div>
 </div>
 <hr>
 <label class="ala-form__label settings-label">
-  {{'Dashboard.Settings.application' | translate}}
+  {{'universal_deviceSetting_application' | translate}}
 </label>
 <div class="ala-list__item">
   <label class="ala-form__label settings-item">
-    {{'Dashboard.Settings.thirdPartyUsage' | translate}}
+    {{'universal_userProfile_thirdPartyUsage' | translate}}
   </label>
   <div class="settings-control">
     <span style="color:#26abe3">

@@ -69,7 +69,7 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() isPrint: boolean;
   @Input() type: string;
 
-  @ViewChild('container')
+  @ViewChild('container', {static: false})
   container: ElementRef;
 
   constructor(
@@ -90,7 +90,6 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
 
   // 初始化highChart-kidin-1081211
   initInfoHighChart () {
-    Highcharts.charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
     this.highestHRZoneValue = 0;
 
     const totalSecond = this.data.reduce((accumulator, current) => accumulator + current),
@@ -123,33 +122,32 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
 
       switch (highestHRZoneIndex) {
         case 0:
-          this.highestHRZone = this.translateService.instant('Dashboard.GroupClass.limit_generalZone');
+          this.highestHRZone = this.translateService.instant('universal_activityData_limit_generalZone');
           this.highestHRZoneColor = 'rgb(70, 156, 245)';
           break;
         case 1:
-          this.highestHRZone = this.translateService.instant('Dashboard.GroupClass.warmUpZone');
+          this.highestHRZone = this.translateService.instant('universal_activityData_warmUpZone');
           this.highestHRZoneColor = 'rgb(64, 218, 232)';
           break;
         case 2:
-          this.highestHRZone = this.translateService.instant('Dashboard.GroupClass.aerobicZone');
+          this.highestHRZone = this.translateService.instant('universal_activityData_aerobicZone');
           this.highestHRZoneColor = 'rgb(86, 255, 0)';
           break;
         case 3:
-          this.highestHRZone = this.translateService.instant('Dashboard.GroupClass.enduranceZone');
+          this.highestHRZone = this.translateService.instant('universal_activityData_enduranceZone');
           this.highestHRZoneColor = 'rgb(214, 207, 1)';
           break;
         case 4:
-          this.highestHRZone = this.translateService.instant('Dashboard.GroupClass.marathonZone');
+          this.highestHRZone = this.translateService.instant('universal_activityData_marathonZone');
           this.highestHRZoneColor = 'rgb(234, 164, 4)';
           break;
         case 5:
-          this.highestHRZone = this.translateService.instant('Dashboard.GroupClass.anaerobicZone');
+          this.highestHRZone = this.translateService.instant('universal_activityData_anaerobicZone');
           this.highestHRZoneColor = 'rgba(243, 105, 83)';
           break;
       }
 
-      const HRChartOptions = new ChartOptions(sportPercentageDataset),
-            HRChartDiv = this.container.nativeElement;
+      const HRChartOptions = new ChartOptions(sportPercentageDataset);
 
       HRChartOptions['series'][0].dataLabels = {
         enabled: true,
@@ -159,12 +157,12 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
       };
 
       HRChartOptions['xAxis'].categories = [
-        this.translateService.instant('Dashboard.GroupClass.limit_generalZone'),
-        this.translateService.instant('Dashboard.GroupClass.warmUpZone'),
-        this.translateService.instant('Dashboard.GroupClass.aerobicZone'),
-        this.translateService.instant('Dashboard.GroupClass.enduranceZone'),
-        this.translateService.instant('Dashboard.GroupClass.marathonZone'),
-        this.translateService.instant('Dashboard.GroupClass.anaerobicZone')
+        this.translateService.instant('universal_activityData_limit_generalZone'),
+        this.translateService.instant('universal_activityData_warmUpZone'),
+        this.translateService.instant('universal_activityData_aerobicZone'),
+        this.translateService.instant('universal_activityData_enduranceZone'),
+        this.translateService.instant('universal_activityData_marathonZone'),
+        this.translateService.instant('universal_activityData_anaerobicZone')
       ];
 
       HRChartOptions['yAxis'].labels = {
@@ -178,15 +176,11 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
         HRChartOptions['chart'].width = 540;
       }
 
-      // 根據圖表清單依序將圖表顯示出來-kidin-1081217
-      setTimeout(() => {
-        chart(HRChartDiv, HRChartOptions);
-      }, 200);
+      this.createChart(HRChartOptions);
 
     } else {
 
-      const HRChartOptions = new ChartOptions(sportPercentageDataset),
-            HRChartDiv = this.container.nativeElement;
+      const HRChartOptions = new ChartOptions(sportPercentageDataset);
 
       HRChartOptions['chart'] = {
         margin: [2, 0, 2, 0],
@@ -235,13 +229,22 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
       };
 
       HRChartOptions['chart'].zoomType = '';
-
-      // 根據圖表清單依序將圖表顯示出來-kidin-1081217
-      setTimeout(() => {
-        chart(HRChartDiv, HRChartOptions);
-      }, 200);
-
+      this.createChart(HRChartOptions);
     }
+
+  }
+
+  // 確認取得元素才建立圖表-kidin-1090706
+  createChart (option: ChartOptions) {
+
+    setTimeout (() => {
+      if (!this.container) {
+        this.createChart(option);
+      } else {
+        const chartDiv = this.container.nativeElement;
+        chart(chartDiv, option);
+      }
+    }, 200);
 
   }
 

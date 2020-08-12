@@ -10,7 +10,7 @@ import {
   SimpleChanges,
   OnDestroy
 } from '@angular/core';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { BehaviorSubject } from 'rxjs';
 import { ImageCroppedEvent } from 'ngx-image-cropper';
 import { ImageCropperComponent } from 'ngx-image-cropper';
 import { UtilsService } from '../../services/utils.service';
@@ -41,7 +41,7 @@ export class UploadFileComponent implements OnInit, OnChanges, OnDestroy {
   isImgUpLoading = false;
 
   @Output() onChange = new EventEmitter();
-  @ViewChild('fileUpload')
+  @ViewChild('fileUpload', {static: false})
   set lookUp(ref: any) {
     ref.nativeElement.value = null;
   }
@@ -66,7 +66,7 @@ export class UploadFileComponent implements OnInit, OnChanges, OnDestroy {
     this.handleChange(evt);
   }
 
-  @ViewChild(ImageCropperComponent)
+  @ViewChild(ImageCropperComponent, {static: false})
   imageCropper: ImageCropperComponent;
 
   constructor(
@@ -132,7 +132,7 @@ export class UploadFileComponent implements OnInit, OnChanges, OnDestroy {
   handleErrorMsg() {
     const { isTypeCorrect } = this.fileInformation;
     if (!isTypeCorrect) {
-      this.fileInformation.errorMsg = this.translate.instant('Dashboard.Group.GroupInfo.photoRestriction');
+      this.fileInformation.errorMsg = this.translate.instant('universal_status_photoRestriction');
     }
   }
 

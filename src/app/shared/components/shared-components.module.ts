@@ -99,7 +99,7 @@ import { CustomSelectComponent } from './custom-material/custom-select/custom-se
     DateRangePickerComponent,
     MuscleMapChartComponent,
     MuscleSvgIconComponent,
-    CustomSelectComponent
+    CustomSelectComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [

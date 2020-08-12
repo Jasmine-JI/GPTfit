@@ -7,6 +7,30 @@ import { PeopleSelectorWinComponent } from '../../components/people-selector-win
 import { HashIdService } from '@shared/services/hash-id.service';
 import { debounce } from '@shared/utils/';
 import { UserProfileService } from '@shared/services/user-profile.service';
+import { AuthService } from '../../../../shared/services/auth.service';
+import { Router } from '@angular/router';
+import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { TranslateService } from '@ngx-translate/core';
+import { last } from 'rxjs/operators';
+import * as moment from 'moment';
+
+const errorMsg = 'Error!<br />Please try again later.';
+
+interface UserInfo {
+  userName: string;
+  userId: number;
+  userPageLink: string;
+  userDeviceLog: string;
+  smallIcon: string;
+  middleIcon: string;
+  largeIcon: string;
+  email: string;
+  countryCode: string;
+  phone: string;
+  enableStatus: string;
+  lastLogin: string;
+  lastResetPwd: string;
+}
 
 @Component({
   selector: 'app-inner-test',
@@ -19,15 +43,32 @@ export class InnerTestComponent implements OnInit {
     private utils: UtilsService,
     public dialog: MatDialog,
     private hashIdService: HashIdService,
-    private userProfileService: UserProfileService
+    private userProfileService: UserProfileService,
+    private auth: AuthService,
+    private router: Router,
+    private translate: TranslateService
   ) {
     this.onGroupEncode = debounce(this.onGroupEncode, 1000);
     this.onGroupDecode = debounce(this.onGroupDecode, 1000);
   }
-  userName: string;
-  smallIcon: string;
-  middleIcon: string;
-  largeIcon: string;
+
+  userInfo: UserInfo = {
+    userName: '',
+    userId: null,
+    userPageLink: '',
+    userDeviceLog: '',
+    smallIcon: '',
+    middleIcon: '',
+    largeIcon: '',
+    email: '',
+    countryCode: '',
+    phone: '',
+    enableStatus: '',
+    lastLogin: '',
+    lastResetPwd: ''
+  };
+
+  nickname: string;
   smallIconWidth: number;
   smallIconHeight: number;
   middleIconWidth: number;
@@ -42,30 +83,59 @@ export class InnerTestComponent implements OnInit {
   hashGroupId: string;
   groupInfo: any;
   groupImg = '/assets/images/group-default.svg';
-  userImg = '/assets/images/user.png';
+  userImg = '/assets/images/user2.png';
   description: string;
   userId: string;
   hashUserId: string;
-  groupLevel: string;
+  groupLevel: number;
+  flag = 402;
 
   ngOnInit() {}
-  getUserAvartar(userId) {
+
+  /**
+   * 使用userId或帳號查詢使用者資訊
+   * @param userId {string}- userId或帳號
+   * @author kidin-1090806
+   */
+  getUserAvartar(userId: number): void {
     let params = new HttpParams();
     params = params.set('userId', userId.toString());
+
     this.groupService.fetchUserAvartar(params).subscribe(res => {
       if (res.resultCode === 200) {
-        this.userName = res.userName;
-        this.smallIcon = this.utils.buildBase64ImgString(res.smallIcon);
-        this.middleIcon = this.utils.buildBase64ImgString(res.middleIcon);
-        this.largeIcon = this.utils.buildBase64ImgString(res.largeIcon);
-        this.handleAvartarInfo(this.smallIcon, 1);
-        this.handleAvartarInfo(this.middleIcon, 2);
-        this.handleAvartarInfo(this.largeIcon, 3);
+
+        let lastResetPwd: string;
+        if (res.lastResetPwd !== null && res.lastResetPwd !== '') {
+          lastResetPwd = moment.unix(+res.lastResetPwd).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+        } else {
+          lastResetPwd = '未重設';
+        }
+
+        this.userInfo = {
+          userName: res.userName,
+          userId: userId,
+          userPageLink: `https://${location.hostname}/user-profile/${this.hashIdService.handleUserIdEncode(userId.toString())}`,
+          userDeviceLog: `https://${location.hostname}/dashboard/system/device_log/detail/${userId}`,
+          smallIcon: this.utils.buildBase64ImgString(res.smallIcon),
+          middleIcon: this.utils.buildBase64ImgString(res.middleIcon),
+          largeIcon: this.utils.buildBase64ImgString(res.largeIcon),
+          email: res.email,
+          countryCode: res.countryCode,
+          phone: res.phone,
+          enableStatus: res.enableStatus,
+          lastLogin: moment.unix(+res.lastLogin).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+          lastResetPwd: lastResetPwd
+        };
+
+        this.handleAvartarInfo(this.userInfo.smallIcon, 1);
+        this.handleAvartarInfo(this.userInfo.middleIcon, 2);
+        this.handleAvartarInfo(this.userInfo.largeIcon, 3);
       } else {
         this.isWrong = true;
       }
     });
   }
+
   handleAvartarInfo(icon, type) {
     const image = new Image();
     image.src = icon;
@@ -90,23 +160,46 @@ export class InnerTestComponent implements OnInit {
       }
     }, 500);
   }
-  openSelectorWin(e) {
+
+  /**
+   * 根據類別開啟選擇器頁面
+   * @param type {number}- 1: userId 2:帳號
+   * @param e {MouseEvent}
+   * @author kidin-1090806
+   */
+  openSelectorWin(type: number, e: MouseEvent): void {
     const adminLists = [];
     e.preventDefault();
     this.dialog.open(PeopleSelectorWinComponent, {
       hasBackdrop: true,
       data: {
         title: `人員選擇`,
+        type,
         adminLists,
         onConfirm: this.handleConfirm.bind(this),
         isInnerAdmin: true
       }
+
     });
+
   }
-  handleConfirm(_lists) {
-    const userIds = _lists.map(_list => _list.userId);
+
+  /**
+   * 點選確認後送出查詢
+   * @param _lists {array}
+   * @author kidin-1090806
+   */
+  handleConfirm(type: number, _lists: Array<any>): void {
+    let userIds: Array<number>;
+    if (type === 1) {
+      userIds = _lists.map(_list => _list.userId);
+    } else {
+      userIds = _lists.map(_list => _list.user_id);
+    }
+
     this.getUserAvartar(userIds[0]);
   }
+
   fetchGroupInfo() {
     if (
       this.groupId ===
@@ -129,26 +222,31 @@ export class InnerTestComponent implements OnInit {
       });
     }
   }
+
   fetchUserProfile() {
-    if (
-      this.userId === this.hashIdService.handleUserIdDecode(this.hashUserId) &&
-      this.hashUserId === this.hashIdService.handleUserIdEncode(this.userId)
-    ) {
+    if (this.userId || this.hashUserId) {
+
       const body = {
-        token: this.utils.getToken() || '',
-        targetUserId: this.userId || '',
-        avatarType: 2,
+        targetUserId: this.userId || this.hashIdService.handleUserIdDecode(this.hashUserId)
       };
-      this.userProfileService.getUserProfile(body).subscribe(res => {
-        const response: any = res;
-        const { name, nameIcon, description } = response.info;
-        this.description = description;
-        this.userName = name;
-        this.userImg = nameIcon
-          ? this.utils.buildBase64ImgString(nameIcon)
-          : '/assets/images/user.png';
+
+      this.userProfileService.getUserProfile(body).pipe(
+        last()
+      ).subscribe(res => {
+        if (res.processResult.resultCode !== 200) {
+          console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+        } else {
+          const response: any = res.userProfile;
+          const { nickname, avatarUrl, description } = response;
+          this.description = description;
+          this.nickname = nickname;
+          this.userImg = avatarUrl ? avatarUrl : '/assets/images/user2.png';
+        }
+
       });
+
     }
+
   }
   onGroupEncode(e) {
     this.hashGroupId = this.hashIdService.handleGroupIdEncode(e.target.value);
@@ -166,4 +264,41 @@ export class InnerTestComponent implements OnInit {
     this.userId = this.hashIdService.handleUserIdDecode(e.target.value);
     this.fetchUserProfile();
   }
+
+  // 顯示彈跳視窗訊息-kidin-1090518
+  showMsgBox (msg: string, navigate: boolean) {
+
+    if (navigate) {
+
+      this.dialog.open(MessageBoxComponent, {
+        hasBackdrop: true,
+        disableClose: true,
+        data: {
+          title: 'Message',
+          body: msg,
+          confirmText: this.translate.instant(
+            'universal_operating_confirm'
+          ),
+          onConfirm: this.router.navigateByUrl('/signIn-web')
+        }
+      });
+
+    } else {
+
+      this.dialog.open(MessageBoxComponent, {
+        hasBackdrop: true,
+        disableClose: true,
+        data: {
+          title: 'Message',
+          body: msg,
+          confirmText: this.translate.instant(
+            'universal_operating_confirm'
+          )
+        }
+      });
+
+    }
+
+  }
+
 }

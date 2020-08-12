@@ -106,7 +106,7 @@
 'finalEventDate': finalEventDate || 'Portal.FinalDayOfMonth' | translate}"
           >
             <!-- 本月進行的例行排行賽為
-            <span style="color: #157fcc;font-weight: 700">指定地圖{{ mapName }}{{ distance }}KM</span>
+            <span style="color: #157fcc;font-weight: 700">指定地圖{{ mapName }} {{ distance }}KM</span>
             <div>排行榜於每日06:00刷新，最終排名以{{ finalEventDate || '當月最後一日 23:59' }} 結算成績為主</div> -->
           </div>
           <div class="summary" *ngIf="isRealTime && tabIdx > 0">
@@ -124,7 +124,7 @@
           <span style="color: #008bcd;font-weight: 700"
            *ngIf="isRealTime && tabIdx > 0"
           >
-            {{ mapName | mapTranslate }}{{ distance }}KM
+            {{ mapName | mapTranslate }} {{ distance }}KM
           </span>
         </div>
         <div class="table-responsive">

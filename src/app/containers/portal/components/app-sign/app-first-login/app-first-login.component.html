@@ -2,82 +2,82 @@
   <div class="flexCol" style="align-items: center;">
     <div class="flexRow appHeader firstLogin-header" style="justify-content: center;">
       <span>
-        {{ 'Dashboard.info' | translate }}
+        {{ 'universal_userProfile_info' | translate }}
       </span>
       <span
         style="position: absolute; right:20px; cursor: pointer;"
-        [style.pointer-events]="sending || dataIncomplete ? 'none' : ''"
-        [style.color]="sending || dataIncomplete ? '#bde2f4' : '#23a0da'"
+        [style.pointer-events]="sending ? 'none' : ''"
+        [style.color]="sending ? '#bde2f4' : '#23a0da'"
         (click)="submit()"
-      >{{ 'SH.send' | translate }}</span>
+      >{{ 'universal_operating_send' | translate }}</span>
     </div>
     <div style="margin-top: 10px;">
       <app-upload-file
         [isUserAvastarMode]="true"
         [isImageFileMode]="true"
         [imageURL]="userImg"
-        [btnText]="'Dashboard.Group.GroupInfo.selectImg' | translate"
+        [btnText]="'universal_operating_selectImg' | translate"
         [accept]="acceptFileExtensions.join()"
         (onChange)="handleAttachmentChange($event)"
       ></app-upload-file>
     </div>
     <div class="flexCol appDiv" style="min-height: 70px;">
-      <span class="formTitle">{{ 'Dashboard.Settings.gender' | translate }}</span>
+      <span class="formTitle">{{ 'universal_userProfile_gender' | translate }}</span>
       <mat-radio-group [(ngModel)]="editBody.userProfile.gender" style="margin-top: 10px;">
         <mat-radio-button
           value="0"
           color="primary"
         >
-          {{'Dashboard.Settings.male' | translate}}
+          {{'universal_userProfile_male' | translate}}
         </mat-radio-button>
         <mat-radio-button
           value="1"
           color="primary"
           style="margin-left: 40px;"
         >
-          {{'Dashboard.Settings.female' | translate}}
+          {{'universal_userProfile_female' | translate}}
         </mat-radio-button>
       </mat-radio-group>
     </div>
     <div class="flexCol appDiv">
-      <span class="formTitle">{{ 'Dashboard.Settings.birthday' | translate }}</span>
+      <span class="formTitle">{{ 'universal_userProfile_birthday' | translate }}</span>
       <input
-        placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Dashboard.Settings.birthday' | translate }}, ex. 19910505"
+        placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.birthday } }}, ex. 19910505"
         maxlength="8"
         [(ngModel)]="editBody.userProfile.birthday"
-        (focusout)="checkBirthday($event)"
-        (keypress)="checkBirthday($event)"
+        (change)="checkBirthday($event)"
       />
-      <span class="formCue" *ngIf="cue.birthday !== ''">{{ cue.birthday }}</span>
+      <span class="formCue" *ngIf="cue.birthday !== ''">{{ cue.birthday | translate }}</span>
     </div>
     <div class="flexCol appDiv">
-      <span class="formTitle">{{ 'Dashboard.Settings.bodyHeight' | translate }}</span>
+      <span class="formTitle">{{ 'universal_userProfile_bodyHeight' | translate }}</span>
       <input
-        placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Dashboard.Settings.bodyHeight' | translate }}"
+        placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.bodyHeight } }}"
         maxlength="3"
         [(ngModel)]="editBody.userProfile.bodyHeight"
         (focusout)="checkBodyHeight($event)"
         (keypress)="checkBodyHeight($event)"
       />
-      <span class="formCue" *ngIf="cue.bodyHeight !== ''">{{ cue.bodyHeight }}</span>
+      <span class="formCue" *ngIf="cue.bodyHeight !== ''">{{ cue.bodyHeight | translate }}</span>
     </div>
     <div class="flexCol appDiv">
-      <span class="formTitle">{{ 'Dashboard.Settings.bodyWeight' | translate }}</span>
+      <span class="formTitle">{{ 'universal_userProfile_bodyWeight' | translate }}</span>
       <input
-        placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Dashboard.Settings.bodyWeight' | translate }}"
+        placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.bodyWeight } }}"
         maxlength="3"
         [(ngModel)]="editBody.userProfile.bodyWeight"
         (focusout)="checkBodyWeight($event)"
         (keypress)="checkBodyWeight($event)"
       />
-      <span class="formCue" *ngIf="cue.bodyWeight !== ''">{{ cue.bodyWeight }}</span>
+      <span class="formCue" *ngIf="cue.bodyWeight !== ''">{{ cue.bodyWeight | translate }}</span>
     </div>
     <button
       class="appview-btn"
-      [class.appview-btn-unclickable]="sending || dataIncomplete"
+      [class.appview-btn-unclickable]="sending"
       (click)="submit()"
     >
-      <span>{{ 'SH.send' | translate }}</span>
+      <span>{{ 'universal_operating_send' | translate }}</span>
+      <i *ngIf="sending" class="fa fa-spinner fa-pulse"></i>
     </button>
   </div>
 </ng-container>
@@ -95,77 +95,79 @@
                 [isUserAvastarMode]="true"
                 [isImageFileMode]="true"
                 [imageURL]="userImg"
-                [btnText]="'Dashboard.Group.GroupInfo.selectImg' | translate"
+                [btnText]="'universal_operating_selectImg' | translate"
                 [accept]="acceptFileExtensions.join()"
                 (onChange)="handleAttachmentChange($event)"
               ></app-upload-file>
             </div>
             <div class="flexCol webDiv">
-              <span class="access-text">{{ 'Portal.nickname' | translate }}</span>
+              <span class="access-text">{{ 'universal_userAccount_nickname' | translate }}</span>
               <span style="margin-top: 10px;">{{ nickName }}</span>
             </div>
             <div class="flexCol webDiv" style="min-height: 70px;">
-              <span class="access-text">{{ 'Dashboard.Settings.gender' | translate }}</span>
+              <span class="access-text">{{ 'universal_userProfile_gender' | translate }}</span>
               <mat-radio-group [(ngModel)]="editBody.userProfile.gender" style="margin-top: 10px;">
                 <mat-radio-button
                   value="0"
                   color="primary"
                 >
-                  {{'Dashboard.Settings.male' | translate}}
+                  {{'universal_userProfile_male' | translate}}
                 </mat-radio-button>
                 <mat-radio-button
                   value="1"
                   color="primary"
                   style="margin-left: 40px;"
                 >
-                  {{'Dashboard.Settings.female' | translate}}
+                  {{'universal_userProfile_female' | translate}}
                 </mat-radio-button>
               </mat-radio-group>
             </div>
             <div class="flexCol webDiv">
-              <span class="access-text">{{ 'Dashboard.Settings.birthday' | translate }}</span>
+              <span class="access-text">{{ 'universal_userProfile_birthday' | translate }}</span>
               <input
-                placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Dashboard.Settings.birthday' | translate }}, ex. 19910505"
+                placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.birthday} }}, ex. 19910505"
                 maxlength="8"
                 class="form-control"
                 [(ngModel)]="editBody.userProfile.birthday"
-                (focusout)="checkBirthday($event)"
-                (keypress)="checkBirthday($event)"
+                (keypress)="lockUnNum($event)"
+                (change)="checkBirthday($event)"
               />
-              <span class="form__message form__message--placeholder" *ngIf="cue.birthday !== ''">{{ cue.birthday }}</span>
+              <span class="form__message form__message--placeholder" *ngIf="cue.birthday !== ''">
+                {{ cue.birthday | translate }}
+              </span>
             </div>
             <div class="flexCol webDiv">
-              <span class="access-text">{{ 'Dashboard.Settings.bodyHeight' | translate }}</span>
+              <span class="access-text">{{ 'universal_userProfile_bodyHeight' | translate }}</span>
               <input
-                placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Dashboard.Settings.bodyHeight' | translate }}"
+                placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.bodyHeight} }}"
                 maxlength="3"
                 class="form-control"
                 [(ngModel)]="editBody.userProfile.bodyHeight"
                 (focusout)="checkBodyHeight($event)"
                 (keypress)="checkBodyHeight($event)"
               />
-              <span class="form__message form__message--placeholder" *ngIf="cue.bodyHeight !== ''">{{ cue.bodyHeight }}</span>
+              <span class="form__message form__message--placeholder" *ngIf="cue.bodyHeight !== ''">{{ cue.bodyHeight | translate }}</span>
             </div>
             <div class="flexCol webDiv">
-              <span class="access-text">{{ 'Dashboard.Settings.bodyWeight' | translate }}</span>
+              <span class="access-text">{{ 'universal_userProfile_bodyWeight' | translate }}</span>
               <input
-                placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Dashboard.Settings.bodyWeight' | translate }}"
+                placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.bodyWeight} }}"
                 maxlength="3"
                 class="form-control"
                 [(ngModel)]="editBody.userProfile.bodyWeight"
                 (focusout)="checkBodyWeight($event)"
                 (keypress)="checkBodyWeight($event)"
               />
-              <span class="form__message form__message--placeholder" *ngIf="cue.bodyWeight !== ''">{{ cue.bodyWeight }}</span>
+              <span class="form__message form__message--placeholder" *ngIf="cue.bodyWeight !== ''">{{ cue.bodyWeight | translate }}</span>
             </div>
             <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
               <button
                 class="btn btn-primary access-btn"
-                [class.appview-btn-unclickable]="sending || dataIncomplete"
-                [style.background]="sending || dataIncomplete ? '#2b819b54' : ''"
+                [class.appview-btn-unclickable]="sending"
+                [style.background]="sending ? '#2b819b54' : ''"
                 (click)="submit()"
               >
-                <span *ngIf="!sending">{{ 'SH.send' | translate }}</span>
+                <span *ngIf="!sending">{{ 'universal_operating_send' | translate }}</span>
                 <i *ngIf="sending" class="fa fa-spinner fa-pulse"></i>
               </button>
             </div>

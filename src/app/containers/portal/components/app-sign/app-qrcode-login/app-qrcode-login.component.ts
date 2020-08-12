@@ -1,14 +1,16 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 
 import { AuthService } from '../../../../../shared/services/auth.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { SignupService } from '../../../services/signup.service';
-import { UserInfoService } from '../../../../dashboard/services/userInfo.service';
+import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import * as moment from 'moment';
 
@@ -17,7 +19,8 @@ import * as moment from 'moment';
   templateUrl: './app-qrcode-login.component.html',
   styleUrls: ['./app-qrcode-login.component.scss']
 })
-export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
+export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy {
+  private ngUnsubscribe = new Subject();
 
   qrLoginStatus = 'check';  // check: 等待登入; logging：登入中; success： 成功;
   loggingDot = '';
@@ -30,6 +33,7 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
   callIpCount = 0;
   currentTimeStamp = moment().valueOf();
   pcView = false;
+  appSys = 0;
 
   userInfo = {
     icon: '',
@@ -46,7 +50,7 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private utils: UtilsService,
     private signupService: SignupService,
-    private userInfoService: UserInfoService,
+    private userProfileService: UserProfileService,
     private auth: AuthService,
     private dialog: MatDialog,
     private router: Router,
@@ -56,16 +60,43 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.loginBody.token = this.utils.getToken() || '';
     this.getClientIpaddress();
+    this.checkPage(location.pathname);
 
-    if (location.pathname === '/signInQrcode' || location.pathname === '/signInQrcode-web') {
+  }
 
-      if (location.pathname.indexOf('web') > 0) {
-        this.pcView = true;
-        this.utils.setHideNavbarStatus(false);
+  ngAfterViewInit() {
+    if (this.pcView === false) {
+      this.getAppId();
+    }
+
+  }
+
+  // 返回app-kidin-1090513
+  turnBack () {
+    if (this.appSys === 1) {
+      (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
+    } else if (this.appSys === 2) {
+      (window as any).android.closeWebView('Close');
+    } else {
+
+      if (this.pcView) {
+        this.router.navigateByUrl('/signIn-web');
       } else {
-        this.pcView = false;
-        this.utils.setHideNavbarStatus(true);
+        this.router.navigateByUrl('/signIn');
       }
+
+
+    }
+
+  }
+
+  /**
+   * 根據url顯示該頁面
+   * @param pathname {string}
+   * @author kidin-1090720
+   */
+  checkPage(pathname: string): void {
+    if (pathname === '/signInQrcode' || pathname === '/signInQrcode-web') {
 
       this.getClientIpaddress();
       this.displayPage = 'showQrcode';
@@ -74,8 +105,10 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
         this.createLoginQrcode();
         this.waitQrcodeLogin();
       } else {
-        this.translate.get('hello.world').subscribe(() => {
-          this.cue = this.translate.instant('custom.improperOpe');
+        this.translate.get('hello.world').pipe(
+          takeUntil(this.ngUnsubscribe)
+        ).subscribe(() => {
+          this.cue = 'universal_userAccount_improperOperation';
         });
 
       }
@@ -92,6 +125,26 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
         this.getUserInfo();
       }
 
+    }
+
+    if (pathname.indexOf('web') > 0) {
+      this.pcView = true;
+      this.utils.setHideNavbarStatus(false);
+    } else {
+      this.pcView = false;
+      this.utils.setHideNavbarStatus(true);
+    }
+
+  }
+
+  // 取得註冊來源平台、類型和ID-kidin-1090512
+  getAppId () {
+    if ((window as any).webkit) {
+      this.appSys = 1;
+    } else if ((window as any).android) {
+      this.appSys = 2;
+    } else {
+      this.appSys = 0;
     }
 
   }
@@ -137,10 +190,10 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
         this.utils.setLocalStorageObject('count', `${this.currentTimeStamp}1`);
         return true;
       } else if (count > 4) {  // 操作超過五次前端上鎖
-        this.cue = this.translate.instant('custom.improperOpe');
+        this.cue = 'universal_userAccount_improperOperation';
         return false;
       } else {
-        this.utils.setLocalStorageObject('count', `${timeStamp}${count + 1}`);
+        this.utils.setLocalStorageObject('count', `${timeStamp} ${count + 1}`);
         return true;
       }
 
@@ -172,12 +225,15 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
                 hasBackdrop: true,
                 data: {
                   title: 'Message',
-                  body: `Server error.<br />Please try again later.`,
+                  body: `Error.<br />Please try again later.`,
                   confirmText: this.translate.instant(
-                    'other.confirm'
-                  )
+                    'universal_operating_confirm'
+                  ),
+                  onConfirm: this.turnBack.bind(this)
                 }
               });
+
+              console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
               break;
 
           }
@@ -193,34 +249,29 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
 
               switch (response.processResult.apiReturnMessage) {
                 case 'Waiting for QR sign in time out.':
-                  this.cue = this.translate.instant('custom.idle');
+                  this.cue = 'universal_userAccount_idleForTooLong';
                   break;
                 default:
                   this.dialog.open(MessageBoxComponent, {
                     hasBackdrop: true,
                     data: {
                       title: 'Message',
-                      body: `Server error.<br />Please try again later.`,
+                      body: `Error.<br />Please try again later.`,
                       confirmText: this.translate.instant(
-                        'other.confirm'
-                      )
+                        'universal_operating_confirm'
+                      ),
+                      onConfirm: this.turnBack.bind(this)
                     }
                   });
+
+                  console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
                   break;
               }
 
             } else {
-              this.cue = this.translate.instant('Portal.signSuceesfully');
+              this.cue = 'universal_userAccount_signSuceesfully';
               const token = response.qrSignIn.token;
-              this.utils.writeToken(token);
-              this.auth.setLoginStatus(true);
-
-              if (this.auth.backUrl.length > 0) {
-                location.href = this.auth.backUrl;
-              } else {
-                location.href = '/dashboard';
-              }
-
+              this.userLogin(token);
             }
 
           });
@@ -229,6 +280,27 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
 
       });
     }
+  }
+
+  // 使用者登入-kidin-1090714
+  userLogin (token: string) {
+    if (this.appSys === 1) {
+      (window as any).webkit.messageHandlers.returnToken.postMessage(token);
+      (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
+    } else if (this.appSys === 2) {
+      (window as any).android.returnToken(token);
+      (window as any).android.closeWebView('Close');
+    } else {
+      this.utils.writeToken(token);
+      this.auth.setLoginStatus(true);
+      if (this.auth.backUrl.length > 0) {
+        location.href = this.auth.backUrl;
+      } else {
+        location.href = '/dashboard';
+      }
+
+    }
+
   }
 
   // 取得url query string-kidin-1090514
@@ -255,7 +327,7 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
       token: this.utils.getToken() || ''
     };
 
-    this.userInfoService.fetchUserInfo(body).subscribe(res => {
+    this.userProfileService.getUserProfile(body).subscribe(res => {
       const profile = res.userProfile;
       this.userInfo.name = profile.nickname;
       this.userInfo.icon = `${profile.avatarUrl}?${profile.editTimestamp}`;
@@ -275,7 +347,7 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
           title: 'Message',
           body: `Guid Error`,
           confirmText: this.translate.instant(
-            'other.confirm'
+            'universal_operating_confirm'
           )
         }
       });
@@ -293,7 +365,7 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
                   title: 'Message',
                   body: `Guid Error`,
                   confirmText: this.translate.instant(
-                    'other.confirm'
+                    'universal_operating_confirm'
                   )
                 }
               });
@@ -304,12 +376,15 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
                 hasBackdrop: true,
                 data: {
                   title: 'Message',
-                  body: `${this.translate.instant('SH.logIn')} ${this.translate.instant('Dashboard.MyDevice.failure')}`,
+                  body: `Error.<br />Please try again later.`,
                   confirmText: this.translate.instant(
-                    'other.confirm'
-                  )
+                    'universal_operating_confirm'
+                  ),
+                  onConfirm: this.turnBack.bind(this)
                 }
               });
+
+              console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
               break;
 
           }
@@ -342,14 +417,11 @@ export class AppQrcodeLoginComponent implements OnInit, OnDestroy {
 
   }
 
-  // 不登入並導回登入頁2-kidin-1090525
-  cancelLogin () {
-    this.router.navigateByUrl('/signIn');
-  }
-
   // 離開頁面則取消隱藏navbar-kidin-1090514
   ngOnDestroy () {
     this.utils.setHideNavbarStatus(false);
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
 }

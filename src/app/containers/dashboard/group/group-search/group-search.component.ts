@@ -6,13 +6,9 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import { GroupService } from '../../services/group.service';
-import {
-  MatTableDataSource,
-  MatPaginator,
-  PageEvent,
-  MatSort,
-  Sort
-} from '@angular/material';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSort, Sort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/observable/fromEvent';
@@ -27,9 +23,9 @@ import { HashIdService } from '@shared/services/hash-id.service';
   encapsulation: ViewEncapsulation.None
 })
 export class GroupSearchComponent implements OnInit {
-  // to fixed
-  groupLevel = '130'; //  Type 'string | string[]' is not assignable to type 'string'.  所以暫時先用any，之後找原因
-  searchWords: any; //  Type 'string | string[]' is not assignable to type 'string'.  所以暫時先用any，之後找原因
+
+  groupLevel = '130';
+  searchWords: String | string[];
   token: string;
   logSource = new MatTableDataSource<any>();
   totalCount: number;
@@ -40,11 +36,11 @@ export class GroupSearchComponent implements OnInit {
   isEmpty = true;
   isLoading = false;
 
-  @ViewChild('paginator')
+  @ViewChild('paginator', {static: true})
   paginator: MatPaginator;
-  @ViewChild('sortTable')
+  @ViewChild('sortTable', {static: false})
   sortTable: MatSort;
-  @ViewChild('filter')
+  @ViewChild('filter', {static: false})
   filter: ElementRef;
   constructor(
     private groupService: GroupService,
@@ -89,6 +85,7 @@ export class GroupSearchComponent implements OnInit {
       page: (this.currentPage && this.currentPage.pageIndex.toString()) || '0',  // 修復點選下一頁清單卻沒有改變的問題-kidin-1081205(Bug 956)
       pageCounts: (this.currentPage && this.currentPage.pageSize.toString()) || '10'  // 修復每頁顯示項數失效的問題-kidin-1081205(Bug 956)
     };
+
     if (this.searchWords && this.searchWords.length > 0) {
       this.isLoading = true;
       this.groupService.fetchGroupList(body).subscribe(res => {
@@ -103,7 +100,7 @@ export class GroupSearchComponent implements OnInit {
         const url =
           '/dashboard/group-search?' +
           `pageNumber=${this.currentPage.pageIndex +
-            1}&searchWords=${this.searchWords.trim()}` +
+            1}&searchWords=${(this.searchWords as string).trim()}` +
           `&groupLevel=${this.groupLevel}`;
         this.router.navigateByUrl(url);
       });

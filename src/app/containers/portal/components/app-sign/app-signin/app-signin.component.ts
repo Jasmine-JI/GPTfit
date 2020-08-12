@@ -4,8 +4,10 @@ import { UtilsService } from '@shared/services/utils.service';
 import { AuthService } from '../../../../../shared/services/auth.service';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 
+import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { formTest } from '../../../models/form-test';
 
 @Component({
   selector: 'app-app-signin',
@@ -14,8 +16,15 @@ import { MatDialog } from '@angular/material';
 })
 export class AppSigninComponent implements OnInit, OnDestroy {
 
+  readonly formReg = formTest;
+
+  subscription: Subscription[] = [];
+  i18n = {
+    account: '',
+    email: '',
+    password: ''
+  };
   loginStatus = 'check';  // check: 等待登入; logging：登入中; success： 成功;
-  loggingDot = '';
   isKeyin = false;
   displayPW = false;
   dataIncomplete = true;
@@ -31,11 +40,11 @@ export class AppSigninComponent implements OnInit, OnDestroy {
   selectLists = [
     {
       name: 'email',
-      i18nKey: 'Portal.email'
+      i18nKey: 'universal_userAccount_email'
     },
     {
       name: 'phone',
-      i18nKey: 'Portal.phone'
+      i18nKey: 'universal_userAccount_phone'
     }
   ];
 
@@ -57,7 +66,6 @@ export class AppSigninComponent implements OnInit, OnDestroy {
   };
 
   cue = {
-    account: '',
     email: '',
     password: '',
     signResult: ''
@@ -65,12 +73,12 @@ export class AppSigninComponent implements OnInit, OnDestroy {
 
   // 驗證用
   regCheck = {
-    email: /^.{1,63}@[a-zA-Z0-9]{2,63}.[a-zA-Z]{2,63}(.[a-zA-Z]{2,63})?$/,
+    email: this.formReg.email,
     emailPass: false,
-    phone: /^([1-9][0-9]+)$/,
+    phone: this.formReg.phone,
     phonePass: false,
     countryCodePass: false,
-    password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,20}$/,
+    password: this.formReg.password,
     passwordPass: false
   };
 
@@ -80,9 +88,19 @@ export class AppSigninComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private dialog: MatDialog,
     private router: Router
-  ) {}
+  ) {
+    // 當語系變換就重新取得翻譯-kidin-1090720
+    this.subscription.push(
+      this.translate.onLangChange.subscribe(() => {
+        this.getTranslate();
+      })
+
+    );
+
+  }
 
   ngOnInit() {
+    this.getTranslate();
 
     if (location.pathname.indexOf('web') > 0) {
       this.pcView = true;
@@ -94,6 +112,26 @@ export class AppSigninComponent implements OnInit, OnDestroy {
 
   }
 
+  // 取得多國語系翻譯-kidin-1090620
+  getTranslate () {
+    this.subscription.push(
+        this.translate.get([
+        'universal_userAccount_account',
+        'universal_userAccount_email',
+        'universal_userAccount_password'
+      ]).subscribe(res => {
+        this.i18n = {
+          account: res['universal_userAccount_account'],
+          email: res['universal_userAccount_email'],
+          password: res['universal_userAccount_password']
+        };
+
+      })
+
+    );
+
+  }
+
   // 返回app-kidin-1090513
   turnBack () {
     this.router.navigateByUrl('/');
@@ -101,7 +139,6 @@ export class AppSigninComponent implements OnInit, OnDestroy {
 
   // 判斷使用者輸入的帳號切換帳號類型-kidin-1090518
   determineAccountType (e) {
-
     const account = e.target.value,
           numReg = /^([0-9]*)$/;
     if (account.length !== 0) {
@@ -161,18 +198,16 @@ export class AppSigninComponent implements OnInit, OnDestroy {
 
   // 確認使用者信箱格式-kidin-1090511
   checkEmail (e) {
-    if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout' || e.type === undefined) {
-      const inputEmail = e.currentTarget.value;
+    this.loginBody.email = e.currentTarget.value;
 
-      if (inputEmail.length === 0 || !this.regCheck.email.test(inputEmail)) {
-        this.cue.email = this.translate.instant('Portal.emailFormat');
-        this.regCheck.emailPass = false;
-      } else {
-        this.loginBody.email = inputEmail;
-        this.cue.email = '';
-        this.regCheck.emailPass = true;
-      }
+    if (this.loginBody.email.length === 0 || !this.regCheck.email.test(this.loginBody.email)) {
+      this.cue.email = 'universal_userAccount_emailFormat';
+      this.regCheck.emailPass = false;
+    } else {
+      this.cue.email = '';
+      this.regCheck.emailPass = true;
     }
+
 
     this.checkAll();
   }
@@ -223,13 +258,12 @@ export class AppSigninComponent implements OnInit, OnDestroy {
   // 確認密碼格式-kidin-1090511
   checkPassword (e) {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
-      const inputPassword = e.currentTarget.value;
+      this.loginBody.password = e.currentTarget.value;
 
-      if (!this.regCheck.password.test(inputPassword)) {
-        this.cue.password = this.translate.instant('Portal.passwordFormat');
+      if (!this.regCheck.password.test(this.loginBody.password)) {
+        this.cue.password = 'universal_userAccount_passwordFormat';
         this.regCheck.passwordPass = false;
       } else {
-        this.loginBody.password = inputPassword;
         this.cue.password = '';
         this.regCheck.passwordPass = true;
       }
@@ -240,7 +274,6 @@ export class AppSigninComponent implements OnInit, OnDestroy {
 
   // 確認是否所有欄位皆已完成-kidin-1090512
   checkAll () {
-
     if (!this.regCheck.passwordPass) {
       this.dataIncomplete = true;
     } else {
@@ -257,71 +290,81 @@ export class AppSigninComponent implements OnInit, OnDestroy {
 
   }
 
-  // 登入-kidin-1090527
-  login () {
-    this.loginStatus = 'logging';
-    this.processingDot();
+  /**
+   * 針對自動填入多檢查一次
+   * @returns boolean
+   * @author -kidin-1090810
+   */
+  doulbleCheck(): boolean {
 
-    this.authService.loginServerV2(this.loginBody).subscribe(res => {
+    let pass = true;
+    if (!this.formReg.password.test(this.loginBody.password)) {
+      pass = false;
+    }
 
-      if (res.processResult.resultCode === 200) {
-        this.cue.signResult = '';
-        const token = res.signIn.token;
-        this.utils.writeToken(token);
-        this.authService.setLoginStatus(true);
-        this.loginStatus = 'success';
+    if (this.formReg.email.test(this.loginBody.email)) {
+      this.loginBody.signInType = 1;
+    } else if (this.formReg.phone.test(this.loginBody.phone)) {
+      this.loginBody.signInType = 2;
+    } else {
+      pass = false;
+    }
 
-        if (res.signIn.counter <= 1) {
-          this.router.navigateByUrl('/firstLogin');
-        } else if (this.authService.backUrl.length > 0) {
-          location.href = this.authService.backUrl; // 為了讓登入的api request payload清除掉
-        } else {
-          location.href = '/dashboard'; // 為了讓登入的api request payload清除掉
-        }
-
-      } else {
-
-        switch (res.processResult.apiReturnMessage) {
-          case 'Sign in fail, found error mobile number or country code.':
-          case 'Sign in fail, found error email.':
-          case 'Sign in fail, found error password.':
-            this.cue.signResult = this.translate.instant('other.errorAccountPassword');
-            break;
-          default:
-            this.dialog.open(MessageBoxComponent, {
-              hasBackdrop: true,
-              data: {
-                title: 'Message',
-                body: `Server error.<br />Please try again later.`,
-                confirmText: this.translate.instant(
-                  'other.confirm'
-                )
-              }
-            });
-            break;
-        }
-
-        this.loginStatus = 'check';
-      }
-
-    });
-
+    return pass;
   }
 
-  // 登入中按鈕顯示動態效果-kidin-1090525
-  processingDot () {
-    const dot = setInterval(() => {
-      this.loggingDot += '.';
-      if (this.loggingDot === '....' || this.loginStatus === 'check' || this.loginStatus === 'success') {
-        this.loggingDot = '';
+  // 登入-kidin-1090527
+  login () {
+    this.checkAll();
+    if (this.doulbleCheck() || this.dataIncomplete === false) {
+      this.loginStatus = 'logging';
+      this.authService.loginServerV2(this.loginBody).subscribe(res => {
 
-        if (this.loginStatus === 'check' || this.loginStatus === 'success') {
-          window.clearInterval(dot as any);
+        if (res.processResult.resultCode === 200) {
+          this.cue.signResult = '';
+          const token = res.signIn.token;
+          this.utils.writeToken(token);
+          this.authService.setLoginStatus(true);
+          this.loginStatus = 'success';
+
+          if (res.signIn.counter <= 1) {
+            this.router.navigateByUrl('/firstLogin-web');
+          } else if (this.authService.backUrl.length > 0) {
+            location.href = this.authService.backUrl; // 為了讓登入的api request payload清除掉
+          } else {
+            location.href = '/dashboard'; // 為了讓登入的api request payload清除掉
+          }
+
+        } else {
+
+          switch (res.processResult.apiReturnMessage) {
+            case 'Sign in fail, found error mobile number or country code.':
+            case 'Sign in fail, found error email.':
+            case 'Sign in fail, found error password.':
+              this.cue.signResult = 'universal_userAccount_errorAccountPassword';
+              break;
+            default:
+              this.dialog.open(MessageBoxComponent, {
+                hasBackdrop: true,
+                data: {
+                  title: 'Message',
+                  body: `Error.<br />Please try again later.`,
+                  confirmText: this.translate.instant(
+                    'universal_operating_confirm'
+                  ),
+                  onConfirm: this.turnBack.bind(this)
+                }
+              });
+
+              break;
+          }
+
+          this.loginStatus = 'check';
         }
 
-      }
+      });
 
-    }, 500);
+    }
 
   }
 
@@ -340,19 +383,26 @@ export class AppSigninComponent implements OnInit, OnDestroy {
   showPrivateMsg(e) {
     e.preventDefault();
     let text = '';
-    text = `${this.translate.instant('Portal.clauseContentPage1')}
-    <a target="_blank"href="https://www.alatech.com.tw/action-copyright.htm">『${this.translate.instant('Portal.clause')}』</a>
-    、 <a target="_blank" href="https://www.alatech.com.tw/action-privacy.htm">『${this.translate.instant('Portal.privacyStatement')}』</a>
-    ${this.translate.instant('Portal.clauseContentPage2')}`.replace(/\n/gm, '');
+    text = `${this.translate.instant('universal_userAccount_clauseContentPage1')}
+    <a target="_blank"href="https://www.alatech.com.tw/action-copyright.htm">『${this.translate.instant('universal_userAccount_clause')}』</a>
+    、 <a target="_blank" href="https://www.alatech.com.tw/action-privacy.htm">『${this.translate.instant('universal_userAccount_privacyStatement')}』</a>
+    ${this.translate.instant('universal_userAccount_clauseContentPage2')}`.replace(/\n/gm, '');
 
-    let title,
-        confirmText,
-        cancelText;
-    this.translate.get(['Portal.clause', 'SH.agree', 'SH.disagree']).subscribe(translation => {
-        title = translation['Portal.clause'];
-        confirmText = translation['SH.agree'];
-        cancelText = translation['SH.disagree'];
-    });
+    let title: string,
+        confirmText: string,
+        cancelText: string;
+
+     this.subscription.push(this.translate.get([
+        'universal_userAccount_clause',
+        'universal_operating_agree',
+        'universal_operating_disagree'
+      ]).subscribe(res => {
+        title = res['universal_userAccount_clause'];
+        confirmText = res['universal_operating_agree'];
+        cancelText = res['universal_operating_disagree'];
+      })
+
+     );
 
     this.dialog.open(MessageBoxComponent, {
       hasBackdrop: true,
@@ -375,6 +425,7 @@ export class AppSigninComponent implements OnInit, OnDestroy {
   // 離開頁面則取消隱藏navbar和清除Interval-kidin-1090514
   ngOnDestroy () {
     this.utils.setHideNavbarStatus(false);
+    this.subscription.forEach(_subscription => _subscription.unsubscribe());
   }
 
 }

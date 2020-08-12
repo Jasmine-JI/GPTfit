@@ -7,20 +7,20 @@
         (click)="turnBack()"
       ></i>
       <span class="appview-header appview-header-position">
-        {{ 'other.modify' | translate }} {{ 'Portal.account' | translate }}
+        {{ 'universal_operating_modify' | translate }} {{ 'universal_userAccount_account' | translate }}
       </span>
     </div>
     <div class="flexCol appDiv" style="min-height: initial;">
-      <span class="app-alert" style="font-size: 20px; font-weight: bold;">{{ 'custom.changeAccount' | translate }}</span>
+      <span class="app-alert" style="font-size: 20px; font-weight: bold;">{{ 'universal_userAccount_changingAccount' | translate }}</span>
       <span style="font-size: 14px; font-weight: bold;">{{ accountInfo.oldAccount }}</span>
     </div>
     <div class="flexCol" style="margin-top: 10px;">
       <div class="flexCol appDiv">
-        <span class="formTitle">{{ 'Portal.password' | translate }}</span>
+        <span class="formTitle">{{ 'universal_userAccount_password' | translate }}</span>
         <input
           type="password"
           id="signupPW"
-          placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Portal.password' | translate }}"
+          placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.password} }}"
           maxlength="20"
           [(ngModel)]="editBody.oldPassword"
           (focusout)="checkPassword($event)"
@@ -31,10 +31,10 @@
           [style.color]="displayPW ? 'black' : '#aaaaaa'"
           (click)="toggleDisplayPW()"
         ></i>
-        <span class="formCue" *ngIf="cue.password !== ''">{{ cue.password }}</span>
+        <span class="formCue" *ngIf="cue.password !== ''">{{ cue.password | translate }}</span>
       </div>
       <div class="flexCol app-alert" style="margin: 0 auto; align-items: center;">
-        <span>{{ 'custom.newAccountWellBe' | translate }}</span>
+        <span>{{ 'universal_userAccount_accountChanged' | translate }}</span>
         <span
           class="icon-svg_web-icon_p1_073-level_fold"
           style="width:20px; font-size: 50px; transform: rotate(270deg); margin-top: 10px;"
@@ -52,7 +52,7 @@
         <div>
           <input
             style="width: 100%;"
-            placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Portal.email' | translate }}"
+            placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.email} }}"
             (focusout)="checkEmail($event)"
             (keypress)="checkEmail($event)"
             *ngIf="editBody.newAccountType === 1"
@@ -68,13 +68,18 @@
             style="width: 100%;"
           ></app-intl-phone-input>
         </div>
-        <span class="formCue" *ngIf="editBody.newAccountType === 1 && cue.email !== ''">{{ cue.email }}</span>
+        <span class="formCue" *ngIf="editBody.newAccountType === 1 && cue.email !== '' && cue.email !== 'accountRepeat'">
+          {{ cue.email | translate }}
+        </span>
+        <span class="formCue" *ngIf="editBody.newAccountType === 1 && cue.email !== '' && cue.email === 'accountRepeat'">
+          {{ 'universal_userAccount_account' | translate }} {{ 'universal_deviceSetting_repeat' | translate }}
+        </span>
       </div>
       <div
         class="flexCol appDiv"
         [style.display]="imgCaptcha.show ? '' : 'none'"
       >
-        <span class="formTitle">{{ 'Portal.imgCaptcha' | translate }}</span>
+        <span class="formTitle">{{ 'universal_userAccount_imgCaptcha' | translate }}</span>
         <div class="flexRow">
           <input
             placeholder="{{ imgCaptcha.placeholder }}"
@@ -85,7 +90,7 @@
           <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha">
         </div>
         <span class="formCue" *ngIf="imgCaptcha.show && imgCaptcha.cue !== ''">
-          {{ imgCaptcha.cue }}
+          {{ imgCaptcha.cue | translate }}
         </span>
       </div>
     </div>
@@ -94,7 +99,8 @@
       [class.appview-btn-unclickable]="sending || dataIncomplete"
       (click)="submit()"
     >
-      <span>{{ 'SH.send' | translate }}</span>
+      <span>{{ 'universal_operating_send' | translate }}</span>
+      <i *ngIf="sending" class="fa fa-spinner fa-pulse"></i>
     </button>
   </div>
 </ng-container>
@@ -108,17 +114,17 @@
           </header>
           <div class="access-panel-body">
             <div class="flexCol webDiv" style="min-height: initial;">
-              <span class="app-alert" style="font-size: 20px; font-weight: bold;">{{ 'custom.changeAccount' | translate }}</span>
+              <span class="app-alert" style="font-size: 20px; font-weight: bold;">{{ 'universal_userAccount_changingAccount' | translate }}</span>
               <span style="font-size: 14px; font-weight: bold;">{{ accountInfo.oldAccount }}</span>
             </div>
             <div class="flexCol" style="margin-top: 10px;">
               <div class="flexCol webDiv">
-                <span class="access-text" style="margin-bottom: 10px;">{{ 'Portal.password' | translate }}</span>
+                <span class="access-text" style="margin-bottom: 10px;">{{ 'universal_userAccount_password' | translate }}</span>
                 <input
                   type="password"
                   id="signupPW"
                   class="form-control"
-                  placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Portal.password' | translate }}"
+                  placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.password} }}"
                   maxlength="20"
                   [(ngModel)]="editBody.oldPassword"
                   (focusout)="checkPassword($event)"
@@ -130,10 +136,10 @@
                   [style.color]="displayPW ? 'black' : '#aaaaaa'"
                   (click)="toggleDisplayPW()"
                 ></i>
-                <span class="form__message form__message--placeholder" *ngIf="cue.password !== ''">{{ cue.password }}</span>
+                <span class="form__message form__message--placeholder" *ngIf="cue.password !== ''">{{ cue.password | translate }}</span>
               </div>
               <div class="flexCol app-alert" style="margin: 0 auto; align-items: center;">
-                <span>{{ 'custom.newAccountWellBe' | translate }}</span>
+                <span>{{ 'universal_userAccount_accountChanged' | translate }}</span>
                 <span
                   class="icon-svg_web-icon_p1_073-level_fold"
                   style="width:20px; font-size: 50px; transform: rotate(270deg); margin-top: 10px;"
@@ -153,7 +159,7 @@
                   <input
                     style="width: 100%;"
                     class="form-control"
-                    placeholder="{{ 'Portal.enterInfo' | translate }} {{ 'Portal.email' | translate }}"
+                    placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.email} }}"
                     (focusout)="checkEmail($event)"
                     (keypress)="checkEmail($event)"
                     *ngIf="editBody.newAccountType === 1"
@@ -170,13 +176,13 @@
                     style="width: 100%;"
                   ></app-intl-phone-input>
                 </div>
-                <span class="form__message form__message--placeholder" *ngIf="editBody.newAccountType === 1 && cue.email !== ''">{{ cue.email }}</span>
+                <span class="form__message form__message--placeholder" *ngIf="editBody.newAccountType === 1 && cue.email !== ''">{{ cue.email | translate }}</span>
               </div>
               <div
                 class="flexCol webDiv"
                 [style.display]="imgCaptcha.show ? '' : 'none'"
               >
-                <span class="access-text" style="margin-bottom: 10px;">{{ 'Portal.imgCaptcha' | translate }}</span>
+                <span class="access-text" style="margin-bottom: 10px;">{{ 'universal_userAccount_imgCaptcha' | translate }}</span>
                 <div class="flexRow">
                   <input
                     placeholder="{{ imgCaptcha.placeholder }}"
@@ -187,18 +193,18 @@
                   <img src="{{ imgCaptcha.imgCode }}" class="appView-imgCaptcha">
                 </div>
                 <span class="form__message form__message--placeholder" *ngIf="imgCaptcha.show && imgCaptcha.cue !== ''">
-                  {{ imgCaptcha.cue }}
+                  {{ imgCaptcha.cue | translate }}
                 </span>
               </div>
               <div style="display: flex;justify-content: space-between; align-items: center; margin-top: 20px;">
-                <a class="access-text" style="cursor:pointer" [routerLink]="['/signIn-web']"><{{'Dashboard.ProductInfo.back' | translate}}</a>
+                <a class="access-text" style="cursor:pointer" [routerLink]="['/signIn-web']"><{{'universal_operating_back' | translate}}</a>
                 <button
                   class="btn btn-primary access-btn"
                   [class.appview-btn-unclickable]="sending || dataIncomplete"
                   [style.background]="sending || dataIncomplete ? '#2b819b54' : ''"
                   (click)="submit()"
                 >
-                  <span *ngIf="!sending">{{ 'SH.send' | translate }}</span>
+                  <span *ngIf="!sending">{{ 'universal_operating_send' | translate }}</span>
                   <i *ngIf="sending" class="fa fa-spinner fa-pulse"></i>
                 </button>
               </div>
