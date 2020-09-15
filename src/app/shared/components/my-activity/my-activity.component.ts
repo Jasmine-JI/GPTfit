@@ -14,7 +14,7 @@ import { UtilsService } from '@shared/services/utils.service';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { HashIdService } from '@shared/services/hash-id.service';
-import * as moment from 'moment';
+import moment from 'moment';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';

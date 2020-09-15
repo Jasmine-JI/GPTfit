@@ -30,7 +30,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
   accountInfo = {
     type: 1,  // 1：信箱 2：手機
-    account: '',
+    account: 'Please wait...',
     id: 0
   };
 
@@ -105,14 +105,6 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.getUrlString(location.search);
     this.getUserInfo();
-
-    // 按下登出時，跳轉回登入頁-kidin-1090109
-    this.authService.getLoginStatus().subscribe(res => {
-      if (res === false && this.pcView === true) {
-        return this.router.navigateByUrl('/signIn-web');
-      }
-    });
-
   }
 
   /**
@@ -200,28 +192,31 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 使用token取得使用者帳號資訊-kidin-1090514
   getUserInfo () {
-    const body = {
-      token: this.appInfo.token || ''
-    };
+    if (this.appInfo.token !== '') {
+      const body = {
+        token: this.appInfo.token || ''
+      };
 
-    this.userProfileService.getUserProfile(body).subscribe(res => {
+      this.userProfileService.getUserProfile(body).subscribe(res => {
 
-      const profile = res.userProfile;
-      if (profile.email) {
-        this.accountInfo = {
-          type: 1,
-          account: profile.email,
-          id: profile.userIdk
-        };
-      } else {
-        this.accountInfo = {
-          type: 2,
-          account: `+${profile.countryCode} ${profile.mobileNumber}`,
-          id: profile.userId
-        };
-      }
+        const profile = res.userProfile;
+        if (profile.email) {
+          this.accountInfo = {
+            type: 1,
+            account: profile.email,
+            id: profile.userIdk
+          };
+        } else {
+          this.accountInfo = {
+            type: 2,
+            account: `+${profile.countryCode} ${profile.mobileNumber}`,
+            id: profile.userId
+          };
+        }
 
-    });
+      });
+
+    }
 
   }
 
@@ -492,39 +487,50 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 點擊email認證信後送出驗證碼給server驗證-kidin-1090518
   emailEnable (body) {
-    this.sending = true;
+    if (
+      this.logMessage.enable !== ''
+      && this.logMessage.success !== ''
+      && this.logMessage.confirm !== ''
+    ) {
+      this.sending = true;
 
-    this.signupService.fetchEnableAccount(body, this.ip).subscribe(res => {
+      this.signupService.fetchEnableAccount(body, this.ip).subscribe(res => {
 
-      let msgBody;
-      if (res.processResult.resultCode !== 200) {
+        let msgBody;
+        if (res.processResult.resultCode !== 200) {
 
-        switch (res.processResult.apiReturnMessage) {
-          case 'Enable account fail, account was enabled.':  // 已啟用後再次點擊啟用信件，則當作啟用成功-kidin-1090520
-            msgBody = `${this.logMessage.enable} ${this.logMessage.success}`;
-            this.enableSuccess = true; // app v2上架後刪除此行
-            break;
-          default:
-            msgBody = errorMsg;
-            console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
-            break;
+          switch (res.processResult.apiReturnMessage) {
+            case 'Enable account fail, account was enabled.':  // 已啟用後再次點擊啟用信件，則當作啟用成功-kidin-1090520
+              msgBody = `${this.logMessage.enable} ${this.logMessage.success}`;
+              this.enableSuccess = true; // app v2上架後刪除此行
+              break;
+            default:
+              msgBody = errorMsg;
+              console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+              break;
+          }
+
+          this.showMsgBox(msgBody, true);
+        } else {
+          this.enableSuccess = true; // app v2上架後刪除此行
+          msgBody = `${this.logMessage.enable} ${this.logMessage.success}`;
+          this.showMsgBox(msgBody, true);
         }
 
-        this.showMsgBox(msgBody, true);
-      } else {
-        this.enableSuccess = true; // app v2上架後刪除此行
-        msgBody = `${this.logMessage.enable} ${this.logMessage.success}`;
-        this.showMsgBox(msgBody, true);
-      }
+        this.sending = false;
+      });
 
-      this.sending = false;
-    });
+    } else {
+      setTimeout(() => {
+        this.emailEnable(body);
+      }, 500);
+
+    }
 
   }
 
   // 顯示彈跳視窗訊息-kidin-1090518
   showMsgBox (msg: string, navigate: boolean) {
-
     if (navigate) {
 
       // 待app v2上架後移除此判斷-kidin-1090724

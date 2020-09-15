@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import SimpleLinearRegression from 'ml-regression-simple-linear';
-import * as moment from 'moment';
+import moment from 'moment';
 import { first } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 

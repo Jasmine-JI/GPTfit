@@ -14,6 +14,9 @@ import { SportPacePipe } from '@shared/pipes/sport-pace.pipe';
 import { MuscleNamePipe } from './muscle-name.pipe';
 import { SlicePipe } from './slice.pipe';
 import { A3FormatPipe } from './a3-format.pipe';
+import { CloudrunSummaryPipe } from './cloudrun-summary.pipe';
+import { RelativeDayPipe } from './relative-day.pipe';
+import { TimeFormatPipe } from './time-format.pipe';
 
 
 @NgModule({
@@ -35,7 +38,10 @@ import { A3FormatPipe } from './a3-format.pipe';
     SportPacePipe,
     MuscleNamePipe,
     SlicePipe,
-    A3FormatPipe
+    A3FormatPipe,
+    CloudrunSummaryPipe,
+    RelativeDayPipe,
+    TimeFormatPipe
   ],
   exports: [
     SexPipe,
@@ -52,7 +58,10 @@ import { A3FormatPipe } from './a3-format.pipe';
     SportPacePipe,
     MuscleNamePipe,
     SlicePipe,
-    A3FormatPipe
+    A3FormatPipe,
+    CloudrunSummaryPipe,
+    RelativeDayPipe,
+    TimeFormatPipe
   ]
 })
 export class SharedPipes {}

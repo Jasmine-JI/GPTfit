@@ -456,31 +456,50 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
       };
 
       this.signupService.fetchCaptcha(releaseBody, this.ip).subscribe(res => {
-        if (res.processResult.resultCode === 200) {
+        if (res.processResult && res.processResult.resultCode === 200) {
           this.imgCaptcha.show = false;
           this.submit();
         } else {
 
-          switch (res.processResult.apiReturnMessage) {
-            case 'Found a wrong unlock key.':
-              this.signupCue.imgCaptcha = 'errorValue';
-              this.sending = false;
-              break;
-            default:
-              this.dialog.open(MessageBoxComponent, {
-                hasBackdrop: true,
-                data: {
-                  title: 'Message',
-                  body: `Error.<br />Please try again later.`,
-                  confirmText: this.translate.instant(
-                    'universal_operating_confirm'
-                  ),
-                  onConfirm: this.turnBack.bind(this)
-                }
-              });
+          if (res.processResult) {
 
-              console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
-              break;
+            switch (res.processResult.apiReturnMessage) {
+              case 'Found a wrong unlock key.':
+                this.signupCue.imgCaptcha = 'errorValue';
+                this.sending = false;
+                break;
+              default:
+                this.dialog.open(MessageBoxComponent, {
+                  hasBackdrop: true,
+                  data: {
+                    title: 'Message',
+                    body: `Error.<br />Please try again later.`,
+                    confirmText: this.translate.instant(
+                      'universal_operating_confirm'
+                    ),
+                    onConfirm: this.turnBack.bind(this)
+                  }
+                });
+
+                console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+                break;
+            }
+
+          } else {
+
+            this.dialog.open(MessageBoxComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'Message',
+                body: `Error.<br />Please try again later.`,
+                confirmText: this.translate.instant(
+                  'universal_operating_confirm'
+                ),
+                onConfirm: this.turnBack.bind(this)
+              }
+            });
+
+            console.log(`${res.resultCode}: ${res.info}`);
           }
 
         }
@@ -514,7 +533,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.signupService.fetchRegister(body, this.ip).subscribe(res => {
 
-      if (res.processResult.resultCode !== 200) {
+      if (res.processResult && res.processResult.resultCode !== 200) {
 
         switch (res.processResult.apiReturnMessage) {
           case 'Register account is existing.':
@@ -561,6 +580,20 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
             break;
         }
 
+      } else if (res.resultCode && res.resultCode === 400) {
+        this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          data: {
+            title: 'Message',
+            body: `Error.<br />Please try again later.`,
+            confirmText: this.translate.instant(
+              'universal_operating_confirm'
+            ),
+            onConfirm: this.turnBack.bind(this)
+          }
+        });
+
+        console.log(`${res.resultCode}: ${res.info}`);
       } else {
         this.newToken = res.register.token;
         this.saveToken(this.newToken);

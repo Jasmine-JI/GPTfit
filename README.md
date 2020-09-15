@@ -93,14 +93,14 @@ web
 │
 ├─ src/
 │   ├─ app/ // 包含應用的元件和模組，我們要寫的程式碼都在這個目錄
-│   ├─ assets/ // 資源目錄，儲存靜態資源的 比如圖片、多語系json檔(i18n/)
+│   ├─ assets/ // 資源目錄，儲存靜態資源的 比如sass樣式共用設定、圖片、多語系json檔(i18n/)
 │   ├─ environments/ // 環境配置。Angular是支援多環境開發的，我們可以在不同的環境下（開發環境，測試環境，生產環境）共用一套程式碼，主要用來配置環境的
 |       ├─ environment.dev.web.ts // 指向235開發環境nodejs api 3001port的環境變數檔
 |       ├─ environment.prod.ts // 指向130正式環境nodejs api 3000port的環境變數檔(130 build)
 |       ├─ environment.ts // 指向234正式環境nodejs api 3000port的環境變數檔(本機開發) 
 |       ├─ environment.tst.ts // 指向232開發環境nodejs api 3000port的環境變數檔(已棄用，但未來有多人開發前端，可選用此)
 |       ├─ environment.uat.ts // 指向234正式環境nodejs api 3000port的環境變數檔(234 build) 
-|       └─  environment.web.ts // 指向235正式環境nodejs api 3000port的環境變數檔(235 build) 
+|       └─ environment.web.ts // 指向235正式環境nodejs api 3000port的環境變數檔(235 build) 
 |
 │   ├─ .htaccess // apache route config設定，沒此設定，無法啟用angular route於apache
 │   ├─ favicon.ico // 瀏覽器的網址列、書籤、頁籤上都會用到的小 icon 圖檔。
@@ -125,6 +125,8 @@ web
 ├─ server.js // node js api server在正式環境的進入點(pm2 start 就是run起這個)
 ├─ package.json // 此專案的腳本與使用的模組
 ├─ tsconfig.json //  TypeScript 編譯時看的編譯設定檔
+├─ robots.txt //  宣告不可以爬蟲的頁面
+├─ sitemap.xml //  協助搜尋引擎爬蟲增加SEO
 └─ tslint.json // TSLint 是 TypeScript 的格式驗證工具
 ```
 

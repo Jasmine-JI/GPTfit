@@ -20,7 +20,9 @@
           (&nbsp;<a href="#" (click)="showPrivateMsg($event)">{{'universal_userAccount_signUp' | translate}}</a>&nbsp;)
         </div>
         <input
+          #accountInput
           placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.account } }}"
+          (keypress)="handleNext($event, 'account')"
           (change)="determineAccountType($event)"
         />
         <i
@@ -44,9 +46,11 @@
           </div>
           <div *ngIf="loginBody.signInType === 1">
             <input
+              #emailInput
               style="width: 100%;"
               placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.email } }}"
               [(value)]="currentAccount"
+              (keypress)="handleNext($event, 'email')"
               (change)="checkEmail($event)"
             />
             <i
@@ -74,13 +78,14 @@
       <div class="flexCol appDiv">
         <span class="formTitle">{{ 'universal_userAccount_password' | translate }}</span>
         <input
+          #password
           type="password"
           id="signupPW"
           placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.password } }}"
           maxlength="20"
           [(ngModel)]="loginBody.password"
-          (focusout)="checkPassword($event)"
-          (keypress)="checkPassword($event)"
+          (keypress)="handleNext($event, 'password')"
+          (change)="checkPassword($event)"
         />
         <i
           class="icon-svg_web-icon_p1_081-watch inputIcon"
@@ -130,8 +135,10 @@
                   (&nbsp;<a href="#" (click)="showPrivateMsg($event)">{{'universal_userAccount_signUp' | translate}}</a>&nbsp;)
                 </div>
                 <input
+                  #accountInput_web
                   placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.account } }}"
                   class="form-control"
+                  (keypress)="handleNext($event, 'account')"
                   (change)="determineAccountType($event)"
                 />
                 <i
@@ -156,10 +163,13 @@
                   </div>
                   <div *ngIf="loginBody.signInType === 1">
                     <input
+                      #emailInput_web
                       class="form-control"
                       style="width: 100%;"
                       placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.email } }}"
                       [(value)]="currentAccount"
+                      (keypress)="handleNext($event, 'email')"
+                      (focusout)="checkEmail($event)"
                       (change)="checkEmail($event)"
                     />
                     <i
@@ -196,14 +206,16 @@
                   (&nbsp;<a href="#" [routerLink]="['/resetPassword-web']">{{'universal_userAccount_forgetPassword' | translate}}</a>&nbsp;)
                 </div>
                 <input
+                  #password_web
                   type="password"
                   id="signupPW"
                   class="form-control"
                   placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.password } }}"
                   maxlength="20"
                   [(ngModel)]="loginBody.password"
+                  (keypress)="handleNext($event, 'password')"
                   (focusout)="checkPassword($event)"
-                  (keypress)="checkPassword($event)"
+                  (change)="checkPassword($event)"
                 />
                 <i
                   class="icon-svg_web-icon_p1_081-watch inputIcon"

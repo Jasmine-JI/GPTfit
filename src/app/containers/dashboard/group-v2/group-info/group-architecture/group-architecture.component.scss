@@ -1,0 +1,11 @@
+@import "font.scss";
+
+
+.content__title {
+  @include title;
+}
+
+.content__subtitle {
+  @include subtitle-or-focus;
+  margin-bottom: 15px;
+}

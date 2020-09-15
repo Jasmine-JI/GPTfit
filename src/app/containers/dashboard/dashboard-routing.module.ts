@@ -2,9 +2,6 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { DashboardComponent } from './dashboard.component';
 import { EnrollFormComponent } from './components/enroll-form/enroll-form.component';
-import { EventComponent } from './components/event/event.component';
-import { CreateEventComponent } from './components/create-event/create-event.component';
-import { EditEventComponent } from './components/edit-event/edit-event.component';
 import { CertificateComponent } from './components/certificate/certificate.component';
 import { CertificatePreviewComponent } from './components/certificate-preview/certificate-preview.component';
 import { EventCalendarComponent } from './components/event-calendar/event-calendar.component';
@@ -15,8 +12,8 @@ import { DbMaintainComponent } from './components/db-maintain/db-maintain.compon
 import { DeviceLogComponent } from './components/device-log/device-log.component';
 import { DeviceLogDetailComponent } from './components/device-log-detail/device-log-detail.component';
 import { CoachDashboardComponent } from './components/coach-dashboard/coach-dashboard.component';
-import { EventManagementComponent } from './components/event-management/event-management.component';
 import { AuthGuard } from '@shared/guards/auth/auth.guard';
+import { UnsaveGuard } from '../dashboard/guards/unsave-guard';
 import { MyGroupListComponent } from './group/my-group-list/my-group-list.component';
 import { GroupSearchComponent } from './group/group-search/group-search.component';
 import { GroupInfoComponent } from './group/group-info/group-info.component';
@@ -44,7 +41,23 @@ import { ComReportComponent } from './group/group-info/com-report/com-report.com
 import { ComLifeTrackingComponent } from './group/group-info/com-life-tracking/com-life-tracking.component';
 import { MyLifeTrackingComponent } from '@shared/components/my-life-tracking/my-life-tracking.component';
 import { QrcodeUploadComponent } from './components/qrcode-upload/qrcode-upload.component';
-// import { GroupInfoComponent as GroupInfoV2Component } from './group-v2/group-info/group-info.component';
+
+import { GroupInfoComponent as GroupInfoV2Component } from './group-v2/group-info/group-info.component';
+import { SearchGroupComponent } from './group-v2/search-group/search-group.component';
+import { MyGroupListComponent as MyGroupListV2Component } from './group-v2/my-group-list/my-group-list.component';
+import { EditGroupComponent } from './group-v2/group-info/edit-group/edit-group.component';
+import { SportsReportComponent } from './group-v2/group-info/sports-report/sports-report.component';
+import { MyClassReportComponent } from './group-v2/group-info/my-class-report/my-class-report.component';
+import { CommercePlanComponent } from './group-v2/group-info/commerce-plan/commerce-plan.component';
+import { MemberListComponent } from './group-v2/group-info/member-list/member-list.component';
+import { GroupArchitectureComponent } from './group-v2/group-info/group-architecture/group-architecture.component';
+import { CloudrunReportComponent } from './group-v2/group-info/cloudrun-report/cloudrun-report.component';
+import { LifeTrackingComponent as LifeTrackingV2Component } from './group-v2/group-info/life-tracking/life-tracking.component';
+import { ClassAnalysisComponent as ClassAnalysisV2Component } from './group-v2/group-info/class-analysis/class-analysis.component';
+import { CreateGroupComponent as CreateGroupV2Component } from './group-v2/group-info/create-group/create-group.component';
+import { ActivityListManageComponent } from './components/official-activity-manage/activity-list-manage/activity-list-manage.component';
+import { EditOfficialActivityComponent } from './components/official-activity-manage/edit-official-activity/edit-official-activity.component';
+import { ParticipantsManageComponent } from './components/official-activity-manage/participants-manage/participants-manage.component';
 
 const routes: Routes = [
   {
@@ -55,11 +68,6 @@ const routes: Routes = [
       {
         path: 'enroll/:event_id',
         component: EnrollFormComponent,
-        canActivate: [DashboardGuard]
-      },
-      {
-        path: 'event',
-        component: EventComponent,
         canActivate: [DashboardGuard]
       },
       {
@@ -129,22 +137,18 @@ const routes: Routes = [
       },
       {
         path: 'system/event-management',
-        component: EventManagementComponent,
-        canActivate: [DashboardGuard]
+        component: ActivityListManageComponent,
+        canActivate: [DashboardGuard],
       },
       {
-        path: 'system/event',
-        component: EventComponent,
-        canActivate: [DashboardGuard]
+        path: 'system/event-management/edit',
+        component: EditOfficialActivityComponent,
+        canActivate: [DashboardGuard],
+        canDeactivate: [UnsaveGuard]
       },
       {
-        path: 'system/event/create',
-        component: CreateEventComponent,
-        canActivate: [DashboardGuard]
-      },
-      {
-        path: 'system/event/edit/:id',
-        component: EditEventComponent,
+        path: 'system/event-management/participants',
+        component: ParticipantsManageComponent,
         canActivate: [DashboardGuard]
       },
       {
@@ -265,12 +269,58 @@ const routes: Routes = [
         path: 'qrupload/activityfile',
         component: QrcodeUploadComponent
       },
-      /*
+
       {
         path: 'group-info-v2/:groupId',
-        component: GroupInfoV2Component
-      }
-      */
+        component: GroupInfoV2Component,
+        children: [
+          {
+            path: 'edit-group',
+            component: EditGroupComponent
+          },
+          {
+            path: 'commerce-plan',
+            component: CommercePlanComponent
+          },
+          {
+            path: 'group-architecture',
+            component: GroupArchitectureComponent
+          },
+          {
+            path: 'member-list',
+            component: MemberListComponent
+          },
+          {
+            path: 'myclass-report',
+            component: MyClassReportComponent
+          },
+          {
+            path: 'class-analysis-v2',
+            component: ClassAnalysisV2Component
+          },
+          {
+            path: 'sports-report',
+            component: SportsReportComponent
+          },
+          {
+            path: 'life-tracking-v2',
+            component: LifeTrackingV2Component
+          },
+          {
+            path: 'cloudrun-report',
+            component: CloudrunReportComponent
+          },
+        ]
+      },
+      {
+        path: 'search-group',
+        component: SearchGroupComponent
+      },
+      {
+        path: 'mygroup-list-v2',
+        component: MyGroupListComponent
+      },
+
     ]
   },
   { path: '**', redirectTo: '404' }

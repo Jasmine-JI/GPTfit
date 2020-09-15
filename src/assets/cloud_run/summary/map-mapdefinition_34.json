@@ -1,0 +1,77 @@
+﻿{
+  "map": {
+    "basic": {
+      "mapId": "34",
+      "mapCode": "10",
+      "info": [
+        {
+          "language": "TW",
+          "mapName": "台北信義區",
+          "country": "台灣",
+          "city": "台北",
+          "property": "路跑",
+          "introduce": "象山位於台北盆地東緣的南港山系西側，因山形似象而得名，與鄰近的獅山、虎山、豹山、合稱為四獸山。山頂海拔183公尺，由於象山臨近台北市東區，因此成為觀賞拍攝台北101大樓的良好景點"
+        },
+        {
+          "language": "CN",
+          "mapName": "台北信义区",
+          "country": "台湾",
+          "city": "台北",
+          "property": "路跑",
+          "introduce": "象山位于台北盆地东缘的南港山系西侧，因山形似象而得名，与邻近的狮山、虎山、豹山、合称为四兽山。山顶海拔183公尺，由于象山临近台北市东区，因此成为观赏拍摄台北101大楼的良好景点"
+        },
+        {
+          "language": "EN",
+          "mapName": "Taipei Xinyi",
+          "country": "Taiwan",
+          "city": "Taipei",
+          "property": "road running",
+          "introduce": "Mount Elephant is a mountain in Xinyi District, Taipei, Taiwan. It is close to the Taipei Metro Xiangshan Station. It is 183 m high and has a hiking trail about 1.5 km long. The Taipei 101 can be seen from the trail. The Six Giant Rocks are a tourist attraction in Xiangshan and there are platforms for photographers"
+        }
+      ]
+    },
+    "buildMap": {
+      "info": [
+        {
+          "infoId": "1",
+          "GPXName": "taipei_5k.gpx",
+          "leftTopCoordinateLat": "25.038643",
+          "leftTopCoordinateLon": "121.560002",
+          "rightBottomCoordinateLat": "25.023995",
+          "rightBottomCoordinateLon": "121.588573",
+          "FileName1080p": "taipei_5k_1080.jpg",
+          "RankingBackground": "taipei_5k_ranking_bg.jpg",
+          "smallFileName": "map-photo_taipei_5k.jpg",
+          "objectFileName": "get-view_taipei_5k.png",
+          "RunwayTtype": "line"
+        }
+      ]
+    },
+    "raceRoom": {
+      "info": [
+        {
+          "infoId": "1",
+          "category": "race",
+          "raceOrientation": "y",
+          "raceLap": "1",
+          "raceManLimit": "16",
+          "raceCloseTime": "None"
+        }
+      ]
+    },
+    "limitation": {
+      "info": [
+        {
+          "infoId": "1",
+          "createRaceLevel": "1",
+          "joinRaceLevel": "1",
+          "createRaceQualify": "None",
+          "joinRaceQualify": "None",
+          "label": "None",
+          "location": "None",
+          "model": "None"
+        }
+      ]
+    }
+  }
+}

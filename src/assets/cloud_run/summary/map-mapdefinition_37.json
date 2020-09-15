@@ -1,0 +1,77 @@
+﻿{
+  "map": {
+    "basic": {
+      "mapId": "37",
+      "mapCode": "12",
+      "info": [
+        {
+          "language": "TW",
+          "mapName": "倫敦馬拉松",
+          "country": "英國",
+          "city": "倫敦",
+          "property": "路跑",
+          "introduce": "倫敦馬拉松誕生於1981年，當時是受了紐約馬拉松的啟發而生成。倫敦馬拉松每年4月下旬舉行，絕對是每一個跑手的節日，寬闊的場地、景色優美的路線、熱情的觀眾、排山倒海般的歡呼聲，再加上快速的路線和幾乎完美無瑕的組織工作，這一切無疑深深吸引著那些馬拉松資深跑手。"
+        },
+        {
+          "language": "CN",
+          "mapName": "伦敦马拉松",
+          "country": "英国",
+          "city": "伦敦",
+          "property": "路跑",
+          "introduce": "伦敦马拉松诞生于1981年，当时是受了纽约马拉松的启发而生成。伦敦马拉松每年4月下旬举行，绝对是每一个跑手的节日，宽阔的场地、景色优美的路线、热情的观众、排山倒海般的欢呼声，再加上快速的路线和几乎完美无瑕的组织工作，这一切无疑深深吸引着那些马拉松资深跑手。"
+        },
+        {
+          "language": "EN",
+          "mapName": "London Marathon",
+          "country": "UK",
+          "city": "London",
+          "property": "road running",
+          "introduce": "The London Marathon is a long-distance running event held in London, United Kingdom, part of the World Marathon Majors. The event was first run on 29 March 1981 and has been held in the spring of every year since."
+        }
+      ]
+    },
+    "buildMap": {
+      "info": [
+        {
+          "infoId": "1",
+          "GPXName": "london_42k.gpx",
+          "leftTopCoordinateLat": "51.547059",
+          "leftTopCoordinateLon": "-0.162054",
+          "rightBottomCoordinateLat": "51.432244",
+          "rightBottomCoordinateLon": "0.166533",
+          "FileName1080p": "london_42k_1080.jpg",
+          "RankingBackground": "london_42k_ranking_bg.jpg",
+          "smallFileName": "map-photo_london_42k.jpg",
+          "objectFileName": "get-view_london_42k.png",
+          "RunwayTtype": "line"
+        }
+      ]
+    },
+    "raceRoom": {
+      "info": [
+        {
+          "infoId": "1",
+          "category": "race",
+          "raceOrientation": "y",
+          "raceLap": "1",
+          "raceManLimit": "16",
+          "raceCloseTime": "None"
+        }
+      ]
+    },
+    "limitation": {
+      "info": [
+        {
+          "infoId": "1",
+          "createRaceLevel": "1",
+          "joinRaceLevel": "1",
+          "createRaceQualify": "None",
+          "joinRaceQualify": "None",
+          "label": "None",
+          "location": "None",
+          "model": "None"
+        }
+      ]
+    }
+  }
+}

@@ -21,7 +21,7 @@ import { PeopleSelectorWinComponent } from '../../components/people-selector-win
 import * as _ from 'lodash';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { planDatas } from '../desc';
-import * as moment from 'moment';
+import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 import { HashIdService } from '@shared/services/hash-id.service';
 import { Subject } from 'rxjs';
@@ -467,6 +467,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         commercePlanExpired
       } = value;
       const image = new Image();
+      image.setAttribute('crossOrigin', 'Anonymous');
       if (this.finalImageLink === undefined || this.finalImageLink === null || this.finalImageLink === '') {
         if (location.hostname === '192.168.1.235') {
           image.src = 'https://app.alatech.com.tw/assets/images/group.jpg';
@@ -474,7 +475,13 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
           image.src = `https://${location.hostname}/assets/images/group.jpg`;
         }
       } else {
-        image.src = this.finalImageLink;
+
+        if (location.pathname === 'www.gptfit.com') {
+          image.src = this.finalImageLink.replace('cloud.alatech.com.tw', 'www.gptfitcom.com');
+        } else {
+          image.src = this.finalImageLink;
+        }
+
       }
 
       // 確認建立的brandType-kidin-1090115

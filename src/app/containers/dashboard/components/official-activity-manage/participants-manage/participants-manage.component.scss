@@ -1,0 +1,319 @@
+$btn--blue--opcity: rgba(59, 134, 255, 0.8);
+$btn--blue: rgba(59, 134, 255, 1);
+$transition-effect: 0.2s cubic-bezier(0.5, 0.5, 0.5, 0.5);
+$gray: rgba(200, 200, 200, 1);
+$dark-gray: rgba(150, 150, 150, 1);
+$darker-gray: rgba(100, 100, 100, 1);
+$warn-color: rgba(255, 167, 167, 1);
+$userId-width: 60px;
+$nickname-width: 150px;
+$account-width: 150px;
+$gender-width: 50px;
+$age-width: 50px;
+$apply-width: 150px;
+$status-width: 100px;
+$group-width: 100px;
+
+@mixin center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin transition($target) {
+  -webkit-transition: $target $transition-effect;
+  -moz-transition: $target $transition-effect;
+  -ms-transition: $target $transition-effect;
+  -o-transition: $target $transition-effect;
+  transition: $target $transition-effect;
+}
+
+@mixin box--btn {
+  width: 60px;
+  text-align: center;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+@mixin btn--active {
+  position: relative;
+  cursor: pointer;
+  @include transition(top);
+  @include transition(left);
+
+  &:active {
+    top: 2px;
+    left: 2px;
+    @include transition(top);
+    @include transition(left);
+  }
+
+}
+
+@mixin title($width) {
+  font-weight: bold;
+  font-size: 24px;
+  width: $width;
+  margin-right: 10px;
+  text-align: center;
+}
+
+@mixin content($width) {
+  width: $width;
+  margin-right: 10px;
+  word-break: break-all;
+  text-align: center;
+}
+
+
+
+.input--style {
+  outline: none;
+  border: 1px solid $darker-gray;
+  border-radius: 20px;
+  padding: 0px 10px;
+  width: 300px;
+  height: 35px;
+  margin-right: 20px;
+}
+
+.input__btn {
+  @include center();
+  background-color: $btn--blue--opcity;
+  width: 120px;
+  height: 35px;
+  color: white;
+  font-weight: bold;
+  border-radius: 5px;
+  box-shadow: 2px 2px 2px $gray;
+  @include transition(background-color);
+  @include btn--active();
+
+  &:hover {
+    background-color: $btn--blue;
+    @include transition(background-color);
+  }
+
+  &:active {
+    box-shadow: 0px 0px 0px $gray;
+    @include transition(box-shadow);
+  }
+
+}
+
+.delete__switch__btn {
+  @include btn--active();
+  font-size: 30px;
+  color: $dark-gray;
+  border: 1px solid $dark-gray;
+  border-radius: 5px;
+  @include transition(color);
+  @include transition(border-color);
+
+  &:hover {
+    color: $darker-gray;
+    border-color: $darker-gray;
+    @include transition(color);
+    @include transition(border-color);
+  }
+
+}
+
+.delete__mode {
+  color: $warn-color;
+  border-color: $warn-color;
+  @include transition(color);
+  @include transition(border-color);
+}
+
+#userId__column__title {
+  @include title($userId-width);
+}
+
+#nickname__column__title {
+  @include title($nickname-width);
+}
+
+#account__column__title {
+  @include title($account-width);
+}
+
+#gender__column__title {
+  @include title($gender-width);
+}
+
+#age__column__title {
+  @include title($age-width);
+}
+
+#apply__column__title {
+  @include title($apply-width);
+}
+
+#status__column__title {
+  @include title($status-width);
+}
+
+#group__column__title {
+  @include title($group-width);
+}
+
+.delete__icon {
+  position: absolute;
+  top: 7px;
+  left: -30px;
+  font-size: 30px;
+  color: $warn-color;
+  cursor: pointer;
+  @include transition(color);
+
+  &:hover {
+    color: rgba(255, 0, 0, 1);
+    @include transition(color);
+  }
+
+}
+
+.userId__column__content {
+  @include content($userId-width);
+  text-align: center;
+}
+
+.nickname__column__content {
+  @include content($nickname-width);
+}
+
+.account__column__content {
+  @include content($account-width);
+}
+
+.gender__column__content {
+  @include content($gender-width);
+  text-align: center;
+}
+
+.age__column__content {
+  @include content($age-width);
+  text-align: center;
+}
+
+.apply__column__content {
+  @include content($apply-width);
+}
+
+.status__column__content {
+  @include content($status-width);
+  height: 30px;
+  padding: 2px;
+  border-radius: 24px;
+  cursor: pointer;
+  opacity: 0.9;
+  @include transition(opacity);
+
+  &:hover {
+    opacity: 1;
+    font-weight: bold;
+    @include transition(opacity);
+  }
+
+}
+
+.group__column__content {
+  @include content($group-width);
+  cursor: pointer;
+
+  &:after {
+    content: '';
+    border-style: solid;
+    border-color: black transparent transparent transparent;
+    border-width: 5px 5px 0px 5px;
+    position: relative;
+    top: 13px;
+    left: 5px;
+  }
+
+  &:hover {
+    border-bottom: 1px solid black;
+  }
+
+}
+
+.deletor__column__content {
+  @include content($status-width);
+}
+
+.del__column__content {
+  @include content($group-width);
+}
+
+#group__list {
+  position: absolute;
+  z-index: 10;
+  background-color: white;
+  border: 1px solid rgba(200, 200, 200, 1);
+  width: 130px;
+  padding: 5px 10px;
+  left: -15px;
+  top: 25px;
+}
+
+.group__list__item {
+  padding: 5px 10px;
+  cursor: pointer;
+  @include transition(background-color);
+
+  &:hover {
+    color: white;
+    font-weight: bold;
+    background-color: $btn--blue--opcity;
+    @include transition(background-color);
+  }
+
+}
+
+.pay__info {
+  margin: 10px 0px;
+}
+
+h4 {
+  font-weight: bold;
+  margin-bottom: 0px;
+}
+
+.check__box__item {
+  margin-right: 20px;
+  align-items: center;
+}
+
+.check__box {
+  position: relative;
+  border: 2px solid $btn--blue;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.check__box__checked {
+  &::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: $btn--blue;
+  }
+
+}
+
+.check__box__title {
+  width: 120px;
+  height: 30px;
+  border-radius: 15px;
+  text-align: center;
+  font-weight: bold;
+  padding: 3px 0px;
+}

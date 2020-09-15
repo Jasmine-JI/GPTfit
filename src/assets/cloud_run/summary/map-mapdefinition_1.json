@@ -1,0 +1,67 @@
+{
+    "map": {
+        "basic": {
+		    "mapId":"1",
+			"mapCode":"0",
+            "info": [{
+                "language":"TW",
+                "mapName":"艾菲爾鐵塔路跑",
+                "country":"法國",
+                "city":"巴黎",
+                "property":"景點",
+                "introduce":"戰神廣場是一個座落於法國巴黎七區的廣大帶狀公園，介於位在其西北方的艾菲爾鐵塔。"                 
+            },{
+                "language":"CN",
+                "mapName":"艾菲尔铁塔路跑",
+                "country":"法国",
+                "city":"巴黎",
+                "property":"景点",
+                "introduce":"战神广场是一个座落于法国巴黎七区的广大带状公园，介于位在其西北方的艾菲尔铁塔。" 
+            },{
+                "language":"EN",
+                "mapName":"Eiffel Tower road running",
+                "country":"France",
+                "city":"Paris",
+                "property":"Attractions",
+                "introduce":"The Champ de Mars is a large public greenspace in Paris, France, located in the seventh arrondissement, between the Eiffel Tower to the northwest."   
+            }]
+        },
+        "buildMap": {
+            "info": [{
+                "infoId":"1",
+                "GPXName":"tour_eiffel.gpx",
+                "leftTopCoordinateLat":"48.859995",
+				"leftTopCoordinateLon":"2.288420",
+                "rightBottomCoordinateLat":"48.852366",
+				"rightBottomCoordinateLon":"2.308509",
+                "FileName1080p":"tour_eiffel_1080.jpg",
+				"RankingBackground":"tour_eiffel_ranking_bg.jpg",
+                "smallFileName":"map-photo_tour_eiffel.png",
+                "objectFileName":"get-view_tour_eiffel.png",
+				"RunwayTtype":"ring"
+            }]
+        },
+        "raceRoom": {
+            "info": [{
+                "infoId":"1",
+                "category":"race",
+                "raceOrientation":"y",
+                "raceLap":"1",
+                "raceManLimit":"8",
+                "raceCloseTime":"None"                    
+            }]
+        },
+        "limitation": {
+            "info": [{
+                "infoId":"1",
+                "createRaceLevel":"1",
+                "joinRaceLevel":"1",
+                "createRaceQualify":"None",
+                "joinRaceQualify":"None",
+                "label":"None",
+                "location":"None",
+                "model":"None"             
+            }]
+        }
+    }
+}

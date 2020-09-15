@@ -1,0 +1,67 @@
+{
+    "map": {
+        "basic": {
+		    "mapId":"9",
+			"mapCode":"1",
+            "info": [{
+                "language":"TW",
+                "mapName":"阿里山公路路跑體驗賽",
+                "country":"台灣",
+                "city":"嘉義縣",
+                "property":"國際馬拉松、景點",
+                "introduce":"阿里山擁有豐富的自然與人文資源，日出、雲海、森林、鐵道以及原住民文化。海拔2000公尺以上的高山，享受高山的美景"                 
+            },{
+                "language":"CN",
+                "mapName":"阿里山公路路跑体验赛",
+                "country":"台湾",
+                "city":"嘉义县",
+                "property":"国际马拉松、景点",
+                "introduce":"阿里山拥有丰富的自然与人文资源，日出、云海、森林、铁道以及原住民文化。海拔2000公尺以上的高山，享受高山的美丽"   
+            },{
+                "language":"EN",
+                "mapName":"Alishan Road Running Experience",
+                "country":"Taiwan",
+                "city":"Chiayi County",
+                "property":"marathon,Attractions",
+                "introduce":"Alishan has a wealth of natural and cultural resources, sunrise, sea of clouds, forests, railways and aboriginal culture. Enjoy the beauty of the high mountains in the mountains above 2000 meters above sea level."   
+            }]
+        },
+        "buildMap": {
+            "info": [{
+                "infoId":"1",
+                "GPXName":"alishan_road_race_experience.gpx",
+                "leftTopCoordinateLat":"23.515215",
+				"leftTopCoordinateLon":"120.785697",
+                "rightBottomCoordinateLat":"23.493761",
+				"rightBottomCoordinateLon":"120.827081",
+                "FileName1080p":"alishan_1080.jpg",
+				"RankingBackground":"alishan_ranking_bg.jpg",
+                "smallFileName":"map-photo_alishan.png",
+                "objectFileName":"get-view_alishan.png",
+				"RunwayTtype":"line"
+            }]
+        },
+        "raceRoom": {
+            "info": [{
+                "infoId":"1",
+                "category":"race",
+                "raceOrientation":"y",
+                "raceLap":"1",
+                "raceManLimit":"16",
+                "raceCloseTime":"None"                    
+            }]
+        },
+        "limitation": {
+            "info": [{
+                "infoId":"1",
+                "createRaceLevel":"1",
+                "joinRaceLevel":"1",
+                "createRaceQualify":"None",
+                "joinRaceQualify":"None",
+                "label":"None",
+                "location":"None",
+                "model":"None"             
+            }]
+        }
+    }
+}

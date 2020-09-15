@@ -1,0 +1,77 @@
+﻿{
+  "map": {
+    "basic": {
+      "mapId": "40",
+      "mapCode": "12",
+      "info": [
+        {
+          "language": "TW",
+          "mapName": "牙買加池塘",
+          "country": "美國",
+          "city": "波士頓",
+          "property": "路跑",
+          "introduce": "位於波士頓、布魯克蘭和牙買加平原三地交界處的牙買加池塘,水面面積達到68英畝，湖的平均水深是25英尺,湖中心的水深超過50英尺。 沿湖一周供人們散步、跑步、騎車或鍛煉或釣魚的小馬路長1.5英里,沿途觀賞風景十分愜意,在夏天的傍晚是周圍鄰居消夏的好去處。早晨人們來這裡跑步,白天釣魚、划船,傍晚散步、遛狗,在波士頓這個生活、工作節奏都很快的城市,平靜的水面、清新的空氣、以及長在湖邊水中歷經滄桑的大樹無疑給人們帶來了一種難得的安詳感。"
+        },
+        {
+          "language": "CN",
+          "mapName": "牙买加池塘",
+          "country": "美国",
+          "city": "波士顿",
+          "property": "路跑",
+          "introduce": "位于波士顿、布鲁克兰和牙买加平原三地交界处的牙买加池塘,水面面积达到68英亩，湖的平均水深是25英尺,湖中心的水深超过50英尺。 沿湖一周供人们散步、跑步、骑车或锻炼或钓鱼的小马路长1.5英里,沿途观赏风景十分惬意,在夏天的傍晚是周围邻居消夏的好去处。早晨人们来这里跑步,白天钓鱼、划船,傍晚散步、遛狗,在波士顿这个生活、工作节奏都很快的城市,平静的水面、清新的空气、以及长在湖边水中历经沧桑的大树无疑给人们带来了一种难得的安详感。"
+        },
+        {
+          "language": "EN",
+          "mapName": "Jamaica Pond",
+          "country": "US",
+          "city": "Boston",
+          "property": "road running",
+          "introduce": "Jamaica Pond is in the Jamaica Plain neighborhood of Boston, Massachusetts, and was first included in Boston's \"Emerald Necklace\" of parks in 1892. Many people enjoy walking or running on the 1.5 mile path around the pond. Street parking can be found on Perkins Street , on the pond's west side."
+        }
+      ]
+    },
+    "buildMap": {
+      "info": [
+        {
+          "infoId": "1",
+          "GPXName": "jamaica_pond.gpx",
+          "leftTopCoordinateLat": "42.322203",
+          "leftTopCoordinateLon": "-71.128011",
+          "rightBottomCoordinateLat": "42.312764",
+          "rightBottomCoordinateLon": "-71.105499",
+          "FileName1080p": "jamaica_pond_1080.jpg",
+          "RankingBackground": "jamaica_pond_ranking_bg.jpg",
+          "smallFileName": "map-photo_jamaica_pond.jpg",
+          "objectFileName": "get-view_jamaica_pond.png",
+          "RunwayTtype": "line"
+        }
+      ]
+    },
+    "raceRoom": {
+      "info": [
+        {
+          "infoId": "1",
+          "category": "race",
+          "raceOrientation": "y",
+          "raceLap": "1",
+          "raceManLimit": "16",
+          "raceCloseTime": "None"
+        }
+      ]
+    },
+    "limitation": {
+      "info": [
+        {
+          "infoId": "1",
+          "createRaceLevel": "1",
+          "joinRaceLevel": "1",
+          "createRaceQualify": "None",
+          "joinRaceQualify": "None",
+          "label": "None",
+          "location": "None",
+          "model": "None"
+        }
+      ]
+    }
+  }
+}

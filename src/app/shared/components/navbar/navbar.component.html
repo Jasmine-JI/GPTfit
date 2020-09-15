@@ -1,7 +1,7 @@
 <nav class="navbar fixed-top navbar-expand-lg navabar-color bg-color navbar-toggle">
   <a class="navbar-brand nav-item" [routerLink]="['/']">
-    <h2 style="font-weight: 700">
-      center
+    <h2 style="font-family: 'Russo One', sans-serif;">
+      GPTfit
       <span class="alpha-text" *ngIf="isAlphaVersion">alpha</span>
     </h2>
   </a>
@@ -56,10 +56,10 @@
       </li>
 
       <li class="nav-item" [class.active]="navItemNum === 2"
-        *ngIf="!isShowResetPwd && false"
+        *ngIf="!isShowResetPwd"
         (click)="chooseNavItem(2)"
       >
-        <a class="nav-link" [routerLink]="['/leaderboard']">{{ "universal_race_leaderboard" | translate}}</a>
+        <a class="nav-link" [routerLink]="['/official-activity']" *ngIf="!noActivity">官方活動頁面</a>
       </li>
       <li class="nav-item" *ngIf="isShowResetPwd">
         <a class="nav-link" (click)="reloadPage()">Reset Password</a>

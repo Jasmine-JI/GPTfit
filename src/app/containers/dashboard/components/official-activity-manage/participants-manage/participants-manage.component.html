@@ -1,0 +1,172 @@
+<div class="flexCol" [style.cursor]="uiFlag.isLoading ? 'wait' : ''">
+  <section class="flexRow" style="align-items: center;">
+    <span style="display: flex; align-items: center; justify-content: center; cursor: pointer;" (click)="handleReturn()">
+      <i
+        class="icon-svg_web-icon_p1_073-level_fold"
+        style="font-size: 42px; color: rgba(188, 188, 188, 1);"
+      ></i>
+      返回列表
+    </span>
+    <h3 style="font-weight: bold; margin: 0 auto; padding-right: 10vw;">{{ activity?.name }}</h3>
+    <i class="icon-svg_web-icon_p1_009-delete delete__switch__btn" [class.delete__mode]="uiFlag.deleteMode" (click)="switchDeleteMode()"></i>
+  </section>
+  <section class="flexRow" style="align-items: center; margin: 30px auto;">
+    <input type="text" #hashIdInput class="input--style" placeholder="輸入驗證碼查詢" (change)="checkEmpty()" />
+    <span class="input__btn" (click)="searchUser()">序號查詢</span>
+  </section>
+  <section style="margin: 10px auto;">
+    <div class="flexRow" style="border-bottom: 1px solid rgba(200, 200, 200, 1);">
+      <span id="userId__column__title">Uid</span>
+      <span id="nickname__column__title">暱稱</span>
+      <span id="account__column__title">帳號</span>
+      <span id="gender__column__title">性別</span>
+      <span id="age__column__title">年齡</span>
+      <span id="apply__column__title">報名時間</span>
+      <span id="status__column__title">狀態</span>
+      <span id="group__column__title">分組</span>
+    </div>
+    <div class="flexCol">
+      <div *ngFor="let _group of searchRes; let gIdx = index;">
+        <div
+          class="flexRow"
+          style="position: relative; padding: 10px 0px; border-bottom: 1px solid rgba(200, 200, 200, 1); min-height: 60px;"
+          *ngFor="let _member of _group.member; let mIdx = index;"
+        >
+          <i class="icon-svg_web-icon_p1_012-close delete__icon" *ngIf="uiFlag.deleteMode" (click)="deleteUser(gIdx, mIdx)"></i>
+          <span class="userId__column__content">{{ _member.userId }}</span>
+          <span class="nickname__column__content">{{ _member.nickname }}</span>
+          <span class="account__column__content">{{ _member.account }}</span>
+          <span class="gender__column__content" *ngIf="_member.gender === 0">男</span>
+          <span class="gender__column__content" *ngIf="_member.gender === 1">女</span>
+          <span class="age__column__content">{{ _member.age }}</span>
+          <span class="apply__column__content">{{ _member.applyTimeStamp | timeFormat: 'YYYY-MM-DD HH:mm' }}</span>
+          <div
+            class="status__column__content"
+            style="position: relative;"
+            [style.background-color]="_member.status === 'checking' ? 'rgba(255, 251, 146, 1)' : 'rgba(141, 240, 203, 1)'"
+            (click)="showEditPayInfo($event, gIdx, mIdx)"
+          >
+            <span *ngIf="_member.status === 'checking'">尚未繳費</span>
+            <span *ngIf="_member.status === 'checked'">繳費完成</span>
+            <mat-icon style="font-size: 8px; width: 4px;">create</mat-icon>
+          </div>
+          <div class="group__column__content" style="position: relative;" (click)="showGroupSelector(gIdx, mIdx)">
+            {{ _group.groupName }}
+            <div
+              id="group__list"
+              class="flexCol"
+              *ngIf="uiFlag.groupSelectorObj.group === gIdx && uiFlag.groupSelectorObj.member === mIdx">
+              <span
+                class="group__list__item"
+                *ngFor="let _list of activity.group; let groupIdx = index;"
+                (click)="changeGroup(gIdx, mIdx, groupIdx)"
+              >
+                {{ _list.groupName }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section
+    style="
+      position: fixed;
+      border: 1px solid rgba(150, 150, 150, 1);
+      padding: 20px;
+      width: 360px;
+      background-color: white;
+      z-index: 2;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    "
+    [style.top]="uiFlag.payInfo.y"
+    [style.left]="uiFlag.payInfo.x"
+    (click)="stopPropagation($event)"
+    *ngIf="uiFlag.payInfo.showEditPayInfo"
+  >
+    <div class="flexCol">
+      <h4 class="pay__info" style="border-bottom: 1px solid; padding-bottom: 7px;">
+        {{ searchRes[uiFlag.payInfo.gId].member[uiFlag.payInfo.mId].nickname }}
+      </h4>
+      <div class="flexCol pay__info">
+        <h4>狀態</h4>
+        <div class="flexRow">
+          <div class="flexRow check__box__item" (click)="checkStatus('checked')">
+            <div
+              class="check__box"
+              [class.check__box__checked]="searchRes[uiFlag.payInfo.gId].member[uiFlag.payInfo.mId].status === 'checked'"
+            ></div>
+            <span class="check__box__title" style="background-color: rgba(141, 240, 203, 1);">
+              繳費完成
+            </span>
+          </div>
+          <div class="flexRow check__box__item" (click)="checkStatus('checking')">
+            <div
+              class="check__box"
+              [class.check__box__checked]="searchRes[uiFlag.payInfo.gId].member[uiFlag.payInfo.mId].status === 'checking'"
+            ></div>
+            <span class="check__box__title" style="background-color: rgba(255, 251, 146, 1);">
+              尚未繳費
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="flexCol pay__info">
+        <h4>單號</h4>
+        <input
+          type="text"
+          [value]="searchRes[uiFlag.payInfo.gId].member[uiFlag.payInfo.mId].orderNum ? searchRes[uiFlag.payInfo.gId].member[uiFlag.payInfo.mId].orderNum : ''"
+          (change)="saveOrderNum($event)"
+        >
+      </div>
+      <div class="flexCol pay__info">
+        <h4>備註</h4>
+        <textarea
+          style="resize: none; height: 30px;"
+          [value]="searchRes[uiFlag.payInfo.gId].member[uiFlag.payInfo.mId].remarks ? searchRes[uiFlag.payInfo.gId].member[uiFlag.payInfo.mId].remarks : ''"
+          (change)="saveRemarks($event)"
+          (focus)="stopPropagation($event)"
+        ></textarea>
+      </div>
+    </div>
+  </section>
+  <section class="flexRow" style="align-items: center; margin: 10px auto;">
+    <input type="text" #accountInput class="input--style" placeholder="請輸入User Id" />
+    <span class="input__btn" (click)="addUser()">手動報名</span>
+  </section>
+  <section class="flexRow" style="align-items: center; margin: 10px auto;">
+    <input type="text" #groupInput class="input--style" placeholder="請輸入群組hash id" />
+    <span class="input__btn" (click)="addGroup()">群組報名</span>
+  </section>
+  <section style="margin: 20px auto;" *ngIf="activity && activity.delMember.length > 0">
+    <h3>刪除列表</h3>
+    <div class="flexRow" style="border-bottom: 1px solid rgba(200, 200, 200, 1);">
+      <span id="userId__column__title">Uid</span>
+      <span id="nickname__column__title">暱稱</span>
+      <span id="account__column__title">帳號</span>
+      <span id="gender__column__title">性別</span>
+      <span id="age__column__title">年齡</span>
+      <span id="apply__column__title">報名時間</span>
+      <span id="status__column__title">刪除者</span>
+      <span id="group__column__title">刪除時間</span>
+    </div>
+    <div class="flexCol">
+      <div *ngFor="let _delMember of activity?.delMember; let _delIdx = index;">
+        <div
+          class="flexRow"
+          style="position: relative; padding: 10px 0px; border-bottom: 1px solid rgba(200, 200, 200, 1); min-height: 60px;"
+        >
+          <span class="userId__column__content">{{ _delMember.userId }}</span>
+          <span class="nickname__column__content">{{ _delMember.nickname }}</span>
+          <span class="account__column__content">{{ _delMember.account }}</span>
+          <span class="gender__column__content" *ngIf="_delMember.gender === 0">男</span>
+          <span class="gender__column__content" *ngIf="_delMember.gender === 1">女</span>
+          <span class="age__column__content">{{ _delMember.age }}</span>
+          <span class="apply__column__content">{{ _delMember.applyTimeStamp | timeFormat: 'YYYY-MM-DD HH:mm' }}</span>
+          <span class="deletor__column__content">{{ _delMember.editInfo.editorId }}</span>
+          <span class="del__column__content">{{ _delMember.editInfo.editTimestamp | timeFormat: 'YYYY-MM-DD HH:mm' }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

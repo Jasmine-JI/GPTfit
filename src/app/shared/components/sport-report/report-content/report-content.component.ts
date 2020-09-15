@@ -1,5 +1,5 @@
 import { Component, OnInit, Output, OnChanges, OnDestroy, EventEmitter } from '@angular/core';
-import * as moment from 'moment';
+import moment from 'moment';
 import { Subject } from 'rxjs';
 import { first, takeUntil, tap, switchMap } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
@@ -567,6 +567,14 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
         typeRowHrZoneThree = 0,
         typeRowHrZoneFour = 0,
         typeRowHrZoneFive = 0;
+
+    if (this.activitiesList === undefined) {
+      setTimeout(() => {
+        this.calPerCategoryData();
+      });
+
+      return false;
+    }
 
     for (let i = 0; i < this.activitiesList.length; i++) {
       typeAllDataDate.unshift(this.activitiesList[i].startTime.split('T')[0]);

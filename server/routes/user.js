@@ -1,4 +1,5 @@
 var express = require('express');
+var searchNickname = require('../models/user_id').searchNickname;
 
 var router = express.Router();
 var checkAccessRight = require('../models/auth.model').checkAccessRight;
@@ -41,10 +42,12 @@ router.get('/userAvartar', function (req, res, next) {
     }
   } = req;
   const token = req.headers['authorization'];
-  checkAccessRight(token).then(_res => {
+  checkAccessRight(token, 20).then(_res => {
     if (_res) {
       const sql = `
-        select login_acc, icon_small, icon_middle, icon_large, e_mail, phone, country_code, active_status, time_stamp, timestamp_reset_passwd from ?? where user_id = ?;
+        select login_acc, icon_small, icon_middle, icon_large, e_mail, phone, country_code, active_status, time_stamp, timestamp_reset_passwd, gender, birthday
+        from ??
+        where user_id = ?;
       `;
       con.query(sql, ['user_profile', userId], function (err, rows) {
         if (err) {
@@ -65,6 +68,8 @@ router.get('/userAvartar', function (req, res, next) {
           enableStatus = rows[0].active_status;
           lastLogin = rows[0].time_stamp;
           lastResetPwd = rows[0].timestamp_reset_passwd;
+          gender = rows[0].gender;
+          birthday = rows[0].birthday;
         }
 
         res.json({
@@ -78,7 +83,9 @@ router.get('/userAvartar', function (req, res, next) {
           phone,
           enableStatus,
           lastLogin,
-          lastResetPwd
+          lastResetPwd,
+          gender,
+          birthday
         });
       });
     } else {
@@ -136,6 +143,33 @@ router.post('/getLogonData_v2', function (req, res, next) {
 
     });
   });
+});
+
+// 使用關鍵字尋找相關暱稱(auto complete list)-kidin-1090908
+router.post('/search_nickname', function (req, res, next) {
+  const {
+    con,
+    body
+  } = req;
+
+  const result = searchNickname(body.keyword).then(result => {
+    if (result) {
+      return res.json({
+        resultCode: 200,
+        resultMessage: "Get result success.",
+        nickname: result
+      });
+
+    } else {
+      return res.json({
+        resultCode: 400,
+        resultMessage: "Not found.",
+      })
+
+    }
+
+  });
+
 });
 
 // Exports

@@ -1,0 +1,78 @@
+﻿{
+  "map": {
+    "basic": {
+      "mapId": "40",
+      "mapCode": "12",
+      "info": [
+        {
+          "language": "TW",
+          "mapName": "波士頓馬拉松",
+          "country": "美國",
+          "city": "波士頓",
+          "property": "路跑",
+          "introduce": "每年於愛國者日（四月的第三個星期一）在美國麻薩諸塞州波士頓舉行的馬拉松比賽。1896年夏季奧林匹克運動會的成功催生了於1897年創立的波士頓馬拉松，這是全世界最古老的馬拉松比賽，也是世界馬拉松大滿貫賽事之一。現在波士頓田徑協會主辦此項事。波士頓馬拉松是世界上最受矚目的馬拉松賽之一，每年都有不下50萬人沿路在穿越美國馬薩諸塞州八個城市的跑道旁圍觀，約2萬多人參賽。"
+        },
+        {
+          "language": "CN",
+          "mapName": "波士顿马拉松",
+          "country": "美国",
+          "city": "波士顿",
+          "property": "路跑",
+          "introduce": "每年于爱国者日（四月的第三个星期一）在美国麻萨诸塞州波士顿举行的马拉松比赛。1896年夏季奥林匹克运动会的成功催生了于1897年创立的波士顿马拉松，这是全世界最古老的马拉松比赛，也是世界马拉松大满贯赛事之一。现在波士顿田径协会主办此项事。波士顿马拉松是世界上最受瞩目的马拉松赛之一，每年都有不下50万人沿路在穿越美国马萨诸塞州八个城市的跑道旁围观，约2万多人参赛。"
+
+        },
+        {
+          "language": "EN",
+          "mapName": "Boston Marathon",
+          "country": "US",
+          "city": "Boston",
+          "property": "road running",
+          "introduce": "The Boston Marathon is an annual marathon race hosted by several cities in greater Boston in eastern Massachusetts, United States. It is traditionally held on Patriots' Day, the third Monday of April.Begun in 1897, the event was inspired by the success of the first marathon competition in the 1896 Summer Olympics.The Boston Marathon is the world's oldest annual marathon and ranks as one of the world's best-known road racing events. It is one of six World Marathon Majors. Its course runs from Hopkinton in southern Middlesex County to Copley Square in Boston."
+        }
+      ]
+    },
+    "buildMap": {
+      "info": [
+        {
+          "infoId": "1",
+          "GPXName": "boston_42k.gpx",
+          "leftTopCoordinateLat": "42.441001",
+          "leftTopCoordinateLon": "-71.536187",
+          "rightBottomCoordinateLat": "42.176530",
+          "rightBottomCoordinateLon": "-70.890190",
+          "FileName1080p": "boston_42k_1080.jpg",
+          "RankingBackground": "boston_42k_ranking_bg.jpg",
+          "smallFileName": "map-photo_boston_42k.jpg",
+          "objectFileName": "get-view_boston_42k.png",
+          "RunwayTtype": "line"
+        }
+      ]
+    },
+    "raceRoom": {
+      "info": [
+        {
+          "infoId": "1",
+          "category": "race",
+          "raceOrientation": "y",
+          "raceLap": "1",
+          "raceManLimit": "16",
+          "raceCloseTime": "None"
+        }
+      ]
+    },
+    "limitation": {
+      "info": [
+        {
+          "infoId": "1",
+          "createRaceLevel": "1",
+          "joinRaceLevel": "1",
+          "createRaceQualify": "None",
+          "joinRaceQualify": "None",
+          "label": "None",
+          "location": "None",
+          "model": "None"
+        }
+      ]
+    }
+  }
+}

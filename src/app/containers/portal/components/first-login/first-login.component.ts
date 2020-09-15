@@ -10,7 +10,7 @@ import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
-import * as moment from 'moment';
+import moment from 'moment';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 

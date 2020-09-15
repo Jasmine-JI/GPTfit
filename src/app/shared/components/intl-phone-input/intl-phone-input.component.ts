@@ -11,6 +11,7 @@ import { codes } from '@shared/components/intl-phone-input/countryCode';
 import { FormGroup } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
+import { UtilsService } from '../../services/utils.service';
 
 @Component({
   selector: 'app-intl-phone-input',
@@ -43,7 +44,8 @@ export class IntlPhoneInputComponent implements OnInit, OnChanges {
 
   constructor(
     public translate: TranslateService,
-    private router: Router
+    private router: Router,
+    private utils: UtilsService
   ) {
     translate.onLangChange.subscribe(() => {
       this.getTranslate();
@@ -62,6 +64,13 @@ export class IntlPhoneInputComponent implements OnInit, OnChanges {
       this.countryCode = `+${this.currentCountryCode}`;
       this.onChange.emit(this.countryCode);
       this.emitPhoneNum();
+    } else if (this.utils.getLocalStorageObject('countryCode')) {
+      setTimeout(() => { // 處理develop mode的angular檢查機制
+        this.countryCode = `+${this.utils.getLocalStorageObject('countryCode')}`;
+        this.onChange.emit(this.countryCode);
+        this.emitPhoneNum();
+      });
+
     }
 
     if (this.currentValue) {

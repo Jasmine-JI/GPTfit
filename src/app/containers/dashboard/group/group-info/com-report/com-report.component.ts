@@ -3,7 +3,7 @@ import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
 import SimpleLinearRegression from 'ml-regression-simple-linear';
-import * as moment from 'moment';
+import moment from 'moment';
 import * as _Highcharts from 'highcharts';
 import * as lodash from 'lodash';
 import { first } from 'rxjs/operators';

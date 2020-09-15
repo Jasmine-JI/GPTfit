@@ -2,7 +2,7 @@ import { Component, OnInit, Input, OnChanges } from '@angular/core';
 import { SettingsService } from '../../../services/settings.service';
 import { FormGroup, FormBuilder, Validators, FormArray, FormControl } from '@angular/forms';
 import { UtilsService } from '@shared/services/utils.service';
-import * as moment from 'moment';
+import moment from 'moment';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
@@ -171,13 +171,16 @@ export class UserSettingsComponent implements OnInit, OnChanges {
       this.isNameLoading = true;
       this.settingsService.updateUserProfile(body).subscribe(res => {
         this.isNameLoading = false;
-        if (res.processResult.resultCode === 200) {
+        if (res.processResult && res.processResult.resultCode === 200) {
           this.userProfileService.refreshUserProfile({
             token,
           });
 
           this.isNameError = false;
           this.inValidText = this.translate.instant('universal_userAccount_fullField');
+        } else if (res.resultCode === 400) {
+          this.inValidText = `error`;
+          this.isNameError = true;
         } else {
           this.inValidText = `${this.translate.instant('universal_activityData_name')} ${this.translate.instant('universal_deviceSetting_repeat')}`;
           this.isNameError = true;
@@ -266,7 +269,14 @@ export class UserSettingsComponent implements OnInit, OnChanges {
         mid: '',
         small: ''
       };
-      image.src = nameIcon;
+
+      if (location.hostname === 'www.gptfit.com') {
+        image.src = nameIcon.replace('cloud.alatech.com.tw', 'www.gptfit.com');
+      } else {
+        image.src = nameIcon;
+      }
+
+      image.setAttribute('crossOrigin', 'Anonymous');
 
       image.onload = () => {
         avatar.large = this.imageToDataUri(image, 256, 256);
@@ -290,7 +300,7 @@ export class UserSettingsComponent implements OnInit, OnChanges {
         this.isSaveUserSettingLoading = true;
         this.settingsService.updateUserProfile(body).subscribe(res => {
           this.isSaveUserSettingLoading = false;
-          if (res.processResult.resultCode === 200) {
+          if (res.processResult && res.processResult.resultCode === 200) {
             // 重新存取身體資訊供各種圖表使用-kidin-1081212
             this.userProfileService.refreshUserProfile({
               token,

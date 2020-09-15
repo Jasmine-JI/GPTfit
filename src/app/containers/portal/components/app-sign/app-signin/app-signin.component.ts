@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '@shared/services/utils.service';
 import { AuthService } from '../../../../../shared/services/auth.service';
@@ -14,7 +14,7 @@ import { formTest } from '../../../models/form-test';
   templateUrl: './app-signin.component.html',
   styleUrls: ['./app-signin.component.scss']
 })
-export class AppSigninComponent implements OnInit, OnDestroy {
+export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
 
   readonly formReg = formTest;
 
@@ -82,6 +82,13 @@ export class AppSigninComponent implements OnInit, OnDestroy {
     passwordPass: false
   };
 
+  @ViewChild('accoutInput') accountInput: ElementRef;
+  @ViewChild('accountInput_web') accountInput_web: ElementRef;
+  @ViewChild('emailInput') emailInput: ElementRef;
+  @ViewChild('emailInput_web') emailInput_web: ElementRef;
+  @ViewChild('password') passwordInput: ElementRef;
+  @ViewChild('password_web') passwordInput_web: ElementRef;
+
   constructor(
     private translate: TranslateService,
     private utils: UtilsService,
@@ -102,7 +109,7 @@ export class AppSigninComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.getTranslate();
 
-    if (location.pathname.indexOf('web') > 0) {
+    if (location.pathname.indexOf('web') > 0 || location.pathname.indexOf('signin') > 0) {
       this.pcView = true;
       this.utils.setHideNavbarStatus(false);
     } else {
@@ -112,8 +119,17 @@ export class AppSigninComponent implements OnInit, OnDestroy {
 
   }
 
+  ngAfterViewInit() {
+      if (this.pcView) {
+        this.accountInput_web.nativeElement.focus();
+      } else {
+        this.accountInput.nativeElement.focus();
+      }
+
+  }
+
   // 取得多國語系翻譯-kidin-1090620
-  getTranslate () {
+  getTranslate() {
     this.subscription.push(
         this.translate.get([
         'universal_userAccount_account',
@@ -133,12 +149,12 @@ export class AppSigninComponent implements OnInit, OnDestroy {
   }
 
   // 返回app-kidin-1090513
-  turnBack () {
+  turnBack() {
     this.router.navigateByUrl('/');
   }
 
   // 判斷使用者輸入的帳號切換帳號類型-kidin-1090518
-  determineAccountType (e) {
+  determineAccountType(e) {
     const account = e.target.value,
           numReg = /^([0-9]*)$/;
     if (account.length !== 0) {
@@ -161,7 +177,11 @@ export class AppSigninComponent implements OnInit, OnDestroy {
           }
         };
 
-        this.checkEmail(formatValue);
+        // 待欄位生成後再檢查
+        setTimeout(() => {
+          this.checkEmail(formatValue);
+        });
+
       }
 
       this.currentAccount = inputAccount;
@@ -175,7 +195,7 @@ export class AppSigninComponent implements OnInit, OnDestroy {
   }
 
   // 取得使用者選擇的帳號類型
-  getAccountType (e) {
+  getAccountType(e) {
     this.loginBody.signInType = +e + 1;
 
     if (+e + 1 === 1) {
@@ -197,7 +217,7 @@ export class AppSigninComponent implements OnInit, OnDestroy {
   }
 
   // 確認使用者信箱格式-kidin-1090511
-  checkEmail (e) {
+  checkEmail(e) {
     this.loginBody.email = e.currentTarget.value;
 
     if (this.loginBody.email.length === 0 || !this.regCheck.email.test(this.loginBody.email)) {
@@ -213,7 +233,7 @@ export class AppSigninComponent implements OnInit, OnDestroy {
   }
 
   // 取得使用者輸入的國碼-kidin-1090504
-  onCodeChange (countryCode) {
+  onCodeChange(countryCode) {
     this.loginBody.countryCode = +countryCode;
     this.regCheck.countryCodePass = true;
 
@@ -221,7 +241,7 @@ export class AppSigninComponent implements OnInit, OnDestroy {
   }
 
   // 取得使用者輸入的電話號碼-kidin-
-  getPhoneNum (phoneNum) {
+  getPhoneNum(phoneNum) {
     if (phoneNum.length === 0) {
       this.regCheck.phonePass = false;
     } else {
@@ -233,7 +253,7 @@ export class AppSigninComponent implements OnInit, OnDestroy {
   }
 
   // 將使用者輸入的密碼進行隱藏-kidin-1090430
-  hidePassword () {
+  hidePassword() {
     const pwInputType = (<HTMLInputElement>document.getElementById('signupPW'));
 
     if (this.displayPW === true) {
@@ -245,7 +265,7 @@ export class AppSigninComponent implements OnInit, OnDestroy {
   }
 
   // 顯示密碼-kidin-1090429
-  toggleDisplayPW () {
+  toggleDisplayPW() {
     if (this.displayPW === false) {
       this.displayPW = true;
     } else {
@@ -256,7 +276,7 @@ export class AppSigninComponent implements OnInit, OnDestroy {
   }
 
   // 確認密碼格式-kidin-1090511
-  checkPassword (e) {
+  checkPassword(e) {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
       this.loginBody.password = e.currentTarget.value;
 
@@ -273,19 +293,34 @@ export class AppSigninComponent implements OnInit, OnDestroy {
   }
 
   // 確認是否所有欄位皆已完成-kidin-1090512
-  checkAll () {
-    if (!this.regCheck.passwordPass) {
-      this.dataIncomplete = true;
-    } else {
+  checkAll() {
 
-      if (this.loginBody.signInType === 1 && !this.regCheck.emailPass) {
-        this.dataIncomplete = true;
-      } else if (this.loginBody.signInType === 2 && (!this.regCheck.countryCodePass || !this.regCheck.phonePass)) {
-        this.dataIncomplete = true;
-      } else {
-        this.dataIncomplete = false;
+    if (this.loginBody.signInType === 1 && !this.regCheck.emailPass) {
+      this.dataIncomplete = true;
+
+      if (this.emailInput) {
+        this.emailInput.nativeElement.focus();
+      } else if (this.emailInput_web) {
+        this.emailInput_web.nativeElement.focus();
+      } else if (this.loginBody.signInType === 1 && this.accountInput) {
+        this.accountInput.nativeElement.focus();
+      } else if (this.loginBody.signInType === 1 && this.accountInput_web) {
+        this.accountInput_web.nativeElement.focus();
       }
 
+    } else if (this.loginBody.signInType === 2 && (!this.regCheck.countryCodePass || !this.regCheck.phonePass)) {
+      this.dataIncomplete = true;
+    } else if (!this.regCheck.passwordPass) {
+      this.dataIncomplete = true;
+
+      if (this.passwordInput) {
+        this.passwordInput.nativeElement.focus();
+      } else {
+        this.passwordInput_web.nativeElement.focus();
+      }
+
+    } else {
+      this.dataIncomplete = false;
     }
 
   }
@@ -304,7 +339,7 @@ export class AppSigninComponent implements OnInit, OnDestroy {
 
     if (this.formReg.email.test(this.loginBody.email)) {
       this.loginBody.signInType = 1;
-    } else if (this.formReg.phone.test(this.loginBody.phone)) {
+    } else if (this.formReg.phone.test(this.loginBody.mobileNumber)) {
       this.loginBody.signInType = 2;
     } else {
       pass = false;
@@ -314,7 +349,7 @@ export class AppSigninComponent implements OnInit, OnDestroy {
   }
 
   // 登入-kidin-1090527
-  login () {
+  login() {
     this.checkAll();
     if (this.doulbleCheck() || this.dataIncomplete === false) {
       this.loginStatus = 'logging';
@@ -327,7 +362,14 @@ export class AppSigninComponent implements OnInit, OnDestroy {
           this.authService.setLoginStatus(true);
           this.loginStatus = 'success';
 
-          if (res.signIn.counter <= 1) {
+          // 儲存國碼方便使用者下次登入
+          if (this.loginBody.signInType === 2) {
+            this.utils.setLocalStorageObject('countryCode', this.loginBody.countryCode);
+          }
+
+          if (location.search.indexOf('action') > -1) {
+            this.navigateAssignPage(location.search);
+          } else if (res.signIn.counter <= 1) {
             this.router.navigateByUrl('/firstLogin-web');
           } else if (this.authService.backUrl.length > 0) {
             location.href = this.authService.backUrl; // 為了讓登入的api request payload清除掉
@@ -369,12 +411,32 @@ export class AppSigninComponent implements OnInit, OnDestroy {
   }
 
   // 轉導至qrcode sign頁面-kidin-1090527
-  navigateToQrcodeSign () {
+  navigateToQrcodeSign() {
 
     if (this.pcView === true) {
       this.router.navigateByUrl('/signInQrcode-web');
     } else {
       this.router.navigateByUrl('/signInQrcode');
+    }
+
+  }
+
+  /**
+   * 跳轉至指定頁面
+   * @param queryString {string}
+   */
+  navigateAssignPage(queryString: string) {
+    const queryArr = queryString.replace('?', '').split('&');
+    if (queryArr.some(_query => _query.indexOf('action') > -1 && _query.indexOf('applyActivity') > -1)) {
+      let fileName: string;
+      queryArr.forEach(_query => {
+        if (_query.indexOf('activity') > -1) {
+          fileName = _query.split('=')[1];
+        }
+
+      });
+
+      this.router.navigateByUrl(`/official-activity?file=${fileName}&action=applyActivity`);
     }
 
   }
@@ -418,12 +480,33 @@ export class AppSigninComponent implements OnInit, OnDestroy {
   }
 
   // 轉導至註冊頁面-kidin-1090529
-  navigateToSignup () {
+  navigateToSignup() {
     this.router.navigateByUrl('/register-web');
   }
 
+  /**
+   * 當使用者按下enter時，進行下一步
+   * @event keypress
+   * @param e {KeyboardEvent}
+   * @param column {string}-欄位
+   * @author kidin-1090817
+   */
+  handleNext(e: KeyboardEvent, column: string) {
+    if (e.key === 'Enter') {
+
+      if (this.pcView) {
+        this[`${column}Input_web`].nativeElement.blur();
+      } else {
+        this[`${column}Input`].nativeElement.blur();
+      }
+
+      this.login();
+    }
+
+  }
+
   // 離開頁面則取消隱藏navbar和清除Interval-kidin-1090514
-  ngOnDestroy () {
+  ngOnDestroy() {
     this.utils.setHideNavbarStatus(false);
     this.subscription.forEach(_subscription => _subscription.unsubscribe());
   }

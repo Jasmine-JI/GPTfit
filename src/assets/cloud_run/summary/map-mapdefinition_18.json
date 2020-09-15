@@ -1,0 +1,77 @@
+{
+  "map": {
+    "basic": {
+      "mapId": "18",
+      "mapCode": "5",
+      "info": [
+        {
+          "language": "TW",
+          "mapName": "阿里山雲端路跑",
+          "country": "台灣",
+          "city": "嘉義",
+          "property": "路跑",
+          "introduce": "海拔2000公尺以上的高山，阿里山擁有豐富的自然與人文資源，日出、雲海、森林、鐵道以及原住民文化，阿里山更是空氣清淨品質區域，全台唯一阿里山高山路跑，邀請您一同體驗高山之美。"
+        },
+        {
+          "language": "CN",
+          "mapName": "阿里山云端路跑",
+          "country": "台湾",
+          "city": "嘉义",
+          "property": "路跑",
+          "introduce": "海拔2000公尺以上的高山，阿里山拥有丰富的自然与人文资源，日出、云海、森林、铁道以及原住民文化，阿里山更是空气清净品质区域，全台唯一阿里山高山路跑，邀请您一同体验高山之美。"
+        },
+        {
+          "language": "EN",
+          "mapName": "Alishan Above Cloud",
+          "country": "Taiwan",
+          "city": "Chayi",
+          "property": "road running",
+          "introduce": "Rise above 2000m, Alishan famous for its rich nature and culture, from sun rise, cloud sea, forest, rail to native culture, Alishan is also clean air zone, the only Alishan high mountain road running, you are welcome to join and enjoy."
+        }
+      ]
+    },
+    "buildMap": {
+      "info": [
+        {
+          "infoId": "1",
+          "GPXName": "alishan_10k.gpx",
+          "leftTopCoordinateLat": "23.515009",
+          "leftTopCoordinateLon": "120.789650",
+          "rightBottomCoordinateLat": "23.493599",
+          "rightBottomCoordinateLon": "120.831071",
+          "FileName1080p": "alishan_10k_1080.jpg",
+          "RankingBackground": "alishan_10k_ranking_bg.jpg",
+          "smallFileName": "map-photo_alishan_10k.png",
+          "objectFileName": "get-view_alishan_10k.png",
+          "RunwayTtype": "line"
+        }
+      ]
+    },
+    "raceRoom": {
+      "info": [
+        {
+          "infoId": "1",
+          "category": "race",
+          "raceOrientation": "y",
+          "raceLap": "1",
+          "raceManLimit": "16",
+          "raceCloseTime": "None"
+        }
+      ]
+    },
+    "limitation": {
+      "info": [
+        {
+          "infoId": "1",
+          "createRaceLevel": "1",
+          "joinRaceLevel": "1",
+          "createRaceQualify": "None",
+          "joinRaceQualify": "None",
+          "label": "None",
+          "location": "None",
+          "model": "None"
+        }
+      ]
+    }
+  }
+}

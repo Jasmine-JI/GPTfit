@@ -13,7 +13,7 @@ import { NgProgress, NgProgressRef } from '@ngx-progressbar/core';
 import { Router } from '@angular/router';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { HashIdService } from '@shared/services/hash-id.service';
-import * as moment from 'moment';
+import moment from 'moment';
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';

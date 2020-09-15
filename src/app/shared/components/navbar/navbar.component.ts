@@ -6,6 +6,7 @@ import { AuthService } from '@shared/services/auth.service';
 import { Observable } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../services/utils.service';
+import { OfficialActivityService } from '../../services/official-activity.service';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -14,6 +15,7 @@ import { UtilsService } from '../../services/utils.service';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements OnInit {
+  noActivity = true;
   isShowMask = false;
   isCollapseShow = false;
   isCollapseSearchShow = false;
@@ -42,7 +44,8 @@ export class NavbarComponent implements OnInit {
     private authService: AuthService,
     private utilsService: UtilsService,
     @Inject(WINDOW) private window,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private officialActivityService: OfficialActivityService
   ) {}
 
   ngOnInit() {
@@ -92,7 +95,10 @@ export class NavbarComponent implements OnInit {
     this.globalEventsManager.showCollapseEmitter.subscribe(mode => {
       this.isCollapseSearchShow = mode;
     });
+
+    this.checkOfficialActivity();
   }
+
   @HostListener('window:resize', [])
   onResize() {
     this.deviceWidth = window.innerWidth;
@@ -143,4 +149,23 @@ export class NavbarComponent implements OnInit {
     this.utilsService.setLocalStorageObject('locale', lang);
     this.toggleMask();
   }
+
+  /**
+   * 確認有無官方活動
+   * @author kidin-1090904
+   */
+  checkOfficialActivity() {
+    const body = {
+      token: this.utilsService.getToken() || ''
+    };
+
+    this.officialActivityService.getAllOfficialActivity(body).subscribe(res => {
+      if (res.resultCode === 200 && res.activityList.length > 0) {
+        this.noActivity = false;
+      }
+
+    });
+
+  }
+
 }
