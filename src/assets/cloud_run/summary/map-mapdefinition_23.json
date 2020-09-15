@@ -1,0 +1,76 @@
+{
+  "map": {
+    "basic": {
+      "mapId": "23",
+      "mapCode": "7",
+      "info": [
+        {
+          "language": "TW",
+          "mapName": "平壤馬拉松",
+          "country": "朝鮮",
+          "city": "平壤",
+          "property": "路跑",
+          "introduce": "每年4月在朝鮮民主主義人民共和國首都平壤舉行的國際馬拉松比賽。比賽起始於金日成體育場，環繞金日成體育場周邊四圈，來回橫跨金日成體育場後方的大同江，終點同樣設在金日成體育場。所有運動員慣例被安排入宿Sosan hotel。比賽時間為早上九點開始，氣溫約6-8度，非常適合馬拉松運動員創造佳績。自1981年舉辦第一屆，1984年始分設男女項目。主辦單位通常安排賽前一天向金日成領袖紀念牆獻花致意，賽後當天下午安排參訪金日成故居萬景臺紀念園區。"
+        },
+        {
+          "language": "CN",
+          "mapName": "平壤马拉松",
+          "country": "朝鲜",
+          "city": "平壤",
+          "property": "路跑",
+          "introduce": "每年4月在朝鲜民主主义人民共和国首都平壤举行的国际马拉松比赛。比赛起始于金日成体育场，环绕金日成体育场周边四圈，来回横跨金日成体育场后方的大同江，终点同样设在金日成体育场。所有运动员惯例被安排入宿Sosan hotel。比赛时间为早上九点开始，气温约6-8度，非常适合马拉松运动员创造佳绩。自1981年举办第一届，1984年始分设男女项目。主办单位通常安排赛前一天向金日成领袖纪念墙献花致意，赛后当天下午安排参访金日成故居万景台纪念园区。"        },
+        {
+          "language": "EN",
+          "mapName": "Pyongyang",
+          "country": "North Korea",
+          "city": "Pyongyang",
+          "property": "road running",
+          "introduce": "also known as Mangyongdae Prize International Marathon, is an annual marathon race contested each April in Pyongyang, the capital of North Korea. It is categorised as an IAAF Bronze Label Road Race."
+        }
+      ]
+    },
+    "buildMap": {
+      "info": [
+        {
+          "infoId": "1",
+          "GPXName": "pyongyang_42k.gpx",
+          "leftTopCoordinateLat": "39.071214",
+          "leftTopCoordinateLon": "125.630123",
+          "rightBottomCoordinateLat": "38.971025",
+          "rightBottomCoordinateLon": "125.860896",
+          "FileName1080p": "pyongyang_42k_1080.jpg",
+          "RankingBackground": "pyongyang_42k_ranking_bg.jpg",
+          "smallFileName": "map-photo_pyongyang_42k.jpg",
+          "objectFileName": "get-view_pyongyang_42k.png",
+          "RunwayTtype": "line"
+        }
+      ]
+    },
+    "raceRoom": {
+      "info": [
+        {
+          "infoId": "1",
+          "category": "race",
+          "raceOrientation": "y",
+          "raceLap": "1",
+          "raceManLimit": "16",
+          "raceCloseTime": "None"
+        }
+      ]
+    },
+    "limitation": {
+      "info": [
+        {
+          "infoId": "1",
+          "createRaceLevel": "1",
+          "joinRaceLevel": "1",
+          "createRaceQualify": "None",
+          "joinRaceQualify": "None",
+          "label": "None",
+          "location": "None",
+          "model": "None"
+        }
+      ]
+    }
+  }
+}

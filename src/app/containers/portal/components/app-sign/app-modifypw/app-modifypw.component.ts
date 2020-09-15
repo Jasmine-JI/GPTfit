@@ -154,10 +154,10 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
 
       const profile = res.userProfile;
       if (profile.email) {
-        this.editBody.editType = 1;
+        this.editBody.newAccountType = 1;
         this.editBody.newEmail = profile.email;
       } else {
-        this.editBody.editType = 2;
+        this.editBody.newAccountType = 2;
         this.editBody.newCountryCode = profile.countryCode;
         this.editBody.newMobileNumber = profile.mobileNumber;
       }
@@ -334,6 +334,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
       } else {
         this.newToken = res.editAccount.newToken;
         this.utils.writeToken(this.newToken);  // 直接在瀏覽器幫使用者登入
+        this.userProfileService.refreshUserProfile({token: this.newToken});
         this.authService.setLoginStatus(true);
         this.finishEdit(this.newToken);
         this.sending = false;

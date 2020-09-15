@@ -16,7 +16,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import * as moment from 'moment';
+import moment from 'moment';
 import {
   BreakpointObserver,
   Breakpoints

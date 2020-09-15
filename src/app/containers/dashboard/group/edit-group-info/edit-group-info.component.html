@@ -308,7 +308,7 @@
                   <ng-container  *ngFor="let brandAdmItem of brandAdministrators">
                     <app-member-capsule
                       [isAdminInfo]="true"
-                      [isHadMenu]="maxAccessRight <= 29"
+                      [isHadMenu]="maxAccessRight <= 30 && brandAdministrators.length > 1"
                       [title]="brandAdmItem?.memberName"
                       [memberInfo]="brandAdmItem"
                       [name]="brandAdmItem && brandAdmItem?.memberName"

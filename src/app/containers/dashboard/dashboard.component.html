@@ -3,11 +3,11 @@
   *ngIf="!isLoading" [class.minimize-main-nav]="isSideNavOpend"
   style="display: flex;align-items: stretch;"
 >
-  <mat-drawer-container *ngIf="!isPreviewMode">
+  <mat-drawer-container style="z-index: 10;" *ngIf="!isPreviewMode">
     <mat-drawer #sideNav opened={{isDefaultOpend}} mode={{mode}}>
       <nav class="navbar ala-dashboard-nav">
-        <span class="ala-dashboard-logo">
-          center
+        <span class="ala-dashboard-logo" style="font-family: 'Russo One', sans-serif;">
+          GPTfit
           <span class="alpha-text" *ngIf="isAlphaVersion">alpha</span>
         </span>
         <mat-nav-list style="z-index: 3;">
@@ -168,47 +168,14 @@
               </li>
             </mat-expansion-panel>
           </mat-accordion>
-          <mat-accordion multi="false" *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30">
-            <mat-expansion-panel [expanded]="target === 6 || target === 7 || target === 8|| target === 9">
-              <mat-expansion-panel-header  class="ala-expansion-panel-header"
-                [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
-              >
-                <mat-panel-title>
-                  <!--  之後把font awesome 與material icon 擇一-->
-                  <i class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"></i>{{"universal_race_racesManagement" | translate }}
-                </mat-panel-title>
-              </mat-expansion-panel-header>
-              <li class="ala-sidenav-menu-item"
-                (click)="chooseItem(6, sideNav)"
-                [class.ala-sidenav-menu-item__active]="target === 6"
-                [routerLink]="['/dashboard/system/event-management']"
-              >
-                {{"universal_race_racesOverview" | translate }}
-              </li>
-
-              <li class="ala-sidenav-menu-item"
-                (click)="chooseItem(7, sideNav)"
-                [class.ala-sidenav-menu-item__active]="target === 7"
-                [routerLink]="['/dashboard/system/event']"
-              >
-                {{"universal_race_createAndEditRaces" | translate }}
-              </li>
-              <li class="ala-sidenav-menu-item"
-                (click)="chooseItem(8, sideNav)"
-                [class.ala-sidenav-menu-item__active]="target === 8"
-                [routerLink]="['/dashboard/system/event-calendar']"
-              >
-                {{"universal_race_racesLog" | translate }}
-              </li>
-              <li class="ala-sidenav-menu-item"
-                (click)="chooseItem(9, sideNav)"
-                [class.ala-sidenav-menu-item__active]="target === 9"
-                [routerLink]="['/dashboard/system/leaderboard-settings']"
-              >
-                {{"universal_race_updateRanking" | translate }}
-              </li>
-            </mat-expansion-panel>
-          </mat-accordion>
+          <li
+            class="ala-sidenav-item"
+            (click)="chooseItem(6, sideNav)"
+            [class.ala-sidenav-menu-item__active]="target === 6"
+            [routerLink]="['/dashboard/system/event-management']"
+          >
+            <i class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"></i>{{"universal_race_racesManagement" | translate }}
+          </li>
           <mat-accordion multi="false" *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30">
             <mat-expansion-panel [expanded]="target === 11 || target === 12 || target === 22">
               <mat-expansion-panel-header  class="ala-expansion-panel-header"

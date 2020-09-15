@@ -1,9 +1,5 @@
 var mysql = require("mysql");
 var os = require('os');
-const {
-  sendMail
-} = require('../utils/send_mail');
-var moment = require('moment');
 
 var address,
   ifaces = os.networkInterfaces();
@@ -11,12 +7,13 @@ for (var dev in ifaces) {
   ifaces[dev].filter((details) => details.family === 'IPv4' && details.internal === false ? address = details.address : undefined);
 }
 var connectInfo = {};
- var reconnectNum = 0;
- console.log('address: ', address);
+var reconnectNum = 0;
+console.log('address: ', address);
 if (address === '192.168.1.235' || address === '172.17.0.1') {
   connectInfo = {
     host: "192.168.1.234",
-    user: "root",
+    port: "3306",
+    user: "root235",
     password: "A1atech",
     database: "alatech",
     multipleStatements: true

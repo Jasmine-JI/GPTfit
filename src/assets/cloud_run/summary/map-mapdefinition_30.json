@@ -1,0 +1,78 @@
+﻿{
+  "map": {
+    "basic": {
+      "mapId": "30",
+      "mapCode": "9",
+      "info": [
+        {
+          "language": "TW",
+          "mapName": "廈門馬拉松",
+          "country": "中國",
+          "city": "廈門",
+          "property": "路跑",
+          "introduce": "廈門馬拉松由廈門市政府與中國田徑協會共同主辦，創辦于2003年。 比賽規模由初創時的11998人，發展到2014年最高峰時77151人同場競技，包含全程、半程、10公里、5公里等共四個專案。 後出於安全以及比賽專業化發展的考慮，自2015年起嘗試對賽事進行分項和瘦身，將半程、10公里作為配套賽在海滄舉辦。 2017年起繼北京馬拉松之後，成為全國第二個僅設全程專案的專業化馬拉松"
+        },
+        {
+          "language": "CN",
+          "mapName": "厦门马拉松",
+          "country": "中国",
+          "city": "厦门",
+          "property": "路跑",
+          "introduce": "厦门马拉松由厦门市政府与中国田径协会共同主办，创办于2003年。 比赛规模由初创时的11998人，发展到2014年最高峰时77151人同场竞技，包含全程、半程、10公里、5公里等共四个专案。 后出于安全以及比赛专业化发展的考虑，自2015年起尝试对赛事进行分项和瘦身，将半程、10公里作为配套赛在海沧举办。 2017年起继北京马拉松之后，成为全国第二个仅设全程项目的专业化马拉松"
+
+        },
+        {
+          "language": "EN",
+          "mapName": "Xiamen Marathon",
+          "country": "China",
+          "city": "Xiamen",
+          "property": "road running",
+          "introduce": "The Berlin Marathon (branded BMW Berlin Marathon for sponsorship reasons) is a major running and sporting event held annually in Berlin, Germany. The official marathon distance of 42.195 kilometers (26 miles 385 yards) is set up as a citywide road race where professional athletes and amateur runners jointly participate. Initiated in 1974, the event traditionally takes place on the last weekend in September"
+        }
+      ]
+    },
+    "buildMap": {
+      "info": [
+        {
+          "infoId": "1",
+          "GPXName": "xiamen_42k.gpx",
+          "leftTopCoordinateLat": "24.500421",
+          "leftTopCoordinateLon": "118.064284",
+          "rightBottomCoordinateLat": "24.414844",
+          "rightBottomCoordinateLon": "118.230270",
+          "FileName1080p": "xiamen_42k_1080.jpg",
+          "RankingBackground": "xiamen_42k_ranking_bg.jpg",
+          "smallFileName": "map-photo_xiamen_42k.jpg",
+          "objectFileName": "get-view_xiamen_42k.png",
+          "RunwayTtype": "line"
+        }
+      ]
+    },
+    "raceRoom": {
+      "info": [
+        {
+          "infoId": "1",
+          "category": "race",
+          "raceOrientation": "y",
+          "raceLap": "1",
+          "raceManLimit": "16",
+          "raceCloseTime": "None"
+        }
+      ]
+    },
+    "limitation": {
+      "info": [
+        {
+          "infoId": "1",
+          "createRaceLevel": "1",
+          "joinRaceLevel": "1",
+          "createRaceQualify": "None",
+          "joinRaceQualify": "None",
+          "label": "None",
+          "location": "None",
+          "model": "None"
+        }
+      ]
+    }
+  }
+}

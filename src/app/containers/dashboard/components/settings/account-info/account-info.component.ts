@@ -88,7 +88,7 @@ export class AccountInfoComponent implements OnInit {
       if (location.hostname === 'cloud.alatech.com.tw') {
         this.stravaApiDomain = 'https://cloud.alatech.com.tw:5443';
       } else if (location.hostname === 'www.gptfit.com') {
-        this.stravaApiDomain = 'https://www.gptfit.com:5443';
+        this.stravaApiDomain = 'https://www.gptfit.com:6443';
       }
 
     }
@@ -159,7 +159,8 @@ export class AccountInfoComponent implements OnInit {
         'https://www.strava.com/oauth/authorize?' +
         `client_id=${this.clientId}&response_type=code&` +
         `redirect_uri=${this.stravaApiDomain}/api/v1/strava/redirect_uri` +
-        '/1/AlaCenter&state=mystate&approval_prompt=force&scope=activity:write,read');
+        '/1/AlaCenter&state=mystate&approval_prompt=force&scope=activity:write,read'
+      );
     }
 
     const body = {

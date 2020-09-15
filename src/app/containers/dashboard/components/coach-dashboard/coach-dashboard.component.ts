@@ -19,7 +19,7 @@ import { CoachService } from '../../services/coach.service';
 import { ActivatedRoute } from '@angular/router';
 import * as _Highcharts from 'highcharts';
 import { webSocket } from 'rxjs/webSocket';
-import * as moment from 'moment';
+import moment from 'moment';
 import { stockChart } from 'highcharts/highstock';
 
 import { UtilsService } from '@shared/services/utils.service';

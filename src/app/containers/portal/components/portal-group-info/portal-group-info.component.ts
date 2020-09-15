@@ -22,7 +22,6 @@ export class PortalGroupInfoComponent implements OnInit, OnDestroy {
   dispGroupId: string;
   isGroupAdmin = false;
   groupLevel: number;
-  subscription: any;
   constructor(
     private groupService: GroupService,
     private utils: UtilsService,
@@ -79,10 +78,6 @@ export class PortalGroupInfoComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    const token = this.utils.getToken() || '';
-    if (token) {
-      this.subscription.unsubscribe();
-    }
   }
 
 }

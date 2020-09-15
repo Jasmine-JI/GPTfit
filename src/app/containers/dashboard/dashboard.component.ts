@@ -51,7 +51,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   isAlphaVersion = false;
   version: string;
   isHideFooter = false;
-  updateQueryString = '';
+
   constructor(
     private globalEventsManager: GlobalEventsManager,
     private authService: AuthService,
@@ -78,6 +78,9 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
           this.isDefaultOpend = false;
           this.isSideNavOpend = false;
           this.isHideFooter = true;
+        } else if (_val.url.indexOf('/dashboard/system/event-management') > -1) {
+          this.isDefaultOpend = false;
+          this.isSideNavOpend = false;
         } else {
           this.mode = 'side';
           this.isHadContainer = true;
@@ -224,10 +227,6 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.translateService.use(browserLang);
     }
 
-    this.userInfoService.getUpdatedImgStatus().subscribe(res => {
-      this.updateQueryString = res;
-    });
-
     this.userInfoService.getUserId().subscribe(res => {
       this.userId = res;
     });
@@ -250,6 +249,9 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.isSideNavOpend = false;
     } else if (location.pathname.indexOf('/dashboard/coach-dashboard') > -1) {
       this.mode = 'over';
+      this.isDefaultOpend = false;
+      this.isSideNavOpend = false;
+    } else if (location.pathname.indexOf('/dashboard/system/event-management') > -1) {
       this.isDefaultOpend = false;
       this.isSideNavOpend = false;
     } else {

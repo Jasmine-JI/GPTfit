@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import * as moment from 'moment';
+import moment from 'moment';
 import { EventInfoService } from '../../services/event-info.service';
 import { GpxService } from '../../services/gpx.service';
 import { HttpParams } from '@angular/common/http';

@@ -17,9 +17,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { HashIdService } from '@shared/services/hash-id.service';
 import { ShareGroupInfoDialogComponent } from '@shared/components/share-group-info-dialog/share-group-info-dialog.component';
 
-import * as moment from 'moment';
+import moment from 'moment';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, switchMap, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-group-info',
@@ -167,7 +167,20 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
       this.userId = res;
     });
 
-    this.groupService.fetchGroupListDetail(body).subscribe(res => {
+    this.groupService.fetchGroupListDetail(body).pipe(
+      switchMap(res => this.userInfoService.getUpdatedImgStatus().pipe(
+        map(response => {
+          if (response.length !== 0) {
+            const newImage = `${res.info.groupIcon}${response}`;
+            Object.assign(res.info, {groupIcon: newImage});  // 使用者群組圖片後強迫觸發瀏覽器取得新圖片
+          }
+
+          return res;
+        })
+
+      )),
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
       this.groupInfo = res.info;
       this.groupService.saveGroupInfo(this.groupInfo); // 將群組資訊存取進service減少call api次數-kidin-1081227
       const {

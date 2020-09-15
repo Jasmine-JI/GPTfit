@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, OnChanges, EventEmitter, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import * as $ from 'jquery';
-import * as moment from 'moment';
+import jquery from 'jquery';
+import moment from 'moment';
 import 'daterangepicker';
 
 @Component({
@@ -15,6 +15,8 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
   @Input() default: string;
   @Input() pickerType: string;
   @Input() refStartDate: string;
+  @Input() startTimeStamp: number;
+  @Input() endTimeStamp: number;
 
   // 預設上週-kidin-1090330
   defaultDate = {
@@ -39,9 +41,9 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
     this.getDefaultDate();
     this.translate.get('hello.world').subscribe(() => {
 
-      if (this.pickerType) {  // 單一日期選擇器
+      if (this.pickerType === 'singlePicker') {  // 單一日期選擇器
 
-        $('input[name="dates"]').daterangepicker({
+        jquery('input[name="dates"]').daterangepicker({
           singleDatePicker: true,
           showDropdowns: true,
           minYear: +moment().format('YYYY'),
@@ -52,25 +54,39 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
             format: 'YYYY/MM/DD'
           },
           ranges: {
-            [`1 ${this.translate.instant('universal_time_month')}`]:
+            [`1 jquery{this.translate.instant('universal_time_month')}`]:
               [moment(this.refStartDate).subtract(-1, 'month'), moment(this.refStartDate).subtract(-1, 'month')],
-            [`2 ${this.translate.instant('universal_time_month')}`]:
+            [`2 jquery{this.translate.instant('universal_time_month')}`]:
               [moment(this.refStartDate).subtract(-2, 'month'), moment(this.refStartDate).subtract(-2, 'month')],
-            [`3 ${this.translate.instant('universal_time_month')}`]:
+            [`3 jquery{this.translate.instant('universal_time_month')}`]:
               [moment(this.refStartDate).subtract(-3, 'month'), moment(this.refStartDate).subtract(-3, 'month')],
-            [`6 ${this.translate.instant('universal_time_month')}`]:
+            [`6 jquery{this.translate.instant('universal_time_month')}`]:
               [moment(this.refStartDate).subtract(-6, 'month'), moment(this.refStartDate).subtract(-6, 'month')],
-            [`1 ${this.translate.instant('universal_time_year')}`]:
+            [`1 jquery{this.translate.instant('universal_time_year')}`]:
               [moment(this.refStartDate).subtract(-1, 'year'), moment(this.refStartDate).subtract(-1, 'year')],
-            [`2 ${this.translate.instant('universal_time_year')}`]:
+            [`2 jquery{this.translate.instant('universal_time_year')}`]:
               [moment(this.refStartDate).subtract(-2, 'year'), moment(this.refStartDate).subtract(-2, 'year')]
           },
           showCustomRangeLabel: false,
           alwaysShowCalendars: true
         });
+
+      } else if (this.pickerType === 'rangePick') {  // 範圍日期選擇器(無快速選擇自訂日期區間)
+
+        jquery('input[name="dates"]').daterangepicker({
+          startDate: moment(this.defaultDate.startDate),
+          endDate: moment(this.defaultDate.endDate),
+          minYear: 2010,
+          locale: {
+            format: 'YYYY/MM/DD'
+          },
+          showCustomRangeLabel: false,
+          alwaysShowCalendars: true
+        });
+
       } else {  // 範圍日期選擇器
-        // 預設上週-kidin-1090330
-        $('input[name="dates"]').daterangepicker({
+
+        jquery('input[name="dates"]').daterangepicker({
           startDate: moment(this.defaultDate.startDate),
           endDate: moment(this.defaultDate.endDate),
           minYear: 2010,
@@ -95,7 +111,7 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
         });
       }
 
-      $('input[name="dates"]').on('apply.daterangepicker', this.emitDateRange.bind(this));
+      jquery('input[name="dates"]').on('apply.daterangepicker', this.emitDateRange.bind(this));
 
       this.selectDateRange.emit(this.defaultDate);
     });
@@ -104,49 +120,66 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
 
   // 取得預設日期-kidin-1090331
   getDefaultDate () {
-    switch (this.default) {
-      case 'today':
-        this.defaultDate = {
-          startDate: moment().format('YYYY-MM-DDT00:00:00.000Z'),
-          endDate: moment().format('YYYY-MM-DDT23:59:59.999Z')
-        };
-        break;
-      case 'last7Days':
-        this.defaultDate = {
-          startDate: moment().subtract(6, 'days').format('YYYY-MM-DDT00:00:00.000Z'),
-          endDate: moment().format('YYYY-MM-DDT23:59:59.999Z')
-        };
-        break;
-      case 'lastWeek':
-        this.defaultDate = {
-          startDate: moment().subtract(1, 'week').startOf('week').format('YYYY-MM-DDT00:00:00.000Z'),
-          endDate: moment().subtract(1, 'week').endOf('week').format('YYYY-MM-DDT23:59:59.999Z')
-        };
-        break;
-      case 'last30Days':
-        this.defaultDate = {
-          startDate: moment().subtract(29, 'days').format('YYYY-MM-DDT00:00:00.000Z'),
-          endDate: moment().format('YYYY-MM-DDT23:59:59.999Z')
-        };
-        break;
-      case 'nextYear':
-        this.defaultDate = {
-          startDate: moment().subtract(-1, 'year').format('YYYY-MM-DDT00:00:00.000Z'),
-          endDate: moment().subtract(-1, 'year').format('YYYY-MM-DDT23:59:59.999Z')
-        };
-        break;
-      default:
-        const startDate = this.default.split('_')[0];
-        let endDate;
-        if (this.default.split('_')[1]) {
-          endDate = this.default.split('_')[1];
-        }
-        this.defaultDate = {
-          startDate: moment(startDate).format('YYYY-MM-DDT00:00:00.000Z'),
-          endDate: moment(endDate).format('YYYY-MM-DDT23:59:59.999Z')
-        };
-        break;
+    if (this.default) {
+
+      switch (this.default) {
+        case 'today':
+          this.defaultDate = {
+            startDate: moment().format('YYYY-MM-DDT00:00:00.000Z'),
+            endDate: moment().format('YYYY-MM-DDT23:59:59.999Z')
+          };
+          break;
+        case 'last7Days':
+          this.defaultDate = {
+            startDate: moment().subtract(6, 'days').format('YYYY-MM-DDT00:00:00.000Z'),
+            endDate: moment().format('YYYY-MM-DDT23:59:59.999Z')
+          };
+          break;
+        case 'lastWeek':
+          this.defaultDate = {
+            startDate: moment().subtract(1, 'week').startOf('week').format('YYYY-MM-DDT00:00:00.000Z'),
+            endDate: moment().subtract(1, 'week').endOf('week').format('YYYY-MM-DDT23:59:59.999Z')
+          };
+          break;
+        case 'last30Days':
+          this.defaultDate = {
+            startDate: moment().subtract(29, 'days').format('YYYY-MM-DDT00:00:00.000Z'),
+            endDate: moment().format('YYYY-MM-DDT23:59:59.999Z')
+          };
+          break;
+        case 'nextMonth': // 曆期下個月
+          this.defaultDate = {
+            startDate: moment().subtract(-1, 'month').startOf('month').format('YYYY-MM-DDT00:00:00.000Z'),
+            endDate: moment().subtract(-1, 'month').endOf('month').format('YYYY-MM-DDT23:59:59.999Z')
+          };
+          break;
+        case 'nextYear':
+          this.defaultDate = {
+            startDate: moment().subtract(-1, 'year').format('YYYY-MM-DDT00:00:00.000Z'),
+            endDate: moment().subtract(-1, 'year').format('YYYY-MM-DDT23:59:59.999Z')
+          };
+          break;
+        default:
+          const startDate = this.default.split('_')[0];
+          let endDate;
+          if (this.default.split('_')[1]) {
+            endDate = this.default.split('_')[1];
+          }
+          this.defaultDate = {
+            startDate: moment(startDate).format('YYYY-MM-DDT00:00:00.000Z'),
+            endDate: moment(endDate).format('YYYY-MM-DDT23:59:59.999Z')
+          };
+          break;
+      }
+
+    } else {
+      this.defaultDate = {
+        startDate: moment(this.startTimeStamp).format('YYYY-MM-DDT00:00:00.000Z'),
+        endDate: moment(this.endTimeStamp).format('YYYY-MM-DDT23:59:59.999Z')
+      };
+
     }
+
   }
 
   // 發送日期區間給父組件-kidin-1090330

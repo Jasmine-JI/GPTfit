@@ -3,7 +3,7 @@ import { getUrlQueryStrings } from '@shared/utils/';
 import { QrcodeService } from '../../services/qrcode.service';
 import { HttpParams } from '@angular/common/http';
 import { NgProgress, NgProgressRef } from '@ngx-progressbar/core';
-import * as moment from 'moment';
+import moment from 'moment';
 import { UtilsService } from '@shared/services/utils.service';
 import { TranslateService } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';

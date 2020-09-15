@@ -3,7 +3,9 @@
   "compilerOptions": {
     "outDir": "../out-tsc/app",
     "baseUrl": "./",
-    "types": ["highcharts"]
+    "types": ["highcharts"],
+    "resolveJsonModule": true,
+    "esModuleInterop": true
   },
   "files": [
     "main.ts",

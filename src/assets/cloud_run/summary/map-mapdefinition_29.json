@@ -1,0 +1,77 @@
+﻿{
+  "map": {
+    "basic": {
+      "mapId": "29",
+      "mapCode": "8",
+      "info": [
+        {
+          "language": "TW",
+          "mapName": "柏林中心",
+          "country": "德國",
+          "city": "柏林",
+          "property": "路跑",
+          "introduce": "柏林是歐盟區內人口第3多的城市以及城市面積第8大的城市。它是柏林－布蘭登堡都會區的中心，有來自超過190個國家的5百萬人口。地理上位於歐洲平原，受溫帶季節性氣候影響。城市周圍三分之一的土地由森林、公園、花園、河流和湖泊組成。"
+        },
+        {
+         "language": "CN",
+          "mapName": "柏林中心",
+          "country": "德国",
+          "city": "柏林",
+          "property": "路跑",
+          "introduce": "柏林是欧盟区内人口第3多的城市以及城市面积第8大的城市。它是柏林－布兰登堡都会区的中心，有来自超过190个国家的5百万人口。地理上位於欧洲平原，受温带季节性气候影响。城市周围三分之一的土地由森林丶公园丶花园丶河流和湖泊组成。"
+        },
+        {
+          "language": "EN",
+          "mapName": "Berlin Center",
+          "country": "Germany",
+          "city": "Berlin",
+          "property": "road running",
+          "introduce": "Berlin straddles the banks of the River Spree, which flows into the River Havel in the western borough of Spandau. Among the city's main topographical features are the many lakes in the western and southeastern boroughs formed by the Spree, Havel, and Dahme rivers. Due to its location in the European Plain, Berlin is influenced by a temperate seasonal climate. About one-third of the city's area is composed of forests, parks, gardens, rivers, canals and lakes"
+        }
+      ]
+    },
+    "buildMap": {
+      "info": [
+        {
+          "infoId": "1",
+          "GPXName": "berlin_5k.gpx",
+           "leftTopCoordinateLat": "52.524994",
+          "leftTopCoordinateLon": "13.376862",
+          "rightBottomCoordinateLat": "52.508976",
+          "rightBottomCoordinateLon": "13.423695",
+          "FileName1080p": "berlin_5k_1080.jpg",
+          "RankingBackground": "berlin_5k_ranking_bg.jpg",
+          "smallFileName": "map-photo_berlin_5k.jpg",
+          "objectFileName": "get-view_berlin_5k.png",
+          "RunwayTtype": "line"
+        }
+      ]
+    },
+    "raceRoom": {
+      "info": [
+        {
+          "infoId": "1",
+          "category": "race",
+          "raceOrientation": "y",
+          "raceLap": "1",
+          "raceManLimit": "16",
+          "raceCloseTime": "None"
+        }
+      ]
+    },
+    "limitation": {
+      "info": [
+        {
+          "infoId": "1",
+          "createRaceLevel": "1",
+          "joinRaceLevel": "1",
+          "createRaceQualify": "None",
+          "joinRaceQualify": "None",
+          "label": "None",
+          "location": "None",
+          "model": "None"
+        }
+      ]
+    }
+  }
+}

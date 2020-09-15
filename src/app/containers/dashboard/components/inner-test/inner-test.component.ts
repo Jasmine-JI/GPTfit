@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
 import { last } from 'rxjs/operators';
-import * as moment from 'moment';
+import moment from 'moment';
 
 const errorMsg = 'Error!<br />Please try again later.';
 

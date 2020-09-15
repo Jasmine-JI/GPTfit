@@ -12,7 +12,7 @@ export class UtilsService {
   imgSelected$ = new BehaviorSubject<boolean>(false);
   hideNavbar$ = new BehaviorSubject<boolean>(false);
 
-  setLocalStorageObject(key: string, value) {
+  setLocalStorageObject(key: string, value: any) {
     localStorage.setItem(key, JSON.stringify(value));
   }
 

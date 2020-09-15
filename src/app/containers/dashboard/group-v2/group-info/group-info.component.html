@@ -1,0 +1,316 @@
+<div>
+  <div class="flexRow group__page">
+    <div class="flexCol info__sidebar" *ngIf="!uiFlag.isSmallScreen">
+      <div class="group__icon" style="margin-bottom: 10px;">
+        <img
+          [src]="currentGroupInfo.groupDetail.groupIcon"
+          (error)="this.currentGroupInfo.groupDetail.groupIcon = '/assets/images/group.jpg'"
+        />
+      </div>
+      <div class="flexCol info__section" [class.fold--close]="uiFlag.listFold.groupName">
+        <div class="flexCol section--padding separate__border">
+          <div class="flexRow title__section">
+            <div>
+              <span class="info__title">{{ 'universal_group_group' | translate }}</span>
+              <i class="icon-svg_web-icon_p1_013-share icon__btn"></i>
+            </div>
+            <i
+              class="icon-svg_web-icon_p1_006-unfold icon__btn"
+              [class.icon--rotate]="uiFlag.listFold.groupName"
+              (click)="handleFold('groupName')"
+            ></i>
+          </div>
+          <div class="flexCol">
+            <span class="info__subtitle" *ngIf="currentGroupInfo.groupDetail.brandType === 1">
+              {{ 'universal_group_gym' | translate }}
+            </span>
+            <span class="info__subtitle" *ngIf="currentGroupInfo.groupDetail.brandType === 2">
+              {{ 'universal_group_company' | translate }}
+            </span>
+            <span
+              class="info__content"
+              (click)="handleNavigation(currentGroupInfo.groupDetail.groupRootInfo[2].brandGroupId)"
+              *ngIf="currentGroupInfo.groupLevel > 30 && currentGroupInfo.groupDetail.groupRootInfo"
+            >
+              {{ currentGroupInfo.groupDetail.groupRootInfo[2].brandName }}
+            </span>
+            <span
+              class="current__level"
+              *ngIf="currentGroupInfo.groupLevel === 30"
+            >
+              {{ currentGroupInfo.groupDetail.groupName }}
+            </span>
+          </div>
+          <div class="flexCol" *ngIf="currentGroupInfo.groupLevel >= 40">
+            <span class="info__subtitle" *ngIf="currentGroupInfo.groupDetail.brandType === 1">
+              {{ 'universal_group_branch' | translate }}
+            </span>
+            <span class="info__subtitle" *ngIf="currentGroupInfo.groupDetail.brandType === 2">
+              {{ 'universal_group_companyBranch' | translate }}
+            </span>
+            <span
+              class="info__content"
+              (click)="handleNavigation(currentGroupInfo.groupDetail.groupRootInfo[3].branchGroupId)"
+              *ngIf="currentGroupInfo.groupLevel > 40 && currentGroupInfo.groupDetail.groupRootInfo"
+            >
+              {{ currentGroupInfo.groupDetail.groupRootInfo[3].branchName }}
+            </span>
+            <span
+              class="current__level"
+              *ngIf="currentGroupInfo.groupLevel === 40"
+            >
+              {{ currentGroupInfo.groupDetail.groupName }}
+            </span>
+          </div>
+          <div class="flexCol" *ngIf="currentGroupInfo.groupLevel >= 50">
+            <span class="info__subtitle" *ngIf="currentGroupInfo.groupDetail.brandType === 1">
+              {{ 'universal_group_class' | translate }}
+            </span>
+            <span class="info__subtitle" *ngIf="currentGroupInfo.groupDetail.brandType === 2">
+              {{ 'universal_group_department' | translate }}
+            </span>
+            <span class="current__level">
+              {{ currentGroupInfo.groupDetail.groupName }}
+            </span>
+          </div>
+        </div>
+        <div class="flexRow section--padding" style="justify-content: space-between;">
+          <span class="info__title" *ngIf="currentGroupInfo.groupDetail.groupStatus === 2">
+            {{ 'universal_group_auditSystem' | translate }}
+          </span>
+          <span class="info__title" *ngIf="currentGroupInfo.groupDetail.groupStatus === 1">
+            {{ 'universal_group_freeToJoin' | translate }}
+          </span>
+          <button
+            class="alatech-btn alatech-btn--default"
+            [class.cancelJoin__btn]="user.joinStatus === 1"
+            style="margin-top: 10px;" *ngIf="!user.isGroupAdmin"
+          >
+            <span *ngIf="user.joinStatus === 5" (click)="handleJoinGroup(1)">
+              {{ 'universal_group_applicationsForJoin' | translate }}
+            </span>
+            <span *ngIf="user.joinStatus === 1" (click)="handleJoinGroup(2)">
+              {{ 'universal_group_cancelJoin' | translate }}
+            </span>
+            <span *ngIf="user.joinStatus === 2" (click)="handleJoinGroup(2)">
+              {{ 'universal_group_exitGroup' | translate }}
+            </span>
+          </button>
+        </div>
+      </div>
+      <div
+        class="flexCol info__section section--padding"
+        [class.fold--close]="uiFlag.listFold.groupIntroduction"
+      >
+        <div class="flexRow title__section">
+          <span class="info__title">{{ 'universal_group_introduction' | translate }}</span>
+          <i
+            class="icon-svg_web-icon_p1_006-unfold icon__btn"
+            [class.icon--rotate]="uiFlag.listFold.groupIntroduction"
+            (click)="handleFold('groupIntroduction')"
+          ></i>
+        </div>
+        <div class="flexCol" style="position: relative;">
+          <span id="group__desc" [class.hide__part]="!uiFlag.isShowMoreIntroduction">
+            {{ currentGroupInfo.groupDetail.groupDesc }}
+          </span>
+          <span class="see__more" (click)="handleSeeMore()" *ngIf="!uiFlag.isShowMoreIntroduction">
+            ...{{ 'universal_operating_more' | translate }}
+          </span>
+        </div>
+      </div>
+      <div class="flexCol info__section section--padding" [class.fold--close]="uiFlag.listFold.groupMenu">
+        <div class="flexRow title__section">
+          <span class="info__title">{{ 'universal_operating_menu' | translate }}</span>
+          <i
+            class="icon-svg_web-icon_p1_006-unfold icon__btn"
+            [class.icon--rotate]="uiFlag.listFold.groupMenu"
+            (click)="handleFold('groupMenu')"
+          ></i>
+        </div>
+        <p
+          class="info__list"
+          [class.current__page]="currentContentPage === 'class-analysis-v2'"
+          *ngIf="currentGroupInfo.groupDetail.brandType === 1"
+          (click)="handleShowContent('class-analysis-v2')"
+        >
+          {{ 'universal_group_myObject' | translate: {'object': '課程分析' } }} &gt;
+        </p>
+        <p
+         class="info__list"
+         [class.current__page]="currentContentPage === 'myclass-report'"
+         *ngIf="currentGroupInfo.groupDetail.brandType === 1"
+         (click)="handleShowContent('myclass-report')"
+        >
+          {{ 'universal_group_group' | translate}} {{ 'universal_group_classReport' | translate}} &gt;
+        </p>
+        <p
+         class="info__list"
+         [class.current__page]="currentContentPage === 'sports-report'"
+         *ngIf="currentGroupInfo.groupDetail.brandType === 2"
+         (click)="handleShowContent('sports-report')"
+        >
+          {{ 'universal_activityData_sportReport' | translate }} &gt;
+        </p>
+        <p
+         class="info__list"
+         [class.current__page]="currentContentPage === 'life-tracking-v2'"
+         *ngIf="currentGroupInfo.groupDetail.brandType === 2"
+         (click)="handleShowContent('life-tracking-v2')"
+        >
+          {{ 'universal_lifeTracking_lifeTracking' | translate }} &gt;
+        </p>
+        <p
+         class="info__list"
+         [class.current__page]="currentContentPage === 'cloudrun-report'"
+         (click)="handleShowContent('cloudrun-report')"
+        >
+          {{ 'universal_app_cloudRun' | translate}} &gt;
+        </p>
+        <p
+         class="info__list"
+         [class.current__page]="currentContentPage === 'member-list'"
+         (click)="handleShowContent('member-list')"
+        >
+          {{ 'universal_group_groupMember' | translate }} &gt;
+        </p>
+        <p
+         class="info__list"
+         [class.current__page]="currentContentPage === 'group-architecture'"
+         (click)="handleShowContent('group-architecture')"
+        >
+          {{ 'universal_group_group' | translate }} {{ 'universal_group_layer' | translate }} &gt;
+        </p>
+        <p
+         class="info__list"
+         [class.current__page]="currentContentPage === 'commerce-plan'"
+         *ngIf="currentGroupInfo.groupLevel === 30"
+         (click)="handleShowContent('commerce-plan')"
+        >
+          {{ 'universal_group_program' | translate }} {{ 'universal_group_status' | translate }} &gt;
+        </p>
+        <p
+         class="info__list"
+         [class.current__page]="currentContentPage === 'edit-group'"
+         *ngIf="user.isGroupAdmin"
+         (click)="handleShowContent('edit-group')"
+        >
+          {{ 'universal_group_groupManagement' | translate }} &gt;
+        </p>
+      </div>
+    </div>
+    <div class="flexCol main__content section--padding" style="align-items: center;">
+      <div class="main__image">
+        <img src="/assets/images/introduce/T3.jpg"  style="max-height: 200px; max-width: 100%;" />
+        <div class="flexRow group_allbranch">
+          <span *ngIf="!uiFlag.isSmallScreen && currentGroupInfo.groupLevel >= 30">
+            <!--
+            <span *ngIf="currentGroupInfo.groupLevel > 30 && currentGroupInfo.groupDetail.groupRootInfo">
+              {{ currentGroupInfo.groupDetail.groupRootInfo[2].brandName }}/
+            </span>
+            -->
+            <span class="group__name" *ngIf="currentGroupInfo.groupLevel === 30">
+              {{ currentGroupInfo.groupDetail.groupName }}
+            </span>
+          </span>
+          <span *ngIf="!uiFlag.isSmallScreen && currentGroupInfo.groupLevel >= 40">
+            <!--
+            <span *ngIf="currentGroupInfo.groupLevel > 40 && currentGroupInfo.groupDetail.groupRootInfo">
+              {{ currentGroupInfo.groupDetail.groupRootInfo[3].branchName }}/
+            </span>
+            -->
+            <span class="group__name" *ngIf="currentGroupInfo.groupLevel === 40">
+              {{ currentGroupInfo.groupDetail.groupName }}
+            </span>
+          </span>
+          <span class="group__name" *ngIf="currentGroupInfo.groupLevel >= 50">
+              {{ currentGroupInfo.groupDetail.groupName }}
+          </span>
+
+        </div>
+        <div class="group__icon" *ngIf="uiFlag.isSmallScreen">
+          <img src="/assets/logo.png" />
+        </div>
+      </div>
+
+      <div class="flexCol info__sidebar" *ngIf="uiFlag.isSmallScreen">
+        <div class="flexCol info__section" [class.fold--close]="uiFlag.listFold.groupName">
+          <div class="flexCol section--padding separate__border">
+            <div class="flexRow title__section">
+              <div>
+                <span class="info__title">{{ 'universal_group_group' | translate }}</span>
+                <i class="icon-svg_web-icon_p1_013-share icon__btn"></i>
+              </div>
+              <i
+                class="icon-svg_web-icon_p1_006-unfold icon__btn"
+                [class.icon--rotate]="uiFlag.listFold.groupName"
+                (click)="handleFold('groupName')"
+              ></i>
+            </div>
+            <div class="flexCol">
+              <span class="info__subtitle">{{ 'universal_group_gym' | translate }}</span>
+              <span class="info__subtitle">{{ 'universal_group_company' | translate }}</span>
+              <span class="info__content">Coding</span>
+            </div>
+            <div class="flexCol">
+              <span class="info__subtitle">{{ 'universal_group_branch' | translate }}</span>
+              <span class="info__subtitle">{{ 'universal_group_companyBranch' | translate }}</span>
+              <span class="info__content">Coding</span>
+            </div>
+            <div class="flexCol">
+              <span class="info__subtitle">{{ 'universal_group_class' | translate }}</span>
+              <span class="info__subtitle">{{ 'universal_group_department' | translate }}</span>
+              <span class="info__content">Coding</span>
+            </div>
+          </div>
+          <div class="flexRow section--padding">
+            <span class="info__title">{{ 'universal_group_auditSystem' | translate }}</span>
+            <span class="info__title">{{ 'universal_group_freeToJoin' | translate }}</span>
+            <button class="alatech-btn alatech-btn--default" style="margin-top: 10px;">
+              <span>{{ 'universal_group_applicationsForJoin' | translate }}</span>
+              <span>{{ 'universal_group_cancelJoin' | translate }}</span>
+              <span>{{ 'universal_group_exitGroup' | translate }}</span>
+            </button>
+          </div>
+        </div>
+        <div class="flexCol info__section section--padding" [class.fold--close]="uiFlag.listFold.groupIntroduction">
+          <div class="flexRow title__section">
+            <span class="info__title">{{ 'universal_group_introduction' | translate }}</span>
+            <i
+              class="icon-svg_web-icon_p1_006-unfold icon__btn"
+              [class.icon--rotate]="uiFlag.listFold.groupIntroduction"
+              (click)="handleFold('groupIntroduction')"
+            ></i>
+          </div>
+          <div class="flexRow">
+            <span>Coding</span>
+            <span *ngIf="uiFlag.isShowMoreIntroduction">{{ 'universal_operating_more' | translate }}</span>
+          </div>
+        </div>
+        <div class="flexCol info__section section--padding" [class.fold--close]="uiFlag.listFold.groupMenu">
+          <div class="flexRow title__section">
+            <span class="info__title">{{ 'universal_operating_menu' | translate }}</span>
+            <i
+              class="icon-svg_web-icon_p1_006-unfold icon__btn"
+              [class.icon--rotate]="uiFlag.listFold.groupMenu"
+              (click)="handleFold('groupMenu')"
+            ></i>
+          </div>
+          <p class="info__list">{{ 'universal_group_myObject' | translate: {'object': '課程分析' } }} &gt;</p>
+          <p class="info__list">{{ 'universal_group_group' | translate}} {{ 'universal_group_classReport' | translate}} &gt;</p>
+          <p class="info__list">{{ 'universal_app_cloudRun' | translate}} &gt;</p>
+          <p class="info__list">{{ 'universal_activityData_sportReport' | translate }} &gt;</p>
+          <p class="info__list">{{ 'universal_lifeTracking_lifeTracking' | translate }} &gt;</p>
+          <p class="info__list">{{ 'universal_group_groupMember' | translate }} &gt;</p>
+          <p class="info__list">{{ 'universal_group_group' | translate }} {{ 'universal_group_layer' | translate }} &gt;</p>
+          <p class="info__list">{{ 'universal_group_program' | translate }} {{ 'universal_group_status' | translate }} &gt;</p>
+          <p class="info__list">{{ 'universal_group_groupManagement' | translate }} &gt;</p>
+        </div>
+      </div>
+
+      <div style="width: 100%;">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </div>
+</div>

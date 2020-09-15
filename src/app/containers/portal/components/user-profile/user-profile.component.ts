@@ -87,7 +87,7 @@ export class UserProfileComponent implements OnInit {
         const { nickname, avatarUrl, description } = res.userProfile;
         this.description = description;
         this.userName = nickname;
-        this.userImg = avatarUrl ? `${avatarUrl} ${this.updateQueryString}` : '/assets/images/user2.png';
+        this.userImg = avatarUrl ? `${avatarUrl}${this.updateQueryString}` : '/assets/images/user2.png';
       }
 
     });

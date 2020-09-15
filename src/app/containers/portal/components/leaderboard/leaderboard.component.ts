@@ -14,7 +14,7 @@ import {
 import { GlobalEventsManager } from '@shared/global-events-manager';
 import { forkJoin } from 'rxjs';
 import { IMyDpOptions } from 'mydatepicker';
-import * as moment from 'moment';
+import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({

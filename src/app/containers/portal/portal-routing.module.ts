@@ -15,6 +15,8 @@ import { Page404Component } from '../../shared/components/page404/page404.compon
 import { Page403Component } from '../../shared/components/page403/page403.component';
 import { QrcodeUploadComponent } from '../dashboard/components/qrcode-upload/qrcode-upload.component';
 
+import { OfficialActivityComponent } from './components/official-activity/official-activity.component';
+
 import { AppSignupComponent } from './components/app-sign/app-signup/app-signup.component';
 import { AppSigninComponent } from './components/app-sign/app-signin/app-signin.component';
 import { AppEnableComponent } from './components/app-sign/app-enable/app-enable.component';
@@ -23,6 +25,7 @@ import { AppModifypwComponent } from './components/app-sign/app-modifypw/app-mod
 import { AppChangeAccountComponent } from './components/app-sign/app-change-account/app-change-account.component';
 import { AppQrcodeLoginComponent } from './components/app-sign/app-qrcode-login/app-qrcode-login.component';
 import { AppFirstLoginComponent } from './components/app-sign/app-first-login/app-first-login.component';
+
 
 const routes: Routes = [
   {
@@ -74,6 +77,11 @@ const routes: Routes = [
       {
         path: 'qrupload/activityfile',
         component: QrcodeUploadComponent
+      },
+      {
+        path: 'signin',
+        component: AppSigninComponent,
+        canActivate: [SigninGuard]
       },
       {
         path: 'register',
@@ -144,6 +152,10 @@ const routes: Routes = [
       {
         path: 'firstLogin-web',
         component: AppFirstLoginComponent
+      },
+      {
+        path: 'official-activity',
+        component: OfficialActivityComponent
       },
       { path: '404', component: Page404Component },
       { path: '403', component: Page403Component }

@@ -1,0 +1,445 @@
+<ng-container *ngIf="pageSetting">
+  <div class="flexCol">
+    <section class="flexRow" style="justify-content: space-between; align-items: center;">
+      <span style="display: flex; align-items: center; justify-content: center; cursor: pointer;" (click)="handleReturn()">
+        <i
+          class="icon-svg_web-icon_p1_073-level_fold"
+          style="font-size: 42px; color: rgba(188, 188, 188, 1);"
+        ></i>
+        返回列表
+      </span>
+      <div class="flexRow">
+        <h3 style="font-weight: bold;" *ngIf="uiFlag.showEventTitleInput === false">{{ pageSetting?.name }}</h3>
+        <input
+          type="text"
+          #eventTitle
+          style="border: 0px; border-bottom: 2px solid rgba(59, 134, 255, 1); outline: none;"
+          [(value)]="pageSetting.name"
+          (click)="stopClickPropagation($event)"
+          (keypress)="saveEventTitle($event)"
+          (focusout)="saveEventTitle($event)"
+          *ngIf="uiFlag.showEventTitleInput === true"
+        />
+        <mat-icon
+          class="edit__icon"
+          style="font-size: 16px;"
+          (click)="showEventTitleIntput($event, true)"
+          *ngIf="uiFlag.showEventTitleInput === false"
+        >create</mat-icon>
+  <!--
+        <i
+          class="icon-svg_web-icon_p1_012-close edit__icon"
+          style="color: red;"
+          (click)="showEventTitleIntput(false)"
+          *ngIf="uiFlag.showEventTitleInput === true"
+        ></i>
+        <i
+          class="icon-svg_web-icon_p2_097-ok edit__icon"
+          style="color: green;"
+          (click)="saveEventTitle()"
+          *ngIf="uiFlag.showEventTitleInput === true"
+        ></i>
+  -->
+      </div>
+      <div class="flexRow" style="align-items: center;">
+        <span class="event__switch__btn">
+          <div
+            class="switch__btn"
+            [class.switch__btn__on]="pageSetting?.eventStatus === 'public'"
+            (click)="handlePublicEvent()"
+          >
+            <span
+              class="switch__rod"
+              [class.switch__rod__right]="pageSetting?.eventStatus === 'public'"
+            ></span>
+          </div>
+          <span *ngIf="pageSetting?.eventStatus === 'public'">頁面公開</span>
+          <span *ngIf="pageSetting?.eventStatus === 'private'">頁面隱藏</span>
+        </span>
+        <mat-icon
+          class="operating__icon"
+          [class.btn__saving]="uiFlag.isSaving"
+          [class.btn__saved]="uiFlag.isSaved"
+          [class.btn__not__saved]="!uiFlag.isSaved"
+          [style.pointer-events]="uiFlag.isSaved ? 'none' : ''"
+          (click)="savePageSetting()"
+        >save</mat-icon>
+        <mat-icon class="operating__icon" (click)="previewSetting()">remove_red_eye</mat-icon>
+      </div>
+    </section>
+    <section class="flexCol" style="margin: 10px auto;">
+      <div class="flexRow map__setting--margin">
+        <span class="map__setting__title">顯圖選擇</span>
+        <div style="position: relative;" style="cursor: pointer;">
+          <div id="map__choice" (click)="showMapSelector($event)">
+            <span style="padding: 2px 5px; overflow: hidden;">{{ (pageSetting?.mapId | cloudrunSummary: 'zh-tw')?.mapName }}</span>
+          </div>
+          <div
+            class="flexCol"
+            style="position: absolute; z-index: 10; background-color: white; border: 1px solid; padding: 5px 10px; max-height: 350px; overflow: scroll;"
+            *ngIf="uiFlag.showMapSelector"
+          >
+            <span class="choice__item" *ngFor="let _maplist of mapList; let mapIndex = index;" (click)="chooseMap(mapIndex + 1)">
+              {{ (mapIndex + 1 | cloudrunSummary: 'zh-tw').mapName }}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="flexRow map__setting--margin">
+        <span class="map__setting__title">活動日期</span>
+        <app-date-range-picker
+          [pickerType]="'rangePick'"
+          [startTimeStamp]="pageSetting?.startTimeStamp"
+          [endTimeStamp]="pageSetting?.endTimeStamp"
+          (selectDateRange)="getSelectDate($event)"
+        ></app-date-range-picker>
+      </div>
+    </section>
+    <section
+      class="flexRow"
+      style="margin: 20px 30px; padding: 20px 30px; background-color: rgba(252, 252, 252, 1); border: 1px solid rgba(188, 188, 188, 1); flex-wrap: wrap;"
+    >
+      <div class="setting__btn__block">
+        <input type="file" accept=".jpg, .jpeg, .png, .gif" #eventImg style="display: none;" (change)="handleUploadEventImg($event)" />
+        <span class="setting__btn" (click)="handleShowSelector($event, 'eventImg')">專頁圖片</span>
+        <span class="setting__content">{{ pageSetting?.eventImage }}</span>
+      </div>
+      <div class="setting__btn__block color__setting">
+        <span class="setting__btn" (click)="handleShowSelector($event, 'mainColor')">主色</span>
+        <span class="event__color__text">
+          {{ pageSetting?.mainColor }}
+          <input
+            type="color"
+            #mainColor
+            class="color__selector event__color"
+            [(value)]="pageSetting.mainColor"
+            (change)="saveMainColor($event)"
+            *ngIf="pageSetting"
+          />
+        </span>
+      </div>
+      <div class="setting__btn__block color__setting">
+        <span class="setting__btn" (click)="handleShowSelector($event, 'bgColor')">底色</span>
+        <span class="event__color__text">
+          {{ pageSetting?.backgroundColor }}
+          <input
+            type="color"
+            #bgColor
+            class="color__selector event__color"
+            [(value)]="pageSetting.backgroundColor"
+            (change)="saveBgColor($event)"
+            *ngIf="pageSetting"
+          />
+        </span>
+      </div>
+    </section>
+    <section class="flexCol table__section">
+      <div class="flexRow table__header">
+        <span id="card__title">標題</span>
+        <span id="card__bgcolor">底色</span>
+        <span id="card__content">內容</span>
+      </div>
+      <div
+        class="flexRow table__content"
+        *ngFor="let _card of pageSetting.card; let _cardIdx = index;"
+        [style.margin-left]="_cardIdx < 6 ? '65px' : ''"
+      >
+        <i class="icon-svg_web-icon_p1_012-close delete__icon" *ngIf="_cardIdx > 5" (click)="deleteRow('card', _cardIdx)"></i>
+        <div class="flexRow row__line">
+          <span
+            class="card__title__list"
+            *ngIf="uiFlag.editItem.card.title !== _cardIdx"
+            (click)="editItem($event, 'card', _cardIdx, 'title')"
+          >{{ _card.title }}</span>
+          <input
+            type="text"
+            #title
+            class="card__title__list table__edit__input"
+            [(value)]="pageSetting.card[_cardIdx].title"
+            (click)="stopClickPropagation($event)"
+            (keypress)="saveItemSetting($event, 'card', _cardIdx, 'title')"
+            (focusout)="saveItemSetting($event, 'card', _cardIdx, 'title')"
+            *ngIf="uiFlag.editItem.card.title === _cardIdx"
+          />
+          <span
+            class="card__bgcolor__list"
+            (click)="editItem($event, 'card', _cardIdx, 'bgColor')"
+          >{{ _card.bgColor }}</span>
+          <input
+            type="color"
+            style="margin-right: 20px;"
+            class="card__bgcolor__list color__selector"
+            [(value)]="pageSetting.card[_cardIdx].bgColor"
+            (change)="saveItemSetting($event, 'card', _cardIdx, 'bgColor')"
+            autofocus
+          />
+          <span
+            class="card__content__list"
+            (click)="editItem($event, 'card', _cardIdx, 'content')"
+          >{{ _card.content }}</span>
+        </div>
+      </div>
+      <span>
+        <div class="flexRow add__item" (click)="addItem('card')">
+          <i class="icon-svg_web-icon_p1_029-add"></i>
+          <span>新增卡片</span>
+        </div>
+      </span>
+    </section>
+    <section class="flexCol table__section">
+      <div class="flexRow table__header">
+        <span id="group__id">組別</span>
+        <span id="group__name">名稱</span>
+      </div>
+      <div
+        class="flexRow table__content"
+        *ngFor="let _group of pageSetting.group; let _groupIdx = index;"
+        [style.margin-left]="_groupIdx < 1 ? '65px' : ''"
+      >
+        <i class="icon-svg_web-icon_p1_012-close delete__icon" *ngIf="_groupIdx > 0" (click)="deleteRow('group', _groupIdx)"></i>
+        <div class="flexRow row__line">
+          <span class="group__id__list">{{ _groupIdx + 1 }}</span>
+          <span
+            class="group__name__list"
+            *ngIf="uiFlag.editItem.group.groupName !== _groupIdx"
+            (click)="editItem($event, 'group', _groupIdx, 'groupName')"
+          >{{ _group.groupName }}</span>
+          <input
+            type="text"
+            #groupName
+            class="group__name__list table__edit__input"
+            [(value)]="pageSetting.group[_groupIdx].groupName"
+            (click)="stopClickPropagation($event)"
+            (keypress)="saveItemSetting($event, 'group', _groupIdx, 'groupName')"
+            (focusout)="saveItemSetting($event, 'group', _groupIdx, 'groupName')"
+            *ngIf="uiFlag.editItem.group.groupName === _groupIdx"
+          />
+        </div>
+      </div>
+      <div class="flexRow add__item" (click)="addItem('group')">
+        <i class="icon-svg_web-icon_p1_029-add"></i>
+        <span>新增分組</span>
+      </div>
+    </section>
+    <section class="flexCol table__section">
+      <div class="flexRow table__header">
+        <span id="product__name">產品名稱</span>
+        <span id="product__link">連結</span>
+        <span id="product__img">圖片</span>
+      </div>
+      <div class="flexRow table__content" *ngFor="let _product of pageSetting.product; let _productIdx = index;">
+        <i class="icon-svg_web-icon_p1_012-close delete__icon" (click)="deleteRow('product', _productIdx)"></i>
+        <div class="flexRow row__line">
+          <span
+            class="product__name__list"
+            *ngIf="uiFlag.editItem.product.name !== _productIdx"
+            (click)="editItem($event, 'product', _productIdx, 'name')"
+          >{{ _product.name }}</span>
+          <input
+            type="text"
+            #name
+            class="product__name__list table__edit__input"
+            [(value)]="pageSetting.product[_productIdx].name"
+            (click)="stopClickPropagation($event)"
+            (keypress)="saveItemSetting($event, 'product', _productIdx, 'name')"
+            (focusout)="saveItemSetting($event, 'product', _productIdx, 'name')"
+            *ngIf="uiFlag.editItem.product.name === _productIdx"
+          />
+          <span
+            class="product__link__list"
+            *ngIf="uiFlag.editItem.product.link !== _productIdx"
+            (click)="editItem($event, 'product', _productIdx, 'link')"
+          >{{ _product.link }}</span>
+          <input
+            type="text"
+            #link
+            class="product__link__list table__edit__input"
+            [(value)]="pageSetting.product[_productIdx].link"
+            (click)="stopClickPropagation($event)"
+            (keypress)="saveItemSetting($event, 'product', _productIdx, 'link')"
+            (focusout)="saveItemSetting($event, 'product', _productIdx, 'link')"
+            *ngIf="uiFlag.editItem.product.link === _productIdx"
+          />
+          <div class="flexRow product__img__list" style="cursor: pointer;" (click)="openImgSelector($event, 'product', _productIdx, 'img')">
+            <mat-icon class="img__icon">insert_photo</mat-icon>
+            <span>{{ _product.img }}</span>
+          </div>
+          <input
+            type="file"
+            accept=".jpg, .jpeg, .png, .gif"
+            #img
+            class="product__img__input product__img__list table__edit__input"
+            style="display: none;"
+            (change)="saveImg($event, 'product', _productIdx, 'img')"
+          />
+        </div>
+      </div>
+      <div class="flexRow add__item" (click)="addItem('product')">
+        <i class="icon-svg_web-icon_p1_029-add"></i>
+        <span>新增產品</span>
+      </div>
+    </section>
+    <section class="flexCol table__section">
+      <div class="flexRow table__header">
+        <span id="discount__name">組合名稱</span>
+        <span id="discount__price">價格</span>
+        <span id="discount__link">連結</span>
+        <span id="discount__img">圖片</span>
+      </div>
+      <div class="flexRow table__content" *ngFor="let _discount of pageSetting.discount; let _discountIdx = index;">
+        <i class="icon-svg_web-icon_p1_012-close delete__icon" (click)="deleteRow('discount', _discountIdx)"></i>
+        <div class="flexRow row__line">
+          <span
+            class="discount__name__list"
+            *ngIf="uiFlag.editItem.discount.name !== _discountIdx"
+            (click)="editItem($event, 'discount', _discountIdx, 'name')"
+          >{{ _discount.name }}</span>
+          <input
+            type="text"
+            #name
+            class="discount__name__list table__edit__input"
+            [(value)]="pageSetting.discount[_discountIdx].name"
+            (click)="stopClickPropagation($event)"
+            (keypress)="saveItemSetting($event, 'discount', _discountIdx, 'name')"
+            (focusout)="saveItemSetting($event, 'discount', _discountIdx, 'name')"
+            *ngIf="uiFlag.editItem.discount.name === _discountIdx"
+          />
+          <span
+            class="discount__price__list"
+            *ngIf="uiFlag.editItem.discount.price !== _discountIdx"
+            (click)="editItem($event, 'discount', _discountIdx, 'price')"
+          >{{ _discount.price }}</span>
+          <input
+            type="text"
+            #price
+            class="discount__price__list table__edit__input"
+            [(value)]="pageSetting.discount[_discountIdx].price"
+            (click)="stopClickPropagation($event)"
+            (keypress)="saveItemSetting($event, 'discount', _discountIdx, 'price')"
+            (focusout)="saveItemSetting($event, 'discount', _discountIdx, 'price')"
+            *ngIf="uiFlag.editItem.discount.price === _discountIdx"
+          />
+          <span
+            class="discount__link__list"
+            *ngIf="uiFlag.editItem.discount.link !== _discountIdx"
+            (click)="editItem($event, 'discount', _discountIdx, 'link')"
+          >{{ _discount.link }}</span>
+          <input
+            type="text"
+            #link
+            class="discount__link__list table__edit__input"
+            [(value)]="pageSetting.discount[_discountIdx].link"
+            (click)="stopClickPropagation($event)"
+            (keypress)="saveItemSetting($event, 'discount', _discountIdx, 'link')"
+            (focusout)="saveItemSetting($event, 'discount', _discountIdx, 'link')"
+            *ngIf="uiFlag.editItem.discount.link === _discountIdx"
+          />
+          <div class="flexRow discount__img__list" style="cursor: pointer;" (click)="openImgSelector($event, 'discount', _discountIdx, 'img')">
+            <mat-icon class="img__icon">insert_photo</mat-icon>
+            <span>{{ _discount.img }}</span>
+          </div>
+          <input
+            type="file"
+            accept=".jpg, .jpeg, .png, .gif"
+            #img
+            class="discount__img__input discount__img__list table__edit__input"
+            style="display: none;"
+            (change)="saveImg($event, 'discount', _discountIdx, 'img')"
+          />
+        </div>
+      </div>
+      <div class="flexRow add__item" (click)="addItem('discount')">
+        <i class="icon-svg_web-icon_p1_029-add"></i>
+        <span>新增組合</span>
+      </div>
+    </section>
+  </div>
+</ng-container>
+<ng-container *ngIf="uiFlag.showEditCardContent">
+  <div id="content__editor" class="flexCol" (click)="stopClickPropagation($event)">
+    <section class="flexRow" style="padding: 10px 10px; justify-content: space-between; width: 90%;">
+      <div class="flexRow" style="justify-content: space-around; width: 150px; height: 30px;">
+        <div
+          class="align__icon"
+          [class.align__btn--active]="pageSetting.card[uiFlag.editItem.card.content].textAlign === 'start'"
+          (click)="saveAlign($event, 'start')"
+        >
+          <mat-icon>format_align_left</mat-icon>
+        </div>
+        <div
+          class="align__icon"
+          [class.align__btn--active]="pageSetting.card[uiFlag.editItem.card.content].textAlign === 'center'"
+          (click)="saveAlign($event, 'center')"
+        >
+          <mat-icon>format_align_center</mat-icon>
+        </div>
+        <div
+          class="align__icon"
+          [class.align__btn--active]="pageSetting.card[uiFlag.editItem.card.content].textAlign === 'end'"
+          (click)="saveAlign($event, 'end')"
+        >
+          <mat-icon>format_align_right</mat-icon>
+        </div>
+      </div>
+      <div class="card__font">
+        <mat-form-field style="width: 50px;">
+          <mat-select
+            [(value)]="pageSetting.card[uiFlag.editItem.card.content].fontSize"
+            (change)="saveFontSize($event)"
+          >
+            <mat-option value="12" (click)="stopClickPropagation($event)">
+              12
+            </mat-option>
+            <mat-option value="14" (click)="stopClickPropagation($event)">
+              14
+            </mat-option>
+            <mat-option value="16" (click)="stopClickPropagation($event)">
+              16
+            </mat-option>
+            <mat-option value="18" (click)="stopClickPropagation($event)">
+              18
+            </mat-option>
+            <mat-option value="20" (click)="stopClickPropagation($event)">
+              20
+            </mat-option>
+            <mat-option value="22" (click)="stopClickPropagation($event)">
+              22
+            </mat-option>
+            <mat-option value="24" (click)="stopClickPropagation($event)">
+              24
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="flexRow">
+        <span>{{ pageSetting?.card[uiFlag.editItem.card.content].color }}</span>
+        <input
+          type="color"
+          class="color__selector"
+          [(value)]="pageSetting.card[uiFlag.editItem.card.content].color"
+          (click)="stopClickPropagation($event)"
+          (change)="saveCardFontColor($event)"
+        />
+      </div>
+      <div class="flexRow" style="width: 150px;">
+        <input
+          type="file"
+          accept=".jpg, .jpeg, .png, .gif"
+          #cardImg style="display: none;"
+          (change)="saveImg($event, 'card', uiFlag.editItem.card.content, 'img')"
+        />
+        <span style="cursor: pointer;">
+          <mat-icon class="img__icon" (click)="handleCardImgSelector($event)" >insert_photo</mat-icon>
+          {{ pageSetting?.card[uiFlag.editItem.card.content].img }}
+        </span>
+      </div>
+    </section>
+    <section>
+      <textarea
+        id="card__content__textarea"
+        [(value)]="cardContent"
+        (change)="saveCardContent($event)"
+      ></textarea>
+    </section>
+  </div>
+</ng-container>

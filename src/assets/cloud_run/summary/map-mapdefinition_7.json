@@ -1,0 +1,67 @@
+{
+    "map": {
+        "basic": {
+		    "mapId":"7",
+			"mapCode":"3",
+            "info": [{
+                "language":"TW",
+                "mapName":"外灘國際馬拉松10K",
+                "country":"中國",
+                "city":"上海",
+                "property":"國際馬拉松、景點",
+                "introduce":"始於1996年，中國四大馬拉松賽事之一，每年秋冬季舉辦。起點設在外灘，終點設在八萬人體育場。路線經過上海幾個地標建築，外灘、靜安寺、淮海路、浦西世博園區、龍騰大道等，是中國最好的賽事之一。"                 
+            },{
+                "language":"CN",
+                "mapName":"外滩国际马拉松10K",
+                "country":"中国",
+                "city":"上海",
+                "property":"国际马拉松、景点",
+                "introduce":"始于1996年，中国四大马拉松赛事之一，每年秋冬季举办。起点设在外滩，终点设在八万人体育场。路线经过上海几个地标建筑，外滩、静安寺、淮海路、浦西世博园区、龙腾大道等，是中国最好的赛事之一。"   
+            },{
+                "language":"EN",
+                "mapName":"The Bund International Marathon 10K",
+                "country":"China",
+                "city":"Shanghai",
+                "property":"marathon、attractions",
+                "introduce":"One of China's four major marathon.Held every fall.Starting point in the Bund,The finish line at the stadium.Passing Shanghai landmark, Bund, Jing'an Temple, Huai Hai Road, Puxi Expo Park,Dragon Avenue.It is one of the best marathon in China."   
+            }]
+        },
+        "buildMap": {
+            "info": [{
+                "infoId":"1",
+                "GPXName":"shanghai-10k.gpx",
+                "leftTopCoordinateLat":"31.246309",
+				"leftTopCoordinateLon":"121.440507",
+                "rightBottomCoordinateLat":"31.20609",
+				"rightBottomCoordinateLon":"121.523962",
+                "FileName1080p":"shanghai_1080.jpg",
+				"RankingBackground":"shanghai_ranking_bg.jpg",
+                "smallFileName":"map-photo_shanghai.png",
+                "objectFileName":"get-view_shanghai.png",
+				"RunwayTtype":"line"
+            }]
+        },
+        "raceRoom": {
+            "info": [{
+                "infoId":"1",
+                "category":"race",
+                "raceOrientation":"y",
+                "raceLap":"1",
+                "raceManLimit":"16",
+                "raceCloseTime":"None"                    
+            }]
+        },
+        "limitation": {
+            "info": [{
+                "infoId":"1",
+                "createRaceLevel":"1",
+                "joinRaceLevel":"1",
+                "createRaceQualify":"None",
+                "joinRaceQualify":"None",
+                "label":"None",
+                "location":"None",
+                "model":"None"             
+            }]
+        }
+    }
+}

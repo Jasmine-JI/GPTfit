@@ -22,7 +22,7 @@ import { MessageBoxComponent } from '@shared/components/message-box/message-box.
 import { MatBottomSheet, MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
 import { TranslateService } from '@ngx-translate/core';
 import { HashIdService } from '@shared/services/hash-id.service';
-import * as moment from 'moment';
+import moment from 'moment';
 
 @Component({
   selector: 'app-edit-group-info',
@@ -412,7 +412,14 @@ export class EditGroupInfoComponent implements OnInit {
     if (valid) {
       const { groupName, groupDesc, groupStatus, groupVideoUrl } = value;
       const image = new Image();
-      image.src = this.finalImageLink;
+
+      if (location.pathname === 'www.gptfit.com') {
+        image.src = this.finalImageLink.replace('cloud.alatech.com.tw', 'www.gptfit.com');
+      } else {
+        image.src = this.finalImageLink;
+      }
+
+      image.setAttribute('crossOrigin', 'Anonymous');
       image.onload = () => {
         const body1 = {
           token: this.token,

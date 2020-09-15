@@ -14,7 +14,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { AuthService } from '@shared/services/auth.service';
 import { IMyDpOptions } from 'mydatepicker';
-import * as moment from 'moment';
+import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../shared/services/utils.service';
 import { DetectInappService } from '@shared/services/detect-inapp.service';

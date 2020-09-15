@@ -12,7 +12,7 @@ import { takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import * as moment from 'moment';
+import moment from 'moment';
 
 @Component({
   selector: 'app-app-qrcode-login',
@@ -292,6 +292,7 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
       (window as any).android.closeWebView('Close');
     } else {
       this.utils.writeToken(token);
+      this.userProfileService.refreshUserProfile({token});
       this.auth.setLoginStatus(true);
       if (this.auth.backUrl.length > 0) {
         location.href = this.auth.backUrl;
