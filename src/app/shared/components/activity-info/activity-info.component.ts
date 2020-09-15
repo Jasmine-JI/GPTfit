@@ -28,7 +28,7 @@ import chinaBorderData from './border-data_china';
 import taiwanBorderData from './border-data_taiwan';
 import { ActivityOtherDetailsService } from '@shared/services/activity-other-details.service';
 import { debounce } from '@shared/utils/';
-import * as moment from 'moment';
+import moment from 'moment';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';

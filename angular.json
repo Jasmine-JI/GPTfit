@@ -23,7 +23,7 @@
               "src/manifest.json"
             ],
             "styles": [
-              "src/icon.css",
+              "src/icon.scss",
               "src/styles-app-loading.css",
               "node_modules/leaflet/dist/leaflet.css",
               "src/styles.scss",
@@ -33,6 +33,11 @@
               "node_modules/tui-calendar/dist/tui-calendar.css",
               "node_modules/daterangepicker/daterangepicker.css"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/assets/styles"
+              ]
+            },
             "scripts": [
               "node_modules/jquery/dist/jquery.slim.min.js",
               "node_modules/jquery/dist/jquery.min.js",
@@ -196,7 +201,7 @@
               "node_modules/leaflet-omnivore/leaflet-omnivore.min.js"
             ],
             "styles": [
-              "src/icon.css",
+              "src/icon.scss",
               "src/styles-app-loading.css",
               "node_modules/leaflet/dist/leaflet.css",
               "src/styles.scss",
@@ -204,10 +209,17 @@
               "node_modules/font-awesome/css/font-awesome.min.css",
               "node_modules/dragula/dist/dragula.css"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/assets/styles"
+              ]
+            },
             "assets": [
               "src/assets",
               "src/favicon.ico",
-              "src/manifest.json"
+              "src/manifest.json",
+              "src/sitemap.xml",
+              "src/robots.txt"
             ]
           }
         },

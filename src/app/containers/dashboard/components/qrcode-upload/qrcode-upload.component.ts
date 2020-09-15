@@ -11,8 +11,8 @@ import { AuthService } from '../../../../shared/services/auth.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
-import * as moment from 'moment';
-import * as md5 from 'md5';
+import moment from 'moment';
+import md5 from 'md5';
 
 @Component({
   selector: 'app-qrcode-upload',

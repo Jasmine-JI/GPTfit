@@ -1,0 +1,153 @@
+$btn-color-blue: rgba(59, 134, 255, 0.9);
+$btn-color-blue-hover: rgba(59, 134, 255, 1);
+$not-open-color: rgba(200, 200, 200, 1);
+$not-start-color: rgba(56, 147, 252, 1);
+$proccessing-color: rgba(56, 252, 128, 1);
+$end-color: rgba(255, 98, 98, 1);
+$white: rgba(255, 255, 255, 1);
+$btn-shadow-color: rgba(200, 200, 200, 1);
+$transition-effect: 0.2s cubic-bezier(0.5, 0.5, 0.5, 0.5);
+$content-row-color: rgba(240, 240, 240, 1);
+$btn-border-radius: 5px;
+
+@mixin transition($target) {
+  -webkit-transition: $target $transition-effect;
+  -moz-transition: $target $transition-effect;
+  -ms-transition: $target $transition-effect;
+  -o-transition: $target $transition-effect;
+  transition: $target $transition-effect;
+}
+
+@mixin center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin font--bold($size) {
+  font-weight: bold;
+  font-size: $size;
+}
+
+@mixin column($width) {
+  width: $width;
+  word-break: break-all;
+}
+
+#create__btn {
+  @include center();
+  position: relative;
+  margin: 20px 0;
+  width: 140px;
+  height: 40px;
+  border-radius: $btn-border-radius;
+  color: $white;
+  background-color: $btn-color-blue;
+  box-shadow: 2px 2px 2px $btn-shadow-color;
+  cursor: pointer;
+  @include transition(left);
+  @include transition(top);
+  @include transition(background-color);
+
+  &:hover {
+    background-color: $btn-color-blue-hover;
+    @include transition(background-color);
+  }
+
+  &:active {
+    left: 2px;
+    top: 2px;
+    box-shadow: 0px 0px 0px $btn-shadow-color;
+    @include transition(left);
+    @include transition(top);
+    @include transition(box-shadow);
+  }
+
+}
+
+.list__header {
+  @include font--bold(24px);
+}
+
+.list__row {
+  padding: 10px;
+  border-bottom: 1px solid rgba(150, 150, 150, 1);
+  justify-content: space-between;
+}
+
+.row__expand {
+  height: 120px;
+  @include transition(height);
+}
+
+.row__btn {
+  @include center();
+  position: relative;
+  width: 120px;
+  height: 40px;
+  border: 1px solid rgba(150, 150, 150, 1);
+  border-radius: $btn-border-radius;
+  margin-right: 2vw;
+  z-index: 2;
+  background-color: $white;
+  font-size: 12px;
+  text-align: center;
+  color: rgba(100, 100, 100, 1);
+  @include transition(color);
+  @include transition(left);
+  @include transition(top);
+
+  &:hover {
+    color: rgba(0, 0, 0, 1);
+    @include transition(color);
+  }
+
+  &:active {
+    left: 2px;
+    top: 2px;
+    @include transition(left);
+    @include transition(top);
+  }
+
+}
+
+#content__row {
+  @include transition(background-color);
+  padding: 10px;
+  border-bottom: 1px solid rgba(150, 150, 150, 1);
+
+  &:hover {
+    cursor: pointer;
+    background-color: $content-row-color;
+    @include transition(background-color);
+  }
+
+}
+
+.name__column {
+  @include column(120px);
+}
+
+.date__column {
+  @include column(165px);
+}
+
+.status__column {
+  @include column(90px);
+}
+
+#not__open__dot::first-letter {
+  color: $not-open-color;
+}
+
+#not__start__dot::first-letter {
+  color: $not-start-color;
+}
+
+#processing__dot::first-letter {
+  color: $proccessing-color;
+}
+
+#end__dot::first-letter {
+  color: $end-color;
+}

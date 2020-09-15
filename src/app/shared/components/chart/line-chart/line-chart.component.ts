@@ -2,7 +2,7 @@ import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input }
 
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
-import * as moment from 'moment';
+import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態

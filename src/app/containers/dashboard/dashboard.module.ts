@@ -52,6 +52,7 @@ import { RightSettingWinComponent } from './group/right-setting-win/right-settin
 import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
 import { PeopleSelectorWinComponent } from './components/people-selector-win/people-selector-win.component';
 import { DashboardGuard } from './guards/dashboard-guard';
+import { UnsaveGuard } from '../dashboard/guards/unsave-guard';
 import { ActivityService } from '@shared/services/activity.service';
 import { SportTypePipe } from './pipes/sport-type.pipe';
 import { SportDatePipe } from './pipes/sport-date.pipe';
@@ -92,7 +93,8 @@ import { ComReportComponent } from './group/group-info/com-report/com-report.com
 import { ComLifeTrackingComponent } from './group/group-info/com-life-tracking/com-life-tracking.component';
 import { ModifyBoxComponent } from './components/settings/privacy-settings/modify-box/modify-box.component';
 import { QrcodeUploadComponent } from './components/qrcode-upload/qrcode-upload.component';
-/*
+import { OfficialActivityService } from '../../shared/services/official-activity.service';
+
 import { GroupInfoComponent as GroupInfoV2Component } from './group-v2/group-info/group-info.component';
 import { SearchGroupComponent } from './group-v2/search-group/search-group.component';
 import { EditGroupComponent } from './group-v2/group-info/edit-group/edit-group.component';
@@ -102,7 +104,10 @@ import { CommercePlanComponent } from './group-v2/group-info/commerce-plan/comme
 import { MemberListComponent } from './group-v2/group-info/member-list/member-list.component';
 import { GroupArchitectureComponent } from './group-v2/group-info/group-architecture/group-architecture.component';
 import { CloudrunReportComponent } from './group-v2/group-info/cloudrun-report/cloudrun-report.component';
-*/
+import { ActivityListManageComponent } from './components/official-activity-manage/activity-list-manage/activity-list-manage.component';
+import { EditOfficialActivityComponent } from './components/official-activity-manage/edit-official-activity/edit-official-activity.component';
+import { ParticipantsManageComponent } from './components/official-activity-manage/participants-manage/participants-manage.component';
+
 
 @NgModule({
   imports: [
@@ -133,6 +138,7 @@ import { CloudrunReportComponent } from './group-v2/group-info/cloudrun-report/c
     GroupService,
     EditGroupGuard,
     DashboardGuard,
+    UnsaveGuard,
     ActivityService,
     ReportService,
     SettingsService,
@@ -142,6 +148,7 @@ import { CloudrunReportComponent } from './group-v2/group-info/cloudrun-report/c
     ActivityOtherDetailsService,
     DetectInappService,
     LifeTrackingService,
+    OfficialActivityService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
@@ -205,7 +212,7 @@ import { CloudrunReportComponent } from './group-v2/group-info/cloudrun-report/c
     ComLifeTrackingComponent,
     ModifyBoxComponent,
     QrcodeUploadComponent,
-    /*
+
     GroupInfoV2Component,
     SearchGroupComponent,
     EditGroupComponent,
@@ -214,8 +221,10 @@ import { CloudrunReportComponent } from './group-v2/group-info/cloudrun-report/c
     CommercePlanComponent,
     MemberListComponent,
     GroupArchitectureComponent,
-    CloudrunReportComponent
-    */
+    CloudrunReportComponent,
+    ActivityListManageComponent,
+    EditOfficialActivityComponent,
+    ParticipantsManageComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [

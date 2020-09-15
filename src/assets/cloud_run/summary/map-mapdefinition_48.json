@@ -1,0 +1,77 @@
+﻿{
+  "map": {
+    "basic": {
+      "mapId": "48",
+      "mapCode": "13",
+      "info": [
+        {
+          "language": "TW",
+          "mapName": "塔瑙斯里步道20",
+          "country": "泰國",
+          "city": "叻武里府",
+          "property": "路跑",
+          "introduce": "奔跑於以詩琳通公主為名的自然公園內，位在泰緬邊境的塔瑙斯里山脈橫跨多個省份，TNT系列賽並非適合大眾的休閒比賽，是一場有ITRA積分的高難度挑戰，要在崎嶇路面翻山越嶺從半夜出發衝擊個人極限"
+        },
+        {
+          "language": "CN",
+          "mapName": "塔瑙斯里步道20",
+          "country": "泰国",
+          "city": "叻武里府",
+          "property": "路跑",
+          "introduce": "奔跑于以诗琳通公主为名的自然公园内，位在泰缅边境的塔瑙斯里山脉横跨多个省份，TNT系列赛并非适合大众的休閒比赛，是一场有ITRA积分的高难度挑战，要在崎岖路面翻山越岭从半夜出发冲击个人极限"
+        },
+        {
+          "language": "EN",
+          "mapName": "Tanaosri Trail 20",
+          "country": "TH",
+          "city": "Ratchaburi",
+          "property": "road running",
+          "introduce": "Run in the natural park named after Royal highness Princess Maha Chakri Sirindhorn, located in beautiful Tanaosri mountian, this route is not for everyone, very chellange and with ITRA score its one of the memoriable race in your life"
+        }
+      ]
+    },
+    "buildMap": {
+      "info": [
+        {
+          "infoId": "1",
+          "GPXName": "tanaosri_trail_20k.gpx",
+          "leftTopCoordinateLat": "13.564518",
+          "leftTopCoordinateLon": "99.178214",
+          "rightBottomCoordinateLat": "13.474053",
+          "rightBottomCoordinateLon": "99.342877",
+          "FileName1080p": "tanaosri_trail_20k_1080.jpg",
+          "RankingBackground": "tanaosri_trail_20k_ranking_bg.jpg",
+          "smallFileName": "map-photo_tanaosri_trail_20k.jpg",
+          "objectFileName": "get-view_tanaosri_trail_20k.png",
+          "RunwayTtype": "line"
+        }
+      ]
+    },
+    "raceRoom": {
+      "info": [
+        {
+          "infoId": "1",
+          "category": "race",
+          "raceOrientation": "y",
+          "raceLap": "1",
+          "raceManLimit": "16",
+          "raceCloseTime": "None"
+        }
+      ]
+    },
+    "limitation": {
+      "info": [
+        {
+          "infoId": "1",
+          "createRaceLevel": "1",
+          "joinRaceLevel": "1",
+          "createRaceQualify": "None",
+          "joinRaceQualify": "None",
+          "label": "None",
+          "location": "None",
+          "model": "None"
+        }
+      ]
+    }
+  }
+}

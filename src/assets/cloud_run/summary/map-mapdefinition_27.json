@@ -1,0 +1,77 @@
+﻿{
+  "map": {
+    "basic": {
+      "mapId": "27",
+      "mapCode": "8",
+      "info": [
+        {
+          "language": "TW",
+          "mapName": "柏林馬拉松",
+          "country": "德國",
+          "city": "柏林",
+          "property": "路跑",
+          "introduce": "柏林馬拉松是德國柏林一年一度舉辦的馬拉松賽事在9月的最後一個星期日，比賽自1974年開始舉辦，獲得國際田徑總會(IAAF)金牌等級認證的全程馬拉松，現時的主要贊助商為寶馬（BMW），因此也被冠名為「BMW柏林馬拉松」。現時的賽道全長42.195公里，2008年共有40,000多名來自107個國家的選手參賽。柏林馬拉松也是世界馬拉松大賽的6個賽事之一"
+        },
+        {
+          "language": "CN",
+          "mapName": "柏林马拉松",
+          "country": "德国",
+          "city": "柏林",
+          "property": "路跑",
+          "introduce": "柏林馬拉松是德國柏林一年一度舉辦的馬拉松賽事在9月的最後一個星期日，比賽自1974年開始舉辦，獲得國際田徑聯合會(IAAF )金牌等級認證的全程馬拉松，現時的主要贊助商為寶馬（BMW），因此也被冠名為「BMW柏林馬拉松」。現時的賽道全長42.195公里，2008年共有40,000多名來自107個國家的選手參賽。 柏林馬拉松也是世界馬拉松大賽的6個賽事之一"
+        },
+        {
+          "language": "EN",
+          "mapName": "Berlin Marathon",
+          "country": "Germany",
+          "city": "Berlin",
+          "property": "road running",
+          "introduce": "The Berlin Marathon (branded BMW Berlin Marathon for sponsorship reasons) is a major running and sporting event held annually in Berlin, Germany. The official marathon distance of 42.195 kilometers (26 miles 385 yards) is set up as a citywide road race where professional athletes and amateur runners jointly participate. Initiated in 1974, the event traditionally takes place on the last weekend in September"
+        }
+      ]
+    },
+    "buildMap": {
+      "info": [
+        {
+          "infoId": "1",
+          "GPXName": "berlin_42k.gpx",
+          "leftTopCoordinateLat": "52.530352",
+          "leftTopCoordinateLon": "13.273",
+          "rightBottomCoordinateLat": "52.456051",
+          "rightBottomCoordinateLon": "13.489904",
+          "FileName1080p": "berlin_42k_1080.jpg",
+          "RankingBackground": "berlin_42k_ranking_bg.jpg",
+          "smallFileName": "map-photo_berlin_42k.jpg",
+          "objectFileName": "get-view_berlin_42k.png",
+          "RunwayTtype": "line"
+        }
+      ]
+    },
+    "raceRoom": {
+      "info": [
+        {
+          "infoId": "1",
+          "category": "race",
+          "raceOrientation": "y",
+          "raceLap": "1",
+          "raceManLimit": "16",
+          "raceCloseTime": "None"
+        }
+      ]
+    },
+    "limitation": {
+      "info": [
+        {
+          "infoId": "1",
+          "createRaceLevel": "1",
+          "joinRaceLevel": "1",
+          "createRaceQualify": "None",
+          "joinRaceQualify": "None",
+          "label": "None",
+          "location": "None",
+          "model": "None"
+        }
+      ]
+    }
+  }
+}

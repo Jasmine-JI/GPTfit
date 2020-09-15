@@ -15,6 +15,10 @@ import { AuthService } from '../services/auth.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../components/message-box/message-box.component';
 
+/**
+ * 偵測所有http request，若任何response返回401就進行登出
+ * @author kidin-1090817
+ */
 @Injectable()
 export class HttpStatusInterceptor implements HttpInterceptor {
   constructor(
@@ -35,18 +39,9 @@ export class HttpStatusInterceptor implements HttpInterceptor {
             if (typeof (event.body) !== 'object') {
               parseBody = JSON.parse(event.body);
               if (parseBody.processResult && parseBody.processResult.resultCode === 401) {
-                this.dialog.open(MessageBoxComponent, {
-                  hasBackdrop: true,
-                  data: {
-                    title: 'Error',
-                    body:
-                      '<br>Login identity error, Please Login again!',
-                    confirmText: 'Confirm'
-                  }
-                });
                 const auth = this.injector.get(AuthService);
                 auth.logout();
-                setTimeout(() => location.href = '/signIn-web', 5000);
+                console.log('Login identity error!');
               }
             }
 

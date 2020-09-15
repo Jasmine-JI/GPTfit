@@ -1,0 +1,77 @@
+﻿{
+  "map": {
+    "basic": {
+      "mapId": "33",
+      "mapCode": "10",
+      "info": [
+        {
+          "language": "TW",
+          "mapName": "台北跨橋",
+          "country": "台灣",
+          "city": "台北",
+          "property": "路跑",
+          "introduce": "從熱鬧的公館出發一路經過福和橋、永福橋、中正橋、華中橋、光復橋、華翠橋、華江橋、中興橋最後由忠孝橋到台北車站"
+        },
+        {
+          "language": "CN",
+          "mapName": "台北跨桥",
+          "country": "台湾",
+          "city": "台北",
+          "property": "路跑",
+          "introduce": "从热闹的公馆出发一路经过福和桥、永福桥、中正桥、华中桥、光复桥、华翠桥、华江桥、中兴桥最后由忠孝桥到台北车站"
+        },
+        {
+          "language": "EN",
+          "mapName": "Taipei Bridges",
+          "country": "Taiwan",
+          "city": "Taipei",
+          "property": "road running",
+          "introduce": "From GongGuan across all the connected bridges to Taipei Station"
+        }
+      ]
+    },
+    "buildMap": {
+      "info": [
+        {
+          "infoId": "1",
+          "GPXName": "taipei_28k.gpx",
+           "leftTopCoordinateLat": "25.063793",
+          "leftTopCoordinateLon": "121.458273",
+          "rightBottomCoordinateLat": "24.983462",
+          "rightBottomCoordinateLon": "121.616736",
+          "FileName1080p": "taipei_28k_1080.jpg",
+          "RankingBackground": "taipei_28k_ranking_bg.jpg",
+          "smallFileName": "map-photo_taipei_28k.jpg",
+          "objectFileName": "get-view_taipei_28k.png",
+          "RunwayTtype": "line"
+        }
+      ]
+    },
+    "raceRoom": {
+      "info": [
+        {
+          "infoId": "1",
+          "category": "race",
+          "raceOrientation": "y",
+          "raceLap": "1",
+          "raceManLimit": "16",
+          "raceCloseTime": "None"
+        }
+      ]
+    },
+    "limitation": {
+      "info": [
+        {
+          "infoId": "1",
+          "createRaceLevel": "1",
+          "joinRaceLevel": "1",
+          "createRaceQualify": "None",
+          "joinRaceQualify": "None",
+          "label": "None",
+          "location": "None",
+          "model": "None"
+        }
+      ]
+    }
+  }
+}

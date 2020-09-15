@@ -1,0 +1,76 @@
+{
+    "map": {
+        "basic": {
+		    "mapId":"6",
+			"mapCode":"0",
+            "info": [{
+                "language":"TW",
+                "mapName":"萬金石暖身賽",
+                "country":"台灣",
+                "city":"新北市",
+                "property":"國際馬拉松、景點",
+                "introduce":"由萬里翡翠灣起跑，經金山至石門國中前折返之賽道路線，是全臺唯一IAAF國際認證馬拉松，更是跑界中一場絕美的視覺饗宴，山海交錯的美麗維納斯海岸線盡收眼底。"                 
+            },{
+                "language":"CN",
+                "mapName":"万金石暖身赛",
+                "country":"台湾",
+                "city":"新北市",
+                "property":"国际马拉松、景点",
+                "introduce":"由万里翡翠湾起跑，经金山至石门国中前折返之赛道路线，是全台唯一IAAF国际认证马拉松，更是跑界中一场绝美的视觉飨宴，山海交错的美丽维纳斯海岸线尽收眼底。"   
+            },{
+                "language":"EN",
+                "mapName":"Wanjinshi Warm up ",
+                "country":"Taiwan",
+                "city":"New Taipei City",
+                "property":"marathon,Attractions",
+                "introduce":"It is the only IAAF certified marathon in Taiwan, Starting in Miles Emerald Bay,Jinshan Shimen middle school round trip route. Mountain and sea beautiful panoramic view of the coastline."   
+            }]
+        },
+        "buildMap": {
+            "info": [{
+                "infoId":"1",
+                "GPXName":"wanjinshi_warm-up.gpx",
+                "leftTopCoordinateLat":"25.210474",
+				"leftTopCoordinateLon":"121.661994",
+                "rightBottomCoordinateLat":"25.180343",
+				"rightBottomCoordinateLon":"121.722051",
+                "FileName1080p":"wanjinshi_warm-up_1080.jpg",
+				"RankingBackground":"wanjinshi_warm-up_ranking_bg.jpg",
+                "smallFileName":"map-photo_wanjinshi.png",
+                "objectFileName":"get-view_wanjinshi.png",
+				"RunwayTtype":"line"
+            }]
+        },
+        "route": {
+            "info": [{
+                "infoId":"1",
+                "distance":"4.20",
+                "totalElevation":"116m",
+				"incline":"2.7%",
+                "degree":"2"   
+            }]
+        },
+        "raceRoom": {
+            "info": [{
+                "infoId":"1",
+                "category":"race",
+                "raceOrientation":"y",
+                "raceLap":"1",
+                "raceManLimit":"8",
+                "raceCloseTime":"None"                    
+            }]
+        },
+        "limitation": {
+            "info": [{
+                "infoId":"1",
+                "createRaceLevel":"1",
+                "joinRaceLevel":"1",
+                "createRaceQualify":"None",
+                "joinRaceQualify":"None",
+                "label":"TaiSPO",
+                "location":"None",
+                "model":"None"             
+            }]
+        }
+    }
+}

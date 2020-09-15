@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, Renderer2, ViewChild, ElementRef } from '@angular/core';
-import * as moment from 'moment';
+import moment from 'moment';
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
 

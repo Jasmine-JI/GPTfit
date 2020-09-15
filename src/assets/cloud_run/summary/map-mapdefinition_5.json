@@ -1,0 +1,67 @@
+{
+    "map": {
+        "basic": {
+		    "mapId":"5",
+			"mapCode":"0",
+            "info": [{
+                "language":"TW",
+                "mapName":"帕那辛奈克體育場",
+                "country":"希臘",
+                "city":"雅典",
+                "property":"景點",
+                "introduce":"位於希臘雅典的馬蹄型體育場，亦是世界上唯一一座全部利用大理石興建的大型體育場。它在古希臘時期主要用來舉辦紀念雅典娜女神的泛雅典運動會"                 
+            },{
+                "language":"CN",
+                "mapName":"帕那辛奈克体育场",
+                "country":"希腊",
+                "city":"雅典",
+                "property":"景点",
+                "introduce":"位于希腊雅典的马蹄型体育场，亦是世界上唯一一座全部利用大理石兴建的大型体育场。它在古希腊时期主要用来举办纪念雅典娜女神的泛雅典运动会"    
+            },{
+                "language":"EN",
+                "mapName":"Kallimarmaro stadium",
+                "country":"Greece",
+                "city":"Athens",
+                "property":"Attractions",
+                "introduce":"The Panathenaic Stadium is a multi-purpose stadium in Athens, Greece. One of the main historic attractions of Athens, it is the only stadium in the world built entirely of marble."   
+            }]
+        },
+        "buildMap": {
+            "info": [{
+                "infoId":"1",
+                "GPXName":"panathenean_stadium.gpx",
+                "leftTopCoordinateLat":"37.969408",
+				"leftTopCoordinateLon":"23.739180",
+                "rightBottomCoordinateLat":"37.967139",
+				"rightBottomCoordinateLon":"23.744329",
+                "FileName1080p":"panathenean_stadium_1080.jpg",
+				"RankingBackground":"panathenean_stadium_ranking_bg.jpg",
+                "smallFileName":"map-photo_panathenean_stadium.png",
+                "objectFileName":"get-view_panathenean_stadium.png",
+				"RunwayTtype":"ring"
+            }]
+        },
+        "raceRoom": {
+            "info": [{
+                "infoId":"1",
+                "category":"race",
+                "raceOrientation":"y",
+                "raceLap":"1",
+                "raceManLimit":"8",
+                "raceCloseTime":"None"                    
+            }]
+        },
+        "limitation": {
+            "info": [{
+                "infoId":"1",
+                "createRaceLevel":"1",
+                "joinRaceLevel":"1",
+                "createRaceQualify":"None",
+                "joinRaceQualify":"None",
+                "label":"None",
+                "location":"None",
+                "model":"None"             
+            }]
+        }
+    }
+}

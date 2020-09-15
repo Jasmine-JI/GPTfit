@@ -1,0 +1,67 @@
+{
+    "map": {
+        "basic": {
+		    "mapId":"15",
+			"mapCode":"3",
+            "info": [{
+                "language":"TW",
+                "mapName":"北京半程馬拉松",
+                "country":"中國",
+                "city":"北京",
+                "property":"馬拉松",
+                "introduce":"由中國田徑協會主辦，經國家體育總局和北京市人民政府批准，並經國際田聯和國際馬拉松及公路跑協會認可的中國最高水平的馬拉松賽。創辦於1981年。"                 
+            },{
+                "language":"CN",
+                "mapName":"北京半程马拉松21K",
+                "country":"中国",
+                "city":"北京",
+                "property":"马拉松",
+                "introduce":"由中国田径协会主办，经国家体育总局和北京市人民政府批准，并经国际田联和国际马拉松及公路跑协会认可的中国最高水平的马拉松赛。创办于1981年。"                 
+            },{
+                "language":"EN",
+                "mapName":"Beijing half marathon",
+                "country":"China",
+                "city":"Beijing County",
+                "property":"marathon,Attractions",
+                "introduce":"The Beijing Marathon is an annual marathon race of 42.195 km held in October in Beijing, People's Republic of China."   
+            }]
+        },
+        "buildMap": {
+            "info": [{
+                "infoId":"1",
+                "GPXName":"beijin_marathon_21k.gpx",
+                "leftTopCoordinateLat":"39.999246",
+				"leftTopCoordinateLon":"116.229737",
+                "rightBottomCoordinateLat":"39.882670",
+				"rightBottomCoordinateLon":"116.500362",
+                "FileName1080p":"beijin_marathon_21k_1080.jpg",
+				"RankingBackground":"beijin_marathon_21k_ranking_bg.jpg",
+                "smallFileName":"map-photo_beijin_marathon_21k.png",
+                "objectFileName":"get-view_beijin_marathon_21k.png",
+				"RunwayTtype":"line"
+            }]
+        },
+        "raceRoom": {
+            "info": [{
+                "infoId":"1",
+                "category":"race",
+                "raceOrientation":"y",
+                "raceLap":"1",
+                "raceManLimit":"16",
+                "raceCloseTime":"None"                    
+            }]
+        },
+        "limitation": {
+            "info": [{
+                "infoId":"1",
+                "createRaceLevel":"1",
+                "joinRaceLevel":"1",
+                "createRaceQualify":"None",
+                "joinRaceQualify":"None",
+                "label":"None",
+                "location":"None",
+                "model":"None"             
+            }]
+        }
+    }
+}

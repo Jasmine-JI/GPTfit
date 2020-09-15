@@ -1,0 +1,67 @@
+{
+    "map": {
+        "basic": {
+		    "mapId":"16",
+			"mapCode":"4",
+            "info": [{
+                "language":"TW",
+                "mapName":"東京馬拉松",
+                "country":"日本",
+                "city":"東京",
+                "property":"馬拉松",
+                "introduce":"東京馬拉松是亞洲最大型的馬拉松賽，賽事行經皇居、東京鐵塔、淺草雷門等知名景點，從去年開始加入世界馬拉松系列賽，成為世界6大馬拉松，參賽者各個精心裝扮，如同一場馬拉松嘉年華會。"                 
+            },{
+                "language":"CN",
+                "mapName":"东京马拉松",
+                "country":"日本",
+                "city":"东京",
+                "property":"马拉松",
+                "introduce":"东京马拉松是亚洲最大型的马拉松赛，赛事行经皇居、东京铁塔、浅草雷门等知名景点，从去年开始加入世界马拉松系列赛，成为世界6大马拉松，参赛者各个精心装扮，如同一场马拉松嘉年华会。"                 
+            },{
+                "language":"EN",
+                "mapName":"Tokyo marathon",
+                "country":"Japan",
+                "city":"Tokyo",
+                "property":"marathon,Attractions",
+                "introduce":"The Tokyo Marathon is the largest marathon in Asia. It has passed through the famous attractions such as the Imperial Palace, Tokyo Tower, and Asakusa Leimen. It has joined the World Marathon Series and became the world's six major marathons since last year. The participants are dressed up like a marathon carnival."   
+            }]
+        },
+        "buildMap": {
+            "info": [{
+                "infoId":"1",
+                "GPXName":"tokyo_marathon_42k.gpx",
+                "leftTopCoordinateLat":"35.713197",
+				"leftTopCoordinateLon":"139.671576",
+                "rightBottomCoordinateLat":"35.629582",
+				"rightBottomCoordinateLon":"139.854736",
+                "FileName1080p":"tokyo_marathon_42k_1080.jpg",
+				"RankingBackground":"tokyo_marathon_42k_ranking_bg.jpg",
+                "smallFileName":"map-photo_tokyo_marathon_42k.png",
+                "objectFileName":"get-view_tokyo_marathon_42k.png",
+				"RunwayTtype":"line"
+            }]
+        },
+        "raceRoom": {
+            "info": [{
+                "infoId":"1",
+                "category":"race",
+                "raceOrientation":"y",
+                "raceLap":"1",
+                "raceManLimit":"16",
+                "raceCloseTime":"None"                    
+            }]
+        },
+        "limitation": {
+            "info": [{
+                "infoId":"1",
+                "createRaceLevel":"1",
+                "joinRaceLevel":"1",
+                "createRaceQualify":"None",
+                "joinRaceQualify":"None",
+                "label":"None",
+                "location":"None",
+                "model":"None"             
+            }]
+        }
+    }
+}

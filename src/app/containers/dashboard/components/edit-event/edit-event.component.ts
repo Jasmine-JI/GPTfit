@@ -4,7 +4,7 @@ import { EventInfoService } from '../../services/event-info.service';
 import { HttpParams } from '@angular/common/http';
 import { IMyDpOptions } from 'mydatepicker';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
-import * as moment from 'moment';
+import moment from 'moment';
 import { MsgDialogComponent } from '../msg-dialog/msg-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { forkJoin } from 'rxjs';

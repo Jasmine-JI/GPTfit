@@ -6,7 +6,7 @@ import {
   OnDestroy
 } from '@angular/core';
 import { ViewEncapsulation } from '@angular/core';
-import * as moment from 'moment';
+import moment from 'moment';
 import * as _Highcharts from 'highcharts';
 import { ReportService } from '../../services/report.service';
 

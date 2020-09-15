@@ -1,6 +1,6 @@
 import { Component, OnInit, OnChanges, Input, Output, EventEmitter } from '@angular/core';
 import Calendar from 'tui-calendar';
-import * as moment from 'moment';
+import moment from 'moment';
 import { ActivatedRoute } from '@angular/router';
 
 import { ActivityService } from '../../services/activity.service';

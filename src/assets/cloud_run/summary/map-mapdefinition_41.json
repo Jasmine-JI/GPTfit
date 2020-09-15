@@ -1,0 +1,78 @@
+﻿{
+  "map": {
+    "basic": {
+      "mapId": "40",
+      "mapCode": "12",
+      "info": [
+        {
+          "language": "TW",
+          "mapName": "伯納姆公園碼頭",
+          "country": "美國",
+          "city": "芝加哥",
+          "property": "路跑",
+          "introduce": "伯納姆公園是一個開放式公園，長6英里，598英畝的公園由芝加哥公園物業組成，沿著密西根湖邊其將格蘭特公園和傑克遜公園連接在一起。該公園是1927年以一名叫丹尼爾·伯納姆的都市計畫建築師命名的。伯納姆是在1893年世界哥倫比亞博覽會的設計師之一。商人亞倫·蒙哥馬利·沃德認為芝加哥需要有一個公開通達的「永遠開放，清晰和自由」的湖畔，以免這個城市淪為那個時代那些由建築業和重工業破壞了城市美麗的典型骯髒的美國城市。這個城市的湖畔從好萊塢到彩虹灣附近的鋼鐵廠前城區範圍內一直開放至今。"
+        },
+        {
+          "language": "CN",
+          "mapName": "伯纳姆公园码头",
+          "country": "美国",
+          "city": "芝加哥",
+          "property": "路跑",
+          "introduce": "伯纳姆公园是一个开放式公园，长6英里，598英亩的公园由芝加哥公园物业组成，沿着密西根湖边其将格兰特公园和杰克逊公园连接在一起。该公园是1927年以一名叫丹尼尔·伯纳姆的都市计划建筑师命名的。伯纳姆是在1893年世界哥伦比亚博览会的设计师之一。商人亚伦·蒙哥马利·沃德认为芝加哥需要有一个公开通达的「永远开放，清晰和自由」的湖畔，以免这个城市沦为那个时代那些由建筑业和重工业破坏了城市美丽的典型肮脏的美国城市。这个城市的湖畔从好莱坞到彩虹湾附近的钢铁厂前城区范围内一直开放至今。"
+
+        },
+        {
+          "language": "EN",
+          "mapName": "Burnham Park Habor",
+          "country": "US",
+          "city": "Chicago",
+          "property": "road running",
+          "introduce": "Burnham Park is a public park located in Chicago. Situated along 6 miles of Lake Michigan shoreline, the park connects Grant Park at 14th Street to Jackson Park at 56th Street. The 598 acres of parkland is owned and managed by Chicago Park District.It was named for urban planner and architect Daniel Burnham in 1927.Burnham was one of the designers of the 1893 World's Columbian Exposition."
+        }
+      ]
+    },
+    "buildMap": {
+      "info": [
+        {
+          "infoId": "1",
+          "GPXName": "chicago_habor.gpx",
+          "leftTopCoordinateLat": "41.866876", 
+          "leftTopCoordinateLon": "-87.619429",
+          "rightBottomCoordinateLat": "41.853873",
+          "rightBottomCoordinateLon": "-87.589268",
+          "FileName1080p": "chicago_habor_1080.jpg",
+          "RankingBackground": "chicago_habor_ranking_bg.jpg",
+          "smallFileName": "map-photo_chicago_habor.jpg",
+          "objectFileName": "get-view_chicago_habor.png",
+          "RunwayTtype": "line"
+        }
+      ]
+    },
+    "raceRoom": {
+      "info": [
+        {
+          "infoId": "1",
+          "category": "race",
+          "raceOrientation": "y",
+          "raceLap": "1",
+          "raceManLimit": "16",
+          "raceCloseTime": "None"
+        }
+      ]
+    },
+    "limitation": {
+      "info": [
+        {
+          "infoId": "1",
+          "createRaceLevel": "1",
+          "joinRaceLevel": "1",
+          "createRaceQualify": "None",
+          "joinRaceQualify": "None",
+          "label": "None",
+          "location": "None",
+          "model": "None"
+        }
+      ]
+    }
+  }
+}

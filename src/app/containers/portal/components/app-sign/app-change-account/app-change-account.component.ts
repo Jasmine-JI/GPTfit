@@ -473,6 +473,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
       } else {
         this.newToken = res.editAccount.newToken;
         this.utils.writeToken(this.newToken);  // 直接在瀏覽器幫使用者登入
+        this.userProfileService.refreshUserProfile({token: this.newToken});
         this.authService.setLoginStatus(true);
 
         if (this.appSys === 1) {

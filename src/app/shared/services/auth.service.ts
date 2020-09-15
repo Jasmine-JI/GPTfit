@@ -1,3 +1,4 @@
+import { UserProfileService } from './user-profile.service';
 import {
   HttpClient,
 } from '@angular/common/http';
@@ -9,6 +10,7 @@ import { User } from '../models/user';
 import { tap, map } from 'rxjs/operators';
 import { UtilsService, TOKEN } from '@shared/services/utils.service';
 
+
 @Injectable()
 export class AuthService {
   loginStatus$ = new BehaviorSubject<boolean>(false);
@@ -19,6 +21,7 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private utils: UtilsService,
+    private userProfileService: UserProfileService,
     private router: Router,
     private injector: Injector // private router: Router
   ) {}
@@ -33,6 +36,7 @@ export class AuthService {
   loginServerV2(body: any): Observable<any> {
     return this.http.post<any>('/api/v2/user/signIn', body).pipe(
       tap(res => {
+
         switch (res.processResult.resultCode) {
           case 200:
           case 402: // 刷新權杖
@@ -58,6 +62,7 @@ export class AuthService {
   }
 
   logout() {
+    this.userProfileService.clearUserProfile();
     this.loginStatus$.next(false);
     this.currentUser$.next(null);
     this.hadAlertEnableAccount = false;

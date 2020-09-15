@@ -47,6 +47,8 @@ import { AppChangeAccountComponent } from './components/app-sign/app-change-acco
 import { AppQrcodeLoginComponent } from './components/app-sign/app-qrcode-login/app-qrcode-login.component';
 import { AppFirstLoginComponent } from './components/app-sign/app-first-login/app-first-login.component';
 import { QRCodeModule } from 'angularx-qrcode';
+import { OfficialActivityComponent } from './components/official-activity/official-activity.component';
+import { OfficialActivityService } from '../../shared/services/official-activity.service';
 
 @NgModule({
   imports: [
@@ -81,6 +83,7 @@ import { QRCodeModule } from 'angularx-qrcode';
     ReportService,
     ActivityOtherDetailsService,
     DetectInappService,
+    OfficialActivityService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: EmptyResponseBodyErrorInterceptor,
@@ -105,7 +108,8 @@ import { QRCodeModule } from 'angularx-qrcode';
     AppForgetpwComponent,
     AppModifypwComponent,
     AppQrcodeLoginComponent,
-    AppFirstLoginComponent
+    AppFirstLoginComponent,
+    OfficialActivityComponent
   ],
   entryComponents: [MessageBoxComponent]
 })

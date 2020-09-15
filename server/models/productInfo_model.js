@@ -57,8 +57,8 @@ exports.getInfos = function(sn) {
             return _info.appId === productData.mainApp[0].appId
         })[0] : null;
         if (domain === '127.0.0.1') {
-          domain = 'cloud.alatech.com.tw';
-          // domain = 'www.gptfit.com';
+          // domain = 'cloud.alatech.com.tw';
+          domain = 'www.gptfit.com';
         }
 
         if (mainAppData) {
