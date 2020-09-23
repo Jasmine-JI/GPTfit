@@ -1607,6 +1607,9 @@ export class ComReportComponent implements OnInit, OnDestroy {
             }
 
             break;
+          default:
+            console.log('Not support this sports type.');
+            break;
         }
       }
     }
@@ -3023,6 +3026,8 @@ export class ComReportComponent implements OnInit, OnDestroy {
           return 'icon-svg_web-icon_p1_087-aerobic';
         case 'row':
           return 'icon-svg_web-icon_p1_088-row';
+        default:
+          return 'icon-svg_web-icon_p1_083-run';
       }
     });
 

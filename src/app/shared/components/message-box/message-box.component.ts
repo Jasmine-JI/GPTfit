@@ -28,6 +28,11 @@ export class MessageBoxComponent implements OnInit {
   get cancelText() {
     return this.data.cancelText;
   }
+
+  get jusCon() {
+    return this.data.jusCon;
+  }
+
   constructor(
     private router: Router,
     private dialog: MatDialog,

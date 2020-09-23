@@ -588,7 +588,8 @@ var user = require('./server/routes/user.js');
 var center = require('./server/routes/center.js');
 var sport = require('./server/routes/sport.js');
 var uploadSportFile = require('./server/routes/uploadSportFile.js');
-var officialActivity = require('./routes/officialActivity.js');
+var officialActivity = require('./server/routes/officialActivity.js');
+var group = require('./routes/group.js');
 
 app.use('/nodejs/api/rankForm', rankForm.unprotected);
 app.use('/nodejs/api/rankForm', authMiddleware, rankForm.protected);
@@ -607,6 +608,7 @@ app.use('/nodejs/api/center', authMiddleware, center);
 app.use('/nodejs/api/sport', authMiddleware, sport);
 app.use('/nodejs/api/uploadSportFile', uploadSportFile);
 app.use('/nodejs/api/officialActivity', officialActivity);
+app.use('/nodejs/api/group', group);
 app.use('/nodejs/img', express.static('/tmp/official-activity-img'));
 
 

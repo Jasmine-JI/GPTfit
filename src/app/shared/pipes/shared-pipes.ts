@@ -17,6 +17,10 @@ import { A3FormatPipe } from './a3-format.pipe';
 import { CloudrunSummaryPipe } from './cloudrun-summary.pipe';
 import { RelativeDayPipe } from './relative-day.pipe';
 import { TimeFormatPipe } from './time-format.pipe';
+import { RegionCodePipe } from './region-code.pipe';
+import { LanguageCodePipe } from './language-code.pipe';
+import { AppIdPipe } from './app-id.pipe';
+import { SystemIdPipe } from './system-id.pipe';
 
 
 @NgModule({
@@ -41,7 +45,11 @@ import { TimeFormatPipe } from './time-format.pipe';
     A3FormatPipe,
     CloudrunSummaryPipe,
     RelativeDayPipe,
-    TimeFormatPipe
+    TimeFormatPipe,
+    RegionCodePipe,
+    LanguageCodePipe,
+    AppIdPipe,
+    SystemIdPipe
   ],
   exports: [
     SexPipe,
@@ -61,7 +69,11 @@ import { TimeFormatPipe } from './time-format.pipe';
     A3FormatPipe,
     CloudrunSummaryPipe,
     RelativeDayPipe,
-    TimeFormatPipe
+    TimeFormatPipe,
+    RegionCodePipe,
+    LanguageCodePipe,
+    AppIdPipe,
+    SystemIdPipe
   ]
 })
 export class SharedPipes {}

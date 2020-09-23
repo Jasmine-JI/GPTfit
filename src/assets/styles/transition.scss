@@ -1,0 +1,9 @@
+$transition-effect: 0.2s cubic-bezier(0.5, 0.5, 0.5, 0.5);
+
+@mixin transition($target) {
+  -webkit-transition: $target $transition-effect;
+  -moz-transition: $target $transition-effect;
+  -ms-transition: $target $transition-effect;
+  -o-transition: $target $transition-effect;
+  transition: $target $transition-effect;
+}

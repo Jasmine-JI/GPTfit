@@ -107,6 +107,8 @@ import { CloudrunReportComponent } from './group-v2/group-info/cloudrun-report/c
 import { ActivityListManageComponent } from './components/official-activity-manage/activity-list-manage/activity-list-manage.component';
 import { EditOfficialActivityComponent } from './components/official-activity-manage/edit-official-activity/edit-official-activity.component';
 import { ParticipantsManageComponent } from './components/official-activity-manage/participants-manage/participants-manage.component';
+import { EditPushMessageComponent } from './components/push-message/edit-push-message/edit-push-message.component';
+import { PushMessageListComponent } from './components/push-message/push-message-list/push-message-list.component';
 
 
 @NgModule({
@@ -224,7 +226,9 @@ import { ParticipantsManageComponent } from './components/official-activity-mana
     CloudrunReportComponent,
     ActivityListManageComponent,
     EditOfficialActivityComponent,
-    ParticipantsManageComponent
+    ParticipantsManageComponent,
+    EditPushMessageComponent,
+    PushMessageListComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [

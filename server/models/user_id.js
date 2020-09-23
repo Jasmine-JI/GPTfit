@@ -27,10 +27,33 @@ exports.getUserId = function (token) {
 };
 
 exports.searchNickname = function (keyword) {
-  let result = {};
+
   return new Promise((resolve, reject) => {
     db.query(
       `SELECT login_acc, user_id FROM ?? WHERE login_acc like ? '%'`, ['user_profile', keyword],
+      function (err, rows) {
+        if (err) {
+          return reject(false);
+        }
+
+        if (rows.length > 0) {
+          return resolve(rows);
+        } else {
+          return reject(false);
+        }
+
+      }
+
+    );
+
+  });
+
+};
+
+exports.getUserList = function (list) {
+  return new Promise((resolve, reject) => {
+    db.query(
+      `SELECT login_acc as nickname, user_id as userId FROM ?? WHERE user_id in (?) `, ['user_profile', list],
       function (err, rows) {
         if (err) {
           return reject(false);

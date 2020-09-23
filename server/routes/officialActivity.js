@@ -1,5 +1,6 @@
 var { getUserActivityInfo } = require('../models/officialActivity_model');
 var { checkAccessRight } = require('../models/auth.model');
+var { getUserId } = require('../models/user_id');
 var formidable = require('formidable');
 const express = require('express');
 const router = express.Router();
@@ -19,7 +20,8 @@ router.post('/create', (req, res, next) => {
 
   fs.writeFile(`/tmp/official-activity/${body.file.fileName}.json`, JSON.stringify(body.file), (err) => {
     if (err) {
-      console.log(err);
+      console.error(err);
+      writeLogFile(body.file.fileName, body.token, 'Create official activity', err);
       return res.json({
         resultCode: 400,
         resultMessage: "Create activity failed.",
@@ -27,6 +29,7 @@ router.post('/create', (req, res, next) => {
       })
 
     } else {
+      writeLogFile(body.file.fileName, body.token, 'Create official activity', 'Create official activity success.');
       return res.json({
         resultCode: 200,
         resultMessage: "Create activity success.",
@@ -78,6 +81,7 @@ router.post('/update', (req, res, next) => {
 
   fs.writeFile(`/tmp/official-activity/${body.file.fileName}.json`, JSON.stringify(body.file), (err) => {
     if (err) {
+      writeLogFile(body.file.fileName, body.token, 'Update official activity', err);
       return res.json({
         resultCode: 400,
         resultMessage: "Update activity failed.",
@@ -85,9 +89,10 @@ router.post('/update', (req, res, next) => {
       })
 
     } else {
+      writeLogFile(body.file.fileName, body.token, 'Update official activity', 'Update official activity success.');
       return res.json({
         resultCode: 200,
-        resultMessage: "Create activity success.",
+        resultMessage: "Update activity success.",
         nodejsApiCode: "N3003",
         fileName: body.file.fileName
       });
@@ -107,24 +112,27 @@ router.post('/edit', (req, res, next) => {
 
   const form = new formidable.IncomingForm();
   form.parse(req, (err, fields, imgs) => {
-    const file = fields.file,
+    const token = fields.token,
+          file = fields.file,
           fileName = JSON.parse(file).fileName;
 
     saveImg(fileName, imgs);
 
     fs.writeFile(`/tmp/official-activity/${fileName}.json`, file, (err) => {
       if (err) {
+        writeLogFile(fileName, token, 'Edit official activity', err);
         return res.json({
           resultCode: 400,
           resultMessage: "Update activity failed.",
-          nodejsApiCode: "N3003"
+          nodejsApiCode: "N3007"
         })
 
       } else {
+        writeLogFile(fileName, token, 'Edit official activity', 'Edit official activity success.');
         return res.json({
           resultCode: 200,
-          resultMessage: "Create activity success.",
-          nodejsApiCode: "N3003",
+          resultMessage: "Update activity success.",
+          nodejsApiCode: "N3007",
           fileName: fileName
         });
 
@@ -150,17 +158,19 @@ router.post('/apply', (req, res, next) => {
 
   fs.writeFile(`/tmp/official-activity/${body.fileName}.json`, JSON.stringify(data), (err) => {
     if (err) {
+      writeLogFile(body.fileName, body.token, 'Apply official activity', err);
       return res.json({
         resultCode: 400,
         resultMessage: "Apply activity failed.",
-        nodejsApiCode: "N3007"
+        nodejsApiCode: "N3008"
       })
 
     } else {
+      writeLogFile(body.fileName, body.token, 'Apply official activity', 'Apply official activity success.');
       return res.json({
         resultCode: 200,
         resultMessage: "Apply activity success.",
-        nodejsApiCode: "N3007",
+        nodejsApiCode: "N3008",
         fileName: body.fileName
       });
 
@@ -246,6 +256,7 @@ router.post('/update-rank', (req, res, next) => {
         data = fs.readFileSync(`/tmp/official-activity/${body.fileName}.json`);
       } catch (err) {
         console.log(`Error: Read file ${body.fileName} failed.`);
+        writeLogFile(body.fileName, body.token, 'Before update Ranking', err);
 
         return res.json({
           resultCode: 400,
@@ -306,7 +317,7 @@ router.post('/user-record', (req, res, next) => {
                 if (_group.rank.some((_rank, rIndex) => {
                   if (_rank.userId === body.userId) {
                     rankIdx = rIndex;
-                    return _rank.userId === body.userId
+                    return _rank.userId === body.userId && _group.rank[rankIdx].ranking !== '-';
                   }
 
                 })) {
@@ -472,10 +483,9 @@ async function getPerGroupRank(body, res, file) {
 
       const query = await getUserActivityInfo(mapId.toString(), startTimeStamp, endTimeStamp, mapDistance, userIdArr).then(resp => {
         if (resp) {
-
           file.group[i].rank = filterData(resp);
         } else {
-
+          writeLogFile(body.fileName, body.token, 'Query db for sports file', err);
           file.group[i].rank = [];
         }
 
@@ -490,6 +500,7 @@ async function getPerGroupRank(body, res, file) {
   fs.writeFile(`/tmp/official-activity/${body.fileName}.json`, JSON.stringify(file), (err) => {
     if (err) {
       console.log(`Error: Write file ${body.fileName} failed.`);
+      writeLogFile(body.fileName, body.token, 'Update ranking', err);
 
       return res.json({
         resultCode: 400,
@@ -498,6 +509,7 @@ async function getPerGroupRank(body, res, file) {
       })
 
     } else {
+      writeLogFile(body.fileName, body.token, 'Update ranking', 'Update ranking success.');
       return res.json({
         resultCode: 200,
         resultMessage: "Update ranking success.",
@@ -523,7 +535,7 @@ function fillRanking(file) {
 
     notFinishUser.forEach(_user => {
       _group.rank.push({
-        ranking: rankLength + 1,
+        ranking: '-',
         userId: _user.userId,
         nickname: _user.nickname,
         record: 'N/A',
@@ -539,9 +551,16 @@ function fillRanking(file) {
   return file;
 }
 
-// 儲存照片至指定資料夾-kidin-1090914
+/**
+ * 儲存照片至指定資料夾
+ * @param {string} fileName
+ * @param {any} imgs
+ * @author kidin-1090914
+ */
 function saveImg(fileName, imgs) {
-  const imgChildDir = `/tmp/official-activity-img/${fileName}`;
+  const imgDir = '/tmp/official-activity-img',
+        imgChildDir = `/tmp/official-activity-img/${fileName}`;
+  checkDir(imgDir);
   checkDir(imgChildDir);
 
   for (let img in imgs) {
@@ -556,12 +575,74 @@ function saveImg(fileName, imgs) {
 
 }
 
-// 判斷目標資料夾是否存在，如不存在則創建該資料夾-kidin-1090914
+/**
+ * 判斷目標資料夾是否存在，如不存在則創建該資料夾
+ * @param {string} path
+ * @param {*} cb
+ * @author kidin-1090914
+ */
 function checkDir(path, cb) {
   if (!fs.existsSync(path)) {
     fs.mkdirSync(path);
   }
 
+}
+
+/**
+ * 將錯誤訊息寫入log檔
+ * @param {string} fileName-該活動檔案名稱
+ * @param {string} token
+ * @param {string} action-正在執行的動作
+ * @param {string} msg-訊息
+ * @author kidin-1090918
+ */
+async function writeLogFile(fileName, token, action, msg) {
+
+  const dir = '/tmp/official-activity-log',
+        logFile = `${dir}/${fileName}.log`;
+  checkDir(dir);
+
+  let data = [];
+  try {
+    if (fs.existsSync(logFile)) {
+
+      data = fs.readFileSync(logFile);
+
+      data = JSON.parse(data.toString('utf8'));
+    }
+
+  } catch(err) {
+
+    console.error(err);
+  }
+
+  // 保留500條log
+  if (data.length === 500) {
+
+    data.pop();
+  }
+
+  let userId;
+  const query = await getUserId(token).then(resp => {
+
+    if (resp) {
+
+      userId = resp;
+    } else {
+
+      userId = null;
+    }
+
+  })
+
+  data.unshift({
+    logDate: moment().format('YYYY-MM-DD HH:mm:ss'),
+    operatorId: userId,
+    action: action,
+    msg: msg
+  });
+
+  const write = fs.writeFileSync(logFile, JSON.stringify(data));
 }
 
 module.exports = router;

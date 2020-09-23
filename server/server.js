@@ -37,7 +37,7 @@ if (address === '192.168.1.231' || address === '192.168.1.235' || address === '1
  * @author-kidin-1090914
  */
 const runActivityRankTask = function () {
-  schedule.scheduleJob('00 00 04 * * *', function () {
+  schedule.scheduleJob('00 00 03 * * *', function () {
 
     const allFile = fs.readdirSync('/tmp/official-activity');
     let list = [];
@@ -373,6 +373,7 @@ var sport = require('./routes/sport.js');
 var auth = require('./routes/auth.js');
 var uploadSportFile = require('./routes/uploadSportFile.js');
 var officialActivity = require('./routes/officialActivity.js');
+var group = require('./routes/group.js');
 
 app.use('/nodejs/api/rankForm', rankForm.unprotected);
 app.use('/nodejs/api/rankForm', authMiddleware, rankForm.protected);
@@ -393,7 +394,9 @@ app.use('/nodejs/api/sport', authMiddleware, sport);
 app.use('/nodejs/api/auth', auth);
 app.use('/nodejs/api/uploadSportFile', uploadSportFile);
 app.use('/nodejs/api/officialActivity', officialActivity);
+app.use('/nodejs/api/group', group);
 app.use('/nodejs/img', express.static('/tmp/official-activity-img'));
+
 
 // Start the server
 const port = process.env.PORT || 3001;

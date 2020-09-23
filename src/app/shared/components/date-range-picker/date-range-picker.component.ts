@@ -17,6 +17,7 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
   @Input() refStartDate: string;
   @Input() startTimeStamp: number;
   @Input() endTimeStamp: number;
+  @Input() noBorder = false;
 
   // 預設上週-kidin-1090330
   defaultDate = {
@@ -71,6 +72,22 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
           alwaysShowCalendars: true
         });
 
+      } else if (this.pickerType === 'simpleSinglePicker') {
+
+        jquery('input[name="dates"]').daterangepicker({
+          singleDatePicker: true,
+          showDropdowns: true,
+          minYear: +moment().format('YYYY'),
+          minDate: moment(),
+          startDate: moment(this.defaultDate.startDate),
+          endDate: moment(this.defaultDate.startDate),
+          locale: {
+            format: 'YYYY/MM/DD'
+          },
+          showCustomRangeLabel: false,
+          alwaysShowCalendars: true
+        });
+
       } else if (this.pickerType === 'rangePick') {  // 範圍日期選擇器(無快速選擇自訂日期區間)
 
         jquery('input[name="dates"]').daterangepicker({
@@ -106,9 +123,10 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
             [this.translate.instant('universal_time_lastMonth')]:
               [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
           },
-        showCustomRangeLabel: false,
-        alwaysShowCalendars: true
+          showCustomRangeLabel: false,
+          alwaysShowCalendars: true
         });
+
       }
 
       jquery('input[name="dates"]').on('apply.daterangepicker', this.emitDateRange.bind(this));
@@ -145,6 +163,12 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
           this.defaultDate = {
             startDate: moment().subtract(29, 'days').format('YYYY-MM-DDT00:00:00.000Z'),
             endDate: moment().format('YYYY-MM-DDT23:59:59.999Z')
+          };
+          break;
+        case 'nextDay':
+          this.defaultDate = {
+            startDate: moment().subtract(-1, 'days').format('YYYY-MM-DDT00:00:00.000Z'),
+            endDate: moment().subtract(-1, 'days').format('YYYY-MM-DDT23:59:59.999Z')
           };
           break;
         case 'nextMonth': // 曆期下個月

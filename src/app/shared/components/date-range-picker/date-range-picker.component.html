@@ -2,6 +2,8 @@
   type="text"
   name="dates"
   style="cursor: pointer;"
-  [style.width]="pickerType === 'singlePicker' ? '110px' : '200px'"
+  [style.width]="pickerType === 'singlePicker' || pickerType === 'simpleSinglePicker' ? '110px' : '200px'"
+  [style.border]="noBorder ? 'none' : ''"
+  [style.outline]="noBorder ? 'none' : ''"
   readonly
 >

@@ -108,8 +108,11 @@ $list-shadow-color: rgba(100, 100, 100, 0.3);
 
 #join--btn {
   @include border--btn(1px, rgba(255, 255, 255, 0), true);
-  opacity: 0.8;
+  @include center();
+  opacity: 0.9;
   color: white;
+  font-size: 18px;
+  font-weight: bold;
   width: 20vw;
   height: calc(20px + 2vw);
   bottom: 15vw;
@@ -361,6 +364,7 @@ $list-shadow-color: rgba(100, 100, 100, 0.3);
   width: fit-content;
   border-radius: 30px;
   font-weight: bold;
+  color: white;
   cursor: pointer;
   white-space: nowrap;
   @include transition(color);
