@@ -220,6 +220,16 @@ export class GroupService {
   }
 
   /**
+   * 使用nodejs取得群組名稱列表
+   * @param body
+   * @method post
+   * @author kidin-1090923
+   */
+  getGroupNameList(body: object) {
+    return this.http.post<any>(API_SERVER + 'group/getGroupNameList', body);
+  }
+
+  /**
    * 確認使用者在該群組的權限
    * @param currentId {string}-所在頁面的群組ID
    * @author kidin-1090729

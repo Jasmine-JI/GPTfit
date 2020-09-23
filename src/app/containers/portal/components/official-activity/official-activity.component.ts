@@ -259,7 +259,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
     if (location.hostname.indexOf('192.168.1.235') > -1) {
       path = `http://192.168.1.235:3001/nodejs/img/${fileName}/`;
     } else {
-      path = `${location.host}:3000/nodejs/img/${fileName}/`;
+      path = `https://${location.hostname}:3000/nodejs/img/${fileName}/`;
     }
 
     resp['activity']['eventImage'] = `${path}${resp['activity']['eventImage']}`;
@@ -293,7 +293,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
         if (location.host.indexOf('192.168.1.235') > -1) {
           host = 'https://app.alatech.com.tw';
         } else {
-          host = location.host;
+          host = `https://${location.hostname}`;
         }
 
         Object.assign(_rank, { icon: `${host}/${md5('alatech')}/s_${this.hashIdService.handleUserIdEncode(_rank.userId)}.png` });
@@ -447,7 +447,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
   selectDiscount(index: number) {
     this.uiFlag.discountSelectIdx = index;
     if (this.uiFlag.applied || this.userProfile === undefined) {
-      window.open(this.activity.discount[index].link);
+      window.open(this.activity.discount[index].link, '_blank', 'noopener=yes,noreferrer=yes');
     }
 
   }
@@ -536,7 +536,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
     if (this.activity.discount.length === 0) {
       return false;
     } else {
-      window.open(this.activity.discount[this.uiFlag.discountSelectIdx].link);
+      window.open(this.activity.discount[this.uiFlag.discountSelectIdx].link, '_blank', 'noopener=yes,noreferrer=yes');
       return;
     }
 
@@ -616,7 +616,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1090820
    */
   handleNavigatePage(id: number) {
-    window.open(this.activity.product[id].link);
+    window.open(this.activity.product[id].link, '_blank', 'noopener=yes,noreferrer=yes');
   }
 
   /**
@@ -692,7 +692,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
     if (location.host.indexOf('192.168.1.235') > -1) {
       host = 'https://app.alatech.com.tw';
     } else {
-      host = location.host;
+      host = `https://${location.hostname}`;
     }
 
     const iconPath = `${host}/${md5('alatech')}/m_${this.hashIdService.handleUserIdEncode(search.user_id)}.png`;

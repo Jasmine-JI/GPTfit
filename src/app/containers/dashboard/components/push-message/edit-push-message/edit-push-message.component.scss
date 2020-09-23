@@ -1,0 +1,229 @@
+$sea--blue: rgba(0, 104, 183, 1);
+$transition-effect: 0.2s cubic-bezier(0.5, 0.5, 0.5, 0.5);
+$selector-width: 130px;
+$middle-gray: rgba(150, 150, 150, 1);
+$input-min-width: 250px;
+$input-max-width: 600px;
+
+@mixin transition($target) {
+  -webkit-transition: $target $transition-effect;
+  -moz-transition: $target $transition-effect;
+  -ms-transition: $target $transition-effect;
+  -o-transition: $target $transition-effect;
+  transition: $target $transition-effect;
+}
+
+#send__btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 40px;
+  border: 1px solid;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
+  @include transition(top);
+  @include transition(left);
+  @include transition(background-color);
+
+  &:hover {
+    background-color: rgba(250, 250, 250, 1);
+    @include transition(background-color);
+  }
+
+  &:active {
+    top: 2px;
+    left: 2px;
+    box-shadow: none;
+    @include transition(top);
+    @include transition(left);
+  }
+
+}
+
+.condition__content {
+  margin: 10px 0 10px 20px;
+}
+
+.radio__item {
+  margin-right: 20px;
+  align-items: center;
+}
+
+.radio {
+  position: relative;
+  border: 2px solid $sea--blue;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  margin-right: 2px;
+  cursor: pointer;
+}
+
+.radio__checked {
+  &::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: $sea--blue;
+  }
+
+}
+
+.condition__tag {
+  justify-content: space-between;
+  border: 1px solid;
+  padding: 2px 5px;
+  margin: 0px 5px;
+  font-size: 14px;
+}
+
+.add__or__delete {
+  font-size: 22px;
+  margin-left: 2px;
+  cursor: pointer;
+}
+
+.input__title {
+  white-space: nowrap;
+}
+
+.lan__input {
+  margin: 7px 0 7px 20px;
+  align-items: center;
+}
+
+.lan__input__title {
+  width: 50vw;
+  min-width: $input-min-width;
+  max-width: $input-max-width;
+  margin-left: 10px;
+  padding: 3px 20px;
+}
+
+.lan__input__link {
+  @extend .lan__input__title;
+  width: calc(50vw - #{$selector-width} - 10px);
+  min-width: calc(#{$input-min-width} - #{$selector-width} - 10px);
+  max-width: calc(#{$input-max-width} - #{$selector-width} - 10px);
+}
+
+.readonly__width {
+  width: 50vw;
+  min-width: $input-min-width;
+  max-width: $input-max-width;
+}
+
+.lan__input__content {
+  @extend .lan__input__title;
+  resize: none;
+  height: 200px;
+  padding: 10px 20px;
+}
+
+#language__link {
+  color: rgba(0, 162, 255, 1);
+  font-weight: bold;
+  cursor: pointer;
+  margin: 20px 0px;
+}
+
+.link__input {
+  display: flex;
+  flex-direction: row;
+}
+
+#link__selector__section {
+  cursor: pointer;
+  margin-left: 10px;
+  padding: 5px;
+  width: $selector-width;
+  height: 32px;
+  border: 1px solid $middle-gray;
+}
+
+.selector__prompt {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+
+  &::after {
+    content: '';
+    border-style: solid;
+    border-width: 10px 5px 0px 5px;
+    border-color: black transparent transparent transparent;
+    position: relative;
+    left: 5px;
+    margin: auto 0;
+    @include transition(transform);
+  }
+
+}
+
+.selector__drop {
+  &::after {
+    content: '';
+    transform: rotate(180deg);
+    @include transition(transform);
+  }
+
+}
+
+.link__selector {
+  color: black;
+  padding: 2px;
+  @include transition(background-color);
+
+  &:hover {
+    color: white;
+    background-color: rgba(0, 104, 183, 1);
+    @include transition(background-color);
+  }
+
+}
+
+#link__drop__list {
+  position: absolute;
+  z-index: 2;
+  top: 25px;
+  padding: 10px;
+  background-color: white;
+  width: $selector-width;
+  min-width: 120px;
+  border: 1px solid $middle-gray;
+}
+
+
+/******************** media ************************/
+
+@media  (max-width: 650px) {
+  .link__input {
+    flex-direction: column;
+  }
+
+  .lan__input__link {
+    min-width: $input-min-width;
+  }
+
+}
+
+@media  (max-width: 470px) {
+  .condition__content, .lan__input {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .radio__item, .media__margin {
+    margin-left: 20px;
+  }
+
+}

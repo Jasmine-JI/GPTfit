@@ -6,8 +6,8 @@
   <mat-drawer-container style="z-index: 10;" *ngIf="!isPreviewMode">
     <mat-drawer #sideNav opened={{isDefaultOpend}} mode={{mode}}>
       <nav class="navbar ala-dashboard-nav">
-        <span class="ala-dashboard-logo" style="font-family: 'Russo One', sans-serif;">
-          GPTfit
+        <span class="ala-dashboard-logo" style="font-family: Eurostile-ExtendedTwo; font-size: 22px;">
+          GPT Fit
           <span class="alpha-text" *ngIf="isAlphaVersion">alpha</span>
         </span>
         <mat-nav-list style="z-index: 3;">
@@ -173,6 +173,7 @@
             (click)="chooseItem(6, sideNav)"
             [class.ala-sidenav-menu-item__active]="target === 6"
             [routerLink]="['/dashboard/system/event-management']"
+            *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30"
           >
             <i class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"></i>{{"universal_race_racesManagement" | translate }}
           </li>
@@ -209,6 +210,35 @@
                 >
                   {{"universal_activityData_create" | translate }} {{"universal_group_company" | translate }} {{"universal_group_group" | translate }}
                 </li>
+            </mat-expansion-panel>
+          </mat-accordion>
+          <mat-accordion multi="false" *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30">
+            <mat-expansion-panel [expanded]="target === 30">
+              <mat-expansion-panel-header  class="ala-expansion-panel-header"
+                [collapsedHeight]="'100%'" [expandedHeight]="'100%'"
+              >
+                <mat-panel-title>
+                  <!--  之後把font awesome 與material icon 擇一-->
+                  <i class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"></i>
+                  推播管理
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <li class="ala-sidenav-menu-item"
+                (click)="chooseItem(20, sideNav)"
+                [class.ala-sidenav-menu-item__active]="target === 31"
+                [routerLink]="['/dashboard/system/create-push']"
+                *ngIf="userProfile.systemAccessRight && (userProfile.systemAccessRight[0] === 10 || userProfile.systemAccessRight[0] === 28)"
+              >
+                建立推播
+              </li>
+              <li class="ala-sidenav-menu-item"
+                (click)="chooseItem(5, sideNav)"
+                [class.ala-sidenav-menu-item__active]="target === 32"
+                [routerLink]="['/dashboard/system/push-list']"
+                *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 29"
+              >
+                推播清單
+              </li>
             </mat-expansion-panel>
           </mat-accordion>
           <mat-accordion multi="false" *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30">

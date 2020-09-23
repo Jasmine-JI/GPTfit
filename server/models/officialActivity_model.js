@@ -16,6 +16,7 @@ exports.getUserActivityInfo = function (mapId, startTimestamp, endTimestamp, map
        FROM ?? m, ?? a, ?? u
        WHERE
         SUBSTRING_INDEX(m.cloud_run_map_id, '=', -1) = ?
+        and a.total_distance_meters / 200 < a.total_step
         and m.creation_unix_timestamp >= ?
         and m.creation_unix_timestamp <= ?
         and m.file_id = a.file_id

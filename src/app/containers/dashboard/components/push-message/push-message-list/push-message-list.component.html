@@ -1,0 +1,89 @@
+<main>
+  <section class="flexRow" style="justify-content: space-between;">
+    <div>
+      <span style="font-weight: bold; color: rgba(0, 104, 183, 1);">訊息列表</span>
+      <span style="margin-left: 30px;">
+        現在時間：{{ currentTime | timeFormat: 'YYYY-MM-DD HH:mm:ss' }}
+      </span>
+    </div>
+    <div class="flexRow" style="width: 220px; justify-content: space-between;">
+      <span class="push__list__btn" (click)="refreshList()">刷新列表</span>
+      <span
+        class="push__list__btn"
+        [routerLink]="['/dashboard/system/create-push']"
+        *ngIf="userProfile?.systemAccessRight && (userProfile?.systemAccessRight[0] === 10 || userProfile?.systemAccessRight[0] === 28)"
+      >建立推播</span>
+    </div>
+  </section>
+  <section class="flexRow" style="justify-content: space-between; align-items: center; margin: 20px 0;">
+    <div class="flexRow" style="align-items: center;">
+      <span>
+        篩選日期：
+      </span>
+      <app-date-range-picker
+        [pickerType]="'rangePick'"
+        [startTimeStamp]="filterCondition.startTimeStamp"
+        [endTimeStamp]="filterCondition.endTimeStamp"
+        (selectDateRange)="getSelectDate($event)"
+      ></app-date-range-picker>
+    </div>
+    <div>
+      <mat-paginator
+        #paginator
+        [length]="uiFlag.totalCount"
+        [pageIndex]="currentPage?.pageIndex"
+        [pageSize]="10"
+        [pageSizeOptions]="[5, 10, 15]"
+      >
+      </mat-paginator>
+    </div>
+  </section>
+  <section>
+    <div
+      class="flexRow table__row"
+      style="
+        font-size: 18px;
+        font-weight: bold; color: rgba(100, 100, 100, 1);
+        border-bottom: 1px solid rgba(200, 200, 200, 1);
+        padding-bottom: 10px;
+      "
+    >
+      <span id="table__time__title">發送時間</span>
+      <span id="table__status__title">狀態</span>
+      <span id="table__title__title">標題</span>
+      <span id="table__obj__title">發送對象</span>
+      <span id="table__creator__title">發送者</span>
+    </div>
+    <div>
+      <div
+        class="flexRow table__row table__row__content"
+        *ngFor="let _list of res; let _iIdx = index;"
+        (click)="navigatePushDetail(_iIdx)"
+      >
+        <span
+          class="table__time__content"
+          [class.push__yet--color]="_list.pushStatus === 1"
+          [class.push__cancel--color]="_list.pushStatus === 3">
+          {{ _list.pushTimeStamp * 1000 | timeFormat: 'YYYY-MM-DD HH:mm:ss' }}
+        </span>
+        <span class="table__status__content">
+          <span class="push__yet--color" style="cursor: pointer;" (click)="checkCancelPush($event, _iIdx)" *ngIf="_list.pushStatus === 1">
+            未發送
+            <i class="icon-svg_web-icon_p2_084-pause"></i>
+          </span>
+          <span *ngIf="_list.pushStatus === 2">已發送</span>
+          <span class="push__cancel--color" *ngIf="_list.pushStatus === 3">中斷發送</span>
+        </span>
+        <span class="table__title__content">{{ _list.title }}</span>
+        <span class="table__obj__content">
+          <span *ngFor="let _obj of _list.pushObjectType; let _lIdx = index;">
+            <span>{{ pushCondition[+_obj - 2] }}</span>
+            <span *ngIf="_lIdx !== _list.pushObjectType.length - 1">,</span>
+          </span>
+        </span>
+        <span class="table__creator__content">{{ _list.creatorName }}</span>
+      </div>
+    </div>
+  </section>
+</main>
+

@@ -1,11 +1,31 @@
-<h2 class="ala-dialog" mat-dialog-title>
-  {{ title }}
+<h2 class="FlexRow ala-dialog" mat-dialog-title>
+  <span *ngIf="!uiFlag.titleChoice">{{ title }}</span>
+  <div style="cursor: pointer;" (click)="openTitleSelector()" *ngIf="uiFlag.titleChoice">
+    <div class="selector__prompt" [class.selector__drop]="uiFlag.showTitleSelector">
+      {{ pushCondition[uiFlag.titleIdx] }}
+      <div
+        id="title__drop__list"
+        *ngIf="uiFlag.titleChoice && uiFlag.showTitleSelector"
+      >
+        <div
+          class="title__selector"
+          *ngFor="let _pushCondition of pushCondition;
+          let _tIdx = index;"
+          (click)="changeTitle($event, _tIdx)"
+        >
+          <span>
+            {{ _pushCondition }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
 </h2>
 <mat-dialog-content class="ala-selector-content">
   <!-- <div>{{'universal_group_area' | translate }}： 台灣</div> -->
   <div class="memberselector-area">
     <div class="memberselector__content">
-      <div class="memberselector__bar-box">
+      <div class="memberselector__bar-box" *ngIf="uiFlag.canSearch">
         <ng-container *ngIf="!isInnerAdmin">
           <label style="margin-right: 5px">{{'universal_operating_search' | translate }}</label>
           <select [(ngModel)]="chooseGroupId" style="max-width: 100%;">
@@ -21,14 +41,21 @@
         <input
           placeholder="{{'universal_group_nameKeyword' | translate }}"
           [(ngModel)]="keyword"
-          *ngIf="type === 1"
+          *ngIf="type === 1 || (type === 3 && uiFlag.titleIdx === 4)"
         />
         <input
           placeholder="{{'universal_userAccount_account' | translate }}"
           [(ngModel)]="keyword"
           *ngIf="type === 2"
         />
-        <button class="icon-btn" (click)="search()"
+        <input
+          placeholder="請輸入Hash 群組ID"
+          [(ngModel)]="keyword"
+          *ngIf="type === 3 && uiFlag.titleIdx === 3"
+        />
+        <button
+          class="icon-btn"
+          (click)="search()"
           style="margin-left: 5px"
         >
           <i class="fa fa-search icon_fa"></i>
@@ -46,6 +73,12 @@
             <span *ngIf="type === 1">{{item.groupName}}/{{item.userName}}</span>
             <span *ngIf="type === 2 && item.e_mail">{{item.login_acc}}/{{item.e_mail}}</span>
             <span *ngIf="type === 2 && item.phone">{{item.login_acc}}/{{item.phone}}</span>
+            <span *ngIf="type === 3 && uiFlag.titleIdx === 0">{{ item | regionCode }}</span>
+            <span *ngIf="type === 3 && uiFlag.titleIdx === 1">{{ item | systemId }}</span>
+            <span *ngIf="type === 3 && uiFlag.titleIdx === 2">{{ item | appId }}</span>
+            <span *ngIf="type === 3 && uiFlag.titleIdx === 3">{{ item.groupName }}</span>
+            <span *ngIf="type === 3 && uiFlag.titleIdx === 4">{{ item.userName }}</span>
+            <span *ngIf="type === 3 && uiFlag.titleIdx === 5">{{ item | languageCode }}</span>
           </li>
         </ng-container>
         <li class="memberselector-sl__item memberselector-sl__item--empty"
@@ -59,14 +92,14 @@
       <button class="alatech-btn alatech-btn--default memberselector__btn"
         title="{{'universal_operating_join' | translate }}"
         [class.memberselector__btn--is-focused]="areaType === 1"
-        (click)="assignUser()"
+        (click)="assignItem()"
       >
         {{'universal_operating_join' | translate }}<i class="fa fa-chevron-right memberselector__icon--rotate" style="margin-left: 5px"></i>
       </button>
       <button class="alatech-btn alatech-btn--default memberselector__btn"
         title="{{'universal_operating_delete' | translate }}"
         [class.memberselector__btn--is-focused]="areaType === 2"
-        (click)="removeUser()"
+        (click)="removeItem()"
       >
         <i class="fa fa-chevron-left memberselector__icon--rotate" style="margin-right: 5px"></i>{{'universal_operating_delete' | translate }}
       </button>
@@ -75,19 +108,26 @@
       (click)="handleBtnColor(2, $event)"
     >
       <ul class="memberselector-sl memberselector-sl--with-bar memberselector-sl--with-bar--manage">
-        <ng-container *ngIf="adminLists.length > 0">
+        <ng-container *ngIf="selectedDatas.length > 0">
           <li class="memberselector-sl__item"
-            *ngFor="let item of adminLists;let _idx = index"
+            *ngFor="let item of selectedDatas; let _idx = index"
             (click)="handleExistItem(_idx)"
             [class.memberselector-sl__item--is-selected]="chooseExistIndex === _idx"
+            [style.pointer-events]="item === 'zh-TW' || item === 'zh-CN' || item === 'en-US' ? 'none' : 'initial'"
           >
             <span *ngIf="type === 1">{{item.groupName}}/{{item.userName}}</span>
             <span *ngIf="type === 2 && item.e_mail">{{item.login_acc}}/{{item.e_mail}}</span>
             <span *ngIf="type === 2 && item.phone">{{item.login_acc}}/{{item.phone}}</span>
+            <span *ngIf="type === 3 && uiFlag.titleIdx === 0">{{ item | regionCode }}</span>
+            <span *ngIf="type === 3 && uiFlag.titleIdx === 1">{{ item | systemId }}</span>
+            <span *ngIf="type === 3 && uiFlag.titleIdx === 2">{{ item | appId }}</span>
+            <span *ngIf="type === 3 && uiFlag.titleIdx === 3">{{ item.groupName }}</span>
+            <span *ngIf="type === 3 && uiFlag.titleIdx === 4">{{ item.userName }}</span>
+            <span *ngIf="type === 3 && uiFlag.titleIdx === 5">{{ item | languageCode }}</span>
           </li>
         </ng-container>
         <li class="memberselector-sl__item memberselector-sl__item--empty"
-          *ngIf="adminLists.length === 0"
+          *ngIf="selectedDatas.length === 0"
         >
           {{'universal_group_canNotFind' | translate }}
         </li>

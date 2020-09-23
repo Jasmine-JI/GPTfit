@@ -41,6 +41,8 @@ import { ComReportComponent } from './group/group-info/com-report/com-report.com
 import { ComLifeTrackingComponent } from './group/group-info/com-life-tracking/com-life-tracking.component';
 import { MyLifeTrackingComponent } from '@shared/components/my-life-tracking/my-life-tracking.component';
 import { QrcodeUploadComponent } from './components/qrcode-upload/qrcode-upload.component';
+import { EditPushMessageComponent } from './components/push-message/edit-push-message/edit-push-message.component';
+import { PushMessageListComponent } from './components/push-message/push-message-list/push-message-list.component';
 
 import { GroupInfoComponent as GroupInfoV2Component } from './group-v2/group-info/group-info.component';
 import { SearchGroupComponent } from './group-v2/search-group/search-group.component';
@@ -216,6 +218,21 @@ const routes: Routes = [
         component: LifeTrackingComponent
       },
       {
+        path: 'system/create-push',
+        component: EditPushMessageComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/push-detail',
+        component: EditPushMessageComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/push-list',
+        component: PushMessageListComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
         path: 'settings',
         component: SettingsComponent,
         children: [
@@ -319,8 +336,7 @@ const routes: Routes = [
       {
         path: 'mygroup-list-v2',
         component: MyGroupListComponent
-      },
-
+      }
     ]
   },
   { path: '**', redirectTo: '404' }
