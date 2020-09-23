@@ -695,6 +695,9 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
           case 'Get phone and sms infomation is not enough.':
             this.cue.verificationCode = this.i18n.errorCaptcha;
             break;
+          case 'Post fail, account is not existing.':
+            this.cue.phone = 'universal_userAccount_noRegisterData';
+            break;
           default:
             const msgBody = 'Error!<br /> Please try again later.';
             this.showMsgBox(msgBody);

@@ -94,7 +94,7 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
         console.log(`Error: ${res.resultMessage}`);
       } else {
         this.activity = res.activity;
-        this.searchRes = this.deepCopy(this.activity.group);
+        this.searchRes = this.utils.deepCopy(this.activity.group);
 
         if (this.activity.discount.length === 0) {
           this.uiFlag.isFreeActivity = true;
@@ -159,7 +159,7 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
   checkEmpty() {
     const hashUserId = this.hashIdInput.nativeElement.value;
     if (hashUserId.length === 0) {
-      this.searchRes = this.deepCopy(this.activity.group);
+      this.searchRes = this.utils.deepCopy(this.activity.group);
     }
 
   }
@@ -220,7 +220,7 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
       if (res.resultCode !== 200) {
         console.log('Delete error');
       } else {
-        this.searchRes = this.deepCopy(this.activity.group);
+        this.searchRes = this.utils.deepCopy(this.activity.group);
       }
 
     });
@@ -250,8 +250,13 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
     } else if (this.activity.delMember.some(_delMem => _delMem.userId === userId)) {
       let delIndex: number;
       const [addUser] = this.activity.delMember.filter((_delMember, index) => {
-        delIndex = index;
-        return _delMember.userId === userId;
+        if (_delMember.userId === userId) {
+          delIndex = index;
+          return true;
+        } else {
+          return false;
+        }
+
       });
 
       this.activity.delMember.splice(delIndex, 1);
@@ -259,7 +264,7 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
       delete addUser.editInfo;
 
       this.activity.group[0].member.push(addUser);
-      this.searchRes = this.deepCopy(this.activity.group);
+      this.searchRes = this.utils.deepCopy(this.activity.group);
 
       this.saveFile();
     } else {
@@ -287,7 +292,7 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
                 };
 
           this.activity.group[0].member.push(addUser);
-          this.searchRes = this.deepCopy(this.activity.group);
+          this.searchRes = this.utils.deepCopy(this.activity.group);
 
           this.saveFile();
         }
@@ -305,11 +310,12 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
   addGroup() {
     const hashGroupId = this.groupInput.nativeElement.value,
           groupId = this.hashids.handleGroupIdDecode(hashGroupId),
+          groupLevel = this.getGroupLevel(groupId),
           userIdSet = new Set(),
           body = {
             token: this.utils.getToken(),
             groupId,
-            groupLevel: 30,
+            groupLevel,
             avatarType: 3,
             infoType: 5
           };
@@ -378,15 +384,13 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
   checkStatus(status: string) {
     const gId = this.uiFlag.payInfo.gId,
           mId = this.uiFlag.payInfo.mId;
-    this.activity.group[gId].member[mId].status = status;
 
-    if (this.searchRes.length === 1) {
-      this.searchRes[0].member[0].status = status;
-    } else {
-      this.searchRes = this.deepCopy(this.activity.group);
+    if (this.activity.group[gId].member[mId].status !== status) {
+      this.activity.group[gId].member[mId].status = status;
+      this.searchRes = this.utils.deepCopy(this.activity.group);
+      this.saveFile();
     }
 
-    this.saveFile();
   }
 
   /**
@@ -405,7 +409,7 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
       Object.assign(editTarget, {orderNum});
     }
 
-    this.searchRes = this.deepCopy(this.activity.group);
+    this.searchRes = this.utils.deepCopy(this.activity.group);
     this.saveFile();
   }
 
@@ -425,7 +429,7 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
       Object.assign(editTarget, {remarks});
     }
 
-    this.searchRes = this.deepCopy(this.activity.group);
+    this.searchRes = this.utils.deepCopy(this.activity.group);
     this.saveFile();
   }
 
@@ -464,7 +468,7 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
       this.activity.group[gIdx].member = this.activity.group[gIdx].member.filter((_member, idx) => idx !== mIdx);
       this.activity.group[groupIdx].member.push(memberInfo);
       this.showGroupSelector(gIdx, mIdx);
-      this.searchRes = this.deepCopy(this.activity.group);
+      this.searchRes = this.utils.deepCopy(this.activity.group);
 
       this.saveFile();
     }
@@ -492,40 +496,23 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
 
   }
 
+
   /**
-   * 物件深拷貝
-   * @param obj
-   * @param cache
-   * @author kidin-1090902
+   * 取得群組階層
+   * @param groupId {string}
+   * @returns groupLevel
+   * @author kidin-1090916
    */
-  deepCopy(obj: any, cache = new WeakMap()) {
-    // 基本型別 & function
-    if (obj === null || typeof obj !== 'object') {
-      return obj;
+  getGroupLevel(groupId: string) {
+    const groupIdArr = groupId.split('-');
+    if (groupIdArr[3] === '0' && groupIdArr[4] === '0') {
+      return 30;
+    } else if (groupIdArr[3] !== '0' && groupIdArr[4] === '0') {
+      return 40;
+    } else if (groupIdArr[3] !== '0' && groupIdArr[4] !== '0') {
+      return 60;
     }
 
-    // Date 及 RegExp
-    if (obj instanceof Date || obj instanceof RegExp) {
-      return obj.constructor(obj);
-    }
-
-    // 檢查快取
-    if (cache.has(obj)) {
-      return cache.get(obj);
-    }
-
-    // 使用原物件的 constructor
-    const copy = new obj.constructor();
-
-    // 先放入 cache 中
-    cache.set(obj, copy);
-
-    // 取出所有一般屬性 & 所有 key 為 symbol 的屬性
-    [...Object.getOwnPropertyNames(obj), ...Object.getOwnPropertySymbols(obj)].forEach(key => {
-      copy[key] = this.deepCopy(obj[key], cache);
-    });
-
-    return copy;
   }
 
   /**

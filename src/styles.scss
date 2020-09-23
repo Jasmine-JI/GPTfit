@@ -2,6 +2,16 @@
 /* @import "~@angular/material/prebuilt-themes/pink-bluegrey.css"; */
 @import '~@angular/material/prebuilt-themes/indigo-pink.css';
 
+@font-face {
+  font-family: Matamata-Regular;
+  src: url("./assets/fonts/Matamata-Regular.otf") format("opentype");
+}
+
+@font-face {
+  font-family: Eurostile-ExtendedTwo;
+  src: url("./assets/fonts/gpt_logo字14511.ttf") format("TrueType");
+}
+
 .alpha-text {
   color: #F2850C;
   font-size: 14px;

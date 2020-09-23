@@ -18,15 +18,17 @@
     </div>
     <img
       [src]="activity.eventImage"
-      style="width: 100%;"
+      style="width: 100%; height: calc(100vw * 9 / 16);"
       (error)="this.activity.eventImage = '/assets/images/runner.jpg'"
     />
     <button
       id="join--btn"
       [style.background-color]="activity.mainColor"
-      *ngIf="!uiFlag.activityEnd && uiFlag.haveAnyActivity"
+      *ngIf="!uiFlag.activityEnd && uiFlag.haveAnyActivity && !uiFlag.applied"
       (click)="navigateApply()"
-    >參加</button>
+    >
+      <span>參加</span>
+    </button>
     <div id="page__tag--postion" class="flexRow">
       <div
         class="page__tag search__tag"
@@ -178,10 +180,10 @@
                   style="height: 200px; width: 200px; box-shadow: 5px 5px 5px rgba(220, 220, 220, 1); background-color: white;"
                 />
                 <div class="flexCol discount__choice">
-                  <span  [style.color]="uiFlag.discountSelectIdx === _dIdx && !uiFlag.applied? activity.mainColor : black">
+                  <span  [style.color]="uiFlag.discountSelectIdx === _dIdx && !uiFlag.applied? activity.mainColor : 'black'">
                     {{ _discount.name }}
                   </span>
-                  <span style="font-weight: bold;" [style.color]="uiFlag.discountSelectIdx === _dIdx ? activity.mainColor : black">
+                  <span style="font-weight: bold;" [style.color]="uiFlag.discountSelectIdx === _dIdx ? activity.mainColor : 'black'">
                     NT {{ _discount.price }}
                   </span>
                 </div>

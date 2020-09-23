@@ -20,6 +20,7 @@ export class InnerSettingsComponent implements OnInit, OnDestroy {
 
   systemDevelopers = [];
   systemMaintainers = [];
+  systemPushners = [];
   marketingDevelopers = [];
   isLoading = false;
   userId: number;
@@ -53,6 +54,9 @@ export class InnerSettingsComponent implements OnInit, OnDestroy {
         );
         this.systemMaintainers = _result.filter(
           _res => _res.accessRight === '20'
+        );
+        this.systemPushners = _result.filter(
+          _res => _res.accessRight === '28'
         );
         this.marketingDevelopers = _result.filter(
           _res => _res.accessRight === '29'
@@ -90,12 +94,15 @@ export class InnerSettingsComponent implements OnInit, OnDestroy {
     } else if (_type === 20) {
       targetAdminName = '系統維護員(20)';
       adminLists = _.cloneDeep(this.systemMaintainers); // 深拷貝，避免win修改先影響settings table
+      isCanOpen = this.maxAccessRight < 30 ? true : false;
+    } else if (_type === 28) {
+      targetAdminName = '系統維護員(28)';
+      adminLists = _.cloneDeep(this.systemPushners); // 深拷貝，避免win修改先影響settings table
       isCanOpen = this.maxAccessRight < 20 ? true : false;
     } else {
       targetAdminName = '行銷與企劃員(29)';
       adminLists = _.cloneDeep(this.marketingDevelopers); // 深拷貝，避免win修改先影響settings table
-      isCanOpen = this.maxAccessRight < 30 ? true
-          : false;
+      isCanOpen = this.maxAccessRight < 30 ? true : false;
     }
 
     if (isCanOpen) {

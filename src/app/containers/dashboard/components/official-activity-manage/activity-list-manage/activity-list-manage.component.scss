@@ -76,7 +76,8 @@ $btn-border-radius: 5px;
 }
 
 .row__expand {
-  height: 120px;
+  min-height: 120px;
+  height: fit-content;
   @include transition(height);
 }
 

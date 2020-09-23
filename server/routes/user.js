@@ -1,5 +1,6 @@
 var express = require('express');
 var searchNickname = require('../models/user_id').searchNickname;
+var getUserList = require('../models/user_id').getUserList;
 
 var router = express.Router();
 var checkAccessRight = require('../models/auth.model').checkAccessRight;
@@ -42,7 +43,7 @@ router.get('/userAvartar', function (req, res, next) {
     }
   } = req;
   const token = req.headers['authorization'];
-  checkAccessRight(token, 20).then(_res => {
+  checkAccessRight(token, 29).then(_res => {
     if (_res) {
       const sql = `
         select login_acc, icon_small, icon_middle, icon_large, e_mail, phone, country_code, active_status, time_stamp, timestamp_reset_passwd, gender, birthday
@@ -164,6 +165,49 @@ router.post('/search_nickname', function (req, res, next) {
       return res.json({
         resultCode: 400,
         resultMessage: "Not found.",
+      })
+
+    }
+
+  });
+
+});
+
+// userId[]查找暱稱-kidin-1090923
+router.post('/getUserList', function (req, res, next) {
+  const {
+    con,
+    body
+  } = req;
+
+  const result = getUserList(body.userIdList).then(resp => {
+    if (resp) {
+
+      const resList = [];
+      body.userIdList.forEach(_list => {
+
+        resp.forEach(__resp => {
+
+          if (_list === +__resp.userId) {
+            resList.push(__resp);
+          }
+
+        });
+
+      });
+
+      return res.json({
+        apiCode: 'N9001', // 暫定
+        resultCode: 200,
+        resultMessage: "Get result success.",
+        nickname: resList
+      });
+
+    } else {
+      return res.json({
+        apiCode: 'N9001', // 暫定
+        resultCode: 400,
+        resultMessage: "Get result failed.",
       })
 
     }

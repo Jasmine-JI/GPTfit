@@ -106,6 +106,15 @@ export class UserProfileService {
   }
 
   /**
+   * 使用nodejs取得指定的使用者列表
+   * @param body {any}
+   * @author kidin-1090902
+   */
+  getUserList(body: any) {
+    return this.http.post<any>(API_SERVER + 'user/getUserList', body);
+  }
+
+  /**
    * 清除userProfile資料
    * @author kidin-1090909
    */
