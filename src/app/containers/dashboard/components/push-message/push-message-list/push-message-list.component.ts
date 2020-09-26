@@ -25,6 +25,8 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
   timeout: any;
 
   uiFlag = {
+    isTableLoading: false,
+    noTableData: true,
     cancelIndex: null,
     totalCount: 0,
     haveReservation: false
@@ -122,6 +124,7 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
    * @author kidin-1090917
    */
   getPushMessage() {
+    this.uiFlag.isTableLoading = true;
 
     for (const key in this.filterCondition) {
 
@@ -176,6 +179,14 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
     ).subscribe(response => {
       this.res = (response as any).notificationList;
       this.uiFlag.totalCount = (response as any).page.totalCounts;
+
+      if (this.uiFlag.totalCount === 0) {
+        this.uiFlag.noTableData = true;
+      } else {
+        this.uiFlag.noTableData = false;
+      }
+
+      this.uiFlag.isTableLoading = false;
       this.checkHaveReservation();
     });
 

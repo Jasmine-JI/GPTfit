@@ -38,4 +38,14 @@ export class QrcodeService {
   getQRFitPairURL(body) {
     return this.http.post<any>('/api/v1/device/getQRFitPairURL', body); // 7018
   }
+
+  /**
+   * 取得設備資訊-7021
+   * @param body {Object}
+   * @author kidin-1090924
+   */
+  getEquipmentLog(body: any) {
+    return this.http.post<any>('/api/v1/device/getEquipmentLog', body);
+  }
+
 }

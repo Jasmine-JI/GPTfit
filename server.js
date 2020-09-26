@@ -589,7 +589,7 @@ var center = require('./server/routes/center.js');
 var sport = require('./server/routes/sport.js');
 var uploadSportFile = require('./server/routes/uploadSportFile.js');
 var officialActivity = require('./server/routes/officialActivity.js');
-var group = require('./routes/group.js');
+var group = require('./server/routes/group.js');
 
 app.use('/nodejs/api/rankForm', rankForm.unprotected);
 app.use('/nodejs/api/rankForm', authMiddleware, rankForm.protected);

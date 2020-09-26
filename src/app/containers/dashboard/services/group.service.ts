@@ -202,11 +202,11 @@ export class GroupService {
   /**
    * nodejs middleware
    * @param params
-   * @method get
+   * @method post
    * @author kidin-1090715
    */
-  fetchUserAvartar(params) {
-    return this.http.get<any>(API_SERVER + 'user/userAvartar', { params });
+  fetchUserAvartar(body: object) {
+    return this.http.post<any>(API_SERVER + 'user/userAvartar', body);
   }
 
   /**

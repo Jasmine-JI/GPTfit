@@ -1,6 +1,6 @@
 <div class="flexCol" [style.cursor]="uiFlag.isLoading ? 'wait' : ''">
   <section class="flexRow" style="align-items: center;">
-    <span style="display: flex; align-items: center; justify-content: center; cursor: pointer;" (click)="handleReturn()">
+    <span style="display: flex; align-items: center; justify-content: center; cursor: pointer; white-space: nowrap;" (click)="handleReturn()">
       <i
         class="icon-svg_web-icon_p1_073-level_fold"
         style="font-size: 42px; color: rgba(188, 188, 188, 1);"
@@ -25,44 +25,46 @@
       <span id="status__column__title">狀態</span>
       <span id="group__column__title">分組</span>
     </div>
-    <div class="flexCol">
-      <div *ngFor="let _group of searchRes; let gIdx = index;">
-        <div
-          class="flexRow"
-          style="position: relative; padding: 10px 0px; border-bottom: 1px solid rgba(200, 200, 200, 1); min-height: 60px;"
-          *ngFor="let _member of _group.member; let mIdx = index;"
-        >
-          <i class="icon-svg_web-icon_p1_012-close delete__icon" *ngIf="uiFlag.deleteMode" (click)="deleteUser(gIdx, mIdx)"></i>
-          <span class="userId__column__content">{{ _member.userId }}</span>
-          <span class="nickname__column__content">{{ _member.nickname }}</span>
-          <span class="account__column__content">{{ _member.account }}</span>
-          <span class="gender__column__content" *ngIf="_member.gender === 0">男</span>
-          <span class="gender__column__content" *ngIf="_member.gender === 1">女</span>
-          <span class="age__column__content">{{ _member.age }}</span>
-          <span class="apply__column__content">{{ _member.applyTimeStamp | timeFormat: 'YYYY-MM-DD HH:mm' }}</span>
+    <div class="flexCol" *ngIf="activity">
+      <div *ngFor="let _group of activity.group; let gIdx = index;">
+        <div *ngFor="let _member of _group.member; let mIdx = index;">
           <div
-            class="status__column__content"
-            style="position: relative;"
-            [style.background-color]="_member.status === 'checking' ? 'rgba(255, 251, 146, 1)' : 'rgba(141, 240, 203, 1)'"
-            (click)="showEditPayInfo($event, gIdx, mIdx)"
+            class="flexRow"
+            style="position: relative; padding: 10px 0px; border-bottom: 1px solid rgba(200, 200, 200, 1); min-height: 60px;"
+            *ngIf="uiFlag.focus.gId === null || (uiFlag.focus.gId === gIdx && uiFlag.focus.mId === mIdx)"
           >
-            <span *ngIf="_member.status === 'checking'">尚未繳費</span>
-            <span *ngIf="_member.status === 'checked'">繳費完成</span>
-            <mat-icon style="font-size: 8px; width: 4px;">create</mat-icon>
-          </div>
-          <div class="group__column__content" style="position: relative;" (click)="showGroupSelector(gIdx, mIdx)">
-            {{ _group.groupName }}
+            <i class="icon-svg_web-icon_p1_012-close delete__icon" *ngIf="uiFlag.deleteMode" (click)="deleteUser(gIdx, mIdx)"></i>
+            <span class="userId__column__content">{{ _member.userId }}</span>
+            <span class="nickname__column__content">{{ _member.nickname }}</span>
+            <span class="account__column__content">{{ _member.account }}</span>
+            <span class="gender__column__content" *ngIf="_member.gender === 0">男</span>
+            <span class="gender__column__content" *ngIf="_member.gender === 1">女</span>
+            <span class="age__column__content">{{ _member.age }}</span>
+            <span class="apply__column__content">{{ _member.applyTimeStamp | timeFormat: 'YYYY-MM-DD HH:mm' }}</span>
             <div
-              id="group__list"
-              class="flexCol"
-              *ngIf="uiFlag.groupSelectorObj.group === gIdx && uiFlag.groupSelectorObj.member === mIdx">
-              <span
-                class="group__list__item"
-                *ngFor="let _list of activity.group; let groupIdx = index;"
-                (click)="changeGroup(gIdx, mIdx, groupIdx)"
-              >
-                {{ _list.groupName }}
-              </span>
+              class="status__column__content"
+              style="position: relative;"
+              [style.background-color]="_member.status === 'checking' ? 'rgba(255, 251, 146, 1)' : 'rgba(141, 240, 203, 1)'"
+              (click)="showEditPayInfo($event, gIdx, mIdx)"
+            >
+              <span *ngIf="_member.status === 'checking'">尚未繳費</span>
+              <span *ngIf="_member.status === 'checked'">繳費完成</span>
+              <mat-icon style="font-size: 8px; width: 4px;">create</mat-icon>
+            </div>
+            <div class="group__column__content" style="position: relative;" (click)="showGroupSelector(gIdx, mIdx)">
+              {{ _group.groupName }}
+              <div
+                id="group__list"
+                class="flexCol"
+                *ngIf="uiFlag.groupSelectorObj.group === gIdx && uiFlag.groupSelectorObj.member === mIdx">
+                <span
+                  class="group__list__item"
+                  *ngFor="let _list of activity.group; let groupIdx = index;"
+                  (click)="changeGroup(gIdx, mIdx, groupIdx)"
+                >
+                  {{ _list.groupName }}
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -86,7 +88,7 @@
   >
     <div class="flexCol">
       <h4 class="pay__info" style="border-bottom: 1px solid; padding-bottom: 7px;">
-        {{ searchRes[uiFlag.payInfo.gId].member[uiFlag.payInfo.mId].nickname }}
+        {{ activity.group[uiFlag.payInfo.gId].member[uiFlag.payInfo.mId].nickname }}
       </h4>
       <div class="flexCol pay__info">
         <h4>狀態</h4>
@@ -94,7 +96,7 @@
           <div class="flexRow check__box__item" (click)="checkStatus('checked')">
             <div
               class="check__box"
-              [class.check__box__checked]="searchRes[uiFlag.payInfo.gId].member[uiFlag.payInfo.mId].status === 'checked'"
+              [class.check__box__checked]="activity.group[uiFlag.payInfo.gId].member[uiFlag.payInfo.mId].status === 'checked'"
             ></div>
             <span class="check__box__title" style="background-color: rgba(141, 240, 203, 1);">
               繳費完成
@@ -103,7 +105,7 @@
           <div class="flexRow check__box__item" (click)="checkStatus('checking')">
             <div
               class="check__box"
-              [class.check__box__checked]="searchRes[uiFlag.payInfo.gId].member[uiFlag.payInfo.mId].status === 'checking'"
+              [class.check__box__checked]="activity.group[uiFlag.payInfo.gId].member[uiFlag.payInfo.mId].status === 'checking'"
             ></div>
             <span class="check__box__title" style="background-color: rgba(255, 251, 146, 1);">
               尚未繳費
@@ -115,7 +117,7 @@
         <h4>單號</h4>
         <input
           type="text"
-          [value]="searchRes[uiFlag.payInfo.gId].member[uiFlag.payInfo.mId].orderNum ? searchRes[uiFlag.payInfo.gId].member[uiFlag.payInfo.mId].orderNum : ''"
+          [value]="activity.group[uiFlag.payInfo.gId].member[uiFlag.payInfo.mId].orderNum ? activity.group[uiFlag.payInfo.gId].member[uiFlag.payInfo.mId].orderNum : ''"
           (change)="saveOrderNum($event)"
         >
       </div>
@@ -123,7 +125,7 @@
         <h4>備註</h4>
         <textarea
           style="resize: none; height: 30px;"
-          [value]="searchRes[uiFlag.payInfo.gId].member[uiFlag.payInfo.mId].remarks ? searchRes[uiFlag.payInfo.gId].member[uiFlag.payInfo.mId].remarks : ''"
+          [value]="activity.group[uiFlag.payInfo.gId].member[uiFlag.payInfo.mId].remarks ? activity.group[uiFlag.payInfo.gId].member[uiFlag.payInfo.mId].remarks : ''"
           (change)="saveRemarks($event)"
           (focus)="stopPropagation($event)"
         ></textarea>

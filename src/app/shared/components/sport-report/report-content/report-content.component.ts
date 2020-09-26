@@ -234,6 +234,8 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
       this.initVariable();
 
       // 1個月內取日概要陣列，半年以上取周概要陣列-kidin_1090122
+      this.checkReportRangeType(this.reportStartTime, this.reportEndTime);
+
       const body = {
         token: this.token || '',
         type: this.reportRangeType,
@@ -1896,6 +1898,21 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
 
   print() {
     window.print();
+  }
+
+  /**
+   * 確認報告類型（日/週）
+   * @param startDate {string}-報告開始日期
+   * @param endDate {string}-報告結束日期
+   * @author kidin-1090926
+   */
+  checkReportRangeType(startDate: string, endDate: string) {
+    if (moment(endDate).diff(moment(startDate), 'days') <= 30) {
+      this.reportRangeType = 1;
+    } else {
+      this.reportRangeType = 2;
+    }
+
   }
 
   ngOnDestroy () {
