@@ -54,7 +54,11 @@
       <span id="table__obj__title">發送對象</span>
       <span id="table__creator__title">發送者</span>
     </div>
-    <div>
+    <div class="ala-loading-shade" *ngIf="uiFlag.isTableLoading">
+      <mat-spinner></mat-spinner>
+    </div>
+    <span style="color: rgba(150, 150, 150, 1);" *ngIf="!uiFlag.isTableLoading && uiFlag.noTableData">無資料顯示</span>
+    <div *ngIf="!uiFlag.isTableLoading && !uiFlag.noTableData">
       <div
         class="flexRow table__row table__row__content"
         *ngFor="let _list of res; let _iIdx = index;"

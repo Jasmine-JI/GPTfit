@@ -98,10 +98,13 @@ export class InnerTestComponent implements OnInit {
    * @author kidin-1090806
    */
   getUserAvartar(userId: number): void {
-    let params = new HttpParams();
-    params = params.set('userId', userId.toString());
 
-    this.groupService.fetchUserAvartar(params).subscribe(res => {
+    const body = {
+      token: this.utils.getToken(),
+      userId: userId
+    };
+
+    this.groupService.fetchUserAvartar(body).subscribe(res => {
       if (res.resultCode === 200) {
 
         let lastResetPwd: string;

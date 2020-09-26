@@ -154,12 +154,14 @@ export class IntlPhoneInputComponent implements OnInit, OnChanges {
     if (this.countryCode === undefined) {
       this.phoneCue = 'universal_userAccount_countryRegionCode';
       this.focusoutPhoneInt.emit('');
-    } else if (this.phone.length > 0 && this.regPhone.test(this.phone)) {
+    } else if (this.phone.length > 0 && this.regPhone.test(this.phone) && this.phoneCue !== 'accountRepeat') {
       this.phoneCue = '';
       this.focusoutPhoneInt.emit(this.phone);
-    } else {
+    } else if (this.phoneCue !== 'accountRepeat') {
       this.phoneCue = 'universal_userAccount_phoneFormat';
       this.focusoutPhoneInt.emit('');
+    } else {
+      this.focusoutPhoneInt.emit(this.phone);
     }
 
   }

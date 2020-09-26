@@ -3,6 +3,7 @@
     <div
       style="
         position: absolute;
+        z-index: 10;
         top: 10px;
         left: 20px;
         color: white;
@@ -17,17 +18,21 @@
       GPTfit
     </div>
     <img
+      id="main__image"
       [src]="activity.eventImage"
-      style="width: 100%; height: calc(100vw * 9 / 16);"
       (error)="this.activity.eventImage = '/assets/images/runner.jpg'"
     />
     <button
       id="join--btn"
       [style.background-color]="activity.mainColor"
-      *ngIf="!uiFlag.activityEnd && uiFlag.haveAnyActivity && !uiFlag.applied"
+      [style.pointer-events]="uiFlag.activityEnd || uiFlag.applied ? 'none' : 'initial'"
+      [style.cursor]="uiFlag.activityEnd || uiFlag.applied ? 'context-menu' : 'pointer'"
+      *ngIf="uiFlag.haveAnyActivity"
       (click)="navigateApply()"
     >
-      <span>參加</span>
+      <span *ngIf="!uiFlag.activityEnd && !uiFlag.applied">參加</span>
+      <span *ngIf="!uiFlag.activityEnd && uiFlag.applied">已報名</span>
+      <span *ngIf="uiFlag.activityEnd">已截止</span>
     </button>
     <div id="page__tag--postion" class="flexRow">
       <div
@@ -97,9 +102,9 @@
       </div>
     </div>
   </div>
-  <ng-container *ngIf="uiFlag.currentTag === 'description'">
+  <ng-container *ngIf="uiFlag.currentTag === 'description' && !uiFlag.changeFileLoading">
     <p style="display: block; margin: 20px 0; font-weight: bold; text-align: center; font-size: 20px;" *ngIf="!uiFlag.haveAnyActivity">無任何歷史官方活動</p>
-    <div class="flexRow page_content card__section">
+    <div class="flexRow page_content card__section card__section__keyframs">
       <div
         class="cloudRun__card"
         [style.background-color]="_card.bgColor"
@@ -130,7 +135,11 @@
       >
         <div id="apply__info--width" class="flexCol">
           <div id="apply__info">
-            <div class="flexCol output__div" *ngIf="activity.group?.length > 1 && !uiFlag.applied && userProfile !== undefined">
+            <div
+              class="flexCol output__div"
+              style="margin-right: 10px;"
+              *ngIf="activity.group?.length > 1 && !uiFlag.applied && userProfile !== undefined"
+            >
               <span>您好，{{ userProfile.nickname }}</span>
               <span>請選擇您欲報名的分組</span>
               <div id="group__column__content" style="position: relative;" (click)="showGroupSelector()">
@@ -167,7 +176,7 @@
               <span *ngIf="!uiFlag.applied && userProfile !== undefined">請選擇</span>
               優惠組合
             </span>
-            <div class="flexRow" style="flex-wrap: wrap; width: 60vw;">
+            <div class="flexRow discount__card">
               <div
                 class="flexRow product__list"
                 style="align-items: initial; text-align: initial;"
