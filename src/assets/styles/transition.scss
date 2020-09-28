@@ -1,3 +1,4 @@
+// transition 各瀏覽器支援
 $transition-effect: 0.2s cubic-bezier(0.5, 0.5, 0.5, 0.5);
 
 @mixin transition($target) {

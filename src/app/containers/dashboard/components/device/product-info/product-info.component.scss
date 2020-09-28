@@ -1,0 +1,150 @@
+$log-time-width: 160px;
+$update-time-width: 160px;
+$log-message-width: 300px;
+$light-gray: rgba(200, 200, 200, 1);
+
+
+@mixin table-title($width) {
+  display: inline-block;
+  width: $width;
+  font-size: 14px;
+  color: rgba(150, 150, 150, 1);
+}
+
+@mixin table-content($width, $margin: false) {
+  display: inline-block;
+  width: $width;
+  font-size: 14px;
+
+  @if ($margin) {
+    margin-right: 10px;
+  } @else {
+    margin-right: 0px;
+  }
+
+}
+
+
+.app-link {
+  margin: 10px 0 15px;
+
+}
+.app-link img {
+  /* width: 55px; */
+  height: 55px;
+  cursor: pointer;
+}
+
+.device-hint {
+  display: inline-block;
+  margin-left: 10px;
+  position: relative;
+  width: calc(100% - 340px);
+}
+.device-hint-box {
+  position: absolute;
+  border: 1px solid #ccc;
+  top: 27px;
+  left: -30px;
+  height: auto;
+  min-width: 400px;
+  max-height: 400px;
+  overflow: scroll;
+  background-color: #feffe9;
+  color: black;
+  padding: 10px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.product-info.group-image--area {
+  max-width: 225px;
+}
+
+.product__page__tab {
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 20px;
+  color: rgba(100, 100, 100, 1);
+  margin: 5px 0;
+}
+
+.product__tab__active {
+  color: rgba(43, 173, 228, 1);
+  cursor: context-menu;
+  pointer-events: none;
+}
+
+.info__item {
+  margin-bottom: 40px;
+}
+
+.productlog__table__titile {
+  justify-content: space-between;
+  padding: 20px 0;
+  border-bottom: 1px solid $light-gray;
+
+}
+
+.productlog__table__content {
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid $light-gray;
+}
+
+#log__time__title {
+  @include table-title($log-time-width);
+}
+
+#update__time__title {
+  @include table-title($update-time-width);
+}
+
+#log__message__title {
+  @include table-title($log-message-width);
+}
+
+.log__time__content {
+  @include table-content($log-time-width, $margin: true);
+}
+
+.update__time__content {
+  @include table-content($update-time-width, $margin: true);
+}
+
+.log__message__content {
+  @include table-content($log-message-width, $margin: false);
+}
+
+
+/******************************* Media **************************************/
+
+@media(max-width: 1169px) {
+  .device-hint-box {
+    top: 30px;
+    left: initial;
+    right: 10px;
+    min-width: 285px;
+    max-width: initial;
+
+  }
+}
+@media(max-width: 977px) {
+  .device-hint {
+    display: block;
+    width: 100%;
+    margin: 10px 0 0 0;
+  }
+  .device-hint-box {
+    position: initial;
+    top: 30px;
+    left: initial;
+    right: 10px;
+    min-width: 285px;
+    max-width: initial;
+  }
+}
+@media(max-width: 767px) {
+  .product-info.group-image--area {
+    max-width: initial;
+  }
+}

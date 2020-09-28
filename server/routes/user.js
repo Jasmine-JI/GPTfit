@@ -35,21 +35,44 @@ router.get('/userProfile', function (req, res, next) {
   });
 });
 
-router.get('/userAvartar', function (req, res, next) {
+router.post('/userAvartar', function (req, res, next) {
   const {
     con,
-    query: {
+    body: {
+      token,
       userId
     }
   } = req;
-  const token = req.headers['authorization'];
+
   checkAccessRight(token, 29).then(_res => {
     if (_res) {
+
+      let keyword;
+      if (Array.isArray(userId)) {
+        keyword = 'in (?)';
+      } else {
+        keyword = '= ?';
+      }
+
       const sql = `
-        select login_acc, icon_small, icon_middle, icon_large, e_mail, phone, country_code, active_status, time_stamp, timestamp_reset_passwd, gender, birthday
+        select
+          user_id as userId,
+          login_acc as userName,
+          icon_small as smallIcon,
+          icon_middle as middleIcon,
+          icon_large as largeIcon,
+          e_mail as email,
+          phone,
+          country_code as countryCode,
+          active_status as enableStatus,
+          time_stamp as lastLogin,
+          timestamp_reset_passwd as lastResetPwd,
+          gender,
+          birthday
         from ??
-        where user_id = ?;
-      `;
+        where user_id ${keyword};
+      `
+
       con.query(sql, ['user_profile', userId], function (err, rows) {
         if (err) {
           console.log(err);
@@ -57,37 +80,53 @@ router.get('/userAvartar', function (req, res, next) {
             errorMessage: err.sqlMessage
           });
         }
-        let userName = '';
-        if (rows.length > 0) {
-          userName = rows[0].login_acc;
-          smallIcon = rows[0].icon_small;
-          middleIcon = rows[0].icon_middle;
-          largeIcon = rows[0].icon_large;
-          email = rows[0].e_mail || '';
-          countryCode = rows[0].country_code || '';
-          phone = rows[0].phone || '';
-          enableStatus = rows[0].active_status;
-          lastLogin = rows[0].time_stamp;
-          lastResetPwd = rows[0].timestamp_reset_passwd;
-          gender = rows[0].gender;
-          birthday = rows[0].birthday;
+
+        if (rows.length > 0 && Array.isArray(userId)) {
+
+          res.json({
+            resultCode: 200,
+            userList: rows
+          })
+
+        } else if (rows.length > 0) {
+          res.json({
+            resultCode: 200,
+            userId: rows[0].userId,
+            userName: rows[0].userName,
+            smallIcon: rows[0].smallIcon,
+            middleIcon: rows[0].middleIcon,
+            largeIcon: rows[0].largeIcon,
+            email: rows[0].email || '',
+            countryCode: rows[0].countryCode || '',
+            phone: rows[0].phone || '',
+            enableStatus: rows[0].enableStatus,
+            lastLogin: rows[0].lastLogin,
+            lastResetPwd: rows[0].lastResetPwd,
+            gender: rows[0].gender,
+            birthday: rows[0].birthday
+
+          })
+
+        } else {
+          res.json({
+            resultCode: 200,
+            userName: '',
+            smallIcon: '',
+            middleIcon: '',
+            largeIcon: '',
+            email: '',
+            countryCode: null,
+            phone: null,
+            enableStatus: null,
+            lastLogin: null,
+            lastResetPwd: null,
+            gender: null,
+            birthday: null,
+            userList: []
+          })
+
         }
 
-        res.json({
-          resultCode: 200,
-          userName,
-          smallIcon,
-          middleIcon,
-          largeIcon,
-          email,
-          countryCode,
-          phone,
-          enableStatus,
-          lastLogin,
-          lastResetPwd,
-          gender,
-          birthday
-        });
       });
     } else {
       res.json({

@@ -28,6 +28,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
 
   uiFlag = {
     width: 1500,
+    changeFileLoading: false,
     currentTag: 'description', // description/leaderBoard/activityList/search
     cardExpand: false,
     cardExpandId: null,
@@ -101,7 +102,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
 
 
   /**
-   * 刷新登入者並取得
+   * 取得登入者資訊
    * @author kidin-1090908
    */
   getUserProfile() {
@@ -112,31 +113,17 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
         token
       };
 
-      this.userProfileService.refreshUserProfile(body);
-      this.getRxUserProfile();
+      this.userProfileService.getUserProfile(body).subscribe(res => {
+        if (res.processResult.resultCode !== 200) {
+          console.log(`${res.processResult.apiCode}：${res.processResult.apiReturnMessage}`);
+        } else {
+          Object.assign(res, {serialNumber: this.hashIdService.handleUserIdEncode(res.userId)});
+          this.userProfile = res.userProfile;
+        }
+
+      });
+
     }
-
-  }
-
-  /**
-   * 取得userProfile
-   * @author kidin-1090910
-   */
-  getRxUserProfile() {
-    this.userProfileService.getRxUserProfile().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      if (res) {
-        Object.assign(res, {serialNumber: this.hashIdService.handleUserIdEncode(res.userId)});
-        this.userProfile = res;
-      } else {
-        setTimeout(() => {
-          this.getRxUserProfile();
-        }, 200);
-
-      }
-
-    });
 
   }
 
@@ -207,6 +194,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1090903
    */
   getFile(fileName: string, token: string) {
+    this.uiFlag.changeFileLoading = true;
     const body = {
       token,
       fileName
@@ -224,8 +212,10 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
     ).subscribe(res => {
       if (res.resultCode !== 200) {
         console.log(`Error: ${res.resultMessage}`);
+        this.uiFlag.changeFileLoading = false;
       } else {
         this.activity = res.activity;
+        this.uiFlag.changeFileLoading = false;
 
         // 確認活動是否結束
         if (this.activity.endTimeStamp < moment().valueOf()) {

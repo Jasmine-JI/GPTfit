@@ -59,6 +59,7 @@ export class EditOfficialActivityComponent implements OnInit, OnDestroy {
     showEventTitleInput: false,
     showEditCardContent: false,
     isClickCardImg: false,
+    isFocusInput: false,
     editItem: {
       card: {
         title: null,
@@ -140,7 +141,7 @@ export class EditOfficialActivityComponent implements OnInit, OnDestroy {
     this.pageClickEvent = page.pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
-      if (!this.uiFlag.isClickCardImg) {
+      if (!this.uiFlag.isClickCardImg && !this.uiFlag.isFocusInput) {
         this.initUiFlag();
       } else {
         this.uiFlag.isClickCardImg = false;
@@ -185,6 +186,7 @@ export class EditOfficialActivityComponent implements OnInit, OnDestroy {
       showEventTitleInput: false,
       showEditCardContent: false,
       isClickCardImg: false,
+      isFocusInput: false,
       editItem: {
         card: {
           title: null,
@@ -448,6 +450,7 @@ export class EditOfficialActivityComponent implements OnInit, OnDestroy {
    */
   editItem(e: KeyboardEvent, type: string, id: number, item: string): void {
     e.stopPropagation();
+    this.uiFlag.isFocusInput = true;
     this.uiFlag.editItem[type][item] = id;
 
     switch (item) {
@@ -487,6 +490,7 @@ export class EditOfficialActivityComponent implements OnInit, OnDestroy {
       this.pageSetting[type][id][item] = (e as any).currentTarget.value;
       this.uiFlag.editItem[type][item] = null;
       this.uiFlag.isSaved = false;
+      this.uiFlag.isFocusInput = false;
     }
 
   }

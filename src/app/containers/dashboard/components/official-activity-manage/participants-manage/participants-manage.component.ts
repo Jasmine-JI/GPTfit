@@ -1,3 +1,5 @@
+import { MessageBoxComponent } from './../../../../../shared/components/message-box/message-box.component';
+import { MatDialog } from '@angular/material/dialog';
 import { UserProfileService } from './../../../../../shared/services/user-profile.service';
 import { HttpParams } from '@angular/common/http';
 import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
@@ -43,6 +45,10 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
   uiFlag = {
     isLoading: false,
     showSearchRes: false,
+    focus: {
+      gId: null,
+      mId: null
+    },
     payInfo: {
       showEditPayInfo: false,
       gId: null,
@@ -59,7 +65,6 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
   };
 
   activity: any;
-  searchRes: Group[];
   editorId = null;
 
   constructor(
@@ -68,7 +73,8 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
     private officialActivityService: OfficialActivityService,
     private utils: UtilsService,
     private groupService: GroupService,
-    private userProfileService: UserProfileService
+    private userProfileService: UserProfileService,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -89,12 +95,12 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
             fileName
           };
 
+    this.uiFlag.isLoading = true;
     this.officialActivityService.getOfficialActivity(body).subscribe(res => {
       if (res.resultCode !== 200) {
         console.log(`Error: ${res.resultMessage}`);
       } else {
         this.activity = res.activity;
-        this.searchRes = this.utils.deepCopy(this.activity.group);
 
         if (this.activity.discount.length === 0) {
           this.uiFlag.isFreeActivity = true;
@@ -102,6 +108,7 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
 
       }
 
+      this.uiFlag.isLoading = false;
     });
 
   }
@@ -128,7 +135,10 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
     this.pageClickEvent = pageClick.pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
-      this.uiFlag.payInfo.showEditPayInfo = false;
+      if (this.uiFlag.payInfo.showEditPayInfo) {
+        this.uiFlag.payInfo.showEditPayInfo = false;
+      }
+
     });
 
   }
@@ -159,7 +169,11 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
   checkEmpty() {
     const hashUserId = this.hashIdInput.nativeElement.value;
     if (hashUserId.length === 0) {
-      this.searchRes = this.utils.deepCopy(this.activity.group);
+      this.uiFlag.focus = {
+        gId: null,
+        mId: null
+      };
+
     }
 
   }
@@ -172,10 +186,24 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
     const hashUserId = this.hashIdInput.nativeElement.value,
           searchUserId = +this.hashids.handleUserIdDecode(hashUserId);
 
-    this.searchRes = this.searchRes.map(_group => {
-      _group.member = _group.member.filter(_user => _user.userId === searchUserId);
-      return _group;
-    });
+    for (let i = 0; i < this.activity.group.length; i++) {
+
+      const member = this.activity.group[i].member;
+      for (let j = 0; j < member.length; j++) {
+
+        if (member[j].userId === searchUserId) {
+
+          this.uiFlag.focus = {
+            gId: i,
+            mId: j
+          };
+
+          break;
+        }
+
+      }
+
+    }
 
   }
 
@@ -216,13 +244,15 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
       file: this.activity
     };
 
+    this.uiFlag.isLoading = true;
     this.officialActivityService.updateOfficialActivity(body).subscribe(res => {
       if (res.resultCode !== 200) {
         console.log('Delete error');
       } else {
-        this.searchRes = this.utils.deepCopy(this.activity.group);
+        console.log('Delete success');
       }
 
+      this.uiFlag.isLoading = false;
     });
 
   }
@@ -240,63 +270,66 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
       userId = user_id;
     }
 
-    let params = new HttpParams();
-    params = params.set('userId', userId.toString());
-
+    // 確認user是否已經報名
     if (
       this.activity.group.some(_group => _group.member.some(_member => _member.userId === userId))
     ) {
       return false;
-    } else if (this.activity.delMember.some(_delMem => _delMem.userId === userId)) {
-      let delIndex: number;
-      const [addUser] = this.activity.delMember.filter((_delMember, index) => {
-        if (_delMember.userId === userId) {
-          delIndex = index;
-          return true;
-        } else {
-          return false;
-        }
 
-      });
-
-      this.activity.delMember.splice(delIndex, 1);
-      addUser.status = this.uiFlag.isFreeActivity ? 'checked' : 'checking';
-      delete addUser.editInfo;
-
-      this.activity.group[0].member.push(addUser);
-      this.searchRes = this.utils.deepCopy(this.activity.group);
-
+    // 確認user是否在刪除列表中
+    } else if (this.checkDelMember(userId)) {
       this.saveFile();
     } else {
+      this.uiFlag.isLoading = true;
 
-      this.groupService.fetchUserAvartar(params).subscribe(res => {
+      // 使用call nodejs api取得使用者資訊
+      const body = {
+        token: this.utils.getToken(),
+        userId: userId
+      };
+
+      this.groupService.fetchUserAvartar(body).subscribe(res => {
         if (res.resultCode !== 200) {
           console.log('Add user Error');
         } else {
-          let account;
-          if (res.countryCode.length !== 0) {
-            account = `+${res.countryCode} ${res.phone}`;
+
+          if (res.userName === '') {
+            this.dialog.open(MessageBoxComponent, {
+              hasBackdrop: true,
+              data: {
+                title: 'Message',
+                body: '無此使用者!',
+                confirmText: '確定'
+              }
+
+            });
+
           } else {
-            account = res.email;
+
+            let account;
+            if (res.countryCode.length !== 0) {
+              account = `+${res.countryCode} ${res.phone}`;
+            } else {
+              account = res.email;
+            }
+
+            const currentTimeStamp = moment().valueOf(),
+                  addUser = {
+                    userId: userId,
+                    nickname: res.userName,
+                    account: account,
+                    gender: res.gender,
+                    age: moment().year() - (+res.birthday.slice(0, 4)),
+                    applyTimeStamp: currentTimeStamp,
+                    status: this.uiFlag.isFreeActivity ? 'checked' : 'checking'
+                  };
+
+            this.activity.group[0].member.push(addUser);
+            this.saveFile();
           }
-
-          const currentTimeStamp = moment().valueOf(),
-                addUser = {
-                  userId: userId,
-                  nickname: res.userName,
-                  account: account,
-                  gender: res.gender,
-                  age: moment().year() - (+res.birthday.slice(0, 4)),
-                  applyTimeStamp: currentTimeStamp,
-                  status: this.uiFlag.isFreeActivity ? 'checked' : 'checking'
-                };
-
-          this.activity.group[0].member.push(addUser);
-          this.searchRes = this.utils.deepCopy(this.activity.group);
-
-          this.saveFile();
         }
 
+        this.uiFlag.isLoading = false;
       });
 
     }
@@ -304,7 +337,7 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 將整個群組成員加入報名
+   * 將整個群組成員加入報名名單
    * @param hashGroupId {string}-hash過後的group id
    */
   addGroup() {
@@ -320,18 +353,107 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
             infoType: 5
           };
 
+    this.uiFlag.isLoading = true;
     this.groupService.fetchGroupMemberList(body).subscribe(res => {
       if (res.resultCode === 200) {
         res.info.groupMemberInfo.forEach(_info => {
-          userIdSet.add(_info.memberId);
+          userIdSet.add(+_info.memberId);
         });
 
-        const userIdArr = Array.from(userIdSet);
-        userIdArr.forEach(_userId => {
-          this.addUser(+_userId);
+        let userIdArr = Array.from(userIdSet);
+        userIdArr = userIdArr.filter(_userId => {
+          return !this.checkDelMember(+_userId);
         });
+
+        if (userIdArr.length !== 0) {
+          this.addNonApplyUser(userIdArr as Array<number>);
+        } else {
+          this.saveFile();
+        }
+
       }
 
+      this.uiFlag.isLoading = false;
+    });
+
+  }
+
+  /**
+   * 確認欲加入的使用者是否已在參賽者列表或刪除列表中
+   * @param userId {number}
+   * @returns boolean
+   * @author kidin-1090926
+   */
+  checkDelMember(userId: number): boolean {
+    if (this.activity.group.some(_group => _group.member.some(_member => _member.userId === userId))) {
+      return true;
+    } else if (this.activity.delMember.some(_delMem => _delMem.userId === userId)) {
+
+      let delIndex: number;
+      const [addUser] = this.activity.delMember.filter((_delMember, index) => {
+        if (_delMember.userId === userId) {
+          delIndex = index;
+          return true;
+        } else {
+          return false;
+        }
+
+      });
+
+      this.activity.delMember.splice(delIndex, 1);
+      addUser.status = this.uiFlag.isFreeActivity ? 'checked' : 'checking';
+      delete addUser.editInfo;
+      this.activity.group[0].member.push(addUser);
+
+      return true;
+    } else {
+      return false;
+    }
+
+  }
+
+  /**
+   * 將未申請過的成員加入參賽人員列表
+   * @param userIdList {Array<number>}
+   * @author kidin-1090926
+   */
+  addNonApplyUser(userIdList: Array<number>) {
+    const body = {
+      token: this.utils.getToken(),
+      userId: userIdList
+    };
+
+    this.groupService.fetchUserAvartar(body).subscribe(res => {
+      if (res.resultCode !== 200) {
+        console.log('Add user Error');
+      } else {
+
+        res.userList.forEach(_user => {
+          let account;
+          if (_user.countryCode !== null && _user.countryCode !== '') {
+            account = `+${_user.countryCode} ${_user.phone}`;
+          } else {
+            account = _user.email;
+          }
+
+          const currentTimeStamp = moment().valueOf(),
+                addUser = {
+                  userId: _user.userId,
+                  nickname: _user.userName,
+                  account: account,
+                  gender: _user.gender,
+                  age: moment().year() - (+_user.birthday.slice(0, 4)),
+                  applyTimeStamp: currentTimeStamp,
+                  status: this.uiFlag.isFreeActivity ? 'checked' : 'checking'
+                };
+
+          this.activity.group[0].member.push(addUser);
+        });
+
+        this.saveFile();
+      }
+
+      this.uiFlag.isLoading = false;
     });
 
   }
@@ -387,10 +509,9 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
 
     if (this.activity.group[gId].member[mId].status !== status) {
       this.activity.group[gId].member[mId].status = status;
-      this.searchRes = this.utils.deepCopy(this.activity.group);
-      this.saveFile();
     }
 
+    this.saveFile();
   }
 
   /**
@@ -409,7 +530,6 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
       Object.assign(editTarget, {orderNum});
     }
 
-    this.searchRes = this.utils.deepCopy(this.activity.group);
     this.saveFile();
   }
 
@@ -429,7 +549,6 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
       Object.assign(editTarget, {remarks});
     }
 
-    this.searchRes = this.utils.deepCopy(this.activity.group);
     this.saveFile();
   }
 
@@ -468,7 +587,6 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
       this.activity.group[gIdx].member = this.activity.group[gIdx].member.filter((_member, idx) => idx !== mIdx);
       this.activity.group[groupIdx].member.push(memberInfo);
       this.showGroupSelector(gIdx, mIdx);
-      this.searchRes = this.utils.deepCopy(this.activity.group);
 
       this.saveFile();
     }
@@ -485,6 +603,7 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
       file: this.activity
     };
 
+    this.uiFlag.isLoading = true;
     this.officialActivityService.updateOfficialActivity(body).subscribe(res => {
       if (res.resultCode !== 200) {
         console.log('Update error.');
@@ -492,6 +611,7 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
         console.log('Update success.');
       }
 
+      this.uiFlag.isLoading = false;
     });
 
   }

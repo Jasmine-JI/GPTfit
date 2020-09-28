@@ -35,8 +35,8 @@ export class MyActivityComponent implements OnInit {
   isLoading = false;
   isEmpty = false;
   targetUserId: string;
-  filterStartTime = moment().add(-1, 'years').format('YYYY-MM-DDTHH:mm:00.000+08:00');
-  filterEndTime = moment().format('YYYY-MM-DDTHH:mm:00.000+08:00');
+  filterStartTime = moment().add(-1, 'years').format('YYYY-MM-DDTHH:mm:00.000Z');
+  filterEndTime = moment().format('YYYY-MM-DDTHH:mm:00.000Z');
   sportType = '99';
   searchWords = '';
   @Input() isPortal = false;
@@ -63,11 +63,11 @@ export class MyActivityComponent implements OnInit {
     const queryStrings = this.utils.getUrlQueryStrings(location.search);
     const { pageNumber, startTime, endTime, type, searchWords } = queryStrings;
     this.filterStartTime = startTime
-      ? moment(startTime).format('YYYY-MM-DDTHH:mm:00.000+08:00')
-      : moment().add(-1, 'years').format('YYYY-MM-DDTHH:mm:00.000+08:00');
+      ? moment(startTime).format('YYYY-MM-DDTHH:mm:00.000Z')
+      : moment().add(-1, 'years').format('YYYY-MM-DDTHH:mm:00.000Z');
     this.filterEndTime = endTime
-      ? moment(endTime).format('YYYY-MM-DDT23:59:00.000+08:00')
-      : moment().format('YYYY-MM-DDT23:59:00.000+08:00');
+      ? moment(endTime).format('YYYY-MM-DDT23:59:00.000Z')
+      : moment().format('YYYY-MM-DDT23:59:00.000Z');
     this.sportType = type ? type.toString() : '99';
     this.searchWords = searchWords && searchWords.length > 0 ? searchWords.toString() : '';
     this.targetUserId = this.hashIdService.handleUserIdDecode(
@@ -157,10 +157,10 @@ export class MyActivityComponent implements OnInit {
         (this.currentPage && this.currentPage.pageSize.toString()) || '10',
       searchWords: this.searchWords,
       filterStartTime: this.filterStartTime
-        ? moment(this.filterStartTime).format('YYYY-MM-DDTHH:mm:00.000+08:00')
+        ? moment(this.filterStartTime).format('YYYY-MM-DDTHH:mm:00.000Z')
         : '',
       filterEndTime: moment(this.filterEndTime).format(
-        'YYYY-MM-DDTHH:mm:00.000+08:00'
+        'YYYY-MM-DDTHH:mm:00.000Z'
       ),
       targetUserId: ''
     };
@@ -188,11 +188,11 @@ export class MyActivityComponent implements OnInit {
   ) {
     if (isStartTime) {
       this.filterStartTime = moment($event.value).format(
-        'YYYY-MM-DDTHH:mm:00.000+08:00'
+        'YYYY-MM-DDTHH:mm:00.000Z'
       );
     } else {
       this.filterEndTime = moment($event.value).format(
-        'YYYY-MM-DDT23:59:00.000+08:00'
+        'YYYY-MM-DDT23:59:00.000Z'
       );
     }
   }
@@ -203,8 +203,8 @@ export class MyActivityComponent implements OnInit {
     this.router.navigateByUrl(`/dashboard/activity/${fileId}`);
   }
   reset() {
-    this.filterStartTime = moment().add(-1, 'years').format('YYYY-MM-DDTHH:mm:00.000+08:00');
-    this.filterEndTime = moment().format('YYYY-MM-DDTHH:mm:00.000+08:00');
+    this.filterStartTime = moment().add(-1, 'years').format('YYYY-MM-DDTHH:mm:00.000Z');
+    this.filterEndTime = moment().format('YYYY-MM-DDTHH:mm:00.000Z');
     this.sportType = '99';
     this.searchWords = '';
   }

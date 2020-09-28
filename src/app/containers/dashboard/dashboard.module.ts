@@ -58,6 +58,7 @@ import { SportTypePipe } from './pipes/sport-type.pipe';
 import { SportDatePipe } from './pipes/sport-date.pipe';
 import { SportTimePipe } from './pipes/sport-time.pipe';
 import { SportPacePipe } from './pipes/sport-pace.pipe';
+import { ProductErrorLogPipe } from './pipes/product-error-log.pipe';
 import { NgProgressModule } from '@ngx-progressbar/core';
 import { MyDeviceComponent } from './components/device/my-device/my-device.component';
 import { ProductInfoComponent } from './components/device/product-info/product-info.component';
@@ -192,6 +193,7 @@ import { PushMessageListComponent } from './components/push-message/push-message
     SportDatePipe,
     SportTimePipe,
     SportPacePipe,
+    ProductErrorLogPipe,
     MyDeviceComponent,
     ProductInfoComponent,
     TodayLoginnerWinComponent,

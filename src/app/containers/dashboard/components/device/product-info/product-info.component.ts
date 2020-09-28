@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { QrcodeService } from '../../../../portal/services/qrcode.service';
 import { ActivatedRoute } from '@angular/router';
 import { NgProgress, NgProgressRef } from '@ngx-progressbar/core';
@@ -10,15 +10,31 @@ import { TranslateService } from '@ngx-translate/core';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { Subject } from 'rxjs';
 import { takeUntil, map } from 'rxjs/operators';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import moment from 'moment';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-product-info',
   templateUrl: './product-info.component.html',
-  styleUrls: ['./product-info.component.css', '../../../group/group-style.scss']
+  styleUrls: ['./product-info.component.scss', '../../../group/group-style.scss']
 })
 export class ProductInfoComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe = new Subject();
+  @ViewChild('paginatorA', {static: false}) paginatorA: MatPaginator;
+
+  @ViewChild('paginatorB', {static: false}) paginatorB: MatPaginator;
+
+  currentPage: PageEvent;
+
+  uiFlag = {
+    isTableLoading: false,
+    noTableData: true,
+    page: 'productInfo',
+    totalCount: 0
+  };
 
   userMaxAccessRight = 99;
   groupImg = 'http://app.alatech.com.tw/app/public_html/products/img/t0500.png';
@@ -28,6 +44,7 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
   deviceInfo: any;
   deviceSN: string;
   productInfo: any;
+  modelTypeName: string;
   productManual: any;
   isMainAppOpen = false;
   isSecondAppOpen = false;
@@ -48,6 +65,8 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
   fitPairStatus: string;
   deviceEnableDate: string;
   deviceBondDate: string;
+  totalUseTime: string;
+  totalUseKiloMeter: number;
   token: string;
   fitPairTip: string;
   qrURL: string;
@@ -55,6 +74,14 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
   deviceBondUserName: string;
   deviceBondUserId: string;
   deviceImgUrl: string;
+  logTimeSelect = {
+    filterStartTime: moment().subtract(1, 'year').format('YYYY-MM-DDT00:00:00.000Z'),
+    filterEndTime: moment().format('YYYY-MM-DDT23:59:59Z')
+  };
+
+  productErrorLog: Array<any> = [];
+  logList: any;
+
   constructor(
     private qrCodeService: QrcodeService,
     private progress: NgProgress,
@@ -63,8 +90,14 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
     private userProfileService: UserProfileService,
     private router: Router,
     public dialog: MatDialog,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private breakpointObserver: BreakpointObserver
   ) {}
+
+  // Check if device is phone or tablet
+  get isMobile() {
+    return this.breakpointObserver.isMatched('(max-width: 767px)');
+  }
 
   ngOnInit() {
     this.getTranslate();
@@ -100,6 +133,15 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
       this.fitPairStatus = res.info.fitPairStatus;
       this.deviceBondDate = res.info.deviceBondDate;
       this.deviceEnableDate = res.info.deviceEnableDate;
+
+      if (res.info.equipmentInfo.totalUseTimeSecond) {
+        this.totalUseTime = this.ConvertTime(res.info.equipmentInfo.totalUseTimeSecond);
+      }
+
+      if (res.info.equipmentInfo.totalNumberOfEnable) {
+        this.totalUseKiloMeter = Math.round(res.info.equipmentInfo.totalNumberOfEnable / 1000);
+      }
+
       if (res.resultCode === 200) {
         this.deviceBondUserName = res.info.deviceBondUserName;
         this.deviceBondUserId = res.info.deviceBondUserId;
@@ -108,6 +150,7 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
           this.progressRef.complete();
           this.isLoading = false;
           this.deviceInfo = response.info.productInfo[0];
+          this.modelTypeName = this.deviceInfo.modelTypeName;
           if (location.hostname === '192.168.1.235') {
             this.deviceImgUrl = `http://app.alatech.com.tw/app/public_html/products${this.deviceInfo.modelImg}`;
           } else {
@@ -158,36 +201,42 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
       this.productInfo = this.deviceInfo.informations['relatedLinks_zh-CN'];
     } else if (lang === 'en-us') {
       this.productInfo = this.deviceInfo.informations['relatedLinks_en-US'];
-    } else if (lang === 'es-es') {
+    } else if (lang === 'es-es' && this.deviceInfo.informations['relatedLinks_es-ES']) {
       this.productInfo = this.deviceInfo.informations['relatedLinks_es-ES'];
     } else {
       this.productInfo = this.deviceInfo.informations['relatedLinks_zh-TW'];
     }
   }
+
   // 新增西班牙語-kidin-1081106
   handleProductManual(lang) {
     if (lang === 'zh-cn') {
       this.productManual = this.deviceInfo.informations['manual_zh-CN'];
     } else if (lang === 'en-us') {
       this.productManual = this.deviceInfo.informations['manual_en-US'];
-    } else if (lang === 'es-es') {
-      this.productManual = this.deviceInfo.informations['relatedLinks_es-ES'];
+    } else if (lang === 'es-es' && this.deviceInfo.informations['manual_es-ES']) {
+      this.productManual = this.deviceInfo.informations['manual_es-ES'];
     } else {
       this.productManual = this.deviceInfo.informations['manual_zh-TW'];
     }
   }
+
   swithMainApp() {
     this.isMainAppOpen = !this.isMainAppOpen;
   }
+
   swithSecondApp() {
     this.isSecondAppOpen = !this.isSecondAppOpen;
   }
+
   mouseEnter() {
     this.isDisplayBox = true;
   }
+
   mouseLeave() {
     this.isDisplayBox = false;
   }
+
   manage() {
     const body = {
       token: this.token,
@@ -210,6 +259,7 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
       }
     });
   }
+
   generate() {
     const body = {
       token: this.token,
@@ -219,6 +269,7 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
       this.qrURL = res.info.qrURL;
     });
   }
+
   goBack() {
     if (history.state.navigationId >= 2) {
       history.back();
@@ -226,6 +277,7 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
       this.router.navigateByUrl('/dashboard/device');
     }
   }
+
   unBondDeviceDialog() {
     const body = {
       token: this.token,
@@ -256,6 +308,7 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
       }
     });
   }
+
   openUnBondDeviceDialog() {
     this.dialog.open(MessageBoxComponent, {
       hasBackdrop: true,
@@ -268,7 +321,135 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
         onConfirm: () => this.unBondDeviceDialog(),
         cancelText: 'cancel'
       }
+
     });
+
+  }
+
+  /**
+   * 切換顯示頁面
+   * @event click
+   * @param page {string}-切換的頁面
+   * @author kidin-1090924
+   */
+  switchPage(page: string) {
+    this.uiFlag.page = page;
+
+    setTimeout(() => {
+      this.checkCurrentPage();
+      this.getProductLog();
+    });
+
+  }
+
+  /**
+   * 確認當前分頁
+   * @author kidin-1090924
+   */
+  checkCurrentPage() {
+    this.currentPage = {
+      pageIndex: 0,
+      pageSize: 10,
+      length: null
+    };
+
+    // 分頁切換時，重新取得資料
+    this.paginatorA.page.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe((page: PageEvent) => {
+      this.currentPage = page;
+      this.getProductLog();
+    });
+
+    this.paginatorB.page.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe((page: PageEvent) => {
+      this.currentPage = page;
+      this.getProductLog();
+    });
+
+  }
+
+  /**
+   * 取得設備日誌
+   * @author kidin-1090924
+   */
+  getProductLog() {
+    this.uiFlag.isTableLoading = true;
+    const body = {
+      token: this.utilsService.getToken(),
+      queryEquipmentSN: this.deviceSN,
+      filterStartTime: this.logTimeSelect.filterStartTime,
+      filterEndTime: this.logTimeSelect.filterEndTime,
+      page: this.currentPage.pageIndex,
+      pageCounts: this.currentPage.pageSize
+    };
+
+    this.qrCodeService.getEquipmentLog(body).subscribe(res => {
+      if (res.resultCode !== 200) {
+        console.log(`${res.apiCode}：${res.resultMessage}`);
+      } else {
+        this.logList = res.info.equipmentErrorLog;
+        this.uiFlag.totalCount = res.info.totalCounts;
+
+        if (this.logList.length === 0) {
+          this.uiFlag.noTableData = true;
+        } else {
+          this.uiFlag.noTableData = false;
+        }
+
+      }
+
+      this.uiFlag.isTableLoading = false;
+    });
+
+  }
+
+  /**
+   * 取得使用者選擇的日期
+   * @param $event {MatDatepickerInputEvent<moment.Moment>}
+   * @param isStartTime {boolean}
+   * @author kidin-1090924
+   */
+  handleDateChange(
+    $event: MatDatepickerInputEvent<moment.Moment>,
+    isStartTime: boolean
+  ) {
+    if (isStartTime) {
+      this.logTimeSelect.filterStartTime = moment($event.value).format(
+        'YYYY-MM-DDT00:00:00.000Z'
+      );
+    } else {
+      this.logTimeSelect.filterEndTime = moment($event.value).format(
+        'YYYY-MM-DDT23:59:59.000Z'
+      );
+
+    }
+
+  }
+
+  /**
+   * 將秒數轉為小時制
+   * @param second {number}-秒數
+   * @author kidin-1090924
+   */
+  ConvertTime(second: number) {
+    let hour: number,
+        min: number,
+        sec: number;
+    if (second >= 3600) {
+      hour = Math.floor(second / 3600);
+      min = Math.floor(second - (hour * 3600));
+      sec = second - hour * 3600 - min * 60;
+      return `${hour}:${min}:${sec}`;
+    } else if (second >= 60) {
+      min = Math.floor(second - (hour * 3600));
+      sec = second - hour * 3600 - min * 60;
+      return `0:${min}:${sec}`;
+    } else {
+      return `0:00:${second}`;
+    }
+
   }
 
   /**

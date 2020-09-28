@@ -1,3 +1,6 @@
+@import 'transition.scss';
+@import 'keyframes.scss';
+
 $btn-radius: 5px;
 $btn-active: rgba(155, 155, 155, 1);
 $btn-hover: rgba(100, 100, 100, 1);
@@ -14,7 +17,6 @@ $apply-output-width: 200px;
 $apply-output-height: 35px;
 $shadow-color-sink: rgba(0, 0, 0, 0.2);
 $shadow-color-float: rgba(0, 0, 0, 0.1);
-$transition-effect: 0.2s cubic-bezier(0.5, 0.5, 0.5, 0.5);
 $main-tag-width: calc(40px + 16vw);
 $sub-tag-width: 10vw;
 $card-width: 320px;
@@ -40,14 +42,6 @@ $list-shadow-color: rgba(100, 100, 100, 0.3);
   left: $left;
   width: $width;
   white-space: nowrap;
-}
-
-@mixin transition($target) {
-  -webkit-transition: $target $transition-effect;
-  -moz-transition: $target $transition-effect;
-  -ms-transition: $target $transition-effect;
-  -o-transition: $target $transition-effect;
-  transition: $target $transition-effect;
 }
 
 @mixin rotate($deg) {
@@ -101,6 +95,29 @@ $list-shadow-color: rgba(100, 100, 100, 0.3);
   background-color: white;
 }
 
+@mixin fade-in-out {
+  position: relative;
+  animation: color-gradient 1s 1;
+  animation-timing-function: ease-in-out;
+  @include keyframes(color-gradient) {
+    0% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+    }
+
+  }
+
+}
+
+#main__image {
+  width: 100%;
+  height: calc(100vw * 9 / 16);
+  @include fade-in-out();
+}
+
 #page__tag--postion, #join--btn {
   position: absolute;
   z-index: 2;
@@ -114,6 +131,7 @@ $list-shadow-color: rgba(100, 100, 100, 0.3);
   font-size: 18px;
   font-weight: bold;
   width: 20vw;
+  min-width: 75px;
   height: calc(20px + 2vw);
   bottom: 15vw;
   left: 40vw;
@@ -201,6 +219,10 @@ $list-shadow-color: rgba(100, 100, 100, 0.3);
   flex-wrap: wrap;
 }
 
+.card__section__keyframs {
+  @include fade-in-out();
+}
+
 .card__image {
   max-width: 90%;
   margin: 0 auto;
@@ -217,7 +239,7 @@ $list-shadow-color: rgba(100, 100, 100, 0.3);
 }
 
 #apply__info--width {
-  width: 550px;
+  width: fit-content;
   margin: 0 auto;
 }
 
@@ -227,6 +249,7 @@ $list-shadow-color: rgba(100, 100, 100, 0.3);
   justify-content: space-between;
   align-items: flex-end;
   padding: 20px 0px;
+  max-width: 550px;
 }
 
 .output__div {
@@ -307,6 +330,12 @@ $list-shadow-color: rgba(100, 100, 100, 0.3);
 
 }
 
+.discount__card {
+  flex-wrap: wrap;
+  width: 60vw;
+  justify-content: center;
+}
+
 .pay__btn {
   position: relative;
   display: inline-block;
@@ -358,7 +387,7 @@ $list-shadow-color: rgba(100, 100, 100, 0.3);
 
 .group__btn {
   @include font--bold(18px);
-  background-color: rgba(243, 243, 243, 1);
+  background-color: rgba(120, 120, 120, 1);
   padding: 5px 15px;
   margin: 5px 10px;
   width: fit-content;
@@ -745,6 +774,13 @@ $list-shadow-color: rgba(100, 100, 100, 0.3);
 
   #activity__rank__header, .activity__rank__content {
     left: 7vw;
+  }
+
+}
+
+@media(max-width: 800px) {
+  .discount__card {
+    width: 100%;
   }
 
 }
