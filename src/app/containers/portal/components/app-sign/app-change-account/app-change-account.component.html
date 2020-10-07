@@ -17,20 +17,23 @@
     <div class="flexCol" style="margin-top: 10px;">
       <div class="flexCol appDiv">
         <span class="formTitle">{{ 'universal_userAccount_password' | translate }}</span>
-        <input
-          type="password"
-          id="signupPW"
-          placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.password} }}"
-          maxlength="20"
-          [(ngModel)]="editBody.oldPassword"
-          (focusout)="checkPassword($event)"
-          (keypress)="checkPassword($event)"
-        />
-        <i
-          class="icon-svg_web-icon_p1_081-watch inputIcon"
-          [style.color]="displayPW ? 'black' : '#aaaaaa'"
-          (click)="toggleDisplayPW()"
-        ></i>
+        <div class="flexRow member__input">
+          <input
+            type="password"
+            id="signupPW"
+            style="width: 100%;"
+            placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.password} }}"
+            maxlength="20"
+            [(ngModel)]="editBody.oldPassword"
+            (focusout)="checkPassword($event)"
+            (keypress)="checkPassword($event)"
+          />
+          <i
+            class="icon-svg_web-icon_p1_081-watch qrcode__login__icon"
+            [style.color]="displayPW ? 'black' : '#aaaaaa'"
+            (click)="toggleDisplayPW()"
+          ></i>
+        </div>
         <span class="formCue" *ngIf="cue.password !== ''">{{ cue.password | translate }}</span>
       </div>
       <div class="flexCol app-alert" style="margin: 0 auto; align-items: center;">
@@ -41,37 +44,24 @@
         ></span>
       </div>
       <div class="flexCol appDiv">
-        <app-custom-select
-          [selectLists]="selectLists"
-          [fontOpt]="fontOpt"
-          [position]="position"
-          [triangleColor]="'#239fd9'"
-          (selectItem)="this.getAccountType($event)"
-        >
-        </app-custom-select>
-        <div>
+        <span class="formTitle">{{ 'universal_userAccount_account' | translate }}</span>
+        <div class="flexRow">
           <input
             style="width: 100%;"
-            placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.email} }}"
-            (focusout)="checkEmail($event)"
-            (keypress)="checkEmail($event)"
-            *ngIf="editBody.newAccountType === 1"
+            placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.account} }}"
+            (keydown)="determineAccountType($event)"
+            (change)="saveAccount($event)"
           />
-        </div>
-        <div class="flexRow" *ngIf="editBody.newAccountType === 2">
           <app-intl-phone-input
             (onChange)="onCodeChange($event)"
-            (focusoutPhoneInt)="getPhoneNum($event)"
-            [uiVersion]="'v2'"
-            [regPhone]="regCheck.phone"
-            [phoneCue]="cue.phone"
             style="width: 100%;"
+            *ngIf="editBody.newAccountType === 2"
           ></app-intl-phone-input>
         </div>
-        <span class="formCue" *ngIf="editBody.newAccountType === 1 && cue.email !== '' && cue.email !== 'accountRepeat'">
-          {{ cue.email | translate }}
+        <span class="formCue" *ngIf="cue.account !== '' && cue.account !== 'accountRepeat'">
+          {{ cue.account | translate }}
         </span>
-        <span class="formCue" *ngIf="editBody.newAccountType === 1 && cue.email !== '' && cue.email === 'accountRepeat'">
+        <span class="formCue" *ngIf="cue.account !== '' && cue.account === 'accountRepeat'">
           {{ 'universal_userAccount_account' | translate }} {{ 'universal_deviceSetting_repeat' | translate }}
         </span>
       </div>
@@ -120,22 +110,23 @@
             <div class="flexCol" style="margin-top: 10px;">
               <div class="flexCol webDiv">
                 <span class="access-text" style="margin-bottom: 10px;">{{ 'universal_userAccount_password' | translate }}</span>
-                <input
-                  type="password"
-                  id="signupPW"
-                  class="form-control"
-                  placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.password} }}"
-                  maxlength="20"
-                  [(ngModel)]="editBody.oldPassword"
-                  (focusout)="checkPassword($event)"
-                  (keypress)="checkPassword($event)"
-                />
-                <i
-                  class="icon-svg_web-icon_p1_081-watch inputIcon"
-                  style="top: -30px; left: 90%;"
-                  [style.color]="displayPW ? 'black' : '#aaaaaa'"
-                  (click)="toggleDisplayPW()"
-                ></i>
+                <div class="flexRow member__input">
+                  <input
+                    type="password"
+                    id="signupPW"
+                    class="form-control"
+                    placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.password} }}"
+                    maxlength="20"
+                    [(ngModel)]="editBody.oldPassword"
+                    (focusout)="checkPassword($event)"
+                    (keypress)="checkPassword($event)"
+                  />
+                  <i
+                    class="icon-svg_web-icon_p1_081-watch qrcode__login__icon"
+                    [style.color]="displayPW ? 'black' : '#aaaaaa'"
+                    (click)="toggleDisplayPW()"
+                  ></i>
+                </div>
                 <span class="form__message form__message--placeholder" *ngIf="cue.password !== ''">{{ cue.password | translate }}</span>
               </div>
               <div class="flexCol app-alert" style="margin: 0 auto; align-items: center;">
@@ -146,37 +137,32 @@
                 ></span>
               </div>
               <div class="flexCol webDiv">
-                <app-custom-select
-                  style="margin: 0 0 10px 12px;"
-                  [selectLists]="selectLists"
-                  [fontOpt]="webFontOpt"
-                  [position]="position"
-                  [triangleColor]="'#239fd9'"
-                  (selectItem)="this.getAccountType($event)"
-                >
-                </app-custom-select>
-                <div>
+                <span class="access-text" style="margin-bottom: 10px;">{{ 'universal_userAccount_account' | translate }}</span>
+                <div class="flexRow">
                   <input
                     style="width: 100%;"
                     class="form-control"
-                    placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.email} }}"
-                    (focusout)="checkEmail($event)"
-                    (keypress)="checkEmail($event)"
-                    *ngIf="editBody.newAccountType === 1"
+                    placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.account} }}"
+                    (keydown)="determineAccountType($event)"
+                    (change)="saveAccount($event)"
                   />
-                </div>
-                <div class="flexRow" *ngIf="editBody.newAccountType === 2">
                   <app-intl-phone-input
                     (onChange)="onCodeChange($event)"
-                    (focusoutPhoneInt)="getPhoneNum($event)"
-                    [uiVersion]="'v2'"
                     [webUi]="true"
-                    [regPhone]="regCheck.phone"
-                    [phoneCue]="cue.phone"
-                    style="width: 100%;"
+                    style="width: 190px;"
+                    *ngIf="editBody.newAccountType === 2"
                   ></app-intl-phone-input>
                 </div>
-                <span class="form__message form__message--placeholder" *ngIf="editBody.newAccountType === 1 && cue.email !== ''">{{ cue.email | translate }}</span>
+                <span
+                  class="form__message form__message--placeholder"
+                  *ngIf="cue.account !== '' && cue.account !== 'accountRepeat'"
+                >{{ cue.account | translate }}</span>
+                <span
+                  class="form__message form__message--placeholder"
+                  *ngIf="cue.account !== '' && cue.account === 'accountRepeat'"
+                >
+                  {{ 'universal_userAccount_account' | translate }} {{ 'universal_deviceSetting_repeat' | translate }}
+                </span>
               </div>
               <div
                 class="flexCol webDiv"

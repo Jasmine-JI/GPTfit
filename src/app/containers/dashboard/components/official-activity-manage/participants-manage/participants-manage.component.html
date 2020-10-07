@@ -8,7 +8,10 @@
       返回列表
     </span>
     <h3 style="font-weight: bold; margin: 0 auto; padding-right: 10vw;">{{ activity?.name }}</h3>
-    <i class="icon-svg_web-icon_p1_009-delete delete__switch__btn" [class.delete__mode]="uiFlag.deleteMode" (click)="switchDeleteMode()"></i>
+    <div class="flexRow" style="width: 70px; justify-content: space-between;">
+      <i class="icon-svg_web-icon_p1_018-input delete__switch__btn" (click)="downloadCSV()"></i>
+      <i class="icon-svg_web-icon_p1_009-delete delete__switch__btn" [class.delete__mode]="uiFlag.deleteMode" (click)="switchDeleteMode()"></i>
+    </div>
   </section>
   <section class="flexRow" style="align-items: center; margin: 30px auto;">
     <input type="text" #hashIdInput class="input--style" placeholder="輸入驗證碼查詢" (change)="checkEmpty()" />
@@ -23,7 +26,8 @@
       <span id="age__column__title">年齡</span>
       <span id="apply__column__title">報名時間</span>
       <span id="status__column__title">狀態</span>
-      <span id="group__column__title">分組</span>
+      <span class="group__column__title">個人組</span>
+      <span class="group__column__title" *ngIf="activity?.team?.length > 0">團體組</span>
     </div>
     <div class="flexCol" *ngIf="activity">
       <div *ngFor="let _group of activity.group; let gIdx = index;">
@@ -51,18 +55,45 @@
               <span *ngIf="_member.status === 'checked'">繳費完成</span>
               <mat-icon style="font-size: 8px; width: 4px;">create</mat-icon>
             </div>
-            <div class="group__column__content" style="position: relative;" (click)="showGroupSelector(gIdx, mIdx)">
+            <div class="group__column__content" style="position: relative;" (click)="showGroupSelector(gIdx, mIdx, 'group')">
               {{ _group.groupName }}
               <div
-                id="group__list"
-                class="flexCol"
-                *ngIf="uiFlag.groupSelectorObj.group === gIdx && uiFlag.groupSelectorObj.member === mIdx">
+                class="flexCol group__list"
+                *ngIf="uiFlag.groupSelectorObj.group === gIdx && uiFlag.groupSelectorObj.member === mIdx && uiFlag.groupSelectorObj.type === 'group'"
+              >
                 <span
                   class="group__list__item"
                   *ngFor="let _list of activity.group; let groupIdx = index;"
-                  (click)="changeGroup(gIdx, mIdx, groupIdx)"
+                  (click)="changeGroup($event, gIdx, mIdx, groupIdx)"
                 >
                   {{ _list.groupName }}
+                </span>
+              </div>
+            </div>
+            <div
+              class="group__column__content"
+              style="position: relative;"
+              (click)="showGroupSelector(gIdx, mIdx, 'team')"
+              *ngIf="activity?.team?.length > 0"
+            >
+              <span *ngIf="_member.team === ''">無隊伍</span>
+              <span *ngIf="_member.team !== ''">{{ _member.team }}</span>
+              <div
+                class="flexCol group__list"
+                *ngIf="uiFlag.groupSelectorObj.group === gIdx && uiFlag.groupSelectorObj.member === mIdx && uiFlag.groupSelectorObj.type === 'team'"
+              >
+                <span
+                  class="group__list__item"
+                  (click)="changeTeam($event, gIdx, mIdx, -1)"
+                >
+                  無隊伍
+                </span>
+                <span
+                  class="group__list__item"
+                  *ngFor="let _team of activity.team; let _teamIdx = index;"
+                  (click)="changeTeam($event, gIdx, mIdx, _teamIdx)"
+                >
+                  {{ _team.teamName }}
                 </span>
               </div>
             </div>
@@ -132,12 +163,46 @@
       </div>
     </div>
   </section>
-  <section class="flexRow" style="align-items: center; margin: 10px auto;">
+  <section class="flexRow" style="align-items: center; margin: 10px auto;" *ngIf="activity">
     <input type="text" #accountInput class="input--style" placeholder="請輸入User Id" />
     <span class="input__btn" (click)="addUser()">手動報名</span>
   </section>
-  <section class="flexRow" style="align-items: center; margin: 10px auto;">
-    <input type="text" #groupInput class="input--style" placeholder="請輸入群組hash id" />
+  <section class="flexRow" style="align-items: center; margin: 10px auto;" *ngIf="activity">
+    <input
+      type="text"
+      #groupInput
+      class="input--style"
+      [style.width]="activity.team.length > 0 ? '190px' : ''"
+      placeholder="請輸入群組hash id"
+    />
+    <div
+      class="group__column__content"
+      style="position: relative;"
+      (click)="showInputTeamSelector()"
+      *ngIf="activity?.team?.length > 0"
+    >
+      <span *ngIf="uiFlag.inputTeamSelector.currentSelect === ''">無隊伍</span>
+      <span *ngIf="uiFlag.inputTeamSelector.currentSelect !== ''">{{ uiFlag.inputTeamSelector.currentSelect }}</span>
+      <div
+        style="max-height: 150px; overflow: scroll;"
+        class="flexCol group__list"
+        *ngIf="uiFlag.inputTeamSelector.show"
+      >
+        <span
+          class="group__list__item"
+          (click)="changeInputTeam($event, -1)"
+        >
+          無隊伍
+        </span>
+        <span
+          class="group__list__item"
+          *ngFor="let _team of activity.team; let _teamIdx = index;"
+          (click)="changeInputTeam($event, _teamIdx)"
+        >
+          {{ _team.teamName }}
+        </span>
+      </div>
+    </div>
     <span class="input__btn" (click)="addGroup()">群組報名</span>
   </section>
   <section style="margin: 20px auto;" *ngIf="activity && activity.delMember.length > 0">
@@ -150,7 +215,7 @@
       <span id="age__column__title">年齡</span>
       <span id="apply__column__title">報名時間</span>
       <span id="status__column__title">刪除者</span>
-      <span id="group__column__title">刪除時間</span>
+      <span class="group__column__title">刪除時間</span>
     </div>
     <div class="flexCol">
       <div *ngFor="let _delMember of activity?.delMember; let _delIdx = index;">
@@ -171,4 +236,5 @@
       </div>
     </div>
   </section>
+  <footer style="height: 120px;"></footer>
 </div>

@@ -144,7 +144,7 @@ export class GroupService {
   }
 
   /**
-   * nodejs middleware
+   * nodejs middleware-取得群組清單
    * @method get
    * @author kidin-1090715
    */

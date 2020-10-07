@@ -1,7 +1,6 @@
 import { MessageBoxComponent } from './../../../../../shared/components/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
 import { UserProfileService } from './../../../../../shared/services/user-profile.service';
-import { HttpParams } from '@angular/common/http';
 import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { HashIdService } from '../../../../../shared/services/hash-id.service';
@@ -11,6 +10,7 @@ import { GroupService } from '../../../services/group.service';
 import moment from 'moment';
 import { fromEvent, Subscription, Subject, merge } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
+import { CloudrunSummaryPipe } from '../../../../../shared/pipes/cloudrun-summary.pipe'
 
 
 interface UserInfo {
@@ -31,7 +31,10 @@ interface Group {
 @Component({
   selector: 'app-participants-manage',
   templateUrl: './participants-manage.component.html',
-  styleUrls: ['./participants-manage.component.scss']
+  styleUrls: ['./participants-manage.component.scss'],
+  providers: [
+    CloudrunSummaryPipe
+  ]
 })
 export class ParticipantsManageComponent implements OnInit, OnDestroy {
 
@@ -44,7 +47,6 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
 
   uiFlag = {
     isLoading: false,
-    showSearchRes: false,
     focus: {
       gId: null,
       mId: null
@@ -59,7 +61,12 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
     isFreeActivity: false,
     groupSelectorObj: {
       group: null,
-      member: null
+      member: null,
+      type: null
+    },
+    inputTeamSelector: {
+      show: false,
+      currentSelect: ''
     },
     deleteMode: false
   };
@@ -74,7 +81,8 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
     private utils: UtilsService,
     private groupService: GroupService,
     private userProfileService: UserProfileService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private cloudrunSummaryPipe: CloudrunSummaryPipe
   ) { }
 
   ngOnInit(): void {
@@ -252,7 +260,19 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
         console.log('Delete success');
       }
 
+      // 若在查詢模式下刪除使用者，則清除查詢輸入框
+      if (this.uiFlag.focus.gId !== null) {
+        this.hashIdInput.nativeElement.value = '';
+
+        this.uiFlag.focus = {
+          gId: null,
+          mId: null
+        };
+  
+      }
+
       this.uiFlag.isLoading = false;
+
     });
 
   }
@@ -265,7 +285,7 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
   addUser(user_id: number = null) {
     let userId: number;
     if (user_id === null) {
-      userId = +this.accountInput.nativeElement.value;
+      userId = +this.accountInput.nativeElement.value.trim();
     } else {
       userId = user_id;
     }
@@ -321,7 +341,8 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
                     gender: res.gender,
                     age: moment().year() - (+res.birthday.slice(0, 4)),
                     applyTimeStamp: currentTimeStamp,
-                    status: this.uiFlag.isFreeActivity ? 'checked' : 'checking'
+                    status: this.uiFlag.isFreeActivity ? 'checked' : 'checking',
+                    team: ''
                   };
 
             this.activity.group[0].member.push(addUser);
@@ -385,7 +406,8 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
    * @author kidin-1090926
    */
   checkDelMember(userId: number): boolean {
-    if (this.activity.group.some(_group => _group.member.some(_member => _member.userId === userId))) {
+    let index: number;
+    if (this.checkApplied(userId)) {
       return true;
     } else if (this.activity.delMember.some(_delMem => _delMem.userId === userId)) {
 
@@ -402,6 +424,7 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
 
       this.activity.delMember.splice(delIndex, 1);
       addUser.status = this.uiFlag.isFreeActivity ? 'checked' : 'checking';
+      addUser.team = this.uiFlag.inputTeamSelector.currentSelect;
       delete addUser.editInfo;
       this.activity.group[0].member.push(addUser);
 
@@ -409,6 +432,29 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
     } else {
       return false;
     }
+
+  }
+
+  /**
+   * 確認使用者是否已被加入列表中
+   * @param userId {number}
+   * @returns boolean
+   * @author kidin-1090930
+   */
+  checkApplied(userId: number): boolean {
+    return this.activity.group.some(_group => _group.member.some(_member => {
+      if (_member.userId === userId) {
+        
+        if (this.activity.team.length > 0) {
+          _member.team = this.uiFlag.inputTeamSelector.currentSelect;
+        }
+
+        return true;
+      } else {
+        return false;
+      }
+
+    }))
 
   }
 
@@ -444,7 +490,8 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
                   gender: _user.gender,
                   age: moment().year() - (+_user.birthday.slice(0, 4)),
                   applyTimeStamp: currentTimeStamp,
-                  status: this.uiFlag.isFreeActivity ? 'checked' : 'checking'
+                  status: this.uiFlag.isFreeActivity ? 'checked' : 'checking',
+                  team: this.activity.team.length > 0 ? this.uiFlag.inputTeamSelector.currentSelect : ''
                 };
 
           this.activity.group[0].member.push(addUser);
@@ -553,21 +600,24 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 顯示或隱藏分組選擇器
+   * 顯示或隱藏分組選擇器(個人組/團體組)
    * @param gid {number} group順位
    * @param mid {number} member順位
+   * @param type {string} group/team
    * @author kidin-1090901
    */
-  showGroupSelector(gid: number, mid: number) {
-    if (this.uiFlag.groupSelectorObj.group === gid && this.uiFlag.groupSelectorObj.member === mid) {
-      this.uiFlag.groupSelectorObj = {
-        group: null,
-        member: null
-      };
+  showGroupSelector(gid: number, mid: number, type: string) {
+    if (
+      this.uiFlag.groupSelectorObj.group === gid
+      && this.uiFlag.groupSelectorObj.member === mid
+      && this.uiFlag.groupSelectorObj.type === type
+    ) {
+      this.closeGroupSelector();
     } else {
       this.uiFlag.groupSelectorObj = {
         group: gid,
-        member: mid
+        member: mid,
+        type: type
       };
 
     }
@@ -575,22 +625,55 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 變更參賽者組別
+   * 隱藏分組選擇器(個人組/團體組)
+   * @author kidin-1090930
+   */
+  closeGroupSelector() {
+    this.uiFlag.groupSelectorObj = {
+      group: null,
+      member: null,
+      type: null
+    };
+
+  }
+
+  /**
+   * 變更參賽者個人組組別
+   * @param e {KeyboardEvent}
    * @param gIdx {number}
    * @param mIdx {number}
    * @param groupIdx {number}
    * @author kidin-1090901
    */
-  changeGroup(gIdx: number, mIdx: number, groupIdx: number) {
+  changeGroup(e: KeyboardEvent, gIdx: number, mIdx: number, groupIdx: number) {
+    e.stopPropagation();
     if (gIdx !== groupIdx) {
       const memberInfo = this.activity.group[gIdx].member[mIdx];
       this.activity.group[gIdx].member = this.activity.group[gIdx].member.filter((_member, idx) => idx !== mIdx);
       this.activity.group[groupIdx].member.push(memberInfo);
-      this.showGroupSelector(gIdx, mIdx);
-
       this.saveFile();
     }
 
+    this.closeGroupSelector();
+  }
+
+  /**
+   * 變更參賽者團體組組別
+   * @param e {KeyboardEvent}
+   * @param gIdx {number}
+   * @param mIdx {number}
+   * @param groupIdx {number}
+   */
+  changeTeam(e: KeyboardEvent, gIdx: number, mIdx: number, groupIdx: number) {
+    e.stopPropagation();
+    if (groupIdx > -1) {
+      this.activity.group[gIdx].member[mIdx].team = this.activity.team[groupIdx].teamName;
+    } else {
+      this.activity.group[gIdx].member[mIdx].team = '';
+    }
+
+    this.closeGroupSelector();
+    this.saveFile();
   }
 
   /**
@@ -633,6 +716,99 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
       return 60;
     }
 
+  }
+
+  /**
+   * 將參賽者列表下載為一份csv檔
+   * @author kidin-1090928
+   */
+  downloadCSV() {
+    const CSVName = `${this.activity.name}.csv`,
+          data = this.switchCSVFile(this.activity),
+          blob = new Blob(['\ufeff' + data], {  // 加上bom（\ufeff）讓excel辨識編碼
+            type: 'text/csv;charset=utf8'
+          }),
+          href = URL.createObjectURL(blob),  // 建立csv檔url
+          link = document.createElement('a');  // 建立連結供csv下載使用
+
+    document.body.appendChild(link);
+    link.href = href;
+    link.download = CSVName;
+    link.click();
+  }
+
+  /**
+   * 將所需資料轉換為csv格式
+   * @param activity {any}-活動賽事檔案內容
+   * @author kidin-1090928
+   */
+  switchCSVFile(activity: any) {
+    let csvTable = '';
+    for (let i = 0; i < this.activity.group.length; i++) {
+
+      const memberList = this.activity.group[i].member;
+      for (let j = 0; j < memberList.length; j++) {
+        const member = memberList[j];
+        csvTable += `${member.userId
+          },${member.nickname
+          },${member.account
+          },${member.gender === 0 ? '男' : '女'
+          },${member.age
+          },${moment(member.applyTimeStamp).format('YYYY-MM-DD HH:MM:DD')
+          },${member.status === 'checked' ? '繳費完成' : '尚未繳費'
+          },${member.orderNum ? member.orderNum : ''
+          },${activity.group[i].groupName
+          },${member.team
+          },${member.remarks ? member.remarks: ''
+          }
+        `
+      }
+
+    }
+
+
+    const csvData = `活動名稱,${activity.name},,,,,,,,,
+      活動地圖,${this.cloudrunSummaryPipe.transform(activity.mapId, 'zh-tw').mapName },,,,,,,,,
+      活動開始時間,${moment(activity.startTimeStamp).format('YYYY-MM-DD')},,,,,,,,,
+      活動結束時間,${moment(activity.endTimeStamp).format('YYYY-MM-DD')},,,,,,,,,
+      建立時間,${moment(activity.createTimeStamp).format('YYYY-MM-DD')},,,,,,,,,
+      ,,,,,,,,,,
+      User id,暱稱,帳號,性別,年齡,報名時間,繳費狀態,繳費單號,分組,團體賽分組,備註
+      ${csvTable}
+    `;
+
+    return csvData;
+  }
+
+  /**
+   * 顯示或隱藏團體組別列表
+   * @author kidin-1090930
+   */
+  showInputTeamSelector() {
+    if (this.uiFlag.inputTeamSelector.show) {
+      this.uiFlag.inputTeamSelector.show = false;
+    } else {
+      this.uiFlag.inputTeamSelector.show = true;
+    }
+    
+  }
+
+  /**
+   * 切換輸入欄位的團體組別
+   * @param e {KeyboardEvent}
+   * @param index {number}
+   * @author kidin-1090930
+   */
+  changeInputTeam(e: KeyboardEvent, index: number) {
+    e.stopPropagation();
+
+    if (index > -1) {
+      this.uiFlag.inputTeamSelector.currentSelect = this.activity.team[index].teamName;
+    } else {
+      this.uiFlag.inputTeamSelector.currentSelect = '';
+    }
+    
+    this.showInputTeamSelector();
   }
 
   /**

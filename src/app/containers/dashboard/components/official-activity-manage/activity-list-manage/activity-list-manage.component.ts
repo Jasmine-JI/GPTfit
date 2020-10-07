@@ -140,6 +140,32 @@ export class ActivityListManageComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * 複製活動
+   * @param index {number}
+   * @author kidin-1091005
+   */
+  copyActivity(index: number) {
+    const currentTimestamp = moment().valueOf(),
+          hashTimeStamp = this.hashIdService.handleUserIdEncode(currentTimestamp.toString()), // 將創建時間（timestamp）hash過後當作檔名
+          body = {
+            token: this.utils.getToken(),
+            newFileName: hashTimeStamp,
+            targetFile: this.activityList[index].fileName
+          };
+
+    this.officialActivityService.copyOfficialActivity(body).subscribe(res => {
+
+      if (res.resultCode !== 200) {
+        console.log('Error', 'Copy activity failed');
+      } else {
+        this.router.navigateByUrl(`/dashboard/system/event-management/edit?file=${res.fileName}`);
+      }
+    
+    });
+
+  }
+
+  /**
    * 創建新賽事
    * @author kidin-1090902
    */
@@ -168,6 +194,7 @@ export class ActivityListManageComponent implements OnInit, OnDestroy {
               mapId: 1,
               mapDistance: 1450,
               eventStatus: 'private',
+              canApply: true,
               startTimeStamp: moment().subtract(-1, 'month').startOf('month').valueOf(),  // 預設下個月1日
               endTimeStamp: moment().subtract(-1, 'month').endOf('month').valueOf(), // 預設下個月月底
               eventImage: '',
@@ -256,6 +283,7 @@ export class ActivityListManageComponent implements OnInit, OnDestroy {
                   rank: []
                 }
               ],
+              team: [],
               product: [],
               discount: [],
               delMember: []

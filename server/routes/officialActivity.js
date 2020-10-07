@@ -43,6 +43,46 @@ router.post('/create', (req, res, next) => {
 
 });
 
+// 複製活動檔案
+router.post('/copy', (req, res, next) => {
+  const {
+    con,
+    body
+  } = req;
+
+  const newFilePath = `/tmp/official-activity/${body.newFileName}.json`;
+  fs.copyFile(`/tmp/official-activity/${body.targetFile}.json`, newFilePath, (err) => {
+    if (err) {
+      console.error(err);
+      writeLogFile(body.targetFile, body.token, 'Copy official activity', err);
+      return res.json({
+        resultCode: 400,
+        resultMessage: "Copy activity failed.",
+        nodejsApiCode: "N3010"
+      })
+
+    } else {
+      writeLogFile(body.newFileName, body.token, 'Copy official activity', 'Copy official activity success.');
+
+      let data = fs.readFileSync(newFilePath);
+      data = JSON.parse(data.toString('utf8'));
+      data.fileName = body.newFileName; // 替換成新的fileName
+
+      const write = fs.writeFileSync(newFilePath, JSON.stringify(data));
+
+      return res.json({
+        resultCode: 200,
+        resultMessage: "Copy activity success.",
+        nodejsApiCode: "N3010",
+        fileName: body.newFileName
+      });
+
+    }
+
+  })
+
+});
+
 // 取得指定活動檔案
 router.post('/get', (req, res, next) => {
   const {
@@ -386,16 +426,16 @@ function filterData(data) {
   let rank = 1,
       preRecord = null;
 
-  data.forEach(_data => {
+  data.forEach((_data, index) => {
     if (!rankList.some(_list => _list.userId === _data.user_id)) {
 
       // 完賽時間相同則排名相同
       if (preRecord !== null && _data.total_second === preRecord) {
         rankList.push({
-          ranking: rank - 1,
+          ranking: data[index - 1].ranking,
           userId: _data.user_id,
           nickname: _data.login_acc,
-          record: formatTime(_data.total_second),
+          record: _data.total_second,
           finishDate: formatDate(+_data.creation_unix_timestamp),
           distance: _data.total_distance_meters
         });
@@ -407,7 +447,7 @@ function filterData(data) {
           ranking: rank,
           userId: _data.user_id,
           nickname: _data.login_acc,
-          record: formatTime(_data.total_second),
+          record: _data.total_second,
           finishDate: formatDate(+_data.creation_unix_timestamp),
           distance: _data.total_distance_meters
         });
@@ -420,32 +460,6 @@ function filterData(data) {
   });
 
   return rankList;
-}
-
-/**
- * 將秒轉換成時分秒
- * @param time
- * @author kidin-1090902
- */
-function formatTime(time) {
-  const hour = Math.floor((time) / 3600);
-  const minute = Math.floor((time % 3600) / 60);
-  const second = time - (hour * 3600) - (minute * 60);
-  if (hour === 0) {
-    return `${fillTwoDigits(minute)}:${fillTwoDigits(second)}`;
-  } else {
-    return `${hour}:${fillTwoDigits(minute)}:${fillTwoDigits(second)}`;
-  }
-}
-
-/**
- * 時間補零
- * @param num
- * @author kidin-1090902
- */
-function fillTwoDigits(num) {
-  const timeStr = '0' + Math.floor(num);
-  return timeStr.substr(-2);
 }
 
 /**
@@ -470,6 +484,7 @@ async function getPerGroupRank(body, res, file) {
         mapDistance = file.mapDistance;
 
   for (let i = 0; i < file.group.length; i++) {
+    file.group[i].rank = [];  // 清空排名
     let userIdArr = [];
 
     file.group[i].member.forEach(_member => {
@@ -486,7 +501,6 @@ async function getPerGroupRank(body, res, file) {
           file.group[i].rank = filterData(resp);
         } else {
           writeLogFile(body.fileName, body.token, 'Query db for sports file', err);
-          file.group[i].rank = [];
         }
 
       })
@@ -496,6 +510,10 @@ async function getPerGroupRank(body, res, file) {
   }
 
   file = fillRanking(file);
+
+  if (file.team.length > 0) {
+    file = createTeamRanking(file);
+  }
 
   fs.writeFile(`/tmp/official-activity/${body.fileName}.json`, JSON.stringify(file), (err) => {
     if (err) {
@@ -524,14 +542,38 @@ async function getPerGroupRank(body, res, file) {
 }
 
 /**
- * 將已報名但未上傳成績的參賽者加入排名末端
+ * 將已報名已繳費但未上傳成績的參賽者加入排名末端
  * @param file
  * @author kidin-1090911
  */
 function fillRanking(file) {
+
   file.group.map(_group => {
-    const notFinishUser = _group.member.filter(_member => !_group.rank.some(_rank => _rank.userId === _member.userId)),
-          rankLength = _group.rank.length;
+    const notFinishUser = _group.member.filter(_member => {
+
+      if (_member.status !== 'checked') {
+        return false;
+      } else {
+
+        for (let i = 0; i < _group.rank.length; i++) {
+
+          if (_group.rank[i].userId === _member.userId) {
+
+            // 在排名資訊中添加team資訊以供團體排名使用
+            if (file.team.length > 0) {
+              Object.assign(_group.rank[i], {team: _member.team})
+            }
+    
+            return false;
+          } else {
+            return true;
+          }
+
+        }
+
+      }
+      
+    });
 
     notFinishUser.forEach(_user => {
       _group.rank.push({
@@ -540,12 +582,104 @@ function fillRanking(file) {
         nickname: _user.nickname,
         record: 'N/A',
         finishDate: 'N/A',
-        distance: 'N/A'
+        distance: 'N/A',
+        team: _user.team
+      });
+      
+    });
+
+    return _group;
+  });
+
+  return file;
+}
+
+/**
+ * 從個人排名獲取資料生成群組排名
+ * @param file
+ * @author kidin-1090911
+ */
+function createTeamRanking(file) {
+  file = initialTeamMember(file);
+  file = sortMember(file);
+
+  file.team.forEach((_team, index) => {
+
+    let peopleNum = 0,
+        finishNum = 0,
+        totalSecond = 0;
+
+    if (_team.member) {
+      peopleNum = _team.member.length;
+
+      _team.member.forEach(_member => {
+
+        if (_member.record !== 'N/A') {
+          finishNum++;
+          totalSecond += _member.record;
+        }
+        
+      });
+      
+    }
+    
+    Object.assign(_team, {totalTime: totalSecond });
+    Object.assign(_team, {record: Math.round(totalSecond / finishNum)});
+    Object.assign(_team, {peopleNum: `${finishNum}/${peopleNum}`});
+  });
+
+  return file;
+}
+
+/**
+ * 將團體的成員清空以利成員名單重新建立
+ * @param file
+ * @author kidin-1091005
+ */
+function initialTeamMember(file) {
+  file.team.forEach(_team => {
+    if (_team.member) {
+      _team.member.length = 0;
+    }
+
+  });
+
+  return file;
+}
+
+/**
+ * 依據個人所參加的團體進行分類
+ * @param file
+ * @author kidin-1090930
+ */
+function sortMember(file) {
+  file.group.forEach(_group => {
+    _group.rank.forEach(_rank => {
+      file.team.forEach(_team => {
+        if (_rank.team === _team.teamName) {
+          
+          if (!_team.hasOwnProperty('member')) {
+            Object.assign(_team, {member: [{
+              userId: _rank.userId,
+              nickname: _rank.nickname,
+              record: _rank.record
+            }]});
+
+          } else {
+            _team.member.push({
+              userId: _rank.userId,
+              nickname: _rank.nickname,
+              record: _rank.record
+            })
+
+          }
+
+        }
+
       });
 
     });
 
-    return _group;
   });
 
   return file;

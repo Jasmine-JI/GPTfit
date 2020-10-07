@@ -19,25 +19,39 @@
           (click)="handleExpandRow(_idx)"
         >
           <div class="flexCol" style="width: 100%; justify-content: space-between;">
-            <div class="flexRow" *ngIf="uiFlag.showRowBtn === _idx">
-              <span class="row__btn" (click)="handleNavigatePage('edit', _idx)">編輯賽事</span>
-              <span class="row__btn" (click)="handleNavigatePage('member', _idx)">參賽者列表</span>
-              <span class="row__btn" (click)="updateRanking(_idx)">更新排行榜</span>
-              <span class="row__btn" (click)="handleNavigatePage('official', _idx)">前往活動頁</span>
+            <div class="flexRow" style="justify-content: space-between;" *ngIf="uiFlag.showRowBtn === _idx">
+              <div class="flexRow">
+                <span class="row__btn" (click)="handleNavigatePage('edit', _idx)">編輯賽事</span>
+                <span class="row__btn" (click)="handleNavigatePage('member', _idx)">參賽者列表</span>
+                <span class="row__btn" (click)="updateRanking(_idx)">更新排行榜</span>
+                <span class="row__btn" (click)="handleNavigatePage('official', _idx)">前往活動頁</span>
+              </div>
+              <i id="copy__btn" class="icon-svg_web-icon_p1_047-comparing" style="font-size: 30px;" (click)="copyActivity(_idx)"></i>
             </div>
             <div class="flexRow" style="justify-content: space-between;">
               <span class="name__column">{{ _list.name }}</span>
               <span class="date__column">{{ _list.range }}</span>
-              <span id="not__open__dot" class="status__column" *ngIf="_list.finalTimeStamp && false">
+              <span id="not__open__dot" class="status__column" *ngIf="_list.eventStatus === 'private'">
                 ● 未公開
               </span>
-              <span id="not__start__dot" class="status__column" *ngIf="_list.startTimeStamp > currentTimeStamp">
+              <span
+                id="not__start__dot"
+                class="status__column"
+                *ngIf="_list.startTimeStamp > currentTimeStamp && _list.eventStatus !== 'private'"
+              >
                 ● 尚未開始
               </span>
-              <span id="processing__dot" class="status__column" *ngIf="_list.startTimeStamp < currentTimeStamp && _list.finalTimeStamp > currentTimeStamp">
+              <span
+                id="processing__dot"
+                class="status__column"
+                *ngIf="_list.startTimeStamp < currentTimeStamp && _list.finalTimeStamp > currentTimeStamp && _list.eventStatus !== 'private'">
                 ● 進行中
               </span>
-              <span id="end__dot" class="status__column" *ngIf="_list.finalTimeStamp < currentTimeStamp">
+              <span
+                id="end__dot"
+                class="status__column"
+                *ngIf="_list.finalTimeStamp < currentTimeStamp && _list.eventStatus !== 'private'"
+              >
                 ● 已結束
               </span>
             </div>

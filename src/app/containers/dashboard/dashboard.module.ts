@@ -56,7 +56,6 @@ import { UnsaveGuard } from '../dashboard/guards/unsave-guard';
 import { ActivityService } from '@shared/services/activity.service';
 import { SportTypePipe } from './pipes/sport-type.pipe';
 import { SportDatePipe } from './pipes/sport-date.pipe';
-import { SportTimePipe } from './pipes/sport-time.pipe';
 import { SportPacePipe } from './pipes/sport-pace.pipe';
 import { ProductErrorLogPipe } from './pipes/product-error-log.pipe';
 import { NgProgressModule } from '@ngx-progressbar/core';
@@ -191,7 +190,6 @@ import { PushMessageListComponent } from './components/push-message/push-message
     PeopleSelectorWinComponent,
     SportTypePipe,
     SportDatePipe,
-    SportTimePipe,
     SportPacePipe,
     ProductErrorLogPipe,
     MyDeviceComponent,
