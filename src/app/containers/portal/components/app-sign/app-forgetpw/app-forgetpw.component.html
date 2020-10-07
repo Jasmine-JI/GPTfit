@@ -11,50 +11,25 @@
       </span>
     </div>
     <div *ngIf="formValue.resetPasswordFlow <= 2">
-      <div class="flexCol appDiv" *ngIf="!isKeyin">
+      <div class="flexCol appDiv">
         <span class="formTitle">{{ 'universal_userAccount_account' | translate }}</span>
-        <input
-          placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.account } }}"
-          (focusout)="determineAccountType($event)"
-        />
+        <div class="flexRow member__input">
+          <input
+            style="width: 100%;"
+            placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.account } }}"
+            (keydown)="determineAccountType($event)"
+            (change)="saveAccount($event)"
+          />
+          <app-intl-phone-input
+            (onChange)="onCodeChange($event)"
+            [currentCountryCode]="formValue.countryCode"
+            style="width: 100%;"
+            *ngIf="formValue.type === 2"
+          ></app-intl-phone-input>
+        </div>
         <span class="formCue" *ngIf="cue.account !== ''">{{ cue.account | translate }}</span>
       </div>
       <div class="flexCol" style="margin-top: 10px;">
-        <div class="flexCol appDiv" *ngIf="isKeyin">
-          <app-custom-select
-            [selectLists]="selectLists"
-            [fontOpt]="fontOpt"
-            [position]="position"
-            [triangleColor]="'#239fd9'"
-            [currentSelectId]="formValue.type - 1"
-            (selectItem)="getAccountType($event)"
-          >
-          </app-custom-select>
-          <div>
-            <input
-              style="width: 100%;"
-              placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.email } }}"
-              [(value)]="currentAccount"
-              (focusout)="checkEmail($event)"
-              (keypress)="checkEmail($event)"
-              *ngIf="formValue.type === 1"
-            />
-            <span class="formCue" *ngIf="formValue.type === 1 && cue.email !== ''">{{ cue.email | translate }}</span>
-          </div>
-          <div class="flexRow" *ngIf="formValue.type === 2">
-            <app-intl-phone-input
-              (onChange)="onCodeChange($event)"
-              (focusoutPhoneInt)="getPhoneNum($event)"
-              [currentValue]="currentAccount"
-              [currentCountryCode]="formValue.countryCode"
-              [uiVersion]="'v2'"
-              [regPhone]="regCheck.phone"
-              [phoneCue]="cue.phone"
-              style="width: 100%;"
-            ></app-intl-phone-input>
-          </div>
-          <span class="formCue" *ngIf="formValue.type === 2 && cue.phone !== ''">{{ cue.phone | translate }}</span>
-        </div>
         <div class="flexCol appDiv" *ngIf="formValue.type === 2 && !phoneFormIncomplete">
           <span class="formTitle">{{ 'universal_userAccount_phoneCaptcha' | translate }}</span>
           <div>
@@ -146,57 +121,26 @@
           </header>
           <div class="access-panel-body">
             <div *ngIf="formValue.resetPasswordFlow <= 2">
-              <div class="flexCol webDiv" *ngIf="!isKeyin">
+              <div class="flexCol webDiv">
                 <span class="access-text" style="margin-bottom: 10px;">{{ 'universal_userAccount_account' | translate }}</span>
-                <input
-                  placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.account } }}"
-                  class="form-control"
-                  (focusout)="determineAccountType($event)"
-                />
+                <div class="flexRow member__input">
+                  <input
+                    placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.account } }}"
+                    class="form-control"
+                    (keydown)="determineAccountType($event)"
+                    (change)="saveAccount($event)"
+                  />
+                  <app-intl-phone-input
+                    (onChange)="onCodeChange($event)"
+                    [currentCountryCode]="formValue.countryCode"
+                    [webUi]="true"
+                    style="width: 190px;"
+                    *ngIf="formValue.type === 2"
+                  ></app-intl-phone-input>
+                </div>
                 <span class="form__message form__message--placeholder" *ngIf="cue.account !== ''">{{ cue.account | translate }}</span>
               </div>
               <div class="flexCol" style="margin-top: 10px;">
-                <div class="flexCol webDiv" *ngIf="isKeyin">
-                  <app-custom-select
-                    [selectLists]="selectLists"
-                    [fontOpt]="webFontOpt"
-                    [position]="position"
-                    [triangleColor]="'#239fd9'"
-                    [currentSelectId]="formValue.type - 1"
-                    (selectItem)="getAccountType($event)"
-                  >
-                  </app-custom-select>
-                  <div>
-                    <input
-                      style="width: 100%;"
-                      class="form-control"
-                      placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.email } }}"
-                      [(value)]="currentAccount"
-                      (focusout)="checkEmail($event)"
-                      (keypress)="checkEmail($event)"
-                      *ngIf="formValue.type === 1"
-                    />
-                    <span class="form__message form__message--placeholder" *ngIf="formValue.type === 1 && cue.email !== ''">
-                      {{ cue.email | translate }}
-                    </span>
-                  </div>
-                  <div class="flexRow" *ngIf="formValue.type === 2">
-                    <app-intl-phone-input
-                      (onChange)="onCodeChange($event)"
-                      (focusoutPhoneInt)="getPhoneNum($event)"
-                      [currentValue]="currentAccount"
-                      [currentCountryCode]="formValue.countryCode"
-                      [uiVersion]="'v2'"
-                      [webUi]="true"
-                      [regPhone]="regCheck.phone"
-                      [phoneCue]="cue.phone"
-                      style="width: 100%;"
-                    ></app-intl-phone-input>
-                  </div>
-                  <span class="form__message form__message--placeholder" *ngIf="formValue.type === 2 && cue.phone !== ''">
-                    {{ cue.phone | translate }}
-                  </span>
-                </div>
                 <div class="flexCol webDiv" *ngIf="formValue.type === 2 && !phoneFormIncomplete">
                   <span class="access-text" style="margin-bottom: 10px;">{{ 'universal_userAccount_phoneCaptcha' | translate }}</span>
                   <div>

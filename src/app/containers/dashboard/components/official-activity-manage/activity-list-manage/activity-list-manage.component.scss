@@ -112,6 +112,11 @@ $btn-border-radius: 5px;
 
 }
 
+#copy__btn {
+  @extend .row__btn;
+  width: 40px;
+}
+
 #content__row {
   @include transition(background-color);
   padding: 10px;

@@ -19,8 +19,6 @@ interface RegCheck {
   passwordPass: boolean;
   nickname: RegExp;
   nicknamePass: boolean;
-  phone: RegExp;
-  phonePass: boolean;
   countryCodePass: boolean;
 }
 
@@ -36,7 +34,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly formReg = formTest;
 
   i18n = {
-    email: '',
+    account: '',
     password: '',
     nickname: ''
   };
@@ -58,38 +56,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     passwordPass: false,
     nickname: this.formReg.nickname,
     nicknamePass: false,
-    phone: this.formReg.phone,
-    phonePass: false,
     countryCodePass: false
-  };
-
-  // 帳號類型選項
-  selectLists = [
-    {
-      name: 'email',
-      i18nKey: 'universal_userAccount_email'
-    },
-    {
-      name: 'phone',
-      i18nKey: 'universal_userAccount_phone'
-    }
-  ];
-
-  fontOpt = {
-    size: '20px',
-    weight: 'bold',
-    color: '#aaaaaa'
-  };
-
-  webFontOpt = {
-    size: '16px',
-    weight: 'normal',
-    color: '#757575'
-  };
-
-  position = {
-    bottom: '25px',
-    zIndex: 101
   };
 
   // 儲存表單內容
@@ -107,8 +74,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 輸入錯誤各欄位提示內容
   signupCue = {
-    email: '',
-    phone: '',
+    account: '',
     password: '',
     nickname: '',
     imgCaptcha: ''
@@ -171,7 +137,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
       this.i18n = {
-        email: this.translate.instant('universal_userAccount_email'),
+        account: this.translate.instant('universal_userAccount_emailPerPhone'),
         password: this.translate.instant('universal_userAccount_password'),
         nickname: this.translate.instant('universal_userAccount_nickname')
       };
@@ -242,37 +208,73 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
+  // 判斷使用者輸入的帳號切換帳號類型-kidin-1090518
+  determineAccountType(e: any) {
+    const account = e.currentTarget.value;
+
+    if (e.key !== 'Enter') {
+
+      if (e.key === 'Backspace') {
+        const value = account.slice(0, account.length - 1);
+        if (value.length > 0 && this.formReg.number.test(value)) {
+          this.signupData.type = 2;
+        } else {
+          this.signupData.type = 1;
+        }
+  
+      } else if (this.formReg.number.test(account) && this.formReg.number.test(e.key)) {
+        this.signupData.type = 2;
+      } else if (!this.formReg.number.test(e.key)) {
+        this.signupData.type = 1;
+      }
+
+    }
+
+  }
+
   /**
-   * 取得使用者選擇的帳號類型
-   * @param e {string}
-   * @author kidin-1090717
+   * 儲存使用者輸入的帳號
+   * @param e {ChangeEvent}
+   * @author kidin-1091006
    */
-  getAccountType(e: string): void {
-    this.signupData.type = +e + 1;
-    this.checkAll(this.regCheck);
+  saveAccount(e: Event) {
+    const account = (e as any).currentTarget.value;
+
+    if (account.length > 0) {
+      if (this.formReg.number.test(account)) {
+        this.signupData.type = 2;
+        this.signupCue.account = '';
+        this.signupData.phone = account;
+        this.checkAll(this.regCheck);
+      } else {
+        this.signupData.type = 1;
+        this.signupData.email = account;
+        this.checkEmail(this.signupData.email);
+      }
+
+    } else {
+      this.signupData.type = 1;
+      this.signupCue.account = 'universal_status_wrongFormat';
+    }
+
   }
 
   /**
    * 確認使用者信箱格式
-   * @param e {MouseEvent | KeyboardEvent}
+   * @param email {string}
    * @author kidin-1090511
    */
-  checkEmail(e: any): void {
-    if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
-      const inputEmail = e.currentTarget.value;
-
-      if (inputEmail.length === 0 || !this.regCheck.email.test(inputEmail)) {
-        this.signupCue.email = 'errorFormat';
-        this.regCheck.emailPass = false;
-      } else {
-        this.signupData.email = inputEmail;
-        this.signupCue.email = '';
-        this.regCheck.emailPass = true;
-      }
-
-      this.checkAll(this.regCheck);
+  checkEmail(email: string): void {
+    if (email.length === 0 || !this.regCheck.email.test(email)) {
+      this.signupCue.account = 'universal_status_wrongFormat';
+      this.regCheck.emailPass = false;
+    } else {
+      this.signupData.email = email;
+      this.signupCue.account = '';
+      this.regCheck.emailPass = true;
     }
 
+    this.checkAll(this.regCheck);
   }
 
   /**
@@ -335,22 +337,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   onCodeChange(countryCode: string): void {
     this.signupData.countryCode = +countryCode;
     this.regCheck.countryCodePass = true;
-
-    this.checkAll(this.regCheck);
-  }
-
-  /**
-   * 取得使用者輸入的電話號碼
-   * @param phoneNum {string}
-   * @author kidin-1090717
-   */
-  getPhoneNum (phoneNum: string): void {
-    if (phoneNum.length === 0) {
-      this.regCheck.phonePass = false;
-    } else {
-      this.signupData.phone = +phoneNum;
-      this.regCheck.phonePass = true;
-    }
+    this.signupCue.account = '';
 
     this.checkAll(this.regCheck);
   }
@@ -428,14 +415,16 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
     } else {
 
-      if (!check.countryCodePass
-          || !check.phonePass
-          || !check.passwordPass
-          || !check.nicknamePass
-          || (this.imgCaptcha.show && this.signupData.imgCaptcha.length === 0)
+      if (!check.countryCodePass) {
+        this.signupCue.account = 'universal_userAccount_countryRegionCode';
+        this.dataIncomplete = true;
+      } else if (!check.passwordPass
+        || !check.nicknamePass
+        || (this.imgCaptcha.show && this.signupData.imgCaptcha.length === 0)
       ) {
         this.dataIncomplete = true;
       } else {
+        this.signupCue.account = '';
         this.dataIncomplete = false;
       }
 
@@ -537,13 +526,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
         switch (res.processResult.apiReturnMessage) {
           case 'Register account is existing.':
-
-            if (this.signupData.type === 1) {
-              this.signupCue.email = 'accountRepeat';
-            } else {
-              this.signupCue.phone = 'accountRepeat';
-            }
-
+            this.signupCue.account = 'accountRepeat';
             break;
           case 'Register name is existing.':
             this.signupCue.nickname = 'nicknameRepeat';

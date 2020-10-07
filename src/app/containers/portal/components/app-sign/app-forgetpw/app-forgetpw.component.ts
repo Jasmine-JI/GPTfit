@@ -37,7 +37,6 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
   };
   sending = false;
   appSys = 0;  // 0: web, 1: ios, 2: android
-  isKeyin = false;
   showSendPhoneCaptcha = false;
   sendingPhoneCaptcha = false;
   displayPW = false;
@@ -60,39 +59,8 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
     password: ''
   };
 
-  // 帳號類型選項
-  selectLists = [
-    {
-      name: 'email',
-      i18nKey: 'universal_userAccount_email'
-    },
-    {
-      name: 'phone',
-      i18nKey: 'universal_userAccount_phone'
-    }
-  ];
-
-  fontOpt = {
-    size: '20px',
-    weight: 'bold',
-    color: '#aaaaaa'
-  };
-
-  webFontOpt = {
-    size: '16px',
-    weight: 'normal',
-    color: '#757575'
-  };
-
-  position = {
-    bottom: '25px',
-    zIndex: 101
-  };
-
   cue = {
     account: '',
-    email: '',
-    phone: '',
     verificationCode: '',
     password: ''
   };
@@ -108,8 +76,6 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
   // 驗證用
   regCheck = {
     email: this.formReg.email,
-    phone: this.formReg.phone,
-    phonePass: false,
     countryCodePass: false,
     password: this.formReg.password
   };
@@ -227,13 +193,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     if (this.currentAccount) {
-      const formatObj = {
-        target: {
-          value: this.currentAccount
-        }
-      };
-
-      this.determineAccountType(formatObj);
+      this.determineAccountType(this.currentAccount);
     }
 
     if (this.formValue.verificationCode.length !== 0) {
@@ -269,76 +229,76 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // 判斷使用者輸入的帳號切換帳號類型-kidin-1090518
-  determineAccountType (e) {
+  determineAccountType(e: any) {
 
-    const account = e.target.value,
-          numReg = /^([0-9]*)$/;
-    if (account.length !== 0) {
+    if (e.key) {
+      const account = e.currentTarget.value;
 
-      let inputAccount = '';
-      if (account[0] === '0' && numReg.test(account)) {
-        inputAccount = account.slice(1, account.length);
-      } else {
-        inputAccount = account;
+      if (e.key !== 'Enter') {
+
+        if (e.key === 'Backspace') {
+          const value = account.slice(0, account.length - 1);
+          if (value.length > 0 && this.formReg.number.test(value)) {
+            this.formValue.type = 2;
+          } else {
+            this.formValue.type = 1;
+          }
+  
+        } else if (this.formReg.number.test(account) && this.formReg.number.test(e.key)) {
+          this.formValue.type = 2;
+        } else if (!this.formReg.number.test(e.key)) {
+          this.formValue.type = 1;
+        }
+
       }
 
-      if (this.regCheck.phone.test(inputAccount)) {
+    } else {
+
+      if (this.formReg.number.test(e)) {
         this.formValue.type = 2;
       } else {
         this.formValue.type = 1;
-
-        const formatValue = {
-          currentTarget: {
-            value: inputAccount
-          }
-        };
-
-        this.checkEmail(formatValue);
       }
 
-      this.currentAccount = inputAccount;
-      this.isKeyin = true;
-
-    } else {
-      this.isKeyin = false;
-      this.currentAccount = '';
     }
-
+    
   }
 
-  // 取得使用者選擇的帳號類型
-  getAccountType (e) {
-    this.formValue.type = +e + 1;
+  /**
+   * 儲存使用者輸入的帳號
+   * @param e {ChangeEvent}
+   * @author kidin-1091006
+   */
+  saveAccount(e: Event) {
+    const account = (e as any).currentTarget.value;
 
-    if (+e + 1 === 1) {
-
-      if (!this.regCheck.email.test(this.currentAccount)) {
-        this.currentAccount = '';
+    if (account.length > 0) {
+      if (this.formReg.number.test(account)) {
+        this.formValue.type = 2;
+        this.cue.account = '';
+        this.formValue.phone = account;
+      } else {
+        this.formValue.type = 1;
+        this.formValue.email = account;
+        this.checkEmail(this.formValue.email);
       }
 
     } else {
-
-      if (!this.regCheck.phone.test(this.currentAccount)) {
-        this.currentAccount = '';
-      }
-
+      this.formValue.type = 1;
+      this.cue.account = 'universal_status_wrongFormat';
     }
 
   }
 
   // 確認使用者信箱格式-kidin-1090511
-  checkEmail (e) {
-    if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout' || e.type === undefined) {
-      const inputEmail = e.currentTarget.value;
+  checkEmail (email: string) {
 
-      if (inputEmail.length === 0 || !this.regCheck.email.test(inputEmail)) {
-        this.cue.email = 'universal_userAccount_emailFormat';
-        this.dataIncomplete = true;
-      } else {
-        this.formValue.email = inputEmail;
-        this.cue.email = '';
-        this.dataIncomplete = false;
-      }
+    if (email.length === 0 || !this.regCheck.email.test(email)) {
+      this.cue.account = 'universal_status_wrongFormat';
+      this.dataIncomplete = true;
+    } else {
+      this.cue.account = '';
+      this.dataIncomplete = false;
     }
 
   }
@@ -351,23 +311,11 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
     this.checkPhoneForm();
   }
 
-  // 取得使用者輸入的電話號碼-kidin-
-  getPhoneNum (phoneNum) {
-    if (phoneNum.length === 0) {
-      this.regCheck.phonePass = false;
-    } else {
-      this.formValue.phone = phoneNum;
-      this.regCheck.phonePass = true;
-    }
-
-    this.checkPhoneForm();
-  }
-
   // 確認國碼及手機皆已輸入-kidin-1090519
   checkPhoneForm () {
 
     setTimeout(() => {  // 處理angular檢查時，狀態不一致的問題-kidin-1090519
-      if (this.regCheck.countryCodePass === true && this.regCheck.phonePass === true) {
+      if (this.regCheck.countryCodePass === true) {
         this.phoneFormIncomplete = false;
       } else {
         this.phoneFormIncomplete = true;
@@ -405,7 +353,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
               this.getImgCaptcha(res.processResult.imgLockCode);
               break;
             case 'Post fail, account is not existing.':
-              this.cue.phone = 'universal_userAccount_noRegisterData';
+              this.cue.account = 'universal_userAccount_noRegisterData';
               break;
             default:
               const msgBody = 'Error!<br /> Please try again later.';
@@ -549,7 +497,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
             this.getImgCaptcha(res.processResult.imgLockCode);
             break;
           case 'Post fail, account is not existing.':
-            this.cue.email = 'universal_userAccount_noRegisterData';
+            this.cue.account = 'universal_userAccount_noRegisterData';
             break;
           default:
             const msgBody = 'Error!<br /> Please try again later.';
@@ -696,7 +644,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
             this.cue.verificationCode = this.i18n.errorCaptcha;
             break;
           case 'Post fail, account is not existing.':
-            this.cue.phone = 'universal_userAccount_noRegisterData';
+            this.cue.account = 'universal_userAccount_noRegisterData';
             break;
           default:
             const msgBody = 'Error!<br /> Please try again later.';

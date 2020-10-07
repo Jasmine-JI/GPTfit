@@ -154,7 +154,7 @@ $group-width: 100px;
   @include title($status-width);
 }
 
-#group__column__title {
+.group__column__title {
   @include title($group-width);
 }
 
@@ -246,7 +246,7 @@ $group-width: 100px;
   @include content($group-width);
 }
 
-#group__list {
+.group__list {
   position: absolute;
   z-index: 10;
   background-color: white;

@@ -5,7 +5,7 @@ export class SystemIdPipe implements PipeTransform {
   transform(value: number, args: string[]): any {
     switch (value) {
       case 1:
-        return 'Ios';
+        return 'iOS';
       case 2:
         return 'Android';
     }

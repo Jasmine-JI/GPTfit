@@ -69,7 +69,7 @@
     </section>
     <section class="flexCol" style="margin: 10px auto;">
       <div class="flexRow map__setting--margin">
-        <span class="map__setting__title">顯圖選擇</span>
+        <span class="map__setting__title">地圖選擇</span>
         <div style="position: relative;" style="cursor: pointer;">
           <div id="map__choice" (click)="showMapSelector($event)">
             <span style="padding: 2px 5px; overflow: hidden;">{{ (pageSetting?.mapId | cloudrunSummary: 'zh-tw')?.mapName }}</span>
@@ -93,6 +93,29 @@
           [endTimeStamp]="pageSetting?.endTimeStamp"
           (selectDateRange)="getSelectDate($event)"
         ></app-date-range-picker>
+      </div>
+      <div class="flexRow map__setting--margin">
+        <span class="map__setting__title">開放報名</span>
+        <div class="flexRow radio__item" (click)="switchCanApply(true)">
+          <div
+            class="radio"
+            [class.radio__checked]="pageSetting?.canApply"
+            [style.pointer-events]="pageSetting?.canApply ? 'none' : 'initial'"
+          ></div>
+          <span>
+            是
+          </span>
+        </div>
+        <div class="flexRow radio__item" (click)="switchCanApply(false)">
+          <div
+            class="radio"
+            [class.radio__checked]="!pageSetting?.canApply"
+            [style.pointer-events]="!pageSetting?.canApply ? 'none' : 'initial'"
+          ></div>
+          <span>
+            否
+          </span>
+        </div>
       </div>
     </section>
     <section
@@ -188,8 +211,8 @@
     </section>
     <section class="flexCol table__section">
       <div class="flexRow table__header">
-        <span id="group__id">組別</span>
-        <span id="group__name">名稱</span>
+        <span class="group__id">個人賽組別</span>
+        <span class="group__name">名稱</span>
       </div>
       <div
         class="flexRow table__content"
@@ -219,6 +242,40 @@
       <div class="flexRow add__item" (click)="addItem('group')">
         <i class="icon-svg_web-icon_p1_029-add"></i>
         <span>新增分組</span>
+      </div>
+    </section>
+    <section class="flexCol table__section">
+      <div class="flexRow table__header">
+        <span class="group__id">團體賽隊伍</span>
+        <span class="group__name">隊名</span>
+      </div>
+      <div
+        class="flexRow table__content"
+        *ngFor="let _team of pageSetting.team; let _teamIdx = index;"
+      >
+        <i class="icon-svg_web-icon_p1_012-close delete__icon" (click)="deleteRow('team', _teamIdx)"></i>
+        <div class="flexRow row__line">
+          <span class="group__id__list">{{ _teamIdx + 1 }}</span>
+          <span
+            class="group__name__list"
+            *ngIf="uiFlag.editItem.team.teamName !== _teamIdx"
+            (click)="editItem($event, 'team', _teamIdx, 'teamName')"
+          >{{ _team.teamName }}</span>
+          <input
+            type="text"
+            #teamName
+            class="group__name__list table__edit__input"
+            [(value)]="pageSetting.team[_teamIdx].teamName"
+            (click)="stopClickPropagation($event)"
+            (keypress)="saveItemSetting($event, 'team', _teamIdx, 'teamName')"
+            (focusout)="saveItemSetting($event, 'team', _teamIdx, 'teamName')"
+            *ngIf="uiFlag.editItem.team.teamName === _teamIdx"
+          />
+        </div>
+      </div>
+      <div class="flexRow add__item" (click)="addItem('team')">
+        <i class="icon-svg_web-icon_p1_029-add"></i>
+        <span>新增隊伍</span>
       </div>
     </section>
     <section class="flexCol table__section">

@@ -25,7 +25,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
   readonly formReg = formTest;
 
   i18n = {
-    email: '',
+    account: '',
     password: ''
   };
   displayPW = false;
@@ -45,8 +45,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
 
   cue = {
     password: '',
-    email: '',
-    phone: ''
+    account: ''
   };
 
   accountInfo = {
@@ -60,38 +59,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
     emailPass: false,
     password: this.formReg.password,
     passwordPass: false,
-    phone: this.formReg.phone,
-    phonePass: false,
     countryCodePass: false
-  };
-
-  // 帳號類型選項
-  selectLists = [
-    {
-      name: 'email',
-      i18nKey: 'universal_userAccount_email'
-    },
-    {
-      name: 'phone',
-      i18nKey: 'universal_userAccount_phone'
-    }
-  ];
-
-  fontOpt = {
-    size: '20px',
-    weight: 'bold',
-    color: '#aaaaaa'
-  };
-
-  webFontOpt = {
-    size: '16px',
-    weight: 'normal',
-    color: '#757575'
-  };
-
-  position = {
-    bottom: '25px',
-    zIndex: 101
   };
 
   // 惡意註冊圖碼解鎖
@@ -162,7 +130,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
       this.i18n = {
-        email: this.translate.instant('universal_userAccount_account'),
+        account: this.translate.instant('universal_userAccount_emailPerPhone'),
         password: this.translate.instant('universal_userAccount_password')
       };
 
@@ -245,29 +213,68 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
 
   }
 
-  // 取得使用者選擇的帳號類型
-  getAccountType (e) {
-    this.editBody.newAccountType = +e + 1;
-    this.checkAll(this.regCheck);
+  // 判斷使用者輸入的帳號切換帳號類型-kidin-1090518
+  determineAccountType(e: KeyboardEvent) {
+    const account = (e as any).currentTarget.value;
+
+    if (e.key !== 'Enter') {
+     
+      if (e.key === 'Backspace') {
+        const value = account.slice(0, account.length - 1);
+        if (value.length > 0 && this.formReg.number.test(value)) {
+          this.editBody.newAccountType = 2;
+        } else {
+          this.editBody.newAccountType = 1;
+        }
+  
+      } else if (this.formReg.number.test(account) && this.formReg.number.test(e.key)) {
+        this.editBody.newAccountType = 2;
+      } else if (!this.formReg.number.test(e.key)) {
+        this.editBody.newAccountType = 1;
+      }
+
+    }
+
+  }
+
+  /**
+   * 儲存使用者輸入的帳號
+   * @param e {ChangeEvent}
+   * @author kidin-1091006
+   */
+  saveAccount(e: Event) {
+    const account = (e as any).currentTarget.value;
+
+    if (account.length > 0) {
+      if (this.formReg.number.test(account)) {
+        this.editBody.newAccountType = 2;
+        this.cue.account = '';
+        this.editBody.newMobileNumber = account;
+        this.checkAll(this.regCheck);
+      } else {
+        this.editBody.newAccountType = 1;
+        this.editBody.newEmail = account;
+        this.checkEmail(this.editBody.newEmail);
+      }
+
+    } else {
+      this.editBody.newAccountType = 1;
+      this.cue.account = 'universal_status_wrongFormat';
+    }
+
   }
 
   // 確認使用者信箱格式-kidin-1090511
-  checkEmail (e) {
-    if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
-      const inputEmail = e.currentTarget.value;
-
-      if (inputEmail.length === 0 || !this.regCheck.email.test(inputEmail)) {
-        this.cue.email = 'universal_userAccount_emailFormat';
-        this.regCheck.emailPass = false;
-      } else {
-        this.editBody.newEmail = inputEmail;
-        this.cue.email = '';
-        this.regCheck.emailPass = true;
-      }
-
-      this.checkAll(this.regCheck);
+  checkEmail (email: string) {
+    if (email.length === 0 || !this.regCheck.email.test(email)) {
+      this.cue.account = 'universal_status_wrongFormat';
+      this.regCheck.emailPass = false;
+    } else {
+      this.cue.account = '';
+      this.regCheck.emailPass = true;
     }
 
+    this.checkAll(this.regCheck);
   }
 
   // 將使用者輸入的密碼進行隱藏-kidin-1090430
@@ -316,18 +323,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
   onCodeChange (countryCode) {
     this.editBody.newCountryCode = +countryCode;
     this.regCheck.countryCodePass = true;
-
-    this.checkAll(this.regCheck);
-  }
-
-  // 取得使用者輸入的電話號碼-kidin-
-  getPhoneNum (phoneNum) {
-    if (phoneNum.length === 0) {
-      this.regCheck.phonePass = false;
-    } else {
-      this.editBody.newMobileNumber = phoneNum;
-      this.regCheck.phonePass = true;
-    }
+    this.cue.account = '';
 
     this.checkAll(this.regCheck);
   }
@@ -362,17 +358,18 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
 
     } else {
 
-      if (!check.countryCodePass
-          || !check.phonePass
-          || !check.passwordPass
-          || (this.imgCaptcha.show && this.imgCaptcha.code.length === 0)
-      ) {
+      if (!check.countryCodePass) {
+        this.cue.account = 'universal_userAccount_countryRegionCode';
+        this.dataIncomplete = true;
+      } else if (!check.passwordPass || (this.imgCaptcha.show && this.imgCaptcha.code.length === 0)) {
         this.dataIncomplete = true;
       } else {
+        this.cue.account = '';
         this.dataIncomplete = false;
       }
 
     }
+
   }
 
   // 進行變更帳號流程-kidin-1090518
@@ -429,13 +426,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
 
         switch (res.processResult.apiReturnMessage) {
           case 'Change account is existing.':
-
-            if (this.editBody.newAccountType === 1) {
-              this.cue.email = 'accountRepeat';
-            } else {
-              this.cue.phone = 'accountRepeat';
-            }
-
+            this.cue.account = 'accountRepeat';
             break;
           case 'Change account fail, old password is not correct.':
             this.cue.password = 'universal_userAccount_notSamePassword';

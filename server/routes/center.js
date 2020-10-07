@@ -7,6 +7,7 @@ var { getAccessRight } = require('../models/get_accessRight');
 
 var moment = require('moment');
 
+// 已停用，待廢棄-kidin-1090928
 router.get('/getGroupListDetail', function (req, res, next) {
   const {
     con,
@@ -52,6 +53,8 @@ router.get('/getGroupListDetail', function (req, res, next) {
 
   });
 });
+
+// 已停用，待廢棄-kidin-1090928
 router.get('/getGroupJoinStatus', function (req, res, next) {
   const {
     con,
@@ -93,6 +96,7 @@ router.get('/getGroupJoinStatus', function (req, res, next) {
 
 });
 
+// apiCode-center01:取得群組清單
 router.get('/getGroupList', function (req, res, next) {
   const {
     con

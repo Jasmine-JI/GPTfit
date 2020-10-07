@@ -2,13 +2,14 @@
 @import 'keyframes.scss';
 $btn--blue--opcity: rgba(59, 134, 255, 0.8);
 $btn--blue: rgba(59, 134, 255, 1);
+$sea--blue: rgba(0, 104, 183, 1);
 $btn-shadow-color: rgba(200, 200, 200, 1);
 $btn-not-save: rgba(255, 120, 120, 1);
 $gray: rgba(200, 200, 200, 1);
 $dark-gray: rgba(150, 150, 150, 1);
 $darker-gray: rgba(100, 100, 100, 1);
 $card-title-width: 130px;
-$group-id-width: 100px;
+$group-id-width: 150px;
 $product-name-width: 300px;
 $product-link-width: 300px;
 $discount-name-width: 250px;
@@ -216,6 +217,35 @@ $discount-link-width: 250px;
 
 }
 
+.radio__item {
+  margin-right: 20px;
+  align-items: center;
+}
+
+.radio {
+  position: relative;
+  border: 2px solid $sea--blue;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  margin-right: 2px;
+  cursor: pointer;
+}
+
+.radio__checked {
+  &::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: $sea--blue;
+  }
+
+}
+
 .setting__btn {
   @include center();
   background-color: $btn--blue--opcity;
@@ -293,11 +323,11 @@ $discount-link-width: 250px;
   max-width: 770px;
 }
 
-#group__id {
+.group__id {
   width: $group-id-width;
 }
 
-#group__name {
+.group__name {
   width: 40px;
 }
 
@@ -307,7 +337,8 @@ $discount-link-width: 250px;
 }
 
 .group__name__list {
-  @include table--content(calc(50vw + 160px));
+  @include table--content(calc(50vw + 90px));
+  max-width: 835px;
 }
 
 #product__name {

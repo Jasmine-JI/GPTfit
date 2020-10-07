@@ -15,6 +15,7 @@ interface Activity {
   mapId: number;
   mapDistance: number;
   eventStatus: string;
+  canApply: boolean;
   startTimeStamp: number;
   endTimeStamp: number;
   eventImage: string;
@@ -22,6 +23,7 @@ interface Activity {
   backgroundColor: string;
   card: Array<any>;
   group: Array<any>;
+  team: Array<any>;
   product: Array<any>;
   discount: Array<any>;
   createTimeStamp: number;
@@ -46,6 +48,7 @@ export class EditOfficialActivityComponent implements OnInit, OnDestroy {
   @ViewChild('bgColor') bgColor: ElementRef;
   @ViewChild('title') title: ElementRef;
   @ViewChild('groupName') groupName: ElementRef;
+  @ViewChild('teamName') teamName: ElementRef;
   @ViewChild('name') name: ElementRef;
   @ViewChild('link') link: ElementRef;
   @ViewChild('price') price: ElementRef;
@@ -68,6 +71,9 @@ export class EditOfficialActivityComponent implements OnInit, OnDestroy {
       },
       group: {
         groupName: null
+      },
+      team: {
+        teamName: null
       },
       product: {
         img: null,
@@ -143,6 +149,8 @@ export class EditOfficialActivityComponent implements OnInit, OnDestroy {
     ).subscribe(() => {
       if (!this.uiFlag.isClickCardImg && !this.uiFlag.isFocusInput) {
         this.initUiFlag();
+      } else if (this.uiFlag.showEditCardContent) {
+        this.uiFlag.showEditCardContent = false;
       } else {
         this.uiFlag.isClickCardImg = false;
       }
@@ -195,6 +203,9 @@ export class EditOfficialActivityComponent implements OnInit, OnDestroy {
         },
         group: {
           groupName: null
+        },
+        team: {
+          teamName: null
         },
         product: {
           img: null,
@@ -318,6 +329,16 @@ export class EditOfficialActivityComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * 切換是否開放報名
+   * @param apply {boolean}
+   * @author kidin-1090929
+   */
+  switchCanApply(apply: boolean) {
+    this.pageSetting.canApply = apply;
+    this.uiFlag.isSaved = false;
+  }
+
+  /**
    * 開啟各種選擇器
    * @event click
    * @param e {MouseEvent}
@@ -384,7 +405,7 @@ export class EditOfficialActivityComponent implements OnInit, OnDestroy {
 
   /**
    * 刪除項目
-   * @param item {string}-card/group/product
+   * @param item {string}-card/group/team/product
    * @param idx {number}
    * @author kidin-1090827
    */
@@ -418,6 +439,12 @@ export class EditOfficialActivityComponent implements OnInit, OnDestroy {
           groupName: '組別',
           member: [],
           rank: []
+        });
+        break;
+      case 'team':
+        this.pageSetting.team.push({
+          teamId: this.pageSetting.team.length + 1,
+          teamName: '組別'
         });
         break;
       case 'product':
@@ -456,6 +483,7 @@ export class EditOfficialActivityComponent implements OnInit, OnDestroy {
     switch (item) {
       case 'title':
       case 'groupName':
+      case 'teamName':
       case 'name':
       case 'link':
       case 'name':

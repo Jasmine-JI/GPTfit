@@ -13,16 +13,6 @@
   cursor: pointer;
 }
 
-.selected-flag--invalid {
-  border: 1px solid #c75353;
-  box-shadow: rgba(163, 50, 50, .34) 0 0 4px 0;
-}
-
-.selected-flag--disabled {
-  background-color: #e9ecef;
-  opacity: 1;
-}
-
 .ala-intl-tel.dropdown-menu {
   width: 95%;
   max-height: 200px;
@@ -51,21 +41,6 @@
 .dial-code {
   color: #999;
 }
-.clearable__clear {
-  display: none;
-  position: absolute;
-  right: 10px;
-  top: 0;
-  padding: 0 8px;
-  font-style: normal;
-  font-size: 1.2em;
-  user-select: none;
-  cursor: pointer;
-}
-
-.clearable__clear.show {
-  display: inline;
-}
 
 .material-icons.async-caret {
   position: absolute;
@@ -93,29 +68,13 @@
 
 }
 
-.spinner {
-  position: absolute;
-  right: 30px;
-  top: 0;
-  padding: 6px 4px;
-  font-style: normal;
-  font-size: 1.2em;
-  user-select: none;
-  cursor: pointer;
-}
-
-.spinner-hidden {
-  display: none;
-}
-
 .selected-flag-v2 {
   position: relative;
   border: none;
   display: inline-block;
   background-color: #fff;
   padding: 0.5rem 1.5rem 0.5rem 0.5rem;
-  margin: 5px 0px;
-  width: fit-content;
+  width: 140px;
   height: 38px;
   color: black;
   font-size: 16px;
