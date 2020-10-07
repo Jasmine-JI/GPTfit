@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 import { UtilsService } from './utils.service';
 import { UserProfileService } from './user-profile.service';
 import { environment } from '../../../environments/environment';
+import { throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 
 const { API_SERVER } = environment.url;
@@ -23,6 +25,17 @@ export class OfficialActivityService {
    */
   createOfficialActivity (body: any) {
     return this.http.post<any>(API_SERVER + 'officialActivity/create', body);
+  }
+
+  /**
+   * 使用nodejs複製活動
+   * @param body {any}
+   * @author kidin-1090902
+   */
+  copyOfficialActivity (body: any) {
+    return this.http.post<any>(API_SERVER + 'officialActivity/copy', body).pipe(
+      catchError(err => throwError(err))
+    );
   }
 
     /**

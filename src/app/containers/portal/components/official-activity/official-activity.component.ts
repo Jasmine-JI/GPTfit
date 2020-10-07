@@ -40,9 +40,11 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
     discountSelectIdx: 0,
     currentGroupId: 0,
     currentRankStart: 1,
+    currentTeamRankStart: 1,
     canPrev: false,
     canNext: false,
-    displayRanking: [],
+    canTeamRankPrev: false,
+    canTeamRankNext: false,
     showAll: false,
     displayUserActivity: [],
     showAutoCompleteList: false,
@@ -50,7 +52,8 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
     activityEnd: false,
     applied: false,
     copied: false,
-    haveAnyActivity: false
+    haveAnyActivity: false,
+    showAvgRecord: true
   };
 
   activity: any = {};
@@ -65,6 +68,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
     userRecord: []
   };
 
+  teamRanking = [];
   currentTimeStamp = moment().valueOf();
 
   constructor(
@@ -117,7 +121,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
         if (res.processResult.resultCode !== 200) {
           console.log(`${res.processResult.apiCode}：${res.processResult.apiReturnMessage}`);
         } else {
-          Object.assign(res, {serialNumber: this.hashIdService.handleUserIdEncode(res.userId)});
+          Object.assign(res.userProfile, {serialNumber: this.hashIdService.handleUserIdEncode(res.userProfile.userId)});
           this.userProfile = res.userProfile;
         }
 
@@ -195,6 +199,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
    */
   getFile(fileName: string, token: string) {
     this.uiFlag.changeFileLoading = true;
+    this.uiFlag.currentGroupId = 0;
     const body = {
       token,
       fileName
@@ -217,13 +222,22 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
         this.activity = res.activity;
         this.uiFlag.changeFileLoading = false;
 
+        if (this.activity.team.length > 0) {
+          this.createTeamRanking()
+        }
+
         // 確認活動是否結束
         if (this.activity.endTimeStamp < moment().valueOf()) {
           this.uiFlag.activityEnd = true;
         } else {
           this.uiFlag.activityEnd = false;
           this.uiFlag.groupSelect.name = this.activity.group[0].groupName;
-          this.uiFlag.applied = this.checkoutUserApply();
+
+          if (this.userProfile !== undefined) {
+            this.uiFlag.applied = this.checkoutUserApply();
+          } else {
+            this.uiFlag.applied = false;
+          }
 
           if (!this.uiFlag.applied && location.search.indexOf('applyActivity') > -1) {
             this.scrollToApplySection();
@@ -317,6 +331,80 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * 從個人成績比對團體名單後生成團體競賽排名
+   * @author kidin-1090930
+   */
+  createTeamRanking() {
+    this.activity.team = this.sortTeam(this.activity.team);
+    this.activity.team = this.assignRank(this.activity.team);
+  }
+
+    /**
+   * 將團體依照 1.該組有無成員 2.全隊是否完賽 3.平均時間花費少 排序以利後續排名
+   * @param team {any}
+   * @author kidin-1091005
+   */
+  sortTeam(team: any) {
+    let swapped = true;
+    for (let i = 0; i < team.length && swapped; i++) {
+
+      if (team[i].peopleNum) {
+
+        swapped = false;
+        for (let j = 0; j < team.length - 1 - i; j++) {
+
+          const peopleNumArr = team[j].peopleNum.split('/'),
+                nextPeopleNumArr = team[j + 1].peopleNum.split('/');
+
+          if (
+            (+peopleNumArr[1] !== 0 && +nextPeopleNumArr[1] === 0)
+            || (+peopleNumArr[1] !== 0 && +peopleNumArr[0] === +peopleNumArr[1] && +nextPeopleNumArr[0] !== +nextPeopleNumArr[1])
+            || (team[j].record < team[j + 1].record)
+          ) {
+            continue;
+          } else {
+            [team[j], team[j + 1]] = [team[j + 1], team[j]];
+            swapped = true;
+          }
+
+        }
+
+      }
+
+    }
+
+    return team;
+  }
+    
+  /**
+   * 確認團體是否皆完賽及團體間成績是否相同，並進行排名
+   * @param team {any}
+   * @author kidin-1091005
+   */
+  assignRank(team: any) {
+    let rank = 1;
+    for (let i = 0; i < team.length; i++) {
+
+      if (team[i].peopleNum) {
+
+        const peopleNumArr = team[i].peopleNum.split('/');
+        if (+peopleNumArr[1] === 0 || +peopleNumArr[0] !== +peopleNumArr[1]) { // 無成員或有隊員尚未完賽則不予排名
+          Object.assign(team[i], {rank: '-'});
+        } else if (i === 0 || team[i].record !== team[i - 1].record) {
+          Object.assign(team[i], {rank});
+        } else { // 成績相同者排名相同
+          Object.assign(team[i], {rank: team[i - 1].rank})
+        }
+
+        rank++;
+      }
+
+    }
+
+    return team;
+  }
+
+  /**
    * 返回首頁
    * @author kidin-1090907
    */
@@ -378,6 +466,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
 
     if (tag === 'leaderBoard') {
       this.checkGroupRankingLength();
+      this.checkTeamRankingLength();
     } else if (tag === 'search') {
       this.listenAutoComplete();
       this.getUserInfo();
@@ -436,7 +525,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
    */
   selectDiscount(index: number) {
     this.uiFlag.discountSelectIdx = index;
-    if (this.uiFlag.applied || this.userProfile === undefined) {
+    if (this.uiFlag.applied && this.userProfile !== undefined) {
       window.open(this.activity.discount[index].link, '_blank', 'noopener=yes,noreferrer=yes');
     }
 
@@ -463,6 +552,10 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
       applyTimeStamp: moment().valueOf(),
       status: 'checking'
     };
+
+    if (this.activity.team && this.activity.team.length > 0) {
+      Object.assign(userApplyInfo, {team: ''});
+    }
 
     const body = {
       token: this.utils.getToken() || '',
@@ -554,20 +647,26 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
       this.uiFlag.canPrev = true;
     }
 
-    this.sliceRankingList(this.uiFlag.currentGroupId, this.uiFlag.currentRankStart);
   }
 
   /**
-   * 只顯示該組排行榜指定範圍內的10名
-   * @param groupId {number}-組別id
-   * @param rankStart {number}-開始名次
-   * @author kidin-1090820
+   * 確認團體排名長度
+   * @author kidin-1090930
    */
-  sliceRankingList(groupId: number = 0, rankStart: number = 1): void {
-    if (this.uiFlag.canNext) {
-      this.uiFlag.displayRanking = this.activity.group[groupId].rank.slice(rankStart - 1, rankStart + 9);
+  checkTeamRankingLength() {
+    if (
+      this.teamRanking.length <= 10
+      || this.uiFlag.currentTeamRankStart + 10 > this.teamRanking.length
+    ) {
+      this.uiFlag.canTeamRankNext = false;
     } else {
-      this.uiFlag.displayRanking = this.activity.group[groupId].rank.slice(rankStart - 1, this.activity.group[groupId].rank.length);
+      this.uiFlag.canTeamRankNext = true;
+    }
+
+    if (this.uiFlag.currentTeamRankStart - 10 < 1) {
+      this.uiFlag.canTeamRankPrev = false;
+    } else {
+      this.uiFlag.canTeamRankPrev = true;
     }
 
   }
@@ -577,14 +676,31 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
    * @param action {string} prev/next
    * @author kidin1090820
    */
-  handleChangeRankRange(action: string): void {
-    if (action === 'prev') {
-      this.uiFlag.currentRankStart = this.uiFlag.currentRankStart - 10;
-    } else {
-      this.uiFlag.currentRankStart = this.uiFlag.currentRankStart + 10;
-    }
+  handleChangeRankRange(action: string, type: string): void {
+    switch (type) {
+      case 'personal':
 
-    this.checkGroupRankingLength(this.uiFlag.currentGroupId);
+        if (action === 'prev') {
+          this.uiFlag.currentRankStart = this.uiFlag.currentRankStart - 10;
+        } else {
+          this.uiFlag.currentRankStart = this.uiFlag.currentRankStart + 10;
+        }
+
+        this.checkGroupRankingLength(this.uiFlag.currentGroupId);
+        break;
+      case 'team':
+
+        if (action === 'prev') {
+          this.uiFlag.currentTeamRankStart = this.uiFlag.currentTeamRankStart - 10;
+        } else {
+          this.uiFlag.currentTeamRankStart = this.uiFlag.currentTeamRankStart + 10;
+        }
+
+        this.checkTeamRankingLength();
+        break;
+
+    }
+    
   }
 
   /**
@@ -597,6 +713,35 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
     this.uiFlag.currentGroupId = groupId;
     this.uiFlag.currentRankStart = 1;
     this.checkGroupRankingLength(this.uiFlag.currentGroupId);
+  }
+
+  /**
+   * 顯示團體成員與否
+   * @param index {number}
+   * @author kidin-1091005
+   */
+  showTeamMember(index: number) {
+    if (this.activity.team[index].open === undefined) {
+      Object.assign(this.activity.team[index], {open: true});
+    } else if (this.activity.team[index].open) {
+      this.activity.team[index].open = false;
+    } else {
+      this.activity.team[index].open = true;
+    }
+
+  }
+
+  /**
+   * 切換成績類別
+   * @author kidin-1091006
+   */
+  switchRecordType() {
+    if (this.uiFlag.showAvgRecord) {
+      this.uiFlag.showAvgRecord = false;
+    } else {
+      this.uiFlag.showAvgRecord = true;
+    }
+
   }
 
   /**
@@ -620,10 +765,10 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
       input = fromEvent(document.querySelector('#keywordInput'), 'input');
 
       this.rxKeywordInput = input.pipe(
-        debounceTime(500),
+        debounceTime(250),
         map(e => (e as any).target.value),
         switchMap(value => {
-          if ((value as string).length < 1) {
+          if (value === undefined || value === '') {
             this.uiFlag.showAutoCompleteList = false;
             return of([]);
           } else {
@@ -640,11 +785,11 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
         }),
         takeUntil(this.ngUnsubscribe)
       ).subscribe(result => {
-        if (result.nickname.length > 0) {
+        if (result.nickname && result.nickname.length > 0) {
           this.nicknameList = result.nickname;
           this.uiFlag.showAutoCompleteList = true;
         } else {
-          this.nicknameList.length = 0;
+          this.nicknameList = [];
           this.uiFlag.showAutoCompleteList = false;
         }
 
@@ -694,6 +839,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
     };
 
     this.uiFlag.showAutoCompleteList = false;
+    this.searchUserActivity();
   }
 
   /**

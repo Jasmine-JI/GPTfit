@@ -96,7 +96,6 @@ $list-shadow-color: rgba(100, 100, 100, 0.3);
 }
 
 @mixin fade-in-out {
-  position: relative;
   animation: color-gradient 1s 1;
   animation-timing-function: ease-in-out;
   @include keyframes(color-gradient) {
@@ -175,6 +174,22 @@ $list-shadow-color: rgba(100, 100, 100, 0.3);
 .focus__tag {
   border-bottom: 4px solid $sky-blue;
   background-color: white;
+}
+
+.activity__loading {
+    animation: loading 0.25s infinite;
+    animation-timing-function: ease-in-out;
+    @include keyframes(loading) {
+      0% {
+        opacity: 0.1;
+      }
+  
+      100% {
+        opacity: 1;
+      }
+  
+    }
+
 }
 
 .icon--font {
@@ -458,6 +473,12 @@ $list-shadow-color: rgba(100, 100, 100, 0.3);
   white-space: pre-wrap;
 }
 
+.nickname__list__team {
+  @extend #nickname;
+  white-space: pre-wrap;
+  left: calc(50px + 10vw);
+}
+
 .record__list {
   @extend #record;
   white-space: pre-wrap;
@@ -466,6 +487,21 @@ $list-shadow-color: rgba(100, 100, 100, 0.3);
 .finish__date__list {
   @extend #finish__date;
   white-space: pre-wrap;
+}
+
+.team__expand {
+  animation: expand 0.2s 1;
+  animation-timing-function: ease-in-out;
+  @include keyframes(expand) {
+    0% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+    }
+
+  }
 }
 
 .product__list {
@@ -760,7 +796,7 @@ $list-shadow-color: rgba(100, 100, 100, 0.3);
 }
 
 @media (max-width: 950px) {
-  #nickname, .nickname__list {
+  #nickname, .nickname__list, .nickname__list__team {
     width: 200px;
   }
 
@@ -858,7 +894,7 @@ $list-shadow-color: rgba(100, 100, 100, 0.3);
     top: 60px;
   }
 
-  #nickname, .nickname__list {
+  #nickname, .nickname__list, .nickname__list__team {
     width: 150px;
   }
 
@@ -877,7 +913,7 @@ $list-shadow-color: rgba(100, 100, 100, 0.3);
 }
 
 @media (max-width: 420px) {
-  #nickname, .nickname__list {
+  #nickname, .nickname__list, .nickname__list__team {
     width: 120px;
   }
 

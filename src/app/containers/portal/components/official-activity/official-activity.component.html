@@ -30,9 +30,9 @@
       *ngIf="uiFlag.haveAnyActivity"
       (click)="navigateApply()"
     >
-      <span *ngIf="!uiFlag.activityEnd && !uiFlag.applied">參加</span>
-      <span *ngIf="!uiFlag.activityEnd && uiFlag.applied">已報名</span>
-      <span *ngIf="uiFlag.activityEnd">已截止</span>
+      <span *ngIf="!uiFlag.activityEnd && !uiFlag.applied && activity.canApply">參加</span>
+      <span *ngIf="!uiFlag.activityEnd && uiFlag.applied && activity.canApply">已報名</span>
+      <span *ngIf="uiFlag.activityEnd || !activity.canApply">已截止</span>
     </button>
     <div id="page__tag--postion" class="flexRow">
       <div
@@ -46,6 +46,7 @@
       <div
         class="page__tag main__tag"
         [class.focus__tag]="uiFlag.currentTag === 'description'"
+        [class.activity__loading]="uiFlag.changeFileLoading"
         [style.border-color]="uiFlag.currentTag === 'description' ? activity.mainColor : ''"
         (click)="handleShowPage('description')"
       >
@@ -103,7 +104,11 @@
     </div>
   </div>
   <ng-container *ngIf="uiFlag.currentTag === 'description' && !uiFlag.changeFileLoading">
-    <p style="display: block; margin: 20px 0; font-weight: bold; text-align: center; font-size: 20px;" *ngIf="!uiFlag.haveAnyActivity">無任何歷史官方活動</p>
+    <div style="height: 500px;" *ngIf="!uiFlag.haveAnyActivity">
+      <p
+        style="display: block; margin: 100px 0; font-weight: bold; text-align: center; font-size: 20px;"
+      >無任何歷史官方活動</p>
+    </div>
     <div class="flexRow page_content card__section card__section__keyframs">
       <div
         class="cloudRun__card"
@@ -128,7 +133,7 @@
     <section
       id="apply__section"
       #applySection
-      *ngIf="!uiFlag.activityEnd && activity.discount?.length > 0"
+      *ngIf="!uiFlag.activityEnd && (activity.discount?.length > 0 || this.activity.group.length !== 1)"
     >
       <div
         style="margin: 0 auto; padding: 20px 0; align-items: center; width: 90vw; border-top: 1px solid rgba(100, 100, 100, 1);"
@@ -240,7 +245,7 @@
   <ng-container *ngIf="uiFlag.currentTag === 'leaderBoard'">
     <div class="page_content">
       <div class="flexCol table__section">
-        <span class="table__title">標題</span>
+        <span class="table__title">{{ activity?.name }}</span>
         <div class="flexRow group__btn__section">
           <span
             class="group__btn"
@@ -250,33 +255,35 @@
           >{{ _group.groupName }}</span>
         </div>
         <div class="flexCol">
-          <span>參賽人數： {{ activity.group[uiFlag.currentGroupId]?.member?.length }} 人</span>
+          <span>參賽人數： {{ activity.group[uiFlag.currentGroupId]?.rank?.length || 0 }} 人</span>
           <div class="flexRow table__head" [style.color]="activity.mainColor">
             <span id="ranking">排行</span>
             <span id="nickname">暱稱</span>
             <span id="record">成績</span>
             <span id="finish__date" *ngIf="uiFlag.width >= 800">完成日期</span>
           </div>
-          <div id="rank__list" class="flexRow" *ngFor="let _participant of uiFlag.displayRanking; let _index = index;">
-            <span class="ranking__list">{{ _participant.ranking }}</span>
-            <div class="flexRow nickname__list">
-              <img
-                [src]="_participant.icon"
-                (error)="_participant.icon='/assets/images/user2.png'"
-                style="max-height: 30px; border-radius: 50%; margin: 0 2px;"
-              />
-              <span>
-                {{ _participant.nickname }}
-              </span>
+          <div class="flexCol" *ngFor="let _participant of activity.group[uiFlag.currentGroupId].rank; let _index = index;">
+            <div id="rank__list" class="flexRow" *ngIf="_index + 1 >= uiFlag.currentRankStart && _index + 1 < uiFlag.currentRankStart + 10">
+              <span class="ranking__list">{{ _participant.ranking }}</span>
+              <div class="flexRow nickname__list">
+                <img
+                  [src]="_participant.icon"
+                  (error)="_participant.icon='/assets/images/user2.png'"
+                  style="max-height: 30px; border-radius: 50%; margin: 0 2px;"
+                />
+                <span>
+                  {{ _participant.nickname }}
+                </span>
+              </div>
+              <span class="record__list">{{ _participant.record | sportTime: false }}</span>
+              <span class="finish__date__list" *ngIf="uiFlag.width >= 800">{{ _participant.finishDate }}</span>
             </div>
-            <span class="record__list">{{ _participant.record }}</span>
-            <span class="finish__date__list" *ngIf="uiFlag.width >= 800">{{ _participant.finishDate }}</span>
           </div>
           <div class="flexRow page__section">
             <div
               class="switch__btn  switch__left"
               [class.switch__btn--active]="uiFlag.canPrev"
-              (click)="handleChangeRankRange('prev')"
+              (click)="handleChangeRankRange('prev', 'personal')"
             >
               <i class="icon-svg_web-icon_p1_006-unfold switch__icon"></i>
             </div>
@@ -284,14 +291,88 @@
             <div
               class="switch__btn switch__right"
               [class.switch__btn--active]="uiFlag.canNext"
-              (click)="handleChangeRankRange('next')"
+              (click)="handleChangeRankRange('next', 'personal')"
+            >
+              <i class="icon-svg_web-icon_p1_006-unfold switch__icon"></i>
+            </div>
+          </div>
+        </div>
+        <div class="flexCol" *ngIf="activity && activity.team?.length > 0">
+          <span>參賽隊數： {{ activity.team?.length }} 隊</span>
+          <div class="flexRow table__head" [style.color]="activity.mainColor">
+            <span id="ranking">排行</span>
+            <span id="nickname">隊名</span>
+            <div id="record" style="cursor: pointer;" (click)="switchRecordType()">
+              <span *ngIf="uiFlag.showAvgRecord">平均成績</span>
+              <span *ngIf="!uiFlag.showAvgRecord">總成績</span>
+              <i class="icon-svg_web-icon_p1_031-sync" style="font-size: 24px;"></i>
+            </div>
+            <span id="finish__date" *ngIf="uiFlag.width >= 800">完賽人數</span>
+          </div>
+          <div class="flexCol" *ngFor="let _team of activity.team; let _tIdx = index">
+            <div
+              id="rank__list"
+              class="flexRow"
+              style="cursor: pointer;"
+              [style.background-color]="activity.mainColor + '10'"
+              (click)="showTeamMember(_tIdx)"
+              *ngIf="_tIdx + 1 >= uiFlag.currentTeamRankStart && _tIdx + 1 < uiFlag.currentTeamRankStart + 10"
+            >
+              <span class="ranking__list" *ngIf="_team.rank; else noTeamRank;">{{ _team.rank }}</span>
+              <ng-template #noTeamRank>
+                <span class="ranking__list">-</span>
+              </ng-template>
+              <div class="flexRow nickname__list">
+                <span>
+                  {{ _team.teamName }}
+                </span>
+              </div>
+              <div class="record__list" *ngIf="uiFlag.showAvgRecord">
+                <span *ngIf="_team.record && _team.record !== null; else noTeamRecord;">
+                  {{ _team.record | sportTime: false }}
+                </span>
+              </div>
+              <div class="record__list" *ngIf="!uiFlag.showAvgRecord">
+                <span *ngIf="_team.totalTime && _team.totalTime !== null; else noTeamRecord;">
+                  {{ _team.totalTime | sportTime: false }}
+                </span>
+              </div>
+              <ng-template #noTeamRecord>
+                <span>-:-:-</span>
+              </ng-template>
+              <span class="finish__date__list" *ngIf="uiFlag.width >= 800 && _team.peopleNum">{{ _team.peopleNum }}</span>
+              <span class="finish__date__list" *ngIf="uiFlag.width >= 800 && !_team.peopleNum">0/0</span>
+            </div>
+            <div class="team__expand" *ngIf="_team.open !== undefined && _team.open">
+              <div id="rank__list" class="flexRow" *ngFor="let _tMember of _team.member;">
+                <span class="ranking__list">
+                  <i class="icon-svg_web-icon_p1_083-run" style="font-size: 20px;"></i>
+                </span>
+                <span class="nickname__list">{{ _tMember.nickname }}</span>
+                <span class="record__list">{{ _tMember.record | sportTime: false }}</span>
+              </div>  
+            </div>
+          </div>
+          <div class="flexRow page__section">
+            <div
+              class="switch__btn  switch__left"
+              [class.switch__btn--active]="uiFlag.canTeamRankPrev"
+              (click)="handleChangeRankRange('prev', 'team')"
+            >
+              <i class="icon-svg_web-icon_p1_006-unfold switch__icon"></i>
+            </div>
+            <span style="font-weight: bold;">{{ uiFlag.currentTeamRankStart }} - {{ uiFlag.currentTeamRankStart + 9 }}</span>
+            <div
+              class="switch__btn switch__right"
+              [class.switch__btn--active]="uiFlag.canTeamRankNext"
+              (click)="handleChangeRankRange('next', 'team')"
             >
               <i class="icon-svg_web-icon_p1_006-unfold switch__icon"></i>
             </div>
           </div>
         </div>
       </div>
-      <div class="flexCol table__section" *ngIf="activity.product.length > 0">
+      <section class="flexCol table__section" *ngIf="activity.product.length > 0">
         <span id="product__title">精選產品</span>
         <div class="flexRow" style="flex-wrap: wrap;">
           <div
@@ -309,7 +390,7 @@
             </span>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   </ng-container>
   <ng-container *ngIf="uiFlag.currentTag === 'search'">
@@ -320,24 +401,23 @@
             <input
               type="text"
               placeholder="請輸入暱稱"
+              autocomplete="off"
               id="keywordInput"
               [(value)]="search.name"
               style="height: 45px;"
             >
             <div id="auto__complete" *ngIf="uiFlag.showAutoCompleteList">
-              <div id="auto__complete__list" *ngFor="let _list of nicknameList" (click)="handleClickKeyword(_list)">
+              <div
+                id="auto__complete__list"
+                *ngFor="let _list of nicknameList" (click)="handleClickKeyword(_list)"
+              >
                 {{ _list.login_acc }}
               </div>
             </div>
           </div>
-          <span
-            class="search__btn"
-            style="margin-left: 30px;"
-            [style.background-color]="activity.mainColor"
-            (click)="searchUserActivity($event)"
-          >搜尋</span>
         </div>
       </div>
+      <div *ngIf="uiFlag.displayUserActivity.length === 0" style="color: rgba(100, 100, 100, 1)">此使用者無參賽資料</div>
       <div *ngIf="search.userRecord.length > 0">
         <div class="flexRow" style="margin: 20px 0px;">
           <img id="user__icon" [src]="search.icon" (error)="search.icon = '/assets/images/user2.png'"/>

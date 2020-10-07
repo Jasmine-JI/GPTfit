@@ -14,86 +14,62 @@
       <img src="./assets/logoTitle.png" alt="Alatech Logo" style="max-width: 300px; margin: 20px 0px; width: 75%;">
     </div>
     <div>
-      <div class="flexCol appDiv" *ngIf="!isKeyin">
+      <div class="flexCol appDiv">
         <div class="flexRow">
           <span class="formTitle">{{ 'universal_userAccount_account' | translate }}</span>
           (&nbsp;<a href="#" (click)="showPrivateMsg($event)">{{'universal_userAccount_signUp' | translate}}</a>&nbsp;)
         </div>
-        <input
-          #accountInput
-          placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.account } }}"
-          (keypress)="handleNext($event, 'account')"
-          (change)="determineAccountType($event)"
-        />
-        <i
-          class="icon-svg_web-icon_p1_004-qr_code inputIcon"
-          (click)="navigateToQrcodeSign()"
-        ></i>
-      </div>
-      <div class="flexCol" style="margin-top: 10px;">
-        <div class="flexCol appDiv" *ngIf="isKeyin">
-          <div class="flexRow">
-            <app-custom-select
-              [selectLists]="selectLists"
-              [fontOpt]="webFontOpt"
-              [position]="position"
-              [triangleColor]="'#239fd9'"
-              [currentSelectId]="loginBody.signInType - 1"
-              (selectItem)="getAccountType($event)"
-            >
-            </app-custom-select>
-            (&nbsp;<a href="#" (click)="showPrivateMsg($event)">{{'universal_userAccount_signUp' | translate}}</a>&nbsp;)
-          </div>
-          <div *ngIf="loginBody.signInType === 1">
-            <input
-              #emailInput
-              style="width: 100%;"
-              placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.email } }}"
-              [(value)]="currentAccount"
-              (keypress)="handleNext($event, 'email')"
-              (change)="checkEmail($event)"
-            />
-            <i
-              class="icon-svg_web-icon_p1_004-qr_code inputIcon"
-              (click)="navigateToQrcodeSign()"
-            ></i>
-            <span class="formCue" style="position: relative; left: -25px;" *ngIf="loginBody.signInType === 1 && cue.email !== ''">
-              {{ cue.email | translate }}
-            </span>
-          </div>
+        <div class="flexRow member__input">
+          <input
+            #accountInput
+            style="width: 100%;"
+            placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.account } }}"
+            (keydown)="determineAccountType($event)"
+            (change)="saveAccount($event)"
+          />
+          <i
+            class="icon-svg_web-icon_p1_004-qr_code qrcode__login__icon"
+            (click)="navigateToQrcodeSign()"
+          ></i>
           <div class="flexRow" *ngIf="loginBody.signInType === 2">
             <app-intl-phone-input
               (onChange)="onCodeChange($event)"
               (focusoutPhoneInt)="getPhoneNum($event)"
-              [currentValue]="currentAccount"
               [currentCountryCode]="loginBody.countryCode"
-              [uiVersion]="'v2'"
-              [regPhone]="regCheck.phone"
-              [qrcodeLink]="true"
               style="width: 100%;"
             ></app-intl-phone-input>
           </div>
         </div>
+        <span class="formCue" *ngIf="cue.account !== ''">
+          {{ cue.account | translate }}
+        </span>
       </div>
       <div class="flexCol appDiv">
-        <span class="formTitle">{{ 'universal_userAccount_password' | translate }}</span>
-        <input
-          #password
-          type="password"
-          id="signupPW"
-          placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.password } }}"
-          maxlength="20"
-          [(ngModel)]="loginBody.password"
-          (keypress)="handleNext($event, 'password')"
-          (change)="checkPassword($event)"
-        />
-        <i
-          class="icon-svg_web-icon_p1_081-watch inputIcon"
-          [style.color]="displayPW ? 'black' : '#aaaaaa'"
-          (click)="toggleDisplayPW()"
-        ></i>
+        <div class="flexRow">
+          <span class="formTitle">{{ 'universal_userAccount_password' | translate }}</span>
+          (&nbsp;<a href="#" [routerLink]="['/resetPassword-web']">{{'universal_userAccount_forgetPassword' | translate}}</a>&nbsp;)
+        </div>
+        <div class="flexRow member__input">
+          <input
+            #password
+            type="password"
+            id="signupPW"
+            style="width: 100%;"
+            placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.password } }}"
+            maxlength="20"
+            [(ngModel)]="loginBody.password"
+            (keypress)="handleNext($event, 'password')"
+            (focusout)="checkPassword($event)"
+            (change)="checkPassword($event)"
+          />
+          <i
+            class="icon-svg_web-icon_p1_081-watch qrcode__login__icon"
+            [style.color]="displayPW ? 'black' : '#aaaaaa'"
+            (click)="toggleDisplayPW()"
+          ></i>
+        </div>
         <span class="formCue" *ngIf="cue.password !== ''">
-          {{ cue.password | translate }}
+          {{ 'universal_userAccount_passwordFormat' | translate }}
         </span>
       </div>
     </div>
@@ -127,102 +103,67 @@
             <img src="assets/attacus_logo.png" style="width: 36%">
           </header>
           <div class="access-panel-body">
-
             <div>
-              <div class="flexCol" *ngIf="!isKeyin">
+              <div class="flexCol">
                 <div class="flexRow">
                   <span class="access-text" style="margin-bottom: 10px;">{{ 'universal_userAccount_account' | translate }}</span>
                   (&nbsp;<a href="#" (click)="showPrivateMsg($event)">{{'universal_userAccount_signUp' | translate}}</a>&nbsp;)
                 </div>
-                <input
-                  #accountInput_web
-                  placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.account } }}"
-                  class="form-control"
-                  (keypress)="handleNext($event, 'account')"
-                  (change)="determineAccountType($event)"
-                />
-                <i
-                  class="icon-svg_web-icon_p1_004-qr_code inputIcon"
-                  style="top: -30px; left: 90%;"
-                  (click)="navigateToQrcodeSign()"
-                ></i>
-              </div>
-              <div class="flexCol" style="margin-top: 10px;">
-                <div class="flexCol" *ngIf="isKeyin">
-                  <div class="flexRow">
-                    <app-custom-select
-                      [selectLists]="selectLists"
-                      [fontOpt]="webFontOpt"
-                      [position]="position"
-                      [triangleColor]="'#239fd9'"
-                      [currentSelectId]="loginBody.signInType - 1"
-                      (selectItem)="getAccountType($event)"
-                    >
-                    </app-custom-select>
-                    (&nbsp;<a href="#" (click)="showPrivateMsg($event)">{{'universal_userAccount_signUp' | translate}}</a>&nbsp;)
-                  </div>
-                  <div *ngIf="loginBody.signInType === 1">
+                <div class="flexRow">
+                  <div class="flexRow member__input">
                     <input
-                      #emailInput_web
-                      class="form-control"
+                      #accountInput_web
+                      placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.account } }}"
                       style="width: 100%;"
-                      placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.email } }}"
-                      [(value)]="currentAccount"
-                      (keypress)="handleNext($event, 'email')"
-                      (focusout)="checkEmail($event)"
-                      (change)="checkEmail($event)"
+                      class="form-control"
+                      (keydown)="determineAccountType($event)"
+                      (change)="saveAccount($event)"
                     />
                     <i
-                      class="icon-svg_web-icon_p1_004-qr_code inputIcon"
-                      style="top: -30px; left: 90%;"
+                      class="icon-svg_web-icon_p1_004-qr_code qrcode__login__icon"
                       (click)="navigateToQrcodeSign()"
                     ></i>
-                    <span
-                      class="form__message form__message--placeholder"
-                      style="position: relative; left: -25px;"
-                      *ngIf="loginBody.signInType === 1 && cue.email !== ''"
-                    >
-                      {{ 'universal_userAccount_emailFormat' | translate }}
-                    </span>
                   </div>
                   <div class="flexRow" *ngIf="loginBody.signInType === 2">
                     <app-intl-phone-input
                       (onChange)="onCodeChange($event)"
-                      (focusoutPhoneInt)="getPhoneNum($event)"
-                      [currentValue]="currentAccount"
                       [currentCountryCode]="loginBody.countryCode"
-                      [uiVersion]="'v2'"
                       [webUi]="true"
-                      [regPhone]="regCheck.phone"
-                      [qrcodeLink]="true"
                       style="width: 100%;"
                     ></app-intl-phone-input>
                   </div>
                 </div>
+                <span
+                  class="form__message form__message--placeholder"
+                  *ngIf="cue.account !== ''"
+                >
+                  {{ cue.account | translate }}
+                </span>
               </div>
               <div class="flexCol webDiv">
                 <div class="flexRow">
                   <span class="access-text" style="margin-bottom: 10px;">{{ 'universal_userAccount_password' | translate }}</span>
                   (&nbsp;<a href="#" [routerLink]="['/resetPassword-web']">{{'universal_userAccount_forgetPassword' | translate}}</a>&nbsp;)
                 </div>
-                <input
-                  #password_web
-                  type="password"
-                  id="signupPW"
-                  class="form-control"
-                  placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.password } }}"
-                  maxlength="20"
-                  [(ngModel)]="loginBody.password"
-                  (keypress)="handleNext($event, 'password')"
-                  (focusout)="checkPassword($event)"
-                  (change)="checkPassword($event)"
-                />
-                <i
-                  class="icon-svg_web-icon_p1_081-watch inputIcon"
-                  style="top: -30px; left: 90%;"
-                  [style.color]="displayPW ? 'black' : '#aaaaaa'"
-                  (click)="toggleDisplayPW()"
-                ></i>
+                <div class="flexRow member__input">
+                  <input
+                    #password_web
+                    type="password"
+                    id="signupPW"
+                    class="form-control"
+                    placeholder="{{ 'universal_userAccount_enterInfo' | translate: {'info': i18n.password } }}"
+                    maxlength="20"
+                    [(ngModel)]="loginBody.password"
+                    (keypress)="handleNext($event, 'password')"
+                    (focusout)="checkPassword($event)"
+                    (change)="checkPassword($event)"
+                  />
+                  <i
+                    class="icon-svg_web-icon_p1_081-watch qrcode__login__icon"
+                    [style.color]="displayPW ? 'black' : '#aaaaaa'"
+                    (click)="toggleDisplayPW()"
+                  ></i>
+                </div>
                 <span class="form__message form__message--placeholder" *ngIf="cue.password !== ''">
                   {{ 'universal_userAccount_passwordFormat' | translate }}
                 </span>
@@ -242,7 +183,6 @@
                 <i *ngIf="loginStatus !== 'check'" class="fa fa-spinner fa-pulse"></i>
               </button>
             </div>
-
           </div>
         </div>
       </div>
