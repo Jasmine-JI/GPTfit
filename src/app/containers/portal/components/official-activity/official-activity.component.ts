@@ -357,9 +357,11 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
                 nextPeopleNumArr = team[j + 1].peopleNum.split('/');
 
           if (
-            (+peopleNumArr[1] !== 0 && +nextPeopleNumArr[1] === 0)
-            || (+peopleNumArr[1] !== 0 && +peopleNumArr[0] === +peopleNumArr[1] && +nextPeopleNumArr[0] !== +nextPeopleNumArr[1])
-            || (team[j].record < team[j + 1].record)
+            (+peopleNumArr[1] !== 0 && +nextPeopleNumArr[1] === 0)  // 隊伍有人排序靠前
+            || (+peopleNumArr[1] !== 0 && +peopleNumArr[0] === +peopleNumArr[1] && +nextPeopleNumArr[0] !== +nextPeopleNumArr[1]) // 全隊完賽排序靠前
+            || (team[j].record !== null && team[j + 1].record === null) // 有成績的隊伍排序靠前
+            || (team[j].record < team[j + 1].record) // 平均成績時間短排序靠前
+            || (+peopleNumArr[1] === 0 && +nextPeopleNumArr[1] === 0) // 隊伍皆沒人排序不變
           ) {
             continue;
           } else {
@@ -417,14 +419,18 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1090909
    */
   navigateApply() {
-    if (this.userProfile === undefined) {
-      this.router.navigateByUrl(`/signIn-web?action=applyActivity&activity=${this.activity.fileName}`);
-    } else {
+    if (!this.uiFlag.activityEnd && !this.uiFlag.applied && this.activity.canApply) {
 
-      if (this.activity.discount.length === 0 && this.activity.group.length === 1) {
-        this.applyActivity();
+      if (this.userProfile === undefined) {
+        this.router.navigateByUrl(`/signIn-web?action=applyActivity&activity=${this.activity.fileName}`);
       } else {
-        this.scrollToApplySection();
+  
+        if (this.activity.discount.length === 0 && this.activity.group.length === 1) {
+          this.applyActivity();
+        } else {
+          this.scrollToApplySection();
+        }
+  
       }
 
     }
@@ -536,56 +542,60 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1090909
    */
   applyActivity() {
-    let account: string;
-    if (this.userProfile.email) {
-      account = this.userProfile.email;
-    } else {
-      account = `+${this.userProfile.countryCode} ${this.userProfile.mobileNumber}`;
-    }
+    if (!this.uiFlag.activityEnd && !this.uiFlag.applied && this.activity.canApply) {
 
-    const userApplyInfo = {
-      userId: this.userProfile.userId,
-      nickname: this.userProfile.nickname,
-      account,
-      gender: this.userProfile.gender,
-      age: this.getAge(this.userProfile.birthday),
-      applyTimeStamp: moment().valueOf(),
-      status: 'checking'
-    };
-
-    if (this.activity.team && this.activity.team.length > 0) {
-      Object.assign(userApplyInfo, {team: ''});
-    }
-
-    const body = {
-      token: this.utils.getToken() || '',
-      groupIdx: this.uiFlag.groupSelect.index,
-      fileName: this.activity.fileName,
-      memberInfo: userApplyInfo
-    };
-
-    this.officialActivityService.applyOfficialActivity(body).subscribe(res => {
-      this.uiFlag.applied = true;
-
-      let msg: string;
-      if (res.resultCode !== 200) {
-        msg = 'Error! 請稍後再試';
+      let account: string;
+      if (this.userProfile.email) {
+        account = this.userProfile.email;
       } else {
-        msg = '申請成功';
+        account = `+${this.userProfile.countryCode} ${this.userProfile.mobileNumber}`;
       }
 
-      this.dialog.open(MessageBoxComponent, {
-        hasBackdrop: true,
-        data: {
-          title: 'message',
-          body: msg,
-          confirmText: '確認',
-          onConfirm: this.navigateAssignPage.bind(this)
+      const userApplyInfo = {
+        userId: this.userProfile.userId,
+        nickname: this.userProfile.nickname,
+        account,
+        gender: this.userProfile.gender,
+        age: this.getAge(this.userProfile.birthday),
+        applyTimeStamp: moment().valueOf(),
+        status: 'checking'
+      };
+
+      if (this.activity.team && this.activity.team.length > 0) {
+        Object.assign(userApplyInfo, {team: ''});
+      }
+
+      const body = {
+        token: this.utils.getToken() || '',
+        groupIdx: this.uiFlag.groupSelect.index,
+        fileName: this.activity.fileName,
+        memberInfo: userApplyInfo
+      };
+
+      this.officialActivityService.applyOfficialActivity(body).subscribe(res => {
+        this.uiFlag.applied = true;
+
+        let msg: string;
+        if (res.resultCode !== 200) {
+          msg = 'Error! 請稍後再試';
+        } else {
+          msg = '申請成功';
         }
+
+        this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          data: {
+            title: 'message',
+            body: msg,
+            confirmText: '確認',
+            onConfirm: this.navigateAssignPage.bind(this)
+          }
+
+        });
 
       });
 
-    });
+    }
 
   }
 
