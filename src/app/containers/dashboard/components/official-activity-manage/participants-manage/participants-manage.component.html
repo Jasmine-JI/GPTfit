@@ -7,10 +7,16 @@
       ></i>
       返回列表
     </span>
-    <h3 style="font-weight: bold; margin: 0 auto; padding-right: 10vw;">{{ activity?.name }}</h3>
-    <div class="flexRow" style="width: 70px; justify-content: space-between;">
-      <i class="icon-svg_web-icon_p1_018-input delete__switch__btn" (click)="downloadCSV()"></i>
-      <i class="icon-svg_web-icon_p1_009-delete delete__switch__btn" [class.delete__mode]="uiFlag.deleteMode" (click)="switchDeleteMode()"></i>
+    <h3 style="font-weight: bold; margin: 0 auto;">{{ activity?.name }}</h3>
+    <div class="flexRow" style="width: 110px; justify-content: space-between;">
+      <i id="update__btn__prompt" #updateRankingBtn class="icon-svg_web-icon_p1_031-sync delete__switch__btn"></i>
+      <i id="export__btn__prompt" class="icon-svg_web-icon_p1_018-input delete__switch__btn" (click)="downloadCSV()"></i>
+      <i
+        id="delete__btn__prompt"
+        class="icon-svg_web-icon_p1_009-delete delete__switch__btn"
+        [class.delete__mode]="uiFlag.deleteMode"
+        (click)="switchDeleteMode()"
+      ></i>
     </div>
   </section>
   <section class="flexRow" style="align-items: center; margin: 30px auto;">
