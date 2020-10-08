@@ -1,15 +1,15 @@
 import { MessageBoxComponent } from './../../../../../shared/components/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
 import { UserProfileService } from './../../../../../shared/services/user-profile.service';
-import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnDestroy, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HashIdService } from '../../../../../shared/services/hash-id.service';
 import { OfficialActivityService } from '../../../../../shared/services/official-activity.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { GroupService } from '../../../services/group.service';
 import moment from 'moment';
-import { fromEvent, Subscription, Subject, merge } from 'rxjs';
-import { takeUntil, switchMap, map } from 'rxjs/operators';
+import { fromEvent, Subscription, Subject, of } from 'rxjs';
+import { takeUntil, switchMap, tap, debounceTime } from 'rxjs/operators';
 import { CloudrunSummaryPipe } from '../../../../../shared/pipes/cloudrun-summary.pipe'
 
 
@@ -36,11 +36,12 @@ interface Group {
     CloudrunSummaryPipe
   ]
 })
-export class ParticipantsManageComponent implements OnInit, OnDestroy {
+export class ParticipantsManageComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private ngUnsubscribe = new Subject();
   pageClickEvent = new Subscription();
 
+  @ViewChild('updateRankingBtn') updateRankingBtn: ElementRef;
   @ViewChild('hashIdInput') hashIdInput: ElementRef;
   @ViewChild('accountInput') accountInput: ElementRef;
   @ViewChild('groupInput') groupInput: ElementRef;
@@ -89,6 +90,10 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
     this.getParticipant(location.search);
     this.getEditorId();
     this.listenEvent();
+  }
+
+  ngAfterViewInit() {
+    this.updateRanking();
   }
 
   /**
@@ -715,6 +720,36 @@ export class ParticipantsManageComponent implements OnInit, OnDestroy {
     } else if (groupIdArr[3] !== '0' && groupIdArr[4] !== '0') {
       return 60;
     }
+
+  }
+
+  /**
+   * 手動更新排行榜
+   * @param index {number}
+   * @author kidin-1090826
+   */
+  updateRanking() {
+    const update = fromEvent(this.updateRankingBtn.nativeElement, 'click');
+    update.pipe(
+      debounceTime(1000),
+      switchMap(res => {
+
+        const body = {
+          token: this.utils.getToken(),
+          fileName: this.activity.fileName
+        };
+    
+        return this.officialActivityService.updateRank(body);
+      })
+
+    ).subscribe(res => {
+      if (res.resultCode !== 200) {
+        console.log('Error:', res);
+      } else {
+        console.log('Update rank success.')
+      }
+
+    });
 
   }
 

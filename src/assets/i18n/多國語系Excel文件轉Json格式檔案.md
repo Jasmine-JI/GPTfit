@@ -11,7 +11,7 @@
 ### 將txt檔轉碼並轉為Json格式檔案
 1. 新增py檔並將最下方程式碼依檔案名稱和路經修改後貼上並存檔，在 terminal 執行 `python fileName.py` 即可將所有txt檔轉為Json格式檔案。
 
-2. 檢查生成的json檔有無問題（如有空鍵，回文件將文件內的換行刪除再重頭開始轉換流程）。
+2. 檢查生成的json檔有無問題（如有空鍵，回文件將文件內的換行刪除再重頭開始轉換流程。如語系欄位順序變動或新增，則需改寫此程式）。
 
 3. 使用編輯器比較功能，比較舊有同語系Json檔跟新Json檔，是否有變更變數，並調整。
 
@@ -23,8 +23,8 @@ import json
 
 fileList = [
     'zh-tw',
-    'en-us',
     'zh-cn',
+    'en-us',
     'es-es',
     'de-de',
     'fr-fr',
@@ -57,7 +57,7 @@ for i in range(len(fileList)):
         obj = {}
         for arr in arrayContent:
             try:
-                # 利用'tab'當作拆分欄位的依據
+                # 利用'tab'當作拆分欄位的依據(arr.split('\t')[0] => 完整代碼, arr.split('\t')[1] => 繁中...，以此類推)
                 if len(arr.split('\t')[0]) > 0 and len(arr.split('\t')) >= 2 and arr.split('\t')[1] != '':
                     if len(arr.split('\t')) > 8:
 
@@ -72,7 +72,7 @@ for i in range(len(fileList)):
                             else:
                                 obj[arr.split('\t')[0]] = arr.split('\t')[1]
 
-                    # 文件該鍵只翻譯到簡體之前
+                    # 文件該鍵只翻譯到英文之前
                     elif i == 2:
 
                         if len(arr.split('\t')) > 3 and arr.split('\t')[3] != '':
@@ -81,7 +81,7 @@ for i in range(len(fileList)):
                         else:
                             obj[arr.split('\t')[0]] = arr.split('\t')[1]
 
-                    # 文件該鍵只翻譯到英文之前
+                    # 文件該鍵只翻譯到簡體之前
                     elif i == 1:
 
                         if len(arr.split('\t')) > 2 and arr.split('\t')[2] != '':

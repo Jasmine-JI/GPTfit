@@ -173,6 +173,7 @@ function fillRanking(file) {
         return false;
       } else {
 
+        let noRank = true;
         for (let i = 0; i < _group.rank.length; i++) {
 
           if (_group.rank[i].userId === _member.userId) {
@@ -182,13 +183,12 @@ function fillRanking(file) {
               Object.assign(_group.rank[i], {team: _member.team})
             }
     
-            return false;
-          } else {
-            return true;
+            noRank = false;
           }
 
         }
 
+        return noRank;
       }
       
     });
