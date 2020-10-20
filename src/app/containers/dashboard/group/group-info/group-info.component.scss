@@ -300,7 +300,10 @@
 
 }
 
-@media(max-width: 767px) {
+
+/************************************ media ****************************/
+
+@media(max-width: 768px) {
   .group-info.row {
     display: block;
     .group-image--area {
@@ -314,4 +317,5 @@
       margin: 0 auto;
     }
   }
+
 }

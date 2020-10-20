@@ -5,7 +5,7 @@ import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 @Component({
   selector: 'app-today-loginner-win',
   templateUrl: './today-loginner-win.component.html',
-  styleUrls: ['./today-loginner-win.component.css'],
+  styleUrls: ['./today-loginner-win.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class TodayLoginnerWinComponent implements OnInit {

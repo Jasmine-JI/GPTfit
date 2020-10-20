@@ -9,7 +9,7 @@ import { setLocalStorageObject } from '@shared/utils/';
 @Component({
   selector: 'app-event-management',
   templateUrl: './event-management.component.html',
-  styleUrls: ['./event-management.component.css']
+  styleUrls: ['./event-management.component.scss']
 })
 export class EventManagementComponent implements OnInit {
   events: any;

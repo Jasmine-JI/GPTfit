@@ -12,7 +12,7 @@ import { takeUntil } from 'rxjs/operators';
 @Component({
   selector: 'app-inner-settings',
   templateUrl: './inner-settings.component.html',
-  styleUrls: ['./inner-settings.component.css']
+  styleUrls: ['./inner-settings.component.scss']
 })
 export class InnerSettingsComponent implements OnInit, OnDestroy {
 

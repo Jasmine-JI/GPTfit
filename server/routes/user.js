@@ -219,39 +219,52 @@ router.post('/getUserList', function (req, res, next) {
     body
   } = req;
 
-  const result = getUserList(body.userIdList).then(resp => {
-    if (resp) {
+  if (body.userIdList.length === 0) {
 
-      const resList = [];
-      body.userIdList.forEach(_list => {
+    return res.json({
+      apiCode: 'N9001', // 暫定
+      resultCode: 200,
+      resultMessage: "Get result success.",
+      nickname: []
+    });
 
-        resp.forEach(__resp => {
+  } else {
+    const result = getUserList(body.userIdList).then(resp => {
 
-          if (_list === +__resp.userId) {
-            resList.push(__resp);
-          }
+      if (resp) {
+
+        const resList = [];
+        body.userIdList.forEach(_list => {
+
+          resp.forEach(__resp => {
+
+            if (_list === +__resp.userId) {
+              resList.push(__resp);
+            }
+
+          });
 
         });
 
-      });
+        return res.json({
+          apiCode: 'N9001', // 暫定
+          resultCode: 200,
+          resultMessage: "Get result success.",
+          nickname: resList
+        });
 
-      return res.json({
-        apiCode: 'N9001', // 暫定
-        resultCode: 200,
-        resultMessage: "Get result success.",
-        nickname: resList
-      });
+      } else {
+        return res.json({
+          apiCode: 'N9001', // 暫定
+          resultCode: 400,
+          resultMessage: "Get result failed.",
+        })
 
-    } else {
-      return res.json({
-        apiCode: 'N9001', // 暫定
-        resultCode: 400,
-        resultMessage: "Get result failed.",
-      })
+      }
 
-    }
+    });
 
-  });
+  }
 
 });
 

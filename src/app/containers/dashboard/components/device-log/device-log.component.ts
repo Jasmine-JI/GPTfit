@@ -14,7 +14,7 @@ import { UtilsService } from '@shared/services/utils.service';
 @Component({
   selector: 'app-device-log',
   templateUrl: './device-log.component.html',
-  styleUrls: ['./device-log.component.css']
+  styleUrls: ['./device-log.component.scss']
 })
 export class DeviceLogComponent implements OnInit {
   logSource = new MatTableDataSource<any>();

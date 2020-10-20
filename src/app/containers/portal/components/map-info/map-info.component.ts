@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-map-info',
   templateUrl: './map-info.component.html',
-  styleUrls: ['./map-info.component.css']
+  styleUrls: ['./map-info.component.scss']
 })
 export class MapInfoComponent implements OnInit, AfterViewInit {
   constructor(

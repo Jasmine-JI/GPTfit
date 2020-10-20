@@ -2,10 +2,10 @@
 
 
 .content__title {
-  @include title;
+  @include bold-font();
 }
 
 .content__subtitle {
-  @include subtitle-or-focus;
+  @include subtitle-or-focus();
   margin-bottom: 15px;
 }

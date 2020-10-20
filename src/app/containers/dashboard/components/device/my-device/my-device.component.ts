@@ -22,7 +22,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 @Component({
   selector: 'app-my-device',
   templateUrl: './my-device.component.html',
-  styleUrls: ['./my-device.component.css', '../../../group/group-style.scss'],
+  styleUrls: ['./my-device.component.scss', '../../../group/group-style.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class MyDeviceComponent implements OnInit, OnChanges {

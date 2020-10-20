@@ -30,7 +30,7 @@ import { UtilsService } from '@shared/services/utils.service';
 @Component({
   selector: 'app-device-log-detail',
   templateUrl: './device-log-detail.component.html',
-  styleUrls: ['./device-log-detail.component.css'],
+  styleUrls: ['./device-log-detail.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class DeviceLogDetailComponent implements OnInit {

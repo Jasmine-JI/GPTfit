@@ -24,7 +24,7 @@ import { PeopleSelectorWinComponent } from '../people-selector-win/people-select
 @Component({
   selector: 'app-enroll-form',
   templateUrl: './enroll-form.component.html',
-  styleUrls: ['./enroll-form.component.css']
+  styleUrls: ['./enroll-form.component.scss']
 })
 export class EnrollFormComponent implements OnInit {
   isIDFormatErr = false;

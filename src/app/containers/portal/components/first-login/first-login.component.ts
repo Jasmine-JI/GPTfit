@@ -17,7 +17,7 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-first-login',
   templateUrl: './first-login.component.html',
-  styleUrls: ['./first-login.component.css'],
+  styleUrls: ['./first-login.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class FirstLoginComponent implements OnInit {
