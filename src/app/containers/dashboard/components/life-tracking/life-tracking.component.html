@@ -280,6 +280,18 @@
         <span class="life-tracking-data-name">targetSleepSecond：</span>
         <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.targetSleepSecond + '' || 'null'}}</span>
       </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">walkElevGain：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.walkElevGain + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">walkElevLoss：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.walkElevLoss + '' || 'null'}}</span>
+      </div>
+      <div class="fileInfo-item">
+        <span class="life-tracking-data-name">totalStandUpSecond：</span>
+        <span class="life-tracking-data-value">{{lifeTrackingDayLayer?.totalStandUpSecond + '' || 'null'}}</span>
+      </div>
     </div>
   </ng-container>
   <ng-container *ngIf="!lifeTrackingDayLayer || lifeTrackingDayLayer?.length === 0">
@@ -345,6 +357,21 @@
 
       <div class="activity-block" *ngIf="!(isInitialChartDone && !iswearingStatusChartTargetDisplay)">
         <div #wearingStatusChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
+        </div>
+      </div>
+
+      <div class="activity-block" *ngIf="!(isInitialChartDone && !iswalkElevGainChartTargetDisplay)">
+        <div #walkElevGainChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
+        </div>
+      </div>
+
+      <div class="activity-block" *ngIf="!(isInitialChartDone && !iswalkElevLossChartTargetDisplay)">
+        <div #walkElevLossChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
+        </div>
+      </div>
+
+      <div class="activity-block" *ngIf="!(isInitialChartDone && !islocalPressureChartTargetDisplay)">
+        <div #localPressureChartTarget class="chart" [style.visibility]="isShowChart ? 'visible' : 'hidden'">
         </div>
       </div>
     </div>
