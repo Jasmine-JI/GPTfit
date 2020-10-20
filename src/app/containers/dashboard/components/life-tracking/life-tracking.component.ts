@@ -61,6 +61,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   finalDatas: any;
   charts = [];
   isInitialChartDone = false;
+
   @ViewChild('container', {static: false})
   container: ElementRef;
   @ViewChild('activityChartTarget', {static: false})
@@ -89,6 +90,13 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   totalStepChartTarget: ElementRef;
   @ViewChild('wearingStatusChartTarget', {static: false})
   wearingStatusChartTarget: ElementRef;
+  @ViewChild('walkElevGainChartTarget', {static: false})
+  walkElevGainChartTarget: ElementRef;
+  @ViewChild('walkElevLossChartTarget', {static: false})
+  walkElevLossChartTarget: ElementRef;
+  @ViewChild('localPressureChartTarget', {static: false})
+  localPressureChartTarget: ElementRef;
+
   isactivityChartTargetDisplay = false;
   isairPressureChartTargetDisplay = false;
   iselevChartTargetDisplay = false;
@@ -102,6 +110,9 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
   istotalLifeCaloriesChartTargetDisplay = false;
   istotalStepChartTargetDisplay = false;
   iswearingStatusChartTargetDisplay = false;
+  iswalkElevGainChartTargetDisplay = false;
+  iswalkElevLossChartTargetDisplay = false;
+  islocalPressureChartTargetDisplay = false;
 
   filterStartTime = moment().format('YYYY-MM-DDT00:00:00.000+08:00');
   filterEndTime = moment().format('YYYY-MM-DDT00:00:00.000+08:00');
@@ -143,6 +154,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
     this.progressRef = this.ngProgress.ref();
     this.fetchTrackingDayDetail();
   }
+
   openSelectorWin(e) {
     const adminLists = [];
     e.preventDefault();
@@ -157,6 +169,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
       }
     });
   }
+
   handleConfirm(type, _lists) {
     const userIds = _lists.map(_list => _list.userId);
     const userNames = _lists.map(_list => _list.userName);
@@ -164,10 +177,12 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
     this.targetUserId = userIds[0].toString();
     this.targetUserName = userNames[0];
   }
+
   removeLabel(idx) {
     this.targetUserId = '';
     this.targetUserName = '';
   }
+
   fetchTrackingDayDetail() {
     const body = {
       token: this.utils.getToken() || '',
@@ -175,6 +190,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
       filterStartTime: this.filterStartTime,
       filterEndTime: this.filterEndTime
     };
+
     this.progressRef.start();
     this.lifeTrackingService.getTrackingDayDetail(body).subscribe(res => {
       if (res.resultCode === 401 || res.resultCode === 402) {
@@ -182,14 +198,13 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
         this.isLoading = false;
         this.progressRef.complete();
         return;
-      }
-      if (res.resultCode === 400) {
+      } else if (res.resultCode === 400) {
         this.isFileIDNotExist = true;
         return this.router.navigateByUrl('/404');
       }
+
       this.fileInfo = res['trackingData'][0]['fileInfo'];
-      this.lifeTrackingDayLayer =
-        res['trackingData'][0]['lifeTrackingDayLayer'];
+      this.lifeTrackingDayLayer = res['trackingData'][0]['lifeTrackingDayLayer'];
       if (!this.utils.isObjectEmpty(this.fileInfo)) {
         if (this.fileInfo.author.indexOf('?') > -1) {
           // 防止後續author會帶更多參數，先不寫死
@@ -199,27 +214,26 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
             .split('=')[1]
             .replace(')', '');
         }
-        this.syncDate = moment(this.fileInfo.syncDate).format(
-          'YYYY/MM/DD HH:mm:SS'
-        );
-        this.editDate = moment(this.fileInfo.syncDate).format(
-          'YYYY/MM/DD HH:mm:SS'
-        );
+
+        this.syncDate = moment(this.fileInfo.syncDate).format('YYYY/MM/DD HH:mm:SS');
+        this.editDate = moment(this.fileInfo.syncDate).format('YYYY/MM/DD HH:mm:SS');
         this.infoDate = this.handleDate(this.fileInfo.creationDate);
       }
 
-      this.lifeTrackingPoints =
-        res['trackingData'][0]['lifeTrackingPointLayer'];
+      this.lifeTrackingPoints = res['trackingData'][0]['lifeTrackingPointLayer'];
       if (this.lifeTrackingPoints && this.lifeTrackingPoints.length > 0) {
         this.isShowChart = true;
         this.initHchart();
       } else {
         this.isShowChart = false;
       }
+
       this.progressRef.complete();
       this.isLoading = false;
     });
+
   }
+
   goToProfile() {
     this.router.navigateByUrl(
       `/user-profile/${this.hashIdService.handleUserIdEncode(
@@ -227,6 +241,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
       )}`
     );
   }
+
   handleDate(dateStr) {
     const arr = dateStr.split('T');
     const dateArr = arr[0].split('');
@@ -251,6 +266,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
       time;
     return date;
   }
+
   handleSynchronizedPoint(e, finalDatas) {
     // Do something with 'event'
     for (let i = 0; i < Highcharts.charts.length; i = i + 1) {
@@ -279,20 +295,13 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
       }
     }
   }
-  ngOnDestroy() {
-    if (!this.isShowNoRight && !this.isFileIDNotExist) {
-      Highcharts.charts.forEach((_highChart, idx) => {
-        if (_highChart !== undefined) {
-          _highChart.destroy();
-        }
-      });
-    }
-  }
+
   initHchart() {
     const { finalDatas, chartTargets } = this.lifeTrackingService.handlePoints(
       this.lifeTrackingPoints,
       86400 / +this.lifeTrackingDayLayer.totalPoint
     );
+
     this.chartTargets = chartTargets;
     this.finalDatas = finalDatas;
 
@@ -315,13 +324,17 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
     this.renderer.listen(this.container.nativeElement, 'mousemove', e =>
       this.handleSynchronizedPoint(e, finalDatas)
     );
+
     this.renderer.listen(this.container.nativeElement, 'touchmove', e =>
       this.handleSynchronizedPoint(e, finalDatas)
     );
+
     this.renderer.listen(this.container.nativeElement, 'touchstart', e =>
       this.handleSynchronizedPoint(e, finalDatas)
     );
+    
   }
+
   syncExtremes(num, finalDatas, e) {
     // 調整縮放會同步
     const thisChart = this.charts[num];
@@ -356,6 +369,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
       });
     }
   }
+
   handleDateChange($event: MatDatepickerInputEvent<moment.Moment>) {
     this.filterStartTime = moment($event.value).format(
       'YYYY-MM-DDTHH:mm:00.000+08:00'
@@ -364,4 +378,15 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
       'YYYY-MM-DDT00:00:00.000+08:00'
     );
   }
+
+  ngOnDestroy() {
+    if (!this.isShowNoRight && !this.isFileIDNotExist) {
+      Highcharts.charts.forEach((_highChart, idx) => {
+        if (_highChart !== undefined) {
+          _highChart.destroy();
+        }
+      });
+    }
+  }
+
 }
