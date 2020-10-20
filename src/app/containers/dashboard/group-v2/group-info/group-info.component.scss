@@ -46,11 +46,11 @@ $info-border: 1px solid #c5c5c5;
 }
 
 .current__page {
-  @include subtitle-or-focus;
+  @include subtitle-or-focus();
 }
 
 .current__level {
-  @include subtitle-or-focus;
+  @include subtitle-or-focus();
   text-align: end;
 }
 
@@ -164,7 +164,7 @@ $info-border: 1px solid #c5c5c5;
 }
 
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   .group__page {
     flex-direction: column;
   }

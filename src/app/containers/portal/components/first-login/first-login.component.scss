@@ -1,0 +1,32 @@
+.user-photo .fileupload__input {
+  width: 130px!important;
+  height: 130px!important;
+}
+
+.user-photo .ala-upload-image {
+  max-width: 130px!important;
+  height: 130px!important;
+}
+.ala-upload-image img {
+  height: 130px;
+  width: auto;
+}
+.form-group.form-group--half {
+  width: calc((100% - 50px) /2);
+  display: inline-block;
+}
+.form-group.form-group--half:nth-child(odd) {
+  margin-left: 50px;
+}
+.access-panel-body.first-login {
+  padding: 20px 75px;
+}
+
+@media (max-width: 768px) {
+  .ala-upload-image {
+    min-width: initial;
+  }
+  .access-panel-body.first-login {
+    padding: 15px 25px;
+  }
+}

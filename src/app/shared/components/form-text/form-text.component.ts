@@ -5,7 +5,7 @@ import { FormGroup } from '@angular/forms';
 @Component({
   selector: 'app-form-text',
   templateUrl: './form-text.component.html',
-  styleUrls: ['./form-text.component.css']
+  styleUrls: ['./form-text.component.scss']
 })
 export class FormTextComponent implements OnInit {
   @Input() class_name = 'form-field';

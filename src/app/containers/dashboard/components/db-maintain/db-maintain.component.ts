@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 @Component({
   selector: 'app-db-maintain',
   templateUrl: './db-maintain.component.html',
-  styleUrls: ['./db-maintain.component.css']
+  styleUrls: ['./db-maintain.component.scss']
 })
 export class DbMaintainComponent implements OnInit {
   initdbArray = [];

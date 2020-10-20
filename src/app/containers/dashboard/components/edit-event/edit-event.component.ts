@@ -12,7 +12,7 @@ import { forkJoin } from 'rxjs';
 @Component({
   selector: 'app-edit-event',
   templateUrl: './edit-event.component.html',
-  styleUrls: ['./edit-event.component.css']
+  styleUrls: ['./edit-event.component.scss']
 })
 export class EditEventComponent implements OnInit {
   get sessionDatas() {

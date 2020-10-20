@@ -9,7 +9,7 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-event',
   templateUrl: './event.component.html',
-  styleUrls: ['./event.component.css']
+  styleUrls: ['./event.component.scss']
 })
 export class EventComponent implements OnInit {
   events: any;

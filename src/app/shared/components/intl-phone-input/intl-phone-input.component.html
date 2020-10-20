@@ -3,7 +3,7 @@
     <div
       [class.selected-flag-v2]="!webUi"
       [class.selected-flag]="webUi"
-      [style.width]="webUi ? '170px' : ''"
+      [style.width]="webUi ? '120px' : ''"
       (click)="openActive($event)"
     >
       {{ this.countryCode || 'universal_userAccount_countryRegion' | translate }}
@@ -12,7 +12,7 @@
   </div>
   <ul
     class="dropdown-menu ala-intl-tel"
-    style="top: 35px; height: 25vh;"
+    style="top: 35px; height: 25vh; left: -40px;"
     *ngIf="countryOptions && countryOptions.length > 0" [class.show]="active && countryOptions.length > 0"
   >
     <li *ngFor="let o of countryOptions; let i = index" (click)="chooseCountry(i)">

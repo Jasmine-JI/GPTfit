@@ -9,7 +9,7 @@ import { Top3DialogComponent } from '../top3-dialog/top3-dialog.component';
 @Component({
   selector: 'app-event-calendar',
   templateUrl: './event-calendar.component.html',
-  styleUrls: ['./event-calendar.component.css']
+  styleUrls: ['./event-calendar.component.scss']
 })
 export class EventCalendarComponent implements OnInit {
   selectedDay: Date;

@@ -3,7 +3,7 @@ import { Component, OnInit, Input } from '@angular/core';
 @Component({
   selector: 'app-form-remind',
   templateUrl: './form-remind.component.html',
-  styleUrls: ['./form-remind.component.css']
+  styleUrls: ['./form-remind.component.scss']
 })
 export class FormRemindComponent implements OnInit {
   @Input() className: string;

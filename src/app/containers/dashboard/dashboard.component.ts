@@ -6,7 +6,6 @@ import {
   OnDestroy
 } from '@angular/core';
 import { GlobalEventsManager } from '@shared/global-events-manager';
-import { MatSidenav } from '@angular/material/sidenav';
 import { AuthService } from '@shared/services/auth.service';
 import { Router } from '@angular/router';
 import { UserInfoService } from './services/userInfo.service';
@@ -24,6 +23,14 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { UserProfileInfo } from '../dashboard/models/userProfileInfo';
 
+
+interface UiFlag {
+  currentDrop: string;
+  sidebarMode: 'hide' | 'narrow' | 'expand';
+  navFixed: boolean;
+  mobileMode: boolean;
+}
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -33,18 +40,21 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   private ngUnsubscribe = new Subject();
 
+  uiFlag: UiFlag = {
+    currentDrop: '',
+    sidebarMode: 'narrow',
+    navFixed: false,
+    mobileMode: false
+  };
+
   userProfile = <UserProfileInfo>{};
   isPreviewMode = false;
   isLoading = false;
   isMaskShow = false;
   isCollapseOpen = false;
   target = 14; // 目前預設是我的活動
-  isSideNavOpend: boolean;
-  mode = 'side';
-  isDefaultOpend: boolean;
   isUserMenuShow = false;
   accountStatus = 2; // 1:未啟用 2:已啟用
-
   isHadContainer = true;
   footerAddClassName = '';
   userId: number;
@@ -73,18 +83,18 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.router.events.subscribe(_val => {
       if (_val instanceof NavigationEnd) {
         if (_val.url.indexOf('/dashboard/coach-dashboard') > -1) {
-          this.mode = 'over';
           this.isHadContainer = false;
-          this.isDefaultOpend = false;
-          this.isSideNavOpend = false;
           this.isHideFooter = true;
+          this.uiFlag.mobileMode = true;
+          this.shrinkSidebar();
         } else if (_val.url.indexOf('/dashboard/system/event-management') > -1) {
-          this.isDefaultOpend = false;
-          this.isSideNavOpend = false;
-        } else {
-          this.mode = 'side';
+          this.uiFlag.mobileMode = true;
+          this.shrinkSidebar();
+        } else if (window.innerWidth > 768) {
           this.isHadContainer = true;
           this.isHideFooter = false;
+          this.uiFlag.mobileMode = false;
+          this.shrinkSidebar();
         }
         if (
           _val.url.indexOf('/dashboard/coach-dashboard') > -1 ||
@@ -244,19 +254,17 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     });
 
     if (window.innerWidth < 769) {
-      this.mode = 'over';
-      this.isDefaultOpend = false;
-      this.isSideNavOpend = false;
+      this.uiFlag.mobileMode = true;
+      this.shrinkSidebar();
     } else if (location.pathname.indexOf('/dashboard/coach-dashboard') > -1) {
-      this.mode = 'over';
-      this.isDefaultOpend = false;
-      this.isSideNavOpend = false;
+      this.uiFlag.mobileMode = true;
+      this.shrinkSidebar();
     } else if (location.pathname.indexOf('/dashboard/system/event-management') > -1) {
-      this.isDefaultOpend = false;
-      this.isSideNavOpend = false;
+      this.uiFlag.mobileMode = true;
+      this.shrinkSidebar();
     } else {
-      this.isDefaultOpend = true;
-      this.isSideNavOpend = true;
+      this.uiFlag.mobileMode = false;
+      this.shrinkSidebar();
     }
 
   }
@@ -265,22 +273,22 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.cdRef.detectChanges();
   }
 
-  onResize(event, sideNav) {
+  onResize(event) {
     if (
       (location.pathname.indexOf('/dashboard/group-info-v2') > -1 && event.target.innerWidth < 1000)
       || event.target.innerWidth < 769
     ) {
-      // this.toggleSideNav(sideNav);
-      this.mode = 'over';
-      this.isDefaultOpend = false;
-      this.isSideNavOpend = false;
+      this.uiFlag.mobileMode = true;
+      this.shrinkSidebar();
     } else if (location.pathname.indexOf('/dashboard/coach-dashboard') > -1) {
-      this.isDefaultOpend = false;
-      this.isSideNavOpend = false;
+      this.uiFlag.mobileMode = true;
+      this.shrinkSidebar();
+    } else if (location.pathname.indexOf('/dashboard/system/event-management') > -1) {
+      this.uiFlag.mobileMode = true;
+      this.shrinkSidebar();
     } else {
-      this.mode = 'side';
-      this.isDefaultOpend = true;
-      this.isSideNavOpend = true;
+      this.uiFlag.mobileMode = false;
+      this.shrinkSidebar();
     }
   }
 
@@ -297,33 +305,14 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     );
   }
 
-  toggleSideNav(sideNav: MatSidenav) {
-    this.isSideNavOpend = !this.isSideNavOpend;
-    return sideNav.toggle().then(result => {
-      const toogleResult = result;
-      if (toogleResult === 'open') {
-        this.isSideNavOpend = true;
-      } else {
-        this.isSideNavOpend = false;
-      }
-
-      if (location.pathname.indexOf('/dashboard/coach-dashboard') > -1) {
-        this.isSideNavOpend = false; // 如果是caoch bard 因為backdrop點擊不會觸發這個function，所以另外判斷是去handle
-      }
-      if (window.innerWidth < 769) {
-        this.mode = 'over';
-        this.isDefaultOpend = false;
-      } else {
-        this.isDefaultOpend = true;
-      }
-    });
-  }
-
-  chooseItem(_target, sidenav) {
+  chooseItem(_target) {
     this.target = _target;
-    if (window.innerWidth < 769 && this.target > 0) {
-      this.toggleSideNav(sidenav);
+
+    if (this.uiFlag.mobileMode) {
+      this.uiFlag.navFixed = false;
+      this.shrinkSidebar();
     }
+
   }
 
   logout() {
@@ -337,6 +326,66 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   toEnableAccount(): void {
     this.router.navigateByUrl(`/enableAccount-web`);
+  }
+
+  /**
+   * 展開sidebar
+   * @author kidin-1091013
+   */
+  expandSidebar() {
+    if (!this.uiFlag.mobileMode) {
+      this.uiFlag.sidebarMode = 'expand';
+    }
+    
+  }
+
+  /**
+   * 根據畫面大小決定隱藏還是縮小sidebar
+   * @author kidin-1091013
+   */
+  shrinkSidebar() {
+    if (!this.uiFlag.navFixed && !this.uiFlag.mobileMode) {
+      this.uiFlag.sidebarMode = 'narrow';
+    } else if (!this.uiFlag.navFixed && this.uiFlag.mobileMode) {
+      this.uiFlag.sidebarMode = 'hide';
+    }
+    
+  }
+
+  /**
+   * 固定navside與否
+   * @author kidin-1091015
+   */
+  navbarFixed() {
+    if (this.uiFlag.navFixed) {
+      this.uiFlag.navFixed = false;
+      this.shrinkSidebar();
+    } else {
+      this.uiFlag.navFixed = true;
+      this.uiFlag.sidebarMode = 'expand';
+    }
+    
+  }
+
+  /**
+   * 根據使用者所點選的項目展開清單
+   * @param index {string}
+   */
+  dropDown(index: string) {
+    if (this.uiFlag.currentDrop === index) {
+      this.uiFlag.currentDrop = '';
+    } else {
+      this.uiFlag.currentDrop = index;
+    }
+
+  }
+
+  /**
+   * 導至首頁
+   * @author kidin-1091016
+   */
+  navigateHomePage() {
+    this.router.navigateByUrl('/');
   }
 
 

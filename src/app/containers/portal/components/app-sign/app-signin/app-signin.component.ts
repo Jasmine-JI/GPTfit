@@ -166,10 +166,20 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
         this.cue.account = '';
         this.loginBody.mobileNumber = account;
         this.checkAll();
+
+        if (this.loginBody.email) {
+          delete this.loginBody.email;
+        }
+
       } else {
         this.loginBody.signInType = 1;
         this.loginBody.email = account;
         this.checkEmail(this.loginBody.email);
+
+        if (this.loginBody.mobileNumber) {
+          delete this.loginBody.mobileNumber;
+        }
+
       }
 
     } else {
@@ -238,7 +248,7 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 確認密碼格式-kidin-1090511
   checkPassword(e) {
-    if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
+    if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout' || e.type === 'change') {
       this.loginBody.password = e.currentTarget.value;
       if (!this.regCheck.password.test(this.loginBody.password)) {
         this.cue.password = 'universal_userAccount_passwordFormat';
@@ -275,15 +285,14 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author -kidin-1090810
    */
   doulbleCheck(): boolean {
-
     let pass = true;
     if (!this.formReg.password.test(this.loginBody.password)) {
       pass = false;
     }
 
-    if (this.formReg.email.test(this.loginBody.email)) {
+    if (this.loginBody.email && this.formReg.email.test(this.loginBody.email)) {
       this.loginBody.signInType = 1;
-    } else if (this.formReg.phone.test(this.loginBody.mobileNumber)) {
+    } else if (this.loginBody.mobileNumber && this.formReg.phone.test(this.loginBody.mobileNumber)) {
       this.loginBody.signInType = 2;
     } else {
       pass = false;

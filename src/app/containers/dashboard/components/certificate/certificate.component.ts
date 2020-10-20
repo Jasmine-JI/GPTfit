@@ -4,7 +4,7 @@ import { IMyDpOptions } from 'mydatepicker';
 @Component({
   selector: 'app-certificate',
   templateUrl: './certificate.component.html',
-  styleUrls: ['./certificate.component.css']
+  styleUrls: ['./certificate.component.scss']
 })
 export class CertificateComponent implements OnInit {
   startDateOptions: IMyDpOptions = {

@@ -10,7 +10,7 @@ import { Location } from '@angular/common';
 @Component({
   selector: 'app-enroll-preview',
   templateUrl: './enroll-preview.component.html',
-  styleUrls: ['./enroll-preview.component.css']
+  styleUrls: ['./enroll-preview.component.scss']
 })
 export class EnrollPreviewComponent implements OnInit {
   results: any;

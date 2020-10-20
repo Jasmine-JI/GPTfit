@@ -1,0 +1,22 @@
+.error-403 {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  text-align: center;
+  color: #405060;
+}
+
+.error-403 h2 {
+  font-size: 18px;
+}
+
+@media (min-width: 769px) {
+  .error-403 {
+    width: 70%;
+    padding: 20px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 2px 1px hsla(0, 0%, 100%, .2);
+  }
+}

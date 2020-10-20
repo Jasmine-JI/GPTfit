@@ -1,8 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { PortalComponent } from './portal.component';
-import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
-import { MapInfoComponent } from './components/map-info/map-info.component';
 import { DemoQrcodComponent } from './components/demo-qrcod/demo-qrcod.component';
 import { SigninGuard } from '@shared/guards/signin/signin.guard';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
@@ -14,9 +12,7 @@ import { ApplicationComponent } from './components/application/application.compo
 import { Page404Component } from '../../shared/components/page404/page404.component';
 import { Page403Component } from '../../shared/components/page403/page403.component';
 import { QrcodeUploadComponent } from '../dashboard/components/qrcode-upload/qrcode-upload.component';
-
 import { OfficialActivityComponent } from './components/official-activity/official-activity.component';
-
 import { AppSignupComponent } from './components/app-sign/app-signup/app-signup.component';
 import { AppSigninComponent } from './components/app-sign/app-signin/app-signin.component';
 import { AppEnableComponent } from './components/app-sign/app-enable/app-enable.component';
@@ -29,20 +25,24 @@ import { AppFirstLoginComponent } from './components/app-sign/app-first-login/ap
 
 const routes: Routes = [
   {
+    path: 'introduction/system',
+    component: PortalComponent,
+  },
+  {
+    path: 'introduction/application',
+    component: PortalComponent,
+  },
+  {
+    path: 'introduction/analysis',
+    component: PortalComponent,
+  },
+  {
     path: '',
     component: PortalComponent,
     children: [
       {
         path: 'application',
         component: ApplicationComponent,
-      },
-      {
-        path: 'leaderboard',
-        component: LeaderboardComponent
-      },
-      {
-        path: 'leaderboard/mapInfo',
-        component: MapInfoComponent
       },
       {
         path: 'pair',

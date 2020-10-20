@@ -23,7 +23,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 @Component({
   selector: 'app-my-activity',
   templateUrl: './my-activity.component.html',
-  styleUrls: ['./my-activity.component.css']
+  styleUrls: ['./my-activity.component.scss']
 })
 
 export class MyActivityComponent implements OnInit {
@@ -57,7 +57,7 @@ export class MyActivityComponent implements OnInit {
   ) {}
   // Check if device is phone or tablet
   get isMobile() {
-    return this.breakpointObserver.isMatched('(max-width: 767px)');
+    return this.breakpointObserver.isMatched('(max-width: 768px)');
   }
   ngOnInit() {
     const queryStrings = this.utils.getUrlQueryStrings(location.search);
