@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, Inject, Input } from '@angular/core';
+import { Component, OnInit, HostListener, Inject, Input, Output, EventEmitter } from '@angular/core';
 import { GlobalEventsManager } from '@shared/global-events-manager';
 import { Router } from '@angular/router';
 import { WINDOW } from '@shared/services/window.service';
@@ -12,7 +12,7 @@ import { OfficialActivityService } from '../../services/official-activity.servic
   // tslint:disable-next-line:component-selector
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.css']
+  styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent implements OnInit {
   noActivity = true;
@@ -24,9 +24,10 @@ export class NavbarComponent implements OnInit {
   isShowDashboard = false;
   isShowLeaderboard = false;
   deviceWidth: number;
-  navItemNum: number;
+  navItemNum = 1;
   login$: Observable<boolean>;
   langName: string;
+  hideLogout = true;
   langData = {
     'zh-tw': '繁體中文',
     'zh-cn': '简体中文',
@@ -37,7 +38,10 @@ export class NavbarComponent implements OnInit {
     'it-it': 'italiano',
     'pt-pt': 'Português'
   };
+
   @Input() isAlphaVersion = false;
+  @Output() selectPage = new EventEmitter<string>();
+
   constructor(
     private globalEventsManager: GlobalEventsManager,
     private router: Router,
@@ -55,16 +59,7 @@ export class NavbarComponent implements OnInit {
     this.login$ = this.authService.getLoginStatus();
     this.deviceWidth = window.innerWidth;
     this.href = this.router.url;
-    if (this.router.url.indexOf('/leaderboard') > -1) {
-      this.isShowLeaderboard = true;
-      this.navItemNum = 2;
-    }
-    if (this.router.url === '/signIn-web') {
-      this.navItemNum = 3;
-    }
-    if (this.router.url === '/') {
-      this.navItemNum = 1;
-    }
+    this.handleActivePage();
 
     if (this.href.indexOf('resetpassword') > -1) {
       this.utilsService.setResetPasswordStatus(true);
@@ -97,6 +92,38 @@ export class NavbarComponent implements OnInit {
     });
 
     this.checkOfficialActivity();
+  }
+
+  /**
+   * 確認現在頁面以對應active連結
+   * @author kidin-1091013
+   */
+  handleActivePage() {
+    switch (this.router.url) {
+      case '/':
+      case '/introduction/system':
+        this.navItemNum = 1;
+        break;
+      case '/introduction/application':
+      case '/#connect':
+      case '/#cloudrun':
+      case '/#trainlive':
+      case '/#fitness':
+        this.navItemNum = 2;
+        break;
+      case '/introduction/analysis':
+        this.navItemNum = 3;
+        break;
+      case '/official-activity':
+        this.navItemNum = 4;
+      case '/signIn-web':
+        this.navItemNum = 5;
+        break;
+      default:
+        this.navItemNum = 0;
+        break;
+    }
+
   }
 
   @HostListener('window:resize', [])
@@ -139,10 +166,31 @@ export class NavbarComponent implements OnInit {
   logout() {
     this.authService.logout();
   }
+
   chooseNavItem(num: number) {
     this.navItemNum = num;
     this.toggleMask();
+    switch(num) {
+      case 1:
+        this.selectPage.emit('system');
+        break;
+      case 2:
+        this.selectPage.emit('application');
+        break;
+      case 3:
+        this.selectPage.emit('analysis');
+        break;
+      case 4:
+        this.router.navigateByUrl('/official-activity');
+        break;
+      case 5:
+      case 6:
+        this.router.navigateByUrl('/signIn-web');
+        break;
+    }
+
   }
+
   switchLang(lang: string) {
     this.langName = this.langData[lang];
     this.translateService.use(lang);

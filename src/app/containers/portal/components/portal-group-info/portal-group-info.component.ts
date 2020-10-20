@@ -11,7 +11,7 @@ import { HashIdService } from '@shared/services/hash-id.service';
   selector: 'app-portal-group-info',
   templateUrl: './portal-group-info.component.html',
   styleUrls: [
-    './portal-group-info.component.css',
+    './portal-group-info.component.scss',
     '../../../dashboard/group/group-style.scss'
   ]
 })

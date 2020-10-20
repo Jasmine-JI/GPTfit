@@ -4,7 +4,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 @Component({
   selector: 'app-db-result-dialog',
   templateUrl: './db-result-dialog.component.html',
-  styleUrls: ['./db-result-dialog.component.css']
+  styleUrls: ['./db-result-dialog.component.scss']
 })
 export class DbResultDialogComponent implements OnInit {
 

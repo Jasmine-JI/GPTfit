@@ -21,7 +21,7 @@ import { UserProfileService } from '../../services/user-profile.service';
 @Component({
   selector: 'app-member-capsule',
   templateUrl: './member-capsule.component.html',
-  styleUrls: ['./member-capsule.component.css'],
+  styleUrls: ['./member-capsule.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class MemberCapsuleComponent implements OnInit {

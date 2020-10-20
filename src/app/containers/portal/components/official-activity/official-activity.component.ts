@@ -123,6 +123,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
         } else {
           Object.assign(res.userProfile, {serialNumber: this.hashIdService.handleUserIdEncode(res.userProfile.userId)});
           this.userProfile = res.userProfile;
+          this.uiFlag.applied = this.checkoutUserApply();  // api回來再次確認使用者是否報名
         }
 
       });
@@ -357,14 +358,20 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
                 nextPeopleNumArr = team[j + 1].peopleNum.split('/');
 
           if (
-            (+peopleNumArr[1] !== 0 && +nextPeopleNumArr[1] === 0)  // 隊伍有人排序靠前
-            || (+peopleNumArr[1] !== 0 && +peopleNumArr[0] === +peopleNumArr[1] && +nextPeopleNumArr[0] !== +nextPeopleNumArr[1]) // 全隊完賽排序靠前
-            || (team[j].record !== null && team[j + 1].record === null) // 有成績的隊伍排序靠前
-            || (team[j].record < team[j + 1].record) // 平均成績時間短排序靠前
-            || (+peopleNumArr[1] === 0 && +nextPeopleNumArr[1] === 0) // 隊伍皆沒人排序不變
+              (+nextPeopleNumArr[1] !== 0 && +nextPeopleNumArr[0] === +nextPeopleNumArr[1] && +peopleNumArr[0] !== +peopleNumArr[1]) // 全隊完賽排序靠前
+            || 
+              (
+                (
+                  (+peopleNumArr[1] !== 0 && +peopleNumArr[0] === +peopleNumArr[1] && +nextPeopleNumArr[1] !== 0 && +nextPeopleNumArr[0] === +nextPeopleNumArr[1])
+                  || (+peopleNumArr[1] !== 0 && +peopleNumArr[0] !== +peopleNumArr[1] && +nextPeopleNumArr[1] !== 0 && +nextPeopleNumArr[0] !== +nextPeopleNumArr[1])
+                ) // 平均成績時間短排序靠前
+                && (team[j].record > team[j + 1].record)
+              )
+            || 
+              (team[j].record === null && team[j + 1].record !== null) // 有成績的隊伍排序靠前
+            ||
+              (+peopleNumArr[1] === 0 && +nextPeopleNumArr[1] !== 0)  // 隊伍有人排序靠前
           ) {
-            continue;
-          } else {
             [team[j], team[j + 1]] = [team[j + 1], team[j]];
             swapped = true;
           }
@@ -542,6 +549,7 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1090909
    */
   applyActivity() {
+    this.uiFlag.applied = this.checkoutUserApply(); // 再次確認使用者是否已經報名
     if (!this.uiFlag.activityEnd && !this.uiFlag.applied && this.activity.canApply) {
 
       let account: string;

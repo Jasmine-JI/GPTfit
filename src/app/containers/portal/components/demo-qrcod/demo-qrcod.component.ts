@@ -14,9 +14,14 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-demo-qrcod',
   templateUrl: './demo-qrcod.component.html',
-  styleUrls: ['./demo-qrcod.component.css']
+  styleUrls: ['./demo-qrcod.component.scss']
 })
 export class DemoQrcodComponent implements OnInit {
+  i18n = {
+    confirm: '',
+    bindSuccess: '',
+    bindFailed: ''
+  };
   displayQr: any;
   deviceInfo: any;
   isMainAppOpen = [];
@@ -47,6 +52,7 @@ export class DemoQrcodComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.getTranslate();
     this.token = this.utilsService.getToken() || '';
     const queryStrings = getUrlQueryStrings(location.search);
     this.displayQr = queryStrings;
@@ -89,6 +95,23 @@ export class DemoQrcodComponent implements OnInit {
         this.secondaryAppList = this.deviceInfo.secondaryApp;
       }
     });
+  }
+
+
+  /**
+   * 待多國語系套件載入完成後再生成翻譯
+   * @author kidin-1091015
+   */
+  getTranslate () {
+    this.translateService.get('hollow world').subscribe(() => {
+      this.i18n = {
+        confirm: this.translateService.instant('universal_operating_confirm'),
+        bindSuccess: this.translateService.instant('universal_btDevice_bindSuccess'),
+        bindFailed: this.translateService.instant('universal_popUpMessage_pairFailed')
+      }
+
+    });
+
   }
 
   handleImageLoad(event): void {
@@ -320,7 +343,7 @@ export class DemoQrcodComponent implements OnInit {
               body: this.translateService.instant(
                 'universal_uiFitpair_undoFitpair'
               ),
-              confirmText: this.translateService.instant('universal_operating_confirm'),
+              confirmText: this.i18n.confirm,
               onConfirm: this.uploadDevice.bind(this)
             }
           });
@@ -329,8 +352,8 @@ export class DemoQrcodComponent implements OnInit {
             hasBackdrop: true,
             data: {
               title: 'message',
-              body: this.translateService.instant('universal_btDevice_bindSuccess'),
-              confirmText: this.translateService.instant('universal_operating_confirm'),
+              body: this.i18n.bindSuccess,
+              confirmText: this.i18n.confirm,
               onConfirm: this.uploadDevice.bind(this)
             }
           });
@@ -340,8 +363,8 @@ export class DemoQrcodComponent implements OnInit {
           hasBackdrop: true,
           data: {
             title: 'message',
-            body: this.translateService.instant('universal_popUpMessage_pairFailed'),
-            confirmText: this.translateService.instant('universal_operating_confirm'),
+            body: this.i18n.bindFailed,
+            confirmText: this.i18n.confirm,
             onConfirm: this.uploadDevice.bind(this)
           }
         });

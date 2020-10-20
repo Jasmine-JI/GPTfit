@@ -18,7 +18,7 @@ import { HashIdService } from '@shared/services/hash-id.service';
 @Component({
   selector: 'app-my-group-list',
   templateUrl: './my-group-list.component.html',
-  styleUrls: ['./my-group-list.component.css', '../group-style.scss']
+  styleUrls: ['./my-group-list.component.scss', '../group-style.scss']
 })
 export class MyGroupListComponent implements OnInit {
   logSource = new MatTableDataSource<any>();

@@ -6,7 +6,7 @@ import { EventInfoService } from '../../services/event-info.service';
 @Component({
   selector: 'app-top3-dialog',
   templateUrl: './top3-dialog.component.html',
-  styleUrls: ['./top3-dialog.component.css']
+  styleUrls: ['./top3-dialog.component.scss']
 })
 export class Top3DialogComponent implements OnInit {
   mapDatas: any;

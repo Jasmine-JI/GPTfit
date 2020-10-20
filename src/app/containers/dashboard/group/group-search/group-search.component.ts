@@ -19,7 +19,7 @@ import { HashIdService } from '@shared/services/hash-id.service';
 @Component({
   selector: 'app-group-search',
   templateUrl: './group-search.component.html',
-  styleUrls: ['./group-search.component.css'],
+  styleUrls: ['./group-search.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class GroupSearchComponent implements OnInit {

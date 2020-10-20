@@ -5,7 +5,7 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-hr-zone-dialog',
   templateUrl: './hr-zone-dialog.component.html',
-  styleUrls: ['./hr-zone-dialog.component.css']
+  styleUrls: ['./hr-zone-dialog.component.scss']
 })
 export class HrZoneDialogComponent implements OnInit {
   constructor(

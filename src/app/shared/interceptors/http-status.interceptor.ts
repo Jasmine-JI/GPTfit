@@ -52,8 +52,20 @@ export class HttpStatusInterceptor implements HttpInterceptor {
             if (err.status === 401 || err.status === 402 || err.status === 403) {
               const router = this.injector.get(Router);
               const auth = this.injector.get(AuthService);
+
+              this.dialog.open(MessageBoxComponent, {
+                hasBackdrop: true,
+                data: {
+                  title: 'Error',
+                  body: `${err.status}：網路異常，請稍後再試`,
+                  confirmText: 'Confirm'
+                }
+
+              });
+
               auth.logout();
               router.navigate(['/signIn-web']);
+
             }
             if (err.status === 504) {
               this.dialog.open(MessageBoxComponent, {

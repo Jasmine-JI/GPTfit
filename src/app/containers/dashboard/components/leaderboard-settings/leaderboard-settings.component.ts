@@ -8,7 +8,7 @@ import { saveAs } from 'file-saver'; // 引入前記得要裝： npm install fil
 @Component({
   selector: 'app-leaderboard-settings',
   templateUrl: './leaderboard-settings.component.html',
-  styleUrls: ['./leaderboard-settings.component.css']
+  styleUrls: ['./leaderboard-settings.component.scss']
 })
 export class LeaderboardSettingsComponent implements OnInit {
   timeStart = '';

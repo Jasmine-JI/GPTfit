@@ -194,29 +194,42 @@ router.post('/apply', (req, res, next) => {
   let data = fs.readFileSync(`/tmp/official-activity/${body.fileName}.json`);
   data = JSON.parse(data.toString('utf8'));
 
-  data.group[body.groupIdx].member.push(body.memberInfo);
+  if (data.group.some(_group => _group.member.some(_member => _member.userId === body.memberInfo.userId))) {
+    res.json({
+      resultCode: 200,
+      resultMessage: "Activity has applied.",
+      nodejsApiCode: "N3008",
+      fileName: body.fileName
+    });
 
-  fs.writeFile(`/tmp/official-activity/${body.fileName}.json`, JSON.stringify(data), (err) => {
-    if (err) {
-      writeLogFile(body.fileName, body.token, 'Apply official activity', err);
-      return res.json({
-        resultCode: 400,
-        resultMessage: "Apply activity failed.",
-        nodejsApiCode: "N3008"
-      })
+  } else {
 
-    } else {
-      writeLogFile(body.fileName, body.token, 'Apply official activity', 'Apply official activity success.');
-      return res.json({
-        resultCode: 200,
-        resultMessage: "Apply activity success.",
-        nodejsApiCode: "N3008",
-        fileName: body.fileName
-      });
+    data.delMember = data.delMember.filter(_delMember => _delMember.userId !== body.memberInfo.userId);
+    data.group[body.groupIdx].member.push(body.memberInfo);
 
-    }
+    fs.writeFile(`/tmp/official-activity/${body.fileName}.json`, JSON.stringify(data), (err) => {
+      if (err) {
+        writeLogFile(body.fileName, body.token, 'Apply official activity', err);
+        return res.json({
+          resultCode: 400,
+          resultMessage: "Apply activity failed.",
+          nodejsApiCode: "N3008"
+        })
 
-  })
+      } else {
+        writeLogFile(body.fileName, body.token, 'Apply official activity', 'Apply official activity success.');
+        return res.json({
+          resultCode: 200,
+          resultMessage: "Apply activity success.",
+          nodejsApiCode: "N3008",
+          fileName: body.fileName
+        });
+
+      }
+
+    })
+
+  }
 
 });
 

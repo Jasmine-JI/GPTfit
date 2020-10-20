@@ -1,3 +1,34 @@
+@import 'flex-center.scss';
+@import 'font.scss';
+@import 'color.scss';
+@import 'transition.scss';
+@import 'keyframes.scss';
+
+
+@mixin home-image ($image) {
+  background-image: $image;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 45vw;
+  min-height: 400px;
+  width: 100%;
+  position: relative;
+}
+
+@mixin header-title ($min-width: 257px) {
+  padding: 9px 35px;
+  min-width: $min-width;
+  color: #fff;
+  background-color: rgba(0, 0, 0, .35);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  @content
+}
+
+
 .main {
   padding-top: 63px;
   width: 100%;
@@ -71,23 +102,29 @@
 
 /* home */
 .home-header {
-  background-image: url('/assets/images/introduce/T1.jpg');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  height: 568px;
-  width: 100%;
-  position: relative;
+  @include home-image(url('/assets/images/introduce/T1.jpg'));
 }
+
+.system__header-titile {
+  @include center();
+  @include header-title(calc(60px + 45vw)) {
+    min-height: calc(20px + 13vw);
+  };
+
+}
+
+.system__title--size {
+  font-size: calc(10px + 3vw);
+  text-align: center;
+}
+
+.application__title--size {
+    font-size: calc(10px + 2vw);
+    text-align: center;
+}
+
 .home-header-title {
-  padding: 9px 35px;
-  min-width: 257px;
-  color: #fff;
-  background-color: rgba(0, 0, 0, .35);
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  @include header-title();
 }
 
 .home-header-title h1 {
@@ -116,136 +153,275 @@
 }
 
 .home-cloudRun-description {
-  background-image: url('/assets/images/introduce/T2.jpg');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  height: 568px;
-  width: 100%;
-  position: relative;
+  @include home-image(url('/assets/images/introduce/T2.jpg'));
 }
+
 .home-cloudRun-app {
   height: 700px;
   display: flex;
 }
+
 .home-coach-description {
-  background-image: url('/assets/images/introduce/T3.jpg');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  width: 100%;
-  height: 568px;
-  position: relative;
+  @include home-image(url('/assets/images/introduce/T3.jpg'));
 }
 
 .home-fitness-description {
-  background-image: url('/assets/images/introduce/fitness_page.jpg');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  width: 100%;
-  height: 568px;
-  position: relative;
+  @include home-image(url('/assets/images/introduce/fitness_page.jpg'));
+}
+
+.system__t1 {
+  @include home-image(url('/assets/images/introduce/system-T1.jpg'));
+}
+
+.system__t2 {
+  @include home-image(url('/assets/images/introduce/system-T2.jpg'));
+}
+
+.system__t3 {
+  @include home-image(url('/assets/images/introduce/system-T3.jpg'));
+}
+
+.system__t4 {
+  @include home-image(url('/assets/images/introduce/system-T4.jpg'));
+}
+
+.analysis__t1 {
+  @include home-image(url('/assets/images/introduce/analysis-T1.jpg'));
+}
+
+.analysis__t2 {
+  @include home-image(url('/assets/images/introduce/analysis-T2.jpg'));
+}
+
+.analysis__t3 {
+  @include home-image(url('/assets/images/introduce/analysis-T3.jpg'));
+}
+
+.analysis__t4 {
+  @include home-image(url('/assets/images/introduce/analysis-T4.jpg'));
 }
 
 .app-link-container {
   display: flex;
   flex-direction: column;
 }
+
 .cloudRun-app-container {
   display: none;
 }
+
 .cloudRun-app-info {
   display: flex;
   align-items: center;
   flex-direction: column;
-  justify-content: center
+  justify-content: center;
 }
+
 .coach-img {
   display: none;
 }
+
 .home-connect-info {
   display: flex;
   align-items: center;
   flex-direction: column;
-  justify-content: center
+  justify-content: center;
 }
+
 .ala-app-info {
   display: none;
 }
 
-@media (min-width: 768px) {
+.homepage__btn {
+  @include center();
+  @include bold-font(18px);
+  border: 1px solid black;
+  width: 200px;
+  height: 60px;
+  cursor: pointer;
+  @include transition(background-color);
+
+  &:hover {
+    background-color: $ligntest-gray;
+    @include transition(background-color);
+  }
+
+}
+
+.system__introduction__text {
+  @include bold-font(18px);
+  text-align: left;
+}
+
+.fade__in {
+  animation: fade-in 1s 1;
+  animation-timing-function: ease-in;
+  @include keyframes(fade-in) {
+    0% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+    }
+
+  }
+
+}
+
+.hide__slide__img {
+  opacity: 0;
+}
+
+.left__slide__in {
+  display: initial;
+  position: relative;
+  animation: left-slide-in 1s 1;
+  animation-timing-function: ease-in;
+  @include keyframes(left-slide-in) {
+    0% {
+      opacity: 0;
+      left: -50px
+    }
+
+    100% {
+      opacity: 1;
+      left: 0;
+    }
+
+  }
+
+}
+
+.right__slide__in {
+  display: initial;
+  position: relative;
+  animation: right-slide-in 1s 1;
+  animation-timing-function: ease-in;
+  @include keyframes(right-slide-in) {
+    0% {
+      opacity: 0;
+      left: 50px
+    }
+
+    100% {
+      opacity: 1;
+      left: 0;
+    }
+
+  }
+
+}
+
+.bottom__slide__in {
+  display: initial;
+  position: relative;
+  animation: bottom-slide-in 1s 1;
+  animation-timing-function: ease-in;
+  @include keyframes(bottom-slide-in) {
+    0% {
+      opacity: 0;
+      top: 50px
+    }
+
+    100% {
+      opacity: 1;
+      top: 0;
+    }
+
+  }
+
+}
+
+/*************************** media *************************/
+
+@media (min-width: 769px) {
   .date-picker {
     vertical-align: middle;
     display: inline-block;
     width: calc((100% - 30px) / 2);
   }
-  .home-header {
-    height: 837px;
-  }
+
   .home-header-title {
     padding: 11px 50px;
     min-width: 382px;
     color: #fff;
   }
+
   .ala-app-info {
     display: block;
     height: 100%;
   }
-  .ala-app-info img {
-    height: 100%;
-  }
+
   .home-connect-app {
     display: flex;
   }
+
   .cloudRun-app-container {
     display: block;
   }
-  .home-cloudRun-app {
-    height: 100%;
-    margin: 30px 0px;
-  }
+
   .coach-img {
     width: 45%;
     display: block;
   }
+
   .message a {
     float: right;
   }
+
   .home-cloudRun-description {
     height: 887px;
   }
+
   .home-coach-description {
     height: 841px;
   }
+
   .home-fitness-description {
     height: 887px;
   }
+
 }
+
+@media(max-width: 768px) {
+  .rwd__hide {
+    display: none;
+  }
+
+}
+
 @media(min-width: 1440px) {
   .app-link + .app-link {
     margin-top: 0px;
     margin-left: 35px;
   }
+
   .app-link-container {
     flex-direction: row;
   }
+
   .app-link img {
     width: 174px;
     height: auto;
   }
+
   .cloudRun-app-info {
     flex-direction: row;
     align-items: flex-end;
   }
+
   .cloudRun-app-info .app-link-container {
     margin-left: 95px;
   }
+
   .home-header-title {
     padding: 40px 120px;
   }
+
   .home-header-title h1 {
     font-size: 35px;
     line-height: 70px;
   }
+
 }

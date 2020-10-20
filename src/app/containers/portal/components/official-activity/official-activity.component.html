@@ -46,7 +46,6 @@
       <div
         class="page__tag main__tag"
         [class.focus__tag]="uiFlag.currentTag === 'description'"
-        [class.activity__loading]="uiFlag.changeFileLoading"
         [style.border-color]="uiFlag.currentTag === 'description' ? activity.mainColor : ''"
         (click)="handleShowPage('description')"
       >

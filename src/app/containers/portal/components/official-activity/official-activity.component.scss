@@ -172,24 +172,8 @@ $list-shadow-color: rgba(100, 100, 100, 0.3);
 }
 
 .focus__tag {
-  border-bottom: 4px solid $sky-blue;
+  border-bottom: 4px solid;
   background-color: white;
-}
-
-.activity__loading {
-    animation: loading 0.25s infinite;
-    animation-timing-function: ease-in-out;
-    @include keyframes(loading) {
-      0% {
-        opacity: 0.1;
-      }
-  
-      100% {
-        opacity: 1;
-      }
-  
-    }
-
 }
 
 .icon--font {
