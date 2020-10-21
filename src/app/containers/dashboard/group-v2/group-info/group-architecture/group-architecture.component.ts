@@ -1,11 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
-import { GroupDetailInfo } from '../../../models/group-detail';
+import { GroupDetailInfo, GroupArchitecture } from '../../../models/group-detail';
 import { GroupService } from '../../../services/group.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 
 import { Subject } from 'rxjs';
-import { takeUntil, map, switchMap } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 
 
 @Component({
@@ -18,61 +18,49 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject();
 
   groupInfo = <GroupDetailInfo>{};
-  groupArchitecture = {};
+  groupArchitecture = <GroupArchitecture>{};
 
   constructor(
-    private groupService: GroupService,
-    private utils: UtilsService
+    private groupService: GroupService
   ) { }
 
   ngOnInit(): void {
-
+    this.getGroupDetail();
+    this.getAllLevelGroupData();
   }
 
   /**
-   * 取得目前頁面群組資訊
-   * @author kidin-1090813
+   * 取得群組詳細資訊
+   * @author kidin-1091020
    */
-  getCurrentGroupInfo() {
-    this.groupService.getGroupInfo().subscribe(res => {
-      this.groupInfo = res;
-    });
-
-  }
-
-  /**
-   * 先取得頁面群組資訊再取得群組階層
-   * @author kidin-1090813
-   */
-  getGroupArchitecture() {
-
-    let body = {
-      token: this.utils.getToken() || '',
-      avatarType: 3,
-      groupId: this.groupInfo.groupId,
-      groupLevel: this.utils.displayGroupLevel(this.groupInfo.groupId),
-      infoType: 1
-    }
-    this.groupService.getGroupInfo().pipe(
-      switchMap(res => this.groupService.fetchGroupMemberList(body).pipe(
-        map(resp => resp)
-      )),
+  getGroupDetail() {
+    this.groupService.getRxGroupDetail().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       this.groupInfo = res;
     });
 
-    this.groupService.fetchGroupMemberList(body).subscribe(res => {
-      if (res.resultCode !== 200) {
-        console.log(`${res.apiCode}：`, res.resultMessage);
-      } else {
-        this.groupArchitecture = res.info.subGroupInfo;
-      }
+  }
 
+  /**
+   * 取得所有階層群組資訊
+   * @author kidin-1090716
+   */
+  getAllLevelGroupData() {
+    this.groupService.getAllLevelGroupData().pipe(
+    ).subscribe(res => {
+      this.groupArchitecture = res;
+      console.log('groupArchitecture', this.groupArchitecture);
     });
 
   }
 
-  ngOnDestroy() {}
+  /**
+   * 取消rxjs訂閱
+   */
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
 
 }

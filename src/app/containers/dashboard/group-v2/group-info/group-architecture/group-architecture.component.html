@@ -2,16 +2,71 @@
   <span class="content__title">
     {{ 'universal_group_group' | translate }} {{ 'universal_group_layer' | translate }}
   </span>
-  <div>
-    <span class="content__subtitle">{{ 'universal_group_gym' | translate }}</span>
-    <span class="content__subtitle">{{ 'universal_group_company' | translate }}</span>
-  </div>
-  <div>
-    <span class="content__subtitle">{{ 'universal_group_branch' | translate }}</span>
-    <span class="content__subtitle">{{ 'universal_group_companyBranch' | translate }}</span>
-  </div>
-  <div>
-    <span class="content__subtitle">{{ 'universal_group_class' | translate }}</span>
-    <span span class="content__subtitle">{{ 'universal_group_department' | translate }}</span>
-  </div>
+  <section class="architecture__section">
+    <span class="content__subtitle" *ngIf="groupInfo.brandType === 1">{{ 'universal_group_gym' | translate }}</span>
+    <span class="content__subtitle" *ngIf="groupInfo.brandType === 2">{{ 'universal_group_company' | translate }}</span>
+    <div>
+      <app-member-capsule
+        class="group__list__content"
+        [isSubGroupInfo]="true"
+        [title]="groupArchitecture.brands[0].groupName"
+        [memberInfo]="groupArchitecture.brands[0]"
+        [name]="groupArchitecture.brands[0].groupName"
+        [icon]="groupArchitecture.brands[0].groupIcon"
+        [groupId]="groupArchitecture.brands[0].groupId"
+        [brandType]="groupInfo.brandType"
+        *ngIf="groupArchitecture.brands && groupInfo.brandType"
+      >
+      </app-member-capsule>
+    </div>
+  </section>
+  <section class="architecture__section">
+    <span class="content__subtitle" *ngIf="groupInfo.brandType === 1">{{ 'universal_group_branch' | translate }}</span>
+    <span class="content__subtitle" *ngIf="groupInfo.brandType === 2">{{ 'universal_group_companyBranch' | translate }}</span>
+    <div
+      class="flexRow"
+      style="flex-wrap: wrap;"
+      *ngIf="groupArchitecture.branches && groupArchitecture.branches.length > 0 && groupInfo.brandType; else noData;"
+    >
+      <div class="group__list__content" *ngFor="let _branch of groupArchitecture.branches;">
+        <app-member-capsule
+          [isSubGroupInfo]="true"
+          [title]="_branch.groupName"
+          [memberInfo]="_branch"
+          [name]="_branch.groupName"
+          [icon]="_branch.groupIcon"
+          [groupId]="_branch.groupId"
+          [brandType]="groupInfo.brandType"
+          *ngIf="groupArchitecture.brands && groupInfo.brandType"
+        >
+        </app-member-capsule>
+      </div>
+    </div>
+  </section>
+  <section class="architecture__section">
+    <span class="content__subtitle" *ngIf="groupInfo.brandType === 1">{{ 'universal_group_class' | translate }}</span>
+    <span span class="content__subtitle" *ngIf="groupInfo.brandType === 2">{{ 'universal_group_department' | translate }}</span>
+    <div
+      class="flexRow"
+      style="flex-wrap: wrap;"
+      *ngIf="groupArchitecture.coaches && groupArchitecture.coaches.length > 0 && groupInfo.brandType; else noData;"
+    >
+      <div class="group__list__content" *ngFor="let _coach of groupArchitecture.coaches;">
+        <app-member-capsule
+          [isSubGroupInfo]="true"
+          [title]="_coach.groupName"
+          [memberInfo]="_coach"
+          [name]="_coach.groupName"
+          [icon]="_coach.groupIcon"
+          [groupId]="_coach.groupId"
+          [brandType]="groupInfo.brandType"
+          *ngIf="groupArchitecture.brands && groupInfo.brandType"
+        >
+        </app-member-capsule>
+      </div>
+    </div>
+  </section>
+  <ng-template #noData>
+    <span style="margin-left: 10px;">{{'universal_status_noData' | translate}}</span>
+  </ng-template>
 </div>

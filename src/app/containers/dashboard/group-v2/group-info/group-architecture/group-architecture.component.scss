@@ -1,11 +1,19 @@
 @import "font.scss";
 
 
+.architecture__section {
+  margin: 10px 0;
+}
+
+.group__list__content {
+  margin: 5px;
+}
+
 .content__title {
-  @include bold-font();
+  @include bold-font(20px);
 }
 
 .content__subtitle {
-  @include subtitle-or-focus();
+  @include subtitle-or-focus(16px);
   margin-bottom: 15px;
 }

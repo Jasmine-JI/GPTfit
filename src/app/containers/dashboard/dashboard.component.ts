@@ -29,6 +29,7 @@ interface UiFlag {
   sidebarMode: 'hide' | 'narrow' | 'expand';
   navFixed: boolean;
   mobileMode: boolean;
+  hover: boolean;
 }
 
 @Component({
@@ -44,7 +45,8 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     currentDrop: '',
     sidebarMode: 'narrow',
     navFixed: false,
-    mobileMode: false
+    mobileMode: false,
+    hover: false
   };
 
   userProfile = <UserProfileInfo>{};
@@ -61,6 +63,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   isAlphaVersion = false;
   version: string;
   isHideFooter = false;
+  debounce: any;
 
   constructor(
     private globalEventsManager: GlobalEventsManager,
@@ -333,10 +336,18 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091013
    */
   expandSidebar() {
-    if (!this.uiFlag.mobileMode) {
-      this.uiFlag.sidebarMode = 'expand';
+    this.uiFlag.hover = true;
+    if (this.debounce) {
+      clearTimeout(this.debounce);
     }
-    
+
+    this.debounce = setTimeout(() => {
+      if (!this.uiFlag.mobileMode && this.uiFlag.hover) {
+        this.uiFlag.sidebarMode = 'expand';
+      }
+
+    }, 250);
+
   }
 
   /**
@@ -344,6 +355,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091013
    */
   shrinkSidebar() {
+    this.uiFlag.hover = false;
     if (!this.uiFlag.navFixed && !this.uiFlag.mobileMode) {
       this.uiFlag.sidebarMode = 'narrow';
     } else if (!this.uiFlag.navFixed && this.uiFlag.mobileMode) {
