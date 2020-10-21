@@ -474,7 +474,7 @@ export class LifeTrackingService {
     finalDatas.push({ wearingStatusChartTarget: wearingStatusOptions, isSyncExtremes: true });
     chartTargets.push('wearingStatusChartTarget');
 
-    // wearingStatus
+    // walkElevGain
     walkElevGainDataset.data = walkElevGainDataset.data.map((val, j) => [
       pointSeconds[j],
       val
@@ -484,7 +484,7 @@ export class LifeTrackingService {
     finalDatas.push({ walkElevGainChartTarget: walkElevGainOptions, isSyncExtremes: true });
     chartTargets.push('walkElevGainChartTarget');
 
-    // wearingStatus
+    // walkElevLoss
     walkElevLossDataset.data = walkElevLossDataset.data.map((val, j) => [
       pointSeconds[j],
       val
@@ -494,7 +494,7 @@ export class LifeTrackingService {
     finalDatas.push({ walkElevLossChartTarget: walkElevLossOptions, isSyncExtremes: true });
     chartTargets.push('walkElevLossChartTarget');
 
-    // wearingStatus
+    // localPressure
     localPressureDataset.data = localPressureDataset.data.map((val, j) => [
       pointSeconds[j],
       val

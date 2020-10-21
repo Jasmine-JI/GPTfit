@@ -4,7 +4,7 @@
 .version {
   color: #fff;
   padding: 5px 15px 5px 20px;
-  position: absolute;
+  position: relative;
   bottom: 0;
   font-size: 12px;
   opacity: 0.3;
@@ -82,14 +82,14 @@
 }
 
 .main-nav-toggle {
+  position: relative;
   height: 34px;
   width: 34px;
-  border-radius: 50%;
-  box-shadow: 0 0 0 1px #fff;
   align-items: center;
   cursor: pointer;
   transition: transform 400ms ease-in;
   display: flex;
+  justify-content: center;
 }
 
 .minimize-main-nav.main-nav-toggle {
@@ -287,20 +287,16 @@
 
 .toggle__btn {
   position: relative;
-  left: 45px;
   @include transition(left);
 }
 
 .toggle__btn__move {
-  left: 270px;
   @include transition(left);
 }
 
 .pin__icon {
-  position: relative;
-  top: 2px;
   color: white;
-  font-size: 30px;
+  font-size: 20px;
 }
 
 .narrow__sidebar {
@@ -315,6 +311,12 @@
   flex-wrap: nowrap;
   white-space: nowrap;
   overflow: hidden;
+  z-index: 10;
+
+  & span {
+    white-space: normal;
+  }
+
 }
 
 .nav__color {

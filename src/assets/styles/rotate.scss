@@ -1,0 +1,9 @@
+// rotate 各瀏覽器支援
+
+@mixin el-rotate($degree) {
+    -moz-transform: rotate($degree);
+    -webkit-transform: rotate($degree);
+    -o-transform: rotate($degree);
+    -ms-transform: rotate($degree);
+    transform: rotate($degree);
+}

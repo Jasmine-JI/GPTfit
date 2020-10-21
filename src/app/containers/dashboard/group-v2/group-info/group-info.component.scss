@@ -1,9 +1,14 @@
 @import "font.scss";
+@import "transition.scss";
+@import "rotate.scss";
 
 $info-border: 1px solid #c5c5c5;
 
 .group__icon {
+  margin: 0 auto;
+  margin-bottom: 10px;
   width: 100%;
+  max-width: 200px;
   position: relative;
   border: 1px solid #ffffff00;
   border-radius: 50%;
@@ -46,7 +51,7 @@ $info-border: 1px solid #c5c5c5;
 }
 
 .current__page {
-  @include subtitle-or-focus();
+  @include subtitle-or-focus(16px);
 }
 
 .current__level {
@@ -55,6 +60,7 @@ $info-border: 1px solid #c5c5c5;
 }
 
 .info__list {
+  font-size: 16px;
   padding-left: 15px;
   cursor: pointer;
 }
@@ -64,7 +70,7 @@ $info-border: 1px solid #c5c5c5;
   max-height: 500px;
   border: $info-border;
   margin-bottom: 10px;
-  transition: max-height 0.2s cubic-bezier(0.5, 0.5, 0.5, 0.5);
+  @include transition(max-height);
 }
 
 .info__sidebar {
@@ -115,7 +121,7 @@ $info-border: 1px solid #c5c5c5;
   font-size: 24px;
   max-height: 24px;
   cursor: pointer;
-  transition: 0.5s ease-in-out;
+  @include transition(transform);
 }
 
 .title__section {
@@ -124,16 +130,22 @@ $info-border: 1px solid #c5c5c5;
 }
 
 .icon--rotate {
-  -moz-transform:rotate(180deg);
-  -webkit-transform:rotate(180deg);
-  -o-transform:rotate(180deg);
-  -ms-transform:rotate(180deg);
-  transform:rotate(180deg);
+  @include el-rotate(180deg);
 }
 
 .fold--close {
   max-height: 45px;
   overflow: hidden;
+}
+
+.expand__content {
+  opacity: 1;
+  @include transition(opacity);
+}
+
+.fold__content {
+  opacity: 0;
+  @include transition(opacity);
 }
 
 .cancelJoin__btn {
@@ -164,6 +176,8 @@ $info-border: 1px solid #c5c5c5;
 }
 
 
+/*********************************** media *****************************/
+
 @media (max-width: 768px) {
   .group__page {
     flex-direction: column;
@@ -182,13 +196,14 @@ $info-border: 1px solid #c5c5c5;
   }
 
   .group__icon {
-    position: relative;
-    width: calc( 100vw / 6 );
+    position: absolute;
+    margin: 0;
+    width: calc(100vw / 6);
     z-index: 2;
-    bottom: calc( 100vw / 7 + 30px );
-    left: calc( 100vw / 10 );
+    top: calc(110px + 3vw);
+    left: calc(20px + 10vw);
     background: #ffffff;
-    border-color: 3px solid #ffffff;
+    border: 2px solid #ffffff;
   }
 
   .group__name {
