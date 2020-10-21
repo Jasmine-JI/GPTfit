@@ -114,13 +114,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   /**
-   * pipe doing each functions and return the result.
-   * @param any
-   * @author kidin-1090716
-   */
-  pipes = (...fns) => x => fns.reduce((v, f) => f(v), x);
-
-  /**
    * 判斷瀏覽器頁面大小
    * @author kidin-20200714
    */
@@ -210,6 +203,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         this.openAlert(errMsg);
         console.log(`${res.resultCode}: ${res.resultMessage}`);
       } else {
+        this.groupService.saveGroupDetail(res.info);
         this.currentGroupInfo.groupDetail = res.info;
         this.handleDescSectionResize();
         console.log('groupDetail', this.currentGroupInfo.groupDetail);
@@ -248,21 +242,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   /**
-   * 取得所有階層群組資訊
-   * @author kidin-1090716
-   */
-  getAllLevelGroupData() {
-    this.groupService.getAllLevelGroupData().pipe(
-      tap(res => {
-        this.currentGroupInfo.allGroupInfo = res;
-        console.log(this.currentGroupInfo.allGroupInfo);
-      })
-
-    );
-
-  }
-
-  /**
    * 切換不同群組頁面及更新群組和使用者相關資訊
    * @author kidin-10812217
    */
@@ -271,7 +250,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.getCurrentGroupInfo();
     this.getGroupDetail();
     this.saveAllLevelGroupData();
-    this.getAllLevelGroupData();
     this.getUserJoinInfo();
     this.checkUserAccessRight();
   }

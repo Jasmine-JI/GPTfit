@@ -2153,4 +2153,15 @@
  "universal_status_busy": "忙碌中",
  "universal_status_inMotion": "運動中",
  "universal_status_unableSync": "無法同步",
- "universal_status_batteryLow": "電量過低"}
+ "universal_status_batteryLow": "電量過低",
+ "universal_activityData_upstairs": "上樓",
+ "universal_activityData_downstairs": "下樓",
+ "universal_activityData_poor": "不足",
+ "universal_activityData_average": "合格",
+ "universal_activityData_fine": "優良",
+ "universal_activityData_recovery": "恢復",
+ "universal_activityData_tired": "疲憊",
+ "universal_lifeTracking_limit_deepSleep": "深眠",
+ "universal_lifeTracking_limit_lightSleep": "淺眠",
+ "universal_lifeTracking_limit_wideAwake": "清醒",
+ "universal_lifeTracking_limit_rollingOver": "翻身"}
