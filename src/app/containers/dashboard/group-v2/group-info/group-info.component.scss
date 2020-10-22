@@ -2,7 +2,6 @@
 @import "transition.scss";
 @import "rotate.scss";
 
-$info-border: 1px solid #c5c5c5;
 
 .group__icon {
   margin: 0 auto;
@@ -68,7 +67,6 @@ $info-border: 1px solid #c5c5c5;
 .info__section {
   height: fit-content;
   max-height: 500px;
-  border: $info-border;
   margin-bottom: 10px;
   @include transition(max-height);
 }
@@ -111,10 +109,6 @@ $info-border: 1px solid #c5c5c5;
 
 .group__name {
   font-size: 48px;
-}
-
-.separate__border {
-  border-bottom: $info-border;
 }
 
 .icon__btn {

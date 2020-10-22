@@ -28,6 +28,7 @@
       <mat-option value="4">{{ "universal_activityData_swin" | translate}}</mat-option>
       <mat-option value="5">{{ "universal_activityData_aerobic" | translate}}</mat-option>
       <mat-option value="6">{{ "universal_sportsName_boating" | translate}}</mat-option>
+      <mat-option value="7">{{ "universal_activityData_ballSports" | translate}}</mat-option>
     </mat-select>
   </mat-form-field>
   <mat-form-field style="margin-right: 35px;">
@@ -87,6 +88,9 @@
         <i *ngIf=" row.activityInfoLayer.type === '6'"
           class="icon-svg_web-icon_p1_088-row ala-activity-icon"
         ></i>
+        <i *ngIf=" row.activityInfoLayer.type === '7'"
+          class="icon-svg_web-icon_p3_056-ball ala-activity-icon"
+        ></i>
       </mat-cell>
     </ng-container>
     <ng-container matColumnDef="type">
@@ -137,64 +141,54 @@
       <mat-cell *matCellDef="let row">
         <div>
           <!-- <div> -->
-            <span *ngIf=" row.activityInfoLayer.type !== '5' && row.activityInfoLayer.type !== '3'">
+            <span *ngIf="row.activityInfoLayer.type !== '5' && row.activityInfoLayer.type !== '3'">
               {{ (row.activityInfoLayer && row.activityInfoLayer?.avgSpeed | sportPace: row.activityInfoLayer.type) || ' -- ' }}
               <span
-                *ngIf=" row.activityInfoLayer.type === '1'"
+                *ngIf="row.activityInfoLayer.type === '1'"
               >
                 min/1km
               </span>
               <span
-                *ngIf=" row.activityInfoLayer.type === '4'"
+                *ngIf="row.activityInfoLayer.type === '4'"
               >
                 min/100m
               </span>
               <span
-                *ngIf=" row.activityInfoLayer.type === '6'"
+                *ngIf="row.activityInfoLayer.type === '6'"
               >
                 min/500m
               </span>
               <span
-                *ngIf=" row.activityInfoLayer.type === '2'"
+                *ngIf="row.activityInfoLayer.type === '2' || row.activityInfoLayer.type === '7'"
               >
                 km/hr
               </span>
             </span>
-            <span *ngIf=" row.activityInfoLayer.type === '5'">
+            <span *ngIf="row.activityInfoLayer.type === '5'">
               {{ row.activityInfoLayer && row.activityInfoLayer?.maxHeartRateBpm || ' -- ' }}bpm
             </span>
-            <span *ngIf=" row.activityInfoLayer.type === '3'">
+            <span *ngIf="row.activityInfoLayer.type === '3'">
               {{ row.activityInfoLayer && row.activityInfoLayer?.totalReps || ' -- ' }}
             </span>
           <!-- </div> -->
           <div>
             <span style="color: #919191;font-size: 12px"
-              *ngIf=" row.activityInfoLayer.type === '1'"
+              *ngIf="row.activityInfoLayer.type === '1' || row.activityInfoLayer.type === '4' || row.activityInfoLayer.type === '6'"
             >
               {{ 'universal_activityData_avgPace' | translate}}
             </span>
             <span style="color: #919191;font-size: 12px"
-              *ngIf=" row.activityInfoLayer.type === '4'"
-            >
-              {{ 'universal_activityData_avgPace' | translate}}
-            </span>
-            <span style="color: #919191;font-size: 12px"
-              *ngIf=" row.activityInfoLayer.type === '6'"
-            >
-              {{ 'universal_activityData_avgPace' | translate}}
-            </span>
-            <span style="color: #919191;font-size: 12px"
-              *ngIf=" row.activityInfoLayer.type === '2'"
+              *ngIf="row.activityInfoLayer.type === '2' || row.activityInfoLayer.type === '7'"
             >
                {{ 'universal_activityData_limit_avgSpeed' | translate}}
             </span>
             <span style="color: #919191;font-size: 12px"
-              *ngIf=" row.activityInfoLayer.type === '5'"
+              *ngIf="row.activityInfoLayer.type === '5'"
             >
               {{ 'universal_userProfile_maxHr' | translate}}
             </span>
             <span style="color: #919191;font-size: 12px"
-              *ngIf=" row.activityInfoLayer.type === '3'"
+              *ngIf="row.activityInfoLayer.type === '3'"
             >
               {{ 'universal_activityData_totalReps' | translate}}
             </span>

@@ -55,17 +55,17 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
             format: 'YYYY/MM/DD'
           },
           ranges: {
-            [`1 jquery{this.translate.instant('universal_time_month')}`]:
+            [`1 ${this.translate.instant('universal_time_month')}`]:
               [moment(this.refStartDate).subtract(-1, 'month'), moment(this.refStartDate).subtract(-1, 'month')],
-            [`2 jquery{this.translate.instant('universal_time_month')}`]:
+            [`2 ${this.translate.instant('universal_time_month')}`]:
               [moment(this.refStartDate).subtract(-2, 'month'), moment(this.refStartDate).subtract(-2, 'month')],
-            [`3 jquery{this.translate.instant('universal_time_month')}`]:
+            [`3 ${this.translate.instant('universal_time_month')}`]:
               [moment(this.refStartDate).subtract(-3, 'month'), moment(this.refStartDate).subtract(-3, 'month')],
-            [`6 jquery{this.translate.instant('universal_time_month')}`]:
+            [`6 ${this.translate.instant('universal_time_month')}`]:
               [moment(this.refStartDate).subtract(-6, 'month'), moment(this.refStartDate).subtract(-6, 'month')],
-            [`1 jquery{this.translate.instant('universal_time_year')}`]:
+            [`1 ${this.translate.instant('universal_time_year')}`]:
               [moment(this.refStartDate).subtract(-1, 'year'), moment(this.refStartDate).subtract(-1, 'year')],
-            [`2 jquery{this.translate.instant('universal_time_year')}`]:
+            [`2 ${this.translate.instant('universal_time_year')}`]:
               [moment(this.refStartDate).subtract(-2, 'year'), moment(this.refStartDate).subtract(-2, 'year')]
           },
           showCustomRangeLabel: false,

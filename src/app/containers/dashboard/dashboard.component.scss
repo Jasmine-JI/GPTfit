@@ -341,7 +341,7 @@
 .expand__navbar {
   display: flex;
   background-color: rgba(31, 38, 38, 1);
-  z-index: 1003;
+  z-index: 999;
   width: 270px;
   @include transition(width);
 }

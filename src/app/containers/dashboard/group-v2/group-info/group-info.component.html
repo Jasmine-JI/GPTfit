@@ -80,9 +80,6 @@
           <span class="info__title" *ngIf="currentGroupInfo.groupDetail.groupStatus === 2">
             {{ 'universal_group_auditSystem' | translate }}
           </span>
-          <span class="info__title" *ngIf="currentGroupInfo.groupDetail.groupStatus === 1">
-            {{ 'universal_group_freeToJoin' | translate }}
-          </span>
           <button
             class="alatech-btn alatech-btn--default"
             [class.cancelJoin__btn]="user.joinStatus === 1"
