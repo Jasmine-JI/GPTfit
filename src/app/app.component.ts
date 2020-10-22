@@ -16,7 +16,7 @@ export class AppComponent {
         || location.hostname === 'www.gptfit.com'
       )
     ) {
-      location.href = location.href.replace('http://', 'https://');
+      location.href = location.href.replace('http://', 'https://'); // 以由後端(google domain設定http轉導)，待穩定後移除此段
     } else if (location.protocol === 'http:' && location.hostname === 'cloud.alatech.com.tw') {
       location.href = location.href.replace('http://cloud.alatech.com.tw', 'https://www.gptfit.com');
     } else if (location.hostname === 'cloud.alatech.com.tw') {

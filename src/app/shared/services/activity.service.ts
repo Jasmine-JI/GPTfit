@@ -132,7 +132,11 @@ export class ActivityService {
       isNoCycleCadences = false,
       isNoSwimCadences = false,
       isNoRowingCadences = false,
-      accumulateTime = 0;
+      isNoGForce = false,
+      accumulateTime = 0,
+      gForce_x = [],
+      gForce_y = [],
+      gForce_z = [];
     const pointUnit = [],
       speeds = [],
       elevations = [],
@@ -201,12 +205,14 @@ export class ActivityService {
     // 預埋裝置分段顯示-kidin-1081113
     if (chartKind === 'lineChart' && segRange === 'deviceLap') {
       lapDatas.forEach((_lap, idx) => {
+
         if (xaxisUnit === 'time') {
           accumulateTime += +_lap.lapTotalSecond;
           pointUnit.push(accumulateTime * 1000);
         } else {
           pointUnit.push(+_lap.lapTotalDistanceMeters);
         }
+
         if (!this.utils.isNumber(_lap.lapAvgSpeed) && !isDebug) {
           isNoSpeeds = true;
           isNoPaces = true;
@@ -217,6 +223,7 @@ export class ActivityService {
             speeds.push(+_lap.lapAvgSpeed);
           }
         }
+
         if (!isNoPaces && _lap.lapAvgSpeed === 0) {
           paces.push(3600);
         } else {
@@ -229,6 +236,7 @@ export class ActivityService {
           } else {
           }
         }
+
         if (!this.utils.isNumber(_lap.lapCycleAvgWatt) && !isDebug) {
           isNoCycleWatt = true;
         } else {
@@ -238,6 +246,7 @@ export class ActivityService {
             watts.push(+_lap.lapCycleAvgWatt);
           }
         }
+
         if (!this.utils.isNumber(_lap.lapRowingAvgWatt) && !isDebug) {
           isNoRowingWatt = true;
         } else {
@@ -247,6 +256,7 @@ export class ActivityService {
             watts.push(+_lap.lapRowingAvgWatt);
           }
         }
+
         if ((!_lap.altitudeMeters || _lap.altitudeMeters.length === 0) && !isDebug) {
           isNoElevations = true;
         } else {
@@ -256,6 +266,7 @@ export class ActivityService {
             elevations.push(+_lap.altitudeMeters);
           }
         }
+
         if (infoDatas.totalHrZone0Second === null) {
           if (!this.utils.isNumber(_lap.lapAvgHeartRateBpm) && !isDebug) {
             isNoHeartRates = true;
@@ -284,6 +295,7 @@ export class ActivityService {
           userZoneTimes[4].y = infoDatas.totalHrZone4Second;
           userZoneTimes[5].y = infoDatas.totalHrZone5Second;
         }
+
         if (!this.utils.isNumber(_lap.lapRunAvgCadence) && !isDebug) {
           isNoRunCadences = true;
         } else {
@@ -293,6 +305,7 @@ export class ActivityService {
             runCadences.push(+_lap.lapRunAvgCadence);
           }
         }
+
         if (!this.utils.isNumber(_lap.lapCycleAvgCadence) && !isDebug) {
           isNoCycleCadences = true;
         } else {
@@ -302,6 +315,7 @@ export class ActivityService {
             cycleCadences.push(+_lap.lapCycleAvgCadence);
           }
         }
+
         if (!this.utils.isNumber(_lap.lapSwimAvgCadence) && !isDebug) {
           isNoSwimCadences = true;
         } else {
@@ -311,6 +325,7 @@ export class ActivityService {
             swimCadences.push(+_lap.lapSwimAvgCadence);
           }
         }
+
         if (!this.utils.isNumber(_lap.lapRowingAvgCadence) && !isDebug) {
           isNoRowingCadences = true;
         } else {
@@ -320,6 +335,7 @@ export class ActivityService {
             rowingCadences.push(+_lap.lapRowingAvgCadence);
           }
         }
+
         if (!this.utils.isNumber(_lap.temp) && !isDebug) {
           isNoTemps = true;
         } else {
@@ -329,6 +345,7 @@ export class ActivityService {
             temps.push(+_lap.temp);
           }
         }
+
       });
     } else {
       // 新增判斷爬升高度是否皆為null值來決定是否顯示爬升圖表-kidin-1081209
@@ -361,6 +378,7 @@ export class ActivityService {
             speeds.push(+_point.speed);
           }
         }
+
         if (!isNoPaces && _point.speed === 0) {
           paces.push(3600);
         } else {
@@ -374,6 +392,7 @@ export class ActivityService {
             paces.push(Math.floor(((60 / +_point.speed) * 60) / 2));
           }
         }
+
         if (!this.utils.isNumber(_point.cycleWatt) && !isDebug) {
           isNoCycleWatt = true;
         } else {
@@ -383,6 +402,7 @@ export class ActivityService {
             watts.push(+_point.cycleWatt);
           }
         }
+
         if (!this.utils.isNumber(_point.rowingWatt) && !isDebug) {
           isNoRowingWatt = true;
         } else {
@@ -392,6 +412,7 @@ export class ActivityService {
             watts.push(+_point.rowingWatt);
           }
         }
+
         if (isNoElevations === false) {
           if (!_point.altitudeMeters || _point.altitudeMeters.length === 0) {
             elevations.push(null);
@@ -399,6 +420,7 @@ export class ActivityService {
             elevations.push(+_point.altitudeMeters);
           }
         }
+
         // 若api無心率區間資料，則自行計算區間-kidin-1081217
         if (infoDatas.totalHrZone0Second === null) {
           if (!this.utils.isNumber(_point.heartRateBpm) && !isDebug) {
@@ -430,6 +452,7 @@ export class ActivityService {
           userZoneTimes[4].y = infoDatas.totalHrZone4Second >= 0 ? infoDatas.totalHrZone4Second : 0;
           userZoneTimes[5].y = infoDatas.totalHrZone5Second >= 0 ? infoDatas.totalHrZone5Second : 0;
         }
+
         if (!this.utils.isNumber(_point.runCadence) && !isDebug) {
           isNoRunCadences = true;
         } else {
@@ -439,6 +462,7 @@ export class ActivityService {
             runCadences.push(+_point.runCadence);
           }
         }
+
         if (!this.utils.isNumber(_point.cycleCadence) && !isDebug) {
           isNoCycleCadences = true;
         } else {
@@ -448,6 +472,7 @@ export class ActivityService {
             cycleCadences.push(+_point.cycleCadence);
           }
         }
+
         if (!this.utils.isNumber(_point.swimCadence) && !isDebug) {
           isNoSwimCadences = true;
         } else {
@@ -457,6 +482,7 @@ export class ActivityService {
             swimCadences.push(+_point.swimCadence);
           }
         }
+
         if (!this.utils.isNumber(_point.rowingCadence) && !isDebug) {
           isNoRowingCadences = true;
         } else {
@@ -466,6 +492,7 @@ export class ActivityService {
             rowingCadences.push(+_point.rowingCadence);
           }
         }
+
         if (!this.utils.isNumber(_point.temp) && !isDebug) {
           isNoTemps = true;
         } else {
@@ -475,8 +502,40 @@ export class ActivityService {
             temps.push(+_point.temp);
           }
         }
+
+        if (
+          (
+            !this.utils.isNumber(_point.gsensorXRawData)
+            && !this.utils.isNumber(_point.gsensorYRawData)
+            && !this.utils.isNumber(_point.gsensorZRawData)
+          )
+          && !isDebug
+        ) {
+          isNoGForce = true;
+        } else {
+          if (!this.utils.isNumber(_point.gsensorXRawData)) {
+            gForce_x.push(null);
+          } else {
+            gForce_x.push(+_point.gsensorXRawData);
+          }
+
+          if (!this.utils.isNumber(_point.gsensorYRawData)) {
+            gForce_y.push(null);
+          } else {
+            gForce_y.push(+_point.gsensorYRawData);
+          }
+
+          if (!this.utils.isNumber(_point.gsensorZRawData)) {
+            gForce_z.push(null);
+          } else {
+            gForce_z.push(+_point.gsensorZRawData);
+          }
+
+        }
+
       });
     }
+
     const speedDataset = {
       name: 'Speed',
       data: speeds,
@@ -484,6 +543,7 @@ export class ActivityService {
       type: 'line',
       valueDecimals: 1
     };
+
     const elevationDataset = {
       name: 'Altitude',
       data: elevations,
@@ -491,6 +551,7 @@ export class ActivityService {
       type: 'area',
       valueDecimals: 1
     };
+
     const hrDataset = {
       name: 'Heart rate',
       data: heartRates,
@@ -498,6 +559,7 @@ export class ActivityService {
       type: 'area',
       valueDecimals: 0
     };
+
     const runCadenceDataset = {
       name: 'Run Cadence',
       data: runCadences,
@@ -505,6 +567,7 @@ export class ActivityService {
       type: 'scatter',
       valueDecimals: 0
     };
+
     const cycleCadenceDataset = {
       name: 'Cadence',
       data: cycleCadences,
@@ -512,6 +575,7 @@ export class ActivityService {
       type: 'scatter',
       valueDecimals: 0
     };
+    
     const swimCadenceDataset = {
       name: 'Cadence',
       data: swimCadences,
@@ -519,6 +583,7 @@ export class ActivityService {
       type: 'scatter',
       valueDecimals: 0
     };
+
     const rowingCadenceDataset = {
       name: 'Cadence',
       data: rowingCadences,
@@ -526,6 +591,7 @@ export class ActivityService {
       type: 'scatter',
       valueDecimals: 0
     };
+
     const paceDataset = {
       name: 'Pace',
       data: paces,
@@ -533,6 +599,7 @@ export class ActivityService {
       type: 'line',
       valueDecimals: 1
     };
+
     const wattDataset = {
       name: 'Watt',
       data: watts,
@@ -540,6 +607,7 @@ export class ActivityService {
       type: 'line',
       valueDecimals: 1
     };
+
     const tempDataset = {
       name: 'Temperature',
       data: temps,
@@ -547,6 +615,7 @@ export class ActivityService {
       type: 'line',
       valueDecimals: 1
     };
+
     const zoneDataset = {
       name: 'HR zone',
       data: userZoneTimes,
@@ -554,6 +623,15 @@ export class ActivityService {
       type: 'column',
       valueDecimals: 0
     };
+
+    const gForceDataset = {
+      name: 'G force',
+      data: null,
+      unit: 'g',
+      type: 'line',
+      valueDecimals: 2
+    };
+
     const finalDatas = [];
     const chartTargets = [];
     let speedOptions,
@@ -566,7 +644,8 @@ export class ActivityService {
       wattOptions,
       paceOptions,
       tempOptions,
-      zoneOptions;
+      zoneOptions,
+      gForceOptions;
     // 新增長條圖均化顯示和綜合分析顯示-kidin-1081113
     if (!isNoCycleWatt) {
       if (chartKind === 'columnChart') {
@@ -587,6 +666,7 @@ export class ActivityService {
       finalDatas.push({ wattChartTarget: wattOptions, isSyncExtremes: true });
       chartTargets.push('wattChartTarget');
     }
+
     if (!isNoRowingWatt) {
       if (chartKind === 'columnChart') {
         wattDataset.type = 'column';
@@ -606,6 +686,7 @@ export class ActivityService {
       finalDatas.push({ wattChartTarget: wattOptions, isSyncExtremes: true });
       chartTargets.push('wattChartTarget');
     }
+
     if (!isNoElevations) {
       if (chartKind === 'columnChart') {
         elevationDataset.type = 'column';
@@ -625,6 +706,7 @@ export class ActivityService {
       finalDatas.push({ elevationChartTarget: elevationOptions, isSyncExtremes: true });
       chartTargets.push('elevationChartTarget');
     }
+
     if (!isNoHeartRates) {
       if (chartKind === 'columnChart') {
         hrDataset.type = 'column';
@@ -644,6 +726,7 @@ export class ActivityService {
       finalDatas.push({ hrChartTarget: hrOptions, isSyncExtremes: true });
       chartTargets.push('hrChartTarget');
     }
+
     if (!isNoZones) {
       zoneDataset.data = zoneDataset.data.map((val, j) => val);
       zoneOptions = new Option(zoneDataset, colorIdx);
@@ -694,6 +777,7 @@ export class ActivityService {
       finalDatas.push({ zoneChartTarget: zoneOptions, isSyncExtremes: false });
       chartTargets.push('zoneChartTarget');
     }
+
     if (!isNoPaces) {
       if (chartKind === 'columnChart') {
         paceDataset.type = 'column';
@@ -775,6 +859,7 @@ export class ActivityService {
       finalDatas.push({ paceChartTarget: paceOptions, isSyncExtremes: true });
       chartTargets.push('paceChartTarget');
     }
+
     if (!isNoRunCadences) {
       if (chartKind === 'columnChart') {
         runCadenceDataset.type = 'column';
@@ -822,6 +907,7 @@ export class ActivityService {
       finalDatas.push({ cadenceChartTarget: runCadenceOptions, isSyncExtremes: true });
       chartTargets.push('cadenceChartTarget');
     }
+
     if (!isNoCycleCadences) {
       if (chartKind === 'columnChart') {
         cycleCadenceDataset.type = 'column';
@@ -869,6 +955,7 @@ export class ActivityService {
       finalDatas.push({ cadenceChartTarget: cycleCadenceOptions, isSyncExtremes: true });
       chartTargets.push('cadenceChartTarget');
     }
+
     if (!isNoSwimCadences) {
       if (chartKind === 'columnChart') {
         swimCadenceDataset.type = 'column';
@@ -909,6 +996,7 @@ export class ActivityService {
       finalDatas.push({ cadenceChartTarget: swimCadenceOptions, isSyncExtremes: true });
       chartTargets.push('cadenceChartTarget');
     }
+
     if (!isNoRowingCadences) {
       if (chartKind === 'columnChart') {
         rowingCadenceDataset.type = 'column';
@@ -928,6 +1016,7 @@ export class ActivityService {
       finalDatas.push({ cadenceChartTarget: rowingCadenceOptions, isSyncExtremes: true });
       chartTargets.push('cadenceChartTarget');
     }
+
     if (!isNoTemps) {
       if (chartKind === 'columnChart') {
         tempDataset.type = 'column';
@@ -947,6 +1036,7 @@ export class ActivityService {
       finalDatas.push({ tempChartTarget: tempOptions, isSyncExtremes: true });
       chartTargets.push('tempChartTarget');
     }
+
     if (!isNoSpeeds) {
       if (chartKind === 'columnChart') {
         speedDataset.type = 'column';
@@ -965,6 +1055,72 @@ export class ActivityService {
       }
       finalDatas.push({ speedChartTarget: speedOptions, isSyncExtremes: true });
       chartTargets.push('speedChartTarget');
+    }
+
+    if (!isNoGForce) {    
+      gForceOptions = new Option(gForceDataset, colorIdx);
+      colorIdx++;
+      gForceOptions['series'].length = 0; // 清空陣列後重新填入數據
+
+      gForce_x = gForce_x.map((val, j) => [
+        pointUnit[j],
+        val
+      ]);
+
+      gForceOptions['series'].push({
+        data: gForce_x,
+        name: `G force-x`,
+        type: 'line',
+        color: '#6e9bff',
+        fillOpacity: 0.3,
+        tooltip: {
+          valueSuffix: ` g`
+        },
+        dataLabels: {
+          enabled: false
+        }
+      })
+
+      gForce_y = gForce_y.map((val, j) => [
+        pointUnit[j],
+        val
+      ]);
+
+      gForceOptions['series'].push({
+        data: gForce_y,
+        name: `G force-y`,
+        type: 'line',
+        color: '#75f25f',
+        fillOpacity: 0.3,
+        tooltip: {
+          valueSuffix: ` g`
+        },
+        dataLabels: {
+          enabled: false
+        }
+      })
+
+      gForce_z = gForce_z.map((val, j) => [
+        pointUnit[j],
+        val
+      ]);
+
+      gForceOptions['series'].push({
+        data: gForce_z,
+        name: `G force-z`,
+        type: 'line',
+        color: '#ea5757',
+        fillOpacity: 0.3,
+        tooltip: {
+          valueSuffix: ` g`
+        },
+        dataLabels: {
+          enabled: false
+        }
+      })
+
+      finalDatas.push({ gForceChartTarget: gForceOptions, isSyncExtremes: true });
+      chartTargets.push('gForceChartTarget');
     }
 
     return { finalDatas, chartTargets };
