@@ -47,6 +47,9 @@
         <div class="activity-icon" *ngIf="reportCategory === '6'">
           <i class="icon-svg_web-icon_p1_088-row"></i>
         </div>
+        <div class="activity-icon" *ngIf="reportCategory === '7'">
+          <i class="icon-svg_web-icon_p3_056-ball"></i>
+        </div>
         <div class="flexCol" style="margin-left: 20px;">
           <span class="reportDateTime">
             {{'universal_group_buildFromTime' | translate: {'date': reportEndDate, 'range': period} }}
@@ -71,6 +74,9 @@
           </span>
           <span *ngIf="reportCategory === '6'" class="reportTitle">
             {{'universal_sportsName_boating' | translate}} {{'universal_activityData_sportReport' | translate}}
+          </span>
+          <span *ngIf="reportCategory === '7'" class="reportTitle">
+            {{'universal_activityData_ballSports' | translate}} {{'universal_activityData_sportReport' | translate}}
           </span>
         </div>
       </div>
@@ -253,6 +259,18 @@
               </span>
             </div>
             <span class="perTypeAvgTime">{{'universal_adjective_avg' | translate}} {{perTypeTime[5] | sportTime}}</span>
+          </div>
+          <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[6] !== 0" (click)="assignCategory('6')">
+            <div class="flexRow">
+              <span
+                class="dot"
+                [style.color]="selectType === '7' || selectType === '99' ? '#6bebf9' : '#9e9e9e'"
+              >●</span>
+              <span class="perTypeTitle">
+                {{'universal_activityData_ballSports' | translate}} {{perTypeLength[6]}} {{'universal_activityData_numberOf' | translate}}
+              </span>
+            </div>
+            <span class="perTypeAvgTime">{{'universal_adjective_avg' | translate}} {{perTypeTime[6] | sportTime}}</span>
           </div>
         </div>
       </div>

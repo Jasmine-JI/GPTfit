@@ -146,8 +146,21 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
               });
             }
           break;
+          case 6:
+            if (this.selectType !== '7' && this.selectType !== '99') {
+              sportPercentageDataset.push({
+                name: this.translateService.instant('universal_activityData_ballSports'), y: this.data[6], color: '#9e9e9e'
+              });
+            } else {
+              sportPercentageDataset.push({
+                name: this.translateService.instant('universal_activityData_ballSports'), y: this.data[6], color: '#6bebf9'
+              });
+            }
+          break;
         }
+
       }
+
     }
 
     // 根據圖表清單依序將圖表顯示出來-kidin-1081217

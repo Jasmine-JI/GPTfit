@@ -128,21 +128,25 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
       account = this.accountInput.nativeElement.value;
     }
 
-    // 當使用者按下enter，則聚焦下一個欄位
-    if (e.key === 'Enter') {
-      this.handleNext({code: 'Enter'}, 'account');
-    } else if (e.key === 'Backspace') {
-      const value = account.slice(0, account.length - 1);
-      if (value.length > 0 && this.formReg.number.test(value)) {
+    // 當使用者按下enter，則聚焦下一個欄位(使用e.key.length === 1 過濾功能鍵)
+    if (e.key.length === 1 || e.key === 'Enter' || e.key === 'Backspace') {
+
+      if (e.key === 'Enter') {
+        this.handleNext({code: 'Enter'}, 'account');
+      } else if (e.key === 'Backspace') {
+        const value = account.slice(0, account.length - 1);
+        if (value.length > 0 && this.formReg.number.test(value)) {
+          this.loginBody.signInType = 2;
+        } else {
+          this.loginBody.signInType = 1;
+        }
+
+      } else if (this.formReg.number.test(account) && this.formReg.number.test(e.key)) {
         this.loginBody.signInType = 2;
-      } else {
+      } else if (!this.formReg.number.test(e.key)) {
         this.loginBody.signInType = 1;
       }
 
-    } else if (this.formReg.number.test(account) && this.formReg.number.test(e.key)) {
-      this.loginBody.signInType = 2;
-    } else if (!this.formReg.number.test(e.key)) {
-      this.loginBody.signInType = 1;
     }
 
   }

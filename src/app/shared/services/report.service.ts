@@ -19,6 +19,7 @@ export class ReportService {
   typeSwimData$ = new BehaviorSubject<any>({});
   typeAerobicData$ = new BehaviorSubject<any>({});
   typeRowData$ = new BehaviorSubject<any>({});
+  typeBallData$ = new BehaviorSubject<any>({});
 
   constructor(private http: HttpClient) {}
 
@@ -55,7 +56,8 @@ export class ReportService {
     dataWeightTrain: Object,
     dataSwim: Object,
     dataAerobic: Object,
-    dataRow: Object
+    dataRow: Object,
+    dataBall: Object,
   ) {
     this.typeAllData$.next(dataAll);
     this.typeRunData$.next(dataRun);
@@ -64,6 +66,7 @@ export class ReportService {
     this.typeSwimData$.next(dataSwim);
     this.typeAerobicData$.next(dataAerobic);
     this.typeRowData$.next(dataRow);
+    this.typeBallData$.next(dataBall);
   }
 
   getreportCategory (): Observable<string> {
@@ -88,6 +91,8 @@ export class ReportService {
         return this.typeAerobicData$;
       case '6':
         return this.typeRowData$;
+      case '7':
+        return this.typeBallData$;
       default:
         return this.typeAllData$;
     }

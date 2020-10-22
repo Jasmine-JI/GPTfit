@@ -390,7 +390,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
     this.totalHrZoneFive = 0;
     this.avgCalories = 0;
     this.totalCalories = 0;
-    this.reportService.setTypeAllData({}, {}, {}, {}, {}, {}, {});
+    this.reportService.setTypeAllData({}, {}, {}, {}, {}, {}, {}, {});
     this.perHrZoneData = [];
     this.perTypeLength = [];
     this.perTypeTime = [];
@@ -511,7 +511,14 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
           typeRowHR = [],
           typeRowMaxHR = [],
           typeRowPower = [],
-          typeRowMaxPower = [];
+          typeRowMaxPower = [],
+          typeBallHrZoneData = [],
+          typeBallCalories = [],
+          typeBallDataDate = [],
+          typeBallSpeed = [],
+          typeBallMaxSpeed = [],
+          typeBallHR = [],
+          typeBallMaxHR = [];
 
     let typeAllTotalTrainTime = 0,
         typeAllTotalDistance = 0,
@@ -568,7 +575,16 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
         typeRowHrZoneTwo = 0,
         typeRowHrZoneThree = 0,
         typeRowHrZoneFour = 0,
-        typeRowHrZoneFive = 0;
+        typeRowHrZoneFive = 0,
+        typeBallLength = 0,
+        typeBallTotalTrainTime = 0,
+        typeBallTotalDistance = 0,
+        typeBallHrZoneZero = 0,
+        typeBallHrZoneOne = 0,
+        typeBallHrZoneTwo = 0,
+        typeBallHrZoneThree = 0,
+        typeBallHrZoneFour = 0,
+        typeBallHrZoneFive = 0;
 
     if (this.activitiesList === undefined) {
       setTimeout(() => {
@@ -861,6 +877,46 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
             }
 
             break;
+          case '7':
+            typeBallLength += +perStrokeData['totalActivities'];
+            typeBallTotalTrainTime += +perStrokeData['totalSecond'];
+            typeBallCalories.unshift(perStrokeData['calories']);
+            typeBallTotalDistance += perStrokeData['totalDistanceMeters'];
+            typeBallDataDate.unshift(this.activitiesList[i].startTime.split('T')[0]);
+            typeBallSpeed.unshift(perStrokeData['avgSpeed']);
+            typeBallMaxSpeed.unshift(perStrokeData['avgMaxSpeed']);
+            typeBallHR.unshift(perStrokeData['avgHeartRateBpm']);
+            typeBallMaxHR.unshift(perStrokeData['avgMaxHeartRateBpm']);
+
+            if (perStrokeData['totalHrZone0Second'] !== null) {
+              typeBallHrZoneZero += perStrokeData['totalHrZone0Second'];
+              typeBallHrZoneOne += perStrokeData['totalHrZone1Second'];
+              typeBallHrZoneTwo += perStrokeData['totalHrZone2Second'];
+              typeBallHrZoneThree += perStrokeData['totalHrZone3Second'];
+              typeBallHrZoneFour += perStrokeData['totalHrZone4Second'];
+              typeBallHrZoneFive += perStrokeData['totalHrZone5Second'];
+              if (
+                perStrokeData['totalHrZone0Second'] +
+                perStrokeData['totalHrZone1Second'] +
+                perStrokeData['totalHrZone2Second'] +
+                perStrokeData['totalHrZone3Second'] +
+                perStrokeData['totalHrZone4Second'] +
+                perStrokeData['totalHrZone5Second'] !== 0
+              ) {
+                typeBallHrZoneData.unshift([
+                  perStrokeData.type,
+                  perStrokeData['totalHrZone0Second'],
+                  perStrokeData['totalHrZone1Second'],
+                  perStrokeData['totalHrZone2Second'],
+                  perStrokeData['totalHrZone3Second'],
+                  perStrokeData['totalHrZone4Second'],
+                  perStrokeData['totalHrZone5Second'],
+                  this.activitiesList[i].startTime.split('T')[0]
+                ]);
+              }
+            }
+
+            break;
         }
       }
 
@@ -873,7 +929,8 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
           typeWeightTrainAvgTrainTime = (typeWeightTrainTotalTrainTime / typeWeightTrainLength) || 0,
           typeSwimAvgTrainTime = (typeSwimTotalTrainTime / typeSwimLength) || 0,
           typeAerobicAvgTrainTime = (typeAerobicTotalTrainTime / typeAerobicLength) || 0,
-          typeRowAvgTrainTime = (typeRowTotalTrainTime / typeRowLength) || 0;
+          typeRowAvgTrainTime = (typeRowTotalTrainTime / typeRowLength) || 0,
+          typeBallAvgTrainTime = (typeBallTotalTrainTime / typeBallLength) || 0;
 
     const typeAllData = {
       activityLength: this.activityLength,
@@ -887,14 +944,15 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
       HrZoneThree: typeAllHrZoneThree,
       HrZoneFour: typeAllHrZoneFour,
       HrZoneFive: typeAllHrZoneFive,
-      perTypeLength: [typeRunLength, typeCycleLength, typeWeightTrainLength, typeSwimLength, typeAerobicLength, typeRowLength],
+      perTypeLength: [typeRunLength, typeCycleLength, typeWeightTrainLength, typeSwimLength, typeAerobicLength, typeRowLength, typeBallLength],
       perTypeTime: [
         typeRunAvgTrainTime,
         typeCycleAvgTrainTime,
         typeWeightTrainAvgTrainTime,
         typeSwimAvgTrainTime,
         typeAerobicAvgTrainTime,
-        typeRowAvgTrainTime
+        typeRowAvgTrainTime,
+        typeBallAvgTrainTime
       ],
       perHrZoneData: this.computeSameHRZoneData(typeAllHrZoneData),
       perCaloriesData: this.computeSameDayData(typeAllCalories, [], typeAllDataDate, 'calories'),
@@ -1002,6 +1060,23 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
       perPowerData: this.computeSportData(typeRowPower, typeRowMaxPower, typeRowDataDate, 'power')
     };
 
+    const typeBallData = {
+      activityLength: typeBallLength,
+      totalTime: this.formatTime(typeBallTotalTrainTime),
+      avgTime: this.formatTime(typeBallAvgTrainTime),
+      distance: typeBallTotalDistance,
+      HrZoneZero: typeBallHrZoneZero,
+      HrZoneOne: typeBallHrZoneOne,
+      HrZoneTwo: typeBallHrZoneTwo,
+      HrZoneThree: typeBallHrZoneThree,
+      HrZoneFour: typeBallHrZoneFour,
+      HrZoneFive: typeBallHrZoneFive,
+      perHrZoneData: this.computeSameHRZoneData(typeBallHrZoneData),
+      perCaloriesData: this.computeSameDayData(typeBallCalories, [], typeBallDataDate, 'calories'),
+      perPaceData: this.computePace(typeBallSpeed, typeBallMaxSpeed, typeBallDataDate, 6),
+      perHRData: this.computeSportData(typeBallHR, typeBallMaxHR, typeBallDataDate, 'HR')
+    };
+
     this.reportService.setTypeAllData(
       typeAllData,
       typeRunData,
@@ -1010,6 +1085,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
       typeSwimData,
       typeAerobicData,
       typeRowData,
+      typeBallData
     );
     this.isLoading = false;
 

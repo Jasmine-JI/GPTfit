@@ -316,6 +316,14 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.shrinkSidebar();
     }
 
+    switch (_target) {
+      case 14:
+      case 15:
+      case 6:
+        this.uiFlag.currentDrop = '';
+        break;
+    }
+
   }
 
   logout() {
