@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-
+import { ReportConditionOpt } from '../models/report-condition'
 import moment from 'moment';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
 
 
 @Injectable()
@@ -20,6 +20,7 @@ export class ReportService {
   typeAerobicData$ = new BehaviorSubject<any>({});
   typeRowData$ = new BehaviorSubject<any>({});
   typeBallData$ = new BehaviorSubject<any>({});
+  reportCondition$ = new ReplaySubject<ReportConditionOpt>();
 
   constructor(private http: HttpClient) {}
 
@@ -75,6 +76,14 @@ export class ReportService {
 
   getReportAddition (): Observable<Array<BehaviorSubject<string>>> {
     return this.addition$;
+  }
+
+  setReportCondition(status: ReportConditionOpt) {
+    this.reportCondition$.next(status);
+  }
+
+  getReportCondition(): Observable<ReportConditionOpt> {
+    return this.reportCondition$;
   }
 
   getTypeData (type: string) {

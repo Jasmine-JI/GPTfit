@@ -21,6 +21,7 @@ import { RegionCodePipe } from './region-code.pipe';
 import { LanguageCodePipe } from './language-code.pipe';
 import { AppIdPipe } from './app-id.pipe';
 import { SystemIdPipe } from './system-id.pipe';
+import { SportTypePipe } from './sport-type.pipe'
 
 
 @NgModule({
@@ -49,7 +50,8 @@ import { SystemIdPipe } from './system-id.pipe';
     RegionCodePipe,
     LanguageCodePipe,
     AppIdPipe,
-    SystemIdPipe
+    SystemIdPipe,
+    SportTypePipe
   ],
   exports: [
     SexPipe,
@@ -73,7 +75,8 @@ import { SystemIdPipe } from './system-id.pipe';
     RegionCodePipe,
     LanguageCodePipe,
     AppIdPipe,
-    SystemIdPipe
+    SystemIdPipe,
+    SportTypePipe
   ]
 })
 export class SharedPipes {}

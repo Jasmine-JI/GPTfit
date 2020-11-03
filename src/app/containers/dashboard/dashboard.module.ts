@@ -54,7 +54,6 @@ import { PeopleSelectorWinComponent } from './components/people-selector-win/peo
 import { DashboardGuard } from './guards/dashboard-guard';
 import { UnsaveGuard } from '../dashboard/guards/unsave-guard';
 import { ActivityService } from '@shared/services/activity.service';
-import { SportTypePipe } from './pipes/sport-type.pipe';
 import { SportDatePipe } from './pipes/sport-date.pipe';
 import { SportPacePipe } from './pipes/sport-pace.pipe';
 import { ProductErrorLogPipe } from './pipes/product-error-log.pipe';
@@ -94,14 +93,16 @@ import { ComLifeTrackingComponent } from './group/group-info/com-life-tracking/c
 import { ModifyBoxComponent } from './components/settings/privacy-settings/modify-box/modify-box.component';
 import { QrcodeUploadComponent } from './components/qrcode-upload/qrcode-upload.component';
 import { OfficialActivityService } from '../../shared/services/official-activity.service';
+import { GroupPageTitlePipe } from './pipes/group-page-title.pipe';
 
 import { GroupInfoComponent as GroupInfoV2Component } from './group-v2/group-info/group-info.component';
 import { SearchGroupComponent } from './group-v2/search-group/search-group.component';
-import { EditGroupComponent } from './group-v2/group-info/edit-group/edit-group.component';
+import { GroupIntroductionComponent } from './group-v2/group-info/group-introduction/group-introduction.component';
 import { SportsReportComponent } from './group-v2/group-info/sports-report/sports-report.component';
 import { MyClassReportComponent } from './group-v2/group-info/my-class-report/my-class-report.component';
 import { CommercePlanComponent } from './group-v2/group-info/commerce-plan/commerce-plan.component';
 import { MemberListComponent } from './group-v2/group-info/member-list/member-list.component';
+import { AdminListComponent } from './group-v2/group-info/admin-list/admin-list.component';
 import { GroupArchitectureComponent } from './group-v2/group-info/group-architecture/group-architecture.component';
 import { CloudrunReportComponent } from './group-v2/group-info/cloudrun-report/cloudrun-report.component';
 import { ActivityListManageComponent } from './components/official-activity-manage/activity-list-manage/activity-list-manage.component';
@@ -188,7 +189,6 @@ import { PushMessageListComponent } from './components/push-message/push-message
     RightSettingWinComponent,
     InnerSettingsComponent,
     PeopleSelectorWinComponent,
-    SportTypePipe,
     SportDatePipe,
     SportPacePipe,
     ProductErrorLogPipe,
@@ -214,14 +214,16 @@ import { PushMessageListComponent } from './components/push-message/push-message
     ComLifeTrackingComponent,
     ModifyBoxComponent,
     QrcodeUploadComponent,
+    GroupPageTitlePipe,
 
     GroupInfoV2Component,
     SearchGroupComponent,
-    EditGroupComponent,
+    GroupIntroductionComponent,
     SportsReportComponent,
     MyClassReportComponent,
     CommercePlanComponent,
     MemberListComponent,
+    AdminListComponent,
     GroupArchitectureComponent,
     CloudrunReportComponent,
     ActivityListManageComponent,

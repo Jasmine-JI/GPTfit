@@ -1231,7 +1231,7 @@
  "universal_activityData_fileNameToLong": "名称长度必须为{{number}}-{{number}}个字",
  "universal_activityData_burdenInfo": "负载资讯",
  "universal_activityData_lastWeight": "上组重量",
- "universal_activityData_lastTotalWeight": "nn",
+ "universal_activityData_lastTotalWeight": "上组总重量",
  "universal_activityData_limit_lastWeight": "上组重量",
  "universal_activityData_limit_lastTotalWeight": "上组总重量",
  "universal_operating_startExercising": "开始运动",
@@ -2164,4 +2164,5 @@
  "universal_lifeTracking_limit_deepSleep": "深眠",
  "universal_lifeTracking_limit_lightSleep": "淺眠",
  "universal_lifeTracking_limit_wideAwake": "清醒",
- "universal_lifeTracking_limit_rollingOver": "翻身"}
+ "universal_lifeTracking_limit_rollingOver": "翻身",
+ "universal_activityData_calendarSelect": "历期选择"}

@@ -7,7 +7,6 @@ import {
 } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import 'rxjs/add/operator/take';
 import { GroupService } from '../services/group.service'
 import { UtilsService } from '@shared/services/utils.service';
 import { HashIdService } from '@shared/services/hash-id.service';
