@@ -234,7 +234,7 @@ export class AppForgetpwComponent implements OnInit, AfterViewInit, OnDestroy {
     if (e.key) {
       const account = e.currentTarget.value;
 
-      if (e.key !== 'Enter') {
+      if (e.key.length === 1 || e.key === 'Backspace') {
 
         if (e.key === 'Backspace') {
           const value = account.slice(0, account.length - 1);

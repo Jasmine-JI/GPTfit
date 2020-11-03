@@ -47,11 +47,12 @@ import { PushMessageListComponent } from './components/push-message/push-message
 import { GroupInfoComponent as GroupInfoV2Component } from './group-v2/group-info/group-info.component';
 import { SearchGroupComponent } from './group-v2/search-group/search-group.component';
 import { MyGroupListComponent as MyGroupListV2Component } from './group-v2/my-group-list/my-group-list.component';
-import { EditGroupComponent } from './group-v2/group-info/edit-group/edit-group.component';
+import { GroupIntroductionComponent } from './group-v2/group-info/group-introduction/group-introduction.component';
 import { SportsReportComponent } from './group-v2/group-info/sports-report/sports-report.component';
 import { MyClassReportComponent } from './group-v2/group-info/my-class-report/my-class-report.component';
 import { CommercePlanComponent } from './group-v2/group-info/commerce-plan/commerce-plan.component';
 import { MemberListComponent } from './group-v2/group-info/member-list/member-list.component';
+import { AdminListComponent } from './group-v2/group-info/admin-list/admin-list.component';
 import { GroupArchitectureComponent } from './group-v2/group-info/group-architecture/group-architecture.component';
 import { CloudrunReportComponent } from './group-v2/group-info/cloudrun-report/cloudrun-report.component';
 import { LifeTrackingComponent as LifeTrackingV2Component } from './group-v2/group-info/life-tracking/life-tracking.component';
@@ -292,8 +293,8 @@ const routes: Routes = [
         component: GroupInfoV2Component,
         children: [
           {
-            path: 'edit-group',
-            component: EditGroupComponent
+            path: 'group-introduction',
+            component: GroupIntroductionComponent
           },
           {
             path: 'commerce-plan',
@@ -306,6 +307,10 @@ const routes: Routes = [
           {
             path: 'member-list',
             component: MemberListComponent
+          },
+          {
+            path: 'admin-list',
+            component: AdminListComponent
           },
           {
             path: 'myclass-report',

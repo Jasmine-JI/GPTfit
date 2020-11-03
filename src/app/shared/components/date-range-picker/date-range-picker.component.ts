@@ -18,6 +18,10 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
   @Input() startTimeStamp: number;
   @Input() endTimeStamp: number;
   @Input() noBorder = false;
+  @Input() openLeft = false;
+  @Input() openPicker: boolean;
+  @Input() limitMax: boolean;
+  @Input() maxWidth: string;
 
   // 預設上週-kidin-1090330
   defaultDate = {
@@ -42,98 +46,112 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
     this.getDefaultDate();
     this.translate.get('hello.world').subscribe(() => {
 
-      if (this.pickerType === 'singlePicker') {  // 單一日期選擇器
-
-        jquery('input[name="dates"]').daterangepicker({
-          singleDatePicker: true,
-          showDropdowns: true,
-          minYear: +moment().format('YYYY'),
-          minDate: moment(),
-          startDate: moment(this.refStartDate),
-          endDate: moment(this.refStartDate),
-          locale: {
-            format: 'YYYY/MM/DD'
-          },
-          ranges: {
-            [`1 ${this.translate.instant('universal_time_month')}`]:
-              [moment(this.refStartDate).subtract(-1, 'month'), moment(this.refStartDate).subtract(-1, 'month')],
-            [`2 ${this.translate.instant('universal_time_month')}`]:
-              [moment(this.refStartDate).subtract(-2, 'month'), moment(this.refStartDate).subtract(-2, 'month')],
-            [`3 ${this.translate.instant('universal_time_month')}`]:
-              [moment(this.refStartDate).subtract(-3, 'month'), moment(this.refStartDate).subtract(-3, 'month')],
-            [`6 ${this.translate.instant('universal_time_month')}`]:
-              [moment(this.refStartDate).subtract(-6, 'month'), moment(this.refStartDate).subtract(-6, 'month')],
-            [`1 ${this.translate.instant('universal_time_year')}`]:
-              [moment(this.refStartDate).subtract(-1, 'year'), moment(this.refStartDate).subtract(-1, 'year')],
-            [`2 ${this.translate.instant('universal_time_year')}`]:
-              [moment(this.refStartDate).subtract(-2, 'year'), moment(this.refStartDate).subtract(-2, 'year')]
-          },
-          showCustomRangeLabel: false,
-          alwaysShowCalendars: true
-        });
-
-      } else if (this.pickerType === 'simpleSinglePicker') {
-
-        jquery('input[name="dates"]').daterangepicker({
-          singleDatePicker: true,
-          showDropdowns: true,
-          minYear: +moment().format('YYYY'),
-          minDate: moment(),
-          startDate: moment(this.defaultDate.startDate),
-          endDate: moment(this.defaultDate.startDate),
-          locale: {
-            format: 'YYYY/MM/DD'
-          },
-          showCustomRangeLabel: false,
-          alwaysShowCalendars: true
-        });
-
-      } else if (this.pickerType === 'rangePick') {  // 範圍日期選擇器(無快速選擇自訂日期區間)
-
-        jquery('input[name="dates"]').daterangepicker({
-          startDate: moment(this.defaultDate.startDate),
-          endDate: moment(this.defaultDate.endDate),
-          minYear: 2010,
-          locale: {
-            format: 'YYYY/MM/DD'
-          },
-          showCustomRangeLabel: false,
-          alwaysShowCalendars: true
-        });
-
-      } else {  // 範圍日期選擇器
-
-        jquery('input[name="dates"]').daterangepicker({
-          startDate: moment(this.defaultDate.startDate),
-          endDate: moment(this.defaultDate.endDate),
-          minYear: 2010,
-          maxDate: moment(),
-          locale: {
-            format: 'YYYY/MM/DD'
-          },
-          ranges: {
-            [this.translate.instant('universal_time_today')]: [moment(), moment()],
-            [this.translate.instant('universal_time_last7Days')]: [moment().subtract(6, 'days'), moment()],
-            [this.translate.instant('universal_time_last30Days')]: [moment().subtract(29, 'days'), moment()],
-            [this.translate.instant('universal_time_thisWeek')]: [moment().startOf('week'), moment().endOf('week')],
-            [this.translate.instant('universal_time_lastWeek')]:
-              [moment().subtract(1, 'week').startOf('week'), moment().subtract(1, 'week').endOf('week')],
-            [this.translate.instant('universal_time_thisMonth')]:
-              [moment().startOf('month'), moment().endOf('month')],
-            [this.translate.instant('universal_time_lastMonth')]:
-              [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-          },
-          showCustomRangeLabel: false,
-          alwaysShowCalendars: true
-        });
+      let pickerOpt: object;
+      switch (this.pickerType) {
+        case 'singlePicker': // 單一日期選擇器
+          pickerOpt = {
+            singleDatePicker: true,
+            showDropdowns: true,
+            minYear: +moment().format('YYYY'),
+            minDate: moment(),
+            startDate: moment(this.refStartDate),
+            endDate: moment(this.refStartDate),
+            locale: {
+              format: 'YYYY/MM/DD'
+            },
+            ranges: {
+              [`1 ${this.translate.instant('universal_time_month')}`]:
+                [moment(this.refStartDate).subtract(-1, 'month'), moment(this.refStartDate).subtract(-1, 'month')],
+              [`2 ${this.translate.instant('universal_time_month')}`]:
+                [moment(this.refStartDate).subtract(-2, 'month'), moment(this.refStartDate).subtract(-2, 'month')],
+              [`3 ${this.translate.instant('universal_time_month')}`]:
+                [moment(this.refStartDate).subtract(-3, 'month'), moment(this.refStartDate).subtract(-3, 'month')],
+              [`6 ${this.translate.instant('universal_time_month')}`]:
+                [moment(this.refStartDate).subtract(-6, 'month'), moment(this.refStartDate).subtract(-6, 'month')],
+              [`1 ${this.translate.instant('universal_time_year')}`]:
+                [moment(this.refStartDate).subtract(-1, 'year'), moment(this.refStartDate).subtract(-1, 'year')],
+              [`2 ${this.translate.instant('universal_time_year')}`]:
+                [moment(this.refStartDate).subtract(-2, 'year'), moment(this.refStartDate).subtract(-2, 'year')]
+            },
+            showCustomRangeLabel: false,
+            alwaysShowCalendars: true
+          };
+          break;
+        case 'simpleSinglePicker': // 單一日期選擇器(無快速選擇自訂日期區間)
+          pickerOpt = {
+            singleDatePicker: true,
+            showDropdowns: true,
+            minYear: +moment().format('YYYY'),
+            minDate: moment(),
+            startDate: moment(this.defaultDate.startDate),
+            endDate: moment(this.defaultDate.startDate),
+            locale: {
+              format: 'YYYY/MM/DD'
+            },
+            showCustomRangeLabel: false,
+            alwaysShowCalendars: true
+          }
+          break;
+        case 'rangePick': // 範圍日期選擇器(無快速選擇自訂日期區間)
+          pickerOpt = {
+            startDate: moment(this.defaultDate.startDate),
+            endDate: moment(this.defaultDate.endDate),
+            minYear: 2010,
+            locale: {
+              format: 'YYYY/MM/DD'
+            },
+            showCustomRangeLabel: false,
+            alwaysShowCalendars: true
+          }
+          break;
+        default: // 預設範圍日期選擇器
+          pickerOpt = {
+            startDate: moment(this.defaultDate.startDate),
+            endDate: moment(this.defaultDate.endDate),
+            minYear: 2010,
+            maxDate: moment(),
+            locale: {
+              format: 'YYYY/MM/DD'
+            },
+            ranges: {
+              [this.translate.instant('universal_time_today')]: [moment(), moment()],
+              [this.translate.instant('universal_time_last7Days')]: [moment().subtract(6, 'days'), moment()],
+              [this.translate.instant('universal_time_last30Days')]: [moment().subtract(29, 'days'), moment()],
+              [this.translate.instant('universal_time_thisWeek')]: [moment().startOf('week'), moment().endOf('week')],
+              [this.translate.instant('universal_time_lastWeek')]:
+                [moment().subtract(1, 'week').startOf('week'), moment().subtract(1, 'week').endOf('week')],
+              [this.translate.instant('universal_time_thisMonth')]:
+                [moment().startOf('month'), moment().endOf('month')],
+              [this.translate.instant('universal_time_lastMonth')]:
+                [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            },
+            showCustomRangeLabel: false,
+            alwaysShowCalendars: true
+          }
+          break;
 
       }
 
+      if (this.openLeft) {
+        Object.assign(pickerOpt, {opens: 'left'});
+      }
+
+      if (this.limitMax) {
+        Object.assign(pickerOpt, {maxDate: moment()})
+      }
+
+      jquery('input[name="dates"]').daterangepicker(pickerOpt);
       jquery('input[name="dates"]').on('apply.daterangepicker', this.emitDateRange.bind(this));
 
-      this.selectDateRange.emit(this.defaultDate);
+      if (this.openPicker) {
+        const picker = document.getElementById('picker');
+        picker.click();
+      } else if (this.openPicker === undefined) {
+        this.selectDateRange.emit(this.defaultDate);
+      }
+      
     });
-
+    
   }
 
   // 取得預設日期-kidin-1090331
@@ -208,12 +226,15 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
 
   // 發送日期區間給父組件-kidin-1090330
   emitDateRange (event, picker) {
-    const dateRange = {
-      startDate: picker.startDate.format('YYYY-MM-DDT00:00:00.000Z'),
-      endDate: picker.endDate.format('YYYY-MM-DDT23:59:59.999Z')
-    };
+    if (this.openPicker === undefined || this.openPicker) {
+      const dateRange = {
+        startDate: picker.startDate.format('YYYY-MM-DDT00:00:00.000Z'),
+        endDate: picker.endDate.format('YYYY-MM-DDT23:59:59.999Z')
+      };
 
-    this.selectDateRange.emit(dateRange);
+      this.selectDateRange.emit(dateRange);
+    }
+
   }
 
 }

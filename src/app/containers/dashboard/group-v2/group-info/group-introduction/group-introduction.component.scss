@@ -1,0 +1,10 @@
+@import 'font.scss';
+@import 'color.scss';
+
+.info__title {
+  @include bold-font(14px);
+}
+
+.info__item__title {
+  color: $gray;
+}

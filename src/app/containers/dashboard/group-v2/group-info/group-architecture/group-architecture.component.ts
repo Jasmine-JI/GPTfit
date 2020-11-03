@@ -48,6 +48,7 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
    */
   getAllLevelGroupData() {
     this.groupService.getAllLevelGroupData().pipe(
+      takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       this.groupArchitecture = res;
       console.log('groupArchitecture', this.groupArchitecture);

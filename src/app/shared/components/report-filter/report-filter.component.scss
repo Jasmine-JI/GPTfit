@@ -1,0 +1,202 @@
+@import 'transition.scss';
+@import 'flex-center.scss';
+@import 'font.scss';
+@import "rotate.scss";
+
+$active-color: rgba(38, 171, 227, 1);
+$hover-bg-gray: rgba(240, 240, 240, 1);
+
+@mixin default-btn($bg-color) {
+  @include center();
+  @include transition(background-color);
+  cursor: pointer;
+  width: fit-content;
+  padding: 5px 10px;
+  margin: 5px;
+  background-color: $bg-color;
+  @content;
+}
+
+.condition__unfold__icon {
+  @include transition(transform);
+  margin-left: 10px;
+}
+
+.condition__fold__icon {
+  @include transition(transform);
+  @include el-rotate(180deg);
+}
+
+#date__selector__bar {
+  @include center();
+  height: 50px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(225, 225, 225, 1);
+}
+
+.date__type__bar {
+  @include transition(transform);
+  height: 100%;
+}
+
+.selector__tab__title {
+  @include center();
+  color: rgba(120, 120, 120, 1);
+  font-size: 14px;
+  padding: 0 24px;
+  min-width: 160px;
+  text-align: center;
+  white-space: nowrap;
+  height: 100%;
+
+  &:hover {
+    background-color: $hover-bg-gray;
+  }
+
+}
+
+.switch__btn {
+  @include center();
+  font-size: 24px;
+
+  &:hover {
+    background-color: $hover-bg-gray;
+  }
+
+}
+
+.btn__disabled {
+  color: rgba(200, 200, 200, 1);
+  pointer-events: none;
+}
+
+.date__drop {
+  align-items: center;
+  min-width: 120px;
+  width: fit-content;
+  border: 1px solid rgba(210, 210, 210, 1);
+  cursor: pointer;
+  position: absolute;
+  top: 50px;
+  z-index: 1;
+  background-color: white;
+}
+
+.calendar_period__option {
+  padding: 5px 0;
+  width: 100%;
+  text-align: center;
+  
+  &:hover {
+    background-color: $active-color;
+    color: white;
+  }
+
+}
+
+.date__type--active {
+  color: $active-color;
+}
+
+.date__selector--active {
+  @include transition(transform);
+  width: 160px;
+  border-bottom: 3px solid $active-color;
+  position: absolute;
+  top: 45px;
+}
+
+.condition__title {
+  @include subtitle-or-focus(16px);
+}
+
+.condition__subtitle {
+  @include subtitle-color-custom(14px, rgba(130, 130, 130, 1));
+}
+
+.condition__content {
+  margin-left: 35px;
+}
+
+.condition__btn {
+  @include default-btn(rgba(190, 190, 190, 1));
+  color: white;
+  font-size: 14px;
+  border-radius: 3px;
+
+  &:hover {
+    background-color: rgba(150, 150, 150, 1);
+  }
+
+}
+
+.condition__btn--active {
+  @include transition(background-color);
+  color: black;
+  background-color: rgba(255, 254, 169, 1);
+
+  &:hover {
+    background-color: rgba(255, 253, 120, 1);
+  }
+
+}
+
+.confirm__btn {
+  @include default-btn(rgba(38, 171, 227, 1));
+  @include transition(top);
+  @include transition(left);
+  position: relative;
+  color: white;
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.3);
+
+  &:hover {
+    background-color: rgba(50, 190, 250, 1);
+  }
+
+  &:active {
+    top: 2px;
+    left: 2px;
+    @include transition(top);
+    @include transition(left);
+  }
+
+}
+
+#map__choice {
+  display: flex;
+  justify-content: center;
+  min-width: 200px;
+  width: fit-content;
+  height: 30px;
+  border: 1px solid;
+  padding: 0 5px;
+
+  span {
+
+    &::after {
+      content: '';
+      position: relative;
+      top: 13px;
+      left: 5px;
+      border-style: solid;
+      border-width: 5px 5px 0px 5px;
+      border-color: black transparent transparent transparent;
+    }
+
+  }
+
+}
+
+.choice__item {
+  padding: 2px;
+  @include transition(color);
+  @include transition(background-color);
+
+  &:hover {
+    color: white;
+    background-color: $active-color;
+    @include transition(color);
+    @include transition(background-color);
+  }
+
+}

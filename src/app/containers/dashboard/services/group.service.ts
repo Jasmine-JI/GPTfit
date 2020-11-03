@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject, throwError } from 'rxjs';
+import { Observable, BehaviorSubject, ReplaySubject, throwError } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
 import { UtilsService } from '@shared/services/utils.service';
 import { UserProfileService } from '../../../shared/services/user-profile.service'
@@ -22,7 +22,7 @@ export class GroupService {
   groupInfo$ = new BehaviorSubject<any>({}); // 儲存group資訊-kidin-1081210
   allLevelGroupInfo$ = new BehaviorSubject<any>({}); // 儲存 同"品牌/企業" group 資訊-kidin-1090604
   groupDetail$ = new BehaviorSubject<any>({});  // 儲存群組基本概要方便各子頁面使用-kidin-1091020
-  allLevelGroupData$ = new BehaviorSubject<any>({}); // 儲存 同"品牌/企業" group 資訊-kidin-1090716
+  allLevelGroupData$ = new ReplaySubject<any>(); // 儲存 同"品牌/企業" group 資訊-kidin-1090716
   updatedGroupImg$ = new BehaviorSubject<string>('');
   memberList$ = new BehaviorSubject<any>({
     groupId: '',

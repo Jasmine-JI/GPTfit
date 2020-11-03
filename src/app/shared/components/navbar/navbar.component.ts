@@ -27,7 +27,7 @@ export class NavbarComponent implements OnInit {
   navItemNum = 1;
   login$: Observable<boolean>;
   langName: string;
-  hideLogout = true;
+  hideLogout = false;
   langData = {
     'zh-tw': '繁體中文',
     'zh-cn': '简体中文',

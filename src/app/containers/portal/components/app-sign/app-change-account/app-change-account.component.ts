@@ -217,7 +217,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
   determineAccountType(e: KeyboardEvent) {
     const account = (e as any).currentTarget.value;
 
-    if (e.key !== 'Enter') {
+    if (e.key.length === 1 || e.key === 'Backspace') {
      
       if (e.key === 'Backspace') {
         const value = account.slice(0, account.length - 1);

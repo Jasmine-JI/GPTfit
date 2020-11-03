@@ -413,7 +413,7 @@ export class EditGroupInfoComponent implements OnInit {
       const { groupName, groupDesc, groupStatus, groupVideoUrl } = value;
       const image = new Image();
 
-      if (location.pathname === 'www.gptfit.com') {
+      if (location.hostname === 'www.gptfit.com') {
         image.src = this.finalImageLink.replace('cloud.alatech.com.tw', 'www.gptfit.com');
       } else {
         image.src = this.finalImageLink;
