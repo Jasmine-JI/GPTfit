@@ -1,5 +1,6 @@
 // 通用標題/副標題
 $color-focus: #26abe3;
+$color-subtitle: rgba(130, 130, 130, 1);
 
 @mixin bold-font($size: 14px) {
   font-size: $size;
@@ -9,4 +10,9 @@ $color-focus: #26abe3;
 @mixin subtitle-or-focus($size: 14px) {
   @include bold-font($size);
   color: $color-focus;
+}
+
+@mixin subtitle-color-custom($size: 14px, $color: rgba(130, 130, 130, 1)) {
+  @include bold-font($size);
+  color: $color;
 }

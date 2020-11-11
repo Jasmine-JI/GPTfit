@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EditGroupComponent } from './edit-group.component';
+import { AdminListComponent } from './admin-list.component';
 
-describe('EditGroupComponent', () => {
-  let component: EditGroupComponent;
-  let fixture: ComponentFixture<EditGroupComponent>;
+describe('AdminListComponent', () => {
+  let component: AdminListComponent;
+  let fixture: ComponentFixture<AdminListComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ EditGroupComponent ]
+      declarations: [ AdminListComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(EditGroupComponent);
+    fixture = TestBed.createComponent(AdminListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

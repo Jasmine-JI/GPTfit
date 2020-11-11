@@ -8,7 +8,6 @@ import {
 import { Observable } from 'rxjs';
 import { take, map } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
-import 'rxjs/add/operator/take';
 
 @Injectable()
 export class SigninGuard implements CanActivate {

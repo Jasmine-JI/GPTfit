@@ -1,1 +1,181 @@
-<p>report-filter works!</p>
+<div style="width: 90vw; max-width: 800px;" [class.reportPreviewMode]="uiFlag.isPreviewMode">
+  <div class="flexRow" style="align-items: center; cursor: pointer;" (click)="openConditionSelector()">
+    <span class="condition__title">{{ 'universal_operating_filter' | translate }}</span>
+    <i
+      class="icon-svg_web-icon_p1_006-unfold condition__unfold__icon"
+      [class.condition__fold__icon]="uiFlag.showConditionSelector"
+    ></i>
+  </div>
+  <main *ngIf="uiFlag.showConditionSelector">
+    <section id="date__selector__bar">
+      <div #dateSelectorBar class="flexRow" style="height: 48px; position: relative;">
+        <i
+          class="icon-svg_web-icon_p1_073-level_fold switch__btn"
+          (click)="shiftDateTypeBar('pre')"
+          [style.border-right]="uiFlag.disableBtn !== 'pre' ? '2px solid rgba(230, 230, 230, 1)' : 'none'"
+          [class.btn__disabled]="uiFlag.disableBtn === 'pre'"
+          *ngIf="uiFlag.showDateTypeShiftIcon"
+        ></i>
+        <div
+          class="flexCol date__type__content"
+          style="display: flex; overflow: hidden; justify-content: center; position: relative;"
+          [style.max-width]="uiFlag.dateTypeBarWidth"
+        >
+          <div class="flexRow date__type__bar" [style.transform]="uiFlag.dateTypeBarOffset">
+            <span
+              class="selector__tab__title"
+              [class.date__type--active]="date.type === 'sevenDay'"
+              (click)="selectDateRange($event, 0)"
+            >7{{'universal_time_day' | translate}}</span>
+            <span
+              class="selector__tab__title"
+              [class.date__type--active]="date.type === 'thirtyDay'"
+              (click)="selectDateRange($event, 1)"
+            >30{{'universal_time_day' | translate}}</span>
+            <span
+              class="selector__tab__title"
+              [class.date__type--active]="date.type === 'sixMonth'"
+              (click)="selectDateRange($event, 2)"
+            >6{{'universal_time_month' | translate}}</span>
+            <div #calendarPeriod style="display: flex; justify-content: center; position: relative;">
+              <span
+                class="selector__tab__title"
+                [class.date__type--active]="date.type === 'today' || date.type === 'thisWeek' || date.type === 'thisMonth' || date.type === 'thisYear'"
+                (click)="selectDateRange($event, 3)"
+              >選擇曆期</span>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: center;">
+              <span
+                class="selector__tab__title"
+                [class.date__type--active]="date.type === 'custom'"
+                (click)="selectDateRange($event, 4)"
+              >{{'universal_activityData_dateRange' | translate}}</span>
+              <app-date-range-picker
+                style="position: absolute; bottom: 0px; z-index: -1; opacity: 0; pointer-events: none;"
+                [pickerType]="'rangePick'"
+                [startTimeStamp]="date?.startTimestamp"
+                [endTimeStamp]="date.endTimestamp"
+                [openLeft]="true"
+                [openPicker]="date.openSelector === 'custom'"
+                [limitMax]="true"
+                [maxWidth]="'0px'"
+                (selectDateRange)="getSelectDate($event)"
+              ></app-date-range-picker>
+            </div>
+          </div>
+          <div class="date__selector--active" [style.transform]="uiFlag.activeDateTypeOffset"></div>
+        </div>
+        <i
+          class="icon-svg_web-icon_p1_074-level_unfold switch__btn"
+          (click)="shiftDateTypeBar('next')"
+          [style.border-left]="uiFlag.disableBtn !== 'next' ? '2px solid rgba(230, 230, 230, 1)' : 'none'"
+          [class.btn__disabled]="uiFlag.disableBtn === 'next'"
+          *ngIf="uiFlag.showDateTypeShiftIcon"
+        ></i>
+        <div
+          class="flexCol date__drop"
+          [style.transform]="uiFlag.calendarPeriodOffset"
+          *ngIf="date.openSelector === 'calendarPeriod'"
+        >
+          <span class="calendar_period__option" (click)="selectCalendarPeroid('today')">{{'universal_time_today' | translate}}</span>
+          <span class="calendar_period__option" (click)="selectCalendarPeroid('thisWeek')">{{'universal_time_thisWeek' | translate}}</span>
+          <span class="calendar_period__option" (click)="selectCalendarPeroid('thisMonth')">{{'universal_time_thisMonth' | translate}}</span>
+          <span class="calendar_period__option" (click)="selectCalendarPeroid('thisYear')">今年</span>
+        </div>
+      </div>
+    </section>
+    <section style="font-weight: 700; letter-spacing: 1.5px; margin: 5px 0px; display:flex; align-items: center;">
+      <button mat-icon-button
+        (click)="shiftPreTime()"
+        class="report-time-btn"
+      >
+        <mat-icon style="cursor: pointer">
+          keyboard_arrow_left
+        </mat-icon>
+      </button>
+      <button mat-icon-button
+        (click)="shiftNextTime()"
+        [disabled]="date.endTimestamp >= date.maxTimestamp"
+        class="report-time-btn"
+      >
+        <mat-icon style="cursor: pointer">
+          keyboard_arrow_right
+        </mat-icon>
+      </button>
+      {{date.startTimestamp | timeFormat: 'YYYY/MM/DD'}} - {{date.endTimestamp | timeFormat: 'YYYY/MM/DD'}}
+    </section>
+    <section class="flexCol" *ngIf="reportConditionOpt && reportConditionOpt.brandType !== null">
+      <span class="condition__title">{{ 'universal_group_group' | translate }}</span>
+      <div class="flexCol condition__content">
+        <div class="flexCol" *ngIf="reportConditionOpt.group.brands !== null">
+          <span class="condition__subtitle" *ngIf="reportConditionOpt.brandType === 1">{{ 'universal_group_brand' | translate }}</span>
+          <span class="condition__subtitle" *ngIf="reportConditionOpt.brandType === 2">{{ 'universal_group_enterprise' | translate }}</span>
+          <div class="flexRow">
+            <span
+              class="condition__btn"
+              [class.condition__btn--active]="reportConditionOpt.group.brands.selected"
+              (click)="handleClickBrand()"
+            >{{ reportConditionOpt.group.brands.groupName }}</span>
+          </div>
+        </div>
+        <div class="flexCol" *ngIf="reportConditionOpt.group.branches !== null">
+          <span class="condition__subtitle" *ngIf="reportConditionOpt.brandType === 1">{{ 'universal_group_branch' | translate }}</span>
+          <span class="condition__subtitle" *ngIf="reportConditionOpt.brandType === 2">{{ 'universal_group_companyBranch' | translate }}</span>
+          <div class="flexRow" style="flex-wrap: wrap;">
+            <span
+              class="condition__btn"
+              *ngFor="let _branches of reportConditionOpt.group.branches; let _branchIdx = index;"
+              [class.condition__btn--active]="_branches.selected"
+              (click)="handleClickBranch(_branchIdx)"
+            >{{ _branches.groupName }}</span>
+          </div>
+        </div>
+        <div class="flexCol">
+          <span class="condition__subtitle" *ngIf="reportConditionOpt.brandType === 1">{{ 'universal_group_coachingClass' | translate }}</span>
+          <span class="condition__subtitle" *ngIf="reportConditionOpt.brandType === 2">{{ 'universal_group_department' | translate }}</span>
+          <div class="flexRow" style="flex-wrap: wrap;">
+            <span
+              class="condition__btn"
+              *ngFor="let _coaches of reportConditionOpt.group.coaches; let _coachIdx = index;"
+              [class.condition__btn--active]="_coaches.selected"
+              (click)="handleClickCoach(_coachIdx)"
+            >{{ _coaches.groupName }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="flexCol" *ngIf="reportConditionOpt && reportConditionOpt.reportType === 'sport'">
+      <span class="condition__title">{{ 'universal_activityData_activityType' | translate }}</span>
+      <div class="flexRow condition__content" style="flex-wrap: wrap;">
+        <span
+          class="condition__btn"
+          *ngFor="let _type of sportCondition;"
+          [class.condition__btn--active]="reportConditionOpt.sportType === 99 || reportConditionOpt.sportType === _type"
+          (click)="handleClickSportType(_type)"
+        >
+          {{ _type | sportType | translate }}
+        </span>
+      </div>
+    </section>
+    <section class="flexCol" *ngIf="reportConditionOpt && reportConditionOpt.reportType === 'cloudRun'">
+      <span class="condition__title">Cloud Run {{ 'universal_activityData_map' | translate }}</span>
+      <div class="condition__content" style="position: relative; cursor: pointer;">
+        <div id="map__choice" (click)="showMapSelector($event)">
+          <span style="padding: 2px 5px; overflow: hidden;">{{ (reportConditionOpt.cloudRunMap | cloudrunSummary: 'zh-tw').mapName }}</span>
+        </div>
+        <div
+          class="flexCol"
+          style="position: absolute; z-index: 10; background-color: white; border: 1px solid; padding: 5px 10px; max-height: 350px; overflow: scroll;"
+          *ngIf="uiFlag.showMapSelector"
+        >
+          <span class="choice__item" *ngFor="let _maplist of mapList; let mapIndex = index;" (click)="chooseMap(mapIndex + 1)">
+            {{ (mapIndex + 1 | cloudrunSummary: 'zh-tw').mapName }}
+          </span>
+        </div>
+      </div>
+    </section>
+    <div style="display: flex; justify-content: flex-end;">
+      <span class="confirm__btn" (click)="submit()">{{ 'universal_operating_determine' | translate }}</span>
+    </div>
+  </main>
+</div>

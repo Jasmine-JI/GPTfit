@@ -1,0 +1,54 @@
+<div class="flexCol">
+  <section class="flexRow" style="justify-content: flex-end;">
+    <button class="child__page__btn" (click)="handleEdit()">
+      <span *ngIf="!uiFlag.editMode">{{ 'universal_operating_edit' | translate}}</span>
+      <span *ngIf="uiFlag.editMode">{{ 'universal_operating_finishEdit' | translate}}</span>
+    </button>
+  </section>
+  <section class="flexCol">
+    <span class="info__title">{{ 'universal_group_group' | translate}}</span>
+    <div class="flexCol">
+      <div>
+        <span class="info__item__title">
+          {{ 'universal_group_gym' | translate}}:
+        </span>
+        <span class="info__item__title">
+          {{ 'universal_group_company' | translate}}:
+        </span>
+        <span>
+
+        </span>
+      </div>
+      <div>
+        <span class="info__item__title">
+          {{ 'universal_group_branch' | translate}}:
+        </span>
+        <span class="info__item__title">
+          {{ 'universal_group_companyBranch' | translate}}:
+        </span>
+        <span>
+
+        </span>
+      </div>
+      <div>
+        <span class="info__item__title">
+          {{ 'universal_group_class' | translate}}:
+        </span>
+        <span class="info__item__title">
+          {{ 'universal_group_department' | translate}}:
+        </span>
+        <span>
+
+        </span>
+      </div>
+    </div>
+  </section>
+  <section class="flexCol">
+    <span class="info__title">{{ 'universal_group_status' | translate}}</span>
+    <span></span>
+  </section>
+  <section class="flexCol">
+    <span class="info__title">{{ 'universal_group_introduction' | translate}}</span>
+    <span></span>
+  </section>
+</div>
