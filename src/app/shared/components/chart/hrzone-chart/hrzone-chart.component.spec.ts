@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { HrzoneChartComponent } from './hrzone-chart.component';
 
@@ -6,7 +6,7 @@ describe('HrzoneChartComponent', () => {
   let component: HrzoneChartComponent;
   let fixture: ComponentFixture<HrzoneChartComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ HrzoneChartComponent ]
     })

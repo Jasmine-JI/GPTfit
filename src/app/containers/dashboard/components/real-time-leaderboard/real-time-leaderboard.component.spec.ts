@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { RealTimeLeaderboardComponent } from './real-time-leaderboard.component';
 
@@ -6,7 +6,7 @@ describe('RealTimeLeaderboardComponent', () => {
   let component: RealTimeLeaderboardComponent;
   let fixture: ComponentFixture<RealTimeLeaderboardComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ RealTimeLeaderboardComponent ]
     })

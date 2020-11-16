@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { AppQrcodeLoginComponent } from './app-qrcode-login.component';
 
@@ -6,7 +6,7 @@ describe('AppQrcodeLoginComponent', () => {
   let component: AppQrcodeLoginComponent;
   let fixture: ComponentFixture<AppQrcodeLoginComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ AppQrcodeLoginComponent ]
     })
