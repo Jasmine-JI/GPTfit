@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { EditGroupInfoComponent } from './edit-group-info.component';
 
@@ -6,7 +6,7 @@ describe('EditGroupInfoComponent', () => {
   let component: EditGroupInfoComponent;
   let fixture: ComponentFixture<EditGroupInfoComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ EditGroupInfoComponent ]
     })

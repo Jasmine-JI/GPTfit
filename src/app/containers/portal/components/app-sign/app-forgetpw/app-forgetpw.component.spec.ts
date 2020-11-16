@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { AppForgetpwComponent } from './app-forgetpw.component';
 
@@ -6,7 +6,7 @@ describe('AppForgetpwComponent', () => {
   let component: AppForgetpwComponent;
   let fixture: ComponentFixture<AppForgetpwComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ AppForgetpwComponent ]
     })

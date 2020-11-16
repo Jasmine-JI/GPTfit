@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CloudRunGpxComponent } from './cloud-run-gpx.component';
 
@@ -6,7 +6,7 @@ describe('CloudRunGpxComponent', () => {
   let component: CloudRunGpxComponent;
   let fixture: ComponentFixture<CloudRunGpxComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CloudRunGpxComponent ]
     })

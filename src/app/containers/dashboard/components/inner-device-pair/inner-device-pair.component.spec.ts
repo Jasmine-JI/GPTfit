@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { InnerDevicePairComponent } from './inner-device-pair.component';
 
@@ -6,7 +6,7 @@ describe('InnerDevicePairComponent', () => {
   let component: InnerDevicePairComponent;
   let fixture: ComponentFixture<InnerDevicePairComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ InnerDevicePairComponent ]
     })
