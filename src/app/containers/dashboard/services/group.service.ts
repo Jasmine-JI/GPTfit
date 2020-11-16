@@ -6,7 +6,7 @@ import { UserProfileService } from '../../../shared/services/user-profile.servic
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { GroupIdSlicePipe } from '../../../shared/pipes/group-id-slice.pipe';
-import { GroupDetailInfo } from '../models/group-detail';
+import { GroupDetailInfo, UserSimpleInfo } from '../models/group-detail';
 
 const { API_SERVER } = environment.url;
 
@@ -18,11 +18,15 @@ const { API_SERVER } = environment.url;
  */
 @Injectable()
 export class GroupService {
-
+  sideBarMode$ = new ReplaySubject<any>(1); // sidebar展開與否
+  userSimpleInfo$ = new ReplaySubject<UserSimpleInfo>(1); // 儲存使用者在該群組的簡易資訊（權限）-kidin-1091103
   groupInfo$ = new BehaviorSubject<any>({}); // 儲存group資訊-kidin-1081210
-  allLevelGroupInfo$ = new BehaviorSubject<any>({}); // 儲存 同"品牌/企業" group 資訊-kidin-1090604
-  groupDetail$ = new BehaviorSubject<any>({});  // 儲存群組基本概要方便各子頁面使用-kidin-1091020
-  allLevelGroupData$ = new ReplaySubject<any>(); // 儲存 同"品牌/企業" group 資訊-kidin-1090716
+  allLevelGroupInfo$ = new ReplaySubject<any>(1); // 儲存 同"品牌/企業" group 資訊-kidin-1090604
+  groupDetail$ = new ReplaySubject<any>(1);  // 儲存群組基本概要方便各子頁面使用-kidin-1091020
+  allLevelGroupData$ = new ReplaySubject<any>(1); // 儲存 同"品牌/企業" group 資訊-kidin-1090716
+  groupCommerceInfo$ = new ReplaySubject<any>(1); // 儲存群組經營權限資訊-kidin-1091104
+  classMemberList$ = new ReplaySubject<any>(1); // 儲存課程成員清單-kidin-1091116
+  comMemberList$ = new ReplaySubject<any>(1); // 儲存企業/分公司/部門群組成員清單-kidin-1091116
   updatedGroupImg$ = new BehaviorSubject<string>('');
   memberList$ = new BehaviorSubject<any>({
     groupId: '',
@@ -332,6 +336,40 @@ export class GroupService {
   }
 
   /**
+   * 取得課程一般成員名單
+   * @author kidin-1091116
+   */
+  getClassMemberList() {
+    return this.classMemberList$;
+  }
+
+  /**
+   * 儲存課程一般成員名單
+   * @param list {Array<any>}
+   * @author kidin-1091116
+   */
+  setClassMemberList(list: Array<any>) {
+    this.classMemberList$.next(list);
+  }
+
+  /**
+   * 取得企業/分公司/部門群組的成員名單（含管理員）
+   * @author kidin-1091116
+   */
+  getcomMemberList() {
+    return this.comMemberList$;
+  }
+
+  /**
+   * 儲存企業/分公司/部門群組的成員名單（含管理員）
+   * @param list {Array<any>}
+   * @author kidin-1091116
+   */
+  setcomMemberList(list: Array<any>) {
+    this.comMemberList$.next(list);
+  }
+
+  /**
    * 儲存訂閱的不同類別運動資料
    * @param dataAll {object}
    * @param dataRun {object}
@@ -419,6 +457,23 @@ export class GroupService {
   }
 
   /**
+   * 儲存群組概要資訊
+   * @param Detail {any}-api 1102回傳內容
+   * @author kidin-1091020
+   */
+  saveCommerceInfo(commerceInfo: any) {
+    this.groupCommerceInfo$.next(commerceInfo);
+  }
+
+  /**
+   * 取得群組概要資訊
+   * @author kidin-1091020
+   */
+  getRxCommerceInfo() {
+    return this.groupCommerceInfo$;
+  }
+
+  /**
    * 1103-依權限取得群組內所有群組後並儲存
    * @author kidin-1090716
    */
@@ -470,7 +525,7 @@ export class GroupService {
    * 取得訂閱的group資訊
    * @author kidin-1081210
    */
-  getAllLevelGroupInfo () {
+  getAllLevelGroupInfo() {
     return this.allLevelGroupInfo$;
   }
 
@@ -479,9 +534,44 @@ export class GroupService {
    * @param status {any}
    * @author kidin-1081210
    */
-  saveAllLevelGroupInfo (status: any) {
+  saveAllLevelGroupInfo(status: any) {
     this.allLevelGroupInfo$.next(status);
   }
+
+  /**
+   * 取得訂閱的使用者在該群組的簡易資訊
+   * @author kidin-1081210
+   */
+  getUserSimpleInfo() {
+    return this.userSimpleInfo$;
+  }
+
+  /**
+   * 儲存訂閱的使用者在該群組的簡易資訊
+   * @param status {UserSimpleInfo}
+   * @author kidin-1081210
+   */
+  saveUserSimpleInfo(status: UserSimpleInfo) {
+    this.userSimpleInfo$.next(status);
+  }
+
+  /**
+   * 取得sidebar 模式供子頁面用
+   * @author kidin-1091111
+   */
+  getRxSideBarMode() {
+    return this.sideBarMode$;
+  }
+
+  /**
+   * 儲存sidebar 模式供子頁面用
+   * @param status {'expand' | 'hide' | 'narrow'}-sidebar 模式
+   * @author kidin-1091111
+   */
+  setSideBarMode(status: 'expand' | 'hide' | 'narrow') {
+    this.sideBarMode$.next(status);
+  }
+  
 
   /**
    * 比較使用者所屬group是否和所在頁面相同或上層

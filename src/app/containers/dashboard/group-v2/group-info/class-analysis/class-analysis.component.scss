@@ -1,0 +1,65 @@
+@import 'transition.scss';
+
+$calender-focus-color: rgba(53, 126, 189, 1);
+$calender-default-red: rgba(235, 104, 119);
+
+.clickable {
+  cursor: pointer;
+
+  &:hover {
+    outline: rgba(53, 126, 189, 0.5) solid 1px;
+  }
+
+}
+
+.switch__btn {
+  padding: 0 10px;
+}
+
+.calender__week__format {
+  justify-content: space-between;
+  align-items: center;
+  min-height: 30px;
+  margin: 5px 0;
+}
+
+.calender__day {
+  min-width: 40px;
+  text-align: center;
+}
+
+.have__date__mark {
+  position: relative;
+
+  &:after {
+    content: '●';
+    color: $calender-default-red;
+    font-size: 8px;
+    position: relative;
+    top: 4;
+    right: 4px;
+  }
+
+}
+
+.focus__one__day {
+  background-color: $calender-focus-color;
+  color: white;
+  border-radius: 5px;
+  @include transition(background-color);
+
+  &:after {
+    color: white;
+  }
+
+}
+
+.today__mark {
+  border-radius: 5px;
+  border: 2px solid rgba(53, 126, 189, 0.5);
+}
+
+.unclickable {
+  pointer-events: none;
+  color: rgba(120, 120, 120, 1)
+}

@@ -19,7 +19,7 @@ export class GroupLevelNamePipe implements PipeTransform {
       } else if (value === 40) {
         return 'universal_group_companyBranch';
       } else if (value === 60) {
-        return '';
+        return 'universal_group_department';
       } else {
         return 'universal_group_generalGroup';
       }

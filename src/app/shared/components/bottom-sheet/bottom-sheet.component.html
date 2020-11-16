@@ -1,0 +1,21 @@
+<mat-nav-list>
+  <a mat-list-item
+    (click)="openLink($event, 'teacher')"
+  >
+    <span mat-line>
+      {{'universal_activityData_create' | translate}} {{'universal_group_courseInformationProfessionalClass' | translate}}
+    </span>
+  </a>
+  <a mat-list-item
+    (click)="openLink($event, 'coach')"
+  >
+    <span mat-line>
+      {{'universal_activityData_create' | translate}} {{'universal_group_courseInformationFitnessClass' | translate}}
+    </span>
+  </a>
+  <a mat-list-item
+    (click)="openLink($event, 'cancel')"
+  >
+    <span mat-line>{{ 'universal_operating_cancel' | translate }}</span>
+  </a>
+</mat-nav-list>

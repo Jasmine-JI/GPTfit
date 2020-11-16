@@ -1,0 +1,78 @@
+<div class="flexCol child__page__card">
+  <section
+    class="flexRow"
+    style="justify-content: flex-end;"
+    *ngIf="
+      userSimpleInfo
+      && (userSimpleInfo.isGroupAdmin || userSimpleInfo.accessRight[0] <= 29)
+      && groupInfo.groupStatus !== 4
+      && groupInfo.groupStatus !== 5
+      && !groupInfo.expired
+      && +groupInfo.commerceStatus === 1
+    "  
+  >
+    <button
+      class="child__page__btn"
+      [class.edit__mode__btn]="uiFlag.editMode"
+      [class.btn__loading__status]="uiFlag.isLoading"
+      (click)="handleEdit()"
+    >
+      <span *ngIf="!uiFlag.editMode">{{ 'universal_operating_edit' | translate}}</span>
+      <span *ngIf="uiFlag.editMode">{{ 'universal_operating_finishEdit' | translate}}</span>
+    </button>
+  </section>
+  <section class="architecture__section">
+    <span class="content__subtitle">{{ 'universal_group_generalMember' | translate }}</span>
+    <div
+      class="flexRow"
+      style="flex-wrap: wrap;"
+      *ngIf="normalMemberList.length > 0 && groupInfo.brandType; else noData;"
+    >
+      <div class="group__list__content" *ngFor="let _normalMem of normalMemberList;">
+        <app-member-capsule
+          [isNormalMemberInfo]="true"
+          [title]="_normalMem.memberName"
+          [memberInfo]="_normalMem"
+          [name]="_normalMem.memberName"
+          [icon]="_normalMem.memberIcon"
+          [userId]="_normalMem.memberId"
+          [brandType]="this.brandType"
+          [isHadMenu]="uiFlag.editMode && (userSimpleInfo.isGroupAdmin || userSimpleInfo.accessRight[0] <= 29)"
+          [groupId]="groupInfo.groupId"
+          [groupLevel]="groupInfo.groupLevel"
+          [coachType]="groupInfo.coachType"
+          (onAssignAdmin)="handleAssignAdmin($event)"
+        >
+        </app-member-capsule>
+      </div>
+    </div>
+  </section>
+  <section class="architecture__section">
+    <span class="content__subtitle">{{ 'universal_group_pendingMember' | translate }}</span>
+    <div
+      class="flexRow"
+      style="flex-wrap: wrap;"
+      *ngIf="waitMemberList.length > 0 && groupInfo.brandType; else noData;"
+    >
+      <div class="group__list__content" *ngFor="let _waitMem of waitMemberList;">
+        <app-member-capsule
+          [isWaittingMemberInfo]="true"
+          [title]="_waitMem.memberName"
+          [memberInfo]="item"
+          [name]="_waitMem.memberName"
+          [icon]="_waitMem.memberIcon"
+          [userId]="_waitMem.memberId"
+          [brandType]="this.brandType"
+          [isHadMenu]="uiFlag.editMode && (userSimpleInfo.isGroupAdmin || userSimpleInfo.accessRight[0] <= 29)"
+          [groupId]="groupInfo.groupId"
+          [groupLevel]="groupInfo.groupLevel"
+          (onWaittingMemberInfoChange)="handleWaittingMemberInfo($event)"
+        >
+        </app-member-capsule>
+      </div>
+    </div>
+  </section>
+  <ng-template #noData>
+    <div style="margin: 5px 5px 5px 10px;">{{'universal_status_noData' | translate}}</div>
+  </ng-template>
+</div>

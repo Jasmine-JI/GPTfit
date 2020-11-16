@@ -241,7 +241,7 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
       ];
 
       targetImg.forEach(_img => {
-        if (_img !== undefined){
+        if (_img !== undefined && this[_img] !== undefined) {
 
           const imgElement = this[_img].nativeElement;
           if (((window.innerHeight / 1.5) + window.pageYOffset) > imgElement.offsetTop) {

@@ -14,14 +14,43 @@ export interface GroupDetailInfo {
   groupVideoUrl: string;
   rtnMsg: string;
   selfJoinStatus: number;
+  expired?: boolean;
+  commerceStatus?: number;
   shareActivityToMember: object;
   shareAvatarToMember: object;
   shareReportToMember: object;
 }
 
+/**
+ * 群組各階層資訊
+ */
 export interface GroupArchitecture {
   groupId: string;
   brands: any;
   branches: any;
   coaches: any;
+}
+
+/**
+ * 使用者在該群組的簡易資訊
+ */
+export interface UserSimpleInfo {
+  nickname: string;
+  userId: number;
+  token: string;
+  accessRight: Array<number>;
+  joinStatus: number;
+  isGroupAdmin: boolean;
+}
+
+/**
+ * api 1103回應的groupMemberInfo內容
+ */
+export interface MemberInfo {
+  accessRight: number | string;
+  groupId: string;
+  joinStatus: number;
+  memberIcon: string;
+  memberId: number;
+  memberName: string;
 }

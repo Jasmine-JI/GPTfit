@@ -1,10 +1,107 @@
 @import 'font.scss';
 @import 'color.scss';
+@import 'transition.scss';
+@import 'rotate.scss';
+
+$input-border-color: rgba(120, 120, 120, 1);
+$group-btn-blue: rgba(0, 183, 238, 1);
+
 
 .info__title {
-  @include bold-font(14px);
+  white-space: nowrap;
+  @include bold-font(16px);
 }
 
 .info__item__title {
   color: $gray;
+}
+
+.info__section {
+  margin: 0 10px 20px 10px;
+}
+
+.group__layer__section {
+  margin: 5px 0px;
+}
+
+.info__content {
+  margin: 6px 0 0 35px;
+}
+
+.info__row {
+  margin-left: 15px;
+}
+
+.status__selector {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-right: 10px;
+  cursor: pointer;
+  border: 1px solid $input-border-color;
+  width: 200px;
+
+  &:after {
+    content: '';
+    display: inline-block;
+    width: 12px;
+    position: relative;
+    left: 5px;
+    border-style: solid;
+    border-width: 8px 6px 0px 6px;
+    border-color: $input-border-color transparent transparent transparent;
+    @include transition(transform);
+  }
+
+}
+
+.status__selector__active {
+
+  &:after {
+    @include transition(transform);
+    @include el-rotate(180deg);
+  }
+
+}
+
+#status__selector__list {
+  position: absolute;
+  z-index: 1;
+  top: 24px;
+  left: -1px;
+  width: 200px;
+  background-color: white;
+  border: 1px solid $input-border-color;
+
+  & span {
+    @include transition(background-color);
+    
+    &:hover {
+      color: white;
+      background-color: $group-btn-blue;
+      @include transition(background-color);
+    }
+
+  }
+
+}
+
+.create__brand__input {
+  width: 200px;
+}
+
+
+/************************************** media ******************************/
+
+@media (max-width: 500px) {
+
+  .group__layer__section {
+    flex-direction: column;
+  }
+
+  .info__row {
+    text-align: end;
+  }
+
 }

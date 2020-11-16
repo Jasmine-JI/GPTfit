@@ -26,6 +26,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe = new Subject();
 
+  @ViewChild('filterSection') filterSection: ElementRef;
   @ViewChild('dateSelectorBar') dateSelectorBar: ElementRef;
   @ViewChild('calendarPeriod') calendarPeriod: ElementRef;
 
@@ -89,16 +90,24 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    */
   @HostListener ('window:resize', [])
   onResize() {
-    if (window.innerWidth < 820) {
-      this.uiFlag.showDateTypeShiftIcon = true;
-      this.uiFlag.dateTypeBarWidth = `${window.innerWidth - 70}px`;
-    } else {
-      this.uiFlag.showDateTypeShiftIcon = false;
-      this.uiFlag.dateTypeBarWidth = `800px`;
-      this.uiFlag.offsetNum = 0;
-      this.uiFlag.dateTypeBarOffset = `translateX(0px)`;
-      this.changeActiveBar();
-    }
+    this.date.openSelector = null;
+
+    setTimeout(() => {
+      const filterSection = this.filterSection.nativeElement,
+            filterSectionWidth = filterSection.clientWidth;
+
+      if (filterSectionWidth < 820) {
+        this.uiFlag.showDateTypeShiftIcon = true;
+        this.uiFlag.dateTypeBarWidth = `${filterSectionWidth - 90}px`;
+      } else {
+        this.uiFlag.showDateTypeShiftIcon = false;
+        this.uiFlag.dateTypeBarWidth = `800px`;
+        this.uiFlag.offsetNum = 0;
+        this.uiFlag.dateTypeBarOffset = `translateX(0px)`;
+        this.changeActiveBar();
+      }
+
+    })
 
   }
 
@@ -145,11 +154,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    * @author kidin-1091028
    */
   openConditionSelector() {
-    if (this.uiFlag.showConditionSelector) {
-      this.uiFlag.showConditionSelector = false;
-    } else {
-      this.uiFlag.showConditionSelector = true;
-    }
+    this.uiFlag.showConditionSelector = !this.uiFlag.showConditionSelector;
   }
 
   /**
@@ -158,6 +163,9 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    * @author kidin-1091027
    */
   shiftDateTypeBar(action: 'pre' | 'next') {
+    const filterSection = this.filterSection.nativeElement,
+          filterSectionWidth = filterSection.clientWidth;
+
     if (action === 'pre') {
       this.uiFlag.offsetNum += 160;
     } else {
@@ -166,7 +174,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
 
     if (this.uiFlag.offsetNum === 0) {
       this.uiFlag.disableBtn = 'pre';
-    } else if (this.uiFlag.offsetNum <= window.innerWidth - 848) {
+    } else if (this.uiFlag.offsetNum <= filterSectionWidth - 848) {
       this.uiFlag.disableBtn = 'next';
     } else {
       this.uiFlag.disableBtn = null;
@@ -208,14 +216,12 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         if (this.date.openSelector !== 'calendarPeriod') {
           this.date.openSelector = 'calendarPeriod';
           const dropList = this.calendarPeriod.nativeElement,
-                dropListCenter = dropList.getBoundingClientRect().left;
+                dropListCenter = dropList.getBoundingClientRect().left,
+                dateSelectorBar = this.dateSelectorBar.nativeElement,
+                dateSelectorBarLeft = dateSelectorBar.getBoundingClientRect().left;
 
           // 根據畫面大小調整選單位置
-          if (this.uiFlag.dateTypeBarWidth !== '800px') {
-            this.uiFlag.calendarPeriodOffset = `translateX(${dropListCenter + 10}px)`;
-          } else {
-            this.uiFlag.calendarPeriodOffset = `translateX(504px)`;
-          }
+          this.uiFlag.calendarPeriodOffset = `translateX(${dropListCenter - dateSelectorBarLeft + 20}px)`;
           
         } else {
           this.date.openSelector = null;
@@ -457,11 +463,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    */
   showMapSelector(e: MouseEvent) {
     e.stopPropagation();
-    if (this.uiFlag.showMapSelector) {
-      this.uiFlag.showMapSelector = false;
-    } else {
-      this.uiFlag.showMapSelector = true;
-    }
+    this.uiFlag.showMapSelector = !this.uiFlag.showMapSelector;
 
   }
 

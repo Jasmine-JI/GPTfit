@@ -4,7 +4,7 @@ import { UtilsService } from '../../../../../shared/services/utils.service';
 import { ReportService } from '../../../../../shared/services/report.service';
 import { ReportConditionOpt, GroupTree } from '../../../../../shared/models/report-condition';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, first } from 'rxjs/operators';
 
 @Component({
   selector: 'app-sports-report',
@@ -46,6 +46,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   getAllLevelGroupInfo() {
     this.groupService.getAllLevelGroupData().pipe(
+      first(),
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       const groupLevel = +this.utils.displayGroupLevel(res.groupId),
@@ -97,6 +98,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
    */
   getReportSelectedCondition() {
     this.reportService.getReportCondition().pipe(
+      first(),
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       console.log('after select', res);

@@ -22,7 +22,7 @@
   overflow: initial;
 }
 .container {
-  padding: 30px;
+  padding: 30px 10px;
   min-height: calc(100vh - 78px);
 }
 
@@ -389,7 +389,7 @@
 
 @media (max-width: 991px) {
   .container {
-    max-width: 95%;
+    width: 99vw;
   }
 }
 
@@ -424,7 +424,7 @@
 
 @media(max-width: 370px) {
   .container {
-    padding: 15px;
+    padding: 10px 5px;
   }
 }
 

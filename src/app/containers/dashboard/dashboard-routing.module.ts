@@ -57,7 +57,6 @@ import { GroupArchitectureComponent } from './group-v2/group-info/group-architec
 import { CloudrunReportComponent } from './group-v2/group-info/cloudrun-report/cloudrun-report.component';
 import { LifeTrackingComponent as LifeTrackingV2Component } from './group-v2/group-info/life-tracking/life-tracking.component';
 import { ClassAnalysisComponent as ClassAnalysisV2Component } from './group-v2/group-info/class-analysis/class-analysis.component';
-import { CreateGroupComponent as CreateGroupV2Component } from './group-v2/group-info/create-group/create-group.component';
 import { ActivityListManageComponent } from './components/official-activity-manage/activity-list-manage/activity-list-manage.component';
 import { EditOfficialActivityComponent } from './components/official-activity-manage/edit-official-activity/edit-official-activity.component';
 import { ParticipantsManageComponent } from './components/official-activity-manage/participants-manage/participants-manage.component';
