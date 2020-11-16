@@ -30,16 +30,20 @@ export class FormTextareaComponent implements OnInit, OnChanges {
   @Input() disabled = false;
   @Input() isHadCount = false;
   countText: string;
-  preContent = this.content;
+  preContent: string;
   invalidClassName = `${this.class_name} ${this.class_name}--invalid`;
   constructor(private utils: UtilsService) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.preContent = this.content;
+  }
+
   ngOnChanges(changes: SimpleChanges) {
     if (changes.content && changes.content.currentValue) {
       this.countText = `${changes.content.currentValue.length}/${this.maxLength}`;
     }
   }
+
   handleAutoHeight(textarea) {
     let adjustedHeight = textarea.currentTarget.clientHeight;
     adjustedHeight = Math.max(
@@ -50,10 +54,12 @@ export class FormTextareaComponent implements OnInit, OnChanges {
       textarea.currentTarget.style.height = adjustedHeight + 'px';
     }
   }
+
   handleChange(event) {
     const value = event.target.value;
     this.handleAutoHeight(event);
     this.countText = `${value.length}/${this.maxLength}`;
     this.onChange.emit(value);
   }
+  
 }

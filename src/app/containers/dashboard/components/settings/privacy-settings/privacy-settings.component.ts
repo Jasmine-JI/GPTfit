@@ -9,7 +9,7 @@ import {
 import { SettingsService } from '../../../services/settings.service';
 import { ModifyBoxComponent } from './modify-box/modify-box.component';
 import { UtilsService } from '@shared/services/utils.service';
-import { MAT_CHECKBOX_CLICK_ACTION } from '@angular/material/checkbox';
+import { MAT_CHECKBOX_DEFAULT_OPTIONS } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -26,7 +26,7 @@ declare var google: any;
     '../settings.component.scss'
   ],
   providers: [
-    { provide: MAT_CHECKBOX_CLICK_ACTION, useValue: 'noop' }
+    { provide: MAT_CHECKBOX_DEFAULT_OPTIONS, useValue: 'noop' }
   ],
   encapsulation: ViewEncapsulation.None
 })
