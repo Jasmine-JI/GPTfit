@@ -1,1 +1,62 @@
-<p>class-analysis works!</p>
+<div
+  class="flexCol child__page__card"
+  *ngIf="groupInfo && groupInfo.groupRootInfo"
+>
+  <header class="flexCol">
+    <span class="content__subtitle">{{ 'universal_time_recentActivities' | translate }}</span>
+    <div class="flexRow">
+      <section class="flexCol" style="width: 40%; font-weight: bold;">
+        <div class="flexRow" style="justify-content: space-between; margin-bottom: 10px;">
+          <span class="switch__btn clickable" (click)="switchCalender('pre')">&lt;</span>
+          <span>{{ calender.startTimestamp | timeFormat: 'MM/DD' }} - {{ calender.endTimestamp | timeFormat: 'MM/DD' }}</span>
+          <span
+            class="switch__btn clickable"
+            (click)="switchCalender('next')"
+            [class.unclickable]="calender.endTimestamp >= calender.currentTimestamp"
+          >&gt;</span>
+        </div>
+        <div class="flexRow calender__week__format" style="pointer-events: none;">
+          <span class="calender__day">Su</span>
+          <span class="calender__day">Mo</span>
+          <span class="calender__day">Tu</span>
+          <span class="calender__day">We</span>
+          <span class="calender__day">Th</span>
+          <span class="calender__day">Fr</span>
+          <span class="calender__day">Sa</span>
+        </div>
+        <div class="flexRow calender__week__format">
+          <span
+            class="calender__day clickable"
+            [class.unclickable]="_dayOfOne.timestamp > calender.currentTimestamp"
+            [class.today__mark]="_dayOfOne.timestamp === calender.currentTimestamp"
+            [class.have__date__mark]="_dayOfOne.haveDate"
+            [class.focus__one__day]="_dayOfOne.focus"
+            (click)="focusOneDay('weekOne', _idxA)"
+            *ngFor="let _dayOfOne of calender.weekOne; let _idxA = index;"
+          >
+            {{ _dayOfOne.day }}
+          </span>
+        </div>
+        <div class="flexRow calender__week__format">
+          <span
+            class="calender__day clickable"
+            [class.unclickable]="_dayOfTwo.timestamp > calender.currentTimestamp"
+            [class.today__mark]="_dayOfTwo.timestamp === calender.currentTimestamp"
+            [class.have__date__mark]="_dayOfTwo.haveDate"
+            [class.focus__one__day]="_dayOfTwo.focus"
+            (click)="focusOneDay('weekTwo', _idxB)"
+            *ngFor="let _dayOfTwo of calender.weekTwo; let _idxB = index;"
+          >
+            {{ _dayOfTwo.day }}
+          </span>
+        </div>
+      </section>
+      <section>
+
+      </section>
+    </div>
+  </header>
+  <main>
+
+  </main>
+</div>

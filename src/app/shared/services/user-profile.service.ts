@@ -55,10 +55,16 @@ export class UserProfileService {
       )),
       switchMap(res => this.userInfoService.getUpdatedImgStatus().pipe(
         map(response => {
+          /*
           if (response.length !== 0) {
             const newImage = `${res.avatarUrl}${response}`;
             Object.assign(res, {avatarUrl: newImage});  // 使用者更新頭像強迫觸發瀏覽器取得新圖片
           }
+          */
+
+          const random = Math.random(),
+                newImage = `${res.avatarUrl}?${random.toFixed(9)}`;
+          Object.assign(res, {avatarUrl: newImage});  // 改為一刷新api 1010就刷新頭像1091103（待串圖床後移除此段）
 
           return res;
         })

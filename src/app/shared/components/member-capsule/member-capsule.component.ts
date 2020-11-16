@@ -58,6 +58,7 @@ export class MemberCapsuleComponent implements OnInit {
   token: string;
   updateImgQueryString = '';
   public elementRef;
+
   constructor(
     myElement: ElementRef,
     private groupService: GroupService,
@@ -70,6 +71,7 @@ export class MemberCapsuleComponent implements OnInit {
   ) {
     this.elementRef = myElement;
   }
+
   @HostListener('document:click', ['$event'])
   clickout(event) {
     if (this.elementRef.nativeElement.contains(event.target)) {
@@ -77,19 +79,30 @@ export class MemberCapsuleComponent implements OnInit {
       this.active = false;
     }
   }
+
   handleClick() {}
+
   ngOnInit() {
     this.getTranslate();
-
-    this.groupService.getImgUpdatedStatus().subscribe(response => {
-      this.updateImgQueryString = response;
-    });
-    this.icon = `${this.icon}${this.updateImgQueryString}`;
-    this.listenImage(this.icon);
+    this.refreshGroupIcon();
     this.token = this.utils.getToken() || '';
   }
 
-  // 待套件載好再取得多國語系翻譯-kidin-1090622
+  /**
+   * 使用query string強迫瀏覽器更新icon（待接圖床後移除）
+   */
+  refreshGroupIcon() {
+    this.groupService.getImgUpdatedStatus().subscribe(response => {
+      this.updateImgQueryString = response;
+    });
+
+    this.icon = `${this.icon}${this.updateImgQueryString}`;
+  }
+
+  /**
+   * 待套件載好再取得多國語系翻譯
+   * @author kidin-1090622
+   */
   getTranslate () {
     this.translate.get('hollow world').subscribe(() => {
       this.i18n = {
@@ -103,37 +116,23 @@ export class MemberCapsuleComponent implements OnInit {
 
   }
 
-  listenImage(link) {
-    // Set the image height and width
-    const image = new Image();
-    image.addEventListener('load', this.handleImageLoad.bind(this));
-    image.src = link;
-  }
-  handleImageLoad(event): void {
-    const width = event.target.width;
-    const height = event.target.height;
-    const radio = width / height;
-    if (radio > 1.6) {
-      this.width = '180%';
-      this.height = 'auto';
-    } else if (radio < 0.6) {
-      this.width = 'auto';
-      this.height = '180%';
-    } else if (radio < 1.6 && radio > 1.3) {
-      this.width = '150%';
-      this.height = 'auto';
-    } else {
-      this.width = '100%';
-      this.height = 'auto';
-    }
-  }
+  /**
+   * 選單開關
+   */
   toggleMenu() {
     if (this.isSubGroupInfo && !this.isHadMenu) {
-      this.router.navigateByUrl(`/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}`);
+      this.router.navigateByUrl(
+        `/dashboard/group-info-v2/${this.hashIdService.handleGroupIdEncode(this.groupId)}/group-introduction`
+      );
     } else {
       this.active = !this.active;
     }
   }
+  
+  /**
+   * 更改成員加入群組狀態
+   * @param _type {number}-加入狀態
+   */
   handleJoinStatus(_type: number) {
     const body = {
       token: this.token,
@@ -143,13 +142,18 @@ export class MemberCapsuleComponent implements OnInit {
       groupLevel: this.groupLevel,
       brandType: this.brandType
     };
+
     this.groupService.updateJoinStatus(body).subscribe(res => {
       if (res.resultCode === 200) {
         return this.onWaittingMemberInfoChange.emit(this.userId);
       }
     });
+
   }
 
+  /**
+   * 移除管理員
+   */
   handleEditGroupMember() {
     const body = {
       token: this.token,
@@ -157,6 +161,7 @@ export class MemberCapsuleComponent implements OnInit {
       userId: this.userId,
       accessRight: '90'
     };
+
     this.groupService.editGroupMember(body).subscribe(res => {
       if (res.resultCode === 200) {
         const refreshBody = {
@@ -165,6 +170,7 @@ export class MemberCapsuleComponent implements OnInit {
         this.userProfileService.refreshUserProfile(refreshBody);
         return this.onRemoveAdmin.emit(this.userId);
       }
+
       if (res.resultCode === 400) {
         this.dialog.open(MessageBoxComponent, {
           hasBackdrop: true,
@@ -174,8 +180,13 @@ export class MemberCapsuleComponent implements OnInit {
           }
         });
       }
+
     });
   }
+
+  /**
+   * 跳出移除管理員提示框
+   */
   handleRemoveAdmin() {
     this.dialog.open(MessageBoxComponent, {
       hasBackdrop: true,
@@ -188,7 +199,12 @@ export class MemberCapsuleComponent implements OnInit {
       }
     });
   }
-  handleAssignAdmin(type) {
+
+  /**
+   * 指派一般成員為管理員
+   * @param type (number)-群組類型
+   */
+  handleAssignAdmin(type: number) {
     let accessRight = '';
     if (type === 2) {
       accessRight = '60';
@@ -197,13 +213,14 @@ export class MemberCapsuleComponent implements OnInit {
     } else {
       accessRight = this.groupLevel + '';
     }
-    // if (this.groupLevel === 80 || this.groupLevel === 60) {
+
     const body = {
       token: this.token,
       groupId: this.groupId,
       userId: this.userId,
       accessRight
     };
+    
     this.groupService.editGroupMember(body).subscribe(res => {
       if (res.resultCode === 200) {
         const refreshBody = {
@@ -213,6 +230,7 @@ export class MemberCapsuleComponent implements OnInit {
         this.onAssignAdmin.emit(this.userId);
         this.dialog.closeAll();
       }
+
       if (res.resultCode === 400) {
         this.dialog.open(MessageBoxComponent, {
           hasBackdrop: true,
@@ -223,21 +241,12 @@ export class MemberCapsuleComponent implements OnInit {
         });
       }
     });
-    // } else {
-    // this.dialog.open(RightSettingWinComponent, {
-    //   hasBackdrop: true,
-    //   data: {
-    //     name: this.name,
-    //     groupId: this.groupId,
-    //     userId: this.userId,
-    //     groupLevel: this.groupLevel
-    //   }
-    // });
-    // }
+
   }
-  goToManage() {
-    this.router.navigateByUrl(`/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}/edit`);
-  }
+
+  /**
+   * 移除一般成員
+   */
   handleDeleteGroupMember() {
     const body = {
       token: this.token,
@@ -251,6 +260,10 @@ export class MemberCapsuleComponent implements OnInit {
       }
     });
   }
+
+  /**
+   * 跳出移除成員提示框
+   */
   handleDeleteMember() {
     this.dialog.open(MessageBoxComponent, {
       hasBackdrop: true,
@@ -263,6 +276,10 @@ export class MemberCapsuleComponent implements OnInit {
       }
     });
   }
+
+  /**
+   * 解散群組
+   */
   handleDeleteGroup() {
     const body = {
       token: this.token,
@@ -276,6 +293,10 @@ export class MemberCapsuleComponent implements OnInit {
       }
     });
   }
+
+  /**
+   * 開啟解散群組提示框
+   */
   openDeleteGroupWin() {
     const targetName = this.translate.instant('universal_group_group');
     this.dialog.open(MessageBoxComponent, {
@@ -291,12 +312,31 @@ export class MemberCapsuleComponent implements OnInit {
       }
     });
   }
+
+  /**
+   * 轉導至個人頁面
+   */
   goToUserProfileInGroupInfo() {
     if (!this.isSubGroupInfo && !this.isHadMenu) {
-      this.router.navigateByUrl(`/user-profile/${this.hashIdService.handleUserIdEncode(this.userId)}`);
+      this.goToUserProfileInEditGroupInfo();
     }
   }
+
+
   goToUserProfileInEditGroupInfo() {
     this.router.navigateByUrl(`/user-profile/${this.hashIdService.handleUserIdEncode(this.userId)}`);
   }
+
+  /**
+   * 若圖片下載失敗則使用預設圖片
+   */
+  handleImgIconError() {
+    if (this.isSubGroupInfo) {
+      this.icon = '/assets/images/group.jpg';
+    } else {
+      this.icon = '/assets/images/user2.png';
+    }
+
+  }
+
 }

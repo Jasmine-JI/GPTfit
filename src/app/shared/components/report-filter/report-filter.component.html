@@ -1,5 +1,9 @@
-<div style="width: 90vw; max-width: 800px;" [class.reportPreviewMode]="uiFlag.isPreviewMode">
-  <div class="flexRow" style="align-items: center; cursor: pointer;" (click)="openConditionSelector()">
+<div
+  #filterSection
+  style="width: 100%; padding: 5px; background-color: white; border: 1px solid rgba(200, 200, 200, 1);"
+  [class.reportPreviewMode]="uiFlag.isPreviewMode"
+>
+  <div class="flexRow" style="width: fit-content; align-items: center; cursor: pointer;" (click)="openConditionSelector()">
     <span class="condition__title">{{ 'universal_operating_filter' | translate }}</span>
     <i
       class="icon-svg_web-icon_p1_006-unfold condition__unfold__icon"

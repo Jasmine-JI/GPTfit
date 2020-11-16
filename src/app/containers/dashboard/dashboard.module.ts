@@ -100,6 +100,7 @@ import { SearchGroupComponent } from './group-v2/search-group/search-group.compo
 import { GroupIntroductionComponent } from './group-v2/group-info/group-introduction/group-introduction.component';
 import { SportsReportComponent } from './group-v2/group-info/sports-report/sports-report.component';
 import { MyClassReportComponent } from './group-v2/group-info/my-class-report/my-class-report.component';
+import { ClassAnalysisComponent as ClassAnalysisV2Component } from './group-v2/group-info/class-analysis/class-analysis.component';
 import { CommercePlanComponent } from './group-v2/group-info/commerce-plan/commerce-plan.component';
 import { MemberListComponent } from './group-v2/group-info/member-list/member-list.component';
 import { AdminListComponent } from './group-v2/group-info/admin-list/admin-list.component';
@@ -221,6 +222,7 @@ import { PushMessageListComponent } from './components/push-message/push-message
     GroupIntroductionComponent,
     SportsReportComponent,
     MyClassReportComponent,
+    ClassAnalysisV2Component,
     CommercePlanComponent,
     MemberListComponent,
     AdminListComponent,

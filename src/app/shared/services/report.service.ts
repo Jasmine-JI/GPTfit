@@ -20,7 +20,7 @@ export class ReportService {
   typeAerobicData$ = new BehaviorSubject<any>({});
   typeRowData$ = new BehaviorSubject<any>({});
   typeBallData$ = new BehaviorSubject<any>({});
-  reportCondition$ = new ReplaySubject<ReportConditionOpt>();
+  reportCondition$ = new ReplaySubject<ReportConditionOpt>(1);
 
   constructor(private http: HttpClient) {}
 

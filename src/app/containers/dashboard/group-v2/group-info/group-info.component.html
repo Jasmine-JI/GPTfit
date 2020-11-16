@@ -1,5 +1,5 @@
 <div class="flexCol">
-  <nav class="flexCol" style="position: relative;">
+  <nav #navSection class="flexCol" style="position: relative;">
     <section style="height: 20vw; max-height: 200px; width: 100%; background-color: rgba(200, 200, 200, 1);">
       <img src="" />
     </section>
@@ -11,45 +11,70 @@
         />
       </div>
       <div class="flexRow group__all__branch" style="flex-wrap: wrap; justify-content: flex-end;">
-        <div class="flexRow" style="flex-wrap: nowrap; white-space: nowrap;">
-          <span class="group__name" *ngIf="currentGroupInfo.groupDetail.groupRootInfo && currentGroupInfo.groupDetail.groupRootInfo[2]">
+        <div class="flexRow" style="flex-wrap: nowrap; white-space: nowrap; align-items: flex-end;" *ngIf="!uiFlag.createMode">
+          <span
+            style="cursor: pointer;"
+            class="group__name hover__bottom__border"
+            (click)="handleNavigation(currentGroupInfo.groupDetail.groupRootInfo[2].brandGroupId)"
+            *ngIf="currentGroupInfo.groupDetail.groupRootInfo && currentGroupInfo.groupDetail.groupRootInfo[2]"
+          >
             {{ currentGroupInfo.groupDetail.groupRootInfo[2].brandName }}\
           </span>
-          <span class="group__name" *ngIf="currentGroupInfo.groupDetail.groupRootInfo && currentGroupInfo.groupDetail.groupRootInfo[3]">
+          <span
+            style="cursor: pointer;"
+            class="group__name hover__bottom__border"
+            (click)="handleNavigation(currentGroupInfo.groupDetail.groupRootInfo[3].branchGroupId)"
+            *ngIf="currentGroupInfo.groupDetail.groupRootInfo && currentGroupInfo.groupDetail.groupRootInfo[3]"
+          >
             {{ currentGroupInfo.groupDetail.groupRootInfo[3].branchName }}\
           </span>
+          <span class="group__name" style="font-size: 24px; font-weight: bold; color: black;">
+            {{ currentGroupInfo.groupDetail.groupName }}
+          </span>
         </div>
-        <span class="group__name" style="font-size: 24px; font-weight: bold; color: black;">
-          {{ currentGroupInfo.groupDetail.groupName }}
+        <span style="font-weight: bold; font-size: 24px; color: rgba(0, 183, 238, 1);" *ngIf="uiFlag.createMode">
+          {{
+            'universal_activityData_create' | translate
+          }} {{
+            uiFlag.createLevel | groupLevelTranslate: currentGroupInfo.brandType | translate
+          }}
         </span>
       </div>
       <div class="flexRow" style="align-items: center;">
-        <button
-          class="group__page__btn"
-          [class.primary__btn]="user.joinStatus === 5"
-          [class.warning__btn]="user.joinStatus === 1"
-          [class.unattracly__btn]="user.joinStatus === 2"
-          *ngIf="!user.isGroupAdmin"
-        >
-          <span *ngIf="user.joinStatus === 5 && currentGroupInfo.groupDetail.groupStatus === 1" (click)="handleJoinGroup(1)">
-            +{{ 'universal_operating_join' | translate }}
-          </span>
-          <span *ngIf="user.joinStatus === 5 && currentGroupInfo.groupDetail.groupStatus === 2" (click)="handleJoinGroup(1)">
-            +{{ 'universal_group_applicationsForJoin' | translate }}
-          </span>
-          <span *ngIf="user.joinStatus === 1" (click)="handleJoinGroup(2)">
-            {{ 'universal_group_cancelJoin' | translate }}
-          </span>
-          <span *ngIf="user.joinStatus === 2" (click)="handleJoinGroup(2)">
-            {{ 'universal_group_exitGroup' | translate }}
-          </span>
-        </button>
-        <i
-          class="icon-svg_web-icon_p1_013-share group__page__btn primary__btn"
-          style="color: white; font-size: 24px; padding: 2px; cursor: pointer;"
-          (click)="openShareGroupInfoDialog()"
-        ></i>
+        <ng-container *ngIf="!uiFlag.createMode">
+          <button
+            class="group__page__btn"
+            [class.primary__btn]="user.joinStatus === 5"
+            [class.warning__btn]="user.joinStatus === 1"
+            [class.unattracly__btn]="user.joinStatus === 2"
+            *ngIf="!user.isGroupAdmin"
+          >
+            <span *ngIf="user.joinStatus === 5 && currentGroupInfo.groupDetail.groupStatus === 1" (click)="handleJoinGroup(1)">
+              +{{ 'universal_operating_join' | translate }}
+            </span>
+            <span *ngIf="user.joinStatus === 5 && currentGroupInfo.groupDetail.groupStatus === 2" (click)="handleJoinGroup(1)">
+              +{{ 'universal_group_applicationsForJoin' | translate }}
+            </span>
+            <span *ngIf="user.joinStatus === 1" (click)="handleJoinGroup(2)">
+              {{ 'universal_group_cancelJoin' | translate }}
+            </span>
+            <span *ngIf="user.joinStatus === 2" (click)="handleJoinGroup(2)">
+              {{ 'universal_group_exitGroup' | translate }}
+            </span>
+          </button>
+          <i
+            class="icon-svg_web-icon_p1_013-share group__page__btn primary__btn"
+            style="color: white; font-size: 24px; padding: 2px; cursor: pointer;"
+            (click)="openShareGroupInfoDialog()"
+          ></i>
+        </ng-container>
       </div>
+    </section>
+    <section>
+      <span
+        [innerHTML]="currentGroupInfo.groupDetail.groupDesc"
+        style="display: inline-block; color: rgba(120, 120, 120, 1); font-size: 14px; margin: 10px 0 10px 30px;"
+      ></span>
     </section>
     <section #pageListBar class="flexCol" style="width: 100%; margin: 10px 0px;">
       <div style="border-top: 2px solid rgba(200, 200, 200, 1); width: 100%;"></div>
@@ -61,14 +86,20 @@
       <div class="flexRow" style="justify-content: space-between; align-items: center;">
         <div class="flexRow">
           <ng-container *ngFor="let _page of childPageList; let _idx = index;">
-            <span 
-              class="child__page__title main__page__list"
-              [class.active--color]="uiFlag.currentTagIndex === _idx"
-              (click)="handleShowContent($event, _page, _idx)"
-              *ngIf="uiFlag.divideIndex === null || _idx < uiFlag.divideIndex"
-            >
-              {{ _page | groupPageTitle }}
-            </span>
+            <ng-container *ngIf="!uiFlag.createMode || (uiFlag.createMode && _page === 'group-introduction')">
+              <span 
+                class="child__page__title main__page__list"
+                [class.active--color]="uiFlag.currentTagIndex === _idx"
+                (click)="handleShowContent($event, _page, _idx)"
+                *ngIf="uiFlag.divideIndex === null || _idx < uiFlag.divideIndex"
+              >
+                {{ _page | groupPageTitle }}
+                <i
+                  class="icon-svg_web-icon_p1_069-about warn__icon"
+                  *ngIf="_page === 'commerce-plan' && (currentGroupInfo.groupDetail.expired || +currentGroupInfo.commerceInfo.commerceStatus !== 1)"
+                ></i>
+              </span>
+            </ng-container>
           </ng-container>
         </div>
         <div
@@ -76,10 +107,20 @@
           style="position: relative; display: flex; justify-content: flex-end;"
           class="child__page__title"
           (click)="handleShowMorePageOpt($event)"
-          *ngIf="uiFlag.divideIndex !== null"
+          *ngIf="uiFlag.divideIndex !== null && !uiFlag.createMode"
         >
           <span [class.active--color]="uiFlag.currentTagIndex >= uiFlag.divideIndex && !uiFlag.showMorePageOpt">
-            {{ 'universal_operating_more' | translate }}
+            <span style="position: relative;">
+              {{ 'universal_operating_more' | translate }}
+              <i
+                style="top: -10px; right: -10px;"
+                class="icon-svg_web-icon_p1_069-about warn__icon"
+                *ngIf="
+                  currentGroupInfo.groupLevel === 30
+                  && (currentGroupInfo.groupDetail.expired || +currentGroupInfo.commerceInfo.commerceStatus !== 1)
+                "
+              ></i>
+            </span>
             <span
               class="see__more__triangle"
               [class.active--color]="uiFlag.currentTagIndex >= uiFlag.divideIndex && !uiFlag.showMorePageOpt"
@@ -109,250 +150,18 @@
       </div>
     </section>
   </nav>
-  <div
+  <section
+    class="card__section"
     *ngIf="
       uiFlag.currentPage === 'myclass-report'
-      || uiFlag.currentPage === 'class-analysis-v2'
       || uiFlag.currentPage === 'sports-report'
       || uiFlag.currentPage === 'life-tracking-v2'
       || uiFlag.currentPage === 'cloudrun-report'
     "
   >
     <app-report-filter></app-report-filter>
-  </div>
-  <main style="width: 100%;">
+  </section>
+  <main class="card__section" style="width: 100%;">
     <router-outlet></router-outlet>
   </main>
 </div>
-
-<!--
-<div class="flexCenter">
-  <div class="flexRow group__page">
-    <main class="flexCol main__content" style="align-items: center;">
-      <div class="main__image">
-        <img src="/assets/images/introduce/T3.jpg"  style="max-height: 200px; max-width: 100%;" />
-        <div class="flexRow group__all__branch">
-          <span *ngIf="!uiFlag.isSmallScreen && currentGroupInfo.groupLevel >= 30">
-
-            <span class="group__name" *ngIf="currentGroupInfo.groupLevel === 30">
-              {{ currentGroupInfo.groupDetail.groupName }}
-            </span>
-          </span>
-          <span *ngIf="!uiFlag.isSmallScreen && currentGroupInfo.groupLevel >= 40">
-
-            <span class="group__name" *ngIf="currentGroupInfo.groupLevel === 40">
-              {{ currentGroupInfo.groupDetail.groupName }}
-            </span>
-          </span>
-          <span class="group__name" *ngIf="currentGroupInfo.groupLevel >= 50">
-              {{ currentGroupInfo.groupDetail.groupName }}
-          </span>
-        </div>
-      </div>
-      <div class="flexCol info__sidebar" *ngIf="uiFlag.isSmallScreen" style="display: none;">
-        <div class="group__icon">
-          <img
-            [src]="currentGroupInfo.groupDetail.groupIcon"
-            (error)="this.currentGroupInfo.groupDetail.groupIcon = '/assets/images/group.jpg'"
-          />
-        </div>
-        <section style="margin: 40px 0 10px 0;" class="flexCol info__section" [class.fold--close]="uiFlag.listFold.groupName">
-          <div class="flexCol separate__border">
-            <div class="flexRow title__section">
-              <div>
-                <span class="info__title">{{ 'universal_group_group' | translate }}</span>
-                <i class="icon-svg_web-icon_p1_013-share icon__btn"></i>
-              </div>
-              <i
-                class="icon-svg_web-icon_p1_006-unfold icon__btn"
-                [class.icon--rotate]="uiFlag.listFold.groupName"
-                (click)="handleFold('groupName')"
-              ></i>
-            </div>
-            <div class="flexCol expand__content" [class.fold__content]="uiFlag.listFold.groupName">
-              <div class="flexCol">
-                <span class="info__subtitle" *ngIf="currentGroupInfo.groupDetail.brandType === 1">
-                  {{ 'universal_group_gym' | translate }}
-                </span>
-                <span class="info__subtitle" *ngIf="currentGroupInfo.groupDetail.brandType === 2">
-                  {{ 'universal_group_company' | translate }}
-                </span>
-                <span
-                  class="info__content"
-                  (click)="handleNavigation(currentGroupInfo.groupDetail.groupRootInfo[2].brandGroupId)"
-                  *ngIf="currentGroupInfo.groupLevel > 30 && currentGroupInfo.groupDetail.groupRootInfo"
-                >
-                  {{ currentGroupInfo.groupDetail.groupRootInfo[2].brandName }}
-                </span>
-                <span
-                  class="current__level"
-                  *ngIf="currentGroupInfo.groupLevel === 30"
-                >
-                  {{ currentGroupInfo.groupDetail.groupName }}
-                </span>
-              </div>
-              <div class="flexCol" *ngIf="currentGroupInfo.groupLevel >= 40">
-                <span class="info__subtitle" *ngIf="currentGroupInfo.groupDetail.brandType === 1">
-                  {{ 'universal_group_branch' | translate }}
-                </span>
-                <span class="info__subtitle" *ngIf="currentGroupInfo.groupDetail.brandType === 2">
-                  {{ 'universal_group_companyBranch' | translate }}
-                </span>
-                <span
-                  class="info__content"
-                  (click)="handleNavigation(currentGroupInfo.groupDetail.groupRootInfo[3].branchGroupId)"
-                  *ngIf="currentGroupInfo.groupLevel > 40 && currentGroupInfo.groupDetail.groupRootInfo"
-                >
-                  {{ currentGroupInfo.groupDetail.groupRootInfo[3].branchName }}
-                </span>
-                <span
-                  class="current__level"
-                  *ngIf="currentGroupInfo.groupLevel === 40"
-                >
-                  {{ currentGroupInfo.groupDetail.groupName }}
-                </span>
-              </div>
-              <div class="flexCol" *ngIf="currentGroupInfo.groupLevel >= 50">
-                <span class="info__subtitle" *ngIf="currentGroupInfo.groupDetail.brandType === 1">
-                  {{ 'universal_group_class' | translate }}
-                </span>
-                <span class="info__subtitle" *ngIf="currentGroupInfo.groupDetail.brandType === 2">
-                  {{ 'universal_group_department' | translate }}
-                </span>
-                <span class="current__level">
-                  {{ currentGroupInfo.groupDetail.groupName }}
-                </span>
-              </div>
-            </div>
-          </div>
-          <div style="justify-content: space-between;" class="flexRow" [class.fold__content]="uiFlag.listFold.groupName">
-            <span class="info__title" *ngIf="currentGroupInfo.groupDetail.groupStatus === 2">
-              {{ 'universal_group_auditSystem' | translate }}
-            </span>
-            <span class="info__title" *ngIf="currentGroupInfo.groupDetail.groupStatus === 1">
-              {{ 'universal_group_freeToJoin' | translate }}
-            </span>
-            <button
-              class="alatech-btn alatech-btn--default"
-              [class.cancelJoin__btn]="user.joinStatus === 1"
-              style="margin-top: 10px;" *ngIf="!user.isGroupAdmin"
-            >
-              <span *ngIf="user.joinStatus === 5" (click)="handleJoinGroup(1)">
-                {{ 'universal_group_applicationsForJoin' | translate }}
-              </span>
-              <span *ngIf="user.joinStatus === 1" (click)="handleJoinGroup(2)">
-                {{ 'universal_group_cancelJoin' | translate }}
-              </span>
-              <span *ngIf="user.joinStatus === 2" (click)="handleJoinGroup(2)">
-                {{ 'universal_group_exitGroup' | translate }}
-              </span>
-            </button>
-          </div>
-        </section>
-        <section
-          class="flexCol info__section"
-          [class.fold--close]="uiFlag.listFold.groupIntroduction"
-        >
-          <div class="flexRow title__section">
-            <span class="info__title">{{ 'universal_group_introduction' | translate }}</span>
-            <i
-              class="icon-svg_web-icon_p1_006-unfold icon__btn"
-              [class.icon--rotate]="uiFlag.listFold.groupIntroduction"
-              (click)="handleFold('groupIntroduction')"
-            ></i>
-          </div>
-          <div style="position: relative;" class="flexCol expand__content" [class.fold__content]="uiFlag.listFold.groupIntroduction">
-            <span id="group__desc" [class.hide__part]="!uiFlag.isShowMoreIntroduction">
-              {{ currentGroupInfo.groupDetail.groupDesc }}
-            </span>
-            <span class="see__more" (click)="handleSeeMore()" *ngIf="!uiFlag.isShowMoreIntroduction">
-              ...{{ 'universal_operating_more' | translate }}
-            </span>
-          </div>
-        </section>
-        <section class="flexCol info__section" [class.fold--close]="uiFlag.listFold.groupMenu">
-          <div class="flexRow title__section">
-            <span class="info__title">{{ 'universal_operating_menu' | translate }}</span>
-            <i
-              class="icon-svg_web-icon_p1_006-unfold icon__btn"
-              [class.icon--rotate]="uiFlag.listFold.groupMenu"
-              (click)="handleFold('groupMenu')"
-            ></i>
-          </div>
-          <div class="flexCol expand__content" [class.fold__content]="uiFlag.listFold.groupMenu">
-            <p
-              class="info__list"
-              [class.current__page]="currentContentPage === 'class-analysis-v2'"
-              *ngIf="currentGroupInfo.groupDetail.brandType === 1"
-              (click)="handleShowContent('class-analysis-v2')"
-            >
-              {{ 'universal_group_myObject' | translate: {'object': '課程分析' } }} &gt;
-            </p>
-            <p
-            class="info__list"
-            [class.current__page]="currentContentPage === 'myclass-report'"
-            *ngIf="currentGroupInfo.groupDetail.brandType === 1"
-            (click)="handleShowContent('myclass-report')"
-            >
-              {{ 'universal_group_group' | translate}} {{ 'universal_group_classReport' | translate}} &gt;
-            </p>
-            <p
-            class="info__list"
-            [class.current__page]="currentContentPage === 'sports-report'"
-            *ngIf="currentGroupInfo.groupDetail.brandType === 2"
-            (click)="handleShowContent('sports-report')"
-            >
-              {{ 'universal_activityData_sportReport' | translate }} &gt;
-            </p>
-            <p
-            class="info__list"
-            [class.current__page]="currentContentPage === 'life-tracking-v2'"
-            *ngIf="currentGroupInfo.groupDetail.brandType === 2"
-            (click)="handleShowContent('life-tracking-v2')"
-            >
-              {{ 'universal_lifeTracking_lifeTracking' | translate }} &gt;
-            </p>
-            <p
-            class="info__list"
-            [class.current__page]="currentContentPage === 'cloudrun-report'"
-            (click)="handleShowContent('cloudrun-report')"
-            >
-              {{ 'universal_app_cloudRun' | translate}} &gt;
-            </p>
-            <p
-            class="info__list"
-            [class.current__page]="currentContentPage === 'member-list'"
-            (click)="handleShowContent('member-list')"
-            >
-              {{ 'universal_group_groupMember' | translate }} &gt;
-            </p>
-            <p
-            class="info__list"
-            [class.current__page]="currentContentPage === 'group-architecture'"
-            (click)="handleShowContent('group-architecture')"
-            >
-              {{ 'universal_group_group' | translate }} {{ 'universal_group_layer' | translate }} &gt;
-            </p>
-            <p
-            class="info__list"
-            [class.current__page]="currentContentPage === 'commerce-plan'"
-            *ngIf="currentGroupInfo.groupLevel === 30"
-            (click)="handleShowContent('commerce-plan')"
-            >
-              {{ 'universal_group_program' | translate }} {{ 'universal_group_status' | translate }} &gt;
-            </p>
-            <p
-            class="info__list"
-            [class.current__page]="currentContentPage === 'edit-group'"
-            *ngIf="user.isGroupAdmin"
-            (click)="handleShowContent('edit-group')"
-            >
-              {{ 'universal_group_groupManagement' | translate }} &gt;
-            </p>
-          </div>
-        </section>
-      </div>
-    </main>
-  </div>
-</div>
--->

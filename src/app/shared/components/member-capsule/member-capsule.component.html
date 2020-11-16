@@ -1,18 +1,6 @@
 <div style="display:inline-block" (click)="goToUserProfileInGroupInfo()">
   <div class="member-selector" [title]="title" (click)="toggleMenu()">
-    <div *ngIf="icon"
-      [ngStyle]="{'background-image': 'url(' + icon + ')'}"
-      class="capsule-img"
-    ></div>
-    <img *ngIf="!icon && !isSubGroupInfo"
-      src="/assets/images/user2.png"
-      class="capsule-img"
-    >
-    <img *ngIf="!icon && isSubGroupInfo"
-      src="/assets/images/group-default.svg"
-      style="opacity: .1"
-      class="capsule-img"
-    >
+    <img class="capsule-img" [src]="icon" (error)="handleImgIconError()">
     <span>{{ name }}</span>
     <ng-container
       *ngIf="isSubGroupInfo && isHadMenu"
@@ -21,11 +9,6 @@
       <ul class="dropdown-menu"
         [class.show]="active"
       >
-        <li class="normal-manage" (click)="goToManage()">
-          <a>
-            {{ 'universal_group_management' | translate}}
-          </a>
-        </li>
         <li class="warn-manage" (click)="openDeleteGroupWin()" *ngIf="canDisband">
           <a>
             {{'universal_operating_disband' | translate}} {{'universal_group_group' | translate}}

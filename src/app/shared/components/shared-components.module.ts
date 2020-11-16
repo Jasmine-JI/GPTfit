@@ -48,6 +48,7 @@ import { MuscleMapChartComponent } from './chart/muscle-map/muscle-map-chart/mus
 import { MuscleSvgIconComponent } from './chart/muscle-map/muscle-svg-icon/muscle-svg-icon.component';
 import { CustomSelectComponent } from './custom-material/custom-select/custom-select.component';
 import { ReportFilterComponent } from './report-filter/report-filter.component';
+import { BottomSheetComponent } from './bottom-sheet/bottom-sheet.component';
 
 @NgModule({
   imports: [
@@ -101,7 +102,8 @@ import { ReportFilterComponent } from './report-filter/report-filter.component';
     MuscleMapChartComponent,
     MuscleSvgIconComponent,
     CustomSelectComponent,
-    ReportFilterComponent
+    ReportFilterComponent,
+    BottomSheetComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [

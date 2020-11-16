@@ -3,7 +3,9 @@
 @import "rotate.scss";
 
 $page-title-colr: rgba(120, 120, 120, 1);
+$warn-color: rgba(255, 75, 75, 1);
 $group-btn-blue: rgba(0, 183, 238, 1);
+$parents__group__color: rgba(150, 150, 150, 1);
 
 .group__header {
   display: flex;
@@ -11,6 +13,12 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   align-items: center;
   justify-content: space-between;
   margin-top: 10px;
+}
+
+.card__section {
+  padding: 10px;
+  margin: 5px 0;
+  background-color: rgba(240, 240, 240, 1);
 }
 
 .group__icon {
@@ -21,7 +29,7 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   top: calc(30px + 4vw);
   left: calc(20px);
   background: #ffffff;
-  border: 2px solid #ffffff;
+  border: 3px solid #ffffff;
   border-radius: 50%;
   overflow: hidden;
 
@@ -49,7 +57,7 @@ $group-btn-blue: rgba(0, 183, 238, 1);
 
 .group__all__branch {
   align-items: flex-end;
-  color: rgba(150, 150, 150, 1);
+  color: $parents__group__color;
   font-size: 20px;
   white-space: nowrap;
   margin-left: calc(120px + 5vw);
@@ -57,6 +65,15 @@ $group-btn-blue: rgba(0, 183, 238, 1);
 
 .group__name {
   font-size: 14px;
+  line-height: normal;
+}
+
+.hover__bottom__border {
+  
+  &:hover {
+    border-bottom: 1px solid $parents__group__color;
+  }
+
 }
 
 .icon--rotate {
@@ -70,14 +87,28 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   margin: 5px;
   padding: 2px 10px;
   white-space: nowrap;
+  @include transition(opacity);
+
+  &:hover {
+    opacity: 0.8;
+    @include transition(opacity);
+  }
+
 }
 
 .primary__btn {
   background-color: $group-btn-blue;
+  @include transition(opacity);
+
+  &:hover {
+    opacity: 0.8;
+    @include transition(opacity);
+  }
+
 }
 
 .warning__btn {
-  background-color: rgba(255, 75, 75, 1);
+  background-color: $warn-color;
 }
 
 .unattracly__btn {
@@ -85,6 +116,7 @@ $group-btn-blue: rgba(0, 183, 238, 1);
 }
 
 .child__page__title {
+  position: relative;
   padding: 10px 15px;
   color:$page-title-colr;
   cursor: pointer;
@@ -163,6 +195,14 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   
 }
 
+.warn__icon {
+  font-size: 24px;
+  color: $warn-color;
+  position: absolute;
+  top: 1px;
+  right: 2px;
+}
+
 .open__fold {
 
   &:after {
@@ -178,6 +218,71 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   padding: 3px 10px;
   background-color: white;
   font-size: 14px;
+  margin: 0 5px;
+  @include transition(background-color);
+
+  &:hover {
+    background-color: rgba(245, 245, 245, 1);
+    @include transition(background-color);
+  }
+
+}
+
+.child__page__card {
+  background-color: white;
+  border: 1px solid rgba(200, 200, 200, 1);
+  padding: 10px;
+}
+
+.group__blue__label {
+  color: $group-btn-blue;
+  font-weight: bold;
+}
+
+.edit__mode__btn {
+  background-color: rgba(255, 75, 75, 1) !important;
+  color: white !important;
+  @include transition(background-color);
+}
+
+.btn__loading__status {
+  background-color: rgba(200, 200, 200, 1) !important;
+  color: black !important;
+  cursor: progress;
+  pointer-events: none;
+  @include transition(background-color)
+}
+
+.group-icon {
+  font-size: 25px;
+  margin-left: 10px;
+}
+
+.warn__text {
+  font-size: 14px;
+  color: $warn-color;
+}
+
+.candidate-label {
+  display: inline-block;
+  margin: 0 10px 10px 0;
+  background-color: rgb(242, 242, 242);
+  border: 1px solid rgb(204, 204, 204);
+  border-radius: 3px;
+  padding: 3px 5px;
+}
+
+.architecture__section {
+  margin: 10px 0;
+}
+
+.group__list__content {
+  margin: 5px;
+}
+
+.content__subtitle {
+  @include subtitle-or-focus(18px);
+  margin-bottom: 15px;
 }
 
 

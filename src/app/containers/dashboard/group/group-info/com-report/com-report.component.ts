@@ -572,6 +572,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
               this.groupService.saveGroupInfo(this.groupData);
               this.showGroupInfo();
             });
+            
           }
 
         });

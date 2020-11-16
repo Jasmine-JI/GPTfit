@@ -3,6 +3,9 @@ import { cloneDeep } from 'lodash';
 import { stringify, parse } from 'query-string';
 import { FormGroup } from '@angular/forms';
 import { Observable, BehaviorSubject } from 'rxjs';
+import { MessageBoxComponent } from '../components/message-box/message-box.component';
+import { TranslateService } from '@ngx-translate/core';
+import { MatDialog } from '@angular/material/dialog';
 export const TOKEN = 'ala_token';
 export const EMPTY_OBJECT = {};
 
@@ -11,6 +14,11 @@ export class UtilsService {
   isResetPassword$ = new BehaviorSubject<boolean>(false);
   imgSelected$ = new BehaviorSubject<boolean>(false);
   hideNavbar$ = new BehaviorSubject<boolean>(false);
+
+  constructor(
+    private dialog: MatDialog,
+    private translate: TranslateService
+  ) {}
 
   setLocalStorageObject(key: string, value: any) {
     localStorage.setItem(key, JSON.stringify(value));
@@ -305,6 +313,25 @@ export class UtilsService {
     });
 
     return copy;
+  }
+
+  /**
+   * 跳出提示視窗
+   * @param msg {string}-欲顯示的訊息
+   * @author kidin-1090811
+   */
+  openAlert(msg: string) {
+    this.dialog.open(MessageBoxComponent, {
+      hasBackdrop: true,
+      data: {
+        title: 'Message',
+        body: msg,
+        confirmText: this.translate.instant(
+          'universal_operating_confirm'
+        )
+      }
+    });
+
   }
 
 }

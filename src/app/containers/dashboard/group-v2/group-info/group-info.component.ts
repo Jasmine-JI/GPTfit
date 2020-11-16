@@ -1,25 +1,18 @@
-import { Component, OnInit, OnDestroy, ElementRef, AfterViewChecked, HostListener, ViewChild } from '@angular/core';
-import { fromEvent, Subscription, Subject } from 'rxjs';
-import { tap, map, takeUntil } from 'rxjs/operators';
+import { Component, OnInit, OnDestroy, ElementRef, AfterViewChecked, ViewChild } from '@angular/core';
+import { fromEvent, Subscription, Subject, forkJoin } from 'rxjs';
+import { takeUntil, tap, switchMap, map } from 'rxjs/operators';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
-import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 import { ShareGroupInfoDialogComponent } from '../../../../shared/components/share-group-info-dialog/share-group-info-dialog.component';
-import { GroupDetailInfo } from '../../models/group-detail';
-
+import { GroupDetailInfo, UserSimpleInfo } from '../../models/group-detail';
+import moment from 'moment';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { GroupService } from '../../services/group.service';
 import { HashIdService } from '../../../../shared/services/hash-id.service';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 
 const errMsg = `Error.<br />Please try again later.`;
-
-interface GroupAccessRightList {
-  accessRight: string;
-  groupId: string;
-  joinStatus: number;
-}
 
 @Component({
   selector: 'app-group-info-v2',
@@ -28,6 +21,7 @@ interface GroupAccessRightList {
 })
 export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
+  @ViewChild('navSection') navSection: ElementRef;
   @ViewChild('pageListBar') pageListBar: ElementRef;
   @ViewChild('seeMore') seeMore: ElementRef;
 
@@ -35,12 +29,13 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   pageResize: Subscription;
   clickEvent: Subscription;
-  descSectionResize: Subscription;
 
   /**
    * 使用者在此群組的身份資料
    */
-  user = {
+  user = <UserSimpleInfo>{
+    nickname: '',
+    userId: null,
     token: '',
     accessRight: [],
     joinStatus: 2,
@@ -57,18 +52,22 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     currentPage: 'group-introduction',
     currentTagIndex: 0,
     barPosition: 0,
-    barWidth: 0
+    barWidth: 0,
+    createMode: false,
+    createLevel: null
   };
 
   /**
    * 此群組相關資料
    */
   currentGroupInfo = {
+    brandType: 1,
     groupId: '',
     hashGroupId: '',
     groupLevel: 99,
     groupDetail: <GroupDetailInfo>{},
-    allGroupInfo: {}
+    allGroupInfo: {},
+    commerceInfo: <any>{}
   };
 
   /**
@@ -101,24 +100,12 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-20200710
    */
   ngOnInit(): void {
-    
     this.getToken();
-    this.detectUrlChange();
-
-    this.router.events.pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe((val: NavigationEnd) => {
-      if (val instanceof NavigationEnd && val.url) {
-        this.detectUrlChange();
-      }
-    });
-
-    this.route.params.pipe(
-      tap(params => console.log('params', params)),
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe();
-
+    this.checkQueryString(location.search);
+    this.detectParamChange();
+    this.detectGroupIdChange();
     this.handlePageResize();
+    this.handleSideBarSwitch();
   }
 
   ngAfterViewChecked() {}
@@ -138,6 +125,23 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   /**
+   * 當sidebar模式變更時，重新計算active bar位置
+   * @author kidin-1091111
+   */
+  handleSideBarSwitch() {
+    this.groupService.getRxSideBarMode().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+
+      setTimeout(() => {
+        this.getBtnPosition(this.uiFlag.currentTagIndex);
+      }, 250); // 待sidebar動畫結束再計算位置
+      
+    })
+
+  }
+
+  /**
    * 偵測全域點擊事件，以收納"更多"選單
    * @author kidin-20201112
    */
@@ -152,28 +156,150 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   /**
+   * 確認url的query string
+   * @param query {string}-url query string
+   * @author kidin-1091106
+   */
+  checkQueryString(query: string) {
+    if (query.indexOf('?') > -1) {
+      const queryArr = query.split('?')[1].split('&');
+      for (let i = 0, queryLength = queryArr.length; i < queryLength; i++) {
+
+        if (queryArr[i].indexOf('createType') > -1) {
+          this.openCreateMode(queryArr[i].split('=')[1]);
+        } else if (queryArr[i].indexOf('brandType') > -1) {
+          this.currentGroupInfo.brandType = +queryArr[i].split('=')[1];
+        }
+
+      }
+
+    } else {
+      this.uiFlag.createMode = false;
+    }
+
+  }
+
+  /**
+   * 處理url param改變的事件
+   * @author kidin-1091110
+   */
+  detectParamChange() {
+    this.router.events.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(event => {
+
+      if (event instanceof NavigationEnd) {
+        console.log(event.url);
+        this.checkQueryString(event.url);
+        this.getCurrentContentPage(event);
+        this.getBtnPosition(this.uiFlag.currentTagIndex);
+      }
+
+    })
+
+  }
+
+  /**
+   * 處理切換不同群組的事件
+   * @author kidin-1091110
+   */
+  detectGroupIdChange() {
+    this.route.params.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
+      this.detectGroupChange();
+    });
+
+  }
+
+  /**
+   * 根據權限和群組類別決定是否開啟建立群組模式
+   * @param type {string}-欲新建的群組type
+   * @author kidin-1091106
+   */
+  openCreateMode(type: string) {
+    if (this.user.accessRight[0]) {
+
+      switch (type) {
+        case 'brand':
+          if (this.user.accessRight[0] <= 29) {
+            this.uiFlag.createMode = true;
+            this.uiFlag.createLevel = 30;
+          }
+
+          break;
+        case 'branch':
+          if (this.user.accessRight[0] <= 30) {
+            this.uiFlag.createMode = true;
+            this.uiFlag.createLevel = 40;
+          }
+
+          break;
+        case 'coach':
+        case 'department':
+          if (this.user.accessRight[0] <= 40) {
+            this.uiFlag.createMode = true;
+            this.uiFlag.createLevel = 60;
+          }
+
+          break;
+        case 'teacher':
+          if (this.user.accessRight[0] <= 40) {
+            this.uiFlag.createMode = true;
+            this.uiFlag.createLevel = 60;
+          }
+
+          break;
+        default:
+          this.closeCreateMode();
+          break;
+      }
+
+    } else {
+      // 待api取得user資訊再判斷是否進入create mode(網站重新整理時)
+      setTimeout(() => {
+        this.openCreateMode(type);
+      }, 250);
+
+    }
+
+  }
+
+  /**
+   * 關閉建立群組模式
+   * @author kidin-1091106
+   */
+  closeCreateMode() {
+    this.uiFlag.createMode = false;
+
+    // 移除query string，避免create mode被重複開啟
+    const newUrl = `${location.origin}${location.pathname}`;
+    window.history.pushState({path: newUrl}, '', newUrl);
+  }
+
+  /**
    * 依瀏覽器大小將超出邊界的清單進行收納
    * @author kidin-20200714
    */
   checkScreenSize() {
 
     setTimeout(() => {
-      const pageBar = this.pageListBar.nativeElement,
-            pageBarWidth = pageBar.clientWidth;
+      const navSection = this.navSection.nativeElement,
+            navSectionWidth = navSection.clientWidth;
 
       let reservedSpace = 0;
       this.uiFlag.windowInnerWidth = window.innerWidth;
-      if (window.innerWidth >= 1000) {
+      if (window.innerWidth >= 1000 && window.innerWidth <= 1390) {
         reservedSpace = 270; // sidebar展開所需的空間
       }
 
-      if (pageBarWidth < this.perPageOptSize.total + reservedSpace) {
+      if (navSectionWidth < this.perPageOptSize.total + reservedSpace) {
         const titleSizeList = this.perPageOptSize.perSize;
         let total = 0;
         for (let i = 0, sizeArrLen = titleSizeList.length; i < sizeArrLen; i++) {
 
           total += titleSizeList[i];
-          if (total + reservedSpace + 130 >= pageBarWidth) { // 130為"更多"按鈕的空間
+          if (total + reservedSpace + 130 >= navSectionWidth) { // 130為"更多"按鈕的空間
             this.uiFlag.divideIndex = i;
             break;
           }
@@ -183,6 +309,10 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         this.handleGlobalClick();
       } else {
         this.uiFlag.divideIndex = null;
+        if (this.clickEvent) {
+          this.clickEvent.unsubscribe();
+        }
+
       }
 
       this.getBtnPosition(this.uiFlag.currentTagIndex);
@@ -196,6 +326,22 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   getToken() {
     this.user.token = this.utils.getToken() || '';
+  }
+
+  /**
+   * 切換不同群組頁面即更新群組和使用者相關資訊
+   * @author kidin-10812217
+   */
+  detectGroupChange() {
+    if (this.currentGroupInfo.hashGroupId !== this.route.snapshot.paramMap.get('groupId')) {
+      this.uiFlag.createMode = false;
+      this.getCurrentGroupInfo();
+      this.getGroupNeedInfo();
+      this.saveAllLevelGroupData();
+    } else {
+      this.getRxGroupNeedInfo();
+    }
+
   }
 
   /**
@@ -215,26 +361,132 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * 取得當前群組詳細資訊
    * @author kidin-1090716
    */
-  getGroupDetail() {
-    const body = {
+  getGroupNeedInfo() {
+    /**
+     * api 1102 request body
+     */
+    const detailBody = {
       token: this.user.token,
       groupId: this.currentGroupInfo.groupId,
       findRoot: 1,
       avatarType: 3
     };
 
-    this.groupService.fetchGroupListDetail(body).subscribe(res => {
-      if (res.resultCode !== 200) {
-        this.openAlert(errMsg);
-        console.log(`${res.resultCode}: ${res.resultMessage}`);
+    const groupIdArr = this.currentGroupInfo.groupId.split('-');
+    groupIdArr.length = 3;
+
+    /**
+     * api 1115 request body
+     */
+    const commerceBody = {
+      token: this.user.token,
+      groupId: `${groupIdArr.join('-')}-0-0-0`
+    };
+
+    forkJoin([
+      this.groupService.fetchGroupListDetail(detailBody),
+      this.groupService.fetchCommerceInfo(commerceBody)
+    ]).subscribe(resArr => {
+      console.log('combine', resArr);
+      this.handleDetail(resArr[0]);
+      this.handleCommerce(resArr[1]);
+      this.checkUserAccessRight();
+      this.initChildPageList();
+      this.getCurrentContentPage();
+      this.getPerPageOptSize();
+    })
+
+  }
+
+  /**
+   * 處理api 1102的response
+   * @param res {any}-api 1102 response
+   * @author kidin-1091104
+   */
+  handleDetail(res: any) {
+    console.log('handleDetail', res);
+    if (res.resultCode !== 200) {
+
+      if (this.currentGroupInfo.groupId !== '0-0-0-0-0-0') {
+        this.utils.openAlert(errMsg);
+        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
-        this.groupService.saveGroupDetail(res.info);
-        this.currentGroupInfo.groupDetail = res.info;
-        console.log('groupDetail', this.currentGroupInfo.groupDetail);
+        const rootGroupDetail = {
+          brandType: this.currentGroupInfo.brandType,
+          classActivityType: [],
+          coachType: '',
+          commerceStatus: 1,
+          expired: false,
+          groupDesc: '',
+          groupIcon: '',
+          groupId: "0-0-0-0-0-0",
+          groupName: '',
+          groupRootInfo: [null, null],
+          groupStatus: 2,
+          groupVideoUrl: '',
+          rtnMsg: '',
+          selfJoinStatus: 5,
+          shareActivityToMember: {disableAccessRight: Array(0), enableAccessRight: Array(0), switch: "2"},
+          shareAvatarToMember: {disableAccessRight: Array(0), enableAccessRight: Array(0), switch: "1"},
+          shareReportToMember: {disableAccessRight: Array(0), enableAccessRight: Array(0), switch: "2"}
+        }
+
+        this.groupService.saveGroupDetail(rootGroupDetail);
       }
 
-    });
+    } else {
+      this.user.joinStatus = res.info.selfJoinStatus;
+      this.currentGroupInfo.groupDetail = res.info;
+      this.groupService.saveGroupDetail(res.info);
+      console.log('groupDetail', this.currentGroupInfo.groupDetail);
+    }
 
+  }
+
+  /**
+   * 處理api 1102的response
+   * @param res {any}-api 1115 response
+   * @author kidin-1091104
+   */
+  handleCommerce(res: any) {
+    if (res.resultCode !== 200) {
+      this.utils.openAlert(errMsg);
+      console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+    } else {
+
+      if (moment(res.info.commercePlanExpired).valueOf() < moment().valueOf()) {
+        Object.assign(res.info, {expired: true});
+      } else {
+        Object.assign(res.info, {expired: false});
+        
+      }
+
+      this.currentGroupInfo.commerceInfo = res.info;
+      this.groupService.saveCommerceInfo(res.info);
+    }
+
+  }
+
+  /**
+   * 藉由rx取得已儲存的資訊
+   * @author kidin-1091105
+   */
+  getRxGroupNeedInfo() {
+    forkJoin([
+      this.groupService.getRxGroupDetail(),
+      this.groupService.getRxCommerceInfo()
+    ]).pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(resArr => {
+      this.user.joinStatus = resArr[0].info.selfJoinStatus;
+      this.currentGroupInfo.groupDetail = resArr[0].info;
+      this.currentGroupInfo.commerceInfo = resArr[1].info;
+      this.checkUserAccessRight();
+      this.initChildPageList();
+      this.getCurrentContentPage();
+      this.getPerPageOptSize();
+    })
+    
   }
 
   /**
@@ -251,48 +503,32 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   /**
-   * 切換不同群組頁面及更新群組和使用者相關資訊
-   * @author kidin-10812217
-   */
-  detectUrlChange() {
-    this.getCurrentContentPage();
-    this.getCurrentGroupInfo();
-    this.getGroupDetail();
-    this.saveAllLevelGroupData();
-    this.getUserJoinInfo();
-    this.checkUserAccessRight();
-    this.initChildPageList();
-    this.getPerPageOptSize();
-  }
-
-  /**
    * 根據url對應選單
+   * @param event {NavigationStart}-變更url產生的事件
    * @author kidin-1090813
    */
-  getCurrentContentPage(): void {
-    const arr = location.pathname.split('/');
-    if (arr.length === 5) {
-      this.uiFlag.currentPage = arr[arr.length - 1];
+  getCurrentContentPage(event = null): void {
+    let urlArr: Array<string>;
+    if (event !== null) {
+      urlArr = event.url.split('/');
     } else {
-      this.router.navigateByUrl(
-        `/dashboard/group-info-v2/${this.hashIdService.handleGroupIdEncode(this.currentGroupInfo.groupId)}/group-introduction`
-      );
+      urlArr = location.pathname.split('/');
+    }
+
+    if (urlArr.indexOf('group-info-v2') > -1) {
+    console.log('arr', urlArr, event);
+      if (urlArr.length === 5) {
+        this.uiFlag.currentPage = urlArr[urlArr.length - 1].split('?')[0];
+        this.uiFlag.currentTagIndex = this.childPageList.indexOf(this.uiFlag.currentPage);
+      } else {
+        this.router.navigateByUrl(
+          `/dashboard/group-info-v2/${this.hashIdService.handleGroupIdEncode(this.currentGroupInfo.groupId)}/group-introduction`
+        )
+
+      }
+
     }
     
-  }
-
-  /**
-   * 取得使用者加入資訊
-   * @author kidin-1090811
-   */
-  getUserJoinInfo() {
-    this.userProfileService.getRxUserProfile().pipe(
-      tap(res => {
-        console.log('userProfile', res);
-      }),
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => this.user.joinStatus = this.getJoinStatus(res.groupAccessRightList));
-
   }
 
   /**
@@ -300,8 +536,21 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1090811
    */
   checkUserAccessRight() {
-    this.groupService.checkAccessRight(this.currentGroupInfo.groupId).subscribe(res => {
-      this.user.accessRight = res;
+    this.groupService.checkAccessRight(this.currentGroupInfo.groupId).pipe(
+      switchMap(res => this.userProfileService.getRxUserProfile().pipe(
+        map(resp => {
+          const userObj = {};
+          Object.assign(userObj, {accessRight: res});
+          Object.assign(userObj, {nickname: resp.nickname});
+          Object.assign(userObj, {userId: resp.userId});
+          return userObj;
+        })
+      )),
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
+      this.user.accessRight = (res as any).accessRight;
+      this.user.nickname = (res as any).nickname;
+      this.user.userId = (res as any).userId;
       this.user.isGroupAdmin = this.user.accessRight.some(_accessRight => {
         if (this.currentGroupInfo.groupLevel === 60) {
           return _accessRight === 50 || _accessRight === 60;
@@ -311,16 +560,26 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
       });
 
-    });
+      this.groupService.saveUserSimpleInfo(this.user);
+    })
 
   }
 
   /**
-   * 根據brand type、group level、user access right顯示可點選的頁面
+   * 根據群組類別、群組階層、群組經營狀態、使用者權限等，顯示可點選的頁面
+   * @author kidin-1091104
    */
   initChildPageList() {
-    const groupDetail = this.currentGroupInfo.groupDetail;
-    if (groupDetail.brandType === 1 && this.currentGroupInfo.groupLevel === 60) {
+
+    const groupDetail = this.currentGroupInfo.groupDetail,
+          commerceInfo = this.currentGroupInfo.commerceInfo;
+
+    if (
+      groupDetail.brandType === 1
+      && this.currentGroupInfo.groupLevel === 60
+      && !commerceInfo.expired
+      && +commerceInfo.commerceStatus === 1
+    ) {
       this.childPageList = [
         'group-introduction',
         'myclass-report',
@@ -330,9 +589,16 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         'group-architecture',
         'admin-list'
       ];
-    } else if (groupDetail.brandType === 1) {
+    } else if (
+      groupDetail.brandType === 2
+      && !commerceInfo.expired
+      && +commerceInfo.commerceStatus === 1
+    ) {
       this.childPageList = [
         'group-introduction',
+        'sports-report',
+        'life-tracking-v2',
+        'cloudrun-report',
         'member-list',
         'group-architecture',
         'admin-list'
@@ -340,9 +606,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     } else {
       this.childPageList = [
         'group-introduction',
-        'sports-report',
-        'life-tracking-v2',
-        'cloudrun-report',
         'member-list',
         'group-architecture',
         'admin-list'
@@ -362,6 +625,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   getPerPageOptSize() {
 
     setTimeout(() => {
+      this.initPageOptSize();
       const menuList = document.querySelectorAll('.main__page__list');
       this.uiFlag.barWidth = menuList[0].clientWidth;
       menuList.forEach(_menu => {
@@ -375,15 +639,14 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   /**
-   * 取得使用者在此群組和關聯群組之狀態
-   * @params groupList {Array<object>}
-   * @returns joinStatus {number}
-   * @author kidin-1090811
+   * 將perPageOptSize參數進行初始化
+   * @author kidin-1091110
    */
-  getJoinStatus(groupList: Array<GroupAccessRightList>): number {
-    const belongGroup = groupList.filter(_list => _list.groupId === this.currentGroupInfo.groupId);
-    console.log('belongGroup', belongGroup);
-    return belongGroup[0] ? belongGroup[0].joinStatus : 5;
+  initPageOptSize() {
+    this.perPageOptSize = {
+      total: 0,
+      perSize: []
+    };
   }
 
   /**
@@ -402,8 +665,8 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.groupService.actionGroup(body).subscribe(res => {
       console.log('handleJoinGroup', res);
       if (res.resultCode !== 200) {
-        this.openAlert(errMsg);
-        console.log(`${res.resultCode}: ${res.resultMessage}`);
+        this.utils.openAlert(errMsg);
+        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
         this.userProfileService.refreshUserProfile({token: this.user.token});
       }
@@ -419,7 +682,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1090811
    */
   handleNavigation(groupId: string) {
-    console.log('handleNavigation', groupId, this.hashIdService.handleGroupIdEncode(groupId));
     this.router.navigateByUrl(
       `/dashboard/group-info-v2/${this.hashIdService.handleGroupIdEncode(groupId)}/group-introduction`
     );
@@ -435,11 +697,11 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   handleShowContent(e: MouseEvent, page: string, tagIdx: number) {
     e.stopPropagation();
-    this.getBtnPosition(tagIdx);
+    this.router.navigateByUrl(`/dashboard/group-info-v2/${this.currentGroupInfo.hashGroupId}/${page}`);
     this.uiFlag.currentPage = page;
     this.uiFlag.currentTagIndex = tagIdx;
     this.uiFlag.showMorePageOpt = false;
-    this.router.navigateByUrl(`/dashboard/group-info-v2/${this.currentGroupInfo.hashGroupId}/${page}`);
+    this.getBtnPosition(tagIdx);
   }
 
   /**
@@ -448,6 +710,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091102
    */
   getBtnPosition(tagIdx: number) {
+
     if (this.uiFlag.divideIndex === null || tagIdx < this.uiFlag.divideIndex) {
 
       setTimeout(() => {
@@ -459,7 +722,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         }
 
         this.uiFlag.barPosition = frontSize;
-
       });
       
     } else {
@@ -490,32 +752,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   handleShowMorePageOpt(e: MouseEvent) {
     e.stopPropagation();
-
-    if (this.uiFlag.showMorePageOpt) {
-      this.uiFlag.showMorePageOpt = false;
-    } else {
-      this.uiFlag.showMorePageOpt = true;
-    }
-
-  }
-
-  /**
-   * 跳出提示視窗
-   * @param msg {string}-欲顯示的訊息
-   * @author kidin-1090811
-   */
-  openAlert(msg: string) {
-    this.dialog.open(MessageBoxComponent, {
-      hasBackdrop: true,
-      data: {
-        title: 'Message',
-        body: msg,
-        confirmText: this.translate.instant(
-          'universal_operating_confirm'
-        )
-      }
-    });
-
+    this.uiFlag.showMorePageOpt = !this.uiFlag.showMorePageOpt;
   }
 
   /**

@@ -786,6 +786,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
       default:
         this.planName = this.translate.instant('universal_group_customPlan');
     }
+
     this.dialog.open(MessageBoxComponent, {
       hasBackdrop: true,
       data: {
@@ -796,29 +797,19 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         confirmText: this.translate.instant('universal_operating_confirm'),
         cancelText: this.translate.instant('universal_operating_cancel'),
         onConfirm: () => {
-          if (this.commercePlan && this.commercePlan > 0) {
-              this.isShowCreateForm = true;
+          this.router.navigateByUrl(
+            `/dashboard/group-info-v2/${
+              this.hashIdService.handleGroupIdEncode(`0-0-0-0-0-0`)
+            }/group-introduction?createType=brand&plan=${
+              this.commercePlan
+            }&brandType=1`
+          );
 
-            if (this.commercePlan < 99) {
-              const {
-                maxBranches,
-                maxClasses,
-                maxGroupManagers,
-                maxGroupMembers
-              } = this.planDatas[this.commercePlan - 1];
-              this.form.patchValue({
-                maxBranches,
-                maxClasses,
-                maxGroupManagers,
-                maxGroupMembers
-              });
-            }
-          } else {
-            this.isShowCreateForm = false;
-          }
         }
       }
+
     });
+    
   }
 
   // 建立企業群組-kidin-109114
@@ -836,6 +827,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
       default:
         this.planName = this.translate.instant('universal_group_customPlan');
     }
+
     this.dialog.open(MessageBoxComponent, {
       hasBackdrop: true,
       data: {
@@ -846,28 +838,19 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         confirmText: this.translate.instant('universal_operating_confirm'),
         cancelText: this.translate.instant('universal_operating_cancel'),
         onConfirm: () => {
-          if (this.commercePlan && this.commercePlan > 0) {
-              this.isShowCreateForm = true;
-            if (this.commercePlan < 99) {
-              const {
-                maxBranches,
-                maxClasses,
-                maxGroupManagers,
-                maxGroupMembers
-              } = this.planDatas[this.commercePlan - 1];
-              this.form.patchValue({
-                maxBranches,
-                maxClasses,
-                maxGroupManagers,
-                maxGroupMembers
-              });
-            }
-          } else {
-            this.isShowCreateForm = false;
-          }
+          this.router.navigateByUrl(
+            `/dashboard/group-info-v2/${
+              this.hashIdService.handleGroupIdEncode(`0-0-0-0-0-0`)
+            }/group-introduction?createType=brand&plan=${
+              this.commercePlan
+            }&brandType=2`
+          );
+
         }
       }
+
     });
+
   }
 
   handleCancel(e) {
