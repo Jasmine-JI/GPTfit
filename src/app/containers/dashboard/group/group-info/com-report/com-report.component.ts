@@ -1271,7 +1271,14 @@ export class ComReportComponent implements OnInit, OnDestroy {
           typeRowHR = [],
           typeRowMaxHR = [],
           typeRowPower = [],
-          typeRowMaxPower = [];
+          typeRowMaxPower = [],
+          typeBallHrZoneData = [],
+          typeBallCalories = [],
+          typeBallDataDate = [],
+          typeBallSpeed = [],
+          typeBallMaxSpeed = [],
+          typeBallHR = [],
+          typeBallMaxHR = [];
 
     let typeAllTotalTrainTime = 0,
         typeAllTotalDistance = 0,
@@ -1328,7 +1335,16 @@ export class ComReportComponent implements OnInit, OnDestroy {
         typeRowHrZoneTwo = 0,
         typeRowHrZoneThree = 0,
         typeRowHrZoneFour = 0,
-        typeRowHrZoneFive = 0;
+        typeRowHrZoneFive = 0,
+        typeBallLength = 0,
+        typeBallTotalTrainTime = 0,
+        typeBallTotalDistance = 0,
+        typeBallHrZoneZero = 0,
+        typeBallHrZoneOne = 0,
+        typeBallHrZoneTwo = 0,
+        typeBallHrZoneThree = 0,
+        typeBallHrZoneFour = 0,
+        typeBallHrZoneFive = 0;
 
     for (let i = 0; i < this.activitiesList.length; i++) {
 
@@ -1607,6 +1623,46 @@ export class ComReportComponent implements OnInit, OnDestroy {
             }
 
             break;
+          case '7':
+            typeBallLength += +perData['totalActivities'];
+            typeBallTotalTrainTime += +perData['totalSecond'];
+            typeBallCalories.push(perData['calories']);
+            typeBallTotalDistance += perData['totalDistanceMeters'];
+            typeBallDataDate.push(this.activitiesList[i].startTime.split('T')[0]);
+            typeBallSpeed.push(perData['avgSpeed']);
+            typeBallMaxSpeed.push(perData['avgMaxSpeed']);
+            typeBallHR.push(perData['avgHeartRateBpm']);
+            typeBallMaxHR.push(perData['avgMaxHeartRateBpm']);
+
+            if (perData['totalHrZone0Second'] !== null) {
+              typeBallHrZoneZero += perData['totalHrZone0Second'];
+              typeBallHrZoneOne += perData['totalHrZone1Second'];
+              typeBallHrZoneTwo += perData['totalHrZone2Second'];
+              typeBallHrZoneThree += perData['totalHrZone3Second'];
+              typeBallHrZoneFour += perData['totalHrZone4Second'];
+              typeBallHrZoneFive += perData['totalHrZone5Second'];
+              if (
+                perData['totalHrZone0Second'] +
+                perData['totalHrZone1Second'] +
+                perData['totalHrZone2Second'] +
+                perData['totalHrZone3Second'] +
+                perData['totalHrZone4Second'] +
+                perData['totalHrZone5Second'] !== 0
+              ) {
+                typeBallHrZoneData.push([
+                  perData.type,
+                  perData['totalHrZone0Second'],
+                  perData['totalHrZone1Second'],
+                  perData['totalHrZone2Second'],
+                  perData['totalHrZone3Second'],
+                  perData['totalHrZone4Second'],
+                  perData['totalHrZone5Second'],
+                  this.activitiesList[i].startTime.split('T')[0]
+                ]);
+              }
+            }
+
+            break;
           default:
             console.log('Not support this sports type.');
             break;
@@ -1620,7 +1676,8 @@ export class ComReportComponent implements OnInit, OnDestroy {
           typeWeightTrainAvgTrainTime = (typeWeightTrainTotalTrainTime) || 0,
           typeSwimAvgTrainTime = (typeSwimTotalTrainTime) || 0,
           typeAerobicAvgTrainTime = (typeAerobicTotalTrainTime) || 0,
-          typeRowAvgTrainTime = (typeRowTotalTrainTime) || 0;
+          typeRowAvgTrainTime = (typeRowTotalTrainTime) || 0,
+          typeBallAvgTrainTime = (typeBallTotalTrainTime) || 0;
 
     const typeAllData = {
       activityLength: this.activityLength,
@@ -1634,14 +1691,15 @@ export class ComReportComponent implements OnInit, OnDestroy {
       HrZoneThree: typeAllHrZoneThree,
       HrZoneFour: typeAllHrZoneFour,
       HrZoneFive: typeAllHrZoneFive,
-      perTypeLength: [typeRunLength, typeCycleLength, typeWeightTrainLength, typeSwimLength, typeAerobicLength, typeRowLength],
+      perTypeLength: [typeRunLength, typeCycleLength, typeWeightTrainLength, typeSwimLength, typeAerobicLength, typeRowLength, typeBallLength],
       perTypeTime: [
         typeRunAvgTrainTime,
         typeCycleAvgTrainTime,
         typeWeightTrainAvgTrainTime,
         typeSwimAvgTrainTime,
         typeAerobicAvgTrainTime,
-        typeRowAvgTrainTime
+        typeRowAvgTrainTime,
+        typeBallAvgTrainTime
       ],
       perHrZoneData: this.computeSameHRZoneData(typeAllHrZoneData),
       perCaloriesData: this.computeSameDayData(typeAllCalories, [], typeAllDataDate, 'calories'),
@@ -3026,6 +3084,8 @@ export class ComReportComponent implements OnInit, OnDestroy {
           return 'icon-svg_web-icon_p1_087-aerobic';
         case 'row':
           return 'icon-svg_web-icon_p1_088-row';
+        case 'ball':
+          return 'icon-svg_web-icon_p3_056-ball';
         default:
           return 'icon-svg_web-icon_p1_083-run';
       }

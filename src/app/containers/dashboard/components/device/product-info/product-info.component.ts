@@ -96,7 +96,7 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
 
   // Check if device is phone or tablet
   get isMobile() {
-    return this.breakpointObserver.isMatched('(max-width: 767px)');
+    return this.breakpointObserver.isMatched('(max-width: 768px)');
   }
 
   ngOnInit() {

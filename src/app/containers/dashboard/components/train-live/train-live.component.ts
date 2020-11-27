@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-train-live',
   templateUrl: './train-live.component.html',
-  styleUrls: ['./train-live.component.css']
+  styleUrls: ['./train-live.component.scss']
 })
 export class TrainLiveComponent implements OnInit, AfterViewInit {
   classLists: any;

@@ -132,6 +132,9 @@
           <i *ngIf="activityInfo?.type === '6'"
             class="icon-svg_web-icon_p1_088-row"
           ></i>
+          <i *ngIf="activityInfo?.type === '7'"
+            class="icon-svg_web-icon_p3_056-ball"
+          ></i>
         </div>
         <span *ngIf="!editNameMode" style="color: #919191;margin-left: 15px;font-size: 26px;">
           {{activityName}}
@@ -269,6 +272,38 @@
             <span class="data-label">rpm</span>
           </div>
           <div class="activity-info-data-name">{{'universal_activityData_avgRowCadence' | translate}}</div>
+        </div>
+        <div *ngIf="activityInfo?.type === '7'"
+          class="summary-item"
+        >
+          <div class="activity-info-data-value activity-info-data-unit">{{activityInfo?.maxGforceY || 0 }}
+            <span class="data-label">{{'universal_unit_abridgeGram' | translate}}</span>
+          </div>
+          <div class="activity-info-data-name">{{'universal_activityData_maxAcceleration' | translate}}</div>
+        </div>
+        <div *ngIf="activityInfo?.type === '7'"
+          class="summary-item"
+        >
+          <div class="activity-info-data-value activity-info-data-unit">{{activityInfo?.maxGforceZ || 0 }}
+            <span class="data-label">{{'universal_unit_abridgeGram' | translate}}</span>
+          </div>
+          <div class="activity-info-data-name">{{'universal_activityData_maxJump' | translate}}</div>
+        </div>
+        <div *ngIf="activityInfo?.type === '7'"
+          class="summary-item"
+        >
+          <div class="activity-info-data-value activity-info-data-unit">{{activityInfo?.miniGforceY || 0 }}
+            <span class="data-label">{{'universal_unit_abridgeGram' | translate}}</span>
+          </div>
+          <div class="activity-info-data-name">{{'universal_activityData_maxImpact' | translate}}</div>
+        </div>
+        <div *ngIf="activityInfo?.type === '7'"
+          class="summary-item"
+        >
+          <div class="activity-info-data-value activity-info-data-unit">{{activityInfo?.miniGforceZ || 0 }}
+            <span class="data-label">{{'universal_unit_abridgeGram' | translate}}</span>
+          </div>
+          <div class="activity-info-data-name">{{'universal_activityData_maxFloorImpact' | translate}}</div>
         </div>
       </div>
     </div>
@@ -439,6 +474,13 @@
             chart target
           </div>
         </div>
+        <div class="activity-block" *ngIf="!(isInitialChartDone && !isgForceChartTargetDisplay) && isDebug && chartKind !== 'columnChart'">
+          <div #gForceChartTarget class="chart"
+            [class.hidden]="!isgForceChartTargetDisplay"
+          >
+            chart target
+          </div>
+        </div>
       </div>
     </ng-container>
     <p style="page-break-inside:avoid">
@@ -465,7 +507,13 @@
                 </div>
                 <span
                   class="data-label"
-                  *ngIf="activityInfo?.type === '1' || activityInfo?.type === '2' || activityInfo?.type === '4' || activityInfo?.type === '6'"
+                  *ngIf="
+                    activityInfo?.type === '1' 
+                    || activityInfo?.type === '2' 
+                    || activityInfo?.type === '4' 
+                    || activityInfo?.type === '6'
+                    || activityInfo?.type === '7'
+                  "
                 >
                   {{'universal_activityData_movingTime' | translate}}
                 </span>
@@ -488,7 +536,7 @@
               </div>
             </div>
             <div class="activity-info__area"
-*ngIf="activityInfo?.type !== '2' && activityInfo?.type !== '3' && activityInfo?.type !== '5' &&
+*ngIf="activityInfo?.type !== '2' && activityInfo?.type !== '3' && activityInfo?.type !== '5' && activityInfo?.type !== '7' &&
 (activityInfo?.avgSpeed || activityInfo?.avgMoveSpeed || activityInfo?.maxSpeed)"
             >
               <div class="ala-dashboard-title activity-title">
@@ -895,6 +943,121 @@
                 </div>
                 <span class="data-label">
                   {{'universal_activityData_baetRowReps' | translate}}({{'universal_activityData_row' | translate}})
+                </span>
+              </div>
+            </div>
+            <div class="activity-info__area"
+              *ngIf="activityInfo?.type === '7' && isDebug"
+            >
+              <div class="ala-dashboard-title activity-title">
+                {{'universal_unit_gforce' | translate}}
+              </div>
+              <div class="activity-info__area--block">
+                <div>
+                  {{activityInfo?.totalPlusGforceX || 0}}
+                  <span class="data-label">g</span>
+                </div>
+                <span class="data-label">
+                  {{'universal_activityData_totalRight' | translate}}
+                </span>
+              </div>
+              <div class="activity-info__area--block">
+                <div>
+                  {{activityInfo?.totalPlusGforceY || 0}}
+                  <span class="data-label">g</span>
+                </div>
+                <span class="data-label">
+                  {{'universal_activityData_totalAcceleration' | translate}}
+                </span>
+              </div>
+              <div class="activity-info__area--block">
+                <div>
+                  {{activityInfo?.totalPlusGforceZ || 0}}
+                  <span class="data-label">g</span>
+                </div>
+                <span class="data-label">
+                  {{'universal_activityData_totalJump' | translate}}
+                </span>
+              </div>
+              <div class="activity-info__area--block">
+                <div>
+                  {{activityInfo?.totalMinusGforceX || 0}}
+                  <span class="data-label">g</span>
+                </div>
+                <span class="data-label">
+                  {{'universal_activityData_totalLeft' | translate}}
+                </span>
+              </div>
+              <div class="activity-info__area--block">
+                <div>
+                  {{activityInfo?.totalMinusGforceY || 0}}
+                  <span class="data-label">g</span>
+                </div>
+                <span class="data-label">
+                  {{'universal_activityData_totalImpact' | translate}}
+                </span>
+              </div>
+              <div class="activity-info__area--block">
+                <div>
+                  {{activityInfo?.totalMinusGforceZ || 0}}
+                  <span class="data-label">g</span>
+                </div>
+                <span class="data-label">
+                  {{'universal_activityData_totalFloorImpact' | translate}}
+                </span>
+              </div>
+              <div class="activity-info__area--block">
+                <div>
+                  {{activityInfo?.maxGforceX || 0}}
+                  <span class="data-label">g</span>
+                </div>
+                <span class="data-label">
+                  {{'universal_activityData_maxRight' | translate}}
+                </span>
+              </div>
+              <div class="activity-info__area--block">
+                <div>
+                  {{activityInfo?.maxGforceY || 0}}
+                  <span class="data-label">g</span>
+                </div>
+                <span class="data-label">
+                  {{'universal_activityData_maxAcceleration' | translate}}
+                </span>
+              </div>
+              <div class="activity-info__area--block">
+                <div>
+                  {{activityInfo?.maxGforceZ || 0}}
+                  <span class="data-label">g</span>
+                </div>
+                <span class="data-label">
+                  {{'universal_activityData_maxJump' | translate}}
+                </span>
+              </div>
+              <div class="activity-info__area--block">
+                <div>
+                  {{activityInfo?.miniGforceX || 0}}
+                  <span class="data-label">g</span>
+                </div>
+                <span class="data-label">
+                  {{'universal_activityData_maxLeft' | translate}}
+                </span>
+              </div>
+              <div class="activity-info__area--block">
+                <div>
+                  {{activityInfo?.miniGforceY || 0}}
+                  <span class="data-label">g</span>
+                </div>
+                <span class="data-label">
+                  {{'universal_activityData_maxImpact' | translate}}
+                </span>
+              </div>
+              <div class="activity-info__area--block">
+                <div>
+                  {{activityInfo?.miniGforceZ || 0}}
+                  <span class="data-label">g</span>
+                </div>
+                <span class="data-label">
+                  {{'universal_activityData_maxFloorImpact' | translate}}
                 </span>
               </div>
             </div>

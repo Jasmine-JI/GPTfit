@@ -101,6 +101,20 @@
         {{'universal_sportsName_boating' | translate}}
       </span>
     </li>
+    <li
+      class="report-type-list"
+      (click)="handleRenderChart('7')"
+      [style.color]="chooseType === '7' ? '#157fcc' : 'initial'"
+      [style.pointer-events]="chooseType === '7' ? 'none' : 'initial'"
+    >
+      <i
+        class="icon-svg_web-icon_p1_074-level_unfold"
+        *ngIf="chooseType === '7'"
+      ></i>
+      <span>
+        {{'universal_activityData_ballSports' | translate}}
+      </span>
+    </li>
   </div>
   <div class="col-10 media-940-maxwidth" [class.reportPreviewMode]="isPreviewMode">
     <mat-tab-group

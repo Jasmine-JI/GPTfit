@@ -4,9 +4,6 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { HttpParams } from '@angular/common/http';
-import 'rxjs/add/operator/debounceTime';
-import 'rxjs/add/operator/distinctUntilChanged';
-import 'rxjs/add/observable/fromEvent';
 import { Router } from '@angular/router';
 import { debounce } from '@shared/utils/';
 import { UtilsService } from '@shared/services/utils.service';
@@ -14,7 +11,7 @@ import { UtilsService } from '@shared/services/utils.service';
 @Component({
   selector: 'app-device-log',
   templateUrl: './device-log.component.html',
-  styleUrls: ['./device-log.component.css']
+  styleUrls: ['./device-log.component.scss']
 })
 export class DeviceLogComponent implements OnInit {
   logSource = new MatTableDataSource<any>();

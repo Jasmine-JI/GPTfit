@@ -1,11 +1,12 @@
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { Observable, BehaviorSubject, ReplaySubject, throwError } from 'rxjs';
+import { map, switchMap, catchError } from 'rxjs/operators';
 import { UtilsService } from '@shared/services/utils.service';
 import { UserProfileService } from '../../../shared/services/user-profile.service'
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { GroupIdSlicePipe } from '../../../shared/pipes/group-id-slice.pipe';
+import { GroupDetailInfo } from '../models/group-detail';
 
 const { API_SERVER } = environment.url;
 
@@ -20,7 +21,8 @@ export class GroupService {
 
   groupInfo$ = new BehaviorSubject<any>({}); // 儲存group資訊-kidin-1081210
   allLevelGroupInfo$ = new BehaviorSubject<any>({}); // 儲存 同"品牌/企業" group 資訊-kidin-1090604
-  allLevelGroupData$ = new BehaviorSubject<any>({}); // 儲存 同"品牌/企業" group 資訊-kidin-1090716
+  groupDetail$ = new BehaviorSubject<any>({});  // 儲存群組基本概要方便各子頁面使用-kidin-1091020
+  allLevelGroupData$ = new ReplaySubject<any>(); // 儲存 同"品牌/企業" group 資訊-kidin-1090716
   updatedGroupImg$ = new BehaviorSubject<string>('');
   memberList$ = new BehaviorSubject<any>({
     groupId: '',
@@ -398,6 +400,23 @@ export class GroupService {
   saveGroupInfo (status: object) {
     this.groupInfo$.next(status);
   }
+  
+  /**
+   * 儲存群組概要資訊
+   * @param Detail {GroupDetailInfo}-api 1102回傳內容
+   * @author kidin-1091020
+   */
+  saveGroupDetail(detail: GroupDetailInfo) {
+    this.groupDetail$.next(detail);
+  }
+
+  /**
+   * 取得群組概要資訊
+   * @author kidin-1091020
+   */
+  getRxGroupDetail() {
+    return this.groupDetail$;
+  }
 
   /**
    * 1103-依權限取得群組內所有群組後並儲存
@@ -416,15 +435,26 @@ export class GroupService {
       avatarType: 3
     };
 
-    this.allLevelGroupData$.next(
-      switchMap(() => {
-        return this.http.post<any>('/api/v1/center/getGroupMemberList', body).pipe(
-          map(data => Object.assign(data, {groupId: groupId}))
-        );
+    this.fetchGroupMemberList(body).pipe(
+      catchError(err => throwError(err)),
+      map(data => {
+        if (data.resultCode === 200) {
+          Object.assign(data.info.subGroupInfo, {groupId: groupId});
+          return data;
+        } else {
+          const newData = {
+            info: {
+              subGroupInfo: null
+            }
 
+          };
+          return newData;
+        }
+        
       })
-
-    );
+    ).subscribe(res => {
+      this.allLevelGroupData$.next(res.info.subGroupInfo);
+    });
 
   }
 

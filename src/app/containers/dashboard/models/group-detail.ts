@@ -18,3 +18,10 @@ export interface GroupDetailInfo {
   shareAvatarToMember: object;
   shareReportToMember: object;
 }
+
+export interface GroupArchitecture {
+  groupId: string;
+  brands: any;
+  branches: any;
+  coaches: any;
+}

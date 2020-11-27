@@ -8,9 +8,6 @@ import { GroupService } from '../../services/group.service';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import 'rxjs/add/operator/debounceTime';
-import 'rxjs/add/operator/distinctUntilChanged';
-import 'rxjs/add/observable/fromEvent';
 import { Router } from '@angular/router';
 import { UtilsService } from '@shared/services/utils.service';
 import { HashIdService } from '@shared/services/hash-id.service';
@@ -18,7 +15,7 @@ import { HashIdService } from '@shared/services/hash-id.service';
 @Component({
   selector: 'app-my-group-list',
   templateUrl: './my-group-list.component.html',
-  styleUrls: ['./my-group-list.component.css', '../group-style.scss']
+  styleUrls: ['./my-group-list.component.scss', '../group-style.scss']
 })
 export class MyGroupListComponent implements OnInit {
   logSource = new MatTableDataSource<any>();

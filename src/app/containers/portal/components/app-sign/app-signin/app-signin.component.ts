@@ -128,21 +128,25 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
       account = this.accountInput.nativeElement.value;
     }
 
-    // 當使用者按下enter，則聚焦下一個欄位
-    if (e.key === 'Enter') {
-      this.handleNext({code: 'Enter'}, 'account');
-    } else if (e.key === 'Backspace') {
-      const value = account.slice(0, account.length - 1);
-      if (value.length > 0 && this.formReg.number.test(value)) {
+    // 當使用者按下enter，則聚焦下一個欄位(使用e.key.length === 1 過濾功能鍵)
+    if (e.key.length === 1 || e.key === 'Enter' || e.key === 'Backspace') {
+
+      if (e.key === 'Enter') {
+        this.handleNext({code: 'Enter'}, 'account');
+      } else if (e.key === 'Backspace') {
+        const value = account.slice(0, account.length - 1);
+        if (value.length > 0 && this.formReg.number.test(value)) {
+          this.loginBody.signInType = 2;
+        } else {
+          this.loginBody.signInType = 1;
+        }
+
+      } else if (this.formReg.number.test(account) && this.formReg.number.test(e.key)) {
         this.loginBody.signInType = 2;
-      } else {
+      } else if (!this.formReg.number.test(e.key)) {
         this.loginBody.signInType = 1;
       }
 
-    } else if (this.formReg.number.test(account) && this.formReg.number.test(e.key)) {
-      this.loginBody.signInType = 2;
-    } else if (!this.formReg.number.test(e.key)) {
-      this.loginBody.signInType = 1;
     }
 
   }
@@ -166,10 +170,20 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
         this.cue.account = '';
         this.loginBody.mobileNumber = account;
         this.checkAll();
+
+        if (this.loginBody.email) {
+          delete this.loginBody.email;
+        }
+
       } else {
         this.loginBody.signInType = 1;
         this.loginBody.email = account;
         this.checkEmail(this.loginBody.email);
+
+        if (this.loginBody.mobileNumber) {
+          delete this.loginBody.mobileNumber;
+        }
+
       }
 
     } else {
@@ -238,7 +252,7 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 確認密碼格式-kidin-1090511
   checkPassword(e) {
-    if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
+    if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout' || e.type === 'change') {
       this.loginBody.password = e.currentTarget.value;
       if (!this.regCheck.password.test(this.loginBody.password)) {
         this.cue.password = 'universal_userAccount_passwordFormat';
@@ -275,15 +289,14 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author -kidin-1090810
    */
   doulbleCheck(): boolean {
-
     let pass = true;
     if (!this.formReg.password.test(this.loginBody.password)) {
       pass = false;
     }
 
-    if (this.formReg.email.test(this.loginBody.email)) {
+    if (this.loginBody.email && this.formReg.email.test(this.loginBody.email)) {
       this.loginBody.signInType = 1;
-    } else if (this.formReg.phone.test(this.loginBody.mobileNumber)) {
+    } else if (this.loginBody.mobileNumber && this.formReg.phone.test(this.loginBody.mobileNumber)) {
       this.loginBody.signInType = 2;
     } else {
       pass = false;

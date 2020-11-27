@@ -236,8 +236,12 @@
           <span class="gender__column__content" *ngIf="_delMember.gender === 1">女</span>
           <span class="age__column__content">{{ _delMember.age }}</span>
           <span class="apply__column__content">{{ _delMember.applyTimeStamp | timeFormat: 'YYYY-MM-DD HH:mm' }}</span>
-          <span class="deletor__column__content">{{ _delMember.editInfo.editorId }}</span>
-          <span class="del__column__content">{{ _delMember.editInfo.editTimestamp | timeFormat: 'YYYY-MM-DD HH:mm' }}</span>
+          <span class="deletor__column__content" *ngIf="_delMember.editInfo">
+            {{ _delMember.editInfo.editorId }}
+          </span>
+          <span class="del__column__content" *ngIf="_delMember.editInfo">
+            {{ _delMember.editInfo.editTimestamp | timeFormat: 'YYYY-MM-DD HH:mm' }}
+          </span>
         </div>
       </div>
     </div>

@@ -97,6 +97,8 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   zoneChartTarget: ElementRef;
   @ViewChild('wattChartTarget', {static: false})
   wattChartTarget: ElementRef;
+  @ViewChild('gForceChartTarget', {static: false})
+  gForceChartTarget: ElementRef;
   @ViewChild('muscleMap', {static: false})
   muscleMap: MuscleMapComponent;
   @ViewChild('muscleTrainList', {static: false})
@@ -110,6 +112,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   istempChartTargetDisplay = false;
   iszoneChartTargetDisplay = false;
   iswattChartTargetDisplay = false;
+  isgForceChartTargetDisplay = false;
 
   proficiency = 'metacarpus';  // 使用者重訓熟練度設定(預設進階者)-kidin-1081122
   activityInfo: any;

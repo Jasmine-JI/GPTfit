@@ -9,7 +9,7 @@ import { UserProfileService } from '../../../../shared/services/user-profile.ser
 @Component({
   selector: 'app-right-setting-win',
   templateUrl: './right-setting-win.component.html',
-  styleUrls: ['./right-setting-win.component.css'],
+  styleUrls: ['./right-setting-win.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class RightSettingWinComponent implements OnInit {

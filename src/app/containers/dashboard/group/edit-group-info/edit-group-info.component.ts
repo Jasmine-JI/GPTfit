@@ -27,7 +27,7 @@ import moment from 'moment';
 @Component({
   selector: 'app-edit-group-info',
   templateUrl: './edit-group-info.component.html',
-  styleUrls: ['./edit-group-info.component.css', '../group-style.scss'],
+  styleUrls: ['./edit-group-info.component.scss', '../group-style.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class EditGroupInfoComponent implements OnInit {
@@ -413,7 +413,7 @@ export class EditGroupInfoComponent implements OnInit {
       const { groupName, groupDesc, groupStatus, groupVideoUrl } = value;
       const image = new Image();
 
-      if (location.pathname === 'www.gptfit.com') {
+      if (location.hostname === 'www.gptfit.com') {
         image.src = this.finalImageLink.replace('cloud.alatech.com.tw', 'www.gptfit.com');
       } else {
         image.src = this.finalImageLink;

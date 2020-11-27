@@ -13,10 +13,10 @@
   [ease]="_options.ease"
 >
 </ng-progress>
-<div class="row" *ngIf="!isLoading">
-  <div class="flexCol col-md-4 product-info group-image--area" style="align-items: center;">
+<div class="flexRow whole__content" *ngIf="!isLoading">
+  <div class="flexCol col-md-4 product-info" style="align-items: center;">
     <img *ngIf="!deviceInfo" src={{noProductImg}}>
-    <img *ngIf="deviceInfo" src={{deviceImgUrl}} >
+    <img style="height: 40vw; max-height: 300px; min-height: 200px;" *ngIf="deviceInfo" src={{deviceImgUrl}}>
     <span
       style="margin-top: 20px;"
       class="product__page__tab"
@@ -31,12 +31,9 @@
     >設備日誌</span>
   </div>
   <ng-container *ngIf="uiFlag.page === 'productInfo'">
-    <div class="col-md-8">
-      <div class="group-edit-bar">
-        <span class="group-handle-name">
-          {{'universal_deviceSetting_productInfo' | translate}}
-        </span>
-        <div class="rwd-btn_action">
+    <div style="width: 100%;" class="info__content">
+      <div style="display: flex; justify-content: flex-end;">
+        <div class="flexRow btn__section">
           <button class="alatech-btn alatech-btn--default activty-btn"
             title="{{'universal_operating_finishEdit' | translate}}"
             style="width: 140px;height: 38px;"
@@ -44,14 +41,20 @@
           >
             {{'universal_operating_finishEdit' | translate}}
           </button>
-          <button class="alatech-btn alatech-btn--default activty-btn"
+          <button
+            class="alatech-btn alatech-btn--default activty-btn"
             title="{{'universal_operating_back' | translate}}"
-            style="width: 140px;height: 38px;"
+            style="width: 140px;height: 38px; margin: 0;"
             (click)="goBack()"
           >
             {{'universal_operating_back' | translate}}
           </button>
         </div>
+      </div>
+      <div class="group-edit-bar">
+        <span class="group-handle-name">
+          {{'universal_deviceSetting_productInfo' | translate}}
+        </span>
       </div>
       <div style="color: #919191">
         <div class="info__item">

@@ -18,7 +18,7 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-forgetpwd',
   templateUrl: './forgetpwd.component.html',
-  styleUrls: ['./forgetpwd.component.css']
+  styleUrls: ['./forgetpwd.component.scss']
 })
 export class ForgetpwdComponent implements OnInit, OnDestroy {
   i18n = {

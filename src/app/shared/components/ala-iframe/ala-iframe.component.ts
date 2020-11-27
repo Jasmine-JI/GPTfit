@@ -8,7 +8,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 @Component({
   selector: 'app-ala-iframe',
   templateUrl: './ala-iframe.component.html',
-  styleUrls: ['./ala-iframe.component.css']
+  styleUrls: ['./ala-iframe.component.scss']
 })
 export class AlaIframeComponent implements OnChanges {
   @Input() src: any;

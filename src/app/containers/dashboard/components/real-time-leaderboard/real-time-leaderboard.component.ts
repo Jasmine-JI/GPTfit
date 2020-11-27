@@ -7,7 +7,7 @@ import { MapService } from '@shared/services/map.service';
 @Component({
   selector: 'app-real-time-leaderboard',
   templateUrl: './real-time-leaderboard.component.html',
-  styleUrls: ['./real-time-leaderboard.component.css']
+  styleUrls: ['./real-time-leaderboard.component.scss']
 })
 export class RealTimeLeaderboardComponent implements OnInit {
   rankDatas: any;

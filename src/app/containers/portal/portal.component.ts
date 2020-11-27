@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { GlobalEventsManager } from '@shared/global-events-manager';
 // import debounce from 'debounce';
 
@@ -9,6 +9,8 @@ import { UtilsService } from '../../shared/services/utils.service';
 import { DetectInappService } from '@shared/services/detect-inapp.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
+import { fromEvent, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -16,12 +18,31 @@ import { MessageBoxComponent } from '@shared/components/message-box/message-box.
   templateUrl: './portal.component.html',
   styleUrls: ['./portal.component.scss']
 })
-export class PortalComponent implements OnInit {
+export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
+
+  private ngUnsubscribe = new Subject();
+
+  @ViewChild('system_T1') systemT1: ElementRef;
+  @ViewChild('system_T2') systemT2: ElementRef;
+  @ViewChild('system_T3') systemT3: ElementRef;
+  @ViewChild('system_T4') systemT4: ElementRef;
+  @ViewChild('application_T1') applicationT1: ElementRef;
+  @ViewChild('application_T2') applicationT2: ElementRef;
+  @ViewChild('application_T3') applicationT3: ElementRef;
+  @ViewChild('application_T4') applicationT4: ElementRef;
+  @ViewChild('analysis_T1') analysisT1: ElementRef;
+  @ViewChild('analysis_T2') analysisT2: ElementRef;
+  @ViewChild('analysis_T3') analysisT3: ElementRef;
+  @ViewChild('analysis_T4') analysisT4: ElementRef;
+
+  uiFlag = {
+    page: 'system'
+  };
+
   isMaskShow = false;
   isCollapseOpen = false;
   isEventTab: boolean;
   tabIdx = 0;
-  isIntroducePage: boolean;
   isAlphaVersion = false;
   isPreviewMode = false;
   hideNavbar = false;  // 隱藏navbar-Kidin-1081023
@@ -47,6 +68,12 @@ export class PortalComponent implements OnInit {
     this.checkPage();
     this.checkLanguage();
     this.handleShowNavBar();
+    this.listenTargetImg();
+    
+  }
+
+  ngAfterViewInit() {
+    window.scrollTo({top: 0, behavior: 'auto'});
   }
 
   /**
@@ -122,17 +149,25 @@ export class PortalComponent implements OnInit {
    * @author kidin-1091008
    */
   checkPage() {
-    if (
-      this.router.url === '/' ||
-      this.router.url === '/?openExternalBrowser=1' ||
-      this.router.url === '/#connect' ||
-      this.router.url === '/#cloudrun' ||
-      this.router.url === '/#trainlive' ||
-      this.router.url === '/#fitness'
-    ) {
-      this.isIntroducePage = true;
-    } else {
-      this.isIntroducePage = false;
+    switch (this.router.url) {
+      case '/':
+      case '/introduction/system':
+        this.uiFlag.page = 'system';
+        break;
+      case '/?openExternalBrowser=1':
+      case '/#connect':
+      case '/#cloudrun':
+      case '/#trainlive':
+      case '/#fitness':
+      case '/introduction/application':
+        this.uiFlag.page = 'application';
+        break;
+      case '/introduction/analysis':
+        this.uiFlag.page = 'analysis';
+        break;
+      default:
+        this.uiFlag.page = 'other';
+        break;
     }
 
   }
@@ -176,6 +211,86 @@ export class PortalComponent implements OnInit {
     });
 
   }
+
+  /**
+   * 監聽該頁面圖片位置以產生動態css
+   * @author kidin-1091014
+   */
+  listenTargetImg() {
+      const scrollEvent = fromEvent(document, 'scroll');
+      scrollEvent.pipe(
+        takeUntil(this.ngUnsubscribe)
+      ).subscribe(e => {
+        this.slideImg();
+      })
+    
+  }
+
+  /**
+   * 當頁面滾到指定位置，則圖片滑入
+   * @author kidin-1091014
+   */
+  slideImg() {
+
+    setTimeout(() => {
+      let targetImg = [
+        `${this.uiFlag.page}T1`,
+        `${this.uiFlag.page}T2`,
+        `${this.uiFlag.page}T3`,
+        `${this.uiFlag.page}T4`
+      ];
+
+      targetImg.forEach(_img => {
+        if (_img !== undefined){
+
+          const imgElement = this[_img].nativeElement;
+          if (((window.innerHeight / 1.5) + window.pageYOffset) > imgElement.offsetTop) {
+
+            switch (_img) {
+              case 'systemT1':
+              case 'applicationT4':
+              case 'analysisT1':
+                this.addClass(imgElement, 'left__slide__in');
+                break;
+              case 'systemT2':
+              case 'systemT4':
+              case 'analysisT2':
+                this.addClass(imgElement, 'right__slide__in');
+                break;
+              default:
+                this.addClass(imgElement, 'bottom__slide__in');
+                break;
+            }
+            
+          }
+
+        }
+
+      })
+
+    })
+
+  }
+
+  /**
+   * 確認元素是否有該class，若無則添加class
+   * @param el {Element}
+   * @param name {string}
+   * @author kidin-1091014
+   */
+  addClass(el: Element, name: string) {
+    let classList = el.className.split(' ');
+
+    if (classList.indexOf('hide__slide__img') > -1) {
+      classList = classList.filter(_class => _class !== 'hide__slide__img');
+    }
+
+    if (classList.indexOf(name) < 0) {
+      classList.push(name); 
+      el.className = classList.join(' ');
+    }
+
+  }
   
   /**
    * 遮罩顯示與否
@@ -186,6 +301,65 @@ export class PortalComponent implements OnInit {
     this.globalEventsManager.openCollapse(this.isCollapseOpen);
     this.isMaskShow = false;
     this.globalEventsManager.closeCollapse(false);
+  }
+
+  /**
+   * 根據點擊切換頁面
+   * @param e {string}-點擊的頁面
+   * @author kidin-1091008
+   */
+  switchPage(e: string) {
+    let url = `/introduction/${e}`;
+    this.router.navigateByUrl(url);
+    this.uiFlag.page = e;
+    window.scrollTo({top: 0, behavior: 'auto'});
+  }
+
+  /**
+   * 根據語系轉導至指定網址
+   * @param code {number} 1: 了解更多 2:探索產品 3:取得應用 4:與我們聯絡
+   * @author kidin-1091012
+   */
+  handleNavigation(code: number) {
+    const currentLang = this.utilsService.getLocalStorageObject('locale');
+    let lang: string;
+    switch (currentLang) {
+      case 'zh-tw':
+        lang = 'tw';
+        break;
+      case 'zh-cn':
+        lang = 'cn';
+        break;
+      default:
+        lang = 'en';
+        break;
+    }
+
+    switch (code) {
+      case 1:
+        window.open(`https://www.attacusfitness.com/gpt/lang/${lang}/id/38`, '_blank', 'noopener=yes,noreferrer=yes');
+        break;
+      case 2:
+        window.open(`https://www.attacusfitness.com/products/${lang}/id/3`, '_blank', 'noopener=yes,noreferrer=yes');
+        break;
+      case 3:
+        this.uiFlag.page = 'application';
+        window.scrollTo({top: 0, behavior: 'smooth'});
+        break;
+      case 4:
+        window.open(`https://www.attacusfitness.com/contact/lang/${lang}`, '_blank', 'noopener=yes,noreferrer=yes');
+        break;
+    }
+
+  }
+
+  /**
+   * 取消rxjs訂閱
+   * @author kidin-1091014
+   */
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
 }
