@@ -15,7 +15,7 @@ export class GroupPageTitlePipe implements PipeTransform {
 
     switch (value) {
       case 'group-introduction':
-        return this.translate.instant('universal_deviceSetting_adout');
+        return `${this.translate.instant('universal_deviceSetting_adout')}`;
       case 'myclass-report':
         return `${this.translate.instant('universal_userProfile_personal')} ${this.translate.instant('universal_group_classReport')}`;
       case 'class-analysis-v2':
@@ -33,7 +33,7 @@ export class GroupPageTitlePipe implements PipeTransform {
       case 'commerce-plan':
         return this.translate.instant('universal_group_program');
       case 'admin-list':
-        return this.translate.instant('universal_group_administrator');
+        return `${this.translate.instant('universal_group_administrator')}`;
     }
 
   }

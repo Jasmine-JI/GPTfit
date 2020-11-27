@@ -1,5 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
+/**
+ * 根據區域語系碼回傳相對應語系中文名稱
+ */
 @Pipe({name: 'languageCode'})
 export class LanguageCodePipe implements PipeTransform {
   transform(value: string, args: string[]): any {

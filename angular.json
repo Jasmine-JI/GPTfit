@@ -214,7 +214,7 @@
               "src/assets",
               "src/favicon.ico",
               "src/manifest.json",
-              "src/sitemap.xml",
+              "sitemap.xml",
               "src/robots.txt"
             ]
           }

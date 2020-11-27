@@ -1,7 +1,7 @@
 # GPT Center
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.5.0.
-Angular version: 6.1.10
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.0.1
+Angular version: 11.0.0
 
 ## Installation
 ```
@@ -69,6 +69,24 @@ npm run pm2-kill
 ```
 是kill掉nodejs api server process
 （235環境無效，需要再下netstat -tlunp | grep 3000 查到pid後，再下kill -9 pid碼 進行刪除）
+
+## web本地圖片
+web本地圖片（如首頁圖片等），130/234/235路徑皆為/var/www/html/app
+
+由專案經理在234環境更新圖片，235環境再去掛載234環境該資料夾。
+
+掛載設定檔路徑為/etc/fstab，若未成功掛載，可下
+
+```
+mount -a
+```
+
+，不需要掛載時下
+
+```
+unmount
+```
+
 ## 資料夾結構
 
 ```
@@ -137,6 +155,7 @@ app
 │   ├─ dashboard/ // 需登入後的頁面
 |   |  ├─ components/ // 專屬dashboard模組的元件
 |   |  ├─ group/ // 群組的pages(裏頭有群組資訊、群組編輯、我的群組列表...等)
+|   |  ├─ group-v2/ // 群組v2的pages(裏頭有群組資訊、群組編輯、我的群組列表...等)
 |   |  ├─ guards/ // 專屬dashboard模組的守衛
 |   |  ├─ models/ // 有關typescript定義資料型態
 |   |  ├─ pipes/ // 專屬dashboard模組的通道

@@ -1,5 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
+/**
+ * a3轉譯
+ */
 @Pipe({name: 'a3Format'})
 export class A3FormatPipe implements PipeTransform {
   transform(value: string): any {

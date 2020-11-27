@@ -48,6 +48,9 @@ import map46 from '../../../assets/cloud_run/summary/map-mapdefinition_46.json';
 import map47 from '../../../assets/cloud_run/summary/map-mapdefinition_47.json';
 import map48 from '../../../assets/cloud_run/summary/map-mapdefinition_48.json';
 
+/**
+ * 依地圖編號及多國語系回應該相關資訊(需跟著cloud run 地圖更新)
+ */
 @Pipe({name: 'cloudrunSummary'})
 export class CloudrunSummaryPipe implements PipeTransform {
   transform(value: number, args: string): any {

@@ -1,11 +1,21 @@
 @import "font.scss";
 @import "transition.scss";
 @import "rotate.scss";
+@import "flex-center.scss";
 
 $page-title-colr: rgba(120, 120, 120, 1);
 $warn-color: rgba(255, 75, 75, 1);
 $group-btn-blue: rgba(0, 183, 238, 1);
 $parents__group__color: rgba(150, 150, 150, 1);
+$edit__icon__size: 30px;
+
+
+#scenery__section {
+  position: relative;
+  width: 100%;
+  height: 373px;
+  background-color: rgba(200, 200, 200, 1);
+}
 
 .group__header {
   display: flex;
@@ -23,11 +33,10 @@ $parents__group__color: rgba(150, 150, 150, 1);
 
 .group__icon {
   position: absolute;
-  width: calc(100vw / 6);
-  max-width: 150px;
+  width: 150px;
   z-index: 2;
-  top: calc(30px + 4vw);
-  left: calc(20px);
+  top: 250px;
+  left: 50px;
   background: #ffffff;
   border: 3px solid #ffffff;
   border-radius: 50%;
@@ -55,6 +64,53 @@ $parents__group__color: rgba(150, 150, 150, 1);
   position: relative;
 }
 
+#eidt__mask {
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.5);
+  width: 110vw;
+  height: 110vh;
+  top: -5vh;
+  left: -5vw;
+  z-index: 11;
+}
+
+.img__edit__icon {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  font-size: 24px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  @include center();
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.unClickable {
+  pointer-events: none;
+}
+
+.img__selector {
+  position: fixed;
+  background-color: white;
+  border-radius: 3px;
+  margin: 0 10px;
+  padding: 0 10px 10px 10px;
+  min-width: 250px;
+  min-height: 250px;
+  max-width: 700px;
+}
+
+.absolute__center {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
 .group__all__branch {
   align-items: flex-end;
   color: $parents__group__color;
@@ -64,6 +120,12 @@ $parents__group__color: rgba(150, 150, 150, 1);
 }
 
 .group__name {
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  align-items: flex-end;
+}
+
+.group__parents__name {
   font-size: 14px;
   line-height: normal;
 }
@@ -212,86 +274,42 @@ $parents__group__color: rgba(150, 150, 150, 1);
   
 }
 
-.child__page__btn {
-  border: 1px solid gray;
-  border-radius: 5px;
-  padding: 3px 10px;
-  background-color: white;
-  font-size: 14px;
-  margin: 0 5px;
-  @include transition(background-color);
 
-  &:hover {
-    background-color: rgba(245, 245, 245, 1);
-    @include transition(background-color);
+/*********************************** media *****************************/
+
+
+@media (max-width: 1199px) {
+
+  #scenery__section {
+    height: 313px;
+  }
+
+  .group__icon {
+    top: 190px;
   }
 
 }
 
-.child__page__card {
-  background-color: white;
-  border: 1px solid rgba(200, 200, 200, 1);
-  padding: 10px;
+@media (max-width: 991px) {
+
+  #scenery__section {
+    height: 233px;
+  }
+
+  .group__icon {
+    top: 110px;
+  }
+
 }
 
-.group__blue__label {
-  color: $group-btn-blue;
-  font-weight: bold;
-}
-
-.edit__mode__btn {
-  background-color: rgba(255, 75, 75, 1) !important;
-  color: white !important;
-  @include transition(background-color);
-}
-
-.btn__loading__status {
-  background-color: rgba(200, 200, 200, 1) !important;
-  color: black !important;
-  cursor: progress;
-  pointer-events: none;
-  @include transition(background-color)
-}
-
-.group-icon {
-  font-size: 25px;
-  margin-left: 10px;
-}
-
-.warn__text {
-  font-size: 14px;
-  color: $warn-color;
-}
-
-.candidate-label {
-  display: inline-block;
-  margin: 0 10px 10px 0;
-  background-color: rgb(242, 242, 242);
-  border: 1px solid rgb(204, 204, 204);
-  border-radius: 3px;
-  padding: 3px 5px;
-}
-
-.architecture__section {
-  margin: 10px 0;
-}
-
-.group__list__content {
-  margin: 5px;
-}
-
-.content__subtitle {
-  @include subtitle-or-focus(18px);
-  margin-bottom: 15px;
-}
-
-
-/*********************************** media *****************************/
-
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .group__header {
     flex-direction: column;
-    align-items: flex-end;
+    align-items: center;
+  }
+
+  .group__all__branch {
+    margin: 20px 0 10px 0;
   }
 
   .main__image, .main__image img, .info__sidebar {
@@ -302,11 +320,49 @@ $parents__group__color: rgba(150, 150, 150, 1);
     max-height: calc(100vw / 3.5 + 70px);
   }
 
+  #scenery__section {
+    height: 173px;
+  }
+
+  .group__icon {
+    left: initial;
+    top: 65px;
+    width: 130px;
+    height: 130px;
+  }
+
+  .scenery__edit__icon {
+    top: 20px;
+    right: 20px;
+  }
+
 }
 
-@media (max-width: 450px) {
-  .group__icon {
-    top: 30px;
+@media (max-width: 575px) {
+
+  #scenery__section {
+    height: 173px;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+
+    & img {
+      height: 173px;
+      min-width: 520px;
+    }
+
+  }
+
+  .group__name {
+    flex-direction: column;
+    align-items: center;
+  }
+
+}
+
+@media (max-width: 340px) {
+  .child__page__card {
+    padding: 10px 2px;
   }
 
 }

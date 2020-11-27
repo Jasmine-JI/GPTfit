@@ -6,6 +6,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { MessageBoxComponent } from '../components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';
+import { AlbumType } from '../models/image';
 export const TOKEN = 'ala_token';
 export const EMPTY_OBJECT = {};
 
@@ -332,6 +333,53 @@ export class UtilsService {
       }
     });
 
+  }
+
+  /**
+   * 將base64轉file
+   * @param albumType {AlbumType}-圖片類型
+   * @param base64 {string}-base64檔案
+   * @author kidin-1091125
+   */
+  dataUriToBlob(albumType: AlbumType, base64: string) {
+    base64 = this.checkImgSize(albumType, base64);
+    const byteString = window.atob(base64.split(',')[1]),  // 去除base64前綴
+          arrayBuffer = new ArrayBuffer(byteString.length),
+          int8Array = new Uint8Array(arrayBuffer);
+
+    for (let i = 0; i < byteString.length; i++) {
+      int8Array[i] = byteString.charCodeAt(i);
+    }
+
+    const blob = new Blob([int8Array], { type: 'image/png' });    
+    return blob;
+  }
+
+  /**
+   * 檢查圖片大小，過大就壓縮
+   * @param albumType {AlbumType}-圖片類型
+   * @param img {string}-base64檔案
+   * @author kidin-1091126
+   */
+  checkImgSize(albumType: AlbumType, img: string) {
+    const imageSize = (img.length * (3 / 4)) - 1;  // 計算base64 size的公式（正確公式要判斷base64的'='數量，這邊直接當作'='數量為1）
+    const limitSize = 500000;  // 圖片上傳限制500kb
+    if (imageSize > limitSize) {
+      const image = new Image();
+      image.src = img;
+
+      const canvas = document.createElement('canvas'),
+            ctx = canvas.getContext('2d');
+
+      canvas.width = 1080;
+      canvas.height = albumType === 1 || albumType === 11 ? 1080 : 360;
+      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+      this.checkImgSize(albumType, canvas.toDataURL('image/jpeg', limitSize / imageSize));  // 壓縮完再次確認是否超過大小限制
+    } else {
+      return img;
+    }
+    
   }
 
 }

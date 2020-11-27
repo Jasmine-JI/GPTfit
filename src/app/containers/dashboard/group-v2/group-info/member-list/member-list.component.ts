@@ -9,7 +9,7 @@ import { takeUntil, first } from 'rxjs/operators';
 @Component({
   selector: 'app-member-list',
   templateUrl: './member-list.component.html',
-  styleUrls: ['./member-list.component.scss', '../group-info.component.scss']
+  styleUrls: ['./member-list.component.scss', '../group-child-page.scss']
 })
 export class MemberListComponent implements OnInit, OnDestroy {
 

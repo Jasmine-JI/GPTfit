@@ -1,0 +1,328 @@
+/**
+  * 此scss檔案為群組子頁面共用樣式
+  */
+
+
+@import "font.scss";
+@import "transition.scss";
+
+$warn-color: rgba(255, 75, 75, 1);
+$group-btn-blue: rgba(0, 183, 238, 1);
+
+
+.child__page__btn {
+  border: 1px solid gray;
+  border-radius: 5px;
+  padding: 3px 10px;
+  background-color: white;
+  font-size: 14px;
+  margin: 0 5px;
+  @include transition(background-color);
+
+  &:hover {
+    background-color: rgba(245, 245, 245, 1);
+    @include transition(background-color);
+  }
+
+}
+
+.child__page__card {
+  background-color: white;
+  border: 1px solid rgba(200, 200, 200, 1);
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.group__blue__label {
+  color: $group-btn-blue;
+  font-weight: bold;
+}
+
+.edit__mode__btn {
+  background-color: rgba(255, 75, 75, 1) !important;
+  color: white !important;
+  @include transition(background-color);
+}
+
+.btn__loading__status {
+  background-color: rgba(200, 200, 200, 1) !important;
+  color: black !important;
+  cursor: progress;
+  pointer-events: none;
+  @include transition(background-color)
+}
+
+.group-icon {
+  font-size: 25px;
+  margin-left: 10px;
+}
+
+.warn__text {
+  font-size: 14px;
+  color: $warn-color;
+}
+
+.candidate-label {
+  display: inline-block;
+  margin: 0 10px 10px 0;
+  background-color: rgb(242, 242, 242);
+  border: 1px solid rgb(204, 204, 204);
+  border-radius: 3px;
+  padding: 3px 5px;
+}
+
+.architecture__section {
+  margin: 10px 0;
+}
+
+.group__list__content {
+  margin: 5px;
+}
+
+.content__subtitle {
+  @include subtitle-or-focus(18px);
+  margin-bottom: 15px;
+}
+  
+
+
+/******************************** 我的報告和課程分析共用樣式(命名待重構) ***************************************/
+
+.activity-title {
+  border-bottom: 2px #e5e5e5 solid;
+}
+
+.searchInput {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.selectArea {
+  display: flex;
+  flex-direction: row;
+}
+
+.sportCategory {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 10px;
+}
+
+.datetimeInput {
+  display: flex;
+  flex-direction: row;
+}
+
+.functionButton {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  width: 100%;
+  margin: 10px 0px;
+}
+
+.unClickable {
+  pointer-events: none;
+}
+
+.whiteMask {
+  background-color: rgba(255, 255, 255, 0.6);
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+}
+
+.reprotHeadArea {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.brandName {
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.reportName {
+  display: flex;
+  flex-direction: row;
+  font-size: 24px;
+  color: gray;
+  font-weight: bold;
+}
+
+.areaDescription {
+  font-size: 16px;
+  color:#919191;
+  margin-left: 10px;
+}
+
+::ng-deep .activity-Link {
+  color: #54b9e7;
+
+  &:hover {
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}
+
+::ng-deep .fileAmount {
+  color: red;
+}
+
+.activity-icon {
+  width: 60px;
+  height: 60px;
+  line-height: 60px;
+  font-size: 35px;
+  box-shadow: 0 0 0 2px #ccc;
+  border-radius: 50%;
+  background-color: #fafafa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #888;
+}
+
+.activity-info_icon_size{
+  font-size: 30px;
+}
+
+.summaryArea {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.summaryDataArea {
+  margin: 0px 5px;
+}
+
+.summaryData {
+  font-size: 24px;
+  font-weight: bold;
+  color: #646464;
+}
+
+.summaryDescription {
+  font-size: 15px;
+  color: #6e6e6e;
+}
+
+.sportEfficiencyArea {
+  display: flex;
+  flex-direction: row;
+}
+
+.other-info--area {
+  position: absolute;
+  width: 100%;
+  background-color: #EDEDED;
+  padding: 10px 5px;
+  left: 0;
+  font-size: 16px;
+  color: #909090;
+}
+
+.otherInfoArea {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.sportEfficiency {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  color: #646464;
+  font-weight: bold;
+}
+
+.HRZone {
+  padding-right: 2px;
+  border-right: 2px #e5e5e5 solid;
+  width: 50%;
+}
+
+.bodyQuality {
+  margin-left: 2px;
+  width: 50%;
+}
+
+.chartTitle {
+  margin-block-start: 0px;
+  margin-block-end: 0px;
+}
+
+.groupPagePhoto {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.groupPagePhoto img {
+  width: 100%;
+  height: auto;
+}
+
+.otherInfoSection {
+  display: flex;
+  flex-direction: column;
+  margin:5px;
+  padding: 0 10px;
+  min-width: 29%;
+}
+
+.introductionName {
+  color: black;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.hidden {
+  display: none;
+}
+
+.class__analysis__footer {
+  flex-wrap: wrap;
+}
+
+@media (max-width: 470px) {
+  .sportEfficiencyArea {
+    flex-direction: column;
+  }
+
+  .HRZone {
+    border-right: none;
+    width: 100%;
+  }
+
+  .bodyQuality {
+    width: 100%;
+  }
+
+  .hideColumn {
+    display: none;
+  }
+}
+
+
+@media (max-width: 410px) {
+  .class__analysis__footer {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+/***********************************************************************/

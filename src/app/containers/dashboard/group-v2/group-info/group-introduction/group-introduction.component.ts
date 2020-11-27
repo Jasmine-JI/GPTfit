@@ -17,7 +17,7 @@ const errMsg = `Error.<br />Please try again later.`;
 @Component({
   selector: 'app-group-introduction',
   templateUrl: './group-introduction.component.html',
-  styleUrls: ['./group-introduction.component.scss', '../group-info.component.scss']
+  styleUrls: ['./group-introduction.component.scss', '../group-child-page.scss']
 })
 export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
@@ -31,20 +31,19 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     enterName: '',
     enterDesc: '',
     assignAdmin: ''
-  }
+  };
 
   /**
    * ui需要用到的各種flag
    */
   uiFlag = {
-    editMode: false,
-    createMode: false,
+    editMode: <'edit' | 'create' | 'complete' | 'close'>'close',
     createLevel: 60,
     contentChange: false,
     statusChange: false,
     openStatusSelector: false,
     isLoading: false
-  }
+  };
 
   /**
    * 表單驗證用flag
@@ -52,7 +51,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   formCheck = {
     name: null,
     desc: null
-  }
+  };
 
   /**
    * 使用者個人資訊（含權限）
@@ -75,7 +74,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     groupDesc: '',
     groupVideoUrl: '',
     changeStatus: 1
-  }
+  };
 
   /**
    * 編輯完成送出api 1109 的 request body
@@ -118,7 +117,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
       enableAccessRight: [],
       disableAccessRight: []
     }
-  }
+  };
 
   /**
    * 新建群組的管理員名單
@@ -132,7 +131,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     planName: '',  // 方案名稱
     planDatas: planDatas,  // 群組各方案設定
     totalCost: 0  // 建立群組方案所需的花費
-  }
+  };
 
   constructor(
     private groupService: GroupService,
@@ -263,7 +262,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
         break;
       default:
-        this.uiFlag.createMode = false;
+        this.closeEditMode('close');
         break;
     }
 
@@ -274,7 +273,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @author kidin-1091106
    */
   openCreateMode() {
-    this.uiFlag.createMode = true;
+    this.openEditMode('create');
     this.createBody.token = this.userSimpleInfo.token;
     this.createBody.groupId = this.groupDetail.groupId;
     this.createBody.brandType = this.groupDetail.brandType;
@@ -311,16 +310,21 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 取消並關閉編輯模式
-   * @author kidin-1091103
+   * 開啟編輯或建立群組模式
+   * @author kidin1091123
    */
-  handleCancelEdit() {
-    if (this.uiFlag.createMode) {
-      this.cancelCreateMode();
-    } else if (this.uiFlag.editMode) {
-      this.uiFlag.editMode = false;
-    }
+  openEditMode(action: 'edit' | 'create') {
+    this.uiFlag.editMode = action;
+    this.groupService.setEditMode(action);    
+  }
 
+  /**
+   * 關閉編輯模式
+   * @author kidin1091123
+   */
+  closeEditMode(action: 'complete' | 'close') {
+    this.uiFlag.editMode = 'close';
+    this.groupService.setEditMode(action);    
   }
 
   /**
@@ -328,7 +332,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @author kidin-1091111
    */
   cancelCreateMode() {
-    this.uiFlag.createMode = false;
+    this.closeEditMode('close');
     if (this.createBody.levelType !== 3) {
       this.router.navigateByUrl(
         `/dashboard/group-info-v2/${this.hashIdService.handleGroupIdEncode(this.createBody.groupId)}/group-architecture`
@@ -351,16 +355,13 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @author kidin-1091103
    */
   handleEdit() {
-    if (this.uiFlag.createMode || this.uiFlag.editMode) {
 
-      if (this.uiFlag.createMode) {
-        this.checkCreateInput();
-      } else if (this.uiFlag.editMode) {
-        this.checkEditInput();
-      }
-
+    if (this.uiFlag.editMode === 'create') {
+      this.checkCreateInput();
+    } else if (this.uiFlag.editMode === 'edit') {
+      this.checkEditInput();
     } else {
-      this.uiFlag.editMode = true;
+      this.openEditMode('edit');
       this.listenGlobalClick();
     }
 
@@ -400,8 +401,8 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @author kidin1091110
    */
   checkEditInput() {
-    if (this.formCheck.name === null && this.formCheck.desc === null) {
-      this.uiFlag.editMode = false;
+    if (this.formCheck.name === null && this.formCheck.desc === null && !this.uiFlag.statusChange) {
+      this.closeEditMode('complete');
     } else if (this.editBody.groupName !== '' && this.editBody.groupDesc !== '') {
       this.saveEditContent();
     }
@@ -491,9 +492,9 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     if ((e as any).target.value.trim().length > 0) {
       this.formCheck.name = true;
 
-      if (this.uiFlag.createMode) {
+      if (this.uiFlag.editMode === 'create') {
         this.createBody.levelName = (e as any).target.value;
-      } else if (this.uiFlag.editMode) {
+      } else if (this.uiFlag.editMode === 'edit') {
         this.uiFlag.contentChange = true;
         this.editBody.groupName = (e as any).target.value;
       }
@@ -513,9 +514,9 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     if ((e as any).target.value.trim().length > 0) {
       this.formCheck.desc = true;
 
-      if (this.uiFlag.createMode) {
+      if (this.uiFlag.editMode === 'create') {
         this.createBody.levelDesc = (e as any).target.value;
-      } else if (this.uiFlag.editMode) {
+      } else if (this.uiFlag.editMode === 'edit') {
         this.uiFlag.contentChange = true;
         this.editBody.groupDesc = (e as any).target.value;
       }
@@ -544,14 +545,14 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    */
   saveGroupStatus(e: MouseEvent, status: number) {
     e.stopPropagation();
-    if (this.uiFlag.createMode) {
-      this.createBody.groupStatus = (e as any).target.value;
-    } else if (this.uiFlag.editMode) {
+    if (this.uiFlag.editMode === 'create') {
+      this.createBody.groupStatus = status;
+    } else if (this.uiFlag.editMode === 'edit') {
       this.uiFlag.statusChange = true;
       this.editBody.changeStatus = status;
-      this.uiFlag.openStatusSelector = false;
     }
     
+    this.uiFlag.openStatusSelector = false;
   }
 
   /**
@@ -679,7 +680,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
           }/group-introduction`
         );
 
-        this.uiFlag.createMode = false;
+        this.closeEditMode('complete');
       }
 
     });
@@ -708,7 +709,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     } else if (this.uiFlag.statusChange && this.uiFlag.contentChange) {
       this.sendCombinedReq(eidtGroupBody, changeGroupStatusBody);
     } else {
-      this.uiFlag.editMode = false;
+      this.closeEditMode('complete');
       this.cancelListenGlobalClick();
     }
 
@@ -743,7 +744,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     this.uiFlag.isLoading = true;
     this.groupService.changeGroupStatus(body).subscribe(res => {
       if (res.resultCode === 200) {
-        
+        this.initPage();
       } else {
         console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
         this.utils.openAlert(errMsg);
@@ -784,8 +785,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    */
   initPage() {
     this.refreshGroupDetail();
-    this.uiFlag.editMode = false;
-    this.uiFlag.createMode = false;
+    this.closeEditMode('complete');
     this.uiFlag.contentChange = false;
     this.uiFlag.statusChange = false;
     this.cancelListenGlobalClick();
@@ -821,7 +821,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @author kidin-1091111
    */
   navigateParentsGroup(groupId: string) {
-    this.uiFlag.editMode = false;
+    this.closeEditMode('close');
     this.router.navigateByUrl(
       `/dashboard/group-info-v2/${this.hashIdService.handleGroupIdEncode(groupId)}/group-introduction`
     );

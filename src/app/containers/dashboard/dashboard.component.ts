@@ -192,6 +192,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       this.isLoading = false;
+      console.log('ressss', res);
       this.userProfile = (res as UserProfileInfo);
     });
 

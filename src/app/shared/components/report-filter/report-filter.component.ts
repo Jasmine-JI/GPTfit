@@ -542,14 +542,20 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
 
   }
 
-
+  /**
+   * 取得40階group Id
+   * @author kidin-1091029
+   */
   getparentsGroupId(childId: string): string {
     const idArr = childId.split('-');
     idArr.length = 4;
     return `${idArr.join('-')}-0-0`;
   }
 
-
+  /**
+   * 取消rxjs訂閱
+   * @author kidin-1091029
+   */
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();

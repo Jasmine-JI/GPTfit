@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, ReplaySubject, throwError } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
-import { UtilsService } from '@shared/services/utils.service';
+import { UtilsService } from '../../../shared/services/utils.service';
 import { UserProfileService } from '../../../shared/services/user-profile.service'
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
@@ -19,14 +19,15 @@ const { API_SERVER } = environment.url;
 @Injectable()
 export class GroupService {
   sideBarMode$ = new ReplaySubject<any>(1); // sidebar展開與否
+  editMode$ = new ReplaySubject<'edit' | 'create' | 'complete' | 'close'>(1); // 是否進入編輯模式或建立模式
   userSimpleInfo$ = new ReplaySubject<UserSimpleInfo>(1); // 儲存使用者在該群組的簡易資訊（權限）-kidin-1091103
   groupInfo$ = new BehaviorSubject<any>({}); // 儲存group資訊-kidin-1081210
   allLevelGroupInfo$ = new ReplaySubject<any>(1); // 儲存 同"品牌/企業" group 資訊-kidin-1090604
   groupDetail$ = new ReplaySubject<any>(1);  // 儲存群組基本概要方便各子頁面使用-kidin-1091020
   allLevelGroupData$ = new ReplaySubject<any>(1); // 儲存 同"品牌/企業" group 資訊-kidin-1090716
   groupCommerceInfo$ = new ReplaySubject<any>(1); // 儲存群組經營權限資訊-kidin-1091104
-  classMemberList$ = new ReplaySubject<any>(1); // 儲存課程成員清單-kidin-1091116
-  comMemberList$ = new ReplaySubject<any>(1); // 儲存企業/分公司/部門群組成員清單-kidin-1091116
+  classMemberList$ = new BehaviorSubject<any>([]); // 儲存課程成員清單-kidin-1091116
+  comMemberList$ = new BehaviorSubject<any>([]); // 儲存企業/分公司/部門群組成員清單-kidin-1091116
   updatedGroupImg$ = new BehaviorSubject<string>('');
   memberList$ = new BehaviorSubject<any>({
     groupId: '',
@@ -339,7 +340,7 @@ export class GroupService {
    * 取得課程一般成員名單
    * @author kidin-1091116
    */
-  getClassMemberList() {
+  getRXClassMemberList() {
     return this.classMemberList$;
   }
 
@@ -356,7 +357,7 @@ export class GroupService {
    * 取得企業/分公司/部門群組的成員名單（含管理員）
    * @author kidin-1091116
    */
-  getcomMemberList() {
+  getRXcomMemberList() {
     return this.comMemberList$;
   }
 
@@ -571,7 +572,23 @@ export class GroupService {
   setSideBarMode(status: 'expand' | 'hide' | 'narrow') {
     this.sideBarMode$.next(status);
   }
-  
+
+  /**
+   * 取得群組是否進入編輯或建立群組的狀態
+   * @author kidin-1091123
+   */
+  getRxEditMode()  {
+    return this.editMode$;
+  }
+
+  /**
+   * 儲存是否進入編輯或建立群組的狀態
+   * @param status {boolean}-是否進入編輯或建立群組的狀態
+   * @author kidin-1091123
+   */
+  setEditMode(status: 'edit' | 'create' | 'complete' | 'close') {
+    this.editMode$.next(status);
+  }
 
   /**
    * 比較使用者所屬group是否和所在頁面相同或上層

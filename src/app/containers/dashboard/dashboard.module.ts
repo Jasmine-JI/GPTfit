@@ -2,7 +2,7 @@ import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DashboardComponent } from './dashboard.component';
 import { DashboardRoutingModule } from './dashboard-routing.module';
-import { SharedComponentsModule } from '@shared/components/shared-components.module';
+import { SharedComponentsModule } from '../../shared/components/shared-components.module';
 import { EnrollFormComponent } from './components/enroll-form/enroll-form.component';
 import { FormsModule } from '@angular/forms';
 import { CreateEventComponent } from './components/create-event/create-event.component';
@@ -12,17 +12,17 @@ import { CertificatePreviewComponent } from './components/certificate-preview/ce
 import { CertificateComponent } from './components/certificate/certificate.component';
 import { MyDatePickerModule } from 'mydatepicker';
 import { EventEnrollService } from './services/event-enroll.service';
-import { MapService } from '@shared/services/map.service';
+import { MapService } from '../../shared/services/map.service';
 import { EventCalendarComponent } from './components/event-calendar/event-calendar.component';
-import { CustomMaterialModule } from '@shared/custom-material.module.ts';
+import { CustomMaterialModule } from '../../shared/custom-material.module';
 import { EnrollPreviewComponent } from './components/enroll-preview/enroll-preview.component';
-import { GlobalEventsManager } from '@shared/global-events-manager';
+import { GlobalEventsManager } from '../../shared/global-events-manager';
 import { EventInfoService } from './services/event-info.service';
 import { GpxService } from './services/gpx.service';
 import { MsgDialogComponent } from './components/msg-dialog/msg-dialog.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { SharedPipes } from '@shared/pipes/shared-pipes';
+import { SharedPipes } from '../../shared/pipes/shared-pipes';
 import { LeaderboardSettingsComponent } from './components/leaderboard-settings/leaderboard-settings.component';
 import { RealTimeLeaderboardComponent } from './components/real-time-leaderboard/real-time-leaderboard.component';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -37,8 +37,8 @@ import { HrZoneDialogComponent } from './components/hr-zone-dialog/hr-zone-dialo
 import { Top3DialogComponent } from './components/top3-dialog/top3-dialog.component';
 import { EventManagementComponent } from './components/event-management/event-management.component';
 import { UserInfoService } from './services/userInfo.service';
-import { UtilsService } from '@shared/services/utils.service';
-import { SharedModule } from '@shared/shared.module';
+import { UtilsService } from '../../shared/services/utils.service';
+import { SharedModule } from '../../shared/shared.module';
 import { MyGroupListComponent } from './group/my-group-list/my-group-list.component';
 import { AllGroupListComponent } from './group/all-group-list/all-group-list.component';
 import { GroupSearchComponent } from './group/group-search/group-search.component';
@@ -53,37 +53,35 @@ import { InnerSettingsComponent } from './components/inner-settings/inner-settin
 import { PeopleSelectorWinComponent } from './components/people-selector-win/people-selector-win.component';
 import { DashboardGuard } from './guards/dashboard-guard';
 import { UnsaveGuard } from '../dashboard/guards/unsave-guard';
-import { ActivityService } from '@shared/services/activity.service';
-import { SportDatePipe } from './pipes/sport-date.pipe';
-import { SportPacePipe } from './pipes/sport-pace.pipe';
+import { ActivityService } from '../../shared/services/activity.service';
 import { ProductErrorLogPipe } from './pipes/product-error-log.pipe';
 import { NgProgressModule } from '@ngx-progressbar/core';
 import { MyDeviceComponent } from './components/device/my-device/my-device.component';
 import { ProductInfoComponent } from './components/device/product-info/product-info.component';
 import { TodayLoginnerWinComponent } from './components/today-loginner-win/today-loginner-win.component';
-import { ReportService } from '@shared/services/report.service';
+import { ReportService } from '../../shared/services/report.service';
 import { TrainLiveComponent } from './components/train-live/train-live.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { TokenInterceptor } from '@shared/interceptors/token.interceptor';
+import { TokenInterceptor } from '../../shared/interceptors/token.interceptor';
 import { BottomSheetComponent } from './group/edit-group-info/edit-group-info.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { UserSettingsComponent } from './components/settings/user-settings/user-settings.component';
 import { PrivacySettingsComponent } from './components/settings/privacy-settings/privacy-settings.component';
 import { AccountInfoComponent } from './components/settings/account-info/account-info.component';
 import { SettingsService } from './services/settings.service';
-import { UserProfileService } from '@shared/services/user-profile.service';
+import { UserProfileService } from '../../shared/services/user-profile.service';
 import { PersonalPreferencesComponent } from './components/settings/personal-preferences/personal-preferences.component';
 import { CommercePlanTableComponent } from './group/commerce-plan-table/commerce-plan-table.component';
 import { PrivacySettingDialogComponent } from './group/privacy-setting-dialog/privacy-setting-dialog.component';
 import { InnerTestComponent } from './components/inner-test/inner-test.component';
-import { HashIdService } from '@shared/services/hash-id.service';
+import { HashIdService } from '../../shared/services/hash-id.service';
 import { CloudRunGpxComponent } from './components/cloud-run-gpx/cloud-run-gpx.component';
 import { InnerAdminService } from './services/inner-admin.service';
-import { ActivityOtherDetailsService } from '@shared/services/activity-other-details.service';
-import { DetectInappService } from '@shared/services/detect-inapp.service';
+import { ActivityOtherDetailsService } from '../../shared/services/activity-other-details.service';
+import { DetectInappService } from '../../shared/services/detect-inapp.service';
 import { QRCodeModule } from 'angularx-qrcode';
 import { InnerDevicePairComponent } from './components/inner-device-pair/inner-device-pair.component';
-import { ShareGroupInfoDialogComponent } from '@shared/components/share-group-info-dialog/share-group-info-dialog.component';
+import { ShareGroupInfoDialogComponent } from '../../shared/components/share-group-info-dialog/share-group-info-dialog.component';
 import { LifeTrackingComponent } from './components/life-tracking/life-tracking.component';
 import { LifeTrackingService } from './services/life-tracking.service';
 import { MyReportComponent } from './group/group-info/my-report/my-report.component';
@@ -190,8 +188,6 @@ import { PushMessageListComponent } from './components/push-message/push-message
     RightSettingWinComponent,
     InnerSettingsComponent,
     PeopleSelectorWinComponent,
-    SportDatePipe,
-    SportPacePipe,
     ProductErrorLogPipe,
     MyDeviceComponent,
     ProductInfoComponent,
