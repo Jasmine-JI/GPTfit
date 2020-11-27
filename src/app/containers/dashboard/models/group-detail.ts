@@ -7,6 +7,7 @@ export interface GroupDetailInfo {
   coachType: string;
   groupDesc: string;
   groupIcon: string;
+  groupThemeImgUrl: string;
   groupId: string;
   groupName: string;
   groupRootInfo: Array<any>;

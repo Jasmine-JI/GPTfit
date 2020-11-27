@@ -11,6 +11,9 @@ import { UtilsService } from '../../../../shared/services/utils.service';
 import { GroupService } from '../../services/group.service';
 import { HashIdService } from '../../../../shared/services/hash-id.service';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
+import { v5 as uuidv5 } from 'uuid';
+import { ImageUploadService } from '../../services/image-upload.service';
+import { AlbumType } from '../../../../shared/models/image';
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -53,8 +56,11 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     currentTagIndex: 0,
     barPosition: 0,
     barWidth: 0,
-    createMode: false,
-    createLevel: null
+    createLevel: null,
+    isPreviewMode: false,
+    editMode: <'edit' | 'create' | 'complete' | 'close'>'close',
+    openSceneryImgSelector: false,
+    openIconImgSelector: false
   };
 
   /**
@@ -83,6 +89,21 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     perSize: []
   };
 
+  /**
+   * 變更照片
+   */
+  editImage = {
+    edited: false,
+    icon: {
+      origin: null,
+      base64: null
+    },
+    scenery: {
+      origin: null,
+      base64: null
+    }
+  };
+
   constructor(
     private translate: TranslateService,
     private groupService: GroupService,
@@ -91,7 +112,8 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     private router: Router,
     private utils: UtilsService,
     private userProfileService: UserProfileService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private imageUploadService: ImageUploadService
   ) {}
 
   /**
@@ -106,6 +128,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.detectGroupIdChange();
     this.handlePageResize();
     this.handleSideBarSwitch();
+    this.checkEditMode();
   }
 
   ngAfterViewChecked() {}
@@ -142,6 +165,104 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   /**
+   * 當進入編輯或建立群組模式時，讓佈景或圖片進入可編輯模式
+   * @author kidin-1091123
+   */
+  checkEditMode() {
+    this.groupService.getRxEditMode().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
+      this.uiFlag.editMode = res;
+      this.upLoadImg();
+      this.uiFlag.openIconImgSelector = false;
+      this.uiFlag.openSceneryImgSelector = false;
+    });
+
+  }
+
+  /**
+   * 如有編輯圖片則進行上傳
+   * @author kidin-1091125
+   */
+  upLoadImg() {
+    if (this.uiFlag.editMode !== 'close' && this.editImage.edited) {
+      let imgArr = [];
+
+      const formData = new FormData();
+      formData.set('token', this.utils.getToken());
+      formData.set('targetType', '2');
+      formData.set('targetGroupId', this.currentGroupInfo.groupDetail.groupId);
+      
+      // 群組icon
+      if (this.editImage.icon.base64 !== null) {
+        const fileName = this.createFileName(imgArr.length);
+        imgArr.unshift({
+          albumType: 11,
+          fileNameFull: `${fileName}.jpg`
+        })
+
+        formData.append('file', this.base64ToFile(11, this.editImage.icon.base64, fileName));
+      }
+
+      // 群組佈景
+      if (this.editImage.scenery.base64 !== null) {   
+        const fileName = this.createFileName(imgArr.length);
+        imgArr.unshift({
+          albumType: 12,
+          fileNameFull: `${fileName}.jpg`
+        })
+
+        formData.append('file', this.base64ToFile(12, this.editImage.scenery.base64, fileName));
+      }
+
+      formData.set('img', JSON.stringify(imgArr));
+
+      this.imageUploadService.addImg(formData).subscribe(res => {
+
+        if (res.processResult.resultCode !== 200) {
+          this.utils.openAlert('Image upload error.');
+          console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+        } else {
+          this.getGroupNeedInfo();
+          this.saveAllLevelGroupData();
+        }
+
+      });
+
+      this.groupService.setEditMode('close');
+    }
+
+  }
+
+  /**
+   * 建立圖片名稱
+   * @param length {number}-檔案序列
+   * @author kidin-1091125
+   */
+  createFileName(length: number) {
+    const nameSpace = uuidv5('https://www.gptfit.com', uuidv5.URL),
+          keyword = `${
+            moment().valueOf().toString()}${
+            length}${
+            this.currentGroupInfo.groupDetail.groupId.split('-').join('')
+          }`;
+
+    return uuidv5(keyword, nameSpace);
+  }
+
+  /**
+   * 將base64的圖片轉為檔案格式
+   * @param albumType {number}-圖片類型
+   * @param base64 {string}-base64圖片
+   * @param fileName {檔案名稱}
+   * @author kidin-1091127
+   */
+  base64ToFile(albumType: AlbumType, base64: string, fileName: string): File {
+    const blob = this.utils.dataUriToBlob(albumType, base64);
+    return new File([blob], `${fileName}.jpg`, {type: 'image/jpeg'});
+  }
+
+  /**
    * 偵測全域點擊事件，以收納"更多"選單
    * @author kidin-20201112
    */
@@ -163,18 +284,21 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   checkQueryString(query: string) {
     if (query.indexOf('?') > -1) {
       const queryArr = query.split('?')[1].split('&');
-      for (let i = 0, queryLength = queryArr.length; i < queryLength; i++) {
-
-        if (queryArr[i].indexOf('createType') > -1) {
-          this.openCreateMode(queryArr[i].split('=')[1]);
-        } else if (queryArr[i].indexOf('brandType') > -1) {
-          this.currentGroupInfo.brandType = +queryArr[i].split('=')[1];
+      queryArr.forEach(_query => {
+        switch (_query.split('=')[0]) {
+          case 'createType':
+            this.openCreateMode(_query.split('=')[1]);
+            break;
+          case 'brandType':
+            this.currentGroupInfo.brandType = +_query.split('=')[1];
+            break;
+          case 'ipm':
+            this.uiFlag.isPreviewMode = true;
+            break;
         }
 
-      }
+      });
 
-    } else {
-      this.uiFlag.createMode = false;
     }
 
   }
@@ -223,14 +347,12 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       switch (type) {
         case 'brand':
           if (this.user.accessRight[0] <= 29) {
-            this.uiFlag.createMode = true;
             this.uiFlag.createLevel = 30;
           }
 
           break;
         case 'branch':
           if (this.user.accessRight[0] <= 30) {
-            this.uiFlag.createMode = true;
             this.uiFlag.createLevel = 40;
           }
 
@@ -238,14 +360,12 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         case 'coach':
         case 'department':
           if (this.user.accessRight[0] <= 40) {
-            this.uiFlag.createMode = true;
             this.uiFlag.createLevel = 60;
           }
 
           break;
         case 'teacher':
           if (this.user.accessRight[0] <= 40) {
-            this.uiFlag.createMode = true;
             this.uiFlag.createLevel = 60;
           }
 
@@ -270,7 +390,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091106
    */
   closeCreateMode() {
-    this.uiFlag.createMode = false;
+    this.groupService.setEditMode('close');
 
     // 移除query string，避免create mode被重複開啟
     const newUrl = `${location.origin}${location.pathname}`;
@@ -334,7 +454,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   detectGroupChange() {
     if (this.currentGroupInfo.hashGroupId !== this.route.snapshot.paramMap.get('groupId')) {
-      this.uiFlag.createMode = false;
+      this.groupService.setEditMode('close');
       this.getCurrentGroupInfo();
       this.getGroupNeedInfo();
       this.saveAllLevelGroupData();
@@ -419,6 +539,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
           expired: false,
           groupDesc: '',
           groupIcon: '',
+          groupThemeImgUrl: '',
           groupId: "0-0-0-0-0-0",
           groupName: '',
           groupRootInfo: [null, null],
@@ -579,6 +700,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       && this.currentGroupInfo.groupLevel === 60
       && !commerceInfo.expired
       && +commerceInfo.commerceStatus === 1
+      && this.currentGroupInfo.groupDetail.groupStatus !== 6
     ) {
       this.childPageList = [
         'group-introduction',
@@ -593,6 +715,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       groupDetail.brandType === 2
       && !commerceInfo.expired
       && +commerceInfo.commerceStatus === 1
+      && this.currentGroupInfo.groupDetail.groupStatus !== 6
     ) {
       this.childPageList = [
         'group-introduction',
@@ -794,6 +917,44 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
     });
 
+  }
+
+  /**
+   * 開啟圖片選擇器
+   * 
+   * @author kidin-1091123
+   */
+  openImgSelector(type: 'icon' | 'scenery') {
+    if (type === 'icon') {
+      this.uiFlag.openIconImgSelector = true;
+    } else {
+      this.uiFlag.openSceneryImgSelector = true;
+    }
+    
+  }
+
+  /**
+   * 關閉圖片選擇器
+   * @author kidin-1091124
+   */
+  closeSelector(e: any) {
+    console.log('closeSelector', e);
+
+    if (e.action === 'complete') {
+
+      this.editImage.edited = true;
+      if (e.img.albumType === 11) {
+        this.editImage.icon.origin = e.img.origin;
+        this.editImage.icon.base64 = e.img.base64;
+      } else {
+        this.editImage.scenery.origin = e.img.origin;
+        this.editImage.scenery.base64 = e.img.base64;
+      }
+
+    }
+
+    this.uiFlag.openIconImgSelector = false;
+    this.uiFlag.openSceneryImgSelector = false;
   }
 
   /**

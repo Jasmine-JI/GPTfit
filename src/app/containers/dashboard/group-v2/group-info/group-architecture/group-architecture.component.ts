@@ -15,7 +15,7 @@ const errMsg = `Error.<br />Please try again later.`;
 @Component({
   selector: 'app-group-architecture',
   templateUrl: './group-architecture.component.html',
-  styleUrls: ['./group-architecture.component.scss', '../group-info.component.scss']
+  styleUrls: ['./group-architecture.component.scss', '../group-child-page.scss']
 })
 export class GroupArchitectureComponent implements OnInit, OnDestroy {
 

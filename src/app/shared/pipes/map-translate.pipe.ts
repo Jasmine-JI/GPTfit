@@ -1,6 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
+// 待廢
 @Pipe({ name: 'mapTranslate' })
 export class MapTranslatePipe implements PipeTransform {
   constructor(private translate: TranslateService) {}

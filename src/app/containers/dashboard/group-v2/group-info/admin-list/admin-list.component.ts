@@ -8,7 +8,7 @@ import { takeUntil, first } from 'rxjs/operators';
 @Component({
   selector: 'app-admin-list',
   templateUrl: './admin-list.component.html',
-  styleUrls: ['./admin-list.component.scss', '../group-info.component.scss']
+  styleUrls: ['./admin-list.component.scss', '../group-child-page.scss']
 })
 export class AdminListComponent implements OnInit, OnDestroy {
 

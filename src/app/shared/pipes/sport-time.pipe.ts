@@ -1,5 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
+/**
+ * 將總秒數轉為時:分:秒
+ */
 @Pipe({name: 'sportTime'})
 export class SportTimePipe implements PipeTransform {
   transform(value: string, args: boolean = true): any {

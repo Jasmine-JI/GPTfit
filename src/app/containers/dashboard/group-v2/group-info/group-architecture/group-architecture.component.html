@@ -7,6 +7,7 @@
       && (userSimpleInfo.isGroupAdmin || userSimpleInfo.accessRight[0] <= 29)
       && groupInfo.groupStatus !== 4
       && groupInfo.groupStatus !== 5
+      && (groupInfo.groupStatus !== 6 || userSimpleInfo.accessRight[0] <= 30)
       && !groupInfo.expired
       && +groupInfo.commerceStatus === 1
     "  

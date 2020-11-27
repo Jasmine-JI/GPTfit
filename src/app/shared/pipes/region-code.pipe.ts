@@ -1,5 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
+/**
+ * 根據區域代碼回傳對應區域中文名稱
+ */
 @Pipe({name: 'regionCode'})
 export class RegionCodePipe implements PipeTransform {
   transform(value: string, args: string[]): any {

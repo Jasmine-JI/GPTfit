@@ -10,7 +10,7 @@ const errMsg = `Error.<br />Please try again later.`;
 @Component({
   selector: 'app-commerce-plan',
   templateUrl: './commerce-plan.component.html',
-  styleUrls: ['./commerce-plan.component.scss', '../group-info.component.scss']
+  styleUrls: ['./commerce-plan.component.scss', '../group-child-page.scss']
 })
 export class CommercePlanComponent implements OnInit, OnDestroy {
 

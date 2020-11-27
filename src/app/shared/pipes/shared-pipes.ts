@@ -1,16 +1,16 @@
 import { NgModule } from '@angular/core';
-import { SexPipe } from '@shared/pipes/sex.pipe';
-import { TimePipe } from '@shared/pipes/time.pipe';
-import { MapTranslatePipe } from '@shared/pipes/map-translate.pipe';
-import { UnixTimeConvertPipe } from '@shared/pipes/unix-time-convert.pipe';
-import { SafeHtmlPipe } from '@shared/pipes/safe-html.pipe';
-import { ProductTypePipe } from '@shared/pipes/product-type.pipe';
+import { SexPipe } from './sex.pipe';
+import { TimePipe } from './time.pipe';
+import { MapTranslatePipe } from './map-translate.pipe';
+import { UnixTimeConvertPipe } from './unix-time-convert.pipe';
+import { SafeHtmlPipe } from './safe-html.pipe';
+import { ProductTypePipe } from './product-type.pipe';
 import { LineBreakPipe } from './line-break.pipe';
 import { GroupStatusPipe } from './group-status.pipe';
 import { GroupLevelNamePipe } from './group-level-name.pipe';
-import { SportDatePipe } from '@shared/pipes/sport-date.pipe';
-import { SportTimePipe } from '@shared/pipes/sport-time.pipe';
-import { SportPacePipe } from '@shared/pipes/sport-pace.pipe';
+import { SportDatePipe } from './sport-date.pipe';
+import { SportTimePipe } from './sport-time.pipe';
+import { SportPacePipe } from './sport-pace.pipe';
 import { MuscleNamePipe } from './muscle-name.pipe';
 import { SlicePipe } from './slice.pipe';
 import { A3FormatPipe } from './a3-format.pipe';
@@ -21,7 +21,8 @@ import { RegionCodePipe } from './region-code.pipe';
 import { LanguageCodePipe } from './language-code.pipe';
 import { AppIdPipe } from './app-id.pipe';
 import { SystemIdPipe } from './system-id.pipe';
-import { SportTypePipe } from './sport-type.pipe'
+import { SportTypePipe } from './sport-type.pipe';
+import { SportTypeIconPipe } from './sport-type-icon.pipe';
 
 
 @NgModule({
@@ -51,7 +52,8 @@ import { SportTypePipe } from './sport-type.pipe'
     LanguageCodePipe,
     AppIdPipe,
     SystemIdPipe,
-    SportTypePipe
+    SportTypePipe,
+    SportTypeIconPipe
   ],
   exports: [
     SexPipe,
@@ -76,7 +78,8 @@ import { SportTypePipe } from './sport-type.pipe'
     LanguageCodePipe,
     AppIdPipe,
     SystemIdPipe,
-    SportTypePipe
+    SportTypePipe,
+    SportTypeIconPipe
   ]
 })
 export class SharedPipes {}

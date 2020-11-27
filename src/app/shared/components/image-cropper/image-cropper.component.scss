@@ -1,0 +1,29 @@
+$operator-width: 230px;
+
+@import 'button.scss';
+
+.selector__btn {
+  @include button(30px);
+}
+
+.img__edit__btn {
+  @include button(24px, 1px solid rgba(100, 100, 100, 1), white) {
+    width: 50px;
+    height: 30px;
+    border-radius: 30px;
+  };
+}
+
+#operator__btn {
+  justify-content: space-between;
+  max-width: $operator-width;
+  margin: 20px auto;
+}
+
+#finish__btn {
+  @include button(18px, none, rgba(0, 183, 238, 1)) {
+    color: white;
+    width: $operator-width;
+    border-radius: 5px;
+  };
+}
