@@ -20,6 +20,7 @@ export interface GroupDetailInfo {
   shareActivityToMember: object;
   shareAvatarToMember: object;
   shareReportToMember: object;
+  groupLevel?: number;
 }
 
 /**
@@ -54,4 +55,11 @@ export interface MemberInfo {
   memberIcon: string;
   memberId: number;
   memberName: string;
+  coachName?: string;
+  branchName?: string;
 }
+
+/**
+ * 群組各種編輯模式狀態
+ */
+export type EditMode = 'edit' | 'create' | 'complete' | 'close';

@@ -212,6 +212,8 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
             account: `+${profile.countryCode} ${profile.mobileNumber}`,
             id: profile.userId
           };
+
+          this.reciprocal();
         }
 
       });

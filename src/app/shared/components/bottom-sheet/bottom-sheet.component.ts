@@ -79,7 +79,7 @@ export class BottomSheetComponent implements OnInit {
           cancelText: this.cancelText,
           onConfirm: () => {
             this.router.navigateByUrl(
-              `/dashboard/group-info-v2/${this.hashIdService.handleGroupIdEncode(this.groupId)}/group-introduction?createType=${type}`
+              `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}/group-introduction?createType=${type}`
             );
 
           }

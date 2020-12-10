@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { BottomSheetComponent } from '../../../../../shared/components/bottom-sheet/bottom-sheet.component';
+import { GroupIdSlicePipe } from '../../../../../shared/pipes/group-id-slice.pipe';
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -25,7 +26,9 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
    * UI會用到的各個flag
    */
   uiFlag = {
-    editMode: false
+    editMode: <'complete' | 'edit'>'complete',
+    branchFull: false,
+    classFull: false
   };
 
   /**
@@ -49,6 +52,7 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
     private router: Router,
     private hashIdService: HashIdService,
     private bottomSheet: MatBottomSheet,
+    private groupIdSlicePipe: GroupIdSlicePipe
   ) { }
 
   ngOnInit(): void {
@@ -60,8 +64,6 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
    * @author kidin-1091020
    */
   initPage() {
-    console.log('init');
- 
     combineLatest([
       this.groupService.getRxGroupDetail(),
       this.groupService.getRxCommerceInfo(),
@@ -70,15 +72,56 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
     ]).pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(resArr => {
-      console.log('resArr', resArr);
       Object.assign(resArr[0], {groupLevel: this.utils.displayGroupLevel(resArr[0].groupId)});
       Object.assign(resArr[0], {expired: resArr[1].expired});
       Object.assign(resArr[0], {commerceStatus: resArr[1].commerceStatus});
       this.groupInfo = resArr[0];
-      console.log('groupInfo', this.groupInfo);
-      this.groupArchitecture = resArr[2];
+      this.groupArchitecture = this.checkParentsGroup(resArr[2]);
       this.userSimpleInfo = resArr[3];
+      this.checkGroupNum(resArr[1].groupStatus);
     })
+
+  }
+
+  /**
+   * 在子群組加入對應的父群組資訊
+   * @param groupArchitecture {GroupArchitecture}-api 1103的群組階層（subGroupInfo）
+   * @author kidin-1091201
+   */
+  checkParentsGroup(groupArchitecture: GroupArchitecture) {
+    groupArchitecture.coaches.map(_coach => {
+
+      groupArchitecture.branches.forEach(_branch => {
+        
+        if (this.groupIdSlicePipe.transform(_coach.groupId, 4) === this.groupIdSlicePipe.transform(_branch.groupId, 4)) {
+          Object.assign(_coach, {branchName: _branch.groupName});
+        }
+
+      });
+
+      return _coach;
+    });
+
+    return groupArchitecture;
+  }
+
+  /**
+   * 確認群組建立數目是否超過方案限制
+   * @param groupStatus {any}-群組建立數目的狀態
+   * @author kidin-1091130
+   */
+  checkGroupNum(groupStatus: any) {
+    if (+groupStatus.currentBranches >= +groupStatus.maxBranches) {
+      this.uiFlag.branchFull = true;
+    } else {
+      this.uiFlag.branchFull = false;
+    }
+
+    if (+groupStatus.currentClasses >= +groupStatus.maxClasses) {
+      this.uiFlag.classFull = true;
+    } else {
+      this.uiFlag.classFull = false;
+    }
 
   }
 
@@ -87,7 +130,13 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
    * @author kidin-1091103
    */
   handleEdit() {
-    this.uiFlag.editMode = !this.uiFlag.editMode;
+    if (this.uiFlag.editMode === 'complete') {
+      this.uiFlag.editMode = 'edit';
+      this.groupService.setEditMode('edit');
+    } else {
+      this.uiFlag.editMode = 'complete'
+      this.groupService.setEditMode('complete');
+    }
   }
 
   /**
@@ -96,8 +145,13 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
    * @author kidin-1091105
    */
   disbandGroup(e: any) {
-    console.log('disband group', e);
-    this.refreshGroupDetail();
+    if (this.groupInfo.groupId === e) {
+      this.router.navigateByUrl('/dashboard/my-group-list');
+    } else {
+      this.refreshGroupDetail();
+      this.refreshAllLevelGroupData();
+    }
+    
   }
 
   /**
@@ -108,11 +162,11 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
   addGroup(type: string) {
     if (type === 'branch') {
       this.router.navigateByUrl(
-        `/dashboard/group-info-v2/${this.hashIdService.handleGroupIdEncode(this.groupInfo.groupId)}/group-introduction?createType=branch`
+        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupInfo.groupId)}/group-introduction?createType=branch`
       );
     } else if (type === 'class' && this.groupInfo.brandType === 2) {
       this.router.navigateByUrl(
-        `/dashboard/group-info-v2/${this.hashIdService.handleGroupIdEncode(this.groupInfo.groupId)}/group-introduction?createType=department`
+        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupInfo.groupId)}/group-introduction?createType=department`
       );
     } else {
       this.bottomSheet.open(BottomSheetComponent, {
@@ -140,6 +194,31 @@ export class GroupArchitectureComponent implements OnInit, OnDestroy {
         console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
         this.groupService.saveGroupDetail(res.info);
+      }
+
+    });
+
+  }
+
+  /**
+   * 儲存所有階層群組資訊
+   * @author kidin-1090716
+   */
+  refreshAllLevelGroupData() {
+    const body = {
+      token: this.userSimpleInfo.token,
+      avatarType: 3,
+      groupId: this.groupInfo.groupId,
+      groupLevel: this.groupInfo.groupLevel,
+      infoType: 1
+    }
+
+    this.groupService.fetchGroupMemberList(body).subscribe(res => {
+      if (res.resultCode !== 200) {
+        this.utils.openAlert(errMsg);
+        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+      } else {
+        this.groupService.setAllLevelGroupData(res.info.subGroupInfo);
       }
 
     });

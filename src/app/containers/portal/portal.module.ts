@@ -49,6 +49,8 @@ import { AppFirstLoginComponent } from './components/app-sign/app-first-login/ap
 import { QRCodeModule } from 'angularx-qrcode';
 import { OfficialActivityComponent } from './components/official-activity/official-activity.component';
 import { OfficialActivityService } from '../../shared/services/official-activity.service';
+import { AppTermsComponent } from './components/app-sign/app-terms/app-terms.component';
+import { AppPrivacyStatementComponent } from './components/app-sign/app-privacy-statement/app-privacy-statement.component';
 
 @NgModule({
   imports: [
@@ -109,7 +111,9 @@ import { OfficialActivityService } from '../../shared/services/official-activity
     AppModifypwComponent,
     AppQrcodeLoginComponent,
     AppFirstLoginComponent,
-    OfficialActivityComponent
+    OfficialActivityComponent,
+    AppTermsComponent,
+    AppPrivacyStatementComponent
   ],
   entryComponents: [MessageBoxComponent]
 })

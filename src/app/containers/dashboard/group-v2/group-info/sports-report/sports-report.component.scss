@@ -1,0 +1,428 @@
+.trainLiveCategroy {
+  margin: 0px 10px 10px 0px;
+  height: 30px;
+  border: solid 1px gray;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.searchReport {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 2px #9e9e9e solid;
+}
+
+.inputDateTime {
+  height: 30px;
+  border: solid 1px gray;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.btnWord {
+  max-width: 70px;
+  line-height: 100%;
+  border-radius: 0px;
+  margin: 0px;
+  margin-bottom: 10px;
+}
+
+.btnWord:first-child {
+  border-radius: 5px 0px 0px 5px;
+}
+
+.btnWord:last-child {
+  border-radius: 0px 5px 5px 0px;
+}
+
+.BtnBgColor {
+  background-color: #21c7f9;
+  color: white;
+}
+
+#dashBetweenDate {
+  height: 2px;
+  flex: 1 0 10px;
+  background: gray;
+  margin: 0px 10px 20px 10px;
+  align-content: center;
+}
+
+.datetimeInput {
+  margin-bottom: 10px;
+}
+
+.dateSelectArea {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  max-width: 230px;
+}
+
+.reportHeader {
+  margin: 10px 0px;
+  justify-content: space-between;
+}
+
+.reportTitle {
+  color: #616161;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.reportDateTime {
+  font-size: 14px;
+  color:#919191;
+  font-weight: bold;
+}
+
+.infoDataUnit {
+  font-size: 16px;
+  color:#919191;
+  font-weight: bold;
+}
+
+.sepLine {
+  border-left: 1px solid #e0e0e0;
+  height: 40px;
+  margin-top: 10px;
+}
+
+.ringChart {
+  width: 40%;
+}
+
+.distributionChartWidth {
+  margin-top: 10px;
+  width: 60%;
+}
+
+.ringChartSection {
+  margin-top: 10px;
+  width: 50%;
+}
+
+.perTypeInfo {
+  font-size: 14px;
+  margin-left: 15px;
+
+  &:hover{
+    cursor: pointer;;
+  }
+}
+
+.perTypeTitle {
+  color: #5a5a5a;
+  font-weight: bold;
+}
+
+.dot {
+  margin-right: 5px;
+  font-size: 16px;
+}
+
+.hand {
+  font-weight: bold;
+}
+
+.perTypeAvgTime {
+  margin-left: 30px;
+}
+
+.distributionChart {
+  width:100%;
+  height: auto;
+}
+
+.reportChartTitle {
+  font-weight: bold;
+  width: fit-content;
+  white-space: nowrap;
+}
+
+.separateLine {
+  margin-left: 10px;
+  border-top: 1px solid #c9c9c9;
+  width: 100%;
+}
+
+.dataContent {
+  margin: 5px 0px 0px 10px;
+  justify-content: space-between;
+}
+
+.dataMargin {
+  margin-top: 10px;
+}
+
+.dataFont {
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.dataAnnotation {
+  font-size: 16px;
+  font-weight: bold;
+  color: #919191;
+}
+
+#HRZoneChart {
+  width: 55%;
+}
+
+#HRInfo {
+  width: 45%;
+  border-left: 1px solid #e5e5e5;
+}
+
+.dataNumber {
+  width: 35%;
+}
+
+.dataChart {
+  width: 65%;
+  margin-left: 30px;
+}
+
+.printMark {
+  width: 100%;
+  background-color:#ededed;
+  text-align: center;
+  font-weight: bold;
+  height:fit-content;
+}
+
+.tableTitle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.tableTitleWord {
+  color: #747474;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+}
+
+.tableArrangement {
+
+  .visualizeData {
+    height: 40px;
+    background-color: #dbf3ff;
+    position: absolute;
+  }
+
+  .setIn {
+    margin: 0 auto;
+    z-index: 3;
+  }
+
+}
+
+.fixPlace {
+  position: relative;
+  right: 10px;
+}
+
+.chartTitleUnit {
+  color:#919191;
+}
+
+.tableContent {
+  font-weight: bold;
+  color: #747474;
+}
+
+.upArrow, .downArrow, .lockIcon {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.upArrow {
+  color: #ff4cd7;
+}
+
+.downArrow {
+  color: #00baff;
+}
+
+.seeMoreLink {
+  color: #157fcc;
+  text-align: center;
+  font-weight: bold;
+  margin-top: 10px;
+
+  &:hover {
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}
+
+.tableAnalysisIcon {
+  font-size: 20px;
+}
+
+.tableMenu {
+  position: fixed;
+  z-index: 5;
+  background-color: white;
+  box-shadow: grey;
+  width: fit-content;
+  border: 1px solid #dedede;
+  box-shadow: 3px 3px grey;
+  width: 250px;
+}
+
+.tableMenuTitle {
+  display: block;
+  font-weight: bold;
+  font-size: 14px;
+  color: #003c67;
+}
+
+.tableListSection {
+
+  padding: 5px;
+  border: 1px solid #bcbcbc;
+  height: 150px;
+  overflow-y: scroll;
+
+  div {
+    white-space: pre-wrap;
+    font-size: 10px;
+
+    span {
+      display: inline-block;
+      background-color: #dedede;
+      border-radius: 5px;
+      font-weight: bold;
+      margin: 3px;
+      cursor: pointer;
+    }
+
+  }
+
+}
+
+.tableMenuList {
+  margin: 2px;
+  padding: 5px 20px 5px 10px;
+  color: #656565;
+  font-weight: bold;
+  text-decoration: none;
+
+  &:hover {
+    cursor: pointer;
+    color: white;
+    background-color: #26abe3;
+  }
+}
+
+::ng-deep.tableCheckbox .mat-checkbox-checked.mat-primary .mat-checkbox-background,
+.tableCheckbox .mat-checkbox-indeterminate.mat-primary .mat-checkbox-background {
+  background-color: #26abe3 !important;
+}
+
+mat-header-cell:first-child, mat-cell:first-child, mat-footer-cell:first-child {
+  padding-left: 0px !important;
+}
+
+mat-header-cell:last-child, mat-cell:last-child, mat-footer-cell:last-child {
+  padding-right: 0px !important;
+}
+
+@media (max-width: 1200px) {
+  .searchInput {
+    flex-direction: column;
+    margin-bottom: 10px;
+  }
+
+  .selectArea {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 1000px){
+  .media-1000-col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .authorInfo {
+    justify-content: flex-end;
+    margin-top: 10px;
+  }
+
+  .media-1000-dataContent {
+    flex-direction: column;
+  }
+
+  .media-1000-dataNumber {
+    width: 100%;
+  }
+
+  .media-1000-dataChart {
+    width: 100%;
+    margin-left: 0px;
+  }
+}
+
+@media (max-width: 769px){
+  .media-769-col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ringChart {
+    width: 100%;
+  }
+
+  .distributionChartWidth {
+    width: 100%;
+  }
+
+  #HRZoneChart {
+    width: 100%;
+  }
+
+  #HRInfo {
+    width: auto;
+    border-left: none;
+  }
+
+  .dataChart {
+    width: 100%;
+    margin-left: 0px;
+  }
+
+}
+
+@media (max-width: 630px){
+
+  .tableTitleWord {
+    font-size: 14px;
+  }
+
+  .summaryData {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 550px){
+  .reportTitle {
+    font-size: 20px;
+  }
+
+}
+
+@media print {
+  .pageBreak {
+    min-height: 1px;
+    page-break-before: always;
+  }
+}

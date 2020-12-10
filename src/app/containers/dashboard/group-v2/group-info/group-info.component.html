@@ -1,4 +1,4 @@
-<div style="position: relative;" class="flexCol">
+<div style="position: relative;" class="flexCol" [style.top]="uiFlag.portalMode ? '-63px' : '0'">
   <nav
     #navSection
     class="flexCol"
@@ -6,9 +6,16 @@
     [style.display]="uiFlag.isPreviewMode ? 'none' : ''"
   >
     <section id="scenery__section">
-      <img 
+      <img
         style="position: absolute; width: 100%; height: 100%;"
         [src]="uiFlag.editMode !== 'close' && editImage.scenery.base64 !== null ? editImage.scenery.base64 : currentGroupInfo.groupDetail.groupThemeImgUrl"
+        (error)="sceneryError()"
+        *ngIf="!uiFlag.hideScenery && uiFlag.editMode !== 'create'"
+      />
+      <img
+        style="position: absolute; width: 100%; height: 100%;"
+        [src]="editImage.scenery.base64 !== null ? editImage.scenery.base64 : ''"
+        *ngIf="!uiFlag.hideScenery && uiFlag.editMode === 'create'"
       />
       <div class="flexCenter absolute__center">
         <i
@@ -18,11 +25,17 @@
         ></i>
       </div>
     </section>
-    <section class="group__header">
-      <div class="group__icon">
+    <section class="group__header" [class.portal__mode]="uiFlag.portalMode">
+      <div class="group__icon" [style.left]="uiFlag.portalMode ? 'initial' : '50px'">
         <img
           [src]="uiFlag.editMode !== 'close' && editImage.icon.base64 !== null ? editImage.icon.base64 : currentGroupInfo.groupDetail.groupIcon"
           (error)="this.currentGroupInfo.groupDetail.groupIcon = '/assets/images/group.jpg'"
+          *ngIf="uiFlag.editMode !== 'create'"
+        />
+        <i class="icon-svg_web-icon_p1_059-lock group__lock" *ngIf="currentGroupInfo.groupDetail.groupStatus === 6"></i>
+        <img
+          [src]="editImage.icon.base64 !== null ? editImage.icon.base64 : '/assets/images/group.jpg'"
+          *ngIf="uiFlag.editMode === 'create'"
         />
         <div class="flexCenter absolute__center">
           <i
@@ -68,45 +81,66 @@
         <ng-container *ngIf="uiFlag.editMode !== 'create'">
           <button
             class="group__page__btn"
-            [class.primary__btn]="user.joinStatus === 5"
+            [class.primary__btn]="
+              user.joinStatus === 5
+              && !currentGroupInfo.commerceInfo.expired
+              && +currentGroupInfo.commerceInfo.groupMemberStatus.currentGroupMembers < +currentGroupInfo.commerceInfo.groupMemberStatus.maxGroupMembers
+            "
             [class.warning__btn]="user.joinStatus === 1"
             [class.unattracly__btn]="user.joinStatus === 2"
-            *ngIf="!user.isGroupAdmin"
+            [class.can__not__join]="
+              uiFlag.isJoinLoading
+              || (
+                user.joinStatus === 5
+                  && (currentGroupInfo.commerceInfo.expired
+                    || +currentGroupInfo.commerceInfo.groupMemberStatus.currentGroupMembers >= +currentGroupInfo.commerceInfo.groupMemberStatus.maxGroupMembers
+                  )
+                )
+            "
+            *ngIf="!user.isGroupAdmin && currentGroupInfo.groupDetail.groupStatus !== 6"
           >
             <span
-              *ngIf="user.joinStatus === 5 && currentGroupInfo.groupDetail.groupStatus === 1"
+              *ngIf="!uiFlag.isJoinLoading && user.joinStatus === 5 && currentGroupInfo.groupDetail.groupStatus === 1"
               (click)="handleJoinGroup(1)"
             >
               +{{ 'universal_operating_join' | translate }}
             </span>
             <span
-              *ngIf="user.joinStatus === 5 && currentGroupInfo.groupDetail.groupStatus === 2"
+              *ngIf="!uiFlag.isJoinLoading && user.joinStatus === 5 && currentGroupInfo.groupDetail.groupStatus === 2"
               (click)="handleJoinGroup(1)"
             >
               +{{ 'universal_group_applicationsForJoin' | translate }}
             </span>
-            <span *ngIf="user.joinStatus === 1" (click)="handleJoinGroup(2)">
+            <span *ngIf="!uiFlag.isJoinLoading && user.joinStatus === 1" (click)="handleJoinGroup(2)">
               {{ 'universal_group_cancelJoin' | translate }}
             </span>
-            <span *ngIf="user.joinStatus === 2" (click)="handleJoinGroup(2)">
+            <span *ngIf="!uiFlag.isJoinLoading && user.joinStatus === 2" (click)="handleJoinGroup(2)">
               {{ 'universal_group_exitGroup' | translate }}
             </span>
+            <app-loading-icon style="font-size: 8px;" *ngIf="uiFlag.isJoinLoading"></app-loading-icon>
           </button>
           <i
             class="icon-svg_web-icon_p1_013-share group__page__btn primary__btn"
             style="color: white; font-size: 24px; padding: 2px; cursor: pointer;"
+            *ngIf="!uiFlag.portalMode"
             (click)="openShareGroupInfoDialog()"
           ></i>
         </ng-container>
       </div>
     </section>
-    <section>
+    <section [class.portal__mode]="uiFlag.portalMode">
       <span
+        #groupHeaderDescription
         [innerHTML]="currentGroupInfo.groupDetail.groupDesc"
-        style="display: inline-block; color: rgba(120, 120, 120, 1); font-size: 14px; margin: 10px 0 10px 30px;"
+        class="group__header__description"
+        [class.group__desc__overflow]="uiFlag.groupDescOverflow"
+        (click)="handleNavigation(currentGroupInfo.groupId)"
+        *ngIf="!uiFlag.isLoading"
       ></span>
+      <app-loading-icon *ngIf="uiFlag.isLoading"
+      ></app-loading-icon>
     </section>
-    <section #pageListBar class="flexCol" style="width: 100%; margin: 10px 0px;">
+    <section #pageListBar class="flexCol page__list__bar" [class.portal__mode]="uiFlag.portalMode">
       <div style="border-top: 2px solid rgba(200, 200, 200, 1); width: 100%;"></div>
       <div
         id="active__bar"
@@ -186,13 +220,13 @@
     *ngIf="
       uiFlag.currentPage === 'myclass-report'
       || uiFlag.currentPage === 'sports-report'
-      || uiFlag.currentPage === 'life-tracking-v2'
+      || uiFlag.currentPage === 'life-tracking'
       || uiFlag.currentPage === 'cloudrun-report'
     "
   >
     <app-report-filter></app-report-filter>
   </section>
-  <main class="card__section" style="width: 100%;">
+  <main class="card__section" [class.portal__mode]="uiFlag.portalMode">
     <router-outlet></router-outlet>
   </main>
   <section

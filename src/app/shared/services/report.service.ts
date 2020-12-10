@@ -21,6 +21,7 @@ export class ReportService {
   typeRowData$ = new BehaviorSubject<any>({});
   typeBallData$ = new BehaviorSubject<any>({});
   reportCondition$ = new ReplaySubject<ReportConditionOpt>(1);
+  reportLoading$ = new ReplaySubject<boolean>(1);
 
   constructor(private http: HttpClient) {}
 
@@ -78,29 +79,55 @@ export class ReportService {
     return this.addition$;
   }
 
+  /**
+   * 儲存篩選器條件
+   * @param status {ReportConditionOpt}-篩選器條件
+   * @author kidin-1091210
+   */
   setReportCondition(status: ReportConditionOpt) {
     this.reportCondition$.next(status);
   }
 
+  /**
+   * 取得篩選器條件
+   * @author kidin-1091210
+   */
   getReportCondition(): Observable<ReportConditionOpt> {
     return this.reportCondition$;
   }
 
-  getTypeData (type: string) {
+  /**
+   * 儲存loading狀態
+   * @param status {boolean}-loading狀態
+   * @author kidin-1091210
+   */
+  setReportLoading(status: boolean) {
+    this.reportLoading$.next(status);
+  }
+
+  /**
+   * 取得loading狀態
+   * @author kidin-1091210
+   */
+  getReportLoading(): Observable<boolean> {
+    return this.reportLoading$;
+  }
+
+  getTypeData (type: number) {
     switch (type) {
-      case '1':
+      case 1:
         return this.typeRunData$;
-      case '2':
+      case 2:
         return this.typeCycleData$;
-      case '3':
+      case 3:
         return this.typeWeightTrainData$;
-      case '4':
+      case 4:
         return this.typeSwimData$;
-      case '5':
+      case 5:
         return this.typeAerobicData$;
-      case '6':
+      case 6:
         return this.typeRowData$;
-      case '7':
+      case 7:
         return this.typeBallData$;
       default:
         return this.typeAllData$;

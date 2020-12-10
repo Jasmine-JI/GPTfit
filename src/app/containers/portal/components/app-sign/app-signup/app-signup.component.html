@@ -1,4 +1,44 @@
-<ng-container *ngIf="!pcView">
+<ng-container *ngIf="!pcView && !agreeTerms">
+  <div class="flexCol" style="position: relative;">
+    <div class="flexRow appHeader">
+      <i
+        class="icon-svg_web-icon_p1_073-level_fold"
+        style="font-size: 30px; cursor: pointer;"
+        (click)="turnBack()"
+      ></i>
+      <span class="appview-header" style="position: relative; right: 15px; margin: 0 auto;">
+        {{ 'universal_userAccount_clause' | translate }}
+      </span>
+    </div>
+    <div class="flexCol" style="margin-top: 10px;">
+      <div style="padding: 10px 20px; font-weight: bold;">
+        <span id="mainContent"></span>
+      </div>
+    </div>
+    <button
+      class="appview-btn"
+      (click)="handleAgreeTerms(true)"
+    >
+      <span>{{ 'universal_operating_agree' | translate }}</span>
+    </button>
+    <button
+      style="border: none; background-color: white; font-weight: bold; margin: 20px auto; width: 90%;"
+      (click)="handleAgreeTerms(false)"
+    >
+      <span>{{ 'universal_operating_disagree' | translate }}</span>
+    </button>
+    <ng-container *ngIf="showTerms !== null">
+      <div class="terms__section">
+        <div style="position: relative;">
+          <app-app-terms style="width: 100%; height: 100%;" *ngIf="showTerms === 'terms'"></app-app-terms>
+          <app-app-privacy-statement style="width: 100%; height: 100%;" *ngIf="showTerms === 'privacy'"></app-app-privacy-statement>
+          <i class="icon-svg_web-icon_p1_012-close close__btn" (click)="handleShowTerms(null)"></i>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</ng-container>
+<ng-container *ngIf="!pcView && agreeTerms">
   <div class="flexCol">
     <div class="flexRow appHeader" style="justify-content: space-between;">
       <i

@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { fromEvent, Subscription, Subject, forkJoin } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
-import { GroupDetailInfo, UserSimpleInfo } from '../../../models/group-detail';
+import { GroupDetailInfo, UserSimpleInfo, EditMode } from '../../../models/group-detail';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { GroupService } from '../../../services/group.service';
 import { HashIdService } from '../../../../../shared/services/hash-id.service';
@@ -37,7 +37,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * ui需要用到的各種flag
    */
   uiFlag = {
-    editMode: <'edit' | 'create' | 'complete' | 'close'>'close',
+    editMode: <EditMode>'close',
     createLevel: 60,
     contentChange: false,
     statusChange: false,
@@ -96,10 +96,10 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
       maxGeneralGroups: 0
     },
     groupManagerSetting: {
-      maxGroupManagers: 4
+      maxGroupManagers: null
     },
     groupMemberSetting: {
-      maxGroupMembers: 20
+      maxGroupMembers: null
     },
     commercePlanExpired: '',
     shareAvatarToMember: {
@@ -229,8 +229,8 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         break;
       case 'branch':
         if (this.userSimpleInfo.accessRight[0] <= 30) {
-          this.openCreateMode();
           this.assignAdmin();
+          this.openCreateMode();
           this.createBody.levelType = 4;
           this.uiFlag.createLevel = 40;
         }
@@ -239,8 +239,8 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
       case 'coach':
       case 'department':
         if (this.userSimpleInfo.accessRight[0] <= 40) {
-          this.openCreateMode();
           this.assignAdmin();
+          this.openCreateMode();
           this.createBody.levelType = 5;
           this.uiFlag.createLevel = 60;
           this.createBody.coachType = 2;
@@ -251,8 +251,8 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         break;
       case 'teacher':
         if (this.userSimpleInfo.accessRight[0] <= 40) {
-          this.openCreateMode();
           this.assignAdmin();
+          this.openCreateMode();
           this.createBody.levelType = 5;
           this.uiFlag.createLevel = 60;
           this.createBody.coachType = 1;
@@ -288,7 +288,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    */
   assignAdmin() {
     this.chooseLabels.length === 0;
-    this.chooseLabels.push({ 'groupName': 'Alatech', 'userName': this.userSimpleInfo.nickname, 'userId': this.userSimpleInfo.userId });
+    this.chooseLabels.push({ 'groupName': 'GPTfit', 'userName': this.userSimpleInfo.nickname, 'userId': this.userSimpleInfo.userId });
   }
 
   /**
@@ -323,8 +323,16 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @author kidin1091123
    */
   closeEditMode(action: 'complete' | 'close') {
-    this.uiFlag.editMode = 'close';
-    this.groupService.setEditMode(action);    
+    if (this.uiFlag.editMode === 'edit') {
+      this.uiFlag.editMode = 'close';
+      this.groupService.setEditMode(action);
+    } else if (this.uiFlag.editMode === 'create' && action !== 'complete') {
+      this.cancelCreateMode();
+    } else if (this.uiFlag.editMode === 'create' && action === 'complete') {
+      this.groupService.setEditMode(action);
+      this.uiFlag.editMode = 'close';
+    }
+    
   }
 
   /**
@@ -332,10 +340,11 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @author kidin-1091111
    */
   cancelCreateMode() {
-    this.closeEditMode('close');
+    this.uiFlag.editMode = 'close';
+    this.groupService.setEditMode('close');   
     if (this.createBody.levelType !== 3) {
       this.router.navigateByUrl(
-        `/dashboard/group-info-v2/${this.hashIdService.handleGroupIdEncode(this.createBody.groupId)}/group-architecture`
+        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.createBody.groupId)}/group-architecture`
       );
 
     } else {
@@ -628,7 +637,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
           numReg = /^\d+$/;
     switch (formItem) {
       case 'branch':
-        if (numReg.test(num) && num >= 1 && num <= 100) {
+        if (numReg.test(num) && num >= 1 && num <= 1000) {
           this.createBody.groupSetting.maxBranches = num;
         } else {
           this.createBody.groupSetting.maxBranches = 1;
@@ -636,7 +645,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         
         break;
       case 'class':
-        if (numReg.test(num) && num >= 1 && num <= 500) {
+        if (numReg.test(num) && num >= 1 && num <= 50000) {
           this.createBody.groupSetting.maxClasses = num;
         } else {
           this.createBody.groupSetting.maxClasses = 2;
@@ -644,7 +653,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         
         break;
       case 'admin':
-        if (numReg.test(num) && num >= 1 && num <= 1000) {
+        if (numReg.test(num) && num >= 1 && num <= 100000) {
           this.createBody.groupManagerSetting.maxGroupManagers = num;
         } else {
           this.createBody.groupManagerSetting.maxGroupManagers = 4;
@@ -652,7 +661,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         
         break;
       case 'member':
-        if (numReg.test(num) && num >= 1 && num <= 100000) {
+        if (numReg.test(num) && num >= 1 && num <= 1000000) {
           this.createBody.groupMemberSetting.maxGroupMembers = num;
         } else {
           this.createBody.groupMemberSetting.maxGroupMembers = 20;
@@ -674,12 +683,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
         this.utils.openAlert(errMsg);
       } else {
-        this.router.navigateByUrl(
-          `/dashboard/group-info-v2/${
-            this.hashIdService.handleGroupIdEncode(res.info.newGroupId)
-          }/group-introduction`
-        );
-
+        this.groupService.saveNewGroupId(res.info.newGroupId);
         this.closeEditMode('complete');
       }
 
@@ -745,6 +749,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     this.groupService.changeGroupStatus(body).subscribe(res => {
       if (res.resultCode === 200) {
         this.initPage();
+        this.refreshAllLevelGroupData();
       } else {
         console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
         this.utils.openAlert(errMsg);
@@ -768,6 +773,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     ]).subscribe(res => {
       if (res[0].resultCode === 200 && res[1].resultCode === 200) {
         this.initPage();
+        this.refreshAllLevelGroupData();
       } else {
         console.log(`${res[0].resultCode}: Api-${res[0].apiCode} ${res[0].resultMessage}`);
         console.log(`${res[1].resultCode}: Api-${res[1].apiCode} ${res[1].resultMessage}`);
@@ -775,6 +781,31 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
       }
       
       this.uiFlag.isLoading = false;
+    });
+
+  }
+
+  /**
+   * 儲存所有階層群組資訊
+   * @author kidin-1090716
+   */
+  refreshAllLevelGroupData() {
+    const body = {
+      token: this.editBody.token,
+      avatarType: 3,
+      groupId: this.editBody.groupId,
+      groupLevel: this.editBody.groupLevel,
+      infoType: 1
+    }
+
+    this.groupService.fetchGroupMemberList(body).subscribe(res => {
+      if (res.resultCode !== 200) {
+        this.utils.openAlert(errMsg);
+        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+      } else {
+        this.groupService.setAllLevelGroupData(res.info.subGroupInfo);
+      }
+
     });
 
   }
@@ -823,7 +854,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
   navigateParentsGroup(groupId: string) {
     this.closeEditMode('close');
     this.router.navigateByUrl(
-      `/dashboard/group-info-v2/${this.hashIdService.handleGroupIdEncode(groupId)}/group-introduction`
+      `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(groupId)}/group-introduction`
     );
 
   }

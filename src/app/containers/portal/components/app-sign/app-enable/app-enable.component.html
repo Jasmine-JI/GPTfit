@@ -15,6 +15,14 @@
         <span class="formTitle">{{ 'universal_userAccount_activateAccount' | translate }}</span>
         <span style="font-size: 14px; font-weight: bold;">{{ accountInfo.account }}</span>
       </div>
+      <button
+        class="appview-btn"
+        [class.appview-btn-unclickable]="sendingPhoneCaptcha"
+        *ngIf="accountInfo.type === 2"
+        (click)="reciprocal()"
+      >
+        <span>{{ 'universal_operating_send' | translate }}({{ timeCount }}s)</span>
+      </button>
       <div class="flexCol appDiv" *ngIf="accountInfo.type === 2">
         <span class="formTitle">{{ 'universal_userAccount_phoneCaptcha' | translate }}</span>
         <div>
@@ -46,14 +54,6 @@
           {{ imgCaptcha.cue | translate }}
         </span>
       </div>
-      <button
-        class="appview-btn"
-        [class.appview-btn-unclickable]="sendingPhoneCaptcha"
-        *ngIf="accountInfo.type === 2"
-        (click)="reciprocal()"
-      >
-        <span>{{ 'universal_operating_send' | translate }}({{ timeCount }}s)</span>
-      </button>
     </div>
     <button
       class="appview-btn"

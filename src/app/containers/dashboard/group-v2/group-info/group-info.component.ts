@@ -5,7 +5,7 @@ import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { ShareGroupInfoDialogComponent } from '../../../../shared/components/share-group-info-dialog/share-group-info-dialog.component';
-import { GroupDetailInfo, UserSimpleInfo } from '../../models/group-detail';
+import { GroupDetailInfo, UserSimpleInfo, EditMode } from '../../models/group-detail';
 import moment from 'moment';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { GroupService } from '../../services/group.service';
@@ -27,6 +27,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   @ViewChild('navSection') navSection: ElementRef;
   @ViewChild('pageListBar') pageListBar: ElementRef;
   @ViewChild('seeMore') seeMore: ElementRef;
+  @ViewChild('groupHeaderDescription') groupHeaderDescription: ElementRef;
 
   private ngUnsubscribe = new Subject();
 
@@ -58,9 +59,14 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     barWidth: 0,
     createLevel: null,
     isPreviewMode: false,
-    editMode: <'edit' | 'create' | 'complete' | 'close'>'close',
+    editMode: <EditMode>'close',
     openSceneryImgSelector: false,
-    openIconImgSelector: false
+    openIconImgSelector: false,
+    groupDescOverflow: false,
+    hideScenery: false,
+    portalMode: false,
+    isLoading: false,
+    isJoinLoading: false
   };
 
   /**
@@ -79,7 +85,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   /**
    * 群組子頁面清單
    */
-  childPageList: Array<string> = ['group-introduction'];
+  childPageList: Array<string> = [];
 
   /**
    * 儲存子頁面清單各選項按鈕寬度
@@ -172,8 +178,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.groupService.getRxEditMode().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
-      this.uiFlag.editMode = res;
-      this.upLoadImg();
+      this.upLoadImg(res);
       this.uiFlag.openIconImgSelector = false;
       this.uiFlag.openSceneryImgSelector = false;
     });
@@ -182,17 +187,17 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   /**
    * 如有編輯圖片則進行上傳
+   * @param editMode {EditMode}-編輯模式的狀態
    * @author kidin-1091125
    */
-  upLoadImg() {
-    if (this.uiFlag.editMode !== 'close' && this.editImage.edited) {
+  upLoadImg(editMode: EditMode) {
+    if (editMode === 'complete' && this.editImage.edited) {
       let imgArr = [];
 
       const formData = new FormData();
       formData.set('token', this.utils.getToken());
       formData.set('targetType', '2');
-      formData.set('targetGroupId', this.currentGroupInfo.groupDetail.groupId);
-      
+
       // 群組icon
       if (this.editImage.icon.base64 !== null) {
         const fileName = this.createFileName(imgArr.length);
@@ -217,20 +222,53 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
       formData.set('img', JSON.stringify(imgArr));
 
-      this.imageUploadService.addImg(formData).subscribe(res => {
+      if (this.uiFlag.editMode === 'edit') {
+        formData.set('targetGroupId', this.currentGroupInfo.groupDetail.groupId);
+        this.sendImgUploadReq(formData, this.currentGroupInfo.groupDetail.groupId);
+      } else if (this.uiFlag.editMode === 'create') {
+        const newGroupId = this.groupService.getNewGroupId();
+        formData.set('targetGroupId', newGroupId);
+        this.sendImgUploadReq(formData, newGroupId);
+      }
 
-        if (res.processResult.resultCode !== 200) {
-          this.utils.openAlert('Image upload error.');
-          console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+    } else if (this.uiFlag.editMode === 'create' && editMode === 'complete') {
+      this.closeCreateMode();
+      this.handleNavigation(this.groupService.getNewGroupId());
+    } else if (editMode === 'complete') {
+      this.getGroupNeedInfo();
+      this.groupService.setEditMode('close');
+    } else {
+      this.uiFlag.editMode = editMode;
+    }
+    
+  }
+
+  /**
+   * 送出api 8001
+   * @param formData {FormData}-api所需資料
+   * @param groupId {string}-group id
+   * @author kidin-1091130
+   */
+  sendImgUploadReq(formData: FormData, groupId: string) {
+    this.imageUploadService.addImg(formData).subscribe(res => {
+
+      if (res.processResult.resultCode !== 200) {
+        this.utils.openAlert('Image upload error.');
+        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+      } else {
+        this.initImgSetting();
+
+        if (this.uiFlag.editMode === 'create') {
+          this.closeCreateMode();
+          this.handleNavigation(groupId);
         } else {
           this.getGroupNeedInfo();
-          this.saveAllLevelGroupData();
+          this.groupService.setEditMode('close');
         }
+ 
+      }
 
-      });
-
-      this.groupService.setEditMode('close');
-    }
+    });
 
   }
 
@@ -260,6 +298,25 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   base64ToFile(albumType: AlbumType, base64: string, fileName: string): File {
     const blob = this.utils.dataUriToBlob(albumType, base64);
     return new File([blob], `${fileName}.jpg`, {type: 'image/jpeg'});
+  }
+
+  /**
+   * 將圖片設定初始化
+   * @author kidin-1091201
+   */
+  initImgSetting() {
+    this.uiFlag.hideScenery = false;
+    this.editImage = {
+      edited: false,
+      icon: {
+        origin: null,
+        base64: null
+      },
+      scenery: {
+        origin: null,
+        base64: null
+      }
+    };
   }
 
   /**
@@ -313,7 +370,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     ).subscribe(event => {
 
       if (event instanceof NavigationEnd) {
-        console.log(event.url);
         this.checkQueryString(event.url);
         this.getCurrentContentPage(event);
         this.getBtnPosition(this.uiFlag.currentTagIndex);
@@ -446,6 +502,14 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   getToken() {
     this.user.token = this.utils.getToken() || '';
+    if (location.pathname.indexOf('dashboard') < 0 && this.user.token !== '') {
+      this.router.navigateByUrl(`/dashboard${location.pathname}${location.search}`);
+    } else if (location.pathname.indexOf('dashboard') < 0) {
+      this.uiFlag.portalMode = true;
+    } else {
+      this.uiFlag.portalMode = false;
+    }
+
   }
 
   /**
@@ -457,7 +521,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.groupService.setEditMode('close');
       this.getCurrentGroupInfo();
       this.getGroupNeedInfo();
-      this.saveAllLevelGroupData();
     } else {
       this.getRxGroupNeedInfo();
     }
@@ -503,17 +566,100 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       groupId: `${groupIdArr.join('-')}-0-0-0`
     };
 
-    forkJoin([
-      this.groupService.fetchGroupListDetail(detailBody),
-      this.groupService.fetchCommerceInfo(commerceBody)
-    ]).subscribe(resArr => {
-      console.log('combine', resArr);
-      this.handleDetail(resArr[0]);
-      this.handleCommerce(resArr[1]);
-      this.checkUserAccessRight();
-      this.initChildPageList();
-      this.getCurrentContentPage();
-      this.getPerPageOptSize();
+    /**
+     * api 1103 request body
+     */
+    const childGroupBody = {
+      token: this.user.token,
+      avatarType: 3,
+      groupId: this.currentGroupInfo.groupId,
+      groupLevel: this.currentGroupInfo.groupLevel,
+      infoType: 1
+    }
+
+    /**
+     * api 1103 request body
+     */
+    const adminListBody = {
+      token: this.user.token,
+      avatarType: 3,
+      groupId: this.currentGroupInfo.groupId,
+      groupLevel: this.currentGroupInfo.groupLevel,
+      infoType: 2
+    }
+
+    /**
+     * api 1103 request body
+     */
+    const memberListBody = {
+      token: this.user.token,
+      avatarType: 3,
+      groupId: this.currentGroupInfo.groupId,
+      groupLevel: this.currentGroupInfo.groupLevel,
+      infoType: 3
+    }
+
+    this.uiFlag.isLoading = true;
+    if (this.uiFlag.portalMode) {
+      forkJoin([
+        this.groupService.fetchGroupListDetail(detailBody),
+        this.groupService.fetchCommerceInfo(commerceBody)
+      ]).subscribe(resArr => {
+        this.uiFlag.isLoading = false;
+        this.uiFlag.hideScenery = false;
+        this.handleDetail(resArr[0]);
+        this.handleCommerce(resArr[1]);
+        this.checkUserAccessRight();
+        this.initChildPageList();
+        this.getCurrentContentPage();
+        this.getPerPageOptSize();
+      })
+
+    } else {
+      forkJoin([
+        this.groupService.fetchGroupListDetail(detailBody),
+        this.groupService.fetchCommerceInfo(commerceBody),
+        this.groupService.fetchGroupMemberList(childGroupBody),
+        this.groupService.fetchGroupMemberList(adminListBody),
+        this.groupService.fetchGroupMemberList(memberListBody)
+      ]).subscribe(resArr => {
+        this.uiFlag.isLoading = false;
+        this.uiFlag.hideScenery = false;
+        this.handleDetail(resArr[0]);
+        this.handleCommerce(resArr[1]);
+        this.handleMemberList(resArr[2], resArr[3], resArr[4]);
+        this.checkUserAccessRight();
+        this.initChildPageList();
+        this.getCurrentContentPage();
+        this.getPerPageOptSize();
+      })
+
+    }
+
+  }
+
+  /**
+   * 取得管理員和成員名單
+   * @param groupArchitecture {GroupArchitecture}-api 1103的群組階層（subGroupInfo）
+   * @author kidin-1091111
+   */
+  refreshMemberList() {
+    const body = {
+      token: this.user.token,
+      avatarType: 3,
+      groupId: this.currentGroupInfo.groupId,
+      groupLevel: this.currentGroupInfo.groupLevel,
+      infoType: 3
+    }
+
+    this.groupService.fetchGroupMemberList(body).subscribe(res => {
+      if (res.resultCode !== 200) {
+        this.utils.openAlert(errMsg);
+        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+      } else {
+        this.groupService.setNormalMemberList(res.info.groupMemberInfo);
+      }
+
     })
 
   }
@@ -524,7 +670,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091104
    */
   handleDetail(res: any) {
-    console.log('handleDetail', res);
     if (res.resultCode !== 200) {
 
       if (this.currentGroupInfo.groupId !== '0-0-0-0-0-0') {
@@ -559,7 +704,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.user.joinStatus = res.info.selfJoinStatus;
       this.currentGroupInfo.groupDetail = res.info;
       this.groupService.saveGroupDetail(res.info);
-      console.log('groupDetail', this.currentGroupInfo.groupDetail);
+      this.checkGroupResLength();
     }
 
   }
@@ -589,6 +734,42 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   /**
+   * 處理api 1103
+   * @param adminRes {any}-管理員清單
+   * @param memberRes {any}-一般成員清單
+   * @author kidin-1091209
+   */
+  handleMemberList(childGroupRes: any, adminRes: any, memberRes: any) {
+    if (childGroupRes.resultCode !== 200 || adminRes.resultCode !== 200 || memberRes.resultCode !== 200) {
+      this.utils.openAlert(errMsg);
+      console.log(`${childGroupRes.resultCode}: Api ${childGroupRes.apiCode} ${childGroupRes.resultMessage}`);
+      console.log(`${adminRes.resultCode}: Api ${adminRes.apiCode} ${adminRes.resultMessage}`);
+      console.log(`${memberRes.resultCode}: Api ${memberRes.apiCode} ${memberRes.resultMessage}`);
+    } else {
+
+      const groupLevel = this.utils.displayGroupLevel(this.currentGroupInfo.groupId);
+      if (groupLevel <= 30) {
+        Object.assign(this.currentGroupInfo.groupDetail, {branchNum: childGroupRes.info.subGroupInfo.branches.length});
+      }
+
+      if (groupLevel <= 40) {
+        Object.assign(this.currentGroupInfo.groupDetail, {coachNum: childGroupRes.info.subGroupInfo.coaches.length});
+      }
+      
+      Object.assign(childGroupRes.info.subGroupInfo, {groupId: this.currentGroupInfo.groupId});
+      this.groupService.setAllLevelGroupData(childGroupRes.info.subGroupInfo);
+      this.groupService.setAdminList(adminRes.info.groupMemberInfo);
+      this.groupService.setNormalMemberList(memberRes.info.groupMemberInfo);
+
+      adminRes.info.groupMemberInfo = adminRes.info.groupMemberInfo.filter(_admin => _admin.groupId === this.currentGroupInfo.groupId);
+      Object.assign(this.currentGroupInfo.groupDetail, {adminNum: adminRes.info.groupMemberInfo.length});
+      Object.assign(this.currentGroupInfo.groupDetail, {memberNum: memberRes.info.groupMemberInfo.length});
+      this.groupService.saveGroupDetail(this.currentGroupInfo.groupDetail);
+    }
+
+  }
+
+  /**
    * 藉由rx取得已儲存的資訊
    * @author kidin-1091105
    */
@@ -606,20 +787,30 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.initChildPageList();
       this.getCurrentContentPage();
       this.getPerPageOptSize();
+      this.checkGroupResLength();
     })
     
   }
 
   /**
-   * 儲存所有階層群組資訊
-   * @author kidin-1090716
+   * 確認群組介紹是否過長
+   * @author kidin-1091204
    */
-  saveAllLevelGroupData() {
-    this.groupService.saveAllLevelGroupData(
-      this.user.token,
-      this.currentGroupInfo.groupId,
-      this.currentGroupInfo.groupLevel
-    );
+  checkGroupResLength() {
+
+    setTimeout(() => {
+      const descSection = this.groupHeaderDescription.nativeElement,
+            descStyle = window.getComputedStyle(descSection, null),
+            descLineHeight = +descStyle.lineHeight.split('px')[0],
+            descHeight = +descStyle.height.split('px')[0];
+
+      if (descHeight / descLineHeight > 2) {
+        this.uiFlag.groupDescOverflow = true;
+      } else {
+        this.uiFlag.groupDescOverflow = false;
+      }
+
+    });
 
   }
 
@@ -636,16 +827,17 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       urlArr = location.pathname.split('/');
     }
 
-    if (urlArr.indexOf('group-info-v2') > -1) {
-    console.log('arr', urlArr, event);
-      if (urlArr.length === 5) {
+    if (urlArr.indexOf('group-info') > -1) {
+
+      if (this.uiFlag.portalMode) {
+        this.uiFlag.currentPage = 'group-introduction';
+        this.uiFlag.currentTagIndex = 0;
+        this.handleNavigation(this.currentGroupInfo.groupId);
+      } else if (urlArr.length === 5) {
         this.uiFlag.currentPage = urlArr[urlArr.length - 1].split('?')[0];
         this.uiFlag.currentTagIndex = this.childPageList.indexOf(this.uiFlag.currentPage);
       } else {
-        this.router.navigateByUrl(
-          `/dashboard/group-info-v2/${this.hashIdService.handleGroupIdEncode(this.currentGroupInfo.groupId)}/group-introduction`
-        )
-
+        this.handleNavigation(this.currentGroupInfo.groupId);
       }
 
     }
@@ -657,32 +849,35 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1090811
    */
   checkUserAccessRight() {
-    this.groupService.checkAccessRight(this.currentGroupInfo.groupId).pipe(
-      switchMap(res => this.userProfileService.getRxUserProfile().pipe(
-        map(resp => {
-          const userObj = {};
-          Object.assign(userObj, {accessRight: res});
-          Object.assign(userObj, {nickname: resp.nickname});
-          Object.assign(userObj, {userId: resp.userId});
-          return userObj;
-        })
-      )),
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      this.user.accessRight = (res as any).accessRight;
-      this.user.nickname = (res as any).nickname;
-      this.user.userId = (res as any).userId;
-      this.user.isGroupAdmin = this.user.accessRight.some(_accessRight => {
-        if (this.currentGroupInfo.groupLevel === 60) {
-          return _accessRight === 50 || _accessRight === 60;
-        } else  {
-          return _accessRight === this.currentGroupInfo.groupLevel;
-        }
+    if (this.user.token.length !== 0) {
+      this.groupService.checkAccessRight(this.currentGroupInfo.groupId).pipe(
+        switchMap(res => this.userProfileService.getRxUserProfile().pipe(
+          map(resp => {
+            const userObj = {};
+            Object.assign(userObj, {accessRight: res});
+            Object.assign(userObj, {nickname: (resp as any).nickname});
+            Object.assign(userObj, {userId: (resp as any).userId});
+            return userObj;
+          })
+        )),
+        takeUntil(this.ngUnsubscribe)
+      ).subscribe(res => {
+        this.user.accessRight = (res as any).accessRight;
+        this.user.nickname = (res as any).nickname;
+        this.user.userId = (res as any).userId;
+        this.user.isGroupAdmin = this.user.accessRight.some(_accessRight => {
+          if (this.currentGroupInfo.groupLevel === 60) {
+            return _accessRight === 50 || _accessRight === 60;
+          } else  {
+            return _accessRight === this.currentGroupInfo.groupLevel;
+          }
 
-      });
+        });
 
-      this.groupService.saveUserSimpleInfo(this.user);
-    })
+        this.groupService.saveUserSimpleInfo(this.user);
+      })
+
+    }
 
   }
 
@@ -695,18 +890,23 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     const groupDetail = this.currentGroupInfo.groupDetail,
           commerceInfo = this.currentGroupInfo.commerceInfo;
 
-    if (
+    if (this.uiFlag.portalMode) {
+      this.childPageList = [
+        'group-introduction'
+      ];
+    } else if (
       groupDetail.brandType === 1
       && this.currentGroupInfo.groupLevel === 60
       && !commerceInfo.expired
       && +commerceInfo.commerceStatus === 1
       && this.currentGroupInfo.groupDetail.groupStatus !== 6
+      && this.user.accessRight[0] <= 50
     ) {
       this.childPageList = [
         'group-introduction',
         'myclass-report',
-        'class-analysis-v2',
-        'cloudrun-report',
+        'class-analysis',
+        // 'cloudrun-report',
         'member-list',
         'group-architecture',
         'admin-list'
@@ -720,8 +920,8 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.childPageList = [
         'group-introduction',
         'sports-report',
-        'life-tracking-v2',
-        'cloudrun-report',
+        'life-tracking',
+        // 'cloudrun-report',
         'member-list',
         'group-architecture',
         'admin-list'
@@ -778,23 +978,43 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1090811
    */
   handleJoinGroup(actionType: number) {
-    const body = {
-      token: this.user.token,
-      groupId: this.currentGroupInfo.groupId,
-      brandType: this.currentGroupInfo.groupDetail.brandType,
-      actionType
-    };
+    if (this.user.token.length === 0) {
+      this.router.navigateByUrl(
+        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.currentGroupInfo.groupId)}/group-introduction`
+      );
+    } else {
 
-    this.groupService.actionGroup(body).subscribe(res => {
-      console.log('handleJoinGroup', res);
-      if (res.resultCode !== 200) {
-        this.utils.openAlert(errMsg);
-        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
-      } else {
-        this.userProfileService.refreshUserProfile({token: this.user.token});
-      }
+      const body = {
+        token: this.user.token,
+        groupId: this.currentGroupInfo.groupId,
+        brandType: this.currentGroupInfo.groupDetail.brandType,
+        actionType
+      };
 
-    });
+      this.uiFlag.isJoinLoading = true;
+      this.groupService.actionGroup(body).subscribe(res => {
+        if (res.resultCode !== 200) {
+          this.utils.openAlert(errMsg);
+          console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+        } else {
+
+          if (this.currentGroupInfo.groupDetail.groupStatus === 1 || this.user.joinStatus === 2) {
+            this.userProfileService.refreshUserProfile({token: this.user.token});
+            this.getGroupNeedInfo();
+          } else if (actionType === 1 && this.currentGroupInfo.groupDetail.groupStatus === 2) {
+            this.user.joinStatus = 1;
+            this.refreshMemberList();
+          } else if (actionType === 2 && this.currentGroupInfo.groupDetail.groupStatus === 2) {
+            this.user.joinStatus = 5;
+            this.refreshMemberList();
+          }
+
+        }
+
+        this.uiFlag.isJoinLoading = false;
+      });
+
+    }
 
   }
 
@@ -805,9 +1025,16 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1090811
    */
   handleNavigation(groupId: string) {
-    this.router.navigateByUrl(
-      `/dashboard/group-info-v2/${this.hashIdService.handleGroupIdEncode(groupId)}/group-introduction`
-    );
+    if (this.uiFlag.portalMode) {
+      this.router.navigateByUrl(
+        `/group-info/${this.hashIdService.handleGroupIdEncode(groupId)}/group-introduction`
+      );
+    } else {
+      this.router.navigateByUrl(
+        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(groupId)}/group-introduction`
+      );
+
+    }
 
   }
 
@@ -820,7 +1047,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    */
   handleShowContent(e: MouseEvent, page: string, tagIdx: number) {
     e.stopPropagation();
-    this.router.navigateByUrl(`/dashboard/group-info-v2/${this.currentGroupInfo.hashGroupId}/${page}`);
+    this.router.navigateByUrl(`/dashboard/group-info/${this.currentGroupInfo.hashGroupId}/${page}`);
     this.uiFlag.currentPage = page;
     this.uiFlag.currentTagIndex = tagIdx;
     this.uiFlag.showMorePageOpt = false;
@@ -909,7 +1136,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.dialog.open(ShareGroupInfoDialogComponent, {
       hasBackdrop: true,
       data: {
-        url: location.href,
+        url: `${location.origin}/group-info/${this.hashIdService.handleGroupIdEncode(this.currentGroupInfo.groupId)}`,
         title: this.translate.instant('universal_operating_share'),
         totalGroupName: totalGroupName || '',
         cancelText: this.translate.instant('universal_operating_cancel')
@@ -938,8 +1165,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091124
    */
   closeSelector(e: any) {
-    console.log('closeSelector', e);
-
     if (e.action === 'complete') {
 
       this.editImage.edited = true;
@@ -949,12 +1174,22 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       } else {
         this.editImage.scenery.origin = e.img.origin;
         this.editImage.scenery.base64 = e.img.base64;
+        this.uiFlag.hideScenery = false;
       }
 
     }
 
     this.uiFlag.openIconImgSelector = false;
     this.uiFlag.openSceneryImgSelector = false;
+  }
+
+  /**
+   * 若圖片不存在或載入錯誤則隱藏該元素
+   * @author kidin-1091204
+   */
+  sceneryError() {
+    console.log('image Error');
+    this.uiFlag.hideScenery = true;
   }
 
   /**

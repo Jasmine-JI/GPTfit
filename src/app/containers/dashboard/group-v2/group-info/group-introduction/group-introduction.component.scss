@@ -91,6 +91,9 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   width: 200px;
 }
 
+.btn__loading__status {
+  pointer-events: none;
+}
 
 /************************************** media ******************************/
 

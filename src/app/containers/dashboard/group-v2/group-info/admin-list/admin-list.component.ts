@@ -1,9 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { GroupDetailInfo, UserSimpleInfo, MemberInfo } from '../../../models/group-detail';
+import { GroupDetailInfo, UserSimpleInfo, MemberInfo, GroupArchitecture } from '../../../models/group-detail';
 import { GroupService } from '../../../services/group.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
-import { Subject, combineLatest } from 'rxjs';
+import { Subject, combineLatest, forkJoin } from 'rxjs';
 import { takeUntil, first } from 'rxjs/operators';
+import { GroupIdSlicePipe } from '../../../../../shared/pipes/group-id-slice.pipe';
+
+const errMsg = `Error.<br />Please try again later.`;
 
 @Component({
   selector: 'app-admin-list',
@@ -18,7 +21,7 @@ export class AdminListComponent implements OnInit, OnDestroy {
    * UI會用到的各個flag
    */
   uiFlag = {
-    editMode: false
+    editMode: <'complete' | 'edit'>'complete'
   };
 
   /**
@@ -32,6 +35,11 @@ export class AdminListComponent implements OnInit, OnDestroy {
   userSimpleInfo: UserSimpleInfo;
 
   /**
+   * 群組階層簡易資訊
+   */
+  groupArchitecture = <GroupArchitecture>{};
+
+  /**
    * 管理員列表
    */
   adminList = {
@@ -43,7 +51,8 @@ export class AdminListComponent implements OnInit, OnDestroy {
 
   constructor(
     private groupService: GroupService,
-    private utils: UtilsService
+    private utils: UtilsService,
+    private groupIdSlicePipe: GroupIdSlicePipe
   ) { }
 
   ngOnInit(): void {
@@ -58,9 +67,10 @@ export class AdminListComponent implements OnInit, OnDestroy {
     combineLatest([
       this.groupService.getRxGroupDetail(),
       this.groupService.getRxCommerceInfo(),
-      this.groupService.getUserSimpleInfo()
+      this.groupService.getUserSimpleInfo(),
+      this.groupService.getAllLevelGroupData(),
+      this.groupService.getRXAdminList()
     ]).pipe(
-      first(),
       takeUntil(this.ngUnsubscribe)
     ).subscribe(resArr => {
       Object.assign(resArr[0], {groupLevel: this.utils.displayGroupLevel(resArr[0].groupId)});
@@ -68,17 +78,19 @@ export class AdminListComponent implements OnInit, OnDestroy {
       Object.assign(resArr[0], {commerceStatus: resArr[1].commerceStatus});
       this.groupInfo = resArr[0];
       this.userSimpleInfo = resArr[2];
-      this.getAdminList();
+      this.groupArchitecture = resArr[3];
+      this.sortMember(resArr[4], this.groupArchitecture);
     })
 
   }
 
   /**
-   * 取得成員名單
+   * 取得管理員和成員名單
+   * @param groupArchitecture {GroupArchitecture}-api 1103的群組階層（subGroupInfo）
    * @author kidin-1091111
    */
-  getAdminList() {
-    const body = {
+  refreshList() {
+    const adminBody = {
       token: this.userSimpleInfo.token,
       groupId: this.groupInfo.groupId,
       groupLevel: this.utils.displayGroupLevel(this.groupInfo.groupId),
@@ -86,24 +98,38 @@ export class AdminListComponent implements OnInit, OnDestroy {
       avatarType: 3
     }
 
-    this.groupService.fetchGroupMemberList(body).subscribe(res => {
-      if (res.resultCode !== 200) {
-        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+    const memberBody = {
+      token: this.userSimpleInfo.token,
+      groupId: this.groupInfo.groupId,
+      groupLevel: this.utils.displayGroupLevel(this.groupInfo.groupId),
+      infoType: 3,
+      avatarType: 3
+    }
+
+    forkJoin([
+      this.groupService.fetchGroupMemberList(adminBody),
+      this.groupService.fetchGroupMemberList(memberBody)
+    ]).subscribe(resArr => {
+      if (resArr[0].resultCode !== 200 || resArr[1].resultCode !== 200) {
+        this.utils.openAlert(errMsg);
+        console.log(`${resArr[0].resultCode}: Api ${resArr[0].apiCode} ${resArr[0].resultMessage}`);
+        console.log(`${resArr[1].resultCode}: Api ${resArr[1].apiCode} ${resArr[1].resultMessage}`);
       } else {
-        console.log('adminList', res);
-        this.sortMember(res.info.groupMemberInfo);
+        this.groupService.setAdminList(resArr[0].info.groupMemberInfo);
+        this.groupService.setNormalMemberList(resArr[1].info.groupMemberInfo);
       }
-      
-    });
+
+    })
 
   }
 
   /**
    * 將成員依加入狀態分類
    * @param memArr {Array<MemberInfo>}-api 1103回應的groupMemberInfo內容
+   * @param groupArchitecture {GroupArchitecture}-api 1103的群組階層（subGroupInfo）
    * @author kidin-1091111
    */
-  sortMember(memArr: Array<MemberInfo>) {
+  sortMember(memArr: Array<MemberInfo>, groupArchitecture: GroupArchitecture) {
     this.initList();
     memArr.forEach(_mem => {
       switch (+_mem.accessRight) {
@@ -111,13 +137,25 @@ export class AdminListComponent implements OnInit, OnDestroy {
           this.adminList.brand.push(_mem);
           break;
         case 40:
-          this.adminList.branch.push(_mem);
+          _mem = this.getGroupName(_mem, groupArchitecture, 40);
+          if (_mem !== null) {
+            this.adminList.branch.push(_mem);
+          }
+          
           break;
         case 50:
-          this.adminList.class.push(_mem);
+          _mem = this.getGroupName(_mem, groupArchitecture, 50);
+          if (_mem !== null) {
+            this.adminList.class.push(_mem);
+          }
+
           break;
         case 60:
-          this.adminList.teacher.push(_mem);
+          _mem = this.getGroupName(_mem, groupArchitecture, 60);
+          if (_mem !== null) {
+            this.adminList.teacher.push(_mem);
+          }
+
           break;
       }
 
@@ -140,21 +178,84 @@ export class AdminListComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * 取得該管理員所屬群組名稱及篩掉群組已解散的管理員
+   * @param member {MemberInfo}-管理員簡易資訊
+   * @param groupArchitecture {GroupArchitecture}-api 1103的群組階層（subGroupInfo）
+   * @param groupLevel {number}-群組階層
+   * @author kidin-1091201
+   */
+  getGroupName(member: MemberInfo, groupArchitecture: GroupArchitecture, groupLevel: number) {
+    let haveGroup = false;
+    if (groupLevel === 40) {
+
+      const branches = groupArchitecture.branches,
+            branchesLength = branches.length;
+      for (let i = 0; i < branchesLength; i++) {
+
+        if (member.groupId === branches[i].groupId) {
+          haveGroup = true;
+          Object.assign(member, {branchName: branches[i].groupName});
+          break;
+        }
+
+      }
+
+    } else {
+      const branches = groupArchitecture.branches,
+            branchesLength = branches.length,
+            coaches = groupArchitecture.coaches,
+            coachesLength = coaches.length;
+      for (let i = 0; i < coachesLength; i++) {
+
+        if (member.groupId === coaches[i].groupId) {
+          haveGroup = true;
+          Object.assign(member, {coachName: coaches[i].groupName});
+
+          for (let j = 0; j < branchesLength; j++) {
+
+            if (this.groupIdSlicePipe.transform(member.groupId, 4) === this.groupIdSlicePipe.transform(branches[j].groupId, 4)) {
+              Object.assign(member, {branchName: branches[j].groupName});
+              break;
+            }
+    
+          }
+
+        }
+
+      }
+
+    }
+    
+    if (haveGroup) {
+      return member;
+    } else {
+      return null;
+    }
+
+  }
+
+  /**
    * 開啟或關閉編輯模式
    * @author kidin-1091111
    */
   handleEdit() {
-    this.uiFlag.editMode = !this.uiFlag.editMode;
+    if (this.uiFlag.editMode === 'complete') {
+      this.uiFlag.editMode = 'edit';
+      this.groupService.setEditMode('edit');
+    } else {
+      this.uiFlag.editMode = 'complete'
+      this.groupService.setEditMode('complete');
+    }
+
   }
 
   /**
    * 指派為管理員
-   * @param e {}
+   * @param e {number}
    * @author kidin-1091111
    */
   handleRemoveAdmin(e: number) {
-    console.log('assign admin', e);
-    this.getAdminList();
+    this.refreshList();
   }
 
   /**

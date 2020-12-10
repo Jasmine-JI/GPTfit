@@ -401,11 +401,31 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
   // 顯示註冊條款-kidin-1090529
   showPrivateMsg(e) {
     e.preventDefault();
+
     let text = '';
-    text = `${this.translate.instant('universal_userAccount_clauseContentPage1')}
-    <a target="_blank"href="https://www.alatech.com.tw/action-copyright.htm">『${this.translate.instant('universal_userAccount_clause')}』</a>
-    、 <a target="_blank" href="https://www.alatech.com.tw/action-privacy.htm">『${this.translate.instant('universal_userAccount_privacyStatement')}』</a>
-    ${this.translate.instant('universal_userAccount_clauseContentPage2')}`.replace(/\n/gm, '');
+    if (navigator.language.toLowerCase() === 'pt-br') {
+      text = `${this.translate.instant('universal_userAccount_clauseContentPage1')
+        }<a target="_blank" href="https://app.alatech.com.tw/app/public_html/appHelp/pt-BR/termsConditions.html">『${
+          this.translate.instant('universal_userAccount_clause')
+        }』</a>、<a target="_blank" href="https://app.alatech.com.tw/app/public_html/appHelp/pt-BR/privacyPolicy.html">『${
+          this.translate.instant('universal_userAccount_privacyStatement')
+        }』</a>
+        ${this.translate.instant('universal_userAccount_clauseContentPage2')
+      }`.replace(/\n/gm, '');
+    } else if (navigator.language.indexOf('zh') > -1) {
+      text = `${this.translate.instant('universal_userAccount_clauseContentPage1')
+        }<a target="_blank" href="https://www.alatech.com.tw/action-copyright.htm">『${this.translate.instant('universal_userAccount_clause')
+        }』</a>、<a target="_blank" href="https://www.alatech.com.tw/action-privacy.htm">『${this.translate.instant('universal_userAccount_privacyStatement')}』</a>${
+        this.translate.instant('universal_userAccount_clauseContentPage2')
+      }`.replace(/\n/gm, '');
+    } else {
+      text = `${this.translate.instant('universal_userAccount_clauseContentPage1')
+        }<a target="_blank" href="http://www.alatech.com/Terms%20and%20Conditions/action-copyright.htm">『${
+        this.translate.instant('universal_userAccount_clause')}』</a>、<a target="_blank" href="http://www.alatech.com/Privacy%20Policy/action-privacy.htm">『${
+        this.translate.instant('universal_userAccount_privacyStatement')}』</a>${
+        this.translate.instant('universal_userAccount_clauseContentPage2')
+      }`.replace(/\n/gm, '');
+    }
 
     let title: string,
         confirmText: string,

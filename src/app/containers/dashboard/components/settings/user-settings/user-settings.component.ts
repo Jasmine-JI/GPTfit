@@ -31,7 +31,8 @@ export class UserSettingsComponent implements OnInit, OnChanges {
   isNameLoading = false;
   isSaveUserSettingLoading = false;
   imgCropping = false;
-  updateQueryString: string;
+  anyChange = false;
+  newIcon = '';
 
   @Input() userData: any;
   constructor(
@@ -71,38 +72,37 @@ export class UserSettingsComponent implements OnInit, OnChanges {
   ngOnInit(): void {}
 
   ngOnChanges(): void {
-    const {
-      nickname,
-      avatarUrl,
-      bodyHeight,
-      bodyWeight,
-      birthday,
-      description
-    } = this.userData;
-    const gender = this.userData.gender === '2' ? '0' : this.userData.gender; // 如果接到性別為無(2)就轉成男生
+    // 若使用者已更動部份資訊（尚未點選儲存，但已修改暱稱）
+    if (!this.anyChange) {
+      let {
+        nickname,
+        avatarUrl,
+        bodyHeight,
+        bodyWeight,
+        birthday,
+        description
+      } = this.userData;
+      const gender = this.userData.gender === '2' ? '0' : this.userData.gender; // 如果接到性別為無(2)就轉成男生
 
-    // 確認頭像有無更新-kidin-1090113
-    this.userInfoService.getUpdatedImgStatus().subscribe(res => {
-      this.updateQueryString = res;
-    });
+      this.settingsForm = this.fb.group({
+        // 定義表格的預設值
+        nameIcon: [
+          `${avatarUrl}`,
+          Validators.required
+        ],
+        name: [nickname, Validators.required],
+        height: [bodyHeight, Validators.required],
+        weight: [bodyWeight, Validators.required],
+        birthday,
+        gender,
+        description
+      });
 
-    this.settingsForm = this.fb.group({
-      // 定義表格的預設值
-      nameIcon: [
-        `${avatarUrl}${this.updateQueryString}`,
-        Validators.required
-      ],
-      name: [nickname, Validators.required],
-      height: [bodyHeight, Validators.required],
-      weight: [bodyWeight, Validators.required],
-      birthday,
-      gender,
-      description
-    });
+      this.utils.getImgSelectedStatus().subscribe(res => {
+        this.imgCropping = res;
+      });
 
-    this.utils.getImgSelectedStatus().subscribe(res => {
-      this.imgCropping = res;
-    });
+    }
 
   }
 
@@ -140,8 +140,10 @@ export class UserSettingsComponent implements OnInit, OnChanges {
     }
 
     if (type === 1) {
+      this.anyChange = true;
       this.settingsForm.patchValue({ height: tuneHeight });
     } else {
+      this.anyChange = true;
       this.settingsForm.patchValue({ weight: tuneWeight });
     }
 
@@ -214,6 +216,7 @@ export class UserSettingsComponent implements OnInit, OnChanges {
    */
   handleChangeTextarea(text: string, type: number): void {
     if (type === 1) {
+      this.anyChange = true;
       return this.settingsForm.patchValue({ description: text });
     }
   }
@@ -227,9 +230,11 @@ export class UserSettingsComponent implements OnInit, OnChanges {
     const inputBirthdayValue = moment($event.value);
     let value = moment($event.value).format('YYYYMMDD');
     if (inputBirthdayValue.isBetween('19390101', moment())) {
+      this.anyChange = true;
       this.settingsForm.patchValue({ birthday: value });
     } else {
       value = (Number(moment().format('YYYYMMDD')) - 300000) + '';
+      this.anyChange = true;
       this.settingsForm.patchValue({ birthday: value });
     }
   }
@@ -369,6 +374,8 @@ export class UserSettingsComponent implements OnInit, OnChanges {
           }
         });
       } else {
+        this.anyChange = true;
+        this.newIcon = link;
         this.settingsForm.patchValue({nameIcon: link});
       }
     }

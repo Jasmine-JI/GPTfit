@@ -4,6 +4,7 @@
 @import "flex-center.scss";
 
 $page-title-colr: rgba(120, 120, 120, 1);
+$group-btn-gray: rgba(160, 160, 160, 1);
 $warn-color: rgba(255, 75, 75, 1);
 $group-btn-blue: rgba(0, 183, 238, 1);
 $parents__group__color: rgba(150, 150, 150, 1);
@@ -28,6 +29,7 @@ $edit__icon__size: 30px;
 .card__section {
   padding: 10px;
   margin: 5px 0;
+  width: 100%;
   background-color: rgba(240, 240, 240, 1);
 }
 
@@ -48,7 +50,7 @@ $edit__icon__size: 30px;
     content: "";
   }
 
-  img {
+  img, > i {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -56,6 +58,9 @@ $edit__icon__size: 30px;
     right: 0;
     width: 100%;
     margin: auto 0;
+    color: red;
+    font-size: 120px;
+    @include center();
   }
 
 }
@@ -130,12 +135,46 @@ $edit__icon__size: 30px;
   line-height: normal;
 }
 
+.group__header__description {
+  display: inline-block;
+  color: rgba(120, 120, 120, 1);
+  font-size: 14px;
+  margin: 10px 0 10px 30px;
+  max-width: 900px;
+  pointer-events: none;
+  padding-right: 40px;
+}
+
+.group__desc__overflow {
+  position: relative;
+  pointer-events: initial;
+  cursor: pointer;
+  max-height: 45px;
+  overflow: hidden;
+
+  &:after {
+    content: '... more >';
+    position: absolute;
+    right: 0;
+    top: 21px;
+    z-index: 1;
+    background-color: white;
+    padding: 0 20px;
+  }
+
+}
+
 .hover__bottom__border {
   
   &:hover {
     border-bottom: 1px solid $parents__group__color;
   }
 
+}
+
+.page__list__bar {
+  width: 100%;
+  margin: 10px 0px;
 }
 
 .icon--rotate {
@@ -174,7 +213,12 @@ $edit__icon__size: 30px;
 }
 
 .unattracly__btn {
-  background-color: rgba(160, 160, 160, 1);
+  background-color:$group-btn-gray;
+}
+
+.can__not__join {
+  background-color: $group-btn-gray;
+  pointer-events: none;
 }
 
 .child__page__title {
@@ -272,6 +316,12 @@ $edit__icon__size: 30px;
     @include el-rotate(180deg);
   }
   
+}
+
+.portal__mode {
+  width: 90vw;
+  margin: 0 auto;
+  max-width: 1000px;
 }
 
 

@@ -28,6 +28,7 @@ export class TuiCalenderComponent implements OnInit, OnChanges {
   calendarRange: string;
   startTime: any;
   endTime: any;
+  createDate: string;
 
   constructor(
     private activityService: ActivityService,
@@ -71,8 +72,8 @@ export class TuiCalenderComponent implements OnInit, OnChanges {
           calendarEndTime = this.calendar.getDateRangeEnd().getTime();
 
     this.calendarRange = `${moment(calendarStartTime).format('YYYY/MM/DD')} ~ ${moment(calendarEndTime).format('YYYY/MM/DD')}`;
-    this.startTime = this.getFuzzyTime(calendarStartTime, 'startTime');
-    this.endTime = this.getFuzzyTime(calendarEndTime, 'endTime');
+    this.startTime = moment(calendarStartTime).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+    this.endTime = moment(calendarEndTime).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
   }
 
   // 切換日曆-kidin-1090318
@@ -98,30 +99,6 @@ export class TuiCalenderComponent implements OnInit, OnChanges {
     }
 
     this.getClassTime();
-  }
-
-  // 取得當地時區並加以處理-kidin-1081210
-  getFuzzyTime (time, type) {
-    const date = moment(time).format('YYYY-MM-DD'),
-          timeZoneMinite = new Date(),
-          timeZone = -(timeZoneMinite.getTimezoneOffset() / 60);
-    let timeZoneStr = '';
-    if (timeZone < 10 && timeZone >= 0) {
-      timeZoneStr = `+0${timeZone}`;
-    } else if (timeZone > 10) {
-      timeZoneStr = `+${timeZone}`;
-    } else if (timeZone > -10 && timeZone < 0) {
-      timeZoneStr = `-0${timeZone}`;
-    } else {
-      timeZoneStr = `-${timeZone}`;
-    }
-
-    // 取得使用者選擇的時間後，換算成24小時-kidin-1081220
-    if (type === 'startTime') {
-      return `${date}T00:00:00.000${timeZoneStr}:00`;
-    } else {
-      return `${date}T23:59:59.000${timeZoneStr}:00`;
-    }
   }
 
   // 取得課程時間-kidin-1090318
