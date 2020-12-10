@@ -46,26 +46,25 @@ export class UserProfileService {
    */
   refreshUserProfile(body: any) {
     this.getUserProfile(body).pipe(
+      map(response => {
+        const userProfile = response.userProfile,
+              newImage = `${userProfile.avatarUrl}?${userProfile.editTimeStamp}`;
+        Object.assign(userProfile, {avatarUrl: newImage})
+        return response;
+      }),
       switchMap(res => this.getMemberAccessRight(body).pipe(
-        map(resp => Object.assign(
-          res.userProfile,
-          {groupAccessRightList: resp.info.groupAccessRight},
-          {systemAccessRight: this.getAllAccessRight(resp.info.groupAccessRight)}
-        ))
-      )),
-      switchMap(res => this.userInfoService.getUpdatedImgStatus().pipe(
-        map(response => {
-          if (response.length !== 0) {
-            const newImage = `${res.avatarUrl}${response}`;
-            Object.assign(res, {avatarUrl: newImage});  // 使用者更新頭像強迫觸發瀏覽器取得新圖片
-          }
+        map(resp => {
+          Object.assign(
+            res.userProfile,
+            {groupAccessRightList: resp.info.groupAccessRight},
+            {systemAccessRight: this.getAllAccessRight(resp.info.groupAccessRight)}
+          )
 
           return res;
         })
-
       )),
       tap(result => {
-        this.userProfile$.next(result);
+        this.userProfile$.next(result.userProfile);
       })
     ).subscribe();
 

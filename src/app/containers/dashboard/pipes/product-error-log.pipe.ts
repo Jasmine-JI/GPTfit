@@ -1,5 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
+
+/**
+ * 裝置日誌log轉譯
+ */
 @Pipe({name: 'productErrorLog'})
 export class ProductErrorLogPipe implements PipeTransform {
   transform(value: string, args: string[]): any {

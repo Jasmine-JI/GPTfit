@@ -1,734 +1,735 @@
-<ng-container *ngIf="nodata && !isLoading" style="width: 100%; display: flex; flex-direction: row; justify-content: center;">
-  <p style="margin-top: 10px; color: gray; font-size: 18px;">{{'universal_status_noData' | translate}}</p>
-</ng-container>
-<ng-container *ngIf="isLoading" style="display:flex;justify-content: center;align-items: center; width:100%;">
-  <div class="whiteMask">
-    <mat-spinner style="z-index: 3; margin-top: 30px;"></mat-spinner>
-  </div>
-</ng-container>
-<ng-container *ngIf="!isLoading && !nodata" style="width: 100%; min-height: 100%; padding-bottom: 30px;">
-  <div class="functionButton">
-    <button class="alatech-btn alatech-btn--default activity-btn"
-      title="{{'universal_operating_print' | translate}}"
-      (click)="print()"
-      *ngIf="isPreviewMode"
-    >
-      {{'universal_operating_print' | translate}}
-    </button>
-    <a target="_blank"
-      [href]="previewUrl"
-      class="alatech-btn--default"
-      *ngIf="!isPreviewMode"
-    >
-      <i class="icon-svg_web-icon_p2_087-print activity-info_icon_size"></i>
-    </a>
-  </div>
-  <div [class.fitWindow]="!isPreviewMode">
-    <div class="flexRow reportHeader" [class.media-1000-col]="!isPreviewMode">
-      <div class="flexRow">
-        <div class="activity-icon" *ngIf="reportCategory === '99'">
-          <i class="icon-svg_web-icon_p2_038-complex"></i>
-        </div>
-        <div class="activity-icon" *ngIf="reportCategory === '1'">
-          <i class="icon-svg_web-icon_p1_083-run"></i>
-        </div>
-        <div class="activity-icon" *ngIf="reportCategory === '2'">
-          <i class="icon-svg_web-icon_p1_084-cycle"></i>
-        </div>
-        <div class="activity-icon" *ngIf="reportCategory === '3'">
-          <i class="icon-svg_web-icon_p1_086-weight_training"></i>
-        </div>
-        <div class="activity-icon" *ngIf="reportCategory === '4'">
-          <i class="icon-svg_web-icon_p1_085-swim"></i>
-        </div>
-        <div class="activity-icon" *ngIf="reportCategory === '5'">
-          <i class="icon-svg_web-icon_p1_087-aerobic"></i>
-        </div>
-        <div class="activity-icon" *ngIf="reportCategory === '6'">
-          <i class="icon-svg_web-icon_p1_088-row"></i>
-        </div>
-        <div class="activity-icon" *ngIf="reportCategory === '7'">
-          <i class="icon-svg_web-icon_p3_056-ball"></i>
-        </div>
-        <div class="flexCol" style="margin-left: 20px;">
-          <span class="reportDateTime">
-            {{'universal_group_buildFromTime' | translate: {'date': reportEndDate, 'range': period} }}
-          </span>
-          <span *ngIf="reportCategory === '99'" class="reportTitle">
-            {{'universal_activityData_allActivity' | translate}} {{'universal_activityData_sportReport' | translate}}
-          </span>
-          <span *ngIf="reportCategory === '1'" class="reportTitle">
-            {{'universal_activityData_run' | translate}} {{'universal_activityData_sportReport' | translate}}
-          </span>
-          <span *ngIf="reportCategory === '2'" class="reportTitle">
-            {{'universal_activityData_cycle' | translate}} {{'universal_activityData_sportReport' | translate}}
-          </span>
-          <span *ngIf="reportCategory === '3'" class="reportTitle">
-            {{'universal_activityData_weightTraining' | translate}} {{'universal_activityData_sportReport' | translate}}
-          </span>
-          <span *ngIf="reportCategory === '4'" class="reportTitle">
-            {{'universal_activityData_swin' | translate}} {{'universal_activityData_sportReport' | translate}}
-          </span>
-          <span *ngIf="reportCategory === '5'" class="reportTitle">
-            {{'universal_activityData_aerobic' | translate}} {{'universal_activityData_sportReport' | translate}}
-          </span>
-          <span *ngIf="reportCategory === '6'" class="reportTitle">
-            {{'universal_sportsName_boating' | translate}} {{'universal_activityData_sportReport' | translate}}
-          </span>
-          <span *ngIf="reportCategory === '7'" class="reportTitle">
-            {{'universal_activityData_ballSports' | translate}} {{'universal_activityData_sportReport' | translate}}
-          </span>
-        </div>
-      </div>
-      <div class="flexRow authorInfo">
-        <span class="reportTitle" style="margin: 10px 10px 0px 0px;">{{fileInfo?.nickname}}</span>
-        <div style="margin-right: 10px;">
-          <img style="width: 55px; border-radius: 50%;" src="{{fileInfo?.avatarUrl}}">
-        </div>
-      </div>
+<div style="background-color: white;">
+  <ng-container *ngIf="nodata && !isLoading" style="width: 100%; display: flex; flex-direction: row; justify-content: center;">
+    <p style="margin-top: 10px; color: gray; font-size: 18px;">{{'universal_status_noData' | translate}}</p>
+  </ng-container>
+  <ng-container *ngIf="isLoading" style="display:flex;justify-content: center;align-items: center; width:100%;">
+    <div class="whiteMask">
+      <mat-spinner style="z-index: 3; margin-top: 30px;"></mat-spinner>
     </div>
-  </div>
-  <div class="flexCol">
-    <div class="activity-title flexRow" style="justify-content: space-between;">
-      <span class="ala-dashboard-title">{{'universal_activityData_summary' | translate}}</span>
-      <span class="reportDateTime" style="text-align: end;">
-        {{'universal_activityData_creatTime' | translate}} {{reportCreatedTime}}
-      </span>
+  </ng-container>
+  <ng-container *ngIf="!isLoading && !nodata" style="width: 100%; min-height: 100%; padding-bottom: 30px;">
+    <div class="functionButton">
+      <button class="alatech-btn alatech-btn--default activity-btn"
+        title="{{'universal_operating_print' | translate}}"
+        (click)="print()"
+        *ngIf="isPreviewMode"
+      >
+        {{'universal_operating_print' | translate}}
+      </button>
+      <a target="_blank"
+        [href]="previewUrl"
+        class="alatech-btn--default"
+        *ngIf="!isPreviewMode"
+      >
+        <i class="icon-svg_web-icon_p2_087-print activity-info_icon_size"></i>
+      </a>
     </div>
-    <div>
-      <div class="summaryArea">
-        <div class="summaryDataArea">
-          <span class="summaryData">{{categoryActivityLength || 0}}</span>
-          <p class="summaryDescription">{{'universal_activityData_totalActivity' | translate}}</p>
-        </div>
-        <div class="sepLine"></div>
-        <div class="summaryDataArea">
-          <span class="summaryData">{{totalTime || 0}}</span>
-          <p class="summaryDescription">{{'universal_activityData_totalTime' | translate}}</p>
-        </div>
-        <div class="sepLine"></div>
-        <div class="summaryDataArea">
-          <span class="summaryData">{{avgTime || 0}}</span>
-          <p class="summaryDescription">
-            {{'universal_adjective_avg' | translate}} {{'universal_activityData_timing' | translate}}
-          </p>
-        </div>
-        <div class="sepLine"></div>
-        <div class="summaryDataArea">
-          <div>
-            <div *ngIf="totalCalories >= 1000">
-              <span class="summaryData">{{totalCalories / 1000 | number:'1.0-2' || 0}}k</span>
-              <span class="infoDataUnit"> cal</span>
-            </div>
-            <div *ngIf="totalCalories < 1000">
-              <span class="summaryData">{{totalCalories | number:'1.0-1' || 0}}</span>
-              <span class="infoDataUnit"> cal</span>
-            </div>
-          </div>
-          <p class="summaryDescription">{{'universal_activityData_totalCalorie' | translate}}</p>
-        </div>
-        <div class="sepLine"></div>
-        <div class="summaryDataArea">
-          <div *ngIf="(totalCalories / categoryActivityLength) >= 1000">
-            <span class="summaryData">{{(totalCalories / categoryActivityLength) / 1000 | number:'1.0-2' || 0}}k</span>
-            <span class="infoDataUnit"> cal</span>
-          </div>
-          <div *ngIf="(totalCalories / categoryActivityLength) < 1000">
-            <span class="summaryData">{{(totalCalories / categoryActivityLength) | number:'1.0-1' || 0}}</span>
-            <span class="infoDataUnit"> cal</span>
-          </div>
-          <p class="summaryDescription">
-            {{'universal_adjective_avg' | translate}} {{'universal_activityData_totalCalorie' | translate}}
-          </p>
-        </div>
-        <div class="sepLine" *ngIf="reportCategory !== '99' && reportCategory !== '3' && reportCategory !== '5'"></div>
-        <div class="summaryDataArea" *ngIf="reportCategory !== '99' && reportCategory !== '3' && reportCategory !== '5'">
-          <div *ngIf="totalDistance >= 1000">
-            <span class="summaryData">{{totalDistance / 1000 | number:'1.0-1' || 0}}</span>
-            <span class="infoDataUnit"> km</span>
-          </div>
-          <div *ngIf="totalDistance < 1000">
-            <span class="summaryData">{{totalDistance | number:'1.0-1' || 0}}</span>
-            <span class="infoDataUnit"> m</span>
-          </div>
-          <p class="summaryDescription">{{'universal_activityData_totalDistance' | translate}}</p>
-        </div>
-        <div class="sepLine" *ngIf="reportCategory === '3'"></div>
-        <div class="summaryDataArea" *ngIf="reportCategory === '3'">
-          <div *ngIf="totalWeight >= 1000">
-            <span class="summaryData" >{{totalWeight / 1000 | number:'1.0-1' || 0}}</span>
-            <span class="infoDataUnit"> tn</span>
-          </div>
-          <div *ngIf="totalWeight < 1000">
-            <span class="summaryData" >{{totalWeight | number:'1.0-1' || 0}}</span>
-            <span class="infoDataUnit"> kg</span>
-          </div>
-          <p class="summaryDescription">{{'universal_activityData_totalWeight' | translate}}</p>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="flexCol" *ngIf="reportCategory === '99'">
-    <div class="activity-title flexRow" style="justify-content: space-between;">
-      <span class="ala-dashboard-title">{{'universal_activityData_activityAnalysis' | translate}}</span>
-    </div>
-    <div class="areaDescription">
-      {{'universal_activityData_activityAnalysisReportDescription' | translate}}
-    </div>
-    <div class="flexRow media-769-col">
-      <div class="flexCol ringChart">
+    <div [class.fitWindow]="!isPreviewMode">
+      <div class="flexRow reportHeader" [class.media-1000-col]="!isPreviewMode">
         <div class="flexRow">
-          <div class="flexCol ringChartSection">
-            <span style="font-weight: bold;">{{'universal_activityData_amountOfQuantity' | translate}}</span>
-            <app-ring-chart [data]="perTypeLength" [selectType]="selectType" *ngIf="!isLoading && !isRxjsLoading"></app-ring-chart>
+          <div class="activity-icon" *ngIf="reportCategory === 99">
+            <i class="icon-svg_web-icon_p2_038-complex"></i>
           </div>
-          <div class="flexCol ringChartSection">
-            <span style="font-weight: bold;">{{'universal_activityData_proportionOfTime' | translate}}</span>
-            <app-ring-chart [data]="perTypeTime" [selectType]="selectType" *ngIf="!isLoading && !isRxjsLoading"></app-ring-chart>
+          <div class="activity-icon" *ngIf="reportCategory === 1">
+            <i class="icon-svg_web-icon_p1_083-run"></i>
           </div>
-        </div>
-        <div class="flexRow" style="flex-wrap: wrap; justify-content: space-around;">
-          <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[0] !== 0" (click)="assignCategory('1')">
-            <div class="flexRow">
-              <span
-                class="dot"
-                [style.color]="selectType === '1' || selectType === '99' ? '#ea5757' : '#9e9e9e'"
-              >●</span>
-              <span class="perTypeTitle">
-                {{'universal_activityData_run' | translate}} {{perTypeLength[0]}} {{'universal_activityData_numberOf' | translate}}
-              </span>
-            </div>
-            <span class="perTypeAvgTime">{{'universal_adjective_avg' | translate}} {{perTypeTime[0] | sportTime}}</span>
+          <div class="activity-icon" *ngIf="reportCategory === 2">
+            <i class="icon-svg_web-icon_p1_084-cycle"></i>
           </div>
-          <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[1] !== 0" (click)="assignCategory('2')">
-            <div class="flexRow">
-              <span
-                class="dot"
-                [style.color]="selectType === '2' || selectType === '99' ? '#ff9a22' : '#9e9e9e'"
-              >●</span>
-              <span class="perTypeTitle">
-                {{'universal_activityData_cycle' | translate}} {{perTypeLength[1]}} {{'universal_activityData_numberOf' | translate}}
-              </span>
-            </div>
-            <span class="perTypeAvgTime">{{'universal_adjective_avg' | translate}} {{perTypeTime[1] | sportTime}}</span>
+          <div class="activity-icon" *ngIf="reportCategory === 3">
+            <i class="icon-svg_web-icon_p1_086-weight_training"></i>
           </div>
-          <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[2] !== 0" (click)="assignCategory('3')">
-            <div class="flexRow">
-              <span
-                class="dot"
-                [style.color]="selectType === '3' || selectType === '99' ? '#f9cc3d' : '#9e9e9e'"
-              >●</span>
-              <span class="perTypeTitle">
-                {{'universal_activityData_weightTraining' | translate}} {{perTypeLength[2]}} {{'universal_activityData_numberOf' | translate}}
-              </span>
-            </div>
-            <span class="perTypeAvgTime">{{'universal_adjective_avg' | translate}} {{perTypeTime[2] | sportTime}}</span>
+          <div class="activity-icon" *ngIf="reportCategory === 4">
+            <i class="icon-svg_web-icon_p1_085-swim"></i>
           </div>
-          <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[3] !== 0" (click)="assignCategory('4')">
-            <div class="flexRow">
-              <span
-                class="dot"
-                [style.color]="selectType === '4' || selectType === '99' ? '#cfef4b' : '#9e9e9e'"
-              >●</span>
-              <span class="perTypeTitle">
-                {{'universal_activityData_swin' | translate}} {{perTypeLength[3]}} {{'universal_activityData_numberOf' | translate}}
-              </span>
-            </div>
-            <span class="perTypeAvgTime">{{'universal_adjective_avg' | translate}} {{perTypeTime[3] | sportTime}}</span>
+          <div class="activity-icon" *ngIf="reportCategory === 5">
+            <i class="icon-svg_web-icon_p1_087-aerobic"></i>
           </div>
-          <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[4] !== 0" (click)="assignCategory('5')">
-            <div class="flexRow">
-              <span
-                class="dot"
-                [style.color]="selectType === '5' || selectType === '99' ? '#75f25f' : '#9e9e9e'"
-              >●</span>
-              <span class="perTypeTitle">
-                {{'universal_activityData_aerobic' | translate}} {{perTypeLength[4]}} {{'universal_activityData_numberOf' | translate}}
-              </span>
-            </div>
-            <span class="perTypeAvgTime">{{'universal_adjective_avg' | translate}} {{perTypeTime[4] | sportTime}}</span>
+          <div class="activity-icon" *ngIf="reportCategory === 6">
+            <i class="icon-svg_web-icon_p1_088-row"></i>
           </div>
-          <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[5] !== 0" (click)="assignCategory('6')">
-            <div class="flexRow">
-              <span
-                class="dot"
-                [style.color]="selectType === '6' || selectType === '99' ? '#72e8b0' : '#9e9e9e'"
-              >●</span>
-              <span class="perTypeTitle">
-                {{'universal_sportsName_boating' | translate}} {{perTypeLength[5]}} {{'universal_activityData_numberOf' | translate}}
-              </span>
-            </div>
-            <span class="perTypeAvgTime">{{'universal_adjective_avg' | translate}} {{perTypeTime[5] | sportTime}}</span>
+          <div class="activity-icon" *ngIf="reportCategory === 7">
+            <i class="icon-svg_web-icon_p3_056-ball"></i>
           </div>
-          <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[6] !== 0" (click)="assignCategory('7')">
-            <div class="flexRow">
-              <span
-                class="dot"
-                [style.color]="selectType === '7' || selectType === '99' ? '#6bebf9' : '#9e9e9e'"
-              >●</span>
-              <span class="perTypeTitle">
-                {{'universal_activityData_ballSports' | translate}} {{perTypeLength[6]}} {{'universal_activityData_numberOf' | translate}}
-              </span>
-            </div>
-            <span class="perTypeAvgTime">{{'universal_adjective_avg' | translate}} {{perTypeTime[6] | sportTime}}</span>
+          <div class="flexCol" style="margin-left: 20px;">
+            <span class="reportDateTime">
+              {{'universal_group_buildFromTime' | translate: {'date': reportEndDate, 'range': period} }}
+            </span>
+            <span *ngIf="reportCategory === 99" class="reportTitle">
+              {{'universal_activityData_allActivity' | translate}} {{'universal_activityData_sportReport' | translate}}
+            </span>
+            <span *ngIf="reportCategory === 1" class="reportTitle">
+              {{'universal_activityData_run' | translate}} {{'universal_activityData_sportReport' | translate}}
+            </span>
+            <span *ngIf="reportCategory === 2" class="reportTitle">
+              {{'universal_activityData_cycle' | translate}} {{'universal_activityData_sportReport' | translate}}
+            </span>
+            <span *ngIf="reportCategory === 3" class="reportTitle">
+              {{'universal_activityData_weightTraining' | translate}} {{'universal_activityData_sportReport' | translate}}
+            </span>
+            <span *ngIf="reportCategory === 4" class="reportTitle">
+              {{'universal_activityData_swin' | translate}} {{'universal_activityData_sportReport' | translate}}
+            </span>
+            <span *ngIf="reportCategory === 5" class="reportTitle">
+              {{'universal_activityData_aerobic' | translate}} {{'universal_activityData_sportReport' | translate}}
+            </span>
+            <span *ngIf="reportCategory === 6" class="reportTitle">
+              {{'universal_sportsName_boating' | translate}} {{'universal_activityData_sportReport' | translate}}
+            </span>
+            <span *ngIf="reportCategory === 7" class="reportTitle">
+              {{'universal_activityData_ballSports' | translate}} {{'universal_activityData_sportReport' | translate}}
+            </span>
           </div>
         </div>
-      </div>
-      <div class="flexCol distributionChartWidth">
-        <span style="font-weight: bold; margin-bottom: 15px;">
-          {{'universal_activityData_activityEffectivenessMap' | translate}}
-          <span *ngIf="dataDateRange === 'day'">({{'universal_time_day' | translate}})</span>
-          <span *ngIf="dataDateRange === 'week'">({{'universal_time_week' | translate}})</span>
-        </span>
-        <app-distribution-chart
-          [typeList]="typeList"
-          [perAvgHR]="perAvgHR"
-          [perActivityTime]="perActivityTime"
-          [selectType]="selectType"
-          [HRRange]="[60, hrZoneRange['z5']]"
-          *ngIf="!isLoading && !isRxjsLoading"
-          class="distributionChart"
-        >
-        </app-distribution-chart>
+        <div class="flexRow authorInfo">
+          <span class="reportTitle" style="margin: 10px 10px 0px 0px;">{{fileInfo?.nickname}}</span>
+          <div style="margin-right: 10px;">
+            <img style="width: 55px; border-radius: 50%;" src="{{fileInfo?.avatarUrl}}">
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="flexCol" *ngIf="reportCategory !== '3'">
-    <span class="ala-dashboard-title activity-title" style="margin-bottom: 5px;">{{'universal_activityData_hrZone' | translate}}</span>
-    <div class="flexRow media-769-col">
-      <div class="flexCol" id="HRZoneChart">
+    <div class="flexCol">
+      <div class="activity-title flexRow" style="justify-content: space-between;">
+        <span class="ala-dashboard-title">{{'universal_activityData_summary' | translate}}</span>
+        <span class="reportDateTime" style="text-align: end;">
+          {{'universal_activityData_creatTime' | translate}} {{reportCreatedTime}}
+        </span>
+      </div>
+      <div>
+        <div class="summaryArea">
+          <div class="summaryDataArea">
+            <span class="summaryData">{{categoryActivityLength || 0}}</span>
+            <p class="summaryDescription">{{'universal_activityData_totalActivity' | translate}}</p>
+          </div>
+          <div class="sepLine"></div>
+          <div class="summaryDataArea">
+            <span class="summaryData">{{totalTime || 0}}</span>
+            <p class="summaryDescription">{{'universal_activityData_totalTime' | translate}}</p>
+          </div>
+          <div class="sepLine"></div>
+          <div class="summaryDataArea">
+            <span class="summaryData">{{avgTime || 0}}</span>
+            <p class="summaryDescription">
+              {{'universal_adjective_avg' | translate}} {{'universal_activityData_timing' | translate}}
+            </p>
+          </div>
+          <div class="sepLine"></div>
+          <div class="summaryDataArea">
+            <div>
+              <div *ngIf="totalCalories >= 1000">
+                <span class="summaryData">{{totalCalories / 1000 | number:'1.0-2' || 0}}k</span>
+                <span class="infoDataUnit"> cal</span>
+              </div>
+              <div *ngIf="totalCalories < 1000">
+                <span class="summaryData">{{totalCalories | number:'1.0-1' || 0}}</span>
+                <span class="infoDataUnit"> cal</span>
+              </div>
+            </div>
+            <p class="summaryDescription">{{'universal_activityData_totalCalorie' | translate}}</p>
+          </div>
+          <div class="sepLine"></div>
+          <div class="summaryDataArea">
+            <div *ngIf="(totalCalories / categoryActivityLength) >= 1000">
+              <span class="summaryData">{{(totalCalories / categoryActivityLength) / 1000 | number:'1.0-2' || 0}}k</span>
+              <span class="infoDataUnit"> cal</span>
+            </div>
+            <div *ngIf="(totalCalories / categoryActivityLength) < 1000">
+              <span class="summaryData">{{(totalCalories / categoryActivityLength) | number:'1.0-1' || 0}}</span>
+              <span class="infoDataUnit"> cal</span>
+            </div>
+            <p class="summaryDescription">
+              {{'universal_adjective_avg' | translate}} {{'universal_activityData_totalCalorie' | translate}}
+            </p>
+          </div>
+          <div class="sepLine" *ngIf="reportCategory !== 99 && reportCategory !== 3 && reportCategory !== 5"></div>
+          <div class="summaryDataArea" *ngIf="reportCategory !== 99 && reportCategory !== 3 && reportCategory !== 5">
+            <div *ngIf="totalDistance >= 1000">
+              <span class="summaryData">{{totalDistance / 1000 | number:'1.0-1' || 0}}</span>
+              <span class="infoDataUnit"> km</span>
+            </div>
+            <div *ngIf="totalDistance < 1000">
+              <span class="summaryData">{{totalDistance | number:'1.0-1' || 0}}</span>
+              <span class="infoDataUnit"> m</span>
+            </div>
+            <p class="summaryDescription">{{'universal_activityData_totalDistance' | translate}}</p>
+          </div>
+          <div class="sepLine" *ngIf="reportCategory === 3"></div>
+          <div class="summaryDataArea" *ngIf="reportCategory === 3">
+            <div *ngIf="totalWeight >= 1000">
+              <span class="summaryData" >{{totalWeight / 1000 | number:'1.0-1' || 0}}</span>
+              <span class="infoDataUnit"> tn</span>
+            </div>
+            <div *ngIf="totalWeight < 1000">
+              <span class="summaryData" >{{totalWeight | number:'1.0-1' || 0}}</span>
+              <span class="infoDataUnit"> kg</span>
+            </div>
+            <p class="summaryDescription">{{'universal_activityData_totalWeight' | translate}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flexCol" *ngIf="reportCategory === 99">
+      <div class="activity-title flexRow" style="justify-content: space-between;">
+        <span class="ala-dashboard-title">{{'universal_activityData_activityAnalysis' | translate}}</span>
+      </div>
+      <div class="areaDescription">
+        {{'universal_activityData_activityAnalysisReportDescription' | translate}}
+      </div>
+      <div class="flexRow media-769-col">
+        <div class="flexCol ringChart">
+          <div class="flexRow">
+            <div class="flexCol ringChartSection">
+              <span style="font-weight: bold;">{{'universal_activityData_amountOfQuantity' | translate}}</span>
+              <app-ring-chart [data]="perTypeLength" [selectType]="selectType" *ngIf="!isLoading && !isRxjsLoading"></app-ring-chart>
+            </div>
+            <div class="flexCol ringChartSection">
+              <span style="font-weight: bold;">{{'universal_activityData_proportionOfTime' | translate}}</span>
+              <app-ring-chart [data]="perTypeTime" [selectType]="selectType" *ngIf="!isLoading && !isRxjsLoading"></app-ring-chart>
+            </div>
+          </div>
+          <div class="flexRow" style="flex-wrap: wrap; justify-content: space-around;">
+            <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[0] !== 0" (click)="assignCategory('1')">
+              <div class="flexRow">
+                <span
+                  class="dot"
+                  [style.color]="selectType === '1' || selectType === '99' ? '#ea5757' : '#9e9e9e'"
+                >●</span>
+                <span class="perTypeTitle">
+                  {{'universal_activityData_run' | translate}} {{perTypeLength[0]}} {{'universal_activityData_numberOf' | translate}}
+                </span>
+              </div>
+              <span class="perTypeAvgTime">{{'universal_adjective_avg' | translate}} {{perTypeTime[0] | sportTime}}</span>
+            </div>
+            <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[1] !== 0" (click)="assignCategory('2')">
+              <div class="flexRow">
+                <span
+                  class="dot"
+                  [style.color]="selectType === '2' || selectType === '99' ? '#ff9a22' : '#9e9e9e'"
+                >●</span>
+                <span class="perTypeTitle">
+                  {{'universal_activityData_cycle' | translate}} {{perTypeLength[1]}} {{'universal_activityData_numberOf' | translate}}
+                </span>
+              </div>
+              <span class="perTypeAvgTime">{{'universal_adjective_avg' | translate}} {{perTypeTime[1] | sportTime}}</span>
+            </div>
+            <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[2] !== 0" (click)="assignCategory('3')">
+              <div class="flexRow">
+                <span
+                  class="dot"
+                  [style.color]="selectType === '3' || selectType === '99' ? '#f9cc3d' : '#9e9e9e'"
+                >●</span>
+                <span class="perTypeTitle">
+                  {{'universal_activityData_weightTraining' | translate}} {{perTypeLength[2]}} {{'universal_activityData_numberOf' | translate}}
+                </span>
+              </div>
+              <span class="perTypeAvgTime">{{'universal_adjective_avg' | translate}} {{perTypeTime[2] | sportTime}}</span>
+            </div>
+            <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[3] !== 0" (click)="assignCategory('4')">
+              <div class="flexRow">
+                <span
+                  class="dot"
+                  [style.color]="selectType === '4' || selectType === '99' ? '#cfef4b' : '#9e9e9e'"
+                >●</span>
+                <span class="perTypeTitle">
+                  {{'universal_activityData_swin' | translate}} {{perTypeLength[3]}} {{'universal_activityData_numberOf' | translate}}
+                </span>
+              </div>
+              <span class="perTypeAvgTime">{{'universal_adjective_avg' | translate}} {{perTypeTime[3] | sportTime}}</span>
+            </div>
+            <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[4] !== 0" (click)="assignCategory('5')">
+              <div class="flexRow">
+                <span
+                  class="dot"
+                  [style.color]="selectType === '5' || selectType === '99' ? '#75f25f' : '#9e9e9e'"
+                >●</span>
+                <span class="perTypeTitle">
+                  {{'universal_activityData_aerobic' | translate}} {{perTypeLength[4]}} {{'universal_activityData_numberOf' | translate}}
+                </span>
+              </div>
+              <span class="perTypeAvgTime">{{'universal_adjective_avg' | translate}} {{perTypeTime[4] | sportTime}}</span>
+            </div>
+            <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[5] !== 0" (click)="assignCategory('6')">
+              <div class="flexRow">
+                <span
+                  class="dot"
+                  [style.color]="selectType === '6' || selectType === '99' ? '#72e8b0' : '#9e9e9e'"
+                >●</span>
+                <span class="perTypeTitle">
+                  {{'universal_sportsName_boating' | translate}} {{perTypeLength[5]}} {{'universal_activityData_numberOf' | translate}}
+                </span>
+              </div>
+              <span class="perTypeAvgTime">{{'universal_adjective_avg' | translate}} {{perTypeTime[5] | sportTime}}</span>
+            </div>
+            <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[6] !== 0" (click)="assignCategory('7')">
+              <div class="flexRow">
+                <span
+                  class="dot"
+                  [style.color]="selectType === '7' || selectType === '99' ? '#6bebf9' : '#9e9e9e'"
+                >●</span>
+                <span class="perTypeTitle">
+                  {{'universal_activityData_ballSports' | translate}} {{perTypeLength[6]}} {{'universal_activityData_numberOf' | translate}}
+                </span>
+              </div>
+              <span class="perTypeAvgTime">{{'universal_adjective_avg' | translate}} {{perTypeTime[6] | sportTime}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="flexCol distributionChartWidth">
+          <span style="font-weight: bold; margin-bottom: 15px;">
+            {{'universal_activityData_activityEffectivenessMap' | translate}}
+            <span *ngIf="dataDateRange === 'day'">({{'universal_time_day' | translate}})</span>
+            <span *ngIf="dataDateRange === 'week'">({{'universal_time_week' | translate}})</span>
+          </span>
+          <app-distribution-chart
+            [typeList]="typeList"
+            [perAvgHR]="perAvgHR"
+            [perActivityTime]="perActivityTime"
+            [selectType]="selectType"
+            [HRRange]="[60, hrZoneRange['z5']]"
+            *ngIf="!isLoading && !isRxjsLoading"
+            class="distributionChart"
+          >
+          </app-distribution-chart>
+        </div>
+      </div>
+    </div>
+    <div class="flexCol" *ngIf="reportCategory !== 3">
+      <span class="ala-dashboard-title activity-title" style="margin-bottom: 5px;">{{'universal_activityData_hrZone' | translate}}</span>
+      <div class="flexRow media-769-col">
+        <div class="flexCol" id="HRZoneChart">
+          <p class="areaDescription">
+            {{'universal_activityData_hrStatisticsDuringThePeriod' | translate: {'number': categoryActivityLength } }}
+          </p>
+          <div>
+            <div>
+              <p class="chartTitle">{{'universal_group_hrZoneLandingPoint' | translate}}</p>
+            </div>
+            <div>
+              <app-hrzone-chart
+                [data]="typeHrZone"
+                [type]="'mixHrZone'"
+                *ngIf="!isLoading && !isRxjsLoading"
+              ></app-hrzone-chart>
+            </div>
+          </div>
+        </div>
+        <div id="HRInfo">
+          <app-hrzone-info [hrZoneRange]="hrZoneRange" *ngIf="!isLoading && !isRxjsLoading"></app-hrzone-info>
+        </div>
+      </div>
+    </div>
+    <div class="flexCol" *ngIf="reportCategory !== 3">
+      <span class="ala-dashboard-title activity-title">{{'universal_activityData_hrZoneTrend' | translate}}</span>
+      <div>
         <p class="areaDescription">
-          {{'universal_activityData_hrStatisticsDuringThePeriod' | translate: {'number': categoryActivityLength } }}
+          {{'universal_activityData_hrZoneTrendReportDescription' | translate}}
         </p>
         <div>
-          <div>
-            <p class="chartTitle">{{'universal_group_hrZoneLandingPoint' | translate}}</p>
-          </div>
-          <div>
-            <app-hrzone-chart
-              [data]="typeHrZone"
-              [type]="'mixHrZone'"
-              *ngIf="!isLoading && !isRxjsLoading"
-            ></app-hrzone-chart>
-          </div>
+          <app-stack-column-chart
+            [perHrZoneData]="perHrZoneData"
+            [dateRange]="dataDateRange"
+            *ngIf="!isLoading && !isRxjsLoading"
+          >
+          </app-stack-column-chart>
         </div>
       </div>
-      <div id="HRInfo">
-        <app-hrzone-info [hrZoneRange]="hrZoneRange" *ngIf="!isLoading && !isRxjsLoading"></app-hrzone-info>
-      </div>
     </div>
-  </div>
-  <div class="flexCol" *ngIf="reportCategory !== '3'">
-    <span class="ala-dashboard-title activity-title">{{'universal_activityData_hrZoneTrend' | translate}}</span>
-    <div>
-      <p class="areaDescription">
-        {{'universal_activityData_hrZoneTrendReportDescription' | translate}}
-      </p>
+    <div class="flexCol" *ngIf="reportCategory === 3">
+      <div class="activity-title muscleMatFormParent">
+        <span class="ala-dashboard-title">
+          {{'universal_activityData_weightTrainingEffectiveness' | translate}}
+        </span>
+        <mat-form-field class="selectList">
+          <p class="selectListPrefix">{{'universal_activityData_weightTrainingExtent' | translate}}：</p>
+          <mat-select [(value)]="proficiency"
+            (selectionChange)="handleproficiency($event)"
+          >
+            <mat-option value="asept">{{'universal_activityData_highRanker' | translate}}</mat-option>
+            <mat-option value="metacarpus">{{'universal_activityData_advanced' | translate}}</mat-option>
+            <mat-option value="Novice">{{'universal_activityData_beginner' | translate}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
       <div>
-        <app-stack-column-chart
-          [perHrZoneData]="perHrZoneData"
-          [dateRange]="dataDateRange"
-          *ngIf="!isLoading && !isRxjsLoading"
-        >
-        </app-stack-column-chart>
+        <app-muscle-map-chart
+          [description]="description"
+          [data]="trainingPart"
+          [proficiencyCoefficient]="proficiencyCoefficient"
+          [level]="level"
+          [page]="'report'"
+          [userWeight]="userWeight"
+          [timeStamp]="chartTimeStamp"
+          (clickData)="handleClickMuscleList($event)"
+        ></app-muscle-map-chart>
       </div>
     </div>
-  </div>
-  <div class="flexCol" *ngIf="reportCategory === '3'">
-    <div class="activity-title muscleMatFormParent">
-      <span class="ala-dashboard-title">
-        {{'universal_activityData_weightTrainingEffectiveness' | translate}}
-      </span>
-      <mat-form-field class="selectList">
-        <p class="selectListPrefix">{{'universal_activityData_weightTrainingExtent' | translate}}：</p>
-        <mat-select [(value)]="proficiency"
-          (selectionChange)="handleproficiency($event)"
-        >
-          <mat-option value="asept">{{'universal_activityData_highRanker' | translate}}</mat-option>
-          <mat-option value="metacarpus">{{'universal_activityData_advanced' | translate}}</mat-option>
-          <mat-option value="Novice">{{'universal_activityData_beginner' | translate}}</mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
-    <div>
-      <app-muscle-map-chart
-        [description]="description"
-        [data]="trainingPart"
-        [proficiencyCoefficient]="proficiencyCoefficient"
-        [level]="level"
-        [page]="'report'"
-        [userWeight]="userWeight"
-        [timeStamp]="chartTimeStamp"
-        (clickData)="handleClickMuscleList($event)"
-      ></app-muscle-map-chart>
-    </div>
-  </div>
-  <div class="flexCol" *ngIf="reportCategory === '3'">
-    <span class="ala-dashboard-title activity-title">{{'universal_activityData_trainingTrend' | translate}}</span>
-    <div>
-      <p class="areaDescription">
-        {{'universal_activityData_trainingTrendDescription' | translate}}
-      </p>
-      <div *ngFor="let list of muscleTrendList; let idx = index;">
-        <div class="flexCol" *ngIf="list.isFocus">
-          <div class="flexRow muscleChartList">
-            <div class="flexCol">
-              <div class="flexRow" style="align-items: center;">
-                <app-muscle-svg-icon
-                  style="width: 80px;"
-                  [muscleGroupId]="list.id"
-                ></app-muscle-svg-icon>
-                <i
-                  class="icon-svg_web-icon_p1_006-unfold foldIcon"
-                  *ngIf="list.isFold"
-                  (click)="handleChartFold(idx)"
-                ></i>
-                <i
-                  class="icon-svg_web-icon_p1_007-fold foldIcon"
-                  *ngIf="!list.isFold"
-                  (click)="handleChartFold(idx)"
-                ></i>
-              </div>
-              <span>{{ list.name }}</span>
-            </div>
-            <app-discolor-column-chart
-              class="muscleTrendChart"
-              [data]="list.muscleGroupData"
-              [dateRange]="dataDateRange"
-              [sportType]="reportCategory"
-              [proficiencyCoefficient]="proficiencyCoefficient"
-              [userWeight]="userWeight"
-              [chartName]="'Muscle'"
-            ></app-discolor-column-chart>
-          </div>
-          <div  *ngIf="!list.isFold">
-            <div *ngFor="let part of list.trainList;">
-              <div class="flexRow muscleChartList">
-                <div
-                  class="flexCol fold__content"
-                  style="align-items: flex-start; margin-left: 20px;"
-                >
+    <div class="flexCol" *ngIf="reportCategory === 3">
+      <span class="ala-dashboard-title activity-title">{{'universal_activityData_trainingTrend' | translate}}</span>
+      <div>
+        <p class="areaDescription">
+          {{'universal_activityData_trainingTrendDescription' | translate}}
+        </p>
+        <div *ngFor="let list of muscleTrendList; let idx = index;">
+          <div class="flexCol" *ngIf="list.isFocus">
+            <div class="flexRow muscleChartList">
+              <div class="flexCol">
+                <div class="flexRow" style="align-items: center;">
                   <app-muscle-svg-icon
                     style="width: 80px;"
-                    [muscleCode]="[part[0]]"
+                    [muscleGroupId]="list.id"
                   ></app-muscle-svg-icon>
-                  <span>{{ part[0] | muscleName }}</span>
+                  <i
+                    class="icon-svg_web-icon_p1_006-unfold foldIcon"
+                    *ngIf="list.isFold"
+                    (click)="handleChartFold(idx)"
+                  ></i>
+                  <i
+                    class="icon-svg_web-icon_p1_007-fold foldIcon"
+                    *ngIf="!list.isFold"
+                    (click)="handleChartFold(idx)"
+                  ></i>
                 </div>
-                <app-discolor-column-chart
-                  class="muscleContentTrendChart"
-                  [data]="part[1]"
-                  [dateRange]="dataDateRange"
-                  [sportType]="reportCategory"
-                  [proficiencyCoefficient]="proficiencyCoefficient"
-                  [userWeight]="userWeight"
-                  [chartName]="'Muscle'"
-                ></app-discolor-column-chart>
+                <span>{{ list.name }}</span>
+              </div>
+              <app-discolor-column-chart
+                class="muscleTrendChart"
+                [data]="list.muscleGroupData"
+                [dateRange]="dataDateRange"
+                [sportType]="reportCategory"
+                [proficiencyCoefficient]="proficiencyCoefficient"
+                [userWeight]="userWeight"
+                [chartName]="'Muscle'"
+              ></app-discolor-column-chart>
+            </div>
+            <div  *ngIf="!list.isFold">
+              <div *ngFor="let part of list.trainList;">
+                <div class="flexRow muscleChartList">
+                  <div
+                    class="flexCol fold__content"
+                    style="align-items: flex-start; margin-left: 20px;"
+                  >
+                    <app-muscle-svg-icon
+                      style="width: 80px;"
+                      [muscleCode]="[part[0]]"
+                    ></app-muscle-svg-icon>
+                    <span>{{ part[0] | muscleName }}</span>
+                  </div>
+                  <app-discolor-column-chart
+                    class="muscleContentTrendChart"
+                    [data]="part[1]"
+                    [dateRange]="dataDateRange"
+                    [sportType]="reportCategory"
+                    [proficiencyCoefficient]="proficiencyCoefficient"
+                    [userWeight]="userWeight"
+                    [chartName]="'Muscle'"
+                  ></app-discolor-column-chart>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-  <div class="flexCol">
-      <p class="ala-dashboard-title activity-title">
-        <span *ngIf="dataDateRange === 'day'">{{'universal_time_day' | translate}}</span>
-        <span *ngIf="dataDateRange === 'week'">{{'universal_time_week' | translate}}</span>
-        {{'universal_activityData_trend' | translate}}
-      </p>
-      <div class="flexCol" *ngIf="reportCategory === '2'">
-        <div class="flexRow" style="align-items: center;">
-          <span class="reportChartTitle">{{'universal_activityData_speed' | translate}}</span>
-          <div class="separateLine"></div>
-        </div>
-        <div class="flexRow dataContent" [class.media-1000-dataContent]="!isPreviewMode">
-          <div class="flexRow dataNumber" [class.media-1000-dataNumber]="!isPreviewMode">
-            <div class="flexCol dataMargin" style="width: 50%;">
-              <span class="dataFont">{{bestSpeed || 0 | number:'1.0-1'}}</span>
-              <span class="dataAnnotation">{{'universal_activityData_maxSpeedPerHour' | translate}}</span>
+    <div class="flexCol">
+        <p class="ala-dashboard-title activity-title">
+          <span *ngIf="dataDateRange === 'day'">{{'universal_time_day' | translate}}</span>
+          <span *ngIf="dataDateRange === 'week'">{{'universal_time_week' | translate}}</span>
+          {{'universal_activityData_trend' | translate}}
+        </p>
+        <div class="flexCol" *ngIf="reportCategory === 2">
+          <div class="flexRow" style="align-items: center;">
+            <span class="reportChartTitle">{{'universal_activityData_speed' | translate}}</span>
+            <div class="separateLine"></div>
+          </div>
+          <div class="flexRow dataContent" [class.media-1000-dataContent]="!isPreviewMode">
+            <div class="flexRow dataNumber" [class.media-1000-dataNumber]="!isPreviewMode">
+              <div class="flexCol dataMargin" style="width: 50%;">
+                <span class="dataFont">{{bestSpeed || 0 | number:'1.0-1'}}</span>
+                <span class="dataAnnotation">{{'universal_activityData_maxSpeedPerHour' | translate}}</span>
+              </div>
+              <div class="flexCol dataMargin" style="width: 50%;">
+                <span class="dataFont">{{avgSpeed || 0 | number:'1.0-1'}}</span>
+                <span class="dataAnnotation">{{'universal_activityData_avgSpeedPerHour' | translate}}</span>
+              </div>
             </div>
-            <div class="flexCol dataMargin" style="width: 50%;">
-              <span class="dataFont">{{avgSpeed || 0 | number:'1.0-1'}}</span>
-              <span class="dataAnnotation">{{'universal_activityData_avgSpeedPerHour' | translate}}</span>
+            <div class="dataChart" [class.media-1000-dataChart]="!isPreviewMode">
+              <app-discolor-column-chart
+                [data]="perSpeedData"
+                [dateRange]="dataDateRange"
+                [sportType]="reportCategory"
+                [chartName]="'Speed'"
+                *ngIf="!isLoading && !isRxjsLoading"
+              >
+              </app-discolor-column-chart>
             </div>
           </div>
-          <div class="dataChart" [class.media-1000-dataChart]="!isPreviewMode">
-            <app-discolor-column-chart
-              [data]="perSpeedData"
-              [dateRange]="dataDateRange"
-              [sportType]="reportCategory"
-              [chartName]="'Speed'"
-              *ngIf="!isLoading && !isRxjsLoading"
-            >
-            </app-discolor-column-chart>
+        </div>
+        <div class="flexCol" *ngIf="reportCategory === 1 || reportCategory === 4 || reportCategory === 6">
+          <div class="flexRow" style="align-items: center;">
+            <span class="reportChartTitle" *ngIf="reportCategory === 1">{{'universal_activityData_kilometerPace' | translate}}</span>
+            <span class="reportChartTitle" *ngIf="reportCategory === 4">{{'universal_activityData_100mPace' | translate}}</span>
+            <span class="reportChartTitle" *ngIf="reportCategory === 6">{{'universal_activityData_500mPace' | translate}}</span>
+            <div class="separateLine"></div>
+          </div>
+          <div class="flexRow dataContent" [class.media-1000-dataContent]="!isPreviewMode">
+            <div class="flexRow dataNumber" [class.media-1000-dataNumber]="!isPreviewMode">
+              <div class="flexCol dataMargin" style="width: 50%;">
+                <span class="dataFont">{{bestPace || 0}}</span>
+                <span class="dataAnnotation">{{'universal_activityData_liveBestPace' | translate}}</span>
+              </div>
+              <div class="flexCol dataMargin" style="width: 50%;">
+                <span class="dataFont">{{avgPace || 0}}</span>
+                <span class="dataAnnotation">{{'universal_activityData_avgPace' | translate}}</span>
+              </div>
+            </div>
+            <div class="dataChart" [class.media-1000-dataChart]="!isPreviewMode">
+              <app-discolor-column-chart
+                [data]="perPaceData"
+                [dateRange]="dataDateRange"
+                [sportType]="reportCategory"
+                [chartName]="'Pace'"
+                *ngIf="!isLoading && !isRxjsLoading"
+              >
+              </app-discolor-column-chart>
+            </div>
           </div>
         </div>
+        <div class="flexCol" *ngIf="reportCategory === 2 || reportCategory === 6">
+          <div class="flexRow" style="align-items: center;">
+            <span class="reportChartTitle">{{'universal_activityData_power' | translate}}</span>
+            <div class="separateLine"></div>
+          </div>
+          <div class="flexRow dataContent" [class.media-1000-dataContent]="!isPreviewMode">
+            <div class="flexRow dataNumber" [class.media-1000-dataNumber]="!isPreviewMode">
+              <div class="flexCol dataMargin" style="width: 50%;">
+                <span class="dataFont">{{bestPower || 0 | number:'1.0-1'}}</span>
+                <span class="dataAnnotation">{{'universal_activityData_maxPower' | translate}}</span>
+              </div>
+              <div class="flexCol dataMargin" style="width: 50%;">
+                <span class="dataFont">{{avgPower || 0 | number:'1.0-1'}}</span>
+                <span class="dataAnnotation">{{'universal_activityData_avgPower' | translate}}</span>
+              </div>
+            </div>
+            <div class="dataChart" [class.media-1000-dataChart]="!isPreviewMode">
+              <app-compare-line-chart
+                [data]="perPowerData"
+                [dateRange]="dataDateRange"
+                [sportType]="reportCategory"
+                [chartName]="'Power'"
+                [chartHeight]="110"
+                *ngIf="!isLoading && !isRxjsLoading"
+              >
+              </app-compare-line-chart>
+            </div>
+          </div>
+        </div>
+        <div class="flexCol" *ngIf="reportCategory === 1">
+          <div class="flexRow" style="align-items: center;">
+            <span class="reportChartTitle">{{'universal_activityData_stepCadence' | translate}}</span>
+            <div class="separateLine"></div>
+          </div>
+          <div class="flexRow dataContent" [class.media-1000-dataContent]="!isPreviewMode">
+            <div class="flexRow dataNumber" [class.media-1000-dataNumber]="!isPreviewMode">
+              <div class="flexCol dataMargin" style="width: 50%;">
+                <span class="dataFont">{{bestCadence || 0}}</span>
+                <span class="dataAnnotation">{{'universal_activityData_maxStepCadence' | translate}}</span>
+              </div>
+              <div class="flexCol dataMargin" style="width: 50%;">
+                <span class="dataFont">{{avgCadence || 0 | number:'1.0-1'}}</span>
+                <span class="dataAnnotation">{{'universal_activityData_avgStepCadence' | translate}}</span>
+              </div>
+            </div>
+            <div class="dataChart" [class.media-1000-dataChart]="!isPreviewMode">
+              <app-discolor-column-chart
+                [data]="perCadenceData"
+                [dateRange]="dataDateRange"
+                [sportType]="reportCategory"
+                [chartName]="'Cadence'"
+                *ngIf="!isLoading && !isRxjsLoading"
+              >
+              </app-discolor-column-chart>
+            </div>
+          </div>
+        </div>
+        <div class="flexCol" *ngIf="reportCategory === 2">
+          <div class="flexRow" style="align-items: center;">
+            <span class="reportChartTitle">{{'universal_activityData_CyclingCadence' | translate}}</span>
+            <div class="separateLine"></div>
+          </div>
+          <div class="flexRow dataContent" [class.media-1000-dataContent]="!isPreviewMode">
+            <div class="flexRow dataNumber" [class.media-1000-dataNumber]="!isPreviewMode">
+              <div class="flexCol dataMargin" style="width: 50%;">
+                <span class="dataFont">{{bestCadence || 0}}</span>
+                <span class="dataAnnotation">{{'universal_activityData_maxCyclingCadence' | translate}}</span>
+              </div>
+              <div class="flexCol dataMargin" style="width: 50%;">
+                <span class="dataFont">{{avgCadence || 0 | number:'1.0-1'}}</span>
+                <span class="dataAnnotation">{{'universal_activityData_avgCyclingCadence' | translate}}</span>
+              </div>
+            </div>
+            <div class="dataChart" [class.media-1000-dataChart]="!isPreviewMode">
+              <app-discolor-column-chart
+                [data]="perCadenceData"
+                [dateRange]="dataDateRange"
+                [sportType]="reportCategory"
+                [chartName]="'Cadence'"
+                *ngIf="!isLoading && !isRxjsLoading"
+              >
+              </app-discolor-column-chart>
+            </div>
+          </div>
+        </div>
+        <div class="flexCol" *ngIf="reportCategory === 4">
+          <div class="flexRow" style="align-items: center;">
+            <span class="reportChartTitle">{{'universal_activityData_swimCadence' | translate}}</span>
+            <div class="separateLine"></div>
+          </div>
+          <div class="flexRow dataContent" [class.media-1000-dataContent]="!isPreviewMode">
+            <div class="flexRow dataNumber" [class.media-1000-dataNumber]="!isPreviewMode">
+              <div class="flexCol dataMargin" style="width: 50%;">
+                <span class="dataFont">{{bestCadence || 0}}</span>
+                <span class="dataAnnotation">{{'universal_activityData_maxSwimmingCadence' | translate}}</span>
+              </div>
+              <div class="flexCol dataMargin" style="width: 50%;">
+                <span class="dataFont">{{avgCadence || 0 | number:'1.0-1'}}</span>
+                <span class="dataAnnotation">{{'universal_activityData_avgSwimReps' | translate}}</span>
+              </div>
+            </div>
+            <div class="dataChart" [class.media-1000-dataChart]="!isPreviewMode">
+              <app-discolor-column-chart
+                [data]="perCadenceData"
+                [dateRange]="dataDateRange"
+                [sportType]="reportCategory"
+                [chartName]="'Cadence'"
+                *ngIf="!isLoading && !isRxjsLoading"
+              >
+              </app-discolor-column-chart>
+            </div>
+          </div>
+        </div>
+        <div class="flexCol" *ngIf="reportCategory === 6">
+          <div class="flexRow" style="align-items: center;">
+            <span class="reportChartTitle">{{'universal_activityData_rowCadence' | translate}}</span>
+            <div class="separateLine"></div>
+          </div>
+          <div class="flexRow dataContent" [class.media-1000-dataContent]="!isPreviewMode">
+            <div class="flexRow dataNumber" [class.media-1000-dataNumber]="!isPreviewMode">
+              <div class="flexCol dataMargin" style="width: 50%;">
+                <span class="dataFont">{{bestCadence || 0}}</span>
+                <span class="dataAnnotation">{{'universal_activityData_baetRowReps' | translate}}</span>
+              </div>
+              <div class="flexCol dataMargin" style="width: 50%;">
+                <span class="dataFont">{{avgCadence || 0 | number:'1.0-1'}}</span>
+                <span class="dataAnnotation">{{'universal_activityData_avgRowCadence' | translate}}</span>
+              </div>
+            </div>
+            <div class="dataChart" [class.media-1000-dataChart]="!isPreviewMode">
+              <app-discolor-column-chart
+                [data]="perCadenceData"
+                [dateRange]="dataDateRange"
+                [sportType]="reportCategory"
+                [chartName]="'Cadence'"
+                *ngIf="!isLoading && !isRxjsLoading"
+              >
+              </app-discolor-column-chart>
+            </div>
+          </div>
+        </div>
+        <div class="flexCol" *ngIf="reportCategory !== 99 && reportCategory !== 3">
+          <div class="flexRow" style="align-items: center;">
+            <span class="reportChartTitle">{{'universal_activityData_hr' | translate}}</span>
+            <div class="separateLine"></div>
+          </div>
+          <div class="flexRow dataContent" [class.media-1000-dataContent]="!isPreviewMode">
+            <div class="flexRow dataNumber" [class.media-1000-dataNumber]="!isPreviewMode">
+              <div class="flexCol dataMargin" style="width: 50%;">
+                <span class="dataFont">{{bestHR || 0 | number:'1.0-1'}}</span>
+                <span class="dataAnnotation">{{'universal_userProfile_maxHr' | translate}}</span>
+              </div>
+              <div class="flexCol dataMargin" style="width: 50%;">
+                <span class="dataFont">{{avgHR || 0 | number:'1.0-1'}}</span>
+                <span class="dataAnnotation">{{'universal_activityData_avgHr' | translate}}</span>
+              </div>
+            </div>
+            <div class="dataChart" [class.media-1000-dataChart]="!isPreviewMode">
+              <app-compare-line-chart
+                [data]="perHRData"
+                [dateRange]="dataDateRange"
+                [sportType]="reportCategory"
+                [chartName]="'HR'"
+                [hrZoneRange]="hrZoneRange"
+                [chartHeight]="110"
+                *ngIf="!isLoading && !isRxjsLoading"
+              >
+              </app-compare-line-chart>
+            </div>
+          </div>
+        </div>
+        <div class="flexCol" *ngIf="reportCategory === 4">
+          <div class="flexRow" style="align-items: center;">
+            <span class="reportChartTitle">Swolf</span>
+            <div class="separateLine"></div>
+          </div>
+          <div class="flexRow dataContent" [class.media-1000-dataContent]="!isPreviewMode">
+            <div class="flexRow dataNumber" [class.media-1000-dataNumber]="!isPreviewMode">
+              <div class="flexCol dataMargin" style="width: 50%;">
+                <span class="dataFont">{{bestSwolf || 0}}</span>
+                <span class="dataAnnotation">{{'universal_activityData_bestSwolf' | translate}}</span>
+              </div>
+              <div class="flexCol dataMargin" style="width: 50%;">
+                <span class="dataFont">{{avgSwolf || 0 | number:'1.0-1'}}</span>
+                <span class="dataAnnotation">{{'universal_activityData_avgSwolf' | translate}}</span>
+              </div>
+            </div>
+            <div class="dataChart" [class.media-1000-dataChart]="!isPreviewMode">
+              <app-discolor-column-chart
+                [data]="perSwolfData"
+                [dateRange]="dataDateRange"
+                [sportType]="reportCategory"
+                [chartName]="'Swolf'"
+                *ngIf="!isLoading && !isRxjsLoading"
+              >
+              </app-discolor-column-chart>
+            </div>
+          </div>
+        </div>
+        <div class="flexCol">
+          <div class="flexRow" style="align-items: center;">
+            <span class="reportChartTitle">{{'universal_userProfile_calories' | translate}}</span>
+            <div class="separateLine"></div>
+          </div>
+          <div class="flexRow dataContent" [class.media-1000-dataContent]="!isPreviewMode">
+            <div class="flexRow dataNumber" [class.media-1000-dataNumber]="!isPreviewMode">
+              <div class="flexCol dataMargin" style="width: 50%;">
+                <span class="dataFont" *ngIf="bestCalories / 1000 >= 1">{{bestCalories / 1000 || 0 | number:'1.0-1'}}kcal</span>
+                <span class="dataFont" *ngIf="bestCalories / 1000 < 1">{{bestCalories || 0 | number:'1.0-1'}}cal</span>
+                <span class="dataAnnotation">{{'universal_adjective_maxBig' | translate}} {{'universal_userProfile_calories' | translate}}</span>
+              </div>
+              <div class="flexCol dataMargin" style="width: 50%;">
+                <span class="dataFont">{{avgCalories || 0 | number:'1.0-1'}}cal</span>
+                <span class="dataAnnotation">
+                  {{'universal_adjective_avg' | translate}} {{'universal_userProfile_calories' | translate}}
+                </span>
+              </div>
+            </div>
+            <div class="dataChart" [class.media-1000-dataChart]="!isPreviewMode">
+              <app-fillet-column-chart
+                [data]="perCalories"
+                [dateRange]="dataDateRange"
+                [sportType]="reportCategory"
+                [chartName]="'Calories'"
+                *ngIf="!isLoading && !isRxjsLoading"
+              >
+              </app-fillet-column-chart>
+            </div>
+          </div>
+        </div>
+    </div>
+    <ng-container *ngIf="isPreviewMode && !isLoading">
+      <div class="printMark">
+        GPTfit
       </div>
-      <div class="flexCol" *ngIf="reportCategory === '1' || reportCategory === '4' || reportCategory === '6'">
-        <div class="flexRow" style="align-items: center;">
-          <span class="reportChartTitle" *ngIf="reportCategory === '1'">{{'universal_activityData_kilometerPace' | translate}}</span>
-          <span class="reportChartTitle" *ngIf="reportCategory === '4'">{{'universal_activityData_100mPace' | translate}}</span>
-          <span class="reportChartTitle" *ngIf="reportCategory === '6'">{{'universal_activityData_500mPace' | translate}}</span>
-          <div class="separateLine"></div>
-        </div>
-        <div class="flexRow dataContent" [class.media-1000-dataContent]="!isPreviewMode">
-          <div class="flexRow dataNumber" [class.media-1000-dataNumber]="!isPreviewMode">
-            <div class="flexCol dataMargin" style="width: 50%;">
-              <span class="dataFont">{{bestPace || 0}}</span>
-              <span class="dataAnnotation">{{'universal_activityData_liveBestPace' | translate}}</span>
-            </div>
-            <div class="flexCol dataMargin" style="width: 50%;">
-              <span class="dataFont">{{avgPace || 0}}</span>
-              <span class="dataAnnotation">{{'universal_activityData_avgPace' | translate}}</span>
-            </div>
-          </div>
-          <div class="dataChart" [class.media-1000-dataChart]="!isPreviewMode">
-            <app-discolor-column-chart
-              [data]="perPaceData"
-              [dateRange]="dataDateRange"
-              [sportType]="reportCategory"
-              [chartName]="'Pace'"
-              *ngIf="!isLoading && !isRxjsLoading"
-            >
-            </app-discolor-column-chart>
-          </div>
-        </div>
-      </div>
-      <div class="flexCol" *ngIf="reportCategory === '2' || reportCategory === '6'">
-        <div class="flexRow" style="align-items: center;">
-          <span class="reportChartTitle">{{'universal_activityData_power' | translate}}</span>
-          <div class="separateLine"></div>
-        </div>
-        <div class="flexRow dataContent" [class.media-1000-dataContent]="!isPreviewMode">
-          <div class="flexRow dataNumber" [class.media-1000-dataNumber]="!isPreviewMode">
-            <div class="flexCol dataMargin" style="width: 50%;">
-              <span class="dataFont">{{bestPower || 0 | number:'1.0-1'}}</span>
-              <span class="dataAnnotation">{{'universal_activityData_maxPower' | translate}}</span>
-            </div>
-            <div class="flexCol dataMargin" style="width: 50%;">
-              <span class="dataFont">{{avgPower || 0 | number:'1.0-1'}}</span>
-              <span class="dataAnnotation">{{'universal_activityData_avgPower' | translate}}</span>
-            </div>
-          </div>
-          <div class="dataChart" [class.media-1000-dataChart]="!isPreviewMode">
-            <app-compare-line-chart
-              [data]="perPowerData"
-              [dateRange]="dataDateRange"
-              [sportType]="reportCategory"
-              [chartName]="'Power'"
-              [chartHeight]="110"
-              *ngIf="!isLoading && !isRxjsLoading"
-            >
-            </app-compare-line-chart>
-          </div>
-        </div>
-      </div>
-      <div class="flexCol" *ngIf="reportCategory === '1'">
-        <div class="flexRow" style="align-items: center;">
-          <span class="reportChartTitle">{{'universal_activityData_stepCadence' | translate}}</span>
-          <div class="separateLine"></div>
-        </div>
-        <div class="flexRow dataContent" [class.media-1000-dataContent]="!isPreviewMode">
-          <div class="flexRow dataNumber" [class.media-1000-dataNumber]="!isPreviewMode">
-            <div class="flexCol dataMargin" style="width: 50%;">
-              <span class="dataFont">{{bestCadence || 0}}</span>
-              <span class="dataAnnotation">{{'universal_activityData_maxStepCadence' | translate}}</span>
-            </div>
-            <div class="flexCol dataMargin" style="width: 50%;">
-              <span class="dataFont">{{avgCadence || 0 | number:'1.0-1'}}</span>
-              <span class="dataAnnotation">{{'universal_activityData_avgStepCadence' | translate}}</span>
-            </div>
-          </div>
-          <div class="dataChart" [class.media-1000-dataChart]="!isPreviewMode">
-            <app-discolor-column-chart
-              [data]="perCadenceData"
-              [dateRange]="dataDateRange"
-              [sportType]="reportCategory"
-              [chartName]="'Cadence'"
-              *ngIf="!isLoading && !isRxjsLoading"
-            >
-            </app-discolor-column-chart>
-          </div>
-        </div>
-      </div>
-      <div class="flexCol" *ngIf="reportCategory === '2'">
-        <div class="flexRow" style="align-items: center;">
-          <span class="reportChartTitle">{{'universal_activityData_CyclingCadence' | translate}}</span>
-          <div class="separateLine"></div>
-        </div>
-        <div class="flexRow dataContent" [class.media-1000-dataContent]="!isPreviewMode">
-          <div class="flexRow dataNumber" [class.media-1000-dataNumber]="!isPreviewMode">
-            <div class="flexCol dataMargin" style="width: 50%;">
-              <span class="dataFont">{{bestCadence || 0}}</span>
-              <span class="dataAnnotation">{{'universal_activityData_maxCyclingCadence' | translate}}</span>
-            </div>
-            <div class="flexCol dataMargin" style="width: 50%;">
-              <span class="dataFont">{{avgCadence || 0 | number:'1.0-1'}}</span>
-              <span class="dataAnnotation">{{'universal_activityData_avgCyclingCadence' | translate}}</span>
-            </div>
-          </div>
-          <div class="dataChart" [class.media-1000-dataChart]="!isPreviewMode">
-            <app-discolor-column-chart
-              [data]="perCadenceData"
-              [dateRange]="dataDateRange"
-              [sportType]="reportCategory"
-              [chartName]="'Cadence'"
-              *ngIf="!isLoading && !isRxjsLoading"
-            >
-            </app-discolor-column-chart>
-          </div>
-        </div>
-      </div>
-      <div class="flexCol" *ngIf="reportCategory === '4'">
-        <div class="flexRow" style="align-items: center;">
-          <span class="reportChartTitle">{{'universal_activityData_swimCadence' | translate}}</span>
-          <div class="separateLine"></div>
-        </div>
-        <div class="flexRow dataContent" [class.media-1000-dataContent]="!isPreviewMode">
-          <div class="flexRow dataNumber" [class.media-1000-dataNumber]="!isPreviewMode">
-            <div class="flexCol dataMargin" style="width: 50%;">
-              <span class="dataFont">{{bestCadence || 0}}</span>
-              <span class="dataAnnotation">{{'universal_activityData_maxSwimmingCadence' | translate}}</span>
-            </div>
-            <div class="flexCol dataMargin" style="width: 50%;">
-              <span class="dataFont">{{avgCadence || 0 | number:'1.0-1'}}</span>
-              <span class="dataAnnotation">{{'universal_activityData_avgSwimReps' | translate}}</span>
-            </div>
-          </div>
-          <div class="dataChart" [class.media-1000-dataChart]="!isPreviewMode">
-            <app-discolor-column-chart
-              [data]="perCadenceData"
-              [dateRange]="dataDateRange"
-              [sportType]="reportCategory"
-              [chartName]="'Cadence'"
-              *ngIf="!isLoading && !isRxjsLoading"
-            >
-            </app-discolor-column-chart>
-          </div>
-        </div>
-      </div>
-      <div class="flexCol" *ngIf="reportCategory === '6'">
-        <div class="flexRow" style="align-items: center;">
-          <span class="reportChartTitle">{{'universal_activityData_rowCadence' | translate}}</span>
-          <div class="separateLine"></div>
-        </div>
-        <div class="flexRow dataContent" [class.media-1000-dataContent]="!isPreviewMode">
-          <div class="flexRow dataNumber" [class.media-1000-dataNumber]="!isPreviewMode">
-            <div class="flexCol dataMargin" style="width: 50%;">
-              <span class="dataFont">{{bestCadence || 0}}</span>
-              <span class="dataAnnotation">{{'universal_activityData_baetRowReps' | translate}}</span>
-            </div>
-            <div class="flexCol dataMargin" style="width: 50%;">
-              <span class="dataFont">{{avgCadence || 0 | number:'1.0-1'}}</span>
-              <span class="dataAnnotation">{{'universal_activityData_avgRowCadence' | translate}}</span>
-            </div>
-          </div>
-          <div class="dataChart" [class.media-1000-dataChart]="!isPreviewMode">
-            <app-discolor-column-chart
-              [data]="perCadenceData"
-              [dateRange]="dataDateRange"
-              [sportType]="reportCategory"
-              [chartName]="'Cadence'"
-              *ngIf="!isLoading && !isRxjsLoading"
-            >
-            </app-discolor-column-chart>
-          </div>
-        </div>
-      </div>
-      <div class="flexCol" *ngIf="reportCategory !== '99' && reportCategory !== '3'">
-        <div class="flexRow" style="align-items: center;">
-          <span class="reportChartTitle">{{'universal_activityData_hr' | translate}}</span>
-          <div class="separateLine"></div>
-        </div>
-        <div class="flexRow dataContent" [class.media-1000-dataContent]="!isPreviewMode">
-          <div class="flexRow dataNumber" [class.media-1000-dataNumber]="!isPreviewMode">
-            <div class="flexCol dataMargin" style="width: 50%;">
-              <span class="dataFont">{{bestHR || 0 | number:'1.0-1'}}</span>
-              <span class="dataAnnotation">{{'universal_userProfile_maxHr' | translate}}</span>
-            </div>
-            <div class="flexCol dataMargin" style="width: 50%;">
-              <span class="dataFont">{{avgHR || 0 | number:'1.0-1'}}</span>
-              <span class="dataAnnotation">{{'universal_activityData_avgHr' | translate}}</span>
-            </div>
-          </div>
-          <div class="dataChart" [class.media-1000-dataChart]="!isPreviewMode">
-            <app-compare-line-chart
-              [data]="perHRData"
-              [dateRange]="dataDateRange"
-              [sportType]="reportCategory"
-              [chartName]="'HR'"
-              [hrZoneRange]="hrZoneRange"
-              [chartHeight]="110"
-              *ngIf="!isLoading && !isRxjsLoading"
-            >
-            </app-compare-line-chart>
-          </div>
-        </div>
-      </div>
-      <div class="flexCol" *ngIf="reportCategory === '4'">
-        <div class="flexRow" style="align-items: center;">
-          <span class="reportChartTitle">Swolf</span>
-          <div class="separateLine"></div>
-        </div>
-        <div class="flexRow dataContent" [class.media-1000-dataContent]="!isPreviewMode">
-          <div class="flexRow dataNumber" [class.media-1000-dataNumber]="!isPreviewMode">
-            <div class="flexCol dataMargin" style="width: 50%;">
-              <span class="dataFont">{{bestSwolf || 0}}</span>
-              <span class="dataAnnotation">{{'universal_activityData_bestSwolf' | translate}}</span>
-            </div>
-            <div class="flexCol dataMargin" style="width: 50%;">
-              <span class="dataFont">{{avgSwolf || 0 | number:'1.0-1'}}</span>
-              <span class="dataAnnotation">{{'universal_activityData_avgSwolf' | translate}}</span>
-            </div>
-          </div>
-          <div class="dataChart" [class.media-1000-dataChart]="!isPreviewMode">
-            <app-discolor-column-chart
-              [data]="perSwolfData"
-              [dateRange]="dataDateRange"
-              [sportType]="reportCategory"
-              [chartName]="'Swolf'"
-              *ngIf="!isLoading && !isRxjsLoading"
-            >
-            </app-discolor-column-chart>
-          </div>
-        </div>
-      </div>
-      <div class="flexCol">
-        <div class="flexRow" style="align-items: center;">
-          <span class="reportChartTitle">{{'universal_userProfile_calories' | translate}}</span>
-          <div class="separateLine"></div>
-        </div>
-        <div class="flexRow dataContent" [class.media-1000-dataContent]="!isPreviewMode">
-          <div class="flexRow dataNumber" [class.media-1000-dataNumber]="!isPreviewMode">
-            <div class="flexCol dataMargin" style="width: 50%;">
-              <span class="dataFont" *ngIf="bestCalories / 1000 >= 1">{{bestCalories / 1000 || 0 | number:'1.0-1'}}kcal</span>
-              <span class="dataFont" *ngIf="bestCalories / 1000 < 1">{{bestCalories || 0 | number:'1.0-1'}}cal</span>
-              <span class="dataAnnotation">{{'universal_adjective_maxBig' | translate}} {{'universal_userProfile_calories' | translate}}</span>
-            </div>
-            <div class="flexCol dataMargin" style="width: 50%;">
-              <span class="dataFont">{{avgCalories || 0 | number:'1.0-1'}}cal</span>
-              <span class="dataAnnotation">
-                {{'universal_adjective_avg' | translate}} {{'universal_userProfile_calories' | translate}}
-              </span>
-            </div>
-          </div>
-          <div class="dataChart" [class.media-1000-dataChart]="!isPreviewMode">
-            <app-fillet-column-chart
-              [data]="perCalories"
-              [dateRange]="dataDateRange"
-              [sportType]="reportCategory"
-              [chartName]="'Calories'"
-              *ngIf="!isLoading && !isRxjsLoading"
-            >
-            </app-fillet-column-chart>
-          </div>
-        </div>
-      </div>
-  </div>
-</ng-container>
-<ng-container *ngIf="isPreviewMode && !isLoading">
-  <div class="printMark">
-    GPTfit
-  </div>
-</ng-container>
-
+    </ng-container>
+  </ng-container>
+</div>

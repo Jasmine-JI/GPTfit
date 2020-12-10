@@ -1,0 +1,24 @@
+@import 'keyframes.scss';
+
+.run__icon {
+  position: relative;
+  animation: jump 1s infinite;
+  font-size: 24px;
+  right: 0px;
+
+  @include keyframes(jump) {
+    0% {
+      top: 0px;
+    }
+
+    50% {
+      top: -10px;
+    }
+
+    100% {
+      top: 0px;
+    }
+
+  }
+
+}

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { GroupArchitectureComponent } from './group-architecture.component';
 
@@ -6,7 +6,7 @@ describe('GroupArchitectureComponent', () => {
   let component: GroupArchitectureComponent;
   let fixture: ComponentFixture<GroupArchitectureComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ GroupArchitectureComponent ]
     })

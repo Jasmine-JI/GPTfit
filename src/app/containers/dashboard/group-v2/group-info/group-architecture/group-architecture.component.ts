@@ -1,57 +1,226 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
-import { GroupDetailInfo, GroupArchitecture } from '../../../models/group-detail';
+import { GroupDetailInfo, GroupArchitecture, UserSimpleInfo } from '../../../models/group-detail';
 import { GroupService } from '../../../services/group.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
-
-import { Subject } from 'rxjs';
+import { HashIdService } from '../../../../../shared/services/hash-id.service';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { Router } from '@angular/router';
+import { Subject, combineLatest } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { BottomSheetComponent } from '../../../../../shared/components/bottom-sheet/bottom-sheet.component';
+import { GroupIdSlicePipe } from '../../../../../shared/pipes/group-id-slice.pipe';
 
+const errMsg = `Error.<br />Please try again later.`;
 
 @Component({
   selector: 'app-group-architecture',
   templateUrl: './group-architecture.component.html',
-  styleUrls: ['./group-architecture.component.scss']
+  styleUrls: ['./group-architecture.component.scss', '../group-child-page.scss']
 })
 export class GroupArchitectureComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe = new Subject();
 
+  /**
+   * UI會用到的各個flag
+   */
+  uiFlag = {
+    editMode: <'complete' | 'edit'>'complete',
+    branchFull: false,
+    classFull: false
+  };
+
+  /**
+   * 目前群組的詳細資訊
+   */
   groupInfo = <GroupDetailInfo>{};
+
+  /**
+   * 群組階層簡易資訊
+   */
   groupArchitecture = <GroupArchitecture>{};
 
+  /**
+   * 使用者個人資訊（含權限）
+   */
+  userSimpleInfo: UserSimpleInfo;
+
   constructor(
-    private groupService: GroupService
+    private groupService: GroupService,
+    private utils: UtilsService,
+    private router: Router,
+    private hashIdService: HashIdService,
+    private bottomSheet: MatBottomSheet,
+    private groupIdSlicePipe: GroupIdSlicePipe
   ) { }
 
   ngOnInit(): void {
-    this.getGroupDetail();
-    this.getAllLevelGroupData();
+    this.initPage();
   }
 
   /**
-   * 取得群組詳細資訊
+   * 取得已儲存的群組詳細資訊、階層群組資訊、使用者資訊
    * @author kidin-1091020
    */
-  getGroupDetail() {
-    this.groupService.getRxGroupDetail().pipe(
+  initPage() {
+    combineLatest([
+      this.groupService.getRxGroupDetail(),
+      this.groupService.getRxCommerceInfo(),
+      this.groupService.getAllLevelGroupData(),
+      this.groupService.getUserSimpleInfo()
+    ]).pipe(
       takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      this.groupInfo = res;
+    ).subscribe(resArr => {
+      Object.assign(resArr[0], {groupLevel: this.utils.displayGroupLevel(resArr[0].groupId)});
+      Object.assign(resArr[0], {expired: resArr[1].expired});
+      Object.assign(resArr[0], {commerceStatus: resArr[1].commerceStatus});
+      this.groupInfo = resArr[0];
+      this.groupArchitecture = this.checkParentsGroup(resArr[2]);
+      this.userSimpleInfo = resArr[3];
+      this.checkGroupNum(resArr[1].groupStatus);
+    })
+
+  }
+
+  /**
+   * 在子群組加入對應的父群組資訊
+   * @param groupArchitecture {GroupArchitecture}-api 1103的群組階層（subGroupInfo）
+   * @author kidin-1091201
+   */
+  checkParentsGroup(groupArchitecture: GroupArchitecture) {
+    groupArchitecture.coaches.map(_coach => {
+
+      groupArchitecture.branches.forEach(_branch => {
+        
+        if (this.groupIdSlicePipe.transform(_coach.groupId, 4) === this.groupIdSlicePipe.transform(_branch.groupId, 4)) {
+          Object.assign(_coach, {branchName: _branch.groupName});
+        }
+
+      });
+
+      return _coach;
+    });
+
+    return groupArchitecture;
+  }
+
+  /**
+   * 確認群組建立數目是否超過方案限制
+   * @param groupStatus {any}-群組建立數目的狀態
+   * @author kidin-1091130
+   */
+  checkGroupNum(groupStatus: any) {
+    if (+groupStatus.currentBranches >= +groupStatus.maxBranches) {
+      this.uiFlag.branchFull = true;
+    } else {
+      this.uiFlag.branchFull = false;
+    }
+
+    if (+groupStatus.currentClasses >= +groupStatus.maxClasses) {
+      this.uiFlag.classFull = true;
+    } else {
+      this.uiFlag.classFull = false;
+    }
+
+  }
+
+  /**
+   * 開啟編輯模式或送出request並關閉編輯模式
+   * @author kidin-1091103
+   */
+  handleEdit() {
+    if (this.uiFlag.editMode === 'complete') {
+      this.uiFlag.editMode = 'edit';
+      this.groupService.setEditMode('edit');
+    } else {
+      this.uiFlag.editMode = 'complete'
+      this.groupService.setEditMode('complete');
+    }
+  }
+
+  /**
+   * 解散群組
+   * @param e {any}
+   * @author kidin-1091105
+   */
+  disbandGroup(e: any) {
+    if (this.groupInfo.groupId === e) {
+      this.router.navigateByUrl('/dashboard/my-group-list');
+    } else {
+      this.refreshGroupDetail();
+      this.refreshAllLevelGroupData();
+    }
+    
+  }
+
+  /**
+   * 新增子群組
+   * @param type {string}-新建群組的類別
+   * @author kidin-1091105
+   */
+  addGroup(type: string) {
+    if (type === 'branch') {
+      this.router.navigateByUrl(
+        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupInfo.groupId)}/group-introduction?createType=branch`
+      );
+    } else if (type === 'class' && this.groupInfo.brandType === 2) {
+      this.router.navigateByUrl(
+        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupInfo.groupId)}/group-introduction?createType=department`
+      );
+    } else {
+      this.bottomSheet.open(BottomSheetComponent, {
+        data: { groupId: this.groupInfo.groupId }
+      });
+    }
+
+  }
+
+  /**
+   * 重新刷新群組資訊
+   * @author kidin-1091104
+   */
+  refreshGroupDetail() {
+    const body = {
+      token: this.userSimpleInfo.token,
+      groupId: this.groupInfo.groupId,
+      findRoot: 1,
+      avatarType: 3
+    };
+
+    this.groupService.fetchGroupListDetail(body).subscribe(res => {
+      if (res.resultCode !== 200) {
+        this.utils.openAlert(errMsg);
+        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+      } else {
+        this.groupService.saveGroupDetail(res.info);
+      }
+
     });
 
   }
 
   /**
-   * 取得所有階層群組資訊
+   * 儲存所有階層群組資訊
    * @author kidin-1090716
    */
-  getAllLevelGroupData() {
-    this.groupService.getAllLevelGroupData().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      this.groupArchitecture = res;
-      console.log('groupArchitecture', this.groupArchitecture);
+  refreshAllLevelGroupData() {
+    const body = {
+      token: this.userSimpleInfo.token,
+      avatarType: 3,
+      groupId: this.groupInfo.groupId,
+      groupLevel: this.groupInfo.groupLevel,
+      infoType: 1
+    }
+
+    this.groupService.fetchGroupMemberList(body).subscribe(res => {
+      if (res.resultCode !== 200) {
+        this.utils.openAlert(errMsg);
+        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+      } else {
+        this.groupService.setAllLevelGroupData(res.info.subGroupInfo);
+      }
+
     });
 
   }

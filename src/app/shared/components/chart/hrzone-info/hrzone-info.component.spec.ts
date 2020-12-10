@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { HrzoneInfoComponent } from './hrzone-info.component';
 
@@ -6,7 +6,7 @@ describe('HrzoneInfoComponent', () => {
   let component: HrzoneInfoComponent;
   let fixture: ComponentFixture<HrzoneInfoComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ HrzoneInfoComponent ]
     })

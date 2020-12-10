@@ -26,6 +26,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe = new Subject();
 
+  @ViewChild('filterSection') filterSection: ElementRef;
   @ViewChild('dateSelectorBar') dateSelectorBar: ElementRef;
   @ViewChild('calendarPeriod') calendarPeriod: ElementRef;
 
@@ -43,7 +44,8 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     calendarPeriodOffset: 'translateX(0px)',
     activeDateTypeOffset: 'translateX(0px)',
     offsetNum: 0,
-    disableBtn: 'pre'
+    disableBtn: 'pre',
+    isLoading: false,
   }
 
   /**
@@ -73,6 +75,8 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    */
   mapList: Array<any> = [];
 
+  timeout: any;
+
   constructor(
     private utils: UtilsService,
     private reportService: ReportService
@@ -81,6 +85,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.onResize();
     this.getReportCondition();
+    this.getLoadingStatus();
   }
 
   /**
@@ -89,16 +94,24 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    */
   @HostListener ('window:resize', [])
   onResize() {
-    if (window.innerWidth < 820) {
-      this.uiFlag.showDateTypeShiftIcon = true;
-      this.uiFlag.dateTypeBarWidth = `${window.innerWidth - 70}px`;
-    } else {
-      this.uiFlag.showDateTypeShiftIcon = false;
-      this.uiFlag.dateTypeBarWidth = `800px`;
-      this.uiFlag.offsetNum = 0;
-      this.uiFlag.dateTypeBarOffset = `translateX(0px)`;
-      this.changeActiveBar();
-    }
+    this.date.openSelector = null;
+
+    setTimeout(() => {
+      const filterSection = this.filterSection.nativeElement,
+            filterSectionWidth = filterSection.clientWidth;
+
+      if (filterSectionWidth < 820) {
+        this.uiFlag.showDateTypeShiftIcon = true;
+        this.uiFlag.dateTypeBarWidth = `${filterSectionWidth - 90}px`;
+      } else {
+        this.uiFlag.showDateTypeShiftIcon = false;
+        this.uiFlag.dateTypeBarWidth = `800px`;
+        this.uiFlag.offsetNum = 0;
+        this.uiFlag.dateTypeBarOffset = `translateX(0px)`;
+        this.changeActiveBar();
+      }
+
+    })
 
   }
 
@@ -133,6 +146,19 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * 取得是否loading
+   * @author kidin-1091210
+   */
+  getLoadingStatus() {
+    this.reportService.getReportLoading().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
+      this.uiFlag.isLoading = res;
+    });
+
+  }
+
+  /**
    * 取得所有maplist
    * @author kidin-1091029
    */
@@ -145,11 +171,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    * @author kidin-1091028
    */
   openConditionSelector() {
-    if (this.uiFlag.showConditionSelector) {
-      this.uiFlag.showConditionSelector = false;
-    } else {
-      this.uiFlag.showConditionSelector = true;
-    }
+    this.uiFlag.showConditionSelector = !this.uiFlag.showConditionSelector;
   }
 
   /**
@@ -158,6 +180,9 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    * @author kidin-1091027
    */
   shiftDateTypeBar(action: 'pre' | 'next') {
+    const filterSection = this.filterSection.nativeElement,
+          filterSectionWidth = filterSection.clientWidth;
+
     if (action === 'pre') {
       this.uiFlag.offsetNum += 160;
     } else {
@@ -166,7 +191,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
 
     if (this.uiFlag.offsetNum === 0) {
       this.uiFlag.disableBtn = 'pre';
-    } else if (this.uiFlag.offsetNum <= window.innerWidth - 848) {
+    } else if (this.uiFlag.offsetNum <= filterSectionWidth - 848) {
       this.uiFlag.disableBtn = 'next';
     } else {
       this.uiFlag.disableBtn = null;
@@ -191,31 +216,44 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         this.date.startTimestamp = moment().startOf('day').subtract(6, 'days').valueOf();
         this.date.endTimestamp = moment().endOf('day').valueOf();
         this.date.openSelector = null;
+
+        if (this.reportConditionOpt.hideConfirmBtn) {
+          this.submit();
+        }
+
         break;
       case 1:
         this.date.type = 'thirtyDay';
         this.date.startTimestamp = moment().startOf('day').subtract(29, 'days').valueOf();
         this.date.endTimestamp = moment().endOf('day').valueOf();
         this.date.openSelector = null;
+
+        if (this.reportConditionOpt.hideConfirmBtn) {
+          this.submit();
+        }
+
         break;
       case 2:
         this.date.type = 'sixMonth';
         this.date.startTimestamp = moment().subtract(6, 'month').add(1, 'days').valueOf();
         this.date.endTimestamp = moment().endOf('day').valueOf();
         this.date.openSelector = null;
+
+        if (this.reportConditionOpt.hideConfirmBtn) {
+          this.submit();
+        }
+
         break;
       case 3:
         if (this.date.openSelector !== 'calendarPeriod') {
           this.date.openSelector = 'calendarPeriod';
           const dropList = this.calendarPeriod.nativeElement,
-                dropListCenter = dropList.getBoundingClientRect().left;
+                dropListCenter = dropList.getBoundingClientRect().left,
+                dateSelectorBar = this.dateSelectorBar.nativeElement,
+                dateSelectorBarLeft = dateSelectorBar.getBoundingClientRect().left;
 
           // 根據畫面大小調整選單位置
-          if (this.uiFlag.dateTypeBarWidth !== '800px') {
-            this.uiFlag.calendarPeriodOffset = `translateX(${dropListCenter + 10}px)`;
-          } else {
-            this.uiFlag.calendarPeriodOffset = `translateX(504px)`;
-          }
+          this.uiFlag.calendarPeriodOffset = `translateX(${dropListCenter - dateSelectorBarLeft + 20}px)`;
           
         } else {
           this.date.openSelector = null;
@@ -292,6 +330,11 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
 
     this.date.openSelector = null;
     this.changeActiveBar();
+
+    if (this.reportConditionOpt.hideConfirmBtn) {
+      this.submit();
+    }
+
   }
 
   /**
@@ -305,6 +348,11 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
       this.date.startTimestamp = moment(e.startDate).valueOf();
       this.date.endTimestamp = moment(e.endDate).valueOf();
       this.date.openSelector = null;
+
+      if (this.reportConditionOpt.hideConfirmBtn) {
+        this.submit();
+      }
+
     }
     
   }
@@ -348,6 +396,18 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         break;
     }
 
+    // 設置debounce避免使用者快速點擊而大量呼叫api
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+
+    this.timeout = setTimeout(() => {
+      if (this.reportConditionOpt.hideConfirmBtn) {
+        this.submit();
+      }
+
+    }, 300);
+    
   }
 
   /**
@@ -383,8 +443,23 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         this.date.endTimestamp = startTime.endOf('year').valueOf();
         break;
       case 'custom':
+        const range = moment(this.date.endTimestamp).diff(startTime);
+        this.date.startTimestamp = moment(this.date.startTimestamp + range).startOf('day').valueOf();
+        this.date.endTimestamp = moment(this.date.startTimestamp + range).endOf('day').valueOf();
         break;
     }
+
+    // 設置debounce避免使用者快速點擊而大量呼叫api
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+
+    this.timeout = setTimeout(() => {
+      if (this.reportConditionOpt.hideConfirmBtn) {
+        this.submit();
+      }
+
+    }, 300);
 
   }
 
@@ -447,6 +522,11 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    */
   handleClickSportType(type: SportType) {
     this.reportConditionOpt.sportType = type;
+    
+    if (this.reportConditionOpt.hideConfirmBtn) {
+      this.submit();
+    }
+    
   }
 
   /**
@@ -457,11 +537,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    */
   showMapSelector(e: MouseEvent) {
     e.stopPropagation();
-    if (this.uiFlag.showMapSelector) {
-      this.uiFlag.showMapSelector = false;
-    } else {
-      this.uiFlag.showMapSelector = true;
-    }
+    this.uiFlag.showMapSelector = !this.uiFlag.showMapSelector;
 
   }
 
@@ -540,14 +616,20 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
 
   }
 
-
+  /**
+   * 取得40階group Id
+   * @author kidin-1091029
+   */
   getparentsGroupId(childId: string): string {
     const idArr = childId.split('-');
     idArr.length = 4;
     return `${idArr.join('-')}-0-0`;
   }
 
-
+  /**
+   * 取消rxjs訂閱
+   * @author kidin-1091029
+   */
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();

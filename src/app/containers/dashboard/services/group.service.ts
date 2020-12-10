@@ -1,12 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, ReplaySubject, throwError } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
-import { UtilsService } from '@shared/services/utils.service';
+import { UtilsService } from '../../../shared/services/utils.service';
 import { UserProfileService } from '../../../shared/services/user-profile.service'
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { GroupIdSlicePipe } from '../../../shared/pipes/group-id-slice.pipe';
-import { GroupDetailInfo } from '../models/group-detail';
+import { GroupDetailInfo, UserSimpleInfo } from '../models/group-detail';
 
 const { API_SERVER } = environment.url;
 
@@ -18,16 +18,25 @@ const { API_SERVER } = environment.url;
  */
 @Injectable()
 export class GroupService {
-
+  sideBarMode$ = new ReplaySubject<any>(1); // sidebar展開與否
+  editMode$ = new ReplaySubject<'edit' | 'create' | 'complete' | 'close'>(1); // 是否進入編輯模式或建立模式
+  userSimpleInfo$ = new ReplaySubject<UserSimpleInfo>(1); // 儲存使用者在該群組的簡易資訊（權限）-kidin-1091103
   groupInfo$ = new BehaviorSubject<any>({}); // 儲存group資訊-kidin-1081210
-  allLevelGroupInfo$ = new BehaviorSubject<any>({}); // 儲存 同"品牌/企業" group 資訊-kidin-1090604
-  groupDetail$ = new BehaviorSubject<any>({});  // 儲存群組基本概要方便各子頁面使用-kidin-1091020
-  allLevelGroupData$ = new ReplaySubject<any>(); // 儲存 同"品牌/企業" group 資訊-kidin-1090716
+  allLevelGroupInfo$ = new ReplaySubject<any>(1); // 儲存 同"品牌/企業" group 資訊-kidin-1090604
+  groupDetail$ = new ReplaySubject<any>(1);  // 儲存群組基本概要方便各子頁面使用-kidin-1091020
+  allLevelGroupData$ = new ReplaySubject<any>(1); // 儲存 同"品牌/企業" group 資訊-kidin-1090716
+  groupCommerceInfo$ = new ReplaySubject<any>(1); // 儲存群組經營權限資訊-kidin-1091104
+  classMemberList$ = new BehaviorSubject<any>([]); // 儲存課程成員清單-kidin-1091116
+  comMemberList$ = new BehaviorSubject<any>([]); // 儲存企業/分公司/部門群組成員清單-kidin-1091116
+  adminList$ = new ReplaySubject<any>(1);
+  normalMemberList$ = new ReplaySubject<any>(1);
   updatedGroupImg$ = new BehaviorSubject<string>('');
   memberList$ = new BehaviorSubject<any>({
     groupId: '',
     groupList: []
   });
+
+  newGroupId: string; // 創建群組的group id，以上傳圖床。
 
   reportCategory$ = new BehaviorSubject<string>('99');
   typeAllData$ = new BehaviorSubject<any>({});
@@ -332,6 +341,57 @@ export class GroupService {
   }
 
   /**
+   * 取得課程一般成員名單
+   * @author kidin-1091116
+   */
+  getRXClassMemberList() {
+    return this.classMemberList$;
+  }
+
+  /**
+   * 儲存課程一般成員名單
+   * @param list {Array<any>}
+   * @author kidin-1091116
+   */
+  setClassMemberList(list: Array<any>) {
+    this.classMemberList$.next(list);
+  }
+
+  /**
+   * 取得管理員名單
+   * @author kidin-1091116
+   */
+  getRXAdminList() {
+    return this.adminList$;
+  }
+
+  /**
+   * 儲存管理員名單
+   * @param list {Array<any>}
+   * @author kidin-1091116
+   */
+  setAdminList(list: Array<any>) {
+    this.adminList$.next(list);
+  }
+
+  /**
+   * 取得一般成員名單
+   * @author kidin-1091116
+   */
+  getRXNormalMemberList() {
+    return this.normalMemberList$;
+  }
+
+  /**
+   * 儲存一般成員名單
+   * @param list {Array<any>}
+   * @author kidin-1091116
+   */
+  setNormalMemberList(list: Array<any>) {
+    this.normalMemberList$.next(list);
+  }
+
+  /**
    * 儲存訂閱的不同類別運動資料
    * @param dataAll {object}
    * @param dataRun {object}
@@ -419,43 +479,45 @@ export class GroupService {
   }
 
   /**
+   * 儲存群組概要資訊
+   * @param Detail {any}-api 1102回傳內容
+   * @author kidin-1091020
+   */
+  saveCommerceInfo(commerceInfo: any) {
+    this.groupCommerceInfo$.next(commerceInfo);
+  }
+
+  /**
+   * 取得群組概要資訊
+   * @author kidin-1091020
+   */
+  getRxCommerceInfo() {
+    return this.groupCommerceInfo$;
+  }
+
+  /**
+   * 儲存新的群組id
+   * @param Detail {string}-新的group id
+   * @author kidin-1091020
+   */
+  saveNewGroupId(id: string) {
+    this.newGroupId = id;
+  }
+
+  /**
+   * 取得群組概要資訊
+   * @author kidin-1091020
+   */
+  getNewGroupId() {
+    return this.newGroupId;
+  }
+
+  /**
    * 1103-依權限取得群組內所有群組後並儲存
    * @author kidin-1090716
    */
-  saveAllLevelGroupData(
-    token: string,
-    groupId: string,
-    groupLevel: number
-  ) {
-    const body = {
-      token,
-      groupId,
-      groupLevel,
-      infoType: 1,
-      avatarType: 3
-    };
-
-    this.fetchGroupMemberList(body).pipe(
-      catchError(err => throwError(err)),
-      map(data => {
-        if (data.resultCode === 200) {
-          Object.assign(data.info.subGroupInfo, {groupId: groupId});
-          return data;
-        } else {
-          const newData = {
-            info: {
-              subGroupInfo: null
-            }
-
-          };
-          return newData;
-        }
-        
-      })
-    ).subscribe(res => {
-      this.allLevelGroupData$.next(res.info.subGroupInfo);
-    });
-
+  setAllLevelGroupData(childGroupList: any) {
+    this.allLevelGroupData$.next(childGroupList);
   }
 
   /**
@@ -470,7 +532,7 @@ export class GroupService {
    * 取得訂閱的group資訊
    * @author kidin-1081210
    */
-  getAllLevelGroupInfo () {
+  getAllLevelGroupInfo() {
     return this.allLevelGroupInfo$;
   }
 
@@ -479,8 +541,59 @@ export class GroupService {
    * @param status {any}
    * @author kidin-1081210
    */
-  saveAllLevelGroupInfo (status: any) {
+  saveAllLevelGroupInfo(status: any) {
     this.allLevelGroupInfo$.next(status);
+  }
+
+  /**
+   * 取得訂閱的使用者在該群組的簡易資訊
+   * @author kidin-1081210
+   */
+  getUserSimpleInfo() {
+    return this.userSimpleInfo$;
+  }
+
+  /**
+   * 儲存訂閱的使用者在該群組的簡易資訊
+   * @param status {UserSimpleInfo}
+   * @author kidin-1081210
+   */
+  saveUserSimpleInfo(status: UserSimpleInfo) {
+    this.userSimpleInfo$.next(status);
+  }
+
+  /**
+   * 取得sidebar 模式供子頁面用
+   * @author kidin-1091111
+   */
+  getRxSideBarMode() {
+    return this.sideBarMode$;
+  }
+
+  /**
+   * 儲存sidebar 模式供子頁面用
+   * @param status {'expand' | 'hide' | 'narrow'}-sidebar 模式
+   * @author kidin-1091111
+   */
+  setSideBarMode(status: 'expand' | 'hide' | 'narrow') {
+    this.sideBarMode$.next(status);
+  }
+
+  /**
+   * 取得群組是否進入編輯或建立群組的狀態
+   * @author kidin-1091123
+   */
+  getRxEditMode()  {
+    return this.editMode$;
+  }
+
+  /**
+   * 儲存是否進入編輯或建立群組的狀態
+   * @param status {boolean}-是否進入編輯或建立群組的狀態
+   * @author kidin-1091123
+   */
+  setEditMode(status: 'edit' | 'create' | 'complete' | 'close') {
+    this.editMode$.next(status);
   }
 
   /**

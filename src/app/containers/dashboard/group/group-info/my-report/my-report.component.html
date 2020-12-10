@@ -75,7 +75,7 @@
     <div>
       <div class="flexRow areaDescription">
           <span class="activity-Link" style="white-space: nowrap;" (click)="visitAuthor()">
-            {{fileInfo?.author | slice}}
+            {{ fileInfo?.author | stringSlice: 0 }}
           </span>
           <div id="reportInfo" class="areaDescription"></div>
       </div>

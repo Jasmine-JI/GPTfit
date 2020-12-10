@@ -1,5 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
+/**
+ * 根據運動類別回傳對應多國語系的鍵。
+ */
 @Pipe({name: 'sportType'})
 export class SportTypePipe implements PipeTransform {
   transform(value: string | number, args: string[]): any {

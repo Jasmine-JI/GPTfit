@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { PushMessageListComponent } from './push-message-list.component';
 
@@ -6,7 +6,7 @@ describe('PushMessageListComponent', () => {
   let component: PushMessageListComponent;
   let fixture: ComponentFixture<PushMessageListComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ PushMessageListComponent ]
     })

@@ -1,5 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
+/**
+ * 將timestamp依據不同天數長度回傳相對天數
+ */
 @Pipe({name: 'relativeDay'})
 export class RelativeDayPipe implements PipeTransform {
   transform(retiveTimeStamp: number, args: string[]): any {

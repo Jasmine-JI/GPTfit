@@ -21,7 +21,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { UserProfileInfo } from '../dashboard/models/userProfileInfo';
+import { UserProfileInfo } from './models/userProfileInfo';
+import { GroupService } from './services/group.service';
 
 
 interface UiFlag {
@@ -76,7 +77,8 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     private hashIdService: HashIdService,
     private detectInappService: DetectInappService,
     private dialog: MatDialog,
-    private userProfileService: UserProfileService
+    private userProfileService: UserProfileService,
+    private groupService: GroupService
   ) {
 
     if (location.search.indexOf('ipm=s') > -1) {
@@ -278,7 +280,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   onResize(event) {
     if (
-      (location.pathname.indexOf('/dashboard/group-info-v2') > -1 && event.target.innerWidth < 1000)
+      (location.pathname.indexOf('/dashboard/group-info') > -1 && event.target.innerWidth < 1000)
       || event.target.innerWidth < 769
     ) {
       this.uiFlag.mobileMode = true;
@@ -351,7 +353,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
 
     this.debounce = setTimeout(() => {
       if (!this.uiFlag.mobileMode && this.uiFlag.hover) {
-        this.uiFlag.sidebarMode = 'expand';
+        this.handeSideBarMode('expand');
       }
 
     }, 250);
@@ -365,9 +367,9 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   shrinkSidebar() {
     this.uiFlag.hover = false;
     if (!this.uiFlag.navFixed && !this.uiFlag.mobileMode) {
-      this.uiFlag.sidebarMode = 'narrow';
+      this.handeSideBarMode('narrow');
     } else if (!this.uiFlag.navFixed && this.uiFlag.mobileMode) {
-      this.uiFlag.sidebarMode = 'hide';
+      this.handeSideBarMode('hide');
     }
     
   }
@@ -382,9 +384,19 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.shrinkSidebar();
     } else {
       this.uiFlag.navFixed = true;
-      this.uiFlag.sidebarMode = 'expand';
+      this.handeSideBarMode('expand');
     }
     
+  }
+
+  /**
+   * 處理sidebar 收合等
+   * @param mode {'expand' | 'hide' | 'narrow'}-sidebar 模式
+   * @author kidin-1091111
+   */
+  handeSideBarMode(mode: 'expand' | 'hide' | 'narrow') {
+    this.uiFlag.sidebarMode = mode;
+    this.groupService.setSideBarMode(mode);
   }
 
   /**

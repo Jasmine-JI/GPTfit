@@ -21,6 +21,8 @@ import { AppModifypwComponent } from './components/app-sign/app-modifypw/app-mod
 import { AppChangeAccountComponent } from './components/app-sign/app-change-account/app-change-account.component';
 import { AppQrcodeLoginComponent } from './components/app-sign/app-qrcode-login/app-qrcode-login.component';
 import { AppFirstLoginComponent } from './components/app-sign/app-first-login/app-first-login.component';
+import { GroupInfoComponent } from '../dashboard/group-v2/group-info/group-info.component';
+import { GroupIntroductionComponent } from '../../containers/dashboard/group-v2/group-info/group-introduction/group-introduction.component';
 
 
 const routes: Routes = [
@@ -68,7 +70,13 @@ const routes: Routes = [
       },
       {
         path: 'group-info/:groupId',
-        component: PortalGroupInfoComponent
+        component: GroupInfoComponent,
+        children: [
+          {
+            path: 'group-introduction',
+            component: GroupIntroductionComponent
+          }
+        ]
       },
       {
         path: 'first-login',

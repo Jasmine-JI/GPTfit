@@ -190,9 +190,13 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
         'it-it',
         'pt-pt'
       ];  // 新增文件全語系-kidin-1090629
-      if (currentLocales.findIndex(_locale => _locale === browserLang) === -1) {
+
+      if (browserLang === 'pt-br') {
+        browserLang = 'pt-pt'; // 巴西語預設顯示葡萄牙語-kidin-1091203
+      } else if (currentLocales.findIndex(_locale => _locale === browserLang) === -1) {
         browserLang = 'en-us'; // default en-us
       }
+
       this.translateService.use(browserLang);
       this.utilsService.setLocalStorageObject('locale', browserLang);
     } else {
@@ -241,7 +245,7 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
       ];
 
       targetImg.forEach(_img => {
-        if (_img !== undefined){
+        if (this[_img]) {
 
           const imgElement = this[_img].nativeElement;
           if (((window.innerHeight / 1.5) + window.pageYOffset) > imgElement.offsetTop) {

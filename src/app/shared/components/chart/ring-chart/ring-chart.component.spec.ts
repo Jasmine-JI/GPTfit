@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { RingChartComponent } from './ring-chart.component';
 
@@ -6,7 +6,7 @@ describe('RingChartComponent', () => {
   let component: RingChartComponent;
   let fixture: ComponentFixture<RingChartComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ RingChartComponent ]
     })

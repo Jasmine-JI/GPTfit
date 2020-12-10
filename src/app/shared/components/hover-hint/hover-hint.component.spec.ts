@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { HoverHintComponent } from './hover-hint.component';
 
@@ -6,7 +6,7 @@ describe('HoverHintComponent', () => {
   let component: HoverHintComponent;
   let fixture: ComponentFixture<HoverHintComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ HoverHintComponent ]
     })

@@ -1,0 +1,7 @@
+// 設定button style
+@mixin button($font-size: 24px, $border: none, $background-color: white) {
+  font-size: $font-size;
+  border: $border;
+  background-color: $background-color;
+  @content
+}

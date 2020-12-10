@@ -1,12 +1,20 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
+/**
+ * 根據性別代碼回傳對應的性別
+ */
 @Pipe({name: 'sex'})
 export class SexPipe implements PipeTransform {
   transform(value: number, args: string[] = null): any {
-    if (value === 0) {
-      return 'male';
-    } else if (value === 1) {
-      return 'female';
-    } return 'private';
+    switch (value) {
+      case 0:
+        return 'male';
+      case 1:
+        return 'female';
+      default:
+        return 'private';
+    }
+
   }
+
 }

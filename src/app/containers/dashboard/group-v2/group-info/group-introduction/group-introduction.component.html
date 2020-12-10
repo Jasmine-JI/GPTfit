@@ -1,54 +1,326 @@
-<div class="flexCol">
-  <section class="flexRow" style="justify-content: flex-end;">
-    <button class="child__page__btn" (click)="handleEdit()">
-      <span *ngIf="!uiFlag.editMode">{{ 'universal_operating_edit' | translate}}</span>
-      <span *ngIf="uiFlag.editMode">{{ 'universal_operating_finishEdit' | translate}}</span>
+<div
+  class="flexCol child__page__card"
+  *ngIf="groupDetail && groupDetail.groupRootInfo"
+>
+  <section 
+    class="flexRow"
+    style="justify-content: flex-end; margin: 10px;"
+    *ngIf="
+      userSimpleInfo
+      && (userSimpleInfo.isGroupAdmin || userSimpleInfo.accessRight[0] <= 29)
+      && groupDetail.groupStatus !== 4
+      && groupDetail.groupStatus !== 5
+      && (groupDetail.groupStatus !== 6 || userSimpleInfo.accessRight[0] <= 30)
+      && !groupDetail.expired
+      && groupDetail.commerceStatus === 1
+    "
+  >
+    <button class="child__page__btn" (click)="closeEditMode('close')" *ngIf="uiFlag.editMode !== 'close'">
+      <span>{{ 'universal_operating_cancel' | translate}}</span>
+    </button>
+    <button
+      class="child__page__btn"
+      [class.edit__mode__btn]="uiFlag.editMode !== 'close'"
+      [class.btn__loading__status]="uiFlag.isLoading"
+      (click)="handleEdit()"
+    >
+      <span *ngIf="uiFlag.editMode === 'close'">{{ 'universal_operating_edit' | translate}}</span>
+      <span *ngIf="uiFlag.editMode !== 'close'">{{ 'universal_operating_finishEdit' | translate}}</span>
     </button>
   </section>
-  <section class="flexCol">
+  <section class="flexCol info__section">
     <span class="info__title">{{ 'universal_group_group' | translate}}</span>
-    <div class="flexCol">
-      <div>
+    <div class="flexCol info__content">
+      <div class="flexRow group__layer__section" *ngIf="uiFlag.editMode !== 'create' || createBody.levelType > 3">
         <span class="info__item__title">
-          {{ 'universal_group_gym' | translate}}:
+          {{ 30 | groupLevelTranslate: groupDetail.brandType | translate }} :
         </span>
-        <span class="info__item__title">
-          {{ 'universal_group_company' | translate}}:
-        </span>
-        <span>
-
+        <span
+          style="cursor: pointer;"
+          class="info__row"
+          (click)="navigateParentsGroup(groupDetail.groupRootInfo[2].brandGroupId)"
+          *ngIf="groupDetail.groupRootInfo.length >= 3; else currentGroupName;"
+        >
+          {{ groupDetail.groupRootInfo[2].brandName }}
         </span>
       </div>
-      <div>
+      <div class="flexRow group__layer__section" *ngIf="groupDetail.groupRootInfo.length >= 3;">
         <span class="info__item__title">
-          {{ 'universal_group_branch' | translate}}:
+          {{ 40 | groupLevelTranslate: groupDetail.brandType | translate }} :
         </span>
-        <span class="info__item__title">
-          {{ 'universal_group_companyBranch' | translate}}:
-        </span>
-        <span>
-
+        <span
+          style="cursor: pointer;"
+          class="info__row"
+          (click)="navigateParentsGroup(groupDetail.groupRootInfo[3].branchGroupId)"
+          *ngIf="groupDetail.groupRootInfo.length >= 4; else currentGroupName;"
+        >
+          {{ groupDetail.groupRootInfo[3].branchName }}
         </span>
       </div>
-      <div>
+      <div class="flexRow group__layer__section" *ngIf="groupDetail.groupRootInfo.length >= 4;">
         <span class="info__item__title">
-          {{ 'universal_group_class' | translate}}:
+          {{ 60 | groupLevelTranslate: groupDetail.brandType | translate }} :
         </span>
+        <span class="info__row" *ngTemplateOutlet="currentGroupName"></span>
+      </div>
+      <div class="flexRow group__layer__section" *ngIf="uiFlag.editMode === 'create'">
         <span class="info__item__title">
-          {{ 'universal_group_department' | translate}}:
+          {{ uiFlag.createLevel | groupLevelTranslate: groupDetail.brandType | translate }} :
         </span>
-        <span>
-
-        </span>
+        <input
+          class="info__row"
+          style="border: 1px solid;"
+          [style.border-color]="formCheck.name !== false ? 'rgba(120, 120, 120, 1)' : 'red'"
+          placeholder="{{ i18n.enterName }}"
+          maxlength="32"
+          [value]="createBody.levelName"
+          (focusout)="saveGroupName($event)"
+          (change)="saveGroupName($event)"
+        />
       </div>
     </div>
   </section>
-  <section class="flexCol">
+  <section class="flexCol info__section">
     <span class="info__title">{{ 'universal_group_status' | translate}}</span>
-    <span></span>
+    <span
+      class="info__content"
+      *ngIf="uiFlag.editMode === 'close'"
+    >
+      {{ groupDetail.groupStatus | groupStatus | translate }}
+      <span
+        style="color: red;"
+        *ngIf="groupDetail.expired || groupDetail.commerceStatus !== 1"
+      >
+        ({{ 'universal_group_outOfService' | translate }})
+      </span>
+    </span>
+    <div
+      class="flexCol info__content status__selector"
+      [class.status__selector__active]="uiFlag.openStatusSelector"
+      style="position: relative;"
+      *ngIf="uiFlag.editMode !== 'close'"
+      (click)="openStatusSelector($event)"
+    >
+      <span *ngIf="uiFlag.editMode === 'edit'">{{ editBody.changeStatus | groupStatus | translate }}</span>
+      <span *ngIf="uiFlag.editMode === 'create'">{{ createBody.groupStatus | groupStatus | translate }}</span>
+      <div id="status__selector__list" class="flexCol" *ngIf="uiFlag.openStatusSelector">
+        <span (click)="saveGroupStatus($event, 1)">{{ 'universal_group_freeToJoin' | translate }}</span>
+        <span (click)="saveGroupStatus($event, 2)">{{ 'universal_group_auditSystem' | translate }}</span>
+        <span (click)="saveGroupStatus($event, 3)">{{ 'universal_operating_hide' | translate }}</span>
+        <span (click)="saveGroupStatus($event, 6)" *ngIf="uiFlag.editMode === 'edit'">{{ 'universal_status_disable' | translate }}</span>
+      </div>
+    </div>
   </section>
-  <section class="flexCol">
+  <section class="flexCol info__section">
     <span class="info__title">{{ 'universal_group_introduction' | translate}}</span>
-    <span></span>
+    <span class="info__content" [innerHTML]="groupDetail.groupDesc | lineBreak" *ngIf="uiFlag.editMode === 'close'"></span>
+    <textarea
+      style="min-height: 300px; resize: none;"
+      [style.border-color]="formCheck.desc !== false ? 'rgba(120, 120, 120, 1)' : 'red'"
+      class="info__content"
+      placeholder="{{ i18n.enterDesc }}"
+      maxlength="500"
+      [value]="uiFlag.editMode === 'create' ? createBody.levelDesc : editBody.groupDesc"
+      (focusout)="saveGroupDesc($event)"
+      (change)="saveGroupDesc($event)"
+      *ngIf="uiFlag.editMode !== 'close'">
+    </textarea>
+  </section>
+  <section class="flexCol info__section" *ngIf="uiFlag.editMode === 'close' && userSimpleInfo">
+    <span class="info__title">{{ 'universal_group_groupInfo' | translate }}</span>
+    <span class="info__content" *ngIf="editBody.groupLevel <= 30">
+      {{ 'universal_group_numberOfBranches' | translate }}：{{ groupDetail.branchNum }}
+    </span>
+    <span class="info__content" *ngIf="editBody.groupLevel <= 40">
+      {{ 'universal_group_numberOfClass' | translate }}：{{ groupDetail.coachNum }}
+    </span>
+    <span class="info__content">
+      {{ 'universal_group_numberOfAdministrators' | translate }}：{{ groupDetail.adminNum }}
+    </span>
+    <span class="info__content">
+      {{ 'universal_group_generalMember' | translate }}：{{ groupDetail.memberNum }}
+    </span>
+  </section>
+  <section
+    class="flexCol info__section"
+    *ngIf="groupDetail.brandType === 1 && editBody.groupLevel === 60 && uiFlag.editMode === 'edit'"
+  >
+    <span class="info__title">{{ 'universal_live_liveLink' | translate}}</span>
+    <input class="info__content" [value]="editBody.groupVideoUrl" (change)="saveVedioUrl($event)">
+  </section>
+  <section class="info__section" *ngIf="uiFlag.editMode === 'create'">
+    <div class="ala-list__item" style="margin-top: 20px">
+      <span class="info__title">
+        {{'universal_group_assignAdmin' | translate}}：
+      </span>
+      <div class="ala-form__col assign-admin">
+        <button class="icon-btn" (click)="openSelectorWin(createBody.levelType, $event)">
+          <i class="icon-svg_web-icon_p1_021-add_friend group-icon"></i>
+        </button>
+        <div class="warn__text" *ngIf="chooseLabels.length === 0;">
+          {{'universal_group_addAdministrator' | translate}}
+        </div>
+        <div style="margin-top: 15px" *ngIf="chooseLabels && chooseLabels.length > 0">
+          <ng-container *ngFor="let label of chooseLabels;let _idx = index">
+            <div class="candidate-label">
+              <div style="display: inline-block">{{label.groupName}}/{{label.userName}}</div>
+              <button class="icon-btn" (click)="removeLabel(_idx)">
+                <i class="fa fa-plus icon_fa" style="transform: rotate(45deg);"></i>
+              </button>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="info__section" *ngIf="uiFlag.editMode === 'create' && uiFlag.createLevel === 30">
+    <div>
+      <span class="info__title">
+        方案內容
+      </span>
+      <div class="ala-list__item" 
+        style="margin-top: 20px"
+      >
+        <label class="ala-form__label">
+          方案名稱：
+        </label>
+        {{createBrandSetting.planName}}
+      </div>
+      <div class="ala-list__item" style="margin-top: 20px">
+        <label class="ala-form__label">
+          購買時長：
+        </label>
+        <mat-button-toggle-group
+          name="fontStyle"
+          aria-label="Font Style"
+          [style.border-color]="createBody.commercePlanExpired === '' ? 'red' : ''"
+          (change)="saveExpireTime($event)"
+        >
+          <mat-button-toggle value="1">1個月</mat-button-toggle>
+          <mat-button-toggle value="2">2個月</mat-button-toggle>
+          <mat-button-toggle value="3">3個月</mat-button-toggle>
+          <mat-button-toggle value="6">半年</mat-button-toggle>
+          <mat-button-toggle value="12">1年</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+      <div class="ala-list__item"
+        style="margin-top: 20px"
+      >
+        <label class="ala-form__label"
+          [class.form__label--required]="createBody.commercePlan === 99"
+          *ngIf="createBody.brandType === 1"
+        >
+          分店數量：
+        </label>
+        <label class="ala-form__label"
+          [class.form__label--required]="createBody.commercePlan === 99"
+          *ngIf="createBody.brandType === 2"
+        >
+          分公司數量：
+        </label>
+        <span *ngIf="createBody.commercePlan !== 99">
+          {{ createBody.groupSetting.maxBranches }}
+        </span>
+        <input
+          type="number"
+          class="create__brand__input"
+          [min]="1"
+          [max]="100"
+          [value]="createBody.groupSetting.maxBranches"
+          (change)="savePlanSetting($event, 'branch')"
+          *ngIf="createBody.commercePlan === 99"
+        >
+      </div>
+      <div class="ala-list__item" 
+        style="margin-top: 20px"
+      >
+        <label class="ala-form__label"
+          [class.form__label--required]="createBody.commercePlan === 99"
+          *ngIf="createBody.brandType === 1"
+        >
+          課程數量：
+        </label>
+        <label class="ala-form__label"
+          [class.form__label--required]="createBody.commercePlan === 99"
+          *ngIf="createBody.brandType === 2"
+        >
+          部門數量：
+        </label>
+        <span *ngIf="createBody.commercePlan !== 99">
+          {{ createBody.groupSetting.maxClasses }}
+        </span>
+        <input
+          type="number"
+          class="create__brand__input"
+          [min]="2"
+          [max]="500"
+          [value]="createBody.groupSetting.maxClasses"
+          (change)="savePlanSetting($event, 'class')"
+          *ngIf="createBody.commercePlan === 99"
+        >
+      </div>
+      <div class="ala-list__item" 
+        style="margin-top: 20px"
+      >
+        <label class="ala-form__label"
+          [class.form__label--required]="createBody.commercePlan === 99"
+        >
+          可入會成員：
+        </label>
+        <span *ngIf="createBody.commercePlan !== 99">
+          {{ createBody.groupMemberSetting.maxGroupMembers }}
+        </span>
+        <input
+          type="number"
+          class="create__brand__input"
+          [min]="20"
+          [max]="100000"
+          [value]="createBody.groupMemberSetting.maxGroupMembers"
+          (change)="savePlanSetting($event, 'member')"
+          *ngIf="createBody.commercePlan === 99"
+        >
+      </div>
+      <div class="ala-list__item" 
+        style="margin-top: 20px"
+      >
+        <label class="ala-form__label"
+          [class.form__label--required]="createBody.commercePlan === 99"
+        >
+          可建立管理員：
+        </label>
+        <span *ngIf="createBody.commercePlan !== 99">
+          {{ createBody.groupManagerSetting.maxGroupManagers }}
+        </span>
+        <input
+          type="number"
+          class="create__brand__input"
+          [min]="4"
+          [max]="1000"
+          [value]="createBody.groupManagerSetting.maxGroupManagers"
+          (change)="savePlanSetting($event, 'admin')"
+          *ngIf="createBody.commercePlan === 99"
+        >
+      </div>
+      <hr>
+      <label class="ala-form__label">總計費用：</label>
+      <span style="color: #F1873A">
+        <span *ngIf="createBody.commercePlan === 1">free</span>
+        <span *ngIf="createBody.commercePlan !== 99 && createBody.commercePlan !== 1 && createBody.brandType === 1">
+          $ {{(createBrandSettingtotalCost | number:'.') || (createBrandSetting.planDatas[createBody.commercePlan - 1].cost  | number:'.')}}
+        </span>
+        <span *ngIf="createBody.commercePlan === 99 || createBody.brandType === 2">自訂價格</span>
+      </span>
+    </div>
   </section>
 </div>
+<ng-template #currentGroupName>
+  <span class="group__blue__label info__row" *ngIf="uiFlag.editMode === 'close' || uiFlag.editMode === 'create'">
+    {{ groupDetail.groupName }}
+  </span>
+  <input
+    class="info__row"
+    [value]="editBody.groupName"
+    (change)="saveGroupName($event)"
+    *ngIf="uiFlag.editMode === 'edit'"
+  />
+</ng-template>
