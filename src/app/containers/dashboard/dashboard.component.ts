@@ -192,7 +192,6 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       this.isLoading = false;
-      console.log('ressss', res);
       this.userProfile = (res as UserProfileInfo);
     });
 
@@ -281,7 +280,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   onResize(event) {
     if (
-      (location.pathname.indexOf('/dashboard/group-info-v2') > -1 && event.target.innerWidth < 1000)
+      (location.pathname.indexOf('/dashboard/group-info') > -1 && event.target.innerWidth < 1000)
       || event.target.innerWidth < 769
     ) {
       this.uiFlag.mobileMode = true;

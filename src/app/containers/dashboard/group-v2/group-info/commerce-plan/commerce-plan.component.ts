@@ -86,7 +86,6 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
     ]).pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(resArr => {
-      console.log('last', resArr);
       this.groupInfo = resArr[0];
       this.commerceInfo = resArr[1];
       this.userSimpleInfo = resArr[2];
@@ -243,7 +242,6 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
    */
   saveNumSetting(e: Event, type: 'adminNum' | 'memberNum' | 'branchNum' | 'classNum') {
     const num = (e as any).target.value;
-    console.log('save', num);
     switch (type) {
       case 'adminNum':
         if (num < 4 || num > 1000) {
@@ -282,7 +280,6 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
    * @author kidin-1091112
    */
   savePlanSetting() {
-    console.log('send setting', this.editBody);
     this.groupService.editGroupManage(this.editBody).subscribe(res => {
       if (res.resultCode !== 200) {
         console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);

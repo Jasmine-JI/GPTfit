@@ -14,12 +14,12 @@
   >
     <button
       class="child__page__btn"
-      [class.edit__mode__btn]="uiFlag.editMode"
+      [class.edit__mode__btn]="uiFlag.editMode === 'edit'"
       [class.btn__loading__status]="uiFlag.isLoading"
       (click)="handleEdit()"
     >
-      <span *ngIf="!uiFlag.editMode">{{ 'universal_operating_edit' | translate}}</span>
-      <span *ngIf="uiFlag.editMode">{{ 'universal_operating_finishEdit' | translate}}</span>
+      <span *ngIf="uiFlag.editMode === 'complete'">{{ 'universal_operating_edit' | translate}}</span>
+      <span *ngIf="uiFlag.editMode === 'edit'">{{ 'universal_operating_finishEdit' | translate}}</span>
     </button>
   </section>
   <section class="architecture__section">
@@ -39,11 +39,12 @@
           [icon]="_brandAdmin.memberIcon"
           [userId]="_brandAdmin.memberId"
           [brandType]="this.brandType"
-          [isHadMenu]="uiFlag.editMode && (userSimpleInfo.isGroupAdmin || userSimpleInfo.accessRight[0] <= 29)"
-          [groupId]="groupInfo.groupId"
+          [isHadMenu]="adminList.brand.length > 1 && uiFlag.editMode === 'edit' && (userSimpleInfo.isGroupAdmin || userSimpleInfo.accessRight[0] <= 29)"
+          [groupId]="_brandAdmin.groupId"
           [groupLevel]="groupInfo.groupLevel"
           [coachType]="groupInfo.coachType"
           (onAssignAdmin)="handleAssignAdmin($event)"
+          (onRemoveAdmin)="handleRemoveAdmin()"
         >
         </app-member-capsule>
       </div>
@@ -66,10 +67,12 @@
           [icon]="_branchAdmin.memberIcon"
           [userId]="_branchAdmin.memberId"
           [brandType]="this.brandType"
-          [isHadMenu]="uiFlag.editMode && (userSimpleInfo.isGroupAdmin || userSimpleInfo.accessRight[0] <= 29)"
-          [groupId]="groupInfo.groupId"
+          [isHadMenu]="adminList.branch.length > 1 && uiFlag.editMode === 'edit' && (userSimpleInfo.isGroupAdmin || userSimpleInfo.accessRight[0] <= 29)"
+          [groupId]="_branchAdmin.groupId"
           [groupLevel]="groupInfo.groupLevel"
+          [parentsName]="_branchAdmin.branchName"
           (onWaittingMemberInfoChange)="handleWaittingMemberInfo($event)"
+          (onRemoveAdmin)="handleRemoveAdmin()"
         >
         </app-member-capsule>
       </div>
@@ -92,10 +95,12 @@
           [icon]="_coach.memberIcon"
           [userId]="_coach.memberId"
           [brandType]="this.brandType"
-          [isHadMenu]="uiFlag.editMode && (userSimpleInfo.isGroupAdmin || userSimpleInfo.accessRight[0] <= 29)"
-          [groupId]="groupInfo.groupId"
+          [isHadMenu]="adminList.class.length > 1 && uiFlag.editMode === 'edit' && (userSimpleInfo.isGroupAdmin || userSimpleInfo.accessRight[0] <= 29)"
+          [groupId]="_coach.groupId"
           [groupLevel]="groupInfo.groupLevel"
+          [parentsName]="_coach.branchName + '/' + _coach.coachName"
           (onWaittingMemberInfoChange)="handleWaittingMemberInfo($event)"
+          (onRemoveAdmin)="handleRemoveAdmin()"
         >
         </app-member-capsule>
       </div>
@@ -117,10 +122,12 @@
           [icon]="_teacher.memberIcon"
           [userId]="_teacher.memberId"
           [brandType]="this.brandType"
-          [isHadMenu]="uiFlag.editMode && (userSimpleInfo.isGroupAdmin || userSimpleInfo.accessRight[0] <= 29)"
-          [groupId]="groupInfo.groupId"
+          [isHadMenu]="adminList.teacher.length > 1 && uiFlag.editMode === 'edit' && (userSimpleInfo.isGroupAdmin || userSimpleInfo.accessRight[0] <= 29)"
+          [groupId]="_teacher.groupId"
           [groupLevel]="groupInfo.groupLevel"
+          [parentsName]="_teacher.branchName + '/' + _teacher.coachName"
           (onWaittingMemberInfoChange)="handleWaittingMemberInfo($event)"
+          (onRemoveAdmin)="handleRemoveAdmin()"
         >
         </app-member-capsule>
       </div>

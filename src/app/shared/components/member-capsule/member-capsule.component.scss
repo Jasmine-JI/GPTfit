@@ -1,14 +1,3 @@
-.member-selector .dropdown-menu > li {
-  padding: 3px 8px;
-}
-
-.member-selector .dropdown-menu.show {
-  padding: 8px 5px;
-  min-width: auto;
-  box-shadow: 1px 2px #888888;
-  min-width: 115px;
-}
-
 .member-selector {
   position: relative;
   width: 237px;
@@ -18,16 +7,59 @@
   display: flex;
   align-items: center;
   vertical-align: middle;
+
+  .dropdown-menu > li {
+    padding: 3px 8px;
+  }
+
+  .dropdown-menu.show {
+    padding: 8px 5px;
+    min-width: auto;
+    box-shadow: 1px 2px #888888;
+    min-width: 115px;
+  }
+
+  .dropdown-menu {
+    top: 40px;
+    right:0px;
+    left: auto;
+  }
+
+  span {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 140px;
+    display: inline-block;
+    position: relative;
+    top: 10px;
+    left: 10px;
+    transform: translate(0%, -50%);
+    line-height: normal;
+  }
+
+  i {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translate(0%, -50%);
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+
 }
 
-.member-selector:hover {
-  cursor: pointer;
-}
-
-.member-selector .dropdown-menu {
-  top: 40px;
-  right:0px;
-  left: auto;
+.group__lock {
+  font-size: 50px;
+  color: red;
+  left: 3px;
+  display: flex;
+  align-items: center;
+  border: 3px solid red;
+  border-radius: 50%;
+  width: 55px;
 }
 
 .normal-manage:hover {
@@ -63,24 +95,4 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-}
-
-.member-selector span {
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-  width: 140px;
-  display: inline-block;
-  position: relative;
-  position: absolute;
-  top: 50%;
-  left: 70px;
-  transform: translate(0%, -50%);
-}
-
-.member-selector i {
-  position: absolute;
-  top: 50%;
-  right: 10px;
-  transform: translate(0%, -50%);
 }

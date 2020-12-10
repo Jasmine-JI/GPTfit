@@ -44,7 +44,8 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     calendarPeriodOffset: 'translateX(0px)',
     activeDateTypeOffset: 'translateX(0px)',
     offsetNum: 0,
-    disableBtn: 'pre'
+    disableBtn: 'pre',
+    isLoading: false,
   }
 
   /**
@@ -74,6 +75,8 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    */
   mapList: Array<any> = [];
 
+  timeout: any;
+
   constructor(
     private utils: UtilsService,
     private reportService: ReportService
@@ -82,6 +85,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.onResize();
     this.getReportCondition();
+    this.getLoadingStatus();
   }
 
   /**
@@ -137,6 +141,19 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         this.getMapList();
       }
 
+    });
+
+  }
+
+  /**
+   * 取得是否loading
+   * @author kidin-1091210
+   */
+  getLoadingStatus() {
+    this.reportService.getReportLoading().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
+      this.uiFlag.isLoading = res;
     });
 
   }
@@ -199,18 +216,33 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         this.date.startTimestamp = moment().startOf('day').subtract(6, 'days').valueOf();
         this.date.endTimestamp = moment().endOf('day').valueOf();
         this.date.openSelector = null;
+
+        if (this.reportConditionOpt.hideConfirmBtn) {
+          this.submit();
+        }
+
         break;
       case 1:
         this.date.type = 'thirtyDay';
         this.date.startTimestamp = moment().startOf('day').subtract(29, 'days').valueOf();
         this.date.endTimestamp = moment().endOf('day').valueOf();
         this.date.openSelector = null;
+
+        if (this.reportConditionOpt.hideConfirmBtn) {
+          this.submit();
+        }
+
         break;
       case 2:
         this.date.type = 'sixMonth';
         this.date.startTimestamp = moment().subtract(6, 'month').add(1, 'days').valueOf();
         this.date.endTimestamp = moment().endOf('day').valueOf();
         this.date.openSelector = null;
+
+        if (this.reportConditionOpt.hideConfirmBtn) {
+          this.submit();
+        }
+
         break;
       case 3:
         if (this.date.openSelector !== 'calendarPeriod') {
@@ -298,6 +330,11 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
 
     this.date.openSelector = null;
     this.changeActiveBar();
+
+    if (this.reportConditionOpt.hideConfirmBtn) {
+      this.submit();
+    }
+
   }
 
   /**
@@ -311,6 +348,11 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
       this.date.startTimestamp = moment(e.startDate).valueOf();
       this.date.endTimestamp = moment(e.endDate).valueOf();
       this.date.openSelector = null;
+
+      if (this.reportConditionOpt.hideConfirmBtn) {
+        this.submit();
+      }
+
     }
     
   }
@@ -354,6 +396,18 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         break;
     }
 
+    // 設置debounce避免使用者快速點擊而大量呼叫api
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+
+    this.timeout = setTimeout(() => {
+      if (this.reportConditionOpt.hideConfirmBtn) {
+        this.submit();
+      }
+
+    }, 300);
+    
   }
 
   /**
@@ -389,8 +443,23 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         this.date.endTimestamp = startTime.endOf('year').valueOf();
         break;
       case 'custom':
+        const range = moment(this.date.endTimestamp).diff(startTime);
+        this.date.startTimestamp = moment(this.date.startTimestamp + range).startOf('day').valueOf();
+        this.date.endTimestamp = moment(this.date.startTimestamp + range).endOf('day').valueOf();
         break;
     }
+
+    // 設置debounce避免使用者快速點擊而大量呼叫api
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+
+    this.timeout = setTimeout(() => {
+      if (this.reportConditionOpt.hideConfirmBtn) {
+        this.submit();
+      }
+
+    }, 300);
 
   }
 
@@ -453,6 +522,11 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    */
   handleClickSportType(type: SportType) {
     this.reportConditionOpt.sportType = type;
+    
+    if (this.reportConditionOpt.hideConfirmBtn) {
+      this.submit();
+    }
+    
   }
 
   /**

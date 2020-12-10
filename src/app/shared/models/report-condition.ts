@@ -11,6 +11,7 @@ export interface ReportConditionOpt {
   group?: GroupTree;
   sportType?: SportType;
   cloudRunMap?: number;
+  hideConfirmBtn: boolean;
 }
 
 export interface GroupSimpleInfo {

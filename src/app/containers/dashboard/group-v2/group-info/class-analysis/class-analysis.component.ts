@@ -379,7 +379,6 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       }),
       takeUntil(this.ngUnsubscribe)
     ).subscribe(response => {
-      console.log('member list', response);
       this.memberList = (response as Array<any>).map(_res => _res.memberId);
       this.createCalender();
     });
@@ -429,7 +428,6 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
     }
 
-    console.log('calender', this.calender);
     this.getClassList();
   }
 
@@ -473,7 +471,6 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         this.utils.openAlert(errMsg);
         console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
-        console.log('analysis', res);
         this.calenderActivities = res.info.activities;
         this.handleCalenderActivity(this.calenderActivities);
       }
@@ -657,7 +654,6 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
           this.updateUrl(false);
         } else {
           this.uiFlag.noData = false;
-          console.log('activity detail', res);
           this.reportCreatedTime = moment().format('YYYY/MM/DD HH:mm');
           this.handleTableData('showPart');
           const infoData = this.activityDetail[0];
@@ -1311,7 +1307,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   // 根據使用者點選的連結導引至該頁面-kidin-1081223
   visitLink() {
     this.router.navigateByUrl(
-      `/dashboard/group-info-v2/${this.hashIdService.handleGroupIdEncode(this.groupInfo.groupId)}/group-introduction`
+      `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupInfo.groupId)}/group-introduction`
     );
 
   }

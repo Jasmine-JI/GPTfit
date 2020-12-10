@@ -1,6 +1,7 @@
 import {
   Component,
   OnInit,
+  OnChanges,
   Input,
   HostListener,
   ElementRef,
@@ -11,12 +12,12 @@ import {
 import { GroupService } from '../../../containers/dashboard/services/group.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { MatDialog } from '@angular/material/dialog';
-import { RightSettingWinComponent } from '../../../containers/dashboard/group/right-setting-win/right-setting-win.component';
 import { Router } from '@angular/router';
 import { MessageBoxComponent } from '../message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
 import { HashIdService } from '@shared/services/hash-id.service';
 import { UserProfileService } from '../../services/user-profile.service';
+import { LongTextPipe } from '../../pipes/long-text.pipe';
 
 @Component({
   selector: 'app-member-capsule',
@@ -24,7 +25,7 @@ import { UserProfileService } from '../../services/user-profile.service';
   styleUrls: ['./member-capsule.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class MemberCapsuleComponent implements OnInit {
+export class MemberCapsuleComponent implements OnInit, OnChanges {
   @Input() memberInfo: any;
   @Input() icon: string;
   @Input() name: string;
@@ -41,6 +42,9 @@ export class MemberCapsuleComponent implements OnInit {
   @Input() coachType: string;
   @Input() brandType: number;
   @Input() accessRight: string;
+  @Input() parentsName: string;
+  @Input() isLocked: boolean;
+
   @Output() onWaittingMemberInfoChange = new EventEmitter();
   @Output() onRemoveAdmin = new EventEmitter();
   @Output() onRemoveGroup = new EventEmitter();
@@ -57,6 +61,7 @@ export class MemberCapsuleComponent implements OnInit {
   height = 'auto';
   token: string;
   updateImgQueryString = '';
+  displayParentsName: string;
   public elementRef;
 
   constructor(
@@ -67,7 +72,8 @@ export class MemberCapsuleComponent implements OnInit {
     private router: Router,
     public dialog: MatDialog,
     private translate: TranslateService,
-    private hashIdService: HashIdService
+    private hashIdService: HashIdService,
+    private longTextPipe: LongTextPipe
   ) {
     this.elementRef = myElement;
   }
@@ -86,6 +92,10 @@ export class MemberCapsuleComponent implements OnInit {
     this.getTranslate();
     this.refreshGroupIcon();
     this.token = this.utils.getToken() || '';
+  }
+
+  ngOnChanges() {
+    this.checkParentsLength();
   }
 
   /**
@@ -117,12 +127,34 @@ export class MemberCapsuleComponent implements OnInit {
   }
 
   /**
+   * 若父群組名稱過長，則將之裁切
+   * @author kidin-1091201
+   */
+  checkParentsLength() {
+    if (this.parentsName && this.parentsName.length > 11) {
+      
+      if (this.parentsName.indexOf('/') > -1) {
+        const groupName = this.parentsName.split('/'),
+              branchName = groupName[0],
+              coachName = groupName[1];
+        this.displayParentsName = `${this.longTextPipe.transform(branchName, 2)}/${this.longTextPipe.transform(coachName, 8)}`;
+      } else {
+        this.displayParentsName = `${this.longTextPipe.transform(this.parentsName, 8)}`;
+      }
+
+    } else {
+      this.displayParentsName = this.parentsName;
+    }
+
+  }
+
+  /**
    * 選單開關
    */
   toggleMenu() {
     if (this.isSubGroupInfo && !this.isHadMenu) {
       this.router.navigateByUrl(
-        `/dashboard/group-info-v2/${this.hashIdService.handleGroupIdEncode(this.groupId)}/group-introduction`
+        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupId)}/group-introduction`
       );
     } else {
       this.active = !this.active;

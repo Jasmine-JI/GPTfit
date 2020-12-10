@@ -23,6 +23,8 @@ import { AppIdPipe } from './app-id.pipe';
 import { SystemIdPipe } from './system-id.pipe';
 import { SportTypePipe } from './sport-type.pipe';
 import { SportTypeIconPipe } from './sport-type-icon.pipe';
+import { LongTextPipe } from './long-text.pipe';
+import { GroupIdSlicePipe } from './group-id-slice.pipe';
 
 
 @NgModule({
@@ -53,7 +55,9 @@ import { SportTypeIconPipe } from './sport-type-icon.pipe';
     AppIdPipe,
     SystemIdPipe,
     SportTypePipe,
-    SportTypeIconPipe
+    SportTypeIconPipe,
+    LongTextPipe,
+    GroupIdSlicePipe
   ],
   exports: [
     SexPipe,
@@ -79,7 +83,9 @@ import { SportTypeIconPipe } from './sport-type-icon.pipe';
     AppIdPipe,
     SystemIdPipe,
     SportTypePipe,
-    SportTypeIconPipe
+    SportTypeIconPipe,
+    LongTextPipe,
+    GroupIdSlicePipe
   ]
 })
 export class SharedPipes {}

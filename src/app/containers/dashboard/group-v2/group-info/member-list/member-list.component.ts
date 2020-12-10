@@ -3,8 +3,10 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { GroupDetailInfo, UserSimpleInfo, MemberInfo } from '../../../models/group-detail';
 import { GroupService } from '../../../services/group.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
-import { Subject, combineLatest } from 'rxjs';
-import { takeUntil, first } from 'rxjs/operators';
+import { Subject, combineLatest, forkJoin } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+
+const errMsg = `Error.<br />Please try again later.`;
 
 @Component({
   selector: 'app-member-list',
@@ -19,7 +21,9 @@ export class MemberListComponent implements OnInit, OnDestroy {
    * UI會用到的各個flag
    */
   uiFlag = {
-    editMode: false
+    editMode: <'complete' | 'edit'>'complete',
+    seeMoreMember: false,
+    seeMoreWaitMember: false
   };
 
   /**
@@ -59,28 +63,37 @@ export class MemberListComponent implements OnInit, OnDestroy {
     combineLatest([
       this.groupService.getRxGroupDetail(),
       this.groupService.getRxCommerceInfo(),
-      this.groupService.getUserSimpleInfo()
+      this.groupService.getUserSimpleInfo(),
+      this.groupService.getRXNormalMemberList()
     ]).pipe(
-      first(),
       takeUntil(this.ngUnsubscribe)
     ).subscribe(resArr => {
-      console.log('yoyoyoyoyo');
       Object.assign(resArr[0], {groupLevel: this.utils.displayGroupLevel(resArr[0].groupId)});
       Object.assign(resArr[0], {expired: resArr[1].expired});
       Object.assign(resArr[0], {commerceStatus: resArr[1].commerceStatus});
+      this.sortMember(resArr[3]);
       this.groupInfo = resArr[0];
       this.userSimpleInfo = resArr[2];
-      this.getMemberList();
+
     })
 
   }
 
   /**
-   * 取得成員名單
+   * 取得管理員和成員名單
+   * @param groupArchitecture {GroupArchitecture}-api 1103的群組階層（subGroupInfo）
    * @author kidin-1091111
    */
-  getMemberList() {
-    const body = {
+  refreshList() {
+    const adminBody = {
+      token: this.userSimpleInfo.token,
+      groupId: this.groupInfo.groupId,
+      groupLevel: this.utils.displayGroupLevel(this.groupInfo.groupId),
+      infoType: 2,
+      avatarType: 3
+    }
+
+    const memberBody = {
       token: this.userSimpleInfo.token,
       groupId: this.groupInfo.groupId,
       groupLevel: this.utils.displayGroupLevel(this.groupInfo.groupId),
@@ -88,15 +101,20 @@ export class MemberListComponent implements OnInit, OnDestroy {
       avatarType: 3
     }
 
-    this.groupService.fetchGroupMemberList(body).subscribe(res => {
-      if (res.resultCode !== 200) {
-        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+    forkJoin([
+      this.groupService.fetchGroupMemberList(adminBody),
+      this.groupService.fetchGroupMemberList(memberBody)
+    ]).subscribe(resArr => {
+      if (resArr[0].resultCode !== 200 || resArr[1].resultCode !== 200) {
+        this.utils.openAlert(errMsg);
+        console.log(`${resArr[0].resultCode}: Api ${resArr[0].apiCode} ${resArr[0].resultMessage}`);
+        console.log(`${resArr[1].resultCode}: Api ${resArr[1].apiCode} ${resArr[1].resultMessage}`);
       } else {
-        console.log('res', res);
-        this.sortMember(res.info.groupMemberInfo);
+        this.groupService.setAdminList(resArr[0].info.groupMemberInfo);
+        this.groupService.setNormalMemberList(resArr[1].info.groupMemberInfo);
       }
-      
-    });
+
+    })
 
   }
 
@@ -132,7 +150,13 @@ export class MemberListComponent implements OnInit, OnDestroy {
    * @author kidin-1091111
    */
   handleEdit() {
-    this.uiFlag.editMode = !this.uiFlag.editMode;
+    if (this.uiFlag.editMode === 'complete') {
+      this.uiFlag.editMode = 'edit';
+      this.groupService.setEditMode('edit');
+    } else {
+      this.uiFlag.editMode = 'complete'
+      this.groupService.setEditMode('complete');
+    }
   }
 
   /**
@@ -141,8 +165,7 @@ export class MemberListComponent implements OnInit, OnDestroy {
    * @author kidin-1091111
    */
   handleAssignAdmin(e: number) {
-    console.log('assign admin', e);
-    this.getMemberList();
+    this.refreshList();
   }
 
   /**
@@ -151,8 +174,16 @@ export class MemberListComponent implements OnInit, OnDestroy {
    * @author kidin-1091111
    */
   handleWaittingMemberInfo(e) {
-    console.log('change member status', e);
-    this.getMemberList();
+    this.refreshList();
+  }
+
+  /**
+   * 點擊看更多顯示所有人列表
+   * @param type {'Member' | 'WaitMember'}-看更多的類別
+   * @author kidin-1091201
+   */
+  seeMore(type: 'Member' | 'WaitMember') {
+    this.uiFlag[`seeMore${type}`] = true;
   }
 
 

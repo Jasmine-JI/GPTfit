@@ -10,9 +10,7 @@ import { HashIdService } from '@shared/services/hash-id.service';
 
 import { GroupService } from '../../../services/group.service';
 import { UtilsService } from '@shared/services/utils.service';
-import { UserInfoService } from '../../../services/userInfo.service';
 import { ActivityService } from '../../../../../shared/services/activity.service';
-import { ActivityOtherDetailsService } from '../../../../../shared/services/activity-other-details.service';
 import { QrcodeService } from '../../../../portal/services/qrcode.service';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 
@@ -210,7 +208,6 @@ export class MyReportComponent implements OnInit, OnDestroy {
     private translateService: TranslateService,
     private groupService: GroupService,
     private utils: UtilsService,
-    private userInfoService: UserInfoService,
     private qrcodeService: QrcodeService,
     private userProfileService: UserProfileService,
     private activityService: ActivityService

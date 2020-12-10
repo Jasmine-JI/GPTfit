@@ -1,4 +1,191 @@
-<div class="flexCol child__page__card">
-  <app-loading-icon *ngIf="uiFlag.isLoading"></app-loading-icon>
-  <app-sports-reports></app-sports-reports>
+<div class="card__section">
+  <ng-container
+    *ngIf="hasResData === false && initialChartComplated"
+    style="width: 100%; display: flex; flex-direction: row; justify-content: center;"
+  >
+    <div class="child__page__card">
+      <p style="margin-top: 10px; color: gray; font-size: 18px;">{{'universal_status_noData' | translate}}</p>
+    </div>
+  </ng-container>
+  <ng-container
+    *ngIf="!reportCompleted || !initialChartComplated"
+    style="display:flex;justify-content: center;align-items: center;width:100%"
+  >
+    <mat-spinner style="z-index: 3; margin-top: 30px; position: absolute; left: 50%;"></mat-spinner>
+    <div class="whiteMask">
+    </div>
+  </ng-container>
+  <ng-container *ngIf="hasResData && reportCompleted" style="width: 100%">
+    <section class="child__page__card">
+      <div class="functionButton">
+        <button class="alatech-btn alatech-btn--default activity-btn"
+          title="{{'universal_operating_print' | translate}}"
+          (click)="print()"
+          *ngIf="isPreviewMode"
+        >
+          {{'universal_operating_print' | translate}}
+        </button>
+        <button class="alatech-btn--default"
+          (click)="goBack()"
+          *ngIf="!isPreviewMode"
+          style="border: none;"
+          style="display: none;"
+        >
+          <i class="icon-svg_web-icon_p1_013-share activity-info_icon_size"></i>
+        </button>
+        <a target="_blank"
+          [href]="previewUrl"
+          class="alatech-btn--default"
+          *ngIf="!isPreviewMode"
+        >
+          <i class="icon-svg_web-icon_p2_087-print activity-info_icon_size"></i>
+        </a>
+      </div>
+      <div class="reprotHeadArea" [class.fitWindow]="!isPreviewMode">
+        <div style="display: flex; flex-direction: row;">
+          <div style="margin-right: 10px;">
+            <img src="{{brandImg}}">
+          </div>
+          <div style="display: flex; flex-direction: column;">
+            <span class="brandName">{{brandName}}</span>
+            <span style="font-size: 14px;">{{branchName}}</span>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column;">
+          <span style="font-size: 8px; color:#919191; text-align: end;">{{'universal_activityData_creatTime' | translate}} {{reportCreatedTime}}</span>
+          <div class="reportName">
+            <p>{{fileInfo?.dispName}}</p>
+            <p style="margin-left: 10px;">{{'universal_group_personalAnalysis' | translate}}</p>
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column;">
+        <span class="ala-dashboard-title activity-title">{{'universal_activityData_summary' | translate}}</span>
+        <div>
+          <div class="flexRow areaDescription">
+              <span class="activity-Link" style="white-space: nowrap;" (click)="visitAuthor()">
+                {{ fileInfo?.author | stringSlice: 0 }}
+              </span>
+              <div id="reportInfo" class="areaDescription"></div>
+          </div>
+          <div style="display: flex; flex-direction: row; margin: 10px 0px; align-items: center;">
+            <div class="activity-icon">
+              <i [class]="sportType | sportTypeIcon"></i>
+            </div>
+            <span style="margin-left: 15px; color: #919191; font-size: 26px;">{{fileInfo?.dispName}}</span>
+          </div>
+          <div class="summaryArea">
+            <div class="summaryDataArea">
+              <span class="summaryData">{{totalTime}}</span>
+              <p class="summaryDescription">{{'universal_activityData_totalTime' | translate}}</p>
+            </div>
+            <div class="summaryDataArea">
+              <span class="summaryData">{{avgHR | number:'1.0-1'}} bpm</span>
+              <p class="summaryDescription">{{'universal_activityData_avgHr' | translate}}</p>
+            </div>
+            <div class="summaryDataArea">
+              <span class="summaryData">{{totalCalories | number:'1.0-1'}} cal</span>
+              <p class="summaryDescription">{{'universal_activityData_totalCalorie' | translate}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column;">
+        <span class="ala-dashboard-title activity-title">{{'universal_activityData_exerciseAchievement' | translate}}</span>
+        <div>
+          <p class="areaDescription">
+            {{'universal_group_exerciseEffectiveness' | translate}}
+          </p>
+          <div #container class="sportEfficiencyArea">
+            <div class="HRZone" *ngIf="!(initialChartComplated && !showHRZoneChartTarget)" style="width: 55%;">
+              <div class="sportEfficiency">
+                <p class="chartTitle">{{'universal_group_hrZoneLandingPoint' | translate}}</p>
+                <p class="chartTitle">{{avgHRZone}}</p>
+              </div>
+              <div #HRZoneChartTarget class="chart" style="margin-right: 10px;">
+                chart target
+              </div>
+            </div>
+            <div style="width: 45%; height: 100%;">
+              <app-hrzone-info [hrZoneRange]="hrZoneRange"></app-hrzone-info>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; ">
+          <p class="ala-dashboard-title activity-title">{{'universal_group_personalAnalysis' | translate}}</p>
+          <div class="trendChart" *ngIf="!(initialChartComplated && !showavgHRChartTarget)" style="width: 100%;">
+            <div class="sportTrend">
+              <p class="chartTitle">{{'universal_activityData_avgHr' | translate}}</p>
+              <p class="chartTitle">{{ avgHR | number:'1.0-2' }}bpm</p>
+            </div>
+            <div #avgHRChartTarget class="chart">
+              chart target
+            </div>
+          </div>
+          <div class="trendChart" *ngIf="!(initialChartComplated && !showcaloriesChartTarget)" style="width: 100%;">
+            <div class="sportTrend">
+              <p class="chartTitle">{{'universal_activityData_totalCalorie' | translate}}</p>
+              <p class="chartTitle">{{ totalCalories | number:'1.0-2' }}cal</p>
+            </div>
+            <div #caloriesChartTarget class="chart">
+              chart target
+            </div>
+          </div>
+      </div>
+    </section>
+  </ng-container>
+  <ng-container *ngIf="hasResData">
+    <div class="other-info--area otherInfoArea">
+      <div class="otherInfoSection">
+        <p class="ala-dashboard-title activity-title">{{'universal_deviceSetting_device' | translate}}</p>
+        <img src="{{this.deviceImgUrl}}" style="width: 100px; height: 100px; margin: 0 auto;">
+        <span class="introductionName">{{ deviceInfo?.modelName || 'universal_status_noData' | translate }}</span>
+        <p>{{"universal_deviceSetting_modeType" | translate}}：{{ (deviceInfo?.modelTypeID | productType | translate) || 'universal_status_noData' | translate }}</p>
+      </div>
+      <div class="otherInfoSection">
+        <p class="ala-dashboard-title activity-title">{{'universal_group_courseIntroduction' | translate}}</p>
+        <div style="display: flex; flex-direction: column;">
+          <div class="groupPagePhoto">
+            <img src="{{groupImg}}">
+          </div>
+          <div class="lesson-title" style="padding-left: 10px; display: flex; flex-direction: column; margin-bottom: 10px;">
+            <span class="introductionName">
+              {{groupData?.groupName}}
+            </span>
+            <span style="text-align: right; font-size: 10px;">
+              {{brandName}} /  {{branchName}}
+            </span>
+          </div>
+        </div>
+        <span>{{lessonPartInfo}}</span>
+        <div
+          *ngIf="!showAllLessonInfo"
+          style="color: #5fbae3;cursor:pointer;text-align: right"
+          (click)="handleExtendCoachInfo('lessonInfo')"
+        >
+          ...{{ "universal_operating_more" | translate}}
+        </div>
+      </div>
+      <div class="otherInfoSection">
+        <p class="ala-dashboard-title activity-title">{{'universal_group_coachIntroduction' | translate}}</p>
+        <div style="display: flex; flex-direction: column;">
+          <div class="groupPagePhoto">
+            <img src="{{coachInfo?.avatarUrl}}" (error)="this.coachInfo.avatarUrl='/assets/images/user2.png'">
+          </div>
+          <span class="introductionName">
+            {{coachInfo?.nickname}}
+          </span>
+        </div>
+        <p>{{coachPartInfo}}</p>
+        <div
+          *ngIf="!showAllCoachInfo"
+          style="color: #5fbae3;cursor:pointer;text-align: right"
+          (click)="handleExtendCoachInfo('coachInfo')"
+        >
+          ...{{ "universal_operating_more" | translate}}
+        </div>
+      </div>
+    </div>
+  </ng-container>
 </div>

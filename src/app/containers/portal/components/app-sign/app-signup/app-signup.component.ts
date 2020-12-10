@@ -6,7 +6,7 @@ import { UtilsService } from '@shared/services/utils.service';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 
-import { Subject } from 'rxjs';
+import { fromEvent, Subscription, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -47,6 +47,11 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   newToken: string;
   ip = '';
   pcView = false;
+  agreeTerms = false;
+  termsText = '';
+  showTerms = <'terms' | 'privacy' | null>null;
+  termsRxEvent = new Subscription();
+  privacyRxEvent = new Subscription();
 
   // 驗證用
   regCheck: RegCheck = {
@@ -142,8 +147,58 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
         nickname: this.translate.instant('universal_userAccount_nickname')
       };
 
+      const mainContent = document.getElementById('mainContent');
+
+      mainContent.innerHTML = `${this.translate.instant('universal_userAccount_clauseContentPage1')
+        }<span id="terms" style="color: rgba(0, 123, 255, 1);">『${
+          this.translate.instant('universal_userAccount_clause')
+        }』</span>、<span id="privacy" style="color: rgba(0, 123, 255, 1);">『${
+          this.translate.instant('universal_userAccount_privacyStatement')
+        }』</span>${
+          this.translate.instant('universal_userAccount_clauseContentPage2')
+        }`.replace(/\n/gm, '');
+
+      this.listenClickTerms();
     });
 
+  }
+
+  /**
+   * 監聽條款、隱私權點擊事件
+   * @author kidin-1091209
+   */
+  listenClickTerms() {
+
+    setTimeout(() => {
+      const termsLink = document.getElementById('terms'),
+            privacyLink = document.getElementById('privacy'),
+            termsClickEvent = fromEvent(termsLink, 'click'),
+            privacyClickEvent = fromEvent(privacyLink, 'click');
+      
+      this.termsRxEvent = termsClickEvent.pipe(
+        takeUntil(this.ngUnsubscribe)
+      ).subscribe(e => {
+        this.handleShowTerms('terms');
+      })
+
+      this.privacyRxEvent = privacyClickEvent.pipe(
+        takeUntil(this.ngUnsubscribe)
+      ).subscribe(e => {
+        this.handleShowTerms('privacy');
+      })
+
+    });
+
+  }
+
+  /**
+   * 處理顯示條款或隱私選詳細頁面
+   * @param action {'terms' | 'privacy' | null}
+   * @author kidin-1091208
+   */
+  handleShowTerms(action: 'terms' | 'privacy' | null) {
+    this.showTerms = action;
+    return false;
   }
 
   /**
@@ -667,6 +722,19 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
       this.router.navigateByUrl(`/enableAccount-web`);
     } else {
       this.router.navigateByUrl(`/enableAccount`);
+    }
+
+  }
+
+  /**
+   * 處理使用者點選同意或不同意條款和隱私權聲明
+   * @param action {boolean}-同意/不同意
+   * @author kidin-1091208
+   */
+  handleAgreeTerms(action: boolean) {
+    this.agreeTerms = action;
+    if (!action) {
+      this.turnBack();
     }
 
   }

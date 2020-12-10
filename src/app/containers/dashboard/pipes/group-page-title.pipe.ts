@@ -18,11 +18,11 @@ export class GroupPageTitlePipe implements PipeTransform {
         return `${this.translate.instant('universal_deviceSetting_adout')}`;
       case 'myclass-report':
         return `${this.translate.instant('universal_userProfile_personal')} ${this.translate.instant('universal_group_classReport')}`;
-      case 'class-analysis-v2':
+      case 'class-analysis':
         return `${this.translate.instant('universal_group_group')} ${this.translate.instant('universal_group_classReport')}`;
       case 'sports-report':
         return `${this.translate.instant('universal_group_group')} ${this.translate.instant('universal_activityData_sportReport')}`;
-      case 'life-tracking-v2':
+      case 'life-tracking':
         return `${this.translate.instant('universal_group_group')} ${this.translate.instant('universal_lifeTracking_lifeTracking')}`;
       case 'cloudrun-report':
         return `${this.translate.instant('universal_group_group')} cloud run ${this.translate.instant('universal_activityData_report')}`;

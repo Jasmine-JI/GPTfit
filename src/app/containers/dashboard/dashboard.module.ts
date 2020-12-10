@@ -97,6 +97,7 @@ import { GroupInfoComponent as GroupInfoV2Component } from './group-v2/group-inf
 import { SearchGroupComponent } from './group-v2/search-group/search-group.component';
 import { GroupIntroductionComponent } from './group-v2/group-info/group-introduction/group-introduction.component';
 import { SportsReportComponent } from './group-v2/group-info/sports-report/sports-report.component';
+import { LifeTrackingComponent as LifeTrackingV2Component } from './group-v2/group-info/life-tracking/life-tracking.component';
 import { MyClassReportComponent } from './group-v2/group-info/my-class-report/my-class-report.component';
 import { ClassAnalysisComponent as ClassAnalysisV2Component } from './group-v2/group-info/class-analysis/class-analysis.component';
 import { CommercePlanComponent } from './group-v2/group-info/commerce-plan/commerce-plan.component';
@@ -217,6 +218,7 @@ import { PushMessageListComponent } from './components/push-message/push-message
     SearchGroupComponent,
     GroupIntroductionComponent,
     SportsReportComponent,
+    LifeTrackingV2Component,
     MyClassReportComponent,
     ClassAnalysisV2Component,
     CommercePlanComponent,

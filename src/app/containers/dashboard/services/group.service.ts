@@ -28,11 +28,15 @@ export class GroupService {
   groupCommerceInfo$ = new ReplaySubject<any>(1); // 儲存群組經營權限資訊-kidin-1091104
   classMemberList$ = new BehaviorSubject<any>([]); // 儲存課程成員清單-kidin-1091116
   comMemberList$ = new BehaviorSubject<any>([]); // 儲存企業/分公司/部門群組成員清單-kidin-1091116
+  adminList$ = new ReplaySubject<any>(1);
+  normalMemberList$ = new ReplaySubject<any>(1);
   updatedGroupImg$ = new BehaviorSubject<string>('');
   memberList$ = new BehaviorSubject<any>({
     groupId: '',
     groupList: []
   });
+
+  newGroupId: string; // 創建群組的group id，以上傳圖床。
 
   reportCategory$ = new BehaviorSubject<string>('99');
   typeAllData$ = new BehaviorSubject<any>({});
@@ -354,20 +358,37 @@ export class GroupService {
   }
 
   /**
-   * 取得企業/分公司/部門群組的成員名單（含管理員）
+   * 取得管理員名單
    * @author kidin-1091116
    */
-  getRXcomMemberList() {
-    return this.comMemberList$;
+  getRXAdminList() {
+    return this.adminList$;
   }
 
   /**
-   * 儲存企業/分公司/部門群組的成員名單（含管理員）
+   * 儲存管理員名單
    * @param list {Array<any>}
    * @author kidin-1091116
    */
-  setcomMemberList(list: Array<any>) {
-    this.comMemberList$.next(list);
+  setAdminList(list: Array<any>) {
+    this.adminList$.next(list);
+  }
+
+  /**
+   * 取得一般成員名單
+   * @author kidin-1091116
+   */
+  getRXNormalMemberList() {
+    return this.normalMemberList$;
+  }
+
+  /**
+   * 儲存一般成員名單
+   * @param list {Array<any>}
+   * @author kidin-1091116
+   */
+  setNormalMemberList(list: Array<any>) {
+    this.normalMemberList$.next(list);
   }
 
   /**
@@ -475,43 +496,28 @@ export class GroupService {
   }
 
   /**
+   * 儲存新的群組id
+   * @param Detail {string}-新的group id
+   * @author kidin-1091020
+   */
+  saveNewGroupId(id: string) {
+    this.newGroupId = id;
+  }
+
+  /**
+   * 取得群組概要資訊
+   * @author kidin-1091020
+   */
+  getNewGroupId() {
+    return this.newGroupId;
+  }
+
+  /**
    * 1103-依權限取得群組內所有群組後並儲存
    * @author kidin-1090716
    */
-  saveAllLevelGroupData(
-    token: string,
-    groupId: string,
-    groupLevel: number
-  ) {
-    const body = {
-      token,
-      groupId,
-      groupLevel,
-      infoType: 1,
-      avatarType: 3
-    };
-
-    this.fetchGroupMemberList(body).pipe(
-      catchError(err => throwError(err)),
-      map(data => {
-        if (data.resultCode === 200) {
-          Object.assign(data.info.subGroupInfo, {groupId: groupId});
-          return data;
-        } else {
-          const newData = {
-            info: {
-              subGroupInfo: null
-            }
-
-          };
-          return newData;
-        }
-        
-      })
-    ).subscribe(res => {
-      this.allLevelGroupData$.next(res.info.subGroupInfo);
-    });
-
+  setAllLevelGroupData(childGroupList: any) {
+    this.allLevelGroupData$.next(childGroupList);
   }
 
   /**
