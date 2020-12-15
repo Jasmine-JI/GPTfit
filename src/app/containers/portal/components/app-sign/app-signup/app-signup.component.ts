@@ -38,6 +38,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     password: '',
     nickname: ''
   };
+
   appSys = 0;  // 0:web, 1:ios, 2:android
   focusForm = '';
   displayPW = false;
@@ -49,9 +50,11 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   pcView = false;
   agreeTerms = false;
   termsText = '';
-  showTerms = <'terms' | 'privacy' | null>null;
+  showTerms = <'termsConditions' | 'privacyPolicy' | null>null;
   termsRxEvent = new Subscription();
   privacyRxEvent = new Subscription();
+  termsLink: string;
+  debounce = false;
 
   // 驗證用
   regCheck: RegCheck = {
@@ -178,13 +181,13 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
       this.termsRxEvent = termsClickEvent.pipe(
         takeUntil(this.ngUnsubscribe)
       ).subscribe(e => {
-        this.handleShowTerms('terms');
+        this.handleShowTerms('termsConditions');
       })
 
       this.privacyRxEvent = privacyClickEvent.pipe(
         takeUntil(this.ngUnsubscribe)
       ).subscribe(e => {
-        this.handleShowTerms('privacy');
+        this.handleShowTerms('privacyPolicy');
       })
 
     });
@@ -193,10 +196,29 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /**
    * 處理顯示條款或隱私選詳細頁面
-   * @param action {'terms' | 'privacy' | null}
+   * @param action {'termsConditions' | 'privacyPolicy' | null}
    * @author kidin-1091208
    */
-  handleShowTerms(action: 'terms' | 'privacy' | null) {
+  handleShowTerms(action: 'termsConditions' | 'privacyPolicy' | null) {
+    if (action !== null) {
+
+      switch(navigator.language.toLowerCase()) {
+        case 'zh-tw':
+          this.termsLink = `${location.origin}/app/public_html/appHelp/zh-TW/${action}.html`;
+          break;
+        case 'zh-cn':
+          this.termsLink = `${location.origin}/app/public_html/appHelp/zh-CN/${action}.html`;
+          break;
+        case 'pt-br':
+          this.termsLink = `${location.origin}/app/public_html/appHelp/pt-BR/${action}.html`;
+          break;
+        default:
+          this.termsLink = `${location.origin}/app/public_html/appHelp/en-US/${action}.html`;
+          break;
+      }
+
+    }
+
     this.showTerms = action;
     return false;
   }
@@ -206,18 +228,31 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1090717
    */
   turnBack(): void {
-    if (this.appSys === 1) {
-      (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
-    } else if (this.appSys === 2) {
-      (window as any).android.closeWebView('Close');
-    } else {
+    if (this.showTerms !== null) {
+      this.showTerms = null;
 
-      if (this.pcView) {
-        this.router.navigateByUrl('/signIn-web');
+      // 避免關閉條款時，不小心連點而關閉webview
+      this.debounce = true;
+      setTimeout(() => {
+        this.debounce = false
+      }, 250);
+
+    } else if (!this.debounce) {
+
+      if (this.appSys === 1) {
+        (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
+      } else if (this.appSys === 2) {
+        (window as any).android.closeWebView('Close');
       } else {
-        this.router.navigateByUrl('/signIn');
-      }
 
+        if (this.pcView) {
+          this.router.navigateByUrl('/signIn-web');
+        } else {
+          this.router.navigateByUrl('/signIn');
+        }
+
+
+      }
 
     }
 

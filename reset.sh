@@ -59,9 +59,6 @@ elif [ $IP_ADDR == "192.168.1.234" ]; then
         ln -s /var/www/html/RD_FW_2 /var/www/html/dist/RD_FW_2
   fi
   if [ ! -L /var/www/html/dist/img ]; then
-        ln -s /var/www/html/img /var/www/html/dist/img
-  fi
-  if [ ! -L /var/www/html/dist/img ]; then
         ln -s /var/cloud/img /var/www/html/dist/img
   fi
 elif [ $IP_ADDR == "192.168.1.232" ]; then

@@ -5,12 +5,16 @@
     style="position: relative;"
     [style.display]="uiFlag.isPreviewMode ? 'none' : ''"
   >
-    <section id="scenery__section">
+    <section
+      id="scenery__section"
+      style="background-size: cover;"
+      [style.background-image]="uiFlag.portalMode && currentGroupInfo.groupDetail.groupThemeImgUrl ? 'url(' + currentGroupInfo.groupDetail.groupThemeImgUrl + ')' : ''"
+    >
       <img
         style="position: absolute; width: 100%; height: 100%;"
         [src]="uiFlag.editMode !== 'close' && editImage.scenery.base64 !== null ? editImage.scenery.base64 : currentGroupInfo.groupDetail.groupThemeImgUrl"
         (error)="sceneryError()"
-        *ngIf="!uiFlag.hideScenery && uiFlag.editMode !== 'create'"
+        *ngIf="(!uiFlag.portalMode || currentGroupInfo.groupDetail.groupThemeImgUrl === undefined) && !uiFlag.hideScenery && uiFlag.editMode !== 'create'"
       />
       <img
         style="position: absolute; width: 100%; height: 100%;"
