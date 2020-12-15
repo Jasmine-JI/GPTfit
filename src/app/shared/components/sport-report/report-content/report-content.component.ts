@@ -44,7 +44,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
   nodata = false;
   dataDateRange = '';
   showReport = false;
-  selectType = '99';
+  selectType = 99;
   proficiency = 'metacarpus'; // 預設進階者
   description: string;
   handleMuscleData = false;
@@ -623,7 +623,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
 
         this.activityLength += +perStrokeData['totalActivities'];
         typeAllTotalTrainTime += +perStrokeData['totalSecond'];
-        typeList.unshift(perStrokeData['type']);
+        typeList.unshift(+perStrokeData['type']);
         typeAllavgHr.unshift(perStrokeData['avgHeartRateBpm']);
         typeAllActivityTime.unshift(
           perStrokeData['totalSecond'] / perStrokeData['totalActivities']
@@ -1765,7 +1765,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
   // 點擊運定項目後該類別相關資料特別顯示-kidin-1090214
   assignCategory (category) {
     if (category === this.selectType) {
-      this.selectType = '99';
+      this.selectType = 99;
     } else {
       this.selectType = category;
     }
@@ -2005,6 +2005,10 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
 
   }
 
+  /**
+   * 解除rxjs訂閱與初始化篩選器
+   * @author kidin-1091211
+   */
   ngOnDestroy () {
     this.showReport = false;
     this.ngUnsubscribe.next();

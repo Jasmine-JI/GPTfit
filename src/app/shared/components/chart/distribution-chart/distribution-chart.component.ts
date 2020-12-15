@@ -20,11 +20,11 @@ import { TranslateService } from '@ngx-translate/core';
 
 export class DistributionChartComponent implements OnInit, OnChanges {
   // 運動報告用變數-kidin-1090218
-  @Input() typeList: Array<string>;
+  @Input() typeList: Array<number>;
   @Input() perAvgHR: Array<any>;
   @Input() perActivityTime: Array<any>;
   @Input() HRRange: Array<any>;
-  @Input() selectType: string;
+  @Input() selectType: number;
 
   // 生活追蹤用變數
   @Input() perFFMI: Array<any>;
@@ -197,7 +197,7 @@ export class DistributionChartComponent implements OnInit, OnChanges {
     }
 
     for (let i = 0; i < this.perAvgHR.length; i++) {
-      if (this.selectType === '99' || this.typeList[i] === this.selectType) {
+      if (this.selectType === 99 || this.typeList[i] === this.selectType) {
         let y;
         if (this.perAvgHR[i] >= boundary[0] && this.perAvgHR[i] <= boundary[1]) {
           if (+this.perActivityTime[i] <= 1200) {

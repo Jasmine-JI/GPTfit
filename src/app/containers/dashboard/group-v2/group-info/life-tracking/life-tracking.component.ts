@@ -168,17 +168,11 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
    */
   reportConditionOpt: ReportConditionOpt = {
     brandType: 2,
-    reportType: 'sport',
+    reportType: 'lifeTracking',
     date: {
       startTimestamp: moment().startOf('day').subtract(6, 'days').valueOf(),
       endTimestamp: moment().endOf('day').valueOf(),
     },
-    group: {
-      brands: null,
-      branches: null,
-      coaches: []
-    },
-    sportType: 99,
     hideConfirmBtn: true
   }
 
@@ -1428,6 +1422,10 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
     this.reportService.setReportLoading(status);
   }
 
+  /**
+   * 解除rxjs訂閱
+   * @author kidin-1091211
+   */
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();

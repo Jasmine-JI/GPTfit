@@ -189,11 +189,11 @@
             </div>
           </div>
           <div class="flexRow" style="flex-wrap: wrap; justify-content: space-around;">
-            <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[0] !== 0" (click)="assignCategory('1')">
+            <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[0] !== 0" (click)="assignCategory(1)">
               <div class="flexRow">
                 <span
                   class="dot"
-                  [style.color]="selectType === '1' || selectType === '99' ? '#ea5757' : '#9e9e9e'"
+                  [style.color]="selectType === 1 || selectType === 99 ? '#ea5757' : '#9e9e9e'"
                 >●</span>
                 <span class="perTypeTitle">
                   {{'universal_activityData_run' | translate}} {{perTypeLength[0]}} {{'universal_activityData_numberOf' | translate}}
@@ -201,11 +201,11 @@
               </div>
               <span class="perTypeAvgTime">{{'universal_adjective_avg' | translate}} {{perTypeTime[0] | sportTime}}</span>
             </div>
-            <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[1] !== 0" (click)="assignCategory('2')">
+            <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[1] !== 0" (click)="assignCategory(2)">
               <div class="flexRow">
                 <span
                   class="dot"
-                  [style.color]="selectType === '2' || selectType === '99' ? '#ff9a22' : '#9e9e9e'"
+                  [style.color]="selectType === 2 || selectType === 99 ? '#ff9a22' : '#9e9e9e'"
                 >●</span>
                 <span class="perTypeTitle">
                   {{'universal_activityData_cycle' | translate}} {{perTypeLength[1]}} {{'universal_activityData_numberOf' | translate}}
@@ -213,11 +213,11 @@
               </div>
               <span class="perTypeAvgTime">{{'universal_adjective_avg' | translate}} {{perTypeTime[1] | sportTime}}</span>
             </div>
-            <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[2] !== 0" (click)="assignCategory('3')">
+            <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[2] !== 0" (click)="assignCategory(3)">
               <div class="flexRow">
                 <span
                   class="dot"
-                  [style.color]="selectType === '3' || selectType === '99' ? '#f9cc3d' : '#9e9e9e'"
+                  [style.color]="selectType === 3 || selectType === 99 ? '#f9cc3d' : '#9e9e9e'"
                 >●</span>
                 <span class="perTypeTitle">
                   {{'universal_activityData_weightTraining' | translate}} {{perTypeLength[2]}} {{'universal_activityData_numberOf' | translate}}
@@ -225,11 +225,11 @@
               </div>
               <span class="perTypeAvgTime">{{'universal_adjective_avg' | translate}} {{perTypeTime[2] | sportTime}}</span>
             </div>
-            <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[3] !== 0" (click)="assignCategory('4')">
+            <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[3] !== 0" (click)="assignCategory(4)">
               <div class="flexRow">
                 <span
                   class="dot"
-                  [style.color]="selectType === '4' || selectType === '99' ? '#cfef4b' : '#9e9e9e'"
+                  [style.color]="selectType === 4 || selectType === 99 ? '#cfef4b' : '#9e9e9e'"
                 >●</span>
                 <span class="perTypeTitle">
                   {{'universal_activityData_swin' | translate}} {{perTypeLength[3]}} {{'universal_activityData_numberOf' | translate}}
@@ -237,11 +237,11 @@
               </div>
               <span class="perTypeAvgTime">{{'universal_adjective_avg' | translate}} {{perTypeTime[3] | sportTime}}</span>
             </div>
-            <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[4] !== 0" (click)="assignCategory('5')">
+            <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[4] !== 0" (click)="assignCategory(5)">
               <div class="flexRow">
                 <span
                   class="dot"
-                  [style.color]="selectType === '5' || selectType === '99' ? '#75f25f' : '#9e9e9e'"
+                  [style.color]="selectType === 5 || selectType === 99 ? '#75f25f' : '#9e9e9e'"
                 >●</span>
                 <span class="perTypeTitle">
                   {{'universal_activityData_aerobic' | translate}} {{perTypeLength[4]}} {{'universal_activityData_numberOf' | translate}}
@@ -249,11 +249,11 @@
               </div>
               <span class="perTypeAvgTime">{{'universal_adjective_avg' | translate}} {{perTypeTime[4] | sportTime}}</span>
             </div>
-            <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[5] !== 0" (click)="assignCategory('6')">
+            <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[5] !== 0" (click)="assignCategory(6)">
               <div class="flexRow">
                 <span
                   class="dot"
-                  [style.color]="selectType === '6' || selectType === '99' ? '#72e8b0' : '#9e9e9e'"
+                  [style.color]="selectType === 6 || selectType === 99 ? '#72e8b0' : '#9e9e9e'"
                 >●</span>
                 <span class="perTypeTitle">
                   {{'universal_sportsName_boating' | translate}} {{perTypeLength[5]}} {{'universal_activityData_numberOf' | translate}}
@@ -261,11 +261,11 @@
               </div>
               <span class="perTypeAvgTime">{{'universal_adjective_avg' | translate}} {{perTypeTime[5] | sportTime}}</span>
             </div>
-            <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[6] !== 0" (click)="assignCategory('7')">
+            <div class="flexCol perTypeInfo" *ngIf="perTypeLength && perTypeLength[6] !== 0" (click)="assignCategory(7)">
               <div class="flexRow">
                 <span
                   class="dot"
-                  [style.color]="selectType === '7' || selectType === '99' ? '#6bebf9' : '#9e9e9e'"
+                  [style.color]="selectType === 7 || selectType === 99 ? '#6bebf9' : '#9e9e9e'"
                 >●</span>
                 <span class="perTypeTitle">
                   {{'universal_activityData_ballSports' | translate}} {{perTypeLength[6]}} {{'universal_activityData_numberOf' | translate}}

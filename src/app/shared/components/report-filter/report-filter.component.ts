@@ -34,7 +34,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    * UI上會需要用到的變數或flag
    */
   uiFlag = {
-    showConditionSelector: false,
+    showConditionSelector: true,
     isPreviewMode: false,
     dateTypeIdx: 0,
     showDateTypeShiftIcon: false,
@@ -46,6 +46,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     offsetNum: 0,
     disableBtn: 'pre',
     isLoading: false,
+    currentType: ''
   }
 
   /**
@@ -137,12 +138,34 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     ).subscribe(res => {
       this.reportConditionOpt = res;
 
+      if (this.reportConditionOpt.reportType !== this.uiFlag.currentType) {
+        this.initDate();
+        this.uiFlag.currentType = this.reportConditionOpt.reportType;
+      }
+
       if (this.reportConditionOpt.reportType === 'cloudRun') {
         this.getMapList();
       }
 
     });
 
+  }
+
+  /**
+   * 初始化日期
+   * @author kidin-1091215
+   */
+  initDate() {
+    this.date = {
+      type: 'sevenDay',
+      maxTimestamp: moment().endOf('day').valueOf(),
+      startTimestamp: moment().startOf('day').subtract(6, 'days').valueOf(),
+      endTimestamp: moment().endOf('day').valueOf(),
+      endOfShift: true,
+      openSelector: null
+    }
+
+    this.changeActiveBar();
   }
 
   /**

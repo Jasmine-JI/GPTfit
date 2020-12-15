@@ -29,11 +29,10 @@
     </button>
     <ng-container *ngIf="showTerms !== null">
       <div class="terms__section">
-        <div style="position: relative;">
-          <app-app-terms style="width: 100%; height: 100%;" *ngIf="showTerms === 'terms'"></app-app-terms>
-          <app-app-privacy-statement style="width: 100%; height: 100%;" *ngIf="showTerms === 'privacy'"></app-app-privacy-statement>
-          <i class="icon-svg_web-icon_p1_012-close close__btn" (click)="handleShowTerms(null)"></i>
-        </div>
+        <app-ala-iframe
+          [src]="termsLink"
+          [type]="'signUp'"
+        ></app-ala-iframe>
       </div>
     </ng-container>
   </div>
