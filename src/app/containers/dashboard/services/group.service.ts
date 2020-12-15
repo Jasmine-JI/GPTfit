@@ -38,7 +38,7 @@ export class GroupService {
 
   newGroupId: string; // 創建群組的group id，以上傳圖床。
 
-  reportCategory$ = new BehaviorSubject<string>('99');
+  reportCategory$ = new BehaviorSubject<number>(99);
   typeAllData$ = new BehaviorSubject<any>({});
   typeRunData$ = new BehaviorSubject<any>({});
   typeCycleData$ = new BehaviorSubject<any>({});
@@ -328,7 +328,7 @@ export class GroupService {
    * @param status {string}}
    * @author kidin-1090715
    */
-  setReportCategory (status: string) {
+  setReportCategory (status: number) {
     this.reportCategory$.next(status);
   }
 
@@ -336,7 +336,7 @@ export class GroupService {
    * 取得訂閱的運動報告類別
    * @author kidin-1090715
    */
-  getreportCategory (): Observable<string> {
+  getreportCategory (): Observable<number> {
     return this.reportCategory$;
   }
 
@@ -422,22 +422,22 @@ export class GroupService {
 
   /**
    * 取得指定類別的運動資料
-   * @param type {string}
+   * @param type {number}
    * @author kidin-1090715
    */
-  getTypeData (type: string) {
+  getTypeData (type: number) {
     switch (type) {
-      case '1':
+      case 1:
         return this.typeRunData$;
-      case '2':
+      case 2:
         return this.typeCycleData$;
-      case '3':
+      case 3:
         return this.typeWeightTrainData$;
-      case '4':
+      case 4:
         return this.typeSwimData$;
-      case '5':
+      case 5:
         return this.typeAerobicData$;
-      case '6':
+      case 6:
         return this.typeRowData$;
       default:
         return this.typeAllData$;

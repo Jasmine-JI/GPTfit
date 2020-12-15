@@ -177,7 +177,14 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
    * @author kidin-1091008
    */
   checkLanguage() {
-    let browserLang = this.utilsService.getLocalStorageObject('locale');
+    let browserLang: string;
+    // 確認是否為webview
+    if ((window as any).webkit || (window as any).android) {
+      browserLang = navigator.language;
+    } else {
+      browserLang = this.utilsService.getLocalStorageObject('locale');
+    }
+
     if (!browserLang) {
       browserLang = this.translateService.getBrowserCultureLang().toLowerCase();
       const currentLocales = [

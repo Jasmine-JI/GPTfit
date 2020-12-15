@@ -185,7 +185,7 @@
         </div>
       </div>
     </section>
-    <div style="display: flex; justify-content: flex-end;" *ngIf="!reportConditionOpt.hideConfirmBtn">
+    <div style="display: flex; justify-content: flex-end;" *ngIf="reportConditionOpt && !reportConditionOpt.hideConfirmBtn">
       <span class="confirm__btn" (click)="submit()">{{ 'universal_operating_determine' | translate }}</span>
     </div>
   </main>

@@ -339,7 +339,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
     endDate: moment().format('YYYY-MM-DDT23:59:59.999Z')
   };
   diffDay: number;
-  reportCategory = '99';
+  reportCategory = 99;
   reportEndDate = '';
   period = '';
   reportRangeType = 1;
@@ -1840,7 +1840,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
   }
 
   // 根據運動類別使用rxjs從service取得資料-kidin-1090120
-  loadCategoryData (type: string) {
+  loadCategoryData (type: number) {
     this.isRxjsLoading = true;
     this.groupService.getTypeData(type).subscribe(res => {
       this.categoryActivityLength = res.activityLength;

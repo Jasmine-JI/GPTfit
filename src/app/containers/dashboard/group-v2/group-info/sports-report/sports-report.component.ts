@@ -58,7 +58,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   nodata = false;
   dataDateRange = '';
   showReport = false;
-  selectType = '99';
+  selectType = 99;
   sortStatus = {
     group: false,
     person: false
@@ -467,6 +467,11 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     
     this.reportService.setReportCondition(this.reportConditionOpt);
     this.getReportSelectedCondition();
+
+    // 使用rxjs訂閱運動類別使運動類別更改時可以即時切換-kidin-1090121
+    this.groupService.getreportCategory().pipe(first()).subscribe(res => {
+      this.loadCategoryData(res);
+    });
 
     // 確認是否為預覽列印頁面-kidin-1090205
     if (location.search.indexOf('ipm=s') > -1) {
@@ -1374,7 +1379,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
         this.activityLength += +perData['totalActivities'];
         typeAllTotalTrainTime += +perData['totalSecond'];
-        typeList.push(perData['type']);
+        typeList.push(+perData['type']);
         typeAllCalories.push(perData['calories']);
         typeAllDataDate.push(this.activitiesList[i].startTime.split('T')[0]);
         typeAllavgHr.push(perData['avgHeartRateBpm']);
@@ -1838,6 +1843,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     );
     
     this.changeLoadingStatus(false);
+    this.loadCategoryData(99);
   }
 
   // 使時間依照xxxx/XX/XX格式顯示-kidin-1090120
@@ -1859,7 +1865,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   }
 
   // 根據運動類別使用rxjs從service取得資料-kidin-1090120
-  loadCategoryData (type: string) {
+  loadCategoryData (type: number) {
     this.isRxjsLoading = true;
     this.groupService.getTypeData(type).subscribe(res => {
       this.categoryActivityLength = res.activityLength;
@@ -3192,7 +3198,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   // 點擊運動項目後該類別相關資料特別顯示-kidin-1090214
   assignCategory (category) {
     if (category === this.selectType) {
-      this.selectType = '99';
+      this.selectType = 99;
     } else {
       this.selectType = category;
     }
@@ -3990,7 +3996,10 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     this.reportService.setReportLoading(status);
   }
 
-
+  /**
+   * 解除rxjs訂閱
+   * @author kidin-1091211
+   */
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
