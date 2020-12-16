@@ -405,23 +405,34 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
     let text = '';
     if (navigator.language.toLowerCase() === 'pt-br') {
       text = `${this.translate.instant('universal_userAccount_clauseContentPage1')
-        }<a target="_blank" href="https://app.alatech.com.tw/app/public_html/appHelp/pt-BR/termsConditions.html">『${
+        }<a target="_blank" href="${location.origin}/app/public_html/appHelp/pt-BR/termsConditions.html">『${
           this.translate.instant('universal_userAccount_clause')
-        }』</a>、<a target="_blank" href="https://app.alatech.com.tw/app/public_html/appHelp/pt-BR/privacyPolicy.html">『${
+        }』</a>、<a target="_blank" href="${location.origin}/app/public_html/appHelp/pt-BR/privacyPolicy.html">『${
           this.translate.instant('universal_userAccount_privacyStatement')
         }』</a>
         ${this.translate.instant('universal_userAccount_clauseContentPage2')
       }`.replace(/\n/gm, '');
-    } else if (navigator.language.indexOf('zh') > -1) {
+    } else if (navigator.language.toLowerCase() === 'zh-tw') {
       text = `${this.translate.instant('universal_userAccount_clauseContentPage1')
-        }<a target="_blank" href="https://www.alatech.com.tw/action-copyright.htm">『${this.translate.instant('universal_userAccount_clause')
-        }』</a>、<a target="_blank" href="https://www.alatech.com.tw/action-privacy.htm">『${this.translate.instant('universal_userAccount_privacyStatement')}』</a>${
+        }<a target="_blank" href="${location.origin}/app/public_html/appHelp/zh-TW/termsConditions.html">『${
+          this.translate.instant('universal_userAccount_clause')
+        }』</a>、<a target="_blank" href="${location.origin}/app/public_html/appHelp/zh-TW/privacyPolicy.html">『${
+          this.translate.instant('universal_userAccount_privacyStatement')}』</a>${
+        this.translate.instant('universal_userAccount_clauseContentPage2')
+      }`.replace(/\n/gm, '');
+    } else if (navigator.language.toLowerCase() === 'zh-cn') {
+      text = `${this.translate.instant('universal_userAccount_clauseContentPage1')
+        }<a target="_blank" href="${location.origin}/app/public_html/appHelp/zh-CN/termsConditions.html">『${
+          this.translate.instant('universal_userAccount_clause')
+        }』</a>、<a target="_blank" href="${location.origin}/app/public_html/appHelp/zh-CN/privacyPolicy.html">『${
+          this.translate.instant('universal_userAccount_privacyStatement')}』</a>${
         this.translate.instant('universal_userAccount_clauseContentPage2')
       }`.replace(/\n/gm, '');
     } else {
       text = `${this.translate.instant('universal_userAccount_clauseContentPage1')
-        }<a target="_blank" href="http://www.alatech.com/Terms%20and%20Conditions/action-copyright.htm">『${
-        this.translate.instant('universal_userAccount_clause')}』</a>、<a target="_blank" href="http://www.alatech.com/Privacy%20Policy/action-privacy.htm">『${
+        }<a target="_blank" href="${location.origin}/app/public_html/appHelp/en-US/termsConditions.html">『${
+        this.translate.instant('universal_userAccount_clause')
+      }』</a>、<a target="_blank" href="${location.origin}/app/public_html/appHelp/en-US/privacyPolicy.html">『${
         this.translate.instant('universal_userAccount_privacyStatement')}』</a>${
         this.translate.instant('universal_userAccount_clauseContentPage2')
       }`.replace(/\n/gm, '');
