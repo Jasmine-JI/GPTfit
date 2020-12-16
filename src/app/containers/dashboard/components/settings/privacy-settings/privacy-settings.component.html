@@ -52,7 +52,7 @@
       <div *ngIf="activityTracking.showPerObj">
         <mat-checkbox
           color="primary"
-          [checked]="activityTracking.openObj.indexOf(4) >= 0"
+          [checked]="activityTracking.openObj.indexOf(4) > -1"
           (click)="selectModifyRange('file', 4)"
         >
           {{ 'universal_group_myObject' | translate: {'object': i18n.gym} }}
