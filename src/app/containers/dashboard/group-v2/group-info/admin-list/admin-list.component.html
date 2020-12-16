@@ -39,7 +39,11 @@
           [icon]="_brandAdmin.memberIcon"
           [userId]="_brandAdmin.memberId"
           [brandType]="this.brandType"
-          [isHadMenu]="adminList.brand.length > 1 && uiFlag.editMode === 'edit' && (userSimpleInfo.isGroupAdmin || userSimpleInfo.accessRight[0] <= 29)"
+          [isHadMenu]="
+            adminList.brand.length > 1
+            && uiFlag.editMode === 'edit'
+            && ((userSimpleInfo.isGroupAdmin && userSimpleInfo.accessRight[0] <= 30) || userSimpleInfo.accessRight[0] <= 29)
+          "
           [groupId]="_brandAdmin.groupId"
           [groupLevel]="groupInfo.groupLevel"
           [coachType]="groupInfo.coachType"
@@ -67,7 +71,11 @@
           [icon]="_branchAdmin.memberIcon"
           [userId]="_branchAdmin.memberId"
           [brandType]="this.brandType"
-          [isHadMenu]="adminList.branch.length > 1 && uiFlag.editMode === 'edit' && (userSimpleInfo.isGroupAdmin || userSimpleInfo.accessRight[0] <= 29)"
+          [isHadMenu]="
+            adminList.branch.length > 1
+            && uiFlag.editMode === 'edit'
+            && ((userSimpleInfo.isGroupAdmin && userSimpleInfo.accessRight[0] <= 40) || userSimpleInfo.accessRight[0] <= 29)
+          "
           [groupId]="_branchAdmin.groupId"
           [groupLevel]="groupInfo.groupLevel"
           [parentsName]="_branchAdmin.branchName"
@@ -95,7 +103,11 @@
           [icon]="_coach.memberIcon"
           [userId]="_coach.memberId"
           [brandType]="this.brandType"
-          [isHadMenu]="adminList.class.length > 1 && uiFlag.editMode === 'edit' && (userSimpleInfo.isGroupAdmin || userSimpleInfo.accessRight[0] <= 29)"
+          [isHadMenu]="
+            adminList.class.length > 1
+            && uiFlag.editMode === 'edit'
+            && ((userSimpleInfo.isGroupAdmin && userSimpleInfo.accessRight[0] <= 50) || userSimpleInfo.accessRight[0] <= 29)
+          "
           [groupId]="_coach.groupId"
           [groupLevel]="groupInfo.groupLevel"
           [parentsName]="_coach.branchName + '/' + _coach.coachName"
@@ -122,7 +134,11 @@
           [icon]="_teacher.memberIcon"
           [userId]="_teacher.memberId"
           [brandType]="this.brandType"
-          [isHadMenu]="adminList.teacher.length > 1 && uiFlag.editMode === 'edit' && (userSimpleInfo.isGroupAdmin || userSimpleInfo.accessRight[0] <= 29)"
+          [isHadMenu]="
+            adminList.teacher.length > 1
+            && uiFlag.editMode === 'edit'
+            && (userSimpleInfo.accessRight[0] <= 60 || userSimpleInfo.accessRight[0] <= 29)
+          "
           [groupId]="_teacher.groupId"
           [groupLevel]="groupInfo.groupLevel"
           [parentsName]="_teacher.branchName + '/' + _teacher.coachName"

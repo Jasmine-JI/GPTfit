@@ -191,6 +191,9 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
     this.token = this.utils.getToken() || '';
     this.getAllLevelGroupInfo();
 
+    this.reportService.setReportCondition(this.reportConditionOpt);
+    this.getReportSelectedCondition();
+
     // 確認是否為預覽列印頁面-kidin-1090205
     if (location.search.indexOf('ipm=s') > -1) {
       this.isPreviewMode = true;
@@ -213,7 +216,10 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
           endDate: moment(res.date.endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ')
         };
   
-        this.handleSubmitSearch('click');
+        if (this.groupList) {
+          this.handleSubmitSearch('click');
+        }
+
       }
 
     });
@@ -288,13 +294,6 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
             });
 
       this.groupList = list;
-      const groupListInfo = {
-        groupId: this.groupData.groupId,
-        groupList: this.groupList
-      };
-      
-      this.reportService.setReportCondition(this.reportConditionOpt);
-      this.getReportSelectedCondition();
 
       // 確認網址是否帶有query string-kidin-1090215
       if (
@@ -386,6 +385,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
             totalFFMI = 0,
             validFFMIStroke = 0;
 
+        this.allPersonalData.length = 0;
         for (let i = 0; i < res.length; i++) {
 
           // 確認隱私權有無開放-kidin-1090215

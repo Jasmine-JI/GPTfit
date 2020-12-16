@@ -141,7 +141,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1090717
    */
   getTranslate(): void {
-    this.translate.get('hollo word').pipe(
+    this.translate.get('hollow world').pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
       this.i18n = {
@@ -152,16 +152,20 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
       const mainContent = document.getElementById('mainContent');
 
-      mainContent.innerHTML = `${this.translate.instant('universal_userAccount_clauseContentPage1')
-        }<span id="terms" style="color: rgba(0, 123, 255, 1);">『${
-          this.translate.instant('universal_userAccount_clause')
-        }』</span>、<span id="privacy" style="color: rgba(0, 123, 255, 1);">『${
-          this.translate.instant('universal_userAccount_privacyStatement')
-        }』</span>${
-          this.translate.instant('universal_userAccount_clauseContentPage2')
-        }`.replace(/\n/gm, '');
+      if (mainContent) {
+        mainContent.innerHTML = `${this.translate.instant('universal_userAccount_clauseContentPage1')
+          }<span id="terms" style="color: rgba(0, 123, 255, 1);">『${
+            this.translate.instant('universal_userAccount_clause')
+          }』</span>、<span id="privacy" style="color: rgba(0, 123, 255, 1);">『${
+            this.translate.instant('universal_userAccount_privacyStatement')
+          }』</span>${
+            this.translate.instant('universal_userAccount_clauseContentPage2')
+          }`.replace(/\n/gm, '');
 
-      this.listenClickTerms();
+        this.listenClickTerms();
+
+      }
+
     });
 
   }
@@ -202,7 +206,14 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   handleShowTerms(action: 'termsConditions' | 'privacyPolicy' | null) {
     if (action !== null) {
 
-      switch(navigator.language.toLowerCase()) {
+      let lang: string;
+      if ((window as any).android) {
+        lang = this.utils.getLocalStorageObject('locale');
+      } else {
+        lang = navigator.language.toLowerCase();
+      }
+
+      switch(lang) {
         case 'zh-tw':
           this.termsLink = `${location.origin}/app/public_html/appHelp/zh-TW/${action}.html`;
           break;
