@@ -157,115 +157,120 @@ export class PrivacySettingsComponent implements OnInit, OnChanges {
    * @author
    */
   selectModifyRange (type: string, obj: number) {
-    this.editing = true;
 
-    let radioBtn: HTMLElement;
-    switch (type) {
-      case 'file':
-        radioBtn = document.getElementById('selectFileAll');
-        this.activityTracking.showConfirmBtn = true;
+    // 用setTimeout處理資料和顯示不同步的問題
+    setTimeout(() => {
+      this.editing = true;
 
-        switch (obj) {
-          case 99:
-            if (this.activityTracking.openObj.indexOf(obj) >= 0) {
+      let radioBtn: HTMLElement;
+      switch (type) {
+        case 'file':
+          radioBtn = document.getElementById('selectFileAll');
+          this.activityTracking.showConfirmBtn = true;
 
-              setTimeout(() => {
-                radioBtn.classList.remove('mat-radio-checked');
-              }, 0);
+          switch (obj) {
+            case 99:
+              if (this.activityTracking.openObj.indexOf(obj) >= 0) {
 
-              this.activityTracking.openObj.length = 1;
-              this.activityTracking.showPerObj = true;
-            } else {
-              radioBtn.classList.add('mat-radio-checked');
-              this.activityTracking.openObj.length = 1;
-              this.activityTracking.openObj.push(99);
-              this.activityTracking.showPerObj = false;
-            }
-            break;
-          case 4:
-            if (this.activityTracking.openObj.indexOf(obj) > 0) {
-              this.activityTracking.openObj = this.activityTracking.openObj.filter(_obj => {
-                return _obj !== obj;
-              });
-            } else {
-              this.activityTracking.openObj.push(obj);
-              this.activityTracking.openObj.sort();
-            }
+                setTimeout(() => {
+                  radioBtn.classList.remove('mat-radio-checked');
+                }, 0);
 
-            break;
-        }
-        break;
+                this.activityTracking.openObj.length = 1;
+                this.activityTracking.showPerObj = true;
+              } else {
+                radioBtn.classList.add('mat-radio-checked');
+                this.activityTracking.openObj.length = 1;
+                this.activityTracking.openObj.push(99);
+                this.activityTracking.showPerObj = false;
+              }
+              break;
+            case 4:
+              if (this.activityTracking.openObj.indexOf(obj) > 0) {
+                this.activityTracking.openObj = this.activityTracking.openObj.filter(_obj => {
+                  return _obj !== obj;
+                });
+              } else {
+                this.activityTracking.openObj.push(obj);
+                this.activityTracking.openObj.sort();
+              }
 
-      case 'sportReport':
-        radioBtn = document.getElementById('selectSportReportAll');
-        this.activityTrackingReport.showConfirmBtn = true;
+              break;
+          }
+          break;
 
-        switch (obj) {
-          case 99:
-            if (this.activityTrackingReport.openObj.indexOf(obj) >= 0) {
+        case 'sportReport':
+          radioBtn = document.getElementById('selectSportReportAll');
+          this.activityTrackingReport.showConfirmBtn = true;
 
-              setTimeout(() => {
-                radioBtn.classList.remove('mat-radio-checked');
-              }, 0);
+          switch (obj) {
+            case 99:
+              if (this.activityTrackingReport.openObj.indexOf(obj) >= 0) {
 
-              this.activityTrackingReport.openObj.length = 1;
-              this.activityTrackingReport.showPerObj = true;
-            } else {
-              radioBtn.classList.add('mat-radio-checked');
-              this.activityTrackingReport.openObj.length = 1;
-              this.activityTrackingReport.openObj.push(99);
-              this.activityTrackingReport.showPerObj = false;
-            }
-            break;
-          case 4:
-            if (this.activityTrackingReport.openObj.indexOf(obj) > 0) {
-              this.activityTrackingReport.openObj = this.activityTrackingReport.openObj.filter(_obj => {
-                return _obj !== obj;
-              });
-            } else {
-              this.activityTrackingReport.openObj.push(obj);
-              this.activityTrackingReport.openObj.sort();
-            }
+                setTimeout(() => {
+                  radioBtn.classList.remove('mat-radio-checked');
+                }, 0);
 
-            break;
-        }
-        break;
+                this.activityTrackingReport.openObj.length = 1;
+                this.activityTrackingReport.showPerObj = true;
+              } else {
+                radioBtn.classList.add('mat-radio-checked');
+                this.activityTrackingReport.openObj.length = 1;
+                this.activityTrackingReport.openObj.push(99);
+                this.activityTrackingReport.showPerObj = false;
+              }
+              break;
+            case 4:
+              if (this.activityTrackingReport.openObj.indexOf(obj) > 0) {
+                this.activityTrackingReport.openObj = this.activityTrackingReport.openObj.filter(_obj => {
+                  return _obj !== obj;
+                });
+              } else {
+                this.activityTrackingReport.openObj.push(obj);
+                this.activityTrackingReport.openObj.sort();
+              }
 
-      case 'lifeTracking':
-        radioBtn = document.getElementById('selectLifeTranckingAll');
-        this.lifeTrackingReport.showConfirmBtn = true;
+              break;
+          }
+          break;
 
-        switch (obj) {
-          case 99:
-            if (this.lifeTrackingReport.openObj.indexOf(obj) >= 0) {
+        case 'lifeTracking':
+          radioBtn = document.getElementById('selectLifeTranckingAll');
+          this.lifeTrackingReport.showConfirmBtn = true;
 
-              setTimeout(() => {
-                radioBtn.classList.remove('mat-radio-checked');
-              }, 0);
+          switch (obj) {
+            case 99:
+              if (this.lifeTrackingReport.openObj.indexOf(obj) >= 0) {
 
-              this.lifeTrackingReport.openObj.length = 1;
-              this.lifeTrackingReport.showPerObj = true;
-            } else {
-              radioBtn.classList.add('mat-radio-checked');
-              this.lifeTrackingReport.openObj.length = 1;
-              this.lifeTrackingReport.openObj.push(99);
-              this.lifeTrackingReport.showPerObj = false;
-            }
-            break;
-          case 4:
-            if (this.lifeTrackingReport.openObj.indexOf(obj) > 0) {
-              this.lifeTrackingReport.openObj = this.lifeTrackingReport.openObj.filter(_obj => {
-                return _obj !== obj;
-              });
-            } else {
-              this.lifeTrackingReport.openObj.push(obj);
-              this.lifeTrackingReport.openObj.sort();
-            }
+                setTimeout(() => {
+                  radioBtn.classList.remove('mat-radio-checked');
+                }, 0);
 
-            break;
-        }
-        break;
-    }
+                this.lifeTrackingReport.openObj.length = 1;
+                this.lifeTrackingReport.showPerObj = true;
+              } else {
+                radioBtn.classList.add('mat-radio-checked');
+                this.lifeTrackingReport.openObj.length = 1;
+                this.lifeTrackingReport.openObj.push(99);
+                this.lifeTrackingReport.showPerObj = false;
+              }
+              break;
+            case 4:
+              if (this.lifeTrackingReport.openObj.indexOf(obj) > 0) {
+                this.lifeTrackingReport.openObj = this.lifeTrackingReport.openObj.filter(_obj => {
+                  return _obj !== obj;
+                });
+              } else {
+                this.lifeTrackingReport.openObj.push(obj);
+                this.lifeTrackingReport.openObj.sort();
+              }
+
+              break;
+          }
+          break;
+      }
+
+    })
 
   }
 

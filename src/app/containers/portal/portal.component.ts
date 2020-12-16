@@ -178,11 +178,11 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   checkLanguage() {
     let browserLang: string;
-    // 確認是否為webview
-    if ((window as any).webkit || (window as any).android) {
-      browserLang = navigator.language;
-    } else {
+    // 確認是否為android
+    if ((window as any).android) {
       browserLang = this.utilsService.getLocalStorageObject('locale');
+    } else {
+      browserLang = navigator.language.toLowerCase();
     }
 
     if (!browserLang) {
@@ -207,6 +207,11 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
       this.translateService.use(browserLang);
       this.utilsService.setLocalStorageObject('locale', browserLang);
     } else {
+
+      if (browserLang === 'pt-br') {
+        browserLang = 'pt-pt'; // 巴西語預設顯示葡萄牙語-kidin-1091203
+      }
+
       this.translateService.use(browserLang);
     }
 
