@@ -150,23 +150,30 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
         nickname: this.translate.instant('universal_userAccount_nickname')
       };
 
-      const mainContent = document.getElementById('mainContent');
-
-      if (mainContent) {
-        mainContent.innerHTML = `${this.translate.instant('universal_userAccount_clauseContentPage1')
-          }<span id="terms" style="color: rgba(0, 123, 255, 1);">『${
-            this.translate.instant('universal_userAccount_clause')
-          }』</span>、<span id="privacy" style="color: rgba(0, 123, 255, 1);">『${
-            this.translate.instant('universal_userAccount_privacyStatement')
-          }』</span>${
-            this.translate.instant('universal_userAccount_clauseContentPage2')
-          }`.replace(/\n/gm, '');
-
-        this.listenClickTerms();
-
-      }
-
+      this.createMainContent();
     });
+
+  }
+
+  /**
+   * 建立條款顯示內容
+   * @author kidin-1091216
+   */
+  createMainContent() {
+    const mainContent = document.getElementById('mainContent');
+    if (mainContent) {
+      mainContent.innerHTML = `${this.translate.instant('universal_userAccount_clauseContentPage1')
+        }<span id="terms" style="color: rgba(0, 123, 255, 1);">『${
+          this.translate.instant('universal_userAccount_clause')
+        }』</span>、<span id="privacy" style="color: rgba(0, 123, 255, 1);">『${
+          this.translate.instant('universal_userAccount_privacyStatement')
+        }』</span>${
+          this.translate.instant('universal_userAccount_clauseContentPage2')
+        }`.replace(/\n/gm, '');
+
+      this.listenClickTerms();
+
+    }
 
   }
 

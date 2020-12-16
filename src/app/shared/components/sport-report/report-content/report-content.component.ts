@@ -260,7 +260,6 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
   createReport() {
     if (this.userId) {
       this.isLoading = true;
-      this.initVariable();
 
       // 1個月內取日概要陣列，半年以上取周概要陣列-kidin_1090122
       this.checkReportRangeType(this.reportStartTime, this.reportEndTime);
@@ -279,6 +278,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
           this.updateUrl('false');
           return this.showPrivacyUi.emit(true);
         } else if (res[0].resultCode === 200) {
+          this.initVariable();
           this.showPrivacyUi.emit(false);
           const dataLength = res[0].reportInfo.totalPoint;
           if (dataLength === 0) {
