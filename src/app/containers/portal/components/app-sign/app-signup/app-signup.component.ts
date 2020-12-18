@@ -690,33 +690,27 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
         this.saveToken(this.newToken);
         this.authService.setLoginStatus(true);
 
-        // web先強迫要啟用帳號，待app v2上架後拿掉此判斷-kidin-1090724
-        if (!this.pcView) {
-          const N = '\n';
-          this.dialog.open(MessageBoxComponent, {
-            hasBackdrop: true,
-            disableClose: true,
-            data: {
-              title: 'Message',
-              body: `${this.translate.instant('universal_status_success')} ${this.translate.instant('universal_userAccount_signUp')} ${
-                N} ${this.translate.instant('universal_popUpMessage_continueExecution')} ${
-                this.translate.instant('universal_deviceSetting_switch')} ${this.translate.instant('universal_userAccount_account')}?
-              `,
-              confirmText: this.translate.instant(
-                'universal_operating_confirm'
-              ),
-              cancelText: this.translate.instant(
-                'universal_operating_cancel'
-              ),
-              onCancel: this.finishSignup.bind(this),
-              onConfirm: this.toEnableAccount.bind(this)
-            }
+        const N = '\n';
+        this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          disableClose: true,
+          data: {
+            title: 'Message',
+            body: `${this.translate.instant('universal_status_success')} ${this.translate.instant('universal_userAccount_signUp')} ${
+              N} ${this.translate.instant('universal_popUpMessage_continueExecution')} ${
+              this.translate.instant('universal_deviceSetting_switch')} ${this.translate.instant('universal_userAccount_account')}?
+            `,
+            confirmText: this.translate.instant(
+              'universal_operating_confirm'
+            ),
+            cancelText: this.translate.instant(
+              'universal_operating_cancel'
+            ),
+            onCancel: this.finishSignup.bind(this),
+            onConfirm: this.toEnableAccount.bind(this)
+          }
 
-          });
-
-        } else {
-          this.router.navigateByUrl(`/enableAccount-web`);
-        }
+        });
 
       }
 

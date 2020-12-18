@@ -287,7 +287,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @author kidin-1091109
    */
   assignAdmin() {
-    this.chooseLabels.length === 0;
+    this.chooseLabels.length = 0;
     this.chooseLabels.push({ 'groupName': 'GPTfit', 'userName': this.userSimpleInfo.nickname, 'userId': this.userSimpleInfo.userId });
   }
 
@@ -467,6 +467,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    */
   handleConfirm(type: number, _lists: Array<Object>) {
     this.chooseLabels = _lists;
+    this.createBody.groupManager = this.chooseLabels.map(_user => _user.userId);
   }
 
   /**

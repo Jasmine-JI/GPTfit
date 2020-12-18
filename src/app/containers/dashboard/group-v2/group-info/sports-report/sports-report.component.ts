@@ -34,6 +34,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     date: {
       startTimestamp: moment().startOf('day').subtract(6, 'days').valueOf(),
       endTimestamp: moment().endOf('day').valueOf(),
+      type: 'sevenDay'
     },
     group: {
       brands: null,
@@ -637,7 +638,6 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     };
 
     this.groupService.fetchGroupMemberList(body).subscribe(res => {
-
       const memlist = [],
             memberList = res.info.groupMemberInfo;
       for (let i = 0; i < memberList.length; i++) {
@@ -714,16 +714,15 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     }
 
     this.defaultDate = `${this.selectDate.startDate}_${this.selectDate.endDate}`;
-
-    if (this.isPreviewMode) {
-      this.handleSubmitSearch('url');
-    }
-
+    this.reportConditionOpt.date.startTimestamp = moment(this.selectDate.startDate).valueOf();
+    this.reportConditionOpt.date.endTimestamp = moment(this.selectDate.endDate).valueOf();
+    this.reportConditionOpt.date.type = 'custom';
+    this.reportService.setReportCondition(this.reportConditionOpt);
+    this.handleSubmitSearch('url');
   }
 
   // 依群組階層將成員分類，並過濾已解散群組和使用set過濾重複階層的成員-kidin-1090602
   sortMember (level, list) {
-
       const lowObj = {},
             middleObj = {},
             highObj = {},
@@ -3424,7 +3423,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     this.groupPage = {
       memberList: this.getTargetGroupMemberList(e.currentTarget.id),
       info: `/dashboard/group-info/${hashGroupId}`,
-      report: `/dashboard/group-info/${hashGroupId}/com-report?startdate=${startDateString}&enddate=${endDateString}`
+      report: `/dashboard/group-info/${hashGroupId}/sports-report?startdate=${startDateString}&enddate=${endDateString}`
     };
 
     const menuPosition = {

@@ -56,12 +56,12 @@ module.exports = function writeGpx(results, fs) {
     const content = `<?xml version="1.0" encoding="UTF-8"?>
     <gpx creator="Alatech Connect" version="1.0"
       xmlns="http://www.topografix.com/GPX/1/1"
-      xmlns:ns3="http://www.alatechcloud.alatech.com.tw"
+      xmlns:ns3="https://www.gptfit.com"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd"
     >
       <metadata>
-        <link href="alatechcloud.alatech.com.tw">
+        <link href="https://www.gptfit.com">
           <text>Alatech Connect</text>
         </link>
         <time>${timeStr}</time>

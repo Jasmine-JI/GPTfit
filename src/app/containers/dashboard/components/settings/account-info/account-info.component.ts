@@ -79,7 +79,6 @@ export class AccountInfoComponent implements OnInit {
    */
   checkDomain(): void {
     if (
-      location.hostname === 'alatechcloud.alatech.com.tw' ||
       location.hostname === '152.101.90.130' ||
       location.hostname === 'cloud.alatech.com.tw' ||
       location.hostname === 'www.gptfit.com'

@@ -28,6 +28,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
     date: {
       startTimestamp: moment().startOf('day').subtract(6, 'days').valueOf(),
       endTimestamp: moment().endOf('day').valueOf(),
+      type: 'sevenDay'
     },
     sportType: 99,
     hideConfirmBtn: true
