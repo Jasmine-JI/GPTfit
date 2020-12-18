@@ -5,6 +5,7 @@ export interface ReportConditionOpt {
   date?: {
     startTimestamp: number;
     endTimestamp: number;
+    type: 'sevenDay' | 'thirtyDay' | 'sixMonth' | 'today' | 'thisWeek' | 'thisMonth' | 'thisYear' | 'custom';
   };
   brandType?: null | 1 | 2;
   reportType?: 'sport' | 'lifeTracking' | 'cloudRun';

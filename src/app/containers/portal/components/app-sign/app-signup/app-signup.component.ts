@@ -150,23 +150,30 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
         nickname: this.translate.instant('universal_userAccount_nickname')
       };
 
-      const mainContent = document.getElementById('mainContent');
-
-      if (mainContent) {
-        mainContent.innerHTML = `${this.translate.instant('universal_userAccount_clauseContentPage1')
-          }<span id="terms" style="color: rgba(0, 123, 255, 1);">『${
-            this.translate.instant('universal_userAccount_clause')
-          }』</span>、<span id="privacy" style="color: rgba(0, 123, 255, 1);">『${
-            this.translate.instant('universal_userAccount_privacyStatement')
-          }』</span>${
-            this.translate.instant('universal_userAccount_clauseContentPage2')
-          }`.replace(/\n/gm, '');
-
-        this.listenClickTerms();
-
-      }
-
+      this.createMainContent();
     });
+
+  }
+
+  /**
+   * 建立條款顯示內容
+   * @author kidin-1091216
+   */
+  createMainContent() {
+    const mainContent = document.getElementById('mainContent');
+    if (mainContent) {
+      mainContent.innerHTML = `${this.translate.instant('universal_userAccount_clauseContentPage1')
+        }<span id="terms" style="color: rgba(0, 123, 255, 1);">『${
+          this.translate.instant('universal_userAccount_clause')
+        }』</span>、<span id="privacy" style="color: rgba(0, 123, 255, 1);">『${
+          this.translate.instant('universal_userAccount_privacyStatement')
+        }』</span>${
+          this.translate.instant('universal_userAccount_clauseContentPage2')
+        }`.replace(/\n/gm, '');
+
+      this.listenClickTerms();
+
+    }
 
   }
 
@@ -683,33 +690,27 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
         this.saveToken(this.newToken);
         this.authService.setLoginStatus(true);
 
-        // web先強迫要啟用帳號，待app v2上架後拿掉此判斷-kidin-1090724
-        if (!this.pcView) {
-          const N = '\n';
-          this.dialog.open(MessageBoxComponent, {
-            hasBackdrop: true,
-            disableClose: true,
-            data: {
-              title: 'Message',
-              body: `${this.translate.instant('universal_status_success')} ${this.translate.instant('universal_userAccount_signUp')} ${
-                N} ${this.translate.instant('universal_popUpMessage_continueExecution')} ${
-                this.translate.instant('universal_deviceSetting_switch')} ${this.translate.instant('universal_userAccount_account')}?
-              `,
-              confirmText: this.translate.instant(
-                'universal_operating_confirm'
-              ),
-              cancelText: this.translate.instant(
-                'universal_operating_cancel'
-              ),
-              onCancel: this.finishSignup.bind(this),
-              onConfirm: this.toEnableAccount.bind(this)
-            }
+        const N = '\n';
+        this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          disableClose: true,
+          data: {
+            title: 'Message',
+            body: `${this.translate.instant('universal_status_success')} ${this.translate.instant('universal_userAccount_signUp')} ${
+              N} ${this.translate.instant('universal_popUpMessage_continueExecution')} ${
+              this.translate.instant('universal_deviceSetting_switch')} ${this.translate.instant('universal_userAccount_account')}?
+            `,
+            confirmText: this.translate.instant(
+              'universal_operating_confirm'
+            ),
+            cancelText: this.translate.instant(
+              'universal_operating_cancel'
+            ),
+            onCancel: this.finishSignup.bind(this),
+            onConfirm: this.toEnableAccount.bind(this)
+          }
 
-          });
-
-        } else {
-          this.router.navigateByUrl(`/enableAccount-web`);
-        }
+        });
 
       }
 

@@ -1,11 +1,8 @@
 .terms__section {
-  position: fixed;
-  z-index: 1;
   width: 100vw;
-  height: calc(100vh - 41px);
+  height: calc(100vh - 10px);
   border: none;
   word-break: break-word;
-  margin: 41px auto 0 auto;
 }
 
 .close__btn {

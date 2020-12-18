@@ -178,10 +178,6 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
           // 使用api v2 1003確認或刷新token和取得帳號狀態
           this.authService.loginServerV2(body).subscribe(loginRes => {
             this.accountStatus = loginRes.signIn.accountStatus;
-            if (loginRes.signIn.accountStatus === 1) {  // 待app v2 上架再刪除此段-kidin-1090724
-              this.router.navigateByUrl(`/enableAccount-web`);
-            }
-
           });
 
         }

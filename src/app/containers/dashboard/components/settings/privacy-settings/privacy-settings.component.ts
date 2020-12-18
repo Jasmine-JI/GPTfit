@@ -136,14 +136,13 @@ export class PrivacySettingsComponent implements OnInit, OnChanges {
 
   /**
    * 滑鼠滑入顯示提示框
-   * @event
    */
   mouseEnter() {
     this.isDisplayBox = true;
   }
 
   /**
-   *
+   *滑鼠滑入顯示提示框
    */
   mouseLeave() {
     this.isDisplayBox = false;
@@ -154,7 +153,6 @@ export class PrivacySettingsComponent implements OnInit, OnChanges {
    * 1:僅自己 2:我的朋友 3:我的群組 4:我的健身房教練 99:所有人
    * @param type {string}
    * @param obj {number}
-   * @author
    */
   selectModifyRange (type: string, obj: number) {
 

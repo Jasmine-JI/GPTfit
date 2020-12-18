@@ -617,9 +617,6 @@ app.use(function (req, res, next) {
   } else {
     allowedOrigins = [
       'http://152.101.90.130',
-      'http://alatechcloud.alatech.com.tw:8080',
-      'https://alatechcloud.alatech.com.tw:8080',
-      'http://alatechcloud.alatech.com.tw',
       'http://152.101.90.130:8080',
       'https://152.101.90.130:8080',
       'https://cloud.alatech.com.tw',

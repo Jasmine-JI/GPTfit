@@ -869,7 +869,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
           if (this.currentGroupInfo.groupLevel === 60) {
             return _accessRight === 50 || _accessRight === 60;
           } else  {
-            return _accessRight === this.currentGroupInfo.groupLevel;
+            return _accessRight <= this.currentGroupInfo.groupLevel;
           }
 
         });
