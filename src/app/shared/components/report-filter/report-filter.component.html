@@ -47,7 +47,7 @@
                 class="selector__tab__title"
                 [class.date__type--active]="date.type === 'today' || date.type === 'thisWeek' || date.type === 'thisMonth' || date.type === 'thisYear'"
                 (click)="selectDateRange($event, 3)"
-              >選擇曆期</span>
+              >{{'universal_activityData_calendarSelect' | translate}}</span>
             </div>
             <div style="display: flex; align-items: center; justify-content: center;">
               <span
@@ -85,7 +85,7 @@
           <span class="calendar_period__option" (click)="selectCalendarPeroid('today')">{{'universal_time_today' | translate}}</span>
           <span class="calendar_period__option" (click)="selectCalendarPeroid('thisWeek')">{{'universal_time_thisWeek' | translate}}</span>
           <span class="calendar_period__option" (click)="selectCalendarPeroid('thisMonth')">{{'universal_time_thisMonth' | translate}}</span>
-          <span class="calendar_period__option" (click)="selectCalendarPeroid('thisYear')">今年</span>
+          <span class="calendar_period__option" (click)="selectCalendarPeroid('thisYear')">{{'universal_time_thisYear' | translate}}</span>
         </div>
       </div>
     </section>

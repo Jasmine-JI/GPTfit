@@ -31,6 +31,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
     date: {
       startTimestamp: moment().startOf('day').subtract(6, 'days').valueOf(),
       endTimestamp: moment().endOf('day').valueOf(),
+      type: 'sevenDay'
     },
     sportType: 99,
     hideConfirmBtn: true
@@ -218,8 +219,6 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
           tap(reportAddition => {
             this.reportStartTime = moment(reportAddition.date.startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
             this.reportEndTime = moment(reportAddition.date.endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
-            this.reportEndDate = this.reportEndTime.split('T')[0].replace(/-/g, '/');
-            this.switchPeriod();
             this.createReport();
 
             this.reportCategory = reportAddition.sportType;
@@ -245,8 +244,6 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
       ).subscribe(response => {
         this.reportStartTime = moment(response.date.startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
         this.reportEndTime = moment(response.date.endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
-        this.reportEndDate = this.reportEndTime.split('T')[0].replace(/-/g, '/');
-        this.switchPeriod();
         this.createReport();
 
         this.reportCategory = response.sportType;
@@ -258,6 +255,8 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
 
   // 建立運動報告-kidin-1090117
   createReport() {
+    this.reportEndDate = this.reportEndTime.split('T')[0].replace(/-/g, '/');
+    this.switchPeriod();
     if (this.userId) {
       this.isLoading = true;
 
@@ -436,7 +435,6 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
 
     } else {
       const weekCoefficient = this.findDate();
-
       for (let i = 0; i < weekCoefficient.weekNum; i++) {
         this.chartTimeStamp.push(weekCoefficient.startDate + 86400000 * i * 7);
       }
@@ -612,6 +610,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
       return false;
     }
 
+    this.activityLength = 0;
     for (let i = 0; i < this.activitiesList.length; i++) {
       typeAllDataDate.unshift(this.activitiesList[i].startTime.split('T')[0]);
 
@@ -1131,6 +1130,8 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
   // 根據運動類別使用rxjs從service取得資料-kidin-1090120
   loadCategoryData (type: number) {
     this.isRxjsLoading = true;
+    this.reportEndDate = this.reportEndTime.split('T')[0].replace(/-/g, '/');
+    this.switchPeriod();
 
     // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
     Highcharts.charts.forEach((_highChart, idx) => {

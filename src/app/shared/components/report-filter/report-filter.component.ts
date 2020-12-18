@@ -147,6 +147,19 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         this.getMapList();
       }
 
+      if (res.date.startTimestamp !== null) {
+        this.date.startTimestamp = res.date.startTimestamp;
+        this.date.endTimestamp = res.date.endTimestamp;
+        this.date.type = res.date.type;
+        if (res.date.endTimestamp <= this.date.maxTimestamp) {
+          this.date.endOfShift = false;
+        } else {
+          this.date.endOfShift = true;
+        }
+
+        this.changeActiveBar();
+      }
+
     });
 
   }
