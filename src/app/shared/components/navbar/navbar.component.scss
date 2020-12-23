@@ -67,6 +67,11 @@ input[type='email']::-webkit-input-placeholder {
 }
 
 @media (max-width: 991px) {
+  .show {
+    max-height: calc(100vh - 65px);
+    overflow-y: scroll;
+  }
+
   .nav-rwd {
     display: none;
   }

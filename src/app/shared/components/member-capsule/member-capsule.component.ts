@@ -44,6 +44,7 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
   @Input() accessRight: string;
   @Input() parentsName: string;
   @Input() isLocked: boolean;
+  @Input() adminList: Array<any>;
 
   @Output() onWaittingMemberInfoChange = new EventEmitter();
   @Output() onRemoveAdmin = new EventEmitter();
@@ -54,7 +55,9 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
     teacher: '',
     coach: '',
     leagueAdministrator: '',
-    departmentAdministrator: ''
+    departmentAdministrator: '',
+    onlyOneAdmin: '',
+    confirmText: ''
   };
   active = false;
   width = '100%';
@@ -119,7 +122,9 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
         teacher: this.translate.instant('universal_group_teacher'),
         coach: this.translate.instant('universal_group_coach'),
         leagueAdministrator: this.translate.instant('universal_group_administrator'),
-        departmentAdministrator: this.translate.instant('universal_group_departmentAdmin')
+        departmentAdministrator: this.translate.instant('universal_group_departmentAdmin'),
+        onlyOneAdmin: this.translate.instant('universal_group_addAdministrator'),
+        confirmText: this.translate.instant('universal_operating_confirm')
       };
 
     });
@@ -214,22 +219,41 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
       }
 
     });
+
   }
 
   /**
    * 跳出移除管理員提示框
    */
   handleRemoveAdmin() {
-    this.dialog.open(MessageBoxComponent, {
-      hasBackdrop: true,
-      data: {
-        title: 'message',
-        body: `${this.translate.instant('universal_group_removeAdmin')}?`,
-        confirmText: this.translate.instant('universal_operating_confirm'),
-        cancelText: this.translate.instant('universal_operating_cancel'),
-        onConfirm: this.handleEditGroupMember.bind(this)
-      }
-    });
+    const adminLength = this.adminList.filter(_admin => _admin.groupId === this.groupId).length;
+
+    if (adminLength <= 1) {
+
+      this.dialog.open(MessageBoxComponent, {
+        hasBackdrop: true,
+        data: {
+          title: 'message',
+          body: this.i18n.onlyOneAdmin,
+          confirmText: this.i18n.confirmText
+        }
+      });
+
+    } else {
+      this.dialog.open(MessageBoxComponent, {
+        hasBackdrop: true,
+        data: {
+          title: 'message',
+          body: `${this.translate.instant('universal_group_removeAdmin')}?`,
+          confirmText: this.translate.instant('universal_operating_confirm'),
+          cancelText: this.translate.instant('universal_operating_cancel'),
+          onConfirm: this.handleEditGroupMember.bind(this)
+        }
+
+      });
+
+    }
+
   }
 
   /**

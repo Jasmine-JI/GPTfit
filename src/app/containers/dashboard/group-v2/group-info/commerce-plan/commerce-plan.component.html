@@ -2,15 +2,7 @@
   <section
     class="flexRow"
     style="justify-content: flex-end;"
-    *ngIf="
-      userSimpleInfo
-      && (userSimpleInfo.isGroupAdmin || userSimpleInfo.accessRight[0] <= 29)
-      && groupInfo.groupStatus !== 4
-      && groupInfo.groupStatus !== 5
-      && !commerceInfo.expired
-      && +commerceInfo.commerceStatus === 1
-    "  
-  >
+    *ngIf="userSimpleInfo && userSimpleInfo.accessRight[0] <= 29">
     <button class="child__page__btn" (click)="handleCancelEdit()" *ngIf="uiFlag.editMode">
       <span>{{ 'universal_operating_cancel' | translate}}</span>
     </button>

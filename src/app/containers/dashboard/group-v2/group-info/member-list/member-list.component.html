@@ -4,10 +4,10 @@
     style="justify-content: flex-end;"
     *ngIf="
       userSimpleInfo
-      && (userSimpleInfo.isGroupAdmin || userSimpleInfo.accessRight[0] <= 29)
+      && userSimpleInfo.accessRight[0] <= groupInfo.groupLevel
       && groupInfo.groupStatus !== 4
       && groupInfo.groupStatus !== 5
-      && (groupInfo.groupStatus !== 6 || userSimpleInfo.accessRight[0] <= 30)
+      && (groupInfo.groupStatus !== 6 || userSimpleInfo.accessRight[0] < groupInfo.groupLevel)
       && !groupInfo.expired
       && +groupInfo.commerceStatus === 1
     "  
@@ -39,7 +39,7 @@
             [icon]="_normalMem.memberIcon"
             [userId]="_normalMem.memberId"
             [brandType]="groupInfo.brandType"
-            [isHadMenu]="uiFlag.editMode === 'edit' && (userSimpleInfo.isGroupAdmin || userSimpleInfo.accessRight[0] <= 29)"
+            [isHadMenu]="uiFlag.editMode === 'edit' && userSimpleInfo.accessRight[0] <= groupInfo.groupLevel"
             [groupId]="groupInfo.groupId"
             [groupLevel]="groupInfo.groupLevel"
             [coachType]="groupInfo.coachType"
@@ -71,7 +71,7 @@
             [icon]="_waitMem.memberIcon"
             [userId]="_waitMem.memberId"
             [brandType]="groupInfo.brandType"
-            [isHadMenu]="uiFlag.editMode === 'edit' && (userSimpleInfo.isGroupAdmin || userSimpleInfo.accessRight[0] <= 29)"
+            [isHadMenu]="uiFlag.editMode === 'edit' && userSimpleInfo.accessRight[0] <= groupInfo.groupLevel"
             [groupId]="groupInfo.groupId"
             [groupLevel]="groupInfo.groupLevel"
             (onWaittingMemberInfoChange)="handleWaittingMemberInfo($event)"

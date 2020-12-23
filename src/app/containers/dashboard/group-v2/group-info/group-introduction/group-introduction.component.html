@@ -1,16 +1,13 @@
-<div
-  class="flexCol child__page__card"
-  *ngIf="groupDetail && groupDetail.groupRootInfo"
->
+<div class="flexCol child__page__card">
   <section 
     class="flexRow"
     style="justify-content: flex-end; margin: 10px;"
     *ngIf="
       userSimpleInfo
-      && (userSimpleInfo.isGroupAdmin || userSimpleInfo.accessRight[0] <= 29)
+      && (userSimpleInfo.accessRight[0] <= editBody.groupLevel || uiFlag.editMode === 'create')
       && groupDetail.groupStatus !== 4
       && groupDetail.groupStatus !== 5
-      && (groupDetail.groupStatus !== 6 || userSimpleInfo.accessRight[0] <= 30)
+      && (groupDetail.groupStatus !== 6 || userSimpleInfo.accessRight[0] < editBody.groupLevel)
       && !groupDetail.expired
       && groupDetail.commerceStatus === 1
     "
@@ -32,19 +29,19 @@
     <span class="info__title">{{ 'universal_group_group' | translate}}</span>
     <div class="flexCol info__content">
       <div class="flexRow group__layer__section" *ngIf="uiFlag.editMode !== 'create' || createBody.levelType > 3">
-        <span class="info__item__title">
+        <span class="info__item__title" *ngIf="groupDetail">
           {{ 30 | groupLevelTranslate: groupDetail.brandType | translate }} :
         </span>
         <span
           style="cursor: pointer;"
           class="info__row"
           (click)="navigateParentsGroup(groupDetail.groupRootInfo[2].brandGroupId)"
-          *ngIf="groupDetail.groupRootInfo.length >= 3; else currentGroupName;"
+          *ngIf="groupDetail &&  groupDetail.groupRootInfo && groupDetail.groupRootInfo.length >= 3; else currentGroupName;"
         >
           {{ groupDetail.groupRootInfo[2].brandName }}
         </span>
       </div>
-      <div class="flexRow group__layer__section" *ngIf="groupDetail.groupRootInfo.length >= 3;">
+      <div class="flexRow group__layer__section" *ngIf="groupDetail &&  groupDetail.groupRootInfo && groupDetail.groupRootInfo.length >= 3;">
         <span class="info__item__title">
           {{ 40 | groupLevelTranslate: groupDetail.brandType | translate }} :
         </span>
@@ -52,12 +49,12 @@
           style="cursor: pointer;"
           class="info__row"
           (click)="navigateParentsGroup(groupDetail.groupRootInfo[3].branchGroupId)"
-          *ngIf="groupDetail.groupRootInfo.length >= 4; else currentGroupName;"
+          *ngIf="groupDetail &&  groupDetail.groupRootInfo && groupDetail.groupRootInfo.length >= 4; else currentGroupName;"
         >
           {{ groupDetail.groupRootInfo[3].branchName }}
         </span>
       </div>
-      <div class="flexRow group__layer__section" *ngIf="groupDetail.groupRootInfo.length >= 4;">
+      <div class="flexRow group__layer__section" *ngIf="groupDetail &&  groupDetail.groupRootInfo && groupDetail.groupRootInfo.length >= 4;">
         <span class="info__item__title">
           {{ 60 | groupLevelTranslate: groupDetail.brandType | translate }} :
         </span>
@@ -86,10 +83,10 @@
       class="info__content"
       *ngIf="uiFlag.editMode === 'close'"
     >
-      {{ groupDetail.groupStatus | groupStatus | translate }}
+      {{ groupDetail?.groupStatus | groupStatus | translate }}
       <span
         style="color: red;"
-        *ngIf="groupDetail.expired || groupDetail.commerceStatus !== 1"
+        *ngIf="groupDetail && (groupDetail.expired || groupDetail.commerceStatus !== 1)"
       >
         ({{ 'universal_group_outOfService' | translate }})
       </span>
@@ -107,13 +104,16 @@
         <span (click)="saveGroupStatus($event, 1)">{{ 'universal_group_freeToJoin' | translate }}</span>
         <span (click)="saveGroupStatus($event, 2)">{{ 'universal_group_auditSystem' | translate }}</span>
         <span (click)="saveGroupStatus($event, 3)">{{ 'universal_operating_hide' | translate }}</span>
-        <span (click)="saveGroupStatus($event, 6)" *ngIf="uiFlag.editMode === 'edit'">{{ 'universal_status_disable' | translate }}</span>
+        <span
+          (click)="saveGroupStatus($event, 6)"
+          *ngIf="uiFlag.editMode === 'edit' && editBody.groupLevel > 30 && userSimpleInfo.accessRight[0] < editBody.groupLevel"
+        >{{ 'universal_status_disable' | translate }}</span>
       </div>
     </div>
   </section>
   <section class="flexCol info__section">
     <span class="info__title">{{ 'universal_group_introduction' | translate}}</span>
-    <span class="info__content" [innerHTML]="groupDetail.groupDesc | lineBreak" *ngIf="uiFlag.editMode === 'close'"></span>
+    <span class="info__content" [innerHTML]="groupDetail.groupDesc | lineBreak" *ngIf="groupDetail && uiFlag.editMode === 'close'"></span>
     <textarea
       style="min-height: 300px; resize: none;"
       [style.border-color]="formCheck.desc !== false ? 'rgba(120, 120, 120, 1)' : 'red'"
@@ -129,21 +129,21 @@
   <section class="flexCol info__section" *ngIf="uiFlag.editMode === 'close' && userSimpleInfo">
     <span class="info__title">{{ 'universal_group_groupInfo' | translate }}</span>
     <span class="info__content" *ngIf="editBody.groupLevel <= 30">
-      {{ 'universal_group_numberOfBranches' | translate }}：{{ groupDetail.branchNum }}
+      {{ 'universal_group_numberOfBranches' | translate }}：{{ groupDetail?.branchNum }}
     </span>
     <span class="info__content" *ngIf="editBody.groupLevel <= 40">
-      {{ 'universal_group_numberOfClass' | translate }}：{{ groupDetail.coachNum }}
+      {{ 'universal_group_numberOfClass' | translate }}：{{ groupDetail?.coachNum }}
     </span>
     <span class="info__content">
-      {{ 'universal_group_numberOfAdministrators' | translate }}：{{ groupDetail.adminNum }}
+      {{ 'universal_group_numberOfAdministrators' | translate }}：{{ groupDetail?.adminNum }}
     </span>
     <span class="info__content">
-      {{ 'universal_group_generalMember' | translate }}：{{ groupDetail.memberNum }}
+      {{ 'universal_group_generalMember' | translate }}：{{ groupDetail?.memberNum }}
     </span>
   </section>
   <section
     class="flexCol info__section"
-    *ngIf="groupDetail.brandType === 1 && editBody.groupLevel === 60 && uiFlag.editMode === 'edit'"
+    *ngIf="groupDetail && groupDetail.brandType === 1 && editBody.groupLevel === 60 && uiFlag.editMode === 'edit'"
   >
     <span class="info__title">{{ 'universal_live_liveLink' | translate}}</span>
     <input class="info__content" [value]="editBody.groupVideoUrl" (change)="saveVedioUrl($event)">
@@ -314,7 +314,7 @@
   </section>
 </div>
 <ng-template #currentGroupName>
-  <span class="group__blue__label info__row" *ngIf="uiFlag.editMode === 'close' || uiFlag.editMode === 'create'">
+  <span class="group__blue__label info__row" *ngIf="groupDetail && (uiFlag.editMode === 'close' || uiFlag.editMode === 'create')">
     {{ groupDetail.groupName }}
   </span>
   <input

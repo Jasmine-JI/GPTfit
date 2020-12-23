@@ -215,7 +215,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
       let lang: string;
       if ((window as any).android) {
-        lang = this.utils.getLocalStorageObject('locale');
+        lang = this.getUrlLanguageString(location.search);
       } else {
         lang = navigator.language.toLowerCase();
       }
@@ -239,6 +239,42 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.showTerms = action;
     return false;
+  }
+
+  /**
+   * 從網址取得語系
+   * @param str {string}-query string
+   * @author kidin-1091222
+   */
+  getUrlLanguageString(str: string) {
+    if (str.indexOf('l=') > -1) {
+      const tempStr = str.split('l=')[1];
+      let lan: string;
+      if (tempStr.indexOf('&') > -1) {
+        lan = tempStr.split('&')[0].toLowerCase();
+      } else {
+        lan = tempStr.toLowerCase();
+      }
+
+      switch (lan) {
+        case 'zh-tw':
+        case 'zh-cn':
+        case 'en-us':
+        case 'es-es':
+        case 'de-de':
+        case 'fr-fr':
+        case 'it-it':
+        case 'pt-pt':
+        case 'pt-br':
+          return lan;
+        default:
+          return 'en-us';
+      }
+
+    } else {
+      return 'en-us';
+    }
+
   }
 
   /**

@@ -518,7 +518,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
             title: 'Message',
             body: msg,
             confirmText: this.logMessage.confirm,
-            onConfirm: () => this.router.navigateByUrl('/')
+            onConfirm: this.turnFirstLoginOrBack.bind(this)
           }
         });
 
@@ -533,6 +533,27 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
           confirmText: this.logMessage.confirm
         }
       });
+
+    }
+
+  }
+
+  /**
+   * 啟用成功後導回app或第一次登入頁面
+   * @author kidin-1091222
+   */
+  turnFirstLoginOrBack () {
+    if (this.appInfo.sys === 1) {
+      (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
+    } else if (this.appInfo.sys === 2) {
+      (window as any).android.closeWebView('Close');
+    } else {
+
+      if (this.pcView === true) {
+        this.router.navigateByUrl('/firstLogin-web');
+      } else {
+        this.router.navigateByUrl('/firstLogin');
+      }
 
     }
 
