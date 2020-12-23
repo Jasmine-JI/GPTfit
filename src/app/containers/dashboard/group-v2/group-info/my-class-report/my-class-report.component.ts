@@ -299,8 +299,6 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initPage();
-    this.reportService.setReportCondition(this.reportConditionOpt);
-    this.getReportSelectedCondition();
 
     if (location.search.indexOf('ipm=s') > -1) {
       this.isPreviewMode = true;
@@ -318,6 +316,9 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     ) {
       this.urlOpenReprot = true;
       this.queryStringShowData();
+    } else {
+      this.reportService.setReportCondition(this.reportConditionOpt);
+      this.getReportSelectedCondition();
     }
 
     Highcharts.charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
@@ -350,9 +351,9 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     for (let i = 0; i < queryString.length; i++) {
       if (queryString[i].indexOf('startdate=') > -1) {
         this.startDate = queryString[i].replace('startdate=', '');
-        this.selectDate.startDate = moment(this.startDate).format('YYYY-MM-DDT00:00:00.000Z');
+        this.reportConditionOpt.date.startTimestamp = moment(queryString[i].replace('startdate=', '')).valueOf();
       } else if (queryString[i].indexOf('enddate=') > -1) {
-        this.selectDate.endDate = moment(queryString[i].replace('enddate=', '')).format('YYYY-MM-DDT23:59:59.999Z');
+        this.reportConditionOpt.date.endTimestamp = moment(queryString[i].replace('endDate=', '')).valueOf();
       } else if (queryString[i].indexOf('sportType=') > -1) {
         this.sportType = +queryString[i].replace('sportType=', '');
       } else if (queryString[i].indexOf('id=') > -1) {
@@ -360,7 +361,9 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
       }
     }
 
-    this.handleSubmitSearch('url');
+    this.reportConditionOpt.date.type = 'custom';
+    this.reportService.setReportCondition(this.reportConditionOpt);
+    this.getReportSelectedCondition();
   }
 
   /**
@@ -378,7 +381,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
         };
   
         this.sportType = res.sportType;
-        this.handleSubmitSearch('click');
+        this.handleSubmitSearch();
       }
 
     });
@@ -386,17 +389,11 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   }
 
   // 使用者送出表單後顯示相關資料-kidin-1081209
-  handleSubmitSearch (act) {
+  handleSubmitSearch () {
     this.token = this.utils.getToken() || '';
     this.reportCompleted = false;
-
     this.initVariable();
     this.getUserInfo();
-
-    if (act === 'click') {
-      this.updateUrl('false');
-    }
-
     this.getGroupInfo();
 
     // 根據條件取得多筆運動檔案資料-kidin-1081211
@@ -425,7 +422,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
           author: author,
           dispName: '',
           equipmentSN: '',
-          class: this.groupId,
+          class: this.groupInfo.groupId,
           teacher: '',
           tag: ''
         }
@@ -1112,7 +1109,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   // 連結至課程頁面-kidin-1090624
   visitClass () {
     this.router.navigateByUrl(
-      `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.fileInfo.class)}`
+      `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.groupInfo.groupId)}/group-introduction`
     );
   }
 

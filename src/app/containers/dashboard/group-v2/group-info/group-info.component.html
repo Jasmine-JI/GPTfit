@@ -84,45 +84,44 @@
       <div class="flexRow" style="align-items: center;">
         <ng-container *ngIf="uiFlag.editMode !== 'create'">
           <button
-            class="group__page__btn"
-            [class.primary__btn]="
-              user.joinStatus === 5
+            class="group__page__btn primary__btn"
+            [class.can__not__join]="uiFlag.isJoinLoading"
+            *ngIf="
+              (user.joinStatus === 3 || user.joinStatus === 5)
               && !currentGroupInfo.commerceInfo.expired
               && +currentGroupInfo.commerceInfo.groupMemberStatus.currentGroupMembers < +currentGroupInfo.commerceInfo.groupMemberStatus.maxGroupMembers
             "
-            [class.warning__btn]="user.joinStatus === 1"
-            [class.unattracly__btn]="user.joinStatus === 2"
-            [class.can__not__join]="
-              uiFlag.isJoinLoading
-              || (
-                user.joinStatus === 5
-                  && (currentGroupInfo.commerceInfo.expired
-                    || +currentGroupInfo.commerceInfo.groupMemberStatus.currentGroupMembers >= +currentGroupInfo.commerceInfo.groupMemberStatus.maxGroupMembers
-                  )
-                )
-            "
-            *ngIf="!user.isGroupAdmin && currentGroupInfo.groupDetail.groupStatus !== 6"
           >
             <span
-              *ngIf="!uiFlag.isJoinLoading && user.joinStatus === 5 && currentGroupInfo.groupDetail.groupStatus === 1"
-              (click)="handleJoinGroup(1)"
+              *ngIf="!uiFlag.isJoinLoading && currentGroupInfo.groupDetail.groupStatus === 1; else loading;"
+              (click)="joinGroup(1)"
             >
               +{{ 'universal_operating_join' | translate }}
             </span>
             <span
-              *ngIf="!uiFlag.isJoinLoading && user.joinStatus === 5 && currentGroupInfo.groupDetail.groupStatus === 2"
-              (click)="handleJoinGroup(1)"
+              *ngIf="!uiFlag.isJoinLoading && currentGroupInfo.groupDetail.groupStatus === 2; else loading;"
+              (click)="joinGroup(1)"
             >
               +{{ 'universal_group_applicationsForJoin' | translate }}
             </span>
-            <span *ngIf="!uiFlag.isJoinLoading && user.joinStatus === 1" (click)="handleJoinGroup(2)">
+          </button>
+          <button
+            class="group__page__btn"
+            [class.warning__btn]="user.joinStatus === 1"
+            [class.unattracly__btn]="user.joinStatus === 2"
+            [class.can__not__join]="uiFlag.isJoinLoading"
+            *ngIf="((user.joinStatus === 1 || user.joinStatus === 2) && !user.isGroupAdmin) && currentGroupInfo.groupDetail.groupStatus !== 6"
+          >
+            <span *ngIf="!uiFlag.isJoinLoading && user.joinStatus === 1; else loading;" (click)="handleJoinGroup(2)">
               {{ 'universal_group_cancelJoin' | translate }}
             </span>
-            <span *ngIf="!uiFlag.isJoinLoading && user.joinStatus === 2" (click)="handleJoinGroup(2)">
+            <span *ngIf="!uiFlag.isJoinLoading && user.joinStatus === 2; else loading;" (click)="handleJoinGroup(2)">
               {{ 'universal_group_exitGroup' | translate }}
             </span>
-            <app-loading-icon style="font-size: 8px;" *ngIf="uiFlag.isJoinLoading"></app-loading-icon>
           </button>
+          <ng-template #loading>
+            <app-loading-icon style="font-size: 8px;" *ngIf="uiFlag.isJoinLoading"></app-loading-icon>
+          </ng-template>
           <i
             class="icon-svg_web-icon_p1_013-share group__page__btn primary__btn"
             style="color: white; font-size: 24px; padding: 2px; cursor: pointer;"

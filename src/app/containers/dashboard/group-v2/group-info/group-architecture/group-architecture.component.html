@@ -4,10 +4,10 @@
     style="justify-content: flex-end;"
     *ngIf="
       userSimpleInfo
-      && (userSimpleInfo.isGroupAdmin || userSimpleInfo.accessRight[0] <= 29)
+      && userSimpleInfo.accessRight[0] <= groupInfo.groupLevel
       && groupInfo.groupStatus !== 4
       && groupInfo.groupStatus !== 5
-      && (groupInfo.groupStatus !== 6 || userSimpleInfo.accessRight[0] <= 30)
+      && (groupInfo.groupStatus !== 6 || userSimpleInfo.accessRight[0] < groupInfo.groupLevel)
       && !groupInfo.expired
       && +groupInfo.commerceStatus === 1
     "  

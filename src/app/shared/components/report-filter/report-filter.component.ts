@@ -593,7 +593,8 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     Object.assign(this.reportConditionOpt, {
       date: {
         startTimestamp: this.date.startTimestamp,
-        endTimestamp: this.date.endTimestamp
+        endTimestamp: this.date.endTimestamp,
+        type: this.date.type
       }
     });
 

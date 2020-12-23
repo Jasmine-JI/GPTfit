@@ -80,14 +80,15 @@ export class UserSettingsComponent implements OnInit, OnChanges {
         bodyHeight,
         bodyWeight,
         birthday,
-        description
+        description,
+        editTimeStamp
       } = this.userData;
       const gender = this.userData.gender === '2' ? '0' : this.userData.gender; // 如果接到性別為無(2)就轉成男生
 
       this.settingsForm = this.fb.group({
         // 定義表格的預設值
         nameIcon: [
-          `${avatarUrl}`,
+          `${avatarUrl}?${editTimeStamp}`,
           Validators.required
         ],
         name: [nickname, Validators.required],
