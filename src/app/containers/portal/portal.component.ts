@@ -74,6 +74,7 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngAfterViewInit() {
     window.scrollTo({top: 0, behavior: 'auto'});
+    this.checkLanguage();  // 因應手機平台，故在此生命週期再判斷一次語系
   }
 
   /**
@@ -177,42 +178,69 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
    * @author kidin-1091008
    */
   checkLanguage() {
-    let browserLang = this.utilsService.getLocalStorageObject('locale');
-
-    if (!browserLang) {
-      // 確認是否為android
-      if ((window as any).android) {
-        browserLang = this.translateService.getBrowserCultureLang().toLowerCase();
-      } else {
-        browserLang = navigator.language.toLowerCase() || this.translateService.getBrowserCultureLang().toLowerCase();
-      }
-      
-      const currentLocales = [
-        'zh-tw',
-        'zh-cn',
-        'en-us',
-        'es-es',
-        'de-de',
-        'fr-fr',
-        'it-it',
-        'pt-pt'
-      ];  // 新增文件全語系-kidin-1090629
-
-      if (browserLang === 'pt-br') {
-        browserLang = 'pt-pt'; // 巴西語預設顯示葡萄牙語-kidin-1091203
-      } else if (currentLocales.findIndex(_locale => _locale === browserLang) === -1) {
-        browserLang = 'en-us'; // default en-us
-      }
-
-      this.translateService.use(browserLang);
-      this.utilsService.setLocalStorageObject('locale', browserLang);
+    // 根據不同平台使用不同方式取得語系
+    let browserLang: string;
+    if ((window as any).android) {
+      browserLang = this.getUrlLanguageString(location.search);
+    } else if ((window as any).webkit) {
+      browserLang = navigator.language.toLowerCase() || 'en-us';
     } else {
+      browserLang = this.utilsService.getLocalStorageObject('locale') || navigator.language.toLowerCase();
+    }
 
-      if (browserLang === 'pt-br') {
-        browserLang = 'pt-pt'; // 巴西語預設顯示葡萄牙語-kidin-1091203
+    const currentLocales = [
+      'zh-tw',
+      'zh-cn',
+      'en-us',
+      'es-es',
+      'de-de',
+      'fr-fr',
+      'it-it',
+      'pt-pt'
+    ];  // 新增文件全語系-kidin-1090629
+
+    if (browserLang === 'pt-br') {
+      browserLang = 'pt-pt'; // 巴西語預設顯示葡萄牙語-kidin-1091203
+    } else if (currentLocales.findIndex(_locale => _locale === browserLang) === -1) {
+      browserLang = 'en-us'; // default en-us
+    }
+
+    this.translateService.use(browserLang);
+    this.utilsService.setLocalStorageObject('locale', browserLang);
+  }
+
+  /**
+   * 從網址取得語系
+   * @param str {string}-query string
+   * @author kidin-1091222
+   */
+  getUrlLanguageString(str: string) {
+    if (str.indexOf('l=') > -1) {
+      const tempStr = str.split('l=')[1];
+      let lan: string;
+      if (tempStr.indexOf('&') > -1) {
+        lan = tempStr.split('&')[0].toLowerCase();
+      } else {
+        lan = tempStr.toLowerCase();
       }
 
-      this.translateService.use(browserLang);
+      switch (lan) {
+        case 'zh-tw':
+        case 'zh-cn':
+        case 'en-us':
+        case 'es-es':
+        case 'de-de':
+        case 'fr-fr':
+        case 'it-it':
+        case 'pt-pt':
+        case 'pt-br':
+          return lan;
+        default:
+          return 'en-us';
+      }
+
+    } else {
+      return 'en-us';
     }
 
   }

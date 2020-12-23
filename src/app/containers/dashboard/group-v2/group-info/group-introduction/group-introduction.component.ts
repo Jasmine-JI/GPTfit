@@ -11,6 +11,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { PeopleSelectorWinComponent } from '../../../components/people-selector-win/people-selector-win.component';
 import { planDatas } from '../../../group/desc';
 import moment from 'moment';
+import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -139,7 +140,8 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     private hashIdService: HashIdService,
     private translate: TranslateService,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private userProfileService: UserProfileService
   ) { }
 
   ngOnInit(): void {
@@ -205,7 +207,8 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         this.checkCreateMode(queryArr[i].split('=')[1]);
       } else if (queryArr[i].indexOf('plan') > -1) {
         this.saveBrandPlan(+queryArr[i].split('=')[1]);
-        this.createBody.brandType = this.groupDetail.brandType;
+      } else if (queryArr[i].indexOf('brandType') > -1) {
+        this.createBody.brandType = +queryArr[i].split('=')[1];
       }
 
     }
@@ -221,7 +224,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     switch (type) {
       case 'brand':
         if (this.userSimpleInfo.accessRight[0] <= 29) {
-          this.openCreateMode();
+          this.openCreateMode(30);
           this.createBody.levelType = 3;
           this.uiFlag.createLevel = 30;
         }
@@ -230,7 +233,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
       case 'branch':
         if (this.userSimpleInfo.accessRight[0] <= 30) {
           this.assignAdmin();
-          this.openCreateMode();
+          this.openCreateMode(40);
           this.createBody.levelType = 4;
           this.uiFlag.createLevel = 40;
         }
@@ -240,7 +243,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
       case 'department':
         if (this.userSimpleInfo.accessRight[0] <= 40) {
           this.assignAdmin();
-          this.openCreateMode();
+          this.openCreateMode(60);
           this.createBody.levelType = 5;
           this.uiFlag.createLevel = 60;
           this.createBody.coachType = 2;
@@ -252,7 +255,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
       case 'teacher':
         if (this.userSimpleInfo.accessRight[0] <= 40) {
           this.assignAdmin();
-          this.openCreateMode();
+          this.openCreateMode(60);
           this.createBody.levelType = 5;
           this.uiFlag.createLevel = 60;
           this.createBody.coachType = 1;
@@ -270,14 +273,21 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
   /**
    * 開啟建立群組模式
+   * @param level {number}-群組階層
    * @author kidin-1091106
    */
-  openCreateMode() {
+  openCreateMode(level: number) {
     this.openEditMode('create');
     this.createBody.token = this.userSimpleInfo.token;
-    this.createBody.groupId = this.groupDetail.groupId;
-    this.createBody.brandType = this.groupDetail.brandType;
-    this.createBody.groupManager = this.chooseLabels.map(_user => _user.userId);
+
+    if (level <= 30) {
+      this.createBody.groupId = '0-0-0-0-0-0';
+    } else {
+      this.createBody.groupId = this.groupDetail.groupId;
+      this.createBody.brandType = this.groupDetail.brandType;
+      this.createBody.groupManager = this.chooseLabels.map(_user => _user.userId);
+    }
+
     this.getTranslate();
     this.listenGlobalClick();
   }
@@ -315,7 +325,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    */
   openEditMode(action: 'edit' | 'create') {
     this.uiFlag.editMode = action;
-    this.groupService.setEditMode(action);    
+    this.groupService.setEditMode(action);
   }
 
   /**
@@ -677,13 +687,14 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * 儲存建立群組的內容
    * @author kidin-1091106
    */
-  saveCreateContent() {
+  saveCreateContent() {    
     this.groupService.createGroup(this.createBody).subscribe(res => {
 
       if (res.resultCode !== 200) {
         console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
         this.utils.openAlert(errMsg);
       } else {
+        this.userProfileService.refreshUserProfile({token: this.userSimpleInfo.token});
         this.groupService.saveNewGroupId(res.info.newGroupId);
         this.closeEditMode('complete');
       }

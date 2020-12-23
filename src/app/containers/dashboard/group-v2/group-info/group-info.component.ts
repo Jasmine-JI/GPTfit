@@ -14,6 +14,7 @@ import { UserProfileService } from '../../../../shared/services/user-profile.ser
 import { v5 as uuidv5 } from 'uuid';
 import { ImageUploadService } from '../../services/image-upload.service';
 import { AlbumType } from '../../../../shared/models/image';
+import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -780,9 +781,9 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     ]).pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(resArr => {
-      this.user.joinStatus = resArr[0].info.selfJoinStatus;
-      this.currentGroupInfo.groupDetail = resArr[0].info;
-      this.currentGroupInfo.commerceInfo = resArr[1].info;
+      this.user.joinStatus = (resArr[0] as any).info.selfJoinStatus;
+      this.currentGroupInfo.groupDetail = (resArr[0] as any).info;
+      this.currentGroupInfo.commerceInfo = (resArr[1] as any).info;
       this.checkUserAccessRight();
       this.initChildPageList();
       this.getCurrentContentPage();
@@ -869,7 +870,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
           if (this.currentGroupInfo.groupLevel === 60) {
             return _accessRight === 50 || _accessRight === 60;
           } else  {
-            return _accessRight <= this.currentGroupInfo.groupLevel;
+            return _accessRight === this.currentGroupInfo.groupLevel;
           }
 
         });
@@ -906,6 +907,21 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         'group-introduction',
         'myclass-report',
         'class-analysis',
+        // 'cloudrun-report',
+        'member-list',
+        'group-architecture',
+        'admin-list'
+      ];
+    } else if (
+      groupDetail.brandType === 1
+      && this.currentGroupInfo.groupLevel === 60
+      && !commerceInfo.expired
+      && +commerceInfo.commerceStatus === 1
+      && this.currentGroupInfo.groupDetail.groupStatus !== 6
+    ) {
+      this.childPageList = [
+        'group-introduction',
+        'myclass-report',
         // 'cloudrun-report',
         'member-list',
         'group-architecture',
@@ -970,6 +986,36 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       total: 0,
       perSize: []
     };
+  }
+
+  /**
+   * 加入群組並顯示隱私權
+   * @author kidin-1091223
+   */
+  joinGroup() {
+    this.translate.get('hollow world').subscribe(() => {
+      const bodyText = this.translate.instant('universal_group_joinClassStatement', {
+          'object': this.translate.instant('universal_privacy_myGym')
+        }
+      );
+
+      return this.dialog.open(MessageBoxComponent, {
+        hasBackdrop: true,
+        data: {
+          title: this.translate.instant('universal_group_disclaimer'),
+          body: bodyText,
+          confirmText: this.translate.instant('universal_operating_agree'),
+          cancelText: this.translate.instant('universal_operating_disagree'),
+          onConfirm: () => {
+            this.handleJoinGroup(1);
+          }
+          
+        }
+
+      });
+
+    });
+
   }
 
   /**

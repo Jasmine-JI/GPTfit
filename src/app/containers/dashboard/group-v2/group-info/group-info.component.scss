@@ -324,6 +324,17 @@ $edit__icon__size: 30px;
   max-width: 1000px;
 }
 
+.group__lock {
+  font-size: 50px;
+  color: red;
+  left: 3px;
+  display: flex;
+  align-items: center;
+  border: 3px solid red;
+  border-radius: 50%;
+  width: 55px;
+}
+
 
 /*********************************** media *****************************/
 

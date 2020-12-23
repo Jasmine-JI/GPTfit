@@ -17,7 +17,7 @@
               {{ userProfile.nickname || '' }}
             </div>
             <img
-              [src]="userProfile.avatarUrl"
+              [src]="userProfile.avatarUrl + '?' + userProfile.editTimeStamp"
               class="header-user-photo"
               (error)="this.userProfile.avatarUrl='/assets/images/user2.png'"
             >

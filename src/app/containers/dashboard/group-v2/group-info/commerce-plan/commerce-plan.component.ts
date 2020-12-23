@@ -125,6 +125,7 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
       this.savePlanSetting();
     } else {
       this.uiFlag.editMode = true;
+      this.groupService.setEditMode('edit');
       this.handleEditBody();
       if (+this.editBody.commercePlan === 99) {
         setTimeout(() => {
@@ -172,6 +173,7 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
    */
   handleCancelEdit() {
     this.uiFlag.editMode = false;
+    this.groupService.setEditMode('close');
   }
 
   /**
@@ -286,29 +288,7 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
         this.utils.openAlert(errMsg);
       } else {
         this.uiFlag.editMode = false;
-        this.refreshCommerceInfo();
-      }
-
-    });
-
-  }
-
-  /**
-   * 串接api 1115來更新已儲存資訊
-   * @author kidin-1091112
-   */
-  refreshCommerceInfo() {
-    const body = {
-      token: this.userSimpleInfo.token,
-      groupId: this.groupInfo.groupId
-    }
-
-    this.groupService.fetchCommerceInfo(body).subscribe(res => {
-      if (res.resultCode !== 200) {
-        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
-        this.utils.openAlert(errMsg);
-      } else {
-        this.groupService.saveCommerceInfo(res.info);
+        this.groupService.setEditMode('complete');
       }
 
     });

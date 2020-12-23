@@ -43,7 +43,11 @@
       </div>
     </div>
   </div>
-  <div class="collapse navbar-collapse" [class.show]="isCollapseShow" id="navbarResponsive">
+  <div
+    class="collapse navbar-collapse"
+    [class.show]="isCollapseShow"
+    id="navbarResponsive"
+  >
     <ul class="navbar-nav">
       <li class="nav-item nav-rwd__hamburger" style="list-style: none;" *ngIf="(login$| async)">
         <a class="nav-link" [routerLink]="['/dashboard']">{{ "universal_uiFitpair_startUsing" | translate}}</a>

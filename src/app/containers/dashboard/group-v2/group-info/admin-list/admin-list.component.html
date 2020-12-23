@@ -4,10 +4,10 @@
     style="justify-content: flex-end;"
     *ngIf="
       userSimpleInfo
-      && (userSimpleInfo.isGroupAdmin || userSimpleInfo.accessRight[0] <= 29)
+      && userSimpleInfo.accessRight[0] <= groupInfo.groupLevel
       && groupInfo.groupStatus !== 4
       && groupInfo.groupStatus !== 5
-      && (groupInfo.groupStatus !== 6 || userSimpleInfo.accessRight[0] <= 30)
+      && (groupInfo.groupStatus !== 6 || userSimpleInfo.accessRight[0] < groupInfo.groupLevel)
       && !groupInfo.expired
       && +groupInfo.commerceStatus === 1
     "  
@@ -42,7 +42,7 @@
           [isHadMenu]="
             adminList.brand.length > 1
             && uiFlag.editMode === 'edit'
-            && ((userSimpleInfo.isGroupAdmin && userSimpleInfo.accessRight[0] <= 30) || userSimpleInfo.accessRight[0] <= 29)
+            && userSimpleInfo.accessRight[0] <= 30
           "
           [groupId]="_brandAdmin.groupId"
           [groupLevel]="groupInfo.groupLevel"
@@ -74,11 +74,12 @@
           [isHadMenu]="
             adminList.branch.length > 1
             && uiFlag.editMode === 'edit'
-            && ((userSimpleInfo.isGroupAdmin && userSimpleInfo.accessRight[0] <= 40) || userSimpleInfo.accessRight[0] <= 29)
+            && userSimpleInfo.accessRight[0] <= 40
           "
           [groupId]="_branchAdmin.groupId"
           [groupLevel]="groupInfo.groupLevel"
           [parentsName]="_branchAdmin.branchName"
+          [adminList]="adminList.branch"
           (onWaittingMemberInfoChange)="handleWaittingMemberInfo($event)"
           (onRemoveAdmin)="handleRemoveAdmin()"
         >
@@ -106,11 +107,12 @@
           [isHadMenu]="
             adminList.class.length > 1
             && uiFlag.editMode === 'edit'
-            && ((userSimpleInfo.isGroupAdmin && userSimpleInfo.accessRight[0] <= 50) || userSimpleInfo.accessRight[0] <= 29)
+            && userSimpleInfo.accessRight[0] <= 50
           "
           [groupId]="_coach.groupId"
           [groupLevel]="groupInfo.groupLevel"
           [parentsName]="_coach.branchName + '/' + _coach.coachName"
+          [adminList]="adminList.class"
           (onWaittingMemberInfoChange)="handleWaittingMemberInfo($event)"
           (onRemoveAdmin)="handleRemoveAdmin()"
         >
@@ -137,11 +139,12 @@
           [isHadMenu]="
             adminList.teacher.length > 1
             && uiFlag.editMode === 'edit'
-            && (userSimpleInfo.accessRight[0] <= 60 || userSimpleInfo.accessRight[0] <= 29)
+            && (userSimpleInfo.accessRight[0] <= 60 && userSimpleInfo.accessRight[0] !== 50)
           "
           [groupId]="_teacher.groupId"
           [groupLevel]="groupInfo.groupLevel"
           [parentsName]="_teacher.branchName + '/' + _teacher.coachName"
+          [adminList]="adminList.teacher"
           (onWaittingMemberInfoChange)="handleWaittingMemberInfo($event)"
           (onRemoveAdmin)="handleRemoveAdmin()"
         >
