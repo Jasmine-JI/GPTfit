@@ -7,7 +7,7 @@
       && (userSimpleInfo.accessRight[0] <= editBody.groupLevel || uiFlag.editMode === 'create')
       && groupDetail.groupStatus !== 4
       && groupDetail.groupStatus !== 5
-      && (groupDetail.groupStatus !== 6 || userSimpleInfo.accessRight[0] < editBody.groupLevel)
+      && (groupDetail.groupStatus !== 6 || (userSimpleInfo.accessRight[0] < editBody.groupLevel && userSimpleInfo.accessRight[0] < 50))
       && !groupDetail.expired
       && groupDetail.commerceStatus === 1
     "
@@ -106,7 +106,11 @@
         <span (click)="saveGroupStatus($event, 3)">{{ 'universal_operating_hide' | translate }}</span>
         <span
           (click)="saveGroupStatus($event, 6)"
-          *ngIf="uiFlag.editMode === 'edit' && editBody.groupLevel > 30 && userSimpleInfo.accessRight[0] < editBody.groupLevel"
+          *ngIf="
+            uiFlag.editMode === 'edit'
+            && editBody.groupLevel > 30
+            && userSimpleInfo.accessRight[0] < editBody.groupLevel
+            && userSimpleInfo.accessRight[0] < 50"
         >{{ 'universal_status_disable' | translate }}</span>
       </div>
     </div>

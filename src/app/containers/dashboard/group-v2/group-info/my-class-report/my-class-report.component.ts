@@ -361,9 +361,19 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
       }
     }
 
-    this.reportConditionOpt.date.type = 'custom';
-    this.reportService.setReportCondition(this.reportConditionOpt);
-    this.getReportSelectedCondition();
+    if (!this.isPreviewMode) {
+      this.reportConditionOpt.date.type = 'custom';
+      this.reportService.setReportCondition(this.reportConditionOpt);
+      this.getReportSelectedCondition();
+    } else {
+      this.selectDate = {
+        startDate: moment(this.reportConditionOpt.date.startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+        endDate: moment(this.reportConditionOpt.date.endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ')
+      }
+
+      this.handleSubmitSearch();
+    }
+
   }
 
   /**
@@ -406,6 +416,8 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
       targetUser = '1';
       author = '';
     }
+
+    const urlArr = location.pathname.split('/');
     const body = {
       token: this.token,
       searchTime: {
@@ -422,7 +434,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
           author: author,
           dispName: '',
           equipmentSN: '',
-          class: this.groupInfo.groupId,
+          class: this.hashIdService.handleGroupIdDecode(urlArr[urlArr.length - 2]),
           teacher: '',
           tag: ''
         }

@@ -7,7 +7,7 @@
       && userSimpleInfo.accessRight[0] <= groupInfo.groupLevel
       && groupInfo.groupStatus !== 4
       && groupInfo.groupStatus !== 5
-      && (groupInfo.groupStatus !== 6 || userSimpleInfo.accessRight[0] < groupInfo.groupLevel)
+      && (groupInfo.groupStatus !== 6 || (userSimpleInfo.accessRight[0] < groupInfo.groupLevel && userSimpleInfo.accessRight[0] < 50))
       && !groupInfo.expired
       && +groupInfo.commerceStatus === 1
     "  
@@ -47,6 +47,7 @@
           [groupId]="_brandAdmin.groupId"
           [groupLevel]="groupInfo.groupLevel"
           [coachType]="groupInfo.coachType"
+          [adminList]="adminList.brand"
           (onAssignAdmin)="handleAssignAdmin($event)"
           (onRemoveAdmin)="handleRemoveAdmin()"
         >
