@@ -972,7 +972,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.userProfileService.getUserProfile(body).subscribe(res => {
         if (res.processResult.resultCode !== 200) {
-          console.log('Serve Error!', res.processResult.apiReturnMessage);
+          console.log('Error!', res.processResult.apiReturnMessage);
         } else {
           const userProfile = res.userProfile;
           const birthday = userProfile['birthday'];

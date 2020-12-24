@@ -71,8 +71,6 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
   timeCount = 30;
   sendingPhoneCaptcha = false;
 
-  enableSuccess = false; // app v2上架後刪除
-
   constructor(
     private translate: TranslateService,
     private utils: UtilsService,
@@ -212,6 +210,8 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
             account: `+${profile.countryCode} ${profile.mobileNumber}`,
             id: profile.userId
           };
+
+          this.reciprocal();
         }
 
       });
@@ -240,24 +240,6 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
         this.router.navigateByUrl('/signIn-web');
       } else {
         this.router.navigateByUrl('/signIn');
-      }
-
-    }
-
-  }
-
-  // 待app v2 上架後移除此function-kidin-1090803
-  turnFirstLoginOrBack () {
-    if (this.appInfo.sys === 1) {
-      (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
-    } else if (this.appInfo.sys === 2) {
-      (window as any).android.closeWebView('Close');
-    } else {
-
-      if (this.pcView === true) {
-        this.router.navigateByUrl('/firstLogin-web');
-      } else {
-        this.router.navigateByUrl('/firstLogin');
       }
 
     }
@@ -425,7 +407,6 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
             const msgBody = this.translate.instant('universal_userAccount_sendCaptchaChackEmail');
             this.showMsgBox(msgBody, true);
           } else {
-            this.enableSuccess = true; // app v2上架後刪除此行
             const msgBody = `${this.logMessage.enable
               } ${this.logMessage.success
             }`;
@@ -502,7 +483,6 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
           switch (res.processResult.apiReturnMessage) {
             case 'Enable account fail, account was enabled.':  // 已啟用後再次點擊啟用信件，則當作啟用成功-kidin-1090520
               msgBody = `${this.logMessage.enable} ${this.logMessage.success}`;
-              this.enableSuccess = true; // app v2上架後刪除此行
               break;
             default:
               msgBody = errorMsg;
@@ -512,7 +492,6 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
           this.showMsgBox(msgBody, true);
         } else {
-          this.enableSuccess = true; // app v2上架後刪除此行
           msgBody = `${this.logMessage.enable} ${this.logMessage.success}`;
           this.showMsgBox(msgBody, true);
         }
@@ -532,9 +511,6 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
   // 顯示彈跳視窗訊息-kidin-1090518
   showMsgBox (msg: string, navigate: boolean) {
     if (navigate) {
-
-      // 待app v2上架後移除此判斷-kidin-1090724
-      if (!this.pcView || this.enableSuccess) {
         this.dialog.open(MessageBoxComponent, {
           hasBackdrop: true,
           disableClose: true,
@@ -545,20 +521,6 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
             onConfirm: this.turnFirstLoginOrBack.bind(this)
           }
         });
-
-      } else {
-        this.dialog.open(MessageBoxComponent, {
-          hasBackdrop: true,
-          disableClose: true,
-          data: {
-            title: 'Message',
-            body: msg,
-            confirmText: this.logMessage.confirm,
-            onConfirm: () => this.router.navigateByUrl('/')
-          }
-        });
-
-      }
 
     } else {
 
@@ -571,6 +533,27 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
           confirmText: this.logMessage.confirm
         }
       });
+
+    }
+
+  }
+
+  /**
+   * 啟用成功後導回app或第一次登入頁面
+   * @author kidin-1091222
+   */
+  turnFirstLoginOrBack () {
+    if (this.appInfo.sys === 1) {
+      (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
+    } else if (this.appInfo.sys === 2) {
+      (window as any).android.closeWebView('Close');
+    } else {
+
+      if (this.pcView === true) {
+        this.router.navigateByUrl('/firstLogin-web');
+      } else {
+        this.router.navigateByUrl('/firstLogin');
+      }
 
     }
 

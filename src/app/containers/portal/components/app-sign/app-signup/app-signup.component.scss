@@ -1,0 +1,18 @@
+.terms__section {
+  width: 100vw;
+  height: calc(100vh - 10px);
+  border: none;
+  word-break: break-word;
+}
+
+.close__btn {
+  font-size: 24px;
+  border-radius: 50%;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.7);
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  top: -10px;
+  right: -10px;
+}

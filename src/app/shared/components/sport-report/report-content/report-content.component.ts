@@ -10,6 +10,7 @@ import { HashIdService } from '@shared/services/hash-id.service';
 import { UserProfileService } from '../../../services/user-profile.service';
 import { ReportService } from '../../../services/report.service';
 import * as _Highcharts from 'highcharts';
+import { ReportConditionOpt } from '../../../models/report-condition';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -22,6 +23,20 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
 
   private ngUnsubscribe = new Subject();
 
+  /**
+   * 報告頁面可讓使用者篩選的條件
+   */
+  reportConditionOpt: ReportConditionOpt = {
+    reportType: 'sport',
+    date: {
+      startTimestamp: moment().startOf('day').subtract(6, 'days').valueOf(),
+      endTimestamp: moment().endOf('day').valueOf(),
+      type: 'sevenDay'
+    },
+    sportType: 99,
+    hideConfirmBtn: true
+  }
+
   // UI控制相關變數-kidin-1090115
   isLoading = true;
   isRxjsLoading = true;
@@ -30,7 +45,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
   nodata = false;
   dataDateRange = '';
   showReport = false;
-  selectType = '99';
+  selectType = 99;
   proficiency = 'metacarpus'; // 預設進階者
   description: string;
   handleMuscleData = false;
@@ -39,12 +54,11 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
   @Output() showPrivacyUi = new EventEmitter();
   token: string;
   userId: number;
-  reportCategory = '99';
+  reportCategory = 99;
   reportStartTime = '';
   reportEndTime = '';
   reportEndDate = '';
   period = '';
-  selectPeriod = '';
   reportStartDate = '';
   reportRangeType = 1;
   reportCreatedTime = moment().format('YYYY/MM/DD HH:mm');
@@ -136,6 +150,17 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
       this.isPreviewMode = true;
       this.getProficiency(location.search);
     }
+
+    this.reportService.setReportCondition(this.reportConditionOpt);
+
+    if (
+      location.search.indexOf('startdate=') > -1
+      || location.search.indexOf('enddate=') > -1
+      || location.search.indexOf('sport=') > -1
+    ) {
+      this.queryStringShowData();
+    }
+
   }
 
   ngOnChanges () {}
@@ -152,6 +177,23 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
 
     }
 
+  }
+
+  // 依query string顯示資料-kidin-20191226
+  queryStringShowData () {
+    const queryString = location.search.replace('?', '').split('&');
+    for (let i = 0; i < queryString.length; i++) {
+      if (queryString[i].indexOf('startdate=') > -1) {
+        this.reportStartTime = moment(queryString[i].replace('startdate=', '')).format('YYYY-MM-DDT00:00:00.000Z');
+      } else if (queryString[i].indexOf('enddate=') > -1) {
+        this.reportEndTime = moment(queryString[i].replace('enddate=', '')).format('YYYY-MM-DDT23:59:59.999Z');
+      } else if (queryString[i].indexOf('sport=') > -1) {
+        this.reportCategory = +queryString[i].replace('sport=', '');
+      }
+
+    }
+
+    this.createReport();
   }
 
   // 從rxjs取得儲存數據-kidin-1090415
@@ -173,14 +215,14 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
           this.getUserBodyInfo(userHRBase, userAge, userMaxHR, userRestHR);
         }),
         // 使用rxjs訂閱搜索日期使搜索日期更改時可以即時切換-kidin-1090121
-        switchMap(() => this.reportService.getReportAddition().pipe(
+        switchMap(() => this.reportService.getReportCondition().pipe(
           tap(reportAddition => {
-            this.reportStartTime = reportAddition[0].value;
-            this.reportEndTime = reportAddition[1].value;
-            this.reportEndDate = this.reportEndTime.split('T')[0].replace(/-/g, '/');
-            this.checkReportEndDate();
-            this.switchPeriod(reportAddition[2].value);
+            this.reportStartTime = moment(reportAddition.date.startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+            this.reportEndTime = moment(reportAddition.date.endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
             this.createReport();
+
+            this.reportCategory = reportAddition.sportType;
+            this.loadCategoryData(reportAddition.sportType);
           })
         )),
         takeUntil(this.ngUnsubscribe)
@@ -197,41 +239,26 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
       this.hrZoneRange['z5'] = 'Z5';
 
       // 使用rxjs訂閱搜索日期使搜索日期更改時可以即時切換-kidin-1090121
-      this.reportService.getReportAddition().pipe(
+      this.reportService.getReportCondition().pipe(
         takeUntil(this.ngUnsubscribe)
       ).subscribe(response => {
-        this.reportStartTime = response[0].value;
-        this.reportEndTime = response[1].value;
-        this.reportEndDate = this.reportEndTime.split('T')[0].replace(/-/g, '/');
-        this.checkReportEndDate();
-        this.switchPeriod(response[2].value);
+        this.reportStartTime = moment(response.date.startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+        this.reportEndTime = moment(response.date.endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
         this.createReport();
+
+        this.reportCategory = response.sportType;
+        this.loadCategoryData(response.sportType);
       });
     }
 
-    // 使用rxjs訂閱運動類別使運動類別更改時可以即時切換-kidin-1090121
-    this.reportService.getreportCategory().pipe(
-      takeUntil(this.ngUnsubscribe)
-    ).subscribe(res => {
-      this.selectType = '99';
-      this.reportCategory = res;
-      this.loadCategoryData(res);
-    });
-  }
-
-  // 確認週報告日期是否為未來日期-kidin-1090227(Bug 1082)
-  checkReportEndDate () {
-    const checkDate = moment(this.reportEndDate, 'YYYY/MM/DD');
-    if (checkDate.diff(moment(), 'day') > 0) {
-      this.reportEndDate = moment().format('YYYY/MM/DD');
-    }
   }
 
   // 建立運動報告-kidin-1090117
   createReport() {
+    this.reportEndDate = this.reportEndTime.split('T')[0].replace(/-/g, '/');
+    this.switchPeriod();
     if (this.userId) {
       this.isLoading = true;
-      this.initVariable();
 
       // 1個月內取日概要陣列，半年以上取周概要陣列-kidin_1090122
       this.checkReportRangeType(this.reportStartTime, this.reportEndTime);
@@ -250,6 +277,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
           this.updateUrl('false');
           return this.showPrivacyUi.emit(true);
         } else if (res[0].resultCode === 200) {
+          this.initVariable();
           this.showPrivacyUi.emit(false);
           const dataLength = res[0].reportInfo.totalPoint;
           if (dataLength === 0) {
@@ -276,7 +304,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
             this.calPerCategoryData();
           }
         } else {
-          console.log('Sever Error');
+          console.log('Error');
         }
       });
 
@@ -285,40 +313,29 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   // 依據選擇的搜索日期切換顯示-kidin-1090121
-  switchPeriod (period: string) {
+  switchPeriod () {
     // 用get方法確認translate套件已完成載入(Bug 1147)-kidin-1090316
     this.translate.get('hello.world').subscribe(() => {
-      switch (period) {
-        case '7':
-          this.reportRangeType = 1;
-          this.selectPeriod = '7';
-          this.period = `7 ${this.translate.instant(
-            'universal_time_day'
-          )}`;
-        break;
-        case '30':
-          this.reportRangeType = 1;
-          this.selectPeriod = '30';
-          this.period = `30 ${this.translate.instant(
-            'universal_time_day'
-          )}`;
-        break;
-        case '182':
-          this.reportRangeType = 2;
-          this.selectPeriod = '182';
-          this.period = `6 ${this.translate.instant(
-            'universal_time_month'
-          )}`;
-        break;
-        case '364':
-          this.reportRangeType = 2;
-          this.selectPeriod = '364';
-          this.period = `12 ${this.translate.instant(
-            'universal_time_month'
-          )}`;
-        break;
+      const diffDay = moment(this.reportEndTime).diff(moment(this.reportStartTime), 'days') + 1;
+      this.period = `${diffDay} ${this.translate.instant(
+        'universal_time_day'
+      )}`;
+
+      // 52天內取日概要陣列，52天以上取周概要陣列-kidin_1090211
+      if (diffDay <= 52) {
+        this.reportRangeType = 1;
+        this.dataDateRange = 'day';
+      } else {
+        this.reportRangeType = 2;
+        this.dataDateRange = 'week';
       }
+
+      this.period = `${diffDay} ${this.translate.instant(
+        'universal_time_day'
+      )}`;
+
     });
+
   }
 
   // 取得使用者資訊並計算心率區間範圍()-kidin-1090203
@@ -418,7 +435,6 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
 
     } else {
       const weekCoefficient = this.findDate();
-
       for (let i = 0; i < weekCoefficient.weekNum; i++) {
         this.chartTimeStamp.push(weekCoefficient.startDate + 86400000 * i * 7);
       }
@@ -594,6 +610,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
       return false;
     }
 
+    this.activityLength = 0;
     for (let i = 0; i < this.activitiesList.length; i++) {
       typeAllDataDate.unshift(this.activitiesList[i].startTime.split('T')[0]);
 
@@ -605,7 +622,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
 
         this.activityLength += +perStrokeData['totalActivities'];
         typeAllTotalTrainTime += +perStrokeData['totalSecond'];
-        typeList.unshift(perStrokeData['type']);
+        typeList.unshift(+perStrokeData['type']);
         typeAllavgHr.unshift(perStrokeData['avgHeartRateBpm']);
         typeAllActivityTime.unshift(
           perStrokeData['totalSecond'] / perStrokeData['totalActivities']
@@ -1111,8 +1128,10 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   // 根據運動類別使用rxjs從service取得資料-kidin-1090120
-  loadCategoryData (type: string) {
+  loadCategoryData (type: number) {
     this.isRxjsLoading = true;
+    this.reportEndDate = this.reportEndTime.split('T')[0].replace(/-/g, '/');
+    this.switchPeriod();
 
     // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
     Highcharts.charts.forEach((_highChart, idx) => {
@@ -1747,7 +1766,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
   // 點擊運定項目後該類別相關資料特別顯示-kidin-1090214
   assignCategory (category) {
     if (category === this.selectType) {
-      this.selectType = '99';
+      this.selectType = 99;
     } else {
       this.selectType = category;
     }
@@ -1898,7 +1917,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
             endDateString = this.reportEndTime.split('T')[0];
       let searchString;
 
-      if (this.reportCategory === '3') {
+      if (this.reportCategory === 3) {
 
         let selectMuscle = '';
         for (let i = 0; i < this.muscleTrendList.length; i++) {
@@ -1919,7 +1938,6 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
         `sport=${this.reportCategory
         }&startdate=${startDateString
         }&enddate=${endDateString
-        }&selectPeriod=${this.selectPeriod
         }&selectProficiency=${this.proficiencyCoefficient
         }&selectMuscle=${selectMuscle
         }`;
@@ -1928,7 +1946,6 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
         `sport=${this.reportCategory
         }&startdate=${startDateString
         }&enddate=${endDateString
-        }&selectPeriod=${this.selectPeriod
         }`;
       }
 
@@ -1936,8 +1953,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
         if (
           location.search.indexOf('sport=') > -1 &&
           location.search.indexOf('startdate=') > -1 &&
-          location.search.indexOf('enddate=') > -1 &&
-          location.search.indexOf('selectPeriod=') > -1
+          location.search.indexOf('enddate=') > -1
         ) {
           // 將舊的sr query string換成新的-kidin-1090205
           const preUrl = location.pathname;
@@ -1947,8 +1963,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
             if (
               queryString[i].indexOf('sport=') === -1 &&
               queryString[i].indexOf('startdate=') === -1 &&
-              queryString[i].indexOf('enddate=') === -1 &&
-              queryString[i].indexOf('selectPeriod=') === -1
+              queryString[i].indexOf('enddate=') === -1
             ) {
               newSufUrl = `${newSufUrl}&${queryString[i]}`;
             }
@@ -1991,6 +2006,10 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
 
   }
 
+  /**
+   * 解除rxjs訂閱與初始化篩選器
+   * @author kidin-1091211
+   */
   ngOnDestroy () {
     this.showReport = false;
     this.ngUnsubscribe.next();

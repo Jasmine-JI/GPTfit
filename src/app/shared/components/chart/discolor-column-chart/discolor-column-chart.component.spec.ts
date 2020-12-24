@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { DiscolorColumnChartComponent } from './discolor-column-chart.component';
 
@@ -6,7 +6,7 @@ describe('DiscolorColumnChartComponent', () => {
   let component: DiscolorColumnChartComponent;
   let fixture: ComponentFixture<DiscolorColumnChartComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ DiscolorColumnChartComponent ]
     })

@@ -1,5 +1,10 @@
-<div style="width: 90vw; max-width: 800px;" [class.reportPreviewMode]="uiFlag.isPreviewMode">
-  <div class="flexRow" style="align-items: center; cursor: pointer;" (click)="openConditionSelector()">
+<div
+  #filterSection
+  style="width: 100%; padding: 5px; background-color: white; border: 1px solid rgba(200, 200, 200, 1);"
+  [class.reportPreviewMode]="uiFlag.isPreviewMode"
+  [style.pointer-events]="uiFlag.isLoading ? 'none' : 'initial'"
+>
+  <div class="flexRow" style="width: fit-content; align-items: center; cursor: pointer;" (click)="openConditionSelector()">
     <span class="condition__title">{{ 'universal_operating_filter' | translate }}</span>
     <i
       class="icon-svg_web-icon_p1_006-unfold condition__unfold__icon"
@@ -42,7 +47,7 @@
                 class="selector__tab__title"
                 [class.date__type--active]="date.type === 'today' || date.type === 'thisWeek' || date.type === 'thisMonth' || date.type === 'thisYear'"
                 (click)="selectDateRange($event, 3)"
-              >選擇曆期</span>
+              >{{'universal_activityData_calendarSelect' | translate}}</span>
             </div>
             <div style="display: flex; align-items: center; justify-content: center;">
               <span
@@ -80,7 +85,7 @@
           <span class="calendar_period__option" (click)="selectCalendarPeroid('today')">{{'universal_time_today' | translate}}</span>
           <span class="calendar_period__option" (click)="selectCalendarPeroid('thisWeek')">{{'universal_time_thisWeek' | translate}}</span>
           <span class="calendar_period__option" (click)="selectCalendarPeroid('thisMonth')">{{'universal_time_thisMonth' | translate}}</span>
-          <span class="calendar_period__option" (click)="selectCalendarPeroid('thisYear')">今年</span>
+          <span class="calendar_period__option" (click)="selectCalendarPeroid('thisYear')">{{'universal_time_thisYear' | translate}}</span>
         </div>
       </div>
     </section>
@@ -104,7 +109,10 @@
       </button>
       {{date.startTimestamp | timeFormat: 'YYYY/MM/DD'}} - {{date.endTimestamp | timeFormat: 'YYYY/MM/DD'}}
     </section>
-    <section class="flexCol" *ngIf="reportConditionOpt && reportConditionOpt.brandType !== null">
+    <section
+      class="flexCol"
+      *ngIf="reportConditionOpt && reportConditionOpt.brandType !== null && 1 + 1 === 3"
+    >
       <span class="condition__title">{{ 'universal_group_group' | translate }}</span>
       <div class="flexCol condition__content">
         <div class="flexCol" *ngIf="reportConditionOpt.group.brands !== null">
@@ -144,7 +152,10 @@
         </div>
       </div>
     </section>
-    <section class="flexCol" *ngIf="reportConditionOpt && reportConditionOpt.reportType === 'sport'">
+    <section
+      class="flexCol"
+      *ngIf="reportConditionOpt && reportConditionOpt.reportType === 'sport' && (reportConditionOpt.brandType === undefined || reportConditionOpt.brandType !== 2)"
+    >
       <span class="condition__title">{{ 'universal_activityData_activityType' | translate }}</span>
       <div class="flexRow condition__content" style="flex-wrap: wrap;">
         <span
@@ -174,7 +185,7 @@
         </div>
       </div>
     </section>
-    <div style="display: flex; justify-content: flex-end;">
+    <div style="display: flex; justify-content: flex-end;" *ngIf="reportConditionOpt && !reportConditionOpt.hideConfirmBtn">
       <span class="confirm__btn" (click)="submit()">{{ 'universal_operating_determine' | translate }}</span>
     </div>
   </main>

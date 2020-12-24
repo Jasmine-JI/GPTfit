@@ -10,7 +10,7 @@
         {{ 'universal_userAccount_resetPassword' | translate }}
       </span>
     </div>
-    <div *ngIf="formValue.resetPasswordFlow <= 2">
+    <ng-container *ngIf="formValue.resetPasswordFlow <= 2">
       <div class="flexCol appDiv">
         <span class="formTitle">{{ 'universal_userAccount_account' | translate }}</span>
         <div class="flexRow member__input">
@@ -29,6 +29,17 @@
         </div>
         <span class="formCue" *ngIf="cue.account !== ''">{{ cue.account | translate }}</span>
       </div>
+      <button
+        class="appview-btn"
+        [class.appview-btn-unclickable]="sendingPhoneCaptcha"
+        *ngIf="formValue.type === 2 && formValue.resetPasswordFlow !== 3 && !phoneFormIncomplete"
+        (click)="reciprocal()"
+      >
+        <span>
+          {{ 'universal_operating_send' | translate }}
+          <span *ngIf="timeCount !== 30">({{ timeCount }}s)</span>
+        </span>
+      </button>
       <div class="flexCol" style="margin-top: 10px;">
         <div class="flexCol appDiv" *ngIf="formValue.type === 2 && !phoneFormIncomplete">
           <span class="formTitle">{{ 'universal_userAccount_phoneCaptcha' | translate }}</span>
@@ -62,7 +73,7 @@
           </span>
         </div>
       </div>
-    </div>
+    </ng-container>
     <div *ngIf="formValue.resetPasswordFlow === 3">
       <div class="flexCol appDiv" style="min-height: initial;">
         <span class="app-alert" style="font-size: 20px; font-weight: bold;">{{ 'universal_userAccount_changingPassword' | translate }}</span>
@@ -94,14 +105,6 @@
     </div>
     <button
       class="appview-btn"
-      [class.appview-btn-unclickable]="sendingPhoneCaptcha"
-      *ngIf="formValue.type === 2 && formValue.resetPasswordFlow !== 3 && !phoneFormIncomplete"
-      (click)="reciprocal()"
-    >
-      <span>{{ 'universal_operating_send' | translate }}({{ timeCount }}s)</span>
-    </button>
-    <button
-      class="appview-btn"
       [class.appview-btn-unclickable]="sending || dataIncomplete"
       (click)="submit()"
     >
@@ -113,7 +116,7 @@
 </ng-container>
 <ng-container *ngIf="pcView">
   <div class="access-bg" style="margin-top: 0px;">
-    <div class="container signup" style="padding-top:63px">
+    <div class="container signup" style="padding: 63px 0 70px 0;">
       <div class="d-flex" style="flex-direction: column;align-items: center;">
         <div class="access-panel" style="margin-top: 60px;">
           <header class="access-header">

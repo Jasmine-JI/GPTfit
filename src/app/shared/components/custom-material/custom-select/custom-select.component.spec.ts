@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CustomSelectComponent } from './custom-select.component';
 
@@ -6,7 +6,7 @@ describe('CustomSelectComponent', () => {
   let component: CustomSelectComponent;
   let fixture: ComponentFixture<CustomSelectComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CustomSelectComponent ]
     })

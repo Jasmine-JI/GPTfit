@@ -6,7 +6,7 @@ import { UtilsService } from '@shared/services/utils.service';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
 
-import { Subject } from 'rxjs';
+import { fromEvent, Subscription, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -38,6 +38,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     password: '',
     nickname: ''
   };
+
   appSys = 0;  // 0:web, 1:ios, 2:android
   focusForm = '';
   displayPW = false;
@@ -47,6 +48,13 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   newToken: string;
   ip = '';
   pcView = false;
+  agreeTerms = false;
+  termsText = '';
+  showTerms = <'termsConditions' | 'privacyPolicy' | null>null;
+  termsRxEvent = new Subscription();
+  privacyRxEvent = new Subscription();
+  termsLink: string;
+  debounce = false;
 
   // 驗證用
   regCheck: RegCheck = {
@@ -133,7 +141,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1090717
    */
   getTranslate(): void {
-    this.translate.get('hollo word').pipe(
+    this.translate.get('hollow world').pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
       this.i18n = {
@@ -142,7 +150,130 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
         nickname: this.translate.instant('universal_userAccount_nickname')
       };
 
+      this.createMainContent();
     });
+
+  }
+
+  /**
+   * 建立條款顯示內容
+   * @author kidin-1091216
+   */
+  createMainContent() {
+    const mainContent = document.getElementById('mainContent');
+    if (mainContent) {
+      mainContent.innerHTML = `${this.translate.instant('universal_userAccount_clauseContentPage1')
+        }<span id="terms" style="color: rgba(0, 123, 255, 1);">『${
+          this.translate.instant('universal_userAccount_clause')
+        }』</span>、<span id="privacy" style="color: rgba(0, 123, 255, 1);">『${
+          this.translate.instant('universal_userAccount_privacyStatement')
+        }』</span>${
+          this.translate.instant('universal_userAccount_clauseContentPage2')
+        }`.replace(/\n/gm, '');
+
+      this.listenClickTerms();
+
+    }
+
+  }
+
+  /**
+   * 監聽條款、隱私權點擊事件
+   * @author kidin-1091209
+   */
+  listenClickTerms() {
+
+    setTimeout(() => {
+      const termsLink = document.getElementById('terms'),
+            privacyLink = document.getElementById('privacy'),
+            termsClickEvent = fromEvent(termsLink, 'click'),
+            privacyClickEvent = fromEvent(privacyLink, 'click');
+      
+      this.termsRxEvent = termsClickEvent.pipe(
+        takeUntil(this.ngUnsubscribe)
+      ).subscribe(e => {
+        this.handleShowTerms('termsConditions');
+      })
+
+      this.privacyRxEvent = privacyClickEvent.pipe(
+        takeUntil(this.ngUnsubscribe)
+      ).subscribe(e => {
+        this.handleShowTerms('privacyPolicy');
+      })
+
+    });
+
+  }
+
+  /**
+   * 處理顯示條款或隱私選詳細頁面
+   * @param action {'termsConditions' | 'privacyPolicy' | null}
+   * @author kidin-1091208
+   */
+  handleShowTerms(action: 'termsConditions' | 'privacyPolicy' | null) {
+    if (action !== null) {
+
+      let lang: string;
+      if ((window as any).android) {
+        lang = this.getUrlLanguageString(location.search);
+      } else {
+        lang = navigator.language.toLowerCase();
+      }
+
+      switch(lang) {
+        case 'zh-tw':
+          this.termsLink = `${location.origin}/app/public_html/appHelp/zh-TW/${action}.html`;
+          break;
+        case 'zh-cn':
+          this.termsLink = `${location.origin}/app/public_html/appHelp/zh-CN/${action}.html`;
+          break;
+        case 'pt-br':
+          this.termsLink = `${location.origin}/app/public_html/appHelp/pt-BR/${action}.html`;
+          break;
+        default:
+          this.termsLink = `${location.origin}/app/public_html/appHelp/en-US/${action}.html`;
+          break;
+      }
+
+    }
+
+    this.showTerms = action;
+    return false;
+  }
+
+  /**
+   * 從網址取得語系
+   * @param str {string}-query string
+   * @author kidin-1091222
+   */
+  getUrlLanguageString(str: string) {
+    if (str.indexOf('l=') > -1) {
+      const tempStr = str.split('l=')[1];
+      let lan: string;
+      if (tempStr.indexOf('&') > -1) {
+        lan = tempStr.split('&')[0].toLowerCase();
+      } else {
+        lan = tempStr.toLowerCase();
+      }
+
+      switch (lan) {
+        case 'zh-tw':
+        case 'zh-cn':
+        case 'en-us':
+        case 'es-es':
+        case 'de-de':
+        case 'fr-fr':
+        case 'it-it':
+        case 'pt-pt':
+        case 'pt-br':
+          return lan;
+        default:
+          return 'en-us';
+      }
+
+    } else {
+      return 'en-us';
+    }
 
   }
 
@@ -151,18 +282,31 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1090717
    */
   turnBack(): void {
-    if (this.appSys === 1) {
-      (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
-    } else if (this.appSys === 2) {
-      (window as any).android.closeWebView('Close');
-    } else {
+    if (this.showTerms !== null) {
+      this.showTerms = null;
 
-      if (this.pcView) {
-        this.router.navigateByUrl('/signIn-web');
+      // 避免關閉條款時，不小心連點而關閉webview
+      this.debounce = true;
+      setTimeout(() => {
+        this.debounce = false
+      }, 250);
+
+    } else if (!this.debounce) {
+
+      if (this.appSys === 1) {
+        (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
+      } else if (this.appSys === 2) {
+        (window as any).android.closeWebView('Close');
       } else {
-        this.router.navigateByUrl('/signIn');
-      }
 
+        if (this.pcView) {
+          this.router.navigateByUrl('/signIn-web');
+        } else {
+          this.router.navigateByUrl('/signIn');
+        }
+
+
+      }
 
     }
 
@@ -582,33 +726,27 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
         this.saveToken(this.newToken);
         this.authService.setLoginStatus(true);
 
-        // web先強迫要啟用帳號，待app v2上架後拿掉此判斷-kidin-1090724
-        if (!this.pcView) {
-          const N = '\n';
-          this.dialog.open(MessageBoxComponent, {
-            hasBackdrop: true,
-            disableClose: true,
-            data: {
-              title: 'Message',
-              body: `${this.translate.instant('universal_status_success')} ${this.translate.instant('universal_userAccount_signUp')} ${
-                N} ${this.translate.instant('universal_popUpMessage_continueExecution')} ${
-                this.translate.instant('universal_deviceSetting_switch')} ${this.translate.instant('universal_userAccount_account')}?
-              `,
-              confirmText: this.translate.instant(
-                'universal_operating_confirm'
-              ),
-              cancelText: this.translate.instant(
-                'universal_operating_cancel'
-              ),
-              onCancel: this.finishSignup.bind(this),
-              onConfirm: this.toEnableAccount.bind(this)
-            }
+        const N = '\n';
+        this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          disableClose: true,
+          data: {
+            title: 'Message',
+            body: `${this.translate.instant('universal_status_success')} ${this.translate.instant('universal_userAccount_signUp')} ${
+              N} ${this.translate.instant('universal_popUpMessage_continueExecution')} ${
+              this.translate.instant('universal_deviceSetting_switch')} ${this.translate.instant('universal_userAccount_account')}?
+            `,
+            confirmText: this.translate.instant(
+              'universal_operating_confirm'
+            ),
+            cancelText: this.translate.instant(
+              'universal_operating_cancel'
+            ),
+            onCancel: this.finishSignup.bind(this),
+            onConfirm: this.toEnableAccount.bind(this)
+          }
 
-          });
-
-        } else {
-          this.router.navigateByUrl(`/enableAccount-web`);
-        }
+        });
 
       }
 
@@ -667,6 +805,19 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
       this.router.navigateByUrl(`/enableAccount-web`);
     } else {
       this.router.navigateByUrl(`/enableAccount`);
+    }
+
+  }
+
+  /**
+   * 處理使用者點選同意或不同意條款和隱私權聲明
+   * @param action {boolean}-同意/不同意
+   * @author kidin-1091208
+   */
+  handleAgreeTerms(action: boolean) {
+    this.agreeTerms = action;
+    if (!action) {
+      this.turnBack();
     }
 
   }

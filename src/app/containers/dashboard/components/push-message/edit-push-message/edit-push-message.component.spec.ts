@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { EditPushMessageComponent } from './edit-push-message.component';
 
@@ -6,7 +6,7 @@ describe('EditPushMessageComponent', () => {
   let component: EditPushMessageComponent;
   let fixture: ComponentFixture<EditPushMessageComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ EditPushMessageComponent ]
     })

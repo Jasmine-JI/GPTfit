@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { EventManagementComponent } from './event-management.component';
 
@@ -6,7 +6,7 @@ describe('EventManagementComponent', () => {
   let component: EventManagementComponent;
   let fixture: ComponentFixture<EventManagementComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ EventManagementComponent ]
     })

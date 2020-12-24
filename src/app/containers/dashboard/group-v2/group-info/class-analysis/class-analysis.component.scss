@@ -1,0 +1,283 @@
+@import 'transition.scss';
+
+$calender-focus-color: rgba(53, 126, 189, 1);
+$calender-default-red: rgba(235, 104, 119, 1);
+$calender-pot-size: 3px;
+
+
+.calender__section {
+  width: 50%;
+  font-weight: bold;
+}
+
+.class__list {
+  width: 50%;
+  margin-left: 30px;
+  padding-left: 10px;
+  max-height: 155px;
+  overflow-y: scroll;
+}
+
+.clickable {
+  cursor: pointer;
+
+  &:hover {
+    outline: rgba(53, 126, 189, 0.5) solid 1px;
+  }
+
+}
+
+.switch__btn {
+  padding: 0 10px;
+}
+
+.calender__week__format {
+  justify-content: space-between;
+  align-items: center;
+  min-height: 30px;
+  margin: 5px 0;
+}
+
+.calender__day {
+  min-width: 40px;
+  text-align: center;
+}
+
+.have__date__mark {
+  position: relative;
+
+  &:after {
+    content: '';
+    width: $calender-pot-size;
+    height: $calender-pot-size;
+    border: $calender-pot-size solid $calender-default-red;
+    border-radius: $calender-pot-size;
+    position: absolute;
+    top: 3px;
+    right: 3px;
+  }
+
+}
+
+.focus__one__day {
+  background-color: $calender-focus-color;
+  color: white;
+  border-radius: 5px;
+  @include transition(background-color);
+
+  &:after {
+    border-color: white;
+  }
+
+}
+
+.today__mark {
+  border-radius: 5px;
+  border: 2px solid rgba(53, 126, 189, 0.5);
+}
+
+.unclickable {
+  pointer-events: none;
+  color: rgba(120, 120, 120, 1)
+}
+
+.activity__row {
+  height: 50px;
+  align-items: center;
+  cursor: pointer;
+  padding: 5px;
+  @include transition(background-color);
+
+  &:hover {
+    background-color: rgba(235, 104, 119, 0.2);
+    @include transition(background-color);
+  }
+
+}
+
+.item__bar {
+  position: relative;
+  z-index: 1;
+  width: 5px;
+  height: 40px;
+  background-color: $calender-default-red;
+  @include transition(background-color);
+}
+
+.item__bar--active {
+  background-color: white;
+  @include transition(background-color);
+}
+
+.row--focus {
+  background-color: $calender-default-red;
+  @include transition(background-color);
+}
+
+.item--focous {
+  color: white;
+}
+
+.acitivty__item__component {
+  margin-right: 15px;
+}
+
+
+
+/******************************** 可能大改，故沿用舊code ******************************************/
+
+#dash {
+  height: 2px;
+  flex: 1 0 10px;
+  background: gray;
+  margin: 15px 10px 0px 10px;
+  align-content: center;
+}
+
+mat-header-cell:first-child, mat-cell:first-child, mat-footer-cell:first-child {
+  padding-left: 0px !important;
+}
+
+mat-header-cell:last-child, mat-cell:last-child, mat-footer-cell:last-child {
+  padding-right: 0px !important;
+}
+
+.tableTitle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.tableTitleWord {
+  color: black;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+}
+
+.tableArrangement {
+  display: flex;
+  justify-content: center;
+}
+
+.chartTitleUnit {
+  color:#919191;
+}
+
+.memberHRZoneChart {
+  width: 100%;
+}
+
+.activeItem {
+  background-color: #ededed;
+}
+
+.seeMoreLink {
+  color: #157fcc;
+  text-align: center;
+  font-weight: bold;
+  margin-top: 10px;
+
+  &:hover {
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}
+
+@media (max-width: 1200px) {
+  .searchInput {
+    flex-direction: column;
+    margin-bottom: 10px;
+  }
+
+  .selectArea {
+    flex-direction: column;
+  }
+
+  #dash {
+    margin: 15px 5px 0px 5px;
+  }
+
+  .datetimeInput {
+    max-width: 245px;
+  }
+}
+
+@media (max-width: 1150px) {
+  .fitWindow {
+    flex-direction: column;
+  }
+
+  .reportName {
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 565px) {
+  .otherInfoArea {
+    flex-wrap: wrap;
+  }
+
+  .otherInfoSection {
+    min-width: 150px;
+  }
+}
+
+@media (max-width: 525px) {
+  .brandName {
+    font-size: 24px;
+  }
+
+  .reportName {
+    font-size: 20px;
+  }
+
+  .summaryData {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 470px) {
+  .sportEfficiencyArea {
+    flex-direction: column;
+  }
+
+  .HRZone {
+    border-right: none;
+    width: 100%;
+  }
+
+  .bodyQuality {
+    width: 100%;
+  }
+
+  .hideColumn {
+    display: none;
+  }
+}
+
+/**************************************************************************/
+
+
+
+
+/********************************** media *********************************/
+
+@media (max-width: 767px) {
+
+  .calender__area {
+    flex-direction: column;
+  }
+
+  .calender__section {
+    width: 100%;
+  }
+  
+  .class__list {
+    width: 100%;
+    margin: 10px 10px 10px 0;
+  }
+
+}

@@ -4,7 +4,6 @@ import { PortalComponent } from './portal.component';
 import { DemoQrcodComponent } from './components/demo-qrcod/demo-qrcod.component';
 import { SigninGuard } from '@shared/guards/signin/signin.guard';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
-import { PortalGroupInfoComponent } from './components/portal-group-info/portal-group-info.component';
 import { SportReportComponent } from '@shared/components/sport-report/sport-report.component';
 import { ActivityInfoComponent } from '@shared/components/activity-info/activity-info.component';
 import { MyActivityComponent } from '@shared/components/my-activity/my-activity.component';
@@ -21,6 +20,10 @@ import { AppModifypwComponent } from './components/app-sign/app-modifypw/app-mod
 import { AppChangeAccountComponent } from './components/app-sign/app-change-account/app-change-account.component';
 import { AppQrcodeLoginComponent } from './components/app-sign/app-qrcode-login/app-qrcode-login.component';
 import { AppFirstLoginComponent } from './components/app-sign/app-first-login/app-first-login.component';
+import { GroupInfoComponent } from '../dashboard/group-v2/group-info/group-info.component';
+import { GroupIntroductionComponent } from '../../containers/dashboard/group-v2/group-info/group-introduction/group-introduction.component';
+import { AppCompressDataComponent } from './components/app-sign/app-compress-data/app-compress-data.component';
+import { AppDestroyAccountComponent } from './components/app-sign/app-destroy-account/app-destroy-account.component';
 
 
 const routes: Routes = [
@@ -68,7 +71,13 @@ const routes: Routes = [
       },
       {
         path: 'group-info/:groupId',
-        component: PortalGroupInfoComponent
+        component: GroupInfoComponent,
+        children: [
+          {
+            path: 'group-introduction',
+            component: GroupIntroductionComponent
+          }
+        ]
       },
       {
         path: 'first-login',
@@ -119,6 +128,16 @@ const routes: Routes = [
       {
         path: 'firstLogin',
         component: AppFirstLoginComponent
+      },
+      {
+        path: 'compressData',
+        component: AppCompressDataComponent
+        
+      },
+      {
+        path: 'destroyAccount',
+        component: AppDestroyAccountComponent
+        
       },
       {
         path: 'register-web',

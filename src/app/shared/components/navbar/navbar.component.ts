@@ -203,16 +203,20 @@ export class NavbarComponent implements OnInit {
    * @author kidin-1090904
    */
   checkOfficialActivity() {
-    const body = {
-      token: this.utilsService.getToken() || ''
-    };
+    if (navigator.language.toLocaleLowerCase() !== 'pt-br') {
 
-    this.officialActivityService.getAllOfficialActivity(body).subscribe(res => {
-      if (res.resultCode === 200 && res.activityList.length > 0) {
-        this.noActivity = false;
-      }
+      const body = {
+        token: this.utilsService.getToken() || ''
+      };
 
-    });
+      this.officialActivityService.getAllOfficialActivity(body).subscribe(res => {
+        if (res.resultCode === 200 && res.activityList.length > 0) {
+          this.noActivity = false;
+        }
+
+      });
+
+    }
 
   }
 

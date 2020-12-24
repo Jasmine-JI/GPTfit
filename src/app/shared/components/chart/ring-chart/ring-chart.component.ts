@@ -59,7 +59,7 @@ class ChartOptions {
 export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() data: Array<number>;
-  @Input() selectType: string;  // 先預埋根據運動類型過濾落點-kidin-1090131
+  @Input() selectType: number;  // 先預埋根據運動類型過濾落點-kidin-1090131
 
   @ViewChild('container', {static: false})
   container: ElementRef;
@@ -81,7 +81,7 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
       if (this.data[i] !== 0) {
         switch (i) {
           case 0:
-            if (this.selectType !== '1' && this.selectType !== '99') {
+            if (this.selectType !== 1 && this.selectType !== 99) {
               sportPercentageDataset.push({
                 name: this.translateService.instant('universal_activityData_run'), y: this.data[0], color: '#9e9e9e'
               });
@@ -92,7 +92,7 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
             }
             break;
           case 1:
-            if (this.selectType !== '2' && this.selectType !== '99') {
+            if (this.selectType !== 2 && this.selectType !== 99) {
               sportPercentageDataset.push({
                 name: this.translateService.instant('universal_activityData_cycle'), y: this.data[1], color: '#9e9e9e'
               });
@@ -103,7 +103,7 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
             }
           break;
           case 2:
-            if (this.selectType !== '3' && this.selectType !== '99') {
+            if (this.selectType !== 3 && this.selectType !== 99) {
               sportPercentageDataset.push({
                 name: this.translateService.instant('universal_activityData_weightTraining'), y: this.data[2], color: '#9e9e9e'
               });
@@ -114,7 +114,7 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
             }
           break;
           case 3:
-            if (this.selectType !== '4' && this.selectType !== '99') {
+            if (this.selectType !== 4 && this.selectType !== 99) {
               sportPercentageDataset.push({
                 name: this.translateService.instant('universal_activityData_swin'), y: this.data[3], color: '#9e9e9e'
               });
@@ -125,7 +125,7 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
             }
           break;
           case 4:
-            if (this.selectType !== '5' && this.selectType !== '99') {
+            if (this.selectType !== 5 && this.selectType !== 99) {
               sportPercentageDataset.push({
                 name: this.translateService.instant('universal_activityData_aerobic'), y: this.data[4], color: '#9e9e9e'
               });
@@ -136,7 +136,7 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
             }
           break;
           case 5:
-            if (this.selectType !== '6' && this.selectType !== '99') {
+            if (this.selectType !== 6 && this.selectType !== 99) {
               sportPercentageDataset.push({
                 name: this.translateService.instant('universal_sportsName_boating'), y: this.data[5], color: '#9e9e9e'
               });
@@ -147,7 +147,7 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
             }
           break;
           case 6:
-            if (this.selectType !== '7' && this.selectType !== '99') {
+            if (this.selectType !== 7 && this.selectType !== 99) {
               sportPercentageDataset.push({
                 name: this.translateService.instant('universal_activityData_ballSports'), y: this.data[6], color: '#9e9e9e'
               });

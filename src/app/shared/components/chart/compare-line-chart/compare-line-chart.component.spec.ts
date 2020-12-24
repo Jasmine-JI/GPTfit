@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CompareLineChartComponent } from './compare-line-chart.component';
 
@@ -6,7 +6,7 @@ describe('CompareLineChartComponent', () => {
   let component: CompareLineChartComponent;
   let fixture: ComponentFixture<CompareLineChartComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CompareLineChartComponent ]
     })

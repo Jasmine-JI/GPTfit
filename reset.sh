@@ -21,8 +21,8 @@ tempIP=${IP_ADDR%192.168.1.235}
 if [ "${IP_ADDR#$tempIP}" == "192.168.1.235" ]; then
   API_SERVER="/home/dezhi/web"
   echo "!!!!!!!!!!!!!!!!!!!!!!!"
-  if [ ! -L /var/www/html/dist/phpmyadmin ]; then
-          ln -s /usr/share/phpmyadmin /var/www/html/dist/phpmyadmin
+  if [ ! -L /var/www/html/dist/gptdbtool ]; then
+          ln -s /usr/share/phpmyadmin /var/www/html/dist/gptdbtool
   fi
   if [ ! -L /var/www/html/dist/RD_FW_2 ]; then
         ln -s /var/www/html/RD_FW_2 /var/www/html/dist/RD_FW_2
@@ -34,8 +34,8 @@ elif [ $IP_ADDR == "192.168.1.234" ]; then
   if [ ! -L /var/www/html/dist/map ]; then
           ln -s /var/www/html/map/ /var/www/html/dist/map
   fi
-  if [ ! -L /var/www/html/dist/phpmyadmin ]; then
-          ln -s /usr/share/phpmyadmin /var/www/html/dist/phpmyadmin
+  if [ ! -L /var/www/html/dist/gptdbtool ]; then
+          ln -s /usr/share/phpmyadmin /var/www/html/dist/gptdbtool
   fi
   if [ ! -L /var/www/html/dist/RD_FW ]; then
           ln -s /var/www/html/RD_FW /var/www/html/dist/RD_FW
@@ -57,6 +57,9 @@ elif [ $IP_ADDR == "192.168.1.234" ]; then
   fi
   if [ ! -L /var/www/html/dist/RD_FW_2 ]; then
         ln -s /var/www/html/RD_FW_2 /var/www/html/dist/RD_FW_2
+  fi
+  if [ ! -L /var/www/html/dist/img ]; then
+        ln -s /var/cloud/img /var/www/html/dist/img
   fi
 elif [ $IP_ADDR == "192.168.1.232" ]; then
   if [ ! -h /var/www/html/dist/angular ]; then
@@ -81,8 +84,8 @@ elif [ $IP_ADDR == "192.168.1.232" ]; then
           ln -s /var/www/html/fed /var/www/html/dist/fed
   fi
 
-  if [ ! -L /var/www/html/dist/phpmyadmin ]; then
-          ln -s /usr/share/phpmyadmin /var/www/html/dist/phpmyadmin
+  if [ ! -L /var/www/html/dist/gptdbtool ]; then
+          ln -s /usr/share/phpmyadmin /var/www/html/dist/gptdbtool
   fi
   if [ ! -L /var/www/html/dist/public ]; then
           ln -s /var/www/html/public /var/www/html/dist/public
@@ -99,13 +102,16 @@ elif [ $IP_ADDR == "192.168.1.232" ]; then
   if [ ! -L /var/www/html/dist/RD_FW_2 ]; then
         ln -s /var/www/html/RD_FW_2 /var/www/html/dist/RD_FW_2
   fi
+  if [ ! -L /var/www/html/dist/img ]; then
+        ln -s /var/cloud/img /var/www/html/dist/img
+  fi
 else
   if [ ! -L /var/www/html/dist/alatech ]; then
           ln -s /home/project/alatech_cloud/atechrwd/ /var/www/html/dist/alatech
   fi
 
-  if [ ! -L /var/www/html/dist/phpmyadmin ]; then
-          ln -s /usr/share/phpmyadmin /var/www/html/dist/phpmyadmin
+  if [ ! -L /var/www/html/dist/gptdbtool ]; then
+          ln -s /usr/share/phpmyadmin /var/www/html/dist/gptdbtool
   fi
   if [ ! -L /var/www/html/dist/RD_FW ]; then
           ln -s /var/www/html/RD_FW /var/www/html/dist/RD_FW
@@ -124,6 +130,9 @@ else
   fi
   if [ ! -L /var/www/html/dist/RD_FW_2 ]; then
         ln -s /var/www/html/RD_FW_2 /var/www/html/dist/RD_FW_2
+  fi
+  if [ ! -L /var/www/html/dist/img ]; then
+        ln -s /var/cloud/img /var/www/html/dist/img
   fi
 fi
 cd $API_SERVER

@@ -17,7 +17,7 @@ import { FormTextComponent } from './form-text/form-text.component';
 import { FormRemindComponent } from './form-remind/form-remind.component';
 import { FormTextareaComponent } from './form-textarea/form-textarea.component';
 import { MemberCapsuleComponent } from './member-capsule/member-capsule.component';
-import { SharedPipes } from '@shared/pipes/shared-pipes';
+import { SharedPipes } from '../pipes/shared-pipes';
 import { Page403Component } from './page403/page403.component';
 import { AlaIframeComponent } from './ala-iframe/ala-iframe.component';
 import { MyActivityComponent } from './my-activity/my-activity.component';
@@ -48,6 +48,12 @@ import { MuscleMapChartComponent } from './chart/muscle-map/muscle-map-chart/mus
 import { MuscleSvgIconComponent } from './chart/muscle-map/muscle-svg-icon/muscle-svg-icon.component';
 import { CustomSelectComponent } from './custom-material/custom-select/custom-select.component';
 import { ReportFilterComponent } from './report-filter/report-filter.component';
+import { BottomSheetComponent } from './bottom-sheet/bottom-sheet.component';
+import { SportsReportComponent } from './sports-report/sports-report.component';
+import { LifeTrackingComponent } from './life-tracking/life-tracking.component';
+import { LoadingIconComponent } from './loading-icon/loading-icon.component';
+import { ImgCropperComponent } from './image-cropper/image-cropper.component';
+import { PrivacySettingDialogComponent } from './privacy-setting-dialog/privacy-setting-dialog.component';
 
 @NgModule({
   imports: [
@@ -101,7 +107,13 @@ import { ReportFilterComponent } from './report-filter/report-filter.component';
     MuscleMapChartComponent,
     MuscleSvgIconComponent,
     CustomSelectComponent,
-    ReportFilterComponent
+    ReportFilterComponent,
+    BottomSheetComponent,
+    SportsReportComponent,
+    LifeTrackingComponent,
+    LoadingIconComponent,
+    ImgCropperComponent,
+    PrivacySettingDialogComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -139,7 +151,12 @@ import { ReportFilterComponent } from './report-filter/report-filter.component';
     MuscleMapChartComponent,
     MuscleSvgIconComponent,
     CustomSelectComponent,
-    ReportFilterComponent
+    ReportFilterComponent,
+    SportsReportComponent,
+    LifeTrackingComponent,
+    LoadingIconComponent,
+    ImgCropperComponent,
+    PrivacySettingDialogComponent
   ]
 })
 export class SharedComponentsModule {}

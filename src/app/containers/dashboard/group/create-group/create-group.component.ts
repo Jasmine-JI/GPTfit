@@ -239,7 +239,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
 
         // 建立分店以及課程群組時，指派建立者為預設管理員。 by Vincent 2019/5/9
         if (+this.createType === 1 || +this.createType === 2) {
-          this.chooseLabels.push({ 'groupName': 'Alatech', 'userName': this.role.userName, 'userId': this.role.userId });
+          this.chooseLabels.push({ 'groupName': 'GPTfit', 'userName': this.role.userName, 'userId': this.role.userId });
           this.form.patchValue({ groupManager: [ this.role.userId ] });
         }
 
@@ -786,6 +786,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
       default:
         this.planName = this.translate.instant('universal_group_customPlan');
     }
+
     this.dialog.open(MessageBoxComponent, {
       hasBackdrop: true,
       data: {
@@ -796,29 +797,19 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         confirmText: this.translate.instant('universal_operating_confirm'),
         cancelText: this.translate.instant('universal_operating_cancel'),
         onConfirm: () => {
-          if (this.commercePlan && this.commercePlan > 0) {
-              this.isShowCreateForm = true;
+          this.router.navigateByUrl(
+            `/dashboard/group-info/${
+              this.hashIdService.handleGroupIdEncode(`0-0-0-0-0-0`)
+            }/group-introduction?createType=brand&plan=${
+              this.commercePlan
+            }&brandType=1`
+          );
 
-            if (this.commercePlan < 99) {
-              const {
-                maxBranches,
-                maxClasses,
-                maxGroupManagers,
-                maxGroupMembers
-              } = this.planDatas[this.commercePlan - 1];
-              this.form.patchValue({
-                maxBranches,
-                maxClasses,
-                maxGroupManagers,
-                maxGroupMembers
-              });
-            }
-          } else {
-            this.isShowCreateForm = false;
-          }
         }
       }
+
     });
+    
   }
 
   // 建立企業群組-kidin-109114
@@ -836,6 +827,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
       default:
         this.planName = this.translate.instant('universal_group_customPlan');
     }
+
     this.dialog.open(MessageBoxComponent, {
       hasBackdrop: true,
       data: {
@@ -846,28 +838,19 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
         confirmText: this.translate.instant('universal_operating_confirm'),
         cancelText: this.translate.instant('universal_operating_cancel'),
         onConfirm: () => {
-          if (this.commercePlan && this.commercePlan > 0) {
-              this.isShowCreateForm = true;
-            if (this.commercePlan < 99) {
-              const {
-                maxBranches,
-                maxClasses,
-                maxGroupManagers,
-                maxGroupMembers
-              } = this.planDatas[this.commercePlan - 1];
-              this.form.patchValue({
-                maxBranches,
-                maxClasses,
-                maxGroupManagers,
-                maxGroupMembers
-              });
-            }
-          } else {
-            this.isShowCreateForm = false;
-          }
+          this.router.navigateByUrl(
+            `/dashboard/group-info/${
+              this.hashIdService.handleGroupIdEncode(`0-0-0-0-0-0`)
+            }/group-introduction?createType=brand&plan=${
+              this.commercePlan
+            }&brandType=2`
+          );
+
         }
       }
+
     });
+
   }
 
   handleCancel(e) {

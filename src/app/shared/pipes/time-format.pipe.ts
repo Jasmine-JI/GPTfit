@@ -3,7 +3,7 @@ import moment from 'moment';
 
 @Pipe({name: 'timeFormat'})
 export class TimeFormatPipe implements PipeTransform {
-  transform(value: string, args: string): any {
+  transform(value: string | number, args: string): any {
     return moment(value).format(args);
   }
 

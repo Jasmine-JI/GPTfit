@@ -1,0 +1,64 @@
+<ng-container>
+  <div class="flexCol">
+    <div class="flexRow appHeader" style="justify-content: space-between;">
+      <i
+        class="icon-svg_web-icon_p1_073-level_fold"
+        style="font-size: 30px; cursor: pointer;"
+        (click)="turnBack()"
+      ></i>
+      <span class="appview-header appview-header-position">
+        {{ 'universal_userAccount_performDataArchiving' | translate }}
+      </span>
+    </div>
+    <section style="margin: 0 20px;">
+      <div style="display: flex; justify-content: center; align-items: flex-start; margin: 20px 0;" *ngIf="compressResp.status !== 3">
+        {{ 'universal_userAccount_dataArchivingInstructions' | translate }}
+      </div>
+      <span style="color: red; margin-bottom: 10px;" *ngIf="compressResp.status === 1">
+        {{ 'universal_userAccount_undone' | translate }}
+      </span>
+      <div class="flexCol" *ngIf="compressResp.status === 2">
+        <span style="margin: 10px 0;">
+          {{ 'universal_userAccount_completeDataArchiving' | translate }}
+        </span>
+        <span style="color: red; margin-bottom: 10px;">
+          {{ 'universal_userAccount_downloadPeriod' | translate: {'yyyy-mm-dd': compressResp.archiveLinkDate, 'HH:MM': compressResp.archiveLinkTime } }}
+        </span>
+        <textarea
+          #dataLink
+          style="margin-bottom: 10px; border: 1px solid rgba(200, 200, 200, 1); font-size: 10px; height: 150px; overflow: scroll; outline: none; resize: none;"
+          [value]="compressResp.archiveLink"
+          readonly
+        ></textarea>
+      </div>
+      <span style="display: block; margin: 20px 0;" *ngIf="compressResp.status === 3">
+        {{ 'universal_userAccount_duplicateArchive' | translate: {'yyyy-mm-dd': compressResp.cooldownDate, 'HH:MM': compressResp.cooldownTime } }}
+      </span>
+      <button
+        style="margin-top: 0px; display: block;"
+        class="appview-btn"
+        [class.appview-btn-unclickable]="uiFlag.isLoading || compressResp.status === 1 || compressResp.status === 3"
+        (click)="handleClickBtn()"
+      >
+        <span *ngIf="compressResp.status === 0 || compressResp.status === 3">
+          {{ 'universal_userAccount_performDataArchiving' | translate }}
+        </span>
+        <span *ngIf="compressResp.status === 1 || compressResp.status === 2">
+          {{ 'universal_operating_download' | translate }}
+        </span>
+        <i *ngIf="uiFlag.isLoading" class="fa fa-spinner fa-pulse"></i>
+      </button>
+      <button
+        style="margin-top: 0px; display: block; background-color: white; color: black; font-size: 16px; height: 20px;"
+        class="appview-btn"
+        (click)="handleCopyLink()"
+        *ngIf="compressResp.status === 2"
+      >
+        <span>
+          {{ 'universal_userAccount_copyLink' | translate }}
+        </span>
+      </button>
+    </section>
+  </div>
+</ng-container>
+

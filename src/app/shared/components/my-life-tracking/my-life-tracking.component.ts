@@ -9,6 +9,7 @@ import { UtilsService } from '@shared/services/utils.service';
 import { HashIdService } from '@shared/services/hash-id.service';
 import { ReportService } from '../../services/report.service';
 import { UserProfileService } from '../../services/user-profile.service';
+import { ReportConditionOpt } from '../../models/report-condition';
 
 @Component({
   selector: 'app-my-life-tracking',
@@ -18,6 +19,20 @@ import { UserProfileService } from '../../services/user-profile.service';
 export class MyLifeTrackingComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe = new Subject();
+
+  /**
+   * 報告頁面可讓使用者篩選的條件
+   */
+  reportConditionOpt: ReportConditionOpt = {
+    reportType: 'lifeTracking',
+    date: {
+      startTimestamp: moment().startOf('day').subtract(6, 'days').valueOf(),
+      endTimestamp: moment().endOf('day').valueOf(),
+      type: 'sevenDay'
+    },
+    sportType: 99,
+    hideConfirmBtn: true
+  }
 
   // UI控制相關變數-kidin-1090115
   isLoading = false;
@@ -54,11 +69,10 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
   startDate = '';
   endDate = moment().format('YYYY-MM-DD');
   reportEndDate = '';
-  selectPeriod = '7';
+  selectPeriod = 7;
   period = `7 ${this.translate.instant('universal_time_day')}`;
   reportRangeType = 1;
   reportCreatedTime = moment().format('YYYY/MM/DD HH:mm');
-  timeZoneStr = '';
   previewUrl = '';
 
   infoData = {
@@ -163,8 +177,8 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-
     this.token = this.utilsService.getToken() || '';
+    this.reportService.setReportCondition(this.reportConditionOpt);
 
     // 確認是否為預覽列印頁面-kidin-1090215
     if (location.search.indexOf('ipm=s') > -1) {
@@ -172,38 +186,23 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
     }
 
     // 確認url是否有query string-kidin-1090205
-    this.getTimeZone();
     if (
       location.search.indexOf('startdate=') > -1 &&
-      location.search.indexOf('enddate=') > -1 &&
-      location.search.indexOf('selectPeriod=') > -1
+      location.search.indexOf('enddate=') > -1
     ) {
       this.queryStringShowData();
       this.getUserId('url');
     } else {
-      this.reportEndTime = moment().format(`YYYY-MM-DDT23:59:59${this.timeZoneStr}`);
-      this.reportStartTime = moment()
-        .subtract(6, 'days')
-        .format(`YYYY-MM-DDT00:00:00${this.timeZoneStr}`);
+      this.reportService.getReportCondition().pipe(
+        takeUntil(this.ngUnsubscribe)
+      ).subscribe(res => {
+        this.reportStartTime = moment(res.date.startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+        this.reportEndTime = moment(res.date.endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+        this.getUserId('click');
+      })
 
-      this.getUserId('click');
     }
 
-  }
-
-  // 取得當地時區並加以處理-kidin-109024
-  getTimeZone () {
-    const timeZoneMinite = new Date();
-    const timeZone = -(timeZoneMinite.getTimezoneOffset() / 60);
-    if (timeZone < 10 && timeZone >= 0) {
-      this.timeZoneStr = `+0${timeZone}:00`;
-    } else if (timeZone > 10) {
-      this.timeZoneStr = `+${timeZone}:00`;
-    } else if (timeZone > -10 && timeZone < 0) {
-      this.timeZoneStr = `-0${timeZone}:00`;
-    } else {
-      this.timeZoneStr = `-${timeZone}:00`;
-    }
   }
 
   // 依query string顯示資料-kidin-20191226
@@ -214,48 +213,23 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
         this.filterStartTime = queryString[i].replace('startdate=', '').replace(/-/g, '/');
         this.reportStartTime = moment(queryString[i]
           .replace('startdate=', ''), 'YYYY-MM-DD')
-          .format(`YYYY-MM-DDT00:00:00${this.timeZoneStr}`);
+          .startOf('day')
+          .format(`YYYY-MM-DDTHH:mm:ss.SSSZ`);
       } else if (queryString[i].indexOf('enddate=') > -1) {
         this.filterEndTime = queryString[i].replace('enddate=', '').replace(/-/g, '/');
         this.reportEndTime = moment(queryString[i]
           .replace('enddate=', ''), 'YYYY-MM-DD')
-          .format(`YYYY-MM-DDT23:59:59${this.timeZoneStr}`);
-      } else if (queryString[i].indexOf('selectPeriod=') > -1) {
-        this.selectPeriod = queryString[i].replace('selectPeriod=', '');
-
-        switch (this.selectPeriod) {
-          case '7':
-            this.selectedIndex = 0;
-            this.reportRangeType = 1;
-            this.dataDateRange = 'day';
-            this.period = `7 ${this.translate.instant('universal_time_day')}`;
-            break;
-          case '30':
-            this.selectedIndex = 1;
-            this.reportRangeType = 1;
-            this.dataDateRange = 'day';
-            this.period = `30 ${this.translate.instant('universal_time_day')}`;
-            break;
-          case '182':
-            this.selectedIndex = 2;
-            this.reportRangeType = 2;
-            this.dataDateRange = 'week';
-            this.period = `6 ${this.translate.instant('universal_time_month')}`;
-            break;
-          default:
-            this.selectedIndex = 3;
-            this.reportRangeType = 2;
-            this.dataDateRange = 'week';
-            this.period = `12 ${this.translate.instant('universal_time_month')}`;
-            break;
-        }
+          .endOf('day')
+          .format(`YYYY-MM-DDTHH:mm:ss.SSSZ`);
       }
+
     }
 
   }
 
   // 取得userId-kidin-1090224
   getUserId (action) {
+    this.switchPeriod();
     const hashUserId = this.route.snapshot.paramMap.get('userId');
     if (hashUserId === null) {
 
@@ -284,176 +258,31 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
 
   }
 
-  // 選擇日期長度-kidin-1090224
-  changeGroupInfo (e) {
-    this.timeType = e.index;
-    this.filterEndTime = moment().format('YYYY/MM/DD');
-    const day = moment().format('d');
-    if (this.timeType === 0) {
-      this.reportRangeType = 1;
-      this.dataDateRange = 'day';
-      this.selectPeriod = '7';
-      this.period = `7 ${this.translate.instant('universal_time_day')}`;
-      this.filterStartTime = moment()
-        .subtract(6, 'days')
-        .format('YYYY/MM/DD');
-    } else if (this.timeType === 1) {
-      this.reportRangeType = 1;
-      this.dataDateRange = 'day';
-      this.selectPeriod = '30';
-      this.period = `30 ${this.translate.instant('universal_time_day')}`;
-      this.filterStartTime = moment()
-        .subtract(29, 'days')
-        .format('YYYY/MM/DD');
-    } else if (this.timeType === 2) {
-      this.reportRangeType = 2;
-      this.dataDateRange = 'week';
-      this.selectPeriod = '182';
-      this.period = `6 ${this.translate.instant('universal_time_month')}`;
-      this.filterStartTime = moment()
-        .subtract(day, 'days')
-        .subtract(26, 'weeks')
-        .format('YYYY/MM/DD');
-      this.filterEndTime = moment()
-        .add(6 - +day, 'days')
-        .format('YYYY/MM/DD');
-    } else {
-      this.reportRangeType = 2;
-      this.dataDateRange = 'week';
-      this.selectPeriod = '364';
-      this.period = `12 ${this.translate.instant('universal_time_month')}`;
-      this.filterStartTime = moment()
-        .subtract(day, 'days')
-        .subtract(52, 'weeks')
-        .format('YYYY/MM/DD');
-      this.filterEndTime = moment()
-        .add(6 - +day, 'days')
-        .format('YYYY/MM/DD');
+    // 依據選擇的搜索日期切換顯示-kidin-1090121
+    switchPeriod () {
+      // 用get方法確認translate套件已完成載入(Bug 1147)-kidin-1090316
+      this.translate.get('hello.world').subscribe(() => {
+        const diffDay = moment(this.reportEndTime).diff(moment(this.reportStartTime), 'days') + 1;
+        this.period = `${diffDay} ${this.translate.instant(
+          'universal_time_day'
+        )}`;
+  
+        // 52天內取日概要陣列，52天以上取周概要陣列-kidin_1090211
+        if (diffDay <= 52) {
+          this.reportRangeType = 1;
+          this.dataDateRange = 'day';
+        } else {
+          this.reportRangeType = 2;
+          this.dataDateRange = 'week';
+        }
+  
+        this.period = `${diffDay} ${this.translate.instant(
+          'universal_time_day'
+        )}`;
+  
+      });
+  
     }
-
-    let filterEndTime = moment().format(`YYYY-MM-DDT23:59:59${this.timeZoneStr}`);
-
-    let filterStartTime = '';
-    if (this.timeType === 0) {
-      filterStartTime = moment()
-        .subtract(6, 'days')
-        .format(`YYYY-MM-DDT00:00:00${this.timeZoneStr}`);
-    } else if (this.timeType === 1) {
-      filterStartTime = moment()
-        .subtract(29, 'days')
-        .format(`YYYY-MM-DDT00:00:00${this.timeZoneStr}`);
-    } else if (this.timeType === 2) {
-      filterStartTime = moment()
-        .subtract(day, 'days')
-        .subtract(26, 'weeks')
-        .format(`YYYY-MM-DDT00:00:00${this.timeZoneStr}`);
-      filterEndTime = moment()
-        .add(6 - +day, 'days')
-        .format(`YYYY-MM-DDT23:59:59${this.timeZoneStr}`);
-    } else {
-      filterStartTime = moment()
-        .subtract(day, 'days')
-        .subtract(52, 'weeks')
-        .format(`YYYY-MM-DDT00:00:00${this.timeZoneStr}`);
-      filterEndTime = moment()
-        .add(6 - +day, 'days')
-        .format(`YYYY-MM-DDT23:59:59${this.timeZoneStr}`);
-    }
-
-    this.reportStartTime = filterStartTime;
-    this.reportEndTime = filterEndTime;
-
-    this.generateTimePeriod();
-  }
-
-  shiftPreTime() {
-    if (this.timeType === 0) {
-      this.filterEndTime = moment(this.filterStartTime)
-        .subtract(1, 'days')
-        .format('YYYY/MM/DD');
-      this.filterStartTime = moment(this.filterEndTime)
-        .subtract(6, 'days')
-        .format('YYYY/MM/DD');
-    } else if (this.timeType === 1) {
-      this.filterEndTime = moment(this.filterStartTime)
-        .subtract(1, 'days')
-        .format('YYYY/MM/DD');
-      this.filterStartTime = moment(this.filterEndTime)
-        .subtract(29, 'days')
-        .format('YYYY/MM/DD');
-    } else if (this.timeType === 2) {
-      this.filterEndTime = moment(this.filterStartTime)
-        .subtract(1, 'days')
-        .format('YYYY/MM/DD');
-      this.filterStartTime = moment(this.filterEndTime)
-        .subtract(6, 'days')
-        .subtract(26, 'weeks')
-        .format('YYYY/MM/DD');
-    } else {
-      this.filterEndTime = moment(this.filterStartTime)
-        .subtract(1, 'days')
-        .format('YYYY/MM/DD');
-      this.filterStartTime = moment(this.filterEndTime)
-        .subtract(6, 'days')
-        .subtract(52, 'weeks')
-        .format('YYYY/MM/DD');
-    }
-    this.reportEndTime = moment(this.filterEndTime).format(
-      `YYYY-MM-DDT23:59:59${this.timeZoneStr}`
-    );
-    this.reportStartTime = moment(this.filterStartTime).format(
-      `YYYY-MM-DDT00:00:00${this.timeZoneStr}`
-    );
-
-    this.generateTimePeriod();
-  }
-
-  shiftNextTime() {
-    if (
-      this.filterEndTime !== this.today ||
-      this.filterEndTime !== this.endWeekDay
-    ) {
-      if (this.timeType === 0) {
-        this.filterStartTime = moment(this.filterEndTime)
-          .add(1, 'days')
-          .format('YYYY/MM/DD');
-        this.filterEndTime = moment(this.filterStartTime)
-          .add(6, 'days')
-          .format('YYYY/MM/DD');
-      } else if (this.timeType === 1) {
-        this.filterStartTime = moment(this.filterEndTime)
-          .add(1, 'days')
-          .format('YYYY/MM/DD');
-        this.filterEndTime = moment(this.filterStartTime)
-          .add(29, 'days')
-          .format('YYYY/MM/DD');
-      } else if (this.timeType === 2) {
-        this.filterStartTime = moment(this.filterEndTime)
-          .add(1, 'days')
-          .format('YYYY/MM/DD');
-        this.filterEndTime = moment(this.filterStartTime)
-          .add(6, 'days')
-          .add(26, 'weeks')
-          .format('YYYY/MM/DD');
-      } else {
-        this.filterStartTime = moment(this.filterEndTime)
-          .add(1, 'days')
-          .format('YYYY/MM/DD');
-        this.filterEndTime = moment(this.filterStartTime)
-          .add(6, 'days')
-          .add(52, 'weeks')
-          .format('YYYY/MM/DD');
-      }
-      this.reportEndTime = moment(this.filterEndTime).format(
-        `YYYY-MM-DDT23:59:59${this.timeZoneStr}`
-      );
-      this.reportStartTime = moment(this.filterStartTime).format(
-        `YYYY-MM-DDT00:00:00${this.timeZoneStr}`
-      );
-
-      this.generateTimePeriod();
-    }
-  }
 
   generateTimePeriod() {
     this.periodTimes = [];
@@ -503,7 +332,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
       moment(this.reportEndTime.split('T')[0], 'YYYY-MM-DD').valueOf()
     ];
 
-    this.createTimeStampArr(+this.selectPeriod);
+    this.createTimeStampArr(this.selectPeriod);
 
     this.reportService.fetchTrackingSummaryArray(body).subscribe(res => {
       if (Array.isArray(res)) {
@@ -949,7 +778,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
       let searchString;
 
       searchString =
-        `startdate=${startDateString}&enddate=${endDateString}&selectPeriod=${this.selectPeriod}`;
+        `startdate=${startDateString}&enddate=${endDateString}`;
 
       if (location.search.indexOf('?') > -1) {
         if (
@@ -964,8 +793,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
           for (let i = 0; i < queryString.length; i++) {
             if (
               queryString[i].indexOf('startdate=') === -1 &&
-              queryString[i].indexOf('enddate=') === -1 &&
-              queryString[i].indexOf('selectPeriod=') === -1
+              queryString[i].indexOf('enddate=') === -1
             ) {
               newSufUrl = `${newSufUrl}&${queryString[i]}`;
             }

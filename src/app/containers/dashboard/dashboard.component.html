@@ -3,7 +3,7 @@
   style="display: flex;align-items: stretch;"
 >
   <ng-container *ngIf="!isPreviewMode">
-    <header class="header header__color ala-dashboard-header" style="background-color: rgba(121, 125, 125, 1);">
+    <header class="header header__color ala-dashboard-header">
       <div class="mobile-menu-toggle" (click)="navbarFixed()" *ngIf="uiFlag.mobileMode">
         <div>
           <i class="icon-svg_web-icon_p1_005-menu main-nav-toggle-icon"></i>
@@ -17,7 +17,7 @@
               {{ userProfile.nickname || '' }}
             </div>
             <img
-              [src]="userProfile.avatarUrl"
+              [src]="userProfile.avatarUrl + '?' + userProfile.editTimeStamp"
               class="header-user-photo"
               (error)="this.userProfile.avatarUrl='/assets/images/user2.png'"
             >
@@ -447,7 +447,7 @@
                   [routerLink]="['/dashboard/system/device_log']"
                   *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 20"
                 >
-                  {{"universal_deviceSetting_deviceLog" | translate }}
+                  應用日誌
                 </li>
               </div>
             </div>
@@ -459,7 +459,7 @@
             [ngClass]="footerAddClassName"
             [style.display]="isHideFooter ? 'none' : 'block'"
           >
-            {{'universal_vocabulary_footerAnnouncement' | translate: {'appName': 'Center' } }}
+            {{'universal_vocabulary_footerAnnouncement' | translate: {'appName': 'GPTfit' } }}
             <div>{{'universal_ota_version' | translate}}: {{version}}</div>
           </div>
         </div>

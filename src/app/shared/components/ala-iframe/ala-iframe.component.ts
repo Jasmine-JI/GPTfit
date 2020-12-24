@@ -12,6 +12,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 })
 export class AlaIframeComponent implements OnChanges {
   @Input() src: any;
+  @Input() type: 'trainLive' | 'signUp' = 'trainLive';  // 用於trainlive頁面或註冊頁面
 
   constructor (
     private sanitizer: DomSanitizer

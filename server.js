@@ -609,16 +609,14 @@ app.use(function (req, res, next) {
       'https://192.168.1.235:8080',
       'https://192.168.1.231:8080',
       'http://localhost:8080',
-      'https://app.alatech.com.tw'
-    ]; // 因為要for在家只做前端時，需要隨意的domain去call
+      'https://app.alatech.com.tw',
+      'https://8080-7aaf076f-51b0-42d2-98b7-1d6f0d057f29.asia-east1.cloudshell.dev'
+    ]; // 因為要for在家只做前端時，需要隨意的domain去call（cloudshell.dev這個domain為kidin用cloud shell建的開發用環境，不需要時可移除）
   } else if (address === '192.168.1.232') {
     allowedOrigins = ['http://192.168.1.232:8080'];
   } else {
     allowedOrigins = [
       'http://152.101.90.130',
-      'http://alatechcloud.alatech.com.tw:8080',
-      'https://alatechcloud.alatech.com.tw:8080',
-      'http://alatechcloud.alatech.com.tw',
       'http://152.101.90.130:8080',
       'https://152.101.90.130:8080',
       'https://cloud.alatech.com.tw',

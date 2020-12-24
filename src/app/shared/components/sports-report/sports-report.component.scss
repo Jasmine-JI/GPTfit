@@ -1,0 +1,354 @@
+.function__button {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  width: 100%;
+  margin: 10px 0px;
+}
+
+.activity__icon {
+  width: 60px;
+  height: 60px;
+  line-height: 60px;
+  font-size: 35px;
+  box-shadow: 0 0 0 2px #ccc;
+  border-radius: 50%;
+  background-color: #fafafa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #888;
+}
+
+.report__date__time {
+  font-size: 14px;
+  color:#919191;
+  font-weight: bold;
+}
+
+.report__title {
+  color: #616161;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.activity__title {
+  border-bottom: 2px #e5e5e5 solid;
+}
+
+.summary__area {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.summary__data__area {
+  margin: 0px 5px;
+}
+
+.summary__data {
+  font-size: 24px;
+  font-weight: bold;
+  color: #646464;
+}
+
+.summary__description {
+  font-size: 15px;
+  color: #6e6e6e;
+}
+
+.sep__line {
+  border-left: 1px solid #e0e0e0;
+  height: 40px;
+  margin-top: 10px;
+}
+
+.info__data__unit {
+  font-size: 16px;
+  color:#919191;
+  font-weight: bold;
+}
+
+.area__description {
+  font-size: 16px;
+  color:#919191;
+  margin-left: 10px;
+  font-weight: bold;
+}
+
+.ring__chart {
+  width: 40%;
+}
+
+.ring__chart__section {
+  margin-top: 10px;
+  width: 50%;
+}
+
+.per__type__info {
+  font-size: 16px;
+  margin-left: 15px;
+
+  &:hover{
+    cursor: pointer;;
+  }
+}
+
+.per__type__title {
+  color: #5a5a5a;
+  font-weight: bold;
+}
+
+.dot {
+  margin-right: 5px;
+  font-size: 16px;
+}
+
+.type__avg__time {
+  margin-left: 30px;
+}
+
+.distribution__chart__width {
+  margin-top: 10px;
+  width: 60%;
+}
+
+.distributionChart {
+  width:100%;
+  height: auto;
+}
+
+.chart__title {
+  margin-block-start: 0px;
+  margin-block-end: 0px;
+}
+
+.hr__zone {
+  padding-right: 2px;
+  border-right: 2px #e5e5e5 solid;
+  width: 50%;
+}
+
+.report__chart__title {
+  font-weight: bold;
+  width: fit-content;
+  white-space: nowrap;
+}
+
+.separate__line {
+  margin-left: 10px;
+  border-top: 1px solid #c9c9c9;
+  width: 100%;
+}
+
+.data__content {
+  margin: 5px 0px 0px 10px;
+  justify-content: space-between;
+}
+
+.data__number {
+  width: 35%;
+}
+
+.data__margin {
+  margin-top: 10px;
+}
+
+.data__font {
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.data__annotation {
+  font-size: 16px;
+  font-weight: bold;
+  color: #919191;
+}
+
+.data__Chart {
+  width: 65%;
+}
+
+.print__mark {
+  width: 100%;
+  position: absolute;
+  background-color:#ededed;
+  text-align: center;
+  font-weight: bold;
+  height:fit-content;
+}
+
+.table__menu {
+  position: fixed;
+  z-index: 5;
+  background-color: white;
+  box-shadow: grey;
+  width: fit-content;
+  border: 1px solid #dedede;
+  box-shadow: 3px 3px grey;
+  width: 250px;
+}
+
+.table__menu__title {
+  display: block;
+  font-weight: bold;
+  font-size: 14px;
+  color: #003c67;
+}
+
+::ng-deep.table__Check__box .mat-checkbox-checked.mat-primary .mat-checkbox-background,
+.table__Check__box .mat-checkbox-indeterminate.mat-primary .mat-checkbox-background {
+  background-color: #26abe3 !important;
+}
+
+.table__title__word {
+  color: #747474;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+}
+
+.table__arrangement {
+
+  .visualize__data {
+    height: 40px;
+    background-color: #dbf3ff;
+    position: absolute;
+  }
+
+  .set__in {
+    margin: 0 auto;
+    z-index: 3;
+  }
+
+}
+
+.table__content {
+  font-weight: bold;
+  color: #747474;
+}
+
+.up__arrow, .down__arrow, .lock__icon {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.table__title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.chart__title__unit {
+  color:#919191;
+}
+
+.fix__place {
+  position: relative;
+  right: 10px;
+}
+
+.see__more__link {
+  color: #157fcc;
+  text-align: center;
+  font-weight: bold;
+  margin-top: 10px;
+
+  &:hover {
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}
+
+.table__menu__list {
+  margin: 2px;
+  padding: 5px 20px 5px 10px;
+  color: #656565;
+  font-weight: bold;
+  text-decoration: none;
+
+  &:hover {
+    cursor: pointer;
+    color: white;
+    background-color: #26abe3;
+  }
+}
+
+/***************************************** media ***************************************/
+
+@media (max-width: 1000px){
+  .media-1000-col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .authorInfo {
+    justify-content: flex-end;
+    margin-top: 10px;
+  }
+
+  .media-1000-data__content {
+    flex-direction: column;
+  }
+
+  .media-1000-data__number {
+    width: 100%;
+  }
+
+  .media-1000-data__Chart {
+    width: 100%;
+    margin-left: 0px;
+  }
+
+  .musclePartList {
+    width: 100%;
+  }
+}
+
+
+@media (max-width: 767px){
+  .media-767-col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ring__chart,
+  .distribution__chart__width,
+  #HRZoneChart,
+  .muscleTrendChart,
+  .muscleContentTrendChart,
+  .fold__content {
+    width: 100%;
+  }
+
+  #HRInfo {
+    width: auto;
+    border-left: none;
+  }
+
+  .muscleChartList {
+    flex-direction: column;
+  }
+
+}
+
+@media (max-width: 550px){
+  .report__title {
+    font-size: 20px;
+  }
+
+  .area__description {
+    font-size: 10px;
+  }
+
+}
+
+@media print {
+  .page__break {
+    min-height: 1px;
+    page-break-before: always;
+  }
+}

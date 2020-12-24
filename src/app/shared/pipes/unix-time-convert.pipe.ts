@@ -1,6 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import moment from 'moment';
 
+/**
+ * 將unixTime 換成所需日期格式
+ */
 @Pipe({name: 'unixTime'})
 export class UnixTimeConvertPipe implements PipeTransform {
   transform(_time: string, args: string[]): any {

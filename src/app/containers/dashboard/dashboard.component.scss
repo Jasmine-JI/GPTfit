@@ -13,16 +13,16 @@
   width: calc(100% - 273px);
   position: relative;
   flex-grow: 1;
-  height: calc(100vh - 60px);
-  margin-top: 60px;
+  height: calc(100vh);
+  padding: 60px 0;
   overflow: auto;
 }
 .main-body.preview {
   margin-top: 0px;
-  overflow: initial;
+  overflow: scroll;
 }
 .container {
-  padding: 30px;
+  padding: 30px 10px;
   min-height: calc(100vh - 78px);
 }
 
@@ -117,7 +117,7 @@
 }
 
 .header__color {
-  background-color: #797d7d;
+  background-color: rgba(121, 125, 125, 0.7);
 }
 
 .ala-dashboard-header {
@@ -389,7 +389,7 @@
 
 @media (max-width: 991px) {
   .container {
-    max-width: 95%;
+    width: 99vw;
   }
 }
 
@@ -424,7 +424,7 @@
 
 @media(max-width: 370px) {
   .container {
-    padding: 15px;
+    padding: 10px 5px;
   }
 }
 

@@ -79,12 +79,11 @@ export class AccountInfoComponent implements OnInit {
    */
   checkDomain(): void {
     if (
-      location.hostname === 'alatechcloud.alatech.com.tw' ||
       location.hostname === '152.101.90.130' ||
       location.hostname === 'cloud.alatech.com.tw' ||
       location.hostname === 'www.gptfit.com'
     ) {
-      this.clientId = 30796;
+      this.clientId = 52136;
       if (location.hostname === 'cloud.alatech.com.tw') {
         this.stravaApiDomain = 'https://cloud.alatech.com.tw:5443';
       } else if (location.hostname === 'www.gptfit.com') {

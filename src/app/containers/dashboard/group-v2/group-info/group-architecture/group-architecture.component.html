@@ -1,7 +1,43 @@
-<div class="flexCol">
-  <span class="content__title">
-    {{ 'universal_group_group' | translate }} {{ 'universal_group_layer' | translate }}
-  </span>
+<div class="flexCol child__page__card">
+  <section
+    class="flexRow"
+    style="justify-content: flex-end;"
+    *ngIf="
+      userSimpleInfo
+      && userSimpleInfo.accessRight[0] <= groupInfo.groupLevel
+      && groupInfo.groupStatus !== 4
+      && groupInfo.groupStatus !== 5
+      && (groupInfo.groupStatus !== 6 || (userSimpleInfo.accessRight[0] < groupInfo.groupLevel && userSimpleInfo.accessRight[0] < 50))
+      && !groupInfo.expired
+      && +groupInfo.commerceStatus === 1
+    "  
+  >
+    <button
+      class="child__page__btn"
+      (click)="addGroup('branch')"
+      *ngIf="groupInfo.groupLevel === 30 && userSimpleInfo.accessRight[0] <= 30 && !uiFlag.branchFull"
+    >
+      <span *ngIf="groupInfo.brandType === 1">{{ 'universal_group_addBranch' | translate}}</span>
+      <span *ngIf="groupInfo.brandType === 2">{{ 'universal_group_addBranchOffice' | translate}}</span>
+    </button>
+    <button
+      class="child__page__btn"
+      (click)="addGroup('class')"
+      *ngIf="groupInfo.groupLevel === 40 && userSimpleInfo.accessRight[0] <= 40 && !uiFlag.classFull"
+    >
+      <span *ngIf="groupInfo.brandType === 1">{{ 'universal_group_addCoachingClass' | translate}}</span>
+      <span *ngIf="groupInfo.brandType === 2">{{ 'universal_group_addDepartment' | translate}}</span>
+    </button>
+    <button
+      class="child__page__btn"
+      [class.edit__mode__btn]="uiFlag.editMode === 'edit'"
+      [class.btn__loading__status]="uiFlag.isLoading"
+      (click)="handleEdit()"
+    >
+      <span *ngIf="uiFlag.editMode === 'complete'">{{ 'universal_operating_edit' | translate}}</span>
+      <span *ngIf="uiFlag.editMode === 'edit'">{{ 'universal_operating_finishEdit' | translate}}</span>
+    </button>
+  </section>
   <section class="architecture__section">
     <span class="content__subtitle" *ngIf="groupInfo.brandType === 1">{{ 'universal_group_gym' | translate }}</span>
     <span class="content__subtitle" *ngIf="groupInfo.brandType === 2">{{ 'universal_group_company' | translate }}</span>
@@ -14,7 +50,11 @@
         [name]="groupArchitecture.brands[0].groupName"
         [icon]="groupArchitecture.brands[0].groupIcon"
         [groupId]="groupArchitecture.brands[0].groupId"
+        [groupLevel]="groupInfo.groupLevel"
         [brandType]="groupInfo.brandType"
+        [isHadMenu]="uiFlag.editMode === 'edit' && userSimpleInfo.accessRight[0] <= 29"
+        [canDisband]="userSimpleInfo.accessRight[0] <= 29"
+        [isLocked]="groupArchitecture.brands[0].groupStatus === 6"
         *ngIf="groupArchitecture.brands && groupInfo.brandType"
       >
       </app-member-capsule>
@@ -36,7 +76,12 @@
           [name]="_branch.groupName"
           [icon]="_branch.groupIcon"
           [groupId]="_branch.groupId"
+          [groupLevel]="groupInfo.groupLevel"
           [brandType]="groupInfo.brandType"
+          [isHadMenu]="uiFlag.editMode === 'edit' && userSimpleInfo.accessRight[0] <= 30"
+          [canDisband]="userSimpleInfo.accessRight[0] <= 30"
+          [isLocked]="_branch.groupStatus === 6"
+          (onRemoveGroup)="disbandGroup($event)"
           *ngIf="groupArchitecture.brands && groupInfo.brandType"
         >
         </app-member-capsule>
@@ -59,7 +104,13 @@
           [name]="_coach.groupName"
           [icon]="_coach.groupIcon"
           [groupId]="_coach.groupId"
+          [groupLevel]="groupInfo.groupLevel"
           [brandType]="groupInfo.brandType"
+          [isHadMenu]="uiFlag.editMode === 'edit' && userSimpleInfo.accessRight[0] <= 40"
+          [canDisband]="userSimpleInfo.accessRight[0] <= 40"
+          [parentsName]="_coach.branchName"
+          [isLocked]="_coach.groupStatus === 6"
+          (onRemoveGroup)="disbandGroup($event)"
           *ngIf="groupArchitecture.brands && groupInfo.brandType"
         >
         </app-member-capsule>
@@ -67,6 +118,6 @@
     </div>
   </section>
   <ng-template #noData>
-    <span style="margin-left: 10px;">{{'universal_status_noData' | translate}}</span>
+    <div style="margin: 5px 5px 5px 10px;">{{'universal_status_noData' | translate}}</div>
   </ng-template>
 </div>

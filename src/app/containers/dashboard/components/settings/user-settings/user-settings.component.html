@@ -3,9 +3,12 @@
   <h3>{{'universal_userProfile_userSetting' | translate}}</h3>
   <button class="alatech-btn alatech-btn--default settings-btn"
     title="{{'universal_operating_save' | translate}}"
+    [style.background-color]="isSaveUserSettingLoading ? 'rgba(200, 200, 200, 1)' : 'initial'"
+    [style.pointer-events]="isSaveUserSettingLoading ? 'none' : 'initial'"
     (click)="saveSettings(settingsForm)"
   >
-    {{'universal_operating_save' | translate}}
+    <span *ngIf="!isSaveUserSettingLoading">{{'universal_operating_save' | translate}}</span>
+    <span *ngIf="isSaveUserSettingLoading">{{'universal_status_saving' | translate}}</span>
   </button>
 </div>
 <form [formGroup]="settingsForm"

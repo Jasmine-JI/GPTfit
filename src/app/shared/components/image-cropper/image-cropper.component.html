@@ -1,0 +1,60 @@
+<ng-container>
+  <div class="flexRow" style="justify-content: space-between;">
+    <button class="selector__btn" (click)="selectorImg()">
+      <i class="icon-svg_web-icon_p2_099-upload_to_cloud "></i>
+    </button>
+    <button class="selector__btn" (click)="closeImgSelector()">
+      <i class="icon-svg_web-icon_p1_012-close"></i>
+    </button>
+  </div>
+  <div
+    style="position: relative; min-height: 200px; min-width: 200px; border: 1px solid rgba(200, 200, 200, 1);"
+  >
+    <div
+      class="flexCenter"
+      style="flex-direction: column; position: absolute; width: 100%; height: 100%; color: rgba(200, 200, 200, 1);"
+    >
+      <span *ngIf="!uiFlag.isImgUpLoading">{{ 'universal_operating_selectImg' | translate }}</span>
+      <span style="font-size: 12px;" *ngIf="!uiFlag.isImgUpLoading">*JPG,JPEG,GIF,PNG</span>
+      <app-loading-icon *ngIf="uiFlag.isImgUpLoading"></app-loading-icon>
+    </div>
+    <input
+      #imgUpload
+      type="file"
+      accept=".jpg,.jpeg,.gif,.png"
+      (change)="handleImgSelected($event)"
+      hidden
+    />
+    <image-cropper
+      style="max-height: 50vh;"
+      [imageChangedEvent]="imageCropSetting.imageChangedEvent"
+      [roundCropper]="imageCropSetting.roundCropper"
+      [aspectRatio]="imageCropSetting.aspectRatio"
+      [maintainAspectRatio]="imageCropSetting.maintainAspectRatio"
+      [cropperMaxWidth]="1080"
+      [resizeToWidth]="1080"
+      format="jpeg"
+      (imageCropped)="imageCropped($event)"
+      (imageLoaded)="imageLoaded()"
+      (cropperReady)="cropperReady()"
+      (loadImageFailed)="loadImageFailed()"
+    ></image-cropper>
+  </div>
+  <section id="operator__btn" class="flexRow" *ngIf="uiFlag.selectedImg">
+    <button class="img__edit__btn flexCenter" (click)="rotateLeft()">
+      <i class="icon-svg_web-icon_p3_003-left_turn"></i>
+    </button>
+    <button class="img__edit__btn flexCenter" (click)="rotateRight()">
+      <i class="icon-svg_web-icon_p3_002-right_turn"></i>
+    </button>
+    <button class="img__edit__btn flexCenter" (click)="flipHorizontal()">
+      <i class="icon-svg_web-icon_p3_004-horizontal_mirroring"></i>
+    </button>
+    <button class="img__edit__btn flexCenter" (click)="flipVertical()">
+      <i class="icon-svg_web-icon_p3_005-vertical_mirroring"></i>
+    </button>
+  </section>
+  <div class="flexCenter" style="margin: 10px;" *ngIf="uiFlag.selectedImg">
+    <button id="finish__btn" (click)="finishCrop()">{{ 'universal_operating_finished' | translate }}</button>
+  </div>
+</ng-container>

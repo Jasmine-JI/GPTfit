@@ -59,6 +59,16 @@ class ChartOptions {
   styleUrls: ['./hrzone-chart.component.scss']
 })
 export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
+
+  i18n = {
+    zoneZero: '',
+    zoneOne: '',
+    zoneTwo: '',
+    zoneThree: '',
+    zoneFour: '',
+    zoneFive: ''
+  }
+
   noHRZoneData = true;
 
   highestHRZone = '';
@@ -76,7 +86,9 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
     private translateService: TranslateService
   ) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.getTranslate();
+  }
 
   ngOnChanges () {
     if (this.data.reduce((accumulator, current) => accumulator + current) === 0) {
@@ -86,6 +98,24 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     this.initInfoHighChart();
+  }
+
+  /**
+   * 待套件載完之後再載入多國語系
+   */
+  getTranslate() {
+    this.translateService.get('hollow world').subscribe(() => {
+      this.i18n = {
+        zoneZero: `${this.translateService.instant('universal_activityData_limit_generalZone')}`,
+        zoneOne: `${this.translateService.instant('universal_activityData_warmUpZone')}`,
+        zoneTwo: `${this.translateService.instant('universal_activityData_aerobicZone')}`,
+        zoneThree: `${this.translateService.instant('universal_activityData_enduranceZone')}`,
+        zoneFour: `${this.translateService.instant('universal_activityData_marathonZone')}`,
+        zoneFive: `${this.translateService.instant('universal_activityData_anaerobicZone')}`
+      }
+
+    })
+
   }
 
   // 初始化highChart-kidin-1081211
@@ -122,27 +152,27 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
 
       switch (highestHRZoneIndex) {
         case 0:
-          this.highestHRZone = this.translateService.instant('universal_activityData_limit_generalZone');
+          this.highestHRZone = this.i18n.zoneZero;
           this.highestHRZoneColor = 'rgb(70, 156, 245)';
           break;
         case 1:
-          this.highestHRZone = this.translateService.instant('universal_activityData_warmUpZone');
+          this.highestHRZone = this.i18n.zoneOne;
           this.highestHRZoneColor = 'rgb(64, 218, 232)';
           break;
         case 2:
-          this.highestHRZone = this.translateService.instant('universal_activityData_aerobicZone');
+          this.highestHRZone = this.i18n.zoneTwo;
           this.highestHRZoneColor = 'rgb(86, 255, 0)';
           break;
         case 3:
-          this.highestHRZone = this.translateService.instant('universal_activityData_enduranceZone');
+          this.highestHRZone = this.i18n.zoneThree;
           this.highestHRZoneColor = 'rgb(214, 207, 1)';
           break;
         case 4:
-          this.highestHRZone = this.translateService.instant('universal_activityData_marathonZone');
+          this.highestHRZone = this.i18n.zoneFour;
           this.highestHRZoneColor = 'rgb(234, 164, 4)';
           break;
         case 5:
-          this.highestHRZone = this.translateService.instant('universal_activityData_anaerobicZone');
+          this.highestHRZone = this.i18n.zoneFive;
           this.highestHRZoneColor = 'rgba(243, 105, 83)';
           break;
       }
@@ -157,12 +187,12 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
       };
 
       HRChartOptions['xAxis'].categories = [
-        this.translateService.instant('universal_activityData_limit_generalZone'),
-        this.translateService.instant('universal_activityData_warmUpZone'),
-        this.translateService.instant('universal_activityData_aerobicZone'),
-        this.translateService.instant('universal_activityData_enduranceZone'),
-        this.translateService.instant('universal_activityData_marathonZone'),
-        this.translateService.instant('universal_activityData_anaerobicZone')
+        this.i18n.zoneZero,
+        this.i18n.zoneOne,
+        this.i18n.zoneTwo,
+        this.i18n.zoneThree,
+        this.i18n.zoneFour,
+        this.i18n.zoneFive
       ];
 
       HRChartOptions['yAxis'].labels = {
