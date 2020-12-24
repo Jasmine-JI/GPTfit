@@ -3,7 +3,7 @@
   (selectPage)="switchPage($event)"
   *ngIf="!isPreviewMode && !hideNavbar"
 ></app-navbar>
-<div class="main" [ngClass]="{'preview': isPreviewMode, 'hideNavbar': hideNavbar}">
+<div style="height: 100vh; overflow-y: scroll;" class="main" [ngClass]="{'preview': isPreviewMode, 'hideNavbar': hideNavbar}">
   <div class="mask" [class.mask--show]="isMaskShow" (click)="touchMask()"></div>
   <ng-container *ngIf="uiFlag.page === 'system'">
     <div style="min-height: 100vh; margin-top: -63px" class="fade__in">

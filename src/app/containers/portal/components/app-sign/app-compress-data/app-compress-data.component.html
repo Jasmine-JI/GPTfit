@@ -1,4 +1,4 @@
-<ng-container *ngIf="appSys === 0">
+<ng-container>
   <div class="flexCol">
     <div class="flexRow appHeader" style="justify-content: space-between;">
       <i
@@ -11,7 +11,7 @@
       </span>
     </div>
     <section style="margin: 0 20px;">
-      <div style="display: flex; justify-content: center; align-items: flex-start; margin: 20px 0;">
+      <div style="display: flex; justify-content: center; align-items: flex-start; margin: 20px 0;" *ngIf="compressResp.status !== 3">
         {{ 'universal_userAccount_dataArchivingInstructions' | translate }}
       </div>
       <span style="color: red; margin-bottom: 10px;" *ngIf="compressResp.status === 1">
@@ -31,13 +31,16 @@
           readonly
         ></textarea>
       </div>
+      <span style="display: block; margin: 20px 0;" *ngIf="compressResp.status === 3">
+        {{ 'universal_userAccount_duplicateArchive' | translate: {'yyyy-mm-dd': compressResp.cooldownDate, 'HH:MM': compressResp.cooldownTime } }}
+      </span>
       <button
         style="margin-top: 0px; display: block;"
         class="appview-btn"
-        [class.appview-btn-unclickable]="uiFlag.isLoading || compressResp.status === 1"
+        [class.appview-btn-unclickable]="uiFlag.isLoading || compressResp.status === 1 || compressResp.status === 3"
         (click)="handleClickBtn()"
       >
-        <span *ngIf="compressResp.status === 0">
+        <span *ngIf="compressResp.status === 0 || compressResp.status === 3">
           {{ 'universal_userAccount_performDataArchiving' | translate }}
         </span>
         <span *ngIf="compressResp.status === 1 || compressResp.status === 2">
@@ -56,34 +59,6 @@
         </span>
       </button>
     </section>
-  </div>
-</ng-container>
-<ng-container *ngIf="appSys !== 0">
-  <div class="access-bg">
-    <div class="container signup" style="padding-top: 63px">
-      <div class="d-flex" style="flex-direction: column; align-items: center;;">
-        <div class="access-description"  innerHtml="{{ 'universal_app_gptSlogan' | translate }}">
-        </div>
-        <div class="access-panel">
-          <header class="access-header">
-            <img src="assets/attacus_logo.png" style="width: 36%">
-          </header>
-          <div class="access-panel-body">
-            <div style="display: flex;justify-content: flex-end; align-items: center; margin-top: 20px;">
-              <button
-                class="btn btn-primary access-btn"
-                [class.appview-btn-unclickable]="true"
-                [style.background]="true ? '#2b819b54' : ''"
-                (click)="login()"
-              >
-                <span *ngIf="true">{{ 'universal_userAccount_logIn' | translate }}</span>
-                <i *ngIf="true" class="fa fa-spinner fa-pulse"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </ng-container>
 

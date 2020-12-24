@@ -474,7 +474,7 @@
             chart target
           </div>
         </div>
-        <div class="activity-block" *ngIf="!(isInitialChartDone && !isgForceChartTargetDisplay) && isDebug && chartKind !== 'columnChart'">
+        <div class="activity-block" *ngIf="!(isInitialChartDone && !isgForceChartTargetDisplay) && chartKind !== 'columnChart'">
           <div #gForceChartTarget class="chart"
             [class.hidden]="!isgForceChartTargetDisplay"
           >

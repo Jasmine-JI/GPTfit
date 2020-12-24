@@ -14,12 +14,12 @@
   position: relative;
   flex-grow: 1;
   height: calc(100vh);
-  padding-top: 60px;
+  padding: 60px 0;
   overflow: auto;
 }
 .main-body.preview {
   margin-top: 0px;
-  overflow: initial;
+  overflow: scroll;
 }
 .container {
   padding: 30px 10px;

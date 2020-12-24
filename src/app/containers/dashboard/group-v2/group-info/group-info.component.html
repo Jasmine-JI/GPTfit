@@ -88,6 +88,7 @@
             [class.can__not__join]="uiFlag.isJoinLoading"
             *ngIf="
               (user.joinStatus === 3 || user.joinStatus === 5)
+              && (currentGroupInfo.groupDetail.groupStatus === 1 || currentGroupInfo.groupDetail.groupStatus === 2)
               && !currentGroupInfo.commerceInfo.expired
               && +currentGroupInfo.commerceInfo.groupMemberStatus.currentGroupMembers < +currentGroupInfo.commerceInfo.groupMemberStatus.maxGroupMembers
             "
