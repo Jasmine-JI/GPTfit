@@ -45,7 +45,7 @@ input[type='email']::-webkit-input-placeholder {
 }
 
 .dropdown-menu.dropdown-menu-lang {
-  left: -35px;
+  left: -70px;
 }
 
 .collapse.navbar-collapse.show .navbar-utility {
@@ -68,6 +68,7 @@ input[type='email']::-webkit-input-placeholder {
 
 @media (max-width: 991px) {
   .show {
+    z-index: 5;
     max-height: calc(100vh - 65px);
     overflow-y: scroll;
   }
@@ -106,6 +107,11 @@ input[type='email']::-webkit-input-placeholder {
     background-color: rgb(111, 111, 111);
     cursor: pointer;
   }
+
+  .navbar-nav {
+    height: 120vh;
+  }
+
 }
 
 @media (max-width: 375px) {

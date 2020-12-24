@@ -15,6 +15,7 @@ import { v5 as uuidv5 } from 'uuid';
 import { ImageUploadService } from '../../services/image-upload.service';
 import { AlbumType } from '../../../../shared/models/image';
 import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
+import { PrivacySettingDialogComponent } from '../../../../shared/components/privacy-setting-dialog/privacy-setting-dialog.component';
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -199,41 +200,66 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       formData.set('token', this.utils.getToken());
       formData.set('targetType', '2');
 
-      // 群組icon
-      if (this.editImage.icon.base64 !== null) {
-        const fileName = this.createFileName(imgArr.length);
-        imgArr.unshift({
-          albumType: 11,
-          fileNameFull: `${fileName}.jpg`
-        })
-
-        formData.append('file', this.base64ToFile(11, this.editImage.icon.base64, fileName));
-      }
-
-      // 群組佈景
-      if (this.editImage.scenery.base64 !== null) {   
-        const fileName = this.createFileName(imgArr.length);
-        imgArr.unshift({
-          albumType: 12,
-          fileNameFull: `${fileName}.jpg`
-        })
-
-        formData.append('file', this.base64ToFile(12, this.editImage.scenery.base64, fileName));
-      }
-
-      formData.set('img', JSON.stringify(imgArr));
-
       if (this.uiFlag.editMode === 'edit') {
         formData.set('targetGroupId', this.currentGroupInfo.groupDetail.groupId);
+
+        // 群組icon
+        if (this.editImage.icon.base64 !== null) {
+          const fileName = this.createFileName(imgArr.length, this.currentGroupInfo.groupDetail.groupId);
+          imgArr.unshift({
+            albumType: 11,
+            fileNameFull: `${fileName}.jpg`
+          })
+
+          formData.append('file', this.base64ToFile(11, this.editImage.icon.base64, fileName));
+        }
+
+        // 群組佈景
+        if (this.editImage.scenery.base64 !== null) {   
+          const fileName = this.createFileName(imgArr.length, this.currentGroupInfo.groupDetail.groupId);
+          imgArr.unshift({
+            albumType: 12,
+            fileNameFull: `${fileName}.jpg`
+          })
+
+          formData.append('file', this.base64ToFile(12, this.editImage.scenery.base64, fileName));
+        }
+
+        formData.set('img', JSON.stringify(imgArr));
         this.sendImgUploadReq(formData, this.currentGroupInfo.groupDetail.groupId);
       } else if (this.uiFlag.editMode === 'create') {
         const newGroupId = this.groupService.getNewGroupId();
+
+        // 群組icon
+        if (this.editImage.icon.base64 !== null) {
+          const fileName = this.createFileName(imgArr.length, newGroupId);
+          imgArr.unshift({
+            albumType: 11,
+            fileNameFull: `${fileName}.jpg`
+          })
+
+          formData.append('file', this.base64ToFile(11, this.editImage.icon.base64, fileName));
+        }
+
+        // 群組佈景
+        if (this.editImage.scenery.base64 !== null) {   
+          const fileName = this.createFileName(imgArr.length, newGroupId);
+          imgArr.unshift({
+            albumType: 12,
+            fileNameFull: `${fileName}.jpg`
+          })
+
+          formData.append('file', this.base64ToFile(12, this.editImage.scenery.base64, fileName));
+        }
+
+        formData.set('img', JSON.stringify(imgArr));
         formData.set('targetGroupId', newGroupId);
         this.sendImgUploadReq(formData, newGroupId);
       }
 
     } else if (this.uiFlag.editMode === 'create' && editMode === 'complete') {
       this.closeCreateMode();
+      this.userProfileService.refreshUserProfile({token: this.user.token});
       this.handleNavigation(this.groupService.getNewGroupId());
     } else if (editMode === 'complete') {
       this.getGroupNeedInfo();
@@ -261,6 +287,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
         if (this.uiFlag.editMode === 'create') {
           this.closeCreateMode();
+          this.userProfileService.refreshUserProfile({token: this.user.token});
           this.handleNavigation(groupId);
         } else {
           this.getGroupNeedInfo();
@@ -276,15 +303,12 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   /**
    * 建立圖片名稱
    * @param length {number}-檔案序列
+   * @param groupId {string}-群組id
    * @author kidin-1091125
    */
-  createFileName(length: number) {
+  createFileName(length: number, groupId: string) {
     const nameSpace = uuidv5('https://www.gptfit.com', uuidv5.URL),
-          keyword = `${
-            moment().valueOf().toString()}${
-            length}${
-            this.currentGroupInfo.groupDetail.groupId.split('-').join('')
-          }`;
+          keyword = `${moment().valueOf().toString()}${length}${groupId.split('-').join('')}`;
 
     return uuidv5(keyword, nameSpace);
   }
@@ -447,11 +471,10 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091106
    */
   closeCreateMode() {
-    this.groupService.setEditMode('close');
-
     // 移除query string，避免create mode被重複開啟
     const newUrl = `${location.origin}${location.pathname}`;
     window.history.pushState({path: newUrl}, '', newUrl);
+    this.groupService.setEditMode('close');
   }
 
   /**
@@ -1016,6 +1039,13 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
     });
 
+  }
+
+  /**
+   * 確認使用者的隱私權設定(待實作)
+   * @author kidin-1091224
+   */
+  checkoutUserPrivacy() {
   }
 
   /**

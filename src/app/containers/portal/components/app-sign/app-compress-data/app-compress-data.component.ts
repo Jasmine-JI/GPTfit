@@ -28,7 +28,9 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit {
     archiveLink: '',
     archiveLinkDate: null,
     archiveLinkTime: null,
-    cooldownTimestamp: null
+    cooldownTimestamp: null,
+    cooldownDate: null,
+    cooldownTime: null
   }; // api 1012 response
 
   constructor(
@@ -55,16 +57,13 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit {
    * @author kidin-1091216
    */
   getDeviceSys () {
+    this.utils.setHideNavbarStatus(true);
     if ((window as any).webkit) {
       this.appSys = 1;
-      this.utils.setHideNavbarStatus(true);
     } else if ((window as any).android) {
       this.appSys = 2;
-      this.utils.setHideNavbarStatus(true);
     } else {
       this.appSys = 0;
-      // this.utils.setHideNavbarStatus(false);
-      this.utils.setHideNavbarStatus(true);
     }
 
   }
@@ -140,6 +139,8 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit {
             this.compressResp.archiveLinkTime = moment(res.archiveLinkTimestamp * 1000).format('HH:mm');
           } else if (res.status === 3) {
             this.compressResp.cooldownTimestamp = res.cooldownTimestamp;
+            this.compressResp.cooldownDate = moment(res.cooldownTimestamp * 1000).format('YYYY-MM-DD');
+            this.compressResp.cooldownTime = moment(res.cooldownTimestamp * 1000).format('HH:mm');
           }
 
         }
@@ -184,13 +185,7 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit {
     } else if (this.appSys === 2) {
       (window as any).android.closeWebView('Close');
     } else {
-
-      if (this.token.length === 0) {
-        this.router.navigateByUrl('/signIn-web');
-      } else {
-        this.router.navigateByUrl('/dashboard/settings/account-info');
-      }
-      
+      window.close();
     }
 
   }

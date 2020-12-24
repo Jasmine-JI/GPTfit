@@ -227,7 +227,6 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
    */
   handleRemoveAdmin() {
     const adminLength = this.adminList.filter(_admin => _admin.groupId === this.groupId).length;
-
     if (adminLength <= 1) {
 
       this.dialog.open(MessageBoxComponent, {

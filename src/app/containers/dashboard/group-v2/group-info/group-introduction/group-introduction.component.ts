@@ -420,7 +420,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @author kidin1091110
    */
   checkEditInput() {
-    if (this.formCheck.name === null && this.formCheck.desc === null && !this.uiFlag.statusChange) {
+    if (this.formCheck.name === null && this.formCheck.desc === null && !this.uiFlag.contentChange && !this.uiFlag.statusChange) {
       this.closeEditMode('complete');
     } else if (this.editBody.groupName !== '' && this.editBody.groupDesc !== '') {
       this.saveEditContent();
@@ -694,7 +694,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
         this.utils.openAlert(errMsg);
       } else {
-        this.userProfileService.refreshUserProfile({token: this.userSimpleInfo.token});
         this.groupService.saveNewGroupId(res.info.newGroupId);
         this.closeEditMode('complete');
       }
@@ -717,7 +716,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
         };
 
     delete eidtGroupBody.changeStatus;
-
     if (this.uiFlag.contentChange && !this.uiFlag.statusChange) {
       this.sendEditGroupReq(eidtGroupBody);
     } else if (this.uiFlag.statusChange && !this.uiFlag.contentChange) {

@@ -1,1 +1,154 @@
-<p>app-destroy-account works!</p>
+<ng-container>
+  <div class="flexCol">
+    <div class="flexRow appHeader" style="justify-content: space-between;">
+      <i
+        class="icon-svg_web-icon_p1_073-level_fold"
+        style="font-size: 30px; cursor: pointer;"
+        (click)="turnBack()"
+      ></i>
+      <span class="appview-header appview-header-position">
+        {{ 'universal_userAccount_accountDeletion' | translate }}
+      </span>
+    </div>
+    <section style="margin: 0 20px;">
+      <div style="display: flex; justify-content: center; align-items: flex-start; margin: 20px 0;" *ngIf="!uiFlag.cancelDestroy">
+        {{ 'universal_userAccount_accountDeletionInstructions1' | translate }}
+      </div>
+      <div style="display: flex; justify-content: center; align-items: flex-start; margin: 20px 0;" *ngIf="!uiFlag.cancelDestroy">
+        {{ 'universal_userAccount_accountDeletionInstructions2' | translate }}
+      </div>
+      <ng-container *ngIf="destroyResp.status === 0 && !uiFlag.cancelDestroy">
+        <div class="flexCol">
+          <div class="flexCol">
+            <span>{{ 'universal_userAccount_tellToDeleteAccount' | translate }}</span>
+            <span *ngIf="user && user.email">{{ user.email }}</span>
+            <span *ngIf="user && user.countryCode">+{{ user.countryCode }} {{ user.mobileNumber }}</span>
+          </div>
+          <div class="flexRow">
+            <div style="border: 1px solid black; height: 20px; width: 20px; cursor: pointer;" (click)="handleCheckCompress()">
+
+            </div>
+            <span>{{ 'universal_userAccount_confirmDownloadInformation' | translate }}</span>
+          </div>
+        </div>
+        <button
+          style="margin-top: 0px; display: block;"
+          class="appview-btn"
+          [class.appview-btn-unclickable]="uiFlag.isLoading || !uiFlag.checkCompress"
+          (click)="applyDestroy()"
+        >
+          <span>
+            {{ 'universal_userAccount_accountDeletion' | translate }}
+          </span>
+          <i *ngIf="uiFlag.isLoading" class="fa fa-spinner fa-pulse"></i>
+        </button>
+      </ng-container>
+      <ng-container *ngIf="destroyResp.status === 1 && user && user.email && !uiFlag.cancelDestroy">
+        <div class="flexCol">
+          <div class="flexCol">
+            <span>{{ 'universal_userAccount_verifyAccount' | translate }}</span>
+            <span>{{ 'universal_userAccount_sendCaptchaChackEmail' | translate }}</span>
+            <span>{{ user.email }}</span>
+          </div>
+          <button
+            style="margin-top: 0px; display: block; color: rgba(217, 35, 35, 1);"
+            class="appview-btn"
+            [class.appview-btn-unclickable]="uiFlag.isLoading"
+            (click)="applyDestroy()"
+          >
+            <span *ngIf="destroyResp.status === 0 || destroyResp.status === 3">
+              {{ 'universal_userAccount_performDataArchiving' | translate }}
+            </span>
+            <i *ngIf="uiFlag.isLoading" class="fa fa-spinner fa-pulse"></i>
+          </button>
+          <button
+            style="margin-top: 0px; display: block;"
+            class="appview-btn"
+            [class.appview-btn-unclickable]="uiFlag.isLoading"
+            (click)="cancelDestroy()"
+          >
+            <span>
+              {{ 'universal_userAccount_cancelAccountDeletion' | translate }}
+            </span>
+            <i *ngIf="uiFlag.isLoading" class="fa fa-spinner fa-pulse"></i>
+          </button>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="user && user.countryCode && destroyResp.status === 1 && !uiFlag.cancelDestroy">
+        <div class="flexCol">
+          <div class="flexCol">
+            <span>{{ 'universal_userAccount_verifyAccount' | translate }}</span>
+            <span *ngIf="user && user.countryCode">+{{ user.countryCode }} {{ user.mobileNumber }}</span>
+            <span>
+              <input type="text" (change)="handleVerifyCode($event)">
+              <button>{{ 'universal_operating_send' | translate }}</button>
+            </span>
+            <span>{{ 'universal_userAccount_smsVerificationInstructions' | translate }}</span>
+          </div>
+          <button
+            style="margin-top: 0px; display: block; color: rgba(217, 35, 35, 1);"
+            class="appview-btn"
+            [class.appview-btn-unclickable]="uiFlag.isLoading"
+            (click)="applyDestroy()"
+          >
+            <span *ngIf="destroyResp.status === 0 || destroyResp.status === 3">
+              {{ 'universal_userAccount_performDataArchiving' | translate }}
+            </span>
+            <i *ngIf="uiFlag.isLoading" class="fa fa-spinner fa-pulse"></i>
+          </button>
+          <button
+            style="margin-top: 0px; display: block;"
+            class="appview-btn"
+            [class.appview-btn-unclickable]="uiFlag.isLoading"
+            (click)="cancelDestroy()"
+          >
+            <span>
+              {{ 'universal_userAccount_cancelAccountDeletion' | translate }}
+            </span>
+            <i *ngIf="uiFlag.isLoading" class="fa fa-spinner fa-pulse"></i>
+          </button>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="destroyResp.status === 2 && !uiFlag.cancelDestroy">
+        <span>{{ 'universal_userAccount_successfullyRequestedToDeleteAccount' | translate }}</span>
+        <span style="display: block; margin: 20px 0;">
+          {{ 'universal_userAccount_deleteAccountDate' | translate: {'yyyy-mm-dd': destroyResp.destroyDate, 'HH:MM': destroyResp.destroyTime } }}
+        </span>
+        <span>{{ 'universal_userAccount_deleteAccount' | translate }}</span>
+        <button
+          style="margin-top: 0px; display: block;"
+          class="appview-btn"
+          [class.appview-btn-unclickable]="uiFlag.isLoading || destroyResp.status === 1 || destroyResp.status === 3"
+          (click)="handleClickBtn()"
+        >
+          <span *ngIf="destroyResp.status === 0 || destroyResp.status === 3">
+            {{ 'universal_userAccount_performDataArchiving' | translate }}
+          </span>
+          <span *ngIf="destroyResp.status === 1 || destroyResp.status === 2">
+            {{ 'universal_operating_download' | translate }}
+          </span>
+          <i *ngIf="uiFlag.isLoading" class="fa fa-spinner fa-pulse"></i>
+        </button>
+      </ng-container>
+      <ng-container *ngIf="uiFlag.cancelDestroy">
+        <div class="flexCol">
+          <span>{{ 'universal_userAccount_undeleteSuccessfully' | translate }}</span>
+          <button
+            style="margin-top: 0px; display: block;"
+            class="appview-btn"
+            (click)="turnBack()"
+          >
+            <span *ngIf="destroyResp.status === 0 || destroyResp.status === 3">
+              {{ 'universal_userAccount_performDataArchiving' | translate }}
+            </span>
+            <span *ngIf="destroyResp.status === 1 || destroyResp.status === 2">
+              {{ 'universal_operating_download' | translate }}
+            </span>
+            <i *ngIf="uiFlag.isLoading" class="fa fa-spinner fa-pulse"></i>
+          </button>
+        </div>
+      </ng-container>
+    </section>
+  </div>
+</ng-container>
+

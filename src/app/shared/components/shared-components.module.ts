@@ -53,6 +53,7 @@ import { SportsReportComponent } from './sports-report/sports-report.component';
 import { LifeTrackingComponent } from './life-tracking/life-tracking.component';
 import { LoadingIconComponent } from './loading-icon/loading-icon.component';
 import { ImgCropperComponent } from './image-cropper/image-cropper.component';
+import { PrivacySettingDialogComponent } from './privacy-setting-dialog/privacy-setting-dialog.component';
 
 @NgModule({
   imports: [
@@ -111,7 +112,8 @@ import { ImgCropperComponent } from './image-cropper/image-cropper.component';
     SportsReportComponent,
     LifeTrackingComponent,
     LoadingIconComponent,
-    ImgCropperComponent
+    ImgCropperComponent,
+    PrivacySettingDialogComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -153,7 +155,8 @@ import { ImgCropperComponent } from './image-cropper/image-cropper.component';
     SportsReportComponent,
     LifeTrackingComponent,
     LoadingIconComponent,
-    ImgCropperComponent
+    ImgCropperComponent,
+    PrivacySettingDialogComponent
   ]
 })
 export class SharedComponentsModule {}
