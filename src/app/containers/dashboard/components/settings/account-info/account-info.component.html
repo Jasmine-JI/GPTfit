@@ -1,52 +1,65 @@
 <h3>{{'universal_vocabulary_accountInformation' | translate}}</h3>
-<div class="flexRow">
-  <label class="ala-form__label settings-label">
-    {{'universal_userProfile_basicInformation' | translate}}
-  </label>
-  <span *ngIf="accountStatus === 1">
-    (<span style="color:#cb5e5e; text-decoration: underline;" (click)="navigateToAssignPage('/enableAccount-web')">
-      {{ 'universal_deviceSetting_switch' | translate }} {{'universal_userAccount_account' | translate}}
-    </span>)
-  </span>
-</div>
-<div class="ala-list__item">
-  <label class="ala-form__label settings-item">
-    {{'universal_userAccount_account' | translate}}
-  </label>
-  <div class="flexRow settings-control">
-    <span style="color:#919191">
-      {{ account }}
-    </span>
-    <span style="cursor: pointer;">
-      (<span style="color:#cb5e5e; text-decoration: underline;" (click)="navigateToAssignPage('/changeAccount-web')">
+<section class="flexCol">
+  <div class="flexRow">
+    <label class="ala-form__label settings-label">
+      {{'universal_userProfile_basicInformation' | translate}}
+    </label>
+  </div>
+  <div class="ala-list__item">
+    <label class="ala-form__label settings-item">
+      {{'universal_userAccount_account' | translate}}
+    </label>
+    <div class="flexRow settings-control">
+      <span style="color:#919191">
+        {{ account }}
+      </span>
+    </div>
+  </div>
+  <div style="margin: 10px 0  0 195px;" class="flexCol">
+      <span
+        class="account__info__link"
+        style="color: #cb5e5e; font-weight: bold;"
+        (click)="navigateToAssignPage('/enableAccount')"
+        *ngIf="accountStatus === 1"
+      >
+        {{ 'universal_deviceSetting_switch' | translate }} {{'universal_userAccount_account' | translate}}
+      </span>
+      <span class="account__info__link" (click)="navigateToAssignPage('/changeAccount')">
         {{ 'universal_operating_edit' | translate }} {{'universal_userAccount_account' | translate}}
-      </span>)
-    </span>
+      </span>
+      <span class="account__info__link" (click)="navigateToAssignPage('/editPassword')">
+        {{'universal_userProfile_changePassword' | translate}}
+      </span>
+      <span class="account__info__link" (click)="navigateToAssignPage('/compressData')" *ngIf="userAccessRight <= 20">
+        {{'universal_userAccount_performDataArchiving' | translate}}
+      </span>
+      <span
+        style="color: #cb5e5e;"
+        class="account__info__link"
+        (click)="navigateToAssignPage('/destroyAccount')"
+        *ngIf="userAccessRight <= 20"
+      >
+        {{'universal_userAccount_accountDeletion' | translate}}
+      </span>
   </div>
-</div>
-<div class="ala-list__item">
-  <label class="ala-form__label settings-item">{{'universal_userAccount_password' | translate}}</label>
-  <div class="settings-control">
-    <span style="color:#cb5e5e;text-decoration: underline; cursor: pointer;" (click)="navigateToAssignPage('/editPassword-web')">
-      {{'universal_userProfile_changePassword' | translate}}
-    </span>
-  </div>
-</div>
+</section>
 <hr>
-<label class="ala-form__label settings-label">
-  {{'universal_deviceSetting_application' | translate}}
-</label>
-<div class="ala-list__item">
-  <label class="ala-form__label settings-item">
-    {{'universal_userProfile_thirdPartyUsage' | translate}}
+<section>
+  <label class="ala-form__label settings-label">
+    {{'universal_deviceSetting_application' | translate}}
   </label>
-  <div class="settings-control">
-    <span style="color:#26abe3">
-      Strava
-    </span>
-    <mat-slide-toggle [(ngModel)]="stravaStatus"
-      (change)="handleStravaStatus($event)"
-    >
-    </mat-slide-toggle>
+  <div class="ala-list__item">
+    <label class="ala-form__label settings-item">
+      {{'universal_userProfile_thirdPartyUsage' | translate}}
+    </label>
+    <div class="settings-control">
+      <span style="color:#26abe3">
+        Strava
+      </span>
+      <mat-slide-toggle [(ngModel)]="stravaStatus"
+        (change)="handleStravaStatus($event)"
+      >
+      </mat-slide-toggle>
+    </div>
   </div>
-</div>
+</section>

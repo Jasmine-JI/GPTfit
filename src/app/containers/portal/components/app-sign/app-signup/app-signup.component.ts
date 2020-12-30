@@ -141,7 +141,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1090717
    */
   getTranslate(): void {
-    this.translate.get('hollow world').pipe(
+    this.translate.get('hellow world').pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
       this.i18n = {
@@ -247,7 +247,9 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1091222
    */
   getUrlLanguageString(str: string) {
-    if (str.indexOf('l=') > -1) {
+    if (navigator && navigator.language) {
+      return navigator.language.toLowerCase();
+    } else if (str.indexOf('l=') > -1) {
       const tempStr = str.split('l=')[1];
       let lan: string;
       if (tempStr.indexOf('&') > -1) {
@@ -800,12 +802,14 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   toEnableAccount(): void {
     this.utils.setHideNavbarStatus(false);
-
-    if (this.pcView === true) {
-      this.router.navigateByUrl(`/enableAccount-web`);
-    } else {
-      this.router.navigateByUrl(`/enableAccount`);
-    }
+    this.router.navigateByUrl(`/enableAccount`);
+    /* 待測試無問題後刪除此段-kidin-1091229
+      if (this.pcView === true) {
+        this.router.navigateByUrl(`/enableAccount-web`);
+      } else {
+        this.router.navigateByUrl(`/enableAccount`);
+      }
+    */
 
   }
 

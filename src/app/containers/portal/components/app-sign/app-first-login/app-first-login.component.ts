@@ -93,7 +93,10 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
     ).subscribe(res => {
       if (res === false && this.pcView === true) {
         return this.router.navigateByUrl('/signIn-web');
+      } else if (res === false && this.pcView === false) {
+        return this.router.navigateByUrl('/signIn');
       }
+
     });
 
   }

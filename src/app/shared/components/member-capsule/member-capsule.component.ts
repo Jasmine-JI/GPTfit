@@ -117,7 +117,7 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
    * @author kidin-1090622
    */
   getTranslate () {
-    this.translate.get('hollow world').subscribe(() => {
+    this.translate.get('hellow world').subscribe(() => {
       this.i18n = {
         teacher: this.translate.instant('universal_group_teacher'),
         coach: this.translate.instant('universal_group_coach'),

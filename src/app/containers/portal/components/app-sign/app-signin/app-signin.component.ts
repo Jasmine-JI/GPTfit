@@ -412,30 +412,40 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
         }』</a>
         ${this.translate.instant('universal_userAccount_clauseContentPage2')
       }`.replace(/\n/gm, '');
-    } else if (navigator.language.toLowerCase() === 'zh-tw') {
-      text = `${this.translate.instant('universal_userAccount_clauseContentPage1')
-        }<a target="_blank" href="${location.origin}/app/public_html/appHelp/zh-TW/termsConditions.html">『${
-          this.translate.instant('universal_userAccount_clause')
-        }』</a>、<a target="_blank" href="${location.origin}/app/public_html/appHelp/zh-TW/privacyPolicy.html">『${
-          this.translate.instant('universal_userAccount_privacyStatement')}』</a>${
-        this.translate.instant('universal_userAccount_clauseContentPage2')
-      }`.replace(/\n/gm, '');
-    } else if (navigator.language.toLowerCase() === 'zh-cn') {
-      text = `${this.translate.instant('universal_userAccount_clauseContentPage1')
-        }<a target="_blank" href="${location.origin}/app/public_html/appHelp/zh-CN/termsConditions.html">『${
-          this.translate.instant('universal_userAccount_clause')
-        }』</a>、<a target="_blank" href="${location.origin}/app/public_html/appHelp/zh-CN/privacyPolicy.html">『${
-          this.translate.instant('universal_userAccount_privacyStatement')}』</a>${
-        this.translate.instant('universal_userAccount_clauseContentPage2')
-      }`.replace(/\n/gm, '');
+
     } else {
-      text = `${this.translate.instant('universal_userAccount_clauseContentPage1')
-        }<a target="_blank" href="${location.origin}/app/public_html/appHelp/en-US/termsConditions.html">『${
-        this.translate.instant('universal_userAccount_clause')
-      }』</a>、<a target="_blank" href="${location.origin}/app/public_html/appHelp/en-US/privacyPolicy.html">『${
-        this.translate.instant('universal_userAccount_privacyStatement')}』</a>${
-        this.translate.instant('universal_userAccount_clauseContentPage2')
-      }`.replace(/\n/gm, '');
+
+      const lan = this.utils.getLocalStorageObject('locale');
+      switch (lan) {
+        case 'zh-tw':
+          text = `${this.translate.instant('universal_userAccount_clauseContentPage1')
+            }<a target="_blank" href="${location.origin}/app/public_html/appHelp/zh-TW/termsConditions.html">『${
+              this.translate.instant('universal_userAccount_clause')
+            }』</a>、<a target="_blank" href="${location.origin}/app/public_html/appHelp/zh-TW/privacyPolicy.html">『${
+              this.translate.instant('universal_userAccount_privacyStatement')}』</a>${
+            this.translate.instant('universal_userAccount_clauseContentPage2')
+          }`.replace(/\n/gm, '');
+          break;
+        case 'zh-cn':
+          text = `${this.translate.instant('universal_userAccount_clauseContentPage1')
+            }<a target="_blank" href="${location.origin}/app/public_html/appHelp/zh-CN/termsConditions.html">『${
+              this.translate.instant('universal_userAccount_clause')
+            }』</a>、<a target="_blank" href="${location.origin}/app/public_html/appHelp/zh-CN/privacyPolicy.html">『${
+              this.translate.instant('universal_userAccount_privacyStatement')}』</a>${
+            this.translate.instant('universal_userAccount_clauseContentPage2')
+          }`.replace(/\n/gm, '');
+          break;
+        default:
+          text = `${this.translate.instant('universal_userAccount_clauseContentPage1')
+            }<a target="_blank" href="${location.origin}/app/public_html/appHelp/en-US/termsConditions.html">『${
+            this.translate.instant('universal_userAccount_clause')
+          }』</a>、<a target="_blank" href="${location.origin}/app/public_html/appHelp/en-US/privacyPolicy.html">『${
+            this.translate.instant('universal_userAccount_privacyStatement')}』</a>${
+            this.translate.instant('universal_userAccount_clauseContentPage2')
+          }`.replace(/\n/gm, '');
+          break;
+      };
+
     }
 
     let title: string,

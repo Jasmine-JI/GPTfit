@@ -334,7 +334,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1090513
    */
   toEnableAccount(): void {
-    this.router.navigateByUrl(`/enableAccount-web`);
+    window.open(`/enableAccount`, '', 'height=700,width=375,resizable=no');
   }
 
   /**

@@ -103,7 +103,7 @@ export class DemoQrcodComponent implements OnInit {
    * @author kidin-1091015
    */
   getTranslate () {
-    this.translateService.get('hollow world').subscribe(() => {
+    this.translateService.get('hellow world').subscribe(() => {
       this.i18n = {
         confirm: this.translateService.instant('universal_operating_confirm'),
         bindSuccess: this.translateService.instant('universal_btDevice_bindSuccess'),

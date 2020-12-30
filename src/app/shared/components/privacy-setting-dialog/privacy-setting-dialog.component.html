@@ -9,14 +9,12 @@
 
 <div style="margin-top: 30px;height: 250px;">
   <div class="control-list">
-    <label class="ala-form__label settings-item" [style.width]="showBatchChangeBox ? '100%': 'fit-content'">
+    <label class="ala-form__label settings-item">
       {{'universal_privacy_newAvtivityData' | translate}}
-      <app-hover-hint [type]="'sportsFile'" [leftPosition]="true" (showBox)="showBox($event)"></app-hover-hint>
+      <app-hover-hint class="hover__hint" [type]="'sportsFile'" [leftPosition]="true" (showBox)="showBox($event)"></app-hover-hint>
     </label>
     <div class="settings-control">
-      <!--<mat-checkbox color="primary" value="4" [checked]="activityTrackingStatus[0]" (change)="handleCheckBox($event, 1, 1)"><span
-          style="font-size: 14px">{{'Dashboard.privacySettings.OnlyForPF' | translate}}</span>-->
-      <mat-checkbox color="primary" value="4" [checked]="true" (change)="handleCheckBox($event, 1, 1)">
+      <mat-checkbox color="primary" value="4" [checked]="true" (change)="handleCheckBox($event, 1, 4)">
         <span style="font-size: 14px">
           {{ 'universal_group_myObject' | translate: {'object': i18n.gym} }}
           /
@@ -27,14 +25,12 @@
     </div>
   </div>
   <div class="control-list">
-    <label class="ala-form__label settings-item" [style.width]="showBatchChangeBox ? '100%': 'fit-content'">
+    <label class="ala-form__label settings-item">
       {{'universal_privacy_newAvtivityReport' | translate}}
-      <app-hover-hint [type]="'sportsReport'" [leftPosition]="true" (showBox)="showBox($event)"></app-hover-hint>
+      <app-hover-hint class="hover__hint" [type]="'sportsReport'" [leftPosition]="true" (showBox)="showBox($event)"></app-hover-hint>
     </label>
     <div class="settings-control">
-      <!--<mat-checkbox color="primary" value="4" [checked]="activityTrackingReportStatus[0]" (change)="handleCheckBox($event, 1, 2)"><span
-          style="font-size: 14px">{{'universal_group_objectOnly' | translate: {'object': myGym} }}</span>-->
-      <mat-checkbox color="primary" value="4" [checked]="true" (change)="handleCheckBox($event, 1, 2)">
+      <mat-checkbox color="primary" value="4" [checked]="true" (change)="handleCheckBox($event, 2, 4)">
         <span style="font-size: 14px">
           {{ 'universal_group_myObject' | translate: {'object': i18n.gym} }}
           /
@@ -45,12 +41,12 @@
     </div>
   </div>
   <div class="control-list">
-    <label class="ala-form__label settings-item" [style.width]="showBatchChangeBox ? '100%': 'fit-content'">
+    <label class="ala-form__label settings-item">
       {{'universal_privacy_newLifeTrackingReport' | translate}}
-      <app-hover-hint [type]="'lifeTrackingReport'" [leftPosition]="true" (showBox)="showBox($event)"></app-hover-hint>
+      <app-hover-hint class="hover__hint" [type]="'lifeTrackingReport'" [leftPosition]="true" (showBox)="showBox($event)"></app-hover-hint>
     </label>
     <div class="settings-control">
-      <mat-checkbox color="primary" value="4" [checked]="true" (change)="handleCheckBox($event, 1, 3)">
+      <mat-checkbox color="primary" value="4" [checked]="true" (change)="handleCheckBox($event, 3, 4)">
         <span style="font-size: 14px">
           {{ 'universal_group_myObject' | translate: {'object': i18n.gym} }}
           /
