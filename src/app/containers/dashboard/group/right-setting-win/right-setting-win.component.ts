@@ -68,7 +68,7 @@ export class RightSettingWinComponent implements OnInit {
 
   // 待多國語系套件載入完成後再產生翻譯-kidin-1090622
   getTranslate () {
-    this.translate.get('hollow world').subscribe(() => {
+    this.translate.get('hellow world').subscribe(() => {
       this.i18n = {
         brandAdministrator: this.translate.instant('universal_group_brandAdministrator'),
         branchAdministrator: this.translate.instant('universal_group_branchAdministrator'),

@@ -5,6 +5,7 @@
 ></app-navbar>
 <div style="height: 100vh; overflow-y: scroll;" class="main" [ngClass]="{'preview': isPreviewMode, 'hideNavbar': hideNavbar}">
   <div class="mask" [class.mask--show]="isMaskShow" (click)="touchMask()"></div>
+  <div style="min-height: 3000px;" *ngIf="uiFlag.page === 'analysis' || uiFlag.page === 'system' || uiFlag.page === 'application'">
   <ng-container *ngIf="uiFlag.page === 'system'">
     <div style="min-height: 100vh; margin-top: -63px" class="fade__in">
       <header>
@@ -23,7 +24,13 @@
             </h3>
             <div class="flexRow">
               <div class="ala-app-info">
-                <img #system_T1 src="/assets/images/introduce/system-T1-system.jpg" style="max-height: 500px; height: 40vw;" class="hide__slide__img">
+                <img
+                  #system_T1
+                  id="systemT1"
+                  src="/assets/images/introduce/system-T1-system.jpg"
+                  style="max-height: 500px; height: 40vw;"
+                  class="hide__slide__img"
+                >
               </div>
               <div class="message flexCol" style="max-width: 500px; text-align: left; margin-top: calc(20px + 3vw);">
                 <div class="flexCol">
@@ -62,6 +69,7 @@
             <div style="display: flex; align-items: flex-end;">
               <img
                 #system_T2
+                id="systemT2"
                 style="max-height: 250px; margin: 0 0 50px 60px;"
                 class="rwd__hide  hide__slide__img"
                 src="/assets/images/introduce/system-T2-wearable.jpg"
@@ -83,6 +91,7 @@
           <div class="flexRow" style="justify-content: center; margin: 50px;">
             <img
               #system_T3
+              id="systemT3"
               class="rwd__hide hide__slide__img"
               style="max-height: 400px; margin: 0 30px;"
               src="/assets/images/introduce/system-T3-app.jpg"
@@ -121,7 +130,14 @@
                 <span class="homepage__btn" (click)="handleNavigation(4)">{{ 'universal_app_contactUs' | translate }}</span>
               -->
             </div>
-            <img #system_T4 src="/assets/images/introduce/system-T4-iot.jpg" alt="AP1000" style="max-height: 300px;" class="rwd__hide hide__slide__img">
+            <img
+              #system_T4
+              id="systemT4"
+              src="/assets/images/introduce/system-T4-iot.jpg"
+              alt="AP1000"
+              style="max-height: 300px;"
+              class="rwd__hide hide__slide__img"
+            >
           </div>
         </div>
       </section>
@@ -163,7 +179,13 @@
               </div>
             </div>
             <div class="ala-app-info">
-              <img #application_T1 src="/assets/images/introduce/T1-connect.jpg" alt="Ala Connect" class="hide__slide__img">
+              <img
+                #application_T1
+                id="applicationT1"
+                src="/assets/images/introduce/T1-connect.jpg"
+                alt="Ala Connect"
+                class="hide__slide__img"
+              >
             </div>
           </div>
         </div>
@@ -180,7 +202,14 @@
           <div style="display: flex;">
             <div>
               <div class="cloudRun-app-container">
-                <img #application_T2 style="width: 100%"src="/assets/images/introduce/T2-cloudrun.jpg" alt="Ala Cloud Run" class="hide__slide__img">
+                <img
+                  #application_T2
+                  id="applicationT2"
+                  style="width: 100%"
+                  src="/assets/images/introduce/T2-cloudrun.jpg"
+                  alt="Ala Cloud Run"
+                  class="hide__slide__img"
+                >
               </div>
               <div class="cloudRun-app-info">
                 <div class="message">
@@ -254,6 +283,7 @@
               <div class="rwd__hide">
                 <img
                   #application_T3
+                  id="applicationT3"
                   class="hide__slide__img coach-img"
                   style="max-width: 500px; margin: 10px; width: 40vw;"
                   src="/assets/images/introduce/fitness_screenshot.png"
@@ -278,6 +308,7 @@
               <div class="rwd__hide">
                 <img 
                   #application_T4
+                  id="applicationT4"
                   style="width: 40vw; max-width: 500px;"
                   class="hide__slide__img"
                   src="/assets/images/introduce/T3-trainlive.jpg"
@@ -315,7 +346,13 @@
         <div class="container">
           <div class="flexRow" style="justify-content: center; align-items: center;">
             <div class="ala-app-info">
-              <img #analysis_T1 src="/assets/images/introduce/analysis-T1-hr.jpg" style="max-height: 388px; height: 30vw;" class="hide__slide__img">
+              <img
+                #analysis_T1
+                id="analysisT1"
+                src="/assets/images/introduce/analysis-T1-hr.jpg"
+                style="max-height: 388px; height: 30vw;"
+                class="hide__slide__img"
+              >
             </div>
             <div style="max-width: 450px; margin: 0 50px">
               <div class="message">
@@ -343,7 +380,13 @@
               <p class="system__introduction__text">{{ 'universal_app_sportsScienceInfo2' | translate }}</p>
             </div>
             <div class="rwd__hide">
-              <img #analysis_T2 style="max-height: 400px;" src="/assets/images/introduce/analysis-T2-report.jpg" class="hide__slide__img">
+              <img
+                #analysis_T2
+                id="analysisT2"
+                style="max-height: 400px;"
+                src="/assets/images/introduce/analysis-T2-report.jpg"
+                class="hide__slide__img"
+              >
             </div>
           </div>
         </div>
@@ -361,6 +404,7 @@
             <div style="display: flex;align-items: center;justify-content: center">
               <img
                 #analysis_T3
+                id="analysisT3"
                 style="max-height: 400px;"
                 src="/assets/images/introduce/analysis-T3-life.jpg"
                 class="rwd__hide hide__slide__img"
@@ -394,12 +438,19 @@
                   {{ 'universal_app_groupInfoComment1' | translate }}
                 </p>
               </div>
-              <img #analysis_T4 src="/assets/images/introduce/analysis-T4-group.jpg" style="max-height: 350px;" class="rwd__hide hide__slide__img">
+              <img
+                #analysis_T4
+                id="analysisT4"
+                src="/assets/images/introduce/analysis-T4-group.jpg"
+                style="max-height: 350px;"
+                class="rwd__hide hide__slide__img"
+              >
             </div>
           </div>
         </div>
       </section>
     </div>
   </ng-container>
+</div>
   <router-outlet *ngIf="uiFlag.page !== 'analysis' && uiFlag.page !== 'system' && uiFlag.page !== 'application'"></router-outlet>
 </div>

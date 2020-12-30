@@ -133,10 +133,22 @@
   <section class="flexCol info__section" *ngIf="uiFlag.editMode === 'close' && userSimpleInfo">
     <span class="info__title">{{ 'universal_group_groupInfo' | translate }}</span>
     <span class="info__content" *ngIf="editBody.groupLevel <= 30">
-      {{ 'universal_group_numberOfBranches' | translate }}：{{ groupDetail?.branchNum }}
+      <ng-container *ngIf="groupDetail.brandType === 1">
+        {{ 'universal_group_numberOfBranches' | translate }}
+      </ng-container>
+      <ng-container *ngIf="groupDetail.brandType === 2">
+        {{ 'universal_group_companyBranch' | translate }}
+      </ng-container>
+      ：{{ groupDetail?.branchNum }}
     </span>
     <span class="info__content" *ngIf="editBody.groupLevel <= 40">
-      {{ 'universal_group_numberOfClass' | translate }}：{{ groupDetail?.coachNum }}
+      <ng-container *ngIf="groupDetail.brandType === 1">
+        {{ 'universal_group_numberOfClass' | translate }}
+      </ng-container>
+      <ng-container *ngIf="groupDetail.brandType === 2">
+        {{ 'universal_group_department' | translate }}
+      </ng-container>
+      ：{{ groupDetail?.coachNum }}
     </span>
     <span class="info__content">
       {{ 'universal_group_numberOfAdministrators' | translate }}：{{ groupDetail?.adminNum }}
@@ -310,7 +322,7 @@
       <span style="color: #F1873A">
         <span *ngIf="createBody.commercePlan === 1">free</span>
         <span *ngIf="createBody.commercePlan !== 99 && createBody.commercePlan !== 1 && createBody.brandType === 1">
-          $ {{(createBrandSettingtotalCost | number:'.') || (createBrandSetting.planDatas[createBody.commercePlan - 1].cost  | number:'.')}}
+          $ {{(createBrandSetting.totalCost | number:'.') || (createBrandSetting.planDatas[createBody.commercePlan - 1].cost  | number:'.')}}
         </span>
         <span *ngIf="createBody.commercePlan === 99 || createBody.brandType === 2">自訂價格</span>
       </span>

@@ -104,7 +104,7 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
    * 待套件載完之後再載入多國語系
    */
   getTranslate() {
-    this.translateService.get('hollow world').subscribe(() => {
+    this.translateService.get('hellow world').subscribe(() => {
       this.i18n = {
         zoneZero: `${this.translateService.instant('universal_activityData_limit_generalZone')}`,
         zoneOne: `${this.translateService.instant('universal_activityData_warmUpZone')}`,

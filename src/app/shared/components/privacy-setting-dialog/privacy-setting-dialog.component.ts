@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, EventEmitter, Output, Input } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UtilsService } from '../../services/utils.service';
 import { SettingsService } from '../../../containers/dashboard/services/settings.service';
@@ -19,38 +19,23 @@ export class PrivacySettingDialogComponent implements OnInit {
   };
   groupId: string;
   token: string;
-  shareTargetText: string;
-  tempActivityTrackingReport: string[];
-  tempActivityTracking: string[];
-  tempActivityTrackingReportStatus: string[];
-  tempActivityTrackingStatus: string[];
-  tempLifeTracking: string[];
-  tempLifeTrackingStatus: string[];
+  tempActivityTrackingReport: number[];
+  tempActivityTracking: number[];
+  tempLifeTracking: number[];
   showBatchChangeBox = false;
-  @Output() onConfirm: EventEmitter<any> = new EventEmitter();
 
-  get activityTrackingReport() {
-    this.tempActivityTrackingReport = [...this.data.activityTrackingReport];
-    return this.data.activityTrackingReport;
-  }
-  get activityTracking() {
-    this.tempActivityTracking = [...this.data.activityTracking];
-    return this.data.activityTracking;
-  }
-  get activityTrackingReportStatus() {
-    this.tempActivityTrackingReportStatus = [...this.data.activityTrackingReportStatus];
-    return this.data.activityTrackingReportStatus;
-  }
-  get activityTrackingStatus() {
-    this.tempActivityTrackingStatus = [...this.data.activityTrackingStatus];
-    return this.data.activityTrackingStatus;
-  }
-  get targetText() {
-    return this.data.targetText;
-  }
   get groupName() {
     return this.data.groupName;
   }
+
+  get privacy() {
+    return this.data.privacy;
+  }
+
+  get onConfirm() {
+    return this.data.onConfirm;
+  }
+
   constructor(
     private dialog: MatDialog,
     private utils: UtilsService,
@@ -61,93 +46,106 @@ export class PrivacySettingDialogComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.translate.get('hollow world').subscribe(() => {
+    this.translate.get('hellow world').subscribe(() => {
       this.i18n.gym = this.translate.instant('universal_group_gym');
     });
 
-    const activityTrackingArray = [],
-          activityTrackingReportArray = [],
-          lifeTrackingReportArray = [];
+    this.setDefaultPrivacy();
+  }
 
-    // 隱私權預設勾選「新運動檔案」及「新運動期間報告」開放給體適能教練
-    activityTrackingArray.push('1');
-    activityTrackingArray.push('4');
-    activityTrackingReportArray.push('1');
-    activityTrackingReportArray.push('4');
-    lifeTrackingReportArray.push('1');
-    lifeTrackingReportArray.push('4');
+  /**
+   * 預設隱私權設定
+   * @author kidin-1091230
+   */
+  setDefaultPrivacy() {
+    // 隱私權預設勾選「新運動檔案」、「新運動期間報告」、「新生活追蹤報告」開放給體適能教練
+    this.tempActivityTracking = this.privacy.activityTracking.map(_activity => +_activity);
+    this.tempActivityTrackingReport = this.privacy.activityTrackingReport.map(_activityTracking => +_activityTracking);
+    this.tempLifeTracking = this.privacy.lifeTrackingReport.map(_lifeTracking => +_lifeTracking);
 
-    this.tempActivityTracking = activityTrackingArray;
-    this.tempActivityTrackingReport = activityTrackingReportArray;
-    this.tempLifeTracking = lifeTrackingReportArray;
+    if (!this.tempActivityTracking.some(_activityTracking => +_activityTracking === 4)) {
+      this.tempActivityTracking.push(4);
+      this.tempActivityTracking.sort();
+    }
+
+    if (!this.tempActivityTrackingReport.some(_activityTrackingReport => +_activityTrackingReport === 4)) {
+      this.tempActivityTrackingReport.push(4);
+      this.tempActivityTrackingReport.sort();
+    }
+
+    if (!this.tempLifeTracking.some(_lifeTrackingReport => +_lifeTrackingReport === 4)) {
+      this.tempLifeTracking.push(4);
+      this.tempLifeTracking.sort();
+    }
+
   }
 
   confirm() {
-    this.onConfirm.emit();
-    let body;
-    if (this.tempActivityTracking.length !== 0) {
-      body = {
-        token: this.utils.getToken() || '',
+    const body = {
+      token: this.utils.getToken() || '',
+      userProfile: {
         privacy: {
           activityTracking: this.tempActivityTracking,
           activityTrackingReport: this.tempActivityTrackingReport,
           lifeTrackingReport: this.tempLifeTracking
         }
-      };
-    } else {
-      body = {
-        token: this.utils.getToken() || '',
-        privacy: {
-          activityTracking: this.tempActivityTracking,
-          activityTrackingReport: this.tempActivityTrackingReport
-        }
-      };
-    }
-
+      }
+    };
 
     this.settingsService.updateUserProfile(body).subscribe(() => {
       // 重新存取身體資訊供各種圖表使用-kidin-1081212
       const refreshBody = {
         token : this.utils.getToken() || ''
       };
-      this.userProfileService.refreshUserProfile({
-        token: refreshBody
-      });
+
+      this.userProfileService.refreshUserProfile(refreshBody);
+      this.onConfirm();
       this.dialog.closeAll();
     });
 
   }
-  handleCheckBox(event, idx, type) {
-    let tempArr = [];
-    let tempStatus = [];
-    if (type === 1) {
-      tempArr = [...this.activityTracking];
-      tempStatus = [...this.activityTrackingStatus];
-    } else if (type === 2) {
-      tempArr = [...this.activityTrackingReport];
-      tempStatus = [...this.activityTrackingReportStatus];
-    } else {
-      tempArr = this.tempLifeTracking;
-      tempStatus = this.tempLifeTrackingStatus;
+
+  /**
+   * 變更隱私權勾選狀態
+   * @param event {any}
+   * @param type {1 | 2 | 3} 1:運動活動資料 2:運動期間報告 3:生活追蹤期間報告
+   * @param obj {number}-開放對象 1:我自己 4:群組管理員 99:所有人
+   * @author kidin-1091230
+   */
+  handleCheckBox(event: any, type: 1 | 2 | 3, obj: number) {
+    switch (type) {
+      case 1:
+
+        if (this.tempActivityTracking.some(_activityTracking => +_activityTracking === obj)) {
+          this.tempActivityTracking = this.tempActivityTracking.filter(_activityTracking => +_activityTracking !== obj);
+        } else {
+          this.tempActivityTracking.push(obj);
+          this.tempActivityTracking.sort();
+        }
+
+        break;
+      case 2:
+
+        if (this.tempActivityTrackingReport.some(_activityTrackingReport => +_activityTrackingReport === obj)) {
+          this.tempActivityTrackingReport = this.tempActivityTrackingReport.filter(_activityTrackingReport => +_activityTrackingReport !== obj);
+        } else {
+          this.tempActivityTrackingReport.push(obj);
+          this.tempActivityTrackingReport.sort();
+        }
+
+        break;
+      case 3:
+
+        if (this.tempLifeTracking.some(_lifeTrackingReport => +_lifeTrackingReport === obj)) {
+          this.tempLifeTracking = this.tempLifeTracking.filter(_lifeTrackingReport => +_lifeTrackingReport !== obj);
+        } else {
+          this.tempLifeTracking.push(obj);
+          this.tempLifeTracking.sort();
+        }
+
+        break;
     }
-    if (event.checked) {
-      tempStatus[idx] = true;
-      tempArr.push(event.source.value);
-    } else {
-      tempStatus[idx] = false;
-      const i = tempArr.findIndex(x => x.value === event.source.value);
-      tempArr.splice(i, 1);
-    }
-    if (type === 1) {
-      this.tempActivityTracking = [...tempArr];
-      this.tempActivityTrackingStatus = [...tempStatus];
-    } else if (type === 2) {
-      this.tempActivityTrackingReport = [...tempArr];
-      this.tempActivityTrackingReportStatus = [...tempStatus];
-    } else {
-      tempArr = this.tempLifeTracking;
-      tempStatus = this.tempLifeTrackingStatus;
-    }
+
   }
 
   // 取得輸入框顯示與否的狀態-kidin-1090326

@@ -50,6 +50,7 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
   selectedIndex = 0;
   periodTimes = [];
   windowWidth = window.innerWidth;
+  rangeTranslate = '';
 
   // 資料儲存用變數-kidin-1090115
   token: string;
@@ -258,31 +259,47 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
 
   }
 
-    // 依據選擇的搜索日期切換顯示-kidin-1090121
-    switchPeriod () {
-      // 用get方法確認translate套件已完成載入(Bug 1147)-kidin-1090316
-      this.translate.get('hello.world').subscribe(() => {
-        const diffDay = moment(this.reportEndTime).diff(moment(this.reportStartTime), 'days') + 1;
-        this.period = `${diffDay} ${this.translate.instant(
-          'universal_time_day'
-        )}`;
-  
-        // 52天內取日概要陣列，52天以上取周概要陣列-kidin_1090211
-        if (diffDay <= 52) {
-          this.reportRangeType = 1;
-          this.dataDateRange = 'day';
-        } else {
-          this.reportRangeType = 2;
-          this.dataDateRange = 'week';
-        }
-  
-        this.period = `${diffDay} ${this.translate.instant(
-          'universal_time_day'
-        )}`;
-  
-      });
-  
-    }
+  // 依據選擇的搜索日期切換顯示-kidin-1090121
+  switchPeriod () {
+    // 用get方法確認translate套件已完成載入(Bug 1147)-kidin-1090316
+    this.translate.get('hello.world').subscribe(() => {
+      const diffDay = moment(this.reportEndTime).diff(moment(this.reportStartTime), 'days') + 1;
+      this.period = `${diffDay} ${this.translate.instant(
+        'universal_time_day'
+      )}`;
+
+      // 52天內取日概要陣列，52天以上取周概要陣列-kidin_1090211
+      if (diffDay <= 52) {
+        this.reportRangeType = 1;
+        this.dataDateRange = 'day';
+        this.getTranslate('universal_time_day');
+      } else {
+        this.reportRangeType = 2;
+        this.dataDateRange = 'week';
+        this.getTranslate('universal_time_week');
+      }
+
+      this.period = `${diffDay} ${this.translate.instant(
+        'universal_time_day'
+      )}`;
+
+    });
+
+  }
+
+  /**
+   * 待多國語系套件載入後再產生翻譯
+   * @param key {string}
+   * @author kidin-1091229
+   */
+  getTranslate(key: string) {
+    this.translate.get('hellow world').pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      this.rangeTranslate = this.translate.instant(key);
+    });
+
+  }
 
   generateTimePeriod() {
     this.periodTimes = [];

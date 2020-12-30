@@ -32,7 +32,7 @@ fileList = [
     'pt-pt'
 ]
 
-# 將txt由UTF-16-LE編譯成UTF-8
+# 將txt由UTF-16-LE編譯成UTF-8（開發時為了比較好debug將不同格式分開資料夾存放，可自行合併資料夾）
 oldPath = './waitConvert/utf16le.txt'
 oldFile = open(oldPath, 'r', encoding = 'utf-16-le')
 newPath = './converted/utf8.txt'
@@ -114,6 +114,8 @@ for i in range(len(fileList)):
         jsonFile = open(jsonPath, 'w', encoding = 'UTF-8', newline='')
         jsonFile.write(finalContent)
         jsonFile.close()
+        
+        print ('%s is converted' % fileList[i])
 
     except ValueError as e:
         print ('Edit file error.', e)

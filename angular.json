@@ -69,7 +69,11 @@
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.uat.ts"
                 }
-              ]
+              ],
+              "index": {
+                "input": "src/environments/index.uat.html",
+                "output": "index.html"
+              }
             },
             "tst": {
               "budgets": [
@@ -135,7 +139,11 @@
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.web.ts"
                 }
-              ]
+              ],
+              "index": {
+                "input": "src/environments/index.web.html",
+                "output": "index.html"
+              }
             },
             "dev-web": {
               "budgets": [

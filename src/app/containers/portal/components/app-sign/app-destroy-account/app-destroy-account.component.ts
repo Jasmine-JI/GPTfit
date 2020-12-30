@@ -9,6 +9,7 @@ import { UserProfileService } from '../../../../../shared/services/user-profile.
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
+import { AuthService } from '../../../../../shared/services/auth.service';
 
 @Component({
   selector: 'app-app-destroy-account',
@@ -23,26 +24,27 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit {
   uiFlag = {
     isLoading: false,
     isAnyGroupAdmin: false,
+    cancelDestroyLoading: false,
     cancelDestroy: false,
     checkCompress: false,
     sendPhoneCaptcha: false,
-    Countdown: false
+    Countdown: false,
+    verifyCodeError: false
   };
 
   appSys: AppCode = 0;
   token: string;
   user: any;
-  verifyCode: '';
+  verifyCode = '';
   timeCount = 30;
+  deleteApplySuccessText = '';
 
   /**
    * 儲存api 1013相關資訊
    */
   destroyResp = {
     status: 0,
-    destroyTimestemp: null,
-    destroyDate: null,
-    destroyTime: null
+    destroyTimestamp: null
   };
 
   constructor(
@@ -50,11 +52,11 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit {
     private router: Router,
     private signupService: SignupService,
     private userProfileService: UserProfileService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private auth: AuthService
   ) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   /**
    * 因應ios嵌入webkit物件時間點較後面，故在此生命週期才判斷裝置平台
@@ -63,8 +65,6 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit {
   ngAfterViewInit () {
     this.getDeviceSys();
     this.getUserToken();
-    this.getUserProfile();
-    this.checkoutIsGroupAdmin();
   }
 
   /**
@@ -100,32 +100,14 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit {
 
     }
 
-  }
+    if (this.token.length === 0) {
+      this.auth.backUrl = location.href;
+      this.router.navigateByUrl('/signIn');
+    } else {
+      this.getUserProfile();
+      this.checkQueryString();
+    }
 
-  /**
-   * 確認是否有任何群組管理員的身份，若無才可刪除帳號
-   * @author kidin-1091223
-   */
-  checkoutIsGroupAdmin() {
-    this.uiFlag.isLoading = true;
-    this.userProfileService.getMemberAccessRight({token: this.token}).subscribe(res => {
-      this.uiFlag.isLoading = false;
-      if (res.resultCode !== 200) {
-        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
-      } else {
-
-        if (
-          res.info.groupAccessRight.some(_list => +_list.accessRight < 90)
-        ) {
-          this.destroyResp.status = 99; // 99代表不能申請
-        } else {
-          this.checkQueryString();
-        }
-
-      }
-
-    });
-    
   }
 
   /**
@@ -141,7 +123,9 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit {
         const str = queryArr[i].split('=')[0];
         if(str === 'vc') {
           isVeificationFlow = true;
+          this.uiFlag.checkCompress = true;
           this.verifyIdentidy(queryArr[i].split('=')[1]);
+          break;
         }
 
       };
@@ -208,10 +192,13 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit {
         } else {
           this.destroyResp.status = res.status;
 
-          if (res.status === 2) {
-            this.destroyResp.destroyTimestemp = res.destroyTimestemp;
-            this.destroyResp.destroyDate = moment(res.destroyTimestemp * 1000).format('YYYY-MM-DD');
-            this.destroyResp.destroyTime = moment(res.destroyTimestemp * 1000).format('HH:mm');
+          if (res.status === 0) {
+            this.checkoutIsGroupAdmin();
+          } else if (res.status === 2) {
+            this.destroyResp.destroyTimestamp = res.destroyTimestamp;
+            const destroyDate = moment(res.destroyTimestamp * 1000).format('YYYY-MM-DD'),
+                  destroyTime = moment(res.destroyTimestamp * 1000).format('HH:mm');
+            this.getTranslate(destroyDate, destroyTime);
           }
 
         }
@@ -220,6 +207,36 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit {
 
     }
 
+  }
+
+  /**
+   * 確認是否有任何群組管理員的身份，若無才可刪除帳號
+   * @author kidin-1091223
+   */
+  checkoutIsGroupAdmin() {
+    this.uiFlag.isLoading = true;
+    this.userProfileService.getMemberAccessRight({token: this.token}).subscribe(res => {
+      this.uiFlag.isLoading = false;
+      if (res.resultCode !== 200) {
+        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+      } else {
+
+        if (
+          res.info.groupAccessRight.some(_list => +_list.accessRight < 90)
+        ) {
+          this.translate.get('hellow world').pipe(
+            takeUntil(this.ngUnsubscribe)
+          ).subscribe(() => {
+            const msg = this.translate.instant('universal_userAccount_adminDeleteAccount');
+            this.utils.openAlert(msg);
+          });
+
+        }
+
+      }
+
+    });
+    
   }
 
   /**
@@ -240,10 +257,38 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit {
         console.log(`${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`);
       } else {
         this.destroyResp.status = res.status;
+
+        if (this.user.countryCode) {
+          this.translate.get('hellow world').pipe(
+            takeUntil(this.ngUnsubscribe)
+          ).subscribe(() => {
+            const msg = this.translate.instant('universal_userAccount_sendSmsSuccess');
+            this.utils.openAlert(msg);
+          });
+
+          this.countDown();
+        } else {
+          this.translate.get('hellow world').pipe(
+            takeUntil(this.ngUnsubscribe)
+          ).subscribe(() => {
+            const msg = this.translate.instant('universal_userAccount_sendCaptchaChackEmail');
+            this.utils.openAlert(msg);
+          })
+          
+        }
+
       }
 
     });
 
+  }
+
+  /**
+   * 點擊帳號驗證
+   * @author kidin-1091228
+   */
+  submitVerifyCode() {
+    this.verifyIdentidy(this.verifyCode);
   }
 
   /**
@@ -252,29 +297,51 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit {
    * @author kidin-1091223
    */
   verifyIdentidy(code: string) {
-    const body = {
-      token: this.token,
-      flow: 3,
-      verificationCode: code
-    };
+      const body = {
+        token: this.token,
+        flow: 3,
+        verificationCode: code
+      };
 
-    this.uiFlag.isLoading = true;
-    this.signupService.fetchDestroyAccount(body).subscribe(res => {
-      this.uiFlag.isLoading = false;
-      const processResult = res.processResult;
-      if (processResult.resultCode !== 200) {
-        console.log(`${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`);
-      } else {
-        this.destroyResp = {
-          status: res.status,
-          destroyTimestemp: res.destroyTimestemp,
-          destroyDate: moment(res.destroyTimestemp * 1000).format('YYYY-MM-DD'),
-          destroyTime: moment(res.destroyTimestemp * 1000).format('HH:mm')
-        };
+      this.uiFlag.isLoading = true;
+      this.signupService.fetchDestroyAccount(body).subscribe(res => {
+        this.uiFlag.isLoading = false;
+        const processResult = res.processResult;
+        if (!processResult && res.info.rtnMsg.indexOf('Exception: invalid literal for int() with base 10:') > -1) {
+          this.uiFlag.verifyCodeError = true;
+        } else if (!processResult && res.resultCode === 400) {
+          const msg = 'Error! Please try again later.'
+          this.utils.openAlert(msg);
+        } else if (processResult.resultCode !== 200) {
+          console.log(`${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`);
+          if (processResult.apiReturnMessage === 'Destroy me fail, code was verified.') {
+            this.uiFlag.checkCompress = false;
+            this.translate.get('hellow world').pipe(
+              takeUntil(this.ngUnsubscribe)
+            ).subscribe(() => {
+              const msg = this.translate.instant('universal_userAccount_linkHasExpired');
+              this.utils.openAlert(msg);
+            });
 
-      }
+          } else if (processResult.apiReturnMessage === 'Destroy me fail, found verification code error.') {
+            this.uiFlag.verifyCodeError = true;
+          } else {
+            this.checkDestroyStatus();
+          }
+          
+        } else {
+          this.uiFlag.verifyCodeError = false;
+          this.destroyResp = {
+            status: res.status,
+            destroyTimestamp: res.destroyTimestamp,
+          };
 
-    });
+          const destroyDate = moment(res.destroyTimestamp * 1000).format('YYYY-MM-DD'),
+                destroyTime = moment(res.destroyTimestamp * 1000).format('HH:mm');
+          this.getTranslate(destroyDate, destroyTime);
+        }
+
+      });
 
   }
 
@@ -288,14 +355,15 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit {
       flow: 4
     };
 
-    this.uiFlag.isLoading = true;
+    this.uiFlag.cancelDestroyLoading = true;
     this.signupService.fetchDestroyAccount(body).subscribe(res => {
-      this.uiFlag.isLoading = false;
+      this.uiFlag.cancelDestroyLoading = false;
       const processResult = res.processResult;
       if (processResult.resultCode !== 200) {
         console.log(`${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`);
       } else {
-        this.destroyResp.status = res.status;
+        this.destroyResp.status = 0;
+        this.uiFlag.cancelDestroy = true;
       }
 
     });
@@ -347,6 +415,25 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit {
       }
 
     }, 1000);
+
+  }
+
+  /**
+   * 待多國語系套件載完後再取得翻譯
+   * @param date {string}-刪除帳號的日期
+   * @param time {string}-刪除帳號的時間
+   * @author kidin-1091228
+   */
+  getTranslate(date: string, time: string) {
+    this.translate.get('hellow world').pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      this.deleteApplySuccessText = `${this.translate.instant('universal_userAccount_successfullyRequestedToDeleteAccount', {
+        'yyyy-mm-dd': `<span class="date__time__warn">${date}</span>`,
+        'HH:MM': `<span class="date__time__warn">${time}</span>`
+      })}`;
+
+    })
 
   }
 

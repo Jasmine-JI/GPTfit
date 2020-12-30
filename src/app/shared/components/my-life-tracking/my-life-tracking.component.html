@@ -109,13 +109,7 @@
         <div class="flexCol">
           <div class="activity-title flexRow">
             <span class="ala-dashboard-title">
-              <span *ngIf="dataDateRange === 'day'">
-                {{'universal_time_day' | translate}}
-              </span>
-              <span *ngIf="dataDateRange === 'week'">
-                {{'universal_time_week' | translate}}
-              </span>
-              間日常生活紀錄
+              {{ 'universal_group_dailyLifeRecord' | translate: {'range': rangeTranslate} }}
             </span>
           </div>
           <div class="flexRow durationSection">

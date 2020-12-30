@@ -535,7 +535,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   // 取得變數內容並將部分變數替換成html element-kidin-1090623
   getReportInfo () {
     const targetDiv = document.getElementById('reportInfo');
-    this.translateService.get('hollow world').subscribe(() => {
+    this.translateService.get('hellow world').subscribe(() => {
       targetDiv.innerHTML = this.translateService.instant('universal_group_sportsRecordReportClass', {
         'class': `<span id="classLink" class="activity-Link">${this.fileInfo.dispName}</span>`,
         'dateTime': this.getClassRealDateTime(),

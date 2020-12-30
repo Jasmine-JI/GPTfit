@@ -84,10 +84,10 @@ export class UserProfileComponent implements OnInit {
       if (res.processResult.resultCode !== 200) {
         this.router.navigateByUrl('/404');
       } else {
-        const { nickname, avatarUrl, description } = res.userProfile;
+        const { nickname, avatarUrl, description, editTimeStamp } = res.userProfile;
         this.description = description;
         this.userName = nickname;
-        this.userImg = avatarUrl ? `${avatarUrl}${this.updateQueryString}` : '/assets/images/user2.png';
+        this.userImg = avatarUrl ? `${avatarUrl}?${editTimeStamp}` : '/assets/images/user2.png';
       }
 
     });

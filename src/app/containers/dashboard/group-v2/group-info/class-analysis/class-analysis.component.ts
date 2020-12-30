@@ -785,7 +785,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
   // 取得變數內容並將部分變數替換成html element-kidin-1090623
   getReportInfo () {
-    this.translate.get('hollow world').subscribe(() => {
+    this.translate.get('hellow world').subscribe(() => {
       const targetDiv = document.getElementById('reportInfo');
 
       targetDiv.innerHTML = this.translate.instant('universal_group_sportsRecordReportClass', {

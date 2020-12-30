@@ -36,6 +36,23 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   pageResize: Subscription;
   clickEvent: Subscription;
 
+  i18n = {
+    allMember: '',
+    nickname: '',
+    file: '',
+    sportReport: '',
+    openObj: '',
+    notOpenObj: '',
+    brandAdmin: '',
+    branchAdmin: '',
+    coach: '',
+    teacher: '',
+    comAdmin: '',
+    subComAdmin: '',
+    departmentAdmin: '',
+    myGym: ''
+  };
+
   /**
    * 使用者在此群組的身份資料
    */
@@ -45,7 +62,12 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     token: '',
     accessRight: [],
     joinStatus: 2,
-    isGroupAdmin: false
+    isGroupAdmin: false,
+    privacy: {
+      activityTracking: [1],
+      activityTrackingReport: [1],
+      lifeTrackingReport: [1]
+    }
   };
 
   /**
@@ -180,7 +202,10 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.groupService.getRxEditMode().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
-      this.upLoadImg(res);
+      if (res === 'complete') {
+        this.upLoadImg(res);
+      }
+
       this.uiFlag.openIconImgSelector = false;
       this.uiFlag.openSceneryImgSelector = false;
     });
@@ -482,7 +507,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-20200714
    */
   checkScreenSize() {
-
+    
     setTimeout(() => {
       const navSection = this.navSection.nativeElement,
             navSectionWidth = navSection.clientWidth;
@@ -517,7 +542,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
       this.getBtnPosition(this.uiFlag.currentTagIndex);
     });
-    
+
   }
 
   /**
@@ -881,6 +906,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
             Object.assign(userObj, {accessRight: res});
             Object.assign(userObj, {nickname: (resp as any).nickname});
             Object.assign(userObj, {userId: (resp as any).userId});
+            Object.assign(userObj, {privacy: (resp as any).privacy})
             return userObj;
           })
         )),
@@ -889,6 +915,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         this.user.accessRight = (res as any).accessRight;
         this.user.nickname = (res as any).nickname;
         this.user.userId = (res as any).userId;
+        this.user.privacy = (res as any).privacy;
         this.user.isGroupAdmin = this.user.accessRight.some(_accessRight => {
           if (this.currentGroupInfo.groupLevel === 60) {
             return _accessRight === 50 || _accessRight === 60;
@@ -910,7 +937,6 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091104
    */
   initChildPageList() {
-
     const groupDetail = this.currentGroupInfo.groupDetail,
           commerceInfo = this.currentGroupInfo.commerceInfo;
 
@@ -985,6 +1011,10 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091030
    */
   getPerPageOptSize() {
+    this.uiFlag.divideIndex = null;
+    if (this.clickEvent) {
+      this.clickEvent.unsubscribe();
+    }
 
     setTimeout(() => {
       this.initPageOptSize();
@@ -1005,10 +1035,16 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091110
    */
   initPageOptSize() {
+    this.uiFlag.divideIndex = null;
+    if (this.clickEvent) {
+      this.clickEvent.unsubscribe();
+    }
+
     this.perPageOptSize = {
       total: 0,
       perSize: []
     };
+
   }
 
   /**
@@ -1016,23 +1052,80 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091223
    */
   joinGroup() {
-    this.translate.get('hollow world').subscribe(() => {
-      const bodyText = this.translate.instant('universal_group_joinClassStatement', {
-          'object': this.translate.instant('universal_privacy_myGym')
-        }
+    if (this.user.token.length === 0) {
+      this.router.navigateByUrl(
+        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.currentGroupInfo.groupId)}/group-introduction`
       );
+    } else {
+      this.translate.get('hellow world').subscribe(() => {
+        const bodyText = this.translate.instant('universal_group_joinClassStatement', {
+            'object': this.translate.instant('universal_privacy_myGym')
+          }
+        );
 
-      return this.dialog.open(MessageBoxComponent, {
+        return this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          data: {
+            title: this.translate.instant('universal_group_disclaimer'),
+            body: bodyText,
+            confirmText: this.translate.instant('universal_operating_agree'),
+            cancelText: this.translate.instant('universal_operating_disagree'),
+            onConfirm: () => {
+              this.checkoutUserPrivacy();
+            }
+            
+          }
+
+        });
+
+      });
+
+    }
+
+  }
+
+  /**
+   * 確認使用者的隱私權設定
+   * @author kidin-1091224
+   */
+  checkoutUserPrivacy() {
+    let openPrivacy = true;
+    for (let privacyType in this.user.privacy) {
+
+      if (this.user.privacy.hasOwnProperty(privacyType)) {
+
+        const privacyArr = this.user.privacy[privacyType];
+        if (!privacyArr.some(_privacy => +_privacy === 4) && !privacyArr.some(_privacy => +_privacy === 99)) {
+          openPrivacy = false;
+        }
+
+      }
+
+    }
+
+    if (openPrivacy) {
+      this.handleJoinGroup(1);
+    } else {
+      this.openPrivacySetting();
+    }
+    
+  }
+
+  /**
+   * 顯示隱私權設定框
+   * @author kidin-1091229
+   */
+  openPrivacySetting() {
+    // 待上一個dialog完全關閉再開啟隱私權設定dialog
+    setTimeout(() => {
+      this.dialog.open(PrivacySettingDialogComponent, {
         hasBackdrop: true,
         data: {
-          title: this.translate.instant('universal_group_disclaimer'),
-          body: bodyText,
-          confirmText: this.translate.instant('universal_operating_agree'),
-          cancelText: this.translate.instant('universal_operating_disagree'),
+          groupName: this.currentGroupInfo.groupDetail.groupName,
+          privacy: this.user.privacy,
           onConfirm: () => {
             this.handleJoinGroup(1);
           }
-          
         }
 
       });
@@ -1042,55 +1135,40 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   /**
-   * 確認使用者的隱私權設定(待實作)
-   * @author kidin-1091224
-   */
-  checkoutUserPrivacy() {
-  }
-
-  /**
    * 使用者加入或退出群組
    * @event click
    * @author kidin-1090811
    */
   handleJoinGroup(actionType: number) {
-    if (this.user.token.length === 0) {
-      this.router.navigateByUrl(
-        `/dashboard/group-info/${this.hashIdService.handleGroupIdEncode(this.currentGroupInfo.groupId)}/group-introduction`
-      );
-    } else {
+    const body = {
+      token: this.user.token,
+      groupId: this.currentGroupInfo.groupId,
+      brandType: this.currentGroupInfo.groupDetail.brandType,
+      actionType
+    };
 
-      const body = {
-        token: this.user.token,
-        groupId: this.currentGroupInfo.groupId,
-        brandType: this.currentGroupInfo.groupDetail.brandType,
-        actionType
-      };
+    this.uiFlag.isJoinLoading = true;
+    this.groupService.actionGroup(body).subscribe(res => {
+      if (res.resultCode !== 200) {
+        this.utils.openAlert(errMsg);
+        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+      } else {
 
-      this.uiFlag.isJoinLoading = true;
-      this.groupService.actionGroup(body).subscribe(res => {
-        if (res.resultCode !== 200) {
-          this.utils.openAlert(errMsg);
-          console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
-        } else {
-
-          if (this.currentGroupInfo.groupDetail.groupStatus === 1 || this.user.joinStatus === 2) {
-            this.userProfileService.refreshUserProfile({token: this.user.token});
-            this.getGroupNeedInfo();
-          } else if (actionType === 1 && this.currentGroupInfo.groupDetail.groupStatus === 2) {
-            this.user.joinStatus = 1;
-            this.refreshMemberList();
-          } else if (actionType === 2 && this.currentGroupInfo.groupDetail.groupStatus === 2) {
-            this.user.joinStatus = 5;
-            this.refreshMemberList();
-          }
-
+        if (this.currentGroupInfo.groupDetail.groupStatus === 1 || this.user.joinStatus === 2) {
+          this.userProfileService.refreshUserProfile({token: this.user.token});
+          this.getGroupNeedInfo();
+        } else if (actionType === 1 && this.currentGroupInfo.groupDetail.groupStatus === 2) {
+          this.user.joinStatus = 1;
+          this.refreshMemberList();
+        } else if (actionType === 2 && this.currentGroupInfo.groupDetail.groupStatus === 2) {
+          this.user.joinStatus = 5;
+          this.refreshMemberList();
         }
 
-        this.uiFlag.isJoinLoading = false;
-      });
+      }
 
-    }
+      this.uiFlag.isJoinLoading = false;
+    });
 
   }
 
@@ -1141,13 +1219,16 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
 
       setTimeout(() => {
         const tagPosition = document.querySelectorAll('.main__page__list');
-        this.uiFlag.barWidth = tagPosition[tagIdx].clientWidth;
-        let frontSize = 0;
-        for (let i = 0; i < tagIdx; i++) {
-          frontSize += tagPosition[i].clientWidth;
+        if (tagPosition && tagPosition[tagIdx]) {
+          this.uiFlag.barWidth = tagPosition[tagIdx].clientWidth;
+          let frontSize = 0;
+          for (let i = 0; i < tagIdx; i++) {
+            frontSize += tagPosition[i].clientWidth;
+          }
+
+          this.uiFlag.barPosition = frontSize;
         }
 
-        this.uiFlag.barPosition = frontSize;
       });
       
     } else {
