@@ -1,0 +1,39 @@
+@import 'font.scss';
+
+.account__font {
+  @include bold-font($size: 14px);
+}
+
+.check__account__title {
+  color: rgba(170, 170, 170, 1);
+  font-size: 24px;
+  font-weight: bold;
+
+}
+
+.check__account__message {
+  color: rgba(100, 100, 100, 1);
+  font-weight: bold;
+}
+
+.check__account {
+  font-weight: bold;
+}
+
+.description {
+  display: flex;
+  align-items: flex-start;
+  margin: 20px 0;
+}
+
+div {
+
+  .check__account__title, .check__account__message, .check__account {
+    margin-bottom: 10px;
+  }
+
+}
+
+::ng-deep .date__time__warn {
+  color: rgba(217, 35, 35, 1);
+}

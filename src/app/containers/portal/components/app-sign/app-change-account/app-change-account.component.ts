@@ -203,6 +203,32 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
       (window as any).android.closeWebView('Close');
     } else {
 
+      window.close();
+      // 若無法關閉視窗就導回登入頁
+      if (this.pcView === true) {
+        this.router.navigateByUrl('/signIn-web');
+      } else {
+        this.router.navigateByUrl('/signIn');
+      }
+
+    }
+
+  }
+
+  /**
+   * 變更帳號成功後關閉視窗並重新整理
+   * @author kidin-1091229
+   */
+  closeWindow() {
+    if (this.appSys === 1) {
+      (window as any).webkit.messageHandlers.closeWebView.postMessage('Close');
+    } else if (this.appSys === 2) {
+      (window as any).android.closeWebView('Close');
+    } else {
+
+      window.close();
+      window.opener.location.reload();
+      // 若無法關閉視窗就導回登入頁
       if (this.pcView === true) {
         this.router.navigateByUrl('/signIn-web');
       } else {
@@ -489,7 +515,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
             cancelText: this.translate.instant(
               'universal_operating_cancel'
             ),
-            onCancel: this.turnBack.bind(this),
+            onCancel: this.closeWindow.bind(this),
             onConfirm: this.toEnableAccount.bind(this)
           }
         });
@@ -504,11 +530,14 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
   // 轉導至啟用帳號頁面-kidin-1090513
   toEnableAccount () {
     this.utils.setHideNavbarStatus(false);
+    this.router.navigateByUrl(`/enableAccount`);
+  /* 待測試無問題後刪除此段-kidin-1091229
     if (this.pcView === true) {
       this.router.navigateByUrl(`/enableAccount-web`);
     } else {
       this.router.navigateByUrl(`/enableAccount`);
     }
+  */
 
   }
 

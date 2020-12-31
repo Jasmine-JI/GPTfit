@@ -306,7 +306,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @author kidin-1091106
    */
   getTranslate() {
-    this.translate.get('hollow world').pipe(
+    this.translate.get('hellow world').pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
       this.i18n = {
@@ -630,7 +630,6 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     }
 
     this.createBody.commercePlanExpired = date;
-
     if (this.createBody.commercePlan !== 1 && this.createBody.commercePlan !== 99) {
       this.createBrandSetting.totalCost = +planDatas[this.createBody.commercePlan - 1].cost * +(e as any).value;
     }

@@ -175,7 +175,7 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
 
   // 待多國語系套件載入後再生成翻譯-kidin-1090623
   getTranslate () {
-    this.translate.get('hollow world').subscribe(() => {
+    this.translate.get('hellow world').subscribe(() => {
       this.fitPairTip = this.translate.instant('universal_uiFitpair_fitpairDetailDescription');
     });
 
