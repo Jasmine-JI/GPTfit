@@ -802,14 +802,11 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   toEnableAccount(): void {
     this.utils.setHideNavbarStatus(false);
-    this.router.navigateByUrl(`/enableAccount`);
-    /* 待測試無問題後刪除此段-kidin-1091229
-      if (this.pcView === true) {
-        this.router.navigateByUrl(`/enableAccount-web`);
-      } else {
-        this.router.navigateByUrl(`/enableAccount`);
-      }
-    */
+    if (this.pcView === true) {
+      this.router.navigateByUrl(`/enableAccount-web`);
+    } else {
+      this.router.navigateByUrl(`/enableAccount`);
+    }
 
   }
 
@@ -834,7 +831,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     this.utils.setHideNavbarStatus(false);
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
-
   }
 
 

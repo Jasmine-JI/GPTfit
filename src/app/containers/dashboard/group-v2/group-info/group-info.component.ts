@@ -202,10 +202,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.groupService.getRxEditMode().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
-      if (res === 'complete') {
-        this.upLoadImg(res);
-      }
-
+      this.upLoadImg(res);
       this.uiFlag.openIconImgSelector = false;
       this.uiFlag.openSceneryImgSelector = false;
     });
