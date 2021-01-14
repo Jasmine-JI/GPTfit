@@ -8,7 +8,7 @@ export class AppIdPipe implements PipeTransform {
   transform(value: number, args: string[]): any {
     switch (value) {
       case 0:
-        return 'GPTfit'
+        return 'GPTFit'
       case 1:
         return 'Connect';
       case 2:

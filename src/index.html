@@ -82,10 +82,17 @@
 </head>
 
 <body>
-  <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAxH3XmJqNGBft-D_LPgqAZr0SzqtKMxms">
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAxH3XmJqNGBft-D_LPgqAZr0SzqtKMxms&libraries=visualization" defer></script>
+  <!--
+    <script src="https://api.map.baidu.com/api?v=3.0&ak=OdeRujkUP9qPqweQxnjjWDi75rCYx6I7" defer></script>
+  -->
+  <script>
+    (function(){
+      window.BMAP_PROTOCOL = "https";
+      window.BMap_loadScriptTime = (new Date).getTime();
+    })()
   </script>
-  <script src="https://api.map.baidu.com/api?v=3.0&ak=OdeRujkUP9qPqweQxnjjWDi75rCYx6I7"></script>
+  <script src="https://api.map.baidu.com/getscript?v=3.0&ak=OdeRujkUP9qPqweQxnjjWDi75rCYx6I7&services=&t=20210105095946" defer></script>
   <app-root>
     <div class="app-loading">
       <div class="logo"></div>

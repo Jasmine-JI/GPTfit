@@ -17,7 +17,7 @@ const Highcharts: any = _Highcharts; // 不檢查highchart型態
 @Component({
   selector: 'app-report-content',
   templateUrl: './report-content.component.html',
-  styleUrls: ['./report-content.component.scss']
+  styleUrls: ['./report-content.component.scss', '../sport-report.component.scss']
 })
 export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
 
@@ -61,7 +61,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
   period = '';
   reportStartDate = '';
   reportRangeType = 1;
-  reportCreatedTime = moment().format('YYYY/MM/DD HH:mm');
+  reportCreatedTime = moment().format('YYYY-MM-DD HH:mm');
   fileInfo: any;
   activitiesList: any;
   previewUrl = '';

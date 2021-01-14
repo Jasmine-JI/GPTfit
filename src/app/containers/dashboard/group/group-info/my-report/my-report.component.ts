@@ -130,7 +130,7 @@ export class MyReportComponent implements OnInit, OnDestroy {
     endDate: moment().format('YYYY-MM-DDT23:59:59.999Z')
   };
   startDate: string;
-  reportCreatedTime = moment().format('YYYY/MM/DD HH:mm');
+  reportCreatedTime = moment().format('YYYY-MM-DD HH:mm');
   groupImg: string;
   groupId: string;
   activityLength: number;
@@ -600,8 +600,8 @@ export class MyReportComponent implements OnInit, OnDestroy {
     this.translateService.get('hellow world').subscribe(() => {
       targetDiv.innerHTML = this.translateService.instant('universal_group_myReportOnPeriod', {
         'class': `[<span id="classLink" class="activity-Link">${this.fileInfo.dispName}</span>]`,
-        'startDate': moment(this.selectDate.startDate).format('YYYY/MM/DD'),
-        'endDate': moment(this.selectDate.endDate).format('YYYY/MM/DD'),
+        'startDate': moment(this.selectDate.startDate).format('YYYY-MM-DD'),
+        'endDate': moment(this.selectDate.endDate).format('YYYY-MM-DD'),
         'number': `<span class="fileAmount">${this.activityLength}</span>`
       });
 

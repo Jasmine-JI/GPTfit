@@ -26,7 +26,7 @@ import { HashIdService } from '@shared/services/hash-id.service';
 import { TranslateService } from '@ngx-translate/core';
 import chinaBorderData from './border-data_china';
 import taiwanBorderData from './border-data_taiwan';
-import { ActivityOtherDetailsService } from '@shared/services/activity-other-details.service';
+import { ActivityOtherDetailsService } from '../../services/activity-other-details.service';
 import { debounce } from '@shared/utils/';
 import moment from 'moment';
 import { MatDialog } from '@angular/material/dialog';
@@ -845,7 +845,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         }
         this.infoDate = this.handleDate(this.activityInfo.startTime);
         this.printFileDate = moment(this.activityInfo.startTime).format(
-          'YYYY/MM/DD HH:mm'
+          'YYYY-MM-DD HH:mm'
         );
         this.totalSecond = this.activityInfo.totalSecond;
         this.resolutionSeconds = this.activityInfo.resolutionSeconds;  // 修正心率區間秒數與APP有落差-kidin-1081212(Bug 985)

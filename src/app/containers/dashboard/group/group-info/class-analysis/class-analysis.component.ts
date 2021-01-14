@@ -118,7 +118,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
   tableData = new MatTableDataSource<any>();
   token: string;
   previewUrl: string;
-  reportCreatedTime = moment().format('YYYY/MM/DD HH:mm');
+  reportCreatedTime = moment().format('YYYY-MM-DD HH:mm');
   classTime: number;
   reportStartDate = '';
   reportCategory = '1';

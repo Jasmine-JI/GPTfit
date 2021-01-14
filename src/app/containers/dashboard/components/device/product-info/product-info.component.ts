@@ -138,8 +138,8 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
         this.totalUseTime = this.ConvertTime(res.info.equipmentInfo.totalUseTimeSecond);
       }
 
-      if (res.info.equipmentInfo.totalNumberOfEnable) {
-        this.totalUseKiloMeter = Math.round(res.info.equipmentInfo.totalNumberOfEnable / 1000);
+      if (res.info.equipmentInfo.totalUseMeter) {
+        this.totalUseKiloMeter = Math.round(res.info.equipmentInfo.totalUseMeter / 1000);
       }
 
       if (res.resultCode === 200) {
@@ -439,12 +439,12 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
         sec: number;
     if (second >= 3600) {
       hour = Math.floor(second / 3600);
-      min = Math.floor(second - (hour * 3600));
-      sec = second - hour * 3600 - min * 60;
+      min = Math.floor((second - (hour * 3600)) / 60);
+      sec = second - (hour * 3600) - (min * 60);
       return `${hour}:${min}:${sec}`;
     } else if (second >= 60) {
-      min = Math.floor(second - (hour * 3600));
-      sec = second - hour * 3600 - min * 60;
+      min = Math.floor((second - (hour * 3600)) / 60);
+      sec = second - (hour * 3600) - (min * 60);
       return `0:${min}:${sec}`;
     } else {
       return `0:00:${second}`;

@@ -1,0 +1,47 @@
+<section class="flexCol">
+  <div class="flexRow cardTitle" style="position: relative; justify-content: space-between;">
+    <span class="cardSubtitle">
+      <ng-container *ngIf="uiFlag.showMap">
+        {{ 'universal_activityData_map' | translate }}
+      </ng-container>
+      <ng-container *ngIf="!uiFlag.showMap">
+        {{ 'universal_activityData_dataComparison' | translate }}
+      </ng-container>
+    </span>
+    <i class="icon-svg_web-icon_p1_001-setting settingIcon" (click)="handleShowOptMenu($event)"></i>
+    <div id="map__opt__menu" *ngIf="uiFlag.showMapOpt">
+      <div class="flexRow" *ngIf="mapOpt.showMapSourceSelector">
+        <span class="flexRow radio__selector" (click)="changeMapSource('google')">
+          <span class="radio__btn" [class.radio__btn--active]="mapOpt.mapSource === 'google'"></span>
+          Google
+        </span>
+        <span class="flexRow radio__selector" (click)="changeMapSource('baidu')">
+          <span class="radio__btn" [class.radio__btn--active]="mapOpt.mapSource === 'baidu'"></span>
+          Baidu
+        </span>
+      </div>
+      <div class="flexRow" *ngIf="sysAccessRight <= 20">
+        <span class="flexRow radio__selector" [class.radio__btn--active]="mapOpt.mapKind === 'normal'" (click)="changeMapKind('normal')">
+          <span class="radio__btn"></span>
+          單線圖
+        </span>
+        <span class="flexRow radio__selector" [class.radio__btn--active]="mapOpt.mapKind === 'heat'" (click)="changeMapKind('heat')">
+          <span class="radio__btn"></span>
+          熱力圖
+        </span>
+      </div>
+      <div class="flexCol">
+        <div class="flexCol">
+          <span>{{ 'universal_vocabulary_data' | translate }} 1</span>
+          <div>{{ mapOpt.compareA }}</div>
+        </div>
+        <div class="flexCol">
+          <span>{{ 'universal_vocabulary_data' | translate }} 2</span>
+          <div>{{ mapOpt.compareA }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div #gMap class="map__style" *ngIf="mapOpt.mapSource === 'google'"></div>
+  <div #bMap class="map__style" *ngIf="mapOpt.mapSource === 'baidu'"></div>
+</section>

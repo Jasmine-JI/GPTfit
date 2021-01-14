@@ -54,6 +54,8 @@ import { LifeTrackingComponent } from './life-tracking/life-tracking.component';
 import { LoadingIconComponent } from './loading-icon/loading-icon.component';
 import { ImgCropperComponent } from './image-cropper/image-cropper.component';
 import { PrivacySettingDialogComponent } from './privacy-setting-dialog/privacy-setting-dialog.component';
+import { ActivityDetailComponent } from './activity-detail/activity-detail.component';
+import { MapChartCompareComponent } from './map-chart-compare/map-chart-compare.component';
 
 @NgModule({
   imports: [
@@ -113,7 +115,9 @@ import { PrivacySettingDialogComponent } from './privacy-setting-dialog/privacy-
     LifeTrackingComponent,
     LoadingIconComponent,
     ImgCropperComponent,
-    PrivacySettingDialogComponent
+    PrivacySettingDialogComponent,
+    ActivityDetailComponent,
+    MapChartCompareComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -156,7 +160,9 @@ import { PrivacySettingDialogComponent } from './privacy-setting-dialog/privacy-
     LifeTrackingComponent,
     LoadingIconComponent,
     ImgCropperComponent,
-    PrivacySettingDialogComponent
+    PrivacySettingDialogComponent,
+    ActivityDetailComponent,
+    MapChartCompareComponent
   ]
 })
 export class SharedComponentsModule {}

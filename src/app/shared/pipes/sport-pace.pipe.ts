@@ -7,10 +7,10 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class SportPacePipe implements PipeTransform {
   transform(value: string | number, args: string | number): string | number {
     
-    if (+args === 1 || args === 4 || args === 6) {
+    if (args == 1 || args == 4 || args == 6) {
 
       // 速度為0則配速一律顯示60'00"
-      if (+value === 0) {
+      if (value == 0) {
         return `60'00"`;
       } else {
         let yVal: number;

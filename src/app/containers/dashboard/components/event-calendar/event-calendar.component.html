@@ -41,7 +41,7 @@
   <div fxFlex>
     <mat-card>
       <mat-card-content>
-        <h1>{{selectedDay | date:'yyyy/MM/dd'}}</h1>
+        <h1>{{selectedDay | date:'YYYY-MM-DD'}}</h1>
         <mat-divider></mat-divider>
         <mat-list>
           <mat-list-item *ngFor="let item of selectedItem.notes; let i = index">

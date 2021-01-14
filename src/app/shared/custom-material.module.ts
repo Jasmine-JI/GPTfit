@@ -37,12 +37,12 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 
 export const TW_FORMATS = { // 可以自己定義時間格式，因為原本material設定台灣時間格式就是我們要的XX/XX/XX，所以這個變數沒用到
   parse: {
-    dateInput: 'YYYY/MM/DD'
+    dateInput: 'YYYY-MM-DD'
   },
   display: {
-    dateInput: 'YYYY/MM/DD',
+    dateInput: 'YYYY-MM-DD',
     monthYearLabel: 'YYYY MMM',
-    dateA11yLabel: 'YYYY/MM/DD',
+    dateA11yLabel: 'YYYY-MM-DD',
     monthYearA11yLabel: 'YYYY MMM'
   }
 };

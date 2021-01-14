@@ -728,27 +728,46 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
         this.saveToken(this.newToken);
         this.authService.setLoginStatus(true);
 
-        const N = '\n';
-        this.dialog.open(MessageBoxComponent, {
-          hasBackdrop: true,
-          disableClose: true,
-          data: {
-            title: 'Message',
-            body: `${this.translate.instant('universal_status_success')} ${this.translate.instant('universal_userAccount_signUp')} ${
-              N} ${this.translate.instant('universal_popUpMessage_continueExecution')} ${
-              this.translate.instant('universal_deviceSetting_switch')} ${this.translate.instant('universal_userAccount_account')}?
-            `,
-            confirmText: this.translate.instant(
-              'universal_operating_confirm'
-            ),
-            cancelText: this.translate.instant(
-              'universal_operating_cancel'
-            ),
-            onCancel: this.finishSignup.bind(this),
-            onConfirm: this.toEnableAccount.bind(this)
-          }
+        // 若有目標導向網址，則跳過詢問啟用步驟
+        if (this.authService.backUrl.length > 0) {
+          this.dialog.open(MessageBoxComponent, {
+            hasBackdrop: true,
+            disableClose: true,
+            data: {
+              title: 'Message',
+              body: `${this.translate.instant('universal_status_success')} ${this.translate.instant('universal_userAccount_signUp')}`,
+              confirmText: this.translate.instant(
+                'universal_operating_confirm'
+              ),
+              onConfirm: this.finishSignup.bind(this)
+            }
 
-        });
+          });
+          
+        } else {
+          const N = '\n';
+          this.dialog.open(MessageBoxComponent, {
+            hasBackdrop: true,
+            disableClose: true,
+            data: {
+              title: 'Message',
+              body: `${this.translate.instant('universal_status_success')} ${this.translate.instant('universal_userAccount_signUp')} ${
+                N} ${this.translate.instant('universal_popUpMessage_continueExecution')} ${
+                this.translate.instant('universal_deviceSetting_switch')} ${this.translate.instant('universal_userAccount_account')}?
+              `,
+              confirmText: this.translate.instant(
+                'universal_operating_confirm'
+              ),
+              cancelText: this.translate.instant(
+                'universal_operating_cancel'
+              ),
+              onCancel: this.finishSignup.bind(this),
+              onConfirm: this.toEnableAccount.bind(this)
+            }
+
+          });
+          
+        }
 
       }
 

@@ -1,0 +1,169 @@
+@import 'font.scss';
+@import 'flex-center.scss';
+@import 'transition.scss';
+
+$sky-blue: rgba(17, 166, 235, 1);
+$table-fontsize: 14px;
+$segmentation-color: rgba(100, 100, 100, 1);
+
+.card__section {
+  margin: 10px 0;
+}
+
+.row__to__column {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+#summary__info {
+  position: relative;
+}
+
+#scenery__img {
+  width: 100%;
+  background-color: rgba(225, 225, 225, 1);
+  min-height: 172px;
+}
+
+#active__underLine {
+  height: 2px;
+  width: 60px;
+  background-color: $sky-blue;
+  position: absolute;
+  bottom: 0;
+  @include transitionALL();
+}
+
+.tag__title {
+  display: block;
+  padding: 0 10px;
+  cursor: pointer;
+  min-width: 60px;
+  @include center();
+
+  &:hover {
+    background-color: rgba(240, 240, 240, 1);
+    @include transition(background-color);
+  }
+
+}
+
+.non__active {
+  color: rgba(100, 100, 100, 1);
+}
+
+#sport__type__icon {
+  font-size: 30px;
+  color: rgba(100, 100, 100, 1);
+  border: 2px solid rgba(200, 200, 200, 1);
+  border-radius: 50%;
+  height: 50px;
+  width: 50px;
+}
+
+#summary__info__section {
+  width: 100%;
+  height: 50px;
+  position: absolute;
+  z-index: 1;
+  bottom: 0px;
+  justify-content: space-around;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.summery__block {
+  align-items: center;
+  justify-content: center;
+}
+
+.img__icon {
+  border-radius: 50%;
+  width: 50px;
+}
+
+.small__font {
+  font-size: 12px;
+  color: rgba(150, 150, 150, 1);
+}
+
+.head__name {
+  @include bold-font(30px);
+  color: rgba(115, 115, 115, 1);
+}
+
+.summary__type__title {
+  color: white;
+  font-size: 12px;
+}
+
+.summary__type__content {
+  color: white;
+  @include bold-font(16px);
+}
+
+.table__list__title {
+  @include bold-font($table-fontsize);
+  margin-left: 10px;
+  color: rgba(125, 125, 125, 1);
+}
+
+.table__list__block {
+  background-color: rgba(240, 240, 240, 1);
+  width: 100%;
+  height: fit-content;
+}
+
+.table__list__subtitle {
+  @extend .table__list__title;
+  margin-left: 50px;
+}
+
+.table__list__content {
+  font-size: $table-fontsize;
+  margin-right: 10px;
+}
+
+.table__row {
+  justify-content: space-between;
+  margin: 2px 0;
+}
+
+.segmentation__text {
+  text-align: center;
+}
+
+.segmentation__title {
+  color: $segmentation-color;
+}
+
+.segmentation__unit {
+  font-size: 12px;
+}
+
+.segmentation__row {
+  color: $segmentation-color;
+
+  :nth-child(odd) {
+
+    td {
+      background-color: rgba(235, 235, 235, 1);
+    }
+
+  }
+  
+}
+
+.map__card {
+  max-height: 500px;
+  width: 100%;
+}
+
+/******************************************* media *****************************************/
+@media(max-width: 767) {
+  .row__to__column {
+    flex-direction: column;
+    justify-content: center;
+  }
+
+}

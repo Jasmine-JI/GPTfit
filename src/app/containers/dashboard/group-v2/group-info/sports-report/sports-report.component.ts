@@ -360,7 +360,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   reportEndDate = '';
   period = '';
   reportRangeType = 1;
-  reportCreatedTime = moment().format('YYYY/MM/DD HH:mm');
+  reportCreatedTime = moment().format('YYYY-MM-DD HH:mm');
   hasDataNumber = 0;
   passPrivacyNum = 0;
   activitiesList: Array<any>;
@@ -1077,7 +1077,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
             this.updateUrl('false');
           } else {
             this.nodata = false;
-            this.reportEndDate = moment(this.selectDate.endDate.split('T')[0]).format('YYYY/MM/DD');
+            this.reportEndDate = moment(this.selectDate.endDate.split('T')[0]).format('YYYY-MM-DD');
             this.showReport = true;
             this.updateUrl('true');
             this.sortData(groupReportData);

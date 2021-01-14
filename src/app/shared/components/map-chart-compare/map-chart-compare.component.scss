@@ -1,0 +1,44 @@
+$radio-size: 20px;
+
+.map__style {
+  height: 500px;
+}
+
+#map__opt__menu {
+  position: absolute;
+  z-index: 1;
+  width: 220px;
+  background-color: white;
+  border: 1px solid rgba(150, 150, 150, 1);
+  padding: 10px;
+  right: 0px;
+  top: 30px;
+}
+
+.radio__selector {
+  cursor: pointer;
+  align-items: center;
+  margin-right: 15px;
+
+  &:before {
+    content: '';
+    border: 1px solid black;
+    border-radius: 50%;
+    width: $radio-size;
+    height: $radio-size;
+    margin-right: 5px;
+  }
+
+}
+
+.radio__btn {
+  
+}
+
+.radio__selector--active {
+
+  &:before {
+    background-color: rgba(17, 166, 235, 1);
+  }
+
+}

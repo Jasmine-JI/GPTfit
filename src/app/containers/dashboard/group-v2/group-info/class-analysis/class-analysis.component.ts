@@ -196,7 +196,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     { y: 0, z: '', color: '#f3b353' },
     { y: 0, z: '', color: '#f36953' }
   ];
-  reportCreatedTime = moment().format('YYYY/MM/DD HH:mm');
+  reportCreatedTime = moment().format('YYYY-MM-DD HH:mm');
   HRZoneThree: any = 0;
   classLink: HTMLElement;
   previewUrl: any;
@@ -442,7 +442,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         fuzzyTime: '',
         filterStartTime: moment(this.calender.startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
         filterEndTime: moment(this.calender.endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-        filterSameTime: '2'
+        filterSameTime: this.uiFlag.isDebugMode ? '1' : '2'
       },
       searchRule: {
         activity: '99',
@@ -654,7 +654,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
           this.updateUrl(false);
         } else {
           this.uiFlag.noData = false;
-          this.reportCreatedTime = moment().format('YYYY/MM/DD HH:mm');
+          this.reportCreatedTime = moment().format('YYYY-MM-DD HH:mm');
           this.handleTableData('showPart');
           const infoData = this.activityDetail[0];
           this.fileInfo = infoData.fileInfo;
