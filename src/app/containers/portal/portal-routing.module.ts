@@ -24,6 +24,7 @@ import { GroupInfoComponent } from '../dashboard/group-v2/group-info/group-info.
 import { GroupIntroductionComponent } from '../../containers/dashboard/group-v2/group-info/group-introduction/group-introduction.component';
 import { AppCompressDataComponent } from './components/app-sign/app-compress-data/app-compress-data.component';
 import { AppDestroyAccountComponent } from './components/app-sign/app-destroy-account/app-destroy-account.component';
+import { ActivityDetailComponent } from '../../shared/components/activity-detail/activity-detail.component';
 
 
 const routes: Routes = [
@@ -51,10 +52,17 @@ const routes: Routes = [
         path: 'pair',
         component: DemoQrcodComponent
       },
+      
       {
         path: 'activity/:fileId',
         component: ActivityInfoComponent
       },
+      /*
+      {
+        path: 'activity/:fileId',
+        component: ActivityDetailComponent
+      },
+      */
       {
         path: 'user-profile/:userId',
         component: UserProfileComponent,

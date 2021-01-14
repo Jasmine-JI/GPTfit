@@ -25,6 +25,13 @@ import { SportTypePipe } from './sport-type.pipe';
 import { SportTypeIconPipe } from './sport-type-icon.pipe';
 import { LongTextPipe } from './long-text.pipe';
 import { GroupIdSlicePipe } from './group-id-slice.pipe';
+import { ThousandConversionPipe } from './thousand-conversion.pipe';
+import { SportPaceSibsPipe } from './sport-pace-sibs.pipe';
+import { DistanceSibsPipe } from './distance-sibs.pipe';
+import { WeightSibsPipe } from './weight-sibs.pipe';
+import { SpeedSibsPipe } from './speed-sibs.pipe';
+import { TemperatureSibsPipe } from './temperature-sibs.pipe';
+import { swimPosture } from './swim-posture.pipe';
 
 
 @NgModule({
@@ -57,7 +64,14 @@ import { GroupIdSlicePipe } from './group-id-slice.pipe';
     SportTypePipe,
     SportTypeIconPipe,
     LongTextPipe,
-    GroupIdSlicePipe
+    GroupIdSlicePipe,
+    ThousandConversionPipe,
+    SportPaceSibsPipe,
+    DistanceSibsPipe,
+    WeightSibsPipe,
+    SpeedSibsPipe,
+    TemperatureSibsPipe,
+    swimPosture
   ],
   exports: [
     SexPipe,
@@ -85,7 +99,14 @@ import { GroupIdSlicePipe } from './group-id-slice.pipe';
     SportTypePipe,
     SportTypeIconPipe,
     LongTextPipe,
-    GroupIdSlicePipe
+    GroupIdSlicePipe,
+    ThousandConversionPipe,
+    SportPaceSibsPipe,
+    DistanceSibsPipe,
+    WeightSibsPipe,
+    SpeedSibsPipe,
+    TemperatureSibsPipe,
+    swimPosture
   ]
 })
 export class SharedPipes {}

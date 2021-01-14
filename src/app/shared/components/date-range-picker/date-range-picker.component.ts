@@ -57,7 +57,7 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
             startDate: moment(this.refStartDate),
             endDate: moment(this.refStartDate),
             locale: {
-              format: 'YYYY/MM/DD'
+              format: 'YYYY-MM-DD'
             },
             ranges: {
               [`1 ${this.translate.instant('universal_time_month')}`]:
@@ -86,7 +86,7 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
             startDate: moment(this.defaultDate.startDate),
             endDate: moment(this.defaultDate.startDate),
             locale: {
-              format: 'YYYY/MM/DD'
+              format: 'YYYY-MM-DD'
             },
             showCustomRangeLabel: false,
             alwaysShowCalendars: true
@@ -98,7 +98,7 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
             endDate: moment(this.defaultDate.endDate),
             minYear: 2010,
             locale: {
-              format: 'YYYY/MM/DD'
+              format: 'YYYY-MM-DD'
             },
             showCustomRangeLabel: false,
             alwaysShowCalendars: true
@@ -111,7 +111,7 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
             minYear: 2010,
             maxDate: moment(),
             locale: {
-              format: 'YYYY/MM/DD'
+              format: 'YYYY-MM-DD'
             },
             ranges: {
               [this.translate.instant('universal_time_today')]: [moment(), moment()],

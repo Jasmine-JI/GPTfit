@@ -49,7 +49,7 @@
         </div>
         <div class="flexRow condition__content" *ngIf="uiFlag.readonly">
           <span *ngIf="uiFlag.readonly">預約/發送時間：</span>
-          <span class="media__margin">{{ req.pushMode.timeStamp * 1000 | timeFormat: 'YYYY/MM/DD HH:mm:ss' }}</span>
+          <span class="media__margin">{{ req.pushMode.timeStamp * 1000 | timeFormat: 'YYYY-MM-DD HH:mm:ss' }}</span>
         </div>
         <div class="flexRow condition__content" *ngIf="uiFlag.readonly">
           <span>發送狀態：</span>
@@ -152,7 +152,7 @@
         </div>
         <div class="flexRow condition__content" *ngIf="uiFlag.readonly">
           <span>建立日期：</span>
-          <span class="media__margin">{{ creator.createTimeStamp * 1000 | timeFormat: 'YYYY/MM/DD HH:mm' }}</span>
+          <span class="media__margin">{{ creator.createTimeStamp * 1000 | timeFormat: 'YYYY-MM-DD HH:mm' }}</span>
         </div>
       </section>
       <section class="flexCol">

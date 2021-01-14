@@ -64,7 +64,7 @@ export class ComLifeTrackingComponent implements OnInit {
   period = '';
   dateRangeTranslate = '';
   reportRangeType = 1;
-  reportCreatedTime = moment().format('YYYY/MM/DD HH:mm');
+  reportCreatedTime = moment().format('YYYY-MM-DD HH:mm');
   previewUrl = '';
 
   infoData = {
@@ -372,7 +372,7 @@ export class ComLifeTrackingComponent implements OnInit {
 
     this.reportService.fetchTrackingSummaryArray(body).subscribe(res => {
       if (Array.isArray(res)) {
-        this.reportEndDate = moment(this.selectDate.endDate.split('T')[0]).format('YYYY/MM/DD');
+        this.reportEndDate = moment(this.selectDate.endDate.split('T')[0]).format('YYYY-MM-DD');
         this.reportCompleted = false;
 
         const currentYear = moment().year();

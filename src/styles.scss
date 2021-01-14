@@ -2,6 +2,8 @@
 /* @import "~@angular/material/prebuilt-themes/pink-bluegrey.css"; */
 @import '~@angular/material/prebuilt-themes/indigo-pink.css';
 @import 'transition.scss';
+@import 'font.scss';
+@import 'flex-center.scss';
 
 @font-face {
   font-family: Matamata-Regular;
@@ -12,6 +14,8 @@
   font-family: Eurostile-ExtendedTwo;
   src: url("./assets/fonts/gpt_logo字14511.ttf") format("TrueType");
 }
+
+$sky-blue: rgba(17, 166, 235, 1);
 
 .alpha-text {
   color: #F2850C;
@@ -172,7 +176,7 @@
 .formCue {
   font-size: 14px;
   font-weight: bold;
-  color: #595959;
+  color: #ea5757;
 }
 
 .app-alert {
@@ -672,6 +676,41 @@ a.ban-send:hover {
   justify-content: center;
 }
 
+.cardTitle {
+  border-bottom: 1px solid rgba(150, 150, 150, 1);
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.cardSubtitle {
+  color: $sky-blue;
+  @include bold-font(18px);
+}
+
+.settingIcon {
+  font-size: 24px;
+  cursor: pointer;
+  @include center();
+}
+
+
+/* about font family */
+@font-face {
+  font-family: 'ITC';
+  src: url('/assets/fonts/ITC Avant Garde Gothic Demi.ttf');
+  src: url('/assets/fonts/itc_avant_garde_gothic_demi-webfont.woff'); /*為了IE可吃到此字體*/
+
+  font-weight: 700;
+  font-style: normal;
+}
+.dropdown-menu.dropdown-menu-lang {
+  top: 47px;
+  left: -81px;
+}
+
+
+/************************************* media **************************************/
+
 @media(max-width: 991px) {
   .access-bg {
     margin-top: -63px;
@@ -694,22 +733,6 @@ a.ban-send:hover {
     font-size: 25px;
   }
 }
-
-
-/* about font family */
-@font-face {
-  font-family: 'ITC';
-  src: url('/assets/fonts/ITC Avant Garde Gothic Demi.ttf');
-  src: url('/assets/fonts/itc_avant_garde_gothic_demi-webfont.woff'); /*為了IE可吃到此字體*/
-
-  font-weight: 700;
-  font-style: normal;
-}
-.dropdown-menu.dropdown-menu-lang {
-  top: 47px;
-  left: -81px;
-}
-
 
 /* about print */
 @media print {

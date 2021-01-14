@@ -55,6 +55,7 @@ import { ClassAnalysisComponent } from './group-v2/group-info/class-analysis/cla
 import { ActivityListManageComponent } from './components/official-activity-manage/activity-list-manage/activity-list-manage.component';
 import { EditOfficialActivityComponent } from './components/official-activity-manage/edit-official-activity/edit-official-activity.component';
 import { ParticipantsManageComponent } from './components/official-activity-manage/participants-manage/participants-manage.component';
+import { ActivityDetailComponent } from '../../shared/components/activity-detail/activity-detail.component';
 
 const routes: Routes = [
   {
@@ -221,10 +222,18 @@ const routes: Routes = [
         path: 'activity-list',
         component: MyActivityComponent
       },
+      
       {
         path: 'activity/:fileId',
         component: ActivityInfoComponent
       },
+      
+     /*
+      {
+        path: 'activity/:fileId',
+        component: ActivityDetailComponent
+      },
+      */
       {
         path: 'sport-report',
         component: SportReportComponent

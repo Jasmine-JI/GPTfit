@@ -12,6 +12,47 @@
   novalidate
   (ngSubmit)="saveSettings(settingsForm)"
 >
+  <label class="ala-form__label settings-label" *ngIf="userData.systemAccessRight[0] <= 20">
+    {{'universal_vocabulary_activity' | translate}}
+  </label>
+  <div class="ala-list__item" *ngIf="userData.systemAccessRight[0] <= 20">
+    <label class="ala-form__label settings-item">
+      {{'universal_deviceSetting_unit' | translate}}
+    </label>
+    <div class="settings-control">
+      <select class="form-field"
+        formControlName="unit"
+        (change)="handleUnit($event)"
+      >
+        <option value="0">{{'universal_userProfile_metric' | translate}}</option>
+        <option value="1">{{'universal_userProfile_imperial' | translate}}</option>
+      </select>
+    </div>
+  </div>
+  <div class="ala-list__item" *ngIf="userData.systemAccessRight[0] <= 20">
+    <label class="ala-form__label settings-item">
+      {{'universal_userProfile_stepLength' | translate}}
+    </label>
+    <div class="settings-control">
+      <div style="display: inline-block">
+        <app-form-text
+          [type]="'number'"
+          [content]="stepLength"
+          [maxLength]="32"
+          [disabled]="isSaveUserSettingLoading"
+          [control]="settingsForm"
+          [controlName]="'stepLength'"
+          [max]="unit === 0 ? 255 : +(255 / inch).toFixed(2)"
+          [min]="unit === 0 ? 30 : +(30 / inch).toFixed(2)"
+          (focusout)="handlestepLengthArrange($event)"
+        >
+        </app-form-text>
+      </div>
+      <span style="display: inline-block;margin-left: 10px" *ngIf="unit === 0">cm</span>
+      <span style="display: inline-block;margin-left: 10px" *ngIf="unit === 1">inch</span>
+    </div>
+  </div>
+  <hr *ngIf="userData.systemAccessRight[0] <= 20">
   <label class="ala-form__label settings-label">
     {{'universal_activityData_hr' | translate}}
   </label>
