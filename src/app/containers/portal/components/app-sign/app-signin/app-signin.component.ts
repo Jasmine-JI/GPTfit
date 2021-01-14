@@ -329,7 +329,7 @@ export class AppSigninComponent implements OnInit, AfterViewInit, OnDestroy {
           } else if (res.signIn.counter <= 1) {
             this.router.navigateByUrl('/firstLogin-web');
           } else if (this.authService.backUrl.length > 0) {
-            location.href = this.authService.backUrl; // 為了讓登入的api request payload清除掉
+            location.href = this.authService.backUrl;
           } else {
             location.href = '/dashboard'; // 為了讓登入的api request payload清除掉
           }

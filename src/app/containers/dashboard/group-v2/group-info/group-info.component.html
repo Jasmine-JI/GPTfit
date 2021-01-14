@@ -111,7 +111,11 @@
             [class.warning__btn]="user.joinStatus === 1"
             [class.unattracly__btn]="user.joinStatus === 2"
             [class.can__not__join]="uiFlag.isJoinLoading"
-            *ngIf="((user.joinStatus === 1 || user.joinStatus === 2) && !user.isGroupAdmin) && currentGroupInfo.groupDetail.groupStatus !== 6"
+            *ngIf="
+              ((user.joinStatus === 1 || user.joinStatus === 2) && !user.isGroupAdmin)
+              && currentGroupInfo.groupDetail.groupStatus !== 6
+              && uiFlag.editMode !== 'create'
+            "
           >
             <span *ngIf="!uiFlag.isJoinLoading && user.joinStatus === 1; else loading;" (click)="handleJoinGroup(2)">
               {{ 'universal_group_cancelJoin' | translate }}
@@ -121,7 +125,7 @@
             </span>
           </button>
           <ng-template #loading>
-            <app-loading-icon style="font-size: 8px;" *ngIf="uiFlag.isJoinLoading"></app-loading-icon>
+            <app-loading-icon style="font-size: 8px; pointer-events: none;" *ngIf="uiFlag.isJoinLoading"></app-loading-icon>
           </ng-template>
           <i
             class="icon-svg_web-icon_p1_013-share group__page__btn primary__btn"

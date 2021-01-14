@@ -5,6 +5,7 @@ import { UtilsService } from '@shared/services/utils.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
+import { inch } from '../../../../../shared/models/bs-constant';
 
 @Component({
   selector: 'app-personal-preferences',
@@ -19,7 +20,10 @@ export class PersonalPreferencesComponent implements OnInit, OnChanges {
   isSaveUserSettingLoading = false;
   blockSaveButton = false;
   heartRateBase: number;
+  unit: number;
+  inch = inch;
   @Input() userData: any;
+
   constructor(
     private settingsService: SettingsService,
     private fb: FormBuilder,
@@ -44,6 +48,11 @@ export class PersonalPreferencesComponent implements OnInit, OnChanges {
       (this.settingsForm && this.settingsForm.get('wheelSize').value) || null
     );
   }
+  get stepLength() {
+    return (
+      (this.settingsForm && this.settingsForm.get('stepLength').value) || null
+    );
+  }
 
   ngOnInit(): void {}
 
@@ -54,11 +63,13 @@ export class PersonalPreferencesComponent implements OnInit, OnChanges {
       heartRateResting,
       wheelSize,
       normalBedTime,
-      normalWakeTime
+      normalWakeTime,
+      unit,
+      strideLengthCentimeter
     } = this.userData;
 
     this.heartRateBase = +heartRateBase;
-
+    this.unit = unit;
     this.settingsForm = this.fb.group({
       // 定義表格的預設值
       heartRateBase,
@@ -66,7 +77,9 @@ export class PersonalPreferencesComponent implements OnInit, OnChanges {
       heartRateResting,
       normalBedTime,
       normalWakeTime,
-      wheelSize
+      wheelSize,
+      unit,
+      stepLength: unit === 0 ? strideLengthCentimeter : +(strideLengthCentimeter / inch).toFixed(2)
     });
   }
 
@@ -122,6 +135,27 @@ export class PersonalPreferencesComponent implements OnInit, OnChanges {
   }
 
   /**
+   * 判斷步距是否為合理值
+   * @event focusout
+   * @param e {FocusEvent}
+   * @author kidin-1100106
+   */
+  handlestepLengthArrange(e: FocusEvent) {
+    let inputStepLength = (e as any).target.value;
+    if (this.unit === 1) {
+      inputStepLength = inputStepLength * inch;
+    }
+
+    if (inputStepLength > 255) {
+      inputStepLength = this.unit === 0 ? 255 : +(255 / inch).toFixed(2);
+    } else if (inputStepLength < 30) {
+      inputStepLength = this.unit === 0 ? 30 : +(30 / inch).toFixed(2);
+    }
+
+    this.settingsForm.patchValue({ stepLength: inputStepLength });
+  }
+
+  /**
    * 當使用者按下儲存時，call api更新資料
    * @param { value, valid }
    * @author kidin-1090723
@@ -134,7 +168,9 @@ export class PersonalPreferencesComponent implements OnInit, OnChanges {
         heartRateResting,
         wheelSize,
         normalBedTime,
-        normalWakeTime
+        normalWakeTime,
+        unit,
+        stepLength
       } = value;
 
       const token = this.utils.getToken() || '';
@@ -146,7 +182,9 @@ export class PersonalPreferencesComponent implements OnInit, OnChanges {
           heartRateResting,
           wheelSize,
           normalBedTime,
-          normalWakeTime
+          normalWakeTime,
+          unit,
+          strideLengthCentimeter: this.unit === 0 ? stepLength : stepLength * inch
         }
 
       };
@@ -187,6 +225,18 @@ export class PersonalPreferencesComponent implements OnInit, OnChanges {
    */
   handleHeartRateBase (e: Event) {
     this.heartRateBase = +(e as any).target.value;
+  }
+
+  /**
+   * 取得使用者選擇的單位
+   * @event change
+   * @param e {changeEvent}-0: 公制 1:英制
+   * @author kidin-1100106
+   */
+  handleUnit(e: Event) {
+    let inputStepLength = this.unit === 0 ? +(this.stepLength / inch).toFixed(2) : this.stepLength * inch;
+    this.settingsForm.patchValue({ stepLength: inputStepLength });
+    this.unit = +(e as any).target.value;
   }
 
 }

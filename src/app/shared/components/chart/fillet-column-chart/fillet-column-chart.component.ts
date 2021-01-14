@@ -155,10 +155,10 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
     trendChartOptions['tooltip'] = {
       formatter: function () {
         if (this.series.xAxis.tickInterval === 30 * 24 * 4600 * 1000) {
-          return `${moment(this.x).format('YYYY/MM/DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY/MM/DD')}
+          return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY-MM-DD')}
             <br/>${this.series.name}: ${parseFloat(this.y).toFixed(1)}`;
         } else {
-          return `${moment(this.x).format('YYYY/MM/DD')}
+          return `${moment(this.x).format('YYYY-MM-DD')}
             <br/>${this.series.name}: ${parseFloat(this.y).toFixed(1)}`;
         }
 

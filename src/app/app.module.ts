@@ -13,7 +13,7 @@ import { SigninGuard } from '@shared/guards/signin/signin.guard';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from '@shared/interceptors/token.interceptor';
 import { HttpStatusInterceptor } from '@shared/interceptors/http-status.interceptor';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { NgProgressModule } from '@ngx-progressbar/core';
@@ -25,6 +25,7 @@ import { CommonModule } from '@angular/common';
 import { A3FormatPipe } from './shared/pipes/a3-format.pipe';
 import { GroupIdSlicePipe } from './shared/pipes/group-id-slice.pipe';
 import { LongTextPipe } from './shared/pipes/long-text.pipe';
+import { GraphQLModule } from './graphql.module';
 
 export function startupServiceFactory(startupService: StartupService): Function { return () => startupService.load(); }
 
@@ -48,7 +49,9 @@ export function createTranslateLoader(http: HttpClient) {
         deps: [HttpClient]
       }
     }),
-    NgProgressModule
+    NgProgressModule,
+    GraphQLModule,
+    HttpClientModule
     // ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [

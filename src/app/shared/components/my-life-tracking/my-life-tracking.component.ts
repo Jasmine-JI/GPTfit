@@ -59,21 +59,21 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
   timeType = 0;
   filterStartTime = moment()
     .subtract(6, 'days')
-    .format('YYYY/MM/DD');
-  filterEndTime = moment().format('YYYY/MM/DD');
+    .format('YYYY-MM-DD');
+  filterEndTime = moment().format('YYYY-MM-DD');
   reportStartTime: string;
   reportEndTime: string;
-  today = moment().format('YYYY/MM/DD');
+  today = moment().format('YYYY-MM-DD');
   endWeekDay = moment()
     .add(6 - +moment().format('d'), 'days')
-    .format('YYYY/MM/DD');
+    .format('YYYY-MM-DD');
   startDate = '';
   endDate = moment().format('YYYY-MM-DD');
   reportEndDate = '';
   selectPeriod = 7;
   period = `7 ${this.translate.instant('universal_time_day')}`;
   reportRangeType = 1;
-  reportCreatedTime = moment().format('YYYY/MM/DD HH:mm');
+  reportCreatedTime = moment().format('YYYY-MM-DD HH:mm');
   previewUrl = '';
 
   infoData = {
@@ -854,9 +854,9 @@ export class MyLifeTrackingComponent implements OnInit, OnDestroy {
 
   // 確認週報告日期是否為未來日期-kidin-1090227
   checkReportEndDate () {
-    const checkDate = moment(this.reportEndDate, 'YYYY/MM/DD');
+    const checkDate = moment(this.reportEndDate, 'YYYY-MM-DD');
     if (checkDate.diff(moment(), 'day') > 0) {
-      this.reportEndDate = moment().format('YYYY/MM/DD');
+      this.reportEndDate = moment().format('YYYY-MM-DD');
     }
   }
 

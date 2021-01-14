@@ -1,0 +1,11 @@
+﻿# 宣告各個搜尋引擎不可爬蟲的頁面
+# robots.txt for http://www.gptfit.com/
+
+# User-agent: *
+# Disallow: /enroll/*
+# Disallow: /event/*
+# Disallow: /system/*
+# Disallow: /403
+# Disallow: /404
+
+# Sitemap: https://www.gptfit.com/sitemap.xml

@@ -202,10 +202,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.groupService.getRxEditMode().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
-      if (res === 'complete') {
-        this.upLoadImg(res);
-      }
-
+      this.upLoadImg(res);
       this.uiFlag.openIconImgSelector = false;
       this.uiFlag.openSceneryImgSelector = false;
     });
@@ -725,37 +722,51 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         this.utils.openAlert(errMsg);
         console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
-        const rootGroupDetail = {
-          brandType: this.currentGroupInfo.brandType,
-          classActivityType: [],
-          coachType: '',
-          commerceStatus: 1,
-          expired: false,
-          groupDesc: '',
-          groupIcon: '',
-          groupThemeImgUrl: '',
-          groupId: "0-0-0-0-0-0",
-          groupName: '',
-          groupRootInfo: [null, null],
-          groupStatus: 2,
-          groupVideoUrl: '',
-          rtnMsg: '',
-          selfJoinStatus: 5,
-          shareActivityToMember: {disableAccessRight: Array(0), enableAccessRight: Array(0), switch: "2"},
-          shareAvatarToMember: {disableAccessRight: Array(0), enableAccessRight: Array(0), switch: "1"},
-          shareReportToMember: {disableAccessRight: Array(0), enableAccessRight: Array(0), switch: "2"}
-        }
-
-        this.groupService.saveGroupDetail(rootGroupDetail);
+        this.saveDefaultGroupDetail();
       }
 
     } else {
-      this.user.joinStatus = res.info.selfJoinStatus;
-      this.currentGroupInfo.groupDetail = res.info;
-      this.groupService.saveGroupDetail(res.info);
-      this.checkGroupResLength();
+      
+      if (res.info.groupId === '0-0-0-0-0-0') {
+        this.saveDefaultGroupDetail();
+      } else {
+        this.user.joinStatus = res.info.selfJoinStatus;
+        this.currentGroupInfo.groupDetail = res.info;
+        this.groupService.saveGroupDetail(res.info);
+        this.checkGroupResLength();
+      }
+
     }
 
+  }
+
+  /**
+   * 儲存預設為0-0-0-0-0-0的群組資訊
+   * @author kidin-1100105
+   */
+  saveDefaultGroupDetail() {
+    const rootGroupDetail = {
+      brandType: this.currentGroupInfo.brandType,
+      classActivityType: [],
+      coachType: '',
+      commerceStatus: 1,
+      expired: false,
+      groupDesc: '',
+      groupIcon: '',
+      groupThemeImgUrl: '',
+      groupId: "0-0-0-0-0-0",
+      groupName: '',
+      groupRootInfo: [null, null],
+      groupStatus: 2,
+      groupVideoUrl: '',
+      rtnMsg: '',
+      selfJoinStatus: 5,
+      shareActivityToMember: {disableAccessRight: Array(0), enableAccessRight: Array(0), switch: "2"},
+      shareAvatarToMember: {disableAccessRight: Array(0), enableAccessRight: Array(0), switch: "1"},
+      shareReportToMember: {disableAccessRight: Array(0), enableAccessRight: Array(0), switch: "2"}
+    }
+
+    this.groupService.saveGroupDetail(rootGroupDetail);
   }
 
   /**

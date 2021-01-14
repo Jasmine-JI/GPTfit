@@ -5,7 +5,6 @@ import {
   EventEmitter,
   OnDestroy
 } from '@angular/core';
-import { ViewEncapsulation } from '@angular/core';
 import * as _Highcharts from 'highcharts';
 import { ReportService } from '../../services/report.service';
 
@@ -14,8 +13,7 @@ const Highcharts: any = _Highcharts; // 不檢查highchart型態
 @Component({
   selector: 'app-sport-report',
   templateUrl: './sport-report.component.html',
-  styleUrls: ['./sport-report.component.scss'],
-  encapsulation: ViewEncapsulation.None,
+  styleUrls: ['./sport-report.component.scss']
 })
 export class SportReportComponent implements OnInit, OnDestroy {
 

@@ -416,7 +416,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
           if (this.accountInfo.type === 1) {
             const msgBody = this.translate.instant('universal_userAccount_sendCaptchaChackEmail');
-            this.showMsgBox(msgBody, 'turnBack');
+            this.showMsgBox(msgBody, 'enableSuccess');
           } else {
             const msgBody = `${this.logMessage.enable} ${this.logMessage.success}`;
             this.showMsgBox(msgBody, 'enableSuccess');
@@ -585,9 +585,9 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
       window.onunload = this.refreshParent;
       // 若無法關閉瀏覽器則導回登入頁
       if (this.pcView === true) {
-        this.router.navigateByUrl('/signIn-web');
+        this.router.navigateByUrl(this.utils.getToken() ? '/firstLogin-web' : '/signIn-web');
       } else {
-        this.router.navigateByUrl('/signIn');
+        this.router.navigateByUrl(this.utils.getToken() ? '/firstLogin' : '/signIn');
       }
 
     }
