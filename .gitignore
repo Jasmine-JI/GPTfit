@@ -47,7 +47,7 @@ testem.log
 Thumbs.db
 
 # robots.txt（備份在src/environment）
-robots.txt
+/src/robots.txt
 
 # sitemap.xml（備份在src/environment）
 sitemap.xml

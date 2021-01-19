@@ -20,7 +20,8 @@
             "assets": [
               "src/assets",
               "src/favicon.ico",
-              "src/manifest.json"
+              "src/manifest.json",
+              "src/robots.txt"
             ],
             "styles": [
               "src/icon.scss",
@@ -223,7 +224,7 @@
               "src/favicon.ico",
               "src/manifest.json",
               "sitemap.xml",
-              "src/robots.txt"
+              "robots.txt"
             ]
           }
         },

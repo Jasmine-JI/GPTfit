@@ -404,7 +404,7 @@ app.use(function (req, res, next) {
   const allowHeaders = ['X-Requested-With', 'content-type', 'Authorization',
     'deviceID', 'charset', 'language', 'Accept', 'deviceType', 'deviceName',
     'deviceOSVersion', 'appVersionCode', 'appVersionName', 'regionCode', 'appName',
-     'equipmentSN', 'Accept-Encoding'
+     'equipmentSN', 'Accept-Encoding', 'utcZone'
   ];
   res.setHeader('Access-Control-Allow-Headers', allowHeaders.join(','));
   // res.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept, token, Authorization, X-Auth-Token, X-XSRF-TOKEN, X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Access-Control-Allow-Headers");

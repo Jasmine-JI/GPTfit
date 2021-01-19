@@ -397,8 +397,7 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
         window.open(`https://www.attacusfitness.com/products/${lang}/id/3`, '_blank', 'noopener=yes,noreferrer=yes');
         break;
       case 3:
-        this.uiFlag.page = 'application';
-        window.scrollTo({top: 0, behavior: 'smooth'});
+        this.switchPage('application');
         break;
       case 4:
         window.open(`https://www.attacusfitness.com/contact/lang/${lang}`, '_blank', 'noopener=yes,noreferrer=yes');

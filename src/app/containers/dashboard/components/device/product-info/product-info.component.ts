@@ -197,28 +197,18 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
 
   // 新增西班牙語-kidin-1081106
   handleProductInfo(lang) {
-    if (lang === 'zh-cn') {
-      this.productInfo = this.deviceInfo.informations['relatedLinks_zh-CN'];
-    } else if (lang === 'en-us') {
-      this.productInfo = this.deviceInfo.informations['relatedLinks_en-US'];
-    } else if (lang === 'es-es' && this.deviceInfo.informations['relatedLinks_es-ES']) {
-      this.productInfo = this.deviceInfo.informations['relatedLinks_es-ES'];
-    } else {
-      this.productInfo = this.deviceInfo.informations['relatedLinks_zh-TW'];
-    }
+    const lanArr = lang.split('-'),
+          formatLang = `${lanArr[0].toLowerCase()}-${lanArr[1].toUpperCase()}`;
+
+    this.productInfo = this.deviceInfo.informations[`relatedLinks_${formatLang}`] || [];
   }
 
   // 新增西班牙語-kidin-1081106
   handleProductManual(lang) {
-    if (lang === 'zh-cn') {
-      this.productManual = this.deviceInfo.informations['manual_zh-CN'];
-    } else if (lang === 'en-us') {
-      this.productManual = this.deviceInfo.informations['manual_en-US'];
-    } else if (lang === 'es-es' && this.deviceInfo.informations['manual_es-ES']) {
-      this.productManual = this.deviceInfo.informations['manual_es-ES'];
-    } else {
-      this.productManual = this.deviceInfo.informations['manual_zh-TW'];
-    }
+    const lanArr = lang.split('-'),
+          formatLang = `${lanArr[0].toLowerCase()}-${lanArr[1].toUpperCase()}`;
+
+    this.productManual = this.deviceInfo.informations[`manual_${formatLang}`] || [];
   }
 
   swithMainApp() {

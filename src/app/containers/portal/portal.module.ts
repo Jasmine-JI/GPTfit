@@ -5,7 +5,6 @@ import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
 
 import { PortalRoutingModule } from './portal-routing.module';
 import { PortalComponent } from './portal.component';
-import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
 import { SharedPipes } from '@shared/pipes/shared-pipes';
 import { MapInfoComponent } from './components/map-info/map-info.component';
 import { MapGPXService } from '@shared/services/map-gpx.service';
@@ -96,7 +95,6 @@ import { AppDestroyAccountComponent } from './components/app-sign/app-destroy-ac
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   declarations: [
     PortalComponent,
-    LeaderboardComponent,
     MapInfoComponent,
     DemoQrcodComponent,
     UserProfileComponent,
