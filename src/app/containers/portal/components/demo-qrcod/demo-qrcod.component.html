@@ -22,7 +22,7 @@
         title="{{'universal_deviceSetting_productRegistration' | translate}}"
         *ngIf="isShowBindingBtn"
         (click)="goBinding()"
-        style="color: #26abe3;font-weight: bold; font-size: 20px;"
+        style="color: #26abe3;font-weight: bold; font-size: 14px;"
       >
         {{'universal_deviceSetting_productRegistration' | translate}}
       </button>
@@ -30,7 +30,7 @@
         title="Fit Pair"
         *ngIf="isShowFitPairBtn && isFitPaired"
         (click)="fitPair('2')"
-        style="font-size: 20px;"
+        style="font-size: 14px;"
       >
         {{'universal_uiFitpair_undoFitpair' | translate }}
       </button>
@@ -38,7 +38,7 @@
         title="Fit Pair"
         *ngIf="isShowFitPairBtn && !isFitPaired"
         (click)="fitPair('1')"
-        style="font-size: 20px;"
+        style="font-size: 14px;"
       >
         Fit Pair
       </button>

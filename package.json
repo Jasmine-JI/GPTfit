@@ -14,7 +14,7 @@
     "build": "ng build",
     "preweb-build": "npm run pm2-kill",
     "pretst-build": "npm run pm2-kill && find dist/* -type l -delete",
-    "preuat-build": "npm run pm2-kill && cp src/environments/robots.uat.txt robots.txt && find dist/* -type l -delete",
+    "preuat-build": "npm run pm2-kill && cp src/environments/robots.uat.txt src/robots.txt && find dist/* -type l -delete",
     "preprod-build": "npm run pm2-kill && find dist/* -type l -delete",
     "postweb-build": "npm run bash",
     "posttst-build": "npm run bash",

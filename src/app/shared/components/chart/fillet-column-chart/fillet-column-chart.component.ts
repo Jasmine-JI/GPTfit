@@ -1,9 +1,10 @@
 import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
-
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
 import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
@@ -67,6 +68,7 @@ class ChartOptions {
   styleUrls: ['./fillet-column-chart.component.scss']
 })
 export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy {
+  private ngUnsubscribe = new Subject;
 
   tooltipTitle = '';
   dateList = [];
@@ -90,83 +92,88 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
   }
 
   initChart () {
-    let trendDataset;
-    let chartData = [];
-    switch (this.chartName) {
-      case 'Calories':
-        for (let i = 0; i < this.data.date.length; i++) {
-          if (this.data.calories[i] >= 0) {
-            chartData.push({
-              x: this.data.date[i],
-              y: this.data.calories[i],
-            });
+    this.translate.get('hellow world').pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      let trendDataset;
+      let chartData = [];
+      switch (this.chartName) {
+        case 'Calories':
+          for (let i = 0; i < this.data.date.length; i++) {
+            if (this.data.calories[i] >= 0) {
+              chartData.push({
+                x: this.data.date[i],
+                y: this.data.calories[i],
+              });
+            }
           }
+
+          this.tooltipTitle = this.translate.instant('universal_userProfile_calories');
+
+          break;
+        case 'FitTime':
+          this.createDateList();
+
+          const newData = [];
+          let idx = 0;
+          for (let i = 0; i < this.dateList.length; i++) {
+            if (this.dateList[i] === this.data.date[idx]) {
+              newData.push(this.data.fitTimeList[idx]);
+              idx++;
+            } else {
+              newData.push(0);
+            }
+          }
+          chartData = newData.map((_item, index) => {
+            return {
+              x: this.dateList[index],
+              y: _item / 60
+            };
+          });
+
+          this.tooltipTitle = this.translate.instant('universal_userProfile_fitTime');
+
+          break;
+      }
+
+      trendDataset = [
+        {
+          name: this.tooltipTitle,
+          data: chartData,
+          showInLegend: false,
+          color: this.data.colorSet
         }
+      ];
 
-        this.tooltipTitle = this.translate.instant('universal_userProfile_calories');
+      const trendChartOptions = new ChartOptions(trendDataset);
 
-        break;
-      case 'FitTime':
-        this.createDateList();
+      // 設定圖表x軸時間間距-kidin-1090204
+      if (this.dateRange === 'day' && this.data.date.length <= 7) {
+        trendChartOptions['xAxis'].tickInterval = 24 * 3600 * 1000;  // 間距一天
+      } else if (this.dateRange === 'day' && this.data.date.length > 7) {
+        trendChartOptions['xAxis'].tickInterval = 7 * 24 * 3600 * 1000;  // 間距一週
+      } else {
+        trendChartOptions['xAxis'].tickInterval = 30 * 24 * 4600 * 1000;  // 間距一個月
+      }
 
-        const newData = [];
-        let idx = 0;
-        for (let i = 0; i < this.dateList.length; i++) {
-          if (this.dateList[i] === this.data.date[idx]) {
-            newData.push(this.data.fitTimeList[idx]);
-            idx++;
+      // 設定浮動提示框顯示格式-kidin-1090204
+      trendChartOptions['tooltip'] = {
+        formatter: function () {
+          if (this.series.xAxis.tickInterval === 30 * 24 * 4600 * 1000) {
+            return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY-MM-DD')}
+              <br/>${this.series.name}: ${parseFloat(this.y).toFixed(1)}`;
           } else {
-            newData.push(0);
+            return `${moment(this.x).format('YYYY-MM-DD')}
+              <br/>${this.series.name}: ${parseFloat(this.y).toFixed(1)}`;
           }
-        }
-        chartData = newData.map((_item, index) => {
-          return {
-            x: this.dateList[index],
-            y: _item / 60
-          };
-        });
 
-        this.tooltipTitle = this.translate.instant('universal_userProfile_fitTime');
-
-        break;
-    }
-
-    trendDataset = [
-      {
-        name: this.tooltipTitle,
-        data: chartData,
-        showInLegend: false,
-        color: this.data.colorSet
-      }
-    ];
-
-    const trendChartOptions = new ChartOptions(trendDataset);
-
-    // 設定圖表x軸時間間距-kidin-1090204
-    if (this.dateRange === 'day' && this.data.date.length <= 7) {
-      trendChartOptions['xAxis'].tickInterval = 24 * 3600 * 1000;  // 間距一天
-    } else if (this.dateRange === 'day' && this.data.date.length > 7) {
-      trendChartOptions['xAxis'].tickInterval = 7 * 24 * 3600 * 1000;  // 間距一週
-    } else {
-      trendChartOptions['xAxis'].tickInterval = 30 * 24 * 4600 * 1000;  // 間距一個月
-    }
-
-    // 設定浮動提示框顯示格式-kidin-1090204
-    trendChartOptions['tooltip'] = {
-      formatter: function () {
-        if (this.series.xAxis.tickInterval === 30 * 24 * 4600 * 1000) {
-          return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY-MM-DD')}
-            <br/>${this.series.name}: ${parseFloat(this.y).toFixed(1)}`;
-        } else {
-          return `${moment(this.x).format('YYYY-MM-DD')}
-            <br/>${this.series.name}: ${parseFloat(this.y).toFixed(1)}`;
         }
 
-      }
+      };
 
-    };
+      this.createChart(trendChartOptions);
+    });
 
-    this.createChart(trendChartOptions);
   }
 
   // 根據搜尋期間，列出日期清單供圖表使用-kidin-1090220
@@ -218,6 +225,9 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
 
   }
 
-  ngOnDestroy () {}
+  ngOnDestroy () {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
 
 }

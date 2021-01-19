@@ -639,7 +639,7 @@ app.use(function (req, res, next) {
   const allowHeaders = ['X-Requested-With', 'content-type', 'Authorization',
     'deviceID', 'charset', 'language', 'Accept', 'deviceType', 'deviceName',
     'deviceOSVersion', 'appVersionCode', 'appVersionName', 'regionCode', 'appName',
-    'equipmentSN', 'Accept-Encoding'
+    'equipmentSN', 'Accept-Encoding', 'utcZone'
   ];
   res.setHeader('Access-Control-Allow-Headers', allowHeaders.join(','));
 

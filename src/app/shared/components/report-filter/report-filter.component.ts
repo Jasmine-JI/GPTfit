@@ -281,6 +281,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
 
         break;
       case 3:
+        this.scrollToChildPageTop();
         if (this.date.openSelector !== 'calendarPeriod') {
           this.date.openSelector = 'calendarPeriod';
           const dropList = this.calendarPeriod.nativeElement,
@@ -298,6 +299,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         break;
       case 4:
         this.date.type = 'custom';
+        this.scrollToChildPageTop();
         if (this.date.openSelector !== 'custom') {
           this.date.openSelector = 'custom';
         } else {
@@ -308,6 +310,18 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     }
 
     this.changeActiveBar();
+  }
+
+  /**
+   * 當使用者點擊功能列時，將功能列捲動到上面避免日曆被遮住
+   * @author kidin-1100119
+   */
+  scrollToChildPageTop() {
+      const listEle = this.filterSection.nativeElement,
+            listEleTop = listEle.offsetTop,
+            mainBodyEle = document.querySelector('.main-body');
+
+      mainBodyEle.scrollTo({top: listEleTop});
   }
 
   /**

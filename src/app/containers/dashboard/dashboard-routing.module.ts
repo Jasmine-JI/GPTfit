@@ -6,8 +6,6 @@ import { CertificateComponent } from './components/certificate/certificate.compo
 import { CertificatePreviewComponent } from './components/certificate-preview/certificate-preview.component';
 import { EventCalendarComponent } from './components/event-calendar/event-calendar.component';
 import { EnrollPreviewComponent } from './components/enroll-preview/enroll-preview.component';
-import { LeaderboardSettingsComponent } from './components/leaderboard-settings/leaderboard-settings.component';
-import { RealTimeLeaderboardComponent } from './components/real-time-leaderboard/real-time-leaderboard.component';
 import { DbMaintainComponent } from './components/db-maintain/db-maintain.component';
 import { DeviceLogComponent } from './components/device-log/device-log.component';
 import { DeviceLogDetailComponent } from './components/device-log-detail/device-log-detail.component';
@@ -82,10 +80,6 @@ const routes: Routes = [
         canActivate: [DashboardGuard]
       },
       {
-        path: 'real-time-leaderboard',
-        component: RealTimeLeaderboardComponent
-      },
-      {
         path: 'db',
         component: DbMaintainComponent
       },
@@ -120,11 +114,6 @@ const routes: Routes = [
       {
         path: 'system/event-calendar',
         component: EventCalendarComponent,
-        canActivate: [DashboardGuard]
-      },
-      {
-        path: 'system/leaderboard-settings',
-        component: LeaderboardSettingsComponent,
         canActivate: [DashboardGuard]
       },
       {

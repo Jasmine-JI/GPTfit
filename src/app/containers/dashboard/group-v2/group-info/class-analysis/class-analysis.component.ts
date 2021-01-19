@@ -1138,7 +1138,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     };
     const classCaloriesOptions = new ChartOptions(classCaloriesDataset);
     classCaloriesOptions['tooltip'] = {
-      pointFormat: `${this.translate.instant('universal_adjective_total')}{point.y}人`
+      pointFormat: `${this.translate.instant('universal_activityData_people')} {point.y}`
     };
     classCaloriesOptions['title'].align = 'center';
     classCaloriesOptions['title'].x = 0;

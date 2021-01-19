@@ -8,6 +8,7 @@ import {
 import { UtilsService } from '../services/utils.service';
 import { Observable } from 'rxjs';
 import { version } from '../version';
+import moment from 'moment';
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
@@ -34,7 +35,11 @@ export class TokenInterceptor implements HttpInterceptor {
       appVersion = version.develop;
     }
 
-    const token = this.utils.getToken() || '';
+    const token = this.utils.getToken() || '',
+          // 取瀏覽器語系若為日語，則只會回'ja'
+          regionCode = navigator.language.toUpperCase().split('-')[1]
+            || navigator.language.toUpperCase().split('-')[0]
+            || 'US';
 
     let newRequest = request.clone({
       setHeaders: {
@@ -49,8 +54,10 @@ export class TokenInterceptor implements HttpInterceptor {
         appVersionCode: appVersion,
         appVersionName: appVersion,
         language: this.utils.getLocalStorageObject('locale') || 'en-us',
-        regionCode: 'TW'
+        regionCode,
+        utcZone: moment().format('Z')
       }
+
     });
 
     if (token) {
