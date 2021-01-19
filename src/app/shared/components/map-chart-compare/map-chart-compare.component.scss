@@ -1,4 +1,7 @@
+@import 'flex-center.scss';
+
 $radio-size: 20px;
+$radio-active-size: 14px;
 
 .map__style {
   height: 500px;
@@ -19,26 +22,48 @@ $radio-size: 20px;
   cursor: pointer;
   align-items: center;
   margin-right: 15px;
-
-  &:before {
-    content: '';
-    border: 1px solid black;
-    border-radius: 50%;
-    width: $radio-size;
-    height: $radio-size;
-    margin-right: 5px;
-  }
-
 }
 
 .radio__btn {
-  
+  @include center();
+  border: 1px solid black;
+  border-radius: 50%;
+  width: $radio-size;
+  height: $radio-size;
+  margin-right: 5px;
 }
 
-.radio__selector--active {
+.radio__btn--active {
 
   &:before {
+    content: '';
+    width: $radio-active-size;
+    height: $radio-active-size;
+    border-radius: 50%;
     background-color: rgba(17, 166, 235, 1);
   }
 
+}
+
+.drop__menu {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  border: 1px solid black;
+  height: 30px;
+  margin-top: 5px;
+  padding: 5px;
+  cursor: pointer;
+
+  &:after {
+    content: '';
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 10px solid black;
+  }
+
+}
+
+.selector__section {
+  margin: 5px 0;
 }

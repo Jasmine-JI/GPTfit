@@ -22,10 +22,11 @@ export class SignupService {
    * @param body {any}-api 所需參數
    * @param ip {string}-使用者ip位置
    */
-  fetchRegister (body: any, ip: string) {
+  fetchRegister (body: any, ip: string, regionCode: string) {
     const httpOptions = {
       headers: new HttpHeaders({
-        'remoteAddr': `${ip}`,
+        'remoteAddr': ip,
+        'regionCode': regionCode || 'US'
       })
     };
 
@@ -42,7 +43,7 @@ export class SignupService {
   fetchEnableAccount (body: any, ip: string) {
     const httpOptions = {
       headers: new HttpHeaders({
-        'remoteAddr': `${ip}`,
+        'remoteAddr': ip,
       })
     };
 
@@ -59,7 +60,7 @@ export class SignupService {
   fetchCaptcha (body: any, ip: string) {
     const httpOptions = {
       headers: new HttpHeaders({
-        'remoteAddr': `${ip}`,
+        'remoteAddr': ip,
       })
     };
 
@@ -76,7 +77,7 @@ export class SignupService {
   fetchQrcodeLogin (body: any, ip: string) {
     const httpOptions = {
       headers: new HttpHeaders({
-        'remoteAddr': `${ip}`,
+        'remoteAddr': ip,
       })
     };
 

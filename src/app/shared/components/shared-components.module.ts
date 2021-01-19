@@ -56,6 +56,7 @@ import { ImgCropperComponent } from './image-cropper/image-cropper.component';
 import { PrivacySettingDialogComponent } from './privacy-setting-dialog/privacy-setting-dialog.component';
 import { ActivityDetailComponent } from './activity-detail/activity-detail.component';
 import { MapChartCompareComponent } from './map-chart-compare/map-chart-compare.component';
+import { TrinomialChartComponent } from './chart/trinomial-chart/trinomial-chart.component';
 
 @NgModule({
   imports: [
@@ -117,7 +118,8 @@ import { MapChartCompareComponent } from './map-chart-compare/map-chart-compare.
     ImgCropperComponent,
     PrivacySettingDialogComponent,
     ActivityDetailComponent,
-    MapChartCompareComponent
+    MapChartCompareComponent,
+    TrinomialChartComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -162,7 +164,8 @@ import { MapChartCompareComponent } from './map-chart-compare/map-chart-compare.
     ImgCropperComponent,
     PrivacySettingDialogComponent,
     ActivityDetailComponent,
-    MapChartCompareComponent
+    MapChartCompareComponent,
+    TrinomialChartComponent
   ]
 })
 export class SharedComponentsModule {}

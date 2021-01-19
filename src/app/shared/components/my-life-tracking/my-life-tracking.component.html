@@ -4,7 +4,7 @@
   </span>
   <app-report-filter class="card__section" *ngIf="!isPreviewMode"></app-report-filter>
   <section class="card__section">
-    <div style="background-color: white;">
+    <div style="background-color: white; padding: 0 10px;">
       <ng-container *ngIf="isLoading" style="display:flex;justify-content: center;align-items: center; width:100%;">
         <mat-spinner style="z-index: 3; margin-top: 30px; position: absolute; left: 50%;"></mat-spinner>
         <div class="whiteMask">
@@ -385,10 +385,10 @@
             </div>
           </div>
         </div>
-        <div *ngIf="isPreviewMode && !isLoading" class="printMark">
-          GPTFit
-        </div>
       </ng-container>
+    </div>
+    <div *ngIf="isPreviewMode && !isLoading" class="printMark">
+      GPTFit
     </div>
   </section>
 </div>

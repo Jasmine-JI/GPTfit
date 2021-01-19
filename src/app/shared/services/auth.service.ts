@@ -67,7 +67,6 @@ export class AuthService {
     this.currentUser$.next(null);
     this.hadAlertEnableAccount = false;
     this.utils.removeToken();
-    this.backUrl = '';
   }
 
   setLoginStatus(status) {

@@ -23,8 +23,6 @@ import { MsgDialogComponent } from './components/msg-dialog/msg-dialog.component
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedPipes } from '../../shared/pipes/shared-pipes';
-import { LeaderboardSettingsComponent } from './components/leaderboard-settings/leaderboard-settings.component';
-import { RealTimeLeaderboardComponent } from './components/real-time-leaderboard/real-time-leaderboard.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DbMaintainComponent } from './components/db-maintain/db-maintain.component';
 import { DbResultDialogComponent } from './components/db-result-dialog/db-result-dialog.component';
@@ -169,8 +167,6 @@ import { PushMessageListComponent } from './components/push-message/push-message
     EventCalendarComponent,
     EnrollPreviewComponent,
     MsgDialogComponent,
-    LeaderboardSettingsComponent,
-    RealTimeLeaderboardComponent,
     DbMaintainComponent,
     DbResultDialogComponent,
     DeviceLogComponent,

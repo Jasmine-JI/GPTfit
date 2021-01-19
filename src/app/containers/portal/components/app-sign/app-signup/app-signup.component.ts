@@ -47,6 +47,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   needImgCaptcha = false;
   newToken: string;
   ip = '';
+  countryCode = null;
   pcView = false;
   agreeTerms = false;
   termsText = '';
@@ -348,8 +349,9 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1090521
    */
   getClientIpaddress(): void {
-    this.getClientIp.requestJsonp('https://api.ipify.org', 'format=jsonp', 'callback').subscribe(res => {
+    this.getClientIp.requestJsonp('https://get.geojs.io/v1/ip/country.js', 'format=jsonp', 'callback').subscribe(res => {
       this.ip = (res as any).ip;
+      this.countryCode = (res as any).country;
     });
 
   }
@@ -666,7 +668,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
       body.mobileNumber = this.signupData.phone;
     }
 
-    this.signupService.fetchRegister(body, this.ip).subscribe(res => {
+    this.signupService.fetchRegister(body, this.ip, this.countryCode).subscribe(res => {
 
       if (res.processResult && res.processResult.resultCode !== 200) {
 

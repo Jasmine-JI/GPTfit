@@ -120,30 +120,19 @@ export class DemoQrcodComponent implements OnInit {
     this.imgClass =
       width > height ? 'product-photo--portrait' : 'product-photo--landscape';
   }
-  // 新增西班牙語-kidin-1081106
+
   handleProductInfo(lang) {
-    if (lang === 'zh-cn') {
-      this.productInfo = this.deviceInfo['relatedLinks_zh-CN'];
-    } else if (lang === 'en-us') {
-      this.productInfo = this.deviceInfo['relatedLinks_en-US'];
-    } else if (lang === 'es-es') {
-      this.productInfo = this.deviceInfo['relatedLinks_es-ES'];
-    } else {
-      this.productInfo = this.deviceInfo['relatedLinks_zh-TW'];
-    }
+    const lanArr = lang.split('-'),
+          formatLang = `${lanArr[0].toLowerCase()}-${lanArr[1].toUpperCase()}`;
+
+    this.productInfo = this.deviceInfo[`relatedLinks_${formatLang}`] || [];
   }
 
-  // 新增西班牙語-kidin-1081106
   handleProductManual(lang) {
-    if (lang === 'zh-cn') {
-      this.productManual = this.deviceInfo['manual_zh-CN'];
-    } else if (lang === 'en-us') {
-      this.productManual = this.deviceInfo['manual_en-US'];
-    } else if (lang === 'es-es') {
-      this.productManual = this.deviceInfo['manual_es-ES'];
-    } else {
-      this.productManual = this.deviceInfo['manual_zh-TW'];
-    }
+    const lanArr = lang.split('-'),
+          formatLang = `${lanArr[0].toLowerCase()}-${lanArr[1].toUpperCase()}`;
+
+    this.productManual = this.deviceInfo[`manual_${formatLang}`] || [];
   }
 
   handleUpload() {
