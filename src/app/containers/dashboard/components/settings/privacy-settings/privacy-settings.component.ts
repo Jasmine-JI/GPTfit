@@ -121,7 +121,7 @@ export class PrivacySettingsComponent implements OnInit, OnChanges {
    * @author kidin-1090723
    */
   getTranslate () {
-    this.translate.get('hollow world').subscribe(() => {
+    this.translate.get('hellow world').subscribe(() => {
       this.i18n = {
         gym: this.translate.instant('universal_group_gym'),
         description: this.translate.instant('universal_privacy_addSportsPrivacyStatement'),

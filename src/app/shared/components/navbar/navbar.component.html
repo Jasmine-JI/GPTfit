@@ -74,7 +74,9 @@
         *ngIf="!isShowResetPwd"
         (click)="chooseNavItem(4)"
       >
+      <!--  
         <a class="nav-link" *ngIf="!noActivity">官方活動頁面</a>
+      -->
       </li>
       <li class="nav-item" *ngIf="isShowResetPwd">
         <a class="nav-link" (click)="reloadPage()">Reset Password</a>

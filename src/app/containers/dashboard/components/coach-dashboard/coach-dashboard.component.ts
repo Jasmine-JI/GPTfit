@@ -315,7 +315,7 @@ export class CoachDashboardComponent
       this.handleLessonInfo(demoLessonInfo);
 
       this.currentMemberNum = 6;
-      this.demoTime = moment().format('YYYY/MM/DD Ahh:mm');
+      this.demoTime = moment().format('YYYY-MM-DD Ahh:mm');
       this.getDemoData(type);
     }
     const hrOptions: any = {

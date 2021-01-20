@@ -131,10 +131,6 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
           this.target = 8;
         } else if (_val.url.indexOf('/dashboard/system/event') > -1) {
           this.target = 7;
-        } else if (
-          _val.url.indexOf('/dashboard/system/leaderboard-settings') > -1
-        ) {
-          this.target = 9;
         } else if (_val.url.indexOf('/dashboard/system/all-group-list') > -1) {
           this.target = 11;
         } else if (
@@ -334,7 +330,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1090513
    */
   toEnableAccount(): void {
-    this.router.navigateByUrl(`/enableAccount-web`);
+    window.open(`/enableAccount`, '', 'height=700,width=375,resizable=no');
   }
 
   /**

@@ -47,6 +47,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
   needImgCaptcha = false;
   newToken: string;
   ip = '';
+  countryCode = null;
   pcView = false;
   agreeTerms = false;
   termsText = '';
@@ -141,7 +142,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1090717
    */
   getTranslate(): void {
-    this.translate.get('hollow world').pipe(
+    this.translate.get('hellow world').pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
       this.i18n = {
@@ -247,7 +248,9 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1091222
    */
   getUrlLanguageString(str: string) {
-    if (str.indexOf('l=') > -1) {
+    if (navigator && navigator.language) {
+      return navigator.language.toLowerCase();
+    } else if (str.indexOf('l=') > -1) {
       const tempStr = str.split('l=')[1];
       let lan: string;
       if (tempStr.indexOf('&') > -1) {
@@ -346,8 +349,9 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    * @author kidin-1090521
    */
   getClientIpaddress(): void {
-    this.getClientIp.requestJsonp('https://api.ipify.org', 'format=jsonp', 'callback').subscribe(res => {
+    this.getClientIp.requestJsonp('https://get.geojs.io/v1/ip/country.js', 'format=jsonp', 'callback').subscribe(res => {
       this.ip = (res as any).ip;
+      this.countryCode = (res as any).country;
     });
 
   }
@@ -664,7 +668,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
       body.mobileNumber = this.signupData.phone;
     }
 
-    this.signupService.fetchRegister(body, this.ip).subscribe(res => {
+    this.signupService.fetchRegister(body, this.ip, this.countryCode).subscribe(res => {
 
       if (res.processResult && res.processResult.resultCode !== 200) {
 
@@ -726,27 +730,46 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
         this.saveToken(this.newToken);
         this.authService.setLoginStatus(true);
 
-        const N = '\n';
-        this.dialog.open(MessageBoxComponent, {
-          hasBackdrop: true,
-          disableClose: true,
-          data: {
-            title: 'Message',
-            body: `${this.translate.instant('universal_status_success')} ${this.translate.instant('universal_userAccount_signUp')} ${
-              N} ${this.translate.instant('universal_popUpMessage_continueExecution')} ${
-              this.translate.instant('universal_deviceSetting_switch')} ${this.translate.instant('universal_userAccount_account')}?
-            `,
-            confirmText: this.translate.instant(
-              'universal_operating_confirm'
-            ),
-            cancelText: this.translate.instant(
-              'universal_operating_cancel'
-            ),
-            onCancel: this.finishSignup.bind(this),
-            onConfirm: this.toEnableAccount.bind(this)
-          }
+        // 若有目標導向網址，則跳過詢問啟用步驟
+        if (this.authService.backUrl.length > 0) {
+          this.dialog.open(MessageBoxComponent, {
+            hasBackdrop: true,
+            disableClose: true,
+            data: {
+              title: 'Message',
+              body: `${this.translate.instant('universal_status_success')} ${this.translate.instant('universal_userAccount_signUp')}`,
+              confirmText: this.translate.instant(
+                'universal_operating_confirm'
+              ),
+              onConfirm: this.finishSignup.bind(this)
+            }
 
-        });
+          });
+          
+        } else {
+          const N = '\n';
+          this.dialog.open(MessageBoxComponent, {
+            hasBackdrop: true,
+            disableClose: true,
+            data: {
+              title: 'Message',
+              body: `${this.translate.instant('universal_status_success')} ${this.translate.instant('universal_userAccount_signUp')} ${
+                N} ${this.translate.instant('universal_popUpMessage_continueExecution')} ${
+                this.translate.instant('universal_deviceSetting_switch')} ${this.translate.instant('universal_userAccount_account')}?
+              `,
+              confirmText: this.translate.instant(
+                'universal_operating_confirm'
+              ),
+              cancelText: this.translate.instant(
+                'universal_operating_cancel'
+              ),
+              onCancel: this.finishSignup.bind(this),
+              onConfirm: this.toEnableAccount.bind(this)
+            }
+
+          });
+          
+        }
 
       }
 
@@ -800,7 +823,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   toEnableAccount(): void {
     this.utils.setHideNavbarStatus(false);
-
     if (this.pcView === true) {
       this.router.navigateByUrl(`/enableAccount-web`);
     } else {
@@ -830,7 +852,6 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     this.utils.setHideNavbarStatus(false);
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
-
   }
 
 

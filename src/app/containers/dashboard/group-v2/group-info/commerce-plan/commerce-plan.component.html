@@ -151,7 +151,7 @@
         </div>
         <div class="group-list-item">{{ 'universal_group_authorizationDueDate' | translate}}：
           <span *ngIf="!uiFlag.editMode">
-            {{(commerceInfo.commercePlanExpired) | date: 'y/MM/dd'}}
+            {{(commerceInfo.commercePlanExpired) | date: 'y-MM-dd'}}
           </span>
           <span *ngIf="uiFlag.editMode">
             <app-date-range-picker

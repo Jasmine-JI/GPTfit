@@ -322,16 +322,19 @@ export class UtilsService {
    * @author kidin-1090811
    */
   openAlert(msg: string) {
-    this.dialog.open(MessageBoxComponent, {
-      hasBackdrop: true,
-      data: {
-        title: 'Message',
-        body: msg,
-        confirmText: this.translate.instant(
-          'universal_operating_confirm'
-        )
-      }
-    });
+    this.translate.get('hellow world').subscribe(() => {
+      this.dialog.open(MessageBoxComponent, {
+        hasBackdrop: true,
+        data: {
+          title: 'Message',
+          body: msg,
+          confirmText: this.translate.instant(
+            'universal_operating_confirm'
+          )
+        }
+      });
+
+    })
 
   }
 

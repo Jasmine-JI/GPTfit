@@ -46,5 +46,8 @@ testem.log
 .DS_Store
 Thumbs.db
 
-# robots.txt
-robots.txt
+# robots.txt（備份在src/environment）
+/src/robots.txt
+
+# sitemap.xml（備份在src/environment）
+sitemap.xml

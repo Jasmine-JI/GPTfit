@@ -1,45 +1,32 @@
-<form novalidate #f="ngForm"  class="form modify-password__form">
-  <!--*ngIf="!isSuccess && resultMessage.length === 0"-->
-  <div class="border" style="padding: 15px">
-
-      <div class="form-group ">
-        <div class="row">
-          <div class="col-md-5 text-right">
-            <label class="form__label--required">參賽者姓名:</label>
-          </div>
-          <div class="col-md-5">
-            <input type="text" autocomplete="off" class="form-control form-field" name="userName" [(ngModel)]="formData.userName" #userName="ngModel"
-              minlength="1" [class.form-field--invalid]="(userName.errors?.required && userName.touched) || (f.submitted && userName.errors?.required)"
-              required />
-            <div class="form__message" *ngIf="(userName.errors?.required && userName.touched) || (f.submitted && userName.errors?.required)">
-              userName is required.
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="form-group ">
-        <div class="row">
-          <div class="col-md-5 text-right">
-            <label class="form__label--required">參賽時間:</label>
-          </div>
-
-            <div class="col-md-5">
-              <my-date-picker name="selectedStartDate" class="rank__datepicker" [options]="startDateOptions"  required>
-              </my-date-picker>
-            </div>
-          </div>
-      </div>
-
-  </div>
-  <div class="alatech-footer">
-    <div class="justify-content-end">
-      <a class="alatech-btn alatech-btn--default" title="預覽詳細競賽資訊(包含子活動)" target="_blank" href="/dashboard/certificate/preview?ipm=s">
-        預覽
-      </a>
-      <button class="alatech-btn alatech-btn--default" title="預覽詳細競賽資訊(包含子活動)" target="_blank" href="/dashboard/certificate/preview?ipm=s">
-        確定
-      </button>
-    </div>
-  </div>
-
-</form>
+<section style="margin-bottom: 30px;" class="flexCol">
+  <button (click)="getDashBoardNeedInfo()">
+    登入後資訊
+  </button>
+  <span>次數：{{ compareData.dashboard.normal.count }}</span>
+  <span>單次花費時間：{{ compareData.dashboard.normal.costTime }}s</span>
+  <span>平均花費時間：{{ compareData.dashboard.normal.avgTime }}s</span>
+</section>
+<section style="margin-bottom: 30px;" class="flexCol">
+  <button (click)="getDashBoardNeedInfo_g()">
+    登入後資訊（GraphQL）
+  </button>
+  <span>次數：{{ compareData.dashboard.graphql.count }}</span>
+  <span>單次花費時間：{{ compareData.dashboard.graphql.costTime }}s</span>
+  <span>平均花費時間：{{ compareData.dashboard.graphql.avgTime }}s</span>
+</section>
+<section style="margin-bottom: 30px;" class="flexCol">
+  <button (click)="getGroupNeedInfo()">
+    群組資訊
+  </button>
+  <span>次數：{{ compareData.group.normal.count }}</span>
+  <span>單次花費時間：{{ compareData.group.normal.costTime }}s</span>
+  <span>平均花費時間：{{ compareData.group.normal.avgTime }}s</span>
+</section>
+<section style="margin-bottom: 30px;" class="flexCol">
+  <button (click)="getGroupNeedInfo_g()">
+    群組資訊（GraphQL）
+  </button>
+  <span>次數：{{ compareData.group.graphql.count }}</span>
+  <span>單次花費時間：{{ compareData.group.graphql.costTime }}s</span>
+  <span>平均花費時間：{{ compareData.group.graphql.avgTime }}s</span>
+</section>

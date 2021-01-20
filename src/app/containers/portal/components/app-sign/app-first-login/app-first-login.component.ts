@@ -93,7 +93,10 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
     ).subscribe(res => {
       if (res === false && this.pcView === true) {
         return this.router.navigateByUrl('/signIn-web');
+      } else if (res === false && this.pcView === false) {
+        return this.router.navigateByUrl('/signIn');
       }
+
     });
 
   }
@@ -336,9 +339,8 @@ export class AppFirstLoginComponent implements OnInit, OnDestroy {
     return canvas.toDataURL().replace('data:image/png;base64,', '');
   }
 
-  // 清除session flag並轉導至目標頁或dashboard-kidin-1090526
+  // 轉導至目標頁或dashboard-kidin-1090526
   navigateToDashboard () {
-    this.utils.removeSessionStorageObject('isFirstLogin');
     if (this.authService.backUrl.length > 0) {
       return (location.href = this.authService.backUrl);
     } else {

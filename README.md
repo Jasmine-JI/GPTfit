@@ -7,6 +7,11 @@ Angular version: 11.0.0
 ```
 npm install
 ```
+安裝完成後接著需再下
+```
+npm run patch
+```
+以修正部份套件程式碼避免編譯報錯
 
 ## Development server
 有分為加密模式與非加密模式
@@ -117,8 +122,10 @@ web
 |       ├─ environment.prod.ts // 指向130正式環境nodejs api 3000port的環境變數檔(130 build)
 |       ├─ environment.ts // 指向234正式環境nodejs api 3000port的環境變數檔(本機開發) 
 |       ├─ environment.tst.ts // 指向232開發環境nodejs api 3000port的環境變數檔(已棄用，但未來有多人開發前端，可選用此)
-|       ├─ environment.uat.ts // 指向234正式環境nodejs api 3000port的環境變數檔(234 build) 
-|       └─ environment.web.ts // 指向235正式環境nodejs api 3000port的環境變數檔(235 build) 
+|       ├─ environment.uat.ts // 指向234測試環境nodejs api 3000port的環境變數檔(234 build) 
+|       ├─ environment.web.ts // 指向235正式環境nodejs api 3000port的環境變數檔(235 build) 
+|       ├─ index.uat.html // 234測試環境替換index.html（自動替換），以解決測試網域seo過前的問題(測試中) 
+|       └─ index.web.html // 235開發環境替換index.html（自動替換）(測試用)
 |
 │   ├─ .htaccess // apache route config設定，沒此設定，無法啟用angular route於apache
 │   ├─ favicon.ico // 瀏覽器的網址列、書籤、頁籤上都會用到的小 icon 圖檔。
@@ -133,6 +140,7 @@ web
 │   ├─ typings.d.ts  typescript模組定義檔，為了讓 TypeScript 能與目前市面上各種 JavaScript 模組/函式庫一起運作
 │   └─ test.ts // 跟 main.ts 檔類似，不過主要是用在測試檔上。
 |
+├─ patch  //  補丁包，用來修改套件避免編譯錯誤。
 ├─ angular.json  //  Angular CLI 的設定檔
 ├─ .gitignore // 讓 git 不要追蹤設定裡的檔案
 ├─ karma.conf.js //  Karma 的設定檔。Karma 是一套單元測試工具
@@ -193,6 +201,7 @@ app
 │   ├─ shared.module.ts // 共用module
 │   └─ version.ts // GPT center版本號
 │
+├─ graphql.module.ts // 使用graphql用到的module（測試中）
 ├─ app-routing.module.ts
 ├─ app.component.css
 ├─ app.component.html
@@ -216,6 +225,7 @@ app
 **@types/highcharts** | 5.0.31 | highcharts的typescript型別定義檔 | None
 **@types/lodash** | 4.14.109 | lodash的typescript型別定義檔 | None
 **@types/query-string** | 6.2.0 | query-string的typescript型別定義檔 | None
+**apollo-angular** |  "2.1.0" | 在angular使用graphql的套件 | [Link](https://apollo-angular.com)
 **[angularx-qrcode](https://github.com/cordobo/angularx-qrcode#readme)** | 1.5.3 | 產生qrcode功能 | [Link](https://gitlab.com/alatech_cloud/web/blob/release_internal_server/src/app/containers/dashboard/components/device/product-info/product-info.component.html#L146)
 **[bootstrap](https://getbootstrap.com/)** | 4.1.3 | css framework，目前主要的排版layout樣式皆採用於此，ex: container、menu...等 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/navbar/navbar.component.html#L80)
 **[file-saver](https://github.com/eligrey/FileSaver.js#readme)** | 1.3.3 | 是一款基於 HTML5 完成文件保存的插件，它可以幫我們直接從網頁中導出多種格式文件 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/containers/dashboard/components/leaderboard-settings/leaderboard-settings.component.ts#L6)
@@ -231,420 +241,5 @@ app
 **[mydatepicker](https://github.com/kekeh/mydatepicker#readme)** | 2.6.1|日期選擇器元件，目前使用於外部排行版與賽事管理系統，建議可以慢慢替換成material design(因為那時還沒出...) | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/containers/portal/portal.component.ts#L15)
 **[query-string](https://github.com/sindresorhus/query-string#readmee)** | 6.1.0| 用来做url查询参数的解析| [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/services/utils.service.ts#L3)
 **[ml-regression-simple-linear](https://www.npmjs.com/package/ml-regression-simple-linear)** | 2.1.1| 用来做群組report的簡單回歸分析 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/dashboard/group/group-info/com-life-tracking/com-life-tracking.component.ts#L3)
-**[tui-calendar](https://ui.toast.com/tui-calendar/)** | 1.12.11| 行事曆套件 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/tui-calender/tui-calender.component.ts)
+**[tui-calendar](https://ui.toast.com/tui-calendar/)** | 1.12.11| 行事曆套件(棄用) | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/tui-calender/tui-calender.component.ts)
 **[daterangepicker](https://www.daterangepicker.com)** | 3.0.5| 可以雙開的日期選擇器| [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/date-range-picker/date-range-picker.component.ts)
-
-## 套件修改
-若有更新套件，請修改以下套件避免報錯或跑版
-
-### tui-calendar
-
-> 路徑：./var/web/node_modules/tui-calendar/dist/tui-calendar.css
-> 說明：刪除小白點樣式。
-
-```scss
-// 刪除此樣式
-.tui-full-calendar-weekday-schedule-bullet {
-  position: absolute;
-  padding: 0;
-  width: 6px;
-  height: 6px;
-  top: 6px;
-  left: 0;
-  border-radius: 50%;
-}
-```
-
-### ml-regression-simple-linear
-> 路徑：./var/web/node_modules/ml-regression-simple-linear/regression-simple-linear.d.ts
-> 說明：修改套件輸出檔案的寫法避免報錯。
-
-```javascript
-// 將輸出類修改成以下形式，並刪除最後export = SimpleLinearRegression;
-export default class SimpleLinearRegression extends BaseRegression
-```
-
-### query-string
-> 路徑：./var/web/node_modules/query-string/index.js
-> 說明：修改套件輸出檔案的寫法避免報錯。
-
-```javascript
-// 目前僅需該套件的stringify,parse函式，故只輸出該兩個函式，修改內容可參考以下。
-'use strict';
-const strictUriEncode = require('strict-uri-encode');
-const decodeComponent = require('decode-uri-component');
-const splitOnFirst = require('split-on-first');
-
-const isNullOrUndefined = value => value === null || value === undefined;
-
-function encoderForArrayFormat(options) {
-	switch (options.arrayFormat) {
-		case 'index':
-			return key => (result, value) => {
-				const index = result.length;
-
-				if (
-					value === undefined ||
-					(options.skipNull && value === null) ||
-					(options.skipEmptyString && value === '')
-				) {
-					return result;
-				}
-
-				if (value === null) {
-					return [...result, [encode(key, options), '[', index, ']'].join('')];
-				}
-
-				return [
-					...result,
-					[encode(key, options), '[', encode(index, options), ']=', encode(value, options)].join('')
-				];
-			};
-
-		case 'bracket':
-			return key => (result, value) => {
-				if (
-					value === undefined ||
-					(options.skipNull && value === null) ||
-					(options.skipEmptyString && value === '')
-				) {
-					return result;
-				}
-
-				if (value === null) {
-					return [...result, [encode(key, options), '[]'].join('')];
-				}
-
-				return [...result, [encode(key, options), '[]=', encode(value, options)].join('')];
-			};
-
-		case 'comma':
-		case 'separator':
-			return key => (result, value) => {
-				if (value === null || value === undefined || value.length === 0) {
-					return result;
-				}
-
-				if (result.length === 0) {
-					return [[encode(key, options), '=', encode(value, options)].join('')];
-				}
-
-				return [[result, encode(value, options)].join(options.arrayFormatSeparator)];
-			};
-
-		default:
-			return key => (result, value) => {
-				if (
-					value === undefined ||
-					(options.skipNull && value === null) ||
-					(options.skipEmptyString && value === '')
-				) {
-					return result;
-				}
-
-				if (value === null) {
-					return [...result, encode(key, options)];
-				}
-
-				return [...result, [encode(key, options), '=', encode(value, options)].join('')];
-			};
-	}
-}
-
-function parserForArrayFormat(options) {
-	let result;
-
-	switch (options.arrayFormat) {
-		case 'index':
-			return (key, value, accumulator) => {
-				result = /\[(\d*)\]$/.exec(key);
-
-				key = key.replace(/\[\d*\]$/, '');
-
-				if (!result) {
-					accumulator[key] = value;
-					return;
-				}
-
-				if (accumulator[key] === undefined) {
-					accumulator[key] = {};
-				}
-
-				accumulator[key][result[1]] = value;
-			};
-
-		case 'bracket':
-			return (key, value, accumulator) => {
-				result = /(\[\])$/.exec(key);
-				key = key.replace(/\[\]$/, '');
-
-				if (!result) {
-					accumulator[key] = value;
-					return;
-				}
-
-				if (accumulator[key] === undefined) {
-					accumulator[key] = [value];
-					return;
-				}
-
-				accumulator[key] = [].concat(accumulator[key], value);
-			};
-
-		case 'comma':
-		case 'separator':
-			return (key, value, accumulator) => {
-				const isArray = typeof value === 'string' && value.split('').indexOf(options.arrayFormatSeparator) > -1;
-				const newValue = isArray ? value.split(options.arrayFormatSeparator).map(item => decode(item, options)) : value === null ? value : decode(value, options);
-				accumulator[key] = newValue;
-			};
-
-		default:
-			return (key, value, accumulator) => {
-				if (accumulator[key] === undefined) {
-					accumulator[key] = value;
-					return;
-				}
-
-				accumulator[key] = [].concat(accumulator[key], value);
-			};
-	}
-}
-
-function validateArrayFormatSeparator(value) {
-	if (typeof value !== 'string' || value.length !== 1) {
-		throw new TypeError('arrayFormatSeparator must be single character string');
-	}
-}
-
-function encode(value, options) {
-	if (options.encode) {
-		return options.strict ? strictUriEncode(value) : encodeURIComponent(value);
-	}
-
-	return value;
-}
-
-function decode(value, options) {
-	if (options.decode) {
-		return decodeComponent(value);
-	}
-
-	return value;
-}
-
-function keysSorter(input) {
-	if (Array.isArray(input)) {
-		return input.sort();
-	}
-
-	if (typeof input === 'object') {
-		return keysSorter(Object.keys(input))
-			.sort((a, b) => Number(a) - Number(b))
-			.map(key => input[key]);
-	}
-
-	return input;
-}
-
-function removeHash(input) {
-	const hashStart = input.indexOf('#');
-	if (hashStart !== -1) {
-		input = input.slice(0, hashStart);
-	}
-
-	return input;
-}
-
-function getHash(url) {
-	let hash = '';
-	const hashStart = url.indexOf('#');
-	if (hashStart !== -1) {
-		hash = url.slice(hashStart);
-	}
-
-	return hash;
-}
-
-function extract(input) {
-	input = removeHash(input);
-	const queryStart = input.indexOf('?');
-	if (queryStart === -1) {
-		return '';
-	}
-
-	return input.slice(queryStart + 1);
-}
-
-function parseValue(value, options) {
-	if (options.parseNumbers && !Number.isNaN(Number(value)) && (typeof value === 'string' && value.trim() !== '')) {
-		value = Number(value);
-	} else if (options.parseBooleans && value !== null && (value.toLowerCase() === 'true' || value.toLowerCase() === 'false')) {
-		value = value.toLowerCase() === 'true';
-	}
-
-	return value;
-}
-
-function parse(input, options) {
-	options = Object.assign({
-		decode: true,
-		sort: true,
-		arrayFormat: 'none',
-		arrayFormatSeparator: ',',
-		parseNumbers: false,
-		parseBooleans: false
-	}, options);
-
-	validateArrayFormatSeparator(options.arrayFormatSeparator);
-
-	const formatter = parserForArrayFormat(options);
-
-	// Create an object with no prototype
-	const ret = Object.create(null);
-
-	if (typeof input !== 'string') {
-		return ret;
-	}
-
-	input = input.trim().replace(/^[?#&]/, '');
-
-	if (!input) {
-		return ret;
-	}
-
-	for (const param of input.split('&')) {
-		let [key, value] = splitOnFirst(options.decode ? param.replace(/\+/g, ' ') : param, '=');
-
-		// Missing `=` should be `null`:
-		// http://w3.org/TR/2012/WD-url-20120524/#collect-url-parameters
-		value = value === undefined ? null : ['comma', 'separator'].includes(options.arrayFormat) ? value : decode(value, options);
-		formatter(decode(key, options), value, ret);
-	}
-
-	for (const key of Object.keys(ret)) {
-		const value = ret[key];
-		if (typeof value === 'object' && value !== null) {
-			for (const k of Object.keys(value)) {
-				value[k] = parseValue(value[k], options);
-			}
-		} else {
-			ret[key] = parseValue(value, options);
-		}
-	}
-
-	if (options.sort === false) {
-		return ret;
-	}
-
-	return (options.sort === true ? Object.keys(ret).sort() : Object.keys(ret).sort(options.sort)).reduce((result, key) => {
-		const value = ret[key];
-		if (Boolean(value) && typeof value === 'object' && !Array.isArray(value)) {
-			// Sort object keys, not values
-			result[key] = keysSorter(value);
-		} else {
-			result[key] = value;
-		}
-
-		return result;
-	}, Object.create(null));
-}
-
-function stringify (object, options) {
-	if (!object) {
-		return '';
-	}
-
-	options = Object.assign({
-		encode: true,
-		strict: true,
-		arrayFormat: 'none',
-		arrayFormatSeparator: ','
-	}, options);
-
-	validateArrayFormatSeparator(options.arrayFormatSeparator);
-
-	const shouldFilter = key => (
-		(options.skipNull && isNullOrUndefined(object[key])) ||
-		(options.skipEmptyString && object[key] === '')
-	);
-
-	const formatter = encoderForArrayFormat(options);
-
-	const objectCopy = {};
-
-	for (const key of Object.keys(object)) {
-		if (!shouldFilter(key)) {
-			objectCopy[key] = object[key];
-		}
-	}
-
-	const keys = Object.keys(objectCopy);
-
-	if (options.sort !== false) {
-		keys.sort(options.sort);
-	}
-
-	return keys.map(key => {
-		const value = object[key];
-
-		if (value === undefined) {
-			return '';
-		}
-
-		if (value === null) {
-			return encode(key, options);
-		}
-
-		if (Array.isArray(value)) {
-			return value
-				.reduce(formatter(key), [])
-				.join('&');
-		}
-
-		return encode(key, options) + '=' + encode(value, options);
-	}).filter(x => x.length > 0).join('&');
-};
-
-function parseUrl (input, options) {
-	options = Object.assign({
-		decode: true
-	}, options);
-
-	const [url, hash] = splitOnFirst(input, '#');
-
-	return Object.assign(
-		{
-			url: url.split('?')[0] || '',
-			query: parse(extract(input), options)
-		},
-		options && options.parseFragmentIdentifier && hash ? {fragmentIdentifier: decode(hash, options)} : {}
-	);
-};
-
-function stringifyUrl (input, options) {
-	options = Object.assign({
-		encode: true,
-		strict: true
-	}, options);
-
-	const url = removeHash(input.url).split('?')[0] || '';
-	const queryFromUrl = extract(input.url);
-	const parsedQueryFromUrl = parse(queryFromUrl, {sort: false});
-
-	const query = Object.assign(parsedQueryFromUrl, input.query);
-	let queryString = stringify(query, options);
-	if (queryString) {
-		queryString = `?${queryString}`;
-	}
-
-	let hash = getHash(input.url);
-	if (input.fragmentIdentifier) {
-		hash = `#${encode(input.fragmentIdentifier, options)}`;
-	}
-
-	return `${url}${queryString}${hash}`;
-};
-
-export {stringify, parse};
-```

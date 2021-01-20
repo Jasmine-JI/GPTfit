@@ -1,6 +1,6 @@
 <ng-container *ngIf="!pcView && !agreeTerms">
-  <div class="flexCol" style="position: relative;">
-    <div style="position: fixed;" class="flexRow appHeader">
+  <div class="flexCol" style="position: relative; overflow-x: hidden;">
+    <div style="position: fixed; z-index: 1;" class="flexRow appHeader">
       <i
         class="icon-svg_web-icon_p1_073-level_fold"
         style="font-size: 30px; cursor: pointer;"
@@ -31,7 +31,7 @@
       </button>
     </div>
     <ng-container *ngIf="showTerms !== null">
-      <div class="terms__section">
+      <div class="terms__section" style="overflow: auto; -webkit-overflow-scrolling: touch;">
         <app-ala-iframe
           [src]="termsLink"
           [type]="'signUp'"

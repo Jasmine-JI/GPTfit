@@ -209,11 +209,11 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         if (this.series.xAxis.tickInterval === 30 * 24 * 4600 * 1000) {
-          return `${moment(this.x).format('YYYY/MM/DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY/MM/DD')}
+          return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY-MM-DD')}
             <br/>${this.series.name}: ${zoneTime}
             <br/>Total: ${totalZoneTime}`;
         } else {
-          return `${moment(this.x).format('YYYY/MM/DD')}
+          return `${moment(this.x).format('YYYY-MM-DD')}
             <br/>${this.series.name}: ${zoneTime}
             <br/>Total: ${totalZoneTime}`;
         }
@@ -377,11 +377,11 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         if (this.series.xAxis.tickInterval === 30 * 24 * 4600 * 1000) {
-          return `${moment(this.x).format('YYYY/MM/DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY/MM/DD')}
+          return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY-MM-DD')}
             <br/>${this.series.name}: ${zoneTime}
             <br/>Total: ${totalZoneTime}`;
         } else {
-          return `${moment(this.x).format('YYYY/MM/DD')}
+          return `${moment(this.x).format('YYYY-MM-DD')}
             <br/>${this.series.name}: ${zoneTime}
             <br/>Total: ${totalZoneTime}`;
         }

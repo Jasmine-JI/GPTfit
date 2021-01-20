@@ -43,7 +43,7 @@ export class CustomSelectComponent implements OnInit, OnChanges {
 
   // 取得翻譯-kidin-1090507
   getTranslate () {
-    this.translate.get('hollow world').subscribe(() => {
+    this.translate.get('hellow world').subscribe(() => {
       this.currentSelect.i18n = this.translate.instant(this.selectLists[0].i18nKey);
 
       for (let i = 0; i < this.selectLists.length; i++) {

@@ -1,0 +1,739 @@
+<main *ngIf="activityInfoLayer">
+  <section class="card__section row__to__column">
+    <div class="flexRow">
+      <i
+        id="sport__type__icon"
+        class="flexCenter"
+        [class]="activityInfoLayer.type | sportTypeIcon"
+      ></i>
+      <div class="flexCol" style="justify-content: center; margin-left: 20px; line-height: 1.2;">
+        <span class="small__font">{{ fileTime }}</span>
+        <span class="head__name">{{ fileInfo.dispName }}</span>
+      </div>
+    </div>
+    <div class="flexRow" style="align-items: center;">
+      <span class="head__name" style="margin-right: 10px;">{{ ownerProfile.name }}</span>
+      <img class="img__icon" [src]="ownerProfile.icon" (error)="this.ownerProfile.icon='/assets/images/user2.png'">
+    </div>
+  </section>
+  <secton class="flexRow" style="justify-content: space-between;">
+    <section class="card__section" style="width: 53%;">
+      <div style="max-width: 600px;">
+        <div
+          class="cardTitle"
+          *ngIf="uiFlag.pcView; else activeBarTemp;"
+        >
+          <span class="cardSubtitle">{{ 'universal_activityData_summary' | translate }}</span>
+        </div>
+        <div id="summary__info">
+          <img [src]="sceneryImg" id="scenery__img">
+          <div id="summary__info__section" class="flexRow">
+            <div class="flexCol summery__block">
+              <span class="summary__type__title">{{ 'universal_activityData_totalTime' | translate }}</span>
+              <span class="summary__type__content">{{ activityInfoLayer.totalSecond | sportTime: true }}</span>
+            </div>
+            <div class="flexCol summery__block" *ngIf="[3, 5].indexOf(+activityInfoLayer.type) <= -1">
+              <span class="summary__type__title">{{ 'universal_activityData_totalDistance' | translate }}</span>
+              <span class="summary__type__content">
+                {{ activityInfoLayer.totalDistanceMeters | distanceSibs: userProfile.unit }}
+              </span>
+            </div>
+            <div class="flexCol summery__block" *ngIf="[1, 4, 6].indexOf(+activityInfoLayer.type) > -1">
+              <span class="summary__type__title">{{ 'universal_activityData_avgPace' | translate }}</span>
+              <span class="summary__type__content">
+                {{ activityInfoLayer.avgSpeed | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit] }}
+              </span>
+            </div>
+            <div class="flexCol summery__block" *ngIf="[2, 7].indexOf(+activityInfoLayer.type) > -1">
+              <span class="summary__type__title">{{ 'universal_activityData_avgSpeed' | translate }}</span>
+              <span class="summary__type__content">{{ activityInfoLayer.avgSpeed | speedSibs: userProfile.unit || 0 }}</span>
+            </div>
+            <div class="flexCol summery__block" *ngIf="+activityInfoLayer.type === 3">
+              <span class="summary__type__title">{{ 'universal_activityData_totalWeight' | translate }}</span>
+              <span class="summary__type__content">{{ activityInfoLayer.totalWeightKg | weightSibs: [userProfile.unit, 0] }}</span>
+            </div>
+            <div class="flexCol summery__block" *ngIf="+activityInfoLayer.type === 3">
+              <span class="summary__type__title">{{ 'universal_activityData_totalReps' | translate }}</span>
+              <span class="summary__type__content">{{ activityInfoLayer.totalReps }} reps</span>
+            </div>
+            <div class="flexCol summery__block" *ngIf="+activityInfoLayer.type === 5">
+              <span class="summary__type__title">{{ 'universal_activityData_totalCalories' | translate }}</span>
+              <span class="summary__type__content">{{ activityInfoLayer.calories | thousandConversion: 'cal' }}</span>
+            </div>
+            <div class="flexCol summery__block" *ngIf="+activityInfoLayer.type === 5">
+              <span class="summary__type__title">{{ 'universal_userProfile_maxHr' | translate }}</span>
+              <span class="summary__type__content">{{ activityInfoLayer.maxHeartRateBpm }} bpm</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <sectoin class="card__section" style="width: 45%;">
+      <ng-container *ngIf="!uiFlag.pcView; else activeBarTemp;"></ng-container>
+      <ng-template #activeBarTemp>
+        <div #tagBar style="position: relative; margin-bottom: 10px;" class="flexRow">
+          <span
+            #summary
+            class="cardSubtitle tag__title"
+            [style.pointer-events]="uiFlag.currentTag === 'summary' ? 'none' : 'initial'"
+            [class.non__active]="uiFlag.currentTag !== 'summary'"
+            (click)="switchTag('summary')"
+            *ngIf="!uiFlag.pcView"
+          >
+          {{ 'universal_activityData_summary' | translate }}
+        </span>
+          <span
+            #detail
+            class="cardSubtitle tag__title"
+            [style.pointer-events]="uiFlag.currentTag === 'detail' ? 'none' : 'initial'"
+            [class.non__active]="uiFlag.currentTag !== 'detail'"
+            (click)="switchTag('detail')"
+          >
+            {{ 'universal_activityData_detailsData' | translate }}
+          </span>
+          <span
+            #segmentation
+            class="cardSubtitle tag__title"
+            [style.pointer-events]="uiFlag.currentTag === 'segmentation' ? 'none' : 'initial'"
+            [class.non__active]="uiFlag.currentTag !== 'segmentation'"
+            (click)="switchTag('segmentation')"
+          >
+            {{ 'universal_activityData_station' | translate }}
+          </span>
+          <span
+            #chart
+            class="cardSubtitle tag__title"
+            [style.pointer-events]="uiFlag.currentTag === 'chart' ? 'none' : 'initial'"
+            [class.non__active]="uiFlag.currentTag !== 'chart'"
+            (click)="switchTag('chart')"
+            *ngIf="!uiFlag.pcView"
+          >
+            {{ 'universal_vocabulary_chart' | translate }}
+          </span>
+          <div
+            id="active__underLine"
+            [style.left]="activeLine.left + 'px'"
+            [style.width]="activeLine.width + 'px'"
+          ></div>
+        </div>
+      </ng-template>
+      <section style="max-height: 340px; overflow-y: scroll;">
+        <ng-container *ngIf="uiFlag.currentTag === 'detail'">
+          <div class="flexCol">
+            <div class="flexCol">
+              <span class="table__list__title">{{ 'universal_activityData_timing' | translate }}</span>
+              <div class="flexCol table__list__block">
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_totalTime' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalSecond | sportTime: true }}</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">
+                    <ng-container *ngIf="[3, 5].indexOf(+activityInfoLayer.type) <= -1">
+                      {{ 'universal_activityData_movingTime' | translate }}
+                    </ng-container>
+                    <ng-container *ngIf="[3, 5].indexOf(+activityInfoLayer.type) > -1">
+                      {{ 'universal_activityData_activityTime' | translate }}
+                    </ng-container>
+                  </span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalActivitySecond | sportTime: true }}</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_restTime' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalRestSecond | sportTime: true }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="flexCol">
+              <span class="table__list__title">{{ 'universal_activityData_hr' | translate }}</span>
+              <div class="flexCol table__list__block">
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_avgHr' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.avgHeartRateBpm }} bpm</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_userProfile_maxHr' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.maxHeartRateBpm }} bpm</span>
+                </div>
+              </div>
+            </div>
+            <div class="flexCol">
+              <span class="table__list__title">{{ 'universal_activityData_hrZone' | translate }}</span>
+              <div class="flexCol table__list__block">
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_generalZone' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalHrZone0Second | sportTime: true }}</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_warmUpZone' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalHrZone1Second | sportTime: true }}</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_aerobicZone' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalHrZone2Second | sportTime: true }}</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_enduranceZone' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalHrZone3Second | sportTime: true }}</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_marathonZone' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalHrZone4Second | sportTime: true }}</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_anaerobicZone' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalHrZone5Second | sportTime: true }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="flexCol" *ngIf="activityInfoLayer.totalFtpZone0Second !== null && activityInfoLayer.type == 2">
+              <span class="table__list__title">{{ 'universal_activityData_ftpZone' | translate }}</span>
+              <div class="flexCol table__list__block">
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_ftpZ0' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalFtpZone0Second | sportTime: true }}</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_ftpZ1' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalFtpZone1Second | sportTime: true }}</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_ftpZ2' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalFtpZone2Second | sportTime: true }}</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_ftpZ3' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalFtpZone3Second | sportTime: true }}</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_ftpZ4' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalFtpZone4Second | sportTime: true }}</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_ftpZ5' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalFtpZone5Second | sportTime: true }}</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_ftpZ6' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalFtpZone6Second | sportTime: true }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="flexCol" *ngIf="[1, 4, 6].indexOf(+activityInfoLayer.type) > -1">
+              <span class="table__list__title">{{ 'universal_activityData_pace' | translate }}</span>
+              <div class="flexCol table__list__block">
+                <ng-container *ngIf="activityInfoLayer.type == 1">
+                  <div class="flexRow table__row">
+                    <span class="table__list__subtitle">
+                      <ng-container *ngIf="userProfile.unit === 0">
+                        {{ 'universal_activityData_avgKilometerPace' | translate }}
+                      </ng-container>
+                      <ng-container *ngIf="userProfile.unit === 1">
+                        {{ 'universal_activityData_avgMilePace' | translate }}
+                      </ng-container>
+                    </span>
+                    <span class="table__list__content">
+                      {{ activityInfoLayer.avgSpeed | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit] }}
+                    </span>
+                  </div>
+                  <div class="flexRow table__row">
+                    <span class="table__list__subtitle">
+                      <ng-container *ngIf="userProfile.unit === 0">
+                        {{ 'universal_activityData_avgMovingKilometerPace' | translate }}
+                      </ng-container>
+                      <ng-container *ngIf="userProfile.unit === 1">
+                        {{ 'universal_activityData_avgMoveMilePace' | translate }}
+                      </ng-container>
+                    </span>
+                    <span class="table__list__content">
+                      {{ activityInfoLayer.avgMoveSpeed | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit] }}
+                    </span>
+                  </div>
+                  <div class="flexRow table__row">
+                    <span class="table__list__subtitle">
+                      <ng-container *ngIf="userProfile.unit === 0">
+                        {{ 'universal_activityData_bestKilometerPace' | translate }}
+                      </ng-container>
+                      <ng-container *ngIf="userProfile.unit === 1">
+                        {{ 'universal_activityData_bestMilePace' | translate }}
+                      </ng-container>
+                    </span>
+                    <span class="table__list__content">
+                      {{ activityInfoLayer.maxSpeed | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit] }}
+                    </span>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="activityInfoLayer.type == 4">
+                  <div class="flexRow table__row">
+                    <span class="table__list__subtitle">{{ 'universal_activityData_avg100mPace' | translate }}</span>
+                    <span class="table__list__content">
+                      {{ activityInfoLayer.avgSpeed | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit] }}
+                    </span>
+                  </div>
+                  <div class="flexRow table__row">
+                    <span class="table__list__subtitle">{{ 'universal_activityData_avgMoving100mPace' | translate }}</span>
+                    <span class="table__list__content">
+                      {{ activityInfoLayer.avgMoveSpeed | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit] }}
+                    </span>
+                  </div>
+                  <div class="flexRow table__row">
+                    <span class="table__list__subtitle">{{ 'universal_activityData_bestMoving100mPace' | translate }}</span>
+                    <span class="table__list__content">
+                      {{ activityInfoLayer.maxSpeed | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit] }}
+                    </span>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="activityInfoLayer.type == 6">
+                  <div class="flexRow table__row">
+                    <span class="table__list__subtitle">{{ 'universal_activityData_avg500mPace' | translate }}</span>
+                    <span class="table__list__content">
+                      {{ activityInfoLayer.avgSpeed | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit] }}
+                    </span>
+                  </div>
+                  <div class="flexRow table__row">
+                    <span class="table__list__subtitle">{{ 'universal_activityData_bestMoving500mPace' | translate }}</span>
+                    <span class="table__list__content">
+                      {{ activityInfoLayer.avgMoveSpeed | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit] }}
+                    </span>
+                  </div>
+                  <div class="flexRow table__row">
+                    <span class="table__list__subtitle">{{ 'universal_activityData_avgMoving500mPace' | translate }}</span>
+                    <span class="table__list__content">
+                      {{ activityInfoLayer.maxSpeed | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit] }}
+                    </span>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+            <div class="flexCol" *ngIf="[3, 5].indexOf(+activityInfoLayer.type) <= -1">
+              <span class="table__list__title">{{ 'universal_activityData_speed' | translate }}</span>
+              <div class="flexCol table__list__block">
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_avgSpeedPerHour' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.avgSpeed | speedSibs: userProfile.unit }}</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_avgMovingSpeed' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.avgMoveSpeed | speedSibs: userProfile.unit }}</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_liveBestSpeed' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.maxSpeed | speedSibs: userProfile.unit }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="flexCol" *ngIf="activityInfoLayer.type == 1">
+              <span class="table__list__title">{{ 'universal_activityData_runDynamics' | translate }}</span>
+              <div class="flexCol table__list__block">
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_avgStepCadence' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.runAvgCadence }} spm</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_liveMaxStepCadence' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.runMaxCadence }} spm</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_avgStepLength' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.avgStrideLengthCentimeter }} cm</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_activityTotalSteps' | translate }}</span>
+                  <span class="table__list__content">
+                    {{ activityInfoLayer.totalStep }} {{ 'universal_lifeTracking_step' | translate }}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="flexCol" *ngIf="[1, 2].indexOf(+activityInfoLayer.type) > -1">
+              <span class="table__list__title">{{ 'universal_activityData_climb' | translate }}</span>
+              <div class="flexCol table__list__block">
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_climbGain' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.elevGain | distanceSibs: userProfile.unit }}</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_climbLoss' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.elevLoss | distanceSibs: userProfile.unit }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="flexCol" *ngIf="[1, 2].indexOf(+activityInfoLayer.type) > -1">
+              <span class="table__list__title">{{ 'universal_activityData_altitude' | translate }}</span>
+              <div class="flexCol table__list__block">
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_maxAltitude' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.maxElev | distanceSibs: userProfile.unit }}</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_minAltitude' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.minElev | distanceSibs: userProfile.unit }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="flexCol">
+              <span class="table__list__title">{{ 'universal_activityData_temperature' | translate }}</span>
+              <div class="flexCol table__list__block">
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_activityAvgTemp' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.avgTemp | temperatureSibs: userProfile.unit }}</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_maxTemperature' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.maxTemp | temperatureSibs: userProfile.unit }}</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_lowTemperature' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.minTemp | temperatureSibs: userProfile.unit }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="flexCol" *ngIf="activityInfoLayer.type == 2">
+              <span class="table__list__title">{{ 'universal_activityData_cyclingDynamics' | translate }}</span>
+              <div class="flexCol table__list__block">
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_avgCyclingCadence' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.cycleAvgCadence }} rpm</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_liveMaxCycleCadence' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.cycleMaxCadence }} rpm</span>
+                </div>
+              </div>
+            </div>
+            <div class="flexCol" *ngIf="[2, 6].indexOf(+activityInfoLayer.type) > -1">
+              <span class="table__list__title">{{ 'universal_activityData_power' | translate }}</span>
+              <div class="flexCol table__list__block">
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_avgPower' | translate }}</span>
+                  <span class="table__list__content">
+                    <ng-container *ngIf="activityInfoLayer.type == 2">{{ activityInfoLayer.cycleAvgWatt }}</ng-container>
+                    <ng-container *ngIf="activityInfoLayer.type == 6">{{ activityInfoLayer.rowingAvgWatt }}</ng-container>
+                  </span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_maxPower' | translate }}</span>
+                  <span class="table__list__content">
+                    <ng-container *ngIf="activityInfoLayer.type == 2">{{ activityInfoLayer.cycleMaxWatt }}</ng-container>
+                    <ng-container *ngIf="activityInfoLayer.type == 6">{{ activityInfoLayer.rowingMaxWatt }}</ng-container>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="flexCol" *ngIf="activityInfoLayer.type == 3">
+              <span class="table__list__title">{{ 'universal_activityData_sets' | translate }}</span>
+              <div class="flexCol table__list__block">
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_totalActivitySet' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalLapOrSet }} sets</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_totalReps' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalReps }} reps</span>
+                </div>
+              </div>
+            </div>
+            <div class="flexCol" *ngIf="activityInfoLayer.type == 3">
+              <span class="table__list__title">{{ 'universal_activityData_weight' | translate }}</span>
+              <div class="flexCol table__list__block">
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_activiyTotalWeight' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalWeightKg | weightSibs: [userProfile.unit, 0] }}</span>
+                </div>
+                <ng-container *ngFor="let _muscleCode of muscleTranslate | keyvalue">
+                  <ng-container *ngFor="let _part of activityInfoLayer.weightTrainingInfo;">
+                    <ng-container *ngIf="_part.muscle == _muscleCode.key">
+                      <div class="flexRow table__row">
+                        <span class="table__list__subtitle">
+                          {{ 'universal_group_muscleTrainingVolume' | translate: {'muscle': _muscleCode.value} }}
+                        </span>
+                        <span class="table__list__content">
+                          {{ _part.totalWeightKg | weightSibs: [userProfile.unit, 0] }}
+                        </span>
+                      </div>
+                    </ng-container>
+                  </ng-container>
+                </ng-container>
+              </div>
+            </div>
+            <div class="flexCol" *ngIf="activityInfoLayer.type == 4 && activityInfoLayer.avgSwolf !== null">
+              <span class="table__list__title">{{ 'universal_activityData_swimPerformance' | translate }}</span>
+              <div class="flexCol table__list__block">
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_avgSwolf' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.avgSwolf }}</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_bestSwolf' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.bestSwolf }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="flexCol" *ngIf="activityInfoLayer.type == 4">
+              <span class="table__list__title">{{ 'universal_activityData_swimmingDynamics' | translate }}</span>
+              <div class="flexCol table__list__block">
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_avgStrokeCadence' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.swimAvgCadence }} spm</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_baetSwimReps' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.swimMaxCadence }} spm</span>
+                </div>
+              </div>
+            </div>
+            <div class="flexCol" *ngIf="activityInfoLayer.type == 4">
+              <span class="table__list__title">{{ 'universal_activityData_SwimPool' | translate }}</span>
+              <div class="flexCol table__list__block">
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_poolLength' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.poolLengthMeters | distanceSibs: userProfile.unit}}</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_poolSwimReps' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.poolSwimAvgCadence }} spm</span>
+                </div>
+              </div>
+            </div>
+            <div class="flexCol" *ngIf="activityInfoLayer.type == 6">
+              <span class="table__list__title">{{ 'universal_activityData_rowingDynamic' | translate }}</span>
+              <div class="flexCol table__list__block">
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_avgRowCadence' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.rowingAvgCadence }} rpm</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_baetRowReps' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.rowingMaxCadence }} rpm</span>
+                </div>
+              </div>
+            </div>
+            <div
+              class="flexCol"
+              *ngIf="activityInfoLayer.type == 7 && activityInfoLayer.totalPlusGforceX !== null && userProfile.systemAccessRight <= 20"
+            >
+              <span class="table__list__title">{{ 'universal_unit_gforce' | translate }}</span>
+              <div class="flexCol table__list__block">
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_totalPlusGforceX' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalPlusGforceX }} g</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_totalPlusGforceY' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalPlusGforceY }} g</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_totalPlusGforceZ' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalPlusGforceZ }} g</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_totalMinusGforceX' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalMinusGforceX }} g</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_totalMinusGforceY' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalMinusGforceY }} g</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_totalMinusGforceZ' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalMinusGforceZ }} g</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_maxGforceX' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.maxGforceX }} g</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_maxGforceY' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.maxGforceY }} g</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_maxGforceZ' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.maxGforceZ }} g</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_miniGforceX' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.miniGforceX }} g</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_miniGforceY' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.miniGforceY }} g</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_miniGforceZ' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.miniGforceZ }} g</span>
+                </div>
+              </div>
+            </div>
+            <div class="flexCol" *ngIf="activityInfoLayer.type == 7 && activityInfoLayer.totalSwingCount">
+              <span class="table__list__title">{{ 'universal_activityData_swing' | translate }}</span>
+              <div class="flexCol table__list__block">
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_maxSwing' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.maxSwingSpeed | speedSibs: userProfile.unit }} </span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_swingCount' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalSwingCount }}</span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_forehandCount' | translate }}</span>
+                  <span class="table__list__content">
+                    {{ 
+                      ((activityInfoLayer.totalForehandSwingCount) / 
+                        (activityInfoLayer.totalForehandSwingCount + activityInfoLayer.totalBackhandSwingCount)) | number: '1.0-0'
+                    }}%
+                  </span>
+                </div>
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_backhandCcount' | translate }}</span>
+                  <span class="table__list__content">
+                    {{ 
+                      ((activityInfoLayer.totalBackhandSwingCount) / 
+                        (activityInfoLayer.totalForehandSwingCount + activityInfoLayer.totalBackhandSwingCount)) | number: '1.0-0'
+                    }}%
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="uiFlag.currentTag === 'segmentation'">
+          <section class="flexCol">
+            <table>
+              <thead>
+                <tr>
+                  <th class="segmentation__text">
+                    <div class="flexCol">
+                      <span class="segmentation__title">{{ 'universal_activityData_numero' | translate }}</span>
+                      <span class="segmentation__unit">&nbsp;</span>
+                    </div>
+                  </th>
+                  <th class="segmentation__text" *ngIf="[3, 5].indexOf(+activityInfoLayer.type) > -1">
+                    <div class="flexCol">
+                      <span class="segmentation__title">{{ 'universal_activityData_limit_setName' | translate }}</span>
+                      <span class="segmentation__unit">&nbsp;</span>
+                    </div>
+                  </th>
+                  <th class="segmentation__text">
+                    <div class="flexCol">
+                      <span class="segmentation__title">
+                        {{ 'universal_activityData_limit_activitySectionTime' | translate }}
+                      </span>
+                      <span class="segmentation__unit">&nbsp;</span>
+                    </div>
+                  </th>
+                  <th class="segmentation__text">
+                    <div class="flexCol">
+                      <span class="segmentation__title">{{ 'universal_activityData_limit_liveLapHr' | translate }}</span>
+                      <span class="segmentation__unit">bpm</span>
+                    </div>
+                  </th>
+                  <th class="segmentation__text" *ngIf="[1, 2, 6, 7].indexOf(+activityInfoLayer.type) > -1">
+                    <div class="flexCol">
+                      <span class="segmentation__title">{{ 'universal_activityData_limit_lapDistance' | translate }}</span>
+                      <span class="segmentation__unit">
+                        <ng-container *ngIf="userProfile.unit == 0">
+                          km
+                        </ng-container>
+                        <ng-container *ngIf="userProfile.unit == 1">
+                          mi
+                        </ng-container>
+                      </span>
+                    </div>
+                  </th>
+                  <th class="segmentation__text" *ngIf="[1, 4, 6].indexOf(+activityInfoLayer.type) > -1">
+                    <div class="flexCol">
+                      <span class="segmentation__title">{{ 'universal_activityData_limit_liveLapPace' | translate }}</span>
+                      <span class="segmentation__unit">
+                        <ng-container *ngIf="userProfile.unit == 0">
+                          km
+                        </ng-container>
+                        <ng-container *ngIf="userProfile.unit == 1">
+                          mi
+                        </ng-container>
+                      </span>
+                    </div>
+                  </th>
+                  <th class="segmentation__text" *ngIf="[2, 7].indexOf(+activityInfoLayer.type) > -1">
+                    <div class="flexCol">
+                      <span class="segmentation__title">{{ 'universal_activityData_limit_liveLapSpeed' | translate }}</span>
+                      <span class="segmentation__unit">{{ userProfile.unit == 0 ? 'km/hr' : 'mi/hr' }}</span>
+                    </div>
+                  </th>
+                  <th class="segmentation__text" *ngIf="activityInfoLayer.type == 3">
+                    <div class="flexCol">
+                      <span class="segmentation__title">{{ 'universal_activityData_limit_liveOneRm' | translate }}</span>
+                      <span class="segmentation__unit">{{ userProfile.unit == 0 ? 'kg' : 'lb' }}</span>
+                    </div>
+                  </th>
+                  <th class="segmentation__text" *ngIf="activityInfoLayer.type == 3">
+                    <div class="flexCol">
+                      <span class="segmentation__title">{{ 'universal_activityData_limit_avgTempo' | translate }}</span>
+                      <span class="segmentation__unit">spm</span>
+                    </div>
+                  </th>
+                  <th class="segmentation__text" *ngIf="activityInfoLayer.type == 4">
+                    <div class="flexCol">
+                      <span class="segmentation__title">{{ 'universal_activityData_limit_liveLapSwimPosture' | translate }}</span>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="segmentation__row">
+                <ng-container *ngFor="let _layer of activityLapLayer; let _lIdx = index;">
+                  <tr>
+                    <td class="flexRow segmentation__text" style="align-items: center; justify-content: center;">
+                      <i
+                        style="font-size: 22px;"
+                        class="ala-activity-icon"
+                        [class]="_layer.type == 0 ? (+activityInfoLayer.type | sportTypeIcon) : 'icon-svg_web-icon_p2_039-rest'"
+                      >
+                      </i>
+                      {{ _lIdx }}
+                    </td>
+                    <td class="segmentation__text" *ngIf="[3, 5].indexOf(+activityInfoLayer.type) > -1">
+                      {{ _layer.dispName }}
+                    </td>
+                    <td class="segmentation__text">
+                      {{ +_layer.lapTotalSecond | sportTime: true }}
+                    </td>
+                    <td class="segmentation__text">
+                      {{ _layer.lapAvgHeartRateBpm || 0 }}
+                    </td>
+                    <td class="segmentation__text" *ngIf="[1, 2, 6, 7].indexOf(+activityInfoLayer.type) > -1">
+                      {{ (userProfile.unit == 0 ? 
+                          _layer.lapTotalDistanceMeters / 1000 : (_layer.lapTotalDistanceMeters / 1000) / unit.mi) | number: '1.0-2' || 0 }}
+                    </td>
+                    <td class="segmentation__text" *ngIf="[1, 4, 6].indexOf(+activityInfoLayer.type) > -1">
+                      {{ _layer.lapAvgSpeed | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit, 1] || 0 }}
+                    </td>
+                    <td class="segmentation__text" *ngIf="[2, 7].indexOf(+activityInfoLayer.type) > -1">
+                      {{ (userProfile.unit == 0 ? _layer.lapAvgSpeed : _layer.lapAvgSpeed / unit.mi) | number: '1.0-2' || 0 }}
+                    </td>
+                    <td class="segmentation__text" *ngIf="activityInfoLayer.type == 3">
+                      {{ _layer.setOneRepMax | weightSibs: [userProfile.unit, 1] || 0 }}
+                    </td>
+                    <td class="segmentation__text" *ngIf="activityInfoLayer.type == 3">
+                      {{ _layer.setMoveRepetitionsAvgCadence || 0 }}
+                    </td>
+                    <td class="segmentation__text" *ngIf="activityInfoLayer.type == 4">
+                      {{ _layer.lapSwimPosture | swimPosture | translate }}
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </section>
+        </ng-container>
+      </section>
+    </sectoin>
+  </secton>
+  <ng-container *ngIf="uiFlag.pcView || uiFlag.currentTag === 'chart'">
+    <app-map-chart-compare
+      [isNormalCoordinate]="uiFlag.isNormalCoordinate"
+      [userPoint]="[activityPointLayer]"
+      [sportType]="+activityInfoLayer.type"
+      [sysAccessRight]="userProfile.systemAccessRight[0]"
+    ></app-map-chart-compare>
+  </ng-container>
+</main>

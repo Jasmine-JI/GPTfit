@@ -1,0 +1,71 @@
+<section class="flexCol">
+  <div class="flexRow cardTitle" style="position: relative; justify-content: space-between;">
+    <span class="cardSubtitle">
+      <ng-container *ngIf="uiFlag.showMap">
+        {{ 'universal_activityData_map' | translate }}
+      </ng-container>
+      <ng-container *ngIf="!uiFlag.showMap">
+        {{ 'universal_activityData_dataComparison' | translate }}
+      </ng-container>
+    </span>
+    <i class="icon-svg_web-icon_p1_001-setting settingIcon" (click)="handleShowOptMenu($event)"></i>
+    <div id="map__opt__menu" *ngIf="uiFlag.showMapOpt">
+      <div class="flexRow selector__section" *ngIf="mapOpt.showMapSourceSelector">
+        <span class="flexRow radio__selector" (click)="changeMapSource('google')">
+          <span class="radio__btn" [class.radio__btn--active]="mapOpt.mapSource === 'google'"></span>
+          Google
+        </span>
+        <span class="flexRow radio__selector" (click)="changeMapSource('baidu')">
+          <span class="radio__btn" [class.radio__btn--active]="mapOpt.mapSource === 'baidu'"></span>
+          Baidu
+        </span>
+      </div>
+      <div class="flexRow selector__section" *ngIf="sysAccessRight <= 20">
+        <span class="flexRow radio__selector" (click)="changeMapKind('normal')">
+          <span class="radio__btn" [class.radio__btn--active]="mapOpt.mapKind === 'normal'"></span>
+          路線圖
+        </span>
+        <span class="flexRow radio__selector" (click)="changeMapKind('heat')">
+          <span class="radio__btn"[class.radio__btn--active]="mapOpt.mapKind === 'heat'" ></span>
+          熱力圖
+        </span>
+      </div>
+      <div class="flexCol">
+        <div class="flexCol selector__section">
+          <span [style.color]="mapOpt.compareAColor">{{ 'universal_vocabulary_data' | translate }} 1</span>
+          <div class="drop__menu" (click)="handleShowDropList('compareA')">
+            {{ mapOpt.compareA }}
+          </div>
+        </div>
+        <div class="flexCol selector__section">
+          <span [style.color]="mapOpt.compareBColor">{{ 'universal_vocabulary_data' | translate }} 2</span>
+          <div class="drop__menu" (click)="handleShowDropList('compareB')">
+            {{ mapOpt.compareA }}
+          </div>
+        </div>
+        <ng-template #dropList>
+          <div class="flexCol">
+            <span>{{ 'universal_activityData_hr' | translate }}</span>
+            <span>{{ 'universal_activityData_speedPerHour' | translate }}</span>
+            <span>{{ 'universal_activityData_pace' | translate }}</span>
+            <span>{{ 'universal_activityData_stepCadence' | translate }}</span>
+            <span>{{ 'universal_activityData_CyclingCadence' | translate }}</span>
+            <span>{{ 'universal_activityData_repeatTempo' | translate }}</span>
+            <span>{{ 'universal_activityData_swimCadence' | translate }}</span>
+            <span>{{ 'universal_activityData_rowCadence' | translate }}</span>
+            <span>{{ 'universal_activityData_power' | translate }}</span>
+            <span>{{ 'universal_activityData_temperature' | translate }}</span>
+            <span>{{ 'universal_unit_gforceX' | translate }}</span>
+            <span>{{ 'universal_unit_gforceY' | translate }}</span>
+            <span>{{ 'universal_unit_gforceZ' | translate }}</span>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+  <div #gMap class="map__style" *ngIf="mapOpt.mapSource === 'google'">
+  </div>
+  <div #bMap class="map__style" *ngIf="mapOpt.mapSource === 'baidu'">
+  </div>
+  <app-trinomial-chart></app-trinomial-chart>
+</section>

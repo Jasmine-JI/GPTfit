@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { getUrlQueryStrings } from '@shared/utils/';
 import { SettingsService } from '../../../services/settings.service';
 import { UtilsService } from '@shared/services/utils.service';
@@ -8,18 +8,26 @@ import { MessageBoxComponent } from '@shared/components/message-box/message-box.
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../../../shared/services/auth.service';
 
+import { UserProfileService } from '../../../../../shared/services/user-profile.service';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+
 @Component({
   selector: 'app-account-info',
   templateUrl: './account-info.component.html',
   styleUrls: ['./account-info.component.scss', '../settings.component.scss']
 })
-export class AccountInfoComponent implements OnInit {
+export class AccountInfoComponent implements OnInit, OnDestroy {
+
+  private ngUnsubscribe = new Subject;
+
   stravaStatus = false;
   clientId = 30689;
   stravaApiDomain = 'https://app.alatech.com.tw:5443';
   account: string;
   accountStatus: number;
   thirdPartyAgency: Array<any>;
+  userAccessRight = 90;
 
   constructor(
     private utils: UtilsService,
@@ -27,13 +35,15 @@ export class AccountInfoComponent implements OnInit {
     private router: Router,
     public dialog: MatDialog,
     private translate: TranslateService,
-    private auth: AuthService
+    private auth: AuthService,
+    private userProfileService: UserProfileService
   ) {}
 
   ngOnInit() {
     this.getThirdPartyAgency();
     this.checkDomain();
     this.handleQueryStrings();
+    this.getRxUserProfile();
   }
 
   /**
@@ -179,7 +189,32 @@ export class AccountInfoComponent implements OnInit {
    * @author kidin-1090529
    */
   navigateToAssignPage (url: string) {
-    this.router.navigateByUrl(url);
+    window.open(url, '', 'height=700,width=375,resizable=no');
+  }
+
+  /**
+   * 取得管理權限用，待測試完帳號刪除後移除此function
+   * @author kidin-1091229
+   */
+  getRxUserProfile() {
+    this.userProfileService.getRxUserProfile().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
+      if (res) {
+        this.userAccessRight = res.systemAccessRight[0];
+      }
+      
+    });
+
+  }
+
+  /**
+   * 取消訂閱rxjs，待測試完帳號刪除後移除此function
+   * @author kidin-1091229
+   */
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
 }

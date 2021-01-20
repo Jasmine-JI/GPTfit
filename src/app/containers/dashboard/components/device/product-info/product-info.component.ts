@@ -138,8 +138,8 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
         this.totalUseTime = this.ConvertTime(res.info.equipmentInfo.totalUseTimeSecond);
       }
 
-      if (res.info.equipmentInfo.totalNumberOfEnable) {
-        this.totalUseKiloMeter = Math.round(res.info.equipmentInfo.totalNumberOfEnable / 1000);
+      if (res.info.equipmentInfo.totalUseMeter) {
+        this.totalUseKiloMeter = Math.round(res.info.equipmentInfo.totalUseMeter / 1000);
       }
 
       if (res.resultCode === 200) {
@@ -175,7 +175,7 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
 
   // 待多國語系套件載入後再生成翻譯-kidin-1090623
   getTranslate () {
-    this.translate.get('hollow world').subscribe(() => {
+    this.translate.get('hellow world').subscribe(() => {
       this.fitPairTip = this.translate.instant('universal_uiFitpair_fitpairDetailDescription');
     });
 
@@ -197,28 +197,18 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
 
   // 新增西班牙語-kidin-1081106
   handleProductInfo(lang) {
-    if (lang === 'zh-cn') {
-      this.productInfo = this.deviceInfo.informations['relatedLinks_zh-CN'];
-    } else if (lang === 'en-us') {
-      this.productInfo = this.deviceInfo.informations['relatedLinks_en-US'];
-    } else if (lang === 'es-es' && this.deviceInfo.informations['relatedLinks_es-ES']) {
-      this.productInfo = this.deviceInfo.informations['relatedLinks_es-ES'];
-    } else {
-      this.productInfo = this.deviceInfo.informations['relatedLinks_zh-TW'];
-    }
+    const lanArr = lang.split('-'),
+          formatLang = `${lanArr[0].toLowerCase()}-${lanArr[1].toUpperCase()}`;
+
+    this.productInfo = this.deviceInfo.informations[`relatedLinks_${formatLang}`] || [];
   }
 
   // 新增西班牙語-kidin-1081106
   handleProductManual(lang) {
-    if (lang === 'zh-cn') {
-      this.productManual = this.deviceInfo.informations['manual_zh-CN'];
-    } else if (lang === 'en-us') {
-      this.productManual = this.deviceInfo.informations['manual_en-US'];
-    } else if (lang === 'es-es' && this.deviceInfo.informations['manual_es-ES']) {
-      this.productManual = this.deviceInfo.informations['manual_es-ES'];
-    } else {
-      this.productManual = this.deviceInfo.informations['manual_zh-TW'];
-    }
+    const lanArr = lang.split('-'),
+          formatLang = `${lanArr[0].toLowerCase()}-${lanArr[1].toUpperCase()}`;
+
+    this.productManual = this.deviceInfo.informations[`manual_${formatLang}`] || [];
   }
 
   swithMainApp() {
@@ -439,12 +429,12 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
         sec: number;
     if (second >= 3600) {
       hour = Math.floor(second / 3600);
-      min = Math.floor(second - (hour * 3600));
-      sec = second - hour * 3600 - min * 60;
+      min = Math.floor((second - (hour * 3600)) / 60);
+      sec = second - (hour * 3600) - (min * 60);
       return `${hour}:${min}:${sec}`;
     } else if (second >= 60) {
-      min = Math.floor(second - (hour * 3600));
-      sec = second - hour * 3600 - min * 60;
+      min = Math.floor((second - (hour * 3600)) / 60);
+      sec = second - (hour * 3600) - (min * 60);
       return `0:${min}:${sec}`;
     } else {
       return `0:00:${second}`;

@@ -215,7 +215,9 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
    * @author kidin-1091222
    */
   getUrlLanguageString(str: string) {
-    if (str.indexOf('l=') > -1) {
+    if (navigator && navigator.language) {
+      return navigator.language.toLowerCase();
+    } else if (str.indexOf('l=') > -1) {
       const tempStr = str.split('l=')[1];
       let lan: string;
       if (tempStr.indexOf('&') > -1) {
@@ -261,20 +263,23 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
    * @author kidin-1091014
    */
   listenTargetImg() {
-      const scrollEvent = fromEvent(document, 'scroll');
-      scrollEvent.pipe(
-        takeUntil(this.ngUnsubscribe)
-      ).subscribe(e => {
-        this.slideImg();
-      })
+    const mainSection = document.querySelector('.main'),
+          scrollEvent = fromEvent(mainSection, 'scroll');
+
+    scrollEvent.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(e => {
+      this.slideImg((e as any).target.scrollTop);
+    })
     
   }
 
   /**
    * 當頁面滾到指定位置，則圖片滑入
+   * @param scrollTop {number}-距離頂端的捲動高度
    * @author kidin-1091014
    */
-  slideImg() {
+  slideImg(scrollTop: number) {
 
     setTimeout(() => {
       let targetImg = [
@@ -285,10 +290,10 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
       ];
 
       targetImg.forEach(_img => {
-        if (this[_img]) {
-
-          const imgElement = this[_img].nativeElement;
-          if (((window.innerHeight / 1.5) + window.pageYOffset) > imgElement.offsetTop) {
+        const imgElement = document.getElementById(_img);
+        if (imgElement) {
+          
+          if (scrollTop + (window.innerHeight * 2 / 3) >= imgElement.offsetTop) {
 
             switch (_img) {
               case 'systemT1':
@@ -357,6 +362,11 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigateByUrl(url);
     this.uiFlag.page = e;
     window.scrollTo({top: 0, behavior: 'auto'});
+
+    setTimeout(() => {
+      this.listenTargetImg();
+    })
+    
   }
 
   /**
@@ -387,8 +397,7 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
         window.open(`https://www.attacusfitness.com/products/${lang}/id/3`, '_blank', 'noopener=yes,noreferrer=yes');
         break;
       case 3:
-        this.uiFlag.page = 'application';
-        window.scrollTo({top: 0, behavior: 'smooth'});
+        this.switchPage('application');
         break;
       case 4:
         window.open(`https://www.attacusfitness.com/contact/lang/${lang}`, '_blank', 'noopener=yes,noreferrer=yes');

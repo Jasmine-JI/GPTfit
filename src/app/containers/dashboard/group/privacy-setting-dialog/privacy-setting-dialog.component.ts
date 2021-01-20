@@ -61,7 +61,7 @@ export class PrivacySettingDialogComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.translate.get('hollow world').subscribe(() => {
+    this.translate.get('hellow world').subscribe(() => {
       this.i18n.gym = this.translate.instant('universal_group_gym');
     });
 

@@ -14,7 +14,7 @@
     "build": "ng build",
     "preweb-build": "npm run pm2-kill",
     "pretst-build": "npm run pm2-kill && find dist/* -type l -delete",
-    "preuat-build": "npm run pm2-kill && find dist/* -type l -delete",
+    "preuat-build": "npm run pm2-kill && cp src/environments/robots.uat.txt src/robots.txt && find dist/* -type l -delete",
     "preprod-build": "npm run pm2-kill && find dist/* -type l -delete",
     "postweb-build": "npm run bash",
     "posttst-build": "npm run bash",
@@ -24,6 +24,7 @@
     "uat-build": "ng build -c uat --aot --output-hashing=all --base-href /",
     "tst-build": "ng build -c tst --aot --base-href /",
     "prod-build": "ng build --prod --aot --build-optimizer --output-hashing=all --base-href /",
+    "patch": "cp patch/query-string.index.js node_modules/query-string/index.js && cp patch/regression-simple-linear.d.ts node_modules/ml-regression-simple-linear/regression-simple-linear.d.ts",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -54,6 +55,7 @@
     "@types/md5": "^2.2.0",
     "@types/uuid": "^8.3.0",
     "angularx-qrcode": "^10.0.11",
+    "apollo-angular": "^2.1.0",
     "body-parser": "1.18.2",
     "bootstrap": "^4.4.1",
     "concurrently": "4.0.1",
@@ -90,7 +92,9 @@
     "tslib": "^2.0.0",
     "tui-calendar": "^1.12.11",
     "uuid": "^8.3.1",
-    "zone.js": "~0.10.3"
+    "zone.js": "~0.10.3",
+    "@apollo/client": "^3.0.0",
+    "graphql": "^15.0.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.1100.1",

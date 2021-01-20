@@ -22,7 +22,7 @@
       class="product__page__tab"
       [class.product__tab__active]="uiFlag.page === 'productInfo'"
       (click)="switchPage('productInfo')"
-    >產品資訊</span>
+    >{{ 'universal_deviceSetting_productInfo' | translate }}</span>
     <span
       class="product__page__tab"
       [class.product__tab__active]="uiFlag.page === 'productLog'"
@@ -245,7 +245,7 @@
               {{ _log.uploadTime  | timeFormat: 'YYYY-MM-DD HH:mm:ss' }}
             </span>
             <span class="log__message__content">
-              {{ _log.code }}: {{ ('errorCode_' + modelTypeName + '_' + _log.code) | productErrorLog }}
+              {{ _log.code }}: {{ ('errorCode_' + modelTypeName + '_' + (_log.code.split('_')[0])) | productErrorLog }}
             </span>
           </div>
         </div>

@@ -196,7 +196,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     { y: 0, z: '', color: '#f3b353' },
     { y: 0, z: '', color: '#f36953' }
   ];
-  reportCreatedTime = moment().format('YYYY/MM/DD HH:mm');
+  reportCreatedTime = moment().format('YYYY-MM-DD HH:mm');
   HRZoneThree: any = 0;
   classLink: HTMLElement;
   previewUrl: any;
@@ -442,7 +442,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
         fuzzyTime: '',
         filterStartTime: moment(this.calender.startTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
         filterEndTime: moment(this.calender.endTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-        filterSameTime: '2'
+        filterSameTime: this.uiFlag.isDebugMode ? '1' : '2'
       },
       searchRule: {
         activity: '99',
@@ -654,7 +654,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
           this.updateUrl(false);
         } else {
           this.uiFlag.noData = false;
-          this.reportCreatedTime = moment().format('YYYY/MM/DD HH:mm');
+          this.reportCreatedTime = moment().format('YYYY-MM-DD HH:mm');
           this.handleTableData('showPart');
           const infoData = this.activityDetail[0];
           this.fileInfo = infoData.fileInfo;
@@ -785,7 +785,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
   // 取得變數內容並將部分變數替換成html element-kidin-1090623
   getReportInfo () {
-    this.translate.get('hollow world').subscribe(() => {
+    this.translate.get('hellow world').subscribe(() => {
       const targetDiv = document.getElementById('reportInfo');
 
       targetDiv.innerHTML = this.translate.instant('universal_group_sportsRecordReportClass', {
@@ -1138,7 +1138,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     };
     const classCaloriesOptions = new ChartOptions(classCaloriesDataset);
     classCaloriesOptions['tooltip'] = {
-      pointFormat: `${this.translate.instant('universal_adjective_total')}{point.y}人`
+      pointFormat: `${this.translate.instant('universal_activityData_people')} {point.y}`
     };
     classCaloriesOptions['title'].align = 'center';
     classCaloriesOptions['title'].x = 0;

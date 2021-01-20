@@ -71,7 +71,7 @@ export class TuiCalenderComponent implements OnInit, OnChanges {
     const calendarStartTime = this.calendar.getDateRangeStart().getTime(),
           calendarEndTime = this.calendar.getDateRangeEnd().getTime();
 
-    this.calendarRange = `${moment(calendarStartTime).format('YYYY/MM/DD')} ~ ${moment(calendarEndTime).format('YYYY/MM/DD')}`;
+    this.calendarRange = `${moment(calendarStartTime).format('YYYY-MM-DD')} ~ ${moment(calendarEndTime).format('YYYY-MM-DD')}`;
     this.startTime = moment(calendarStartTime).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
     this.endTime = moment(calendarEndTime).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
   }

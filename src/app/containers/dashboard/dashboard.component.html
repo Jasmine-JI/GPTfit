@@ -39,7 +39,7 @@
             </div>
             <div class="header-nav-menu-section">
               <ul>
-                <li style="color: #ff3838; font-weight: bold;" [routerLink]="['/enableAccount-web']" *ngIf="accountStatus === 1">
+                <li style="color: #ff3838; font-weight: bold;" (click)="toEnableAccount()" *ngIf="accountStatus === 1">
                   {{ "universal_deviceSetting_switch" | translate}} {{ "universal_userAccount_account" | translate}}
                 </li>
                 <li (click)="goToUserProfile(userProfile.userId)">
@@ -459,7 +459,7 @@
             [ngClass]="footerAddClassName"
             [style.display]="isHideFooter ? 'none' : 'block'"
           >
-            {{'universal_vocabulary_footerAnnouncement' | translate: {'appName': 'GPTfit' } }}
+            {{'universal_vocabulary_footerAnnouncement' | translate: {'appName': 'GPTFit' } }}
             <div>{{'universal_ota_version' | translate}}: {{version}}</div>
           </div>
         </div>

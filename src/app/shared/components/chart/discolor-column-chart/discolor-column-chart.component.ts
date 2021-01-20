@@ -386,11 +386,11 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
             }
 
             if (this.series.xAxis.tickInterval === 30 * 24 * 4600 * 1000) {
-              return `${moment(this.x).format('YYYY/MM/DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY/MM/DD')}
+              return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY-MM-DD')}
                 <br/>Best Pace: ${paceBestTime}
                 <br/>${this.series.name}: ${bottomPace}`;
             } else {
-              return `${moment(this.x).format('YYYY/MM/DD')}
+              return `${moment(this.x).format('YYYY-MM-DD')}
                 <br/>Best Pace: ${paceBestTime}
                 <br/>${this.series.name}: ${bottomPace}`;
             }
@@ -408,11 +408,11 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         trendChartOptions['tooltip'] = {
           formatter: function () {
             if (this.series.xAxis.tickInterval === 30 * 24 * 4600 * 1000) {
-              return `${moment(this.x).format('YYYY/MM/DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY/MM/DD')}
+              return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY-MM-DD')}
                 <br/>Best Candence: ${this.point.y}
                 <br/>${this.series.name}: ${this.point.low}`;
             } else {
-              return `${moment(this.x).format('YYYY/MM/DD')}
+              return `${moment(this.x).format('YYYY-MM-DD')}
                 <br/>Best Candence: ${this.point.y}
                 <br/>${this.series.name}: ${this.point.low}`;
             }
@@ -430,11 +430,11 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         trendChartOptions['tooltip'] = {
           formatter: function () {
             if (this.series.xAxis.tickInterval === 30 * 24 * 4600 * 1000) {
-              return `${moment(this.x).format('YYYY/MM/DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY/MM/DD')}
+              return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY-MM-DD')}
                 <br/>Best Swolf: ${this.point.low}
                 <br/>${this.series.name}: ${this.point.y}`;
             } else {
-              return `${moment(this.x).format('YYYY/MM/DD')}
+              return `${moment(this.x).format('YYYY-MM-DD')}
                 <br/>Best Swolf: ${this.point.low}
                 <br/>${this.series.name}: ${this.point.y}`;
             }
@@ -451,11 +451,11 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         trendChartOptions['tooltip'] = {
           formatter: function () {
             if (this.series.xAxis.tickInterval === 30 * 24 * 4600 * 1000) {
-              return `${moment(this.x).format('YYYY/MM/DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY/MM/DD')}
+              return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY-MM-DD')}
                 <br/>Best Speed: ${this.point.y}
                 <br/>${this.series.name}: ${this.point.low}`;
             } else {
-              return `${moment(this.x).format('YYYY/MM/DD')}
+              return `${moment(this.x).format('YYYY-MM-DD')}
                 <br/>Best Speed: ${this.point.y}
                 <br/>${this.series.name}: ${this.point.low}`;
             }
@@ -469,12 +469,12 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         trendChartOptions['tooltip'] = {
           formatter: function () {
             if (this.series.xAxis.tickInterval === 30 * 24 * 4600 * 1000) {
-              return `${moment(this.x).format('YYYY/MM/DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY/MM/DD')}
+              return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY-MM-DD')}
                 <br/>${this.series.name[1]}: ${this.point.t.toFixed(1)}
                 <br/>${this.series.name[0]}: ${this.point.z.toFixed(1)}`;
 
             } else {
-              return `${moment(this.x).format('YYYY/MM/DD')}
+              return `${moment(this.x).format('YYYY-MM-DD')}
                 <br/>${this.series.name[1]}: ${this.point.t.toFixed(1)}
                 <br/>${this.series.name[0]}: ${this.point.z.toFixed(1)}`;
             }
@@ -496,11 +496,11 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         trendChartOptions['tooltip'] = {
           formatter: function () {
             if (this.series.xAxis.tickInterval === 30 * 24 * 4600 * 1000) {
-              return `${moment(this.x).format('YYYY/MM/DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY/MM/DD')}
+              return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY-MM-DD')}
                 <br/>1RM: ${this.point.y.toFixed(1)}K
                 <br/>Avg Weight: ${this.point.low.toFixed(1)}`;
             } else {
-              return `${moment(this.x).format('YYYY/MM/DD')}
+              return `${moment(this.x).format('YYYY-MM-DD')}
                 <br/>1RM: ${this.point.y.toFixed(1)}
                 <br/>Avg Weight: ${this.point.low.toFixed(1)}`;
             }

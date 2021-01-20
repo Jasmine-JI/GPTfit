@@ -6,8 +6,6 @@ import { CertificateComponent } from './components/certificate/certificate.compo
 import { CertificatePreviewComponent } from './components/certificate-preview/certificate-preview.component';
 import { EventCalendarComponent } from './components/event-calendar/event-calendar.component';
 import { EnrollPreviewComponent } from './components/enroll-preview/enroll-preview.component';
-import { LeaderboardSettingsComponent } from './components/leaderboard-settings/leaderboard-settings.component';
-import { RealTimeLeaderboardComponent } from './components/real-time-leaderboard/real-time-leaderboard.component';
 import { DbMaintainComponent } from './components/db-maintain/db-maintain.component';
 import { DeviceLogComponent } from './components/device-log/device-log.component';
 import { DeviceLogDetailComponent } from './components/device-log-detail/device-log-detail.component';
@@ -55,6 +53,7 @@ import { ClassAnalysisComponent } from './group-v2/group-info/class-analysis/cla
 import { ActivityListManageComponent } from './components/official-activity-manage/activity-list-manage/activity-list-manage.component';
 import { EditOfficialActivityComponent } from './components/official-activity-manage/edit-official-activity/edit-official-activity.component';
 import { ParticipantsManageComponent } from './components/official-activity-manage/participants-manage/participants-manage.component';
+import { ActivityDetailComponent } from '../../shared/components/activity-detail/activity-detail.component';
 
 const routes: Routes = [
   {
@@ -79,10 +78,6 @@ const routes: Routes = [
         path: 'enroll/:event_id/preview',
         component: EnrollPreviewComponent,
         canActivate: [DashboardGuard]
-      },
-      {
-        path: 'real-time-leaderboard',
-        component: RealTimeLeaderboardComponent
       },
       {
         path: 'db',
@@ -119,11 +114,6 @@ const routes: Routes = [
       {
         path: 'system/event-calendar',
         component: EventCalendarComponent,
-        canActivate: [DashboardGuard]
-      },
-      {
-        path: 'system/leaderboard-settings',
-        component: LeaderboardSettingsComponent,
         canActivate: [DashboardGuard]
       },
       {
@@ -221,10 +211,18 @@ const routes: Routes = [
         path: 'activity-list',
         component: MyActivityComponent
       },
+      
       {
         path: 'activity/:fileId',
         component: ActivityInfoComponent
       },
+      
+     /*
+      {
+        path: 'activity/:fileId',
+        component: ActivityDetailComponent
+      },
+      */
       {
         path: 'sport-report',
         component: SportReportComponent

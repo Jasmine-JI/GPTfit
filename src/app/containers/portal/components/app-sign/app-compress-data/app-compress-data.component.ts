@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { SignupService } from '../../../services/signup.service';
 import moment from 'moment';
+import { AuthService } from '../../../../../shared/services/auth.service';
 
 @Component({
   selector: 'app-app-compress-data',
@@ -36,7 +37,8 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit {
   constructor(
     private router: Router,
     private utils: UtilsService,
-    private signupService: SignupService
+    private signupService: SignupService,
+    private auth: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -49,7 +51,6 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit {
   ngAfterViewInit () {
     this.getDeviceSys();
     this.getUserToken();
-    this.checkCompressStatus();
   }
 
   /**
@@ -83,6 +84,13 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit {
         this.token = '';
       }
 
+    }
+
+    if (this.token.length === 0) {
+      this.auth.backUrl = location.href;
+      this.router.navigateByUrl('/signIn');
+    } else {
+      this.checkCompressStatus();
     }
 
   }

@@ -119,7 +119,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
   // 確認ngx translate套件已經載入再產生翻譯-kidin-1090430
   createPlaceholder () {
 
-    this.translate.get('hello.world').pipe(
+    this.translate.get('hellow world').pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
       this.phoneCaptcha.placeholder = this.translate.instant('universal_userAccount_phoneCaptcha');
@@ -236,6 +236,12 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
       (window as any).android.closeWebView('Close');
     } else {
 
+      window.close();
+      if (history.length >= 2) {  // 可能已編輯過帳號，故需重整頁面
+        window.onunload = this.refreshParent;
+      }
+
+      // 若無法關閉視窗就導回登入頁
       if (this.pcView === true) {
         this.router.navigateByUrl('/signIn-web');
       } else {
@@ -287,27 +293,32 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
               break;
 
             default:
-              this.showMsgBox(errorMsg, true);
+              this.showMsgBox(errorMsg, 'turnBack');
               console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
               break;
           }
 
         } else if (resultInfo.resultCode === 200) {
-          const msg = this.translate.instant('universal_userAccount_sendSmsSuccess');
-          this.showMsgBox(msg, false);
+          this.translate.get('hellow world').pipe(
+            takeUntil(this.ngUnsubscribe)
+          ).subscribe(() => {
+            const msg = this.translate.instant('universal_userAccount_sendSmsSuccess');
+            this.showMsgBox(msg, 'none');
 
-          const btnInterval = setInterval(() => {
-            this.timeCount--;
+            const btnInterval = setInterval(() => {
+              this.timeCount--;
 
-            if (this.timeCount === 0) {
-              this.sendingPhoneCaptcha = false;
-              this.timeCount = 30;
+              if (this.timeCount === 0) {
+                this.sendingPhoneCaptcha = false;
+                this.timeCount = 30;
 
-              // 設any處理typescript報錯：Argument of type 'Timer' is not assignable to parameter of type 'number'-kidin-1090515
-              window.clearInterval(btnInterval as any);
-            }
+                // 設any處理typescript報錯：Argument of type 'Timer' is not assignable to parameter of type 'number'-kidin-1090515
+                window.clearInterval(btnInterval as any);
+              }
 
-          }, 1000);
+            }, 1000);
+
+          });
 
         }
 
@@ -375,7 +386,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
             case `Post fail, parmameter 'project' or 'token' or 'userId' error.`:
             case `Post fail, check 'userId' error with verification code.`:
               msgBody = this.translate.instant('universal_userAccount_errorCaptcha');
-              this.showMsgBox(msgBody, false);
+              this.showMsgBox(msgBody, 'none');
               break;
             case 'Found attack, update status to lock!':
             case 'Found lock!':
@@ -397,7 +408,7 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
             default:
               msgBody = errorMsg;
               console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
-              this.showMsgBox(errorMsg, true);
+              this.showMsgBox(errorMsg, 'turnBack');
               break;
           }
 
@@ -405,12 +416,10 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
           if (this.accountInfo.type === 1) {
             const msgBody = this.translate.instant('universal_userAccount_sendCaptchaChackEmail');
-            this.showMsgBox(msgBody, true);
+            this.showMsgBox(msgBody, 'enableSuccess');
           } else {
-            const msgBody = `${this.logMessage.enable
-              } ${this.logMessage.success
-            }`;
-            this.showMsgBox(msgBody, true);
+            const msgBody = `${this.logMessage.enable} ${this.logMessage.success}`;
+            this.showMsgBox(msgBody, 'enableSuccess');
           }
 
         }
@@ -483,17 +492,18 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
           switch (res.processResult.apiReturnMessage) {
             case 'Enable account fail, account was enabled.':  // 已啟用後再次點擊啟用信件，則當作啟用成功-kidin-1090520
               msgBody = `${this.logMessage.enable} ${this.logMessage.success}`;
+              this.showMsgBox(msgBody, 'enableSuccess');
               break;
             default:
               msgBody = errorMsg;
               console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+              this.showMsgBox(msgBody, 'turnBack');
               break;
           }
 
-          this.showMsgBox(msgBody, true);
         } else {
           msgBody = `${this.logMessage.enable} ${this.logMessage.success}`;
-          this.showMsgBox(msgBody, true);
+          this.showMsgBox(msgBody, 'enableSuccess');
         }
 
         this.sending = false;
@@ -508,9 +518,29 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  // 顯示彈跳視窗訊息-kidin-1090518
-  showMsgBox (msg: string, navigate: boolean) {
-    if (navigate) {
+  /**
+   * 顯示彈跳視窗訊息
+   * @param msg {string}-欲顯示的訊息
+   * @param action {'turnBack' | 'enableSuccess' | 'none'}
+   * @author kidin-1091229
+   */
+  showMsgBox (msg: string, action: 'turnBack' | 'enableSuccess' | 'none') {
+    switch (action) {
+      case 'turnBack':
+        this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          disableClose: true,
+          data: {
+            title: 'Message',
+            body: msg,
+            confirmText: this.logMessage.confirm,
+            onConfirm: this.turnBack.bind(this)
+          }
+        });
+        
+        break;
+
+      case 'enableSuccess':
         this.dialog.open(MessageBoxComponent, {
           hasBackdrop: true,
           disableClose: true,
@@ -522,18 +552,20 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         });
 
-    } else {
+        break;
 
-      this.dialog.open(MessageBoxComponent, {
-        hasBackdrop: true,
-        disableClose: true,
-        data: {
-          title: 'Message',
-          body: msg,
-          confirmText: this.logMessage.confirm
-        }
-      });
+      case 'none':
+        this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          disableClose: true,
+          data: {
+            title: 'Message',
+            body: msg,
+            confirmText: this.logMessage.confirm
+          }
+        });
 
+        break;
     }
 
   }
@@ -549,14 +581,25 @@ export class AppEnableComponent implements OnInit, AfterViewInit, OnDestroy {
       (window as any).android.closeWebView('Close');
     } else {
 
+      window.close();
+      window.onunload = this.refreshParent;
+      // 若無法關閉瀏覽器則導回登入頁
       if (this.pcView === true) {
-        this.router.navigateByUrl('/firstLogin-web');
+        this.router.navigateByUrl(this.utils.getToken() ? '/firstLogin-web' : '/signIn-web');
       } else {
-        this.router.navigateByUrl('/firstLogin');
+        this.router.navigateByUrl(this.utils.getToken() ? '/firstLogin' : '/signIn');
       }
 
     }
 
+  }
+
+  /**
+   * 關閉子視窗後將頁面重新整理
+   * @author kidin-1091229
+   */
+  refreshParent() {
+    window.opener.location.reload();
   }
 
   // 離開頁面則取消隱藏navbar-kidin-1090514
