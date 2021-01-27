@@ -439,7 +439,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   perAvgHR = [];
   perActivityTime = [];
   hrZoneRange = {
-    HRBase: 0,
+    hrBase: 0,
     z0: 'Z0',
     z1: 'Z1',
     z2: 'Z2',

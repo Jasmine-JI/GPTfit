@@ -376,15 +376,15 @@
               <div class="flexCol table__list__block">
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_activityAvgTemp' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.avgTemp | temperatureSibs: userProfile.unit }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.avgTemp | temperatureSibs: [userProfile.unit, 0] }}</span>
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_maxTemperature' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.maxTemp | temperatureSibs: userProfile.unit }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.maxTemp | temperatureSibs: [userProfile.unit, 0] }}</span>
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_lowTemperature' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.minTemp | temperatureSibs: userProfile.unit }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.minTemp | temperatureSibs: [userProfile.unit, 0] }}</span>
                 </div>
               </div>
             </div>
@@ -734,6 +734,51 @@
       [userPoint]="[activityPointLayer]"
       [sportType]="+activityInfoLayer.type"
       [sysAccessRight]="userProfile.systemAccessRight[0]"
+      [unit]="userProfile.unit"
     ></app-map-chart-compare>
   </ng-container>
+  <section class="card__section">
+    <div>
+      <div
+        class="cardTitle"
+        *ngIf="uiFlag.pcView; else activeBarTemp;"
+      >
+        <span class="cardSubtitle">{{ 'universal_activityData_heartRateAnalysis' | translate }}</span>
+      </div>
+      <div class="zone__section">
+        <div class="flexCol zone__chart">
+          <span class="instructionsText">{{ 'universal_activityData_hrStatisticsDuringThePeriod' | translate: {'number': 1} }}</span>
+          <app-hrzone-chart
+            [data]="chartData.hr"
+            [type]="mixHrZone"
+          ></app-hrzone-chart>
+        </div>
+        <app-hrzone-info
+          class="info__chart"
+          [hrZoneRange]="chartData.hrInfo"
+        ></app-hrzone-info>
+      </div>
+    </div>
+  </section>
+  <section class="card__section" *ngIf="+activityInfoLayer.type === 2">
+    <div>
+      <div
+        class="cardTitle"
+      >
+        <span class="cardSubtitle">{{ 'universal_activityData_ftpZone' | translate }}</span>
+      </div>
+      <div class="zone__section">
+        <div class="flexCol zone__chart">
+          <span class="instructionsText">{{ 'universal_activityData_hrStatisticsDuringThePeriod' | translate: {'number': 1} }}</span>
+          <app-hrzone-chart
+            [data]="chartData.hr"
+            [type]="mixHrZone"
+          ></app-hrzone-chart>
+        </div>
+        <app-threshold-info
+          class="info__chart"
+        ></app-threshold-info>
+      </div>
+    </div>
+  </section>
 </main>

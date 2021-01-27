@@ -101,7 +101,7 @@
           </div>
         </div>
       </div>
-      <div class="row mainAppSection" style="margin-bottom: 15px" *ngIf="deviceInfo?.secondaryApp">
+      <div class="row mainAppSection" [style.margin-bottom]="productInfo && productInfo.length > 0 ? '15px' : '50px'" *ngIf="deviceInfo?.secondaryApp">
         <div class="col-sm-6 text-sm-right text-center" style="font-weight: bold">
           {{"universal_deviceSetting_otherApp" | translate}}：
         </div>

@@ -1,4 +1,5 @@
 @import 'flex-center.scss';
+@import 'transition.scss';
 
 $radio-size: 20px;
 $radio-active-size: 14px;
@@ -47,7 +48,7 @@ $radio-active-size: 14px;
 
 .drop__menu {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   border: 1px solid black;
   height: 30px;
@@ -66,4 +67,28 @@ $radio-active-size: 14px;
 
 .selector__section {
   margin: 5px 0;
+  position: relative;
+}
+
+.drop__menu__list {
+  cursor: pointer;
+  position: absolute;
+  width: 100%;
+  border: 1px solid black;
+  padding: 5px;
+  z-index: 2;
+  background-color: white;
+  top: 58px;
+
+  span {
+    padding: 2px;
+
+    &:hover {
+      background-color: rgba(17, 166, 235, 1);
+      color: white;
+      @include transition(background-color);
+    }
+
+  }
+
 }
