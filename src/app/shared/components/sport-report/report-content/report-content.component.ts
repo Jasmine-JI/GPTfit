@@ -4,13 +4,13 @@ import { Subject } from 'rxjs';
 import { first, takeUntil, tap, switchMap } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-
 import { UtilsService } from '@shared/services/utils.service';
 import { HashIdService } from '@shared/services/hash-id.service';
 import { UserProfileService } from '../../../services/user-profile.service';
 import { ReportService } from '../../../services/report.service';
 import * as _Highcharts from 'highcharts';
 import { ReportConditionOpt } from '../../../models/report-condition';
+import { HrZoneRange } from '../../../models/chart-data';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -112,8 +112,8 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
   perPowerData = [];
   perAvgHR = [];
   perActivityTime = [];
-  hrZoneRange = {
-    HRBase: 0,
+  hrZoneRange = <HrZoneRange>{
+    hrBase: 0,
     z0: 'Z0',
     z1: 'Z1',
     z2: 'Z2',
@@ -230,7 +230,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
 
     } else {
       this.userId = +this.hashIdService.handleUserIdDecode(hashUserId);
-      this.hrZoneRange['HRBase'] = 0;
+      this.hrZoneRange['hrBase'] = 0;
       this.hrZoneRange['z0'] = 'Z0';
       this.hrZoneRange['z1'] = 'Z1';
       this.hrZoneRange['z2'] = 'Z2';
@@ -344,15 +344,15 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
       if (userMaxHR && userRestHR) {
         if (userHRBase === 0) {
           // 區間數值採無條件捨去法
-          this.hrZoneRange['HRBase'] = userHRBase;
-          this.hrZoneRange['z0'] = Math.floor((220 - userAge) * 0.5) + '';
-          this.hrZoneRange['z1'] = Math.floor((220 - userAge) * 0.6 - 1) + '';
-          this.hrZoneRange['z2'] = Math.floor((220 - userAge) * 0.7 - 1) + '';
-          this.hrZoneRange['z3'] = Math.floor((220 - userAge) * 0.8 - 1) + '';
-          this.hrZoneRange['z4'] = Math.floor((220 - userAge) * 0.9 - 1) + '';
-          this.hrZoneRange['z5'] = Math.floor((220 - userAge) * 1) + '';
+          this.hrZoneRange['hrBase'] = userHRBase;
+          this.hrZoneRange['z0'] = Math.floor((220 - userAge) * 0.5);
+          this.hrZoneRange['z1'] = Math.floor((220 - userAge) * 0.6 - 1);
+          this.hrZoneRange['z2'] = Math.floor((220 - userAge) * 0.7 - 1);
+          this.hrZoneRange['z3'] = Math.floor((220 - userAge) * 0.8 - 1);
+          this.hrZoneRange['z4'] = Math.floor((220 - userAge) * 0.9 - 1);
+          this.hrZoneRange['z5'] = Math.floor((220 - userAge) * 1);
         } else {
-          this.hrZoneRange['HRBase'] = userHRBase;
+          this.hrZoneRange['hrBase'] = userHRBase;
           this.hrZoneRange['z0'] = Math.floor((userMaxHR - userRestHR) * (0.55)) + userRestHR;
           this.hrZoneRange['z1'] = Math.floor((userMaxHR - userRestHR) * (0.6)) + userRestHR;
           this.hrZoneRange['z2'] = Math.floor((userMaxHR - userRestHR) * (0.65)) + userRestHR;
@@ -363,15 +363,15 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
       } else {
         if (userHRBase === 0) {
           // 區間數值採無條件捨去法
-          this.hrZoneRange['HRBase'] = userHRBase;
-          this.hrZoneRange['z0'] = Math.floor((220 - userAge) * 0.5) + '';
-          this.hrZoneRange['z1'] = Math.floor((220 - userAge) * 0.6 - 1) + '';
-          this.hrZoneRange['z2'] = Math.floor((220 - userAge) * 0.7 - 1) + '';
-          this.hrZoneRange['z3'] = Math.floor((220 - userAge) * 0.8 - 1) + '';
-          this.hrZoneRange['z4'] = Math.floor((220 - userAge) * 0.9 - 1) + '';
-          this.hrZoneRange['z5'] = Math.floor((220 - userAge) * 1) + '';
+          this.hrZoneRange['hrBase'] = userHRBase;
+          this.hrZoneRange['z0'] = Math.floor((220 - userAge) * 0.5);
+          this.hrZoneRange['z1'] = Math.floor((220 - userAge) * 0.6 - 1);
+          this.hrZoneRange['z2'] = Math.floor((220 - userAge) * 0.7 - 1);
+          this.hrZoneRange['z3'] = Math.floor((220 - userAge) * 0.8 - 1);
+          this.hrZoneRange['z4'] = Math.floor((220 - userAge) * 0.9 - 1);
+          this.hrZoneRange['z5'] = Math.floor((220 - userAge) * 1);
         } else {
-          this.hrZoneRange['HRBase'] = userHRBase;
+          this.hrZoneRange['hrBase'] = userHRBase;
           this.hrZoneRange['z0'] = Math.floor(((220 - userAge) - userRestHR) * (0.55)) + userRestHR;
           this.hrZoneRange['z1'] = Math.floor(((220 - userAge) - userRestHR) * (0.6)) + userRestHR;
           this.hrZoneRange['z2'] = Math.floor(((220 - userAge) - userRestHR) * (0.65)) + userRestHR;
@@ -381,7 +381,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
         }
       }
     } else {
-      this.hrZoneRange['HRBase'] = 0;
+      this.hrZoneRange['hrBase'] = 0;
       this.hrZoneRange['z0'] = 'Z0';
       this.hrZoneRange['z1'] = 'Z1';
       this.hrZoneRange['z2'] = 'Z2';

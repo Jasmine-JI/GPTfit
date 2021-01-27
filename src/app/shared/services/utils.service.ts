@@ -7,6 +7,7 @@ import { MessageBoxComponent } from '../components/message-box/message-box.compo
 import { TranslateService } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AlbumType } from '../models/image';
+import { HrZoneRange } from '../models/chart-data';
 export const TOKEN = 'ala_token';
 export const EMPTY_OBJECT = {};
 
@@ -383,6 +384,72 @@ export class UtilsService {
       return img;
     }
     
+  }
+
+  /**
+   * 
+   * @param userHRBase {0 | 1}-使用者心率法, 0.最大心率法 1.儲備心率法
+   * @param userAge 
+   * @param userMaxHR 
+   * @param userRestHR 
+   */
+  getUserHrRange(userHRBase, userAge, userMaxHR, userRestHR) {
+    let userHrInfo = <HrZoneRange>{
+      hrBase: userHRBase,
+      z0: 0,
+      z1: 0,
+      z2: 0,
+      z3: 0,
+      z4: 0,
+      z5: 0
+    };
+
+    if (userAge !== null) {
+      if (userMaxHR && userRestHR) {
+        if (userHRBase === 0) {
+          // 區間數值採無條件捨去法
+          userHrInfo['z0'] = Math.floor((220 - userAge) * 0.5 - 1);
+          userHrInfo['z1'] = Math.floor((220 - userAge) * 0.6 - 1);
+          userHrInfo['z2'] = Math.floor((220 - userAge) * 0.7 - 1);
+          userHrInfo['z3'] = Math.floor((220 - userAge) * 0.8 - 1);
+          userHrInfo['z4'] = Math.floor((220 - userAge) * 0.9 - 1);
+          userHrInfo['z5'] = Math.floor((220 - userAge) * 1);
+        } else {
+          userHrInfo['z0'] = Math.floor((userMaxHR - userRestHR) * (0.55)) + userRestHR;
+          userHrInfo['z1'] = Math.floor((userMaxHR - userRestHR) * (0.6)) + userRestHR;
+          userHrInfo['z2'] = Math.floor((userMaxHR - userRestHR) * (0.65)) + userRestHR;
+          userHrInfo['z3'] = Math.floor((userMaxHR - userRestHR) * (0.75)) + userRestHR;
+          userHrInfo['z4'] = Math.floor((userMaxHR - userRestHR) * (0.85)) + userRestHR;
+          userHrInfo['z5'] = Math.floor((userMaxHR - userRestHR) * (1)) + userRestHR;
+        }
+      } else {
+        if (userHRBase === 0) {
+          // 區間數值採無條件捨去法
+          userHrInfo['z0'] = Math.floor((220 - userAge) * 0.5 - 1);
+          userHrInfo['z1'] = Math.floor((220 - userAge) * 0.6 - 1);
+          userHrInfo['z2'] = Math.floor((220 - userAge) * 0.7 - 1);
+          userHrInfo['z3'] = Math.floor((220 - userAge) * 0.8 - 1);
+          userHrInfo['z4'] = Math.floor((220 - userAge) * 0.9 - 1);
+          userHrInfo['z5'] = Math.floor((220 - userAge) * 1);
+        } else {
+          userHrInfo['z0'] = Math.floor(((220 - userAge) - userRestHR) * (0.55)) + userRestHR;
+          userHrInfo['z1'] = Math.floor(((220 - userAge) - userRestHR) * (0.6)) + userRestHR;
+          userHrInfo['z2'] = Math.floor(((220 - userAge) - userRestHR) * (0.65)) + userRestHR;
+          userHrInfo['z3'] = Math.floor(((220 - userAge) - userRestHR) * (0.75)) + userRestHR;
+          userHrInfo['z4'] = Math.floor(((220 - userAge) - userRestHR) * (0.85)) + userRestHR;
+          userHrInfo['z5'] = Math.floor(((220 - userAge) - userRestHR) * (1)) + userRestHR;
+        }
+      }
+    } else {
+      userHrInfo['z0'] = 'Z0';
+      userHrInfo['z1'] = 'Z1';
+      userHrInfo['z2'] = 'Z2';
+      userHrInfo['z3'] = 'Z3';
+      userHrInfo['z4'] = 'Z4';
+      userHrInfo['z5'] = 'Z5';
+    }
+
+    return userHrInfo;
   }
 
 }

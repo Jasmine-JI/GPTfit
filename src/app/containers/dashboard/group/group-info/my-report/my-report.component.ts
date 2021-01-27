@@ -2,20 +2,17 @@ import { Component, OnInit, OnDestroy, Renderer2, ViewChild, ElementRef } from '
 import moment from 'moment';
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
-
 import { Router } from '@angular/router';
-
 import { TranslateService } from '@ngx-translate/core';
 import { HashIdService } from '@shared/services/hash-id.service';
-
 import { GroupService } from '../../../services/group.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { ActivityService } from '../../../../../shared/services/activity.service';
 import { QrcodeService } from '../../../../portal/services/qrcode.service';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
-
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { HrZoneRange } from '../../../../../shared/models/chart-data';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -178,8 +175,8 @@ export class MyReportComponent implements OnInit, OnDestroy {
     { y: 0, color: '#f36953' }
   ];
   colorIdx = 0;
-  hrZoneRange = {
-    HRBase: 0,
+  hrZoneRange = <HrZoneRange>{
+    hrBase: 0,
     z0: 'Z0',
     z1: 'Z1',
     z2: 'Z2',
@@ -391,7 +388,7 @@ export class MyReportComponent implements OnInit, OnDestroy {
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       if (+this.userId !== res.userId) {
-        this.hrZoneRange['HRBase'] = 0;
+        this.hrZoneRange['hrBase'] = 0;
         this.hrZoneRange['z0'] = 'Z0';
         this.hrZoneRange['z1'] = 'Z1';
         this.hrZoneRange['z2'] = 'Z2';
@@ -417,15 +414,15 @@ export class MyReportComponent implements OnInit, OnDestroy {
       if (userMaxHR && userRestHR) {
         if (userHRBase === 0) {
           // 區間數值採無條件捨去法
-          this.hrZoneRange['HRBase'] = userHRBase;
-          this.hrZoneRange['z0'] = Math.floor((220 - userAge) * 0.5 - 1) + '';
-          this.hrZoneRange['z1'] = Math.floor((220 - userAge) * 0.6 - 1) + '';
-          this.hrZoneRange['z2'] = Math.floor((220 - userAge) * 0.7 - 1) + '';
-          this.hrZoneRange['z3'] = Math.floor((220 - userAge) * 0.8 - 1) + '';
-          this.hrZoneRange['z4'] = Math.floor((220 - userAge) * 0.9 - 1) + '';
-          this.hrZoneRange['z5'] = Math.floor((220 - userAge) * 1) + '';
+          this.hrZoneRange['hrBase'] = userHRBase;
+          this.hrZoneRange['z0'] = Math.floor((220 - userAge) * 0.5 - 1);
+          this.hrZoneRange['z1'] = Math.floor((220 - userAge) * 0.6 - 1);
+          this.hrZoneRange['z2'] = Math.floor((220 - userAge) * 0.7 - 1);
+          this.hrZoneRange['z3'] = Math.floor((220 - userAge) * 0.8 - 1);
+          this.hrZoneRange['z4'] = Math.floor((220 - userAge) * 0.9 - 1);
+          this.hrZoneRange['z5'] = Math.floor((220 - userAge) * 1);
         } else {
-          this.hrZoneRange['HRBase'] = userHRBase;
+          this.hrZoneRange['hrBase'] = userHRBase;
           this.hrZoneRange['z0'] = Math.floor((userMaxHR - userRestHR) * (0.55)) + userRestHR;
           this.hrZoneRange['z1'] = Math.floor((userMaxHR - userRestHR) * (0.6)) + userRestHR;
           this.hrZoneRange['z2'] = Math.floor((userMaxHR - userRestHR) * (0.65)) + userRestHR;
@@ -436,15 +433,15 @@ export class MyReportComponent implements OnInit, OnDestroy {
       } else {
         if (userHRBase === 0) {
           // 區間數值採無條件捨去法
-          this.hrZoneRange['HRBase'] = userHRBase;
-          this.hrZoneRange['z0'] = Math.floor((220 - userAge) * 0.5 - 1) + '';
-          this.hrZoneRange['z1'] = Math.floor((220 - userAge) * 0.6 - 1) + '';
-          this.hrZoneRange['z2'] = Math.floor((220 - userAge) * 0.7 - 1) + '';
-          this.hrZoneRange['z3'] = Math.floor((220 - userAge) * 0.8 - 1) + '';
-          this.hrZoneRange['z4'] = Math.floor((220 - userAge) * 0.9 - 1) + '';
-          this.hrZoneRange['z5'] = Math.floor((220 - userAge) * 1) + '';
+          this.hrZoneRange['hrBase'] = userHRBase;
+          this.hrZoneRange['z0'] = Math.floor((220 - userAge) * 0.5 - 1);
+          this.hrZoneRange['z1'] = Math.floor((220 - userAge) * 0.6 - 1);
+          this.hrZoneRange['z2'] = Math.floor((220 - userAge) * 0.7 - 1);
+          this.hrZoneRange['z3'] = Math.floor((220 - userAge) * 0.8 - 1);
+          this.hrZoneRange['z4'] = Math.floor((220 - userAge) * 0.9 - 1);
+          this.hrZoneRange['z5'] = Math.floor((220 - userAge) * 1);
         } else {
-          this.hrZoneRange['HRBase'] = userHRBase;
+          this.hrZoneRange['hrBase'] = userHRBase;
           this.hrZoneRange['z0'] = Math.floor(((220 - userAge) - userRestHR) * (0.55)) + userRestHR;
           this.hrZoneRange['z1'] = Math.floor(((220 - userAge) - userRestHR) * (0.6)) + userRestHR;
           this.hrZoneRange['z2'] = Math.floor(((220 - userAge) - userRestHR) * (0.65)) + userRestHR;
@@ -454,7 +451,7 @@ export class MyReportComponent implements OnInit, OnDestroy {
         }
       }
     } else {
-      this.hrZoneRange['HRBase'] = 0;
+      this.hrZoneRange['hrBase'] = 0;
       this.hrZoneRange['z0'] = 'Z0';
       this.hrZoneRange['z1'] = 'Z1';
       this.hrZoneRange['z2'] = 'Z2';
@@ -540,13 +537,13 @@ export class MyReportComponent implements OnInit, OnDestroy {
                 if (hrBpm[j].heartRateBpm !== 0) {
                   if (hrBpm[j].heartRateBpm.heartRateBpm >= this.hrZoneRange.z0 && hrBpm[j].heartRateBpm < this.hrZoneRange.z1) {
                     HRZoneOne += resolutionSeconds;
-                  } else if (hrBpm[j].heartRateBpm >= this.hrZoneRange.z1 + 1 && hrBpm[j].heartRateBpm < this.hrZoneRange.z2) {
+                  } else if (hrBpm[j].heartRateBpm >= (this.hrZoneRange.z1 as any) + 1 && hrBpm[j].heartRateBpm < this.hrZoneRange.z2) {
                     HRZoneTwo += resolutionSeconds;
-                  } else if (hrBpm[j].heartRateBpm >= this.hrZoneRange.z2 + 1 && hrBpm[j].heartRateBpm < this.hrZoneRange.z3) {
+                  } else if (hrBpm[j].heartRateBpm >= (this.hrZoneRange.z2 as any) + 1 && hrBpm[j].heartRateBpm < this.hrZoneRange.z3) {
                     HRZoneThree += resolutionSeconds;
-                  } else if (hrBpm[j].heartRateBpm >= this.hrZoneRange.z3 + 1 && hrBpm[j].heartRateBpm < this.hrZoneRange.z4) {
+                  } else if (hrBpm[j].heartRateBpm >= (this.hrZoneRange.z3 as any) + 1 && hrBpm[j].heartRateBpm < this.hrZoneRange.z4) {
                     HRZoneFour += resolutionSeconds;
-                  } else if (hrBpm[j].heartRateBpm >= this.hrZoneRange.z4 + 1) {
+                  } else if (hrBpm[j].heartRateBpm >= (this.hrZoneRange.z4 as any) + 1) {
                     HRZoneFive += resolutionSeconds;
                   } else {
                     HRZoneZero += resolutionSeconds;

@@ -7,7 +7,7 @@ import {
   Output,
   EventEmitter
 } from '@angular/core';
-import { codes } from '@shared/components/intl-phone-input/countryCode';
+import { codes } from '../intl-phone-input/countryCode';
 import { TranslateService } from '@ngx-translate/core';
 import { UtilsService } from '../../services/utils.service';
 

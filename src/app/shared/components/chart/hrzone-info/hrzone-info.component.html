@@ -5,7 +5,7 @@
     text-anchor="middle"
     font-size="16"
     font-weight="bold"
-    *ngIf="hrZoneRange.HRBase === 0"
+    *ngIf="hrZoneRange.hrBase === 0"
   >
     {{"universal_userProfile_maximalHeartRate" | translate}}
   </text>
@@ -15,7 +15,7 @@
     text-anchor="middle"
     font-size="16"
     font-weight="bold"
-    *ngIf="hrZoneRange.HRBase === 1">
+    *ngIf="hrZoneRange.hrBase === 1">
     {{"universal_userProfile_heartRateReserve" | translate}}
   </text>
   <text x="180" y="30" text-anchor="middle" font-size="10" stroke="#ff9292" fill="#ff9292">{{hrZoneRange.z5}}</text>

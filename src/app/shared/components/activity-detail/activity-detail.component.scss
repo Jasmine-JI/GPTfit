@@ -159,6 +159,21 @@ $segmentation-color: rgba(100, 100, 100, 1);
   width: 100%;
 }
 
+.zone__section {
+  display: flex;
+  flex-direction: row;
+}
+
+.zone__chart {
+  width: 55%;
+  border-right: 1px solid rgba(200, 200, 200, 1);
+  justify-content: space-between;
+}
+
+.info__chart {
+  width: 45%;
+}
+
 /******************************************* media *****************************************/
 @media(max-width: 767) {
   .row__to__column {

@@ -57,6 +57,8 @@ import { PrivacySettingDialogComponent } from './privacy-setting-dialog/privacy-
 import { ActivityDetailComponent } from './activity-detail/activity-detail.component';
 import { MapChartCompareComponent } from './map-chart-compare/map-chart-compare.component';
 import { TrinomialChartComponent } from './chart/trinomial-chart/trinomial-chart.component';
+import { QuadrantChartComponent } from './chart/quadrant-chart/quadrant-chart.component';
+import { ThresholdInfoComponent } from './chart/threshold-info/threshold-info.component';
 
 @NgModule({
   imports: [
@@ -119,7 +121,9 @@ import { TrinomialChartComponent } from './chart/trinomial-chart/trinomial-chart
     PrivacySettingDialogComponent,
     ActivityDetailComponent,
     MapChartCompareComponent,
-    TrinomialChartComponent
+    TrinomialChartComponent,
+    QuadrantChartComponent,
+    ThresholdInfoComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
