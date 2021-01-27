@@ -1,5 +1,5 @@
 ﻿# 宣告各個搜尋引擎不可爬蟲的頁面
 # robots.txt for http://app.alatech.com.tw/
 
-# User-agent: *
-# Disallow: /
+User-agent: *
+Disallow: /

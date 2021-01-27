@@ -115,6 +115,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
   isgForceChartTargetDisplay = false;
 
   proficiency = 'metacarpus';  // 使用者重訓熟練度設定(預設進階者)-kidin-1081122
+  rowData: any;
   activityInfo: any;
   fileInfo: any;
   infoDate: string;
@@ -723,6 +724,7 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
           return this.router.navigateByUrl('/403');
         }
 
+        this.rowData = res;
         this.activityInfo = res.activityInfoLayer;
         this.activityName = res.fileInfo.dispName;
         this.activityNameBeforeState = res.fileInfo.dispName;
@@ -1206,6 +1208,143 @@ export class ActivityInfoComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
+  }
+
+
+  /**
+   * 將參賽者列表下載為一份csv檔
+   * @author kidin-1090928
+   */
+  downloadCSV() {
+    const CSVName = `${this.rowData.fileInfo.dispName}${this.rowData.fileInfo.creationDate}.csv`,
+          data = this.switchCSVFile(this.rowData),
+          blob = new Blob(['\ufeff' + data], {  // 加上bom（\ufeff）讓excel辨識編碼
+            type: 'text/csv;charset=utf8'
+          }),
+          href = URL.createObjectURL(blob),  // 建立csv檔url
+          link = document.createElement('a');  // 建立連結供csv下載使用
+
+    document.body.appendChild(link);
+    link.href = href;
+    link.download = CSVName;
+    link.click();
+
+  }
+
+  /**
+   * 將所需資料轉換為csv格式
+   * @param rowData {any}-活動賽事檔案內容
+   * @author kidin-1090928
+   */
+  switchCSVFile(rowData: any) {
+    let csvData = '';
+    const [finalObj, finalLength] = this.flattenObj(rowData);
+    csvData += '\n';
+    for (let i = -1; i < finalLength; i++) {
+
+      for (let key in finalObj) {
+        
+        if (i === -1) {
+          csvData += `${key},`;
+        } else {
+          csvData += finalObj[key][i] !== undefined ? `${finalObj[key][i]},` : ',';
+        }
+        
+      }
+      
+      csvData += '\n';
+    }
+
+    return csvData;
+  }
+
+  /**
+   * 攤平物件
+   * @param rowData {any}-api 2103 的內容
+   * @author kidin-1100126
+   */
+  flattenObj(rowData: any): Array<any> {
+    // csv排除以下資訊
+    const excludeData = [
+            'alaFormatVersionName',
+            'apiCode',
+            'msgCode',
+            'resultCode',
+            'resultMessage',
+            'fileInfo'
+          ],
+          finalObj = {};
+    let maxLength = 0;
+
+    for (let key in rowData) {
+
+      if (!excludeData.includes(key)) {
+
+        // 純陣列
+        if (Array.isArray(rowData[key]) && typeof rowData[key][0] !== 'object') {
+          maxLength = rowData[key].length > maxLength ? rowData[key].length : maxLength;
+          // 同key則將數據整合至一個array中
+          if (finalObj.hasOwnProperty(key)) {
+            finalObj[key].concat(rowData[key]);
+          } else {
+            Object.assign(finalObj, {[key]: rowData[key]});
+          }
+
+        // 為陣列，且其元素為物件 
+        } else if (Array.isArray(rowData[key]) && typeof rowData[key][0] === 'object') {
+          maxLength = rowData[key].length > maxLength ? rowData[key].length : maxLength;
+          rowData[key].forEach(_rowData => {
+            const [childObj, childMaxLength] = this.flattenObj(_rowData);
+            maxLength = childMaxLength > maxLength ? childMaxLength : maxLength;
+            for (let childKey in childObj) {
+              const mergeKey = `${key}.${childKey}`;
+              // 同key則將數據整合至一個array中
+              if (finalObj.hasOwnProperty(mergeKey)) {
+                Array.isArray(childObj[childKey]) ? 
+                  finalObj[mergeKey].concat(childObj[childKey]) : finalObj[mergeKey].push(childObj[childKey]);
+              } else {
+                Array.isArray(childObj[childKey]) ?
+                  Object.assign(finalObj, {[mergeKey]: childObj[childKey]}) : Object.assign(finalObj, {[mergeKey]: [childObj[childKey]]});;
+              }
+              
+            }
+
+          });
+
+        // 物件
+        } else if (rowData[key] !== null && typeof rowData[key] === 'object') {
+          const [childObj, childMaxLength] = this.flattenObj(rowData[key]);
+          maxLength = childMaxLength > maxLength ? childMaxLength : maxLength;
+          for (let childKey in childObj) {
+
+            // 同key則將數據整合至一個array中
+            const mergeKey = `${key}.${childKey}`;
+            if (finalObj.hasOwnProperty(mergeKey)) {
+              Array.isArray(childObj[childKey]) ? 
+                finalObj[mergeKey].push(childObj[childKey][0]) : finalObj[mergeKey].push(childObj[childKey]);
+            } else {
+              Array.isArray(childObj[childKey]) ? 
+                Object.assign(finalObj, {[mergeKey]: childObj[childKey]}) : Object.assign(finalObj, {[mergeKey]: [childObj[childKey]]});
+            }
+            
+          }
+
+        // 純值
+        } else {
+          // 同key則將數據整合至一個array中
+          if (finalObj.hasOwnProperty(key)) {
+            finalObj[key].push(rowData[key][0]);
+          } else {
+            Object.assign(finalObj, {[key]: rowData[key]});
+          }
+          
+        }
+
+      }
+
+    }
+
+    return [finalObj, maxLength];
   }
 
   ngOnDestroy() {

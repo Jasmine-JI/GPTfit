@@ -47,14 +47,14 @@ export interface SportsReportContent {
     perHmPace?: number;  // 人均百米配速
     avgFiveHmPace?: number;  // 人均五百米配速
     perFiveHmPace?: number;  // 人均五百米配速
-    avgRunCandence?: number;  // 平均步頻
-    perRunCandence?: number;  // 人均步頻
-    avgRideCandence?: number;  // 平均踏頻
-    perRideCandence?: number;  // 人均踏頻
-    avgSwimCandence?: number;  // 平均划頻
-    perSwimCandence?: number;  // 人均划頻
-    avgRowCandence?: number;  // 平均槳頻
-    perRowCandence?: number;  // 人均槳頻
+    avgRuncadence?: number;  // 平均步頻
+    perRuncadence?: number;  // 人均步頻
+    avgRidecadence?: number;  // 平均踏頻
+    perRidecadence?: number;  // 人均踏頻
+    avgSwimcadence?: number;  // 平均划頻
+    perSwimcadence?: number;  // 人均划頻
+    avgRowcadence?: number;  // 平均槳頻
+    perRowcadence?: number;  // 人均槳頻
     avgPower?: number;  // 平均功率
     perPower?: number;  // 人均功率
     cumulativeLeft?: number;  // 累積向左
@@ -117,10 +117,10 @@ export interface SportsReportContent {
     hmPace?: Array<any>;  // 百米配速
     ridePower?: Array<any>;  // 騎乘功率
     rowPower?: Array<any>;  // 划船功率
-    runCandence?: Array<any>;  // 步頻
-    rideCandence?: Array<any>;  // 踏頻
-    swimCandence?: Array<any>;  // 划頻
-    RowCandence?: Array<any>;  // 槳頻
+    runcadence?: Array<any>;  // 步頻
+    ridecadence?: Array<any>;  // 踏頻
+    swimcadence?: Array<any>;  // 划頻
+    Rowcadence?: Array<any>;  // 槳頻
     hr?: Array<any>;  // 心率
     calories?: Array<any>;  // 卡路里
     swimBenefit?: Array<any>;  // 游泳效益
@@ -163,10 +163,10 @@ export interface SportsReportContent {
     bestRidePower?: number; // 最佳騎乘功率
     avgRowPower?: number; // 平均划槳功率
     bestRowPower?: number; // 最佳划槳功率
-    avgRunCandence?: number; // 平均步頻
-    bestRunCandence?: number; // 最佳步頻
-    avgRideCandence?: number; // 平均踏頻
-    bestRideCandence?: number; // 最佳踏頻
+    avgRuncadence?: number; // 平均步頻
+    bestRuncadence?: number; // 最佳步頻
+    avgRidecadence?: number; // 平均踏頻
+    bestRidecadence?: number; // 最佳踏頻
     hrZoneChart?: Array<any>; // 心率區間圖表
     cumulativeLeft?: number;  // 累積向左
     cumulativeRight?: number;  // 累積向右
@@ -204,10 +204,10 @@ export interface SportsReportContent {
     bestRidePower?: number; // 暱稱
     avgRowPower?: number; // 暱稱
     bestRowPower?: number; // 暱稱
-    avgRunCandence?: number; // 暱稱
-    bestRunCandence?: number; // 暱稱
-    avgRideCandence?: number; // 暱稱
-    bestRideCandence?: number; // 暱稱
+    avgRuncadence?: number; // 暱稱
+    bestRuncadence?: number; // 暱稱
+    avgRidecadence?: number; // 暱稱
+    bestRidecadence?: number; // 暱稱
     hrZoneChart?: Array<any>; // 暱稱
     cumulativeLeft?: number;  // 累積向左
     cumulativeRight?: number;  // 累積向右

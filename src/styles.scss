@@ -691,6 +691,13 @@ a.ban-send:hover {
   font-size: 24px;
   cursor: pointer;
   @include center();
+  color: black;
+}
+
+.instructionsText {
+  font-size: 16px;
+  color:#919191;
+  margin-left: 10px;
 }
 
 

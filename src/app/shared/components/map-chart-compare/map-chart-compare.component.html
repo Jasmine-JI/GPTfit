@@ -1,4 +1,4 @@
-<section class="flexCol">
+<section class="flexCol" style="position: relative;">
   <div class="flexRow cardTitle" style="position: relative; justify-content: space-between;">
     <span class="cardSubtitle">
       <ng-container *ngIf="uiFlag.showMap">
@@ -9,7 +9,7 @@
       </ng-container>
     </span>
     <i class="icon-svg_web-icon_p1_001-setting settingIcon" (click)="handleShowOptMenu($event)"></i>
-    <div id="map__opt__menu" *ngIf="uiFlag.showMapOpt">
+    <div id="map__opt__menu" *ngIf="uiFlag.showMapOpt" (click)="$event.stopPropagation()">
       <div class="flexRow selector__section" *ngIf="mapOpt.showMapSourceSelector">
         <span class="flexRow radio__selector" (click)="changeMapSource('google')">
           <span class="radio__btn" [class.radio__btn--active]="mapOpt.mapSource === 'google'"></span>
@@ -32,32 +32,61 @@
       </div>
       <div class="flexCol">
         <div class="flexCol selector__section">
-          <span [style.color]="mapOpt.compareAColor">{{ 'universal_vocabulary_data' | translate }} 1</span>
-          <div class="drop__menu" (click)="handleShowDropList('compareA')">
-            {{ mapOpt.compareA }}
+          <span [style.color]="mapOpt.compareA.color">{{ 'universal_vocabulary_data' | translate }} 1</span>
+          <div class="drop__menu" (click)="handleShowDropList($event, 'compareA')">
+            {{ mapOpt.compareA.type | dataTypeTranslate: [sportType, unit] | translate }}
           </div>
+          <ng-container *ngIf="uiFlag.showDataSelector === 'compareA'">
+            <ng-container *ngIf="!uiFlag.showDataSelector; else dropList;"></ng-container>
+          </ng-container>
         </div>
         <div class="flexCol selector__section">
-          <span [style.color]="mapOpt.compareBColor">{{ 'universal_vocabulary_data' | translate }} 2</span>
-          <div class="drop__menu" (click)="handleShowDropList('compareB')">
-            {{ mapOpt.compareA }}
+          <span [style.color]="mapOpt.compareB.color">{{ 'universal_vocabulary_data' | translate }} 2</span>
+          <div class="drop__menu" (click)="handleShowDropList($event, 'compareB')">
+            {{ mapOpt.compareB.type | dataTypeTranslate: [sportType, unit] | translate }}
           </div>
+          <ng-container *ngIf="uiFlag.showDataSelector === 'compareB'">
+            <ng-container *ngIf="!uiFlag.showDataSelector; else dropList;"></ng-container>
+          </ng-container>
         </div>
         <ng-template #dropList>
-          <div class="flexCol">
-            <span>{{ 'universal_activityData_hr' | translate }}</span>
-            <span>{{ 'universal_activityData_speedPerHour' | translate }}</span>
-            <span>{{ 'universal_activityData_pace' | translate }}</span>
-            <span>{{ 'universal_activityData_stepCadence' | translate }}</span>
-            <span>{{ 'universal_activityData_CyclingCadence' | translate }}</span>
-            <span>{{ 'universal_activityData_repeatTempo' | translate }}</span>
-            <span>{{ 'universal_activityData_swimCadence' | translate }}</span>
-            <span>{{ 'universal_activityData_rowCadence' | translate }}</span>
-            <span>{{ 'universal_activityData_power' | translate }}</span>
-            <span>{{ 'universal_activityData_temperature' | translate }}</span>
-            <span>{{ 'universal_unit_gforceX' | translate }}</span>
-            <span>{{ 'universal_unit_gforceY' | translate }}</span>
-            <span>{{ 'universal_unit_gforceZ' | translate }}</span>
+          <div class="flexCol drop__menu__list">
+            <span (click)="changeCompareData('hr')" *ngIf="![mapOpt.compareA.type, mapOpt.compareB.type].includes('hr')">
+              {{ 'universal_activityData_hr' | translate }}
+            </span>
+            <span (click)="changeCompareData('speed')" *ngIf="[2, 7].includes(sportType) && ![mapOpt.compareA.type, mapOpt.compareB.type].includes('speed')">
+              {{ 'universal_activityData_speedPerHour' | translate }}
+            </span>
+            <span (click)="changeCompareData('pace')" *ngIf="![2, 7].includes(sportType) && ![mapOpt.compareA.type, mapOpt.compareB.type].includes('pace')">
+              {{ 'universal_activityData_pace' | translate }}
+            </span>
+            <span (click)="changeCompareData('cadence')" *ngIf="sportType === 1 && ![mapOpt.compareA.type, mapOpt.compareB.type].includes('cadence')">
+              {{ 'universal_activityData_stepCadence' | translate }}
+            </span>
+            <span (click)="changeCompareData('cadence')" *ngIf="sportType === 2 && ![mapOpt.compareA.type, mapOpt.compareB.type].includes('cadence')">
+              {{ 'universal_activityData_CyclingCadence' | translate }}
+            </span>
+            <span (click)="changeCompareData('cadence')" *ngIf="sportType === 4 && ![mapOpt.compareA.type, mapOpt.compareB.type].includes('cadence')">
+              {{ 'universal_activityData_swimCadence' | translate }}
+            </span>
+            <span (click)="changeCompareData('cadence')" *ngIf="sportType === 6 && ![mapOpt.compareA.type, mapOpt.compareB.type].includes('cadence')">
+              {{ 'universal_activityData_rowCadence' | translate }}
+            </span>
+            <span (click)="changeCompareData('power')" *ngIf="[2, 6].includes(sportType) && ![mapOpt.compareA.type, mapOpt.compareB.type].includes('power')">
+              {{ 'universal_activityData_power' | translate }}
+            </span>
+            <span (click)="changeCompareData('temperature')" *ngIf="![mapOpt.compareA.type, mapOpt.compareB.type].includes('temperature')">
+              {{ 'universal_activityData_temperature' | translate }}
+            </span>
+            <span (click)="changeCompareData('gforceX')" *ngIf="sportType === 7 && ![mapOpt.compareA.type, mapOpt.compareB.type].includes('gforceX')">
+              {{ 'universal_unit_gforceX' | translate }}
+            </span>
+            <span (click)="changeCompareData('gforceY')" *ngIf="sportType === 7 && ![mapOpt.compareA.type, mapOpt.compareB.type].includes('gforceY')">
+              {{ 'universal_unit_gforceY' | translate }}
+            </span>
+            <span (click)="changeCompareData('gforceZ')" *ngIf="sportType === 7 && ![mapOpt.compareA.type, mapOpt.compareB.type].includes('gforceZ')">
+              {{ 'universal_unit_gforceZ' | translate }}
+            </span>
           </div>
         </ng-template>
       </div>
@@ -67,5 +96,15 @@
   </div>
   <div #bMap class="map__style" *ngIf="mapOpt.mapSource === 'baidu'">
   </div>
-  <app-trinomial-chart></app-trinomial-chart>
+  <app-trinomial-chart
+    style="position: absolute; bottom: 5px; width: 100%;"
+    [compareA]="mapOpt.compareA"
+    [compareB]="mapOpt.compareB"
+    [terrain]="mapOpt.terrain"
+    [second]="mapOpt.second"
+    [sportType]="sportType"
+    [unit]="unit"
+    [showMap]="uiFlag.showMap"
+    (onHover)="movePoint($event)"
+  ></app-trinomial-chart>
 </section>

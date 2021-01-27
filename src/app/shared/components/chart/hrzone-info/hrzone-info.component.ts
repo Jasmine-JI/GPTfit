@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
+import { HrZoneRange } from '../../../models/chart-data';
 
 @Component({
   selector: 'app-hrzone-info',
@@ -6,7 +7,7 @@ import { Component, OnInit, Input, OnChanges } from '@angular/core';
   styleUrls: ['./hrzone-info.component.scss']
 })
 export class HrzoneInfoComponent implements OnInit, OnChanges {
-  @Input() hrZoneRange: any;
+  @Input() hrZoneRange: HrZoneRange;
 
   constructor() {
   }

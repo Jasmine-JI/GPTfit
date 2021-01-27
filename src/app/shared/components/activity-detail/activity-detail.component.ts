@@ -12,8 +12,12 @@ import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 import { MuscleNamePipe } from '../../pipes/muscle-name.pipe';
 import { mi, lb } from '../../models/bs-constant';
+import * as _Highcharts from 'highcharts';
+import { HrZoneRange } from '../../models/chart-data';
 
-const errMsg = `Error! Please try again later.`;
+const errMsg = `Error! Please try again later.`,
+      Highcharts: any = _Highcharts; // 不檢查highchart型態
+
 type DisplayTag = 'summary' | 'detail' | 'segmentation' | 'chart';
 
 @Component({
@@ -90,6 +94,23 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * 運動分點
    */
   activityPointLayer: any;
+
+  /**
+   * 圖表所需資訊（處理後）
+   */
+  chartData = {
+    hr: [0, 0, 0, 0, 0, 0],
+    hrInfo: <HrZoneRange>{
+      hrBase: 0,
+      z0: <number | string>0,
+      z1: <number | string>0,
+      z2: <number | string>0,
+      z3: <number | string>0,
+      z4: <number | string>0,
+      z5: <number | string>0
+    },
+    ftp: [0, 0, 0, 0, 0, 0, 0]
+  };
 
   /**
    * footer其他資訊
@@ -256,10 +277,14 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     this.handleFileInfo(data.fileInfo);
     this.activityInfoLayer = data.activityInfoLayer;
     this.handleSceneryImg(+this.activityInfoLayer.type, +this.activityInfoLayer.subtype);
+    this.handleHrZoneData(this.activityInfoLayer);
+    if (+this.activityInfoLayer.type === 2) {
+      this.handleFtpZoneData(this.activityInfoLayer);
+    }
+
     this.activityLapLayer = data.activityLapLayer;
     this.getOtherInfo(this.fileInfo);
     this.handleActivityPoint(data.activityPointLayer);
-
     if(this.activityInfoLayer.type == 3) {
       this.createMuscleTranslate();
     }
@@ -394,6 +419,46 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       this.sceneryImg = `/app/public_html/img/${sportType}_0.jpg`;
     }
     
+  }
+
+  /**
+   * 將心率區間合併為array供圖表使用,及取得心率說明圖表
+   * @param info {any}-activityInfoLayer
+   * @author kidin-1100125
+   */
+  handleHrZoneData(info: any) {
+    this.chartData.hr = [
+      info.totalHrZone0Second,
+      info.totalHrZone1Second,
+      info.totalHrZone2Second,
+      info.totalHrZone3Second,
+      info.totalHrZone4Second,
+      info.totalHrZone5Second
+    ];
+    
+    const userAge = moment().diff(this.userProfile.birthday, 'years'),
+          userHRBase = this.userProfile.heartRateBase,
+          userMaxHR = this.userProfile.heartRateMax,
+          userRestHR = this.userProfile.heartRateResting;
+    this.chartData.hrInfo = this.utils.getUserHrRange(userHRBase, userAge, userMaxHR, userRestHR);
+  }
+
+  /**
+   * 將閾值區間合併為array供圖表使用
+   * @param info {any}-activityInfoLayer
+   * @author kidin-1100125
+   */
+  handleFtpZoneData(info: any) {
+    this.chartData.ftp = [
+      info.totalFtpZone0Second,
+      info.totalFtpZone1Second,
+      info.totalFtpZone2Second,
+      info.totalFtpZone3Second,
+      info.totalFtpZone4Second,
+      info.totalFtpZone5Second,
+      info.totalFtpZone6Second
+    ];
+
   }
 
   /**
@@ -557,6 +622,14 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100104
    */
   handleActivityPoint(point: any) {
+    // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
+    Highcharts.charts.forEach((_highChart, idx) => {
+      if (_highChart !== undefined) {
+        _highChart.destroy();
+      }
+    });
+    Highcharts.charts.length = 0;
+
     this.activityPointLayer = {};
     // this.uiFlag.resolution = this.handleResolution(point.length); (預埋)
 

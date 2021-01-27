@@ -409,11 +409,11 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
           formatter: function () {
             if (this.series.xAxis.tickInterval === 30 * 24 * 4600 * 1000) {
               return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY-MM-DD')}
-                <br/>Best Candence: ${this.point.y}
+                <br/>Best cadence: ${this.point.y}
                 <br/>${this.series.name}: ${this.point.low}`;
             } else {
               return `${moment(this.x).format('YYYY-MM-DD')}
-                <br/>Best Candence: ${this.point.y}
+                <br/>Best cadence: ${this.point.y}
                 <br/>${this.series.name}: ${this.point.low}`;
             }
 
