@@ -1,14 +1,17 @@
 import { Component, OnInit, OnDestroy, OnChanges, ViewChild, ElementRef, Input } from '@angular/core';
-
 import { TranslateService } from '@ngx-translate/core';
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
-// 建立圖表用-kidin-1081212
+/**
+ * 建立圖表用
+ * @constructs dataset {any}
+ * @author kidin-1081212
+ */
 class ChartOptions {
-  constructor (dataset) {
+  constructor (dataset: any) {
     return {
       chart: {
         height: 300
@@ -75,9 +78,9 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
   highestHRZoneValue = 0;
   highestHRZoneColor = '';
 
-  @Input() data: Array<number>;
+  @Input() data: Array<number>; // 各心率區間總秒數，ex.[992, 123, 1534, 1234, 1231, 321]
   @Input() isPrint: boolean;
-  @Input() type: string;
+  @Input() type: 'mixHrZone' | 'personalAnalysis';
 
   @ViewChild('container', {static: false})
   container: ElementRef;
@@ -91,6 +94,7 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges () {
+    console.log('hr data', this.data);
     if (this.data.reduce((accumulator, current) => accumulator + current) === 0) {
       this.noHRZoneData = true;
     } else {
@@ -118,7 +122,10 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
 
   }
 
-  // 初始化highChart-kidin-1081211
+  /**
+   * 初始化highChart
+   * @author kidin-1081211
+   */
   initInfoHighChart () {
     this.highestHRZoneValue = 0;
 
@@ -264,7 +271,11 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
 
   }
 
-  // 確認取得元素才建立圖表-kidin-1090706
+  /**
+   * 確認取得元素才建立圖表
+   * @param option {ChartOptions}
+   * @author kidin-1090706
+   */
   createChart (option: ChartOptions) {
 
     setTimeout (() => {

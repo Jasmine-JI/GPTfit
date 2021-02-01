@@ -1,0 +1,45 @@
+.description__text {
+  font-size: 8px;
+}
+
+.text__right {
+  text-align: right;
+}
+
+.description__title {
+  font-weight: bold;
+  font-size: 14px;
+  white-space: pre-wrap; // test
+}
+
+
+
+.zone__section {
+  position: absolute;
+  width: 46%;
+}
+
+.right__zone {
+  left: 54%;
+}
+
+.left__zone {
+  text-align: right;
+}
+
+.zone__range {
+  min-height: 24px;
+}
+
+.zone__bar {
+  width: 10px;
+  height: 60px;
+  border-radius: 10px;
+  margin: 0 10px;
+}
+
+.zone__description {
+  font-size: 8px;
+  max-height: 125px;
+  overflow: scroll;
+}

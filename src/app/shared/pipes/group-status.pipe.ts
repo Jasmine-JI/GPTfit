@@ -6,20 +6,23 @@ import { Pipe, PipeTransform } from '@angular/core';
 @Pipe({name: 'groupStatus'})
 export class GroupStatusPipe implements PipeTransform {
   transform(value: number, args: string[]): any {
-    if (value === 1) {
-      return 'universal_group_freeToJoin';
-    } else if (value === 2) {
-      return 'universal_group_auditSystem';
-    } else if (value === 3) {
-      return 'universal_operating_hide';
-    } else if (value === 4) {
-      return 'universal_operating_disband';
-    } else if (value === 5) {
-      return 'universal_status_noData';
-    } else if (value === 6) {
-      return 'universal_status_disable';
-    } else {
-      return 'universal_status_loading';
+    switch (value) {
+      case 1:
+        return 'universal_group_freeToJoin';
+      case 2:
+        return 'universal_group_auditSystem';
+      case 3:
+        return 'universal_operating_hide';
+      case 4:
+        return 'universal_operating_disband';
+      case 5:
+        return 'universal_status_noData';
+      case 6:
+        return 'universal_status_disable';
+      default:
+        return 'universal_status_loading';
     }
+
   }
+  
 }

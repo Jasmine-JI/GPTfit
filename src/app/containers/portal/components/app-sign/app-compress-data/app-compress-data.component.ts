@@ -27,6 +27,7 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit {
   compressResp = {
     status: 0,
     archiveLink: '',
+    archiveFakeLink: '',
     archiveLinkDate: null,
     archiveLinkTime: null,
     cooldownTimestamp: null,
@@ -49,8 +50,22 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit {
    * @author kidin-1090710
    */
   ngAfterViewInit () {
+    this.checkQueryString(location.search);
     this.getDeviceSys();
     this.getUserToken();
+  }
+
+  /**
+   * 確認是否有query string
+   * @author kidin-1100120
+   */
+  checkQueryString(queryString: string) {
+    if (queryString.length > 0 && queryString.split('?')[1].split('=')[0] === 'code') {
+      const downloadPort = location.hostname === 'www.gptfit.com' ? '6443' : '5443',
+            downloadUrl = `https://${location.hostname}:${downloadPort}/archive/click?${queryString.split('?')[1]}`;
+      location.href = downloadUrl;
+    }
+
   }
 
   /**
@@ -142,7 +157,8 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit {
           this.compressResp.status = res.status;
 
           if (res.status === 2) {
-            this.compressResp.archiveLink = res.archiveLink;
+            this.compressResp.archiveLink = location.hostname === 'www.gptfit.com' ? res.archiveLink.replace('5443', '6443') : res.archiveLink;
+            this.compressResp.archiveFakeLink = `https://${location.hostname}/compressData?${res.archiveLink.split('?')[1]}`;
             this.compressResp.archiveLinkDate = moment(res.archiveLinkTimestamp * 1000).format('YYYY-MM-DD');
             this.compressResp.archiveLinkTime = moment(res.archiveLinkTimestamp * 1000).format('HH:mm');
           } else if (res.status === 3) {

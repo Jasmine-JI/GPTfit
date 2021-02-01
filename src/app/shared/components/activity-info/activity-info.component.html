@@ -70,6 +70,14 @@
         >
           <i class="icon-svg_web-icon_p1_059-lock activity-info_icon_size"></i>
         </button>
+        <button
+          class="alatech-btn--default"
+          (click)="downloadCSV()"
+          *ngIf="!isPrevieMode && !editNameMode && !hideButton && loginId == userLink.userId"
+          style="border: none;"
+        >
+          <i class="icon-svg_web-icon_p1_018-input activity-info_icon_size"></i>
+        </button>
         <a  target="_blank"
           [href]="previewUrl"
           class="alatech-btn--default"

@@ -3,6 +3,9 @@ import { transform, WGS84, BD09 } from 'gcoord';
 import { Subscription, Subject, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { UtilsService } from '../../services/utils.service';
+import { SportType } from '../../models/report-condition';
+import { TranslateService } from '@ngx-translate/core';
+import { DataTypeTranslatePipe } from '../../pipes/data-type-translate.pipe';
 
 
 declare let google: any,
@@ -17,6 +20,8 @@ type BoundaryCoordinate = {
   left: number;
   right: number;
 }
+type QuadrantDataOpt = 'hr' | 'speed' | 'pace' | 'cadence' | 'power';
+type CompareDataOpt = 'hr' | 'speed' | 'pace' | 'cadence' | 'power' | 'temperature' | 'gforceX' | 'gforceY' | 'gforceZ';
 
 @Component({
   selector: 'app-map-chart-compare',
@@ -27,9 +32,10 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input('userPoint') userPoint: Array<any>;
   @Input('userInfo') userInfo: Array<any>;
-  @Input('sportType') sportType: number;
+  @Input('sportType') sportType: SportType;
   @Input('isNormalCoordinate') isNormalCoordinate: any;
   @Input('sysAccessRight') sysAccessRight: number;
+  @Input('unit') unit: number;
   @Input('hideChart') hideChart: boolean;
   @ViewChild('gMap') gMap: ElementRef;
   @ViewChild('bMap') bMap: ElementRef;
@@ -42,7 +48,8 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
   uiFlag = {
     userInChina: false,
     showMap: false,
-    showMapOpt: false
+    showMapOpt: false,
+    showDataSelector: null
   };
 
   /**
@@ -52,10 +59,20 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
     showMapSourceSelector: true,
     mapSource: <MapSource>'google',  // 地圖來源
     mapKind: <MapKind>'normal', // 街道圖/熱力圖
-    compareA: null,
-    compareAColor: 'rgba(155, 194, 71, 1)',
-    compareB: null,
-    compareBColor: 'rgba(252, 124, 124, 1)'
+    compareA: {
+      type: <CompareDataOpt>null,
+      name: '',
+      color: 'rgba(155, 194, 71, 1)',
+      data: []
+    },
+    compareB: {
+      type: <CompareDataOpt>null,
+      name: '',
+      color: 'rgba(252, 124, 124, 1)',
+      data: []
+    },
+    terrain: [],
+    second: []
   }
 
   /**
@@ -81,7 +98,9 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
   clickEvent: Subscription;
 
   constructor(
-    private utils: UtilsService
+    private utils: UtilsService,
+    private translate: TranslateService,
+    private dataTypeTranslatePipe: DataTypeTranslatePipe
   ) { }
 
   ngOnInit(): void {
@@ -95,7 +114,8 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       this.uiFlag.showMap = false;
     }
-    
+
+    this.handleDefaultCompareData(this.sportType);
   }
 
   /**
@@ -209,7 +229,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
         })
 
         mark.setMap(this.googleObj.map);
-        this.googleObj.gMapPlayMark.push(this.googleObj.path[0]);
+        this.googleObj.gMapPlayMark.push(mark);
       });
 
       // this.changeMapKind(this.mapOpt.mapKind);
@@ -332,6 +352,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
         
         this.baiduObj.map.addOverlay(playerMark);
         this.baiduObj.map.setCenter(playerMark);
+        this.baiduObj.bMapPlayMark.push(playerMark);
       });
 
       if(this.mapOpt.mapKind === 'heat' && this.checkCanvasSupport()) {
@@ -395,6 +416,74 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   /**
+   * 根據運動類別預設比較圖表的資料類型
+   * @param type {SportType}-運動類別
+   * @author kidin-1100120
+   */
+  handleDefaultCompareData(type: SportType) {
+    this.translate.get('hellow world').pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      switch (type) {
+        case 1:
+          this.mapOpt.compareA = {
+            type: 'hr',
+            name: this.translate.instant(this.dataTypeTranslatePipe.transform('hr', [type, this.unit])),
+            color: this.mapOpt.compareA.color,
+            data: this.userPoint[0][this.handleDataKey('hr', type)]
+          };
+
+          this.mapOpt.compareB = {
+            type: 'pace',
+            name: this.translate.instant(this.dataTypeTranslatePipe.transform('pace', [type, this.unit])),
+            color: this.mapOpt.compareB.color,
+            data: this.userPoint[0][this.handleDataKey('pace', type)]
+          };
+
+          break;
+        case 2:
+        case 7:
+          this.mapOpt.compareA = {
+            type: 'hr',
+            name: this.translate.instant(this.dataTypeTranslatePipe.transform('hr', [type, this.unit])),
+            color: this.mapOpt.compareA.color,
+            data: this.userPoint[0][this.handleDataKey('hr', type)]
+          };
+
+          this.mapOpt.compareB = {
+            type: 'speed',
+            name: this.translate.instant(this.dataTypeTranslatePipe.transform('speed', [type, this.unit])),
+            color: this.mapOpt.compareB.color,
+            data: this.userPoint[0][this.handleDataKey('speed', type)]
+          };
+
+          break;
+        case 4:
+        case 6:
+          this.mapOpt.compareA = {
+            type: 'pace',
+            name: this.translate.instant(this.dataTypeTranslatePipe.transform('pace', [type, this.unit])),
+            color: this.mapOpt.compareA.color,
+            data: this.userPoint[0][this.handleDataKey('pace', type)]
+          };
+
+          this.mapOpt.compareB = {
+            type: 'cadence',
+            name: this.translate.instant(this.dataTypeTranslatePipe.transform('cadence', [type, this.unit])),
+            color: this.mapOpt.compareB.color,
+            data: this.userPoint[0][this.handleDataKey('cadence', type)]
+          };
+
+          break;
+      }
+
+      this.mapOpt.terrain = [1, 2].includes(this.sportType) ? this.userPoint[0].altitudeMeters : [];
+      this.mapOpt.second = this.userPoint[0].pointSecond;
+    });
+
+  }
+
+  /**
    * 切換地圖來源
    * @param source {MapSource}-地圖來源
    * @author kidin-1100114
@@ -402,6 +491,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
   changeMapSource(source: MapSource) {
     this.mapOpt.mapSource = source;
     this.mapOpt.mapSource === 'google' ? this.handleGoogleMap(this.userPoint) : this.handleBaiduMap(this.userPoint);
+    this.uiFlag.showDataSelector = false;
   }
 
   /**
@@ -412,6 +502,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
   changeMapKind(kind: MapKind) {
     this.mapOpt.mapKind = kind;
     this.mapOpt.mapSource === 'google' ? this.handleGoogleMap(this.userPoint) : this.handleBaiduMap(this.userPoint);
+    this.uiFlag.showDataSelector = false;
   }
 
   /**
@@ -420,8 +511,20 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
    * @param type {type}-欲比較的項目類別
    * @author kidin-1100114
    */
-  changeCompareData(idx: 'compareA' | 'compareB', type: string) {
-    this.mapOpt[idx] = type;
+  changeCompareData(type: CompareDataOpt) {
+    this.translate.get('hellow world').pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      this.mapOpt[this.uiFlag.showDataSelector] = {
+        type,
+        name: this.translate.instant(this.dataTypeTranslatePipe.transform(type, [this.sportType, this.unit])),
+        color: this.mapOpt[this.uiFlag.showDataSelector].color,
+        data: this.userPoint[0][this.handleDataKey(type, this.sportType)]
+      };
+      
+    });
+
+    this.uiFlag.showDataSelector = null;
   }
 
   /**
@@ -433,6 +536,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
     e.stopPropagation();
     this.uiFlag.showMapOpt = !this.uiFlag.showMapOpt;
     this.uiFlag.showMapOpt ? this.subscribeClick() : this.ngUnsubscribeClick();
+    this.uiFlag.showDataSelector = false;
   }
 
   /**
@@ -460,10 +564,64 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
 
   /**
    * 顯示下拉式選單與否
+   * @param e {MouseEvent}
    * @param list {'compareA' | 'compareB'}-使用者欲選擇的資料欄位
    * @author kidin-1100119
    */
-  handleShowDropList(list: 'compareA' | 'compareB') {
+  handleShowDropList(e: MouseEvent, list: 'compareA' | 'compareB') {
+    e.stopPropagation();
+    this.uiFlag.showDataSelector = this.uiFlag.showDataSelector === list ? null : list;
+  }
+
+  /**
+   * 根據資料類別和運動類別回應api對應的key
+   * @param dataType {CompareDataOpt}-資料類別
+   * @param sportType {SportType}-運動類別
+   * @author kidin-1100120
+   */
+  handleDataKey(dataType: CompareDataOpt, sportType: SportType): string {
+    switch (dataType) {
+      case 'hr':
+        return 'heartRateBpm';
+      case 'speed':
+      case 'pace':
+        return 'speed';
+      case 'cadence':
+        switch(sportType) {
+          case 1:
+            return 'runCadence';
+          case 1:
+            return 'cycleCadence';
+          case 1:
+            return 'swimCadence';
+          case 1:
+            return 'rowingCadence';
+        }
+      case 'power':
+        return sportType === 2 ? 'cycleWatt' : 'rowingWatt';
+      case 'temperature':
+        return 'temp';
+      case 'gforceX':
+        return 'gsensorXRawData';
+      case 'gforceY':
+        return 'gsensorYRawData';
+      case 'gforceZ':
+        return 'gsensorZRawData';
+    }
+
+  }
+
+  /**
+   * 根據使用者滑鼠在圖表的位置，移動地圖的記號
+   * @param e {number}-point位置
+   * @author kidin-1100121
+   */
+  movePoint(e: number) {
+    if (this.mapOpt.mapSource === 'google') {
+      this.googleObj.gMapPlayMark.forEach(_mark => _mark.setPosition(this.googleObj.path[e]));
+    } else {
+      this.baiduObj.bMapPlayMark.forEach(_mark => _mark.setPosition(this.baiduObj.path[e]));
+    }
 
   }
 

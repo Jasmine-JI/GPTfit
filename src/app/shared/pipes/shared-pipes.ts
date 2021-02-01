@@ -32,6 +32,8 @@ import { WeightSibsPipe } from './weight-sibs.pipe';
 import { SpeedSibsPipe } from './speed-sibs.pipe';
 import { TemperatureSibsPipe } from './temperature-sibs.pipe';
 import { swimPosture } from './swim-posture.pipe';
+import { DataTypeTranslatePipe } from './data-type-translate.pipe';
+import { DataTypeUnitPipe } from './data-type-unit.pipe';
 
 
 @NgModule({
@@ -71,7 +73,9 @@ import { swimPosture } from './swim-posture.pipe';
     WeightSibsPipe,
     SpeedSibsPipe,
     TemperatureSibsPipe,
-    swimPosture
+    swimPosture,
+    DataTypeTranslatePipe,
+    DataTypeUnitPipe
   ],
   exports: [
     SexPipe,
@@ -106,7 +110,9 @@ import { swimPosture } from './swim-posture.pipe';
     WeightSibsPipe,
     SpeedSibsPipe,
     TemperatureSibsPipe,
-    swimPosture
+    swimPosture,
+    DataTypeTranslatePipe,
+    DataTypeUnitPipe
   ]
 })
 export class SharedPipes {}
