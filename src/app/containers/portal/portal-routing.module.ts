@@ -52,17 +52,17 @@ const routes: Routes = [
         path: 'pair',
         component: DemoQrcodComponent
       },
-      
+      /*
       {
         path: 'activity/:fileId',
         component: ActivityInfoComponent
       },
-      /*
+      */
       {
         path: 'activity/:fileId',
         component: ActivityDetailComponent
       },
-      */
+      
       {
         path: 'user-profile/:userId',
         component: UserProfileComponent,

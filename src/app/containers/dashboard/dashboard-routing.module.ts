@@ -211,18 +211,18 @@ const routes: Routes = [
         path: 'activity-list',
         component: MyActivityComponent
       },
-      
+      /*
       {
         path: 'activity/:fileId',
         component: ActivityInfoComponent
       },
-      
-     /*
+      */
+     
       {
         path: 'activity/:fileId',
         component: ActivityDetailComponent
       },
-      */
+      
       {
         path: 'sport-report',
         component: SportReportComponent

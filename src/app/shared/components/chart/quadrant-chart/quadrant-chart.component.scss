@@ -1,0 +1,117 @@
+@import 'transition.scss';
+
+$data-color: rgba(100, 100, 100, 1);
+$axis-type-width: 160px;
+$btn-width: 120px;
+$btn-height: 35px;
+
+.item__spot {
+  font-size: 8px;
+}
+
+.data__title {
+  color: $data-color;
+}
+
+.data__content {
+  text-align: end;
+  font-size: 24px;
+  color: $data-color;
+}
+
+.data__item {
+  width: 50%;
+  margin: 15px;
+}
+
+.transparent__spot {
+  color: transparent;
+}
+
+#opt__setting__menu {
+  position: absolute;
+  background-color: white;
+  z-index: 2;
+  padding: 10px;
+  border: 1px solid black;
+  top: 28px;
+  right: 0px;
+  width: 300px;
+  height: 420px;
+  justify-content: space-between;
+}
+
+.axis__type__selector {
+  position: relative;
+  border: 1px solid black;
+  width: $axis-type-width;
+  height: 30px;
+  text-align: right;
+  padding: 2px 20px 2px 2px;
+  cursor: pointer;
+
+  &:after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    right: 3px;
+    border: solid;
+    border-width: 10px 6px 0px 6px;
+    border-color: black transparent transparent transparent;
+  }
+
+}
+
+.axis__selector__list {
+  padding: 5px;
+  background-color: white;
+  z-index: 5;
+  position: absolute;
+  border: 1px solid black;
+  width: $axis-type-width;
+  top: 53px;
+  cursor: pointer;
+
+  span {
+    text-align: right;
+    padding: 2px 15px 2px 2px;
+
+    &:hover {
+      color: white;
+      background-color: rgba(17, 166, 235, 1);
+      @include transition(background-color);
+    }
+
+  }
+
+}
+
+.origin__input {
+  width: 100px;
+  text-align: right;
+}
+
+.axis__definition__section {
+  justify-content: space-between;
+}
+
+.bold__font {
+  font-weight: bold;
+}
+
+#default__btn {
+  border: none;
+  background-color: white;
+  color: rgba(241, 129, 129, 1);
+  width: $btn-width;
+  height: $btn-height;
+}
+
+#confirm__btn {
+  border: none;
+  background-color: rgba(35, 200, 254, 1);
+  border-radius: 5px;
+  color: white;
+  width: $btn-width;
+  height: $btn-height;
+}

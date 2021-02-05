@@ -59,6 +59,8 @@ import { MapChartCompareComponent } from './map-chart-compare/map-chart-compare.
 import { TrinomialChartComponent } from './chart/trinomial-chart/trinomial-chart.component';
 import { QuadrantChartComponent } from './chart/quadrant-chart/quadrant-chart.component';
 import { ThresholdInfoComponent } from './chart/threshold-info/threshold-info.component';
+import { ThresholdChartComponent } from './chart/threshold-chart/threshold-chart.component';
+import { RainbowColumnChartComponent } from './chart/rainbow-column-chart/rainbow-column-chart.component';
 
 @NgModule({
   imports: [
@@ -123,7 +125,9 @@ import { ThresholdInfoComponent } from './chart/threshold-info/threshold-info.co
     MapChartCompareComponent,
     TrinomialChartComponent,
     QuadrantChartComponent,
-    ThresholdInfoComponent
+    ThresholdInfoComponent,
+    ThresholdChartComponent,
+    RainbowColumnChartComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [

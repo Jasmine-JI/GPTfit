@@ -92,10 +92,8 @@
       </div>
     </div>
   </div>
-  <div #gMap class="map__style" *ngIf="mapOpt.mapSource === 'google'">
-  </div>
-  <div #bMap class="map__style" *ngIf="mapOpt.mapSource === 'baidu'">
-  </div>
+  <div #gMap class="map__style" [class.hide__map]="!uiFlag.showMap" *ngIf="mapOpt.mapSource === 'google'"></div>
+  <div #bMap class="map__style" [class.hide__map]="!uiFlag.showMap" *ngIf="mapOpt.mapSource === 'baidu'"></div>
   <app-trinomial-chart
     style="position: absolute; bottom: 5px; width: 100%;"
     [compareA]="mapOpt.compareA"

@@ -5,6 +5,8 @@
 $sky-blue: rgba(17, 166, 235, 1);
 $table-fontsize: 14px;
 $segmentation-color: rgba(100, 100, 100, 1);
+$radio-size: 20px;
+$radio-active-size: 14px;
 
 .card__section {
   margin: 10px 0;
@@ -172,6 +174,98 @@ $segmentation-color: rgba(100, 100, 100, 1);
 
 .info__chart {
   width: 45%;
+  margin-left: 2px;
+}
+
+#map__opt__menu {
+  position: absolute;
+  z-index: 1;
+  width: fit-content;
+  min-width: 220px;
+  background-color: white;
+  border: 1px solid rgba(150, 150, 150, 1);
+  padding: 10px;
+  right: 0px;
+  top: 28px;
+}
+
+.bold__font {
+  font-weight: bold;
+}
+
+.radio__section {
+  margin: 5px 0 5px 10px;
+}
+
+.radio__selector {
+  cursor: pointer;
+  align-items: center;
+  margin-right: 15px;
+  width: 50%;
+  margin-bottom: 5px;
+}
+
+.radio__btn {
+  @include center();
+  border: 1px solid black;
+  border-radius: 50%;
+  width: $radio-size;
+  height: $radio-size;
+  margin-right: 5px;
+}
+
+.radio__btn--active {
+
+  &:before {
+    content: '';
+    width: $radio-active-size;
+    height: $radio-active-size;
+    border-radius: 50%;
+    background-color: rgba(17, 166, 235, 1);
+  }
+
+}
+
+.drop__menu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid black;
+  height: 30px;
+  margin-top: 5px;
+  padding: 5px;
+  cursor: pointer;
+
+  &:after {
+    content: '';
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 10px solid black;
+  }
+
+}
+
+.drop__menu__list {
+  cursor: pointer;
+  position: absolute;
+  width: 100%;
+  border: 1px solid black;
+  padding: 5px;
+  z-index: 2;
+  background-color: white;
+  top: 34px;
+
+  span {
+    padding: 2px;
+
+    &:hover {
+      background-color: rgba(17, 166, 235, 1);
+      color: white;
+      @include transition(background-color);
+    }
+
+  }
+
 }
 
 /******************************************* media *****************************************/

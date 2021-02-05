@@ -14,11 +14,15 @@ import { MuscleNamePipe } from '../../pipes/muscle-name.pipe';
 import { mi, lb } from '../../models/bs-constant';
 import * as _Highcharts from 'highcharts';
 import { HrZoneRange } from '../../models/chart-data';
+import { SportType } from '../../models/report-condition';
 
 const errMsg = `Error! Please try again later.`,
       Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 type DisplayTag = 'summary' | 'detail' | 'segmentation' | 'chart';
+type SegmentType = 'pointSecond' | 'distanceMeters';
+type SegmentSecond = 60 | 300 | 600 | 1800;
+type SegmentMeter = 100 | 500 | 1000 | 10000;
 
 @Component({
   selector: 'app-activity-detail',
@@ -44,12 +48,13 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     isLoading: false,
     isNormalCoordinate: false,
     showWeightTrainingOpt: false,
-    showQuadrantOpt: false,
     showChartOpt: false,
     pcView: true,
     currentTag: <DisplayTag>'detail',
     tagChanged: false,
-    resolution: 1
+    resolution: 1,
+    noFtpData: false,
+    showSegmentRangeList: false
   };
 
   /**
@@ -96,6 +101,11 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   activityPointLayer: any;
 
   /**
+   * 距離趨勢圖所需數據
+   */
+  trendChartData: any;
+
+  /**
    * 圖表所需資訊（處理後）
    */
   chartData = {
@@ -111,6 +121,24 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     },
     ftp: [0, 0, 0, 0, 0, 0, 0]
   };
+
+  /**
+   * 分段數據
+   */
+  segmentData = {
+    xAxis: <Array<number>>[0],
+    yAxis: {
+      hr: <Array<number>>[0],
+      speed: <Array<number>>[0],
+      altitude: <Array<number>>[0],
+      cadence: <Array<number>>[0],
+      power: <Array<number>>[0],
+      temperature: <Array<number>>[0],
+      gforceX: <Array<number>>[0],
+      gforceY: <Array<number>>[0],
+      gforceZ: <Array<number>>[0]
+    }
+  }
 
   /**
    * footer其他資訊
@@ -130,9 +158,20 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     lb: lb
   }
 
+  /**
+   * 趨勢圖表設定
+   */
+  trendChartOpt = {
+    segmentMode: false,
+    xAxisType: <SegmentType>'pointSecond',
+    segmentRange: <SegmentSecond | SegmentMeter>60,
+    haveDistanceChoice: true
+  }
+
   fileTime: string;
   sceneryImg: string;
   pageResize: Subscription;
+  clickEvent: Subscription;
   muscleTranslate = {};
 
   constructor(
@@ -234,13 +273,15 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     if (this.uiFlag.isPortal) {
       body = {
         token: '',
-        fileId: this.fileInfo.fileId
+        fileId: this.fileInfo.fileId,
+        // displayDetailField: 3  // 新api回傳格式
       };
 
     } else {
       body = {
         token: this.utils.getToken(),
         fileId: this.fileInfo.fileId,
+        // displayDetailField: 3, // 新api回傳格式
         debug: `${this.uiFlag.isDebug}`
       };
 
@@ -276,6 +317,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   handleActivityDetail(data: any) {
     this.handleFileInfo(data.fileInfo);
     this.activityInfoLayer = data.activityInfoLayer;
+    // 距離為0則趨勢圖表設定框分段解析不顯示距離選項
+    this.trendChartOpt.haveDistanceChoice = this.activityInfoLayer.totalDistanceMeters ? true : false;
     this.handleSceneryImg(+this.activityInfoLayer.type, +this.activityInfoLayer.subtype);
     this.handleHrZoneData(this.activityInfoLayer);
     if (+this.activityInfoLayer.type === 2) {
@@ -283,7 +326,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     this.activityLapLayer = data.activityLapLayer;
-    this.getOtherInfo(this.fileInfo);
+    // this.getOtherInfo(this.fileInfo);
     this.handleActivityPoint(data.activityPointLayer);
     if(this.activityInfoLayer.type == 3) {
       this.createMuscleTranslate();
@@ -320,8 +363,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         if (res.processResult && res.processResult.resultCode === 200) {
           const {userProfile} = res;
           this.ownerProfile = {
-            icon: userProfile.avatarUrl,
-            name: userProfile.nickname
+            icon: userProfile[0].avatarUrl,
+            name: userProfile[0].nickname
           };
         } else if (res.processResult && res.processResult.resultCode !== 200) {
           console.log(`${res.processResult.resultCode}: Api ${res.processResult.apiCode} ${res.processResult.resultMessage}`);
@@ -649,7 +692,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       'gsensorXRawData',
       'gsensorYRawData',
       'gsensorZRawData',
-      'moveRepetitions'
+      'moveRepetitions',
+      'distanceMeters'
     ];
 
     let haveEffectiveCoordinates = false,
@@ -733,6 +777,343 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       return 1;
     }
 
+  }
+
+
+  /**
+   * 顯示趨勢圖表設定選項
+   * @param e {MouseEvent}
+   * @author kidin-1100114
+   */
+  handleShowOptMenu(e: MouseEvent) {
+    e.stopPropagation();
+    this.uiFlag.showChartOpt = !this.uiFlag.showChartOpt;
+    this.uiFlag.showChartOpt ? this.subscribeClick() : this.ngUnsubscribeClick();
+  }
+
+  /**
+   * 訂閱點擊事件
+   * @author kidin-1100114
+   */
+  subscribeClick() {
+    const click = fromEvent(document, 'click');
+    this.clickEvent = click.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      this.uiFlag.showChartOpt = false;
+      this.uiFlag.showSegmentRangeList = false;
+      this.ngUnsubscribeClick();
+    });
+
+  }
+
+  /**
+   * 取消訂閱點擊事件
+   * @author kidin-1100114
+   */
+  ngUnsubscribeClick() {
+    this.clickEvent.unsubscribe();
+  }
+
+  /**
+   * 切換是否分段
+   * @author kidin-1100203
+   */
+  changeSegmentMode() {
+    this.trendChartOpt.segmentMode = !this.trendChartOpt.segmentMode;
+    if (this.trendChartOpt.segmentMode) {
+      this.countSegmentData();
+    }
+
+  }
+
+  /**
+   * 切換x軸依據類型
+   * @param type {SegmentType}-分段類型
+   * @author kidin-1100203
+   */
+  changeXAxisType(type: SegmentType) {
+    this.trendChartOpt.segmentRange = type === 'pointSecond' ? 60 : 100;
+    this.trendChartOpt.xAxisType = type;
+
+    const countList = this.getCountList(+this.activityInfoLayer.type as SportType);
+    if (type === 'distanceMeters' && !this.trendChartData) {
+      const apiKeyList = countList.map(_list => _list[1]);
+      this.trendChartData = this.utils.handleRepeatXAxis(
+        this.activityPointLayer['distanceMeters'],
+        this.activityPointLayer,
+        apiKeyList
+      );
+    }
+
+    if (this.trendChartOpt.segmentMode) {
+      this.countSegmentData();
+
+    }
+
+  }
+
+  /**
+   * 展開或收合分段範圍選擇清單
+   * @param e {KeyboardEvent}
+   * @author kidin-1100203
+   */
+  handleShowDropList() {
+    this.uiFlag.showSegmentRangeList = !this.uiFlag.showSegmentRangeList;
+  }
+
+  /**
+   * 切換分段範圍
+   * @param range {SegmentSecond | SegmentMeter}-分段範圍
+   * @author kidin-1100203
+   */
+  changeSegmentRange(range: SegmentSecond | SegmentMeter) {
+    this.trendChartOpt.segmentRange = range;
+    this.uiFlag.showSegmentRangeList = false;
+    this.countSegmentData();
+  }
+
+  /**
+   * 根據運動類別取得趨勢圖表所需顯示的項目
+   * @param sportType {SportType}-運動類別
+   * @author kidin-1100205
+   */
+  getCountList(sportType: SportType): Array<Array<string>> {
+    let arr: Array<Array<string>>;
+    switch (sportType) {
+      case 1:
+        arr = [
+          ['hr', 'heartRateBpm'],
+          ['temperature', 'temp'],
+          ['altitude', 'altitudeMeters'],
+          ['cadence', 'runCadence'],
+          ['speed', 'speed']
+        ];
+        break;
+      case 2:
+        arr = [
+          ['hr', 'heartRateBpm'],
+          ['temperature', 'temp'],
+          ['altitude', 'altitudeMeters'],
+          ['cadence', 'cycleCadence'],
+          ['power', 'cycleWatt'],
+          ['speed', 'speed']
+        ];
+        break;
+      case 3:
+        arr = [
+          ['hr', 'heartRateBpm'],
+          ['temperature', 'temp'],
+          ['cadence', 'moveRepetitions']
+        ];
+        break;
+      case 4:
+        arr = [
+          ['hr', 'heartRateBpm'],
+          ['temperature', 'temp'],
+          ['cadence', 'swimCadence'],
+          ['speed', 'speed']
+        ];
+        break;
+      case 5:
+        arr = [
+          ['hr', 'heartRateBpm'],
+          ['temperature', 'temp']
+        ];
+        break;
+      case 6:
+        arr = [
+          ['hr', 'heartRateBpm'],
+          ['temperature', 'temp'],
+          ['altitude', 'altitudeMeters'],
+          ['cadence', 'rowingCadence'],
+          ['speed', 'speed'],
+          ['power', 'rowingWatt']
+        ];
+        break;
+      case 7:
+        arr = [
+          ['hr', 'heartRateBpm'],
+          ['temperature', 'temp'],
+          ['altitude', 'altitudeMeters'],
+          ['speed', 'speed'],
+          ['gforceX', 'gsensorXRawData'],
+          ['gforceY', 'gsensorYRawData'],
+          ['gforceZ', 'gsensorZRawData']
+        ];
+        break;
+      default:
+        arr = [
+          ['hr', 'heartRateBpm'],
+          ['temperature', 'temp']
+        ];
+        break;
+    }
+
+    return arr;
+  }
+
+  /**
+   * 計算分段數據
+   * @author kidin-1100203
+   */
+  countSegmentData() {
+    this.initSegmentData();
+    const countList = this.getCountList(+this.activityInfoLayer.type as SportType),
+          range = this.trendChartOpt.segmentRange,
+          refXAxisData = this.trendChartOpt.xAxisType === 'pointSecond' ? this.activityPointLayer['pointSecond'] : this.trendChartData.xAxis,
+          refYAxisData = this.trendChartOpt.xAxisType === 'pointSecond' ? this.activityPointLayer : this.trendChartData.yAxis;
+console.log('trendChartData', this.trendChartData);
+    let divideIndex = 1,
+        segmentTotal = {};
+    for (let i = 0, dataLength = refXAxisData.length; i < dataLength; i++) {
+
+      // 將分段範圍內的數據進行均化
+      if (refXAxisData[i] < range * divideIndex && i !== dataLength - 1) {
+        // 將分段範圍內的所需所有類型數據根據比例進行加總
+        countList.forEach(_list => {
+          const key = _list[0],
+                apiKey = _list[1],
+                scale = (refXAxisData[i] - (refXAxisData[i - 1] || 0)) / range;  // 數據在該分段佔比
+          if (segmentTotal.hasOwnProperty(key)) {
+            segmentTotal[key] += refYAxisData[apiKey][i] * scale;
+          } else {
+            Object.assign(
+              segmentTotal, 
+              {[key]: refYAxisData[apiKey][i] * scale}
+            );
+
+          }
+
+        });
+
+      } else {
+        const scale = (range * divideIndex - (refXAxisData[i - 1] || 0)) / range;  // 數據在該分段佔比
+        // 當x軸數據大於目前分段範圍兩倍以上時
+        if ((refXAxisData[i] / range) >= divideIndex + 1) {
+          const nextBoundaryIdx = Math.ceil(refXAxisData[i] / range);
+
+          countList.forEach((_list, _index) => {
+            const key = _list[0],
+                  apiKey = _list[1];
+            
+            segmentTotal[key] += refYAxisData[apiKey][i] * scale;
+            this.segmentData.yAxis[key].push(+segmentTotal[key].toFixed(1));
+            if (_index === 0) {
+              this.segmentData.xAxis.push(range * divideIndex);
+            }
+            
+            const fillLen = nextBoundaryIdx - (divideIndex + 1) - 1,  // 填充的array長度
+                  fillArr = new Array(fillLen),
+                  xAxisFillArr = fillArr.map((_arr, index) => range * ((divideIndex + 1) + index)),
+                  yAxisFillArr = fillArr.fill(refYAxisData[apiKey][i], 0, fillLen);
+
+            if (_index === 0) {
+              this.segmentData.xAxis.concat(xAxisFillArr);
+            }
+
+            this.segmentData.yAxis[key].concat(yAxisFillArr);
+
+            // 若數據不在分段邊界上
+            if (range * divideIndex !== refXAxisData[i]) {
+              // 下一個分段的數值加上該比例數值
+              if (i !== dataLength - 1) {
+                const nextScale = (refXAxisData[i] - (nextBoundaryIdx - 1)) / range;
+                segmentTotal[key] = refYAxisData[apiKey][i] * nextScale;
+              } else {
+
+                this.segmentData.yAxis[key].push(refYAxisData[apiKey][i]);
+                if (_index === 0) {
+                  this.segmentData.xAxis.push(range * nextBoundaryIdx);
+                }
+              }
+            } else {
+              segmentTotal[key] = 0;
+            }
+
+          });
+
+          divideIndex = nextBoundaryIdx;
+        } else {
+          // 判斷數據是否在分段邊界上或為最後一點
+          if (range * divideIndex !== refXAxisData[i] && i !== dataLength - 1) {
+            countList.forEach((_list, _index) => {
+              const key = _list[0],
+                    apiKey = _list[1];
+
+              segmentTotal[key] += refYAxisData[apiKey][i] * scale;
+              this.segmentData.yAxis[key].push(+segmentTotal[key].toFixed(1));
+              if (_index === 0) {
+                this.segmentData.xAxis.push(range * divideIndex);
+              }
+
+              // 下一個分段的數值加上該比例數值
+              const nextScale = (refXAxisData[i] - range * divideIndex) / range;
+              segmentTotal[key] = refYAxisData[apiKey][i] * nextScale;
+            });
+ 
+          } else {
+            countList.forEach(_list => {
+              const key = _list[0],
+                    apiKey = _list[1];
+
+              segmentTotal[key] += refYAxisData[apiKey][i] * scale;
+              this.segmentData.yAxis[key].push(+(segmentTotal[key].toFixed(1))); 
+              segmentTotal[key] = 0;
+            });
+            
+            this.segmentData.xAxis.push(range * divideIndex);
+          }
+
+          divideIndex++;
+        }
+
+      }
+
+    }
+console.log('segment', this.segmentData);
+  }
+
+  /**
+   * 
+   */
+  countDistanceBaseData() {
+    
+  }
+
+  /**
+   * 初始化分段數據
+   * @author kidin-1100204
+   */
+  initSegmentData() {
+    this.segmentData = {
+      xAxis: <Array<number>>[0],
+      yAxis: {
+        hr: <Array<number>>[0],
+        speed: <Array<number>>[0],
+        altitude: <Array<number>>[0],
+        cadence: <Array<number>>[0],
+        power: <Array<number>>[0],
+        temperature: <Array<number>>[0],
+        gforceX: <Array<number>>[0],
+        gforceY: <Array<number>>[0],
+        gforceZ: <Array<number>>[0]
+      }
+    }
+
+  }
+
+  /**
+   * 建立分段x軸數據
+   * @param maxXaxis {number}-該筆運動檔案最大距離或秒數
+   * @param range {number}-分段範圍
+   * @author kidin-1100204
+   */
+  createSegmentXAxisData(maxXaxis: number, range: number): Array<number> {
+    const length = Math.ceil(maxXaxis / range) + 1, // 含x = 0
+          xAxisDataArr = new Array(length);
+
+    return xAxisDataArr.map((_x, index) => _x * index);
   }
 
   /**

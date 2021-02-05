@@ -8,6 +8,10 @@ $radio-active-size: 14px;
   height: 500px;
 }
 
+.hide__map {
+  height: 150px;
+}
+
 #map__opt__menu {
   position: absolute;
   z-index: 1;
@@ -16,7 +20,7 @@ $radio-active-size: 14px;
   border: 1px solid rgba(150, 150, 150, 1);
   padding: 10px;
   right: 0px;
-  top: 30px;
+  top: 28px;
 }
 
 .radio__selector {

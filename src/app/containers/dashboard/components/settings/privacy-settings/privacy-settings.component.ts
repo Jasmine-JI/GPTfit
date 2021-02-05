@@ -4,7 +4,8 @@ import {
   ViewEncapsulation,
   ViewChild,
   Input,
-  OnChanges
+  OnChanges,
+  OnDestroy
 } from '@angular/core';
 import { SettingsService } from '../../../services/settings.service';
 import { ModifyBoxComponent } from './modify-box/modify-box.component';
@@ -12,7 +13,8 @@ import { UtilsService } from '@shared/services/utils.service';
 import { MAT_CHECKBOX_DEFAULT_OPTIONS } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 
@@ -30,7 +32,10 @@ declare var google: any;
   ],
   encapsulation: ViewEncapsulation.None
 })
-export class PrivacySettingsComponent implements OnInit, OnChanges {
+export class PrivacySettingsComponent implements OnInit, OnChanges, OnDestroy {
+
+  private ngUnsubscribe = new Subject();
+
   i18n = {  // 可能再增加新的翻譯
     gym: '',
     description: '',
@@ -111,7 +116,11 @@ export class PrivacySettingsComponent implements OnInit, OnChanges {
       this.lifeTrackingReport.openObj = lifeTrackingReport.map(_obj => +_obj); // api v1 轉 api v2 型態改number
       this.detectCheckBoxValue('lifeTracking');
 
-      this.editObject = this.translate.instant('universal_vocabulary_data');
+      this.translate.get('hellow world').pipe(
+        takeUntil(this.ngUnsubscribe)
+      ).subscribe(() => {
+        this.editObject = this.translate.instant('universal_vocabulary_data');
+      });
     }
 
   }
@@ -394,4 +403,10 @@ export class PrivacySettingsComponent implements OnInit, OnChanges {
     });
 
   }
+
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
 }

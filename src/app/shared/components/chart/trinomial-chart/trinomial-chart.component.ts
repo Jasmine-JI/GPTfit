@@ -92,6 +92,7 @@ class ChartOptions {
           month: '%H:%M:%S',
           year: '%H:%M:%S'
         },
+        valueDecimals: 1
       },
       series: dataset
     };
@@ -117,6 +118,8 @@ export class TrinomialChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input('showMap') showMap: boolean;
   @ViewChild('container') container: ElementRef;
   @Output() onHover: EventEmitter<any> = new EventEmitter();
+
+  chartIndex = null; // 此圖表在詳細頁面所有的highchart的順位
 
   constructor(
     private renderer: Renderer2,
@@ -247,10 +250,7 @@ export class TrinomialChartComponent implements OnInit, OnChanges, OnDestroy {
       if (!this.container) {
         this.createChart(option);
       } else {
-        console.log('highchartsA', Highcharts.charts);
-
-        chart(chartDiv, option);
-        console.log('highchartsB', Highcharts.charts);
+        this.chartIndex = chart(chartDiv, option).index;  // 產生圖表同時紀錄此圖表的index
       }
 
       if (this.showMap) {
@@ -269,7 +269,7 @@ export class TrinomialChartComponent implements OnInit, OnChanges, OnDestroy {
    * @author kidin-1100122
    */
   handleSynchronizedPoint(e: any) {
-    const compareChart: any = Highcharts.charts[0],
+    const compareChart: any = Highcharts.charts[this.chartIndex],
           event = compareChart.pointer.normalize(e), // Find coordinates within the chart
           point = compareChart.series[0].searchPoint(event, true); // Get the hovered point
     if (point && point.index) {
