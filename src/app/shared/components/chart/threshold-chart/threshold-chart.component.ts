@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, OnChanges, ViewChild, ElementRef, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, OnChanges, ViewChild, ElementRef, Input, Output, EventEmitter } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
@@ -59,22 +59,23 @@ class ChartOptions {
 }
 
 @Component({
-  selector: 'app-hrzone-chart',
-  templateUrl: './hrzone-chart.component.html',
-  styleUrls: ['./hrzone-chart.component.scss']
+  selector: 'app-threshold-chart',
+  templateUrl: './threshold-chart.component.html',
+  styleUrls: ['./threshold-chart.component.scss']
 })
-export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
+export class ThresholdChartComponent implements OnInit, OnChanges, OnDestroy {
 
   private ngUnsubscribe = new Subject();
 
-  noHRZoneData = true;
-  highestHRZone = '';
-  highestHRZoneValue = 0;
-  highestHRZoneColor = '';
+  noFtpZoneData = true;
+  highestFtpZone = '';
+  highestFtpZoneValue = 0;
+  highestFtpZoneColor = '';
 
-  @Input() data: Array<number>; // 各心率區間總秒數，ex.[992, 123, 1534, 1234, 1231, 321]
+  @Input() data: Array<number>; // 各區間總秒數，ex.[992, 123, 1534, 1234, 1231, 321, 123]
   @Input() isPrint: boolean;
-  @Input() type: 'mixHrZone' | 'personalAnalysis';
+  @Input() type: 'mixFtpZone' | 'personalAnalysis';
+  @Output() checkData: EventEmitter<boolean> = new EventEmitter();
 
   @ViewChild('container', {static: false})
   container: ElementRef;
@@ -88,11 +89,12 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnChanges () {
     if (this.data.reduce((accumulator, current) => accumulator + current) === 0) {
-      this.noHRZoneData = true;
+      this.noFtpZoneData = true;
     } else {
-      this.noHRZoneData = false;
+      this.noFtpZoneData = false;
     }
 
+    this.checkData.emit(this.noFtpZoneData);
     this.initInfoHighChart();
   }
 
@@ -104,15 +106,15 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
     this.translateService.get('hellow world').pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
-      const zoneZero = `${this.translateService.instant('universal_activityData_limit_generalZone')}`,
-            zoneOne = `${this.translateService.instant('universal_activityData_warmUpZone')}`,
-            zoneTwo = `${this.translateService.instant('universal_activityData_aerobicZone')}`,
-            zoneThree = `${this.translateService.instant('universal_activityData_enduranceZone')}`,
-            zoneFour = `${this.translateService.instant('universal_activityData_marathonZone')}`,
-            zoneFive = `${this.translateService.instant('universal_activityData_anaerobicZone')}`;
+      const zoneZero = `${this.translateService.instant('universal_activityData_ftpZ0')}`,
+            zoneOne = `${this.translateService.instant('universal_activityData_ftpZ1')}`,
+            zoneTwo = `${this.translateService.instant('universal_activityData_ftpZ2')}`,
+            zoneThree = `${this.translateService.instant('universal_activityData_ftpZ3')}`,
+            zoneFour = `${this.translateService.instant('universal_activityData_ftpZ4')}`,
+            zoneFive = `${this.translateService.instant('universal_activityData_ftpZ5')}`,
+            zoneSix = `${this.translateService.instant('universal_activityData_ftpZ6')}`;
 
-    
-      this.highestHRZoneValue = 0;
+      this.highestFtpZoneValue = 0;
 
       const totalSecond = this.data.reduce((accumulator, current) => accumulator + current),
             zoneZeroPercentage = (this.data[0] / totalSecond) * 100,
@@ -120,7 +122,8 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
             zoneTwoPercentage = (this.data[2] / totalSecond) * 100,
             zoneThreePercentage = (this.data[3] / totalSecond) * 100,
             zoneFourPercentage = (this.data[4] / totalSecond) * 100,
-            zoneFivePercentage = (this.data[5] / totalSecond) * 100;
+            zoneFivePercentage = (this.data[5] / totalSecond) * 100,
+            zoneSixPercentage = (this.data[6] / totalSecond) * 100;
 
       const sportPercentageDataset = [
         {y: zoneZeroPercentage, color: '#70b1f3'},
@@ -129,43 +132,48 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
         {y: zoneThreePercentage, color: '#f7f25b'},
         {y: zoneFourPercentage, color: '#f3b353'},
         {y: zoneFivePercentage, color: '#f36953'},
+        {y: zoneSixPercentage, color: '#ea57a3'},
       ];
 
       if (this.type !== 'personalAnalysis') {
 
-        // 取得最高占比的心率區間-kidin-1090130
-        let highestHRZoneIndex = 0;
+        // 取得最高占比的區間-kidin-1090130
+        let highestFtpZoneIndex = 0;
         for (let i = 0; i < 6; i++) {
-          if (sportPercentageDataset[i].y > this.highestHRZoneValue) {
-            this.highestHRZoneValue = sportPercentageDataset[i].y;
-            highestHRZoneIndex = i;
+          if (sportPercentageDataset[i].y > this.highestFtpZoneValue) {
+            this.highestFtpZoneValue = sportPercentageDataset[i].y;
+            highestFtpZoneIndex = i;
           }
         }
 
-        switch (highestHRZoneIndex) {
+        switch (highestFtpZoneIndex) {
           case 0:
-            this.highestHRZone = zoneZero;
-            this.highestHRZoneColor = 'rgb(70, 156, 245)';
+            this.highestFtpZone = zoneZero;
+            this.highestFtpZoneColor = 'rgb(70, 156, 245)';
             break;
           case 1:
-            this.highestHRZone = zoneOne;
-            this.highestHRZoneColor = 'rgb(64, 218, 232)';
+            this.highestFtpZone = zoneOne;
+            this.highestFtpZoneColor = 'rgb(64, 218, 232)';
             break;
           case 2:
-            this.highestHRZone = zoneTwo;
-            this.highestHRZoneColor = 'rgb(86, 255, 0)';
+            this.highestFtpZone = zoneTwo;
+            this.highestFtpZoneColor = 'rgb(86, 255, 0)';
             break;
           case 3:
-            this.highestHRZone = zoneThree;
-            this.highestHRZoneColor = 'rgb(214, 207, 1)';
+            this.highestFtpZone = zoneThree;
+            this.highestFtpZoneColor = 'rgb(214, 207, 1)';
             break;
           case 4:
-            this.highestHRZone = zoneFour;
-            this.highestHRZoneColor = 'rgb(234, 164, 4)';
+            this.highestFtpZone = zoneFour;
+            this.highestFtpZoneColor = 'rgb(234, 164, 4)';
             break;
           case 5:
-            this.highestHRZone = zoneFive;
-            this.highestHRZoneColor = 'rgba(243, 105, 83)';
+            this.highestFtpZone = zoneFive;
+            this.highestFtpZoneColor = 'rgb(243, 105, 83)';
+            break;
+          case 6:
+            this.highestFtpZone = zoneSix;
+            this.highestFtpZoneColor = 'rgb(239, 56, 150)';
             break;
         }
 
@@ -184,7 +192,8 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
           zoneTwo,
           zoneThree,
           zoneFour,
-          zoneFive
+          zoneFive,
+          zoneSix
         ];
 
         HRChartOptions['yAxis'].labels = {

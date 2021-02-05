@@ -20,7 +20,6 @@ type BoundaryCoordinate = {
   left: number;
   right: number;
 }
-type QuadrantDataOpt = 'hr' | 'speed' | 'pace' | 'cadence' | 'power';
 type CompareDataOpt = 'hr' | 'speed' | 'pace' | 'cadence' | 'power' | 'temperature' | 'gforceX' | 'gforceY' | 'gforceZ';
 
 @Component({
@@ -536,7 +535,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
     e.stopPropagation();
     this.uiFlag.showMapOpt = !this.uiFlag.showMapOpt;
     this.uiFlag.showMapOpt ? this.subscribeClick() : this.ngUnsubscribeClick();
-    this.uiFlag.showDataSelector = false;
+    this.uiFlag.showDataSelector = null;
   }
 
   /**
