@@ -1,0 +1,36 @@
+<section class="flexCol">
+  <div class="flexRow" style="align-items: center; justify-content: space-between;">
+    <h6 id="chart__title">{{ chartType | dataTypeTranslate: [sportType, unit] | translate }}</h6>
+    <span id="row__line"></span>
+  </div>
+  <main class="flexRow" style="margin-left: 20px;">
+    <div class="flexRow" style="width: 40%; justify-content: space-between;">
+      <div class="flexCol info__section">
+        <span class="data__number">
+          {{ infoData.best }}{{ chartType | dataTypeUnit: [sportType, unit] }}
+        </span>
+        <span class="data__description">
+          <ng-container *ngIf="chartType === 'pace'">
+            {{ 'universal_adjective_maxBest' | translate }}
+          </ng-container>
+          <ng-container *ngIf="chartType !== 'pace'">
+            {{ 'universal_adjective_maxHight' | translate }}
+          </ng-container>
+          {{ chartType | dataTypeTranslate: [sportType, unit] | translate }}
+        </span>
+      </div>
+      <div class="flexCol info__section">
+        <span class="data__number">
+          {{ infoData.avg }}{{ chartType | dataTypeUnit: [sportType, unit] }}
+        </span>
+        <span class="data__description">
+          {{ 'universal_adjective_avg' | translate }}
+          {{ chartType | dataTypeTranslate: [sportType, unit] | translate }}
+        </span>
+      </div>
+    </div>
+    <div #container style="width: 60%;">
+      chart
+    </div>
+  </main>
+</section>  

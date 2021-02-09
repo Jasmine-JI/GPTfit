@@ -110,7 +110,7 @@ export class TrinomialChartComponent implements OnInit, OnChanges, OnDestroy {
   private ngUnsubscribe = new Subject;
 
   @Input('sportType') sportType: number;
-  @Input('unit') unit: number;
+  @Input('unit') unit: 0 | 1;
   @Input('compareA') compareA: any;
   @Input('compareB') compareB: any;
   @Input('terrain') terrain: number[];

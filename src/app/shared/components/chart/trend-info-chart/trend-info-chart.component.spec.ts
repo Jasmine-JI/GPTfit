@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RainbowColumnChartComponent } from './rainbow-column-chart.component';
+import { TrendInfoChartComponent } from './trend-info-chart.component';
 
-describe('RainbowColumnChartComponent', () => {
-  let component: RainbowColumnChartComponent;
-  let fixture: ComponentFixture<RainbowColumnChartComponent>;
+describe('TrendInfoChartComponent', () => {
+  let component: TrendInfoChartComponent;
+  let fixture: ComponentFixture<TrendInfoChartComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ RainbowColumnChartComponent ]
+      declarations: [ TrendInfoChartComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(RainbowColumnChartComponent);
+    fixture = TestBed.createComponent(TrendInfoChartComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

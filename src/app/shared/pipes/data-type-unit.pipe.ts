@@ -41,6 +41,8 @@ export class DataTypeUnitPipe implements PipeTransform {
         return 'w';
       case 'temperature':
         return unit === 0 ? '°C' : '°F';
+      case 'altitude':
+        return unit === 0 ? 'm' : 'ft';;
       case 'gforceX':
       case 'gforceY':
       case 'gforceZ':
