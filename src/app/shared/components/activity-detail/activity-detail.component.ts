@@ -955,6 +955,11 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   /**
    * 計算分段數據
+   * 計算方式為依每個x軸數據差及分段範圍進行加權計算
+   * ex. distance(x軸數據) = [0, 35, 195, 199]; hr(y軸數據) = [91, 133, 150, 143]; 分段為100 m
+   * 則分段過後y軸數據計算為 分段一： (133 * (35 - 100 * 0) / 100) + (150 * (100 * 1 - 35) / 100)
+   *                       分段二： (150 * (195 - 100 * 1) / (199 - 100 * 1)) + 143 * ((199 - 195) / (199 - 100 * 1))
+   * 故分段數據為 distance = [0, 100, 200]; hr = [0, 144, 149.7];
    * @author kidin-1100203
    */
   countSegmentData() {
@@ -969,12 +974,21 @@ console.log('trendChartData', this.trendChartData);
     for (let i = 0, dataLength = refXAxisData.length; i < dataLength; i++) {
 
       // 將分段範圍內的數據進行均化
-      if (refXAxisData[i] < range * divideIndex && i !== dataLength - 1) {
+      if (refXAxisData[i] < range * divideIndex) {
         // 將分段範圍內的所需所有類型數據根據比例進行加總
-        countList.forEach(_list => {
+        countList.forEach((_list, _index) => {
           const key = _list[0],
-                apiKey = _list[1],
-                scale = (refXAxisData[i] - (refXAxisData[i - 1] || 0)) / range;  // 數據在該分段佔比
+                apiKey = _list[1];
+
+          // 確認是否為最後一段數據
+          let scale: number;
+          if (refXAxisData[dataLength - 1] < range * divideIndex) {
+            scale = (refXAxisData[i] - (refXAxisData[i - 1] || 0)) / (refXAxisData[dataLength - 1] - (range * (divideIndex - 1)));
+          } else {
+            scale = (refXAxisData[i] - (refXAxisData[i - 1] || 0)) / range;  // 數據在該分段佔比
+          }
+
+          // 將該分段數據進行加總
           if (segmentTotal.hasOwnProperty(key)) {
             segmentTotal[key] += refYAxisData[apiKey][i] * scale;
           } else {
@@ -983,6 +997,15 @@ console.log('trendChartData', this.trendChartData);
               {[key]: refYAxisData[apiKey][i] * scale}
             );
 
+          }
+
+          // 確認是否為最後一個數據
+          if (i === dataLength - 1) {
+            this.segmentData.yAxis[key].push(+segmentTotal[key].toFixed(1));
+
+            if (_index === 0) {
+              this.segmentData.xAxis.push(range * divideIndex);
+            }
           }
 
         });
@@ -995,24 +1018,22 @@ console.log('trendChartData', this.trendChartData);
 
           countList.forEach((_list, _index) => {
             const key = _list[0],
-                  apiKey = _list[1];
-            
-            segmentTotal[key] += refYAxisData[apiKey][i] * scale;
-            this.segmentData.yAxis[key].push(+segmentTotal[key].toFixed(1));
-            if (_index === 0) {
-              this.segmentData.xAxis.push(range * divideIndex);
-            }
-            
-            const fillLen = nextBoundaryIdx - (divideIndex + 1) - 1,  // 填充的array長度
+                  apiKey = _list[1],
+                  fillLen = nextBoundaryIdx - (divideIndex + 1) - 1,  // 填充的array長度
                   fillArr = new Array(fillLen),
                   xAxisFillArr = fillArr.map((_arr, index) => range * ((divideIndex + 1) + index)),
                   yAxisFillArr = fillArr.fill(refYAxisData[apiKey][i], 0, fillLen);
 
+            // y軸填入上一段數據後，開始填充下一段數據
+            segmentTotal[key] += refYAxisData[apiKey][i] * scale;
+            this.segmentData.yAxis[key].push(+segmentTotal[key].toFixed(1));
+            this.segmentData.yAxis[key].concat(yAxisFillArr);
+
+            // x軸填入上一段數據後，開始填充下一段數據
             if (_index === 0) {
+              this.segmentData.xAxis.push(range * divideIndex);
               this.segmentData.xAxis.concat(xAxisFillArr);
             }
-
-            this.segmentData.yAxis[key].concat(yAxisFillArr);
 
             // 若數據不在分段邊界上
             if (range * divideIndex !== refXAxisData[i]) {
@@ -1021,7 +1042,6 @@ console.log('trendChartData', this.trendChartData);
                 const nextScale = (refXAxisData[i] - (nextBoundaryIdx - 1)) / range;
                 segmentTotal[key] = refYAxisData[apiKey][i] * nextScale;
               } else {
-
                 this.segmentData.yAxis[key].push(refYAxisData[apiKey][i]);
                 if (_index === 0) {
                   this.segmentData.xAxis.push(range * nextBoundaryIdx);
@@ -1035,7 +1055,7 @@ console.log('trendChartData', this.trendChartData);
 
           divideIndex = nextBoundaryIdx;
         } else {
-          // 判斷數據是否在分段邊界上或為最後一點
+          // 判斷數據是否在分段邊界上或為最後一個數據
           if (range * divideIndex !== refXAxisData[i] && i !== dataLength - 1) {
             countList.forEach((_list, _index) => {
               const key = _list[0],
@@ -1072,13 +1092,6 @@ console.log('trendChartData', this.trendChartData);
 
     }
 console.log('segment', this.segmentData);
-  }
-
-  /**
-   * 
-   */
-  countDistanceBaseData() {
-    
   }
 
   /**

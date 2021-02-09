@@ -800,11 +800,11 @@
             <div class="flexRow radio__section">
               <span class="flexRow radio__selector" (click)="changeXAxisType('pointSecond')">
                 <span class="radio__btn" [class.radio__btn--active]="trendChartOpt.xAxisType === 'pointSecond'"></span>
-                {{ 'universal_activityData_time' | translate }}
+                <span>{{ 'universal_activityData_time' | translate }}</span>
               </span>
               <span class="flexRow radio__selector" (click)="changeXAxisType('distanceMeters')">
                 <span class="radio__btn" [class.radio__btn--active]="trendChartOpt.xAxisType === 'distanceMeters'"></span>
-                {{ 'universal_activityData_distance' | translate }}
+                <span>{{ 'universal_activityData_distance' | translate }}</span>
               </span>
             </div>
           </div>
@@ -813,11 +813,11 @@
             <div class="flexRow radio__section">
               <span class="flexRow radio__selector" (click)="changeSegmentMode()">
                 <span class="radio__btn" [class.radio__btn--active]="!trendChartOpt.segmentMode"></span>
-                {{ 'universal_activityData_trendOfChange' | translate }}
+                <span>{{ 'universal_activityData_trendOfChange' | translate }}</span>
               </span>
               <span class="flexRow radio__selector" (click)="changeSegmentMode()">
                 <span class="radio__btn" [class.radio__btn--active]="trendChartOpt.segmentMode"></span>
-                {{ 'universal_activityData_segmentationResolution' | translate }}
+                <span>{{ 'universal_activityData_segmentationResolution' | translate }}</span>
               </span>
             </div>
           </div>
@@ -871,15 +871,155 @@
           </div>
         </div>
       </div>
-      <app-rainbow-column-chart
-        [yAxisData]="activityPointLayer.heartRateBpm"
-        [xAxisData]="activityPointLayer.pointSecond"
+      <app-trend-info-chart
+        [yAxisData]="trendChartOpt.segmentMode ? segmentData.yAxis.hr : activityPointLayer.heartRateBpm"
+        [xAxisData]="
+          trendChartOpt.segmentMode ? 
+            segmentData.xAxis : (trendChartOpt.xAxisType === 'pointSecond' ? activityPointLayer.pointSecond : activityPointLayer.distanceMeters)
+        "
+        [xAxisType]="trendChartOpt.xAxisType"
         [sportType]="+activityInfoLayer.type"
+        [unit]="userProfile.unit"
         [chartType]="'hr'"
         [hrRange]="chartData.hrInfo"
         [showInfo]="true"
+        [page]="'detail'"
       >
-      </app-rainbow-column-chart>
+      </app-trend-info-chart>
+      <app-trend-info-chart
+        [yAxisData]="trendChartOpt.segmentMode ? segmentData.yAxis.altitudeMeters : activityPointLayer.altitudeMeters"
+        [xAxisData]="
+          trendChartOpt.segmentMode ? 
+            segmentData.xAxis : (trendChartOpt.xAxisType === 'pointSecond' ? activityPointLayer.pointSecond : activityPointLayer.distanceMeters)
+        "
+        [xAxisType]="trendChartOpt.xAxisType"
+        [sportType]="+activityInfoLayer.type"
+        [unit]="userProfile.unit"
+        [chartType]="'altitude'"
+        [showInfo]="true"
+        [page]="'detail'"
+        *ngIf="[1, 2, 6, 7].includes(+activityInfoLayer.type) && activityPointLayer.altitudeMeters"
+      >
+      </app-trend-info-chart>
+      <app-trend-info-chart
+        [yAxisData]="trendChartOpt.segmentMode ? segmentData.yAxis.speed : activityPointLayer.speed"
+        [xAxisData]="
+          trendChartOpt.segmentMode ? 
+            segmentData.xAxis : (trendChartOpt.xAxisType === 'pointSecond' ? activityPointLayer.pointSecond : activityPointLayer.distanceMeters)
+        "
+        [xAxisType]="trendChartOpt.xAxisType"
+        [sportType]="+activityInfoLayer.type"
+        [unit]="userProfile.unit"
+        [chartType]="'speed'"
+        [showInfo]="true"
+        [page]="'detail'"
+        *ngIf="[2, 7].includes(+activityInfoLayer.type)"
+      >
+      </app-trend-info-chart>
+      <app-trend-info-chart
+        [yAxisData]="trendChartOpt.segmentMode ? segmentData.yAxis.runCadence : activityPointLayer.runCadence"
+        [xAxisData]="
+          trendChartOpt.segmentMode ? 
+            segmentData.xAxis : (trendChartOpt.xAxisType === 'pointSecond' ? activityPointLayer.pointSecond : activityPointLayer.distanceMeters)
+        "
+        [xAxisType]="trendChartOpt.xAxisType"
+        [sportType]="+activityInfoLayer.type"
+        [unit]="userProfile.unit"
+        [chartType]="'cadence'"
+        [showInfo]="true"
+        [page]="'detail'"
+        *ngIf="+activityInfoLayer.type === 1"
+      >
+      </app-trend-info-chart>
+      <app-trend-info-chart
+        [yAxisData]="trendChartOpt.segmentMode ? segmentData.yAxis.cycleCadence : activityPointLayer.cycleCadence"
+        [xAxisData]="
+          trendChartOpt.segmentMode ? 
+            segmentData.xAxis : (trendChartOpt.xAxisType === 'pointSecond' ? activityPointLayer.pointSecond : activityPointLayer.distanceMeters)
+        "
+        [xAxisType]="trendChartOpt.xAxisType"
+        [sportType]="+activityInfoLayer.type"
+        [unit]="userProfile.unit"
+        [chartType]="'cadence'"
+        [showInfo]="true"
+        [page]="'detail'"
+        *ngIf="+activityInfoLayer.type === 2"
+      >
+      </app-trend-info-chart>
+      <app-trend-info-chart
+        [yAxisData]="trendChartOpt.segmentMode ? segmentData.yAxis.swimCadence : activityPointLayer.swimCadence"
+        [xAxisData]="
+          trendChartOpt.segmentMode ? 
+            segmentData.xAxis : (trendChartOpt.xAxisType === 'pointSecond' ? activityPointLayer.pointSecond : activityPointLayer.distanceMeters)
+        "
+        [xAxisType]="trendChartOpt.xAxisType"
+        [sportType]="+activityInfoLayer.type"
+        [unit]="userProfile.unit"
+        [chartType]="'cadence'"
+        [showInfo]="true"
+        [page]="'detail'"
+        *ngIf="+activityInfoLayer.type === 4"
+      >
+      </app-trend-info-chart>
+      <app-trend-info-chart
+        [yAxisData]="trendChartOpt.segmentMode ? segmentData.yAxis.rowingCadence : activityPointLayer.rowingCadence"
+        [xAxisData]="
+          trendChartOpt.segmentMode ? 
+            segmentData.xAxis : (trendChartOpt.xAxisType === 'pointSecond' ? activityPointLayer.pointSecond : activityPointLayer.distanceMeters)
+        "
+        [xAxisType]="trendChartOpt.xAxisType"
+        [sportType]="+activityInfoLayer.type"
+        [unit]="userProfile.unit"
+        [chartType]="'cadence'"
+        [showInfo]="true"
+        [page]="'detail'"
+        *ngIf="+activityInfoLayer.type === 6"
+      >
+      </app-trend-info-chart>
+      <app-trend-info-chart
+        [yAxisData]="trendChartOpt.segmentMode ? segmentData.yAxis.cycleWatt : activityPointLayer.cycleWatt"
+        [xAxisData]="
+          trendChartOpt.segmentMode ? 
+            segmentData.xAxis : (trendChartOpt.xAxisType === 'pointSecond' ? activityPointLayer.pointSecond : activityPointLayer.distanceMeters)
+        "
+        [xAxisType]="trendChartOpt.xAxisType"
+        [sportType]="+activityInfoLayer.type"
+        [unit]="userProfile.unit"
+        [chartType]="'power'"
+        [showInfo]="true"
+        [page]="'detail'"
+        *ngIf="+activityInfoLayer.type === 2"
+      >
+      </app-trend-info-chart>
+      <app-trend-info-chart
+        [yAxisData]="trendChartOpt.segmentMode ? segmentData.yAxis.rowingWatt : activityPointLayer.rowingWatt"
+        [xAxisData]="
+          trendChartOpt.segmentMode ? 
+            segmentData.xAxis : (trendChartOpt.xAxisType === 'pointSecond' ? activityPointLayer.pointSecond : activityPointLayer.distanceMeters)
+        "
+        [xAxisType]="trendChartOpt.xAxisType"
+        [sportType]="+activityInfoLayer.type"
+        [unit]="userProfile.unit"
+        [chartType]="'power'"
+        [showInfo]="true"
+        [page]="'detail'"
+        *ngIf="+activityInfoLayer.type === 6"
+      >
+      </app-trend-info-chart>
+      <app-trend-info-chart
+        [yAxisData]="trendChartOpt.segmentMode ? segmentData.yAxis.temp : activityPointLayer.temp"
+        [xAxisData]="
+          trendChartOpt.segmentMode ? 
+            segmentData.xAxis : (trendChartOpt.xAxisType === 'pointSecond' ? activityPointLayer.pointSecond : activityPointLayer.distanceMeters)
+        "
+        [xAxisType]="trendChartOpt.xAxisType"
+        [sportType]="+activityInfoLayer.type"
+        [unit]="userProfile.unit"
+        [chartType]="'temperature'"
+        [showInfo]="true"
+        [page]="'detail'"
+      >
+      </app-trend-info-chart>
     </section>
   </ng-container>
 </main>

@@ -60,7 +60,7 @@ import { TrinomialChartComponent } from './chart/trinomial-chart/trinomial-chart
 import { QuadrantChartComponent } from './chart/quadrant-chart/quadrant-chart.component';
 import { ThresholdInfoComponent } from './chart/threshold-info/threshold-info.component';
 import { ThresholdChartComponent } from './chart/threshold-chart/threshold-chart.component';
-import { RainbowColumnChartComponent } from './chart/rainbow-column-chart/rainbow-column-chart.component';
+import { TrendInfoChartComponent } from './chart/trend-info-chart/trend-info-chart.component';
 
 @NgModule({
   imports: [
@@ -127,7 +127,7 @@ import { RainbowColumnChartComponent } from './chart/rainbow-column-chart/rainbo
     QuadrantChartComponent,
     ThresholdInfoComponent,
     ThresholdChartComponent,
-    RainbowColumnChartComponent
+    TrendInfoChartComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [

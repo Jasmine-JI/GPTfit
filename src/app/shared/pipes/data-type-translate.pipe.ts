@@ -43,6 +43,8 @@ export class DataTypeTranslatePipe implements PipeTransform {
         return 'universal_activityData_power';
       case 'temperature':
         return 'universal_activityData_temperature';
+      case 'altitude':
+        return 'universal_activityData_altitude';
       case 'gforceX':
         return 'universal_unit_gforceX';
       case 'gforceY':

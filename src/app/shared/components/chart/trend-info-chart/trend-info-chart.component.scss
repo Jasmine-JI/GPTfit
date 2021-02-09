@@ -1,0 +1,32 @@
+#chart__title {
+  font-weight: bold;
+  white-space: nowrap;
+  color: rgba(75, 75, 75, 1);
+  margin-bottom: 0;
+
+  &:after {
+    content: '';
+  }
+
+}
+
+#row__line {
+  height: 0;
+  width: 100%;
+  border: 1px solid rgba(220, 220, 220, 1);
+  margin-left: 10px;
+}
+
+.info__section {
+  width: 50%;
+  justify-content: center;
+}
+
+.data__number {
+  font-size: 24px;
+}
+
+.data__description {
+  font-size: 12px;
+  color: rgba(120, 120, 120, 1);
+}
