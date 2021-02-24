@@ -16,22 +16,31 @@ export class ShareGroupInfoDialogComponent implements OnInit {
     const _url = this.data.url.replace('/dashboard/', '/');
     return _url;
   }
-  get totalGroupName() {
-    return this.data.totalGroupName;
+
+  get shareName() {
+    return this.data.shareName;
   }
 
   get onConfirm() {
     return this.data.onConfirm;
   }
+
   get onCancel() {
     return this.data.onCancel;
   }
+
   get confirmText() {
     return this.data.confirmText;
   }
+
   get cancelText() {
     return this.data.cancelText;
   }
+
+  get debugUrl() {
+    return this.data.debugUrl;
+  }
+
   constructor(
     private router: Router,
     private snackbar: MatSnackBar,
@@ -40,6 +49,7 @@ export class ShareGroupInfoDialogComponent implements OnInit {
   ) {}
 
   ngOnInit() {}
+
   handleConfirm() {
     if (this.onConfirm) {
       this.onConfirm();
@@ -53,6 +63,7 @@ export class ShareGroupInfoDialogComponent implements OnInit {
     }
     this.dialog.closeAll();
   }
+
   copyInputMessage(inputElement) {
     inputElement.select();
     document.execCommand('copy');
@@ -62,5 +73,7 @@ export class ShareGroupInfoDialogComponent implements OnInit {
       'OK',
       { duration: 3000 }
     );
+    
   }
+
 }

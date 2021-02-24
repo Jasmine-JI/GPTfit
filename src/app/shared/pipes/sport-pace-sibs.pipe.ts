@@ -55,8 +55,14 @@ export class SportPaceSibsPipe implements PipeTransform {
         if (costminperkm > 60) {
           return !args[2] || args[2] === 0 ? `60'00" ${unit}` : `60'00"`;
         } else {
-          const timeMin = ('0' + costminperkm).slice(-2);
-          const timeSecond = ('0' + costsecondperkm).slice(-2);
+          let timeMin = ('0' + costminperkm).slice(-2);
+          let timeSecond = ('0' + costsecondperkm).slice(-2);
+          // 因應四捨五入
+          if (timeSecond === '60') {
+            timeSecond = '00';
+            timeMin = +timeMin === 60 ? '60' : `${+timeMin + 1}`
+          }
+
           return !args[2] || args[2] === 0 ? `${timeMin}'${timeSecond}" ${unit}` : `${timeMin}'${timeSecond}"`;
         }
 

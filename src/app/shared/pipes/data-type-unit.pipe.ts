@@ -30,6 +30,7 @@ export class DataTypeUnitPipe implements PipeTransform {
         
         switch (sportType) {
           case 1:
+          case 3:
           case 4:
             return 'spm';
           case 2:
@@ -41,6 +42,8 @@ export class DataTypeUnitPipe implements PipeTransform {
         return 'w';
       case 'temperature':
         return unit === 0 ? '°C' : '°F';
+      case 'altitude':
+        return unit === 0 ? 'm' : 'ft';;
       case 'gforceX':
       case 'gforceY':
       case 'gforceZ':

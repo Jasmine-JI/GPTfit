@@ -33,6 +33,8 @@ export class DataTypeTranslatePipe implements PipeTransform {
             return 'universal_activityData_stepCadence';
           case 2:
             return 'universal_activityData_CyclingCadence';
+          case 3:
+            return 'universal_activityData_repeatTempo';
           case 4:
             return 'universal_activityData_swimCadence';
           case 6:
@@ -43,6 +45,10 @@ export class DataTypeTranslatePipe implements PipeTransform {
         return 'universal_activityData_power';
       case 'temperature':
         return 'universal_activityData_temperature';
+      case 'altitude':
+        return 'universal_activityData_altitude';
+      case 'gforce':
+        return 'universal_unit_gforce';
       case 'gforceX':
         return 'universal_unit_gforceX';
       case 'gforceY':

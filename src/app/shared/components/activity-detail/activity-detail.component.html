@@ -1,4 +1,24 @@
-<main *ngIf="activityInfoLayer">
+<app-loading-bar [progress]="progress"></app-loading-bar>
+<main [attr.id]="uiFlag.isPortal ? 'portal__detail__page' : ''" *ngIf="activityInfoLayer">
+  <section
+    class="card__section flexRow"
+    style="align-items: center; margin-bottom: 20px;"
+    [style.justify-content]="uiFlag.isPreviewMode ? 'space-between' : 'flex-end'"
+  >
+    <span
+      style="font-family: Eurostile-ExtendedTwo; font-size: 30px; height: 30px; color: rgba(80, 80, 80, 1)"
+      *ngIf="uiFlag.isPreviewMode"
+    >GPTFit</span>
+    <i class="icon-svg_web-icon_p1_013-share function__btn" (click)="showShareBox()" *ngIf="!uiFlag.isPreviewMode"></i>
+    <i class="icon-svg_web-icon_p1_018-input function__btn" (click)="downloadRawData()" *ngIf="uiFlag.isFileOwner && !uiFlag.isPreviewMode"></i>
+    <i class="icon-svg_web-icon_p2_087-print function__btn" (click)="printPreview()" *ngIf="!uiFlag.isPreviewMode"></i>
+    <i class="icon-svg_web-icon_p1_009-delete function__btn" (click)="showDeleteAlert()" *ngIf="uiFlag.isFileOwner && !uiFlag.isPreviewMode"></i>
+    <i class="icon-svg_web-icon_p1_012-close function__btn" (click)="returnList()" *ngIf="!uiFlag.isPreviewMode"></i>
+    <span id="print__datetime">
+      {{ 'universal_operating_print' | translate}} {{ 'universal_activityData_time' | translate }}：{{ printDateTime }}
+    </span>
+    <button id="print__btn" (click)="printPage()" *ngIf="uiFlag.isPreviewMode">{{ 'universal_operating_print' | translate }}</button>
+  </section>
   <section class="card__section row__to__column">
     <div class="flexRow">
       <i
@@ -8,16 +28,44 @@
       ></i>
       <div class="flexCol" style="justify-content: center; margin-left: 20px; line-height: 1.2;">
         <span class="small__font">{{ fileTime }}</span>
-        <span class="head__name">{{ fileInfo.dispName }}</span>
+        <div class="flexRow" style="align-items: center;">
+          <span class="head__name" *ngIf="!uiFlag.editNameMode">{{ fileInfo.dispName }}</span>
+          <input
+            type="text"
+            id="head__name__input"
+            class="head__name"
+            maxlength="24"
+            [(ngModel)]="newFileName"
+            (keypress)="handleKeypress($event)"
+            *ngIf="uiFlag.editNameMode"
+          >
+          <i
+            class="icon-svg_web-icon_p1_008-edit edit__btn"
+            (click)="editFileName()"
+            *ngIf="!uiFlag.editNameMode && uiFlag.isFileOwner && !uiFlag.isPreviewMode"
+          ></i>
+          <i
+            class="icon-svg_web-icon_p1_012-close edit__btn"
+            style="color: red;"
+            (click)="cancelEdit()"
+            *ngIf="uiFlag.editNameMode"
+          ></i>
+          <i
+            class="icon-svg_web-icon_p2_097-ok edit__btn"
+            style="color: green;"
+            (click)="confirmEdit()"
+            *ngIf="uiFlag.editNameMode"
+          ></i>
+        </div>
       </div>
     </div>
-    <div class="flexRow" style="align-items: center;">
+    <div id="file__owner" class="flexRow">
       <span class="head__name" style="margin-right: 10px;">{{ ownerProfile.name }}</span>
       <img class="img__icon" [src]="ownerProfile.icon" (error)="this.ownerProfile.icon='/assets/images/user2.png'">
     </div>
   </section>
-  <secton class="flexRow" style="justify-content: space-between;">
-    <section class="card__section" style="width: 53%;">
+  <secton id="main__content">
+    <section class="card__section" [style.width]="uiFlag.pcView ? '53%' : '100%'">
       <div style="max-width: 600px;">
         <div
           class="cardTitle"
@@ -25,26 +73,27 @@
         >
           <span class="cardSubtitle">{{ 'universal_activityData_summary' | translate }}</span>
         </div>
-        <div id="summary__info">
-          <img [src]="sceneryImg" id="scenery__img">
+        <div id="summary__info" *ngIf="uiFlag.pcView || uiFlag.currentTag === 'summary'">
+          <img [src]="sceneryImg" id="scenery__img" (load)="sceneryImgLoaded()">
+          <span id="img__loading__text" *ngIf="!uiFlag.imageLoaded">Loading...</span>
           <div id="summary__info__section" class="flexRow">
             <div class="flexCol summery__block">
               <span class="summary__type__title">{{ 'universal_activityData_totalTime' | translate }}</span>
               <span class="summary__type__content">{{ activityInfoLayer.totalSecond | sportTime: true }}</span>
             </div>
-            <div class="flexCol summery__block" *ngIf="[3, 5].indexOf(+activityInfoLayer.type) <= -1">
+            <div class="flexCol summery__block" *ngIf="![3, 5].includes(+activityInfoLayer.type)">
               <span class="summary__type__title">{{ 'universal_activityData_totalDistance' | translate }}</span>
               <span class="summary__type__content">
                 {{ activityInfoLayer.totalDistanceMeters | distanceSibs: userProfile.unit }}
               </span>
             </div>
-            <div class="flexCol summery__block" *ngIf="[1, 4, 6].indexOf(+activityInfoLayer.type) > -1">
+            <div class="flexCol summery__block" *ngIf="[1, 4, 6].includes(+activityInfoLayer.type)">
               <span class="summary__type__title">{{ 'universal_activityData_avgPace' | translate }}</span>
               <span class="summary__type__content">
                 {{ activityInfoLayer.avgSpeed | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit] }}
               </span>
             </div>
-            <div class="flexCol summery__block" *ngIf="[2, 7].indexOf(+activityInfoLayer.type) > -1">
+            <div class="flexCol summery__block" *ngIf="[2, 7].includes(+activityInfoLayer.type)">
               <span class="summary__type__title">{{ 'universal_activityData_avgSpeed' | translate }}</span>
               <span class="summary__type__content">{{ activityInfoLayer.avgSpeed | speedSibs: userProfile.unit || 0 }}</span>
             </div>
@@ -68,10 +117,15 @@
         </div>
       </div>
     </section>
-    <sectoin class="card__section" style="width: 45%;">
+    <sectoin class="card__section"  [style.width]="uiFlag.pcView ? '45%' : '100%'">
       <ng-container *ngIf="!uiFlag.pcView; else activeBarTemp;"></ng-container>
       <ng-template #activeBarTemp>
-        <div #tagBar style="position: relative; margin-bottom: 10px;" class="flexRow">
+        <div
+          #tagBar
+          style="position: relative; margin-bottom: 10px;"
+          class="flexRow"
+          [style.border-bottom]="uiFlag.pcView ? 'none' : '1px solid rgba(200, 200, 200, 1)'"
+        >
           <span
             #summary
             class="cardSubtitle tag__title"
@@ -80,8 +134,8 @@
             (click)="switchTag('summary')"
             *ngIf="!uiFlag.pcView"
           >
-          {{ 'universal_activityData_summary' | translate }}
-        </span>
+            <i class="icon-svg_web-icon_p1_011-gps tag__icon"></i>
+          </span>
           <span
             #detail
             class="cardSubtitle tag__title"
@@ -89,7 +143,12 @@
             [class.non__active]="uiFlag.currentTag !== 'detail'"
             (click)="switchTag('detail')"
           >
-            {{ 'universal_activityData_detailsData' | translate }}
+            <ng-container *ngIf="uiFlag.pcView">
+              {{ 'universal_activityData_detailsData' | translate }}
+            </ng-container>
+            <ng-container *ngIf="!uiFlag.pcView">
+              <i class="icon-svg_web-icon_p1_005-menu tag__icon"></i>
+            </ng-container>
           </span>
           <span
             #segmentation
@@ -98,7 +157,12 @@
             [class.non__active]="uiFlag.currentTag !== 'segmentation'"
             (click)="switchTag('segmentation')"
           >
-            {{ 'universal_activityData_station' | translate }}
+            <ng-container *ngIf="uiFlag.pcView">
+              {{ 'universal_activityData_station' | translate }}
+            </ng-container>
+            <ng-container *ngIf="!uiFlag.pcView">
+              <i class="icon-svg_web-icon_p2_017-lap tag__icon"></i>
+            </ng-container>
           </span>
           <span
             #chart
@@ -108,7 +172,7 @@
             (click)="switchTag('chart')"
             *ngIf="!uiFlag.pcView"
           >
-            {{ 'universal_vocabulary_chart' | translate }}
+            <i class="icon-svg_web-icon_p1_037-chart tag__icon"></i>
           </span>
           <div
             id="active__underLine"
@@ -117,7 +181,7 @@
           ></div>
         </div>
       </ng-template>
-      <section style="max-height: 340px; overflow-y: scroll;">
+      <section class="lap__info">
         <ng-container *ngIf="uiFlag.currentTag === 'detail'">
           <div class="flexCol">
             <div class="flexCol">
@@ -129,10 +193,10 @@
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">
-                    <ng-container *ngIf="[3, 5].indexOf(+activityInfoLayer.type) <= -1">
+                    <ng-container *ngIf="![3, 5].includes(+activityInfoLayer.type)">
                       {{ 'universal_activityData_movingTime' | translate }}
                     </ng-container>
-                    <ng-container *ngIf="[3, 5].indexOf(+activityInfoLayer.type) > -1">
+                    <ng-container *ngIf="[3, 5].includes(+activityInfoLayer.type)">
                       {{ 'universal_activityData_activityTime' | translate }}
                     </ng-container>
                   </span>
@@ -186,6 +250,15 @@
                 </div>
               </div>
             </div>
+            <div class="flexCol">
+              <span class="table__list__title">{{ 'universal_userProfile_calories' | translate }}</span>
+              <div class="flexCol table__list__block">
+                <div class="flexRow table__row">
+                  <span class="table__list__subtitle">{{ 'universal_activityData_totalCalorie' | translate }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.calories }} cal</span>
+                </div>
+              </div>
+            </div>
             <div class="flexCol" *ngIf="activityInfoLayer.totalFtpZone0Second !== null && activityInfoLayer.type == 2">
               <span class="table__list__title">{{ 'universal_activityData_ftpZone' | translate }}</span>
               <div class="flexCol table__list__block">
@@ -219,7 +292,7 @@
                 </div>
               </div>
             </div>
-            <div class="flexCol" *ngIf="[1, 4, 6].indexOf(+activityInfoLayer.type) > -1">
+            <div class="flexCol" *ngIf="[1, 4, 6].includes(+activityInfoLayer.type)">
               <span class="table__list__title">{{ 'universal_activityData_pace' | translate }}</span>
               <div class="flexCol table__list__block">
                 <ng-container *ngIf="activityInfoLayer.type == 1">
@@ -305,7 +378,7 @@
                 </ng-container>
               </div>
             </div>
-            <div class="flexCol" *ngIf="[3, 5].indexOf(+activityInfoLayer.type) <= -1">
+            <div class="flexCol" *ngIf="![3, 5].includes(+activityInfoLayer.type)">
               <span class="table__list__title">{{ 'universal_activityData_speed' | translate }}</span>
               <div class="flexCol table__list__block">
                 <div class="flexRow table__row">
@@ -345,7 +418,7 @@
                 </div>
               </div>
             </div>
-            <div class="flexCol" *ngIf="[1, 2].indexOf(+activityInfoLayer.type) > -1">
+            <div class="flexCol" *ngIf="[1, 2].includes(+activityInfoLayer.type)">
               <span class="table__list__title">{{ 'universal_activityData_climb' | translate }}</span>
               <div class="flexCol table__list__block">
                 <div class="flexRow table__row">
@@ -358,7 +431,7 @@
                 </div>
               </div>
             </div>
-            <div class="flexCol" *ngIf="[1, 2].indexOf(+activityInfoLayer.type) > -1">
+            <div class="flexCol" *ngIf="[1, 2].includes(+activityInfoLayer.type)">
               <span class="table__list__title">{{ 'universal_activityData_altitude' | translate }}</span>
               <div class="flexCol table__list__block">
                 <div class="flexRow table__row">
@@ -401,21 +474,29 @@
                 </div>
               </div>
             </div>
-            <div class="flexCol" *ngIf="[2, 6].indexOf(+activityInfoLayer.type) > -1">
+            <div class="flexCol" *ngIf="[2, 6].includes(+activityInfoLayer.type)">
               <span class="table__list__title">{{ 'universal_activityData_power' | translate }}</span>
               <div class="flexCol table__list__block">
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_avgPower' | translate }}</span>
                   <span class="table__list__content">
-                    <ng-container *ngIf="activityInfoLayer.type == 2">{{ activityInfoLayer.cycleAvgWatt }}</ng-container>
-                    <ng-container *ngIf="activityInfoLayer.type == 6">{{ activityInfoLayer.rowingAvgWatt }}</ng-container>
+                    <ng-container *ngIf="activityInfoLayer.type == 2">
+                      {{ activityInfoLayer.cycleAvgWatt || 0 }} w
+                    </ng-container>
+                    <ng-container *ngIf="activityInfoLayer.type == 6">
+                      {{ activityInfoLayer.rowingAvgWatt || 0 }} w
+                    </ng-container>
                   </span>
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_maxPower' | translate }}</span>
                   <span class="table__list__content">
-                    <ng-container *ngIf="activityInfoLayer.type == 2">{{ activityInfoLayer.cycleMaxWatt }}</ng-container>
-                    <ng-container *ngIf="activityInfoLayer.type == 6">{{ activityInfoLayer.rowingMaxWatt }}</ng-container>
+                    <ng-container *ngIf="activityInfoLayer.type == 2">
+                      {{ activityInfoLayer.cycleMaxWatt || 0 }} w
+                    </ng-container>
+                    <ng-container *ngIf="activityInfoLayer.type == 6">
+                      {{ activityInfoLayer.rowingMaxWatt || 0 }} w
+                    </ng-container>
                   </span>
                 </div>
               </div>
@@ -425,7 +506,7 @@
               <div class="flexCol table__list__block">
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_totalActivitySet' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.totalLapOrSet }} sets</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalActivityLapOrSet }} sets</span>
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_totalReps' | translate }}</span>
@@ -491,7 +572,7 @@
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_poolSwimReps' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.poolSwimAvgCadence }} spm</span>
+                  <span class="table__list__content">{{ activityInfoLayer.poolSwimAvgCadence || '-' }} spm</span>
                 </div>
               </div>
             </div>
@@ -510,7 +591,7 @@
             </div>
             <div
               class="flexCol"
-              *ngIf="activityInfoLayer.type == 7 && activityInfoLayer.totalPlusGforceX !== null && userProfile.systemAccessRight <= 20"
+              *ngIf="activityInfoLayer.type == 7 && activityInfoLayer.totalPlusGforceX !== null && userProfile.systemAccessRight[0] <= 20"
             >
               <span class="table__list__title">{{ 'universal_unit_gforce' | translate }}</span>
               <div class="flexCol table__list__block">
@@ -598,8 +679,8 @@
           </div>
         </ng-container>
         <ng-container *ngIf="uiFlag.currentTag === 'segmentation'">
-          <section class="flexCol">
-            <table>
+          <section class="flexCol lap__info">
+            <table style="width: 100%;">
               <thead>
                 <tr>
                   <th class="segmentation__text">
@@ -608,7 +689,7 @@
                       <span class="segmentation__unit">&nbsp;</span>
                     </div>
                   </th>
-                  <th class="segmentation__text" *ngIf="[3, 5].indexOf(+activityInfoLayer.type) > -1">
+                  <th class="segmentation__text" *ngIf="[3, 5].includes(+activityInfoLayer.type)">
                     <div class="flexCol">
                       <span class="segmentation__title">{{ 'universal_activityData_limit_setName' | translate }}</span>
                       <span class="segmentation__unit">&nbsp;</span>
@@ -628,7 +709,7 @@
                       <span class="segmentation__unit">bpm</span>
                     </div>
                   </th>
-                  <th class="segmentation__text" *ngIf="[1, 2, 6, 7].indexOf(+activityInfoLayer.type) > -1">
+                  <th class="segmentation__text" *ngIf="[1, 2, 6, 7].includes(+activityInfoLayer.type)">
                     <div class="flexCol">
                       <span class="segmentation__title">{{ 'universal_activityData_limit_lapDistance' | translate }}</span>
                       <span class="segmentation__unit">
@@ -641,7 +722,7 @@
                       </span>
                     </div>
                   </th>
-                  <th class="segmentation__text" *ngIf="[1, 4, 6].indexOf(+activityInfoLayer.type) > -1">
+                  <th class="segmentation__text" *ngIf="[1, 4, 6].includes(+activityInfoLayer.type)">
                     <div class="flexCol">
                       <span class="segmentation__title">{{ 'universal_activityData_limit_liveLapPace' | translate }}</span>
                       <span class="segmentation__unit">
@@ -654,7 +735,7 @@
                       </span>
                     </div>
                   </th>
-                  <th class="segmentation__text" *ngIf="[2, 7].indexOf(+activityInfoLayer.type) > -1">
+                  <th class="segmentation__text" *ngIf="[2, 7].includes(+activityInfoLayer.type)">
                     <div class="flexCol">
                       <span class="segmentation__title">{{ 'universal_activityData_limit_liveLapSpeed' | translate }}</span>
                       <span class="segmentation__unit">{{ userProfile.unit == 0 ? 'km/hr' : 'mi/hr' }}</span>
@@ -689,9 +770,9 @@
                         [class]="_layer.type == 0 ? (+activityInfoLayer.type | sportTypeIcon) : 'icon-svg_web-icon_p2_039-rest'"
                       >
                       </i>
-                      {{ _lIdx }}
+                      {{ _lIdx + 1 }}
                     </td>
-                    <td class="segmentation__text" *ngIf="[3, 5].indexOf(+activityInfoLayer.type) > -1">
+                    <td class="segmentation__text" *ngIf="[3, 5].includes(+activityInfoLayer.type)">
                       {{ _layer.dispName }}
                     </td>
                     <td class="segmentation__text">
@@ -700,14 +781,14 @@
                     <td class="segmentation__text">
                       {{ _layer.lapAvgHeartRateBpm || 0 }}
                     </td>
-                    <td class="segmentation__text" *ngIf="[1, 2, 6, 7].indexOf(+activityInfoLayer.type) > -1">
+                    <td class="segmentation__text" *ngIf="[1, 2, 6, 7].includes(+activityInfoLayer.type)">
                       {{ (userProfile.unit == 0 ? 
                           _layer.lapTotalDistanceMeters / 1000 : (_layer.lapTotalDistanceMeters / 1000) / unit.mi) | number: '1.0-2' || 0 }}
                     </td>
-                    <td class="segmentation__text" *ngIf="[1, 4, 6].indexOf(+activityInfoLayer.type) > -1">
+                    <td class="segmentation__text" *ngIf="[1, 4, 6].includes(+activityInfoLayer.type)">
                       {{ _layer.lapAvgSpeed | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit, 1] || 0 }}
                     </td>
-                    <td class="segmentation__text" *ngIf="[2, 7].indexOf(+activityInfoLayer.type) > -1">
+                    <td class="segmentation__text" *ngIf="[2, 7].includes(+activityInfoLayer.type)">
                       {{ (userProfile.unit == 0 ? _layer.lapAvgSpeed : _layer.lapAvgSpeed / unit.mi) | number: '1.0-2' || 0 }}
                     </td>
                     <td class="segmentation__text" *ngIf="activityInfoLayer.type == 3">
@@ -728,56 +809,439 @@
       </section>
     </sectoin>
   </secton>
+  <app-map-chart-compare
+    [isNormalCoordinate]="uiFlag.isNormalCoordinate"
+    [userPoint]="[activityPointLayer]"
+    [sportType]="+activityInfoLayer.type"
+    [sysAccessRight]="userProfile.systemAccessRight[0]"
+    [unit]="userProfile.unit"
+    *ngIf="(uiFlag.pcView || uiFlag.currentTag === 'summary') && [1, 2, 4, 6, 7].includes(+activityInfoLayer.type)"
+  ></app-map-chart-compare>
   <ng-container *ngIf="uiFlag.pcView || uiFlag.currentTag === 'chart'">
-    <app-map-chart-compare
-      [isNormalCoordinate]="uiFlag.isNormalCoordinate"
+    <section class="card__section" *ngIf="+activityInfoLayer.type === 3">
+      <div class="flexRow cardTitle" style="position: relative; justify-content: space-between;">
+        <span class="cardSubtitle">{{ 'universal_activityData_weightTrainingEffectiveness' | translate }}</span>
+        <i class="icon-svg_web-icon_p1_001-setting settingIcon" (click)="handleShowWeightTrainOptMenu($event)"></i>
+        <div
+          id="weight__train__setting"
+          class="flexCol"
+          (click)="$event.stopPropagation()"
+          *ngIf="uiFlag.showWeightTrainingOpt"
+        >
+          <span>{{ 'universal_activityData_weightTrainingExtent' | translate }}</span>
+          <div class="flexCol" style="position: relative;">
+            <span
+              class="drop__menu weight__train__menu"
+              [class.drop__menu--active]="uiFlag.showLevelSelector"
+              (click)="handleShowLevelSelector($event)"
+            >
+              <ng-container *ngIf="uiFlag.weightTrainLevel === 'novice'">
+                {{ 'universal_activityData_beginner' | translate }}
+              </ng-container>
+              <ng-container *ngIf="uiFlag.weightTrainLevel === 'metacarpus'">
+                {{ 'universal_activityData_advanced' | translate }}
+              </ng-container>
+              <ng-container *ngIf="uiFlag.weightTrainLevel === 'asept'">
+                {{ 'universal_activityData_highRanker' | translate }}
+              </ng-container>
+            </span>
+            <div class="drop__menu__list" *ngIf="uiFlag.showLevelSelector">
+              <span class="level__opt" (click)="changeLevel('novice')">
+                {{ 'universal_activityData_beginner' | translate }}
+              </span>
+              <span class="level__opt" (click)="changeLevel('metacarpus')">
+                {{ 'universal_activityData_advanced' | translate }}
+              </span>
+              <span class="level__opt" (click)="changeLevel('asept')">
+                {{ 'universal_activityData_highRanker' | translate }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <app-muscle-map-card
+        [mainPartData]="activityInfoLayer.weightTrainingInfo"
+        [vicePartList]="activityInfoLayer.useViceMuscle"
+        [level]="uiFlag.weightTrainLevel"
+        [userWeight]="userProfile.bodyWeight"
+      ></app-muscle-map-card>
+    </section>
+    <section class="card__section">
+      <div>
+        <div class="cardTitle">
+          <span class="cardSubtitle">{{ 'universal_activityData_heartRateAnalysis' | translate }}</span>
+        </div>
+        <div class="zone__section">
+          <div class="flexCol zone__chart">
+            <span class="instructionsText">{{ 'universal_activityData_hrStatisticsDuringThePeriod' | translate: {'number': 1} }}</span>
+            <app-hrzone-chart
+              [data]="chartData.hr"
+              [type]="mixHrZone"
+            ></app-hrzone-chart>
+          </div>
+          <app-hrzone-info
+            class="info__chart"
+            [hrZoneRange]="chartData.hrInfo"
+          ></app-hrzone-info>
+        </div>
+      </div>
+    </section>
+    <section class="card__section" *ngIf="(+activityInfoLayer.type === 2 && !uiFlag.noFtpData) || uiFlag.isDebug">
+      <div>
+        <div
+          class="cardTitle"
+        >
+          <span class="cardSubtitle">{{ 'universal_activityData_ftpZone' | translate }}</span>
+        </div>
+        <div class="zone__section">
+          <div class="flexCol zone__chart">
+            <span class="instructionsText">{{ 'universal_activityData_hrStatisticsDuringThePeriod' | translate: {'number': 1} }}</span>
+            <app-threshold-chart
+              [data]="chartData.ftp"
+              [type]="mixFtpZone"
+              (checkData)="this.uiFlag.noFtpData = $event;"
+            ></app-threshold-chart>
+          </div>
+          <app-threshold-info
+            class="info__chart"
+          ></app-threshold-info>
+        </div>
+      </div>
+    </section>
+    <app-quadrant-chart
       [userPoint]="[activityPointLayer]"
       [sportType]="+activityInfoLayer.type"
       [sysAccessRight]="userProfile.systemAccessRight[0]"
       [unit]="userProfile.unit"
-    ></app-map-chart-compare>
-  </ng-container>
-  <section class="card__section">
-    <div>
-      <div
-        class="cardTitle"
-        *ngIf="uiFlag.pcView; else activeBarTemp;"
-      >
-        <span class="cardSubtitle">{{ 'universal_activityData_heartRateAnalysis' | translate }}</span>
-      </div>
-      <div class="zone__section">
-        <div class="flexCol zone__chart">
-          <span class="instructionsText">{{ 'universal_activityData_hrStatisticsDuringThePeriod' | translate: {'number': 1} }}</span>
-          <app-hrzone-chart
-            [data]="chartData.hr"
-            [type]="mixHrZone"
-          ></app-hrzone-chart>
+      [hrRange]="chartData.hrInfo.z0 !== 'Z0' ? chartData.hrInfo : chartData.defaultHrInfo"
+      *ngIf="[1, 2, 4, 6].includes(+activityInfoLayer.type)"
+    ></app-quadrant-chart>
+    <div class="pageBreak" *ngIf="uiFlag.isPreviewMode && activityInfoLayer.type == 3"></div>
+    <section class="card__section">
+      <div class="flexRow cardTitle" style="position: relative; justify-content: space-between;">
+        <span class="cardSubtitle">{{ 'universal_activityData_trend' | translate }}</span>
+        <i class="icon-svg_web-icon_p1_001-setting settingIcon" (click)="handleShowOptMenu($event)"></i>
+        <div id="map__opt__menu" (click)="$event.stopPropagation();" *ngIf="uiFlag.showChartOpt">
+          <div class="flexCol" *ngIf="trendChartOpt.haveDistanceChoice">
+            <span class="bold__font">{{ 'universal_activityData_inAccordanceWith' | translate }}</span>
+            <div class="flexRow radio__section">
+              <span class="flexRow radio__selector" (click)="changeXAxisType('pointSecond')">
+                <span class="radio__btn" [class.radio__btn--active]="trendChartOpt.xAxisType === 'pointSecond'"></span>
+                <span>{{ 'universal_activityData_time' | translate }}</span>
+              </span>
+              <span class="flexRow radio__selector" (click)="changeXAxisType('distanceMeters')">
+                <span class="radio__btn" [class.radio__btn--active]="trendChartOpt.xAxisType === 'distanceMeters'"></span>
+                <span>{{ 'universal_activityData_distance' | translate }}</span>
+              </span>
+            </div>
+          </div>
+          <div class="flexCol">
+            <span class="bold__font">{{ 'universal_vocabulary_type' | translate }}</span>
+            <div class="flexRow radio__section">
+              <span class="flexRow radio__selector" (click)="changeSegmentMode()">
+                <span class="radio__btn" [class.radio__btn--active]="!trendChartOpt.segmentMode"></span>
+                <span>{{ 'universal_activityData_trendOfChange' | translate }}</span>
+              </span>
+              <span class="flexRow radio__selector" (click)="changeSegmentMode()">
+                <span class="radio__btn" [class.radio__btn--active]="trendChartOpt.segmentMode"></span>
+                <span>{{ 'universal_activityData_segmentationResolution' | translate }}</span>
+              </span>
+            </div>
+          </div>
+          <div class="flexCol" *ngIf="trendChartOpt.segmentMode">
+            <span class="bold__font">{{ 'universal_activityData_segment' | translate }}</span>
+            <div class="flexCol" style="position: relative;">
+              <div
+                class="drop__menu"
+                [class.drop__menu--active]="uiFlag.showSegmentRangeList"
+                (click)="handleShowDropList()"
+              >
+                <ng-container *ngIf="trendChartOpt.xAxisType === 'pointSecond'">
+                  {{ 'universal_activityData_everyMinutes' | translate: {number: (trendChartOpt.segmentRange / 60)} }}
+                </ng-container>
+                <ng-container *ngIf="trendChartOpt.xAxisType === 'distanceMeters'">
+                  <ng-container *ngIf="trendChartOpt.segmentRange < 1000">
+                    {{ 'universal_activityData_everyUnit' | translate: {number: trendChartOpt.segmentRange, unit: 'm'} }}
+                  </ng-container>
+                  <ng-container *ngIf="trendChartOpt.segmentRange >= 1000">
+                    {{ 'universal_activityData_everyUnit' | translate: {number: trendChartOpt.segmentRange / 1000, unit: 'km'} }}
+                  </ng-container>
+                </ng-container>
+              </div>
+              <div class="flexCol drop__menu__list" *ngIf="uiFlag.showSegmentRangeList">
+                <ng-container *ngIf="trendChartOpt.xAxisType === 'pointSecond'">
+                  <span (click)="changeSegmentRange(60)">
+                    {{ 'universal_activityData_everyMinutes' | translate: {number: 1} }}
+                  </span>
+                  <span (click)="changeSegmentRange(300)">
+                    {{ 'universal_activityData_everyMinutes' | translate: {number: 5} }}
+                  </span>
+                  <span (click)="changeSegmentRange(600)">
+                    {{ 'universal_activityData_everyMinutes' | translate: {number: 10} }}
+                  </span>
+                  <span (click)="changeSegmentRange(1800)">
+                    {{ 'universal_activityData_everyMinutes' | translate: {number: 30} }}
+                  </span>
+                </ng-container>
+                <ng-container *ngIf="trendChartOpt.xAxisType === 'distanceMeters'">
+                  <span (click)="changeSegmentRange(100)">
+                    {{ 'universal_activityData_everyUnit' | translate: {number: 100, unit: 'm'} }}
+                  </span>
+                  <span (click)="changeSegmentRange(500)">
+                    {{ 'universal_activityData_everyUnit' | translate: {number: 500, unit: 'm'} }}
+                  </span>
+                  <span (click)="changeSegmentRange(1000)">
+                    {{ 'universal_activityData_everyUnit' | translate: {number: 1, unit: 'km'} }}
+                  </span>
+                  <span (click)="changeSegmentRange(10000)">
+                    {{ 'universal_activityData_everyUnit' | translate: {number: 10, unit: 'km'} }}
+                  </span>
+                </ng-container>
+              </div>
+            </div>
+          </div>
         </div>
-        <app-hrzone-info
-          class="info__chart"
-          [hrZoneRange]="chartData.hrInfo"
-        ></app-hrzone-info>
+      </div>
+      <app-trend-info-chart
+        [yAxisData]="this.trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.hr : trendChartOpt.yAxisDataRef.heartRateBpm"
+        [xAxisData]="trendChartOpt.xAxisDataRef"
+        [xAxisType]="trendChartOpt.xAxisType"
+        [sportType]="+activityInfoLayer.type"
+        [unit]="userProfile.unit"
+        [chartType]="'hr'"
+        [hrRange]="chartData.hrInfo.z0 === 'Z0' ? chartData.defaultHrInfo : chartData.hrInfo"
+        [showInfo]="true"
+        [page]="'detail'"
+      >
+      </app-trend-info-chart>
+      <app-trend-info-chart
+        [yAxisData]="this.trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.speed : trendChartOpt.yAxisDataRef.speed"
+        [xAxisData]="trendChartOpt.xAxisDataRef"
+        [xAxisType]="trendChartOpt.xAxisType"
+        [sportType]="+activityInfoLayer.type"
+        [unit]="userProfile.unit"
+        [chartType]="'pace'"
+        [showInfo]="true"
+        [page]="'detail'"
+        *ngIf="[1, 4, 6].includes(+activityInfoLayer.type) && activityPointLayer.speed"
+      >
+      </app-trend-info-chart>
+      <app-trend-info-chart
+        [yAxisData]="this.trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.altitude : trendChartOpt.yAxisDataRef.altitudeMeters"
+        [xAxisData]="trendChartOpt.xAxisDataRef"
+        [xAxisType]="trendChartOpt.xAxisType"
+        [sportType]="+activityInfoLayer.type"
+        [unit]="userProfile.unit"
+        [chartType]="'altitude'"
+        [showInfo]="true"
+        [page]="'detail'"
+        *ngIf="[1, 2, 6, 7].includes(+activityInfoLayer.type) && activityPointLayer.altitudeMeters"
+      >
+      </app-trend-info-chart>
+      <app-trend-info-chart
+        [yAxisData]="this.trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.speed : trendChartOpt.yAxisDataRef.speed"
+        [xAxisData]="trendChartOpt.xAxisDataRef"
+        [xAxisType]="trendChartOpt.xAxisType"
+        [sportType]="+activityInfoLayer.type"
+        [unit]="userProfile.unit"
+        [chartType]="'speed'"
+        [showInfo]="true"
+        [page]="'detail'"
+        *ngIf="[2, 7].includes(+activityInfoLayer.type)"
+      >
+      </app-trend-info-chart>
+      <app-trend-info-chart
+        [yAxisData]="this.trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.cadence : trendChartOpt.yAxisDataRef.runCadence"
+        [xAxisData]="trendChartOpt.xAxisDataRef"
+        [xAxisType]="trendChartOpt.xAxisType"
+        [sportType]="+activityInfoLayer.type"
+        [unit]="userProfile.unit"
+        [chartType]="'cadence'"
+        [showInfo]="true"
+        [page]="'detail'"
+        *ngIf="+activityInfoLayer.type === 1"
+      >
+      </app-trend-info-chart>
+      <app-trend-info-chart
+        [yAxisData]="this.trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.cadence : trendChartOpt.yAxisDataRef.cycleCadence"
+        [xAxisData]="trendChartOpt.xAxisDataRef"
+        [xAxisType]="trendChartOpt.xAxisType"
+        [sportType]="+activityInfoLayer.type"
+        [unit]="userProfile.unit"
+        [chartType]="'cadence'"
+        [showInfo]="true"
+        [page]="'detail'"
+        *ngIf="+activityInfoLayer.type === 2"
+      >
+      </app-trend-info-chart>
+      <app-trend-info-chart
+        [yAxisData]="this.trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.cadence : trendChartOpt.yAxisDataRef.moveRepetitions"
+        [xAxisData]="trendChartOpt.xAxisDataRef"
+        [xAxisType]="trendChartOpt.xAxisType"
+        [sportType]="+activityInfoLayer.type"
+        [unit]="userProfile.unit"
+        [chartType]="'cadence'"
+        [showInfo]="true"
+        [page]="'detail'"
+        *ngIf="+activityInfoLayer.type === 3 && activityPointLayer.moveRepetitions"
+      >
+      </app-trend-info-chart>
+      <app-trend-info-chart
+        [yAxisData]="this.trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.cadence : trendChartOpt.yAxisDataRef.swimCadence"
+        [xAxisData]="trendChartOpt.xAxisDataRef"
+        [xAxisType]="trendChartOpt.xAxisType"
+        [sportType]="+activityInfoLayer.type"
+        [unit]="userProfile.unit"
+        [chartType]="'cadence'"
+        [showInfo]="true"
+        [page]="'detail'"
+        *ngIf="+activityInfoLayer.type === 4"
+      >
+      </app-trend-info-chart>
+      <app-trend-info-chart
+        [yAxisData]="this.trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.cadence : trendChartOpt.yAxisDataRef.rowingCadence"
+        [xAxisData]="trendChartOpt.xAxisDataRef"
+        [xAxisType]="trendChartOpt.xAxisType"
+        [sportType]="+activityInfoLayer.type"
+        [unit]="userProfile.unit"
+        [chartType]="'cadence'"
+        [showInfo]="true"
+        [page]="'detail'"
+        *ngIf="+activityInfoLayer.type === 6"
+      >
+      </app-trend-info-chart>
+      <app-trend-info-chart
+        [yAxisData]="this.trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.power : trendChartOpt.yAxisDataRef.cycleWatt"
+        [xAxisData]="trendChartOpt.xAxisDataRef"
+        [xAxisType]="trendChartOpt.xAxisType"
+        [sportType]="+activityInfoLayer.type"
+        [unit]="userProfile.unit"
+        [chartType]="'power'"
+        [showInfo]="true"
+        [page]="'detail'"
+        *ngIf="+activityInfoLayer.type === 2"
+      >
+      </app-trend-info-chart>
+      <app-trend-info-chart
+        [yAxisData]="this.trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.power : trendChartOpt.yAxisDataRef.rowingWatt"
+        [xAxisData]="trendChartOpt.xAxisDataRef"
+        [xAxisType]="trendChartOpt.xAxisType"
+        [sportType]="+activityInfoLayer.type"
+        [unit]="userProfile.unit"
+        [chartType]="'power'"
+        [showInfo]="true"
+        [page]="'detail'"
+        *ngIf="+activityInfoLayer.type === 6"
+      >
+      </app-trend-info-chart>
+      <app-trend-info-chart
+        [yAxisData]="this.trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.temperature : trendChartOpt.yAxisDataRef.temp"
+        [xAxisData]="trendChartOpt.xAxisDataRef"
+        [xAxisType]="trendChartOpt.xAxisType"
+        [sportType]="+activityInfoLayer.type"
+        [unit]="userProfile.unit"
+        [chartType]="'temperature'"
+        [showInfo]="true"
+        [page]="'detail'"
+      >
+      </app-trend-info-chart>
+      <app-trend-info-chart
+        [yAxisData]="
+          this.trendChartOpt.segmentMode ? 
+            [trendChartOpt.yAxisDataRef.gforceX, trendChartOpt.yAxisDataRef.gforceY, trendChartOpt.yAxisDataRef.gforceZ]
+            :
+            [trendChartOpt.yAxisDataRef.gsensorXRawData, trendChartOpt.yAxisDataRef.gsensorYRawData, trendChartOpt.yAxisDataRef.gsensorZRawData]
+        "
+        [xAxisData]="trendChartOpt.xAxisDataRef"
+        [xAxisType]="trendChartOpt.xAxisType"
+        [sportType]="+activityInfoLayer.type"
+        [unit]="userProfile.unit"
+        [chartType]="'gforce'"
+        [showInfo]="true"
+        [page]="'detail'"
+        *ngIf="+activityInfoLayer.type === 7"
+      >
+      </app-trend-info-chart>
+    </section>
+    <div class="pageBreak" *ngIf="uiFlag.isPreviewMode && activityInfoLayer.type == 5"></div>
+  </ng-container>
+  <section
+    id="footer__section"
+    *ngIf="fileInfo.author && (uiFlag.pcView || uiFlag.currentTag === 'summary')"
+  >
+    <div class="flexCol footer__Info" *ngIf="fileInfo.equipmentSN && fileInfo.equipmentSN.length > 0 && otherInfo.deviceInfo">
+      <div class="flexRow cardTitle" style="position: relative; justify-content: space-between;">
+        <span class="cardSubtitle">{{ 'universal_deviceSetting_productInfo' | translate }}</span>
+      </div>
+      <div class="flexCenter footer__header">
+        <img
+          style="max-height: 200px; max-width: 300px;"
+          [src]="otherInfo.deviceInfo.icon"
+          (error)="this.otherInfo.deviceInfo.icon = '/app/public_html/products/img/unknown.png'"
+        >
+      </div>
+      <span class="footer__content">{{ 'universal_deviceSetting_modeCode' | translate }}：{{ otherInfo.deviceInfo.name }}</span>
+      <span class="footer__content">
+        {{ 'universal_deviceSetting_modeType' | translate }}：{{ otherInfo.deviceInfo.type | productType | translate }}
+      </span>
+    </div>
+    <div class="flexCol footer__Info" *ngIf="fileInfo.class && otherInfo.classInfo">
+      <div class="flexRow cardTitle" style="position: relative; justify-content: space-between;">
+        <span class="cardSubtitle">{{ 'universal_group_courseIntroduction' | translate }}</span>
+      </div>
+      <div class="flexCol">
+        <div class="flexRow footer__header">
+          <img class="footer__icon" [src]="otherInfo.classInfo.icon" (error)="this.otherInfo.classInfo.icon = '/assets/images/group.jpg'">
+          <div class="flexCol" style="margin-left: 20px; width: 100%">
+            <span class="footer__name">{{ otherInfo.classInfo.name }}</span>
+            <span class="footer__content" style="font-size: 14px; text-align: right;">{{ otherInfo.classInfo.parents }}</span>
+          </div>
+        </div>
+        <span #classDesc class="footer__content" [class.hide__overflow]="uiFlag.classDescOverflow">
+          {{ otherInfo.classInfo.desc }}
+        </span>
+        <span class="show__more__btn" *ngIf="uiFlag.classDescOverflow" (click)="handleShowMore('classDesc')">more...</span>
       </div>
     </div>
-  </section>
-  <section class="card__section" *ngIf="+activityInfoLayer.type === 2">
-    <div>
-      <div
-        class="cardTitle"
-      >
-        <span class="cardSubtitle">{{ 'universal_activityData_ftpZone' | translate }}</span>
+    <div class="flexCol footer__Info" *ngIf="fileInfo.class && otherInfo.teacherInfo">
+      <div class="flexRow cardTitle" style="position: relative; justify-content: space-between;">
+        <span class="cardSubtitle">{{ 'universal_group_coachIntroduction' | translate }}</span>
       </div>
-      <div class="zone__section">
-        <div class="flexCol zone__chart">
-          <span class="instructionsText">{{ 'universal_activityData_hrStatisticsDuringThePeriod' | translate: {'number': 1} }}</span>
-          <app-hrzone-chart
-            [data]="chartData.hr"
-            [type]="mixHrZone"
-          ></app-hrzone-chart>
+      <div class="flexCol">
+        <div class="flexRow footer__header">
+          <img class="footer__icon" [src]="otherInfo.teacherInfo.icon" (error)="this.otherInfo.teacherInfo.icon = '/assets/images/user2.png'">
+          <span class="footer__name" style="margin-left: 20px;">{{ otherInfo.teacherInfo.name }}</span>
         </div>
-        <app-threshold-info
-          class="info__chart"
-        ></app-threshold-info>
+        <span #teacherDesc class="footer__content" [class.hide__overflow]="uiFlag.teacherDescOverflow">
+          {{ otherInfo.teacherInfo.desc }}
+        </span>
+        <span class="show__more__btn" *ngIf="uiFlag.teacherDescOverflow" (click)="handleShowMore('teacherDesc')">more...</span>
+      </div>
+    </div>
+    <div class="flexCol footer__Info" *ngIf="!fileInfo.class || uiFlag.isDebug">
+      <div class="flexRow cardTitle" style="position: relative; justify-content: space-between;">
+        <span class="cardSubtitle">{{ 'universal_activityData_fileInfo' | translate }}</span>
+      </div>
+      <div class="flexCol">
+        <span class="footer__content">{{ 'universal_activityData_dataFormatVersion' | translate }}：{{ fileInfo.versionName || '--' }}</span>
+        <span class="footer__content">Fw Code：{{ fileInfo.equipmentFwCode || '--' }}</span>
+        <div class="footer__content" [class.flexCol]="fileInfo.syncDate">
+          {{ 'universal_activityData_syncDate' | translate }}：
+          <span [style.text-align]="fileInfo.syncDate ? 'right' : 'left'">{{ fileInfo.syncDate || '--' }}</span>
+        </div>
+        <div class="footer__content" [class.flexCol]="fileInfo.editDate">
+          {{ 'universal_activityData_editTime' | translate }}：
+          <span [style.text-align]="fileInfo.editDate ? 'right' : 'left'">{{ fileInfo.editDate || '--' }}</span>
+        </div>
+        <span class="footer__content">Create From：{{ fileInfo.createFrom.split('?')[0] || '--' }}</span>
+      </div>
+    </div>
+    <div class="flexCol footer__Info" *ngIf="!fileInfo.class || uiFlag.isDebug">
+      <div class="flexRow cardTitle" style="position: relative; justify-content: space-between;">
+        <span class="cardSubtitle">{{ 'universal_activityData_tag' | translate }}</span>
+      </div>
+      <div *ngFor="let _tag of fileInfo.tag;">
+        <span class="footer__content footer__tag">#{{ _tag }}</span>
       </div>
     </div>
   </section>

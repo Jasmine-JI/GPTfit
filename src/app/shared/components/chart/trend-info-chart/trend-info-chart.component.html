@@ -1,0 +1,108 @@
+<section class="flexCol">
+  <div class="flexRow" style="align-items: center; justify-content: space-between;">
+    <h6 id="chart__title">{{ chartType | dataTypeTranslate: [sportType, unit] | translate }}</h6>
+    <span id="row__line"></span>
+  </div>
+  <main id="main__seciton">
+    <div class="flexRow info__block" style="justify-content: space-between;" *ngIf="chartType !== 'gforce'">
+      <div class="flexCol info__section">
+        <span class="data__number">
+          <ng-container *ngIf="chartType === 'pace'">
+            {{ infoData.best | sportPaceSibs: [sportType, unit, 1] }}
+          </ng-container>
+          <ng-container *ngIf="chartType !== 'pace'">
+            {{ infoData.best }}
+          </ng-container>
+          <ng-container *ngIf="chartType !== 'pace'">
+            {{ chartType | dataTypeUnit: [sportType, unit] }}
+          </ng-container>
+        </span>
+        <span class="data__description">
+          <ng-container *ngIf="chartType === 'pace'">
+            {{ 'universal_adjective_maxBest' | translate }}
+          </ng-container>
+          <ng-container *ngIf="chartType !== 'pace'">
+            {{ 'universal_adjective_maxHight' | translate }}
+          </ng-container>
+          {{ chartType | dataTypeTranslate: [sportType, unit] | translate }}
+        </span>
+      </div>
+      <div class="flexCol info__section">
+        <span class="data__number">
+          <ng-container *ngIf="chartType === 'pace'">
+            {{ infoData.avg | sportPaceSibs: [sportType, unit, 1] }}
+          </ng-container>
+          <ng-container *ngIf="chartType !== 'pace'">
+            {{ infoData.avg }}
+          </ng-container>
+          <ng-container *ngIf="chartType !== 'pace'">
+            {{ chartType | dataTypeUnit: [sportType, unit] }}
+          </ng-container>
+        </span>
+        <span class="data__description">
+          {{ 'universal_adjective_avg' | translate }}
+          {{ chartType | dataTypeTranslate: [sportType, unit] | translate }}
+        </span>
+      </div>
+    </div>
+    <div class="flexCol info__block" *ngIf="chartType === 'gforce'">
+      <div class="flexRow">
+        <div class="flexCol info__section">
+          <span class="data__number gforce__x">
+            {{ gForceInfoData.x.max | number: '1.0-2' }}g
+          </span>
+          <span class="data__description">
+            {{ 'universal_adjective_maxHight' | translate }} {{ 'universal_unit_gforce' | translate }}-X
+          </span>
+        </div>
+        <div class="flexCol info__section">
+          <span class="data__number gforce__x">
+            {{ gForceInfoData.x.min | number: '1.0-2' }}g
+          </span>
+          <span class="data__description">
+            {{ 'universal_adjective_maxSmall' | translate }} {{ 'universal_unit_gforce' | translate }}-X
+          </span>
+        </div>
+      </div>
+      <div class="flexRow">
+        <div class="flexCol info__section">
+          <span class="data__number gforce__y">
+            {{ gForceInfoData.y.max | number: '1.0-2' }}g
+          </span>
+          <span class="data__description">
+            {{ 'universal_adjective_maxHight' | translate }} {{ 'universal_unit_gforce' | translate }}-Y
+          </span>
+        </div>
+        <div class="flexCol info__section">
+          <span class="data__number gforce__y">
+            {{ gForceInfoData.y.min | number: '1.0-2' }}g
+          </span>
+          <span class="data__description">
+            {{ 'universal_adjective_maxSmall' | translate }} {{ 'universal_unit_gforce' | translate }}-Y
+          </span>
+        </div>
+      </div>
+      <div class="flexRow">
+        <div class="flexCol info__section">
+          <span class="data__number gforce__z">
+            {{ gForceInfoData.z.max | number: '1.0-2' }}g
+          </span>
+          <span class="data__description">
+            {{ 'universal_adjective_maxHight' | translate }} {{ 'universal_unit_gforce' | translate }}-Z
+          </span>
+        </div>
+        <div class="flexCol info__section">
+          <span class="data__number gforce__z">
+            {{ gForceInfoData.z.min | number: '1.0-2' }}g
+          </span>
+          <span class="data__description">
+            {{ 'universal_adjective_maxSmall' | translate }} {{ 'universal_unit_gforce' | translate }}-Z
+          </span>
+        </div>
+      </div>
+    </div>
+    <div #container id="chart__block">
+      chart
+    </div>
+  </main>
+</section>  

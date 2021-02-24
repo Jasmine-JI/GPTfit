@@ -10,7 +10,7 @@
     </span>
     <i class="icon-svg_web-icon_p1_001-setting settingIcon" (click)="handleShowOptMenu($event)"></i>
     <div id="map__opt__menu" *ngIf="uiFlag.showMapOpt" (click)="$event.stopPropagation()">
-      <div class="flexRow selector__section" *ngIf="mapOpt.showMapSourceSelector">
+      <div class="flexRow selector__section" *ngIf="mapOpt.showMapSourceSelector && uiFlag.showMap">
         <span class="flexRow radio__selector" (click)="changeMapSource('google')">
           <span class="radio__btn" [class.radio__btn--active]="mapOpt.mapSource === 'google'"></span>
           Google
@@ -20,7 +20,7 @@
           Baidu
         </span>
       </div>
-      <div class="flexRow selector__section" *ngIf="sysAccessRight <= 20">
+      <div class="flexRow selector__section" *ngIf="sysAccessRight <= 20 && uiFlag.showMap">
         <span class="flexRow radio__selector" (click)="changeMapKind('normal')">
           <span class="radio__btn" [class.radio__btn--active]="mapOpt.mapKind === 'normal'"></span>
           路線圖
@@ -33,7 +33,11 @@
       <div class="flexCol">
         <div class="flexCol selector__section">
           <span [style.color]="mapOpt.compareA.color">{{ 'universal_vocabulary_data' | translate }} 1</span>
-          <div class="drop__menu" (click)="handleShowDropList($event, 'compareA')">
+          <div
+            class="drop__menu"
+            [class.drop__menu--active]="uiFlag.showDataSelector === 'compareA'"
+            (click)="handleShowDropList($event, 'compareA')"
+          >
             {{ mapOpt.compareA.type | dataTypeTranslate: [sportType, unit] | translate }}
           </div>
           <ng-container *ngIf="uiFlag.showDataSelector === 'compareA'">
@@ -42,7 +46,11 @@
         </div>
         <div class="flexCol selector__section">
           <span [style.color]="mapOpt.compareB.color">{{ 'universal_vocabulary_data' | translate }} 2</span>
-          <div class="drop__menu" (click)="handleShowDropList($event, 'compareB')">
+          <div
+            class="drop__menu"
+            [class.drop__menu--active]="uiFlag.showDataSelector === 'compareB'"
+            (click)="handleShowDropList($event, 'compareB')"
+          >
             {{ mapOpt.compareB.type | dataTypeTranslate: [sportType, unit] | translate }}
           </div>
           <ng-container *ngIf="uiFlag.showDataSelector === 'compareB'">
@@ -92,10 +100,8 @@
       </div>
     </div>
   </div>
-  <div #gMap class="map__style" *ngIf="mapOpt.mapSource === 'google'">
-  </div>
-  <div #bMap class="map__style" *ngIf="mapOpt.mapSource === 'baidu'">
-  </div>
+  <div #gMap class="map__style" [class.hide__map]="!uiFlag.showMap" *ngIf="mapOpt.mapSource === 'google'"></div>
+  <div #bMap class="map__style" [class.hide__map]="!uiFlag.showMap" *ngIf="mapOpt.mapSource === 'baidu'"></div>
   <app-trinomial-chart
     style="position: absolute; bottom: 5px; width: 100%;"
     [compareA]="mapOpt.compareA"

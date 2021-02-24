@@ -22,6 +22,9 @@ export class MuscleMapChartComponent implements OnInit, OnChanges {
   showAllTrainColor = false;
   baseUrl = window.location.href;
 
+  /**
+   * 各肌群數據
+   */
   muscleGroupList = [
     {
       id: 1,
@@ -132,8 +135,12 @@ export class MuscleMapChartComponent implements OnInit, OnChanges {
     this.emitData('init');
   }
 
-  // 根據query string取得使用者圖表點擊資訊-kidin-1090415
-  checkChartStatus (query) {
+  /**
+   * 根據query string取得使用者圖表點擊資訊
+   * @param query {string}-url query string
+   * @author kidin-1090415
+   */
+  checkChartStatus (query: string) {
     const queryString = query.replace('?', '').split('&');
     for (let i = 0; i < queryString.length; i++) {
 
@@ -158,8 +165,12 @@ export class MuscleMapChartComponent implements OnInit, OnChanges {
 
   }
 
-  // 將數據依照肌群和部位分開-kidin-1090406
-  arrangeData (oldData) {
+  /**
+   * 將數據依照肌群和部位分開
+   * @param oldData {}
+   * @author kidin-1090406
+   */
+  arrangeData (oldData: Array<any>) {
     const middleData = {
       'armMuscles': {},
       'pectoralsMuscle': {},
@@ -231,7 +242,11 @@ export class MuscleMapChartComponent implements OnInit, OnChanges {
     this.sortData(middleData);
   }
 
-  // 將每個肌肉部位數據依照日期做排序，並取得每個肌群相關數據-kidin-1090406
+  /**
+   * 將每個肌肉部位數據依照日期做排序，並取得每個肌群相關數據
+   * @param middleData {}-
+   * @author kidin-1090406
+   */
   sortData (middleData) {
 
     let idx = 0;
@@ -294,7 +309,11 @@ export class MuscleMapChartComponent implements OnInit, OnChanges {
     this.calGroupData(this.muscleGroupList);
   }
 
-  // 計算各肌群數據-kidin-1090413
+  /**
+   * 計算各肌群數據
+   * @param muscleGroup {}-
+   * @author kidin-1090413
+   */
   calGroupData (muscleGroup) {
 
     for (let i = 0; i < muscleGroup.length; i++) {
@@ -323,7 +342,11 @@ export class MuscleMapChartComponent implements OnInit, OnChanges {
 
   }
 
-  // 將同一肌群的數據依日期排列-kidin-1090413
+  /**
+   * 將同一肌群的數據依日期排列
+   * @param disorderData {}-
+   * @author kidin-1090413
+   */
   sortMuscleGroupData (disorderData) {
 
     let swapped = true;
@@ -349,7 +372,11 @@ export class MuscleMapChartComponent implements OnInit, OnChanges {
     return this.mergeRepeatData(disorderData);
   }
 
-  // 將重複日期的資料做合併-kidin-1090413
+  /**
+   * 將重複日期的資料做合併
+   * @param repeatData 
+   * @author kidin-1090413
+   */
   mergeRepeatData (repeatData) {
     const noRepeatData = {
       oneRepMaxChartData: [],
@@ -399,7 +426,11 @@ export class MuscleMapChartComponent implements OnInit, OnChanges {
     return noRepeatData;
   }
 
-  // 根據訓練程度顯示不同顏色-kidin-1090406
+  /**
+   * 根據訓練程度顯示不同顏色
+   * @param OneRepMax 
+   * @author kidin-1090406
+   */
   assignPartColor (OneRepMax) {
     const saturation = '100%',  // 主訓練部位色彩飽和度
           Brightness = '70%',  // 主訓練部位色彩明亮度
@@ -414,7 +445,10 @@ export class MuscleMapChartComponent implements OnInit, OnChanges {
     return `hsla(${trainingLevel}, ${saturation}, ${Brightness}, ${transparency})`;
   }
 
-  // 點擊肌肉地圖切換顯示-kidin-1090409
+  /**
+   * 點擊肌肉地圖切換顯示
+   * @author kidin-1090409
+   */
   handleShowColor () {
 
     if (this.showAllTrainColor === false) {
@@ -435,7 +469,11 @@ export class MuscleMapChartComponent implements OnInit, OnChanges {
     this.assignMuscleMapColor(this.muscleGroupList);
   }
 
-  // 點擊肌群後更改聚焦狀態，並重新繪製肌肉地圖-kidin-1090406
+  /**
+   * 點擊肌群後更改聚焦狀態，並重新繪製肌肉地圖
+   * @param e {}
+   * @author kidin-1090406
+   */
   handleMusclePart (e) {
     this.showAllTrainColor = false;
 
@@ -459,7 +497,10 @@ export class MuscleMapChartComponent implements OnInit, OnChanges {
     this.assignMuscleMapColor(this.muscleGroupList);
   }
 
-  // 依據使用者所選的訓練程度重新指派顏色-kidin-1090406
+  /**
+   * 依據使用者所選的訓練程度重新指派顏色
+   * @author kidin-1090406
+   */
   reAssignColor () {
 
     for (let i = 0; i < this.muscleGroupList.length; i++) {
@@ -480,12 +521,19 @@ export class MuscleMapChartComponent implements OnInit, OnChanges {
     this.assignMuscleMapColor(this.muscleGroupList);
   }
 
-  // 將聚焦的數據找出後傳給父組件-kidin-1090406
+  /**
+   * 將聚焦的數據找出後傳給父組件
+   * @param act {}
+   * @author kidin-1090406
+   */
   emitData (act) {
     this.clickData.emit([this.muscleGroupList, act]);
   }
 
-  // 將肌肉地圖顏色初始化-kidin-1090406
+  /**
+   * 將肌肉地圖顏色初始化
+   * @author kidin-1090406
+   */
   initChart () {
     // 先將顏色清除後再重新上色-kidin-1081128
     const allBodyPath = Array.from(document.querySelectorAll('.resetColor') as NodeListOf<HTMLElement>);
@@ -494,7 +542,11 @@ export class MuscleMapChartComponent implements OnInit, OnChanges {
     });
   }
 
-  // 依照數據將肌肉地圖填色-kidin-1090406
+  /**
+   * 依照數據將肌肉地圖填色
+   * @param list {}
+   * @author kidin-1090406
+   */
   assignMuscleMapColor (list) {
     this.initChart();
 
@@ -695,7 +747,10 @@ export class MuscleMapChartComponent implements OnInit, OnChanges {
 
   }
 
-  // 將沒有資料的肌群，其顯示位置往後擺-kidin-1090415
+  /**
+   * 將沒有資料的肌群，其顯示位置往後擺
+   * @author kidin-1090415
+   */
   sortMuscleGroup () {
 
     let swapped = true;
@@ -715,7 +770,10 @@ export class MuscleMapChartComponent implements OnInit, OnChanges {
 
   }
 
-  // 解決safari在使用linearGradient時，無法正常顯示的問題-kidin-1090428
+  /**
+   * 解決safari在使用linearGradient時，無法正常顯示的問題
+   * @author kidin-1090428
+   */
   fixSvgUrls () {
     const svgArr = document.querySelectorAll('#linearGradientBar');
 
