@@ -1,6 +1,6 @@
 <div (window:resize)="onResize($event)"
   *ngIf="!isLoading" [class.minimize-main-nav]="uiFlag.sidebarMode === 'expand'"
-  style="display: flex;align-items: stretch;"
+  style="display: flex; align-items: stretch;"
 >
   <ng-container *ngIf="!isPreviewMode">
     <header class="header header__color ala-dashboard-header">
@@ -466,7 +466,9 @@
       </div>
     </nav>
   </ng-container>
-  <div class="main-body" #mainBody
+  <div
+    #mainBody
+    class="main-body"
     [class.preview]="isPreviewMode"
   >
     <div

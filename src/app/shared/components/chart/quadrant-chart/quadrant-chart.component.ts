@@ -145,6 +145,16 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
    * 圖表
    */
   chart = {
+    line: {
+      xAxis: {
+        x: null,
+        y: null
+      },
+      yAxis: {
+        x: null,
+        y: null
+      }
+    },
     x: {
       max: null,
       min: null
@@ -154,8 +164,14 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
       min: null
     },
     label: {
-      x: null,
-      y: null,
+      xAxis: {
+        x: null,
+        y: null
+      },
+      yAxis: {
+        x: null,
+        y: null
+      },
       size: 16
     },
     pointNum: {
@@ -209,6 +225,16 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
    */
   initData() {
     this.chart = {
+      line: {
+        xAxis: {
+          x: null,
+          y: null
+        },
+        yAxis: {
+          x: null,
+          y: null
+        }
+      },
       x: {
         max: null,
         min: null
@@ -218,8 +244,14 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
         min: null
       },
       label: {
-        x: null,
-        y: null,
+        xAxis: {
+          x: null,
+          y: null
+        },
+        yAxis: {
+          x: null,
+          y: null
+        },
         size: 16
       },
       pointNum: {
@@ -468,10 +500,32 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
     this.chart.y.min = this.chart.y.min - yPadding;
     this.chart.y.max = this.chart.y.max + yPadding;
 
+    // 取得圖表軸線位置
+    const xAxisYPosition = +(((this.chart.y.max - yOrigin) / (this.chart.y.max - this.chart.y.min)) * this.chart.chartSvgHeight).toFixed(0),
+          yAxisXPosition = +(((xOrigin - this.chart.x.min) / (this.chart.x.max - this.chart.x.min)) * this.chart.chartSvgWidth).toFixed(0);
+    this.chart.line = {
+      xAxis: {
+        x: [0, this.chart.chartSvgWidth],
+        y: xAxisYPosition
+      },
+      yAxis: {
+        x: yAxisXPosition,
+        y: [0, this.chart.chartSvgHeight]
+      }
+    }
+
     // 取得x、y軸數值標示位置
+    const xLabelYPosition = +(((this.chart.y.max - (this.chart.y.min - yPadding)) / (this.chart.y.max - this.chart.y.min)) * this.chart.chartSvgHeight).toFixed(0),
+          yLabelXPosition = +((((this.chart.x.min - xPadding) - this.chart.x.min) / (this.chart.x.max - this.chart.x.min)) * this.chart.chartSvgWidth).toFixed(0);
     this.chart.label = {
-      x: this.chart.x.min - xPadding,
-      y: this.chart.y.min - yPadding,
+      xAxis: {
+        x: [0, this.chart.chartSvgWidth / 2, this.chart.chartSvgWidth],
+        y: xLabelYPosition
+      },
+      yAxis: {
+        x: yLabelXPosition,
+        y: [this.chart.chartSvgHeight, this.chart.chartSvgHeight / 2, 0]
+      },
       size: 16
     }
 

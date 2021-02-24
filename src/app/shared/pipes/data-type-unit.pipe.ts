@@ -30,6 +30,7 @@ export class DataTypeUnitPipe implements PipeTransform {
         
         switch (sportType) {
           case 1:
+          case 3:
           case 4:
             return 'spm';
           case 2:

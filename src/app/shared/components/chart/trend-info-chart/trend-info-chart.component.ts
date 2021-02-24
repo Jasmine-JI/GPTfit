@@ -1,6 +1,5 @@
 import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
 import { chart } from 'highcharts';
-import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -9,7 +8,7 @@ import { mi, ft,  } from '../../../models/bs-constant';
 import { SportType } from '../../../models/report-condition';
 import { TemperatureSibsPipe } from '../../../pipes/temperature-sibs.pipe';
 
-type ChartType = 'hr' | 'pace' | 'altitude' | 'speed' | 'cadence' | 'power' | 'temperature';
+type ChartType = 'hr' | 'pace' | 'altitude' | 'speed' | 'cadence' | 'power' | 'temperature' | 'gforce';
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
@@ -17,8 +16,8 @@ class ChartOptions {
     return {
       chart: {
         type: chartType,
-        height: 110,
-        zoomType: 'x',
+        height: 110,  // 圖表高度
+        zoomType: 'x',  // 縮放基準
       },
       title: {
         text: ''
@@ -50,10 +49,10 @@ class ChartOptions {
           enabled: false
         },
         gridLineColor: 'transparent',  // 格線顏色
-        startOnTick: false,
+        startOnTick: false,  // Whether to force the axis to start on a tick.
         minPadding: 0,
         maxPadding: 0,
-        tickAmount: 1
+        tickAmount: 1  // y軸隔線數目
       },
       plotOptions: {
         column: {
@@ -112,6 +111,24 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
     avg: 0
   };
 
+  /**
+   * 顯示最高和最小G力用
+   */
+  gForceInfoData = {
+    x: {
+      max: 0,
+      min: null
+    },
+    y: {
+      max: 0,
+      min: null
+    },
+    z: {
+      max: 0,
+      min: null
+    }
+  }
+
   constructor(
     private translate: TranslateService,
     private temperatureSibsPipe: TemperatureSibsPipe
@@ -121,7 +138,7 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges() {
-      this.initChart();
+    this.initChart();
   }
 
   /**
@@ -137,6 +154,7 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
       let processedData = [],
           type = 'line',
           total = 0,
+          Denominator: number,
           seriesSet: any,
           chartOptions: any;
 
@@ -160,11 +178,12 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
           });
 
           // 補上time = 0s的點
+          Denominator = processedData.length || 1;
           if (processedData[0].x !== 0) {
             processedData = [{x: 0, y: 0, color: '#6e9bff'}, ...processedData];
           }
 
-          this.infoData.avg = +(total / (processedData.length - 1)).toFixed(1);
+          this.infoData.avg = +(total / Denominator).toFixed(1) || 0;
           seriesSet = [{
             name: this.translate.instant('universal_activityData_hr'),
             groupPadding: 0,
@@ -181,6 +200,95 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
             type,
             this.xAxisType === 'pointSecond' ? 'datetime' : 'linear'
           );
+
+          this.createChart(chartOptions);
+          break;
+        case 'pace':
+          this.yAxisData.forEach((_yAxis, _index) => {
+            const _xAxis = this.xAxisData[_index];
+            
+            let _yAxisConvert: number;
+            switch (this.sportType) {
+              case 1:  // 公里或英里配速
+                _yAxisConvert = this.unit === 0 ? _yAxis : _yAxis / mi;
+                break;
+              case 4:  // 百米配速
+                _yAxisConvert = _yAxis * 10;
+                break;
+              case 6:  // 500米配速
+                _yAxisConvert = _yAxis * 2;
+                break;
+            }
+                  
+            const chartData = {
+              x: this.page === 'detail' && this.xAxisType === 'pointSecond' ? _xAxis * 1000 : _xAxis,
+              y: +(3600 / (_yAxisConvert >= 1 ? _yAxisConvert : 1)).toFixed(0)
+            };
+
+            processedData.push(chartData);
+            total += _yAxis;
+            if (_yAxis > this.infoData.best) {
+              this.infoData.best = _yAxis;
+            }
+
+          });
+
+          // 補上time = 0s的點
+          Denominator = processedData.length || 1;
+          if (processedData[0].x !== 0) {
+            processedData = [{x: 3600, y: 3600}, ...processedData];
+          }
+
+          this.infoData.avg = +(total / Denominator).toFixed(1) || 0;
+          seriesSet = [{
+            name: this.translate.instant('universal_activityData_pace'),
+            data: processedData,
+            turboThreshold: 100000,
+            showInLegend: false,
+            color: {
+              linearGradient : { x1: 0, x2: 0, y1: 1, y2: 0 },
+              stops : [
+                [0, 'rgba(255, 0, 255, 1)'],
+                [1, 'rgba(255, 255, 0, 1)']
+              ]
+            }
+          }];
+
+          chartOptions = new ChartOptions(
+            seriesSet,
+            type,
+            this.xAxisType === 'pointSecond' ? 'datetime' : 'linear'
+          );
+
+          chartOptions['yAxis'].reversed = true;  // y軸反轉
+
+          // 將y軸修改為符合配速的格式
+          chartOptions['yAxis'].labels = {
+            formatter: function() {
+              const val = +this.value,
+                    costminperkm = Math.floor(val / 60),
+                    costsecondperkm = Math.round(val - costminperkm * 60),
+                    timeMin = ('0' + costminperkm).slice(-2),
+                    timeSecond = ('0' + costsecondperkm).slice(-2);
+              return `${timeMin}'${timeSecond}"`;
+            }
+          };
+
+          // 將tooltip內的資料修改為符合配速的格式
+          chartOptions['tooltip'] = {
+            pointFormatter: function() {
+              const val = this.y,
+                    costminperkm = Math.floor(val / 60),
+                    costsecondperkm = Math.round(val - costminperkm * 60),
+                    timeMin = ('0' + costminperkm).slice(-2),
+                    timeSecond = ('0' + costsecondperkm).slice(-2),
+                    paceVal = `${timeMin}'${timeSecond}"`;
+              return `<br><span style="color: ${this.series.color};">●</span> ${this.series.name}: <b>${paceVal}</b><br>`;
+            }
+          }
+
+          chartOptions['yAxis'].min = 0;
+          chartOptions['yAxis'].max = 3600;
 
           this.createChart(chartOptions);
           break;
@@ -202,11 +310,12 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
           });
 
           // 補上time = 0s的點
+          Denominator = processedData.length || 1;
           if (processedData[0].x !== 0) {
             processedData = [{x: 0, y: 0}, ...processedData];
           }
 
-          this.infoData.avg = +(total / (processedData.length - 1)).toFixed(1);
+          this.infoData.avg = +(total / Denominator).toFixed(1) || 0;
           seriesSet = [{
             name: this.translate.instant('universal_activityData_hr'),
             data: processedData,
@@ -244,11 +353,12 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
           });
 
           // 補上time = 0s的點
+          Denominator = processedData.length || 1;
           if (processedData[0].x !== 0) {
             processedData = [{x: 0, y: 0}, ...processedData];
           }
 
-          this.infoData.avg = +(total / (processedData.length - 1)).toFixed(1);
+          this.infoData.avg = +(total / Denominator).toFixed(1) || 0;
           seriesSet = [{
             name: this.translate.instant('universal_activityData_speed'),
             data: processedData,
@@ -293,11 +403,16 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
           });
 
           // 補上time = 0s的點
+          Denominator = processedData.length || 1;
           if (processedData[0].x !== 0) {
             processedData = [{x: 0, y: 0, color: '#6e9bff'}, ...processedData];
           }
 
-          this.infoData.avg = +(total / (processedData.length - 1)).toFixed(1);
+          this.infoData.avg = +(total / Denominator).toFixed(1) || 0;
+          const pointFormat = this.xAxisType === 'pointSecond' ? 
+              `{point.x: %H:%M:%S}<br> {point.y} ${[1, 3, 4].includes(this.sportType) ? 'spm' : 'rpm'}` 
+              : 
+              `{point.x}<br> {point.y} ${[1, 4].includes(this.sportType) ? 'spm' : 'rpm'}`;
 
           seriesSet = [{
             name: this.translate.instant(this.getCadenceKey(this.sportType)),
@@ -305,7 +420,7 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
             turboThreshold: 100000,
             showInLegend: false,
             tooltip: {
-              pointFormat: `{point.x: %H:%M:%S}<br> {point.y} ${[1, 4].includes(this.sportType) ? 'spm' : 'rpm'}`
+              pointFormat: pointFormat
             }
           }];
 
@@ -324,7 +439,7 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
             const _xAxis = this.xAxisData[_index],
                   chartData = {
                     x: this.page === 'detail' && this.xAxisType === 'pointSecond' ? _xAxis * 1000 : _xAxis,
-                    y: _yAxis
+                    y: _yAxis || 0
                   };
 
             processedData.push(chartData);
@@ -336,11 +451,12 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
           });
 
           // 補上time = 0s的點
+          Denominator = processedData.length || 1;
           if (processedData[0].x !== 0) {
             processedData = [{x: 0, y: 0}, ...processedData];
           }
 
-          this.infoData.avg = +(total / (processedData.length - 1)).toFixed(1);
+          this.infoData.avg = +(total / Denominator).toFixed(1) || 0;
           seriesSet = [{
             name: this.translate.instant('universal_activityData_power'),
             data: processedData,
@@ -367,9 +483,10 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
           this.createChart(chartOptions);
           break;
         case 'temperature':
+          let maxTemp = 0;
           this.yAxisData.forEach((_yAxis, _index) => {
             const _xAxis = this.xAxisData[_index],
-                  _yAxisConvert = this.unit === 0 ? _yAxis : this.temperatureSibsPipe.transform(_yAxis, [this.unit, 1]),
+                  _yAxisConvert = this.unit === 0 ? (_yAxis || 0) : this.temperatureSibsPipe.transform((_yAxis || 0), [this.unit, 1]),
                   chartData = {
                     x: this.page === 'detail' && this.xAxisType === 'pointSecond' ? _xAxis * 1000 : _xAxis,
                     y: _yAxisConvert,
@@ -378,30 +495,46 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
 
             processedData.push(chartData);
             total += _yAxisConvert;
-            if (_yAxisConvert > this.infoData.best) {
-              this.infoData.best = _yAxisConvert;
-            }
+            if (_yAxisConvert > this.infoData.best) this.infoData.best = _yAxisConvert;
+            if (_yAxis > maxTemp) maxTemp = _yAxis;
 
           });
 
           // 補上time = 0s的點
-          if (processedData[0].x !== 0) {
-            processedData = [{x: 0, y: 0, color: '#6e9bff'}, ...processedData];
+          Denominator = processedData.length || 1;
+          if (processedData[0].x !== 0) processedData = [{x: 0, y: 0, color: '#6e9bff'}, ...processedData];
+
+
+          // 取得圖表線型顏色
+          let stops = [
+            [0, '#6e9bff'],
+            [1, '#6e9bff']
+          ];
+          if (this.getColor(maxTemp, 'temperature') === '#ea5757') {
+            stops = [
+              [0, '#6e9bff'],
+              [10 / maxTemp, '#75f25f'],
+              [31 / maxTemp, '#75f25f'],
+              [32 / maxTemp, '#ea5757'],
+              [1, '#ea5757']
+            ]
+          } else if (this.getColor(maxTemp, 'temperature') === '#75f25f') {
+            stops = [
+              [0, '#6e9bff'],
+              [10 / maxTemp, '#75f25f'],
+              [1, '#75f25f']
+            ]
           }
 
-          this.infoData.avg = +(total / (processedData.length - 1)).toFixed(1);
+          this.infoData.avg = +(total / Denominator).toFixed(1) || 0;
           seriesSet = [{
-            name: this.translate.instant('universal_activityData_power'),
+            name: this.translate.instant('universal_activityData_temperature'),
             data: processedData,
             turboThreshold: 100000,
             showInLegend: false,
             color: {
-              linearGradient : { x1: 0, x2: 0, y1: 1, y2: 0 },
-              stops : [
-                [0, '#6e9bff'],
-                [0.9, '#75f25f'],
-                [1, '#ea5757']
-              ]
+              linearGradient: { x1: 0, x2: 0, y1: 1, y2: 0 },
+              stops
             },
             tooltip: {
               valueSuffix: ` ${this.unit === 0 ? '°C' : '°F'}`
@@ -414,6 +547,115 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
             this.xAxisType === 'pointSecond' ? 'datetime' : 'linear'
           );
 
+          chartOptions.yAxis.min = null;
+          this.createChart(chartOptions);
+          break;
+        case 'gforce':
+          this.initGForceData();
+          const xGForce = {
+                  ref: this.yAxisData[0],
+                  final: []
+                },
+                yGForce = {
+                  ref: this.yAxisData[1],
+                  final: []
+                },
+                zGForce = {
+                  ref: this.yAxisData[2],
+                  final: []
+                };
+
+          // let chartMax = null; // 預埋此變數避免圖表y軸線需對稱
+                
+          // 整理成圖表可用的數據並取得各方向G力最大及平均值      
+          this.xAxisData.forEach((_xAxis, _index) => {
+            const _xGForce = xGForce.ref[_index],
+                  _yGForce = yGForce.ref[_index],
+                  _zGForce = zGForce.ref[_index];
+
+            xGForce.final.push({
+              x: this.page === 'detail' && this.xAxisType === 'pointSecond' ? _xAxis * 1000 : _xAxis,
+              y: _xGForce
+            }),
+            yGForce.final.push({
+              x: this.page === 'detail' && this.xAxisType === 'pointSecond' ? _xAxis * 1000 : _xAxis,
+              y: _yGForce
+            }),
+            zGForce.final.push({
+              x: this.page === 'detail' && this.xAxisType === 'pointSecond' ? _xAxis * 1000 : _xAxis,
+              y: _zGForce
+            });
+
+            // 取得最大與最小g力
+            if (_xGForce > this.gForceInfoData.x.max) this.gForceInfoData.x.max = _xGForce;
+            if (_yGForce > this.gForceInfoData.y.max) this.gForceInfoData.y.max = _yGForce;
+            if (_zGForce > this.gForceInfoData.z.max) this.gForceInfoData.z.max = _zGForce;
+            if (this.gForceInfoData.x.min === null || _xGForce < this.gForceInfoData.x.min) this.gForceInfoData.x.min = _xGForce;
+            if (this.gForceInfoData.y.min === null || _yGForce < this.gForceInfoData.y.min) this.gForceInfoData.y.min = _yGForce;
+            if (this.gForceInfoData.z.min === null || _zGForce < this.gForceInfoData.z.min) this.gForceInfoData.z.min = _zGForce;
+
+            /* 取得圖表最高或最低點(預埋此段避免圖表y軸線需對稱)
+            const _xGForceAbs = Math.abs(_xGForce),
+                  _yGForceAbs = Math.abs(_yGForce),
+                  _zGForceAbs = Math.abs(_zGForce);
+            if (chartMax === null || _xGForceAbs > chartMax) chartMax = _xGForceAbs;
+            if (chartMax === null || _yGForceAbs > chartMax) chartMax = _yGForceAbs;
+            if (chartMax === null || _zGForceAbs > chartMax) chartMax = _zGForceAbs;
+            */
+          });
+
+          // 補上time = 0s的點
+          if (xGForce.final[0].x !== 0) xGForce.final = [{x: 0, y: 0}, ...xGForce.final];
+          if (yGForce.final[0].x !== 0) yGForce.final = [{x: 0, y: 0}, ...yGForce.final];
+          if (zGForce.final[0].x !== 0) zGForce.final = [{x: 0, y: 0}, ...zGForce.final];
+
+          seriesSet = [
+            {
+              name: `${this.translate.instant('universal_unit_gforce')}-X`,
+              data: xGForce.final,
+              turboThreshold: 100000,
+              showInLegend: false,
+              color: '#6e9bff',
+              tooltip: {
+                valueSuffix: ` g`
+              }
+            },
+            {
+              name: `${this.translate.instant('universal_unit_gforce')}-Y`,
+              data: yGForce.final,
+              turboThreshold: 100000,
+              showInLegend: false,
+              color: '#75f25f',
+              tooltip: {
+                valueSuffix: ` g`
+              }
+            },
+            {
+              name: `${this.translate.instant('universal_unit_gforce')}-Z`,
+              data: zGForce.final,
+              turboThreshold: 100000,
+              showInLegend: false,
+              color: '#ea5757',
+              tooltip: {
+                valueSuffix: ` g`
+              }
+            }
+          ];
+
+          chartOptions = new ChartOptions(
+            seriesSet,
+            type,
+            this.xAxisType === 'pointSecond' ? 'datetime' : 'linear'
+          );
+
+          /* 預埋此段避免圖表y軸線需對稱
+          const chartBorder = chartMax * 1.2;
+          chartOptions['yAxis'].min = -chartBorder;  
+          chartOptions['yAxis'].max = chartBorder;
+          */
+          chartOptions['yAxis'].min = null;
+          chartOptions['chart'].height = 175;
+          chartOptions['yAxis'].tickAmount = 3;
           this.createChart(chartOptions);
           break;
       }
@@ -424,12 +666,35 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
 
   /**
    * 初始化最高（佳）及平均數據
+   * @author kidin-1100218
    */
   initInfo() {
     this.infoData = {
       best: 0,
       avg: 0
     };
+  }
+
+  /**
+   * 初始化g值最高與最低數據
+   * @author kidin-1100219
+   */
+  initGForceData() {
+    this.gForceInfoData = {
+      x: {
+        max: 0,
+        min: null
+      },
+      y: {
+        max: 0,
+        min: null
+      },
+      z: {
+        max: 0,
+        min: null
+      }
+    }
+
   }
 
   /**
@@ -463,6 +728,9 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
           case 2:
             // 超過220一律紅色
             return 220 - data < 0 ? `hsla(0, 70%, 65%, 1)` : `hsla(${220 - data}, 70%, 65%, 1)`;
+          case 3:
+            // 超過30一律橙色
+            return 30 - data < 0 ? `hsla(33, 70%, 65%, 1)` : `hsla(${220 - data}, 70%, 65%, 1)`;
           case 4:
           case 6:
             // 超過60一律紅色
@@ -495,6 +763,8 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
         return 'universal_activityData_stepCadence';
       case 2:
         return 'universal_activityData_CyclingCadence';
+      case 3:
+        return 'universal_activityData_repeatTempo';
       case 4:
         return 'universal_activityData_swimCadence';
       case 6:
@@ -527,100 +797,3 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
   }
 
 }
-
-
-/*
-Highcharts.chart('container', {
-
-    title: {
-        text: 'Solar Employment Growth by Sector, 2010-2016'
-    },
-
-    subtitle: {
-        text: 'Source: thesolarfoundation.com'
-    },
-
-    yAxis: {
-        title: {
-            text: 'Number of Employees'
-        }
-    },
-
-    xAxis: {
-        accessibility: {
-            rangeDescription: 'Range: 2010 to 2017'
-        }
-    },
-
-    legend: {
-        layout: 'vertical',
-        align: 'right',
-        verticalAlign: 'middle'
-    },
-
-    plotOptions: {
-        series: {
-            label: {
-                connectorAllowed: false
-            },
-            pointStart: 2010
-        }
-    },
-
-    series: [{
-        name: 'Installation',
-        color: {
-          linearGradient : { x1: 0, x2: 0, y1: 1, y2: 0 },
-          stops : [
-          	[0/225, '#6e9bff'],
-            [94/225, '#6e9bff'],
-            [113/225, '#6bebf9'],
-            [132/225, '#75f25f'],
-            [151/225, '#f9cc3d'],
-            [169/225, '#ff9a22'],
-            [170/225, '#ea5757'],
-            [225/225, '#ea5757']
-          ]
-        },
-        marker: {
-          enabled: false
-        },
-        data: [
-        0,
-          125,
-          135,
-          145,
-          155,
-          165,
-          175,
-          185,
-          195,
-          205,
-          210,
-          225,
-          190,
-          170,
-          150,
-          130,
-          110,
-          90
-        ]
-    }],
-
-    responsive: {
-        rules: [{
-            condition: {
-                maxWidth: 500
-            },
-            chartOptions: {
-                legend: {
-                    layout: 'horizontal',
-                    align: 'center',
-                    verticalAlign: 'bottom'
-                }
-            }
-        }]
-    }
-
-});
-*/

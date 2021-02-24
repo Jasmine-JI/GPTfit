@@ -32,7 +32,6 @@
               "node_modules/bootstrap/dist/css/bootstrap.css",
               "node_modules/font-awesome/css/font-awesome.min.css",
               "node_modules/material-design-icons/iconfont/material-icons.css",
-              "node_modules/tui-calendar/dist/tui-calendar.css",
               "node_modules/daterangepicker/daterangepicker.css"
             ],
             "stylePreprocessorOptions": {

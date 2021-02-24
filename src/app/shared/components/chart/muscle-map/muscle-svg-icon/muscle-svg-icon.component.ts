@@ -7,7 +7,7 @@ import { Component, OnInit, OnChanges, Input } from '@angular/core';
 })
 export class MuscleSvgIconComponent implements OnInit, OnChanges {
 
-  @Input() muscleCode: Array<string>;
+  @Input() muscleCode: Array<number>;
   @Input() muscleGroupId: Array<string>;
 
   constructor() { }
@@ -25,22 +25,22 @@ export class MuscleSvgIconComponent implements OnInit, OnChanges {
   getMuscleGroupPart (id) {
     switch (+id) {
       case 1:  // 手臂肌群
-        this.muscleCode = ['16', '32', '128'];
+        this.muscleCode = [16, 32, 128];
         break;
       case 2:  // 胸部肌群
-        this.muscleCode = ['48', '49', '50', '51', '52', '53'];
+        this.muscleCode = [48, 49, 50, 51, 52, 53];
         break;
       case 3:  // 肩部肌群
-        this.muscleCode = ['64', '65', '66', '67', '68', '69'];
+        this.muscleCode = [64, 65, 66, 67, 68, 69];
         break;
       case 4:  // 背部肌群
-        this.muscleCode = ['80', '81', '82'];
+        this.muscleCode = [80, 81, 82];
         break;
       case 5:  // 腹部肌群
-        this.muscleCode = ['96', '97', '98', '99', '100'];
+        this.muscleCode = [96, 97, 98, 99, 100];
         break;
       case 6:  // 腿部肌群
-        this.muscleCode = ['112', '113', '114', '115', '116', '117'];
+        this.muscleCode = [112, 113, 114, 115, 116, 117];
         break;
     }
   }

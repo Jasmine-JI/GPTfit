@@ -21,14 +21,11 @@ import { SharedPipes } from '../pipes/shared-pipes';
 import { Page403Component } from './page403/page403.component';
 import { AlaIframeComponent } from './ala-iframe/ala-iframe.component';
 import { MyActivityComponent } from './my-activity/my-activity.component';
-import { ActivityInfoComponent } from './activity-info/activity-info.component';
 import { SportReportComponent } from './sport-report/sport-report.component';
 import { NgProgressModule } from '@ngx-progressbar/core';
 import { ImageCropperModule } from 'ngx-image-cropper';
 import { ShareGroupInfoDialogComponent } from './share-group-info-dialog/share-group-info-dialog.component';
 import { QRCodeModule } from 'angularx-qrcode';
-import { MuscleMapComponent } from './activity-info/muscleMap/muscle-map.component';
-import { MuscleTrainListComponent } from './activity-info/muscle-train-list/muscle-train-list.component';
 import { ReportContentComponent } from './sport-report/report-content/report-content.component';
 import { RingChartComponent } from './chart/ring-chart/ring-chart.component';
 import { HrzoneChartComponent } from './chart/hrzone-chart/hrzone-chart.component';
@@ -41,7 +38,6 @@ import { DiscolorColumnChartComponent } from './chart/discolor-column-chart/disc
 import { LineChartComponent } from './chart/line-chart/line-chart.component';
 import { MyLifeTrackingComponent } from './my-life-tracking/my-life-tracking.component';
 import { BodyConstituteSvgComponent } from './chart/body-constitute-svg/body-constitute-svg.component';
-import { TuiCalenderComponent } from './tui-calender/tui-calender.component';
 import { HoverHintComponent } from './hover-hint/hover-hint.component';
 import { DateRangePickerComponent } from './date-range-picker/date-range-picker.component';
 import { MuscleMapChartComponent } from './chart/muscle-map/muscle-map-chart/muscle-map-chart.component';
@@ -61,6 +57,8 @@ import { QuadrantChartComponent } from './chart/quadrant-chart/quadrant-chart.co
 import { ThresholdInfoComponent } from './chart/threshold-info/threshold-info.component';
 import { ThresholdChartComponent } from './chart/threshold-chart/threshold-chart.component';
 import { TrendInfoChartComponent } from './chart/trend-info-chart/trend-info-chart.component';
+import { MuscleMapCardComponent } from './activity-detail/muscle-map-card/muscle-map-card.component';
+import { LoadingBarComponent } from './loading-bar/loading-bar.component';
 
 @NgModule({
   imports: [
@@ -91,11 +89,8 @@ import { TrendInfoChartComponent } from './chart/trend-info-chart/trend-info-cha
     Page403Component,
     AlaIframeComponent,
     MyActivityComponent,
-    ActivityInfoComponent,
     SportReportComponent,
     ShareGroupInfoDialogComponent,
-    MuscleMapComponent,
-    MuscleTrainListComponent,
     ReportContentComponent,
     RingChartComponent,
     HrzoneChartComponent,
@@ -108,7 +103,6 @@ import { TrendInfoChartComponent } from './chart/trend-info-chart/trend-info-cha
     LineChartComponent,
     MyLifeTrackingComponent,
     BodyConstituteSvgComponent,
-    TuiCalenderComponent,
     HoverHintComponent,
     DateRangePickerComponent,
     MuscleMapChartComponent,
@@ -127,7 +121,9 @@ import { TrendInfoChartComponent } from './chart/trend-info-chart/trend-info-cha
     QuadrantChartComponent,
     ThresholdInfoComponent,
     ThresholdChartComponent,
-    TrendInfoChartComponent
+    TrendInfoChartComponent,
+    MuscleMapCardComponent,
+    LoadingBarComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -146,7 +142,6 @@ import { TrendInfoChartComponent } from './chart/trend-info-chart/trend-info-cha
     MemberCapsuleComponent,
     AlaIframeComponent,
     MyActivityComponent,
-    ActivityInfoComponent,
     SportReportComponent,
     ShareGroupInfoDialogComponent,
     RingChartComponent,
@@ -159,7 +154,6 @@ import { TrendInfoChartComponent } from './chart/trend-info-chart/trend-info-cha
     DiscolorColumnChartComponent,
     LineChartComponent,
     BodyConstituteSvgComponent,
-    TuiCalenderComponent,
     HoverHintComponent,
     DateRangePickerComponent,
     MuscleMapChartComponent,

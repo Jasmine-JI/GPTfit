@@ -1278,20 +1278,20 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091102
    */
   openShareGroupInfoDialog() {
-    let totalGroupName:string;
+    let shareName:string;
     switch (this.currentGroupInfo.groupLevel) {
       case 30:
-        totalGroupName = this.currentGroupInfo.groupDetail.groupName;
+        shareName = this.currentGroupInfo.groupDetail.groupName;
         break;
       case 40:
-        totalGroupName = `${
+        shareName = `${
           this.currentGroupInfo.groupDetail.groupRootInfo[2].brandName
         }-${
           this.currentGroupInfo.groupDetail.groupName
         }`;
         break;
       case 60:
-        totalGroupName = `${
+        shareName = `${
           this.currentGroupInfo.groupDetail.groupRootInfo[2].brandName
         }-${
           this.currentGroupInfo.groupDetail.groupRootInfo[3].branchName
@@ -1306,7 +1306,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       data: {
         url: `${location.origin}/group-info/${this.hashIdService.handleGroupIdEncode(this.currentGroupInfo.groupId)}`,
         title: this.translate.instant('universal_operating_share'),
-        totalGroupName: totalGroupName || '',
+        shareName: shareName || '',
         cancelText: this.translate.instant('universal_operating_cancel')
       }
 

@@ -589,11 +589,11 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
         switch(sportType) {
           case 1:
             return 'runCadence';
-          case 1:
+          case 2:
             return 'cycleCadence';
-          case 1:
+          case 4:
             return 'swimCadence';
-          case 1:
+          case 6:
             return 'rowingCadence';
         }
       case 'power':

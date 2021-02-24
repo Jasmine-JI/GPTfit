@@ -1,0 +1,78 @@
+$listBorderColor: rgb(229, 229, 229);
+$focusBodyPartColor: #6f6f6f;
+
+#main__section {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+#svg__block {
+  width: 50%;
+}
+
+#list__block {
+  width: 50%;
+  max-width: 460px;
+}
+
+.muscle__training__list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  min-width: 300px;
+  margin: 5px 5px 0px 10px;
+  padding:5px;
+  border: 1px solid;
+  border-color: $listBorderColor;
+  cursor: pointer;
+}
+
+.muscle__part__info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  margin-left: 10px;
+}
+
+.muscle__data {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-left: 5px;
+}
+
+.muscle__dataText {
+  margin: 0px;
+  text-align: end;
+}
+
+
+/********************************* media *************************/
+
+@media(max-width: 950px) {
+  .muscle__training__list {
+    margin-left: 0px;
+  }
+}
+
+@media(max-width: 767px) {
+  #main__section {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #svg__block, #list__block {
+    width: 100%;
+  }
+
+  #svg__block {
+    max-width: 400px;
+  }
+
+  #list__block {
+    margin-top: 10px;
+  }
+
+}
