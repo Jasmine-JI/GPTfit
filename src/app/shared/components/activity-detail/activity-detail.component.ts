@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { Subject, fromEvent, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { UserProfileService } from '../../services/user-profile.service';
@@ -15,6 +15,11 @@ import { mi, lb } from '../../models/bs-constant';
 import * as _Highcharts from 'highcharts';
 import { HrZoneRange } from '../../models/chart-data';
 import { SportType } from '../../models/report-condition';
+import { UserLevel } from '../../models/weight-train';
+import { MatDialog } from '@angular/material/dialog';
+import { MessageBoxComponent } from '../message-box/message-box.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ShareGroupInfoDialogComponent } from '../share-group-info-dialog/share-group-info-dialog.component';
 
 const errMsg = `Error! Please try again later.`,
       Highcharts: any = _Highcharts; // 不檢查highchart型態
@@ -23,6 +28,7 @@ type DisplayTag = 'summary' | 'detail' | 'segmentation' | 'chart';
 type SegmentType = 'pointSecond' | 'distanceMeters';
 type SegmentSecond = 60 | 300 | 600 | 1800;
 type SegmentMeter = 100 | 500 | 1000 | 10000;
+type FooterDesc = 'classDesc' | 'teacherDesc';
 
 @Component({
   selector: 'app-activity-detail',
@@ -35,6 +41,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   @ViewChild('detail') detail: ElementRef;
   @ViewChild('segmentation') segmentation: ElementRef;
   @ViewChild('chart') chart: ElementRef;
+  @ViewChild('classDesc') classDesc: ElementRef;
+  @ViewChild('teacherDesc') teacherDesc: ElementRef;
 
   private ngUnsubscribe = new Subject();
 
@@ -54,7 +62,14 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     tagChanged: false,
     resolution: 1,
     noFtpData: false,
-    showSegmentRangeList: false
+    showSegmentRangeList: false,
+    weightTrainLevel: <UserLevel>'novice',
+    showLevelSelector: false,
+    classDescOverflow: false,
+    teacherDescOverflow: false,
+    editNameMode: false,
+    isFileOwner: false,
+    imageLoaded: false
   };
 
   /**
@@ -77,6 +92,11 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     icon: null,
     name: null
   };
+
+  /**
+   * 原始數據（供下載用）
+   */
+  rawData: any;
 
   /**
    * 運動檔案資訊
@@ -118,6 +138,15 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       z3: <number | string>0,
       z4: <number | string>0,
       z5: <number | string>0
+    },
+    defaultHrInfo: <HrZoneRange>{
+      hrBase: 0,
+      z0: <number>0,
+      z1: <number>0,
+      z2: <number>0,
+      z3: <number>0,
+      z4: <number>0,
+      z5: <number>0
     },
     ftp: [0, 0, 0, 0, 0, 0, 0]
   };
@@ -165,7 +194,9 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     segmentMode: false,
     xAxisType: <SegmentType>'pointSecond',
     segmentRange: <SegmentSecond | SegmentMeter>60,
-    haveDistanceChoice: true
+    haveDistanceChoice: true,
+    yAxisDataRef: null,
+    xAxisDataRef: null
   }
 
   fileTime: string;
@@ -173,6 +204,10 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   pageResize: Subscription;
   clickEvent: Subscription;
   muscleTranslate = {};
+  newFileName = '';
+  printDateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+  previewUrl = location.search.includes('?') ? `${location.href}&ipm=s` : `${location.href}?ipm=s`;
+  progress = 0;
 
   constructor(
     private userProfileService: UserProfileService,
@@ -182,18 +217,22 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     private qrcodeService: QrcodeService,
     private groupService: GroupService,
     private translate: TranslateService,
-    private muscleName: MuscleNamePipe
+    private muscleName: MuscleNamePipe,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
     this.getFileId(location.pathname);
     this.checkQueryString(location.search);
+    this.checkScreenSize();
     this.handlePageResize();
     this.getActivityDetail();
   }
 
   ngAfterViewInit() {
     this.switchTag(this.uiFlag.currentTag);
+    this.getOtherInfo(this.fileInfo);
   }
 
   /**
@@ -207,10 +246,12 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       this.getRxUserProfile();
     } else {
       this.uiFlag.isPortal = true;
+      this.createUserProfile();
     }
 
     const pathArr = path.split('/');
     this.fileInfo.fileId = pathArr[pathArr.length - 1];
+    this.progress = 10;
   }
 
   /**
@@ -219,11 +260,11 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100104
    */
   checkQueryString(searchStr: string) {
-    if (searchStr.indexOf('debug') > -1) {
+    if (searchStr.includes('debug')) {
       this.uiFlag.isDebug = true;
     }
 
-    if (searchStr.indexOf('ims') > -1) {
+    if (searchStr.includes('ipm=s')) {
       this.uiFlag.isPreviewMode = true;
     }
 
@@ -238,16 +279,70 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     this.pageResize = page.pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
-      if (window.innerWidth < 768) {
-        this.uiFlag.currentTag = this.uiFlag.tagChanged ? this.uiFlag.currentTag : 'summary';
-        this.uiFlag.pcView = false;
-      } else {
-        this.uiFlag.currentTag = this.uiFlag.tagChanged ? this.uiFlag.currentTag : 'detail';
-        this.uiFlag.pcView = true;
-      }
-
+      this.checkScreenSize();
       this.switchTag(this.uiFlag.currentTag);
     });
+
+  }
+
+  /**
+   * 確認瀏覽器畫面大小以給予合適畫面
+   * @author kidin-1100222
+   */
+  checkScreenSize() {
+    if (window.innerWidth < 768) {
+      this.uiFlag.currentTag = this.uiFlag.tagChanged ? this.uiFlag.currentTag : 'summary';
+      this.uiFlag.pcView = false;
+    } else {
+      this.uiFlag.currentTag = this.uiFlag.currentTag === 'segmentation' ? 'segmentation' : 'detail';
+      this.uiFlag.pcView = true;
+    }
+
+  }
+
+  /**
+   * 根據登入與否取得userProfile或建立訪客userProfile
+   * @author kidin-1100220
+   */
+  createUserProfile() {
+    if (this.utils.getToken()) {
+      this.getRxUserProfile();
+    } else {
+      this.userProfile = {
+        systemAccessRight: [99],
+        autoTargetStep: 5000,
+        avatarUrl: null,
+        basalMetabolic: null,
+        birthday: null,
+        bodyAge: 30,
+        bodyHeight: 175,
+        bodyWeight: 70,
+        description: '',
+        email: '',
+        fatRate: null,
+        gender: 0,
+        groupAccessRightList: null,
+        handedness: null,
+        heartRateBase: 0,
+        heartRateMax: 195,
+        heartRateResting: 60,
+        lastBodyTimestamp: null,
+        moistureRate: null,
+        muscleRate: null,
+        nickname: 'Visitors',
+        normalBedTime: null,
+        normalWakeTime: null,
+        proteinRate: null,
+        skeletonRate: null,
+        strideLengthCentimeter: null,
+        unit: 0,
+        userId: -1,
+        visceralFat: null,
+        weightTrainingStrengthLevel: 100,
+        wheelSize: 600,
+      }
+
+    }
 
   }
 
@@ -270,6 +365,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   getActivityDetail() {
     let body: any;
+    this.progress = 30;
     if (this.uiFlag.isPortal) {
       body = {
         token: '',
@@ -290,16 +386,20 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     this.activityService.fetchSportListDetail(body).subscribe(res => {
       switch (res.resultCode) {
         case 400:  // 找不到該筆運動檔案或其他
+          this.progress = 100;
           console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
           this.router.navigateByUrl('/404');
           break;
         case 403: // 無權限觀看該運動檔案
+          this.progress = 100;
           this.router.navigateByUrl('/403');
           break;
         case 200:
+          this.progress = 70;
           this.handleActivityDetail(res);
           break;
         default:
+          this.progress = 100;
           console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
           this.utils.openAlert(errMsg);
           break;
@@ -315,23 +415,21 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100104
    */
   handleActivityDetail(data: any) {
+    this.rawData = data;
     this.handleFileInfo(data.fileInfo);
     this.activityInfoLayer = data.activityInfoLayer;
-    // 距離為0則趨勢圖表設定框分段解析不顯示距離選項
-    this.trendChartOpt.haveDistanceChoice = this.activityInfoLayer.totalDistanceMeters ? true : false;
     this.handleSceneryImg(+this.activityInfoLayer.type, +this.activityInfoLayer.subtype);
     this.handleHrZoneData(this.activityInfoLayer);
-    if (+this.activityInfoLayer.type === 2) {
-      this.handleFtpZoneData(this.activityInfoLayer);
-    }
+    if (+this.activityInfoLayer.type === 2) this.handleFtpZoneData(this.activityInfoLayer);
 
     this.activityLapLayer = data.activityLapLayer;
-    // this.getOtherInfo(this.fileInfo);
     this.handleActivityPoint(data.activityPointLayer);
     if(this.activityInfoLayer.type == 3) {
+      this.getUserWeightTrainLevel();
       this.createMuscleTranslate();
     }
 
+    this.progress = 100;
   }
 
   /**
@@ -344,27 +442,25 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     this.handleFileCreateDate(this.fileInfo.creationDate);
 
     const targetUserId = +this.fileInfo.author.split('=')[1];
-    let isOwner = false;
     if (!this.uiFlag.isPortal) {
       
       if (this.userProfile.userId === targetUserId) {
-        isOwner = true;
+        this.uiFlag.isFileOwner = true;
       }
 
     }
 
-    if (!isOwner) {
+    if (!this.uiFlag.isFileOwner) {
       const body = {
-        token: this.utils.getToken() || '',
-        targetUserId: [targetUserId]
+        targetUserId: targetUserId
       };
 
       this.userProfileService.getUserProfile(body).subscribe(res => {
         if (res.processResult && res.processResult.resultCode === 200) {
           const {userProfile} = res;
           this.ownerProfile = {
-            icon: userProfile[0].avatarUrl,
-            name: userProfile[0].nickname
+            icon: userProfile.avatarUrl,
+            name: userProfile.nickname
           };
         } else if (res.processResult && res.processResult.resultCode !== 200) {
           console.log(`${res.processResult.resultCode}: Api ${res.processResult.apiCode} ${res.processResult.resultMessage}`);
@@ -479,11 +575,12 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       info.totalHrZone5Second
     ];
     
-    const userAge = moment().diff(this.userProfile.birthday, 'years'),
+    const userAge = this.uiFlag.isFileOwner ? moment().diff(this.userProfile.birthday, 'years') : null,
           userHRBase = this.userProfile.heartRateBase,
           userMaxHR = this.userProfile.heartRateMax,
           userRestHR = this.userProfile.heartRateResting;
     this.chartData.hrInfo = this.utils.getUserHrRange(userHRBase, userAge, userMaxHR, userRestHR);
+    this.chartData.defaultHrInfo = this.utils.getUserHrRange(0, 30, 190, 60); // 預設的心率區間
   }
 
   /**
@@ -510,16 +607,45 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100104
    */
   getOtherInfo(fileInfo: any) {
-    if (fileInfo.class) {
-      this.getClassInfo(fileInfo.class.split('=')[1]);
-      this.getTeacherInfo(+fileInfo.teacher.split('=')[1]);
+    if (fileInfo.author) {
+
+      if (fileInfo.class) {
+        const groupId = fileInfo.class.split('=')[1] || fileInfo.class.split('=')[0];
+        if (groupId.includes('-')) this.getClassInfo(groupId);  // 確認是否抓到正確的groupId
+        this.getTeacherInfo(+fileInfo.teacher.split('=')[1]);
+      }
+
+      if (fileInfo.equipmentSN.length !== 0) {
+        this.getProductInfo(fileInfo.equipmentSN);
+      }
+
+    } else {
+      // 待頁面皆生成再取頁尾資訊
+      setTimeout(() => {
+        this.getOtherInfo(this.fileInfo);
+      }, 2000);
+
     }
 
-    if (fileInfo.equipmentSN.length !== 0) {
-      this.getProductInfo(fileInfo.equipmentSN);
+  }
+
+  /**
+   * 從userProfile取得使用者設定的重訓程度
+   * @author kidin-1100218
+   */
+  getUserWeightTrainLevel() {
+    switch(`${this.userProfile.weightTrainingStrengthLevel}%`) {
+      case '200%':
+        this.uiFlag.weightTrainLevel = 'asept';
+        break;
+      case '50%':
+        this.uiFlag.weightTrainLevel = 'novice';
+        break;
+      default:
+        this.uiFlag.weightTrainLevel = 'metacarpus';
+        break;
     }
 
-    console.log('otherInfo', this.otherInfo);
   }
 
   /**
@@ -565,6 +691,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           desc: info.groupDesc
         };
 
+        this.checkGroupResLength('classDesc');
       }
       
     });
@@ -586,10 +713,12 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       if (res.processResult && res.processResult.resultCode === 200) {
         const {userProfile} = res;
         this.otherInfo.teacherInfo = {
-          icon: userProfile.avatarUrl,
-          name: userProfile.nickname,
-          desc: userProfile.description
+          icon: userProfile[0].avatarUrl,
+          name: userProfile[0].nickname,
+          desc: userProfile[0].description
         };
+
+        this.checkGroupResLength('teacherDesc');
       } else if (res.processResult && res.processResult.resultCode !== 200) {
         console.log(`${res.processResult.resultCode}: Api ${res.processResult.apiCode} ${res.processResult.resultMessage}`);
       } else {
@@ -619,7 +748,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         const {productInfo} = res.info;
         // 暫時只顯示單一裝置，待有顯示多裝置需求再修改
         this.otherInfo.deviceInfo = {
-          icon: productInfo[0].modelImg,
+          icon: `/app/public_html/products${productInfo[0].modelImg}`,
           name: productInfo[0].modelName,
           type: productInfo[0].modelTypeName
         };
@@ -675,6 +804,9 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
     this.activityPointLayer = {};
     // this.uiFlag.resolution = this.handleResolution(point.length); (預埋)
+
+    // 距離為0或第一點的距離為null則趨勢圖表設定框分段解析不顯示距離選項
+    this.trendChartOpt.haveDistanceChoice = (this.activityInfoLayer.totalDistanceMeters && point[0]['distanceMeters']) ? true : false;
 
     // 頁面所需資訊
     const needKey = [
@@ -753,6 +885,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
     });
 
+    this.assignDataRef();
+
     // 若所有座標皆為無效點，則不顯示地圖
     if (!haveEffectiveCoordinates) {
       this.uiFlag.isNormalCoordinate = false;
@@ -762,7 +896,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       this.uiFlag.isNormalCoordinate = true;
     }
 
-    console.log('point', this.activityPointLayer, this.uiFlag.isNormalCoordinate);
   }
 
   /**
@@ -779,6 +912,38 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
   }
 
+  /**
+   * 顯示重訓圖表訓練程度選項
+   * @param e {MouseEvent}
+   * @author kidin-1100114
+   */
+  handleShowWeightTrainOptMenu(e: MouseEvent) {
+    e.stopPropagation();
+    this.uiFlag.showWeightTrainingOpt = !this.uiFlag.showWeightTrainingOpt;
+    this.uiFlag.showWeightTrainingOpt ? this.subscribeClick() : this.ngUnsubscribeClick();
+  }
+
+  /**
+   * 顯示重訓程度選擇清單
+   * @param e {MouseEvent}
+   * @author kidin-1100218
+   */
+  handleShowLevelSelector(e: MouseEvent) {
+    e.stopPropagation();
+    this.uiFlag.showLevelSelector = !this.uiFlag.showLevelSelector;
+  }
+
+  /**
+   * 變更重訓程度
+   * @param level {UserLevel}-重訓程度
+   * @author kidin-1100218
+   */
+  changeLevel(level: UserLevel) {
+    this.uiFlag.weightTrainLevel = level;
+    this.uiFlag.showLevelSelector = false;
+    this.uiFlag.showWeightTrainingOpt = false;
+    this.ngUnsubscribeClick();
+  }
 
   /**
    * 顯示趨勢圖表設定選項
@@ -802,6 +967,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     ).subscribe(() => {
       this.uiFlag.showChartOpt = false;
       this.uiFlag.showSegmentRangeList = false;
+      this.uiFlag.showWeightTrainingOpt = false;
       this.ngUnsubscribeClick();
     });
 
@@ -825,6 +991,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       this.countSegmentData();
     }
 
+    this.assignDataRef();
   }
 
   /**
@@ -844,11 +1011,34 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         this.activityPointLayer,
         apiKeyList
       );
+
     }
 
     if (this.trendChartOpt.segmentMode) {
       this.countSegmentData();
+    }
 
+    this.assignDataRef();
+  }
+
+  /**
+   * 根據使用者所選之設定，指定圖表輸入的數據
+   * @author kidin-1100222
+   */
+  assignDataRef() {
+    if (!this.trendChartOpt.segmentMode) {
+
+      if (this.trendChartOpt.xAxisType === 'pointSecond') {
+        this.trendChartOpt.xAxisDataRef = this.activityPointLayer['pointSecond'];
+        this.trendChartOpt.yAxisDataRef = this.activityPointLayer;
+      } else {
+        this.trendChartOpt.xAxisDataRef = this.trendChartData.xAxis;
+        this.trendChartOpt.yAxisDataRef = this.trendChartData.yAxis;
+      }
+
+    } else {
+      this.trendChartOpt.xAxisDataRef = this.segmentData.xAxis;
+      this.trendChartOpt.yAxisDataRef = this.segmentData.yAxis;
     }
 
   }
@@ -871,6 +1061,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     this.trendChartOpt.segmentRange = range;
     this.uiFlag.showSegmentRangeList = false;
     this.countSegmentData();
+    this.assignDataRef();
   }
 
   /**
@@ -968,7 +1159,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           range = this.trendChartOpt.segmentRange,
           refXAxisData = this.trendChartOpt.xAxisType === 'pointSecond' ? this.activityPointLayer['pointSecond'] : this.trendChartData.xAxis,
           refYAxisData = this.trendChartOpt.xAxisType === 'pointSecond' ? this.activityPointLayer : this.trendChartData.yAxis;
-console.log('trendChartData', this.trendChartData);
+
     let divideIndex = 1,
         segmentTotal = {};
     for (let i = 0, dataLength = refXAxisData.length; i < dataLength; i++) {
@@ -991,16 +1182,12 @@ console.log('trendChartData', this.trendChartData);
           // 將該分段數據進行加總
           if (segmentTotal.hasOwnProperty(key)) {
             segmentTotal[key] += refYAxisData[apiKey][i] * scale;
-          } else {
-            Object.assign(
-              segmentTotal, 
-              {[key]: refYAxisData[apiKey][i] * scale}
-            );
-
+          } else if (refYAxisData[apiKey]) {
+            Object.assign(segmentTotal, {[key]: refYAxisData[apiKey][i] * scale});
           }
 
           // 確認是否為最後一個數據
-          if (i === dataLength - 1) {
+          if (i === dataLength - 1 && segmentTotal.hasOwnProperty(key)) {
             this.segmentData.yAxis[key].push(+segmentTotal[key].toFixed(1));
 
             if (_index === 0) {
@@ -1012,43 +1199,48 @@ console.log('trendChartData', this.trendChartData);
 
       } else {
         const scale = (range * divideIndex - (refXAxisData[i - 1] || 0)) / range;  // 數據在該分段佔比
-        // 當x軸數據大於目前分段範圍兩倍以上時
+        // 當x軸數據大於目前分段範圍兩段以上時
         if ((refXAxisData[i] / range) >= divideIndex + 1) {
           const nextBoundaryIdx = Math.ceil(refXAxisData[i] / range);
-
           countList.forEach((_list, _index) => {
-            const key = _list[0],
-                  apiKey = _list[1],
-                  fillLen = nextBoundaryIdx - (divideIndex + 1) - 1,  // 填充的array長度
-                  fillArr = new Array(fillLen),
-                  xAxisFillArr = fillArr.map((_arr, index) => range * ((divideIndex + 1) + index)),
-                  yAxisFillArr = fillArr.fill(refYAxisData[apiKey][i], 0, fillLen);
 
-            // y軸填入上一段數據後，開始填充下一段數據
-            segmentTotal[key] += refYAxisData[apiKey][i] * scale;
-            this.segmentData.yAxis[key].push(+segmentTotal[key].toFixed(1));
-            this.segmentData.yAxis[key].concat(yAxisFillArr);
+            if (refYAxisData[_list[1]]) {
+              const key = _list[0],
+                    apiKey = _list[1],
+                    fillLen = (nextBoundaryIdx - 1) - divideIndex ,  // 填充的array長度
+                    fillArr = new Array(fillLen),
+                    xAxisFillArr = Array.from(fillArr, (value, index) => range * ((divideIndex + 1) + index)),
+                    yAxisFillArr = fillArr.fill(refYAxisData[apiKey][i], 0, fillLen);
 
-            // x軸填入上一段數據後，開始填充下一段數據
-            if (_index === 0) {
-              this.segmentData.xAxis.push(range * divideIndex);
-              this.segmentData.xAxis.concat(xAxisFillArr);
-            }
+              // y軸填入上一段數據後，再開始填充下一段數據
+              segmentTotal[key] += refYAxisData[apiKey][i] * scale;
+              this.segmentData.yAxis[key].push(+segmentTotal[key].toFixed(1));
+              this.segmentData.yAxis[key] = this.segmentData.yAxis[key].concat(yAxisFillArr);
 
-            // 若數據不在分段邊界上
-            if (range * divideIndex !== refXAxisData[i]) {
-              // 下一個分段的數值加上該比例數值
-              if (i !== dataLength - 1) {
-                const nextScale = (refXAxisData[i] - (nextBoundaryIdx - 1)) / range;
-                segmentTotal[key] = refYAxisData[apiKey][i] * nextScale;
-              } else {
-                this.segmentData.yAxis[key].push(refYAxisData[apiKey][i]);
-                if (_index === 0) {
-                  this.segmentData.xAxis.push(range * nextBoundaryIdx);
-                }
+              // x軸填入上一段數據後，再開始填充下一段數據
+              if (_index === 0) {
+                this.segmentData.xAxis.push(range * divideIndex);
+                this.segmentData.xAxis = this.segmentData.xAxis.concat(xAxisFillArr);
               }
-            } else {
-              segmentTotal[key] = 0;
+
+              // 若數據不在分段邊界上
+              if (range * divideIndex !== refXAxisData[i]) {
+                // 下一個分段的數值加上該比例數值
+                if (i !== dataLength - 1) {
+                  const nextScale = (refXAxisData[i] - ((nextBoundaryIdx - 1) * range)) / range;
+                  segmentTotal[key] = refYAxisData[apiKey][i] * nextScale;
+
+                } else {
+                  this.segmentData.yAxis[key].push(refYAxisData[apiKey][i]);
+                  if (_index === 0) {
+                    this.segmentData.xAxis.push(range * nextBoundaryIdx);
+                  }
+
+                }
+              } else {
+                segmentTotal[key] = 0;
+              }
+
             }
 
           });
@@ -1058,28 +1250,35 @@ console.log('trendChartData', this.trendChartData);
           // 判斷數據是否在分段邊界上或為最後一個數據
           if (range * divideIndex !== refXAxisData[i] && i !== dataLength - 1) {
             countList.forEach((_list, _index) => {
-              const key = _list[0],
-                    apiKey = _list[1];
+              if (refYAxisData[_list[1]]) {
+                const key = _list[0],
+                      apiKey = _list[1];
 
-              segmentTotal[key] += refYAxisData[apiKey][i] * scale;
-              this.segmentData.yAxis[key].push(+segmentTotal[key].toFixed(1));
-              if (_index === 0) {
-                this.segmentData.xAxis.push(range * divideIndex);
+                segmentTotal[key] += refYAxisData[apiKey][i] * scale;
+                this.segmentData.yAxis[key].push(+segmentTotal[key].toFixed(1));
+                if (_index === 0) {
+                  this.segmentData.xAxis.push(range * divideIndex);
+                }
+
+                // 下一個分段的數值加上該比例數值
+                const nextScale = (refXAxisData[i] - range * divideIndex) / range;
+                segmentTotal[key] = refYAxisData[apiKey][i] * nextScale;
+
               }
 
-              // 下一個分段的數值加上該比例數值
-              const nextScale = (refXAxisData[i] - range * divideIndex) / range;
-              segmentTotal[key] = refYAxisData[apiKey][i] * nextScale;
             });
  
           } else {
             countList.forEach(_list => {
-              const key = _list[0],
-                    apiKey = _list[1];
+              if (refYAxisData[_list[1]]) {
+                const key = _list[0],
+                      apiKey = _list[1];
 
-              segmentTotal[key] += refYAxisData[apiKey][i] * scale;
-              this.segmentData.yAxis[key].push(+(segmentTotal[key].toFixed(1))); 
-              segmentTotal[key] = 0;
+                segmentTotal[key] += refYAxisData[apiKey][i] * scale;
+                this.segmentData.yAxis[key].push(+(segmentTotal[key].toFixed(1))); 
+                segmentTotal[key] = 0;
+              }
+
             });
             
             this.segmentData.xAxis.push(range * divideIndex);
@@ -1091,7 +1290,7 @@ console.log('trendChartData', this.trendChartData);
       }
 
     }
-console.log('segment', this.segmentData);
+
   }
 
   /**
@@ -1127,6 +1326,378 @@ console.log('segment', this.segmentData);
           xAxisDataArr = new Array(length);
 
     return xAxisDataArr.map((_x, index) => _x * index);
+  }
+
+  /**
+   * 確認群組介紹是否過長
+   * @author kidin-1091204
+   */
+  checkGroupResLength(type: FooterDesc) {
+
+    setTimeout(() => {
+      const descSection = this[type].nativeElement,
+            descStyle = window.getComputedStyle(descSection, null),
+            descLineHeight = +descStyle.lineHeight.split('px')[0],
+            descHeight = +descStyle.height.split('px')[0];
+
+      if (descHeight / descLineHeight > 5) {
+        this.uiFlag[`${type}Overflow`] = true;
+      } else {
+        this.uiFlag[`${type}Overflow`] = false;
+      }
+
+    });
+
+  }
+
+  /**
+   * 展開介紹區塊
+   * @param type {}-欲展開的區塊
+   * @author kidin-1100219
+   */
+  handleShowMore(type: FooterDesc) {
+    this.uiFlag[`${type}Overflow`] = false;
+  }
+
+  /**
+   * 顯示分享框
+   * @author kidin-1100220
+   */
+  showShareBox() {
+    const url = this.uiFlag.isPortal ? location.href : `${location.origin}${location.pathname.split('/dashboard')[1]}`,
+          debugUrl = this.uiFlag.isPortal ? `${location.origin}/dashboard${location.pathname}?debug=` : `${location.href.split('?')[0]}?debug=`;
+
+    this.dialog.open(ShareGroupInfoDialogComponent, {
+      hasBackdrop: true,
+      data: {
+        url,
+        title: this.translate.instant('universal_operating_share'),
+        shareName: this.fileInfo.dispName,
+        cancelText: this.translate.instant('universal_operating_cancel'),
+        debugUrl: this.userProfile.systemAccessRight[0] <= 29 ? debugUrl : ''
+      }
+
+    });
+
+  }
+
+  /**
+   * 下載raw data
+   * @author kidin-1100220
+   */
+  downloadRawData() {
+    const CSVName = `${this.rawData.fileInfo.dispName}${this.rawData.fileInfo.creationDate}.csv`,
+          data = this.switchCSVFile(this.rawData),
+          blob = new Blob(['\ufeff' + data], {  // 加上bom（\ufeff）讓excel辨識編碼
+            type: 'text/csv;charset=utf8'
+          }),
+          href = URL.createObjectURL(blob),  // 建立csv檔url
+          link = document.createElement('a');  // 建立連結供csv下載使用
+
+    document.body.appendChild(link);
+    link.href = href;
+    link.download = CSVName;
+    link.click();
+  }
+
+  /**
+   * 將所需資料轉換為csv格式
+   * @param rawData {any}-活動賽事檔案內容
+   * @author kidin-1090928
+   */
+  switchCSVFile(rawData: any) {
+    let csvData = '';
+    const [finalObj, finalLength] = this.flattenObj(rawData);
+    csvData += '\n';
+    for (let i = -1; i < finalLength; i++) {
+
+      for (let key in finalObj) {
+        
+        if (i === -1) {
+          csvData += `${key},`;
+        } else {
+          csvData += finalObj[key][i] !== undefined ? `${finalObj[key][i]},` : ',';
+        }
+        
+      }
+      
+      csvData += '\n';
+    }
+
+    return csvData;
+  }
+
+  /**
+   * 攤平物件
+   * @param rawData {any}-api 2103 的內容
+   * @author kidin-1100126
+   */
+  flattenObj(rawData: any): Array<any> {
+    // csv排除以下資訊
+    const excludeData = [
+            'alaFormatVersionName',
+            'apiCode',
+            'msgCode',
+            'resultCode',
+            'resultMessage',
+            'fileInfo'
+          ],
+          finalObj = {};
+    let maxLength = 0;
+
+    for (let key in rawData) {
+
+      if (!excludeData.includes(key)) {
+
+        // 純陣列
+        if (Array.isArray(rawData[key]) && typeof rawData[key][0] !== 'object') {
+          maxLength = rawData[key].length > maxLength ? rawData[key].length : maxLength;
+          // 同key則將數據整合至一個array中
+          if (finalObj.hasOwnProperty(key)) {
+            finalObj[key] = finalObj[key].concat(rawData[key]);
+          } else {
+            Object.assign(finalObj, {[key]: rawData[key]});
+          }
+
+        // 為陣列，且其元素為物件 
+        } else if (Array.isArray(rawData[key]) && typeof rawData[key][0] === 'object') {
+          maxLength = rawData[key].length > maxLength ? rawData[key].length : maxLength;
+          rawData[key].forEach(_rawData => {
+            const [childObj, childMaxLength] = this.flattenObj(_rawData);
+            maxLength = childMaxLength > maxLength ? childMaxLength : maxLength;
+            for (let childKey in childObj) {
+              const mergeKey = `${key}.${childKey}`;
+              // 同key則將數據整合至一個array中
+              if (finalObj.hasOwnProperty(mergeKey)) {
+
+                if (Array.isArray(childObj[childKey])) {
+                  finalObj[mergeKey] = finalObj[mergeKey].concat(childObj[childKey]);
+                } else {
+                  finalObj[mergeKey].push(childObj[childKey]);
+                }
+
+              } else {
+                Array.isArray(childObj[childKey]) ?
+                  Object.assign(finalObj, {[mergeKey]: childObj[childKey]}) : Object.assign(finalObj, {[mergeKey]: [childObj[childKey]]});;
+              }
+              
+            }
+
+          });
+
+        // 物件
+        } else if (rawData[key] !== null && typeof rawData[key] === 'object') {
+          const [childObj, childMaxLength] = this.flattenObj(rawData[key]);
+          maxLength = childMaxLength > maxLength ? childMaxLength : maxLength;
+          for (let childKey in childObj) {
+
+            // 同key則將數據整合至一個array中
+            const mergeKey = `${key}.${childKey}`;
+            if (finalObj.hasOwnProperty(mergeKey)) {
+              Array.isArray(childObj[childKey]) ? 
+                finalObj[mergeKey].push(childObj[childKey][0]) : finalObj[mergeKey].push(childObj[childKey]);
+            } else {
+              Array.isArray(childObj[childKey]) ? 
+                Object.assign(finalObj, {[mergeKey]: childObj[childKey]}) : Object.assign(finalObj, {[mergeKey]: [childObj[childKey]]});
+            }
+            
+          }
+
+        // 純值
+        } else {
+          // 同key則將數據整合至一個array中
+          if (finalObj.hasOwnProperty(key)) {
+            finalObj[key].push(rawData[key][0]);
+          } else {
+            Object.assign(finalObj, {[key]: rawData[key]});
+          }
+          
+        }
+
+      }
+
+    }
+
+    return [finalObj, maxLength];
+  }
+
+  /**
+   * 開新分頁預覽列印頁面
+   * @author kidin-1100220
+   */
+  printPreview() {
+    window.open(this.previewUrl, '_blank', 'noopener=yes,noreferrer=yes');
+  }
+
+  /**
+   * 列印
+   * @author kidin-1100220
+   */
+  printPage() {
+    window.print();
+  }
+
+  /**
+   * 顯示刪除警告視窗
+   * @author kidin-1100220
+   */
+  showDeleteAlert() {
+    return this.dialog.open(MessageBoxComponent, {
+      hasBackdrop: true,
+      data: {
+        title: 'Message',
+        body: `${this.translate.instant(
+          'universal_activityData_file'
+        )} ${this.translate.instant(
+          'universal_popUpMessage_confirmDelete'
+        )}`,
+        confirmText: this.translate.instant(
+          'universal_operating_confirm'
+        ),
+        cancelText: this.translate.instant(
+          'universal_operating_cancel'
+        ),
+        onCancel: () => {
+          return false;
+        },
+        onConfirm: this.deleteFile.bind(this)
+      }
+    });
+
+  }
+
+  /**
+   * 刪除運動檔案後導回運動列表
+   * @author kidin-1100220
+   */
+  deleteFile () {
+    const body = {
+      token: this.utils.getToken() || '',
+      fileId: [this.fileInfo.fileId]
+    };
+
+    this.activityService.deleteActivityData(body).subscribe(res => {
+      if (+res.resultCode === 200) {
+        this.snackBar.open(
+          `${this.translate.instant(
+            'universal_operating_delete'
+          )}
+          ${this.translate.instant(
+            'universal_status_success'
+          )}`,
+          'OK',
+          { duration: 2000 }
+        );
+
+        setTimeout(() => {
+          this.router.navigateByUrl('/dashboard/activity-list');
+        }, 2000);
+      } else {
+        this.snackBar.open(
+          `${this.translate.instant(
+            'universal_operating_delete'
+          )}
+          ${this.translate.instant(
+            'universal_status_failure'
+          )}`,
+          'OK',
+          { duration: 2000 }
+        );
+      }
+    });
+
+  }
+
+  /**
+   * 返回運動列表
+   * @author kidin-1100220
+   */
+  returnList() {
+    window.history.back();
+  }
+
+  /**
+   * 編輯檔案名稱
+   * @author kidin-1100220
+   */
+  editFileName() {
+    this.newFileName = this.fileInfo.dispName;
+    this.uiFlag.editNameMode = true;
+  }
+
+  /**
+   * 若使用者點擊Enter，則上傳新檔案名稱
+   * @param e {KeyboardEvent}
+   * @author kidin-1100220
+   */
+  handleKeypress(e: KeyboardEvent) {
+    const oldFileName = this.fileInfo.dispName;
+    if ((e.key === 'Enter' && this.newFileName === oldFileName)) {
+      this.uiFlag.editNameMode = false;
+    } else if (e.key === 'Enter' && this.newFileName.trim() === '') {
+      this.newFileName = oldFileName;
+      this.uiFlag.editNameMode = false;
+    } else if (e.key === 'Enter' && this.newFileName !== oldFileName) {
+      this.handleNewProfileName();
+    }
+
+  }
+
+  /**
+   * 關閉編輯活動檔案名稱模式
+   * @author kidin-1100220
+   */
+  cancelEdit() {
+    this.uiFlag.editNameMode = false;
+    this.newFileName = this.fileInfo.dispName;
+  }
+
+  /**
+   * 確認修改檔案名稱
+   * @author kidin-1100220
+   */
+  confirmEdit() {
+    const oldFileName = this.fileInfo.dispName;
+    if (this.newFileName !== oldFileName) {
+      this.handleNewProfileName();
+    } else {
+      this.uiFlag.editNameMode = false;
+    }
+    
+  }
+
+  /**
+   * 上傳新名稱
+   * @author kidin-1100220
+   */
+  handleNewProfileName() {
+    const body = {
+      token: this.utils.getToken() || '',
+      fileId: this.fileInfo.fileId,
+      fileInfo: {
+        dispName: this.newFileName,
+        editDate: moment().format('YYYY-MM-DDTHH:mm:ss.SSSZ')
+      }
+    };
+
+    this.activityService.fetchEditActivityProfile(body).subscribe(res => {
+      if (res.resultCode === 200) {
+        this.uiFlag.editNameMode = false;
+        this.fileInfo.dispName = this.newFileName;
+      } else {
+        this.utils.openAlert(errMsg);
+      }
+
+    });
+
+  }
+
+  /**
+   * 圖片載入完成
+   * @author kidin-1100224
+   */
+  sceneryImgLoaded() {
+    this.uiFlag.imageLoaded = true;
   }
 
   /**

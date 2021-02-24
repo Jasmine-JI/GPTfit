@@ -24,10 +24,7 @@ const Highcharts: any = _Highcharts; // 不檢查highchart型態
 @Component({
   selector: 'app-life-tracking',
   templateUrl: './life-tracking.component.html',
-  styleUrls: [
-    './life-tracking.component.scss',
-    '../../../../shared/components/activity-info/activity-info.component.scss'
-  ],
+  styleUrls: ['./life-tracking.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class LifeTrackingComponent implements OnInit, OnDestroy {

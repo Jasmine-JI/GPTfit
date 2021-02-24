@@ -1,13 +1,11 @@
 import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input, Renderer2, Output, EventEmitter } from '@angular/core';
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
-import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription, Subject, fromEvent } from 'rxjs';
+import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DataTypeUnitPipe } from '../../../pipes/data-type-unit.pipe';
 import { TemperatureSibsPipe } from '../../../pipes/temperature-sibs.pipe';
-import { SportPaceSibsPipe } from '../../../pipes/sport-pace-sibs.pipe';
 import { mi, ft } from '../../../models/bs-constant';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
@@ -125,8 +123,7 @@ export class TrinomialChartComponent implements OnInit, OnChanges, OnDestroy {
     private renderer: Renderer2,
     private translate: TranslateService,
     private dataTypeUnitPipe: DataTypeUnitPipe,
-    private temperatureSibsPipe: TemperatureSibsPipe,
-    private sportPaceSibsPipe: SportPaceSibsPipe
+    private temperatureSibsPipe: TemperatureSibsPipe
   ) {}
 
   ngOnInit(): void {}
@@ -293,13 +290,13 @@ export class TrinomialChartComponent implements OnInit, OnChanges, OnDestroy {
         let costSecond: number;
         switch (this.sportType) {
           case 1:
-            costSecond = +(3600 / (this.unit === 0 ? data : data * mi)).toFixed(0); // 公里或英里配速
+            costSecond = +(3600 / (this.unit === 0 ? data : data / mi)).toFixed(0); // 公里或英里配速
             break;
           case 4:
-            costSecond = +(3600 / (data / 10)).toFixed(0);  // 百米配速
+            costSecond = +(3600 / (data * 10)).toFixed(0);  // 百米配速
             break;
           case 6:
-            costSecond = +(3600 / (data / 2)).toFixed(0);  // 500米配速
+            costSecond = +(3600 / (data * 2)).toFixed(0);  // 500米配速
             break;
         }
 

@@ -1,25 +1,16 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { DashboardComponent } from './dashboard.component';
-import { EnrollFormComponent } from './components/enroll-form/enroll-form.component';
 import { CertificateComponent } from './components/certificate/certificate.component';
-import { CertificatePreviewComponent } from './components/certificate-preview/certificate-preview.component';
-import { EventCalendarComponent } from './components/event-calendar/event-calendar.component';
-import { EnrollPreviewComponent } from './components/enroll-preview/enroll-preview.component';
-import { DbMaintainComponent } from './components/db-maintain/db-maintain.component';
 import { DeviceLogComponent } from './components/device-log/device-log.component';
 import { DeviceLogDetailComponent } from './components/device-log-detail/device-log-detail.component';
 import { CoachDashboardComponent } from './components/coach-dashboard/coach-dashboard.component';
 import { AuthGuard } from '@shared/guards/auth/auth.guard';
 import { UnsaveGuard } from '../dashboard/guards/unsave-guard';
 import { GroupSearchComponent } from './group/group-search/group-search.component';
-import { EditGroupInfoComponent } from './group/edit-group-info/edit-group-info.component';
 import { AllGroupListComponent } from './group/all-group-list/all-group-list.component';
-import { EditGroupGuard } from './guards/edit-group-guard';
-import { CreateGroupComponent } from './group/create-group/create-group.component';
 import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
 import { DashboardGuard } from './guards/dashboard-guard';
-import { ActivityInfoComponent } from '@shared/components/activity-info/activity-info.component';
 import { MyActivityComponent } from '@shared/components/my-activity/my-activity.component';
 import { SportReportComponent } from '@shared/components/sport-report/sport-report.component';
 import { MyDeviceComponent } from './components/device/my-device/my-device.component';
@@ -39,6 +30,7 @@ import { PushMessageListComponent } from './components/push-message/push-message
 import { GroupInfoComponent } from './group-v2/group-info/group-info.component';
 import { SearchGroupComponent } from './group-v2/search-group/search-group.component';
 import { MyGroupListComponent } from './group/my-group-list/my-group-list.component';
+import { CreateGroupComponent } from './group/create-group/create-group.component';
 // import { MyGroupListComponent } from './group-v2/my-group-list/my-group-list.component';
 import { GroupIntroductionComponent } from './group-v2/group-info/group-introduction/group-introduction.component';
 import { SportsReportComponent } from './group-v2/group-info/sports-report/sports-report.component';
@@ -62,26 +54,8 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       {
-        path: 'enroll/:event_id',
-        component: EnrollFormComponent,
-        canActivate: [DashboardGuard]
-      },
-      {
-        path: 'certificate',
+        path: 'certificate',  // graphql測試用
         component: CertificateComponent
-      },
-      {
-        path: 'certificate/preview',
-        component: CertificatePreviewComponent
-      },
-      {
-        path: 'enroll/:event_id/preview',
-        component: EnrollPreviewComponent,
-        canActivate: [DashboardGuard]
-      },
-      {
-        path: 'db',
-        component: DbMaintainComponent
       },
       {
         path: 'coach-dashboard/:classId',
@@ -109,11 +83,6 @@ const routes: Routes = [
       {
         path: 'system/event-management/participants',
         component: ParticipantsManageComponent,
-        canActivate: [DashboardGuard]
-      },
-      {
-        path: 'system/event-calendar',
-        component: EventCalendarComponent,
         canActivate: [DashboardGuard]
       },
       {
@@ -211,13 +180,6 @@ const routes: Routes = [
         path: 'activity-list',
         component: MyActivityComponent
       },
-      /*
-      {
-        path: 'activity/:fileId',
-        component: ActivityInfoComponent
-      },
-      */
-     
       {
         path: 'activity/:fileId',
         component: ActivityDetailComponent

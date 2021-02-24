@@ -6,7 +6,6 @@ import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
 import { PortalRoutingModule } from './portal-routing.module';
 import { PortalComponent } from './portal.component';
 import { SharedPipes } from '@shared/pipes/shared-pipes';
-import { MapInfoComponent } from './components/map-info/map-info.component';
 import { MapGPXService } from '@shared/services/map-gpx.service';
 import { RankFormService } from './services/rank-form.service';
 import { MapService } from '@shared/services/map.service';
@@ -29,14 +28,12 @@ import { SignupService } from './services/signup.service';
 import { ForgetService } from './services/forget.service';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
 import { UserProfileService } from '@shared/services/user-profile.service';
-import { PortalGroupInfoComponent } from './components/portal-group-info/portal-group-info.component';
 import { CustomMaterialModule } from '@shared/custom-material.module.ts';
 import { BasicInfoComponent } from './components/user-profile/basic-info/basic-info.component';
 import { ActivityService } from '@shared/services/activity.service.ts';
 import { ReportService } from '@shared/services/report.service';
 import { ActivityOtherDetailsService } from '@shared/services/activity-other-details.service';
 import { DetectInappService } from '@shared/services/detect-inapp.service';
-import { ApplicationComponent } from './components/application/application.component';
 import { AppSignupComponent } from './components/app-sign/app-signup/app-signup.component';
 import { AppSigninComponent } from './components/app-sign/app-signin/app-signin.component';
 import { AppEnableComponent } from './components/app-sign/app-enable/app-enable.component';
@@ -95,12 +92,9 @@ import { AppDestroyAccountComponent } from './components/app-sign/app-destroy-ac
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   declarations: [
     PortalComponent,
-    MapInfoComponent,
     DemoQrcodComponent,
     UserProfileComponent,
-    PortalGroupInfoComponent,
     BasicInfoComponent,
-    ApplicationComponent,
     AppSignupComponent,
     AppSigninComponent,
     AppEnableComponent,

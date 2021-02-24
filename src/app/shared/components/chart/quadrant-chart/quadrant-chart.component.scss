@@ -2,8 +2,8 @@
 
 $data-color: rgba(100, 100, 100, 1);
 $axis-type-width: 160px;
-$btn-width: 120px;
-$btn-height: 35px;
+$btn-width: 140px;
+$btn-height: 40px;
 
 .item__spot {
   font-size: 8px;
@@ -11,6 +11,10 @@ $btn-height: 35px;
 
 .data__title {
   color: $data-color;
+}
+
+.origin__type {
+  white-space: nowrap;
 }
 
 .data__content {
@@ -21,7 +25,7 @@ $btn-height: 35px;
 
 .data__item {
   width: 50%;
-  margin: 15px;
+  margin: 15px 10px;
 }
 
 .transparent__spot {
@@ -86,6 +90,21 @@ $btn-height: 35px;
 
 }
 
+#main__section {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+#info__section {
+  width: 50%;
+}
+
+#quadrant__chart {
+  width: 45%;
+  max-width: 400px;
+}
+
 .origin__input {
   width: 100px;
   text-align: right;
@@ -105,6 +124,8 @@ $btn-height: 35px;
   color: rgba(241, 129, 129, 1);
   width: $btn-width;
   height: $btn-height;
+  font-size: 14px;
+  line-height: 1.2;
 }
 
 #confirm__btn {
@@ -114,4 +135,39 @@ $btn-height: 35px;
   color: white;
   width: $btn-width;
   height: $btn-height;
+}
+
+
+/**************************************** media *****************************************/
+
+@media(max-width: 767px) {
+  #main__section {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #info__section, #quadrant__chart {
+    width: 98%;
+  }
+
+  #quadrant__chart {
+    margin-top: 15px;
+  }
+
+  .data__item {
+    margin: 5px;
+  }
+
+  .data__title {
+    font-size: 14px;
+  }
+
+}
+
+@media print {
+  #main__section {
+    flex-direction: row;
+    align-items: initial;
+  }
+
 }

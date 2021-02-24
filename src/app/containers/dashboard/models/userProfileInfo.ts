@@ -25,7 +25,7 @@ export interface UserProfileInfo {
   nickname: string;
   normalBedTime: string;
   normalWakeTime: string;
-  privacy: {
+  privacy?: {
     activityTracking: Array<number | string>
     activityTrackingReport: Array<number | string>
     lifeTrackingReport: Array<number | string>
@@ -33,7 +33,7 @@ export interface UserProfileInfo {
   proteinRate: number;
   skeletonRate: number;
   strideLengthCentimeter: number;
-  target: {
+  target?: {
     bodyWeight: number;
     calorie: number;
     distance: number;
@@ -48,6 +48,6 @@ export interface UserProfileInfo {
   unit: number;
   userId: number;
   visceralFat: number;
-  weightTrainingStengthLevel: number;
+  weightTrainingStrengthLevel: number;
   wheelSize: number;
 }

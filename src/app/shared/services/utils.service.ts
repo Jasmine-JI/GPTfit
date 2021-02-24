@@ -586,13 +586,17 @@ export class UtilsService {
 
         if (i === 0) {
           handleList.forEach(_list => {
-            Object.assign(finalData.yAxis, {[_list]: []});
-            Object.assign(repeatTotal, {[_list]: yData[_list][0]});
+            if (yData[_list]) {
+              Object.assign(finalData.yAxis, {[_list]: []});
+              Object.assign(repeatTotal, {[_list]: yData[_list][0]});
+            }
+            
           });
         } else {
           handleList.forEach(_list => {
-            repeatTotal[_list] += yData[_list][i];
+            if (yData[_list]) repeatTotal[_list] += yData[_list][i];
           });
+
         }
 
         repeatLen++;
@@ -603,21 +607,21 @@ export class UtilsService {
         if (repeatLen) {
           finalData.xAxis.push(xData[i - 1]);
           handleList.forEach(_list => {
-            finalData.yAxis[_list].push(+(repeatTotal[_list] / repeatLen).toFixed(1));
+            if (finalData.yAxis[_list]) finalData.yAxis[_list].push(+(repeatTotal[_list] / repeatLen).toFixed(1));
           });
 
         }
         
         if (i !== xAxisLen - 1) {
           handleList.forEach(_list => {
-            repeatTotal[_list] = yData[_list][i];
+            if (yData[_list]) repeatTotal[_list] = yData[_list][i];
           });
 
           repeatLen = 1;
         } else {
           finalData.xAxis.push(xData[i]);
           handleList.forEach(_list => {
-            finalData.yAxis[_list].push(yData[_list][i]);
+            if (finalData.yAxis[_list]) finalData.yAxis[_list].push(yData[_list][i]);
           });
 
         }

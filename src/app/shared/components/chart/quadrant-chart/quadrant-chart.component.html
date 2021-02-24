@@ -131,8 +131,8 @@
       </ng-template>
     </div>
   </div>
-  <main class="flexRow" style="justify-content: space-between;">
-    <div class="flexCol" style="width: 50%;">
+  <main id="main__section">
+    <div id="info__section" class="flexCol">
       <div class="flexRow">
         <div class="flexCol data__item">
           <span>
@@ -198,7 +198,8 @@
           <span>
             <span class="item__spot transparent__spot">●</span>
             <span class="data__title">
-              {{ 'universal_vocabulary_xOrigin' | translate }}-{{ chartOpt.xAxis.type | dataTypeTranslate: [sportType, unit] | translate }}
+              {{ 'universal_vocabulary_xOrigin' | translate }}-
+              <span class="origin__type">{{ chartOpt.xAxis.type | dataTypeTranslate: [sportType, unit] | translate }}</span>
             </span>
           </span>
           <span class="data__content">
@@ -217,7 +218,8 @@
           <span>
             <span class="item__spot transparent__spot">●</span>
             <span class="data__title">
-              {{ 'universal_vocabulary_yOrigin' | translate }}-{{ chartOpt.yAxis.type | dataTypeTranslate: [sportType, unit] | translate }}
+              {{ 'universal_vocabulary_yOrigin' | translate }}-
+              <span class="origin__type">{{ chartOpt.yAxis.type | dataTypeTranslate: [sportType, unit] | translate }}</span>
             </span>
           </span>
           <span class="data__content">
@@ -231,182 +233,182 @@
         </div>
       </div>
     </div>
-    <svg
-      version="1.1"
-      baseProfile="full"
-      xmlns="http://www.w3.org/2000/svg"
-      width="45%"
-      style="max-height: 250px;"
-      viewBox="0 0 450 350"
-      id='quadrantChart'
-    >
-      <g>
-        <ng-container *ngFor="let _point of chart.displayPoint;">
-          <circle
-            [attr.cx]="_point.x"
-            [attr.cy]="_point.y"
-            [attr.stroke]="_point.color"
-            [attr.fill]="_point.color"
-            style="opacity: 0.8;"
-            r="3"
+    <div id="quadrant__chart">
+      <svg
+        version="1.1"
+        baseProfile="full"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="-95 0 570 350"
+        width="100%"
+      >
+        <g>
+          <ng-container *ngFor="let _point of chart.displayPoint;">
+            <circle
+              [attr.cx]="_point.x"
+              [attr.cy]="_point.y"
+              [attr.stroke]="_point.color"
+              [attr.fill]="_point.color"
+              style="opacity: 0.8;"
+              r="3"
+            >
+            </circle>
+          </ng-container>
+        </g>
+        <line
+          [attr.x1]="chart.line.xAxis.x[0]"
+          [attr.y1]="chart.line.xAxis.y"
+          [attr.x2]="chart.line.xAxis.x[1]"
+          [attr.y2]="chart.line.xAxis.y"
+          stroke="black"
+          fill="black"
+          stroke-width="1"
+        />
+        <line
+          [attr.x1]="chart.line.yAxis.x"
+          [attr.y1]="chart.line.yAxis.y[0]"
+          [attr.x2]="chart.line.yAxis.x"
+          [attr.y2]="chart.line.yAxis.y[1]"
+          stroke="black"
+          fill="black"
+          stroke-width="1"
+        />
+        <g>
+          <text
+            [attr.x]="chart.chartSvgWidth"
+            [attr.y]="0"
+            [attr.stroke]="color.quadrantI"
+            [attr.fill]="color.quadrantI"
+            text-anchor="middle"
+            dominant-baseline="hanging"
+            font-size="35"
           >
-          </circle>
-        </ng-container>
-      </g>
-      <line
-        [attr.x1]="0"
-        [attr.y1]="((chart.y.max - chartOpt.yAxis.origin) / (chart.y.max - chart.y.min)) * chart.chartSvgHeight | number: '1.0-0'"
-        [attr.x2]="chart.chartSvgWidth"
-        [attr.y2]="((chart.y.max - chartOpt.yAxis.origin) / (chart.y.max - chart.y.min)) * chart.chartSvgHeight | number: '1.0-0'"
-        stroke="black"
-        fill="black"
-        stroke-width="1"
-      />
-      <line
-        [attr.x1]="((chartOpt.xAxis.origin - chart.x.min) / (chart.x.max - chart.x.min)) * chart.chartSvgWidth | number: '1.0-0'"
-        [attr.y1]="0"
-        [attr.x2]="((chartOpt.xAxis.origin - chart.x.min) / (chart.x.max - chart.x.min)) * chart.chartSvgWidth | number: '1.0-0'"
-        [attr.y2]="chart.chartSvgHeight"
-        stroke="black"
-        fill="black"
-        stroke-width="1"
-      />
-      <g>
-        <text
-          [attr.x]="chart.chartSvgWidth"
-          [attr.y]="0"
-          [attr.stroke]="color.quadrantI"
-          [attr.fill]="color.quadrantI"
-          text-anchor="middle"
-          dominant-baseline="hanging"
-          font-size="35"
-        >
-          I
-        </text>
-        <text
-          [attr.x]="0"
-          [attr.y]="0"
-          [attr.stroke]="color.quadrantII"
-          [attr.fill]="color.quadrantII"
-          text-anchor="middle"
-          dominant-baseline="hanging"
-          font-size="35"
-        >
-          II
-        </text>
-        <text
-          [attr.x]="0"
-          [attr.y]="chart.chartSvgHeight"
-          [attr.stroke]="color.quadrantIII"
-          [attr.fill]="color.quadrantIII"
-          text-anchor="middle"
-          dominant-baseline="text-bottom"
-          font-size="35"
-        >
-          III
-        </text>
-        <text
-          [attr.x]="chart.chartSvgWidth"
-          [attr.y]="chart.chartSvgHeight"
-          [attr.stroke]="color.quadrantIV"
-          [attr.fill]="color.quadrantIV"
-          text-anchor="middle"
-          dominant-baseline="text-bottom"
-          font-size="35"
-        >
-          IV
-        </text>
-        <text
-          [attr.x]="0"
-          [attr.y]="((chart.y.max - chart.label.y) / (chart.y.max - chart.y.min)) * chart.chartSvgHeight | number: '1.0-0'"
-          text-anchor="middle"
-          dominant-baseline="middle"
-          fill="gray"
-          [attr.font-size]="chart.label.size"
-        >
-          <ng-container *ngIf="chartOpt.xAxis.type === 'pace'">
-            &lt;{{ (chart.x.min < 0 ? 0 : chart.x.min) | sportPaceSibs: [sportType, unit, 1] }}
-          </ng-container>
-          <ng-container *ngIf="chartOpt.xAxis.type !== 'pace'">
-            {{ chart.x.min | number: '1.0-0' }}
-          </ng-container>
-        </text>
-        <text
-          [attr.x]="chart.chartSvgWidth / 2"
-          [attr.y]="((chart.y.max - chart.label.y) / (chart.y.max - chart.y.min)) * chart.chartSvgHeight | number: '1.0-0'"
-          text-anchor="middle"
-          dominant-baseline="middle"
-          fill="gray"
-          [attr.font-size]="chart.label.size"
-        >
-          <ng-container *ngIf="chartOpt.xAxis.type === 'pace'">
-            {{ ((chart.x.min + chart.x.max) / 2) | sportPaceSibs: [sportType, unit, 1] }}
-          </ng-container>
-          <ng-container *ngIf="chartOpt.xAxis.type !== 'pace'">
-            {{ ((chart.x.min + chart.x.max) / 2) | number: '1.0-0' }}
-          </ng-container>
-        </text>
-        <text
-          [attr.x]="chart.chartSvgWidth"
-          [attr.y]="((chart.y.max - chart.label.y) / (chart.y.max - chart.y.min)) * chart.chartSvgHeight | number: '1.0-0'"
-          text-anchor="middle"
-          dominant-baseline="middle"
-          fill="gray"
-          [attr.font-size]="chart.label.size"
-        >
-          <ng-container *ngIf="chartOpt.xAxis.type === 'pace'">
-            {{ chart.x.max | sportPaceSibs: [sportType, unit, 1] }}
-          </ng-container>
-          <ng-container *ngIf="chartOpt.xAxis.type !== 'pace'">
-            {{ chart.x.max | number: '1.0-0' }}
-          </ng-container>
-        </text>
-        <text
-          [attr.x]="((chart.label.x - chart.x.min) / (chart.x.max - chart.x.min)) * chart.chartSvgWidth | number: '1.0-0'"
-          [attr.y]="chart.chartSvgHeight"
-          text-anchor="middle"
-          dominant-baseline="text-bottom"
-          fill="gray"
-          [attr.font-size]="chart.label.size"
-        >
-          <ng-container *ngIf="chartOpt.yAxis.type === 'pace'">
-            &lt;{{ (chart.y.min < 0 ? 0 : chart.y.min) | sportPaceSibs: [sportType, unit, 1] }}
-          </ng-container>
-          <ng-container *ngIf="chartOpt.yAxis.type !== 'pace'">
-            {{ chart.y.min | number: '1.0-0' }}
-          </ng-container>
-        </text>
-        <text
-          [attr.x]="((chart.label.x - chart.x.min) / (chart.x.max - chart.x.min)) * chart.chartSvgWidth | number: '1.0-0'"
-          [attr.y]="chart.chartSvgHeight / 2"
-          text-anchor="middle"
-          dominant-baseline="middle"
-          fill="gray"
-          [attr.font-size]="chart.label.size"
-        >
-          <ng-container *ngIf="chartOpt.yAxis.type === 'pace'">
-            {{ ((chart.y.min + chart.y.max) / 2) | sportPaceSibs: [sportType, unit, 1] }}
-          </ng-container>
-          <ng-container *ngIf="chartOpt.yAxis.type !== 'pace'">
-            {{ ((chart.y.min + chart.y.max) / 2) | number: '1.0-0' }}
-          </ng-container>
-        </text>
-        <text
-          [attr.x]="((chart.label.x - chart.x.min) / (chart.x.max - chart.x.min)) * chart.chartSvgWidth | number: '1.0-0'"
-          [attr.y]="0"
-          text-anchor="middle"
-          dominant-baseline="hanging"
-          fill="gray"
-          [attr.font-size]="chart.label.size"
-        >
-          <ng-container *ngIf="chartOpt.yAxis.type === 'pace'">
-            {{ chart.y.max | sportPaceSibs: [sportType, unit, 1] }}
-          </ng-container>
-          <ng-container *ngIf="chartOpt.yAxis.type !== 'pace'">
-            {{ chart.y.max | number: '1.0-0' }}
-          </ng-container>
-        </text>
-      </g>
-    </svg>
+            I
+          </text>
+          <text
+            [attr.x]="0"
+            [attr.y]="0"
+            [attr.stroke]="color.quadrantII"
+            [attr.fill]="color.quadrantII"
+            text-anchor="middle"
+            dominant-baseline="hanging"
+            font-size="35"
+          >
+            II
+          </text>
+          <text
+            [attr.x]="0"
+            [attr.y]="chart.chartSvgHeight"
+            [attr.stroke]="color.quadrantIII"
+            [attr.fill]="color.quadrantIII"
+            text-anchor="middle"
+            dominant-baseline="text-bottom"
+            font-size="35"
+          >
+            III
+          </text>
+          <text
+            [attr.x]="chart.chartSvgWidth"
+            [attr.y]="chart.chartSvgHeight"
+            [attr.stroke]="color.quadrantIV"
+            [attr.fill]="color.quadrantIV"
+            text-anchor="middle"
+            dominant-baseline="text-bottom"
+            font-size="35"
+          >
+            IV
+          </text>
+          <text
+            [attr.x]="chart.label.xAxis.x[0]"
+            [attr.y]="chart.label.xAxis.y"
+            text-anchor="middle"
+            dominant-baseline="middle"
+            fill="gray"
+            [attr.font-size]="chart.label.size"
+          >
+            <ng-container *ngIf="chartOpt.xAxis.type === 'pace'">
+              &lt;{{ (chart.x.min < 0 ? 0 : chart.x.min) | sportPaceSibs: [sportType, unit, 1] }}
+            </ng-container>
+            <ng-container *ngIf="chartOpt.xAxis.type !== 'pace'">
+              {{ chart.x.min | number: '1.0-0' }}
+            </ng-container>
+          </text>
+          <text
+            [attr.x]="chart.label.xAxis.x[1]"
+            [attr.y]="chart.label.xAxis.y"
+            text-anchor="middle"
+            dominant-baseline="middle"
+            fill="gray"
+            [attr.font-size]="chart.label.size"
+          >
+            <ng-container *ngIf="chartOpt.xAxis.type === 'pace'">
+              {{ ((chart.x.min + chart.x.max) / 2) | sportPaceSibs: [sportType, unit, 1] }}
+            </ng-container>
+            <ng-container *ngIf="chartOpt.xAxis.type !== 'pace'">
+              {{ ((chart.x.min + chart.x.max) / 2) | number: '1.0-0' }}
+            </ng-container>
+          </text>
+          <text
+            [attr.x]="chart.label.xAxis.x[2]"
+            [attr.y]="chart.label.xAxis.y"
+            text-anchor="middle"
+            dominant-baseline="middle"
+            fill="gray"
+            [attr.font-size]="chart.label.size"
+          >
+            <ng-container *ngIf="chartOpt.xAxis.type === 'pace'">
+              {{ chart.x.max | sportPaceSibs: [sportType, unit, 1] }}
+            </ng-container>
+            <ng-container *ngIf="chartOpt.xAxis.type !== 'pace'">
+              {{ chart.x.max | number: '1.0-0' }}
+            </ng-container>
+          </text>
+          <text
+            [attr.x]="chart.label.yAxis.x"
+            [attr.y]="chart.label.yAxis.y[0]"
+            text-anchor="middle"
+            dominant-baseline="text-bottom"
+            fill="gray"
+            [attr.font-size]="chart.label.size"
+          >
+            <ng-container *ngIf="chartOpt.yAxis.type === 'pace'">
+              &lt;{{ (chart.y.min < 0 ? 0 : chart.y.min) | sportPaceSibs: [sportType, unit, 1] }}
+            </ng-container>
+            <ng-container *ngIf="chartOpt.yAxis.type !== 'pace'">
+              {{ chart.y.min | number: '1.0-0' }}
+            </ng-container>
+          </text>
+          <text
+            [attr.x]="chart.label.yAxis.x"
+            [attr.y]="chart.label.yAxis.y[1]"
+            text-anchor="middle"
+            dominant-baseline="middle"
+            fill="gray"
+            [attr.font-size]="chart.label.size"
+          >
+            <ng-container *ngIf="chartOpt.yAxis.type === 'pace'">
+              {{ ((chart.y.min + chart.y.max) / 2) | sportPaceSibs: [sportType, unit, 1] }}
+            </ng-container>
+            <ng-container *ngIf="chartOpt.yAxis.type !== 'pace'">
+              {{ ((chart.y.min + chart.y.max) / 2) | number: '1.0-0' }}
+            </ng-container>
+          </text>
+          <text
+            [attr.x]="chart.label.yAxis.x"
+            [attr.y]="chart.label.yAxis.y[2]"
+            text-anchor="middle"
+            dominant-baseline="hanging"
+            fill="gray"
+            [attr.font-size]="chart.label.size"
+          >
+            <ng-container *ngIf="chartOpt.yAxis.type === 'pace'">
+              {{ chart.y.max | sportPaceSibs: [sportType, unit, 1] }}
+            </ng-container>
+            <ng-container *ngIf="chartOpt.yAxis.type !== 'pace'">
+              {{ chart.y.max | number: '1.0-0' }}
+            </ng-container>
+          </text>
+        </g>
+      </svg>
+    </div>
   </main>
 </section>
