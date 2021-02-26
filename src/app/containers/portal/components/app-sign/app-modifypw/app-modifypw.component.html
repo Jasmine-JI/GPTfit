@@ -12,10 +12,10 @@
     </div>
     <div class="flexCol appDiv" style="min-height: initial;">
       <span class="app-alert" style="font-size: 20px; font-weight: bold;">{{ 'universal_userAccount_changingPassword' | translate }}</span>
-      <span style="font-size: 14px; font-weight: bold;" *ngIf="editBody.editType === 1">
+      <span style="font-size: 14px; font-weight: bold;" *ngIf="editBody.newAccountType === 1">
         {{ editBody.newEmail }}
       </span>
-      <span style="font-size: 14px; font-weight: bold;" *ngIf="editBody.editType === 2">
+      <span style="font-size: 14px; font-weight: bold;" *ngIf="editBody.newAccountType === 2">
         +{{ editBody.newCountryCode }} {{ editBody.newMobileNumber }}
       </span>
     </div>

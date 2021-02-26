@@ -206,8 +206,9 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   muscleTranslate = {};
   newFileName = '';
   printDateTime = moment().format('YYYY-MM-DD HH:mm:ss');
-  previewUrl = location.search.includes('?') ? `${location.href}&ipm=s` : `${location.href}?ipm=s`;
+  previewUrl = '';
   progress = 0;
+  compareChartQueryString = '';
 
   constructor(
     private userProfileService: UserProfileService,
@@ -260,12 +261,36 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100104
    */
   checkQueryString(searchStr: string) {
-    if (searchStr.includes('debug')) {
-      this.uiFlag.isDebug = true;
-    }
+    const queryString = searchStr.split('?')[1];
+    if (queryString && queryString.length > 0) {
+      const queryArr = queryString.split('&');
+      queryArr.forEach(_query => {
+        const query = _query.split('='),
+              key = query[0],
+              value = query[1];
+        switch (key) {
+          case 'debug':
+            this.uiFlag.isDebug = true;
+            break;
+          case 'ipm':
+            this.uiFlag.isPreviewMode = true;
+            break;
+          case 'weightTrainLevel':
+            this.uiFlag.weightTrainLevel = value as UserLevel;
+            break;
+          case 'xAxisType':
+            this.trendChartOpt.xAxisType = value as SegmentType;
+            break;
+          case 'segmentMode':
+            this.trendChartOpt.segmentMode = value === 'true';
+            break;
+          case 'segmentRange':
+            this.trendChartOpt.segmentRange = +value as (SegmentSecond | SegmentMeter);
+            break;
+        }
 
-    if (searchStr.includes('ipm=s')) {
-      this.uiFlag.isPreviewMode = true;
+      })
+
     }
 
   }
@@ -425,7 +450,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     this.activityLapLayer = data.activityLapLayer;
     this.handleActivityPoint(data.activityPointLayer);
     if(this.activityInfoLayer.type == 3) {
-      this.getUserWeightTrainLevel();
+      if (!this.uiFlag.isPreviewMode) this.getUserWeightTrainLevel();
       this.createMuscleTranslate();
     }
 
@@ -794,6 +819,26 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100104
    */
   handleActivityPoint(point: any) {
+    const pointLen = point.length;
+    // 若最後兩點時間相同，則將最後兩點進行均化
+    if (point[pointLen - 1].pointSecond === point[pointLen - 2].pointSecond) {
+      const repeatPoint = point.splice(pointLen - 1, pointLen)[0],
+            newPointLen = point.length,
+            lastPoint = point[newPointLen - 1];
+      for (let key in lastPoint) {
+
+        if (lastPoint.hasOwnProperty(key) && repeatPoint.hasOwnProperty(key)) {
+
+          if (key !== 'pointSecond' && lastPoint[key] && repeatPoint[key]) {
+            lastPoint[key] = (+lastPoint[key] + (+repeatPoint[key])) / 2;
+          }
+
+        }
+
+      }
+
+    }
+
     // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
     Highcharts.charts.forEach((_highChart, idx) => {
       if (_highChart !== undefined) {
@@ -885,7 +930,17 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
     });
 
-    this.assignDataRef();
+    if (this.uiFlag.isPreviewMode) {
+      this.changeXAxisType(this.trendChartOpt.xAxisType);
+      if (this.trendChartOpt.segmentMode) {
+        this.countSegmentData();
+      }
+  
+      this.changeSegmentRange(this.trendChartOpt.segmentRange);
+    } else {
+      this.assignDataRef();
+    }
+    
 
     // 若所有座標皆為無效點，則不顯示地圖
     if (!haveEffectiveCoordinates) {
@@ -1000,9 +1055,11 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100203
    */
   changeXAxisType(type: SegmentType) {
-    this.trendChartOpt.segmentRange = type === 'pointSecond' ? 60 : 100;
+    if (!this.uiFlag.isPreviewMode) {
+      this.trendChartOpt.segmentRange = type === 'pointSecond' ? 60 : 100;
+    }
+    
     this.trendChartOpt.xAxisType = type;
-
     const countList = this.getCountList(+this.activityInfoLayer.type as SportType);
     if (type === 'distanceMeters' && !this.trendChartData) {
       const apiKeyList = countList.map(_list => _list[1]);
@@ -1526,7 +1583,26 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100220
    */
   printPreview() {
+    this.getPreviewUrl();
     window.open(this.previewUrl, '_blank', 'noopener=yes,noreferrer=yes');
+  }
+
+  /**
+   * 根據使用者圖表設定取得預覽列印網址
+   * @author kidin-1100225
+   */
+  getPreviewUrl() {
+    let queryStringArr = ['ipm=s'];
+    if (this.activityInfoLayer.type == 3) queryStringArr.push(`weightTrainLevel=${this.uiFlag.weightTrainLevel}`);
+    if ([1, 2, 4, 6, 7].includes(+this.activityInfoLayer.type)) queryStringArr.push(this.compareChartQueryString);
+
+    let trendChartQueryString = `xAxisType=${this.trendChartOpt.xAxisType}&segmentMode=${this.trendChartOpt.segmentMode}`;
+    if (this.trendChartOpt.segmentMode) trendChartQueryString += `&segmentRange=${this.trendChartOpt.segmentRange}`;
+    queryStringArr.push(trendChartQueryString);
+
+    if (this.uiFlag.isDebug) queryStringArr.push('debug=true');
+
+    this.previewUrl = `${location.origin}${location.pathname}?${queryStringArr.join('&')}`;
   }
 
   /**
@@ -1698,6 +1774,15 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   sceneryImgLoaded() {
     this.uiFlag.imageLoaded = true;
+  }
+
+  /**
+   * 取得使用者地圖比較圖之設定，用來設定預覽列印頁面url querystring
+   * @param e {string}-由子組件傳回之url querystring
+   * @author kidin-1100225
+   */
+  getChartSetting(e: string) {
+    this.compareChartQueryString = e;
   }
 
   /**

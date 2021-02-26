@@ -773,7 +773,18 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
       const paceReg = /(^([0-5]?\d)'[0-5]\d")|(60'00")/;
       if (paceReg.test(editValue)) {
         const totalSecond = (+editValue.split(`'`)[0]) * 60 + (+editValue.split(`'`)[1].split(`"`)[0]);
-        finalValue = this.unit === 1 ? +((3600 / totalSecond) * mi).toFixed(2) : +(3600 / totalSecond).toFixed(2);
+        switch (this.sportType) {
+          case 1:
+            finalValue = this.unit === 1 ? +((3600 / totalSecond) * mi).toFixed(2) : +(3600 / totalSecond).toFixed(2);
+            break;
+          case 4:
+            finalValue = +(3600 / (totalSecond * 10)).toFixed(2);
+            break;
+          case 6:
+            finalValue = +(3600 / (totalSecond * 2)).toFixed(2);
+            break;
+        }
+
       } else {
         finalValue = this.getDefaultPace(this.sportType);
       }
