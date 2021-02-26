@@ -74,7 +74,10 @@ class ChartOptions {
       ],
       plotOptions: {
         series: {
-          connectNulls: true  // 若為null值，是否要忽略null值將線連接起來
+          connectNulls: true,  // 若為null值，是否要忽略null值將線連接起來
+          marker: {
+            enabled: false
+          }
         },
       },
       tooltip: {

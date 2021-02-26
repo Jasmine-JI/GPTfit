@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, OnDestroy, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnChanges, OnDestroy, Input, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
 import { transform, WGS84, BD09 } from 'gcoord';
 import { Subscription, Subject, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -6,6 +6,7 @@ import { UtilsService } from '../../services/utils.service';
 import { SportType } from '../../models/report-condition';
 import { TranslateService } from '@ngx-translate/core';
 import { DataTypeTranslatePipe } from '../../pipes/data-type-translate.pipe';
+import { chinaAndTaiwanBorder } from '../../models/china-border-data';
 
 
 declare let google: any,
@@ -36,6 +37,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
   @Input('sysAccessRight') sysAccessRight: number;
   @Input('unit') unit: number;
   @Input('hideChart') hideChart: boolean;
+  @Output() chartSetting: EventEmitter<string> = new EventEmitter();
   @ViewChild('gMap') gMap: ElementRef;
   @ViewChild('bMap') bMap: ElementRef;
 
@@ -46,9 +48,11 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
    */
   uiFlag = {
     userInChina: false,
+    converseCoordinate: false,
     showMap: false,
     showMapOpt: false,
-    showDataSelector: null
+    showDataSelector: null,
+    isPreviewMode: false
   };
 
   /**
@@ -114,7 +118,12 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
       this.uiFlag.showMap = false;
     }
 
-    this.handleDefaultCompareData(this.sportType);
+    if (location.search.includes('ipm=s')) {
+      this.setChartSetting();
+    } else {
+      this.handleDefaultCompareData(this.sportType);
+    }
+
   }
 
   /**
@@ -140,7 +149,53 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
       this.uiFlag.userInChina = true;  // 暫以無法載入google map當作使用者位於中國的依據
     }
 
-    this.mapOpt.mapSource === 'google' ? this.handleGoogleMap(this.userPoint) : this.handleBaiduMap(this.userPoint);
+    this.mapOpt.mapSource === 'google' ? this.handleGoogleMap(dataArr) : this.handleBaiduMap(dataArr);
+  }
+
+  /**
+   * 確認是否為預覽列印頁面
+   * @author kidin-1100225
+   */
+  setChartSetting() {
+    const queryString = location.search.split('?')[1];
+    if (queryString && queryString.length > 0) {
+      const queryArr = queryString.split('&');
+      let correctNum = 0;
+      queryArr.forEach(_queryArr => {
+        const query = _queryArr.split('='),
+              key = query[0],
+              value = query[1];
+        switch (key) {
+          case 'mapSource':
+            this.changeMapSource(value as MapSource);
+            break;
+          case 'compareA':
+            this.uiFlag.showDataSelector = 'compareA';
+            this.changeCompareData(value as CompareDataOpt);
+            correctNum++;
+            break;
+          case 'compareB':
+            this.uiFlag.showDataSelector = 'compareB';
+            this.changeCompareData(value as CompareDataOpt);
+            correctNum++;
+            break;
+        }
+        
+        this.uiFlag.showDataSelector = null;
+      });
+
+      // 確認queryString正確帶有compareA和compareB這兩個key，避免圖表異常顯示
+      if (correctNum !== 2) {
+        this.handleDefaultCompareData(this.sportType);
+      } else {
+        this.mapOpt.terrain = [1, 2].includes(this.sportType) ? this.userPoint[0].altitudeMeters : [];
+        this.mapOpt.second = this.userPoint[0].pointSecond;
+      }
+
+    } else {
+      this.handleDefaultCompareData(this.sportType);
+    }
+
   }
 
   /**
@@ -263,18 +318,22 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
    */
   handleBaiduMap(dataArr: Array<any>) {
     setTimeout(() => {
-      const baiduMapEle = this.bMap.nativeElement,
+      const lngArr = dataArr[0].longitudeDegrees,
+            latArr = dataArr[0].latitudeDegrees,
+            baiduMapEle = this.bMap.nativeElement,
             effectPointIdx = [],
             reservedPoint: BoundaryCoordinate = {
               top: null,
               bottom: null,
               left: null,
               right: null
-            };
+            },
+            effectIndex = this.findEffectIndex(dataArr[0].longitudeDegrees);
 
+      this.uiFlag.converseCoordinate = 
+        this.handleBorderData([+lngArr[effectIndex], +latArr[effectIndex]], chinaAndTaiwanBorder);
       this.baiduObj.map = new BMap.Map(baiduMapEle);
       this.baiduObj.path = dataArr[0].latitudeDegrees.map((_lan, _idx) => {
-
         const _lng = dataArr[0].longitudeDegrees[_idx];
         if (_lan && _lng) {
           effectPointIdx.push(_idx); // 儲存有效點的位置方便補值
@@ -291,11 +350,24 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
       let j = 0;
       this.baiduObj.path = this.baiduObj.path.map((_path, _index) => {
         let _bd09Point;
-        if (_index != effectPointIdx[j]) {
-          _bd09Point = transform([this.baiduObj.path[effectPointIdx[j]][0], this.baiduObj.path[effectPointIdx[j]][1]], WGS84, BD09);
+        if (this.uiFlag.userInChina || this.uiFlag.converseCoordinate) {
+
+          if (_index != effectPointIdx[j]) {
+            _bd09Point = transform([this.baiduObj.path[effectPointIdx[j]][0], this.baiduObj.path[effectPointIdx[j]][1]], WGS84, BD09);
+          } else {
+            j++;
+            _bd09Point = transform([_path[0], _path[1]], WGS84, BD09);
+          }
+
         } else {
-          j++;
-          _bd09Point = transform([_path[0], _path[1]], WGS84, BD09);
+
+          if (_index != effectPointIdx[j]) {
+            _bd09Point = transform([this.baiduObj.path[effectPointIdx[j]][0], this.baiduObj.path[effectPointIdx[j]][1]], WGS84, WGS84);
+          } else {
+            j++;
+            _bd09Point = transform([_path[0], _path[1]], WGS84, WGS84);
+          }
+
         }
 
         return new BMap.Point(_bd09Point[0], _bd09Point[1]);
@@ -322,7 +394,9 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
 
       const pathHorizonCenter = (reservedPoint.left + reservedPoint.right) / 2,
             pathVerticalCenter = reservedPoint.bottom - ((reservedPoint.top - reservedPoint.bottom) * 0.2),  // 將整體路線在顯示中向上偏移，以留給圖表
-            bd09Center = transform([pathHorizonCenter, pathVerticalCenter], WGS84, BD09),
+            bd09Center = 
+              (this.uiFlag.userInChina || this.uiFlag.converseCoordinate)
+                ? transform([pathHorizonCenter, pathVerticalCenter], WGS84, BD09) : [pathHorizonCenter, pathVerticalCenter],
             bdCenterPoint = new BMap.Point(bd09Center[0], bd09Center[1]),
             boundPath = this.baiduObj.path.slice();
 
@@ -490,7 +564,8 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
   changeMapSource(source: MapSource) {
     this.mapOpt.mapSource = source;
     this.mapOpt.mapSource === 'google' ? this.handleGoogleMap(this.userPoint) : this.handleBaiduMap(this.userPoint);
-    this.uiFlag.showDataSelector = false;
+    this.uiFlag.showDataSelector = null;
+    this.chartSettingEmit();
   }
 
   /**
@@ -501,7 +576,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
   changeMapKind(kind: MapKind) {
     this.mapOpt.mapKind = kind;
     this.mapOpt.mapSource === 'google' ? this.handleGoogleMap(this.userPoint) : this.handleBaiduMap(this.userPoint);
-    this.uiFlag.showDataSelector = false;
+    this.uiFlag.showDataSelector = null;
   }
 
   /**
@@ -524,6 +599,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
     });
 
     this.uiFlag.showDataSelector = null;
+    this.chartSettingEmit();
   }
 
   /**
@@ -623,6 +699,62 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
     }
 
   }
+
+  /**
+   * 將圖表設定傳至父組件以方便設定預覽列印url querystring
+   * @author kidin-1100225
+   */
+  chartSettingEmit() {
+    const setting = 
+      `mapSource=${this.mapOpt.mapSource}&compareA=${this.mapOpt.compareA.type}&compareB=${this.mapOpt.compareB.type}`;
+    this.chartSetting.emit(setting);
+  }
+
+  /**
+   * 找出路線中有效的起始座標
+   * @param coordinate {Array<number>}-經度或緯度陣列
+   * @author kidin-1100226
+   */
+  findEffectIndex(coordinate: Array<number>) {
+    let index: number = null;
+    for (let i = 0, len = coordinate.length; i < len; i++) {
+
+      if (coordinate[i] !== null && coordinate[i] !== 100) {
+        index = i;
+        break;
+      }
+
+    }
+
+    return index;
+  }
+
+  /**
+   * 確認該點是否在該範圍內
+   * @param point {Array<number>}-座標
+   * @param borderArr {Array<Array<number>>}-地區邊界座標
+   * @author kidin-1100225
+   */
+  handleBorderData(point: Array<number>, borderArr: Array<Array<number>>) {
+    const x = point[0],
+          y = point[1];
+    let inside = false;
+    for (let i = 0, j = borderArr.length - 1; i < borderArr.length; j = i++) {
+      const xi = borderArr[i][0],
+            yi = borderArr[i][1],
+            xj = borderArr[j][0],
+            yj = borderArr[j][1],
+            intersect = yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
+
+      if (intersect) {
+        inside = !inside;
+      }
+
+    }
+
+    return inside;
+  }
+
 
   /**
    * 取消訂閱rxjs

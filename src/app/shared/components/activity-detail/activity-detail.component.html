@@ -815,6 +815,7 @@
     [sportType]="+activityInfoLayer.type"
     [sysAccessRight]="userProfile.systemAccessRight[0]"
     [unit]="userProfile.unit"
+    (chartSetting)="getChartSetting($event)"
     *ngIf="(uiFlag.pcView || uiFlag.currentTag === 'summary') && [1, 2, 4, 6, 7].includes(+activityInfoLayer.type)"
   ></app-map-chart-compare>
   <ng-container *ngIf="uiFlag.pcView || uiFlag.currentTag === 'chart'">
@@ -864,6 +865,7 @@
         [vicePartList]="activityInfoLayer.useViceMuscle"
         [level]="uiFlag.weightTrainLevel"
         [userWeight]="userProfile.bodyWeight"
+        (levelSetting)="getLevelSetting($event)"
       ></app-muscle-map-card>
     </section>
     <section class="card__section">
@@ -1003,7 +1005,7 @@
         </div>
       </div>
       <app-trend-info-chart
-        [yAxisData]="this.trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.hr : trendChartOpt.yAxisDataRef.heartRateBpm"
+        [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.hr : trendChartOpt.yAxisDataRef.heartRateBpm"
         [xAxisData]="trendChartOpt.xAxisDataRef"
         [xAxisType]="trendChartOpt.xAxisType"
         [sportType]="+activityInfoLayer.type"
@@ -1015,7 +1017,7 @@
       >
       </app-trend-info-chart>
       <app-trend-info-chart
-        [yAxisData]="this.trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.speed : trendChartOpt.yAxisDataRef.speed"
+        [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.speed : trendChartOpt.yAxisDataRef.speed"
         [xAxisData]="trendChartOpt.xAxisDataRef"
         [xAxisType]="trendChartOpt.xAxisType"
         [sportType]="+activityInfoLayer.type"
@@ -1027,7 +1029,7 @@
       >
       </app-trend-info-chart>
       <app-trend-info-chart
-        [yAxisData]="this.trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.altitude : trendChartOpt.yAxisDataRef.altitudeMeters"
+        [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.altitude : trendChartOpt.yAxisDataRef.altitudeMeters"
         [xAxisData]="trendChartOpt.xAxisDataRef"
         [xAxisType]="trendChartOpt.xAxisType"
         [sportType]="+activityInfoLayer.type"
@@ -1039,7 +1041,7 @@
       >
       </app-trend-info-chart>
       <app-trend-info-chart
-        [yAxisData]="this.trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.speed : trendChartOpt.yAxisDataRef.speed"
+        [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.speed : trendChartOpt.yAxisDataRef.speed"
         [xAxisData]="trendChartOpt.xAxisDataRef"
         [xAxisType]="trendChartOpt.xAxisType"
         [sportType]="+activityInfoLayer.type"
@@ -1051,7 +1053,7 @@
       >
       </app-trend-info-chart>
       <app-trend-info-chart
-        [yAxisData]="this.trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.cadence : trendChartOpt.yAxisDataRef.runCadence"
+        [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.cadence : trendChartOpt.yAxisDataRef.runCadence"
         [xAxisData]="trendChartOpt.xAxisDataRef"
         [xAxisType]="trendChartOpt.xAxisType"
         [sportType]="+activityInfoLayer.type"
@@ -1063,7 +1065,7 @@
       >
       </app-trend-info-chart>
       <app-trend-info-chart
-        [yAxisData]="this.trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.cadence : trendChartOpt.yAxisDataRef.cycleCadence"
+        [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.cadence : trendChartOpt.yAxisDataRef.cycleCadence"
         [xAxisData]="trendChartOpt.xAxisDataRef"
         [xAxisType]="trendChartOpt.xAxisType"
         [sportType]="+activityInfoLayer.type"
@@ -1075,7 +1077,7 @@
       >
       </app-trend-info-chart>
       <app-trend-info-chart
-        [yAxisData]="this.trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.cadence : trendChartOpt.yAxisDataRef.moveRepetitions"
+        [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.cadence : trendChartOpt.yAxisDataRef.moveRepetitions"
         [xAxisData]="trendChartOpt.xAxisDataRef"
         [xAxisType]="trendChartOpt.xAxisType"
         [sportType]="+activityInfoLayer.type"
@@ -1087,7 +1089,7 @@
       >
       </app-trend-info-chart>
       <app-trend-info-chart
-        [yAxisData]="this.trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.cadence : trendChartOpt.yAxisDataRef.swimCadence"
+        [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.cadence : trendChartOpt.yAxisDataRef.swimCadence"
         [xAxisData]="trendChartOpt.xAxisDataRef"
         [xAxisType]="trendChartOpt.xAxisType"
         [sportType]="+activityInfoLayer.type"
@@ -1099,7 +1101,7 @@
       >
       </app-trend-info-chart>
       <app-trend-info-chart
-        [yAxisData]="this.trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.cadence : trendChartOpt.yAxisDataRef.rowingCadence"
+        [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.cadence : trendChartOpt.yAxisDataRef.rowingCadence"
         [xAxisData]="trendChartOpt.xAxisDataRef"
         [xAxisType]="trendChartOpt.xAxisType"
         [sportType]="+activityInfoLayer.type"
@@ -1111,7 +1113,7 @@
       >
       </app-trend-info-chart>
       <app-trend-info-chart
-        [yAxisData]="this.trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.power : trendChartOpt.yAxisDataRef.cycleWatt"
+        [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.power : trendChartOpt.yAxisDataRef.cycleWatt"
         [xAxisData]="trendChartOpt.xAxisDataRef"
         [xAxisType]="trendChartOpt.xAxisType"
         [sportType]="+activityInfoLayer.type"
@@ -1123,7 +1125,7 @@
       >
       </app-trend-info-chart>
       <app-trend-info-chart
-        [yAxisData]="this.trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.power : trendChartOpt.yAxisDataRef.rowingWatt"
+        [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.power : trendChartOpt.yAxisDataRef.rowingWatt"
         [xAxisData]="trendChartOpt.xAxisDataRef"
         [xAxisType]="trendChartOpt.xAxisType"
         [sportType]="+activityInfoLayer.type"
@@ -1135,7 +1137,7 @@
       >
       </app-trend-info-chart>
       <app-trend-info-chart
-        [yAxisData]="this.trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.temperature : trendChartOpt.yAxisDataRef.temp"
+        [yAxisData]="trendChartOpt.segmentMode ? trendChartOpt.yAxisDataRef.temperature : trendChartOpt.yAxisDataRef.temp"
         [xAxisData]="trendChartOpt.xAxisDataRef"
         [xAxisType]="trendChartOpt.xAxisType"
         [sportType]="+activityInfoLayer.type"
@@ -1147,7 +1149,7 @@
       </app-trend-info-chart>
       <app-trend-info-chart
         [yAxisData]="
-          this.trendChartOpt.segmentMode ? 
+          trendChartOpt.segmentMode ? 
             [trendChartOpt.yAxisDataRef.gforceX, trendChartOpt.yAxisDataRef.gforceY, trendChartOpt.yAxisDataRef.gforceZ]
             :
             [trendChartOpt.yAxisDataRef.gsensorXRawData, trendChartOpt.yAxisDataRef.gsensorYRawData, trendChartOpt.yAxisDataRef.gsensorZRawData]

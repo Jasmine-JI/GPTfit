@@ -322,7 +322,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
           mainBodyEle = document.querySelector('.main-body');
 
     if (mainBodyEle) {
-      mainBodyEle.scrollTo({top: listEleTop})
+      mainBodyEle.scrollTo({top: listEleTop - 60, behavior: 'smooth'});
     };
     
   }
