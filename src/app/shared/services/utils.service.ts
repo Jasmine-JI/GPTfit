@@ -571,7 +571,7 @@ export class UtilsService {
   handleRepeatXAxis(
     xData: Array<number>, yData: Array<Array<number>>, handleList: Array<string>
   ): {xAxis: Array<number>, yAxis: object} {
-    
+
     const finalData = {
             xAxis: [],
             yAxis: {}
@@ -582,7 +582,7 @@ export class UtilsService {
     for (let i = 0, xAxisLen = xData.length; i < xAxisLen; i++) {
 
       // 當前x軸數據與前一項x軸數據相同時，將y軸數據相加
-      if (xData[i] === (xData[i -1] || 0) && i !== xAxisLen - 1) {
+      if ((i === 0 || xData[i] === xData[i -1]) && i !== xAxisLen - 1) {
 
         if (i === 0) {
           handleList.forEach(_list => {

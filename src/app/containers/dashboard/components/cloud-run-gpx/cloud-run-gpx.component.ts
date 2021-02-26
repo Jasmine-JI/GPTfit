@@ -7,7 +7,7 @@ import {
 import { InnerAdminService } from '../../services/inner-admin.service';
 import { saveAs } from 'file-saver'; // 引入前記得要裝： npm install file-saver
 import { transform, WGS84, BD09, GCJ02 } from 'gcoord';
-import { chinaBorder } from '../../../../shared/models/china-border-data';
+import { chinaAndTaiwanBorder } from '../../../../shared/models/china-border-data';
 import { taiwanBorder } from '../../../../shared/models/taiwan-border-data';
 
 export interface PeriodicElement {
@@ -107,7 +107,7 @@ export class CloudRunGpxComponent implements OnInit {
             if (
               this.handleBorderData(
                 [+_point.longitudeDegrees, +_point.latitudeDegrees],
-                chinaBorder
+                chinaAndTaiwanBorder
               )
             ) {
               this.isInChinaArea = true;
