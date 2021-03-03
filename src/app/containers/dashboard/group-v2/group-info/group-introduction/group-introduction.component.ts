@@ -11,7 +11,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { PeopleSelectorWinComponent } from '../../../components/people-selector-win/people-selector-win.component';
 import { planDatas } from '../../../group/desc';
 import moment from 'moment';
-import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -140,8 +139,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     private hashIdService: HashIdService,
     private translate: TranslateService,
     private dialog: MatDialog,
-    private router: Router,
-    private userProfileService: UserProfileService
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -688,11 +686,11 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
 
   }
 
-    /**
+  /**
    * 儲存建立群組的內容
    * @author kidin-1091106
    */
-  saveCreateContent() {    
+  saveCreateContent() {
     this.groupService.createGroup(this.createBody).subscribe(res => {
 
       if (res.resultCode !== 200) {

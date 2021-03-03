@@ -32,7 +32,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   @ViewChild('groupHeaderDescription') groupHeaderDescription: ElementRef;
 
   private ngUnsubscribe = new Subject();
-
+  groupIdSubscription: Subscription;
   pageResize: Subscription;
   clickEvent: Subscription;
 
@@ -133,6 +133,8 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       base64: null
     }
   };
+
+  newGroupId: string;
 
   constructor(
     private translate: TranslateService,
@@ -250,39 +252,47 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         formData.set('img', JSON.stringify(imgArr));
         this.sendImgUploadReq(formData, this.currentGroupInfo.groupDetail.groupId);
       } else if (this.uiFlag.editMode === 'create') {
-        const newGroupId = this.groupService.getNewGroupId();
+        this.groupIdSubscription = this.groupService.getNewGroupId().pipe(
+          takeUntil(this.ngUnsubscribe)
+        ).subscribe(res => {
+          this.newGroupId = res;
+          // 群組icon
+          if (this.editImage.icon.base64 !== null) {
+            const fileName = this.createFileName(imgArr.length, this.newGroupId);
+            imgArr.unshift({
+              albumType: 11,
+              fileNameFull: `${fileName}.jpg`
+            })
 
-        // 群組icon
-        if (this.editImage.icon.base64 !== null) {
-          const fileName = this.createFileName(imgArr.length, newGroupId);
-          imgArr.unshift({
-            albumType: 11,
-            fileNameFull: `${fileName}.jpg`
-          })
+            formData.append('file', this.base64ToFile(11, this.editImage.icon.base64, fileName));
+          }
 
-          formData.append('file', this.base64ToFile(11, this.editImage.icon.base64, fileName));
-        }
+          // 群組佈景
+          if (this.editImage.scenery.base64 !== null) {   
+            const fileName = this.createFileName(imgArr.length, this.newGroupId);
+            imgArr.unshift({
+              albumType: 12,
+              fileNameFull: `${fileName}.jpg`
+            })
 
-        // 群組佈景
-        if (this.editImage.scenery.base64 !== null) {   
-          const fileName = this.createFileName(imgArr.length, newGroupId);
-          imgArr.unshift({
-            albumType: 12,
-            fileNameFull: `${fileName}.jpg`
-          })
+            formData.append('file', this.base64ToFile(12, this.editImage.scenery.base64, fileName));
+          }
 
-          formData.append('file', this.base64ToFile(12, this.editImage.scenery.base64, fileName));
-        }
+          formData.set('img', JSON.stringify(imgArr));
+          formData.set('targetGroupId', this.newGroupId);
+          this.sendImgUploadReq(formData, this.newGroupId);
+        });
 
-        formData.set('img', JSON.stringify(imgArr));
-        formData.set('targetGroupId', newGroupId);
-        this.sendImgUploadReq(formData, newGroupId);
       }
 
     } else if (this.uiFlag.editMode === 'create' && editMode === 'complete') {
       this.closeCreateMode();
       this.userProfileService.refreshUserProfile({token: this.user.token});
-      this.handleNavigation(this.groupService.getNewGroupId());
+      this.groupIdSubscription = this.groupService.getNewGroupId().pipe(
+        takeUntil(this.ngUnsubscribe)
+      ).subscribe(res => {
+        this.handleNavigation(res);
+      });
     } else if (editMode === 'complete') {
       this.getGroupNeedInfo();
       this.groupService.setEditMode('close');
@@ -319,6 +329,10 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       }
 
     });
+
+    if (this.groupIdSubscription) {
+      this.groupIdSubscription.unsubscribe();
+    }
 
   }
 

@@ -1,5 +1,5 @@
-<app-loading-bar [progress]="progress"></app-loading-bar>
-<main [attr.id]="uiFlag.isPortal ? 'portal__detail__page' : ''" *ngIf="activityInfoLayer">
+<app-loading-bar [progress]="progress" [isPreviewMode]="uiFlag.isPreviewMode"></app-loading-bar>
+<main [attr.id]="uiFlag.isPortal ? 'portal__detail__page' : ''" *ngIf="userProfile && activityInfoLayer">
   <section
     class="card__section flexRow"
     style="align-items: center; margin-bottom: 20px;"
@@ -9,7 +9,21 @@
       style="font-family: Eurostile-ExtendedTwo; font-size: 30px; height: 30px; color: rgba(80, 80, 80, 1)"
       *ngIf="uiFlag.isPreviewMode"
     >GPTFit</span>
-    <i class="icon-svg_web-icon_p1_013-share function__btn" (click)="showShareBox()" *ngIf="!uiFlag.isPreviewMode"></i>
+    <i
+      class="icon-svg_web-icon_p1_008-edit function__btn"
+      (click)="editFileName()"
+      *ngIf="!uiFlag.editNameMode && uiFlag.isFileOwner && !uiFlag.isPreviewMode"
+    ></i>
+    <i
+      class="icon-svg_web-icon_p1_059-lock function__btn"
+      (click)="openPrivacySetting()"
+      *ngIf="uiFlag.isFileOwner && !uiFlag.isPreviewMode"
+    ></i>
+    <i
+      class="icon-svg_web-icon_p1_013-share function__btn"
+      (click)="showPrivacyAlert()"
+      *ngIf="(uiFlag.isFileOwner || userProfile.systemAccessRight[0] <= 29) && !uiFlag.isPreviewMode"
+    ></i>
     <i class="icon-svg_web-icon_p1_018-input function__btn" (click)="downloadRawData()" *ngIf="uiFlag.isFileOwner && !uiFlag.isPreviewMode"></i>
     <i class="icon-svg_web-icon_p2_087-print function__btn" (click)="printPreview()" *ngIf="!uiFlag.isPreviewMode"></i>
     <i class="icon-svg_web-icon_p1_009-delete function__btn" (click)="showDeleteAlert()" *ngIf="uiFlag.isFileOwner && !uiFlag.isPreviewMode"></i>
@@ -39,11 +53,6 @@
             (keypress)="handleKeypress($event)"
             *ngIf="uiFlag.editNameMode"
           >
-          <i
-            class="icon-svg_web-icon_p1_008-edit edit__btn"
-            (click)="editFileName()"
-            *ngIf="!uiFlag.editNameMode && uiFlag.isFileOwner && !uiFlag.isPreviewMode"
-          ></i>
           <i
             class="icon-svg_web-icon_p1_012-close edit__btn"
             style="color: red;"
