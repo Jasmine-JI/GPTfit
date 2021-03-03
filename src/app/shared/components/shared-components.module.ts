@@ -59,6 +59,7 @@ import { ThresholdChartComponent } from './chart/threshold-chart/threshold-chart
 import { TrendInfoChartComponent } from './chart/trend-info-chart/trend-info-chart.component';
 import { MuscleMapCardComponent } from './activity-detail/muscle-map-card/muscle-map-card.component';
 import { LoadingBarComponent } from './loading-bar/loading-bar.component';
+import { EditIndividualPrivacyComponent } from './edit-individual-privacy/edit-individual-privacy.component';
 
 @NgModule({
   imports: [
@@ -123,7 +124,8 @@ import { LoadingBarComponent } from './loading-bar/loading-bar.component';
     ThresholdChartComponent,
     TrendInfoChartComponent,
     MuscleMapCardComponent,
-    LoadingBarComponent
+    LoadingBarComponent,
+    EditIndividualPrivacyComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -167,7 +169,8 @@ import { LoadingBarComponent } from './loading-bar/loading-bar.component';
     PrivacySettingDialogComponent,
     ActivityDetailComponent,
     MapChartCompareComponent,
-    TrinomialChartComponent
+    TrinomialChartComponent,
+    EditIndividualPrivacyComponent
   ]
 })
 export class SharedComponentsModule {}

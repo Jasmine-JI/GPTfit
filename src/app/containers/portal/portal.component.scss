@@ -30,6 +30,8 @@
 
 
 .main {
+  height: 100vh;
+  overflow-y: scroll;
   padding-top: 63px;
   width: 100%;
 }
@@ -422,6 +424,14 @@
   .home-header-title h1 {
     font-size: 35px;
     line-height: 70px;
+  }
+
+}
+
+@media print {
+  .main {
+    overflow: visible;
+    height: fit-content;
   }
 
 }

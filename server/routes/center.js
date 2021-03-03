@@ -239,7 +239,7 @@ router.get('/searchMember', function (req, res, next) {
         const sql = `
           select u.login_acc as userName, g.group_name as groupName, m.member_id as userId
           from ?? m, ?? g, ?? u
-          where u.login_acc like ? '%' and g.group_id = m.group_id and m.member_id = u.user_id ${groupIdQuery} ${accessRightQuery};
+          where u.login_acc like '%' ? '%' and g.group_id = m.group_id and m.member_id = u.user_id ${groupIdQuery} ${accessRightQuery};
         `;
         con.query(sql, ['group_member_info', 'group_info', 'user_profile', keyword, additionalVal], function (err, rows) {
           if (err) {
@@ -259,9 +259,9 @@ router.get('/searchMember', function (req, res, next) {
 
         let sql = '';
         if (phoneReg.test(keyword)) {
-          sql = `select user_id, login_acc, phone as phone from ?? where phone like ? '%'`;
+          sql = `select user_id, login_acc, phone as phone from ?? where phone like '%' ? '%'`;
         } else {
-          sql = `select user_id, login_acc, e_mail as e_mail from ?? where e_mail like ? '%'`;
+          sql = `select user_id, login_acc, e_mail as e_mail from ?? where e_mail like '%' ? '%'`;
         }
 
         con.query(sql, ['user_profile', keyword], function (err, rows) {

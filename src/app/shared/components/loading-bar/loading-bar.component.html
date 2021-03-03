@@ -1,6 +1,7 @@
 <div id="loading__bar" [style.width]="progress + '%'" *ngIf="!uiFlag.pageComplete"></div>
 <div
   id="loading__spinner"
+  [style.top]="isPreviewMode ? '20px' : '70px'"
   *ngIf="!uiFlag.pageComplete"
 >
   <mat-spinner [diameter]="20"></mat-spinner>
