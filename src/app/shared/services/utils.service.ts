@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { cloneDeep } from 'lodash';
 import { stringify, parse } from 'query-string';
 import { FormGroup } from '@angular/forms';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
 import { MessageBoxComponent } from '../components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
 import { MatDialog } from '@angular/material/dialog';
@@ -22,6 +22,7 @@ export class UtilsService {
   isResetPassword$ = new BehaviorSubject<boolean>(false);
   imgSelected$ = new BehaviorSubject<boolean>(false);
   hideNavbar$ = new BehaviorSubject<boolean>(false);
+  loadingProgress$ = new ReplaySubject<number>(1);
 
   constructor(
     private dialog: MatDialog,
@@ -285,6 +286,24 @@ export class UtilsService {
 
   getHideNavbarStatus(): Observable<boolean> {
     return this.hideNavbar$;
+  }
+
+  /**
+   * 設定loading進度
+   * @param status {number}
+   * @author kidin-1100302
+   */
+  setLoadingProgress(status: number) {
+    this.loadingProgress$.next(status);
+  }
+
+  /**
+   * 取得loading進度
+   * @param status {number}
+   * @author kidin-1100302
+   */
+  getLoadingProgress(): Observable<number> {
+    return this.loadingProgress$;
   }
 
   /**

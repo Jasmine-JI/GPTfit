@@ -35,9 +35,7 @@ export class GroupService {
     groupId: '',
     groupList: []
   });
-
-  newGroupId: string; // 創建群組的group id，以上傳圖床。
-
+  newGroupId$ = new ReplaySubject<any>(1); // 創建群組的group id，以上傳圖床。
   reportCategory$ = new BehaviorSubject<number>(99);
   typeAllData$ = new BehaviorSubject<any>({});
   typeRunData$ = new BehaviorSubject<any>({});
@@ -501,7 +499,7 @@ export class GroupService {
    * @author kidin-1091020
    */
   saveNewGroupId(id: string) {
-    this.newGroupId = id;
+    this.newGroupId$.next(id);
   }
 
   /**
@@ -509,7 +507,7 @@ export class GroupService {
    * @author kidin-1091020
    */
   getNewGroupId() {
-    return this.newGroupId;
+    return this.newGroupId$;
   }
 
   /**

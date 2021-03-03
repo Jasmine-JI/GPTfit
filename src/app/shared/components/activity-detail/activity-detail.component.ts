@@ -20,6 +20,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../message-box/message-box.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ShareGroupInfoDialogComponent } from '../share-group-info-dialog/share-group-info-dialog.component';
+import { PrivacyCode } from '../../models/user-privacy';
+import { EditIndividualPrivacyComponent } from '../edit-individual-privacy/edit-individual-privacy.component';
 
 const errMsg = `Error! Please try again later.`,
       Highcharts: any = _Highcharts; // 不檢查highchart型態
@@ -209,6 +211,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   previewUrl = '';
   progress = 0;
   compareChartQueryString = '';
+  filePrivacy: Array<PrivacyCode> = [1];
 
   constructor(
     private userProfileService: UserProfileService,
@@ -393,7 +396,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     this.progress = 30;
     if (this.uiFlag.isPortal) {
       body = {
-        token: '',
+        token: this.utils.getToken() || '',
         fileId: this.fileInfo.fileId,
         // displayDetailField: 3  // 新api回傳格式
       };
@@ -1417,6 +1420,87 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   /**
+   * 若該筆運動檔案未開放隱私權則顯示隱私權提示
+   * @author kidin-1100302
+   */
+  showPrivacyAlert() {
+    if (this.userProfile.systemAccessRight[0] <= 29 && !this.uiFlag.isFileOwner) {
+      this.showShareBox();
+    } else {
+      
+      this.dialog.open(MessageBoxComponent, {
+        hasBackdrop: true,
+        data: {
+          title: 'Message',
+          body: `${this.translate.instant('universal_privacy_usingSharing')}`,
+          confirmText: this.translate.instant(
+            'universal_operating_confirm'
+          ),
+          cancelText: this.translate.instant(
+            'universal_operating_cancel'
+          ),
+          onCancel: () => {
+            return false;
+          },
+          onConfirm: this.openFilePrivacy.bind(this)
+        }
+      });
+
+    }
+
+  }
+
+  /**
+   * 開放該筆運動檔案隱私權
+   * @author kidin-1100302
+   */
+  openFilePrivacy() {
+    this.filePrivacy = [99];
+    this.editFilePrivacy(true);
+  }
+
+  /**
+   * 編輯該筆運動檔案隱私權
+   * @param willShare {boolean}-是否顯示分享框
+   * @author kidin-1100302
+   */
+  editFilePrivacy(willShare: boolean = false) {
+    const body = {
+      token: this.utils.getToken() || '',
+      fileId: this.fileInfo.fileId,
+      fileInfo: {
+        privacy: this.filePrivacy
+      }
+    };
+
+    this.activityService.fetchEditActivityProfile(body).subscribe(res => {
+      if (res.resultCode === 200) {
+        
+        if (willShare) {
+          this.showShareBox();
+        } else {
+          this.snackBar.open(
+            `${this.translate.instant(
+              'universal_operating_edit'
+            )}
+            ${this.translate.instant(
+              'universal_status_success'
+            )}`,
+            'OK',
+            { duration: 2000 }
+          );
+
+        }
+
+      } else {
+        this.utils.openAlert(errMsg);
+      }
+
+    });
+
+  }
+
+  /**
    * 顯示分享框
    * @author kidin-1100220
    */
@@ -1783,6 +1867,33 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   getChartSetting(e: string) {
     this.compareChartQueryString = e;
+  }
+
+  /**
+   * 編輯該運動檔案隱私權
+   * @author kidin-1100302
+   */
+  openPrivacySetting() {
+    this.dialog.open(EditIndividualPrivacyComponent, {
+      hasBackdrop: true,
+      data: {
+        editType: 1,
+        fileId: this.fileInfo.fileId,
+        openObj: this.fileInfo.privacy.map(_privacy => +_privacy),
+        onConfirm: this.editPrivacy.bind(this)
+      }
+
+    });
+
+  }
+
+  /**
+   * 修改隱私權設定成功後替換fileInfo的privacy
+   * @param privacy {Array<PrivacyCode>}-該筆運動檔案隱私權設定
+   * @author kidin-1100302
+   */
+  editPrivacy(privacy: Array<PrivacyCode>) {
+    this.fileInfo.privacy = privacy;
   }
 
   /**
