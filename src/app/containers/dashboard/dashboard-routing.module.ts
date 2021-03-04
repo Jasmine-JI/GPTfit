@@ -46,6 +46,9 @@ import { ActivityListManageComponent } from './components/official-activity-mana
 import { EditOfficialActivityComponent } from './components/official-activity-manage/edit-official-activity/edit-official-activity.component';
 import { ParticipantsManageComponent } from './components/official-activity-manage/participants-manage/participants-manage.component';
 import { ActivityDetailComponent } from '../../shared/components/activity-detail/activity-detail.component';
+import { SystemLogComponent } from './components/system-log/system-log.component';
+import { SystemFolderPermissionComponent } from './components/system-folder-permission/system-folder-permission.component';
+import { AlaAppAnalysisComponent } from './components/ala-app-analysis/ala-app-analysis.component';
 
 const routes: Routes = [
   {
@@ -152,6 +155,21 @@ const routes: Routes = [
       {
         path: 'system/push-list',
         component: PushMessageListComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/system-log',
+        component: SystemLogComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/folder-permission',
+        component: SystemFolderPermissionComponent,
+        canActivate: [DashboardGuard]
+      },
+      {
+        path: 'system/ala-app-analysis',
+        component: AlaAppAnalysisComponent,
         canActivate: [DashboardGuard]
       },
       {

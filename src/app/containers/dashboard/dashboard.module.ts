@@ -6,11 +6,9 @@ import { SharedComponentsModule } from '../../shared/components/shared-component
 import { FormsModule } from '@angular/forms';
 import { CertificateComponent } from './components/certificate/certificate.component';
 import { MyDatePickerModule } from 'mydatepicker';
-import { EventEnrollService } from './services/event-enroll.service';
 import { MapService } from '../../shared/services/map.service';
 import { CustomMaterialModule } from '../../shared/custom-material.module';
 import { GlobalEventsManager } from '../../shared/global-events-manager';
-import { EventInfoService } from './services/event-info.service';
 import { GpxService } from './services/gpx.service';
 import { MsgDialogComponent } from './components/msg-dialog/msg-dialog.component';
 import { BrowserModule } from '@angular/platform-browser';
@@ -86,6 +84,9 @@ import { EditOfficialActivityComponent } from './components/official-activity-ma
 import { ParticipantsManageComponent } from './components/official-activity-manage/participants-manage/participants-manage.component';
 import { EditPushMessageComponent } from './components/push-message/edit-push-message/edit-push-message.component';
 import { PushMessageListComponent } from './components/push-message/push-message-list/push-message-list.component';
+import { SystemLogComponent } from './components/system-log/system-log.component';
+import { SystemFolderPermissionComponent } from './components/system-folder-permission/system-folder-permission.component';
+import { AlaAppAnalysisComponent } from './components/ala-app-analysis/ala-app-analysis.component';
 
 
 @NgModule({
@@ -105,10 +106,8 @@ import { PushMessageListComponent } from './components/push-message/push-message
     QRCodeModule
   ],
   providers: [
-    EventEnrollService,
     MapService,
     GlobalEventsManager,
-    EventInfoService,
     GpxService,
     DeviceLogService,
     CoachService,
@@ -181,7 +180,10 @@ import { PushMessageListComponent } from './components/push-message/push-message
     EditOfficialActivityComponent,
     ParticipantsManageComponent,
     EditPushMessageComponent,
-    PushMessageListComponent
+    PushMessageListComponent,
+    SystemLogComponent,
+    SystemFolderPermissionComponent,
+    AlaAppAnalysisComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
