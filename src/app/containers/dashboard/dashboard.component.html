@@ -300,6 +300,15 @@
                   <!--  之後把font awesome 與material icon 擇一-->
                   {{"universal_system_lifetrackingLog" | translate }}
                 </li>
+                <li class="ala-sidenav-menu-item"
+                  (click)="chooseItem(24)"
+                  [class.ala-sidenav-menu-item__active]="target === 24"
+                  [routerLink]="['/dashboard/system/system-log']"
+                  *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 20"
+                >
+                  <!--  之後把font awesome 與material icon 擇一-->
+                  系統日誌
+                </li>
               </div>
             </div>
             <div
