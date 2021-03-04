@@ -35,6 +35,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
   };
 
   editBody: any = {
+    editType: 1,
     token: '',
     oldPassword: '',
     newAccountType: 0,

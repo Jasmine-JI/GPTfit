@@ -652,4 +652,17 @@ export class UtilsService {
     return finalData;
   }
 
+  /**
+   * 處理api回覆錯誤的情況
+   * @param resultCode {number}-api 的resultCode
+   * @param apiCode {number}-apiCode
+   * @param apiMsg {string}-api resultMessage
+   * @author kidin-1100304
+   */
+  handleError(resultCode: number, apiCode: number, apiMsg: string) {
+    console.log(`${resultCode}: Api ${apiCode} ${apiMsg}`);
+    const errorMsg = `Error!<br>Please try again later.`
+    this.openAlert(errorMsg);
+  }
+
 }
