@@ -317,11 +317,14 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    * @author kidin-1100119
    */
   scrollToChildPageTop() {
-      const listEle = this.filterSection.nativeElement,
-            listEleTop = listEle.offsetTop,
-            mainBodyEle = document.querySelector('.main-body');
+    const listEle = this.filterSection.nativeElement,
+          listEleTop = listEle.offsetTop,
+          mainBodyEle = document.querySelector('.main-body');
 
-      mainBodyEle.scrollTo({top: listEleTop});
+    if (mainBodyEle) {
+      mainBodyEle.scrollTo({top: listEleTop - 60, behavior: 'smooth'});
+    };
+    
   }
 
   /**

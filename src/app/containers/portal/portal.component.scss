@@ -30,6 +30,8 @@
 
 
 .main {
+  height: 100vh;
+  overflow-y: scroll;
   padding-top: 63px;
   width: 100%;
 }
@@ -102,7 +104,7 @@
 
 /* home */
 .home-header {
-  @include home-image(url('/assets/images/introduce/T1.jpg'));
+  @include home-image(url('/app/public_html/img/introduction/application/T1.jpg'));
 }
 
 .system__header-titile {
@@ -153,7 +155,7 @@
 }
 
 .home-cloudRun-description {
-  @include home-image(url('/assets/images/introduce/T2.jpg'));
+  @include home-image(url('/app/public_html/img/introduction/application/T2.jpg'));
 }
 
 .home-cloudRun-app {
@@ -162,43 +164,43 @@
 }
 
 .home-coach-description {
-  @include home-image(url('/assets/images/introduce/T3.jpg'));
+  @include home-image(url('/app/public_html/img/introduction/application/T3.jpg'));
 }
 
 .home-fitness-description {
-  @include home-image(url('/assets/images/introduce/fitness_page.jpg'));
+  @include home-image(url('/app/public_html/img/introduction/application/T4.jpg'));
 }
 
 .system__t1 {
-  @include home-image(url('/assets/images/introduce/system-T1.jpg'));
+  @include home-image(url('/app/public_html/img/introduction/system/T1.jpg'));
 }
 
 .system__t2 {
-  @include home-image(url('/assets/images/introduce/system-T2.jpg'));
+  @include home-image(url('/app/public_html/img/introduction/system/T2.jpg'));
 }
 
 .system__t3 {
-  @include home-image(url('/assets/images/introduce/system-T3.jpg'));
+  @include home-image(url('/app/public_html/img/introduction/system/T3.jpg'));
 }
 
 .system__t4 {
-  @include home-image(url('/assets/images/introduce/system-T4.jpg'));
+  @include home-image(url('/app/public_html/img/introduction/system/T4.jpg'));
 }
 
 .analysis__t1 {
-  @include home-image(url('/assets/images/introduce/analysis-T1.jpg'));
+  @include home-image(url('/app/public_html/img/introduction/analysis/T1.jpg'));
 }
 
 .analysis__t2 {
-  @include home-image(url('/assets/images/introduce/analysis-T2.jpg'));
+  @include home-image(url('/app/public_html/img/introduction/analysis/T2.jpg'));
 }
 
 .analysis__t3 {
-  @include home-image(url('/assets/images/introduce/analysis-T3.jpg'));
+  @include home-image(url('/app/public_html/img/introduction/analysis/T3.jpg'));
 }
 
 .analysis__t4 {
-  @include home-image(url('/assets/images/introduce/analysis-T4.jpg'));
+  @include home-image(url('/app/public_html/img/introduction/analysis/T4.jpg'));
 }
 
 .app-link-container {
@@ -422,6 +424,14 @@
   .home-header-title h1 {
     font-size: 35px;
     line-height: 70px;
+  }
+
+}
+
+@media print {
+  .main {
+    overflow: visible;
+    height: fit-content;
   }
 
 }

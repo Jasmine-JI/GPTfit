@@ -263,7 +263,7 @@ $sky-blue: rgba(17, 166, 235, 1);
 body,
 html {
   font-family: 'Microsoft JhengHei', sans-serif !important;
-  height: 100%;
+  height: 100vh;
   margin: 0;
 }
 
@@ -279,6 +279,7 @@ html {
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 100vh;
 }
 
 /* form field */
@@ -677,7 +678,7 @@ a.ban-send:hover {
 }
 
 .cardTitle {
-  border-bottom: 1px solid rgba(150, 150, 150, 1);
+  border-bottom: 1px solid rgba(200, 200, 200, 1);
   width: 100%;
   margin-bottom: 10px;
 }
@@ -772,8 +773,17 @@ a.ban-send:hover {
 
 /*使css屬性background color可以列印出來*/
 @media print {
-  body {-webkit-print-color-adjust: exact;}
+  body {
+    -webkit-print-color-adjust: exact;
+    overflow: visible;
   }
+  
+  .pageBreak {
+    min-height: 1px;
+    page-break-before: always;
+  }
+
+}
 
 @media(max-width: 767px) {
   .group-manage__action {

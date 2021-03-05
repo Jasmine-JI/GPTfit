@@ -11,7 +11,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { PeopleSelectorWinComponent } from '../../../components/people-selector-win/people-selector-win.component';
 import { planDatas } from '../../../group/desc';
 import moment from 'moment';
-import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 
 const errMsg = `Error.<br />Please try again later.`;
 
@@ -140,8 +139,7 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
     private hashIdService: HashIdService,
     private translate: TranslateService,
     private dialog: MatDialog,
-    private router: Router,
-    private userProfileService: UserProfileService
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -601,6 +599,12 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
       this.createBody.groupSetting.maxClasses = planDatas[plan - 1].maxClasses;
       this.createBody.groupManagerSetting.maxGroupManagers = planDatas[plan - 1].maxGroupManagers;
       this.createBody.groupMemberSetting.maxGroupMembers = planDatas[plan - 1].maxGroupMembers;
+    } else {
+      // 客製群組暫時預設同中小企業方案
+      this.createBody.groupSetting.maxBranches = planDatas[2].maxBranches;
+      this.createBody.groupSetting.maxClasses = planDatas[2].maxClasses;
+      this.createBody.groupManagerSetting.maxGroupManagers = planDatas[2].maxGroupManagers;
+      this.createBody.groupMemberSetting.maxGroupMembers = planDatas[2].maxGroupMembers;
     }
     
   }
@@ -643,55 +647,56 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
    * @author kidin-1091110
    */
   savePlanSetting(e: Event, formItem: 'branch' | 'class' | 'admin' | 'member') {
-    const num = (e as any).value,
-          numReg = /^\d+$/;
+    const num = (e as any).target.value,
+          numReg = /\d+/;
     switch (formItem) {
       case 'branch':
         if (numReg.test(num) && num >= 1 && num <= 1000) {
-          this.createBody.groupSetting.maxBranches = num;
+          this.createBody.groupSetting.maxBranches = +num;
         } else {
-          this.createBody.groupSetting.maxBranches = 1;
+          this.createBody.groupSetting.maxBranches = 10;
         }
         
         break;
       case 'class':
         if (numReg.test(num) && num >= 1 && num <= 50000) {
-          this.createBody.groupSetting.maxClasses = num;
+          this.createBody.groupSetting.maxClasses = +num;
         } else {
-          this.createBody.groupSetting.maxClasses = 2;
+          this.createBody.groupSetting.maxClasses = 80;
         }
         
         break;
       case 'admin':
         if (numReg.test(num) && num >= 1 && num <= 100000) {
-          this.createBody.groupManagerSetting.maxGroupManagers = num;
+          this.createBody.groupManagerSetting.maxGroupManagers = +num;
         } else {
-          this.createBody.groupManagerSetting.maxGroupManagers = 4;
+          this.createBody.groupManagerSetting.maxGroupManagers = 200;
         }
         
         break;
       case 'member':
         if (numReg.test(num) && num >= 1 && num <= 1000000) {
-          this.createBody.groupMemberSetting.maxGroupMembers = num;
+          this.createBody.groupMemberSetting.maxGroupMembers = +num;
         } else {
-          this.createBody.groupMemberSetting.maxGroupMembers = 20;
+          this.createBody.groupMemberSetting.maxGroupMembers = 10000;
         }
-        
+
         break;
     }
 
   }
 
-    /**
+  /**
    * 儲存建立群組的內容
    * @author kidin-1091106
    */
-  saveCreateContent() {    
+  saveCreateContent() {
     this.groupService.createGroup(this.createBody).subscribe(res => {
 
       if (res.resultCode !== 200) {
         console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
-        this.utils.openAlert(errMsg);
+        const msg = `Error.<br />Please check Plans status or try again later.`;
+        this.utils.openAlert(msg);
       } else {
         this.groupService.saveNewGroupId(res.info.newGroupId);
         this.closeEditMode('complete');

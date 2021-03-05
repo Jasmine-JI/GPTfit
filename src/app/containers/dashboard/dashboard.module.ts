@@ -3,50 +3,29 @@ import { CommonModule } from '@angular/common';
 import { DashboardComponent } from './dashboard.component';
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { SharedComponentsModule } from '../../shared/components/shared-components.module';
-import { EnrollFormComponent } from './components/enroll-form/enroll-form.component';
 import { FormsModule } from '@angular/forms';
-import { CreateEventComponent } from './components/create-event/create-event.component';
-import { EventComponent } from './components/event/event.component';
-import { EditEventComponent } from './components/edit-event/edit-event.component';
-import { CertificatePreviewComponent } from './components/certificate-preview/certificate-preview.component';
 import { CertificateComponent } from './components/certificate/certificate.component';
 import { MyDatePickerModule } from 'mydatepicker';
-import { EventEnrollService } from './services/event-enroll.service';
 import { MapService } from '../../shared/services/map.service';
-import { EventCalendarComponent } from './components/event-calendar/event-calendar.component';
 import { CustomMaterialModule } from '../../shared/custom-material.module';
-import { EnrollPreviewComponent } from './components/enroll-preview/enroll-preview.component';
 import { GlobalEventsManager } from '../../shared/global-events-manager';
-import { EventInfoService } from './services/event-info.service';
 import { GpxService } from './services/gpx.service';
 import { MsgDialogComponent } from './components/msg-dialog/msg-dialog.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedPipes } from '../../shared/pipes/shared-pipes';
 import { ReactiveFormsModule } from '@angular/forms';
-import { DbMaintainComponent } from './components/db-maintain/db-maintain.component';
-import { DbResultDialogComponent } from './components/db-result-dialog/db-result-dialog.component';
 import { DeviceLogComponent } from './components/device-log/device-log.component';
 import { DeviceLogService } from './services/device-log.service';
 import { DeviceLogDetailComponent } from './components/device-log-detail/device-log-detail.component';
 import { CoachDashboardComponent } from './components/coach-dashboard/coach-dashboard.component';
 import { CoachService } from './services/coach.service';
-import { HrZoneDialogComponent } from './components/hr-zone-dialog/hr-zone-dialog.component';
-import { Top3DialogComponent } from './components/top3-dialog/top3-dialog.component';
-import { EventManagementComponent } from './components/event-management/event-management.component';
 import { UserInfoService } from './services/userInfo.service';
 import { UtilsService } from '../../shared/services/utils.service';
 import { SharedModule } from '../../shared/shared.module';
-import { MyGroupListComponent } from './group/my-group-list/my-group-list.component';
-import { AllGroupListComponent } from './group/all-group-list/all-group-list.component';
-import { GroupSearchComponent } from './group/group-search/group-search.component';
-import { GroupInfoComponent } from './group/group-info/group-info.component';
 import { GroupService } from './services/group.service';
 import { AccessNamePipe } from './pipes/access-name.pipe';
-import { EditGroupInfoComponent } from './group/edit-group-info/edit-group-info.component';
 import { EditGroupGuard } from './guards/edit-group-guard';
-import { CreateGroupComponent } from './group/create-group/create-group.component';
-import { RightSettingWinComponent } from './group/right-setting-win/right-setting-win.component';
 import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
 import { PeopleSelectorWinComponent } from './components/people-selector-win/people-selector-win.component';
 import { DashboardGuard } from './guards/dashboard-guard';
@@ -56,12 +35,10 @@ import { ProductErrorLogPipe } from './pipes/product-error-log.pipe';
 import { NgProgressModule } from '@ngx-progressbar/core';
 import { MyDeviceComponent } from './components/device/my-device/my-device.component';
 import { ProductInfoComponent } from './components/device/product-info/product-info.component';
-import { TodayLoginnerWinComponent } from './components/today-loginner-win/today-loginner-win.component';
 import { ReportService } from '../../shared/services/report.service';
 import { TrainLiveComponent } from './components/train-live/train-live.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from '../../shared/interceptors/token.interceptor';
-import { BottomSheetComponent } from './group/edit-group-info/edit-group-info.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { UserSettingsComponent } from './components/settings/user-settings/user-settings.component';
 import { PrivacySettingsComponent } from './components/settings/privacy-settings/privacy-settings.component';
@@ -69,8 +46,6 @@ import { AccountInfoComponent } from './components/settings/account-info/account
 import { SettingsService } from './services/settings.service';
 import { UserProfileService } from '../../shared/services/user-profile.service';
 import { PersonalPreferencesComponent } from './components/settings/personal-preferences/personal-preferences.component';
-import { CommercePlanTableComponent } from './group/commerce-plan-table/commerce-plan-table.component';
-import { PrivacySettingDialogComponent } from './group/privacy-setting-dialog/privacy-setting-dialog.component';
 import { InnerTestComponent } from './components/inner-test/inner-test.component';
 import { HashIdService } from '../../shared/services/hash-id.service';
 import { CloudRunGpxComponent } from './components/cloud-run-gpx/cloud-run-gpx.component';
@@ -82,15 +57,16 @@ import { InnerDevicePairComponent } from './components/inner-device-pair/inner-d
 import { ShareGroupInfoDialogComponent } from '../../shared/components/share-group-info-dialog/share-group-info-dialog.component';
 import { LifeTrackingComponent } from './components/life-tracking/life-tracking.component';
 import { LifeTrackingService } from './services/life-tracking.service';
-import { MyReportComponent } from './group/group-info/my-report/my-report.component';
-import { ClassAnalysisComponent } from './group/group-info/class-analysis/class-analysis.component';
-import { ComReportComponent } from './group/group-info/com-report/com-report.component';
-import { ComLifeTrackingComponent } from './group/group-info/com-life-tracking/com-life-tracking.component';
 import { ModifyBoxComponent } from './components/settings/privacy-settings/modify-box/modify-box.component';
 import { QrcodeUploadComponent } from './components/qrcode-upload/qrcode-upload.component';
 import { OfficialActivityService } from '../../shared/services/official-activity.service';
 import { GroupPageTitlePipe } from './pipes/group-page-title.pipe';
 
+import { GroupSearchComponent } from './group/group-search/group-search.component';
+import { AllGroupListComponent } from './group/all-group-list/all-group-list.component';
+import { MyGroupListComponent } from './group/my-group-list/my-group-list.component';
+import { CreateGroupComponent } from './group/create-group/create-group.component';
+import { CommercePlanTableComponent } from './group/commerce-plan-table/commerce-plan-table.component';
 import { GroupInfoComponent as GroupInfoV2Component } from './group-v2/group-info/group-info.component';
 import { SearchGroupComponent } from './group-v2/search-group/search-group.component';
 import { GroupIntroductionComponent } from './group-v2/group-info/group-introduction/group-introduction.component';
@@ -108,6 +84,9 @@ import { EditOfficialActivityComponent } from './components/official-activity-ma
 import { ParticipantsManageComponent } from './components/official-activity-manage/participants-manage/participants-manage.component';
 import { EditPushMessageComponent } from './components/push-message/edit-push-message/edit-push-message.component';
 import { PushMessageListComponent } from './components/push-message/push-message-list/push-message-list.component';
+import { SystemLogComponent } from './components/system-log/system-log.component';
+import { SystemFolderPermissionComponent } from './components/system-folder-permission/system-folder-permission.component';
+import { AlaAppAnalysisComponent } from './components/ala-app-analysis/ala-app-analysis.component';
 
 
 @NgModule({
@@ -127,10 +106,8 @@ import { PushMessageListComponent } from './components/push-message/push-message
     QRCodeModule
   ],
   providers: [
-    EventEnrollService,
     MapService,
     GlobalEventsManager,
-    EventInfoService,
     GpxService,
     DeviceLogService,
     CoachService,
@@ -158,58 +135,35 @@ import { PushMessageListComponent } from './components/push-message/push-message
   ],
   declarations: [
     DashboardComponent,
-    EnrollFormComponent,
-    CreateEventComponent,
-    EventComponent,
-    EditEventComponent,
-    CertificatePreviewComponent,
     CertificateComponent,
-    EventCalendarComponent,
-    EnrollPreviewComponent,
     MsgDialogComponent,
-    DbMaintainComponent,
-    DbResultDialogComponent,
     DeviceLogComponent,
     DeviceLogDetailComponent,
     CoachDashboardComponent,
-    HrZoneDialogComponent,
-    Top3DialogComponent,
-    EventManagementComponent,
-    MyGroupListComponent,
-    AllGroupListComponent,
-    GroupSearchComponent,
-    GroupInfoComponent,
     AccessNamePipe,
-    EditGroupInfoComponent,
-    CreateGroupComponent,
-    RightSettingWinComponent,
     InnerSettingsComponent,
     PeopleSelectorWinComponent,
     ProductErrorLogPipe,
     MyDeviceComponent,
     ProductInfoComponent,
-    TodayLoginnerWinComponent,
     TrainLiveComponent,
-    BottomSheetComponent,
     SettingsComponent,
     UserSettingsComponent,
     PrivacySettingsComponent,
     AccountInfoComponent,
     PersonalPreferencesComponent,
-    CommercePlanTableComponent,
-    PrivacySettingDialogComponent,
     InnerTestComponent,
     CloudRunGpxComponent,
     InnerDevicePairComponent,
     LifeTrackingComponent,
-    MyReportComponent,
-    ClassAnalysisComponent,
-    ComReportComponent,
-    ComLifeTrackingComponent,
+    GroupSearchComponent,
+    AllGroupListComponent,
+    MyGroupListComponent,
+    CreateGroupComponent,
+    CommercePlanTableComponent,
     ModifyBoxComponent,
     QrcodeUploadComponent,
     GroupPageTitlePipe,
-
     GroupInfoV2Component,
     SearchGroupComponent,
     GroupIntroductionComponent,
@@ -226,19 +180,15 @@ import { PushMessageListComponent } from './components/push-message/push-message
     EditOfficialActivityComponent,
     ParticipantsManageComponent,
     EditPushMessageComponent,
-    PushMessageListComponent
+    PushMessageListComponent,
+    SystemLogComponent,
+    SystemFolderPermissionComponent,
+    AlaAppAnalysisComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
     MsgDialogComponent,
-    DbResultDialogComponent,
-    HrZoneDialogComponent,
-    Top3DialogComponent,
-    RightSettingWinComponent,
     PeopleSelectorWinComponent,
-    TodayLoginnerWinComponent,
-    BottomSheetComponent,
-    PrivacySettingDialogComponent,
     ShareGroupInfoDialogComponent,
     ModifyBoxComponent
   ]

@@ -6,17 +6,37 @@
     <qrcode [qrdata]="qrURL" [size]="256" [level]="'M'"></qrcode>
   </div>
   <div style="width: 100%;text-align: center;margin: 15px 0px;">
-    <b>{{totalGroupName}}</b>
+    <b>{{shareName}}</b>
   </div>
 
   <div>
-    <label style="margin-right: 10px">Link:</label>
-    <input value="{{qrURL}}" #qrUrl
-      style="width: calc(100% - 75px)"
+    <label style="margin-right: 10px">Link：</label>
+    <input
+      #qrUrl
+      [value]="qrURL"
+      style="width: calc(100% - 90px)"
+      readonly
     >
     <button class="icon-btn"
       style="margin-left: 10px"
       (click)="copyInputMessage(qrUrl)"
+    >
+      <i class="fa fa-clipboard" aria-hidden="true"
+        style="font-size: 20px;color:#333"
+      ></i>
+    </button>
+  </div>
+  <div *ngIf="debugUrl && debugUrl.length > 0">
+    <label style="margin-right: 10px">Debug Link：</label>
+    <input
+      #debugURL
+      [value]="debugUrl"
+      style="width: calc(100% - 145px)"
+      readonly
+    >
+    <button class="icon-btn"
+      style="margin-left: 10px"
+      (click)="copyInputMessage(debugURL)"
     >
       <i class="fa fa-clipboard" aria-hidden="true"
         style="font-size: 20px;color:#333"

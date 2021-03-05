@@ -14,16 +14,17 @@
   position: relative;
   flex-grow: 1;
   height: calc(100vh);
-  padding: 60px 0;
-  overflow: auto;
+  padding: 60px 0 0 0;
+  overflow: scroll;
 }
 .main-body.preview {
   margin-top: 0px;
+  padding: 5px 0 0 0;
   overflow: scroll;
 }
 .container {
-  padding: 30px 10px;
-  min-height: calc(100vh - 78px);
+  padding: 20px 10px 40px 10px;
+  min-height: calc(100vh - 60px);
 }
 
 .containerPrint {
@@ -426,5 +427,14 @@
   .container {
     padding: 10px 5px;
   }
+
+}
+
+@media print {
+  .main-body.preview {
+    overflow: visible;
+    height: fit-content;
+  }
+
 }
 

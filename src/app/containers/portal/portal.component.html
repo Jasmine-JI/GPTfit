@@ -3,7 +3,7 @@
   (selectPage)="switchPage($event)"
   *ngIf="!isPreviewMode && !hideNavbar"
 ></app-navbar>
-<div style="height: 100vh; overflow-y: scroll;" class="main" [ngClass]="{'preview': isPreviewMode, 'hideNavbar': hideNavbar}">
+<div class="main" [ngClass]="{'preview': isPreviewMode, 'hideNavbar': hideNavbar}">
   <div class="mask" [class.mask--show]="isMaskShow" (click)="touchMask()"></div>
   <div style="min-height: 3000px;" *ngIf="uiFlag.page === 'analysis' || uiFlag.page === 'system' || uiFlag.page === 'application'">
   <ng-container *ngIf="uiFlag.page === 'system'">
@@ -27,7 +27,7 @@
                 <img
                   #system_T1
                   id="systemT1"
-                  src="/assets/images/introduce/system-T1-system.jpg"
+                  src="/app/public_html/img/introduction/system/T1-system.jpg"
                   style="max-height: 500px; height: 40vw;"
                   class="hide__slide__img"
                 >
@@ -72,7 +72,7 @@
                 id="systemT2"
                 style="max-height: 250px; margin: 0 0 50px 60px;"
                 class="rwd__hide  hide__slide__img"
-                src="/assets/images/introduce/system-T2-wearable.jpg"
+                src="/app/public_html/img/introduction/system/T2-wearable.jpg"
                 alt="WB002"
               >
             </div>
@@ -94,7 +94,7 @@
               id="systemT3"
               class="rwd__hide hide__slide__img"
               style="max-height: 400px; margin: 0 30px;"
-              src="/assets/images/introduce/system-T3-app.jpg"
+              src="/app/public_html/img/introduction/system/T3-app.jpg"
               alt="Fitness"
             >
             <div class="flexCol" style="max-width: 650px; justify-content: space-around;">
@@ -133,7 +133,7 @@
             <img
               #system_T4
               id="systemT4"
-              src="/assets/images/introduce/system-T4-iot.jpg"
+              src="/app/public_html/img/introduction/system/T4-iot.jpg"
               alt="AP1000"
               style="max-height: 300px;"
               class="rwd__hide hide__slide__img"
@@ -164,17 +164,17 @@
               </div>
               <div class="app-link-container">
                 <a target="_blank" class="app-link" href="https://itunes.apple.com/us/app/alaconnect/id1386657871?l=zh&ls=1&mt=8">
-                  <img class="app-icon" src="/assets/images/introduce/getApp_01_apple.png" alt="ala connect apple ios app">
+                  <img class="app-icon" src="/app/public_html/img/introduction/application/getApp_01_apple.png" alt="ala connect apple ios app">
                 </a>
                 <a target="_blank" class="app-link" href="https://play.google.com/store/apps/details?id=pack.ala.ala_connect"
                   alt="ala connect android google app"
                 >
-                  <img class="app-icon" src="/assets/images/introduce/getApp_02_googleplay.png">
+                  <img class="app-icon" src="/app/public_html/img/introduction/application/getApp_02_googleplay.png">
                 </a>
                 <a target="_blank" class="app-link" href="https://www.alatech.com.tw/upload_files/alatech/website/ala_connect.apk"
                   alt="ala connect apk download"
                 >
-                  <img class="app-icon" src="/assets/images/introduce/getApp_03_apk.png">
+                  <img class="app-icon" src="/app/public_html/img/introduction/application/getApp_03_apk.png">
                 </a>
               </div>
             </div>
@@ -182,7 +182,7 @@
               <img
                 #application_T1
                 id="applicationT1"
-                src="/assets/images/introduce/T1-connect.jpg"
+                src="/app/public_html/img/introduction/application/T1-connect.jpg"
                 alt="Ala Connect"
                 class="hide__slide__img"
               >
@@ -206,7 +206,7 @@
                   #application_T2
                   id="applicationT2"
                   style="width: 100%"
-                  src="/assets/images/introduce/T2-cloudrun.jpg"
+                  src="/app/public_html/img/introduction/application/T2-cloudrun.jpg"
                   alt="Ala Cloud Run"
                   class="hide__slide__img"
                 >
@@ -222,19 +222,19 @@
                     href="https://itunes.apple.com/us/app/cloud-run/id1316368345?mt=8"
                     alt="ala cloud run Apple ios app"
                   >
-                    <img class="app-icon" src="/assets/images/introduce/getApp_01_apple.png">
+                    <img class="app-icon" src="/app/public_html/img/introduction/application/getApp_01_apple.png">
                   </a>
                   <a target="_blank" class="app-link"
                     href="https://play.google.com/store/apps/details?id=pack.ala.ala_cloudrun"
                     alt="ala cloud run android google app"
                   >
-                    <img class="app-icon" src="/assets/images/introduce/getApp_02_googleplay.png">
+                    <img class="app-icon" src="/app/public_html/img/introduction/application/getApp_02_googleplay.png">
                   </a>
                   <a target="_blank" class="app-link"
                     href="https://www.alatech.com.tw/upload_files/alatech/website/ala_cloudrun.apk"
                     alt="ala cloud run apk download"
                   >
-                    <img class="app-icon" src="/assets/images/introduce/getApp_03_apk.png">
+                    <img class="app-icon" src="/app/public_html/img/introduction/application/getApp_03_apk.png">
                   </a>
                 </div>
               </div>
@@ -264,19 +264,19 @@
                     href="https://apps.apple.com/us/app/alatech-fitness/id1456714279"
                     alt="ala cloud run Apple ios app"
                   >
-                    <img class="app-icon" src="/assets/images/introduce/getApp_01_apple.png">
+                    <img class="app-icon" src="/app/public_html/img/introduction/application/getApp_01_apple.png">
                   </a>
                   <a target="_blank" class="app-link"
                     href="https://play.google.com/store/apps/details?id=pack.alatech.fitness"
                     alt="ala cloud run android google app"
                   >
-                    <img class="app-icon" src="/assets/images/introduce/getApp_02_googleplay.png">
+                    <img class="app-icon" src="/app/public_html/img/introduction/application/getApp_02_googleplay.png">
                   </a>
                   <a target="_blank" class="app-link"
                     href="https://www.alatech.com.tw/upload_files/alatech/website/alafitness.apk"
                     alt="ala cloud run apk download"
                   >
-                    <img class="app-icon" src="/assets/images/introduce/getApp_03_apk.png">
+                    <img class="app-icon" src="/app/public_html/img/introduction/application/getApp_03_apk.png">
                   </a>
                 </div>
               </div>
@@ -286,7 +286,7 @@
                   id="applicationT3"
                   class="hide__slide__img coach-img"
                   style="max-width: 500px; margin: 10px; width: 40vw;"
-                  src="/assets/images/introduce/fitness_screenshot.png"
+                  src="/app/public_html/img/introduction/application/T4-fitness.jpg"
                   alt="ala coach Board web"
                 >
               </div>
@@ -311,7 +311,7 @@
                   id="applicationT4"
                   style="width: 40vw; max-width: 500px;"
                   class="hide__slide__img"
-                  src="/assets/images/introduce/T3-trainlive.jpg"
+                  src="/app/public_html/img/introduction/application/T3-trainlive.jpg"
                   alt="ala coach Board web"
                 >
               </div>
@@ -349,7 +349,7 @@
               <img
                 #analysis_T1
                 id="analysisT1"
-                src="/assets/images/introduce/analysis-T1-hr.jpg"
+                src="/app/public_html/img/introduction/analysis/T1-hr.jpg"
                 style="max-height: 388px; height: 30vw;"
                 class="hide__slide__img"
               >
@@ -384,7 +384,7 @@
                 #analysis_T2
                 id="analysisT2"
                 style="max-height: 400px;"
-                src="/assets/images/introduce/analysis-T2-report.jpg"
+                src="/app/public_html/img/introduction/analysis/T2-report.jpg"
                 class="hide__slide__img"
               >
             </div>
@@ -406,7 +406,7 @@
                 #analysis_T3
                 id="analysisT3"
                 style="max-height: 400px;"
-                src="/assets/images/introduce/analysis-T3-life.jpg"
+                src="/app/public_html/img/introduction/analysis/T3-life.jpg"
                 class="rwd__hide hide__slide__img"
               >
               <div class="message" style="margin: 0 30px; max-width: 500px;">
@@ -441,7 +441,7 @@
               <img
                 #analysis_T4
                 id="analysisT4"
-                src="/assets/images/introduce/analysis-T4-group.jpg"
+                src="/app/public_html/img/introduction/analysis/T4-group.jpg"
                 style="max-height: 350px;"
                 class="rwd__hide hide__slide__img"
               >

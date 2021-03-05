@@ -1890,7 +1890,7 @@
  "universal_group_numberOfDepartments": "Numero di dipartimenti",
  "universal_group_sportsRecordReportClass": "Rapporto di allenamento per {{class}} classe {{dateTime}} con {{number}} persone.",
  "universal_group_dailyLifeRecord": "Rapporto di Life Tracking per {{range}}.",
- "universal_group_buildFromTime": "A partire dal {{data}}, fin dal {{range}}.",
+ "universal_group_buildFromTime": "A partire dal {{date}}, fin dal {{range}}.",
  "universal_group_assignAdministrator": "Assegnare a {{name}} il ruolo di responsabile di {{group}}?",
  "universal_activityData_setReps": "Tempi totali per questo gruppo",
  "universal_group_enterprise": "Impresa",

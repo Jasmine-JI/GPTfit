@@ -1,0 +1,188 @@
+@import 'transition.scss';
+@import 'rotate.scss';
+
+$title-color: rgba(21, 127, 204, 1);
+$drop-menu-width: 120px;
+$info-color: rgba(0, 128, 0, 1);
+$warn-color: rgba(255, 141, 0, 1);
+$error-color: rgba(255, 0, 0, 1);
+$debug-color: rgba(128, 0, 128, 1);
+
+h4, h5, h6 {
+  color: $title-color;
+}
+
+h4, h5 {
+  font-weight: bold;
+}
+
+h5 {
+  border-bottom: 1px solid rgba(220, 220, 220, 1);
+  margin-bottom: 10px;
+}
+
+header {
+  margin-bottom: 15px;
+}
+
+section {
+  margin: 10px;
+
+  div {
+    margin: 5px 0 5px 10px;
+  }
+
+}
+
+.alert__empty {
+  border: 1px solid red;
+  border-radius: 5px;
+}
+
+.user__selector__btn {
+  border: 1px solid gray;
+  background-color: white;
+  color: rgba(75, 75, 75, 1);
+}
+
+.user__info {
+  font-weight: bold;
+}
+
+.drop__menu {
+  position: relative;
+  width: $drop-menu-width;
+  height: 30px;
+  border: 1px solid black;
+  padding: 2px;
+  cursor: pointer;
+
+  &:after {
+    content: '';
+    position: absolute;
+    right: 5px;
+    top: 9px;
+    border: solid;
+    border-width: 8px 5px 0px 5px;
+    border-color: black transparent transparent transparent;
+    @include transition(transform);
+  }
+
+  div {
+    position: absolute;
+    z-index: 1;
+    top: 28px;
+    right: -1px;
+    border: 1px solid black;
+    padding: 2px;
+    width: $drop-menu-width;
+    margin: 0;
+    background-color: white;
+
+    span {
+      @include transition(background-color);
+
+      &:hover {
+        color: white;
+        background-color: rgba(38, 171, 227, 1);
+        @include transition(background-color);
+      }
+
+    }
+
+  }
+
+}
+
+.drop__menu--active {
+
+  &:after {
+    transform: rotate(180deg);
+    @include transition(transform);
+  }
+
+}
+
+.info__color {
+  color: $info-color;
+}
+
+.warn__color {
+  color: $warn-color;
+}
+
+.error__color {
+  color: $error-color;
+}
+
+.debug__color {
+  color: $debug-color;
+}
+
+#clear__btn, #submit__btn {
+  height: 35px;
+  width: 80px;
+  border-radius: 5px;
+}
+
+#clear__btn {
+  border: 1px solid rgba(200, 200, 200, 1);
+  background-color: white;
+  color: rgba(170, 0, 0, 1);
+  margin-right: 10px;
+}
+
+#submit__btn {
+  border: none;
+  background-color: rgba(38, 171, 227, 1);
+  color: white;
+}
+
+.date__column {
+  min-width: 90px;
+}
+.serverity__column {
+  min-width: 80px;
+}
+
+.app__column {
+  min-width: 80px;
+}
+
+.code__column {
+  min-width: 80px;
+}
+
+.name__column {
+  min-width: 200px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.message__column {
+  min-width: 250px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+
+/***************************** media *************************************/
+
+@media (max-width: 991px) {
+  .name__column {
+    display: none;
+  }
+
+}
+
+@media (max-width: 991px) {
+  .message__column {
+    min-width: 100px;
+  }
+
+  .date__column {
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+}

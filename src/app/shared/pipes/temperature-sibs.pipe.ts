@@ -10,12 +10,13 @@ export class TemperatureSibsPipe implements PipeTransform {
    * @author kidin-1100108
    */
   transform(value: number, args: number[]): number | string {
-    const unitType = args[0];
+    const checkValue = value ? value : 0,
+          unitType = args[0];
 
     if (unitType === 0) {
-      return args[1] === 0 ? `${value.toFixed(1)} °C` : +`${value.toFixed(1)}`;
+      return args[1] === 0 ? `${checkValue.toFixed(1)} °C` : +`${checkValue.toFixed(1)}`;
     } else {
-      return args[1] === 0 ? `${(value * (9 / 5) + 32).toFixed(1)} °F` : +`${(value * (9 / 5) + 32).toFixed(1)}`;
+      return args[1] === 0 ? `${(checkValue * (9 / 5) + 32).toFixed(1)} °F` : +`${(checkValue * (9 / 5) + 32).toFixed(1)}`;
     }
     
   }

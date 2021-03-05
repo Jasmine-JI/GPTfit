@@ -32,7 +32,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
   @ViewChild('groupHeaderDescription') groupHeaderDescription: ElementRef;
 
   private ngUnsubscribe = new Subject();
-
+  groupIdSubscription: Subscription;
   pageResize: Subscription;
   clickEvent: Subscription;
 
@@ -133,6 +133,8 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       base64: null
     }
   };
+
+  newGroupId: string;
 
   constructor(
     private translate: TranslateService,
@@ -250,39 +252,47 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         formData.set('img', JSON.stringify(imgArr));
         this.sendImgUploadReq(formData, this.currentGroupInfo.groupDetail.groupId);
       } else if (this.uiFlag.editMode === 'create') {
-        const newGroupId = this.groupService.getNewGroupId();
+        this.groupIdSubscription = this.groupService.getNewGroupId().pipe(
+          takeUntil(this.ngUnsubscribe)
+        ).subscribe(res => {
+          this.newGroupId = res;
+          // 群組icon
+          if (this.editImage.icon.base64 !== null) {
+            const fileName = this.createFileName(imgArr.length, this.newGroupId);
+            imgArr.unshift({
+              albumType: 11,
+              fileNameFull: `${fileName}.jpg`
+            })
 
-        // 群組icon
-        if (this.editImage.icon.base64 !== null) {
-          const fileName = this.createFileName(imgArr.length, newGroupId);
-          imgArr.unshift({
-            albumType: 11,
-            fileNameFull: `${fileName}.jpg`
-          })
+            formData.append('file', this.base64ToFile(11, this.editImage.icon.base64, fileName));
+          }
 
-          formData.append('file', this.base64ToFile(11, this.editImage.icon.base64, fileName));
-        }
+          // 群組佈景
+          if (this.editImage.scenery.base64 !== null) {   
+            const fileName = this.createFileName(imgArr.length, this.newGroupId);
+            imgArr.unshift({
+              albumType: 12,
+              fileNameFull: `${fileName}.jpg`
+            })
 
-        // 群組佈景
-        if (this.editImage.scenery.base64 !== null) {   
-          const fileName = this.createFileName(imgArr.length, newGroupId);
-          imgArr.unshift({
-            albumType: 12,
-            fileNameFull: `${fileName}.jpg`
-          })
+            formData.append('file', this.base64ToFile(12, this.editImage.scenery.base64, fileName));
+          }
 
-          formData.append('file', this.base64ToFile(12, this.editImage.scenery.base64, fileName));
-        }
+          formData.set('img', JSON.stringify(imgArr));
+          formData.set('targetGroupId', this.newGroupId);
+          this.sendImgUploadReq(formData, this.newGroupId);
+        });
 
-        formData.set('img', JSON.stringify(imgArr));
-        formData.set('targetGroupId', newGroupId);
-        this.sendImgUploadReq(formData, newGroupId);
       }
 
     } else if (this.uiFlag.editMode === 'create' && editMode === 'complete') {
       this.closeCreateMode();
       this.userProfileService.refreshUserProfile({token: this.user.token});
-      this.handleNavigation(this.groupService.getNewGroupId());
+      this.groupIdSubscription = this.groupService.getNewGroupId().pipe(
+        takeUntil(this.ngUnsubscribe)
+      ).subscribe(res => {
+        this.handleNavigation(res);
+      });
     } else if (editMode === 'complete') {
       this.getGroupNeedInfo();
       this.groupService.setEditMode('close');
@@ -319,6 +329,10 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       }
 
     });
+
+    if (this.groupIdSubscription) {
+      this.groupIdSubscription.unsubscribe();
+    }
 
   }
 
@@ -1217,6 +1231,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.uiFlag.currentTagIndex = tagIdx;
     this.uiFlag.showMorePageOpt = false;
     this.getBtnPosition(tagIdx);
+    this.scrollPage(page);
   }
 
   /**
@@ -1244,6 +1259,23 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       
     } else {
       this.getSeeMorePosition();
+    }
+    
+  }
+
+  /**
+   * 根據子頁面捲動頁面至指定位置
+   * @param page {string}-子頁面
+   * @author kidin-1100226
+   */
+  scrollPage(page: string) {
+    const mainBodyEle = document.querySelector('.main-body');
+    if (page === 'group-introduction') {
+      mainBodyEle.scrollTo({top: 0, behavior: 'smooth'});
+    } else {
+      const pageListBar = document.querySelectorAll('.page__list__bar')[0] as HTMLElement,
+            pageListBarTop = pageListBar.offsetTop;
+      mainBodyEle.scrollTo({top: pageListBarTop, behavior: 'smooth'});
     }
     
   }
@@ -1278,20 +1310,20 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @author kidin-1091102
    */
   openShareGroupInfoDialog() {
-    let totalGroupName:string;
+    let shareName:string;
     switch (this.currentGroupInfo.groupLevel) {
       case 30:
-        totalGroupName = this.currentGroupInfo.groupDetail.groupName;
+        shareName = this.currentGroupInfo.groupDetail.groupName;
         break;
       case 40:
-        totalGroupName = `${
+        shareName = `${
           this.currentGroupInfo.groupDetail.groupRootInfo[2].brandName
         }-${
           this.currentGroupInfo.groupDetail.groupName
         }`;
         break;
       case 60:
-        totalGroupName = `${
+        shareName = `${
           this.currentGroupInfo.groupDetail.groupRootInfo[2].brandName
         }-${
           this.currentGroupInfo.groupDetail.groupRootInfo[3].branchName
@@ -1306,7 +1338,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       data: {
         url: `${location.origin}/group-info/${this.hashIdService.handleGroupIdEncode(this.currentGroupInfo.groupId)}`,
         title: this.translate.instant('universal_operating_share'),
-        totalGroupName: totalGroupName || '',
+        shareName: shareName || '',
         cancelText: this.translate.instant('universal_operating_cancel')
       }
 

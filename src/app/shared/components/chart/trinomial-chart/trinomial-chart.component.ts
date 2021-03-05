@@ -1,13 +1,11 @@
 import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input, Renderer2, Output, EventEmitter } from '@angular/core';
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
-import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription, Subject, fromEvent } from 'rxjs';
+import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DataTypeUnitPipe } from '../../../pipes/data-type-unit.pipe';
 import { TemperatureSibsPipe } from '../../../pipes/temperature-sibs.pipe';
-import { SportPaceSibsPipe } from '../../../pipes/sport-pace-sibs.pipe';
 import { mi, ft } from '../../../models/bs-constant';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
@@ -76,7 +74,10 @@ class ChartOptions {
       ],
       plotOptions: {
         series: {
-          connectNulls: true  // 若為null值，是否要忽略null值將線連接起來
+          connectNulls: true,  // 若為null值，是否要忽略null值將線連接起來
+          marker: {
+            enabled: false
+          }
         },
       },
       tooltip: {
@@ -92,6 +93,7 @@ class ChartOptions {
           month: '%H:%M:%S',
           year: '%H:%M:%S'
         },
+        valueDecimals: 1
       },
       series: dataset
     };
@@ -109,7 +111,7 @@ export class TrinomialChartComponent implements OnInit, OnChanges, OnDestroy {
   private ngUnsubscribe = new Subject;
 
   @Input('sportType') sportType: number;
-  @Input('unit') unit: number;
+  @Input('unit') unit: 0 | 1;
   @Input('compareA') compareA: any;
   @Input('compareB') compareB: any;
   @Input('terrain') terrain: number[];
@@ -118,12 +120,13 @@ export class TrinomialChartComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('container') container: ElementRef;
   @Output() onHover: EventEmitter<any> = new EventEmitter();
 
+  chartIndex = null; // 此圖表在詳細頁面所有的highchart的順位
+
   constructor(
     private renderer: Renderer2,
     private translate: TranslateService,
     private dataTypeUnitPipe: DataTypeUnitPipe,
-    private temperatureSibsPipe: TemperatureSibsPipe,
-    private sportPaceSibsPipe: SportPaceSibsPipe
+    private temperatureSibsPipe: TemperatureSibsPipe
   ) {}
 
   ngOnInit(): void {}
@@ -247,10 +250,7 @@ export class TrinomialChartComponent implements OnInit, OnChanges, OnDestroy {
       if (!this.container) {
         this.createChart(option);
       } else {
-        console.log('highchartsA', Highcharts.charts);
-
-        chart(chartDiv, option);
-        console.log('highchartsB', Highcharts.charts);
+        this.chartIndex = chart(chartDiv, option).index;  // 產生圖表同時紀錄此圖表的index
       }
 
       if (this.showMap) {
@@ -269,7 +269,7 @@ export class TrinomialChartComponent implements OnInit, OnChanges, OnDestroy {
    * @author kidin-1100122
    */
   handleSynchronizedPoint(e: any) {
-    const compareChart: any = Highcharts.charts[0],
+    const compareChart: any = Highcharts.charts[this.chartIndex],
           event = compareChart.pointer.normalize(e), // Find coordinates within the chart
           point = compareChart.series[0].searchPoint(event, true); // Get the hovered point
     if (point && point.index) {
@@ -293,13 +293,13 @@ export class TrinomialChartComponent implements OnInit, OnChanges, OnDestroy {
         let costSecond: number;
         switch (this.sportType) {
           case 1:
-            costSecond = +(3600 / (this.unit === 0 ? data : data * mi)).toFixed(0); // 公里或英里配速
+            costSecond = +(3600 / (this.unit === 0 ? data : data / mi)).toFixed(0); // 公里或英里配速
             break;
           case 4:
-            costSecond = +(3600 / (data / 10)).toFixed(0);  // 百米配速
+            costSecond = +(3600 / (data * 10)).toFixed(0);  // 百米配速
             break;
           case 6:
-            costSecond = +(3600 / (data / 2)).toFixed(0);  // 500米配速
+            costSecond = +(3600 / (data * 2)).toFixed(0);  // 500米配速
             break;
         }
 

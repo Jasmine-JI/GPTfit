@@ -47,9 +47,12 @@ export class UserProfileService {
   refreshUserProfile(body: any) {
     this.getUserProfile(body).pipe(
       map(response => {
+        // 待個人頭像接圖床之後再刪除此段
         const userProfile = response.userProfile,
               newImage = `${userProfile.avatarUrl}?${userProfile.editTimeStamp}`;
-        Object.assign(userProfile, {avatarUrl: newImage})
+        Object.assign(userProfile, {avatarUrl: newImage});
+
+        Object.assign(userProfile, {unit: 0});  // 待所有報告皆完成公英制轉換再刪除此行
         return response;
       }),
       switchMap(res => this.getMemberAccessRight(body).pipe(

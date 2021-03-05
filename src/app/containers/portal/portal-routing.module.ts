@@ -5,9 +5,7 @@ import { DemoQrcodComponent } from './components/demo-qrcod/demo-qrcod.component
 import { SigninGuard } from '@shared/guards/signin/signin.guard';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
 import { SportReportComponent } from '@shared/components/sport-report/sport-report.component';
-import { ActivityInfoComponent } from '@shared/components/activity-info/activity-info.component';
 import { MyActivityComponent } from '@shared/components/my-activity/my-activity.component';
-import { ApplicationComponent } from './components/application/application.component';
 import { Page404Component } from '../../shared/components/page404/page404.component';
 import { Page403Component } from '../../shared/components/page403/page403.component';
 import { QrcodeUploadComponent } from '../dashboard/components/qrcode-upload/qrcode-upload.component';
@@ -45,24 +43,14 @@ const routes: Routes = [
     component: PortalComponent,
     children: [
       {
-        path: 'application',
-        component: ApplicationComponent,
-      },
-      {
         path: 'pair',
         component: DemoQrcodComponent
       },
-      
-      {
-        path: 'activity/:fileId',
-        component: ActivityInfoComponent
-      },
-      /*
       {
         path: 'activity/:fileId',
         component: ActivityDetailComponent
       },
-      */
+      
       {
         path: 'user-profile/:userId',
         component: UserProfileComponent,

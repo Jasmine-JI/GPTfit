@@ -1,93 +1,168 @@
-<!--
-<svg version="1.1" baseProfile="full" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 550 740">
-  <text x="285" y="15" text-anchor="middle" font-size="18" stroke="#ea57a3" fill="#ea57a3">{{ftpZoneRange.z6}}</text>
-  <rect x="282" y="19" width="6" height="80" rx="3" ry="3" stroke="#ea57a3" fill="#ea57a3" />
-  <text x="285" y="118" text-anchor="middle" font-size="18" stroke="#ff9292" fill="#ff9292">{{ftpZoneRange.z5}}</text>
-  <rect x="282" y="124" width="6" height="80" rx="3" ry="3" stroke="#ff9292" fill="#ff9292" />
-  <text x="285" y="223" text-anchor="middle" font-size="18" stroke="#ffc92f" fill="#ffc92f">{{ftpZoneRange.z4}}</text>
-  <rect x="282" y="229" width="6" height="80" rx="3" ry="3" stroke="#ffce78" fill="#ffce78" />
-  <text x="285" y="328" text-anchor="middle" font-size="18" stroke="#e6df84" fill="#e6df84">{{ftpZoneRange.z3}}</text>
-  <rect x="282" y="334" width="6" height="80" rx="3" ry="3" stroke="#fffd7a" fill="#fffd7a" />
-  <text x="285" y="433" text-anchor="middle" font-size="18" stroke="#cde2b4" fill="#cde2b4">{{ftpZoneRange.z2}}</text>
-  <rect x="282" y="439" width="6" height="80" rx="3" ry="3" stroke="#afff9d" fill="#afff9d" />
-  <text x="285" y="538" text-anchor="middle" font-size="18" stroke="#a3d6ee" fill="#a3d6ee">{{ftpZoneRange.z1}}</text>
-  <rect x="282" y="544" width="6" height="80" rx="3" ry="3" stroke="#7fd9ff" fill="#7fd9ff" />
-  <text x="285" y="643" text-anchor="middle" font-size="18" stroke="#7fa6ff" fill="#7fa6ff">{{ftpZoneRange.z0}}</text>
-  <rect x="282" y="649" width="6" height="80" rx="3" ry="3" stroke="#7fa6ff" fill="#7fa6ff" />
-
-  <foreignObject class="flexCol" x="305" y="2" width="250" height="200">
-    <xhtml:span class="description__title" style="color:#ea57a3;">
-      {{"universal_activityData_ftpZ6" | translate}} 151%~
-    </span>
-    <xhtml:span class="description__text">{{"universal_activityData_ftpZ6Info" | translate}}</span>
-  </foreignObject>
-  <foreignObject class="flexCol text__right" x="15" y="100" width="250" height="200">
-    <xhtml:span class="description__title" style="color:#ff9292;">
-      121%~150 {{"universal_activityData_ftpZ5" | translate}}
-    </span>
-    <xhtml:span class="description__text">{{"universal_activityData_ftpZ5Info" | translate}}</span>
-  </foreignObject>
-  <foreignObject class="flexCol" x="305" y="205" width="250" height="200">
-    <xhtml:span class="description__title" style="color:#ffc92f;">
-      {{"universal_activityData_ftpZ4" | translate}} 106~120%
-    </span>
-    <xhtml:span class="description__text">{{"universal_activityData_ftpZ4Info" | translate}}</span>
-  </foreignObject>
-  <foreignObject class="flexCol text__right" x="15" y="310" width="250" height="200">
-    <xhtml:span class="description__title" style="color:#e6df84;">
-      91~105% {{"universal_activityData_ftpZ3" | translate}}
-    </span>
-    <xhtml:span class="description__text">{{"universal_activityData_ftpZ3Info" | translate}}</span>
-  </foreignObject>
-  <foreignObject class="flexCol" x="305" y="415" width="250" height="200">
-    <xhtml:span class="description__title" style="color:#cde2b4;">
-      {{"universal_activityData_ftpZ2" | translate}} 76~90%
-    </span>
-    <xhtml:span class="description__text">{{"universal_activityData_ftpZ2Info" | translate}}</span>
-  </foreignObject>
-  <foreignObject class="flexCol text__right" x="15" y="520" width="250" height="200">
-    <xhtml:span class="description__title" style="color:#a3d6ee;">
-      56~75% {{"universal_activityData_ftpZ1" | translate}}
-    </span>
-    <xhtml:span class="description__text">{{"universal_activityData_ftpZ1Info" | translate}}</span>
-  </foreignObject>
-  <foreignObject class="flexCol" x="305" y="625" width="250" height="200">
-    <xhtml:span class="description__title" style="color:#7fa6ff;">
-      {{"universal_activityData_ftpZ0" | translate}} ~55%
-    </span>
-    <xhtml:span class="description__text">{{"universal_activityData_ftpZ0Info" | translate}}</span>
-  </foreignObject>
-</svg>
--->
-<section class="flexRow" style="position: relative;">
-  <div class="zone__section right__zone">
-    <div class="flexCol">
-      <span class="description__title" style="color:#ea57a3;">
-        {{"universal_activityData_ftpZ6" | translate}} 151%~
-      </span>
-      <span class="zone__description">
-        {{"universal_activityData_ftpZ6Info" | translate}}
-      </span>
-    </div>
-  </div>
-  <div class="zone__section left__zone" style="top: 84px;">
-    <div class="flexCol">
-      <span class="description__title" style="color:#ff9292;">
-        121%~150 {{"universal_activityData_ftpZ5" | translate}}
-      </span>
-      <span class="zone__description">
-        {{"universal_activityData_ftpZ5Info" | translate}}
-      </span>
-    </div>
-  </div>
-  <div class="flexCol" style="position: absolute; left: 47%;">
-    <div class="flexCol" style="color:#ea57a3;">
-      <span class="zone__range">{{ ftpZoneRange.z6 }}</span>
+<table width="100%" border="0" cellpadding="0">
+  <tr style="color: #ea57a3;">
+    <td >&nbsp;</td>
+    <td class="zone__range">{{ ftpZoneRange.z6 }}</td>
+    <td>
+      <table cellspacing="0" cellpadding="0">
+        <tr>
+          <td class="zone__title">{{"universal_activityData_ftpZ6" | translate}} 151%~</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>
       <span class="zone__bar" style="background-color: #ea57a3;"></span>
-    </div>
-    <div class="flexCol" style="color:#ff9292; top: 84px;">
-      <span class="zone__range">{{ ftpZoneRange.z5 }}</span>
+    </td>
+    <td class="text__top" rowspan="3">
+      <table cellspacing="0" cellpadding="0">
+        <tr>
+          <td class="zone__content">{{"universal_activityData_ftpZ6Info" | translate}}</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr style="color: #ff9292;">
+    <td>
+      <table class="right__text" cellspacing="0" cellpadding="0">
+        <tr>
+          <td class="zone__title">121%~150 {{"universal_activityData_ftpZ5" | translate}}</td>
+        </tr>
+      </table>
+    </td>
+    <td class="zone__range">{{ ftpZoneRange.z5 }}</td>
+  </tr>
+  <tr>
+    <td class="text__top" rowspan="3"  >
+      <table class="right__text" cellspacing="0" cellpadding="0">
+        <tr>
+          <td class="zone__content">{{ "universal_activityData_ftpZ5Info" | translate }}</td>
+        </tr>
+      </table>
+    </td>
+    <td>
       <span class="zone__bar" style="background-color: #ff9292;"></span>
-    </div>
-  </div>
-</section>
+    </td>
+  </tr>
+  <tr style="color: #ff9a22;">
+    <td class="zone__range">{{ ftpZoneRange.z4 }}</td>
+    <td>
+      <table cellspacing="0" cellpadding="0">
+        <tr>
+          <td class="zone__title">{{"universal_activityData_ftpZ4" | translate}} 106~120%</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <span class="zone__bar" style="background-color: #ff9a22;"></span>
+    </td>
+    <td class="text__top" rowspan="3"  >
+      <table cellspacing="0" cellpadding="0">
+        <tr>
+          <td class="zone__content">{{"universal_activityData_ftpZ4Info" | translate}}</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr style="color: #f9cc3d;">
+    <td >
+      <table class="right__text" cellspacing="0" cellpadding="0">
+        <tr>
+          <td class="zone__title">91~105% {{"universal_activityData_ftpZ3" | translate}}</td>
+        </tr>
+      </table>
+    </td>
+    <td class="zone__range">{{ ftpZoneRange.z3 }}</td>
+  </tr>
+  <tr>
+    <td class="text__top" rowspan="3">
+      <table class="right__text" cellspacing="0" cellpadding="0">
+        <tr>
+          <td class="zone__content" >{{"universal_activityData_ftpZ3Info" | translate}}</td>
+        </tr>
+      </table>
+    </td>
+      <td>
+        <span class="zone__bar" style="background-color: #f9cc3d;"></span>
+      </td>
+  </tr>
+  <tr style="color: #75f25f;">
+    <td class="zone__range">{{ ftpZoneRange.z2 }}</td>
+    <td>
+      <table cellspacing="0" cellpadding="0">
+        <tr>
+          <td class="zone__title">{{"universal_activityData_ftpZ2" | translate}} 76~90%</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <span class="zone__bar" style="background-color: #75f25f;"></span>
+    </td>
+    <td class="text__top" rowspan="3" >
+      <table cellspacing="0" cellpadding="0">
+        <tr>
+          <td class="zone__content">{{"universal_activityData_ftpZ2Info" | translate}}</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr style="color: #6bebf9;">
+    <td >
+      <table class="right__text" cellspacing="0" cellpadding="0">
+        <tr>
+          <td class="zone__title">56~75% {{"universal_activityData_ftpZ1" | translate}}</td>
+        </tr>
+      </table>
+    </td>
+    <td class="zone__range">{{ ftpZoneRange.z1 }}</td>
+  </tr>
+  <tr>
+    <td class="text__top" rowspan="3" >
+      <table class="right__text" cellspacing="0" cellpadding="0">
+        <tr>
+          <td class="zone__content">{{"universal_activityData_ftpZ1Info" | translate}}</td>
+        </tr>
+      </table>
+    </td>
+    <td>
+      <span class="zone__bar" style="background-color: #6bebf9;"></span>
+    </td>
+  </tr>
+  <tr style="color: #6e9bff;">
+    <td class="zone__range">{{ ftpZoneRange.z0 }}</td>
+    <td>
+      <table cellspacing="0" cellpadding="0">
+        <tr>
+          <td class="zone__title">{{"universal_activityData_ftpZ0" | translate}} ~55%</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <span class="zone__bar" style="background-color: #6e9bff;"></span>
+    </td>
+    <td class="text__top" rowspan="3">
+      <table cellspacing="0" cellpadding="0"  >
+        <tr>
+          <td class="zone__content">{{"universal_activityData_ftpZ0Info" | translate}}</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td >
+      <table class="right__text" cellspacing="0" cellpadding="0">
+        <tr>
+          <td class="zone__title"></td>
+        </tr>
+      </table>
+    </td>
+    <td class="zone__range" style="min-height: 40px;"></td>
+  </tr>
+</table>

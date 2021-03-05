@@ -1998,7 +1998,7 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
    * @author kidin-1090926
    */
   checkReportRangeType(startDate: string, endDate: string) {
-    if (moment(endDate).diff(moment(startDate), 'days') <= 30) {
+    if (moment(endDate).diff(moment(startDate), 'days') <= 52) {
       this.reportRangeType = 1;
     } else {
       this.reportRangeType = 2;
