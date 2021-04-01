@@ -212,6 +212,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   progress = 0;
   compareChartQueryString = '';
   filePrivacy: Array<PrivacyCode> = [1];
+  cloudrunMapId: number;
 
   constructor(
     private userProfileService: UserProfileService,
@@ -467,6 +468,10 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   handleFileInfo(fileInfo: any) {
     this.fileInfo = fileInfo;
+    const { cloudRunMapId } = this.fileInfo;
+    if (cloudRunMapId) {
+      this.cloudrunMapId = cloudRunMapId.includes('=') ? +cloudRunMapId.split('?mapId=')[1] : +cloudRunMapId;
+    }
     this.handleFileCreateDate(this.fileInfo.creationDate);
 
     const targetUserId = +this.fileInfo.author.split('=')[1];

@@ -12,6 +12,7 @@
 
 #loading__spinner {
   position: fixed;
+  z-index: 100;
   right: 15px;
   display:flex;
   justify-content: center;

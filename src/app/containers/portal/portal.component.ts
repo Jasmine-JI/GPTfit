@@ -160,6 +160,10 @@ export class PortalComponent implements OnInit, OnDestroy, AfterViewInit {
       case '/#cloudrun':
       case '/#trainlive':
       case '/#fitness':
+      case '/introduction/application#connect':
+      case '/introduction/application#cloudrun':
+      case '/introduction/application#trainlive':
+      case '/introduction/application#fitness':
       case '/introduction/application':
         this.uiFlag.page = 'application';
         break;

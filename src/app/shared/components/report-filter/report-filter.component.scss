@@ -5,6 +5,9 @@
 
 $active-color: rgba(38, 171, 227, 1);
 $hover-bg-gray: rgba(240, 240, 240, 1);
+$radio-size: 20px;
+$radio-active-size: 14px;
+$drop-list-width: 200px;
 
 @mixin default-btn($bg-color) {
   @include center();
@@ -116,6 +119,7 @@ $hover-bg-gray: rgba(240, 240, 240, 1);
 
 .condition__content {
   margin-left: 35px;
+  flex-wrap: wrap;
 }
 
 .condition__btn {
@@ -162,33 +166,48 @@ $hover-bg-gray: rgba(240, 240, 240, 1);
 
 }
 
-#map__choice {
+.map__choice {
   display: flex;
   justify-content: center;
-  min-width: 200px;
+  min-width: $drop-list-width;
   width: fit-content;
   height: 30px;
   border: 1px solid;
   padding: 0 5px;
+  cursor: pointer;
+  position: relative;
+}
 
-  span {
+.map__choosed__text {
+  padding: 2px 14px 2px 6px;
+  position: relative;
 
-    &::after {
-      content: '';
-      position: relative;
-      top: 13px;
-      left: 5px;
-      border-style: solid;
-      border-width: 5px 5px 0px 5px;
-      border-color: black transparent transparent transparent;
-    }
+  &:after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    right: 0px;
+    border-style: solid;
+    border-width: 8px 5px 0px 5px;
+    border-color: black transparent transparent transparent;
+    @include transition(transform);
+  }
 
+}
+
+.map__choose--active {
+
+  &:after {
+    @include transition(transform);
+    @include el-rotate(180deg);
   }
 
 }
 
 .choice__item {
   padding: 2px;
+  width: 100%;
+  text-align: center;
   @include transition(color);
   @include transition(background-color);
 
@@ -199,4 +218,47 @@ $hover-bg-gray: rgba(240, 240, 240, 1);
     @include transition(background-color);
   }
 
+}
+
+#map__drop__list {
+  position: absolute;
+  z-index: 10;
+  background-color: white;
+  border: 1px solid;
+  padding: 5px 10px;
+  min-width: $drop-list-width;
+  max-height: 350px;
+  overflow: scroll;
+  top: 28px;
+}
+
+.radio__selector {
+  cursor: pointer;
+  align-items: center;
+  margin-right: 15px;
+}
+
+.radio__btn {
+  @include center();
+  border: 1px solid black;
+  border-radius: 50%;
+  width: $radio-size;
+  height: $radio-size;
+  margin-right: 5px;
+}
+
+.radio__btn--active {
+
+  &:before {
+    content: '';
+    width: $radio-active-size;
+    height: $radio-active-size;
+    border-radius: 50%;
+    background-color: rgba(17, 166, 235, 1);
+  }
+
+}
+
+.map__child__block {
+  margin: 5px 0;
 }

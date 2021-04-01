@@ -3,6 +3,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { UtilsService } from './utils.service';
 import { environment } from '../../../environments/environment';
+import { throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 const { API_SERVER } = environment.url;
 
@@ -14,29 +16,74 @@ export class ActivityService {
     private utils: UtilsService
   ) {}
 
-  // 使用nodejs先將數據下載成文件再上傳至server-kidin-1090421
-  uploadSportFile (body) {
-    return this.http.post<any>(API_SERVER + 'uploadSportFile', body);
+  /**
+   * 使用nodejs先將數據下載成文件再上傳至server
+   * @param body {any}
+   * @author kidin-1090421
+   */
+  uploadSportFile (body: any) {
+    return this.http.post<any>(API_SERVER + 'uploadSportFile', body).pipe(
+      catchError(err => throwError(err))
+    );
   }
 
   fetchTestData() {
     return this.http.get<any>('https://data.jianshukeji.com/jsonp?filename=json/activity.json');
   }
-  fetchSportList(body) {
-    return this.http.post<any>('/api/v2/sport/getSportList', body);
-  }
-  fetchSportListDetail(body) {
-    return this.http.post<any>('/api/v2/sport/getSportListDetail', body);
-  }
-  fetchEditActivityProfile(body) {
-    return this.http.post<any>('/api/v2/sport/editActivityProfile', body);
-  }
-  fetchMultiActivityData(body) {
-    return this.http.post<any>('/api/v2/sport/getMultiActivityData', body);
+
+  /**
+   * api-2102
+   * @param body {any}
+   * @author kidin-1100308
+   */
+  fetchSportList(body: any) {
+    return this.http.post<any>('/api/v2/sport/getSportList', body).pipe(
+      catchError(err => throwError(err))
+    );
   }
 
-  deleteActivityData (body) {
-    return this.http.post<any>('/api/v2/sport/deleteActivityData', body);
+  /**
+   * api-2103
+   * @param body {any}
+   * @author kidin-1100308
+   */
+  fetchSportListDetail(body: any) {
+    return this.http.post<any>('/api/v2/sport/getSportListDetail', body).pipe(
+      catchError(err => throwError(err))
+    );
+  }
+
+  /**
+   * api-2108
+   * @param body {any}
+   * @author kidin-1100308
+   */
+  fetchEditActivityProfile(body: any) {
+    return this.http.post<any>('/api/v2/sport/editActivityProfile', body).pipe(
+      catchError(err => throwError(err))
+    );
+  }
+
+  /**
+   * api-2111
+   * @param body {any}
+   * @author kidin-1100308
+   */
+  fetchMultiActivityData(body: any) {
+    return this.http.post<any>('/api/v2/sport/getMultiActivityData', body).pipe(
+      catchError(err => throwError(err))
+    );
+  }
+
+  /**
+   * api-2109
+   * @param body {any}
+   * @author kidin-1100308
+   */
+  deleteActivityData (body: any) {
+    return this.http.post<any>('/api/v2/sport/deleteActivityData', body).pipe(
+      catchError(err => throwError(err))
+    );
   }
 
 }

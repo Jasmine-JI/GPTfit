@@ -169,15 +169,34 @@
           </div>
         </ng-container>
         <ng-container *ngIf="isAdminMode">
-          <span class="group-handle-name">註冊持有人：</span>{{deviceBondUserName}}
-          <div style="margin: 25px 0">
-          <button class="alatech-btn alatech-btn--default activty-btn"
-            title="{{'universal_uiFitpair_unbind' | translate}} {{'universal_deviceSetting_device' | translate}}"
-            style="width: 140px;height: 38px;"
-            (click)="openUnBondDeviceDialog()"
-          >
-            {{'universal_uiFitpair_unbind' | translate}} {{'universal_deviceSetting_device' | translate}}
-          </button>
+          <div class="flexCol">
+            <p>
+              <span class="group-handle-name">Fitpair頁面：</span>
+              <a [href]="qrURL" target="_blank" rel="noopener noreferrer">點擊前往</a>
+            </p>
+            <p>
+              <span class="group-handle-name">註冊持有人：</span>
+                {{deviceBondUserName || '無'}}
+            </p>
+            <p>
+              <span class="group-handle-name">Fitpair對象：</span>
+                <img
+                  [src]="fitpairUser.icon"
+                  (error)="this.fitpairUser.icon = '/assets/images/user2.png'"
+                  style="border-radius: 50%; margin-right: 10px; max-height: 30px;"
+                >
+                <span>{{ fitpairUser.name }}</span>
+                <span>({{ fitpairUser.id }})</span>
+            </p>
+            <div style="margin: 25px 0">
+              <button class="alatech-btn alatech-btn--default activty-btn"
+                title="{{'universal_uiFitpair_unbind' | translate}} {{'universal_deviceSetting_device' | translate}}"
+                style="width: 140px;height: 38px;"
+                (click)="openUnBondDeviceDialog()"
+              >
+                {{'universal_uiFitpair_unbind' | translate}} {{'universal_deviceSetting_device' | translate}}
+              </button>
+            </div>
           </div>
         </ng-container>
     </div>

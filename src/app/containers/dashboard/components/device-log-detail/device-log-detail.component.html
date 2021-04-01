@@ -52,7 +52,7 @@
 <mat-paginator #paginatorA
   [length]="totalCount"
   [pageIndex]="currentPage?.pageIndex"
-  [pageSize]="10"
+  [pageSize]="pageSize || 10"
   [pageSizeOptions]="[10, 25, 100]"
 >
 </mat-paginator>
@@ -88,7 +88,7 @@
 <mat-paginator #paginatorB
   [length]="totalCount"
   [pageIndex]="currentPage?.pageIndex"
-  [pageSize]="10"
+  [pageSize]="pageSize || 10"
   [pageSizeOptions]="[10, 25, 100]"
 >
 </mat-paginator>
