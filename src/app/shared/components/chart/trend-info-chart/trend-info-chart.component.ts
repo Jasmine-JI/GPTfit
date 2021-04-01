@@ -344,6 +344,7 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
             this.xAxisType === 'pointSecond' ? 'datetime' : 'linear'
           );
 
+          chartOptions.yAxis.min = null;
           this.createChart(chartOptions);
           break;
         case 'speed':

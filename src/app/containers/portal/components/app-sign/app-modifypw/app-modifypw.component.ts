@@ -346,6 +346,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
         );
 
         setTimeout(() => {
+          window.close();
           this.turnBack();
         }, 1000);
 

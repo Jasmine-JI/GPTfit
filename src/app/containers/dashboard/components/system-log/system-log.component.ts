@@ -90,6 +90,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     this.paginatorA.page.subscribe((page: PageEvent) => {
       this.currentPage = page;
       this.searchCondition.page = this.currentPage.pageIndex;
+      this.searchCondition.pageCounts = this.currentPage.pageSize;
       this.submit();
     });
 
@@ -97,6 +98,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     this.paginatorB.page.subscribe((page: PageEvent) => {
       this.currentPage = page;
       this.searchCondition.page = this.currentPage.pageIndex;
+      this.searchCondition.pageCounts = this.currentPage.pageSize;
       this.submit();
     });
   }

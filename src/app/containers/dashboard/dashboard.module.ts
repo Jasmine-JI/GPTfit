@@ -60,7 +60,6 @@ import { LifeTrackingService } from './services/life-tracking.service';
 import { ModifyBoxComponent } from './components/settings/privacy-settings/modify-box/modify-box.component';
 import { QrcodeUploadComponent } from './components/qrcode-upload/qrcode-upload.component';
 import { OfficialActivityService } from '../../shared/services/official-activity.service';
-import { GroupPageTitlePipe } from './pipes/group-page-title.pipe';
 
 import { GroupSearchComponent } from './group/group-search/group-search.component';
 import { AllGroupListComponent } from './group/all-group-list/all-group-list.component';
@@ -163,7 +162,6 @@ import { AlaAppAnalysisComponent } from './components/ala-app-analysis/ala-app-a
     CommercePlanTableComponent,
     ModifyBoxComponent,
     QrcodeUploadComponent,
-    GroupPageTitlePipe,
     GroupInfoV2Component,
     SearchGroupComponent,
     GroupIntroductionComponent,

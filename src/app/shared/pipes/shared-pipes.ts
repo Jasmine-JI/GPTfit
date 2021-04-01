@@ -14,7 +14,6 @@ import { SportPacePipe } from './sport-pace.pipe';
 import { MuscleNamePipe } from './muscle-name.pipe';
 import { SlicePipe } from './slice.pipe';
 import { A3FormatPipe } from './a3-format.pipe';
-import { CloudrunSummaryPipe } from './cloudrun-summary.pipe';
 import { RelativeDayPipe } from './relative-day.pipe';
 import { TimeFormatPipe } from './time-format.pipe';
 import { RegionCodePipe } from './region-code.pipe';
@@ -56,7 +55,6 @@ import { DataTypeUnitPipe } from './data-type-unit.pipe';
     MuscleNamePipe,
     SlicePipe,
     A3FormatPipe,
-    CloudrunSummaryPipe,
     RelativeDayPipe,
     TimeFormatPipe,
     RegionCodePipe,
@@ -93,7 +91,6 @@ import { DataTypeUnitPipe } from './data-type-unit.pipe';
     MuscleNamePipe,
     SlicePipe,
     A3FormatPipe,
-    CloudrunSummaryPipe,
     RelativeDayPipe,
     TimeFormatPipe,
     RegionCodePipe,

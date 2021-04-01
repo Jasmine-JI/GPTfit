@@ -215,6 +215,12 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   color: #6e6e6e;
 }
 
+.sepLine {
+  border-left: 1px solid #e0e0e0;
+  height: 40px;
+  margin-top: 10px;
+}
+
 .sportEfficiencyArea {
   display: flex;
   flex-direction: row;
@@ -297,6 +303,172 @@ $group-btn-blue: rgba(0, 183, 238, 1);
 
 .class__analysis__footer {
   flex-wrap: wrap;
+}
+
+.tableTitle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.tableTitleWord {
+  color: #747474;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+}
+
+.tableArrangement {
+
+  .visualizeData {
+    height: 40px;
+    background-color: #dbf3ff;
+    position: absolute;
+  }
+
+  .setIn {
+    margin: 0 auto;
+    z-index: 3;
+  }
+
+}
+
+.analysisTable {
+  margin-left: 20px;
+}
+
+.fixPlace {
+  position: relative;
+  right: 10px;
+}
+
+.chartTitleUnit {
+  color:#919191;
+}
+
+.tableContent {
+  font-weight: bold;
+  color: #747474;
+  position: relative;
+}
+
+.tableRow {
+  cursor: pointer;
+  @include transition(background-color);
+
+  &:hover {
+    background-color: rgba(240, 240, 240, 1);
+    @include transition(background-color);
+  }
+
+}
+
+.upArrow, .downArrow, .lockIcon {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.upArrow {
+  color: #ff4cd7;
+}
+
+.downArrow {
+  color: #00baff;
+}
+
+.seeMoreLink {
+  color: #157fcc;
+  text-align: center;
+  font-weight: bold;
+  margin-top: 10px;
+
+  &:hover {
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}
+
+.tableAnalysisIcon {
+  font-size: 20px;
+}
+
+.tableMenu {
+  position: fixed;
+  z-index: 5;
+  background-color: white;
+  box-shadow: grey;
+  width: fit-content;
+  border: 1px solid #dedede;
+  box-shadow: 3px 3px grey;
+  width: 250px;
+}
+
+.tableMenuTitle {
+  display: block;
+  font-weight: bold;
+  font-size: 14px;
+  color: #003c67;
+}
+
+.tableListSection {
+
+  padding: 5px;
+  border: 1px solid #bcbcbc;
+  height: 150px;
+  overflow-y: scroll;
+
+  div {
+    white-space: pre-wrap;
+    font-size: 10px;
+
+    span {
+      display: inline-block;
+      background-color: #dedede;
+      border-radius: 5px;
+      font-weight: bold;
+      margin: 3px;
+      cursor: pointer;
+    }
+
+  }
+
+}
+
+.tableMenuList {
+  margin: 2px;
+  padding: 5px 20px 5px 10px;
+  color: #656565;
+  font-weight: bold;
+  text-decoration: none;
+
+  &:hover {
+    cursor: pointer;
+    color: white;
+    background-color: #26abe3;
+  }
+}
+
+::ng-deep.tableCheckbox .mat-checkbox-checked.mat-primary .mat-checkbox-background,
+.tableCheckbox .mat-checkbox-indeterminate.mat-primary .mat-checkbox-background {
+  background-color: #26abe3 !important;
+}
+
+mat-header-cell:first-child, mat-cell:first-child, mat-footer-cell:first-child {
+  padding-left: 0px !important;
+}
+
+mat-header-cell:last-child, mat-cell:last-child, mat-footer-cell:last-child {
+  padding-right: 0px !important;
+}
+
+.printMark {
+  width: 100%;
+  background-color:#ededed;
+  text-align: center;
+  font-weight: bold;
+  height:fit-content;
 }
 
 @media (max-width: 470px) {
