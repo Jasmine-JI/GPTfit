@@ -824,6 +824,7 @@
     [sportType]="+activityInfoLayer.type"
     [sysAccessRight]="userProfile.systemAccessRight[0]"
     [unit]="userProfile.unit"
+    [cloudrunMapId]="cloudrunMapId"
     (chartSetting)="getChartSetting($event)"
     *ngIf="(uiFlag.pcView || uiFlag.currentTag === 'summary') && [1, 2, 4, 6, 7].includes(+activityInfoLayer.type)"
   ></app-map-chart-compare>
@@ -1241,7 +1242,7 @@
           <span [style.text-align]="fileInfo.syncDate ? 'right' : 'left'">{{ fileInfo.syncDate || '--' }}</span>
         </div>
         <div class="footer__content" [class.flexCol]="fileInfo.editDate">
-          {{ 'universal_activityData_editTime' | translate }}：
+          {{ 'universal_vocabulary_editDate' | translate }}：
           <span [style.text-align]="fileInfo.editDate ? 'right' : 'left'">{{ fileInfo.editDate || '--' }}</span>
         </div>
         <span class="footer__content">Create From：{{ fileInfo.createFrom.split('?')[0] || '--' }}</span>

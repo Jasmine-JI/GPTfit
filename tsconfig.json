@@ -8,6 +8,7 @@
       ]
     },
     "outDir": "./dist/out-tsc",
+    "rootDir": "./src",
     "sourceMap": false,
     "declaration": false,
     "moduleResolution": "node",

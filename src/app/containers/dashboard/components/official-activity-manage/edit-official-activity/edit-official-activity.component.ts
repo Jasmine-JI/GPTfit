@@ -3,10 +3,10 @@ import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/co
 import { OfficialActivityService } from '../../../../../shared/services/official-activity.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
-import mapList from '../../../../../../assets/cloud_run/mapList.json';
-import { fromEvent, Subscription, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { fromEvent, Subscription, Subject, Observable } from 'rxjs';
+import { takeUntil, switchMap, tap } from 'rxjs/operators';
 import moment from 'moment';
+import { CloudrunService } from '../../../../../shared/services/cloudrun.service';
 
 
 interface Activity {
@@ -91,18 +91,30 @@ export class EditOfficialActivityComponent implements OnInit, OnDestroy {
 
   pageSetting: Activity;
   cardContent = '';
-  mapList: Array<any> = [];
   editor: number;
   formData = new FormData();
+  currentLanguage: 'zh-tw';
+
+  /**
+   * 雲跑地圖清單
+   */
+  mapList: Array<any> = [];
+
+  /**
+   * 所有雲跑地圖相關資訊
+   */
+  allMapInfo: Observable<any>;
 
   constructor (
     private router: Router,
     private officialActivityService: OfficialActivityService,
     private utils: UtilsService,
-    private userProfileService: UserProfileService
+    private userProfileService: UserProfileService,
+    private cloudrunService: CloudrunService
   ) { }
 
   ngOnInit(): void {
+    this.currentLanguage = this.utils.getLocalStorageObject('locale');
     this.getFile(location.search);
     this.listenClickEvent();
     this.getMapList();
@@ -165,7 +177,10 @@ export class EditOfficialActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1090907
    */
   getMapList() {
-    this.mapList = mapList.mapList.raceMapInfo.slice(0, 48);
+    this.cloudrunService.getAllMapInfo().subscribe(res => {
+      this.allMapInfo = res.list;
+    });
+
   }
 
   /**
@@ -305,7 +320,7 @@ export class EditOfficialActivityComponent implements OnInit, OnDestroy {
    */
   chooseMap(index: number): void {
     this.pageSetting.mapId = index;
-    this.pageSetting.mapDistance = (+mapList.mapList.raceMapInfo[index - 1].distance) * 1000;
+    this.pageSetting.mapDistance = (+this.allMapInfo[index - 1].distance) * 1000;
     this.uiFlag.showMapSelector = false;
     this.uiFlag.isSaved = false;
   }

@@ -1,5 +1,5 @@
 import { Component, OnInit, OnChanges, OnDestroy, Input, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
-import { transform, WGS84, BD09 } from 'gcoord';
+import { transform, WGS84, GCJ02, BD09 } from 'gcoord';
 import { Subscription, Subject, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { UtilsService } from '../../services/utils.service';
@@ -7,6 +7,7 @@ import { SportType } from '../../models/report-condition';
 import { TranslateService } from '@ngx-translate/core';
 import { DataTypeTranslatePipe } from '../../pipes/data-type-translate.pipe';
 import { chinaAndTaiwanBorder } from '../../models/china-border-data';
+import { taiwanBorder } from '../../models/taiwan-border-data';
 
 
 declare let google: any,
@@ -37,6 +38,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
   @Input('sysAccessRight') sysAccessRight: number;
   @Input('unit') unit: number;
   @Input('hideChart') hideChart: boolean;
+  @Input('cloudrunMapId') cloudrunMapId: number;
   @Output() chartSetting: EventEmitter<string> = new EventEmitter();
   @ViewChild('gMap') gMap: ElementRef;
   @ViewChild('bMap') bMap: ElementRef;
@@ -48,7 +50,6 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
    */
   uiFlag = {
     userInChina: false,
-    converseCoordinate: false,
     showMap: false,
     showMapOpt: false,
     showDataSelector: null,
@@ -85,7 +86,9 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
     gMapPlayMark: [],
     map: null,
     path: null,
-    displayMap: null
+    displayMap: null,
+    mapKind: <'roadmap' | 'satellite' | 'hybrid'>'roadmap',
+    eventListener: null
   }
 
   /**
@@ -213,22 +216,34 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
               bottom: null,
               left: null,
               right: null
-            };
+            },
+            startPoint = [+dataArr[0].longitudeDegrees[0], +dataArr[0].latitudeDegrees[0]],
+            needConverse = 
+              this.handleBorderData(startPoint, chinaAndTaiwanBorder) && !this.handleBorderData(startPoint, taiwanBorder);
 
       this.googleObj.path = dataArr[0].latitudeDegrees.map((_lan, _idx) => {
-          const _lng = dataArr[0].longitudeDegrees[_idx],
-                _mapPoint = new google.maps.LatLng(_lan, _lng);  // google map座標為(緯度, 經度)
-          if (_lan && _lng) {
-            effectPointIdx.push(_idx); // 儲存有效點的位置方便補值
-            reservedPoint.top = !reservedPoint.top || _lan > reservedPoint.top ? _lan : reservedPoint.top;
-            reservedPoint.bottom = !reservedPoint.bottom || _lan < reservedPoint.bottom ? _lan : reservedPoint.bottom;
-            reservedPoint.left = !reservedPoint.left || _lng < reservedPoint.left ? _lng : reservedPoint.left;
-            reservedPoint.right = !reservedPoint.right || _lng > reservedPoint.right ? _lng : reservedPoint.right;
-            bounds.extend(_mapPoint);
-          }
+        const _lng = dataArr[0].longitudeDegrees[_idx];
+        
+        let WGS84Point: any;
+        if ((this.uiFlag.userInChina || needConverse) && !['satellite', 'hybrid'].includes(this.googleObj.mapKind)) {
+          WGS84Point = transform([_lng, _lan], WGS84, GCJ02);
+        } else {
+          WGS84Point = [_lng, _lan];
+        }
 
-          return _mapPoint;
-        });
+        const _mapPoint = new google.maps.LatLng(WGS84Point[1], WGS84Point[0]),  // google map座標為(緯度, 經度)
+              [_newLng, _newLan] = [...WGS84Point];
+        if (_lan && _lng) {
+          effectPointIdx.push(_idx); // 儲存有效點的位置方便補值
+          reservedPoint.top = !reservedPoint.top || _newLan > reservedPoint.top ? _newLan : reservedPoint.top;
+          reservedPoint.bottom = !reservedPoint.bottom || _newLan < reservedPoint.bottom ? _newLan : reservedPoint.bottom;
+          reservedPoint.left = !reservedPoint.left || _newLng < reservedPoint.left ? _newLng : reservedPoint.left;
+          reservedPoint.right = !reservedPoint.right || _newLng > reservedPoint.right ? _newLng : reservedPoint.right;
+          bounds.extend(_mapPoint);
+        }
+
+        return _mapPoint;
+      });
 
       // 將整體路線在顯示中向上偏移，以留給圖表
       bounds.extend(
@@ -260,7 +275,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
             mapSetting = {  // 地圖設定
               zoom: 15,
               center: new google.maps.LatLng(24.123499, 120.66014),
-              mapTypeId: 'roadmap',
+              mapTypeId: this.googleObj.mapKind,
               gestureHandling: 'cooperative', // 讓使用者在手機環境下使用單止滑頁面，雙指滑地圖
               streetViewControlOptions: {
                 position: google.maps.ControlPosition.RIGHT_TOP,
@@ -307,6 +322,16 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
   
       this.googleObj.displayMap.setMap(this.googleObj.map);
       this.googleObj.map.fitBounds(bounds);  // 將地圖縮放至可看到整個路線
+
+      this.googleObj.eventListener = google.maps.event.addListener(this.googleObj.map, 'maptypeid_changed', () => {
+        if (this.googleObj.mapKind !== this.googleObj.map.getMapTypeId()) {
+          this.googleObj.mapKind = this.googleObj.map.getMapTypeId();
+          google.maps.event.removeListener(this.googleObj.eventListener);
+          this.handleGoogleMap(dataArr);
+        }
+
+      });
+
     })
     
   }
@@ -330,8 +355,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
             },
             effectIndex = this.findEffectIndex(dataArr[0].longitudeDegrees);
 
-      this.uiFlag.converseCoordinate = 
-        this.handleBorderData([+lngArr[effectIndex], +latArr[effectIndex]], chinaAndTaiwanBorder);
+      const needConverse = this.handleBorderData([+lngArr[effectIndex], +latArr[effectIndex]], chinaAndTaiwanBorder);
       this.baiduObj.map = new BMap.Map(baiduMapEle);
       this.baiduObj.path = dataArr[0].latitudeDegrees.map((_lan, _idx) => {
         const _lng = dataArr[0].longitudeDegrees[_idx];
@@ -350,7 +374,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
       let j = 0;
       this.baiduObj.path = this.baiduObj.path.map((_path, _index) => {
         let _bd09Point;
-        if (this.uiFlag.userInChina || this.uiFlag.converseCoordinate) {
+        if (this.uiFlag.userInChina || needConverse) {
 
           if (_index != effectPointIdx[j]) {
             _bd09Point = transform([this.baiduObj.path[effectPointIdx[j]][0], this.baiduObj.path[effectPointIdx[j]][1]], WGS84, BD09);
@@ -394,9 +418,8 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
 
       const pathHorizonCenter = (reservedPoint.left + reservedPoint.right) / 2,
             pathVerticalCenter = reservedPoint.bottom - ((reservedPoint.top - reservedPoint.bottom) * 0.2),  // 將整體路線在顯示中向上偏移，以留給圖表
-            bd09Center = 
-              (this.uiFlag.userInChina || this.uiFlag.converseCoordinate)
-                ? transform([pathHorizonCenter, pathVerticalCenter], WGS84, BD09) : [pathHorizonCenter, pathVerticalCenter],
+            bd09Center = (this.uiFlag.userInChina || needConverse) ? 
+              transform([pathHorizonCenter, pathVerticalCenter], WGS84, BD09) : [pathHorizonCenter, pathVerticalCenter],
             bdCenterPoint = new BMap.Point(bd09Center[0], bd09Center[1]),
             boundPath = this.baiduObj.path.slice();
 
@@ -448,29 +471,6 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
     });
 
   }
-
-  /**
-   * 計算baidu 地圖縮放大小，以讓整個路線可以在地圖中完整顯示(先用baidu api處理，如沒問題則刪除此function)
-   * coordinate
-   * @author kidin-1100118
-  calcScale(coordinate: BoundaryCoordinate) {
-    const earthRadius = 6378.39, // km
-          earthCircumference = 2 * earthRadius * Math.PI, // 地球圓周（km）
-          {top, bottom, left, right} = coordinate,
-          currentEarthRadius = earthRadius * Math.sin(90 - ((top + bottom) / 2)),  // 根據緯度不同，該緯度的水平地球半徑也不相同
-          horizonDistance = currentEarthRadius / 360 * (right - left),
-          verticalDistance = earthCircumference / 360 * (top - bottom);
-
-    console.log('pathDis', coordinate, horizonDistance, verticalDistance);
-    // baidu map以目前的視圖，垂直距離6km的縮放大小大概在13，放大2倍，縮放大小+1
-    if (horizonDistance >= verticalDistance) {
-      return horizonDistance / 6 >= 1 ? Math.ceil(13 - Math.log2((horizonDistance / 6))) : Math.floor(13 + (Math.log2(6 / horizonDistance)));
-    } else {
-      return verticalDistance / 6 >= 1 ? Math.ceil(13 - Math.log2((verticalDistance / 6))) : Math.floor(13 + (Math.log2(6 / verticalDistance)));
-    }
-
-  }
-  */
 
   /**
    * 判斷是否支援canvas
@@ -757,9 +757,10 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
 
 
   /**
-   * 取消訂閱rxjs
+   * 取消訂閱rxjs及移除google map事件監聽
    */
   ngOnDestroy(): void {
+    if (this.googleObj.eventListener) google.maps.event.removeListener(this.googleObj.eventListener);
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }

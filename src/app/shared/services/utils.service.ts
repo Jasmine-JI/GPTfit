@@ -665,4 +665,26 @@ export class UtilsService {
     this.openAlert(errorMsg);
   }
 
+  /**
+   * 計算兩點gpx之間的距離（大圓距離）
+   * @param gpxA {Array<number>}
+   * @param gpxB {Array<number>}
+   * @author kidin-1100324
+   */
+  countDistance(gpxA: Array<number>, gpxB: Array<number>) {
+    const earthR = 6371,  // km
+          radConst = Math.PI / 180,
+          [φA, λA] = [...gpxA],
+          [φB, λB] = [...gpxB];
+    if (φA !== φB || λA !== λB) {
+      const [φRA, λRA] = [...[φA * radConst, λA * radConst]],
+            [φRB, λRB] = [...[φB * radConst, λB * radConst]],
+      σ = Math.acos(Math.sin(φRA) * Math.sin(φRB) + Math.cos(φRA) * Math.cos(φRB) * Math.cos(Math.abs(λRB - λRA)));
+      return +(earthR * σ * 1000).toFixed(0);
+    } else {
+      return 0;
+    }
+    
+  }
+
 }

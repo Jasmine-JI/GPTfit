@@ -8,9 +8,9 @@ import { OfficialActivityService } from '../../../../../shared/services/official
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { GroupService } from '../../../services/group.service';
 import moment from 'moment';
-import { fromEvent, Subscription, Subject, of } from 'rxjs';
-import { takeUntil, switchMap, tap, debounceTime } from 'rxjs/operators';
-import { CloudrunSummaryPipe } from '../../../../../shared/pipes/cloudrun-summary.pipe'
+import { fromEvent, Subscription, Subject, Observable } from 'rxjs';
+import { takeUntil, switchMap, debounceTime, tap } from 'rxjs/operators';
+import { CloudrunService } from '../../../../../shared/services/cloudrun.service';
 
 
 interface UserInfo {
@@ -31,10 +31,7 @@ interface Group {
 @Component({
   selector: 'app-participants-manage',
   templateUrl: './participants-manage.component.html',
-  styleUrls: ['./participants-manage.component.scss'],
-  providers: [
-    CloudrunSummaryPipe
-  ]
+  styleUrls: ['./participants-manage.component.scss']
 })
 export class ParticipantsManageComponent implements OnInit, AfterViewInit, OnDestroy {
 
@@ -75,6 +72,16 @@ export class ParticipantsManageComponent implements OnInit, AfterViewInit, OnDes
   activity: any;
   editorId = null;
 
+  /**
+   * 雲跑地圖清單
+   */
+  mapList: Array<any> = [];
+
+  /**
+   * 所有雲跑地圖相關資訊
+   */
+  allMapInfo: Observable<any>;
+
   constructor(
     private router: Router,
     private hashids: HashIdService,
@@ -83,7 +90,7 @@ export class ParticipantsManageComponent implements OnInit, AfterViewInit, OnDes
     private groupService: GroupService,
     private userProfileService: UserProfileService,
     private dialog: MatDialog,
-    private cloudrunSummaryPipe: CloudrunSummaryPipe
+    private cloudrunService: CloudrunService
   ) { }
 
   ngOnInit(): void {
@@ -758,18 +765,23 @@ export class ParticipantsManageComponent implements OnInit, AfterViewInit, OnDes
    * @author kidin-1090928
    */
   downloadCSV() {
-    const CSVName = `${this.activity.name}.csv`,
-          data = this.switchCSVFile(this.activity),
-          blob = new Blob(['\ufeff' + data], {  // 加上bom（\ufeff）讓excel辨識編碼
-            type: 'text/csv;charset=utf8'
-          }),
-          href = URL.createObjectURL(blob),  // 建立csv檔url
-          link = document.createElement('a');  // 建立連結供csv下載使用
+    this.cloudrunService.getAllMapInfo().pipe(
+      tap(res => this.allMapInfo = res['list']),
+    ).subscribe(() => {
+      const CSVName = `${this.activity.name}.csv`,
+            data = this.switchCSVFile(this.activity),
+            blob = new Blob(['\ufeff' + data], {  // 加上bom（\ufeff）讓excel辨識編碼
+              type: 'text/csv;charset=utf8'
+            }),
+            href = URL.createObjectURL(blob),  // 建立csv檔url
+            link = document.createElement('a');  // 建立連結供csv下載使用
 
-    document.body.appendChild(link);
-    link.href = href;
-    link.download = CSVName;
-    link.click();
+      document.body.appendChild(link);
+      link.href = href;
+      link.download = CSVName;
+      link.click();
+    });
+
   }
 
   /**
@@ -778,6 +790,23 @@ export class ParticipantsManageComponent implements OnInit, AfterViewInit, OnDes
    * @author kidin-1090928
    */
   switchCSVFile(activity: any) {
+    const currentLanguage = this.utils.getLocalStorageObject('locale');
+    let languageIdx: number;
+    switch (currentLanguage) {
+      case 'zh-tw':
+        languageIdx = 0;
+        break;
+      case 'zh-cn':
+        languageIdx = 1;
+        break;
+      case 'es-es':
+        languageIdx = 3;
+        break;
+      default:
+        languageIdx = 2;
+        break;
+    }
+
     let csvTable = '';
     for (let i = 0; i < this.activity.group.length; i++) {
 
@@ -803,7 +832,7 @@ export class ParticipantsManageComponent implements OnInit, AfterViewInit, OnDes
 
 
     const csvData = `活動名稱,${activity.name},,,,,,,,,
-      活動地圖,${this.cloudrunSummaryPipe.transform(activity.mapId, 'zh-tw').mapName },,,,,,,,,
+      活動地圖,${this.allMapInfo[activity.mapId - 1].info[languageIdx].mapName },,,,,,,,,
       活動開始時間,${moment(activity.startTimeStamp).format('YYYY-MM-DD')},,,,,,,,,
       活動結束時間,${moment(activity.endTimeStamp).format('YYYY-MM-DD')},,,,,,,,,
       建立時間,${moment(activity.createTimeStamp).format('YYYY-MM-DD')},,,,,,,,,

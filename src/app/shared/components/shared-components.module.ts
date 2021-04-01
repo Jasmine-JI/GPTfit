@@ -60,6 +60,8 @@ import { TrendInfoChartComponent } from './chart/trend-info-chart/trend-info-cha
 import { MuscleMapCardComponent } from './activity-detail/muscle-map-card/muscle-map-card.component';
 import { LoadingBarComponent } from './loading-bar/loading-bar.component';
 import { EditIndividualPrivacyComponent } from './edit-individual-privacy/edit-individual-privacy.component';
+import { CloudrunMapComponent } from './cloudrun-map/cloudrun-map.component';
+import { EquidistantChartComponent } from './chart/equidistant-chart/equidistant-chart.component';
 
 @NgModule({
   imports: [
@@ -125,7 +127,9 @@ import { EditIndividualPrivacyComponent } from './edit-individual-privacy/edit-i
     TrendInfoChartComponent,
     MuscleMapCardComponent,
     LoadingBarComponent,
-    EditIndividualPrivacyComponent
+    EditIndividualPrivacyComponent,
+    CloudrunMapComponent,
+    EquidistantChartComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -170,7 +174,9 @@ import { EditIndividualPrivacyComponent } from './edit-individual-privacy/edit-i
     ActivityDetailComponent,
     MapChartCompareComponent,
     TrinomialChartComponent,
-    EditIndividualPrivacyComponent
+    EditIndividualPrivacyComponent,
+    CloudrunMapComponent,
+    LoadingBarComponent
   ]
 })
 export class SharedComponentsModule {}

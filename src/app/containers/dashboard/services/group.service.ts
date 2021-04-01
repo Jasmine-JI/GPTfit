@@ -35,6 +35,10 @@ export class GroupService {
     groupId: '',
     groupList: []
   });
+  memList$ = new BehaviorSubject<any>({  // 成員清單
+    groupId: '',
+    groupList: []
+  });
   newGroupId$ = new ReplaySubject<any>(1); // 創建群組的group id，以上傳圖床。
   reportCategory$ = new BehaviorSubject<number>(99);
   typeAllData$ = new BehaviorSubject<any>({});
@@ -322,6 +326,23 @@ export class GroupService {
   }
 
   /**
+   * 取得訂閱的成員列表
+   * @author kidin-1090715
+   */
+  getMemList (): Observable<any> {
+    return this.memList$;
+  }
+
+  /**
+   * 儲存訂閱的成員列表
+   * @param status {any}
+   * @author kidin-1090715
+   */
+  setMemList (status: any) {
+    this.memList$.next(status);
+  }
+
+  /**
    * 儲存訂閱的運動報告類別
    * @param status {string}}
    * @author kidin-1090715
@@ -503,7 +524,7 @@ export class GroupService {
   }
 
   /**
-   * 取得群組概要資訊
+   * 取得新的群組id
    * @author kidin-1091020
    */
   getNewGroupId() {
@@ -619,6 +640,18 @@ export class GroupService {
         );
     }
 
+  }
+
+  /**
+   * 取得所需的群組id片段
+   * @param id {string}-group id
+   * @param leng (number)-欲取得的群組id片段數目
+   * @author kidin-1100308
+   */
+  getPartGroupId(id: string, leng: number) {
+    const arr = id.split('-');
+    arr.length = leng;
+    return arr.join('-');
   }
 
 }

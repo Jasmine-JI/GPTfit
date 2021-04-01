@@ -11,7 +11,10 @@ export interface ReportConditionOpt {
   reportType?: 'sport' | 'lifeTracking' | 'cloudRun';
   group?: GroupTree;
   sportType?: SportType;
-  cloudRunMap?: number;
+  cloudRun?: {
+    mapId: number;
+    month: string;  // 例行賽月份
+  };
   hideConfirmBtn: boolean;
 }
 

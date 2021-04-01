@@ -36,7 +36,7 @@ export class HttpStatusInterceptor implements HttpInterceptor {
           if (event instanceof HttpResponse) {
             // do stuff with response if you want
             let parseBody;
-            if (typeof (event.body) !== 'object') {
+            if (typeof (event.body) !== 'object' && event.body.slice(0, 5) !== '<?xml') {
               parseBody = JSON.parse(event.body);
               if (parseBody.processResult && parseBody.processResult.resultCode === 401) {
                 const auth = this.injector.get(AuthService);
