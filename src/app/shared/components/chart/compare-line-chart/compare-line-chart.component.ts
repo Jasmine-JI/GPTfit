@@ -1,9 +1,9 @@
 import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
-
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
 import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
+import { CompareLineTrendChart, DisplayPage } from '../../../models/chart-data';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -32,7 +32,9 @@ class ChartOptions {
           week: '%m/%d',
           month: '%Y/%m',
           year: '%Y'
-        }
+        },
+        minPadding: 0.1,
+        maxPadding: 0.03
       },
       yAxis: {
         title: {
@@ -59,24 +61,22 @@ class ChartOptions {
 @Component({
   selector: 'app-compare-line-chart',
   templateUrl: './compare-line-chart.component.html',
-  styleUrls: ['./compare-line-chart.component.scss']
+  styleUrls: ['./compare-line-chart.component.scss', '../chart-share-style.scss']
 })
 export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
-
   noData = false;
-
   firstSunday: number;
   lastSunday: number;
   dataLength: number;
+  chartType: string;
 
   @Input() data: any;
   @Input() dateRange: string;
-  @Input() sportType: string;
   @Input() chartName: string;
   @Input() hrZoneRange: any;
   @Input() searchDate: Array<number>;
   @Input() chartHeight: number;
-
+  @Input() page: DisplayPage;
   @ViewChild('container', {static: false})
   container: ElementRef;
 
@@ -87,7 +87,6 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() {}
 
   ngOnChanges () {
-
     if (this.data.fatRateList && this.data.fatRateList.length === 0) {
       this.noData = true;
     }
@@ -107,15 +106,18 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
 
     switch (this.chartName) {
       case 'HR':
+        this.chartType = 'hr';
         this.dataLength = this.data.date.length;
-
-        for (let i = 0; i < this.data.date.length; i++) {
+        for (let i = 0; i < this.dataLength; i++) {
+          // 使用 Date.UTC(year, month - 1, day) 才能使highchart折線圖的點落在x軸軸線上
+          const dateArr = moment(this.data.date[i]).format('YYYY-MM-DD').split('-'),
+                [year, month, day] = [...dateArr];
           chartData.push(
-            this.assignColor(this.data.date[i], this.data.HR[i], 'normal')
+            this.assignColor(Date.UTC(+year, +month - 1, +day), this.data.HR[i], 'normal')
           );
 
           chartBestData.push(
-            this.assignColor(this.data.date[i], this.data.bestHR[i], 'best')
+            this.assignColor(Date.UTC(+year, +month - 1, +day), this.data.bestHR[i], 'best')
           );
         }
 
@@ -143,11 +145,14 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
         break;
       case 'Power':
         this.dataLength = this.data.date.length;
+        for (let i = 0; i < this.dataLength; i++) {
+          // 使用 Date.UTC(year, month - 1, day) 才能使highchart折線圖的點落在x軸軸線上
+          const dateArr = moment(this.data.date[i]).format('YYYY-MM-DD').split('-'),
+                [year, month, day] = [...dateArr];
 
-        for (let i = 0; i < this.data.date.length; i++) {
           chartData.push(
             {
-              x: this.data.date[i],
+              x: Date.UTC(+year, +month - 1, +day),
               y: this.data.power[i],
               marker: {
                 enabled: true,
@@ -158,7 +163,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
 
           chartBestData.push(
             {
-              x: this.data.date[i],
+              x: Date.UTC(+year, +month - 1, +day),
               y: this.data.bestPower[i],
               marker: {
                 enabled: true,
@@ -191,7 +196,6 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
 
         break;
       case 'LifeHR':
-
         // 若搜尋的第一天（週）或最後一天（週）沒有數據，則用前後數據遞補-kidin-1090220
         if (this.dateRange === 'week') {
 
@@ -223,8 +227,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         this.dataLength = this.data.date.length;
-
-        for (let i = 0; i < this.data.date.length; i++) {
+        for (let i = 0; i < this.dataLength; i++) {
           chartData.push(
             {
               x: this.data.date[i],
@@ -273,11 +276,9 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
 
         break;
       case 'Weight':
-
         trendDataset = [];
         this.dataLength = this.data.weightList.length;
-
-        for (let i = 0; i < this.data.weightList.length; i++) {
+        for (let i = 0; i < this.dataLength; i++) {
 
           // 若搜尋的第一天（週）或最後一天（週）沒有數據，則用前後數據遞補-kidin-1090220
           const weightData = this.data.weightList[i];
@@ -315,11 +316,9 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
 
         break;
       case 'FatRate':
-
         trendDataset = [];
         this.dataLength = this.data.fatRateList.length;
-
-        for (let i = 0; i < this.data.fatRateList.length; i++) {
+        for (let i = 0; i < this.dataLength; i++) {
 
           // 若搜尋的第一天（週）或最後一天（週）沒有數據，則用前後數據遞補-kidin-1090220
           const fatRateData = this.data.fatRateList[i];
@@ -357,11 +356,9 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
 
         break;
       case 'MuscleRate':
-
         trendDataset = [];
         this.dataLength = this.data.muscleRateList.length;
-
-        for (let i = 0; i < this.data.muscleRateList.length; i++) {
+        for (let i = 0; i < this.dataLength; i++) {
 
           // 若搜尋的第一天（週）或最後一天（週）沒有數據，則用前後數據遞補-kidin-1090220
           const muscleRateData = this.data.muscleRateList[i];
@@ -401,7 +398,6 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     const trendChartOptions = new ChartOptions(trendDataset);
-
     // 以後可能會個別設定，故不寫死-kidin-1090221
     switch (this.chartName) {
       case 'HR':
@@ -426,24 +422,26 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
 
         // 設定圖表高度-kidin-1090221
         trendChartOptions['chart'].height = this.chartHeight;
-
         break;
     }
 
-    // 設定圖表x軸時間間距-kidin-1090204
-    if (this.dateRange === 'day' && this.dataLength <= 7) {
-      trendChartOptions['xAxis'].tickInterval = 24 * 3600 * 1000;  // 間距一天
-    } else if (this.dateRange === 'day' && this.dataLength > 7) {
-      trendChartOptions['xAxis'].tickInterval = 7 * 24 * 3600 * 1000;  // 間距一週
-    } else {
-      trendChartOptions['xAxis'].tickInterval = 30 * 24 * 4600 * 1000;  // 間距一個月
+    if (this.page !== 'cloudrun') {
+      // 設定圖表x軸時間間距-kidin-1090204
+      if (this.dateRange === 'day' && this.dataLength <= 7) {
+        trendChartOptions['xAxis'].tickInterval = 24 * 3600 * 1000;  // 間距一天
+      } else if (this.dateRange === 'day' && this.dataLength > 7) {
+        trendChartOptions['xAxis'].tickInterval = 7 * 24 * 3600 * 1000;  // 間距一週
+      } else {
+        trendChartOptions['xAxis'].tickInterval = 30 * 24 * 4600 * 1000;  // 間距一個月
+      }
+
     }
 
     this.createChart(trendChartOptions);
   }
 
   // 根據心率區間的值決定該點顏色-kidin-1090210
-  assignColor (valueX: string, valueY: number, type: string) {
+  assignColor (valueX: number | string, valueY: number, type: string) {
     if (this.hrZoneRange['z0'] !== null) {
       if (valueY < this.hrZoneRange['z0']) {
         return {

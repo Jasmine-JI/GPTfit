@@ -10,6 +10,9 @@ import { AlbumType } from '../models/image';
 import { HrZoneRange } from '../models/chart-data';
 export const TOKEN = 'ala_token';
 export const EMPTY_OBJECT = {};
+import moment from 'moment';
+import { Unit, mi, ft } from '../models/bs-constant';
+import { SportType } from '../models/report-condition';
 
 type Point = {
   x: number;
@@ -412,13 +415,13 @@ export class UtilsService {
   }
 
   /**
-   * 
+   * 取得各心率區間
    * @param userHRBase {0 | 1}-使用者心率法, 0.最大心率法 1.儲備心率法
-   * @param userAge 
-   * @param userMaxHR 
-   * @param userRestHR 
+   * @param userAge {number}
+   * @param userMaxHR {number}
+   * @param userRestHR {number}
    */
-  getUserHrRange(userHRBase, userAge, userMaxHR, userRestHR) {
+  getUserHrRange(userHRBase: number, userAge: number, userMaxHR: number, userRestHR: number) {
     let userHrInfo = <HrZoneRange>{
       hrBase: userHRBase,
       z0: 0,
@@ -685,6 +688,118 @@ export class UtilsService {
       return 0;
     }
     
+  }
+
+  /**
+   * 取得日期區間（日/週）
+   * @param date {{startDate: string; endDate: string;}}-使用者所選日期範圍
+   * @author kidin-1100401
+   * @returns {'day' | 'week'}
+   */
+  getDateInterval(date: {startDate: string; endDate: string;}) {
+    const { startDate, endDate } = date;
+    if ((moment(endDate).diff(moment(startDate), 'days') + 1) <= 52) {
+      return 'day';
+    } else {
+      return 'week';
+    }
+
+  }
+
+  /**
+   * 建立報告期間的timeStamp讓圖表使用
+   * @param date {{start: string; end: string;}}-報告起始日期和結束日期
+   * @author kidin-1100401
+   */
+  createTimeStampArr(date: {startDate: string; endDate: string;}) {
+  const timeStampArr = [],
+        { startDate, endDate } = date,
+        range = moment(endDate).diff(moment(startDate), 'days') + 1,
+        startTimestamp = moment(startDate).startOf('day').valueOf(),
+        endTimestamp = moment(endDate).startOf('day').valueOf();
+
+    if (this.getDateInterval(date) === 'day') {
+
+      for (let i = 0; i < range; i++) {
+        timeStampArr.push(startTimestamp + 86400000 * i);
+      }
+
+    } else {
+      const weekCoefficient = this.findDate(startTimestamp, endTimestamp);
+      for (let i = 0; i < weekCoefficient.weekNum; i++) {
+        timeStampArr.push(weekCoefficient.startDate + 86400000 * i * 7);
+      }
+
+    }
+
+    return timeStampArr;
+  }
+
+  /**
+   * 根據搜索時間取得周報告第一周的開始日期和週數
+   * @param startTimestamp {number}-開始時間
+   * @param endTimestamp {number}-結束時間
+   * @author kidin-1100401
+   */
+  findDate(startTimestamp: number, endTimestamp: number) {
+    const week = {
+      startDate: 0,
+      weekNum: 0
+    };
+
+    let weekEndDate: number;
+    // 周報告開頭是星期日-kidin-1090312
+    if (moment(startTimestamp).isoWeekday() !== 7) {
+      week.startDate = startTimestamp - 86400 * 1000 * moment(startTimestamp).isoWeekday();
+    } else {
+      week.startDate = startTimestamp;
+    }
+
+    if (moment(startTimestamp).isoWeekday() !== 7) {
+      weekEndDate = endTimestamp - 86400 * 1000 * moment(endTimestamp).isoWeekday();
+    } else {
+      weekEndDate = endTimestamp;
+    }
+
+    week.weekNum = ((weekEndDate - week.startDate) / (86400 * 1000 * 7)) + 1;
+    return week;
+  }
+
+  /**
+   * 依運動類別將速度轉換成所需的配速格式
+   * @param value {number}-速度
+   * @param sportType {SportType}-運動類別
+   * @param unit {Unit}-使用者所選的單位
+   * @param type {'second' | 'minute'}-轉成純秒數或mm':ss"
+   * @returns pace {number | string}
+   * @author kidin-1100407
+   */
+  convertSpeed(value: number, sportType: SportType, unit: Unit, convertType: 'second' | 'minute'): number | string {
+    let ttlSecond: number;
+    const speed = value <= 1  ? 1 : value;  // 配速最小60'00" t/km（1 km/hr）
+    switch (sportType) {
+      case 1:
+        ttlSecond = unit === 0 ? +(3600 / speed).toFixed(1) : +(3600 / (speed / mi)).toFixed(1);
+        break;
+      case 4:
+        ttlSecond = unit === 0 ? +((3600 / speed)).toFixed(1) : +(3600 / ((speed * 10) / ft)).toFixed(1);
+        break;
+      case 6:
+        ttlSecond = unit === 0 ? +(3600 / speed).toFixed(1) : +(3600 / ((speed * 2) / ft)).toFixed(1);
+        break;
+    }
+
+    switch (convertType) {
+      case 'second':
+        return ttlSecond;
+      case 'minute':
+        const minute = Math.floor(ttlSecond / 60),
+              second = (ttlSecond - (minute * 60)).toFixed(0),
+              minuteStr = `${minute}`.padStart(2, '0'),
+              secondStr = second.padStart(2, '0');
+        return `${minuteStr}'${secondStr}"`;
+    }
+
   }
 
 }

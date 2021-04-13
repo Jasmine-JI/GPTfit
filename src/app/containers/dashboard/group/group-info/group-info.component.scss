@@ -62,14 +62,6 @@
   flex-direction: row;
 }
 
-.functionButton {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  width: 100%;
-  margin: 10px 0px;
-}
-
 .unClickable {
   pointer-events: none;
 }

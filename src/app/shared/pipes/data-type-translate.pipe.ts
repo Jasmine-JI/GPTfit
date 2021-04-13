@@ -7,9 +7,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 @Pipe({name: 'dataTypeTranslate'})
 export class DataTypeTranslatePipe implements PipeTransform {
   transform(value: string, args: number[]): any {
-    const sportType = args[0],
-          unit = args[1];
-
+    const [sportType, unit] = [...args];
     switch (value) {
       case 'hr':
         return 'universal_activityData_hr';
@@ -55,6 +53,8 @@ export class DataTypeTranslatePipe implements PipeTransform {
         return 'universal_unit_gforceY';
       case 'gforceZ':
         return 'universal_unit_gforceZ';
+      case 'time':
+        return 'universal_activityData_time';
       default:
         return 'universal_vocabulary_other';
     }
