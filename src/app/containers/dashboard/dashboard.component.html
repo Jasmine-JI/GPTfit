@@ -142,7 +142,7 @@
               <div class="flexRow drop__down" (click)="dropDown('group')">
                 <i
                   class="icon-svg_web-icon_p1_036-friends ala-sidenav-icon"
-                  [class.ala-sidenav-menu-item__active]="uiFlag.sidebarMode === 'narrow' && (target === 10 || target === 17)"
+                  [class.ala-sidenav-menu-item__active]="uiFlag.sidebarMode === 'narrow' && [10, 17].includes(target)"
                 ></i>
                 <span class="small__side navbar__list__title" [class.drop__list]="uiFlag.sidebarMode === 'expand' || uiFlag.navFixed">
                   <span>{{"universal_group_group" | translate}}</span>
@@ -207,7 +207,7 @@
               <div class="flexRow drop__down" (click)="dropDown('myReport')">
                 <i
                   class="icon-svg_web-icon_p1_037-chart ala-sidenav-icon"
-                  [class.ala-sidenav-menu-item__active]="uiFlag.sidebarMode === 'narrow' && (target === 16 || target === 23)"
+                  [class.ala-sidenav-menu-item__active]="uiFlag.sidebarMode === 'narrow' && [16, 23, 25].includes(target)"
                 ></i>
                 <span class="small__side navbar__list__title" [class.drop__list]="uiFlag.sidebarMode === 'expand' || uiFlag.navFixed">
                   <span >{{"universal_group_myReport" | translate}}</span>
@@ -236,6 +236,13 @@
                 >
                   {{"universal_lifeTracking_lifeTracking" | translate}}
                 </li>
+                <li class="ala-sidenav-menu-item"
+                  (click)="chooseItem(25)"
+                  [class.ala-sidenav-menu-item__active]="target === 25"
+                  [routerLink]="['/dashboard/cloudrun']"
+                >
+                  Cloud run
+                </li>
               </div>
             </div>
           </section>
@@ -249,7 +256,7 @@
               <div class="flexRow drop__down" (click)="dropDown('systemManagement')">
                 <i
                   class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"
-                  [class.ala-sidenav-menu-item__active]="uiFlag.sidebarMode === 'narrow' && (target === 13 || target === 18 || target === 19 || target === 21)"
+                  [class.ala-sidenav-menu-item__active]="uiFlag.sidebarMode === 'narrow' && [13, 18, 19, 21, 24].includes(target)"
                 ></i>
                 <span class="small__side navbar__list__title" [class.drop__list]="uiFlag.sidebarMode === 'expand' || uiFlag.navFixed">
                   <span >{{"universal_system_systemManagement" | translate }}</span>
@@ -336,7 +343,7 @@
               <div class="flexRow drop__down" (click)="dropDown('groupManagement')">
                 <i
                   class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"
-                  [class.ala-sidenav-menu-item__active]="uiFlag.sidebarMode === 'narrow' && (target === 11 || target === 12 || target === 22)"
+                  [class.ala-sidenav-menu-item__active]="uiFlag.sidebarMode === 'narrow' && [11, 12, 22].includes(target)"
                 ></i>
                 <span class="small__side navbar__list__title" [class.drop__list]="uiFlag.sidebarMode === 'expand' || uiFlag.navFixed">
                   <span >{{"universal_group_groupManagement" | translate }}</span>
@@ -386,7 +393,7 @@
               <div class="flexRow drop__down" (click)="dropDown('push')">
                 <i
                   class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"
-                  [class.ala-sidenav-menu-item__active]="uiFlag.sidebarMode === 'narrow' && (target === 31 || target === 32)"
+                  [class.ala-sidenav-menu-item__active]="uiFlag.sidebarMode === 'narrow' && [31, 32].includes(target)"
                 ></i>
                 <span class="small__side navbar__list__title" [class.drop__list]="uiFlag.sidebarMode === 'expand' || uiFlag.navFixed">
                   <span>推播管理</span>
@@ -396,7 +403,6 @@
                   ></i>
                 </span>
               </div>
-              
               <div
                 class="navbar__list__content"
                 [class.expand__content]="uiFlag.currentDrop === 'push' && uiFlag.sidebarMode === 'expand' ? true : false"
@@ -410,7 +416,7 @@
                   建立推播
                 </li>
                 <li class="ala-sidenav-menu-item"
-                  (click)="chooseItem(5)"
+                  (click)="chooseItem(32)"
                   [class.ala-sidenav-menu-item__active]="target === 32"
                   [routerLink]="['/dashboard/system/push-list']"
                   *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 29"
@@ -427,7 +433,7 @@
               <div class="flexRow drop__down" (click)="dropDown('deviceManagement')">
                 <i
                   class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"
-                  [class.ala-sidenav-menu-item__active]="uiFlag.sidebarMode === 'narrow' && (target === 5 || target === 20)"
+                  [class.ala-sidenav-menu-item__active]="uiFlag.sidebarMode === 'narrow' && [5, 20].includes(target)"
                 ></i>
                 <span class="small__side navbar__list__title" [class.drop__list]="uiFlag.sidebarMode === 'expand' || uiFlag.navFixed">
                   <span >{{"universal_deviceSetting_deviceManagement" | translate }}</span>

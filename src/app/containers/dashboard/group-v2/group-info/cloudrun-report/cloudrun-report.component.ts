@@ -1,6 +1,6 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Subject, combineLatest, fromEvent, Subscription } from 'rxjs';
-import { takeUntil, switchMap, map, first } from 'rxjs/operators';
+import { takeUntil, switchMap, map, first, debounceTime } from 'rxjs/operators';
 import { ReportConditionOpt, GroupTree, GroupSimpleInfo } from '../../../../../shared/models/report-condition';
 import moment from 'moment';
 import { ReportService } from '../../../../../shared/services/report.service';
@@ -68,7 +68,8 @@ type NavigationPage = 'info' | 'sportsReport' | 'cloudrunReport';
 @Component({
   selector: 'app-cloudrun-report',
   templateUrl: './cloudrun-report.component.html',
-  styleUrls: ['./cloudrun-report.component.scss', '../group-child-page.scss']
+  styleUrls: ['./cloudrun-report.component.scss', '../group-child-page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CloudrunReportComponent implements OnInit, OnDestroy {
 
@@ -104,7 +105,8 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     sportType: 1,
     cloudRun: {
       mapId: 1,
-      month: moment().format('YYYYMM')
+      month: moment().format('YYYYMM'),
+      checkCompletion: true
     },
     hideConfirmBtn: false
   }
@@ -373,7 +375,8 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     private cloudrunService: CloudrunService,
     private hashIdService: HashIdService,
     private translate: TranslateService,
-    private userProfileService: UserProfileService
+    private userProfileService: UserProfileService,
+    private changeDetectorRef: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -382,7 +385,6 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     this.checkWindowSize();
     this.checkQueryString(location.search);
     this.getNeedInfo();
-    this.getReportSelectedCondition();
   }
 
   /**
@@ -396,6 +398,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     ).subscribe(e => {
       this.windowWidth = (e as any).target.innerWidth;
       this.assignChooseNum(this.windowWidth);
+      this.changeDetectorRef.markForCheck();
     });
 
   }
@@ -492,6 +495,9 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
             if (_value.includes('g')) this.groupTable.showAll = true;
             if (_value.includes('m')) this.memberTable.showAll = true;
             break;
+          case 'check':
+            this.reportConditionOpt.cloudRun.checkCompletion = _value === 'true';
+            break;
         }
 
       });
@@ -547,6 +553,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
 
       this.reportService.setReportCondition(this.reportConditionOpt);
       this.getTranslate();
+      this.getReportSelectedCondition();
     });
 
   }
@@ -597,9 +604,10 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
   updateUrl() {
     const { startDate, endDate } = this.selectDate,
           startDateString = startDate.split('T')[0],
-          endDateString = endDate.split('T')[0];
+          endDateString = endDate.split('T')[0],
+          { checkCompletion: check } = this.reportConditionOpt.cloudRun;
     let searchString =
-      `?ipm=s&startdate=${startDateString}&enddate=${endDateString}&mapid=${this.currentMapId}&source=${this.mapSource}`;
+      `?ipm=s&startdate=${startDateString}&enddate=${endDateString}&mapid=${this.currentMapId}&source=${this.mapSource}&check=${check}`;
 
     let compare: string;
     const { clickList } = this.compare;
@@ -695,6 +703,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       this.handleReportTime();
       this.progress = 50;
       this.getGroupMemList(this.sortOriginData(response[1]));
+      this.changeDetectorRef.markForCheck();
     });
 
   }
@@ -729,7 +738,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       this.reportEndDate = endDate.split('T')[0];
       this.reportTimeRange = `${range} ${this.translate.instant('universal_time_day')}`;
     });
-    
+
   }
 
   /**
@@ -955,6 +964,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       this.progress = 70;
       this.sortGroupData(result, memberData);
       this.progress = 100;
+      this.changeDetectorRef.markForCheck();
     });
 
   }
@@ -1077,7 +1087,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 將群組和成員數據進行混和
+   * 將群組和成員數據進行歸屬
    * @param groupList {any}-群組清單
    * @param memList {any}-成員清單
    * @author kidin-1100310
@@ -1089,8 +1099,8 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
             brandsGroupId = `${this.groupService.getPartGroupId(groupId, 3)}-0-0-0`,
             branchesGroupId = `${this.groupService.getPartGroupId(groupId, 4)}-0-0`;
       if (groupList.hasOwnProperty(groupId)) {
-        /** 團體分需所需的成員清單及成績加總，上面階層會將下面階層成員包含進去 */
-        if (groupList.hasOwnProperty(brandsGroupId) && !groupList[brandsGroupId].member.includes(_list => _list.id === userId)) {
+        /** 團體分析所需的成員清單及成績加總，上面階層會將下面階層成員包含進去 */
+        if (groupList.hasOwnProperty(brandsGroupId) && !groupList[brandsGroupId].member.some(_list => _list.id === userId)) {
           groupList[brandsGroupId].member.push({id: userId, name: nickName});
           if (
             memberData.hasOwnProperty(userId)
@@ -1104,7 +1114,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
 
         }
         
-        if (groupList.hasOwnProperty(branchesGroupId) && !groupList[branchesGroupId].member.includes(_list => _list.id === userId)) {
+        if (groupList.hasOwnProperty(branchesGroupId) && !groupList[branchesGroupId].member.some(_list => _list.id === userId)) {
             groupList[branchesGroupId].member.push({id: userId, name: nickName});
             if (
               memberData.hasOwnProperty(userId)
@@ -1117,7 +1127,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
             }
         }
 
-        if (!groupList[groupId].member.includes(_list => _list.id === userId)) {
+        if (!groupList[groupId].member.some(_list => _list.id === userId)) {
           groupList[groupId].member.push({id: userId, name: nickName});
           if (
             memberData.hasOwnProperty(userId)
@@ -1342,7 +1352,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
           totalSeconds,
           bestSeconds: bestFile.time,
           bestSpeed: bestFile.avgSpeed,
-          bestFileId: bestFile.fileId,
+          fileId: bestFile.fileId,
           avgSecond,
           avgHr,
           avgCadence,
@@ -1353,26 +1363,33 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         });
 
       } else {
-        const { info: {name, icon}, privacy, level } = memData[key];
-        tableArr.push({
-          userId: key,
-          name,
-          icon,
-          level,
-          runTimes: 0,
-          totalSeconds: 0,
-          bestSeconds: 0,
-          bestSpeed: 0,
-          bestFileId: null,
-          avgSecond: 0,
-          avgHr: 0,
-          avgCadence: 0,
-          totalCalories: 0,
-          avgSpeed: 0,
-          hrZone: [0, 0, 0, 0, 0, 0],
-          privacy,
-          ratio: '0%'
-        });
+
+        if (!memData[key].info) {
+          delete memData[key];  // 該成員數據為connect跨網域補傳數據，故移除。
+        } else {
+          const { info: {name, icon}, privacy, level } = memData[key];
+          tableArr.push({
+            userId: key,
+            name,
+            icon,
+            level,
+            runTimes: 0,
+            totalSeconds: 0,
+            bestSeconds: 0,
+            bestSpeed: 0,
+            fileId: null,
+            avgSecond: 0,
+            avgHr: 0,
+            avgCadence: 0,
+            totalCalories: 0,
+            avgSpeed: 0,
+            hrZone: [0, 0, 0, 0, 0, 0],
+            privacy,
+            ratio: '0%'
+          });
+
+        }
+
       }
 
     }
@@ -1420,7 +1437,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       totalStep
     } = record;
 
-    if (this.checkRaceComplete(+distance, +totalStep)) {
+    if (!this.reportConditionOpt.cloudRun.checkCompletion || this.checkRaceComplete(+distance, +totalStep)) {
       return {
         avgHeartRateBpm,
         avgSpeed,
@@ -1448,7 +1465,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   checkRaceComplete(distance: number, totalStep: number): boolean {
     const mapDistance = +this.mapInfo.distance * 1000;
-    if (distance >= mapDistance && distance / 200 < totalStep) {
+    if (distance >= mapDistance && distance / 2 < totalStep) {
       return true;
     } else {
       return false;
@@ -1591,11 +1608,11 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     this.groupTable.showDataType = this.groupTable.showDataType.slice(0, max);
     this.memberTable.showDataType = this.groupTable.showDataType.slice(0, max);
     this.setAnalysisOpt();
+    this.changeDetectorRef.markForCheck();
   }
 
   // 依照群組階層決定可篩選的條件-kidin-1090609
   assignFilter (level: number) {
-
     const defaultFil = {
       group: [2], // 預設50階
       person: [2], // 預設50階
@@ -1629,6 +1646,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     const sortCategory = this.getSortType(this[`${table}Table`].sortType as AnalysisData),
           sortDirection = this[`${table}SortTable`].direction;
     this[`${table}TableData`].data = this.sortData(this[`${table}TableData`].data, sortCategory, sortDirection === 'asc');
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -1687,8 +1705,8 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
 
         // 無成績者皆必排最後
         if (
-          (!_dataA && _dataB !== 0)
-          || (_dataB !== 0 && asc && _dataB < _dataA)
+          (!_dataA && _dataB && _dataB !== 0)
+          || (_dataB && asc && _dataB < _dataA)
           || (!asc && _dataB > _dataA)
         ) {
           swaped = true;
@@ -1701,8 +1719,14 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
 
     if (sortCategory !== 'name' && sortDenominator !== 0) {
       return sortData.map(_data => {
-        const sortData = _data[sortCategory],
-              numerator = sortCategory === 'avgSpeed' ? +(3600 / sortData).toFixed(0) : +sortData.toFixed(0);
+        const sortItemData = _data[sortCategory];
+        let numerator: number;
+        if (sortItemData) {
+          numerator = sortCategory === 'avgSpeed' ? +(3600 / sortItemData).toFixed(0) : +sortItemData.toFixed(0);
+        } else {
+          numerator = 0;
+        }
+
         _data.ratio = `${((numerator / sortDenominator) * 100).toFixed(0)}%`;
         return _data;
       });
@@ -1730,7 +1754,8 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       this.handleScrollEvent();
       this.handleClickEvent();
     }
-    
+
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -1765,6 +1790,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
 
     this.handleScrollEvent();
     this.handleClickEvent();
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -1774,12 +1800,12 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
   handleScrollEvent() {
     const mainSection = document.querySelector('.main-body'),
           scroll = fromEvent(mainSection, 'scroll');
-
     this.scrollEvent = scroll.pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(e => {
       this.initShowMenu();
       this.scrollEvent.unsubscribe();
+      this.changeDetectorRef.markForCheck();
     });
 
   }
@@ -1799,12 +1825,12 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   handleClickEvent() {
     const click = fromEvent(document, 'click');
-
     this.clickEvent = click.pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(e => {
       this.initShowMenu();
       this.clickEvent.unsubscribe();
+      this.changeDetectorRef.markForCheck();
     });
 
   }
@@ -1840,6 +1866,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
   showAllData (type: AnalysisTable) {
     this[`${type}Table`].showAll = true;
     this.updateUrl();
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -1865,6 +1892,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     }
     
     this.initShowMenu();
+
   }
 
   /**
@@ -1890,7 +1918,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         break;
       */
     }
-    
+
   }
 
   /**
@@ -1924,6 +1952,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       this.setAnalysisOpt();
     }
 
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -1998,6 +2027,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
   mapSourceChange(e: 'google' | 'baidu') {
     this.mapSource = e;
     this.updateUrl();
+    this.changeDetectorRef.markForCheck();
   }
 
   /**

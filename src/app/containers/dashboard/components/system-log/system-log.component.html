@@ -4,32 +4,50 @@
   <header class="flexCol" style="position: relative;">
     <h5>篩選條件</h5>
     <div class="flexRow" style="flex-wrap: wrap; min-height: 140px;">
-      <section class="flexCol" [class.alert__empty]="uiFlag.notChoiceUser" style="min-width: 230px;">
-        <h6>
-          選擇使用者
+      <section
+        class="flexCol"
+        [class.alert__empty]="uiFlag.notChoiceTarget"
+        style="min-width: 230px;"
+      >
+        <h6 style="cursor: pointer; align-items: center;" (click)="changeTargetType()">
+          <i class="icon-svg_web-icon_p1_031-sync" style="font-size: 20px; color: rgba(38, 171, 227, 1)"></i>
+          <ng-container *ngIf="uiFlag.targetType === 'user'">選擇使用者</ng-container>
+          <ng-container *ngIf="uiFlag.targetType === 'equipment'">裝置序號</ng-container> 
           <span style="color: red;">*</span>
         </h6>
-        <div class="flexRow" style="align-items: center;">
-          <button class="user__selector__btn" (click)="openSelectorWin(1, $event)">
-            暱稱
-          </button>
-          <span class="user__info">：{{ targetUser.name || '---' }}</span>
-        </div>
-        <div class="flexRow" style="align-items: center;">
-          <button class="user__selector__btn" (click)="openSelectorWin(2, $event)">
-            帳號
-          </button>
-          <span class="user__info">：{{ targetUser.account || '---' }}</span>
-        </div>
-        <div class="flexRow" style="align-items: center;">
-          <span>User id：</span>
-          <input
-            type="text"
-            placeholder="User id"
-            style="width: 70px; border: none; border-bottom: 1px solid gray; outline: none;"
-            [value]="targetUser.id"
-            (change)="changeUserId($event)"
-          >
+        <div class="flexCol" style="margin-left: 10px;">
+          <ng-container *ngIf="uiFlag.targetType === 'user'">
+            <div class="flexRow" style="align-items: center;">
+              <button class="user__selector__btn" (click)="openSelectorWin(1, $event)">
+                暱稱
+              </button>
+              <span class="user__info">：{{ targetUser.name || '---' }}</span>
+            </div>
+            <div class="flexRow" style="align-items: center;">
+              <button class="user__selector__btn" (click)="openSelectorWin(2, $event)">
+                帳號
+              </button>
+              <span class="user__info">：{{ targetUser.account || '---' }}</span>
+            </div>
+            <div class="flexRow" style="align-items: center;">
+              <span>User id：</span>
+              <input
+                type="text"
+                placeholder="User id"
+                style="width: 70px; border: none; border-bottom: 1px solid gray; outline: none;"
+                [value]="targetUser.id"
+                (change)="changeUserId($event)"
+              >
+            </div>
+          </ng-container>
+          <ng-container *ngIf="uiFlag.targetType === 'equipment'">
+            <input
+              type="text"
+              style="width: 160px; margin-left: 10px;"
+              [(ngModel)]="searchCondition.targetEquipmentSN"
+              placeholder="請輸入序號"
+            >
+          </ng-container>
         </div>
       </section>
       <section class="flexCol">

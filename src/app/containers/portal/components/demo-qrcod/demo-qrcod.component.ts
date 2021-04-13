@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { getUrlQueryStrings } from '@shared/utils/';
 import { QrcodeService } from '../../services/qrcode.service';
 import { HttpParams } from '@angular/common/http';
@@ -10,13 +10,17 @@ import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { AuthService } from '@shared/services/auth.service';
 import { Router } from '@angular/router';
+import { UserProfileService } from '../../../../shared/services/user-profile.service';
+import { Subscription, Subject, of } from 'rxjs';
+import { takeUntil, switchMap, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-demo-qrcod',
   templateUrl: './demo-qrcod.component.html',
   styleUrls: ['./demo-qrcod.component.scss']
 })
-export class DemoQrcodComponent implements OnInit {
+export class DemoQrcodComponent implements OnInit, OnDestroy {
+  private ngUnsubscribe = new Subject;
   i18n = {
     confirm: '',
     bindSuccess: '',
@@ -48,7 +52,8 @@ export class DemoQrcodComponent implements OnInit {
     private translateService: TranslateService,
     private dialog: MatDialog,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private userProfileService: UserProfileService
   ) {}
 
   ngOnInit() {
@@ -206,16 +211,28 @@ export class DemoQrcodComponent implements OnInit {
       deviceFWVer: '',
       deviceRFVer: ''
     };
-    this.qrcodeService.uploadDeviceInfo(body, device_sn).subscribe(
+    this.qrcodeService.uploadDeviceInfo(body, device_sn).pipe(
+      switchMap(res1 => {
+        return this.userProfileService.getRxUserProfile().pipe(
+          map(res2 => this.token ? [res1, res2.userId] : [res1])
+        );
+      }),
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(
       res => {
+        const [result, userId] = [...res];
         this.progressRef.complete();
         this.isLoading = false;
-        const result = res;
         const {
           resultCode,
-          info: { warrantyStatus, fitPairStatus, isFitPaired }
+          info: { 
+            warrantyStatus,
+            fitPairStatus,
+            isFitPaired,
+            fitPairUserId
+          }
         } = result;
-        this.isFitPaired = isFitPaired;
+
         if (resultCode !== 200) {
           this.isShowBindingBtn = false; // 驗證失敗，不顯示登錄產品btn
           this.isShowFitPairBtn = false;
@@ -224,10 +241,45 @@ export class DemoQrcodComponent implements OnInit {
           this.isShowBindingBtn = warrantyStatus !== '2'; // 驗證成功，判斷是否已綁訂
           this.isShowFitPairBtn = fitPairStatus === '3';
           this.isWrong = false;
+
+          this.isFitPaired = isFitPaired;
+          if (fitPairStatus === '3' && isFitPaired && fitPairUserId != userId) {
+            this.openFitPairAlert();
+          }
+
         }
+
       },
       err => (this.isWrong = true)
     );
+  }
+
+  /**
+   * 若使用者非該裝置榜定者，則跳出訊息提示是否複寫fitpair對象
+   * @author kidin-1100409
+   */
+  openFitPairAlert() {
+    return this.dialog.open(MessageBoxComponent, {
+      hasBackdrop: true,
+      data: {
+        title: 'message',
+        body: this.translateService.instant('universal_deviceSetting_overwrite'),
+        confirmText: this.translateService.instant('universal_operating_confirm'),
+        onConfirm: this.coverFitpair.bind(this),
+        cancelText: this.translateService.instant('universal_operating_cancel')
+      }
+
+    });
+
+  }
+
+  /**
+   * 覆蓋fitpair對象
+   * @author kidin-1100409
+   */
+  coverFitpair() {
+    this.fitPair('2', false);
+    this.fitPair('1');
   }
 
   swithMainApp(e) {
@@ -293,7 +345,7 @@ export class DemoQrcodComponent implements OnInit {
     }
   }
 
-  fitPair(type) {
+  fitPair(type: string, showMessage: boolean = true) {
     this.fitPairType = type;
     if (this.fitPairType === '2' || (!this.isShowBindingBtn)) {
       return this.handleFitPair();
@@ -307,24 +359,26 @@ export class DemoQrcodComponent implements OnInit {
         confirmText: this.translateService.instant('universal_deviceSetting_productRegistration'),
         onConfirm: this.goBinding.bind(this, 1),
         cancelText: this.translateService.instant('universal_uiFitpair_singleFitpair'),
-        onCancel: this.handleFitPair.bind(this)
+        onCancel: this.handleFitPair.bind(this, showMessage)
       }
     });
   }
 
-  handleFitPair() {
+  handleFitPair(showMessage: boolean = true) {
     const { device_sn } = this.displayQr;
     const body = {
       token: this.token,
       fitPairType: this.fitPairType,
       pairEquipmentSN: [device_sn]
     };
+
     if (!this.token) {
       return this.handleGoLoginPage(2);
     }
+
     this.qrcodeService.fitPairSetting(body).subscribe(res => {
       if (res.resultCode === 200) {
-        if (this.fitPairType === '2') {
+        if (this.fitPairType === '2' && showMessage) {
           return this.dialog.open(MessageBoxComponent, {
             hasBackdrop: true,
             data: {
@@ -360,4 +414,14 @@ export class DemoQrcodComponent implements OnInit {
       }
     });
   }
+
+  /**
+   * 取消rxjs訂閱
+   * @author kidin-1100309
+   */
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
 }
