@@ -3,6 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import jquery from 'jquery';
 import moment from 'moment';
 import 'daterangepicker';
+import { AUTO_STYLE } from '@angular/animations';
 
 @Component({
   selector: 'app-date-range-picker',
@@ -56,6 +57,7 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
             minDate: moment(),
             startDate: moment(this.refStartDate),
             endDate: moment(this.refStartDate),
+            drops: 'auto',
             locale: {
               format: 'YYYY-MM-DD'
             },
@@ -85,6 +87,7 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
             minDate: moment(),
             startDate: moment(this.defaultDate.startDate),
             endDate: moment(this.defaultDate.startDate),
+            drops: 'auto',
             locale: {
               format: 'YYYY-MM-DD'
             },

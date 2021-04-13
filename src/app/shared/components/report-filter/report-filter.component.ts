@@ -799,13 +799,10 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    * @author kidin-1100308
    */
   chooseRoutine(index: number) {
-    const {month, mapId} = this.routineRaceList[index];
-    this.reportConditionOpt.cloudRun = {
-      month,
-      mapId: +mapId
-    };
-
-    const isThisMonth = moment().format('YYYYMM') === month;
+    const {month, mapId} = this.routineRaceList[index],
+          isThisMonth = moment().format('YYYYMM') === month;
+    this.reportConditionOpt.cloudRun.month = month;
+    this.reportConditionOpt.cloudRun.mapId = +mapId;
     this.date = {
       type: 'thisMonth',
       maxTimestamp: moment().endOf('day').valueOf(),
@@ -816,6 +813,14 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     }
 
     this.changeActiveBar();
+  }
+
+  /**
+   * 切換是否只顯示完賽數據
+   * @author kidin-1100413
+   */
+  changeCheckStatus() {
+    this.reportConditionOpt.cloudRun.checkCompletion = !this.reportConditionOpt.cloudRun.checkCompletion;
   }
 
   /**

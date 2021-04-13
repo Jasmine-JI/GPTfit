@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Subject, fromEvent, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { UserProfileService } from '../../services/user-profile.service';
@@ -35,7 +35,8 @@ type FooterDesc = 'classDesc' | 'teacherDesc';
 @Component({
   selector: 'app-activity-detail',
   templateUrl: './activity-detail.component.html',
-  styleUrls: ['./activity-detail.component.scss']
+  styleUrls: ['./activity-detail.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('tagBar') tagBar: ElementRef;
@@ -214,6 +215,26 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   filePrivacy: Array<PrivacyCode> = [1];
   cloudrunMapId: number;
 
+  // 頁面所需資訊
+  readonly needKey = [
+    'pointSecond',
+    'altitudeMeters',
+    'heartRateBpm',
+    'speed',
+    'runCadence',
+    'cycleCadence',
+    'cycleWatt',
+    'swimCadence',
+    'temp',
+    'rowingWatt',
+    'rowingCadence',
+    'gsensorXRawData',
+    'gsensorYRawData',
+    'gsensorZRawData',
+    'moveRepetitions',
+    'distanceMeters'
+  ];
+
   constructor(
     private userProfileService: UserProfileService,
     private utils: UtilsService,
@@ -224,7 +245,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     private translate: TranslateService,
     private muscleName: MuscleNamePipe,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private changeDetectorRef: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -310,6 +332,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     ).subscribe(() => {
       this.checkScreenSize();
       this.switchTag(this.uiFlag.currentTag);
+      this.changeDetectorRef.markForCheck();
     });
 
   }
@@ -434,6 +457,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           break;
       }
 
+      this.changeDetectorRef.markForCheck();
     });
 
   }
@@ -445,20 +469,26 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   handleActivityDetail(data: any) {
     this.rawData = data;
-    this.handleFileInfo(data.fileInfo);
-    this.activityInfoLayer = data.activityInfoLayer;
+    const { fileInfo, activityInfoLayer, activityLapLayer, activityPointLayer } = data;
+    this.handleFileInfo(fileInfo);
+    this.activityInfoLayer = activityInfoLayer;
     this.handleSceneryImg(+this.activityInfoLayer.type, +this.activityInfoLayer.subtype);
     this.handleHrZoneData(this.activityInfoLayer);
     if (+this.activityInfoLayer.type === 2) this.handleFtpZoneData(this.activityInfoLayer);
+    this.activityLapLayer = activityLapLayer;
+    if (activityPointLayer.length === 0) {
+      this.handleActivityPoint(this.handleEmptyPoint());
+    } else {
+      this.handleActivityPoint(activityPointLayer);
+    }
 
-    this.activityLapLayer = data.activityLapLayer;
-    this.handleActivityPoint(data.activityPointLayer);
     if(this.activityInfoLayer.type == 3) {
       if (!this.uiFlag.isPreviewMode) this.getUserWeightTrainLevel();
       this.createMuscleTranslate();
     }
 
     this.progress = 100;
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -472,8 +502,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     if (cloudRunMapId) {
       this.cloudrunMapId = cloudRunMapId.includes('=') ? +cloudRunMapId.split('?mapId=')[1] : +cloudRunMapId;
     }
-    this.handleFileCreateDate(this.fileInfo.creationDate);
 
+    this.handleFileCreateDate(this.fileInfo.creationDate);
     const targetUserId = +this.fileInfo.author.split('=')[1];
     if (!this.uiFlag.isPortal) {
       
@@ -520,7 +550,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   handleFileCreateDate(date: string) {
     const dayInWeek = moment(date).weekday();
     let weekDay: string;
-
     this.translate.get('hollow world').pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
@@ -727,6 +756,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         this.checkGroupResLength('classDesc');
       }
       
+      this.changeDetectorRef.markForCheck();
     });
 
   }
@@ -758,6 +788,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       }
 
+      this.changeDetectorRef.markForCheck();
     });
 
   }
@@ -788,6 +819,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
       }
 
+      this.changeDetectorRef.markForCheck();
     });
 
   }
@@ -817,8 +849,35 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
       }
 
+      this.changeDetectorRef.markForCheck();
     }, 50);
     
+  }
+
+  /**
+   * 處理activityPointLayer為空陣列的情況
+   * @author kidin-1100413
+   */
+  handleEmptyPoint() {
+    return [{
+      pointSecond: null,
+      altitudeMeters: null,
+      heartRateBpm: null,
+      speed: null,
+      runCadence: null,
+      cycleCadence: null,
+      cycleWatt: null,
+      swimCadence: null,
+      temp: null,
+      rowingWatt: null,
+      rowingCadence: null,
+      gsensorXRawData: null,
+      gsensorYRawData: null,
+      gsensorZRawData: null,
+      moveRepetitions: null,
+      distanceMeters: null
+    }];
+
   }
 
   /**
@@ -827,9 +886,11 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    * @author kidin-1100104
    */
   handleActivityPoint(point: any) {
-    const pointLen = point.length;
+    const pointLen = point.length,
+          { pointSecond } = point[pointLen - 1] || {pointSecond: 0},
+          { pointSecond: beforePointSecond } = point[pointLen - 2] || {pointSecond: undefined};
     // 若最後兩點時間相同，則將最後兩點進行均化
-    if (point[pointLen - 1].pointSecond === point[pointLen - 2].pointSecond) {
+    if (pointSecond === beforePointSecond) {
       const repeatPoint = point.splice(pointLen - 1, pointLen)[0],
             newPointLen = point.length,
             lastPoint = point[newPointLen - 1];
@@ -860,27 +921,6 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
     // 距離為0或第一點的距離為null則趨勢圖表設定框分段解析不顯示距離選項
     this.trendChartOpt.haveDistanceChoice = (this.activityInfoLayer.totalDistanceMeters && point[0]['distanceMeters']) ? true : false;
-
-    // 頁面所需資訊
-    const needKey = [
-      'pointSecond',
-      'altitudeMeters',
-      'heartRateBpm',
-      'speed',
-      'runCadence',
-      'cycleCadence',
-      'cycleWatt',
-      'swimCadence',
-      'temp',
-      'rowingWatt',
-      'rowingCadence',
-      'gsensorXRawData',
-      'gsensorYRawData',
-      'gsensorZRawData',
-      'moveRepetitions',
-      'distanceMeters'
-    ];
-
     let haveEffectiveCoordinates = false,
         effectiveDegree = {  // 補斷點用
           latitudeDegrees: null,
@@ -926,7 +966,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         }
 
         // 將各個所需資料分別合併為array，以供圖表使用
-        needKey.forEach(_key => {
+        this.needKey.forEach(_key => {
           if (_point.hasOwnProperty(_key)) {
             this.activityPointLayer.hasOwnProperty(_key) ?
               this.activityPointLayer[_key].push(+_point[_key]) : Object.assign(this.activityPointLayer, {[_key]: [+_point[_key]]});
@@ -984,6 +1024,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     e.stopPropagation();
     this.uiFlag.showWeightTrainingOpt = !this.uiFlag.showWeightTrainingOpt;
     this.uiFlag.showWeightTrainingOpt ? this.subscribeClick() : this.ngUnsubscribeClick();
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -994,6 +1035,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   handleShowLevelSelector(e: MouseEvent) {
     e.stopPropagation();
     this.uiFlag.showLevelSelector = !this.uiFlag.showLevelSelector;
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -1006,6 +1048,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     this.uiFlag.showLevelSelector = false;
     this.uiFlag.showWeightTrainingOpt = false;
     this.ngUnsubscribeClick();
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -1017,6 +1060,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     e.stopPropagation();
     this.uiFlag.showChartOpt = !this.uiFlag.showChartOpt;
     this.uiFlag.showChartOpt ? this.subscribeClick() : this.ngUnsubscribeClick();
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -1032,6 +1076,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       this.uiFlag.showSegmentRangeList = false;
       this.uiFlag.showWeightTrainingOpt = false;
       this.ngUnsubscribeClick();
+      this.changeDetectorRef.markForCheck();
     });
 
   }
@@ -1055,6 +1100,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     this.assignDataRef();
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -1084,6 +1130,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     this.assignDataRef();
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -1115,6 +1162,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   handleShowDropList() {
     this.uiFlag.showSegmentRangeList = !this.uiFlag.showSegmentRangeList;
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -1127,6 +1175,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     this.uiFlag.showSegmentRangeList = false;
     this.countSegmentData();
     this.assignDataRef();
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -1411,6 +1460,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         this.uiFlag[`${type}Overflow`] = false;
       }
 
+      this.changeDetectorRef.markForCheck();
     });
 
   }
@@ -1422,6 +1472,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   handleShowMore(type: FooterDesc) {
     this.uiFlag[`${type}Overflow`] = false;
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -1453,6 +1504,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
     }
 
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -1501,6 +1553,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         this.utils.openAlert(errMsg);
       }
 
+      this.changeDetectorRef.markForCheck();
     });
 
   }
@@ -1525,6 +1578,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
     });
 
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -1729,6 +1783,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       }
     });
 
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -1769,6 +1824,8 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           { duration: 2000 }
         );
       }
+
+      this.changeDetectorRef.markForCheck();
     });
 
   }
@@ -1788,6 +1845,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   editFileName() {
     this.newFileName = this.fileInfo.dispName;
     this.uiFlag.editNameMode = true;
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -1815,6 +1873,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   cancelEdit() {
     this.uiFlag.editNameMode = false;
     this.newFileName = this.fileInfo.dispName;
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -1829,6 +1888,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
       this.uiFlag.editNameMode = false;
     }
     
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -1853,6 +1913,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         this.utils.openAlert(errMsg);
       }
 
+      this.changeDetectorRef.markForCheck();
     });
 
   }
@@ -1863,6 +1924,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   sceneryImgLoaded() {
     this.uiFlag.imageLoaded = true;
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -1890,6 +1952,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
 
     });
 
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -1899,6 +1962,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
    */
   editPrivacy(privacy: Array<PrivacyCode>) {
     this.fileInfo.privacy = privacy;
+    this.changeDetectorRef.markForCheck();
   }
 
   /**

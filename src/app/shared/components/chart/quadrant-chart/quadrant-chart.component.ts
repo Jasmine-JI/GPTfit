@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnChanges, OnDestroy, Input, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { SportType } from '../../../models/report-condition';
 import { Subscription, Subject, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -33,7 +33,8 @@ type ChartOpt = {
 @Component({
   selector: 'app-quadrant-chart',
   templateUrl: './quadrant-chart.component.html',
-  styleUrls: ['./quadrant-chart.component.scss']
+  styleUrls: ['./quadrant-chart.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
 
@@ -188,11 +189,13 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   clickEvent: Subscription;
+  check = 0;
 
   constructor(
     private translate: TranslateService,
     private utils: UtilsService,
-    private sportPaceSibsPipe: SportPaceSibsPipe
+    private sportPaceSibsPipe: SportPaceSibsPipe,
+    private changeDetectorRef: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -215,6 +218,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
       this.setDefaultOpt();
       this.setUserOpt();
       this.createChart(this.userPoint);
+      this.changeDetectorRef.markForCheck();
     });
 
   }
@@ -548,6 +552,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
       this.getCoefficient(this.chart.displayPoint.length)
     );
 
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -621,6 +626,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
       this.ngUnsubscribeClick();
     }
 
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -640,6 +646,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
         this.ngUnsubscribeClick();
       }
       
+      this.changeDetectorRef.markForCheck();
     });
 
   }
@@ -660,6 +667,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
   handleFocus(e: FocusEvent) {
     e.stopPropagation();
     this.uiFlag.focusInput = true;
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -669,6 +677,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
    */
   handleFocusout(e: FocusEvent) {
     this.uiFlag.focusInput = false;
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -678,6 +687,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
    */
   showAxisType(axis: Axis) {
     this.uiFlag.showDataSelector = this.uiFlag.showDataSelector === axis ? null : axis;
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -711,6 +721,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
       this.tempOpt.customMeaning = true;
     }
     
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -808,6 +819,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
       this.unit
     );
 
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -819,6 +831,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
   editQuadrantMeaning(quadrant: Quadrant, e: Event) {
     this.tempOpt.customMeaning = true;
     this.tempOpt.meaning[quadrant] = (e as any).target.value;
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -841,6 +854,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
     this.chartOpt = this.utils.deepCopy(this.defaultOpt);
     this.restoreOrigin();
     this.redrawChart();
+    this.utils.setLocalStorageObject(`quadrantOpt__${this.sportType}`, JSON.stringify(this.chartOpt));
   }
 
   /**

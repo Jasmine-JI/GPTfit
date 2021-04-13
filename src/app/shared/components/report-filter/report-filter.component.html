@@ -181,7 +181,7 @@
           </span>
           <span class="flexRow radio__selector" (click)="changeMapListType('routine')">
             <span class="radio__btn" [class.radio__btn--active]="uiFlag.mapListType === 'routine'"></span>
-            <span>例行賽</span>
+            <span>{{ 'universal_race_match' | translate }}</span>
           </span>
         </div>
         <div
@@ -247,6 +247,20 @@
             </ng-container>
           </div>
         </div>
+      </div>
+      <div
+        class="flexRow condition__content"
+        style="align-items: center; cursor: pointer;"
+        (click)="changeCheckStatus()"
+      >
+        <div style="border: 1px solid black; width: 20px; height: 20px;">
+          <ng-container *ngIf="reportConditionOpt.cloudRun.checkCompletion">
+            <span class="flexCenter" style="height: 19px;">✔</span>
+          </ng-container>
+        </div>
+        <span style="margin-left: 5px;" for="checkCompletion">
+          {{ 'universal_operating_finished' | translate }} {{ 'universal_race_match' | translate }}
+        </span>
       </div>
     </section>
     <div style="display: flex; justify-content: flex-end;" *ngIf="reportConditionOpt && !reportConditionOpt.hideConfirmBtn">

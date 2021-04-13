@@ -1,9 +1,10 @@
 import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
-
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
 import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
+import { DiscolorTrendData, DisplayPage } from '../../../models/chart-data';
+import { Unit } from '../../../models/bs-constant';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -46,7 +47,7 @@ class ChartOptions {
       },
       plotOptions: {
         column: {
-          pointPlacement: 0.3
+          pointPlacement: 0.33
         },
         series: {
           pointWidth: 10,
@@ -62,22 +63,23 @@ class ChartOptions {
 @Component({
   selector: 'app-discolor-column-chart',
   templateUrl: './discolor-column-chart.component.html',
-  styleUrls: ['./discolor-column-chart.component.scss']
+  styleUrls: ['./discolor-column-chart.component.scss', '../chart-share-style.scss']
 })
 export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestroy {
-
   dateList = [];
   highestPoint = 0;
   lowestPoint = 3600;
   dataLength: number;
+  chartType: string;
 
   @Input() data: any;
   @Input() dateRange: string;
-  @Input() sportType: string;
   @Input() chartName: string;
   @Input() searchDate: Array<number>;
   @Input() userWeight: number;
   @Input() proficiencyCoefficient: number;
+  @Input() page: DisplayPage;
+  @Input() unit: Unit;
 
   @ViewChild('container', {static: true})
   container: ElementRef;
@@ -95,12 +97,11 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
   initChart () {
     let trendDataset;
     const chartData = [];
-
     switch (this.chartName) {
       case 'Pace':
+        this.chartType = 'pace';
         this.dataLength = this.data.date.length;
-
-        for (let i = 0; i < this.data.date.length; i++) {
+        for (let i = 0; i < this.dataLength; i++) {
 
           if (this.data.pace[i] > this.highestPoint) {
             this.highestPoint = this.data.pace[i];
@@ -122,8 +123,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         break;
       case 'Cadence':
         this.dataLength = this.data.date.length;
-
-        for (let i = 0; i < this.data.date.length; i++) {
+        for (let i = 0; i < this.dataLength; i++) {
 
           if (this.data.bestCadence[i] > this.highestPoint) {
             this.highestPoint = this.data.bestCadence[i];
@@ -144,8 +144,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         break;
       case 'Swolf':
         this.dataLength = this.data.date.length;
-
-        for (let i = 0; i < this.data.date.length; i++) {
+        for (let i = 0; i < this.dataLength; i++) {
 
           if (this.data.swolf[i] > this.highestPoint) {
             this.highestPoint = this.data.swolf[i];
@@ -166,8 +165,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         break;
       case 'Speed':
         this.dataLength = this.data.date.length;
-
-        for (let i = 0; i < this.data.date.length; i++) {
+        for (let i = 0; i < this.dataLength; i++) {
 
           if (this.data.bestSpeed[i] > this.highestPoint) {
             this.highestPoint = this.data.bestSpeed[i];
@@ -193,7 +191,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         let index = 0;
         this.dataLength = this.dateList.length;
 
-        for (let i = 0; i < this.dateList.length; i++) {
+        for (let i = 0; i < this.dataLength; i++) {
           if (this.dateList[i] === this.data.date[index]) {
             newData.push(this.data.stepList[index]);
             newTargetData.push(this.data.targetStepList[index]);
@@ -204,7 +202,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
           }
         }
 
-        for (let i = 0; i < this.dateList.length; i++) {
+        for (let i = 0; i < this.dataLength; i++) {
           if (newData[i] - newTargetData[i] >= 0) {
             chartData.push(
               {
@@ -291,7 +289,6 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
 
         break;
       case 'Muscle':
-
         trendDataset = [
           {
             name: this.chartName,
@@ -327,7 +324,6 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
     }
 
     const trendChartOptions = new ChartOptions(trendDataset);
-
     switch (this.chartName) {
       case 'Pace':
         trendChartOptions['yAxis'].reversed = true; // 將y軸反轉-kidin-1090206
@@ -511,13 +507,16 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         break;
     }
 
-    // 設定圖表x軸時間間距-kidin-1090204
-    if (this.dateRange === 'day' && this.dataLength <= 7) {
-      trendChartOptions['xAxis'].tickInterval = 24 * 3600 * 1000;  // 間距一天
-    } else if (this.dateRange === 'day' && this.dataLength > 7) {
-      trendChartOptions['xAxis'].tickInterval = 7 * 24 * 3600 * 1000;  // 間距一週
-    } else {
-      trendChartOptions['xAxis'].tickInterval = 30 * 24 * 4600 * 1000;  // 間距一個月
+    if (this.page !== 'cloudrun') {
+      // 設定圖表x軸時間間距-kidin-1090204
+      if (this.dateRange === 'day' && this.dataLength <= 7) {
+        trendChartOptions['xAxis'].tickInterval = 24 * 3600 * 1000;  // 間距一天
+      } else if (this.dateRange === 'day' && this.dataLength > 7) {
+        trendChartOptions['xAxis'].tickInterval = 7 * 24 * 3600 * 1000;  // 間距一週
+      } else {
+        trendChartOptions['xAxis'].tickInterval = 30 * 24 * 4600 * 1000;  // 間距一個月
+      }
+
     }
 
     this.createChart(trendChartOptions);

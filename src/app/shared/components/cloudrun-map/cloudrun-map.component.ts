@@ -37,6 +37,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
   @Input('mapSource') mapSource: MapSource;
   @Input('compareList') compareList: Array<number>;
   @Input('isPreviewMode') isPreviewMode: boolean;
+  @Input('page') page: 'group' | 'person';
   @Output() mapSourceChange: EventEmitter<MapSource> = new EventEmitter();
   @Output() comparePlayer: EventEmitter<number> = new EventEmitter();
 
@@ -436,8 +437,13 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
    */
   createPlayerList(list: any) {
     let completeList: Array<any>;
-    completeList = list.filter(_list => _list.bestSeconds);
-    completeList.sort((a, b) => a.bestSeconds - b.bestSeconds);
+    if (this.page === 'group') {
+      completeList = list.filter(_list => _list.bestSeconds);
+      completeList.sort((a, b) => a.bestSeconds - b.bestSeconds);
+    } else {
+      completeList = list.sort((a, b) => a.totalSecond - b.totalSecond);
+    }
+    
     this.playerList = this.assignRank(completeList);
     this.mapPlay.playSpeed = 10;
     this.initMapPlay();
@@ -452,10 +458,20 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
     let rank = 1;
     for (let i = 0, len = list.length; i < len; i++) {
 
-      if (i === 0 || list[i].bestSeconds !== list[i - 1].bestSeconds) {
-        rank = i + 1;
-      }
+      if (this.page === 'group') {
 
+        if (i === 0 || list[i].bestSeconds !== list[i - 1].bestSeconds) {
+          rank = i + 1;
+        }
+
+      } else {
+
+        if (i === 0 || list[i].totalSecond !== list[i - 1].totalSecond) {
+          rank = i + 1;
+        }
+
+      }
+      
       Object.assign(list[i], {rank});
     }
 
@@ -466,9 +482,9 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
    * 載入預設玩家point資訊(第一名/自己 或 自己/第二名 或 第一名/第二名)
    * @author kidin-1100325
   loadDefaultPlayer() {
-    const index = this.playerList.findIndex(_player => _player.userId == this.userId);
+    const index = this.playerList.findIndex(_player => _player.fileId == this.fileId);
     let loadArr = [];
-    if (!this.dataStore[this.playerList[0].userId]) {
+    if (!this.dataStore[this.playerList[0].fileId]) {
       loadArr.push(0);
     } else {
       this.addPlayer(0);
@@ -476,7 +492,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
 
     if (index > 0) {
 
-      if (!this.dataStore[this.playerList[index].userId]) {
+      if (!this.dataStore[this.playerList[index].fileId]) {
         loadArr.push(index);
       } else {
         this.addPlayer(index);
@@ -484,7 +500,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
 
     } else {
 
-      if (this.playerList[1] && !this.dataStore[this.playerList[1].userId]) {
+      if (this.playerList[1] && !this.dataStore[this.playerList[1].fileId]) {
         loadArr.push(1);
       } else if (this.playerList[1]) {
         this.addPlayer(1);
@@ -506,7 +522,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
           fileIdArr = [];
 
     indexArr.forEach(_index => {
-      fileIdArr.push(this.playerList[_index].bestFileId);
+      fileIdArr.push(this.playerList[_index].fileId);
     });
 
     if (fileIdArr.length > 0) {
@@ -559,10 +575,9 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
         } else {
           const { activities } = info;
           activities.forEach(_activity => {
-            const { activityPointLayer, fileInfo: { author } } = _activity,
-                  userId = author.includes('=') ? author.split('=')[1] : author;
+            const { activityPointLayer, fileInfo: { fileId } } = _activity;
             Object.assign(this.dataStore, {
-              [userId]: {
+              [fileId]: {
                 secondBase: activityPointLayer,
                 distanceBase: this.filterSameDistanceData(activityPointLayer)
               }
@@ -589,13 +604,13 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
    * @author kidin-1100325
    */
   clickPlayer(index: number) {
-    const { userId } = this.playerList[index];
-    if (this.loadedList[userId]) {
-      this.removePlayer(userId);
+    const { fileId } = this.playerList[index];
+    if (this.loadedList[fileId]) {
+      this.removePlayer(fileId);
       this.comparePlayer.emit(index);
     } else {
 
-      if (this.dataStore[userId]) {
+      if (this.dataStore[fileId]) {
         this.addPlayer(index);
       } else {
         this.loadPlayerData([index]);
@@ -607,16 +622,43 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   /**
+   * 使用者聚焦的對象
+   * @param index {number}
+   * @author kidin-1100412
+   */
+  focusPlayer(index: number) {
+    const { fileId } = this.playerList[index],
+          iconSize = this.getMapIconSize() + 20;
+    if (this.loadedList[fileId]) {
+      this.mapPlay.playerMark[fileId].adjustIconSize(iconSize);
+    }
+
+  }
+
+  /**
+   * 使用者移開聚焦的對象
+   * @param index {number}
+   * @author kidin-1100412
+   */
+  blurPlayer(index: number) {
+    const { fileId } = this.playerList[index],
+          iconSize = this.getMapIconSize();
+    if (this.loadedList[fileId]) {
+      this.mapPlay.playerMark[fileId].adjustIconSize(iconSize);
+    }
+  }
+
+  /**
    * 移除玩家
-   * @param userId {number}
+   * @param fileId {number}
    * @author kidin-1100326
    */
-  removePlayer(userId: number) {
+  removePlayer(fileId: number) {
     const obj = this.utils.deepCopy(this.loadedList);
-    delete obj[userId];
+    delete obj[fileId];
     this.loadedList = obj;  // 變更loadedList記憶體位置以觸發子組件change事件
-    this.mapPlay.playerMark[userId].onRemove();
-    delete this.mapPlay.playerMark[userId];
+    this.mapPlay.playerMark[fileId].onRemove();
+    delete this.mapPlay.playerMark[fileId];
   }
 
   /**
@@ -646,12 +688,12 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
   addPlayer(index: number) {
     this.comparePlayer.emit(index);
     const random = (Math.random() * 300).toFixed(0),
-          { userId, name, icon } = this.playerList[index],
-          { distanceBase, secondBase } = this.dataStore[userId],
+          { fileId, name, icon } = this.playerList[index],
+          { distanceBase, secondBase } = this.dataStore[fileId],
           obj = this.utils.deepCopy(this.loadedList);
 
     Object.assign(obj, {
-      [userId]: {
+      [fileId]: {
         name,
         icon,
         distanceBase,
@@ -662,39 +704,37 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
 
     this.loadedList = obj;  // 變更loadedList記憶體位置以觸發子組件change事件
     if (this.mapOpt.mapSource === 'google') {
-      this.createGMapPlayerMark(userId);
+      this.createGMapPlayerMark(fileId);
     } else {
-      this.createBMapPlayerMark(userId);
+      this.createBMapPlayerMark(fileId);
     }
 
   }
 
   /**
    * 建立玩家在google map的起始位置mark
-   * @param userId {number}
+   * @param fileId {number}
    * @author kidin-1100326
    */
-  createGMapPlayerMark(userId: number) {
-    const { name, color, secondBase, icon } = this.loadedList[userId],
+  createGMapPlayerMark(fileId: number) {
+    const { name, color, secondBase, icon } = this.loadedList[fileId],
           lat = +secondBase[0].latitudeDegrees,
           lng = +secondBase[0].longitudeDegrees,
           position = new google.maps.LatLng(lat, lng),  // google map座標為(緯度, 經度)
           iconSize = this.getMapIconSize();
     Object.assign(this.mapPlay.playerMark, {
-      [userId]: new CustomGMapIcon(iconSize, position, name, icon, color)
+      [fileId]: new CustomGMapIcon(iconSize, position, name, icon, color)
     });
 
-    this.mapPlay.playerMark[userId].setMap(this.googleObj.map);
+    this.mapPlay.playerMark[fileId].setMap(this.googleObj.map);
   }
 
   /**
-   * 調整google map 玩家icon的大小
-   * @param zoom {number}-google map縮放比例
+   * 調整玩家icon的大小
    * @author kidin-1100329
    */
   adjustMapIconSize() {
     const iconSize = this.getMapIconSize();
-    
     for (let _playerId in this.mapPlay.playerMark) {
 
       if (this.mapPlay.playerMark.hasOwnProperty(_playerId)) {
@@ -711,11 +751,9 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
    */
   getMapIconSize() {
     const { normal, current } = this.mapPlay.zoom;
-    let iconSize: number;
-    if (current <= normal) {
-      iconSize = 35;
-    } else {
-      iconSize = 35 + ((current - normal) * 10);
+    let iconSize = 30;
+    if (current > normal) {
+      iconSize += ((current - normal) * 10);
     }
 
     return iconSize;
@@ -723,11 +761,11 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
 
   /**
    * 建立玩家在baidu map的起始位置mark
-   * @param userId {number}
+   * @param fileId {number}
    * @author kidin-1100326
    */
-  createBMapPlayerMark(userId: number) {
-    const { name, color, secondBase, icon } = this.loadedList[userId],
+  createBMapPlayerMark(fileId: number) {
+    const { name, color, secondBase, icon } = this.loadedList[fileId],
           lat = +secondBase[0].latitudeDegrees,
           lng = +secondBase[0].longitudeDegrees,
           needConverse = this.handleBorderData([lng, lat], chinaAndTaiwanBorder),
@@ -743,25 +781,25 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
 
     const position = new BMap.Point(bd09Point[0], bd09Point[1]);
     Object.assign(this.mapPlay.playerMark, {
-      [userId]: new CustomBMapIcon(iconSize, position, name, icon, color)
+      [fileId]: new CustomBMapIcon(iconSize, position, name, icon, color)
     });
 
-    this.baiduObj.map.addOverlay(this.mapPlay.playerMark[userId]);
+    this.baiduObj.map.addOverlay(this.mapPlay.playerMark[fileId]);
   }
 
   /**
-   * 設定玩家在baidu map的位置
-   * @param userId {number}
+   * 設定玩家在google map的位置
+   * @param fileId {number}
    * @param index {number}-路徑索引值
    * @author kidin-1100326
    */
-  setGMapMark(userId: number, index: number) {
-    const { secondBase } = this.loadedList[userId];
+  setGMapMark(fileId: number, index: number) {
+    const { secondBase } = this.loadedList[fileId];
     if (secondBase[index]) {
       const lat = +secondBase[index].latitudeDegrees,
             lng = +secondBase[index].longitudeDegrees,
             position = new google.maps.LatLng(lat, lng);
-      this.mapPlay.playerMark[userId].onMove(position);
+      this.mapPlay.playerMark[fileId].onMove(position);
       return false;
     } else {
       return true;
@@ -771,12 +809,12 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
 
   /**
    * 設定玩家在baidu map的位置
-   * @param userId {number}
+   * @param fileId {number}
    * @param index {number}-路徑索引值
    * @author kidin-1100326
    */
-  setBMapMark(userId: number, index: number) {
-    const { secondBase } = this.loadedList[userId];
+  setBMapMark(fileId: number, index: number) {
+    const { secondBase } = this.loadedList[fileId];
     if (secondBase[index]) {
       const lat = +secondBase[index].latitudeDegrees,
             lng = +secondBase[index].longitudeDegrees,
@@ -791,7 +829,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
       }
 
       const position = new BMap.Point(bd09Point[0], bd09Point[1]);
-      this.mapPlay.playerMark[userId].onMove(position);
+      this.mapPlay.playerMark[fileId].onMove(position);
       return false;
     } else {
       return true;

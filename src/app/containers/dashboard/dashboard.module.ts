@@ -86,6 +86,7 @@ import { PushMessageListComponent } from './components/push-message/push-message
 import { SystemLogComponent } from './components/system-log/system-log.component';
 import { SystemFolderPermissionComponent } from './components/system-folder-permission/system-folder-permission.component';
 import { AlaAppAnalysisComponent } from './components/ala-app-analysis/ala-app-analysis.component';
+import { CloudrunReportComponent as PersonCloudrunReport } from './components/cloudrun-report/cloudrun-report.component'
 
 
 @NgModule({
@@ -126,6 +127,7 @@ import { AlaAppAnalysisComponent } from './components/ala-app-analysis/ala-app-a
     DetectInappService,
     LifeTrackingService,
     OfficialActivityService,
+    PersonCloudrunReport,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
@@ -181,7 +183,8 @@ import { AlaAppAnalysisComponent } from './components/ala-app-analysis/ala-app-a
     PushMessageListComponent,
     SystemLogComponent,
     SystemFolderPermissionComponent,
-    AlaAppAnalysisComponent
+    AlaAppAnalysisComponent,
+    PersonCloudrunReport
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [

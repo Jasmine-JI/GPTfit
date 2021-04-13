@@ -108,11 +108,11 @@
             </div>
             <div class="flexCol summery__block" *ngIf="+activityInfoLayer.type === 3">
               <span class="summary__type__title">{{ 'universal_activityData_totalWeight' | translate }}</span>
-              <span class="summary__type__content">{{ activityInfoLayer.totalWeightKg | weightSibs: [userProfile.unit, 0] }}</span>
+              <span class="summary__type__content">{{ activityInfoLayer.totalWeightKg || 0 | weightSibs: [userProfile.unit, 0] }}</span>
             </div>
             <div class="flexCol summery__block" *ngIf="+activityInfoLayer.type === 3">
               <span class="summary__type__title">{{ 'universal_activityData_totalReps' | translate }}</span>
-              <span class="summary__type__content">{{ activityInfoLayer.totalReps }} reps</span>
+              <span class="summary__type__content">{{ activityInfoLayer.totalReps || 0 }} reps</span>
             </div>
             <div class="flexCol summery__block" *ngIf="+activityInfoLayer.type === 5">
               <span class="summary__type__title">{{ 'universal_activityData_totalCalories' | translate }}</span>
@@ -432,11 +432,11 @@
               <div class="flexCol table__list__block">
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_climbGain' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.elevGain | distanceSibs: userProfile.unit }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.elevGain || 0 | distanceSibs: userProfile.unit }}</span>
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_climbLoss' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.elevLoss | distanceSibs: userProfile.unit }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.elevLoss || 0 | distanceSibs: userProfile.unit }}</span>
                 </div>
               </div>
             </div>
@@ -445,11 +445,19 @@
               <div class="flexCol table__list__block">
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_maxAltitude' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.maxElev | distanceSibs: userProfile.unit }}</span>
+                  <span class="table__list__content">
+                    <ng-container *ngIf="activityInfoLayer.maxElev; else dash;">
+                      {{ activityInfoLayer.maxElev | distanceSibs: userProfile.unit }}
+                    </ng-container>
+                  </span>
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_minAltitude' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.minElev | distanceSibs: userProfile.unit }}</span>
+                  <span class="table__list__content">
+                    <ng-container *ngIf="activityInfoLayer.minElev; else dash;">
+                      {{ activityInfoLayer.minElev | distanceSibs: userProfile.unit }}
+                    </ng-container>
+                  </span>
                 </div>
               </div>
             </div>
@@ -458,15 +466,27 @@
               <div class="flexCol table__list__block">
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_activityAvgTemp' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.avgTemp | temperatureSibs: [userProfile.unit, 0] }}</span>
+                  <span class="table__list__content">
+                    <ng-container *ngIf="activityInfoLayer.avgTemp !== null; else dash;">
+                      {{ activityInfoLayer.avgTemp | temperatureSibs: [userProfile.unit, 0] }}
+                    </ng-container>
+                  </span>
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_maxTemperature' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.maxTemp | temperatureSibs: [userProfile.unit, 0] }}</span>
+                  <span class="table__list__content">
+                    <ng-container *ngIf="activityInfoLayer.maxTemp !== null; else dash;">
+                      {{ activityInfoLayer.maxTemp | temperatureSibs: [userProfile.unit, 0] }}
+                    </ng-container>
+                  </span>
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_lowTemperature' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.minTemp | temperatureSibs: [userProfile.unit, 0] }}</span>
+                  <span class="table__list__content">
+                    <ng-container *ngIf="activityInfoLayer.minTemp !== null; else dash;">
+                      {{ activityInfoLayer.minTemp | temperatureSibs: [userProfile.unit, 0] }}
+                    </ng-container>
+                  </span>
                 </div>
               </div>
             </div>
@@ -515,11 +535,11 @@
               <div class="flexCol table__list__block">
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_totalActivitySet' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.totalActivityLapOrSet }} sets</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalActivityLapOrSet || 0 }} sets</span>
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_totalReps' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.totalReps }} reps</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalReps || 0 }} reps</span>
                 </div>
               </div>
             </div>
@@ -528,7 +548,7 @@
               <div class="flexCol table__list__block">
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_activiyTotalWeight' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.totalWeightKg | weightSibs: [userProfile.unit, 0] }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalWeightKg || 0 | weightSibs: [userProfile.unit, 0] }}</span>
                 </div>
                 <ng-container *ngFor="let _muscleCode of muscleTranslate | keyvalue">
                   <ng-container *ngFor="let _part of activityInfoLayer.weightTrainingInfo;">
@@ -801,7 +821,7 @@
                       {{ (userProfile.unit == 0 ? _layer.lapAvgSpeed : _layer.lapAvgSpeed / unit.mi) | number: '1.0-2' || 0 }}
                     </td>
                     <td class="segmentation__text" *ngIf="activityInfoLayer.type == 3">
-                      {{ _layer.setOneRepMax | weightSibs: [userProfile.unit, 1] || 0 }}
+                      {{ _layer.setOneRepMax || 0 | weightSibs: [userProfile.unit, 1] || 0 }}
                     </td>
                     <td class="segmentation__text" *ngIf="activityInfoLayer.type == 3">
                       {{ _layer.setMoveRepetitionsAvgCadence || 0 }}
@@ -815,6 +835,9 @@
             </table>
           </section>
         </ng-container>
+        <ng-template #dash>
+          <span>-</span>
+        </ng-template>
       </section>
     </sectoin>
   </secton>
@@ -932,7 +955,11 @@
     <section class="card__section">
       <div class="flexRow cardTitle" style="position: relative; justify-content: space-between;">
         <span class="cardSubtitle">{{ 'universal_activityData_trend' | translate }}</span>
-        <i class="icon-svg_web-icon_p1_001-setting settingIcon" (click)="handleShowOptMenu($event)"></i>
+        <i
+          class="icon-svg_web-icon_p1_001-setting settingIcon"
+          (click)="handleShowOptMenu($event)"
+          *ngIf="activityPointLayer.pointSecond.length > 1"
+        ></i>
         <div id="map__opt__menu" (click)="$event.stopPropagation();" *ngIf="uiFlag.showChartOpt">
           <div class="flexCol" *ngIf="trendChartOpt.haveDistanceChoice">
             <span class="bold__font">{{ 'universal_activityData_inAccordanceWith' | translate }}</span>
@@ -1245,7 +1272,9 @@
           {{ 'universal_vocabulary_editDate' | translate }}：
           <span [style.text-align]="fileInfo.editDate ? 'right' : 'left'">{{ fileInfo.editDate || '--' }}</span>
         </div>
-        <span class="footer__content">Create From：{{ fileInfo.createFrom.split('?')[0] || '--' }}</span>
+        <span class="footer__content" *ngIf="fileInfo.createFrom">
+          Create From：{{ fileInfo.createFrom.split('?')[0] || '--' }}
+        </span>
       </div>
     </div>
     <div class="flexCol footer__Info" *ngIf="!fileInfo.class || uiFlag.isDebug">

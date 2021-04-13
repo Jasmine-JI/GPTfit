@@ -14,6 +14,7 @@ export interface ReportConditionOpt {
   cloudRun?: {
     mapId: number;
     month: string;  // 例行賽月份
+    checkCompletion: boolean;  // 是否檢查過濾未完賽數據（含防弊）
   };
   hideConfirmBtn: boolean;
 }

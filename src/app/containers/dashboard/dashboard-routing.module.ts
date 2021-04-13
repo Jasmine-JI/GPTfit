@@ -49,6 +49,7 @@ import { ActivityDetailComponent } from '../../shared/components/activity-detail
 import { SystemLogComponent } from './components/system-log/system-log.component';
 import { SystemFolderPermissionComponent } from './components/system-folder-permission/system-folder-permission.component';
 import { AlaAppAnalysisComponent } from './components/ala-app-analysis/ala-app-analysis.component';
+import { CloudrunReportComponent as PersonCloudrunReport } from './components/cloudrun-report/cloudrun-report.component'
 
 const routes: Routes = [
   {
@@ -210,6 +211,10 @@ const routes: Routes = [
       {
         path: 'life-tracking',
         component: MyLifeTrackingComponent
+      },
+      {
+        path: 'cloudrun',
+        component: PersonCloudrunReport
       },
       {
         path: 'device',

@@ -173,7 +173,7 @@ export class AppChangeAccountComponent implements OnInit, AfterViewInit, OnDestr
   // 使用token取得使用者帳號資訊-kidin-1090514
   getUserInfo () {
     const body = {
-      token: this.utils.getToken() || ''
+      token: this.editBody.token || ''
     };
 
     this.userProfileService.getUserProfile(body).subscribe(res => {
