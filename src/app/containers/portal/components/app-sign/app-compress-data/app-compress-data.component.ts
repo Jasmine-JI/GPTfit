@@ -130,9 +130,8 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   /**
-   * 幫使用者複製連結至剪貼簿
+   * 幫使用者複製連結至剪貼簿(因瀏覽器支援度暫時廢棄)
    * @author kidin-1091217
-   */
   handleCopyLink() {
     const dataLinkSpan = this.dataLink.nativeElement;
     dataLinkSpan.select();
@@ -146,6 +145,7 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestro
     });
     
   }
+  */
 
   /**
    * 串接api 1012確認封存狀態

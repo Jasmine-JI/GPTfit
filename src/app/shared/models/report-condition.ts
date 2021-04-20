@@ -25,13 +25,13 @@ export interface GroupSimpleInfo {
   groupId: string;
   groupName: string;
   groupStatus?: string;
-  selected?: boolean;
 }
 
 export interface GroupTree {
   brands: null | GroupSimpleInfo;
   branches: null | Array<GroupSimpleInfo>;
   coaches: Array<GroupSimpleInfo>;
+  selectGroup: string;  // 只擷取到前面有效片段，ex. '0-0-101-1'
 }
 
 export type SportType = 99 | 1 | 2 | 3 | 4 | 5 | 6 | 7;

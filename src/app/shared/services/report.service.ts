@@ -1,9 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ReportConditionOpt } from '../models/report-condition'
-import moment from 'moment';
 import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
-
 
 @Injectable()
 export class ReportService {

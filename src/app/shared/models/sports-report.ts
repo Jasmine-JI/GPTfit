@@ -223,3 +223,245 @@ export interface SportsReportContent {
     maxCumulativeLanding?: number;  // 最大累積落地衝擊
   }>;
 }
+
+/**
+ * 各運動類別共通所需數據
+ */
+export const commonData = [
+  'avgHeartRateBpm',
+  'avgMaxHeartRateBpm',
+  'calories',
+  'totalActivities',
+  'totalHrZone0Second',
+  'totalHrZone1Second',
+  'totalHrZone2Second',
+  'totalHrZone3Second',
+  'totalHrZone4Second',
+  'totalHrZone5Second',
+  'totalSecond'
+];
+
+/**
+ * 跑步類別所需數據
+ */
+ export const runData = [
+  'avgMaxSpeed',
+  'avgRunMaxCadence',
+  'avgSpeed',
+  'totalActivities',
+  'elevGain',
+  'runAvgCadence',
+  'totalDistanceMeters'
+];
+
+/**
+ * 騎乘類別所需數據
+ */
+ export const rideData = [
+  'avgCycleMaxCadence',
+  'avgCycleMaxWatt',
+  'avgMaxSpeed',
+  'avgSpeed',
+  'cycleAvgCadence',
+  'cycleAvgWatt',
+  'totalDistanceMeters',
+  'totalFtpZone0Second',
+  'totalFtpZone1Second',
+  'totalFtpZone2Second',
+  'totalFtpZone3Second',
+  'totalFtpZone4Second',
+  'totalFtpZone5Second',
+  'totalFtpZone6Second'
+];
+
+/**
+ * 重訓類別所需數據
+ */
+ export const weightTrainData = [
+  'totalReps',
+  'calories',
+  'totalWeightKg'
+];
+
+/**
+ * 游泳類別所需數據
+ */
+ export const swimData = [
+  'avgMaxSpeed',
+  'avgSpeed',
+  'avgSwimMaxCadence',
+  'avgSwolf',
+  'bestSwolf',
+  'swimAvgCadence',
+  'totalDistanceMeters'
+];
+
+/**
+ * 有氧類別所需數據(目前有氧所需數據同共通類別)
+ export const aerobicData = [
+];
+ */
+
+/**
+ * 划船類別所需數據
+ */
+ export const rowData = [
+  'avgMaxSpeed',
+  'avgRowingMaxCadence',
+  'avgSpeed',
+  'rowingAvgCadence',
+  'rowingAvgWatt',
+  'rowingMaxWatt',
+  'totalDistanceMeters'
+];
+
+/**
+ * 球類類別所需數據
+ */
+ export const ballData = [
+  'avgMaxSpeed',
+  'avgSpeed',
+  'totalDistanceMeters',
+  'totalMinusGforceX',
+  'totalMinusGforceY',
+  'totalMinusGforceZ',
+  'totalPlusGforceX',
+  'totalPlusGforceY',
+  'totalPlusGforceZ'
+];
+
+/**
+ * 全類別所需圖表
+ */
+export const allTypeChart = [
+  'ringChart',
+  'distributionChart',
+  'hrZoneInfo',
+  'hrZoneTrend',
+  'activityNum',
+  'totalSecond',
+  'calories'
+];
+
+/**
+ * 跑步類別所需圖表
+ */
+ export const runTypeChart = [
+  'hrInfo',
+  'hrZoneTrend',
+  'activityNum',
+  'totalSecond',
+  'distance',
+  'calories' ,
+  'pace',
+  'cadence',
+  'hrTrend'
+];
+
+/**
+ * 騎乘類別所需圖表
+ */
+ export const rideTypeChart = [
+  'hrInfoChart',
+  'hrZoneTrend',
+  'ftpZoneTrend',
+  'activityNum',
+  'totalSecond',
+  'distance',
+  'calories',
+  'speed',
+  'power',
+  'cadence',
+  'hrTrend'
+];
+
+/**
+ * 重訓類別所需圖表
+ */
+ export const weightTrainTypeChart = [
+  'hrTrendChart',
+  'activityNum',
+  'totalSecond',
+  'calories'
+];
+
+/**
+ * 游泳類別所需圖表
+ */
+ export const swimTypeChart = [
+  'hrInfoChart',
+  'hrTrendChart',
+  'activityNum',
+  'totalSecond',
+  'distance',
+  'calories',
+  'pace',
+  'cadence',
+  'swolf'
+];
+
+/**
+ * 有氧類別所需圖表
+ */
+ export const aerobicTypeChart = [
+  'hrInfoChart',
+  'hrTrendChart',
+  'activityNum',
+  'totalSecond',
+  'calories'
+];
+
+/**
+ * 划船類別所需圖表
+ */
+ export const rowTypeChart = [
+  'hrInfoChart',
+  'hrTrendChart',
+  'activityNum',
+  'totalSecond',
+  'calories',
+  'distance',
+  'pace',
+  'power',
+  'cadence'
+];
+
+/**
+ * 群組球類類別所需圖表
+ */
+ export const groupBallTypeChart = [
+  'hrInfoChart',
+  'hrTrendChart',
+  'activityNum',
+  'totalSecond',
+  'calories',
+  'distance',
+  'speed',
+  'xGForceAccumulate',
+  'yGForceAccumulate',
+  'zGForceAccumulate',
+  'xMaxGForce',
+  'yMaxGForce',
+  'zMaxGForce'
+];
+
+/**
+ * 個人球類類別所需圖表
+ */
+ export const personalBallTypeChart = [
+  'hrInfoChart',
+  'hrTrendChart',
+  'activityNum',
+  'totalSecond',
+  'calories',
+  'distance',
+  'speed',
+  'xGForceAccumulate',
+  'yGForceAccumulate',
+  'zGForceAccumulate',
+  'xMaxGForce',
+  'yMaxGForce',
+  'zMaxGForce',
+  'maxSwingSpeed',
+  'swingProportion'
+];

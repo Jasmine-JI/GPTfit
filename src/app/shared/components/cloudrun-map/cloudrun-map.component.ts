@@ -50,7 +50,6 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
     userInChina: false,
     showMap: false,
     showMapOpt: false,
-    isPreviewMode: false,
     changeMapSource: false
   };
 
@@ -115,10 +114,6 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    if (location.search.includes('ipm=s')) {
-      this.uiFlag.isPreviewMode = true;
-    }
-
   }
 
   ngOnChanges(e: any): void {

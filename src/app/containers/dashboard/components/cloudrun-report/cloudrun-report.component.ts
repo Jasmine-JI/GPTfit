@@ -576,7 +576,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       let nextStartTimestamp: number;
       if (nextStartTime) nextStartTimestamp = moment(nextStartTime).startOf('day').valueOf();
       if (startTimestamp !== nextStartTimestamp) {
-        const { sameDateLen } = sameDateData;
+        let { sameDateLen } = sameDateData;
         if (sameDateLen === 0) {
           // 圖表用數據
           this.chartData.hrTrend.zoneZero.push([startTimestamp, totalHrZone0Second || 0]);
@@ -600,6 +600,20 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
           totalCostTime += totalSecond;
           length++;
         } else {
+          sameDateData.z0 += totalHrZone0Second,
+          sameDateData.z1 += totalHrZone1Second,
+          sameDateData.z2 += totalHrZone2Second,
+          sameDateData.z3 += totalHrZone3Second,
+          sameDateData.z4 += totalHrZone4Second,
+          sameDateData.z5 += totalHrZone5Second,
+          sameDateData.avgSpeed += avgSpeed,
+          sameDateData.avgHr += avgHeartRateBpm,
+          sameDateData.avgSeconds += totalSecond;
+          sameDateLen++;
+
+          if (maxSpeed > sameDateData.maxSpeed) sameDateData.maxSpeed = maxSpeed;
+          if (maxHeartRateBpm > sameDateData.maxHr) sameDateData.maxHr = maxHeartRateBpm;
+
           const oneDayAvgSpeed = +(sameDateData.avgSpeed / sameDateLen).toFixed(1),
                 oneDayAvgHr = +(sameDateData.avgHr / sameDateLen).toFixed(0),
                 oneDayAvgSeconds = +(sameDateData.avgSeconds / sameDateLen).toFixed(0);
