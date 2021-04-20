@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { Subject, combineLatest, fromEvent, Subscription } from 'rxjs';
-import { takeUntil, switchMap, map, first, debounceTime } from 'rxjs/operators';
-import { ReportConditionOpt, GroupTree, GroupSimpleInfo } from '../../../../../shared/models/report-condition';
+import { takeUntil, switchMap, map, first } from 'rxjs/operators';
+import { ReportConditionOpt } from '../../../../../shared/models/report-condition';
 import moment from 'moment';
 import { ReportService } from '../../../../../shared/services/report.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
@@ -9,56 +9,11 @@ import { GroupService } from '../../../services/group.service';
 import { ActivityService } from '../../../../../shared/services/activity.service';
 import { CloudrunService } from '../../../../../shared/services/cloudrun.service';
 import { HashIdService } from '../../../../../shared/services/hash-id.service';
-import { MatSort, Sort } from '@angular/material/sort';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { TranslateService } from '@ngx-translate/core';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { Unit } from '../../../../../shared/models/bs-constant';
-
-
-interface TableData {
-  name?: string;
-  groupId?: string;
-  userId?: number;
-  privacy?: boolean;
-  peopleNum?: number;
-  completeNum?: number;
-  runTimes?: number;
-  totalSeconds: number;
-  avgSecond: number;
-  avgSpeed: number;
-  avgHr?: number;
-  avgCalories?: number;
-  totalCalories?: number;
-  hrZone: {
-    z0: number;
-    z1: number;
-    z2: number;
-    z3: number;
-    z4: number;
-    z5: number;
-  };
-  bestFile: {
-    time: number;
-    fileId: number;
-  }
-};
-
-interface ListInfo {
-  info: GroupSimpleInfo;
-  record?: TableData | Array<TableData>;
-}
-
-interface GroupList {
-  brands?: ListInfo;
-  branches?: Array<ListInfo>;
-  coaches: Array<ListInfo>;
-}
-
-interface AnalysisOpt {
-  group: Array<number>;
-  member: Array<number>;
-}
 
 type AnalysisTable = 'group' | 'member';
 type AnalysisData = 
@@ -1475,7 +1430,6 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
 
   /**
    * 根據使用者所選group 返回搜尋groupId條件
-   * @param group {GroupTree}-群組階層資訊
    * @returns group id {string}
    * @author kidin-1100308
    */

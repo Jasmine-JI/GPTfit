@@ -107,7 +107,6 @@ export class CoachDashboardComponent
   isSectionIndividual = false;
   isCoachMoreDisplay = false;
   isLessonMoreDisplay = false;
-  updateImgQueryString: string;
 
   radius = 10;
   elementRef: ElementRef;
@@ -250,11 +249,6 @@ export class CoachDashboardComponent
   }
 
   ngOnInit() {
-    // 確認群組頭像是否更新-kidin-1090113
-    this.groupService.getImgUpdatedStatus().subscribe(response => {
-      this.updateImgQueryString = response;
-    });
-
     const queryStrings = getUrlQueryStrings(location.search);
     this.classType = queryStrings.type;
     this.classId = this.route.snapshot.paramMap.get('classId');
@@ -269,7 +263,7 @@ export class CoachDashboardComponent
         this.classInfo = res.info;
         this.classInfo.groupIcon =
           this.classInfo.groupIcon && this.classInfo.groupIcon.length > 0
-            ? `${this.classInfo.groupIcon}${this.updateImgQueryString}`
+            ? `${this.classInfo.groupIcon}`
             : '/assets/images/group-default.svg';
         const groupIcon = new Image();
         groupIcon.src = this.classInfo.groupIcon;
@@ -279,7 +273,7 @@ export class CoachDashboardComponent
             : 'user-photo--portrait';
         this.classInfo.coachAvatar =
           this.classInfo.coachAvatar && this.classInfo.coachAvatar.length > 0
-            ? `${this.classInfo.coachAvatar} ${this.updateImgQueryString}`
+            ? `${this.classInfo.coachAvatar}`
             : '/assets/images/user2.png';
         if (this.classInfo.groupVideoUrl.length > 0) {
           this.isHadVideoUrl = true;
@@ -579,7 +573,7 @@ export class CoachDashboardComponent
         this.series3.push({ name: userName, data: [] });
         userIcon =
           datas[existIdx] && datas[existIdx].pairIcon.length > 0
-            ? `${datas[existIdx].pairIcon} ${this.updateImgQueryString}`
+            ? `${datas[existIdx].pairIcon}`
             : '/assets/images/user2.png';
         const image = new Image();
         image.src = userIcon;

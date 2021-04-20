@@ -315,7 +315,12 @@ export class OfficialActivityComponent implements OnInit, OnDestroy {
    * @author kidin-1090909
    */
   checkoutUserApply() {
-    return this.activity.group.some(_group => _group.member.some(_member => _member.userId === this.userProfile.userId));
+    if (this.activity.group) {
+      return this.activity.group.some(_group => _group.member.some(_member => _member.userId === this.userProfile.userId));
+    } else {
+      return false;
+    }
+    
   }
 
   /**

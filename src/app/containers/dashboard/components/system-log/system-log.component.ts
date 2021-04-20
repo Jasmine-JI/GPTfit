@@ -94,7 +94,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
       this.currentPage = page;
       this.searchCondition.page = this.currentPage.pageIndex;
       this.searchCondition.pageCounts = this.currentPage.pageSize;
-      this.submit();
+      this.submit(false);
     });
 
     // 分頁切換時，重新取得資料
@@ -102,7 +102,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
       this.currentPage = page;
       this.searchCondition.page = this.currentPage.pageIndex;
       this.searchCondition.pageCounts = this.currentPage.pageSize;
-      this.submit();
+      this.submit(false);
     });
   }
 
@@ -289,7 +289,15 @@ export class SystemLogComponent implements OnInit, OnDestroy {
    * 送出搜尋
    * @author kidin-1100303
    */
-  submit() {
+  submit(initPage: boolean = true) {
+    if (initPage) {
+      this.searchCondition.page = 0;
+      if (this.currentPage) {
+        this.currentPage.pageIndex = 0;
+      }
+      
+    }
+
     const { targetType } = this.uiFlag;
     if (
       (targetType === 'user' && this.targetUser.id)

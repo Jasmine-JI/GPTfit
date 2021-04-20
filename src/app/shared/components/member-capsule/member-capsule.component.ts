@@ -93,23 +93,11 @@ export class MemberCapsuleComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.getTranslate();
-    this.refreshGroupIcon();
     this.token = this.utils.getToken() || '';
   }
 
   ngOnChanges() {
     this.checkParentsLength();
-  }
-
-  /**
-   * 使用query string強迫瀏覽器更新icon（待接圖床後移除）
-   */
-  refreshGroupIcon() {
-    this.groupService.getImgUpdatedStatus().subscribe(response => {
-      this.updateImgQueryString = response;
-    });
-
-    this.icon = `${this.icon}${this.updateImgQueryString}`;
   }
 
   /**

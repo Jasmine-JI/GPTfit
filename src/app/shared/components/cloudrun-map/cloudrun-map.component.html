@@ -12,6 +12,7 @@
       class="icon-svg_web-icon_p1_001-setting settingIcon"
       [class.click--forbidden]="mapPlay.startPlaying"
       (click)="handleShowOptMenu($event)"
+      *ngIf="!isPreviewMode"
     ></i>
     <div id="map__opt__menu" *ngIf="uiFlag.showMapOpt" (click)="$event.stopPropagation()">
       <div class="flexRow selector__section" *ngIf="mapOpt.showMapSourceSelector && uiFlag.showMap">
