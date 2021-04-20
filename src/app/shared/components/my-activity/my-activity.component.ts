@@ -196,11 +196,19 @@ export class MyActivityComponent implements OnInit {
       );
     }
   }
+  
   goDetail(fileId) {
-    if (this.isPortal) {
-      return this.router.navigateByUrl(`/activity/${fileId}`);
+    let debugString = '';
+    if (location.search.includes('debug=')) {
+      debugString = '?debug=';
     }
-    this.router.navigateByUrl(`/dashboard/activity/${fileId}`);
+
+    if (this.isPortal) {
+      return this.router.navigateByUrl(`/activity/${fileId}${debugString}`);
+    } else {
+      this.router.navigateByUrl(`/dashboard/activity/${fileId}${debugString}`);
+    }
+    
   }
   reset() {
     this.filterStartTime = moment().add(-1, 'years').format('YYYY-MM-DDTHH:mm:00.000Z');

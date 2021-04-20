@@ -94,17 +94,18 @@
             "
           >
             <span
-              *ngIf="!uiFlag.isJoinLoading && currentGroupInfo.groupDetail.groupStatus === 1; else loading;"
+              *ngIf="!uiFlag.isJoinLoading && currentGroupInfo.groupDetail.groupStatus === 1;"
               (click)="joinGroup(1)"
             >
               +{{ 'universal_operating_join' | translate }}
             </span>
             <span
-              *ngIf="!uiFlag.isJoinLoading && currentGroupInfo.groupDetail.groupStatus === 2; else loading;"
+              *ngIf="!uiFlag.isJoinLoading && currentGroupInfo.groupDetail.groupStatus === 2;"
               (click)="joinGroup(1)"
             >
               +{{ 'universal_group_applicationsForJoin' | translate }}
             </span>
+            <app-loading-icon style="font-size: 8px; pointer-events: none;" *ngIf="uiFlag.isJoinLoading"></app-loading-icon>
           </button>
           <button
             class="group__page__btn"
@@ -117,16 +118,14 @@
               && uiFlag.editMode !== 'create'
             "
           >
-            <span *ngIf="!uiFlag.isJoinLoading && user.joinStatus === 1; else loading;" (click)="handleJoinGroup(2)">
+            <span *ngIf="!uiFlag.isJoinLoading && user.joinStatus === 1;" (click)="handleJoinGroup(2)">
               {{ 'universal_group_cancelJoin' | translate }}
             </span>
-            <span *ngIf="!uiFlag.isJoinLoading && user.joinStatus === 2; else loading;" (click)="handleJoinGroup(2)">
+            <span *ngIf="!uiFlag.isJoinLoading && user.joinStatus === 2;" (click)="handleJoinGroup(2)">
               {{ 'universal_group_exitGroup' | translate }}
             </span>
-          </button>
-          <ng-template #loading>
             <app-loading-icon style="font-size: 8px; pointer-events: none;" *ngIf="uiFlag.isJoinLoading"></app-loading-icon>
-          </ng-template>
+          </button>
           <i
             class="icon-svg_web-icon_p1_013-share group__page__btn primary__btn"
             style="color: white; font-size: 24px; padding: 2px; cursor: pointer;"

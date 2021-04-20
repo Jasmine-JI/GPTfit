@@ -548,17 +548,8 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    * @author kidin-1091029
    */
   handleClickBrand() {
-    const group = this.reportConditionOpt.group;
-    if (group.brands.selected) {
-      group.brands.selected = false;
-      group.branches = this.batchConditionSelected(group.branches, false);
-      group.coaches = this.batchConditionSelected(group.coaches, false);
-    } else {
-      group.brands.selected = true;
-      group.branches = this.batchConditionSelected(group.branches, true);
-      group.coaches = this.batchConditionSelected(group.coaches, true);
-    }
-
+    const { groupId } = this.reportConditionOpt.group.brands;
+    this.reportConditionOpt.group.selectGroup = groupId.split('-').slice(0, 3).join('-');
   }
 
   /**
@@ -566,17 +557,8 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    * @author kidin-1091029
    */
   handleClickBranch(branchIdx: number) {
-    const { group } = this.reportConditionOpt,
-          assignBranch = group.branches[branchIdx];
-    if (assignBranch.selected) {
-
-      if (group.brands) group.brands.selected = false;
-      assignBranch.selected = false;
-      group.coaches = this.batchConditionSelected(group.coaches, false, assignBranch.groupId);
-    } else {
-      this.assignSelected(assignBranch.groupId, 40);
-    }
-
+    const { groupId } = this.reportConditionOpt.group.branches[branchIdx];
+    this.reportConditionOpt.group.selectGroup = groupId.split('-').slice(0, 4).join('-');
   }
 
   /**
@@ -584,17 +566,8 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    * @author kidin-1091029
    */
   handleClickCoach(coachIdx: number) {
-    const { group } = this.reportConditionOpt,
-          assignCoach = group.coaches[coachIdx];
-    if (assignCoach.selected) {
-
-      if (group.brands) group.brands.selected = false;
-      this.cancelBranchSelected(assignCoach.groupId);
-      assignCoach.selected = false;
-    } else {
-      this.assignSelected(assignCoach.groupId, 50);
-    }
-
+    const { groupId } = this.reportConditionOpt.group.coaches[coachIdx];
+    this.reportConditionOpt.group.selectGroup = groupId.split('-').slice(0, 5).join('-');
   }
 
   /**
@@ -672,112 +645,6 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     });
 
     this.reportService.setReportCondition(this.reportConditionOpt);
-  }
-
-  /**
-   * 批次修改子群組選擇狀態
-   * @param childGroup {GroupSimpleInfo}-群組概要資訊
-   * @param selected {boolean}-標記是否選擇
-   * @param groupId {string}-父群組id
-   * @author kidin-1091029
-   */
-  batchConditionSelected(
-    childGroup: Array<GroupSimpleInfo>,
-    selected: boolean,
-    groupId: string = null
-  ): Array<GroupSimpleInfo> {
-    return childGroup.map(_child => {
-      let branchId: string = '';
-      if (groupId !== null) {
-        branchId = `${this.groupService.getPartGroupId(_child.groupId, 4)}-0-0`
-      }
-      
-      if (groupId === null || branchId === groupId) {
-
-        if (_child.selected === undefined) {
-          Object.assign(_child, {selected});
-        } else {
-          _child.selected = selected;
-        }
-
-      }
-
-      return _child;
-    })
-
-  }
-
-  /**
-   * 除指定之群組及子群組全亮以外，其他取消選擇
-   * @param id {string}-指定選擇的group id
-   * @param level {number}-指定群組的group level
-   * @author kidin-1100309
-   */
-  assignSelected(id: string, level: number) {
-    let { brands, branches, coaches } = this.reportConditionOpt.group;
-    if (brands) brands.selected = false;
-    if (level === 40) {
-      branches = branches.map(_branch => {
-        if (_branch.groupId !== id) {
-          _branch.selected = false;
-        } else {
-          _branch.selected = true;
-        }
-
-        return _branch;
-      });
-
-      coaches = coaches.map(_coach => {
-        const coachParentsId = `${this.groupService.getPartGroupId(_coach.groupId, 4)}-0-0`;
-        if (coachParentsId !== id) {
-          _coach.selected = false;
-        } else {
-          _coach.selected = true;
-        }
-
-        return _coach;
-      });
-
-    }
-
-    if (level === 50) {
-      branches = branches.map(_branch => {
-        _branch.selected = false;
-        return _branch;
-      });
-
-      coaches = coaches.map(_coach => {
-        const { groupId } = _coach;
-        if (groupId !== id) {
-          _coach.selected = false;
-        } else {
-          _coach.selected = true;
-        }
-
-        return _coach;
-      });
-      
-    }
-
-  }
-
-  /**
-   * 取消指定分店/分公司選擇狀態
-   * @param coachGroupId {string}-課程群組id
-   * @author kidin-1091029
-   */
-  cancelBranchSelected(coachGroupId: string) {
-    const branchId = `${this.groupService.getPartGroupId(coachGroupId, 4)}-0-0`,
-          branchList = this.reportConditionOpt.group.branches;
-    for (let i = 0, branchListLength = branchList.length; i < branchListLength; i++) {
-
-      if (branchList[i].groupId === branchId) {
-        branchList[i].selected = false;
-        break;
-      }
-
-    }
-
   }
 
   /**

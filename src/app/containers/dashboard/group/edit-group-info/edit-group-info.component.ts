@@ -70,7 +70,6 @@ export class EditGroupInfoComponent implements OnInit {
   isGroupDetailLoading = false;
   videoUrl = '';
   originalGroupStatus: number;
-  updateImgQueryString = '';
   brandType: any;
   maxAccessRight = 99;
 
@@ -159,13 +158,7 @@ export class EditGroupInfoComponent implements OnInit {
       } = this.groupInfo;
 
       this.brandType = brandType;
-
       this.originalGroupStatus = groupStatus;
-
-      this.groupService.getImgUpdatedStatus().subscribe(response => {
-        this.updateImgQueryString = response;
-      });
-
       this.videoUrl = groupVideoUrl;
       if (groupStatus === 4) {
         this.router.navigateByUrl(`/404`);
@@ -181,7 +174,7 @@ export class EditGroupInfoComponent implements OnInit {
         groupStatus,
         groupVideoUrl
       });
-      this.groupImg = `${groupIcon}${this.updateImgQueryString}`;
+      this.groupImg = `${groupIcon}`;
       this.finalImageLink = this.groupImg;
       this.group_id = this.utils.displayGroupId(groupId);
       this.groupLevel = this.utils.displayGroupLevel(groupId);
@@ -450,7 +443,7 @@ export class EditGroupInfoComponent implements OnInit {
                       this.groupId
                     )}`
                   );
-                  this.groupService.setImgUpdatedImgStatus(`?${moment().format('YYYYMMDDhhmmss')}`);
+                  
                 } else {
                   this.dialog.open(MsgDialogComponent, {
                     hasBackdrop: true,
@@ -461,7 +454,7 @@ export class EditGroupInfoComponent implements OnInit {
                       )
                     }
                   });
-                  this.groupService.setImgUpdatedImgStatus('');
+
                 }
               });
             } else {
@@ -470,7 +463,7 @@ export class EditGroupInfoComponent implements OnInit {
                   this.groupId
                 )}`
               );
-              this.groupService.setImgUpdatedImgStatus(`?${moment().format('YYYYMMDDhhmmss')}`);
+
             }
           } else if (res1.resultCode === 409) {
             this.dialog.open(MsgDialogComponent, {

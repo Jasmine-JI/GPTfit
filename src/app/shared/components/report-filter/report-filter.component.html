@@ -121,7 +121,7 @@
           <div class="flexRow">
             <span
               class="condition__btn"
-              [class.condition__btn--active]="reportConditionOpt.group.brands.selected"
+              [class.condition__btn--active]="reportConditionOpt.group.brands.groupId.includes(reportConditionOpt.group.selectGroup)"
               (click)="handleClickBrand()"
             >{{ reportConditionOpt.group.brands.groupName }}</span>
           </div>
@@ -133,7 +133,7 @@
             <span
               class="condition__btn"
               *ngFor="let _branches of reportConditionOpt.group.branches; let _branchIdx = index;"
-              [class.condition__btn--active]="_branches.selected"
+              [class.condition__btn--active]="_branches.groupId.includes(reportConditionOpt.group.selectGroup)"
               (click)="handleClickBranch(_branchIdx)"
             >{{ _branches.groupName }}</span>
           </div>
@@ -145,7 +145,7 @@
             <span
               class="condition__btn"
               *ngFor="let _coaches of reportConditionOpt.group.coaches; let _coachIdx = index;"
-              [class.condition__btn--active]="_coaches.selected"
+              [class.condition__btn--active]="_coaches.groupId.includes(reportConditionOpt.group.selectGroup)"
               (click)="handleClickCoach(_coachIdx)"
             >{{ _coaches.groupName }}</span>
           </div>
@@ -157,7 +157,8 @@
       *ngIf="
         reportConditionOpt
         && reportConditionOpt.reportType === 'sport'
-        && (reportConditionOpt.brandType === undefined || reportConditionOpt.brandType !== 2)"
+        && (reportConditionOpt.brandType === undefined || reportConditionOpt.brandType !== 2)
+      "
     >
       <span class="condition__title">{{ 'universal_activityData_activityType' | translate }}</span>
       <div class="flexRow condition__content">

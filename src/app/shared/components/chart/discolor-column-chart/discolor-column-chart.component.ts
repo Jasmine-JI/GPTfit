@@ -326,9 +326,10 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
     const trendChartOptions = new ChartOptions(trendDataset);
     switch (this.chartName) {
       case 'Pace':
+        const labelPadding = 2;
+        trendChartOptions['yAxis'].max = this.highestPoint - labelPadding;
+        trendChartOptions['yAxis'].min = this.lowestPoint + labelPadding;
         trendChartOptions['yAxis'].reversed = true; // 將y軸反轉-kidin-1090206
-        trendChartOptions['yAxis'].max = this.highestPoint + 1;
-        trendChartOptions['yAxis'].min = this.lowestPoint - 1;
 
         // 設定圖表y軸單位格式-kidin-1090204
         trendChartOptions['yAxis'].labels = {
@@ -339,15 +340,17 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
             const yVal = this.value,
                   paceMin = Math.floor(yVal / 60),
                   paceSec = Math.round(yVal - paceMin * 60),
-                  timeMin = ('0' + paceMin).slice(-2),
-                  timeSecond = ('0' + paceSec).slice(-2);
+                  timeMin = `${paceMin}`.padStart(2, '0'),
+                  timeSecond = `${paceSec}`.padStart(2, '0');
 
             if (timeMin === '00') {
               return `0'${timeSecond}`;
             } else {
               return `${timeMin}'${timeSecond}`;
             }
+
           }
+
         };
 
         // 設定浮動提示框顯示格式-kidin-1090204
@@ -356,11 +359,10 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
             const y = this.point.low,
                   paceMin = Math.floor(y / 60),
                   pacesecond = Math.round(y - paceMin * 60),
-                  timeMin = ('0' + paceMin).slice(-2),
-                  timeSecond = ('0' + pacesecond).slice(-2);
+                  timeMin = `${paceMin}`.padStart(2, '0'),
+                  timeSecond = `${pacesecond}`.padStart(2, '0');
 
             let bottomPace = '';
-
             if (timeMin === '00') {
               bottomPace = `0'${timeSecond}`;
             } else {
@@ -370,11 +372,10 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
             const yBest = this.point.y,
                   bestMin = Math.floor(yBest / 60),
                   bestSecond = Math.round(yBest - bestMin * 60),
-                  timeBestMin = ('0' + bestMin).slice(-2),
-                  timeBestSecond = ('0' + bestSecond).slice(-2);
+                  timeBestMin = `${bestMin}`.padStart(2, '0'),
+                  timeBestSecond = `${bestSecond}`.padStart(2, '0');
 
             let paceBestTime = '';
-
             if (timeBestMin === '00') {
               paceBestTime = `0'${timeBestSecond}`;
             } else {

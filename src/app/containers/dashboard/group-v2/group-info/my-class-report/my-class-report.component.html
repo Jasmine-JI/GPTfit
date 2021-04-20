@@ -147,7 +147,7 @@
         <p class="ala-dashboard-title activity-title">{{'universal_group_courseIntroduction' | translate}}</p>
         <div style="display: flex; flex-direction: column;">
           <div class="groupPagePhoto">
-            <img src="{{groupImg}}">
+            <img src="{{groupImg}}" (error)="this.groupImg = '/assets/images/group-default.svg'">
           </div>
           <div class="lesson-title" style="padding-left: 10px; display: flex; flex-direction: column; margin-bottom: 10px;">
             <span class="introductionName">
