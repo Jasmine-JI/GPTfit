@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnChanges, OnDestroy, Input, ChangeDetectorRef } from '@angular/core';
 import {  Subscription, Subject, forkJoin } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { UtilsService } from '../../services/utils.service';
@@ -23,7 +23,8 @@ export class LoadingBarComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   constructor(
-    private utils: UtilsService
+    private utils: UtilsService,
+    private changeDetectorRef: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -47,9 +48,11 @@ export class LoadingBarComponent implements OnInit, OnChanges, OnDestroy {
   changeProgress() {
     if (this.progress !== 100) {
       this.uiFlag.pageComplete = false;
+      this.changeDetectorRef.markForCheck();
     } else if (this.progress === 100) {
       setTimeout(() => {
         this.uiFlag.pageComplete = true;
+        this.changeDetectorRef.markForCheck();
       }, 1000);
 
     }

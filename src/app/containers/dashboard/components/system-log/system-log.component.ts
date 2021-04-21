@@ -10,7 +10,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 
-declare type Serverity = 'INFO' | 'WARN' | 'ERROR' | 'DEBUG';
+type Serverity = 'INFO' | 'WARN' | 'ERROR' | 'DEBUG';
+type TargetType = 'user' | 'equipment';
 const apiDateFormat = 'YYYY-MM-DD HH:mm:ss';
 
 @Component({
@@ -29,9 +30,10 @@ export class SystemLogComponent implements OnInit, OnDestroy {
    * ui上會用到的各個flag
    */
   uiFlag = {
-    notChoiceUser: false,
+    notChoiceTarget: false,
     showServeritySelector: false,
-    showAppSelector: false
+    showAppSelector: false,
+    targetType: <TargetType>'user'
   }
 
   /**
@@ -40,6 +42,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
   searchCondition = {
     token: this.utils.getToken(),
     targetUserId: <number>null,
+    targetEquipmentSN: <string>null,
     serverity: <Serverity>null,
     appId: <AppId>null,
     apiCode: <string>null,
@@ -68,7 +71,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     account: null
   }
 
-  progress = 0;
+  progress = 100;
   sysLog: Array<any>;
   currentPage: PageEvent;
   totalCounts = 0;
@@ -90,14 +93,16 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     this.paginatorA.page.subscribe((page: PageEvent) => {
       this.currentPage = page;
       this.searchCondition.page = this.currentPage.pageIndex;
-      this.submit();
+      this.searchCondition.pageCounts = this.currentPage.pageSize;
+      this.submit(false);
     });
 
     // 分頁切換時，重新取得資料
     this.paginatorB.page.subscribe((page: PageEvent) => {
       this.currentPage = page;
       this.searchCondition.page = this.currentPage.pageIndex;
-      this.submit();
+      this.searchCondition.pageCounts = this.currentPage.pageSize;
+      this.submit(false);
     });
   }
 
@@ -177,6 +182,15 @@ export class SystemLogComponent implements OnInit, OnDestroy {
       };
     }
 
+  }
+
+  /**
+   * 變更目標類別
+   * @author kidin-1100413
+   */
+  changeTargetType() {
+    this.initTarget();
+    this.uiFlag.targetType = this.uiFlag.targetType === 'user' ? 'equipment' : 'user';
   }
 
   /**
@@ -275,17 +289,29 @@ export class SystemLogComponent implements OnInit, OnDestroy {
    * 送出搜尋
    * @author kidin-1100303
    */
-  submit() {
-    if (this.targetUser.id) {
-      this.uiFlag.notChoiceUser = false;
-      this.searchCondition.targetUserId = +this.targetUser.id;
+  submit(initPage: boolean = true) {
+    if (initPage) {
+      this.searchCondition.page = 0;
+      if (this.currentPage) {
+        this.currentPage.pageIndex = 0;
+      }
+      
+    }
+
+    const { targetType } = this.uiFlag;
+    if (
+      (targetType === 'user' && this.targetUser.id)
+      || (targetType === 'equipment' && this.searchCondition.targetEquipmentSN)
+    ) {
+      this.progress = 0;
+      this.uiFlag.notChoiceTarget = false;
+      this.searchCondition.targetUserId = targetType === 'user' ? +this.targetUser.id : null;
       this.searchCondition.startTime = moment(this.selectedDate.startDate).format(apiDateFormat);
       this.searchCondition.endTime = moment(this.selectedDate.endDate).format(apiDateFormat);
       let body = {};
       for (let key in this.searchCondition) {
 
         if (this.searchCondition.hasOwnProperty(key)) {
-
           const value = this.searchCondition[key];
           if (value !== null && (typeof(value) === 'number' || value.trim().length !== 0)) {
             Object.assign(body, {[key]: value});
@@ -295,6 +321,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
 
       }
 
+      this.progress = 30;
       this.innerSystemService.getSystemLog(body).subscribe(res => {
         if (res.resultCode === 200) {
           this.sysLog = res.info.content;
@@ -304,10 +331,11 @@ export class SystemLogComponent implements OnInit, OnDestroy {
           this.utils.handleError(res.resultCode, res.apiCode, res.resultMessage);
         }
 
+        this.progress = 100;
       });
 
     } else {
-      this.uiFlag.notChoiceUser = true;
+      this.uiFlag.notChoiceTarget = true;
     }
 
   }
@@ -320,6 +348,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     this.searchCondition = {
       token: this.utils.getToken(),
       targetUserId: <number>null,
+      targetEquipmentSN: <string>null,
       serverity: <Serverity>null,
       appId: <AppId>null,
       apiCode: <string>null,
@@ -341,6 +370,21 @@ export class SystemLogComponent implements OnInit, OnDestroy {
       name: null,
       account: null
     }
+
+  }
+
+  /**
+   * 初始化查詢目標
+   * @author kidin-1100413
+   */
+  initTarget() {
+    this.targetUser = {
+      id: null,
+      name: null,
+      account: null
+    }
+
+    this.searchCondition.targetEquipmentSN = null;
 
   }
 

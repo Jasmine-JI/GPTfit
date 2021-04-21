@@ -981,7 +981,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         'group-introduction',
         'myclass-report',
         'class-analysis',
-        // 'cloudrun-report',
+        'cloudrun-report',
         'member-list',
         'group-architecture',
         'admin-list'
@@ -996,7 +996,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.childPageList = [
         'group-introduction',
         'myclass-report',
-        // 'cloudrun-report',
+        'cloudrun-report',
         'member-list',
         'group-architecture',
         'admin-list'
@@ -1011,7 +1011,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         'group-introduction',
         'sports-report',
         'life-tracking',
-        // 'cloudrun-report',
+        'cloudrun-report',
         'member-list',
         'group-architecture',
         'admin-list'

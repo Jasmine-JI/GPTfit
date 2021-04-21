@@ -111,7 +111,7 @@
     </section>
     <section
       class="flexCol"
-      *ngIf="reportConditionOpt && reportConditionOpt.brandType !== null && 1 + 1 === 3"
+      *ngIf="reportConditionOpt && reportConditionOpt.group && reportConditionOpt.brandType !== null"
     >
       <span class="condition__title">{{ 'universal_group_group' | translate }}</span>
       <div class="flexCol condition__content">
@@ -121,7 +121,7 @@
           <div class="flexRow">
             <span
               class="condition__btn"
-              [class.condition__btn--active]="reportConditionOpt.group.brands.selected"
+              [class.condition__btn--active]="reportConditionOpt.group.brands.groupId.includes(reportConditionOpt.group.selectGroup)"
               (click)="handleClickBrand()"
             >{{ reportConditionOpt.group.brands.groupName }}</span>
           </div>
@@ -133,7 +133,7 @@
             <span
               class="condition__btn"
               *ngFor="let _branches of reportConditionOpt.group.branches; let _branchIdx = index;"
-              [class.condition__btn--active]="_branches.selected"
+              [class.condition__btn--active]="_branches.groupId.includes(reportConditionOpt.group.selectGroup)"
               (click)="handleClickBranch(_branchIdx)"
             >{{ _branches.groupName }}</span>
           </div>
@@ -145,7 +145,7 @@
             <span
               class="condition__btn"
               *ngFor="let _coaches of reportConditionOpt.group.coaches; let _coachIdx = index;"
-              [class.condition__btn--active]="_coaches.selected"
+              [class.condition__btn--active]="_coaches.groupId.includes(reportConditionOpt.group.selectGroup)"
               (click)="handleClickCoach(_coachIdx)"
             >{{ _coaches.groupName }}</span>
           </div>
@@ -154,10 +154,14 @@
     </section>
     <section
       class="flexCol"
-      *ngIf="reportConditionOpt && reportConditionOpt.reportType === 'sport' && (reportConditionOpt.brandType === undefined || reportConditionOpt.brandType !== 2)"
+      *ngIf="
+        reportConditionOpt
+        && reportConditionOpt.reportType === 'sport'
+        && (reportConditionOpt.brandType === undefined || reportConditionOpt.brandType !== 2)
+      "
     >
       <span class="condition__title">{{ 'universal_activityData_activityType' | translate }}</span>
-      <div class="flexRow condition__content" style="flex-wrap: wrap;">
+      <div class="flexRow condition__content">
         <span
           class="condition__btn"
           *ngFor="let _type of sportCondition;"
@@ -169,24 +173,99 @@
       </div>
     </section>
     <section class="flexCol" *ngIf="reportConditionOpt && reportConditionOpt.reportType === 'cloudRun'">
-      <span class="condition__title">Cloud Run {{ 'universal_activityData_map' | translate }}</span>
-      <div class="condition__content" style="position: relative; cursor: pointer;">
-        <div id="map__choice" (click)="showMapSelector($event)">
-          <span style="padding: 2px 5px; overflow: hidden;">{{ (reportConditionOpt.cloudRunMap | cloudrunSummary: 'zh-tw').mapName }}</span>
-        </div>
-        <div
-          class="flexCol"
-          style="position: absolute; z-index: 10; background-color: white; border: 1px solid; padding: 5px 10px; max-height: 350px; overflow: scroll;"
-          *ngIf="uiFlag.showMapSelector"
-        >
-          <span class="choice__item" *ngFor="let _maplist of mapList; let mapIndex = index;" (click)="chooseMap(mapIndex + 1)">
-            {{ (mapIndex + 1 | cloudrunSummary: 'zh-tw').mapName }}
+      <span class="condition__title">{{ 'universal_activityData_map' | translate }}</span>
+      <div class="flexRow condition__content">
+        <div class="flexRow radio__section map__child__block">
+          <span class="flexRow radio__selector" (click)="changeMapListType('all')">
+            <span class="radio__btn" [class.radio__btn--active]="uiFlag.mapListType === 'all'"></span>
+            <span>{{ 'universal_adjective_all' | translate }}</span>
+          </span>
+          <span class="flexRow radio__selector" (click)="changeMapListType('routine')">
+            <span class="radio__btn" [class.radio__btn--active]="uiFlag.mapListType === 'routine'"></span>
+            <span>{{ 'universal_race_match' | translate }}</span>
           </span>
         </div>
+        <div
+          #dropMenu
+          class="map__choice map__child__block"
+          [style.pointer-events]="mapList && mapList.length !== 0 ? 'initial' : 'none'"
+          (click)="showMapSelector($event)"
+        >
+          <span class="map__choosed__text" [class.map__choose--active]="uiFlag.showMapSelector">
+            <ng-container *ngIf="uiFlag.mapListType === 'all'">
+              <ng-container *ngIf="mapList && mapList.length !== 0; else loadingText;">
+                <ng-container *ngIf="uiFlag.currentLanguage === 'zh-tw'">
+                  {{ mapList[reportConditionOpt.cloudRun.mapId - 1].info[0].mapName }}
+                </ng-container>
+                <ng-container *ngIf="uiFlag.currentLanguage === 'zh-cn'">
+                  {{ mapList[reportConditionOpt.cloudRun.mapId - 1].info[1].mapName }}
+                </ng-container>
+                <ng-container *ngIf="uiFlag.currentLanguage === 'es-es'">
+                  {{ mapList[reportConditionOpt.cloudRun.mapId - 1].info[3].mapName }}
+                </ng-container>
+                <ng-container *ngIf="!['zh-tw', 'zh-cn', 'es-es'].includes(uiFlag.currentLanguage)">
+                  {{ mapList[reportConditionOpt.cloudRun.mapId - 1].info[2].mapName }}
+                </ng-container>
+              </ng-container>
+            </ng-container>
+            <ng-container *ngIf="uiFlag.mapListType === 'routine'">
+              <ng-container *ngIf="routineRaceList && routineRaceList.length !== 0; else loadingText;">
+                {{ reportConditionOpt.cloudRun.month }}
+              </ng-container>
+            </ng-container>
+            <ng-template #loadingText>Loading...</ng-template>
+          </span>
+          <div
+            id="map__drop__list"
+            class="flexCol"
+            *ngIf="uiFlag.showMapSelector"
+          >
+            <ng-container *ngIf="uiFlag.mapListType === 'all'">
+              <span
+                class="choice__item"
+                style="text-align: left;"
+                *ngFor="let _mapInfo of mapList; let mapIndex = index;"
+                (click)="chooseMap(mapIndex + 1)"
+              >
+                <ng-container *ngIf="uiFlag.currentLanguage === 'zh-tw'">
+                  {{ _mapInfo.info[0].mapName }}
+                </ng-container>
+                <ng-container *ngIf="uiFlag.currentLanguage === 'zh-cn'">
+                  {{ _mapInfo.info[1].mapName }}
+                </ng-container>
+                <ng-container *ngIf="uiFlag.currentLanguage === 'es-es'">
+                  {{ _mapInfo.info[3].mapName }}
+                </ng-container>
+                <ng-container *ngIf="!['zh-tw', 'zh-cn', 'es-es'].includes(uiFlag.currentLanguage)">
+                  {{ _mapInfo.info[2].mapName }}
+                </ng-container>
+              </span>
+            </ng-container>
+            <ng-container *ngIf="uiFlag.mapListType === 'routine'">
+              <span class="choice__item" *ngFor="let _racelist of routineRaceList; let _idx = index;" (click)="chooseRoutine(_idx)">
+                {{ _racelist.month }}
+              </span>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+      <div
+        class="flexRow condition__content"
+        style="align-items: center; cursor: pointer;"
+        (click)="changeCheckStatus()"
+      >
+        <div style="border: 1px solid black; width: 20px; height: 20px;">
+          <ng-container *ngIf="reportConditionOpt.cloudRun.checkCompletion">
+            <span class="flexCenter" style="height: 19px;">✔</span>
+          </ng-container>
+        </div>
+        <span style="margin-left: 5px;" for="checkCompletion">
+          {{ 'universal_operating_finished' | translate }} {{ 'universal_race_match' | translate }}
+        </span>
       </div>
     </section>
     <div style="display: flex; justify-content: flex-end;" *ngIf="reportConditionOpt && !reportConditionOpt.hideConfirmBtn">
-      <span class="confirm__btn" (click)="submit()">{{ 'universal_operating_determine' | translate }}</span>
+      <span class="confirm__btn" (click)="submit()">{{ 'universal_operating_confirm' | translate }}</span>
     </div>
   </main>
 </div>

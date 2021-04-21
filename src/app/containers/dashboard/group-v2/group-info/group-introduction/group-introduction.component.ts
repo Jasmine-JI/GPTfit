@@ -511,10 +511,10 @@ export class GroupIntroductionComponent implements OnInit, OnDestroy {
       this.formCheck.name = true;
 
       if (this.uiFlag.editMode === 'create') {
-        this.createBody.levelName = (e as any).target.value;
+        this.createBody.levelName = (e as any).target.value.trim();
       } else if (this.uiFlag.editMode === 'edit') {
         this.uiFlag.contentChange = true;
-        this.editBody.groupName = (e as any).target.value;
+        this.editBody.groupName = (e as any).target.value.trim();
       }
 
     } else {

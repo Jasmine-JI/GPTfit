@@ -1,19 +1,24 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { AppCode } from '../../../models/app-webview';
 import { Router } from '@angular/router';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { SignupService } from '../../../services/signup.service';
 import moment from 'moment';
 import { AuthService } from '../../../../../shared/services/auth.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-app-compress-data',
   templateUrl: './app-compress-data.component.html',
   styleUrls: ['./app-compress-data.component.scss']
 })
-export class AppCompressDataComponent implements OnInit, AfterViewInit {
+export class AppCompressDataComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('dataLink') dataLink: ElementRef;
+
+  private ngUnsubscribe = new Subject();
 
   // ui用到的各種flag
   uiFlag = {
@@ -39,7 +44,8 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit {
     private router: Router,
     private utils: UtilsService,
     private signupService: SignupService,
-    private auth: AuthService
+    private auth: AuthService,
+    private translate: TranslateService
   ) { }
 
   ngOnInit(): void {
@@ -124,15 +130,22 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * 幫使用者複製連結至剪貼簿
+   * 幫使用者複製連結至剪貼簿(因瀏覽器支援度暫時廢棄)
    * @author kidin-1091217
-   */
   handleCopyLink() {
     const dataLinkSpan = this.dataLink.nativeElement;
     dataLinkSpan.select();
     document.execCommand('copy');
     this.uiFlag.copied = true;
+    this.translate.get('hellow world').pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      const msg = `${this.translate.instant('universal_userAccount_copyLink')} ${this.translate.instant('universal_status_success')}`
+      this.utils.openAlert(msg);
+    });
+    
   }
+  */
 
   /**
    * 串接api 1012確認封存狀態
@@ -212,6 +225,15 @@ export class AppCompressDataComponent implements OnInit, AfterViewInit {
       window.close();
     }
 
+  }
+
+  /**
+   * 取消rxjs訂閱
+   * @author kidin-1100309
+   */
+   ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
 }

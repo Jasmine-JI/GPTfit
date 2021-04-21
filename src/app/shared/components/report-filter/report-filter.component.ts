@@ -3,19 +3,22 @@ import { UtilsService } from '../../services/utils.service';
 import { ReportService } from '../../services/report.service';
 import moment from 'moment';
 import { ReportConditionOpt, GroupSimpleInfo, SportType } from '../../models/report-condition';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import mapList from '../../../../assets/cloud_run/mapList.json';
+import { Subject, Subscription, fromEvent, Observable } from 'rxjs';
+import { takeUntil, switchMap, tap } from 'rxjs/operators';
+import { CloudrunService } from '../../services/cloudrun.service';
+import { GroupService } from '../../../containers/dashboard/services/group.service';
 
 
 interface DateCondition {
-  type: 'sevenDay' | 'thirtyDay' | 'sixMonth' | 'today' | 'thisWeek' | 'thisMonth' | 'thisYear' | 'custom',
+  type: 'sevenDay' | 'thirtyDay' | 'sixMonth' | 'today' | 'thisWeek' | 'thisMonth' | 'thisYear' | 'custom';
   maxTimestamp: number;
   startTimestamp: number;
   endTimestamp: number;
   endOfShift: boolean;
-  openSelector : null | 'calendarPeriod' | 'custom'
+  openSelector : null | 'calendarPeriod' | 'custom';
 }
+
+type MapListType = 'all' | 'routine';
 
 @Component({
   selector: 'app-report-filter',
@@ -25,10 +28,12 @@ interface DateCondition {
 export class ReportFilterComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe = new Subject();
+  clickSubscription: Subscription;
 
   @ViewChild('filterSection') filterSection: ElementRef;
   @ViewChild('dateSelectorBar') dateSelectorBar: ElementRef;
   @ViewChild('calendarPeriod') calendarPeriod: ElementRef;
+  @ViewChild('dropMenu') dropMenu: ElementRef;
 
   /**
    * UI上會需要用到的變數或flag
@@ -46,7 +51,9 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     offsetNum: 0,
     disableBtn: 'pre',
     isLoading: false,
-    currentType: ''
+    currentType: '',
+    currentLanguage: 'zh-tw',
+    mapListType: <MapListType>'routine'
   }
 
   /**
@@ -76,14 +83,22 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    */
   mapList: Array<any> = [];
 
+  /**
+   * 雲跑例行賽事列表
+   */
+  routineRaceList: Array<any> = [];
+
   timeout: any;
 
   constructor(
     private utils: UtilsService,
-    private reportService: ReportService
+    private reportService: ReportService,
+    private cloudrunService: CloudrunService,
+    private groupService: GroupService
   ) {}
 
   ngOnInit(): void {
+    this.uiFlag.currentLanguage = this.utils.getLocalStorageObject('locale');
     this.onResize();
     this.getReportCondition();
     this.getLoadingStatus();
@@ -137,13 +152,12 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       this.reportConditionOpt = res;
-
       if (this.reportConditionOpt.reportType !== this.uiFlag.currentType) {
         this.initDate();
         this.uiFlag.currentType = this.reportConditionOpt.reportType;
       }
 
-      if (this.reportConditionOpt.reportType === 'cloudRun') {
+      if (this.reportConditionOpt.reportType === 'cloudRun' && (this.mapList.length === 0 || this.routineRaceList.length === 0)) {
         this.getMapList();
       }
 
@@ -199,7 +213,16 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    * @author kidin-1091029
    */
   getMapList() {
-    this.mapList = mapList.mapList.raceMapInfo.slice(0, 48);
+    this.cloudrunService.getAllMapInfo().subscribe(res => {
+      const { list, leaderboard } = res;
+      this.mapList = list;
+      this.routineRaceList = leaderboard;
+      if (this.reportConditionOpt.cloudRun.month === this.routineRaceList[0].month) {
+        this.uiFlag.mapListType = 'routine';
+      }
+
+    });
+
   }
 
   /**
@@ -281,7 +304,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
 
         break;
       case 3:
-        this.scrollToChildPageTop();
+        this.scrollToChildPageTop('filterSection');
         if (this.date.openSelector !== 'calendarPeriod') {
           this.date.openSelector = 'calendarPeriod';
           const dropList = this.calendarPeriod.nativeElement,
@@ -299,12 +322,15 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         break;
       case 4:
         this.date.type = 'custom';
-        this.scrollToChildPageTop();
-        if (this.date.openSelector !== 'custom') {
-          this.date.openSelector = 'custom';
-        } else {
-          this.date.openSelector = null;
-        }
+        this.scrollToChildPageTop('filterSection');
+        // 待捲動動畫結束再顯示日期選擇器
+        setTimeout(() => {
+          if (this.date.openSelector !== 'custom') {
+            this.date.openSelector = 'custom';
+          } else {
+            this.date.openSelector = null;
+          }
+        }, 500);
 
         break;
     }
@@ -314,10 +340,11 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
 
   /**
    * 當使用者點擊功能列時，將功能列捲動到上面避免日曆被遮住
+   * @param element {string}-欲捲動的元素
    * @author kidin-1100119
    */
-  scrollToChildPageTop() {
-    const listEle = this.filterSection.nativeElement,
+  scrollToChildPageTop(element: string) {
+    const listEle = this[element].nativeElement,
           listEleTop = listEle.offsetTop,
           mainBodyEle = document.querySelector('.main-body');
 
@@ -392,8 +419,8 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
 
   /**
    * 取得使用者所選擇的日期
-   * @param e.starDate {string} - 使用者選擇的起始日期
-   * @param e.endDate {string} - 使用者選擇的結束日期
+   * @param e.starDate {string} - 使用者選擇的起始日期('YYYY-MM-DDTHH:mm:ss.SSSZ')
+   * @param e.endDate {string} - 使用者選擇的結束日期('YYYY-MM-DDTHH:mm:ss.SSSZ')
    * @author kidin-1091023
    */
   getSelectDate(e: {startDate: string, endDate: string}) {
@@ -521,17 +548,8 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    * @author kidin-1091029
    */
   handleClickBrand() {
-    const group = this.reportConditionOpt.group;
-    if (group.brands.selected) {
-      group.brands.selected = false;
-      group.branches = this.batchConditionSelected(group.branches, false);
-      group.coaches = this.batchConditionSelected(group.coaches, false);
-    } else {
-      group.brands.selected = true;
-      group.branches = this.batchConditionSelected(group.branches, true);
-      group.coaches = this.batchConditionSelected(group.coaches, true);
-    }
-
+    const { groupId } = this.reportConditionOpt.group.brands;
+    this.reportConditionOpt.group.selectGroup = groupId.split('-').slice(0, 3).join('-');
   }
 
   /**
@@ -539,17 +557,8 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    * @author kidin-1091029
    */
   handleClickBranch(branchIdx: number) {
-    const group = this.reportConditionOpt.group,
-          assignBranch = group.branches[branchIdx];
-    if (assignBranch.selected) {
-      group.brands.selected = false;
-      assignBranch.selected = false;
-      group.coaches = this.batchConditionSelected(group.coaches, false, assignBranch.groupId);
-    } else {
-      assignBranch.selected = true;
-      group.coaches = this.batchConditionSelected(group.coaches, true, assignBranch.groupId);
-    }
-
+    const { groupId } = this.reportConditionOpt.group.branches[branchIdx];
+    this.reportConditionOpt.group.selectGroup = groupId.split('-').slice(0, 4).join('-');
   }
 
   /**
@@ -557,16 +566,8 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    * @author kidin-1091029
    */
   handleClickCoach(coachIdx: number) {
-    const group = this.reportConditionOpt.group,
-          assignCoach = group.coaches[coachIdx];
-    if (assignCoach.selected) {
-      group.brands.selected = false;
-      this.cancelBranchSelected(assignCoach.groupId);
-      assignCoach.selected = false;
-    } else {
-      assignCoach.selected = true;
-    }
-
+    const { groupId } = this.reportConditionOpt.group.coaches[coachIdx];
+    this.reportConditionOpt.group.selectGroup = groupId.split('-').slice(0, 5).join('-');
   }
 
   /**
@@ -590,8 +591,36 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    */
   showMapSelector(e: MouseEvent) {
     e.stopPropagation();
-    this.uiFlag.showMapSelector = !this.uiFlag.showMapSelector;
+    if (this.uiFlag.showMapSelector) {
+      this.clickUnsubscribe();
+    } else {
+      this.uiFlag.showMapSelector = true;
+      this.scrollToChildPageTop('dropMenu');
+      this.clickSubscribe();
+    }
 
+  }
+
+  /**
+   * 訂閱click全域事件
+   * @author kidin-1100304
+   */
+  clickSubscribe() {
+    const clickEvent = fromEvent(document, 'click');
+    this.clickSubscription = clickEvent.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      this.clickUnsubscribe();
+    });
+
+  }
+
+  /**
+   * 取消訂閱click全域事件
+   */
+  clickUnsubscribe() {
+    this.uiFlag.showMapSelector = false;
+    this.clickSubscription.unsubscribe();
   }
 
   /**
@@ -599,7 +628,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    * @author kidin-1091029
    */
   chooseMap(idx: number) {
-    this.reportConditionOpt.cloudRunMap = idx;
+    this.reportConditionOpt.cloudRun.mapId = idx;
   }
 
   /**
@@ -619,65 +648,46 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 批次修改子群組選擇狀態
-   * @param childGroup {GroupSimpleInfo}-群組概要資訊
-   * @param selected {boolean}-標記是否選擇
-   * @param groupId {string}-父群組id
-   * @author kidin-1091029
+   * 變更雲跑地圖清單類別
+   * @param type {MapListType}-清單類別
+   * @author kidin-1100308
    */
-  batchConditionSelected(
-    childGroup: Array<GroupSimpleInfo>,
-    selected: boolean,
-    groupId: string = null
-  ): Array<GroupSimpleInfo> {
-    return childGroup.map(_child => {
-      let branchId: string = '';
-      if (groupId !== null) {
-        branchId = this.getparentsGroupId(_child.groupId);
-      }
-      
-      if (groupId === null || branchId === groupId) {
-
-        if (_child.selected === undefined) {
-          Object.assign(_child, {selected});
-        } else {
-          _child.selected = selected;
-        }
-
-      }
-
-      return _child;
-    })
-
-  }
-
-  /**
-   * 取消指定分店/分公司選擇狀態
-   * @param coachGroupId {string}-課程群組id
-   * @author kidin-1091029
-   */
-  cancelBranchSelected(coachGroupId: string) {
-    const branchId = this.getparentsGroupId(coachGroupId),
-          branchList = this.reportConditionOpt.group.branches;
-    for (let i = 0, branchListLength = branchList.length; i < branchListLength; i++) {
-
-      if (branchList[i].groupId === branchId) {
-        branchList[i].selected = false;
-        break;
-      }
-
+  changeMapListType(type: MapListType) {
+    this.uiFlag.mapListType = type;
+    if (type === 'routine') {
+      this.chooseRoutine(0);
     }
 
   }
 
   /**
-   * 取得40階group Id
-   * @author kidin-1091029
+   * 選擇例行賽月份
+   * @param index {number}-清單序位
+   * @author kidin-1100308
    */
-  getparentsGroupId(childId: string): string {
-    const idArr = childId.split('-');
-    idArr.length = 4;
-    return `${idArr.join('-')}-0-0`;
+  chooseRoutine(index: number) {
+    const {month, mapId} = this.routineRaceList[index],
+          isThisMonth = moment().format('YYYYMM') === month;
+    this.reportConditionOpt.cloudRun.month = month;
+    this.reportConditionOpt.cloudRun.mapId = +mapId;
+    this.date = {
+      type: 'thisMonth',
+      maxTimestamp: moment().endOf('day').valueOf(),
+      startTimestamp: moment(month, 'YYYYMM').startOf('month').valueOf(),
+      endTimestamp: moment(month, 'YYYYMM').endOf('month').valueOf(),
+      endOfShift: !isThisMonth,
+      openSelector: null
+    }
+
+    this.changeActiveBar();
+  }
+
+  /**
+   * 切換是否只顯示完賽數據
+   * @author kidin-1100413
+   */
+  changeCheckStatus() {
+    this.reportConditionOpt.cloudRun.checkCompletion = !this.reportConditionOpt.cloudRun.checkCompletion;
   }
 
   /**

@@ -36,11 +36,6 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       endTimestamp: moment().endOf('day').valueOf(),
       type: 'sevenDay'
     },
-    group: {
-      brands: null,
-      branches: null,
-      coaches: []
-    },
     sportType: 99,
     hideConfirmBtn: true
   }
@@ -616,6 +611,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       this.groupService.getRxGroupDetail(),
       this.groupService.getAllLevelGroupData()
     ]).pipe(
+      first(),
       takeUntil(this.ngUnsubscribe)
     ).subscribe(resArr => {
       this.groupData = resArr[0];
@@ -1866,7 +1862,10 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   // 根據運動類別使用rxjs從service取得資料-kidin-1090120
   loadCategoryData (type: number) {
     this.isRxjsLoading = true;
-    this.groupService.getTypeData(type).subscribe(res => {
+    this.groupService.getTypeData(type).pipe(
+      first(),
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
       this.categoryActivityLength = res.activityLength;
       if (this.categoryActivityLength === undefined || this.categoryActivityLength === 0) {
         this.nodata = true;

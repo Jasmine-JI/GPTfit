@@ -1,1 +1,1040 @@
-<p>cloudrun-report works!</p>
+<app-loading-bar [progress]="progress" [isPreviewMode]="uiFlag.isPreviewMode"></app-loading-bar>
+<div>
+  <main style="background-color: white; padding: 10px;" *ngIf="!uiFlag.noData">
+    <div class="functionButton" style="align-items: center;">
+      <a
+        style="align-items: center; margin: 5px 0;"
+        target="_blank"
+        title="Cloud run"
+        href="/introduction/application/#cloudrun"
+        *ngIf="!uiFlag.isPreviewMode"
+      >
+        <img style="width: 30px; height: 30px; margin-right: 10px;" src="/assets/cloud_run/cloudrun-app-icon.png">
+      </a>
+      <button class="alatech-btn alatech-btn--default activity-btn"
+        title="{{'universal_operating_print' | translate}}"
+        (click)="print()"
+        *ngIf="uiFlag.isPreviewMode"
+      >
+        {{'universal_operating_print' | translate}}
+      </button>
+      <a target="_blank"
+        [href]="previewUrl"
+        class="alatech-btn--default"
+        *ngIf="!uiFlag.isPreviewMode"
+      >
+        <i class="icon-svg_web-icon_p2_087-print activity-info_icon_size"></i>
+      </a>
+    </div>
+    <section class="card__section row__to__column">
+      <div class="flexRow">
+        <i id="sport__type__icon" class="flexCenter" [class]="1 | sportTypeIcon" ></i>
+        <div class="flexCol" style="justify-content: center; margin-left: 20px; line-height: 1.2;">
+          <span class="small__font">
+            {{ 'universal_group_buildFromTime' | translate: {date: reportEndDate, range: reportTimeRange} }}
+          </span>
+          <div class="flexRow" style="align-items: center;">
+            <span class="head__name" *ngIf="mapInfo">{{ mapInfo.mapName }}</span>
+          </div>
+        </div>
+      </div>
+      <div id="file__owner" class="flexRow">
+        <span class="head__name" style="margin-right: 10px;">{{ currentGroup.name }}</span>
+        <img 
+          class="img__icon"
+          [src]="currentGroup.icon"
+          (error)="this.currentGroup.icon='/assets/images/group-default.svg'"
+        >
+      </div>
+    </section>
+    <section class="card__section">
+      <div class="flexRow cardTitle" style="position: relative; justify-content: space-between;">
+        <span class="cardSubtitle">{{ 'universal_activityData_summary' | translate }}</span>
+        <span style="display: flex; align-items: center;" class="small__font">
+          {{ 'universal_activityData_creatTime' | translate }} {{ createTime }}
+        </span>
+      </div>
+      <div class="summaryArea" *ngIf="groupDataObj">
+        <div class="summaryDataArea">
+          <span class="summaryData">{{ groupDataObj[currentGroup.id].member.length || 0 }}</span>
+          <p class="summaryDescription">{{ 'universal_activityData_totalPeople' | translate }}</p>
+        </div>
+        <div class="sepLine"></div>
+        <div class="summaryDataArea">
+          <span class="summaryData">{{ groupDataObj[currentGroup.id].record.completeNum || 0 }}</span>
+          <p class="summaryDescription">
+            {{ 'universal_operating_finished' | translate }} {{ 'universal_activityData_people' | translate }}
+          </p>
+        </div>
+        <div class="sepLine"></div>
+        <div class="summaryDataArea">
+          <span class="summaryData">
+            {{ (groupDataObj[currentGroup.id].record.totalSeconds / groupDataObj[currentGroup.id].record.completeNum) || 0 | sportTime: false }}
+          </span>
+          <p class="summaryDescription">
+            {{ 'universal_adjective_avg' | translate }} {{ 'universal_activityData_timing' | translate }}
+          </p>
+        </div>
+        <div class="sepLine"></div>
+        <div class="summaryDataArea">
+          <span class="summaryData">
+            {{ (groupDataObj[currentGroup.id].record.totalSpeed / groupDataObj[currentGroup.id].record.completeNum) || 0 | sportPaceSibs: [1, unit, 1] }}
+          </span>
+          <p class="summaryDescription">
+            <ng-container *ngIf="unit === 0">{{ 'universal_activityData_avgKilometerPace' | translate }}</ng-container>
+            <ng-container *ngIf="unit === 1">{{ 'universal_activityData_avgMilePace' | translate }}</ng-container>
+          </p>
+        </div>
+        <div class="sepLine"></div>
+        <div class="summaryDataArea">
+          <span class="summaryData">
+            {{ (groupDataObj[currentGroup.id].record.totalCadence / groupDataObj[currentGroup.id].record.completeNum) || 0 | number: '1.0-1' }}
+          </span>
+          <p class="summaryDescription">
+            {{ 'universal_adjective_avg' | translate }} {{ 'universal_activityData_stepCadence' | translate }}
+          </p>
+        </div>
+        <div class="sepLine"></div>
+        <div class="summaryDataArea">
+          <span class="summaryData">
+            {{ (groupDataObj[currentGroup.id].record.totalCalories / groupDataObj[currentGroup.id].record.completeNum) || 0 | number: '1.0-1' }}
+          </span>
+          <p class="summaryDescription">
+            {{ 'universal_adjective_avg' | translate }} {{ 'universal_userProfile_calories' | translate }}
+          </p>
+        </div>
+      </div>
+    </section>
+    <section class="card__section">
+      <app-cloudrun-map
+        [mapId]="+currentMapId"
+        [mapGpx]="mapInfo.point"
+        [mapDistance]="+mapInfo.distance * 1000"
+        [altitude]="mapInfo.altitude"
+        [userList]="backUpData.member"
+        [userId]="userId"
+        [unit]="unit"
+        [selectDate]="selectDate"
+        [groupId]="currentGroup.id"
+        [mapSource]="mapSource"
+        [isPreviewMode]="uiFlag.isPreviewMode"
+        [compareList]="compare.urlList"
+        [page]="'group'"
+        (mapSourceChange)="mapSourceChange($event)"
+        (comparePlayer)="comparePlayer($event)"
+      ></app-cloudrun-map>
+    </section>
+    <section class="card__section">
+      <div class="flexRow cardTitle" style="position: relative; justify-content: space-between;">
+        <span class="cardSubtitle">{{ 'universal_group_groupAnalysis' | translate }}</span>
+        <i class="icon-svg_web-icon_p1_001-setting settingIcon" (click)="handleShowOpt($event, 'group')"></i>
+        <div
+          class="flexCol tableMenu"
+          style="position: absolute; right: 0px; top: 28px; padding: 10px; max-height: 300px; overflow-y: auto;"
+          (click)="$event.stopPropagation();"
+          (scroll)="$event.stopPropagation();"
+          *ngIf="groupTable.showOpt"
+        >
+          <div *ngIf="currentGroup.level <= 40">
+            <span class="tableMenuTitle">{{'universal_operating_filter' | translate}} {{'universal_group_group' | translate}}</span>
+            <div class="tableCheckbox" *ngFor="let _filter of groupTableOpt.filter; let _idx = index;">
+              <mat-checkbox
+                color="primary"
+                value="{{ _filter.level }}"
+                [checked]="groupTable.showLevel.includes(_filter.level)"
+                (change)="changeTableOpt($event, 'group', 'filter')"
+                [style.pointer-events]="groupTable.showLevel.length <= 1 && groupTable.showLevel.includes(_filter.level) ? 'none' : ''"
+                [style.color]="groupTable.showLevel.length <= 1 && groupTable.showLevel.includes(_filter.level) ? '#ababab' : ''"
+                *ngIf="currentGroup.level <= 30 || _idx !== 0"
+              >
+                <span style="font-size: 14px">
+                  {{ _filter.i18n }}
+                </span>
+              </mat-checkbox>
+            </div>
+          </div>
+          <div>
+            <div class="flexRow">
+              <span class="tableMenuTitle">{{'universal_activityData_fieldDisplay' | translate}}</span>
+              <span
+                style="font-size: 8px; margin-left: 5px;"
+                [style.color]="groupTable.showDataType.length >= tableColumn.max ? 'red' : '#ababab'"
+              >
+                ({{ 'universal_activityData_most' | translate: {'number': tableColumn.max} }})
+              </span>
+            </div>
+            <div class="tableCheckbox" *ngFor="let _column of groupTableOpt.column; let _index = index;">
+              <mat-checkbox
+                color="primary"
+                value="{{ _index }}"
+                [checked]="groupTable.showDataType.includes(_index)"
+                (change)="changeTableOpt($event, 'group', 'column')"
+                [style.pointer-events]="
+                  (groupTable.showDataType.length >= tableColumn.max && !groupTable.showDataType.includes(_index))
+                  || (groupTable.showDataType.length <= tableColumn.min && groupTable.showDataType.includes(_index))
+                  ? 'none' : ''
+                "
+                [style.color]="
+                  (groupTable.showDataType.length >= tableColumn.max && !groupTable.showDataType.includes(_index))
+                  || (groupTable.showDataType.length <= tableColumn.min && groupTable.showDataType.includes(_index))
+                  ? '#ababab' : ''
+                "
+              >
+                <span style="font-size: 14px">
+                  {{ _column.i18n }}
+                </span>
+              </mat-checkbox>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="analysisTable">
+        <div style="margin-top: 10px;">
+          <mat-table [dataSource]="groupTableData.data" matSort #groupSortTable="matSort" (matSortChange)="arrangeData('group')">
+            <ng-container matColumnDef="name">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                disableClear="true"
+                class="tableArrangement"
+                style="justify-content: flex-start;"
+                id="groupName"
+              >
+                <span
+                  class="tableTitleWord"
+                  style="text-align: start;"
+                >
+                  {{ 'universal_activityData_name' | translate }}
+                </span>
+              </mat-header-cell>
+              <mat-cell
+                *matCellDef="let row; let i = index;"
+                class="tableArrangement tableContent flexCol"
+                style="align-items: flex-start; justify-content: center;"
+                [style.color]="groupMenu.focusId === row?.groupId ? '#157fcc': ''"
+              >
+                <span style="text-align: start; font-size: 10px; color: #c5c5c5;" *ngIf="row.parents">{{ row?.parents }}</span>
+                <span style="text-align: center;">{{ row?.name }}</span>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="completeNum">
+              <mat-header-cell
+                *matHeaderCellDef
+                class="flexCenter tableArrangement"
+                [style.display]="groupTable.showDataType.includes(0) ? '' : 'none'"
+              >
+                <div class="tableTitle">
+                  <span class="tableTitleWord">
+                    {{ 'universal_operating_finished' | translate }} {{ 'universal_activityData_people' | translate }}
+                  </span>
+                </div>
+              </mat-header-cell>
+              <mat-cell
+                *matCellDef="let row; let i = index;"
+                class="tableArrangement tableContent"
+                [style.display]="groupTable.showDataType.includes(0) ? '' : 'none'"
+              >
+                <div
+                  class="visualizeData"
+                  [style.width]="groupTable.sorted ? row?.ratio : '0px'"
+                  *ngIf="groupTable.sortType === 'completeNum'"
+                ></div>
+                <span class="setIn" [style.color]="row?.completeNum < row?.memberNum ? 'red' : 'none'">
+                  {{ row?.completeNum }}/{{ row?.memberNum }}
+                </span>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="avgTime">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                disableClear="true"
+                class="flexCenter tableArrangement"
+                [style.display]="groupTable.showDataType.includes(1) ? '' : 'none'"
+              >
+                <div class="tableTitle">
+                  <span class="flexCenter tableTitleWord">
+                    {{ 'universal_adjective_avg' | translate }} {{ 'universal_activityData_timing' | translate }}
+                  </span>
+                  <span class="chartTitleUnit">time</span>
+                </div>
+              </mat-header-cell>
+              <mat-cell
+                *matCellDef="let row; let i = index;"
+                class="tableArrangement tableContent"
+                [style.display]="groupTable.showDataType.includes(1) ? '' : 'none'"
+              >
+                <div
+                  class="visualizeData"
+                  [style.width]="groupTable.sorted ? row?.ratio : '0px'"
+                  *ngIf="groupTable.sortType === 'avgTime'"
+                ></div>
+                <div class="setIn">
+                  <span class="table__data">
+                    <ng-container *ngIf="row?.completeNum !== 0; else noTimeData">
+                      {{ row?.avgSecond || 0 | sportTime: false }}
+                    </ng-container>
+                  </span>
+                </div>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="totalTime">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                disableClear="true"
+                class="flexCenter tableArrangement"
+                [style.display]="groupTable.showDataType.includes(2) ? '' : 'none'"
+              >
+                <div class="tableTitle">
+                  <span class="flexCenter tableTitleWord">
+                    {{ 'universal_activityData_limit_totalTime' | translate }}
+                  </span>
+                  <span class="chartTitleUnit">time</span>
+                </div>
+              </mat-header-cell>
+              <mat-cell
+                *matCellDef="let row; let i = index;"
+                class="tableArrangement tableContent"
+                [style.display]="groupTable.showDataType.includes(2) ? '' : 'none'"
+              >
+                <div
+                  class="visualizeData"
+                  [style.width]="groupTable.sorted ? row?.ratio : '0px'"
+                  *ngIf="groupTable.sortType === 'totalTime'"
+                ></div>
+                <div class="setIn">
+                  <span class="table__data">
+                    <ng-container *ngIf="row?.completeNum !== 0; else noTimeData">
+                      {{ row?.totalSeconds | sportTime: false }}
+                    </ng-container>
+                  </span>
+                </div>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="avgPace">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                disableClear="true"
+                class="flexCenter tableArrangement"
+                [style.display]="groupTable.showDataType.includes(3) ? '' : 'none'"
+              >
+                <div class="tableTitle">
+                  <span class="flexCenter tableTitleWord">
+                    {{ (unit === 0 ? 'universal_activityData_limit_avgKilometerPace' : 'universal_activityData_limit_avgMilePace') | translate }}
+                  </span>
+                  <span class="chartTitleUnit">
+                    {{ unit === 0 ? 'min/km' : 'min/mi' }}
+                  </span>
+                </div>
+              </mat-header-cell>
+              <mat-cell
+                *matCellDef="let row; let i = index;"
+                class="tableArrangement tableContent"
+                [style.display]="groupTable.showDataType.includes(3) ? '' : 'none'"
+              >
+                <div
+                  class="visualizeData"
+                  [style.width]="groupTable.sorted ? row?.ratio : '0px'"
+                  *ngIf="groupTable.sortType === 'avgPace'"
+                ></div>
+                <div class="setIn">
+                  <span class="table__data">
+                    <ng-container *ngIf="row?.completeNum !== 0; else noTimeData">
+                      {{ row?.avgSpeed || 0 | sportPaceSibs: [1, unit, 1] }}
+                    </ng-container>
+                  </span>
+                </div>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="avgHr">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                disableClear="true"
+                class="flexCenter tableArrangement"
+                [style.display]="groupTable.showDataType.includes(4) ? '' : 'none'"
+              >
+                <div class="tableTitle">
+                  <span class="tableTitleWord">
+                    {{ 'universal_activityData_limit_avgHr' | translate }}
+                  </span>
+                  <span class="chartTitleUnit">
+                    bpm
+                  </span>
+                </div>
+              </mat-header-cell>
+              <mat-cell
+                *matCellDef="let row; let i = index;"
+                class="tableArrangement tableContent"
+                [style.display]="groupTable.showDataType.includes(4) ? '' : 'none'"
+              >
+                <div
+                  class="visualizeData"
+                  [style.width]="groupTable.sorted ? row?.ratio : '0px'"
+                  *ngIf="groupTable.sortType === 'avgHr'"
+                ></div>
+                <div class="setIn">
+                  <span class="table__data">
+                    <ng-container *ngIf="row?.completeNum !== 0; else noData">
+                      {{ row?.avgHr || 0 | number: '1.0-0' }}
+                    </ng-container>
+                  </span>
+                </div>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="avgCalories">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                disableClear="true"
+                class="flexCenter tableArrangement"
+                [style.display]="groupTable.showDataType.includes(5) ? '' : 'none'"
+              >
+                <div class="tableTitle">
+                  <span class="tableTitleWord">
+                    {{ 'universal_adjective_avg' | translate }} {{ 'universal_userProfile_calories' | translate }}
+                  </span>
+                  <span class="chartTitleUnit">
+                    cal
+                  </span>
+                </div>
+              </mat-header-cell>
+              <mat-cell
+                *matCellDef="let row; let i = index;"
+                class="tableArrangement tableContent"
+                [style.display]="groupTable.showDataType.includes(5) ? '' : 'none'"
+              >
+                <div
+                  class="visualizeData"
+                  [style.width]="groupTable.sorted ? row?.ratio : '0px'"
+                  *ngIf="groupTable.sortType === 'avgCalories'"
+                ></div>
+                <div class="setIn">
+                  <span class="table__data">
+                    <ng-container *ngIf="row?.completeNum !== 0; else noData">
+                      {{ row?.avgCalories | number: '1.0-1' }}
+                    </ng-container>
+                  </span>
+                </div>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="avgCadence">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                disableClear="true"
+                class="flexCenter tableArrangement"
+                [style.display]="groupTable.showDataType.includes(6) ? '' : 'none'"
+              >
+                <div class="tableTitle">
+                  <span class="tableTitleWord">
+                    {{ 'universal_activityData_limit_avgStepCadence' | translate }}
+                  </span>
+                  <span class="chartTitleUnit">spm</span>
+                </div>
+              </mat-header-cell>
+              <mat-cell
+                *matCellDef="let row; let i = index;"
+                class="tableArrangement tableContent"
+                [style.display]="groupTable.showDataType.includes(6) ? '' : 'none'"
+              >
+                <div
+                  class="visualizeData"
+                  [style.width]="groupTable.sorted ? row?.ratio : '0px'"
+                  *ngIf="groupTable.sortType === 'avgCadence'"
+                ></div>
+                <div class="setIn">
+                  <span class="table__data">
+                    <ng-container *ngIf="row?.completeNum !== 0; else noData">
+                      {{ row?.avgCadence || 0 | number: '1.0-1' }}
+                    </ng-container>
+                  </span>
+                </div>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="hrZone">
+              <mat-header-cell
+                *matHeaderCellDef
+                disableClear="true"
+                class="flexCenter tableArrangement"
+                style="min-width: 180px;"
+                [style.display]="groupTable.showDataType.includes(7) ? '' : 'none'"
+              >
+                <div class="tableTitle">
+                  <span class="tableTitleWord">{{ 'universal_activityData_hrZone' | translate }}</span>
+                  <span class="chartTitleUnit">{{ 'universal_activityData_hrZone' | translate }}</span>
+                </div>
+              </mat-header-cell>
+              <mat-cell
+                *matCellDef="let row; let i = index;"
+                class="tableArrangement tableContent"
+                style="min-width: 180px;"
+                [style.display]="groupTable.showDataType.includes(7) ? '' : 'none'"
+              >
+                <ng-container *ngIf="groupTable.showAll || i < tableLength">
+                  <div
+                    style="width: 100%;"
+                    [class.flexCenter]="row?.completeNum === 0"
+                    *ngIf="groupTable.showAll || i < tableLength"
+                  >
+                    <ng-container *ngIf="row?.completeNum !== 0; else noData">
+                      <app-hrzone-chart
+                        [data]="row?.hrZone"
+                        [type]="'personalAnalysis'"
+                        *ngIf="progress === 100"
+                      ></app-hrzone-chart>
+                    </ng-container>
+                  </div>
+                </ng-container>
+              </mat-cell>
+            </ng-container>
+            <ng-container>
+              <mat-header-row
+                *matHeaderRowDef="groupHeaderRowDef"
+              >
+              </mat-header-row>
+              <mat-row
+                *matRowDef="let logRow; let j = index; columns: groupHeaderRowDef"
+                (click)="showAnalysisInfoMenu($event, 'group', logRow.groupId)"
+                class="tableRow"
+                [hidden]="!groupTable.showAll && j >= tableLength"
+              >
+              </mat-row>
+            </ng-container>
+          </mat-table>
+        </div>
+        <div
+          class="seeMoreLink"
+          (click)="showAllData('group')"
+          [hidden]="groupTable.showAll || groupTableData.data.length <= tableLength"
+        >
+          {{ 'universal_operating_more' | translate }}
+        </div>
+      </div>
+      <div
+        class="flexCol tableMenu"
+        [style.top]="groupMenu.show ? groupMenu.y : null"
+        [style.left]="groupMenu.show ? groupMenu.x : null"
+        (click)="$event.stopPropagation();"
+        *ngIf="groupMenu.show"
+      >
+        <div class="flexCol" style="padding: 15px 15px 0px 15px;">
+          <span style="color: #656565; font-weight: bold;">{{ 'universal_group_groupList' | translate }}</span>
+          <div class="tableListSection">
+            <div>
+              <span
+                class="listSpan"
+                [style.color]="memberDataObj[_member.id].record ? 'none' : 'red'"
+                (click)="goMemberPage(_member.id, 'info')"
+                *ngFor="let _member of groupDataObj[groupMenu.focusId].member"
+              >
+                <i
+                  class="icon-svg_web-icon_p1_059-lock lockIcon"
+                  *ngIf="!memberDataObj[_member.id].privacy"
+                ></i>
+                {{ _member.name }}
+              </span>
+            </div>
+          </div>
+        </div>
+        <a target="_blank" class="tableMenuList" (click)="goGroupPage(groupMenu.focusId, 'info')">
+          {{ 'universal_group_groupInfo' | translate }}
+        </a>
+        <a target="_blank" class="tableMenuList" (click)="goGroupPage(groupMenu.focusId, 'sportsReport')">
+          {{ 'universal_activityData_sportReport' | translate }}
+        </a>
+        <a target="_blank" class="tableMenuList" (click)="goGroupPage(groupMenu.focusId, 'cloudrunReport')">
+          Cloud run {{ 'universal_activityData_report' | translate }}
+        </a>
+      </div>
+    </section>
+    <section class="card__section">
+      <div class="flexRow cardTitle" style="position: relative; justify-content: space-between;">
+        <span class="cardSubtitle">{{ 'universal_group_personalAnalysis' | translate }}</span>
+        <i class="icon-svg_web-icon_p1_001-setting settingIcon" (click)="handleShowOpt($event, 'member')"></i>
+        <div
+          class="flexCol tableMenu"
+          style="position: absolute; right: 0px; top: 28px; padding: 10px; max-height: 300px; overflow-y: auto;"
+          (click)="$event.stopPropagation();"
+          (scroll)="$event.stopPropagation();"
+          *ngIf="memberTable.showOpt"
+        >
+          <div *ngIf="currentGroup.level <= 40">
+            <span class="tableMenuTitle">{{'universal_operating_filter' | translate}} {{'universal_group_group' | translate}}</span>
+            <div class="tableCheckbox" *ngFor="let _filter of memberTableOpt.filter; let _idx = index;">
+              <mat-checkbox
+                color="primary"
+                value="{{ _filter.level }}"
+                [checked]="memberTable.showLevel.includes(_filter.level)"
+                (change)="changeTableOpt($event, 'member', 'filter')"
+                [style.pointer-events]="memberTable.showLevel.length <= 1 && memberTable.showLevel.includes(_filter.level) ? 'none' : ''"
+                [style.color]="memberTable.showLevel.length <= 1 && memberTable.showLevel.includes(_filter.level) ? '#ababab' : ''"
+                *ngIf="currentGroup.level <= 30 || _idx !== 0"
+              >
+                <span style="font-size: 14px">
+                  {{ _filter.i18n }}
+                </span>
+              </mat-checkbox>
+            </div>
+          </div>
+          <div>
+            <div class="flexRow">
+              <span class="tableMenuTitle">{{'universal_activityData_fieldDisplay' | translate}}</span>
+              <span
+                style="font-size: 8px; margin-left: 5px;"
+                [style.color]="memberTable.showDataType.length >= tableColumn.max ? 'red' : '#ababab'"
+              >
+                ({{ 'universal_activityData_most' | translate: {'number': tableColumn.max} }})
+              </span>
+            </div>
+            <div class="tableCheckbox" *ngFor="let _column of memberTableOpt.column; let _index = index;">
+              <mat-checkbox
+                color="primary"
+                value="{{ _index }}"
+                [checked]="memberTable.showDataType.includes(_index)"
+                (change)="changeTableOpt($event, 'member', 'column')"
+                [style.pointer-events]="
+                  (memberTable.showDataType.length >= tableColumn.max && !memberTable.showDataType.includes(_index))
+                  || (memberTable.showDataType.length <= tableColumn.min && memberTable.showDataType.includes(_index))
+                  ? 'none' : ''
+                "
+                [style.color]="
+                  (memberTable.showDataType.length >= tableColumn.max && !memberTable.showDataType.includes(_index))
+                  || (memberTable.showDataType.length <= tableColumn.min && memberTable.showDataType.includes(_index))
+                  ? '#ababab' : ''
+                "
+              >
+                <span style="font-size: 14px">
+                  {{ _column.i18n }}
+                </span>
+              </mat-checkbox>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="analysisTable">
+        <div style="margin-top: 10px;">
+          <mat-table [dataSource]="memberTableData.data" matSort #memberSortTable="matSort" (matSortChange)="arrangeData('member')">
+            <ng-container matColumnDef="name">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                disableClear="true"
+                class="tableArrangement"
+                style="justify-content: flex-start;"
+                id="personName"
+              >
+                <span
+                  class="tableTitleWord"
+                  style="text-align: start;"
+                >
+                  {{ 'universal_activityData_name' | translate }}
+                </span>
+              </mat-header-cell>
+              <mat-cell
+                *matCellDef="let row; let i = index;"
+                class="tableArrangement tableContent flexCol"
+                style="align-items: flex-start; justify-content: center;"
+                [style.color]="memberMenu.focusId === row?.userId ? '#157fcc': ''"
+              >
+                <span style="text-align: center;">{{ row?.name }}</span>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="runTimes">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                disableClear="true"
+                class="flexCenter tableArrangement"
+                [style.display]="memberTable.showDataType.includes(0) ? '' : 'none'"
+              >
+                <div class="tableTitle">
+                  <span class="tableTitleWord">{{ 'universal_activityData_totalActivity' | translate }}</span>
+                  <span class="chartTitleUnit">times</span>
+                </div>
+              </mat-header-cell>
+              <mat-cell
+                *matCellDef="let row; let i = index;"
+                class="tableArrangement tableContent"
+                [style.display]="memberTable.showDataType.includes(0) ? '' : 'none'"
+              >
+                <div
+                  class="visualizeData"
+                  [style.width]="memberTable.sorted ? row?.ratio : '0px'"
+                  *ngIf="memberTable.sortType === 'runTimes'"
+                ></div>
+                <span class="setIn table__data" *ngIf="row?.privacy; else privacyLock;">{{ row?.runTimes }}</span>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="bestTime">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                disableClear="true"
+                class="flexCenter tableArrangement"
+                [style.display]="memberTable.showDataType.includes(1) ? '' : 'none'"
+              >
+                <div class="tableTitle">
+                  <span class="flexCenter tableTitleWord">
+                    {{ 'universal_adjective_maxBest' | translate }} {{ 'universal_activityData_timing' | translate }}
+                  </span>
+                  <span class="chartTitleUnit">time</span>
+                </div>
+              </mat-header-cell>
+              <mat-cell
+                *matCellDef="let row; let i = index;"
+                class="tableArrangement tableContent"
+                [style.display]="memberTable.showDataType.includes(1) ? '' : 'none'"
+              >
+                <div
+                  class="visualizeData"
+                  [style.width]="memberTable.sorted ? row?.ratio : '0px'"
+                  *ngIf="memberTable.sortType === 'bestTime'"
+                ></div>
+                <div class="setIn">
+                  <span class="table__data" *ngIf="row?.privacy; else privacyLock">
+                    <ng-container *ngIf="row?.runTimes !== 0; else noTimeData">
+                      {{ row?.bestSeconds | sportTime: false }}
+                    </ng-container>
+                  </span>
+                </div>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="avgTime">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                disableClear="true"
+                class="flexCenter tableArrangement"
+                [style.display]="memberTable.showDataType.includes(2) ? '' : 'none'"
+              >
+                <div class="tableTitle">
+                  <span class="flexCenter tableTitleWord">
+                    {{ 'universal_adjective_avg' | translate }} {{ 'universal_activityData_timing' | translate }}
+                  </span>
+                  <span class="chartTitleUnit">time</span>
+                </div>
+              </mat-header-cell>
+              <mat-cell
+                *matCellDef="let row; let i = index;"
+                class="tableArrangement tableContent"
+                [style.display]="memberTable.showDataType.includes(2) ? '' : 'none'"
+              >
+                <div
+                  class="visualizeData"
+                  [style.width]="memberTable.sorted ? row?.ratio : '0px'"
+                  *ngIf="memberTable.sortType === 'avgTime'"
+                ></div>
+                <div class="setIn">
+                  <span class="table__data" *ngIf="row?.privacy; else privacyLock;">
+                    <ng-container *ngIf="row?.runTimes !== 0; else noTimeData">
+                      {{ row?.avgSecond || 0 | sportTime: false }}
+                    </ng-container>
+                  </span>
+                </div>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="totalTime">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                disableClear="true"
+                class="flexCenter tableArrangement"
+                [style.display]="memberTable.showDataType.includes(3) ? '' : 'none'"
+              >
+                <div class="tableTitle">
+                  <span class="flexCenter tableTitleWord">
+                    {{ 'universal_activityData_limit_totalTime' | translate }}
+                  </span>
+                  <span class="chartTitleUnit">time</span>
+                </div>
+              </mat-header-cell>
+              <mat-cell
+                *matCellDef="let row; let i = index;"
+                class="tableArrangement tableContent"
+                [style.display]="memberTable.showDataType.includes(3) ? '' : 'none'"
+              >
+                <div
+                  class="visualizeData"
+                  [style.width]="memberTable.sorted ? row?.ratio : '0px'"
+                  *ngIf="memberTable.sortType === 'totalTime'"
+                ></div>
+                <div class="setIn">
+                  <span class="table__data" *ngIf="row?.privacy; else privacyLock;">
+                    <ng-container *ngIf="row?.runTimes !== 0; else noTimeData">
+                      {{ row?.totalSeconds | sportTime: false }}
+                    </ng-container>
+                  </span>
+                </div>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="avgPace">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                disableClear="true"
+                class="flexCenter tableArrangement"
+                [style.display]="memberTable.showDataType.includes(4) ? '' : 'none'"
+              >
+                <div class="tableTitle">
+                  <span class="tableTitleWord">
+                    {{ (unit === 0 ? 'universal_activityData_limit_avgKilometerPace' : 'universal_activityData_limit_avgMilePace') | translate }}
+                  </span>
+                  <span class="chartTitleUnit">
+                    {{ unit === 0 ? 'min/km' : 'min/mi' }}
+                  </span>
+                </div>
+              </mat-header-cell>
+              <mat-cell
+                *matCellDef="let row; let i = index;"
+                class="tableArrangement tableContent"
+                [style.display]="memberTable.showDataType.includes(4) ? '' : 'none'"
+              >
+                <div
+                  class="visualizeData"
+                  [style.width]="memberTable.sorted ? row?.ratio : '0px'"
+                  *ngIf="memberTable.sortType === 'avgPace'"
+                ></div>
+                <div class="setIn">
+                  <span class="table__data" *ngIf="row?.privacy; else privacyLock;">
+                    <ng-container *ngIf="row?.runTimes !== 0; else noTimeData">
+                      {{ row?.avgSpeed || 0 | sportPaceSibs: [1, unit, 1] }}
+                    </ng-container>
+                  </span>
+                </div>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="avgHr">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                disableClear="true"
+                class="flexCenter tableArrangement"
+                [style.display]="memberTable.showDataType.includes(5) ? '' : 'none'"
+              >
+                <div class="tableTitle">
+                  <span class="tableTitleWord">
+                    {{ 'universal_activityData_limit_avgHr' | translate }}
+                  </span>
+                </div>
+              </mat-header-cell>
+              <mat-cell
+                *matCellDef="let row; let i = index;"
+                class="tableArrangement tableContent"
+                [style.display]="memberTable.showDataType.includes(5) ? '' : 'none'"
+              >
+                <div
+                  class="visualizeData"
+                  [style.width]="memberTable.sorted ? row?.ratio : '0px'"
+                  *ngIf="memberTable.sortType === 'avgHr'"
+                ></div>
+                <div class="setIn">
+                  <span class="table__data" *ngIf="row?.privacy; else privacyLock;">
+                    <ng-container *ngIf="row?.runTimes !== 0; else noData">
+                      {{ row?.avgHr | number: '1.0-0' }}
+                    </ng-container>
+                  </span>
+                </div>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="totalCalories">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                disableClear="true"
+                class="flexCenter tableArrangement"
+                [style.display]="memberTable.showDataType.includes(6) ? '' : 'none'"
+              >
+                <div class="tableTitle">
+                  <span class="tableTitleWord">
+                    {{ 'universal_activityData_totalCalories' | translate }}
+                  </span>
+                  <span class="chartTitleUnit">cal</span>
+                </div>
+              </mat-header-cell>
+              <mat-cell
+                *matCellDef="let row; let i = index;"
+                class="tableArrangement tableContent"
+                [style.display]="memberTable.showDataType.includes(6) ? '' : 'none'"
+              >
+                <div
+                  class="visualizeData"
+                  [style.width]="memberTable.sorted ? row?.ratio : '0px'"
+                  *ngIf="memberTable.sortType === 'totalCalories'"
+                ></div>
+                <div class="setIn">
+                  <span class="table__data" *ngIf="row?.privacy; else privacyLock;">
+                    <ng-container *ngIf="row?.runTimes !== 0; else noData">
+                      {{ row?.totalCalories | number: '1.0-0' }}
+                    </ng-container>
+                  </span>
+                </div>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="avgCadence">
+              <mat-header-cell
+                *matHeaderCellDef
+                mat-sort-header
+                disableClear="true"
+                class="flexCenter tableArrangement"
+                [style.display]="memberTable.showDataType.includes(7) ? '' : 'none'"
+              >
+                <div class="tableTitle">
+                  <span class="tableTitleWord">
+                    {{ 'universal_activityData_limit_avgStepCadence' | translate }}
+                  </span>
+                  <span class="chartTitleUnit">spm</span>
+                </div>
+              </mat-header-cell>
+              <mat-cell
+                *matCellDef="let row; let i = index;"
+                class="tableArrangement tableContent"
+                [style.display]="memberTable.showDataType.includes(7) ? '' : 'none'"
+              >
+                <div
+                  class="visualizeData"
+                  [style.width]="memberTable.sorted ? row?.ratio : '0px'"
+                  *ngIf="memberTable.sortType === 'avgCadence'"
+                ></div>
+                <div class="setIn">
+                  <span class="table__data" *ngIf="row?.privacy; else privacyLock;">
+                    <ng-container *ngIf="row?.runTimes !== 0; else noData">
+                      {{ row?.avgCadence | number: '1.0-1' }}
+                    </ng-container>
+                  </span>
+                </div>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="hrZone">
+              <mat-header-cell
+                *matHeaderCellDef
+                disableClear="true"
+                class="flexCenter tableArrangement"
+                style="min-width: 180px;"
+                [style.display]="memberTable.showDataType.includes(8) ? '' : 'none'"
+              >
+                <div class="tableTitle">
+                  <span class="tableTitleWord">{{ 'universal_activityData_hrZone' | translate }}</span>
+                  <span class="chartTitleUnit">{{ 'universal_activityData_hrZone' | translate }}</span>
+                </div>
+              </mat-header-cell>
+              <mat-cell
+                *matCellDef="let row; let i = index;"
+                class="tableArrangement tableContent"
+                style="min-width: 180px;"
+                [style.display]="memberTable.showDataType.includes(8) ? '' : 'none'"
+              >
+                <ng-container *ngIf="memberTable.showAll || i < tableLength">
+                  <div
+                    style="width: 100%;"
+                    [class.flexCenter]="row?.runTimes === 0"
+                    *ngIf="row?.privacy; else privacyLock;"
+                  >
+                    <ng-container *ngIf="row?.runTimes !== 0; else noData">
+                      <app-hrzone-chart
+                        [data]="row?.hrZone"
+                        [type]="'personalAnalysis'"
+                        *ngIf="progress === 100"
+                      ></app-hrzone-chart>
+                    </ng-container>
+                  </div>
+                </ng-container>
+              </mat-cell>
+            </ng-container>
+            <ng-container>
+              <mat-header-row
+                *matHeaderRowDef="memberHeaderRowDef"
+              >
+              </mat-header-row>
+              <mat-row
+                *matRowDef="let logRow; let j = index; columns: memberHeaderRowDef"
+                (click)="showAnalysisInfoMenu($event, 'member', logRow.userId)"
+                class="tableRow"
+                [hidden]="!memberTable.showAll && j >= tableLength"
+              >
+              </mat-row>
+            </ng-container>
+          </mat-table>
+        </div>
+        <div
+          class="seeMoreLink"
+          (click)="showAllData('member')"
+          [hidden]="memberTable.showAll || memberTableData.data.length <= tableLength"
+        >
+          {{ 'universal_operating_more' | translate }}
+        </div>
+      </div>
+      <div
+        class="flexCol tableMenu"
+        [style.top]="memberMenu.show ? memberMenu.y : null"
+        [style.left]="memberMenu.show ? memberMenu.x : null"
+        (click)="$event.stopPropagation();"
+        *ngIf="memberMenu.show"
+      >
+        <div class="flexCol" style="padding: 15px 15px 0px 15px;">
+          <span style="color: #656565; font-weight: bold;">{{ 'universal_group_groupList' | translate }}</span>
+          <div class="tableListSection">
+            <div>
+              <span
+                class="listSpan"
+                (click)="goGroupPage(_belongGroup.id, 'info')"
+                *ngFor="let _belongGroup of memberDataObj[memberMenu.focusId].belongGroup"
+              >
+                {{ _belongGroup.name }}
+              </span>
+            </div>
+          </div>
+        </div>
+        <a target="_blank" class="tableMenuList" (click)="goMemberPage(memberMenu.focusId, 'info')">
+          {{ 'universal_userProfile_basicInformation' | translate }}
+        </a>
+        <a target="_blank" class="tableMenuList" (click)="goMemberPage(memberMenu.focusId, 'sportsReport')">
+          {{ 'universal_activityData_sportReport' | translate }}
+        </a>
+        <a target="_blank" class="tableMenuList" (click)="goMemberPage(memberMenu.focusId, 'cloudrunReport')" *ngIf="0 === '0'">
+          Cloud run {{ 'universal_activityData_report' | translate }}
+        </a>
+      </div>
+    </section>
+    <ng-template #noTimeData>
+      -:--
+    </ng-template>
+    <ng-template #noData>
+      --
+    </ng-template>
+    <ng-template #privacyLock>
+      <i
+        class="icon-svg_web-icon_p1_059-lock lockIcon setIn table__data"
+        *ngIf="!row?.privacy"
+      ></i>
+    </ng-template>
+  </main>
+  <footer class="flexRow" style="padding: 5px 10px;" *ngIf="mapInfo">
+    <img
+      id="map__img"
+      [src]="'app/public_html/cloudrun/update/' + mapInfo.mapImg"
+      [alt]="mapInfo.mapName"
+    >
+    <div class="flexCol">
+      <h4 style="word-break: break-word; font-weight: bold;">{{ mapInfo.mapName }}</h4>
+      <p id="map__introduction" style="font-weight: bold; color: rgba(100, 100, 100, 1);">{{ mapInfo.introduce }}</p>
+      <p class="map__info">
+        <span>{{ 'universal_deviceSetting_countryRegion' | translate }}：</span>
+        {{ mapInfo.country }}-{{ mapInfo.city }}
+      </p>
+      <p class="map__info">
+        <span>{{ 'universal_activityData_distance' | translate }}：</span>
+        {{ +mapInfo.distance * 1000 | distanceSibs: unit }}
+      </p>
+      <p class="map__info">
+        <span>{{ 'universal_activityData_avgIncline' | translate }}：</span>
+        {{ mapInfo.incline }}
+      </p>
+    </div>
+  </footer>
+  <div *ngIf="uiFlag.isPreviewMode" class="printMark">
+    GPTFit
+  </div>
+</div>

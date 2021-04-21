@@ -688,6 +688,21 @@ a.ban-send:hover {
   @include bold-font(18px);
 }
 
+.cardSection {
+  padding: 10px;
+  margin: 5px 0;
+  width: 100%;
+  background-color: rgba(240, 240, 240, 1);
+}
+
+.functionButton {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  width: 100%;
+  margin: 10px 0px;
+}
+
 .settingIcon {
   font-size: 24px;
   cursor: pointer;
@@ -716,6 +731,13 @@ a.ban-send:hover {
   left: -81px;
 }
 
+.printMark {
+  width: 100%;
+  background-color:#ededed;
+  text-align: center;
+  font-weight: bold;
+  height:fit-content;
+}
 
 /************************************* media **************************************/
 

@@ -5,7 +5,7 @@ import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-
+import { FilletTrendChart, DisplayPage } from '../../../models/chart-data';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -49,10 +49,11 @@ class ChartOptions {
       plotOptions: {
         column: {
           stacking: 'normal',
-          pointPlacement: 0.3,
+          pointPlacement: 0.33,
         },
         series: {
           pointWidth: null,
+          maxPointWidth: 30,
           borderRadius: 5,
         }
       },
@@ -65,19 +66,19 @@ class ChartOptions {
 @Component({
   selector: 'app-fillet-column-chart',
   templateUrl: './fillet-column-chart.component.html',
-  styleUrls: ['./fillet-column-chart.component.scss']
+  styleUrls: ['./fillet-column-chart.component.scss', '../chart-share-style.scss']
 })
 export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy {
   private ngUnsubscribe = new Subject;
-
   tooltipTitle = '';
   dateList = [];
+  chartType: string;
 
   @Input() data: any;
   @Input() dateRange: string;
   @Input() chartName: string;
   @Input() searchDate: Array<number>;
-
+  @Input() page: DisplayPage;
   @ViewChild('container', {static: false})
   container: ElementRef;
 
@@ -109,11 +110,9 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
           }
 
           this.tooltipTitle = this.translate.instant('universal_userProfile_calories');
-
           break;
         case 'FitTime':
           this.createDateList();
-
           const newData = [];
           let idx = 0;
           for (let i = 0; i < this.dateList.length; i++) {
@@ -124,6 +123,7 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
               newData.push(0);
             }
           }
+
           chartData = newData.map((_item, index) => {
             return {
               x: this.dateList[index],
@@ -132,7 +132,14 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
           });
 
           this.tooltipTitle = this.translate.instant('universal_userProfile_fitTime');
+          break;
+        case 'CostTime':
+          this.chartType = 'time';
+          for (let i = 0, len = this.data.date.length; i < len; i++) {
+            chartData.push([this.data.date[i], this.data.costTime[i]]);
+          }
 
+          this.tooltipTitle = 'Total time';
           break;
       }
 
@@ -146,14 +153,16 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
       ];
 
       const trendChartOptions = new ChartOptions(trendDataset);
+      if (this.page !== 'cloudrun') {
+        // 設定圖表x軸時間間距-kidin-1090204
+        if (this.dateRange === 'day' && this.data.date.length <= 7) {
+          trendChartOptions['xAxis'].tickInterval = 24 * 3600 * 1000;  // 間距一天
+        } else if (this.dateRange === 'day' && this.data.date.length > 7) {
+          trendChartOptions['xAxis'].tickInterval = 7 * 24 * 3600 * 1000;  // 間距一週
+        } else {
+          trendChartOptions['xAxis'].tickInterval = 30 * 24 * 4600 * 1000;  // 間距一個月
+        }
 
-      // 設定圖表x軸時間間距-kidin-1090204
-      if (this.dateRange === 'day' && this.data.date.length <= 7) {
-        trendChartOptions['xAxis'].tickInterval = 24 * 3600 * 1000;  // 間距一天
-      } else if (this.dateRange === 'day' && this.data.date.length > 7) {
-        trendChartOptions['xAxis'].tickInterval = 7 * 24 * 3600 * 1000;  // 間距一週
-      } else {
-        trendChartOptions['xAxis'].tickInterval = 30 * 24 * 4600 * 1000;  // 間距一個月
       }
 
       // 設定浮動提示框顯示格式-kidin-1090204
@@ -170,6 +179,58 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
         }
 
       };
+
+      if (this.page === 'cloudrun') {
+        trendChartOptions['plotOptions'].series.borderRadius = 0;
+
+        // 設定圖表y軸單位格式
+        trendChartOptions['yAxis'].labels = {
+          formatter: function () {
+            const yVal = this.value,
+                  costhr = Math.floor(yVal / 3600),
+                  costmin = Math.floor((yVal - costhr * 60 * 60) / 60),
+                  costsecond = Math.round(yVal - costmin * 60),
+                  timeMin = `${costmin}`.padStart(2, '0'),
+                  timeSecond = `${costsecond}`.padStart(2, '0');
+
+            if (costhr === 0 && timeMin === '00') {
+              return `0:${timeSecond}`;
+            } else if (costhr === 0) {
+              return `${timeMin}:${timeSecond}`;
+            } else {
+              return `${costhr}:${timeMin}:${timeSecond}`;
+            }
+
+          }
+
+        };
+
+        // 設定tooltip顯示格式
+        trendChartOptions['tooltip'] = {
+          formatter: function () {
+            const yVal = this.y,
+                  costhr = Math.floor(yVal / 3600),
+                  costmin = Math.floor((yVal - costhr * 60 * 60) / 60),
+                  costsecond = Math.round(yVal - costmin * 60),
+                  timeMin = `${costmin}`.padStart(2, '0'),
+                  timeSecond = `${costsecond}`.padStart(2, '0');
+
+            let zoneTime = '';
+            if (costhr === 0 && timeMin === '00') {
+              zoneTime = `0:${timeSecond}`;
+            } else if (costhr === 0) {
+              zoneTime = `${timeMin}:${timeSecond}`;
+            } else {
+              zoneTime = `${costhr}:${timeMin}:${timeSecond}`;
+            }
+
+            return `${moment(this.x).format('YYYY-MM-DD')}<br>${this.series.name}: ${zoneTime}`;
+
+          }
+
+        }
+
+      }
 
       this.createChart(trendChartOptions);
     });

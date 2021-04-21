@@ -1,0 +1,180 @@
+<section class="flexCol" style="position: relative;">
+  <div class="flexRow cardTitle" style="position: relative; justify-content: space-between;">
+    <span class="cardSubtitle">
+      <ng-container *ngIf="uiFlag.showMap">
+        {{ 'universal_activityData_map' | translate }}
+      </ng-container>
+      <ng-container *ngIf="!uiFlag.showMap">
+        {{ 'universal_activityData_dataComparison' | translate }}
+      </ng-container>
+    </span>
+    <i
+      class="icon-svg_web-icon_p1_001-setting settingIcon"
+      [class.click--forbidden]="mapPlay.startPlaying"
+      (click)="handleShowOptMenu($event)"
+      *ngIf="!isPreviewMode"
+    ></i>
+    <div id="map__opt__menu" *ngIf="uiFlag.showMapOpt" (click)="$event.stopPropagation()">
+      <div class="flexRow selector__section" *ngIf="mapOpt.showMapSourceSelector && uiFlag.showMap">
+        <span class="flexRow radio__selector" (click)="changeMapSource('google')">
+          <span class="radio__btn" [class.radio__btn--active]="mapOpt.mapSource === 'google'"></span>
+          Google
+        </span>
+        <span class="flexRow radio__selector" (click)="changeMapSource('baidu')">
+          <span class="radio__btn" [class.radio__btn--active]="mapOpt.mapSource === 'baidu'"></span>
+          Baidu
+        </span>
+      </div>
+    </div>
+  </div>
+  <div id="map__list__section" class="flexRow">
+    <div id="map__section" [style.width]="!uiFlag.showMap ? '0' : 'none'">
+      <div #gMap class="map__style" [class.hide__map]="!uiFlag.showMap" *ngIf="mapOpt.mapSource === 'google'"></div>
+      <div #bMap class="map__style" [class.hide__map]="!uiFlag.showMap" *ngIf="mapOpt.mapSource === 'baidu'"></div>
+      <div id="play__bar" class="flexRow" *ngIf="uiFlag.showMap && !isPreviewMode">
+        <div id="play__btn__section" class="flexRow">
+          <button
+            class="play__btn"
+            (click)="handlePlaying()"
+          >
+            <ng-container *ngIf="mapPlay.pause || !mapPlay.startPlaying">
+              <i class="icon-svg_web-icon_p2_085-play"></i>
+            </ng-container>
+            <ng-container *ngIf="!mapPlay.pause && mapPlay.startPlaying">
+              <i class="icon-svg_web-icon_p2_084-pause"></i>
+            </ng-container>
+          </button>
+          <button
+            class="play__btn"
+            (click)="initMapPlay()"
+          >
+            <i class="icon-svg_web-icon_p2_041-stop"></i>
+          </button>
+          <div class="flexRow" style="padding: 0 10px;">
+            <span id="play__timing">
+              {{ mapPlay.truthSecond | sportTime: true }}
+            </span>
+          </div>
+        </div>
+        <div style="position: relative; margin-right: 10px;">
+          <button
+            class="play__btn"
+            style="font-size: 16px; width: 45px;"
+            (click)="showPlaySpeedOpt($event)"
+          >
+            <span class="flexCenter" style="height: 20px;">{{ mapPlay.playSpeed }}x</span>
+          </button>
+          <div id="speed__opt" class="flexCol" *ngIf="mapPlay.showSpeedOpt">
+            <span class="speed__opt__item" (click)="changePlayingSpeed(1)">1x</span>
+            <span class="speed__opt__item" (click)="changePlayingSpeed(5)">5x</span>
+            <span class="speed__opt__item" (click)="changePlayingSpeed(10)">10x</span>
+            <span class="speed__opt__item" (click)="changePlayingSpeed(20)">20x</span>
+            <span class="speed__opt__item" (click)="changePlayingSpeed(50)">50x</span>
+            <span class="speed__opt__item" (click)="changePlayingSpeed(100)">100x</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <section id="record__table">
+      <div class="flexRow" style="justify-content: space-between; margin-bottom: 10px;">
+        <h6 id="table__title" class="cardSubtitle">
+          {{ 'universal_race_bestRecord' | translate }}
+        </h6>
+        <i
+          class="icon-svg_web-icon_p3_003-left_turn"
+          style="font-size: 24px; cursor: pointer;"
+          title="clear"
+          (click)="removeAllPlayerMark()"
+        ></i>
+      </div>
+      <table style="width: 100%;">
+        <thead>
+          <tr>
+            <th class="mark__col">&nbsp;</th>
+            <th class="rank__col">
+              <i class="icon-svg_web-icon_p1_002-trophy" style="font-size: 20px;"></i>
+            </th>
+            <th class="name__col">
+              <ng-container *ngIf="page === 'group'">
+                {{ 'universal_userAccount_nickname' | translate}}
+              </ng-container>
+              <ng-container *ngIf="page === 'person'">
+                {{ 'universal_time_date' | translate}}
+              </ng-container>
+            </th>
+            <th class="pace__col">
+              {{ (unit === 0 ? 'universal_activityData_limit_kilometerPace' : 'universal_activityData_limit_milePace') | translate}}
+            </th>
+            <th class="time__col">{{ 'universal_activityData_time' | translate}}</th>
+          </tr>
+        </thead>
+        <tbody style="display: block; max-height: 315px; overflow-y: scroll;">
+          <ng-container *ngIf="playerList && playerList.length > 0">
+            <tr
+              class="table__row"
+              [class.loaded__player]="loadedList[_player.fileId]"
+              (mouseenter)="focusPlayer(_index)"
+              (mouseleave)="blurPlayer(_index)"
+              (click)="clickPlayer(_index)"
+              *ngFor="let _player of playerList; let _index = index;"
+            >
+              <td
+                class="mark__col"
+                [style.color]="loadedList[_player.fileId] ? loadedList[_player.fileId].color : 'transparent'"
+              >
+              ●</td>
+              <td class="rank__col">
+                {{ _player.rank }}
+              </td>
+              <td class="name__col" [style.color]="userId == _player.userId ? 'rgba(73, 161, 255, 1)' : 'rgba(100, 100, 100, 1)'">
+                <ng-container *ngIf="page === 'group'">
+                  {{ _player.name }}
+                </ng-container>
+                <ng-container *ngIf="page === 'person'">
+                  {{ _player.startTime | timeFormat: 'YYYY-MM-DD HH:mm' }}
+                </ng-container>
+              </td>
+              <td class="pace__col">
+                <ng-container *ngIf="page === 'group'">
+                  {{ _player.bestSpeed | sportPaceSibs: [1, unit, 1] }}
+                </ng-container>
+                <ng-container *ngIf="page === 'person'">
+                  {{ _player.avgSpeed | sportPaceSibs: [1, unit, 1] }}
+                </ng-container>
+              </td>
+              <td class="time__col">
+                <ng-container *ngIf="page === 'group'">
+                  {{ _player.bestSeconds | sportTime: false }}
+                </ng-container>
+                <ng-container *ngIf="page === 'person'">
+                  {{ _player.totalSecond | sportTime: false }}
+                </ng-container>
+              </td>
+            </tr>
+          </ng-container>
+          <ng-container *ngIf="!playerList || playerList.length === 0">
+            <tr class="table__row" style="pointer-events: none;">
+              <td class="mark__col">&nbsp;</td>
+              <td class="rank__col">&nbsp;</td>
+              <td class="name__col">
+                {{ 'universal_status_noData' | translate}}
+              </td>
+              <td class="pace__col">&nbsp;</td>
+              <td class="time__col">&nbsp;</td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </section>
+  </div>
+  <app-equidistant-chart
+    style="width: 100%; min-height: 180px;"
+    [loadedList]="loadedList"
+    [altitude]="altitude"
+    [gpx]="mapGpx"
+    [mapDistance]="mapDistance"
+    [unit]="unit"
+    [page]="'group'"
+    (onHover)="movePoint($event)"
+  ></app-equidistant-chart>
+</section>

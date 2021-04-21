@@ -38,6 +38,7 @@ export class DeviceLogDetailComponent implements OnInit {
   logSource = new MatTableDataSource<any>();
   totalCount: number;
   currentPage: PageEvent;
+  pageSize: number;
   currentSort: Sort;
   userInfo: string;
   isHandset$: Observable<boolean>;
@@ -116,12 +117,14 @@ export class DeviceLogDetailComponent implements OnInit {
     // 分頁切換時，重新取得資料
     this.paginatorA.page.subscribe((page: PageEvent) => {
       this.currentPage = page;
+      this.pageSize = this.currentPage.pageSize;
       this.router.navigateByUrl(`${location.pathname}?pageNumber=${this.currentPage.pageIndex + 1}`);
       this.getLists();
     });
 
     this.paginatorB.page.subscribe((page: PageEvent) => {
       this.currentPage = page;
+      this.pageSize = this.currentPage.pageSize;
       this.router.navigateByUrl(`${location.pathname}?pageNumber=${this.currentPage.pageIndex + 1}`);
       this.getLists();
     });

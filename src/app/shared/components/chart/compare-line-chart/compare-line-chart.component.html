@@ -1,3 +1,33 @@
-<div #container style="width: 100%;">
-  chart
-</div>
+<section class="flexCol">
+  <ng-container *ngIf="page === 'cloudrun'">
+    <div class="flexRow" style="align-items: center; justify-content: space-between;">
+      <h6 id="chartTitle">{{ chartType | dataTypeTranslate: [1, unit] | translate }}</h6>
+      <span id="rowLine"></span>
+    </div>
+  </ng-container>
+    <main id="mainSeciton">
+      <ng-container *ngIf="page === 'cloudrun'">
+      <div class="flexRow infoBlock" style="justify-content: space-between;">
+        <div class="flexCol infoSection">
+          <span class="dataNumber">
+            {{ data.oneRangeBestHR }} {{ chartType | dataTypeUnit: [1, unit] }}
+          </span>
+          <span class="dataDescription">
+            {{ 'universal_adjective_maxHight' | translate }} {{ chartType | dataTypeTranslate: [1, unit] | translate }}
+          </span>
+        </div>
+        <div class="flexCol infoSection">
+          <span class="dataNumber">
+            {{ data.avgHR }} {{ chartType | dataTypeUnit: [1, unit] }}
+          </span>
+          <span class="dataDescription">
+            {{ 'universal_adjective_avg' | translate }} {{ chartType | dataTypeTranslate: [1, unit] | translate }}
+          </span>
+        </div>
+      </div>
+    </ng-container>
+    <div #container id="chartBlock">
+      chart
+    </div>
+  </main>
+</section>

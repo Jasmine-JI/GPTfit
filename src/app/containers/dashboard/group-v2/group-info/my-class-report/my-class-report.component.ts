@@ -249,11 +249,6 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
       endTimestamp: moment().endOf('day').valueOf(),
       type: 'sevenDay'
     },
-    group: {
-      brands: null,
-      branches: null,
-      coaches: []
-    },
     sportType: 99,
     hideConfirmBtn: true
   }
@@ -459,7 +454,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       this.groupData = res;
-      if (this.groupData.hasOwnProperty('groupId')) {
+      if (this.groupData.hasOwnProperty('groupId') && this.groupData.groupId === this.groupId) {
         this.groupId = this.groupData.groupId;
         this.showGroupInfo();
       } else {

@@ -1,15 +1,15 @@
-var mysql = require("mysql");
-var express = require('express');
-var bodyParser = require('body-parser');
-var schedule = require('node-schedule');
-var os = require('os');
-var moment = require('moment');
+const mysql = require("mysql");
+const express = require('express');
+const bodyParser = require('body-parser');
+const schedule = require('node-schedule');
+const os = require('os');
+const moment = require('moment');
 const { getMapList } = require('./server/models/map_model');
-var async = require('async');
-var request = require('request');
+const async = require('async');
+const request = require('request');
 const helmet = require('helmet');
 const { checkTokenExit } = require('./server/models/auth.model');
-var { getUserActivityInfo } = require('./server/models/officialActivity_model');
+const { getUserActivityInfo } = require('./server/models/officialActivity_model');
 
 const https = require('https');
 const fs = require('fs');
@@ -678,21 +678,22 @@ const authMiddleware = function (req, res, next) {
 
 // Set routes
 
-var rankForm = require('./server/routes/rankForm.js');
-var resetPassword = require('./server/routes/resetPassword.js');
-var raceEnroll = require('./server/routes/raceEnroll.js');
-var raceEventInfo = require('./server/routes/raceEventInfo.js');
-var runGpx = require('./server/routes/runGpx.js');
-var deviceLog = require('./server/routes/deviceLog.js');
-var coach = require('./server/routes/coach.js');
-var map = require('./server/routes/map.js');
-var qrPair = require('./server/routes/qrPair.js');
-var user = require('./server/routes/user.js');
-var center = require('./server/routes/center.js');
-var sport = require('./server/routes/sport.js');
-var uploadSportFile = require('./server/routes/uploadSportFile.js');
-var officialActivity = require('./server/routes/officialActivity.js');
-var group = require('./server/routes/group.js');
+const rankForm = require('./server/routes/rankForm.js');
+const resetPassword = require('./server/routes/resetPassword.js');
+const raceEnroll = require('./server/routes/raceEnroll.js');
+const raceEventInfo = require('./server/routes/raceEventInfo.js');
+const runGpx = require('./server/routes/runGpx.js');
+const deviceLog = require('./server/routes/deviceLog.js');
+const coach = require('./server/routes/coach.js');
+const map = require('./server/routes/map.js');
+const qrPair = require('./server/routes/qrPair.js');
+const user = require('./server/routes/user.js');
+const center = require('./server/routes/center.js');
+const sport = require('./server/routes/sport.js');
+const uploadSportFile = require('./server/routes/uploadSportFile.js');
+const officialActivity = require('./server/routes/officialActivity.js');
+const group = require('./server/routes/group.js');
+const cloudrun = require('./server/routes/cloudrun.js');
 
 app.use('/nodejs/api/rankForm', rankForm.unprotected);
 app.use('/nodejs/api/rankForm', authMiddleware, rankForm.protected);
@@ -712,6 +713,7 @@ app.use('/nodejs/api/sport', authMiddleware, sport);
 app.use('/nodejs/api/uploadSportFile', uploadSportFile);
 app.use('/nodejs/api/officialActivity', officialActivity);
 app.use('/nodejs/api/group', group);
+app.use('/nodejs/api/cloudrun', cloudrun);
 app.use('/nodejs/img', express.static('/tmp/official-activity-img'));
 
 

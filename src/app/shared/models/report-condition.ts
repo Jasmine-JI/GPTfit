@@ -11,7 +11,11 @@ export interface ReportConditionOpt {
   reportType?: 'sport' | 'lifeTracking' | 'cloudRun';
   group?: GroupTree;
   sportType?: SportType;
-  cloudRunMap?: number;
+  cloudRun?: {
+    mapId: number;
+    month: string;  // 例行賽月份
+    checkCompletion: boolean;  // 是否檢查過濾未完賽數據（含防弊）
+  };
   hideConfirmBtn: boolean;
 }
 
@@ -21,13 +25,13 @@ export interface GroupSimpleInfo {
   groupId: string;
   groupName: string;
   groupStatus?: string;
-  selected?: boolean;
 }
 
 export interface GroupTree {
   brands: null | GroupSimpleInfo;
   branches: null | Array<GroupSimpleInfo>;
   coaches: Array<GroupSimpleInfo>;
+  selectGroup: string;  // 只擷取到前面有效片段，ex. '0-0-101-1'
 }
 
 export type SportType = 99 | 1 | 2 | 3 | 4 | 5 | 6 | 7;

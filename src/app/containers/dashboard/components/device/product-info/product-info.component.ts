@@ -14,6 +14,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import moment from 'moment';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { CoachService } from '../../../services/coach.service';
 
 @Component({
   selector: 'app-product-info',
@@ -81,6 +82,11 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
 
   productErrorLog: Array<any> = [];
   logList: any;
+  fitpairUser = {
+    name: '',
+    icon: '',
+    id: ''
+  }
 
   constructor(
     private qrCodeService: QrcodeService,
@@ -91,7 +97,8 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
     private router: Router,
     public dialog: MatDialog,
     private translate: TranslateService,
-    private breakpointObserver: BreakpointObserver
+    private breakpointObserver: BreakpointObserver,
+    private coachService: CoachService
   ) {}
 
   // Check if device is phone or tablet
@@ -102,9 +109,6 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.getTranslate();
     this.getUserAccessRight();
-    if (location.pathname.indexOf('/system/device/info') > -1) {
-      this.isAdminMode = true;
-    }
     const langName = this.utilsService.getLocalStorageObject('locale');
     this.deviceSN = this.route.snapshot.paramMap.get('deviceSN');
     let snNumbers = this.utilsService.getLocalStorageObject('snNumber');
@@ -171,6 +175,12 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
         setTimeout(() => this.router.navigateByUrl('dashboard/device'), 3000);
       }
     });
+
+    if (location.pathname.indexOf('/system/device/info') > -1) {
+      this.isAdminMode = true;
+      this.getFitpairUser();
+    }
+
   }
 
   // 待多國語系套件載入後再生成翻譯-kidin-1090623
@@ -200,7 +210,7 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
     const lanArr = lang.split('-'),
           formatLang = `${lanArr[0].toLowerCase()}-${lanArr[1].toUpperCase()}`;
 
-    this.productInfo = this.deviceInfo.informations[`relatedLinks_${formatLang}`] || [];
+    this.productInfo = this.deviceInfo.informations && this.deviceInfo.informations[`relatedLinks_${formatLang}`] || [];
   }
 
   // 新增西班牙語-kidin-1081106
@@ -208,7 +218,7 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
     const lanArr = lang.split('-'),
           formatLang = `${lanArr[0].toLowerCase()}-${lanArr[1].toUpperCase()}`;
 
-    this.productManual = this.deviceInfo.informations[`manual_${formatLang}`] || [];
+    this.productManual = this.deviceInfo.informations && this.deviceInfo.informations[`manual_${formatLang}`] || [];
   }
 
   swithMainApp() {
@@ -440,6 +450,42 @@ export class ProductInfoComponent implements OnInit, OnDestroy {
       return `0:00:${second}`;
     }
 
+  }
+
+  /**
+   * call api-7014取得fitpair對象
+   * @author kidin-1100310
+   */
+  getFitpairUser() {
+    const body = {
+      token: this.token,
+      avatarType: '2',
+      pairEquipmentSN: [this.deviceSN]
+    };
+    this.coachService.fetchFitPairInfo(body).subscribe(res => {
+      if (res.resultCode !== 200) {
+        this.utilsService.handleError(res.resultCode, res.apiCode, res.resultMessage);
+      } else {
+
+        if (res.info.deviceInfo.length > 0) {
+          const { userId, userName, pairIcon } = res.info.deviceInfo[0];
+          this.fitpairUser = {
+            id: userId,
+            name: userName,
+            icon: pairIcon
+          };
+
+        } else {
+          this.fitpairUser = {
+            id: '-',
+            name: '無',
+            icon: '/assets/images/user2.png'
+          };
+        }
+
+      }
+
+    });
   }
 
   /**

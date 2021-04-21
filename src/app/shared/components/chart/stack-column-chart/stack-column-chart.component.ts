@@ -1,9 +1,9 @@
 import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
-
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
 import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
+import { HrZoneTrendData, DisplayPage } from '../../../models/chart-data';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -48,10 +48,11 @@ class ChartOptions {
       plotOptions: {
         column: {
             stacking: 'normal',
-            pointPlacement: 0.3,
+            pointPlacement: 0.33,
         },
         series: {
-          pointWidth: null
+          pointWidth: null,
+          maxPointWidth: 30
         }
       },
       series: dataset
@@ -65,17 +66,14 @@ class ChartOptions {
   styleUrls: ['./stack-column-chart.component.scss']
 })
 export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
-
   noData = true;
-
   dateList = [];
 
-  @Input() perHrZoneData: any;  // 心率區間用變數-kidin-1090218
+  @Input() perHrZoneData: HrZoneTrendData;  // 心率區間用變數-kidin-1090218
   @Input() dateRange: string;
-
   @Input() data: any;  // 生活追蹤用變數-kidin-1090218
   @Input() searchDate: Array<number>;
-
+  @Input() page: DisplayPage;
   @ViewChild('container', {static: false})
   container: ElementRef;
 
@@ -87,7 +85,7 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnChanges () {
     if (this.perHrZoneData) {
-      if (this.perHrZoneData.length === 0) {
+      if (this.perHrZoneData.zoneZero.length === 0) {
         this.noData = true;
       } else {
         this.noData = false;
@@ -143,12 +141,18 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
     const HRTrendChartOptions = new ChartOptions(HRTrendDataset);
 
     // 設定圖表x軸時間間距-kidin-1090204
-    if (this.dateRange === 'day' && this.perHrZoneData.zoneZero.length <= 7) {
-      HRTrendChartOptions['xAxis'].tickInterval = 24 * 3600 * 1000;  // 間距一天
-    } else if (this.dateRange === 'day' && this.perHrZoneData.zoneZero.length > 7) {
-      HRTrendChartOptions['xAxis'].tickInterval = 7 * 24 * 3600 * 1000;  // 間距一週
+    if (this.page !== 'cloudrun') {
+
+      if (this.dateRange === 'day' && this.perHrZoneData.zoneZero.length <= 7) {
+        HRTrendChartOptions['xAxis'].tickInterval = 24 * 3600 * 1000;  // 間距一天
+      } else if (this.dateRange === 'day' && this.perHrZoneData.zoneZero.length > 7) {
+        HRTrendChartOptions['xAxis'].tickInterval = 7 * 24 * 3600 * 1000;  // 間距一週
+      } else {
+        HRTrendChartOptions['xAxis'].tickInterval = 30 * 24 * 4600 * 1000;  // 間距一個月
+      }
+
     } else {
-      HRTrendChartOptions['xAxis'].tickInterval = 30 * 24 * 4600 * 1000;  // 間距一個月
+
     }
 
     // 設定圖表y軸單位格式-kidin-1090204
@@ -228,11 +232,9 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
   // 生活追蹤用圖表-kidin-1090218
   initSleepChart () {
     this.createDateList();
-
     const newDeepSleepData = [],
           newLightSleepData = [],
           newAwakeData = [];
-
     let idx = 0;
     for (let i = 0; i < this.dateList.length; i++) {
       if (this.dateList[i] === this.data.date[idx]) {
@@ -254,7 +256,6 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
         dataSet;
 
     this.noData = false;
-
     deepSleepData = newDeepSleepData.map((_data, index) => {
       return [this.dateList[index], _data];
     });
@@ -306,7 +307,6 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
     chartOptions['yAxis'].labels = {
       formatter: function () {
         const yVal = this.value;
-
         let costhr = Math.floor(yVal / 3600),
             costmin = Math.floor((yVal - costhr * 60 * 60) / 60);
         const costsecond = Math.round(yVal - costmin * 60);
@@ -320,7 +320,6 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         const timeMin = ('0' + costmin).slice(-2);
-
         if (costhr === 0 && timeMin === '00') {
           return `0:00`;
         } else if (costhr === 0) {
@@ -328,21 +327,19 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
         } else {
           return `${costhr}:${timeMin}`;
         }
+
       }
+
     };
 
     // 設定浮動提示框顯示格式-kidin-1090204
     chartOptions['tooltip'] = {
       formatter: function () {
-        const yVal = this.y;
-
-        const costhr = Math.floor(yVal / 3600),
-              costmin = Math.floor((yVal - costhr * 60 * 60) / 60);
-
-        const timeMin = ('0' + costmin).slice(-2);
-
+        const yVal = this.y,
+              costhr = Math.floor(yVal / 3600),
+              costmin = Math.floor((yVal - costhr * 60 * 60) / 60),
+              timeMin = ('0' + costmin).slice(-2);
         let zoneTime = '';
-
         if (costhr === 0 && timeMin === '00') {
           zoneTime = `0:00`;
         } else if (costhr === 0) {
@@ -352,7 +349,6 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         const yTotal = this.total;
-
         let totalHr = Math.floor(yTotal / 3600),
             totalmin = Math.round((yTotal - totalHr * 60 * 60) / 60);
         const totalsecond = Math.round(yTotal - totalmin * 60),
@@ -367,7 +363,6 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         let totalZoneTime = '';
-
         if (totalHr === 0 && timeTotalMin === '00') {
           totalZoneTime = `0:00`;
         } else if (totalHr === 0) {

@@ -105,6 +105,10 @@ export class NavbarComponent implements OnInit {
         this.navItemNum = 1;
         break;
       case '/introduction/application':
+      case '/introduction/application#connect':
+      case '/introduction/application#cloudrun':
+      case '/introduction/application#trainlive':
+      case '/introduction/application#fitness':
       case '/#connect':
       case '/#cloudrun':
       case '/#trainlive':

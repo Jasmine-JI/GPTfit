@@ -27,14 +27,18 @@ export class GroupService {
   allLevelGroupData$ = new ReplaySubject<any>(1); // 儲存 同"品牌/企業" group 資訊-kidin-1090716
   groupCommerceInfo$ = new ReplaySubject<any>(1); // 儲存群組經營權限資訊-kidin-1091104
   classMemberList$ = new BehaviorSubject<any>([]); // 儲存課程成員清單-kidin-1091116
-  comMemberList$ = new BehaviorSubject<any>([]); // 儲存企業/分公司/部門群組成員清單-kidin-1091116
   adminList$ = new ReplaySubject<any>(1);
   normalMemberList$ = new ReplaySubject<any>(1);
-  updatedGroupImg$ = new BehaviorSubject<string>('');
   memberList$ = new BehaviorSubject<any>({
     groupId: '',
     groupList: []
   });
+
+  memList$ = new BehaviorSubject<any>({  // 成員清單
+    groupId: '',
+    groupList: []
+  });
+
   newGroupId$ = new ReplaySubject<any>(1); // 創建群組的group id，以上傳圖床。
   reportCategory$ = new BehaviorSubject<number>(99);
   typeAllData$ = new BehaviorSubject<any>({});
@@ -288,23 +292,6 @@ export class GroupService {
   }
 
   /**
-   * 取得訂閱的群組圖片編輯時間（待圖床完成後移除）
-   * @author kidin-1090715
-   */
-  getImgUpdatedStatus (): Observable<string> {
-    return this.updatedGroupImg$;
-  }
-
-  /**
-   * 儲存訂閱的群組圖片編輯時間（待圖床完成後移除）
-   * @param status {string}
-   * @author kidin-1090715
-   */
-  setImgUpdatedImgStatus (status: string) {
-    this.updatedGroupImg$.next(status);
-  }
-
-  /**
    * 取得訂閱的群組列表
    * @author kidin-1090715
    */
@@ -319,6 +306,23 @@ export class GroupService {
    */
   setMemberList (status: any) {
     this.memberList$.next(status);
+  }
+
+  /**
+   * 取得訂閱的成員列表
+   * @author kidin-1090715
+   */
+  getMemList (): Observable<any> {
+    return this.memList$;
+  }
+
+  /**
+   * 儲存訂閱的成員列表
+   * @param status {any}
+   * @author kidin-1090715
+   */
+  setMemList (status: any) {
+    this.memList$.next(status);
   }
 
   /**
@@ -503,7 +507,7 @@ export class GroupService {
   }
 
   /**
-   * 取得群組概要資訊
+   * 取得新的群組id
    * @author kidin-1091020
    */
   getNewGroupId() {
@@ -569,7 +573,7 @@ export class GroupService {
   }
 
   /**
-   * 儲存sidebar 模式供子頁面用
+   * 儲存sidebar模式供子頁面用
    * @param status {'expand' | 'hide' | 'narrow'}-sidebar 模式
    * @author kidin-1091111
    */
@@ -602,7 +606,6 @@ export class GroupService {
    * @author kidin-1090728
    */
   isSameGroup(userGroupId: string, currentGroupId: string, length: number): boolean {
-
     switch (length) {
       case 3: // 品牌/企業
         return userGroupId === `${this.groupIdSlice.transform(currentGroupId, length)}-0-0-0`;
@@ -619,6 +622,18 @@ export class GroupService {
         );
     }
 
+  }
+
+  /**
+   * 取得所需的群組id片段
+   * @param id {string}-group id
+   * @param leng (number)-欲取得的群組id片段數目
+   * @author kidin-1100308
+   */
+  getPartGroupId(id: string, leng: number) {
+    const arr = id.split('-');
+    arr.length = leng;
+    return arr.join('-');
   }
 
 }

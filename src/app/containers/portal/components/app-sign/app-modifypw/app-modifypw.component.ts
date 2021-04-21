@@ -116,15 +116,13 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 取得url query string和token-kidin-1090514
   getUrlString (urlStr) {
-
     const query = urlStr.replace('?', '').split('&');
-
     for (let i = 0; i < query.length; i++) {
-
       const queryKey = query[i].split('=')[0];
       switch (queryKey) {
         case 'tk':  // 不寫死避免新增參數
           this.editBody.token = query[i].split('=')[1];
+          console.log()
           break;
       }
 
@@ -147,11 +145,10 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
   // 使用token取得使用者帳號資訊-kidin-1090514
   getUserInfo () {
     const body = {
-      token: this.utils.getToken() || ''
+      token:  this.editBody.token
     };
 
     this.userProfileService.getUserProfile(body).subscribe(res => {
-
       const profile = res.userProfile;
       if (profile.email) {
         this.editBody.newAccountType = 1;
@@ -181,7 +178,6 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
   // 將使用者輸入的密碼進行隱藏-kidin-1090430
   hidePassword (id) {
     const pwInputType = (<HTMLInputElement>document.getElementById(id));
-
     if (this.displayPW[id] === true) {
       pwInputType.type = 'text';
     } else {
@@ -206,7 +202,6 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
     if ((e.type === 'keypress' && e.code === 'Enter') || e.type === 'focusout') {
       const inputPassword = e.currentTarget.value,
             regPWD = this.passwordReg;
-
       if (!regPWD.test(inputPassword)) {
         this.cue[obj] = 'universal_userAccount_passwordFormat';
       } else {
@@ -224,6 +219,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
       } else {
         this.dataIncomplete = true;
       }
+
     }
 
   }
@@ -245,9 +241,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 送出修改密碼-kidin-1090519
   submit () {
-
     this.sending = true;
-
     if (this.imgCaptcha.show) {
       const releaseBody = {
         unlockFlow: 2,
@@ -293,10 +287,8 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // 傳送變更表單-kidin-1090514
   sendFormInfo () {
-
     this.userInfoService.fetchEditAccountInfo(this.editBody, this.ip).subscribe(res => {
       if (res.processResult.resultCode !== 200) {
-
         switch (res.processResult.apiReturnMessage) {
           case 'Edit account fail, old password is not correct.':
             this.cue.oldPassword = 'universal_userAccount_notSamePassword';
@@ -346,6 +338,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
         );
 
         setTimeout(() => {
+          window.close();
           this.turnBack();
         }, 1000);
 

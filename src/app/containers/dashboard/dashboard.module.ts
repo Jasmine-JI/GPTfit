@@ -60,7 +60,6 @@ import { LifeTrackingService } from './services/life-tracking.service';
 import { ModifyBoxComponent } from './components/settings/privacy-settings/modify-box/modify-box.component';
 import { QrcodeUploadComponent } from './components/qrcode-upload/qrcode-upload.component';
 import { OfficialActivityService } from '../../shared/services/official-activity.service';
-import { GroupPageTitlePipe } from './pipes/group-page-title.pipe';
 
 import { GroupSearchComponent } from './group/group-search/group-search.component';
 import { AllGroupListComponent } from './group/all-group-list/all-group-list.component';
@@ -87,6 +86,7 @@ import { PushMessageListComponent } from './components/push-message/push-message
 import { SystemLogComponent } from './components/system-log/system-log.component';
 import { SystemFolderPermissionComponent } from './components/system-folder-permission/system-folder-permission.component';
 import { AlaAppAnalysisComponent } from './components/ala-app-analysis/ala-app-analysis.component';
+import { CloudrunReportComponent as PersonCloudrunReport } from './components/cloudrun-report/cloudrun-report.component'
 
 
 @NgModule({
@@ -127,6 +127,7 @@ import { AlaAppAnalysisComponent } from './components/ala-app-analysis/ala-app-a
     DetectInappService,
     LifeTrackingService,
     OfficialActivityService,
+    PersonCloudrunReport,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
@@ -163,7 +164,6 @@ import { AlaAppAnalysisComponent } from './components/ala-app-analysis/ala-app-a
     CommercePlanTableComponent,
     ModifyBoxComponent,
     QrcodeUploadComponent,
-    GroupPageTitlePipe,
     GroupInfoV2Component,
     SearchGroupComponent,
     GroupIntroductionComponent,
@@ -183,7 +183,8 @@ import { AlaAppAnalysisComponent } from './components/ala-app-analysis/ala-app-a
     PushMessageListComponent,
     SystemLogComponent,
     SystemFolderPermissionComponent,
-    AlaAppAnalysisComponent
+    AlaAppAnalysisComponent,
+    PersonCloudrunReport
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [

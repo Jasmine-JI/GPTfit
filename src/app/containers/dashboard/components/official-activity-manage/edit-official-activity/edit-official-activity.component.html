@@ -72,15 +72,42 @@
         <span class="map__setting__title">地圖選擇</span>
         <div style="position: relative;" style="cursor: pointer;">
           <div id="map__choice" (click)="showMapSelector($event)">
-            <span style="padding: 2px 5px; overflow: hidden;">{{ (pageSetting?.mapId | cloudrunSummary: 'zh-tw')?.mapName }}</span>
+            <span style="padding: 2px 5px; overflow: hidden;">
+              <ng-container *ngIf="allMapInfo && allMapInfo.length !== 0; else loadingText;">
+                <ng-container *ngIf="currentLanguage === 'zh-tw'">
+                  {{ allMapInfo[pageSetting?.mapId - 1].info[0].mapName }}
+                </ng-container>
+                <ng-container *ngIf="currentLanguage === 'zh-cn'">
+                  {{ allMapInfo[pageSetting?.mapId - 1].info[1].mapName }}
+                </ng-container>
+                <ng-container *ngIf="currentLanguage === 'es-es'">
+                  {{ allMapInfo[pageSetting?.mapId - 1].info[3].mapName }}
+                </ng-container>
+                <ng-container *ngIf="!['zh-tw', 'zh-cn', 'es-es'].includes(currentLanguage)">
+                  {{ allMapInfo[pageSetting?.mapId - 1].info[2].mapName }}
+                </ng-container>
+              </ng-container>
+              <ng-template #loadingText>Loading...</ng-template>
+            </span>
           </div>
           <div
             class="flexCol"
             style="position: absolute; z-index: 10; background-color: white; border: 1px solid; padding: 5px 10px; max-height: 350px; overflow: scroll;"
             *ngIf="uiFlag.showMapSelector"
           >
-            <span class="choice__item" *ngFor="let _maplist of mapList; let mapIndex = index;" (click)="chooseMap(mapIndex + 1)">
-              {{ (mapIndex + 1 | cloudrunSummary: 'zh-tw').mapName }}
+            <span class="choice__item" *ngFor="let _mapInfo of allMapInfo; let mapIndex = index;" (click)="chooseMap(mapIndex + 1)">
+              <ng-container *ngIf="currentLanguage === 'zh-tw'">
+                {{ _mapInfo.info[0].mapName }}
+              </ng-container>
+              <ng-container *ngIf="currentLanguage === 'zh-cn'">
+                {{ _mapInfo.info[1].mapName }}
+              </ng-container>
+              <ng-container *ngIf="currentLanguage === 'es-es'">
+                {{ _mapInfo.info[3].mapName }}
+              </ng-container>
+              <ng-container *ngIf="!['zh-tw', 'zh-cn', 'es-es'].includes(currentLanguage)">
+                {{ _mapInfo.info[2].mapName }}
+              </ng-container>
             </span>
           </div>
         </div>

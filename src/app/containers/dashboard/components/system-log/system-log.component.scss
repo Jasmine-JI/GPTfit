@@ -97,7 +97,7 @@ section {
 .drop__menu--active {
 
   &:after {
-    transform: rotate(180deg);
+    @include el-rotate(180deg);
     @include transition(transform);
   }
 

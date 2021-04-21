@@ -86,7 +86,6 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
   confirmText: string;
   cancelText: string;
   totalGroupName: string; // 含母階層的群組名稱
-  updateImgQueryString = '';
   brandType: any;
   editManageMode = false;
   editContent = {
@@ -211,14 +210,9 @@ export class GroupInfoComponent implements OnInit, OnDestroy {
         this.joinStatus = 5;
       }
 
-      // 確認群組頭像是否更新-kidin-1090113
-      this.groupService.getImgUpdatedStatus().subscribe(response => {
-        this.updateImgQueryString = response;
-      });
-
       this.groupImg =
         groupIcon && groupIcon.length > 0
-          ? `${groupIcon}${this.updateImgQueryString}`
+          ? `${groupIcon}`
           : '/assets/images/group-default.svg';
       this.group_id = this.utils.displayGroupId(groupId);
       if (this.groupLevel === 40) {
