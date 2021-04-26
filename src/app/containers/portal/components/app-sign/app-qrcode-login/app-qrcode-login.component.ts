@@ -331,7 +331,7 @@ export class AppQrcodeLoginComponent implements OnInit, AfterViewInit, OnDestroy
     this.userProfileService.getUserProfile(body).subscribe(res => {
       const profile = res.userProfile;
       this.userInfo.name = profile.nickname;
-      this.userInfo.icon = `${profile.avatarUrl}?${profile.editTimestamp}`;
+      this.userInfo.icon = `${profile.avatarUrl}`;
     });
 
   }

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const fs = require('fs');
-const FormData = require('form-data');
+const request = require('request');
 
 let uploaded = false;
 
@@ -14,9 +14,13 @@ router.post('/', function (req, res, next) {
   fs.writeFile(`/tmp/${body.fileName}`, JSON.stringify(body.data), (err) => {
     if (err) {
       uploaded = false;
+      return res.json({
+        resultCode: 400,
+        resultMessage: "Upload sport file failed.",
+        nodejsApiCode: "N2101",
+        errMsg: "Write File failed."
+      });
     } else {
-      console.log('Create file success. Next to upload file.');
-
       const uploadData = [{
         fileName: body.fileName,
         userId: body.userId,
@@ -24,16 +28,13 @@ router.post('/', function (req, res, next) {
         deviceId: ''
       }];
 
-      const form = new FormData();
-      form.append('token', body.token);
-      form.append(
-        'file',
-        fs.createReadStream(`/tmp/${body.fileName}`)
-      );
-      form.append('uploadData', JSON.stringify(uploadData));
+      const formData = {
+        token: body.token,
+        uploadData: JSON.stringify(uploadData),
+        file: fs.createReadStream(`/tmp/${body.fileName}`)
+      };
 
-      let host,
-          errMsg;
+      let host;
       switch (body.hostname) {
         case 'cloud.alatech.com.tw':
         case 'www.gptfit.com':
@@ -45,10 +46,9 @@ router.post('/', function (req, res, next) {
           break;
       }
 
-      form.submit({
-        host: host,
-        port: 5555,
-        path: '/api/v2/sport/uploadSportData',
+      const optons = {
+        url: `http://${host}:5555/api/v2/sport/uploadSportData`,
+        method: 'POST',
         headers: {
           'Accept': 'multipart/form-data',
           'Accept-Encoding': 'gzip/deflate',
@@ -64,40 +64,40 @@ router.post('/', function (req, res, next) {
           'regionCode': 'TW',
           'appName': 'AlaCenter',
           'equipmentSN': body.data.fileInfo.equipmentSN
-        }
+        },
+        formData: formData
+      };
 
-      }, (err, result) => {
+      request(optons, (err, response, body) => {
         if (err) {
-          uploaded = false;
-          errMsg = err;
-        } else {
-          uploaded = true;
-
-          fs.unlink(`/tmp/${body.fileName}`, () => {
-            console.log('Delete File success');
+          return res.json({
+            resultCode: 400,
+            resultMessage: "Upload sport file failed.",
+            nodejsApiCode: "N2101",
+            errMsg: "Connect failed."
           });
+        } else {
+          const {resultCode, resultMessage} = JSON.parse(body);
+          if (resultCode !== 200) {
+            return res.json({
+              resultCode: 400,
+              resultMessage: "Upload sport file failed.",
+              nodejsApiCode: "N2101",
+              errMsg: resultMessage
+            });
+          } else {
+            return res.json({
+              resultCode: 200,
+              resultMessage: "Upload sport file success.",
+              msgCode: 2001,
+              nodejsApiCode: "N2101"
+            });
+
+          }
+
         }
 
       });
-
-      setTimeout (() => {
-        if (uploaded === true) {
-          return res.json({
-            resultCode: "200",
-            resultMessage: "Upload sport file success.",
-            msgCode: "2001",
-            nodejsApiCode: "N2101"
-          });
-        } else {
-          return res.json({
-            resultCode: "400",
-            resultMessage: "Upload sport file failed.",
-            msgCode: "4002",
-            nodejsApiCode: "N2101",
-            errMsg: errMsg
-          });
-        }
-      }, 2000);
 
     }
 

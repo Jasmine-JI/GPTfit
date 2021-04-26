@@ -430,9 +430,12 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         token: this.utils.getToken(),
         fileId: this.fileInfo.fileId,
         // displayDetailField: 3, // 新api回傳格式
-        debug: `${this.uiFlag.isDebug}`
       };
 
+    }
+
+    if (this.uiFlag.isDebug) {
+      body = {debug: 'true', ...body};
     }
 
     this.activityService.fetchSportListDetail(body).subscribe(res => {
@@ -504,7 +507,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     this.handleFileCreateDate(this.fileInfo.creationDate);
-    const targetUserId = +this.fileInfo.author.split('=')[1];
+    const targetUserId = this.fileInfo.author ? +this.fileInfo.author.split('=')[1] : undefined;
     if (!this.uiFlag.isPortal) {
       
       if (this.userProfile.userId === targetUserId) {
@@ -514,24 +517,33 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     if (!this.uiFlag.isFileOwner) {
-      const body = {
-        targetUserId: targetUserId
-      };
 
-      this.userProfileService.getUserProfile(body).subscribe(res => {
-        if (res.processResult && res.processResult.resultCode === 200) {
-          const {userProfile} = res;
-          this.ownerProfile = {
-            icon: userProfile.avatarUrl,
-            name: userProfile.nickname
-          };
-        } else if (res.processResult && res.processResult.resultCode !== 200) {
-          console.log(`${res.processResult.resultCode}: Api ${res.processResult.apiCode} ${res.processResult.resultMessage}`);
-        } else {
-          console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
-        }
-  
-      });
+      if (targetUserId) {
+        const body = {
+          targetUserId: targetUserId
+        };
+
+        this.userProfileService.getUserProfile(body).subscribe(res => {
+          if (res.processResult && res.processResult.resultCode === 200) {
+            const {userProfile} = res;
+            this.ownerProfile = {
+              icon: userProfile.avatarUrl,
+              name: userProfile.nickname
+            };
+          } else if (res.processResult && res.processResult.resultCode !== 200) {
+            console.log(`${res.processResult.resultCode}: Api ${res.processResult.apiCode} ${res.processResult.resultMessage}`);
+          } else {
+            console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+          }
+    
+        });
+
+      } else {
+        this.ownerProfile = {
+          icon: null,
+          name: ''
+        };
+      }
     } else {
       this.ownerProfile = {
         icon: this.userProfile.avatarUrl,
@@ -1572,7 +1584,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
         url,
         title: this.translate.instant('universal_operating_share'),
         shareName: this.fileInfo.dispName,
-        cancelText: this.translate.instant('universal_operating_cancel'),
+        cancelText: this.translate.instant('universal_operating_confirm'),
         debugUrl: this.userProfile.systemAccessRight[0] <= 29 ? debugUrl : ''
       }
 

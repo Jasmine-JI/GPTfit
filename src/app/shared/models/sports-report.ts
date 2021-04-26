@@ -465,3 +465,20 @@ export const allTypeChart = [
   'maxSwingSpeed',
   'swingProportion'
 ];
+
+/**
+ * PAI加權係數(pai = 該心率區間心率總秒數 * 該區間pai係數)
+ */
+export const paiCofficient = {
+  z0: 0,
+  z1: 0.5,
+  z2: 1,
+  z3: 1.5,
+  z4: 2,
+  z5: 2.5
+}
+
+/**
+ * 一天pai指標秒數（即經加權後運動時間等於該指標秒數，則api為100）
+ */
+export const dayPaiTarget = 1285;

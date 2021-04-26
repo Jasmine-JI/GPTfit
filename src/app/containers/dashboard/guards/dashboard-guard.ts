@@ -25,10 +25,18 @@ export class DashboardGuard implements CanActivate {
 
     return this.userProfileService.getRxUserProfile().pipe(
       map(res => {
-        if ((res as any).systemAccessRight && (res as any).systemAccessRight[0] < 30) {
-          return true;
+        const { systemAccessRight } = res || {systemAccessRight: undefined};
+        if (systemAccessRight) {
+
+          if (systemAccessRight[0] < 30) {
+            return true;
+          } else {
+            this.router.navigateByUrl(`/403`);
+            return false;
+          }
+
         } else {
-          this.router.navigateByUrl(`/403`);
+          this.router.navigateByUrl(`/signIn-web`);
           return false;
         }
 

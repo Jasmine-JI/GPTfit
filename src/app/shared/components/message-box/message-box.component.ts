@@ -33,6 +33,10 @@ export class MessageBoxComponent implements OnInit {
     return this.data.jusCon;
   }
 
+  get confirmBtnColor() {
+    return this.data.confirmBtnColor;
+  }
+
   constructor(
     private router: Router,
     private dialog: MatDialog,

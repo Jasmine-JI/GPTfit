@@ -61,7 +61,7 @@ export class MyActivityComponent implements OnInit {
   }
   ngOnInit() {
     const queryStrings = this.utils.getUrlQueryStrings(location.search);
-    const { pageNumber, startTime, endTime, type, searchWords } = queryStrings;
+    const { pageNumber, startTime, endTime, type, searchWords, debug } = queryStrings;
     this.filterStartTime = startTime
       ? moment(startTime).format('YYYY-MM-DDTHH:mm:00.000Z')
       : moment().add(-1, 'years').format('YYYY-MM-DDTHH:mm:00.000Z');
@@ -91,23 +91,28 @@ export class MyActivityComponent implements OnInit {
       this.currentPage = page;
       if (this.isPortal) {
         this.router.navigateByUrl(
-          `${location.pathname}?pageNumber=${this.currentPage.pageIndex + 1}&
-          startTime=${this.filterStartTime.slice(
-            0,
-            10
-          )}&endTime=${this.filterEndTime.slice(0, 10)}&type=${this.sportType}&searchWords=${this.searchWords}`
+          `${location.pathname}?pageNumber=${
+            this.currentPage.pageIndex + 1}&startTime=${
+            this.filterStartTime.slice(0, 10)}&endTime=${
+            this.filterEndTime.slice(0, 10)}&type=${
+            this.sportType}&searchWords=${
+            this.searchWords}${
+              debug !== undefined ? '&debug=' : ''
+          }`
         );
       } else {
         this.router.navigateByUrl(
-          `/dashboard/activity-list?pageNumber=${this.currentPage
-            .pageIndex + 1}&startTime=${this.filterStartTime.slice(
-            0,
-            10
-          )}&endTime=${this.filterEndTime.slice(0, 10)}&type=${
-            this.sportType
-          }&searchWords=${this.searchWords}`
+          `/dashboard/activity-list?pageNumber=${
+            this.currentPage.pageIndex + 1}&startTime=${
+            this.filterStartTime.slice(0, 10)}&endTime=${
+            this.filterEndTime.slice(0, 10)}&type=${
+            this.sportType}&searchWords=${
+            this.searchWords}${
+              debug !== undefined ? '&debug=' : ''
+          }`
         );
       }
+
       this.getLists();
     });
   }
