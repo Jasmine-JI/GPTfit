@@ -1339,7 +1339,7 @@ export class GroupInfoComponent implements OnInit, AfterViewChecked, OnDestroy {
         url: `${location.origin}/group-info/${this.hashIdService.handleGroupIdEncode(this.currentGroupInfo.groupId)}`,
         title: this.translate.instant('universal_operating_share'),
         shareName: shareName || '',
-        cancelText: this.translate.instant('universal_operating_cancel')
+        cancelText: this.translate.instant('universal_operating_confirm')
       }
 
     });

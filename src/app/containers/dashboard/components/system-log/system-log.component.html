@@ -141,6 +141,7 @@
               <th class="app__column">App</th>
               <th class="code__column">Api Code</th>
               <th class="name__column">Api Name</th>
+              <th class="id__column" *ngIf="uiFlag.currentTargetType === 'equipment'">User</th>
               <th class="message__column">Message</th>
             </tr>
           </thead>
@@ -159,6 +160,7 @@
               <td class="app__column">{{ _content.appId | appId }}</td>
               <td class="code__column">{{ _content.apiCode }}</td>
               <td class="name__column" style="font-size: 14px;">{{ _content.apiName }}</td>
+              <td class="id__column" *ngIf="uiFlag.currentTargetType === 'equipment'">{{ _content?.userId }}</td>
               <td class="message__column" style="font-size: 14px;">{{ _content.message }}</td>
             </tr>
           </tbody>

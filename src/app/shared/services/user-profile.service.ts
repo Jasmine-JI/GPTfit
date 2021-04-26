@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { UserInfoService } from '../../containers/dashboard/services/userInfo.service';
 import { Injectable } from '@angular/core';
 import { ReplaySubject, Observable } from 'rxjs';
-import { tap, switchMap, map } from 'rxjs/operators';
+import { tap, switchMap, map, retry } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 const { API_SERVER } = environment.url;
@@ -48,12 +48,15 @@ export class UserProfileService {
     this.getUserProfile(body).pipe(
       map(response => {
         // 待個人頭像接圖床之後再刪除此段
-        const userProfile = response.userProfile,
-              newImage = `${userProfile.avatarUrl}?${userProfile.editTimeStamp}`;
-        Object.assign(userProfile, {avatarUrl: newImage});
-
-        Object.assign(userProfile, {unit: 0});  // 待所有報告皆完成公英制轉換再刪除此行
-        return response;
+        const userProfile = response.userProfile
+        if (userProfile) {
+          const newImage = `${userProfile.avatarUrl}`;
+          Object.assign(userProfile, {avatarUrl: newImage});
+          Object.assign(userProfile, {unit: 0});  // 待所有報告皆完成公英制轉換再刪除此行
+          return response;
+        } else {
+          throw new Error('Get userProfile failed.');
+        }
       }),
       switchMap(res => this.getMemberAccessRight(body).pipe(
         map(resp => {
@@ -68,7 +71,8 @@ export class UserProfileService {
       )),
       tap(result => {
         this.userProfile$.next(result.userProfile);
-      })
+      }),
+      retry(3)
     ).subscribe();
 
   }

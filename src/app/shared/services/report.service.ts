@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ReportConditionOpt } from '../models/report-condition'
 import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
+import { paiCofficient } from '../models/sports-report';
 
 @Injectable()
 export class ReportService {
@@ -131,5 +132,17 @@ export class ReportService {
         return this.typeAllData$;
     }
   }
+
+  /**
+   * 根據心率區間計算pai
+   * @param hrZone {Array<number>}-心率區間
+   * @returns pai {number}
+   * @author kidin-1100423
+   
+  countPai(hrZone: Array<number>) {
+    const { z0, z1, z2, z3, z4, z5 } = paiCofficient,
+          weightedValue = 
+  }
+  */
 
 }

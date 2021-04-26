@@ -142,13 +142,10 @@ export class PersonalPreferencesComponent implements OnInit, OnChanges {
    */
   handlestepLengthArrange(e: FocusEvent) {
     let inputStepLength = (e as any).target.value;
-    if (this.unit === 1) {
-      inputStepLength = inputStepLength * inch;
-    }
-
-    if (inputStepLength > 255) {
+    const metricLength = this.unit === 1 ? inputStepLength * inch : inputStepLength;
+    if (metricLength > 255) {
       inputStepLength = this.unit === 0 ? 255 : +(255 / inch).toFixed(2);
-    } else if (inputStepLength < 30) {
+    } else if (metricLength < 30) {
       inputStepLength = this.unit === 0 ? 30 : +(30 / inch).toFixed(2);
     }
 

@@ -10,7 +10,7 @@
         {{ 'universal_userAccount_performDataArchiving' | translate }}
       </span>
     </div>
-    <section style="margin: 0 20px;">
+    <section style="margin: 0 auto; max-width: 440px; padding: 0 20px;">
       <div style="display: flex; justify-content: center; align-items: flex-start; margin: 20px 0;" *ngIf="compressResp.status !== 3">
         {{ 'universal_userAccount_dataArchivingInstructions' | translate }}
       </div>
@@ -31,7 +31,7 @@
           readonly
         ></textarea>
       </div>
-      <span style="display: block; margin: 20px 0;" *ngIf="compressResp.status === 3">
+      <span style="display: block; margin: 20px 0 40px 0;" *ngIf="compressResp.status === 3">
         {{ 'universal_userAccount_duplicateArchive' | translate: {'yyyy-mm-dd': compressResp.cooldownDate, 'HH:MM': compressResp.cooldownTime } }}
       </span>
       <button
