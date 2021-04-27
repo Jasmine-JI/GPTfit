@@ -10,7 +10,7 @@
       style="font-weight: bold; color: #6b6a6a;"
       *ngIf="displayInfo.type === '2'"
     >
-      {{'universal_vocabulary_spinBike' | translate}}
+      {{ translatedInfo.fileInfo.dispName || 'None' }}
     </h1>
   </div>
   <div class="flexCol" style="margin-left: 25px;">
@@ -37,7 +37,9 @@
           <span>{{displayInfo.calories}} cal</span>
         </tr>
         <tr>
-          <span>{{displayInfo.avgSpeed}} km/h</span>
+          <span>
+            {{displayInfo.avgSpeed | speedSibs: userInfo.unit }}
+          </span>
         </tr>
         <tr>
           <span>{{displayInfo.createdTime}}</span>

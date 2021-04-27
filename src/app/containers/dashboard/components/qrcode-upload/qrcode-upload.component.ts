@@ -1,18 +1,21 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { ActivityService } from '../../../../shared/services/activity.service';
 import { A3FormatPipe } from '../../../../shared/pipes/a3-format.pipe';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '../../../../shared/services/auth.service';
-
+import { MatDialog } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 import moment from 'moment';
 import md5 from 'md5';
+import { MessageBoxComponent } from '../../../../shared/components/message-box/message-box.component';
+
+
+const timeFormat = 'YYYY-MM-DD HH:mm'
 
 @Component({
   selector: 'app-qrcode-upload',
@@ -26,14 +29,16 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
   loadingUserData = true;
   uploading = false;
   translatedInfo: any = {};
-  displayInfo: any = {
+  displayInfo = {
     type: '2',
     totalTime: '--',
     calories: '--',
     avgSpeed: '--',
     createdTime: '--'
   };
+
   userInfo: any;
+  coverTimestamp: number;
 
   constructor(
     private router: Router,
@@ -43,11 +48,11 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
     private auth: AuthService,
     private snackbar: MatSnackBar,
     private translate: TranslateService,
-    private a3Format: A3FormatPipe
+    private a3Format: A3FormatPipe,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit() {
-
     // 未登入則導至登入頁，接著導至dashboard以取得user infomation-kidin-1090525
     const token = this.utils.getToken() || '';
     if (token.length === 0) {
@@ -59,7 +64,6 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
       );
     } else {
       this.getUserInfo();
-
       const content = location.search.replace('?', '').split('&'),
             info = this.baseDecodeUnicode(content[1].split('base64,')[1]);
       if (content[0].split('=')[1] === 'a3') {
@@ -125,24 +129,81 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
 
   // 上傳運動檔案-kidin-1090420
   uploadFile () {
-    this.uploading = true;
-    this.createMd5File(this.translatedInfo);
+    const { createdTime } = this.displayInfo,
+          fileTimestamp = moment(createdTime, timeFormat).valueOf(),
+          { totalSecond } = this.translatedInfo.activityInfoLayer,
+          totalUnix = totalSecond * 1000;
+    this.coverTimestamp = moment().valueOf() - totalUnix;
+    // 運動時間距離現在時間超過一天即跳出彈跳視窗確認是否覆蓋時間（避免裝置沒電或忘記設定日期）
+    if (this.coverTimestamp - fileTimestamp > 24 * 60 * 60 * 1000) {
+      const coverTime = moment(this.coverTimestamp).format(timeFormat);
+      this.translate.get('hellow world').pipe(
+        takeUntil(this.ngUnsubscribe)
+      ).subscribe(() => {
+        const msg = `${this.translate.instant('universal_activityData_updateDataTime')
+          }<br>${this.translate.instant('universal_activityData_old')
+          }：${createdTime
+          }<br>${this.translate.instant('universal_activityData_new')
+          }：<span class="cover__heighlight">${coverTime}</span>
+        `;
+        this.dialog.open(MessageBoxComponent, {
+          hasBackdrop: true,
+          data: {
+            title: 'Message',
+            body: msg,
+            confirmBtnColor: '#23a0da',
+            cancelText: this.translate.instant('universal_operating_no'),
+            onCancel: this.createMd5File.bind(this),
+            confirmText: this.translate.instant('universal_operating_yes'),
+            onConfirm: this.coverFileTime.bind(this)
+          }
+
+        })
+
+      });
+    } else {
+      this.createMd5File();
+    }
+
   }
 
-  // 用md5編碼運動檔案內容並產生檔案-kidin-1090420
-  createMd5File (data) {
+  /**
+   * 覆蓋運動檔案開始時間
+   * @author kidin-1100426
+   */
+  coverFileTime() {
+    const date = moment(this.coverTimestamp).format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+    this.translatedInfo.activityInfoLayer.startTime = date;
+    this.translatedInfo.fileInfo.editDate = moment().format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+    this.createMd5File();
+  }
 
-    const token = this.utils.getToken() || '';
+  /**
+   * 根據userProfile補上author欄位，並用md5編碼運動檔案內容並產生檔案
+   * @author kidin-1100426
+   */
+  createMd5File () {
+    this.uploading = true;
+    const { pluginAntSensorName } = this.translatedInfo.activityInfoLayer,
+          { userId, nickname } = this.userInfo;
+    this.translatedInfo.fileInfo.author = `${nickname}?userId=${userId}`;
+    if (pluginAntSensorName && !Array.isArray(pluginAntSensorName)) {
+      this.translatedInfo.activityInfoLayer.pluginAntSensorName = [pluginAntSensorName];
+    }
+
+    const data = this.translatedInfo,
+          token = this.utils.getToken() || '';
     const body = {
       token: token,
-      userId: this.userInfo.nameId,
+      userId: this.userInfo.userId,
       data: data,
       fileName: `${md5(JSON.stringify(data))}.at`,
       hostname: location.hostname
     };
 
-   this.activityService.uploadSportFile(body).subscribe(res => {
-      if (+res.resultCode === 200) {
+    this.activityService.uploadSportFile(body).subscribe(res => {
+      const { errMsg, resultCode, nodejsApiCode } = res;
+      if (res.resultCode == 200) {
         this.snackbar.open(
           this.translate.instant(
             'universal_popUpMessage_uploadSuccess'
@@ -156,6 +217,7 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
           this.router.navigateByUrl('/dashboard/activity-list');
         }, 2000);
       } else {
+        console.log(`${resultCode}: Api ${nodejsApiCode} ${errMsg || 'Upload file failed.'}`);
         this.uploading = false;
         this.snackbar.open(
           this.translate.instant(
@@ -189,7 +251,7 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
         }
 
       case 'file':
-        return moment(time).format('MM/DD hh:mm');
+        return moment(time).format(timeFormat);
     }
   }
 

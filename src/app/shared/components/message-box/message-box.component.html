@@ -6,5 +6,13 @@
 
 <mat-dialog-actions class="justify-content-end" [class.space__between]="jusCon">
   <button mat-button color="warn" *ngIf="cancelText" (click)="handleCancel()">{{cancelText}}</button>
-  <button mat-button color="primary" *ngIf="confirmText" (click)="handleConfirm()">{{confirmText}}</button>
+  <button
+    mat-button
+    color="primary"
+    [style.background-color]="confirmBtnColor ? confirmBtnColor : 'initial'"
+    *ngIf="confirmText"
+    (click)="handleConfirm()"
+  >
+    {{confirmText}}
+  </button>
 </mat-dialog-actions>

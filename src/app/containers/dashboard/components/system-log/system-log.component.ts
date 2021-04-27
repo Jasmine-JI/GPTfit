@@ -33,7 +33,8 @@ export class SystemLogComponent implements OnInit, OnDestroy {
     notChoiceTarget: false,
     showServeritySelector: false,
     showAppSelector: false,
-    targetType: <TargetType>'user'
+    targetType: <TargetType>'user',
+    currentTargetType: <TargetType>'user'
   }
 
   /**
@@ -326,6 +327,7 @@ export class SystemLogComponent implements OnInit, OnDestroy {
         if (res.resultCode === 200) {
           this.sysLog = res.info.content;
           this.totalCounts = res.info.totalCounts;
+          this.uiFlag.currentTargetType = this.uiFlag.targetType;
         } else {
           this.totalCounts = 0;
           this.utils.handleError(res.resultCode, res.apiCode, res.resultMessage);
