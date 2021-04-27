@@ -26,3 +26,8 @@ data {
   min-width: 300px;
   height: 60px;
 }
+
+::ng-deep .cover__heighlight {
+  color: #23a0da;
+  font-weight: bold;
+}

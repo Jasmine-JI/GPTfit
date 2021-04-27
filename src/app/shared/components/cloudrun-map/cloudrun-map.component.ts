@@ -9,9 +9,10 @@ import { Unit } from '../../models/bs-constant';
 import { ActivityService } from '../../services/activity.service';
 import { mi } from '../../models/bs-constant';
 
-declare const google: any,
-              BMap: any,
-              BMAP_SATELLITE_MAP: any;
+// 若google api或baidu api掛掉則建物件代替，避免造成gptfit卡住。
+const google: any = (window as any).google || { maps: { OverlayView: null }},
+      BMap: any = (window as any).BMap || { Overlay: null };
+declare const BMAP_SATELLITE_MAP: any;
 
 type MapSource = 'google' | 'baidu';
 type PlaySpeed = 1 | 5 | 10 | 20 | 50 | 100;

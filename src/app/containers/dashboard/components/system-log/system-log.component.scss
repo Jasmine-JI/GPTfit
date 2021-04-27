@@ -159,6 +159,10 @@ section {
   word-break: break-all;
 }
 
+.id__column {
+  min-width: 70px;
+}
+
 .message__column {
   min-width: 250px;
   white-space: pre-wrap;

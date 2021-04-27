@@ -43,7 +43,7 @@
       <div class="flexCol" style="justify-content: center; margin-left: 20px; line-height: 1.2;">
         <span class="small__font">{{ fileTime }}</span>
         <div class="flexRow" style="align-items: center;">
-          <span class="head__name" *ngIf="!uiFlag.editNameMode">{{ fileInfo.dispName }}</span>
+          <span class="head__name" *ngIf="!uiFlag.editNameMode">{{ fileInfo.dispName || 'None' }}</span>
           <input
             type="text"
             id="head__name__input"
@@ -328,7 +328,7 @@
                       </ng-container>
                     </span>
                     <span class="table__list__content">
-                      {{ activityInfoLayer.avgMoveSpeed | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit] }}
+                      {{ activityInfoLayer.avgMoveSpeed || 0 | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit] }}
                     </span>
                   </div>
                   <div class="flexRow table__row">
@@ -355,7 +355,7 @@
                   <div class="flexRow table__row">
                     <span class="table__list__subtitle">{{ 'universal_activityData_avgMoving100mPace' | translate }}</span>
                     <span class="table__list__content">
-                      {{ activityInfoLayer.avgMoveSpeed | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit] }}
+                      {{ activityInfoLayer.avgMoveSpeed || 0 | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit] }}
                     </span>
                   </div>
                   <div class="flexRow table__row">
@@ -375,7 +375,7 @@
                   <div class="flexRow table__row">
                     <span class="table__list__subtitle">{{ 'universal_activityData_bestMoving500mPace' | translate }}</span>
                     <span class="table__list__content">
-                      {{ activityInfoLayer.avgMoveSpeed | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit] }}
+                      {{ activityInfoLayer.avgMoveSpeed || 0 | sportPaceSibs: [+activityInfoLayer.type, userProfile.unit] }}
                     </span>
                   </div>
                   <div class="flexRow table__row">
@@ -396,7 +396,7 @@
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_avgMovingSpeed' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.avgMoveSpeed | speedSibs: userProfile.unit }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.avgMoveSpeed || 0 | speedSibs: userProfile.unit }}</span>
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_liveBestSpeed' | translate }}</span>

@@ -111,7 +111,12 @@
     </section>
     <section
       class="flexCol"
-      *ngIf="reportConditionOpt && reportConditionOpt.group && reportConditionOpt.brandType !== null"
+      *ngIf="
+        reportConditionOpt
+        && reportConditionOpt.group
+        && reportConditionOpt.brandType !== null
+        && (reportConditionOpt.group.brands !== null || reportConditionOpt.group.branches !== null)
+      "
     >
       <span class="condition__title">{{ 'universal_group_group' | translate }}</span>
       <div class="flexCol condition__content">
@@ -154,11 +159,7 @@
     </section>
     <section
       class="flexCol"
-      *ngIf="
-        reportConditionOpt
-        && reportConditionOpt.reportType === 'sport'
-        && (reportConditionOpt.brandType === undefined || reportConditionOpt.brandType !== 2)
-      "
+      *ngIf="reportConditionOpt && reportConditionOpt.reportType === 'sport'"
     >
       <span class="condition__title">{{ 'universal_activityData_activityType' | translate }}</span>
       <div class="flexRow condition__content">
