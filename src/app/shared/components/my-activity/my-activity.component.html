@@ -106,10 +106,10 @@
       <mat-cell *matCellDef="let row">
         <div>
           <div>
-            {{ row.activityInfoLayer && row.activityInfoLayer?.startTime | sportDate: 'date' || ' -- ' }}
+            {{ row.activityInfoLayer && row.activityInfoLayer?.startTime | timeFormat: 'MM/DD' }}
           </div>
           <div style="color: #999;font-size: 12px">
-            {{ row.activityInfoLayer && row.activityInfoLayer?.startTime | sportDate: 'time' || ' -- ' }}
+            {{ row.activityInfoLayer && row.activityInfoLayer?.startTime | timeFormat: 'HH:mm:ss' }}
           </div>
         </div>
       </mat-cell>

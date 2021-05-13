@@ -34,4 +34,17 @@ export interface GroupTree {
   selectGroup: string;  // 只擷取到前面有效片段，ex. '0-0-101-1'
 }
 
-export type SportType = 99 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
+export enum SportCode {
+  rest,
+  run,
+  cycle,
+  weightTrain,
+  swim,
+  aerobic,
+  row,
+  ball,
+  all = 99
+}
+
+export type SportType = 
+  SportCode.all | SportCode.run | SportCode.cycle | SportCode.weightTrain | SportCode.swim | SportCode.aerobic | SportCode.row | SportCode.ball;

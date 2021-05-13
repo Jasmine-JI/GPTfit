@@ -68,3 +68,34 @@ export interface MemberInfo {
  * 群組各種編輯模式狀態
  */
 export type EditMode = 'edit' | 'create' | 'complete' | 'close';
+
+/**
+ * 群組階層
+ */
+export enum GroupLevel {
+  brand = 30,
+  branch = 40,
+  class = 60,
+  normal = 80
+}
+
+/**
+ * 群組類別：品牌/企業
+ */
+export enum BrandType {
+  brand = 1,
+  enterprise
+}
+
+/**
+ * 群組狀態
+ */
+export enum GroupStatus {
+  open = 1,
+  close,
+  hide,
+  disband,
+  notFound,
+  lock
+}
+

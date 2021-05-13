@@ -18,11 +18,12 @@ export class WeightSibsPipe implements PipeTransform {
       finalValue = value;
       unit = 'kg';
     } else {
-      finalValue = +(value / lb).toFixed(2);
+      finalValue = +(value / lb);
       unit = 'lb';
     }
     
-    return !args[1] || args[1] === 0 ? `${finalValue} ${unit}` : `${finalValue}`;
+    const fixedValue = finalValue.toFixed(2);
+    return !args[1] || args[1] === 0 ? `${fixedValue} ${unit}` : `${fixedValue}`;
   }
 
 }

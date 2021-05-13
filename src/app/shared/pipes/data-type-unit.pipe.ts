@@ -7,16 +7,13 @@ import { Pipe, PipeTransform } from '@angular/core';
 @Pipe({name: 'dataTypeUnit'})
 export class DataTypeUnitPipe implements PipeTransform {
   transform(value: string, args: number[]): any {
-    const sportType = args[0],
-          unit = args[1];
-
+    const [sportType, unit] = [...args];
     switch (value) {
       case 'hr':
         return 'bpm';
       case 'speed':
         return unit === 0 ? 'km/hr' : 'mi/hr';
       case 'pace':
-
         switch (sportType) {
           case 1:
             return unit === 0 ? 't/km' : 't/mi';
@@ -27,7 +24,6 @@ export class DataTypeUnitPipe implements PipeTransform {
         }
 
       case 'cadence':
-        
         switch (sportType) {
           case 1:
           case 3:
@@ -47,6 +43,9 @@ export class DataTypeUnitPipe implements PipeTransform {
       case 'gforceX':
       case 'gforceY':
       case 'gforceZ':
+      case 'xMoveGForce':
+      case 'yMoveGForce':
+      case 'zMoveGForce':
         return 'g';
       default:
         return '';

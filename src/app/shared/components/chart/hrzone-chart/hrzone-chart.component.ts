@@ -4,6 +4,7 @@ import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { zoneColor } from '../../../models/chart-data';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -123,12 +124,12 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
             zoneFivePercentage = (this.data[5] / totalSecond) * 100;
 
       const sportPercentageDataset = [
-        {y: zoneZeroPercentage, color: '#70b1f3'},
-        {y: zoneOnePercentage, color: '#64e0ec'},
-        {y: zoneTwoPercentage, color: '#abf784'},
-        {y: zoneThreePercentage, color: '#f7f25b'},
-        {y: zoneFourPercentage, color: '#f3b353'},
-        {y: zoneFivePercentage, color: '#f36953'},
+        {y: zoneZeroPercentage, color: zoneColor[0]},
+        {y: zoneOnePercentage, color: zoneColor[1]},
+        {y: zoneTwoPercentage, color: zoneColor[2]},
+        {y: zoneThreePercentage, color: zoneColor[3]},
+        {y: zoneFourPercentage, color: zoneColor[4]},
+        {y: zoneFivePercentage, color: zoneColor[5]},
       ];
 
       if (this.type !== 'personalAnalysis') {
@@ -145,27 +146,27 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
         switch (highestHRZoneIndex) {
           case 0:
             this.highestHRZone = zoneZero;
-            this.highestHRZoneColor = 'rgb(70, 156, 245)';
+            this.highestHRZoneColor = zoneColor[0];
             break;
           case 1:
             this.highestHRZone = zoneOne;
-            this.highestHRZoneColor = 'rgb(64, 218, 232)';
+            this.highestHRZoneColor = zoneColor[1];
             break;
           case 2:
             this.highestHRZone = zoneTwo;
-            this.highestHRZoneColor = 'rgb(86, 255, 0)';
+            this.highestHRZoneColor = zoneColor[2];
             break;
           case 3:
             this.highestHRZone = zoneThree;
-            this.highestHRZoneColor = 'rgb(214, 207, 1)';
+            this.highestHRZoneColor = zoneColor[3];
             break;
           case 4:
             this.highestHRZone = zoneFour;
-            this.highestHRZoneColor = 'rgb(234, 164, 4)';
+            this.highestHRZoneColor = zoneColor[4];
             break;
           case 5:
             this.highestHRZone = zoneFive;
-            this.highestHRZoneColor = 'rgba(243, 105, 83)';
+            this.highestHRZoneColor = zoneColor[5];
             break;
         }
 
