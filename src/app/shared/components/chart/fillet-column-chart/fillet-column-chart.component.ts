@@ -6,6 +6,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FilletTrendChart, DisplayPage } from '../../../models/chart-data';
+import { mi, ft, Unit, unit } from '../../../models/bs-constant';
+import { day, month, week } from '../../../models/utils-constant';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -73,12 +75,14 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
   tooltipTitle = '';
   dateList = [];
   chartType: string;
+  dataLen = 0;
 
   @Input() data: any;
   @Input() dateRange: string;
   @Input() chartName: string;
   @Input() searchDate: Array<number>;
   @Input() page: DisplayPage;
+  @Input() unit = <Unit>unit.metric;
   @ViewChild('container', {static: false})
   container: ElementRef;
 
@@ -96,20 +100,44 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
     this.translate.get('hellow world').pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
-      let trendDataset;
-      let chartData = [];
+      let trendDataset,
+          chartData = [];
       switch (this.chartName) {
+        case 'StrokeNum':
+          chartData = this.data.strokeNum;
+          this.tooltipTitle = 
+            `${this.translate.instant('universal_vocabulary_activity')} ${this.translate.instant('universal_activityData_numberOf')}`;
+
+          this.chartType = 'stroke';
+          break;
+        case 'TotalTime':
+          chartData = this.data.totalTime;
+          this.tooltipTitle = this.translate.instant('universal_activityData_totalTime');
+          this.chartType = 'totalTime';
+          break;
+        case 'Distance':
+          chartData = this.data.distance;
+          this.tooltipTitle = this.translate.instant('universal_activityData_distance');
+          this.chartType = 'distance';
+          break;
         case 'Calories':
-          for (let i = 0; i < this.data.date.length; i++) {
-            if (this.data.calories[i] >= 0) {
-              chartData.push({
-                x: this.data.date[i],
-                y: this.data.calories[i],
-              });
+
+          if (this.page !== 'sportReport') {
+            for (let i = 0; i < this.data.date.length; i++) {
+              if (this.data.calories[i] >= 0) {
+                chartData.push({
+                  x: this.data.date[i],
+                  y: this.data.calories[i],
+                });
+              }
             }
+
+          } else {
+            chartData = this.data.calories;
           }
 
           this.tooltipTitle = this.translate.instant('universal_userProfile_calories');
+          this.chartType = 'calories';
           break;
         case 'FitTime':
           this.createDateList();
@@ -153,43 +181,28 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
       ];
 
       const trendChartOptions = new ChartOptions(trendDataset);
-      if (this.page !== 'cloudrun') {
+      if (!['cloudrun'].includes(this.page)) {
         // 設定圖表x軸時間間距-kidin-1090204
-        if (this.dateRange === 'day' && this.data.date.length <= 7) {
-          trendChartOptions['xAxis'].tickInterval = 24 * 3600 * 1000;  // 間距一天
-        } else if (this.dateRange === 'day' && this.data.date.length > 7) {
-          trendChartOptions['xAxis'].tickInterval = 7 * 24 * 3600 * 1000;  // 間距一週
+        if (this.dateRange === 'day' && chartData.length <= 7) {
+          trendChartOptions['xAxis'].tickInterval = day;
+        } else if (this.dateRange === 'day' && chartData.length > 7) {
+          trendChartOptions['xAxis'].tickInterval = week;
         } else {
-          trendChartOptions['xAxis'].tickInterval = 30 * 24 * 4600 * 1000;  // 間距一個月
+          trendChartOptions['xAxis'].tickInterval = month;
         }
 
       }
 
-      // 設定浮動提示框顯示格式-kidin-1090204
-      trendChartOptions['tooltip'] = {
-        formatter: function () {
-          if (this.series.xAxis.tickInterval === 30 * 24 * 4600 * 1000) {
-            return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY-MM-DD')}
-              <br/>${this.series.name}: ${parseFloat(this.y).toFixed(1)}`;
-          } else {
-            return `${moment(this.x).format('YYYY-MM-DD')}
-              <br/>${this.series.name}: ${parseFloat(this.y).toFixed(1)}`;
-          }
-
-        }
-
-      };
-
-      if (this.page === 'cloudrun') {
-        trendChartOptions['plotOptions'].series.borderRadius = 0;
+      if (this.page === 'cloudrun' || this.chartType.toLowerCase().includes('time')) {
+        if (this.page === 'cloudrun') trendChartOptions['plotOptions'].series.borderRadius = 0;
 
         // 設定圖表y軸單位格式
         trendChartOptions['yAxis'].labels = {
           formatter: function () {
             const yVal = this.value,
                   costhr = Math.floor(yVal / 3600),
-                  costmin = Math.floor((yVal - costhr * 60 * 60) / 60),
-                  costsecond = Math.round(yVal - costmin * 60),
+                  costmin = Math.floor((yVal - costhr * 3600) / 60),
+                  costsecond = Math.round(yVal - costhr * 3600 - costmin * 60),
                   timeMin = `${costmin}`.padStart(2, '0'),
                   timeSecond = `${costsecond}`.padStart(2, '0');
 
@@ -210,10 +223,11 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
           formatter: function () {
             const yVal = this.y,
                   costhr = Math.floor(yVal / 3600),
-                  costmin = Math.floor((yVal - costhr * 60 * 60) / 60),
-                  costsecond = Math.round(yVal - costmin * 60),
+                  costmin = Math.floor((yVal - costhr * 3600) / 60),
+                  costsecond = Math.round(yVal - costhr * 3600 - costmin * 60),
                   timeMin = `${costmin}`.padStart(2, '0'),
-                  timeSecond = `${costsecond}`.padStart(2, '0');
+                  timeSecond = `${costsecond}`.padStart(2, '0'),
+                  startDate = moment(this.x).format('YYYY-MM-DD');
 
             let zoneTime = '';
             if (costhr === 0 && timeMin === '00') {
@@ -224,11 +238,132 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
               zoneTime = `${costhr}:${timeMin}:${timeSecond}`;
             }
 
-            return `${moment(this.x).format('YYYY-MM-DD')}<br>${this.series.name}: ${zoneTime}`;
-
+            if (this.series.xAxis.tickInterval === month) {
+              const endDate = moment(this.x + 6 * day).format('YYYY-MM-DD');
+              return `${startDate}~${endDate}<br>${this.series.name}: ${zoneTime}`;
+            } else {
+              return `${startDate}<br>${this.series.name}: ${zoneTime}`;
+            }
+            
           }
 
         }
+      
+      } else if (this.chartType === 'distance') {
+        // 處理公英制及顯示單位
+        if (this.unit === unit.imperial) {
+
+          trendChartOptions['yAxis'].labels = {
+            formatter: function () {
+              if (this.value >= 1000) {
+                const yVal = parseFloat((this.value / mi).toFixed(1));
+                return `${yVal} mi`;
+              } else {
+                const yVal = parseFloat((this.value / ft).toFixed(1));
+                return `${yVal} ft`;
+              }
+              
+
+            }
+  
+          };
+
+          trendChartOptions['tooltip'] = {
+            formatter: function () {
+              if (this.y >= 1000) {
+                const value = parseFloat((this.y / mi).toFixed(1)),
+                      suffix = 'mi',
+                      startDate = moment(this.x).format('YYYY-MM-DD');
+                if (this.series.xAxis.tickInterval === month) {
+                  const endDate = moment(this.x + 6 * day).format('YYYY-MM-DD');
+                  return `${startDate}~${endDate}<br>${this.series.name}: ${value} ${suffix}`;
+                } else {
+                  return `${startDate}<br>${this.series.name}: ${value} ${suffix}`;
+                }
+
+              } else {
+                const value = parseFloat((this.y / ft).toFixed(1)),
+                      suffix = 'ft',
+                      startDate = moment(this.x).format('YYYY-MM-DD');
+                if (this.series.xAxis.tickInterval === month) {
+                  const endDate = moment(this.x + 6 * day).format('YYYY-MM-DD');
+                  return `${startDate}~${endDate}<br>${this.series.name}: ${value} ${suffix}`;
+                } else {
+                  return `${startDate}<br>${this.series.name}: ${value} ${suffix}`;
+                }
+
+              }
+
+            }
+  
+          };
+        } else {
+          trendChartOptions['yAxis'].labels = {
+            formatter: function () {
+              if (this.value >= 1000) {
+                const yVal = parseFloat((this.value / 1000).toFixed(1));
+                return `${yVal} km`;
+              } else {
+                const yVal = parseFloat((this.value).toFixed(1));
+                return `${yVal} m`;
+              }
+              
+
+            }
+  
+          };
+
+          trendChartOptions['tooltip'] = {
+            formatter: function () {
+              if (this.y >= 1000) {
+                const value = parseFloat((this.y / 1000).toFixed(1)),
+                      suffix = 'km',
+                      startDate = moment(this.x).format('YYYY-MM-DD');
+                if (this.series.xAxis.tickInterval === month) {
+                  const endDate = moment(this.x + 6 * day).format('YYYY-MM-DD');
+                  return `${startDate}~${endDate}
+                    <br>${this.series.name}: ${value} ${suffix}
+                  `;
+                } else {
+                  return `${startDate}
+                    <br>${this.series.name}: ${value} ${suffix}
+                  `;
+                }
+
+              } else {
+                const value = parseFloat((this.y).toFixed(1)),
+                      suffix = 'm',
+                      startDate = moment(this.x).format('YYYY-MM-DD');
+                if (this.series.xAxis.tickInterval === month) {
+                  const endDate = moment(this.x + 6 * day).format('YYYY-MM-DD');
+                  return `${startDate}~${endDate}<br>${this.series.name}: ${value} ${suffix}`;
+                } else {
+                  return `${startDate}<br>${this.series.name}: ${value} ${suffix}`;
+                }
+
+              }
+  
+            }
+  
+          };
+
+        }
+        
+      } else {
+        trendChartOptions['tooltip'] = {
+          formatter: function () {
+            const value = parseFloat(this.y.toFixed(1)),
+                  startDate = moment(this.x).format('YYYY-MM-DD');
+            if (this.series.xAxis.tickInterval === month) {
+              const endDate = moment(this.x + 6 * day).format('YYYY-MM-DD');
+              return `${startDate}~${endDate}<br>${this.series.name}: ${value}`;
+            } else {
+              return `${startDate}<br>${this.series.name}: ${value}`;
+            }
+
+          }
+
+        };
 
       }
 
@@ -243,31 +378,31 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
         weekStartDay,
         weekEndDay;
     if (this.dateRange === 'day') {
-      diff = (this.searchDate[1] - this.searchDate[0]) / (86400 * 1000);
+      diff = (this.searchDate[1] - this.searchDate[0]) / day;
 
       for (let i = 0; i < diff + 1; i++) {
-        this.dateList.push(this.searchDate[0] + 86400 * 1000 * i);
+        this.dateList.push(this.searchDate[0] + day * i);
       }
 
     } else if (this.dateRange === 'week') {
 
       // 周報告開頭是星期日-kidin-1090220
       if (moment(this.searchDate[0]).isoWeekday() !== 7) {
-        weekStartDay = this.searchDate[0] - 86400 * 1000 * moment(this.searchDate[0]).isoWeekday();
+        weekStartDay = this.searchDate[0] - day * moment(this.searchDate[0]).isoWeekday();
       } else {
         weekStartDay = this.searchDate[0];
       }
 
       if (moment(this.searchDate[0]).isoWeekday() !== 7) {
-        weekEndDay = this.searchDate[1] - 86400 * 1000 * moment(this.searchDate[1]).isoWeekday();
+        weekEndDay = this.searchDate[1] - day * moment(this.searchDate[1]).isoWeekday();
       } else {
         weekEndDay = this.searchDate[1];
       }
 
-      diff = ((weekEndDay - weekStartDay) / (86400 * 1000 * 7)) + 1;
+      diff = ((weekEndDay - weekStartDay) / week) + 1;
 
       for (let i = 0; i < diff + 1; i++) {
-        this.dateList.push(weekStartDay + 86400 * 1000 * 7 * i);
+        this.dateList.push(weekStartDay + week * i);
       }
     }
   }

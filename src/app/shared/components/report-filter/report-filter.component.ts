@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener } fro
 import { UtilsService } from '../../services/utils.service';
 import { ReportService } from '../../services/report.service';
 import moment from 'moment';
-import { ReportConditionOpt, GroupSimpleInfo, SportType } from '../../models/report-condition';
+import { ReportConditionOpt, GroupSimpleInfo, SportType, SportCode } from '../../models/report-condition';
 import { Subject, Subscription, fromEvent, Observable } from 'rxjs';
 import { takeUntil, switchMap, tap } from 'rxjs/operators';
 import { CloudrunService } from '../../services/cloudrun.service';
@@ -71,7 +71,16 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
   /**
    * 運動類別清單
    */
-  sportCondition = [99, 1, 2, 3, 4, 5, 6, 7];
+  sportCondition = [
+    SportCode.all,
+    SportCode.run,
+    SportCode.cycle,
+    SportCode.weightTrain,
+    SportCode.swim,
+    SportCode.aerobic,
+    SportCode.row,
+    SportCode.ball
+  ];
 
   /**
    * 可以選擇的條件（包含選擇狀態）

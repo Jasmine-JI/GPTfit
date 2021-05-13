@@ -930,10 +930,9 @@
         </div>
         <div class="zone__section">
           <div class="flexCol zone__chart">
-            <span class="instructionsText">{{ 'universal_activityData_hrStatisticsDuringThePeriod' | translate: {'number': 1} }}</span>
             <app-threshold-chart
               [data]="chartData.ftp"
-              [type]="mixFtpZone"
+              [type]="'mixFtpZone'"
               (checkData)="this.uiFlag.noFtpData = $event;"
             ></app-threshold-chart>
           </div>

@@ -12,12 +12,12 @@ import { TranslateService } from '@ngx-translate/core';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { Unit } from '../../../../shared/models/bs-constant';
 import {
-  HrZoneTrendData,
+  ZoneTrendData,
   DiscolorTrendData,
   paceTrendColor,
   CompareLineTrendChart,
   FilletTrendChart,
-  hrColor,
+  zoneColor,
   costTimeColor,
   HrZoneRange
 } from '../../../../shared/models/chart-data';
@@ -98,7 +98,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    * 圖表用數據
    */
   chartData = {
-    hrTrend: <HrZoneTrendData>{
+    hrTrend: <ZoneTrendData>{
       zoneZero: [],
       zoneOne: [],
       zoneTwo: [],
@@ -119,7 +119,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       avgHR: null,
       bestHR: [],
       oneRangeBestHR: null,
-      colorSet: hrColor,
+      colorSet: zoneColor,
       date: []
     },
     costTime: <FilletTrendChart>{
@@ -257,7 +257,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         heartRateMax,
         heartRateResting,
         bodyAge
-      } = resArr[0];
+      } = resArr[0] as any;
       this.userInfo = { unit, name, id, icon };
       this.hrZoneRange = this.utils.getUserHrRange(heartRateBase, bodyAge, heartRateMax, heartRateResting);
       this.allMapList = resArr[1];
@@ -445,7 +445,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         avgHR: null,
         bestHR: [],
         oneRangeBestHR: null,
-        colorSet: hrColor,
+        colorSet: zoneColor,
         date: []
       },
       costTime: {

@@ -135,7 +135,7 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
     } else if (this.dateRange === 'day' && chartData.length > 7) {
       trendChartOptions['xAxis'].tickInterval = 7 * 24 * 3600 * 1000;  // 間距一週
     } else {
-      trendChartOptions['xAxis'].tickInterval = 30 * 24 * 4600 * 1000;  // 間距一個月
+      trendChartOptions['xAxis'].tickInterval = 30 * 24 * 3600 * 1000;  // 間距一個月
     }
 
     // 設定圖表y軸四捨五入取至整數-kidin-1090204
@@ -152,7 +152,7 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
     // 設定浮動提示框顯示格式-kidin-1090204
     trendChartOptions['tooltip'] = {
       formatter: function () {
-        if (this.series.xAxis.tickInterval === 30 * 24 * 4600 * 1000) {
+        if (this.series.xAxis.tickInterval === 30 * 24 * 3600 * 1000) {
           return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY-MM-DD')}
             <br/>${this.series.name}: ${parseFloat(this.y).toFixed(1)}`;
         } else {

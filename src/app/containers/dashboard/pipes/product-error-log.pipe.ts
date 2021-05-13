@@ -3,6 +3,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 /**
  * 裝置日誌log轉譯
+ * @version 20210428
  */
 @Pipe({name: 'productErrorLog'})
 export class ProductErrorLogPipe implements PipeTransform {
@@ -45,19 +46,22 @@ export class ProductErrorLogPipe implements PipeTransform {
       case 'errorCode_treadmill_a99':
         return '上表錯誤:上表顯示ERR 99: 讀寫Flash/EEPROM異常';
       case 'errorCode_treadmill_o00':
-        return '上表錯誤: 上表顯示錯誤.OTA更新失敗';
+        return '上表錯誤: 上表顯示錯誤.OTA更新失敗(_Tr1:補傳錯誤/_Chk1:檔案確認碼錯誤)';
       case 'errorCode_treadmill_b00':
         return 'BTM錯誤: 上表顯示斷線.BTM 通訊異常';
       case 'errorCode_treadmill_b01':
-        return 'LOG : BTM RESET';
+        return 'LOG : BTM RESET(_Pair/_Reset)';
       case 'errorCode_treadmill_b02':
-        return 'LOG : 雲跑開始';
+        return 'LOG : 雲跑開始 (_1:App/_ 2:雲跑/ _3:虛跑/ _4:AppDist/ _5:AppTime)';
       case 'errorCode_treadmill_b03':
-        return 'LOG : 雲跑結束';
+        return 'LOG : 雲跑結束 (_1:App/ _2:雲跑/ _3:虛跑/ _4:AppDist/ _5:AppTime)';
       case 'errorCode_treadmill_m00':
         return 'LOG : 安全KEY觸發';
       case 'errorCode_treadmill_s00':
         return 'LOG : 開機';
+      case 'errorCode_treadmill_s01':
+        return '收到控制器異常錯誤碼';
+
       case 'errorCode_spinBike_a99':
         return 'LOG : 記憶體錯誤';
       case 'errorCode_spinBike_m01':
@@ -65,13 +69,16 @@ export class ProductErrorLogPipe implements PipeTransform {
       case 'errorCode_spinBike_c00':
         return 'LOG : 阻力校正異常，車表顯示錯誤';
       case 'errorCode_spinBike_o00':
-        return 'OTA更新失敗,車表顯示錯誤';
+        return 'OTA更新失敗,車表顯示錯誤(_Tr1:補傳錯誤/_Chk1:檔案確認碼錯誤)';
       case 'errorCode_spinBike_b00':
         return 'BTM錯誤: 顯示斷線.BTM 通訊異常';
       case 'errorCode_spinBike_b01':
         return 'LOG : BTM RESET';
       case 'errorCode_spinBike_s00':
         return 'LOG : 開機';
+      case 'errorCode_spinBike_s01':
+        return '收到控制器異常錯誤碼';
+
       case 'errorCode_rowingMachine_a99':
         return 'LOG : 記憶體錯誤';
       case 'errorCode_rowingMachine_m01':
@@ -84,6 +91,9 @@ export class ProductErrorLogPipe implements PipeTransform {
         return 'LOG : BTM RESET';
       case 'errorCode_rowingMachine_s00':
         return 'LOG : 開機';
+      case 'errorCode_rowingMachine_s01':
+        return '收到控制器異常錯誤碼';
+
       case 'errorCode_wearable_w01':
         return 'ActiveDistance距離為0';
       case 'errorCode_wearable_w02':
@@ -94,8 +104,7 @@ export class ProductErrorLogPipe implements PipeTransform {
         return '運動檔案錯誤';
       case 'errorCode_wearable_w05':
         return '光學心跳讀取錯誤';
-      case 'errorCode_rowingMachine_s01':
-        return '收到控制器異常錯誤碼';
+
       default:
         return `Can't not find this key.`;
     }

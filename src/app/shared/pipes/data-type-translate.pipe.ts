@@ -41,6 +41,8 @@ export class DataTypeTranslatePipe implements PipeTransform {
 
       case 'power':
         return 'universal_activityData_power';
+      case 'swolf':
+        return 'universal_activityData_swolf';
       case 'temperature':
         return 'universal_activityData_temperature';
       case 'altitude':
@@ -53,8 +55,22 @@ export class DataTypeTranslatePipe implements PipeTransform {
         return 'universal_unit_gforceY';
       case 'gforceZ':
         return 'universal_unit_gforceZ';
+      case 'totalTime':
+        return 'universal_activityData_totalTime';
       case 'time':
         return 'universal_activityData_time';
+      case 'stroke':
+        return 'universal_activityData_numberOf';
+      case 'calories':
+        return 'universal_userProfile_calories';
+      case 'distance':
+        return 'universal_activityData_distance';
+      case 'xMoveGForce':
+        return 'universal_activityData_leftRighMovement';
+      case 'yMoveGForce':
+        return 'universal_activityData_accelerateShock';
+      case 'zMoveGForce':
+        return 'universal_activityData_jumpLanding';
       default:
         return 'universal_vocabulary_other';
     }

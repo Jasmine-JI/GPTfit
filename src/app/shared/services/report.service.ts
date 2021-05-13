@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ReportConditionOpt } from '../models/report-condition'
 import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
-import { paiCofficient } from '../models/sports-report';
+import { paiCofficient, dayPaiTarget } from '../models/sports-report';
 
 @Injectable()
 export class ReportService {
@@ -134,15 +134,18 @@ export class ReportService {
   }
 
   /**
-   * 根據心率區間計算pai
+   * 根據心率區間計算PAI，PAI公式=((加權後運動秒數 / 週數) / 週目標時間)*100
    * @param hrZone {Array<number>}-心率區間
+   * @param weekNum {number}-選擇期間的週數
    * @returns pai {number}
    * @author kidin-1100423
-   
-  countPai(hrZone: Array<number>) {
+   */
+  countPai(hrZone: Array<number>, weekNum: number) {
     const { z0, z1, z2, z3, z4, z5 } = paiCofficient,
-          weightedValue = 
+          [zone0, zone1, zone2, zone3, zone4, zone5] = [...hrZone],
+          weightedValue = z0 * zone0 + z1 * zone1 + z2 * zone2 + z3 * zone3 + z4 * zone4 + z5 * zone5;
+    return ((weightedValue / (dayPaiTarget * 7)) * 100) / weekNum;
   }
-  */
+  
 
 }

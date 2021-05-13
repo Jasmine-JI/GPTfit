@@ -1,4 +1,15 @@
-import { Component, OnInit, OnChanges, OnDestroy, Input, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnChanges,
+  OnDestroy,
+  Input,
+  ViewChild,
+  ElementRef,
+  Output,
+  EventEmitter,
+  ChangeDetectorRef
+} from '@angular/core';
 import { transform, WGS84, GCJ02, BD09 } from 'gcoord';
 import { Subscription, Subject, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -111,7 +122,8 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(
     private utils: UtilsService,
-    private activityService: ActivityService
+    private activityService: ActivityService,
+    private changeDetectorRef: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -930,6 +942,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     this.mapPlay.init = true;
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -974,6 +987,7 @@ export class CloudrunMapComponent implements OnInit, OnChanges, OnDestroy {
 
       }
 
+      this.changeDetectorRef.markForCheck();
     }, (1000 / this.mapPlay.playSpeed));
 
   }
