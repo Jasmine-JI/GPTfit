@@ -1,27 +1,91 @@
 <section class="flexCol">
-  <ng-container *ngIf="page === 'cloudrun'">
+  <ng-container *ngIf="['cloudrun', 'sportReport'].includes(page)">
     <div class="flexRow" style="align-items: center; justify-content: space-between;">
-      <h6 id="chartTitle">{{ chartType | dataTypeTranslate: [1, unit] | translate }}</h6>
+      <h6 id="chartTitle">
+        <ng-container *ngIf="chartType === 'planeGForce'">
+          {{ 'universal_adjective_accumulation' | translate }}
+        </ng-container>
+        <ng-container *ngIf="chartType === 'planeMaxGForce'">
+          {{ 'universal_adjective_maxBig' | translate }}
+        </ng-container>
+        {{ chartType | dataTypeTranslate: [1, unit] | translate }}
+      </h6>
       <span id="rowLine"></span>
     </div>
   </ng-container>
-    <main id="mainSeciton">
-      <ng-container *ngIf="page === 'cloudrun'">
+  <main id="mainSeciton">
+    <ng-container *ngIf="['cloudrun', 'sportReport'].includes(page)">
       <div class="flexRow infoBlock" style="justify-content: space-between;">
         <div class="flexCol infoSection">
           <span class="dataNumber">
-            {{ data.bestCostTime | sportTime: false }}
+            <ng-container *ngIf="page === 'cloudrun'">
+              {{ data.bestCostTime | sportTime: [false, false] }}
+            </ng-container>
+            <ng-container *ngIf="data.maxStrokeNum || data.maxStrokeNum === 0">
+              {{ data.maxStrokeNum }}
+            </ng-container>
+            <ng-container *ngIf="data.maxTotalTime || data.maxTotalTime === 0">
+              {{ data.maxTotalTime | sportTime: [false, false] }}
+            </ng-container>
+            <ng-container *ngIf="data.maxCalories || data.maxCalories === 0">
+              {{ data.maxCalories | thousandConversion: 'cal' }}
+            </ng-container>
+            <ng-container *ngIf="data.maxDistance || data.maxDistance === 0">
+              {{ data.maxDistance | distanceSibs: [unit, 0] }}
+            </ng-container>
+            <ng-container *ngIf="data.maxPlaneGForce || data.maxPlaneGForce === 0">
+              {{ data.maxPlaneGForce | number: '1.0-0' }} g
+            </ng-container>
+            <ng-container *ngIf="data.maxPlaneMaxGForce || data.maxPlaneMaxGForce === 0">
+              {{ data.maxPlaneMaxGForce | number: '1.0-3' }} g
+            </ng-container>
           </span>
           <span class="dataDescription">
-            {{ 'universal_adjective_maxBest' | translate }} {{ chartType | dataTypeTranslate: [1, unit] | translate }}
+            <ng-container *ngIf="page === 'cloudrun'">
+              {{ 'universal_adjective_maxBest' | translate }}
+            </ng-container>
+            <ng-container
+              *ngIf="
+                data.maxStrokeNum
+                || data.maxTotalTime
+                || data.maxCalories
+                || data.maxDistance
+                || data.maxPlaneGForce
+                || data.maxPlaneMaxGForce
+              "
+            >
+              {{ 'universal_adjective_maxHight' | translate }}
+            </ng-container>
+            {{ chartType | dataTypeTranslate: [1, unit] | translate }}
           </span>
         </div>
         <div class="flexCol infoSection">
           <span class="dataNumber">
-            {{ data.avgCostTime | sportTime: false }}
+            <ng-container *ngIf="page === 'cloudrun'">
+              {{ data.avgCostTime | sportTime: [false, false] }}
+            </ng-container>
+            <ng-container *ngIf="data.avgStrokeNum || data.avgStrokeNum === 0">
+              {{ data.avgStrokeNum | number: '1.0-1' }}
+            </ng-container>
+            <ng-container *ngIf="data.avgTotalTime || data.avgTotalTime === 0">
+              {{ data.avgTotalTime | sportTime: [false, false] }}
+            </ng-container>
+            <ng-container *ngIf="data.avgCalories || data.avgCalories === 0">
+              {{ data.avgCalories | thousandConversion: 'cal' }}
+            </ng-container>
+            <ng-container *ngIf="data.avgDistance || data.avgDistance === 0">
+              {{ data.avgDistance | distanceSibs: [unit, 0] }}
+            </ng-container>
+            <ng-container *ngIf="data.avgPlaneGForce || data.avgPlaneGForce === 0">
+              {{ data.avgPlaneGForce | number: '1.0-0' }} g
+            </ng-container>
+            <ng-container *ngIf="data.avgPlaneMaxGForce || data.avgPlaneMaxGForce === 0">
+              {{ data.avgPlaneMaxGForce | number: '1.0-3' }} g
+            </ng-container>
           </span>
           <span class="dataDescription">
-            {{ 'universal_adjective_avg' | translate }} {{ chartType | dataTypeTranslate: [1, unit] | translate }}
+            {{ 'universal_adjective_avg' | translate }}
+            {{ chartType | dataTypeTranslate: [1, unit] | translate }}
           </span>
         </div>
       </div>

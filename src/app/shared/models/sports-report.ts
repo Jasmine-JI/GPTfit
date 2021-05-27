@@ -248,7 +248,6 @@ export const commonData = [
   'avgMaxSpeed',
   'avgRunMaxCadence',
   'avgSpeed',
-  'totalActivities',
   'elevGain',
   'runAvgCadence',
   'totalDistanceMeters'
@@ -279,7 +278,6 @@ export const commonData = [
  */
  export const weightTrainData = [
   'totalReps',
-  'calories',
   'totalWeightKg'
 ];
 
@@ -327,7 +325,13 @@ export const commonData = [
   'totalMinusGforceZ',
   'totalPlusGforceX',
   'totalPlusGforceY',
-  'totalPlusGforceZ'
+  'totalPlusGforceZ',
+  'maxGforceX',
+  'maxGforceY',
+  'maxGforceZ',
+  'miniGforceX',
+  'miniGforceY',
+  'miniGforceZ'
 ];
 
 /**
@@ -479,6 +483,11 @@ export const paiCofficient = {
 }
 
 /**
- * 一天pai指標秒數（即經加權後運動時間等於該指標秒數，則api為100）
+ * 一天pai指標秒數（即經加權後運動時間等於該指標秒數，則pai為100）
  */
 export const dayPaiTarget = 1285;
+
+/**
+ * 區間趨勢（上升/下降）
+ */
+export type Regression = 'up' | 'down';

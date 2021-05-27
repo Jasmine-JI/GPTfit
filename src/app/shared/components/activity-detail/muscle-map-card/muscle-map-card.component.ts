@@ -79,203 +79,203 @@ export class MuscleMapCardComponent implements OnInit, OnChanges, OnDestroy {
               transparencyVice = '0.5';  // 次要訓練部位色彩透明度-kidin-1081125
         // 根據次要重訓部位顯示顏色-kidin-1081122
         switch (+allVicePart[i]) {
-          case 16:
+          case MuscleCode.bicepsInside:
             const bicepsInside = document.querySelectorAll('.bicepsInside') as NodeListOf<HTMLElement>;
             for (let k = 0; k < bicepsInside.length; k++) {
               bicepsInside[k].style.fill = colorVice;
               bicepsInside[k].style.opacity = transparencyVice;
             }
             break;
-          case 32:
+          case MuscleCode.triceps:
             const triceps = document.querySelectorAll('.triceps') as NodeListOf<HTMLElement>;
             for (let k = 0; k < triceps.length; k++) {
               triceps[k].style.fill = colorVice;
               triceps[k].style.opacity = transparencyVice;
             }
             break;
-          case 48:
+          case MuscleCode.pectoralsMuscle:
             const pectoralsMuscle = document.querySelectorAll('.pectoralsMuscle') as NodeListOf<HTMLElement>;
             for (let k = 0; k < pectoralsMuscle.length; k++) {
               pectoralsMuscle[k].style.fill = colorVice;
               pectoralsMuscle[k].style.opacity = transparencyVice;
             }
             break;
-          case 49:
+          case MuscleCode.pectoralisUpper:
             const pectoralisUpper = document.querySelectorAll('.pectoralisUpper') as NodeListOf<HTMLElement>;
             for (let k = 0; k < pectoralisUpper.length; k++) {
               pectoralisUpper[k].style.fill = colorVice;
               pectoralisUpper[k].style.opacity = transparencyVice;
             }
             break;
-          case 50:
+          case MuscleCode.pectoralisLower:
             const pectoralisLower = document.querySelectorAll('.pectoralisLower') as NodeListOf<HTMLElement>;
             for (let k = 0; k < pectoralisLower.length; k++) {
               pectoralisLower[k].style.fill = colorVice;
               pectoralisLower[k].style.opacity = transparencyVice;
             }
             break;
-          case 51:
+          case MuscleCode.pectoralsInside:
             const pectoralsInside = document.querySelectorAll('.pectoralsInside') as NodeListOf<HTMLElement>;
             for (let k = 0; k < pectoralsInside.length; k++) {
               pectoralsInside[k].style.fill = colorVice;
               pectoralsInside[k].style.opacity = transparencyVice;
             }
             break;
-          case 52:
+          case MuscleCode.pectoralsOutside:
             const pectoralsOutside = document.querySelectorAll('.pectoralsOutside') as NodeListOf<HTMLElement>;
             for (let k = 0; k < pectoralsOutside.length; k++) {
               pectoralsOutside[k].style.fill = colorVice;
               pectoralsOutside[k].style.opacity = transparencyVice;
             }
             break;
-          case 53:
+          case MuscleCode.frontSerratus:
             const frontSerratus = document.querySelectorAll('.frontSerratus') as NodeListOf<HTMLElement>;
             for (let k = 0; k < frontSerratus.length; k++) {
               frontSerratus[k].style.fill = colorVice;
               frontSerratus[k].style.opacity = transparencyVice;
             }
             break;
-          case 64:
+          case MuscleCode.shoulderMuscle:
             const shoulderMuscle = document.querySelectorAll('.shoulderMuscle') as NodeListOf<HTMLElement>;
             for (let k = 0; k < shoulderMuscle.length; k++) {
               shoulderMuscle[k].style.fill = colorVice;
               shoulderMuscle[k].style.opacity = transparencyVice;
             }
             break;
-          case 65:
+          case MuscleCode.deltoidMuscle:
             const deltoidMuscle = document.querySelectorAll('.deltoidMuscle') as NodeListOf<HTMLElement>;
             for (let k = 0; k < deltoidMuscle.length; k++) {
               deltoidMuscle[k].style.fill = colorVice;
               deltoidMuscle[k].style.opacity = transparencyVice;
             }
             break;
-          case 66:
+          case MuscleCode.deltoidAnterior:
             const deltoidAnterior = document.querySelectorAll('.deltoidAnterior') as NodeListOf<HTMLElement>;
             for (let k = 0; k < deltoidAnterior.length; k++) {
               deltoidAnterior[k].style.fill = colorVice;
               deltoidAnterior[k].style.opacity = transparencyVice;
             }
             break;
-          case 67:
+          case MuscleCode.deltoidLateral:
             const deltoidLateral = document.querySelectorAll('.deltoidLateral') as NodeListOf<HTMLElement>;
             for (let k = 0; k < deltoidLateral.length; k++) {
               deltoidLateral[k].style.fill = colorVice;
               deltoidLateral[k].style.opacity = transparencyVice;
             }
             break;
-          case 68:
+          case MuscleCode.deltoidPosterior:
             const deltoidPosterior = document.querySelectorAll('.deltoidPosterior') as NodeListOf<HTMLElement>;
             for (let k = 0; k < deltoidPosterior.length; k++) {
               deltoidPosterior[k].style.fill = colorVice;
               deltoidPosterior[k].style.opacity = transparencyVice;
             }
             break;
-          case 69:
+          case MuscleCode.trapezius:
             const trapezius = document.querySelectorAll('.trapezius') as NodeListOf<HTMLElement>;
             for (let k = 0; k < trapezius.length; k++) {
               trapezius[k].style.fill = colorVice;
               trapezius[k].style.opacity = transparencyVice;
             }
             break;
-          case 80:
+          case MuscleCode.backMuscle:
             const backMuscle = document.querySelectorAll('.backMuscle') as NodeListOf<HTMLElement>;
             for (let k = 0; k < backMuscle.length; k++) {
               backMuscle[k].style.fill = colorVice;
               backMuscle[k].style.opacity = transparencyVice;
             }
             break;
-          case 81:
+          case MuscleCode.latissimusDorsi:
             const latissimusDorsi = document.querySelectorAll('.latissimusDorsi') as NodeListOf<HTMLElement>;
             for (let k = 0; k < latissimusDorsi.length; k++) {
               latissimusDorsi[k].style.fill = colorVice;
               latissimusDorsi[k].style.opacity = transparencyVice;
             }
             break;
-          case 82:
+          case MuscleCode.erectorSpinae:
             const erectorSpinae = document.querySelectorAll('.erectorSpinae') as NodeListOf<HTMLElement>;
             for (let k = 0; k < erectorSpinae.length; k++) {
               erectorSpinae[k].style.fill = colorVice;
               erectorSpinae[k].style.opacity = transparencyVice;
             }
             break;
-          case 96:
+          case MuscleCode.abdominalMuscle:
             const abdominalMuscle = document.querySelectorAll('.abdominalMuscle') as NodeListOf<HTMLElement>;
             for (let k = 0; k < abdominalMuscle.length; k++) {
               abdominalMuscle[k].style.fill = colorVice;
               abdominalMuscle[k].style.opacity = transparencyVice;
             }
             break;
-          case 97:
+          case MuscleCode.rectusAbdominis:
             const rectusAbdominis = document.querySelectorAll('.rectusAbdominis') as NodeListOf<HTMLElement>;
             for (let k = 0; k < rectusAbdominis.length; k++) {
               rectusAbdominis[k].style.fill = colorVice;
               rectusAbdominis[k].style.opacity = transparencyVice;
             }
             break;
-          case 98:
+          case MuscleCode.rectusAbdominisUpper:
             const rectusAbdominisUpper = document.querySelectorAll('.rectusAbdominisUpper') as NodeListOf<HTMLElement>;
             for (let k = 0; k < rectusAbdominisUpper.length; k++) {
               rectusAbdominisUpper[k].style.fill = colorVice;
               rectusAbdominisUpper[k].style.opacity = transparencyVice;
             }
             break;
-          case 99:
+          case MuscleCode.rectusAbdominisLower:
             const rectusAbdominisLower = document.querySelectorAll('.rectusAbdominisLower') as NodeListOf<HTMLElement>;
             for (let k = 0; k < rectusAbdominisLower.length; k++) {
               rectusAbdominisLower[k].style.fill = colorVice;
               rectusAbdominisLower[k].style.opacity = transparencyVice;
             }
             break;
-          case 100:
+          case MuscleCode.abdominisOblique:
             const abdominisOblique = document.querySelectorAll('.abdominisOblique') as NodeListOf<HTMLElement>;
             for (let k = 0; k < abdominisOblique.length; k++) {
               abdominisOblique[k].style.fill = colorVice;
               abdominisOblique[k].style.opacity = transparencyVice;
             }
             break;
-          case 112:
+          case MuscleCode.legMuscle:
             const legMuscle = document.querySelectorAll('.legMuscle') as NodeListOf<HTMLElement>;
             for (let k = 0; k < legMuscle.length; k++) {
               legMuscle[k].style.fill = colorVice;
               legMuscle[k].style.opacity = transparencyVice;
             }
             break;
-          case 113:
+          case MuscleCode.hipMuscle:
             const hipMuscle = document.querySelectorAll('.hipMuscle') as NodeListOf<HTMLElement>;
             for (let k = 0; k < hipMuscle.length; k++) {
               hipMuscle[k].style.fill = colorVice;
               hipMuscle[k].style.opacity = transparencyVice;
             }
             break;
-          case 114:
+          case MuscleCode.quadricepsFemoris:
             const quadricepsFemoris = document.querySelectorAll('.quadricepsFemoris') as NodeListOf<HTMLElement>;
             for (let k = 0; k < quadricepsFemoris.length; k++) {
               quadricepsFemoris[k].style.fill = colorVice;
               quadricepsFemoris[k].style.opacity = transparencyVice;
             }
             break;
-          case 115:
+          case MuscleCode.hamstrings:
             const hamstrings = document.querySelectorAll('.hamstrings') as NodeListOf<HTMLElement>;
             for (let k = 0; k < hamstrings.length; k++) {
               hamstrings[k].style.fill = colorVice;
               hamstrings[k].style.opacity = transparencyVice;
             }
             break;
-          case 116:
+          case MuscleCode.ankleFlexor:
             const ankleFlexor = document.querySelectorAll('.ankleFlexor') as NodeListOf<HTMLElement>;
             for (let k = 0; k < ankleFlexor.length; k++) {
               ankleFlexor[k].style.fill = colorVice;
               ankleFlexor[k].style.opacity = transparencyVice;
             }
             break;
-          case 117:
+          case MuscleCode.gastrocnemius:
             const gastrocnemius = document.querySelectorAll('.gastrocnemius') as NodeListOf<HTMLElement>;
             for (let k = 0; k < gastrocnemius.length; k++) {
               gastrocnemius[k].style.fill = colorVice;
               gastrocnemius[k].style.opacity = transparencyVice;
             }
             break;
-          case 128:
+          case MuscleCode.wristFlexor:
             const wristFlexor = document.querySelectorAll('.wristFlexor') as NodeListOf<HTMLElement>;
             for (let k = 0; k < wristFlexor.length; k++) {
               wristFlexor[k].style.fill = colorVice;
@@ -285,7 +285,9 @@ export class MuscleMapCardComponent implements OnInit, OnChanges, OnDestroy {
           default:
             break;
         }
+
       }
+
     }
 
     // 根據主要重訓部位訓練程度顯示不同顏色-kidin-1081122
@@ -308,175 +310,175 @@ export class MuscleMapCardComponent implements OnInit, OnChanges, OnDestroy {
       }
 
       switch (trainingPart) {
-        case 16:
+        case MuscleCode.bicepsInside:
           const bicepsInside = document.querySelectorAll('.bicepsInside') as NodeListOf<HTMLElement>;
           for (let k = 0; k < bicepsInside.length; k++) {
             bicepsInside[k].style.fill = color;
           }
           break;
-        case 32:
+        case MuscleCode.triceps:
           const triceps = document.querySelectorAll('.triceps') as NodeListOf<HTMLElement>;
           for (let k = 0; k < triceps.length; k++) {
             triceps[k].style.fill = color;
           }
           break;
-        case 48:
+        case MuscleCode.pectoralsMuscle:
           const pectoralsMuscle = document.querySelectorAll('.pectoralsMuscle') as NodeListOf<HTMLElement>;
           for (let k = 0; k < pectoralsMuscle.length; k++) {
             pectoralsMuscle[k].style.fill = color;
           }
           break;
-        case 49:
+        case MuscleCode.pectoralisUpper:
           const pectoralisUpper = document.querySelectorAll('.pectoralisUpper') as NodeListOf<HTMLElement>;
           for (let k = 0; k < pectoralisUpper.length; k++) {
             pectoralisUpper[k].style.fill = color;
           }
           break;
-        case 50:
+        case MuscleCode.pectoralisLower:
           const pectoralisLower = document.querySelectorAll('.pectoralisLower') as NodeListOf<HTMLElement>;
           for (let k = 0; k < pectoralisLower.length; k++) {
             pectoralisLower[k].style.fill = color;
           }
           break;
-        case 51:
+        case MuscleCode.pectoralsInside:
           const pectoralsInside = document.querySelectorAll('.pectoralsInside') as NodeListOf<HTMLElement>;
           for (let k = 0; k < pectoralsInside.length; k++) {
             pectoralsInside[k].style.fill = color;
           }
           break;
-        case 52:
+        case MuscleCode.pectoralsOutside:
           const pectoralsOutside = document.querySelectorAll('.pectoralsOutside') as NodeListOf<HTMLElement>;
           for (let k = 0; k < pectoralsOutside.length; k++) {
             pectoralsOutside[k].style.fill = color;
           }
           break;
-        case 53:
+        case MuscleCode.frontSerratus:
           const frontSerratus = document.querySelectorAll('.frontSerratus') as NodeListOf<HTMLElement>;
           for (let k = 0; k < frontSerratus.length; k++) {
             frontSerratus[k].style.fill = color;
           }
           break;
-        case 64:
+        case MuscleCode.shoulderMuscle:
           const shoulderMuscle = document.querySelectorAll('.shoulderMuscle') as NodeListOf<HTMLElement>;
           for (let k = 0; k < shoulderMuscle.length; k++) {
             shoulderMuscle[k].style.fill = color;
           }
           break;
-        case 65:
+        case MuscleCode.deltoidMuscle:
           const deltoidMuscle = document.querySelectorAll('.deltoidMuscle') as NodeListOf<HTMLElement>;
           for (let k = 0; k < deltoidMuscle.length; k++) {
             deltoidMuscle[k].style.fill = color;
           }
           break;
-        case 66:
+        case MuscleCode.deltoidAnterior:
           const deltoidAnterior = document.querySelectorAll('.deltoidAnterior') as NodeListOf<HTMLElement>;
           for (let k = 0; k < deltoidAnterior.length; k++) {
             deltoidAnterior[k].style.fill = color;
           }
           break;
-        case 67:
+        case MuscleCode.deltoidLateral:
           const deltoidLateral = document.querySelectorAll('.deltoidLateral') as NodeListOf<HTMLElement>;
           for (let k = 0; k < deltoidLateral.length; k++) {
             deltoidLateral[k].style.fill = color;
           }
           break;
-        case 68:
+        case MuscleCode.deltoidPosterior:
           const deltoidPosterior = document.querySelectorAll('.deltoidPosterior') as NodeListOf<HTMLElement>;
           for (let k = 0; k < deltoidPosterior.length; k++) {
             deltoidPosterior[k].style.fill = color;
           }
           break;
-        case 69:
+        case MuscleCode.trapezius:
           const trapezius = document.querySelectorAll('.trapezius') as NodeListOf<HTMLElement>;
           for (let k = 0; k < trapezius.length; k++) {
             trapezius[k].style.fill = color;
           }
           break;
-        case 80:
+        case MuscleCode.backMuscle:
           const backMuscle = document.querySelectorAll('.backMuscle') as NodeListOf<HTMLElement>;
           for (let k = 0; k < backMuscle.length; k++) {
             backMuscle[k].style.fill = color;
           }
           break;
-        case 81:
+        case MuscleCode.latissimusDorsi:
           const latissimusDorsi = document.querySelectorAll('.latissimusDorsi') as NodeListOf<HTMLElement>;
           for (let k = 0; k < latissimusDorsi.length; k++) {
             latissimusDorsi[k].style.fill = color;
           }
           break;
-        case 82:
+        case MuscleCode.erectorSpinae:
           const erectorSpinae = document.querySelectorAll('.erectorSpinae') as NodeListOf<HTMLElement>;
           for (let k = 0; k < erectorSpinae.length; k++) {
             erectorSpinae[k].style.fill = color;
           }
           break;
-        case 96:
+        case MuscleCode.abdominalMuscle:
           const abdominalMuscle = document.querySelectorAll('.abdominalMuscle') as NodeListOf<HTMLElement>;
           for (let k = 0; k < abdominalMuscle.length; k++) {
             abdominalMuscle[k].style.fill = color;
           }
           break;
-        case 97:
+        case MuscleCode.rectusAbdominis:
           const rectusAbdominis = document.querySelectorAll('.rectusAbdominis') as NodeListOf<HTMLElement>;
           for (let k = 0; k < rectusAbdominis.length; k++) {
             rectusAbdominis[k].style.fill = color;
           }
           break;
-        case 98:
+        case MuscleCode.rectusAbdominisUpper:
           const rectusAbdominisUpper = document.querySelectorAll('.rectusAbdominisUpper') as NodeListOf<HTMLElement>;
           for (let k = 0; k < rectusAbdominisUpper.length; k++) {
             rectusAbdominisUpper[k].style.fill = color;
           }
           break;
-        case 99:
+        case MuscleCode.rectusAbdominisLower:
           const rectusAbdominisLower = document.querySelectorAll('.rectusAbdominisLower') as NodeListOf<HTMLElement>;
           for (let k = 0; k < rectusAbdominisLower.length; k++) {
             rectusAbdominisLower[k].style.fill = color;
           }
           break;
-        case 100:
+        case MuscleCode.abdominisOblique:
           const abdominisOblique = document.querySelectorAll('.abdominisOblique') as NodeListOf<HTMLElement>;
           for (let k = 0; k < abdominisOblique.length; k++) {
             abdominisOblique[k].style.fill = color;
           }
           break;
-        case 112:
+        case MuscleCode.legMuscle:
           const legMuscle = document.querySelectorAll('.legMuscle') as NodeListOf<HTMLElement>;
           for (let k = 0; k < legMuscle.length; k++) {
             legMuscle[k].style.fill = color;
           }
           break;
-        case 113:
+        case MuscleCode.hipMuscle:
           const hipMuscle = document.querySelectorAll('.hipMuscle') as NodeListOf<HTMLElement>;
           for (let k = 0; k < hipMuscle.length; k++) {
             hipMuscle[k].style.fill = color;
           }
           break;
-        case 114:
+        case MuscleCode.quadricepsFemoris:
           const quadricepsFemoris = document.querySelectorAll('.quadricepsFemoris') as NodeListOf<HTMLElement>;
           for (let k = 0; k < quadricepsFemoris.length; k++) {
             quadricepsFemoris[k].style.fill = color;
           }
           break;
-        case 115:
+        case MuscleCode.hamstrings:
           const hamstrings = document.querySelectorAll('.hamstrings') as NodeListOf<HTMLElement>;
           for (let k = 0; k < hamstrings.length; k++) {
             hamstrings[k].style.fill = color;
           }
           break;
-        case 116:
+        case MuscleCode.ankleFlexor:
           const ankleFlexor = document.querySelectorAll('.ankleFlexor') as NodeListOf<HTMLElement>;
           for (let k = 0; k < ankleFlexor.length; k++) {
             ankleFlexor[k].style.fill = color;
           }
           break;
-        case 117:
+        case MuscleCode.gastrocnemius:
           const gastrocnemius = document.querySelectorAll('.gastrocnemius') as NodeListOf<HTMLElement>;
           for (let k = 0; k < gastrocnemius.length; k++) {
             gastrocnemius[k].style.fill = color;
           }
           break;
-        case 128:
+        case MuscleCode.wristFlexor:
           const wristFlexor = document.querySelectorAll('.wristFlexor') as NodeListOf<HTMLElement>;
           for (let k = 0; k < wristFlexor.length; k++) {
             wristFlexor[k].style.fill = color;

@@ -4,6 +4,7 @@ import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { zoneColor } from '../../../models/chart-data';
 
 const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
@@ -126,13 +127,13 @@ export class ThresholdChartComponent implements OnInit, OnChanges, OnDestroy {
             zoneSixPercentage = (this.data[6] / totalSecond) * 100;
 
       const sportPercentageDataset = [
-        {y: zoneZeroPercentage, color: '#70b1f3'},
-        {y: zoneOnePercentage, color: '#64e0ec'},
-        {y: zoneTwoPercentage, color: '#abf784'},
-        {y: zoneThreePercentage, color: '#f7f25b'},
-        {y: zoneFourPercentage, color: '#f3b353'},
-        {y: zoneFivePercentage, color: '#f36953'},
-        {y: zoneSixPercentage, color: '#ea57a3'},
+        {y: zoneZeroPercentage, color: zoneColor[0]},
+        {y: zoneOnePercentage, color: zoneColor[1]},
+        {y: zoneTwoPercentage, color: zoneColor[2]},
+        {y: zoneThreePercentage, color: zoneColor[3]},
+        {y: zoneFourPercentage, color: zoneColor[4]},
+        {y: zoneFivePercentage, color: zoneColor[5]},
+        {y: zoneSixPercentage, color: zoneColor[6]},
       ];
 
       if (this.type !== 'personalAnalysis') {
@@ -149,31 +150,31 @@ export class ThresholdChartComponent implements OnInit, OnChanges, OnDestroy {
         switch (highestFtpZoneIndex) {
           case 0:
             this.highestFtpZone = zoneZero;
-            this.highestFtpZoneColor = 'rgb(70, 156, 245)';
+            this.highestFtpZoneColor = zoneColor[0];
             break;
           case 1:
             this.highestFtpZone = zoneOne;
-            this.highestFtpZoneColor = 'rgb(64, 218, 232)';
+            this.highestFtpZoneColor = zoneColor[1];
             break;
           case 2:
             this.highestFtpZone = zoneTwo;
-            this.highestFtpZoneColor = 'rgb(86, 255, 0)';
+            this.highestFtpZoneColor = zoneColor[2];
             break;
           case 3:
             this.highestFtpZone = zoneThree;
-            this.highestFtpZoneColor = 'rgb(214, 207, 1)';
+            this.highestFtpZoneColor = zoneColor[3];
             break;
           case 4:
             this.highestFtpZone = zoneFour;
-            this.highestFtpZoneColor = 'rgb(234, 164, 4)';
+            this.highestFtpZoneColor = zoneColor[4];
             break;
           case 5:
             this.highestFtpZone = zoneFive;
-            this.highestFtpZoneColor = 'rgb(243, 105, 83)';
+            this.highestFtpZoneColor = zoneColor[5];
             break;
           case 6:
             this.highestFtpZone = zoneSix;
-            this.highestFtpZoneColor = 'rgb(239, 56, 150)';
+            this.highestFtpZoneColor = zoneColor[6];
             break;
         }
 

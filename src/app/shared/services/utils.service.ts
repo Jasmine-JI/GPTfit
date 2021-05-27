@@ -12,7 +12,8 @@ export const TOKEN = 'ala_token';
 export const EMPTY_OBJECT = {};
 import moment from 'moment';
 import { Unit, mi, ft } from '../models/bs-constant';
-import { SportType } from '../models/report-condition';
+import { SportType, SportCode } from '../models/report-condition';
+import { GroupLevel } from '../../containers/dashboard/models/group-detail';
 
 type Point = {
   x: number;
@@ -158,17 +159,23 @@ export class UtilsService {
     }
   }
 
-  displayGroupLevel(_id: string) {
+  /**
+   * 根據群組id取得該群組階層
+   * @param _id {string}-group id
+   * @returns {number}-群組階層
+   * @author kidin-1100512
+   */
+  displayGroupLevel(_id: string): number {
     if (_id) {
       const arr = _id.split('-').splice(2, 4);
       if (+arr[3] > 0) {
-        return 80;
+        return GroupLevel.normal;
       } else if (+arr[2] > 0) {
-        return 60;
+        return GroupLevel.class;
       } else if (+arr[1] > 0) {
-        return 40;
+        return GroupLevel.branch;
       } else {
-        return 30;
+        return GroupLevel.brand;
       }
     }
   }
@@ -324,6 +331,11 @@ export class UtilsService {
     // Date 及 RegExp
     if (obj instanceof Date || obj instanceof RegExp) {
       return obj.constructor(obj);
+    }
+
+    // Set
+    if (obj instanceof Set) {
+      return new Set(obj);
     }
 
     // 檢查快取
@@ -778,13 +790,13 @@ export class UtilsService {
     let ttlSecond: number;
     const speed = value <= 1  ? 1 : value;  // 配速最小60'00" t/km（1 km/hr）
     switch (sportType) {
-      case 1:
+      case SportCode.run:
         ttlSecond = unit === 0 ? +(3600 / speed).toFixed(1) : +(3600 / (speed / mi)).toFixed(1);
         break;
-      case 4:
+      case SportCode.swim:
         ttlSecond = unit === 0 ? +((3600 / speed)).toFixed(1) : +(3600 / ((speed * 10) / ft)).toFixed(1);
         break;
-      case 6:
+      case SportCode.row:
         ttlSecond = unit === 0 ? +(3600 / speed).toFixed(1) : +(3600 / ((speed * 2) / ft)).toFixed(1);
         break;
     }

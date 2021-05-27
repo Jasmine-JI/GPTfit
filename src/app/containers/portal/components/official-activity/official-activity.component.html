@@ -274,7 +274,7 @@
                   {{ _participant.nickname }}
                 </span>
               </div>
-              <span class="record__list">{{ _participant.record | sportTime: false }}</span>
+              <span class="record__list">{{ _participant.record | sportTime: [false, false] }}</span>
               <span class="finish__date__list" *ngIf="uiFlag.width >= 800">{{ _participant.finishDate }}</span>
             </div>
           </div>
@@ -328,12 +328,12 @@
               </div>
               <div class="record__list" *ngIf="uiFlag.showAvgRecord">
                 <span *ngIf="_team.record && _team.record !== null; else noTeamRecord;">
-                  {{ _team.record | sportTime: false }}
+                  {{ _team.record | sportTime: [false, false] }}
                 </span>
               </div>
               <div class="record__list" *ngIf="!uiFlag.showAvgRecord">
                 <span *ngIf="_team.totalTime && _team.totalTime !== null; else noTeamRecord;">
-                  {{ _team.totalTime | sportTime: false }}
+                  {{ _team.totalTime | sportTime: [false, false] }}
                 </span>
               </div>
               <ng-template #noTeamRecord>
@@ -348,7 +348,7 @@
                   <i class="icon-svg_web-icon_p1_083-run" style="font-size: 20px;"></i>
                 </span>
                 <span class="nickname__list">{{ _tMember.nickname }}</span>
-                <span class="record__list">{{ _tMember.record | sportTime: false }}</span>
+                <span class="record__list">{{ _tMember.record | sportTime: [false, false] }}</span>
               </div>  
             </div>
           </div>
@@ -508,7 +508,7 @@
               <div class="flexCol">
                 <span class="small__screen__header" *ngIf="uiFlag.width <= 650">成績</span>
                 <span class="record__table__content" [class.activity__record__content]="uiFlag.width > 650" *ngIf="_record.grades !== '-:--:--'">
-                  {{ _record.grades | sportTime: false }}
+                  {{ _record.grades | sportTime: [false, false] }}
                 </span>
                 <span class="record__table__content" [class.activity__record__content]="uiFlag.width > 650" *ngIf="_record.grades === '-:--:--'">
                   {{ _record.grades }}

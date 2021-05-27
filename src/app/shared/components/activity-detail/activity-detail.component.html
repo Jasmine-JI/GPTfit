@@ -88,7 +88,7 @@
           <div id="summary__info__section" class="flexRow">
             <div class="flexCol summery__block">
               <span class="summary__type__title">{{ 'universal_activityData_totalTime' | translate }}</span>
-              <span class="summary__type__content">{{ activityInfoLayer.totalSecond | sportTime: true }}</span>
+              <span class="summary__type__content">{{ activityInfoLayer.totalSecond | sportTime: [true, false] }}</span>
             </div>
             <div class="flexCol summery__block" *ngIf="![3, 5].includes(+activityInfoLayer.type)">
               <span class="summary__type__title">{{ 'universal_activityData_totalDistance' | translate }}</span>
@@ -198,7 +198,7 @@
               <div class="flexCol table__list__block">
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_totalTime' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.totalSecond | sportTime: true }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalSecond | sportTime: [true, false] }}</span>
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">
@@ -209,11 +209,11 @@
                       {{ 'universal_activityData_activityTime' | translate }}
                     </ng-container>
                   </span>
-                  <span class="table__list__content">{{ activityInfoLayer.totalActivitySecond | sportTime: true }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalActivitySecond | sportTime: [true, false] }}</span>
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_restTime' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.totalRestSecond | sportTime: true }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalRestSecond | sportTime: [true, false] }}</span>
                 </div>
               </div>
             </div>
@@ -235,27 +235,27 @@
               <div class="flexCol table__list__block">
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_generalZone' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.totalHrZone0Second | sportTime: true }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalHrZone0Second | sportTime: [true, false] }}</span>
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_warmUpZone' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.totalHrZone1Second | sportTime: true }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalHrZone1Second | sportTime: [true, false] }}</span>
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_aerobicZone' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.totalHrZone2Second | sportTime: true }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalHrZone2Second | sportTime: [true, false] }}</span>
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_enduranceZone' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.totalHrZone3Second | sportTime: true }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalHrZone3Second | sportTime: [true, false] }}</span>
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_marathonZone' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.totalHrZone4Second | sportTime: true }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalHrZone4Second | sportTime: [true, false] }}</span>
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_anaerobicZone' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.totalHrZone5Second | sportTime: true }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalHrZone5Second | sportTime: [true, false] }}</span>
                 </div>
               </div>
             </div>
@@ -273,31 +273,31 @@
               <div class="flexCol table__list__block">
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_ftpZ0' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.totalFtpZone0Second | sportTime: true }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalFtpZone0Second | sportTime: [true, false] }}</span>
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_ftpZ1' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.totalFtpZone1Second | sportTime: true }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalFtpZone1Second | sportTime: [true, false] }}</span>
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_ftpZ2' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.totalFtpZone2Second | sportTime: true }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalFtpZone2Second | sportTime: [true, false] }}</span>
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_ftpZ3' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.totalFtpZone3Second | sportTime: true }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalFtpZone3Second | sportTime: [true, false] }}</span>
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_ftpZ4' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.totalFtpZone4Second | sportTime: true }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalFtpZone4Second | sportTime: [true, false] }}</span>
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_ftpZ5' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.totalFtpZone5Second | sportTime: true }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalFtpZone5Second | sportTime: [true, false] }}</span>
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_ftpZ6' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.totalFtpZone6Second | sportTime: true }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.totalFtpZone6Second | sportTime: [true, false] }}</span>
                 </div>
               </div>
             </div>
@@ -767,7 +767,7 @@
                   <th class="segmentation__text" *ngIf="[2, 7].includes(+activityInfoLayer.type)">
                     <div class="flexCol">
                       <span class="segmentation__title">{{ 'universal_activityData_limit_liveLapSpeed' | translate }}</span>
-                      <span class="segmentation__unit">{{ userProfile.unit == 0 ? 'km/hr' : 'mi/hr' }}</span>
+                      <span class="segmentation__unit">{{ userProfile.unit == 0 ? 'km/h' : 'mi/h' }}</span>
                     </div>
                   </th>
                   <th class="segmentation__text" *ngIf="activityInfoLayer.type == 3">
@@ -805,7 +805,7 @@
                       {{ _layer.dispName }}
                     </td>
                     <td class="segmentation__text">
-                      {{ +_layer.lapTotalSecond | sportTime: true }}
+                      {{ +_layer.lapTotalSecond | sportTime: [true, false] }}
                     </td>
                     <td class="segmentation__text">
                       {{ _layer.lapAvgHeartRateBpm || 0 }}
@@ -930,10 +930,9 @@
         </div>
         <div class="zone__section">
           <div class="flexCol zone__chart">
-            <span class="instructionsText">{{ 'universal_activityData_hrStatisticsDuringThePeriod' | translate: {'number': 1} }}</span>
             <app-threshold-chart
               [data]="chartData.ftp"
-              [type]="mixFtpZone"
+              [type]="'mixFtpZone'"
               (checkData)="this.uiFlag.noFtpData = $event;"
             ></app-threshold-chart>
           </div>

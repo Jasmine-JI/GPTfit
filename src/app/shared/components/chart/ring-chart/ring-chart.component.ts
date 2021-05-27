@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Input, OnChanges } from '@angular/core';
-
+import { SportType, SportCode } from '../../../models/report-condition';
 import { TranslateService } from '@ngx-translate/core';
 import { chart } from 'highcharts';
 import * as _Highcharts from 'highcharts';
@@ -85,9 +85,9 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
       const sportPercentageDataset = [];
       for (let i = 0; i < this.data.length; i++) {
         if (this.data[i] !== 0) {
-          switch (i) {
-            case 0:
-              if (this.selectType !== 1 && this.selectType !== 99) {
+          switch (i + 1) {
+            case SportCode.run:
+              if (this.selectType !== SportCode.run && this.selectType !== SportCode.all) {
                 sportPercentageDataset.push({
                   name: this.translateService.instant('universal_activityData_run'), y: this.data[0], color: '#9e9e9e'
                 });
@@ -97,8 +97,8 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
                 });
               }
               break;
-            case 1:
-              if (this.selectType !== 2 && this.selectType !== 99) {
+            case SportCode.cycle:
+              if (this.selectType !== SportCode.cycle && this.selectType !== SportCode.all) {
                 sportPercentageDataset.push({
                   name: this.translateService.instant('universal_activityData_cycle'), y: this.data[1], color: '#9e9e9e'
                 });
@@ -108,8 +108,8 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
                 });
               }
             break;
-            case 2:
-              if (this.selectType !== 3 && this.selectType !== 99) {
+            case SportCode.weightTrain:
+              if (this.selectType !== SportCode.weightTrain && this.selectType !== SportCode.all) {
                 sportPercentageDataset.push({
                   name: this.translateService.instant('universal_activityData_weightTraining'), y: this.data[2], color: '#9e9e9e'
                 });
@@ -119,8 +119,8 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
                 });
               }
             break;
-            case 3:
-              if (this.selectType !== 4 && this.selectType !== 99) {
+            case SportCode.swim:
+              if (this.selectType !== SportCode.swim && this.selectType !== SportCode.all) {
                 sportPercentageDataset.push({
                   name: this.translateService.instant('universal_activityData_swin'), y: this.data[3], color: '#9e9e9e'
                 });
@@ -130,8 +130,8 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
                 });
               }
             break;
-            case 4:
-              if (this.selectType !== 5 && this.selectType !== 99) {
+            case SportCode.aerobic:
+              if (this.selectType !== SportCode.aerobic && this.selectType !== SportCode.all) {
                 sportPercentageDataset.push({
                   name: this.translateService.instant('universal_activityData_aerobic'), y: this.data[4], color: '#9e9e9e'
                 });
@@ -141,8 +141,8 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
                 });
               }
             break;
-            case 5:
-              if (this.selectType !== 6 && this.selectType !== 99) {
+            case SportCode.row:
+              if (this.selectType !== SportCode.row && this.selectType !== SportCode.all) {
                 sportPercentageDataset.push({
                   name: this.translateService.instant('universal_sportsName_boating'), y: this.data[5], color: '#9e9e9e'
                 });
@@ -152,8 +152,8 @@ export class RingChartComponent implements OnInit, OnChanges, OnDestroy {
                 });
               }
             break;
-            case 6:
-              if (this.selectType !== 7 && this.selectType !== 99) {
+            case SportCode.ball:
+              if (this.selectType !== SportCode.ball && this.selectType !== SportCode.all) {
                 sportPercentageDataset.push({
                   name: this.translateService.instant('universal_activityData_ballSports'), y: this.data[6], color: '#9e9e9e'
                 });

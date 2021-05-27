@@ -52,7 +52,7 @@
           </button>
           <div class="flexRow" style="padding: 0 10px;">
             <span id="play__timing">
-              {{ mapPlay.truthSecond | sportTime: true }}
+              {{ mapPlay.truthSecond | sportTime: [true, false] }}
             </span>
           </div>
         </div>
@@ -144,10 +144,10 @@
               </td>
               <td class="time__col">
                 <ng-container *ngIf="page === 'group'">
-                  {{ _player.bestSeconds | sportTime: false }}
+                  {{ _player.bestSeconds | sportTime: [false, false] }}
                 </ng-container>
                 <ng-container *ngIf="page === 'person'">
-                  {{ _player.totalSecond | sportTime: false }}
+                  {{ _player.totalSecond | sportTime: [false, false] }}
                 </ng-container>
               </td>
             </tr>

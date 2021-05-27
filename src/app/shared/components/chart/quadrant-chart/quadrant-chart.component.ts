@@ -1,5 +1,5 @@
 import { Component, OnInit, OnChanges, OnDestroy, Input, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
-import { SportType } from '../../../models/report-condition';
+import { SportType, SportCode } from '../../../models/report-condition';
 import { Subscription, Subject, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
@@ -279,7 +279,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
    */
   setDefaultOpt() {
     switch (this.sportType) {
-      case 1:
+      case SportCode.run:
         this.defaultOpt = {
           xAxis: {
             type: 'pace',
@@ -300,7 +300,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
         };
 
         break;
-      case 2:
+      case SportCode.cycle:
         this.defaultOpt = {
           xAxis: {
             type: 'speed',
@@ -320,7 +320,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
           assignUser: null
         };
         break;
-      case 4:
+      case SportCode.swim:
         this.defaultOpt = {
           xAxis: {
             type: 'pace',
@@ -341,7 +341,7 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
         };
 
         break;
-      case 6:
+      case SportCode.row:
         this.defaultOpt = {
           xAxis: {
             type: 'pace',
@@ -594,13 +594,13 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
         return 'speed';
       case 'cadence':
         switch(sportType) {
-          case 1:
+          case SportCode.run:
             return 'runCadence';
-          case 2:
+          case SportCode.cycle:
             return 'cycleCadence';
-          case 4:
+          case SportCode.swim:
             return 'swimCadence';
-          case 6:
+          case SportCode.row:
             return 'rowingCadence';
         }
       case 'power':
@@ -740,13 +740,13 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
         return this.getDefaultPace(sportType);
       case 'cadence':
         switch(sportType) {
-          case 1:
+          case SportCode.run:
             return 180;
-          case 2:
+          case SportCode.cycle:
             return 100;
-          case 4:
+          case SportCode.swim:
             return 30;
-          case 6:
+          case SportCode.row:
             return 40;
         }
       case 'power':
@@ -762,11 +762,11 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
    */
   getDefaultPace(type: SportType) {
     switch(type) {
-      case 1:
+      case SportCode.run:
         return 10;
-      case 4:
+      case SportCode.swim:
         return 4.5;
-      case 6:
+      case SportCode.row:
         return 15;
     }
   }
@@ -785,13 +785,13 @@ export class QuadrantChartComponent implements OnInit, OnChanges, OnDestroy {
       if (paceReg.test(editValue)) {
         const totalSecond = (+editValue.split(`'`)[0]) * 60 + (+editValue.split(`'`)[1].split(`"`)[0]);
         switch (this.sportType) {
-          case 1:
+          case SportCode.run:
             finalValue = this.unit === 1 ? +((3600 / totalSecond) * mi).toFixed(2) : +(3600 / totalSecond).toFixed(2);
             break;
-          case 4:
+          case SportCode.swim:
             finalValue = +(3600 / (totalSecond * 10)).toFixed(2);
             break;
-          case 6:
+          case SportCode.row:
             finalValue = +(3600 / (totalSecond * 2)).toFixed(2);
             break;
         }

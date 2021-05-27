@@ -1,23 +1,43 @@
 <section class="flexCol">
-  <ng-container *ngIf="page === 'cloudrun'">
+  <ng-container *ngIf="['cloudrun', 'sportReport'].includes(page)">
     <div class="flexRow" style="align-items: center; justify-content: space-between;">
-      <h6 id="chartTitle">{{ chartType | dataTypeTranslate: [1, unit] | translate }}</h6>
+      <h6 id="chartTitle">
+        <ng-container *ngIf="sportType === undefined">
+          {{ chartType | dataTypeTranslate: [1, unit] | translate }}
+        </ng-container>
+        <ng-container *ngIf="sportType !== undefined">
+          {{ chartType | dataTypeTranslate: [sportType, unit] | translate }}
+        </ng-container>
+      </h6>
       <span id="rowLine"></span>
     </div>
   </ng-container>
-    <main id="mainSeciton">
-      <ng-container *ngIf="page === 'cloudrun'">
+  <main id="mainSeciton">
+    <ng-container *ngIf="['cloudrun', 'sportReport'].includes(page)">
       <div class="flexRow infoBlock" style="justify-content: space-between;">
         <div class="flexCol infoSection">
           <span class="dataNumber">
             <ng-container *ngIf="chartType === 'pace'">
-              {{ data.oneRangeBestPace }}
+              <ng-container *ngIf="data.maxSpeed !== undefined">
+                {{ data.maxSpeed | sportPaceSibs: [sportType, unit, 1] }}
+              </ng-container>
+              <ng-container *ngIf="data.maxSpeed === undefined">
+                {{ data.oneRangeBestPace }}
+              </ng-container>
             </ng-container>
             <ng-container *ngIf="chartType !== 'pace'">
-              {{ data.oneRangeBestPace }}
+              <ng-container *ngIf="data.maxSpeed !== undefined">
+                {{ data.maxSpeed | number: '1.0-1' }}
+              </ng-container>
+              <ng-container *ngIf="data.maxCadence !== undefined">
+                {{ data.maxCadence | number: '1.0-1' }}
+              </ng-container>
+              <ng-container *ngIf="data.maxSwolf !== undefined">
+                {{ data.maxSwolf | number: '1.0-1' }}
+              </ng-container>
             </ng-container>
             <ng-container *ngIf="chartType !== 'pace'">
-              {{ chartType | dataTypeUnit: [1, unit] }}
+              {{ chartType | dataTypeUnit: [sportType, unit] }}
             </ng-container>
           </span>
           <span class="dataDescription">
@@ -27,24 +47,37 @@
             <ng-container *ngIf="chartType !== 'pace'">
               {{ 'universal_adjective_maxHight' | translate }}
             </ng-container>
-            {{ chartType | dataTypeTranslate: [1, unit] | translate }}
+            {{ chartType | dataTypeTranslate: [sportType, unit] | translate }}
           </span>
         </div>
         <div class="flexCol infoSection">
           <span class="dataNumber">
             <ng-container *ngIf="chartType === 'pace'">
-              {{ data.avgPace }}
+              <ng-container *ngIf="data.avgSpeed !== undefined">
+                {{ data.avgSpeed | sportPaceSibs: [sportType, unit, 1] }}
+              </ng-container>
+              <ng-container *ngIf="data.avgSpeed === undefined">
+                {{ data.avgPace }}
+              </ng-container>
             </ng-container>
             <ng-container *ngIf="chartType !== 'pace'">
-              {{ data.avgPace }}
+              <ng-container *ngIf="data.avgSpeed !== undefined">
+                {{ data.avgSpeed | number: '1.0-1' }}
+              </ng-container>
+              <ng-container *ngIf="data.avgCadence !== undefined">
+                {{ data.avgCadence | number: '1.0-1' }}
+              </ng-container>
+              <ng-container *ngIf="data.avgSwolf !== undefined">
+                {{ data.avgSwolf | number: '1.0-1' }}
+              </ng-container>
             </ng-container>
             <ng-container *ngIf="chartType !== 'pace'">
-              {{ chartType | dataTypeUnit: [1, unit] }}
+              {{ chartType | dataTypeUnit: [sportType, unit] }}
             </ng-container>
           </span>
           <span class="dataDescription">
             {{ 'universal_adjective_avg' | translate }}
-            {{ chartType | dataTypeTranslate: [1, unit] | translate }}
+            {{ chartType | dataTypeTranslate: [sportType, unit] | translate }}
           </span>
         </div>
       </div>

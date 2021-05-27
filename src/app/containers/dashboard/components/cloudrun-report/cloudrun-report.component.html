@@ -64,7 +64,7 @@
         </div>
         <div class="sepLine"></div>
         <div class="summaryDataArea">
-          <span class="summaryData">{{ infoData.totalSeconds || 0 | sportTime: false }}</span>
+          <span class="summaryData">{{ infoData.totalSeconds || 0 | sportTime: [false, false] }}</span>
           <p class="summaryDescription">
             {{ 'universal_activityData_totalTime' | translate }}
           </p>
@@ -72,7 +72,7 @@
         <div class="sepLine"></div>
         <div class="summaryDataArea">
           <span class="summaryData">
-            {{ (infoData.totalSeconds / infoData.stroke) || 0 | sportTime: false }}
+            {{ (infoData.totalSeconds / infoData.stroke) || 0 | sportTime: [false, false] }}
           </span>
           <p class="summaryDescription">
             {{ 'universal_adjective_avg' | translate }} {{ 'universal_activityData_timing' | translate }}

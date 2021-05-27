@@ -10,10 +10,10 @@ export class ThousandConversionPipe implements PipeTransform {
         unit: string;
     // 超過1000以k表示
     if (value >= 1000) {
-      finalValue = +(value / 1000).toFixed(2);
+      finalValue = parseFloat((value / 1000).toFixed(2));
       unit = 'k';
     } else {
-      finalValue = value;
+      finalValue = parseFloat(value.toFixed(1));
       unit = '';
     }
 
