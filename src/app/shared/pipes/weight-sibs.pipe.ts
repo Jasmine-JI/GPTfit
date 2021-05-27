@@ -15,14 +15,14 @@ export class WeightSibsPipe implements PipeTransform {
     let finalValue: number,
         unit: string;
     if (unitType === 0) {
-      finalValue = value;
+      finalValue = value || 0;
       unit = 'kg';
     } else {
-      finalValue = +(value / lb);
+      finalValue = +(value / lb) || 0;
       unit = 'lb';
     }
     
-    const fixedValue = finalValue.toFixed(2);
+    const fixedValue = parseFloat(finalValue.toFixed(1));
     return !args[1] || args[1] === 0 ? `${fixedValue} ${unit}` : `${fixedValue}`;
   }
 

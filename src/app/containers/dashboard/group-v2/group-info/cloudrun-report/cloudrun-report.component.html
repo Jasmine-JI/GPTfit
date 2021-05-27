@@ -69,7 +69,7 @@
         <div class="sepLine"></div>
         <div class="summaryDataArea">
           <span class="summaryData">
-            {{ (groupDataObj[currentGroup.id].record.totalSeconds / groupDataObj[currentGroup.id].record.completeNum) || 0 | sportTime: false }}
+            {{ (groupDataObj[currentGroup.id].record.totalSeconds / groupDataObj[currentGroup.id].record.completeNum) || 0 | sportTime: [false, false] }}
           </span>
           <p class="summaryDescription">
             {{ 'universal_adjective_avg' | translate }} {{ 'universal_activityData_timing' | translate }}
@@ -213,7 +213,7 @@
                 style="align-items: flex-start; justify-content: center;"
                 [style.color]="groupMenu.focusId === row?.groupId ? '#157fcc': ''"
               >
-                <span style="text-align: start; font-size: 10px; color: #c5c5c5;" *ngIf="row.parents">{{ row?.parents }}</span>
+                <span class="parentsName" *ngIf="row.parents">{{ row?.parents }}</span>
                 <span style="text-align: center;">{{ row?.name }}</span>
               </mat-cell>
             </ng-container>
@@ -272,7 +272,7 @@
                 <div class="setIn">
                   <span class="table__data">
                     <ng-container *ngIf="row?.completeNum !== 0; else noTimeData">
-                      {{ row?.avgSecond || 0 | sportTime: false }}
+                      {{ row?.avgSecond || 0 | sportTime: [false, false] }}
                     </ng-container>
                   </span>
                 </div>
@@ -306,7 +306,7 @@
                 <div class="setIn">
                   <span class="table__data">
                     <ng-container *ngIf="row?.completeNum !== 0; else noTimeData">
-                      {{ row?.totalSeconds | sportTime: false }}
+                      {{ row?.totalSeconds | sportTime: [false, false] }}
                     </ng-container>
                   </span>
                 </div>
@@ -521,7 +521,7 @@
         *ngIf="groupMenu.show"
       >
         <div class="flexCol" style="padding: 15px 15px 0px 15px;">
-          <span style="color: #656565; font-weight: bold;">{{ 'universal_group_groupList' | translate }}</span>
+          <span style="color: #656565; font-weight: bold;">{{ 'universal_group_member' | translate }}</span>
           <div class="tableListSection">
             <div>
               <span
@@ -696,7 +696,7 @@
                 <div class="setIn">
                   <span class="table__data" *ngIf="row?.privacy; else privacyLock">
                     <ng-container *ngIf="row?.runTimes !== 0; else noTimeData">
-                      {{ row?.bestSeconds | sportTime: false }}
+                      {{ row?.bestSeconds | sportTime: [false, false] }}
                     </ng-container>
                   </span>
                 </div>
@@ -730,7 +730,7 @@
                 <div class="setIn">
                   <span class="table__data" *ngIf="row?.privacy; else privacyLock;">
                     <ng-container *ngIf="row?.runTimes !== 0; else noTimeData">
-                      {{ row?.avgSecond || 0 | sportTime: false }}
+                      {{ row?.avgSecond || 0 | sportTime: [false, false] }}
                     </ng-container>
                   </span>
                 </div>
@@ -764,7 +764,7 @@
                 <div class="setIn">
                   <span class="table__data" *ngIf="row?.privacy; else privacyLock;">
                     <ng-container *ngIf="row?.runTimes !== 0; else noTimeData">
-                      {{ row?.totalSeconds | sportTime: false }}
+                      {{ row?.totalSeconds | sportTime: [false, false] }}
                     </ng-container>
                   </span>
                 </div>

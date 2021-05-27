@@ -76,12 +76,12 @@
           </p>
         </div>
         <div class="summaryDataArea">
-          <span class="summaryData">{{ info.totalSecond || 0 | sportTime: false }}</span>
+          <span class="summaryData">{{ info.totalSecond || 0 | sportTime: [false, false] }}</span>
           <p class="summaryDescription">{{ 'universal_activityData_totalTime' | translate }}</p>
         </div>
         <div class="summaryDataArea">
           <span class="summaryData">
-            {{ (info.totalSecond / info.activePeopleNum) || 0 | sportTime: false }}
+            {{ (info.totalSecond / info.activePeopleNum) || 0 | sportTime: [false, false] }}
           </span>
           <p class="summaryDescription">
             {{ 'universal_activityData_perCapita' | translate }} {{ 'universal_activityData_totalTime' | translate }}
@@ -118,7 +118,7 @@
         <div class="summaryDataArea" *ngIf="reportConditionOpt.sportType === sportCode.all">
           <div>
             <span class="summaryData">
-              {{ (info.totalBenefitSecond / info.activePeopleNum) || 0 | sportTime: false }}
+              {{ (info.totalBenefitSecond / info.activePeopleNum) || 0 | sportTime: [false, false] }}
             </span>
           </div>
           <p class="summaryDescription">
@@ -141,10 +141,10 @@
         >
           <div>
             <span class="summaryData">
-              {{ (info.totalDistanceMeters / info.activePeopleNum) || 0 | distanceSibs: [unit, 1] }}
+              {{ (info.totalDistanceMeters / info.activePeopleNum) || 0 | distanceSibs: [userInfo.unit, 1] }}
             </span>
             <span calss="infoDataUnit">
-              <ng-container *ngIf="unit === 0">
+              <ng-container *ngIf="userInfo.unit === unitEnum.metric">
                 {{ ((info.totalDistanceMeters / info.activePeopleNum) || 0) >= 1000 ? 'km' : 'm' }}
               </ng-container>
               <ng-container *ngIf="init === 1">
@@ -159,10 +159,10 @@
         <div class="summaryDataArea" *ngIf="reportConditionOpt.sportType === sportCode.run">
           <div>
             <span class="summaryData">
-              {{ (info.elevGain / info.activePeopleNum) || 0 | distanceSibs: [unit, 1] }}
+              {{ (info.elevGain / info.activePeopleNum) || 0 | distanceSibs: [userInfo.unit, 1] }}
             </span>
             <span calss="infoDataUnit">
-              <ng-container *ngIf="unit === 0">
+              <ng-container *ngIf="userInfo.unit === unitEnum.metric">
                 {{ ((info.elevGain / info.activePeopleNum) || 0) >= 1000 ? 'km' : 'm' }}
               </ng-container>
               <ng-container *ngIf="init === 1">
@@ -177,10 +177,10 @@
         <div class="summaryDataArea" *ngIf="reportConditionOpt.sportType === sportCode.weightTrain">
           <div>
             <span class="summaryData">
-              {{ (info.totalWeightKg / info.activePeopleNum) || 0 | weightSibs: [unit, 1] }}
+              {{ (info.totalWeightKg / info.activePeopleNum) || 0 | weightSibs: [userInfo.unit, 1] }}
             </span>
             <span calss="infoDataUnit">
-              {{ unit === 0 ? 'kg' : 'lb' }}
+              {{ userInfo.unit === unitEnum.metric ? 'kg' : 'lb' }}
             </span>
           </div>
           <p class="summaryDescription">
@@ -189,11 +189,11 @@
         </div>
         <div class="summaryDataArea" *ngIf="reportConditionOpt.sportType === sportCode.run">
           <span class="summaryData">
-            {{ (info.avgSpeed / info.activePeopleNum) || 0 | sportPaceSibs: [sportCode.run, unit, 1] }}
+            {{ (info.avgSpeed / info.activePeopleNum) || 0 | sportPaceSibs: [sportCode.run, userInfo.unit, 1] }}
           </span>
           <p class="summaryDescription">
-            <ng-container *ngIf="unit === 0">{{ 'universal_activityData_avgKilometerPace' | translate }}</ng-container>
-            <ng-container *ngIf="unit === 1">{{ 'universal_activityData_avgMilePace' | translate }}</ng-container>
+            <ng-container *ngIf="userInfo.unit === unitEnum.metric">{{ 'universal_activityData_avgKilometerPace' | translate }}</ng-container>
+            <ng-container *ngIf="userInfo.unit === unitEnum.imperial">{{ 'universal_activityData_avgMilePace' | translate }}</ng-container>
           </p>
         </div>
         <div
@@ -202,10 +202,10 @@
         >
           <div>
             <span class="summaryData">
-              {{ (info.avgSpeed / info.activePeopleNum) || 0 | speedSibs: [unit, 1] }}
+              {{ (info.avgSpeed / info.activePeopleNum) || 0 | speedSibs: [userInfo.unit, 1] }}
             </span>
             <span calss="infoDataUnit">
-              {{ unit === 0 ? 'km/hr' : 'mi/hr' }}
+              {{ userInfo.unit === unitEnum.metric ? 'km/h' : 'mi/h' }}
             </span>
           </div>
           <p class="summaryDescription">
@@ -214,7 +214,7 @@
         </div>
         <div class="summaryDataArea" *ngIf="reportConditionOpt.sportType === sportCode.swim">
           <span class="summaryData">
-            {{ (info.avgSpeed / info.activePeopleNum) || 0 | sportPaceSibs: [sportCode.swim, unit, 1] }}
+            {{ (info.avgSpeed / info.activePeopleNum) || 0 | sportPaceSibs: [sportCode.swim, userInfo.unit, 1] }}
           </span>
           <p class="summaryDescription">
             {{ 'universal_activityData_perCapita' | translate }} {{ 'universal_activityData_100mPace' | translate }}
@@ -222,7 +222,7 @@
         </div>
         <div class="summaryDataArea" *ngIf="reportConditionOpt.sportType === sportCode.row">
           <span class="summaryData">
-            {{ (info.avgSpeed / info.activePeopleNum) || 0 | sportPaceSibs: [sportCode.row, unit, 1] }}
+            {{ (info.avgSpeed / info.activePeopleNum) || 0 | sportPaceSibs: [sportCode.row, userInfo.unit, 1] }}
           </span>
           <p class="summaryDescription">
             {{ 'universal_activityData_perCapita' | translate }} {{ 'universal_activityData_500mPace' | translate }} 
@@ -276,6 +276,19 @@
           <div class="summaryDataArea">
             <div>
               <span class="summaryData">
+                {{ (info.totalPlaneAcceleration / info.activePeopleNum) || 0 | number: '1.0-0' }}
+              </span>
+              <span calss="infoDataUnit">g</span>
+            </div>
+            <p class="summaryDescription">
+              {{ 'universal_activityData_perCapita' | translate }}
+              {{ 'universal_adjective_accumulation' | translate }}
+              {{ 'universal_activityData_planarAcceleration' | translate }} 
+            </p>
+          </div>
+          <div class="summaryDataArea" *ngIf="userInfo.accessRight <= 20">
+            <div>
+              <span class="summaryData">
                 {{ (info.totalPlusGforceX / info.activePeopleNum) || 0 | number: '1.0-1' }}
               </span>
               <span calss="infoDataUnit">g</span>
@@ -284,7 +297,7 @@
               {{ 'universal_activityData_perCapita' | translate }} {{ 'universal_activityData_totalRight' | translate }} 
             </p>
           </div>
-          <div class="summaryDataArea">
+          <div class="summaryDataArea" *ngIf="userInfo.accessRight <= 20">
             <div>
               <span class="summaryData">
                 {{ (info.totalMinusGforceX / info.activePeopleNum) || 0 | number: '1.0-1' }}
@@ -295,7 +308,7 @@
               {{ 'universal_activityData_perCapita' | translate }} {{ 'universal_activityData_totalLeft' | translate }} 
             </p>
           </div>
-          <div class="summaryDataArea">
+          <div class="summaryDataArea" *ngIf="userInfo.accessRight <= 20">
             <div>
               <span class="summaryData">
                 {{ (info.totalPlusGforceY / info.activePeopleNum) || 0 | number: '1.0-1' }}
@@ -306,7 +319,7 @@
               {{ 'universal_activityData_perCapita' | translate }} {{ 'universal_activityData_totalAcceleration' | translate }} 
             </p>
           </div>
-          <div class="summaryDataArea">
+          <div class="summaryDataArea" *ngIf="userInfo.accessRight <= 20">
             <div>
               <span class="summaryData">
                 {{ (info.totalMinusGforceY / info.activePeopleNum) || 0 | number: '1.0-1' }}
@@ -347,7 +360,7 @@
         <h6 class="cardSubtitle">{{'universal_activityData_activityAnalysis' | translate}}</h6>
       </div>
       <p class="areaDescription">{{'universal_activityData_activityAnalysisReportDescription' | translate}}</p>
-      <div class="flexRow media-769-col">
+      <div class="flexRow media-768-col">
         <div class="flexCol ringChart">
           <div class="flexRow">
             <div class="flexCol ringChartSection">
@@ -541,7 +554,7 @@
         <div class="cardTitle">
           <h6 class="cardSubtitle">{{'universal_activityData_hrZone' | translate}}</h6>
         </div>
-        <div class="flexRow media-769-col">
+        <div class="flexRow media-768-col">
           <div class="flexCol zoneChart">
             <p class="areaDescription">
               {{ 'universal_activityData_hrStatisticsDuringThePeriod' | translate: {'number': info.totalActivities } }}
@@ -594,7 +607,7 @@
           <div class="cardTitle">
             <h6 class="cardSubtitle">{{ 'universal_activityData_ftpZone' | translate }}</h6>
           </div>
-          <div class="flexRow media-769-col">
+          <div class="flexRow media-768-col">
             <div class="zoneChart" style="display: flex; align-items: center;">
               <app-threshold-chart
                 [data]="chart.thresholdZone"
@@ -672,7 +685,7 @@
             [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
             [chartName]="'Distance'"
             [page]="'sportReport'"
-            [unit]="unit"
+            [unit]="userInfo.unit"
             *ngIf="
               uiFlag.progress === 100
               && [
@@ -691,7 +704,7 @@
             [chartName]="'Speed'"
             [sportType]="reportConditionOpt.sportType"
             [page]="'sportReport'"
-            [unit]="unit"
+            [unit]="userInfo.unit"
             *ngIf="uiFlag.progress === 100 && [sportCode.cycle, sportCode.ball].includes(reportConditionOpt.sportType)"
           >
           </app-discolor-column-chart>
@@ -701,7 +714,7 @@
             [chartName]="'Pace'"
             [sportType]="reportConditionOpt.sportType"
             [page]="'sportReport'"
-            [unit]="unit"
+            [unit]="userInfo.unit"
             *ngIf="uiFlag.progress === 100 && [sportCode.run, sportCode.swim, sportCode.row].includes(reportConditionOpt.sportType)"
           >
           </app-discolor-column-chart>
@@ -719,7 +732,7 @@
             [chartName]="'Cadence'"
             [sportType]="reportConditionOpt.sportType"
             [page]="'sportReport'"
-            [unit]="unit"
+            [unit]="userInfo.unit"
             *ngIf="
               uiFlag.progress === 100
               && [sportCode.run, sportCode.cycle, sportCode.swim, sportCode.row].includes(reportConditionOpt.sportType)
@@ -732,7 +745,7 @@
             [chartName]="'Swolf'"
             [sportType]="reportConditionOpt.sportType"
             [page]="'sportReport'"
-            [unit]="unit"
+            [unit]="userInfo.unit"
             *ngIf="
               uiFlag.progress === 100
               && reportConditionOpt.sportType === sportCode.swim
@@ -740,24 +753,34 @@
             "
           >
           </app-discolor-column-chart>
-          <app-relative-column-chart
-            [data]="chart.totalXAxisMoveTrend"
+          <app-fillet-column-chart
+            [data]="chart.planeAcceleration"
             [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
-            [chartName]="'TotalXGForce'"
-            [sportType]="reportConditionOpt.sportType"
+            [chartName]="'PlaneGForce'"
             [page]="'sportReport'"
             *ngIf="uiFlag.progress === 100 && [sportCode.ball].includes(reportConditionOpt.sportType)"
           >
-          </app-relative-column-chart>
-          <app-relative-column-chart
-            [data]="chart.totalYAxisMoveTrend"
-            [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
-            [chartName]="'TotalYGForce'"
-            [sportType]="reportConditionOpt.sportType"
-            [page]="'sportReport'"
-            *ngIf="uiFlag.progress === 100 && [sportCode.ball].includes(reportConditionOpt.sportType)"
-          >
-          </app-relative-column-chart>
+          </app-fillet-column-chart>
+          <ng-container *ngIf="userInfo.accessRight[0] <= 20">
+            <app-relative-column-chart
+              [data]="chart.totalXAxisMoveTrend"
+              [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
+              [chartName]="'TotalXGForce'"
+              [sportType]="reportConditionOpt.sportType"
+              [page]="'sportReport'"
+              *ngIf="uiFlag.progress === 100 && [sportCode.ball].includes(reportConditionOpt.sportType)"
+            >
+            </app-relative-column-chart>
+            <app-relative-column-chart
+              [data]="chart.totalYAxisMoveTrend"
+              [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
+              [chartName]="'TotalYGForce'"
+              [sportType]="reportConditionOpt.sportType"
+              [page]="'sportReport'"
+              *ngIf="uiFlag.progress === 100 && [sportCode.ball].includes(reportConditionOpt.sportType)"
+            >
+            </app-relative-column-chart>
+          </ng-container>
           <app-relative-column-chart
             [data]="chart.totalZAxisMoveTrend"
             [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
@@ -767,22 +790,32 @@
             *ngIf="uiFlag.progress === 100 && [sportCode.ball].includes(reportConditionOpt.sportType)"
           >
           </app-relative-column-chart>
-          <app-compare-line-chart
-            [data]="chart.extremeXGForce"
+          <app-fillet-column-chart
+            [data]="chart.extremePlaneGForce"
             [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
-            [chartName]="'ExtremeXGForce'"
+            [chartName]="'PlaneMaxGForce'"
             [page]="'sportReport'"
             *ngIf="uiFlag.progress === 100 && [sportCode.ball].includes(reportConditionOpt.sportType)"
           >
-          </app-compare-line-chart>
-          <app-compare-line-chart
-            [data]="chart.extremeYGForce"
-            [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
-            [chartName]="'ExtremeYGForce'"
-            [page]="'sportReport'"
-            *ngIf="uiFlag.progress === 100 && [sportCode.ball].includes(reportConditionOpt.sportType)"
-          >
-          </app-compare-line-chart>
+          </app-fillet-column-chart>
+          <ng-container *ngIf="userInfo.accessRight[0] <= 20">
+            <app-compare-line-chart
+              [data]="chart.extremeXGForce"
+              [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
+              [chartName]="'ExtremeXGForce'"
+              [page]="'sportReport'"
+              *ngIf="uiFlag.progress === 100 && [sportCode.ball].includes(reportConditionOpt.sportType)"
+            >
+            </app-compare-line-chart>
+            <app-compare-line-chart
+              [data]="chart.extremeYGForce"
+              [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
+              [chartName]="'ExtremeYGForce'"
+              [page]="'sportReport'"
+              *ngIf="uiFlag.progress === 100 && [sportCode.ball].includes(reportConditionOpt.sportType)"
+            >
+            </app-compare-line-chart>
+          </ng-container>
           <app-compare-line-chart
             [data]="chart.extremeZGForce"
             [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
@@ -794,5 +827,2386 @@
         </div>
       </div>
     </section>
+    <section class="displaySection" *ngIf="uiFlag.progress === 100">
+      <div class="flexCol">
+        <div class="cardTitle flexRow haveOptBtn">
+          <h6 class="cardSubtitle">{{'universal_group_groupAnalysis' | translate}}</h6>
+          <button>
+            <i class="icon-svg_web-icon_p1_001-setting" (click)="handleShowOpt($event, 'group')"></i>
+          </button>
+          <div
+            class="flexCol tableMenu"
+            style="position: absolute; right: 0px; top: 40px; padding: 10px; max-height: 300px; overflow-y: auto;"
+            (click)="$event.stopPropagation();"
+            (scroll)="$event.stopPropagation();"
+            *ngIf="groupTable.showOpt"
+          >
+            <div>
+              <div class="flexRow">
+                <span class="tableMenuTitle">{{'universal_activityData_fieldDisplay' | translate}}</span>
+                <span
+                  style="font-size: 8px; margin-left: 5px;"
+                  [style.color]="groupTableOpt.length >= tableColumn.max ? 'red' : '#ababab'"
+                >
+                  ({{ 'universal_activityData_most' | translate: {'number': tableColumn.max} }})
+                </span>
+              </div>
+              <div class="tableCheckbox" *ngFor="let _opt of groupTable.showDataDef;">
+                <mat-checkbox
+                  color="primary"
+                  value="{{ _opt }}"
+                  [checked]="groupTableOpt.includes(_opt)"
+                  (change)="changeTableOpt($event, 'group')"
+                  [style.pointer-events]="
+                    _opt === 'name'
+                    || (groupTableOpt.length >= tableColumn.max && !groupTableOpt.includes(_opt))
+                    || (groupTableOpt.length <= tableColumn.min && groupTableOpt.includes(_opt))
+                    ? 'none' : ''
+                  "
+                  [style.color]="
+                    _opt === 'name'
+                    || (groupTableOpt.length >= tableColumn.max && !groupTableOpt.includes(_opt))
+                    || (groupTableOpt.length <= tableColumn.min && groupTableOpt.includes(_opt))
+                    ? '#ababab' : ''
+                  "
+                >
+                  <span style="font-size: 14px">
+                    <ng-container *ngIf="_opt !== 'avgCadence'">
+                      {{ columnTranslate[_opt] }}
+                    </ng-container>
+                    <ng-container *ngIf="_opt === 'avgCadence'">
+                      {{ columnTranslate[_opt][reportConditionOpt.sportType] }}
+                    </ng-container>
+                  </span>
+                </mat-checkbox>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="analysisTable">
+          <div style="margin-top: 10px;">
+            <mat-table [dataSource]="groupTable.list.data" matSort #groupSortTable="matSort" (matSortChange)="arrangeData('group')">
+              <ng-container matColumnDef="name">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="tableArrangement"
+                  style="justify-content: flex-start;"
+                  id="groupName"
+                >
+                  <span
+                    class="tableTitleWord"
+                    style="text-align: start;"
+                  >
+                    {{ 'universal_activityData_name' | translate }}
+                  </span>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent flexCol"
+                  style="align-items: flex-start; justify-content: center;"
+                  [style.color]="analysisMenu.focusId == row ? '#157fcc': ''"
+                >
+                  <span class="parentsName" *ngIf="groupAnalysis[row].parentsName">
+                    {{ groupAnalysis[row].parentsName }}
+                  </span>
+                  <span style="text-align: center;">{{ groupAnalysis[row].name }}</span>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="memberNum">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="groupTableOpt.includes('memberNum') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">
+                      {{ 'universal_vocabulary_activity' | translate }} {{ 'universal_activityData_people' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">person</span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="groupTableOpt.includes('memberNum') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="groupTable.sorted ? groupAnalysis[row].ratio : '0px'"
+                    *ngIf="groupTable.sortType === 'memberNum'"
+                  ></div>
+                  <span class="setIn tableData">
+                    {{ groupAnalysis[row].activityPeople || 0 }}/{{ groupAnalysis[row].memberList.length }}
+                  </span>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="stroke">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="groupTableOpt.includes('stroke') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">{{ 'universal_activityData_numberOfActivity' | translate }}</span>
+                    <span class="chartTitleUnit">times/per</span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="groupTableOpt.includes('stroke') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="groupTable.sorted ? groupAnalysis[row].ratio : '0px'"
+                    *ngIf="groupTable.sortType === 'stroke'"
+                  ></div>
+                  <span class="setIn tableData">
+                    {{ (groupAnalysis[row].totalActivities / groupAnalysis[row].activityPeople) || 0 | number: '1.0-1' }}
+                    <i
+                      class="icon-svg_web-icon_p3_017-up upArrow"
+                      *ngIf="groupAnalysis[row].totalActivitiesTrend === 'up'"
+                    ></i>
+                    <i
+                      class="icon-svg_web-icon_p3_018-down downArrow"
+                      *ngIf="groupAnalysis[row].totalActivitiesTrend === 'down'"
+                    ></i>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(groupAnalysis[row].totalActivitiesTrend)"
+                    ></div>
+                  </span>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="totalTime">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="groupTableOpt.includes('totalTime') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="flexCenter tableTitleWord">
+                      {{ 'universal_activityData_limit_totalTime' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">time/per</span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="groupTableOpt.includes('totalTime') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="groupTable.sorted ? groupAnalysis[row].ratio : '0px'"
+                    *ngIf="groupTable.sortType === 'totalTime'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData">
+                      <ng-container *ngIf="groupAnalysis[row].totalActivities; else noTimeData">
+                        {{ (groupAnalysis[row].totalSecond / groupAnalysis[row].activityPeople) || 0 | sportTime: [true, true] }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="groupAnalysis[row].totalSecondTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="groupAnalysis[row].totalSecondTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(groupAnalysis[row].totalSecondTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="benefitTime">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="groupTableOpt.includes('benefitTime') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="flexCenter tableTitleWord">
+                      {{ 'universal_activityData_benefitime' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">time/per</span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="groupTableOpt.includes('benefitTime') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="groupTable.sorted ? groupAnalysis[row].ratio : '0px'"
+                    *ngIf="groupTable.sortType === 'benefitTime'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData">
+                      <ng-container *ngIf="groupAnalysis[row].totalActivities; else noTimeData">
+                        {{ 
+                          ((
+                            groupAnalysis[row].totalHrZone2Second
+                            + groupAnalysis[row].totalHrZone3Second
+                            + groupAnalysis[row].totalHrZone4Second
+                            + groupAnalysis[row].totalHrZone5Second
+                          ) / groupAnalysis[row].activityPeople) || 0 | sportTime: [true, true]
+                        }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="groupAnalysis[row].benefitTimeTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="groupAnalysis[row].benefitTimeTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(groupAnalysis[row].benefitTimeTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="pai">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="groupTableOpt.includes('pai') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="flexCenter tableTitleWord">
+                      {{ 'universal_activityData_pai' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">pai/per</span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="groupTableOpt.includes('pai') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="groupTable.sorted ? groupAnalysis[row].ratio : '0px'"
+                    *ngIf="groupTable.sortType === 'pai'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData">
+                      <ng-container *ngIf="groupAnalysis[row].totalActivities; else noData">
+                        {{ 
+                          (([
+                            groupAnalysis[row].totalHrZone0Second,
+                            groupAnalysis[row].totalHrZone1Second,
+                            groupAnalysis[row].totalHrZone2Second,
+                            groupAnalysis[row].totalHrZone3Second,
+                            groupAnalysis[row].totalHrZone4Second,
+                            groupAnalysis[row].totalHrZone5Second
+                          ] | pai: reportTime.diffWeek) / groupAnalysis[row].activityPeople) || 0 | number: '1.0-1'
+                        }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="groupAnalysis[row].paiTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="groupAnalysis[row].paiTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(groupAnalysis[row].paiTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="calories">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="groupTableOpt.includes('calories') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="flexCenter tableTitleWord">
+                      {{ 'universal_activityData_totalCalories' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">cal/per</span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="groupTableOpt.includes('calories') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="groupTable.sorted ? groupAnalysis[row].ratio : '0px'"
+                    *ngIf="groupTable.sortType === 'calories'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData">
+                      <ng-container *ngIf="groupAnalysis[row].totalActivities; else noTimeData">
+                        {{ (groupAnalysis[row].calories / groupAnalysis[row].activityPeople) || 0 | number: '1.0-0' }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="groupAnalysis[row].caloriesTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="groupAnalysis[row].caloriesTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(groupAnalysis[row].caloriesTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="totalDistance">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="groupTableOpt.includes('totalDistance') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">
+                      {{ 'universal_activityData_limit_totalDistance' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">
+                      {{ userInfo.unit === unitEnum.metric ? 'km' : 'mi' }}/per
+                    </span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="groupTableOpt.includes('totalDistance') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="groupTable.sorted ? groupAnalysis[row].ratio : '0px'"
+                    *ngIf="groupTable.sortType === 'totalDistance'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData">
+                      <ng-container *ngIf="groupAnalysis[row].totalActivities; else noData">
+                        <ng-container *ngIf="userInfo.unit === unitEnum.metric">
+                          {{
+                            ((groupAnalysis[row].totalDistanceMeters / 1000) / groupAnalysis[row].activityPeople) || 0
+                            | number: '1.0-1'
+                          }}
+                        </ng-container>
+                        <ng-container *ngIf="userInfo.unit === unitEnum.imperial">
+                          {{
+                            (((groupAnalysis[row].totalDistanceMeters / 1000) / mi) / groupAnalysis[row].activityPeople) || 0
+                            | number: '1.0-1'
+                          }}
+                        </ng-container>
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="groupAnalysis[row].totalDistanceTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="groupAnalysis[row].totalDistanceTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(groupAnalysis[row].totalDistanceTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="avgPace">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="groupTableOpt.includes('avgPace') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">
+                      {{ 'universal_activityData_limit_avgPace' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">
+                      <ng-container *ngIf="reportConditionOpt.sportType === sportCode.run">
+                        {{ userInfo.unit === unitEnum.metric ? '(min/km)' : '(min/mi)' }}/per
+                      </ng-container>
+                      <ng-container *ngIf="reportConditionOpt.sportType === sportCode.swim">
+                        (min/100m)/per
+                      </ng-container>
+                      <ng-container *ngIf="reportConditionOpt.sportType === sportCode.row">
+                        (min/500m)/per
+                      </ng-container>
+                    </span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="groupTableOpt.includes('avgPace') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="groupTable.sorted ? groupAnalysis[row].ratio : '0px'"
+                    *ngIf="groupTable.sortType === 'avgPace'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData">
+                      <ng-container *ngIf="groupAnalysis[row].totalActivities; else noTimeData">
+                        {{
+                          ((groupAnalysis[row].avgSpeed / groupAnalysis[row].activityPeople) / groupAnalysis[row].totalActivities) || 0
+                            | sportPaceSibs: [reportConditionOpt.sportType, userInfo.unit, 1]
+                        }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="groupAnalysis[row].avgPaceTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="groupAnalysis[row].avgPaceTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(groupAnalysis[row].avgPaceTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="avgSpeed">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="groupTableOpt.includes('avgSpeed') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">
+                      {{ 'universal_activityData_limit_avgSpeed' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">
+                      {{ userInfo.unit === unitEnum.metric ? '(km/h)' : '(mi/h)' }}/per
+                    </span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="groupTableOpt.includes('avgSpeed') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="groupTable.sorted ? groupAnalysis[row].ratio : '0px'"
+                    *ngIf="groupTable.sortType === 'avgSpeed'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData">
+                      <ng-container *ngIf="groupAnalysis[row].totalActivities; else noTimeData">
+                        {{
+                          ((groupAnalysis[row].avgSpeed / groupAnalysis[row].activityPeople) / groupAnalysis[row].totalActivities)
+                          | speedSibs: [userInfo.unit, 1]
+                        }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="groupAnalysis[row].avgSpeedTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="groupAnalysis[row].avgSpeedrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(groupAnalysis[row].avgSpeedrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="avgCadence">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="groupTableOpt.includes('avgCadence') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">
+                      <ng-container *ngIf="reportConditionOpt.sportType === sportCode.run">
+                        {{ 'universal_activityData_limit_avgStepCadence' | translate }}
+                      </ng-container>
+                      <ng-container *ngIf="reportConditionOpt.sportType === sportCode.cycle">
+                        {{ 'universal_activityData_limit_avgCyclingCadence' | translate }}
+                      </ng-container>
+                      <ng-container *ngIf="reportConditionOpt.sportType === sportCode.swim">
+                        {{ 'universal_activityData_limit_avgSwimReps' | translate }}
+                      </ng-container>
+                      <ng-container *ngIf="reportConditionOpt.sportType === sportCode.row">
+                        {{ 'universal_activityData_limit_avgRowCadence' | translate }}
+                      </ng-container>
+                    </span>
+                    <span class="chartTitleUnit">
+                      <ng-container *ngIf="[sportCode.run, sportCode.swim].includes(reportConditionOpt.sportType)">
+                        spm/per
+                      </ng-container>
+                      <ng-container *ngIf="[sportCode.cycle, sportCode.row].includes(reportConditionOpt.sportType)">
+                        rpm/per
+                      </ng-container>
+                    </span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="groupTableOpt.includes('avgCadence') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="groupTable.sorted ? groupAnalysis[row].ratio : '0px'"
+                    *ngIf="groupTable.sortType === 'avgCadence'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData">
+                      <ng-container *ngIf="groupAnalysis[row].totalActivities; else noData">
+                        <ng-container *ngIf="reportConditionOpt.sportType === sportCode.run">
+                          {{
+                            ((groupAnalysis[row].runAvgCadence / groupAnalysis[row].activityPeople) / groupAnalysis[row].totalActivities)
+                            | number: '1.0-1'
+                          }}
+                        </ng-container>
+                        <ng-container *ngIf="reportConditionOpt.sportType === sportCode.cycle">
+                          {{
+                            ((groupAnalysis[row].cycleAvgCadence / groupAnalysis[row].activityPeople) / groupAnalysis[row].totalActivities)
+                            | number: '1.0-1'
+                          }}
+                        </ng-container>
+                        <ng-container *ngIf="reportConditionOpt.sportType === sportCode.swim">
+                          {{
+                            ((groupAnalysis[row].swimAvgCadence / groupAnalysis[row].activityPeople) / groupAnalysis[row].totalActivities)
+                            | number: '1.0-1'
+                          }}
+                        </ng-container>
+                        <ng-container *ngIf="reportConditionOpt.sportType === sportCode.row">
+                          {{
+                            ((groupAnalysis[row].rowingAvgCadence / groupAnalysis[row].activityPeople) / groupAnalysis[row].totalActivities)
+                            | number: '1.0-1'
+                          }}
+                        </ng-container>
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="groupAnalysis[row].avgCadenceTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="groupAnalysis[row].avgCadenceTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(groupAnalysis[row].avgCadenceTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="avgPower">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="groupTableOpt.includes('avgPower') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">
+                      {{ 'universal_activityData_limit_avgPower' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">
+                      w/per
+                    </span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="groupTableOpt.includes('avgPower') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="groupTable.sorted ? groupAnalysis[row].ratio : '0px'"
+                    *ngIf="groupTable.sortType === 'avgPower'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData">
+                      <ng-container *ngIf="groupAnalysis[row].totalActivities; else noData">
+                        <ng-container *ngIf="sportCode.cycle">
+                          {{
+                            ((groupAnalysis[row].cycleAvgWatt / groupAnalysis[row].activityPeople) / groupAnalysis[row].totalActivities)
+                            | number: '1.0-1'
+                          }}
+                        </ng-container>
+                        <ng-container *ngIf="sportCode.row">
+                          {{
+                            ((groupAnalysis[row].rowingAvgWatt / groupAnalysis[row].activityPeople) / groupAnalysis[row].totalActivities)
+                            | number: '1.0-1'
+                          }}
+                        </ng-container>
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="groupAnalysis[row].avgPowerTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="groupAnalysis[row].avgPowerTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(groupAnalysis[row].avgPowerTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="avgHr">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="groupTableOpt.includes('avgHr') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">
+                      {{ 'universal_activityData_limit_avgHr' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">
+                      bpm/per
+                    </span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="groupTableOpt.includes('avgHr') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="groupTable.sorted ? groupAnalysis[row].ratio : '0px'"
+                    *ngIf="groupTable.sortType === 'avgHr'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData">
+                      <ng-container *ngIf="groupAnalysis[row].totalActivities; else noData">
+                        {{
+                          ((groupAnalysis[row].avgHeartRateBpm / groupAnalysis[row].activityPeople) / groupAnalysis[row].totalActivities)
+                          | number: '1.0-0'
+                        }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="groupAnalysis[row].avgHrTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="groupAnalysis[row].avgHrTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(groupAnalysis[row].avgHrTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="totalPlaneGForce">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="groupTableOpt.includes('totalPlaneGForce') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">
+                      {{ 'universal_adjective_accumulation' | translate }} {{ 'universal_activityData_planarAcceleration' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">
+                      g/per
+                    </span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="groupTableOpt.includes('totalPlaneGForce') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="groupTable.sorted ? groupAnalysis[row].ratio : '0px'"
+                    *ngIf="groupTable.sortType === 'totalPlaneGForce'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData">
+                      <ng-container *ngIf="groupAnalysis[row].totalActivities; else noData">
+                        {{
+                          (([
+                            groupAnalysis[row].totalPlusGforceX,
+                            groupAnalysis[row].totalPlusGforceY,
+                            groupAnalysis[row].totalMinusGforceX,
+                            groupAnalysis[row].totalMinusGforceY
+                          ] | pythagorean) / groupAnalysis[row].activityPeople) || 0 | number: '1.0-0'
+                        }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="groupAnalysis[row].totalPlaneGForceTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="groupAnalysis[row].totalPlaneGForceTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(groupAnalysis[row].totalPlaneGForceTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="totalPlusZGForce">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="groupTableOpt.includes('totalPlusZGForce') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">
+                      {{ 'universal_activityData_limit_totalJump' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">
+                      g/per
+                    </span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="groupTableOpt.includes('totalPlusZGForce') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="groupTable.sorted ? groupAnalysis[row].ratio : '0px'"
+                    *ngIf="groupTable.sortType === 'totalPlusZGForce'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData">
+                      <ng-container *ngIf="groupAnalysis[row].totalActivities; else noData">
+                        {{
+                          (groupAnalysis[row].totalPlusGforceZ / groupAnalysis[row].activityPeople) || 0
+                          | mathAbs: 'plus' | number: '1.0-0'
+                        }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="groupAnalysis[row].totalPlusZGForceTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="groupAnalysis[row].totalPlusZGForceTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(groupAnalysis[row].totalPlusZGForceTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="totalMinZGForce">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="groupTableOpt.includes('totalMinZGForce') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">
+                      {{ 'universal_activityData_limit_totalFloorImpact' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">
+                      g/per
+                    </span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="groupTableOpt.includes('totalMinZGForce') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="groupTable.sorted ? groupAnalysis[row].ratio : '0px'"
+                    *ngIf="groupTable.sortType === 'totalMinZGForce'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData">
+                      <ng-container *ngIf="groupAnalysis[row].totalActivities; else noData">
+                        {{
+                          (groupAnalysis[row].totalMinusGforceZ / groupAnalysis[row].activityPeople) || 0
+                          | mathAbs: 'minus' | number: '1.0-0'
+                        }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="groupAnalysis[row].totalMinZGForceTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="groupAnalysis[row].totalMinZGForceTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(groupAnalysis[row].totalMinZGForceTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="hrZone">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  style="min-width: 180px;"
+                  [style.display]="groupTableOpt.includes('hrZone') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">{{ 'universal_activityData_limit_hrZone' | translate }}</span>
+                    <span class="chartTitleUnit">{{ 'universal_activityData_limit_hrZone' | translate }}</span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  style="min-width: 180px;"
+                  [style.display]="groupTableOpt.includes('hrZone') ? '' : 'none'"
+                >
+                  <ng-container>
+                    <div
+                      style="width: 100%; text-align: center;"
+                      [class.flexCenter]="groupAnalysis[row].totalActivities === 0"
+                     
+                    >
+                      <ng-container *ngIf="groupAnalysis[row].totalActivities; else noData">
+                        <app-hrzone-chart
+                          [data]="[
+                            groupAnalysis[row].totalHrZone0Second,
+                            groupAnalysis[row].totalHrZone1Second,
+                            groupAnalysis[row].totalHrZone2Second,
+                            groupAnalysis[row].totalHrZone3Second,
+                            groupAnalysis[row].totalHrZone4Second,
+                            groupAnalysis[row].totalHrZone5Second
+                          ]"
+                          [type]="'personalAnalysis'"
+                        ></app-hrzone-chart>
+                      </ng-container>
+                    </div>
+                  </ng-container>
+                </mat-cell>
+              </ng-container>
+
+              <ng-container>
+                <mat-header-row *matHeaderRowDef="groupTable.showDataDef"></mat-header-row>
+                <mat-row
+                  *matRowDef="let logRow; let j = index; columns: groupTable.showDataDef"
+                  (click)="showAnalysisInfoMenu($event, 'group', logRow)"
+                  id="{{ logRow }}"
+                  class="tableRow"
+                  [hidden]="!groupTable.showAll && j > tableLength"
+                >
+                </mat-row>
+              </ng-container>
+            </mat-table>
+          </div>
+          <div
+            class="seeMoreLink"
+            (click)="showAllData('group')"
+            [hidden]="groupTable.showAll || groupTable.list.data?.length <= tableLength"
+          >
+            {{ 'universal_operating_more' | translate }}
+          </div>
+        </div>
+
+      </div>
+    </section>
+    <section class="displaySection" *ngIf="uiFlag.progress === 100">
+      <div class="flexCol">
+        <div class="cardTitle flexRow haveOptBtn">
+          <h6 class="cardSubtitle">{{'universal_group_personalAnalysis' | translate}}</h6>
+          <button>
+            <i class="icon-svg_web-icon_p1_001-setting" (click)="handleShowOpt($event, 'person')"></i>
+          </button>
+          <div
+            class="flexCol tableMenu"
+            style="position: absolute; right: 0px; top: 40px; padding: 10px; max-height: 300px; overflow-y: auto;"
+            (click)="$event.stopPropagation();"
+            (scroll)="$event.stopPropagation();"
+            *ngIf="personTable.showOpt"
+          >
+            <div>
+              <div class="flexRow">
+                <span class="tableMenuTitle">{{'universal_activityData_fieldDisplay' | translate}}</span>
+                <span
+                  style="font-size: 8px; margin-left: 5px;"
+                  [style.color]="personTableOpt.length >= tableColumn.max ? 'red' : '#ababab'"
+                >
+                  ({{ 'universal_activityData_most' | translate: {'number': tableColumn.max} }})
+                </span>
+              </div>
+              <div class="tableCheckbox" *ngFor="let _opt of personTable.showDataDef;">
+                <mat-checkbox
+                  color="primary"
+                  value="{{ _opt }}"
+                  [checked]="personTableOpt.includes(_opt)"
+                  (change)="changeTableOpt($event, 'person')"
+                  [style.pointer-events]="
+                    _opt === 'name'
+                    || (personTableOpt.length >= tableColumn.max && !personTableOpt.includes(_opt))
+                    || (personTableOpt.length <= tableColumn.min && personTableOpt.includes(_opt))
+                    ? 'none' : ''
+                  "
+                  [style.color]="
+                    _opt === 'name'
+                    || (personTableOpt.length >= tableColumn.max && !personTableOpt.includes(_opt))
+                    || (personTableOpt.length <= tableColumn.min && personTableOpt.includes(_opt))
+                    ? '#ababab' : ''
+                  "
+                >
+                  <span style="font-size: 14px">
+                    <ng-container *ngIf="_opt !== 'avgCadence'">
+                      {{ columnTranslate[_opt] }}
+                    </ng-container>
+                    <ng-container *ngIf="_opt === 'avgCadence'">
+                      {{ columnTranslate[_opt][reportConditionOpt.sportType] }}
+                    </ng-container>
+                  </span>
+                </mat-checkbox>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="analysisTable">
+          <div style="margin-top: 10px;">
+            <mat-table [dataSource]="personTable.list.data" matSort #personSortTable="matSort" (matSortChange)="arrangeData('person')">
+              <ng-container matColumnDef="name">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="tableArrangement"
+                  style="justify-content: flex-start;"
+                  id="personName"
+                >
+                  <span
+                    class="tableTitleWord"
+                    style="text-align: start;"
+                  >
+                    {{ 'universal_activityData_name' | translate }}
+                  </span>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent flexCol"
+                  style="align-items: flex-start; justify-content: center;"
+                  [style.color]="analysisMenu.focusId == row ? '#157fcc': ''"
+                >
+                  <span style="text-align: center;">{{ personAnalysis[row].name }}</span>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="stroke">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="personTableOpt.includes('stroke') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">{{ 'universal_activityData_numberOfActivity' | translate }}</span>
+                    <span class="chartTitleUnit">times</span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="personTableOpt.includes('stroke') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="personTable.sorted ? personAnalysis[row].ratio : '0px'"
+                    *ngIf="personTable.sortType === 'stroke'"
+                  ></div>
+                  <span
+                    class="setIn tableData"
+                    *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;"
+                  >
+                    {{ personAnalysis[row].totalActivities || 0 }}
+                    <i
+                      class="icon-svg_web-icon_p3_017-up upArrow"
+                      *ngIf="personAnalysis[row].totalActivitiesTrend === 'up'"
+                    ></i>
+                    <i
+                      class="icon-svg_web-icon_p3_018-down downArrow"
+                      *ngIf="personAnalysis[row].totalActivitiesTrend === 'down'"
+                    ></i>
+                  </span>
+                  <div
+                    class="regulatePosition"
+                    *ngIf="!['up', 'down'].includes(personAnalysis[row].totalActivitiesTrend)"
+                  ></div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="totalTime">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="personTableOpt.includes('totalTime') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="flexCenter tableTitleWord">
+                      {{ 'universal_activityData_totalTime' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">time</span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="personTableOpt.includes('totalTime') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="personTable.sorted ? personAnalysis[row].ratio : '0px'"
+                    *ngIf="personTable.sortType === 'totalTime'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock">
+                      <ng-container *ngIf="personAnalysis[row].totalActivities; else noTimeData">
+                        {{ personAnalysis[row].totalSecond | sportTime: [true, true] }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="personAnalysis[row].totalSecondTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="personAnalysis[row].totalSecondTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(personAnalysis[row].totalSecondTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="benefitTime">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="personTableOpt.includes('benefitTime') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="flexCenter tableTitleWord">
+                      {{ 'universal_activityData_benefitime' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">time</span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="personTableOpt.includes('benefitTime') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="personTable.sorted ? personAnalysis[row].ratio : '0px'"
+                    *ngIf="personTable.sortType === 'benefitTime'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;">
+                      <ng-container *ngIf="personAnalysis[row].totalActivities; else noTimeData">
+                        {{ 
+                          (
+                            personAnalysis[row].totalHrZone2Second
+                            + personAnalysis[row].totalHrZone3Second
+                            + personAnalysis[row].totalHrZone4Second
+                            + personAnalysis[row].totalHrZone5Second
+                          ) | sportTime: [true, true]
+                        }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="personAnalysis[row].benefitTimeTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="personAnalysis[row].benefitTimeTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(personAnalysis[row].benefitTimeTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="pai">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="personTableOpt.includes('pai') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="flexCenter tableTitleWord">
+                      {{ 'universal_activityData_pai' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">pai</span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="personTableOpt.includes('pai') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="personTable.sorted ? personAnalysis[row].ratio : '0px'"
+                    *ngIf="personTable.sortType === 'pai'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;">
+                      <ng-container *ngIf="personAnalysis[row].totalActivities; else noData">
+                        {{ 
+                          [
+                            personAnalysis[row].totalHrZone0Second,
+                            personAnalysis[row].totalHrZone1Second,
+                            personAnalysis[row].totalHrZone2Second,
+                            personAnalysis[row].totalHrZone3Second,
+                            personAnalysis[row].totalHrZone4Second,
+                            personAnalysis[row].totalHrZone5Second
+                          ] | pai: reportTime.diffWeek
+                        }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="personAnalysis[row].paiTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="personAnalysis[row].paiTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(personAnalysis[row].paiTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="calories">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="personTableOpt.includes('calories') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="flexCenter tableTitleWord">
+                      {{ 'universal_activityData_totalCalories' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">cal</span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="personTableOpt.includes('calories') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="personTable.sorted ? personAnalysis[row].ratio : '0px'"
+                    *ngIf="personTable.sortType === 'calories'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;">
+                      <ng-container *ngIf="personAnalysis[row].totalActivities; else noTimeData">
+                        {{ personAnalysis[row].calories | number: '1.0-0' }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="personAnalysis[row].caloriesTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="personAnalysis[row].caloriesTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(personAnalysis[row].caloriesTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="totalDistance">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="personTableOpt.includes('totalDistance') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">
+                      {{ 'universal_activityData_limit_totalDistance' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">
+                      {{ userInfo.unit === unitEnum.metric ? 'km' : 'mi' }}
+                    </span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="personTableOpt.includes('totalDistance') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="personTable.sorted ? personAnalysis[row].ratio : '0px'"
+                    *ngIf="personTable.sortType === 'totalDistance'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;">
+                      <ng-container *ngIf="personAnalysis[row].totalActivities; else noData">
+                        <ng-container *ngIf="userInfo.unit === unitEnum.metric">
+                          {{ (personAnalysis[row].totalDistanceMeters / 1000) | number: '1.0-1' }}
+                        </ng-container>
+                        <ng-container *ngIf="userInfo.unit === unitEnum.imperial">
+                          {{ ((personAnalysis[row].totalDistanceMeters / 1000) / mi) | number: '1.0-1' }}
+                        </ng-container>
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="personAnalysis[row].totalDistanceTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="personAnalysis[row].totalDistanceTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(personAnalysis[row].totalDistanceTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="avgPace">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="personTableOpt.includes('avgPace') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">
+                      {{ 'universal_activityData_limit_avgPace' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">
+                      <ng-container *ngIf="reportConditionOpt.sportType === sportCode.run">
+                        {{ userInfo.unit === unitEnum.metric ? 'min/km' : 'min/mi' }}
+                      </ng-container>
+                      <ng-container *ngIf="reportConditionOpt.sportType === sportCode.swim">
+                        'min/100m'
+                      </ng-container>
+                      <ng-container *ngIf="reportConditionOpt.sportType === sportCode.row">
+                        'min/500m'
+                      </ng-container>
+                    </span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="personTableOpt.includes('avgPace') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="personTable.sorted ? personAnalysis[row].ratio : '0px'"
+                    *ngIf="personTable.sortType === 'avgPace'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;">
+                      <ng-container *ngIf="personAnalysis[row].totalActivities; else noTimeData">
+                        {{ 
+                          (personAnalysis[row].avgSpeed / personAnalysis[row].totalActivities)
+                            | sportPaceSibs: [reportConditionOpt.sportType, userInfo.unit, 1]
+                        }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="personAnalysis[row].avgPaceTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="personAnalysis[row].avgPaceTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(personAnalysis[row].avgPaceTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="avgSpeed">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="personTableOpt.includes('avgSpeed') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">
+                      {{ 'universal_activityData_limit_avgSpeed' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">
+                      {{ userInfo.unit === unitEnum.metric ? 'km/h' : 'mi/h' }}
+                    </span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="personTableOpt.includes('avgSpeed') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="personTable.sorted ? personAnalysis[row].ratio : '0px'"
+                    *ngIf="personTable.sortType === 'avgSpeed'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;">
+                      <ng-container *ngIf="personAnalysis[row].totalActivities; else noTimeData">
+                        {{ (personAnalysis[row].avgSpeed / personAnalysis[row].totalActivities) | speedSibs: [userInfo.unit, 1] }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="personAnalysis[row].avgSpeedTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="personAnalysis[row].avgSpeedTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(personAnalysis[row].avgSpeedTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="avgCadence">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="personTableOpt.includes('avgCadence') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">
+                      <ng-container *ngIf="reportConditionOpt.sportType === sportCode.run">
+                        {{ 'universal_activityData_limit_avgStepCadence' | translate }}
+                      </ng-container>
+                      <ng-container *ngIf="reportConditionOpt.sportType === sportCode.cycle">
+                        {{ 'universal_activityData_limit_avgCyclingCadence' | translate }}
+                      </ng-container>
+                      <ng-container *ngIf="reportConditionOpt.sportType === sportCode.swim">
+                        {{ 'universal_activityData_limit_avgSwimReps' | translate }}
+                      </ng-container>
+                      <ng-container *ngIf="reportConditionOpt.sportType === sportCode.row">
+                        {{ 'universal_activityData_limit_avgRowCadence' | translate }}
+                      </ng-container>
+                    </span>
+                    <span class="chartTitleUnit">
+                      <ng-container *ngIf="[sportCode.run, sportCode.swim].includes(reportConditionOpt.sportType)">
+                        spm
+                      </ng-container>
+                      <ng-container *ngIf="[sportCode.cycle, sportCode.row].includes(reportConditionOpt.sportType)">
+                        rpm
+                      </ng-container>
+                    </span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="personTableOpt.includes('avgCadence') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="personTable.sorted ? personAnalysis[row].ratio : '0px'"
+                    *ngIf="personTable.sortType === 'avgCadence'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;">
+                      <ng-container *ngIf="personAnalysis[row].totalActivities; else noData">
+                        <ng-container *ngIf="reportConditionOpt.sportType === sportCode.run">
+                          {{ (personAnalysis[row].runAvgCadence / personAnalysis[row].totalActivities) | number: '1.0-1' }}
+                        </ng-container>
+                        <ng-container *ngIf="reportConditionOpt.sportType === sportCode.cycle">
+                          {{ (personAnalysis[row].cycleAvgCadence / personAnalysis[row].totalActivities) | number: '1.0-1' }}
+                        </ng-container>
+                        <ng-container *ngIf="reportConditionOpt.sportType === sportCode.swim">
+                          {{ (personAnalysis[row].swimAvgCadence / personAnalysis[row].totalActivities) | number: '1.0-1' }}
+                        </ng-container>
+                        <ng-container *ngIf="reportConditionOpt.sportType === sportCode.row">
+                          {{ (personAnalysis[row].rowingAvgCadence / personAnalysis[row].totalActivities) | number: '1.0-1' }}
+                        </ng-container>
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="personAnalysis[row].avgCadenceTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="personAnalysis[row].avgCadenceTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(personAnalysis[row].avgCadenceTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="avgPower">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="personTableOpt.includes('avgPower') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">
+                      {{ 'universal_activityData_limit_avgPower' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">
+                      w
+                    </span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="personTableOpt.includes('avgPower') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="personTable.sorted ? personAnalysis[row].ratio : '0px'"
+                    *ngIf="personTable.sortType === 'avgPower'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;">
+                      <ng-container *ngIf="personAnalysis[row].totalActivities; else noData">
+                        <ng-container *ngIf="sportCode.cycle">
+                          {{ (personAnalysis[row].cycleAvgWatt / personAnalysis[row].totalActivities) | number: '1.0-1' }}
+                        </ng-container>
+                        <ng-container *ngIf="sportCode.row">
+                          {{ (personAnalysis[row].rowingAvgWatt / personAnalysis[row].totalActivities) | number: '1.0-1' }}
+                        </ng-container>
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="personAnalysis[row].avgPowerTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="personAnalysis[row].avgPowerTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(personAnalysis[row].avgPowerTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="avgHr">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="personTableOpt.includes('avgHr') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">
+                      {{ 'universal_activityData_limit_avgHr' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">
+                      bpm
+                    </span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="personTableOpt.includes('avgHr') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="personTable.sorted ? personAnalysis[row].ratio : '0px'"
+                    *ngIf="personTable.sortType === 'avgHr'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;">
+                      <ng-container *ngIf="personAnalysis[row].totalActivities; else noData">
+                        {{ (personAnalysis[row].avgHeartRateBpm / personAnalysis[row].totalActivities) | number: '1.0-0' }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="personAnalysis[row].avgHrTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="personAnalysis[row].avgHrTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(personAnalysis[row].avgHrTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="totalWeight">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="personTableOpt.includes('totalWeight') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">
+                      {{ 'universal_activityData_limit_totalWeight' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">
+                      {{ userInfo.unit === unitEnum.metric ? 'kg' : 'lb' }}
+                    </span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="personTableOpt.includes('totalWeight') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="personTable.sorted ? personAnalysis[row].ratio : '0px'"
+                    *ngIf="personTable.sortType === 'totalWeight'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;">
+                      <ng-container *ngIf="personAnalysis[row].totalActivities; else noData">
+                        {{ personAnalysis[row].totalWeightKg | weightSibs: [userInfo.unit, 1] }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="personAnalysis[row].totalWeightTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="personAnalysis[row].totalWeightTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(personAnalysis[row].totalWeightTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="totalSets">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="personTableOpt.includes('totalSets') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">
+                      {{ 'universal_activityData_limit_totalSets' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">
+                      sets
+                    </span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="personTableOpt.includes('totalSets') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="personTable.sorted ? personAnalysis[row].ratio : '0px'"
+                    *ngIf="personTable.sortType === 'totalSets'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;">
+                      <ng-container *ngIf="personAnalysis[row].totalActivities; else noData">
+                        {{ personAnalysis[row].totalSets }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="personAnalysis[row].totalSetsTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="personAnalysis[row].totalSetsTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(personAnalysis[row].totalSetsTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="preferMuscleGroup">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="personTableOpt.includes('preferMuscleGroup') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">
+                      {{ 'universal_muscleName_preferredMuscleGroup' | translate }}
+                    </span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="personTableOpt.includes('preferMuscleGroup') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="personTable.sorted ? personAnalysis[row].ratio : '0px'"
+                    *ngIf="personTable.sortType === 'preferMuscleGroup'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;">
+                      <ng-container *ngIf="personAnalysis[row].totalActivities; else noData">
+                        <ng-container *ngFor="let prefer of (personAnalysis[row].muscleGroupCount | findPrefer: 3)">
+                          <i
+                            style="font-size: 24px;"
+                            [class]="prefer.muscleGroup | muscleGroupIcon"
+                            *ngIf="prefer.count !== 0"
+                          ></i>
+                        </ng-container>
+                      </ng-container>
+                    </span>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="armMuscle">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="personTableOpt.includes('armMuscle') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">
+                      {{ 'universal_muscleName_armMuscles' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">
+                      {{ userInfo.unit === unitEnum.metric ? 'kg*rep*set' : 'lb*rep*set' }}
+                    </span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="personTableOpt.includes('armMuscle') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="personTable.sorted ? personAnalysis[row].ratio : '0px'"
+                    *ngIf="personTable.sortType === 'armMuscle'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;">
+                      <ng-container
+                        *ngIf="personAnalysis[row].totalActivities && personAnalysis[row].armMuscle[2] !== 0; else noData"
+                      >
+                        {{(personAnalysis[row].armMuscle[0] / personAnalysis[row].armMuscle[1]) || 0 | weightSibs: [userInfo.unit, 1]
+                        }}*{{ (personAnalysis[row].armMuscle[1] / personAnalysis[row].armMuscle[2]) | number: '1.0-1'
+                        }}*{{ personAnalysis[row].armMuscle[2]
+                        }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="personAnalysis[row].armMuscleTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="personAnalysis[row].armMuscleTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(personAnalysis[row].armMuscleTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="pectoralsMuscle">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="personTableOpt.includes('pectoralsMuscle') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">
+                      {{ 'universal_muscleName_pectoralsMuscle' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">
+                      {{ userInfo.unit === unitEnum.metric ? 'kg*rep*set' : 'lb*rep*set' }}
+                    </span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="personTableOpt.includes('pectoralsMuscle') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="personTable.sorted ? personAnalysis[row].ratio : '0px'"
+                    *ngIf="personTable.sortType === 'pectoralsMuscle'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;">
+                      <ng-container
+                        *ngIf="personAnalysis[row].totalActivities && personAnalysis[row].pectoralsMuscle[2] !== 0; else noData"
+                      >
+                        {{ (personAnalysis[row].pectoralsMuscle[0] / personAnalysis[row].pectoralsMuscle[1]) || 0 | weightSibs: [userInfo.unit, 1]
+                        }}*{{ (personAnalysis[row].pectoralsMuscle[1] / personAnalysis[row].pectoralsMuscle[2]) | number: '1.0-1'
+                        }}*{{ personAnalysis[row].pectoralsMuscle[2]
+                        }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="personAnalysis[row].pectoralsMuscleTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="personAnalysis[row].pectoralsMuscleTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(personAnalysis[row].pectoralsMuscleTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="shoulderMuscle">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="personTableOpt.includes('shoulderMuscle') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">
+                      {{ 'universal_muscleName_shoulderMuscle' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">
+                      {{ userInfo.unit === unitEnum.metric ? 'kg*rep*set' : 'lb*rep*set' }}
+                    </span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="personTableOpt.includes('shoulderMuscle') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="personTable.sorted ? personAnalysis[row].ratio : '0px'"
+                    *ngIf="personTable.sortType === 'shoulderMuscle'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;">
+                      <ng-container
+                        *ngIf="personAnalysis[row].totalActivities && personAnalysis[row].shoulderMuscle[2] !== 0; else noData"
+                      >
+                        {{(personAnalysis[row].shoulderMuscle[0] / personAnalysis[row].shoulderMuscle[1]) || 0 | weightSibs: [userInfo.unit, 1]
+                        }}*{{ (personAnalysis[row].shoulderMuscle[1] / personAnalysis[row].shoulderMuscle[2]) | number: '1.0-1'
+                        }}*{{ personAnalysis[row].shoulderMuscle[2]
+                        }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="personAnalysis[row].shoulderMuscleTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="personAnalysis[row].shoulderMuscleTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(personAnalysis[row].shoulderMuscleTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="backMuscle">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="personTableOpt.includes('backMuscle') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">
+                      {{ 'universal_muscleName_backMuscle' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">
+                      {{ userInfo.unit === unitEnum.metric ? 'kg*rep*set' : 'lb*rep*set' }}
+                    </span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="personTableOpt.includes('backMuscle') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="personTable.sorted ? personAnalysis[row].ratio : '0px'"
+                    *ngIf="personTable.sortType === 'backMuscle'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;">
+                      <ng-container
+                        *ngIf="personAnalysis[row].totalActivities && personAnalysis[row].backMuscle[2] !== 0; else noData"
+                      >
+                        {{(personAnalysis[row].backMuscle[0] / personAnalysis[row].backMuscle[1]) || 0 | weightSibs: [userInfo.unit, 1]
+                        }}*{{ (personAnalysis[row].backMuscle[1] / personAnalysis[row].backMuscle[2]) | number: '1.0-1'
+                        }}*{{ personAnalysis[row].backMuscle[2]
+                        }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="personAnalysis[row].backMuscleTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="personAnalysis[row].backMuscleTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(personAnalysis[row].backMuscleTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="abdominalMuscle">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="personTableOpt.includes('abdominalMuscle') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">
+                      {{ 'universal_muscleName_abdominalMuscle' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">
+                      {{ userInfo.unit === unitEnum.metric ? 'kg*rep*set' : 'lb*rep*set' }}
+                    </span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="personTableOpt.includes('abdominalMuscle') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="personTable.sorted ? personAnalysis[row].ratio : '0px'"
+                    *ngIf="personTable.sortType === 'abdominalMuscle'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;">
+                      <ng-container
+                        *ngIf="personAnalysis[row].totalActivities && personAnalysis[row].abdominalMuscle[2] !== 0; else noData"
+                      >
+                        {{ 
+                          (personAnalysis[row].abdominalMuscle[0] / personAnalysis[row].abdominalMuscle[1]) || 0 | weightSibs: [userInfo.unit, 1]
+                        }}*{{ (personAnalysis[row].abdominalMuscle[1] / personAnalysis[row].abdominalMuscle[2]) | number: '1.0-1'
+                        }}*{{ personAnalysis[row].abdominalMuscle[2]
+                        }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="personAnalysis[row].abdominalMuscleTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="personAnalysis[row].abdominalMuscleTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(personAnalysis[row].abdominalMuscleTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="legMuscle">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="personTableOpt.includes('legMuscle') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">
+                      {{ 'universal_muscleName_legMuscle' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">
+                      {{ userInfo.unit === unitEnum.metric ? 'kg*rep*set' : 'lb*rep*set' }}
+                    </span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="personTableOpt.includes('legMuscle') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="personTable.sorted ? personAnalysis[row].ratio : '0px'"
+                    *ngIf="personTable.sortType === 'legMuscle'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;">
+                      <ng-container
+                        *ngIf="personAnalysis[row].totalActivities && personAnalysis[row].legMuscle[2] !== 0; else noData"
+                      >
+                        {{ 
+                          (personAnalysis[row].legMuscle[0] / personAnalysis[row].legMuscle[1]) || 0 | weightSibs: [userInfo.unit, 1]
+                        }}*{{ (personAnalysis[row].legMuscle[1] / personAnalysis[row].legMuscle[2]) | number: '1.0-1'
+                        }}*{{personAnalysis[row].legMuscle[2]
+                        }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="personAnalysis[row].legMuscleTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="personAnalysis[row].legMuscleTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(personAnalysis[row].legMuscleTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="totalPlaneGForce">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="personTableOpt.includes('totalPlaneGForce') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">
+                      {{ 'universal_adjective_accumulation' | translate }} {{ 'universal_activityData_planarAcceleration' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">
+                      g
+                    </span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="personTableOpt.includes('totalPlaneGForce') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="personTable.sorted ? personAnalysis[row].ratio : '0px'"
+                    *ngIf="personTable.sortType === 'totalPlaneGForce'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;">
+                      <ng-container *ngIf="personAnalysis[row].totalActivities; else noData">
+                        {{
+                          [
+                            personAnalysis[row].totalPlusGforceX,
+                            personAnalysis[row].totalPlusGforceY,
+                            personAnalysis[row].totalMinusGforceX,
+                            personAnalysis[row].totalMinusGforceY
+                          ] | pythagorean | number: '1.0-0'
+                        }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="personAnalysis[row].totalPlaneGForceTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="personAnalysis[row].totalPlaneGForceTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(personAnalysis[row].totalPlaneGForceTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="totalPlusZGForce">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="personTableOpt.includes('totalPlusZGForce') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">
+                      {{ 'universal_activityData_totalJump' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">
+                      g
+                    </span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="personTableOpt.includes('totalPlusZGForce') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="personTable.sorted ? personAnalysis[row].ratio : '0px'"
+                    *ngIf="personTable.sortType === 'totalPlusZGForce'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;">
+                      <ng-container *ngIf="personAnalysis[row].totalActivities; else noData">
+                        {{ personAnalysis[row].totalPlusGforceZ | mathAbs: 'plus' | number: '1.0-0' }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="personAnalysis[row].totalPlusZGForceTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="personAnalysis[row].totalPlusZGForceTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(personAnalysis[row].totalPlusZGForceTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="totalMinZGForce">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="personTableOpt.includes('totalMinZGForce') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">
+                      {{ 'universal_activityData_totalFloorImpact' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">
+                      g
+                    </span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="personTableOpt.includes('totalMinZGForce') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="personTable.sorted ? personAnalysis[row].ratio : '0px'"
+                    *ngIf="personTable.sortType === 'totalMinZGForce'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;">
+                      <ng-container *ngIf="personAnalysis[row].totalActivities; else noData">
+                        {{ personAnalysis[row].totalMinusGforceZ | mathAbs: 'minus' | number: '1.0-0' }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="personAnalysis[row].totalMinZGForceTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="personAnalysis[row].totalMinZGForceTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(personAnalysis[row].totalMinZGForceTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="preferSport">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="personTableOpt.includes('preferSport') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="flexCenter tableTitleWord">
+                      {{ 'universal_activityData_activityPreferences' | translate }}
+                    </span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="personTableOpt.includes('preferSport') ? '' : 'none'"
+                >
+                  <div class="setIn">
+                    <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;">
+                      <ng-container *ngIf="personAnalysis[row].totalActivities; else noData">
+                        <ng-container *ngFor="let prefer of (personAnalysis[row].perTypeCount | findPrefer: 3)">
+                          <i
+                            style="font-size: 24px;"
+                            [class]="prefer.type | sportTypeIcon"
+                            *ngIf="prefer.count !== 0"
+                          ></i>
+                        </ng-container>
+                      </ng-container>
+                    </span>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="hrZone">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  style="min-width: 180px;"
+                  [style.display]="personTableOpt.includes('hrZone') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="tableTitleWord">{{ 'universal_activityData_hrZone' | translate }}</span>
+                    <span class="chartTitleUnit">{{ 'universal_activityData_hrZone' | translate }}</span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  style="min-width: 180px;"
+                  [style.display]="personTableOpt.includes('hrZone') ? '' : 'none'"
+                >
+                  <ng-container>
+                    <div
+                      style="width: 100%; text-align: center;"
+                      [class.flexCenter]="personAnalysis[row].totalActivities === 0"
+                      *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;"
+                    >
+                      <ng-container *ngIf="personAnalysis[row].totalActivities; else noData">
+                        <app-hrzone-chart
+                          [data]="[
+                            personAnalysis[row].totalHrZone0Second,
+                            personAnalysis[row].totalHrZone1Second,
+                            personAnalysis[row].totalHrZone2Second,
+                            personAnalysis[row].totalHrZone3Second,
+                            personAnalysis[row].totalHrZone4Second,
+                            personAnalysis[row].totalHrZone5Second
+                          ]"
+                          [type]="'personalAnalysis'"
+                        ></app-hrzone-chart>
+                      </ng-container>
+                    </div>
+                  </ng-container>
+                </mat-cell>
+              </ng-container>
+
+              <ng-container>
+                <mat-header-row *matHeaderRowDef="personTable.showDataDef"></mat-header-row>
+                <mat-row
+                  *matRowDef="let logRow; let j = index; columns: personTable.showDataDef"
+                  (click)="showAnalysisInfoMenu($event, 'person', logRow)"
+                  id="{{ logRow }}"
+                  class="tableRow"
+                  [hidden]="!personTable.showAll && j > tableLength"
+                >
+                </mat-row>
+              </ng-container>
+            </mat-table>
+          </div>
+          <div
+            class="seeMoreLink"
+            (click)="showAllData('person')"
+            [hidden]="personTable.showAll || personTable.list.data?.length <= tableLength"
+          >
+            {{ 'universal_operating_more' | translate }}
+          </div>
+        </div>
+
+      </div>
+    </section>
+    <ng-template #noTimeData>
+      -:--
+    </ng-template>
+    <ng-template #noData>
+      --
+    </ng-template>
+    <ng-template #privacyLock>
+      <i
+        class="icon-svg_web-icon_p1_059-lock lockIcon setIn tableData"
+        *ngIf="!personAnalysis[row]?.openPrivacy"
+      ></i>
+    </ng-template>
+    <div
+      class="flexCol tableMenu"
+      [style.top]="analysisMenu.y"
+      [style.left]="analysisMenu.x"
+      (click)="$event.stopPropagation();"
+      *ngIf="analysisMenu.focusId"
+    >
+      
+      <div class="flexCol" style="padding: 15px 15px 0px 15px;">
+        <span style="color: #656565; font-weight: bold;">
+          <ng-container *ngIf="analysisMenu.type === 'group'">
+            {{ 'universal_group_member' | translate }}
+          </ng-container>
+          <ng-container *ngIf="analysisMenu.type === 'person'">
+            {{ 'universal_group_groupList' | translate }}
+          </ng-container>
+        </span>
+        <div class="tableListSection">
+          <div>
+            <ng-container *ngIf="analysisMenu.type === 'group'">
+              <span
+                class="listSpan"
+                [style.color]="personAnalysis[_member.userId].totalActivities ? 'black' : 'red'"
+                (click)="goPage(person, 'info', _member.userId)"
+                *ngFor="let _member of groupAnalysis[analysisMenu.focusId].memberList"
+              >
+                <i class="icon-svg_web-icon_p1_059-lock lockIcon" *ngIf="!_member.openPrivacy"></i>
+                {{ _member.name }}
+              </span>
+            </ng-container>
+            <ng-container *ngIf="analysisMenu.type === 'person'">
+              <span
+                class="listSpan"
+                (click)="goPage('group', 'info', _group.groupId)"
+                *ngFor="let _group of personAnalysis[analysisMenu.focusId].belongGroup"
+              >
+                {{ _group.name }}
+              </span>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+      <a target="_blank" class="tableMenuList" (click)="goPage(analysisMenu.type, 'info', analysisMenu.focusId)">
+        <ng-container *ngIf="analysisMenu.type === 'group'">
+          {{ 'universal_group_groupInfo' | translate }}
+        </ng-container>
+        <ng-container *ngIf="analysisMenu.type === 'person'">
+          {{ 'universal_userProfile_basicInformation' | translate }}
+        </ng-container>
+      </a>
+      <a target="_blank" class="tableMenuList" (click)="goPage(analysisMenu.type, 'sportsReport', analysisMenu.focusId)">
+        {{ 'universal_activityData_sportReport' | translate }}
+      </a>
+    </div>
   </ng-container>
 </div>

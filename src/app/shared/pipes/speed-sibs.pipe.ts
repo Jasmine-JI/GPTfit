@@ -21,10 +21,10 @@ export class SpeedSibsPipe implements PipeTransform {
 
     if (unitType === 0) {
       const finalValue = +value.toFixed(1);
-      return showUnit === 0 ? `${finalValue} km/hr` : `${finalValue}`;
+      return showUnit === 0 ? `${finalValue} km/h` : `${finalValue}`;
     } else {
       const finalValue = (value / mi).toFixed(1);
-      return showUnit === 0 ? `${finalValue} mi/hr` : `${finalValue}`;
+      return showUnit === 0 ? `${finalValue} mi/h` : `${finalValue}`;
     }
     
   }

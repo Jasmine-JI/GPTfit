@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { ReportConditionOpt } from '../models/report-condition'
 import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
 import { paiCofficient, dayPaiTarget } from '../models/sports-report';
+import { MuscleCode, MuscleGroup } from '../models/weight-train';
 
 @Injectable()
 export class ReportService {
@@ -144,8 +145,78 @@ export class ReportService {
     const { z0, z1, z2, z3, z4, z5 } = paiCofficient,
           [zone0, zone1, zone2, zone3, zone4, zone5] = [...hrZone],
           weightedValue = z0 * zone0 + z1 * zone1 + z2 * zone2 + z3 * zone3 + z4 * zone4 + z5 * zone5;
-    return ((weightedValue / (dayPaiTarget * 7)) * 100) / weekNum;
+    return parseFloat((((weightedValue / (dayPaiTarget * 7)) * 100) / weekNum).toFixed(1));
   }
-  
 
+  /**
+   * 畢氏定理
+   * @param valueArr {Array<number>}
+   * @author kidin-1100514
+   */
+  pythagorean(valueArr: Array<number>) {
+    const countPowTotal = (preVal: number, currentVal: number) => {
+      return preVal + (Math.abs(currentVal) ** 2);
+    }
+
+    return parseFloat(Math.sqrt(valueArr.reduce(countPowTotal, 0)).toFixed(1));
+  }
+
+  /**
+   * 將最大的g值，乘上係數，使其較接近原始平面最大加速度
+   * @param max {number}最大g值
+   * @param vertical {number}-該最大g值其垂直方向之g值
+   * @author kidin-1100514
+   */
+  countMaxPlaneGForce(max: number, vertical: number) {
+    const coefficient = this.pythagorean([max, vertical / 2]) / max;
+    return max * coefficient;
+  }
+
+  /**
+   * 回傳肌肉所屬肌群
+   * @param muscleCode {MuscleCode}-肌肉部位編碼
+   * @return MusecleGroup
+   * @author kidin-1100526
+   */
+  getBelongMuscleGroup(muscleCode: MuscleCode): MuscleGroup {
+    switch (muscleCode) {
+      case MuscleCode.bicepsInside:
+      case MuscleCode.triceps:
+      case MuscleCode.wristFlexor:
+        return MuscleGroup.armMuscle;
+      case MuscleCode.pectoralsMuscle:
+      case MuscleCode.pectoralisUpper:
+      case MuscleCode.pectoralisLower:
+      case MuscleCode.pectoralsInside:
+      case MuscleCode.pectoralsOutside:
+      case MuscleCode.frontSerratus:
+        return MuscleGroup.pectoralsMuscle;
+      case MuscleCode.shoulderMuscle:
+      case MuscleCode.deltoidMuscle:
+      case MuscleCode.deltoidAnterior:
+      case MuscleCode.deltoidLateral:
+      case MuscleCode.deltoidPosterior:
+      case MuscleCode.trapezius:
+        return MuscleGroup.shoulderMuscle;
+      case MuscleCode.backMuscle:
+      case MuscleCode.latissimusDorsi:
+      case MuscleCode.erectorSpinae:
+        return MuscleGroup.backMuscle;
+      case MuscleCode.abdominalMuscle:
+      case MuscleCode.rectusAbdominis:
+      case MuscleCode.rectusAbdominisUpper:
+      case MuscleCode.rectusAbdominisLower:
+      case MuscleCode.abdominisOblique:
+        return MuscleGroup.abdominalMuscle;
+      case MuscleCode.legMuscle:
+      case MuscleCode.hipMuscle:
+      case MuscleCode.quadricepsFemoris:
+      case MuscleCode.hamstrings:
+      case MuscleCode.ankleFlexor:
+      case MuscleCode.gastrocnemius:
+        return MuscleGroup.legMuscle;
+    }
+    
+  }  
+  
 }

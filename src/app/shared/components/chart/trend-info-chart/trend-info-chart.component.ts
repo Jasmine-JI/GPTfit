@@ -386,7 +386,7 @@ export class TrendInfoChartComponent implements OnInit, OnChanges, OnDestroy {
               ]
             },
             tooltip: {
-              valueSuffix: ` ${this.unit === 0 ? 'km/hr' : 'mi/hr'}`
+              valueSuffix: ` ${this.unit === 0 ? 'km/h' : 'mi/h'}`
             }
           }];
 

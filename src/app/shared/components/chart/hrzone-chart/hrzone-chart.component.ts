@@ -202,12 +202,11 @@ export class HrzoneChartComponent implements OnInit, OnChanges, OnDestroy {
         this.createChart(HRChartOptions);
 
       } else {
-
         const HRChartOptions = new ChartOptions(sportPercentageDataset);
-
         HRChartOptions['chart'] = {
           margin: [2, 0, 2, 0],
           height: 40,
+          width: 180,
           style: {
               overflow: 'visible'
           },
