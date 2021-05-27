@@ -193,7 +193,7 @@ $group-btn-blue: rgba(0, 183, 238, 1);
 }
 
 .summaryDataArea {
-  margin: 0px 5px;
+  padding: 0px 15px;
 }
 
 .summaryData {
@@ -321,10 +321,15 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   }
 
   .setIn {
+    display: flex;
     margin: 0 auto;
     z-index: 3;
   }
 
+}
+
+.tableData {
+  display: flex;
 }
 
 .analysisTable {
@@ -334,6 +339,10 @@ $group-btn-blue: rgba(0, 183, 238, 1);
 .fixPlace {
   position: relative;
   right: 10px;
+}
+
+.regulatePosition {
+  width: 20px;
 }
 
 .chartTitleUnit {

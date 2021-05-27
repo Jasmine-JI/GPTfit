@@ -36,6 +36,8 @@ export const costTimeColor = 'rgba(188, 226, 58, 1)',
              hitColor = 'rgba(255, 110, 170, 1)',
              jumpColor = 'rgba(152, 255, 110, 1)',
              landingColor = 'rgba(255, 165, 0, 1)',
+             planeGColor = 'rgba(85, 54, 255, 1)',
+             planeMaxGColor = 'rgba(255, 54, 240, 1)',
              paceTrendColor = ['#6a4db8', '#e04c62', '#ffd451'],
              speedTrendColor = ['#ff00ff', '#ffff00', '#ffff00'],
              cadenceTrendColor = ['#aafc42', '#d6ff38', '#f56300'],
@@ -132,7 +134,13 @@ export interface FilletTrendChart {
   maxDistance?: number;
   avgDistance?: number;
   distance?: Array<Array<number>>;
-  colorSet: string;
+  maxPlaneGForce?: number;
+  avgPlaneGForce?: number;
+  planeGForce?: Array<Array<number>>;
+  maxPlaneMaxGForce?: number;
+  avgPlaneMaxGForce?: number;
+  planeMaxGForce?: Array<Array<number>>;
+  colorSet?: string;
   date?: Array<number>;
 }
 

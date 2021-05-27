@@ -99,3 +99,7 @@ export enum GroupStatus {
   lock
 }
 
+/**
+ * 團體或個人分析
+ */
+export type SettingObj = 'group' | 'person';

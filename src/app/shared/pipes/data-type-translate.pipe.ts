@@ -1,4 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { unit } from '../models/bs-constant';
+import { SportCode } from '../models/report-condition';
 
 /**
  * 將運動資料類別轉為多國語系的鍵
@@ -7,7 +9,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 @Pipe({name: 'dataTypeTranslate'})
 export class DataTypeTranslatePipe implements PipeTransform {
   transform(value: string, args: number[]): any {
-    const [sportType, unit] = [...args];
+    const [sportType, userUnit] = [...args];
     switch (value) {
       case 'hr':
         return 'universal_activityData_hr';
@@ -16,26 +18,26 @@ export class DataTypeTranslatePipe implements PipeTransform {
       case 'pace':
 
         switch (sportType) {
-          case 1:
-            return unit === 0 ? 'universal_activityData_kilometerPace' : 'universal_activityData_milePace';
-          case 4:
+          case SportCode.run:
+            return userUnit === unit.metric ? 'universal_activityData_kilometerPace' : 'universal_activityData_milePace';
+          case SportCode.swim:
             return 'universal_activityData_100mPace';
-          case 6:
+          case SportCode.row:
             return 'universal_activityData_500mPace';
         }
 
       case 'cadence':
         
         switch (sportType) {
-          case 1:
+          case SportCode.run:
             return 'universal_activityData_stepCadence';
-          case 2:
+          case SportCode.cycle:
             return 'universal_activityData_CyclingCadence';
-          case 3:
+          case SportCode.weightTrain:
             return 'universal_activityData_repeatTempo';
-          case 4:
+          case SportCode.swim:
             return 'universal_activityData_swimCadence';
-          case 6:
+          case SportCode.row:
             return 'universal_activityData_rowCadence';
         }
 
@@ -71,6 +73,9 @@ export class DataTypeTranslatePipe implements PipeTransform {
         return 'universal_activityData_accelerateShock';
       case 'zMoveGForce':
         return 'universal_activityData_jumpLanding';
+      case 'planeGForce':
+      case 'planeMaxGForce':
+        return 'universal_activityData_planarAcceleration';
       default:
         return 'universal_vocabulary_other';
     }

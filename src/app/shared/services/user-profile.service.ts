@@ -5,6 +5,7 @@ import { Injectable } from '@angular/core';
 import { ReplaySubject, Observable } from 'rxjs';
 import { tap, switchMap, map, retry } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+import moment from 'moment';
 
 const { API_SERVER } = environment.url;
 
@@ -50,7 +51,7 @@ export class UserProfileService {
         // 待個人頭像接圖床之後再刪除此段
         const userProfile = response.userProfile
         if (userProfile) {
-          const newImage = `${userProfile.avatarUrl}`;
+          const newImage = `${userProfile.avatarUrl}?${moment().valueOf()}`;
           Object.assign(userProfile, {avatarUrl: newImage});
           Object.assign(userProfile, {unit: 0});  // 待所有報告皆完成公英制轉換再刪除此行
           return response;

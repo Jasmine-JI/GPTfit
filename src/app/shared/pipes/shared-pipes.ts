@@ -33,7 +33,11 @@ import { TemperatureSibsPipe } from './temperature-sibs.pipe';
 import { swimPosture } from './swim-posture.pipe';
 import { DataTypeTranslatePipe } from './data-type-translate.pipe';
 import { DataTypeUnitPipe } from './data-type-unit.pipe';
-
+import { PaiPipe } from './pai.pipe';
+import { FindPreferPipe } from './find-prefer.pipe';
+import { MuscleGroupIconPipe } from './muscle-group-icon.pipe';
+import { PythagoreanPipe } from './pythagorean.pipe';
+import { MathAbsPipe } from './math-abs.pipe';
 
 @NgModule({
   imports: [
@@ -73,7 +77,12 @@ import { DataTypeUnitPipe } from './data-type-unit.pipe';
     TemperatureSibsPipe,
     swimPosture,
     DataTypeTranslatePipe,
-    DataTypeUnitPipe
+    DataTypeUnitPipe,
+    PaiPipe,
+    FindPreferPipe,
+    MuscleGroupIconPipe,
+    PythagoreanPipe,
+    MathAbsPipe
   ],
   exports: [
     SexPipe,
@@ -109,7 +118,12 @@ import { DataTypeUnitPipe } from './data-type-unit.pipe';
     TemperatureSibsPipe,
     swimPosture,
     DataTypeTranslatePipe,
-    DataTypeUnitPipe
+    DataTypeUnitPipe,
+    PaiPipe,
+    FindPreferPipe,
+    MuscleGroupIconPipe,
+    PythagoreanPipe,
+    MathAbsPipe
   ]
 })
 export class SharedPipes {}

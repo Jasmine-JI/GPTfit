@@ -5,7 +5,7 @@ import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { FilletTrendChart, DisplayPage } from '../../../models/chart-data';
+import { FilletTrendChart, DisplayPage, planeGColor, planeMaxGColor } from '../../../models/chart-data';
 import { mi, ft, Unit, unit } from '../../../models/bs-constant';
 import { day, month, week } from '../../../models/utils-constant';
 
@@ -76,6 +76,7 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
   dateList = [];
   chartType: string;
   dataLen = 0;
+  columnColor: string;
 
   @Input() data: any;
   @Input() dateRange: string;
@@ -107,7 +108,6 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
           chartData = this.data.strokeNum;
           this.tooltipTitle = 
             `${this.translate.instant('universal_vocabulary_activity')} ${this.translate.instant('universal_activityData_numberOf')}`;
-
           this.chartType = 'stroke';
           break;
         case 'TotalTime':
@@ -119,6 +119,20 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
           chartData = this.data.distance;
           this.tooltipTitle = this.translate.instant('universal_activityData_distance');
           this.chartType = 'distance';
+          break;
+        case 'PlaneGForce':
+          chartData = this.data.planeGForce;
+          this.tooltipTitle = 
+            `${this.translate.instant('universal_adjective_accumulation')} ${this.translate.instant('universal_activityData_planarAcceleration')}`;
+          this.chartType = 'planeGForce';
+          this.columnColor = planeGColor;
+          break;
+        case 'PlaneMaxGForce':
+          chartData = this.data.planeMaxGForce;
+          this.tooltipTitle = 
+            `${this.translate.instant('universal_adjective_maxBig')} ${this.translate.instant('universal_activityData_planarAcceleration')}`;
+          this.chartType = 'planeMaxGForce';
+          this.columnColor = planeMaxGColor;
           break;
         case 'Calories':
 
@@ -176,7 +190,7 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
           name: this.tooltipTitle,
           data: chartData,
           showInLegend: false,
-          color: this.data.colorSet
+          color: this.data.colorSet ?? this.columnColor
         }
       ];
 

@@ -1,5 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { mi } from '../models/bs-constant';
+import { SportCode } from '../models/report-condition';
 
 @Pipe({name: 'sportPaceSibs'})
 export class SportPaceSibsPipe implements PipeTransform {
@@ -22,7 +23,7 @@ export class SportPaceSibsPipe implements PipeTransform {
     }
     
 
-    if (type == 1 || type == 4 || type == 6) {
+    if ([SportCode.run, SportCode.swim, SportCode.row].includes(type)) {
 
       // 速度為0則配速一律顯示60'00"
       if (value == 0) {
@@ -30,7 +31,7 @@ export class SportPaceSibsPipe implements PipeTransform {
       } else {
         let yVal: number;
         switch (type) {
-          case 1:  // 跑步配速
+          case SportCode.run:  // 跑步配速
             if (unitType === 0) {
               yVal = (60 / value) * 60;
             } else {
@@ -38,11 +39,11 @@ export class SportPaceSibsPipe implements PipeTransform {
             }
             
             break;
-          case 4:  // 游泳配速
+          case SportCode.swim:  // 游泳配速
             yVal = (60 / value) * 60 / 10;
             unit = 'min/100m';
             break;
-          case 6:  // 划船配速
+          case SportCode.row:  // 划船配速
             yVal = (60 / value) * 60 / 2;
             unit = 'min/500m';
             break;

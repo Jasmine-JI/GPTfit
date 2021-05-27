@@ -1,19 +1,17 @@
-import { Component, OnInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { GroupService } from '../../../services/group.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { ReportService } from '../../../../../shared/services/report.service';
 import { ReportConditionOpt } from '../../../../../shared/models/report-condition';
-import { Subject, of, combineLatest } from 'rxjs';
+import { Subject, of, combineLatest, fromEvent, Subscription, merge } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
-import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { HashIdService } from '../../../../../shared/services/hash-id.service';
 import { MatSort, Sort } from '@angular/material/sort';
 import moment from 'moment';
 import { MatTableDataSource } from '@angular/material/table';
 import SimpleLinearRegression from 'ml-regression-simple-linear';
-import { GroupDetailInfo } from '../../../models/group-detail';
-import { GroupTree, SportType, SportCode } from '../../../../../shared/models/report-condition';
+import { SportType, SportCode } from '../../../../../shared/models/report-condition';
 import {
   commonData,
   runData,
@@ -21,7 +19,8 @@ import {
   weightTrainData,
   swimData,
   rowData,
-  ballData
+  ballData,
+  Regression
 } from '../../../../../shared/models/sports-report';
 import { Unit, mi, unit } from '../../../../../shared/models/bs-constant';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
@@ -35,14 +34,16 @@ import {
   DiscolorTrendData,
   RelativeTrendChart
 } from '../../../../../shared/models/chart-data';
-import { GroupLevel } from '../../../../dashboard/models/group-detail';
+import { GroupLevel, SettingObj } from '../../../../dashboard/models/group-detail';
 import { MuscleCode, MuscleGroup } from '../../../../../shared/models/weight-train';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 
 @Component({
   selector: 'app-sports-report',
   templateUrl: './sports-report.component.html',
-  styleUrls: ['./sports-report.component.scss', '../group-child-page.scss']
+  styleUrls: ['./sports-report.component.scss', '../group-child-page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SportsReportComponent implements OnInit, OnDestroy {
 
@@ -52,6 +53,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   personSortTable: MatSort;
 
   private ngUnsubscribe = new Subject();
+  scrollAndClickEvent = new Subscription();
+  resizeEvent = new Subscription();
 
   /**
    * UI控制相關flag
@@ -62,7 +65,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     noData: true,
     inited: false,
     analysisType: SportCode.all,
-    noFtpData: true
+    noFtpData: true,
+    haveQueryString: false
   }
 
   /**
@@ -166,12 +170,21 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       maxSwolf: 0,
       minSwolf: null
     },
+    planeAcceleration: <FilletTrendChart>{
+      maxPlaneGForce: 0,
+      avgPlaneGForce: 0,
+      planeGForce: []
+    },
+
+    // 暫只開放給20權觀看，待球類運動細分不同球類時可能會用到
     totalXAxisMoveTrend: <RelativeTrendChart>{
       positiveData: [],
       negativeData: [],
       maxGForce: 0,
       minGForce: 0
     },
+
+    // 暫只開放給20權觀看，待球類運動細分不同球類時可能會用到
     totalYAxisMoveTrend: <RelativeTrendChart>{
       positiveData: [],
       negativeData: [],
@@ -184,12 +197,21 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       maxGForce: 0,
       minGForce: 0
     },
+    extremePlaneGForce: <FilletTrendChart>{
+      maxPlaneMaxGForce: 0,
+      avgPlaneMaxGForce: 0,
+      planeMaxGForce: []
+    },
+
+    // 暫只開放給20權觀看，待球類運動細分不同球類時可能會用到
     extremeXGForce: <CompareLineTrendChart>{
       maxXArr: [],
       minXArr: [],
       maxX: 0,
       minX: 0
     },
+
+    // 暫只開放給20權觀看，待球類運動細分不同球類時可能會用到
     extremeYGForce: <CompareLineTrendChart>{
       maxYArr: [],
       minYArr: [],
@@ -245,19 +267,61 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     power: 0,
     speed: 0,
     cadence: 0,
-    swolf: 0
+    swolf: 0,
+    planeGForce: 0,
+    planeMaxGForce: 0
   };
 
-  groupAnalysis = {};  // 群組分析
-  personAnalysis = {};  // 個人分析
+  groupAnalysis = {};  // 群組分析數據
+  personAnalysis = {};  // 個人分析數據
 
+  /**
+   * 團體分析篩選設定
+   */
+  groupTableOpt = [];
+
+  /**
+   * 個人分析篩選設定
+   */
+  personTableOpt = [];
+
+  /**
+   * 群組分析列表相關
+   */
   groupTable = {
-    showAll: false
+    showAll: false,
+    showOpt: false,
+    sorted: false,
+    sortType: null,
+    mouseInId: false,
+    focusId: null,
+    list: new MatTableDataSource<any>(),
+    showDataDef: []
   }
 
-  memberTable = {
-    showAll: false
+  /**
+   * 個人分析列表相關
+   */
+  personTable = {
+    showAll: false,
+    showOpt: false,
+    sorted: false,
+    sortType: null,
+    mouseInId: false,
+    focusId: null,
+    list: new MatTableDataSource<any>(),
+    showDataDef: []
   }
+
+  /**
+   * 點擊分析列表後顯示之菜單
+   */
+  analysisMenu = {
+    type: null,
+    focusId: '',
+    x: null,
+    y: null
+  };
 
   /**
    * 頁面所需相關時間日期資訊
@@ -266,39 +330,124 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     endDate: null,
     range: null,
     create: null,
+    diffWeek: 0,
     type: <1 | 2>1 // 1: 日報告 2: 週報告
   };
 
-  userId: number;
-  unit = <Unit>unit.metric;  // 使用者所使用的單位
-  previewGroupId = null;  // 預覽列印所選之群組
-  dateLen = 0; // 報告橫跨天數/週數
-  haveDataLen = 0;  // 有數據的天（週）數
-  sameTimeGroupData: any;
-  groupList: any;
+  /**
+   * 使用者概要資訊
+   */
+  userInfo = {
+    id: null,
+    accessRight: null,
+    unit: <Unit>unit.metric
+  }
+
+  /**
+   * 分析列表可設定的欄位數量範圍
+   */
+  tableColumn = {
+    max: 3,
+    min: 2
+  }
+
+  groupList = {
+    analysisObj: {},
+    regression: {},
+    originList: null
+  };
+
   memberList = {
     analysisObj: {},
     noRepeatList: []
   };
+
+  readonly mi = mi;
+  readonly tableLength = 8; // 分析列表預設顯示長度
+  readonly groupLevelEnum = GroupLevel;
+  readonly unitEnum = unit;
+  readonly sportCode = SportCode;
+  dateLen = 0; // 報告橫跨天數/週數
+  haveDataLen = 0;  // 有數據的天（週）數
+  sameTimeGroupData: any;
   previewUrl: string;
   windowWidth = 320;  // 視窗寬度
-  mi = mi;
-  sportCode = SportCode;
-  groupLevelEnum = GroupLevel;
+  columnTranslate = {};  // 分析列表所需的欄位名稱翻譯
 
   constructor(
     private utils: UtilsService,
     private reportService: ReportService,
     private groupService: GroupService,
     private hashIdService: HashIdService,
-    private route: ActivatedRoute,
     private translate: TranslateService,
-    private userProfileService: UserProfileService
+    private userProfileService: UserProfileService,
+    private changeDetectorRef: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
+    this.checkWindowSize(window.innerWidth);
+    this.subscribeWindowSize();
     this.checkQueryString(location.search);
     this.getNeedInfo();
+  }
+
+  /**
+   * 訂閱視窗寬度
+   * @author kidin-1100316
+   */
+   subscribeWindowSize() {
+    const resize = fromEvent(window, 'resize');
+    this.resizeEvent = resize.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(e => {
+      this.windowWidth = (e as any).target.innerWidth;
+      this.checkWindowSize(this.windowWidth);
+      this.changeDetectorRef.markForCheck();
+    });
+
+  }
+
+  /**
+   * 根據視窗寬度調整分析列表最大與最小可顯示數量
+   * @param width {number}-視窗寬度
+   * @author kidin-1100519
+   */
+  checkWindowSize(width: number) {
+      if (width < 500) {
+        this.tableColumn = {
+          max: 3,
+          min: 2
+        };
+
+      } else if (width < 630) {
+        this.tableColumn = {
+          max: 4,
+          min: 2
+        };
+
+      } else if (width < 950) {
+        this.tableColumn = {
+          max: 5,
+          min: 2
+        };
+
+      } else {
+        this.tableColumn = {
+          max: 6,
+          min: 3
+        };
+
+      }
+
+    const { max } = this.tableColumn;
+    if (this.groupTableOpt.length > max) {
+      this.groupTableOpt.length = max;
+    }
+
+    if (this.personTableOpt.length > max) {
+      this.personTableOpt.length = max;
+    }
+
   }
 
   /**
@@ -319,19 +468,18 @@ export class SportsReportComponent implements OnInit, OnDestroy {
             break;
           case 'startdate':
             this.reportConditionOpt.date.startTimestamp = moment(_value, 'YYYY-MM-DD').startOf('day').valueOf();
+            this.reportConditionOpt.date.type = 'custom';
             break;
           case 'enddate':
             this.reportConditionOpt.date.endTimestamp = moment(_value, 'YYYY-MM-DD').endOf('day').valueOf();
+            this.reportConditionOpt.date.type = 'custom';
             break;
-          case 'group':
-            this.previewGroupId = this.hashIdService.handleGroupIdDecode(_value);
-            break;
-          case 'sportType':
+          case 'sporttype':
             this.reportConditionOpt.sportType = +_value as SportType;
             break;
           case 'seemore':
             if (_value.includes('g')) this.groupTable.showAll = true;
-            if (_value.includes('m')) this.memberTable.showAll = true;
+            if (_value.includes('p')) this.personTable.showAll = true;
             break;
         }
 
@@ -348,19 +496,24 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   getNeedInfo() {
     combineLatest([
       this.groupService.getAllLevelGroupData(),
-      this.userProfileService.getRxUserProfile()
+      this.userProfileService.getRxUserProfile(),
+      this.translate.get('hellow world')
     ]).pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(resArr => {
-console.log('allGroup', resArr);
-      this.groupList = resArr[0];
+      this.createTranslate();
+      this.groupList.originList = resArr[0];
       const { groupId, brands, branches, coaches } = resArr[0] as any,
-            { userId, unit, heartRateBase } = resArr[1] as any,
+            { userId, unit, heartRateBase, systemAccessRight } = resArr[1] as any,
             groupLevel = this.utils.displayGroupLevel(groupId),
             group = this.reportConditionOpt.group;
 
-      this.userId = userId;
-      this.unit = unit;
+      this.userInfo = {
+        id: userId,
+        accessRight: systemAccessRight,
+        unit
+      };
+
       this.chart.hrInfo.hrBase = heartRateBase;
       group.coaches = coaches;
       switch (groupLevel) {
@@ -381,26 +534,57 @@ console.log('allGroup', resArr);
           break;
       }
 
-      if (this.uiFlag.isPreviewMode) {
-        const previewGroupLevel = this.utils.displayGroupLevel(this.previewGroupId);
-        if (previewGroupLevel !== groupLevel) {
-          
-          switch (previewGroupLevel) {
-            case GroupLevel.branch:
-              group.selectGroup = this.previewGroupId.split('-').slice(0, 4).join('-');
-              break;
-            case GroupLevel.class:
-              group.selectGroup = this.previewGroupId.split('-').slice(0, 5).join('-');
-              break;
-          }
-
-        }
-
-      }
-
       this.reportService.setReportCondition(this.reportConditionOpt);
       this.getReportSelectedCondition();
     });
+
+  }
+
+  /**
+   * 建立分析列表欄位多國語系
+   * @author kidin-1100520
+   */
+  createTranslate() {
+    this.columnTranslate = {
+      name: this.translate.instant('universal_activityData_name'),
+      memberNum: `
+        ${this.translate.instant('universal_vocabulary_activity')}
+        ${this.translate.instant('universal_activityData_people')}
+      `,
+      stroke: this.translate.instant('universal_activityData_numberOfActivity'),
+      totalTime: this.translate.instant('universal_activityData_limit_totalTime'),
+      benefitTime: this.translate.instant('universal_activityData_benefitime'),
+      pai: this.translate.instant('universal_activityData_pai'),
+      calories: this.translate.instant('universal_activityData_totalCalories'),
+      totalDistance: this.translate.instant('universal_activityData_limit_totalDistance'),
+      avgPace: this.translate.instant('universal_activityData_limit_avgPace'),
+      avgSpeed: this.translate.instant('universal_activityData_limit_avgSpeed'),
+      avgCadence: {
+        [SportCode.run]: this.translate.instant('universal_activityData_limit_avgStepCadence'),
+        [SportCode.cycle]: this.translate.instant('universal_activityData_limit_avgCyclingCadence'),
+        [SportCode.swim]: this.translate.instant('universal_activityData_limit_avgSwimReps'),
+        [SportCode.row]: this.translate.instant('universal_activityData_limit_avgRowCadence'),
+      },
+      avgPower: this.translate.instant('universal_activityData_limit_avgPower'),
+      avgHr: this.translate.instant('universal_activityData_limit_avgHr'),
+      totalPlaneGForce: `
+        ${this.translate.instant('universal_adjective_accumulation')}
+        ${this.translate.instant('universal_activityData_planarAcceleration')}
+      `,
+      totalPlusZGForce: this.translate.instant('universal_activityData_limit_totalJump'),
+      totalMinZGForce: this.translate.instant('universal_activityData_limit_totalFloorImpact'),
+      hrZone: this.translate.instant('universal_activityData_limit_hrZone'),
+      totalWeight: this.translate.instant('universal_activityData_limit_totalWeight'),
+      totalSets: this.translate.instant('universal_activityData_limit_totalSets'),
+      preferMuscleGroup: this.translate.instant('universal_muscleName_preferredMuscleGroup'),
+      armMuscle: this.translate.instant('universal_muscleName_armMuscles'),
+      pectoralsMuscle: this.translate.instant('universal_muscleName_pectoralsMuscle'),
+      shoulderMuscle: this.translate.instant('universal_muscleName_shoulderMuscle'),
+      backMuscle: this.translate.instant('universal_muscleName_backMuscle'),
+      abdominalMuscle: this.translate.instant('universal_muscleName_abdominalMuscle'),
+      legMuscle: this.translate.instant('universal_muscleName_legMuscle'),
+      preferSport: this.translate.instant('universal_activityData_activityPreferences')
+    }
 
   }
 
@@ -474,6 +658,11 @@ console.log('allGroup', resArr);
         maxSwolf: 0,
         minSwolf: null
       },
+      planeAcceleration: {
+        maxPlaneGForce: 0,
+        avgPlaneGForce: 0,
+        planeGForce: []
+      },
       totalXAxisMoveTrend: {
         positiveData: [],
         negativeData: [],
@@ -491,6 +680,11 @@ console.log('allGroup', resArr);
         negativeData: [],
         maxGForce: 0,
         minGForce: 0
+      },
+      extremePlaneGForce: {
+        maxPlaneMaxGForce: 0,
+        avgPlaneMaxGForce: 0,
+        planeMaxGForce: []
       },
       extremeXGForce: {
         maxXArr: [],
@@ -550,12 +744,25 @@ console.log('allGroup', resArr);
       power: 0,
       speed: 0,
       cadence: 0,
-      swolf: 0
+      swolf: 0,
+      planeGForce: 0,
+      planeMaxGForce: 0
     };
 
+    this.groupList.regression = {};
     this.haveDataLen = 0;
     this.groupAnalysis = {};
     this.personAnalysis = {};
+    this.closeAllMenu();
+  }
+
+  /**
+   * 數據處理完成，進行畫面渲染檢查
+   * @author kidin-1100525
+   */
+  reportCompleted() {
+    this.uiFlag.progress = 100;
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -566,25 +773,25 @@ console.log('allGroup', resArr);
     this.reportService.getReportCondition().pipe(
       switchMap(res => {
         const { progress } = this.uiFlag;
-        this.uiFlag.progress = progress === 100 ? 0 : progress;
+        this.uiFlag.progress = progress === 100 ? 10 : progress;
         this.initReportContent();
         const effectGroupId = (res as any).group.selectGroup.split('-'),
-              fillStart = effectGroupId.length;
-        effectGroupId.length = 6;
-        const completeGroupId = effectGroupId.fill('0', fillStart, 6).join('-'),
-              { id: currentGroupId } = this.groupInfo,
-              listBody = {
-                token: this.utils.getToken(),
-                groupId: completeGroupId,
-                groupLevel: this.utils.displayGroupLevel(completeGroupId),
-                infoType: 5,
-                avatarType: 3
-              };
-
+              completeGroupId = this.getCompleteGroupId(effectGroupId),
+              { id: currentGroupId } = this.groupInfo;
+              
+        // 若所選群組不變，則沿用之前的成員清單
         if (currentGroupId === completeGroupId) {
           return of([res, this.memberList]);
         } else {
           this.groupInfo = this.assignGroupInfo(completeGroupId);
+          const listBody = {
+            token: this.utils.getToken(),
+            groupId: completeGroupId,
+            groupLevel: this.utils.displayGroupLevel(completeGroupId),
+            infoType: 5,
+            avatarType: 3
+          };
+
           return this.groupService.fetchGroupMemberList(listBody).pipe(
             map(listRes => {
               const { apiCode, resultCode, resultMessage, info: { groupMemberInfo } } = listRes as any;
@@ -606,7 +813,7 @@ console.log('allGroup', resArr);
       takeUntil(this.ngUnsubscribe)
     ).subscribe(resArr => {
       // 避免連續送出
-      if (this.uiFlag.progress === 0) {
+      if (this.uiFlag.progress === 10) {
         this.uiFlag.progress = 30;
         const [condition, memberList] = [...resArr as any],
               { 
@@ -617,8 +824,8 @@ console.log('allGroup', resArr);
                 group: {
                   selectGroup
                 }
-              } = condition,
-              {
+              } = condition;
+        const {
                 date: { 
                   startTimestamp: preStartTimestamp,
                   endTimestamp: preEndTimestamp
@@ -630,21 +837,20 @@ console.log('allGroup', resArr);
 
         // 日期範圍大於52天則取週報告
         this.reportTime.type = moment(endTimestamp).diff(moment(startTimestamp), 'day') <= 52 ? 1 : 2;
-
-        // 若只更動運動類型，則不再call api取得數據
-        if (
+        const notReGetData = (
           this.uiFlag.inited
           && startTimestamp === preStartTimestamp
           && endTimestamp === preEndTimestamp
           && selectGroup === preSelectGroup
-        ) {
+        );
+
+        // 若只更動運動類型，則不再call api取得數據
+        if (notReGetData) {
           this.reportConditionOpt = this.utils.deepCopy(condition);
           this.personAnalysis = this.utils.deepCopy(memberList.analysisObj);
           this.createReport(this.sameTimeGroupData);
         } else {
           this.reportConditionOpt = this.utils.deepCopy(condition);
-          this.createGroupAnalysisObj(this.groupList);
-
           // 若群組id不變，則使用已儲存之人員清單
           let memIdArr: Array<number>;
           if (selectGroup === preSelectGroup && this.uiFlag.inited) {
@@ -652,39 +858,8 @@ console.log('allGroup', resArr);
           } else {
             if (!this.uiFlag.inited) this.uiFlag.inited = true;
             this.memberList.analysisObj = {};
-            const memIdSet = new Set();
-            memberList.forEach(_list => {
-              const { groupId: _memGroupId, memberId, memberName } = _list;
-              // 取得不重複的所有成員id，用來call api 2104
-              memIdSet.add(_list.memberId);
-              switch (this.groupInfo.level) {
-                
-              }
-  
-              // 生成個人分析物件，方便後續計算個人分析數據
-              const { name: groupName } = this.groupAnalysis[_memGroupId];
-              if (this.memberList.analysisObj[memberId]) {
-                this.memberList.analysisObj[memberId].belongGroup.push({
-                  name: groupName,
-                  groupId: _memGroupId
-                })
-              } else {
-                this.memberList.analysisObj = {
-                  [memberId]: {
-                    openPrivacy: false,
-                    name: memberName,
-                    belongGroup: [{
-                      name: groupName,
-                      groupId: _memGroupId
-                    }]
-                  },
-                  ...this.memberList.analysisObj
-                };
-  
-              }
-  
-            });
-
+            this.createGroupAnalysisObj(this.groupList.originList);
+            const memIdSet = this.handlePersonAnalysisObj(memberList);
             memIdArr = (Array.from(memIdSet) as Array<number>).sort((a, b) => a - b);
             this.memberList.noRepeatList = this.utils.deepCopy(memIdArr);
           }
@@ -700,6 +875,17 @@ console.log('allGroup', resArr);
   }
 
   /**
+   * 取得完整的group id（補零）
+   * @param idArr {Array}
+   * @author kidin-1100525
+   */
+  getCompleteGroupId(idArr: Array<string>) {
+    const fillStart = idArr.length;
+    idArr.length = 6;
+    return idArr.fill('0', fillStart, 6).join('-');
+  }
+
+  /**
    * 取得面面所需的指定群組資訊
    * @param id {string}-group id
    * @author kidin-1100422
@@ -709,7 +895,7 @@ console.log('allGroup', resArr);
       brands,
       branches,
       coaches
-    } = this.groupList;
+    } = this.groupList.originList;
 
     const { groupIcon: brandIcon, groupName: brandName } = brands[0],
           level = this.utils.displayGroupLevel(id);
@@ -785,7 +971,7 @@ console.log('allGroup', resArr);
         this.createReport(res);
       } else {
         this.uiFlag.noData = true;
-        this.uiFlag.progress = 100;
+        this.reportCompleted();
       }
       
     });
@@ -857,20 +1043,21 @@ console.log('allGroup', resArr);
   
               // 計算該運動類別活動人數用
               if (currentSportType !== SportCode.all) activityPeopleSet.add(_data.userId);
-              this.handlePersonAnalysis(userId, _activities);
+              this.countPersonAnalysis(userId, _activities);
             };
 
           });
 
         });
 
+        if (activity.length !== 0) this.createRangeTrend(userId, activity);
       }
       
     });
 
     if (!haveData) {
       this.uiFlag.noData = true;
-      this.uiFlag.progress = 100;
+      this.reportCompleted();
     } else {
       this.translate.get('hellow world').pipe(
         takeUntil(this.ngUnsubscribe)
@@ -883,17 +1070,20 @@ console.log('allGroup', resArr);
           create: moment().format('YYYY-MM-DD HH:mm'),
           endDate: moment(endTimestamp).format('YYYY-MM-DD'),
           range: `${moment(endTimestamp).diff(moment(startTimestamp), 'day') + 1}${rangeUnit}`,
+          diffWeek: (moment(endTimestamp).diff(moment(startTimestamp), 'day') + 1) / 7,
           type: this.reportTime.type
         };
 
         this.info = {activePeopleNum, ...this.info};
         this.handleMixData(mixData);
         this.handleGroupAnalysis(this.personAnalysis);
-        this.uiFlag.progress = 100;
+        this.createAnalysisTable(this.reportConditionOpt.sportType);
+        this.reportCompleted();
+        this.updateUrl();
       })
       
     }
-console.log('personAnalysis', this.personAnalysis);
+
   }
 
   /**
@@ -914,9 +1104,8 @@ console.log('personAnalysis', this.personAnalysis);
       const xAxisTimestamp = dateArr[i],
             { startTimestamp, activities } = noRepeatDateData[dataIdx] || { startTimestamp: undefined, activities: undefined };
       if (xAxisTimestamp === startTimestamp) {
-        let sameDateData = {},
-            sameDateExtremeData = {};
-        const activitiesLen = activities.length
+        let sameDateData = {};
+        const activitiesLen = activities.length;
         for (let j = 0; j < activitiesLen; j++) {
           const _activity = activities[j];
           if (sportType === SportCode.all) this.createAnalysisChartData(_activity);
@@ -948,27 +1137,13 @@ console.log('personAnalysis', this.personAnalysis);
                 sameDateData = {[key]: value, ...sameDateData};
               }
 
-              // 取得最大最小值供圖表使用
-              const lowerCaseKey = key.toLowerCase(),
-                    isExtremeKey = lowerCaseKey.includes('max') || lowerCaseKey.includes('min');
-              if (isExtremeKey) {
-                const currentVal = sameDateExtremeData[key];
-                if (currentVal !== undefined) {
-                  if (lowerCaseKey.includes('max') && value > currentVal) sameDateExtremeData[key] = value;
-                  if (lowerCaseKey.includes('min') && value < currentVal) sameDateExtremeData[key] = value;
-                } else {
-                  sameDateExtremeData = {[key]: value, ...sameDateExtremeData};
-                }
-
-              }
-
             }
 
           }
 
         }
 
-        this.createChartData(sameDateData, sameDateExtremeData, activitiesLen, xAxisTimestamp);
+        this.createChartData(sameDateData, activitiesLen, xAxisTimestamp);
         this.haveDataLen++;
         dataIdx++;
       } else {
@@ -978,25 +1153,37 @@ console.log('personAnalysis', this.personAnalysis);
           zeroData = {[key]: 0, ...zeroData};
         }
 
-        this.createChartData(zeroData, undefined, 1, xAxisTimestamp);
+        this.createChartData(zeroData, 1, xAxisTimestamp);
       }
 
     }
 
     this.getTrendAvgValue();
-    const {
-      totalHrZone0Second: z0,
-      totalHrZone1Second: z1,
-      totalHrZone2Second: z2,
-      totalHrZone3Second: z3,
-      totalHrZone4Second: z4,
-      totalHrZone5Second: z5
-    } = infoData as any;
-    const totalBenefitSecond = z2 + z3 + z4 + z5,  // 效益時間
-          { startTimestamp, endTimestamp } = this.reportConditionOpt.date,
-          diffWeek = (moment(endTimestamp).diff(moment(startTimestamp), 'day') + 1) / 7,
-          pai = this.reportService.countPai([z0, z1, z2, z3, z4, z5], diffWeek); // pai指數
-    this.info = {totalBenefitSecond, pai, ...infoData, ...this.info};
+    this.info = { ...infoData, ...this.info };
+    // 針對不同類別所需數據進行加工
+    switch (sportType) {
+      case SportCode.all:
+        const {
+          totalHrZone0Second: z0,
+          totalHrZone1Second: z1,
+          totalHrZone2Second: z2,
+          totalHrZone3Second: z3,
+          totalHrZone4Second: z4,
+          totalHrZone5Second: z5
+        } = this.info as any;
+  
+        const totalBenefitSecond = z2 + z3 + z4 + z5,  // 效益時間
+              pai = this.reportService.countPai([z0, z1, z2, z3, z4, z5], this.reportTime.diffWeek); // pai指數
+        this.info = { totalBenefitSecond, pai, ...this.info };
+        break;
+      case SportCode.ball:
+        const { totalPlusGforceX, totalPlusGforceY, totalMinusGforceX, totalMinusGforceY } = this.info as any,
+        countElementArr = [totalPlusGforceX, totalPlusGforceY, totalMinusGforceX, totalMinusGforceY],
+        totalPlaneAcceleration = this.reportService.pythagorean(countElementArr);
+        this.info = { totalPlaneAcceleration, ...this.info };
+        break;
+    }
+
   }
 
   /**
@@ -1005,15 +1192,54 @@ console.log('personAnalysis', this.personAnalysis);
    * @author kidin-1100511
    */
   createGroupAnalysisObj(groupList: any) {
-    this.groupAnalysis = {};
-    const { groupId, brands, branches, coaches } = groupList,
-          groupLevel = this.utils.displayGroupLevel(groupId);
+    this.groupList.analysisObj = {};
+    const { brands, branches, coaches } = groupList,
+          { id, level, name, parents } = this.groupInfo;
+    switch (level) {
+      case GroupLevel.class:
+        this.groupList.analysisObj = {
+          [id]: {
+            name,
+            parentsName: parents.split('\\')[1],
+            memberList: [],
+            memberSet: new Set<number>()
+          },
+          ...this.groupList.analysisObj
+        };
+        break;
+      case GroupLevel.branch:
+        coaches.forEach(_coach => {
+          const { groupId: _coachId, groupName: _coachName } = _coach,
+                _parentId = `${this.groupService.getPartGroupId(_coachId, 4)}-0-0`;
+          if (_parentId === id) {
+            this.groupList.analysisObj = {
+              [_coachId]: {
+                name: _coachName,
+                parentsName: name,
+                memberList: [],
+                memberSet: new Set<number>()
+              },
+              ...this.groupList.analysisObj
+            };
 
-    coaches.forEach(_coach => {
-      const { groupId: _coachId, groupName } = _coach;
-      let parentsName: string;
-      switch (groupLevel) {
-        case GroupLevel.brand:
+          }
+    
+        });
+
+        this.groupList.analysisObj = {
+          [id]: {
+            name: name,
+            parentsName: parents,
+            memberList: [],
+            memberSet: new Set<number>()
+          },
+          ...this.groupList.analysisObj
+        };
+        break;
+      case GroupLevel.brand:
+        coaches.forEach(_coach => {
+          const { groupId: _coachId, groupName } = _coach;
+          let parentsName: string;
           for (let i = 0, len = branches.length; i < len; i++) {
             const { groupId: _branchId, groupName: _branchName } = branches[i],
                   partCoachId = this.groupService.getPartGroupId(_branchId, 4),
@@ -1025,60 +1251,117 @@ console.log('personAnalysis', this.personAnalysis);
             }
 
           }
+    
+          this.groupList.analysisObj = {
+            [_coachId]: {
+              name: groupName,
+              parentsName,
+              memberList: [],
+              memberSet: new Set<number>()
+            },
+            ...this.groupList.analysisObj
+          };
+    
+        });
 
+        const { groupId: brandId, groupName: brandName } = brands[0];
+        branches.forEach(_branch => {
+          const { groupId: _branchId, groupName } = _branch;
+          this.groupList.analysisObj = {
+            [_branchId]: {
+              name: groupName,
+              parentsName: brandName,
+              memberList: [],
+              memberSet: new Set<number>()
+            },
+            ...this.groupList.analysisObj
+          };
+  
+        });
+
+        this.groupList.analysisObj = {
+          [brandId]: {
+            name: brandName,
+            parentsName: '',
+            memberList: [],
+            memberSet: new Set<number>()
+          },
+          ...this.groupList.analysisObj
+        };
+        break;
+    }
+
+  }
+
+  /**
+   * 建立個人分析物件以方便後續數據計算，並回傳不重複之成員id
+   * @param memList {Array<any>}-api 1103回傳的資料
+   * @param level {number}-群組階層
+   * @author kidin-1100525
+   */
+  handlePersonAnalysisObj(memList: Array<any>) {
+    const { id, level } = this.groupInfo,
+          memIdSet = new Set();
+    memList.forEach(_list => {
+      const { groupId: _memGroupId, memberId, memberName } = _list;
+      // 取得不重複的所有成員id，用來call api 2104
+      memIdSet.add(memberId);
+
+      // 依據成員所屬群組進行歸納，已便顯示分析選單
+      this.groupList.analysisObj[_memGroupId].memberSet.add(memberId);
+      const { name: _grouphName } = this.groupList.analysisObj[_memGroupId];
+      switch (level) {
+        case GroupLevel.class:
+          if (_memGroupId === id) {
+            this.createPersonAnalysisObj(memberId, memberName, _grouphName, _memGroupId);
+          }
           break;
-        default:
-          const { groupName: branchName } = branches[0];
-          parentsName = branchName;
+        case GroupLevel.branch:
+          const parentsGroupId = `${this.groupService.getPartGroupId(_memGroupId, 4)}-0-0`;
+          this.groupList.analysisObj[parentsGroupId].memberSet.add(memberId);
+          if (parentsGroupId === id) {
+            this.createPersonAnalysisObj(memberId, memberName, _grouphName, _memGroupId);
+          }
+          break;
+        case GroupLevel.brand:
+          const branchGroupId = `${this.groupService.getPartGroupId(_memGroupId, 4)}-0-0`,
+                brandGroupId = `${this.groupService.getPartGroupId(_memGroupId, 3)}-0-0-0`;
+          this.groupList.analysisObj[branchGroupId].memberSet.add(memberId);
+          this.groupList.analysisObj[brandGroupId].memberSet.add(memberId);
+          this.createPersonAnalysisObj(memberId, memberName, _grouphName, _memGroupId);
           break;
       }
 
-      this.groupAnalysis = {
-        [_coachId]: {
-          name: groupName,
-          parentsName,
-          memberList: [],
-          memberSet: new Set<number>()
-        },
-        ...this.groupAnalysis
-      };
-
     });
 
-    if (groupLevel === GroupLevel.brand) {
-      const { groupId: brandId, groupName: brandName } = brands[0];
-      this.groupAnalysis = {
-        [brandId]: {
-          name: brandName,
-          parentsName: '',
-          memberList: []
-        },
-        ...this.groupAnalysis
-      };
+    return memIdSet;
+  }
 
-      branches.forEach(_branch => {
-        const { groupId: _branchId, groupName } = _branch;
-        this.groupAnalysis = {
-          [_branchId]: {
+  /**
+   * 生成個人分析物件，方便後續計算個人分析數據
+   * @param userId {number}
+   * @param userName {string}
+   * @param groupName {string}
+   * @param groupId {string}
+   * @author kidin-1100524
+   */
+  createPersonAnalysisObj(userId: number, userName: string, groupName: string, groupId: string) {
+    if (this.memberList.analysisObj[userId]) {
+      this.memberList.analysisObj[userId].belongGroup.push({
+        name: groupName,
+        groupId: groupId
+      })
+    } else {
+      this.memberList.analysisObj = {
+        [userId]: {
+          openPrivacy: false,
+          name: userName,
+          belongGroup: [{
             name: groupName,
-            parentsName: brandName,
-            memberList: []
-          },
-          ...this.groupAnalysis
-        };
-
-      });
-
-    } else if (groupLevel === GroupLevel.branch) {
-      const { groupName: brandName } = brands[0],
-            { groupId: branchId, groupName } = branches[0];
-      this.groupAnalysis = {
-        [branchId]: {
-          name: groupName,
-          parentsName: brandName,
-          memberList: []
+            groupId: groupId
+          }]
         },
-        ...this.groupAnalysis
+        ...this.memberList.analysisObj
       };
 
     }
@@ -1089,23 +1372,26 @@ console.log('personAnalysis', this.personAnalysis);
    * 統計個人用分析數據
    * @param userId {number}-使用者id
    * @param data {any}-一個單位日期/類別的數據
+   * @param startTime {string}-該筆運動檔案時間
    * @author kidin-1100512
    */
-  handlePersonAnalysis(userId: number, data: any) {
+  countPersonAnalysis(userId: number, data: any) {
     const reportSportType = this.reportConditionOpt.sportType,
           needKey = this.getNeedKey(reportSportType);
     for (let i = 0, len = needKey.length; i < len; i++) {
       const key = needKey[i],
             value = +data[key];
-      let assignPersonData = this.personAnalysis[userId][key];
+      if (value !== undefined) {
 
-      if (assignPersonData) {
-        assignPersonData += value;
-      } else {
-        this.personAnalysis[userId] = {
-          [key]: value,
-          ...this.personAnalysis[userId]
-        };
+        if (this.personAnalysis[userId][key]) {
+          this.personAnalysis[userId][key] += value;
+        } else {
+          this.personAnalysis[userId] = {
+            [key]: value,
+            ...this.personAnalysis[userId]
+          };
+
+        }
 
       }
 
@@ -1118,13 +1404,20 @@ console.log('personAnalysis', this.personAnalysis);
               { perTypeCount } = this.personAnalysis[userId],
               sportTypeArrIndex = +sportType - 1;
         if (perTypeCount) {
-          perTypeCount[sportTypeArrIndex] += totalActivities;
+          perTypeCount[sportTypeArrIndex].count += totalActivities;
         } else {
           // Object.keys(enum) => ["keys", "value"]，故長度除2
           const sportTypeLen = (Object.keys(SportCode)
             .filter(_key => typeof _key === 'string').length / 2) - 2;  // 扣掉rest和all兩個類別
-          const typeCountArr = new Array(sportTypeLen).fill(0);
-          typeCountArr[sportTypeArrIndex] += totalActivities;
+          let typeCountArr = [];
+          for (let i = 0; i < sportTypeLen; i++) {
+            typeCountArr.push({
+              type: i + 1,
+              count: 0
+            })
+          }
+
+          typeCountArr[sportTypeArrIndex].count += totalActivities;
           this.personAnalysis[userId] = {
             perTypeCount: typeCountArr,
             ...this.personAnalysis[userId]
@@ -1136,10 +1429,18 @@ console.log('personAnalysis', this.personAnalysis);
         weightTrainingInfo.forEach(_info => {
           const { muscle, totalReps, totalSets, totalWeightKg } = _info;
           if (!this.personAnalysis[userId].totalSets) {
+            const muscleGroupArr = [
+              { muscleGroup: 0, count: 0 },
+              { muscleGroup: 1, count: 0 },
+              { muscleGroup: 2, count: 0 },
+              { muscleGroup: 3, count: 0 },
+              { muscleGroup: 4, count: 0 },
+              { muscleGroup: 5, count: 0 }
+            ];
             this.personAnalysis[userId] = {
               totalSets: 0,
-              muscleGroupCount: [0, 0, 0, 0, 0, 0],
-              armMuscleGroup: [0, 0, 0],  // [totalWeight, reps, sets]
+              muscleGroupCount: muscleGroupArr,
+              armMuscle: [0, 0, 0],  // [totalWeight, reps, sets]
               pectoralsMuscle: [0, 0, 0],
               shoulderMuscle: [0, 0, 0],
               backMuscle: [0, 0, 0],
@@ -1152,71 +1453,44 @@ console.log('personAnalysis', this.personAnalysis);
 
           this.personAnalysis[userId].totalSets += totalSets;
           const {
-            muscleGroupCount,
-            armMuscleGroup,
-            pectoralsMuscle,
-            shoulderMuscle,
-            backMuscle,
-            abdominalMuscle,
-            legMuscle,
-          } = this.personAnalysis[userId];
-          // 依肌群分別計算數據
-          switch (+muscle) {
-            case MuscleCode.bicepsInside:
-            case MuscleCode.triceps:
-            case MuscleCode.wristFlexor:
-              muscleGroupCount[MuscleGroup.armMuscle] += weightTrainActivities;
-              armMuscleGroup[0] += totalWeightKg;
-              armMuscleGroup[1] += totalReps;
-              armMuscleGroup[2] += totalSets;
+                  muscleGroupCount,
+                  armMuscle,
+                  pectoralsMuscle,
+                  shoulderMuscle,
+                  backMuscle,
+                  abdominalMuscle,
+                  legMuscle,
+                } = this.personAnalysis[userId],
+                belongMuscleGroup = this.reportService.getBelongMuscleGroup(+muscle);
+          
+          muscleGroupCount[belongMuscleGroup].count += weightTrainActivities;
+          switch (belongMuscleGroup) {
+            case MuscleGroup.armMuscle:
+              armMuscle[0] += totalWeightKg;
+              armMuscle[1] += totalReps;
+              armMuscle[2] += totalSets;
               break;
-            case MuscleCode.pectoralsMuscle:
-            case MuscleCode.pectoralisUpper:
-            case MuscleCode.pectoralisLower:
-            case MuscleCode.pectoralsInside:
-            case MuscleCode.pectoralsOutside:
-            case MuscleCode.frontSerratus:
-              muscleGroupCount[MuscleGroup.pectoralsMuscle] += weightTrainActivities;
+            case MuscleGroup.pectoralsMuscle:
               pectoralsMuscle[0] += totalWeightKg;
               pectoralsMuscle[1] += totalReps;
               pectoralsMuscle[2] += totalSets;
               break;
-            case MuscleCode.shoulderMuscle:
-            case MuscleCode.deltoidMuscle:
-            case MuscleCode.deltoidAnterior:
-            case MuscleCode.deltoidLateral:
-            case MuscleCode.deltoidPosterior:
-            case MuscleCode.trapezius:
-              muscleGroupCount[MuscleGroup.shoulderMuscle] += weightTrainActivities;
+            case MuscleGroup.shoulderMuscle:
               shoulderMuscle[0] += totalWeightKg;
               shoulderMuscle[1] += totalReps;
               shoulderMuscle[2] += totalSets;
               break;
-            case MuscleCode.backMuscle:
-            case MuscleCode.latissimusDorsi:
-            case MuscleCode.erectorSpinae:
-              muscleGroupCount[MuscleGroup.backMuscle] += weightTrainActivities;
+            case MuscleGroup.backMuscle:
               backMuscle[0] += totalWeightKg;
               backMuscle[1] += totalReps;
               backMuscle[2] += totalSets;
               break;
-            case MuscleCode.abdominalMuscle:
-            case MuscleCode.rectusAbdominis:
-            case MuscleCode.rectusAbdominisUpper:
-            case MuscleCode.rectusAbdominisLower:
-            case MuscleCode.abdominisOblique:
-              muscleGroupCount[MuscleGroup.abdominalMuscle] += weightTrainActivities;
+            case MuscleGroup.abdominalMuscle:
               abdominalMuscle[0] += totalWeightKg;
               abdominalMuscle[1] += totalReps;
               abdominalMuscle[2] += totalSets;
               break;
-            case MuscleCode.legMuscle:
-            case MuscleCode.hipMuscle:
-            case MuscleCode.quadricepsFemoris:
-            case MuscleCode.hamstrings:
-            case MuscleCode.ankleFlexor:
-            case MuscleCode.gastrocnemius:
-              muscleGroupCount[MuscleGroup.legMuscle] += weightTrainActivities;
+            case MuscleGroup.legMuscle:
               legMuscle[0] += totalWeightKg;
               legMuscle[1] += totalReps;
               legMuscle[2] += totalSets;
@@ -1236,31 +1510,60 @@ console.log('personAnalysis', this.personAnalysis);
    * @author kidin-1100512
    */
   handleGroupAnalysis(personData: any) {
-    const { level } = this.groupInfo;
-    for (let memberId of personData) {
-      if (personData.hasOwnProperty(memberId)) {
-        const { belongGroup, name, openPrivacy } = personData[memberId];
-        for (let i = 0, len = belongGroup.length; i < len; i++) {
-          const { groupId } = belongGroup[i],
-                groupLevel = this.utils.displayGroupLevel(groupId),
-                { memberList } = this.groupAnalysis[groupId],
-                memberIncludes = memberList.includes(_mem => _mem.userId === +memberId);
-          if (!memberIncludes) {
-            this.groupAnalysis[groupId].memberList.push({
+    this.groupAnalysis = this.utils.deepCopy(this.groupList.analysisObj);
+    for (let gid in (this.groupAnalysis as any)) {
+      if (this.groupAnalysis.hasOwnProperty(gid)) {
+        const { memberSet, memberList } = this.groupAnalysis[gid],
+              idList = Array.from(memberSet);
+        idList.forEach(_idList => {
+          const _id  = _idList as number;
+          if (personData.hasOwnProperty(_id)) {
+            const { name, openPrivacy, totalActivities } = personData[_id];
+            memberList.push({
               name,
-              userId: +memberId,
+              userId: _id,
               openPrivacy
             });
 
-            for (let key of personData[memberId]) {
-              if (!['belongGroup', 'name', 'openPrivacy'].includes(key)) {
-                if (this.groupAnalysis[groupId].hasOwnProperty(key)) {
-                  this.groupAnalysis[groupId][key] += personData[memberId][key];
-                } else {
-                  this.groupAnalysis[groupId] = {
-                    [key]: personData[memberId][key],
-                    ...this.groupAnalysis[groupId]
-                  };
+            if (openPrivacy && totalActivities && totalActivities > 0) {
+              
+              if (this.groupAnalysis[gid].activityPeople) {
+                this.groupAnalysis[gid].activityPeople += 1;
+              } else {
+                this.groupAnalysis[gid] = {
+                  activityPeople: 1,
+                  ...this.groupAnalysis[gid]
+                };
+
+              }
+
+              for (let key in personData[_id]) {
+                const excloudKey = [
+                  'belongGroup',
+                  'name',
+                  'openPrivacy',
+                  'perTypeCount',
+                  'totalWeightKg',
+                  'totalReps',
+                  'totalSets',
+                  'muscleGroupCount',
+                  'armMuscle',
+                  'pectoralsMuscle',
+                  'shoulderMuscle',
+                  'backMuscle',
+                  'abdominalMuscle',
+                  'legMuscle'
+                ];
+                if (!excloudKey.includes(key)) {
+                  if (this.groupAnalysis[gid].hasOwnProperty(key)) {
+                    this.groupAnalysis[gid][key] += personData[_id][key];
+                  } else {
+                    this.groupAnalysis[gid] = {
+                      [key]: personData[_id][key],
+                      ...this.groupAnalysis[gid]
+                    };
+
+                  }
 
                 }
 
@@ -1270,26 +1573,628 @@ console.log('personAnalysis', this.personAnalysis);
 
           }
 
+        });
+
+        this.createGroupRegression(gid);
+      }
+      
+    }
+
+  }
+
+  /**
+   * 建立群組區間趨勢
+   * @param groupId {string}-群組id
+   * @author kidin-1100527
+   */
+  createGroupRegression(groupId: string) {
+    const regressionData = this.groupList.regression[groupId];
+    for (let _dataType in regressionData) {
+      if (regressionData.hasOwnProperty(_dataType)) {
+        const { data, date } = regressionData[_dataType],
+              slope = new SimpleLinearRegression(date, data).slope || 0;
+        let trend: Regression = null;
+        if (slope > 0) {
+          trend = 'up';
+        } else if (slope < 0) {
+          trend = 'down';
+        }
+
+        Object.assign(this.groupAnalysis[groupId], {
+          [`${_dataType}Trend`]: trend
+        });
+
+      }
+
+    }
+
+  }
+
+  /**
+   * 根據運動類別及視窗寬度建立群組及個人可設定的數據
+   * @param sportType {SportType}-運動類別
+   * @author kidin-1100517
+   */
+  createAnalysisTable(sportType: SportType) {
+    let groupDef = [],
+        personDef = [];
+    groupDef = [
+      'name',
+      'memberNum',
+      'stroke',
+      'totalTime'
+    ];
+
+    personDef = [
+      'name',
+      'stroke',
+      'totalTime'
+    ];
+    switch (sportType) {
+      case SportCode.all:
+        this.groupTable.showDataDef = groupDef.concat([
+          'benefitTime',
+          'pai',
+          'calories',
+          'hrZone'
+        ]);
+
+        this.personTable.showDataDef = personDef.concat([
+          'benefitTime',
+          'pai',
+          'calories',
+          'preferSport',
+          'hrZone'
+        ]);
+        break;
+      case SportCode.run:
+        this.groupTable.showDataDef = groupDef.concat([
+          'totalDistance',
+          'avgPace',
+          'avgCadence',
+          'calories',
+          'hrZone'
+        ]);
+
+        this.personTable.showDataDef = personDef.concat([
+          'totalDistance',
+          'avgPace',
+          'avgCadence',
+          'calories',
+          'hrZone'
+        ]);
+        break;
+      case SportCode.cycle:
+        this.groupTable.showDataDef = groupDef.concat([
+          'totalDistance',
+          'avgSpeed',
+          'avgCadence',
+          'avgPower',
+          'calories',
+          'hrZone'
+        ]);
+
+        this.personTable.showDataDef = personDef.concat([
+          'totalDistance',
+          'avgSpeed',
+          'avgCadence',
+          'avgPower',
+          'calories',
+          'hrZone'
+        ]);
+        break;
+      case SportCode.weightTrain:
+        this.groupTable.showDataDef = groupDef;
+        this.personTable.showDataDef = personDef.concat([
+          'totalWeight',
+          'totalSets',
+          'preferMuscleGroup',
+          'armMuscle',
+          'pectoralsMuscle',
+          'shoulderMuscle',
+          'backMuscle',
+          'abdominalMuscle',
+          'legMuscle'
+        ]);
+        break;
+      case SportCode.swim:
+        this.groupTable.showDataDef = groupDef.concat([
+          'totalDistance',
+          'avgPace',
+          'avgCadence',
+          'calories',
+          'hrZone'
+        ]);
+
+        this.personTable.showDataDef = personDef.concat([
+          'totalDistance',
+          'avgPace',
+          'avgCadence',
+          'calories',
+          'hrZone'
+        ]);
+        break;
+      case SportCode.aerobic:
+        this.groupTable.showDataDef = groupDef.concat([
+          'avgHr',
+          'calories',
+          'hrZone'
+        ]);
+
+        this.personTable.showDataDef = personDef.concat([
+          'avgHr',
+          'calories',
+          'hrZone'
+        ]);
+        break;
+      case SportCode.row:
+        this.groupTable.showDataDef = groupDef.concat([
+          'totalDistance',
+          'avgPace',
+          'avgCadence',
+          'avgPower',
+          'calories',
+          'hrZone'
+        ]);
+
+        this.personTable.showDataDef = personDef.concat([
+          'totalDistance',
+          'avgPace',
+          'avgCadence',
+          'avgPower',
+          'calories',
+          'hrZone'
+        ]);
+        break;
+      case SportCode.ball:
+        this.groupTable.showDataDef = groupDef.concat([
+          'totalDistance',
+          'totalPlaneGForce',
+          'totalPlusZGForce',
+          'totalMinZGForce',
+          'calories',
+          'hrZone'
+        ]);
+
+        this.personTable.showDataDef = personDef.concat([
+          'totalDistance',
+          'totalPlaneGForce',
+          'totalPlusZGForce',
+          'totalMinZGForce',
+          'calories',
+          'hrZone'
+        ]);
+        break;
+    }
+
+    this.setDisplayCol();
+    this.groupTable.list.sort = this.groupSortTable;
+    this.personTable.list.sort = this.personSortTable;
+    this.groupTable.list.data = Object.keys(this.groupAnalysis).sort();
+    this.personTable.list.data = Object.keys(this.personAnalysis);
+  }
+
+  /**
+   * 建立區間趨勢
+   * @param userId {number}
+   * @param userData {any}
+   * @author kidin-1100518
+   */
+  createRangeTrend(userId: number, userData: any) {
+    const { sportType: selectSportType } = this.reportConditionOpt;
+    let regressionObj = {
+      timestampArr: []
+    };
+    userData.forEach(_data => {
+      const { startTime, activities } = _data,
+            startTimestamp = moment(startTime).valueOf();
+      activities.forEach(_activity => {
+        const {
+          type: sportType,
+          totalActivities,
+          totalSecond,
+          calories,
+          totalHrZone0Second,
+          totalHrZone1Second,
+          totalHrZone2Second,
+          totalHrZone3Second,
+          totalHrZone4Second,
+          totalHrZone5Second,
+          totalDistanceMeters,
+          avgSpeed,
+          runAvgCadence,
+          cycleAvgCadence,
+          cycleAvgWatt,
+          swimAvgCadence,
+          avgHeartRateBpm,
+          rowingAvgCadence,
+          rowingAvgWatt,
+          totalMinusGforceX,
+          totalMinusGforceY,
+          totalMinusGforceZ,
+          totalPlusGforceX,
+          totalPlusGforceY,
+          totalPlusGforceZ,
+          totalWeightKg,
+          weightTrainingInfo
+        } = _activity;
+        if (sportType == selectSportType || selectSportType === SportCode.all) {
+          regressionObj.timestampArr.push(startTimestamp);
+          regressionObj = this.handleRegression(regressionObj, 'totalActivities', totalActivities, userId, startTimestamp);
+          regressionObj = this.handleRegression(regressionObj, 'totalSecond', totalSecond, userId, startTimestamp);
+          regressionObj = this.handleRegression(regressionObj, 'calories', calories, userId, startTimestamp);
+          switch (selectSportType) {
+            case SportCode.all:
+              const benefitSecond = 
+                totalHrZone2Second + totalHrZone3Second + totalHrZone4Second + totalHrZone5Second;
+                regressionObj = this.handleRegression(regressionObj, 'benefitTime', benefitSecond, userId, startTimestamp);
+              
+              const hrZone = [
+                      totalHrZone0Second,
+                      totalHrZone1Second,
+                      totalHrZone2Second,
+                      totalHrZone3Second,
+                      totalHrZone4Second,
+                      totalHrZone5Second
+                    ],
+                    pai = this.reportService.countPai(hrZone, 1 / 7);  // 一天的pai值
+              regressionObj = this.handleRegression(regressionObj, 'pai', pai, userId, startTimestamp);
+              break;
+            case SportCode.run:
+              regressionObj = this.handleRegression(regressionObj, 'totalDistance', totalDistanceMeters, userId, startTimestamp);
+              regressionObj = this.handleRegression(regressionObj, 'avgPace', avgSpeed, userId, startTimestamp);
+              regressionObj = this.handleRegression(regressionObj, 'avgCadence', runAvgCadence, userId, startTimestamp);
+              break;
+            case SportCode.cycle:
+              regressionObj = this.handleRegression(regressionObj, 'totalDistance', totalDistanceMeters, userId, startTimestamp);
+              regressionObj = this.handleRegression(regressionObj, 'avgSpeed', avgSpeed, userId, startTimestamp);
+              regressionObj = this.handleRegression(regressionObj, 'avgCadence', cycleAvgCadence, userId, startTimestamp);
+              regressionObj = this.handleRegression(regressionObj, 'avgPower', cycleAvgWatt, userId, startTimestamp);
+              break;
+            case SportCode.weightTrain:
+              regressionObj = this.handleRegression(regressionObj, 'totalWeight', totalWeightKg, userId, startTimestamp);
+              let ttlSets = 0,
+                  muscleGroupTtlKg = [0, 0, 0, 0, 0, 0];
+              weightTrainingInfo.forEach(_part => {
+                const { muscle, totalSets, totalWeightKg: ttlWeightKg } = _part,
+                      belongMuscleGroup = this.reportService.getBelongMuscleGroup(+muscle);
+                ttlSets += totalSets;
+                muscleGroupTtlKg[belongMuscleGroup] += ttlWeightKg;
+              });
+              regressionObj = this.handleRegression(regressionObj, 'totalSets', ttlSets, userId, startTimestamp);
+              regressionObj = this.handleRegression(regressionObj, 'armMuscle', muscleGroupTtlKg[0], userId, startTimestamp);
+              regressionObj = this.handleRegression(regressionObj, 'pectoralsMuscle', muscleGroupTtlKg[1], userId, startTimestamp);
+              regressionObj = this.handleRegression(regressionObj, 'shoulderMuscle', muscleGroupTtlKg[2], userId, startTimestamp);
+              regressionObj = this.handleRegression(regressionObj, 'backMuscle', muscleGroupTtlKg[3], userId, startTimestamp);
+              regressionObj = this.handleRegression(regressionObj, 'abdominalMuscle', muscleGroupTtlKg[4], userId, startTimestamp);
+              regressionObj = this.handleRegression(regressionObj, 'legMuscle', muscleGroupTtlKg[5], userId, startTimestamp);
+              break;
+            case SportCode.swim:
+              regressionObj = this.handleRegression(regressionObj, 'totalDistance', totalDistanceMeters, userId, startTimestamp);
+              regressionObj = this.handleRegression(regressionObj, 'avgPace', avgSpeed, userId, startTimestamp);
+              regressionObj = this.handleRegression(regressionObj, 'avgCadence', swimAvgCadence, userId, startTimestamp);
+              break;
+            case SportCode.aerobic:
+              regressionObj = this.handleRegression(regressionObj, 'avgHr', avgHeartRateBpm, userId, startTimestamp);
+              break;
+            case SportCode.row:
+              regressionObj = this.handleRegression(regressionObj, 'totalDistance', totalDistanceMeters, userId, startTimestamp);
+              regressionObj = this.handleRegression(regressionObj, 'avgPace', avgSpeed, userId, startTimestamp);
+              regressionObj = this.handleRegression(regressionObj, 'avgCadence', rowingAvgCadence, userId, startTimestamp);
+              regressionObj = this.handleRegression(regressionObj, 'avgPower', rowingAvgWatt, userId, startTimestamp);
+              break;
+            case SportCode.ball:
+              regressionObj = this.handleRegression(regressionObj, 'totalDistance', totalDistanceMeters, userId, startTimestamp);
+              const planeGElement = [
+                      totalMinusGforceX,
+                      totalMinusGforceY,
+                      totalPlusGforceX,
+                      totalPlusGforceY
+                    ],
+                    planeGForce = this.reportService.pythagorean(planeGElement);
+              regressionObj = this.handleRegression(regressionObj, 'totalPlaneGForce', planeGForce, userId, startTimestamp);
+              regressionObj = this.handleRegression(regressionObj, 'totalPlusZGForce', totalPlusGforceZ, userId, startTimestamp);
+              regressionObj = this.handleRegression(regressionObj, 'totalMinZGForce', totalMinusGforceZ, userId, startTimestamp);
+              break;
+          }
+
+        }
+
+      });
+
+    });
+
+    for (let _key in regressionObj) {
+      if (regressionObj.hasOwnProperty(_key) && _key !== 'timestampArr') {
+        const slope = new SimpleLinearRegression(regressionObj['timestampArr'], regressionObj[_key]).slope || 0;
+        let trend: Regression = null;
+        if (slope > 0) {
+          trend = 'up';
+        } else if (slope < 0) {
+          trend = 'down';
+        }
+
+        this.personAnalysis[userId] = {
+          [`${_key}Trend`]: trend,
+          ...this.personAnalysis[userId]
+        };
+
+      }
+
+    }
+
+  }
+
+  /**
+   * 判斷物件是否有該區間趨勢的類別，並將數據儲存
+   * @param obj {any}-儲存區間趨勢數據用物件
+   * @param key {string}-欲建立區間趨勢的類別
+   * @param value {number | string}-欲建立區間趨勢的類別數據
+   * @param userId {number}-成員id
+   * @param timestamp {number}-該數據起始時間
+   * @author kidin-1100526
+   */
+  handleRegression(obj: any, key: string, value: number | string, userId: number, timestamp: number) {
+    const numValue = +value;
+    if (obj.hasOwnProperty(key)) {
+      obj[key].push(numValue);
+    } else {
+      obj = {
+        [key]: [numValue],
+        ...obj
+      };
+    }
+
+    if (this.reportConditionOpt.sportType !== SportCode.weightTrain) {
+      this.mergeGroupData(key, numValue, userId, timestamp);
+    }
+    
+    return obj;
+  }
+
+  /**
+   * 將數據合併至所屬群組
+   * @param key {string}-欲建立區間趨勢的類別
+   * @param value {number}-欲建立區間趨勢的類別數據
+   * @param userId {number}-成員所id
+   * @param timestamp {number}-該數據起始時間
+   * @author kidin-1100526
+   */
+  mergeGroupData(key: string, value: number, userId: number, timestamp: number) {
+    const { analysisObj } = this.groupList;
+    for (let _groupId in analysisObj) {
+
+      if (analysisObj[_groupId].memberSet.has(userId)) {
+        let _group = this.groupList.regression[_groupId];
+        if (_group) {
+          const _regressionEle = _group[key];
+          if (_regressionEle) {
+            _regressionEle.data.push(value);
+            _regressionEle.date.push(timestamp);
+          } else {
+            this.groupList.regression[_groupId] = {
+              [key]: {
+                data: [value],
+                date: [timestamp]
+              },
+              ...this.groupList.regression[_groupId]
+            }
+  
+          }
+  
+        } else {
+          this.groupList.regression = {
+            [_groupId]: {
+              [key]: {
+                data: [value],
+                date: [timestamp]
+              } 
+            },
+            ...this.groupList.regression
+          }
+  
         }
 
       }
 
     }
-console.log('final groupAnalysis', this.groupAnalysis);
+
+  }
+
+  /**
+   * 根據視窗寬度預設可顯示的欄位(含名稱)
+   * @param groupDef {Array<string>}-群組分析可設定之欄位
+   * @param personDef {Array<string>}-個人分析可設定之欄位
+   * @param windowWidth {number}-視窗寬度
+   * @author kidin-1100517
+   */
+  setDisplayCol() {
+    const { max } = this.tableColumn,
+          { sportType } = this.reportConditionOpt,
+          opt = JSON.parse(this.utils.getLocalStorageObject(`groupReport-${sportType}`));
+    if (opt) {
+      const { group, person } = opt;
+      if (group.length > max) {
+        group.length = max;
+        this.saveAnalysisOpt(sportType, opt);
+      }
+
+      if (person.length > max) {
+        person.length = max;
+        this.saveAnalysisOpt(sportType, opt);
+      }
+
+      this.groupTableOpt = group;
+      this.personTableOpt = person;
+    } else {
+      const { sportType } = this.reportConditionOpt;
+      this.setDefaultGroupCol(max, sportType);
+      this.setDefaultPersonCol(max, sportType);
+      this.saveAnalysisOpt(sportType, opt);
+    }
+
+  }
+
+  /**
+   * 儲存分析設定
+   * @param sportType {SportType}-運動類別
+   * @param opt {{group: Array<string>; person: Array<string>}}
+   * @author kidin-1100525
+   */
+  saveAnalysisOpt(sportType: SportType, opt: {group: Array<string>; person: Array<string>}) {
+    const optStr = JSON.stringify(opt);
+    this.utils.setLocalStorageObject(`groupReport-${sportType}`, optStr);
+  }
+
+  /**
+   * 根據可顯示的欄位數目及運動類別，設定群組分析顯示欄位
+   * @param len {number}-可顯示的欄位數目
+   * @param sportType {SportType}-運動類別
+   * @author kidin-1100518
+   */
+  setDefaultGroupCol(len: number, sportType: SportType) {
+    switch (sportType) {
+      case SportCode.all:
+      case SportCode.aerobic:
+        this.groupTableOpt = [
+          'name',
+          'memberNum',
+          'stroke',
+          'totalTime',
+          'calories',
+          'hrZone'
+        ];
+        break;
+      case SportCode.run:
+      case SportCode.swim:
+      case SportCode.row:
+        this.groupTableOpt = [
+          'name',
+          'memberNum',
+          'totalTime',
+          'totalDistance',
+          'avgPace',
+          'hrZone'
+        ];
+        break;
+      case SportCode.cycle:
+        this.groupTableOpt = [
+          'name',
+          'memberNum',
+          'totalTime',
+          'totalDistance',
+          'avgSpeed',
+          'hrZone'
+        ];
+        break;
+      case SportCode.weightTrain:
+        this.groupTableOpt = [
+          'name',
+          'memberNum',
+          'stroke',
+          'totalTime'
+        ];
+        break;
+      case SportCode.ball:
+        this.groupTableOpt = [
+          'name',
+          'memberNum',
+          'totalTime',
+          'totalDistance',
+          'totalPlaneGForce',
+          'totalPlusZGForce'
+        ];
+        break;
+    }
+
+    this.groupTableOpt.length = len;
+  }
+
+  /**
+   * 根據可顯示的欄位數目及運動類別，設定個人分析顯示欄位
+   * @param len {number}-可顯示的欄位數目
+   * @param sportType {SportType}-運動類別
+   * @author kidin-1100518
+   */
+  setDefaultPersonCol(len: number, sportType: SportType) {
+    switch (sportType) {
+      case SportCode.all:
+        this.personTableOpt = [
+          'name',
+          'totalTime',
+          'benefitTime',
+          'calories',
+          'preferSport',
+          'hrZone'
+        ];
+        break;
+      case SportCode.run:
+      case SportCode.swim:
+      case SportCode.row:
+        this.personTableOpt = [
+          'name',
+          'totalTime',
+          'totalDistance',
+          'calories',
+          'avgPace',
+          'hrZone'
+        ];
+        break;
+      case SportCode.cycle:
+        this.personTableOpt = [
+          'name',
+          'totalTime',
+          'totalDistance',
+          'calories',
+          'avgSpeed',
+          'hrZone'
+        ];
+        break;
+      case SportCode.weightTrain:
+        this.personTableOpt = [
+          'name',
+          'totalWeight',
+          'totalSets',
+          'preferMuscleGroup',
+          'armMuscle',
+          'pectoralsMuscle'
+        ];
+        break;
+      case SportCode.aerobic:
+        this.personTableOpt = [
+          'name',
+          'totalTime',
+          'calories',
+          'avgHr',
+          'hrZone'
+        ];
+        break;
+      case SportCode.ball:
+        this.personTableOpt = [
+          'name',
+          'totalTime',
+          'totalDistance',
+          'totalPlaneGForce',
+          'totalPlusZGForce',
+          'hrZone'
+        ];
+        break;
+    }
+
+    this.personTableOpt.length = len;
   }
 
   /**
    * 依運動類別製作各圖表所需數據
    * @param strokeData {any}-一個時間單位（日/週）加總的資料
-   * @param extremeData {any}-一個時間單位（日/週）極端值的資料
    * @param denominator {number}-均化分母
    * @param startTimestamp {number}-該筆數據開始時間
    * @author kidin-1100421
    */
-  createChartData(strokeData: any, extremeData: any, denominator: number, startTimestamp: number) {
+  createChartData(strokeData: any, denominator: number, startTimestamp: number) {
     const { sportType } = this.reportConditionOpt;
     this.createTotalTimeChart(strokeData, startTimestamp);
-    this.createHrChart(strokeData, extremeData, denominator, startTimestamp);
+    this.createHrChart(strokeData, denominator, startTimestamp);
     this.createCaloriesChart(strokeData, startTimestamp);
     if (this.reportTime.type === 2) {
       this.createStrokeNumChart(strokeData, startTimestamp);
@@ -1302,25 +2207,25 @@ console.log('final groupAnalysis', this.groupAnalysis);
       case SportCode.run:
         this.createHrZoneChart(strokeData, startTimestamp);
         this.createDistanceChart(strokeData, startTimestamp);
-        this.createSpeedPaceChart(strokeData, extremeData, denominator, startTimestamp, SportCode.run);
-        this.createCadenceChart(strokeData, extremeData, denominator, startTimestamp, SportCode.run);
+        this.createSpeedPaceChart(strokeData, denominator, startTimestamp, SportCode.run);
+        this.createCadenceChart(strokeData, denominator, startTimestamp, SportCode.run);
         break;
       case SportCode.cycle:
         this.createHrZoneChart(strokeData, startTimestamp);
         this.createThresholdChart(strokeData, startTimestamp);
         this.createDistanceChart(strokeData, startTimestamp);
         this.createPowerChart(strokeData, denominator, startTimestamp, SportCode.cycle);
-        this.createSpeedPaceChart(strokeData, extremeData, denominator, startTimestamp, SportCode.cycle);
-        this.createCadenceChart(strokeData, extremeData, denominator, startTimestamp, SportCode.cycle);
+        this.createSpeedPaceChart(strokeData, denominator, startTimestamp, SportCode.cycle);
+        this.createCadenceChart(strokeData, denominator, startTimestamp, SportCode.cycle);
         break;
       case SportCode.weightTrain:
         break;
       case SportCode.swim:
         this.createHrZoneChart(strokeData, startTimestamp);
         this.createDistanceChart(strokeData, startTimestamp);
-        this.createSpeedPaceChart(strokeData, extremeData, denominator, startTimestamp, SportCode.swim);
-        this.createCadenceChart(strokeData, extremeData, denominator, startTimestamp, SportCode.swim);
-        this.createSwolfChart(strokeData, extremeData, denominator, startTimestamp);
+        this.createSpeedPaceChart(strokeData, denominator, startTimestamp, SportCode.swim);
+        this.createCadenceChart(strokeData, denominator, startTimestamp, SportCode.swim);
+        this.createSwolfChart(strokeData, denominator, startTimestamp);
         break;
       case SportCode.aerobic:
         this.createHrZoneChart(strokeData, startTimestamp);
@@ -1329,15 +2234,17 @@ console.log('final groupAnalysis', this.groupAnalysis);
         this.createHrZoneChart(strokeData, startTimestamp);
         this.createDistanceChart(strokeData, startTimestamp);
         this.createPowerChart(strokeData, denominator, startTimestamp, SportCode.row);
-        this.createSpeedPaceChart(strokeData, extremeData, denominator, startTimestamp, SportCode.row);
-        this.createCadenceChart(strokeData, extremeData, denominator, startTimestamp, SportCode.row);
+        this.createSpeedPaceChart(strokeData, denominator, startTimestamp, SportCode.row);
+        this.createCadenceChart(strokeData, denominator, startTimestamp, SportCode.row);
         break;
       case SportCode.ball:
         this.createHrZoneChart(strokeData, startTimestamp);
         this.createDistanceChart(strokeData, startTimestamp);
         this.createTotalGForceChart(strokeData, startTimestamp);
-        this.createExtremeGForceChart(extremeData, startTimestamp);
-        this.createSpeedPaceChart(strokeData, extremeData, denominator, startTimestamp, SportCode.ball);
+        this.createExtremeGForceChart(strokeData, denominator, startTimestamp);
+        this.createSpeedPaceChart(strokeData, denominator, startTimestamp, SportCode.ball);
+        this.createExtremePlaneChart(strokeData, denominator, startTimestamp);
+        this.createTotalPlaneChart(strokeData, startTimestamp);
         break;
     }
 
@@ -1358,7 +2265,9 @@ console.log('final groupAnalysis', this.groupAnalysis);
             hr,
             power,
             speed,
-            cadence
+            cadence,
+            planeGForce,
+            planeMaxGForce
           } = this.totalCount;
 
     this.chart.totalTimeTrend.avgTotalTime = totalTime / this.haveDataLen;
@@ -1402,6 +2311,8 @@ console.log('final groupAnalysis', this.groupAnalysis);
       case SportCode.ball:
         this.chart.distanceTrend.avgDistance = distance / this.haveDataLen;
         this.chart.speedPaceTrend.avgSpeed = speed / this.haveDataLen;
+        this.chart.planeAcceleration.avgPlaneGForce = planeGForce / this.haveDataLen;
+        this.chart.extremePlaneGForce.avgPlaneMaxGForce = planeMaxGForce / this.haveDataLen;
         break;
     }
 
@@ -1477,21 +2388,20 @@ console.log('final groupAnalysis', this.groupAnalysis);
   /**
    * 建立心率趨勢圖
    * @param data {any}-一天（週）加總的數據
-   * @param extremeData {any}-一天（週）極端數據
    * @param denominator {number}-該天（週）運動總筆數
    * @param startTimestamp {number}-該天（週）起始時間
    * @author kidin-1100505
    */
-  createHrChart(data: any, extremeData: any, denominator: number, startTimestamp: number) {
-    const { avgHeartRateBpm } = data,
-          avgMaxHeartRateBpm = extremeData ? extremeData.avgMaxHeartRateBpm : 0,
+  createHrChart(data: any, denominator: number, startTimestamp: number) {
+    const { avgHeartRateBpm, avgMaxHeartRateBpm } = data,
           { hrArr, maxHrArr, maxHr } = this.chart.hrTrend,
-          oneDayAvgHr = avgHeartRateBpm / denominator;
+          oneDayAvgHr = avgHeartRateBpm / denominator,
+          oneDayAvgMaxHr = avgMaxHeartRateBpm / denominator;
     hrArr.push([startTimestamp, oneDayAvgHr]);
-    maxHrArr.push([startTimestamp, avgMaxHeartRateBpm]);
+    maxHrArr.push([startTimestamp, oneDayAvgMaxHr]);
     this.totalCount.hr += oneDayAvgHr;
-    if (avgMaxHeartRateBpm > maxHr) {
-      this.chart.hrTrend.maxHr = avgMaxHeartRateBpm;
+    if (oneDayAvgMaxHr > maxHr) {
+      this.chart.hrTrend.maxHr = oneDayAvgMaxHr;
     }
 
   }
@@ -1550,49 +2460,43 @@ console.log('final groupAnalysis', this.groupAnalysis);
   /**
    * 根據運動類別與使用者使用之單位建立配速趨勢圖
    * @param data {any}-一天（週）加總的數據
-   * @param extremeData {any}-一天（週）的最大值
    * @param denominator {number}-該天（週）運動總筆數
    * @param startTimestamp {number}-該天（週）起始時間
    * @param type {SportType}-運動類型
    * @author kidin-1100505
    */
-  createSpeedPaceChart(
-    data: any,
-    extremeData: any,
-    denominator: number,
-    startTimestamp: number,
-    type: SportType
-  ) {
-    let avgSpeed: number,
-        avgMaxSpeed: number;
-    const extremeValue = extremeData ? extremeData.avgMaxSpeed : 0;
+  createSpeedPaceChart(data: any, denominator: number, startTimestamp: number, type: SportType) {
+    const { avgSpeed, avgMaxSpeed } = data,
+          { unit: userUnit } = this.userInfo;
+    let avgVal,
+        avgMaxVal;
     switch (type) {
       case SportCode.cycle:
       case SportCode.ball:
-        if (this.unit === unit.metric) {  // km/hr
-          avgSpeed = (data.avgSpeed / denominator) || 0;
-          avgMaxSpeed = extremeValue;
-        } else {  // mi/hr
-          avgSpeed = ((data.avgSpeed / mi) / denominator) || 0;
-          avgMaxSpeed = extremeValue / mi;
+        if (userUnit === unit.metric) {  // km/h
+          avgVal = (avgSpeed / denominator) || 0;
+          avgMaxVal = (avgMaxSpeed / denominator) || 0;
+        } else {  // mi/h
+          avgVal = ((avgSpeed / mi) / denominator) || 0;
+          avgMaxVal = ((avgMaxSpeed / mi) / denominator) || 0;
         }
         break;
       case SportCode.run:
       case SportCode.swim:
       case SportCode.row:
-        avgSpeed = ((data.avgSpeed) / denominator) || 0;
-        avgMaxSpeed = extremeValue;
+        avgVal = (avgSpeed / denominator) || 0;
+        avgMaxVal = (avgMaxSpeed / denominator) || 0;
         break;
     }
 
     const { dataArr, maxSpeed, minSpeed } = this.chart.speedPaceTrend;
     if ([SportCode.run, SportCode.swim, SportCode.row].includes(type)) {
 
-      if (avgSpeed !== 0) {
+      if (avgVal !== 0) {
         dataArr.push({
           x: startTimestamp,
-          y: this.utils.convertSpeed(avgMaxSpeed, type, this.unit, 'second') as number,
-          low: this.utils.convertSpeed(avgSpeed, type, this.unit, 'second') as number
+          y: this.utils.convertSpeed(avgMaxVal, type, userUnit, 'second') as number,
+          low: this.utils.convertSpeed(avgVal, type, userUnit, 'second') as number
         });
 
       } else {
@@ -1606,18 +2510,18 @@ console.log('final groupAnalysis', this.groupAnalysis);
     } else {
       dataArr.push({
         x: startTimestamp,
-        y: avgMaxSpeed,
-        low: avgSpeed
+        y: avgMaxVal,
+        low: avgVal
       });
     }
 
-    this.totalCount.speed += avgSpeed;
-    if (avgMaxSpeed > maxSpeed) {
-      this.chart.speedPaceTrend.maxSpeed = avgMaxSpeed;
+    this.totalCount.speed += avgVal;
+    if (avgMaxVal > maxSpeed) {
+      this.chart.speedPaceTrend.maxSpeed = avgMaxVal;
     }
 
-    if ((minSpeed === null || minSpeed > avgSpeed) && avgSpeed !== 0) {
-      this.chart.speedPaceTrend.minSpeed = avgSpeed;
+    if ((minSpeed === null || minSpeed > avgVal) && avgVal !== 0) {
+      this.chart.speedPaceTrend.minSpeed = avgVal;
     }
 
   }
@@ -1625,45 +2529,34 @@ console.log('final groupAnalysis', this.groupAnalysis);
   /**
    * 根據運動類別與使用者使用之單位建立頻率趨勢圖
    * @param data {any}-一天（週）加總的數據
-   * @param extremeData {any}-一天（週）的最大值
    * @param denominator {number}-該天（週）運動總筆數
    * @param startTimestamp {number}-該天（週）起始時間
    * @param type {SportType}-運動類型
    * @author kidin-1100505
    */
-  createCadenceChart(
-    data: any,
-    extremeData: any,
-    denominator: number,
-    startTimestamp: number,
-    type: SportType
-  ) {
+  createCadenceChart(data: any, denominator: number, startTimestamp: number, type: SportType) {
     let avgCadence: number,
         rangeMaxCadence: number;
     switch (type) {
       case SportCode.run:
-        const { runAvgCadence } = data,
-              avgRunMaxCadence = extremeData ? extremeData.avgRunMaxCadence : 0;
+        const { runAvgCadence, avgRunMaxCadence } = data;
         avgCadence = (runAvgCadence / denominator) || 0;
-        rangeMaxCadence = avgRunMaxCadence;
+        rangeMaxCadence = (avgRunMaxCadence / denominator) || 0;
         break
       case SportCode.cycle:
-        const { cycleAvgCadence } = data,
-              avgCycleMaxCadence = extremeData ? extremeData.avgCycleMaxCadence : 0;
+        const { cycleAvgCadence, avgCycleMaxCadence } = data;
         avgCadence = (cycleAvgCadence / denominator) || 0;
-        rangeMaxCadence = avgCycleMaxCadence;
+        rangeMaxCadence = (avgCycleMaxCadence / denominator) || 0;
         break
       case SportCode.swim:
-        const { swimAvgCadence } = data,
-              avgSwimMaxCadence = extremeData ? extremeData.avgSwimMaxCadence : 0;
+        const { swimAvgCadence, avgSwimMaxCadence } = data;
         avgCadence = (swimAvgCadence / denominator) || 0;
-        rangeMaxCadence = avgSwimMaxCadence;
+        rangeMaxCadence = (avgSwimMaxCadence / denominator) || 0;
         break
       case SportCode.row:
-        const { rowingAvgCadence } = data,
-              avgRowingMaxCadence = extremeData ? extremeData.avgRowingMaxCadence : 0;
+        const { rowingAvgCadence, avgRowingMaxCadence } = data;
         avgCadence = (rowingAvgCadence / denominator) || 0;
-        rangeMaxCadence = avgRowingMaxCadence;
+        rangeMaxCadence = (avgRowingMaxCadence / denominator) || 0;
         break;
     }
 
@@ -1697,20 +2590,14 @@ console.log('final groupAnalysis', this.groupAnalysis);
   /**
    * 建立游泳效益趨勢圖
    * @param data {any}-一天（週）加總的數據
-   * @param extremeData {any}-一天（週）的最大值
    * @param denominator {number}-該天（週）運動總筆數
    * @param startTimestamp {number}-該天（週）起始時間
    * @author kidin-1100505
    */
-  createSwolfChart(
-    data: any,
-    extremeData: any,
-    denominator: number,
-    startTimestamp: number
-  ) {
+  createSwolfChart(data: any, denominator: number, startTimestamp: number) {
     const { dataArr, maxSwolf, minSwolf } = this.chart.swolfTrend,
           avgSwolf = (data.avgSwolf / denominator) || 0,
-          bestSwolf = extremeData ? extremeData.bestSwolf : 0;
+          bestSwolf = (data.bestSwolf / denominator) || 0;
     if (avgSwolf !== 0) {
       dataArr.push({
         x: startTimestamp,
@@ -1807,49 +2694,101 @@ console.log('final groupAnalysis', this.groupAnalysis);
   }
 
   /**
+   * 建立平面加速度趨勢圖
+   * @param data {any}-一天（週）加總的數據
+   * @param startTimestamp {number}-該天（週）起始時間
+   * @author kidin-1100517
+   */
+  createTotalPlaneChart(data: any, startTimestamp: number) {
+    const {
+      totalPlusGforceX,
+      totalPlusGforceY,
+      totalMinusGforceX,
+      totalMinusGforceY
+    } = data;
+
+    const elementArr = [totalPlusGforceX, totalPlusGforceY, totalMinusGforceX, totalMinusGforceY],
+          planeG = parseFloat(this.reportService.pythagorean(elementArr).toFixed(0)),
+          { maxPlaneGForce, planeGForce } = this.chart.planeAcceleration;
+
+    planeGForce.push([startTimestamp, planeG]);
+    this.totalCount.planeGForce += planeG;
+    if (planeG > maxPlaneGForce) {
+      this.chart.planeAcceleration.maxPlaneGForce = planeG;
+    }
+
+  }
+
+  /**
    * 建立最大最小G值趨勢圖
-   * @param extremeData {any}-一天（週）極端數據
+   * @param data {any}-一天（週）加總的數據
+   * @param denominator {number}-該天（週）運動總筆數
    * @param startTimestamp {number}-該天（週）起始時間
    * @author kidin-1100506
    */
-  createExtremeGForceChart(extremeData: any, startTimestamp: number) {
-    let maxGforceX: number,
-        maxGforceY: number,
-        maxGforceZ: number,
-        miniGforceX: number,
-        miniGforceY: number,
-        miniGforceZ: number;
-    if (extremeData) {
-      maxGforceX = extremeData.maxGforceX;
-      maxGforceY = extremeData.maxGforceY;
-      maxGforceZ = extremeData.maxGforceZ;
-      miniGforceX = extremeData.miniGforceX;
-      miniGforceY = extremeData.miniGforceY;
-      miniGforceZ = extremeData.miniGforceZ;
-    } else {
-      maxGforceX = 0;
-      maxGforceY = 0;
-      maxGforceZ = 0;
-      miniGforceX = 0;
-      miniGforceY = 0;
-      miniGforceZ = 0;
-    }
+  createExtremeGForceChart(data: any, denominator: number, startTimestamp: number) {
+    const {
+      maxGforceX,
+      maxGforceY,
+      maxGforceZ,
+      miniGforceX,
+      miniGforceY,
+      miniGforceZ,
+    } = data;
+
+    const maxGForceX = maxGforceX / denominator || 0,
+          maxGForceY = maxGforceY / denominator || 0,
+          maxGForceZ = maxGforceZ / denominator || 0,
+          miniGForceX = miniGforceX / denominator || 0,
+          miniGForceY = miniGforceY / denominator || 0,
+          miniGForceZ = miniGforceZ / denominator || 0;
 
     const { maxXArr, minXArr, maxX, minX } = this.chart.extremeXGForce,
           { maxYArr, minYArr, maxY, minY } = this.chart.extremeYGForce,
           { maxZArr, minZArr, maxZ, minZ } = this.chart.extremeZGForce;
-    maxXArr.push([startTimestamp, maxGforceX]);
-    minXArr.push([startTimestamp, miniGforceX]);
-    maxYArr.push([startTimestamp, maxGforceY]);
-    minYArr.push([startTimestamp, miniGforceY]);
-    maxZArr.push([startTimestamp, maxGforceZ]);
-    minZArr.push([startTimestamp, miniGforceZ]);
-    if (maxGforceX > maxX) this.chart.extremeXGForce.maxX = maxGforceX;
-    if (maxGforceY > maxY) this.chart.extremeYGForce.maxY = maxGforceY;
-    if (maxGforceZ > maxZ) this.chart.extremeZGForce.maxZ = maxGforceZ;
-    if (miniGforceX < minX) this.chart.extremeXGForce.minX = miniGforceX;
-    if (miniGforceY < minY) this.chart.extremeYGForce.minY = miniGforceY;
-    if (miniGforceZ < minZ) this.chart.extremeZGForce.minZ = miniGforceZ;
+    maxXArr.push([startTimestamp, maxGForceX]);
+    minXArr.push([startTimestamp, miniGForceX]);
+    maxYArr.push([startTimestamp, maxGForceY]);
+    minYArr.push([startTimestamp, miniGForceY]);
+    maxZArr.push([startTimestamp, maxGForceZ]);
+    minZArr.push([startTimestamp, miniGForceZ]);
+    if (maxGForceX > maxX) this.chart.extremeXGForce.maxX = maxGForceX;
+    if (maxGForceY > maxY) this.chart.extremeYGForce.maxY = maxGForceY;
+    if (maxGForceZ > maxZ) this.chart.extremeZGForce.maxZ = maxGForceZ;
+    if (miniGForceX < minX) this.chart.extremeXGForce.minX = miniGForceX;
+    if (miniGForceY < minY) this.chart.extremeYGForce.minY = miniGForceY;
+    if (miniGForceZ < minZ) this.chart.extremeZGForce.minZ = miniGForceZ;
+  }
+
+  /**
+   * 建立平面G值趨勢圖
+   * @param data {any}-一天（週）加總的數據
+   * @param denominator {number}-該天（週）運動總筆數
+   * @param startTimestamp {number}-該天（週）起始時間
+   * @author kidin-1100517
+   */
+  createExtremePlaneChart(data: any, denominator: number, startTimestamp: number) {
+    const absMaxGForceX = Math.abs(data.maxGforceX),
+          absMaxGForceY = Math.abs(data.maxGforceY),
+          absMinGForceX = Math.abs(data.miniGforceX),
+          absMinGForceY = Math.abs(data.miniGforceY),
+          maxX = absMaxGForceX >= absMinGForceX ? absMaxGForceX : absMinGForceX,
+          maxY = absMaxGForceY >= absMinGForceY ? absMaxGForceY : absMinGForceY;
+    let maxPlaneG: number;
+    if (maxX >= maxY) {
+      maxPlaneG = this.reportService.countMaxPlaneGForce(maxX, maxY);
+    } else {
+      maxPlaneG = this.reportService.countMaxPlaneGForce(maxY, maxX);
+    }
+
+    const capitaMaxPlaneG = (maxPlaneG / denominator) || 0,
+          { maxPlaneMaxGForce, planeMaxGForce } = this.chart.extremePlaneGForce;
+    planeMaxGForce.push([startTimestamp, capitaMaxPlaneG]);
+    this.totalCount.planeMaxGForce += capitaMaxPlaneG;
+    if (capitaMaxPlaneG > maxPlaneMaxGForce) {
+      this.chart.extremePlaneGForce.maxPlaneMaxGForce = capitaMaxPlaneG;
+    }
+
   }
 
   /**
@@ -2012,11 +2951,122 @@ console.log('final groupAnalysis', this.groupAnalysis);
   }
 
   /**
+   * 點擊分析設定紐
+   * @param e {MouseEvent}
+   * @param obj {SettingObj}-分析列表類別
+   * @author kidin-1100514
+   */
+  handleShowOpt(e: MouseEvent, obj: SettingObj) {
+    e.stopPropagation();  // 避免和訂閱的事件衝突
+    if (this[`${obj}Table`].showOpt) {
+      this.closeAllMenu();
+    } else {
+      this.closeAllMenu();
+      this[`${obj}Table`].showOpt = true;
+      this.subscribeScrollAndClick();
+    }
+
+    this.changeDetectorRef.markForCheck();
+  }
+
+  /**
+   * 關閉所有浮動選單
+   * @author kidin-1100520
+   */
+  closeAllMenu() {
+    this.groupTable.showOpt = false;
+    this.personTable.showOpt = false;
+    this.initAnalysisMenu();
+    this.unsubscribeEvent();
+    this.changeDetectorRef.markForCheck();
+  }
+
+  /**
+   * 初始化分析列表之聚焦選單（關閉選單）
+   * @author kidin-1100520
+   */
+  initAnalysisMenu() {
+    this.analysisMenu = {
+      type: null,
+      focusId: null,
+      x: null,
+      y: null
+    };
+
+  }
+
+  /**
+   * 訂閱捲動和點擊事件
+   * @author kidin-1100520
+   */
+  subscribeScrollAndClick() {
+    const scrollEle = document.querySelectorAll('.main-body'),
+          scrollEvent = fromEvent(scrollEle, 'scroll'),
+          clickEvent = fromEvent(window, 'click'),
+          mergeEvent = merge(scrollEvent, clickEvent);
+
+    this.scrollAndClickEvent = mergeEvent.pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(event => {
+      this.closeAllMenu();
+    });
+
+  }
+
+  /**
+   * 變更欄位設定
+   * @param e {MatCheckboxChange}
+   * @param type {SettingObj}-分析列表類別
+   * @author kidin-1100520
+   */
+  changeTableOpt(e: MatCheckboxChange, type: SettingObj) {
+    const { checked, source: { value } } = e;
+    if (!checked) {
+      this[`${type}TableOpt`] = this[`${type}TableOpt`].filter(_opt => _opt !== value);
+    } else {
+      this[`${type}TableOpt`].push(value);
+    }
+
+    const { sportType } = this.reportConditionOpt,
+          opt = {
+            group: this.groupTableOpt,
+            person: this.personTableOpt
+          };
+    this.saveAnalysisOpt(sportType, opt);
+    this.changeDetectorRef.markForCheck();
+  }
+
+  /**
+   * 取消訂閱捲動和點擊事件
+   * @author kidin-1100520
+   */
+  unsubscribeEvent() {
+    this.scrollAndClickEvent.unsubscribe();
+  }
+
+  /**
    * 覆蓋目前網址與預覽列印網址
    * @param resetUrl {boolean}
    * @author kidin-1100414
    */
-  updateUrl(resetUrl: boolean) {
+  updateUrl(resetUrl: boolean = true) {
+    const { sportType, date: {startTimestamp, endTimestamp} } = this.reportConditionOpt,
+          { id } = this.groupInfo,
+          { origin } = location,
+          hashGroupId = this.hashIdService.handleGroupIdEncode(id),
+          startDate = moment(startTimestamp).format('YYYY-MM-DD'),
+          endDate = moment(endTimestamp).format('YYYY-MM-DD');
+    let seeMore = '';
+    if (this.groupTable.showAll) seeMore += 'g';
+    if (this.personTable.showAll) seeMore += 'p';
+    this.previewUrl = `${origin
+      }/dashboard/group-info/${hashGroupId
+      }/sports-report?startdate=${startDate
+      }&enddate=${endDate
+      }&sporttype=${sportType
+      }&seemore=${seeMore
+      }&ipm=s
+    `;
 
   }
 
@@ -2033,6 +3083,294 @@ console.log('final groupAnalysis', this.groupAnalysis);
       this.uiFlag.analysisType = sportType;
     }
 
+    this.changeDetectorRef.markForCheck();
+  }
+
+  /**
+   * 將群組或個人分析數據進行排序
+   * @param type {SettingObj}-群組或個人分析
+   * @author kidin-1100317
+   */
+  arrangeData(type: SettingObj) {
+    this[`${type}Table`].sorted = true;
+    const sortCategory = this[`${type}SortTable`].active,
+          sortDirection = this[`${type}SortTable`].direction;
+    this[`${type}Table`].sortType = sortCategory;
+    this.sortData(type, this[`${type}Table`].list.data, sortCategory, sortDirection === 'asc');
+    this.changeDetectorRef.markForCheck();
+  }
+  
+  /**
+   * 依使用者點選的類別取得對應的數據
+   * @param type {SettingObj}
+   * @param id {string}-id
+   * @param table {string}-欲排序的列表
+   * @return Array<string>-排序依據
+   * @return number
+   * @author kidin-1100317
+   */
+  getSortData(type: SettingObj, id: string, col: string): number {
+    const { sportType } = this.reportConditionOpt,
+          dataSource = this[`${type}Analysis`][id],
+          denominator = type === 'group' ? dataSource.activityPeople : 1,
+          stroke = dataSource.totalActivities;
+    if (stroke === undefined && col !== 'name') return undefined;
+    switch (col) {
+      case 'name':
+        return dataSource.name;
+      case 'memberNum':
+        return dataSource.activityPeople;
+      case 'stroke':
+        return stroke / denominator;
+      case 'totalTime':
+        return dataSource.totalSecond / denominator;
+      case 'benefitTime':
+        const { 
+                totalHrZone2Second: z2,
+                totalHrZone3Second: z3,
+                totalHrZone4Second: z4,
+                totalHrZone5Second: z5
+              } = dataSource,
+              benefitTime = z2 + z3 + z4 + z5;
+        return (benefitTime / denominator) || 0;
+      case 'totalCalories':
+        return (
+          dataSource.totalHrZone2Second
+          + dataSource.totalHrZone3Second
+          + dataSource.totalHrZone4Second
+          + dataSource.totalHrZone5Second
+        ) / denominator;
+      case 'pai':
+        const { 
+                totalHrZone0Second: zone0,
+                totalHrZone1Second: zone1,
+                totalHrZone2Second: zone2,
+                totalHrZone3Second: zone3,
+                totalHrZone4Second: zone4,
+                totalHrZone5Second: zone5
+              } = dataSource,
+              hrZone = [zone0, zone1, zone2, zone3, zone4, zone5],
+              totalPai = this.reportService.countPai(hrZone, this.reportTime.diffWeek);
+        return totalPai / denominator;
+      case 'calories':
+        return dataSource.calories / denominator;
+      case 'totalDistance':
+        return dataSource.totalDistanceMeters / denominator;
+      case 'avgPace':
+        return (3600 / ((dataSource.avgSpeed / denominator) / stroke)) || 3600;
+      case 'avgSpeed':
+        return (dataSource.avgSpeed / denominator) / stroke;
+      case 'avgCadence':
+        switch (sportType) {
+          case SportCode.run:
+            return (dataSource.runAvgCadence / denominator) / stroke;
+          case SportCode.cycle:
+            return (dataSource.cycleAvgCadence / denominator) / stroke;
+          case SportCode.swim:
+            return (dataSource.swimAvgCadence / denominator) / stroke;
+          case SportCode.row:
+            return (dataSource.rowingAvgCadence / denominator) / stroke;
+        }
+      case 'avgPower':
+        switch (sportType) {
+          case SportCode.cycle:
+            return (dataSource.cycleAvgWatt / denominator) / stroke;
+          case SportCode.row:
+            return (dataSource.rowingAvgWatt / denominator) / stroke;
+        }
+      case 'avgHr':
+        return (dataSource.avgHeartRateBpm / denominator) / stroke;
+      case 'totalPlaneGForce':
+        const xyGForce = [
+                dataSource.totalPlusGforceX,
+                dataSource.totalPlusGforceY,
+                dataSource.totalMinusGforceX,
+                dataSource.totalMinusGforceY
+              ],
+              ttlPlaneGForce = this.reportService.pythagorean(xyGForce);
+        return ttlPlaneGForce / denominator;
+      case 'totalPlusZGForce':
+        return Math.abs(dataSource.totalPlusGforceZ / denominator);
+      case 'totalMinZGForce':
+        return Math.abs(dataSource.totalMinZGForce / denominator);
+      case 'totalWeight':
+        return dataSource.totalWeightKg / denominator;
+      case 'totalSets':
+        return dataSource.totalSets / denominator;
+      case 'armMuscle':
+      case 'pectoralsMuscle':
+      case 'shoulderMuscle':
+      case 'backMuscle':
+      case 'abdominalMuscle':
+      case 'legMuscle':
+        const [
+          totalKg,
+          totalReps,
+          totalSets
+        ] = dataSource[col];
+        if (totalSets !== 0) {
+          return totalKg / denominator;  // 直接用總重排序
+        } else {
+          return undefined;
+        }
+
+    }
+
+  }
+  
+  /**
+   * 將數據進行排序
+   * @param type {SettingObj}
+   * @param data {Array<any>}
+   * @param sortCategory {string}-排序依據
+   * @param asc {boolean}-是否升冪
+   * @author kidin-1100317
+   */
+  sortData(type: SettingObj, data: Array<any>, sortCategory: string, asc: boolean) {
+    let sortDenominator = 0,
+        swaped = true,
+        [...sortData] = data;
+    for (let i = 0, len = sortData.length; i < len && swaped; i++) {
+      swaped = false;
+      for (let j = 0; j < len - 1 - i; j++) {
+        let _dataA = this.getSortData(type, sortData[j], sortCategory),
+            _dataB = this.getSortData(type, sortData[j + 1], sortCategory);
+        // 排序時一併找出最大值
+        if (_dataA > sortDenominator) {
+          sortDenominator = _dataA;
+        } else if (_dataB > sortDenominator) {
+          sortDenominator = _dataB;
+        }
+
+        const noDataCond = _dataA === undefined && _dataB !== undefined,
+              ascCond = _dataB !== undefined && asc && _dataB < _dataA,
+              descCond = _dataB !== undefined && !asc && _dataB > _dataA;
+        // 無成績者皆必排最後
+        if (noDataCond || ascCond || descCond) {
+          swaped = true;
+          [sortData[j], sortData[j + 1]] = [sortData[j + 1], sortData[j]];
+        }
+
+      }
+
+    }
+
+    this[`${type}Table`].list.data = sortData;
+    if (sortCategory !== 'name') {
+      sortData.map(_data => {
+        const sortItemData = this.getSortData(type, _data, sortCategory);
+        let numerator: number;
+        if (sortItemData) {
+          numerator = sortCategory === 'avgPace' ? +(3600 / sortItemData).toFixed(0) : +sortItemData.toFixed(0);
+        } else {
+          numerator = 0;
+        }
+
+        let ratio: string;
+        if (sortDenominator !== 0) {
+          ratio = `${((numerator / sortDenominator) * 100).toFixed(0)}%`;
+        } else {
+          ratio = '0%';
+        }
+        
+        Object.assign(this[`${type}Analysis`][_data], { ratio });
+      });
+
+    }
+
+  }
+
+  /**
+   * 顯示指定對象選單
+   * @param e {MouseEvent}
+   * @param type {SettingObj}-分析列表類別
+   * @param id {string}-群組或使用者id
+   * @author kidin-1100524
+   */
+  showAnalysisInfoMenu(e: MouseEvent, type: SettingObj, id: string) {
+    e.stopPropagation();
+    this.closeAllMenu();
+    this.subscribeScrollAndClick();
+    const menuPosition = {
+      x: `${e.clientX}px`,
+      y: `${e.clientY}px`
+    };
+
+    // 點選位置太靠右則將選單往左移。
+    if (e.view.innerWidth - e.clientX < 270) {
+      menuPosition.x = `${e.view.innerWidth - 270}px`;
+    }
+
+    // 點選位置太靠下則將選單往上移。
+    if (e.view.innerHeight - e.clientY < 280) {
+      menuPosition.y = `${e.view.innerHeight - 280}px`;
+    }
+
+    this.analysisMenu = {
+      type,
+      focusId: id,
+      x: menuPosition.x,
+      y: menuPosition.y
+    };
+
+    this.changeDetectorRef.markForCheck();
+  }
+
+  /**
+   * 根據使用者點擊項目，新開項目視窗
+   * @param obj {SettingObj}-項目類別
+   * @param page {'info' | 'sportReport'}-欲新開視窗之頁面
+   * @param id {string}-群組或成員id
+   * @author kidin-1100524
+   */
+  goPage(obj: SettingObj, page: 'info' | 'sportsReport', id: string) {
+    const { startTimestamp, endTimestamp } = this.reportConditionOpt.date,
+          startDateString = moment(startTimestamp).format('YYYY-MM-DD'),
+          endDateString = moment(endTimestamp).format('YYYY-MM-DD');
+    let url: string,
+        hashId: string;
+    if (obj === 'group') {
+      hashId = this.hashIdService.handleGroupIdEncode(id);
+      switch (page) {
+        case 'info':
+          url = `/dashboard/group-info/${hashId}`;
+          break;
+        case 'sportsReport':
+          url = `/dashboard/group-info/${hashId}/sports-report?startdate=${startDateString}&enddate=${endDateString}`;
+          break;
+      }
+    } else {
+      hashId = this.hashIdService.handleUserIdEncode(id);
+      switch (page) {
+        case 'info':
+          url = `/user-profile/${hashId}`;
+          break;
+        case 'sportsReport':
+          url = `/user-profile/${hashId}/sport-report?startdate=${startDateString}&enddate=${endDateString}`;
+          break;
+      }
+
+    }
+
+    window.open(url);
+  }
+
+  /**
+   * 該分析列表顯示所有人員
+   * @param type {SettingObj}-分析列表類別
+   * @author kidin-1100519
+   */
+  showAllData(type: SettingObj) {
+    this[`${type}Table`].showAll = true;
+    this.updateUrl();
+    this.changeDetectorRef.markForCheck();
+  }
+
+  /**
+   * 列印
+   */
+  print() {
+    window.print();
   }
 
   /**

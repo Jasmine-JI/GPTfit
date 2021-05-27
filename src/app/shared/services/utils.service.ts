@@ -333,6 +333,11 @@ export class UtilsService {
       return obj.constructor(obj);
     }
 
+    // Set
+    if (obj instanceof Set) {
+      return new Set(obj);
+    }
+
     // 檢查快取
     if (cache.has(obj)) {
       return cache.get(obj);

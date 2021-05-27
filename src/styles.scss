@@ -774,6 +774,7 @@ a.ban-send:hover {
 .reportImgIcon {
   border-radius: 50%;
   width: 50px;
+  height: 50px;
 }
 
 .infoDataUnit {
@@ -832,6 +833,26 @@ a.ban-send:hover {
   width: 45%;
 }
 
+.haveOptBtn {
+  position: relative;
+  justify-content: space-between;
+  align-items: center;
+
+  button {
+    font-size: 25px;
+    border: none;
+    background-color: white;
+    padding: 0;
+  }
+
+}
+
+.parentsName {
+  text-align: start;
+  font-size: 10px;
+  color: #c5c5c5;
+}
+
 
 /**********************************************************************************/
 
@@ -845,6 +866,16 @@ a.ban-send:hover {
 }
 
 @media(max-width: 768px) {
+  .media-768-col {
+    display: flex;
+    flex-direction: column;
+
+    >div {
+      width: 100%;
+    }
+
+  }
+
   .access-header {
     height: 50px;
   }

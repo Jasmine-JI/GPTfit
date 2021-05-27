@@ -430,10 +430,12 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
           case 'startdate':
             this.selectDate.startDate = moment(_value, 'YYYY-MM-DD').startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
             this.reportConditionOpt.date.startTimestamp = moment(this.selectDate.startDate).valueOf();
+            this.reportConditionOpt.date.type = 'custom';
             break;
           case 'enddate':
             this.selectDate.endDate = moment(_value, 'YYYY-MM-DD').endOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZ');
             this.reportConditionOpt.date.endTimestamp = moment(this.selectDate.endDate).valueOf();
+            this.reportConditionOpt.date.type = 'custom';
             break;
           case 'mapid':
             this.currentMapId = +_value;
@@ -1642,27 +1644,25 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     let sortDenominator = 0,
         swaped = true;
     const [...sortData] = data;
-        
     for (let i = 0, len = sortData.length; i < len && swaped; i++) {
       swaped = false;
       for (let j = 0; j < len - 1 - i; j++) {
         let _dataA = sortData[j][sortCategory],
             _dataB = sortData[j + 1][sortCategory];
-        if (
-          _dataA
-          && (
-            (sortCategory === 'avgSpeed' && 3600 / _dataA > sortDenominator)
-            || (!['name', 'avgSpeed'].includes(sortCategory) && _dataA > sortDenominator))
-        ) {
-          sortDenominator = sortCategory === 'avgSpeed' ? +(3600 / _dataA).toFixed(0) : +_dataA.toFixed(0);
+        // 排序時一併找出最大值
+        const _valA = sortCategory === 'avgSpeed' ? 3600 / (_dataA || 3600) : _dataA,
+              _valB = sortCategory === 'avgSpeed' ?  3600 / (_dataB || 3600) : _dataB;
+        if (_valA > sortDenominator) {
+          sortDenominator = _valA;
+        } else if (_valB > sortDenominator) {
+          sortDenominator = _valB;
         }
 
         // 無成績者皆必排最後
-        if (
-          (!_dataA && _dataB && _dataB !== 0)
-          || (_dataB && asc && _dataB < _dataA)
-          || (!asc && _dataB > _dataA)
-        ) {
+        const noDataCond = !_dataA && _dataB && _dataB !== 0,
+              ascCond = _dataB && asc && _dataB < _dataA,
+              descCond = !asc && _dataB > _dataA;
+        if (noDataCond || ascCond || descCond) {
           swaped = true;
           [sortData[j], sortData[j + 1]] = [sortData[j + 1], sortData[j]];
         }

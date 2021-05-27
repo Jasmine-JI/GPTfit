@@ -114,7 +114,6 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
     let trendDataset: any,
         chartData = [],
         colorSet: Array<string>;
-console.log('pace', this.data);
     switch (this.chartName) {
       case 'Pace':
         this.chartType = 'pace';
@@ -486,16 +485,18 @@ console.log('pace', this.data);
         // 設定浮動提示框顯示格式-kidin-1090204
         trendChartOptions['tooltip'] = {
           formatter: function () {
-            const startDate = moment(this.x).format('YYYY-MM-DD');
+            const startDate = moment(this.x).format('YYYY-MM-DD'),
+                  yVal = parseFloat(this.point.y.toFixed(1)),
+                  lowVal = parseFloat(this.point.low.toFixed(1));
             if (this.series.xAxis.tickInterval === month) {
               const endDate = moment(this.x + 6 * day).format('YYYY-MM-DD');
               return `${startDate}~${endDate}
-                <br/>Best cadence: ${this.point.y}
-                <br/>${this.series.name}: ${this.point.low}`;
+                <br/>Best cadence: ${yVal}
+                <br/>${this.series.name}: ${lowVal}`;
             } else {
               return `${startDate}
-                <br/>Best cadence: ${this.point.y}
-                <br/>${this.series.name}: ${this.point.low}`;
+                <br/>Best cadence: ${yVal}
+                <br/>${this.series.name}: ${lowVal}`;
             }
 
           }
@@ -510,16 +511,18 @@ console.log('pace', this.data);
         // 設定浮動提示框顯示格式-kidin-1090204
         trendChartOptions['tooltip'] = {
           formatter: function () {
-            const startDate = moment(this.x).format('YYYY-MM-DD');
+            const startDate = moment(this.x).format('YYYY-MM-DD'),
+                  yVal = parseFloat(this.point.y.toFixed(1)),
+                  lowVal = parseFloat(this.point.low.toFixed(1));
             if (this.series.xAxis.tickInterval === month) {
               const endDate = moment(this.x + 6 * day).format('YYYY-MM-DD');
               return `${startDate}~${endDate}
-                <br/>Best Swolf: ${this.point.low}
-                <br/>${this.series.name}: ${this.point.y}`;
+                <br/>Best Swolf: ${lowVal}
+                <br/>${this.series.name}: ${yVal}`;
             } else {
               return `${startDate}
-                <br/>Best Swolf: ${this.point.low}
-                <br/>${this.series.name}: ${this.point.y}`;
+                <br/>Best Swolf: ${lowVal}
+                <br/>${this.series.name}: ${yVal}`;
             }
 
           }
@@ -534,16 +537,17 @@ console.log('pace', this.data);
         trendChartOptions['tooltip'] = {
           formatter: function () {
             const startDate = moment(this.x).format('YYYY-MM-DD'),
-                  roundVal = parseFloat(this.point.low.toFixed(1));
+                  yVal = parseFloat(this.point.y.toFixed(1)),
+                  lowVal = parseFloat(this.point.low.toFixed(1));
             if (this.series.xAxis.tickInterval === month) {
               const endDate = moment(this.x + 6 * day).format('YYYY-MM-DD');
               return `${startDate}~${endDate}
-                <br/>${this.series.name[0]}: ${this.point.y}
-                <br/>${this.series.name[1]}: ${roundVal}`;
+                <br/>${this.series.name[0]}: ${yVal}
+                <br/>${this.series.name[1]}: ${lowVal}`;
             } else {
               return `${startDate}
-                <br/>${this.series.name[0]}: ${this.point.y}
-                <br/>${this.series.name[1]}: ${roundVal}`;
+                <br/>${this.series.name[0]}: ${yVal}
+                <br/>${this.series.name[1]}: ${lowVal}`;
             }
 
           }
@@ -554,17 +558,19 @@ console.log('pace', this.data);
         // 設定浮動提示框顯示格式-kidin-1090204
         trendChartOptions['tooltip'] = {
           formatter: function () {
-            const startDate = moment(this.x).format('YYYY-MM-DD');
+            const startDate = moment(this.x).format('YYYY-MM-DD'),
+                  tVal = parseFloat(this.point.t.toFixed(1)),
+                  zVal = parseFloat(this.point.z.toFixed(1));
             if (this.series.xAxis.tickInterval === month) {
               const endDate = moment(this.x + 6 * day).format('YYYY-MM-DD');
               return `${startDate}~${endDate}
-                <br/>${this.series.name[1]}: ${this.point.t.toFixed(1)}
-                <br/>${this.series.name[0]}: ${this.point.z.toFixed(1)}`;
+                <br/>${this.series.name[1]}: ${tVal}
+                <br/>${this.series.name[0]}: ${zVal}`;
 
             } else {
               return `${startDate}
-                <br/>${this.series.name[1]}: ${this.point.t.toFixed(1)}
-                <br/>${this.series.name[0]}: ${this.point.z.toFixed(1)}`;
+                <br/>${this.series.name[1]}: ${tVal}
+                <br/>${this.series.name[0]}: ${zVal}`;
             }
           }
         };
@@ -583,16 +589,18 @@ console.log('pace', this.data);
         // 設定浮動提示框顯示格式-kidin-1090204
         trendChartOptions['tooltip'] = {
           formatter: function () {
-            const startDate = moment(this.x).format('YYYY-MM-DD');
+            const startDate = moment(this.x).format('YYYY-MM-DD'),
+                  yVal = parseFloat(this.point.y.toFixed(1)),
+                  lowVal = parseFloat(this.point.low.toFixed(1));
             if (this.series.xAxis.tickInterval === month) {
               const endDate = moment(this.x + 6 * day).format('YYYY-MM-DD');
               return `${startDate}~${endDate}
-                <br/>1RM: ${this.point.y.toFixed(1)}K
-                <br/>Avg Weight: ${this.point.low.toFixed(1)}`;
+                <br/>1RM: ${yVal}K
+                <br/>Avg Weight: ${lowVal}`;
             } else {
               return `${startDate}
-                <br/>1RM: ${this.point.y.toFixed(1)}
-                <br/>Avg Weight: ${this.point.low.toFixed(1)}`;
+                <br/>1RM: ${yVal}
+                <br/>Avg Weight: ${lowVal}`;
             }
 
           }

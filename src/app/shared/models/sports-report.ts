@@ -486,3 +486,8 @@ export const paiCofficient = {
  * 一天pai指標秒數（即經加權後運動時間等於該指標秒數，則pai為100）
  */
 export const dayPaiTarget = 1285;
+
+/**
+ * 區間趨勢（上升/下降）
+ */
+export type Regression = 'up' | 'down';
