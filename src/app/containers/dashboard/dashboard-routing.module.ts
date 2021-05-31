@@ -5,14 +5,14 @@ import { CertificateComponent } from './components/certificate/certificate.compo
 import { DeviceLogComponent } from './components/device-log/device-log.component';
 import { DeviceLogDetailComponent } from './components/device-log-detail/device-log-detail.component';
 import { CoachDashboardComponent } from './components/coach-dashboard/coach-dashboard.component';
-import { AuthGuard } from '@shared/guards/auth/auth.guard';
+import { AuthGuard } from '../../shared/guards/auth/auth.guard';
 import { UnsaveGuard } from '../dashboard/guards/unsave-guard';
 import { GroupSearchComponent } from './group/group-search/group-search.component';
 import { AllGroupListComponent } from './group/all-group-list/all-group-list.component';
 import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
 import { DashboardGuard } from './guards/dashboard-guard';
-import { MyActivityComponent } from '@shared/components/my-activity/my-activity.component';
-import { SportReportComponent } from '@shared/components/sport-report/sport-report.component';
+import { MyActivityComponent } from '../../shared/components/my-activity/my-activity.component';
+import { SportReportComponent } from '../../shared/components/sport-report/sport-report.component';
 import { MyDeviceComponent } from './components/device/my-device/my-device.component';
 import { ProductInfoComponent } from './components/device/product-info/product-info.component';
 import { TrainLiveComponent } from './components/train-live/train-live.component';
@@ -22,7 +22,7 @@ import { InnerTestComponent } from './components/inner-test/inner-test.component
 import { CloudRunGpxComponent } from './components/cloud-run-gpx/cloud-run-gpx.component';
 import { InnerDevicePairComponent } from './components/inner-device-pair/inner-device-pair.component';
 import { LifeTrackingComponent } from './components/life-tracking/life-tracking.component';
-import { MyLifeTrackingComponent } from '@shared/components/my-life-tracking/my-life-tracking.component';
+import { MyLifeTrackingComponent } from '../../shared/components/my-life-tracking/my-life-tracking.component';
 import { QrcodeUploadComponent } from './components/qrcode-upload/qrcode-upload.component';
 import { EditPushMessageComponent } from './components/push-message/edit-push-message/edit-push-message.component';
 import { PushMessageListComponent } from './components/push-message/push-message-list/push-message-list.component';
@@ -52,6 +52,11 @@ import { AlaAppAnalysisComponent } from './components/ala-app-analysis/ala-app-a
 import { CloudrunReportComponent as PersonCloudrunReport } from './components/cloudrun-report/cloudrun-report.component'
 
 const routes: Routes = [
+  {
+    path: '',
+    component: DashboardComponent,
+    canActivate: [AuthGuard]
+  },
   {
     path: 'dashboard',
     component: DashboardComponent,
@@ -286,10 +291,17 @@ const routes: Routes = [
       {
         path: 'mygroup-list-v2',
         component: MyGroupListComponent
+      },
+      {
+        path: '**',
+        redirectTo: '404'
       }
     ]
   },
-  { path: '**', redirectTo: '404' }
+  { 
+    path: '**',
+    redirectTo: '404'
+  }
 ];
 
 @NgModule({

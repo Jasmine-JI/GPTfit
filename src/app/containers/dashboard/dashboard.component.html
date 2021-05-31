@@ -1,6 +1,8 @@
-<div (window:resize)="onResize($event)"
-  *ngIf="!isLoading" [class.minimize-main-nav]="uiFlag.sidebarMode === 'expand'"
+<div 
+  (window:resize)="onResize($event)"
+  [class.minimize-main-nav]="uiFlag.sidebarMode === 'expand'"
   style="display: flex; align-items: stretch;"
+  *ngIf="!isLoading"
 >
   <ng-container *ngIf="!isPreviewMode">
     <header class="header header__color ala-dashboard-header">
@@ -107,7 +109,7 @@
               <div class="flexRow drop__down" (click)="dropDown('timelyActivity')">
                 <i
                   class="icon-svg_web-icon_p1_003-peoples ala-sidenav-icon"
-                  [class.ala-sidenav-menu-item__active]="uiFlag.sidebarMode === 'narrow' && target === 3"
+                  [class.ala-sidenav-menu-item__active]="uiFlag.sidebarMode === 'narrow' && target === sideBarList.trainLive"
                 ></i>
                 <span
                   class="small__side navbar__list__title"
@@ -126,8 +128,8 @@
                 [class.expand__content]="uiFlag.currentDrop === 'timelyActivity' && uiFlag.sidebarMode === 'expand' ? true : false"
               >
                 <li class="ala-sidenav-menu-item"
-                  (click)="chooseItem(3)"
-                  [class.ala-sidenav-menu-item__active]="target === 3"
+                  (click)="chooseItem(sideBarList.trainLive)"
+                  [class.ala-sidenav-menu-item__active]="target === sideBarList.trainLive"
                   [routerLink]="['/dashboard/live/train-live']"
                 >
                   Train live
@@ -142,7 +144,9 @@
               <div class="flexRow drop__down" (click)="dropDown('group')">
                 <i
                   class="icon-svg_web-icon_p1_036-friends ala-sidenav-icon"
-                  [class.ala-sidenav-menu-item__active]="uiFlag.sidebarMode === 'narrow' && [10, 17].includes(target)"
+                  [class.ala-sidenav-menu-item__active]="
+                    uiFlag.sidebarMode === 'narrow' && [sideBarList.myGroup, sideBarList.searchGroup].includes(target)
+                  "
                 ></i>
                 <span class="small__side navbar__list__title" [class.drop__list]="uiFlag.sidebarMode === 'expand' || uiFlag.navFixed">
                   <span>{{"universal_group_group" | translate}}</span>
@@ -158,15 +162,15 @@
                 [class.expand__content]="uiFlag.currentDrop === 'group' && uiFlag.sidebarMode === 'expand' ? true : false"
               >
                 <li class="ala-sidenav-menu-item"
-                  (click)="chooseItem(10)"
-                  [class.ala-sidenav-menu-item__active]="target === 10"
+                  (click)="chooseItem(sideBarList.myGroup)"
+                  [class.ala-sidenav-menu-item__active]="target === sideBarList.myGroup"
                   [routerLink]="['/dashboard/my-group-list']"
                 >
                   {{"universal_group_myGroup" | translate}}
                 </li>
                 <li class="ala-sidenav-menu-item"
-                  (click)="chooseItem(17)"
-                  [class.ala-sidenav-menu-item__active]="target === 17"
+                  (click)="chooseItem(sideBarList.searchGroup)"
+                  [class.ala-sidenav-menu-item__active]="target === sideBarList.searchGroup"
                   [routerLink]="['/dashboard/group-search']"
                 >
                   {{"universal_group_searchGroup" | translate}}
@@ -175,8 +179,8 @@
             </div>
             <div class="nav__color" *ngIf="uiFlag.sidebarMode !== 'hide'">
               <li class="ala-sidenav-item drop__down"
-                (click)="chooseItem(14)"
-                [class.ala-sidenav-menu-item__active]="target === 14"
+                (click)="chooseItem(sideBarList.myActivity)"
+                [class.ala-sidenav-menu-item__active]="target === sideBarList.myActivity"
                 [routerLink]="['/dashboard/activity-list']"
               >
                 <i
@@ -189,8 +193,8 @@
             </div>
             <div class="nav__color" *ngIf="uiFlag.sidebarMode !== 'hide'">
               <li class="ala-sidenav-item drop__down"
-                (click)="chooseItem(15)"
-                [class.ala-sidenav-menu-item__active]="target === 15"
+                (click)="chooseItem(sideBarList.myDevice)"
+                [class.ala-sidenav-menu-item__active]="target === sideBarList.myDevice"
                 [routerLink]="['/dashboard/device']"
               >
                 <i class="icon-svg_web-icon_p1_010-treadmill ala-sidenav-icon"></i>
@@ -207,7 +211,10 @@
               <div class="flexRow drop__down" (click)="dropDown('myReport')">
                 <i
                   class="icon-svg_web-icon_p1_037-chart ala-sidenav-icon"
-                  [class.ala-sidenav-menu-item__active]="uiFlag.sidebarMode === 'narrow' && [16, 23, 25].includes(target)"
+                  [class.ala-sidenav-menu-item__active]="
+                    uiFlag.sidebarMode === 'narrow'
+                    && [sideBarList.sportReport, sideBarList.lifeTracking, sideBarList.cloudrun].includes(target)
+                  "
                 ></i>
                 <span class="small__side navbar__list__title" [class.drop__list]="uiFlag.sidebarMode === 'expand' || uiFlag.navFixed">
                   <span >{{"universal_group_myReport" | translate}}</span>
@@ -223,22 +230,22 @@
                 [class.expand__content]="uiFlag.currentDrop === 'myReport' && uiFlag.sidebarMode === 'expand' ? true : false"
               >
                 <li class="ala-sidenav-menu-item"
-                  (click)="chooseItem(16)"
-                  [class.ala-sidenav-menu-item__active]="target === 16"
+                  (click)="chooseItem(sideBarList.sportReport)"
+                  [class.ala-sidenav-menu-item__active]="target === sideBarList.sportReport"
                   [routerLink]="['/dashboard/sport-report']"
                 >
                   {{"universal_activityData_sportReport" | translate }}
                 </li>
                 <li class="ala-sidenav-menu-item"
-                  (click)="chooseItem(23)"
-                  [class.ala-sidenav-menu-item__active]="target === 23"
+                  (click)="chooseItem(sideBarList.lifeTracking)"
+                  [class.ala-sidenav-menu-item__active]="target === sideBarList.lifeTracking"
                   [routerLink]="['/dashboard/life-tracking']"
                 >
                   {{"universal_lifeTracking_lifeTracking" | translate}}
                 </li>
                 <li class="ala-sidenav-menu-item"
-                  (click)="chooseItem(25)"
-                  [class.ala-sidenav-menu-item__active]="target === 25"
+                  (click)="chooseItem(sideBarList.cloudrun)"
+                  [class.ala-sidenav-menu-item__active]="target === sideBarList.cloudrun"
                   [routerLink]="['/dashboard/cloudrun']"
                 >
                   Cloud run
@@ -256,7 +263,16 @@
               <div class="flexRow drop__down" (click)="dropDown('systemManagement')">
                 <i
                   class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"
-                  [class.ala-sidenav-menu-item__active]="uiFlag.sidebarMode === 'narrow' && [13, 18, 19, 21, 24].includes(target)"
+                  [class.ala-sidenav-menu-item__active]="
+                    uiFlag.sidebarMode === 'narrow'
+                    && [
+                      sideBarList.innerAdmin,
+                      sideBarList.innerSearch,
+                      sideBarList.coordinateTranslate,
+                      sideBarList.lifeTrackingLog,
+                      sideBarList.systemLog
+                    ].includes(target)
+                  "
                 ></i>
                 <span class="small__side navbar__list__title" [class.drop__list]="uiFlag.sidebarMode === 'expand' || uiFlag.navFixed">
                   <span >{{"universal_system_systemManagement" | translate }}</span>
@@ -272,8 +288,8 @@
                 [class.expand__content]="uiFlag.currentDrop === 'systemManagement' && uiFlag.sidebarMode === 'expand' ? true : false"
               >
                 <li class="ala-sidenav-menu-item"
-                  (click)="chooseItem(13)"
-                  [class.ala-sidenav-menu-item__active]="target === 13"
+                  (click)="chooseItem(sideBarList.innerAdmin)"
+                  [class.ala-sidenav-menu-item__active]="target === sideBarList.innerAdmin"
                   [routerLink]="['/dashboard/system/setting-member']"
                   *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30"
                 >
@@ -281,8 +297,8 @@
                   {{"universal_system_internalAdministrator" | translate }}
                 </li>
                 <li class="ala-sidenav-menu-item"
-                  (click)="chooseItem(18)"
-                  [class.ala-sidenav-menu-item__active]="target === 18"
+                  (click)="chooseItem(sideBarList.innerSearch)"
+                  [class.ala-sidenav-menu-item__active]="target === sideBarList.innerSearch"
                   [routerLink]="['/dashboard/system/inner-test']"
                   *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 29"
                 >
@@ -290,8 +306,8 @@
                   {{"universal_group_rserGroupQuery" | translate }}
                 </li>
                 <li class="ala-sidenav-menu-item"
-                  (click)="chooseItem(19)"
-                  [class.ala-sidenav-menu-item__active]="target === 19"
+                  (click)="chooseItem(sideBarList.coordinateTranslate)"
+                  [class.ala-sidenav-menu-item__active]="target === sideBarList.coordinateTranslate"
                   [routerLink]="['/dashboard/system/inner-gpx']"
                   *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 20"
                 >
@@ -299,8 +315,8 @@
                   {{"universal_system_coordinateSystemConversion" | translate }}
                 </li>
                 <li class="ala-sidenav-menu-item"
-                  (click)="chooseItem(21)"
-                  [class.ala-sidenav-menu-item__active]="target === 21"
+                  (click)="chooseItem(sideBarList.lifeTrackingLog)"
+                  [class.ala-sidenav-menu-item__active]="target === sideBarList.lifeTrackingLog"
                   [routerLink]="['/dashboard/system/life-tracking']"
                   *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 20"
                 >
@@ -308,8 +324,8 @@
                   {{"universal_system_lifetrackingLog" | translate }}
                 </li>
                 <li class="ala-sidenav-menu-item"
-                  (click)="chooseItem(24)"
-                  [class.ala-sidenav-menu-item__active]="target === 24"
+                  (click)="chooseItem(sideBarList.systemLog)"
+                  [class.ala-sidenav-menu-item__active]="target === sideBarList.systemLog"
                   [routerLink]="['/dashboard/system/system-log']"
                   *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 20"
                 >
@@ -324,8 +340,8 @@
             >
               <li
                 class="ala-sidenav-item drop__down"
-                (click)="chooseItem(6)"
-                [class.ala-sidenav-menu-item__active]="target === 6"
+                (click)="chooseItem(sideBarList.eventManagement)"
+                [class.ala-sidenav-menu-item__active]="target === sideBarList.eventManagement"
                 [routerLink]="['/dashboard/system/event-management']"
                 *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30"
               >
@@ -343,7 +359,10 @@
               <div class="flexRow drop__down" (click)="dropDown('groupManagement')">
                 <i
                   class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"
-                  [class.ala-sidenav-menu-item__active]="uiFlag.sidebarMode === 'narrow' && [11, 12, 22].includes(target)"
+                  [class.ala-sidenav-menu-item__active]="
+                    uiFlag.sidebarMode === 'narrow'
+                    && [sideBarList.allGroupList, sideBarList.createBrandGroup, sideBarList.createEnterpriseGroup].includes(target)
+                  "
                 ></i>
                 <span class="small__side navbar__list__title" [class.drop__list]="uiFlag.sidebarMode === 'expand' || uiFlag.navFixed">
                   <span >{{"universal_group_groupManagement" | translate }}</span>
@@ -360,24 +379,24 @@
                 *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30 && uiFlag.sidebarMode !== 'hide'"
               >
                 <li class="ala-sidenav-menu-item"
-                  (click)="chooseItem(11)"
-                  [class.ala-sidenav-menu-item__active]="target === 11"
+                  (click)="chooseItem(sideBarList.allGroupList)"
+                  [class.ala-sidenav-menu-item__active]="target === sideBarList.allGroupList"
                   *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30"
                   [routerLink]="['/dashboard/system/all-group-list']"
                 >
                   {{"universal_group_listAllGroups" | translate }}
                 </li>
                 <li class="ala-sidenav-menu-item"
-                  (click)="chooseItem(12)"
-                  [class.ala-sidenav-menu-item__active]="target === 12"
+                  (click)="chooseItem(sideBarList.createBrandGroup)"
+                  [class.ala-sidenav-menu-item__active]="target === sideBarList.createBrandGroup"
                   *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30"
                   [routerLink]="['/dashboard/system/create-brand-group']"
                 >
                   {{"universal_activityData_create" | translate }} {{"universal_group_gym" | translate }} {{"universal_group_group" | translate }}
                 </li>
                 <li class="ala-sidenav-menu-item"
-                  (click)="chooseItem(22)"
-                  [class.ala-sidenav-menu-item__active]="target === 22"
+                  (click)="chooseItem(sideBarList.createEnterpriseGroup)"
+                  [class.ala-sidenav-menu-item__active]="target === sideBarList.createEnterpriseGroup"
                   *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30"
                   [routerLink]="['/dashboard/system/create-com-group']"
                 >
@@ -393,7 +412,10 @@
               <div class="flexRow drop__down" (click)="dropDown('push')">
                 <i
                   class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"
-                  [class.ala-sidenav-menu-item__active]="uiFlag.sidebarMode === 'narrow' && [31, 32].includes(target)"
+                  [class.ala-sidenav-menu-item__active]="
+                    uiFlag.sidebarMode === 'narrow'
+                    && [sideBarList.createPush, sideBarList.pushList].includes(target)
+                  "
                 ></i>
                 <span class="small__side navbar__list__title" [class.drop__list]="uiFlag.sidebarMode === 'expand' || uiFlag.navFixed">
                   <span>推播管理</span>
@@ -408,16 +430,16 @@
                 [class.expand__content]="uiFlag.currentDrop === 'push' && uiFlag.sidebarMode === 'expand' ? true : false"
               >
                 <li class="ala-sidenav-menu-item"
-                  (click)="chooseItem(20)"
-                  [class.ala-sidenav-menu-item__active]="target === 31"
+                  (click)="chooseItem(sideBarList.createPush)"
+                  [class.ala-sidenav-menu-item__active]="target === sideBarList.createPush"
                   [routerLink]="['/dashboard/system/create-push']"
                   *ngIf="userProfile.systemAccessRight && (userProfile.systemAccessRight[0] === 10 || userProfile.systemAccessRight[0] === 28)"
                 >
                   建立推播
                 </li>
                 <li class="ala-sidenav-menu-item"
-                  (click)="chooseItem(32)"
-                  [class.ala-sidenav-menu-item__active]="target === 32"
+                  (click)="chooseItem(sideBarList.pushList)"
+                  [class.ala-sidenav-menu-item__active]="target === sideBarList.pushList"
                   [routerLink]="['/dashboard/system/push-list']"
                   *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 29"
                 >
@@ -433,7 +455,10 @@
               <div class="flexRow drop__down" (click)="dropDown('deviceManagement')">
                 <i
                   class="icon-svg_web-icon_p1_048-service ala-sidenav-icon"
-                  [class.ala-sidenav-menu-item__active]="uiFlag.sidebarMode === 'narrow' && [5, 20].includes(target)"
+                  [class.ala-sidenav-menu-item__active]="
+                    uiFlag.sidebarMode === 'narrow'
+                    && [sideBarList.deviceSearch, sideBarList.deviceLog].includes(target)
+                  "
                 ></i>
                 <span class="small__side navbar__list__title" [class.drop__list]="uiFlag.sidebarMode === 'expand' || uiFlag.navFixed">
                   <span >{{"universal_deviceSetting_deviceManagement" | translate }}</span>
@@ -449,16 +474,16 @@
                 [class.expand__content]="uiFlag.currentDrop === 'deviceManagement' && uiFlag.sidebarMode === 'expand' ? true : false"
               >
                 <li class="ala-sidenav-menu-item"
-                  (click)="chooseItem(20)"
-                  [class.ala-sidenav-menu-item__active]="target === 20"
+                  (click)="chooseItem(sideBarList.deviceSearch)"
+                  [class.ala-sidenav-menu-item__active]="target === sideBarList.deviceSearch"
                   [routerLink]="['/dashboard/system/device-pair-management']"
                   *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] < 30"
                 >
                   {{"universal_deviceSetting_deviceInquiry" | translate }}
                 </li>
                 <li class="ala-sidenav-menu-item"
-                  (click)="chooseItem(5)"
-                  [class.ala-sidenav-menu-item__active]="target === 5"
+                  (click)="chooseItem(sideBarList.deviceLog)"
+                  [class.ala-sidenav-menu-item__active]="target === sideBarList.deviceLog"
                   [routerLink]="['/dashboard/system/device_log']"
                   *ngIf="userProfile.systemAccessRight && userProfile.systemAccessRight[0] <= 20"
                 >

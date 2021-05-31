@@ -22,6 +22,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.getUserProfile();
+    this.handleNavigate(location.pathname);
     this.detectUrlChange(location.pathname);
     this.router.events.subscribe((val: NavigationEnd) => {
       if (val instanceof NavigationEnd && val.url) {
@@ -41,6 +42,20 @@ export class SettingsComponent implements OnInit, OnDestroy {
       this.userData = res;
     });
 
+  }
+
+  /**
+   * 根據url確認是否需要導至預設頁面
+   * @param path {string}-url path
+   * @param kidin-1100531
+   */
+  handleNavigate(path: string) {
+    switch (path) {
+      case '/dashboard/settings':
+        this.router.navigateByUrl('/dashboard/settings/user-settings');
+        break;
+    }
+  
   }
 
   /**

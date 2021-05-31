@@ -22,8 +22,7 @@ export class AuthService {
     private http: HttpClient,
     private utils: UtilsService,
     private userProfileService: UserProfileService,
-    private router: Router,
-    private injector: Injector // private router: Router
+    private router: Router
   ) {}
 
   /**
@@ -36,7 +35,6 @@ export class AuthService {
   loginServerV2(body: any): Observable<any> {
     return this.http.post<any>('/api/v2/user/signIn', body).pipe(
       tap(res => {
-
         switch (res.processResult.resultCode) {
           case 200:
           case 402: // 刷新權杖
