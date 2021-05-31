@@ -1,10 +1,7 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { UserInfo } from '../models/userInfo';
 import { UserDetail } from '../models/userDetail';
-import { UtilsService } from '@shared/services/utils.service';
 
 @Injectable()
 export class UserInfoService {
@@ -16,12 +13,7 @@ export class UserInfoService {
 
   // groupId$ = new BehaviorSubject<string>('0-0-0-0-0-0');
   userIcon$ = new BehaviorSubject<string>('');
-  userId$ = new BehaviorSubject<number>(null);
   updatedImg$ = new BehaviorSubject<string>('');
-  initialUserInfo$ = new BehaviorSubject<any>({
-    isInitial: false,
-    groupAccessRight: []
-  });
   userAccessRightDetail$ = new BehaviorSubject<any>({
     accessRight: 'none',
     isCanManage: false,
@@ -30,8 +22,7 @@ export class UserInfoService {
   });
 
   constructor(
-    private http: HttpClient,
-    private utils: UtilsService
+    private http: HttpClient
   ) { }
 
   fetchEnableAccount (body, ip) {  // v2 1002
@@ -75,9 +66,7 @@ export class UserInfoService {
   getUserName(): Observable<string> {
     return this.userName$;
   }
-  getUserId(): Observable<number> {
-    return this.userId$;
-  }
+
   getUserAge(): Observable<number> {
     return this.userAge$;
   }
@@ -99,9 +88,6 @@ export class UserInfoService {
     return this.userAccessRightDetail$.next(data);
   }
 
-  getInitialUserInfoStatus(): Observable<UserInfo> {
-    return this.initialUserInfo$;
-  }
   getUserAccessRightDetail(): Observable<UserDetail> {
     return this.userAccessRightDetail$;
   }

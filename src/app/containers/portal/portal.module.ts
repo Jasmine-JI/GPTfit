@@ -1,8 +1,7 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule, HttpClientJsonpModule } from '@angular/common/http';
-
+import { HttpClientJsonpModule } from '@angular/common/http';
 import { PortalRoutingModule } from './portal-routing.module';
 import { PortalComponent } from './portal.component';
 import { SharedPipes } from '@shared/pipes/shared-pipes';
@@ -52,7 +51,6 @@ import { AppDestroyAccountComponent } from './components/app-sign/app-destroy-ac
   imports: [
     CommonModule,
     PortalRoutingModule,
-    HttpClientModule,
     HttpClientJsonpModule,
     FormsModule,
     MyDatePickerModule,

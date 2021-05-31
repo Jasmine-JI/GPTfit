@@ -1,6 +1,4 @@
 import { HttpClient } from '@angular/common/http';
-
-import { UserInfoService } from '../../containers/dashboard/services/userInfo.service';
 import { Injectable } from '@angular/core';
 import { ReplaySubject, Observable } from 'rxjs';
 import { tap, switchMap, map, retry } from 'rxjs/operators';
@@ -12,8 +10,7 @@ const { API_SERVER } = environment.url;
 @Injectable()
 export class UserProfileService {
   constructor(
-    private http: HttpClient,
-    private userInfoService: UserInfoService
+    private http: HttpClient
   ) {}
 
   userProfile$ = new ReplaySubject(1);
