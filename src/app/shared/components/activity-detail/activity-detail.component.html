@@ -93,7 +93,7 @@
             <div class="flexCol summery__block" *ngIf="![3, 5].includes(+activityInfoLayer.type)">
               <span class="summary__type__title">{{ 'universal_activityData_totalDistance' | translate }}</span>
               <span class="summary__type__content">
-                {{ activityInfoLayer.totalDistanceMeters | distanceSibs: userProfile.unit }}
+                {{ activityInfoLayer.totalDistanceMeters | distanceSibs: [userProfile.unit, true] }}
               </span>
             </div>
             <div class="flexCol summery__block" *ngIf="[1, 4, 6].includes(+activityInfoLayer.type)">
@@ -432,11 +432,11 @@
               <div class="flexCol table__list__block">
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_climbGain' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.elevGain || 0 | distanceSibs: userProfile.unit }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.elevGain || 0 | distanceSibs: [userProfile.unit, true] }}</span>
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_climbLoss' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.elevLoss || 0 | distanceSibs: userProfile.unit }}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.elevLoss || 0 | distanceSibs: [userProfile.unit, true] }}</span>
                 </div>
               </div>
             </div>
@@ -447,7 +447,7 @@
                   <span class="table__list__subtitle">{{ 'universal_activityData_maxAltitude' | translate }}</span>
                   <span class="table__list__content">
                     <ng-container *ngIf="activityInfoLayer.maxElev; else dash;">
-                      {{ activityInfoLayer.maxElev | distanceSibs: userProfile.unit }}
+                      {{ activityInfoLayer.maxElev | distanceSibs: [userProfile.unit, true] }}
                     </ng-container>
                   </span>
                 </div>
@@ -455,7 +455,7 @@
                   <span class="table__list__subtitle">{{ 'universal_activityData_minAltitude' | translate }}</span>
                   <span class="table__list__content">
                     <ng-container *ngIf="activityInfoLayer.minElev; else dash;">
-                      {{ activityInfoLayer.minElev | distanceSibs: userProfile.unit }}
+                      {{ activityInfoLayer.minElev | distanceSibs: [userProfile.unit, true] }}
                     </ng-container>
                   </span>
                 </div>
@@ -597,7 +597,7 @@
               <div class="flexCol table__list__block">
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_poolLength' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.poolLengthMeters | distanceSibs: userProfile.unit}}</span>
+                  <span class="table__list__content">{{ activityInfoLayer.poolLengthMeters | distanceSibs: [userProfile.unit, true] }}</span>
                 </div>
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_poolSwimReps' | translate }}</span>

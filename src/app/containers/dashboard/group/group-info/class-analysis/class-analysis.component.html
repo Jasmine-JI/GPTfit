@@ -24,7 +24,7 @@
   </div>
 </ng-container>
 <ng-container *ngIf="hasResData && reportCompleted && hideCalendar">
-  <div class="functionButton" [style.justify-content]="isPreviewMode ? '' : 'space-between'">
+  <div class="functionBtnBar" [style.justify-content]="isPreviewMode ? '' : 'space-between'">
     <span (click)="returnCalendar()" style="cursor: pointer; color: #0089ff" *ngIf="!isPreviewMode">
       &lt;&lt; {{'universal_operating_back' | translate}}
     </span>

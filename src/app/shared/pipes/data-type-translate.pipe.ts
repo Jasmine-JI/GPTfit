@@ -2,13 +2,17 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { unit } from '../models/bs-constant';
 import { SportCode } from '../models/report-condition';
 
-/**
- * 將運動資料類別轉為多國語系的鍵
- * @author kidin-1100120
- */
 @Pipe({name: 'dataTypeTranslate'})
 export class DataTypeTranslatePipe implements PipeTransform {
-  transform(value: string, args: number[]): any {
+
+  /**
+   * 將運動資料類別轉為多國語系的鍵
+   * @param value {string}-app id
+   * @param args {Array<number>}-[運動類別, 公制/英制]
+   * @returns {any}-多國語系的鍵
+   * @author kidin
+   */
+  transform(value: string, args: Array<number>): string {
     const [sportType, userUnit] = [...args];
     switch (value) {
       case 'hr':

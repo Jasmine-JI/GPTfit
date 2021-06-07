@@ -1,11 +1,16 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-/**
- * 將總秒數轉為時:分:秒或時:分
- */
+
 @Pipe({name: 'sportTime'})
 export class SportTimePipe implements PipeTransform {
-  transform(value: string, args: Array<boolean> = [true, false]): any {
+  /**
+   * 將總秒數轉為時:分:秒或時:分
+   * @param value {number}-時間（s）
+   * @param args {boolean}-不足1小時或1分鐘是否仍完整顯示時：分：秒，ex. 00:00:39
+   * @return {string}-轉換過後的時間字串
+   * @author kidin
+   */
+  transform(value: string, args: Array<boolean> = [true, false]): string {
     const [showZeroHour, hideSecond] = args;
     if (value !== 'N/A') {
       const yVal = +value,

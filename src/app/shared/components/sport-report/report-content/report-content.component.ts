@@ -4,15 +4,14 @@ import { Subject } from 'rxjs';
 import { first, takeUntil, tap, switchMap } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { UtilsService } from '@shared/services/utils.service';
-import { HashIdService } from '@shared/services/hash-id.service';
+import { UtilsService } from '../../../services/utils.service';
+import { HashIdService } from '../../../services/hash-id.service';
 import { UserProfileService } from '../../../services/user-profile.service';
 import { ReportService } from '../../../services/report.service';
-import * as _Highcharts from 'highcharts';
 import { ReportConditionOpt } from '../../../models/report-condition';
 import { HrZoneRange } from '../../../models/chart-data';
+import { charts } from 'highcharts';
 
-const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 @Component({
   selector: 'app-report-content',
@@ -1134,12 +1133,12 @@ export class ReportContentComponent implements OnInit, OnChanges, OnDestroy {
     this.switchPeriod();
 
     // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
-    Highcharts.charts.forEach((_highChart, idx) => {
+    charts.forEach((_highChart, idx) => {
       if (_highChart !== undefined) {
         _highChart.destroy();
       }
     });
-    Highcharts.charts.length = 0;
+    charts.length = 0;
 
     this.reportService.getTypeData(type).pipe(first()).subscribe(res => {
       this.categoryActivityLength = res.activityLength;

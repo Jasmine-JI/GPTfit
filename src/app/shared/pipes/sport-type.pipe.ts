@@ -1,12 +1,16 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { SportCode } from '../models/report-condition';
 
-/**
- * 根據運動類別回傳對應多國語系的鍵。
- */
+
 @Pipe({name: 'sportType'})
 export class SportTypePipe implements PipeTransform {
-  transform(value: string | number, args: string[]): any {
+  /**
+   * 根據運動類別回傳對應多國語系的鍵
+   * @param value {string | number}-運動類型
+   * @return {string}-多國語系的鍵
+   * @author kidin
+   */
+  transform(value: string | number): string {
     switch (+value) {
       case SportCode.run:
         return 'universal_activityData_run';

@@ -1,6 +1,5 @@
 import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
 import { chart } from 'highcharts';
-import * as _Highcharts from 'highcharts';
 import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -11,13 +10,11 @@ import {
   cadenceTrendColor,
   swolfTrendColor
 } from '../../../models/chart-data';
-import { Unit, unit } from '../../../models/bs-constant';
+import { Unit } from '../../../models/bs-constant';
 import { SportType, SportCode } from '../../../models/report-condition';
 import { DataTypeTranslatePipe } from '../../../pipes/data-type-translate.pipe';
 import { day, month, week } from '../../../models/utils-constant';
 import { UtilsService } from '../../../services/utils.service';
-
-const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
@@ -25,7 +22,8 @@ class ChartOptions {
     return {
       chart: {
         type: 'column',
-        height: 110
+        height: 110,
+        backgroundColor: 'transparent'
       },
       title: {
         text: ''

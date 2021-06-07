@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { PeopleSelectorWinComponent } from '../people-selector-win/people-selector-win.component';
 import { GroupService } from '../../services/group.service';
-import * as _ from 'lodash';
+import { cloneDeep } from 'lodash';
 import { UserProfileService } from '../../../../shared/services/user-profile.service';
 import { MsgDialogComponent } from '../msg-dialog/msg-dialog.component';
 import { Router } from '@angular/router';
@@ -89,19 +89,19 @@ export class InnerSettingsComponent implements OnInit, OnDestroy {
 
     if (_type === 10) {
       targetAdminName = '系統開發員(10)';
-      adminLists = _.cloneDeep(this.systemDevelopers); // 深拷貝，避免win修改先影響settings table
+      adminLists = cloneDeep(this.systemDevelopers); // 深拷貝，避免win修改先影響settings table
       isCanOpen = this.maxAccessRight < 20 ? true : false;
     } else if (_type === 20) {
       targetAdminName = '系統維護員(20)';
-      adminLists = _.cloneDeep(this.systemMaintainers); // 深拷貝，避免win修改先影響settings table
+      adminLists = cloneDeep(this.systemMaintainers); // 深拷貝，避免win修改先影響settings table
       isCanOpen = this.maxAccessRight < 30 ? true : false;
     } else if (_type === 28) {
       targetAdminName = '系統維護員(28)';
-      adminLists = _.cloneDeep(this.systemPushners); // 深拷貝，避免win修改先影響settings table
+      adminLists = cloneDeep(this.systemPushners); // 深拷貝，避免win修改先影響settings table
       isCanOpen = this.maxAccessRight < 20 ? true : false;
     } else {
       targetAdminName = '行銷與企劃員(29)';
-      adminLists = _.cloneDeep(this.marketingDevelopers); // 深拷貝，避免win修改先影響settings table
+      adminLists = cloneDeep(this.marketingDevelopers); // 深拷貝，避免win修改先影響settings table
       isCanOpen = this.maxAccessRight < 30 ? true : false;
     }
 

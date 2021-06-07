@@ -1,19 +1,5 @@
-import { Component, OnInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
-import { MatSort, Sort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
-import SimpleLinearRegression from 'ml-regression-simple-linear';
-import moment from 'moment';
-import * as _Highcharts from 'highcharts';
-import * as lodash from 'lodash';
-import { first } from 'rxjs/operators';
-import { ActivatedRoute } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
-import { UtilsService } from '../../services/utils.service';
-import { ReportService } from '../../services/report.service';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-
-const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 @Component({
   selector: 'app-sports-reports',

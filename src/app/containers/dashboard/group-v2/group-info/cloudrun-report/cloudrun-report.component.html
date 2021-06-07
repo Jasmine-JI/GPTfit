@@ -1,7 +1,7 @@
 <app-loading-bar [progress]="progress" [isPreviewMode]="uiFlag.isPreviewMode"></app-loading-bar>
 <div>
   <main style="background-color: white; padding: 10px;" *ngIf="!uiFlag.noData">
-    <div class="functionButton" style="align-items: center;">
+    <div class="functionBtnBar" style="align-items: center;">
       <a
         style="align-items: center; margin: 5px 0;"
         target="_blank"
@@ -1026,7 +1026,7 @@
       </p>
       <p class="map__info">
         <span>{{ 'universal_activityData_distance' | translate }}：</span>
-        {{ +mapInfo.distance * 1000 | distanceSibs: unit }}
+        {{ +mapInfo.distance * 1000 | distanceSibs: [unit, true] }}
       </p>
       <p class="map__info">
         <span>{{ 'universal_activityData_avgIncline' | translate }}：</span>

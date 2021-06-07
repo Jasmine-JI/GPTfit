@@ -14,7 +14,7 @@
     </div>
   </ng-container>
   <main id="mainSeciton">
-    <ng-container *ngIf="['cloudrun', 'sportReport'].includes(page)">
+    <ng-container *ngIf="['cloudrun'].includes(page)">
       <div class="flexRow infoBlock" style="justify-content: space-between;">
         <div class="flexCol infoSection">
           <span class="dataNumber">
@@ -31,7 +31,7 @@
               {{ data.maxCalories | thousandConversion: 'cal' }}
             </ng-container>
             <ng-container *ngIf="data.maxDistance || data.maxDistance === 0">
-              {{ data.maxDistance | distanceSibs: [unit, 0] }}
+              {{ data.maxDistance | distanceSibs: [unit, true] }}
             </ng-container>
             <ng-container *ngIf="data.maxPlaneGForce || data.maxPlaneGForce === 0">
               {{ data.maxPlaneGForce | number: '1.0-0' }} g
@@ -74,7 +74,7 @@
               {{ data.avgCalories | thousandConversion: 'cal' }}
             </ng-container>
             <ng-container *ngIf="data.avgDistance || data.avgDistance === 0">
-              {{ data.avgDistance | distanceSibs: [unit, 0] }}
+              {{ data.avgDistance | distanceSibs: [unit, true] }}
             </ng-container>
             <ng-container *ngIf="data.avgPlaneGForce || data.avgPlaneGForce === 0">
               {{ data.avgPlaneGForce | number: '1.0-0' }} g

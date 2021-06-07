@@ -12,9 +12,21 @@
         </div>
       </div>
       <div style="display: flex; position: fixed; right: 20px">
+        <div class="flexCenter" *ngIf="userProfile.systemAccessRight[0] <= 20">
+          <button style="border: none; background-color: transparent;" (click)="changeTheme()">
+            <span style="font-size: 22px;" [style.color]="theme === 'light' ? 'black' : 'yellow'">
+              ☀
+            </span>
+          </button>
+        </div>
         <div class="dropdown">
-          <div class="header-nav-item" id="dropdownMenu3" data-toggle="dropdown" aria-haspopup="true"
-            aria-expanded="false">
+          <div 
+            class="header-nav-item"
+            id="dropdownMenu3"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
             <div class="header-nav-item" style="margin-right: 10px">
               {{ userProfile.nickname || '' }}
             </div>

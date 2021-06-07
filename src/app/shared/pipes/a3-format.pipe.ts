@@ -1,12 +1,15 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-/**
- * a3轉譯
- */
 @Pipe({name: 'a3Format'})
 export class A3FormatPipe implements PipeTransform {
-  transform(value: string): any {
 
+  /**
+   * a3轉譯
+   * @param value {string}-a3格式代碼
+   * @returns {string}-轉譯後的數據欄位名
+   * @author kidin
+   */
+  transform(value: string): string {
     switch (value) {
       case '1-0':
         return 'fileInfo';

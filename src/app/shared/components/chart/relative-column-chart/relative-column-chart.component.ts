@@ -1,6 +1,5 @@
 import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
 import { chart } from 'highcharts';
-import * as _Highcharts from 'highcharts';
 import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -14,7 +13,6 @@ import {
 } from '../../../models/chart-data';
 import { day, month, week } from '../../../models/utils-constant';
 
-const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
@@ -22,7 +20,8 @@ class ChartOptions {
     return {
       chart: {
         type: 'column',
-        height: 110
+        height: 110,
+        backgroundColor: 'transparent'
       },
       title: {
         text: ''
@@ -87,7 +86,8 @@ export class RelativeColumnChartComponent implements OnInit, OnChanges, OnDestro
   @Input() dateRange: string;
   @Input() sportType: string;
   @Input() chartName: string;
-  @Input() unit = <number>0;
+  @Input() unit: number = 0;
+  @Input() page: string = 'sportReport';
   @ViewChild('container', {static: false})
   container: ElementRef;
 
