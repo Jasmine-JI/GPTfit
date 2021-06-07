@@ -10,14 +10,6 @@ $group-btn-blue: rgba(0, 183, 238, 1);
 $parents__group__color: rgba(150, 150, 150, 1);
 $edit__icon__size: 30px;
 
-
-#scenery__section {
-  position: relative;
-  width: 100%;
-  height: 373px;
-  background-image: linear-gradient(0deg, #ffffff 0%, #bcbcbc 100%);
-}
-
 .group__header {
   display: flex;
   flex-direction: row;
@@ -28,45 +20,6 @@ $edit__icon__size: 30px;
 
 #main__section {
   min-height: 600px;
-}
-
-.card__section {
-  padding: 10px;
-  margin: 5px 0;
-  width: 100%;
-  background-color: rgba(240, 240, 240, 1);
-}
-
-.group__icon {
-  position: absolute;
-  width: 150px;
-  z-index: 2;
-  top: 250px;
-  left: 50px;
-  background: #ffffff;
-  border: 3px solid #ffffff;
-  border-radius: 50%;
-  overflow: hidden;
-
-  &::after {
-    padding-bottom: 100%;
-    display: block;
-    content: "";
-  }
-
-  img, > i {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    margin: auto 0;
-    color: red;
-    font-size: 120px;
-    @include center();
-  }
-
 }
 
 .main__image {
@@ -122,7 +75,6 @@ $edit__icon__size: 30px;
 
 .group__all__branch {
   align-items: flex-end;
-  color: $parents__group__color;
   font-size: 20px;
   white-space: nowrap;
   margin-left: calc(120px + 5vw);
@@ -137,11 +89,19 @@ $edit__icon__size: 30px;
 .group__parents__name {
   font-size: 14px;
   line-height: normal;
+  color: var(--description);
+}
+
+#current__group__name {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--content);
+  line-height: normal;
 }
 
 .group__header__description {
   display: inline-block;
-  color: rgba(120, 120, 120, 1);
+  color: var(--description);
   font-size: 14px;
   margin: 10px 0 10px 30px;
   max-width: 900px;
@@ -149,27 +109,9 @@ $edit__icon__size: 30px;
   padding-right: 40px;
 }
 
-.group__desc__overflow {
-  position: relative;
-  pointer-events: initial;
-  cursor: pointer;
-  max-height: 45px;
-  overflow: hidden;
-
-  &:after {
-    content: '... more >';
-    position: absolute;
-    right: 0;
-    top: 21px;
-    z-index: 1;
-    background-color: white;
-    padding: 0 20px;
-  }
-
-}
-
 .hover__bottom__border {
-  
+  cursor: pointer;
+
   &:hover {
     border-bottom: 1px solid $parents__group__color;
   }
@@ -223,20 +165,6 @@ $edit__icon__size: 30px;
 .can__not__join {
   background-color: $group-btn-gray;
   pointer-events: none;
-}
-
-.child__page__title {
-  position: relative;
-  padding: 10px 15px;
-  color:$page-title-colr;
-  cursor: pointer;
-  white-space: nowrap;
-  @include bold-font(16px);
-
-  &:hover {
-    background-color: rgba(245, 245, 245, 1);
-  }
-
 }
 
 .see__more__triangle {
@@ -342,31 +270,6 @@ $edit__icon__size: 30px;
 
 /*********************************** media *****************************/
 
-
-@media (max-width: 1199px) {
-
-  #scenery__section {
-    height: 313px;
-  }
-
-  .group__icon {
-    top: 190px;
-  }
-
-}
-
-@media (max-width: 991px) {
-
-  #scenery__section {
-    height: 233px;
-  }
-
-  .group__icon {
-    top: 110px;
-  }
-
-}
-
 @media (max-width: 767px) {
   .group__header {
     flex-direction: column;
@@ -385,11 +288,7 @@ $edit__icon__size: 30px;
     max-height: calc(100vw / 3.5 + 70px);
   }
 
-  #scenery__section {
-    height: 173px;
-  }
-
-  .group__icon {
+  .info-sceneryIcon {
     left: initial;
     top: 65px;
     width: 130px;
@@ -404,20 +303,6 @@ $edit__icon__size: 30px;
 }
 
 @media (max-width: 575px) {
-
-  #scenery__section {
-    height: 173px;
-    display: flex;
-    justify-content: center;
-    overflow: hidden;
-
-    & img {
-      height: 173px;
-      min-width: 520px;
-    }
-
-  }
-
   .group__name {
     flex-direction: column;
     align-items: center;

@@ -276,6 +276,16 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   personAnalysis = {};  // 個人分析數據
 
   /**
+   * 紀錄平均數據如avgHeartRateBpm，不為零的筆數和人數。
+   * 個人平均數據計算方式：Σ(當天平均數據 * 當天有效筆數(totalActivity不為null或0)) / 總有效筆數
+   * 群組平均數據計算方式：Σ(個人平均數據) / 有效人數（有效筆數不為0的人數）
+   */
+  avgDataRecord = {
+    group: {},  // 紀錄有效人數
+    person: {}  // 紀錄有效筆數
+  }
+
+  /**
    * 團體分析篩選設定
    */
   groupTableOpt = [];
@@ -752,6 +762,10 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     this.groupList.regression = {};
     this.haveDataLen = 0;
     this.groupAnalysis = {};
+    this.avgDataRecord = {
+      group: {},
+      person: {}
+    };
     this.personAnalysis = {};
     this.closeAllMenu();
   }
@@ -1075,13 +1089,37 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         };
 
         this.info = {activePeopleNum, ...this.info};
+        this.handleFinalPersonAvgData();
         this.handleMixData(mixData);
         this.handleGroupAnalysis(this.personAnalysis);
         this.createAnalysisTable(this.reportConditionOpt.sportType);
         this.reportCompleted();
         this.updateUrl();
-      })
+      });
       
+    }
+
+  }
+
+  /**
+   * 將個人分析加總過後的平均數據再除有效筆數
+   * @author kidin-1100607
+   */
+  handleFinalPersonAvgData() {
+    for (let uid in this.personAnalysis) {
+
+      if (this.personAnalysis.hasOwnProperty(uid) && this.avgDataRecord.person[uid] !== undefined) {
+        const currentUser = this.personAnalysis[uid];
+        for (let key in currentUser) {
+
+          if (currentUser.hasOwnProperty(key) && key.toLowerCase().includes('avg')) {
+            this.personAnalysis[uid][key] = (this.personAnalysis[uid][key] / this.avgDataRecord.person[uid][key]) || 0;
+          }
+
+        }
+
+      }
+
     }
 
   }
@@ -1380,17 +1418,56 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           needKey = this.getNeedKey(reportSportType);
     for (let i = 0, len = needKey.length; i < len; i++) {
       const key = needKey[i],
-            value = +data[key];
+            value = +data[key],
+            isAvgData = key.toLowerCase().includes('avg');
+      let currentUser = this.personAnalysis[userId];
       if (value !== undefined) {
 
-        if (this.personAnalysis[userId][key]) {
-          this.personAnalysis[userId][key] += value;
+        if (currentUser[key] !== undefined) {
+          currentUser[key] += isAvgData ? value * data.totalActivities : value;          
         } else {
-          this.personAnalysis[userId] = {
-            [key]: value,
-            ...this.personAnalysis[userId]
-          };
+          
+          if (isAvgData) {
+            this.personAnalysis[userId] = {
+              [key]: value * data.totalActivities,
+              ...this.personAnalysis[userId]
+            };
 
+          } else {
+            this.personAnalysis[userId] = {
+              [key]: value,
+              ...this.personAnalysis[userId]
+            };
+
+          }
+
+        }
+
+        // 若平均數據為0或undefined，則另外計算該數據筆數
+        if (isAvgData && value !== 0) {
+          let currAnalysisType = this.avgDataRecord.person;
+          if (currAnalysisType.hasOwnProperty(userId)) {
+
+            if (currAnalysisType[userId].hasOwnProperty(key)) {
+              currAnalysisType[userId][key] += data.totalActivities;
+            } else {
+              this.avgDataRecord.person[userId] = {
+                [key]: data.totalActivities,
+                ...this.avgDataRecord.person[userId]
+              }
+
+            }
+
+          } else {
+            this.avgDataRecord.person = {
+              [userId]: {
+                [key]: data.totalActivities
+              },
+              ...this.avgDataRecord.person
+            }
+
+          }
+          
         }
 
       }
@@ -1506,7 +1583,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
   /**
    * 統計團體用分析數據
-   * @param personData {any}
+   * @param personData {any}-個人分析數據
+   * @param avgDataRecord {any}-個人平均數據分別所佔筆數
    * @author kidin-1100512
    */
   handleGroupAnalysis(personData: any) {
@@ -1526,8 +1604,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
             });
 
             if (openPrivacy && totalActivities && totalActivities > 0) {
-              
-              if (this.groupAnalysis[gid].activityPeople) {
+
+              if (this.groupAnalysis[gid].activityPeople !== undefined) {
                 this.groupAnalysis[gid].activityPeople += 1;
               } else {
                 this.groupAnalysis[gid] = {
@@ -1555,6 +1633,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
                   'legMuscle'
                 ];
                 if (!excloudKey.includes(key)) {
+                  // 數據加總
                   if (this.groupAnalysis[gid].hasOwnProperty(key)) {
                     this.groupAnalysis[gid][key] += personData[_id][key];
                   } else {
@@ -1563,6 +1642,33 @@ export class SportsReportComponent implements OnInit, OnDestroy {
                       ...this.groupAnalysis[gid]
                     };
 
+                  }
+
+                  // 紀錄平均數據有效人數
+                  if (key.toLowerCase().includes('avg') && personData[_id][key] !== 0) {
+                    const { group } = this.avgDataRecord;
+                    if (group.hasOwnProperty(gid)) {
+                      let currentGroup = group[gid];
+                      if (currentGroup.hasOwnProperty(key)) {
+                        currentGroup[key] += 1;
+                      } else {
+                        this.avgDataRecord.group[gid] = {
+                          [key]: 1,
+                          ...this.avgDataRecord.group[gid]
+                        };
+
+                      }
+
+                    } else {
+                      this.avgDataRecord.group = {
+                        [gid]: {
+                          [key]: 1
+                        },
+                        ...this.avgDataRecord.group
+                      };
+
+                    }
+                    
                   }
 
                 }

@@ -1,12 +1,10 @@
 import { Component, OnInit, OnDestroy, OnChanges, ViewChild, ElementRef, Input, Output, EventEmitter } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { chart } from 'highcharts';
-import * as _Highcharts from 'highcharts';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { zoneColor } from '../../../models/chart-data';
 
-const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 /**
  * 建立圖表用
@@ -17,7 +15,8 @@ class ChartOptions {
   constructor (dataset: any) {
     return {
       chart: {
-        height: 300
+        height: 300,
+        backgroundColor: 'transparent'
       },
       title: {
         text: ''

@@ -56,6 +56,8 @@ interface UiFlag {
   hover: boolean;
 }
 
+type Theme = 'light' | 'dark';
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -88,6 +90,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   isHideFooter = false;
   debounce: any;
   sideBarList = Dashboard;
+  theme: Theme = 'light';
 
   constructor(
     private globalEventsManager: GlobalEventsManager,
@@ -106,7 +109,6 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   ngOnInit() {
     this.isLoading = true;
     this.handleNavigate(location.pathname);
-    this.checkPreviewPrint();
     this.tokenLogin();
     this.subscribeRouter();
     this.subscribeLangChange();
@@ -135,14 +137,31 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   /**
-   * 確認是否為預覽列印頁面
-   * @author kidin
+   * 根據url帶的query string，做相對應的處理
+   * @param query {string}-query string
+   * @author kidin-1100604
    */
-  checkPreviewPrint() {
-    if (location.search.indexOf('ipm=s') > -1) {
-      this.isPreviewMode = true;
-    }
+  checkQueryString(queryString: string) {
+    if (queryString) {
+      const queryArr = queryString.split('?')[1].split('&');
+      queryArr.forEach(_query => {
+        const [key, value] = _query.split('=');
+        switch (key) {
+          case 'ipm':
+            this.isPreviewMode = true;
+            break;
+          case 'theme':
+            // 暗黑模式尚未完成，故只先開放20權
+            if (this.userProfile.systemAccessRight[0] <= 20 && ['light', 'dark'].includes(value)) {
+              this.changeTheme(value as Theme);
+            }
+            break;
+        }
 
+      });
+
+    }
+    
   }
 
   /**
@@ -166,6 +185,8 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.userProfile = userProfile;
       if (userProfile) {
         this.isLoading = false;
+        this.checkQueryString(location.search);
+        this.checkTheme();
       }
 
     });
@@ -512,6 +533,51 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.router.navigateByUrl('/');
   }
 
+  /**
+   * 檢查主體
+   * @author kidin-1100603
+   */
+  checkTheme() {
+    const storeTheme = this.utilsService.getLocalStorageObject('theme');
+    if (this.userProfile.systemAccessRight[0] <= 20 && storeTheme) {
+      this.changeTheme(storeTheme);
+    } else if (this.userProfile.systemAccessRight[0] <= 20 && storeTheme === undefined){
+      // 避免狀態與class name不符
+      const checkClassName = document.body.classList.value.includes('theme__dark');
+      if (checkClassName) {
+        this.theme = 'dark';
+      } else {
+        this.theme = 'light';
+      }
+
+    }
+    
+  }
+
+  /**
+   * 變更主題顏色
+   * @param theme {Theme}-主題顏色
+   * @author kidin-1100602
+   */
+  changeTheme(theme: Theme = undefined) {
+    let nextTheme: Theme;
+    if (theme) {
+      nextTheme = theme;
+    } else {
+      nextTheme = this.theme === 'dark' ? 'light' : 'dark';
+    }
+
+    if (nextTheme === 'light') {
+      document.body.classList.remove('theme__dark');
+    } else {
+      // 確認是否已有theme__dark這個class name，避免重複添加
+      const checkClassName = document.body.classList.value.includes('theme__dark');
+      if (!checkClassName) document.body.classList.add('theme__dark');
+    }
+
+    this.utilsService.setLocalStorageObject('theme', nextTheme);
+    this.theme = nextTheme;
+  }
 
   /**
    * 解除rxjs訂閱

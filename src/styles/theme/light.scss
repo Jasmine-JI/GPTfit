@@ -1,0 +1,40 @@
+@import 'transition.scss';
+$colors-light: (
+  --background: white,
+  --report-title: rgba(115, 115, 115, 1),
+  --section-subtitle: rgba(75, 75, 75, 1),
+  --content: black,
+  --summary: rgba(100, 100, 100, 1),
+  --icon: rgba(100, 100, 100, 1),
+  --icon-border: rgba(200, 200, 200, 1),
+  --description: rgba(150, 150, 150, 1),
+  --tab-background: rgba(120, 120, 120, 1),
+  --tab-hover: rgba(245, 245, 245, 1),
+  --tab-border: rgba(245, 245, 245, 1),
+  --card-background: rgba(240, 240, 240, 1),
+  --table-background: white,
+  --table-content: rgba(115, 115, 115, 1),
+  --table-row-border: rgba(215, 215, 215, 1),
+  --table-hover: rgba(240, 240, 240, 1),
+  --menu-title: rgba(0, 60, 103, 1),
+  --menu-background: white,
+  --menu-subtitle: rgba(100, 100, 100, 1),
+  --menu-subBackground: white,
+  --disable-color: rgba(200, 200, 200, 1),
+  --scenery-top: rgba(200, 200, 200, 1),
+  --scenery-bottom: white,
+  --input-border: rgba(120, 120, 120, 1),
+  --scroll-bar: rgba(0, 0, 0, 0.3)
+);
+
+.theme__light {
+  @each $name, $color in $colors-light {
+    #{$name}: $color;
+  }
+
+}
+
+.theme--change {
+  @include transition(color, 0.5s);
+  @include transition(background-color, 0.5s);
+}

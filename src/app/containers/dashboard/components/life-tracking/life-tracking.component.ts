@@ -8,18 +8,15 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import { LifeTrackingService } from '../../services/life-tracking.service';
-import { UtilsService } from '@shared/services/utils.service';
+import { UtilsService } from '../../../../shared/services/utils.service';
 import { NgProgress, NgProgressRef } from '@ngx-progressbar/core';
 import { Router } from '@angular/router';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
-import { HashIdService } from '@shared/services/hash-id.service';
+import { HashIdService } from '../../../../shared/services/hash-id.service';
 import moment from 'moment';
-import { chart } from 'highcharts';
-import * as _Highcharts from 'highcharts';
+import { chart, charts, each } from 'highcharts';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
 import { MatDialog } from '@angular/material/dialog';
-
-const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 @Component({
   selector: 'app-life-tracking',
@@ -131,20 +128,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
     private renderer: Renderer2,
     public dialog: MatDialog
   ) {
-    /**
-     * 重写内部的方法， 这里是将提示框即十字准星的隐藏函数关闭
-     */
-    Highcharts.Pointer.prototype.reset = function() {
-      return undefined;
-    };
-    /**
-     * 高亮当前的数据点，并设置鼠标滑动状态及绘制十字准星线
-     */
-    Highcharts.Point.prototype.highlight = function(event) {
-      this.onMouseOver(); // 显示鼠标激活标识
-      // this.series.chart.tooltip.refresh(this); // 显示提示框
-      this.series.chart.xAxis[0].drawCrosshair(event, this); // 显示十字准星线
-    };
+
   }
 
   ngOnInit() {
@@ -266,12 +250,12 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
 
   handleSynchronizedPoint(e, finalDatas) {
     // Do something with 'event'
-    for (let i = 0; i < Highcharts.charts.length; i = i + 1) {
-      const _chart: any = Highcharts.charts[i];
+    for (let i = 0; i < charts.length; i = i + 1) {
+      const _chart: any = charts[i];
       if (_chart !== undefined) {
-        if (Highcharts.charts.length !== finalDatas.length) {
+        if (charts.length !== finalDatas.length) {
           if (
-            finalDatas[i - (Highcharts.charts.length - finalDatas.length)]
+            finalDatas[i - (charts.length - finalDatas.length)]
               .isSyncExtremes
           ) {
             const event = _chart.pointer.normalize(e); // Find coordinates within the chart
@@ -336,12 +320,12 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
     // 調整縮放會同步
     const thisChart = this.charts[num];
     if (e.trigger !== 'syncExtremes') {
-      Highcharts.each(Highcharts.charts, function(_chart, idx) {
-        if (Highcharts.charts.length !== finalDatas.length) {
+      each(charts, function(_chart, idx) {
+        if (charts.length !== finalDatas.length) {
           if (
             _chart !== thisChart &&
             _chart &&
-            finalDatas[idx - (Highcharts.charts.length - finalDatas.length)]
+            finalDatas[idx - (charts.length - finalDatas.length)]
               .isSyncExtremes
           ) {
             if (_chart.xAxis[0].setExtremes) {
@@ -378,7 +362,7 @@ export class LifeTrackingComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (!this.isShowNoRight && !this.isFileIDNotExist) {
-      Highcharts.charts.forEach((_highChart, idx) => {
+      charts.forEach((_highChart, idx) => {
         if (_highChart !== undefined) {
           _highChart.destroy();
         }

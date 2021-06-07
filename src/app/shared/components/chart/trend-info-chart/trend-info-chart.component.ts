@@ -18,6 +18,7 @@ class ChartOptions {
         type: chartType,
         height: 110,  // 圖表高度
         zoomType: 'x',  // 縮放基準
+        backgroundColor: 'transparent'
       },
       title: {
         text: ''

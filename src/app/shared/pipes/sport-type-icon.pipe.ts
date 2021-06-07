@@ -1,12 +1,16 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { SportCode } from '../models/report-condition';
 
-/**
- * 依據不同運動類型回傳該icon的class name（需隨類別增加而更新）
- */
+
 @Pipe({name: 'sportTypeIcon'})
 export class SportTypeIconPipe implements PipeTransform {
-  transform(value: string | number, args: string[]): any {
+  /**
+   * 依據不同運動類型回傳該icon的class name（需隨類別增加而更新）
+   * @param value {string | number}-運動類型
+   * @return {string}-icon class name
+   * @author kidin
+   */
+  transform(value: string | number): any {
     switch (+value) {
       case SportCode.run:
         return 'icon-svg_web-icon_p1_083-run';

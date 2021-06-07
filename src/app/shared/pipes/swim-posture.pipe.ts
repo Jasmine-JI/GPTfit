@@ -1,11 +1,15 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-/**
- * 根據泳姿回傳對應多國語系的鍵。
- */
+
 @Pipe({name: 'swimPosture'})
 export class swimPosture implements PipeTransform {
-  transform(value: string | number, args: string[]): any {
+  /**
+   * 根據泳姿回傳對應多國語系的鍵。
+   * @param value {string | number}-泳姿
+   * @return {string}-多國語系的鍵
+   * @author kidin
+   */
+  transform(value: string | number): string {
     switch (+value) {
       case 1:
         return 'universal_activityData_individualMedley';

@@ -1,0 +1,34 @@
+$colors-dark: (
+  --background: black,
+  --report-title: white,
+  --section-subtitle: rgba(230, 230, 230, 1),
+  --content: white,
+  --summary: rgba(205, 205, 205, 1),
+  --icon: rgba(230, 230, 230, 1),
+  --icon-border: rgba(100, 100, 100, 1),
+  --description: rgba(180, 180, 180, 1),
+  --tab-background: rgba(190, 190, 190, 1),
+  --tab-hover: rgba(50, 50, 50, 1),
+  --tab-border: rgba(50, 50, 50, 1),
+  --card-background: rgba(100, 100, 100, 1),
+  --table-background: rgba(20, 20, 20, 1),
+  --table-content: rgba(215, 215, 215, 1),
+  --table-row-border: rgba(175, 175, 175, 1),
+  --table-hover: rgba(45, 45, 45, 1),
+  --menu-title: rgba(0, 150, 255, 1),
+  --menu-background: rgba(60, 60, 60, 1),
+  --menu-subtitle: white,
+  --menu-subBackground: rgba(90, 90, 90, 1),
+  --disable-color: rgba(130, 130, 130, 1),
+  --scenery-top: black,
+  --scenery-bottom: rgba(200, 200, 200, 1),
+  --input-border: rgba(200, 200, 200, 1),
+  --scroll-bar: rgba(255, 255, 255, 0.1)
+);
+
+.theme__dark {
+  @each $name, $color in $colors-dark {
+    #{$name}: $color;
+  }
+
+}

@@ -16,12 +16,21 @@ export class SportPaceSibsPipe implements PipeTransform {
           unitType = args[1];
 
     let unit: string;
-    if (unitType === 0) {
-      unit = 'min/km';
-    } else {
-      unit = 'min/mi';
+    switch (type) {
+      case SportCode.run:
+        if (unitType === 0) {
+          unit = 'min/km';
+        } else {
+          unit = 'min/mi';
+        }
+        break;
+      case SportCode.swim:
+        unit = 'min/100m';
+        break;
+      case SportCode.row:
+        unit = 'min/500m';
+        break;
     }
-    
 
     if ([SportCode.run, SportCode.swim, SportCode.row].includes(type)) {
 
@@ -41,11 +50,9 @@ export class SportPaceSibsPipe implements PipeTransform {
             break;
           case SportCode.swim:  // 游泳配速
             yVal = (60 / value) * 60 / 10;
-            unit = 'min/100m';
             break;
           case SportCode.row:  // 划船配速
             yVal = (60 / value) * 60 / 2;
-            unit = 'min/500m';
             break;
         }
 

@@ -1,11 +1,7 @@
 import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
-
 import { chart } from 'highcharts';
-import * as _Highcharts from 'highcharts';
 import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
-
-const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
@@ -13,7 +9,8 @@ class ChartOptions {
     return {
       chart: {
         type: 'line',
-        height: 110
+        height: 110,
+        backgroundColor: 'transparent'
       },
       title: {
         text: ''

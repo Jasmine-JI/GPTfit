@@ -5,10 +5,8 @@ import {
   EventEmitter,
   OnDestroy
 } from '@angular/core';
-import * as _Highcharts from 'highcharts';
 import { ReportService } from '../../services/report.service';
 
-const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 @Component({
   selector: 'app-sport-report',
@@ -22,7 +20,6 @@ export class SportReportComponent implements OnInit, OnDestroy {
   isPreviewMode = false;
 
   constructor(
-    private reportService: ReportService
   ) {}
 
   ngOnInit() {

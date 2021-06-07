@@ -1,11 +1,14 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-/**
- * 將timestamp依據不同天數長度回傳相對天數
- */
+
 @Pipe({name: 'relativeDay'})
 export class RelativeDayPipe implements PipeTransform {
-  transform(retiveTimeStamp: number, args: string[]): any {
+  /**
+   * 將timestamp依據不同天數長度回傳相對天數
+   * @param retiveTimeStamp {number}-相隔時間的timestamp
+   * @returns {string} 相對天數
+   */
+  transform(retiveTimeStamp: number): string {
     const relativeDay = retiveTimeStamp / (24 * 60 * 60 * 1000);
     if (relativeDay < 30) {
       return `${Math.round(relativeDay)}天前`;

@@ -7,18 +7,12 @@ export class DistanceSibsPipe implements PipeTransform {
   /**
    * 依公英制及距離長度轉換距離單位。
    * @param value {number}-距離
-   * @param args {number | Array<number>}-公英制或[公英制, 是否顯示單位]
+   * @param args {[number, boolean]}-[公英制, 是否顯示單位]
+   * @return {string}-長度單位
    * @author kidin-1100106
    */
-  transform(value: number, args: number | Array<number>): string {
-    let unitType: number,
-        showUnit = 0;
-    if (Array.isArray(args)) {
-      [unitType, showUnit] = [...args];
-    } else {
-      unitType = args;
-    }
-
+  transform(value: number, args: [number, boolean]): string {
+    const [unitType, showUnit] = [...args];
     let finalValue: number,
         unit: string;
     if (unitType === 0) {
@@ -45,7 +39,7 @@ export class DistanceSibsPipe implements PipeTransform {
     }
     
     const fixedValue = +finalValue.toFixed(2);
-    return showUnit === 0 ? `${fixedValue} ${unit}` : `${fixedValue}`;
+    return showUnit || showUnit === undefined ? `${fixedValue} ${unit}` : `${fixedValue}`;
   }
 
 }

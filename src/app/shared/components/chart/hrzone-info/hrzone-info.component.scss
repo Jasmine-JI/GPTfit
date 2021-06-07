@@ -30,6 +30,7 @@ $zone-description-width: 100%;
   width: $zone-description-width;
   max-height: 90px;
   overflow-y: scroll;
+  color: var(--content);
 }
 
 .right__text {

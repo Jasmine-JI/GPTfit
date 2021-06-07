@@ -9,11 +9,12 @@ $group-btn-blue: rgba(0, 183, 238, 1);
 
 .info__title {
   white-space: nowrap;
+  color: var(--content);
   @include bold-font(16px);
 }
 
 .info__item__title {
-  color: $gray;
+  color: var(--description);
 }
 
 .info__section {
@@ -26,10 +27,12 @@ $group-btn-blue: rgba(0, 183, 238, 1);
 
 .info__content {
   margin: 6px 0 0 35px;
+  color: var(--content);
 }
 
 .info__row {
   margin-left: 15px;
+  color: var(--content);
 }
 
 .status__selector {
@@ -71,10 +74,11 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   top: 24px;
   left: -1px;
   width: 200px;
-  background-color: white;
+  background-color: var(--background);
   border: 1px solid $input-border-color;
 
   & span {
+    color: var(--content);
     @include transition(background-color);
     
     &:hover {

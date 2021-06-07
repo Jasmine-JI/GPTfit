@@ -1,6 +1,5 @@
 import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
 import { chart } from 'highcharts';
-import * as _Highcharts from 'highcharts';
 import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
@@ -9,7 +8,6 @@ import { FilletTrendChart, DisplayPage, planeGColor, planeMaxGColor } from '../.
 import { mi, ft, Unit, unit } from '../../../models/bs-constant';
 import { day, month, week } from '../../../models/utils-constant';
 
-const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
@@ -17,7 +15,8 @@ class ChartOptions {
     return {
       chart: {
         type: 'column',
-        height: 110
+        height: 110,
+        backgroundColor: 'transparent'
       },
       title: {
         text: ''
