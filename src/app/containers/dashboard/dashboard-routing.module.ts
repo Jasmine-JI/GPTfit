@@ -12,7 +12,7 @@ import { AllGroupListComponent } from './group/all-group-list/all-group-list.com
 import { InnerSettingsComponent } from './components/inner-settings/inner-settings.component';
 import { DashboardGuard } from './guards/dashboard-guard';
 import { MyActivityComponent } from '../../shared/components/my-activity/my-activity.component';
-import { SportReportComponent } from '../../shared/components/sport-report/sport-report.component';
+import { SportsReportComponent } from '../../shared/components/sports-report/sports-report.component';
 import { MyDeviceComponent } from './components/device/my-device/my-device.component';
 import { ProductInfoComponent } from './components/device/product-info/product-info.component';
 import { TrainLiveComponent } from './components/train-live/train-live.component';
@@ -33,7 +33,9 @@ import { MyGroupListComponent } from './group/my-group-list/my-group-list.compon
 import { CreateGroupComponent } from './group/create-group/create-group.component';
 // import { MyGroupListComponent } from './group-v2/my-group-list/my-group-list.component';
 import { GroupIntroductionComponent } from './group-v2/group-info/group-introduction/group-introduction.component';
-import { SportsReportComponent } from './group-v2/group-info/sports-report/sports-report.component';
+import {
+  SportsReportComponent as GroupSportsReportComponent
+} from './group-v2/group-info/sports-report/sports-report.component';
 import { MyClassReportComponent } from './group-v2/group-info/my-class-report/my-class-report.component';
 import { CommercePlanComponent } from './group-v2/group-info/commerce-plan/commerce-plan.component';
 import { MemberListComponent } from './group-v2/group-info/member-list/member-list.component';
@@ -211,7 +213,7 @@ const routes: Routes = [
       
       {
         path: 'sport-report',
-        component: SportReportComponent
+        component: SportsReportComponent
       },
       {
         path: 'life-tracking',
@@ -272,7 +274,7 @@ const routes: Routes = [
           },
           {
             path: 'sports-report',
-            component: SportsReportComponent
+            component: GroupSportsReportComponent
           },
           {
             path: 'life-tracking',

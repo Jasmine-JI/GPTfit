@@ -857,7 +857,7 @@
         <span class="cardSubtitle">{{ 'universal_activityData_weightTrainingEffectiveness' | translate }}</span>
         <i class="icon-svg_web-icon_p1_001-setting settingIcon" (click)="handleShowWeightTrainOptMenu($event)"></i>
         <div
-          id="weight__train__setting"
+          class="weightTrainSetting"
           class="flexCol"
           (click)="$event.stopPropagation()"
           *ngIf="uiFlag.showWeightTrainingOpt"
@@ -865,8 +865,8 @@
           <span>{{ 'universal_activityData_weightTrainingExtent' | translate }}</span>
           <div class="flexCol" style="position: relative;">
             <span
-              class="drop__menu weight__train__menu"
-              [class.drop__menu--active]="uiFlag.showLevelSelector"
+              class="dropMenu weightTrainMenu"
+              [class.dropMenu--active]="uiFlag.showLevelSelector"
               (click)="handleShowLevelSelector($event)"
             >
               <ng-container *ngIf="uiFlag.weightTrainLevel === 'novice'">
@@ -879,14 +879,14 @@
                 {{ 'universal_activityData_highRanker' | translate }}
               </ng-container>
             </span>
-            <div class="drop__menu__list" *ngIf="uiFlag.showLevelSelector">
-              <span class="level__opt" (click)="changeLevel('novice')">
+            <div class="dropMenuList" *ngIf="uiFlag.showLevelSelector">
+              <span class="levelOpt" (click)="changeLevel('novice')">
                 {{ 'universal_activityData_beginner' | translate }}
               </span>
-              <span class="level__opt" (click)="changeLevel('metacarpus')">
+              <span class="levelOpt" (click)="changeLevel('metacarpus')">
                 {{ 'universal_activityData_advanced' | translate }}
               </span>
-              <span class="level__opt" (click)="changeLevel('asept')">
+              <span class="levelOpt" (click)="changeLevel('asept')">
                 {{ 'universal_activityData_highRanker' | translate }}
               </span>
             </div>
@@ -990,8 +990,8 @@
             <span class="bold__font">{{ 'universal_activityData_segment' | translate }}</span>
             <div class="flexCol" style="position: relative;">
               <div
-                class="drop__menu"
-                [class.drop__menu--active]="uiFlag.showSegmentRangeList"
+                class="dropMenu"
+                [class.dropMenu--active]="uiFlag.showSegmentRangeList"
                 (click)="handleShowDropList()"
               >
                 <ng-container *ngIf="trendChartOpt.xAxisType === 'pointSecond'">
@@ -1006,7 +1006,7 @@
                   </ng-container>
                 </ng-container>
               </div>
-              <div class="flexCol drop__menu__list" *ngIf="uiFlag.showSegmentRangeList">
+              <div class="flexCol dropMenuList" *ngIf="uiFlag.showSegmentRangeList">
                 <ng-container *ngIf="trendChartOpt.xAxisType === 'pointSecond'">
                   <span (click)="changeSegmentRange(60)">
                     {{ 'universal_activityData_everyMinutes' | translate: {number: 1} }}

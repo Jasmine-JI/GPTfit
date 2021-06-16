@@ -27,7 +27,7 @@ $group-btn-blue: rgba(0, 183, 238, 1);
 }
 
 .child__page__card {
-  background-color: var(--background);
+  background-color: var(--scale-255-0);
   border: 1px solid rgba(200, 200, 200, 1);
   padding: 10px;
   margin-bottom: 10px;
@@ -265,7 +265,7 @@ $group-btn-blue: rgba(0, 183, 238, 1);
 }
 
 .matTable {
-  background-color: var(--table-background);
+  background-color: var(--scale-255-20);
 }
 
 .tableTitle {
@@ -276,7 +276,7 @@ $group-btn-blue: rgba(0, 183, 238, 1);
 }
 
 .tableTitleWord {
-  color: var(--table-content);
+  color: var(--scale-115-215);
   font-size: 16px;
   font-weight: bold;
   text-align: center;
@@ -322,7 +322,7 @@ $group-btn-blue: rgba(0, 183, 238, 1);
 
 .tableContent {
   font-weight: bold;
-  color: var(--table-content);
+  color: var(--scale-115-215);
   position: relative;
 }
 
@@ -332,7 +332,7 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   @include transition(background-color);
 
   &:hover {
-    background-color: var(--table-hover);
+    background-color: var(--scale-240-45);
     @include transition(background-color);
   }
 
@@ -370,7 +370,7 @@ $group-btn-blue: rgba(0, 183, 238, 1);
 .tableMenu {
   position: fixed;
   z-index: 5;
-  background-color: var(--menu-background);
+  background-color: var(--scale-255-60);
   box-shadow: grey;
   width: fit-content;
   border: 1px solid #dedede;
@@ -382,7 +382,7 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   display: block;
   font-weight: bold;
   font-size: 14px;
-  color: var(--menu-title);
+  color: var(--003c67-0096ff);
 }
 
 .tableListSection {
@@ -390,7 +390,7 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   border: 1px solid #bcbcbc;
   height: 150px;
   overflow-y: scroll;
-  background-color: var(--menu-subBackground);
+  background-color: var(--scale-255-90);
 
   div {
     white-space: pre-wrap;
@@ -412,7 +412,7 @@ $group-btn-blue: rgba(0, 183, 238, 1);
 .tableMenuList {
   margin: 2px;
   padding: 5px 20px 5px 10px;
-  color: var(--menu-subtitle);
+  color: var(--scale-100-255);
   font-weight: bold;
   text-decoration: none;
 

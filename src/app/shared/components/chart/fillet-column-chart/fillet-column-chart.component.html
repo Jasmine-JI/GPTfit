@@ -1,4 +1,4 @@
-<section class="flexCol">
+<section class="flexCol pageBreakAvoid">
   <ng-container *ngIf="['cloudrun', 'sportReport'].includes(page)">
     <div class="flexRow" style="align-items: center; justify-content: space-between;">
       <h6 id="chartTitle">
@@ -8,7 +8,10 @@
         <ng-container *ngIf="chartType === 'planeMaxGForce'">
           {{ 'universal_adjective_maxBig' | translate }}
         </ng-container>
-        {{ chartType | dataTypeTranslate: [1, unit] | translate }}
+        <ng-container *ngIf="chartType === 'totalTime' && sportType === sportCode.weightTrain">
+          {{ 'universal_adjective_singleTotal' | translate }}
+        </ng-container>
+        {{ chartType | dataTypeTranslate: [sportType, unit] | translate }}
       </h6>
       <span id="rowLine"></span>
     </div>

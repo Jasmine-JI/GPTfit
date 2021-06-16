@@ -119,6 +119,15 @@ export class UserProfileService {
   }
 
   /**
+   * 手動更新儲存在rxjs內的userProfile
+   * @param profile {any}-更新過後的userProfile
+   * @author kidin-1100615
+   */
+  editRxUserProfile(profile: any) {
+    this.userProfile$.next(profile);
+  }
+
+  /**
    * 清除userProfile資料
    * @author kidin-1090909
    */

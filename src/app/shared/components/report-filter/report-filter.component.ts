@@ -1,10 +1,10 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { UtilsService } from '../../services/utils.service';
 import { ReportService } from '../../services/report.service';
 import moment from 'moment';
-import { ReportConditionOpt, GroupSimpleInfo, SportType, SportCode } from '../../models/report-condition';
-import { Subject, Subscription, fromEvent, Observable } from 'rxjs';
-import { takeUntil, switchMap, tap } from 'rxjs/operators';
+import { ReportConditionOpt, SportType, SportCode } from '../../models/report-condition';
+import { Subject, Subscription, fromEvent, merge } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { CloudrunService } from '../../services/cloudrun.service';
 import { GroupService } from '../../../containers/dashboard/services/group.service';
 
@@ -29,6 +29,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe = new Subject();
   clickSubscription: Subscription;
+  resizeSubScription: Subscription;
 
   @ViewChild('filterSection') filterSection: ElementRef;
   @ViewChild('dateSelectorBar') dateSelectorBar: ElementRef;
@@ -103,11 +104,13 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     private utils: UtilsService,
     private reportService: ReportService,
     private cloudrunService: CloudrunService,
-    private groupService: GroupService
+    private groupService: GroupService,
+    private changeDetectorRef: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.uiFlag.currentLanguage = this.utils.getLocalStorageObject('locale');
+    this.pageSizeChange();
     this.onResize();
     this.getReportCondition();
     this.getLoadingStatus();
@@ -117,14 +120,30 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    * 當畫面大小改變時，根據畫面大小縮放日期選擇器
    * @author kidin-1091028
    */
-  @HostListener ('window:resize', [])
-  onResize() {
+  onResize() {          
+    const resizeEvent = fromEvent(window, 'resize');
     this.date.openSelector = null;
+    this.resizeSubScription = merge(
+      resizeEvent,
+      this.groupService.getRxSideBarMode()
+    ).pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(e => {
+      this.pageSizeChange();
+    });
+    
+    this.changeDetectorRef.markForCheck();
+  }
+
+  /**
+   * 頁面尺寸變更
+   * @author kidin-1100609
+   */
+  pageSizeChange() {
 
     setTimeout(() => {
       const filterSection = this.filterSection.nativeElement,
             filterSectionWidth = filterSection.clientWidth;
-
       if (filterSectionWidth < 820) {
         this.uiFlag.showDateTypeShiftIcon = true;
         this.uiFlag.dateTypeBarWidth = `${filterSectionWidth - 90}px`;
@@ -135,21 +154,10 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         this.uiFlag.dateTypeBarOffset = `translateX(0px)`;
         this.changeActiveBar();
       }
+      
+      this.changeDetectorRef.markForCheck();
+    }, 500);
 
-    })
-
-  }
-
-  /**
-   * 當畫面大小改變時，根據畫面大小縮放日期選擇器
-   * @author kidin-1091028
-   */
-  @HostListener ('window:click', [])
-  onClick() {
-    if (this.date.openSelector === 'calendarPeriod') {
-      this.date.openSelector = null;
-    }
-    
   }
 
   /**
@@ -183,6 +191,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         this.changeActiveBar();
       }
 
+      this.changeDetectorRef.markForCheck();
     });
 
   }
@@ -213,6 +222,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       this.uiFlag.isLoading = res;
+      this.changeDetectorRef.markForCheck();
     });
 
   }
@@ -277,14 +287,12 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    */
   selectDateRange(e: MouseEvent, opt: number) {
     e.stopPropagation();
-    e.preventDefault();
     switch (opt) {
       case 0:
         this.date.type = 'sevenDay';
         this.date.startTimestamp = moment().startOf('day').subtract(6, 'days').valueOf();
         this.date.endTimestamp = moment().endOf('day').valueOf();
         this.date.openSelector = null;
-
         if (this.reportConditionOpt.hideConfirmBtn) {
           this.submit();
         }
@@ -295,7 +303,6 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         this.date.startTimestamp = moment().startOf('day').subtract(29, 'days').valueOf();
         this.date.endTimestamp = moment().endOf('day').valueOf();
         this.date.openSelector = null;
-
         if (this.reportConditionOpt.hideConfirmBtn) {
           this.submit();
         }
@@ -306,7 +313,6 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         this.date.startTimestamp = moment().subtract(6, 'month').add(1, 'days').valueOf();
         this.date.endTimestamp = moment().endOf('day').valueOf();
         this.date.openSelector = null;
-
         if (this.reportConditionOpt.hideConfirmBtn) {
           this.submit();
         }
@@ -323,9 +329,9 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
 
           // 根據畫面大小調整選單位置
           this.uiFlag.calendarPeriodOffset = `translateX(${dropListCenter - dateSelectorBarLeft + 20}px)`;
-          
+          this.clickSubscribe();
         } else {
-          this.date.openSelector = null;
+          this.clickUnsubscribe();
         }
         
         break;
@@ -336,8 +342,9 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         setTimeout(() => {
           if (this.date.openSelector !== 'custom') {
             this.date.openSelector = 'custom';
+            this.clickSubscribe();
           } else {
-            this.date.openSelector = null;
+            this.clickUnsubscribe();
           }
         }, 500);
 
@@ -389,6 +396,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
         break;
     }
 
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -424,6 +432,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
       this.submit();
     }
 
+    this.clickUnsubscribe();
   }
 
   /**
@@ -437,13 +446,14 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
       this.date.startTimestamp = moment(e.startDate).valueOf();
       this.date.endTimestamp = moment(e.endDate).valueOf();
       this.date.openSelector = null;
-
       if (this.reportConditionOpt.hideConfirmBtn) {
         this.submit();
       }
 
+      this.clickUnsubscribe();
     }
     
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -497,6 +507,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
 
     }, 300);
     
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -550,6 +561,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
 
     }, 300);
 
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -559,6 +571,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
   handleClickBrand() {
     const { groupId } = this.reportConditionOpt.group.brands;
     this.reportConditionOpt.group.selectGroup = groupId.split('-').slice(0, 3).join('-');
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -568,6 +581,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
   handleClickBranch(branchIdx: number) {
     const { groupId } = this.reportConditionOpt.group.branches[branchIdx];
     this.reportConditionOpt.group.selectGroup = groupId.split('-').slice(0, 4).join('-');
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -577,6 +591,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
   handleClickCoach(coachIdx: number) {
     const { groupId } = this.reportConditionOpt.group.coaches[coachIdx];
     this.reportConditionOpt.group.selectGroup = groupId.split('-').slice(0, 5).join('-');
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -590,6 +605,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
       this.submit();
     }
     
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -615,21 +631,26 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    * @author kidin-1100304
    */
   clickSubscribe() {
-    const clickEvent = fromEvent(document, 'click');
+    const isDashboard = location.pathname.includes('dashboard'),
+          listenEle = document.querySelector(isDashboard ? '.main-body' : 'main'),
+          clickEvent = fromEvent(listenEle, 'click');
     this.clickSubscription = clickEvent.pipe(
       takeUntil(this.ngUnsubscribe)
-    ).subscribe(() => {
+    ).subscribe(e => {
       this.clickUnsubscribe();
     });
 
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
    * 取消訂閱click全域事件
    */
   clickUnsubscribe() {
+    this.date.openSelector = null;
     this.uiFlag.showMapSelector = false;
     this.clickSubscription.unsubscribe();
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -638,6 +659,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    */
   chooseMap(idx: number) {
     this.reportConditionOpt.cloudRun.mapId = idx;
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -654,6 +676,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
     });
 
     this.reportService.setReportCondition(this.reportConditionOpt);
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -667,6 +690,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
       this.chooseRoutine(0);
     }
 
+    this.changeDetectorRef.markForCheck();
   }
 
   /**
@@ -697,6 +721,7 @@ export class ReportFilterComponent implements OnInit, OnDestroy {
    */
   changeCheckStatus() {
     this.reportConditionOpt.cloudRun.checkCompletion = !this.reportConditionOpt.cloudRun.checkCompletion;
+    this.changeDetectorRef.markForCheck();
   }
 
   /**

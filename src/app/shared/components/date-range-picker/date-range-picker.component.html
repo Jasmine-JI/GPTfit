@@ -8,4 +8,5 @@
   [style.outline]="noBorder ? 'none' : ''"
   [style.max-width]="maxWidth ? maxWidth : 'initial'"
   readonly
+  (click)="$event.stopPropagation()"
 >

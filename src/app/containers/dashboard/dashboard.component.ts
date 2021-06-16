@@ -110,6 +110,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.isLoading = true;
     this.handleNavigate(location.pathname);
     this.tokenLogin();
+    this.checkCurrentPage(location.pathname);
     this.subscribeRouter();
     this.subscribeLangChange();
     this.checkWebVersion();
@@ -149,12 +150,17 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
         switch (key) {
           case 'ipm':
             this.isPreviewMode = true;
+            this.changeTheme('light', false); // 預覽列印頁面必為清亮模式
             break;
           case 'theme':
             // 暗黑模式尚未完成，故只先開放20權
-            if (this.userProfile.systemAccessRight[0] <= 20 && ['light', 'dark'].includes(value)) {
+            const checkValue = ['light', 'dark'].includes(value),
+                  isPreviewMode = queryString.includes('ipm='),
+                  checkAccessRight = this.userProfile.systemAccessRight[0] <= 20;
+            if (checkValue && !isPreviewMode && checkAccessRight) {
               this.changeTheme(value as Theme);
             }
+            
             break;
         }
 
@@ -186,7 +192,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
       if (userProfile) {
         this.isLoading = false;
         this.checkQueryString(location.search);
-        this.checkTheme();
+        if (!this.isPreviewMode) this.checkTheme();
       }
 
     });
@@ -466,7 +472,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
 
     this.debounce = setTimeout(() => {
       if (!this.uiFlag.mobileMode && this.uiFlag.hover) {
-        this.handeSideBarMode('expand');
+        this.handleSideBarMode('expand');
       }
 
     }, 250);
@@ -480,9 +486,9 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   shrinkSidebar() {
     this.uiFlag.hover = false;
     if (!this.uiFlag.navFixed && !this.uiFlag.mobileMode) {
-      this.handeSideBarMode('narrow');
+      this.handleSideBarMode('narrow');
     } else if (!this.uiFlag.navFixed && this.uiFlag.mobileMode) {
-      this.handeSideBarMode('hide');
+      this.handleSideBarMode('hide');
     }
     
   }
@@ -497,7 +503,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.shrinkSidebar();
     } else {
       this.uiFlag.navFixed = true;
-      this.handeSideBarMode('expand');
+      this.handleSideBarMode('expand');
     }
     
   }
@@ -507,7 +513,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @param mode {'expand' | 'hide' | 'narrow'}-sidebar 模式
    * @author kidin-1091111
    */
-  handeSideBarMode(mode: 'expand' | 'hide' | 'narrow') {
+  handleSideBarMode(mode: 'expand' | 'hide' | 'narrow') {
     this.uiFlag.sidebarMode = mode;
     this.groupService.setSideBarMode(mode);
   }
@@ -559,7 +565,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @param theme {Theme}-主題顏色
    * @author kidin-1100602
    */
-  changeTheme(theme: Theme = undefined) {
+  changeTheme(theme: Theme = undefined, save: boolean = true) {
     let nextTheme: Theme;
     if (theme) {
       nextTheme = theme;
@@ -575,7 +581,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
       if (!checkClassName) document.body.classList.add('theme__dark');
     }
 
-    this.utilsService.setLocalStorageObject('theme', nextTheme);
+    if (save) this.utilsService.setLocalStorageObject('theme', nextTheme);
     this.theme = nextTheme;
   }
 

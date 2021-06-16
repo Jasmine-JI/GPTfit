@@ -62,7 +62,13 @@ export class DataTypeTranslatePipe implements PipeTransform {
       case 'gforceZ':
         return 'universal_unit_gforceZ';
       case 'totalTime':
-        return 'universal_activityData_totalTime';
+        switch (sportType) {
+          case SportCode.weightTrain:
+            return 'universal_activityData_activityTime';
+          default:
+            return 'universal_activityData_totalTime';
+        }
+        
       case 'time':
         return 'universal_activityData_time';
       case 'stroke':
@@ -80,6 +86,10 @@ export class DataTypeTranslatePipe implements PipeTransform {
       case 'planeGForce':
       case 'planeMaxGForce':
         return 'universal_activityData_planarAcceleration';
+      case 'swingSpeed':
+        return 'universal_activityData_swingSpeed';
+      case 'swingRatio':
+        return 'universal_activityData_swingTypeRatio';
       default:
         return 'universal_vocabulary_other';
     }

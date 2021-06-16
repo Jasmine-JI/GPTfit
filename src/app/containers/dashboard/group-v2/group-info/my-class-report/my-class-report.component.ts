@@ -12,7 +12,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { Router } from '@angular/router';
 import { HashIdService } from '../../../../../shared/services/hash-id.service';
-import { SportsReportContent } from '../../../../../shared/models/sports-report'
 import { chart, charts, color, each } from 'highcharts';
 import { ReportService } from '../../../../../shared/services/report.service';
 import { ReportConditionOpt } from '../../../../../shared/models/report-condition';
@@ -130,7 +129,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   /**
    * 產生報告所需資料
    */
-  sportsReportContent: SportsReportContent = {
+  sportsReportContent = {
     reportType: 'my-class',
     sportType: 1,
     dateRange: {

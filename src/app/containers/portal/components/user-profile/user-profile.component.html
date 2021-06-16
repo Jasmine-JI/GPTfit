@@ -34,9 +34,9 @@
         ></app-my-activity>
       </ng-container>
       <ng-container *ngIf="chooseIdx === 3 && !isShowLock">
-        <app-sport-report
+        <app-sports-reports
           (showPrivacyUi)="handlePrivacyLock($event)"
-        ></app-sport-report>
+        ></app-sports-reports>
       </ng-container>
       <div class="genesis-message" *ngIf="isShowLock && chooseIdx !== 1 && chooseIdx !== 2">
         <i class="icon-svg_web-icon_p1_059-lock" style="font-size: 100px"></i>

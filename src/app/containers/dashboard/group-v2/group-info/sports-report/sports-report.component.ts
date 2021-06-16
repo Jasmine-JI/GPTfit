@@ -563,6 +563,9 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       `,
       stroke: this.translate.instant('universal_activityData_numberOfActivity'),
       totalTime: this.translate.instant('universal_activityData_limit_totalTime'),
+      totalActivityTime: `${this.translate.instant('universal_adjective_singleTotal')} ${
+        this.translate.instant('universal_activityData_limit_activityTime')
+      }`,
       benefitTime: this.translate.instant('universal_activityData_benefitime'),
       pai: this.translate.instant('universal_activityData_pai'),
       calories: this.translate.instant('universal_activityData_totalCalories'),
@@ -1790,8 +1793,12 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         ]);
         break;
       case SportCode.weightTrain:
-        this.groupTable.showDataDef = groupDef;
+        this.groupTable.showDataDef = groupDef.concat([
+          'totalActivityTime'
+        ]);
+        
         this.personTable.showDataDef = personDef.concat([
+          'totalActivityTime',
           'totalWeight',
           'totalSets',
           'preferMuscleGroup',
@@ -1899,6 +1906,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           type: sportType,
           totalActivities,
           totalSecond,
+          totalActivitySecond,
           calories,
           totalHrZone0Second,
           totalHrZone1Second,
@@ -1967,6 +1975,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
                 ttlSets += totalSets;
                 muscleGroupTtlKg[belongMuscleGroup] += ttlWeightKg;
               });
+              
+              regressionObj = this.handleRegression(regressionObj, 'totalActivitySecond', totalActivitySecond, userId, startTimestamp);
               regressionObj = this.handleRegression(regressionObj, 'totalSets', ttlSets, userId, startTimestamp);
               regressionObj = this.handleRegression(regressionObj, 'armMuscle', muscleGroupTtlKg[0], userId, startTimestamp);
               regressionObj = this.handleRegression(regressionObj, 'pectoralsMuscle', muscleGroupTtlKg[1], userId, startTimestamp);
@@ -2197,6 +2207,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         this.groupTableOpt = [
           'name',
           'memberNum',
+          'totalActivityTime',
           'stroke',
           'totalTime'
         ];
@@ -2259,11 +2270,11 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       case SportCode.weightTrain:
         this.personTableOpt = [
           'name',
+          'totalActivityTime',
           'totalWeight',
           'totalSets',
           'preferMuscleGroup',
-          'armMuscle',
-          'pectoralsMuscle'
+          'armMuscle'
         ];
         break;
       case SportCode.aerobic:
@@ -2458,18 +2469,19 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 建立活動時間趨勢圖
+   * 建立總時間或總活動時間趨勢圖
    * @param data {any}-一天（週）加總的數據
    * @param startTimestamp {number}-該天（週）起始時間
    * @author kidin-1100505
    */
   createTotalTimeChart(data: any, startTimestamp: number) {
-    const { totalSecond } = data,
-          { totalTime, maxTotalTime } = this.chart.totalTimeTrend;
-    totalTime.push([startTimestamp, totalSecond]);
-    this.totalCount.totalTime += totalSecond;
-    if (totalSecond > maxTotalTime) {
-      this.chart.totalTimeTrend.maxTotalTime = totalSecond;
+    const { totalSecond, totalActivitySecond } = data,
+          { totalTime, maxTotalTime } = this.chart.totalTimeTrend,
+          ref = this.reportConditionOpt.sportType === SportCode.weightTrain ? +totalActivitySecond : +totalSecond;
+    totalTime.push([startTimestamp, ref]);
+    this.totalCount.totalTime += ref;
+    if (ref > maxTotalTime) {
+      this.chart.totalTimeTrend.maxTotalTime = ref;
     }
 
   }
@@ -3177,7 +3189,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 點擊分析列表的運動項目
+   * 點擊活動分析的運動項目
    * @param sportType {SportType}
    * @author kidin-1100428
    */
@@ -3229,7 +3241,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       case 'stroke':
         return stroke / denominator;
       case 'totalTime':
-        return dataSource.totalSecond / denominator;
+        const ref = sportType === SportCode.weightTrain ? 'totalActivitySecond' : 'totalSecond';
+        return +dataSource[ref] / denominator;
       case 'benefitTime':
         const { 
                 totalHrZone2Second: z2,

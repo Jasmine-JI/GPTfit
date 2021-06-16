@@ -8,7 +8,8 @@ import {
   paceTrendColor,
   speedTrendColor,
   cadenceTrendColor,
-  swolfTrendColor
+  swolfTrendColor,
+  swingSpeedTrendColor
 } from '../../../models/chart-data';
 import { Unit } from '../../../models/bs-constant';
 import { SportType, SportCode } from '../../../models/report-condition';
@@ -124,100 +125,34 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
             this.dataTypeTranslate.transform('pace', [this.sportType, this.unit])
           ),
         ];
-        if (this.page !== 'sportReport') {  // 待個人運動報告重構後刪除
-          this.dataLength = this.data.date.length;
-          for (let i = 0; i < this.dataLength; i++) {
 
-            if (this.data.pace[i] > this.highestPoint) {
-              this.highestPoint = this.data.pace[i];
-            }
-
-            if (this.data.bestPace[i] !== null && this.data.bestPace[i] < this.lowestPoint) {
-              this.lowestPoint = this.data.bestPace[i];
-            }
-
-            chartData.push(
-              {
-                x: this.data.date[i],
-                y: this.data.bestPace[i],
-                low: this.data.pace[i]
-              }
-            );
-          }
-
-        } else {
-          const { dataArr, minSpeed, maxSpeed } = this.data;
-          this.dataLength = dataArr.length;
-          chartData = dataArr;
-          this.highestPoint = 
-            this.utils.convertSpeed(minSpeed || 0, this.sportType, this.unit, 'second') as number;
-          this.lowestPoint = 
-            this.utils.convertSpeed(maxSpeed, this.sportType, this.unit, 'second') as number;
-        }
+        const { dataArr: paceDataArr, minSpeed: paceminSpeed, maxSpeed: paceSpeed } = this.data;
+        this.dataLength = paceDataArr.length;
+        chartData = paceDataArr;
+        this.highestPoint = 
+          this.utils.convertSpeed(paceminSpeed || 0, this.sportType, this.unit, 'second') as number;
+        this.lowestPoint = 
+          this.utils.convertSpeed(paceSpeed, this.sportType, this.unit, 'second') as number;
 
         break;
       case 'Cadence':
         colorSet = cadenceTrendColor;
         this.chartType = 'cadence';
-        if (this.page !== 'sportReport') {
-          this.dataLength = this.data.date.length;
-          for (let i = 0; i < this.dataLength; i++) {
-
-            if (this.data.bestCadence[i] > this.highestPoint) {
-              this.highestPoint = this.data.bestCadence[i];
-            }
-
-            if (this.data.cadence[i] !== null && this.data.cadence[i] < this.lowestPoint) {
-              this.lowestPoint = this.data.cadence[i];
-            }
-
-            chartData.push(
-              {
-                x: this.data.date[i],
-                y: this.data.bestCadence[i],
-                low: this.data.cadence[i]
-              }
-            );
-          }
-        } else {
-          const { dataArr, maxCadence, minCadence } = this.data;
-          chartData = dataArr;
-          this.dataLength = dataArr.length;
-          this.highestPoint = maxCadence;
-          this.lowestPoint = minCadence;
-        }
-
+        const { dataArr: cadenceDataArr, maxCadence, minCadence } = this.data;
+        chartData = cadenceDataArr;
+        this.dataLength = cadenceDataArr.length;
+        this.highestPoint = maxCadence;
+        this.lowestPoint = minCadence;
         break;
       case 'Swolf':
         this.chartType = 'swolf';
         colorSet = swolfTrendColor
-        if (this.page !== 'sportReport') {
-          this.dataLength = this.data.date.length;
-          for (let i = 0; i < this.dataLength; i++) {
+        const { dataArr: swolfDataArr, maxSwolf, minSwolf } = this.data;
+        chartData = swolfDataArr;
+        this.dataLength = swolfDataArr.length;
+        this.highestPoint = maxSwolf;
+        this.lowestPoint = minSwolf;
 
-            if (this.data.swolf[i] > this.highestPoint) {
-              this.highestPoint = this.data.swolf[i];
-            }
-
-            if (this.data.bestSwolf[i] !== null && this.data.bestSwolf[i] < this.lowestPoint) {
-              this.lowestPoint = this.data.bestSwolf[i];
-            }
-
-            chartData.push(
-              {
-                x: this.data.date[i],
-                y: this.data.swolf[i],
-                low: this.data.bestSwolf[i]
-              }
-            );
-          }
-        } else {
-          const { dataArr, maxSwolf, minSwolf } = this.data;
-          chartData = dataArr;
-          this.dataLength = dataArr.length;
-          this.highestPoint = maxSwolf;
-          this.lowestPoint = minSwolf;
-        }
         break;
       case 'Speed':
         colorSet = speedTrendColor;
@@ -230,33 +165,26 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
             this.dataTypeTranslate.transform('speed', [this.sportType, this.unit])
           ),
         ];
-        if (this.page !== 'sportReport') {  // 待個人運動報告重構後刪除
-          this.dataLength = this.data.date.length;
-          for (let i = 0; i < this.dataLength; i++) {
 
-            if (this.data.bestSpeed[i] > this.highestPoint) {
-              this.highestPoint = this.data.bestSpeed[i];
-            }
+        const { dataArr: speedDataArr, maxSpeed, minSpeed } = this.data;
+        this.dataLength = speedDataArr.length;
+        chartData = speedDataArr;
+        this.highestPoint = maxSpeed;
+        this.lowestPoint = minSpeed;
+        break;
+      case 'SwingSpeed':
+        colorSet = swingSpeedTrendColor;
+        this.chartType = 'swingSpeed';
+        this.chartTitle = [
+          this.translate.instant('universal_activityData_maxSwing'),
+          this.translate.instant('universal_activityData_swingSpeed')
+        ];
 
-            if (this.data.speed[i] !== null && this.data.speed[i] < this.lowestPoint) {
-              this.lowestPoint = this.data.speed[i];
-            }
-
-            chartData.push(
-              {
-                x: this.data.date[i],
-                y: this.data.bestSpeed[i],
-                low: this.data.speed[i]
-              }
-            );
-          }
-        } else {
-          const { dataArr, maxSpeed, minSpeed } = this.data;
-          this.dataLength = dataArr.length;
-          chartData = dataArr;
-          this.highestPoint = maxSpeed;
-          this.lowestPoint = minSpeed;
-        }
+        const { dataArr, maxSpeed: swingMaxSpeed, minSpeed: swingminSpeed } = this.data;
+        this.dataLength = dataArr.length;
+        chartData = dataArr;
+        this.highestPoint = swingMaxSpeed;
+        this.lowestPoint = swingminSpeed;
         break;
       case 'Step': // 生活追蹤步數資料-kidin-1090218
         this.createDateList();
@@ -318,9 +246,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         const saturation = '100%',  // 主訓練部位色彩飽和度
               Brightness = '70%',  // 主訓練部位色彩明亮度
               transparency = 1;  // 主訓練部位色彩透明度
-
         this.dataLength = this.data[0].length;
-
         for (let i = 0; i < this.dataLength; i++) {
 
           if (this.data[1][i] > this.highestPoint) {
@@ -528,6 +454,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         };
         break;
       case 'Speed':
+      case 'SwingSpeed':
         trendChartOptions['yAxis'].max = this.highestPoint + labelPadding;
         trendChartOptions['yAxis'].min = this.lowestPoint - labelPadding;
 
