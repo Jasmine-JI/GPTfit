@@ -1,11 +1,11 @@
 <app-loading-bar [progress]="uiFlag.progress"></app-loading-bar>
-<div style="background-color: white; padding: 10px;">
+<div class="cardContent">
   <ng-container *ngIf="uiFlag.noData">
-    <p style="color: gray;">{{ 'universal_status_noData' | translate }}</p>
+    <p class="noDataText">{{ 'universal_status_noData' | translate }}</p>
   </ng-container>
   <ng-container *ngIf="!uiFlag.noData">
     <header>
-      <div class="functionButton" style="align-items: center;">
+      <div class="functionBtnBar" style="align-items: center;">
         <button class="alatech-btn alatech-btn--default activity-btn"
           title="{{'universal_operating_print' | translate}}"
           (click)="print()"
@@ -13,16 +13,17 @@
         >
           {{'universal_operating_print' | translate}}
         </button>
-        <a target="_blank"
+        <a 
+          target="_blank"
           [href]="previewUrl"
-          class="alatech-btn--default"
+          class="functionBtn"
           *ngIf="!uiFlag.isPreviewMode"
         >
           <i class="icon-svg_web-icon_p2_087-print activity-info_icon_size"></i>
         </a>
       </div>
       <section class="rowToColumn">
-        <div class="flexCenter">
+        <div class="flexRow" style="align-items: center;">
           <i class="flexCenter sportTypeIcon" [class]="reportConditionOpt.sportType | sportTypeIcon" ></i>
           <div class="flexCol" style="justify-content: center; margin-left: 20px; line-height: 1.2;">
             <span class="smallFont">
@@ -37,7 +38,7 @@
             </div>
           </div>
         </div>
-        <div class="flexRow fileOwner">
+        <div class="flexCenter fileOwner">
           <div class="flexCol" style="margin-right: 10px;">
             <span class="headName" >{{ groupInfo.name }}</span>
             <span class="smallFont">{{ groupInfo.parents }}</span>
@@ -76,28 +77,52 @@
           </p>
         </div>
         <div class="summaryDataArea">
-          <span class="summaryData">{{ info.totalSecond || 0 | sportTime: [false, false] }}</span>
-          <p class="summaryDescription">{{ 'universal_activityData_totalTime' | translate }}</p>
+          <span class="summaryData">
+            <ng-container *ngIf="reportConditionOpt.sportType !== sportCode.weightTrain">
+              {{ info.totalSecond || 0 | sportTime: [true, false] }}
+            </ng-container>
+            <ng-container *ngIf="reportConditionOpt.sportType === sportCode.weightTrain">
+              {{ info.totalActivitySecond || 0 | sportTime: [true, false] }}
+            </ng-container>
+          </span>
+          <p class="summaryDescription">
+            <ng-container *ngIf="reportConditionOpt.sportType !== sportCode.weightTrain">
+              {{ 'universal_activityData_totalTime' | translate }}
+            </ng-container>
+            <ng-container *ngIf="reportConditionOpt.sportType === sportCode.weightTrain">
+              {{ 'universal_adjective_singleTotal' | translate }} {{ 'universal_activityData_activityTime' | translate }}
+            </ng-container>
+          </p>
         </div>
         <div class="summaryDataArea">
           <span class="summaryData">
-            {{ (info.totalSecond / info.activePeopleNum) || 0 | sportTime: [false, false] }}
+            <ng-container *ngIf="reportConditionOpt.sportType !== sportCode.weightTrain">
+              {{ (info.totalSecond / info.activePeopleNum) || 0 | sportTime: [true, false] }}
+            </ng-container>
+            <ng-container *ngIf="reportConditionOpt.sportType === sportCode.weightTrain">
+              {{ (info.totalActivitySecond / info.activePeopleNum) || 0 | sportTime: [true, false] }}
+            </ng-container>
           </span>
           <p class="summaryDescription">
-            {{ 'universal_activityData_perCapita' | translate }} {{ 'universal_activityData_totalTime' | translate }}
+            <ng-container *ngIf="reportConditionOpt.sportType !== sportCode.weightTrain">
+              {{ 'universal_activityData_perCapita' | translate }} {{ 'universal_activityData_totalTime' | translate }}
+            </ng-container>
+            <ng-container *ngIf="reportConditionOpt.sportType === sportCode.weightTrain">
+              {{ 'universal_activityData_perCapita' | translate }} {{ 'universal_activityData_activityTime' | translate }}
+            </ng-container>
           </p>
         </div>
         <div class="summaryDataArea">
           <div>
             <span class="summaryData">{{ info.calories || 0 | thousandConversion | number: '1.0-1' }}</span>
-            <span calss="infoDataUnit">{{ info.calories >= 1000 ? 'kcal' : 'cal' }}</span>
+            <span class="infoDataUnit">{{ info.calories >= 1000 ? 'kcal' : 'cal' }}</span>
           </div>
           <p class="summaryDescription">{{ 'universal_activityData_totalCalories' | translate }}</p>
         </div>
         <div class="summaryDataArea">
           <div>
             <span class="summaryData">{{ (info.calories / info.activePeopleNum) || 0 | thousandConversion | number: '1.0-1' }}</span>
-            <span calss="infoDataUnit">{{ (info.calories / info.activePeopleNum) >= 1000 ? 'kcal' : 'cal' }}</span>
+            <span class="infoDataUnit">{{ (info.calories / info.activePeopleNum) >= 1000 ? 'kcal' : 'cal' }}</span>
           </div>
           <p class="summaryDescription">
             {{'universal_activityData_perCapita' | translate}} {{'universal_activityData_totalCalorie' | translate}}
@@ -105,11 +130,15 @@
         </div>
         <div
           class="summaryDataArea"
-          *ngIf="[sportCode.run, sportCode.aerobic, sportCode.ball].includes[reportConditionOpt.sportType]"
+          *ngIf="[sportCode.run, sportCode.aerobic, sportCode.ball].includes(reportConditionOpt.sportType)"
         >
           <div>
-            <span class="summaryData">{{ (info.avgHeartRateBpm / info.activePeopleNum) || 0 }}</span>
-            <span calss="infoDataUnit">bpm</span>
+            <span class="summaryData">
+              {{
+                (groupAnalysis[groupInfo.id]?.avgHeartRateBpm / avgDataRecord.group[groupInfo.id]?.avgHeartRateBpm) || 0 | number: '1.0-0'
+              }}
+            </span>
+            <span class="infoDataUnit">bpm</span>
           </div>
           <p class="summaryDescription">
             {{ 'universal_activityData_perCapita' | translate }} {{ 'universal_activityData_hr' | translate }} 
@@ -118,7 +147,7 @@
         <div class="summaryDataArea" *ngIf="reportConditionOpt.sportType === sportCode.all">
           <div>
             <span class="summaryData">
-              {{ (info.totalBenefitSecond / info.activePeopleNum) || 0 | sportTime: [false, false] }}
+              {{ (info.totalBenefitSecond / info.activePeopleNum) || 0 | sportTime: [true, false] }}
             </span>
           </div>
           <p class="summaryDescription">
@@ -141,9 +170,9 @@
         >
           <div>
             <span class="summaryData">
-              {{ (info.totalDistanceMeters / info.activePeopleNum) || 0 | distanceSibs: [userInfo.unit, 1] }}
+              {{ (info.totalDistanceMeters / info.activePeopleNum) || 0 | distanceSibs: [userInfo.unit, false] }}
             </span>
-            <span calss="infoDataUnit">
+            <span class="infoDataUnit">
               <ng-container *ngIf="userInfo.unit === unitEnum.metric">
                 {{ ((info.totalDistanceMeters / info.activePeopleNum) || 0) >= 1000 ? 'km' : 'm' }}
               </ng-container>
@@ -159,9 +188,9 @@
         <div class="summaryDataArea" *ngIf="reportConditionOpt.sportType === sportCode.run">
           <div>
             <span class="summaryData">
-              {{ (info.elevGain / info.activePeopleNum) || 0 | distanceSibs: [userInfo.unit, 1] }}
+              {{ (info.elevGain / info.activePeopleNum) || 0 | distanceSibs: [userInfo.unit, false] }}
             </span>
-            <span calss="infoDataUnit">
+            <span class="infoDataUnit">
               <ng-container *ngIf="userInfo.unit === unitEnum.metric">
                 {{ ((info.elevGain / info.activePeopleNum) || 0) >= 1000 ? 'km' : 'm' }}
               </ng-container>
@@ -179,7 +208,7 @@
             <span class="summaryData">
               {{ (info.totalWeightKg / info.activePeopleNum) || 0 | weightSibs: [userInfo.unit, 1] }}
             </span>
-            <span calss="infoDataUnit">
+            <span class="infoDataUnit">
               {{ userInfo.unit === unitEnum.metric ? 'kg' : 'lb' }}
             </span>
           </div>
@@ -189,7 +218,7 @@
         </div>
         <div class="summaryDataArea" *ngIf="reportConditionOpt.sportType === sportCode.run">
           <span class="summaryData">
-            {{ (info.avgSpeed / info.activePeopleNum) || 0 | sportPaceSibs: [sportCode.run, userInfo.unit, 1] }}
+            {{ (groupAnalysis[groupInfo.id]?.avgSpeed / avgDataRecord.group[groupInfo.id]?.avgSpeed) || 0 | sportPaceSibs: [sportCode.run, userInfo.unit, 1] }}
           </span>
           <p class="summaryDescription">
             <ng-container *ngIf="userInfo.unit === unitEnum.metric">{{ 'universal_activityData_avgKilometerPace' | translate }}</ng-container>
@@ -202,9 +231,9 @@
         >
           <div>
             <span class="summaryData">
-              {{ (info.avgSpeed / info.activePeopleNum) || 0 | speedSibs: [userInfo.unit, 1] }}
+              {{ (groupAnalysis[groupInfo.id]?.avgSpeed / avgDataRecord.group[groupInfo.id]?.avgSpeed) || 0 | speedSibs: [userInfo.unit, 1] }}
             </span>
-            <span calss="infoDataUnit">
+            <span class="infoDataUnit">
               {{ userInfo.unit === unitEnum.metric ? 'km/h' : 'mi/h' }}
             </span>
           </div>
@@ -214,7 +243,7 @@
         </div>
         <div class="summaryDataArea" *ngIf="reportConditionOpt.sportType === sportCode.swim">
           <span class="summaryData">
-            {{ (info.avgSpeed / info.activePeopleNum) || 0 | sportPaceSibs: [sportCode.swim, userInfo.unit, 1] }}
+            {{ (groupAnalysis[groupInfo.id]?.avgSpeed / avgDataRecord.group[groupInfo.id]?.avgSpeed) || 0 | sportPaceSibs: [sportCode.swim, userInfo.unit, 1] }}
           </span>
           <p class="summaryDescription">
             {{ 'universal_activityData_perCapita' | translate }} {{ 'universal_activityData_100mPace' | translate }}
@@ -222,7 +251,7 @@
         </div>
         <div class="summaryDataArea" *ngIf="reportConditionOpt.sportType === sportCode.row">
           <span class="summaryData">
-            {{ (info.avgSpeed / info.activePeopleNum) || 0 | sportPaceSibs: [sportCode.row, userInfo.unit, 1] }}
+            {{ (groupAnalysis[groupInfo.id]?.avgSpeed / avgDataRecord.group[groupInfo.id]?.avgSpeed) || 0 | sportPaceSibs: [sportCode.row, userInfo.unit, 1] }}
           </span>
           <p class="summaryDescription">
             {{ 'universal_activityData_perCapita' | translate }} {{ 'universal_activityData_500mPace' | translate }} 
@@ -231,9 +260,9 @@
         <div class="summaryDataArea" *ngIf="reportConditionOpt.sportType === sportCode.cycle">
           <div>
             <span class="summaryData">
-              {{ (info.cycleAvgCadence / info.activePeopleNum) || 0 | number: '1.0-1' }}
+              {{ (groupAnalysis[groupInfo.id]?.cycleAvgCadence / avgDataRecord.group[groupInfo.id]?.cycleAvgCadence) || 0 | number: '1.0-1' }}
             </span>
-            <span calss="infoDataUnit">rpm</span>
+            <span class="infoDataUnit">rpm</span>
           </div>
           <p class="summaryDescription">
             {{ 'universal_activityData_perCapita' | translate }} {{ 'universal_activityData_CyclingCadence' | translate }} 
@@ -242,9 +271,9 @@
         <div class="summaryDataArea" *ngIf="reportConditionOpt.sportType === sportCode.swim">
           <div>
             <span class="summaryData">
-              {{ (info.swimAvgCadence / info.activePeopleNum) || 0 | number: '1.0-1' }}
+              {{ (groupAnalysis[groupInfo.id]?.swimAvgCadence / avgDataRecord.group[groupInfo.id]?.swimAvgCadence) || 0 | number: '1.0-1' }}
             </span>
-            <span calss="infoDataUnit">rpm</span>
+            <span class="infoDataUnit">rpm</span>
           </div>
           <p class="summaryDescription">
             {{ 'universal_activityData_perCapita' | translate }} {{ 'universal_activityData_swimCadence' | translate }} 
@@ -253,9 +282,9 @@
         <div class="summaryDataArea" *ngIf="reportConditionOpt.sportType === sportCode.row">
           <div>
             <span class="summaryData">
-              {{ (info.rowingAvgCadence / info.activePeopleNum) || 0 | number: '1.0-1' }}
+              {{ (groupAnalysis[groupInfo.id]?.rowingAvgCadence / avgDataRecord.group[groupInfo.id]?.rowingAvgCadence) || 0 | number: '1.0-1' }}
             </span>
-            <span calss="infoDataUnit">rpm</span>
+            <span class="infoDataUnit">rpm</span>
           </div>
           <p class="summaryDescription">
             {{ 'universal_activityData_perCapita' | translate }} {{ 'universal_activityData_rowCadence' | translate }} 
@@ -264,9 +293,9 @@
         <div class="summaryDataArea" *ngIf="reportConditionOpt.sportType === sportCode.row">
           <div>
             <span class="summaryData">
-              {{ (info.rowingAvgWatt / info.activePeopleNum) || 0 | number: '1.0-1' }}
+              {{ (groupAnalysis[groupInfo.id]?.rowingAvgWatt / avgDataRecord.group[groupInfo.id]?.rowingAvgWatt) || 0 | number: '1.0-1' }}
             </span>
-            <span calss="infoDataUnit">watt</span>
+            <span class="infoDataUnit">watt</span>
           </div>
           <p class="summaryDescription">
             {{ 'universal_activityData_perCapita' | translate }} {{ 'universal_activityData_power' | translate }} 
@@ -278,7 +307,7 @@
               <span class="summaryData">
                 {{ (info.totalPlaneAcceleration / info.activePeopleNum) || 0 | number: '1.0-0' }}
               </span>
-              <span calss="infoDataUnit">g</span>
+              <span class="infoDataUnit">g</span>
             </div>
             <p class="summaryDescription">
               {{ 'universal_activityData_perCapita' | translate }}
@@ -291,7 +320,7 @@
               <span class="summaryData">
                 {{ (info.totalPlusGforceX / info.activePeopleNum) || 0 | number: '1.0-1' }}
               </span>
-              <span calss="infoDataUnit">g</span>
+              <span class="infoDataUnit">g</span>
             </div>
             <p class="summaryDescription">
               {{ 'universal_activityData_perCapita' | translate }} {{ 'universal_activityData_totalRight' | translate }} 
@@ -302,7 +331,7 @@
               <span class="summaryData">
                 {{ (info.totalMinusGforceX / info.activePeopleNum) || 0 | number: '1.0-1' }}
               </span>
-              <span calss="infoDataUnit">g</span>
+              <span class="infoDataUnit">g</span>
             </div>
             <p class="summaryDescription">
               {{ 'universal_activityData_perCapita' | translate }} {{ 'universal_activityData_totalLeft' | translate }} 
@@ -313,7 +342,7 @@
               <span class="summaryData">
                 {{ (info.totalPlusGforceY / info.activePeopleNum) || 0 | number: '1.0-1' }}
               </span>
-              <span calss="infoDataUnit">g</span>
+              <span class="infoDataUnit">g</span>
             </div>
             <p class="summaryDescription">
               {{ 'universal_activityData_perCapita' | translate }} {{ 'universal_activityData_totalAcceleration' | translate }} 
@@ -324,7 +353,7 @@
               <span class="summaryData">
                 {{ (info.totalMinusGforceY / info.activePeopleNum) || 0 | number: '1.0-1' }}
               </span>
-              <span calss="infoDataUnit">g</span>
+              <span class="infoDataUnit">g</span>
             </div>
             <p class="summaryDescription">
               {{ 'universal_activityData_perCapita' | translate }} {{ 'universal_activityData_totalImpact' | translate }} 
@@ -335,7 +364,7 @@
               <span class="summaryData">
                 {{ (info.totalPlusGforceZ / info.activePeopleNum) || 0 | number: '1.0-1' }}
               </span>
-              <span calss="infoDataUnit">g</span>
+              <span class="infoDataUnit">g</span>
             </div>
             <p class="summaryDescription">
               {{ 'universal_activityData_perCapita' | translate }} {{ 'universal_activityData_totalJump' | translate }} 
@@ -346,7 +375,7 @@
               <span class="summaryData">
                 {{ (info.totalMinusGforceZ / info.activePeopleNum) || 0 | number: '1.0-1' }}
               </span>
-              <span calss="infoDataUnit">g</span>
+              <span class="infoDataUnit">g</span>
             </div>
             <p class="summaryDescription">
               {{ 'universal_activityData_perCapita' | translate }} {{ 'universal_activityData_totalFloorImpact' | translate }} 
@@ -531,7 +560,7 @@
           </div>
         </div>
         <div class="flexCol distributionChartWidth">
-          <span style="font-weight: bold; margin-bottom: 15px;">
+          <span class="reportTypeTitle">
             {{'universal_activityData_activityEffectivenessMap' | translate}}
             <span *ngIf="reportTime.type === 1">({{'universal_time_day' | translate}})</span>
             <span *ngIf="reportTime.type === 2">({{'universal_time_week' | translate}})</span>
@@ -659,6 +688,7 @@
             [data]="chart.totalTimeTrend"
             [dateRange]="reportTime.type === 1 ? 'day' : 'week'"
             [chartName]="'TotalTime'"
+            [sportType]="reportConditionOpt.sportType"
             [page]="'sportReport'"
             *ngIf="uiFlag.progress === 100"
           >
@@ -857,20 +887,14 @@
                   value="{{ _opt }}"
                   [checked]="groupTableOpt.includes(_opt)"
                   (change)="changeTableOpt($event, 'group')"
-                  [style.pointer-events]="
+                  [class]="
                     _opt === 'name'
-                    || (groupTableOpt.length >= tableColumn.max && !groupTableOpt.includes(_opt))
-                    || (groupTableOpt.length <= tableColumn.min && groupTableOpt.includes(_opt))
-                    ? 'none' : ''
-                  "
-                  [style.color]="
-                    _opt === 'name'
-                    || (groupTableOpt.length >= tableColumn.max && !groupTableOpt.includes(_opt))
-                    || (groupTableOpt.length <= tableColumn.min && groupTableOpt.includes(_opt))
-                    ? '#ababab' : ''
+                      || (groupTableOpt.length >= tableColumn.max && !groupTableOpt.includes(_opt))
+                      || (groupTableOpt.length <= tableColumn.min && groupTableOpt.includes(_opt))
+                    ? 'reportCheckBox-disable' : 'reportCheckBox'
                   "
                 >
-                  <span style="font-size: 14px">
+                  <span style="font-size: 14px;">
                     <ng-container *ngIf="_opt !== 'avgCadence'">
                       {{ columnTranslate[_opt] }}
                     </ng-container>
@@ -885,7 +909,13 @@
         </div>
         <div class="analysisTable">
           <div style="margin-top: 10px;">
-            <mat-table [dataSource]="groupTable.list.data" matSort #groupSortTable="matSort" (matSortChange)="arrangeData('group')">
+            <mat-table
+              class="matTable"
+              [dataSource]="groupTable.list.data"
+              matSort
+              #groupSortTable="matSort"
+              (matSortChange)="arrangeData('group')"
+            >
               <ng-container matColumnDef="name">
                 <mat-header-cell
                   *matHeaderCellDef
@@ -1012,7 +1042,7 @@
                   <div class="setIn">
                     <span class="tableData">
                       <ng-container *ngIf="groupAnalysis[row].totalActivities; else noTimeData">
-                        {{ (groupAnalysis[row].totalSecond / groupAnalysis[row].activityPeople) || 0 | sportTime: [true, true] }}
+                        {{ (groupAnalysis[row].totalSecond / groupAnalysis[row].activityPeople) || 0 | sportTime: [true, false] }}
                         <i
                           class="icon-svg_web-icon_p3_017-up upArrow"
                           *ngIf="groupAnalysis[row].totalSecondTrend === 'up'"
@@ -1026,6 +1056,52 @@
                     <div
                       class="regulatePosition"
                       *ngIf="!['up', 'down'].includes(groupAnalysis[row].totalSecondTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="totalActivityTime">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="groupTableOpt.includes('totalActivityTime') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="flexCenter tableTitleWord">
+                      {{ 'universal_adjective_singleTotal' | translate }} {{ 'universal_activityData_limit_activityTime' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">time/per</span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="groupTableOpt.includes('totalActivityTime') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="groupTable.sorted ? groupAnalysis[row].ratio : '0px'"
+                    *ngIf="groupTable.sortType === 'totalActivityTime'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData">
+                      <ng-container *ngIf="groupAnalysis[row].totalActivities; else noTimeData">
+                        {{ (groupAnalysis[row].totalActivitySecond / groupAnalysis[row].activityPeople) || 0 | sportTime: [true, false] }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="groupAnalysis[row].totalActivitySecondTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="groupAnalysis[row].totalActivitySecondTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(groupAnalysis[row].totalActivitySecondTrend)"
                     ></div>
                   </div>
                 </mat-cell>
@@ -1064,7 +1140,7 @@
                             + groupAnalysis[row].totalHrZone3Second
                             + groupAnalysis[row].totalHrZone4Second
                             + groupAnalysis[row].totalHrZone5Second
-                          ) / groupAnalysis[row].activityPeople) || 0 | sportTime: [true, true]
+                          ) / groupAnalysis[row].activityPeople) || 0 | sportTime: [true, false]
                         }}
                         <i
                           class="icon-svg_web-icon_p3_017-up upArrow"
@@ -1282,7 +1358,7 @@
                     <span class="tableData">
                       <ng-container *ngIf="groupAnalysis[row].totalActivities; else noTimeData">
                         {{
-                          ((groupAnalysis[row].avgSpeed / groupAnalysis[row].activityPeople) / groupAnalysis[row].totalActivities) || 0
+                          (groupAnalysis[row].avgSpeed / avgDataRecord.group[row]?.avgSpeed) || 0
                             | sportPaceSibs: [reportConditionOpt.sportType, userInfo.unit, 1]
                         }}
                         <i
@@ -1333,7 +1409,7 @@
                     <span class="tableData">
                       <ng-container *ngIf="groupAnalysis[row].totalActivities; else noTimeData">
                         {{
-                          ((groupAnalysis[row].avgSpeed / groupAnalysis[row].activityPeople) / groupAnalysis[row].totalActivities)
+                          (groupAnalysis[row].avgSpeed / avgDataRecord.group[row]?.avgSpeed)
                           | speedSibs: [userInfo.unit, 1]
                         }}
                         <i
@@ -1401,25 +1477,25 @@
                       <ng-container *ngIf="groupAnalysis[row].totalActivities; else noData">
                         <ng-container *ngIf="reportConditionOpt.sportType === sportCode.run">
                           {{
-                            ((groupAnalysis[row].runAvgCadence / groupAnalysis[row].activityPeople) / groupAnalysis[row].totalActivities)
+                            (groupAnalysis[row].runAvgCadence / avgDataRecord.group[row]?.runAvgCadence)
                             | number: '1.0-1'
                           }}
                         </ng-container>
                         <ng-container *ngIf="reportConditionOpt.sportType === sportCode.cycle">
                           {{
-                            ((groupAnalysis[row].cycleAvgCadence / groupAnalysis[row].activityPeople) / groupAnalysis[row].totalActivities)
+                            (groupAnalysis[row].cycleAvgCadence / avgDataRecord.group[row]?.cycleAvgCadence)
                             | number: '1.0-1'
                           }}
                         </ng-container>
                         <ng-container *ngIf="reportConditionOpt.sportType === sportCode.swim">
                           {{
-                            ((groupAnalysis[row].swimAvgCadence / groupAnalysis[row].activityPeople) / groupAnalysis[row].totalActivities)
+                            (groupAnalysis[row].swimAvgCadence / avgDataRecord.group[row]?.swimAvgCadence)
                             | number: '1.0-1'
                           }}
                         </ng-container>
                         <ng-container *ngIf="reportConditionOpt.sportType === sportCode.row">
                           {{
-                            ((groupAnalysis[row].rowingAvgCadence / groupAnalysis[row].activityPeople) / groupAnalysis[row].totalActivities)
+                            (groupAnalysis[row].rowingAvgCadence / avgDataRecord.group[row]?.rowingAvgCadence)
                             | number: '1.0-1'
                           }}
                         </ng-container>
@@ -1472,13 +1548,13 @@
                       <ng-container *ngIf="groupAnalysis[row].totalActivities; else noData">
                         <ng-container *ngIf="sportCode.cycle">
                           {{
-                            ((groupAnalysis[row].cycleAvgWatt / groupAnalysis[row].activityPeople) / groupAnalysis[row].totalActivities)
+                            (groupAnalysis[row].cycleAvgWatt / avgDataRecord.group[row]?.cycleAvgWatt)
                             | number: '1.0-1'
                           }}
                         </ng-container>
                         <ng-container *ngIf="sportCode.row">
                           {{
-                            ((groupAnalysis[row].rowingAvgWatt / groupAnalysis[row].activityPeople) / groupAnalysis[row].totalActivities)
+                            (groupAnalysis[row].rowingAvgWatt / avgDataRecord.group[row]?.rowingAvgWatt)
                             | number: '1.0-1'
                           }}
                         </ng-container>
@@ -1530,7 +1606,7 @@
                     <span class="tableData">
                       <ng-container *ngIf="groupAnalysis[row].totalActivities; else noData">
                         {{
-                          ((groupAnalysis[row].avgHeartRateBpm / groupAnalysis[row].activityPeople) / groupAnalysis[row].totalActivities)
+                          (groupAnalysis[row].avgHeartRateBpm / avgDataRecord.group[row]?.avgHeartRateBpm) || 0
                           | number: '1.0-0'
                         }}
                         <i
@@ -1804,17 +1880,11 @@
                   value="{{ _opt }}"
                   [checked]="personTableOpt.includes(_opt)"
                   (change)="changeTableOpt($event, 'person')"
-                  [style.pointer-events]="
+                  [class]="
                     _opt === 'name'
-                    || (personTableOpt.length >= tableColumn.max && !personTableOpt.includes(_opt))
-                    || (personTableOpt.length <= tableColumn.min && personTableOpt.includes(_opt))
-                    ? 'none' : ''
-                  "
-                  [style.color]="
-                    _opt === 'name'
-                    || (personTableOpt.length >= tableColumn.max && !personTableOpt.includes(_opt))
-                    || (personTableOpt.length <= tableColumn.min && personTableOpt.includes(_opt))
-                    ? '#ababab' : ''
+                      || (personTableOpt.length >= tableColumn.max && !personTableOpt.includes(_opt))
+                      || (personTableOpt.length <= tableColumn.min && personTableOpt.includes(_opt))
+                    ? 'reportCheckBox-disable' : 'reportCheckBox'
                   "
                 >
                   <span style="font-size: 14px">
@@ -1832,7 +1902,13 @@
         </div>
         <div class="analysisTable">
           <div style="margin-top: 10px;">
-            <mat-table [dataSource]="personTable.list.data" matSort #personSortTable="matSort" (matSortChange)="arrangeData('person')">
+            <mat-table
+              class="matTable"
+              [dataSource]="personTable.list.data"
+              matSort
+              #personSortTable="matSort"
+              (matSortChange)="arrangeData('person')"
+            >
               <ng-container matColumnDef="name">
                 <mat-header-cell
                   *matHeaderCellDef
@@ -1929,7 +2005,7 @@
                   <div class="setIn">
                     <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock">
                       <ng-container *ngIf="personAnalysis[row].totalActivities; else noTimeData">
-                        {{ personAnalysis[row].totalSecond | sportTime: [true, true] }}
+                        {{ personAnalysis[row].totalSecond | sportTime: [true, false] }}
                         <i
                           class="icon-svg_web-icon_p3_017-up upArrow"
                           *ngIf="personAnalysis[row].totalSecondTrend === 'up'"
@@ -1943,6 +2019,52 @@
                     <div
                       class="regulatePosition"
                       *ngIf="!['up', 'down'].includes(personAnalysis[row].totalSecondTrend)"
+                    ></div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="totalActivityTime">
+                <mat-header-cell
+                  *matHeaderCellDef
+                  mat-sort-header
+                  disableClear="true"
+                  class="flexCenter tableArrangement"
+                  [style.display]="personTableOpt.includes('totalActivityTime') ? '' : 'none'"
+                >
+                  <div class="tableTitle">
+                    <span class="flexCenter tableTitleWord">
+                      {{ 'universal_adjective_singleTotal' | translate }} {{ 'universal_activityData_limit_activityTime' | translate }}
+                    </span>
+                    <span class="chartTitleUnit">time</span>
+                  </div>
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row; let i = index;"
+                  class="tableArrangement tableContent"
+                  [style.display]="personTableOpt.includes('totalActivityTime') ? '' : 'none'"
+                >
+                  <div
+                    class="visualizeData"
+                    [style.width]="personTable.sorted ? personAnalysis[row].ratio : '0px'"
+                    *ngIf="personTable.sortType === 'totalActivityTime'"
+                  ></div>
+                  <div class="setIn">
+                    <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock">
+                      <ng-container *ngIf="personAnalysis[row].totalActivities; else noTimeData">
+                        {{ personAnalysis[row].totalActivitySecond | sportTime: [true, false] }}
+                        <i
+                          class="icon-svg_web-icon_p3_017-up upArrow"
+                          *ngIf="personAnalysis[row].totalActivitySecondTrend === 'up'"
+                        ></i>
+                        <i
+                          class="icon-svg_web-icon_p3_018-down downArrow"
+                          *ngIf="personAnalysis[row].totalActivitySecondTrend === 'down'"
+                        ></i>
+                      </ng-container>
+                    </span>
+                    <div
+                      class="regulatePosition"
+                      *ngIf="!['up', 'down'].includes(personAnalysis[row].totalActivitySecondTrend)"
                     ></div>
                   </div>
                 </mat-cell>
@@ -1981,7 +2103,7 @@
                             + personAnalysis[row].totalHrZone3Second
                             + personAnalysis[row].totalHrZone4Second
                             + personAnalysis[row].totalHrZone5Second
-                          ) | sportTime: [true, true]
+                          ) | sportTime: [true, false]
                         }}
                         <i
                           class="icon-svg_web-icon_p3_017-up upArrow"
@@ -2192,10 +2314,7 @@
                   <div class="setIn">
                     <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;">
                       <ng-container *ngIf="personAnalysis[row].totalActivities; else noTimeData">
-                        {{ 
-                          (personAnalysis[row].avgSpeed / personAnalysis[row].totalActivities)
-                            | sportPaceSibs: [reportConditionOpt.sportType, userInfo.unit, 1]
-                        }}
+                        {{ personAnalysis[row].avgSpeed | sportPaceSibs: [reportConditionOpt.sportType, userInfo.unit, 1] }}
                         <i
                           class="icon-svg_web-icon_p3_017-up upArrow"
                           *ngIf="personAnalysis[row].avgPaceTrend === 'up'"
@@ -2243,7 +2362,7 @@
                   <div class="setIn">
                     <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;">
                       <ng-container *ngIf="personAnalysis[row].totalActivities; else noTimeData">
-                        {{ (personAnalysis[row].avgSpeed / personAnalysis[row].totalActivities) | speedSibs: [userInfo.unit, 1] }}
+                        {{ personAnalysis[row].avgSpeed | speedSibs: [userInfo.unit, 1] }}
                         <i
                           class="icon-svg_web-icon_p3_017-up upArrow"
                           *ngIf="personAnalysis[row].avgSpeedTrend === 'up'"
@@ -2308,16 +2427,16 @@
                     <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;">
                       <ng-container *ngIf="personAnalysis[row].totalActivities; else noData">
                         <ng-container *ngIf="reportConditionOpt.sportType === sportCode.run">
-                          {{ (personAnalysis[row].runAvgCadence / personAnalysis[row].totalActivities) | number: '1.0-1' }}
+                          {{ personAnalysis[row].runAvgCadence | number: '1.0-1' }}
                         </ng-container>
                         <ng-container *ngIf="reportConditionOpt.sportType === sportCode.cycle">
-                          {{ (personAnalysis[row].cycleAvgCadence / personAnalysis[row].totalActivities) | number: '1.0-1' }}
+                          {{ personAnalysis[row].cycleAvgCadence | number: '1.0-1' }}
                         </ng-container>
                         <ng-container *ngIf="reportConditionOpt.sportType === sportCode.swim">
-                          {{ (personAnalysis[row].swimAvgCadence / personAnalysis[row].totalActivities) | number: '1.0-1' }}
+                          {{ personAnalysis[row].swimAvgCadence | number: '1.0-1' }}
                         </ng-container>
                         <ng-container *ngIf="reportConditionOpt.sportType === sportCode.row">
-                          {{ (personAnalysis[row].rowingAvgCadence / personAnalysis[row].totalActivities) | number: '1.0-1' }}
+                          {{ personAnalysis[row].rowingAvgCadence | number: '1.0-1' }}
                         </ng-container>
                         <i
                           class="icon-svg_web-icon_p3_017-up upArrow"
@@ -2367,10 +2486,10 @@
                     <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;">
                       <ng-container *ngIf="personAnalysis[row].totalActivities; else noData">
                         <ng-container *ngIf="sportCode.cycle">
-                          {{ (personAnalysis[row].cycleAvgWatt / personAnalysis[row].totalActivities) | number: '1.0-1' }}
+                          {{ personAnalysis[row].cycleAvgWatt | number: '1.0-1' }}
                         </ng-container>
                         <ng-container *ngIf="sportCode.row">
-                          {{ (personAnalysis[row].rowingAvgWatt / personAnalysis[row].totalActivities) | number: '1.0-1' }}
+                          {{ personAnalysis[row].rowingAvgWatt | number: '1.0-1' }}
                         </ng-container>
                         <i
                           class="icon-svg_web-icon_p3_017-up upArrow"
@@ -2419,7 +2538,7 @@
                   <div class="setIn">
                     <span class="tableData" *ngIf="personAnalysis[row]?.openPrivacy; else privacyLock;">
                       <ng-container *ngIf="personAnalysis[row].totalActivities; else noData">
-                        {{ (personAnalysis[row].avgHeartRateBpm / personAnalysis[row].totalActivities) | number: '1.0-0' }}
+                        {{ personAnalysis[row].avgHeartRateBpm | number: '1.0-0' }}
                         <i
                           class="icon-svg_web-icon_p3_017-up upArrow"
                           *ngIf="personAnalysis[row].avgHrTrend === 'up'"
@@ -3163,7 +3282,7 @@
     >
       
       <div class="flexCol" style="padding: 15px 15px 0px 15px;">
-        <span style="color: #656565; font-weight: bold;">
+        <span class="menuSubtitle">
           <ng-container *ngIf="analysisMenu.type === 'group'">
             {{ 'universal_group_member' | translate }}
           </ng-container>

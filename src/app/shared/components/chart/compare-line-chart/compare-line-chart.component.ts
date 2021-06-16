@@ -1,6 +1,5 @@
 import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
 import { chart } from 'highcharts';
-import * as _Highcharts from 'highcharts';
 import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -16,8 +15,9 @@ import {
 } from '../../../models/chart-data';
 import { unit, Unit } from '../../../models/bs-constant';
 import { day, month, week } from '../../../models/utils-constant';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
-const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
@@ -25,7 +25,8 @@ class ChartOptions {
     return {
       chart: {
         type: 'spline',
-        height: 110
+        height: 110,
+        backgroundColor: 'transparent'
       },
       title: {
         text: ''
@@ -76,6 +77,7 @@ class ChartOptions {
   styleUrls: ['./compare-line-chart.component.scss', '../chart-share-style.scss']
 })
 export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
+  private ngUnsubscribe = new Subject;
   noData = false;
   firstSunday: number;
   lastSunday: number;
@@ -114,7 +116,12 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
       this.findDate();
     }
 
-    this.initChart();
+    this.translate.get('hellow world').pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      this.initChart();
+    });
+    
   }
 
   initChart () {
@@ -124,151 +131,56 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
     switch (this.chartName) {
       case 'HR':
         this.chartType = 'hr';
-        const hrTitle = this.translate.instant('universal_activityData_hr');
-        if (this.page !== 'sportReport') {
-          this.dataLength = this.data.date.length;
-          for (let i = 0; i < this.dataLength; i++) {
-            // 使用 Date.UTC(year, month - 1, day) 才能使highchart折線圖的點落在x軸軸線上
-            const dateArr = moment(this.data.date[i]).format('YYYY-MM-DD').split('-'),
-                  [year, month, day] = [...dateArr];
-            chartData.push(
-              this.assignColor(Date.UTC(+year, +month - 1, +day), this.data.HR[i], 'normal')
-            );
-
-            chartBestData.push(
-              this.assignColor(Date.UTC(+year, +month - 1, +day), this.data.bestHR[i], 'best')
-            );
+        const { maxHrArr, hrArr } = this.data;
+        this.dataLength = hrArr.length;
+        trendDataset = [
+          {
+            name: this.translate.instant('universal_userProfile_maxHr'),
+            data: maxHrArr,
+            showInLegend: false,
+            color: '#ff9a22',
+            marker: {
+              symbol: 'circle'
+            }
+          },
+          {
+            name: this.translate.instant('universal_activityData_hr'),
+            data: hrArr,
+            showInLegend: false,
+            color: '#75f25f',
+            marker: {
+              symbol: 'circle'
+            }
           }
-
-          
-          trendDataset = [
-            {
-              name: hrTitle,
-              data: chartBestData,
-              showInLegend: false,
-              color: '#ff9a22',
-              marker: {
-                symbol: 'circle'
-              }
-            },
-            {
-              name: hrTitle,
-              data: chartData,
-              showInLegend: false,
-              color: '#75f25f',
-              marker: {
-                symbol: 'circle'
-              }
-            }
-          ];
-
-        } else {
-          const { maxHrArr, hrArr } = this.data;
-          this.dataLength = hrArr.length;
-          trendDataset = [
-            {
-              name: hrTitle,
-              data: maxHrArr,
-              showInLegend: false,
-              color: '#ff9a22',
-              marker: {
-                symbol: 'circle'
-              }
-            },
-            {
-              name: hrTitle,
-              data: hrArr,
-              showInLegend: false,
-              color: '#75f25f',
-              marker: {
-                symbol: 'circle'
-              }
-            }
-          ];
-
-        }
+        ];
 
         break;
       case 'Power':
         const powerTitle = this.translate.instant('universal_activityData_power');
         this.chartType = 'power';
-        if (this.page !== 'sportReport') {
-          this.dataLength = this.data.date.length;
-          for (let i = 0; i < this.dataLength; i++) {
-            // 使用 Date.UTC(year, month - 1, day) 才能使highchart折線圖的點落在x軸軸線上
-            const dateArr = moment(this.data.date[i]).format('YYYY-MM-DD').split('-'),
-                  [year, month, day] = [...dateArr];
-
-            chartData.push(
-              {
-                x: Date.UTC(+year, +month - 1, +day),
-                y: this.data.power[i],
-                marker: {
-                  enabled: true,
-                  fillColor: '#75f25f'
-                }
-              }
-            );
-
-            chartBestData.push(
-              {
-                x: Date.UTC(+year, +month - 1, +day),
-                y: this.data.bestPower[i],
-                marker: {
-                  enabled: true,
-                  fillColor: '#ea5757'
-                }
-              }
-            );
+        this.dataLength = this.data.powerArr.length;
+        trendDataset = [
+          {
+            name: powerTitle,
+            data: this.data.maxPowerArr,
+            showInLegend: false,
+            color: '#ff9a22',
+            marker: {
+              fillColor: '#ea5757',
+              symbol: 'circle'
+            }
+          },
+          {
+            name: powerTitle,
+            data: this.data.powerArr,
+            showInLegend: false,
+            color: '#72e8b0',
+            marker: {
+              fillColor: '#75f25f',
+              symbol: 'circle'
+            }
           }
-
-          trendDataset = [
-            {
-              name: powerTitle,
-              data: chartBestData,
-              showInLegend: false,
-              color: '#ff9a22',
-              marker: {
-                symbol: 'circle'
-              }
-            },
-            {
-              name: powerTitle,
-              data: chartData,
-              showInLegend: false,
-              color: '#72e8b0',
-              marker: {
-                symbol: 'circle'
-              }
-            }
-          ];
-
-        } else {
-          this.dataLength = this.data.powerArr.length;
-          trendDataset = [
-            {
-              name: powerTitle,
-              data: this.data.maxPowerArr,
-              showInLegend: false,
-              color: '#ff9a22',
-              marker: {
-                fillColor: '#ea5757',
-                symbol: 'circle'
-              }
-            },
-            {
-              name: powerTitle,
-              data: this.data.powerArr,
-              showInLegend: false,
-              color: '#72e8b0',
-              marker: {
-                fillColor: '#75f25f',
-                symbol: 'circle'
-              }
-            }
-          ];
-
-        }
+        ];
 
         break;
       case 'ExtremeXGForce':
@@ -730,6 +642,13 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
 
   }
 
-  ngOnDestroy () {}
+  /**
+   * 解除rxjs訂閱
+   * @author kidin-1100615
+   */
+  ngOnDestroy () {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
 
 }

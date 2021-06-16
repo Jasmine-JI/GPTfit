@@ -5,7 +5,6 @@ import { UtilsService } from '../../../shared/services/utils.service';
 import { UserProfileService } from '../../../shared/services/user-profile.service'
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
-import { GroupIdSlicePipe } from '../../../shared/pipes/group-id-slice.pipe';
 import { GroupDetailInfo, UserSimpleInfo } from '../models/group-detail';
 
 const { API_SERVER } = environment.url;
@@ -52,8 +51,7 @@ export class GroupService {
   constructor(
     private http: HttpClient,
     private userProfileService: UserProfileService,
-    private utils: UtilsService,
-    private groupIdSlice: GroupIdSlicePipe
+    private utils: UtilsService
   ) {}
 
   /**
@@ -608,17 +606,17 @@ export class GroupService {
   isSameGroup(userGroupId: string, currentGroupId: string, length: number): boolean {
     switch (length) {
       case 3: // 品牌/企業
-        return userGroupId === `${this.groupIdSlice.transform(currentGroupId, length)}-0-0-0`;
+        return userGroupId === `${this.getPartGroupId(currentGroupId, length)}-0-0-0`;
       case 4: // 分店/分公司
         return (
-          userGroupId === `${this.groupIdSlice.transform(currentGroupId, length)}-0-0`
-          || userGroupId === `${this.groupIdSlice.transform(currentGroupId, 3)}-0-0-0`
+          userGroupId === `${this.getPartGroupId(currentGroupId, length)}-0-0`
+          || userGroupId === `${this.getPartGroupId(currentGroupId, 3)}-0-0-0`
         );
       case 5: // 課程/部門
         return (
-          userGroupId === `${this.groupIdSlice.transform(currentGroupId, length)}-0`
-          || userGroupId === `${this.groupIdSlice.transform(currentGroupId, 3)}-0-0-0`
-          || userGroupId === `${this.groupIdSlice.transform(currentGroupId, 4)}-0-0`
+          userGroupId === `${this.getPartGroupId(currentGroupId, length)}-0`
+          || userGroupId === `${this.getPartGroupId(currentGroupId, 3)}-0-0-0`
+          || userGroupId === `${this.getPartGroupId(currentGroupId, 4)}-0-0`
         );
     }
 

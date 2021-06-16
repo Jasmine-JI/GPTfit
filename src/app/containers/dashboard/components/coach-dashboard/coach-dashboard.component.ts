@@ -17,15 +17,13 @@ import {
 import { demoCoachInfo, demoLessonInfo } from './fakeUsers';
 import { CoachService } from '../../services/coach.service';
 import { ActivatedRoute } from '@angular/router';
-import * as _Highcharts from 'highcharts';
+import { setOptions } from 'highcharts';
 import { webSocket } from 'rxjs/webSocket';
 import moment from 'moment';
 import { stockChart } from 'highcharts/highstock';
-
-import { UtilsService } from '@shared/services/utils.service';
-import { getUrlQueryStrings } from '@shared/utils/';
-import { GroupService } from '../../services/group.service';
-import * as _ from 'lodash';
+import { UtilsService } from '../../../../shared/services/utils.service';
+import { getUrlQueryStrings } from '../../../../shared/utils/';
+import { cloneDeep, keyBy } from 'lodash';
 
 export class Message {
   constructor(
@@ -33,8 +31,6 @@ export class Message {
     public classMemberDataFieldValue: any
   ) {}
 }
-
-const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 @Component({
   selector: 'app-coach-dashboard',
@@ -226,12 +222,11 @@ export class CoachDashboardComponent
   userInfos: any = [];
   constructor(
     private coachService: CoachService,
-    private groupService: GroupService,
     private route: ActivatedRoute,
     elementRef: ElementRef,
     private utils: UtilsService
   ) {
-    Highcharts.setOptions({ global: { useUTC: false } });
+    setOptions({ time: { useUTC: false } });
     this.elementRef = elementRef;
     let hostName = 'app.alatech.com.tw';
     if (location.hostname === 'cloud.alatech.com.tw') {
@@ -290,11 +285,11 @@ export class CoachDashboardComponent
   handleDemoinit(type) {
     let series;
     if (type === 0) {
-      series = _.cloneDeep(this.series1);
+      series = cloneDeep(this.series1);
     } else if (type === 1) {
-      series = _.cloneDeep(this.series2);
+      series = cloneDeep(this.series2);
     } else {
-      series = _.cloneDeep(this.series3);
+      series = cloneDeep(this.series3);
     }
     if (series && series[0].data.length > 0) {
       series = series.sort(
@@ -351,9 +346,9 @@ export class CoachDashboardComponent
         { name: 'Stephanie', data: [] }
       ];
 
-      this.series1 = _.cloneDeep(series);
-      this.series2 = _.cloneDeep(series);
-      this.series3 = _.cloneDeep(series);
+      this.series1 = cloneDeep(series);
+      this.series2 = cloneDeep(series);
+      this.series3 = cloneDeep(series);
     }
     this.handleDemoinit(this.chartType);
   }
@@ -617,7 +612,7 @@ export class CoachDashboardComponent
       };
       this.initHChart(hrOptions);
       this.isLoading = false;
-      this.userInfos = _.keyBy(infos, keyName =>
+      this.userInfos = keyBy(infos, keyName =>
         keyName.pairEquipmentSN.trim()
       );
     });

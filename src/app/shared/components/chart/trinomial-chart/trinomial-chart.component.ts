@@ -1,6 +1,5 @@
 import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input, Renderer2, Output, EventEmitter } from '@angular/core';
-import { chart } from 'highcharts';
-import * as _Highcharts from 'highcharts';
+import { chart, charts } from 'highcharts';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -8,7 +7,6 @@ import { DataTypeUnitPipe } from '../../../pipes/data-type-unit.pipe';
 import { TemperatureSibsPipe } from '../../../pipes/temperature-sibs.pipe';
 import { mi, ft } from '../../../models/bs-constant';
 
-const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 /**
  * 建立圖表用
@@ -269,7 +267,7 @@ export class TrinomialChartComponent implements OnInit, OnChanges, OnDestroy {
    * @author kidin-1100122
    */
   handleSynchronizedPoint(e: any) {
-    const compareChart: any = Highcharts.charts[this.chartIndex],
+    const compareChart: any = charts[this.chartIndex],
           event = compareChart.pointer.normalize(e), // Find coordinates within the chart
           point = compareChart.series[0].searchPoint(event, true); // Get the hovered point
     if (point && point.index) {

@@ -1,9 +1,0 @@
-<div class="flexCol">
-  <span style="color: #157fcc; font-weight:700; font-size: 20px;" *ngIf="!isPreviewMode">
-    {{'universal_activityData_sportReport' | translate}}
-  </span>
-  <app-report-filter class="card__section" *ngIf="!isPreviewMode"></app-report-filter>
-  <div class="card__section">
-    <app-report-content (showPrivacyUi)="emitPrivacy($event)"></app-report-content>
-  </div>
-</div>

@@ -1,6 +1,5 @@
 import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
 import { chart } from 'highcharts';
-import * as _Highcharts from 'highcharts';
 import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -10,11 +9,12 @@ import {
   hitColor,
   jumpColor,
   landingColor,
+  forehandSwingColor,
+  backHandSwingColor,
   RelativeTrendChart
 } from '../../../models/chart-data';
 import { day, month, week } from '../../../models/utils-constant';
 
-const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
@@ -22,7 +22,8 @@ class ChartOptions {
     return {
       chart: {
         type: 'column',
-        height: 110
+        height: 110,
+        backgroundColor: 'transparent'
       },
       title: {
         text: ''
@@ -55,8 +56,8 @@ class ChartOptions {
       tooltip: {},
       plotOptions: {
         column: {
-            stacking: 'normal',
-            pointPlacement: 0.33,
+          stacking: 'normal',
+          pointPlacement: 0.33,
         },
         series: {
           pointWidth: null,
@@ -87,7 +88,8 @@ export class RelativeColumnChartComponent implements OnInit, OnChanges, OnDestro
   @Input() dateRange: string;
   @Input() sportType: string;
   @Input() chartName: string;
-  @Input() unit = <number>0;
+  @Input() unit: number = 0;
+  @Input() page: string = 'sportReport';
   @ViewChild('container', {static: false})
   container: ElementRef;
 
@@ -133,6 +135,15 @@ export class RelativeColumnChartComponent implements OnInit, OnChanges, OnDestro
         this.title = {
           positive: this.translate.instant('universal_activityData_totalJump'),
           negative: this.translate.instant('universal_activityData_totalFloorImpact')
+        };
+        break;
+      case 'SwingRatio':
+        this.chartType = 'swingRatio';
+        positiveColor = forehandSwingColor;
+        negativeColor = backHandSwingColor;
+        this.title = {
+          positive: this.translate.instant('universal_activityData_forehandCount'),
+          negative: this.translate.instant('universal_activityData_backhandCcount')
         };
         break;
     }
@@ -181,9 +192,11 @@ export class RelativeColumnChartComponent implements OnInit, OnChanges, OnDestro
 
     };
 
+    const top = this.data.maxGForce ?? this.data.maxForehandCount,
+          bottom = this.data.minGForce ?? this.data.maxBackhandCount;
     // 設定圖表上下限軸線位置，以顯示數值為0的軸線
-    let absPositive = Math.abs(parseFloat(this.data.maxGForce.toFixed(0))),
-        absNegative = Math.abs(parseFloat(this.data.minGForce.toFixed(0)));
+    let absPositive = Math.abs(parseFloat(top.toFixed(0))),
+        absNegative = Math.abs(parseFloat(bottom.toFixed(0)));
     if (absPositive > absNegative) {
       chartOptions['yAxis']['tickPositions'] = [-absPositive, 0, absPositive];
     } else {

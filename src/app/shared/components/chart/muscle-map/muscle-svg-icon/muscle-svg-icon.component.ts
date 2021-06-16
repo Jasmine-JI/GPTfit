@@ -1,4 +1,13 @@
 import { Component, OnInit, OnChanges, Input } from '@angular/core';
+import {
+  MuscleGroup,
+  ArmMuscle,
+  PectoralsMuscle,
+  ShoulderMuscle,
+  BackMuscle,
+  AbdominalMuscle,
+  LegMuscle
+} from '../../../../models/weight-train';
 
 @Component({
   selector: 'app-muscle-svg-icon',
@@ -7,8 +16,8 @@ import { Component, OnInit, OnChanges, Input } from '@angular/core';
 })
 export class MuscleSvgIconComponent implements OnInit, OnChanges {
 
-  @Input() muscleCode: Array<number>;
-  @Input() muscleGroupId: Array<string>;
+  @Input() muscleCode: any = [];
+  @Input() muscleGroupId: string;
 
   constructor() { }
 
@@ -16,31 +25,38 @@ export class MuscleSvgIconComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges () {
-    if (this.muscleGroupId) {
+    if (this.muscleGroupId !== undefined) {
       this.getMuscleGroupPart(this.muscleGroupId);
+    } else {
+      this.muscleCode = this.muscleCode.map(_code => +_code);
     }
+
   }
 
-  // 根據id取得肌群下的肌肉部位-kidin-1090415
-  getMuscleGroupPart (id) {
+  /**
+   * 根據id取得肌群下的肌肉部位
+   * @param id {string}-肌群id
+   * @author kidin-1090415
+   */
+  getMuscleGroupPart (id: string) {
     switch (+id) {
-      case 1:  // 手臂肌群
-        this.muscleCode = [16, 32, 128];
+      case MuscleGroup.armMuscle:  // 手臂肌群
+        this.muscleCode = ArmMuscle;
         break;
-      case 2:  // 胸部肌群
-        this.muscleCode = [48, 49, 50, 51, 52, 53];
+      case MuscleGroup.pectoralsMuscle:  // 胸部肌群
+        this.muscleCode = PectoralsMuscle;
         break;
-      case 3:  // 肩部肌群
-        this.muscleCode = [64, 65, 66, 67, 68, 69];
+      case MuscleGroup.shoulderMuscle:  // 肩部肌群
+        this.muscleCode = ShoulderMuscle;
         break;
-      case 4:  // 背部肌群
-        this.muscleCode = [80, 81, 82];
+      case MuscleGroup.backMuscle:  // 背部肌群
+        this.muscleCode = BackMuscle;
         break;
-      case 5:  // 腹部肌群
-        this.muscleCode = [96, 97, 98, 99, 100];
+      case MuscleGroup.abdominalMuscle:  // 腹部肌群
+        this.muscleCode = AbdominalMuscle;
         break;
-      case 6:  // 腿部肌群
-        this.muscleCode = [112, 113, 114, 115, 116, 117];
+      case MuscleGroup.legMuscle:  // 腿部肌群
+        this.muscleCode = LegMuscle;
         break;
     }
   }

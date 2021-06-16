@@ -2,8 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/co
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import moment from 'moment';
-import { chart } from 'highcharts';
-import * as _Highcharts from 'highcharts';
+import { chart, charts } from 'highcharts';
 
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -17,7 +16,6 @@ import { UserProfileService } from '../../../../../shared/services/user-profile.
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
@@ -193,20 +191,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
     private qrcodeService: QrcodeService,
     private userProfileService: UserProfileService,
     private activityService: ActivityService
-    ) {
-      // 改寫內部設定
-      // 將提示框即十字準星的隱藏函數關閉
-      Highcharts.Pointer.prototype.reset = function() {
-        return undefined;
-      };
-      /**
-       * 聚焦當前的數據點，並設置滑鼠滑動狀態及繪製十字準星線
-       */
-      Highcharts.Point.prototype.highlight = function(event) {
-        this.onMouseOver(); // 顯示滑鼠啟動標示
-        this.series.chart.xAxis[0].drawCrosshair(event, this); // 顯示十字準星线
-      };
-    }
+    ) {}
 
   ngOnInit() {
     if (location.search.indexOf('ipm=s') > -1) {
@@ -224,7 +209,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
       this.queryStringShowData();
     }
 
-    Highcharts.charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
+    charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
 
     this.tableData.sort = this.sortTable;
   }
@@ -753,7 +738,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
   // 初始化highChart-kidin-1081211
   initInfoHighChart () {
-    Highcharts.charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
+    charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
     this.chartDatas.length = 0;
     this.chartTargetList.length = 0;
     this.HRZoneChartDatas.length = 0;
@@ -1189,7 +1174,7 @@ export class ClassAnalysisComponent implements OnInit, OnDestroy {
 
   ngOnDestroy () {
     // 將之前生成的highchart卸除避免新生成的highchart無法顯示-kidin-1081219
-    Highcharts.charts.forEach((_highChart, idx) => {
+    charts.forEach((_highChart, idx) => {
       if (_highChart !== undefined) {
         _highChart.destroy();
       }

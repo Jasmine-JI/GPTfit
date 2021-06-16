@@ -38,7 +38,12 @@ npm start
 ```
 mv node_modules/gcoord/src/geojson.d.ts node_modules/gcoord/dist/types
 ```
-
+> ※ Heap out of memory
+> 在run angular server時若遇到Heap out of memory的錯誤訊息，目前有三種情況導致此現象發生
+>
+> 1. html code有錯：因angular error log機制，在越前面的地方出錯，angular 會需要耗費越多記憶體印出error log，當記憶體超出設定值，會導致直接顯示Heap out of memory而無法印出error log，因此需再回頭檢視程式碼找出錯誤。
+> 2. ~~angular 9 bug：angular 9打包會造成memory leak的bug。~~(目前已更新至11以上，目前此問題影響較小)。
+> 3. 設定值太小：package.json裡，scripts.start有加一個"--max_old_space_size"參數，如確認問題原因非以上兩點，則可嘗試將此設定值調高，如調高仍無法解決，則需嘗試將code優化或請mis協助提高記憶體。
 
 ## Build
 Build code的npm script分為三種環境
@@ -255,3 +260,5 @@ app
 |**[ml-regression-simple-linear](https://www.npmjs.com/package/ml-regression-simple-linear)** | 2.1.1| 用来做群組report的簡單回歸分析 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/dashboard/group/group-info/com-life-tracking/com-life-tracking.component.ts#L3)|
 |**[tui-calendar](https://ui.toast.com/tui-calendar/)** | 1.12.11| 行事曆套件(棄用) | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/tui-calender/tui-calender.component.ts)|
 |**[daterangepicker](https://www.daterangepicker.com)** | 3.0.5| 可以雙開的日期選擇器| [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/date-range-picker/date-range-picker.component.ts)|
+|**normalize.css** | 8.0.1| css正規化| [Link](https://www.npmjs.com/package/normalize.css)|
+

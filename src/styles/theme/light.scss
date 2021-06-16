@@ -1,0 +1,39 @@
+@import 'transition.scss';
+
+$colors-light: (
+  --scale-255-0: rgba(255, 255, 255, 1),
+  --scale-255-20: rgba(255, 255, 255, 1),
+  --scale-255-60: rgba(255, 255, 255, 1),
+  --scale-255-90: rgba(255, 255, 255, 1),
+  --scale-255-200: rgba(255, 255, 255, 1),
+  --scale-245-50: rgba(245, 245, 245, 1),
+  --scale-240-45: rgba(240, 240, 240, 1),
+  --scale-240-100: rgba(240, 240, 240, 1),
+  --scale-215-175: rgba(215, 215, 215, 1),
+  --scale-200-0: rgba(200, 200, 200, 1),
+  --scale-200-100: rgba(200, 200, 200, 1),
+  --scale-200-130: rgba(200, 200, 200, 1),
+  --scale-150-180: rgba(150, 150, 150, 1),
+  --scale-120-190: rgba(120, 120, 120, 1),
+  --scale-120-200: rgba(120, 120, 120, 1),
+  --scale-115-215: rgba(115, 115, 115, 1),
+  --scale-115-255: rgba(115, 115, 115, 1),
+  --scale-100-205: rgba(100, 100, 100, 1),
+  --scale-100-230: rgba(100, 100, 100, 1),
+  --scale-100-255: rgba(100, 100, 100, 1),
+  --scale-75-230: rgba(75, 75, 75, 1),
+  --scale-0-255: rgba(0, 0, 0, 1),
+  --003c67-0096ff: #003c67
+);
+
+.theme__light {
+  @each $name, $color in $colors-light {
+    #{$name}: $color;
+  }
+
+}
+
+.theme--change {
+  @include transition(color, 0.5s);
+  @include transition(background-color, 0.5s);
+}

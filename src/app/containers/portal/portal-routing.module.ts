@@ -2,10 +2,10 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { PortalComponent } from './portal.component';
 import { DemoQrcodComponent } from './components/demo-qrcod/demo-qrcod.component';
-import { SigninGuard } from '@shared/guards/signin/signin.guard';
+import { SigninGuard } from '../../shared/guards/signin/signin.guard';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
-import { SportReportComponent } from '@shared/components/sport-report/sport-report.component';
-import { MyActivityComponent } from '@shared/components/my-activity/my-activity.component';
+import { SportsReportComponent } from '../../shared/components/sports-report/sports-report.component';
+import { MyActivityComponent } from '../../shared/components/my-activity/my-activity.component';
 import { Page404Component } from '../../shared/components/page404/page404.component';
 import { Page403Component } from '../../shared/components/page403/page403.component';
 import { QrcodeUploadComponent } from '../dashboard/components/qrcode-upload/qrcode-upload.component';
@@ -61,7 +61,7 @@ const routes: Routes = [
           },
           {
             path: 'sport-report',
-            component: SportReportComponent
+            component: SportsReportComponent
           }
         ]
       },

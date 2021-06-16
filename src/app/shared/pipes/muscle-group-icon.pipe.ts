@@ -1,12 +1,16 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { MuscleGroup } from '../models/weight-train';
 
-/**
- * 依據不同運動類型回傳該icon的class name（需隨類別增加而更新）
- */
+
 @Pipe({name: 'muscleGroupIcon'})
 export class MuscleGroupIconPipe implements PipeTransform {
-  transform(value: number, args: string[]): any {
+  /**
+   * 依據不同肌群代碼回傳該icon的class name
+   * @param value {number}-肌群代碼
+   * @returns {string}-肌群icon的class name
+   * @author kidin-1100528
+   */
+  transform(value: number): string {
     switch (value) {
       case MuscleGroup.armMuscle:
         return 'icon-svg_web-icon_p3_028-hand_muscle';

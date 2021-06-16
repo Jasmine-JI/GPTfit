@@ -65,9 +65,19 @@ export class ShareGroupInfoDialogComponent implements OnInit {
   }
 
   copyInputMessage(inputElement) {
-    inputElement.select();
+    const isOS = navigator.userAgent.match(/ipad|iphone/i);
+    if (isOS) {
+      const range = document.createRange();
+      range.selectNodeContents(inputElement);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+    } else {
+      inputElement.select();
+    }
+
+    inputElement.setSelectionRange(0, 99999);
     document.execCommand('copy');
-    inputElement.setSelectionRange(0, 0);
     this.snackbar.open(
       'Copied!!',
       'OK',

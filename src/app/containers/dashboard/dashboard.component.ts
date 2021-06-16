@@ -56,6 +56,8 @@ interface UiFlag {
   hover: boolean;
 }
 
+type Theme = 'light' | 'dark';
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -88,6 +90,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   isHideFooter = false;
   debounce: any;
   sideBarList = Dashboard;
+  theme: Theme = 'light';
 
   constructor(
     private globalEventsManager: GlobalEventsManager,
@@ -106,8 +109,8 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   ngOnInit() {
     this.isLoading = true;
     this.handleNavigate(location.pathname);
-    this.checkPreviewPrint();
     this.tokenLogin();
+    this.checkCurrentPage(location.pathname);
     this.subscribeRouter();
     this.subscribeLangChange();
     this.checkWebVersion();
@@ -135,14 +138,36 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   /**
-   * 確認是否為預覽列印頁面
-   * @author kidin
+   * 根據url帶的query string，做相對應的處理
+   * @param query {string}-query string
+   * @author kidin-1100604
    */
-  checkPreviewPrint() {
-    if (location.search.indexOf('ipm=s') > -1) {
-      this.isPreviewMode = true;
-    }
+  checkQueryString(queryString: string) {
+    if (queryString) {
+      const queryArr = queryString.split('?')[1].split('&');
+      queryArr.forEach(_query => {
+        const [key, value] = _query.split('=');
+        switch (key) {
+          case 'ipm':
+            this.isPreviewMode = true;
+            this.changeTheme('light', false); // 預覽列印頁面必為清亮模式
+            break;
+          case 'theme':
+            // 暗黑模式尚未完成，故只先開放20權
+            const checkValue = ['light', 'dark'].includes(value),
+                  isPreviewMode = queryString.includes('ipm='),
+                  checkAccessRight = this.userProfile.systemAccessRight[0] <= 20;
+            if (checkValue && !isPreviewMode && checkAccessRight) {
+              this.changeTheme(value as Theme);
+            }
+            
+            break;
+        }
 
+      });
+
+    }
+    
   }
 
   /**
@@ -166,6 +191,8 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.userProfile = userProfile;
       if (userProfile) {
         this.isLoading = false;
+        this.checkQueryString(location.search);
+        if (!this.isPreviewMode) this.checkTheme();
       }
 
     });
@@ -445,7 +472,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
 
     this.debounce = setTimeout(() => {
       if (!this.uiFlag.mobileMode && this.uiFlag.hover) {
-        this.handeSideBarMode('expand');
+        this.handleSideBarMode('expand');
       }
 
     }, 250);
@@ -459,9 +486,9 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
   shrinkSidebar() {
     this.uiFlag.hover = false;
     if (!this.uiFlag.navFixed && !this.uiFlag.mobileMode) {
-      this.handeSideBarMode('narrow');
+      this.handleSideBarMode('narrow');
     } else if (!this.uiFlag.navFixed && this.uiFlag.mobileMode) {
-      this.handeSideBarMode('hide');
+      this.handleSideBarMode('hide');
     }
     
   }
@@ -476,7 +503,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.shrinkSidebar();
     } else {
       this.uiFlag.navFixed = true;
-      this.handeSideBarMode('expand');
+      this.handleSideBarMode('expand');
     }
     
   }
@@ -486,7 +513,7 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
    * @param mode {'expand' | 'hide' | 'narrow'}-sidebar 模式
    * @author kidin-1091111
    */
-  handeSideBarMode(mode: 'expand' | 'hide' | 'narrow') {
+  handleSideBarMode(mode: 'expand' | 'hide' | 'narrow') {
     this.uiFlag.sidebarMode = mode;
     this.groupService.setSideBarMode(mode);
   }
@@ -512,6 +539,51 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     this.router.navigateByUrl('/');
   }
 
+  /**
+   * 檢查主體
+   * @author kidin-1100603
+   */
+  checkTheme() {
+    const storeTheme = this.utilsService.getLocalStorageObject('theme');
+    if (this.userProfile.systemAccessRight[0] <= 20 && storeTheme) {
+      this.changeTheme(storeTheme);
+    } else if (this.userProfile.systemAccessRight[0] <= 20 && storeTheme === undefined){
+      // 避免狀態與class name不符
+      const checkClassName = document.body.classList.value.includes('theme__dark');
+      if (checkClassName) {
+        this.theme = 'dark';
+      } else {
+        this.theme = 'light';
+      }
+
+    }
+    
+  }
+
+  /**
+   * 變更主題顏色
+   * @param theme {Theme}-主題顏色
+   * @author kidin-1100602
+   */
+  changeTheme(theme: Theme = undefined, save: boolean = true) {
+    let nextTheme: Theme;
+    if (theme) {
+      nextTheme = theme;
+    } else {
+      nextTheme = this.theme === 'dark' ? 'light' : 'dark';
+    }
+
+    if (nextTheme === 'light') {
+      document.body.classList.remove('theme__dark');
+    } else {
+      // 確認是否已有theme__dark這個class name，避免重複添加
+      const checkClassName = document.body.classList.value.includes('theme__dark');
+      if (!checkClassName) document.body.classList.add('theme__dark');
+    }
+
+    if (save) this.utilsService.setLocalStorageObject('theme', nextTheme);
+    this.theme = nextTheme;
+  }
 
   /**
    * 解除rxjs訂閱

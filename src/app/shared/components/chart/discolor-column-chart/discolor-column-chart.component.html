@@ -1,4 +1,4 @@
-<section class="flexCol">
+<section class="flexCol pageBreakAvoid">
   <ng-container *ngIf="['cloudrun', 'sportReport'].includes(page)">
     <div class="flexRow" style="align-items: center; justify-content: space-between;">
       <h6 id="chartTitle">
@@ -13,7 +13,7 @@
     </div>
   </ng-container>
   <main id="mainSeciton">
-    <ng-container *ngIf="['cloudrun', 'sportReport'].includes(page)">
+    <ng-container *ngIf="['cloudrun'].includes(page)">
       <div class="flexRow infoBlock" style="justify-content: space-between;">
         <div class="flexCol infoSection">
           <span class="dataNumber">

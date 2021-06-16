@@ -19,9 +19,9 @@ export const metacarpus = ['1%', '50%', '100%'] as const;
 export const novice = ['1%', '25%', '50%'] as const;
 
 export enum Proficiency {
-  novice = 1,
+  asept = 1,
   metacarpus = 2,
-  asept = 4
+  novice = 4
 }
 
 /**
@@ -166,56 +166,61 @@ export enum MuscleGroup {
 /**
  * 手臂肌群
  */
-export type ArmMuscle = 
-  MuscleCode.bicepsInside | MuscleCode.triceps | MuscleCode.wristFlexor;
+export const ArmMuscle = 
+  [MuscleCode.bicepsInside, MuscleCode.triceps, MuscleCode.wristFlexor] as const;
 
 /**
  * 胸部肌群
  */
-export type PectoralsMuscle =
-  MuscleCode.pectoralsMuscle
-  | MuscleCode.pectoralisUpper
-  | MuscleCode.pectoralisLower
-  | MuscleCode.pectoralsInside
-  | MuscleCode.pectoralsOutside
-  | MuscleCode.frontSerratus;
+export const PectoralsMuscle = [
+  MuscleCode.pectoralsMuscle,
+  MuscleCode.pectoralisUpper,
+  MuscleCode.pectoralisLower,
+  MuscleCode.pectoralsInside,
+  MuscleCode.pectoralsOutside,
+  MuscleCode.frontSerratus
+] as const;
 
 /**
  * 肩部肌群
  */
-export type ShoulderMuscle =
-  MuscleCode.shoulderMuscle
-  | MuscleCode.deltoidMuscle
-  | MuscleCode.deltoidAnterior
-  | MuscleCode.deltoidLateral
-  | MuscleCode.deltoidPosterior
-  | MuscleCode.trapezius;
+export const ShoulderMuscle = [
+  MuscleCode.shoulderMuscle,
+  MuscleCode.deltoidMuscle,
+  MuscleCode.deltoidAnterior,
+  MuscleCode.deltoidLateral,
+  MuscleCode.deltoidPosterior,
+  MuscleCode.trapezius
+] as const;
 
 /**
  * 背部肌群
  */
-export type BackMuscle =  MuscleCode.backMuscle | MuscleCode.latissimusDorsi | MuscleCode.erectorSpinae;
+export const BackMuscle = 
+  [MuscleCode.backMuscle, MuscleCode.latissimusDorsi, MuscleCode.erectorSpinae] as const;
 
 /**
  * 腹部肌群
  */
-export type AbdominalMuscle =
-  MuscleCode.abdominalMuscle
-  | MuscleCode.rectusAbdominis
-  | MuscleCode.rectusAbdominisUpper
-  | MuscleCode.rectusAbdominisLower
-  | MuscleCode.abdominisOblique;
+export const AbdominalMuscle = [
+  MuscleCode.abdominalMuscle,
+  MuscleCode.rectusAbdominis,
+  MuscleCode.rectusAbdominisUpper,
+  MuscleCode.rectusAbdominisLower,
+  MuscleCode.abdominisOblique
+] as const;
 
 /**
  * 腿部肌群
  */
-export type LegMuscle =
-  MuscleCode.legMuscle
-  | MuscleCode.hipMuscle
-  | MuscleCode.quadricepsFemoris
-  | MuscleCode.hamstrings
-  | MuscleCode.ankleFlexor
-  | MuscleCode.gastrocnemius;
+export const LegMuscle = [
+  MuscleCode.legMuscle,
+  MuscleCode.hipMuscle,
+  MuscleCode.quadricepsFemoris,
+  MuscleCode.hamstrings,
+  MuscleCode.ankleFlexor,
+  MuscleCode.gastrocnemius,
+] as const;
 
 /**
  * 肌肉地圖主部位相關顏色設定

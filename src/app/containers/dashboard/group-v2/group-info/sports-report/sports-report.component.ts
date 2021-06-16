@@ -276,6 +276,16 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   personAnalysis = {};  // 個人分析數據
 
   /**
+   * 紀錄平均數據如avgHeartRateBpm，不為零的筆數和人數。
+   * 個人平均數據計算方式：Σ(當天平均數據 * 當天有效筆數(totalActivity不為null或0)) / 總有效筆數
+   * 群組平均數據計算方式：Σ(個人平均數據) / 有效人數（有效筆數不為0的人數）
+   */
+  avgDataRecord = {
+    group: {},  // 紀錄有效人數
+    person: {}  // 紀錄有效筆數
+  }
+
+  /**
    * 團體分析篩選設定
    */
   groupTableOpt = [];
@@ -553,6 +563,9 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       `,
       stroke: this.translate.instant('universal_activityData_numberOfActivity'),
       totalTime: this.translate.instant('universal_activityData_limit_totalTime'),
+      totalActivityTime: `${this.translate.instant('universal_adjective_singleTotal')} ${
+        this.translate.instant('universal_activityData_limit_activityTime')
+      }`,
       benefitTime: this.translate.instant('universal_activityData_benefitime'),
       pai: this.translate.instant('universal_activityData_pai'),
       calories: this.translate.instant('universal_activityData_totalCalories'),
@@ -752,6 +765,10 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     this.groupList.regression = {};
     this.haveDataLen = 0;
     this.groupAnalysis = {};
+    this.avgDataRecord = {
+      group: {},
+      person: {}
+    };
     this.personAnalysis = {};
     this.closeAllMenu();
   }
@@ -1075,13 +1092,37 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         };
 
         this.info = {activePeopleNum, ...this.info};
+        this.handleFinalPersonAvgData();
         this.handleMixData(mixData);
         this.handleGroupAnalysis(this.personAnalysis);
         this.createAnalysisTable(this.reportConditionOpt.sportType);
         this.reportCompleted();
         this.updateUrl();
-      })
+      });
       
+    }
+
+  }
+
+  /**
+   * 將個人分析加總過後的平均數據再除有效筆數
+   * @author kidin-1100607
+   */
+  handleFinalPersonAvgData() {
+    for (let uid in this.personAnalysis) {
+
+      if (this.personAnalysis.hasOwnProperty(uid) && this.avgDataRecord.person[uid] !== undefined) {
+        const currentUser = this.personAnalysis[uid];
+        for (let key in currentUser) {
+
+          if (currentUser.hasOwnProperty(key) && key.toLowerCase().includes('avg')) {
+            this.personAnalysis[uid][key] = (this.personAnalysis[uid][key] / this.avgDataRecord.person[uid][key]) || 0;
+          }
+
+        }
+
+      }
+
     }
 
   }
@@ -1380,17 +1421,56 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           needKey = this.getNeedKey(reportSportType);
     for (let i = 0, len = needKey.length; i < len; i++) {
       const key = needKey[i],
-            value = +data[key];
+            value = +data[key],
+            isAvgData = key.toLowerCase().includes('avg');
+      let currentUser = this.personAnalysis[userId];
       if (value !== undefined) {
 
-        if (this.personAnalysis[userId][key]) {
-          this.personAnalysis[userId][key] += value;
+        if (currentUser[key] !== undefined) {
+          currentUser[key] += isAvgData ? value * data.totalActivities : value;          
         } else {
-          this.personAnalysis[userId] = {
-            [key]: value,
-            ...this.personAnalysis[userId]
-          };
+          
+          if (isAvgData) {
+            this.personAnalysis[userId] = {
+              [key]: value * data.totalActivities,
+              ...this.personAnalysis[userId]
+            };
 
+          } else {
+            this.personAnalysis[userId] = {
+              [key]: value,
+              ...this.personAnalysis[userId]
+            };
+
+          }
+
+        }
+
+        // 若平均數據為0或undefined，則另外計算該數據筆數
+        if (isAvgData && value !== 0) {
+          let currAnalysisType = this.avgDataRecord.person;
+          if (currAnalysisType.hasOwnProperty(userId)) {
+
+            if (currAnalysisType[userId].hasOwnProperty(key)) {
+              currAnalysisType[userId][key] += data.totalActivities;
+            } else {
+              this.avgDataRecord.person[userId] = {
+                [key]: data.totalActivities,
+                ...this.avgDataRecord.person[userId]
+              }
+
+            }
+
+          } else {
+            this.avgDataRecord.person = {
+              [userId]: {
+                [key]: data.totalActivities
+              },
+              ...this.avgDataRecord.person
+            }
+
+          }
+          
         }
 
       }
@@ -1506,7 +1586,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
   /**
    * 統計團體用分析數據
-   * @param personData {any}
+   * @param personData {any}-個人分析數據
+   * @param avgDataRecord {any}-個人平均數據分別所佔筆數
    * @author kidin-1100512
    */
   handleGroupAnalysis(personData: any) {
@@ -1526,8 +1607,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
             });
 
             if (openPrivacy && totalActivities && totalActivities > 0) {
-              
-              if (this.groupAnalysis[gid].activityPeople) {
+
+              if (this.groupAnalysis[gid].activityPeople !== undefined) {
                 this.groupAnalysis[gid].activityPeople += 1;
               } else {
                 this.groupAnalysis[gid] = {
@@ -1555,6 +1636,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
                   'legMuscle'
                 ];
                 if (!excloudKey.includes(key)) {
+                  // 數據加總
                   if (this.groupAnalysis[gid].hasOwnProperty(key)) {
                     this.groupAnalysis[gid][key] += personData[_id][key];
                   } else {
@@ -1563,6 +1645,33 @@ export class SportsReportComponent implements OnInit, OnDestroy {
                       ...this.groupAnalysis[gid]
                     };
 
+                  }
+
+                  // 紀錄平均數據有效人數
+                  if (key.toLowerCase().includes('avg') && personData[_id][key] !== 0) {
+                    const { group } = this.avgDataRecord;
+                    if (group.hasOwnProperty(gid)) {
+                      let currentGroup = group[gid];
+                      if (currentGroup.hasOwnProperty(key)) {
+                        currentGroup[key] += 1;
+                      } else {
+                        this.avgDataRecord.group[gid] = {
+                          [key]: 1,
+                          ...this.avgDataRecord.group[gid]
+                        };
+
+                      }
+
+                    } else {
+                      this.avgDataRecord.group = {
+                        [gid]: {
+                          [key]: 1
+                        },
+                        ...this.avgDataRecord.group
+                      };
+
+                    }
+                    
                   }
 
                 }
@@ -1684,8 +1793,12 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         ]);
         break;
       case SportCode.weightTrain:
-        this.groupTable.showDataDef = groupDef;
+        this.groupTable.showDataDef = groupDef.concat([
+          'totalActivityTime'
+        ]);
+        
         this.personTable.showDataDef = personDef.concat([
+          'totalActivityTime',
           'totalWeight',
           'totalSets',
           'preferMuscleGroup',
@@ -1793,6 +1906,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           type: sportType,
           totalActivities,
           totalSecond,
+          totalActivitySecond,
           calories,
           totalHrZone0Second,
           totalHrZone1Second,
@@ -1861,6 +1975,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
                 ttlSets += totalSets;
                 muscleGroupTtlKg[belongMuscleGroup] += ttlWeightKg;
               });
+              
+              regressionObj = this.handleRegression(regressionObj, 'totalActivitySecond', totalActivitySecond, userId, startTimestamp);
               regressionObj = this.handleRegression(regressionObj, 'totalSets', ttlSets, userId, startTimestamp);
               regressionObj = this.handleRegression(regressionObj, 'armMuscle', muscleGroupTtlKg[0], userId, startTimestamp);
               regressionObj = this.handleRegression(regressionObj, 'pectoralsMuscle', muscleGroupTtlKg[1], userId, startTimestamp);
@@ -2091,6 +2207,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         this.groupTableOpt = [
           'name',
           'memberNum',
+          'totalActivityTime',
           'stroke',
           'totalTime'
         ];
@@ -2153,11 +2270,11 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       case SportCode.weightTrain:
         this.personTableOpt = [
           'name',
+          'totalActivityTime',
           'totalWeight',
           'totalSets',
           'preferMuscleGroup',
-          'armMuscle',
-          'pectoralsMuscle'
+          'armMuscle'
         ];
         break;
       case SportCode.aerobic:
@@ -2352,18 +2469,19 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 建立活動時間趨勢圖
+   * 建立總時間或總活動時間趨勢圖
    * @param data {any}-一天（週）加總的數據
    * @param startTimestamp {number}-該天（週）起始時間
    * @author kidin-1100505
    */
   createTotalTimeChart(data: any, startTimestamp: number) {
-    const { totalSecond } = data,
-          { totalTime, maxTotalTime } = this.chart.totalTimeTrend;
-    totalTime.push([startTimestamp, totalSecond]);
-    this.totalCount.totalTime += totalSecond;
-    if (totalSecond > maxTotalTime) {
-      this.chart.totalTimeTrend.maxTotalTime = totalSecond;
+    const { totalSecond, totalActivitySecond } = data,
+          { totalTime, maxTotalTime } = this.chart.totalTimeTrend,
+          ref = this.reportConditionOpt.sportType === SportCode.weightTrain ? +totalActivitySecond : +totalSecond;
+    totalTime.push([startTimestamp, ref]);
+    this.totalCount.totalTime += ref;
+    if (ref > maxTotalTime) {
+      this.chart.totalTimeTrend.maxTotalTime = ref;
     }
 
   }
@@ -3071,7 +3189,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 點擊分析列表的運動項目
+   * 點擊活動分析的運動項目
    * @param sportType {SportType}
    * @author kidin-1100428
    */
@@ -3123,7 +3241,8 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       case 'stroke':
         return stroke / denominator;
       case 'totalTime':
-        return dataSource.totalSecond / denominator;
+        const ref = sportType === SportCode.weightTrain ? 'totalActivitySecond' : 'totalSecond';
+        return +dataSource[ref] / denominator;
       case 'benefitTime':
         const { 
                 totalHrZone2Second: z2,

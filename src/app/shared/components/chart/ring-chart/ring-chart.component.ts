@@ -2,11 +2,9 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Input, OnChanges }
 import { SportType, SportCode } from '../../../models/report-condition';
 import { TranslateService } from '@ngx-translate/core';
 import { chart } from 'highcharts';
-import * as _Highcharts from 'highcharts';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
@@ -14,7 +12,8 @@ class ChartOptions {
     return {
       chart: {
         height: 150,
-        margin: [0, 0, 0, 0]
+        margin: [0, 0, 0, 0],
+        backgroundColor: 'transparent'
       },
       title: {
         text: ''

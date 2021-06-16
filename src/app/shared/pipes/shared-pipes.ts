@@ -1,16 +1,11 @@
 import { NgModule } from '@angular/core';
 import { SexPipe } from './sex.pipe';
-import { TimePipe } from './time.pipe';
-import { MapTranslatePipe } from './map-translate.pipe';
-import { UnixTimeConvertPipe } from './unix-time-convert.pipe';
 import { SafeHtmlPipe } from './safe-html.pipe';
 import { ProductTypePipe } from './product-type.pipe';
 import { LineBreakPipe } from './line-break.pipe';
 import { GroupStatusPipe } from './group-status.pipe';
 import { GroupLevelNamePipe } from './group-level-name.pipe';
-import { SportDatePipe } from './sport-date.pipe';
 import { SportTimePipe } from './sport-time.pipe';
-import { SportPacePipe } from './sport-pace.pipe';
 import { MuscleNamePipe } from './muscle-name.pipe';
 import { SlicePipe } from './slice.pipe';
 import { A3FormatPipe } from './a3-format.pipe';
@@ -45,17 +40,12 @@ import { MathAbsPipe } from './math-abs.pipe';
   ],
   declarations: [
     SexPipe,
-    TimePipe,
-    MapTranslatePipe,
-    UnixTimeConvertPipe,
     SafeHtmlPipe,
     ProductTypePipe,
     LineBreakPipe,
     GroupStatusPipe,
     GroupLevelNamePipe,
-    SportDatePipe,
     SportTimePipe,
-    SportPacePipe,
     MuscleNamePipe,
     SlicePipe,
     A3FormatPipe,
@@ -86,17 +76,12 @@ import { MathAbsPipe } from './math-abs.pipe';
   ],
   exports: [
     SexPipe,
-    TimePipe,
-    MapTranslatePipe,
-    UnixTimeConvertPipe,
     SafeHtmlPipe,
     ProductTypePipe,
     LineBreakPipe,
     GroupStatusPipe,
     GroupLevelNamePipe,
-    SportDatePipe,
     SportTimePipe,
-    SportPacePipe,
     MuscleNamePipe,
     SlicePipe,
     A3FormatPipe,

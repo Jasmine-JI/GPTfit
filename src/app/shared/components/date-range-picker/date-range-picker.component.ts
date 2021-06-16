@@ -43,7 +43,7 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
 
   ngOnInit() {}
 
-  ngOnChanges () {
+  ngOnChanges (e) {
     this.getDefaultDate();
     this.translate.get('hello.world').subscribe(() => {
 
@@ -145,7 +145,6 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
 
       jquery('input[name="dates"]').daterangepicker(pickerOpt);
       jquery('input[name="dates"]').on('apply.daterangepicker', this.emitDateRange.bind(this));
-
       if (this.openPicker) {
         const picker = document.getElementById('picker');
         picker.click();

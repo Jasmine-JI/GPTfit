@@ -1,4 +1,4 @@
-<section class="flexCol">
+<section class="flexCol pageBreakAvoid">
   <div class="flexRow" style="align-items: center; justify-content: space-between;">
     <h6 id="chartTitle">
       <ng-container *ngIf="data.maxGForce">
@@ -9,28 +9,30 @@
     <span id="rowLine"></span>
   </div>
   <main id="mainSeciton">
-    <div class="flexRow infoBlock" style="justify-content: space-between;">
-      <div class="flexCol infoSection">
-        <span class="dataNumber">
-          {{ data.maxGForce | number: '1.0-0' }}
-          {{ chartType | dataTypeUnit: [sportType, unit] }}
-        </span>
-        <span class="dataDescription">
-          {{ 'universal_adjective_maxBig' | translate }}
-          {{ title.positive }}
-        </span>
+    <ng-container *ngIf="!['sportReport'].includes(page)">
+      <div class="flexRow infoBlock" style="justify-content: space-between;">
+        <div class="flexCol infoSection">
+          <span class="dataNumber">
+            {{ data.maxGForce | number: '1.0-0' }}
+            {{ chartType | dataTypeUnit: [sportType, unit] }}
+          </span>
+          <span class="dataDescription">
+            {{ 'universal_adjective_maxBig' | translate }}
+            {{ title.positive }}
+          </span>
+        </div>
+        <div class="flexCol infoSection">
+          <span class="dataNumber">
+            {{ data.minGForce | number: '1.0-0' }}
+            {{ chartType | dataTypeUnit: [sportType, unit] }}
+          </span>
+          <span class="dataDescription">
+            {{ 'universal_adjective_maxBig' | translate }}
+            {{ title.negative }}
+          </span>
+        </div>
       </div>
-      <div class="flexCol infoSection">
-        <span class="dataNumber">
-          {{ data.minGForce | number: '1.0-0' }}
-          {{ chartType | dataTypeUnit: [sportType, unit] }}
-        </span>
-        <span class="dataDescription">
-          {{ 'universal_adjective_maxBig' | translate }}
-          {{ title.negative }}
-        </span>
-      </div>
-    </div>
+    </ng-container>
     <div #container id="chartBlock">
       chart
     </div>

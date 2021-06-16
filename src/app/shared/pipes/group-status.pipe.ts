@@ -1,11 +1,16 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-/**
- * 將群組狀態代號轉成多國語系的key
- */
+
 @Pipe({name: 'groupStatus'})
 export class GroupStatusPipe implements PipeTransform {
-  transform(value: number, args: string[]): any {
+
+  /**
+   * 將群組狀態代號轉成多國語系的鍵
+   * @param value {number}-群組狀態代號
+   * @return {string}-翻譯的鍵
+   * @author kidin
+   */
+  transform(value: number): any {
     switch (value) {
       case 1:
         return 'universal_group_freeToJoin';

@@ -38,10 +38,13 @@ export const costTimeColor = 'rgba(188, 226, 58, 1)',
              landingColor = 'rgba(255, 165, 0, 1)',
              planeGColor = 'rgba(85, 54, 255, 1)',
              planeMaxGColor = 'rgba(255, 54, 240, 1)',
+             forehandSwingColor = 'rgba(0, 137, 152, 1)',
+             backHandSwingColor = 'rgba(197, 118, 16, 1)',
              paceTrendColor = ['#6a4db8', '#e04c62', '#ffd451'],
              speedTrendColor = ['#ff00ff', '#ffff00', '#ffff00'],
              cadenceTrendColor = ['#aafc42', '#d6ff38', '#f56300'],
-             swolfTrendColor = ['#aafc42', '#d6ff38', '#7fd9ff'];
+             swolfTrendColor = ['#aafc42', '#d6ff38', '#7fd9ff'],
+             swingSpeedTrendColor = ['#3da200', '#0012ff', '#0012ff'];
 
 export interface HrZoneRange {
   hrBase: 0 | 1;
@@ -147,6 +150,8 @@ export interface FilletTrendChart {
 export interface RelativeTrendChart {
   positiveData: Array<Array<number>>;
   negativeData: Array<Array<number>>;
-  maxGForce: number;
-  minGForce: number;
+  maxGForce?: number;
+  minGForce?: number;
+  maxForehandCount?: number;
+  maxBackhandCount?: number;
 }

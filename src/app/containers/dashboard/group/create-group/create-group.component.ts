@@ -18,7 +18,7 @@ import { UserProfileService } from '../../../../shared/services/user-profile.ser
 import { MsgDialogComponent } from '../../components/msg-dialog/msg-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { PeopleSelectorWinComponent } from '../../components/people-selector-win/people-selector-win.component';
-import * as _ from 'lodash';
+import { cloneDeep } from 'lodash';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { planDatas } from '../desc';
 import moment from 'moment';
@@ -931,7 +931,7 @@ export class CreateGroupComponent implements OnInit, OnDestroy {
     e.preventDefault();
     this.chooseType = _type;
 
-    const adminLists = _.cloneDeep(this.chooseLabels);
+    const adminLists = cloneDeep(this.chooseLabels);
     if (_type !== 3) {
       this.dialog.open(PeopleSelectorWinComponent, {
         hasBackdrop: true,

@@ -2,12 +2,16 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { unit } from '../models/bs-constant';
 import { SportCode } from '../models/report-condition';
 
-/**
- * 根據運動資料類別及公英制回傳相對應的單位
- * @author kidin-1100121
- */
 @Pipe({name: 'dataTypeUnit'})
 export class DataTypeUnitPipe implements PipeTransform {
+
+  /**
+   * 根據運動資料數據類別及公英制回傳相對應的單位
+   * @param value {string}-運動資料數據類別
+   * @param args {Array<number>}-[運動類別, 公制/英制]
+   * @returns {any}-單位
+   * @author kidin
+   */
   transform(value: string, args: number[]): any {
     const [sportType, userUnit] = [...args];
     switch (value) {

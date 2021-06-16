@@ -676,7 +676,7 @@ export class UtilsService {
    */
   handleError(resultCode: number, apiCode: number, apiMsg: string) {
     console.log(`${resultCode}: Api ${apiCode} ${apiMsg}`);
-    const errorMsg = `Error!<br>Please try again later.`
+    const errorMsg = `Error!<br>Please try again later.`;
     this.openAlert(errorMsg);
   }
 
@@ -788,16 +788,16 @@ export class UtilsService {
    */
   convertSpeed(value: number, sportType: SportType, unit: Unit, convertType: 'second' | 'minute'): number | string {
     let ttlSecond: number;
-    const speed = value <= 1  ? 1 : value;  // 配速最小60'00" t/km（1 km/hr）
+    const speed = value <= 1 ? 1 : value;  // 配速最小60'00" t/km（1 km/hr）
     switch (sportType) {
-      case SportCode.run:
-        ttlSecond = unit === 0 ? +(3600 / speed).toFixed(1) : +(3600 / (speed / mi)).toFixed(1);
-        break;
       case SportCode.swim:
-        ttlSecond = unit === 0 ? +((3600 / speed)).toFixed(1) : +(3600 / ((speed * 10) / ft)).toFixed(1);
+        ttlSecond = unit === 0 ? +(3600 / (speed * 10)).toFixed(1) : +(3600 / ((speed * 10) / ft)).toFixed(1);
         break;
       case SportCode.row:
-        ttlSecond = unit === 0 ? +(3600 / speed).toFixed(1) : +(3600 / ((speed * 2) / ft)).toFixed(1);
+        ttlSecond = unit === 0 ? +(3600 / (speed * 2)).toFixed(1) : +(3600 / ((speed * 2) / ft)).toFixed(1);
+        break;
+      default:
+        ttlSecond = unit === 0 ? +(3600 / speed).toFixed(1) : +(3600 / (speed / mi)).toFixed(1);
         break;
     }
 

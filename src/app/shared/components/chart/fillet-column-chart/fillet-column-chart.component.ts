@@ -1,6 +1,5 @@
 import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
 import { chart } from 'highcharts';
-import * as _Highcharts from 'highcharts';
 import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
@@ -8,8 +7,8 @@ import { takeUntil } from 'rxjs/operators';
 import { FilletTrendChart, DisplayPage, planeGColor, planeMaxGColor } from '../../../models/chart-data';
 import { mi, ft, Unit, unit } from '../../../models/bs-constant';
 import { day, month, week } from '../../../models/utils-constant';
+import { SportType, SportCode } from '../../../models/report-condition';
 
-const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
@@ -17,7 +16,8 @@ class ChartOptions {
     return {
       chart: {
         type: 'column',
-        height: 110
+        height: 110,
+        backgroundColor: 'transparent'
       },
       title: {
         text: ''
@@ -77,6 +77,7 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
   chartType: string;
   dataLen = 0;
   columnColor: string;
+  readonly sportCode = SportCode;
 
   @Input() data: any;
   @Input() dateRange: string;
@@ -84,6 +85,7 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
   @Input() searchDate: Array<number>;
   @Input() page: DisplayPage;
   @Input() unit = <Unit>unit.metric;
+  @Input() sportType: SportType = SportCode.all;
   @ViewChild('container', {static: false})
   container: ElementRef;
 
@@ -112,7 +114,16 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
           break;
         case 'TotalTime':
           chartData = this.data.totalTime;
-          this.tooltipTitle = this.translate.instant('universal_activityData_totalTime');
+          if (this.sportType === SportCode.weightTrain) {
+            this.tooltipTitle = `${
+              this.translate.instant('universal_adjective_singleTotal')} ${
+              this.translate.instant('universal_activityData_activityTime')}
+            `;
+
+          } else {
+            this.tooltipTitle = this.translate.instant('universal_activityData_totalTime');
+          }
+          
           this.chartType = 'totalTime';
           break;
         case 'Distance':
@@ -135,21 +146,7 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
           this.columnColor = planeMaxGColor;
           break;
         case 'Calories':
-
-          if (this.page !== 'sportReport') {
-            for (let i = 0; i < this.data.date.length; i++) {
-              if (this.data.calories[i] >= 0) {
-                chartData.push({
-                  x: this.data.date[i],
-                  y: this.data.calories[i],
-                });
-              }
-            }
-
-          } else {
-            chartData = this.data.calories;
-          }
-
+          chartData = this.data.calories;
           this.tooltipTitle = this.translate.instant('universal_userProfile_calories');
           this.chartType = 'calories';
           break;
@@ -207,7 +204,9 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
 
       }
 
-      if (this.page === 'cloudrun' || this.chartType.toLowerCase().includes('time')) {
+      const isCloudrunPage = this.page === 'cloudrun',
+            isTimeChart = this.chartType && this.chartType.toLowerCase().includes('time');
+      if (isCloudrunPage || isTimeChart) {
         if (this.page === 'cloudrun') trendChartOptions['plotOptions'].series.borderRadius = 0;
 
         // 設定圖表y軸單位格式

@@ -1,76 +1,81 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { MuscleCode } from '../models/weight-train';
 
-/**
- * 將肌肉代碼轉為多國語系的鍵
- */
+
 @Pipe({name: 'muscleName'})
 export class MuscleNamePipe implements PipeTransform {
   constructor(
     public translateService: TranslateService
-  ) {
-  }
-  transform(value: string | number, args: string[]): any {
+  ) {}
+
+  /**
+   * 將肌肉代碼轉為多國語系的鍵
+   * @param value {string | number}-肌肉代碼
+   * @returns {string}-翻譯後的字詞
+   * @author kidin
+   */
+  transform(value: string | number): string {
     switch (+value) {
-      case 16 :
+      case MuscleCode.bicepsInside:
         return this.translateService.instant('universal_muscleName_bicepsInside');
-      case 32 :
+      case MuscleCode.triceps:
         return this.translateService.instant('universal_muscleName_triceps');
-      case 48 :
+      case MuscleCode.pectoralsMuscle:
         return this.translateService.instant('universal_muscleName_pectoralsMuscle');
-      case 49 :
+      case MuscleCode.pectoralisUpper:
         return this.translateService.instant('universal_muscleName_pectoralisUpper');
-      case 50 :
+      case MuscleCode.pectoralisLower:
         return this.translateService.instant('universal_muscleName_pectoralisLower');
-      case 51 :
+      case MuscleCode.pectoralsInside:
         return this.translateService.instant('universal_muscleName_pectoralsInside');
-      case 52 :
+      case MuscleCode.pectoralsOutside:
         return this.translateService.instant('universal_muscleName_pectoralsOutside');
-      case 53 :
+      case MuscleCode.frontSerratus:
         return this.translateService.instant('universal_muscleName_frontSerratus');
-      case 64 :
+      case MuscleCode.shoulderMuscle:
         return this.translateService.instant('universal_muscleName_shoulderMuscle');
-      case 65 :
+      case MuscleCode.deltoidMuscle:
         return this.translateService.instant('universal_muscleName_deltoidMuscle');
-      case 66 :
+      case MuscleCode.deltoidAnterior:
         return this.translateService.instant('universal_muscleName_deltoidAnterior');
-      case 67 :
+      case MuscleCode.deltoidLateral:
         return this.translateService.instant('universal_muscleName_deltoidLateral');
-      case 68 :
+      case MuscleCode.deltoidPosterior:
         return this.translateService.instant('universal_muscleName_deltoidPosterior');
-      case 69 :
+      case MuscleCode.trapezius:
         return this.translateService.instant('universal_muscleName_trapezius');
-      case 80 :
+      case MuscleCode.backMuscle:
         return this.translateService.instant('universal_muscleName_backMuscle');
-      case 81 :
+      case MuscleCode.latissimusDorsi:
         return this.translateService.instant('universal_muscleName_latissimusDorsi');
-      case 82 :
+      case MuscleCode.erectorSpinae:
         return this.translateService.instant('universal_muscleName_erectorSpinae');
-      case 96 :
+      case MuscleCode.abdominalMuscle:
         return this.translateService.instant('universal_muscleName_abdominalMuscle');
-      case 97 :
+      case MuscleCode.rectusAbdominis:
         return this.translateService.instant('universal_muscleName_rectusAbdominis');
-      case 98 :
+      case MuscleCode.rectusAbdominisUpper:
         return this.translateService.instant('universal_muscleName_rectusAbdominisUpper');
-      case 99 :
+      case MuscleCode.rectusAbdominisLower:
         return this.translateService.instant('universal_muscleName_rectusAbdominisLower');
-      case 100 :
+      case MuscleCode.abdominisOblique:
         return this.translateService.instant('universal_muscleName_abdominisOblique');
-      case 112 :
+      case MuscleCode.legMuscle:
         return this.translateService.instant('universal_muscleName_legMuscle');
-      case 113 :
+      case MuscleCode.hipMuscle:
         return this.translateService.instant('universal_muscleName_hipMuscle');
-      case 114 :
+      case MuscleCode.quadricepsFemoris:
         return this.translateService.instant('universal_muscleName_quadricepsFemoris');
-      case 115 :
+      case MuscleCode.hamstrings:
         return this.translateService.instant('universal_muscleName_hamstrings');
-      case 116 :
+      case MuscleCode.ankleFlexor:
         return this.translateService.instant('universal_muscleName_ankleFlexor');
-      case 117 :
+      case MuscleCode.gastrocnemius:
         return this.translateService.instant('universal_muscleName_gastrocnemius');
-      case 128 :
+      case MuscleCode.wristFlexor:
         return this.translateService.instant('universal_muscleName_wristFlexor');
-      default :
+      default:
         return this.translateService.instant('universal_status_noData');
     }
   }
