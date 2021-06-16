@@ -109,8 +109,8 @@ export class UserProfileComponent implements OnInit {
     // }
   }
 
-  handlePrivacyLock(isShowLock) {
-    this.isShowLock = isShowLock;
+  handlePrivacyLock(showLock: boolean) {
+    this.isShowLock = showLock;
   }
 
 }

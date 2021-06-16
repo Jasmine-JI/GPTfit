@@ -21,7 +21,7 @@ $drop-list-width: 200px;
 }
 
 .condition__unfold__icon {
-  color: var(--icon);
+  color: var(--scale-100-230);
   @include transition(transform);
   margin-left: 10px;
 }
@@ -45,7 +45,7 @@ $drop-list-width: 200px;
 
 .selector__tab__title {
   @include center();
-  color: var(--section-subtitle);
+  color: var(--scale-75-230);
   font-size: 14px;
   padding: 0 24px;
   min-width: 160px;
@@ -54,7 +54,7 @@ $drop-list-width: 200px;
   height: 100%;
 
   &:hover {
-    background-color: var(--tab-hover);
+    background-color: var(--scale-245-50);
   }
 
 }
@@ -65,30 +65,30 @@ $drop-list-width: 200px;
   margin: 5px 0px;
   display:flex;
   align-items: center;
-  color: var(--content);
+  color: var(--scale-0-255);
 }
 
 .switch__btn {
-  color: var(--content);
+  color: var(--scale-0-255);
   @include center();
   font-size: 24px;
 
   &:hover {
-    background-color: var(--tab-hover);
+    background-color: var(--scale-245-50);
   }
 
 }
 
 .btn__disabled {
-  color: var(--disable-color);
+  color: var(--scale-200-130);
   pointer-events: none;
 }
 
 .report__time__btn {
-  color: var(--content);
+  color: var(--scale-0-255);
 
   &[disabled] {
-    color: var(--disable-color);
+    color: var(--scale-200-130);
   }
 
 }
@@ -102,8 +102,8 @@ $drop-list-width: 200px;
   position: absolute;
   top: 50px;
   z-index: 1;
-  background-color: var(--menu-background);
-  color: var(--content);
+  background-color: var(--scale-255-60);
+  color: var(--scale-0-255);
 }
 
 .calendar_period__option {
@@ -135,7 +135,7 @@ $drop-list-width: 200px;
 }
 
 .condition__subtitle {
-  @include subtitle-color-custom(14px, var(--section-subtitle));
+  @include subtitle-color-custom(14px, var(--scale-75-230));
 }
 
 .condition__content {

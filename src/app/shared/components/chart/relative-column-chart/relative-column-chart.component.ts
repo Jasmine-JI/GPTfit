@@ -9,6 +9,8 @@ import {
   hitColor,
   jumpColor,
   landingColor,
+  forehandSwingColor,
+  backHandSwingColor,
   RelativeTrendChart
 } from '../../../models/chart-data';
 import { day, month, week } from '../../../models/utils-constant';
@@ -54,8 +56,8 @@ class ChartOptions {
       tooltip: {},
       plotOptions: {
         column: {
-            stacking: 'normal',
-            pointPlacement: 0.33,
+          stacking: 'normal',
+          pointPlacement: 0.33,
         },
         series: {
           pointWidth: null,
@@ -135,6 +137,15 @@ export class RelativeColumnChartComponent implements OnInit, OnChanges, OnDestro
           negative: this.translate.instant('universal_activityData_totalFloorImpact')
         };
         break;
+      case 'SwingRatio':
+        this.chartType = 'swingRatio';
+        positiveColor = forehandSwingColor;
+        negativeColor = backHandSwingColor;
+        this.title = {
+          positive: this.translate.instant('universal_activityData_forehandCount'),
+          negative: this.translate.instant('universal_activityData_backhandCcount')
+        };
+        break;
     }
 
     const { positiveData, negativeData } = this.data,
@@ -181,9 +192,11 @@ export class RelativeColumnChartComponent implements OnInit, OnChanges, OnDestro
 
     };
 
+    const top = this.data.maxGForce ?? this.data.maxForehandCount,
+          bottom = this.data.minGForce ?? this.data.maxBackhandCount;
     // 設定圖表上下限軸線位置，以顯示數值為0的軸線
-    let absPositive = Math.abs(parseFloat(this.data.maxGForce.toFixed(0))),
-        absNegative = Math.abs(parseFloat(this.data.minGForce.toFixed(0)));
+    let absPositive = Math.abs(parseFloat(top.toFixed(0))),
+        absNegative = Math.abs(parseFloat(bottom.toFixed(0)));
     if (absPositive > absNegative) {
       chartOptions['yAxis']['tickPositions'] = [-absPositive, 0, absPositive];
     } else {

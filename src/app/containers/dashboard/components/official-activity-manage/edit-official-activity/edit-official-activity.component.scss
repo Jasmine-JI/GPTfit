@@ -23,7 +23,7 @@ $discount-link-width: 250px;
   align-items: center;
 }
 
-@mixin table--content($width) {
+@mixin table--scale-0-255($width) {
   width: $width;
   white-space: nowrap;
   overflow: hidden;
@@ -309,17 +309,17 @@ $discount-link-width: 250px;
 }
 
 .card__title__list {
-  @include table--content($card-title-width);
+  @include table--scale-0-255($card-title-width);
 }
 
 .card__bgcolor__list {
-  @include table--content(65px);
+  @include table--scale-0-255(65px);
   font-family: monospace;
   font-size: 14px;
 }
 
 .card__content__list {
-  @include table--content(60vw);
+  @include table--scale-0-255(60vw);
   max-width: 770px;
 }
 
@@ -332,12 +332,12 @@ $discount-link-width: 250px;
 }
 
 .group__id__list {
-  @include table--content($group-id-width);
+  @include table--scale-0-255($group-id-width);
   padding-left: 15px;
 }
 
 .group__name__list {
-  @include table--content(calc(50vw + 90px));
+  @include table--scale-0-255(calc(50vw + 90px));
   max-width: 835px;
 }
 
@@ -354,17 +354,17 @@ $discount-link-width: 250px;
 }
 
 .product__name__list {
-  @include table--content($product-name-width);
+  @include table--scale-0-255($product-name-width);
   border-right: 20px solid rgba(255, 255, 255, 0);
 }
 
 .product__link__list {
-  @include table--content($product-link-width);
+  @include table--scale-0-255($product-link-width);
   border-right: 20px solid rgba(255, 255, 255, 0);
 }
 
 .product__img__list {
-  @include table--content(calc(50vw - 370px));
+  @include table--scale-0-255(calc(50vw - 370px));
 }
 
 #discount__name {
@@ -384,22 +384,22 @@ $discount-link-width: 250px;
 }
 
 .discount__name__list {
-  @include table--content($discount-name-width);
+  @include table--scale-0-255($discount-name-width);
   border-right: 20px solid rgba(255, 255, 255, 0);
 }
 
 .discount__price__list {
-  @include table--content($discount-price-width);
+  @include table--scale-0-255($discount-price-width);
   border-right: 20px solid rgba(255, 255, 255, 0);
 }
 
 .discount__link__list {
-  @include table--content($discount-link-width);
+  @include table--scale-0-255($discount-link-width);
   border-right: 20px solid rgba(255, 255, 255, 0);
 }
 
 .discount__img__list {
-  @include table--content(calc(50vw - 370px));
+  @include table--scale-0-255(calc(50vw - 370px));
 }
 
 .add__item {
