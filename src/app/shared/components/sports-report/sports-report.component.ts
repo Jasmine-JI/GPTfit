@@ -399,6 +399,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     this.userProfileService.getRxUserProfile().pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
+      this.userProfile = res;
       const {
         userId,
         unit,
@@ -460,7 +461,6 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     this.userProfileService.getUserProfile(body).subscribe(res => {
       const { processResult, userProfile } = res;
       if (userProfile) {
-        this.userProfile = userProfile;
         const { avatarUrl, nickname, userId } = userProfile;
         this.userInfo = {
           name: nickname,

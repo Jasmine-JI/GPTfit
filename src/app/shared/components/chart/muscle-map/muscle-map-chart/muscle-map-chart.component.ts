@@ -17,6 +17,7 @@ import {
   Proficiency,
   ProficiencyCoefficient
 } from '../../../../models/weight-train';
+import { UtilsService } from '../../../../services/utils.service';
 
 @Component({
   selector: 'app-muscle-map-chart',
@@ -110,7 +111,8 @@ export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(
     private translate: TranslateService,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private utils: UtilsService
   ) {}
 
   ngOnInit () {
@@ -121,9 +123,9 @@ export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
     this.translate.get('hellow world').pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
-      this.getMuscleName();
       if (e.proficiencyCoefficient && e.proficiencyCoefficient.firstChange === true) {
         if (this.page === 'report') {
+          this.getMuscleName();
           this.arrangeData(this.data);
         }
       } else {
