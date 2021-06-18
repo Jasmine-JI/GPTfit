@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
-
 import { TranslateService } from '@ngx-translate/core';
+import { SportCode } from '../../../models/report-condition';
 
 /**
  * 運動成效分佈圖
@@ -196,8 +196,8 @@ export class DistributionChartComponent implements OnInit, OnChanges {
       ];
     }
 
-    for (let i = 0; i < this.perAvgHR.length; i++) {
-      if (this.selectType === 99 || this.typeList[i] === this.selectType) {
+    for (let i = 0, len = this.perAvgHR.length; i < len; i++) {
+      if (this.selectType === SportCode.all || this.typeList[i] == this.selectType) {
         let y;
         if (this.perAvgHR[i] >= boundary[0] && this.perAvgHR[i] <= boundary[1]) {
           if (+this.perActivityTime[i] <= 1200) {

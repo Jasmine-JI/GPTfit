@@ -21,12 +21,10 @@ import { SharedPipes } from '../pipes/shared-pipes';
 import { Page403Component } from './page403/page403.component';
 import { AlaIframeComponent } from './ala-iframe/ala-iframe.component';
 import { MyActivityComponent } from './my-activity/my-activity.component';
-import { SportReportComponent } from './sport-report/sport-report.component';
 import { NgProgressModule } from '@ngx-progressbar/core';
 import { ImageCropperModule } from 'ngx-image-cropper';
 import { ShareGroupInfoDialogComponent } from './share-group-info-dialog/share-group-info-dialog.component';
 import { QRCodeModule } from 'angularx-qrcode';
-import { ReportContentComponent } from './sport-report/report-content/report-content.component';
 import { RingChartComponent } from './chart/ring-chart/ring-chart.component';
 import { HrzoneChartComponent } from './chart/hrzone-chart/hrzone-chart.component';
 import { HrzoneInfoComponent } from './chart/hrzone-info/hrzone-info.component';
@@ -62,6 +60,7 @@ import { LoadingBarComponent } from './loading-bar/loading-bar.component';
 import { EditIndividualPrivacyComponent } from './edit-individual-privacy/edit-individual-privacy.component';
 import { CloudrunMapComponent } from './cloudrun-map/cloudrun-map.component';
 import { EquidistantChartComponent } from './chart/equidistant-chart/equidistant-chart.component';
+import { RelativeColumnChartComponent } from './chart/relative-column-chart/relative-column-chart.component';
 
 @NgModule({
   imports: [
@@ -92,9 +91,7 @@ import { EquidistantChartComponent } from './chart/equidistant-chart/equidistant
     Page403Component,
     AlaIframeComponent,
     MyActivityComponent,
-    SportReportComponent,
     ShareGroupInfoDialogComponent,
-    ReportContentComponent,
     RingChartComponent,
     HrzoneChartComponent,
     HrzoneInfoComponent,
@@ -129,7 +126,8 @@ import { EquidistantChartComponent } from './chart/equidistant-chart/equidistant
     LoadingBarComponent,
     EditIndividualPrivacyComponent,
     CloudrunMapComponent,
-    EquidistantChartComponent
+    EquidistantChartComponent,
+    RelativeColumnChartComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [
@@ -148,7 +146,6 @@ import { EquidistantChartComponent } from './chart/equidistant-chart/equidistant
     MemberCapsuleComponent,
     AlaIframeComponent,
     MyActivityComponent,
-    SportReportComponent,
     ShareGroupInfoDialogComponent,
     RingChartComponent,
     HrzoneChartComponent,
@@ -176,7 +173,10 @@ import { EquidistantChartComponent } from './chart/equidistant-chart/equidistant
     TrinomialChartComponent,
     EditIndividualPrivacyComponent,
     CloudrunMapComponent,
-    LoadingBarComponent
+    LoadingBarComponent,
+    ThresholdInfoComponent,
+    ThresholdChartComponent,
+    RelativeColumnChartComponent
   ]
 })
 export class SharedComponentsModule {}

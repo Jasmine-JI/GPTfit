@@ -1,0 +1,18 @@
+// transition 各瀏覽器支援
+$transition-effect: cubic-bezier(0.5, 0.5, 0.5, 0.5);
+
+@mixin transition($target, $time: 0.2s) {
+  -webkit-transition: $target $time $transition-effect;
+  -moz-transition: $target $time $transition-effect;
+  -ms-transition: $target $time $transition-effect;
+  -o-transition: $target $time $transition-effect;
+  transition: $target $time $transition-effect;
+}
+
+@mixin transitionALL() {
+  -webkit-transition: all $transition-effect;
+  -moz-transition: all $transition-effect;
+  -ms-transition: all $transition-effect;
+  -o-transition: all $transition-effect;
+  transition: all $transition-effect;
+}

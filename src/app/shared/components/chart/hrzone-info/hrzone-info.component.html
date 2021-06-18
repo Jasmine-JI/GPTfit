@@ -5,6 +5,7 @@
     text-anchor="middle"
     font-size="16"
     font-weight="bold"
+    style="color: var(--scale-75-230);"
     *ngIf="hrZoneRange.hrBase === 0"
   >
     {{"universal_userProfile_maximalHeartRate" | translate}}
@@ -66,7 +67,7 @@
         <span class="zone__bar" style="background-color: #ff9a22;"></span>
       </td>
     </tr>
-    <tr style="color: #f9cc3d;">
+    <tr style="color: #ffdc00;">
       <td class="zone__range">{{hrZoneRange.z3}}</td>
       <td>
         <table cellspacing="0" cellpadding="0">
@@ -78,7 +79,7 @@
     </tr>
     <tr>
       <td>
-        <span class="zone__bar" style="background-color: #f9cc3d;"></span>
+        <span class="zone__bar" style="background-color: #ffdc00;"></span>
       </td>
       <td class="text__top" rowspan="3"  >
         <table cellspacing="0" cellpadding="0">

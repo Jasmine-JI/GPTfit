@@ -1,22 +1,18 @@
 import { Component, OnInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
-import { MatSort, Sort } from '@angular/material/sort';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-
 import SimpleLinearRegression from 'ml-regression-simple-linear';
 import moment from 'moment';
-import * as _Highcharts from 'highcharts';
-import * as lodash from 'lodash';
+import { cloneDeep } from 'lodash';
 import { first } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
-
 import { TranslateService } from '@ngx-translate/core';
-
-import { UtilsService } from '@shared/services/utils.service';
-import { HashIdService } from '@shared/services/hash-id.service';
+import { UtilsService } from '../../../../../shared/services/utils.service';
+import { HashIdService } from '../../../../../shared/services/hash-id.service';
 import { ReportService } from '../../../../../shared/services/report.service';
 import { GroupService } from '../../../services/group.service';
+import { charts } from 'highcharts';
 
-const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 @Component({
   selector: 'app-com-report',
@@ -1119,12 +1115,12 @@ export class ComReportComponent implements OnInit, OnDestroy {
     this.middleCountModel = {};
 
     // 藉由深拷貝進行初始化-kidin-1090618
-    this.middleGroupList = lodash.cloneDeep(this.initGroupList.getMiddleModel);
+    this.middleGroupList = cloneDeep(this.initGroupList.getMiddleModel);
     if (+this.groupLevel <= 40) {
-      this.highGroupList = lodash.cloneDeep(this.initGroupList.getHighModel);
+      this.highGroupList = cloneDeep(this.initGroupList.getHighModel);
 
       if (+this.groupLevel <= 40) {
-        this.superGroupList = lodash.cloneDeep(this.initGroupList.getSuperModel);
+        this.superGroupList = cloneDeep(this.initGroupList.getSuperModel);
       }
 
     }
@@ -3971,7 +3967,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
     this.showReport = false;
 
     // 將之前生成的highchart卸除避免新生成的highchart無法顯示-kidin-1081219
-    Highcharts.charts.forEach((_highChart, idx) => {
+    charts.forEach((_highChart, idx) => {
       if (_highChart !== undefined) {
         _highChart.destroy();
       }

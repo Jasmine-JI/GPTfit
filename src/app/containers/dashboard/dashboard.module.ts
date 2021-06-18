@@ -11,8 +11,6 @@ import { CustomMaterialModule } from '../../shared/custom-material.module';
 import { GlobalEventsManager } from '../../shared/global-events-manager';
 import { GpxService } from './services/gpx.service';
 import { MsgDialogComponent } from './components/msg-dialog/msg-dialog.component';
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedPipes } from '../../shared/pipes/shared-pipes';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DeviceLogComponent } from './components/device-log/device-log.component';
@@ -91,14 +89,12 @@ import { CloudrunReportComponent as PersonCloudrunReport } from './components/cl
 
 @NgModule({
   imports: [
-    CommonModule,
     DashboardRoutingModule,
+    CommonModule,
     SharedComponentsModule,
     FormsModule,
     MyDatePickerModule,
     CustomMaterialModule,
-    BrowserModule,
-    BrowserAnimationsModule,
     SharedPipes,
     ReactiveFormsModule,
     SharedModule,

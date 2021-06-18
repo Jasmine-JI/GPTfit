@@ -1,22 +1,35 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-/**
- * 將總秒數轉為時:分:秒
- */
+
 @Pipe({name: 'sportTime'})
 export class SportTimePipe implements PipeTransform {
-  transform(value: string, args: boolean = true): any {
+  /**
+   * 將總秒數轉為時:分:秒或時:分
+   * @param value {number}-時間（s）
+   * @param args {boolean}-不足1小時或1分鐘是否仍完整顯示時：分：秒，ex. 00:00:39
+   * @return {string}-轉換過後的時間字串
+   * @author kidin
+   */
+  transform(value: string, args: Array<boolean> = [true, false]): string {
+    const [showZeroHour, hideSecond] = args;
     if (value !== 'N/A') {
       const yVal = +value,
             costhr = Math.floor(yVal / 3600),
             costmin = Math.floor(Math.round(yVal - costhr * 60 * 60) / 60),
             costsecond = Math.round(yVal - costmin * 60 - costhr * 60 * 60),
             timeHr = `${costhr}`.padStart(2, '0'),
-            timeMin = `${costmin}`.padStart(2, '0'),
             timeSecond = `${costsecond}`.padStart(2, '0');
+      let timeMin = `${costmin}`.padStart(2, '0');
 
-      if (args) {
-        return `${timeHr}:${timeMin}:${timeSecond}`;
+      if (showZeroHour) {
+
+        if (hideSecond) {
+          timeMin = +timeSecond >= 30 ? `${costmin + 1}`.padStart(2, '0') : timeMin;
+          return `${timeHr}:${timeMin}`;
+        } else {
+          return `${timeHr}:${timeMin}:${timeSecond}`;
+        }
+        
       } else {
 
         if (costhr === 0) {

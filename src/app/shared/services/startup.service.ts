@@ -1,4 +1,4 @@
-import { Injectable, Injector } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import { UserProfileService } from '../services/user-profile.service';
 import { UtilsService } from '../services/utils.service';
@@ -6,7 +6,6 @@ import { UtilsService } from '../services/utils.service';
 @Injectable()
 export class StartupService {
   constructor(
-    private injector: Injector,
     private authService: AuthService,
     private userProfileService: UserProfileService,
     private utils: UtilsService

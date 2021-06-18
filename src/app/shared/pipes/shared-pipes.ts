@@ -1,16 +1,11 @@
 import { NgModule } from '@angular/core';
 import { SexPipe } from './sex.pipe';
-import { TimePipe } from './time.pipe';
-import { MapTranslatePipe } from './map-translate.pipe';
-import { UnixTimeConvertPipe } from './unix-time-convert.pipe';
 import { SafeHtmlPipe } from './safe-html.pipe';
 import { ProductTypePipe } from './product-type.pipe';
 import { LineBreakPipe } from './line-break.pipe';
 import { GroupStatusPipe } from './group-status.pipe';
 import { GroupLevelNamePipe } from './group-level-name.pipe';
-import { SportDatePipe } from './sport-date.pipe';
 import { SportTimePipe } from './sport-time.pipe';
-import { SportPacePipe } from './sport-pace.pipe';
 import { MuscleNamePipe } from './muscle-name.pipe';
 import { SlicePipe } from './slice.pipe';
 import { A3FormatPipe } from './a3-format.pipe';
@@ -33,7 +28,11 @@ import { TemperatureSibsPipe } from './temperature-sibs.pipe';
 import { swimPosture } from './swim-posture.pipe';
 import { DataTypeTranslatePipe } from './data-type-translate.pipe';
 import { DataTypeUnitPipe } from './data-type-unit.pipe';
-
+import { PaiPipe } from './pai.pipe';
+import { FindPreferPipe } from './find-prefer.pipe';
+import { MuscleGroupIconPipe } from './muscle-group-icon.pipe';
+import { PythagoreanPipe } from './pythagorean.pipe';
+import { MathAbsPipe } from './math-abs.pipe';
 
 @NgModule({
   imports: [
@@ -41,17 +40,12 @@ import { DataTypeUnitPipe } from './data-type-unit.pipe';
   ],
   declarations: [
     SexPipe,
-    TimePipe,
-    MapTranslatePipe,
-    UnixTimeConvertPipe,
     SafeHtmlPipe,
     ProductTypePipe,
     LineBreakPipe,
     GroupStatusPipe,
     GroupLevelNamePipe,
-    SportDatePipe,
     SportTimePipe,
-    SportPacePipe,
     MuscleNamePipe,
     SlicePipe,
     A3FormatPipe,
@@ -73,21 +67,21 @@ import { DataTypeUnitPipe } from './data-type-unit.pipe';
     TemperatureSibsPipe,
     swimPosture,
     DataTypeTranslatePipe,
-    DataTypeUnitPipe
+    DataTypeUnitPipe,
+    PaiPipe,
+    FindPreferPipe,
+    MuscleGroupIconPipe,
+    PythagoreanPipe,
+    MathAbsPipe
   ],
   exports: [
     SexPipe,
-    TimePipe,
-    MapTranslatePipe,
-    UnixTimeConvertPipe,
     SafeHtmlPipe,
     ProductTypePipe,
     LineBreakPipe,
     GroupStatusPipe,
     GroupLevelNamePipe,
-    SportDatePipe,
     SportTimePipe,
-    SportPacePipe,
     MuscleNamePipe,
     SlicePipe,
     A3FormatPipe,
@@ -109,7 +103,12 @@ import { DataTypeUnitPipe } from './data-type-unit.pipe';
     TemperatureSibsPipe,
     swimPosture,
     DataTypeTranslatePipe,
-    DataTypeUnitPipe
+    DataTypeUnitPipe,
+    PaiPipe,
+    FindPreferPipe,
+    MuscleGroupIconPipe,
+    PythagoreanPipe,
+    MathAbsPipe
   ]
 })
 export class SharedPipes {}

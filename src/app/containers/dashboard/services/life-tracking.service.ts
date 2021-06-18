@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { UtilsService } from '@shared/services/utils.service';
-import * as Highcharts from 'highcharts';
+import { UtilsService } from '../../../shared/services/utils.service';
+import { getOptions } from 'highcharts';
 
 class Option {
   constructor(dataset, colorIdx) {
@@ -56,7 +56,7 @@ class Option {
           data: dataset.data,
           name: dataset.name,
           type: dataset.type,
-          color: Highcharts.getOptions().colors[colorIdx],
+          color: getOptions().colors[colorIdx],
           fillOpacity: 0.3,
           tooltip: {
             valueSuffix: ' ' + dataset.unit

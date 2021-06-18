@@ -1,28 +1,22 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Renderer2, } from '@angular/core';
-import { MatSort, Sort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
-import { GroupDetailInfo, UserSimpleInfo, MemberInfo } from '../../../models/group-detail';
-import { CalenderDay } from '../../../models/report';
+import { GroupDetailInfo, UserSimpleInfo } from '../../../models/group-detail';
 import { GroupService } from '../../../services/group.service';
 import { UtilsService } from '../../../../../shared/services/utils.service';
-import { Subject, combineLatest, of } from 'rxjs';
-import { takeUntil, map, switchMap, first } from 'rxjs/operators';
+import { Subject, combineLatest } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import moment from 'moment';
 import { ActivityService } from '../../../../../shared/services/activity.service';
 import { QrcodeService } from '../../../../portal/services/qrcode.service';
-import * as _Highcharts from 'highcharts';
+import { getOptions } from 'highcharts';
 import { TranslateService } from '@ngx-translate/core';
 import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { Router } from '@angular/router';
 import { HashIdService } from '../../../../../shared/services/hash-id.service';
-import { SportsReportContent } from '../../../../../shared/models/sports-report'
-import { chart } from 'highcharts';
+import { chart, charts, color, each } from 'highcharts';
 import { ReportService } from '../../../../../shared/services/report.service';
 import { ReportConditionOpt } from '../../../../../shared/models/report-condition';
 import { HrZoneRange } from '../../../../../shared/models/chart-data';
 
-
-const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
@@ -87,7 +81,7 @@ class ChartOptions {
           name: dataset.name,
           type: dataset.type,
           innerSize: '',
-          color: Highcharts.getOptions().colors[colorIdx],
+          color: getOptions().colors[colorIdx],
           fillOpacity: 0.3,
           tooltip: {
             valueSuffix: ' ' + dataset.unit
@@ -135,7 +129,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   /**
    * 產生報告所需資料
    */
-  sportsReportContent: SportsReportContent = {
+  sportsReportContent = {
     reportType: 'my-class',
     sportType: 1,
     dateRange: {
@@ -278,20 +272,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
     private renderer: Renderer2,
     private translateService: TranslateService,
     private reportService: ReportService
-  ) { 
-    // 改寫內部設定
-    // 將提示框即十字準星的隱藏函數關閉
-    Highcharts.Pointer.prototype.reset = function() {
-      return undefined;
-    };
-    /**
-     * 聚焦當前的數據點，並設置滑鼠滑動狀態及繪製十字準星線
-     */
-    Highcharts.Point.prototype.highlight = function(event) {
-      this.onMouseOver(); // 顯示滑鼠啟動標示
-      this.series.chart.xAxis[0].drawCrosshair(event, this); // 顯示十字準星线
-    };
-  }
+  ) {}
 
   ngOnInit(): void {
     this.initPage();
@@ -317,7 +298,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
       this.getReportSelectedCondition();
     }
 
-    Highcharts.charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
+    charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
   }
 
   /**
@@ -866,12 +847,12 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   // 初始化highChart-kidin-1081211
   initHighChart () {
     // 將之前生成的highchart卸除避免新生成的highchart無法顯示-kidin-1081219
-    Highcharts.charts.forEach((_highChart, idx) => {
+    charts.forEach((_highChart, idx) => {
       if (_highChart !== undefined) {
         _highChart.destroy();
       }
     });
-    Highcharts.charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
+    charts.length = 0;  // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
     this.chartDatas.length = 0;
     this.chartTargetList.length = 0;
 
@@ -934,8 +915,8 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
                 y2: 1
             },
             stops: [
-                [0, Highcharts.getOptions().colors[this.colorIdx]],
-                [1, Highcharts.Color(Highcharts.getOptions().colors[this.colorIdx]).setOpacity(0).get('rgba')]
+                [0, getOptions().colors[this.colorIdx]],
+                [1, color(getOptions().colors[this.colorIdx]).setOpacity(0).get('rgba')]
             ]
         },
         marker: {
@@ -977,8 +958,8 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
                 y2: 1
             },
             stops: [
-                [0, Highcharts.getOptions().colors[this.colorIdx]],
-                [1, Highcharts.Color(Highcharts.getOptions().colors[this.colorIdx]).setOpacity(0).get('rgba')]
+                [0, getOptions().colors[this.colorIdx]],
+                [1, color(getOptions().colors[this.colorIdx]).setOpacity(0).get('rgba')]
             ]
         },
         marker: {
@@ -1031,7 +1012,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
   syncExtremes(num, finalDatas, e) {
     const thisChart = this.charts[num];
     if (e.trigger !== 'syncExtremes') {
-      Highcharts.each(Highcharts.charts, function(_chart, idx) {
+      each(charts, function(_chart, idx) {
         if (_chart !== thisChart && _chart && finalDatas[idx].isSyncExtremes) {
           if (_chart.xAxis[0].setExtremes) {
             _chart.xAxis[0].setExtremes(e.min, e.max, undefined, false, {
@@ -1045,8 +1026,8 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
 
   // 滑動Hchart時，使所有圖表的聚焦位置跟著移動-kidin-1081212
   handleSynchronizedPoint(e, finalDatas) {
-    for (let i = 0; i < Highcharts.charts.length; i = i + 1) {
-      const _chart: any = Highcharts.charts[i];
+    for (let i = 0; i < charts.length; i = i + 1) {
+      const _chart: any = charts[i];
       if (_chart !== undefined) {
         if (finalDatas[0].isSyncExtremes) {
           const event = _chart.pointer.normalize(e); // 取得圖表上的座標
@@ -1184,7 +1165,7 @@ export class MyClassReportComponent implements OnInit, OnDestroy {
    */
   ngOnDestroy() {
     // 將之前生成的highchart卸除避免新生成的highchart無法顯示-kidin-1081219
-    Highcharts.charts.forEach((_highChart, idx) => {
+    charts.forEach((_highChart, idx) => {
       if (_highChart !== undefined) {
         _highChart.destroy();
       }

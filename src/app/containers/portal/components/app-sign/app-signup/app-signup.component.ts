@@ -5,7 +5,7 @@ import { SignupService } from '../../../services/signup.service';
 import { UtilsService } from '@shared/services/utils.service';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { GetClientIpService } from '../../../../../shared/services/get-client-ip.service';
-
+import { UserProfileService } from '../../../../../shared/services/user-profile.service';
 import { fromEvent, Subscription, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
@@ -102,7 +102,8 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
     private dialog: MatDialog,
     private router: Router,
     public getClientIp: GetClientIpService,
-    private authService: AuthService
+    private authService: AuthService,
+    private userProfileService: UserProfileService
   ) {
     translate.onLangChange.pipe(
       takeUntil(this.ngUnsubscribe)
@@ -729,6 +730,9 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
         this.newToken = res.register.token;
         this.saveToken(this.newToken);
         this.authService.setLoginStatus(true);
+        this.userProfileService.refreshUserProfile({
+          token: this.newToken
+        });
 
         // 若有目標導向網址，則跳過詢問啟用步驟
         if (this.authService.backUrl.length > 0) {

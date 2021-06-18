@@ -1,11 +1,10 @@
 import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
 import { chart } from 'highcharts';
-import * as _Highcharts from 'highcharts';
 import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
-import { HrZoneTrendData, DisplayPage } from '../../../models/chart-data';
+import { ZoneTrendData, DisplayPage, zoneColor } from '../../../models/chart-data';
+import { day, month, week } from '../../../models/utils-constant';
 
-const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
@@ -13,7 +12,8 @@ class ChartOptions {
     return {
       chart: {
         type: 'column',
-        height: 150
+        height: 150,
+        backgroundColor: 'transparent'
       },
       title: {
         text: ''
@@ -69,7 +69,7 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
   noData = true;
   dateList = [];
 
-  @Input() perHrZoneData: HrZoneTrendData;  // 心率區間用變數-kidin-1090218
+  @Input() perZoneData: ZoneTrendData;  // 心率區間用變數
   @Input() dateRange: string;
   @Input() data: any;  // 生活追蹤用變數-kidin-1090218
   @Input() searchDate: Array<number>;
@@ -84,13 +84,14 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit () {}
 
   ngOnChanges () {
-    if (this.perHrZoneData) {
-      if (this.perHrZoneData.zoneZero.length === 0) {
+    if (this.perZoneData) {
+      if (this.perZoneData.zoneZero.length === 0) {
         this.noData = true;
       } else {
         this.noData = false;
       }
-      this.initHRChart();
+
+      this.initZoneTrendChart();
     } else if (this.data) {
       this.initSleepChart();
     }
@@ -98,60 +99,69 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   // 心率用圖表-kidin-1090218
-  initHRChart () {
-    const HRTrendDataset = [
+  initZoneTrendChart () {
+    const ZoneTrendDataset = [
       {
         name: 'Zone5',
-        data: this.perHrZoneData.zoneFive,
+        data: this.perZoneData.zoneFive,
         showInLegend: false,
-        color: '#f36953'
+        color: zoneColor[5]
       },
       {
         name: 'Zone4',
-        data: this.perHrZoneData.zoneFour,
+        data: this.perZoneData.zoneFour,
         showInLegend: false,
-        color: '#f3b353'
+        color: zoneColor[4]
       },
       {
         name: 'Zone3',
-        data: this.perHrZoneData.zoneThree,
+        data: this.perZoneData.zoneThree,
         showInLegend: false,
-        color: '#f7f25b'
+        color: zoneColor[3]
       },
       {
         name: 'Zone2',
-        data: this.perHrZoneData.zoneTwo,
+        data: this.perZoneData.zoneTwo,
         showInLegend: false,
-        color: '#abf784'
+        color: zoneColor[2]
       },
       {
         name: 'Zone1',
-        data: this.perHrZoneData.zoneOne,
+        data: this.perZoneData.zoneOne,
         showInLegend: false,
-        color: '#64e0ec'
+        color: zoneColor[1]
       },
       {
         name: 'Zone0',
-        data: this.perHrZoneData.zoneZero,
+        data: this.perZoneData.zoneZero,
         showInLegend: false,
-        color: '#70b1f3'
+        color: zoneColor[0]
       }
     ];
 
-    const HRTrendChartOptions = new ChartOptions(HRTrendDataset);
+    // 表示此圖表為閾值區間
+    if (this.perZoneData.zoneSix) {
+      ZoneTrendDataset.unshift({
+        name: 'Zone6',
+        data: this.perZoneData.zoneSix,
+        showInLegend: false,
+        color: zoneColor[6]
+      })
+
+    }
+
+    const HRTrendChartOptions = new ChartOptions(ZoneTrendDataset);
 
     // 設定圖表x軸時間間距-kidin-1090204
     if (this.page !== 'cloudrun') {
 
-      if (this.dateRange === 'day' && this.perHrZoneData.zoneZero.length <= 7) {
-        HRTrendChartOptions['xAxis'].tickInterval = 24 * 3600 * 1000;  // 間距一天
-      } else if (this.dateRange === 'day' && this.perHrZoneData.zoneZero.length > 7) {
-        HRTrendChartOptions['xAxis'].tickInterval = 7 * 24 * 3600 * 1000;  // 間距一週
+      if (this.dateRange === 'day' && this.perZoneData.zoneZero.length <= 7) {
+        HRTrendChartOptions['xAxis'].tickInterval = day;
+      } else if (this.dateRange === 'day' && this.perZoneData.zoneZero.length > 7) {
+        HRTrendChartOptions['xAxis'].tickInterval = week;
       } else {
-        HRTrendChartOptions['xAxis'].tickInterval = 30 * 24 * 4600 * 1000;  // 間距一個月
+        HRTrendChartOptions['xAxis'].tickInterval = month;
       }
-
-    } else {
 
     }
 
@@ -212,8 +222,8 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
           totalZoneTime = `${totalHr}:${timeTotalMin}:${timeTotalSecond}`;
         }
 
-        if (this.series.xAxis.tickInterval === 30 * 24 * 4600 * 1000) {
-          return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY-MM-DD')}
+        if (this.series.xAxis.tickInterval === month) {
+          return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * day).format('YYYY-MM-DD')}
             <br/>${this.series.name}: ${zoneTime}
             <br/>Total: ${totalZoneTime}`;
         } else {
@@ -296,11 +306,11 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
 
     // 設定圖表x軸時間間距-kidin-1090204
     if (this.dateRange === 'day' && this.dateList.length <= 7) {
-      chartOptions['xAxis'].tickInterval = 24 * 3600 * 1000;  // 間距一天
+      chartOptions['xAxis'].tickInterval = day;  // 間距一天
     } else if (this.dateRange === 'day' && this.dateList.length > 7) {
-      chartOptions['xAxis'].tickInterval = 7 * 24 * 3600 * 1000;  // 間距一週
+      chartOptions['xAxis'].tickInterval = week;  // 間距一週
     } else {
-      chartOptions['xAxis'].tickInterval = 30 * 24 * 4600 * 1000;  // 間距一個月
+      chartOptions['xAxis'].tickInterval = month;  // 間距一個月
     }
 
     // 設定圖表y軸單位格式-kidin-1090204
@@ -371,8 +381,8 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
           totalZoneTime = `${totalHr}:${timeTotalMin}`;
         }
 
-        if (this.series.xAxis.tickInterval === 30 * 24 * 4600 * 1000) {
-          return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY-MM-DD')}
+        if (this.series.xAxis.tickInterval === month) {
+          return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * day).format('YYYY-MM-DD')}
             <br/>${this.series.name}: ${zoneTime}
             <br/>Total: ${totalZoneTime}`;
         } else {
@@ -394,31 +404,31 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
         weekStartDay,
         weekEndDay;
     if (this.dateRange === 'day') {
-      diff = (this.searchDate[1] - this.searchDate[0]) / (86400 * 1000);
+      diff = (this.searchDate[1] - this.searchDate[0]) / (day);
 
       for (let i = 0; i < diff + 1; i++) {
-        this.dateList.push(this.searchDate[0] + 86400 * 1000 * i);
+        this.dateList.push(this.searchDate[0] + day * i);
       }
 
     } else if (this.dateRange === 'week') {
 
       // 周報告開頭是星期日-kidin-1090220
       if (moment(this.searchDate[0]).isoWeekday() !== 7) {
-        weekStartDay = this.searchDate[0] - 86400 * 1000 * moment(this.searchDate[0]).isoWeekday();
+        weekStartDay = this.searchDate[0] - day * moment(this.searchDate[0]).isoWeekday();
       } else {
         weekStartDay = this.searchDate[0];
       }
 
       if (moment(this.searchDate[0]).isoWeekday() !== 7) {
-        weekEndDay = this.searchDate[1] - 86400 * 1000 * moment(this.searchDate[1]).isoWeekday();
+        weekEndDay = this.searchDate[1] - day * moment(this.searchDate[1]).isoWeekday();
       } else {
         weekEndDay = this.searchDate[1];
       }
 
-      diff = ((weekEndDay - weekStartDay) / (86400 * 1000 * 7)) + 1;
+      diff = ((weekEndDay - weekStartDay) / (week)) + 1;
 
       for (let i = 0; i < diff + 1; i++) {
-        this.dateList.push(weekStartDay + 86400 * 1000 * 7 * i);
+        this.dateList.push(weekStartDay + week * i);
       }
     }
 

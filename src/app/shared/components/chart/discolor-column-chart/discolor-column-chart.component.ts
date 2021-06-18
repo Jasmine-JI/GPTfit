@@ -1,12 +1,21 @@
 import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
 import { chart } from 'highcharts';
-import * as _Highcharts from 'highcharts';
 import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
-import { DiscolorTrendData, DisplayPage } from '../../../models/chart-data';
+import {
+  DiscolorTrendData,
+  DisplayPage,
+  paceTrendColor,
+  speedTrendColor,
+  cadenceTrendColor,
+  swolfTrendColor,
+  swingSpeedTrendColor
+} from '../../../models/chart-data';
 import { Unit } from '../../../models/bs-constant';
-
-const Highcharts: any = _Highcharts; // 不檢查highchart型態
+import { SportType, SportCode } from '../../../models/report-condition';
+import { DataTypeTranslatePipe } from '../../../pipes/data-type-translate.pipe';
+import { day, month, week } from '../../../models/utils-constant';
+import { UtilsService } from '../../../services/utils.service';
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
@@ -14,7 +23,8 @@ class ChartOptions {
     return {
       chart: {
         type: 'column',
-        height: 110
+        height: 110,
+        backgroundColor: 'transparent'
       },
       title: {
         text: ''
@@ -71,6 +81,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
   lowestPoint = 3600;
   dataLength: number;
   chartType: string;
+  chartTitle: Array<string>;
 
   @Input() data: any;
   @Input() dateRange: string;
@@ -79,13 +90,16 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
   @Input() userWeight: number;
   @Input() proficiencyCoefficient: number;
   @Input() page: DisplayPage;
+  @Input() sportType = <SportType>SportCode.run;
   @Input() unit: Unit;
 
   @ViewChild('container', {static: true})
   container: ElementRef;
 
   constructor(
-    private translate: TranslateService
+    private translate: TranslateService,
+    private dataTypeTranslate: DataTypeTranslatePipe,
+    private utils: UtilsService
   ) { }
 
   ngOnInit() {}
@@ -95,94 +109,81 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
   }
 
   initChart () {
-    let trendDataset;
-    const chartData = [];
+    let trendDataset: any,
+        chartData = [],
+        colorSet: Array<string>;
     switch (this.chartName) {
       case 'Pace':
         this.chartType = 'pace';
-        this.dataLength = this.data.date.length;
-        for (let i = 0; i < this.dataLength; i++) {
+        colorSet = paceTrendColor;
+        this.chartTitle = [
+          `${this.translate.instant('universal_adjective_maxBest')} ${this.translate.instant(
+            this.dataTypeTranslate.transform('pace', [this.sportType, this.unit])
+          )}`,
+          this.translate.instant(
+            this.dataTypeTranslate.transform('pace', [this.sportType, this.unit])
+          ),
+        ];
 
-          if (this.data.pace[i] > this.highestPoint) {
-            this.highestPoint = this.data.pace[i];
-          }
-
-          if (this.data.bestPace[i] !== null && this.data.bestPace[i] < this.lowestPoint) {
-            this.lowestPoint = this.data.bestPace[i];
-          }
-
-          chartData.push(
-            {
-              x: this.data.date[i],
-              y: this.data.bestPace[i],
-              low: this.data.pace[i]
-            }
-          );
-        }
+        const { dataArr: paceDataArr, minSpeed: paceminSpeed, maxSpeed: paceSpeed } = this.data;
+        this.dataLength = paceDataArr.length;
+        chartData = paceDataArr;
+        this.highestPoint = 
+          this.utils.convertSpeed(paceminSpeed || 0, this.sportType, this.unit, 'second') as number;
+        this.lowestPoint = 
+          this.utils.convertSpeed(paceSpeed, this.sportType, this.unit, 'second') as number;
 
         break;
       case 'Cadence':
-        this.dataLength = this.data.date.length;
-        for (let i = 0; i < this.dataLength; i++) {
-
-          if (this.data.bestCadence[i] > this.highestPoint) {
-            this.highestPoint = this.data.bestCadence[i];
-          }
-
-          if (this.data.cadence[i] !== null && this.data.cadence[i] < this.lowestPoint) {
-            this.lowestPoint = this.data.cadence[i];
-          }
-
-          chartData.push(
-            {
-              x: this.data.date[i],
-              y: this.data.bestCadence[i],
-              low: this.data.cadence[i]
-            }
-          );
-        }
+        colorSet = cadenceTrendColor;
+        this.chartType = 'cadence';
+        const { dataArr: cadenceDataArr, maxCadence, minCadence } = this.data;
+        chartData = cadenceDataArr;
+        this.dataLength = cadenceDataArr.length;
+        this.highestPoint = maxCadence;
+        this.lowestPoint = minCadence;
         break;
       case 'Swolf':
-        this.dataLength = this.data.date.length;
-        for (let i = 0; i < this.dataLength; i++) {
+        this.chartType = 'swolf';
+        colorSet = swolfTrendColor
+        const { dataArr: swolfDataArr, maxSwolf, minSwolf } = this.data;
+        chartData = swolfDataArr;
+        this.dataLength = swolfDataArr.length;
+        this.highestPoint = maxSwolf;
+        this.lowestPoint = minSwolf;
 
-          if (this.data.swolf[i] > this.highestPoint) {
-            this.highestPoint = this.data.swolf[i];
-          }
-
-          if (this.data.bestSwolf[i] !== null && this.data.bestSwolf[i] < this.lowestPoint) {
-            this.lowestPoint = this.data.bestSwolf[i];
-          }
-
-          chartData.push(
-            {
-              x: this.data.date[i],
-              y: this.data.swolf[i],
-              low: this.data.bestSwolf[i]
-            }
-          );
-        }
         break;
       case 'Speed':
-        this.dataLength = this.data.date.length;
-        for (let i = 0; i < this.dataLength; i++) {
+        colorSet = speedTrendColor;
+        this.chartType = 'speed';
+        this.chartTitle = [
+          `${this.translate.instant('universal_adjective_maxBest')} ${this.translate.instant(
+            this.dataTypeTranslate.transform('speed', [this.sportType, this.unit])
+          )}`,
+          this.translate.instant(
+            this.dataTypeTranslate.transform('speed', [this.sportType, this.unit])
+          ),
+        ];
 
-          if (this.data.bestSpeed[i] > this.highestPoint) {
-            this.highestPoint = this.data.bestSpeed[i];
-          }
+        const { dataArr: speedDataArr, maxSpeed, minSpeed } = this.data;
+        this.dataLength = speedDataArr.length;
+        chartData = speedDataArr;
+        this.highestPoint = maxSpeed;
+        this.lowestPoint = minSpeed;
+        break;
+      case 'SwingSpeed':
+        colorSet = swingSpeedTrendColor;
+        this.chartType = 'swingSpeed';
+        this.chartTitle = [
+          this.translate.instant('universal_activityData_maxSwing'),
+          this.translate.instant('universal_activityData_swingSpeed')
+        ];
 
-          if (this.data.speed[i] !== null && this.data.speed[i] < this.lowestPoint) {
-            this.lowestPoint = this.data.speed[i];
-          }
-
-          chartData.push(
-            {
-              x: this.data.date[i],
-              y: this.data.bestSpeed[i],
-              low: this.data.speed[i]
-            }
-          );
-        }
+        const { dataArr, maxSpeed: swingMaxSpeed, minSpeed: swingminSpeed } = this.data;
+        this.dataLength = dataArr.length;
+        chartData = dataArr;
+        this.highestPoint = swingMaxSpeed;
+        this.lowestPoint = swingminSpeed;
         break;
       case 'Step': // 生活追蹤步數資料-kidin-1090218
         this.createDateList();
@@ -244,9 +245,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         const saturation = '100%',  // 主訓練部位色彩飽和度
               Brightness = '70%',  // 主訓練部位色彩明亮度
               transparency = 1;  // 主訓練部位色彩透明度
-
         this.dataLength = this.data[0].length;
-
         for (let i = 0; i < this.dataLength; i++) {
 
           if (this.data[1][i] > this.highestPoint) {
@@ -281,7 +280,10 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
       case 'Step':
         trendDataset = [
           {
-            name: [this.translate.instant('universal_userProfile_StepCount'), this.translate.instant('universal_lifeTracking_targetStep')],
+            name: [
+              this.translate.instant('universal_userProfile_StepCount'),
+              this.translate.instant('universal_lifeTracking_targetStep')
+            ],
             data: chartData,
             showInLegend: false
           }
@@ -301,7 +303,7 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
       default:
         trendDataset = [
           {
-            name: this.chartName,
+            name: this.chartTitle ?? this.chartName,
             data: chartData,
             showInLegend: false,
             color: {
@@ -312,9 +314,9 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
                 y2: 1
               },
               stops: [
-                [0, this.data.colorSet[2]],
-                [0.5, this.data.colorSet[1]],
-                [1, this.data.colorSet[0]]
+                [0, colorSet ? colorSet[2] : this.data.colorSet[2]],
+                [0.5, colorSet ? colorSet[1] : this.data.colorSet[1]],
+                [1, colorSet ? colorSet[0] : this.data.colorSet[0]]
               ]
             }
           }
@@ -323,12 +325,12 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         break;
     }
 
-    const trendChartOptions = new ChartOptions(trendDataset);
+    const trendChartOptions = new ChartOptions(trendDataset),
+          labelPadding = 2;
     switch (this.chartName) {
       case 'Pace':
-        const labelPadding = 2;
-        trendChartOptions['yAxis'].max = this.highestPoint - labelPadding;
-        trendChartOptions['yAxis'].min = this.lowestPoint + labelPadding;
+        trendChartOptions['yAxis'].max = (this.highestPoint + labelPadding) || null;
+        trendChartOptions['yAxis'].min = (this.lowestPoint - labelPadding) || null;
         trendChartOptions['yAxis'].reversed = true; // 將y軸反轉-kidin-1090206
 
         // 設定圖表y軸單位格式-kidin-1090204
@@ -382,14 +384,16 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
               paceBestTime = `${timeBestMin}'${timeBestSecond}`;
             }
 
-            if (this.series.xAxis.tickInterval === 30 * 24 * 4600 * 1000) {
-              return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY-MM-DD')}
-                <br/>Best Pace: ${paceBestTime}
-                <br/>${this.series.name}: ${bottomPace}`;
+            const startDate = moment(this.x).format('YYYY-MM-DD');
+            if (this.series.xAxis.tickInterval === month) {
+              const endDate = moment(this.x + 6 * day).format('YYYY-MM-DD');
+              return `${startDate}~${endDate}
+                <br/>${this.series.name[0]}: ${paceBestTime}
+                <br/>${this.series.name[1]}: ${bottomPace}`;
             } else {
-              return `${moment(this.x).format('YYYY-MM-DD')}
-                <br/>Best Pace: ${paceBestTime}
-                <br/>${this.series.name}: ${bottomPace}`;
+              return `${startDate}
+                <br/>${this.series.name[0]}: ${paceBestTime}
+                <br/>${this.series.name[1]}: ${bottomPace}`;
             }
 
           }
@@ -398,20 +402,24 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
 
         break;
       case 'Cadence':
-        trendChartOptions['yAxis'].max = this.highestPoint + 1;
-        trendChartOptions['yAxis'].min = this.lowestPoint - 1;
+        trendChartOptions['yAxis'].max = this.highestPoint + labelPadding;
+        trendChartOptions['yAxis'].min = this.lowestPoint - labelPadding;
 
         // 設定浮動提示框顯示格式-kidin-1090204
         trendChartOptions['tooltip'] = {
           formatter: function () {
-            if (this.series.xAxis.tickInterval === 30 * 24 * 4600 * 1000) {
-              return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY-MM-DD')}
-                <br/>Best cadence: ${this.point.y}
-                <br/>${this.series.name}: ${this.point.low}`;
+            const startDate = moment(this.x).format('YYYY-MM-DD'),
+                  yVal = parseFloat(this.point.y.toFixed(1)),
+                  lowVal = parseFloat(this.point.low.toFixed(1));
+            if (this.series.xAxis.tickInterval === month) {
+              const endDate = moment(this.x + 6 * day).format('YYYY-MM-DD');
+              return `${startDate}~${endDate}
+                <br/>Best cadence: ${yVal}
+                <br/>${this.series.name}: ${lowVal}`;
             } else {
-              return `${moment(this.x).format('YYYY-MM-DD')}
-                <br/>Best cadence: ${this.point.y}
-                <br/>${this.series.name}: ${this.point.low}`;
+              return `${startDate}
+                <br/>Best cadence: ${yVal}
+                <br/>${this.series.name}: ${lowVal}`;
             }
 
           }
@@ -420,20 +428,24 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         break;
       case 'Swolf':
         trendChartOptions['yAxis'].reversed = true; // 將y軸反轉-kidin-1090206
-        trendChartOptions['yAxis'].max = this.highestPoint + 1;
-        trendChartOptions['yAxis'].min = this.lowestPoint - 1;
+        trendChartOptions['yAxis'].max = this.highestPoint + labelPadding;
+        trendChartOptions['yAxis'].min = this.lowestPoint - labelPadding;
 
         // 設定浮動提示框顯示格式-kidin-1090204
         trendChartOptions['tooltip'] = {
           formatter: function () {
-            if (this.series.xAxis.tickInterval === 30 * 24 * 4600 * 1000) {
-              return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY-MM-DD')}
-                <br/>Best Swolf: ${this.point.low}
-                <br/>${this.series.name}: ${this.point.y}`;
+            const startDate = moment(this.x).format('YYYY-MM-DD'),
+                  yVal = parseFloat(this.point.y.toFixed(1)),
+                  lowVal = parseFloat(this.point.low.toFixed(1));
+            if (this.series.xAxis.tickInterval === month) {
+              const endDate = moment(this.x + 6 * day).format('YYYY-MM-DD');
+              return `${startDate}~${endDate}
+                <br/>Best Swolf: ${lowVal}
+                <br/>${this.series.name}: ${yVal}`;
             } else {
-              return `${moment(this.x).format('YYYY-MM-DD')}
-                <br/>Best Swolf: ${this.point.low}
-                <br/>${this.series.name}: ${this.point.y}`;
+              return `${startDate}
+                <br/>Best Swolf: ${lowVal}
+                <br/>${this.series.name}: ${yVal}`;
             }
 
           }
@@ -441,20 +453,25 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         };
         break;
       case 'Speed':
-        trendChartOptions['yAxis'].max = this.highestPoint + 1;
-        trendChartOptions['yAxis'].min = this.lowestPoint - 1;
+      case 'SwingSpeed':
+        trendChartOptions['yAxis'].max = this.highestPoint + labelPadding;
+        trendChartOptions['yAxis'].min = this.lowestPoint - labelPadding;
 
         // 設定浮動提示框顯示格式-kidin-1090204
         trendChartOptions['tooltip'] = {
           formatter: function () {
-            if (this.series.xAxis.tickInterval === 30 * 24 * 4600 * 1000) {
-              return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY-MM-DD')}
-                <br/>Best Speed: ${this.point.y}
-                <br/>${this.series.name}: ${this.point.low}`;
+            const startDate = moment(this.x).format('YYYY-MM-DD'),
+                  yVal = parseFloat(this.point.y.toFixed(1)),
+                  lowVal = parseFloat(this.point.low.toFixed(1));
+            if (this.series.xAxis.tickInterval === month) {
+              const endDate = moment(this.x + 6 * day).format('YYYY-MM-DD');
+              return `${startDate}~${endDate}
+                <br/>${this.series.name[0]}: ${yVal}
+                <br/>${this.series.name[1]}: ${lowVal}`;
             } else {
-              return `${moment(this.x).format('YYYY-MM-DD')}
-                <br/>Best Speed: ${this.point.y}
-                <br/>${this.series.name}: ${this.point.low}`;
+              return `${startDate}
+                <br/>${this.series.name[0]}: ${yVal}
+                <br/>${this.series.name[1]}: ${lowVal}`;
             }
 
           }
@@ -465,15 +482,19 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         // 設定浮動提示框顯示格式-kidin-1090204
         trendChartOptions['tooltip'] = {
           formatter: function () {
-            if (this.series.xAxis.tickInterval === 30 * 24 * 4600 * 1000) {
-              return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY-MM-DD')}
-                <br/>${this.series.name[1]}: ${this.point.t.toFixed(1)}
-                <br/>${this.series.name[0]}: ${this.point.z.toFixed(1)}`;
+            const startDate = moment(this.x).format('YYYY-MM-DD'),
+                  tVal = parseFloat(this.point.t.toFixed(1)),
+                  zVal = parseFloat(this.point.z.toFixed(1));
+            if (this.series.xAxis.tickInterval === month) {
+              const endDate = moment(this.x + 6 * day).format('YYYY-MM-DD');
+              return `${startDate}~${endDate}
+                <br/>${this.series.name[1]}: ${tVal}
+                <br/>${this.series.name[0]}: ${zVal}`;
 
             } else {
-              return `${moment(this.x).format('YYYY-MM-DD')}
-                <br/>${this.series.name[1]}: ${this.point.t.toFixed(1)}
-                <br/>${this.series.name[0]}: ${this.point.z.toFixed(1)}`;
+              return `${startDate}
+                <br/>${this.series.name[1]}: ${tVal}
+                <br/>${this.series.name[0]}: ${zVal}`;
             }
           }
         };
@@ -486,20 +507,24 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
 
         break;
       case 'Muscle':
-        trendChartOptions['yAxis'].max = this.highestPoint + 1;
-        trendChartOptions['yAxis'].min = this.lowestPoint - 1;
+        trendChartOptions['yAxis'].max = this.highestPoint + labelPadding;
+        trendChartOptions['yAxis'].min = this.lowestPoint - labelPadding;
 
         // 設定浮動提示框顯示格式-kidin-1090204
         trendChartOptions['tooltip'] = {
           formatter: function () {
-            if (this.series.xAxis.tickInterval === 30 * 24 * 4600 * 1000) {
-              return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY-MM-DD')}
-                <br/>1RM: ${this.point.y.toFixed(1)}K
-                <br/>Avg Weight: ${this.point.low.toFixed(1)}`;
+            const startDate = moment(this.x).format('YYYY-MM-DD'),
+                  yVal = parseFloat(this.point.y.toFixed(1)),
+                  lowVal = parseFloat(this.point.low.toFixed(1));
+            if (this.series.xAxis.tickInterval === month) {
+              const endDate = moment(this.x + 6 * day).format('YYYY-MM-DD');
+              return `${startDate}~${endDate}
+                <br/>1RM: ${yVal}K
+                <br/>Avg Weight: ${lowVal}`;
             } else {
-              return `${moment(this.x).format('YYYY-MM-DD')}
-                <br/>1RM: ${this.point.y.toFixed(1)}
-                <br/>Avg Weight: ${this.point.low.toFixed(1)}`;
+              return `${startDate}
+                <br/>1RM: ${yVal}
+                <br/>Avg Weight: ${lowVal}`;
             }
 
           }
@@ -511,11 +536,11 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
     if (this.page !== 'cloudrun') {
       // 設定圖表x軸時間間距-kidin-1090204
       if (this.dateRange === 'day' && this.dataLength <= 7) {
-        trendChartOptions['xAxis'].tickInterval = 24 * 3600 * 1000;  // 間距一天
+        trendChartOptions['xAxis'].tickInterval = day;
       } else if (this.dateRange === 'day' && this.dataLength > 7) {
-        trendChartOptions['xAxis'].tickInterval = 7 * 24 * 3600 * 1000;  // 間距一週
+        trendChartOptions['xAxis'].tickInterval = week;
       } else {
-        trendChartOptions['xAxis'].tickInterval = 30 * 24 * 4600 * 1000;  // 間距一個月
+        trendChartOptions['xAxis'].tickInterval = month;
       }
 
     }
@@ -529,31 +554,31 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
         weekStartDay,
         weekEndDay;
     if (this.dateRange === 'day') {
-      diff = (this.searchDate[1] - this.searchDate[0]) / (86400 * 1000);
+      diff = (this.searchDate[1] - this.searchDate[0]) / day;
 
       for (let i = 0; i < diff + 1; i++) {
-        this.dateList.push(this.searchDate[0] + 86400 * 1000 * i);
+        this.dateList.push(this.searchDate[0] + day * i);
       }
 
     } else if (this.dateRange === 'week') {
 
       // 周報告開頭是星期日-kidin-1090220
       if (moment(this.searchDate[0]).isoWeekday() !== 7) {
-        weekStartDay = this.searchDate[0] - 86400 * 1000 * moment(this.searchDate[0]).isoWeekday();
+        weekStartDay = this.searchDate[0] - day * moment(this.searchDate[0]).isoWeekday();
       } else {
         weekStartDay = this.searchDate[0];
       }
 
       if (moment(this.searchDate[0]).isoWeekday() !== 7) {
-        weekEndDay = this.searchDate[1] - 86400 * 1000 * moment(this.searchDate[1]).isoWeekday();
+        weekEndDay = this.searchDate[1] - day * moment(this.searchDate[1]).isoWeekday();
       } else {
         weekEndDay = this.searchDate[1];
       }
 
-      diff = ((weekEndDay - weekStartDay) / (86400 * 1000 * 7)) + 1;
+      diff = ((weekEndDay - weekStartDay) / week) + 1;
 
       for (let i = 0; i < diff + 1; i++) {
-        this.dateList.push(weekStartDay + 86400 * 1000 * 7 * i);
+        this.dateList.push(weekStartDay + week * i);
       }
     }
 

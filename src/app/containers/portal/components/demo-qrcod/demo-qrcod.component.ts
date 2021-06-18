@@ -238,12 +238,12 @@ export class DemoQrcodComponent implements OnInit, OnDestroy {
           this.isShowFitPairBtn = false;
           this.isWrong = true;
         } else {
-          this.isShowBindingBtn = warrantyStatus !== '2'; // 驗證成功，判斷是否已綁訂
+          this.isShowBindingBtn = warrantyStatus != '2'; // 驗證成功，判斷是否已綁訂
           this.isShowFitPairBtn = fitPairStatus === '3';
           this.isWrong = false;
 
           this.isFitPaired = isFitPaired;
-          if (fitPairStatus === '3' && isFitPaired && fitPairUserId != userId) {
+          if (fitPairStatus == 3 && isFitPaired && fitPairUserId != userId) {
             this.openFitPairAlert();
           }
 
@@ -259,15 +259,20 @@ export class DemoQrcodComponent implements OnInit, OnDestroy {
    * @author kidin-1100409
    */
   openFitPairAlert() {
-    return this.dialog.open(MessageBoxComponent, {
-      hasBackdrop: true,
-      data: {
-        title: 'message',
-        body: this.translateService.instant('universal_deviceSetting_overwrite'),
-        confirmText: this.translateService.instant('universal_operating_confirm'),
-        onConfirm: this.coverFitpair.bind(this),
-        cancelText: this.translateService.instant('universal_operating_cancel')
-      }
+    this.translateService.get('hellow world').pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      return this.dialog.open(MessageBoxComponent, {
+        hasBackdrop: true,
+        data: {
+          title: 'message',
+          body: this.translateService.instant('universal_deviceSetting_overwrite'),
+          confirmText: this.translateService.instant('universal_operating_confirm'),
+          onConfirm: this.coverFitpair.bind(this),
+          cancelText: this.translateService.instant('universal_operating_cancel')
+        }
+  
+      });
 
     });
 
@@ -376,9 +381,19 @@ export class DemoQrcodComponent implements OnInit, OnDestroy {
       return this.handleGoLoginPage(2);
     }
 
-    this.qrcodeService.fitPairSetting(body).subscribe(res => {
+    this.qrcodeService.fitPairSetting(body).pipe(
+      switchMap(res => {
+        // 確保多國語系載入
+        return this.translateService.get('hellow world').pipe(
+          map(resp => {
+            return res;
+          }),
+          takeUntil(this.ngUnsubscribe),
+        )
+      })
+    ).subscribe(res => {
       if (res.resultCode === 200) {
-        if (this.fitPairType === '2' && showMessage) {
+        if (this.fitPairType == '2' && showMessage) {
           return this.dialog.open(MessageBoxComponent, {
             hasBackdrop: true,
             data: {

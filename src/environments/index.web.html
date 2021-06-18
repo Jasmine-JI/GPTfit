@@ -20,63 +20,21 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <style type="text/css">
-    body,
-    html {
-      height: 100%;
+    body, html {
+      height: 100vh;
       overflow-y: hidden;
     }
 
-    .app-loading {
-      position: relative;
+    input, textarea {
+      background-color: transparent;
+      border: 1px solid rgba(120, 120, 120, 1);
+    }
+
+    button {
+      background-color: transparent;
+      border: none;
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
     }
-
-    .app-loading .spinner {
-      height: 200px;
-      width: 200px;
-      animation: rotate 2s linear infinite;
-      transform-origin: center center;
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      margin: auto;
-    }
-
-    .app-loading .spinner .path {
-      stroke-dasharray: 1, 200;
-      stroke-dashoffset: 0;
-      animation: dash 1.5s ease-in-out infinite;
-      stroke-linecap: round;
-      stroke: #ddd;
-    }
-
-    @keyframes rotate {
-      100% {
-        transform: rotate(360deg);
-      }
-    }
-
-    @keyframes dash {
-      0% {
-        stroke-dasharray: 1, 200;
-        stroke-dashoffset: 0;
-      }
-      50% {
-        stroke-dasharray: 89, 200;
-        stroke-dashoffset: -35px;
-      }
-      100% {
-        stroke-dasharray: 89, 200;
-        stroke-dashoffset: -124px;
-      }
-    }
-
   </style>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1976d2">
@@ -85,7 +43,7 @@
   -->
 </head>
 
-<body>
+<body class="theme__light theme--change">
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAxH3XmJqNGBft-D_LPgqAZr0SzqtKMxms&libraries=visualization" defer></script>
   <!--
     <script src="https://api.map.baidu.com/api?v=3.0&ak=OdeRujkUP9qPqweQxnjjWDi75rCYx6I7" defer></script>
@@ -98,14 +56,7 @@
   </script>
   <script src="https://api.map.baidu.com/getscript?v=3.0&ak=OdeRujkUP9qPqweQxnjjWDi75rCYx6I7&services=&t=20210105095946" defer></script>
   <script src="https://api.map.baidu.com/library/Heatmap/2.0/src/Heatmap_min.js" defer></script>
-  <app-root>
-    <div class="app-loading">
-      <div class="logo"></div>
-      <svg class="spinner" viewBox="25 25 50 50">
-        <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" />
-      </svg>
-    </div>
-  </app-root>
+  <app-root></app-root>
   <noscript>Please enable JavaScript to continue using this application.</noscript>
 </body>
 

@@ -4,7 +4,7 @@
 </div>
 <div class="cardSection">
   <main style="background-color: white; padding: 10px;" *ngIf="!uiFlag.noData">
-    <div class="functionButton" style="align-items: center;">
+    <div class="functionBtnBar" style="align-items: center;">
       <a
         style="align-items: center; margin: 5px 0;"
         target="_blank"
@@ -64,7 +64,7 @@
         </div>
         <div class="sepLine"></div>
         <div class="summaryDataArea">
-          <span class="summaryData">{{ infoData.totalSeconds || 0 | sportTime: false }}</span>
+          <span class="summaryData">{{ infoData.totalSeconds || 0 | sportTime: [false, false] }}</span>
           <p class="summaryDescription">
             {{ 'universal_activityData_totalTime' | translate }}
           </p>
@@ -72,7 +72,7 @@
         <div class="sepLine"></div>
         <div class="summaryDataArea">
           <span class="summaryData">
-            {{ (infoData.totalSeconds / infoData.stroke) || 0 | sportTime: false }}
+            {{ (infoData.totalSeconds / infoData.stroke) || 0 | sportTime: [false, false] }}
           </span>
           <p class="summaryDescription">
             {{ 'universal_adjective_avg' | translate }} {{ 'universal_activityData_timing' | translate }}
@@ -188,7 +188,7 @@
       </p>
       <p class="map__info">
         <span>{{ 'universal_activityData_distance' | translate }}：</span>
-        {{ +mapInfo.distance * 1000 | distanceSibs: userInfo.unit }}
+        {{ +mapInfo.distance * 1000 | distanceSibs: [userInfo.unit, true] }}
       </p>
       <p class="map__info">
         <span>{{ 'universal_activityData_avgIncline' | translate }}：</span>

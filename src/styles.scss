@@ -1,9 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
 /* @import "~@angular/material/prebuilt-themes/pink-bluegrey.css"; */
+@import '~normalize.css';
 @import '~@angular/material/prebuilt-themes/indigo-pink.css';
 @import 'transition.scss';
 @import 'font.scss';
 @import 'flex-center.scss';
+@import 'rotate.scss';
 
 @font-face {
   font-family: Matamata-Regular;
@@ -223,9 +225,10 @@ $sky-blue: rgba(17, 166, 235, 1);
 /*定義滾動條軌道 內陰影+圓角*/
 ::-webkit-scrollbar-track
 {
-    -webkit-box-shadow: inset 0 0 6px rgba(255, 255, 255, 0);
+    -webkit-box-shadow: inset 0 0 6px transparent;
+    box-shadow: inset 0 0 6px transparent;
     border-radius: 10px;
-    background-color: rgba(255, 255, 255, 0);
+    background-color: transparent;
 }
 
 /*定義滑塊 內陰影+圓角*/
@@ -233,19 +236,23 @@ $sky-blue: rgba(17, 166, 235, 1);
 {
     border-radius: 10px;
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
-    background-color: rgba(204, 204, 204, 0.1);
+    box-shadow: inset 0 0 6px rgba(200, 200, 200, 0.5);
+    background-color: rgba(200, 200, 200, 0.5);
 }
 
 .session_area .mat-checkbox-inner-container {
   height: 14px;
   width: 14px;
 }
+
 .mat-checkbox + .mat-checkbox {
   margin-left: 10px;
 }
+
 .mat-dialog-container {
   padding-top: 0px !important;
 }
+
 .ala-dialog.mat-dialog-title {
   margin: 0 -24px 20px;
   background-color: #2f4349;
@@ -253,9 +260,11 @@ $sky-blue: rgba(17, 166, 235, 1);
   padding: 8px 25px;
   text-align: center;
 }
+
 .mat-progress-spinner circle, .mat-spinner circle {
   stroke: #108bcd;
 }
+
 .ng-bar-placeholder {
   height: 5px!important;
 }
@@ -685,6 +694,7 @@ a.ban-send:hover {
 
 .cardSubtitle {
   color: $sky-blue;
+  margin-bottom: 0px;
   @include bold-font(18px);
 }
 
@@ -695,12 +705,25 @@ a.ban-send:hover {
   background-color: rgba(240, 240, 240, 1);
 }
 
-.functionButton {
+.functionBtnBar {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
   width: 100%;
   margin: 10px 0px;
+}
+
+.functionBtn {
+  font-size: 30px;
+  cursor: pointer;
+  color: var(--scale-100-230);
+  margin: 10px 2px;
+
+  &:hover {
+    color: $sky-blue;
+    text-decoration: none;
+  }
+
 }
 
 .settingIcon {
@@ -736,10 +759,303 @@ a.ban-send:hover {
   background-color:#ededed;
   text-align: center;
   font-weight: bold;
-  height:fit-content;
+  height: fit-content;
 }
 
+.cardSection {
+  padding: 10px;
+  margin: 5px 0;
+  width: 100%;
+  background-color: var(--scale-240-100);
+}
+
+.cardContent {
+  background-color: var(--scale-255-0);
+  border: 1px solid rgba(200, 200, 200, 1);
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.noDataText {
+  color: var(--scale-100-205);
+}
+
+/********************************* 報告共用樣式 ************************************/
+
+.displaySection {
+  margin: 10px 0;
+}
+
+.sportTypeIcon {
+  font-size: 30px;
+  color: var(--scale-100-230);
+  border: 2px solid var(--scale-100-230-border);
+  border-radius: 50%;
+  height: 50px;
+  width: 50px;
+  min-width: 50px;
+  min-height: 50px;
+}
+
+.rowToColumn {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.smallFont {
+  font-size: 12px;
+  color: var(--scale-150-180);
+}
+
+.headName {
+  @include bold-font(30px);
+  color: var(--scale-115-255);
+}
+
+.reportImgIcon {
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+}
+
+.summaryArea {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.summaryDataArea {
+  padding: 0px 15px;
+}
+
+.summaryData {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--scale-100-205);
+}
+
+.summaryDescription {
+  font-size: 14px;
+  color: var(--scale-100-205);
+}
+
+.areaDescription {
+  font-size: 16px;
+  color:var(--scale-150-180);
+  margin-left: 10px;
+}
+
+.infoDataUnit {
+  font-size: 16px;
+  color: var(--scale-150-180);
+  font-weight: bold;
+}
+
+.ringChart {
+  width: 40%;
+}
+
+.ringChartTitle {
+  color: var(--scale-0-255);
+  font-weight: bold;
+}
+
+.ringChartSection {
+  margin-top: 10px;
+  width: 50%;
+}
+
+.perTypeInfo {
+  font-size: 14px;
+  margin-left: 15px;
+  min-width: 150px;
+
+  &:hover{
+    cursor: pointer;;
+  }
+}
+
+.perTypeTitle {
+  color: var(--scale-75-230);
+  font-weight: bold;
+}
+
+.chartTitle {
+  color: var(--scale-75-230);
+  margin-block-start: 0px;
+  margin-block-end: 0px;
+}
+
+.dot {
+  margin-right: 5px;
+  font-size: 16px;
+}
+
+.perTypeAvgTime {
+  color: var(--scale-0-255);
+  margin-left: 30px;
+}
+
+.distributionChartWidth {
+  margin-top: 10px;
+  width: 60%;
+}
+
+.distributionChart {
+  width: 100%;
+  height: auto;
+}
+
+.zoneChart {
+  width: 55%;
+}
+
+.infoChart {
+  width: 45%;
+}
+
+.haveOptBtn {
+  position: relative;
+  justify-content: space-between;
+  align-items: center;
+
+  button {
+    font-size: 25px;
+    border: none;
+    background-color: transparent;
+    padding: 0;
+
+    i {
+      color: var(--scale-100-230);
+    }
+
+  }
+
+}
+
+.parentsName {
+  text-align: start;
+  font-size: 10px;
+  color: var(--scale-200-130);
+}
+
+.reportTypeTitle {
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: var(--scale-0-255);
+}
+
+.reportCheckBox {
+  color: var(--scale-0-255);
+}
+
+.reportCheckBox-disable {
+  pointer-events: none;
+  color: var(--scale-200-130);
+}
+
+.menuSubtitle {
+  color: var(--scale-100-255);
+  font-weight: bold;
+}
+
+.weightTrainSetting {
+  position: absolute;
+  top: 28px;
+  right: 0px;
+  width: 260px;
+  padding: 15px;
+  background-color: white;
+  z-index: 1;
+  border: 1px solid black;
+}
+
+.dropMenu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid black;
+  height: 30px;
+  margin-top: 5px;
+  padding: 5px;
+  cursor: pointer;
+
+  &:after {
+    content: '';
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 10px solid black;
+    @include transition(transform);
+  }
+
+}
+
+.dropMenu--active {
+
+  &:after {
+    @include transition(transform);
+    @include el-rotate(180deg);
+  }
+
+}
+
+.dropMenuList {
+  cursor: pointer;
+  position: absolute;
+  width: 100%;
+  border: 1px solid black;
+  padding: 5px;
+  z-index: 2;
+  background-color: white;
+  top: 34px;
+
+  span {
+    padding: 2px;
+    display: block;
+
+    &:hover {
+      background-color: rgba(17, 166, 235, 1);
+      color: white;
+      @include transition(background-color);
+    }
+
+  }
+
+  .levelOpt {
+    text-align: right;
+    padding-right: 20px;
+  }
+
+}
+
+.weightTrainMenu {
+  justify-content: flex-end;
+
+  &:after {
+    margin-left: 10px;
+  }
+
+}
+
+.pageBreakAvoid {
+  page-break-inside: avoid;
+}
+
+
+/**********************************************************************************/
+
+
 /************************************* media **************************************/
+
+@media(max-width: 940px) {
+  .media-940-Col {
+    flex-direction: column;
+    justify-content: center;
+  }
+
+}
 
 @media(max-width: 991px) {
   .access-bg {
@@ -748,6 +1064,16 @@ a.ban-send:hover {
 }
 
 @media(max-width: 768px) {
+  .media-768-col {
+    display: flex;
+    flex-direction: column;
+
+    >div {
+      width: 100%;
+    }
+
+  }
+
   .access-header {
     height: 50px;
   }
@@ -791,10 +1117,8 @@ a.ban-send:hover {
   .activty-icon {
     border: 2px solid #ccc;
   }
-}
 
-/*使css屬性background color可以列印出來*/
-@media print {
+  /*使css屬性background color可以列印出來*/
   body {
     -webkit-print-color-adjust: exact;
     overflow: visible;
@@ -803,6 +1127,11 @@ a.ban-send:hover {
   .pageBreak {
     min-height: 1px;
     page-break-before: always;
+  }
+
+  .rowToColumn {
+    flex-direction: row;
+    justify-content: space-between;
   }
 
 }
@@ -819,11 +1148,31 @@ a.ban-send:hover {
     z-index: 1;
     display: block;
   }
+
   .alatech-btn.group-manage__btn+.alatech-btn.group-manage__btn {
     margin: 5px 0 0 0;
   }
+
   .rwd-btn_action {
     text-align: right;
     margin: 15px 0px;
   }
+
+  .fileOwner {
+    justify-content: flex-end;
+  }
+
+  .rowToColumn {
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .headName {
+    font-size: 24px;
+  }
+
+  .ringChart, .distributionChartWidth {
+    width: 100%;
+  }
+
 }

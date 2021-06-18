@@ -1,11 +1,23 @@
 import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
 import { chart } from 'highcharts';
-import * as _Highcharts from 'highcharts';
 import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
-import { CompareLineTrendChart, DisplayPage } from '../../../models/chart-data';
+import {
+  CompareLineTrendChart,
+  DisplayPage,
+  zoneColor,
+  rightMoveColor,
+  leftMoveColor,
+  acclerateColor,
+  hitColor,
+  jumpColor,
+  landingColor
+} from '../../../models/chart-data';
+import { unit, Unit } from '../../../models/bs-constant';
+import { day, month, week } from '../../../models/utils-constant';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
-const Highcharts: any = _Highcharts; // 不檢查highchart型態
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
@@ -13,7 +25,8 @@ class ChartOptions {
     return {
       chart: {
         type: 'spline',
-        height: 110
+        height: 110,
+        backgroundColor: 'transparent'
       },
       title: {
         text: ''
@@ -64,6 +77,7 @@ class ChartOptions {
   styleUrls: ['./compare-line-chart.component.scss', '../chart-share-style.scss']
 })
 export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
+  private ngUnsubscribe = new Subject;
   noData = false;
   firstSunday: number;
   lastSunday: number;
@@ -75,8 +89,9 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
   @Input() chartName: string;
   @Input() hrZoneRange: any;
   @Input() searchDate: Array<number>;
-  @Input() chartHeight: number;
+  @Input() chartHeight = <number>110;
   @Input() page: DisplayPage;
+  @Input() unit = <Unit>unit.metric;
   @ViewChild('container', {static: false})
   container: ElementRef;
 
@@ -92,39 +107,36 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     // 若為週報告，則先求得報告頭尾的日期-kidin-1090220
-    if (this.searchDate && this.dateRange === 'week' && !this.noData) {
+    if (
+      this.searchDate
+      && this.dateRange === 'week'
+      && !this.noData
+      && !['cloudrun', 'sportReport'].includes(this.page)
+    ) {
       this.findDate();
     }
 
-    this.initChart();
+    this.translate.get('hellow world').pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(() => {
+      this.initChart();
+    });
+    
   }
 
   initChart () {
     let trendDataset;
     const chartData = [],
           chartBestData = [];
-
     switch (this.chartName) {
       case 'HR':
         this.chartType = 'hr';
-        this.dataLength = this.data.date.length;
-        for (let i = 0; i < this.dataLength; i++) {
-          // 使用 Date.UTC(year, month - 1, day) 才能使highchart折線圖的點落在x軸軸線上
-          const dateArr = moment(this.data.date[i]).format('YYYY-MM-DD').split('-'),
-                [year, month, day] = [...dateArr];
-          chartData.push(
-            this.assignColor(Date.UTC(+year, +month - 1, +day), this.data.HR[i], 'normal')
-          );
-
-          chartBestData.push(
-            this.assignColor(Date.UTC(+year, +month - 1, +day), this.data.bestHR[i], 'best')
-          );
-        }
-
+        const { maxHrArr, hrArr } = this.data;
+        this.dataLength = hrArr.length;
         trendDataset = [
           {
-            name: this.chartName,
-            data: chartBestData,
+            name: this.translate.instant('universal_userProfile_maxHr'),
+            data: maxHrArr,
             showInLegend: false,
             color: '#ff9a22',
             marker: {
@@ -132,8 +144,8 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
             }
           },
           {
-            name: this.chartName,
-            data: chartData,
+            name: this.translate.instant('universal_activityData_hr'),
+            data: hrArr,
             showInLegend: false,
             color: '#75f25f',
             marker: {
@@ -144,56 +156,110 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
 
         break;
       case 'Power':
-        this.dataLength = this.data.date.length;
-        for (let i = 0; i < this.dataLength; i++) {
-          // 使用 Date.UTC(year, month - 1, day) 才能使highchart折線圖的點落在x軸軸線上
-          const dateArr = moment(this.data.date[i]).format('YYYY-MM-DD').split('-'),
-                [year, month, day] = [...dateArr];
-
-          chartData.push(
-            {
-              x: Date.UTC(+year, +month - 1, +day),
-              y: this.data.power[i],
-              marker: {
-                enabled: true,
-                fillColor: '#75f25f'
-              }
-            }
-          );
-
-          chartBestData.push(
-            {
-              x: Date.UTC(+year, +month - 1, +day),
-              y: this.data.bestPower[i],
-              marker: {
-                enabled: true,
-                fillColor: '#ea5757'
-              }
-            }
-          );
-        }
-
+        const powerTitle = this.translate.instant('universal_activityData_power');
+        this.chartType = 'power';
+        this.dataLength = this.data.powerArr.length;
         trendDataset = [
           {
-            name: this.chartName,
-            data: chartBestData,
+            name: powerTitle,
+            data: this.data.maxPowerArr,
             showInLegend: false,
             color: '#ff9a22',
             marker: {
+              fillColor: '#ea5757',
               symbol: 'circle'
             }
           },
           {
-            name: this.chartName,
-            data: chartData,
+            name: powerTitle,
+            data: this.data.powerArr,
             showInLegend: false,
             color: '#72e8b0',
             marker: {
+              fillColor: '#75f25f',
               symbol: 'circle'
             }
           }
         ];
 
+        break;
+      case 'ExtremeXGForce':
+        const extremeRightMoveTitle = this.translate.instant('universal_activityData_maxRight'),
+              extremeLeftMoveTitle = this.translate.instant('universal_activityData_maxLeft');
+        this.chartType = 'xMoveGForce';
+        this.dataLength = this.data.maxXArr.length;
+          trendDataset = [
+            {
+              name: extremeRightMoveTitle,
+              data: this.data.maxXArr,
+              showInLegend: false,
+              color: rightMoveColor,
+              marker: {
+                symbol: 'circle'
+              }
+            },
+            {
+              name: extremeLeftMoveTitle,
+              data: this.data.minXArr,
+              showInLegend: false,
+              color: leftMoveColor,
+              marker: {
+                symbol: 'circle'
+              }
+            }
+          ];
+        break;
+      case 'ExtremeYGForce':
+        const extremeAccelateTitle = this.translate.instant('universal_activityData_maxAcceleration'),
+              extremeHitTitle = this.translate.instant('universal_activityData_maxImpact');
+        this.chartType = 'yMoveGForce';
+        this.dataLength = this.data.maxYArr.length;
+          trendDataset = [
+            {
+              name: extremeAccelateTitle,
+              data: this.data.maxYArr,
+              showInLegend: false,
+              color: acclerateColor,
+              marker: {
+                symbol: 'circle'
+              }
+            },
+            {
+              name: extremeHitTitle,
+              data: this.data.minYArr,
+              showInLegend: false,
+              color: hitColor,
+              marker: {
+                symbol: 'circle'
+              }
+            }
+          ];
+        break;
+      case 'ExtremeZGForce':
+        const extremeJumpTitle = this.translate.instant('universal_activityData_maxJump'),
+              extremeLandingTitle = this.translate.instant('universal_activityData_maxFloorImpact');
+        this.chartType = 'zMoveGForce';
+        this.dataLength = this.data.maxZArr.length;
+          trendDataset = [
+            {
+              name: extremeJumpTitle,
+              data: this.data.maxZArr,
+              showInLegend: false,
+              color: jumpColor,
+              marker: {
+                symbol: 'circle'
+              }
+            },
+            {
+              name: extremeLandingTitle,
+              data: this.data.minZArr,
+              showInLegend: false,
+              color: landingColor,
+              marker: {
+                symbol: 'circle'
+              }
+            }
+          ];
         break;
       case 'LifeHR':
         // 若搜尋的第一天（週）或最後一天（週）沒有數據，則用前後數據遞補-kidin-1090220
@@ -409,13 +475,15 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
         // 設定浮動提示框顯示格式-kidin-1090204
         trendChartOptions['tooltip'] = {
           formatter: function () {
-            if (this.series.xAxis.tickInterval === 30 * 24 * 4600 * 1000) {
-              return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY-MM-DD')}
-                <br/>${this.series.name}: ${this.point.y.toFixed(1)}`;
+            const startDate = moment(this.x).format('YYYY-MM-DD'),
+                  value = parseFloat(this.point.y.toFixed(1));
+            if (this.series.xAxis.tickInterval === month) {
+              const endDate = moment(this.x + 6 * day).format('YYYY-MM-DD');
+              return `${startDate}~${endDate}<br/>${this.series.name}: ${value}`;
             } else {
-              return `${moment(this.x).format('YYYY-MM-DD')}
-                <br/>${this.series.name}: ${this.point.y.toFixed(1)}`;
+              return `${startDate}<br/>${this.series.name}: ${value}`;
             }
+
           }
 
         };
@@ -423,16 +491,35 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
         // 設定圖表高度-kidin-1090221
         trendChartOptions['chart'].height = this.chartHeight;
         break;
+      case 'ExtremeXGForce':
+      case 'ExtremeYGForce':
+      case 'ExtremeZGForce':
+        // 設定浮動提示框顯示格式(小數點後3位)-kidin-1090204
+        trendChartOptions['tooltip'] = {
+          formatter: function () {
+            const startDate = moment(this.x).format('YYYY-MM-DD'),
+                  value = parseFloat(this.point.y.toFixed(3));
+            if (this.series.xAxis.tickInterval === month) {
+              const endDate = moment(this.x + 6 * day).format('YYYY-MM-DD');
+              return `${startDate}~${endDate}<br/>${this.series.name}: ${value}`;
+            } else {
+              return `${startDate}<br/>${this.series.name}: ${value}`;
+            }
+
+          }
+
+        };
+        break;
     }
 
     if (this.page !== 'cloudrun') {
       // 設定圖表x軸時間間距-kidin-1090204
       if (this.dateRange === 'day' && this.dataLength <= 7) {
-        trendChartOptions['xAxis'].tickInterval = 24 * 3600 * 1000;  // 間距一天
+        trendChartOptions['xAxis'].tickInterval = day;  // 間距一天
       } else if (this.dateRange === 'day' && this.dataLength > 7) {
-        trendChartOptions['xAxis'].tickInterval = 7 * 24 * 3600 * 1000;  // 間距一週
+        trendChartOptions['xAxis'].tickInterval = week;  // 間距一週
       } else {
-        trendChartOptions['xAxis'].tickInterval = 30 * 24 * 4600 * 1000;  // 間距一個月
+        trendChartOptions['xAxis'].tickInterval = month;  // 間距一個月
       }
 
     }
@@ -449,7 +536,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
           y: valueY,
           marker: {
             enabled: true,
-            fillColor: '#70b1f3'
+            fillColor: zoneColor[0]
           }
         };
       } else if (valueY >= this.hrZoneRange['z0'] && valueY < this.hrZoneRange['z1']) {
@@ -458,7 +545,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
           y: valueY,
           marker: {
             enabled: true,
-            fillColor: '#64e0ec'
+            fillColor: zoneColor[1]
           }
         };
       } else if (valueY >= this.hrZoneRange['z1'] && valueY < this.hrZoneRange['z2']) {
@@ -467,7 +554,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
           y: valueY,
           marker: {
             enabled: true,
-            fillColor: '#abf784'
+            fillColor: zoneColor[2]
           }
         };
       } else if (valueY >= this.hrZoneRange['z2'] && valueY < this.hrZoneRange['z3']) {
@@ -476,7 +563,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
           y: valueY,
           marker: {
             enabled: true,
-            fillColor: '#f7f25b'
+            fillColor: zoneColor[3]
           }
         };
       } else if (valueY >= this.hrZoneRange['z3'] && valueY < this.hrZoneRange['z4']) {
@@ -485,7 +572,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
           y: valueY,
           marker: {
             enabled: true,
-            fillColor: '#f3b353'
+            fillColor: zoneColor[4]
           }
         };
       } else {
@@ -494,7 +581,7 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
           y: valueY,
           marker: {
             enabled: true,
-            fillColor: '#f36953'
+            fillColor: zoneColor[5]
           }
         };
       }
@@ -528,13 +615,13 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
 
     // 周報告開頭是星期日-kidin-1090220
     if (moment(this.searchDate[0]).isoWeekday() !== 7) {
-      this.firstSunday = this.searchDate[0] - 86400 * 1000 * moment(this.searchDate[0]).isoWeekday();
+      this.firstSunday = this.searchDate[0] - day * moment(this.searchDate[0]).isoWeekday();
     } else {
       this.firstSunday = this.searchDate[0];
     }
 
     if (moment(this.searchDate[0]).isoWeekday() !== 7) {
-      this.lastSunday = this.searchDate[1] - 86400 * 1000 * moment(this.searchDate[1]).isoWeekday();
+      this.lastSunday = this.searchDate[1] - day * moment(this.searchDate[1]).isoWeekday();
     } else {
       this.lastSunday = this.searchDate[1];
     }
@@ -555,6 +642,13 @@ export class CompareLineChartComponent implements OnInit, OnChanges, OnDestroy {
 
   }
 
-  ngOnDestroy () {}
+  /**
+   * 解除rxjs訂閱
+   * @author kidin-1100615
+   */
+  ngOnDestroy () {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
 
 }

@@ -1,6 +1,7 @@
 import {
   Component,
   OnInit,
+  OnDestroy,
   ViewChild,
   Input
 } from '@angular/core';
@@ -19,6 +20,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '@shared/components/message-box/message-box.component';
 import { TranslateService } from '@ngx-translate/core';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { UserProfileService } from '../../services/user-profile.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { Unit } from '../../models/bs-constant';
 
 @Component({
   selector: 'app-my-activity',
@@ -26,7 +31,9 @@ import { BreakpointObserver } from '@angular/cdk/layout';
   styleUrls: ['./my-activity.component.scss']
 })
 
-export class MyActivityComponent implements OnInit {
+export class MyActivityComponent implements OnInit, OnDestroy {
+  private ngUnsubscribe = new Subject();
+
   logSource = new MatTableDataSource<any>();
   totalCount: number;
   currentPage: PageEvent;
@@ -39,6 +46,7 @@ export class MyActivityComponent implements OnInit {
   filterEndTime = moment().format('YYYY-MM-DDTHH:mm:00.000Z');
   sportType = '99';
   searchWords = '';
+  unit: Unit = 0;
   @Input() isPortal = false;
   @Input() userName;
   @ViewChild('picker', { read: MatInput }) input: MatInput;
@@ -53,13 +61,16 @@ export class MyActivityComponent implements OnInit {
     private hashIdService: HashIdService,
     public dialog: MatDialog,
     private translate: TranslateService,
-    private breakpointObserver: BreakpointObserver
+    private breakpointObserver: BreakpointObserver,
+    private userProfileService: UserProfileService
   ) {}
   // Check if device is phone or tablet
   get isMobile() {
     return this.breakpointObserver.isMatched('(max-width: 768px)');
   }
+
   ngOnInit() {
+    this.getUserUnit();
     const queryStrings = this.utils.getUrlQueryStrings(location.search);
     const { pageNumber, startTime, endTime, type, searchWords, debug } = queryStrings;
     this.filterStartTime = startTime
@@ -117,10 +128,24 @@ export class MyActivityComponent implements OnInit {
     });
   }
 
+  /**
+   * 從userProfile取得使用者使用單位
+   * @author kidin-1100601
+   */
+  getUserUnit() {
+    this.userProfileService.getRxUserProfile().pipe(
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe(res => {
+      this.unit = res.unit;
+    });
+
+  }
+
   changeSort(sortInfo: Sort) {
     this.currentSort = sortInfo;
     this.getLists();
   }
+
   search() {
     this.currentPage.pageIndex = 0;
     this.router.navigateByUrl(
@@ -152,6 +177,7 @@ export class MyActivityComponent implements OnInit {
       });
     }
   }
+
   getLists() {
     this.isLoading = true;
     const body = {
@@ -187,6 +213,7 @@ export class MyActivityComponent implements OnInit {
       }
     });
   }
+
   handleDateChange(
     $event: MatDatepickerInputEvent<moment.Moment>,
     isStartTime: boolean
@@ -215,10 +242,21 @@ export class MyActivityComponent implements OnInit {
     }
     
   }
+
   reset() {
     this.filterStartTime = moment().add(-1, 'years').format('YYYY-MM-DDTHH:mm:00.000Z');
     this.filterEndTime = moment().format('YYYY-MM-DDTHH:mm:00.000Z');
     this.sportType = '99';
     this.searchWords = '';
   }
+
+  /**
+   * 解除rxjs訂閱
+   * @author kidin-1090722
+   */
+   ngOnDestroy(): void {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
 }

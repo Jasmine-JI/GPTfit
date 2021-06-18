@@ -6,9 +6,11 @@
     [style.display]="uiFlag.isPreviewMode ? 'none' : ''"
   >
     <section
-      id="scenery__section"
-      style="background-size: cover;"
-      [style.background-image]="uiFlag.portalMode && currentGroupInfo.groupDetail.groupThemeImgUrl ? 'url(' + currentGroupInfo.groupDetail.groupThemeImgUrl + ')' : ''"
+      class="info-ScenerySection"
+      [style.background-image]="
+        uiFlag.portalMode && currentGroupInfo.groupDetail.groupThemeImgUrl ?
+          'url(' + currentGroupInfo.groupDetail.groupThemeImgUrl + ')' : ''
+      "
     >
       <img
         style="position: absolute; width: 100%; height: 100%;"
@@ -30,7 +32,7 @@
       </div>
     </section>
     <section class="group__header" [class.portal__mode]="uiFlag.portalMode">
-      <div class="group__icon" [style.left]="uiFlag.portalMode ? 'initial' : '50px'">
+      <div class="info-sceneryIcon" [style.left]="uiFlag.portalMode ? 'initial' : '50px'">
         <img
           [src]="uiFlag.editMode !== 'close' && editImage.icon.base64 !== null ? editImage.icon.base64 : currentGroupInfo.groupDetail.groupIcon"
           (error)="this.currentGroupInfo.groupDetail.groupIcon = '/assets/images/group.jpg'"
@@ -53,7 +55,6 @@
         <div class="flexRow group__name" *ngIf="uiFlag.editMode !== 'create'">
           <div>
             <span
-              style="cursor: pointer;"
               class="group__parents__name hover__bottom__border"
               (click)="handleNavigation(currentGroupInfo.groupDetail.groupRootInfo[2].brandGroupId)"
               *ngIf="currentGroupInfo.groupDetail.groupRootInfo && currentGroupInfo.groupDetail.groupRootInfo[2]"
@@ -61,7 +62,6 @@
               {{ currentGroupInfo.groupDetail.groupRootInfo[2].brandName }}\
             </span>
             <span
-              style="cursor: pointer;"
               class="group__parents__name hover__bottom__border"
               (click)="handleNavigation(currentGroupInfo.groupDetail.groupRootInfo[3].branchGroupId)"
               *ngIf="currentGroupInfo.groupDetail.groupRootInfo && currentGroupInfo.groupDetail.groupRootInfo[3]"
@@ -69,7 +69,7 @@
               {{ currentGroupInfo.groupDetail.groupRootInfo[3].branchName }}\
             </span>
           </div>
-          <span style="font-size: 24px; font-weight: bold; color: black; line-height: normal;">
+          <span id="current__group__name">
             {{ currentGroupInfo.groupDetail.groupName }}
           </span>
         </div>
@@ -140,7 +140,7 @@
         #groupHeaderDescription
         [innerHTML]="currentGroupInfo.groupDetail.groupDesc"
         class="group__header__description"
-        [class.group__desc__overflow]="uiFlag.groupDescOverflow"
+        [class.info-descOverflow]="uiFlag.groupDescOverflow"
         (click)="handleNavigation(currentGroupInfo.groupId)"
         *ngIf="!uiFlag.isLoading && uiFlag.editMode !== 'create'"
       ></span>
@@ -159,7 +159,7 @@
           <ng-container *ngFor="let _page of childPageList; let _idx = index;">
             <ng-container *ngIf="uiFlag.editMode !== 'create' || (uiFlag.editMode === 'create' && _page === 'group-introduction')">
               <span 
-                class="child__page__title main__page__list"
+                class="info-childPageTitle main__page__list"
                 [class.active--color]="uiFlag.currentTagIndex === _idx"
                 (click)="handleShowContent($event, _page, _idx)"
                 *ngIf="uiFlag.divideIndex === null || _idx < uiFlag.divideIndex"
@@ -280,7 +280,7 @@
     </section>
   </nav>
   <section
-    class="card__section"
+    class="cardSection"
     [style.display]="uiFlag.isPreviewMode ? 'none' : ''"
     *ngIf="
       uiFlag.currentPage === 'myclass-report'
@@ -291,7 +291,7 @@
   >
     <app-report-filter></app-report-filter>
   </section>
-  <main id="main__section" class="card__section" [class.portal__mode]="uiFlag.portalMode">
+  <main id="main__section" class="cardSection" [class.portal__mode]="uiFlag.portalMode">
     <router-outlet></router-outlet>
   </main>
   <section

@@ -12,7 +12,8 @@ export const TOKEN = 'ala_token';
 export const EMPTY_OBJECT = {};
 import moment from 'moment';
 import { Unit, mi, ft } from '../models/bs-constant';
-import { SportType } from '../models/report-condition';
+import { SportType, SportCode } from '../models/report-condition';
+import { GroupLevel } from '../../containers/dashboard/models/group-detail';
 
 type Point = {
   x: number;
@@ -158,17 +159,23 @@ export class UtilsService {
     }
   }
 
-  displayGroupLevel(_id: string) {
+  /**
+   * 根據群組id取得該群組階層
+   * @param _id {string}-group id
+   * @returns {number}-群組階層
+   * @author kidin-1100512
+   */
+  displayGroupLevel(_id: string): number {
     if (_id) {
       const arr = _id.split('-').splice(2, 4);
       if (+arr[3] > 0) {
-        return 80;
+        return GroupLevel.normal;
       } else if (+arr[2] > 0) {
-        return 60;
+        return GroupLevel.class;
       } else if (+arr[1] > 0) {
-        return 40;
+        return GroupLevel.branch;
       } else {
-        return 30;
+        return GroupLevel.brand;
       }
     }
   }
@@ -324,6 +331,11 @@ export class UtilsService {
     // Date 及 RegExp
     if (obj instanceof Date || obj instanceof RegExp) {
       return obj.constructor(obj);
+    }
+
+    // Set
+    if (obj instanceof Set) {
+      return new Set(obj);
     }
 
     // 檢查快取
@@ -664,7 +676,7 @@ export class UtilsService {
    */
   handleError(resultCode: number, apiCode: number, apiMsg: string) {
     console.log(`${resultCode}: Api ${apiCode} ${apiMsg}`);
-    const errorMsg = `Error!<br>Please try again later.`
+    const errorMsg = `Error!<br>Please try again later.`;
     this.openAlert(errorMsg);
   }
 
@@ -775,20 +787,21 @@ export class UtilsService {
    * @author kidin-1100407
    */
   convertSpeed(value: number, sportType: SportType, unit: Unit, convertType: 'second' | 'minute'): number | string {
-    let ttlSecond: number;
-    const speed = value <= 1  ? 1 : value;  // 配速最小60'00" t/km（1 km/hr）
+    let convertSpeed: number;
     switch (sportType) {
-      case 1:
-        ttlSecond = unit === 0 ? +(3600 / speed).toFixed(1) : +(3600 / (speed / mi)).toFixed(1);
+      case SportCode.swim:
+        convertSpeed = value * 10;
         break;
-      case 4:
-        ttlSecond = unit === 0 ? +((3600 / speed)).toFixed(1) : +(3600 / ((speed * 10) / ft)).toFixed(1);
+      case SportCode.row:
+        convertSpeed = value * 2;
         break;
-      case 6:
-        ttlSecond = unit === 0 ? +(3600 / speed).toFixed(1) : +(3600 / ((speed * 2) / ft)).toFixed(1);
+      default:
+        convertSpeed = unit === 0 ? value : value / mi;
         break;
     }
 
+    const speed = convertSpeed <= 1 ? 1 : convertSpeed,  // 配速最小60'00"
+          ttlSecond = parseFloat((3600 / speed).toFixed(1));
     switch (convertType) {
       case 'second':
         return ttlSecond;

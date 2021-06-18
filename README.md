@@ -1,4 +1,4 @@
-# GPT Center
+# GPTFit
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.0.1
 Angular version: 11.0.0
@@ -38,7 +38,12 @@ npm start
 ```
 mv node_modules/gcoord/src/geojson.d.ts node_modules/gcoord/dist/types
 ```
-
+> ※ Heap out of memory
+> 在run angular server時若遇到Heap out of memory的錯誤訊息，目前有三種情況導致此現象發生
+>
+> 1. html code有錯：因angular error log機制，在越前面的地方出錯，angular 會需要耗費越多記憶體印出error log，當記憶體超出設定值，會導致直接顯示Heap out of memory而無法印出error log，因此需再回頭檢視程式碼找出錯誤。
+> 2. ~~angular 9 bug：angular 9打包會造成memory leak的bug。~~(目前已更新至11以上，目前此問題影響較小)。
+> 3. 設定值太小：package.json裡，scripts.start有加一個"--max_old_space_size"參數，如確認問題原因非以上兩點，則可嘗試將此設定值調高，如調高仍無法解決，則需嘗試將code優化或請mis協助提高記憶體。
 
 ## Build
 Build code的npm script分為三種環境
@@ -73,7 +78,18 @@ npm run pm2-start
 npm run pm2-kill
 ```
 是kill掉nodejs api server process
-（235環境無效，需要再下netstat -tlunp | grep 3000 查到pid後，再下kill -9 pid碼 進行刪除）
+
+若有更新nodejs的code，建議build之前先下
+```
+netstat -tlunp | grep 3000
+```
+
+查到nodejs server pid後，再下
+```
+kill -9 pid碼
+```
+確認該process沒在run之後，再build angular
+避免nodejs server還在跑舊程式碼
 
 ## web本地圖片
 web本地圖片（如首頁圖片等），130/234/235路徑皆為/var/www/html/app
@@ -91,6 +107,10 @@ mount -a
 ```
 unmount
 ```
+## Product error log
+目前device error log代碼由研發定義，web開發者負責文件維護與顯示，若有變更再一併更新下列檔案
+> Excel：Q:\APP+CLOUD\05-翻譯管理\錯誤代碼查找表_{{date}}.xlsx
+> GPTFit：src/app/containers/dashboard/pipes/product-error-log.pipe.ts
 
 ## 資料夾結構
 
@@ -116,8 +136,8 @@ web
 │
 ├─ src/
 │   ├─ app/ // 包含應用的元件和模組，我們要寫的程式碼都在這個目錄
-│   ├─ assets/ // 資源目錄，儲存靜態資源的 比如sass樣式共用設定、圖片、多語系json檔(i18n/)
-│   ├─ environments/ // 環境配置。Angular是支援多環境開發的，我們可以在不同的環境下（開發環境，測試環境，生產環境）共用一套程式碼，主要用來配置環境的
+│   ├─ assets/ // 資源目錄，儲存靜態資源的、圖片、多語系json檔(i18n/)
+│   ├─ environments/ // 環境配置，可以在不同的環境下（開發環境，測試環境，生產環境）共用一套程式碼
 |       ├─ environment.dev.web.ts // 指向235開發環境nodejs api 3001port的環境變數檔
 |       ├─ environment.prod.ts // 指向130正式環境nodejs api 3000port的環境變數檔(130 build)
 |       ├─ environment.ts // 指向234正式環境nodejs api 3000port的環境變數檔(本機開發) 
@@ -126,21 +146,29 @@ web
 |       ├─ environment.web.ts // 指向235正式環境nodejs api 3000port的環境變數檔(235 build) 
 |       ├─ index.uat.html // 234測試環境替換index.html（自動替換），以解決測試網域seo過前的問題(測試中) 
 |       └─ index.web.html // 235開發環境替換index.html（自動替換）(測試用)
+│   ├─ styles/ // 各頁面共用的css樣式，包含主題顏色等等
+|       ├─ model/ // 一些基本scss模塊可供其他scss檔進行@import，以方便開發
+|       ├─ module/ // 風格相近的頁面，其共用css樣式
+|           ├─ info.scss // 概要頁共用樣式（ex.群組概要、個人概要、裝置概要等） 
+|           └─ report.scss // 報告共用樣式（運動報告、生活追蹤、雲跑報告等）
+|       ├─ theme/ // 網站主題顏色（目前僅light/dark樣式，故顏色命名是以此為基礎）
+|           ├─ light.scss // 清亮主題
+|           └─ dark.scss // 暗黑主題
+│       └─ icon.scss // custom icon 定義scss檔
 |
 │   ├─ .htaccess // apache route config設定，沒此設定，無法啟用angular route於apache
 │   ├─ favicon.ico // 瀏覽器的網址列、書籤、頁籤上都會用到的小 icon 圖檔。
-│   ├─ icon.css // Rex custom icon 定義css檔
 │   ├─ index.html // 整個應用的根html，程式啟動就是訪問這個頁面
 │   ├─ main.ts  整個專案的入口點，Angular通過這個檔案來啟動專案
 │   ├─ manifest.json  允許將站點添加至手機主屏幕，是PWA提供的一項重要功能
 │   ├─ polyfills.ts  主要是用來匯入一些必要庫，為了讓Angular能正常執行在老舊瀏覽器版本下
-│   ├─ styles.scss  整個網頁應用程式共用的樣式設定檔(scss版本，希望css檔慢慢變成以scss 去做預處理開發)
+│   ├─ styles.scss  整個網頁應用程式共用的樣式設定檔
 │   ├─ tsconfig.app.json  TypeScript編譯器的配置,新增第三方依賴的時候會修改這個檔案
 │   ├─ tsconfig.spec.json  跟 tsconfig.app.json 用途類似，不過主要是針對測試檔。
 │   ├─ typings.d.ts  typescript模組定義檔，為了讓 TypeScript 能與目前市面上各種 JavaScript 模組/函式庫一起運作
 │   └─ test.ts // 跟 main.ts 檔類似，不過主要是用在測試檔上。
 |
-├─ patch  //  補丁包，用來修改套件避免編譯錯誤。
+├─ patch/  //  補丁包，用來修改套件避免編譯錯誤。
 ├─ angular.json  //  Angular CLI 的設定檔
 ├─ .gitignore // 讓 git 不要追蹤設定裡的檔案
 ├─ karma.conf.js //  Karma 的設定檔。Karma 是一套單元測試工具
@@ -169,7 +197,7 @@ app
 |   |  ├─ pipes/ // 專屬dashboard模組的通道
 |   |  ├─ services/ // 專屬dashboard模組的服務
 |   |  ├─ dashboard-routing.module.ts // dashboard路由模組
-|   |  ├─ dashboard.component.css
+|   |  ├─ dashboard.component.scss
 |   |  ├─ dashboard.component.spec.ts
 |   |  ├─ dashboard.component.ts
 |   |  ├─ dashboard.component.html
@@ -180,7 +208,7 @@ app
 |       ├─ models/ // 有關typescript定義資料型態
 |       ├─ services/ // 專屬外部模組的服務
 |       ├─ portal-routing.module.ts // 外部路由模組
-|       ├─ portal.component.css
+|       ├─ portal.component.scss
 |       ├─ portal.component.spec.ts
 |       ├─ portal.component.ts
 |       ├─ portal.component.html
@@ -203,43 +231,42 @@ app
 │
 ├─ graphql.module.ts // 使用graphql用到的module（測試中）
 ├─ app-routing.module.ts
-├─ app.component.css
+├─ app.component.scss
 ├─ app.component.html
 ├─ app.component.spec.ts
 ├─ app.component.ts
-└─ app.module.ts
+└─ app.module.ts  // 內有設定網頁啟動時，需執行的動作（ex.檢查token有無）
 ```
 
 ## Dependency notes
 
-| Dependency Name | 版本 | 筆記 | 專案範例連結
-
-| ---  | ---  | ---  | ---  |
+| Dependency Name | 版本 | 筆記 | 專案範例連結 |
 | ---- | ---- | ---- | ---- |
-|      |      |      |      |
-**[@ngx-progressbar/core](https://github.com/murhafsousli/ngx-progressbar)** | 5.3.1 | 進度條，ex:使用於裝置資訊、QR配對頁面...等 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/activity-info/activity-info.component.html#L1)
-**[@ngx-translate/core](https://github.com/ngx-translate/core)** | 10.0.2 | 處理多語系 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/containers/portal/components/signin/signin.component.ts#L87)
-**[@angular/pwa](https://angular.io/guide/service-worker-getting-started)** | 0.8.7 | pwa模組，`但目前center還沒啟用，連結是註解掉的部分` | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/app.module.ts#L48)
-**[@angular/service-worker](https://angular.io/guide/service-worker-getting-started)** | 6.1.6 | service-worker模組，`但目前center還沒啟用，連結是註解掉的部分` | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/app.module.ts#L48)
-**@types/googlemaps** | 3.30.16 | google map的typescript型別定義檔 | None
-**@types/highcharts** | 5.0.31 | highcharts的typescript型別定義檔 | None
-**@types/lodash** | 4.14.109 | lodash的typescript型別定義檔 | None
-**@types/query-string** | 6.2.0 | query-string的typescript型別定義檔 | None
-**apollo-angular** |  "2.1.0" | 在angular使用graphql的套件 | [Link](https://apollo-angular.com)
-**[angularx-qrcode](https://github.com/cordobo/angularx-qrcode#readme)** | 1.5.3 | 產生qrcode功能 | [Link](https://gitlab.com/alatech_cloud/web/blob/release_internal_server/src/app/containers/dashboard/components/device/product-info/product-info.component.html#L146)
-**[bootstrap](https://getbootstrap.com/)** | 4.1.3 | css framework，目前主要的排版layout樣式皆採用於此，ex: container、menu...等 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/navbar/navbar.component.html#L80)
-**[file-saver](https://github.com/eligrey/FileSaver.js#readme)** | 1.3.3 | 是一款基於 HTML5 完成文件保存的插件，它可以幫我們直接從網頁中導出多種格式文件 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/containers/dashboard/components/leaderboard-settings/leaderboard-settings.component.ts#L6)
-**[font-awesome](https://fontawesome.com/v4.7.0/)** | 4.7.0 | icon font 的library，目前center已經很少使用，主要是用google mat icon 、和Rex自定的icon，建議可以考慮日後慢慢讓它退場。此icon font特點為<fa> tag| [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/containers/portal/portal.component.html#L40)
-**[gcoord](https://github.com/hujiulong/gcoord#readme)** | 0.2.0| 轉換坐標系的套件 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/activity-info/activity-info.component.ts#L21)
-**[hashids](https://hashids.org/javascript/)** | 1.2.2| hash字串的套件，目前使用於userId和group id，連結可以導往salt的設定 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/services/hash-id.service.ts#L8)
-**[highcharts](https://www.highcharts.com/)** | 6.1.1| highchart套件 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/sport-report/components/scatter-chart/scatter-chart.component.ts#L9)
-**[leaflet](https://github.com/Leaflet/Leaflet#readme)** | 1.2.0| 是一套對行動裝置友善的互動地圖並且開源的JavaScript函式庫 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/angular.json#L38)
-**[lodash](https://lodash.com/)** | 4.17.4| 是一个一致性、模块化、高性能的 JavaScript 实用工具库。 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/containers/dashboard/components/inner-settings/inner-settings.component.ts#L5)
-**[mapbox](https://github.com/mapbox/mapbox-sdk-js)** | 1.0.0-beta9| 是一些開放原始碼地圖函式庫 | None
-**[material-design-icons](https://github.com/google/material-design-icons)** | 3.0.1| Material Design icons by Google 是目前與rex 自定icon大量使用於center的庫。特色是<i class="material-icons"></i> | [Link](https://gitlab.com/alatech_cloud/web/blob/release_internal_server/src/app/containers/portal/components/leaderboard/leaderboard.component.html#L98)
-**[moment](http://momentjs.com/)** | 2.20.1|處理時間格式的函式庫 | None
-**[mydatepicker](https://github.com/kekeh/mydatepicker#readme)** | 2.6.1|日期選擇器元件，目前使用於外部排行版與賽事管理系統，建議可以慢慢替換成material design(因為那時還沒出...) | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/containers/portal/portal.component.ts#L15)
-**[query-string](https://github.com/sindresorhus/query-string#readmee)** | 6.1.0| 用来做url查询参数的解析| [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/services/utils.service.ts#L3)
-**[ml-regression-simple-linear](https://www.npmjs.com/package/ml-regression-simple-linear)** | 2.1.1| 用来做群組report的簡單回歸分析 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/dashboard/group/group-info/com-life-tracking/com-life-tracking.component.ts#L3)
-**[tui-calendar](https://ui.toast.com/tui-calendar/)** | 1.12.11| 行事曆套件(棄用) | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/tui-calender/tui-calender.component.ts)
-**[daterangepicker](https://www.daterangepicker.com)** | 3.0.5| 可以雙開的日期選擇器| [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/date-range-picker/date-range-picker.component.ts)
+|**[@ngx-progressbar/core](https://github.com/murhafsousli/ngx-progressbar)** | 5.3.1 | 進度條，ex:使用於裝置資訊、QR配對頁面...等 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/activity-info/activity-info.component.html#L1)|
+|**[@ngx-translate/core](https://github.com/ngx-translate/core)** | 10.0.2 | 處理多語系 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/containers/portal/components/signin/signin.component.ts#L87)|
+|**[@angular/pwa](https://angular.io/guide/service-worker-getting-started)** | 0.8.7 | pwa模組，`但目前center還沒啟用，連結是註解掉的部分` | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/app.module.ts#L48)|
+|**[@angular/service-worker](https://angular.io/guide/service-worker-getting-started)** | 6.1.6 | service-worker模組，`但目前center還沒啟用，連結是註解掉的部分` | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/app.module.ts#L48)|
+|**@types/googlemaps** | 3.30.16 | google map的typescript型別定義檔 | None|
+|**@types/highcharts** | 5.0.31 | highcharts的typescript型別定義檔 | None|
+|**@types/lodash** | 4.14.109 | lodash的typescript型別定義檔 | None|
+|**@types/query-string** | 6.2.0 | query-string的typescript型別定義檔 | None|
+|**apollo-angular** |  "2.1.0" | 在angular使用graphql的套件 | [Link](https://apollo-angular.com)|
+|**[angularx-qrcode](https://github.com/cordobo/angularx-qrcode#readme)** | 1.5.3 | 產生qrcode功能 | [Link](https://gitlab.com/alatech_cloud/web/blob/release_internal_server/src/app/containers/dashboard/components/device/product-info/product-info.component.html#L146)|
+|**[bootstrap](https://getbootstrap.com/)** | 4.1.3 | css framework，目前主要的排版layout樣式皆採用於此，ex: container、menu...等 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/navbar/navbar.component.html#L80)|
+|**[file-saver](https://github.com/eligrey/FileSaver.js#readme)** | 1.3.3 | 是一款基於 HTML5 完成文件保存的插件，它可以幫我們直接從網頁中導出多種格式文件 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/containers/dashboard/components/leaderboard-settings/leaderboard-settings.component.ts#L6)|
+|**[font-awesome](https://fontawesome.com/v4.7.0/)** | 4.7.0 | icon font 的library，目前center已經很少使用，主要是用google mat icon 、和Rex自定的icon，建議可以考慮日後慢慢讓它退場。| [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/containers/portal/portal.component.html#L40)|
+|**[gcoord](https://github.com/hujiulong/gcoord#readme)** | 0.2.0| 轉換坐標系的套件 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/activity-info/activity-info.component.ts#L21)|
+|**[hashids](https://hashids.org/javascript/)** | 1.2.2| hash字串的套件，目前使用於userId和group id，連結可以導往salt的設定 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/services/hash-id.service.ts#L8)|
+|**[highcharts](https://www.highcharts.com/)** | 6.1.1| highchart套件 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/sport-report/components/scatter-chart/scatter-chart.component.ts#L9)|
+|**[leaflet](https://github.com/Leaflet/Leaflet#readme)** | 1.2.0| 是一套對行動裝置友善的互動地圖並且開源的JavaScript函式庫 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/angular.json#L38)|
+|**[lodash](https://lodash.com/)** | 4.17.4| 是一个一致性、模块化、高性能的 JavaScript 实用工具库。 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/containers/dashboard/components/inner-settings/inner-settings.component.ts#L5)|
+|**[mapbox](https://github.com/mapbox/mapbox-sdk-js)** | 1.0.0-beta9| 是一些開放原始碼地圖函式庫 | None|
+|**[material-design-icons](https://github.com/google/material-design-icons)** | 3.0.1| Material Design icons by Google 是目前與rex 自定icon大量使用於center的庫。 | [Link](https://gitlab.com/alatech_cloud/web/blob/release_internal_server/src/app/containers/portal/components/leaderboard/leaderboard.component.html#L98)|
+|**[moment](http://momentjs.com/)** | 2.20.1|處理時間格式的函式庫 | None|
+|**[mydatepicker](https://github.com/kekeh/mydatepicker#readme)** | 2.6.1|日期選擇器元件，目前使用於外部排行版與賽事管理系統，建議可以慢慢替換成material design(因為那時還沒出...) | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/containers/portal/portal.component.ts#L15)|
+|**[query-string](https://github.com/sindresorhus/query-string#readmee)** | 6.1.0| 用来做url查询参数的解析| [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/services/utils.service.ts#L3)|
+|**[ml-regression-simple-linear](https://www.npmjs.com/package/ml-regression-simple-linear)** | 2.1.1| 用来做群組report的簡單回歸分析 | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/dashboard/group/group-info/com-life-tracking/com-life-tracking.component.ts#L3)|
+|**[tui-calendar](https://ui.toast.com/tui-calendar/)** | 1.12.11| 行事曆套件(棄用) | [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/tui-calender/tui-calender.component.ts)|
+|**[daterangepicker](https://www.daterangepicker.com)** | 3.0.5| 可以雙開的日期選擇器| [Link](https://gitlab.com/alatech_cloud/web/blob/master/src/app/shared/components/date-range-picker/date-range-picker.component.ts)|
+|**normalize.css** | 8.0.1| css正規化| [Link](https://www.npmjs.com/package/normalize.css)|
+

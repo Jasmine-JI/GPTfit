@@ -1,7 +1,7 @@
 #chartTitle {
   font-weight: bold;
   white-space: nowrap;
-  color: rgba(75, 75, 75, 1);
+  color: var(--scale-75-230);
   margin-bottom: 0;
 
   &:after {
@@ -21,7 +21,7 @@
 #rowLine {
   height: 0;
   width: 100%;
-  border: 1px solid rgba(220, 220, 220, 1);
+  border: 1px solid var(--scale-100-230-border);
   margin-left: 10px;
 }
 
@@ -37,11 +37,13 @@
 }
 
 .dataNumber {
+  color: var(--scale-0-255);
   font-weight: bold;
-  font-size: 24px;
+  font-size: 22px;
 }
 
 .dataDescription {
+  color: var(--scale-150-180);
   font-size: 12px;
   color: rgba(120, 120, 120, 1);
 }

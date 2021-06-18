@@ -122,7 +122,6 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
       switch (queryKey) {
         case 'tk':  // 不寫死避免新增參數
           this.editBody.token = query[i].split('=')[1];
-          console.log()
           break;
       }
 

@@ -106,10 +106,10 @@
       <mat-cell *matCellDef="let row">
         <div>
           <div>
-            {{ row.activityInfoLayer && row.activityInfoLayer?.startTime | sportDate: 'date' || ' -- ' }}
+            {{ row.activityInfoLayer && row.activityInfoLayer?.startTime | timeFormat: 'MM/DD' }}
           </div>
           <div style="color: #999;font-size: 12px">
-            {{ row.activityInfoLayer && row.activityInfoLayer?.startTime | sportDate: 'time' || ' -- ' }}
+            {{ row.activityInfoLayer && row.activityInfoLayer?.startTime | timeFormat: 'HH:mm:ss' }}
           </div>
         </div>
       </mat-cell>
@@ -142,27 +142,11 @@
         <div>
           <!-- <div> -->
             <span *ngIf="row.activityInfoLayer.type !== '5' && row.activityInfoLayer.type !== '3'">
-              {{ (row.activityInfoLayer && row.activityInfoLayer?.avgSpeed | sportPace: row.activityInfoLayer.type) || ' -- ' }}
-              <span
-                *ngIf="row.activityInfoLayer.type === '1'"
-              >
-                min/1km
-              </span>
-              <span
-                *ngIf="row.activityInfoLayer.type === '4'"
-              >
-                min/100m
-              </span>
-              <span
-                *ngIf="row.activityInfoLayer.type === '6'"
-              >
-                min/500m
-              </span>
-              <span
-                *ngIf="row.activityInfoLayer.type === '2' || row.activityInfoLayer.type === '7'"
-              >
-                km/hr
-              </span>
+              {{
+                (
+                  row.activityInfoLayer && row.activityInfoLayer?.avgSpeed | sportPaceSibs: [+row.activityInfoLayer.type, unit, 0]
+                ) || ' -- '
+              }}
             </span>
             <span *ngIf="row.activityInfoLayer.type === '5'">
               {{ row.activityInfoLayer && row.activityInfoLayer?.maxHeartRateBpm || ' -- ' }}bpm

@@ -1,6 +1,7 @@
 <div
   #filterSection
-  style="width: 100%; padding: 5px; background-color: white; border: 1px solid rgba(200, 200, 200, 1);"
+  style="width: 100%;"
+  class="cardContent"
   [class.reportPreviewMode]="uiFlag.isPreviewMode"
   [style.pointer-events]="uiFlag.isLoading ? 'none' : 'initial'"
 >
@@ -17,7 +18,7 @@
         <i
           class="icon-svg_web-icon_p1_073-level_fold switch__btn"
           (click)="shiftDateTypeBar('pre')"
-          [style.border-right]="uiFlag.disableBtn !== 'pre' ? '2px solid rgba(230, 230, 230, 1)' : 'none'"
+          [style.border-right]="uiFlag.disableBtn !== 'pre' ? '2px solid var(--tab-border)' : ''"
           [class.btn__disabled]="uiFlag.disableBtn === 'pre'"
           *ngIf="uiFlag.showDateTypeShiftIcon"
         ></i>
@@ -45,7 +46,9 @@
             <div #calendarPeriod style="display: flex; justify-content: center; position: relative;">
               <span
                 class="selector__tab__title"
-                [class.date__type--active]="date.type === 'today' || date.type === 'thisWeek' || date.type === 'thisMonth' || date.type === 'thisYear'"
+                [class.date__type--active]="
+                  date.type === 'today' || date.type === 'thisWeek' || date.type === 'thisMonth' || date.type === 'thisYear'
+                "
                 (click)="selectDateRange($event, 3)"
               >{{'universal_activityData_calendarSelect' | translate}}</span>
             </div>
@@ -73,7 +76,7 @@
         <i
           class="icon-svg_web-icon_p1_074-level_unfold switch__btn"
           (click)="shiftDateTypeBar('next')"
-          [style.border-left]="uiFlag.disableBtn !== 'next' ? '2px solid rgba(230, 230, 230, 1)' : 'none'"
+          [style.border-left]="uiFlag.disableBtn !== 'next' ? '2px solid var(--tab-border)' : 'none'"
           [class.btn__disabled]="uiFlag.disableBtn === 'next'"
           *ngIf="uiFlag.showDateTypeShiftIcon"
         ></i>
@@ -89,19 +92,19 @@
         </div>
       </div>
     </section>
-    <section style="font-weight: 700; letter-spacing: 1.5px; margin: 5px 0px; display:flex; align-items: center;">
-      <button mat-icon-button
+    <section id="shiftDate">
+      <button
         (click)="shiftPreTime()"
-        class="report-time-btn"
+        class="report__time__btn"
       >
         <mat-icon style="cursor: pointer">
           keyboard_arrow_left
         </mat-icon>
       </button>
-      <button mat-icon-button
+      <button
         (click)="shiftNextTime()"
         [disabled]="date.endTimestamp >= date.maxTimestamp"
-        class="report-time-btn"
+        class="report__time__btn"
       >
         <mat-icon style="cursor: pointer">
           keyboard_arrow_right

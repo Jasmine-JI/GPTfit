@@ -1,12 +1,17 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-/**
- * 根據group level回傳多國語系的鍵
- */
 @Pipe({name: 'groupLevelTranslate'})
 export class GroupLevelNamePipe implements PipeTransform {
-  transform(value: number, args: string | number): any {
-    if (+args === 1) {
+
+  /**
+   * 根據group level回傳多國語系的鍵
+   * @param value {string}-group id
+   * @param args {string | number}-brand type
+   * @return {string}-翻譯的鍵
+   * @author kidin
+   */
+  transform(value: number, args: string | number): string {
+    if (args == 1) {
 
       switch (value) {
         case 30:

@@ -1,11 +1,14 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-/**
- * 根據裝置類型回傳對應多國語系的鍵
- */
+
 @Pipe({name: 'productType'})
 export class ProductTypePipe implements PipeTransform {
-  transform(value: string | number, args: string[]): any {
+  /**
+   * 根據裝置類型回傳對應多國語系的鍵
+   * @param value {string | number}-裝置類別名稱或代號
+   * @returns {string}-翻譯的鍵
+   */
+  transform(value: string | number): string {
     switch (value + '') {
       case '1':
       case 'wearable':

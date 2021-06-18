@@ -12,9 +12,9 @@ import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 import { MuscleNamePipe } from '../../pipes/muscle-name.pipe';
 import { mi, lb } from '../../models/bs-constant';
-import * as _Highcharts from 'highcharts';
+import { charts } from 'highcharts';
 import { HrZoneRange } from '../../models/chart-data';
-import { SportType } from '../../models/report-condition';
+import { SportType, SportCode } from '../../models/report-condition';
 import { UserLevel } from '../../models/weight-train';
 import { MatDialog } from '@angular/material/dialog';
 import { MessageBoxComponent } from '../message-box/message-box.component';
@@ -23,8 +23,7 @@ import { ShareGroupInfoDialogComponent } from '../share-group-info-dialog/share-
 import { PrivacyCode } from '../../models/user-privacy';
 import { EditIndividualPrivacyComponent } from '../edit-individual-privacy/edit-individual-privacy.component';
 
-const errMsg = `Error! Please try again later.`,
-      Highcharts: any = _Highcharts; // 不檢查highchart型態
+const errMsg = `Error! Please try again later.`;
 
 type DisplayTag = 'summary' | 'detail' | 'segmentation' | 'chart';
 type SegmentType = 'pointSecond' | 'distanceMeters';
@@ -603,25 +602,25 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   handleSceneryImg(type: number, subtype: number) {
     let sportType: string;
     switch (type) {
-      case 1:
+      case SportCode.run:
         sportType = 'run';
         break;
-      case 2:
+      case SportCode.cycle:
         sportType = 'cycle';
         break;
-      case 3:
+      case SportCode.weightTrain:
         sportType = 'weightTraining';
         break;
-      case 4:
+      case SportCode.swim:
         sportType = 'swim';
         break;
-      case 5:
+      case SportCode.aerobic:
         sportType = 'aerobic';
         break;
-      case 6:
+      case SportCode.row:
         sportType = 'rowing';
         break;
-      case 7:
+      case SportCode.ball:
         sportType = 'ball';
         break;
     }
@@ -732,7 +731,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     ).subscribe(() => {
       const muscleCodeArr = [16, 32, 48, 49, 50, 51, 52, 53, 64, 65, 66, 67, 68, 69, 80, 81, 82, 96, 97, 98, 99, 100, 112, 113, 114, 115, 116, 117, 128];
       muscleCodeArr.forEach(_code => {
-        const muscleName = this.translate.instant(this.muscleName.transform(_code, null));
+        const muscleName = this.muscleName.transform(_code);
         Object.assign(this.muscleTranslate, {[`${_code}`]: muscleName});
       });
 
@@ -921,12 +920,12 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     // 初始化global highchart物件，可避免HighCharts.Charts為 undefined -kidin-1081212
-    Highcharts.charts.forEach((_highChart, idx) => {
+    charts.forEach((_highChart, idx) => {
       if (_highChart !== undefined) {
         _highChart.destroy();
       }
     });
-    Highcharts.charts.length = 0;
+    charts.length = 0;
 
     this.activityPointLayer = {};
     // this.uiFlag.resolution = this.handleResolution(point.length); (預埋)
@@ -1198,7 +1197,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
   getCountList(sportType: SportType): Array<Array<string>> {
     let arr: Array<Array<string>>;
     switch (sportType) {
-      case 1:
+      case SportCode.run:
         arr = [
           ['hr', 'heartRateBpm'],
           ['temperature', 'temp'],
@@ -1207,7 +1206,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           ['speed', 'speed']
         ];
         break;
-      case 2:
+      case SportCode.cycle:
         arr = [
           ['hr', 'heartRateBpm'],
           ['temperature', 'temp'],
@@ -1217,14 +1216,14 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           ['speed', 'speed']
         ];
         break;
-      case 3:
+      case SportCode.weightTrain:
         arr = [
           ['hr', 'heartRateBpm'],
           ['temperature', 'temp'],
           ['cadence', 'moveRepetitions']
         ];
         break;
-      case 4:
+      case SportCode.swim:
         arr = [
           ['hr', 'heartRateBpm'],
           ['temperature', 'temp'],
@@ -1232,13 +1231,13 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           ['speed', 'speed']
         ];
         break;
-      case 5:
+      case SportCode.aerobic:
         arr = [
           ['hr', 'heartRateBpm'],
           ['temperature', 'temp']
         ];
         break;
-      case 6:
+      case SportCode.row:
         arr = [
           ['hr', 'heartRateBpm'],
           ['temperature', 'temp'],
@@ -1248,7 +1247,7 @@ export class ActivityDetailComponent implements OnInit, AfterViewInit, OnDestroy
           ['power', 'rowingWatt']
         ];
         break;
-      case 7:
+      case SportCode.ball:
         arr = [
           ['hr', 'heartRateBpm'],
           ['temperature', 'temp'],

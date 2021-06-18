@@ -3,7 +3,7 @@ import { transform, WGS84, GCJ02, BD09 } from 'gcoord';
 import { Subscription, Subject, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { UtilsService } from '../../services/utils.service';
-import { SportType } from '../../models/report-condition';
+import { SportType, SportCode } from '../../models/report-condition';
 import { TranslateService } from '@ngx-translate/core';
 import { DataTypeTranslatePipe } from '../../pipes/data-type-translate.pipe';
 import { chinaAndTaiwanBorder } from '../../models/china-border-data';
@@ -498,7 +498,7 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
       switch (type) {
-        case 1:
+        case SportCode.run:
           this.mapOpt.compareA = {
             type: 'hr',
             name: this.translate.instant(this.dataTypeTranslatePipe.transform('hr', [type, this.unit])),
@@ -514,8 +514,8 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
           };
 
           break;
-        case 2:
-        case 7:
+        case SportCode.cycle:
+        case SportCode.ball:
           this.mapOpt.compareA = {
             type: 'hr',
             name: this.translate.instant(this.dataTypeTranslatePipe.transform('hr', [type, this.unit])),
@@ -531,8 +531,8 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
           };
 
           break;
-        case 4:
-        case 6:
+        case SportCode.swim:
+        case SportCode.row:
           this.mapOpt.compareA = {
             type: 'pace',
             name: this.translate.instant(this.dataTypeTranslatePipe.transform('pace', [type, this.unit])),
@@ -663,17 +663,17 @@ export class MapChartCompareComponent implements OnInit, OnChanges, OnDestroy {
         return 'speed';
       case 'cadence':
         switch(sportType) {
-          case 1:
+          case SportCode.run:
             return 'runCadence';
-          case 2:
+          case SportCode.cycle:
             return 'cycleCadence';
-          case 4:
+          case SportCode.swim:
             return 'swimCadence';
-          case 6:
+          case SportCode.row:
             return 'rowingCadence';
         }
       case 'power':
-        return sportType === 2 ? 'cycleWatt' : 'rowingWatt';
+        return sportType === SportCode.cycle ? 'cycleWatt' : 'rowingWatt';
       case 'temperature':
         return 'temp';
       case 'gforceX':

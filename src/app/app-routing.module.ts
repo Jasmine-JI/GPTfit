@@ -6,14 +6,15 @@ const routes: Routes = [
   { path: '', component: PortalComponent },
   {
     path: 'dashboard',
-    redirectTo: 'dashboard/activity-list',
-    pathMatch: 'full'
-  },
+    loadChildren: () => import('./containers/dashboard/dashboard.module').then(m => m.DashboardModule)
+  }
+  /* 測試延遲載入用
   {
-    path: 'dashboard/settings',
-    redirectTo: 'dashboard/settings/user-settings',
+    path: 'dashboard',
+    redirectTo: 'activity-list',
     pathMatch: 'full'
   }
+   */
   // { path: '**', redirectTo: '404' }
 ];
 

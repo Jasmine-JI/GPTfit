@@ -312,9 +312,6 @@ export class UserSettingsComponent implements OnInit, OnChanges {
               token,
             });
 
-            // 此字串為更新頭像時，icon url添加的query string-kidin-1090107
-            this.userInfoService.setUpdatedImgStatus(`?${moment().format('YYYYMMDDhhmmss')}`);
-
             this.snackbar.open(
               this.translate.instant(
                 'universal_operating_finishEdit'
@@ -329,11 +326,15 @@ export class UserSettingsComponent implements OnInit, OnChanges {
               'OK',
               { duration: 5000 }
             );
-            this.userInfoService.setUpdatedImgStatus('');
+
           }
+
         });
+
       };
+
     }
+    
   }
 
   /**
