@@ -793,7 +793,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         this.uiFlag.progress = progress === 100 ? 10 : progress;
         this.initReportContent();
         const effectGroupId = (res as any).group.selectGroup.split('-'),
-              completeGroupId = this.getCompleteGroupId(effectGroupId),
+              completeGroupId = this.groupService.getCompleteGroupId(effectGroupId),
               { id: currentGroupId } = this.groupInfo;
               
         // 若所選群組不變，則沿用之前的成員清單
@@ -889,17 +889,6 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
     });
 
-  }
-
-  /**
-   * 取得完整的group id（補零）
-   * @param idArr {Array}
-   * @author kidin-1100525
-   */
-  getCompleteGroupId(idArr: Array<string>) {
-    const fillStart = idArr.length;
-    idArr.length = 6;
-    return idArr.fill('0', fillStart, 6).join('-');
   }
 
   /**
@@ -2119,9 +2108,6 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
   /**
    * 根據視窗寬度預設可顯示的欄位(含名稱)
-   * @param groupDef {Array<string>}-群組分析可設定之欄位
-   * @param personDef {Array<string>}-個人分析可設定之欄位
-   * @param windowWidth {number}-視窗寬度
    * @author kidin-1100517
    */
   setDisplayCol() {

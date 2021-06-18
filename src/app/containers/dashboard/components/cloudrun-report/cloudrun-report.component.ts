@@ -108,19 +108,18 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
     },
     paceTrend: <DiscolorTrendData>{
       avgPace: null,
-      bestPace: [],
-      pace: [],
+      dataArr: [],
       oneRangeBestPace: null,
-      colorSet: paceTrendColor,
-      date: []
+      minSpeed: null,
+      maxSpeed: null,
+      colorSet: paceTrendColor
     },
     hrCompareLine: <CompareLineTrendChart>{
-      HR: [],
+      maxHrArr: [],
+      hrArr: [],
       avgHR: null,
-      bestHR: [],
       oneRangeBestHR: null,
-      colorSet: zoneColor,
-      date: []
+      colorSet: zoneColor
     },
     costTime: <FilletTrendChart>{
       avgCostTime: null,
@@ -256,10 +255,11 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         heartRateBase,
         heartRateMax,
         heartRateResting,
-        bodyAge
+        birthday
       } = resArr[0] as any;
+      const age = this.reportService.countAge(birthday);
       this.userInfo = { unit, name, id, icon };
-      this.hrZoneRange = this.utils.getUserHrRange(heartRateBase, bodyAge, heartRateMax, heartRateResting);
+      this.hrZoneRange = this.utils.getUserHrRange(heartRateBase, age, heartRateMax, heartRateResting);
       this.allMapList = resArr[1];
       if (!this.uiFlag.isPreviewMode && !this.uiFlag.haveUrlCondition) {
         this.reportConditionOpt.cloudRun.mapId = this.allMapList.leaderboard[0].mapId;  // 預設顯示本月例行賽報告
@@ -434,19 +434,18 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       },
       paceTrend: {
         avgPace: null,
-        bestPace: [],
-        pace: [],
+        dataArr: [],
         oneRangeBestPace: null,
-        colorSet: paceTrendColor,
-        date: []
+        minSpeed: null,
+        maxSpeed: null,
+        colorSet: paceTrendColor
       },
       hrCompareLine: {
-        HR: [],
+        maxHrArr: [],
+        hrArr: [],
         avgHR: null,
-        bestHR: [],
         oneRangeBestHR: null,
-        colorSet: zoneColor,
-        date: []
+        colorSet: zoneColor
       },
       costTime: {
         avgCostTime: null,
@@ -522,6 +521,7 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
    */
   handleChartData(data: Array<any>) {
     let oneRangeMaxSpeed = 0,
+        oneRangeMinSpeed = null,
         totalSpeed = 0,
         oneRangeMaxHr = 0,
         totalHr = 0,
@@ -571,8 +571,8 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
       } = data[i];
       const { startTime: nextStartTime } = data[i + 1] || {startTime: undefined},
             startTimestamp = moment(startTime).startOf('day').valueOf(),
-            paceSecond = this.utils.convertSpeed(avgSpeed, 1, this.userInfo.unit, 'second'),
-            bestPaceSecond = this.utils.convertSpeed(maxSpeed, 1, this.userInfo.unit, 'second');
+            paceSecond = this.utils.convertSpeed(avgSpeed, 1, this.userInfo.unit, 'second') as number,
+            bestPaceSecond = this.utils.convertSpeed(maxSpeed, 1, this.userInfo.unit, 'second') as number;
       let nextStartTimestamp: number;
       if (nextStartTime) nextStartTimestamp = moment(nextStartTime).startOf('day').valueOf();
       if (startTimestamp !== nextStartTimestamp) {
@@ -585,10 +585,13 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
           this.chartData.hrTrend.zoneThree.push([startTimestamp, totalHrZone3Second || 0]);
           this.chartData.hrTrend.zoneFour.push([startTimestamp, totalHrZone4Second || 0]);
           this.chartData.hrTrend.zoneFive.push([startTimestamp, totalHrZone5Second || 0]);
-          this.chartData.paceTrend.pace.push(paceSecond as number);
-          this.chartData.paceTrend.bestPace.push(bestPaceSecond as number);
-          this.chartData.hrCompareLine.HR.push(avgHeartRateBpm);
-          this.chartData.hrCompareLine.bestHR.push(maxHeartRateBpm);
+          this.chartData.paceTrend.dataArr.push({
+            x: startTimestamp,
+            y: bestPaceSecond,
+            low: paceSecond
+          });
+          this.chartData.hrCompareLine.hrArr.push([startTimestamp, avgHeartRateBpm]);
+          this.chartData.hrCompareLine.maxHrArr.push([startTimestamp, maxHeartRateBpm]);
           this.chartData.costTime.costTime.push(totalSecond);
 
           // 取得最佳時間
@@ -616,7 +619,9 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
 
           const oneDayAvgSpeed = +(sameDateData.avgSpeed / sameDateLen).toFixed(1),
                 oneDayAvgHr = +(sameDateData.avgHr / sameDateLen).toFixed(0),
-                oneDayAvgSeconds = +(sameDateData.avgSeconds / sameDateLen).toFixed(0);
+                oneDayAvgSeconds = +(sameDateData.avgSeconds / sameDateLen).toFixed(0),
+                oneDayAvgPace = this.utils.convertSpeed(oneDayAvgSpeed, 1, this.userInfo.unit, 'second') as number,
+                sameDateMaxPace = this.utils.convertSpeed(sameDateData.maxSpeed, 1, this.userInfo.unit, 'second') as number;
           // 圖表用數據                
           this.chartData.hrTrend.zoneZero.push([startTimestamp, +(sameDateData.z0 / sameDateLen).toFixed(0)]);
           this.chartData.hrTrend.zoneOne.push([startTimestamp, +(sameDateData.z1 / sameDateLen).toFixed(0)]);
@@ -624,14 +629,13 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
           this.chartData.hrTrend.zoneThree.push([startTimestamp, +(sameDateData.z3 / sameDateLen).toFixed(0)]);
           this.chartData.hrTrend.zoneFour.push([startTimestamp, +(sameDateData.z4 / sameDateLen).toFixed(0)]);
           this.chartData.hrTrend.zoneFive.push([startTimestamp, +(sameDateData.z5 / sameDateLen).toFixed(0)]);
-          this.chartData.paceTrend.pace.push(
-            this.utils.convertSpeed(oneDayAvgSpeed, 1, this.userInfo.unit, 'second') as number
-          );
-          this.chartData.paceTrend.bestPace.push(
-            this.utils.convertSpeed(sameDateData.maxSpeed, 1, this.userInfo.unit, 'second') as number
-          );
-          this.chartData.hrCompareLine.HR.push(oneDayAvgHr);
-          this.chartData.hrCompareLine.bestHR.push(sameDateData.maxHr);
+          this.chartData.paceTrend.dataArr.push({
+            x: startTimestamp,
+            y: sameDateMaxPace,
+            low: oneDayAvgPace
+          });
+          this.chartData.hrCompareLine.hrArr.push([startTimestamp, oneDayAvgHr]);
+          this.chartData.hrCompareLine.maxHrArr.push([startTimestamp, sameDateData.maxHr]);
           this.chartData.costTime.costTime.push(oneDayAvgSeconds);
           
 
@@ -665,20 +669,21 @@ export class CloudrunReportComponent implements OnInit, OnDestroy {
         if (maxHeartRateBpm > sameDateData.maxHr) sameDateData.maxHr = maxHeartRateBpm;
       }
 
-      // 取得最大（佳）值
+      // 取得最大（佳）值和最小值
       if (maxSpeed > oneRangeMaxSpeed) oneRangeMaxSpeed = maxSpeed;
+      if (oneRangeMinSpeed === null || oneRangeMinSpeed > avgSpeed) oneRangeMinSpeed = avgSpeed;
       if (maxHeartRateBpm > oneRangeMaxHr) oneRangeMaxHr = maxHeartRateBpm;
     }
 
     const dataLen = date.length;
+    this.chartData.paceTrend.maxSpeed = oneRangeMaxSpeed;
+    this.chartData.paceTrend.minSpeed = oneRangeMinSpeed;
     this.chartData.paceTrend.oneRangeBestPace = 
       this.utils.convertSpeed(oneRangeMaxSpeed, 1, this.userInfo.unit, 'minute') as string;
     this.chartData.paceTrend.avgPace = 
       this.utils.convertSpeed(((totalSpeed / dataLen) || 0), 1, this.userInfo.unit, 'minute') as string;
-    this.chartData.paceTrend.date = date;
     this.chartData.hrCompareLine.avgHR = +((totalHr / dataLen) || 0).toFixed(0);
     this.chartData.hrCompareLine.oneRangeBestHR = oneRangeMaxHr;
-    this.chartData.hrCompareLine.date = date;
     this.chartData.costTime.avgCostTime = +((totalCostTime / dataLen) || 0).toFixed(0);
     this.chartData.costTime.bestCostTime = oneRangeMinCostTime;
     this.chartData.costTime.date = date;

@@ -787,20 +787,21 @@ export class UtilsService {
    * @author kidin-1100407
    */
   convertSpeed(value: number, sportType: SportType, unit: Unit, convertType: 'second' | 'minute'): number | string {
-    let ttlSecond: number;
-    const speed = value <= 1 ? 1 : value;  // 配速最小60'00" t/km（1 km/hr）
+    let convertSpeed: number;
     switch (sportType) {
       case SportCode.swim:
-        ttlSecond = unit === 0 ? +(3600 / (speed * 10)).toFixed(1) : +(3600 / ((speed * 10) / ft)).toFixed(1);
+        convertSpeed = value * 10;
         break;
       case SportCode.row:
-        ttlSecond = unit === 0 ? +(3600 / (speed * 2)).toFixed(1) : +(3600 / ((speed * 2) / ft)).toFixed(1);
+        convertSpeed = value * 2;
         break;
       default:
-        ttlSecond = unit === 0 ? +(3600 / speed).toFixed(1) : +(3600 / (speed / mi)).toFixed(1);
+        convertSpeed = unit === 0 ? value : value / mi;
         break;
     }
 
+    const speed = convertSpeed <= 1 ? 1 : convertSpeed,  // 配速最小60'00"
+          ttlSecond = parseFloat((3600 / speed).toFixed(1));
     switch (convertType) {
       case 'second':
         return ttlSecond;

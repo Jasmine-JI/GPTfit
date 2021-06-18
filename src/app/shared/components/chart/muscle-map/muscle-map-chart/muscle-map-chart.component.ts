@@ -17,6 +17,7 @@ import {
   Proficiency,
   ProficiencyCoefficient
 } from '../../../../models/weight-train';
+import { UtilsService } from '../../../../services/utils.service';
 
 @Component({
   selector: 'app-muscle-map-chart',
@@ -35,6 +36,8 @@ export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
   showAllTrainColor = false;
   baseUrl = window.location.href;
   level: any = metacarpus;
+  printViewInit = false;
+  focusInit = false;
 
   /**
    * 各肌群數據
@@ -110,7 +113,8 @@ export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor(
     private translate: TranslateService,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private utils: UtilsService
   ) {}
 
   ngOnInit () {
@@ -121,9 +125,9 @@ export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
     this.translate.get('hellow world').pipe(
       takeUntil(this.ngUnsubscribe)
     ).subscribe(() => {
-      this.getMuscleName();
       if (e.proficiencyCoefficient && e.proficiencyCoefficient.firstChange === true) {
         if (this.page === 'report') {
+          this.getMuscleName();
           this.arrangeData(this.data);
         }
       } else {
@@ -136,13 +140,13 @@ export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
       }, 0);
 
       // 確認是否為預覽列印頁面-kidin-1090205
-      if (location.search.indexOf('ipm=s') > -1) {
+      if (location.search.indexOf('ipm=s') > -1 && !this.printViewInit) {
         this.checkChartStatus(location.search);
       } else {
 
         for (let i = 0, len = this.muscleGroupList.length; i < len; i++) {
 
-          if (this.muscleGroupList[i].sets !== 0) {
+          if (this.muscleGroupList[i].sets !== 0 && !this.focusInit) {
             this.muscleGroupList[i].isFocus = true; // 預設全部聚焦（無資料除外）
           }
 
@@ -197,6 +201,7 @@ export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
 
     });
 
+    this.printViewInit = true;
   }
 
   /**
@@ -795,6 +800,7 @@ export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
 
     }
 
+    this.focusInit = true;
   }
 
   /**

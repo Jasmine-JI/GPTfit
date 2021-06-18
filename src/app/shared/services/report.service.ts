@@ -4,6 +4,7 @@ import { ReportConditionOpt } from '../models/report-condition'
 import { Observable, BehaviorSubject, ReplaySubject } from 'rxjs';
 import { paiCofficient, dayPaiTarget } from '../models/sports-report';
 import { MuscleCode, MuscleGroup } from '../models/weight-train';
+import moment from 'moment';
 
 @Injectable()
 export class ReportService {
@@ -217,6 +218,29 @@ export class ReportService {
         return MuscleGroup.legMuscle;
     }
     
-  }  
+  }
+
+  /**
+   * 計算BMI
+   * @param height {number}-身高(m)
+   * @param weight {number}-體重(kg)
+   * @return {number}-BMI
+   * @author kidin-1100618
+   */
+  countBMI(height: number, weight: number): number {
+    const bmi = weight / Math.sqrt(height / 100);
+    return parseFloat(bmi.toFixed(1));
+  }
+
+  /**
+   * 計算年齡
+   * @param birthday {string}-YYYYMMDD
+   * @author kidin-1100618
+   */
+  countAge(birthday: string) {
+    const todayMoment = moment(),
+          birthMoment = moment(birthday, 'YYYYMMDD');
+    return todayMoment.diff(birthMoment, 'year');
+  }
   
 }
