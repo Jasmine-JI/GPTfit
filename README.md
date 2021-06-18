@@ -136,8 +136,8 @@ web
 │
 ├─ src/
 │   ├─ app/ // 包含應用的元件和模組，我們要寫的程式碼都在這個目錄
-│   ├─ assets/ // 資源目錄，儲存靜態資源的 比如sass樣式共用設定、圖片、多語系json檔(i18n/)
-│   ├─ environments/ // 環境配置。Angular是支援多環境開發的，我們可以在不同的環境下（開發環境，測試環境，生產環境）共用一套程式碼，主要用來配置環境的
+│   ├─ assets/ // 資源目錄，儲存靜態資源的、圖片、多語系json檔(i18n/)
+│   ├─ environments/ // 環境配置，可以在不同的環境下（開發環境，測試環境，生產環境）共用一套程式碼
 |       ├─ environment.dev.web.ts // 指向235開發環境nodejs api 3001port的環境變數檔
 |       ├─ environment.prod.ts // 指向130正式環境nodejs api 3000port的環境變數檔(130 build)
 |       ├─ environment.ts // 指向234正式環境nodejs api 3000port的環境變數檔(本機開發) 
@@ -146,21 +146,29 @@ web
 |       ├─ environment.web.ts // 指向235正式環境nodejs api 3000port的環境變數檔(235 build) 
 |       ├─ index.uat.html // 234測試環境替換index.html（自動替換），以解決測試網域seo過前的問題(測試中) 
 |       └─ index.web.html // 235開發環境替換index.html（自動替換）(測試用)
+│   ├─ styles/ // 各頁面共用的css樣式，包含主題顏色等等
+|       ├─ model/ // 一些基本scss模塊可供其他scss檔進行@import，以方便開發
+|       ├─ module/ // 風格相近的頁面，其共用css樣式
+|           ├─ info.scss // 概要頁共用樣式（ex.群組概要、個人概要、裝置概要等） 
+|           └─ report.scss // 報告共用樣式（運動報告、生活追蹤、雲跑報告等）
+|       ├─ theme/ // 網站主題顏色（目前僅light/dark樣式，故顏色命名是以此為基礎）
+|           ├─ light.scss // 清亮主題
+|           └─ dark.scss // 暗黑主題
+│       └─ icon.scss // custom icon 定義scss檔
 |
 │   ├─ .htaccess // apache route config設定，沒此設定，無法啟用angular route於apache
 │   ├─ favicon.ico // 瀏覽器的網址列、書籤、頁籤上都會用到的小 icon 圖檔。
-│   ├─ icon.css // Rex custom icon 定義css檔
 │   ├─ index.html // 整個應用的根html，程式啟動就是訪問這個頁面
 │   ├─ main.ts  整個專案的入口點，Angular通過這個檔案來啟動專案
 │   ├─ manifest.json  允許將站點添加至手機主屏幕，是PWA提供的一項重要功能
 │   ├─ polyfills.ts  主要是用來匯入一些必要庫，為了讓Angular能正常執行在老舊瀏覽器版本下
-│   ├─ styles.scss  整個網頁應用程式共用的樣式設定檔(scss版本，希望css檔慢慢變成以scss 去做預處理開發)
+│   ├─ styles.scss  整個網頁應用程式共用的樣式設定檔
 │   ├─ tsconfig.app.json  TypeScript編譯器的配置,新增第三方依賴的時候會修改這個檔案
 │   ├─ tsconfig.spec.json  跟 tsconfig.app.json 用途類似，不過主要是針對測試檔。
 │   ├─ typings.d.ts  typescript模組定義檔，為了讓 TypeScript 能與目前市面上各種 JavaScript 模組/函式庫一起運作
 │   └─ test.ts // 跟 main.ts 檔類似，不過主要是用在測試檔上。
 |
-├─ patch  //  補丁包，用來修改套件避免編譯錯誤。
+├─ patch/  //  補丁包，用來修改套件避免編譯錯誤。
 ├─ angular.json  //  Angular CLI 的設定檔
 ├─ .gitignore // 讓 git 不要追蹤設定裡的檔案
 ├─ karma.conf.js //  Karma 的設定檔。Karma 是一套單元測試工具
@@ -189,7 +197,7 @@ app
 |   |  ├─ pipes/ // 專屬dashboard模組的通道
 |   |  ├─ services/ // 專屬dashboard模組的服務
 |   |  ├─ dashboard-routing.module.ts // dashboard路由模組
-|   |  ├─ dashboard.component.css
+|   |  ├─ dashboard.component.scss
 |   |  ├─ dashboard.component.spec.ts
 |   |  ├─ dashboard.component.ts
 |   |  ├─ dashboard.component.html
@@ -200,7 +208,7 @@ app
 |       ├─ models/ // 有關typescript定義資料型態
 |       ├─ services/ // 專屬外部模組的服務
 |       ├─ portal-routing.module.ts // 外部路由模組
-|       ├─ portal.component.css
+|       ├─ portal.component.scss
 |       ├─ portal.component.spec.ts
 |       ├─ portal.component.ts
 |       ├─ portal.component.html
@@ -223,11 +231,11 @@ app
 │
 ├─ graphql.module.ts // 使用graphql用到的module（測試中）
 ├─ app-routing.module.ts
-├─ app.component.css
+├─ app.component.scss
 ├─ app.component.html
 ├─ app.component.spec.ts
 ├─ app.component.ts
-└─ app.module.ts
+└─ app.module.ts  // 內有設定網頁啟動時，需執行的動作（ex.檢查token有無）
 ```
 
 ## Dependency notes

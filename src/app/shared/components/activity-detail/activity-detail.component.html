@@ -264,7 +264,7 @@
               <div class="flexCol table__list__block">
                 <div class="flexRow table__row">
                   <span class="table__list__subtitle">{{ 'universal_activityData_totalCalorie' | translate }}</span>
-                  <span class="table__list__content">{{ activityInfoLayer.calories }} cal</span>
+                  <span class="table__list__content">{{ activityInfoLayer.calories | number: '1.0-1' }} cal</span>
                 </div>
               </div>
             </div>

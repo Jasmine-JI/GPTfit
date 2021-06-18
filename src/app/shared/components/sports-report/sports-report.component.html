@@ -219,7 +219,7 @@
             <div class="summaryDataArea" *ngIf="reportConditionOpt.sportType === sportCode.run">
               <div>
                 <span class="summaryData">
-                  {{ info.elevGain | distanceSibs: [userInfo.unit, false] }}
+                  {{ info.elevGain || 0 | distanceSibs: [userInfo.unit, false] }}
                 </span>
                 <span class="infoDataUnit">
                   <ng-container *ngIf="userInfo.unit === unitEnum.metric">

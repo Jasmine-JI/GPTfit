@@ -409,11 +409,11 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         nickname,
         heartRateMax,
         heartRateResting,
-        bodyAge,
+        birthday,
         bodyWeight,
         weightTrainingStrengthLevel
       } = res as any;
-
+      const age = this.reportService.countAge(birthday);
       const weightTrainLevel = this.getWeightTrainLevel(weightTrainingStrengthLevel);
       if (this.uiFlag.isDashboardPage || userId == this.userInfo.id) {
         this.uiFlag.isReportOwner = true;
@@ -427,7 +427,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
           weightTrainLevel: weightTrainLevel
         };
 
-        this.chart.hrInfo = this.utils.getUserHrRange(heartRateBase, bodyAge, heartRateMax, heartRateResting);
+        this.chart.hrInfo = this.utils.getUserHrRange(heartRateBase, age, heartRateMax, heartRateResting);
         this.reportService.setReportCondition(this.reportConditionOpt);
         this.getReportSelectedCondition();
       } else {

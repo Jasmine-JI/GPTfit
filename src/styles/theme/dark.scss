@@ -1,3 +1,8 @@
+/**
+ * 命名方式
+ * --scale-$light-$dark：不同灰階轉換（使用rgba）
+ * --$light-$dark：不同顏色轉換（使用HEX碼）
+ */
 $colors-dark: (
   --scale-255-0: rgba(0, 0, 0, 1),
   --scale-255-20: rgba(20, 20, 20, 1),
