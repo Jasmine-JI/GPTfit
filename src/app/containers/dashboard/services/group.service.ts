@@ -634,4 +634,15 @@ export class GroupService {
     return arr.join('-');
   }
 
+  /**
+   * 取得完整的group id（補零）
+   * @param idArr {Array}
+   * @author kidin-1100525
+   */
+   getCompleteGroupId(idArr: Array<string>) {
+    const fillStart = idArr.length;
+    idArr.length = 6;
+    return idArr.fill('0', fillStart, 6).join('-');
+  }
+
 }

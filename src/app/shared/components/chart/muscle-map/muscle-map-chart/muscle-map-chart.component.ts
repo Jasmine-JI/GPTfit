@@ -36,6 +36,8 @@ export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
   showAllTrainColor = false;
   baseUrl = window.location.href;
   level: any = metacarpus;
+  printViewInit = false;
+  focusInit = false;
 
   /**
    * 各肌群數據
@@ -138,13 +140,13 @@ export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
       }, 0);
 
       // 確認是否為預覽列印頁面-kidin-1090205
-      if (location.search.indexOf('ipm=s') > -1) {
+      if (location.search.indexOf('ipm=s') > -1 && !this.printViewInit) {
         this.checkChartStatus(location.search);
       } else {
 
         for (let i = 0, len = this.muscleGroupList.length; i < len; i++) {
 
-          if (this.muscleGroupList[i].sets !== 0) {
+          if (this.muscleGroupList[i].sets !== 0 && !this.focusInit) {
             this.muscleGroupList[i].isFocus = true; // 預設全部聚焦（無資料除外）
           }
 
@@ -199,6 +201,7 @@ export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
 
     });
 
+    this.printViewInit = true;
   }
 
   /**
@@ -797,6 +800,7 @@ export class MuscleMapChartComponent implements OnInit, OnChanges, OnDestroy {
 
     }
 
+    this.focusInit = true;
   }
 
   /**

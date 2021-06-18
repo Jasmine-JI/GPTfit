@@ -93,7 +93,6 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
   @Input() sportType = <SportType>SportCode.run;
   @Input() unit: Unit;
 
-
   @ViewChild('container', {static: true})
   container: ElementRef;
 
@@ -330,8 +329,8 @@ export class DiscolorColumnChartComponent implements OnInit, OnChanges, OnDestro
           labelPadding = 2;
     switch (this.chartName) {
       case 'Pace':
-        trendChartOptions['yAxis'].max = this.highestPoint + labelPadding;
-        trendChartOptions['yAxis'].min = this.lowestPoint - labelPadding;
+        trendChartOptions['yAxis'].max = (this.highestPoint + labelPadding) || null;
+        trendChartOptions['yAxis'].min = (this.lowestPoint - labelPadding) || null;
         trendChartOptions['yAxis'].reversed = true; // 將y軸反轉-kidin-1090206
 
         // 設定圖表y軸單位格式-kidin-1090204
