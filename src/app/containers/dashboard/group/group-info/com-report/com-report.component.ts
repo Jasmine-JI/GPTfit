@@ -526,7 +526,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
               this.groupService.saveAllLevelGroupInfo(this.allLevelGroupData);
               this.getIdListStart();
             } else {
-              console.log('Error');
+              console.error('Error');
             }
 
           });
@@ -1661,7 +1661,7 @@ export class ComReportComponent implements OnInit, OnDestroy {
 
             break;
           default:
-            console.log('Not support this sports type.');
+            console.error('Not support this sports type.');
             break;
         }
       }

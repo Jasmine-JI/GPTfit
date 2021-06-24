@@ -237,7 +237,7 @@ export class InnerTestComponent implements OnInit {
         last()
       ).subscribe(res => {
         if (res.processResult.resultCode !== 200) {
-          console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+          console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
         } else {
           const response: any = res.userProfile;
           const { nickname, avatarUrl, description } = response;

@@ -1,5 +1,5 @@
 <section class="flexCol pageBreakAvoid">
-  <ng-container *ngIf="['cloudrun', 'sportReport'].includes(page)">
+  <ng-container *ngIf="['cloudrun', 'sportReport'].includes(page) || chartType === 'fitTime'">
     <div class="flexRow" style="align-items: center; justify-content: space-between;">
       <h6 id="chartTitle">
         <ng-container *ngIf="chartType === 'planeGForce'">
@@ -8,7 +8,9 @@
         <ng-container *ngIf="chartType === 'planeMaxGForce'">
           {{ 'universal_adjective_maxBig' | translate }}
         </ng-container>
-        <ng-container *ngIf="chartType === 'totalTime' && sportType === sportCode.weightTrain">
+        <ng-container
+          *ngIf="(chartType === 'totalTime' && sportType === sportCode.weightTrain) || chartType === 'fitTime'"
+        >
           {{ 'universal_adjective_singleTotal' | translate }}
         </ng-container>
         {{ chartType | dataTypeTranslate: [sportType, unit] | translate }}
@@ -17,7 +19,7 @@
     </div>
   </ng-container>
   <main id="mainSeciton">
-    <ng-container *ngIf="['cloudrun'].includes(page)">
+    <ng-container *ngIf="['cloudrun'].includes(page) || chartType === 'fitTime'">
       <div class="flexRow infoBlock" style="justify-content: space-between;">
         <div class="flexCol infoSection">
           <span class="dataNumber">
@@ -42,6 +44,9 @@
             <ng-container *ngIf="data.maxPlaneMaxGForce || data.maxPlaneMaxGForce === 0">
               {{ data.maxPlaneMaxGForce | number: '1.0-3' }} g
             </ng-container>
+            <ng-container *ngIf="data.maxMin || data.maxMin === 0">
+              {{ data.maxMin }} {{ 'universal_unit_min' | translate }}
+            </ng-container>
           </span>
           <span class="dataDescription">
             <ng-container *ngIf="page === 'cloudrun'">
@@ -55,6 +60,7 @@
                 || data.maxDistance
                 || data.maxPlaneGForce
                 || data.maxPlaneMaxGForce
+                || data.maxMin
               "
             >
               {{ 'universal_adjective_maxHight' | translate }}
@@ -84,6 +90,9 @@
             </ng-container>
             <ng-container *ngIf="data.avgPlaneMaxGForce || data.avgPlaneMaxGForce === 0">
               {{ data.avgPlaneMaxGForce | number: '1.0-3' }} g
+            </ng-container>
+            <ng-container *ngIf="data.avgMin || data.avgMin === 0">
+              {{ data.avgMin }} {{ 'universal_unit_min' | translate }}
             </ng-container>
           </span>
           <span class="dataDescription">

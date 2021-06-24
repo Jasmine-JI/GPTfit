@@ -271,7 +271,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
               });
 
-              console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+              console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
               break;
           }
 
@@ -318,7 +318,7 @@ export class AppModifypwComponent implements OnInit, AfterViewInit, OnDestroy {
               }
             });
 
-            console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+            console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
         }
 
         this.sending = false;

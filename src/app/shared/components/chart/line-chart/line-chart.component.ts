@@ -2,6 +2,7 @@ import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input }
 import { chart } from 'highcharts';
 import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
+import { BMIColor, fatRateColor, muscleRateColor } from '../../../models/chart-data';
 
 // 建立圖表用-kidin-1081212
 class ChartOptions {
@@ -86,27 +87,58 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
   initChart () {
     let trendDataset,
         chartData = [],
-        lineColor = '',
+        lineColor: Array<any> = [],
         chartName = '';
-    switch (this.chartName) {
-      case 'Weight':
-        chartData = this.mergeData(this.data.weightList);
-        chartName = this.translate.instant('universal_userProfile_bodyWeight');
-        lineColor = this.data.colorSet;
+    if (this.data.colorSet) {  // 待個人生活追蹤重構後刪除此段
+      switch (this.chartName) {
+        case 'Weight':
+          chartData = this.mergeData(this.data.weightList);
+          chartName = this.translate.instant('universal_userProfile_bodyWeight');
+          lineColor = this.data.colorSet;
 
-        break;
-      case 'FatRate':
-        chartData = this.mergeData(this.data.fatRateList);
-        chartName = this.translate.instant('universal_lifeTracking_fatRate');
-        lineColor = this.data.fatRateColorSet;
+          break;
+        case 'FatRate':
+          chartData = this.mergeData(this.data.fatRateList);
+          chartName = this.translate.instant('universal_lifeTracking_fatRate');
+          lineColor = this.data.fatRateColorSet;
 
-        break;
-      case 'MuscleRate':
-        chartData = this.mergeData(this.data.muscleRateList);
-        chartName = this.translate.instant('universal_userProfile_muscleRate');
-        lineColor = this.data.muscleRateColorSet;
+          break;
+        case 'MuscleRate':
+          chartData = this.mergeData(this.data.muscleRateList);
+          chartName = this.translate.instant('universal_userProfile_muscleRate');
+          lineColor = this.data.muscleRateColorSet;
 
-        break;
+          break;
+      }
+
+    } else {
+      chartData = this.data.arr;
+      this.highestPoint = this.data.top + 1;
+      this.lowestPoint = this.data.bottom - 1;
+      switch (this.chartName) {
+        case 'BMI':
+          chartName = 'BMI';
+          lineColor = [
+            [0, BMIColor[0]],
+            [0.5, BMIColor[1]],
+            [1, BMIColor[2]]
+          ];
+          break;
+        case 'FatRate':
+          chartName = this.translate.instant('universal_lifeTracking_fatRate');
+          lineColor = [
+            [0, fatRateColor[0]],
+            [1, fatRateColor[1]]
+          ];
+          break;
+        case 'MuscleRate':
+          chartName = this.translate.instant('universal_userProfile_muscleRate');
+          lineColor = [
+            [0, muscleRateColor[0]],
+            [1, muscleRateColor[1]]
+          ];
+          break;
+      }
     }
 
     trendDataset = [
@@ -138,7 +170,7 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
     // 設定圖表y軸四捨五入取至整數-kidin-1090204
     trendChartOptions['yAxis'].labels = {
       formatter: function () {
-        return this.value.toFixed(0);
+        return parseFloat(this.value.toFixed(0));
       }
     };
 
@@ -151,10 +183,10 @@ export class LineChartComponent implements OnInit, OnChanges, OnDestroy {
       formatter: function () {
         if (this.series.xAxis.tickInterval === 30 * 24 * 3600 * 1000) {
           return `${moment(this.x).format('YYYY-MM-DD')}~${moment(this.x + 6 * 24 * 3600 * 1000).format('YYYY-MM-DD')}
-            <br/>${this.series.name}: ${parseFloat(this.y).toFixed(1)}`;
+            <br/>${this.series.name}: ${parseFloat(this.y.toFixed(1))}`;
         } else {
           return `${moment(this.x).format('YYYY-MM-DD')}
-            <br/>${this.series.name}: ${parseFloat(this.y).toFixed(1)}`;
+            <br/>${this.series.name}: ${parseFloat(this.y.toFixed(1))}`;
         }
 
       }

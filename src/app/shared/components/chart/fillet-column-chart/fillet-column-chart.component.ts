@@ -1,10 +1,10 @@
-import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
+import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input, ChangeDetectorRef } from '@angular/core';
 import { chart } from 'highcharts';
 import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { FilletTrendChart, DisplayPage, planeGColor, planeMaxGColor } from '../../../models/chart-data';
+import { FilletTrendChart, DisplayPage, planeGColor, planeMaxGColor, fitTimeColor } from '../../../models/chart-data';
 import { mi, ft, Unit, unit } from '../../../models/bs-constant';
 import { day, month, week } from '../../../models/utils-constant';
 import { SportType, SportCode } from '../../../models/report-condition';
@@ -90,7 +90,8 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
   container: ElementRef;
 
   constructor(
-    private translate: TranslateService
+    private translate: TranslateService,
+    private changeDetectorRef: ChangeDetectorRef
   ) { }
 
   ngOnInit() {}
@@ -99,6 +100,10 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
     this.initChart();
   }
 
+  /**
+   * 建立圖表
+   * @author kidin
+   */
   initChart () {
     this.translate.get('hellow world').pipe(
       takeUntil(this.ngUnsubscribe)
@@ -151,24 +156,31 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
           this.chartType = 'calories';
           break;
         case 'FitTime':
-          this.createDateList();
-          const newData = [];
-          let idx = 0;
-          for (let i = 0; i < this.dateList.length; i++) {
-            if (this.dateList[i] === this.data.date[idx]) {
-              newData.push(this.data.fitTimeList[idx]);
-              idx++;
-            } else {
-              newData.push(0);
+          if (this.searchDate) {  // 待個人生活追蹤重構後移除
+            this.createDateList();
+            const newData = [];
+            let idx = 0;
+            for (let i = 0; i < this.dateList.length; i++) {
+              if (this.dateList[i] === this.data.date[idx]) {
+                newData.push(this.data.fitTimeList[idx]);
+                idx++;
+              } else {
+                newData.push(0);
+              }
             }
-          }
 
-          chartData = newData.map((_item, index) => {
-            return {
-              x: this.dateList[index],
-              y: _item / 60
-            };
-          });
+            chartData = newData.map((_item, index) => {
+              return {
+                x: this.dateList[index],
+                y: _item / 60
+              };
+            });
+
+          } else {
+            this.chartType = 'fitTime';
+            chartData = this.data.dataArr;
+            this.columnColor = fitTimeColor;
+          }
 
           this.tooltipTitle = this.translate.instant('universal_userProfile_fitTime');
           break;
@@ -205,8 +217,9 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
       }
 
       const isCloudrunPage = this.page === 'cloudrun',
-            isTimeChart = this.chartType && this.chartType.toLowerCase().includes('time');
-      if (isCloudrunPage || isTimeChart) {
+            isTimeChart = this.chartType && this.chartType.toLowerCase().includes('time'),
+            isFitTimeChart = this.chartType === 'fitTime';
+      if (isCloudrunPage || (isTimeChart && !isFitTimeChart)) {
         if (this.page === 'cloudrun') trendChartOptions['plotOptions'].series.borderRadius = 0;
 
         // 設定圖表y軸單位格式
@@ -385,7 +398,10 @@ export class FilletColumnChartComponent implements OnInit, OnChanges, OnDestroy 
 
   }
 
-  // 根據搜尋期間，列出日期清單供圖表使用-kidin-1090220
+  /**
+   * 根據搜尋期間，列出日期清單供圖表使用
+   * @author kidin-1090220
+   */
   createDateList () {
     let diff,
         weekStartDay,

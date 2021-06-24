@@ -135,7 +135,7 @@ export class EditPushMessageComponent implements OnInit {
     this.pushMessageService.getPushMessageDetail(body).pipe(
       switchMap(res => {
         if (res.processResult.resultCode !== 200) {
-          console.log(`${res.processResult.apiCode}：${res.processResult.apiReturnMessage}`);
+          console.error(`${res.processResult.apiCode}：${res.processResult.apiReturnMessage}`);
         } else {
 
           if (res.pushMode.userId && res.pushMode.userId.length !== 0) {
@@ -153,7 +153,7 @@ export class EditPushMessageComponent implements OnInit {
             return this.userProfileService.getUserList(ubody).pipe(
               map(resp => {
                 if (resp.resultCode !== 200) {
-                  console.log(`${resp.apiCode}：${resp.resultMessage}`);
+                  console.error(`${resp.apiCode}：${resp.resultMessage}`);
                 } else {
                   res.pushMode.userId = resp.nickname;
                 }
@@ -446,7 +446,7 @@ export class EditPushMessageComponent implements OnInit {
 
         } else {
           this.snackbar.open('推播失敗', 'OK', { duration: 5000 });
-          console.log(`${res.precessResult.apiCode}：${res.precessResult.apiReturnMessage}`);
+          console.error(`${res.precessResult.apiCode}：${res.precessResult.apiReturnMessage}`);
         }
 
 
@@ -512,7 +512,7 @@ export class EditPushMessageComponent implements OnInit {
 
     this.pushMessageService.cancelPushMessage(body).subscribe(res => {
       if (res.processResult.resultCode !== 200) {
-        console.log(`${res.processResult.apiCode}：${res.processResult.apiReturnMessage}`);
+        console.error(`${res.processResult.apiCode}：${res.processResult.apiReturnMessage}`);
       } else {
         this.snackbar.open('已取消發送', 'OK', { duration: 2000 });
         setTimeout(() => {

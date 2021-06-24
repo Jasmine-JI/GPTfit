@@ -12,7 +12,10 @@
       <span id="rowLine"></span>
     </div>
   </ng-container>
-  <main id="mainSeciton">
+  <main
+    id="mainSeciton"
+    [style.margin-left]="chartName === 'Step' ? '0' : '20px'"
+  >
     <ng-container *ngIf="['cloudrun'].includes(page)">
       <div class="flexRow infoBlock" style="justify-content: space-between;">
         <div class="flexCol infoSection">

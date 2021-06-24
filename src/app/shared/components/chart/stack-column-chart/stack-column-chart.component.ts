@@ -2,7 +2,7 @@ import { Component, OnInit, OnChanges, OnDestroy, ViewChild, ElementRef, Input }
 import { chart } from 'highcharts';
 import moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
-import { ZoneTrendData, DisplayPage, zoneColor } from '../../../models/chart-data';
+import { ZoneTrendData, DisplayPage, zoneColor, sleepColor } from '../../../models/chart-data';
 import { day, month, week } from '../../../models/utils-constant';
 
 
@@ -98,7 +98,10 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
 
   }
 
-  // 心率用圖表-kidin-1090218
+  /**
+   * 心率趨勢圖表（運動報告）
+   * @author kidin-1090218
+   */
   initZoneTrendChart () {
     const ZoneTrendDataset = [
       {
@@ -239,65 +242,96 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
     this.createChart(HRTrendChartOptions);
   }
 
-  // 生活追蹤用圖表-kidin-1090218
+  /**
+   * 睡眠趨勢圖表（生活追蹤報告）
+   * @author kidin-1090218
+   */
   initSleepChart () {
-    this.createDateList();
-    const newDeepSleepData = [],
-          newLightSleepData = [],
-          newAwakeData = [];
-    let idx = 0;
-    for (let i = 0; i < this.dateList.length; i++) {
-      if (this.dateList[i] === this.data.date[idx]) {
-        newLightSleepData.push(this.data.lightSleepList[idx]);
-        newDeepSleepData.push(this.data.deepSleepList[idx]);
-        newAwakeData.push(this.data.awakeList[idx]);
-        idx++;
+    let dataSet: Array<any>,
+        dataLength: number;
+    if (this.searchDate) {  // 待企業與個人生活追蹤重構後移除
+      this.createDateList();
+      const newDeepSleepData = [],
+            newLightSleepData = [],
+            newAwakeData = [];
+      let idx = 0;
+      for (let i = 0; i < this.dateList.length; i++) {
+        if (this.dateList[i] === this.data.date[idx]) {
+          newLightSleepData.push(this.data.lightSleepList[idx]);
+          newDeepSleepData.push(this.data.deepSleepList[idx]);
+          newAwakeData.push(this.data.awakeList[idx]);
+          idx++;
 
-      } else {
-        newLightSleepData.push(0);
-        newDeepSleepData.push(0);
-        newAwakeData.push(0);
+        } else {
+          newLightSleepData.push(0);
+          newDeepSleepData.push(0);
+          newAwakeData.push(0);
+        }
       }
+
+      let deepSleepData = [],
+          lightSleepData = [],
+          awakeData = [];
+
+      this.noData = false;
+      deepSleepData = newDeepSleepData.map((_data, index) => {
+        return [this.dateList[index], _data];
+      });
+
+      lightSleepData = newLightSleepData.map((_data, index) => {
+        return [this.dateList[index], _data];
+      });
+
+      awakeData = newAwakeData.map((_data, index) => {
+        return [this.dateList[index], _data];
+      });
+
+      dataSet = [
+        {
+          name: this.translate.instant('universal_lifeTracking_lightSleep'),
+          data: lightSleepData,
+          showInLegend: false,
+          color: '#35a8c9'
+        },
+        {
+          name: this.translate.instant('universal_lifeTracking_deepSleep'),
+          data: deepSleepData,
+          showInLegend: false,
+          color: '#1e61bb'
+        },
+        {
+          name: this.translate.instant('universal_lifeTracking_wideAwake'),
+          data: awakeData,
+          showInLegend: false,
+          color: '#ccff00'
+        }
+      ];
+
+    } else {
+      const { deep, light, standUp } = this.data;
+      this.noData = false;
+      dataLength = deep.length;
+      dataSet = [
+        {
+          name: this.translate.instant('universal_lifeTracking_lightSleep'),
+          data: light,
+          showInLegend: false,
+          color: sleepColor[0]
+        },
+        {
+          name: this.translate.instant('universal_lifeTracking_deepSleep'),
+          data: deep,
+          showInLegend: false,
+          color: sleepColor[1]
+        },
+        {
+          name: this.translate.instant('universal_lifeTracking_wideAwake'),
+          data: standUp,
+          showInLegend: false,
+          color: sleepColor[2]
+        }
+      ];
     }
-
-    let deepSleepData = [],
-        lightSleepData = [],
-        awakeData = [],
-        dataSet;
-
-    this.noData = false;
-    deepSleepData = newDeepSleepData.map((_data, index) => {
-      return [this.dateList[index], _data];
-    });
-
-    lightSleepData = newLightSleepData.map((_data, index) => {
-      return [this.dateList[index], _data];
-    });
-
-    awakeData = newAwakeData.map((_data, index) => {
-      return [this.dateList[index], _data];
-    });
-
-    dataSet = [
-      {
-        name: this.translate.instant('universal_lifeTracking_lightSleep'),
-        data: lightSleepData,
-        showInLegend: false,
-        color: '#35a8c9'
-      },
-      {
-        name: this.translate.instant('universal_lifeTracking_deepSleep'),
-        data: deepSleepData,
-        showInLegend: false,
-        color: '#1e61bb'
-      },
-      {
-        name: this.translate.instant('universal_lifeTracking_wideAwake'),
-        data: awakeData,
-        showInLegend: false,
-        color: '#ccff00'
-      }
-    ];
 
     const chartOptions = new ChartOptions(dataSet);
 
@@ -305,9 +339,11 @@ export class StackColumnChartComponent implements OnInit, OnChanges, OnDestroy {
     chartOptions['chart'].height = 170;
 
     // 設定圖表x軸時間間距-kidin-1090204
-    if (this.dateRange === 'day' && this.dateList.length <= 7) {
+    const isDayReport = this.dateRange === 'day',
+          overSevenDay = this.dateList.length > 7 || dataLength > 7;
+    if (isDayReport && !overSevenDay) {
       chartOptions['xAxis'].tickInterval = day;  // 間距一天
-    } else if (this.dateRange === 'day' && this.dateList.length > 7) {
+    } else if (isDayReport && overSevenDay) {
       chartOptions['xAxis'].tickInterval = week;  // 間距一週
     } else {
       chartOptions['xAxis'].tickInterval = month;  // 間距一個月

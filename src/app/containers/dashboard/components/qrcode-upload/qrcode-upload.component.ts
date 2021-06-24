@@ -217,7 +217,7 @@ export class QrcodeUploadComponent implements OnInit, OnDestroy {
           this.router.navigateByUrl('/dashboard/activity-list');
         }, 2000);
       } else {
-        console.log(`${resultCode}: Api ${nodejsApiCode} ${errMsg || 'Upload file failed.'}`);
+        console.error(`${resultCode}: Api ${nodejsApiCode} ${errMsg || 'Upload file failed.'}`);
         this.uploading = false;
         this.snackbar.open(
           this.translate.instant(

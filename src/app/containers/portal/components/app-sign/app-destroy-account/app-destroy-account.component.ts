@@ -159,7 +159,7 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit {
         this.uiFlag.isLoading = false;
         const processResult = res.processResult;
         if (processResult.resultCode !== 200) {
-          console.log(`${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`);
+          console.error(`${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`);
         } else {
           this.user = res.userProfile;
         }
@@ -188,7 +188,7 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit {
         this.uiFlag.isLoading = false;
         const processResult = res.processResult;
         if (processResult.resultCode !== 200) {
-          console.log(`${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`);
+          console.error(`${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`);
         } else {
           this.destroyResp.status = res.status;
 
@@ -218,7 +218,7 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit {
     this.userProfileService.getMemberAccessRight({token: this.token}).subscribe(res => {
       this.uiFlag.isLoading = false;
       if (res.resultCode !== 200) {
-        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+        console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
       } else {
 
         if (
@@ -254,7 +254,7 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit {
       this.uiFlag.isLoading = false;
       const processResult = res.processResult;
       if (processResult.resultCode !== 200) {
-        console.log(`${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`);
+        console.error(`${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`);
       } else {
         this.destroyResp.status = res.status;
 
@@ -313,7 +313,7 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit {
           const msg = 'Error! Please try again later.'
           this.utils.openAlert(msg);
         } else if (processResult.resultCode !== 200) {
-          console.log(`${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`);
+          console.error(`${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`);
           if (processResult.apiReturnMessage === 'Destroy me fail, code was verified.') {
             this.uiFlag.checkCompress = false;
             this.translate.get('hellow world').pipe(
@@ -360,7 +360,7 @@ export class AppDestroyAccountComponent implements OnInit, AfterViewInit {
       this.uiFlag.cancelDestroyLoading = false;
       const processResult = res.processResult;
       if (processResult.resultCode !== 200) {
-        console.log(`${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`);
+        console.error(`${processResult.resultCode}: Api ${processResult.apiCode} ${processResult.resultMessage}`);
       } else {
         this.destroyResp.status = 0;
         this.uiFlag.cancelDestroy = true;

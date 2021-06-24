@@ -6,7 +6,7 @@ export class SportTimePipe implements PipeTransform {
   /**
    * 將總秒數轉為時:分:秒或時:分
    * @param value {number}-時間（s）
-   * @param args {boolean}-不足1小時或1分鐘是否仍完整顯示時：分：秒，ex. 00:00:39
+   * @param args {Array<boolean>}-[不足1小時或1分鐘是否仍完整顯示時：分：秒，ex. 00:00:39, 是否隱藏秒]
    * @return {string}-轉換過後的時間字串
    * @author kidin
    */
