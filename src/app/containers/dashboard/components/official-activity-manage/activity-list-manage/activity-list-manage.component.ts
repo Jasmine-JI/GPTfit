@@ -49,7 +49,7 @@ export class ActivityListManageComponent implements OnInit, OnDestroy {
 
     this.officialActivityService.getAllOfficialActivity(body).subscribe(res => {
       if (res.resultCode !== 200) {
-        console.log(`Error: ${res.resultMessage}`);
+        console.error(`Error: ${res.resultMessage}`);
       } else {
         this.activityList = res.activityList.sort((a, b) => b.finalTimeStamp - a.finalTimeStamp);
         this.getEventRangeDate();
@@ -132,7 +132,7 @@ export class ActivityListManageComponent implements OnInit, OnDestroy {
 
     this.officialActivityService.updateRank(body).subscribe(res => {
       if (res.resultCode !== 200) {
-        console.log('Error:', res);
+        console.error('Error:', res);
       }
 
     });
@@ -156,7 +156,7 @@ export class ActivityListManageComponent implements OnInit, OnDestroy {
     this.officialActivityService.copyOfficialActivity(body).subscribe(res => {
 
       if (res.resultCode !== 200) {
-        console.log('Error', 'Copy activity failed');
+        console.error('Error', 'Copy activity failed');
       } else {
         this.router.navigateByUrl(`/dashboard/system/event-management/edit?file=${res.fileName}`);
       }
@@ -293,7 +293,7 @@ export class ActivityListManageComponent implements OnInit, OnDestroy {
     this.officialActivityService.createOfficialActivity(body).subscribe(res => {
 
         if (res.resultCode !== 200) {
-          console.log('Error', 'Create activity failed');
+          console.error('Error', 'Create activity failed');
         } else {
           this.router.navigateByUrl(`/dashboard/system/event-management/edit?file=${res.fileName}`);
         }

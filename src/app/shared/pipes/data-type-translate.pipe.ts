@@ -90,6 +90,8 @@ export class DataTypeTranslatePipe implements PipeTransform {
         return 'universal_activityData_swingSpeed';
       case 'swingRatio':
         return 'universal_activityData_swingTypeRatio';
+      case 'fitTime':
+        return 'universal_userProfile_fitTime';
       default:
         return 'universal_vocabulary_other';
     }

@@ -385,6 +385,15 @@ $group-btn-blue: rgba(0, 183, 238, 1);
   color: var(--003c67-0096ff);
 }
 
+.analysisMenu {
+  position: absolute;
+  right: 0px;
+  top: 40px;
+  padding: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
 .tableListSection {
   padding: 5px;
   border: 1px solid #bcbcbc;

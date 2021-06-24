@@ -62,7 +62,7 @@ $list-shadow-color: rgba(100, 100, 100, 0.3);
 
 }
 
-@mixin step--scale-100-230($size) {
+@mixin step--icon($size) {
   @include font--bold($size);
   height: 30px;
   width: 30px;
@@ -683,12 +683,12 @@ $list-shadow-color: rgba(100, 100, 100, 0.3);
 }
 
 .activity__step__icon {
-  @include step--scale-100-230(20px);
+  @include step--icon(20px);
   color: white;
 }
 
 .activity__yet__step {
-  @include step--scale-100-230(16px);
+  @include step--icon(16px);
   background-color: white;
   border: 3px solid;
   text-align: center;

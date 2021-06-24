@@ -665,11 +665,11 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 數據處理完成，進行畫面渲染檢查
-   * @author kidin-1100525
+   * 變更載入頁面進度，並檢查頁面渲染（避免loading bar出不來）
+   * @author kidin-1100624
    */
-  reportCompleted() {
-    this.uiFlag.progress = 100;
+  changeProgress(progress: number) {
+    this.uiFlag.progress = progress;
     this.changeDetectorRef.markForCheck();
   }
 
@@ -681,14 +681,14 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     this.reportService.getReportCondition().pipe(
       tap(res => {
         const { progress } = this.uiFlag;
-        this.uiFlag.progress = progress === 100 ? 10 : progress;
+        this.changeProgress(progress === 100 ? 10 : progress);
         this.initReportContent();
       }),
       takeUntil(this.ngUnsubscribe)
     ).subscribe(res => {
       // 避免連續送出
-      if (this.uiFlag.progress === 10) {
-        this.uiFlag.progress = 30;
+      if (this.uiFlag.progress >= 10 && this.uiFlag.progress < 100) {
+        this.changeProgress(30);
         const condition = res as any,
               { date: { startTimestamp, endTimestamp }} = condition,
               { date: { startTimestamp: preStartTimestamp, endTimestamp: preEndTimestamp}} = this.reportConditionOpt;
@@ -742,11 +742,11 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       this.sameTimePersonData = res[0];
       if (res.length && this.sameTimePersonData[this.dataKey].length > 0) {
         this.uiFlag.noData = false;
-        this.uiFlag.progress = 70;
+        this.changeProgress(70);
         this.createReport(this.sameTimePersonData);
       } else {
         this.uiFlag.noData = true;
-        this.reportCompleted();
+        this.changeProgress(100);
       }
       
     });
@@ -826,7 +826,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
     if (!haveData) {
       this.uiFlag.noData = true;
-      this.reportCompleted();
+      this.changeProgress(100);
     } else {
       this.translate.get('hellow world').pipe(
         takeUntil(this.ngUnsubscribe)
@@ -843,7 +843,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         };
 
         this.handleData(originData);
-        this.reportCompleted();
+        this.changeProgress(100);
         this.updateUrl();
       });
       

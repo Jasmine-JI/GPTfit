@@ -284,7 +284,7 @@ export class CommercePlanComponent implements OnInit, OnDestroy {
   savePlanSetting() {
     this.groupService.editGroupManage(this.editBody).subscribe(res => {
       if (res.resultCode !== 200) {
-        console.log(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
+        console.error(`${res.resultCode}: Api ${res.apiCode} ${res.resultMessage}`);
         this.utils.openAlert(errMsg);
       } else {
         this.uiFlag.editMode = false;

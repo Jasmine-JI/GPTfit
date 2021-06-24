@@ -11,7 +11,7 @@ export class WeightSibsPipe implements PipeTransform {
    * @author kidin-1100106
    */
   transform(value: number, args: number[]): string {
-    const unitType = args[0];
+    const [unitType, showUnit] = args;
     let finalValue: number,
         unit: string;
     if (unitType === 0) {
@@ -23,7 +23,7 @@ export class WeightSibsPipe implements PipeTransform {
     }
     
     const fixedValue = parseFloat(finalValue.toFixed(1));
-    return !args[1] || args[1] === 0 ? `${fixedValue} ${unit}` : `${fixedValue}`;
+    return !showUnit ? `${fixedValue} ${unit}` : `${fixedValue}`;
   }
 
 }

@@ -24,7 +24,7 @@
       </div>
       <section class="rowToColumn">
         <div class="flexRow" style="align-items: center;">
-          <i class="flexCenter sportTypeIcon" [class]="reportConditionOpt.sportType | sportTypeIcon" ></i>
+          <i class="flexCenter reportIcon" [class]="reportConditionOpt.sportType | sportTypeIcon" ></i>
           <div class="flexCol" style="justify-content: center; margin-left: 20px; line-height: 1.2;">
             <span class="smallFont">
               {{ 'universal_group_buildFromTime' | translate: {date: reportTime.endDate, range: reportTime.range} }}
@@ -865,8 +865,7 @@
             <i class="icon-svg_web-icon_p1_001-setting" (click)="handleShowOpt($event, 'group')"></i>
           </button>
           <div
-            class="flexCol tableMenu"
-            style="position: absolute; right: 0px; top: 40px; padding: 10px; max-height: 300px; overflow-y: auto;"
+            class="flexCol tableMenu analysisMenu"
             (click)="$event.stopPropagation();"
             (scroll)="$event.stopPropagation();"
             *ngIf="groupTable.showOpt"
@@ -1858,8 +1857,7 @@
             <i class="icon-svg_web-icon_p1_001-setting" (click)="handleShowOpt($event, 'person')"></i>
           </button>
           <div
-            class="flexCol tableMenu"
-            style="position: absolute; right: 0px; top: 40px; padding: 10px; max-height: 300px; overflow-y: auto;"
+            class="flexCol tableMenu analysisMenu"
             (click)="$event.stopPropagation();"
             (scroll)="$event.stopPropagation();"
             *ngIf="personTable.showOpt"

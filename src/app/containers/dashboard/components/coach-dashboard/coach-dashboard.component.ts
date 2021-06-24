@@ -239,7 +239,7 @@ export class CoachDashboardComponent
     this.socket$.subscribe(
       message => this.display(message),
       err => console.error(err),
-      () => console.warn('Completed!')
+      () => console.info('Completed!')
     );
   }
 

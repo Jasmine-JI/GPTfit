@@ -636,7 +636,7 @@ export class GroupService {
 
   /**
    * 取得完整的group id（補零）
-   * @param idArr {Array}
+   * @param idArr {Array<string>}
    * @author kidin-1100525
    */
    getCompleteGroupId(idArr: Array<string>) {

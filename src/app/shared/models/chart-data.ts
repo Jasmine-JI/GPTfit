@@ -26,6 +26,41 @@ export const infoColor = [
   'rgba(239, 56, 150, 1)'
 ];
 
+/**
+ * 步數趨勢圖顏色
+ */
+export const stepColor = [
+  '#6fd205',
+  '#7f7f7f',
+  '#eb5293'
+];
+
+/**
+ * 睡眠趨勢圖顏色
+ */
+export const sleepColor = [
+  '#35a8c9',
+  '#1e61bb',
+  '#ccff00'
+];
+
+export const BMIColor = [
+  '#7ee33a',
+  'yellow',
+  'red'
+];
+
+export const fatRateColor = [
+  '#e0a63a',
+  '#e04fc4'
+];
+
+export const muscleRateColor = [
+  '#3ae5da',
+  '#299fc6'
+];
+
+
 export const costTimeColor = 'rgba(188, 226, 58, 1)',
              strokeNumColor = 'rgba(53, 168, 201, 1)',
              caloriesColor = 'rgba(248, 181, 81, 1)',
@@ -44,7 +79,18 @@ export const costTimeColor = 'rgba(188, 226, 58, 1)',
              speedTrendColor = ['#ff00ff', '#ffff00', '#ffff00'],
              cadenceTrendColor = ['#aafc42', '#d6ff38', '#f56300'],
              swolfTrendColor = ['#aafc42', '#d6ff38', '#7fd9ff'],
-             swingSpeedTrendColor = ['#3da200', '#0012ff', '#0012ff'];
+             swingSpeedTrendColor = ['#3da200', '#0012ff', '#0012ff'],
+             fitTimeColor = 'rgba(248, 181, 81, 1)';
+
+export const maleBodyBoundary = {
+  fatRate: [17, 21, 50],
+  FFMI: [18, 21, 28]
+};
+
+export const femaleBodyBoundary = {
+  fatRate: [23, 27, 56],
+  FFMI: [15, 18, 25]
+};
 
 export interface HrZoneRange {
   hrBase: 0 | 1;

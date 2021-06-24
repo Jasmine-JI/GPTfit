@@ -619,7 +619,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
                   }
                 });
 
-                console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+                console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
                 break;
             }
 
@@ -637,7 +637,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
               }
             });
 
-            console.log(`${res.resultCode}: ${res.info}`);
+            console.error(`${res.resultCode}: ${res.info}`);
           }
 
         }
@@ -708,7 +708,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
               }
             });
 
-            console.log(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
+            console.error(`${res.processResult.resultCode}: ${res.processResult.apiReturnMessage}`);
             break;
         }
 
@@ -725,7 +725,7 @@ export class AppSignupComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         });
 
-        console.log(`${res.resultCode}: ${res.info}`);
+        console.error(`${res.resultCode}: ${res.info}`);
       } else {
         this.newToken = res.register.token;
         this.saveToken(this.newToken);

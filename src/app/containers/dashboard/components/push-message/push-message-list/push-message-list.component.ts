@@ -144,7 +144,7 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
     this.pushMessageService.getPushMessageList(this.req).pipe(
       switchMap(res => {
         if (res.processResult.resultCode !== 200) {
-          console.log(`${res.processResult.apiCode}：${res.processResult.apiReturnMessage}`);
+          console.error(`${res.processResult.apiCode}：${res.processResult.apiReturnMessage}`);
         } else {
           // 取得發送者暱稱
           const userIdArr = [];
@@ -159,7 +159,7 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
           return this.userProfileService.getUserList(body).pipe(
             map(resp => {
               if (resp.resultCode !== 200) {
-                console.log(`${resp.apiCode}：${resp.resultMessage}`);
+                console.error(`${resp.apiCode}：${resp.resultMessage}`);
               } else {
                 resp.nickname.forEach((_user, index) => {
 
@@ -291,7 +291,7 @@ export class PushMessageListComponent implements OnInit, OnDestroy {
 
     this.pushMessageService.cancelPushMessage(body).subscribe(res => {
       if (res.processResult.resultCode !== 200) {
-        console.log(`${res.processResult.apiCode}：${res.processResult.apiReturnMessage}`);
+        console.error(`${res.processResult.apiCode}：${res.processResult.apiReturnMessage}`);
       } else {
         this.snackbar.open('已取消發送', 'OK', { duration: 2000 });
         setTimeout(() => {

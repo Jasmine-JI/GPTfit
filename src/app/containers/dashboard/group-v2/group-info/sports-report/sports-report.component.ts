@@ -471,7 +471,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       const queryArr = query.split('&');
       queryArr.forEach(_query => {
         const _queryArr = _query.split('='),
-              [_key, _value] = [..._queryArr];
+              [_key, _value] = _queryArr;
         switch (_key) {
           case 'ipm':
             this.uiFlag.isPreviewMode = true;
@@ -774,11 +774,11 @@ export class SportsReportComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 數據處理完成，進行畫面渲染檢查
-   * @author kidin-1100525
+   * 變更載入頁面進度，並檢查頁面渲染（避免loading bar出不來）
+   * @author kidin-1100624
    */
-  reportCompleted() {
-    this.uiFlag.progress = 100;
+  changeProgress(progress: number) {
+    this.uiFlag.progress = progress;
     this.changeDetectorRef.markForCheck();
   }
 
@@ -790,7 +790,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     this.reportService.getReportCondition().pipe(
       switchMap(res => {
         const { progress } = this.uiFlag;
-        this.uiFlag.progress = progress === 100 ? 10 : progress;
+        this.changeProgress(progress === 100 ? 10 : progress);
         this.initReportContent();
         const effectGroupId = (res as any).group.selectGroup.split('-'),
               completeGroupId = this.groupService.getCompleteGroupId(effectGroupId),
@@ -830,9 +830,9 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       takeUntil(this.ngUnsubscribe)
     ).subscribe(resArr => {
       // 避免連續送出
-      if (this.uiFlag.progress === 10) {
-        this.uiFlag.progress = 30;
-        const [condition, memberList] = [...resArr as any],
+      if (this.uiFlag.progress >= 10 && this.uiFlag.progress < 100) {
+        this.changeProgress(30);
+        const [condition, memberList] = resArr as any,
               { 
                 date: { 
                   startTimestamp,
@@ -973,11 +973,11 @@ export class SportsReportComponent implements OnInit, OnDestroy {
       this.sameTimeGroupData = res;
       if (res.length && res.length > 0) {
         this.uiFlag.noData = false;
-        this.uiFlag.progress = 70;
+        this.changeProgress(70);
         this.createReport(res);
       } else {
         this.uiFlag.noData = true;
-        this.reportCompleted();
+        this.changeProgress(100);
       }
       
     });
@@ -1063,7 +1063,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
 
     if (!haveData) {
       this.uiFlag.noData = true;
-      this.reportCompleted();
+      this.changeProgress(100);
     } else {
       this.translate.get('hellow world').pipe(
         takeUntil(this.ngUnsubscribe)
@@ -1085,7 +1085,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
         this.handleMixData(mixData);
         this.handleGroupAnalysis(this.personAnalysis);
         this.createAnalysisTable(this.reportConditionOpt.sportType);
-        this.reportCompleted();
+        this.changeProgress(100);
         this.updateUrl();
       });
       
@@ -1189,7 +1189,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     }
 
     this.getTrendAvgValue();
-    this.info = { ...infoData, ...this.info };
+    this.info = { infoData, ...this.info };
     // 針對不同類別所需數據進行加工
     switch (sportType) {
       case SportCode.all:
@@ -1608,7 +1608,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
               }
 
               for (let key in personData[_id]) {
-                const excloudKey = [
+                const excludeKey = [
                   'belongGroup',
                   'name',
                   'openPrivacy',
@@ -1624,7 +1624,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
                   'abdominalMuscle',
                   'legMuscle'
                 ];
-                if (!excloudKey.includes(key)) {
+                if (!excludeKey.includes(key)) {
                   // 數據加總
                   if (this.groupAnalysis[gid].hasOwnProperty(key)) {
                     this.groupAnalysis[gid][key] += personData[_id][key];
@@ -2912,7 +2912,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     } = data;
 
     // 心率區間落點圖表
-    let [z0, z1, z2, z3, z4, z5] = [...this.chart.hrzone];
+    let [z0, z1, z2, z3, z4, z5] = this.chart.hrzone;
     z0 += totalHrZone0Second;
     z1 += totalHrZone1Second;
     z2 += totalHrZone2Second;
@@ -2956,7 +2956,7 @@ export class SportsReportComponent implements OnInit, OnDestroy {
     } = data;
 
     // 閾值區間落點圖表
-    let [z0, z1, z2, z3, z4, z5, z6] = [...this.chart.thresholdZone];
+    let [z0, z1, z2, z3, z4, z5, z6] = this.chart.thresholdZone;
     z0 += totalFtpZone0Second;
     z1 += totalFtpZone1Second;
     z2 += totalFtpZone2Second;
